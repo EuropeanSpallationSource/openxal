@@ -14,13 +14,13 @@ package xal.tools;
  */
 public class StringJoiner {
 	/** Separator to use between consecutive items */
-	final private String SEPARATOR;
+	private final String separator;
 	
 	/** Buffer holding the joined string while it is being assembled */
-	final private StringBuffer BUFFER;
+	private final StringBuffer buffer;
 	
 	/** Object performing the joins which gets changed depending on the rule for joining. */
-	private Joiner _joiner;
+	private Joiner joiner;
 	
 	
 	/** Empty Constructor using ", " as the default separator */
@@ -31,9 +31,9 @@ public class StringJoiner {
 	
 	/** Constructor taking the separator to use for joining items */
 	public StringJoiner( final String separator ) {
-		SEPARATOR = separator;
-		BUFFER = new StringBuffer();   // create an empty string buffer
-		_joiner = new FirstJoiner();    // appropriate joiner for empty buffer
+		this.separator = separator;
+		buffer = new StringBuffer();   // create an empty string buffer
+		joiner = new FirstJoiner();    // appropriate joiner for empty buffer
 	}
 	
 	
@@ -166,13 +166,14 @@ public class StringJoiner {
 	
 	/** append a String item */
 	public void append( final String string ) {
-		_joiner.append( string );
+		joiner.append( string );
 	}
 	
 	
 	/** get the joined items as a String */
+        @Override
 	public String toString() {
-		return BUFFER.toString();
+		return buffer.toString();
 	}
 	
 	
@@ -185,7 +186,7 @@ public class StringJoiner {
 	 */
 	abstract private class Joiner {
 		public void append( final String string ) {
-			BUFFER.append( string );
+			buffer.append( string );
 		}
 	}
 	
@@ -197,9 +198,10 @@ public class StringJoiner {
 	 * a lead separator.
 	 */
 	private class FirstJoiner extends Joiner {
+                @Override
 		public void append( final String string ) {
 			super.append( string );
-			_joiner = new ConsecutiveJoiner();  // for future joins
+			joiner = new ConsecutiveJoiner();  // for future joins
 		}
 	}
 	
@@ -210,8 +212,9 @@ public class StringJoiner {
 	 * used when the buffer already has one or more items in it.
 	 */
 	private class ConsecutiveJoiner extends Joiner {
+                @Override
 		public void append( final String string ) {
-			BUFFER.append( SEPARATOR );
+			buffer.append(separator );
 			super.append( string );
 		}
 	}

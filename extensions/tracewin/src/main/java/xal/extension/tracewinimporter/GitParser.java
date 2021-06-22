@@ -59,29 +59,29 @@ public class GitParser {
      * @return true if parsing was successful
      */
     public boolean URL2Json(String urlString) {
-        JSONObject json_main_page;
-        JSONArray json_seq_list;
-        String seq_name;
-        String seq_url;
+        JSONObject jsonMainPage;
+        JSONArray jsonSeqList;
+        String seqname;
+        String seqUrl;
         List<URI> files = new ArrayList<>();
         List<String> sequences = new ArrayList<>();
         try {
             do {
                 URL url = new URL(urlString);
-                json_main_page = new JSONObject(IOUtils.toString(url.openStream()));
-                json_seq_list = json_main_page.getJSONArray("values");
-                for (int i = 0; i < json_seq_list.length(); i++) {
-                    seq_name = json_seq_list.getJSONObject(i).getString("path");
-                    if (seq_name.substring(0, 1).matches("\\d+(\\.\\d+)?")
-                            && Integer.parseInt(seq_name.substring(2, 3)) == 0) {
-                        seq_url = json_seq_list.getJSONObject(i).getJSONObject("links").getJSONObject("self").getString("href");
-                        sequences.add(seq_name.substring(4));
-                        seq_url += "Beam_Physics/lattice.dat";
-                        files.add(new URI(seq_url));
+                jsonMainPage = new JSONObject(IOUtils.toString(url.openStream()));
+                jsonSeqList = jsonMainPage.getJSONArray("values");
+                for (int i = 0; i < jsonSeqList.length(); i++) {
+                    seqname = jsonSeqList.getJSONObject(i).getString("path");
+                    if (seqname.substring(0, 1).matches("\\d+(\\.\\d+)?")
+                            && Integer.parseInt(seqname.substring(2, 3)) == 0) {
+                        seqUrl = jsonSeqList.getJSONObject(i).getJSONObject("links").getJSONObject("self").getString("href");
+                        sequences.add(seqname.substring(4));
+                        seqUrl += "Beam_Physics/lattice.dat";
+                        files.add(new URI(seqUrl));
                     }
                 }
-                if (json_main_page.has("next")) {
-                    urlString = json_main_page.getString("next");
+                if (jsonMainPage.has("next")) {
+                    urlString = jsonMainPage.getString("next");
                 } else {
                     urlString = null;
                 }

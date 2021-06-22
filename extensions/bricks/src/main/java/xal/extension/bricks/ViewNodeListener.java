@@ -8,8 +8,6 @@
 
 package xal.extension.bricks;
 
-import java.util.List;
-
 
 /** processor of view node events */
 public interface ViewNodeListener extends BrickListener {

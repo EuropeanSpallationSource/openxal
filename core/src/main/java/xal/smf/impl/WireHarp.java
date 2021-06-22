@@ -148,7 +148,7 @@ public class WireHarp extends ProfileDevice {
          */
 
         /** Map of field names to field SCADA descriptors for this structure */
-        public final static ScadaFieldMap   FLD_MAP = new ScadaFieldMap(DevStatus.class);
+        public static final ScadaFieldMap   FLD_MAP = new ScadaFieldMap(DevStatus.class);
 
 
         /**
@@ -320,7 +320,7 @@ public class WireHarp extends ProfileDevice {
          */
 
         /** Map of field names to field SCADA descriptors for this structure */
-        public final static ScadaFieldMap   FLD_MAP = new ScadaFieldMap(DaqConfig.class);
+        public static final ScadaFieldMap   FLD_MAP = new ScadaFieldMap(DaqConfig.class);
 
 
         /**
@@ -1274,14 +1274,14 @@ public class WireHarp extends ProfileDevice {
     public static final String      STR_TYPE_ID = "Harp";
 
     /** software type for the WireHarp class */
-    static final public String      SOFTWARE_TYPE = "Version 2.0.0"; 
+    public static final String      SOFTWARE_TYPE = "Version 2.0.0"; 
 
     /** Hardware type for the WireHarp class */
-    static final public String      HARDWARE_TYPE = "wireharp"; 
+    public static final String      HARDWARE_TYPE = "wireharp"; 
 
 
     /** <b>Kluge</b> - Number of wires on current SNS harps */
-    public final static int             CNT_WIRES = 30;
+    public static final int             CNT_WIRES = 30;
 
 
     /*

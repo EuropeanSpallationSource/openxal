@@ -28,16 +28,16 @@ import java.util.*;
  * @author  tap
  */
 public class ChannelSuite implements DataListener {
-	static final public String DATA_LABEL = "channelsuite";
+	public static final String DATA_LABEL = "channelsuite";
     
     /** map of channels keyed by handle */
-    final private Map<String,Channel> CHANNEL_HANDLE_MAP;
+    private final Map<String,Channel> channelHandleMap;
 	
     /** channel factory for getting channels */
-    private ChannelFactory CHANNEL_FACTORY;
+    private ChannelFactory channelFactory;
     
     /** Signal Suite */
-    final private SignalSuite SIGNAL_SUITE;
+    private final SignalSuite signalSuite;
     
     
     /** Creates a new instance of ChannelSuite using the default channel factory */
@@ -51,22 +51,22 @@ public class ChannelSuite implements DataListener {
 	 * @param channelFactory channel factory (or null for default factory) for generating channels
 	 */
 	public ChannelSuite( final ChannelFactory channelFactory ) {
-		CHANNEL_FACTORY = channelFactory != null ? channelFactory : ChannelFactory.defaultFactory();
-        CHANNEL_HANDLE_MAP = new HashMap<String,Channel>();
-        SIGNAL_SUITE = new SignalSuite();
+		this.channelFactory = channelFactory != null ? channelFactory : ChannelFactory.defaultFactory();
+        channelHandleMap = new HashMap<>();
+        signalSuite = new SignalSuite();
 	}
 
 
 	/** get the channel factory */
 	public ChannelFactory getChannelFactory() {
-		return CHANNEL_FACTORY;
+		return channelFactory;
 	}
 
 
     /** set a new channel factory and clears the old channel map */
     public void setChannelFactory(ChannelFactory channelFactory) {
-        CHANNEL_FACTORY = channelFactory;
-        CHANNEL_HANDLE_MAP.clear();
+        this.channelFactory = channelFactory;
+        channelHandleMap.clear();
     }
     
     
@@ -75,6 +75,7 @@ public class ChannelSuite implements DataListener {
      * external data source.
      * @return a tag that identifies the receiver's type
      */
+        @Override
     public String dataLabel() { return DATA_LABEL; }
     
     
@@ -82,8 +83,9 @@ public class ChannelSuite implements DataListener {
      * Update the data based on the information provided by the data provider.
      * @param adaptor The adaptor from which to update the data
      */
+        @Override
     public void update( final DataAdaptor adaptor ) {
-        SIGNAL_SUITE.update( adaptor );
+        signalSuite.update( adaptor );
     }
     
     
@@ -91,8 +93,9 @@ public class ChannelSuite implements DataListener {
      * Write data to the data adaptor for storage.
      * @param adaptor The adaptor to which the receiver's data is written
      */
+        @Override
     public void write( final DataAdaptor adaptor ) {
-        SIGNAL_SUITE.write( adaptor );
+        signalSuite.write( adaptor );
     }
 
 
@@ -105,7 +108,7 @@ public class ChannelSuite implements DataListener {
 	 * @param valid specifies whether the channel is marked valid
 	 */
 	public void putChannel( final String handle, final String signal, final boolean settable, final String transformKey, final boolean valid ) {
-		SIGNAL_SUITE.putChannel( handle, signal, settable, transformKey, valid );
+		signalSuite.putChannel( handle, signal, settable, transformKey, valid );
 	}
 
 
@@ -138,7 +141,7 @@ public class ChannelSuite implements DataListener {
 	 * @param transform the value transform
 	 */
 	public void putTransform( final String name, final ValueTransform transform ) {
-		SIGNAL_SUITE.putTransform( name, transform );
+		signalSuite.putTransform( name, transform );
 	}
 
 
@@ -148,7 +151,7 @@ public class ChannelSuite implements DataListener {
      * @return true if the PV signal is available and false if not.
      */
     protected boolean hasSignal( final String signal ) {
-        return SIGNAL_SUITE.hasSignal( signal );
+        return signalSuite.hasSignal( signal );
     }
     
     
@@ -157,8 +160,8 @@ public class ChannelSuite implements DataListener {
      * @param handle The handle to check for availability.
      * @return true if the handle is available and false if not.
      */
-    final public boolean hasHandle( final String handle ) {
-        return SIGNAL_SUITE.hasHandle( handle );
+    public final boolean hasHandle( final String handle ) {
+        return signalSuite.hasHandle( handle );
     }
     
     
@@ -166,8 +169,8 @@ public class ChannelSuite implements DataListener {
      * Get all of the handles managed by the is channel suite.
      * @return The handles managed by this channel suite.
      */
-    final public Collection<String> getHandles() {
-        return SIGNAL_SUITE.getHandles();
+    public final Collection<String> getHandles() {
+        return signalSuite.getHandles();
     }
     
     
@@ -176,8 +179,8 @@ public class ChannelSuite implements DataListener {
      * @param handle The handle for which to get the PV signal name.
      * @return Get the PV signal name associated with the specified handle or null if it is not found.
      */
-    final public String getSignal( final String handle ) {
-        return SIGNAL_SUITE.getSignal( handle );
+    public final String getSignal( final String handle ) {
+        return signalSuite.getSignal( handle );
     }
     
     
@@ -186,8 +189,8 @@ public class ChannelSuite implements DataListener {
      * @param handle The handle for which to get the transform.
      * @return The transform for the specified handle.
      */
-    final public ValueTransform getTransform( final String handle ) {
-        return SIGNAL_SUITE.getTransform( handle );
+    public final ValueTransform getTransform( final String handle ) {
+        return signalSuite.getTransform( handle );
     }
 
 
@@ -196,8 +199,8 @@ public class ChannelSuite implements DataListener {
      * @param handle The handle for which to get the validity.
      * @return validity state of the PV or false if there is no entry for the handle
      */
-    final public boolean isValid( final String handle ) {
-		return SIGNAL_SUITE.isValid( handle );
+    public final boolean isValid( final String handle ) {
+		return signalSuite.isValid( handle );
     }
 
 
@@ -207,7 +210,7 @@ public class ChannelSuite implements DataListener {
      * @return set parameter of the PV or false if there is no entry for the handle
      */
     public boolean isSettable( final String handle ) {
-        return SIGNAL_SUITE.isSettable( handle );
+        return signalSuite.isSettable( handle );
     }
 
 
@@ -217,7 +220,7 @@ public class ChannelSuite implements DataListener {
      * @param settable Set parameter.
      */
     public void setSettable( final String handle, final boolean settable ) {
-        SIGNAL_SUITE.setSettable( handle, settable );
+        signalSuite.setSettable( handle, settable );
     }
 
     
@@ -228,30 +231,30 @@ public class ChannelSuite implements DataListener {
      */
     public Channel getChannel( final String handle ) {
         // first see if we have ever cached the channel
-        Channel channel = CHANNEL_HANDLE_MAP.get( handle );
+        Channel channel = channelHandleMap.get( handle );
         
         if ( channel == null ) {                    // if the channel was never cached ...
             final String signal = getSignal( handle );      // lookup the signal
             if ( signal != null && !signal.equals("")) {                 // get the channel from the channel factory
                 final ValueTransform transform = getTransform( handle );
                 if ( transform != null ) {
-                    channel = CHANNEL_FACTORY.getChannel( signal, transform );
+                    channel = channelFactory.getChannel( signal, transform );
                 }
                 else {
-                    channel = CHANNEL_FACTORY.getChannel( signal );
+                    channel = channelFactory.getChannel( signal );
                 }
 
 				channel.setValid( isValid( handle ) );
 
 				if (channel instanceof IServerChannel) {
-					((IServerChannel)channel).setSettable( SIGNAL_SUITE.isSettable(handle) );
+					((IServerChannel)channel).setSettable( signalSuite.isSettable(handle) );
 				}
 
             }
             
             // if we have a channel, cache it for future access
             if ( channel != null ) {
-                CHANNEL_HANDLE_MAP.put( handle, channel );
+                channelHandleMap.put( handle, channel );
             }
         }
         
@@ -270,7 +273,7 @@ public class ChannelSuite implements DataListener {
  */
 class SignalSuite {
 	/** hash set of handles that are settable by default */
-	final static private Set<String> SETTABLE_CHANNEL_HANDLES = new HashSet<>();
+	private static final Set<String> SETTABLE_CHANNEL_HANDLES = new HashSet<>();
 
 	// assign the settable handles
 	static {
@@ -282,16 +285,16 @@ class SignalSuite {
 	}
 
 	/** map of signal entries keyed by handle */
-	final private Map<String,SignalEntry> SIGNAL_MAP;        // handle-PV name table
+	private final Map<String,SignalEntry> signalMap;        // handle-PV name table
 
 	/** map of transforms keyed by name */
-	final private Map<String,ValueTransform> TRANSFORM_MAP;     // handle-value transform table
+	private final Map<String,ValueTransform> transformMap;     // handle-value transform table
 
 
 	/** Creates a new instance of SignalSuite */
 	public SignalSuite() {
-		SIGNAL_MAP = new HashMap<String,SignalEntry>();
-		TRANSFORM_MAP = new HashMap<String,ValueTransform>();
+		signalMap = new HashMap<>();
+		transformMap = new HashMap<>();
 	}
 
 
@@ -313,9 +316,9 @@ class SignalSuite {
 			final String handle = channelAdaptor.stringValue("handle");
 
 			if ( !hasHandle( handle ) ) {
-				SIGNAL_MAP.put( handle, new SignalEntry() );
+				signalMap.put( handle, new SignalEntry() );
 			}
-			final SignalEntry signalEntry = SIGNAL_MAP.get( handle );
+			final SignalEntry signalEntry = signalMap.get( handle );
 
 			final String signal = channelAdaptor.stringValue( "signal" );
 			if ( signal != null )  signalEntry.setSignal( signal );
@@ -355,7 +358,7 @@ class SignalSuite {
 	 * @param adaptor The adaptor to which the receiver's data is written
 	 */
 	public void write( final DataAdaptor adaptor ) {
-		final Collection<Map.Entry<String,SignalEntry>> signalMapEntries = SIGNAL_MAP.entrySet();
+		final Collection<Map.Entry<String,SignalEntry>> signalMapEntries = signalMap.entrySet();
 		for ( final Map.Entry<String,SignalEntry> entry : signalMapEntries ) {
 			final DataAdaptor channelAdaptor = adaptor.createChild("channel");
 			final SignalEntry signalEntry = entry.getValue();
@@ -384,7 +387,7 @@ class SignalSuite {
 	public void putChannel( final String handle, final String signal, final boolean settable, final String transformKey, final boolean valid ) {
 		final SignalEntry signalEntry = new SignalEntry( signal, settable, transformKey );
 		signalEntry.setValid( valid );
-		SIGNAL_MAP.put( handle, signalEntry );
+		signalMap.put( handle, signalEntry );
 	}
 
 
@@ -394,7 +397,7 @@ class SignalSuite {
 	 * @param transform the value transform
 	 */
 	public void putTransform( final String name, final ValueTransform transform ) {
-		TRANSFORM_MAP.put( name, transform );
+		transformMap.put( name, transform );
 	}
 
 
@@ -404,7 +407,7 @@ class SignalSuite {
 	 * @return true if this suite manages the specified signal and false otherwise.
 	 */
 	boolean hasSignal( final String signal ) {
-		for ( final SignalEntry entry : SIGNAL_MAP.values() ) {
+		for ( final SignalEntry entry : signalMap.values() ) {
 			if ( entry.signal().equals( signal ) )  return true;
 		}
 
@@ -428,7 +431,7 @@ class SignalSuite {
 	 * @return The handles managed by this suite.
 	 */
 	public Collection<String> getHandles() {
-		return SIGNAL_MAP.keySet();
+		return signalMap.keySet();
 	}
 
 
@@ -438,7 +441,7 @@ class SignalSuite {
 	 * @return true if the handle is available and false otherwise.
 	 */
 	public boolean hasHandle( final String handle ) {
-		return SIGNAL_MAP.containsKey( handle );
+		return signalMap.containsKey( handle );
 	}
 
 
@@ -461,7 +464,7 @@ class SignalSuite {
 	 */
 	public ValueTransform getTransform(String handle) {
 		final SignalEntry signalEntry = getSignalEntry( handle );
-		return signalEntry != null ? TRANSFORM_MAP.get( signalEntry.getTransformKey() ) : null;
+		return signalEntry != null ? transformMap.get( signalEntry.getTransformKey() ) : null;
 	}
 
 
@@ -505,7 +508,7 @@ class SignalSuite {
 	 * @return signal entry for the handle or null if there is none
 	 */
 	private SignalEntry getSignalEntry( final String handle ) {
-		return SIGNAL_MAP.get( handle );
+		return signalMap.get( handle );
 	}
 }
 
@@ -516,18 +519,18 @@ class SignalSuite {
  * the key is a handle and the value is an instance of SignalEntry.
  */
 class SignalEntry {
-	private String _signal;			// the PV signal name
-	private boolean _settable;		// whether the PV is settable
-	private boolean _valid;			// whether the channel is marked valid
-	private String _transformkey;   // Name of the transform if any
+	private String signal;			// the PV signal name
+	private boolean settable;		// whether the PV is settable
+	private boolean valid;			// whether the channel is marked valid
+	private String transformKey;   // Name of the transform if any
 
 
 	/** Primary Constructor */
 	public SignalEntry( final String signal, final boolean settable, final String transformKey ) {
-		_signal = signal;
-		_settable = settable;
-		_transformkey = transformKey;
-		_valid = true;
+		this.signal = signal;
+		this.settable = settable;
+		this.transformKey = transformKey;
+		valid = true;
 	}
 
 
@@ -542,25 +545,25 @@ class SignalEntry {
 	 * @return true if the PV is settable and false otherwise.
 	 */
 	public boolean settable() {
-		return _settable;
+		return settable;
 	}
 
 
 	/** set the settable property */
 	public void setSettable( final boolean isSettable ) {
-		_settable = isSettable;
+		settable = isSettable;
 	}
 
 
 	/** get the valid status of the PV */
 	public boolean isValid() {
-		return _valid;
+		return valid;
 	}
 
 
 	/** mark the valid status of the PV */
 	public void setValid( final boolean isValid ) {
-		_valid = isValid;
+		valid = isValid;
 	}
 
 
@@ -569,13 +572,13 @@ class SignalEntry {
 	 * @return The PV signal name.
 	 */
 	public String signal() {
-		return _signal;
+		return signal;
 	}
 
 
 	/** set the signal */
 	public void setSignal( final String signal ) {
-		_signal = signal;
+		this.signal = signal;
 	}
 
 
@@ -584,13 +587,13 @@ class SignalEntry {
 	 * @return the name of the associated transform
 	 */
 	public String getTransformKey() {
-		return _transformkey;
+		return transformKey;
 	}
 
 
 	/** set the transform key */
 	public void setTransformKey( final String transformKey ) {
-		_transformkey = transformKey;
+		this.transformKey = transformKey;
 	}
 }
 

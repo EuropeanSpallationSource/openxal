@@ -2,11 +2,10 @@ package xal.extension.scan;
 
 import xal.ca.*;
 
-import java.util.*;
 import java.awt.event.*;
 
 /**
- *  The ActionEvent extention to keep info about a channel record in the case of MonitoredPV event.
+ *  The ActionEvent extension to keep info about a channel record in the case of MonitoredPV event.
  *
  *@author     shishlo
  *created    October 31, 2005

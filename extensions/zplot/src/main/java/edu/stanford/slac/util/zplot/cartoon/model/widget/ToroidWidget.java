@@ -7,7 +7,7 @@ import java.awt.geom.Ellipse2D;
 
 public class ToroidWidget extends CartoonWidget {
 
-	private final static int DIAMETER = 2;
+	private static final int DIAMETER = 2;
 
 	private static Shape createShape() {
 		Shape bpm = BPMWidget.SHAPE;

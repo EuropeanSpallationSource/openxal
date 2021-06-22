@@ -9,8 +9,6 @@
  */
 package xal.extension.solver;
 
-import java.util.*;
-
 /**
  * Objective represents a goal to achieve in optimization.  An objective corresponds to some
  * specified measure and determines that satisfaction achieved by a particular value of the measure. 
@@ -20,7 +18,7 @@ import java.util.*;
  */
 public abstract class Objective {
 	/** the name of the objective */
-	protected final String _name;
+	protected final String name;
 
 	/**
 	 * Constructor
@@ -28,7 +26,7 @@ public abstract class Objective {
 	 * @param name  the name to assign the objective
 	 */
 	public Objective( final String name ) {
-		_name = name;
+		this.name = name;
 	}
 
 
@@ -47,7 +45,7 @@ public abstract class Objective {
 	 * @return   The name of this objective.
 	 */
 	public String getName() {
-		return _name;
+		return name;
 	}
 
 
@@ -56,6 +54,7 @@ public abstract class Objective {
 	 *
 	 * @return   The string representation of an objective.
 	 */
+        @Override
 	public String toString() {
 		return getName();
 	}

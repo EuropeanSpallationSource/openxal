@@ -10,8 +10,7 @@
 
 package xal.tools.apputils.files;
 
-import xal.tools.StringJoiner;
-
+import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
@@ -23,7 +22,7 @@ import javax.swing.filechooser.FileFilter;
  */
 public class FileFilterFactory {
 	/** wildcard extension */
-	static public final String WILDCARD_FILE_EXTENSION = "*";
+	public static final String WILDCARD_FILE_EXTENSION = "*";
 	
     /** Creates a new instance of FileFilterFactory */
     protected FileFilterFactory() {}
@@ -34,10 +33,10 @@ public class FileFilterFactory {
 	 * are added to the file chooser consistent with the specified file types and descriptions.
 	 * @param fileChooser the file chooser to which to add the file filters
      * @param fileTypes An array of file types to accept
-     * @param fileDescriptions An arraz of corresponding file type descriptions
+     * @param fileDescriptions An array of corresponding file type descriptions
      * @return The file chooser that accepts the specified file types (same file chooser as the argument)
      */
-    static public JFileChooser applyFileFilters( final JFileChooser fileChooser, final String[] fileTypes, final String[] fileDescriptions ) {
+    public static JFileChooser applyFileFilters( final JFileChooser fileChooser, final String[] fileTypes, final String[] fileDescriptions ) {
         for ( int index = 0 ; index < fileTypes.length ; index++ ) {
             FileFilter filter = getFileFilter(fileTypes[index], fileDescriptions[index]);
             fileChooser.addChoosableFileFilter(filter);
@@ -58,7 +57,7 @@ public class FileFilterFactory {
      * @param fileTypes An array of file types to accept
      * @return The file chooser that accepts the specified file types (same file chooser as the argument)
      */
-    static public JFileChooser applyFileFilters( final JFileChooser fileChooser, final String[] fileTypes ) {
+    public static JFileChooser applyFileFilters( final JFileChooser fileChooser, final String[] fileTypes ) {
     	applyFileFilters(fileChooser, fileTypes, new String[fileTypes.length]);
         return fileChooser;
     }
@@ -72,11 +71,12 @@ public class FileFilterFactory {
      * @param description the description of this file type
      * @return The file filter that accepts the specified file type
      */
-    static public FileFilter getFileFilter( final String fileType, final String description ) {
+    public static FileFilter getFileFilter( final String fileType, final String description ) {
         return new FileFilter() {
 			final String suffix = "." + fileType.toLowerCase();
 			
-            public boolean accept( final java.io.File file ) {
+                        @Override
+            public boolean accept( final File file ) {
                 if ( file.isDirectory() )  return true;
 				
 				final String extension = getFileExtension( file );
@@ -88,6 +88,7 @@ public class FileFilterFactory {
              * Get the file type as the file filter description.
              * @return File filter description.
              */
+                        @Override
             public String getDescription() {
             	if (description != null)
             		return description + " (*." + fileType + ")";
@@ -107,9 +108,10 @@ public class FileFilterFactory {
      * @param fileTypes Array of file types to accept
      * @return The file filter that accepts the specified file types
      */
-    static public FileFilter getSupportedFileFilter( final String[] fileTypes ) {
+    public static FileFilter getSupportedFileFilter( final String[] fileTypes ) {
         return new FileFilter() {
-            public boolean accept( final java.io.File file ) {
+            @Override
+            public boolean accept( final File file ) {
                 if ( file.isDirectory() )  return true;
 				
 				final String extension = getFileExtension( file );
@@ -128,6 +130,7 @@ public class FileFilterFactory {
              * Description of the file filter which is simply "Supported Files".
              * @return Description of the file filter.
              */
+            @Override
             public String getDescription() {
                 return "Supported Files";
             }
@@ -141,7 +144,7 @@ public class FileFilterFactory {
 	 * @param file  the file for which to get the extension
 	 * @return the file's extension
 	 */
-	static protected String getFileExtension( final java.io.File file ) {
+	protected static String getFileExtension( final File file ) {
 		final String name = file.getName().toLowerCase();
 		final int extensionIndex = name.lastIndexOf('.');
 		
@@ -156,7 +159,7 @@ public class FileFilterFactory {
 	 * @param fileType  the file type against which to test for matching the file extension.
 	 * @return true  if the extension matches the file type
 	 */
-	static protected boolean isMatch( final String extension, final String fileType ) {
+	protected static boolean isMatch( final String extension, final String fileType ) {
 		return fileType.equals( WILDCARD_FILE_EXTENSION ) || extension.equalsIgnoreCase( fileType );
 	}
 }

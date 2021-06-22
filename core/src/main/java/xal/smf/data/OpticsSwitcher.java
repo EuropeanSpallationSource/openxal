@@ -12,9 +12,10 @@ package xal.smf.data;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
+import java.io.File;
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.swing.filechooser.FileFilter;
 
 
 /**
@@ -28,7 +29,7 @@ public class OpticsSwitcher {
     private static final long serialVersionUID = 1L;
     
     /** editor for selecting the optics file */
-    private final OpticsSelectionEditor SELECTION_EDITOR;
+    private final OpticsSelectionEditor selectionEditor;
 	
     
     /** 
@@ -37,8 +38,8 @@ public class OpticsSwitcher {
      * @param disposalHandler callback for cancel and close events
      */
     protected OpticsSwitcher( final boolean includeDisposeButtons, final Runnable disposalHandler ) {
-        SELECTION_EDITOR = new OpticsSelectionEditor( includeDisposeButtons );
-        SELECTION_EDITOR.setDisposalHandler( disposalHandler );
+        selectionEditor = new OpticsSelectionEditor( includeDisposeButtons );
+        selectionEditor.setDisposalHandler( disposalHandler );
     }
 	
     
@@ -58,38 +59,38 @@ public class OpticsSwitcher {
     
     
     /** Create an instance with an automatically configured hosting dialog  */
-    static public OpticsSwitcher getInstance() {
+    public static OpticsSwitcher getInstance() {
         return new OpticsSwitcher( true );
     }
     
     
     /** Create an instance appropriate for a hosted custom frame */
-    static public OpticsSwitcher getInstanceForHostedFrame() {
+    public static OpticsSwitcher getInstanceForHostedFrame() {
         return new OpticsSwitcher( false );
     }
     
     
     /** Create an instance appropriate for a hosted custom dialog */
-    static public OpticsSwitcher getInstanceForHostedDialog( final Runnable disposalHandler ) {
+    public static OpticsSwitcher getInstanceForHostedDialog( final Runnable disposalHandler ) {
         return new OpticsSwitcher( true, disposalHandler );
     }
     
     
     /** Get the view which may optionally be hosted in a custom window */
     public Component getView() {
-        return SELECTION_EDITOR.getView();
+        return selectionEditor.getView();
     }
     
     
     /** Set the callback to capture the user cancel and close events. Call this method if the view will be hosted in a custom dialog */
     public void setDisposalHandler( final Runnable handler ) {
-        SELECTION_EDITOR.setDisposalHandler( handler );
+        selectionEditor.setDisposalHandler( handler );
     }
     
     
     /** reset editor to the default settings */
     public void reset() {
-        SELECTION_EDITOR.reset();
+        selectionEditor.reset();
     }
 	
 	
@@ -141,11 +142,12 @@ public class OpticsSwitcher {
         reset();
         
         dialog.setTitle( "Set the Default Optics" );
-        dialog.getContentPane().add( SELECTION_EDITOR.getView() );  // host the editor view as the dialog's main content
+        dialog.getContentPane().add( selectionEditor.getView() );  // host the editor view as the dialog's main content
         dialog.pack();
 		dialog.setLocationRelativeTo( view );
         
         setDisposalHandler( new Runnable() {
+            @Override
             public void run() {
                 dialog.setVisible( false );     // close the dialog
             }
@@ -166,7 +168,7 @@ public class OpticsSwitcher {
     
     /** determine whether the dialog was canceled */
     public boolean isCanceled() {
-        return SELECTION_EDITOR.isCanceled();
+        return selectionEditor.isCanceled();
     }
 }
 
@@ -175,68 +177,68 @@ public class OpticsSwitcher {
 /** Editor of the optics selection */
 class OpticsSelectionEditor {
     /** file chooser to select path to optics */
-    final private AcceleratorChooser ACCELERATOR_CHOOSER;
+    private final AcceleratorChooser acceleratorChooser;
     
     /** main view */
-    final private Component MAIN_VIEW;
+    private final Component mainView;
     
     /** field to display and edit the file path */
-    final private JTextField PATH_FIELD;
+    private final JTextField pathField;
     
     /** button to revert the path selection to the saved value */
-    final private JButton REVERT_BUTTON;
+    private final JButton revertButon;
     
     /** button to commit the current selection to user preferences */
-    final private JButton COMMIT_BUTTON;
+    private final JButton commitButton;
     
     /** handler to call when the user cancels or closes the view */
-    private Runnable _disposalHandler;
+    private Runnable disposalHandler;
     
     /** indicates whether the dialog was canceled */
-    private boolean _isCanceled;
+    private boolean isCanceled;
 
     
     /** Constructor */
     public OpticsSelectionEditor( final boolean includeDisposeButtons ) {
-        _isCanceled = false;
-        ACCELERATOR_CHOOSER = AcceleratorChooser.getChooser();
+        isCanceled = false;
+        acceleratorChooser = AcceleratorChooser.getChooser();
 
-        PATH_FIELD = new JTextField( AcceleratorChooser.defaultPath() );
-        REVERT_BUTTON = new JButton( "Revert" );
-        COMMIT_BUTTON = new JButton( "Make Default" );
+        pathField = new JTextField( AcceleratorChooser.defaultPath() );
+        revertButon = new JButton( "Revert" );
+        commitButton = new JButton( "Make Default" );
 
-        MAIN_VIEW = createView( includeDisposeButtons );
+        mainView = createView( includeDisposeButtons );
     }
     
     
     /** set the handler to call when the user cancels or closes the view */
     public void setDisposalHandler( final Runnable handler ) {
-        _disposalHandler = handler;
+        disposalHandler = handler;
     }
     
     
     /** get this editor's view */
     public Component getView() {
-        return MAIN_VIEW;
+        return mainView;
     }
     
     
     /** reset the editor */
     public void reset() {
-        PATH_FIELD.setText( AcceleratorChooser.defaultPath() );
-        _isCanceled = false;
+        pathField.setText( AcceleratorChooser.defaultPath() );
+        isCanceled = false;
     }
     
     
     /** determine whether the dialog was canceled */
     public boolean isCanceled() {
-        return _isCanceled;
+        return isCanceled;
     }
     
     
     /** call the disposal handler if any */
     private void dispose() {
-        if ( _disposalHandler != null )  _disposalHandler.run();
+        if ( disposalHandler != null )  disposalHandler.run();
     }
     
     
@@ -259,19 +261,22 @@ class OpticsSelectionEditor {
 		mainView.add( pathRow );
 		
         // add the path field
-        PATH_FIELD.setColumns(40);
-		PATH_FIELD.setMaximumSize( PATH_FIELD.getPreferredSize() );
-        pathRow.add(PATH_FIELD);
+        pathField.setColumns(40);
+		pathField.setMaximumSize( pathField.getPreferredSize() );
+        pathRow.add(pathField);
         
         
         // add listener of text field actions
-        PATH_FIELD.getDocument().addDocumentListener( new DocumentListener() {
+        pathField.getDocument().addDocumentListener( new DocumentListener() {
+            @Override
             public void changedUpdate( DocumentEvent evt) {
                 textChanged( evt );
             }
+            @Override
             public void removeUpdate( DocumentEvent evt ) {
                 textChanged( evt );
             }
+            @Override
             public void insertUpdate( DocumentEvent evt ) {
                 textChanged( evt );
             }
@@ -284,6 +289,7 @@ class OpticsSelectionEditor {
         
         // browse button event handler
         browseButton.addActionListener( new ActionListener() {
+            @Override
             public void actionPerformed( final ActionEvent event ) {
 				browseButtonAction( event );
             }
@@ -303,8 +309,9 @@ class OpticsSelectionEditor {
             cancelButton.setToolTipText( "Cancel the dialog without applying any uncommitted changes and without selecting an accelerator." );
             commitRow.add( cancelButton );
             cancelButton.addActionListener( new ActionListener() {
+                @Override
                 public void actionPerformed( final ActionEvent event ) {
-                    _isCanceled = true;
+                    isCanceled = true;
                     dispose();
                 }
             });
@@ -315,6 +322,7 @@ class OpticsSelectionEditor {
             closeButton.setToolTipText( "Close the dialog without applying any uncommitted changes." );
             commitRow.add( closeButton );
             closeButton.addActionListener( new ActionListener() {
+                @Override
                 public void actionPerformed( final ActionEvent event ) {
                     dispose();
                 }
@@ -323,27 +331,29 @@ class OpticsSelectionEditor {
         
 		
         // add the revert button
-		REVERT_BUTTON.setToolTipText( "Revert the display back to the default optics settings." );
-        commitRow.add( REVERT_BUTTON );
+		revertButon.setToolTipText( "Revert the display back to the default optics settings." );
+        commitRow.add( revertButon );
         
         // commit button event handler
-        REVERT_BUTTON.addActionListener( new ActionListener() {
+        revertButon.addActionListener( new ActionListener() {
+            @Override
             public void actionPerformed( final ActionEvent event ) {
 				// revert to the present default optics file
-				PATH_FIELD.setText( AcceleratorChooser.defaultPath() );
+				pathField.setText( AcceleratorChooser.defaultPath() );
 				updateView();
             }
         });
         
         
         // add the commit button
-		COMMIT_BUTTON.setToolTipText( "Commit the selected path to become the default optics path." );
-        commitRow.add( COMMIT_BUTTON );
+		commitButton.setToolTipText( "Commit the selected path to become the default optics path." );
+        commitRow.add( commitButton );
         
         // commit button event handler
-        COMMIT_BUTTON.addActionListener( new ActionListener() {
+        commitButton.addActionListener( new ActionListener() {
+            @Override
             public void actionPerformed( final ActionEvent event ) {
-				final String path = PATH_FIELD.getText();
+				final String path = pathField.getText();
 				if ( new File(path).exists() ) {
 					// make this file the new default optics
 					AcceleratorChooser.setDefaultPath( path );
@@ -370,10 +380,10 @@ class OpticsSelectionEditor {
 	 * @param event the action event
 	 */
     private void browseButtonAction( final ActionEvent event ) {
-        ACCELERATOR_CHOOSER.showWithOwner( MAIN_VIEW );
-        if ( ACCELERATOR_CHOOSER.approved() ) {
-            final File file = ACCELERATOR_CHOOSER.selection();
-            PATH_FIELD.setText( file.getAbsolutePath() );
+        acceleratorChooser.showWithOwner( mainView );
+        if ( acceleratorChooser.approved() ) {
+            final File file = acceleratorChooser.selection();
+            pathField.setText( file.getAbsolutePath() );
         }
     }
     
@@ -391,8 +401,8 @@ class OpticsSelectionEditor {
 	 * Update the view to reflect the model 
 	 */
     private void updateView() {
-        boolean textSame = PATH_FIELD.getText().equals( AcceleratorChooser.defaultPath() );
-        REVERT_BUTTON.setEnabled( !textSame );
+        boolean textSame = pathField.getText().equals( AcceleratorChooser.defaultPath() );
+        revertButon.setEnabled( !textSame );
         //  CR [19.04.2017]: Commented to allow the button being always enabled.
         //COMMIT_BUTTON.setEnabled( !textSame );
     }
@@ -408,7 +418,7 @@ class AcceleratorChooser extends JFileChooser {
     private static final long serialVersionUID = 1L;
     
 	/** global accelerator chooser */
-    static protected AcceleratorChooser chooser;
+    protected static AcceleratorChooser chooser;
     protected int status;
     
 	
@@ -428,7 +438,8 @@ class AcceleratorChooser extends JFileChooser {
         
         // only accept optics files
         setFileFilter(
-            new javax.swing.filechooser.FileFilter() {
+            new FileFilter() {
+                @Override
                 public boolean accept(File file) { 
                     String name = file.getName().toLowerCase();
                     if ( file.isDirectory() || name.endsWith("xal") ) {
@@ -436,6 +447,7 @@ class AcceleratorChooser extends JFileChooser {
                     }
                     return false;
                 }
+                @Override
                 public String getDescription() { return "Optics Files"; } 
         });
 
@@ -451,7 +463,7 @@ class AcceleratorChooser extends JFileChooser {
 	 * Get the globally accessible accelerator chooser
 	 * @return the accelerator chooser
 	 */
-    static public AcceleratorChooser getChooser() {
+    public static AcceleratorChooser getChooser() {
         return chooser;
     }
     
@@ -478,7 +490,7 @@ class AcceleratorChooser extends JFileChooser {
 	 * Get the default optics path
 	 * @return the default optics path
 	 */
-    static public String defaultPath() {
+    public static String defaultPath() {
         return XMLDataManager.defaultPath();
     }
     
@@ -487,7 +499,7 @@ class AcceleratorChooser extends JFileChooser {
 	 * Set the default optics path
 	 * @param path the default optics path
 	 */
-    static public void setDefaultPath(String path) {
+    public static void setDefaultPath(String path) {
         XMLDataManager.setDefaultPath(path);
     }
     

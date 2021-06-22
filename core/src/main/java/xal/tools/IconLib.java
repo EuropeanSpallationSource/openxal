@@ -26,22 +26,23 @@ public class IconLib {
 		TEXT		( "text" );
 		
 		/** name of this group */
-		private final String _name;
+		private final String name;
 		
 		/** 
 		 * Constructor 
 		 * @param name the name to assign the group
 		 */
 		IconGroup( final String name ) {
-			_name = name;
+			this.name = name;
 		}
 		
 		/** get the name of the group */
 		public String getName() {
-			return _name;
+			return name;
 		}
 			
 		/** Override the string representation to get the name of the group */
+                @Override
         public String toString() {
 			return getName();
 		}
@@ -54,7 +55,7 @@ public class IconLib {
 	 * @param iconName the name of the icon to fetch, e.g. "Cut24.gif"
      * @return The path to the specified icon in classpath notation
      */
-    static protected String getPathToIcon( final IconGroup group, final String iconName ) {
+    protected static String getPathToIcon( final IconGroup group, final String iconName ) {
 		return getPathToIcon( group.toString(), iconName );
     }
 	
@@ -65,7 +66,7 @@ public class IconLib {
 	 * @param iconName the name of the icon to fetch, e.g. "Cut24.gif"
      * @return The URL to the specified icon
 	 */
-	static public URL getIconURL( final IconGroup group, final String iconName ) {
+	public static URL getIconURL( final IconGroup group, final String iconName ) {
 		final String path = getPathToIcon( group, iconName );
 		return ResourceManager.getResourceURL( IconLib.class, path );
 	}
@@ -77,7 +78,7 @@ public class IconLib {
 	 * @param iconName the name of the icon to fetch, e.g. "Cut24.gif"
      * @return The URL to the specified icon
 	 */
-	static public Icon getIcon( final IconGroup group, final String iconName ) {
+	public static Icon getIcon( final IconGroup group, final String iconName ) {
 		return new ImageIcon( getIconURL( group, iconName ) );
 	}
 	
@@ -88,7 +89,7 @@ public class IconLib {
 	 * @param iconName the name of the icon to fetch, e.g. "Cut24.gif"
      * @return The path to the specified icon in classpath notation
      */
-    static protected String getPathToIcon( final String group, final String iconName ) {
+    protected static String getPathToIcon( final String group, final String iconName ) {
         return "icons/" + group + "/" + iconName;
     }
 	
@@ -99,7 +100,7 @@ public class IconLib {
 	 * @param iconName the name of the icon to fetch, e.g. "Cut24.gif"
      * @return The URL to the specified icon
 	 */
-	static public URL getIconURL( final String group, final String iconName ) {
+	public static URL getIconURL( final String group, final String iconName ) {
 		final String path = getPathToIcon( group, iconName );
 		return ResourceManager.getResourceURL( IconLib.class, path );
 	}
@@ -111,7 +112,7 @@ public class IconLib {
 	 * @param iconName the name of the icon to fetch, e.g. "Cut24.gif"
      * @return The URL to the specified icon
 	 */
-	static public Icon getIcon( final String group, final String iconName ) {
+	public static Icon getIcon( final String group, final String iconName ) {
 		return new ImageIcon( getIconURL( group, iconName ) );
 	}
 }

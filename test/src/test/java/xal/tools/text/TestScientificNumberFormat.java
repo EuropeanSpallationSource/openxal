@@ -97,7 +97,7 @@ public class TestScientificNumberFormat {
 
 
 	/** Assert whether the fixed width formatted value matches the specified reference */
-	static private void assertFixedWidthFormat( final String reference, final int significantDigits, final int width, final double value ) {
+	private static void assertFixedWidthFormat( final String reference, final int significantDigits, final int width, final double value ) {
 		final ScientificNumberFormat format = new ScientificNumberFormat( significantDigits, width );
 		final String output = format.format( value );
 		Assert.assertEquals( "Failed fixed width format equality for number: " + value + " with output: " + output + " of length: " + output.length(), reference, output );
@@ -105,7 +105,7 @@ public class TestScientificNumberFormat {
 
 
 	/** Assert whether the formatted value matches the specified reference */
-	static private void assertFormat( final String reference, final int significantDigits, final double value ) {
+	private static void assertFormat( final String reference, final int significantDigits, final double value ) {
 		final ScientificNumberFormat format = new ScientificNumberFormat( significantDigits );
 		final String output = format.format( value );
 		Assert.assertEquals( "Failed format equality for number: " + value + " with output: " + output + " of length: " + output.length(), reference, output );
@@ -113,7 +113,7 @@ public class TestScientificNumberFormat {
 
 
 	/** Assert whether the fixed width formatted output matches the specified reference */
-	static private void assertFixedWidthFormattedOutput( final String reference, final int significantDigits, final int width, final CharSequence separator, final double ... values ) {
+	private static void assertFixedWidthFormattedOutput( final String reference, final int significantDigits, final int width, final CharSequence separator, final double ... values ) {
 		final ScientificNumberFormat format = new ScientificNumberFormat( significantDigits, width );
 		final StringBuffer buffer = new StringBuffer();
 		format.appendTo( buffer, separator, values );

@@ -21,16 +21,16 @@ public class RemoteDataCache<DataType> {
 	private final Callable<DataType> REMOTE_OPERATION;
 
 	/** latest data that has been cached */
-	protected volatile RemoteData<DataType> _cachedData;
+	protected volatile RemoteData<DataType> cachedData;
 
 	/** indicates whether the remote service is connected */
-	private volatile boolean _isConnected;
+	private volatile boolean isConnected;
 
 	/** indicates whether a fetch is pending */
-	private volatile boolean _isFetchPending;
+	private volatile boolean isFetchPending;
 
 	/** optional handler of the update event */
-	private UpdateListener _updateListener;
+	private UpdateListener updateListener;
 
 
 	/** Constructor */
@@ -43,30 +43,30 @@ public class RemoteDataCache<DataType> {
 	public RemoteDataCache( final Callable<DataType> remoteOperation, final UpdateListener updateHandler ) {
 		REMOTE_OPERATION = remoteOperation;
 		
-		_updateListener = updateHandler;
+		updateListener = updateHandler;
 
-		_isFetchPending = false;
-		_cachedData = null;
-		_isConnected = true;	// assume connected until proven otherwise
+		isFetchPending = false;
+		cachedData = null;
+		isConnected = true;	// assume connected until proven otherwise
 	}
 
 
 	/** set the update handler which is called when the cache has been updated */
 	public void setUpdateListener( final UpdateListener handler ) {
-		_updateListener = handler;
+		updateListener = handler;
 	}
 
 
 	/** get the update handler */
 	public UpdateListener getUpdateListener() {
-		return _updateListener;
+		return updateListener;
 	}
 
 
 	/** Refresh the cache with a fresh call to the remote unless a fetch is already pending */
 	public void refresh() {
 		// fetch new data only if a fetch is not currently in progress
-		if ( !_isFetchPending ) {
+		if ( !isFetchPending ) {
 			fetchData();
 		}
 	}
@@ -74,52 +74,53 @@ public class RemoteDataCache<DataType> {
 
 	/** Get the timestamp of the last fetch */
 	public Date getTimestamp() {
-		final RemoteData<DataType> cachedData = _cachedData;
-		return cachedData != null ? cachedData.getTimestamp() : null;
+		final RemoteData<DataType> newCachedData = this.cachedData;
+		return newCachedData != null ? newCachedData.getTimestamp() : null;
 	}
 
 
 	/** Fetch the value and cache it for future requests */
 	public DataType getValue() {
-		final RemoteData<DataType> cachedData = _cachedData;
+		final RemoteData<DataType> newCachedData = this.cachedData;
 		
-		if ( cachedData == null ) {
+		if ( newCachedData == null ) {
 			refresh();
 		}
 
-		return cachedData != null ? cachedData.getValue() : null;
+		return newCachedData != null ? newCachedData.getValue() : null;
 	}
 
 
 	/** determine whether the remote service is connected */
 	public boolean isConnected() {
-		return _isConnected;
+		return isConnected;
 	}
 
 
 	/** Fetch the data from the remote service */
 	private void fetchData() {
-		_isFetchPending = true;
+		isFetchPending = true;
 
 		DispatchQueue.getGlobalDefaultPriorityQueue().dispatchAsync( new Runnable() {
+                        @Override
 			public void run() {
 				try {
 					final DataType result = REMOTE_OPERATION.call();
-					_cachedData = new RemoteData<DataType>( result );
+					cachedData = new RemoteData<>( result );
 				}
 				catch ( RemoteServiceDroppedException exception ) {
-					_cachedData = null;
-					_isConnected = false;
+					cachedData = null;
+					isConnected = false;
 				}
 				catch ( Exception exception ) {
 					exception.printStackTrace();
-					_cachedData = null;
+					cachedData = null;
 				}
 				finally {
-					_isFetchPending = false;
+					isFetchPending = false;
 
 					// if there is an update listener, notify it of the updated value
-					final UpdateListener updateHandler = _updateListener;
+					final UpdateListener updateHandler = updateListener;
 					if ( updateHandler != null ) {
 						updateHandler.observedUpdate( RemoteDataCache.this );
 					}
@@ -134,10 +135,10 @@ public class RemoteDataCache<DataType> {
 /** data from a remote fetch */
 class RemoteData<DataType> {
 	/** latest data that has been cached */
-	final private DataType VALUE;
+	private final DataType VALUE;
 
 	/** time of the last fetch from which the expiration should be measured */
-	final private Date FETCH_TIMESTAMP;
+	private final Date FETCH_TIMESTAMP;
 
 
 	/** Primary Constructor */
@@ -166,6 +167,7 @@ class RemoteData<DataType> {
 
 
 	/** get string representation */
+        @Override
 	public String toString() {
 		return "Cached value: " + VALUE + ", timestamp: " + FETCH_TIMESTAMP;
 	}

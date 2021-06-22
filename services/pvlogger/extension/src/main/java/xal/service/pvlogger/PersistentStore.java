@@ -8,8 +8,6 @@
 
 package xal.service.pvlogger;
 
-import java.net.URL;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,19 +22,19 @@ import xal.tools.database.*;
 /** contains information about the persistent storage */
 class PersistentStore {
 	/** proxy to a database table of snapshot group channels */
-	final private SnapshotGroupChannelTable SNAPSHOT_GROUP_CHANNEL_TABLE;
+	private final SnapshotGroupChannelTable SNAPSHOT_GROUP_CHANNEL_TABLE;
 	
 	/** proxy to a database table of snapshot groups */
-	final protected SnapshotGroupTable SNAPSHOT_GROUP_TABLE;
+	protected final SnapshotGroupTable SNAPSHOT_GROUP_TABLE;
 	
 	/** channel snapshot tables keyed by service ID */
-	final protected Map<String,ChannelSnapshotTable> CHANNEL_SNAPSHOT_TABLES;
+	protected final Map<String,ChannelSnapshotTable> CHANNEL_SNAPSHOT_TABLES;
 	
 	/** machine snapshot table */
-	final protected MachineSnapshotTable MACHINE_SNAPSHOT_TABLE;
+	protected final MachineSnapshotTable MACHINE_SNAPSHOT_TABLE;
 	
 	/** map of channel groups keyed by group ID */
-	final protected Map<String,ChannelGroup> CHANNEL_GROUPS;
+	protected final Map<String,ChannelGroup> CHANNEL_GROUPS;
 	
 	
 	/** Constructor */
@@ -48,12 +46,12 @@ class PersistentStore {
 		
 		CHANNEL_SNAPSHOT_TABLES = loadChannelSnapshotTables( storeAdaptor );
 		
-		CHANNEL_GROUPS = new HashMap<String,ChannelGroup>();
+		CHANNEL_GROUPS = new HashMap<>();
 	}
 	
 	
 	/** get the table configurations from the configuration */
-	static private Map<String,DBTableConfiguration> loadTableConfigurations( final DataAdaptor storeAdaptor ) {
+	private static Map<String,DBTableConfiguration> loadTableConfigurations( final DataAdaptor storeAdaptor ) {
 		final List<DataAdaptor> tableAdaptors = storeAdaptor.childAdaptors( "dbtable" );
 		final Map<String,DBTableConfiguration> tableConfigurations = new HashMap<String,DBTableConfiguration>(2);
 		for ( final DataAdaptor tableAdaptor : tableAdaptors ) {
@@ -66,7 +64,7 @@ class PersistentStore {
 	
 	
 	/** load the machine snapshot tables from the configuration */
-	static private Map<String,ChannelSnapshotTable> loadChannelSnapshotTables( final DataAdaptor storeAdaptor ) {
+	private static Map<String,ChannelSnapshotTable> loadChannelSnapshotTables( final DataAdaptor storeAdaptor ) {
 		final Map<String,ChannelSnapshotTable> channelSnapshotTables = new HashMap<String,ChannelSnapshotTable>();
 		final List<DataAdaptor> serviceAdaptors = storeAdaptor.childAdaptors( "service" );
 		for ( final DataAdaptor serviceAdaptor : serviceAdaptors ) {
@@ -81,7 +79,7 @@ class PersistentStore {
 	
 	
 	/** get a new connection using the specified connection dictionary */
-	static public Connection connectionInstance( final ConnectionDictionary dictionary ) throws SQLException {
+	public static Connection connectionInstance( final ConnectionDictionary dictionary ) throws SQLException {
 		final DatabaseAdaptor databaseAdaptor = dictionary.getDatabaseAdaptor();
 		final Connection connection = databaseAdaptor.getConnection( dictionary );
 		connection.setAutoCommit( false );

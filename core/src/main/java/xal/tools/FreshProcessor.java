@@ -14,30 +14,30 @@ import java.util.concurrent.*;
 /** process on a separate thread pending requests dropping any previous ones */
 public class FreshProcessor {
 	/** pending requests waiting to be processed */
-	final private ArrayBlockingQueue<Runnable> REQUEST_QUEUE;
+	private final ArrayBlockingQueue<Runnable> requestQueue;
 	
 	/** indicates whether the processor should keep running */
-	private volatile boolean _keepRunning;
+	private volatile boolean keepRunning;
 	
 	
 	/** Constructor */
 	public FreshProcessor() {
-		_keepRunning = true;
+		keepRunning = true;
 		
-		REQUEST_QUEUE = new ArrayBlockingQueue<Runnable>( 1 );
+		requestQueue = new ArrayBlockingQueue<>( 1 );
 		new Thread( new RequestProcessor() ).start();
 	}
 	
 	
 	/** Clear pending requests */
 	synchronized public void clear() {
-		REQUEST_QUEUE.clear();
+		requestQueue.clear();
 	}
 	
 	
 	/** Stop processing pending requests */
 	synchronized public void terminate() {
-		_keepRunning = false;
+		keepRunning = false;
 		post( new EmptyRequest() );
 	}
 	
@@ -48,8 +48,8 @@ public class FreshProcessor {
 	 */
 	synchronized public boolean post( final Runnable request ) {
 		try {
-			REQUEST_QUEUE.clear();
-			REQUEST_QUEUE.put( request );
+			requestQueue.clear();
+			requestQueue.put( request );
 			return true;
 		}
 		catch( Exception exception ) {
@@ -66,10 +66,11 @@ public class FreshProcessor {
 	
 	/** Process runner task */
 	private class RequestProcessor extends Thread {
+                @Override
 		public void run() {
-			while ( _keepRunning ) {
+			while ( keepRunning ) {
 				try {
-					final Runnable request = REQUEST_QUEUE.take();
+					final Runnable request = requestQueue.take();
 					request.run();
 					postProcess();
 				}
@@ -85,6 +86,7 @@ public class FreshProcessor {
 
 /** Empty Request used during termination */
 class EmptyRequest implements Runnable {
+        @Override
 	public void run() {}
 }
 

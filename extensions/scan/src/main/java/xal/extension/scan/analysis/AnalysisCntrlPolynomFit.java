@@ -17,42 +17,42 @@ import xal.extension.widgets.plot.*;
  * @author  A. Shishlo
  */
 
-final public class AnalysisCntrlPolynomFit extends AnalysisController{
+public final class AnalysisCntrlPolynomFit extends AnalysisController{
 
     //DEFINITION  "POLYNOMIAL FITTING" PANEL
     private JPanel polynomFitMaxPanel = new JPanel();
-    private JButton fittingPanel_2_Button = new JButton("START FITTING");
-    private JSpinner rankPanel_2_Spinner  = new JSpinner(new SpinnerNumberModel(0,0,3,1)); 
-    private JLabel spinnerPanel_2_Label   = new JLabel(" Order of Fitting :",JLabel.LEFT);
-    private DecimalFormat coeffPanel_2_Format = new DecimalFormat("0.000E0");
+    private JButton fittingPanel2Button = new JButton("START FITTING");
+    private JSpinner rankPanel2Spinner  = new JSpinner(new SpinnerNumberModel(0,0,3,1)); 
+    private JLabel spinnerPanel2Label   = new JLabel(" Order of Fitting :",JLabel.LEFT);
+    private DecimalFormat coeffPanel2Format = new DecimalFormat("0.000E0");
 
     /**  The constructor.*/   
-    public AnalysisCntrlPolynomFit(MainAnalysisController mainController_In,
+    public AnalysisCntrlPolynomFit(MainAnalysisController mainControllerIn,
 			       DataAdaptor analysisConf,
-			       JPanel parentAnalysisPanel_In,
-			       JPanel customControlPanel_In,
-			       JPanel customGraphPanel_In,
-			       JPanel globalButtonsPanel_In,
-			       ScanVariable scanVariableParameter_In,
-			       ScanVariable scanVariable_In,
-			       Vector<MeasuredValue> measuredValuesV_In,
-			       FunctionGraphsJPanel graphAnalysis_In,
-			       JTextField messageTextLocal_In,
-			       BasicGraphData graphDataLocal_In){
+			       JPanel parentAnalysisPanelIn,
+			       JPanel customControlPanelIn,
+			       JPanel customGraphPanelIn,
+			       JPanel globalButtonsPanelIn,
+			       ScanVariable scanVariableParameterIn,
+			       ScanVariable scanVariableIn,
+			       Vector<MeasuredValue> measuredValuesVIn,
+			       FunctionGraphsJPanel graphAnalysisIn,
+			       JTextField messageTextLocalIn,
+			       BasicGraphData graphDataLocalIn){
 
 	//call the superclass constructor
-	super(mainController_In,
+	super(mainControllerIn,
 	      analysisConf,
-	      parentAnalysisPanel_In,
-	      customControlPanel_In,
-	      customGraphPanel_In,
-	      globalButtonsPanel_In,
-	      scanVariableParameter_In,
-	      scanVariable_In,
-	      measuredValuesV_In,
-	      graphAnalysis_In,
-	      messageTextLocal_In,
-	      graphDataLocal_In);
+	      parentAnalysisPanelIn,
+	      customControlPanelIn,
+	      customGraphPanelIn,
+	      globalButtonsPanelIn,
+	      scanVariableParameterIn,
+	      scanVariableIn,
+	      measuredValuesVIn,
+	      graphAnalysisIn,
+	      messageTextLocalIn,
+	      graphDataLocalIn);
 
 
 	String nameIn = "POLYNOMIAL FITTING";
@@ -69,24 +69,27 @@ final public class AnalysisCntrlPolynomFit extends AnalysisController{
     /**
      * Sets the configurations of the analysis.
      */
+    @Override
     public void dumpAnalysisConfig(DataAdaptor analysisConfig){
 	super.dumpAnalysisConfig(analysisConfig);
     }
 
     /**  Sets fonts for all GUI elements.
      */  
+    @Override
     public void setFontsForAll(Font fnt){
 	super.setFontsForAll(fnt);
 
 	//FITTING PANEL ELEMENTS
-	fittingPanel_2_Button.setFont(fnt);
-	rankPanel_2_Spinner.setFont(fnt);
-	((JSpinner.DefaultEditor) rankPanel_2_Spinner.getEditor()).getTextField().setFont(fnt);
-	spinnerPanel_2_Label.setFont(fnt);
+	fittingPanel2Button.setFont(fnt);
+	rankPanel2Spinner.setFont(fnt);
+	((JSpinner.DefaultEditor) rankPanel2Spinner.getEditor()).getTextField().setFont(fnt);
+	spinnerPanel2Label.setFont(fnt);
     }
 
     /**  Does what necessary for close this analysis window. 
      */  
+    @Override
     public void ShutUp(){
 	super.ShutUp();
 	customControlPanel.removeAll();
@@ -95,6 +98,7 @@ final public class AnalysisCntrlPolynomFit extends AnalysisController{
     /**  Does what necessary for open this analysis window. 
      *   This method could be overridden, because it is empty here.
      */  
+    @Override
     public void ShowUp(){
 	super.ShowUp();
 	customControlPanel.add(dataReaderPanel,BorderLayout.NORTH);
@@ -106,6 +110,7 @@ final public class AnalysisCntrlPolynomFit extends AnalysisController{
     /**
      * Updates data on the analysis graph panel.  
      */
+    @Override
     public void updateDataSetOnGraphPanel(){
 	super.updateDataSetOnGraphPanel();
     }
@@ -115,23 +120,24 @@ final public class AnalysisCntrlPolynomFit extends AnalysisController{
     //-----------------------------------------------------
     private void makePolynomFittingPanel(){
 
-	rankPanel_2_Spinner.setAlignmentX(JSpinner.CENTER_ALIGNMENT);
+	rankPanel2Spinner.setAlignmentX(JSpinner.CENTER_ALIGNMENT);
 
-	JPanel tmp_0 = new JPanel();
-        tmp_0.setLayout(new GridLayout(1,2,1,1));
-        tmp_0.add(spinnerPanel_2_Label);
-        tmp_0.add(rankPanel_2_Spinner);
+	JPanel tmp0 = new JPanel();
+        tmp0.setLayout(new GridLayout(1,2,1,1));
+        tmp0.add(spinnerPanel2Label);
+        tmp0.add(rankPanel2Spinner);
         
 
-	JPanel tmp_1 = new JPanel();
-        tmp_1.setLayout(new GridLayout(2,1,1,1));
-        tmp_1.add(tmp_0);
-        tmp_1.add(fittingPanel_2_Button);
+	JPanel tmp1 = new JPanel();
+        tmp1.setLayout(new GridLayout(2,1,1,1));
+        tmp1.add(tmp0);
+        tmp1.add(fittingPanel2Button);
 
         polynomFitMaxPanel.setLayout(new BorderLayout());
-        polynomFitMaxPanel.add(tmp_1,BorderLayout.NORTH);
+        polynomFitMaxPanel.add(tmp1,BorderLayout.NORTH);
 
-	fittingPanel_2_Button.addActionListener(new ActionListener(){
+	fittingPanel2Button.addActionListener(new ActionListener(){
+                @Override
 		public void actionPerformed(ActionEvent e){
 		    BasicGraphData gd = mainController.getChoosenDraphData();
                     if(gd != null){
@@ -141,14 +147,14 @@ final public class AnalysisCntrlPolynomFit extends AnalysisController{
 			double xMax = graphAnalysis.getCurrentMaxX();
 			double yMin = graphAnalysis.getCurrentMinY();
 			double yMax = graphAnalysis.getCurrentMaxY();
-                        int order = ((Integer) rankPanel_2_Spinner.getValue()).intValue();
+                        int order = ((Integer) rankPanel2Spinner.getValue());
 			GraphDataOperations.polynomialFit(gd,graphDataLocal,xMin,xMax,order,10);
 
 			double[][] coeff =  GraphDataOperations.polynomialFit(gd,xMin,xMax,order);
                         if(coeff != null && coeff[0].length > 0){
                             String formula = "Fitting: y = ";
 			    for(int i = 0, n=coeff[0].length; i < n; i++){
-				formula = formula + "("+coeffPanel_2_Format.format(coeff[0][i]) +")*X^"+i;
+				formula = formula + "("+coeffPanel2Format.format(coeff[0][i]) +")*X^"+i;
                                 if(i != (n-1)){
 				    formula = formula +" + ";
 				}
@@ -171,7 +177,7 @@ final public class AnalysisCntrlPolynomFit extends AnalysisController{
 		}
 	    }); 
 
-	fittingPanel_2_Button.setForeground(Color.blue);
+	fittingPanel2Button.setForeground(Color.blue);
     }
 
 }

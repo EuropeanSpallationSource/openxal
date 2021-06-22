@@ -34,7 +34,7 @@ import xal.smf.impl.qualify.ElementTypeManager;
  */
 public class ESSIonSourceCoil extends AcceleratorNode {
 
-    public static final String s_strType = "ISC";
+    public static final String TYPE = "ISC";
 
     // Coils channel handles 
     public static final String I_HANDLE = "I";
@@ -69,7 +69,7 @@ public class ESSIonSourceCoil extends AcceleratorNode {
 
     @Override
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /*
@@ -77,7 +77,7 @@ public class ESSIonSourceCoil extends AcceleratorNode {
      */
     private static void registerType() {
         ElementTypeManager typeManager = ElementTypeManager.defaultManager();
-        typeManager.registerType(ESSIonSourceCoil.class, s_strType);
+        typeManager.registerType(ESSIonSourceCoil.class, TYPE);
         typeManager.registerType(ESSIonSourceCoil.class, "ionSourceCoil");
     }
 }

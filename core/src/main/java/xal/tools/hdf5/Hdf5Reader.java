@@ -40,7 +40,6 @@ import hdf.object.Group;
 import hdf.object.HObject;
 import hdf.object.h5.H5File;
 import java.net.URL;
-import javax.swing.tree.DefaultMutableTreeNode;
 import xal.tools.data.DataAdaptor;
 
 /**

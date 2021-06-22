@@ -14,8 +14,6 @@ package xal.smf.attr;
 
 
 import  java.util.StringTokenizer;
-import java.lang.reflect.*;
-import java.util.*;
 import xal.tools.StringJoiner;
 
 
@@ -29,7 +27,7 @@ public final class Attribute extends Object implements java.io.Serializable {
      *  Constants
      */
     
-    public static String[] s_arrTypeNames = {   "Unknown",      // 0
+    public static String[] arrTypeNames = {   "Unknown",      // 0
                                                 "Boolean",      // 1
                                                 "Character",    // 2
                                                 "Byte",         // 3
@@ -85,99 +83,99 @@ public final class Attribute extends Object implements java.io.Serializable {
      *  Create new Attribute 
      *  Note that Attribute must be initially instantiated to a particular type.
      */
-    public Attribute(boolean val)       { set(val); };
-    public Attribute(int val)           { set(val); };
-    public Attribute(long val)          { set(val); };
-    public Attribute(float val)         { set(val); };
-    public Attribute(double val)        { set(val); };
-    public Attribute(String val)        { set(val); };
+    public Attribute(boolean val)       { set(val); }
+    public Attribute(int val)           { set(val); }
+    public Attribute(long val)          { set(val); }
+    public Attribute(float val)         { set(val); }
+    public Attribute(double val)        { set(val); }
+    public Attribute(String val)        { set(val); }
     
-    public Attribute(int[] arr)         { set(arr); };
-    public Attribute(long[] arr)        { set(arr); };
-    public Attribute(float[] arr)       { set(arr); };
-    public Attribute(double[] arr)      { set(arr); };
-    public Attribute(String[] arr)      { set(arr); };
+    public Attribute(int[] arr)         { set(arr); }
+    public Attribute(long[] arr)        { set(arr); }
+    public Attribute(float[] arr)       { set(arr); }
+    public Attribute(double[] arr)      { set(arr); }
+    public Attribute(String[] arr)      { set(arr); }
 
     
    
     //  Data Query Methods
-    public int      getType()       { return m_intTypeId; };
-    public String   getTypeString() { return s_arrTypeNames[getType()]; };
-    public boolean  isArray()       { return (m_intTypeId > 10); };
+    public int      getType()       { return intTypeId; }
+    public String   getTypeString() { return arrTypeNames[getType()]; }
+    public boolean  isArray()       { return (intTypeId > 10); }
     
-    public Object   getObject()     { return m_objValue; };
+    public Object   getObject()     { return objValue; }
     
 
     // Get Methods
-    public boolean  getBoolean()    { return ((Boolean)m_objValue); };
-    public int      getInteger()    { return ((Integer)m_objValue).intValue(); };
-    public long     getLong()       { return ((Long)m_objValue).longValue(); };
-    public float    getFloat()      { return ((Float)m_objValue).floatValue(); };
-    public double   getDouble()     { return ((Double)m_objValue).doubleValue(); };
-    public String   getString()     { return (String)m_objValue; };
+    public boolean  getBoolean()    { return ((Boolean)objValue); }
+    public int      getInteger()    { return ((Integer)objValue); }
+    public long     getLong()       { return ((Long)objValue); }
+    public float    getFloat()      { return ((Float)objValue); }
+    public double   getDouble()     { return ((Double)objValue); }
+    public String   getString()     { return (String)objValue; }
     
-    public int[]    getArrInt()     { return (int[])m_objValue; };
-    public long[]   getArrLng()     { return (long[])m_objValue; };
-    public float[]  getArrFlt()     { return (float[])m_objValue; };
-    public double[] getArrDbl()     { return (double[])m_objValue; };
-    public String[] getArrStr()     { return (String[])m_objValue; };
+    public int[]    getArrInt()     { return (int[])objValue; }
+    public long[]   getArrLng()     { return (long[])objValue; }
+    public float[]  getArrFlt()     { return (float[])objValue; }
+    public double[] getArrDbl()     { return (double[])objValue; }
+    public String[] getArrStr()     { return (String[])objValue; }
     
     
     //  Set Methods
-    public void set(boolean newVal)     { m_objValue = newVal; m_intTypeId = iBoolean; };
-    public void set(int newVal)         { m_objValue = Integer.valueOf(newVal); m_intTypeId = iInteger; };
-    public void set(long newVal)        { m_objValue = Long.valueOf(newVal);    m_intTypeId = iLong; };
-    public void set(float newVal)       { m_objValue = Float.valueOf(newVal);   m_intTypeId = iFloat; };
-    public void set(double newVal)      { m_objValue = Double.valueOf(newVal);  m_intTypeId = iDouble; };
-    public void set(String newVal)      { m_objValue = newVal;  m_intTypeId = iString; };
+    public void set(boolean newVal)     { objValue = newVal; intTypeId = iBoolean; }
+    public void set(int newVal)         { objValue = newVal; intTypeId = iInteger; }
+    public void set(long newVal)        { objValue = newVal;    intTypeId = iLong; }
+    public void set(float newVal)       { objValue = newVal;   intTypeId = iFloat; }
+    public void set(double newVal)      { objValue = newVal;  intTypeId = iDouble; }
+    public void set(String newVal)      { objValue = newVal;  intTypeId = iString; }
     
-    public void set(int[] newArr)       { m_objValue = newArr;  m_intTypeId = iArrInt; };
-    public void set(long[] newArr)      { m_objValue = newArr;  m_intTypeId = iArrLng; };
-    public void set(float[] newArr)     { m_objValue = newArr;  m_intTypeId = iArrFlt; };
-    public void set(double[] newArr)    { m_objValue = newArr;  m_intTypeId = iArrDbl; };
-    public void set(String[] newArr)    { m_objValue = newArr;  m_intTypeId = iArrStr; };
+    public void set(int[] newArr)       { objValue = newArr;  intTypeId = iArrInt; }
+    public void set(long[] newArr)      { objValue = newArr;  intTypeId = iArrLng; }
+    public void set(float[] newArr)     { objValue = newArr;  intTypeId = iArrFlt; }
+    public void set(double[] newArr)    { objValue = newArr;  intTypeId = iArrDbl; }
+    public void set(String[] newArr)    { objValue = newArr;  intTypeId = iArrStr; }
  
     
     /** Set Attribute value from string parsing */
     public boolean parse(String strVal) throws NumberFormatException {
 
         // Parse string according to type
-		switch (m_intTypeId)  {
+		switch (intTypeId)  {
 		
 			case iDouble:
-				m_objValue = new Double(strVal);
+				objValue = new Double(strVal);
 				break;
 			case iFloat:
-				m_objValue = new Float(strVal);
+				objValue = new Float(strVal);
 				break;
 			case iLong:
-				m_objValue = new Long(strVal);
+				objValue = new Long(strVal);
 				break;
 			case iInteger:
-				m_objValue = new Integer(strVal);
+				objValue = new Integer(strVal);
 				break;
 			case iString:
-				m_objValue = strVal;
+				objValue = strVal;
 				break;
 		
 			case iBoolean:
-				m_objValue = Boolean.valueOf(strVal);
+				objValue = Boolean.valueOf(strVal);
 				break;
 			
 			case iArrDbl:
-				m_objValue = this.parseArrDbl(strVal);
+				objValue = this.parseArrDbl(strVal);
 				break;
 			case iArrFlt:
-				m_objValue = this.parseArrFlt(strVal);
+				objValue = this.parseArrFlt(strVal);
 				break;
 			case iArrLng:
-				m_objValue = this.parseArrLng(strVal);
+				objValue = this.parseArrLng(strVal);
 				break;
 			case iArrInt:
-				m_objValue = this.parseArrInt(strVal);
+				objValue = this.parseArrInt(strVal);
 				break;
 			case iArrStr:
-				m_objValue = this.parseArrStr(strVal);
+				objValue = this.parseArrStr(strVal);
 				break;
 			
 			default:
@@ -194,8 +192,8 @@ public final class Attribute extends Object implements java.io.Serializable {
      *  Local Attributes
      */
                             
-    private int         m_intTypeId = iUnknown;
-    private Object      m_objValue  = null;
+    private int         intTypeId = iUnknown;
+    private Object      objValue  = null;
     
 
     
@@ -221,7 +219,7 @@ public final class Attribute extends Object implements java.io.Serializable {
         }
         
         return arr;
-    };
+    }
         
     private float[]    parseArrFlt(String strArr)  throws NumberFormatException
     {
@@ -239,7 +237,7 @@ public final class Attribute extends Object implements java.io.Serializable {
         }
         
         return arr;
-    };
+    }
     
     private long[]    parseArrLng(String strArr)  throws NumberFormatException
     {
@@ -257,7 +255,7 @@ public final class Attribute extends Object implements java.io.Serializable {
         }
         
         return arr;
-    };
+    }
     
     private int[]    parseArrInt(String strArr)  throws NumberFormatException
     {
@@ -275,7 +273,7 @@ public final class Attribute extends Object implements java.io.Serializable {
         }
         
         return arr;
-    };
+    }
     
     private String[]    parseArrStr(String strArr)  throws NumberFormatException
     {
@@ -293,7 +291,7 @@ public final class Attribute extends Object implements java.io.Serializable {
         }
         
         return arr;
-    };
+    }
     
     
     
@@ -320,7 +318,7 @@ public final class Attribute extends Object implements java.io.Serializable {
         }
 
         return true;
-    };
+    }
     
     private boolean isFloat(String s)   {
         if (!hasNumeric(s))     return false;       // must contain numeric characters
@@ -339,7 +337,7 @@ public final class Attribute extends Object implements java.io.Serializable {
         }
 
         return true;
-    };
+    }
     
     private boolean isLong(String s)    {
         if (!hasNumeric(s))     return false;       // must contain numeric characters
@@ -358,7 +356,7 @@ public final class Attribute extends Object implements java.io.Serializable {
         }
 
         return true;
-    };
+    }
 
     private boolean isInteger(String s) {
         if (!hasNumeric(s))     return false;       // must contain numeric characters
@@ -377,7 +375,7 @@ public final class Attribute extends Object implements java.io.Serializable {
         }
 
         return true;
-    };
+    }
     
     
     
@@ -390,7 +388,7 @@ public final class Attribute extends Object implements java.io.Serializable {
                 Character.getType(s.charAt(i)) == Character.UPPERCASE_LETTER )
                 return true;
         return false;
-    };
+    }
     
     private boolean hasNumeric(String s)    {
         int i, l = s.length();
@@ -398,7 +396,7 @@ public final class Attribute extends Object implements java.io.Serializable {
             if (Character.getType(s.charAt(i)) == Character.DECIMAL_DIGIT_NUMBER)
                 return true;
         return false;
-    };
+    }
     
     
     
@@ -408,41 +406,41 @@ public final class Attribute extends Object implements java.io.Serializable {
         StringJoiner joiner = new StringJoiner(",");
         
         try {
-          switch (m_intTypeId)  {                            
+          switch (intTypeId)  {                            
             case iArrDbl:
-                joiner.append((double[])m_objValue);
+                joiner.append((double[])objValue);
                 stringValue = joiner.toString();
                 break;
             case iArrFlt:
-                joiner.append((float[])m_objValue);
+                joiner.append((float[])objValue);
                 stringValue = joiner.toString();
                 break;
             case iArrLng:
-                joiner.append((long[])m_objValue);
+                joiner.append((long[])objValue);
                 stringValue = joiner.toString();
                 break;
             case iArrInt:
-                joiner.append((int[])m_objValue);
+                joiner.append((int[])objValue);
                 stringValue = joiner.toString();
                 break;
             case iArrStr:
-                joiner.append((String[])m_objValue);
+                joiner.append((String[])objValue);
                 stringValue = joiner.toString();
                 break;
             case iArrBol:
-                joiner.append((boolean[])m_objValue);
+                joiner.append((boolean[])objValue);
                 stringValue = joiner.toString();
                 break;
             case iArrChr:
-                joiner.append((char[])m_objValue);
+                joiner.append((char[])objValue);
                 stringValue = joiner.toString();
                 break;
             case iArrByte:
-                joiner.append((byte[])m_objValue);
+                joiner.append((byte[])objValue);
                 stringValue = joiner.toString();
                 break;
             default:
-                stringValue = m_objValue.toString();
+                stringValue = objValue.toString();
                 break;
             }
         }
@@ -455,8 +453,4 @@ public final class Attribute extends Object implements java.io.Serializable {
     }
     
 
- };
- 
- 
- 
- 
+ }

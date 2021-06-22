@@ -51,7 +51,7 @@ public class JcaServerChannel extends Channel implements IServerChannel {
 
     JcaServerChannel(final String signal, final DefaultServerImpl channelServer) {
         super(signal);
-        m_strId = signal;
+        strId = signal;
 
         if (signal.length() > 0) {
             size = signal.matches(".*(TBT|A)") ? DEFAULT_ARRAY_SIZE : 1;

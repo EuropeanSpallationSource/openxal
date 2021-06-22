@@ -18,19 +18,19 @@ import java.util.List;
  */
 public class ChannelGroupRecord {
 	/** represented channel group */
-	final private ChannelGroup CHANNEL_GROUP;
+	private final ChannelGroup CHANNEL_GROUP;
 	
 	/** default logging period (seconds) for the group */
-	private double _defaultLoggingPeriod;
+	private double defaultLoggingPeriod;
 	
-	/** rentention time in days (or zero for permanent retention) for snapshots associated with this group */
-	private double _retention;
+	/** retention time in days (or zero for permanent retention) for snapshots associated with this group */
+	private double retention;
 	
 	/** service ID */
-	private String _serviceID;
+	private String serviceID;
 	
 	/** description of the channel group */
-	private String _description;
+	private String description;
 	
 	
 	/** Constructor */
@@ -41,7 +41,7 @@ public class ChannelGroupRecord {
 	
 	
 	/** convert the list of groups to a list of records */
-	static public List<ChannelGroupRecord> toRecords( final List<ChannelGroup> groups ) {
+	public static List<ChannelGroupRecord> toRecords( final List<ChannelGroup> groups ) {
 		final List<ChannelGroupRecord> records = new ArrayList<ChannelGroupRecord>( groups.size() );
 		for ( final ChannelGroup group : groups ) {
 			records.add( new ChannelGroupRecord( group ) );
@@ -53,10 +53,10 @@ public class ChannelGroupRecord {
 	
 	/** revert to the group settings */
 	public void revert() {
-		_defaultLoggingPeriod = CHANNEL_GROUP.getDefaultLoggingPeriod();
-		_retention = CHANNEL_GROUP.getRetention();
-		_serviceID = CHANNEL_GROUP.getServiceID();
-		_description = CHANNEL_GROUP.getDescription();
+		defaultLoggingPeriod = CHANNEL_GROUP.getDefaultLoggingPeriod();
+		retention = CHANNEL_GROUP.getRetention();
+		serviceID = CHANNEL_GROUP.getServiceID();
+		description = CHANNEL_GROUP.getDescription();
 	}
 	
 	
@@ -68,25 +68,25 @@ public class ChannelGroupRecord {
 	
 	/** get the service ID */
 	public String getServiceID() {
-		return _serviceID;
+		return serviceID;
 	}
 	
 	
 	/** set the service ID */
 	public void setServiceID( final String serviceID ) {
-		_serviceID = serviceID;
+		this.serviceID = serviceID;
 	}
 	
 	
 	/** get the description */
 	public String getDescription() {
-		return _description;
+		return description;
 	}
 	
 	
 	/** set the description */
 	public void setDescription( final String description ) {
-		_description = description;
+		this.description = description;
 	}
 	
 	
@@ -98,24 +98,24 @@ public class ChannelGroupRecord {
 	
 	/** get the default logging period */
 	public double getDefaultLoggingPeriod() {
-		return _defaultLoggingPeriod;
+		return defaultLoggingPeriod;
 	}
 	
 	
 	/** set the default logging period */
 	public void setDefaultLoggingPeriod( final double period ) {
-		_defaultLoggingPeriod = period;
+		defaultLoggingPeriod = period;
 	}
 	
 	
 	/** get the retention */
 	public double getRetention() {
-		return _retention;
+		return retention;
 	}
 	
 	
 	/** set the retention */
 	public void setRetention( final double retention ) {
-		_retention = retention;
+		this.retention = retention;
 	}
 }	

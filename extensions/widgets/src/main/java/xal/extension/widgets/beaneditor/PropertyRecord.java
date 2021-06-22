@@ -7,13 +7,13 @@ import java.util.List;
 /** Wraps a property for display as a record in a table */
 public class PropertyRecord {
 	/** wrapped property */
-	final private EditableProperty PROPERTY;
+	private final EditableProperty PROPERTY;
 
 	/** current value which may be pending */
-	private Object _value;
+	private Object value;
 
 	/** indicates that this record has unsaved changes */
-	private boolean _hasChanges;
+	private boolean hasChanges;
 
 
 	/** Constructor */
@@ -51,14 +51,14 @@ public class PropertyRecord {
 
 	/** Get the value for this property */
 	public Object getValue() {
-		return _value;
+		return value;
 	}
 
 
 	/** set the pending value */
 	public void setValue( final Object value ) {
 		if ( isEditable() ) {
-			_value = value;
+			this.value = value;
 
 			// get the property's current value
 			final Object propertyValue = PROPERTY.getValue();
@@ -66,10 +66,10 @@ public class PropertyRecord {
 			// if the value is really different from the property's current value then mark it as having changes
 			// if the value is null then look for strict equality otherwise compare using equals
 			if ( ( value == null && value != propertyValue ) || ( value != null && !value.equals( propertyValue ) )  ) {
-				_hasChanges = true;
+				hasChanges = true;
 			}
 			else {
-				_hasChanges = false;
+				hasChanges = false;
 			}
 		}
 	}
@@ -89,7 +89,7 @@ public class PropertyRecord {
 		}
 		else {
 			try {
-				final Class<?> type = rawType.isPrimitive() ? _value.getClass() : rawType;	// convert to wrapper type (e.g. double.class to Double.class) if necessary
+				final Class<?> type = rawType.isPrimitive() ? this.value.getClass() : rawType;	// convert to wrapper type (e.g. double.class to Double.class) if necessary
 				final Object objectValue = toObjectOfType( value, type );
 				setValue( objectValue );
 			}
@@ -102,7 +102,7 @@ public class PropertyRecord {
 
 
 	/** Convert the string to an Object of the specified type */
-	static private Object toObjectOfType( final String stringValue, final Class<?> type ) {
+	private static Object toObjectOfType( final String stringValue, final Class<?> type ) {
 		try {
 			// every wrapper class has a static method named "valueOf" that takes a String and returns a corresponding instance of the wrapper
 			final Method converter = type.getMethod( "valueOf", String.class );
@@ -128,7 +128,7 @@ public class PropertyRecord {
 
 	/** indicates whether this record has unpublished changes */
 	public boolean hasChanges() {
-		return _hasChanges;
+		return hasChanges;
 	}
 
 
@@ -143,8 +143,8 @@ public class PropertyRecord {
 	/** revert back to the current value of the underlying property */
 	public void revert() {
 		// the value is only meaningful for primitive properties (only thing we want to display)
-		_value = PROPERTY.isPrimitive() ? PROPERTY.getValue() : null;
-		_hasChanges = false;
+		value = PROPERTY.isPrimitive() ? PROPERTY.getValue() : null;
+		hasChanges = false;
 	}
 
 
@@ -158,8 +158,8 @@ public class PropertyRecord {
 
 	/** publish the pending value to the underlying property */
 	public void publish() {
-		PROPERTY.setValue( _value );
-		_hasChanges = false;
+		PROPERTY.setValue( value );
+		hasChanges = false;
 	}
 
 
@@ -170,7 +170,7 @@ public class PropertyRecord {
 
 
 	/** Generate a flat list of records from the given property tree */
-	static public List<PropertyRecord> toRecords( final EditablePropertyContainer propertyTree ) {
+	public static List<PropertyRecord> toRecords( final EditablePropertyContainer propertyTree ) {
 		final List<PropertyRecord> records = new ArrayList<>();
 		appendPropertiesToRecords( propertyTree, records );
 		return records;
@@ -178,7 +178,7 @@ public class PropertyRecord {
 
 
 	/** append the properties in the given tree to the records nesting deeply */
-	static private void appendPropertiesToRecords( final EditablePropertyContainer propertyTree, final List<PropertyRecord> records ) {
+	private static void appendPropertiesToRecords( final EditablePropertyContainer propertyTree, final List<PropertyRecord> records ) {
 		records.add( new PropertyRecord( propertyTree ) );		// add the container itself
 
 		// add all the primitive properties

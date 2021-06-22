@@ -33,10 +33,10 @@ import xal.model.IProbe;
 @Deprecated
 public class IdealMagSkewQuad extends IdealMagQuad {
     /** string type identifier for all IdealMagSkewQuad objects */
-    public static final String s_strType = "IdealMagSkewQuad";
+    public static final String TYPE = "IdealMagSkewQuad";
 
     /** Quadrupole rotation angle */
-    private double m_dblSkewAngle = 45.0;
+    private double dblSkewAngle = 45.0;
 
 
 
@@ -70,7 +70,7 @@ public class IdealMagSkewQuad extends IdealMagQuad {
         this.setOrientation(enmOrient);
         this.setMagField(dblFld);
         this.setSkewAngle(dblAng);
-    };
+    }
 
 
     /*
@@ -91,8 +91,8 @@ public class IdealMagSkewQuad extends IdealMagQuad {
      *  @return     rotation angle (in <b>degrees</b>).
      */
     public double getSkewAngle() {
-        return m_dblSkewAngle;
-    };
+        return dblSkewAngle;
+    }
 
 
     /**
@@ -101,8 +101,8 @@ public class IdealMagSkewQuad extends IdealMagQuad {
      *  @param  dblAngle    rotation angle (in <b>degrees</b>).
      */
     public void setSkewAngle(double dblAngle) {
-        m_dblSkewAngle = dblAngle;
-    };
+        dblSkewAngle = dblAngle;
+    }
 
 
 
@@ -125,7 +125,7 @@ public class IdealMagSkewQuad extends IdealMagQuad {
         double gamma = probe.getGamma();
 
         // focusing constant (radians/meter)
-        final double k = ( charge * LightSpeed * getMagField() ) / ( Er * beta * gamma );
+        final double k = ( charge * LIGHT_SPEED * getMagField() ) / ( Er * beta * gamma );
 	final double kSqrt = Math.sqrt( Math.abs( k ) );
 
         // Compute the transfer matrix components
@@ -147,7 +147,7 @@ public class IdealMagSkewQuad extends IdealMagQuad {
         matQuad.setElem( 6, 6, 1.0 ); // homogeneous coordinates
 
         // Set up rotation
-        double angle = Math.PI * m_dblSkewAngle / 180.;
+        double angle = Math.PI * dblSkewAngle / 180.;
         double cs = Math.cos(angle);
         double sn = Math.sin(angle);
         matRotP.setElem( 0, 0,  cs );
@@ -194,7 +194,6 @@ public class IdealMagSkewQuad extends IdealMagQuad {
         os.println("  magnetic field     : " + this.getMagField());
         os.println("  magnet orientation : " + this.getOrientation());
         os.println("  skew quad angle    : " + this.getSkewAngle());
-    };
+    }
 
-
-};
+}

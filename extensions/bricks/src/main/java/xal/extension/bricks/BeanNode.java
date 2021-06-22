@@ -18,35 +18,35 @@ import xal.tools.data.*;
 /** brick which represents a Java Bean */
 abstract public class BeanNode<T> extends Brick implements DataListener {
 	/** data label from bean properties */
-	final static protected String BEAN_DATA_LABEL = "BeanProperty";
+	protected static final String BEAN_DATA_LABEL = "BeanProperty";
 	
 	/** bean object */
-	final protected T BEAN_OBJECT;
+	protected final T beanObject;
 	
 	/** the bean proxy */
-	final protected BeanProxy<T> BEAN_PROXY;
+	protected final BeanProxy<T> beanProxy;
 	
 	/** bean settings */
-	final protected Map<String,Object> BEAN_SETTINGS;
+	protected final Map<String,Object> beanSettings;
 	
 	/** tag for identifying this node */
-	protected String _tag;
+	protected String tag;
 	
 	/** custom bean class name */
-	protected String _customBeanClassName;
+	protected String customBeanClassName;
 	
 	
 	/** Primary Constructor */
 	public BeanNode( final BeanProxy<T> beanProxy, final Map<String,Object> beanSettings, final String tag ) {
-		BEAN_PROXY = beanProxy;
-		BEAN_OBJECT = getPrototypeBean( beanProxy );
-		BEAN_SETTINGS = new HashMap<String,Object>();
+		this.beanProxy = beanProxy;
+		beanObject = getPrototypeBean( beanProxy );
+		this.beanSettings = new HashMap<>();
 		
-		_tag = tag;
-		_customBeanClassName = null;
+		this.tag = tag;
+		customBeanClassName = null;
 		
 		if ( beanSettings != null ) {
-			BEAN_SETTINGS.putAll( beanSettings );
+			this.beanSettings.putAll( beanSettings );
 			applyBeanSettings();
 		}
 	}
@@ -54,7 +54,7 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 	
 	/** Constructor */
 	public BeanNode( final BeanNode<T> node ) {
-		this( node.BEAN_PROXY, node.BEAN_SETTINGS, node.getTag() );
+		this(node.beanProxy, node.beanSettings, node.getTag() );
 		
 		setCustomBeanClassName( node.getCustomBeanClassName() );
 	}
@@ -71,7 +71,7 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 	 * @return the view proxy
 	 */
 	public BeanProxy<T> getBeanProxy() {
-		return BEAN_PROXY;
+		return beanProxy;
 	}
 	
 	
@@ -83,7 +83,7 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 	
 	/** Get the bean object */
 	public T getBeanObject() {
-		return BEAN_OBJECT;
+		return beanObject;
 	}
 	
 	
@@ -93,7 +93,7 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 	 */
 	public BeanInfo getBeanObjectBeanInfo() {
 		try {
-			return Introspector.getBeanInfo( BEAN_OBJECT.getClass() );
+			return Introspector.getBeanInfo(beanObject.getClass() );
 		}
 		catch( IntrospectionException exception ) {
 			return null;
@@ -106,7 +106,7 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 	 * @return this node's tag
 	 */
 	public String getTag() {
-		return _tag;
+		return tag;
 	}
 	
 	
@@ -115,8 +115,8 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 	 * @param tag the new tag
 	 */
 	public void setTag( final String tag ) {
-		_tag = tag;
-		EVENT_PROXY.treeNeedsRefresh( this, this );
+		this.tag = tag;
+		eventProxy.treeNeedsRefresh( this, this );
 	}
 	
 	
@@ -125,7 +125,7 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 	 * @return true if this node has a custom bean class and false if not
 	 */
 	public boolean hasCustomBeanClass() {
-		return _customBeanClassName != null;
+		return customBeanClassName != null;
 	}
 	
 	
@@ -134,7 +134,7 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 	 * @return this node's custom bean class name
 	 */
 	public String getCustomBeanClassName() {
-		return _customBeanClassName;
+		return customBeanClassName;
 	}
 	
 	
@@ -143,8 +143,8 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 	 * @param name the new custom bean class name
 	 */
 	public void setCustomBeanClassName( final String name ) {
-		_customBeanClassName = name;
-		EVENT_PROXY.treeNeedsRefresh( this, this );
+		customBeanClassName = name;
+		eventProxy.treeNeedsRefresh( this, this );
 	}
 	
 	
@@ -153,7 +153,7 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 	 * @return the custom class name if it exists or the prototype class name if there is no custom class
 	 */
 	public String getClassName() {
-		return hasCustomBeanClass() ? getCustomBeanClassName() : BEAN_PROXY.getPrototypeClass().getName();
+		return hasCustomBeanClass() ? getCustomBeanClassName() : beanProxy.getPrototypeClass().getName();
 	}
 	
 	
@@ -167,21 +167,21 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 	}
 	
 	
-	/** get the jython reference snippet */
+	/** get the Jython reference snippet */
 	public String getJythonReferenceSnippet() {
-		return BEAN_PROXY.getJythonReferenceSnippet( this );
+		return beanProxy.getJythonReferenceSnippet( this );
 	}
 	
 	
 	/** get the java reference snippet */
 	public String getJavaReferenceSnippet() {
-		return BEAN_PROXY.getJavaReferenceSnippet( this );
+		return beanProxy.getJavaReferenceSnippet( this );
 	}
 	
 	
 	/** get the java reference snippet */
 	public String getXALReferenceSnippet() {
-		return BEAN_PROXY.getXALReferenceSnippet( this );
+		return beanProxy.getXALReferenceSnippet( this );
 	}
 	
 	
@@ -190,7 +190,7 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 	 * @return the java declaration snippet
 	 */
 	public String getJavaDeclarationSnippet() {
-		return BEAN_PROXY.getJavaDeclarationSnippet( this );
+		return beanProxy.getJavaDeclarationSnippet( this );
 	}
 		
 	
@@ -202,11 +202,11 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 	protected void applyBeanSettings() {
 		final Map<String,PropertyDescriptor> descriptorTable = getProperyDescriptorTable();
 		
-		final Iterator<String> nameIter = BEAN_SETTINGS.keySet().iterator();
+		final Iterator<String> nameIter = beanSettings.keySet().iterator();
 		while( nameIter.hasNext() ) {
 			final String name = nameIter.next();
 			final PropertyDescriptor descriptor = descriptorTable.get( name );
-			final Object value = BEAN_SETTINGS.get( name );
+			final Object value = beanSettings.get( name );
 			try {
 				setPropertyValue( descriptor, value );
 			}
@@ -221,7 +221,7 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 	protected Map<String,PropertyDescriptor> getProperyDescriptorTable() {
 		final BeanInfo beanInfo = getBeanObjectBeanInfo();
 		final PropertyDescriptor[] descriptors = beanInfo != null ? beanInfo.getPropertyDescriptors() : new PropertyDescriptor[0];
-		final Map<String,PropertyDescriptor> descriptorTable = new HashMap<String,PropertyDescriptor>( BEAN_SETTINGS.size() );
+		final Map<String,PropertyDescriptor> descriptorTable = new HashMap<>( beanSettings.size() );
 		for ( final PropertyDescriptor descriptor : descriptors ) {
 			descriptorTable.put( descriptor.getName(), descriptor );
 		}
@@ -232,7 +232,7 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 	/** get the property value */
 	public Object getPropertyValue( final PropertyDescriptor propertyDescriptor ) throws Exception {
 		final Method method = propertyDescriptor.getReadMethod();
-		return method != null ? method.invoke( BEAN_OBJECT ) : null;
+		return method != null ? method.invoke(beanObject ) : null;
 	}
 	
 	
@@ -241,7 +241,7 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 		final Method method = propertyDescriptor.getWriteMethod();
 		
 		try {
-			method.invoke( BEAN_OBJECT, value );
+			method.invoke(beanObject, value );
 		}
 		catch ( InvocationTargetException exception ) {
 			if ( exception.getCause() != null ) {
@@ -256,8 +256,8 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 		}
 		
 		final String name = propertyDescriptor.getName();
-		BEAN_SETTINGS.put( name, value );
-		EVENT_PROXY.propertyChanged( this, propertyDescriptor, value );
+		beanSettings.put( name, value );
+		eventProxy.propertyChanged( this, propertyDescriptor, value );
 		refreshDisplay();
 	}
 	
@@ -280,6 +280,7 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 	 * Provides the name used to identify the class in an external data source.
 	 * @return a tag that identifies the receiver's type
 	 */
+        @Override
     abstract public String dataLabel();
     
     
@@ -287,6 +288,7 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 	 * Update the data based on the information provided by the data provider.
      * @param adaptor The adaptor from which to update the data
      */
+        @Override
     public void update( final DataAdaptor adaptor ) {
 		if ( adaptor.hasAttribute( "customBeanClass" ) ) {
 			setCustomBeanClassName( adaptor.stringValue( "customBeanClass" ) );
@@ -317,15 +319,15 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
      * @param adaptor The adaptor to which the receiver's data is written
      */
     public void write( final DataAdaptor adaptor ) {
-		adaptor.setValue( "tag", _tag );
+		adaptor.setValue("tag", tag );
 		
-		if ( _customBeanClassName != null ) {
-			adaptor.setValue( "customBeanClass", _customBeanClassName );
+		if ( customBeanClassName != null ) {
+			adaptor.setValue("customBeanClass", customBeanClassName );
 		}
 		
-		adaptor.writeNode( BEAN_PROXY );
+		adaptor.writeNode(beanProxy );
 				
-		final Set<Map.Entry<String,Object>> settings = BEAN_SETTINGS.entrySet();
+		final Set<Map.Entry<String,Object>> settings = beanSettings.entrySet();
 		for ( final Map.Entry<String,Object> setting : settings ) {
 			final String name = setting.getKey();
 			final Object value = setting.getValue();
@@ -335,12 +337,13 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 	
 	
 	/** get the archiver of bean propertiers */
-	static public DataListener getPropertyArchiver( final String name, final Object value ) {
+	public static DataListener getPropertyArchiver( final String name, final Object value ) {
 		return new DataListener() {
 			/** 
 			* Provides the name used to identify the class in an external data source.
 			* @return a tag that identifies the receiver's type
 			*/
+                        @Override
 			public String dataLabel() {
 				return BEAN_DATA_LABEL;
 			}
@@ -350,6 +353,7 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 			 * Update the data based on the information provided by the data provider.
 			 * @param adaptor The adaptor from which to update the data
 			 */
+                        @Override
 			public void update( final DataAdaptor adaptor ) {
 			}
 			
@@ -358,6 +362,7 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 			 * Write data to the data adaptor for storage.
 			 * @param adaptor The adaptor to which the receiver's data is written
 			 */
+                        @Override
 			public void write( final DataAdaptor adaptor ) {
 				final PropertyValueEditor<?> editor = PropertyValueEditorManager.getDefaultManager().getEditor( value.getClass() );
 				editor.writeValue( name, value, adaptor );
@@ -367,7 +372,8 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 	
 	
 	/** get a label */
+        @Override
 	public String toString() {
-		return _tag;
+		return tag;
 	}	
 }

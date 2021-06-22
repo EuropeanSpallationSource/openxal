@@ -43,13 +43,13 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
     //
 
     /** data node tag for trajectory */
-    public final static String TRAJ_LABEL = "trajectory";
+    public static final String TRAJ_LABEL = "trajectory";
     
     /** data attribute tag for trajectory concrete type */
-    private final static String TYPE_TRAJ_TAG = "type";
+    private static final String TYPE_TRAJ_TAG = "type";
     
     /** data attribute tag for probe state concrete type */
-    private final static String TYPE_STATE_TAG = "datatype";
+    private static final String TYPE_STATE_TAG = "datatype";
     
     
     /** data attribute tag for time stamp */

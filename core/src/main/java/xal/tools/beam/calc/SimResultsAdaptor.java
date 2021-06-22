@@ -72,8 +72,8 @@ public class SimResultsAdaptor implements ISimLocResults<ProbeState<?>>, ISimEnv
      * @since  Nov 15, 2013
      */
     public SimResultsAdaptor() {
-        this.mapArgToLocCalc = new HashMap<Class<? extends ProbeState<?>>, ISimLocResults<ProbeState<?>>>();
-        this.mapArgToEnvCalc = new HashMap<Class<? extends ProbeState<?>>, ISimEnvResults<ProbeState<?>>>();
+        this.mapArgToLocCalc = new HashMap<>();
+        this.mapArgToEnvCalc = new HashMap<>();
     }
 
     /**

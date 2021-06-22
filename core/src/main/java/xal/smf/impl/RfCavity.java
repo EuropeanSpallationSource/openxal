@@ -51,10 +51,10 @@ public class RfCavity extends AcceleratorSeq {
     public final AccessibleProperty blankBeam = new AccessibleProperty("blankBeam", BLANK_BEAM_HANDLE);
 
     /** accelerator node type */
-    public static final String      s_strType = "RF";
+    public static final String      TYPE = "RF";
     
     /** RF Cavity parameters */
-    protected RfCavityBucket           m_bucRfCavity;           // RfCavityStruct parameters
+    protected RfCavityBucket           bucRfCavity;           // RfCavityStruct parameters
 	
     /**<p> 
      * container of the enclosed RfGap(s) in this cavity sorted by position 
@@ -69,7 +69,7 @@ public class RfCavity extends AcceleratorSeq {
      * cavity structure. 
      * </p>
      */
-    protected List<RfGap> _gaps = new ArrayList<RfGap>();  // rf gaps within this multi-gap device
+    protected List<RfGap> gaps = new ArrayList<>();  // rf gaps within this multi-gap device
 	
 	
 	// static initializer
@@ -106,13 +106,14 @@ public class RfCavity extends AcceleratorSeq {
     /** Register accelerator node type for qualification */
     private static void registerType() {
         ElementTypeManager typeManager = ElementTypeManager.defaultManager();
-        typeManager.registerType( RfCavity.class, s_strType );
+        typeManager.registerType( RfCavity.class, TYPE );
         typeManager.registerType( RfCavity.class, "rfcavity" );
     }
     
     
     /** Override to provide type signature */
-    public String getType()         { return s_strType; };
+    @Override
+    public String getType()         { return TYPE; };
 
 
     /**
@@ -130,15 +131,16 @@ public class RfCavity extends AcceleratorSeq {
      * Update the enclosed rf gaps.
      */    
     private void updateGaps() {
-        final List<AcceleratorNode> nodes = getNodesOfType( RfGap.s_strType, true );
-        _gaps = new ArrayList<>( nodes.size() );
+        final List<AcceleratorNode> nodes = getNodesOfType( RfGap.TYPE, true );
+        gaps = new ArrayList<>( nodes.size() );
         for ( final AcceleratorNode node : nodes ) {
-            _gaps.add( (RfGap)node );
+            gaps.add( (RfGap)node );
         }
         processGaps();
     }
 
     /** Collect all of the enclosed rf gaps for convenience */
+    @Override
     public void update( final DataAdaptor adaptor ) {
         super.update( adaptor );
         updateGaps();
@@ -147,7 +149,7 @@ public class RfCavity extends AcceleratorSeq {
 	
     /** loop through the gaps in this cavity to initialize some stuff */
     private void processGaps() {
-		Iterator<RfGap> gapIter = _gaps.iterator();
+		Iterator<RfGap> gapIter = gaps.iterator();
 		int index = 0;
 		// presently the gappOffset is commented out.
 		// to do it right we need the gapOffset of the 1st
@@ -168,16 +170,17 @@ public class RfCavity extends AcceleratorSeq {
 	
     /** returns the bucket for the RfField of this cavity */
     public RfCavityBucket getRfField() { 
-        return m_bucRfCavity; 
+        return bucRfCavity; 
     }
     
     /** sets the bucket for the RfField of this cavity */    
     public void setRfField(RfCavityBucket buc) { 
-        m_bucRfCavity = buc; 
+        bucRfCavity = buc; 
         super.addBucket(buc); 
     }    
     
     /** Override AcceleratorNode implementation to check for a RfCavityStruct Bucket */
+    @Override
     public void addBucket(AttributeBucket buc)  {
 
         if (buc.getClass().equals( RfCavityBucket.class )) 
@@ -210,7 +213,7 @@ public class RfCavity extends AcceleratorSeq {
 	 * @return the cavity amplitude in MV
 	 */
 	public double toCavAmpAvgFromCA( final double rawValue ) {
-        return rawValue * m_bucRfCavity.getAmpFactor(); 
+        return rawValue * bucRfCavity.getAmpFactor(); 
 	}
 	
 	
@@ -220,7 +223,7 @@ public class RfCavity extends AcceleratorSeq {
 	 * @return the channel access value
 	 */
 	public double toCAFromCavAmpAvg( final double value ) {
-        return value / m_bucRfCavity.getAmpFactor(); 
+        return value / bucRfCavity.getAmpFactor(); 
 	}
 	
     
@@ -242,7 +245,7 @@ public class RfCavity extends AcceleratorSeq {
 	 * @return the cavity phase in degrees
 	 */
 	public double toCavPhaseAvgFromCA( final double rawValue ) {
-		return rawValue + m_bucRfCavity.getPhaseOffset();
+		return rawValue + bucRfCavity.getPhaseOffset();
 	}
 	
 	
@@ -252,7 +255,7 @@ public class RfCavity extends AcceleratorSeq {
 	 * @return the channel access value
 	 */
 	public double toCAFromCavPhaseAvg( final double value ) {
-		return value - m_bucRfCavity.getPhaseOffset();
+		return value - bucRfCavity.getPhaseOffset();
 	}
 	
 
@@ -295,17 +298,17 @@ public class RfCavity extends AcceleratorSeq {
      */
     public double getDfltAvgCavTTF() {
 	    double sum = 0.;
-		for ( final RfGap gap : _gaps ) {
-		    sum += gap.getGapTTF() * gap.m_bucRfGap.getAmpFactor() * Math.cos(gap.getGapDfltPhase() * Math.PI/180.);
+		for ( final RfGap gap : gaps ) {
+		    sum += gap.getGapTTF() * gap.bucRfGap.getAmpFactor() * Math.cos(gap.getGapDfltPhase() * Math.PI/180.);
 	    }
-	    return sum/((double) _gaps.size() * Math.cos(getDfltAvgCavPhase()* Math.PI/180.));
+	    return sum/((double) gaps.size() * Math.cos(getDfltAvgCavPhase()* Math.PI/180.));
     }
     
 	
     /** get the length of the active RF accelerating structure in this cavity (m) */
     public double getRFLength() {
 	    double sum = 0.;
-		for ( final RfGap gap : _gaps ) {
+		for ( final RfGap gap : gaps ) {
 		    sum += gap.getGapLength();
 	    }
 	    return sum;
@@ -319,11 +322,11 @@ public class RfCavity extends AcceleratorSeq {
 	 */
 	public double toAvgCavPhaseFromCavPhase( final double cavityPhase ) {
 		double sum = 0.0;
-		for ( final RfGap gap : _gaps ) {
+		for ( final RfGap gap : gaps ) {
 			sum += gap.toGapPhaseFromCavityPhase( cavityPhase );
 		}
 		
-		return sum / _gaps.size();
+		return sum / gaps.size();
 	}
 	
 	
@@ -333,19 +336,19 @@ public class RfCavity extends AcceleratorSeq {
 	 * @return the average phase of the cavity
 	 */
 	public double toCenterAvgCavPhaseFromCavPhase( final double cavityPhase ) {
-		final int gapCount = _gaps.size();
+		final int gapCount = gaps.size();
 		if ( gapCount < 1 )  return cavityPhase;
 		
 		// if the gap count is even then average over the two center gaps;  if the gap 
 		final int startIndex = ( gapCount - 1 ) / 2;
 		final int endIndex = 1 + gapCount / 2;
 		
-		final List<RfGap> gaps = new ArrayList<RfGap>( endIndex - startIndex );
+		final List<RfGap> gaps = new ArrayList<>( endIndex - startIndex );
 		
 		double phaseSum = 0.0;
 		double totalLength = 0.0;
 		for ( int index = startIndex ; index < endIndex ; index++ ) {
-			final RfGap gap = _gaps.get( index );
+			final RfGap gap = this.gaps.get( index );
 			final double gapLength = gap.getGapLength();
 			phaseSum += gap.toGapPhaseFromCavityPhase( cavityPhase ) * gapLength;
 			totalLength += gapLength;
@@ -378,7 +381,7 @@ public class RfCavity extends AcceleratorSeq {
     /** return the present live set point for the amplitude */
     public double getCavAmpSetPoint() throws ConnectionException, GetException {
 	cavAmpSetC = this.lazilyGetAndConnect(amplitude.getSetHandle(), cavAmpSetC);
-        return cavAmpSetC.getValDbl() * m_bucRfCavity.getAmpFactor();
+        return cavAmpSetC.getValDbl() * bucRfCavity.getAmpFactor();
     }
     
     /** return the present live set point for the phase */
@@ -413,11 +416,11 @@ public class RfCavity extends AcceleratorSeq {
 
 
     /** method to return the gaps associated with this cavity */
-    public Collection<RfGap> getGaps() { return _gaps; }
+    public Collection<RfGap> getGaps() { return gaps; }
     
 	
 	/** method to return the gaps associated with this cavity as a List*/
-    public List<RfGap> getGapsAsList() { return _gaps; }   
+    public List<RfGap> getGapsAsList() { return gaps; }   
     
 	
     /** 
@@ -464,25 +467,25 @@ public class RfCavity extends AcceleratorSeq {
    /** return a polynomial fit of the transit time factor for end cells as a function of beta */  
     public RealUnivariatePolynomial getTTFFitEnd() { 
 	    RfCavityBucket rfCavBuc = this.getRfField();
-	    return new RealUnivariatePolynomial(rfCavBuc.getTTF_endCoefs());
+	    return new RealUnivariatePolynomial(rfCavBuc.getTTFEndCoefs());
     }
 
     /** return a polynomial fit of the transit time factor prime for end cells as a function of beta */  
     public RealUnivariatePolynomial getTTFPrimeFitEnd() { 
 	    RfCavityBucket rfCavBuc = this.getRfField();
-	    return new RealUnivariatePolynomial(rfCavBuc.getTTFPrime_endCoefs());
+	    return new RealUnivariatePolynomial(rfCavBuc.getTTFPrimeEndCoefs());
     }   
     
     /** return a polynomial fit of the "S" transit time factor for end cells as a function of beta */  
     public RealUnivariatePolynomial getSTFFitEnd() { 
 	    RfCavityBucket rfCavBuc = this.getRfField();
-	    return new RealUnivariatePolynomial(rfCavBuc.getSTF_endCoefs());
+	    return new RealUnivariatePolynomial(rfCavBuc.getSTFEndCoefs());
     }
 
     /** return a polynomial fit of the "S" transit time factor prime for end cells as a function of beta */  
     public RealUnivariatePolynomial getSTFPrimeFitEnd() { 
 	    RfCavityBucket rfCavBuc = this.getRfField();
-	    return new RealUnivariatePolynomial(rfCavBuc.getSTFPrime_endCoefs());
+	    return new RealUnivariatePolynomial(rfCavBuc.getSTFPrimeEndCoefs());
     } 
     
  	/** returns 0 if the gap is part of a 0 mode cavity structure (e.g. DTL)

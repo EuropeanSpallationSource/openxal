@@ -111,7 +111,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
     /**
 	 *  the string type identifier for all SpectrumMapRfGap objects
 	 */
-	public final static String s_strType = "SpectrumMapRfGap"; //$NON-NLS-1$
+	public static final String TYPE = "SpectrumMapRfGap"; //$NON-NLS-1$
 
 	
 	//
@@ -121,17 +121,17 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 	/**
 	 *  Parameters for XAL MODEL LATTICE dtd
 	 */
-	public final static String s_strParamETL = "ETL"; //$NON-NLS-1$
+	public static final String PARAM_ETL = "ETL"; //$NON-NLS-1$
 	
 	/**
 	 *  Description of the Field
 	 */
-	public final static String s_strParamPhase = "Phase"; //$NON-NLS-1$
+	public static final String PARAM_PHASE = "Phase"; //$NON-NLS-1$
 	
 	/**
 	 *  Description of the Field
 	 */
-	public final static String s_strParamFreq = "Frequency"; //$NON-NLS-1$
+	public static final String PARAM_FREQ = "Frequency"; //$NON-NLS-1$
 	
 	
 	//
@@ -139,7 +139,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 	//
 	
     /** The number 2&pi; */
-    public final static double  DBL_2PI = 2.0*Math.PI;
+    public static final double  DBL_2PI = 2.0*Math.PI;
 
     
     /** Error tolerance in the iterative search for phase change through RF gap */
@@ -281,12 +281,12 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
     /**
 	 *  ETL product of gap
 	 */
-	private double m_dblETL = 0.0;
+	private double dblETL = 0.0;
 
 	/**
 	 *  phase delay of gap w.r.t. the synchronous particle
 	 */
-	private double m_dblPhase = 0.0;
+	private double dblPhase = 0.0;
 
     /**
      *  the on axis accelerating field (V)
@@ -296,7 +296,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 	/**
 	 *  operating frequency of the gap
 	 */
-	private double m_dblFreq = 0.0;
+	private double dblFreq = 0.0;
 
 	
 	//
@@ -393,7 +393,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 	 *@param  dblFreq   operating RF frequency of gap (in <b>Hertz</b> )
 	 */
 	public SpectrumMapRfGap(String strId, double dblETL, double dblPhase, double dblFreq) {
-		super(s_strType, strId);
+		super(TYPE, strId);
 
 		this.setETL(dblETL);
 		this.setPhase(dblPhase);
@@ -405,7 +405,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 	 *  BE CAREFUL</b>
 	 */
 	public SpectrumMapRfGap() {
-		super(s_strType);
+		super(TYPE);
 	}
 
 
@@ -476,7 +476,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
     public double   wavelengthRF()  {
         
         // Compute the RF wavelength
-        double c      = IElement.LightSpeed;
+        double c      = IElement.LIGHT_SPEED;
         double f      = getFrequency();
         double lambda = c/f;
 
@@ -596,7 +596,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         double W_mid   = varMidGap.W;
         double phi_mid = varMidGap.phi;
         
-        double c = IElement.LightSpeed;
+        double c = IElement.LIGHT_SPEED;
 
         double Q  = Math.abs(probe.getSpeciesCharge());
         double Er = probe.getSpeciesRestEnergy();
@@ -667,7 +667,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 	 */
 	@Override
 	public double getETL() {
-		return m_dblETL;
+		return dblETL;
 	}
 
 	/**
@@ -678,7 +678,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 	 */
     @Override
 	public double getPhase() {
-		return m_dblPhase;
+		return dblPhase;
 	}
 
 	/**
@@ -688,7 +688,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 	 */
     @Override
 	public double getFrequency() {
-		return m_dblFreq;
+		return dblFreq;
 	}
 
 	/**
@@ -703,7 +703,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 	 */
     @Override
 	public void setETL(double dblETL) {
-		m_dblETL = dblETL;
+		this.dblETL = dblETL;
 	}
 
 	/**
@@ -716,7 +716,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 	 */
     @Override
 	public void setPhase(double dblPhase) {
-		m_dblPhase = dblPhase;
+		this.dblPhase = dblPhase;
 	}
 
 	/**
@@ -726,7 +726,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 	 */
     @Override
 	public void setFrequency(double dblFreq) {
-		m_dblFreq = dblFreq;
+		this.dblFreq = dblFreq;
 	}
 
 	/**
@@ -1093,7 +1093,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         this.dblCavModeConst = rfgap.getStructureMode();
         
         this.dblFieldE0 = rfgap.getGapDfltAmp() * 1.0e3;        // the SMF object uses kV (stupid)
-        this.m_dblFreq = rfgap.getGapDfltFrequency() * 1.0e6;   // the SMF object uses MHz (stupid)
+        this.dblFreq = rfgap.getGapDfltFrequency() * 1.0e6;   // the SMF object uses MHz (stupid)
         
         // Create the defining axial field spectrum object
         IRealFunction fitTTFPrime = rfgap.getTTFPrimeFit();
@@ -1101,7 +1101,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         IRealFunction fitSTFPrime = rfgap.getSPrimeFit();
         IRealFunction fitSTF = rfgap.getSFit();
 
-        this.spcGapFlds = new AxialFieldSpectrum(this.m_dblFreq, this.gapOffset, fitTTF, fitTTFPrime, fitSTF, fitSTFPrime);
+        this.spcGapFlds = new AxialFieldSpectrum(this.dblFreq, this.gapOffset, fitTTF, fitTTFPrime, fitSTF, fitSTFPrime);
         
         // Create the accelerating gap model
         //  The accelerating gap potential is set for a unit charge.  It is later updated
@@ -1113,7 +1113,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         
 //        System.out.println(this.getId() + " mode field coefficient A = " + A);
         
-        this.gapAcclMdl = new AcceleratingRfGap(this.m_dblFreq, V0, this.spcGapFlds);
+        this.gapAcclMdl = new AcceleratingRfGap(this.dblFreq, V0, this.spcGapFlds);
     }
 
 	
@@ -1129,22 +1129,22 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
      */
     @Override
     public String toString() {
-        StringBuffer    bufOut = new StringBuffer();
+        StringBuilder    bufOut = new StringBuilder();
         
         bufOut.append(super.toString());
         
-        bufOut.append("  Gap ETL product    : " + this.getETL()); //$NON-NLS-1$
+        bufOut.append("  Gap ETL product    : ").append(this.getETL()); //$NON-NLS-1$
         bufOut.append('\n');
-        bufOut.append("  Gap phase shift    : " + this.getPhase()); //$NON-NLS-1$
+        bufOut.append("  Gap phase shift    : ").append(this.getPhase()); //$NON-NLS-1$
         bufOut.append('\n');
         
-        bufOut.append("  RF frequency       : " + this.getFrequency()); //$NON-NLS-1$
+        bufOut.append("  RF frequency       : ").append(this.getFrequency()); //$NON-NLS-1$
         bufOut.append('\n');
 
-        bufOut.append("  Axial field dblFieldE0     : " + this.getE0() );
+        bufOut.append("  Axial field dblFieldE0     : ").append(this.getE0());
         bufOut.append('\n');
         
-        bufOut.append("  Gap offset         : " + this.getGapOffset() );
+        bufOut.append("  Gap offset         : ").append(this.getGapOffset());
         bufOut.append('\n');
         
         return bufOut.toString();
@@ -1234,7 +1234,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         double L    = this.getGapLength();
         double V0   = A * E0 * L;   // This is for a unit charge 
         
-        this.gapAcclMdl = new AcceleratingRfGap(this.m_dblFreq, V0, this.spcGapFlds);
+        this.gapAcclMdl = new AcceleratingRfGap(this.dblFreq, V0, this.spcGapFlds);
     }
     
     /**
@@ -1501,7 +1501,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
          */
         private double   compDriftingPhaseAdvance(double beta, double len) {
         
-            double c = IElement.LightSpeed;       // speed of light
+            double c = IElement.LIGHT_SPEED;       // speed of light
             double f = this.getFrequency();
         
             //the correction for the gap offset needed
@@ -1590,7 +1590,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
     /**
      * <p>
      * Computes and returns the change in the probe's phase and energy due to the RF gap.
-     * This action here is primarily that of delation.  If the <code>useRfGapPhaseCalculation</code>
+     * This action here is primarily that of deletion.  If the <code>useRfGapPhaseCalculation</code>
      * flag of the probe's algorithm object is set to <code>false</code>, then the 
      * phase and energy change is computed with method 
      * <code>{@link #compGapPhaseAndEnergyGainDirect(IProbe)}</code>.  If the flag is
@@ -1718,7 +1718,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 
     // TODO Remove this after debugging
     private boolean bolMethodCalled = false;
-    private int CNT_CALLS = 0;
+    private int cntCalls = 0;
     /**
      * <p>
      * Computes and returns the longitudinal phase change &delta;&phi; energy 
@@ -1900,12 +1900,12 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 //
 //            EnergyVector    vecGains = new EnergyVector(dphi, dW);
 
-            double  ki = DBL_2PI /(bi*IElement.LightSpeed/this.getFrequency());
+            double  ki = DBL_2PI /(bi*IElement.LIGHT_SPEED/this.getFrequency());
             double  b_mid = RelativisticParameterConverter.computeBetaFromEnergies(W0, Er);
-            double  k_mid = DBL_2PI /(b_mid*IElement.LightSpeed/this.getFrequency());
+            double  k_mid = DBL_2PI /(b_mid*IElement.LIGHT_SPEED/this.getFrequency());
 
             double  theEnergyGain = qAEL * this.spcGapFlds.Tz(k_mid) * Math.cos(phi0 + dphim);
-            double DELTA_PHASE_CORRECTION = Q * A * this.gapAcclMdl.computeNormWaveNumber(W0+dWm, Er) * this.spcGapFlds.dkTz(ki) * Math.sin(phi0 + dphim);
+            double deltaPhaseCorrection = Q * A * this.gapAcclMdl.computeNormWaveNumber(W0+dWm, Er) * this.spcGapFlds.dkTz(ki) * Math.sin(phi0 + dphim);
 
             // TODO Remove type out
 //            if (!this.bolMethodCalled) {
@@ -1924,7 +1924,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 //            }
 
             // TODO - Remove this old XAL reproduction stuff if we are going to production 
-            EnergyVector    vecCrapGains = new EnergyVector(DELTA_PHASE_CORRECTION, theEnergyGain);
+            EnergyVector    vecCrapGains = new EnergyVector(deltaPhaseCorrection, theEnergyGain);
             
             return vecCrapGains;
 //            return vecGapGains;

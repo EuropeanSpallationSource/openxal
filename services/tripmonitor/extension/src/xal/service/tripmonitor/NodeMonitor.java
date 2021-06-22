@@ -24,13 +24,13 @@ public class NodeMonitor implements ChannelEventListener {
 	protected NodeMonitorListener EVENT_PROXY;
 	
 	/** trip monitor filter */
-	final protected TripMonitorFilter MONITOR_FILTER;
+	protected final TripMonitorFilter MONITOR_FILTER;
 	
 	/** accelerator node to monitor */
-	final protected AcceleratorNode NODE;
+	protected final AcceleratorNode NODE;
 	
 	/** channel monitors */
-	final protected List<ChannelMonitor> CHANNEL_MONITORS;
+	protected final List<ChannelMonitor> CHANNEL_MONITORS;
 	
 	
 	/** Constructor */

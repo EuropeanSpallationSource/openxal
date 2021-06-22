@@ -6,7 +6,7 @@ import xal.smf.impl.qualify.*;
 
 /**
  * The implementation of the Current Monitor class. This class contains the
- * methods members, attributes, and signal sets pertinant to modeling Current
+ * methods members, attributes, and signal sets pertinent to modeling Current
  * Monitors.
  * 
  * @author J. Galambos (jdg@ornl.gov)
@@ -14,7 +14,7 @@ import xal.smf.impl.qualify.*;
 
 public class CurrentMonitor extends AcceleratorNode {
 	/** standard type for instances of this class */
-	public static final String s_strType = "BCM";
+	public static final String TYPE = "BCM";
 
 	static {
 		registerType();
@@ -25,14 +25,15 @@ public class CurrentMonitor extends AcceleratorNode {
 	 * Register type for qualification
 	 */
 	private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( CurrentMonitor.class, s_strType );
+		ElementTypeManager.defaultManager().registerTypes( CurrentMonitor.class, TYPE );
 	}
 
 
 
 	/** Override to provide type signature */
+        @Override
 	public String getType() {
-		return s_strType;
+		return TYPE;
 	}
 
 
@@ -150,15 +151,15 @@ public class CurrentMonitor extends AcceleratorNode {
 	public double getTDelay() throws ConnectionException, GetException {
 		tDelayC = this.lazilyGetAndConnect(T_DELAY_HANDLE, tDelayC);
 		return tDelayC.getValDbl();
-	};
+	}
 
 	/**
-	 * Avgerage beam current
+	 * Average beam current
 	 */
 	public double getIAvg() throws ConnectionException, GetException {
 		iAvgC = this.lazilyGetAndConnect(I_AVG_HANDLE, iAvgC);
 		return iAvgC.getValDbl();
-	};
+	}
 
 	/**
 	 * Maximum beam current
@@ -166,5 +167,5 @@ public class CurrentMonitor extends AcceleratorNode {
 	public double getIMax() throws ConnectionException, GetException {
 		iMaxC = this.lazilyGetAndConnect(I_MAX_HANDLE, iMaxC);
 		return iMaxC.getValDbl();
-	};
+	}
 }

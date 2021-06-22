@@ -8,7 +8,6 @@
 
 package xal.extension.solver.algorithm;
 
-import xal.tools.ArrayTool;
 import xal.extension.solver.*;
 import xal.extension.solver.solutionjudge.*;
 import xal.extension.solver.hint.*;
@@ -22,13 +21,13 @@ public class DirectedStep extends SearchAlgorithm {
 	final int NUM_SCALE_STEPS = 10;
 
     /** domain for search steps */
-    private ExcursionHint _searchStepDomain;
+    private ExcursionHint searchStepDomain;
 
 	/** The current best point. */
-	private Trial _bestSolution;
+	private Trial bestSolution;
 
 	/** Last origin trial */
-	private Trial _lastOriginTrial;
+	private Trial lastOriginTrial;
 
 
 	/** Constructor */
@@ -38,8 +37,8 @@ public class DirectedStep extends SearchAlgorithm {
 
     /** reset the algorithm for searching from scratch */
     public void reset() {
-        final ExcursionHint excursionHint = (ExcursionHint)_problem.getHint( ExcursionHint.TYPE );
-        _searchStepDomain = excursionHint != null ? excursionHint : ExcursionHint.getFractionalExcursionHint( 0.001 );
+        final ExcursionHint excursionHint = (ExcursionHint)problem.getHint( ExcursionHint.TYPE );
+        searchStepDomain = excursionHint != null ? excursionHint : ExcursionHint.getFractionalExcursionHint( 0.001 );
     }
 
 
@@ -47,6 +46,7 @@ public class DirectedStep extends SearchAlgorithm {
 	 * Return the label for a search algorithm.
 	 * @return   The trial point.
 	 */
+        @Override
 	public String getLabel() {
 		return "Directed Step";
 	}
@@ -55,13 +55,14 @@ public class DirectedStep extends SearchAlgorithm {
 	/**
 	 * Calculate the next few trial points.
 	 */
+        @Override
 	public void performRun( final AlgorithmSchedule algorithmSchedule ) {
         if(algorithmSchedule.shouldStop()) return;
 		try {
-			//System.out.println( "initial solution:  " + _bestSolution );sx
-            if ( _lastOriginTrial != _bestSolution ) {		// no point in repeating the same result
-                _lastOriginTrial = _bestSolution;
-                final Trial bestTrial = performAcceleratedSearch( _bestSolution );
+			//System.out.println( "initial solution:  " + bestSolution );sx
+            if ( lastOriginTrial != bestSolution ) {		// no point in repeating the same result
+                lastOriginTrial = bestSolution;
+                final Trial bestTrial = performAcceleratedSearch( bestSolution );
             }
             //System.out.println( "best solution:  " + bestTrial + "\n\n" );
 		}
@@ -106,14 +107,14 @@ public class DirectedStep extends SearchAlgorithm {
 	 * @return the gradient at the specified point
 	 */
 	protected double[] calculateGradient( final Trial originTrial ) {
-		final List<Variable> variables = _problem.getVariables();
-		final Map<Variable,Number> valueMap = new HashMap<Variable,Number>( originTrial.getTrialPoint().getValueMap() );
+		final List<Variable> variables = problem.getVariables();
+		final Map<Variable,Number> valueMap = new HashMap<>( originTrial.getTrialPoint().getValueMap() );
 		final double[] gradient = new double[variables.size()];
 		final double originSatisfaction = getSatisfaction( originTrial );
 		int index = 0;
 		for ( Variable variable : variables ) {
 			final double originValue = valueMap.get( variable ).doubleValue();
-            final double[] trialRange = _searchStepDomain.getRange( originValue, variable );
+            final double[] trialRange = searchStepDomain.getRange( originValue, variable );
 
 			final double lowerValue = trialRange[0];
 			valueMap.put( variable, lowerValue );
@@ -139,8 +140,8 @@ public class DirectedStep extends SearchAlgorithm {
 	 * @return the vector from the origin point to the target point
 	 */
 	protected double[] calculateVector( final TrialPoint originPoint, final TrialPoint targetPoint ) {
-		final List<Variable> variables = _problem.getVariables();
-		final Map<Variable,Number> valueMap = new HashMap<Variable,Number>( variables.size() );
+		final List<Variable> variables = problem.getVariables();
+		final Map<Variable,Number> valueMap = new HashMap<>( variables.size() );
 		final double[] vector = new double[variables.size()];
 		int index = 0;
 		for ( Variable variable : variables ) {
@@ -157,7 +158,7 @@ public class DirectedStep extends SearchAlgorithm {
 	 * Search along the gradient from the origin point.
 	 */
 	protected Trial searchAlongGradient( final double[] gradient, final Trial originTrial ) {
-		final List<Variable> variables = _problem.getVariables();
+		final List<Variable> variables = problem.getVariables();
 
 		final TrialPoint originPoint = originTrial.getTrialPoint();
 		double bestSatisfaction = getSatisfaction( originTrial );
@@ -240,8 +241,8 @@ public class DirectedStep extends SearchAlgorithm {
 	/**
 	 * Get a new trial point along the gradient.
 	 */
-	static protected TrialPoint trialPointAlongGradient( final double[] gradient, final TrialPoint originPoint, final double scale, List<Variable> variables ) {
-		final Map<Variable,Number> valueMap = new HashMap<Variable,Number>( variables.size() );
+	protected static TrialPoint trialPointAlongGradient( final double[] gradient, final TrialPoint originPoint, final double scale, List<Variable> variables ) {
+		final Map<Variable,Number> valueMap = new HashMap<>( variables.size() );
 		for ( int index = 0 ; index < gradient.length ; index++ ) {
 			final Variable variable = variables.get( index );
 
@@ -259,7 +260,7 @@ public class DirectedStep extends SearchAlgorithm {
 
 
 	/** Get the satisfaction converting NaN to 0.0 if necessary */
-	static private double getSatisfaction( final Trial trial ) {
+	private static double getSatisfaction( final Trial trial ) {
 		final double rawSatisfaction = trial.getSatisfaction();
 		return Double.isNaN( rawSatisfaction ) ? 0.0 : rawSatisfaction;
 	}
@@ -269,8 +270,9 @@ public class DirectedStep extends SearchAlgorithm {
 	 * Get the minimum number of evaluations per run.  Subclasses may want to override this method.
 	 * @return the minimum number of evaluation per run.
 	 */
+        @Override
 	public int getMinEvaluationsPerRun() {
-        int minEvals = _problem != null ? 4 * _problem.getVariables().size() + 3 * 2 * NUM_SCALE_STEPS : 0;
+        int minEvals = problem != null ? 4 * problem.getVariables().size() + 3 * 2 * NUM_SCALE_STEPS : 0;
         return minEvals;
 	}
     
@@ -279,6 +281,7 @@ public class DirectedStep extends SearchAlgorithm {
 	 * Returns the global rating which in an integer between 0 and 10.
 	 * @return   The global rating for this algorithm.
 	 */
+        @Override
 	public int globalRating() {
 		return 5;
 	}
@@ -288,6 +291,7 @@ public class DirectedStep extends SearchAlgorithm {
 	 * Returns the local rating which is an integer between 0 and 10.
 	 * @return   The local rating for this algorithm.
 	 */
+        @Override
 	public int localRating() {
 		return 5;
 	}
@@ -312,6 +316,7 @@ public class DirectedStep extends SearchAlgorithm {
 	 * @param trial              The trial that was scored.
 	 * @param schedule           the schedule providing this event
 	 */
+        @Override
 	public void trialScored( AlgorithmSchedule schedule, Trial trial ) { }
 
 
@@ -320,6 +325,7 @@ public class DirectedStep extends SearchAlgorithm {
 	 * @param trial              The trial that was vetoed.
 	 * @param schedule           the schedule providing this event
 	 */
+        @Override
 	public void trialVetoed( AlgorithmSchedule schedule, Trial trial ) { }
 
 
@@ -329,76 +335,77 @@ public class DirectedStep extends SearchAlgorithm {
 	 * @param solutions  The list of solutions.
 	 * @param solution   The new optimal solution.
 	 */
+        @Override
 	public void foundNewOptimalSolution( SolutionJudge source, List<Trial> solutions, Trial solution ) {
-            _bestSolution = solution;
+            bestSolution = solution;
 	}
 
 
 
-	/** Locat the maximum for a quadratic specified by:  y = ax^2 + bx + c */
+	/** Locate the maximum for a quadratic specified by:  y = ax^2 + bx + c */
 	private class QuadraticMaximumFinder {
-		final protected List<Sample> _samples;
-		protected double _curvature;
-		protected double _slope;
-		protected boolean _needsUpdate;
+		protected final List<Sample> samples;
+		protected double curvature;
+		protected double slope;
+		protected boolean needsUpdate;
 
 
 		/** Constructor */
 		public QuadraticMaximumFinder() {
-			_samples = new ArrayList<Sample>(3);
-			_needsUpdate = true;
+			samples = new ArrayList<>(3);
+			needsUpdate = true;
 		}
 
 
 		/** add a sample */
-		final public void add( final double x, final double y ) {
+		public final void add( final double x, final double y ) {
 			add( new Sample( x, y ) );
 		}
 
 
 		/** add a sample */
 		private void add( final Sample sample ) {
-			_samples.add( sample );
-			if ( _samples.size() > 3 ) {
-				_samples.remove( 0 );
+			samples.add( sample );
+			if ( samples.size() > 3 ) {
+				samples.remove( 0 );
 			}
-			_needsUpdate = true;
+			needsUpdate = true;
 		}
 
 
 		/** perform fit */
 		private void performFit() {
-			if ( _samples.size() != 3 ) {
-				_curvature = Double.NaN;
-				_slope = Double.NaN;
+			if ( samples.size() != 3 ) {
+				curvature = Double.NaN;
+				slope = Double.NaN;
 			}
 			else {
-				final double x0 = _samples.get(0).getX();
-				final double x1 = _samples.get(1).getX();
-				final double x2 = _samples.get(2).getX();
-				final double y0 = _samples.get(0).getY();
-				final double y1 = _samples.get(1).getY();
-				final double y2 = _samples.get(2).getY();
+				final double x0 = samples.get(0).getX();
+				final double x1 = samples.get(1).getX();
+				final double x2 = samples.get(2).getX();
+				final double y0 = samples.get(0).getY();
+				final double y1 = samples.get(1).getY();
+				final double y2 = samples.get(2).getY();
 
 				final double dx01 = x0 - x1;
 				final double dx21 = x2 - x1;
 				final double dy01 = y0 - y1;
 				final double dy21 = y2 - y1;
 
-				_curvature = ( dy21 * dx01 - dy01 * dx21 ) / ( ( x2*x2 - x1*x1 ) * dx01 - ( x0*x0 - x1*x1 ) * dx21 );
-				_slope = ( y2 - y1 - _curvature * ( x2*x2 - x1*x1 ) ) / dx21;
+				curvature = ( dy21 * dx01 - dy01 * dx21 ) / ( ( x2*x2 - x1*x1 ) * dx01 - ( x0*x0 - x1*x1 ) * dx21 );
+				slope = ( y2 - y1 - curvature * ( x2*x2 - x1*x1 ) ) / dx21;
 
-				//				System.out.println( "Calculating curvature for samples:  " + _samples );
-				//				System.out.println( "Curvature:  " + _curvature + ", slope:  " + _slope );
+				//				System.out.println( "Calculating curvature for samples:  " + samples );
+				//				System.out.println( "Curvature:  " + curvature + ", slope:  " + slope );
 			}
 
-			_needsUpdate = false;
+			needsUpdate = false;
 		}
 
 
 		/** perform fit if necessary */
 		private void performFitIfNeeded() {
-			if ( _needsUpdate ) {
+			if ( needsUpdate ) {
 				performFit();
 			}
 		}
@@ -408,46 +415,47 @@ public class DirectedStep extends SearchAlgorithm {
 		public boolean hasMaximum() {
 			performFitIfNeeded();
 
-			return _curvature < 0.0;
+			return curvature < 0.0;
 		}
 
 
 		/** Calculate the optimal value of X which provides a maximum of the quadratic */
 		public double getOptimalX() {
 			performFitIfNeeded();
-			return - _slope / ( 2.0 * _curvature );
+			return - slope / ( 2.0 * curvature );
 		}
 
 
 
 		/** Evaluation sample */
 		private class Sample {
-			final protected double _x;
-			final protected double _y;
+			protected final double x;
+			protected final double y;
 
 
 			/** Constructor */
 			public Sample( final double x, final double y ) {
-				_x = x;
-				_y = y;
+				this.x = x;
+				this.y = y;
 			}
 
 
 			/** get x */
-			final public double getX() {
-				return _x;
+			public final double getX() {
+				return this.x;
 			}
 
 
 			/** get y */
-			final public double getY() {
-				return _y;
+			public final double getY() {
+				return this.y;
 			}
 
 
 			/** description of this sample */
-			final public String toString() {
-				return "x: " + _x + ", y: " + _y;
+                        @Override
+			public final String toString() {
+				return "x: " + this.x + ", y: " + this.y;
 			}
 		}
 	}

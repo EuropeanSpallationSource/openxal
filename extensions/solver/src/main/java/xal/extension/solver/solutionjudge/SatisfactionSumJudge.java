@@ -10,7 +10,6 @@
  
  package xal.extension.solver.solutionjudge;
   
- import xal.tools.messaging.MessageCenter;
  
  import xal.extension.solver.*;
  
@@ -25,24 +24,25 @@
  */
  public class SatisfactionSumJudge extends SolutionJudge {
 	 protected final double DEFAULT_WEIGHT = 1.0;
-	 protected double _bestWeightedSum;
-	 protected List<Trial> _optimalSolutions;
-	 protected Map<Objective,Double> _objectiveWeightMap;
+	 protected double bestWeightedSum;
+	 protected List<Trial> optimalSolutions;
+	 protected Map<Objective,Double> objectiveWeightMap;
 	 
 	 
 	 /**Creates a new SatisfactionJudge instance*/
 	 public SatisfactionSumJudge() {
-		 _bestWeightedSum = 0.0;
-		 _objectiveWeightMap = new HashMap<Objective,Double>();
-		 _optimalSolutions = new ArrayList<Trial>();		 
+		 bestWeightedSum = 0.0;
+		 objectiveWeightMap = new HashMap<>();
+		 optimalSolutions = new ArrayList<>();		 
 	 }
 	 
 	 
 	 /** Reset the satisfaction sum judge. */
+         @Override
 	 public void reset() {
-		 _bestWeightedSum = 0.0;
-		 _optimalSolutions = new ArrayList<Trial>();
-		 _objectiveWeightMap = new HashMap<Objective,Double>();
+		 bestWeightedSum = 0.0;
+		 optimalSolutions = new ArrayList<>();
+		 objectiveWeightMap = new HashMap<>();
 	 }
 		 
 	 
@@ -52,7 +52,7 @@
 	 * @param weight The weight to give the objective.
 	 */
 	 public void setWeight( final Objective objective, final double weight ) {
-		 _objectiveWeightMap.put( objective, weight );
+		 objectiveWeightMap.put( objective, weight );
 	 }
 	 
 	 
@@ -61,8 +61,8 @@
 	 * @return The weight of the specified objective
 	 */
 	 private double getWeight( final Objective objective ) {
-		 final Double weight = _objectiveWeightMap.get( objective );
-		 return ( weight == null ) ? DEFAULT_WEIGHT : weight.doubleValue();		 
+		 final Double weight = objectiveWeightMap.get( objective );
+		 return ( weight == null ) ? DEFAULT_WEIGHT : weight;		 
 	 } 
 		 
 		 
@@ -70,8 +70,9 @@
 	 * Get the optimal solutions.
 	 * @return A list of solutions
 	 */
+         @Override
 	 public List<Trial> getOptimalSolutions() {
-		 return _optimalSolutions;	 	 
+		 return optimalSolutions;	 	 
 	 }
 	 
 	 
@@ -79,6 +80,7 @@
 	 * Judge the trial.
 	 * @param trial the trial to judge.
 	 */
+         @Override
 	 public void judge( final Trial trial ) {
 		 if ( trial.isVetoed() ) {
 			 trial.setSatisfaction( 0.0 );
@@ -97,15 +99,15 @@
 			 weightedSum /= totalWeight;
 			 trial.setSatisfaction( weightedSum );
 			 
-			 if( weightedSum == _bestWeightedSum ) {
-				 _optimalSolutions.add( trial );
-				 _eventProxy.foundNewOptimalSolution( this, _optimalSolutions, trial );
+			 if( weightedSum == bestWeightedSum ) {
+				 optimalSolutions.add( trial );
+				 eventProxy.foundNewOptimalSolution( this, optimalSolutions, trial );
 			 }
-			 else if( weightedSum > _bestWeightedSum ) {
-				 _bestWeightedSum = weightedSum;
-				 _optimalSolutions.clear();
-				 _optimalSolutions.add( trial );
-				 _eventProxy.foundNewOptimalSolution( this, _optimalSolutions, trial );
+			 else if( weightedSum > bestWeightedSum ) {
+				 bestWeightedSum = weightedSum;
+				 optimalSolutions.clear();
+				 optimalSolutions.add( trial );
+				 eventProxy.foundNewOptimalSolution( this, optimalSolutions, trial );
 			 }
 		 }
 	 }

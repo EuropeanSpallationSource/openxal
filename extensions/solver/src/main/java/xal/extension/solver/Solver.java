@@ -9,13 +9,11 @@
  */
 package xal.extension.solver;
 
-import xal.tools.messaging.MessageCenter;
 
 import xal.extension.solver.algorithm.*;
 import xal.extension.solver.market.*;
 import xal.extension.solver.solutionjudge.*;
 
-import java.util.*;
 
 /**
  * Solver is the primary class for setting up and running an optimization.
@@ -24,13 +22,13 @@ import java.util.*;
  */
 public class Solver implements AlgorithmPoolListener, AlgorithmMarketListener {
 	/** The problem to solve */
-	protected Problem _problem;
+	protected Problem problem;
 	
 	/** The score board for keeping track of the solver status */
-	protected ScoreBoard _scoreboard;
+	protected ScoreBoard scoreboard;
 	
 	/** The schedule of algorithms to run */
-	protected AlgorithmSchedule _schedule;
+	protected AlgorithmSchedule schedule;
 
 
 	/**
@@ -40,16 +38,16 @@ public class Solver implements AlgorithmPoolListener, AlgorithmMarketListener {
 	 * @param market         The market of algorithms to use
 	 */
 	public Solver( final AlgorithmMarket market, final Stopper stopper, final SolutionJudge solutionJudge ) {
-		_scoreboard = new ScoreBoard( solutionJudge );
+		scoreboard = new ScoreBoard( solutionJudge );
 
-		_schedule = new AlgorithmSchedule( this, market, stopper );
+		schedule = new AlgorithmSchedule( this, market, stopper );
 
 		market.addAlgorithmMarketListener( this );
 		market.getAlgorithmPool().addAlgorithmPoolListener( this );
 		solutionJudge.addSolutionJudgeListener( market );
 
-		_schedule.addAlgorithmScheduleListener( market );
-		_schedule.addAlgorithmScheduleListener( _scoreboard );
+		schedule.addAlgorithmScheduleListener( market );
+		schedule.addAlgorithmScheduleListener(scoreboard );
 	}
 
 
@@ -95,8 +93,8 @@ public class Solver implements AlgorithmPoolListener, AlgorithmMarketListener {
 
 	/** Reset the solver. */
 	public void reset() {
-		_scoreboard.reset();
-		_schedule.reset();
+		scoreboard.reset();
+		schedule.reset();
 	}
 
 
@@ -111,7 +109,7 @@ public class Solver implements AlgorithmPoolListener, AlgorithmMarketListener {
 		
 		setProblem( problem );
 		reset();
-		_schedule.execute();
+		schedule.execute();
 	}
 
 
@@ -120,8 +118,8 @@ public class Solver implements AlgorithmPoolListener, AlgorithmMarketListener {
 	 * @param problem  The new problem value
 	 */
 	public void setProblem( final Problem problem ) {
-		_problem = problem;
-		_schedule.setProblem( problem );
+		this.problem = problem;
+		schedule.setProblem( problem );
 	}
 
 
@@ -130,7 +128,7 @@ public class Solver implements AlgorithmPoolListener, AlgorithmMarketListener {
 	 * @return   The problem.
 	 */
 	public Problem getProblem() {
-		return _problem;
+		return problem;
 	}
 	
 	
@@ -145,7 +143,7 @@ public class Solver implements AlgorithmPoolListener, AlgorithmMarketListener {
 	 * @param stopper  The new stopper value
 	 */
 	public void setStopper( final Stopper stopper ) {
-		_schedule.setStopper( stopper );
+		schedule.setStopper( stopper );
 	}
 
 
@@ -154,7 +152,7 @@ public class Solver implements AlgorithmPoolListener, AlgorithmMarketListener {
 	 * @return   The solutionJudge value
 	 */
 	public SolutionJudge getSolutionJudge() {
-		return _scoreboard.getSolutionJudge();
+		return scoreboard.getSolutionJudge();
 	}
 
 
@@ -169,7 +167,7 @@ public class Solver implements AlgorithmPoolListener, AlgorithmMarketListener {
 		}
 
 		solutionJudge.addSolutionJudgeListener( getAlgorithmMarket() );
-		_scoreboard.setSolutionJudge( solutionJudge );
+		scoreboard.setSolutionJudge( solutionJudge );
 	}
 
 
@@ -179,7 +177,7 @@ public class Solver implements AlgorithmPoolListener, AlgorithmMarketListener {
 	 * @return   The scoreboard that shows the present state of solving.
 	 */
 	public ScoreBoard getScoreBoard() {
-		return _scoreboard;
+		return scoreboard;
 	}
 	
 	
@@ -188,7 +186,7 @@ public class Solver implements AlgorithmPoolListener, AlgorithmMarketListener {
 	 * @param trial the trial to judge
 	 */
 	protected void judge( final Trial trial ) {
-		_scoreboard.judge( trial );
+		scoreboard.judge( trial );
 	}
 
 
@@ -197,7 +195,7 @@ public class Solver implements AlgorithmPoolListener, AlgorithmMarketListener {
 	 * @return   The algorithm schedule.
 	 */
 	public AlgorithmSchedule getAlgorithmSchedule() {
-		return _schedule;
+		return schedule;
 	}
 
 
@@ -224,7 +222,7 @@ public class Solver implements AlgorithmPoolListener, AlgorithmMarketListener {
 	 * @return   The algorithm market.
 	 */
 	public AlgorithmMarket getAlgorithmMarket() {
-		return _schedule.getMarket();
+		return schedule.getMarket();
 	}
 
 
@@ -233,9 +231,10 @@ public class Solver implements AlgorithmPoolListener, AlgorithmMarketListener {
 	 * @param source     The source of the added algorithm.
 	 * @param algorithm  Description of the Parameter
 	 */
+        @Override
 	public void algorithmAdded( final AlgorithmPool source, final SearchAlgorithm algorithm ) {
 		getSolutionJudge().addSolutionJudgeListener( algorithm );
-		_schedule.addAlgorithmScheduleListener( algorithm );
+		schedule.addAlgorithmScheduleListener( algorithm );
 	}
 
 
@@ -244,9 +243,10 @@ public class Solver implements AlgorithmPoolListener, AlgorithmMarketListener {
 	 * @param source     The source of the removed algorithm.
 	 * @param algorithm  Description of the Parameter
 	 */
+        @Override
 	public void algorithmRemoved( final AlgorithmPool source, final SearchAlgorithm algorithm ) {
 		getSolutionJudge().removeSolutionJudgeListener( algorithm );
-		_schedule.removeAlgorithmScheduleListener( algorithm );
+		schedule.removeAlgorithmScheduleListener( algorithm );
 	}
 
 
@@ -255,14 +255,16 @@ public class Solver implements AlgorithmPoolListener, AlgorithmMarketListener {
 	 * @param source     The source of the available algorithm.
 	 * @param algorithm  Description of the Parameter
 	 */
+        @Override
 	public void algorithmAvailable( final AlgorithmPool source, final SearchAlgorithm algorithm ) { }
 
 
 	/**
-	 * Send a message that an algorithm is unvavailable.
+	 * Send a message that an algorithm is unavailable.
 	 * @param source     The source of the unavailable algorithm.
 	 * @param algorithm  Description of the Parameter
 	 */
+        @Override
 	public void algorithmUnavailable( final AlgorithmPool source, final SearchAlgorithm algorithm ) { }
 
 
@@ -272,6 +274,7 @@ public class Solver implements AlgorithmPoolListener, AlgorithmMarketListener {
 	 * @param oldPool  Description of the Parameter
 	 * @param newPool  Description of the Parameter
 	 */
+        @Override
 	public void poolChanged( final AlgorithmMarket market, final AlgorithmPool oldPool, final AlgorithmPool newPool ) {
 		if ( oldPool != null ) {
 			oldPool.removeAlgorithmPoolListener( this );
@@ -291,7 +294,7 @@ public class Solver implements AlgorithmPoolListener, AlgorithmMarketListener {
     
     // Same process above but defining the number of evaluations over which to average
     public void recordEfficiency( final int evaluations ){
-        _scoreboard.recordEfficiency( evaluations );
+        scoreboard.recordEfficiency( evaluations );
     }
     
     

@@ -6,13 +6,17 @@
 
 package xal.extension.application;
 
+import java.awt.AWTException;
 import java.awt.BorderLayout;
+import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
@@ -37,14 +41,14 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
 	static final long serialVersionUID = 1L;
 
 	// public static constants for confirmation dialogs
-	final static public int YES_OPTION = JOptionPane.YES_OPTION;
-	final static public int NO_OPTION = JOptionPane.NO_OPTION;
+	public static final int YES_OPTION = JOptionPane.YES_OPTION;
+	public static final int NO_OPTION = JOptionPane.NO_OPTION;
 	    
     /** indicates whether to display a toolbar */
-    private final boolean DISPLAYS_TOOLBAR;
+    private final boolean displayToolbar;
 
 	/** The toolbar associated with this window */
-	private JToolBar _toolBar;
+	private JToolBar toolBar;
     
     /** The document corresponding to this main window */
     protected XalDocument document;
@@ -56,12 +60,12 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
     }
     
     
-    public XalWindow( final XalDocument aDocument, final boolean displaysToolbar ) {
+    public XalWindow( final XalDocument aDocument, final boolean displayToolbar ) {
 		positionWindow();
         registerEvents();
         
         document = aDocument;
-        DISPLAYS_TOOLBAR = displaysToolbar;
+        this.displayToolbar = displayToolbar;
         
         makeFrame();
     }
@@ -91,9 +95,9 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
 
         setJMenuBar( commander.getMenubar() );
         if ( usesToolbar() )  { 
-            _toolBar = commander.getToolbar();
-			if ( _toolBar != null ) {
-				getContentPane().add( _toolBar, "North" );
+            toolBar = commander.getToolbar();
+			if ( toolBar != null ) {
+				getContentPane().add(toolBar, "North" );
 			}
         }
     }
@@ -110,8 +114,9 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
 		* Get the toolbar associated with this window.
 	 * @return This window's toolbar or null if none was added.
 	 */
+        @Override
 	public JToolBar getToolBar() {
-		return _toolBar;
+		return toolBar;
 	}
 	
 	
@@ -135,6 +140,7 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
 	
     
     /** Capture the window content as a PNG.  Present the user with a save dialog box so the image can be saved to a file. */
+        @Override
     public void captureAsImage() {
         try {
 			final String applicationName = Application.getApp().getApplicationAdaptor().applicationName();
@@ -142,7 +148,7 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
 			final String imageName = applicationName.replaceAll( " ", "" ) + "_" + new SimpleDateFormat("yyyyMMdd'T'HHmmss").format( now );
             ImageCaptureManager.defaultManager().saveSnapshot( this.getContentPane(), imageName );
         }
-        catch( java.awt.AWTException exception ) {
+        catch( AWTException exception ) {
 			Logger.getLogger("global").log( Level.WARNING, "Failed to capture image.", exception ); 
             System.err.println( exception );
             displayWarning( exception );
@@ -158,6 +164,7 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
     /** Create a new window listener. */
     public WindowListener newWindowHandler() {
         return new WindowAdapter() {
+            @Override
             public void windowClosing( final WindowEvent event ) {
                 document.closeDocument();
             }
@@ -166,8 +173,9 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
         
     
     /** Show this window.  Make it visible (de-iconify if necessary) and bring it to the front. */
+        @Override
     public void showWindow() {
-        setState( java.awt.Frame.NORMAL );    // de-iconify this window
+        setState( Frame.NORMAL );    // de-iconify this window
         setVisible( true );
         toFront();
     }
@@ -176,8 +184,9 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
     /**
      * Iconify this window.
      */
+        @Override
     public void hideWindow() {
-        setState( java.awt.Frame.ICONIFIED );     // iconify the window
+        setState( Frame.ICONIFIED );     // iconify the window
     }
     
     
@@ -194,7 +203,7 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
     
     
     /** Dispose of this window and remove its association with the document. */
-    final public void releaseWindow() {
+    public final void releaseWindow() {
 		freeCustomResources();
         dispose();
         document.removeXalDocumentListener( this );
@@ -217,7 +226,7 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
 	 */
 	public void generateWindowTitle() {
 		// prefix the window title with the label for this version of Open XAL
-		final StringBuffer windowTitle = new StringBuffer( "[" + Info.getLabel() +  "] - " );
+		final StringBuilder windowTitle = new StringBuilder( "[" + Info.getLabel() +  "] - " );
 
 		// append the application name
 		windowTitle.append( Application.getApp().getApplicationAdaptor().applicationName() );
@@ -225,7 +234,7 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
 		// append the document title
 		String documentTitle = document.getTitle();
 		if ( documentTitle != null && !documentTitle.isEmpty() ) {
-			windowTitle.append( " - " + documentTitle );
+			windowTitle.append(" - ").append(documentTitle);
 			
 			final boolean documentModified = document.hasChanges();
 			if ( documentModified ) {
@@ -241,12 +250,13 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
 		else {
 			try {
 				SwingUtilities.invokeAndWait( new Runnable() {
+                                        @Override
 					public void run() {
 						setTitle( windowTitle.toString() );
 					}
 				});
 			}
-			catch( Exception exception ) {
+			catch( InterruptedException | InvocationTargetException exception ) {
 				exception.printStackTrace();
 				throw new RuntimeException( "Exception updating the window title.", exception );
 			}
@@ -260,7 +270,8 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
 	 * @param document The document initiating the title changed event.
 	 * @param documentTitle The new document title.
 	 */
-    final public void titleChanged( final XalDocument document, final String documentTitle ) {
+        @Override
+    public final void titleChanged( final XalDocument document, final String documentTitle ) {
 		generateWindowTitle();
 		
 		// update the document's title bar icon
@@ -276,7 +287,7 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
                         getRootPane().putClientProperty( "Window.documentFile", file );
                     }
                 }
-                catch( Exception exception ) {
+                catch( URISyntaxException exception ) {
                     exception.printStackTrace();
                 }
 			}
@@ -287,9 +298,10 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
     /** 
      * Implement XalDocumentListener.  Update the title on the title bar to reflect whether the document has changes that need saving.
      * @param document The document initiating the event.
-     * @param newHasChangesStatus The new status identifying whethe the document has changes to be saved
+     * @param newHasChangesStatus The new status identifying whether the document has changes to be saved
      * @see #titleChanged
      */
+        @Override
     public void hasChangesChanged( final XalDocument document, final boolean newHasChangesStatus ) {
         titleChanged( document, document.getTitle() );
     }
@@ -299,12 +311,14 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
      * Implement XalDocumentListener.  Event indicating that the document will close.
      * Closes the window in response.
      */
+        @Override
     public void documentWillClose( final XalDocument document ) {
         closeWindow();
     }
     
     
     /** Implement XalDocumentListener.  Does nothing. */
+        @Override
     public void documentHasClosed( final XalDocument document ) {
     }
     
@@ -315,7 +329,7 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
      * Subclasses may override this method to not create the toolbar.
      */
     public boolean usesToolbar() {
-        return DISPLAYS_TOOLBAR;
+        return displayToolbar;
     }
         
     
@@ -328,6 +342,7 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
 	 * @param message The message to display
 	 * @return YES_OPTION or NO_OPTION 
 	 */
+        @Override
 	public int displayConfirmDialog( final String title, final String message ) {
         Toolkit.getDefaultToolkit().beep();
         return JOptionPane.showConfirmDialog( this, message, title, JOptionPane.YES_NO_OPTION );		
@@ -339,6 +354,7 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
      * @param aTitle Title of the warning dialog box.
      * @param message The warning message to appear in the warning dialog box.
      */
+        @Override
     public void displayWarning( final String aTitle, final String message ) {
         Toolkit.getDefaultToolkit().beep();
         JOptionPane.showMessageDialog( this, message, aTitle, JOptionPane.WARNING_MESSAGE );
@@ -350,6 +366,7 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
      * has been thrown and provide an audible alert.
      * @param exception The exception whose description is being displayed.
      */
+        @Override
     public void displayWarning( final Exception exception ) {
         Toolkit.getDefaultToolkit().beep();
         JOptionPane.showMessageDialog( this, exception.getMessage(), exception.getClass().getName(), JOptionPane.WARNING_MESSAGE );
@@ -361,9 +378,10 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
      * an audible alert.  This method allows
      * clarification about the consequences of the exception (e.g. "Save Failed:").
      * @param aTitle Title of the warning dialog box.
-     * @param prefix Text that should appear in the dialog box before the exception messasge.
+     * @param prefix Text that should appear in the dialog box before the exception message.
      * @param exception The exception about which the warning dialog is displayed.
      */
+        @Override
     public void displayWarning( final String aTitle, final String prefix, final Exception exception ) {
         Toolkit.getDefaultToolkit().beep();
         String message = prefix + "\n" + "Exception: " + exception.getClass().getName() + "\n" + exception.getMessage();
@@ -378,6 +396,7 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
      * @param aTitle Title of the warning dialog box.
      * @param message The warning message to appear in the warning dialog box.
      */
+        @Override
     public void displayError( final String aTitle, final String message ) {
         Toolkit.getDefaultToolkit().beep();
         JOptionPane.showMessageDialog( this, message, aTitle, JOptionPane.ERROR_MESSAGE );
@@ -389,6 +408,7 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
      * provide an audible alert.
      * @param exception The exception about which the warning dialog is displayed.
      */
+        @Override
     public void displayError( final Exception exception ) {
         Toolkit.getDefaultToolkit().beep();
         String message = "Exception: " + exception.getClass().getName() + "\n" + exception.getMessage();
@@ -404,6 +424,7 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
      * @param prefix Text that should appear in the dialog box before the exception messasge.
      * @param exception The exception about which the warning dialog is displayed.
      */
+        @Override
     public void displayError( final String aTitle, final String prefix, final Exception exception ) {
         Toolkit.getDefaultToolkit().beep();
         String message = prefix + "\n" + "Exception: " + exception.getClass().getName() + "\n" + exception.getMessage();

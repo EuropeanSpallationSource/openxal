@@ -6,7 +6,7 @@ import xal.ca.ChannelFactory;
 
 public class EQuad extends Electrostatic {
 
-    public static String      s_strType   = "EQuad";
+    public static String      TYPE   = "EQuad";
 
 	/** horizontal quadrupole type */
     public static final String HORIZONTAL_TYPE = "QHE";
@@ -28,7 +28,7 @@ public class EQuad extends Electrostatic {
      * Register type for qualification
      */
     private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( EQuad.class, s_strType );
+		ElementTypeManager.defaultManager().registerTypes( EQuad.class, TYPE );
     }
 
 
@@ -46,7 +46,7 @@ public class EQuad extends Electrostatic {
 
 	@Override
 	public String getType() {
-		return s_strType;
+		return TYPE;
 	}
 
     
@@ -57,10 +57,10 @@ public class EQuad extends Electrostatic {
      */
 	@Override
     public int getOrientation() {
-    	if (s_strType.equalsIgnoreCase(SKEW_TYPE))
+    	if (TYPE.equalsIgnoreCase(SKEW_TYPE))
     		return NO_ORIENTATION;
     	else
-    		return s_strType.equalsIgnoreCase( HORIZONTAL_TYPE ) ? HORIZONTAL : VERTICAL;
+    		return TYPE.equalsIgnoreCase( HORIZONTAL_TYPE ) ? HORIZONTAL : VERTICAL;
     }
   
     /**
@@ -68,18 +68,20 @@ public class EQuad extends Electrostatic {
 	 * set the quadrupole type since a quadrupole type can be either "QHE" or "QVE".
      * @param adaptor The data provider.
      */
+    @Override
     public void update( final DataAdaptor adaptor ) {
     	if ( adaptor.hasAttribute( "type" ) ) {
-            s_strType = adaptor.stringValue( "type" );
+            TYPE = adaptor.stringValue( "type" );
         }
         super.update( adaptor );
         ElementTypeManager typeManager = ElementTypeManager.defaultManager();
         // check if this type already registered first.  If not, register it.
-        if (!(typeManager.match(EQuad.class, s_strType)))
-        	typeManager.registerType(EQuad.class, s_strType);
+        if (!(typeManager.match(EQuad.class, TYPE)))
+        	typeManager.registerType(EQuad.class, TYPE);
     }
     
+    @Override
     public boolean isKindOf( final String type ) {
-        return type.equalsIgnoreCase( s_strType ) || super.isKindOf( type );
+        return type.equalsIgnoreCase( TYPE ) || super.isKindOf( type );
     }
 }

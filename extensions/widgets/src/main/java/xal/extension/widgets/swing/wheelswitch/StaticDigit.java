@@ -6,7 +6,7 @@ package xal.extension.widgets.swing.wheelswitch;
 import xal.extension.widgets.swing.wheelswitch.comp.SimpleButton;
 
 /**
- * Descedant of <code>Digit</code> displaying static text.
+ * Descendant of <code>Digit</code> displaying static text.
  * Objects of this class also cannot be selected. 
  * 
  * @author <a href="mailto:jernej.kamenik@cosylab.com">Jernej Kamenik</a>

@@ -25,13 +25,13 @@ public class ServiceRef {
     static final String LOCAL_TYPE_SUFFIX = "_tcp.local.";
     
 	/** Pattern matching the protocol and DNS part of the type */
-	static final private Pattern TYPE_PATTERN;
+	private static final Pattern TYPE_PATTERN;
 	
 	/** Property identifying the local service handler */
 	static final String SERVICE_KEY = "remote_service_handler";
 	
-	/** Redezvous service info */
-	private ServiceInfo _serviceInfo;
+	/** Rendezvous service info */
+	private ServiceInfo serviceInfo;
 		
 	
 	static {
@@ -43,7 +43,7 @@ public class ServiceRef {
 	 * Create a new service reference to wrap the specified service info.
 	 */
 	ServiceRef(ServiceInfo serviceInfo) {
-		_serviceInfo = serviceInfo;
+		this.serviceInfo = serviceInfo;
 	}
 	
 	
@@ -52,7 +52,7 @@ public class ServiceRef {
 	 * @return The name of the service provided.
 	 */
 	public String getServiceName() {
-		return _serviceInfo.getPropertyString( SERVICE_KEY );
+		return serviceInfo.getPropertyString( SERVICE_KEY );
 	}
 	
 	
@@ -61,7 +61,7 @@ public class ServiceRef {
 	 * @return The raw name of the service provider.
 	 */
 	public String getRawName() {
-		return _serviceInfo.getName();
+		return serviceInfo.getName();
 	}
 	
 	
@@ -70,7 +70,7 @@ public class ServiceRef {
 	 * @return The type of service provided.
 	 */
 	public String getType() {
-		return getBaseType( _serviceInfo.getType() );
+		return getBaseType( serviceInfo.getType() );
 	}
 	
 	
@@ -79,7 +79,7 @@ public class ServiceRef {
 	 * @return the fully qualified type
 	 */
 	public String getFullType() {
-		return _serviceInfo.getType();
+		return serviceInfo.getType();
 	}
     
     
@@ -96,7 +96,7 @@ public class ServiceRef {
 	 * @return the address of the remote service
 	 */
 	public String getHostAddress() {
-        return getHostAddress( _serviceInfo );
+        return getHostAddress( serviceInfo );
 	}
 	
 	
@@ -105,7 +105,7 @@ public class ServiceRef {
 	 * @return the port for connecting to the remote service
 	 */
 	public int getPort() {
-		return _serviceInfo.getPort();
+		return serviceInfo.getPort();
 	}
 	
 	
@@ -114,7 +114,7 @@ public class ServiceRef {
 	 * @return The wrapped Rendezvous service info.
 	 */
 	ServiceInfo getServiceInfo() {
-		return _serviceInfo;
+		return serviceInfo;
 	}
 	
 	
@@ -123,14 +123,16 @@ public class ServiceRef {
 	 * @param other The other service reference against which to compare this one.
 	 * @return true if the other service reference refers to the same service provider as the this instance and false otherwise.
 	 */
+    @Override
 	public boolean equals(Object other) {
-		return _serviceInfo.equals( ((ServiceRef)other)._serviceInfo); 
+		return serviceInfo.equals( ((ServiceRef)other).serviceInfo); 
 	}
 
 
 	/** override hashCode as required for consistency with equals */
+    @Override
 	public int hashCode() {
-		return _serviceInfo.hashCode();
+		return serviceInfo.hashCode();
 	}
 	
 	
@@ -139,7 +141,7 @@ public class ServiceRef {
 	 * @param fullType The full rendezvous type (e.g. "greeting._tcp._local.")
 	 * @return Just the simple base type (e.g. "greeting")
 	 */
-	static protected String getBaseType( final String fullType ) {
+	protected static String getBaseType( final String fullType ) {
 		Matcher matcher = TYPE_PATTERN.matcher(fullType);
 		matcher.matches();
 		return matcher.group(1);
@@ -152,7 +154,7 @@ public class ServiceRef {
 	 * @param fullType  The full rendezvous type (e.g. "greeting._tcp._local.")
 	 * @return The simple base name (e.g. "Mary")
 	 */
-	static protected String getBaseName(final String fullName, final String fullType) {
+	protected static String getBaseName(final String fullName, final String fullType) {
 		int typeIndex = fullName.lastIndexOf(fullType);
 		
 		return fullName.substring(0, typeIndex-1);
@@ -164,7 +166,7 @@ public class ServiceRef {
 	 * @param baseType The simple base type (e.g. "greeting")
 	 * @return The full rendezvous type (e.g. "greeting._tcp.local.")
 	 */
-	static protected String getFullType( final String baseType ) {
+	protected static String getFullType( final String baseType ) {
 		return "_" + baseType.toLowerCase() + "." + LOCAL_TYPE_SUFFIX;
 	}
 }

@@ -31,11 +31,11 @@ public class TestRmxn {
     
     
     /** A 1D Java array */
-    private final static double[]   DBL_ARR_VEC = new double[] { 0, 1, 2, 3, 4 };
+    private static final double[]   DBL_ARR_VEC = new double[] { 0, 1, 2, 3, 4 };
     
     
     /** A column-dominant 2D Java array */
-    private final static double[][] DBL_ARR_ROWDOM = new double[][] {
+    private static final double[][] DBL_ARR_ROWDOM = new double[][] {
                                                        { 1.1, 1.2, 1.3}, 
                                                        { 2.1, 2.2, 2.3},
                                                        { 3.0, 3.2, 3.3}, 
@@ -44,14 +44,14 @@ public class TestRmxn {
                                                        };
                                                        
     /** A row-dominant 2D Java array */
-    private final static double[][] DBL_ARR_COLDOM = new double[][] 
+    private static final double[][] DBL_ARR_COLDOM = new double[][] 
                                                      { {1.1, 1.2, 1.3, 1.4, 1.5},
                                                        {2.1, 2.2, 2.3, 2.0, 2.5},
                                                        {3.1, 3.2, 3.3, 3.4, 3.0}
                                                      };
                                                       
     /** a square 2D Java array */
-    private final static double[][] DBL_ARR_SQR = new double[][] {
+    private static final double[][] DBL_ARR_SQR = new double[][] {
                                                            { 1.0, 1.2, 1.3, 1.4, 1.5}, 
                                                            { 2.1, 2.0, 2.3, 2.4, 2.5},
                                                            { 3.1, 3.2, 3.0, 3.4, 3.5}, 
@@ -61,32 +61,32 @@ public class TestRmxn {
     
                                                            
     /** The number of rows in the row dominated matrix */
-    private final static int    CNT_ROWS_ROWDOM = DBL_ARR_ROWDOM.length;
+    private static final int    CNT_ROWS_ROWDOM = DBL_ARR_ROWDOM.length;
     
     /** The number of columns in the column dominated matrix */
-    private final static int    CNT_COLS_ROWDOM = DBL_ARR_ROWDOM[0].length;
+    private static final int    CNT_COLS_ROWDOM = DBL_ARR_ROWDOM[0].length;
                                                            
 
     /** The number of rows in the row dominated matrix */
-    private final static int    CNT_ROWS_COLDOM = DBL_ARR_COLDOM.length;
+    private static final int    CNT_ROWS_COLDOM = DBL_ARR_COLDOM.length;
     
     /** The number of columns in the column dominated matrix */
-    private final static int    CNT_COLS_COLDOM = DBL_ARR_COLDOM[0].length;
+    private static final int    CNT_COLS_COLDOM = DBL_ARR_COLDOM[0].length;
     
     
     /** The size of the square matrix */
-    private final static int    SZ_SQR = DBL_ARR_SQR.length;
+    private static final int    SZ_SQR = DBL_ARR_SQR.length;
                                                            
 
     /** The zero matrix with dimensions of row dominated matrices */                                                       
-    private final static Rmxn   MAT_ZERO_ROWDOM = new Rmxn(CNT_ROWS_ROWDOM, CNT_COLS_ROWDOM);
+    private static final Rmxn   MAT_ZERO_ROWDOM = new Rmxn(CNT_ROWS_ROWDOM, CNT_COLS_ROWDOM);
                                                            
     /** The zero matrix with dimensions of column dominated matrices */                                                       
-    private final static Rmxn   MAT_ZERO_COLDOM = new Rmxn(CNT_ROWS_COLDOM, CNT_COLS_COLDOM);
+    private static final Rmxn   MAT_ZERO_COLDOM = new Rmxn(CNT_ROWS_COLDOM, CNT_COLS_COLDOM);
                         
     
     /** The zero matrix with square dimensions  */                                                       
-    private final static Rmxn   MAT_ZERO_SQR = new Rmxn(SZ_SQR, SZ_SQR);
+    private static final Rmxn   MAT_ZERO_SQR = new Rmxn(SZ_SQR, SZ_SQR);
                                                            
     
     /** A small number used in comparing matrix elements (e.g., #isEqual() ) */

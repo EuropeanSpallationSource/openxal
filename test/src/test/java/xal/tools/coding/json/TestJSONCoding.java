@@ -309,34 +309,34 @@ public class TestJSONCoding {
 
     
     /** check whether the coder can encode values */
-    static private <DataType> void checkEncodingEquality( final DataType value ) {
+    private static <DataType> void checkEncodingEquality( final DataType value ) {
         final String controlCoding = String.valueOf( value );
         checkEncodingEquality( controlCoding, value );
     }
     
     
     /** check whether the coder can encode values */
-    static private <DataType> void checkEncodingEquality( final String controlCoding, final DataType value ) {
+    private static <DataType> void checkEncodingEquality( final String controlCoding, final DataType value ) {
         final String testCoding = JSONCoder.defaultEncode( value );
         assertEquality( controlCoding, testCoding );
     }
     
     /** check whether the decoder can decode values */
-    static private <DataType> void checkValueEquality( final DataType controlValue ) {
+    private static <DataType> void checkValueEquality( final DataType controlValue ) {
         final Object testValue = JSONCoder.defaultDecode( String.valueOf( controlValue ) );
         assertEquality( controlValue, testValue );
     }
     
     
     /** check whether the decoder can decode strings */
-    static private void checkStringEquality( final String controlValue, final String testCoding ) {
+    private static void checkStringEquality( final String controlValue, final String testCoding ) {
         final Object testValue = JSONCoder.defaultDecode( testCoding );
         assertEquality( controlValue, testValue );
     }
     
     
     /** check whether a decoded encoding matches the original value */
-    static private void checkEncodingDecoding( final Object controlValue ) {
+    private static void checkEncodingDecoding( final Object controlValue ) {
         final String coding = JSONCoder.defaultEncode( controlValue );
         final Object testValue = JSONCoder.defaultDecode( coding );
         assertEquality( controlValue, testValue );
@@ -344,7 +344,7 @@ public class TestJSONCoding {
     
     
     /** check whether a decoded encoding matches the original value */
-    static private void checkArrayEncodingDecoding( final Object controlArray ) {
+    private static void checkArrayEncodingDecoding( final Object controlArray ) {
         final String coding = JSONCoder.defaultEncode( controlArray );
         final Object testArray = JSONCoder.defaultDecode( coding );
         
@@ -357,14 +357,14 @@ public class TestJSONCoding {
 
 
 	/** check whether the coder can decode the json coding to match the specified control value */
-	static private <DataType> void checkDecodingEquality( final String coding, final DataType controlValue ) {
+	private static <DataType> void checkDecodingEquality( final String coding, final DataType controlValue ) {
 		final Object testValue = JSONCoder.defaultDecode( coding );
 		assertEquality( controlValue, testValue );
 	}
 
 
     /** Assert whether the control value equals the test value */
-    static private void assertEquality( final Object controlValue, final Object testValue ) {
+    private static void assertEquality( final Object controlValue, final Object testValue ) {
         Assert.assertTrue( controlValue == testValue || controlValue.equals( testValue ) );
     }
 }

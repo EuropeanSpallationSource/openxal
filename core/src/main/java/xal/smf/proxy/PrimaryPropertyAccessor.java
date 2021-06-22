@@ -27,16 +27,16 @@ public class PrimaryPropertyAccessor {
 	private Map<AcceleratorNode,Map<String,ModelInput>> nodeInputMap = new HashMap<>();
 	
 	/** cache of values (excluding model inputs) for node properties keyed by node and the subsequent map is keyed by property to get the value */
-	final private Map<AcceleratorNode, Map<String,Double>> PROPERTY_VALUE_CACHE;
+	private final Map<AcceleratorNode, Map<String,Double>> propertyValueCache;
 
 	/** batch accessor for node properties */
-	private BatchPropertyAccessor _batchAccessor;
+	private BatchPropertyAccessor batchAccessor;
 	
 	
 	/** Constructor */
 	public PrimaryPropertyAccessor() {
-		PROPERTY_VALUE_CACHE = new HashMap<>();
-		_batchAccessor = BatchPropertyAccessor.getInstance( Scenario.SYNC_MODE_DESIGN );
+		propertyValueCache = new HashMap<>();
+		batchAccessor = BatchPropertyAccessor.getInstance( Scenario.SYNC_MODE_DESIGN );
 	}
 
 
@@ -44,7 +44,7 @@ public class PrimaryPropertyAccessor {
 	public void requestValuesForNodes( final Collection<AcceleratorNode> nodes, final String syncMode ) {
 		final BatchPropertyAccessor batchAccessor = BatchPropertyAccessor.getInstance( syncMode );
 		batchAccessor.requestValuesForNodes( nodes );
-		_batchAccessor = batchAccessor;
+		this.batchAccessor = batchAccessor;
 	}
 
 	
@@ -69,10 +69,10 @@ public class PrimaryPropertyAccessor {
 			throw new IllegalArgumentException( "unknown node type: " + aNode.getClass().getName() );
 		}
 
-		final Map<String,Double> valueMap = _batchAccessor.valueMapFor( aNode );
+		final Map<String,Double> valueMap = batchAccessor.valueMapFor( aNode );
 
 		// cache the values
-		PROPERTY_VALUE_CACHE.put( aNode, new HashMap<String,Double>( valueMap ) );		// need to copy it so we don't override the raw values
+		propertyValueCache.put( aNode, new HashMap<>( valueMap ) );		// need to copy it so we don't override the raw values
 
 		// apply whatif settings
 		addInputOverrides( aNode, valueMap );
@@ -92,7 +92,7 @@ public class PrimaryPropertyAccessor {
 			throw new IllegalArgumentException( "expected instance of AcceleratorNode" );
 		}
 		final AcceleratorNode aNode = (AcceleratorNode)objNode;
-		final Map<String,Double> valueMap = new HashMap<String,Double>( PROPERTY_VALUE_CACHE.get( aNode ) );		// need to copy it so we don't override the raw values
+		final Map<String,Double> valueMap = new HashMap<>( propertyValueCache.get( aNode ) );		// need to copy it so we don't override the raw values
 		addInputOverrides( aNode, valueMap );
 		return valueMap;
 	}
@@ -110,7 +110,7 @@ public class PrimaryPropertyAccessor {
 	 * @return true if there is an accessor for the supplied node, false otherwise
 	 */
 	public boolean hasAccessorFor(AcceleratorNode aNode) {
-		return _batchAccessor.hasAccessorFor( aNode );
+		return batchAccessor.hasAccessorFor( aNode );
 	}
 
 
@@ -200,7 +200,7 @@ public class PrimaryPropertyAccessor {
 /** Accessor for property values in batch */
 abstract class BatchPropertyAccessor {
 	/** map of property accessors keyed by node */
-	final private static Map<Class<?>,PropertyAccessor> NODE_ACCESSORS = new HashMap<Class<?>,PropertyAccessor>();
+	private static final Map<Class<?>,PropertyAccessor> NODE_ACCESSORS = new HashMap<Class<?>,PropertyAccessor>();
 
 
 	// static initializer
@@ -244,7 +244,7 @@ abstract class BatchPropertyAccessor {
 
 
 	/**
-	 * Get a Map of property values for the supplied node keyd by property name.
+	 * Get a Map of property values for the supplied node keys by property name.
 	 * @param node the AcclereatorNode whose properties to return
 	 * @return a Map of node property values keyed by property name
 	 */
@@ -297,14 +297,14 @@ class DesignBatchPropertyAccessor extends BatchPropertyAccessor {
 /** batch property accessor which is based on channels */
 abstract class BatchChannelPropertyAccessor extends BatchPropertyAccessor {
 	/** channel value keyed by channel */
-	protected Map<Channel,Double> _channelValues;
+	protected Map<Channel,Double> channelValues;
 
 
 	/** make the request for values for the specified nodes */
          @Override
 	public void requestValuesForNodes( final Collection<AcceleratorNode> nodes ) {
 		// assign an empty map at the start should something go wrong later
-		_channelValues = Collections.<Channel,Double>emptyMap();
+		channelValues = Collections.<Channel,Double>emptyMap();
 
 		// collect all the channels from every node's properties
 		final Set<Channel> channels = new HashSet<>();
@@ -341,7 +341,7 @@ abstract class BatchChannelPropertyAccessor extends BatchPropertyAccessor {
                           Logger.getLogger(BatchChannelPropertyAccessor.class.getName()).log(Level.WARNING, "No record for channels: {0}", unreadChannels);
                  }
 
-		_channelValues = channelValues;
+		this.channelValues = channelValues;
 	}
 
 
@@ -379,7 +379,7 @@ class LiveBatchPropertyAccessor extends BatchChannelPropertyAccessor {
 	/** get the value map for the specified node */
         @Override
 	protected Map<String,Double> getValueMap( final PropertyAccessor accessor, final AcceleratorNode node ) {
-		return accessor.getLiveValueMap( node, _channelValues );
+		return accessor.getLiveValueMap( node, channelValues );
 	}
 }
 
@@ -397,6 +397,6 @@ class LiveRFDesignBatchPropertyAccessor extends BatchChannelPropertyAccessor {
 	/** get the value map for the specified node */
         @Override
 	protected Map<String,Double> getValueMap( final PropertyAccessor accessor, final AcceleratorNode node ) {
-		return accessor.getLiveRFDesignValueMap( node, _channelValues );
+		return accessor.getLiveRFDesignValueMap( node, channelValues );
 	}
 }

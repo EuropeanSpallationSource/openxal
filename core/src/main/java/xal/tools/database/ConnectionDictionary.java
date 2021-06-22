@@ -12,9 +12,6 @@ package xal.tools.database;
 
 import java.util.logging.*;
 import java.util.Properties;
-import java.util.prefs.*;
-import java.io.*;
-import java.net.*;
 
 
 /**
@@ -29,10 +26,10 @@ public class ConnectionDictionary extends Properties {
     private static final long serialVersionUID = 1L;
     
 	// public dictionary keys
-	static final public String USER_KEY = "user";
-	static final public String PASSWORD_KEY = "password";
-	static final public String URL_KEY = "url";
-	static final public String DATABASE_ADAPTOR_KEY = "database_adaptor";
+	public static final String USER_KEY = "user";
+	public static final String PASSWORD_KEY = "password";
+	public static final String URL_KEY = "url";
+	public static final String DATABASE_ADAPTOR_KEY = "database_adaptor";
 	
 	
 	/**
@@ -47,7 +44,7 @@ public class ConnectionDictionary extends Properties {
 	 * Get the connection dictionary from the file specified in the user's preferences.
 	 * @return the user's default connection dictionary
 	 */
-	static public ConnectionDictionary defaultDictionary() {
+	public static ConnectionDictionary defaultDictionary() {
 		return getInstance();
 	}
 	
@@ -56,7 +53,7 @@ public class ConnectionDictionary extends Properties {
 	 * Get the connection dictionary from the URL specified in the user's preferences.
 	 * @return the user's default connection dictionary
 	 */
-	static public ConnectionDictionary getInstance() {
+	public static ConnectionDictionary getInstance() {
 		final DBConfiguration configuration = DBConfiguration.getInstance();
 		return configuration != null ? configuration.defaultConnectionDictionary() : null;
 	}
@@ -67,7 +64,7 @@ public class ConnectionDictionary extends Properties {
 	 * @param accountName name of the account for which to initializae the connection dictionary (or null to use the default account if any)
 	 * @return the user's default connection dictionary
 	 */
-	static public ConnectionDictionary getInstance( final String accountName ) {
+	public static ConnectionDictionary getInstance( final String accountName ) {
 		final DBConfiguration configuration = DBConfiguration.getInstance();
 		return configuration != null ? configuration.newConnectionDictionary( accountName ) : null;
 	}
@@ -77,7 +74,7 @@ public class ConnectionDictionary extends Properties {
 	 * Get the available connection dictionary which is the most preferred
 	 * @param accountNames ordered (most preferred is first) accounts to search among
 	 */
-	static public ConnectionDictionary getPreferredInstance( final String ... accountNames ) {
+	public static ConnectionDictionary getPreferredInstance( final String ... accountNames ) {
 		final DBConfiguration configuration = DBConfiguration.getInstance();
 		return configuration != null ? configuration.availableConnectionDictionary( accountNames ) : null;
 	}
@@ -85,11 +82,11 @@ public class ConnectionDictionary extends Properties {
 	
 	/**
 	 * Get the connection dictionary from the URL specified in the user's preferences and for the specified account and server.
-	 * @param accountName name of the account for which to initializae the connection dictionary (or null to use the default account if any)
+	 * @param accountName name of the account for which to initialize the connection dictionary (or null to use the default account if any)
 	 * @param serverName name of the database server for which to initialize the connection dictionary (or null to use the default server if any)
 	 * @return the user's default connection dictionary
 	 */
-	static public ConnectionDictionary getInstance( final String accountName, final String serverName ) {
+	public static ConnectionDictionary getInstance( final String accountName, final String serverName ) {
 		final DBConfiguration configuration = DBConfiguration.getInstance();
 		return configuration != null ? configuration.newConnectionDictionary( accountName, serverName ) : null;
 	}
@@ -169,7 +166,7 @@ public class ConnectionDictionary extends Properties {
 			final Class<?> databaseAdaptorClass = Class.forName( className );
 			return (DatabaseAdaptor)databaseAdaptorClass.newInstance();
 		}
-		catch(Exception exception) {
+		catch(ClassNotFoundException | IllegalAccessException | InstantiationException exception) {
 			final String message = "Failed to instantiate database adaptor for class:  " + className;
 			Logger.getLogger("global").log( Level.SEVERE, message, exception );
 			throw new RuntimeException( message, exception );
@@ -194,4 +191,3 @@ public class ConnectionDictionary extends Properties {
 		setProperty(DATABASE_ADAPTOR_KEY, className);
 	}
 }
-

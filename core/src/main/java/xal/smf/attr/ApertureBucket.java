@@ -40,9 +40,9 @@ public class ApertureBucket extends AttributeBucket {
     public static final int     iIrregular  = 11;
  
     
-    public final static String  c_strType = "aperture"; 
+    public static final String  TYPE = "aperture"; 
 
-    final static String[]       c_arrNames = {  "shape",
+    static final String[]       ARR_NAMES = {  "shape",
                                                 "x",    // Aperture in the horizontal plane.
                                                 "y",    // Aperture in the vertical plane.
                                                 "pos"   // Position in the element.
@@ -54,10 +54,10 @@ public class ApertureBucket extends AttributeBucket {
      *  Local Attributes
      */
     
-    private Attribute m_attShape;
-    private Attribute m_attAperX;
-    private Attribute m_attAperY;
-    private Attribute m_attAperPos;
+    private Attribute attShape;
+    private Attribute attAperX;
+    private Attribute attAperY;
+    private Attribute attAperPos;
     
     
     /*
@@ -65,9 +65,11 @@ public class ApertureBucket extends AttributeBucket {
      */
     
     /** Furnish a unique type id  */
-    public String getType()         { return c_strType; };
+    @Override
+    public String getType()         { return TYPE; }
 
-    public String[] getAttrNames()  { return c_arrNames; };
+    @Override
+    public String[] getAttrNames()  { return ARR_NAMES; }
     
 
      
@@ -76,30 +78,30 @@ public class ApertureBucket extends AttributeBucket {
     public ApertureBucket() {
         super();
         
-        m_attShape  = new Attribute(0);
-        m_attAperX  = new Attribute(new double[] {0.0});
-        m_attAperY  = new Attribute(new double[] {0.0});
-        m_attAperPos  = new Attribute(new double[] {0.0});
+        attShape  = new Attribute(0);
+        attAperX  = new Attribute(new double[] {0.0});
+        attAperY  = new Attribute(new double[] {0.0});
+        attAperPos  = new Attribute(new double[] {0.0});
         
-        super.registerAttribute(c_arrNames[0], m_attShape, "Aperture shape. 0=unknown, 1=ellipse, 2=rectangle, 3=diamond, 11=irregular.");
-        super.registerAttribute(c_arrNames[1], m_attAperX, "Aperture in the horizontal plane.");
-        super.registerAttribute(c_arrNames[2], m_attAperY, "Aperture in the vertical plane.");
-        super.registerAttribute(c_arrNames[3], m_attAperPos, "Position in the element.");
-    };
+        super.registerAttribute(ARR_NAMES[0], attShape, "Aperture shape. 0=unknown, 1=ellipse, 2=rectangle, 3=diamond, 11=irregular.");
+        super.registerAttribute(ARR_NAMES[1], attAperX, "Aperture in the horizontal plane.");
+        super.registerAttribute(ARR_NAMES[2], attAperY, "Aperture in the vertical plane.");
+        super.registerAttribute(ARR_NAMES[3], attAperPos, "Position in the element.");
+    }
 
     
-    public int      getShape()  { return m_attShape.getInteger(); };
-    public double[]   getAperX()  { return m_attAperX.getArrDbl(); };
-    public double[]   getAperY()  { return m_attAperY.getArrDbl(); };
-    public double[]   getAperPos()  { return m_attAperPos.getArrDbl(); };
+    public int      getShape()  { return attShape.getInteger(); }
+    public double[]   getAperX()  { return attAperX.getArrDbl(); }
+    public double[]   getAperY()  { return attAperY.getArrDbl(); }
+    public double[]   getAperPos()  { return attAperPos.getArrDbl(); }
     
-    public void setShape(int intVal)    { m_attShape.set(intVal); };
-    public void setAperX(double dblVal) { m_attAperX.set(new double[] {dblVal}); };
-    public void setAperY(double dblVal) { m_attAperY.set(new double[] {dblVal}); };
-    public void setAperPos(double dblVal) { m_attAperPos.set(new double[] {dblVal}); };
+    public void setShape(int intVal)    { attShape.set(intVal); }
+    public void setAperX(double dblVal) { attAperX.set(new double[] {dblVal}); }
+    public void setAperY(double dblVal) { attAperY.set(new double[] {dblVal}); }
+    public void setAperPos(double dblVal) { attAperPos.set(new double[] {dblVal}); }
     
-    public void setAperX(double[] dblArr) { m_attAperX.set(dblArr); };
-    public void setAperY(double[] dblArr) { m_attAperY.set(dblArr); };
-    public void setAperPos(double[] dblArr) { m_attAperPos.set(dblArr); };
+    public void setAperX(double[] dblArr) { attAperX.set(dblArr); }
+    public void setAperY(double[] dblArr) { attAperY.set(dblArr); }
+    public void setAperPos(double[] dblArr) { attAperPos.set(dblArr); }
     
-};
+}

@@ -22,9 +22,9 @@ public class DisplaceBucket extends AttributeBucket  {
      *  Constants
      */
     
-    public final static String  c_strType = "displacement"; 
+    public static final String  TYPE = "displacement"; 
 
-    final static String[]       c_arrNames = {  "x", 
+    static final String[]       ARR_NAMES = {  "x", 
                                                 "y",
                                                 "z"
                                 };
@@ -35,9 +35,9 @@ public class DisplaceBucket extends AttributeBucket  {
      *  Local Attributes
      */
     
-    private Attribute       m_attDspX;          // x plane offset
-    private Attribute       m_attDspY;          // y plane offset
-    private Attribute       m_attDspZ;          // z plane offset
+    private Attribute       attDspX;          // x plane offset
+    private Attribute       attDspY;          // y plane offset
+    private Attribute       attDspZ;          // z plane offset
     
                                 
                                 
@@ -46,32 +46,32 @@ public class DisplaceBucket extends AttributeBucket  {
      */
                                 
     /** Override virtual to provide type signature */
-    public String getType()         { return c_strType; };
+    @Override
+    public String getType()         { return TYPE; }
      
     
     
     public DisplaceBucket() {
         super();
         
-        m_attDspX = new Attribute(0.0);
-        m_attDspY = new Attribute(0.0);
-        m_attDspZ = new Attribute(0.0);
+        attDspX = new Attribute(0.0);
+        attDspY = new Attribute(0.0);
+        attDspZ = new Attribute(0.0);
         
-        super.registerAttribute(c_arrNames[0], m_attDspX, "X plane offset [m].");
-        super.registerAttribute(c_arrNames[1], m_attDspY, "Y plane offset [m].");
-        super.registerAttribute(c_arrNames[2], m_attDspZ, "Z plane offset [m].");
-    };
+        super.registerAttribute(ARR_NAMES[0], attDspX, "X plane offset [m].");
+        super.registerAttribute(ARR_NAMES[1], attDspY, "Y plane offset [m].");
+        super.registerAttribute(ARR_NAMES[2], attDspZ, "Z plane offset [m].");
+    }
     
 
     /** Returns the displacement offsets */
-    public double getX()    { return m_attDspX.getDouble(); };
-    public double getY()    { return m_attDspY.getDouble(); };
-    public double getZ()    { return m_attDspZ.getDouble(); };
+    public double getX()    { return attDspX.getDouble(); }
+    public double getY()    { return attDspY.getDouble(); }
+    public double getZ()    { return attDspZ.getDouble(); }
     
     
-    public void setX(double dblVal)     { m_attDspX.set(dblVal); };
-    public void setY(double dblVal)     { m_attDspY.set(dblVal); };
-    public void setZ(double dblVal)     { m_attDspZ.set(dblVal); };
-    
+    public void setX(double dblVal)     { attDspX.set(dblVal); }
+    public void setY(double dblVal)     { attDspY.set(dblVal); }
+    public void setZ(double dblVal)     { attDspZ.set(dblVal); }   
    
-};
+}

@@ -44,7 +44,7 @@ public enum PhaseIndex implements IIndex {
      * 
      * @return  set of spatial indices
      */
-    static public EnumSet<PhaseIndex>  spatialIndices()    {
+    public static EnumSet<PhaseIndex>  spatialIndices()    {
         return EnumSet.of(X,Y,Z);
     }
     
@@ -54,7 +54,7 @@ public enum PhaseIndex implements IIndex {
      * 
      * @return  set of momentum indices
      */
-    static public EnumSet<PhaseIndex>  momentumIndices()  {
+    public static EnumSet<PhaseIndex>  momentumIndices()  {
         return EnumSet.of(Xp,Yp,Zp);
     }
     
@@ -73,7 +73,7 @@ public enum PhaseIndex implements IIndex {
     PhaseIndex(int iVal, int iConj)        { 
         this.iVal  = iVal;
         this.iConj = iConj;
-    };
+    }
     
     
     /*
@@ -85,9 +85,10 @@ public enum PhaseIndex implements IIndex {
      * 
      * @return  value of this index
      */
+    @Override
     public int val()    { 
         return this.iVal; 
-    };
+    }
     
     
     /**

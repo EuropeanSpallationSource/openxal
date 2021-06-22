@@ -24,23 +24,23 @@ package xal.smf.attr;
 public class DipoleCorrBucket extends DipoleBucket {
 
     // number of slices in which thin correctors are split
-    private Attribute m_attSlices;
+    private Attribute attSlices;
     // effective length of each slice
-    private Attribute m_attSlicesEffLength;
+    private Attribute attSlicesEffLength;
 
     public DipoleCorrBucket() {
         super();
 
-        m_attSlices = new Attribute(1);
-        m_attSlicesEffLength = new Attribute(new double[]{1.0});
+        attSlices = new Attribute(1);
+        attSlicesEffLength = new Attribute(new double[]{1.0});
 
-        super.registerAttribute(c_arrNames[0], m_attSlices, "Number of slices in which thin correctors are split.");
-        super.registerAttribute(c_arrNames[1], m_attSlicesEffLength, "Effective length of each slice (m).");
+        super.registerAttribute(ARR_NAMES[0], attSlices, "Number of slices in which thin correctors are split.");
+        super.registerAttribute(ARR_NAMES[1], attSlicesEffLength, "Effective length of each slice (m).");
     }
 
-    private final static String c_strType = "steerer";
+    private static final String TYPE = "steerer";
 
-    private final static String[] c_arrNames = {
+    private static final String[] ARR_NAMES = {
         "slices", // number of slices in which thin correctors are split
         "slicesEffLength" // effecttive length of each slice
     };
@@ -48,22 +48,23 @@ public class DipoleCorrBucket extends DipoleBucket {
     /**
      * Override virtual to provide type signature
      */
+    @Override
     public String getType() {
-        return c_strType;
+        return TYPE;
     }
 
     /**
      * return the number of slices in which thin correctors are split
      */
     public int getSlices() {
-        return m_attSlices.getInteger();
+        return attSlices.getInteger();
     }
 
     /**
      * return array with each slice weight
      */
     public double[] getSlicesEffLength() {
-        return m_attSlicesEffLength.getArrDbl();
+        return attSlicesEffLength.getArrDbl();
     }
 
     /**
@@ -72,7 +73,7 @@ public class DipoleCorrBucket extends DipoleBucket {
      * @param intVal number of slices
      */
     public void setSlices(int intVal) {
-        m_attSlices.set(intVal);
+        attSlices.set(intVal);
     }
 
     /**
@@ -81,6 +82,6 @@ public class DipoleCorrBucket extends DipoleBucket {
      * @param arrVal array with weight of slices
      */
     public void setSlicesEffLength(double[] arrVal) {
-        m_attSlicesEffLength.set(arrVal);
+        attSlicesEffLength.set(arrVal);
     }
 }

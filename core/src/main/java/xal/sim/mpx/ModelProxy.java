@@ -32,7 +32,7 @@ import javax.swing.event.EventListenerList;
 import org.w3c.dom.Document;
 
 /**This class provides an API to the on-line model.
- * It features convienience methods to input data to the model, to generate the lattice from 
+ * It features convenience methods to input data to the model, to generate the lattice from 
  * an {@link xal.smf.AcceleratorSeq accelerator sequence}, to run the model, to synchronize the model with the real accelerator,
  * and to extract results from a model run.
  * @author wdklotz
@@ -56,15 +56,15 @@ public class ModelProxy {
 	private String paramSrc;
 
 	/**Probe type indicating a diagnostic probe.*/
-	public final static int DIAGNOSTIC_PROBE = 16;
+	public static final int DIAGNOSTIC_PROBE = 16;
 	/**Probe type indicating an ensemble probe.*/
-	public final static int ENSEMBLE_PROBE = 17;
+	public static final int ENSEMBLE_PROBE = 17;
 	/**Probe type indicating an envelope probe.*/
-	public final static int ENVELOPE_PROBE = 18;
+	public static final int ENVELOPE_PROBE = 18;
 	/**Probe type indicating a particle probe.*/
-	public final static int PARTICLE_PROBE = 19;
+	public static final int PARTICLE_PROBE = 19;
 	
-	public final static int TRANSFERMAP_PROBE = 20;
+	public static final int TRANSFERMAP_PROBE = 20;
 
 	/**Create a new (empty) model proxy. Per default this proxy will be synchronized by
 	 * channel access.
@@ -290,7 +290,7 @@ public class ModelProxy {
 	 * @param src a constant to indicate the channel source. May be one of
 	 * <code>Synchronization.PARAMSRC_DESIGN</code>
 	 * <code>Synchronization.PARAMSRC_LIVE</code>
-	 * @return true on succes, false if failed.
+	 * @return true on success, false if failed.
 	 */
 	public boolean setChannelSource(String src) {
 		paramSrc = src;
@@ -310,7 +310,7 @@ public class ModelProxy {
 	// -------------------------- getter members ------------------------------------------
 	/**
 	 * Returns last selected sequence.
-	 * @return selectet sequence. If not set <code>null</code> is returned.
+	 * @return selected sequence. If not set <code>null</code> is returned.
 	 */
 	public AcceleratorSeq getAcceleratorSequence() {
 		try {
@@ -370,7 +370,7 @@ public class ModelProxy {
 	}
 
 	/**Getter for the on-line-model {@link xal.model.probe.Probe probe} property.
-	 * @return the on-line-model probe. If probe is not set yet <code>null</code> is retuned.
+	 * @return the on-line-model probe. If probe is not set yet <code>null</code> is returned.
 	 */
 	public Probe<?> getProbe() {
 		try {
@@ -506,7 +506,7 @@ public class ModelProxy {
 	}
 	
 	/** Returns true if the probe has been propagated, false otherwise.
-	 * @return ture if the probe has been propagated, false otherwise
+	 * @return true if the probe has been propagated, false otherwise
 	 */
 	protected boolean isProbePropagated() {
 		return bPropagated;

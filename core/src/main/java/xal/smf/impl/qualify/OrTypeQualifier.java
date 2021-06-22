@@ -20,14 +20,14 @@ import java.util.*;
  */
 public class OrTypeQualifier implements TypeQualifier {
 	/** set of qualifiers to "or" */
-    private Set<TypeQualifier> _qualifiers;
+    private Set<TypeQualifier> qualifiers;
 	
 	
     /** 
 	 * Creates new OrTypeQualifier 
 	 */
     public OrTypeQualifier() {
-        _qualifiers = new HashSet<TypeQualifier>();
+        qualifiers = new HashSet<>();
     }
     
     
@@ -47,7 +47,7 @@ public class OrTypeQualifier implements TypeQualifier {
 	 * @return This instance for convenience of chaining "or" operations.
 	 */
     public OrTypeQualifier or( final TypeQualifier qualifier ) {
-        _qualifiers.add( qualifier );
+        qualifiers.add( qualifier );
 		return this;
     }
 	
@@ -85,7 +85,7 @@ public class OrTypeQualifier implements TypeQualifier {
 	 * @param kinds the array of node types
 	 * @return a qualifier that matches for any of the given node types
 	 */
-	static public OrTypeQualifier qualifierForKinds( final String ... kinds ) {
+	public static OrTypeQualifier qualifierForKinds( final String ... kinds ) {
 		return new OrTypeQualifier().or( kinds );
 	}
 	
@@ -95,7 +95,7 @@ public class OrTypeQualifier implements TypeQualifier {
 	 * @param qualifiers the array of node qualifiers
 	 * @return a qualifier that matches for any of the given qualifiers
 	 */
-	static public OrTypeQualifier qualifierForQualifiers( final TypeQualifier ... qualifiers ) {
+	public static OrTypeQualifier qualifierForQualifiers( final TypeQualifier ... qualifiers ) {
 		return new OrTypeQualifier().or( qualifiers );
 	}
 	
@@ -107,8 +107,9 @@ public class OrTypeQualifier implements TypeQualifier {
 	 * @param node The node to test
 	 * @return true if the node is a match to at least one root qualifier and false if not
 	 */
+    @Override
     public boolean match( final AcceleratorNode node ) {
-		for ( TypeQualifier qualifier : _qualifiers ) {
+		for ( TypeQualifier qualifier : qualifiers ) {
             if ( qualifier.match( node ) )  return true;
         }
         

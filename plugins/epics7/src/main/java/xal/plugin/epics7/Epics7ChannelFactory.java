@@ -35,7 +35,7 @@ import xal.ca.ChannelSystem;
 public class Epics7ChannelFactory extends ChannelFactory {
 
     // EPICS7 channel system
-    private static Epics7ChannelSystem CHANNEL_SYSTEM;
+    private static Epics7ChannelSystem channelSystem;
 
     // To keep track of the threads using the Epics7ChannelSystem
     public static final List<Thread> threadList = new ArrayList<>();
@@ -45,13 +45,13 @@ public class Epics7ChannelFactory extends ChannelFactory {
     }
 
     private void setChannelSystem() {
-        if (CHANNEL_SYSTEM == null) {
-            CHANNEL_SYSTEM = Epics7ChannelSystem.newEpics7ChannelSystem();
+        if (channelSystem == null) {
+            channelSystem = Epics7ChannelSystem.newEpics7ChannelSystem();
         }
         synchronized (threadList) {
             if (!threadList.contains(Thread.currentThread())) {
                 threadList.add(Thread.currentThread());
-                FinishedThreadHook finishedThreadHook = new FinishedThreadHook(Thread.currentThread(), threadList, CHANNEL_SYSTEM);
+                FinishedThreadHook finishedThreadHook = new FinishedThreadHook(Thread.currentThread(), threadList, channelSystem);
                 finishedThreadHook.start();
             }
         }
@@ -65,39 +65,39 @@ public class Epics7ChannelFactory extends ChannelFactory {
      */
     @Override
     public boolean init() {
-        if (CHANNEL_SYSTEM == null) {
+        if (channelSystem == null) {
             setChannelSystem();
         }
-        return CHANNEL_SYSTEM.isInitialized();
+        return channelSystem.isInitialized();
     }
 
     @Override
     protected void dispose() {
-        if (CHANNEL_SYSTEM != null) {
-            CHANNEL_SYSTEM.dispose();
-            CHANNEL_SYSTEM = null;
+        if (channelSystem != null) {
+            channelSystem.dispose();
+            channelSystem = null;
         }
     }
 
     @Override
     protected Channel newChannel(String signalName) {
-        if (CHANNEL_SYSTEM == null) {
+        if (channelSystem == null) {
             return null;
         }
         if (isTest()) {
-            signalName += TEST_SUFFIX;
+            signalName += testSuffix;
         }
-        return new Epics7Channel(signalName, CHANNEL_SYSTEM);
+        return new Epics7Channel(signalName, channelSystem);
     }
 
     @Override
     protected ChannelSystem channelSystem() {
-        return CHANNEL_SYSTEM;
+        return channelSystem;
     }
 
     @Override
     public void printInfo() {
         Logger.getLogger(Epics7ChannelFactory.class.getName()).info("Using EPICS7 Open XAL plugin.");
-        CHANNEL_SYSTEM.printInfo();
+        channelSystem.printInfo();
     }
 }

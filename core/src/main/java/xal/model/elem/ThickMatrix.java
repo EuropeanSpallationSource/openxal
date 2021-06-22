@@ -66,7 +66,7 @@ public class ThickMatrix extends ThickElement {
      */
     
     /** string type identifier for all ThickMatrix objects */
-    public static final String          s_strType = "ThickMatrix";
+    public static final String          TYPE = "ThickMatrix";
     
     
     
@@ -75,13 +75,13 @@ public class ThickMatrix extends ThickElement {
      */
     
     /** elapsed time for all probes to propagate this element */
-    private double          m_dblDelT = 0.0;
+    private double          dblDelT = 0.0;
      
     /** the energy gain imparted to all probes */
-    private double          m_dblDelW = 0.0;
+    private double          dblDelW = 0.0;
     
     /** element transfer matrix generator for all probes */
-    private PhaseMatrix        m_matGen = PhaseMatrix.zero();
+    private PhaseMatrix        matGen = PhaseMatrix.zero();
     
 
     
@@ -98,7 +98,7 @@ public class ThickMatrix extends ThickElement {
      *  @param  dblDelW     energy gain imparted of this element (<b>in electron-volts</b>)
      */
     public ThickMatrix(String strId, double dblLen, PhaseMatrix matPhiSub, double dblDelW)    {
-        super(s_strType, strId, dblLen);
+        super(TYPE, strId, dblLen);
         
         this.setEnergyGain(dblDelW);
         this.setTransferMapGenerator(matPhiSub);
@@ -135,7 +135,7 @@ public class ThickMatrix extends ThickElement {
      */
     public ThickMatrix() 
     {
-        super(s_strType);
+        super(TYPE);
     }
     
     
@@ -146,7 +146,7 @@ public class ThickMatrix extends ThickElement {
      * @param   dblDelT     elapsed time through element in <b>seconds</b>  
      */
     public void setElapsedTime(double dblDelT)  {
-        this.m_dblDelT = dblDelT;
+        this.dblDelT = dblDelT;
     }
     
     /**
@@ -156,7 +156,7 @@ public class ThickMatrix extends ThickElement {
      *  @param  dblDelW  energy gain imparted to all probes (<b>in electron-volts</b>)
      */
     public void setEnergyGain(double dblDelW) {
-        this.m_dblDelW = dblDelW;
+        this.dblDelW = dblDelW;
     }
     
     /**
@@ -172,7 +172,7 @@ public class ThickMatrix extends ThickElement {
      *  @param  matGen   transfer matrix generator (probe independent)
      */
     public void setTransferMapGenerator(PhaseMatrix matGen)  {
-        this.m_matGen = matGen;
+        this.matGen = matGen;
     }
     
     
@@ -195,7 +195,7 @@ public class ThickMatrix extends ThickElement {
      */
     @Override
     public double elapsedTime(IProbe probe, double dblLen)  {
-        return (dblLen/this.getLength()) * this.m_dblDelT;
+        return (dblLen/this.getLength()) * this.dblDelT;
     }
     
     /**
@@ -213,7 +213,7 @@ public class ThickMatrix extends ThickElement {
      */
     @Override
     public double energyGain(IProbe probe, double dblLen) {
-        return (dblLen/this.getLength())* this.m_dblDelW; 
+        return (dblLen/this.getLength())* this.dblDelW; 
     }
     
     /**  
@@ -237,7 +237,7 @@ public class ThickMatrix extends ThickElement {
     @Override
     public PhaseMap transferMap(IProbe probe, double dblLen) throws ModelException {
         double          s = dblLen;
-        PhaseMatrix     A = this.m_matGen;
+        PhaseMatrix     A = this.matGen;
         PhaseMatrix     M = PhaseMatrix.identity();
         
         M.plusEquals( A.times(s) );

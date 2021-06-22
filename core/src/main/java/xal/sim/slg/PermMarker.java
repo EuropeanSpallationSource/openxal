@@ -12,7 +12,7 @@ package xal.sim.slg;
  * @author  wdklotz
  */
 public class PermMarker extends ThinElement {
-    private static final String type="pmarker";
+    private static final String TYPE = "pmarker";
     
     /** Creates a new instance of PermanentMarker */
     public PermMarker(double position, double len, String name) {
@@ -48,17 +48,19 @@ public class PermMarker extends ThinElement {
     /**
      * Getter for the element type property.
      */
+    @Override
     public String getType() {
-        return type;
+        return TYPE;
     } 
     
     /**
-     * When called with a Visitor reference the implementor can either
+     * When called with a Visitor reference the implementer can either
      * reject to be visited (empty method body) or call the Visitor by
      * passing its own object reference.
      *
      *@param v the Visitor which wants to visit this object.
      */
+    @Override
     public void accept(Visitor v) {
         v.visit( this );
     }

@@ -22,10 +22,10 @@ import xal.tools.correlator.Correlation;
  */
 public class MPSEvent {
 	/** mean timestamp of the correlated signal events */
-	protected final Date _timestamp;
+	protected final Date timestamp;
 
 	/** sorted list of correlated signal events */
-	protected final List<SignalEvent> _signalEvents;
+	protected final List<SignalEvent> signalEvents;
 
 
 	/**
@@ -34,18 +34,18 @@ public class MPSEvent {
 	 * @param correlation  The correlated MPS trips defining an MPS event.
 	 */
 	public MPSEvent( Correlation<ChannelTimeRecord> correlation ) {
-		_timestamp = correlation.meanDate();
+		timestamp = correlation.meanDate();
 
 		Collection<String> signals = correlation.names();
-		_signalEvents = new ArrayList<>();
+		signalEvents = new ArrayList<>();
 
         for(String signal : signals) {
             ChannelTimeRecord record = correlation.getRecord( signal );
             SignalEvent signalEvent = new SignalEvent( signal, record.getTimestamp() );
-            _signalEvents.add( signalEvent );
+            signalEvents.add( signalEvent );
         }
 
-		Collections.sort( _signalEvents );
+		Collections.sort( signalEvents );
 	}
 
 
@@ -55,7 +55,7 @@ public class MPSEvent {
 	 * @return   the mean timestamp of the correlated signal events
 	 */
 	public Date getTimestamp() {
-		return _timestamp;
+		return timestamp;
 	}
 
 
@@ -65,7 +65,7 @@ public class MPSEvent {
 	 * @return   the list of correlated signal events
 	 */
 	public List<SignalEvent> getSignalEvents() {
-		return _signalEvents;
+		return signalEvents;
 	}
 
 
@@ -76,7 +76,7 @@ public class MPSEvent {
 	 * @return   the first signal event
 	 */
 	public SignalEvent getFirstSignalEvent() {
-		return _signalEvents.get( 0 );
+		return signalEvents.get( 0 );
 	}
 
 
@@ -85,11 +85,12 @@ public class MPSEvent {
 	 *
 	 * @return   description of this event
 	 */
+        @Override
 	public String toString() {
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 
-		buffer.append( "timestamp: " + _timestamp );
-		buffer.append( "signal events: " + _signalEvents.toString() );
+		buffer.append("timestamp: ").append(timestamp);
+		buffer.append("signal events: ").append(signalEvents.toString());
 
 		return buffer.toString();
 	}

@@ -6,6 +6,8 @@
 
 package xal.tools.math.r3;
 
+import java.io.PrintWriter;
+import java.io.Serializable;
 import  xal.tools.math.ClosedInterval;
 import xal.tools.math.MathException;
 
@@ -15,7 +17,7 @@ import xal.tools.math.MathException;
  * @author  Christopher K. Allen
  * @since   Jan 27, 2003
  */
-public class ClosedBox implements java.io.Serializable {
+public class ClosedBox implements Serializable {
     
     
     
@@ -211,7 +213,7 @@ public class ClosedBox implements java.io.Serializable {
      *
      *  @param  os      output stream receiving content dump
      */
-    public void print(java.io.PrintWriter os)   {
+    public void print(PrintWriter os)   {
         I1.print(os);
         os.print("x");
         I2.print(os);
@@ -224,7 +226,7 @@ public class ClosedBox implements java.io.Serializable {
      *
      *  @param  os      output stream receiving content dump
      */
-    public void println(java.io.PrintWriter os)   {
+    public void println(PrintWriter os)   {
         I1.print(os);
         os.print("x");
         I2.print(os);

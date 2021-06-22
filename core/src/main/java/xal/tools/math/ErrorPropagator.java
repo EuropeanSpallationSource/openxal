@@ -16,13 +16,13 @@ import java.util.HashMap;
 /** Propagates errors from independent source variables to the specified operation using standard error propagation. */
 public class ErrorPropagator extends java.lang.Object {
     /** operation for which the error propagation will be performed */
-    private final DifferentiableOperation VARIANCE_PROPAGATOR;
+    private final DifferentiableOperation variancePropagator;
     
     /** independent variables from which source errors are to be propagated */
-    private final DifferentiableVariable[] SOURCE_VARIABLES;
+    private final DifferentiableVariable[] sourceVariables;
     
     /** table of variables for the signal variances keyed by source variable */
-    private final Map<DifferentiableVariable, DifferentiableVariable> VARIANCE_VARIABLES;
+    private final Map<DifferentiableVariable, DifferentiableVariable> varianceVariables;
     
     
 	/** 
@@ -31,18 +31,18 @@ public class ErrorPropagator extends java.lang.Object {
      * @param sourceVariables independent variables from which source errors are to be propagated
      */
     public ErrorPropagator( final DifferentiableOperation baseOperation, final DifferentiableVariable ... sourceVariables ) {
-        SOURCE_VARIABLES = sourceVariables;
-        VARIANCE_VARIABLES = new HashMap<DifferentiableVariable,DifferentiableVariable>( sourceVariables.length );
+        this.sourceVariables = sourceVariables;
+        varianceVariables = new HashMap<>( sourceVariables.length );
         
         // sum the square of the sensitivity to each source variable times the variance variable
         DifferentiableOperation varianceOperationSum = DifferentiableOperation.getConstant( 0.0 );
         for ( final DifferentiableVariable variable : sourceVariables ) {
             final DifferentiableVariable varianceVariable = DifferentiableOperation.getVariable( variable.getName() + "_Variance", 0.0 );
-            VARIANCE_VARIABLES.put( variable, varianceVariable );   // associate the variance variable with the variable
+            varianceVariables.put( variable, varianceVariable );   // associate the variance variable with the variable
             final DifferentiableOperation sensitivity = baseOperation.getDerivative( variable );
             varianceOperationSum = varianceOperationSum.plus( sensitivity.pow( 2 ).times( varianceVariable ) );
         }
-        VARIANCE_PROPAGATOR = varianceOperationSum;
+        variancePropagator = varianceOperationSum;
     }
     
     
@@ -51,7 +51,7 @@ public class ErrorPropagator extends java.lang.Object {
      * @param baseOperation the operation for which the error propagation will be performed
      * @param sourceVariables independent variables from which source errors are to be propagated
      */
-    static public ErrorPropagator getInstance( final DifferentiableOperation baseOperation, final DifferentiableVariable ... sourceVariables ) {
+    public static ErrorPropagator getInstance( final DifferentiableOperation baseOperation, final DifferentiableVariable ... sourceVariables ) {
         return new ErrorPropagator( baseOperation, sourceVariables );
     }
     
@@ -79,10 +79,10 @@ public class ErrorPropagator extends java.lang.Object {
      * @param sourceVariances the variances to each source in the order they were specified in the constructor
      */
     public void setSourceVariances( final double ... sourceVariances ) {
-        if ( sourceVariances.length != SOURCE_VARIABLES.length )  throw new IllegalArgumentException( "ErrorPropagator: The count of variances: " + sourceVariances.length + " must match the count of source variables: " + SOURCE_VARIABLES.length );
+        if ( sourceVariances.length != sourceVariables.length )  throw new IllegalArgumentException( "ErrorPropagator: The count of variances: " + sourceVariances.length + " must match the count of source variables: " + sourceVariables.length );
         
         for ( int variableIndex = 0 ; variableIndex < sourceVariances.length ; variableIndex++ ) {
-            final DifferentiableVariable sourceVariable = SOURCE_VARIABLES[variableIndex];
+            final DifferentiableVariable sourceVariable = sourceVariables[variableIndex];
             setSourceVariance( sourceVariable, sourceVariances[variableIndex] );
         }
     }
@@ -90,7 +90,7 @@ public class ErrorPropagator extends java.lang.Object {
     
     /** Set a common variance to use as the default for all source variables */
     public void setCommonSourceVariance( final double variance ) {
-        for ( final DifferentiableVariable sourceVariable : SOURCE_VARIABLES ) {
+        for ( final DifferentiableVariable sourceVariable : sourceVariables ) {
             final DifferentiableVariable varianceVariable = getVarianceVariable( sourceVariable );
             varianceVariable.setDefaultValue( variance );
         }
@@ -115,33 +115,33 @@ public class ErrorPropagator extends java.lang.Object {
     
     /** Calculate the operation variance propagated from the default source variances */
     public double getVariance() {
-        return VARIANCE_PROPAGATOR.evaluate();
+        return variancePropagator.evaluate();
     }
     
     
     /** Calculate the operation variance propagated from a common source variance. Note that this assignment is only for the current calculation and does change the default source variances. */
     public double getVarianceWithCommonSourceVariance( final double sourceVariance ) {
         final DifferentiableVariableValues valueMap = DifferentiableVariableValues.getInstance();
-        for ( final DifferentiableVariable sourceVariable : SOURCE_VARIABLES ) {
+        for ( final DifferentiableVariable sourceVariable : sourceVariables ) {
             final DifferentiableVariable varianceVariable = getVarianceVariable( sourceVariable );
            valueMap.assignValue( varianceVariable, sourceVariance );
         }
-        return VARIANCE_PROPAGATOR.evaluate( valueMap );
+        return variancePropagator.evaluate( valueMap );
     }
     
     
     /** Calculate the operation variance propagated from the source variances. Note that this assignment is only for the current calculation and does change the default source variances. */
     public double getVarianceWithSourceVariances( final double ... sourceVariances ) {
-        if ( sourceVariances.length != SOURCE_VARIABLES.length )  throw new IllegalArgumentException( "ErrorPropagator: The count of variances: " + sourceVariances.length + " must match the count of source variables: " + SOURCE_VARIABLES.length );
+        if ( sourceVariances.length != sourceVariables.length )  throw new IllegalArgumentException( "ErrorPropagator: The count of variances: " + sourceVariances.length + " must match the count of source variables: " + sourceVariables.length );
         
         final DifferentiableVariableValues valueMap = DifferentiableVariableValues.getInstance();
         for ( int variableIndex = 0 ; variableIndex < sourceVariances.length ; variableIndex++ ) {
-            final DifferentiableVariable sourceVariable = SOURCE_VARIABLES[variableIndex];
+            final DifferentiableVariable sourceVariable = sourceVariables[variableIndex];
             final DifferentiableVariable varianceVariable = getVarianceVariable( sourceVariable );
             valueMap.assignValue( varianceVariable, sourceVariances[variableIndex] );
         }
         
-        return VARIANCE_PROPAGATOR.evaluate( valueMap );
+        return variancePropagator.evaluate( valueMap );
     }
     
     
@@ -154,6 +154,6 @@ public class ErrorPropagator extends java.lang.Object {
     
     /** Get the variance variable for the specified source variable */
     private DifferentiableVariable getVarianceVariable( final DifferentiableVariable sourceVariable ) {
-        return VARIANCE_VARIABLES.get( sourceVariable );
+        return varianceVariables.get( sourceVariable );
     }
 }

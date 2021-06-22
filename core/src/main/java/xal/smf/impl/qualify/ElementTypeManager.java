@@ -7,7 +7,6 @@
 package xal.smf.impl.qualify;
 
 import xal.smf.AcceleratorNode;
-import xal.smf.impl.GenericNode;
 
 import java.util.*;
 
@@ -18,10 +17,10 @@ import java.util.*;
  */
 public class ElementTypeManager {
     // static variables
-    final private static ElementTypeManager DEFAULT_MANAGER;
+    private static final ElementTypeManager DEFAULT_MANAGER;
 
     // instance variables
-    private Map<String,Collection<Class<?>>> _typeTable;
+    private Map<String,Collection<Class<?>>> typeTable;
     
     
 	// static initializer
@@ -32,7 +31,7 @@ public class ElementTypeManager {
     
     /** Creates new ElementTypeManager */
     public ElementTypeManager() {
-        _typeTable = new Hashtable<String,Collection<Class<?>>>();
+        typeTable = new Hashtable<>();
     }
     
     
@@ -57,8 +56,8 @@ public class ElementTypeManager {
         final String lowerType = type.toLowerCase();
         Collection<Class<?>> classSet = getClassSet( lowerType );
         if ( classSet == null ) {
-            classSet = new HashSet<Class<?>>();
-            _typeTable.put( lowerType, classSet );
+            classSet = new HashSet<>();
+            typeTable.put( lowerType, classSet );
         }
         classSet.add( theClass );
     }
@@ -99,12 +98,12 @@ public class ElementTypeManager {
 	
 	/** get the set of all types */
 	public Collection<String> getTypes() {
-		return _typeTable.keySet();
+		return typeTable.keySet();
 	}
     
     
     /** Get the set of classes associated with the specified type */
     private Collection<Class<?>> getClassSet( final String type ) {
-        return _typeTable.get( type );
+        return typeTable.get( type );
     }
 }

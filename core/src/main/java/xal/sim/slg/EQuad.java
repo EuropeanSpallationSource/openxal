@@ -2,7 +2,7 @@ package xal.sim.slg;
 
 public class EQuad extends Element {
 
-    private static final String type="EQuad";
+    private static final String TYPE = "EQuad";
 
 //	protected EQuad(String name, double position, double len) {
 //		super(name, position, len);
@@ -30,12 +30,12 @@ public class EQuad extends Element {
         this(position.doubleValue(),len.doubleValue());
     }
     
-	@Override
     /*
      * Getter for the element type property.
      */
+    @Override
     public String getType() {
-        return type;
+        return TYPE;
     }
 
 	@Override

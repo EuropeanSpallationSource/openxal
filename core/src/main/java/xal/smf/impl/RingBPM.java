@@ -14,7 +14,7 @@ import xal.smf.AccessibleProperty;
  */
 public class RingBPM extends BPM {
 
-	public static final String s_strType = "RBPM";
+	public static final String TYPE = "RBPM";
 
 	/**
 	 * BPM stage 1 length channel handle
@@ -141,7 +141,7 @@ public class RingBPM extends BPM {
 	 * @see #isKindOf
 	 */
 	private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( RingBPM.class, s_strType, "BPM" );
+		ElementTypeManager.defaultManager().registerTypes( RingBPM.class, TYPE, "BPM" );
 	}
 
 	/**
@@ -421,7 +421,7 @@ public class RingBPM extends BPM {
 	}
 
    /**
-     * returns average X position for a certian stage
+     * returns average X position for a certain stage
      * @param stage stage number
      */
 	public double getXAvg(int stage) throws ConnectionException, GetException {
@@ -469,7 +469,7 @@ public class RingBPM extends BPM {
 	}
 	
     /**
-     * returns average Y position for a certian stage
+     * returns average Y position for a certain stage
      * @param stage stage number
      */
 	public double getYAvg(int stage) throws ConnectionException, GetException {

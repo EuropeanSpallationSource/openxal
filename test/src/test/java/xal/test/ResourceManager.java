@@ -22,7 +22,7 @@ public class ResourceManager {
      * @param resourcePath full modified package path (see the notes for the getResource() method of java.lang.Class) relative to the resources location
      * @return URL to the resource or null if there is none found
      */
-    static public URL getResourceURL( final String resourcePath ) {
+    public static URL getResourceURL( final String resourcePath ) {
         return getResourceURL( ResourceManager.class, resourcePath );
     }
 
@@ -32,19 +32,19 @@ public class ResourceManager {
 	 * @param rootClass class at the root of the group (this class must be at the same location as the resources directory in the jar file)
 	 * @param path to the resource relative to the group's resources directory
 	 */
-	static public URL getResourceURL( final Class<?> rootClass, final String resourcePath ) {
+	public static URL getResourceURL( final Class<?> rootClass, final String resourcePath ) {
 		return xal.tools.ResourceManager.getResourceURL( "test", rootClass, resourcePath );
 	}
 
 
     /** Load and get the default test accelerator */
-    static public URL getTestAcceleratorURL() {
+    public static URL getTestAcceleratorURL() {
         return getResourceURL( "/config/main.xal" );
     }
 
     
     /** Load and get the default test accelerator */
-    static public Accelerator getTestAccelerator() {
+    public static Accelerator getTestAccelerator() {
 		final URL opticsURL = getTestAcceleratorURL();
 		return opticsURL != null ? getAcceleratorAtURL( opticsURL ) : null;
     }
@@ -54,7 +54,7 @@ public class ResourceManager {
      * Load and get the accelerator at the specified resource path
      * @param resourcePath fully qualified modified package path to the resource (see the notes for the getResource() method of java.lang.Class)
      */
-    static public Accelerator getAcceleratorForResource( final String resourcePath ) {
+    public static Accelerator getAcceleratorForResource( final String resourcePath ) {
         final URL opticsURL = getResourceURL( resourcePath );
 		return getAcceleratorAtURL( opticsURL );
     }
@@ -64,13 +64,13 @@ public class ResourceManager {
      * Load and get the accelerator at the specified resource path
      * @param opticsURL URL to the optics
      */
-    static public Accelerator getAcceleratorAtURL( final URL opticsURL ) {
+    public static Accelerator getAcceleratorAtURL( final URL opticsURL ) {
         return opticsURL != null ? XMLDataManager.getInstance( opticsURL ).getAccelerator() : null;
     }
 
 
 	/** Get the fully qualified output file given the relative path within the output directory. */
-	static public File getOutputFile( final String relativePath ) {
+	public static File getOutputFile( final String relativePath ) {
 		final File testDirectory = getTestDirectory();
 		if ( testDirectory == null ) {
 			final String errorMessage = "Error getting the output file from ResourceManager. The test directory was null and must be specified using the runtime property, xal.tests.root or an environment variable of the same name.";
@@ -97,7 +97,7 @@ public class ResourceManager {
 	 *
 	 * @since  Dec 1, 2015,   Christopher K. Allen
 	 */
-	static public File getOutputFile( final Class<?> clsPath, final String strFileName) {
+	public static File getOutputFile( final Class<?> clsPath, final String strFileName) {
         String  strPack     = clsPath.getPackage().getName();
         String  strPathRel  = strPack.replace('.', '/');
         String  strPathFile = strPathRel + '/' + strFileName; 
@@ -108,7 +108,7 @@ public class ResourceManager {
 
 
 	/** get the test directory path */
-	static private File getTestDirectory() {
+	private static File getTestDirectory() {
 		final String TEST_DIRECTORY_PROPERTY = "xal.tests.root";
 		final String testDirectoryPropertyPath = System.getProperty( TEST_DIRECTORY_PROPERTY );
 

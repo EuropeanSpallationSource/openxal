@@ -77,7 +77,7 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
          */
 
         /** the set of IND constants that only include phase space variables (not the homogeneous coordinate) */
-        private final static EnumSet<IND> SET_PHASE = EnumSet.of(X, Xp, Y, Yp);
+        private static final EnumSet<IND> SET_PHASE = EnumSet.of(X, Xp, Y, Yp);
         
         
         /*
@@ -114,6 +114,7 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
 		 * @author Christopher K. Allen
 		 * @since  Sep 25, 2013
 		 */
+                @Override
 		public int val() {
 			return this.val;
 		}
@@ -123,7 +124,7 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
 		 */
 		
 		/** The numerical value of this enumeration index */
-		final private int     val; 
+		private final int     val; 
 		
 		/**
 		 * Creates a new <code>IND</code> enumeration constant

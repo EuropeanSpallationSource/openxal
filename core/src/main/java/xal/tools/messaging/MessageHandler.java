@@ -7,6 +7,7 @@
 package xal.tools.messaging;
 
 
+import java.io.Serializable;
 import java.lang.reflect.*;
 import java.util.*;
 
@@ -17,11 +18,11 @@ import java.util.*;
  *
  * @author  tap
  */
-abstract class MessageHandler<ProtocolType> implements InvocationHandler, java.io.Serializable {
+abstract class MessageHandler<ProtocolType> implements InvocationHandler, Serializable {
 	/** required for Serializable */
-	static final private long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 	
-    protected Class<ProtocolType> _protocol;
+    protected Class<ProtocolType> protocol;
     protected Object source;
     protected ProtocolType proxy;
     protected Thread[] threadPool;
@@ -38,7 +39,7 @@ abstract class MessageHandler<ProtocolType> implements InvocationHandler, java.i
     public MessageHandler( final TargetDirectory newDirectory, final Object newSource, final Class<ProtocolType> newProtocol, final int threadPoolSize ) {
         targetDirectory = newDirectory;
         source = newSource;
-        _protocol = newProtocol;
+        protocol = newProtocol;
         threadPool = new Thread[threadPoolSize];
         createProxy();
     }
@@ -50,7 +51,7 @@ abstract class MessageHandler<ProtocolType> implements InvocationHandler, java.i
     
     /** return the interface managed by this handler */
     public Class<ProtocolType> getProtocol() {
-        return _protocol;
+        return protocol;
     }
     
     
@@ -70,7 +71,7 @@ abstract class MessageHandler<ProtocolType> implements InvocationHandler, java.i
     @SuppressWarnings( { "unchecked", "rawtypes" } )
     private void createProxy() {
 		ClassLoader loader = this.getClass().getClassLoader();
-        Class[] protocols = new Class[] {_protocol};		// need to suppress the rawtypes as Generics aren't supported for array creation
+        Class[] protocols = new Class[] {protocol};		// need to suppress the rawtypes as Generics aren't supported for array creation
         
         proxy = (ProtocolType)Proxy.newProxyInstance( loader, protocols, this );
     }
@@ -85,19 +86,20 @@ abstract class MessageHandler<ProtocolType> implements InvocationHandler, java.i
     
     /** implement InvocationHandler interface */
     /** invoke method */
+        @Override
     abstract public Object invoke( final Object proxy, final Method method, final Object[] args );
         
     
     /** get all targets associated with the source and protocol and just the protocol */
     protected Set<ProtocolType> targets() {
-        final Set<ProtocolType> targetSet = new HashSet<ProtocolType>();
+        final Set<ProtocolType> targetSet = new HashSet<>();
         
         // add targets directly associated with the protocol and the target
-        final Set<ProtocolType> directTargets = targetDirectory.targets( source, _protocol );
+        final Set<ProtocolType> directTargets = targetDirectory.targets(source, protocol );
         targetSet.addAll( directTargets );
         
         // add targets associated with the protocol but no target
-        final Set<ProtocolType> anonymousTargets = targetDirectory.targets( null, _protocol );
+        final Set<ProtocolType> anonymousTargets = targetDirectory.targets(null, protocol );
         targetSet.addAll( anonymousTargets );
 
         return targetSet;

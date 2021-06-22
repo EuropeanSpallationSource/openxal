@@ -57,40 +57,40 @@ import xal.tools.math.r3.R3;
  */
 public class ProbeFactory {
 	/** table name for species */
-	protected final static String SPECIES_TABLE = "species";
+	protected static final String SPECIES_TABLE = "species";
 	
 	/** table name for the beam parameters */
-	protected final static String BEAM_TABLE = "beam";
+	protected static final String BEAM_TABLE = "beam";
 	
-	/** table name for the twiss parameters */
-	protected final static String TWISS_TABLE = "twiss";
+	/** table name for the Twiss parameters */
+	protected static final String TWISS_TABLE = "twiss";
 	
 	/** table name for phase coordinates */
-	protected final static String PHASECOORD_TABLE = "PhaseCoordinates";
+	protected static final String PHASECOORD_TABLE = "PhaseCoordinates";
 	
         /** table name for phase coordinates */
-        protected final static String CENTRCOORD_TABLE = "CentroidCoordinates";
+        protected static final String CENTRCOORD_TABLE = "CentroidCoordinates";
     
 	/** table name for the location records */
-	protected final static String LOCATION_TABLE = "location";
+	protected static final String LOCATION_TABLE = "location";
 
 	/** parameter name for kinetic energy */
-	protected final static String KINETIC_ENERGY_PARAM = "W";
+	protected static final String KINETIC_ENERGY_PARAM = "W";
 
 	/** parameter name for species */
-	protected final static String SPECIES_PARAM = "species";
+	protected static final String SPECIES_PARAM = "species";
 
 	/** parameter name for species name parameter */
-	protected final static String SPECIES_NAME_PARAM = "name";
+	protected static final String SPECIES_NAME_PARAM = "name";
 
 	/** parameter name for charge */
-	protected final static String CHARGE_PARAM = "charge";
+	protected static final String CHARGE_PARAM = "charge";
 
 	/** parameter name for mass */
-	protected final static String MASS_PARAM = "mass";
+	protected static final String MASS_PARAM = "mass";
 	
 	/** XML attribute name for the phase coordinates themselves */
-	protected final static String PHASECOORD_VALUE_PARAM = "coordinates";
+	protected static final String PHASECOORD_VALUE_PARAM = "coordinates";
 	
     
 
@@ -340,7 +340,7 @@ public class ProbeFactory {
 	 *  
 	 * @return a list of available location IDs.
 	 */
-	static public List<String> getLocationIDs( final Accelerator accelerator ) {
+	public static List<String> getLocationIDs( final Accelerator accelerator ) {
 		final List<GenericRecord> locationRecords = getLocationRecords( accelerator );
 		final List<String> locationIDs = new ArrayList<String>( locationRecords.size() );
 		
@@ -361,7 +361,7 @@ public class ProbeFactory {
      *  
 	 * @return a list of available location records.
 	 */
-	static public List<GenericRecord> getLocationRecords( final Accelerator accelerator ) {
+	public static List<GenericRecord> getLocationRecords( final Accelerator accelerator ) {
 		final EditContext editContext = accelerator.editContext();
 		final DataTable locationTable = editContext.getTable( LOCATION_TABLE );
 		
@@ -558,7 +558,7 @@ public class ProbeFactory {
 	private static Twiss[] getTwissArray( final String strLocId, final EditContext edcData) {
         final DataTable twissTable = edcData.getTable( "twiss" );
         
-        final Map<String, String> bindings = new HashMap<String, String>();
+        final Map<String, String> bindings = new HashMap<>();
         bindings.put( "name", strLocId );
         
         bindings.put( "coordinate", "x" );
@@ -579,7 +579,7 @@ public class ProbeFactory {
 	 * 
 	 * @param record   data object containing Courant-Snyder parameters 
 	 *
-	 * @return an instance of Twiss for the alpha, beta and emittance from the twiss record.
+	 * @return an instance of Twiss for the alpha, beta and emittance from the Twiss record.
 	 */
 	private static Twiss getTwiss( final GenericRecord record ) {
 		final double alpha = record.doubleValueForKey( "alpha" );
@@ -712,7 +712,7 @@ public class ProbeFactory {
 	}
 		
 	private static boolean hasTwiss(String seqId, DataTable tblTwiss) {
-        final Map<String, String> bindings = new HashMap<String, String>();
+        final Map<String, String> bindings = new HashMap<>();
         bindings.put( "name", seqId);		        
         bindings.put( "coordinate", "x" );        
 	    return tblTwiss.record(bindings) != null;
@@ -735,4 +735,3 @@ public class ProbeFactory {
 	}
 	
 }
-

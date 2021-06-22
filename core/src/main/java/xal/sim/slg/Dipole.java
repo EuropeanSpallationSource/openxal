@@ -13,7 +13,7 @@ package xal.sim.slg;
  * @author  wdklotz
  */
 public class Dipole extends Element {
-    private static final String type="dipole";
+    private static final String TYPE = "dipole";
     
     /**
      * Create a new, initialized <code>Dipole</code> object.
@@ -58,12 +58,12 @@ public class Dipole extends Element {
      */
     @Override
     public String getType() {
-        return type;
+        return TYPE;
     }
 
     /**  
      * Implementation of interface xal.tools.data.DataListener:
-     * Instructs the implementor to write its data to the adaptor for external
+     * Instructs the implementer to write its data to the adaptor for external
      * storage.
      */
     /*public void write(DataAdaptor adaptor) {
@@ -93,7 +93,7 @@ public class Dipole extends Element {
     }*/
     
     /**
-     * When called with a Visitor reference the implementor can either
+     * When called with a Visitor reference the implementer can either
      * reject to be visited (empty method body) or call the Visitor by
      * passing its own object reference.
      *

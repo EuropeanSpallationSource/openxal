@@ -9,6 +9,7 @@ package xal.model.xml;
 
 import java.util.*;
 import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.*;
@@ -34,26 +35,26 @@ public class LatticeXmlParser {
     
     
     /** Attributes for XAL/MODEL/LATTICE DTD */
-    public static final String      s_strElemLatt   = "Lattice";
-    public static final String      s_strElemSeq    = "Sequence";
-    public static final String      s_strElemElem   = "Element";
-    public static final String      s_strElemParam  = "Parameter";
+    public static final String      ELEM_LATT   = "Lattice";
+    public static final String      ELEM_SEQ    = "Sequence";
+    public static final String      ELEM_ELEM   = "Element";
+    public static final String      ELEM_PARAM  = "Parameter";
     
-    public static final String      s_strElemComm   = "comment";
+    public static final String      ELEM_COMM   = "comment";
     
-    public static final String      s_strAttrId   = "id";
-    public static final String      s_strAttrLen  = "len"; 
+    public static final String      ATTR_ID   = "id";
+    public static final String      ATTR_LEN  = "len"; 
     
-    public static final String      s_strAttrVer  = "ver";
-    public static final String      s_strAttrAuth = "author";
-    public static final String      s_strAttrDate = "date";
-    public static final String      s_strAttrText = "text";
+    public static final String      ATTR_VER  = "ver";
+    public static final String      ATTR_AUTH = "author";
+    public static final String      ATTR_DATE = "date";
+    public static final String      ATTR_TEXT = "text";
     
-    public static final String      s_strAttrName = "name";
-    public static final String      s_strAttrType = "type";
-    public static final String      s_strAttrVal  = "value";
+    public static final String      ATTR_NAME = "name";
+    public static final String      ATTR_TYPE = "type";
+    public static final String      ATTR_VAL  = "value";
     
-    public static final String      s_strAttrSep  = "|";
+    public static final String      ATTR_SEP  = "|";
 
     
 
@@ -139,14 +140,14 @@ public class LatticeXmlParser {
      */
     public Lattice parseAdaptor(DataAdaptor adaptor) throws ParsingException {
     	
-        DataAdaptor     daptLat = adaptor.childAdaptor(s_strElemLatt);
+        DataAdaptor     daptLat = adaptor.childAdaptor(ELEM_LATT);
         
         
         // Extract lattice attributes and set them
-        String          strId   = daptLat.stringValue(s_strAttrId);     // lattice id
-        String          strVer  = daptLat.stringValue(s_strAttrVer);     // lattice version
-        String          strAuth = daptLat.stringValue(s_strAttrAuth);    // lattice author
-        String          strDate = daptLat.stringValue(s_strAttrDate);    // lattice date
+        String          strId   = daptLat.stringValue(ATTR_ID);     // lattice id
+        String          strVer  = daptLat.stringValue(ATTR_VER);     // lattice version
+        String          strAuth = daptLat.stringValue(ATTR_AUTH);    // lattice author
+        String          strDate = daptLat.stringValue(ATTR_DATE);    // lattice date
 
         Lattice         latUrl  = new Lattice();
 
@@ -158,15 +159,7 @@ public class LatticeXmlParser {
         try {
             this.loadComposite(latUrl, daptLat);
             
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            throw new ParsingException(e.getMessage());
-            
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-            throw new ParsingException(e.getMessage());
-            
-        } catch (InstantiationException e) {
+        } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException e) {
             e.printStackTrace();
             throw new ParsingException(e.getMessage());
             
@@ -202,7 +195,7 @@ public class LatticeXmlParser {
         throws DataFormatException, NumberFormatException, ClassNotFoundException, InstantiationException, NoSuchMethodException
     {
         // Create a new ElementSeq instance
-        String      strId     = daptSeq.stringValue(s_strAttrId);    // sequence id
+        String      strId     = daptSeq.stringValue(ATTR_ID);    // sequence id
         ElementSeq  seqNew    = new Sector(strId);
 
         this.loadComposite(seqNew, daptSeq);
@@ -226,11 +219,11 @@ public class LatticeXmlParser {
         String      strText;        // user comments for sequence
         String      strComm;        // comment string
                 
-        strAuth = daptComm.stringValue(s_strAttrAuth);
-        strDate = daptComm.stringValue(s_strAttrDate);
-        strText = daptComm.stringValue(s_strAttrText);
+        strAuth = daptComm.stringValue(ATTR_AUTH);
+        strDate = daptComm.stringValue(ATTR_DATE);
+        strText = daptComm.stringValue(ATTR_TEXT);
                 
-        strComm = strAuth + s_strAttrSep + strDate + s_strAttrSep + strText;
+        strComm = strAuth + ATTR_SEP + strDate + ATTR_SEP + strText;
         
         return strComm;
     }
@@ -256,7 +249,7 @@ public class LatticeXmlParser {
 //        IElement    elemNew = ElementFactory.createIElement(strType);
         
         // Create a new element instance whose type is specified by its class type
-        String      strType  = attrValue(daptElem, s_strAttrType);
+        String      strType  = attrValue(daptElem, ATTR_TYPE);
         Class<?>    clsElem  = Class.forName(strType);
         
         Constructor<?> ctorElem = clsElem.getConstructor((Class<?>[])null); 
@@ -277,8 +270,8 @@ public class LatticeXmlParser {
 
 
         // Set the optional element attributes
-        if (daptElem.hasAttribute(s_strAttrId) && elemNew instanceof Element) {
-            String  strId   = daptElem.stringValue(s_strAttrId);
+        if (daptElem.hasAttribute(ATTR_ID) && elemNew instanceof Element) {
+            String  strId   = daptElem.stringValue(ATTR_ID);
             ((Element)elemNew).setId(strId);
         }
 //        if (daptElem.hasAttribute(s_strAttrLen)) {
@@ -313,18 +306,18 @@ public class LatticeXmlParser {
             
             
             // Comments - Load any comments associated with sequence
-            if (daptChild.name().equals(s_strElemComm))  {
+            if (daptChild.name().equals(ELEM_COMM))  {
                 String      strComm = buildComment(daptChild);
                 
             // Sequence - Load a subsequence within the sequence
-            } else if (daptChild.name().equals(s_strElemSeq)) {
+            } else if (daptChild.name().equals(ELEM_SEQ)) {
                 ElementSeq  seqChild = buildSequence(daptChild);
         
                 secNew.addChild(seqChild);
                 
                 
             // Element - Load an element into the sequence (a leaf node in tree)
-            } else if (daptChild.name().equals(s_strElemElem))  {
+            } else if (daptChild.name().equals(ELEM_ELEM))  {
                 IElement elemNew = buildElement(daptChild);
                 
                 secNew.addChild(elemNew);
@@ -345,7 +338,7 @@ public class LatticeXmlParser {
      *  @param  elem        IElement object to have parameter assigned
      *  @param  daptElem    data adaptor containing all parameter information for element
      *
-     *  @exception  DataFormatException     bad paramter format
+     *  @exception  DataFormatException     bad parameter format
      *  @exception  NumberFormatException   numeric value was malformed and unparseable
      *  @exception  NoSuchMethodException   unknown or invalid Parameter for an Element was encountered
      */
@@ -354,15 +347,15 @@ public class LatticeXmlParser {
     {
         
         // Iterate through all parameter elements
-        Iterator<? extends DataAdaptor> iterParam = daptElem.childAdaptors(s_strElemParam).iterator();
+        Iterator<? extends DataAdaptor> iterParam = daptElem.childAdaptors(ELEM_PARAM).iterator();
         while (iterParam.hasNext()) {
 
             // Get the name, type, and value of the parameter
             DataAdaptor daptParam = iterParam.next();
             
-            String  strName = daptParam.stringValue(s_strAttrName);
-            String  strType = daptParam.stringValue(s_strAttrType);
-            String  strValue = daptParam.stringValue(s_strAttrVal);
+            String  strName = daptParam.stringValue(ATTR_NAME);
+            String  strType = daptParam.stringValue(ATTR_TYPE);
+            String  strValue = daptParam.stringValue(ATTR_VAL);
             
             // Use bean introspection to find and set the appropriate property
 			try {
@@ -432,7 +425,7 @@ public class LatticeXmlParser {
                 throw new NoSuchMethodException("LatticeParser#loadParameters() - unknown parameter " 
                                        + strName + " for element " + elem.getId()
                                        );
-            } catch (Exception e)  {
+            } catch (IntrospectionException | ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InstantiationException | SecurityException | InvocationTargetException e)  {
                 throw new DataFormatException("LatticeParser#loadParameters() - unable to set parameter " 
                                         + strName + " for element " + elem.getId()
                                         );

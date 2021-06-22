@@ -35,12 +35,12 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
     /**
      * string type identifier for all IdealMagSectorDipole objects
      */
-    public static final String s_strType = "IdealMagWedgeDipole";
+    public static final String TYPE = "IdealMagWedgeDipole";
 
     /**
      * storage to reserve for child components
      */
-    public static final int s_szReserve = 3;
+    public static final int SIZE_RESERVE = 3;
 
 
     /*
@@ -79,7 +79,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * @param strId instance identifier string
      */
     public IdealMagWedgeDipole(String strId) {
-        super(s_strType, strId, s_szReserve);
+        super(TYPE, strId, SIZE_RESERVE);
 
         this.addChild(this.polEntr);
         this.addChild(this.magBody);

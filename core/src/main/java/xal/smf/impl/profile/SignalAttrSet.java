@@ -217,7 +217,7 @@ public abstract class SignalAttrSet implements DataListener {
         List<ScadaFieldDescriptor>   lstFdVer = this.ver.getFieldDescriptors();
         List<ScadaFieldDescriptor>   lstFdDia = this.dia.getFieldDescriptors();
         
-        List<ScadaFieldDescriptor>   lstFds = new LinkedList<ScadaFieldDescriptor>();
+        List<ScadaFieldDescriptor>   lstFds = new LinkedList<>();
 
         lstFds.addAll(lstFdHor);
         lstFds.addAll(lstFdVer);
@@ -441,9 +441,6 @@ public abstract class SignalAttrSet implements DataListener {
     /**
      * Create a new, initialized <code>ProfileAttrSet</code> object.
      *
-     * @param arrPfdHor     set of process variable descriptors for the horizonal signal
-     * @param arrPfdVer     set of process variable descriptors for the vertical signal
-     * @param arrPfdDia     set of process variable descriptors for the diagonal signal
      * @param ws            hardware device containing initialization data.
      *
      * @throws ConnectionException          unable to connect to a parameter read back channel

@@ -89,8 +89,8 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         super(signalName, CHANNEL_SYSTEM);
 
         // Removing protocol in case it is defined.
-        if (m_strId.startsWith("ca://") || m_strId.startsWith("pva://")) {
-            m_strId = m_strId.substring(m_strId.indexOf("://") + 3);
+        if (strId.startsWith("ca://") || strId.startsWith("pva://")) {
+            strId = strId.substring(strId.indexOf("://") + 3);
         }
 
         this.epics7ServerChannelSystem = CHANNEL_SYSTEM;
@@ -134,7 +134,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     private void addCAPV(DBRType type) {
-        MemoryProcessVariable newMemoryProcessVariable = new MemoryProcessVariable(m_strId, null, type, new double[]{0.0});
+        MemoryProcessVariable newMemoryProcessVariable = new MemoryProcessVariable(strId, null, type, new double[]{0.0});
 
         if (memoryProcessVariable != null) {
             // TODO: Copy metadata from old record to new record
@@ -161,7 +161,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         }
         PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
         PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-        PVRecord newPVRecord = new PVRecord(m_strId, pvStructure);
+        PVRecord newPVRecord = new PVRecord(strId, pvStructure);
         if (pvRecord != null) {
             // TODO: Copy metadata from old record to new record
             removeRecord();
@@ -202,6 +202,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         return 0;
     }
 
+    @Override
     protected PVStructure getDisplay() {
         if (pvRecord != null) {
             return pvRecord.getPVStructure().getStructureField(DISPLAY_FIELD);
@@ -209,6 +210,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         return null;
     }
 
+    @Override
     protected PVStructure getVAlueAlarm() {
         if (pvRecord != null) {
             return pvRecord.getPVStructure().getStructureField(VALUE_ALARM_FIELD);
@@ -216,6 +218,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         return null;
     }
 
+    @Override
     protected PVStructure getControl() {
         if (pvRecord != null) {
             return pvRecord.getPVStructure().getStructureField(CONTROL_FIELD);
@@ -235,17 +238,17 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
 
     @Override
     public ChannelRecord getRawValueRecord() throws ConnectionException, GetException {
-        return new Epics7ChannelRecord(pvRecord.getPVStructure(), m_strId);
+        return new Epics7ChannelRecord(pvRecord.getPVStructure(), strId);
     }
 
     @Override
     public ChannelStatusRecord getRawStatusRecord() throws ConnectionException, GetException {
-        return new Epics7ChannelStatusRecord(pvRecord.getPVStructure(), m_strId);
+        return new Epics7ChannelStatusRecord(pvRecord.getPVStructure(), strId);
     }
 
     @Override
     public ChannelTimeRecord getRawTimeRecord() throws ConnectionException, GetException {
-        return new Epics7ChannelTimeRecord(pvRecord.getPVStructure(), m_strId);
+        return new Epics7ChannelTimeRecord(pvRecord.getPVStructure(), strId);
     }
 
     @Override

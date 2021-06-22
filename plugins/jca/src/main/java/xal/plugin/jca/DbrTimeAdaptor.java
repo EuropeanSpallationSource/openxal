@@ -22,7 +22,7 @@ import java.util.Date;
 class DbrTimeAdaptor extends DbrStatusAdaptor implements TimeAdaptor {
 	// constants
 	/** Offset in seconds between the EPICS native epoch and the Java epoch */
-	final static BigDecimal EPOCH_SECONDS_OFFSET = new BigDecimal( 7305*24*3600 );     // offset from standard Java epoch
+	static final BigDecimal EPOCH_SECONDS_OFFSET = new BigDecimal( 7305*24*3600 );     // offset from standard Java epoch
 	
 	
     /** Creates a new instance of TimeAdaptor */
@@ -57,7 +57,7 @@ class DbrTimeAdaptor extends DbrStatusAdaptor implements TimeAdaptor {
      * @param rawSeconds The number of seconds since January 1, 1990.
      * @return The time in seconds since the Java epoch.
      */
-    static protected BigDecimal convertToJavaTime( final BigDecimal rawSeconds ) {
+    protected static BigDecimal convertToJavaTime( final BigDecimal rawSeconds ) {
         return rawSeconds.add( EPOCH_SECONDS_OFFSET ).setScale( 9, BigDecimal.ROUND_HALF_UP );
     }
 }

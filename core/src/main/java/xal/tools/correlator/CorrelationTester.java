@@ -17,13 +17,13 @@ package xal.tools.correlator;
  * @author  tap
  */
 public class CorrelationTester<RecordType> {
-    private volatile int _fullCount;
-    private volatile CorrelationFilter<RecordType> _filter;
+    private volatile int fullCount;
+    private volatile CorrelationFilter<RecordType> filter;
     
 	
     /** Creates a new instance of CorrelationTester */
     public CorrelationTester( final int fullCount, final CorrelationFilter<RecordType> aFilter ) {
-        _fullCount = fullCount;
+        this.fullCount = fullCount;
         setFilter( aFilter );
     }
     
@@ -33,7 +33,7 @@ public class CorrelationTester<RecordType> {
 	 * @param newCount The number of channels to monitor and correlate.
 	 */
     public void setFullCount( final int newCount ) {
-        _fullCount = newCount;
+        fullCount = newCount;
     }
     
     
@@ -42,7 +42,7 @@ public class CorrelationTester<RecordType> {
 	 * @return The correlation filter.
 	 */
     public CorrelationFilter<RecordType> getFilter() {
-        return _filter;
+        return filter;
     }
     
     
@@ -52,10 +52,10 @@ public class CorrelationTester<RecordType> {
 	 */
     public void setFilter( final CorrelationFilter<RecordType> newFilter ) {
         if ( newFilter == null ) {
-            _filter = CorrelationFilterFactory.<RecordType>defaultFilter();
+            filter = CorrelationFilterFactory.<RecordType>defaultFilter();
         }
         else {
-            _filter = newFilter;
+            filter = newFilter;
         }
     }
     
@@ -66,6 +66,6 @@ public class CorrelationTester<RecordType> {
 	 * @return true if the correlation passes the filter test, and false if not.
 	 */
     public boolean accept( final Correlation<RecordType> correlation ) {
-        return _filter.accept(correlation, _fullCount);
+        return filter.accept(correlation, fullCount);
     }
 }

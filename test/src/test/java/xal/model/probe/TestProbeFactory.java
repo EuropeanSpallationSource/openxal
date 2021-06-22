@@ -59,11 +59,11 @@ public class TestProbeFactory {
      */
     
     /** Output file location */
-    static private String           STR_FILE_OUTPUT = TestRunOnlineModel.class.getName().replace('.', '/') + ".txt";
+    private static String           STR_FILE_OUTPUT = TestRunOnlineModel.class.getName().replace('.', '/') + ".txt";
     
     
     /** URL where we are dumping the output */
-    static public File              FILE_OUTPUT    = ResourceManager.getOutputFile(STR_FILE_OUTPUT);
+    public static File              FILE_OUTPUT    = ResourceManager.getOutputFile(STR_FILE_OUTPUT);
     
     
     /** Persistent storage for test output */

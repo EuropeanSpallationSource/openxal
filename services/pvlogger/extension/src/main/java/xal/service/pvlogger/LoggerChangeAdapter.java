@@ -22,6 +22,7 @@ public class LoggerChangeAdapter implements LoggerChangeListener {
 	 * @param logger The logger whose state has changed.
 	 * @param type The type of change
 	 */
+        @Override
 	public void stateChanged(LoggerSession logger, int type) {}
 	
 	
@@ -30,6 +31,7 @@ public class LoggerChangeAdapter implements LoggerChangeListener {
 	 * @param logger The logger which took the snapshot.
 	 * @param snapshot The machine snapshot taken.
 	 */
+        @Override
 	public void snapshotTaken(LoggerSession logger, MachineSnapshot snapshot) {}
 	
 	
@@ -38,6 +40,7 @@ public class LoggerChangeAdapter implements LoggerChangeListener {
 	 * @param logger The logger which publshed the snapshot.
 	 * @param snapshot The machine snapshot published.
 	 */
+        @Override
 	public void snapshotPublished(LoggerSession logger, MachineSnapshot snapshot) {}
 }
 

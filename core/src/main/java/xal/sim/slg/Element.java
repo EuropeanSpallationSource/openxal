@@ -10,6 +10,7 @@ package xal.sim.slg;
 import xal.smf.AcceleratorNode;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.ArrayList;
@@ -207,20 +208,20 @@ public abstract class Element implements VisitorListener, Cloneable {
         return base;
     }
     
-    private double[] getSlicePositions(double cut_pos) {
+    private double[] getSlicePositions(double cutPos) {
         //calculate length and position of sliced parts.
-        double up_len=cut_pos-getStartPosition();
+        double upLen=cutPos-getStartPosition();
         //        System.out.println("getSlicePostions: "+cut_pos+","+getStartPosition());
-        if(Math.abs(up_len) < Lattice.EPS) {
-            up_len=0.0;
+        if(Math.abs(upLen) < Lattice.EPS) {
+            upLen=0.0;
         }
-        double dn_len=getLength()-up_len;
-        if(Math.abs(dn_len) < Lattice.EPS) {
-            dn_len=0.0;
+        double dnLen=getLength()-upLen;
+        if(Math.abs(dnLen) < Lattice.EPS) {
+            dnLen=0.0;
         }
-        double up_pos=getStartPosition()+up_len*0.5;
-        double dn_pos=getEndPosition()-dn_len*0.5;
-        double[] retval={up_pos,up_len,dn_pos,dn_len};
+        double upPos=getStartPosition()+upLen*0.5;
+        double dnPos=getEndPosition()-dnLen*0.5;
+        double[] retval={upPos,upLen,dnPos,dnLen};
         //        System.out.println("up_p,up_l,dn_p,dn_l: "+up_pos+","+up_len+","+dn_pos+","+dn_len);
         return retval;
     }
@@ -251,26 +252,27 @@ public abstract class Element implements VisitorListener, Cloneable {
         //The slice (and replace) operation. The thick element (this)
         //is cut into an upstream and a downstream part and then element 'insert'
         //is inserted (with limiting markers) into the lattice.
-        final ArrayList<Element> retval=new ArrayList<Element>();
+        final ArrayList<Element> retval=new ArrayList<>();
         Object[] args=new Object[3];
-        Element upstream=null, downstream=null;
+        Element upstream=null;
+        Element downstream=null;
         
-        double cut_pos=insert.getPosition();
-        double[] positions=getSlicePositions(cut_pos);
+        double cutPos=insert.getPosition();
+        double[] positions=getSlicePositions(cutPos);
         //consistyency check: any negative length ?
-        double neg_len=0.f;
+        double negLen=0.f;
         boolean error=false;
         if(positions[1] < -Lattice.EPS) {
-            neg_len=positions[1];
+            negLen=positions[1];
             error=true;
         } else if(positions[3] < -Lattice.EPS) {
-            neg_len=positions[3];
+            negLen=positions[3];
             error=true;
         }
         if(error) {
             //ooops! negative length: severe error ...
             String message="negative length when splitting: "+getName()+": pos= "+getPosition()+", len= "+getLength();
-            message+=": calculated length= "+neg_len;
+            message+=": calculated length= "+negLen;
             message+="\n\t while inserting: "+insert.getName()+": pos= "+insert.getPosition()+", len= "+insert.getLength();
             throw new LatticeError(message);
         }
@@ -282,8 +284,8 @@ public abstract class Element implements VisitorListener, Cloneable {
             params[2]=Class.forName("java.lang.String");
             Constructor<?> constructor = this.getClass().getConstructor(params);
             
-            args[0]=new Double(positions[0]);
-            args[1]=new Double(positions[1]);
+            args[0]=positions[0];
+            args[1]=positions[1];
 //            if (getPosition() > ((Double)args[0]).doubleValue()) 
 //                args[2]=getName()+"x";
 //            else
@@ -293,8 +295,8 @@ public abstract class Element implements VisitorListener, Cloneable {
             upstream=(Element)constructor.newInstance(args);
             upstream.setAcceleratorNode(this.xalNode);
             
-            args[0]=new Double(positions[2]);
-            args[1]=new Double(positions[3]);
+            args[0]=positions[2];
+            args[1]=positions[3];
 //            if (getType() != "drift") {
 //                args[2]=getName()+"y";
 //            }
@@ -338,12 +340,12 @@ public abstract class Element implements VisitorListener, Cloneable {
                 downstream.setHardwareSection(SECTION.UNKNOWN);
             }
             
-        } catch(Exception exptn) {
+        } catch(ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException exptn) {
             System.out.println(exptn);
             System.exit(-1);
         }
         
-        Element marker=new Marker(cut_pos);
+        Element marker=new Marker(cutPos);
         
         if(Math.abs(upstream.getLength()) < Lattice.EPS) {
             retval.add(insert);
@@ -369,12 +371,12 @@ public abstract class Element implements VisitorListener, Cloneable {
      */
     public String toCoutString() {
         String retval="";
-        double el_pos=getPosition();
-        double el_len=getLength();
-		double a_start = toAbsolutePosition(getStartPosition());
+        double elPos=getPosition();
+        double elLen=getLength();
+	double aStart = toAbsolutePosition(getStartPosition());
         String name=getName();
         String type=getType();
-        retval +="s="+fmt.format(a_start)+" m\t"+name+"\t"+type+" p="+fmt.format(el_pos)+" l="+fmt.format(el_len);
+        retval +="s="+fmt.format(aStart)+" m\t"+name+"\t"+type+" p="+fmt.format(elPos)+" l="+fmt.format(elLen);
         return retval;
     }
     
@@ -397,12 +399,13 @@ public abstract class Element implements VisitorListener, Cloneable {
     }
         
     /**
-     * When called with a Visitor reference the implementor can either
+     * When called with a Visitor reference the implementer can either
      * reject to be visited (empty method body) or call the Visitor by
      * passing its own object reference.
      *
      *@param v the Visitor which wants to visit this object.
      */
+    @Override
     public abstract void accept(Visitor v);
     
 }///////////////////////////////////////////// Element

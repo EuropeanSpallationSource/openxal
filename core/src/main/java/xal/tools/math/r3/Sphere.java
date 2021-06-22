@@ -21,10 +21,10 @@ public class Sphere implements java.io.Serializable {
     
     
     /** center of the sphere */
-    private R3      m_ptOrg;
+    private R3      ptOrg;
     
     /** radius of the sphere */
-    private double  m_dblRad = 0.0;
+    private double  dblRad = 0.0;
     
     
     
@@ -35,19 +35,19 @@ public class Sphere implements java.io.Serializable {
      *  @param  dblRad  the radius of the sphere
      */
     public Sphere(R3 ptOrg, double dblRad) {
-        m_ptOrg = ptOrg;
-        m_dblRad = dblRad;
+        this.ptOrg = ptOrg;
+        this.dblRad = dblRad;
     }
     
     /**
      *  Get the radius of the sphere
      */
-    public double   getRadius() { return m_dblRad; };
+    public double   getRadius() { return dblRad; };
     
     /**
      *  Get the centroid of the sphere
      */
-    public R3       getCentroid()   { return m_ptOrg; };
+    public R3       getCentroid()   { return ptOrg; };
     
     
     
@@ -59,10 +59,10 @@ public class Sphere implements java.io.Serializable {
      *  @return         true if pt is an element of the sphere
      */
     public boolean membership(R3 pt) {
-        R3      vecDis = pt.minus(m_ptOrg);
+        R3      vecDis = pt.minus(ptOrg);
         double  dblDis = vecDis.norm2();
         
-        if (dblDis <= m_dblRad) return true;
+        if (dblDis <= dblRad) return true;
         
         return false;
     }
@@ -76,10 +76,10 @@ public class Sphere implements java.io.Serializable {
      *  @return         true if pt is an element of the sphere boundary
      */
     public boolean boundary(R3 pt)  {
-        R3      vecDis = pt.minus(m_ptOrg);
+        R3      vecDis = pt.minus(ptOrg);
         double  dblDis = vecDis.norm2();
         
-        if (dblDis == m_dblRad) return true;
+        if (dblDis == dblRad) return true;
         
         return false;
     }
@@ -90,7 +90,7 @@ public class Sphere implements java.io.Serializable {
      *  @return     volume of sphere
      */
     public double volume() {
-        return (4.0/3.0)*Math.PI*m_dblRad*m_dblRad*m_dblRad;
+        return (4.0/3.0)*Math.PI*dblRad*dblRad*dblRad;
     }
     
 }

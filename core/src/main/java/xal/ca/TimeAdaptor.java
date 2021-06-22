@@ -6,6 +6,8 @@
 
 package xal.ca;
 
+import java.math.BigDecimal;
+
 /**
  *
  * @author  tap
@@ -15,5 +17,5 @@ public interface TimeAdaptor extends StatusAdaptor {
 	 * Time stamp in seconds since the epoch used by Java 
 	 * @return timestamp
 	 */
-    public java.math.BigDecimal getTimestamp();
+    public BigDecimal getTimestamp();
 }

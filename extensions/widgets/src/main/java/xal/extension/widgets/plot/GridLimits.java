@@ -5,7 +5,7 @@ import java.awt.*;
 
 /**
  *  The grid limits class that specifies minimal and maximal values for x and y
- *  variables, numbers of major and minor ticks on the axises, and formats of
+ *  variables, numbers of major and minor ticks on the axes, and formats of
  *  the markers
  *
  *@author     shishlo
@@ -38,7 +38,7 @@ public class GridLimits {
     }
 
 
-    /**  Sets the limits by using smart procedure for both x and y-axises */
+    /**  Sets the limits by using smart procedure for both x and y-axes */
     public void setSmartLimits() {
         setSmartLimitsX();
         setSmartLimitsY();

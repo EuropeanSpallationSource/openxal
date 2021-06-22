@@ -58,7 +58,7 @@ public class TestLattice {
      */
     
     /** Location of the output file */
-    static final private String    STR_FILENAME_OUTPUT = TestLattice.class.getName() + ".txt";
+    private static final String    STR_FILENAME_OUTPUT = TestLattice.class.getName() + ".txt";
 
     
     /** Flag used for indicating whether to type out to stout or file */

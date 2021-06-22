@@ -11,11 +11,9 @@ package xal.tools.apputils.pvselection;
 
 import javax.swing.*;
 import javax.swing.tree.*;
-import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
 
-import xal.tools.messaging.MessageCenter;
 import xal.smf.*;
 import xal.ca.Channel;
 /** 
@@ -36,7 +34,7 @@ public class PVSelector extends JPanel{
     /** the JTree to use for displaying the accelerator */
     public JTree tree;
 
-    /** the JButton to set slected PV or just to escape */
+    /** the JButton to set selected PV or just to escape */
     public JButton slectButton = new JButton("Set Selected PV or ESCAPE");
 
     /** the string container for the selected PV name */
@@ -68,7 +66,7 @@ public class PVSelector extends JPanel{
     /** the selected channel */
     private Channel myChannel;
 
-    /** The constructor. Just craete objects we need internally.
+    /** The constructor. Just create objects we need internally.
      *
      * @param label - the label to use to comment text box
      */
@@ -88,6 +86,7 @@ public class PVSelector extends JPanel{
 	add(slectButton,BorderLayout.SOUTH); 
 
 	slectButton.addActionListener(new java.awt.event.ActionListener() {
+                @Override
 		public void actionPerformed(java.awt.event.ActionEvent evt) {
 		    selectedPVName = jText.getText();
 		    if(actionListenerProxy != null){
@@ -95,12 +94,11 @@ public class PVSelector extends JPanel{
 		    }
 		}
 	    });
-
       
     }
 
 
-    /** The constructor. Just craete objects we need internally.
+    /** The constructor. Just create objects we need internally.
      *
      * @param accel - The XAL accelerator object to build a tree from
      * @param label - the label to use to comment text box
@@ -163,8 +161,9 @@ public class PVSelector extends JPanel{
 	scrollPane.setViewportView(tree);
 
 	// catch when someone directly types in a PV to the textField 
-	jText.addActionListener(new java.awt.event.ActionListener() {
-		public void actionPerformed(java.awt.event.ActionEvent evt) {
+	jText.addActionListener(new ActionListener() {
+                @Override
+		public void actionPerformed(ActionEvent evt) {
 		    selectedPVName = jText.getText();
 		    if(actionListenerProxy != null){
 			actionListenerProxy.actionPerformed(actionEvent);
@@ -173,6 +172,7 @@ public class PVSelector extends JPanel{
 	    });
 
 	MouseListener ml = new MouseAdapter() {
+                @Override
 		public void mousePressed(MouseEvent e) {
 		    int selRow = tree.getRowForLocation(e.getX(), e.getY());
 		    TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
@@ -223,15 +223,15 @@ public class PVSelector extends JPanel{
 	return slectButton;
     }
  
-    /** convienience method to get selected name */
+    /** convenience method to get selected name */
     public String getSelectedPVName(){
 	return selectedPVName;
     };
   
-    /** convienience method to get selected channel */
+    /** convenience method to get selected channel */
     public Channel getSelectedChannel(){
 	return myChannel;
-    };
+    }
   
     
     /** method to set a PVSectedListener */

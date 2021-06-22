@@ -153,6 +153,5 @@ public class R3x3EigenDecomposition {
         this.evd = DecompositionFactory.eig(matTarget.getSize(), true);
         this.evd.decompose(matA);
     }
-
     
 }

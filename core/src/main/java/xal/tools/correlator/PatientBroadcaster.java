@@ -41,6 +41,7 @@ public class PatientBroadcaster<RecordType> extends AbstractBroadcaster<RecordTy
 	 * @param sender The bin agent that published the new correlation.
 	 * @param correlation The new correlation.
      */
+        @Override
     synchronized public void newCorrelation( final BinAgent<RecordType> sender, final Correlation<RecordType> correlation ) {
 		final int numRecords = correlation.numRecords();
 		final boolean isFullCount = ( numRecords == fullCount );
@@ -92,6 +93,7 @@ public class PatientBroadcaster<RecordType> extends AbstractBroadcaster<RecordTy
 	 * @param sender The correlator whose timespan bin has changed.
 	 * @param newTimespan The new timespan used by the correlator.
 	 */
+        @Override
     public void binTimespanChanged( final Correlator<?,RecordType,?> sender, final double newTimespan ) {
 		super.binTimespanChanged( sender, newTimespan );
 		binTimespan = newTimespan;

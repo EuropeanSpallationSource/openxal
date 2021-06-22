@@ -93,16 +93,16 @@ public class Trace3dTracker extends Tracker {
      */
     
     /** string type identifier for algorithm */
-    public static final String      s_strTypeId = "Trace3dTracker";
+    public static final String      TYPE_ID = "Trace3dTracker";
     
     /** current algorithm version */
-    public static final int         s_intVersion = 1;
+    public static final int         VERSION = 1;
     
     /** probe type recognized by this algorithm */
-    public static final Class<EnvelopeProbe>       s_clsProbeType = EnvelopeProbe.class;
+    public static final Class<EnvelopeProbe>       CLS_PROBE_TYPE = EnvelopeProbe.class;
     
     /** maximum distance to advance probe before applying space charge kick */
-    private static final double     s_dblDefStep = .01;
+    private static final double     DEF_STEP = .01;
 
 
     
@@ -125,10 +125,10 @@ public class Trace3dTracker extends Tracker {
      *  Creates a new instance of EnvelopeTracker 
      */
     public Trace3dTracker() { 
-        super(s_strTypeId, s_intVersion, s_clsProbeType);
+        super(TYPE_ID, VERSION, CLS_PROBE_TYPE);
         
-        this.dblStepSize = Trace3dTracker.s_dblDefStep;
-    };
+        this.dblStepSize = Trace3dTracker.DEF_STEP;
+    }
     
     /**
      * Copy constructor for Trace3dTracker
@@ -328,7 +328,7 @@ public class Trace3dTracker extends Tracker {
         
         // Save the new state variables in the probe
         probe.setCovariance(new CovarianceMatrix(chi1));
-    };
+    }
 
     /** 
      * <p>
@@ -414,7 +414,7 @@ public class Trace3dTracker extends Tracker {
         matSC = matSC.conjugateTrans(matRot);   // now rotate to beam cartesian coordinates
         
         return matSC;
-    };
+    }
 }
 
 

@@ -64,4 +64,4 @@ public interface IElectrostatic  {
      */
     public void setVoltage(double dblVoltage);
     
-};
+}

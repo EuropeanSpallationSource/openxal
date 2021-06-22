@@ -9,8 +9,6 @@
  */
 package xal.extension.solver;
 
-import java.util.*;
-
 
 /**
  * SolverStopperFactory is an interface which generates a stopper. Stoppers stop the solver
@@ -26,6 +24,7 @@ public class SolveStopperFactory {
 	 */
 	public static Stopper immediateStopper() {
 		return new Stopper() {
+                                @Override
 				public boolean shouldStop( Solver solver ) {
 					return true;
 				}
@@ -40,6 +39,7 @@ public class SolveStopperFactory {
 	 */
 	public static Stopper maxEvaluationsStopper( final int maxEvaluations ) {
 		return new Stopper() {
+                                @Override
 				public boolean shouldStop( final Solver solver ) {
 					final ScoreBoard scoreboard = solver.getScoreBoard();
 					return scoreboard.getEvaluations() >= maxEvaluations || scoreboard.getAlgorithmExecutions() >= maxEvaluations;
@@ -55,6 +55,7 @@ public class SolveStopperFactory {
 	 */
 	public static Stopper maxElapsedTimeStopper( final double maxSeconds ) {
 		return new Stopper() {
+                                @Override
 				public boolean shouldStop( Solver solver ) {
 					return solver.getScoreBoard().getElapsedTime() >= maxSeconds;
 				}
@@ -70,6 +71,7 @@ public class SolveStopperFactory {
 	 */
 	public static Stopper minSatisfactionStopper( final double satisfactionTarget ) {
 		return new Stopper() {
+                        @Override
 			public boolean shouldStop( Solver solver ) {
 				return meetsSatisfaction( solver, satisfactionTarget );
 			}
@@ -85,6 +87,7 @@ public class SolveStopperFactory {
 	 */
 	public static Stopper maxEvaluationsSatisfactionStopper( final int maxEvaluations, final double satisfactionTarget ) {
 		return new Stopper() {
+                        @Override
 			public boolean shouldStop( final Solver solver ) {
 				final ScoreBoard scoreboard = solver.getScoreBoard();
 				if ( scoreboard.getEvaluations() >= maxEvaluations || scoreboard.getAlgorithmExecutions() >= maxEvaluations )  return true;
@@ -105,6 +108,7 @@ public class SolveStopperFactory {
 	 */
 	public static Stopper minMaxTimeSatisfactionStopper( final double minSeconds, final double maxSeconds, final double satisfactionTarget ) {
 		return new Stopper() {
+                                @Override
 				public boolean shouldStop( Solver solver ) {
 					final double elapsedTime = solver.getScoreBoard().getElapsedTime();
 					
@@ -124,7 +128,7 @@ public class SolveStopperFactory {
 	 * Utility method to test whether the satisfaction target is met.
 	 * @param satisfactionTarget The satisfaction that must be reached by all objectives before stopping.
 	 */
-	static private boolean meetsSatisfaction( final Solver solver, final double satisfactionTarget ) {
+	private static boolean meetsSatisfaction( final Solver solver, final double satisfactionTarget ) {
 		// get the best solution found so far
 		final Trial bestSolution = solver.getScoreBoard().getBestSolution();
 		if ( bestSolution == null )  return false;
@@ -147,6 +151,7 @@ public class SolveStopperFactory {
 	 */
 	public static Stopper flatOptimizationStopper( final int minRepeatSolutions ) {
 		return new Stopper() {
+                        @Override
 			public boolean shouldStop( Solver solver ) {
 				return solver.getScoreBoard().getSolutionJudge().getOptimalSolutions().size() >= minRepeatSolutions;
 			}
@@ -161,6 +166,7 @@ public class SolveStopperFactory {
 	 */
 	public static Stopper maxOptimalSolutionStopper( final int minOptimalSolutions ) {
 		return new Stopper() {
+                                @Override
 				public boolean shouldStop( Solver solver ) {
 					return solver.getScoreBoard().getOptimalSolutionsFound() >= minOptimalSolutions;
 				}
@@ -186,6 +192,7 @@ public class SolveStopperFactory {
 	 */
 	public static Stopper orStoppers( final Stopper ... stoppers ) {
 		return new Stopper() {
+                        @Override
 			public boolean shouldStop( final Solver solver ) {
 				for ( final Stopper stopper : stoppers ) {
 					if ( stopper.shouldStop( solver ) ) return true;
@@ -204,6 +211,7 @@ public class SolveStopperFactory {
 	 */
 	public static Stopper andStopper( final Stopper stopper1, final Stopper stopper2 ) {
 		return new Stopper() {
+                                @Override
 				public boolean shouldStop( final Solver solver ) {
 					return stopper1.shouldStop( solver ) && stopper2.shouldStop( solver );
 				}

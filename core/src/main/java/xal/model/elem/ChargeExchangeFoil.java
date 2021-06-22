@@ -28,10 +28,10 @@ public class ChargeExchangeFoil extends ThinElement {
      */
     
     /** type string identifier for all Marker objects */
-    public static final String          s_strType = "CEFoil";
+    public static final String          TYPE = "CEFoil";
     
     /** identity phase map used by all Markers as the transfer map */
-    private static final PhaseMap s_mapId = PhaseMap.identity();
+    private static final PhaseMap MAP_ID = PhaseMap.identity();
     
     
 
@@ -46,7 +46,7 @@ public class ChargeExchangeFoil extends ThinElement {
      *
      */
     public ChargeExchangeFoil(String strId) {
-        super(s_strType, strId);
+        super(TYPE, strId);
     }
     
     /** 
@@ -55,7 +55,7 @@ public class ChargeExchangeFoil extends ThinElement {
      *  <b>BE CAREFUL</b>
      */
     public ChargeExchangeFoil() {
-        super(s_strType);
+        super(TYPE);
     }
 
     
@@ -97,6 +97,6 @@ public class ChargeExchangeFoil extends ThinElement {
      *  @exception  PropagationException  this should not occur
      */
     @Override
-    protected PhaseMap transferMap(IProbe probe) throws PropagationException { return s_mapId; }
+    protected PhaseMap transferMap(IProbe probe) throws PropagationException { return MAP_ID; }
     
 }

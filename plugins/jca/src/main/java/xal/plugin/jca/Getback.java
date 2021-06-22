@@ -21,8 +21,8 @@ import gov.aps.jca.event.GetListener;
  * @version 1.0
  */
 class Getback implements GetListener {
-    final protected JcaChannel channel;       // Channel to monitor
-    final protected IEventSinkValue listener; // listener for the callback
+    protected final JcaChannel channel;       // Channel to monitor
+    protected final IEventSinkValue listener; // listener for the callback
     
     
     /** 
@@ -46,7 +46,7 @@ class Getback implements GetListener {
      */
     protected void get() throws GetException, ConnectionException {
         try {
-            channel._jcaChannel.get(this);
+            channel.jcaChannel.get(this);
         } 
 		catch ( CAException exception )   {
             throw new GetException( "Get exception in GetBack: " + exception.getMessage() );

@@ -11,15 +11,15 @@ package xal.tools.math;
 
 
 /**
- * Calculates the discrete fourier transform.
- * While not as efficient as a fast fourier transform, it offers more flexibility.
+ * Calculates the discrete Fourier transform.
+ * While not as efficient as a fast Fourier transform, it offers more flexibility.
  * transform(f) = 1/2N * sum( f(t) e^(i pi p k / N) ), k = 0...2N-1, t = kT/2N, freq = 2 pi p / T, p = 0...2N-1
  */
 public class DiscreteFourierTransform {
-	final private static double PI2 = 2.0 * Math.PI;
-	final private double[] VALUES;
-	final private double PERIOD;
-	final private Complex[] SPECTRUM;
+	private static final double PI2 = 2.0 * Math.PI;
+	private final double[] values;
+	private final double period;
+	private final Complex[] spetrum;
 	
 	
 	/**
@@ -34,15 +34,15 @@ public class DiscreteFourierTransform {
 			throw new RuntimeException( "The discrete fourier transform requires an even number of time based values, but you have provided " + values.length + " elements." );
 		} 
 		
-		PERIOD = period;
-		VALUES = values;
-		SPECTRUM = computeTransform();
+		this.period = period;
+		this.values = values;
+		spetrum = computeTransform();
 	}
 	
 	
-	/** compute the discrete fourier transform */
+	/** compute the discrete Fourier transform */
 	private Complex[] computeTransform() {
-		final double[] values = VALUES;
+		final double[] values = this.values;
 		final int count = values.length;
 		final double countReciprocal = 1.0 / count;
 		
@@ -66,30 +66,30 @@ public class DiscreteFourierTransform {
 	
 	/** get the time based array of values */
 	public double[] getValues() {
-		return VALUES;
+		return values;
 	}
 	
 	
 	/** get the time for the specified time index */
 	public double getTime( final int index ) {
-		return index * PERIOD / VALUES.length;
+		return index * period / values.length;
 	}
 	
 	
 	/** get the transform at the specified frequency index */
 	public Complex[] getSpectrum() {
-		return SPECTRUM;
+		return spetrum;
 	}
 	
 	
 	/** get the count of the elements in the transform */
 	public int getSpectrumCount() {
-		return SPECTRUM.length;
+		return spetrum.length;
 	}
 	
 	
 	/** get the frequency associated with the frequency index */
 	public double getFrequency( final int index ) {
-		return ((double)index) / PERIOD;
+		return ((double)index) / period;
 	}
 }

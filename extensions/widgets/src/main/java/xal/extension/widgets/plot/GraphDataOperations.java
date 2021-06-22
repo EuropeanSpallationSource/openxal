@@ -9,29 +9,29 @@ public class  GraphDataOperations{
     private GraphDataOperations(){
     }
 
-    static public Double findIntersectionX(Vector<BasicGraphData> gdV, double xMin, double xMax, double eps){
+    public static Double findIntersectionX(Vector<BasicGraphData> gdV, double xMin, double xMax, double eps){
 		return findIntersection(gdV,xMin,xMax,-Double.MAX_VALUE,Double.MAX_VALUE,eps)[0];
     }
 
-    static public Double findIntersectionY(Vector<BasicGraphData> gdV, double xMin, double xMax, double eps){
+    public static Double findIntersectionY(Vector<BasicGraphData> gdV, double xMin, double xMax, double eps){
 		return findIntersection(gdV,xMin,xMax,-Double.MAX_VALUE,Double.MAX_VALUE,eps)[1];
     }
 
-    static public Double[] findIntersection(Vector<BasicGraphData> gdV, double xMin, double xMax, double eps){
+    public static Double[] findIntersection(Vector<BasicGraphData> gdV, double xMin, double xMax, double eps){
 		return findIntersection(gdV,xMin,xMax,-Double.MAX_VALUE,Double.MAX_VALUE,eps);
     }
 
-    static public Double findIntersectionX(Vector<BasicGraphData> gdV, double xMin, double xMax,
+    public static Double findIntersectionX(Vector<BasicGraphData> gdV, double xMin, double xMax,
                                            double yMin, double yMax, double eps){
         return findIntersection(gdV,xMin,xMax,yMin,yMax,eps)[0];
     }
 
-    static public Double findIntersectionY(Vector<BasicGraphData> gdV, double xMin, double xMax,
+    public static Double findIntersectionY(Vector<BasicGraphData> gdV, double xMin, double xMax,
                                            double yMin, double yMax, double eps){
 		return findIntersection(gdV,xMin,xMax,yMin,yMax,eps)[1];
     }
 
-    static public Double[] findIntersection(Vector<BasicGraphData> gdV, double xMin, double xMax,
+    public static Double[] findIntersection(Vector<BasicGraphData> gdV, double xMin, double xMax,
                                             double yMin, double yMax, double eps){
         Double intersX       = null;
         Double intersY       = null;
@@ -59,12 +59,12 @@ public class  GraphDataOperations{
 							synchronized(gd2){
 								intersArr = findIntersection(gd1,gd2,xMin,xMax,yMin,yMax,eps);
 								if(intersArr[0] != null &&  intersArr[1] != null){
-									xInters = xInters + intersArr[0].doubleValue();
-									yInters = yInters + intersArr[1].doubleValue();
-									xInterS = xInterS + intersArr[4].doubleValue();
-									yInterS = yInterS + intersArr[5].doubleValue();
-									xInterS2 = xInterS2 + intersArr[6].doubleValue();
-									yInterS2 = yInterS2 + intersArr[7].doubleValue();
+									xInters = xInters + intersArr[0];
+									yInters = yInters + intersArr[1];
+									xInterS = xInterS + intersArr[4];
+									yInterS = yInterS + intersArr[5];
+									xInterS2 = xInterS2 + intersArr[6];
+									yInterS2 = yInterS2 + intersArr[7];
                                     nPoints = nPoints + ((int) intersArr[8].doubleValue());
 									nCount++;
 								}
@@ -75,15 +75,15 @@ public class  GraphDataOperations{
 			}
 		}
         if(nCount > 0){
-			intersX = new Double(xInters/nCount);
-            intersY = new Double(yInters/nCount);
-            intersXsum = new Double(xInterS);
-            intersYsum = new Double(yInterS);
-            intersXsum2 = new Double(xInterS2);
-            intersYsum2 = new Double(yInterS2);
-            intersPoints = new Double((double) nPoints);
-            intersXspread = new Double(Math.sqrt(Math.abs(((xInterS2)-xInterS*xInterS/nPoints)/nPoints)));
-            intersYspread = new Double(Math.sqrt(Math.abs(((yInterS2)-yInterS*yInterS/nPoints)/nPoints)));
+            intersX = xInters/nCount;
+            intersY = yInters/nCount;
+            intersXsum = xInterS;
+            intersYsum = yInterS;
+            intersXsum2 = xInterS2;
+            intersYsum2 = yInterS2;
+            intersPoints = (double) nPoints;
+            intersXspread = Math.sqrt(Math.abs(((xInterS2)-xInterS*xInterS/nPoints)/nPoints));
+            intersYspread = Math.sqrt(Math.abs(((yInterS2)-yInterS*yInterS/nPoints)/nPoints));
 		}
         intersArr = new Double[9];
         intersArr[0] = intersX;
@@ -98,34 +98,34 @@ public class  GraphDataOperations{
         return intersArr;
     }
 
-    static public Double findIntersectionX(BasicGraphData gd1, BasicGraphData gd2,
+    public static Double findIntersectionX(BasicGraphData gd1, BasicGraphData gd2,
 										   double xMin, double xMax, double eps){
         return findIntersection(gd1,gd2,xMin,xMax,-Double.MAX_VALUE,Double.MAX_VALUE,eps)[0];
     }
 
-    static public Double findIntersectionY(BasicGraphData gd1, BasicGraphData gd2,
+    public static Double findIntersectionY(BasicGraphData gd1, BasicGraphData gd2,
 										   double xMin, double xMax, double eps){
         return findIntersection(gd1,gd2,xMin,xMax,-Double.MAX_VALUE,Double.MAX_VALUE,eps)[1];
     }
 
-    static public Double findIntersectionX(BasicGraphData gd1, BasicGraphData gd2,
+    public static Double findIntersectionX(BasicGraphData gd1, BasicGraphData gd2,
 										   double xMin, double xMax,
 										   double yMin, double yMax, double eps){
 		return findIntersection(gd1,gd2,xMin,xMax,yMin,yMax,eps)[0];
     }
 
-    static public Double findIntersectionY(BasicGraphData gd1, BasicGraphData gd2,
+    public static Double findIntersectionY(BasicGraphData gd1, BasicGraphData gd2,
 										   double xMin, double xMax,
 										   double yMin, double yMax, double eps){
 		return findIntersection(gd1,gd2,xMin,xMax,yMin,yMax,eps)[1];
     }
 
-    static public Double[] findIntersection(BasicGraphData gd1, BasicGraphData gd2,
+    public static Double[] findIntersection(BasicGraphData gd1, BasicGraphData gd2,
                                             double xMin, double xMax, double eps){
         return findIntersection(gd1,gd2,xMin,xMax,-Double.MAX_VALUE,Double.MAX_VALUE,eps);
     }
 
-    static public Double[] findIntersection(BasicGraphData gd1, BasicGraphData gd2,
+    public static Double[] findIntersection(BasicGraphData gd1, BasicGraphData gd2,
                                             double xMinIni, double xMaxIni,
                                             double yMinIni, double yMaxIni, double eps){
         Double intersX       = null;
@@ -149,11 +149,15 @@ public class  GraphDataOperations{
 		if(yMin < yMinIni ) yMin = yMinIni;
 		if(yMax > yMaxIni ) yMax = yMaxIni;
 
-		double xInterS  = 0.0, yInterS  = 0.0;
-		double xInterS2 = 0.0, yInterS2 = 0.0;
-		double xInter   = 0.0, yInter   = 0.0;
+		double xInterS  = 0.0;
+                double yInterS  = 0.0;
+		double xInterS2 = 0.0;
+                double yInterS2 = 0.0;
+		double xInter   = 0.0;
+                double yInter   = 0.0;
         int nCount = 0;
-		double xc0 = xMin, xc1 = xMax;
+		double xc0 = xMin;
+                double xc1 = xMax;
 		double signD = 0.;
         int nGraphPoints1 = gd1.getNumbOfPoints();
 		if(nGraphPoints1 > 1 &&
@@ -179,8 +183,8 @@ public class  GraphDataOperations{
 					if(signD <= 0.){
 						intersArr = findIntersectionByHalfDiv(gd1,gd2,xc0,xc1,eps);
 						if(intersArr[0] != null && intersArr[1] != null){
-							xInter = intersArr[0].doubleValue();
-							yInter = intersArr[1].doubleValue();
+							xInter = intersArr[0];
+							yInter = intersArr[1];
 							if(xInter >= xMin && xInter <= xMax && yInter >= yMin && yInter <= yMax){
 								xInterS = xInterS + xInter;
 								yInterS = yInterS + yInter;
@@ -200,8 +204,8 @@ public class  GraphDataOperations{
 					if(signD <= 0.){
 						intersArr = findIntersectionByHalfDiv(gd1,gd2,xc0,xc1,eps);
 						if(intersArr[0] != null && intersArr[1] != null){
-							xInter = intersArr[0].doubleValue();
-							yInter = intersArr[1].doubleValue();
+							xInter = intersArr[0];
+							yInter = intersArr[1];
 							if(xInter >= xMin && xInter <= xMax && yInter >= yMin && yInter <= yMax){
 								xInterS = xInterS + xInter;
 								yInterS = yInterS + yInter;
@@ -221,8 +225,8 @@ public class  GraphDataOperations{
 					if(signD <= 0.){
 						intersArr = findIntersectionByHalfDiv(gd1,gd2,xc0,xc1,eps);
 						if(intersArr[0] != null && intersArr[1] != null){
-							xInter = intersArr[0].doubleValue();
-							yInter = intersArr[1].doubleValue();
+							xInter = intersArr[0];
+							yInter = intersArr[1];
 							if(xInter >= xMin && xInter <= xMax && yInter >= yMin && yInter <= yMax){
 								xInterS = xInterS + xInter;
 								yInterS = yInterS + yInter;
@@ -244,8 +248,8 @@ public class  GraphDataOperations{
 					if(signD <= 0.){
 						intersArr = findIntersectionByHalfDiv(gd1,gd2,xc0,xc1,eps);
 						if(intersArr[0] != null && intersArr[1] != null){
-							xInter = intersArr[0].doubleValue();
-							yInter = intersArr[1].doubleValue();
+							xInter = intersArr[0];
+							yInter = intersArr[1];
 							if(xInter >= xMin && xInter <= xMax && yInter >= yMin && yInter <= yMax){
 								xInterS = xInterS + xInter;
 								yInterS = yInterS + yInter;
@@ -261,15 +265,15 @@ public class  GraphDataOperations{
 
 		}
 		if(nCount > 0){
-			intersX = new Double(xInterS/nCount);
-			intersY = new Double(yInterS/nCount);
-            intersXsum = new Double(xInterS);
-            intersYsum = new Double(yInterS);
-            intersXsum2 = new Double(xInterS2);
-            intersYsum2 = new Double(yInterS2);
-            intersPoints = new Double((double) nCount);
-            intersXspread = new Double(Math.sqrt(Math.abs(((xInterS2)-xInterS*xInterS/nCount)/nCount)));
-            intersYspread = new Double(Math.sqrt(Math.abs(((yInterS2)-yInterS*yInterS/nCount)/nCount)));
+			intersX = xInterS/nCount;
+			intersY = yInterS/nCount;
+            intersXsum = xInterS;
+            intersYsum = yInterS;
+            intersXsum2 = xInterS2;
+            intersYsum2 = yInterS2;
+            intersPoints = (double) nCount;
+            intersXspread = Math.sqrt(Math.abs(((xInterS2)-xInterS*xInterS/nCount)/nCount));
+            intersYspread = Math.sqrt(Math.abs(((yInterS2)-yInterS*yInterS/nCount)/nCount));
 		}
         intersArr = new Double[9];
         intersArr[0] = intersX;
@@ -284,7 +288,7 @@ public class  GraphDataOperations{
         return intersArr;
     }
 
-    static private Double [] findIntersectionByHalfDiv(BasicGraphData gd1, BasicGraphData gd2,
+    private static Double [] findIntersectionByHalfDiv(BasicGraphData gd1, BasicGraphData gd2,
                                                        double xMin, double xMax, double eps){
         Double intersX = null;
         Double intersY = null;
@@ -325,8 +329,8 @@ public class  GraphDataOperations{
 		}
 
 		if(nCount > 0){
-			intersX = new Double(xInter/nCount);
-			intersY = new Double(yInter/nCount);
+			intersX = xInter/nCount;
+			intersY = yInter/nCount;
 		}
         intersArr = new Double[2];
         intersArr[0] = intersX;
@@ -335,7 +339,7 @@ public class  GraphDataOperations{
     }
 
 
-    static public double polynom(double x, int order){
+    public static double polynom(double x, int order){
 		if(order < 0 ) return 0.;
         if(order == 0 ) return 1.;
         double rez = 1.;
@@ -345,7 +349,7 @@ public class  GraphDataOperations{
 		return rez;
     }
 
-    static public double polynom(double x, double[] coeff){
+    public static double polynom(double x, double[] coeff){
         if(coeff == null) return 0.;
 		double sum = 0.;
         double yP = 1.;
@@ -356,7 +360,7 @@ public class  GraphDataOperations{
         return sum;
     }
 
-    static public double getExtremumPosition(BasicGraphData gd, double xMin, double xMax){
+    public static double getExtremumPosition(BasicGraphData gd, double xMin, double xMax){
 		double xExtr = Double.MAX_VALUE;
 		double[][] coeff = polynomialFit(gd,xMin,xMax,2);
 		if( coeff == null) return xExtr;
@@ -375,22 +379,22 @@ public class  GraphDataOperations{
     }
 
 
-    static public void polynomialFit(BasicGraphData gdSource, BasicGraphData gdTarget,
+    public static void polynomialFit(BasicGraphData gdSource, BasicGraphData gdTarget,
 									 double xMin, double xMax){
 		polynomialFit(gdSource,gdTarget,xMin,xMax,2,4);
     }
 
-    static public void polynomialFit(BasicGraphData gdSource, BasicGraphData gdTarget,
+    public static void polynomialFit(BasicGraphData gdSource, BasicGraphData gdTarget,
 									 int nOrder){
 		polynomialFit(gdSource,gdTarget,-Double.MAX_VALUE,Double.MAX_VALUE,nOrder);
     }
 
-    static public void polynomialFit(BasicGraphData gdSource, BasicGraphData gdTarget,
+    public static void polynomialFit(BasicGraphData gdSource, BasicGraphData gdTarget,
 									 double xMin, double xMax, int nOrder){
 		polynomialFit(gdSource,gdTarget,xMin,xMax,nOrder,9);
     }
 
-    static public void polynomialFit(BasicGraphData gdSource, BasicGraphData gdTarget,
+    public static void polynomialFit(BasicGraphData gdSource, BasicGraphData gdTarget,
 									 double xMin, double xMax, int nOrder, int nInterP){
         gdTarget.removeAllPoints();
 		gdTarget.setGraphColor(gdSource.getGraphColor());
@@ -421,7 +425,7 @@ public class  GraphDataOperations{
 		gdTarget.addPoint(x_arr,y_arr);
     }
 
-    static public double[][] polynomialFit(BasicGraphData gd, double xMin, double xMax, int nOrderIn){
+    public static double[][] polynomialFit(BasicGraphData gd, double xMin, double xMax, int nOrderIn){
 		if(gd == null) return null;
 		if(nOrderIn < 0) return null;
 		int nOrder = nOrderIn+1;
@@ -538,12 +542,12 @@ public class  GraphDataOperations{
     }
 
 
-    static public boolean reverseMatrix(double[][] a){
+    public static boolean reverseMatrix(double[][] a){
 		return ArrayMath.invertMatrix( a );
     }
 
 
-    static public void unwrapData(BasicGraphData gd){
+    public static void unwrapData(BasicGraphData gd){
 		int nP = gd.getNumbOfPoints();
 		if( nP > 1){
 			double [] xA = new double[nP];
@@ -564,7 +568,7 @@ public class  GraphDataOperations{
 
     /** this method finds +-2*PI to produce the nearest points
 	 */
-    static public double unwrap(double y,double yIn){
+    public static double unwrap(double y, double yIn){
 		if( y == yIn) return y;
 		int n = 0;
 		double diff = yIn - y;
@@ -589,7 +593,7 @@ public class  GraphDataOperations{
      *  @return Object[2] - Object[0] is BasicGraphData class
      *                      instnce Object[1] - Integer instance with point index
      */
-    static public Object[] getGraphDataAndPointIndexInside(Vector<BasicGraphData> gdV,
+    public static Object[] getGraphDataAndPointIndexInside(Vector<BasicGraphData> gdV,
 														   double xMin, double xMax,
 														   double yMin, double yMax){
 		Object[] objArr = new Object[2];
@@ -616,7 +620,7 @@ public class  GraphDataOperations{
 				}
 			}
             if(count == 1 && ind >= 0 && ind < nGraphPoints){
-                objArr[1] = new Integer(ind);
+                objArr[1] = ind;
 			}
 		}
 		return objArr;
@@ -625,10 +629,10 @@ public class  GraphDataOperations{
     /** Returns the vector of BasicGraphData whose
      *  at least one point is inside rectangle.
      */
-    static public Vector<BasicGraphData> getDataInsideRectangle(Vector<BasicGraphData> gdV,
+    public static Vector<BasicGraphData> getDataInsideRectangle(Vector<BasicGraphData> gdV,
 												double xMin, double xMax,
 												double yMin, double yMax){
-		Vector<BasicGraphData> rezV = new Vector<BasicGraphData>();
+		Vector<BasicGraphData> rezV = new Vector<>();
         BasicGraphData gd = null;
         for(int i = 0, n = gdV.size(); i < n; i++){
 			gd = gdV.get(i);
@@ -643,7 +647,7 @@ public class  GraphDataOperations{
 
     /** Returns true if one of the points is inside rectangle.
      */
-    static public boolean isIntersectRectangle(BasicGraphData gd,
+    public static boolean isIntersectRectangle(BasicGraphData gd,
 											   double xMin, double xMax,
 											   double yMin, double yMax){
 		double x = 0.;

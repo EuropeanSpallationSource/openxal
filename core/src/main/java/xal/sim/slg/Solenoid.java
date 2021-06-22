@@ -6,7 +6,7 @@ package xal.sim.slg;
  * @author  chu
   */
 public class Solenoid extends Element {
-    private static final String type="solenoid";
+    private static final String TYPE = "solenoid";
     
     /** Creates a new instance of Quadrupole */
     public Solenoid(double position, double len, String name) {
@@ -32,17 +32,19 @@ public class Solenoid extends Element {
     /*
      * Getter for the element type property.
      */
+    @Override
     public String getType() {
-        return type;
+        return TYPE;
     }
 
     /**
-     * When called with a Visitor reference the implementor can either
+     * When called with a Visitor reference the implementer can either
      * reject to be visited (empty method body) or call the Visitor by
      * passing its own object reference.
      *
      *@param v the Visitor which wants to visit this object.
      */
+    @Override
     public void accept(Visitor v) {
         v.visit( this );
     }

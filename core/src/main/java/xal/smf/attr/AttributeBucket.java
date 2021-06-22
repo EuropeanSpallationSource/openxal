@@ -19,13 +19,13 @@ import xal.tools.data.*;
 
 public abstract class AttributeBucket implements java.io.Serializable, DataListener {
 	/** required for Serializable */
-	static final private long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 	
     /** map of attributes keyed by value */
-    private Map<String,Attribute> m_mapAttrs = new HashMap<>();
+    private Map<String,Attribute> mapAttrs = new HashMap<>();
     
     /** map of attribute descriptions keyed by value */
-    private Map<String,String> m_mapDescriptions = new HashMap<>();
+    private Map<String,String> mapDescriptions = new HashMap<>();
     
     
     /** Derived class must furnish a unique type id */
@@ -35,10 +35,12 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
     // DataListener interface
     
     /** implement DataListener interface */
+        @Override
     public String dataLabel() { return getType(); }
     
     
     /** implement DataListener interface */
+        @Override
     public void update(DataAdaptor adaptor) throws NumberFormatException {
         String[] attributeArray = adaptor.attributes();
         
@@ -51,6 +53,7 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
     
     
     /** implement DataListener interface */
+        @Override
     public void write(DataAdaptor adaptor) {
         String[] attributeNames = getAttrNames();
         int numAttributes = attributeNames.length;
@@ -81,22 +84,22 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
      */
     
     public Attribute   getAttr(String strName)  { 
-        return m_mapAttrs.get(strName); 
-    };
+        return mapAttrs.get(strName); 
+    }
     
     public String getAttrDescription(String strName)  { 
-        return m_mapDescriptions.get(strName); 
-    };
+        return mapDescriptions.get(strName); 
+    }
     
     public String[]  getAttrNames()    {
         int             nNames;             // number of attribute names
         java.util.Set<String>   setKeys;            // keys of the map (i.e., attribute names)
         
-        setKeys = m_mapAttrs.keySet();
+        setKeys = mapAttrs.keySet();
         nNames  = setKeys.size();
         
         return setKeys.toArray( new String[] {} );
-    };
+    }
     
     
     /*
@@ -104,10 +107,10 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
      */
     
     public boolean parseAttrValue(String strName, String strVal)  throws NumberFormatException   {
-        if ( !m_mapAttrs.containsKey( strName ) ) return false;
+        if ( !mapAttrs.containsKey( strName ) ) return false;
       
-        return m_mapAttrs.get( strName ).parse( strVal );
-    };
+        return mapAttrs.get( strName ).parse( strVal );
+    }
        
     
     
@@ -118,37 +121,37 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
     public boolean setAttrValue(String strName, int newVal)  {
         if (!checkAttribute(strName, Attribute.iInteger)) return false;
       
-        m_mapAttrs.get(strName).set(newVal);
+        mapAttrs.get(strName).set(newVal);
         return true;
-    };
+    }
         
     public boolean setAttrValue(String strName, long newVal)  {
         if (!checkAttribute(strName, Attribute.iLong)) return false;
       
-        m_mapAttrs.get(strName).set(newVal);
+        mapAttrs.get(strName).set(newVal);
         return true;
-    };
+    }
 
     public boolean setAttrValue(String strName, float newVal)  {
         if (!checkAttribute(strName, Attribute.iFloat)) return false;
       
-        m_mapAttrs.get(strName).set(newVal);
+        mapAttrs.get(strName).set(newVal);
         return true;
-    };
+    }
         
     public boolean setAttrValue(String strName, double newVal)  {
         if (!checkAttribute(strName, Attribute.iDouble)) return false;
       
-        m_mapAttrs.get(strName).set(newVal);
+        mapAttrs.get(strName).set(newVal);
         return true;
-    };
+    }
         
     public boolean setAttrValue(String strName, String newVal)  {
         if (!checkAttribute(strName, Attribute.iString)) return false;
       
-        m_mapAttrs.get(strName).set(newVal);
+        mapAttrs.get(strName).set(newVal);
         return true;
-    };
+    }
         
 
     // Arrays...
@@ -156,37 +159,37 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
     public boolean setAttrValue(String strName, int[] newVal)   {
         if (!checkAttribute(strName, Attribute.iArrInt)) return false;
       
-        m_mapAttrs.get(strName).set(newVal);
+        mapAttrs.get(strName).set(newVal);
         return true;
-    };
+    }
 
     public boolean setAttrValue(String strName, long[] newVal)   {
         if (!checkAttribute(strName, Attribute.iArrLng)) return false;
       
-        m_mapAttrs.get(strName).set(newVal);
+        mapAttrs.get(strName).set(newVal);
         return true;
-    };
+    }
 
     public boolean setAttrValue(String strName, float[] newVal)   {
         if (!checkAttribute(strName, Attribute.iArrFlt)) return false;
       
-        m_mapAttrs.get(strName).set(newVal);
+        mapAttrs.get(strName).set(newVal);
         return true;
-    };
+    }
 
     public boolean setAttrValue(String strName, double[] newVal)   {
         if (!checkAttribute(strName, Attribute.iArrDbl)) return false;
       
-        m_mapAttrs.get(strName).set(newVal);
+        mapAttrs.get(strName).set(newVal);
         return true;
-    };
+    }
 
     public boolean setAttrValue(String strName, String[] newVal)   {
         if (!checkAttribute(strName, Attribute.iArrStr)) return false;
       
-        m_mapAttrs.get(strName).set(newVal);
+        mapAttrs.get(strName).set(newVal);
         return true;
-    };
+    }
 
     
    
@@ -203,13 +206,13 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
     /** Used by derived classes to define particular attributes  */
     protected void registerAttribute(String strName, Attribute attr)    {
         registerAttribute(strName, attr, new String());
-    };
+    }
     
     /** Used by derived classes to define particular attributes  */
     protected void registerAttribute(String strName, Attribute attr, String description)    {
-        m_mapAttrs.put(strName, attr);
-        m_mapDescriptions.put(strName, description);
-    };
+        mapAttrs.put(strName, attr);
+        mapDescriptions.put(strName, description);
+    }
     
     
     
@@ -217,13 +220,13 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
     
     /** Check attribute validity */
     protected boolean   checkAttribute(String strName, int iType)   {
-        if (!m_mapAttrs.containsKey(strName)) return false;
+        if (!mapAttrs.containsKey(strName)) return false;
       
-        Attribute attr = m_mapAttrs.get(strName);
+        Attribute attr = mapAttrs.get(strName);
         if (attr.getType() != iType) return false;
         
         return true;
-    };
+    }
     
     
     
@@ -235,7 +238,7 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
             super(message);
         }
         
-        static private MissingAttributeException newException(AttributeBucket bucket, String attributeName) {
+        private static MissingAttributeException newException(AttributeBucket bucket, String attributeName) {
             String message = "Error, missing attribute: " + attributeName + 
                 ", for bucket type: " + bucket.getType();
             return new MissingAttributeException(message);

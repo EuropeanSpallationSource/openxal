@@ -11,22 +11,14 @@ package xal.extension.bricks;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.event.*;
-import java.awt.image.*;
-import java.awt.Window;
 import java.beans.*;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.tree.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
 import java.text.*;
 import java.util.Vector;
 import java.util.Map;
 import java.util.HashMap;
-import java.lang.reflect.*;
 
 import xal.extension.widgets.plot.*;
 
@@ -34,12 +26,12 @@ import xal.extension.widgets.plot.*;
 /** factory for making view proxies */
 public class ViewProxyFactory {
 	/** table of proxies keyed by type */
-	static protected Map<String,ViewProxy<?>> PROXY_TABLE;
+	protected static Map<String,ViewProxy<?>> proxyTable;
 	
 	
 	// static initializer
 	static {
-		PROXY_TABLE = new HashMap<String,ViewProxy<?>>();
+		proxyTable = new HashMap<>();
 		
 		register( getFrameProxy( "Window" ) );
 		register( getDialogProxy( "Dialog" ) );
@@ -79,25 +71,25 @@ public class ViewProxyFactory {
 	
 	
 	/** register the proxy in the proxy table */
-	static protected void register( final ViewProxy<?> proxy ) {
-		PROXY_TABLE.put( proxy.getType(), proxy );
+	protected static void register( final ViewProxy<?> proxy ) {
+		proxyTable.put( proxy.getType(), proxy );
 	}
 	
 	
 	/** get a border proxy with the specified type */
-	static public ViewProxy<?> getViewProxy( final String type ) {
-		if ( PROXY_TABLE.containsKey( type ) ) {
-			return PROXY_TABLE.get( type );
+	public static ViewProxy<?> getViewProxy( final String type ) {
+		if ( proxyTable.containsKey( type ) ) {
+			return proxyTable.get( type );
 		}
 		else {
 			final String swingType = "javax.swing." + type;
-			return PROXY_TABLE.get( swingType );
+			return proxyTable.get( swingType );
 		}
 	}
 	
 	
 	/** Create a view proxy for a component with an empty constructor */
-	static public <T extends Component> ViewProxy<T> getViewProxy( final Class<T> viewClass, final String name, final boolean isContainer, final boolean makeIcon ) {
+	public static <T extends Component> ViewProxy<T> getViewProxy( final Class<T> viewClass, final String name, final boolean isContainer, final boolean makeIcon ) {
 		return new ViewProxy<T>( viewClass, isContainer, makeIcon ) {			
 			public String getName() {
 				return name;
@@ -107,19 +99,22 @@ public class ViewProxyFactory {
 	
 	
 	/** Create a view proxy for a component with a constructor that takes a string argument */
-	static public <T extends Component> ViewProxy<T> getViewProxy( final Class<T> viewClass, final String name, final String text, final boolean isContainer, final boolean makeIcon ) {
+	public static <T extends Component> ViewProxy<T> getViewProxy( final Class<T> viewClass, final String name, final String text, final boolean isContainer, final boolean makeIcon ) {
 		return new ViewProxy<T>( viewClass, isContainer, makeIcon ) {
 			/** Get the array of constructor arguments */
+                        @Override
 			public Class<?>[] getConstructorParameterTypes() {
 				return new Class<?>[] { String.class };
 			}
 			
 			
 			/** Get the array of constructor arguments */
+                        @Override
 			public Object[] getConstructorParameters() {
 				return new Object[] { text };
 			}
 			
+                        @Override
 			public String getName() {
 				return name;
 			}
@@ -128,45 +123,46 @@ public class ViewProxyFactory {
 	
 	
 	/** Create a view proxy for a component */
-	static public <T extends Component> ViewProxy<T> getContainerProxy( final Class<T> viewClass, final String name, final String text ) {
+	public static <T extends Component> ViewProxy<T> getContainerProxy( final Class<T> viewClass, final String name, final String text ) {
 		return getViewProxy( viewClass, name, text, true, false );
 	}
 	
 	
 	/** Create a view proxy for a component */
-	static public <T extends Component> ViewProxy<T> getContainerProxy( final Class<T> viewClass, final String name ) {
+	public static <T extends Component> ViewProxy<T> getContainerProxy( final Class<T> viewClass, final String name ) {
 		return getViewProxy( viewClass, name, true, false );
 	}
 	
 	
 	/** Create a view proxy for a component */
-	static public <T extends Component> ViewProxy<T> getComponentProxy( final Class<T> viewClass, final String name, final String text, final boolean makeIcon ) {
+	public static <T extends Component> ViewProxy<T> getComponentProxy( final Class<T> viewClass, final String name, final String text, final boolean makeIcon ) {
 		return getViewProxy( viewClass, name, text, false, makeIcon );
 	}
 	
 	
 	/** Create a view proxy for a component */
-	static public <T extends Component> ViewProxy<T> getComponentProxy( final Class<T> viewClass, final String name, final String text ) {
+	public static <T extends Component> ViewProxy<T> getComponentProxy( final Class<T> viewClass, final String name, final String text ) {
 		return getComponentProxy( viewClass, name, text, false );
 	}
 	
 	
 	/** Create a view proxy for a component */
-	static public <T extends Component> ViewProxy<T> getComponentProxy( final Class<T> viewClass, final String name, final boolean makeIcon ) {
+	public static <T extends Component> ViewProxy<T> getComponentProxy( final Class<T> viewClass, final String name, final boolean makeIcon ) {
 		return getViewProxy( viewClass, name, false, makeIcon );
 	}
 	
 	
 	/** Create a view proxy for a component */
-	static public <T extends Component> ViewProxy<T> getComponentProxy( final Class<T> viewClass, final String name ) {
+	public static <T extends Component> ViewProxy<T> getComponentProxy( final Class<T> viewClass, final String name ) {
 		return getComponentProxy( viewClass, name, false );
 	}
 	
 	
 	/** Generate a view proxy for a combo box view */
-	static public ViewProxy<JTabbedPane> getTabbedPaneProxy() {
+	public static ViewProxy<JTabbedPane> getTabbedPaneProxy() {
 		return new ViewProxy<JTabbedPane>( JTabbedPane.class, true, false ) {
 			/** handle child node property change */
+                        @Override
 			public void handleChildNodePropertyChange( final ViewNode node, final BeanNode<?> beanNode, final PropertyDescriptor propertyDescriptor, final Object value ) {
 				if ( beanNode instanceof ViewNode && propertyDescriptor.getName().equals( "name" ) ) {
 					final int viewIndex = node.getViewIndex( (ViewNode)beanNode );
@@ -179,6 +175,7 @@ public class ViewProxyFactory {
 			
 			
 			/** get the name of the prototype */
+                        @Override
 			public String getName() {
 				return "Tabbed Pane";
 			}
@@ -188,8 +185,9 @@ public class ViewProxyFactory {
 	
 	/** Generate a view proxy for a combo box view */
 	@SuppressWarnings( {"unchecked", "rawtypes"} )	// TODO: JComboBox is typed in Java 7 but not earlier
-	static public ViewProxy<JComboBox> getComboBoxProxy() {
+	public static ViewProxy<JComboBox> getComboBoxProxy() {
 		return new ViewProxy<JComboBox>( JComboBox.class, false, false ) {
+                        @Override
 			public void setupPrototype( final JComboBox comboBox ) {
 				comboBox.addItem( "Oak Ridge National Lab" );
 				comboBox.addItem( "Argonne National Lab" );
@@ -200,6 +198,7 @@ public class ViewProxyFactory {
 			
 			
 			/** get the name of the prototype */
+                        @Override
 			public String getName() {
 				return "Combo Box";
 			}
@@ -209,9 +208,10 @@ public class ViewProxyFactory {
 	
 	/** Generate a view proxy for a list view */
 	@SuppressWarnings( { "rawtypes", "unchecked" } )	// TODO: JList is typed in Java 7 but not earlier
-	static public ViewProxy<JList> getListProxy() {
+	public static ViewProxy<JList> getListProxy() {
 		return new ViewProxy<JList>( JList.class, false, false ) {
 			/** setup the list data */
+                        @Override
 			public void setupPrototype( final JList list )  {
 				final Object[] data = { "Oak Ridge", "Knoxville", "Nashville", "Chattanooga", "Memphis", "Pigeon Forge", "Gatlinburg", "Kingston", "Kingsport", "Johnson City", "Sweetwater", "Crossville", "Jefferson City", "Cleveland", "Alcoa", "Maryville" };
 				list.setListData( data );
@@ -219,6 +219,7 @@ public class ViewProxyFactory {
 			
 			
 			/** get the name of the prototype */
+                        @Override
 			public String getName() {
 				return "List";
 			}
@@ -227,18 +228,21 @@ public class ViewProxyFactory {
 	
 	
 	/** Generate a view proxy for creating a table */
-	static public ViewProxy<JTable> getTableProxy() {
+	public static ViewProxy<JTable> getTableProxy() {
 		return new ViewProxy<JTable>( JTable.class, false, false ) {
 			/** Create an instance of the specified view */
+                        @Override
 			public void setupPrototype( final JTable table ) {
 				table.setModel( new AbstractTableModel() {
                     /** serialization ID */
                     private static final long serialVersionUID = 1L;
                     
+                    @Override
 					public int getRowCount() {
 						return 50;
 					}
 					
+                    @Override
 					public String getColumnName( final int column ) {
 						switch( column ) {
 							case 0:
@@ -252,22 +256,25 @@ public class ViewProxyFactory {
 						}
 					}
 					
+                    @Override
 					public Class<?> getColumnClass( final int column ) {
 						return Number.class;
 					}
 					
+                    @Override
 					public int getColumnCount() {
 						return 3;
 					}
 					
+                    @Override
 					public Object getValueAt( final int row, final int column ) {
 						switch( column ) {
 							case 0:
-								return new Integer( row );
+								return row;
 							case 1:
-								return new Integer( row * row );
+								return row * row;
 							case 2:
-								return new Integer( row * row * row );
+								return row * row * row;
 							default:
 								return null;
 						}
@@ -277,6 +284,7 @@ public class ViewProxyFactory {
 			
 			
 			/** get the name of the prototype */
+                        @Override
 			public String getName() {
 				return "Table";
 			}
@@ -285,9 +293,10 @@ public class ViewProxyFactory {
 	
 	
 	/** Generate a view proxy for creating a table */
-	static public ViewProxy<JTree> getTreeProxy() {
+	public static ViewProxy<JTree> getTreeProxy() {
 		return new ViewProxy<JTree>( JTree.class, false, false ) {
 			/** Create an instance of the specified view */
+                        @Override
 			public void setupPrototype( final JTree tree ) {
 				final DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode( "Stuff" );
 				tree.setModel( new DefaultTreeModel( rootNode ) );
@@ -323,15 +332,17 @@ public class ViewProxyFactory {
 	
 	
 	/** Generate a view proxy for creating check boxes */
-	static public ViewProxy<JScrollPane> getScrollPaneProxy() {
+	public static ViewProxy<JScrollPane> getScrollPaneProxy() {
 		return new ViewProxy<JScrollPane>( JScrollPane.class, true, false ) {
 			/** Get the view's container to which to add sub components  */
+                        @Override
 			public Container getContainer( final JScrollPane view ) {
 				return view.getViewport();
 			}
 			
 			
 			/** get the name of the prototype */
+                        @Override
 			public String getName() {
 				return "Scroll Pane";
 			}
@@ -340,21 +351,24 @@ public class ViewProxyFactory {
 	
 	
 	/** Generate a view proxy for creating a split pane */
-	static public ViewProxy<JSplitPane> getSplitPaneProxy() {
+	public static ViewProxy<JSplitPane> getSplitPaneProxy() {
 		return new ViewProxy<JSplitPane>( JSplitPane.class, true, false ) {
 			/** Get the array of constructor arguments */
+                        @Override
 			public Class<?>[] getConstructorParameterTypes() {
 				return new Class<?>[] { Integer.TYPE };
 			}
 			
 			
 			/** Get the array of constructor arguments */
+                        @Override
 			public Object[] getConstructorParameters() {
 				return new Object[] { JSplitPane.HORIZONTAL_SPLIT };
 			}
 			
 			
 			/** get the name of the prototype */
+                        @Override
 			public String getName() {
 				return "Split Pane";
 			}
@@ -363,27 +377,31 @@ public class ViewProxyFactory {
 	
 	
 	/** Generate a view proxy for creating horizontal boxes */
-	static public ViewProxy<Box> getHorizontalBoxProxy() {
+	public static ViewProxy<Box> getHorizontalBoxProxy() {
 		return new ViewProxy<Box>( Box.class, true, false ) {
 			/** Get the array of constructor arguments */
+                        @Override
 			public Class<?>[] getConstructorParameterTypes() {
 				return new Class<?>[] { Integer.TYPE };
 			}
 			
 			
 			/** Get the array of constructor arguments */
+                        @Override
 			public Object[] getConstructorParameters() {
 				return new Object[] { BoxLayout.X_AXIS };
 			}
 			
 			
 			/** get the name of the prototype */
+                        @Override
 			public String getName() {
 				return "Horizontal Box";
 			}
 			
 			
 			/** get the type of the prototype */
+                        @Override
 			public String getType() {
 				return "javax.swing.Box_Horizontal";
 			}
@@ -392,27 +410,31 @@ public class ViewProxyFactory {
 	
 	
 	/** Generate a view proxy for creating vertical boxes */
-	static public ViewProxy<Box> getVerticalBoxProxy() {
+	public static ViewProxy<Box> getVerticalBoxProxy() {
 		return new ViewProxy<Box>( Box.class, true, false ) {
 			/** Get the array of constructor arguments */
+                        @Override
 			public Class<?>[] getConstructorParameterTypes() {
 				return new Class<?>[] { Integer.TYPE };
 			}
 			
 			
 			/** Get the array of constructor arguments */
+                        @Override
 			public Object[] getConstructorParameters() {
 				return new Object[] { BoxLayout.Y_AXIS };
 			}
 			
 			
 			/** get the name of the prototype */
+                        @Override
 			public String getName() {
 				return "Vertical Box";
 			}
 			
 			
 			/** get the type of the prototype */
+                        @Override
 			public String getType() {
 				return "javax.swing.Box_Vertical";
 			}
@@ -421,21 +443,24 @@ public class ViewProxyFactory {
 	
 	
 	/** Generate a view proxy for creating horizontal glue */
-	static public ViewProxy<Component> getHorizontalGlueProxy() {
+	public static ViewProxy<Component> getHorizontalGlueProxy() {
 		return new ViewProxy<Component>( Component.class, false, false ) {
 			/** Create an instance of the specified view */
+                        @Override
 			public Component getBeanInstance( final Class<Component> theClass ) {
 				return Box.createHorizontalGlue();
 			}
 			
 			
 			/** get the name of the prototype */
+                        @Override
 			public String getName() {
 				return "Horizontal Glue";
 			}
 			
 			
 			/** get the type of the prototype */
+                        @Override
 			public String getType() {
 				return "javax.swing.Box_HorizontalGlue";
 			}
@@ -444,21 +469,24 @@ public class ViewProxyFactory {
 	
 	
 	/** Generate a view proxy for creating horizontal glue */
-	static public ViewProxy<Component> getVerticalGlueProxy() {
+	public static ViewProxy<Component> getVerticalGlueProxy() {
 		return new ViewProxy<Component>( Component.class, false, false ) {
 			/** Create an instance of the specified view */
+                        @Override
 			public Component getBeanInstance( final Class<Component> theClass ) {
 				return Box.createVerticalGlue();
 			}
 			
 			
 			/** get the name of the prototype */
+                        @Override
 			public String getName() {
 				return "Vertical Glue";
 			}
 			
 			
 			/** get the type of the prototype */
+                        @Override
 			public String getType() {
 				return "javax.swing.Box_VerticalGlue";
 			}
@@ -468,9 +496,10 @@ public class ViewProxyFactory {
 	
 	
 	/** Generate a view proxy for creating a function graph panel */
-	static public ViewProxy<FunctionGraphsJPanel> getFunctionGraphsJPanelProxy() {
+	public static ViewProxy<FunctionGraphsJPanel> getFunctionGraphsJPanelProxy() {
 		return new ViewProxy<FunctionGraphsJPanel>( FunctionGraphsJPanel.class, false, false ) {
 			/** Create an instance of the specified view */
+                        @Override
 			public void setup( final FunctionGraphsJPanel plot ) {
 				plot.setName( "Demo" );
 				plot.setAxisNameX( "x" );
@@ -486,6 +515,7 @@ public class ViewProxyFactory {
 			
 			
 			/** Create an instance of the specified view */
+                        @Override
 			public void setupPrototype( final FunctionGraphsJPanel plot ) {				
 				final BasicGraphData graphData = new BasicGraphData();
 				graphData.setGraphColor( Color.BLUE );
@@ -493,13 +523,14 @@ public class ViewProxyFactory {
 				for ( double x = 0.0 ; x < 20.0 ; x++ ) {
 					graphData.addPoint( x, x*x );
 				}
-				final Vector<BasicGraphData> series = new Vector<BasicGraphData>(1);
+				final Vector<BasicGraphData> series = new Vector<>(1);
 				series.add( graphData );
 				plot.addGraphData( series );
 			}
 			
 			
 			/** get the name of the prototype */
+                        @Override
 			public String getName() {
 				return "Function Graph Panel";
 			}
@@ -508,21 +539,24 @@ public class ViewProxyFactory {
 	
 	
 	/** Generate a view proxy for creating horizontal glue */
-	static public ViewProxy<JFrame> getFrameProxy( final String title ) {
+	public static ViewProxy<JFrame> getFrameProxy( final String title ) {
 		return new ViewProxy<JFrame>( JFrame.class, true, false ) {
 			/** Get the array of constructor arguments */
+                        @Override
 			public Class<?>[] getConstructorParameterTypes() {
 				return new Class<?>[] { String.class };
 			}
 			
 			
 			/** Get the array of constructor arguments */
+                        @Override
 			public Object[] getConstructorParameters() {
 				return new Object[] { title };
 			}
 			
 			
 			/** Create an instance of the specified view */
+                        @Override
 			public void setup( final JFrame frame ) {
 				frame.setSize( 500, 400 );
 				frame.setResizable( true );
@@ -530,16 +564,18 @@ public class ViewProxyFactory {
 				
 			
 			/** get the name of the prototype */
+                        @Override
 			public String getName() {
 				return "JFrame";
 			}
 			
 			
 			/** get the java reference snippet */
+                        @Override
 			public String getJavaReferenceSnippet( final BeanNode<?> node ) {
-				final StringBuffer buffer = new StringBuffer();
+				final StringBuilder buffer = new StringBuilder();
 				buffer.append( "WindowReference windowReference = new WindowReference( url, " );
-				buffer.append( "\"" + node.getTag() + "\", arg1, arg2 );" );
+				buffer.append("\"").append(node.getTag()).append("\", arg1, arg2 );");
 				buffer.append( System.getProperty( "line.separator" ) );
 				buffer.append( super.getJavaReferenceSnippet( node ) );
 				return buffer.toString();
@@ -547,10 +583,11 @@ public class ViewProxyFactory {
 			
 			
 			/** get the java reference snippet */
+                        @Override
 			public String getXALReferenceSnippet( final BeanNode<JFrame> node ) {
-				final StringBuffer buffer = new StringBuffer();
+				final StringBuilder buffer = new StringBuilder();
 				buffer.append( "WindowReference windowReference = Application.getAdaptor().getDefaultWindowReference( " );
-				buffer.append( "\"" + node.getTag() + "\", arg1, arg2 );" );
+				buffer.append("\"").append(node.getTag()).append("\", arg1, arg2 );");
 				buffer.append( System.getProperty( "line.separator" ) );
 				buffer.append( super.getJavaReferenceSnippet( node ) );
 				return buffer.toString();
@@ -558,10 +595,11 @@ public class ViewProxyFactory {
 			
 			
 			/** get the java reference snippet */
+                        @Override
 			public String getJythonReferenceSnippet( final BeanNode<?> node ) {
-				final StringBuffer buffer = new StringBuffer();
+				final StringBuilder buffer = new StringBuilder();
 				buffer.append( "window_reference = WindowReference( url, " );
-				buffer.append( "\"" + node.getTag() + "\", [arg1, arg2] )" );
+				buffer.append("\"").append(node.getTag()).append("\", [arg1, arg2] )");
 				buffer.append( System.getProperty( "line.separator" ) );
 				buffer.append( super.getJythonReferenceSnippet( node ) );
 				return buffer.toString();
@@ -572,6 +610,7 @@ public class ViewProxyFactory {
 			 * Get the reference snippet method name
 			 * @return the method name
 			 */
+                        @Override
 			protected String getReferenceSnippetFetchMethodName() {
 				return "getWindow";
 			}
@@ -581,6 +620,7 @@ public class ViewProxyFactory {
 			 * Get the reference snippet method arguments
 			 * @return the method arguments
 			 */
+                        @Override
 			protected String getReferenceSnippetFetchMethodArgumentsString( final BeanNode<?> node ) {
 				return "";
 			}
@@ -589,9 +629,10 @@ public class ViewProxyFactory {
 	
 	
 	/** Generate a view proxy for creating horizontal glue */
-	static public ViewProxy<JDialog> getDialogProxy( final String title ) {
+	public static ViewProxy<JDialog> getDialogProxy( final String title ) {
 		return new ViewProxy<JDialog>( JDialog.class, true, false ) {
 			/** Create an instance of the specified view */
+                        @Override
 			public void setup( final JDialog dialog ) {
 				dialog.setTitle( title );
 				dialog.setSize( 500, 400 );
@@ -600,16 +641,18 @@ public class ViewProxyFactory {
 			
 			
 			/** get the name of the prototype */
+                        @Override
 			public String getName() {
 				return "JDialog";
 			}
 			
 			
 			/** get the java reference snippet */
+                        @Override
 			public String getJavaReferenceSnippet( final BeanNode<?> node ) {
-				final StringBuffer buffer = new StringBuffer();
+				final StringBuilder buffer = new StringBuilder();
 				buffer.append( "WindowReference windowReference = new WindowReference( url, " );
-				buffer.append( "\"" + node.getTag() + "\", arg1, arg2 );" );
+				buffer.append("\"").append(node.getTag()).append("\", arg1, arg2 );");
 				buffer.append( System.getProperty( "line.separator" ) );
 				buffer.append( super.getJavaReferenceSnippet( node ) );
 				return buffer.toString();
@@ -617,10 +660,11 @@ public class ViewProxyFactory {
 			
 			
 			/** get the java reference snippet */
+                        @Override
 			public String getXALReferenceSnippet( final BeanNode<JDialog> node ) {
-				final StringBuffer buffer = new StringBuffer();
+				final StringBuilder buffer = new StringBuilder();
 				buffer.append( "WindowReference windowReference = Application.getAdaptor().getDefaultWindowReference( " );
-				buffer.append( "\"" + node.getTag() + "\", arg1, arg2 );" );
+				buffer.append("\"").append(node.getTag()).append("\", arg1, arg2 );");
 				buffer.append( System.getProperty( "line.separator" ) );
 				buffer.append( super.getJavaReferenceSnippet( node ) );
 				return buffer.toString();
@@ -628,10 +672,11 @@ public class ViewProxyFactory {
 			
 			
 			/** get the java reference snippet */
+                        @Override
 			public String getJythonReferenceSnippet( final BeanNode<?> node ) {
-				final StringBuffer buffer = new StringBuffer();
+				final StringBuilder buffer = new StringBuilder();
 				buffer.append( "window_reference = WindowReference( url, " );
-				buffer.append( "\"" + node.getTag() + "\", [arg1, arg2] )" );
+				buffer.append("\"").append(node.getTag()).append("\", [arg1, arg2] )");
 				buffer.append( System.getProperty( "line.separator" ) );
 				buffer.append( super.getJythonReferenceSnippet( node ) );
 				return buffer.toString();
@@ -642,6 +687,7 @@ public class ViewProxyFactory {
 			 * Get the reference snippet method name
 			 * @return the method name
 			 */
+                        @Override
 			protected String getReferenceSnippetFetchMethodName() {
 				return "getWindow";
 			}
@@ -651,6 +697,7 @@ public class ViewProxyFactory {
 			 * Get the reference snippet method arguments
 			 * @return the method arguments
 			 */
+                        @Override
 			protected String getReferenceSnippetFetchMethodArgumentsString( final BeanNode<?> node ) {
 				return "";
 			}

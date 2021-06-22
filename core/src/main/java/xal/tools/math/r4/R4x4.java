@@ -7,14 +7,9 @@
 package xal.tools.math.r4;
 
 import xal.tools.beam.PhaseMatrix;
-import xal.tools.dyn.TrnsPhaseMatrix;
-import xal.tools.dyn.TrnsPhaseMatrix.IND;
 import xal.tools.math.IIndex;
 import xal.tools.math.SquareMatrix;
 import xal.tools.math.r2.R2x2;
-import xal.tools.math.r3.R3x3;
-import xal.tools.math.r3.R3x3.POS;
-import xal.tools.math.r6.R6x6;
 
 /**
  *  <p>
@@ -67,6 +62,7 @@ public class R4x4 extends SquareMatrix<R4x4> {
         /** 
          * Return the integer value of the index position 
          */
+        @Override
         public int val()    { return i; };
 
         
@@ -325,9 +321,5 @@ public class R4x4 extends SquareMatrix<R4x4> {
 	protected R4x4 newInstance(int row, int cnt) {
 		return new R4x4();
 	}
-    
-    
-    
-    
 
 }

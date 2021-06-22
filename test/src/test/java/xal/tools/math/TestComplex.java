@@ -15,13 +15,13 @@ import org.junit.*;
 /** test the complex number class */
 public class TestComplex {
     /** real part of the sample */
-    static final private double SAMPLE_REAL = 3.0;
+    private static final double SAMPLE_REAL = 3.0;
     
     /** imaginary part of the sample */
-    static final private double SAMPLE_IMAGINARY = 4.0;
+    private static final double SAMPLE_IMAGINARY = 4.0;
     
     /** sample against which to test results */
-    final private Complex SAMPLE;
+    private final Complex SAMPLE;
     
     
     /** Constructor */

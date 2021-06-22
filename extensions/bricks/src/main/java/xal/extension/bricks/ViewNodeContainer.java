@@ -8,9 +8,7 @@
 
 package xal.extension.bricks;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
 
 
 /** interface of nodes which can contain view nodes */

@@ -23,7 +23,7 @@ public class Bend extends Dipole {
      *  Constants
      */
     
-    public static final String      s_strType   = "DH";
+    public static final String      TYPE   = "DH";
 
     
     static {
@@ -35,12 +35,13 @@ public class Bend extends Dipole {
      * Register type for qualification
      */
     private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( Bend.class, s_strType, "bend" );
+		ElementTypeManager.defaultManager().registerTypes( Bend.class, TYPE, "bend" );
     }
   
 
     /** Override to provide type signature */
-    public String getType()   { return s_strType; }
+    @Override
+    public String getType()   { return TYPE; }
 
 
 	/** Constructor */
@@ -60,6 +61,7 @@ public class Bend extends Dipole {
      * of all bends is Horizontal.
      * @return HORIZONTAL
      */
+    @Override
     public int getOrientation() {
         return HORIZONTAL;
     }

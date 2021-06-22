@@ -14,21 +14,21 @@ import xal.smf.impl.qualify.ElementTypeManager;
 
 public class Electrostatic extends AcceleratorNode {
 	/** standard type for instances of this class */
-	public static final String s_strType   = "estat";
+	public static final String TYPE   = "estat";
 
     // orientation constants
-    public final static int NO_ORIENTATION = 0;
-    public final static int HORIZONTAL = 1;
-    public final static int VERTICAL = 2;
+    public static final int NO_ORIENTATION = 0;
+    public static final int HORIZONTAL = 1;
+    public static final int VERTICAL = 2;
 
     /**
      * The container for the magnet information
      *
      */   
-    protected MagnetBucket       m_bucMagnet; 
+    protected MagnetBucket       bucMagnet; 
 
 	/** indicates whether to use the actual field readback or the field setting in the getField() method */
-	protected boolean _useFieldReadback;
+	protected boolean useFieldReadback;
     
     /** field readback handle */
     public static final String FIELD_RB_HANDLE = "fieldRB";
@@ -47,7 +47,7 @@ public class Electrostatic extends AcceleratorNode {
 
 	// Register types for qualification
 	private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( Electromagnet.class, s_strType, "electrostatic" );
+		ElementTypeManager.defaultManager().registerTypes( Electromagnet.class, TYPE, "electrostatic" );
 	}
 
 
@@ -68,7 +68,7 @@ public class Electrostatic extends AcceleratorNode {
      * @return    the attribute bucket containing the machine multipole fields
      */
 
-    public MagnetBucket  getMagBucket()   { return m_bucMagnet; };
+    public MagnetBucket  getMagBucket()   { return bucMagnet; }
 
  
     /**
@@ -76,13 +76,14 @@ public class Electrostatic extends AcceleratorNode {
     * Override AcceleratorNode implementation to check for a MultipoleBucket
     */
 
+        @Override
    public void addBucket(AttributeBucket buc)  {
 
        if (buc.getClass().equals(MagnetBucket.class))
              setMagBucket((MagnetBucket)buc);
 
        super.addBucket(buc);
-   };    
+   }
 
    /**
      *  
@@ -90,11 +91,11 @@ public class Electrostatic extends AcceleratorNode {
      */
 
     public void setMagBucket(MagnetBucket buc) 
-        { m_bucMagnet = buc; super.addBucket(buc); };
+        { bucMagnet = buc; super.addBucket(buc); };
     
 	@Override
 	public String getType() {
-		return s_strType;
+		return TYPE;
 	}
 
     /**
@@ -102,7 +103,7 @@ public class Electrostatic extends AcceleratorNode {
      */
 
     public double getDesignField() {
-        return m_bucMagnet.getDfltField() ;
+        return bucMagnet.getDfltField() ;
     }
 
     /** 
@@ -110,14 +111,14 @@ public class Electrostatic extends AcceleratorNode {
      */
 
     public double getEffLength() {
-        return m_bucMagnet.getEffLength() ;
+        return bucMagnet.getEffLength() ;
     } 
     
     /**
      * get the default magnetic field
      */       
     public double getDfltField() {
-        return m_bucMagnet.getDfltField() ;
+        return bucMagnet.getDfltField() ;
     }
     
     /** 
@@ -125,7 +126,7 @@ public class Electrostatic extends AcceleratorNode {
 	 * @return the field in T/(m^(n-1)), where n = 1 for dipole, 2 for quad, etc. 
 	 */
     public double getField() throws ConnectionException, GetException {
-        return ( _useFieldReadback ) ? getFieldReadback() : getTotalFieldSetting();
+        return ( useFieldReadback ) ? getFieldReadback() : getTotalFieldSetting();
     }
     
 	/**
@@ -168,7 +169,7 @@ public class Electrostatic extends AcceleratorNode {
      */
     public double   getPolarity() {
         try{
-            return m_bucMagnet.getPolarity();
+            return bucMagnet.getPolarity();
         }  
         catch (Exception e) {	    
             System.out.println(" Polarity not set on " + this.getId() 
@@ -182,7 +183,7 @@ public class Electrostatic extends AcceleratorNode {
 	 * @param rawValue the raw channel value
 	 * @return the magnetic field in T/m^(n-1)
 	 */
-	final public double toFieldFromCA( final double rawValue ) {
+	public final double toFieldFromCA( final double rawValue ) {
         return rawValue * getPolarity(); 
 	}
 	
@@ -192,7 +193,7 @@ public class Electrostatic extends AcceleratorNode {
 	 * @param field the magnetic field in T/m^(n-1)
 	 * @return the channel access value
 	 */
-	final public double toCAFromField( final double field ) {
+	public final double toCAFromField( final double field ) {
         return field * getPolarity(); 
 	}
 	

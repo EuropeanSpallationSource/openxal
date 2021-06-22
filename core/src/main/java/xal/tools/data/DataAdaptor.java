@@ -59,7 +59,7 @@ public interface DataAdaptor {
     public String name();
     
     
-    /** returns true iff the node has the specified attribute */
+    /** returns true if the node has the specified attribute */
     public boolean hasAttribute( final String attribute );
     
     

@@ -1004,7 +1004,7 @@ public class SimpleButton extends GradientLabel
 	 */
 	private class ChainMouseListener extends MouseAdapter {
 		/** time to wait in milliseconds before a press triggers a chain of events */
-		final static public long CHAIN_TRIGGER_DURATION = 500;
+		public static final long CHAIN_TRIGGER_DURATION = 500;
 
 		/** time of last press */
 		private long lastPressedTime = 0;

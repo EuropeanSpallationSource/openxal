@@ -7,7 +7,8 @@
 package xal.tools.apputils;
 
 import java.awt.*;
-import java.util.Vector;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.*;
 
 /**
@@ -20,8 +21,10 @@ import javax.swing.*;
 
 public class VerticalLayout implements LayoutManager {
     private int vgap;
-    private int minWidth = 0, minHeight = 0;
-    private int preferredWidth = 0, preferredHeight = 0;
+    private int minWidth = 0;
+    private int minHeight = 0;
+    private int preferredWidth = 0;
+    private int preferredHeight = 0;
     private boolean sizeUnknown = true;
 
     /* Constructor with vgap = 2. */
@@ -35,10 +38,12 @@ public class VerticalLayout implements LayoutManager {
     }
 
     /* Required by LayoutManager. */
+    @Override
     public void addLayoutComponent(String name, Component comp) {
     }
 
     /* Required by LayoutManager. */
+    @Override
     public void removeLayoutComponent(Component comp) {
     }
 
@@ -71,6 +76,7 @@ public class VerticalLayout implements LayoutManager {
 
 
     /* Required by LayoutManager. */
+    @Override
     public Dimension preferredLayoutSize(Container parent) {
         Dimension dim = new Dimension(0, 0);
 
@@ -89,6 +95,7 @@ public class VerticalLayout implements LayoutManager {
     }
 
     /* Required by LayoutManager. */
+    @Override
     public Dimension minimumLayoutSize(Container parent) {
         Dimension dim = new Dimension(0, 0);
 
@@ -112,6 +119,7 @@ public class VerticalLayout implements LayoutManager {
      * minimumLayoutSize will be called -- in the case
      * of applets, at least, they probably won't be.
      */
+    @Override
     public void layoutContainer(Container parent) {
         Insets insets = parent.getInsets();
         int maxWidth = parent.getSize().width
@@ -152,6 +160,7 @@ public class VerticalLayout implements LayoutManager {
     }
 
     /** Returns the string that describes an instance. */
+    @Override
     public String toString() {
         String str = "";
         return getClass().getName() + "[vgap=" + vgap + str + "]";
@@ -159,12 +168,13 @@ public class VerticalLayout implements LayoutManager {
 
 
     /** The main method of the application. */
-    static public void main(String[] args) {
+    public static void main(String[] args) {
 
     JFrame mainFrame = new JFrame("Test of VerticalLayout class");
     mainFrame.addWindowListener(
-        new java.awt.event.WindowAdapter() {
-        public void windowClosing(java.awt.event.WindowEvent evt) {
+        new WindowAdapter() {
+        @Override
+        public void windowClosing(WindowEvent evt) {
             System.exit(0);
         }
         }
@@ -177,33 +187,33 @@ public class VerticalLayout implements LayoutManager {
     mainFrame.getContentPane().add(panel,BorderLayout.WEST);
 
 
-    JTextField txt_1 = new JTextField("aaa");
-    JTextField txt_2 = new JTextField(8);
-    txt_2.setText("=========aaa===========");
-    txt_2.setFont(new Font(txt_1.getFont().getFamily(),Font.BOLD,50));
+    JTextField txt1 = new JTextField("aaa");
+    JTextField txt2 = new JTextField(8);
+    txt2.setText("=========aaa===========");
+    txt2.setFont(new Font(txt1.getFont().getFamily(),Font.BOLD,50));
 
 
-    JPanel panel_1 = new JPanel();
-        panel_1.setLayout(new GridLayout(0,1,0,0));
+    JPanel panel1 = new JPanel();
+        panel1.setLayout(new GridLayout(0,1,0,0));
 
-        JLabel  label_1   = new JLabel("Label 1 ",SwingConstants.CENTER);
-        JLabel  label_2   = new JLabel("Label 2 ",SwingConstants.CENTER);
-        panel_1.add(label_1);
-        panel_1.add(label_2);
+        JLabel  label1   = new JLabel("Label 1 ",SwingConstants.CENTER);
+        JLabel  label2   = new JLabel("Label 2 ",SwingConstants.CENTER);
+        panel1.add(label1);
+        panel1.add(label2);
 
 
-    JPanel panel_2 = new JPanel();
-    panel_2.setLayout( new FlowLayout(FlowLayout.LEFT, 2, 2));
-        JLabel  label_3   = new JLabel("Text 3: ",SwingConstants.CENTER);
-        JTextField txt_3 = new JTextField(" ===========text field 3====");
-    panel_2.add(label_3);
-    panel_2.add(txt_3);
-    panel_2.setBackground(Color.red);
+    JPanel panel2 = new JPanel();
+    panel2.setLayout( new FlowLayout(FlowLayout.LEFT, 2, 2));
+        JLabel  label3   = new JLabel("Text 3: ",SwingConstants.CENTER);
+        JTextField txt3 = new JTextField(" ===========text field 3====");
+    panel2.add(label3);
+    panel2.add(txt3);
+    panel2.setBackground(Color.red);
 
-    panel.add(txt_1);
-    panel.add(txt_2);
-    panel.add(panel_1);
-    panel.add(panel_2);
+    panel.add(txt1);
+    panel.add(txt2);
+    panel.add(panel1);
+    panel.add(panel2);
 
     mainFrame.pack();
     //mainFrame.setSize(new Dimension(300,430));

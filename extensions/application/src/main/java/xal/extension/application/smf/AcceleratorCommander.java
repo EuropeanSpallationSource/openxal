@@ -35,6 +35,7 @@ public class AcceleratorCommander extends Commander {
      * Load the default bundle
      * Override the super class version to include the accelerator specific additions.
      */
+    @Override
     protected void loadDefaultBundle() {
         super.loadDefaultBundle();
 
@@ -49,6 +50,7 @@ public class AcceleratorCommander extends Commander {
      * which dynamically generates the Accelerator menu items.
      * @param document The document for which some commands may need to be associated
      */
+    @Override
     protected void registerCustomCommands(XalDocument document) {
         AcceleratorDocument acceleratorDocument = (AcceleratorDocument)document;
         

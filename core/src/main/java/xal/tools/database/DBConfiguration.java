@@ -21,71 +21,71 @@ import java.util.prefs.*;
 /** load a database configuration */
 public class DBConfiguration {
 	/** key for getting the URL from the preferences */
-	final static protected String PREFERENCES_URL_KEY = "configURL";
+	protected static final String PREFERENCES_URL_KEY = "configURL";
 
 	/** name of the default database adaptor */
-	final private String DEFAULT_DATABASE_ADAPTOR_NAME;
+	private final String defaultDatabaseAdaptorName;
 	
 	/** name of the default server */
-	final private String DEFAULT_SERVER_NAME;
+	private final String defaultServerName;
 	
 	/** name of the default account */
-	final private String DEFAULT_ACCOUNT_NAME;
+	private final String defaultAccountName;
 
 	/** table mapping database adaptor names to database adaptor class names */
-	final private Map<String,String> DATABASE_ADAPTOR_MAP;
+	private final Map<String,String> databaseAdaptorMap;
 	
 	/** table of servers keyed by name */
-	final private Map<String,DBServerConfig> SERVERS;
+	private final Map<String,DBServerConfig> servers;
 	
 	/** table of accounts keyed by name */
-	final private Map<String,DBAccountConfig> ACCOUNTS;
+	private final Map<String,DBAccountConfig> accounts;
 	
 	/** table of schema urls keyed by name */
-	final private Map<String,URL> SCHEMA_URLS;
+	private final Map<String,URL> schemaUrls;
 	
 	
 	/** Primary Constructor */
 	private DBConfiguration( final String defaultDBAdaptorName, final Map<String,String> dbAdaptorMap, final String defaultServerName, final Map<String,DBServerConfig> servers, final String defaultAccountName, final Map<String,DBAccountConfig> accounts, final Map<String,URL> schemaUrls) {
-		DEFAULT_DATABASE_ADAPTOR_NAME = defaultDBAdaptorName;
-		DEFAULT_SERVER_NAME = defaultServerName;
-		DEFAULT_ACCOUNT_NAME = defaultAccountName;
+		defaultDatabaseAdaptorName = defaultDBAdaptorName;
+		this.defaultServerName = defaultServerName;
+		this.defaultAccountName = defaultAccountName;
 
-		DATABASE_ADAPTOR_MAP = dbAdaptorMap;
-		SERVERS = servers;
-		ACCOUNTS = accounts;
-		SCHEMA_URLS = schemaUrls;
+		databaseAdaptorMap = dbAdaptorMap;
+		this.servers = servers;
+		this.accounts = accounts;
+		this.schemaUrls = schemaUrls;
 	}
 	
 	
 	/** get the default server name */
 	public String getDefaultServerName() {
-		return DEFAULT_SERVER_NAME;
+		return defaultServerName;
 	}
 	
 	
 	/** get the default account name */
 	public String getDefaultAccountName() {
-		return DEFAULT_ACCOUNT_NAME;
+		return defaultAccountName;
 	}
 	
 	
 	/** determine whether this configuration has the named account */
 	public boolean hasAccount( final String accountName ) {
-		return ACCOUNTS.containsKey( accountName );
+		return accounts.containsKey( accountName );
 	}
 	
 	
 	/** determine whether this configuration has the named server */
 	public boolean hasServer( final String serverName ) {
-		return SERVERS.containsKey( serverName );
+		return servers.containsKey( serverName );
 	}
 	
 	
 	/** get an alpha-numerically ordered list of account names */
 	public List<String> getAccountNames() {
-		final Set<String> nameSet = ACCOUNTS.keySet();
-		final List<String> names = new ArrayList<String>( nameSet );
+		final Set<String> nameSet = accounts.keySet();
+		final List<String> names = new ArrayList<>( nameSet );
 		Collections.sort( names );
 		return names;
 	}
@@ -93,8 +93,8 @@ public class DBConfiguration {
 	
 	/** get an alpha-numerically ordered list of server names */
 	public List<String> getServerNames() {
-		final Set<String> nameSet = SERVERS.keySet();
-		final List<String> names = new ArrayList<String>( nameSet );
+		final Set<String> nameSet = servers.keySet();
+		final List<String> names = new ArrayList<>( nameSet );
 		Collections.sort( names );
 		return names;
 	}
@@ -102,21 +102,21 @@ public class DBConfiguration {
 	
 	/** 
 	 * Generate a new connection dictionary for the specified account name and server configuration name
-	 * @param accountName name of the account for which to initializae the connection dictionary (or null to use the default account if any)
+	 * @param accountName name of the account for which to initialize the connection dictionary (or null to use the default account if any)
 	 * @param serverName name of the database server for which to initialize the connection dictionary (or null to use the default server if any)
 	 * @return a new connection dictionary from the database configuration
 	 */
 	public ConnectionDictionary newConnectionDictionary( final String accountName, final String serverName ) {
-		final DBAccountConfig account = accountName != null && accountName.length() > 0 ? ACCOUNTS.get( accountName ) : ACCOUNTS.get( DEFAULT_ACCOUNT_NAME );
+		final DBAccountConfig account = accountName != null && accountName.length() > 0 ? accounts.get( accountName ) : accounts.get( defaultAccountName );
 
 		// get the default server name for the account if any
 		final String accountServerName = account != null ? account.getDefaultServerName() : null;
 
 		// resolve the server name to use by first selecting the serverName parameter if not null, then falling back to the account's default server name if not null and finally falling back to the DEFAULT_SERVER_NAME
-		final String resolvedServerName = serverName != null && serverName.length() > 0 ? serverName : accountServerName != null && accountServerName.length() > 0 ? accountServerName : DEFAULT_SERVER_NAME;
+		final String resolvedServerName = serverName != null && serverName.length() > 0 ? serverName : accountServerName != null && accountServerName.length() > 0 ? accountServerName : defaultServerName;
 
 		// get the resolved server configuration
-		final DBServerConfig serverConfig = SERVERS.get( resolvedServerName );
+		final DBServerConfig serverConfig = servers.get( resolvedServerName );
 		
 		final ConnectionDictionary connectionDictionary = new ConnectionDictionary();
 		if ( serverConfig != null ) {
@@ -167,12 +167,12 @@ public class DBConfiguration {
 	
 	/** generate a new connection dictionary from the default database server configuration and default account */
 	public ConnectionDictionary defaultConnectionDictionary() {
-		return newConnectionDictionary( DEFAULT_ACCOUNT_NAME, DEFAULT_SERVER_NAME );
+		return newConnectionDictionary( defaultAccountName, defaultServerName );
 	}
 	
 	
 	/** load the configuration from the default configuration URL */
-	static public DBConfiguration getInstance() {
+	public static DBConfiguration getInstance() {
 		try {
 			return hasDefaultConfiguration() ? getInstance( getDefaultURL() ) : null;
 		}
@@ -184,20 +184,20 @@ public class DBConfiguration {
 	
 	
 	/** load a configuration from the specified URL */
-	static public DBConfiguration getInstance( final URL configURL ) {		
+	public static DBConfiguration getInstance( final URL configURL ) {		
 		final DataAdaptor documentAdaptor = XmlDataAdaptor.adaptorForUrl( configURL, false );
 		return getInstance( documentAdaptor, configURL );
 	}
 	
 	
 	/** load a configuration from the specified configuration document adaptor */
-	static public DBConfiguration getInstance( final DataAdaptor documentAdaptor, URL baseURL ) {
+	public static DBConfiguration getInstance( final DataAdaptor documentAdaptor, URL baseURL ) {
 		final DataAdaptor configAdaptor = documentAdaptor.childAdaptor( "dbconfig" );
 		
 		final DataAdaptor dbAdaptorGroup = configAdaptor.childAdaptor( "adaptors" );
 		final String defaultDBAdaptorName = dbAdaptorGroup.hasAttribute( "default" ) ? dbAdaptorGroup.stringValue( "default" ) : null;
 		final List<DataAdaptor> dbAdaptors = dbAdaptorGroup.childAdaptors( "adaptor" );
-		final Map<String,String> dbAdaptorTable = new HashMap<String,String>();
+		final Map<String,String> dbAdaptorTable = new HashMap<>();
 		for ( final DataAdaptor dbAdaptor : dbAdaptors ) {
 			final String name = dbAdaptor.stringValue( "name" );
 			final String className = dbAdaptor.stringValue( "class" );
@@ -207,7 +207,7 @@ public class DBConfiguration {
 		final DataAdaptor serverGroup = configAdaptor.childAdaptor( "servers" );
 		final String defaultServerName = serverGroup.hasAttribute( "default" ) ? serverGroup.stringValue( "default" ) : null;
 		final List<DataAdaptor> serverAdaptors = serverGroup.childAdaptors( "server" );
-		final Map<String,DBServerConfig> serverTable = new HashMap<String,DBServerConfig>();
+		final Map<String,DBServerConfig> serverTable = new HashMap<>();
 		for ( final DataAdaptor serverAdaptor : serverAdaptors ) {
 			final String name = serverAdaptor.stringValue( "name" );
 			final String url = serverAdaptor.stringValue( "url" );
@@ -220,7 +220,7 @@ public class DBConfiguration {
 		final DataAdaptor accountGroup = configAdaptor.childAdaptor( "accounts" );
 		final String defaultAccountName = accountGroup.hasAttribute( "default" ) ? accountGroup.stringValue( "default" ) : null;
 		final List<DataAdaptor> accountAdaptors = accountGroup.childAdaptors( "account" );
-		final Map<String,DBAccountConfig> accountTable = new HashMap<String,DBAccountConfig>();
+		final Map<String,DBAccountConfig> accountTable = new HashMap<>();
 		for ( final DataAdaptor accountAdaptor : accountAdaptors ) {
 			final String name = accountAdaptor.stringValue( "name" );
 			final String user = accountAdaptor.stringValue( "user" );
@@ -231,7 +231,7 @@ public class DBConfiguration {
 		
 		final DataAdaptor schemasGroup = configAdaptor.childAdaptor( "schemas" );		
 		final List<DataAdaptor> schemaAdaptors = schemasGroup.childAdaptors( "schema" );
-		final Map<String,URL> schemaUrls = new HashMap<String,URL>();
+		final Map<String,URL> schemaUrls = new HashMap<>();
 		for ( final DataAdaptor schemaAdaptor : schemaAdaptors ) {
 			final String name = schemaAdaptor.stringValue( "name" );			 
 			try {
@@ -246,8 +246,8 @@ public class DBConfiguration {
 	}
 	
 	
-	/** determine whether a defualt configuraiton has been specified */
-	static public boolean hasDefaultConfiguration() {
+	/** determine whether a default configuration has been specified */
+	public static boolean hasDefaultConfiguration() {
 		String urlSpec = null;
 		try {
 			urlSpec = getDefaultURLSpec();
@@ -264,7 +264,7 @@ public class DBConfiguration {
 	 * Get the user preferences for this class
 	 * @return the user preferences for this class
 	 */
-	static protected Preferences getDefaults() {
+	protected static Preferences getDefaults() {
 		return xal.tools.apputils.Preferences.nodeForPackage( DBConfiguration.class );
 	}
 	
@@ -273,7 +273,7 @@ public class DBConfiguration {
 	 * Get the URL Spec of the default connection dictionary's properties file
 	 * @return the URL Spec of the configuration
 	 */
-	static public String getDefaultURLSpec() {
+	public static String getDefaultURLSpec() {
 		return getDefaults().get( PREFERENCES_URL_KEY, "" );
 	}
 	
@@ -283,7 +283,7 @@ public class DBConfiguration {
 	 * @param urlSpec URL spec of the configuration
 	 * @throws java.util.prefs.BackingStoreException if the url spec failed to be saved as a default
 	 */
-	static public void setDefaultURLSpec( final String urlSpec ) throws BackingStoreException {
+	public static void setDefaultURLSpec( final String urlSpec ) throws BackingStoreException {
 		Preferences preferences = getDefaults();
 		preferences.put( PREFERENCES_URL_KEY, urlSpec );
 		preferences.flush();
@@ -295,7 +295,7 @@ public class DBConfiguration {
 	 * @return the URL of the default configuration
 	 * @throws java.net.MalformedURLException if the default URL spec cannot form a valid URL
 	 */
-	static public URL getDefaultURL() throws MalformedURLException {
+	public static URL getDefaultURL() throws MalformedURLException {
 		if ( hasDefaultConfiguration() ) {
 			return new URL( getDefaultURLSpec() );
 		}
@@ -310,7 +310,7 @@ public class DBConfiguration {
 	 * @param url URL of the configuration.
 	 * @throws java.util.prefs.BackingStoreException if the url failed to be saved as a default
 	 */
-	static public void setDefaultURL( final URL url ) throws BackingStoreException {
+	public static void setDefaultURL( final URL url ) throws BackingStoreException {
 		setDefaultURLSpec( url.toString() );
 	}
 
@@ -321,15 +321,15 @@ public class DBConfiguration {
 	 * @return the database adaptor
 	 */
 	public DatabaseAdaptor getDefaultDatabaseAdaptor() {
-		if ( DATABASE_ADAPTOR_MAP == null )  return null;
+		if ( databaseAdaptorMap == null )  return null;
 		
-		final String className = DATABASE_ADAPTOR_MAP.get( DEFAULT_DATABASE_ADAPTOR_NAME );
+		final String className = databaseAdaptorMap.get( defaultDatabaseAdaptorName );
 		if ( className == null || className.equals( "" ) )  return null;
 		try {
 			final Class<?> databaseAdaptorClass = Class.forName( className );
 			return (DatabaseAdaptor)databaseAdaptorClass.newInstance();
 		}
-		catch(Exception exception) {
+		catch(ClassNotFoundException | IllegalAccessException | InstantiationException exception) {
 			final String message = "Failed to instantiate database adaptor for class:  " + className;
 			throw new RuntimeException( message, exception );
 		}
@@ -341,7 +341,7 @@ public class DBConfiguration {
 	 * @return url pointing to a file
 	 */
 	public URL getSchemaURL(String name) {
-		return SCHEMA_URLS.get(name);		
+		return schemaUrls.get(name);		
 	}
 }
 
@@ -350,37 +350,37 @@ public class DBConfiguration {
 /** holds a database server configuration */
 class DBServerConfig {
 	/** local name for the server (not an official name) */
-	final private String NAME;
+	private final String name;
 	
 	/** URL specification */
-	final private String URL_SPEC;
+	private final String urlSpec;
 	
 	/** string representation for the adaptor class */
-	final private String ADAPTOR_CLASS_SPEC;
+	private final String adaptorClassSpec;
 	
 	/** Constructor */
 	public DBServerConfig( final String name, final String url, final String adaptorClass ) {
-		NAME = name;
-		URL_SPEC = url;
-		ADAPTOR_CLASS_SPEC = adaptorClass;
+		this.name = name;
+		urlSpec = url;
+		adaptorClassSpec = adaptorClass;
 	}
 	
 	
 	/** get the local server name */
 	public String getName() {
-		return NAME;
+		return name;
 	}
 	
 	
 	/** get the URL spec */
 	public String getURLSpec() {
-		return URL_SPEC;
+		return urlSpec;
 	}
 	
 	
 	/** get the string representation for the database adaptor class */
 	public String getAdaptorClassSpec() {
-		return ADAPTOR_CLASS_SPEC;
+		return adaptorClassSpec;
 	}
 }
 
@@ -389,47 +389,47 @@ class DBServerConfig {
 /** holds a database account configuration */
 class DBAccountConfig {
 	/** local account name (not an official name) */
-	final private String NAME;
+	private final String name;
 	
 	/** user name */
-	final private String USER_NAME;
+	private final String userName;
 	
 	/** user's password */
-	final private String PASSWORD;
+	private final String password;
 
 	/** name of the default server for the specified account if any */
-	final private String DEFAULT_SERVER_NAME;
+	private final String defaultServerName;
 
 
 	/** Constructor */
 	public DBAccountConfig( final String name, final String user, final String password, final String defaultServerName ) {
-		NAME = name;
-		USER_NAME = user;
-		PASSWORD = password;
-		DEFAULT_SERVER_NAME = defaultServerName;
+		this.name = name;
+		userName = user;
+		this.password = password;
+		this.defaultServerName = defaultServerName;
 	}
 	
 	
 	/** get the account name */
 	public String getName() {
-		return NAME;
+		return name;
 	}
 	
 	
 	/** get the user name */
 	public String getUserName() {
-		return USER_NAME;
+		return userName;
 	}
 	
 	
 	/** get the password */
 	public String getPassword() {
-		return PASSWORD;
+		return password;
 	}
 
 
 	/** get the account's default server name */
 	public String getDefaultServerName() {
-		return DEFAULT_SERVER_NAME;
+		return defaultServerName;
 	}
 }

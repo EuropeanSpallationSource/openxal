@@ -56,14 +56,14 @@ class JcaSystem extends ChannelSystem {
 	 * Determine the user's preferred JCA Context otherwise defaulting to JCALibrary.CHANNEL_ACCESS_JAVA 
 	 * @return the string identifying the JCA Context to use
 	 */
-	static private String defaultJCAContextType() {
+	private static String defaultJCAContextType() {
 		final String userJCAContext = fetchUserJCAContext();
 		return getJCAContextType( userJCAContext );
 	}
 	
 	
 	/** Determine the user's preferred JCA Context first checking for a Java property, then an environment variable and finally a user preference */
-	static private String fetchUserJCAContext() {
+	private static String fetchUserJCAContext() {
 		// This try should not be required, but is added as a work around for some strange Matlab behavior (jdg, 1/05/05)
 		try {
 			// first check if the user has set a command line property

@@ -10,8 +10,6 @@ package xal.extension.application;
 
 import java.io.File;
 import java.net.*;
-import java.util.Date;
-import java.text.SimpleDateFormat;
 
 import java.awt.print.*;
 import java.awt.Dimension;
@@ -27,20 +25,20 @@ import xal.tools.xml.*;
 /** Abstract superclass of both free and internal documents.*/
 abstract class XalAbstractDocument implements Pageable {
 	/** wildcard file extension */
-	static public final String WILDCARD_FILE_EXTENSION = ApplicationAdaptor.WILDCARD_FILE_EXTENSION;
+	public static final String WILDCARD_FILE_EXTENSION = ApplicationAdaptor.WILDCARD_FILE_EXTENSION;
 	
 	// public static constants for confirmation dialogs
-	final static public int YES_OPTION = JOptionPane.YES_OPTION;
-	final static public int NO_OPTION = JOptionPane.NO_OPTION;
+	public static final int YES_OPTION = JOptionPane.YES_OPTION;
+	public static final int NO_OPTION = JOptionPane.NO_OPTION;
 
 	/** Local message center */
-	protected MessageCenter MESSAGE_CENTER;
+	protected MessageCenter messageCenter;
 
     /** indicates whether the document has changes that need saving */
-    private boolean _hasChanges;
+    private boolean hasChanges;
 
 	/** this document's title */
-    private String _title;
+    private String title;
 
 	/** The persistent storage URL for the document */
     protected URL source;
@@ -48,7 +46,7 @@ abstract class XalAbstractDocument implements Pageable {
     
     /** Constructor for new documents */
     public XalAbstractDocument() {
-		MESSAGE_CENTER = new MessageCenter("Xal Document Messaging");
+		messageCenter = new MessageCenter("Xal Document Messaging");
 
         setHasChanges( false );
         registerEvents();
@@ -110,7 +108,7 @@ abstract class XalAbstractDocument implements Pageable {
      * @return The title of the document.
      */
     public String getTitle() {
-        return _title;
+        return title;
     }
     
     
@@ -119,7 +117,7 @@ abstract class XalAbstractDocument implements Pageable {
      * @param newTitle The new title for this document.
      */
     public void setTitle(String newTitle) {
-        _title = newTitle;
+        title = newTitle;
     }
     
     
@@ -256,7 +254,7 @@ abstract class XalAbstractDocument implements Pageable {
 	* @return Status of whether this document has changes that need saving.
 	*/
     public boolean hasChanges() {
-        return _hasChanges;
+        return hasChanges;
     }
 
 
@@ -265,7 +263,7 @@ abstract class XalAbstractDocument implements Pageable {
 	 * @param changeStatus Status to set whether this document has changes that need saving.
 	 */
 	public void setHasChanges( final boolean changeStatus ) {
-		_hasChanges = changeStatus;
+		hasChanges = changeStatus;
 	}
 
     
@@ -358,7 +356,7 @@ abstract class XalAbstractDocument implements Pageable {
 	 */
 	public void freeResources() {
 		freeCustomResources();
-		MESSAGE_CENTER = null;
+		messageCenter = null;
 	}
 	
 	
@@ -507,6 +505,7 @@ abstract class XalAbstractDocument implements Pageable {
      * This default implementation simply returns one for printing a single page.
      * @return The number of pages to print
      */
+        @Override
     public int getNumberOfPages() {
         return 1;
     }
@@ -521,6 +520,7 @@ abstract class XalAbstractDocument implements Pageable {
      * @see xal.extension.application.PrintManager#getPageFormat
      * @throws java.lang.IndexOutOfBoundsException when the page index is out of range
      */
+        @Override
     public PageFormat getPageFormat( final int pageIndex ) throws IndexOutOfBoundsException {
         return PrintManager.defaultManager().getPageFormat();
     }
@@ -535,8 +535,10 @@ abstract class XalAbstractDocument implements Pageable {
      * @return The printable object responsible for printing the main window
      * @throws java.lang.IndexOutOfBoundsException when the page index is out of range
      */
+        @Override
     public Printable getPrintable( final int pageIndex ) throws IndexOutOfBoundsException {
         return new Printable() {
+            @Override
             public int print( Graphics graphics, PageFormat pageFormat, int pageIndex ) {
                 final Graphics2D graphics2D = (Graphics2D)graphics;
                 graphics2D.translate(pageFormat.getImageableX(), pageFormat.getImageableY());

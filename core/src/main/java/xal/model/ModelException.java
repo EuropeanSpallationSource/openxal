@@ -28,12 +28,12 @@ public class ModelException extends XalException {
     /** Creates a new instance of ModelException */
     public ModelException() {
         super();
-    };
+    }
     
     /** Creates a new instance of ModelException with message */
     public ModelException(String strMsg) {
         super(strMsg);
-    };
+    }
     
     /**
      * Create a new <code>ModelException</code> object which

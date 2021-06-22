@@ -442,7 +442,7 @@ public class NCellsTest extends SingleElementTest {
         AcceleratorSeq sequence = new AcceleratorSeq("GapTest");
         AcceleratorNode[] nodes = new AcceleratorNode[n];
 
-        double lambda = IElement.LightSpeed / frequency;
+        double lambda = IElement.LIGHT_SPEED / frequency;
         double Lc0, Lc, Lcn;
         double amp0 = 1 + kE0Ti;
         double ampn = 1 + kE0To;
@@ -494,13 +494,13 @@ public class NCellsTest extends SingleElementTest {
 
         // TTF
         if (betas == 0.0) {
-            cavity.getRfField().setTTF_startCoefs(new double[]{});
+            cavity.getRfField().setTTFStartCoefs(new double[]{});
             cavity.getRfField().setTTFCoefs(new double[]{});
-            cavity.getRfField().setTTF_endCoefs(new double[]{});
+            cavity.getRfField().setTTFEndCoefs(new double[]{});
         } else {
-            cavity.getRfField().setTTF_startCoefs(new double[]{betas, Ti, kTi, k2Ti});
+            cavity.getRfField().setTTFStartCoefs(new double[]{betas, Ti, kTi, k2Ti});
             cavity.getRfField().setTTFCoefs(new double[]{betas, Ts, kTs, k2Ts});
-            cavity.getRfField().setTTF_endCoefs(new double[]{betas, To, kTo, k2To});
+            cavity.getRfField().setTTFEndCoefs(new double[]{betas, To, kTo, k2To});
         }
 
         if (m == 1) {

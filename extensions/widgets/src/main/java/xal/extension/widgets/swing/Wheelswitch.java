@@ -47,10 +47,10 @@ import javax.swing.event.EventListenerList;
 
 
 /**
- * Descedant of <code>javax.swing.JPanel</code> that contains a row of digits
+ * Descendant of <code>javax.swing.JPanel</code> that contains a row of digits
  * and optionally a two way up-down button. It can be used for displaying and
  * modifying a single formatted <code>double</code> value with an optional
- * unit string (also in digits) displyed next to the value. Value manipulation
+ * unit string (also in digits) displayed next to the value. Value manipulation
  * and display formatting is handled by the <code>WheelswitchFormatter</code>.
  *
  * @author <a href="mailto:jernej.kamenik@cosylab.com">Jernej Kamenik</a>

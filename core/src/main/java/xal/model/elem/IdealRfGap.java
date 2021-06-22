@@ -40,20 +40,20 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	/**
 	 *  the string type identifier for all IdealRfGap objects
 	 */
-	public final static String s_strType = "IdealRfGap"; //$NON-NLS-1$
+	public static final String TYPE = "IdealRfGap"; //$NON-NLS-1$
 
 	/**
 	 *  Parameters for XAL MODEL LATTICE dtd
 	 */
-	public final static String s_strParamETL = "ETL"; //$NON-NLS-1$
+	public static final String PARAM_ETL = "ETL"; //$NON-NLS-1$
 	/**
 	 *  Description of the Field
 	 */
-	public final static String s_strParamPhase = "Phase"; //$NON-NLS-1$
+	public static final String PARAM_PHASE = "Phase"; //$NON-NLS-1$
 	/**
 	 *  Description of the Field
 	 */
-	public final static String s_strParamFreq = "Frequency"; //$NON-NLS-1$
+	public static final String PARAM_FREQ = "Frequency"; //$NON-NLS-1$
 	
 	/**
 	 * Don't know what this is? CKA
@@ -71,17 +71,17 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	/**
 	 *  ETL product of gap
 	 */
-	private double m_dblETL = 0.0;
+	private double dblETL = 0.0;
 
 	/**
 	 *  phase delay of gap w.r.t. the synchronous particle
 	 */
-	private double m_dblPhase = 0.0;
+	private double dblPhase = 0.0;
 
 	/**
 	 *  operating frequency of the gap
 	 */
-	private double m_dblFreq = 0.0;
+	private double dblFreq = 0.0;
 
 	/**
 	 *  flag indicating that this is the leading gap of a cavity
@@ -111,7 +111,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	private static double upstreamExitTime = 0.;
 
   /** the phase kick correction applied at the gap center [rad]*/
-  static private double deltaPhaseCorrection = 0.;
+  private static double deltaPhaseCorrection = 0.;
 
 	/**
 	 *  the on axis accelerating field (V)
@@ -166,7 +166,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	 *@param  dblFreq   operating RF frequency of gap (in <b>Hertz</b> )
 	 */
 	public IdealRfGap(String strId, double dblETL, double dblPhase, double dblFreq) {
-		super(s_strType, strId);
+		super(TYPE, strId);
 
 		this.setETL(dblETL);
 		this.setPhase(dblPhase);
@@ -178,7 +178,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	 *  BE CAREFUL</b>
 	 */
 	public IdealRfGap() {
-		super(s_strType);
+		super(TYPE);
 	}
 
 	/*
@@ -190,8 +190,9 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	 *
 	 *@return    the ETL product of the gap (in <b>volts</b> ).
 	 */
+        @Override
 	public double getETL() {
-		return m_dblETL;
+		return dblETL;
 	}
 
 	/**
@@ -200,8 +201,9 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	 *
 	 *@return    phase delay w.r.t. synchronous particle (in <b>radians</b> ).
 	 */
+        @Override
 	public double getPhase() {
-		return m_dblPhase;
+		return dblPhase;
 	}
 
 	/**
@@ -209,16 +211,18 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	 *
 	 *@return    frequency of RF gap (in <b>Hertz</b> )
 	 */
+        @Override
 	public double getFrequency() {
-		return m_dblFreq;
+		return dblFreq;
 	}
 
 
 	/**
-	 *  return wheteher this gap is the initial gap of a cavity
+	 *  return whether this gap is the initial gap of a cavity
 	 *
 	 *@return    The firstGap value
 	 */
+        @Override
 	public boolean isFirstGap() {
 		return initialGap;
 	}
@@ -233,8 +237,9 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	 *
 	 *@param  dblETL  ETL product of gap (in <b>volts</b> ).
 	 */
+        @Override
 	public void setETL(double dblETL) {
-		m_dblETL = dblETL;
+		this.dblETL = dblETL;
 	}
 
 	/**
@@ -242,11 +247,12 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	 *  particle. The actual energy gain from the gap is given by qETLcos(dblPhi)
 	 *  where dbkPhi is the phase delay.
 	 *
-	 *@param  dblPhase  phase delay of the RF w.r.t. synchonouse particle (in
+	 *@param  dblPhase  phase delay of the RF w.r.t. synchronous particle (in
 	 *      <b>radians</b> ).
 	 */
+        @Override
 	public void setPhase(double dblPhase) {
-		m_dblPhase = dblPhase;
+		this.dblPhase = dblPhase;
 	}
 
 	/**
@@ -254,8 +260,9 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	 *
 	 *@param  dblFreq  frequency of RF gap (in <b>Hertz</b> )
 	 */
+        @Override
 	public void setFrequency(double dblFreq) {
-		m_dblFreq = dblFreq;
+		this.dblFreq = dblFreq;
 	}
 
 	/**
@@ -263,6 +270,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	 *
 	 *@param  E  The new e0 value
 	 */
+        @Override
 	public void setE0(double E) {
 		E0 = E;
 	}
@@ -272,6 +280,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	 *
 	 *@return    The e0 value
 	 */
+        @Override
 	public double getE0() {
 		return E0;
 	}
@@ -299,7 +308,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     public double   wavelengthRF()  {
         
         // Compute the RF wavelength
-        double c      = IElement.LightSpeed;
+        double c      = IElement.LIGHT_SPEED;
         double f      = getFrequency();
         double lambda = c/f;
 
@@ -363,10 +372,10 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 		double dT = ((deltaPhaseCorrection) / (this.getFrequency() * 2.0 * Math.PI));
 
 		//the gap offset correction
-		dT = dT + gapOffset * (1. / (bi * IElement.LightSpeed) - 1. / (bf * IElement.LightSpeed));
+		dT = dT + gapOffset * (1. / (bi * IElement.LIGHT_SPEED) - 1. / (bf * IElement.LIGHT_SPEED));
 
 		//the time when probe will exit this gap
-		upstreamExitTime = probe.getTime() + dT + (getCellLength()/2.) / (bf * IElement.LightSpeed);
+		upstreamExitTime = probe.getTime() + dT + (getCellLength()/2.) / (bf * IElement.LIGHT_SPEED);
 
 		return dT;
 	}
@@ -412,12 +421,12 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 		double arrival_time = probe.getTime();
 
 		//the correction for the gap offset needed
-		arrival_time = arrival_time + gapOffset / (bi * IElement.LightSpeed);
+		arrival_time = arrival_time + gapOffset / (bi * IElement.LIGHT_SPEED);
 
 		// get phase at the gap center:
 		if(!isFirstGap()) {
 			phi0 = 2. * Math.PI * arrival_time * getFrequency() - firstGapPhaseCorr;
-			double driftTime = probe.getTime() - ((getCellLength()/2.)/(bi * IElement.LightSpeed) + upstreamExitTime);
+			double driftTime = probe.getTime() - ((getCellLength()/2.)/(bi * IElement.LIGHT_SPEED) + upstreamExitTime);
 			int nLabmda = (int) Math.round(2*structureMode*driftTime*getFrequency());
 			structurePhase = structurePhase + Math.PI*nLabmda;
 			phi0 = phi0 + structurePhase;
@@ -448,14 +457,14 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 //		double phi_gap = phi0;
 		double dE_gap = Q*EL*(ttf*Math.cos(phi0) + stf*Math.sin(phi0))/2.0;
 		double b_gap0 = Math.sqrt(1.-Er*Er/((Er+Wi+dE_gap)*(Er+Wi+dE_gap)));	
-		double k_gap0 = 2*Math.PI*freq/(b_gap0*IElement.LightSpeed);	
+		double k_gap0 = 2*Math.PI*freq/(b_gap0*IElement.LIGHT_SPEED);	
 		double gamma_gap = Math.sqrt(1./(1.-b_gap0*b_gap0));
 		double b_gap = b_gap0;
 		double k_gap = k_gap0;
 		double dlt_phi = (Q*EL/(Er*gamma_gap*gamma_gap*gamma_gap*b_gap*b_gap))*k_gap*(ttf_prime*Math.sin(phi0) - stf_prime*Math.cos(phi0))/2.0;
     for( int i = 0; i < 3; i++){
 			b_gap = Math.sqrt(1.-Er*Er/((Er+Wi+dE_gap)*(Er+Wi+dE_gap)));	
-			k_gap = 2*Math.PI*freq/(b_gap*IElement.LightSpeed);	
+			k_gap = 2*Math.PI*freq/(b_gap*IElement.LIGHT_SPEED);	
 			gamma_gap = Math.sqrt(1./(1.-b_gap*b_gap));
 			dE_gap = Q*EL*((ttf + ttf_prime*(k_gap - k_gap0))*Math.cos(phi0+dlt_phi) + (stf + stf_prime*(k_gap - k_gap0))*Math.sin(phi0+dlt_phi))/2.0;
 			dlt_phi = (Q*EL/(Er*gamma_gap*gamma_gap*gamma_gap*b_gap*b_gap))*k_gap*(ttf_prime*Math.sin(phi0+dlt_phi) - stf_prime*Math.cos(phi0+dlt_phi))/2.0;
@@ -604,7 +613,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	public double compTransFocusing(IProbe probe) {
 
 //        double  q = IElement.UnitCharge;
-		double c = IElement.LightSpeed;
+		double c = IElement.LIGHT_SPEED;
 
 		double Q = Math.abs(probe.getSpeciesCharge());
 		double Er = probe.getSpeciesRestEnergy();
@@ -705,15 +714,15 @@ public class IdealRfGap extends ThinElement implements IRfGap {
         
         double bi = probe.getBeta();
         synchronousPhase = 0.;
-        double arrival_time = probe.getTime();
+        double arrivalTime = probe.getTime();
 
         //the correction for the gap offset needed
-        arrival_time = arrival_time + gapOffset / (bi * IElement.LightSpeed);
+        arrivalTime = arrivalTime + gapOffset / (bi * IElement.LIGHT_SPEED);
 
         // get phase at the gap center:
         if (!isFirstGap()) {
-            synchronousPhase = 2. * Math.PI * arrival_time * getFrequency() - firstGapPhaseCorr;
-            double driftTime = probe.getTime() - ((getCellLength() / 2.) / (bi * IElement.LightSpeed) + upstreamExitTime);
+            synchronousPhase = 2. * Math.PI * arrivalTime * getFrequency() - firstGapPhaseCorr;
+            double driftTime = probe.getTime() - ((getCellLength() / 2.) / (bi * IElement.LIGHT_SPEED) + upstreamExitTime);
             int nLabmda = (int) Math.round(2 * structureMode * driftTime * getFrequency());
             structurePhase = structurePhase + Math.PI * nLabmda;
             synchronousPhase = synchronousPhase + structurePhase;
@@ -721,7 +730,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
         } // for first gap use input for phase at the gap center
         else {
             structurePhase = 0.;
-            firstGapPhaseCorr = 2. * Math.PI * arrival_time * getFrequency() - getPhase();
+            firstGapPhaseCorr = 2. * Math.PI * arrivalTime * getFrequency() - getPhase();
             synchronousPhase = getPhase();
         }
     }

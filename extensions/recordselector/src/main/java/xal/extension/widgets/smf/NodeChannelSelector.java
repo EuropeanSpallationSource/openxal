@@ -11,16 +11,14 @@ package xal.extension.widgets.smf;
 import xal.smf.*;
 import xal.extension.widgets.swing.*;
 
-import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collection;
 import java.util.Collections;
 
 
-/** display a view that allows users to select channels associtiated with nodes */
+/** display a view that allows users to select channels associated with nodes */
 public class NodeChannelSelector extends KeyValueRecordSelector<NodeChannelRef> {
 	/** Primary Constructor */
 	protected NodeChannelSelector( final KeyValueFilteredTableModel<NodeChannelRef> tableModel, final JFrame owner, final String title ) {
@@ -34,8 +32,8 @@ public class NodeChannelSelector extends KeyValueRecordSelector<NodeChannelRef> 
 	 * @param owner the window that owns the dialog window
 	 * @param title the title of the dialog window
 	 */
-	static public NodeChannelSelector getInstance( final List<NodeChannelRef> channelRefs, final JFrame owner, final String title ) {
-		final KeyValueFilteredTableModel<NodeChannelRef> tableModel = new KeyValueFilteredTableModel<NodeChannelRef>( channelRefs, "node.id", "node.class.simpleName", "handle" );
+	public static NodeChannelSelector getInstance( final List<NodeChannelRef> channelRefs, final JFrame owner, final String title ) {
+		final KeyValueFilteredTableModel<NodeChannelRef> tableModel = new KeyValueFilteredTableModel<>( channelRefs, "node.id", "node.class.simpleName", "handle" );
 		tableModel.setColumnName( "node.id", "Node" );
 		tableModel.setColumnName( "node.class.simpleName", "Device Type" );
 		tableModel.setColumnName( "handle", "Channel Handle" );
@@ -49,10 +47,10 @@ public class NodeChannelSelector extends KeyValueRecordSelector<NodeChannelRef> 
 	 * @param owner the window that owns the dialog window
 	 * @param title the title of the dialog window
 	 */
-	static public NodeChannelSelector getInstanceFromNodes( final List<AcceleratorNode> nodes, final JFrame owner, final String title ) {
-		final List<NodeChannelRef> channelRefs = new ArrayList<NodeChannelRef>();
+	public static NodeChannelSelector getInstanceFromNodes( final List<AcceleratorNode> nodes, final JFrame owner, final String title ) {
+		final List<NodeChannelRef> channelRefs = new ArrayList<>();
 		for ( final AcceleratorNode node : nodes ) {
-			final List<String> handles = new ArrayList<String>( node.getHandles() );
+			final List<String> handles = new ArrayList<>( node.getHandles() );
 			Collections.sort( handles );	// sort the handles alphabetically
 			for ( final String handle : handles ) {
 				final NodeChannelRef channelRef = new NodeChannelRef( node, handle );
@@ -70,8 +68,8 @@ public class NodeChannelSelector extends KeyValueRecordSelector<NodeChannelRef> 
 	 * @param title the title of the dialog window
 	 * @param handles the channel handles for which to get the channel references
 	 */
-	static public NodeChannelSelector getInstanceFromNodes( final List<AcceleratorNode> nodes, final JFrame owner, final String title, final String ... handles ) {
-		final List<NodeChannelRef> channelRefs = new ArrayList<NodeChannelRef>();
+	public static NodeChannelSelector getInstanceFromNodes( final List<AcceleratorNode> nodes, final JFrame owner, final String title, final String ... handles ) {
+		final List<NodeChannelRef> channelRefs = new ArrayList<>();
 		for ( final AcceleratorNode node : nodes ) {
 			final Collection<String> nodeHandles = node.getHandles();
 			for ( final String handle : handles ) {

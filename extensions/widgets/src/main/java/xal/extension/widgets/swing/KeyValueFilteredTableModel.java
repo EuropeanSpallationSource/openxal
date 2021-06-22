@@ -22,16 +22,16 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
     private static final long serialVersionUID = 1L;
     
 	/** handles the input events and filters the table records accordingly */
-	final private InputFilterHandler INPUT_FILTER_HANDLER;
+	private final InputFilterHandler INPUT_FILTER_HANDLER;
 	
 	/** record filter */
-	final private KeyValueListFilter<T> RECORD_FILTER;
+	private final KeyValueListFilter<T> RECORD_FILTER;
 	
 	/** input document used to specify filtering text */
-	private Document _inputFilterDocument;
+	private Document inputFilterDocument;
 	
 	/** list of all records to filter */
-	private List<T> _allRecords;
+	private List<T> allRecords;
 	
 	
 	/** 
@@ -42,7 +42,7 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
 	public KeyValueFilteredTableModel( final List<T> records, final String ... keyPaths ) {
 		super( records, keyPaths );
 		
-		RECORD_FILTER = new KeyValueListFilter<T>( KEY_VALUE_ADAPTOR, _allRecords, keyPaths );
+		RECORD_FILTER = new KeyValueListFilter<>( KEY_VALUE_ADAPTOR, allRecords, keyPaths );
 		
 		INPUT_FILTER_HANDLER = new InputFilterHandler();
 		setInputFilterDocument( null );
@@ -58,6 +58,7 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
 	
 	
 	/** Set the value of the specified cell */
+    @Override
 	public void setValueAt( final Object value, final int row, final int column ) {
 		super.setValueAt( value, row, column );
 		final T record = getRecordAtRow( row );
@@ -70,12 +71,12 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
 	
 	/** set the specified text input document as the text source for filtering table records */
 	public void setInputFilterDocument( final Document document) {		
-		if ( _inputFilterDocument != null ) {
-			_inputFilterDocument.removeDocumentListener( INPUT_FILTER_HANDLER );
+		if ( inputFilterDocument != null ) {
+			inputFilterDocument.removeDocumentListener( INPUT_FILTER_HANDLER );
 			INPUT_FILTER_HANDLER.clear();	// clear pending requests if any
 		}
 		
-		_inputFilterDocument = document;
+		inputFilterDocument = document;
 		
 		if ( document != null ) {
 			document.addDocumentListener( INPUT_FILTER_HANDLER );
@@ -100,6 +101,7 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
 	 * Overrides the inherited method to set all of the records (before filtering)
 	 * @param records the list of objects
 	 */
+    @Override
 	public void setRecords( final List<T> records ) {
 		setAllRecords( records );
 	}
@@ -110,7 +112,7 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
 	 * @param records the list of objects
 	 */
 	private void setAllRecords( final List<T> records ) {
-		_allRecords = records;
+		allRecords = records;
 		if ( RECORD_FILTER != null ) {
 			RECORD_FILTER.setAllRecords( records );
 			filterRecords();
@@ -127,13 +129,13 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
 	
 	/** apply the filter to all records */
 	private void filterRecords() {
-		final Document document = _inputFilterDocument;
+		final Document document = inputFilterDocument;
 		if ( document != null ) {
 			final String text = getText( document );
 			filterRecords( text );
 		}
 		else {
-			setFilteredRecords( _allRecords );
+			setFilteredRecords( allRecords );
 		}
 	}
 	
@@ -156,7 +158,7 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
 			setFilteredRecords( RECORD_FILTER.filterRecords( text ) );
 		}
 		else {
-			setFilteredRecords( _allRecords );
+			setFilteredRecords( allRecords );
 		}
 	}
 	
@@ -165,7 +167,7 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
 	/** listens for text input changes and filters the table records accordingly */
 	private class InputFilterHandler implements DocumentListener {
 		/** processor for filtering records */
-		final private FreshProcessor FILTER_PROCESSOR;
+		private final FreshProcessor FILTER_PROCESSOR;
 		
 		
 		/** Constructor */
@@ -181,16 +183,19 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
 		
 		
 		/** handle the input change event */
+                @Override
 		public void changedUpdate( final DocumentEvent event ) {
 			recordsNeedsFiltering( event );
 		}
 		
 		/** handle the input insert event */
+                @Override
 		public void insertUpdate( final DocumentEvent event ) {
 			recordsNeedsFiltering( event );
 		}
 		
 		/** handle the input remove event */
+                @Override
 		public void removeUpdate( final DocumentEvent event ) {
 			recordsNeedsFiltering( event );
 		}
@@ -208,7 +213,7 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
 	/** request to filter records in the table model according to the specified text */
 	private class FilterRecordsRequest implements Runnable {
 		/** text with which to filter the records */
-		final private String FILTER_TEXT;
+		private final String FILTER_TEXT;
 		
 		
 		/** Constructor */
@@ -218,6 +223,7 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
 		
 		
 		/** filter the records in the table */
+                @Override
 		public void run() {
 			filterRecords();
 		}

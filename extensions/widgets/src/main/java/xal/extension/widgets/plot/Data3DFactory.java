@@ -1,8 +1,5 @@
 package xal.extension.widgets.plot;
 
-import java.util.*;
-import java.awt.*;
-
 /**
  * This class is a 3D data factory class for colored surface data used 
  * in the FunctionGraphsJPanel class.
@@ -19,7 +16,7 @@ public class Data3DFactory {
     }
 
     /**  Returns the SmoothData3D instance. */   
-    static public ColorSurfaceData getDefaultData3D(int nx, int ny){
+    public static ColorSurfaceData getDefaultData3D(int nx, int ny){
 	if(nx < 3) nx = 3;
 	if(ny < 3) ny = 3;
 	return new SmoothData3D(nx,ny);
@@ -27,7 +24,7 @@ public class Data3DFactory {
 
     /**  Returns the 3d data instance defined by name.
      *   The name could be "smooth", "linear", "point like", and "black&white". */   
-    static public ColorSurfaceData getData3D(int nx, int ny, String dataName){
+    public static ColorSurfaceData getData3D(int nx, int ny, String dataName){
 	if(dataName.equals("smooth")){ 
 	    if(nx < 3) nx = 3;
 	    if(ny < 3) ny = 3;

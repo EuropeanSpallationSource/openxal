@@ -19,31 +19,31 @@ import xal.smf.data.*;
 /** filter to get trip monitor PVs from the optics */
 public class TripMonitorFilter {
 	/** data label */
-	final public static String DATA_LABEL = "TripMonitorFilter";
+	public static final String DATA_LABEL = "TripMonitorFilter";
 	
 	/** trip channel filters */
 	final List<TripChannelFilter> TRIP_CHANNEL_FILTERS;
 	
 	/** name */
-	final protected String NAME;
+	protected final String NAME;
 	
 	/** ID of the accelerator sequence from which to fetch the nodes */
-	final protected String SEQUENCE_ID;
+	protected final String SEQUENCE_ID;
 	
 	/** node type */
-	final protected String NODE_TYPE;
+	protected final String NODE_TYPE;
 	
 	/** pattern for filtering the node key from the a node ID */
-	final protected Pattern NODE_KEY_PATTERN;
+	protected final Pattern NODE_KEY_PATTERN;
 	
 	/** indicates whether the monitor is enabled */
-	final protected boolean IS_ENABLED;
+	protected final boolean IS_ENABLED;
 	
 	/** persistent store for logging trips */
-	final protected PersistentStore PERSISTENT_STORE;
+	protected final PersistentStore PERSISTENT_STORE;
 	
 	/** group of PV formats which are used to generate PVs from node names */
-	final protected PVNodeFormatGroup PV_NODE_FORMAT_GROUP;
+	protected final PVNodeFormatGroup PV_NODE_FORMAT_GROUP;
 	
 	
 	/** Constructor */

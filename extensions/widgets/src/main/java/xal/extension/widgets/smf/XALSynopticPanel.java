@@ -29,7 +29,6 @@ import java.awt.event.WindowEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -40,14 +39,14 @@ import javax.swing.JPanel;
  * <code>XALSynopticPanel</code> is simple panel, that shows synoptic layout of
  * selected XAL sequence.  Synoptic is drawn in horizontal direction. To
  * define right or left distance of drawing from the edge of panel, use
- * margins. To define which part of sequenc should be drawn, use start and end
+ * margins. To define which part of sequence should be drawn, use start and end
  * position.
  *
  * @author <a href="mailto:igor.kriznar@cosylab.com">Igor Kriznar</a>
  * @since Aug 29, 2003.
  * 
  * TODO Fire events for mouse selection of elements
- * TODO Add element selection dialog for choosing singel from multiple selection
+ * TODO Add element selection dialog for choosing single from multiple selection
  * TODO Implement SNS official color code
  */
 public class XALSynopticPanel extends JPanel {
@@ -58,11 +57,11 @@ public class XALSynopticPanel extends JPanel {
 	private double startPosition;
 	private double endPosition;
 	private AcceleratorSeq acceleratorSequence;
-	private ArrayList<AcceleratorNode> thick = new ArrayList<AcceleratorNode>();
-	private ArrayList<AcceleratorNode> thin = new ArrayList<AcceleratorNode>();
+	private ArrayList<AcceleratorNode> thick = new ArrayList<>();
+	private ArrayList<AcceleratorNode> thin = new ArrayList<>();
 	private Insets margin;
 	private String[] labels = new String[0];
-	private double _wrapShift;	// relevant for rings; it specifies the shift in wrap location where negative numbers start
+	private double wrapShift;	// relevant for rings; it specifies the shift in wrap location where negative numbers start
 	
 	
 	/**
@@ -71,7 +70,7 @@ public class XALSynopticPanel extends JPanel {
 	public XALSynopticPanel()
 	{
 		super();
-		_wrapShift = 0.0;
+		wrapShift = 0.0;
 		
 		setBackground(Color.white);
 		margin = new Insets(30, 20, 30, 20);
@@ -99,6 +98,7 @@ public class XALSynopticPanel extends JPanel {
 			frame.setSize(300, 200);
 			frame.getContentPane().add(pane);
 			frame.addWindowListener(new WindowAdapter() {
+                                        @Override
 					public void windowClosing(WindowEvent e)
 					{
 						System.exit(0);
@@ -164,7 +164,7 @@ public class XALSynopticPanel extends JPanel {
 	 * @param shift the shift (meters) in location along the ring where positions are measured in positive versus negative numbers relative to the origin
 	 */
 	public void setWrapShift( final double shift ) {
-		_wrapShift = shift;
+		wrapShift = shift;
 		repaint();
 	}
 
@@ -188,8 +188,8 @@ public class XALSynopticPanel extends JPanel {
 		}
 		
 		
-		final ArrayList<AcceleratorNode> newThick = new ArrayList<AcceleratorNode>(list.size());
-		final ArrayList<AcceleratorNode> newThin = new ArrayList<AcceleratorNode>(list.size());
+		final ArrayList<AcceleratorNode> newThick = new ArrayList<>(list.size());
+		final ArrayList<AcceleratorNode> newThin = new ArrayList<>(list.size());
 
 		for ( final AcceleratorNode el : list ) {
 			double pos = acceleratorSequence.getPosition(el);
@@ -271,6 +271,7 @@ public class XALSynopticPanel extends JPanel {
 	/* (non-Javadoc)
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
+    @Override
 	protected void paintComponent(Graphics g)
 	{
 		super.paintComponent(g);
@@ -305,7 +306,7 @@ public class XALSynopticPanel extends JPanel {
 		}
 
 		final double sequenceLength = acceleratorSequence != null ? acceleratorSequence.getLength() : 0.0;
-		final double wrapLocation = sequenceLength - _wrapShift;
+		final double wrapLocation = sequenceLength - wrapShift;
 		
 		// first draw thick elements
 		for ( final AcceleratorNode el : thick ) {
@@ -421,7 +422,7 @@ public class XALSynopticPanel extends JPanel {
 	}
 
 	/**
-	 * Sets the margin around drawing, takes effect regardles the border
+	 * Sets the margin around drawing, takes effect regardless the border
 	 * margins.
 	 *
 	 * @param insets
@@ -449,6 +450,7 @@ public class XALSynopticPanel extends JPanel {
 	/* (non-Javadoc)
 	 * @see javax.swing.JComponent#getToolTipText(java.awt.event.MouseEvent)
 	 */
+    @Override
 	public String getToolTipText(MouseEvent event)
 	{
 		int i = event.getPoint().x - margin.left;

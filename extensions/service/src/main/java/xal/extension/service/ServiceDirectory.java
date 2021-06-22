@@ -34,27 +34,27 @@ import javax.jmdns.ServiceInfo;
  * Both Bonjour and XML-RPC are accepted protocols implemented in multiple languages.
  * @author  tap
  */
-final public class ServiceDirectory {
+public final class ServiceDirectory {
 	/** The default directory */
-	static final private ServiceDirectory DEFAULT_DIRECTORY;
+	private static final ServiceDirectory DEFAULT_DIRECTORY;
 	
 	/** thread pool */
-	final private ExecutorService THREAD_POOL;
+	private final ExecutorService THREAD_POOL;
     
-    /** coder for encoding and ecoding messages for remote transport */
-    final private Coder MESSAGE_CODER;
+    /** coder for encoding and encoding messages for remote transport */
+    private final Coder MESSAGE_CODER;
 	
 	/** XML-RPC server used for registering services */
-    private RpcServer _rpcServer;
+    private RpcServer rpcServer;
 	
 	/** JmDNS instance */
-	private JmDNS _bonjour;
+	private JmDNS bonjour;
 	
 	/** flag indicating bonjour is in loopback mode (i.e. workstation is disconnected from network) */
-	private boolean _isLoopback; 
+	private boolean isLoopback; 
 	
 	/** Table mapping ServiceListener to the corresponding bonjour service listener */
-	protected Map<ServiceListener, BonjourServiceListenerInfo> _listenerMap;
+	protected Map<ServiceListener, BonjourServiceListenerInfo> listenerMap;
 	
 	
 	// static initializer
@@ -68,23 +68,24 @@ final public class ServiceDirectory {
 		THREAD_POOL = Executors.newCachedThreadPool();
         MESSAGE_CODER = JSONCoder.getInstance();
 		
-		_listenerMap = new Hashtable<ServiceListener, BonjourServiceListenerInfo>();
+		listenerMap = new Hashtable<>();
 		
 		try {
 			try {
-				_bonjour = JmDNS.create( InetAddress.getLocalHost() );
-				_isLoopback = false;
+				bonjour = JmDNS.create( InetAddress.getLocalHost() );
+				isLoopback = false;
 			}
 			catch( Exception exception ) {
 				final String message = "Error attempting to initialize JmDNS.  Will attempt to try loopback mode instead of networked mode.";
 				Logger.getLogger("global").log( Level.WARNING, message, exception );
 				System.err.println( message );
-				_isLoopback = true;
-				_bonjour = JmDNS.create( InetAddress.getByName( "127.0.0.1" ) );
+				isLoopback = true;
+				bonjour = JmDNS.create( InetAddress.getByName( "127.0.0.1" ) );
 			}
 			
 			// shutdown the service directory when quitting the process
 			Runtime.getRuntime().addShutdownHook( new Thread() {
+                                @Override
 				public void run() {
 					System.out.println( "Shutting down services for this process..." );
 					ServiceDirectory.this.dispose();
@@ -104,27 +105,27 @@ final public class ServiceDirectory {
 	 * Get the default ServiceDirectory instance.
 	 * @return The default ServiceDirectory instance.
 	 */
-	static public ServiceDirectory defaultDirectory() {
+	public static ServiceDirectory defaultDirectory() {
 		return DEFAULT_DIRECTORY;
 	}
 	
 	
 	/** Shutdown bonjour and the RPC server and dispose of all resources. */
 	public void dispose() {
-		_listenerMap.clear();
-		if ( _bonjour != null ) {
+		listenerMap.clear();
+		if ( bonjour != null ) {
             try {
-                _bonjour.close();
-                _bonjour = null;
+                bonjour.close();
+                bonjour = null;
             }
             catch( IOException exception ) {
                 throw new RuntimeException( "Exception closing bonjour services.", exception );
             }
 		}
-		if ( _rpcServer != null ) {
+		if ( rpcServer != null ) {
             try {
-                _rpcServer.shutdown();
-                _rpcServer = null;
+                rpcServer.shutdown();
+                rpcServer = null;
             }
             catch ( IOException exception ) {
                 throw new RuntimeException( "Exception closing the server socket.", exception );
@@ -138,16 +139,16 @@ final public class ServiceDirectory {
 	 * @return true if services are available
 	 */
 	public boolean isActive() {
-		return _bonjour != null && _rpcServer != null;
+		return bonjour != null && rpcServer != null;
 	}
 	
 	
 	/**
-	 * Determine if bonjour is running in loopback mode which would indicate that the computer is isolated from the network.  This flag is meaninful only if the service directory is active.
+	 * Determine if bonjour is running in loopback mode which would indicate that the computer is isolated from the network.  This flag is meaningful only if the service directory is active.
 	 * @return true if the service is running in loopback mode and false if it is on a network
 	 */
 	public boolean isLoopback() {
-		return _isLoopback;
+		return isLoopback;
 	}
     
     
@@ -181,7 +182,7 @@ final public class ServiceDirectory {
 	 * @return a new service reference for successful registration and null otherwise.
      */
     public <ProtocolType> ServiceRef registerService( final Class<ProtocolType> protocol, final String name, final ProtocolType provider ) throws ServiceException {
-		return registerService( protocol, name, provider, new HashMap<String,Object>() );
+		return registerService( protocol, name, provider, new HashMap<>() );
     }
 	
     
@@ -199,20 +200,20 @@ final public class ServiceDirectory {
         final String serviceType = getDefaultType( protocol );
 		
 		try {
-            if ( _rpcServer == null ) {
-                _rpcServer = new RpcServer( MESSAGE_CODER );
-                _rpcServer.start();
+            if ( rpcServer == null ) {
+                rpcServer = new RpcServer( MESSAGE_CODER );
+                rpcServer.start();
             }
               
-			int port = _rpcServer.getPort();
+			int port = rpcServer.getPort();
 			
 			// add the service to the RPC Server
-			_rpcServer.addHandler( serviceName, protocol, provider );
+			rpcServer.addHandler( serviceName, protocol, provider );
 			
 			// advertise the service to the world
 			final String bonjourType = ServiceRef.getFullType( serviceType );
 			final ServiceInfo info = ServiceInfo.create( bonjourType, serviceName, port, 0, 0, properties );
-			_bonjour.registerService( info );
+			bonjour.registerService( info );
 			return new ServiceRef( info );
 		}
 		catch( Exception exception ) {
@@ -228,8 +229,8 @@ final public class ServiceDirectory {
      */
     public boolean unregisterService( final ServiceRef serviceRef ) throws ServiceException {
 		try {
-			_bonjour.unregisterService( serviceRef.getServiceInfo() );
-			_rpcServer.removeHandler( serviceRef.getServiceName() );
+			bonjour.unregisterService( serviceRef.getServiceInfo() );
+			rpcServer.removeHandler( serviceRef.getServiceName() );
 			return true;
 		}
 		catch(Exception exception) {
@@ -259,7 +260,7 @@ final public class ServiceDirectory {
 	 */
 	public ServiceRef lookupService( final String type, final String name ) {
 		try {
-			ServiceInfo info = _bonjour.getServiceInfo( type, name );
+			ServiceInfo info = bonjour.getServiceInfo( type, name );
 			return ( info != null ) ? new ServiceRef( info ) : null;
 		}
 		catch(Exception exception) {
@@ -277,7 +278,7 @@ final public class ServiceDirectory {
 	 */
 	public ServiceRef lookupService( final String type, final String name, final int timeout ) throws ServiceException {
 		try {
-			final ServiceInfo info = _bonjour.getServiceInfo( type, name, timeout );
+			final ServiceInfo info = bonjour.getServiceInfo( type, name, timeout );
 			return (info != null) ? new ServiceRef(info) : null;
 		}
 		catch( Exception exception ) {
@@ -309,13 +310,15 @@ final public class ServiceDirectory {
 	 * @see #addServiceListener
 	 */
 	public ServiceRef[] findServicesWithType( final String serviceType, final long timeout ) throws ServiceException {
-		final Map<String,ServiceRef> serviceTable = new Hashtable<String,ServiceRef>();
+		final Map<String,ServiceRef> serviceTable = new Hashtable<>();
 		
 		final ServiceListener listener = new ServiceListener() {
+                        @Override
 			public void serviceAdded( final ServiceDirectory directory, final ServiceRef serviceRef ) {
 				serviceTable.put( serviceRef.getRawName(), serviceRef );
 			}
 			
+                        @Override
 			public void serviceRemoved( final ServiceDirectory directory, final String type, final String name ) {
 				serviceTable.remove( name );
 			}
@@ -366,9 +369,9 @@ final public class ServiceDirectory {
 	public void addServiceListener( final String type, final ServiceListener listener ) throws ServiceException {
 		try {
 			final String bonjourType = ServiceRef.getFullType( type );
-			_bonjour.addServiceListener( bonjourType, new javax.jmdns.ServiceListener() {
+			bonjour.addServiceListener( bonjourType, new javax.jmdns.ServiceListener() {
 				{
-					_listenerMap.put( listener, new BonjourServiceListenerInfo( bonjourType, this ) );
+					listenerMap.put( listener, new BonjourServiceListenerInfo( bonjourType, this ) );
 				}
 				
 				
@@ -377,6 +380,7 @@ final public class ServiceDirectory {
 				 * @param type the fully qualified type of the service
 				 * @param name the fully qualified name of the service
 				 */
+                                @Override
 				public void serviceAdded( final ServiceEvent event ) {
 					System.out.println( "Service added: " + event.getName() );
 					THREAD_POOL.execute( new Runnable() {
@@ -392,6 +396,7 @@ final public class ServiceDirectory {
 				 * @param type the fully qualified type of the service
 				 * @param name the fully qualified name of the service
 				 */
+                                @Override
 				public void serviceRemoved( final ServiceEvent event ) {
 					System.out.println( "Service removed: " + event.getName() );
 					final String type = event.getType();
@@ -405,6 +410,7 @@ final public class ServiceDirectory {
 				 * @param name the fully qualified name of the service
 				 * @param info the service info record, or null if the service could be be resolved
 				 */
+                                @Override
 				public void serviceResolved( final ServiceEvent event ) {
 					final ServiceInfo info  = event.getInfo();
 					final ServiceRef serviceRef = new ServiceRef( info );
@@ -424,10 +430,10 @@ final public class ServiceDirectory {
 	 * @param listener The listener of service availability events.
 	 */
 	public void removeServiceListener( final ServiceListener listener ) {
-		final BonjourServiceListenerInfo info = _listenerMap.get( listener );
+		final BonjourServiceListenerInfo info = listenerMap.get( listener );
 		final javax.jmdns.ServiceListener bonjourListener = info.LISTENER;
 		if ( bonjourListener != null ) {
-			_bonjour.removeServiceListener( info.TYPE, bonjourListener );
+			bonjour.removeServiceListener( info.TYPE, bonjourListener );
 		}
 	}
 	
@@ -438,7 +444,7 @@ final public class ServiceDirectory {
 	 * @param protocol The protocol for which to get a valid type
 	 * @return A valid type to represent the given protocol.
 	 */
-	static protected String getDefaultType( final Class<?> protocol ) {
+	protected static String getDefaultType( final Class<?> protocol ) {
 		String id = protocol.getName();
 		return id.replace('.', '_');
 	}
@@ -449,7 +455,7 @@ final public class ServiceDirectory {
 	 * @param proxy the proxy to the service at the remote host
 	 * @return a string representation of the remote host
 	 */
-	static public String getHost( final Object proxy ) {
+	public static String getHost( final Object proxy ) {
 		return getClientHandler( proxy ).getHost();
 	}
 	
@@ -459,7 +465,7 @@ final public class ServiceDirectory {
 	 * @param proxy the proxy to the service at the remote host
 	 * @return the remote port at which the service is available
 	 */
-	static public int getPort( final Object proxy ) {
+	public static int getPort( final Object proxy ) {
 		return getClientHandler( proxy ).getPort();
 	}
 	
@@ -469,7 +475,7 @@ final public class ServiceDirectory {
 	 * @param proxy the proxy to the remote service
 	 * @return The name of the remote service
 	 */
-	static public String getServiceName( final Object proxy ) {
+	public static String getServiceName( final Object proxy ) {
 		return getClientHandler( proxy ).getServiceName();
 	}
 	
@@ -479,7 +485,7 @@ final public class ServiceDirectory {
 	 * @param proxy the proxy to the remote service
 	 * @return the interface implemented by the proxy
 	 */
-	static public Class<?> getProtocol( final Object proxy ) {
+	public static Class<?> getProtocol( final Object proxy ) {
 		return getClientHandler( proxy ).getProtocol();
 	}
 	
@@ -489,7 +495,7 @@ final public class ServiceDirectory {
 	 * @param proxy the proxy for which we seek its client handler
 	 * @return the client handler for the proxy
 	 */
-	static protected ClientHandler<?> getClientHandler( final Object proxy ) {
+	protected static ClientHandler<?> getClientHandler( final Object proxy ) {
 		return (ClientHandler)Proxy.getInvocationHandler( proxy );
 	}
 	
@@ -498,10 +504,10 @@ final public class ServiceDirectory {
 	/** service listener information for Bonjour */
 	protected class BonjourServiceListenerInfo {
 		/** JmDNS type */
-		final public String TYPE;
+		public final String TYPE;
 		
 		/** JmDNS service listener */
-		final public javax.jmdns.ServiceListener LISTENER;
+		public final javax.jmdns.ServiceListener LISTENER;
 		
 		
 		/** Constructor */

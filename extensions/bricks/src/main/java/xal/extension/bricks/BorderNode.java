@@ -8,20 +8,8 @@
 
 package xal.extension.bricks;
 
-import java.beans.*;
-import javax.swing.*;
 import javax.swing.border.*;
-import java.awt.*;
-import java.awt.dnd.*;
-import java.awt.event.*;
-import java.io.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
-import java.util.Collections;
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
-import java.util.Enumeration;
 
 import xal.tools.data.*;
 
@@ -29,7 +17,7 @@ import xal.tools.data.*;
 /** brick which represents a view */
 public class BorderNode extends BeanNode<Border> {
 	/** data label */
-	public static String DATA_LABEL = "BorderNode";
+	public static String dataLabel = "BorderNode";
 	
 	/** Primary Constructor */
     @SuppressWarnings( "unchecked" )    // nothing we can do to type BorderNode any tighter without introducing a type on BorderNode
@@ -46,21 +34,22 @@ public class BorderNode extends BeanNode<Border> {
 	
 	/** Constructor */
 	public BorderNode( final BorderNode node ) {
-		this ( node.getBorderProxy(), node.BEAN_SETTINGS, node.getTag() );
+		this (node.getBorderProxy(), node.beanSettings, node.getTag() );
 		
 		setCustomBeanClassName( node.getCustomBeanClassName() );
 	}
 	
 	
 	/** get the bean instance */
+        @Override
 	protected Border getPrototypeBean( final BeanProxy<Border> beanProxy ) {
 		return beanProxy.getPrototype();
 	}
 	
 	
 	/** generator */
-	static public BorderNode getInstance( final DataAdaptor adaptor ) {		
-		final DataAdaptor proxyAdaptor = adaptor.childAdaptor( BorderProxy.DATA_LABEL );
+	public static BorderNode getInstance( final DataAdaptor adaptor ) {		
+		final DataAdaptor proxyAdaptor = adaptor.childAdaptor(BorderProxy.dataLabel );
 		final BorderProxy<Border> borderProxy = BorderProxy.getInstance( proxyAdaptor );
 		final String tag = adaptor.stringValue( "tag" );
 		final BorderNode node = new BorderNode( borderProxy, null, tag );
@@ -76,7 +65,7 @@ public class BorderNode extends BeanNode<Border> {
 	 * @return the border
 	 */
 	public Border getBorder() {
-		return BEAN_OBJECT;
+		return beanObject;
 	}
 	
 	
@@ -85,7 +74,7 @@ public class BorderNode extends BeanNode<Border> {
 	 * @return the border proxy
 	 */
 	public BorderProxy<Border> getBorderProxy() {
-		return (BorderProxy<Border>)BEAN_PROXY;
+		return (BorderProxy<Border>)beanProxy;
 	}
 	
 	
@@ -93,12 +82,14 @@ public class BorderNode extends BeanNode<Border> {
 	 * Determine if the brick can add the specified view
 	 * @return true if it can add the specified view and false if not
 	 */
+        @Override
 	public boolean canAdd( final BeanProxy<?> beanProxy ) {
 		return false;
 	}
 	
 	
 	/** refresh display */
+        @Override
 	public void refreshDisplay() {
 		final BeanNode<?> node = (BeanNode<?>)getContainingBrick();
 		if ( node != null ) {
@@ -108,6 +99,7 @@ public class BorderNode extends BeanNode<Border> {
 	
 	
 	/** Remove this brick from its parent */
+        @Override
 	public void removeFromParent() {
 		final ViewNode parent = (ViewNode)getContainingBrick();
 		if ( parent.getBorderNode() == this ) {
@@ -117,6 +109,7 @@ public class BorderNode extends BeanNode<Border> {
 	
 	
 	/** Display the bean's window */
+        @Override
 	public void display() {
 		final ViewNode parent = (ViewNode)getContainingBrick();
 		if ( parent.getBorderNode() == this ) {
@@ -129,7 +122,8 @@ public class BorderNode extends BeanNode<Border> {
 	 * Provides the name used to identify the class in an external data source.
 	 * @return a tag that identifies the receiver's type
 	 */
+        @Override
 	public String dataLabel() {
-		return DATA_LABEL;
+		return dataLabel;
 	}
 }

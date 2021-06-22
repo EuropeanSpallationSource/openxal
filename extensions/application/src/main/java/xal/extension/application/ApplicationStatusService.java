@@ -24,6 +24,7 @@ public class ApplicationStatusService implements ApplicationStatus {
 	 * Get the free memory available to the application instance.
 	 * @return The free memory available on this virtual machine in kB.
 	 */
+        @Override
 	public double getFreeMemory() {
 		return ( (double)Runtime.getRuntime().freeMemory() ) / 1024;
 	}
@@ -33,18 +34,21 @@ public class ApplicationStatusService implements ApplicationStatus {
 	 * Get the total memory consumed by the application instance.
 	 * @return The total memory consumed by the application instance in kB.
 	 */
+        @Override
 	public double getTotalMemory() {
 		return ( (double)Runtime.getRuntime().totalMemory() ) / 1024;
 	}
 	
 	
 	/** reveal the application by bringing all windows to the front */
+        @Override
 	public void showAllWindows() {
 		Application.getApp().showAllWindows();
 	}
 	
 	
 	/** Request that the virtual machine run the garbage collector. */
+        @Override
 	public void collectGarbage() {
 		System.gc();
 	}
@@ -54,6 +58,7 @@ public class ApplicationStatusService implements ApplicationStatus {
 	 * Quit the application normally.
 	 * @param code An unused status code.
 	 */
+        @Override
 	public void quit( final int code ) {
 		Application.getApp().quit();
 	}
@@ -63,6 +68,7 @@ public class ApplicationStatusService implements ApplicationStatus {
 	 * Force the application to quit immediately without running any finalizers.
 	 * @param code The status code used for halting the virtual machine.
 	 */
+        @Override
 	public void forceQuit(int code) {
 		Runtime.getRuntime().exit(code);
 	}
@@ -72,6 +78,7 @@ public class ApplicationStatusService implements ApplicationStatus {
 	 * Get the name of the host where the application is running.
 	 * @return The name of the host where the application is running.
 	 */
+        @Override
 	public String getHostName() {
 		try {
 			return java.net.InetAddress.getLocalHost().getHostName();
@@ -86,6 +93,7 @@ public class ApplicationStatusService implements ApplicationStatus {
 	 * Get the application name.
 	 * @return The application name.
 	 */
+        @Override
 	public String getApplicationName() {
 		return Application.getAdaptor().applicationName();
 	}
@@ -95,6 +103,7 @@ public class ApplicationStatusService implements ApplicationStatus {
 	 * Get the launch time of the application in seconds since the epoch (midnight GMT, January 1, 1970)
 	 * @return the time at with the application was launched in seconds since the epoch
 	 */
+        @Override
 	public Date getLaunchTime() {
 		return Application.getApp().getLaunchTime();
 	}
@@ -104,6 +113,7 @@ public class ApplicationStatusService implements ApplicationStatus {
 	 * Get a heartbeat from the service.
 	 * @return the time measured from the service at which the heartbeat was sent
 	 */
+        @Override
 	public Date getHeartbeat() {
 		return new Date();
 	}

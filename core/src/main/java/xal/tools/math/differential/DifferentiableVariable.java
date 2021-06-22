@@ -11,13 +11,13 @@ package xal.tools.math.differential;
 import java.util.Map;
 
 
-/** Variable used in a differntiable operation */
+/** Variable used in a differentiable operation */
 public class DifferentiableVariable extends DifferentiableSymbol {
     /** name of the variable */
-    final private String NAME;
+    private final String name;
     
     /** default value assigned to this variable */
-    private double _defaultValue;
+    private double defaultValue;
     
     
     /** 
@@ -26,7 +26,7 @@ public class DifferentiableVariable extends DifferentiableSymbol {
      * @param defaultValue value to use when none is supplied during evaluation
      */
     public DifferentiableVariable( final String name, final double defaultValue ) {
-        NAME = name;
+        this.name = name;
         setDefaultValue( defaultValue );
     }
     
@@ -36,6 +36,7 @@ public class DifferentiableVariable extends DifferentiableSymbol {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
         final DifferentiableOperation substitution = substitutions.get( this );
         return substitution != null ? substitution : this;
@@ -44,47 +45,51 @@ public class DifferentiableVariable extends DifferentiableSymbol {
     
     /** Get the name of this variable */
     public String getName() {
-        return NAME;
+        return name;
     }
     
     
     /** get the default value */
     public double getDefaultValue() {
-        return _defaultValue;
+        return defaultValue;
     }
     
     
     /** set the default value */
     public void setDefaultValue( final double value ) {
-        _defaultValue = value;
+        defaultValue = value;
     }
     
     
     /** generate a new variable with the specified name */
-    static public DifferentiableVariable getInstance( final String name, final double defaultValue ) {
+    public static DifferentiableVariable getInstance( final String name, final double defaultValue ) {
         return new DifferentiableVariable( name, defaultValue );
     }
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
-    final public double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
-        return valueMap != null ? valueMap.getValue( this ) : _defaultValue;
+    @Override
+    public final double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
+        return valueMap != null ? valueMap.getValue( this ) : defaultValue;
     }
     
     
     /** Get the derivative with respect to the coordinate at the specified index */
-    final public DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
+    @Override
+    public final DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
         return variable == this ? DifferentiableOperation.getConstant( 1.0 ) : DifferentiableOperation.getConstant( 0.0 );
     }
     
     
     /** get the string representation of this variable */
+    @Override
     public String toString() {
-        return NAME;
+        return name;
     }
     
     
     /** Test whether this operation is equivalent to the specified operation when the two operations are different instances. Always returns false. */
+    @Override
     protected boolean isEquivalentTo( final DifferentiableOperation operation ) {
         return false;
     }

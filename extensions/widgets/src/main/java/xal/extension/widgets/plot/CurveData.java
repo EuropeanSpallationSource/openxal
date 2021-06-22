@@ -23,8 +23,8 @@ public class CurveData{
 
     private int nX, nY;
 
-    private double x_min,x_max;
-    private double y_min,y_max;
+    private double xMin,xMax;
+    private double yMin,yMax;
 
     private Color color = Color.black;
 
@@ -36,10 +36,10 @@ public class CurveData{
     public CurveData(){
 	pointsX = new double[nChunk];
 	pointsY = new double[nChunk];
-        x_min =  Double.MAX_VALUE;
-        x_max = -Double.MAX_VALUE;
-        y_min =  Double.MAX_VALUE;
-        y_max = -Double.MAX_VALUE;
+        xMin =  Double.MAX_VALUE;
+        xMax = -Double.MAX_VALUE;
+        yMin =  Double.MAX_VALUE;
+        yMax = -Double.MAX_VALUE;
     }
 
     /**  Sets the color of the curve.*/
@@ -57,10 +57,10 @@ public class CurveData{
     /**  Deletes all points.*/
     public void clear(){
 	nPoints = 0;
-        x_min =  Double.MAX_VALUE;
-        x_max = -Double.MAX_VALUE;
-        y_min =  Double.MAX_VALUE;
-        y_max = -Double.MAX_VALUE;
+        xMin =  Double.MAX_VALUE;
+        xMax = -Double.MAX_VALUE;
+        yMin =  Double.MAX_VALUE;
+        yMax = -Double.MAX_VALUE;
     }
 
     /**  Returns number of points.*/
@@ -93,18 +93,18 @@ public class CurveData{
     /**  Sets the points.*/
     public void setPoints(double [] x, double [] y){
 	if(x.length == y.length){
-	    x_min =  Double.MAX_VALUE;
-	    x_max = -Double.MAX_VALUE;
-	    y_min =  Double.MAX_VALUE;
-	    y_max = -Double.MAX_VALUE;
+	    xMin =  Double.MAX_VALUE;
+	    xMax = -Double.MAX_VALUE;
+	    yMin =  Double.MAX_VALUE;
+	    yMax = -Double.MAX_VALUE;
 	    resize(x.length);
             for(int i = 0;  i < x.length; i++ ){
 		pointsX[i] = x[i];
 		pointsY[i] = y[i];
-		if(x_min > x[i]) x_min = x[i];
-		if(y_min > y[i]) y_min = y[i];
-		if(x_max < x[i]) x_max = x[i];
-		if(y_max < y[i]) y_max = y[i];
+		if(xMin > x[i]) xMin = x[i];
+		if(yMin > y[i]) yMin = y[i];
+		if(xMax < x[i]) xMax = x[i];
+		if(yMax < y[i]) yMax = y[i];
 	    }
 	    nPoints = x.length;
 	}
@@ -116,23 +116,23 @@ public class CurveData{
 	pointsX[nPoints] = x;
 	pointsY[nPoints] = y;
 	nPoints++;
-	if(x_min > x) x_min = x;
-	if(y_min > y) y_min = y;
-	if(x_max < x) x_max = x;
-	if(y_max < y) y_max = y;
+	if(xMin > x) xMin = x;
+	if(yMin > y) yMin = y;
+	if(xMax < x) xMax = x;
+	if(yMax < y) yMax = y;
     }
 
 	/**  Finds min and max values.*/
 	public void findMinMax(){
-		x_min =  Double.MAX_VALUE;
-	    x_max = -Double.MAX_VALUE;
-	    y_min =  Double.MAX_VALUE;
-	    y_max = -Double.MAX_VALUE;
+		xMin =  Double.MAX_VALUE;
+	    xMax = -Double.MAX_VALUE;
+	    yMin =  Double.MAX_VALUE;
+	    yMax = -Double.MAX_VALUE;
 		for(int i = 0;  i < nPoints; i++ ){
-		if(x_min > pointsX[i]) x_min = pointsX[i];
-		if(y_min > pointsY[i]) y_min = pointsY[i];
-		if(x_max < pointsX[i]) x_max = pointsX[i];
-		if(y_max < pointsY[i]) y_max = pointsY[i];
+		if(xMin > pointsX[i]) xMin = pointsX[i];
+		if(yMin > pointsY[i]) yMin = pointsY[i];
+		if(xMax < pointsX[i]) xMax = pointsX[i];
+		if(yMax < pointsY[i]) yMax = pointsY[i];
 		}
 	}
 
@@ -142,10 +142,10 @@ public class CurveData{
 	if(i < nPoints){
 	    pointsX[i] = x;
 	    pointsY[i] = y;
-	    if(x_min > x) x_min = x;
-	    if(y_min > y) y_min = y;
-	    if(x_max < x) x_max = x;
-	    if(y_max < y) y_max = y;
+	    if(xMin > x) xMin = x;
+	    if(yMin > y) yMin = y;
+	    if(xMax < x) xMax = x;
+	    if(yMax < y) yMax = y;
 	}
     }
 
@@ -161,22 +161,22 @@ public class CurveData{
 
     /**  Returns the minimal X value. */
     public double getMinX(){
-	return x_min;
+	return xMin;
     }
 
     /**  Returns the maximal X value. */
     public double getMaxX(){
-	return x_max;
+	return xMax;
     }
 
     /**  Returns the minimal Y value. */
     public double getMinY(){
-	return y_min;
+	return yMin;
     }
 
     /**  Returns the maximal Y value. */
     public double getMaxY(){
-	return y_max;
+	return yMax;
     }
 
     private void resize(int nSize){

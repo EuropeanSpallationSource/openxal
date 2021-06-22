@@ -87,7 +87,7 @@ public class DiagnosticProbe extends Probe<DiagnosticProbeState> {
      */ 
 	@Override
 	public Trajectory<DiagnosticProbeState> createTrajectory() {
-		return new Trajectory<DiagnosticProbeState>(DiagnosticProbeState.class);
+		return new Trajectory<>(DiagnosticProbeState.class);
 	}
 	
 	@Override

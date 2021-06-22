@@ -33,7 +33,7 @@ public class Timestamp implements Comparable<Timestamp> {
 	static final BigDecimal THOUSAND = new BigDecimal( 1000 );
 
 	/** the timestamp information */
-	protected BigDecimal _timestamp;
+	protected BigDecimal timestamp;
 
 
 	// static initializer
@@ -48,7 +48,7 @@ public class Timestamp implements Comparable<Timestamp> {
 	 * @param timestamp the number of seconds since the Java epoch
 	 */
 	public Timestamp( final BigDecimal timestamp ) {
-		_timestamp = timestamp;
+            this.timestamp = timestamp;
 	}
 
 
@@ -76,7 +76,7 @@ public class Timestamp implements Comparable<Timestamp> {
      * @return The time in milliseconds since the Java epoch.
      */
     public long getTime() {
-        return ( _timestamp.multiply(THOUSAND) ).longValue();
+        return ( timestamp.multiply(THOUSAND) ).longValue();
     }
 
 
@@ -85,7 +85,7 @@ public class Timestamp implements Comparable<Timestamp> {
 	 * @return the time in seconds since the Java epoch.
 	 */
 	public double getSeconds() {
-		return _timestamp.doubleValue();
+		return timestamp.doubleValue();
 	}
 
 
@@ -94,7 +94,7 @@ public class Timestamp implements Comparable<Timestamp> {
 	 * @return the time in seconds since the Java epoch.
 	 */
 	public BigDecimal getFullSeconds() {
-		return _timestamp;
+		return timestamp;
 	}
 
 
@@ -104,7 +104,7 @@ public class Timestamp implements Comparable<Timestamp> {
 	 */
 	public java.sql.Timestamp getSQLTimestamp() {
 		java.sql.Timestamp sqlTimestamp = new java.sql.Timestamp( getTime() );
-		int nanoseconds = _timestamp.subtract( _timestamp.setScale(0, BigDecimal.ROUND_DOWN) ).movePointRight(9).intValue();
+		int nanoseconds = timestamp.subtract( timestamp.setScale(0, BigDecimal.ROUND_DOWN) ).movePointRight(9).intValue();
 		sqlTimestamp.setNanos(nanoseconds);
 
 		return sqlTimestamp;
@@ -116,7 +116,7 @@ public class Timestamp implements Comparable<Timestamp> {
 	 * @param timestamp The timestamp as a java.sql.Timestamp
 	 * @return the timestamp as a BigDecimal in seconds since the Java epoch
 	 */
-	static private BigDecimal toBigDecimal(java.sql.Timestamp timestamp) {
+	private static BigDecimal toBigDecimal(java.sql.Timestamp timestamp) {
 		BigDecimal seconds = new BigDecimal( timestamp.getTime() / 1000 );
 		BigDecimal nanoSeconds = new BigDecimal( timestamp.getNanos() );
 		return seconds.add( nanoSeconds.movePointLeft(9) ).setScale( 9, BigDecimal.ROUND_HALF_UP );
@@ -129,7 +129,7 @@ public class Timestamp implements Comparable<Timestamp> {
 	 * @return formatted string representation
 	 */
 	public String toString( final DateFormat timeFormat ) {
-		final long nanoseconds = _timestamp.subtract( _timestamp.setScale( 0, BigDecimal.ROUND_DOWN ) ).movePointRight(9).longValue();
+		final long nanoseconds = timestamp.subtract( timestamp.setScale( 0, BigDecimal.ROUND_DOWN ) ).movePointRight(9).longValue();
 		return timeFormat.format( getDate() ) + "." + NANOSECOND_FORMATTER.format( nanoseconds );
 	}
 
@@ -138,6 +138,7 @@ public class Timestamp implements Comparable<Timestamp> {
 	 * Get a string representation of the Timestamp.
 	 * @return a string representation of the Timestamp
 	 */
+    @Override
 	public String toString() {
 		return toString( TIME_FORMATTER );
 	}
@@ -147,9 +148,10 @@ public class Timestamp implements Comparable<Timestamp> {
 	 * Determine if the specified timestamp equals this one.
 	 * @return true if they are equals and false if not
 	 */
+    @Override
 	public boolean equals( final Object timestamp ) {
 		if ( timestamp != null && timestamp instanceof Timestamp ) {
-			return ((Timestamp)timestamp)._timestamp.equals( _timestamp );
+			return ((Timestamp)timestamp).timestamp.equals( this.timestamp );
 		}
 		else {
 			return false;
@@ -157,9 +159,10 @@ public class Timestamp implements Comparable<Timestamp> {
 	}
 
 
-	/** Override the hashcode as required when overriding equals. Equality implies equality of the underlying _timestamp instance variables. */
+	/** Override the hashcode as required when overriding equals. Equality implies equality of the underlying timestamp instance variables. */
+    @Override
 	public int hashCode() {
-		return _timestamp.hashCode();
+		return timestamp.hashCode();
 	}
 
 
@@ -168,7 +171,8 @@ public class Timestamp implements Comparable<Timestamp> {
 	 * @param otherTimestamp The timestamp with which to compare this one
 	 * @return 0 if the timestamps are the same, negative if this is earlier than the supplied one and positive otherwise
 	 */
+    @Override
 	public int compareTo( final Timestamp otherTimestamp ) {
-		return _timestamp.compareTo( otherTimestamp._timestamp );
+		return timestamp.compareTo( otherTimestamp.timestamp );
 	}
 }

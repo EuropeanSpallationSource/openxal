@@ -19,10 +19,10 @@ import java.io.*;
 /** encode and decode objects with JSON */
 public class JSONCoder implements Coder {
     /** default coder */
-    static JSONCoder DEFAULT_CODER;
+    static final JSONCoder DEFAULT_CODER;
 
     /** adaptors between all custom types and representation JSON types */
-    final MutableConversionAdaptorStore CONVERSION_ADAPTOR_STORE;
+    final MutableConversionAdaptorStore conversionAdaptorStore;
 
 
     // static initializer
@@ -32,44 +32,44 @@ public class JSONCoder implements Coder {
 
 
     /** get a new JSON Coder only if you need to customize it, otherwise use the static methods to encode/decode */
-    static public JSONCoder getInstance() {
+    public static JSONCoder getInstance() {
         return new JSONCoder( false );
     }
 
 
     /** Constructor to be called for the default coder */
     private JSONCoder( final boolean isDefault ) {
-        CONVERSION_ADAPTOR_STORE = isDefault ? new MutableConversionAdaptorStore( true ) : new MutableConversionAdaptorStore( DEFAULT_CODER.CONVERSION_ADAPTOR_STORE );
+        conversionAdaptorStore = isDefault ? new MutableConversionAdaptorStore( true ) : new MutableConversionAdaptorStore( DEFAULT_CODER.conversionAdaptorStore );
     }
 
 
     /** Get a list of types (including JSON standard types plus default extensions) which are supported for coding and decoding */
-    static public List<String> getDefaultTypes() {
+    public static List<String> getDefaultTypes() {
         return DEFAULT_CODER.getSupportedTypes();
     }
 
 
     /** Get a list of the standard types encoded directly into JSON */
-    static public List<String> getStandardTypes() {
+    public static List<String> getStandardTypes() {
         return ConversionAdaptorStore.getStandardTypes();
     }
 
 
     /** Determine whether the specified type is a standard JSON type */
-    static public boolean isStandardType( final String type ) {
+    public static boolean isStandardType( final String type ) {
         return ConversionAdaptorStore.isStandardType( type );
     }
 
 
     /** Get a list of all types which are supported for coding and decoding */
     public List<String> getSupportedTypes() {
-        return CONVERSION_ADAPTOR_STORE.getSupportedTypes();
+        return conversionAdaptorStore.getSupportedTypes();
     }
 
 
     /** Get a list of types which extend beyond the JSON standard types */
     public List<String> getExtendedTypes() {
-        return CONVERSION_ADAPTOR_STORE.getExtendedTypes();
+        return conversionAdaptorStore.getExtendedTypes();
     }
 
 
@@ -78,14 +78,15 @@ public class JSONCoder implements Coder {
      * @param type type to identify and process for encoding and decoding
      * @param adaptor translator between the custom type and representation JSON constructs
      */
+    @Override
     public <CustomType,RepresentationType> void registerType( final Class<CustomType> type, final ConversionAdaptor<CustomType,RepresentationType> adaptor ) {
-        CONVERSION_ADAPTOR_STORE.registerType( type, adaptor );
+        conversionAdaptorStore.registerType( type, adaptor );
     }
 
 
     /** Get the conversion adaptor for the given value */
     protected ConversionAdaptor<?,?> getConversionAdaptor( final String valueType ) {
-        return CONVERSION_ADAPTOR_STORE.getConversionAdaptor( valueType );
+        return conversionAdaptorStore.getConversionAdaptor( valueType );
     }
 
 
@@ -94,7 +95,7 @@ public class JSONCoder implements Coder {
      * @param archive JSON string representation of an object
      * @return an object with the data described in the archive
      */
-    static public Object defaultDecode( final String archive ) {
+    public static Object defaultDecode( final String archive ) {
         return DEFAULT_CODER.decode( archive );
     }
 
@@ -104,8 +105,9 @@ public class JSONCoder implements Coder {
      * @param archive JSON string representation of an object
      * @return an object with the data described in the archive
      */
+    @Override
     public Object decode( final String archive ) {
-        final JSONDecoder decoder = JSONDecoder.getInstance( archive, new ConversionAdaptorStore( CONVERSION_ADAPTOR_STORE ) );
+        final JSONDecoder decoder = JSONDecoder.getInstance(archive, new ConversionAdaptorStore( conversionAdaptorStore ) );
         return decoder != null ? decoder.decode() : null;
     }
 
@@ -115,7 +117,7 @@ public class JSONCoder implements Coder {
      * @param value the object to encode
      * @return a JSON string representing the value
      */
-    static public String defaultEncode( final Object value ) {
+    public static String defaultEncode( final Object value ) {
         return DEFAULT_CODER.encode( value );
     }
 
@@ -125,8 +127,9 @@ public class JSONCoder implements Coder {
      * @param value the object to encode
      * @return a JSON string representing the value
      */
+    @Override
     public String encode( final Object value ) {
-        return JSONEncoder.encode( value, new ConversionAdaptorStore( CONVERSION_ADAPTOR_STORE ) );
+        return JSONEncoder.encode(value, new ConversionAdaptorStore( conversionAdaptorStore ) );
     }
 }
 
@@ -135,17 +138,17 @@ public class JSONCoder implements Coder {
 /** encode an object graph into JSON */
 class JSONEncoder {
     /** store of conversion adaptors to use when instantiating new instances from the JSON archive */
-    final private ConversionAdaptorStore CONVERSION_ADAPTOR_STORE;
+    private final ConversionAdaptorStore conversionAdaptorStore;
 
     /** stores references to objects already decoded and referenced in new objects */
-    private ReferenceStore _referenceStore;
+    private ReferenceStore referenceStore;
 
 
     /** Constructor */
     protected JSONEncoder( final ConversionAdaptorStore conversionAdaptorStore ) {
-        CONVERSION_ADAPTOR_STORE = conversionAdaptorStore;
+        this.conversionAdaptorStore = conversionAdaptorStore;
 
-        _referenceStore = null;
+        referenceStore = null;
     }
 
 
@@ -157,19 +160,19 @@ class JSONEncoder {
 
     /** get the reference store */
     public ReferenceStore getReferenceStore() {
-        return _referenceStore;
+        return referenceStore;
     }
 
 
     /** get the conversion adaptor store */
     public ConversionAdaptorStore getConversionAdaptorStore() {
-        return CONVERSION_ADAPTOR_STORE;
+        return conversionAdaptorStore;
     }
 
 
     /** encode the specified value */
     public String encode( final Object value ) {
-        _referenceStore = new ReferenceStore();
+        referenceStore = new ReferenceStore();
 
         final AbstractEncoder<?> rootEncoder = getEncoder( value );
         rootEncoder.preprocess( this, value );
@@ -182,7 +185,7 @@ class JSONEncoder {
 
 
     /** encode the specified value into JSON */
-    static public String encode( final Object value, final ConversionAdaptorStore conversionAdaptorStore ) {
+    public static String encode( final Object value, final ConversionAdaptorStore conversionAdaptorStore ) {
         return JSONEncoder.getInstance( conversionAdaptorStore ).encode( value );
     }
 
@@ -212,7 +215,7 @@ class JSONEncoder {
             else if ( valueClass.isArray() ) {
                 return ArrayEncoder.getInstance( value );
             }
-            else if ( CONVERSION_ADAPTOR_STORE.isExtendedClass( valueClass ) ) {  // if the type is not among the standard ones then look to extensions
+            else if ( conversionAdaptorStore.isExtendedClass( valueClass ) ) {  // if the type is not among the standard ones then look to extensions
                 return ExtensionEncoder.getInstance();
             }
             else if ( value instanceof Serializable ) {
@@ -246,10 +249,12 @@ abstract class AbstractEncoder<DataType> {
 /** Base class of encoders for hard objects (not references) */
 abstract class HardEncoder<DataType> extends AbstractEncoder<DataType> {
     /** preprocess the object graph prior to encoding so the references can be resolved and encoded in order (definition first then any references to it) */
+    @Override
     public void preprocess( final JSONEncoder encoder, final Object value ) {}
 
 
     /** encode the specified object to the JSON builder */
+    @Override
     public void encode( final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value ) {
         encodeRaw( encoder, jsonBuilder, value );
     }
@@ -260,16 +265,17 @@ abstract class HardEncoder<DataType> extends AbstractEncoder<DataType> {
 /** Base class of encoders for objects that support references */
 abstract class SoftValueEncoder<DataType> extends AbstractEncoder<DataType> {
     /** key to indicate a reference */
-    static final public String REFERENCE_KEY = "__XALREF";
+    public static final String REFERENCE_KEY = "__XALREF";
 
     /** key identifies an object that is referenced */
-    static final public String OBJECT_ID_KEY = "__XALID";
+    public static final String OBJECT_ID_KEY = "__XALID";
 
     /** key for the referenced value */
-    static final public String VALUE_KEY = "value";
+    public static final String VALUE_KEY = "value";
 
 
     /** encode the specified object to the JSON builder */
+    @Override
     public void encode( final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value ) {
         if ( allowsReference( value ) ) {
             final ReferenceStore referenceStore = encoder.getReferenceStore();
@@ -332,6 +338,7 @@ abstract class SoftValueEncoder<DataType> extends AbstractEncoder<DataType> {
 
 
     /** encode the raw value directly */
+    @Override
     abstract public void encodeRaw( final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value );
 }
 
@@ -340,7 +347,7 @@ abstract class SoftValueEncoder<DataType> extends AbstractEncoder<DataType> {
 /** encode a null to JSON */
 class NullEncoder extends HardEncoder<Object> {
     /** encoder singleton */
-    static final private NullEncoder SHARED_ENCODER;
+    private static final NullEncoder SHARED_ENCODER;
 
 
     // static initializer
@@ -350,12 +357,13 @@ class NullEncoder extends HardEncoder<Object> {
 
 
     /** get the shared instance */
-    static public NullEncoder getInstance() {
+    public static NullEncoder getInstance() {
         return SHARED_ENCODER;
     }
 
 
     /** encode the specified object to the JSON builder */
+    @Override
     public void encodeRaw( final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value ) {
         jsonBuilder.append( "null" );
     }
@@ -366,7 +374,7 @@ class NullEncoder extends HardEncoder<Object> {
 /** encode a string to JSON */
 class StringEncoder extends SoftValueEncoder<String> {
     /** encoder singleton */
-    static final private StringEncoder SHARED_ENCODER;
+    private static final StringEncoder SHARED_ENCODER;
 
 
     // static initializer
@@ -376,7 +384,7 @@ class StringEncoder extends SoftValueEncoder<String> {
 
 
     /** get the shared instance */
-    static public StringEncoder getInstance() {
+    public static StringEncoder getInstance() {
         return SHARED_ENCODER;
     }
 
@@ -388,6 +396,7 @@ class StringEncoder extends SoftValueEncoder<String> {
 
 
     /** preprocess the object graph prior to encoding so the references can be resolved and encoded in order (definition first then any references to it) */
+    @Override
     public void preprocess( final JSONEncoder encoder, final Object value ) {
         if ( allowsReference( value ) ) {
             final ReferenceStore referenceStore = encoder.getReferenceStore();
@@ -397,6 +406,7 @@ class StringEncoder extends SoftValueEncoder<String> {
 
 
     /** encode the string */
+    @Override
     public void encodeRaw( final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value ) {
         jsonBuilder.append( toJSON( value.toString() ) );
     }
@@ -413,7 +423,7 @@ class StringEncoder extends SoftValueEncoder<String> {
 /** encode a boolean to JSON */
 class BooleanEncoder extends HardEncoder<Boolean> {
     /** encoder singleton */
-    static final private BooleanEncoder SHARED_ENCODER;
+    private static final BooleanEncoder SHARED_ENCODER;
 
 
     // static initializer
@@ -423,14 +433,15 @@ class BooleanEncoder extends HardEncoder<Boolean> {
 
 
     /** get the shared instance */
-    static public BooleanEncoder getInstance() {
+    public static BooleanEncoder getInstance() {
         return SHARED_ENCODER;
     }
 
 
     /** encode the specified object to the JSON builder */
+    @Override
     public void encodeRaw( final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value ) {
-        jsonBuilder.append( ((Boolean)value).booleanValue() ? "true" : "false" );
+        jsonBuilder.append( ((Boolean)value) ? "true" : "false" );
     }
 }
 
@@ -439,7 +450,7 @@ class BooleanEncoder extends HardEncoder<Boolean> {
 /** encode a number to JSON */
 class NumberEncoder extends HardEncoder<Number> {
     /** encoder singleton */
-    static final private NumberEncoder SHARED_ENCODER;
+    private static final NumberEncoder SHARED_ENCODER;
 
 
     // static initializer
@@ -449,12 +460,13 @@ class NumberEncoder extends HardEncoder<Number> {
 
 
     /** get the shared instance */
-    static public NumberEncoder getInstance() {
+    public static NumberEncoder getInstance() {
         return SHARED_ENCODER;
     }
 
 
     /** encode the specified object to the JSON builder */
+    @Override
     public void encodeRaw( final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value ) {
         jsonBuilder.append( value.toString() );
     }
@@ -465,7 +477,7 @@ class NumberEncoder extends HardEncoder<Number> {
 /** encode a hash map to JSON */
 class DictionaryEncoder extends SoftValueEncoder<Map<String,Object>> {
     /** encoder singleton */
-    static final private DictionaryEncoder SHARED_ENCODER;
+    private static final DictionaryEncoder SHARED_ENCODER;
 
 
     // static initializer
@@ -475,7 +487,7 @@ class DictionaryEncoder extends SoftValueEncoder<Map<String,Object>> {
 
 
     /** get the shared instance */
-    static public DictionaryEncoder getInstance() {
+    public static DictionaryEncoder getInstance() {
         return SHARED_ENCODER;
     }
 
@@ -499,6 +511,7 @@ class DictionaryEncoder extends SoftValueEncoder<Map<String,Object>> {
 
     /** encode the string */
     @SuppressWarnings( "unchecked" )    // need to cast the value to Map<String,Object>
+    @Override
     public void encodeRaw( final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value ) {
         final Map<String,Object> dictionary = (Map<String,Object>)value;
 
@@ -533,13 +546,13 @@ class DictionaryEncoder extends SoftValueEncoder<Map<String,Object>> {
 /** encoder for extensions which piggybacks on the dictionary encoder */
 class ExtensionEncoder extends SoftValueEncoder<Object> {
     /** custom key identifying a custom type translated in terms of JSON representations */
-    static final public String EXTENDED_TYPE_KEY = "__XALTYPE";
+    public static final String EXTENDED_TYPE_KEY = "__XALTYPE";
 
     /** custom key identifying a custom value to translate in terms of JSON representations */
-    static final public String EXTENDED_VALUE_KEY = "value";
+    public static final String EXTENDED_VALUE_KEY = "value";
 
     /** encoder singleton */
-    static final private ExtensionEncoder SHARED_ENCODER;
+    private static final ExtensionEncoder SHARED_ENCODER;
 
 
     // static initializer
@@ -549,18 +562,19 @@ class ExtensionEncoder extends SoftValueEncoder<Object> {
 
 
     /** get the shared instance */
-    static public ExtensionEncoder getInstance() {
+    public static ExtensionEncoder getInstance() {
         return SHARED_ENCODER;
     }
 
 
     /** get the value type for the specified value */
-    static private String getValueType( final Object value ) {
+    private static String getValueType( final Object value ) {
         return value.getClass().getName();
     }
 
 
     /** preprocess the object graph prior to encoding so the references can be resolved and encoded in order (definition first then any references to it) */
+    @Override
     public void preprocess( final JSONEncoder encoder, final Object value ) {
         final ReferenceStore referenceStore = encoder.getReferenceStore();
         referenceStore.store( value );
@@ -574,6 +588,7 @@ class ExtensionEncoder extends SoftValueEncoder<Object> {
 
 
     /** encode the string */
+    @Override
     public void encodeRaw( final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value ) {
         // create dictionary with the value so we can generate an object that can be referenced
         final ConversionAdaptorStore conversionAdaptorStore = encoder.getConversionAdaptorStore();
@@ -584,11 +599,11 @@ class ExtensionEncoder extends SoftValueEncoder<Object> {
 
     /** get the value representation as a dictionary keyed for the extended type and value */
     @SuppressWarnings( { "unchecked", "rawtypes" } )
-    static private HashMap<String,Object> getValueRep( final Object value, final ConversionAdaptorStore conversionAdaptorStore ) {
+    private static HashMap<String,Object> getValueRep( final Object value, final ConversionAdaptorStore conversionAdaptorStore ) {
         final String valueType = getValueType( value );
         final ConversionAdaptor adaptor = conversionAdaptorStore.getConversionAdaptor( valueType );
         if ( adaptor != null ) {
-            final HashMap<String,Object> valueRep = new HashMap<String,Object>();
+            final HashMap<String,Object> valueRep = new HashMap<>();
             final Object representationValue = adaptor.toRepresentation( value );
             valueRep.put( EXTENDED_TYPE_KEY, valueType );
             valueRep.put( EXTENDED_VALUE_KEY, representationValue );
@@ -605,10 +620,10 @@ class ExtensionEncoder extends SoftValueEncoder<Object> {
 /** encoder for serialized objects which piggybacks on the dictionary encoder */
 class SerializationEncoder extends SoftValueEncoder<Serializable> {
     /** custom key identifying the serialization byte array */
-    static final public String SERIALIZATION_VALUE_KEY = "__XALSERIALIZATION";
+    public static final String SERIALIZATION_VALUE_KEY = "__XALSERIALIZATION";
 
     /** encoder singleton */
-    static final private SerializationEncoder SHARED_ENCODER;
+    private static final SerializationEncoder SHARED_ENCODER;
 
 
     // static initializer
@@ -618,16 +633,16 @@ class SerializationEncoder extends SoftValueEncoder<Serializable> {
 
 
     /** get the shared instance */
-    static public SerializationEncoder getInstance() {
+    public static SerializationEncoder getInstance() {
         return SHARED_ENCODER;
     }
 
 
     /** get the serialization byte array */
     @SuppressWarnings( "unchecked" )
-    static private HashMap<String,Object> getValueRep( final Object value ) {
+    private static HashMap<String,Object> getValueRep( final Object value ) {
         try {
-            final HashMap<String,Object> valueRep = new HashMap<String,Object>();
+            final HashMap<String,Object> valueRep = new HashMap<>();
             final ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
             final ObjectOutputStream objectOutStream = new ObjectOutputStream( byteOutStream );
             objectOutStream.writeObject( value );
@@ -647,6 +662,7 @@ class SerializationEncoder extends SoftValueEncoder<Serializable> {
 
 
     /** preprocess the object graph prior to encoding so the references can be resolved and encoded in order (definition first then any references to it) */
+    @Override
     public void preprocess( final JSONEncoder encoder, final Object value ) {
         final ReferenceStore referenceStore = encoder.getReferenceStore();
         referenceStore.store( value );
@@ -659,6 +675,7 @@ class SerializationEncoder extends SoftValueEncoder<Serializable> {
 
 
     /** encode the string */
+    @Override
     public void encodeRaw( final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value ) {
         // create dictionary with the value so we can generate an object that can be referenced
         final HashMap<String,Object> valueRep = getValueRep( value );
@@ -671,19 +688,19 @@ class SerializationEncoder extends SoftValueEncoder<Serializable> {
 /** encoder for an array of items of a common extended type which piggybacks on the dictionary encoder */
 class TypedArrayEncoder extends ArrayEncoder {
     /** primitive type wrappers keyed by type */
-    final static private Map<Class<?>,Class<?>> PRIMITIVE_TYPE_WRAPPERS;
+    private static final Map<Class<?>,Class<?>> PRIMITIVE_TYPE_WRAPPERS;
 
     /** key for identifying the array data of an extended type */
-    static final public String ARRAY_ITEM_TYPE_KEY = "__XALITEMTYPE";
+    public static final String ARRAY_ITEM_TYPE_KEY = "__XALITEMTYPE";
 
     /** key for identifying the array data of an extended type */
-    static final public String ARRAY_KEY = "array";
+    public static final String ARRAY_KEY = "array";
 
     /** primitive classes keyed by type name */
-    static final private Map<String,Class<?>> PRIMITIVE_CLASSES;
+    private static final Map<String,Class<?>> PRIMITIVE_CLASSES;
 
     /** encoder singleton */
-    static final private TypedArrayEncoder SHARED_ENCODER;
+    private static final TypedArrayEncoder SHARED_ENCODER;
 
 
     // static initializer
@@ -696,12 +713,13 @@ class TypedArrayEncoder extends ArrayEncoder {
 
 
     /** get the shared instance */
-    static public TypedArrayEncoder getInstance() {
+    public static TypedArrayEncoder getInstance() {
         return SHARED_ENCODER;
     }
 
 
     /** preprocess the object graph prior to encoding so the references can be resolved and encoded in order (definition first then any references to it) */
+    @Override
     public void preprocess( final JSONEncoder encoder, final Object value ) {
         final ReferenceStore referenceStore = encoder.getReferenceStore();
         referenceStore.store( value );
@@ -712,6 +730,7 @@ class TypedArrayEncoder extends ArrayEncoder {
 
 
     /** encode the string */
+    @Override
     public void encodeRaw( final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object array ) {
         final String itemType = getComponentType( array );
 
@@ -795,20 +814,20 @@ class TypedArrayEncoder extends ArrayEncoder {
 
 
     /** get the raw component type for the specified array */
-    static private String getComponentType( final Object array ) {
+    private static String getComponentType( final Object array ) {
         return array.getClass().getComponentType().getName();
     }
 
 
     /** get the primitive type for the specified type name */
-    static public Class<?> getPrimitiveType( final String typeName ) {
+    public static Class<?> getPrimitiveType( final String typeName ) {
         return PRIMITIVE_CLASSES.get( typeName );
     }
 
 
     /** populate the table of primitive type wrappers */
     private static Map<Class<?>,Class<?>> populatePrimitiveTypeWrappers() {
-        final Map<Class<?>,Class<?>> table = new Hashtable<Class<?>,Class<?>>();
+        final Map<Class<?>,Class<?>> table = new Hashtable<>();
 
         table.put( Integer.TYPE, Integer.class );
         table.put( Long.TYPE, Long.class );
@@ -824,8 +843,8 @@ class TypedArrayEncoder extends ArrayEncoder {
 
 
     /** generate the table of primitive classes keyed by name */
-    static private Map<String,Class<?>> generatePrimitiveClassMap() {
-        final Map<String,Class<?>> classTable = new Hashtable<String,Class<?>>();
+    private static Map<String,Class<?>> generatePrimitiveClassMap() {
+        final Map<String,Class<?>> classTable = new Hashtable<>();
         registerPrimitiveType( classTable, Float.TYPE );
         registerPrimitiveType( classTable, Double.TYPE );
         registerPrimitiveType( classTable, Byte.TYPE );
@@ -838,7 +857,7 @@ class TypedArrayEncoder extends ArrayEncoder {
 
 
     /** register the primitive type in the table */
-    static private void registerPrimitiveType( final Map<String,Class<?>> table, final Class<?> type ) {
+    private static void registerPrimitiveType( final Map<String,Class<?>> table, final Class<?> type ) {
         table.put( type.getName(), type );
     }
 }
@@ -848,7 +867,7 @@ class TypedArrayEncoder extends ArrayEncoder {
 /** encode an array to JSON */
 class ArrayEncoder extends SoftValueEncoder<Object[]> {
     /** encoder singleton */
-    static final private ArrayEncoder SHARED_ENCODER;
+    private static final ArrayEncoder SHARED_ENCODER;
 
 
     // static initializer
@@ -858,12 +877,13 @@ class ArrayEncoder extends SoftValueEncoder<Object[]> {
 
 
     /** get the shared instance */
-    static public ArrayEncoder getInstance( final Object value ) {
+    public static ArrayEncoder getInstance( final Object value ) {
         return isTypedArray( value ) ? TypedArrayEncoder.getInstance() : SHARED_ENCODER;
     }
 
 
     /** preprocess the object graph prior to encoding so the references can be resolved and encoded in order (definition first then any references to it) */
+    @Override
     public void preprocess( final JSONEncoder encoder, final Object value ) {
         final ReferenceStore referenceStore = encoder.getReferenceStore();
         referenceStore.store( value );
@@ -876,6 +896,7 @@ class ArrayEncoder extends SoftValueEncoder<Object[]> {
 
 
     /** encode the string */
+    @Override
     public void encodeRaw( final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value ) {
         final Object[] array = (Object[])value;
 
@@ -898,7 +919,7 @@ class ArrayEncoder extends SoftValueEncoder<Object[]> {
 
 
     /** Determine whether the array is of a common extended type */
-    static private boolean isTypedArray( final Object array ) {
+    private static boolean isTypedArray( final Object array ) {
         final Class<?> itemClass = array.getClass().getComponentType();
         final boolean isTyped = itemClass != null && itemClass != Object.class;
         return isTyped;
@@ -910,25 +931,25 @@ class ArrayEncoder extends SoftValueEncoder<Object[]> {
 /** Decode JSON into an object graph */
 class JSONDecoder {
     /** JSON archive to parse */
-    final private String JSON_ARCHIVE;
+    private final String jsonArchive;
 
     /** store of conversion adaptors to use when instantiating new instances from the JSON archive */
-    final private ConversionAdaptorStore CONVERSION_ADAPTOR_STORE;
+    private final ConversionAdaptorStore conversionAdaptorStore;
 
     /** stores references to objects already decoded and referenced in new objects */
-    private KeyedReferenceStore _referenceStore;
+    private KeyedReferenceStore referenceStore;
 
     /** current position of the scanner in the archive */
-    private int _scanPosition;
+    private int scanPosition;
 
 
     /** Constructor */
     protected JSONDecoder( final String jsonArchive, final ConversionAdaptorStore conversionAdaptorStore ) {
-        JSON_ARCHIVE = jsonArchive.trim();
-        CONVERSION_ADAPTOR_STORE = conversionAdaptorStore;
+        this.jsonArchive = jsonArchive.trim();
+        this.conversionAdaptorStore = conversionAdaptorStore;
 
-        _scanPosition = 0;
-        _referenceStore = null;
+        scanPosition = 0;
+        referenceStore = null;
     }
 
 
@@ -940,44 +961,44 @@ class JSONDecoder {
 
     /** get the current scan position */
     public int getScanPosition() {
-        return _scanPosition;
+        return scanPosition;
     }
 
 
-    /** set the scan postion */
+    /** set the scan position */
     public void setScanPosition( final int scanPosition ) {
-        _scanPosition = scanPosition;
+        this.scanPosition = scanPosition;
     }
 
 
     /** advance the scan position the specified number of steps */
     public void advanceScanPosition( final int scanLength ) {
-        _scanPosition += scanLength;
+        scanPosition += scanLength;
     }
 
 
     /** get the JSON Archive */
     public String getArchive() {
-        return JSON_ARCHIVE;
+        return jsonArchive;
     }
 
 
     /** get the conversion adaptor store */
     public ConversionAdaptorStore getConversionAdaptorStore() {
-        return CONVERSION_ADAPTOR_STORE;
+        return conversionAdaptorStore;
     }
 
 
     /** get the keyed reference store */
     public KeyedReferenceStore getReferenceStore() {
-        return _referenceStore;
+        return referenceStore;
     }
 
 
     /** decode the archive */
     public Object decode() {
-        _scanPosition = 0;
-        _referenceStore = new KeyedReferenceStore();
+        scanPosition = 0;
+        referenceStore = new KeyedReferenceStore();
 
         return parseNext();
     }
@@ -997,8 +1018,8 @@ class JSONDecoder {
 
     /** get the next decoder */
     private AbstractDecoder<?> nextDecoder() {
-        if ( _scanPosition < JSON_ARCHIVE.length() ) {
-            final char nextChar = JSON_ARCHIVE.charAt( _scanPosition );
+        if ( scanPosition < jsonArchive.length() ) {
+            final char nextChar = jsonArchive.charAt(scanPosition );
 
             switch ( nextChar ) {
             case '+': case '-': case '.':
@@ -1016,7 +1037,7 @@ class JSONDecoder {
                 return DictionaryDecoder.getInstance();
             default:
                 if ( Character.isWhitespace( nextChar ) ) {     // ignore whitespace
-                    ++_scanPosition;    // increment the scan position
+                    ++scanPosition;    // increment the scan position
                     return nextDecoder();
                 }
                 else {
@@ -1043,10 +1064,10 @@ abstract class AbstractDecoder<DataType> {
 /** decode a number from a source string */
 class NumberDecoder extends AbstractDecoder<JSONNumber> {
     /** default number decoder */
-    static private final NumberDecoder DEFAULT_DECODER;
+    private static final NumberDecoder DEFAULT_DECODER;
 
     /** pattern for matching a number */
-    static final Pattern NUMBER_PATTERN;
+    private static final Pattern NUMBER_PATTERN;
 
 
     // static initializer
@@ -1057,12 +1078,13 @@ class NumberDecoder extends AbstractDecoder<JSONNumber> {
 
 
     /** get an instance of the number decoder */
-    static public NumberDecoder getInstance() {
+    public static NumberDecoder getInstance() {
         return DEFAULT_DECODER;
     }
 
 
     /** decode the source to extract the next object */
+    @Override
     protected JSONNumber decode( final JSONDecoder source ) {
         final int startScanPosition = source.getScanPosition();
         final Matcher matcher = NUMBER_PATTERN.matcher( source.getArchive() );
@@ -1087,7 +1109,7 @@ class NumberDecoder extends AbstractDecoder<JSONNumber> {
 /** decode a boolean from a source string */
 class BooleanDecoder extends AbstractDecoder<Boolean> {
     /** default boolean decoder */
-    static private final BooleanDecoder DEFAULT_DECODER;
+    private static final BooleanDecoder DEFAULT_DECODER;
 
 
     // static initializer
@@ -1097,12 +1119,13 @@ class BooleanDecoder extends AbstractDecoder<Boolean> {
 
 
     /** get an instance of the number decoder */
-    static public BooleanDecoder getInstance() {
+    public static BooleanDecoder getInstance() {
         return DEFAULT_DECODER;
     }
 
 
     /** decode the source to extract the next object */
+    @Override
     protected Boolean decode( final JSONDecoder source ) {
         final int startScanPosition = source.getScanPosition();
         final String archive = source.getArchive();
@@ -1134,7 +1157,7 @@ class BooleanDecoder extends AbstractDecoder<Boolean> {
 /** decode a null identifier from a source string */
 class NullDecoder extends AbstractDecoder<Object> {
     /** default null decoder */
-    static private final NullDecoder DEFAULT_DECODER;
+    private static final NullDecoder DEFAULT_DECODER;
 
 
     // static initializer
@@ -1144,12 +1167,13 @@ class NullDecoder extends AbstractDecoder<Object> {
 
 
     /** get an instance of the number decoder */
-    static public NullDecoder getInstance() {
+    public static NullDecoder getInstance() {
         return DEFAULT_DECODER;
     }
 
 
     /** decode the source to extract the next object */
+    @Override
     protected Object decode( final JSONDecoder source ) {
         final int startScanPosition = source.getScanPosition();
         final String archive = source.getArchive();
@@ -1177,7 +1201,7 @@ class NullDecoder extends AbstractDecoder<Object> {
 /** decode a string from a source string */
 class StringDecoder extends AbstractDecoder<String> {
     /** default string decoder */
-    static private final StringDecoder DEFAULT_DECODER;
+    private static final StringDecoder DEFAULT_DECODER;
 
 
     // static initializer
@@ -1187,7 +1211,7 @@ class StringDecoder extends AbstractDecoder<String> {
 
 
     /** get an instance of the number decoder */
-    static public StringDecoder getInstance() {
+    public static StringDecoder getInstance() {
         return DEFAULT_DECODER;
     }
 
@@ -1228,6 +1252,7 @@ class StringDecoder extends AbstractDecoder<String> {
 
 
     /** decode the source to extract the next object */
+    @Override
     protected String decode( final JSONDecoder source ) {
         final int startScanPosition = source.getScanPosition();
         final String archive = source.getArchive();
@@ -1243,7 +1268,7 @@ class StringDecoder extends AbstractDecoder<String> {
 /** decode an array from a source string */
 class ArrayDecoder extends AbstractDecoder<Object[]> {
     /** default array decoder */
-    static private final ArrayDecoder DEFAULT_DECODER;
+    private static final ArrayDecoder DEFAULT_DECODER;
 
 
     // static initializer
@@ -1253,14 +1278,15 @@ class ArrayDecoder extends AbstractDecoder<Object[]> {
 
 
     /** get an instance of the number decoder */
-    static public ArrayDecoder getInstance() {
+    public static ArrayDecoder getInstance() {
         return DEFAULT_DECODER;
     }
 
 
     /** decode the source to extract the next object */
+    @Override
     protected Object[] decode( final JSONDecoder source ) {
-        final List<Object> items = new ArrayList<Object>();
+        final List<Object> items = new ArrayList<>();
         appendItems( source, items );
         return items.toArray();
     }
@@ -1319,7 +1345,7 @@ class ArrayDecoder extends AbstractDecoder<Object[]> {
 /** decode a dictionary from a source string */
 class DictionaryDecoder extends AbstractDecoder<Object> {
     /** default dictionary decoder */
-    static private final DictionaryDecoder DEFAULT_DECODER;
+    private static final DictionaryDecoder DEFAULT_DECODER;
 
 
     // static initializer
@@ -1329,15 +1355,16 @@ class DictionaryDecoder extends AbstractDecoder<Object> {
 
 
     /** get an instance of the number decoder */
-    static public DictionaryDecoder getInstance() {
+    public static DictionaryDecoder getInstance() {
         return DEFAULT_DECODER;
     }
 
 
     /** decode the source to extract the next object */
     @SuppressWarnings( "unchecked" )    // no way to validate representation value and type at compile time
+    @Override
     protected Object decode( final JSONDecoder source ) {
-        final Map<String,Object> dictionary = new HashMap<String,Object>();
+        final Map<String,Object> dictionary = new HashMap<>();
         appendItems( source, dictionary );
 
         final ConversionAdaptorStore conversionAdaptorStore = source.getConversionAdaptorStore();
@@ -1368,7 +1395,7 @@ class DictionaryDecoder extends AbstractDecoder<Object> {
                 }
                 return array;
             }
-            catch( Exception exception ) {
+            catch( ArrayIndexOutOfBoundsException | ClassNotFoundException | IllegalArgumentException | NegativeArraySizeException exception ) {
                 exception.printStackTrace();
                 throw new RuntimeException( "Exception decoding a typed array of type: " + componentType, exception );
             }
@@ -1384,7 +1411,7 @@ class DictionaryDecoder extends AbstractDecoder<Object> {
                 byteInputStream.close();
                 return value;
             }
-            catch ( Exception exception ) {
+            catch ( IOException | ClassNotFoundException exception ) {
                 throw new RuntimeException( "Exception decoding serialized object from dictionary: " + dictionary, exception );
             }
         }
@@ -1500,23 +1527,23 @@ class DictionaryDecoder extends AbstractDecoder<Object> {
 /** Stores referenced items keyed by ID */
 class KeyedReferenceStore {
     /** references keyed by ID */
-    final private Map<Long,Object> REFERENCES;
+    private final Map<Long,Object> references;
 
     /** Constructor */
     public KeyedReferenceStore() {
-        REFERENCES = new HashMap<Long,Object>();
+        references = new HashMap<>();
     }
 
 
     /** store the value associated with the key */
     public void store( final long key, final Object value ) {
-        REFERENCES.put( key, value );
+        references.put( key, value );
     }
 
 
     /** get the item associated with the key */
     public Object get( final long key ) {
-        return REFERENCES.get( key );
+        return references.get( key );
     }
 }
 
@@ -1525,16 +1552,16 @@ class KeyedReferenceStore {
 /** pair of strings representing the key and value */
 class KeyValueStringPair {
     /** key */
-    final public String KEY;
+    public final String key;
 
     /** value */
-    final public String VALUE;
+    public final String value;
 
 
     /** Constructor */
     public KeyValueStringPair( final String key, final String value ) {
-        KEY = key;
-        VALUE = value;
+        this.key = key;
+        this.value = value;
     }
 }
 
@@ -1543,35 +1570,35 @@ class KeyValueStringPair {
 /** storage of possible references */
 class ReferenceStore {
     /** set of objects with a common equality */
-    final private Map<Object,EqualityReference<Object>> EQUALITY_REFERENCES;
+    private final Map<Object,EqualityReference<Object>> equalityReferences;
 
     /** counter of unique objects */
-    private long _objectCounter;
+    private long objectCounter;
 
 
     /** Constructor */
     public ReferenceStore() {
-        EQUALITY_REFERENCES = new HashMap<Object,EqualityReference<Object>>();
-        _objectCounter = 0;
+        equalityReferences = new HashMap<>();
+        objectCounter = 0;
     }
 
 
     /** store the item */
     @SuppressWarnings( "unchecked" )    // no way to test type at compile time
     public <ItemType> IdentityReference<ItemType> store( final ItemType item ) {
-        if ( !EQUALITY_REFERENCES.containsKey( item ) ) {
-            EQUALITY_REFERENCES.put( item, new EqualityReference<Object>() );
+        if ( !equalityReferences.containsKey( item ) ) {
+            equalityReferences.put( item, new EqualityReference<>() );
         }
-        final EqualityReference<ItemType> equalityReference = (EqualityReference<ItemType>)EQUALITY_REFERENCES.get( item );
-        return equalityReference.add( item, ++_objectCounter );
+        final EqualityReference<ItemType> equalityReference = (EqualityReference<ItemType>)equalityReferences.get( item );
+        return equalityReference.add( item, ++objectCounter );
     }
 
 
     /** get the item's identify reference */
     @SuppressWarnings( "unchecked" )    // no way to test type at compile time
     public <ItemType> IdentityReference<ItemType> getIdentityReference( final ItemType item ) {
-        if ( EQUALITY_REFERENCES.containsKey( item ) ) {
-            final EqualityReference<ItemType> equalityReference = (EqualityReference<ItemType>)EQUALITY_REFERENCES.get( item );
+        if ( equalityReferences.containsKey( item ) ) {
+            final EqualityReference<ItemType> equalityReference = (EqualityReference<ItemType>)equalityReferences.get( item );
             return equalityReference.getIdentityReference( item );
         } else {
             return null;
@@ -1584,12 +1611,12 @@ class ReferenceStore {
 /** reference to a collection of objects which are equal among themselves */
 class EqualityReference<ItemType> {
     /** list of identity references */
-    final private List<IdentityReference<ItemType>> IDENTITY_REFERENCES;
+    private final List<IdentityReference<ItemType>> identityReferences;
 
 
     /** Constructor */
     public EqualityReference() {
-        IDENTITY_REFERENCES = new ArrayList<IdentityReference<ItemType>>();
+        identityReferences = new ArrayList<>();
     }
 
 
@@ -1602,8 +1629,8 @@ class EqualityReference<ItemType> {
             return existingReference;
         } else {
             // create a new reference
-            final IdentityReference<ItemType> reference = new IdentityReference<ItemType>( item, uniqueID );
-            IDENTITY_REFERENCES.add( reference );
+            final IdentityReference<ItemType> reference = new IdentityReference<>( item, uniqueID );
+            identityReferences.add( reference );
             return reference;
         }
     }
@@ -1612,7 +1639,7 @@ class EqualityReference<ItemType> {
     /** get the identity reference for the specified item */
     public IdentityReference<ItemType> getIdentityReference( final ItemType item ) {
         // search for references that are identical
-        for ( final IdentityReference<ItemType> reference : IDENTITY_REFERENCES ) {
+        for ( final IdentityReference<ItemType> reference : identityReferences ) {
             if ( reference.getItem() == item ) {
                 return reference;
             }
@@ -1628,60 +1655,60 @@ class EqualityReference<ItemType> {
 /** reference to an object along with the count */
 class IdentityReference<ItemType> {
     /** referenced item */
-    final private ItemType ITEM;
+    private final ItemType item;
 
     /** unique ID for this object */
-    final private long ID;
+    private final long id;
 
     /** indicates multiple references to the item */
-    private boolean _hasMultiple;
+    private boolean hasMultiple;
 
     /** indicates that the reference has already been assigned */
-    private boolean _isEncoded;
+    private boolean isEncoded;
 
 
     /** Constructor */
     public IdentityReference( final ItemType item, final long uniqueID ) {
-        ITEM = item;
-        ID = uniqueID;
-        _hasMultiple = false;
-        _isEncoded = false;
+        this.item = item;
+        id = uniqueID;
+        hasMultiple = false;
+        isEncoded = false;
     }
 
 
     /** get the item */
     public ItemType getItem() {
-        return ITEM;
+        return item;
     }
 
 
     /** get the unique ID for the item */
     public long getID() {
-        return ID;
+        return id;
     }
 
 
     /** indicates whether more than one reference exists to the referenced item */
     public boolean hasMultiple() {
-        return _hasMultiple;
+        return hasMultiple;
     }
 
 
     /** mark whether multiple (more than one) references are made to the item */
     public void setHasMultiple( final boolean hasMultiple ) {
-        _hasMultiple = hasMultiple;
+        this.hasMultiple = hasMultiple;
     }
 
 
     /** gets whether this reference has been encoded so future encoding can just be references */
     public boolean isEncoded() {
-        return _isEncoded;
+        return isEncoded;
     }
 
 
     /** sets whether this reference has been encoded */
     public void setEncoded( final boolean isEncoded ) {
-        _isEncoded = isEncoded;
+        this.isEncoded = isEncoded;
     }
 }
 
@@ -1690,34 +1717,34 @@ class IdentityReference<ItemType> {
 /** conversion adaptors container whose contents cannot be changed */
 class ConversionAdaptorStore {
     /** adaptors between all custom types and representation JSON types */
-    final protected Map<String,ConversionAdaptor<?,?>> TYPE_EXTENSION_ADAPTORS;
+    protected final Map<String,ConversionAdaptor<?,?>> typeExtensionAdaptors;
 
     /** set of standard types */
-    static final private Set<String> STANDARD_TYPES;
+    private static final Set<String> STANDARD_TYPES;
 
 
     // static initializer
     static {
-        STANDARD_TYPES = new HashSet<String>();
+        STANDARD_TYPES = new HashSet<>();
         populateStandardTypes();
     }
 
 
     /** Constructor */
     protected ConversionAdaptorStore() {
-        TYPE_EXTENSION_ADAPTORS = new HashMap<String,ConversionAdaptor<?,?>>();
+        typeExtensionAdaptors = new HashMap<>();
     }
 
 
     /** Unmodifiable Copy Constructor */
     public ConversionAdaptorStore( final ConversionAdaptorStore sourceAdaptors ) {
-        TYPE_EXTENSION_ADAPTORS = Collections.unmodifiableMap( sourceAdaptors.TYPE_EXTENSION_ADAPTORS );
+        typeExtensionAdaptors = Collections.unmodifiableMap(sourceAdaptors.typeExtensionAdaptors );
     }
 
 
     /** populate the set of standard types */
-    static private void populateStandardTypes() {
-        final Set<String> types = new HashSet<String>();
+    private static void populateStandardTypes() {
+        final Set<String> types = new HashSet<>();
 
         types.add( Boolean.class.getName() );
         types.add( Double.class.getName() );
@@ -1731,22 +1758,22 @@ class ConversionAdaptorStore {
 
 
     /** Get a list of all types which are supported for coding and decoding */
-    static public List<String> getStandardTypes() {
-        final List<String> types = new ArrayList<String>( STANDARD_TYPES );
+    public static List<String> getStandardTypes() {
+        final List<String> types = new ArrayList<>( STANDARD_TYPES );
         Collections.sort( types );
         return types;
     }
 
 
     /** determine whether the specified type is a standard JSON type */
-    static public boolean isStandardType( final String type ) {
+    public static boolean isStandardType( final String type ) {
         return STANDARD_TYPES.contains( type );
     }
 
 
     /** Get a list of all types which are supported for coding and decoding */
     public List<String> getSupportedTypes() {
-        final List<String> types = new ArrayList<String>();
+        final List<String> types = new ArrayList<>();
 
         types.addAll( getStandardTypes() );
         types.addAll( getExtendedTypes() );
@@ -1759,9 +1786,9 @@ class ConversionAdaptorStore {
 
     /** Get a list of types which extend beyond the JSON standard types */
     public List<String> getExtendedTypes() {
-        final List<String> types = new ArrayList<String>();
+        final List<String> types = new ArrayList<>();
 
-        for ( final String type : TYPE_EXTENSION_ADAPTORS.keySet() ) {
+        for ( final String type : typeExtensionAdaptors.keySet() ) {
             types.add( type );
         }
 
@@ -1785,13 +1812,13 @@ class ConversionAdaptorStore {
 
     /** Determine if the specified type is an extended type */
     public boolean isExtendedType( final String valueType ) {
-        return TYPE_EXTENSION_ADAPTORS.containsKey( valueType );
+        return typeExtensionAdaptors.containsKey( valueType );
     }
 
 
     /** Get the conversion adaptor for the given value */
     public ConversionAdaptor<?,?> getConversionAdaptor( final String valueType ) {
-        return TYPE_EXTENSION_ADAPTORS.get( valueType );
+        return typeExtensionAdaptors.get( valueType );
     }
 }
 
@@ -1809,7 +1836,7 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
     /** Copy Constructor */
     public MutableConversionAdaptorStore( final MutableConversionAdaptorStore sourceAdaptors ) {
         this( false );
-        TYPE_EXTENSION_ADAPTORS.putAll( sourceAdaptors.TYPE_EXTENSION_ADAPTORS );
+        typeExtensionAdaptors.putAll(sourceAdaptors.typeExtensionAdaptors );
     }
 
 
@@ -1836,7 +1863,7 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
      * @param adaptor translator between the custom type and representation JSON constructs
      */
     public <CustomType,RepresentationType> void registerType( final String type, final ConversionAdaptor<CustomType,RepresentationType> adaptor ) {
-        TYPE_EXTENSION_ADAPTORS.put( type, adaptor );
+        typeExtensionAdaptors.put( type, adaptor );
     }
 
 
@@ -1844,12 +1871,14 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
     private void registerStandardExtensions() {
         registerType( Character.class, new ConversionAdaptor<Character,String>() {
             /** convert the custom type to a representation in terms of representation JSON constructs */
+            @Override
             public String toRepresentation( final Character custom ) {
                 return custom.toString();
             }
 
 
             /** convert the JSON representation construct into the custom type */
+            @Override
             public Character toNative( final String representation ) {
                 return representation.charAt( 0 );
             }
@@ -1857,12 +1886,14 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
 
         registerType( Byte.class, new ConversionAdaptor<Byte,JSONNumber>() {
             /** convert the custom type to a representation in terms of representation JSON constructs */
+            @Override
             public JSONNumber toRepresentation( final Byte custom ) {
                 return new JSONNumber( custom );
             }
 
 
             /** convert the JSON representation construct into the custom type */
+            @Override
             public Byte toNative( final JSONNumber representation ) {
                 return representation.byteValue();
             }
@@ -1870,12 +1901,14 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
 
         registerType( Short.class, new ConversionAdaptor<Short,JSONNumber>() {
             /** convert the custom type to a representation in terms of representation JSON constructs */
+            @Override
             public JSONNumber toRepresentation( final Short custom ) {
                 return new JSONNumber( custom );
             }
 
 
             /** convert the JSON representation construct into the custom type */
+            @Override
             public Short toNative( final JSONNumber representation ) {
                 return representation.shortValue();
             }
@@ -1883,12 +1916,14 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
 
         registerType( Integer.class, new ConversionAdaptor<Integer,JSONNumber>() {
             /** convert the custom type to a representation in terms of representation JSON constructs */
+            @Override
             public JSONNumber toRepresentation( final Integer custom ) {
                 return new JSONNumber( custom );
             }
 
 
             /** convert the JSON representation construct into the custom type */
+            @Override
             public Integer toNative( final JSONNumber representation ) {
                 return representation.intValue();
             }
@@ -1896,12 +1931,14 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
 
         registerType( Long.class, new ConversionAdaptor<Long,JSONNumber>() {
             /** convert the custom type to a representation in terms of representation JSON constructs */
+            @Override
             public JSONNumber toRepresentation( final Long custom ) {
                 return new JSONNumber( custom );
             }
 
 
             /** convert the JSON representation construct into the custom type */
+            @Override
             public Long toNative( final JSONNumber representation ) {
                 return representation.longValue();
             }
@@ -1909,12 +1946,14 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
 
         registerType( Float.class, new ConversionAdaptor<Float,JSONNumber>() {
             /** convert the custom type to a representation in terms of representation JSON constructs */
+            @Override
             public JSONNumber toRepresentation( final Float custom ) {
                 return new JSONNumber( custom );
             }
 
 
             /** convert the JSON representation construct into the custom type */
+            @Override
             public Float toNative( final JSONNumber representation ) {
                 return representation.floatValue();
             }
@@ -1922,12 +1961,14 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
 
         registerType( Double.class, new ConversionAdaptor<Double,JSONNumber>() {
             /** convert the custom type to a representation in terms of representation JSON constructs */
+            @Override
             public JSONNumber toRepresentation( final Double custom ) {
                 return new JSONNumber( custom );
             }
 
 
             /** convert the JSON representation construct into the custom type */
+            @Override
             public Double toNative( final JSONNumber representation ) {
                 return representation.doubleValue();
             }
@@ -1935,12 +1976,14 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
 
         registerType( Date.class, new ConversionAdaptor<Date,JSONNumber>() {
             /** convert the custom type to a representation in terms of representation JSON constructs */
+            @Override
             public JSONNumber toRepresentation( final Date timestamp ) {
                 return new JSONNumber( timestamp.getTime() );
             }
 
 
             /** convert the JSON representation construct into the custom type */
+            @Override
             public Date toNative( final JSONNumber msecFromEpoch ) {
                 return new Date( msecFromEpoch.longValue() );
             }
@@ -1948,6 +1991,7 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
 
         this.<ArrayList<?>,Object[]>registerType( ArrayList.class, new ConversionAdaptor<ArrayList<?>,Object[]>() {
             /** convert the custom type to a representation in terms of representation JSON constructs */
+            @Override
             public Object[] toRepresentation( final ArrayList<?> list ) {
                 return list.toArray();
             }
@@ -1955,6 +1999,7 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
 
             /** convert the JSON representation construct into the custom type */
             @SuppressWarnings( "unchecked" )    // list can represent any type
+            @Override
             public ArrayList<?> toNative( final Object[] array ) {
                 final ArrayList<Object> list = new ArrayList<>( array.length );
                 for ( final Object item : array ) {
@@ -1966,6 +2011,7 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
 
         this.<Vector<?>,Object[]>registerType( Vector.class, new ConversionAdaptor<Vector<?>,Object[]>() {
             /** convert the custom type to a representation in terms of representation JSON constructs */
+            @Override
             public Object[] toRepresentation( final Vector<?> list ) {
                 return list.toArray();
             }
@@ -1973,6 +2019,7 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
 
             /** convert the JSON representation construct into the custom type */
             @SuppressWarnings( "unchecked" )    // list can represent any type
+            @Override
             public Vector<?> toNative( final Object[] array ) {
                 final Vector<Object> list = new Vector<>( array.length );
                 for ( final Object item : array ) {
@@ -1985,6 +2032,7 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
         this.<Hashtable<String,?>,HashMap<String,?>>registerType( Hashtable.class, new ConversionAdaptor<Hashtable<String,?>,HashMap<String,?>>() {
             /** convert the custom type to a representation in terms of representation JSON constructs */
             @SuppressWarnings( "unchecked" )
+            @Override
             public HashMap<String,?> toRepresentation( final Hashtable<String,?> table ) {
                 return new HashMap<>( table );
             }
@@ -1992,6 +2040,7 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
 
             /** convert the JSON representation construct into the custom type */
             @SuppressWarnings( "unchecked" )
+            @Override
             public Hashtable<String,?> toNative( final HashMap<String,?> map ) {
                 return new Hashtable<>( map );
             }
@@ -2000,6 +2049,7 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
         registerType( StackTraceElement.class, new ConversionAdaptor<StackTraceElement,HashMap<String,?>>() {
             /** convert the custom type to a representation in terms of representation JSON constructs */
             @SuppressWarnings( "unchecked" )
+            @Override
             public HashMap<String,?> toRepresentation( final StackTraceElement traceElement ) {
                 final HashMap<String,Object> traceElementMap = new HashMap<>( 3 );
                 traceElementMap.put( "className", traceElement.getClassName() );
@@ -2012,6 +2062,7 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
 
             /** convert the JSON representation construct into the custom type */
             @SuppressWarnings( "unchecked" )
+            @Override
             public StackTraceElement toNative( final HashMap<String,?> traceElementMap ) {
                 final String className = (String)traceElementMap.get( "className" );
                 final String methodName = (String)traceElementMap.get( "methodName" );
@@ -2024,6 +2075,7 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
         registerType( RuntimeException.class, new ConversionAdaptor<RuntimeException,HashMap<String,?>>() {
             /** convert the custom type to a representation in terms of representation JSON constructs */
             @SuppressWarnings( "unchecked" )
+            @Override
             public HashMap<String,?> toRepresentation( final RuntimeException exception ) {
                 final String rawMessage = exception.getMessage();
                 final HashMap<String,Object> exceptionMap = new HashMap<>( 3 );
@@ -2035,6 +2087,7 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
 
             /** convert the JSON representation construct into the custom type */
             @SuppressWarnings( "unchecked" )
+            @Override
             public RuntimeException toNative( final HashMap<String,?> exceptionMap ) {
                 final String message = (String)exceptionMap.get( "message" );
                 final StackTraceElement[] stackTrace = (StackTraceElement[])exceptionMap.get( "stackTrace" );
@@ -2055,54 +2108,61 @@ class JSONNumber extends Number {
 
 
     /** actual number with data */
-    final private Number WRAPPED_NUMBER;
+    private final Number wrappedNumber;
 
 
     /** Constructor */
     public JSONNumber( final Number wrappedNumber ) {
-        WRAPPED_NUMBER = wrappedNumber;
+        this.wrappedNumber = wrappedNumber;
     }
 
 
     /** get this number as a byte value */
+    @Override
     public byte byteValue() {
-        return WRAPPED_NUMBER.byteValue();
+        return wrappedNumber.byteValue();
     }
 
 
     /** get this number as a double value */
+    @Override
     public double doubleValue() {
-        return WRAPPED_NUMBER.doubleValue();
+        return wrappedNumber.doubleValue();
     }
 
 
     /** get this number as a float value */
+    @Override
     public float floatValue() {
-        return WRAPPED_NUMBER.floatValue();
+        return wrappedNumber.floatValue();
     }
 
 
     /** get this number as a int value */
+    @Override
     public int intValue() {
-        return WRAPPED_NUMBER.intValue();
+        return wrappedNumber.intValue();
     }
 
 
     /** get this number as a long value */
+    @Override
     public long longValue() {
-        return WRAPPED_NUMBER.longValue();
+        return wrappedNumber.longValue();
     }
 
 
     /** get this number as a short value */
+    @Override
     public short shortValue() {
-        return WRAPPED_NUMBER.shortValue();
+        return wrappedNumber.shortValue();
     }
 
 
     /** Generate the string representation of the wrapped number */
+    @Override
     public String toString() {
-        return WRAPPED_NUMBER.toString();
+        return wrappedNumber.toString();
     }
 
 

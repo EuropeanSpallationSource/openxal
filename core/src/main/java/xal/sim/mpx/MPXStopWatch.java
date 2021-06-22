@@ -36,8 +36,8 @@ public class MPXStopWatch extends Date {
 	 */
 	public static double getDeltaSec() {
 		long msec = getDeltaMsec();
-		Double sec = new Double(msec);
-		return sec.doubleValue() / 1000.;
+                double sec = (double) msec;
+		return sec / 1000.;
 	}
 
 	/**

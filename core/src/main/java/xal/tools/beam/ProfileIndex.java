@@ -52,7 +52,7 @@ public enum ProfileIndex {
      * 
      * @return          profile descriptor object have the given index 
      */
-    static public ProfileIndex    descriptorFromIndex(int index)    {
+    public static ProfileIndex    descriptorFromIndex(int index)    {
         for (ProfileIndex profile : ProfileIndex.values())    {
             if (profile.val() == index)
                 return profile;

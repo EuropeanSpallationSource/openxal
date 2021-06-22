@@ -167,7 +167,7 @@ public class TransferMapProbe extends Probe<TransferMapState> {
 	 */
     @Override
     public Trajectory<TransferMapState> createTrajectory() {
-        return new Trajectory<TransferMapState>(TransferMapState.class);
+        return new Trajectory<>(TransferMapState.class);
     }
     
     /**

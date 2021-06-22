@@ -45,15 +45,15 @@ public abstract class Element implements IElement {
      */
     
     /** Global index counter for object identifiers */
-    private static  int     s_cntInstances;
+    private static  int     cntInstances;
     
     
     /*
      *  Class loader initialization
      */
     static {
-        s_cntInstances = 0;
-    };
+        cntInstances = 0;
+    }
     
     
     /*
@@ -61,13 +61,13 @@ public abstract class Element implements IElement {
      */
 
 	/** internal unique identifier of element */
-    private int         m_intUID;
+    private int         intUID;
     
     /** the element type identifier */
-    private String      m_strType;
+    private String      strType;
     
     /** modeling element string identifier (not necessarily unique) */
-    private String      m_strId;
+    private String      strId;
     
     /** Identifier string of the model hardware node */
     private String      strSmfId;
@@ -81,9 +81,9 @@ public abstract class Element implements IElement {
     private double      dblPos;
     
     /** total length of the node before it was sliced by scenario generator */
-    protected double m_dblNodeLen = 0.0;
+    protected double dblNodeLen = 0.0;
     /** position of the node before it was sliced by scenario generator */
-    protected double m_dblNodePos = 0.0;
+    protected double dblNodePos = 0.0;
     
     
     //sako closeElements (for fringe field calculations)
@@ -109,8 +109,8 @@ public abstract class Element implements IElement {
      *  Class loader initialization
      */
     static {
-        s_cntInstances = 0;
-    };
+        cntInstances = 0;
+    }
     
     
     /*
@@ -124,7 +124,7 @@ public abstract class Element implements IElement {
      */
     public Element(String strType)    {
         this(strType, "NULLID");
-    };
+    }
     
     /**
      *  Creates a new instance of Element
@@ -133,13 +133,13 @@ public abstract class Element implements IElement {
      *  @param  strId       string identifier of the element
      */
     public Element(String strType, String strId)    {
-        this.m_intUID  = s_cntInstances++;
-        this.m_strType = strType;
-        this.m_strId   = strId;
+        this.intUID  = cntInstances++;
+        this.strType = strType;
+        this.strId   = strId;
         this.strSmfId = "";
         this.dblPos = 0.0;
         this.cpsParent = null;
-    };
+    }
     
 
     /**
@@ -148,8 +148,8 @@ public abstract class Element implements IElement {
      *  @param  strId       new string identifier for element
      */
     public void setId(String strId) {
-        m_strId = strId;
-    };
+        this.strId = strId;
+    }
     
     /**
      * Sets the string identifier of the hardware node which this
@@ -234,8 +234,8 @@ public abstract class Element implements IElement {
      *  @return     the unique identifier of this object
      */
     public int  getUID()  { 
-        return m_intUID; 
-    };
+        return intUID; 
+    }
     
     /**
      * Get the horizontal misalignment
@@ -292,7 +292,7 @@ public abstract class Element implements IElement {
 
     public void setPhiZ(double phiz) {
         this.phiz = phiz;
-    };
+    }
 
     
     
@@ -308,7 +308,7 @@ public abstract class Element implements IElement {
      */
     public void addCloseElements(Element closeElem) {
         if (closeElements == null) {
-            closeElements = new ArrayList<Element>();
+            closeElements = new ArrayList<>();
         }
         closeElements.add(closeElem);
     }
@@ -436,7 +436,7 @@ public abstract class Element implements IElement {
         double dblTime = 0.0;                // the time interval
         double dblBeta = probe.getBeta();    // normalized probe velocity
      
-        dblTime = dblLen / (IConstants.LightSpeed * dblBeta);
+        dblTime = dblLen / (IConstants.LIGHT_SPEED * dblBeta);
         
         return dblTime;
     }
@@ -452,7 +452,7 @@ public abstract class Element implements IElement {
      *  @return     element type string
      */
     @Override
-    public String   getType()   { return m_strType; };
+    public String   getType()   { return strType; }
     
     /**
      *  Returns the string identifier for this element.
@@ -460,7 +460,7 @@ public abstract class Element implements IElement {
      *  @return     string identifier
      */
     @Override
-    public String   getId()     { return m_strId; };
+    public String   getId()     { return strId; }
     
     /**
      * Returns the string identifier of the hardware node which this
@@ -485,11 +485,11 @@ public abstract class Element implements IElement {
      */
     @Override
     public void initializeFrom(LatticeElement latticeElement) {
-        String  strElemId = latticeElement.getModelingElementId();
-        String  strSmfId  = latticeElement.getHardwareNode().getId();
+        String  elemId = latticeElement.getModelingElementId();
+        String  smfId  = latticeElement.getHardwareNode().getId();
         
-        setId( strElemId != null ? strElemId : strSmfId);
-        setHardwareNodeId(strSmfId);
+        setId( elemId != null ? elemId : smfId);
+        setHardwareNodeId(smfId);
         setPosition(latticeElement.getCenterPosition());
         
         AlignmentBucket alignmentBucket = latticeElement.getHardwareNode().getAlign();
@@ -503,8 +503,8 @@ public abstract class Element implements IElement {
             setPhiZ(alignmentBucket.getRoll());
         }
         
-        m_dblNodeLen = latticeElement.getHardwareNode().getLength();
-        m_dblNodePos = latticeElement.getHardwareNode().getPosition();
+        dblNodeLen = latticeElement.getHardwareNode().getLength();
+        dblNodePos = latticeElement.getHardwareNode().getPosition();
         
 //        // CKA: Added to include hardware ID attribute for the new element.
 //        //   This is bound to ScenarioGenerator#collectElements(). 
@@ -540,7 +540,7 @@ public abstract class Element implements IElement {
      * @return original node length
      */
     public double getNodeLen() {
-        return m_dblNodeLen;
+        return dblNodeLen;
     }
 
     /**
@@ -548,7 +548,7 @@ public abstract class Element implements IElement {
      * @return original node length
      */
     public double getNodePos() {
-        return m_dblNodePos;
+        return dblNodePos;
     }
     
     /**
@@ -632,7 +632,7 @@ public abstract class Element implements IElement {
             tracker.setElemPosition(pos);
         }
         alg.propagate(probe, this);
-    };
+    }
     
     /** 
      * <p>
@@ -659,7 +659,7 @@ public abstract class Element implements IElement {
             tracker.setElemPosition(0);
         }
         alg.propagate(probe, this);
-    };
+    }
     
     /** 
      *  <p>
@@ -760,6 +760,7 @@ public abstract class Element implements IElement {
      *  
      *  @return         the elapsed time through section<bold>Units: seconds</bold> 
      */
+    @Override
     public abstract double elapsedTime(IProbe probe, double dblLen);
     
     /** 
@@ -770,6 +771,7 @@ public abstract class Element implements IElement {
      *
      *  @return         the energy gain provided by this element <bold>Units: eV</bold> 
      */
+    @Override
     public abstract double energyGain(IProbe probe, double dblLen);
 
     /**
@@ -782,6 +784,7 @@ public abstract class Element implements IElement {
      * @author Christopher K. Allen
      * @since  Nov 23, 2014
      */
+    @Override
     public abstract double   longitudinalPhaseAdvance(IProbe probe, double dblLen);
 
     /**
@@ -798,6 +801,7 @@ public abstract class Element implements IElement {
      *
      *  @see    xal.model.IElement#transferMap(IProbe,double)
      */
+    @Override
     public abstract PhaseMap transferMap(IProbe probe, double dblLen) throws ModelException;   
 
 
@@ -813,18 +817,18 @@ public abstract class Element implements IElement {
      */
     @Override
     public String toString() {
-        StringBuffer    bufOut = new StringBuffer();
+        StringBuilder    bufOut = new StringBuilder();
         
-        bufOut.append("  Element - " + this.getId());
+        bufOut.append("  Element - ").append(this.getId());
         bufOut.append('\n');
         
-        bufOut.append("  element type       : " + this.getType() );
+        bufOut.append("  element type       : ").append(this.getType());
         bufOut.append('\n');
 
-        bufOut.append("  element UID        : " + this.getUID() );
+        bufOut.append("  element UID        : ").append(this.getUID());
         bufOut.append('\n');
 
-        bufOut.append("  element length     : " + this.getLength() );
+        bufOut.append("  element length     : ").append(this.getLength());
         bufOut.append('\n');
 
         return bufOut.toString();
@@ -846,6 +850,5 @@ public abstract class Element implements IElement {
 //        os.println("  element UID        : " + this.getUID() );
 //        os.println("  element length     : " + this.getLength() );
         os.println(this.toString());
-    };
-};
-
+    }
+}

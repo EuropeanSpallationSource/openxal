@@ -33,19 +33,19 @@ public class TestR3x3 {
     
     
     /** Static identity matrix */
-    static private R3x3     MAT_I;
+    private static R3x3     MAT_I;
     
     /** Static testing matrix */
-    static private R3x3     MAT_2;
+    private static R3x3     MAT_2;
     
     /** static rotation matrix about x axis */
-    static private R3x3     MAT_X;
+    private static R3x3     MAT_X;
     
     /** static testing matrix - a rotation about z axis */
-    static private R3x3     MAT_Z;
+    private static R3x3     MAT_Z;
     
     /** static symmetric test matrix */
-    static private R3x3     MAT_S;
+    private static R3x3     MAT_S;
 
     @BeforeClass
     public static void buildTestingResources() {

@@ -19,7 +19,6 @@ import xal.model.IComposite;
 import xal.model.IElement;
 import xal.model.IProbe;
 import xal.model.ModelException;
-import xal.model.probe.EnvelopeProbe;
 import xal.sim.scenario.LatticeElement;
 import xal.smf.attr.AlignmentBucket;
 import xal.tools.math.r3.R3;
@@ -49,7 +48,7 @@ public abstract class ElementSeq implements IComposite {
      */
     
     /** default number of element positions to reserve in list array */
-    public static final int         s_szDefReserve = 10;
+    public static final int         SIZE_DEF_RESERVE = 10;
     
     
     
@@ -59,17 +58,17 @@ public abstract class ElementSeq implements IComposite {
      */
     
     /** the element type identifier */
-    private String      m_strType;
+    private String      strType;
     
     /** element instance identifier of element */
-    private String      m_strId;
+    private String      strId;
     
     /** Identifier string of the model hardware node */
     private String      strSmfId;
     
 
     /** user comments regarding this sequence */
-    private String      m_strComment;
+    private String      strComment;
 
     
     /** indicates that the composite had been modified and on-demand parameters must be recomputed */
@@ -92,13 +91,13 @@ public abstract class ElementSeq implements IComposite {
      * List of IComponent objects composing composite sequence
      * order upstream to downstream 
      */
-    private List<IComponent>        m_lstCompsForward;
+    private List<IComponent>        lstCompsForward;
     
     /** 
      * List of IComponent objects composing composite sequence
      * order downstream to upstream.
      */
-    private List<IComponent>        m_lstCompsBackward;
+    private List<IComponent>        lstCompsBackward;
     
 
     /** Alignment variable */
@@ -122,7 +121,7 @@ public abstract class ElementSeq implements IComposite {
      *  @param  strType     soft type of the sequence (defined by the child class)
      */
     public ElementSeq(String strType) {
-        this(strType, null , s_szDefReserve);
+        this(strType, null , SIZE_DEF_RESERVE);
     }
  
     /**
@@ -133,7 +132,7 @@ public abstract class ElementSeq implements IComposite {
      *  @param  strId       identifier of the sequence
      */
     public ElementSeq(String strType, String strId) {
-        this(strType, strId, s_szDefReserve);
+        this(strType, strId, SIZE_DEF_RESERVE);
     }
  
     /**
@@ -148,10 +147,10 @@ public abstract class ElementSeq implements IComposite {
      *  @param  szReserve   number of Element spaces to reserve
      */
     public ElementSeq(String strType, String strId, int szReserve) {
-        m_lstCompsForward = new ArrayList<IComponent>(szReserve);
-        m_lstCompsBackward = new ArrayList<IComponent>(szReserve);
-        m_strType = strType;
-        m_strId = strId;
+        lstCompsForward = new ArrayList<>(szReserve);
+        lstCompsBackward = new ArrayList<>(szReserve);
+        this.strType = strType;
+        this.strId = strId;
         strSmfId = "";
         bolDirty = true;
         dblLen = 0.0;
@@ -165,8 +164,8 @@ public abstract class ElementSeq implements IComposite {
      *  @param  strId       new string identifier for element
      */
     public void setId(String strId) {
-        m_strId = strId;
-    };
+        this.strId = strId;
+    }
 
     /**
      * Sets the string identifier of the hardware node which this
@@ -189,7 +188,7 @@ public abstract class ElementSeq implements IComposite {
      *  @param  strComment  string containing user comments
      */
     public void setComments(String strComment)  {
-        m_strComment = strComment;
+        this.strComment = strComment;
     }
 
     
@@ -202,7 +201,7 @@ public abstract class ElementSeq implements IComposite {
      *
      *  @return         string containing user comments
      */
-    public String   getComments()   { return m_strComment; };
+    public String   getComments()   { return strComment; }
     
     /**
      *  Get the number of <code>IElement</code> derived objects contained
@@ -239,7 +238,7 @@ public abstract class ElementSeq implements IComposite {
      * @return  list of elements composing this sequence
      */
     public  List<IComponent> getElementList()    {
-        return  this.m_lstCompsForward;
+        return  this.lstCompsForward;
     }
     
     /**
@@ -367,7 +366,7 @@ public abstract class ElementSeq implements IComposite {
 
     public void setPhiZ(double phiz) {
         this.phiz = phiz;
-    };
+    }
 
     
     /*
@@ -402,7 +401,7 @@ public abstract class ElementSeq implements IComposite {
      */
     public Iterator<IComponent> globalBackIterator()  {
         Iterator<IComponent> flatListIter = new CompositeGlobalIterator(this);
-        List<IComponent> reverseFlatList = new ArrayList<IComponent>();
+        List<IComponent> reverseFlatList = new ArrayList<>();
         
         while (flatListIter.hasNext()) {
             IComponent comp = flatListIter.next();
@@ -569,12 +568,11 @@ public abstract class ElementSeq implements IComposite {
     @Override
     public void initializeFrom(LatticeElement latticeElement)
     {
-        String  strElemId = latticeElement.getModelingElementId();
-        String  strSmfId  = latticeElement.getHardwareNode().getId();
+        String  elemId = latticeElement.getModelingElementId();
+        String  smfId  = latticeElement.getHardwareNode().getId();
         
-        setId( strElemId != null ? strElemId : strSmfId);
-        setHardwareNodeId(strSmfId);
-//      setId(latticeElement.getNode().getId());
+        setId( elemId != null ? elemId : smfId);
+        setHardwareNodeId(smfId);
 
         AlignmentBucket alignmentBucket = latticeElement.getHardwareNode().getAlign();
         
@@ -595,7 +593,7 @@ public abstract class ElementSeq implements IComposite {
      *  @return     type identifier for ElementSeq
      */
     @Override
-    public String getType() { return m_strType; }
+    public String getType() { return strType; }
     
     /**  
      *  Get the sequence identifier 
@@ -603,7 +601,7 @@ public abstract class ElementSeq implements IComposite {
      *  @return     sequence identifier
      */
     @Override
-    public String getId() { return m_strId; }
+    public String getId() { return strId; }
     
     /**
      * Returns the string identifier of the hardware node which this
@@ -695,8 +693,6 @@ public abstract class ElementSeq implements IComposite {
      * Sets the parent structure containing this composite structure. 
      * The parent is assumed to be a composite structure built from component 
      * elements.
-     * 
-     * @return the composite structure built from this structure
      *
      * @see xal.model.IComponent#setParent(xal.model.IComposite)
      *
@@ -904,7 +900,7 @@ public abstract class ElementSeq implements IComposite {
         }
         
         return false;       // did not encounter specified element
-    };
+    }
     
     /**
      *
@@ -968,10 +964,10 @@ public abstract class ElementSeq implements IComposite {
     @Override
     public String   toString() {
 
-        StringBuffer         bufOutput = new StringBuffer();
+        StringBuilder         bufOutput = new StringBuilder();
         Iterator<IComponent> iterCmps  = this.getForwardCompList().iterator();
         
-        bufOutput.append("Sequence ID: " + this.getId() + '\n');
+        bufOutput.append("Sequence ID: ").append(this.getId()).append('\n');
         
         while (iterCmps.hasNext())  {
             IComponent iCmp = iterCmps.next();
@@ -1011,8 +1007,8 @@ public abstract class ElementSeq implements IComposite {
      *  @param  os      output stream
      */
     public void print(PrintWriter os)    {
-        os.println(this.m_strId + " modeling HWID=" + this.strSmfId);
-        os.println("  type code=" + this.m_strType + ", class type=" + this.getClass().getName());
+        os.println(this.strId + " modeling HWID=" + this.strSmfId);
+        os.println("  type code=" + this.strType + ", class type=" + this.getClass().getName());
         os.println();
         
         Iterator<IComponent> iter = this.getForwardCompList().iterator();
@@ -1051,7 +1047,7 @@ public abstract class ElementSeq implements IComposite {
      *  Return the internal list of components
      */
     protected List<IComponent> getForwardCompList()  { 
-        return m_lstCompsForward; 
+        return lstCompsForward; 
     }
     
     /**
@@ -1071,7 +1067,7 @@ public abstract class ElementSeq implements IComposite {
      * 
      */
     protected List<IComponent> getReverseCompList() { 
-        return this.m_lstCompsBackward;
+        return this.lstCompsBackward;
     }
 	
 	/**
@@ -1088,12 +1084,12 @@ public abstract class ElementSeq implements IComposite {
 	 * @param elements the new list of elements
 	 */
 	protected void setCompList( final List<? extends IComponent> elements ) {
-		m_lstCompsForward = new ArrayList<IComponent>( elements );
+		lstCompsForward = new ArrayList<>( elements );
 		
 		// Create reverse list
-		m_lstCompsBackward = new ArrayList<IComponent>();
+		lstCompsBackward = new ArrayList<>();
 		for (IComponent comp : elements) 
-		    m_lstCompsBackward.add(0, comp);
+		    lstCompsBackward.add(0, comp);
 	}
 
 	/**

@@ -14,7 +14,7 @@ package xal.sim.slg;
 public interface VisitorListener {
     
     /**
-     * When called with a Visitor reference the implementor can either
+     * When called with a Visitor reference the implementer can either
      * reject to be visited (empty method body) or call the Visitor by
      * passing its own object reference.
      *

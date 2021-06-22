@@ -20,7 +20,7 @@ import java.util.*;
  * @author  tap
  */
 public class SortOrdering implements Comparator<KeyedRecord> {
-	protected String[] _keys;
+	protected String[] keys;
 	
 	
 	/**
@@ -45,8 +45,8 @@ public class SortOrdering implements Comparator<KeyedRecord> {
 	 * @param newKeys The array of keys used for the sort ordering.
 	 */
 	public SortOrdering( final String[] newKeys ) {
-		_keys = new String[newKeys.length];
-		System.arraycopy(newKeys, 0, _keys, 0, newKeys.length);
+		keys = new String[newKeys.length];
+		System.arraycopy(newKeys, 0, keys, 0, newKeys.length);
 	}
 	
 	
@@ -56,10 +56,10 @@ public class SortOrdering implements Comparator<KeyedRecord> {
 	 * @return this for convenience in adding sorting criteria
 	 */
 	public SortOrdering addKey( final String newKey ) {
-		String[] newKeys = new String[_keys.length + 1];
-		System.arraycopy( _keys, 0, newKeys, 0, _keys.length );
-		newKeys[_keys.length] = newKey;
-		_keys = newKeys;
+		String[] newKeys = new String[keys.length + 1];
+		System.arraycopy(keys, 0, newKeys, 0, keys.length );
+		newKeys[keys.length] = newKey;
+		keys = newKeys;
 		
 		return this;
 	}
@@ -70,7 +70,7 @@ public class SortOrdering implements Comparator<KeyedRecord> {
 	 * @return The sort ordering keys.
 	 */
 	public String[] getKeys() {
-		return _keys;
+		return keys;
 	}
 	
 	
@@ -82,11 +82,12 @@ public class SortOrdering implements Comparator<KeyedRecord> {
 	 * @return 0 if the records are equal, negative if record2 > record1 and positive if record1 > record2
 	 */
     @SuppressWarnings( "unchecked" )
+        @Override
 	public int compare( final KeyedRecord record1, final KeyedRecord record2 ) {
 		int comparison = 0;
 		
-		for ( int index = 0 ; index < _keys.length ; index++ ) {
-			final String key = _keys[index];
+		for ( int index = 0 ; index < keys.length ; index++ ) {
+			final String key = keys[index];
             final Object value1 = record1.valueForKey( key );
             final Object value2 = record2.valueForKey( key );
             if ( value1 instanceof Comparable && value2 instanceof Comparable ) {
@@ -107,4 +108,3 @@ public class SortOrdering implements Comparator<KeyedRecord> {
 		return comparison;
 	}
 }
-

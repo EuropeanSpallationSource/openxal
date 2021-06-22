@@ -9,8 +9,6 @@
  */
   
  package xal.extension.solver.algorithm;
- 
- import java.util.*;
 
  /**
  * The interface implemented by listeners of search algorithm events.

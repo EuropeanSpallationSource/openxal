@@ -22,12 +22,12 @@ import java.util.*;
  */
 public class RandomSearch extends SearchAlgorithm {
     /** random number generator */
-    private Random _randomGenerator;
+    private Random randomGenerator;
     
     
     /** Creates a new instance of RandomSearch */
     public RandomSearch() {
-        _randomGenerator = new Random( 0 );
+        randomGenerator = new Random( 0 );
     }
     
     
@@ -40,7 +40,7 @@ public class RandomSearch extends SearchAlgorithm {
         double lowerLimit = variable.getLowerLimit();
         double upperLimit = variable.getUpperLimit();
         
-        return lowerLimit + _randomGenerator.nextDouble() * ( upperLimit - lowerLimit );
+        return lowerLimit + randomGenerator.nextDouble() * ( upperLimit - lowerLimit );
     }
     
 
@@ -48,6 +48,7 @@ public class RandomSearch extends SearchAlgorithm {
 	 * Return the label for a search algorithm.
 	 * @return   The trial point.
 	 */
+    @Override
 	public String getLabel() {
 		return "Random Search";
 	}
@@ -56,6 +57,7 @@ public class RandomSearch extends SearchAlgorithm {
 	/**
 	 * Calculate the next few trial points.
 	 */
+    @Override
 	public void performRun( final AlgorithmSchedule algorithmSchedule ) {
 		try {
             while( getEvaluationsLeft() > 0 && !algorithmSchedule.shouldStop() ){
@@ -71,10 +73,10 @@ public class RandomSearch extends SearchAlgorithm {
 	 * @return   trialPoint
 	 */
 	public TrialPoint nextTrialPoint() {
-		final Map<Variable,Number> values = new HashMap<Variable,Number>();
-		for ( final Variable variable : _problem.getVariables() ) {
+		final Map<Variable,Number> values = new HashMap<>();
+		for ( final Variable variable : problem.getVariables() ) {
 			double value = generateRandomValue( variable );
-			values.put( variable, new Double( value ) );
+			values.put(variable, value);
 		}
 		return new TrialPoint( values );
 	}
@@ -84,6 +86,7 @@ public class RandomSearch extends SearchAlgorithm {
 	 * Returns the global rating which in an integer between 0 and 10.
 	 * @return   The global rating for this algorithm.
 	 */
+    @Override
 	public int globalRating() {
 		return 10;
 	}
@@ -93,6 +96,7 @@ public class RandomSearch extends SearchAlgorithm {
 	 * Returns the local rating which is an integer between 0 and 10.
 	 * @return   The local rating for this algorithm.
 	 */
+    @Override
 	public int localRating() {
 		return 0;
 	}
@@ -117,6 +121,7 @@ public class RandomSearch extends SearchAlgorithm {
 	 * @param trial              The trial that was scored.
 	 * @param schedule           the schedule providing this event
 	 */
+    @Override
 	public void trialScored( AlgorithmSchedule schedule, Trial trial ) { }
 
 
@@ -125,6 +130,7 @@ public class RandomSearch extends SearchAlgorithm {
 	 * @param trial              The trial that was vetoed.
 	 * @param schedule           the schedule providing this event
 	 */
+    @Override
 	public void trialVetoed( AlgorithmSchedule schedule, Trial trial ) { }
 
 
@@ -134,6 +140,7 @@ public class RandomSearch extends SearchAlgorithm {
 	 * @param solutions  The list of solutions.
 	 * @param solution   The new optimal solution.
 	 */
+    @Override
 	public void foundNewOptimalSolution( SolutionJudge source, List<Trial> solutions, Trial solution ) { }
 }
 

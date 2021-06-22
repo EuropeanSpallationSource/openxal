@@ -11,7 +11,7 @@ import javax.swing.filechooser.FileFilter;
 import java.io.File;
 import java.io.IOException;
 import java.awt.Component;
-import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.image.*;
 import javax.imageio.ImageIO;
 
@@ -27,36 +27,37 @@ import xal.tools.apputils.files.*;
  */
 public class ImageCaptureManager {
 	// static constants for confirmation dialogs
-	final static protected int YES_OPTION = JOptionPane.YES_OPTION;
-	final static protected int NO_OPTION = JOptionPane.NO_OPTION;
+	protected static final int YES_OPTION = JOptionPane.YES_OPTION;
+	protected static final int NO_OPTION = JOptionPane.NO_OPTION;
 	
 	/** default image capture manager to be shared throughout the application */
-    final static private ImageCaptureManager _defaultManager;
+    private static final ImageCaptureManager DEFAULT_MANAGER;
     
     /** chooser for saving images */
-    final protected JFileChooser _fileChooser;
+    protected final JFileChooser fileChooser;
 	
 	/** accessory for managing the default snapshot folder */
-	final protected DefaultFolderAccessory _defaultFolderAccessory;
+	protected final DefaultFolderAccessory defaultFolderAccessory;
     
     
 	/**
 	 * static initializer
 	 */
     static {
-        _defaultManager = new ImageCaptureManager();
+        DEFAULT_MANAGER = new ImageCaptureManager();
     }
     
     
     /** Creates a new instance of ImageCaptureManager */
     protected ImageCaptureManager() {
-        _fileChooser = new JFileChooser();		
-        _fileChooser.setMultiSelectionEnabled( false );
+        fileChooser = new JFileChooser();		
+        fileChooser.setMultiSelectionEnabled( false );
 		
-		_defaultFolderAccessory = new DefaultFolderAccessory( this.getClass(), null, "snapshots" );
-		_defaultFolderAccessory.applyTo( _fileChooser );		
+		defaultFolderAccessory = new DefaultFolderAccessory( this.getClass(), null, "snapshots" );
+		defaultFolderAccessory.applyTo(fileChooser );		
 		
-        _fileChooser.addChoosableFileFilter( new FileFilter() {
+        fileChooser.addChoosableFileFilter( new FileFilter() {
+            @Override
             public boolean accept( final File file ) {
                 String name = file.getName().toLowerCase();
                 if ( file.isDirectory() )  return true;
@@ -69,6 +70,7 @@ public class ImageCaptureManager {
              * Description of the file filter which is simply "Supported Files".
              * @return Description of the file filter.
              */
+            @Override
             public String getDescription() {
                 return "PNG Files";
             }
@@ -80,8 +82,8 @@ public class ImageCaptureManager {
      * Get the default ImageCaptureManager instance.
      * @return The default ImageCaptureManager instance.
      */
-    static public ImageCaptureManager defaultManager() {
-        return _defaultManager;
+    public static ImageCaptureManager defaultManager() {
+        return DEFAULT_MANAGER;
     }
     
     
@@ -90,7 +92,7 @@ public class ImageCaptureManager {
      * @return the image capture file chooser
      */
     public JFileChooser getFileChooser() {
-        return _fileChooser;
+        return fileChooser;
     }
     
     
@@ -116,16 +118,16 @@ public class ImageCaptureManager {
         BufferedImage image = new BufferedImage( component.getWidth(), component.getHeight(), BufferedImage.TYPE_3BYTE_BGR );
         component.paintAll( image.createGraphics() );
 		
-		File defaultFolder = _fileChooser.getCurrentDirectory();
+		File defaultFolder = fileChooser.getCurrentDirectory();
 		File defaultFile = new File( defaultFolder, name + ".png" );
-		_fileChooser.setSelectedFile( defaultFile );
+		fileChooser.setSelectedFile( defaultFile );
 		
-        int status = _fileChooser.showSaveDialog( component );
+        int status = fileChooser.showSaveDialog( component );
         switch(status) {
             case JFileChooser.CANCEL_OPTION:
                 break;
             case JFileChooser.APPROVE_OPTION:
-                File fileSelection = _fileChooser.getSelectedFile();
+                File fileSelection = fileChooser.getSelectedFile();
 				if ( fileSelection.exists() ) {
 					int confirm = displayConfirmDialog(component, "Overwrite Confirmation", "The selected file:  " + fileSelection + " already exists! \n Overwrite selection?");
 					if ( confirm == NO_OPTION ) {
@@ -148,8 +150,8 @@ public class ImageCaptureManager {
 	 * @param message The message to display
 	 * @return YES_OPTION or NO_OPTION 
 	 */
-	static public int displayConfirmDialog( final Component owner, final String title, final String message ) {
-        java.awt.Toolkit.getDefaultToolkit().beep();
-        return JOptionPane.showConfirmDialog( owner, message, title, JOptionPane.YES_NO_OPTION );
+	public static int displayConfirmDialog( final Component owner, final String title, final String message ) {
+        Toolkit.getDefaultToolkit().beep();
+            return JOptionPane.showConfirmDialog( owner, message, title, JOptionPane.YES_NO_OPTION );
 	}
 }

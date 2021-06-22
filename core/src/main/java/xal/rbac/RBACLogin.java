@@ -1,5 +1,6 @@
 package xal.rbac;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -75,7 +76,7 @@ public abstract class RBACLogin {
 			final Method creatorMethod = pluginClass.getMethod( "getRBACLoginInstance" );
 			return (RBACLogin)creatorMethod.invoke( null );
 		}
-		catch( Exception exception ) {
+		catch( ClassNotFoundException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException exception ) {
 			exception.printStackTrace();
 			throw new RuntimeException( "Failed to load the RBACPlugin: " + exception.getMessage() );
 		}

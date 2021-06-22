@@ -10,9 +10,6 @@ import xal.tools.URLUtil;
 import xal.tools.data.*;
 
 import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.logging.*;
 
 /**
  * Static methods for reading and writing tables from/to XML files.
@@ -25,32 +22,32 @@ public class XmlTableIO {
     
     
     /** Read the table group from the specified file into editContext without XML validation. */
-    static public void readTableGroupFromFile( final EditContext editContext, final String tableGroup, final File file ) throws URLUtil.FilePathException {
+    public static void readTableGroupFromFile( final EditContext editContext, final String tableGroup, final File file ) throws URLUtil.FilePathException {
         readTableGroupFromUrl( editContext, tableGroup, URLUtil.urlSpecForFile( file ) );
     }
     
     
     /** Read the table group from the URL file into editContext without XML validation. */
-    static public void readTableGroupFromUrl( final EditContext editContext, final String tableGroup, final String urlSpec ) {
+    public static void readTableGroupFromUrl( final EditContext editContext, final String tableGroup, final String urlSpec ) {
         readTableGroupFromUrl( editContext, tableGroup, urlSpec, false );
     }
     
     
     /** Read the table group from the URL file into editContext with the specified XML validation flag. */
-    static public void readTableGroupFromUrl( final EditContext editContext, final String tableGroup, final String urlSpec, final boolean isValidating ) {
+    public static void readTableGroupFromUrl( final EditContext editContext, final String tableGroup, final String urlSpec, final boolean isValidating ) {
         final DataAdaptor docAdaptor = XmlDataAdaptor.adaptorForUrl( urlSpec, isValidating );
 		editContext.importTablesFromDataAdaptor( docAdaptor, tableGroup );
     }
 
 
     /** Write all tables associated with the specified group in editContext to an XML file. */
-    static public void writeTableGroupToFile( final EditContext editContext, final String group, final File file ) throws URLUtil.FilePathException {
+    public static void writeTableGroupToFile( final EditContext editContext, final String group, final File file ) throws URLUtil.FilePathException {
         writeTableGroupToUrl(editContext, group, URLUtil.urlSpecForFile(file));
     }
     
     
     /** Write all tables associated with the specified group in editContext to an XML file. */
-    static public void writeTableGroupToUrl( final EditContext editContext, final String group, final String urlSpec ) {
+    public static void writeTableGroupToUrl( final EditContext editContext, final String group, final String urlSpec ) {
         final XmlDataAdaptor docAdaptor = XmlDataAdaptor.newEmptyDocumentAdaptor();
 		editContext.writeGroupToDataAdaptor( docAdaptor, group );
         docAdaptor.writeToUrlSpec( urlSpec );

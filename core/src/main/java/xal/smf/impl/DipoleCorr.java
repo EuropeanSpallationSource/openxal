@@ -22,6 +22,7 @@ public abstract class DipoleCorr extends Dipole {
      * Determine whether this magnet is a corrector.
      * @return true since all derived classes will be correctors
      */
+        @Override
     public boolean isCorrector() {
         return true;
     }

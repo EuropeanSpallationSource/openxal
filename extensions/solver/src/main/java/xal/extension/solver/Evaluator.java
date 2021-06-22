@@ -9,8 +9,6 @@
  */
 package xal.extension.solver;
 
-import java.util.*;
-
 /**
  * Evaluator is an interface to a custom evaluator for a specific problem.
  *

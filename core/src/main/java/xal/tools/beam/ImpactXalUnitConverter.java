@@ -12,7 +12,7 @@ public class ImpactXalUnitConverter {
      */
 
     /** Speed of light in a vacuum (meters/second) */
-    private final double LightSpeed = IConstants.LightSpeed;
+    private final double LightSpeed = IConstants.LIGHT_SPEED;
 
     /*
      * Global Methods
@@ -165,7 +165,7 @@ public class ImpactXalUnitConverter {
      *  </pre>
      * </p>
      *
-     *  @param   vecCoord    coordinate phase vector in Trace3D units
+     *  @param   vecCoords    coordinate phase vector in Trace3D units
      *
      *  @return              coordinate phase vector in XAL (MKS) units
      */
@@ -217,7 +217,7 @@ public class ImpactXalUnitConverter {
      *  </pre>
      * </p>
      *
-     *  @param   vecCoord    coordinate phase vector in MKS units
+     *  @param   vecCoords    coordinate phase vector in MKS units
      *
      *  @return              coordinate phase vector in Trace3D units
      */
@@ -271,7 +271,7 @@ public class ImpactXalUnitConverter {
      * </tr>
      * </table></p>
      *
-     * @param   t3dTwiss    Twiss parameters in Trace3D units
+     * @param   impactTwiss    Twiss parameters in Trace3D units
      *
      * @return              Twiss parameters in XAL units
      */
@@ -316,7 +316,7 @@ public class ImpactXalUnitConverter {
      * </tr>
      * </table></p>
      *
-     * @param   t3dTwiss    Trace3D twiss parameters
+     * @param   impactTwiss    Trace3D twiss parameters
      *
      * @return              Twiss parameters in XAL units
      */
@@ -411,7 +411,7 @@ public class ImpactXalUnitConverter {
      * </tr>
      * </table></p>
      *
-     * @param   t3dTwiss    Trace3D twiss parameters
+     * @param   twissXal    Trace3D twiss parameters
      *
      * @return              Twiss parameters in XAL units
      */
@@ -626,7 +626,7 @@ public class ImpactXalUnitConverter {
      *  and return the Twiss parameters as projections that one would observe in
      *  experiments.
      *
-     * @param matCorrel     correlation matrix &lt;zz<sup>T</sup>&gt; in MKS units
+     * @param mat     correlation matrix &lt;zz<sup>T</sup>&gt; in MKS units
      *
      *  @return     array of Twiss with length 3 where<br>
      *              array[0] = Twiss parameters in x plane<br>
@@ -651,27 +651,27 @@ public class ImpactXalUnitConverter {
     /**
      * calculate 1-sigma in xal unit from beta and emittance of xal unit
      */
-    static public double calcSigmaXalFromTrace(double beta, double emit) {
+    public static double calcSigmaXalFromTrace(double beta, double emit) {
         return Math.sqrt(beta*emit);
     }
 
     /**
      * calculate 1-sigma in trace3d unit from beta and emittance of trace3d unit
      */
-    static public double calcSigmaTraceFromTrace(double beta, double emit) {
+    public static double calcSigmaTraceFromTrace(double beta, double emit) {
         return Math.sqrt(beta*emit/5);
     }
     /**
      * calculate 1-sigma in xal unit from beta and emittance of xal unit
      */
-    static public double calcSigmaXalFromXal(double beta, double emit) {
+    public static double calcSigmaXalFromXal(double beta, double emit) {
         return Math.sqrt(beta*emit);
     }
 
     /**
      * calculate 1-sigma in trace3d unit from beta and emittance of trace3d unit
      */
-    static public double calcSigmaTraceFromXal(double beta, double emit) {
+    public static double calcSigmaTraceFromXal(double beta, double emit) {
         return Math.sqrt(beta*emit/5);
     }
 }

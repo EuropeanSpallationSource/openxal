@@ -8,7 +8,6 @@ package xal.smf.impl;
 
 import xal.smf.AcceleratorNode;
 import xal.smf.impl.qualify.*;
-import xal.tools.data.*;
 import xal.ca.ChannelFactory;
 
 /**
@@ -23,19 +22,19 @@ import xal.ca.ChannelFactory;
  * @author  tap
  */
 public class GenericNode extends AcceleratorNode {
-    protected String m_strType;
+    protected String strType;
 
 
 	/**
 	 * Primary Constructor.
 	 * @param strType type of this node (since it is Generic and there is no default type)
 	 * @param strId ID for this node
-	 * @param channelFactory fractory from which to generate channels
+	 * @param channelFactory factory from which to generate channels
 	 */
 	public GenericNode( final String strType, final String strId, final ChannelFactory channelFactory ) {
 		super( strId, channelFactory );
 
-		this.m_strType = strType;
+		this.strType = strType;
 		ElementTypeManager.defaultManager().registerType( GenericNode.class, strType );
 	}
 
@@ -51,7 +50,8 @@ public class GenericNode extends AcceleratorNode {
 
     
     /** Overriden to provide type signature */
-    public String getType()   { return m_strType; }
+    @Override
+    public String getType()   { return strType; }
 
 
 	/** Instantiate a new GenericNode */
@@ -68,7 +68,8 @@ public class GenericNode extends AcceleratorNode {
      * @param compType The type to compare against.
      * @return true if the node is a match and false otherwise.
      */
+    @Override
     public boolean isKindOf(String compType) {
-        return compType.equalsIgnoreCase(this.m_strType);
+        return compType.equalsIgnoreCase(this.strType);
     }
 }

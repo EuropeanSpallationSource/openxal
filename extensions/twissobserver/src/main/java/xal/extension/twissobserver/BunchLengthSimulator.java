@@ -156,7 +156,7 @@ public class BunchLengthSimulator {
      * </p>
      *
      * @param arrMsmts         the measurement data to be packed with longitudinal dummy data 
-     * @param dblBmChrg        beam bunch charge in Coulombs
+     * @param dblBmCurr        beam bunch current in Amps
      * 
      * @throws ModelException  general error during model synchronization or simulation
      *
@@ -180,7 +180,7 @@ public class BunchLengthSimulator {
      *
      * @param arrMsmts         the measurement data to be packed with longitudinal dummy data 
      * @param dblScale         multiplicative factor used to scale bunch lengths. 
-     * @param dblBmChrg        beam bunch charge in Coulombs
+     * @param dblBmCurr        beam bunch current in Amps
      * 
      * @throws ModelException  general error during model synchronization or simulation
      *
@@ -205,7 +205,7 @@ public class BunchLengthSimulator {
      *
      * @param arrMsmts         the measurement data to be packed with longitudinal dummy data
      * @param dblScale         multiplicative factor used to scale bunch lengths. 
-     * @param dblBmChrg        beam bunch charge in Coulombs
+     * @param dblBmCurr        beam bunch current in Amps
      * @param matInitState     initial state of the beam, initial covariance matrix or the default value is used if <code>null</code>
      * 
      * @throws ModelException  general error during model synchronization or simulation

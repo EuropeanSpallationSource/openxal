@@ -37,7 +37,7 @@ public class NPM extends BPM {
     /*
      *  Constants
      */
-    public static final String s_strType = "NPM";
+    public static final String TYPE = "NPM";
 
     /**
      * The container for the NPM information
@@ -86,14 +86,14 @@ public class NPM extends BPM {
      * Register type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes(NPM.class, s_strType);
+        ElementTypeManager.defaultManager().registerTypes(NPM.class, TYPE);
     }
 
     /**
      * Override to provide type signature
      */
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /**
@@ -102,7 +102,7 @@ public class NPM extends BPM {
      */
     @Override
     public boolean isKindOf(String compType) {
-        return s_strType.equals(compType);
+        return TYPE.equals(compType);
     }
 
     /**

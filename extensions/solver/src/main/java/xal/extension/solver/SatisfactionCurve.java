@@ -20,7 +20,7 @@ public class SatisfactionCurve {
 	 * @param value the value to test
 	 * @param tolerance the tolerance corresponding to 90% satisfaction
 	 */
-	static public double exponentialSatisfaction( final double value, final double tolerance ) {
+	public static double exponentialSatisfaction( final double value, final double tolerance ) {
 		return Math.exp( - 0.1 * Math.abs( value ) / tolerance );		// scale for tolerance yielding 90% satisfaction
 	}
 	
@@ -30,7 +30,7 @@ public class SatisfactionCurve {
 	 * @param value the value to test
 	 * @param tolerance the tolerance corresponding to 90% satisfaction
 	 */
-	static public double inverseSatisfaction( final double value, final double tolerance ) {
+	public static double inverseSatisfaction( final double value, final double tolerance ) {
 		final double coef = 9.0 * tolerance;		// scale for tolerance yielding 90% satisfaction
 		return coef / ( Math.abs( value ) + coef );
 	}
@@ -41,7 +41,7 @@ public class SatisfactionCurve {
 	 * @param value the value to test
 	 * @param tolerance the tolerance corresponding to 90% satisfaction
 	 */
-	static public double inverseRisingSatisfaction( final double value, final double tolerance ) {
+	public static double inverseRisingSatisfaction( final double value, final double tolerance ) {
 		return 1.0 - inverseSatisfaction( value, 1.0 - tolerance );
 	}
 	
@@ -51,7 +51,7 @@ public class SatisfactionCurve {
 	 * @param value the value to test
 	 * @param tolerance the tolerance corresponding to 90% satisfaction
 	 */
-	static public double inverseSquareSatisfaction( final double value, final double tolerance ) {
+	public static double inverseSquareSatisfaction( final double value, final double tolerance ) {
 		final double coef = 9.0 * tolerance * tolerance;		// scale for tolerance yielding 90% satisfaction
 		return value == 0.0 ? 1.0 : coef / ( value * value + coef );
 	}
@@ -62,7 +62,7 @@ public class SatisfactionCurve {
 	 * @param value the value to test
 	 * @param tolerance the tolerance corresponding to 90% satisfaction
 	 */
-	static public double inverseSquareRisingSatisfaction( final double value, final double tolerance ) {
+	public static double inverseSquareRisingSatisfaction( final double value, final double tolerance ) {
 		return 1.0 - inverseSquareSatisfaction( value, 1.0 - tolerance );
 	}
 	
@@ -74,7 +74,7 @@ public class SatisfactionCurve {
 	 * @param center the center value of the satisfaction curve
 	 * @param slope the slope of the satisfaction curve at the center
 	 */
-	static public double sCurveSatisfactionWithCenterAndSlope( final double value, final double center, final double slope ) {
+	public static double sCurveSatisfactionWithCenterAndSlope( final double value, final double center, final double slope ) {
 		final double delta = slope * ( value - center );
 		return 0.5 + delta / ( 1 + 2 * Math.abs( delta ) );
 	}
@@ -86,7 +86,7 @@ public class SatisfactionCurve {
 	 * @param minValue the minimum value
 	 * @param maxValue the maximum value
 	 */
-	static public double linearRisingSatisfaction( final double value, final double minValue, final double maxValue ) {
+	public static double linearRisingSatisfaction( final double value, final double minValue, final double maxValue ) {
 		return value > minValue ? ( value < maxValue ? ( value - minValue ) / ( maxValue - minValue ) : 1.0 ) : 0.0;
 	}
 	
@@ -97,7 +97,7 @@ public class SatisfactionCurve {
 	 * @param minValue the minimum value
 	 * @param maxValue the maximum value
 	 */
-	static public double linearFallingSatisfaction( final double value, final double minValue, final double maxValue ) {
+	public static double linearFallingSatisfaction( final double value, final double minValue, final double maxValue ) {
 		return 1.0 - linearRisingSatisfaction( value, minValue, maxValue );
 	}
 	
@@ -109,7 +109,7 @@ public class SatisfactionCurve {
 	 * @param maxValue the maximum value
 	 * @param endSlope the slope at the end point
 	 */
-	static public double acceleratingSatisfaction( final double value, final double minValue, final double maxValue, final double endSlope ) {
+	public static double acceleratingSatisfaction( final double value, final double minValue, final double maxValue, final double endSlope ) {
 		return endSlope >= 0 ? Math.pow( linearRisingSatisfaction( value, minValue, maxValue ), endSlope ) : 1.0 - acceleratingSatisfaction( value, minValue, maxValue, -endSlope );
 	}	
 	
@@ -121,7 +121,7 @@ public class SatisfactionCurve {
 	 * @param maxValue the maximum value
 	 * @param startSlope the slope at the start point
 	 */
-	static public double deceleratingSatisfaction( final double value, final double minValue, final double maxValue, final double startSlope ) {
+	public static double deceleratingSatisfaction( final double value, final double minValue, final double maxValue, final double startSlope ) {
 		return startSlope >= 0.0 ? 1.0 - Math.pow( 1.0 - linearRisingSatisfaction( value, minValue, maxValue ), startSlope ) : 1.0 - deceleratingSatisfaction( value, minValue, maxValue, -startSlope );
 	}	
 }

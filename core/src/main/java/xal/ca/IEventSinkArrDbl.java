@@ -16,5 +16,4 @@ public interface IEventSinkArrDbl {
 
     public void eventArray(double[] arrNew, Channel chan);
     
-};
-
+}

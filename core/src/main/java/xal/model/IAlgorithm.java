@@ -165,4 +165,4 @@ public interface IAlgorithm extends java.rmi.Remote, IContextAware, IArchive {
 //     */
 //     public IArchive getArchive();
  
-};
+}

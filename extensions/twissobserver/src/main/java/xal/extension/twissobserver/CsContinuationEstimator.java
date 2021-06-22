@@ -169,7 +169,7 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
      * Creates a new instance of <code>ContinuationSolution</code>.
      *
      * @param bol2ndSrch    use the fixed point secondary search between beam charge steps 
-     * @param cntCurSteps   number of steps used to move (continuously) from zero charge to full charge
+     * @param cntChgSteps   number of steps used to move (continuously) from zero charge to full charge
      * @param dblDelMmtFrac the fractional perturbation in moment vector used to compute the partial of the recursion function
      * @param dblDelCurFrac the fractional perturbation of the beam current used to compute the recursion function partial
      * @param genTransMat   a pre-configured transfer matrix engine used internally.   
@@ -227,7 +227,7 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
      * where &Delta;<i>q</i> &equiv; <i>q*</i>/<i>N<sub>q</sub></i> .
      * </p>
      * 
-     * @param cntCurSteps   number of steps used to approach the true beam charge solution from the 
+     * @param cntChgSteps   number of steps used to approach the true beam charge solution from the 
      *                      zero current solution using the continuation method
      *
      * @author Christopher K. Allen
@@ -252,7 +252,7 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
      * <br>
      * </p>
      *
-     * @param dblDelCurPct  a value in (0,1) indicating the fraction of the current charge used as perturbation
+     * @param dblDelChgPct  a value in (0,1) indicating the fraction of the current charge used as perturbation
      *
      * @author Christopher K. Allen
      * @since  Nov 28, 2012
@@ -295,11 +295,11 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
     /**
      * <p>
      * Computes the covariance matrix at the given location which is most likely to produce the given
-     * data.  That is, the covariance matrix is constructed at the given device location
-     * from the data provided.  The method used is a continuation method where a curve of 
-     * covariance matrices is constructed from a known solution value, the zero-current case, to the
-     * solution value for the given beam charge.
-     * </p>
+     * data.That is, the covariance matrix is constructed at the given device location
+ from the data provided.  The method used is a continuation method where a curve of 
+ covariance matrices is constructed from a known solution value, the zero-current case, to the
+ solution value for the given beam charge.
+ </p>
      * <p>  
      * The iterates are computed using a continuation method as
      * described in the paper "Implementation of a Beam Envelope State Observer."  Specifically,
@@ -361,11 +361,11 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
      *          moments of the beam at the reconstruction location
      *          
      * @throws ModelException       error occurred during the transfer matrix computations
-     * @throws ConvergenceException this is for the internal call to {@link #computeReconstruction(String, double, CovarianceMatrix, ArrayList)}
      *
      * @author Christopher K. Allen
      * @since  Apr 2, 2013
      */
+    @Override
     public CovarianceMatrix computeReconstruction(String strRecDevId, double dblBnchFreq, double dblBmCurr, ArrayList<Measurement> arrData)
         throws ModelException
     {
@@ -534,7 +534,7 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
         
         // Compute the partial derivatives of the solution curve w.r.t. the beam charge
         //  at the current beam charge and store them in a map.
-        Map<PHASEPLANE, GenericMatrix>   mapVecDSigdq = new HashMap<PHASEPLANE, GenericMatrix>();
+        Map<PHASEPLANE, GenericMatrix>   mapVecDSigdq = new HashMap<>();
         
         for (PHASEPLANE plane : PHASEPLANE.values()) {
             int     cntDim    = plane.getCovariantBasisSize();
@@ -679,7 +679,7 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
         //  We compute column vector DF/dSig_i for each independent variable sig_i 
         //  of vector sig.  The partials are computed numerically by perturbing sig 
         //  by del*e_i at sig0 where e_i is the ith covariance basis matrix.
-        ArrayList<GenericMatrix>       arrVecDelF = new ArrayList<GenericMatrix>();
+        ArrayList<GenericMatrix>       arrVecDelF = new ArrayList<>();
         
         for (int i=0; i<plane.getCovariantBasisSize(); i++) {
             double  dblMmt0    = vecSig0.getElem(i, 0);

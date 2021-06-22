@@ -2,7 +2,6 @@ package xal.extension.scan.analysis;
 
 import java.util.*;
 import java.awt.*;
-import java.text.*;
 import javax.swing.*;
 
 import xal.tools.data.DataAdaptor;
@@ -21,50 +20,50 @@ public final class AnalysisCntrlEmpty extends AnalysisController {
     /**
      *  The constructor.
      *
-     *@param  mainController_In         The MainAnalysisController reference
+     *@param  mainControllerIn         The MainAnalysisController reference
      *@param  analysisConf              The DataAdaptor instance with
      *      configuration data
-     *@param  parentAnalysisPanel_In    The parent panel for analysis
-     *@param  customControlPanel_In     The control panel for GUI elements
+     *@param  parentAnalysisPanelIn    The parent panel for analysis
+     *@param  customControlPanelIn     The control panel for GUI elements
      *      specific for this analysis
-     *@param  customGraphPanel_In       The graph panel for graphs specific for
+     *@param  customGraphPanelIn       The graph panel for graphs specific for
      *      this analysis
-     *@param  globalButtonsPanel_In     The global buttons panel
-     *@param  scanVariableParameter_In  The ScanParameter reference
-     *@param  scanVariable_In           The scan variable reference
-     *@param  measuredValuesV_In        The vector with measured values
+     *@param  globalButtonsPanelIn     The global buttons panel
+     *@param  scanVariableParameterIn  The ScanParameter reference
+     *@param  scanVariableIn           The scan variable reference
+     *@param  measuredValuesVIn        The vector with measured values
      *      references
-     *@param  graphAnalysis_In          The graphAnalysis panel
-     *@param  messageTextLocal_In       The message text field
-     *@param  graphDataLocal_In         The external graph data for temporary
+     *@param  graphAnalysisIn          The graphAnalysis panel
+     *@param  messageTextLocalIn       The message text field
+     *@param  graphDataLocalIn         The external graph data for temporary
      *      graph
      */
-    public AnalysisCntrlEmpty(MainAnalysisController mainController_In,
+    public AnalysisCntrlEmpty(MainAnalysisController mainControllerIn,
         DataAdaptor analysisConf,
-        JPanel parentAnalysisPanel_In,
-        JPanel customControlPanel_In,
-        JPanel customGraphPanel_In,
-        JPanel globalButtonsPanel_In,
-        ScanVariable scanVariableParameter_In,
-        ScanVariable scanVariable_In,
-        Vector<MeasuredValue> measuredValuesV_In,
-        FunctionGraphsJPanel graphAnalysis_In,
-        JTextField messageTextLocal_In,
-        BasicGraphData graphDataLocal_In) {
+        JPanel parentAnalysisPanelIn,
+        JPanel customControlPanelIn,
+        JPanel customGraphPanelIn,
+        JPanel globalButtonsPanelIn,
+        ScanVariable scanVariableParameterIn,
+        ScanVariable scanVariableIn,
+        Vector<MeasuredValue> measuredValuesVIn,
+        FunctionGraphsJPanel graphAnalysisIn,
+        JTextField messageTextLocalIn,
+        BasicGraphData graphDataLocalIn) {
 
         //call the superclass constructor
-        super(mainController_In,
+        super(mainControllerIn,
             analysisConf,
-            parentAnalysisPanel_In,
-            customControlPanel_In,
-            customGraphPanel_In,
-            globalButtonsPanel_In,
-            scanVariableParameter_In,
-            scanVariable_In,
-            measuredValuesV_In,
-            graphAnalysis_In,
-            messageTextLocal_In,
-            graphDataLocal_In);
+            parentAnalysisPanelIn,
+            customControlPanelIn,
+            customGraphPanelIn,
+            globalButtonsPanelIn,
+            scanVariableParameterIn,
+            scanVariableIn,
+            measuredValuesVIn,
+            graphAnalysisIn,
+            messageTextLocalIn,
+            graphDataLocalIn);
 
         String nameIn = "DATA READER";
         DataAdaptor nameDA =  analysisConf.childAdaptor("ANALYSIS_NAME");
@@ -82,6 +81,7 @@ public final class AnalysisCntrlEmpty extends AnalysisController {
      *@param  analysisConfig  The DataAdaptor instance with configuration
      *      data
      */
+    @Override
     public void dumpAnalysisConfig(DataAdaptor analysisConfig) {
         super.dumpAnalysisConfig(analysisConfig);
     }
@@ -92,6 +92,7 @@ public final class AnalysisCntrlEmpty extends AnalysisController {
      *
      *@param  fnt  The new font
      */
+    @Override
     public void setFontsForAll(Font fnt) {
         super.setFontsForAll(fnt);
     }
@@ -100,6 +101,7 @@ public final class AnalysisCntrlEmpty extends AnalysisController {
     /**
      *  Does what necessary to close this analysis window.
      */
+    @Override
     public void ShutUp() {
         super.ShutUp();
     }
@@ -109,6 +111,7 @@ public final class AnalysisCntrlEmpty extends AnalysisController {
      *  Does what necessary to open this analysis window. This method could be
      *  overridden, because it is empty here.
      */
+    @Override
     public void ShowUp() {
         super.ShowUp();
         customControlPanel.add(dataReaderPanel, BorderLayout.NORTH);
@@ -120,6 +123,7 @@ public final class AnalysisCntrlEmpty extends AnalysisController {
     /**
      *  Updates data on the analysis graph panel.
      */
+    @Override
     public void updateDataSetOnGraphPanel() {
         super.updateDataSetOnGraphPanel();
     }

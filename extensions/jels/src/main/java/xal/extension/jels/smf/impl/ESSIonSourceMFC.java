@@ -33,7 +33,7 @@ import xal.smf.impl.qualify.ElementTypeManager;
  */
 public class ESSIonSourceMFC extends AcceleratorNode {
 
-    public static final String s_strType = "ISMFC";
+    public static final String TYPE = "ISMFC";
 
     // Ion Source's mass flow controller channel handles
     public static final String H_2_FLOW_RB_HANDLE = "h2FlowRB";
@@ -78,14 +78,14 @@ public class ESSIonSourceMFC extends AcceleratorNode {
      * Register type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes(ESSIonSourceMFC.class, s_strType);
+        ElementTypeManager.defaultManager().registerTypes(ESSIonSourceMFC.class, TYPE);
     }
 
     /**
      * Override to provide type signature
      */
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /**

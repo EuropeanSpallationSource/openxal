@@ -14,7 +14,7 @@ import xal.tools.beam.PhaseMap;
 
 
 /**
- * Sextupole magnets element 
+ * Octupole magnets element 
  * 
  * Created by Hiroyuki Sako on 11/30/07.
  * 
@@ -22,7 +22,7 @@ import xal.tools.beam.PhaseMap;
  */
 public class IdealMagOctupole extends ThinElement {
     /** type string identifier for all octupole elements */
-    public static final String s_strType = "IdealMagOctupole";
+    public static final String TYPE = "IdealMagOctupole";
     
     /** identity phase map */
     private static final PhaseMap IDENTITY_PHASE_MAP = PhaseMap.identity();
@@ -33,13 +33,13 @@ public class IdealMagOctupole extends ThinElement {
 	 *  @param  strId   identifier of this object
 	 */
     public IdealMagOctupole( final String strId ) {
-        super( s_strType, strId );
+        super( TYPE, strId );
     }
     
 	
     /** Constructor */
     public IdealMagOctupole() {
-        super( s_strType );
+        super( TYPE );
     }
     
     

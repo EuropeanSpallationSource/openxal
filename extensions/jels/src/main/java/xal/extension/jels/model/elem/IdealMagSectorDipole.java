@@ -59,7 +59,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
     /**
      * string type identifier for all IdealMagSectorDipole objects
      */
-    public static final String s_strType = "IdealMagSectorDipole";
+    public static final String TYPE = "IdealMagSectorDipole";
 
     /**
      * Parameters for XAL MODEL LATTICE dtd
@@ -67,27 +67,27 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
     /**
      * Tag for parameters in the XML configuration file
      */
-    public static final String s_strPathLength = "PathLength";  // all thick elements have length - CKA
+    public static final String PATH_LENGTH = "PathLength";  // all thick elements have length - CKA
 
     /**
      * Tag for parameters in the XML configuration file
      */
-    public static final String s_strField = "MagField";
+    public static final String FIELD = "MagField";
 
     /**
      * Tag for parameters in the XML configuration file
      */
-    public static final String s_strEntranceAngle = "EntranceAngle";
+    public static final String ENTRANCE_ANGLE = "EntranceAngle";
 
     /**
      * Tag for parameters in the XML configuration file
      */
-    public static final String s_strExitAngle = "ExitAngle";
+    public static final String EXIT_ANGLE = "ExitAngle";
 
     /**
      * Tag for parameters in the XML configuration file
      */
-    public static final String s_strQuadComponent = "QuadComponent";
+    public static final String QUAD_COMPONENT = "QuadComponent";
 
     /*
      *  Local Attributes
@@ -137,7 +137,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * generation. Thus, all element properties are set following construction.
      */
     public IdealMagSectorDipole() {
-        super(s_strType);
+        super(TYPE);
     }
 
     /**
@@ -147,7 +147,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * @param strId
      */
     public IdealMagSectorDipole(String strId) {
-        super(s_strType, strId);
+        super(TYPE, strId);
     }
 
     /**
@@ -166,7 +166,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
     public IdealMagSectorDipole(String strId, double dblLen,
             int enmOrient, double dblFld,
             double dblGap, double dblFldInd) {
-        super(s_strType, strId, dblLen);
+        super(TYPE, strId, dblLen);
 
         this.setGapHeight(dblGap);
         this.setMagField(dblFld);

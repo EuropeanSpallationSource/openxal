@@ -31,13 +31,14 @@ public class ChannelNameDocument extends PlainDocument {
      * dash, underscore or period.
      * @throws javax.swing.text.BadLocationException under the same conditions the inherited method would.
      */
+        @Override
     public void insertString(int offset, String string, AttributeSet attributes) throws BadLocationException {
         if ( string == null ) {
             super.insertString(offset, null, attributes);
 	    return;
         }
         
-        StringBuffer goodString = new StringBuffer();
+        StringBuilder goodString = new StringBuilder();
         for ( int index = 0 ; index < string.length() ; index++ ) {
             char nextChar = string.charAt(index);
             if ( Character.isLetterOrDigit(nextChar) || nextChar == ':' || nextChar == '_' || nextChar == '-' || nextChar == '.') {

@@ -134,7 +134,7 @@ public abstract class CourantSnyderEstimator {
      * Creates a new <code>TwissObserverBase</code> object which uses the given transfer matrix
      * generator.  
      * 
-     * @param genTransMat   a pre-configured transfer matrix engine used internally.   
+     * @param genTransMatrix   a pre-configured transfer matrix engine used internally.   
      *
      * @author  Christopher K. Allen
      * @since   Sep 4, 2012
@@ -146,13 +146,10 @@ public abstract class CourantSnyderEstimator {
     /**
      * <p>
      * Creates a new <code>TwissObserverBase</code> object using the given maximum iteration count,
-     * maximum convergence error, and the given transfer matrix generator.  This constructor must
-     * be used if Twiss parameters are to be computed in the presence of space charge 
-     * (see <code>{@link #computeCovarianceFiniteCurrent(String, double, ArrayList)}</code>).
-     * </p>
-     *
-     * @param cntMaxIter    maximum number of allowed search iterations 
-     * @param dblMaxError   maximum <i>L</i><sub>2</sub> convergence error in the solution
+     * maximum convergence error, and the given transfer matrix generator.This constructor must
+ be used if Twiss parameters are to be computed in the presence of space charge 
+ (see <code>{@link #computeCovarianceFiniteCurrent(String, double, ArrayList)}</code>).</p>
+     * 
      * @param genTransMat   a pre-configured transfer matrix engine used internally.   
      * 
      * @author  Christopher K. Allen
@@ -301,14 +298,14 @@ public abstract class CourantSnyderEstimator {
      * (and symmetric) containing the moments in the usual locations.
      * 
      * @param matSig0       beam covariance matrix at the accelerator sequence start      
-     * @param dblChrg       beam charge
+     * @param dblBeamCurr       beam current
      * @param strRecDevId   device ID where the Courant-Snyder parameters are being reconstructed
      * @param arrData       profile measurement data along beamline
      *  
      * @return              covariance matrix containing the value of the recursion function generated from
      *                      <var>matSig0</var> and <var>dblChrg</var>
      *                       
-     * @throws ModelException   a general error occurred while computing the transfer matricies
+     * @throws ModelException   a general error occurred while computing the transfer matrices
      *
      * @author Christopher K. Allen
      * @since  Apr 18, 2013

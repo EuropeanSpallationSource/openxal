@@ -10,9 +10,6 @@
 
 package xal.service.pvlogger;
 
-import xal.tools.database.*;
-import xal.extension.service.ServiceDirectory;
-
 import java.util.*;
 
 
@@ -22,16 +19,16 @@ import java.util.*;
  */
 public class LoggerModel {
 	/** The time when this process was launched in seconds since the Java epoch */
-	static final private Date LAUNCH_TIME;
+	private static final Date LAUNCH_TIME;
 	
 	/** PV Logger */
-	final private PVLogger PV_LOGGER;
+	private final PVLogger PV_LOGGER;
 	
 	/** session models keyed by group ID */
-	final private Map<String,SessionModel> SESSION_MODELS;
+	private final Map<String,SessionModel> SESSION_MODELS;
 	
 	/** ID of the service to log */
-	final private String SERVICE_ID;
+	private final String SERVICE_ID;
 
 	
 	/**
@@ -187,7 +184,7 @@ public class LoggerModel {
 	 * Get the launch time of the service.
 	 * @return the launch time in seconds since the Java epoch of January 1, 1970.
 	 */
-	static public Date getLaunchTime() {
+	public static Date getLaunchTime() {
 		return LAUNCH_TIME;
 	}
 }

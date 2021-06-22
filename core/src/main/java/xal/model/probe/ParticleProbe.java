@@ -176,7 +176,7 @@ public class ParticleProbe extends Probe<ParticleProbeState> {
 	 */
     @Override
     public Trajectory<ParticleProbeState> createTrajectory() {
-        return new Trajectory<ParticleProbeState>(ParticleProbeState.class);
+        return new Trajectory<>(ParticleProbeState.class);
     }
     
     /**

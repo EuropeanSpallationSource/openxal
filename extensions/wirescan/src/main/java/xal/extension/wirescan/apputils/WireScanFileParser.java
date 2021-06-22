@@ -17,9 +17,9 @@ public class WireScanFileParser {
 
 	
 	/** Returns the Vector&lt;WireScanData&gt; for all WS in the WS data file */
-	static public Vector<WireScanData> parseFile(File file) {
+	public static Vector<WireScanData> parseFile(File file) {
 		
-		Vector<WireScanData> resV = new Vector<WireScanData>();
+		Vector<WireScanData> resV = new Vector<>();
 		Boolean raw = false;
 		int pvLogId = -1;
 		WireScanData wsD = new WireScanData();	
@@ -77,7 +77,7 @@ public class WireScanFileParser {
 			return resV;
     } catch (IOException e) {
 		}
-		return new Vector<WireScanData>();							
+		return new Vector<>();							
 	}
 }
 

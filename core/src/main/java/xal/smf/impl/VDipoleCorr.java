@@ -13,7 +13,7 @@ import xal.smf.impl.qualify.ElementTypeManager;
 
 public class VDipoleCorr extends DipoleCorr {
 	/** standard type for nodes of this class */
-    public static final String s_strType   = "DCV";
+    public static final String TYPE   = "DCV";
   
 
 	// static initialization
@@ -26,12 +26,13 @@ public class VDipoleCorr extends DipoleCorr {
      * Register type for qualification
      */
     private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( VDipoleCorr.class, s_strType, "vertcorr", "vcorr" );
+		ElementTypeManager.defaultManager().registerTypes( VDipoleCorr.class, TYPE, "vertcorr", "vcorr" );
     }
 
     
     /** Override to provide type signature */
-    public String getType()   { return s_strType; }
+    @Override
+    public String getType()   { return TYPE; }
 
 
 	/** Constructor */
@@ -51,6 +52,7 @@ public class VDipoleCorr extends DipoleCorr {
      * of all vertical correctors is VERTICAL.
      * @return VERTICAL
      */
+    @Override
     public int getOrientation() {
         return VERTICAL;
     }

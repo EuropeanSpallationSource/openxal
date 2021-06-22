@@ -12,7 +12,6 @@
  
  import xal.extension.solver.algorithm.SearchAlgorithm;
 
- import java.util.*;
 
  /**
  * AlgorithmPool keeps track of the available algorithms.
@@ -48,7 +47,7 @@
 	 
 	 
 	 /**
-	 * Send a message that an algorithm is unvavailable.
+	 * Send a message that an algorithm is unavailable.
 	 * @param source The source of the unavailable algorithm.
 	 * @param algorithm which is unavailable.
 	 */

@@ -83,7 +83,7 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
         this.setBunchFrequency(probe.getBunchFrequency());
         this.setBeamCurrent(probe.getBeamCurrent());
 //        this.setBetatronPhase(new R3(probe.getBetatronPhase()));
-    };        
+    }
     
     /**
      * Set the bunch arrival time frequency.
@@ -101,7 +101,7 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
      */
     public void setBeamCurrent(double I)    { 
         this.stateCurrent.setBeamCurrent(I);
-    };
+    }
     
 
 //    /**
@@ -109,7 +109,7 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
 //     * 
 //     *  @param  Q   beam charge in <b>Coulombs</b>
 //     */
-//    public void setBeamCharge(double Q)     { m_dblBmQ = Q; };
+//    public void setBeamCharge(double Q)     { dblBmQ = Q; };
     
 
     
@@ -132,7 +132,7 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
 	@Units( "Hz" )
     public double getBunchFrequency()  {
         return this.stateCurrent.getBunchFrequency();
-    };
+    }
     
     /** 
      * Returns the total beam current 
@@ -177,9 +177,9 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
      *  
      *  <p>
      *  where <i>Q</i> is the bunch charge, <i>e0</i> is the permittivity
-     *  of free space, <i>gamma</i> is the relativitic factor, <i>beta</i> is 
+     *  of free space, <i>gamma</i> is the relativistic factor, <i>beta</i> is 
      *  the normalized design velocity, <i>q</i> is the charge of the beam
-     *  particles and <i>ER</i> is the rest energy of the beam partiles.
+     *  particles and <i>ER</i> is the rest energy of the beam particles.
      *  </p>
      *  
      *  <p>

@@ -6,6 +6,9 @@
 
 package xal.tools.math.r3;
 
+import java.io.PrintWriter;
+import java.io.Serializable;
+
 
 
 /**
@@ -22,7 +25,7 @@ package xal.tools.math.r3;
  * @author  Christopher Allen
  * @since   Jan 24, 2003
  */
-public class Grid implements java.io.Serializable {
+public class Grid implements Serializable {
 
     
     /*
@@ -42,7 +45,7 @@ public class Grid implements java.io.Serializable {
     /**
      *  Represents a point in the grid
      */
-    class GridPt implements java.io.Serializable {
+    class GridPt implements Serializable {
 
         /** Serialization  version number */
         private static final long serialVersionUID = 1L;
@@ -57,7 +60,7 @@ public class Grid implements java.io.Serializable {
     /**
      *  Represents a cell (voxel) in the grid
      */
-    class GridCell implements java.io.Serializable {    
+    class GridCell implements Serializable {    
         
         
         /** Serialization  version number */
@@ -95,7 +98,7 @@ public class Grid implements java.io.Serializable {
          */
         
         /**
-         *  Return potentials at vertecies
+         *  Return potentials at vertices
          */
         public double val000()   { return pt000.val; }
         public double val001()   { return pt001.val; }
@@ -219,25 +222,25 @@ public class Grid implements java.io.Serializable {
      */
     
     /** array of grid points */
-    private GridPt[][][]    m_arrPts;
+    private GridPt[][][]    arrPts;
     
     /** array of grid cells */
-    private GridCell[][][]  m_arrCells;
+    private GridCell[][][]  arrCells;
     
     /** discrete grid size */
-    private Z3        m_vecSize;
+    private Z3        vecSize;
     
     /** physical dimensions of grid */
-    private R3        m_vecDim;
+    private R3        vecDim;
     
     /** grid resolution (L/N) */
-    private R3        m_vecRes;
+    private R3        vecRes;
       
     /** R3 coordinates of first grid point, i.e., the grid origin */
-    private R3        m_ptOrg;
+    private R3        ptOrg;
 
     /** the grid domain in R3 */
-    private ClosedBox       m_boxDom;
+    private ClosedBox       boxDom;
     
     
     
@@ -258,10 +261,10 @@ public class Grid implements java.io.Serializable {
         if (n1<=0 || n2<=0 || n3<=0)
             throw new GridException("Grid::setGridSize() - Bad size vector.");
 
-        m_vecDim.setAll(0.0);
-        m_vecRes.setAll(0.0);
-        m_ptOrg.setAll(0.0);
-        m_vecSize = new Z3(n1, n2, n3);
+        vecDim.setAll(0.0);
+        vecRes.setAll(0.0);
+        ptOrg.setAll(0.0);
+        vecSize = new Z3(n1, n2, n3);
         
         this.allocateGrid(n1, n2, n3);
     }
@@ -281,7 +284,7 @@ public class Grid implements java.io.Serializable {
         this(n1, n2, n3);
 
         setGridDomain(boxDom);
-    };
+    }
     
     
     /**
@@ -294,13 +297,13 @@ public class Grid implements java.io.Serializable {
         if (boxDom.volume() <= 0.0)   
             throw new GridException("Grid3D::setGridDomain() - bad domain descriptor.");
 
-        m_boxDom = boxDom;
-        m_vecDim = boxDom.dimensions();
-        m_ptOrg  = boxDom.getVertexMin();
+        this.boxDom = boxDom;
+        vecDim = boxDom.dimensions();
+        ptOrg  = boxDom.getVertexMin();
 
-        m_vecRes.setx( m_vecDim.getx()/(m_vecSize.geti() - 1) );
-        m_vecRes.sety( m_vecDim.gety()/(m_vecSize.getj() - 1) );
-        m_vecRes.setz( m_vecDim.getz()/(m_vecSize.getk() - 1) );
+        vecRes.setx( vecDim.getx()/(vecSize.geti() - 1) );
+        vecRes.sety( vecDim.gety()/(vecSize.getj() - 1) );
+        vecRes.setz( vecDim.getz()/(vecSize.getk() - 1) );
     }
 
     /**
@@ -329,28 +332,28 @@ public class Grid implements java.io.Serializable {
      *
      *  @return     vector of array dimensions (nx, ny, nz)
      */
-    public Z3 getGridSize()     { return m_vecSize; };
+    public Z3 getGridSize()     { return vecSize; };
     
     /**
      *  Get the domain of the grid in R3.
      *
      *  @return     a ClosedBox object describing the domain of definition for this grid
      */
-    public ClosedBox getGridDomain()        { return m_boxDom; };
+    public ClosedBox getGridDomain()        { return boxDom; };
 
     /**
      *  Get grid resolution.
      *
      *  @return     vector (dx,dy,dz) of spacing between grid points
      */
-    public R3   getGridResolution()     { return m_vecRes; };
+    public R3   getGridResolution()     { return vecRes; };
 
     /**
      *  Get the coordinates of the grid origin, i.e., the first grid vertex.
      *
      *  @return     (x,y,z) coordinates of grid origin
      */
-    public R3   getGridOrigin()         { return m_ptOrg; };
+    public R3   getGridOrigin()         { return ptOrg; };
 
     
     
@@ -361,7 +364,7 @@ public class Grid implements java.io.Serializable {
     /**
      *  Get the function value at the grid point indexed by (i,j,k)
      *
-     *  @param  i       index of the first grid dimention
+     *  @param  i       index of the first grid dimension
      *  @param  j       index of the second grid dimension
      *  @param  k       index of the third grid dimension
      *
@@ -404,7 +407,7 @@ public class Grid implements java.io.Serializable {
         k = (int)Math.floor( vecDis.get3()/this.getGridResolution().get3() );
 
         return new Z3(i,j,k);
-    };
+    }
 
 
 
@@ -462,7 +465,7 @@ public class Grid implements java.io.Serializable {
         k = (int)Math.floor( vecDis.get3()/this.getGridResolution().get3() );
 
         return this.getGridCell(i,j,k);
-    };
+    }
 
     
     /*
@@ -507,7 +510,7 @@ public class Grid implements java.io.Serializable {
      *
      *  @param  os      output stream to receive text description of grid
      */
-    public void print(java.io.PrintWriter os)   {
+    public void print(PrintWriter os)   {
 
         os.println("GRID PARAMETERS");
         os.print("Grid size               : "); this.getGridSize().println(os);
@@ -519,7 +522,7 @@ public class Grid implements java.io.Serializable {
     /**
      *  Testing engine
      */
-    static public void main(String args[]) {
+    public static void main(String args[]) {
         System.out.println("3.5%Math.PI=" + 3.5%Math.PI);
     }
     
@@ -541,7 +544,7 @@ public class Grid implements java.io.Serializable {
      *  @return         object located at grid point (i,j,k)
      */
     protected GridPt    getGridPt(int i, int j, int k)  {
-        return m_arrPts[i][j][k];
+        return arrPts[i][j][k];
     }
 
     /**
@@ -565,7 +568,7 @@ public class Grid implements java.io.Serializable {
      *  @return         object located at grid cell (i,j,k)
      */
     protected GridCell    getGridCell(int i, int j, int k)  {
-        return m_arrCells[i][j][k];
+        return arrCells[i][j][k];
     }
 
     /**
@@ -598,8 +601,8 @@ public class Grid implements java.io.Serializable {
     private void allocateGrid(int n1, int n2, int n3) throws GridException {
         
         // Allocate grid objects
-        m_arrPts = this.allocatePts(n1, n2, n3);
-        m_arrCells = this.allocateCells(n1-1, n2-1, n3-1);
+        arrPts = this.allocatePts(n1, n2, n3);
+        arrCells = this.allocateCells(n1-1, n2-1, n3-1);
         
         
         // Configure grid cells
@@ -657,7 +660,3 @@ public class Grid implements java.io.Serializable {
    
    
 }
-
-
-
-

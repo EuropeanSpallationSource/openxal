@@ -33,7 +33,7 @@ public class FieldMapBucket extends AttributeBucket {
 
     public static final String c_strType = "fieldmap";
 
-    static final String[] c_arrNames = {
+    static final String[] ARR_NAMES = {
         "fieldMapFile",
         "dynamic",
         "fieldType",
@@ -44,26 +44,26 @@ public class FieldMapBucket extends AttributeBucket {
     /**
      * FieldMap file
      */
-    private Attribute m_attFieldMapFile;
+    private Attribute attFieldMapFile;
 
     /**
      * Boolean describing if the field is static (false) or dynamic (true).
      */
-    private Attribute m_attDynamic;
+    private Attribute attDynamic;
     /**
      * String specifying whether it is electric or magnetic.
      */
-    private Attribute m_attFieldType;
+    private Attribute attFieldType;
     /**
      * Number of dimensions of the field map (1, 2, or 3).
      */
-    private Attribute m_attDimensions;
+    private Attribute attDimensions;
     /**
      * Number of points to used in the longitudinal direction. If different than
      * the number of points of the field map, it will use interpolation. A value
      * of 0 will use the number by default.
      */
-    private Attribute m_attNumberOfPoints;
+    private Attribute attNumberOfPoints;
 
     /*
      *  User Interface
@@ -79,37 +79,37 @@ public class FieldMapBucket extends AttributeBucket {
     public FieldMapBucket() {
         super();
 
-        m_attFieldMapFile = new Attribute("");
-        m_attDynamic = new Attribute(false);
-        m_attFieldType = new Attribute("");
-        m_attDimensions = new Attribute(0);
-        m_attNumberOfPoints = new Attribute(0);
+        attFieldMapFile = new Attribute("");
+        attDynamic = new Attribute(false);
+        attFieldType = new Attribute("");
+        attDimensions = new Attribute(0);
+        attNumberOfPoints = new Attribute(0);
 
-        super.registerAttribute(c_arrNames[0], m_attFieldMapFile, "Path of the fieldmap file.");
-        super.registerAttribute(c_arrNames[1], m_attDynamic, "Flag describing if the field is static (false) or dynamic (true).");
-        super.registerAttribute(c_arrNames[2], m_attFieldType, "Either \"electric\" or \"magnetic\".");
-        super.registerAttribute(c_arrNames[3], m_attDimensions, "Number of dimensions of the field map (1, 2, or 3).");
-        super.registerAttribute(c_arrNames[4], m_attNumberOfPoints, "Number of points to used in the longitudinal direction (0=default).");
+        super.registerAttribute(ARR_NAMES[0], attFieldMapFile, "Path of the fieldmap file.");
+        super.registerAttribute(ARR_NAMES[1], attDynamic, "Flag describing if the field is static (false) or dynamic (true).");
+        super.registerAttribute(ARR_NAMES[2], attFieldType, "Either \"electric\" or \"magnetic\".");
+        super.registerAttribute(ARR_NAMES[3], attDimensions, "Number of dimensions of the field map (1, 2, or 3).");
+        super.registerAttribute(ARR_NAMES[4], attNumberOfPoints, "Number of points to used in the longitudinal direction (0=default).");
     }
 
     public String getFieldMapFile() {
-        return m_attFieldMapFile.getString();
+        return attFieldMapFile.getString();
     }
 
     public void setFieldMapFile(String strVal) {
-        m_attFieldMapFile.set(strVal);
+        attFieldMapFile.set(strVal);
     }
 
     public boolean getDynamic() {
-        return m_attDynamic.getBoolean();
+        return attDynamic.getBoolean();
     }
 
     public void setDynamic(boolean bolVal) {
-        m_attDynamic.set(bolVal);
+        attDynamic.set(bolVal);
     }
 
     public FieldType getFieldType() {
-        String strFieldType = m_attFieldType.getString();
+        String strFieldType = attFieldType.getString();
         if ("electric".equalsIgnoreCase(strFieldType) || "e".equalsIgnoreCase(strFieldType)) {
             return FieldType.ELECTRIC;
         } else if ("magnetic".equalsIgnoreCase(strFieldType) || "b".equalsIgnoreCase(strFieldType)) {
@@ -120,25 +120,25 @@ public class FieldMapBucket extends AttributeBucket {
 
     public void setFieldType(FieldType ftVal) {
         if (ftVal == FieldType.ELECTRIC) {
-            m_attFieldType.set("electric");
+            attFieldType.set("electric");
         } else if (ftVal == FieldType.MAGNETIC) {
-            m_attFieldType.set("magnetic");
+            attFieldType.set("magnetic");
         }
     }
 
     public int getDimensions() {
-        return m_attDimensions.getInteger();
+        return attDimensions.getInteger();
     }
 
     public void setDimensions(int intVal) {
-        m_attDimensions.set(intVal);
+        attDimensions.set(intVal);
     }
 
     public int getNumberOfPoints() {
-        return m_attNumberOfPoints.getInteger();
+        return attNumberOfPoints.getInteger();
     }
 
     public void setNumberOfPoints(int intVal) {
-        m_attNumberOfPoints.set(intVal);
+        attNumberOfPoints.set(intVal);
     }
 }

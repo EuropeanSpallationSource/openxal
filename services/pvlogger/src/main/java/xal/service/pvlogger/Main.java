@@ -45,7 +45,7 @@ public class Main {
 	 * Main entry point to the service.  Run the service.
 	 * @param args The launch arguments to the service.
 	 */
-	static public void main(String[] args) {
+	public static void main(String[] args) {
 		new Main().run();
 	}
 }

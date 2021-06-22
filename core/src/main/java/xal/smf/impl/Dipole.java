@@ -1,8 +1,6 @@
 package xal.smf.impl;
 
 import xal.smf.attr.DipoleBucket;
-import xal.smf.*;
-import xal.smf.attr.*;
 import xal.smf.impl.qualify.*;
 import xal.ca.*;
 
@@ -17,7 +15,7 @@ import xal.ca.*;
 
 abstract public class Dipole extends Electromagnet {
 	/** type for this device */
-    public static final String s_strType = MagnetType.DIPOLE;
+    public static final String TYPE = MagnetType.DIPOLE;
 
     // static initializer
     static {
@@ -27,7 +25,7 @@ abstract public class Dipole extends Electromagnet {
     
     /** Register type for qualification */
     private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( Dipole.class, s_strType, "dipole" );
+		ElementTypeManager.defaultManager().registerTypes( Dipole.class, TYPE, "dipole" );
     }
 
 
@@ -49,8 +47,9 @@ abstract public class Dipole extends Electromagnet {
 
 
 	/** get the type */
+    @Override
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
 
@@ -58,6 +57,7 @@ abstract public class Dipole extends Electromagnet {
      * Determine if this magnet has the specified pole
      * @param pole the pole against which to compare this magnet's pole
      */
+    @Override
     public boolean isPole( final String pole ) {
         return pole.equals( MagnetType.DIPOLE );
     }

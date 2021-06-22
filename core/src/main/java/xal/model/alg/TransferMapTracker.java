@@ -7,7 +7,6 @@
 package xal.model.alg;
 
 import xal.tools.beam.PhaseMap;
-import xal.tools.beam.PhaseVector;
 import xal.tools.data.DataAdaptor;
 import xal.tools.data.DataFormatException;
 import xal.tools.data.DataTable;
@@ -37,7 +36,7 @@ public class TransferMapTracker extends Tracker {
      */
     
     /** probe type recognized by this algorithm */
-    public static final Class<TransferMapProbe>       s_clsProbeType = TransferMapProbe.class;
+    public static final Class<TransferMapProbe>       CLS_PROBE_TYPE = TransferMapProbe.class;
 
 
 
@@ -47,10 +46,10 @@ public class TransferMapTracker extends Tracker {
 
     
     /** string type identifier for this algorithm */
-    public static final String      s_strTypeId = TransferMapTracker.class.getName();
+    public static final String      TYPE_ID = TransferMapTracker.class.getName();
     
     /** current version of this algorithm */
-    public static final int         s_intVersion = 1;
+    public static final int         VERSION = 1;
 
     
 
@@ -66,7 +65,7 @@ public class TransferMapTracker extends Tracker {
      * 
      */
     public TransferMapTracker() {
-        super(s_strTypeId, s_intVersion, s_clsProbeType);
+        super(TYPE_ID, VERSION, CLS_PROBE_TYPE);
     }
     
     /**

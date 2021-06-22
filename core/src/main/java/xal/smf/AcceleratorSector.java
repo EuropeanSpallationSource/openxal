@@ -21,18 +21,18 @@ public final class AcceleratorSector extends AcceleratorSeq {
      */
     
     /** List of legal predecessors (AcceleratorSectors) to this AcceleratorSector */
-    private LinkedList<AcceleratorSector> m_lstPred;		// TODO: doesn't look like this ever gets initialized or populated
+    private LinkedList<AcceleratorSector> lstPred;		// TODO: doesn't look like this ever gets initialized or populated
     
     
     
     /** Charge of beam in this sequence (+-1) */
-    protected double            m_dblBeamCharge;               
+    protected double            dblBeamCharge;               
   
     /** particle species charge to mass ratio */
-    protected double            m_dblQ2M;
+    protected double            dblQ2M;
     
     /** particle species rest energy */
-    protected double            m_dblEr;
+    protected double            dblEr;
     
 
     
@@ -41,23 +41,23 @@ public final class AcceleratorSector extends AcceleratorSeq {
      */
 
     /** Return the signum of design particle species charge */
-    public double           getChargeSignum()   { return m_dblBeamCharge; };
+    public double           getChargeSignum()   { return dblBeamCharge; }
     
     /** Return the charge to mass ratio of the design particle species */
-    public double           getCharge2Mass()    { return m_dblQ2M; };
+    public double           getCharge2Mass()    { return dblQ2M; }
     
     /** Return the rest energy of the design particle species */
-    public double           getRestEnergy()     { return m_dblEr; };
+    public double           getRestEnergy()     { return dblEr; }
     
     
     /** Set the charge to mass ratio of the design particle */
-    public void     setCharge2Mass(double dblQ2M)   { m_dblQ2M = dblQ2M; };
+    public void     setCharge2Mass(double dblQ2M)   { this.dblQ2M = dblQ2M; }
     
     /** Set the charge sign of the design particle @param dblSgn {-1,+1} */
-    public void     setChargeSignum(double dblSgn)  { m_dblBeamCharge = dblSgn; };
+    public void     setChargeSignum(double dblSgn)  { dblBeamCharge = dblSgn; }
     
     /** Set the rest energy of the design particle species */
-    public void     setRestEnergy(double dblEr)     { m_dblEr = dblEr; };
+    public void     setRestEnergy(double dblEr)     { this.dblEr = dblEr; }
 
     
     /** Creates a new instance of AcceleratorSector */
@@ -77,6 +77,7 @@ public final class AcceleratorSector extends AcceleratorSeq {
      *  @return         true if successfully add, false if node already is owned by Sector
      *
      */
+    @Override
     public boolean addNode(AcceleratorNode node) {
         if (!super.addNode(node)) return false;
         
@@ -88,7 +89,7 @@ public final class AcceleratorSector extends AcceleratorSeq {
     public AcceleratorSeq   concatenate(AcceleratorSector sec)  {
         boolean     bolTest = false;
 
-		for ( final AcceleratorSector secValid : m_lstPred ) {
+		for ( final AcceleratorSector secValid : lstPred ) {
             if (secValid.equals(sec))
                 bolTest = true;
         }

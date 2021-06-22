@@ -23,68 +23,68 @@ public final class AnalysisCntrlFindIntersection extends AnalysisController {
 
 	//DEFINITION  "FIND INTERSECTION" PANEL
 	private JPanel findIntersectionPanel = new JPanel();
-	private JLabel markerPos_Label = new JLabel(" Marker Position :");
-	private JLabel pvSet_Label = new JLabel(" Scan PV Set:");
-	private JLabel pvRB_Label = new JLabel(" Scan PV RB:");
+	private JLabel markerPosLabel = new JLabel(" Marker Position :");
+	private JLabel pvSetLabel = new JLabel(" Scan PV Set:");
+	private JLabel pvRBLabel = new JLabel(" Scan PV RB:");
 
-	private ActionListener findIntersection_Listener = null;
+	private ActionListener findIntersectionListener = null;
 
-	private JButton find_Button = new JButton("FIND INTERSECTION");
-	private JButton setVal_Button = new JButton("SET FOUND VALUE TO EPICS");
-	private JButton readVal_Button = new JButton("READ CURRENT VALUES");
+	private JButton findButton = new JButton("FIND INTERSECTION");
+	private JButton setValButton = new JButton("SET FOUND VALUE TO EPICS");
+	private JButton readValButton = new JButton("READ CURRENT VALUES");
 
-	private DoubleInputTextField markerPos_Text = new DoubleInputTextField(10);
-	private DoubleInputTextField pvSetVal_Text = new DoubleInputTextField(10);
-	private DoubleInputTextField pvRBVal_Text = new DoubleInputTextField(10);
+	private DoubleInputTextField markerPosText = new DoubleInputTextField(10);
+	private DoubleInputTextField pvSetValText = new DoubleInputTextField(10);
+	private DoubleInputTextField pvRBValText = new DoubleInputTextField(10);
 
-	private DecimalFormat val_Format = new DecimalFormat("####.####");
+	private DecimalFormat valFormat = new DecimalFormat("####.####");
 
-	private ActionListener dragVerLine_Listener = null;
+	private ActionListener dragVerLineListener = null;
 	private double markerPos = 0.;
 
 
 	/**
 	 *  The constructor.
 	 *
-	 *@param  mainController_In         Description of the Parameter
+	 *@param  mainControllerIn         Description of the Parameter
 	 *@param  analysisConf              Description of the Parameter
-	 *@param  parentAnalysisPanel_In    Description of the Parameter
-	 *@param  customControlPanel_In     Description of the Parameter
-	 *@param  customGraphPanel_In       Description of the Parameter
-	 *@param  globalButtonsPanel_In     Description of the Parameter
-	 *@param  scanVariableParameter_In  Description of the Parameter
-	 *@param  scanVariable_In           Description of the Parameter
-	 *@param  measuredValuesV_In        Description of the Parameter
-	 *@param  graphAnalysis_In          Description of the Parameter
-	 *@param  messageTextLocal_In       Description of the Parameter
-	 *@param  graphDataLocal_In         Description of the Parameter
+	 *@param  parentAnalysisPanelIn    Description of the Parameter
+	 *@param  customControlPanelIn     Description of the Parameter
+	 *@param  customGraphPanelIn       Description of the Parameter
+	 *@param  globalButtonsPanelIn     Description of the Parameter
+	 *@param  scanVariableParameterIn  Description of the Parameter
+	 *@param  scanVariableIn           Description of the Parameter
+	 *@param  measuredValuesVIn        Description of the Parameter
+	 *@param  graphAnalysisIn          Description of the Parameter
+	 *@param  messageTextLocalIn       Description of the Parameter
+	 *@param  graphDataLocalIn         Description of the Parameter
 	 */
-	public AnalysisCntrlFindIntersection(MainAnalysisController mainController_In,
+	public AnalysisCntrlFindIntersection(MainAnalysisController mainControllerIn,
 			DataAdaptor analysisConf,
-			JPanel parentAnalysisPanel_In,
-			JPanel customControlPanel_In,
-			JPanel customGraphPanel_In,
-			JPanel globalButtonsPanel_In,
-			ScanVariable scanVariableParameter_In,
-			ScanVariable scanVariable_In,
-			Vector<MeasuredValue> measuredValuesV_In,
-			FunctionGraphsJPanel graphAnalysis_In,
-			JTextField messageTextLocal_In,
-			BasicGraphData graphDataLocal_In) {
+			JPanel parentAnalysisPanelIn,
+			JPanel customControlPanelIn,
+			JPanel customGraphPanelIn,
+			JPanel globalButtonsPanelIn,
+			ScanVariable scanVariableParameterIn,
+			ScanVariable scanVariableIn,
+			Vector<MeasuredValue> measuredValuesVIn,
+			FunctionGraphsJPanel graphAnalysisIn,
+			JTextField messageTextLocalIn,
+			BasicGraphData graphDataLocalIn) {
 
 		//call the superclass constructor
-		super(mainController_In,
+		super(mainControllerIn,
 				analysisConf,
-				parentAnalysisPanel_In,
-				customControlPanel_In,
-				customGraphPanel_In,
-				globalButtonsPanel_In,
-				scanVariableParameter_In,
-				scanVariable_In,
-				measuredValuesV_In,
-				graphAnalysis_In,
-				messageTextLocal_In,
-				graphDataLocal_In);
+				parentAnalysisPanelIn,
+				customControlPanelIn,
+				customGraphPanelIn,
+				globalButtonsPanelIn,
+				scanVariableParameterIn,
+				scanVariableIn,
+				measuredValuesVIn,
+				graphAnalysisIn,
+				messageTextLocalIn,
+				graphDataLocalIn);
 
 		String nameIn = "FIND INTERSECTION";
 		DataAdaptor nameDA =  analysisConf.childAdaptor("ANALYSIS_NAME");
@@ -106,6 +106,7 @@ public final class AnalysisCntrlFindIntersection extends AnalysisController {
 	 *
 	 *@param  analysisConfig  Description of the Parameter
 	 */
+        @Override
 	public void dumpAnalysisConfig(DataAdaptor analysisConfig) {
 		super.dumpAnalysisConfig(analysisConfig);
 	}
@@ -116,24 +117,26 @@ public final class AnalysisCntrlFindIntersection extends AnalysisController {
 	 *
 	 *@param  fnt  The new fontsForAll value
 	 */
+        @Override
 	public void setFontsForAll(Font fnt) {
 		super.setFontsForAll(fnt);
 
-		markerPos_Label.setFont(fnt);
-		pvSet_Label.setFont(fnt);
-		pvRB_Label.setFont(fnt);
-		find_Button.setFont(fnt);
-		setVal_Button.setFont(fnt);
-		readVal_Button.setFont(fnt);
-		markerPos_Text.setFont(fnt);
-		pvSetVal_Text.setFont(fnt);
-		pvRBVal_Text.setFont(fnt);
+		markerPosLabel.setFont(fnt);
+		pvSetLabel.setFont(fnt);
+		pvRBLabel.setFont(fnt);
+		findButton.setFont(fnt);
+		setValButton.setFont(fnt);
+		readValButton.setFont(fnt);
+		markerPosText.setFont(fnt);
+		pvSetValText.setFont(fnt);
+		pvRBValText.setFont(fnt);
 	}
 
 
 	/**
 	 *  Does what necessary for close this analysis window.
 	 */
+        @Override
 	public void ShutUp() {
 		super.ShutUp();
 		customControlPanel.removeAll();
@@ -146,11 +149,12 @@ public final class AnalysisCntrlFindIntersection extends AnalysisController {
 	 *  Does what necessary for open this analysis window. This method could be
 	 *  overridden, because it is empty here.
 	 */
+        @Override
 	public void ShowUp() {
 		super.ShowUp();
 
 		graphAnalysis.addVerticalLine(markerPos, Color.red);
-		graphAnalysis.addDraggedVerLinesListener(dragVerLine_Listener);
+		graphAnalysis.addDraggedVerLinesListener(dragVerLineListener);
 		graphAnalysis.setDraggedVerLinesMotionListen(true);
 
 		customControlPanel.add(dataReaderPanel, BorderLayout.NORTH);
@@ -163,6 +167,7 @@ public final class AnalysisCntrlFindIntersection extends AnalysisController {
 	/**
 	 *  Updates data on the analysis graph panel.
 	 */
+        @Override
 	public void updateDataSetOnGraphPanel() {
 		super.updateDataSetOnGraphPanel();
 	}
@@ -175,21 +180,21 @@ public final class AnalysisCntrlFindIntersection extends AnalysisController {
 	 *  Description of the Method
 	 */
 	private void makeIntersectionFindingPanel() {
-		markerPos_Text.setEditable(true);
-		pvSetVal_Text.setEditable(false);
-		pvRBVal_Text.setEditable(false);
+		markerPosText.setEditable(true);
+		pvSetValText.setEditable(false);
+		pvRBValText.setEditable(false);
 
-		markerPos_Text.setNumberFormat(val_Format);
-		pvSetVal_Text.setNumberFormat(val_Format);
-		pvRBVal_Text.setNumberFormat(val_Format);
+		markerPosText.setNumberFormat(valFormat);
+		pvSetValText.setNumberFormat(valFormat);
+		pvRBValText.setNumberFormat(valFormat);
 
-		markerPos_Text.setHorizontalAlignment(JTextField.CENTER);
-		pvSetVal_Text.setHorizontalAlignment(JTextField.CENTER);
-		pvRBVal_Text.setHorizontalAlignment(JTextField.CENTER);
+		markerPosText.setHorizontalAlignment(JTextField.CENTER);
+		pvSetValText.setHorizontalAlignment(JTextField.CENTER);
+		pvRBValText.setHorizontalAlignment(JTextField.CENTER);
 
-		markerPos_Text.removeInnerFocusListener();
-		pvSetVal_Text.removeInnerFocusListener();
-		pvRBVal_Text.removeInnerFocusListener();
+		markerPosText.removeInnerFocusListener();
+		pvSetValText.removeInnerFocusListener();
+		pvRBValText.removeInnerFocusListener();
 
 		findIntersectionPanel.setLayout(new BorderLayout());
 		Border etchedBorder = BorderFactory.createEtchedBorder();
@@ -197,32 +202,33 @@ public final class AnalysisCntrlFindIntersection extends AnalysisController {
 
 		JPanel temp_0 = new JPanel();
 		temp_0.setLayout(new GridLayout(1, 2, 1, 1));
-		temp_0.add(markerPos_Label);
-		temp_0.add(markerPos_Text);
+		temp_0.add(markerPosLabel);
+		temp_0.add(markerPosText);
 
 		JPanel temp_1 = new JPanel();
 		temp_1.setLayout(new BorderLayout());
-		temp_1.add(find_Button, BorderLayout.NORTH);
+		temp_1.add(findButton, BorderLayout.NORTH);
 		temp_1.add(temp_0, BorderLayout.CENTER);
-		temp_1.add(setVal_Button, BorderLayout.SOUTH);
+		temp_1.add(setValButton, BorderLayout.SOUTH);
 
 		JPanel temp_2 = new JPanel();
 		temp_2.setLayout(new GridLayout(2, 2, 1, 1));
-		temp_2.add(pvSet_Label);
-		temp_2.add(pvSetVal_Text);
-		temp_2.add(pvRB_Label);
-		temp_2.add(pvRBVal_Text);
+		temp_2.add(pvSetLabel);
+		temp_2.add(pvSetValText);
+		temp_2.add(pvRBLabel);
+		temp_2.add(pvRBValText);
 
 		JPanel temp_3 = new JPanel();
 		temp_3.setLayout(new BorderLayout());
 		temp_3.add(temp_1, BorderLayout.NORTH);
 		temp_3.add(temp_2, BorderLayout.CENTER);
-		temp_3.add(readVal_Button, BorderLayout.SOUTH);
+		temp_3.add(readValButton, BorderLayout.SOUTH);
 
 		findIntersectionPanel.add(temp_3, BorderLayout.NORTH);
 
-		dragVerLine_Listener =
+		dragVerLineListener =
 			new ActionListener() {
+                                @Override
 				public void actionPerformed(ActionEvent e) {
 					int ind = graphAnalysis.getDraggedLineIndex();
 					double phase = graphAnalysis.getVerticalValue(ind);
@@ -236,15 +242,16 @@ public final class AnalysisCntrlFindIntersection extends AnalysisController {
 						markerPos = markerPos % 360.;
 						markerPos -= 180.;
 					}
-					markerPos_Text.setValueQuietly(markerPos);
+					markerPosText.setValueQuietly(markerPos);
 				}
 			};
 
-		markerPos_Text.addActionListener(
+		markerPosText.addActionListener(
 			new ActionListener() {
+                                @Override
 				public void actionPerformed(ActionEvent e) {
 					graphAnalysis.addDraggedVerLinesListener(null);
-					markerPos = markerPos_Text.getValue();
+					markerPos = markerPosText.getValue();
 					double shift = MainAnalysisController.getPhaseShift(graphAnalysis.getAllGraphData());
 					double phase = markerPos + shift;
 					if (shift != 0.) {
@@ -256,26 +263,27 @@ public final class AnalysisCntrlFindIntersection extends AnalysisController {
 						phase -= 180.;
 					}
 					graphAnalysis.setVerticalLineValue(phase, 0);
-					graphAnalysis.addDraggedVerLinesListener(dragVerLine_Listener);
+					graphAnalysis.addDraggedVerLinesListener(dragVerLineListener);
 				}
 			});
 
-		findIntersection_Listener =
+		findIntersectionListener =
 			new ActionListener() {
+                                @Override
 				public void actionPerformed(ActionEvent e) {
 					double xMin = graphAnalysis.getCurrentMinX();
 					double xMax = graphAnalysis.getCurrentMaxX();
 					double yMin = graphAnalysis.getCurrentMinY();
 					double yMax = graphAnalysis.getCurrentMaxY();
-					Vector<BasicGraphData> interpGD_V = graphAnalysis.getAllGraphData();
-					interpGD_V.remove(graphDataLocal);
-					if (interpGD_V.size() > 1) {
-						Double[] intersectV = GraphDataOperations.findIntersection(interpGD_V,
+					Vector<BasicGraphData> interpGDV = graphAnalysis.getAllGraphData();
+					interpGDV.remove(graphDataLocal);
+					if (interpGDV.size() > 1) {
+						Double[] intersectV = GraphDataOperations.findIntersection(interpGDV,
 								xMin, xMax, yMin, yMax, 0.001);
 						if (intersectV[0] != null) {
 							graphAnalysis.addDraggedVerLinesListener(null);
-							double phase = intersectV[0].doubleValue();
-							double shift = MainAnalysisController.getPhaseShift(interpGD_V);
+							double phase = intersectV[0];
+							double shift = MainAnalysisController.getPhaseShift(interpGDV);
 							markerPos = phase - shift;
 							if (shift != 0.) {
 								markerPos += 180.;
@@ -285,15 +293,15 @@ public final class AnalysisCntrlFindIntersection extends AnalysisController {
 								markerPos = markerPos % 360.;
 								markerPos -= 180.;
 							}
-							markerPos_Text.setValue(markerPos);
-							graphAnalysis.addDraggedVerLinesListener(dragVerLine_Listener);
+							markerPosText.setValue(markerPos);
+							graphAnalysis.addDraggedVerLinesListener(dragVerLineListener);
 							messageTextLocal.setText(null);
 							messageTextLocal.setText("The intersection point x=" +
-									val_Format.format(intersectV[0].doubleValue()) +
+									valFormat.format(intersectV[0]) +
 									" +- " +
-									val_Format.format(intersectV[2].doubleValue()) +
+									valFormat.format(intersectV[2]) +
 									"   shift = " +
-									val_Format.format(shift)
+									valFormat.format(shift)
 									);
 						} else {
 							Toolkit.getDefaultToolkit().beep();
@@ -309,10 +317,11 @@ public final class AnalysisCntrlFindIntersection extends AnalysisController {
 				}
 			};
 
-		setVal_Button.addActionListener(
+		setValButton.addActionListener(
 			new ActionListener() {
+                                @Override
 				public void actionPerformed(ActionEvent e) {
-					double val = markerPos_Text.getValue();
+					double val = markerPosText.getValue();
 					if (scanVariable.getChannel() != null) {
 						scanVariable.setValue(val);
 					} else {
@@ -323,29 +332,30 @@ public final class AnalysisCntrlFindIntersection extends AnalysisController {
 				}
 			});
 
-		readVal_Button.addActionListener(
+		readValButton.addActionListener(
 			new ActionListener() {
+                                @Override
 				public void actionPerformed(ActionEvent e) {
 					if (scanVariable.getChannel() != null) {
-						pvSetVal_Text.setValue(scanVariable.getValue());
+						pvSetValText.setValue(scanVariable.getValue());
 					} else {
-						pvSetVal_Text.setText(null);
-						pvSetVal_Text.setBackground(Color.white);
+						pvSetValText.setText(null);
+						pvSetValText.setBackground(Color.white);
 					}
 					if (scanVariable.getChannelRB() != null) {
-						pvRBVal_Text.setValue(scanVariable.getValueRB());
+						pvRBValText.setValue(scanVariable.getValueRB());
 					} else {
-						pvRBVal_Text.setText(null);
-						pvRBVal_Text.setBackground(Color.white);
+						pvRBValText.setText(null);
+						pvRBValText.setBackground(Color.white);
 					}
 				}
 			});
 
-		find_Button.addActionListener(findIntersection_Listener);
+		findButton.addActionListener(findIntersectionListener);
 
-		find_Button.setForeground(Color.blue);
-		setVal_Button.setForeground(Color.blue);
-		readVal_Button.setForeground(Color.blue);
+		findButton.setForeground(Color.blue);
+		setValButton.setForeground(Color.blue);
+		readValButton.setForeground(Color.blue);
 	}
 
 }

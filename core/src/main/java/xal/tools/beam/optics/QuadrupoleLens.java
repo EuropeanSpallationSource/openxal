@@ -98,7 +98,7 @@ public class QuadrupoleLens {
     }
     
     /**
-     * approximation valid only for thin lense (adaptive tracking should work well
+     * approximation valid only for thin lens (adaptive tracking should work well
      *  Sako, 20 Sep 2006
      * @param k     strength of the quadrupole lens (in <b>radians/meter</b>)
      * @param l     length of the quadrupole lens (in <b>meters</b>)
@@ -116,7 +116,7 @@ public class QuadrupoleLens {
     }
  
     /**
-     * approximation valid only for thin lense (adaptive tracking should work well
+     * approximation valid only for thin lens (adaptive tracking should work well
      *  Sako, 20 Sep 2006
      * @param k     strength of the quadrupole lens (in <b>radians/meter</b>)
      * @param l     length of the quadrupole lens (in <b>meters</b>)
@@ -133,7 +133,7 @@ public class QuadrupoleLens {
  
     /**
        
-     * approximation valid only for thin lense (adaptive tracking should work well
+     * approximation valid only for thin lens (adaptive tracking should work well
      *  Sako, 20 Sep 2006
      * @param k     strength of the quadrupole lens (in <b>radians/meter</b>)
      * @param l     length of the quadrupole lens (in <b>meters</b>)
@@ -152,7 +152,7 @@ public class QuadrupoleLens {
     
     /**
     
-     * approximation valid only for thin lense (adaptive tracking should work well
+     * approximation valid only for thin lens (adaptive tracking should work well
      *  Sako, 20 Sep 2006
      * @param k     strength of the quadrupole lens (in <b>radians/meter</b>)
      * @param l     length of the quadrupole lens (in <b>meters</b>)

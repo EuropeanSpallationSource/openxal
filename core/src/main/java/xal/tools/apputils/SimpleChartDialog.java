@@ -14,7 +14,6 @@ import java.awt.event.*;
 import java.awt.Toolkit;
 import javax.swing.*;
 import javax.swing.border.*;
-import java.util.*;
 import java.text.DecimalFormat;
 
 
@@ -25,12 +24,12 @@ import java.text.DecimalFormat;
  *
  * @author  tap
  */
-public class SimpleChartDialog extends javax.swing.JDialog implements MouseListener, SwingConstants {
+public class SimpleChartDialog extends JDialog implements MouseListener, SwingConstants {
     /** serialization ID */
     private static final long serialVersionUID = 1L;
     
     protected ChartPopupAdaptor chartAdaptor;
-    protected Component _parent;
+    protected Component parent;
 	
 	// visual components
     private JCheckBox xAutoScaleCheckbox;
@@ -91,7 +90,7 @@ public class SimpleChartDialog extends javax.swing.JDialog implements MouseListe
         setModal(true);
         initComponents();
 
-        _parent = parent;
+        this.parent = parent;
         chartAdaptor = aChartAdaptor;
 	}
     
@@ -101,19 +100,19 @@ public class SimpleChartDialog extends javax.swing.JDialog implements MouseListe
 	 */
     public void showDialog() {
         revertSettings();
-        setLocationRelativeTo(_parent);
+        setLocationRelativeTo(parent);
         setVisible( true );
     }
 
     
     /** convenience method for setting an int field */
-    static public void setFieldValue(JTextField field, int value) {
+    public static void setFieldValue(JTextField field, int value) {
         field.setText( String.valueOf(value) );
     }
     
     
     /** convenience method for setting a double field */
-    static public void setFieldValue(JTextField field, double value) {
+    public static void setFieldValue(JTextField field, double value) {
         DecimalFormat formatter = new DecimalFormat("0.0##E0");
         field.setText( formatter.format(value) );
     }
@@ -337,18 +336,22 @@ public class SimpleChartDialog extends javax.swing.JDialog implements MouseListe
     
     
     /** implement MouseListener interface */
+    @Override
     public void mouseClicked(MouseEvent event) {}
     
 	
     /** implement MouseListener interface */
+    @Override
     public void mouseEntered(MouseEvent event) {}
 	
 	
     /** implement MouseListener interface */
+    @Override
     public void mouseExited(MouseEvent event) {}
     
 	
     /** implement MouseListener interface */
+    @Override
     public void mousePressed(MouseEvent event) {
         if ( event.isPopupTrigger() ) {
             showDialog();
@@ -357,6 +360,7 @@ public class SimpleChartDialog extends javax.swing.JDialog implements MouseListe
     
 	
     /** implement MouseListener interface */
+    @Override
     public void mouseReleased(MouseEvent event) {}
 
 
@@ -368,8 +372,9 @@ public class SimpleChartDialog extends javax.swing.JDialog implements MouseListe
 		setSize( new Dimension(450, 375) );
         setResizable(false);
 		
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent evt) {
                 closeDialog(evt);
             }
         });
@@ -384,8 +389,9 @@ public class SimpleChartDialog extends javax.swing.JDialog implements MouseListe
 		Box row = new Box(HORIZONTAL);
 		
         xAutoScaleCheckbox = new JCheckBox("Auto Scale");
-        xAutoScaleCheckbox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        xAutoScaleCheckbox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
                 xAutoScaleCheckboxActionPerformed(evt);
             }
         });
@@ -397,9 +403,11 @@ public class SimpleChartDialog extends javax.swing.JDialog implements MouseListe
 		xAxisMinValueField.setMaximumSize( xAxisMinValueField.getPreferredSize() );
         xAxisMinValueField.setHorizontalAlignment(JTextField.RIGHT);
 		xAxisMinValueField.addFocusListener( new FocusAdapter() {
+                        @Override
 			public void focusGained(FocusEvent event) {
 				xAxisMinValueField.selectAll();
 			}
+                        @Override
 			public void focusLost(FocusEvent event) {
 				xAxisMinValueField.setCaretPosition(0);
 				xAxisMinValueField.moveCaretPosition(0);
@@ -415,9 +423,11 @@ public class SimpleChartDialog extends javax.swing.JDialog implements MouseListe
 		xAxisMaxValueField.setMaximumSize( xAxisMaxValueField.getPreferredSize() );
         xAxisMaxValueField.setHorizontalAlignment(JTextField.RIGHT);
 		xAxisMaxValueField.addFocusListener( new FocusAdapter() {
+                        @Override
 			public void focusGained(FocusEvent event) {
 				xAxisMaxValueField.selectAll();
 			}
+                        @Override
 			public void focusLost(FocusEvent event) {
 				xAxisMaxValueField.setCaretPosition(0);
 				xAxisMaxValueField.moveCaretPosition(0);
@@ -433,9 +443,11 @@ public class SimpleChartDialog extends javax.swing.JDialog implements MouseListe
 		xAxisDivisionsField.setMaximumSize( xAxisDivisionsField.getPreferredSize() );
         xAxisDivisionsField.setHorizontalAlignment(JTextField.RIGHT);
 		xAxisDivisionsField.addFocusListener( new FocusAdapter() {
+                        @Override
 			public void focusGained(FocusEvent event) {
 				xAxisDivisionsField.selectAll();
 			}
+                        @Override
 			public void focusLost(FocusEvent event) {
 				xAxisDivisionsField.setCaretPosition(0);
 				xAxisDivisionsField.moveCaretPosition(0);
@@ -451,9 +463,11 @@ public class SimpleChartDialog extends javax.swing.JDialog implements MouseListe
 		xAxisMinorTicksField.setMaximumSize( xAxisMinorTicksField.getPreferredSize() );
         xAxisMinorTicksField.setHorizontalAlignment(JTextField.RIGHT);
 		xAxisMinorTicksField.addFocusListener( new FocusAdapter() {
+                        @Override
 			public void focusGained(FocusEvent event) {
 				xAxisMinorTicksField.selectAll();
 			}
+                        @Override
 			public void focusLost(FocusEvent event) {
 				xAxisMinorTicksField.setCaretPosition(0);
 				xAxisMinorTicksField.moveCaretPosition(0);
@@ -466,8 +480,9 @@ public class SimpleChartDialog extends javax.swing.JDialog implements MouseListe
 		xAxisView.add(row);
 
         xGridCheckbox = new JCheckBox("Show Grid");
-        xGridCheckbox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        xGridCheckbox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
                 xGridCheckboxActionPerformed(evt);
             }
         });
@@ -482,8 +497,9 @@ public class SimpleChartDialog extends javax.swing.JDialog implements MouseListe
 		mainView.add(yAxisView);
 		
         yAutoScaleCheckbox = new JCheckBox("Auto Scale");
-        yAutoScaleCheckbox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        yAutoScaleCheckbox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
                 yAutoScaleCheckboxActionPerformed(evt);
             }
         });
@@ -494,11 +510,13 @@ public class SimpleChartDialog extends javax.swing.JDialog implements MouseListe
 		
         yAxisMinValueField = new JTextField(10);
 		yAxisMinValueField.setMaximumSize( yAxisMinValueField.getPreferredSize() );
-        yAxisMinValueField.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        yAxisMinValueField.setHorizontalAlignment(JTextField.RIGHT);
 		yAxisMinValueField.addFocusListener( new FocusAdapter() {
+                        @Override
 			public void focusGained(FocusEvent event) {
 				yAxisMinValueField.selectAll();
 			}
+                        @Override
 			public void focusLost(FocusEvent event) {
 				yAxisMinValueField.setCaretPosition(0);
 				yAxisMinValueField.moveCaretPosition(0);
@@ -512,11 +530,13 @@ public class SimpleChartDialog extends javax.swing.JDialog implements MouseListe
 
         yAxisMaxValueField = new JTextField(10);
 		yAxisMaxValueField.setMaximumSize( yAxisMaxValueField.getPreferredSize() );
-        yAxisMaxValueField.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
+        yAxisMaxValueField.setHorizontalAlignment(JTextField.RIGHT);
 		yAxisMaxValueField.addFocusListener( new FocusAdapter() {
+                        @Override
 			public void focusGained(FocusEvent event) {
 				yAxisMaxValueField.selectAll();
 			}
+                        @Override
 			public void focusLost(FocusEvent event) {
 				yAxisMaxValueField.setCaretPosition(0);
 				yAxisMaxValueField.moveCaretPosition(0);
@@ -532,9 +552,11 @@ public class SimpleChartDialog extends javax.swing.JDialog implements MouseListe
 		yAxisDivisionsField.setMaximumSize( yAxisDivisionsField.getPreferredSize() );
         yAxisDivisionsField.setHorizontalAlignment(JTextField.RIGHT);
 		yAxisDivisionsField.addFocusListener( new FocusAdapter() {
+                        @Override
 			public void focusGained(FocusEvent event) {
 				yAxisDivisionsField.selectAll();
 			}
+                        @Override
 			public void focusLost(FocusEvent event) {
 				yAxisDivisionsField.setCaretPosition(0);
 				yAxisDivisionsField.moveCaretPosition(0);
@@ -550,9 +572,11 @@ public class SimpleChartDialog extends javax.swing.JDialog implements MouseListe
 		yAxisMinorTicksField.setMaximumSize( yAxisMinorTicksField.getPreferredSize() );
         yAxisMinorTicksField.setHorizontalAlignment(JTextField.RIGHT);
 		yAxisMinorTicksField.addFocusListener( new FocusAdapter() {
+                        @Override
 			public void focusGained(FocusEvent event) {
 				yAxisMinorTicksField.selectAll();
 			}
+                        @Override
 			public void focusLost(FocusEvent event) {
 				yAxisMinorTicksField.setCaretPosition(0);
 				yAxisMinorTicksField.moveCaretPosition(0);
@@ -566,8 +590,9 @@ public class SimpleChartDialog extends javax.swing.JDialog implements MouseListe
 		
         yGridCheckbox = new JCheckBox();
         yGridCheckbox.setText("Show Grid");
-        yGridCheckbox.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+        yGridCheckbox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
                 yGridCheckboxActionPerformed(evt);
             }
         });
@@ -583,6 +608,7 @@ public class SimpleChartDialog extends javax.swing.JDialog implements MouseListe
 		
 		JButton revertButton = new JButton("Revert"); 
         revertButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent event) {
                 revertButtonActionPerformed(event);
             }
@@ -591,6 +617,7 @@ public class SimpleChartDialog extends javax.swing.JDialog implements MouseListe
 		
 		JButton applyButton = new JButton("Apply");
         applyButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent event) {
                 applyButtonActionPerformed(event);
             }
@@ -601,44 +628,44 @@ public class SimpleChartDialog extends javax.swing.JDialog implements MouseListe
     }
 	
 	
-    private void yGridCheckboxActionPerformed(java.awt.event.ActionEvent evt) {
+    private void yGridCheckboxActionPerformed(ActionEvent evt) {
         applyYAxisGridSetting();
         revertSettings();
     }
 	
 	
-    private void xGridCheckboxActionPerformed(java.awt.event.ActionEvent evt) {
+    private void xGridCheckboxActionPerformed(ActionEvent evt) {
         applyXAxisGridSetting();
         revertSettings();
     }
 	
 	
-    private void yAutoScaleCheckboxActionPerformed(java.awt.event.ActionEvent evt) {
+    private void yAutoScaleCheckboxActionPerformed(ActionEvent evt) {
         boolean autoScales = yAutoScaleCheckbox.isSelected();
         chartAdaptor.setYAutoScale(autoScales);
         revertSettings();
     }
 	
 	
-    private void xAutoScaleCheckboxActionPerformed(java.awt.event.ActionEvent evt) {
+    private void xAutoScaleCheckboxActionPerformed(ActionEvent evt) {
         boolean autoScales = xAutoScaleCheckbox.isSelected();
         chartAdaptor.setXAutoScale(autoScales);
         revertSettings();
     }
 	
 	
-    private void revertButtonActionPerformed(java.awt.event.ActionEvent evt) {
+    private void revertButtonActionPerformed(ActionEvent evt) {
         revertSettings();
     }
 	
 
-    private void applyButtonActionPerformed(java.awt.event.ActionEvent evt) {
+    private void applyButtonActionPerformed(ActionEvent evt) {
         applySettings();
     }
 	
     
     /** Closes the dialog */
-    private void closeDialog(java.awt.event.WindowEvent evt) {
+    private void closeDialog(WindowEvent evt) {
         setVisible(false);
     }    
 }

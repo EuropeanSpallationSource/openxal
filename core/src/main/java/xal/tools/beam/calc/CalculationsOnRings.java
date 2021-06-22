@@ -12,7 +12,6 @@ import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.PhaseVector;
 import xal.tools.beam.Twiss;
-import xal.tools.beam.Twiss3D;
 import xal.tools.math.r3.R3;
 
 /**
@@ -87,7 +86,7 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      * state location.
      * </p>
      *
-     * @param  trjSimFull  the simulation data for <em>entire</em> ring, a "transfer map trajectory" object
+     * @param  datSim  the simulation data for <em>entire</em> ring, a "transfer map trajectory" object
      *
      * @throws IllegalArgumentException the trajectory does not contain <code>TransferMapState</code> objects
      *

@@ -15,21 +15,21 @@ import xal.ca.Channel;
  * @author  tap
  */
 class PutNotifier implements gov.aps.jca.event.PutListener {
-    final protected PutListener _listener;
-    final protected Channel _channel;
+    protected final PutListener listener;
+    protected final Channel channel;
     
 	
     /** Creates a new instance of PutNotifier */
     public PutNotifier( final Channel channel, final PutListener listener ) {
-        _channel = channel;
-        _listener = listener;
+        this.channel = channel;
+        this.listener = listener;
     }
     
     
     /** jca.event.PutListener Interface Implementation */
     public void putCompleted( final gov.aps.jca.event.PutEvent putEvent ) {
-        if ( _listener != null ) {
-            _listener.putCompleted( _channel );
+        if ( listener != null ) {
+            listener.putCompleted( channel );
         }
     }
 }

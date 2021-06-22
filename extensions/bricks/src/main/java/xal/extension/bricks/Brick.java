@@ -8,18 +8,8 @@
 
 package xal.extension.bricks;
 
-import java.beans.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import java.awt.*;
-import java.awt.dnd.*;
-import java.awt.event.*;
-import java.io.*;
-import javax.swing.event.*;
 import javax.swing.tree.*;
-import java.util.Collections;
 import java.util.List;
-import java.util.ArrayList;
 
 import xal.tools.messaging.MessageCenter;
 
@@ -27,22 +17,22 @@ import xal.tools.messaging.MessageCenter;
 /** Base node for holding views and other items */
 abstract public class Brick {
 	/** the tree node */
-	final protected DefaultMutableTreeNode TREE_NODE;
+	protected final DefaultMutableTreeNode treeNode;
 	
 	/** message center which dispatches events */
-	final protected MessageCenter MESSAGE_CENTER;
+	protected final MessageCenter messageCenter;
 	
 	/** proxy which forwards events to registered listeners */
-	final protected BrickListener EVENT_PROXY;
+	protected final BrickListener eventProxy;
 	
 	
 	/** Primary Constructor */
 	public Brick() {		
-		TREE_NODE = new DefaultMutableTreeNode( this );
-		TREE_NODE.setAllowsChildren( true );
+		treeNode = new DefaultMutableTreeNode( this );
+		treeNode.setAllowsChildren( true );
 		
-		MESSAGE_CENTER = new MessageCenter( "View Node" );
-		EVENT_PROXY = MESSAGE_CENTER.registerSource( this, BrickListener.class );
+		messageCenter = new MessageCenter( "View Node" );
+		eventProxy = messageCenter.registerSource( this, BrickListener.class );
 	}
 	
 	
@@ -51,7 +41,7 @@ abstract public class Brick {
 	 * @param listener the listener to register for receiving events
 	 */
 	public void addBrickListener( final BrickListener listener ) {
-		MESSAGE_CENTER.registerTarget( listener, this, BrickListener.class );
+		messageCenter.registerTarget( listener, this, BrickListener.class );
 	}
 	
 	
@@ -60,7 +50,7 @@ abstract public class Brick {
 	 * @param listener the listener to remove for receiving events from this node
 	 */
 	public void removeBrickListener( final BrickListener listener ) {
-		MESSAGE_CENTER.removeTarget( listener, this, BrickListener.class );
+		messageCenter.removeTarget( listener, this, BrickListener.class );
 	}
 	
 	
@@ -69,7 +59,7 @@ abstract public class Brick {
 	 * @return the tree node
 	 */
 	public DefaultMutableTreeNode getTreeNode() {
-		return TREE_NODE;
+		return treeNode;
 	}
 	
 	
@@ -78,7 +68,7 @@ abstract public class Brick {
 	 * @return the parent view node
 	 */
 	public Object getParent() {
-		final Object treeParent = TREE_NODE.getParent();
+		final Object treeParent = treeNode.getParent();
 		return treeParent instanceof DefaultMutableTreeNode ? ((DefaultMutableTreeNode)treeParent).getUserObject() : null;
 	}
 	

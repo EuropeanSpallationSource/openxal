@@ -1,7 +1,6 @@
 package xal.extension.scan;
 
 import javax.swing.*;
-import java.util.*;
 import java.awt.event.*;
 import java.text.DecimalFormat;
 import java.awt.Font;
@@ -41,6 +40,7 @@ public class BeamTrigger{
 				useTriggerButton.setSelected(true);
 
 				useTriggerButton.addItemListener(new ItemListener(){
+                                        @Override
 					public void itemStateChanged(ItemEvent e) {
 						if (e.getStateChange() == ItemEvent.SELECTED) {
 							setOnOff(true);
@@ -90,11 +90,7 @@ public class BeamTrigger{
 	    try {
 		ch.putVal(1.0);
 	    }
-	    catch (ConnectionException e){
-		setOnOff(false);
-		return;
-	    }
-	    catch (PutException e){ 
+	    catch (ConnectionException | PutException e){ 
 		setOnOff(false);
 		return;
 	    }
@@ -116,8 +112,8 @@ public class BeamTrigger{
 	ch = ChannelFactory.defaultFactory().getChannel(triggerNamePV);
     }
 
-    public void setChannel(Channel ch_In){
-	ch = ch_In;
+    public void setChannel(Channel chIn){
+	ch = chIn;
         triggerNamePV = ch.channelName();
     }
 

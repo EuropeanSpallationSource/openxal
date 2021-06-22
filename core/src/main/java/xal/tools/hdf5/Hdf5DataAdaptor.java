@@ -71,7 +71,7 @@ public class Hdf5DataAdaptor implements FileDataAdaptor {
     /**
      * get the tag name for the specified XML node
      */
-    static private String nameForNode(H5Node node) {
+    private static String nameForNode(H5Node node) {
         return node.getNodeName();
     }
 
@@ -213,7 +213,7 @@ public class Hdf5DataAdaptor implements FileDataAdaptor {
     /**
      * create a new adaptor for the specified node
      */
-    static private Hdf5DataAdaptor newAdaptor(H5Node node) {
+    private static Hdf5DataAdaptor newAdaptor(H5Node node) {
         Hdf5DataAdaptor adaptor = new Hdf5DataAdaptor(node);
         return adaptor;
     }
@@ -309,7 +309,7 @@ public class Hdf5DataAdaptor implements FileDataAdaptor {
     /**
      * Generate an Hdf5DataAdaptor from a urlPath.
      */
-    static public Hdf5DataAdaptor adaptorForUrl(final String urlPath) {
+    public static Hdf5DataAdaptor adaptorForUrl(final String urlPath) {
         Hdf5DataAdaptor adaptor;
 
         adaptor = Hdf5DataAdaptor.newEmptyDocumentAdaptor();
@@ -322,14 +322,14 @@ public class Hdf5DataAdaptor implements FileDataAdaptor {
     /**
      * Generate an Hdf5DataAdaptor from a URL.
      */
-    static public Hdf5DataAdaptor adaptorForUrl(final URL url) {
+    public static Hdf5DataAdaptor adaptorForUrl(final URL url) {
         return Hdf5DataAdaptor.adaptorForUrl(url.toString());
     }
 
     /**
      * Generate an Hdf5DataAdaptor from a File.
      */
-    static public Hdf5DataAdaptor adaptorForFile(final File file) throws MalformedURLException {
+    public static Hdf5DataAdaptor adaptorForFile(final File file) throws MalformedURLException {
         return Hdf5DataAdaptor.adaptorForUrl(file.toURI().toURL());
     }
 
@@ -338,7 +338,7 @@ public class Hdf5DataAdaptor implements FileDataAdaptor {
      *
      * @return DataAdaptor containing the root document node.
      */
-    static public Hdf5DataAdaptor newEmptyDocumentAdaptor() {
+    public static Hdf5DataAdaptor newEmptyDocumentAdaptor() {
         Hdf5DataAdaptor adaptor;
 
         adaptor = new Hdf5DataAdaptor("root");

@@ -8,35 +8,23 @@
 
 package xal.extension.bricks;
 
-import java.beans.*;
-import java.lang.reflect.*;
-import javax.swing.*;
-import javax.swing.table.*;
-import javax.swing.border.*;
 import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.Rectangle;
-import java.awt.event.*;
-import java.awt.image.*;
-import javax.swing.event.*;
 
 import xal.tools.data.*;
 
 
 /** property value editor */
 abstract public class PropertyValueEditor<ValueType> {
-	final protected Component EDITOR_COMPONENT;
-	final protected Component RENDERING_COMPONENT;
+	protected final Component editorComponent;
+	protected final Component renderingComponent;
 	
-	protected PropertyValueCellEditor _currentCellEditor;
+	protected PropertyValueCellEditor currentCellEditor;
 	
 	
 	/** Constructor */
 	public PropertyValueEditor() {
-		EDITOR_COMPONENT = getEditorComponentInstance();
-		RENDERING_COMPONENT = getRenderingComponentInstance();
+		editorComponent = getEditorComponentInstance();
+		renderingComponent = getRenderingComponentInstance();
 	}
 	
 	
@@ -52,19 +40,19 @@ abstract public class PropertyValueEditor<ValueType> {
 	
 	/** Determine if the component supports editing */
 	public boolean isEditable() {
-		return EDITOR_COMPONENT != null;
+		return editorComponent != null;
 	}
 	
 	
 	/** get the component */
 	public Component getEditorComponent() {
-		return EDITOR_COMPONENT;
+		return editorComponent;
 	}
 	
 	
 	/** get the component */
 	public Component getRenderingComponent() {
-		return RENDERING_COMPONENT;
+		return renderingComponent;
 	}
 	
 	/** instantiate a component */
@@ -91,6 +79,6 @@ abstract public class PropertyValueEditor<ValueType> {
 	
 	/** set the current cell editor */
 	public void setCurrentCellEditor( final PropertyValueCellEditor cellEditor ) {
-		_currentCellEditor = cellEditor;
+		currentCellEditor = cellEditor;
 	}
 }

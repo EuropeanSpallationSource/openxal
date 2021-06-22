@@ -11,13 +11,12 @@ package xal.extension.solver.hint;
 
 import xal.extension.solver.*;
 
-import java.util.*;
 
 
 /** A hint that indicates a variable domain. */
 abstract public class DomainHint extends Hint {
-	final static public int LOWER_IND = 0;
-	final static public int UPPER_IND = 1;
+	public static final int LOWER_IND = 0;
+	public static final int UPPER_IND = 1;
 	
 	
 	/** Constructor */

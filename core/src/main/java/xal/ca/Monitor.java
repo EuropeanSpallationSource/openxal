@@ -25,9 +25,9 @@ abstract public class Monitor {
     public static final int ALARM             = 4;
     
     
-    protected boolean             m_bolMonitoring;  // monitoring flag
-    protected int                 m_intMaskEvent;   // event mask for firing monitor    
-    protected Channel             m_xalChan;        // Channel to monitor
+    protected boolean             bolMonitoring;  // monitoring flag
+    protected int                 intMaskEvent;   // event mask for firing monitor    
+    protected Channel             xalChan;        // Channel to monitor
     
     
     /** 
@@ -38,9 +38,9 @@ abstract public class Monitor {
      *  @exception  ConnectionException     Channel is not connected
      */
     protected Monitor(Channel chan, int intMaskEvent) throws ConnectionException {
-        m_bolMonitoring = false;
-        m_intMaskEvent = intMaskEvent;        
-        m_xalChan = chan;
+        bolMonitoring = false;
+        this.intMaskEvent = intMaskEvent;        
+        xalChan = chan;
     }
 
     
@@ -55,7 +55,7 @@ abstract public class Monitor {
      *  @return channel being monitored
      */
     public Channel getChannel() {
-        return m_xalChan;
+        return xalChan;
     }
 
     
@@ -71,6 +71,7 @@ abstract public class Monitor {
      * Make sure monitoring is shut down before destruction
      * @throws Throwable upon failure
      */
+    @Override
     protected void finalize() throws Throwable  {
 		try {
 			clear();
@@ -86,10 +87,10 @@ abstract public class Monitor {
      * @param listener The object receiving the monitor record.
      * @param adaptor The adaptor to the internal data record.
      */
-    final protected void postValueRecord(IEventSinkValue listener, ValueAdaptor adaptor) {
+    protected final void postValueRecord(IEventSinkValue listener, ValueAdaptor adaptor) {
         ChannelRecord record = new ChannelRecordImpl(adaptor);
-        record.applyTransform( m_xalChan.getValueTransform() );
-        listener.eventValue(record, m_xalChan);
+        record.applyTransform( xalChan.getValueTransform() );
+        listener.eventValue(record, xalChan);
     }
     
     
@@ -98,10 +99,10 @@ abstract public class Monitor {
      * @param listener The object receiving the monitor record.
      * @param adaptor The adaptor to the internal data record.
      */
-    final protected void postStatusRecord(IEventSinkValStatus listener, StatusAdaptor adaptor) {
+    protected final void postStatusRecord(IEventSinkValStatus listener, StatusAdaptor adaptor) {
         ChannelStatusRecord record = new ChannelStatusRecordImpl(adaptor);
-        record.applyTransform( m_xalChan.getValueTransform() );
-        listener.eventValue(record, m_xalChan);
+        record.applyTransform( xalChan.getValueTransform() );
+        listener.eventValue(record, xalChan);
     }
     
     
@@ -110,10 +111,10 @@ abstract public class Monitor {
      * @param listener The object receiving the monitor record.
      * @param adaptor The adaptor to the internal data record.
      */
-    final protected void postTimeRecord(IEventSinkValTime listener, TimeAdaptor adaptor) {
+    protected final void postTimeRecord(IEventSinkValTime listener, TimeAdaptor adaptor) {
         ChannelTimeRecord record = new ChannelTimeRecordImpl(adaptor);
-        record.applyTransform( m_xalChan.getValueTransform() );
-        listener.eventValue(record, m_xalChan);
+        record.applyTransform( xalChan.getValueTransform() );
+        listener.eventValue(record, xalChan);
     }
 }
 

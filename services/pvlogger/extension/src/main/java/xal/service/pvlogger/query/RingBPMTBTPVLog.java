@@ -51,7 +51,7 @@ public class RingBPMTBTPVLog {
 	 * @return BPM TBT data
 	 */
 	public HashMap<String, double[][]> getBPMMap() {
-		HashMap<String, double[][]> pvMap = new HashMap<String, double[][]>();
+		HashMap<String, double[][]> pvMap = new HashMap<>();
 		
 		ChannelSnapshot[] css = mss.getChannelSnapshots();
 //		HashMap<String, double[]> xMap = new HashMap<String, double[]>();
@@ -59,7 +59,7 @@ public class RingBPMTBTPVLog {
 		
 		for (int i = 0; i < css.length; i++) {
 			double[] xdata, ydata;
-			if (css[i].getPV().indexOf("xTBT") > -1) {
+			if (css[i].getPV().contains("xTBT")) {
 				String BPMId = css[i].getPV().substring(0, 17);
 				xdata = css[i].getValue();
 				double[][] data = new double[2][xdata.length];
@@ -81,7 +81,7 @@ public class RingBPMTBTPVLog {
 				}
 			} 
 			
-			if (css[i].getPV().indexOf("yTBT") > -1) {
+			if (css[i].getPV().contains("yTBT")) {
 				String BPMId = css[i].getPV().substring(0, 17);
 				ydata = css[i].getValue();
 				double[][] data = new double[2][ydata.length];

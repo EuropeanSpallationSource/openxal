@@ -16,25 +16,25 @@ import java.util.logging.*;
 /** Connect to, monitor and cache a channel's monitor events. */
 public class MonitorCache {
 	/** Message center for dispatching monitor events to registered listeners. */
-	final protected MessageCenter _messageCenter;
+	protected final MessageCenter messageCenter;
 	
 	/** Proxy which forwards monitor events to registered listeners. */
-	final protected IEventSinkValTime _eventProxy;
+	protected final IEventSinkValTime eventProxy;
 	
 	/** the channel to wrap */
-	final protected Channel _channel;
+	protected final Channel channel;
 	
 	/** listener to handle connection events */
-	final protected ConnectionListener _connectionHandler;
+	protected final ConnectionListener connectionHandler;
 	
 	/** listener to handle monitor events */
-	final protected IEventSinkValTime _monitorEventHandler;
+	protected final IEventSinkValTime monitorEventHandler;
 	
 	/** a channel monitor */
-	protected Monitor _monitor;
+	protected Monitor monitor;
 	
 	/** latest monitor event */
-	volatile protected ChannelTimeRecord _latestRecord;
+	volatile protected ChannelTimeRecord latestRecord;
 	
 	
 	/** 
@@ -42,30 +42,30 @@ public class MonitorCache {
 	 * @param channel to monitor
 	 */
 	public MonitorCache( final Channel channel ) {
-		_channel = channel;
-		_monitor = null;
-		_latestRecord = null;
+		this.channel = channel;
+		monitor = null;
+		latestRecord = null;
 		
-		_messageCenter = new MessageCenter( "Monitor Event Cache" );
-		_eventProxy = _messageCenter.registerSource( this, IEventSinkValTime.class );
+		messageCenter = new MessageCenter( "Monitor Event Cache" );
+		eventProxy = messageCenter.registerSource( this, IEventSinkValTime.class );
 		
-		_monitorEventHandler = new MonitorEventHandler();
-		_connectionHandler = new ConnectionEventHandler();
-		_channel.addConnectionListener( _connectionHandler );
+		monitorEventHandler = new MonitorEventHandler();
+		connectionHandler = new ConnectionEventHandler();
+		channel.addConnectionListener( connectionHandler );
 	}
 	
 	
 	/** Dispose of this wrapper's resources. */
 	public void dispose() {
-		if ( _channel != null ) {
-			_channel.removeConnectionListener( _connectionHandler );
+		if ( channel != null ) {
+			channel.removeConnectionListener( connectionHandler );
 		}
 		
-		_messageCenter.removeSource( this, IEventSinkValTime.class );
+		messageCenter.removeSource( this, IEventSinkValTime.class );
 		
-		if ( _monitor != null ) {
-			_monitor.clear();
-			_monitor = null;
+		if ( monitor != null ) {
+			monitor.clear();
+			monitor = null;
 		}
 	}
 	
@@ -75,7 +75,7 @@ public class MonitorCache {
 	 * @param listener to receive events
 	 */
 	public void addMonitorListener( final IEventSinkValTime listener ) {
-		_messageCenter.registerTarget( listener, this, IEventSinkValTime.class );
+		messageCenter.registerTarget( listener, this, IEventSinkValTime.class );
 	}
 	
 	
@@ -84,13 +84,13 @@ public class MonitorCache {
 	 * @param listener to remove from receiving events
 	 */
 	public void removeMonitorListener( final IEventSinkValTime listener ) {
-		_messageCenter.removeTarget( listener, this, IEventSinkValTime.class );
+		messageCenter.removeTarget( listener, this, IEventSinkValTime.class );
 	}
 	
 	
 	/** Request a connection and start the monitor upon connection. */
 	public void requestMonitor() {
-		_channel.requestConnection();
+		channel.requestConnection();
 	}
 	
 	
@@ -99,7 +99,7 @@ public class MonitorCache {
 	 * @return wrapped channel
 	 */
 	public Channel getChannel() {
-		return _channel;
+		return channel;
 	}
 	
 	
@@ -108,7 +108,7 @@ public class MonitorCache {
 	 * @return true if the channel is connected and false if not
 	 */
 	public boolean isConnected() {
-		return _channel.isConnected();
+		return channel.isConnected();
 	}
 	
 	
@@ -117,7 +117,7 @@ public class MonitorCache {
 	 * @return latest record
 	 */
 	public ChannelTimeRecord getLatestRecord() {
-		return _latestRecord;
+		return latestRecord;
 	}
 	
 	
@@ -125,9 +125,10 @@ public class MonitorCache {
 	/** Handle monitor events */
 	protected class MonitorEventHandler implements IEventSinkValTime {
 		/** Handle the monitor event. */
+                @Override
 		public void eventValue( final ChannelTimeRecord record, final Channel channel ) {
-			_latestRecord = record;
-			_eventProxy.eventValue( record, channel );
+			latestRecord = record;
+			eventProxy.eventValue( record, channel );
 		}		
 	}
     
@@ -139,12 +140,13 @@ public class MonitorCache {
 		 * Indicates that a connection to the specified channel has been established.
 		 * @param channel The channel which has been connected.
 		 */
+                @Override
 		public void connectionMade( final Channel channel ) {
-			if ( _monitor == null ) {
+			if ( monitor == null ) {
 				try {
-					_monitor = channel.addMonitorValTime( _monitorEventHandler, Monitor.VALUE );
+					monitor = channel.addMonitorValTime( monitorEventHandler, Monitor.VALUE );
 				}
-				catch ( Exception exception ) {
+				catch ( ConnectionException | MonitorException exception ) {
 					Logger.getLogger( "global" ).log( Level.SEVERE, "Exception attempting to make a monitor.", exception );
 				}
 			}
@@ -155,8 +157,9 @@ public class MonitorCache {
 		 * Indicates that a connection to the specified channel has been dropped.
 		 * @param channel The channel which has been disconnected.
 		 */
+                @Override
 		public void connectionDropped( final Channel channel ) {
-			_latestRecord = null;
+			latestRecord = null;
 		}
 	}
 }

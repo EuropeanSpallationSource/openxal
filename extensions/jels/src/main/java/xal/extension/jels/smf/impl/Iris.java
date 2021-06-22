@@ -36,7 +36,7 @@ public class Iris extends AcceleratorNode {
     /*
      *  Constants
      */
-    public static final String s_strType = "IRIS";
+    public static final String TYPE = "IRIS";
 
     public static final String APERTURE_SET_HANDLE = "apertureS";
     private Channel apertureSC = null;
@@ -66,7 +66,7 @@ public class Iris extends AcceleratorNode {
      * Register type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes(Iris.class, s_strType);
+        ElementTypeManager.defaultManager().registerTypes(Iris.class, TYPE);
     }
 
     /**
@@ -74,7 +74,7 @@ public class Iris extends AcceleratorNode {
      */
     @Override
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /**

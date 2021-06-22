@@ -18,15 +18,15 @@ public class Gaussian {
 	private double center = 0.;
 	private double pedestal = 0.;
 
-	private double sigma_err = 0.;
-	private double amp_err = 0.;
-	private double center_err = 0.;
-	private double pedestal_err = 0.;
+	private double sigmaErr = 0.;
+	private double ampErr = 0.;
+	private double centerErr = 0.;
+	private double pedestalErr = 0.;
 
-	private boolean sigma_incl = true;
-	private boolean amp_incl = true;
-	private boolean center_incl = true;
-	private boolean pedestal_incl = true;
+	private boolean sigmaIncl = true;
+	private boolean ampIncl = true;
+	private boolean centerIncl = true;
+	private boolean pedestalIncl = true;
 
 	private ModelFunction1D mf = null;
 
@@ -35,9 +35,9 @@ public class Gaussian {
 	private DataStore ds = new DataStore();
 
 	private double[] a = new double[4];
-	private double[] a_err = new double[4];
+	private double[] aErr = new double[4];
 
-	private double[] x_tmp = new double[1];
+	private double[] xTmp = new double[1];
 
 	/**
 	 *  The "sigma" parameter
@@ -73,6 +73,7 @@ public class Gaussian {
 		mf =
 			new ModelFunction1D() {
 
+                                @Override
 				public double getValue(double x, double[] a) {
 					if (a.length != 4) {
 						return 0.;
@@ -84,6 +85,7 @@ public class Gaussian {
 				}
 
 
+                                @Override
 				public double getDerivative(double x, double[] a, int a_index) {
 					double res = 0.;
 					if (a.length != 4) {
@@ -149,13 +151,13 @@ public class Gaussian {
 	 */
 	public double getParameterError(String key) {
 		if (key.equals(SIGMA)) {
-			return sigma_err;
+			return sigmaErr;
 		} else if (key.equals(AMP)) {
-			return amp_err;
+			return ampErr;
 		} else if (key.equals(CENTER)) {
-			return center_err;
+			return centerErr;
 		} else if (key.equals(PEDESTAL)) {
-			return pedestal_err;
+			return pedestalErr;
 		}
 		return 0.;
 	}
@@ -165,35 +167,35 @@ public class Gaussian {
 	 *  Includes or excludes the parameter into fitting
 	 *
 	 *@param  key   The parameter name
-	 *@param  incl  The boolean vaiable about including variable into the fitting
+	 *@param  incl  The boolean variable about including variable into the fitting
 	 */
 	public void fitParameter(String key, boolean incl) {
 		if (key.equals(SIGMA)) {
-			sigma_incl = incl;
+			sigmaIncl = incl;
 		} else if (key.equals(AMP)) {
-			amp_incl = incl;
+			ampIncl = incl;
 		} else if (key.equals(CENTER)) {
-			center_incl = incl;
+			centerIncl = incl;
 		} else if (key.equals(PEDESTAL)) {
-			pedestal_incl = incl;
+			pedestalIncl = incl;
 		}
 	}
 
 
 	/**
-	 *  Returns the boolean vaiable about including variable into the fitting
+	 *  Returns the boolean variable about including variable into the fitting
 	 *
 	 *@param  key  The parameter name
 	 */
 	public boolean fitParameter(String key) {
 		if (key.equals(SIGMA)) {
-			return sigma_incl;
+			return sigmaIncl;
 		} else if (key.equals(AMP)) {
-			return amp_incl;
+			return ampIncl;
 		} else if (key.equals(CENTER)) {
-			return center_incl;
+			return centerIncl;
 		} else if (key.equals(PEDESTAL)) {
-			return pedestal_incl;
+			return pedestalIncl;
 		}
 		return false;
 	}
@@ -223,28 +225,28 @@ public class Gaussian {
 	/**
 	 *  Sets the data attribute of the Gaussian object
 	 *
-	 *@param  y_arr      Y data array
-	 *@param  y_err_arr  Y values error array
-	 *@param  x_arr      The new data value
+	 *@param  yArr      Y data array
+	 *@param  yErrArr  Y values error array
+	 *@param  xArr      The new data value
 	 */
-	public void setData(double[] x_arr,
-			double[] y_arr,
-			double[] y_err_arr) {
+	public void setData(double[] xArr,
+			double[] yArr,
+			double[] yErrArr) {
 
 		ds.clear();
 
-		if (x_arr.length != y_arr.length) {
+		if (xArr.length != yArr.length) {
 			return;
 		}
 
 		double[] x = new double[1];
 
-		for (int i = 0; i < x_arr.length; i++) {
-			x[0] = x_arr[i];
-			if (y_err_arr != null) {
-				ds.addRecord(y_arr[i], y_err_arr[i], x);
+		for (int i = 0; i < xArr.length; i++) {
+			x[0] = xArr[i];
+			if (yErrArr != null) {
+				ds.addRecord(yArr[i], yErrArr[i], x);
 			} else {
-				ds.addRecord(y_arr[i], x);
+				ds.addRecord(yArr[i], x);
 			}
 		}
 	}
@@ -253,12 +255,12 @@ public class Gaussian {
 	/**
 	 *  Sets the data attribute of the Gaussian object
 	 *
-	 *@param  y_arr  Y data array
-	 *@param  x_arr  The new data value
+	 *@param  yArr  Y data array
+	 *@param  xArr  The new data value
 	 */
-	public void setData(double[] x_arr,
-			double[] y_arr) {
-		setData(x_arr, y_arr, null);
+	public void setData(double[] xArr,
+			double[] yArr) {
+		setData(xArr, yArr, null);
 	}
 
 
@@ -277,8 +279,8 @@ public class Gaussian {
 	 *@param  y  The y value
 	 */
 	public void addData(double x, double y) {
-		x_tmp[0] = x;
-		ds.addRecord(y, x_tmp);
+		xTmp[0] = x;
+		ds.addRecord(y, xTmp);
 	}
 
 
@@ -287,11 +289,11 @@ public class Gaussian {
 	 *
 	 *@param  x      The x value
 	 *@param  y      The y valu
-	 *@param  y_err  The error of the y value
+	 *@param  yErr  The error of the y value
 	 */
-	public void addData(double x, double y, double y_err) {
-		x_tmp[0] = x;
-		ds.addRecord(y, y_err, x_tmp);
+	public void addData(double x, double y, double yErr) {
+		xTmp[0] = x;
+		ds.addRecord(y, yErr, xTmp);
 	}
 
 
@@ -320,19 +322,19 @@ public class Gaussian {
 	public boolean fit() {
 
 		boolean[] mask = new boolean[4];
-		mask[0] = sigma_incl;
-		mask[1] = amp_incl;
-		mask[2] = center_incl;
-		mask[3] = pedestal_incl;
+		mask[0] = sigmaIncl;
+		mask[1] = ampIncl;
+		mask[2] = centerIncl;
+		mask[3] = pedestalIncl;
 
 		updateParams();
 
-		a_err[0] = 0.;
-		a_err[1] = 0.;
-		a_err[2] = 0.;
-		a_err[3] = 0.;
+		aErr[0] = 0.;
+		aErr[1] = 0.;
+		aErr[2] = 0.;
+		aErr[3] = 0.;
 
-		boolean res = solver.solve(ds, mf, a, a_err, mask);
+		boolean res = solver.solve(ds, mf, a, aErr, mask);
 
 		if (res) {
 			sigma = a[0];
@@ -340,10 +342,10 @@ public class Gaussian {
 			center = a[2];
 			pedestal = a[3];
 
-			sigma_err = a_err[0];
-			amp_err = a_err[1];
-			center_err = a_err[2];
-			pedestal_err = a_err[3];
+			sigmaErr = aErr[0];
+			ampErr = aErr[1];
+			centerErr = aErr[2];
+			pedestalErr = aErr[3];
 		}
 
 		return res;
@@ -379,44 +381,44 @@ public class Gaussian {
 	 */
 	public boolean guessAndFit() {
 		int n = ds.size();
-		double y_min = Double.MAX_VALUE;
-		double y_max = -Double.MAX_VALUE;
+		double yMin = Double.MAX_VALUE;
+		double yMax = -Double.MAX_VALUE;
 		double y = 0.;
 		for (int i = 0; i < n; i++) {
 			y = ds.getY(i);
-			if (y > y_max) {
-				y_max = y;
+			if (y > yMax) {
+				yMax = y;
 			}
-			if (y < y_min) {
-				y_min = y;
+			if (y < yMin) {
+				yMin = y;
 			}
 		}
-		if (y_min > y_max) {
+		if (yMin > yMax) {
 			return false;
 		}
-		double y_level = 0.607 * (y_max - y_min) + y_min;
+		double yLevel = 0.607 * (yMax - yMin) + yMin;
 		int n_cross = 0;
-		double x_min = Double.MAX_VALUE;
-		double x_max = -Double.MAX_VALUE;
+		double xMin = Double.MAX_VALUE;
+		double xMax = -Double.MAX_VALUE;
 		for (int i = 1; i < n; i++) {
-			if ((y_level - ds.getY(i - 1)) * (y_level - ds.getY(i)) <= 0.) {
+			if ((yLevel - ds.getY(i - 1)) * (yLevel - ds.getY(i)) <= 0.) {
 				n_cross++;
-				if (x_min > ds.getArrX(i)[0]) {
-					x_min = ds.getArrX(i)[0];
+				if (xMin > ds.getArrX(i)[0]) {
+					xMin = ds.getArrX(i)[0];
 				}
-				if (x_max < ds.getArrX(i)[0]) {
-					x_max = ds.getArrX(i)[0];
+				if (xMax < ds.getArrX(i)[0]) {
+					xMax = ds.getArrX(i)[0];
 				}
 			}
 		}
-		if (x_max <= x_min) {
+		if (xMax <= xMin) {
 			return false;
 		}
 
-		sigma = Math.abs(x_min - x_max) / 2.0;
-		center = (x_min + x_max) / 2.0;
-		pedestal = Math.min(Math.abs(y_min), Math.abs(y_max));
-		amp = (y_max - y_min);
+		sigma = Math.abs(xMin - xMax) / 2.0;
+		center = (xMin + xMax) / 2.0;
+		pedestal = Math.min(Math.abs(yMin), Math.abs(yMax));
+		amp = (yMax - yMin);
 
 		boolean res = fit();
 		return res;
@@ -447,26 +449,26 @@ public class Gaussian {
 		double s = 0.2;
 
 		int n = 10;
-		double x_min = c - 3 * s;
-		double x_max = c + 3 * s;
-		double step = (x_max - x_min) / (n - 1);
+		double xMin = c - 3 * s;
+		double xMax = c + 3 * s;
+		double step = (xMax - xMin) / (n - 1);
 
-		double[] x_a = new double[n];
-		double[] y_a = new double[n];
+		double[] xArr = new double[n];
+		double[] yArr = new double[n];
 
 		double x = 0.;
 		double err_level = 0.05;
 
 		for (int i = 0; i < n; i++) {
-			x = x_min + step * i;
-			x_a[i] = x;
-			y_a[i] = p + a * Math.exp(-(x - c) * (x - c) / (2. * s * s));
-			y_a[i] = y_a[i] * (1.0 + err_level * 2.0 * (Math.random() - 0.5));
+			x = xMin + step * i;
+			xArr[i] = x;
+			yArr[i] = p + a * Math.exp(-(x - c) * (x - c) / (2. * s * s));
+			yArr[i] = yArr[i] * (1.0 + err_level * 2.0 * (Math.random() - 0.5));
 		}
 
 		Gaussian gs = new Gaussian();
 
-		gs.setData(x_a, y_a);
+		gs.setData(xArr, yArr);
 
 		gs.setParameter(Gaussian.SIGMA, s * 1.5);
 		gs.setParameter(Gaussian.AMP, a * 0.9);
@@ -501,8 +503,8 @@ public class Gaussian {
 		}
 
 		for (int i = 0; i < n; i++) {
-			x = x_min + step * i;
-			System.out.println("i=" + i + " x=" + x + " y_ini=" + y_a[i] + " model=" + gs.getValue(x));
+			x = xMin + step * i;
+			System.out.println("i=" + i + " x=" + x + " y_ini=" + yArr[i] + " model=" + gs.getValue(x));
 		}
 
 		n_iter = 100;

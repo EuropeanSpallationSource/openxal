@@ -12,7 +12,7 @@ public class PVTreeNode extends DefaultMutableTreeNode {
     
 	private String name = null;
     
-    private String old_name = null;
+    private String oldName = null;
     
     private boolean itIsPVName = false;
     
@@ -31,23 +31,23 @@ public class PVTreeNode extends DefaultMutableTreeNode {
     
     private ActionListener switchOnOffListener = null;
     
-    static public int SWITCHED_ON  = 1;
-    static public int SWITCHED_OFF = 0;
+    public static final int SWITCHED_ON  = 1;
+    public static final int SWITCHED_OFF = 0;
     
-    static public String SWITCHED_ON_COMMAND  = "on";
-    static public String SWITCHED_OFF_COMMAND = "off";
+    public static final String SWITCHED_ON_COMMAND  = "on";
+    public static final String SWITCHED_OFF_COMMAND = "off";
     
     private ActionListener createRemoveListener = null;
     
-    static public int CREATE_PV  = 2;
-    static public int REMOVE_PV  = 3;
+    public static final int CREATE_PV  = 2;
+    public static final int REMOVE_PV  = 3;
     
-    static public String CREATE_PV_COMMAND  = "create";
-    static public String REMOVE_PV_COMMAND  = "remove";
+    public static final String CREATE_PV_COMMAND  = "create";
+    public static final String REMOVE_PV_COMMAND  = "remove";
     
     private ActionListener renameListener = null;
-    static public int RENAME_PV  = 4;
-    static public String RENAME_PV_COMMAND  = "rename";
+    public static final int RENAME_PV  = 4;
+    public static final String RENAME_PV_COMMAND  = "rename";
     
     private Color color = null;
     
@@ -62,13 +62,14 @@ public class PVTreeNode extends DefaultMutableTreeNode {
     
     
     /** Get the child PVTreeNode enumeration overriding the inherited untyped Enumeration */
+        @Override
     public Enumeration<TreeNode> children() {
         return (Enumeration<TreeNode>)super.children();
     }
     
     
     public void setName(String name){
-        old_name = this.name;
+        oldName = this.name;
         this.name = name;
         if(name != null && renameListener != null){
             ActionEvent actionEvent = new ActionEvent(this,RENAME_PV,RENAME_PV_COMMAND);
@@ -77,7 +78,7 @@ public class PVTreeNode extends DefaultMutableTreeNode {
     }
     
     public String getOldName(){
-        return old_name;
+        return oldName;
     }
     
     public String getName(){
@@ -189,7 +190,7 @@ public class PVTreeNode extends DefaultMutableTreeNode {
         this.itIsSelected = itIsSelected;
     }
     
-    static public int getNumberOfSelectedNodes(PVTreeNode root){
+    public static int getNumberOfSelectedNodes(PVTreeNode root){
         PVTreeNode next = root;
         int nSelectedCount = 0;
         while(next != null){
@@ -199,7 +200,7 @@ public class PVTreeNode extends DefaultMutableTreeNode {
         return nSelectedCount;
     }
     
-    static public Integer getIndexOfSelectedNode(PVTreeNode root ){
+    public static Integer getIndexOfSelectedNode(PVTreeNode root ){
         Integer index = null;
         synchronized(root){
             PVTreeNode next = root;
@@ -215,7 +216,7 @@ public class PVTreeNode extends DefaultMutableTreeNode {
         return index;
     }
     
-    static public PVTreeNode getSelectedPVTreeNode(PVTreeNode root ){
+    public static PVTreeNode getSelectedPVTreeNode(PVTreeNode root ){
         PVTreeNode next = root;
         synchronized(root){
             int indSelected = 0;

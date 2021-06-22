@@ -209,15 +209,9 @@ public class Signal extends ScadaRecord {
                 
                 return sfdFld;
                 
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
                 throw new ScadaAnnotationException("Bad annotation " + annSig.getClass());
 
-            } catch (IllegalAccessException e) {
-                throw new ScadaAnnotationException("Bad annotation " + annSig.getClass());
-
-            } catch (InvocationTargetException e) {
-                throw new ScadaAnnotationException("Bad annotation " + annSig.getClass());
-                
             }
 
         }
@@ -267,13 +261,7 @@ public class Signal extends ScadaRecord {
                 this.fldAnnTyp  = ASignal.class.getMethod(strChanTyp);
                 this.fldAnnVal  = ASignal.class.getMethod(strChanHnd);
                 
-            } catch (NoSuchMethodException e) {
-                
-                System.err.println(strErrMsg);
-                e.printStackTrace();
-                
-            } catch (SecurityException e) {
-
+            } catch (NoSuchMethodException | SecurityException e) {     
                 System.err.println(strErrMsg);
                 e.printStackTrace();
             }
@@ -330,8 +318,8 @@ public class Signal extends ScadaRecord {
      * @author Christopher K. Allen
      * @since  Feb 7, 2013
      */
-    static public Signal    createConnectedSignal(ASignal annSig) throws BadStructException, ScadaAnnotationException {
-        List<ScadaFieldDescriptor>  lstDscr = new LinkedList<ScadaFieldDescriptor>();
+    public static Signal    createConnectedSignal(ASignal annSig) throws BadStructException, ScadaAnnotationException {
+        List<ScadaFieldDescriptor>  lstDscr = new LinkedList<>();
         
         for ( Signal.FIELD enmFld : FIELD.values() ) {
 
@@ -571,11 +559,11 @@ public class Signal extends ScadaRecord {
             return ""; //$NON-NLS-1$
 
         // Create the buffer and add the noise figures
-        StringBuffer        bufSig = new StringBuffer();
+        StringBuilder        bufSig = new StringBuilder();
         
-        bufSig.append("#samples=");  bufSig.append(this.cnt);
-        bufSig.append(", noise: mean="); bufSig.append(this.navg); 
-        bufSig.append(", var=");       bufSig.append(this.nvar);
+        bufSig.append("#samples=").append(this.cnt);
+        bufSig.append(", noise: mean=").append(this.navg); 
+        bufSig.append(", var=").append(this.nvar);
         bufSig.append("; ");
         
         // Add the signal position-value pairs

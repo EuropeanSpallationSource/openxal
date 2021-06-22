@@ -8,7 +8,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 /**
- * Descedant of <code>Digit</code> displaying a integer value digit.
+ * Descendant of <code>Digit</code> displaying a integer value digit.
  *
  * @author <a href="mailto:jernej.kamenik@cosylab.com">Jernej Kamenik</a>
  * @version $id$

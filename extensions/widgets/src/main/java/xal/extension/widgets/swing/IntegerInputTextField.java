@@ -247,6 +247,7 @@ public class IntegerInputTextField extends JTextField{
 
 	//we need this empty listener to fire action
 	ActionListener emptyListener = new ActionListener(){
+                @Override
 		public void actionPerformed(ActionEvent e){
 		}
 	    }; 
@@ -254,6 +255,7 @@ public class IntegerInputTextField extends JTextField{
 	addActionListener(emptyListener);
 
 	innerListener = new ActionListener(){
+                @Override
 		public void actionPerformed(ActionEvent e){
 		    try{
 			val = Integer.parseInt(getText());
@@ -266,7 +268,9 @@ public class IntegerInputTextField extends JTextField{
 
 
 	innerFocusListener = new FocusListener(){
+                @Override
 		public void focusGained(FocusEvent e){}
+                @Override
 		public void focusLost(FocusEvent e) {
 		    if(!isEditable()) return;
 		    try{
@@ -282,8 +286,11 @@ public class IntegerInputTextField extends JTextField{
 	addFocusListener(innerFocusListener); 
 
 	docListener = new DocumentListener(){
+                @Override
 		public void changedUpdate(DocumentEvent e){ setBackground(alertColor);}
+                @Override
 		public void insertUpdate(DocumentEvent e) { setBackground(alertColor);}
+                @Override
 		public void removeUpdate(DocumentEvent e) { setBackground(alertColor);}
 
 	    };

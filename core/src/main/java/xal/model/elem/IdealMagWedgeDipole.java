@@ -40,10 +40,10 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      */
 
     /** string type identifier for all IdealMagSectorDipole objects */
-    public static final String  s_strType = "IdealMagWedgeDipole";
+    public static final String  TYPE = "IdealMagWedgeDipole";
     
     /** storage to reserve for child components */
-    public static final int     s_szReserve = 3; 
+    public static final int     SIZE_RESERVE = 3; 
 
 
     /*
@@ -51,13 +51,13 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      */
      
     /** magnet body */
-    private IdealMagSectorDipole    m_magBody = new IdealMagSectorDipole();
+    private IdealMagSectorDipole    magBody = new IdealMagSectorDipole();
     
     /** magnet entrance pole face */
-    private IdealMagDipoleFace      m_polEntr = new IdealMagDipoleFace();
+    private IdealMagDipoleFace      polEntr = new IdealMagDipoleFace();
     
     /** magnet entrance pole face */
-    private IdealMagDipoleFace      m_polExit = new IdealMagDipoleFace();
+    private IdealMagDipoleFace      polExit = new IdealMagDipoleFace();
     
 
 
@@ -67,7 +67,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      */
 
     /**
-     * Default constructor - creates a new unitialized instance of 
+     * Default constructor - creates a new uninitialized instance of 
      * <code>IdealMagWedgeDipole</code>.
      */
     public IdealMagWedgeDipole() {
@@ -81,11 +81,11 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * @param strId     instance identifier string
      */
     public IdealMagWedgeDipole(String strId) {
-        super(s_strType, strId, s_szReserve);
+        super(TYPE, strId, SIZE_RESERVE);
         
-        this.addChild(this.m_polEntr);
-        this.addChild(this.m_magBody);
-        this.addChild(this.m_polExit);
+        this.addChild(this.polEntr);
+        this.addChild(this.magBody);
+        this.addChild(this.polExit);
     }
 
 
@@ -186,7 +186,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * @return     entrance pole face
      */
     public  IdealMagDipoleFace  getEntrFace()   {
-        return this.m_polEntr;
+        return this.polEntr;
     }
      
     /**
@@ -195,7 +195,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * @return     exit pole face
      */
     public  IdealMagDipoleFace   getExitFace()   {
-        return this.m_polExit;
+        return this.polExit;
     }
      
     /**
@@ -206,7 +206,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * @return     magnet body
      */
     public  IdealMagSectorDipole    getMagBody()    {
-        return this.m_magBody;
+        return this.magBody;
     }
     
     /**
@@ -262,18 +262,20 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      *              ORIENT_VER  - dipole has steering action in y (vertical) plane
      *              ORIENT_NONE - error
      */
+    @Override
     public int getOrientation() {
         return this.getMagBody().getOrientation();
-    };
+    }
 
     /**  
      *  Get the magnetic field strength of the dipole electromagnet
      *
      *  @return     magnetic field (in <b>Tesla</b>).
      */
+    @Override
     public double getMagField() {
         return this.getMagBody().getMagField();
-    };
+    }
 
 
 
@@ -284,22 +286,24 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      *
      *  @see    #getOrientation
      */
+    @Override
     public void setOrientation(int enmOrient) {
         this.getEntrFace().setOrientation(enmOrient);
         this.getMagBody().setOrientation(enmOrient);
         this.getExitFace().setOrientation(enmOrient);
-    };
+    }
 
     /**  
      *  Set the magnetic field strength of the dipole electromagnet.
      *
      *  @param  dblField    magnetic field (in <b>Tesla</b>).
      */
+    @Override
     public void setMagField(double dblField) {
         this.getEntrFace().setMagField(dblField);
         this.getMagBody().setMagField(dblField);
         this.getExitFace().setMagField(dblField);
-    };
+    }
 
 
 	/**
@@ -324,22 +328,22 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
 
 		// Replace ThickDipole object with an IdealMagWedgeDipole2
 		// First retrieve all the physical parameters for a bending dipole				
-		double len_sect = element.getLength();		
-		double len_path0 = magnet.getDfltPathLength();
-		double ang_bend0 = magnet.getDfltBendAngle() * Math.PI / 180.0;
-		double k_quad0 = magnet.getQuadComponent();
+		double lenSect = element.getLength();		
+		double lenPath0 = magnet.getDfltPathLength();
+		double angBend0 = magnet.getDfltBendAngle() * Math.PI / 180.0;
+		double kQuad0 = magnet.getQuadComponent();
 
 		// Now compute the dependent parameters
-		double R_bend0 = len_path0 / ang_bend0;
-		double fld_ind0 = -k_quad0 * R_bend0 * R_bend0;
+		double RBend0 = lenPath0 / angBend0;
+		double fldInd0 = -kQuad0 * RBend0 * RBend0;
 
-		double ang_bend = ang_bend0 * (len_sect / len_path0);
-		double len_path = R_bend0 * ang_bend;
+		double angBend = angBend0 * (lenSect / lenPath0);
+		double lenPath = RBend0 * angBend;
 
 		// Set the parameters for the new model element				
 		/*setPhysicalLength(len_sect);
 		setDesignPathLength(len_path);*/		
-		setFieldIndex(fld_ind0);
+		setFieldIndex(fldInd0);
 		/*setDesignBendAngle(ang_bend);*/
 						
 		if (element.isFirstSlice()) // first piece

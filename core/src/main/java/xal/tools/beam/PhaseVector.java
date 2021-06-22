@@ -9,6 +9,7 @@
 package xal.tools.beam;
 
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.util.EnumSet;
 import java.util.StringTokenizer;
 
@@ -47,7 +48,7 @@ import xal.tools.math.r6.R6;
  *  </pre>
  *  </p>
  *  <p>
- *  Homogeneous coordinates are parameterizations of the projective spaces <i>P<sup>n</sup></i>.  
+ *  Homogeneous coordinates are parametrizations of the projective spaces <i>P<sup>n</sup></i>.  
  *  They are
  *  useful here to allow vector transpositions, normally produced by vector addition, to 
  *  be represented as matrix multiplications.  These operations can be embodied by the class
@@ -68,7 +69,7 @@ import xal.tools.math.r6.R6;
  * @author Christopher K. Allen
  * @since  Oct 11, 2013
  */
-public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Serializable, IArchive {
+public class PhaseVector extends BaseVector<PhaseVector> implements Serializable, IArchive {
     
     
     /*
@@ -116,7 +117,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
         /** Index of the Z (longitudinal) coordinate */
         Z   (4),        
         
-        /** Index of the Z' (change in momenutum) coordinate */
+        /** Index of the Z' (change in momentum) coordinate */
         Zp  (5),        
         
         /** Index of the homogeneous coordinate */
@@ -128,7 +129,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
          */
         
         /** the set of IND constants that only include phase space variables (not the homogeneous coordinate) */
-        private final static EnumSet<IND> SET_PHASE = EnumSet.of(X, Xp, Y, Yp, Z, Zp);
+        private static final EnumSet<IND> SET_PHASE = EnumSet.of(X, Xp, Y, Yp, Z, Zp);
 
         
         /*
@@ -165,6 +166,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
          * @author Christopher K. Allen
          * @since  Sep 25, 2013
          */
+        @Override
         public int val() {
             return this.val;
         }
@@ -174,7 +176,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
          */
         
         /** The numerical value of this enumeration index */
-        final public    int     val; 
+        public final    int     val; 
         
         /**
          * Creates a new <code>IND</code> enumeration constant
@@ -293,7 +295,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
      * Embeds the given vector <b>z</b> &in; <b>R</b><sup>4</sup> into 
      * homogeneous phase space.  The given vector is treated like a vector
      * of transverse phase space coordinates corresponding to the first 4 elements
-     * of a <code>PhaseVector</code> object.  The vector elements corresonding
+     * of a <code>PhaseVector</code> object.  The vector elements corresponding
      * to the longitudinal phase space coordinates <i>z</i> and <i>z'</i> are
      * both set to zero.  The last element of 
      * the returned phase vector has value 1, as do all phase vectors.
@@ -357,7 +359,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
      */
     public PhaseVector(PhaseVector vecInit) {
         super(vecInit);
-    };
+    }
     
     
     
@@ -450,7 +452,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
         // Extract initial phase coordinate values
         for (int i=0; i<6; i++) {
             String  strVal = tokArgs.nextToken();
-            double  dblVal = Double.valueOf(strVal).doubleValue();
+            double  dblVal = Double.parseDouble(strVal);
 
             this.setElem(i,dblVal);
         }
@@ -467,6 +469,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
      * @author Christopher K. Allen
      * @since  Sep 6, 2014
      */
+    @Override
     public void setVector(double[] arrVector) throws IllegalArgumentException {
         
         // Check the dimensions of the argument double array
@@ -500,69 +503,69 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
     /**
      *  Set the x position coordinate
      */
-    public void setx(double dblVal)  { this.setElem(0, dblVal); };
+    public void setx(double dblVal)  { this.setElem(0, dblVal); }
     
     /**
      *  Set the x momentum coordinate
      */
-    public void setxp(double dblVal)  { this.setElem(1, dblVal); };
+    public void setxp(double dblVal)  { this.setElem(1, dblVal); }
     
     /**
      *  Set the y position coordinate
      */
-    public void sety(double dblVal)  { this.setElem(2, dblVal); };
+    public void sety(double dblVal)  { this.setElem(2, dblVal); }
     
     /**
      *  Set the y momentum coordinate
      */
-    public void setyp(double dblVal)  { this.setElem(3, dblVal); };
+    public void setyp(double dblVal)  { this.setElem(3, dblVal); }
     
     /**
      *  Set the z position coordinate
      */
-    public void setz(double dblVal)  { this.setElem(4, dblVal); };
+    public void setz(double dblVal)  { this.setElem(4, dblVal); }
     
     /**
      *  Set the z momentum coordinate
      */
-    public void setzp(double dblVal)  { this.setElem(5, dblVal); };
+    public void setzp(double dblVal)  { this.setElem(5, dblVal); }
     
     
     /**
      *  Return the x position coordinate
      */
 	@Units( "meters" )
-    public double   getx()  { return this.getElem(0); };
+    public double   getx()  { return this.getElem(0); }
     
     /**
      *  Return the x momentum coordinate
      */
 	@Units( "radians" )
-    public double   getxp() { return this.getElem(1); };
+    public double   getxp() { return this.getElem(1); }
     
     /**
      *  Return the y position coordinate
      */
 	@Units( "meters" )
-    public double   gety()  { return this.getElem(2); };
+    public double   gety()  { return this.getElem(2); }
     
     /**
      *  Return the y momentum coordinate
      */
 	@Units( "radians" )
-    public double   getyp() { return this.getElem(3); };
+    public double   getyp() { return this.getElem(3); }
     
     /**
      *  Return the z momentum coordinate
      */
 	@Units( "meters" )
-    public double   getz()  { return this.getElem(4); };
+    public double   getz()  { return this.getElem(4); }
     
     /**
      *  Return the z momentum coordinate
      */
 	@Units( "radians" )
-    public double   getzp() { return this.getElem(5); };
+    public double   getzp() { return this.getElem(5); }
     
     /**
      *  Get position coordinates in R3.
@@ -570,7 +573,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
      *  @return     (x,y,z)
      */
 	@NoEdit		// returns a new instance so should not edit
-    public R3   getPosition()   { return new R3(getx(), gety(), getz()); };
+    public R3   getPosition()   { return new R3(getx(), gety(), getz()); }
     
     /**
      *  Get momentum coordinate in R3.
@@ -578,7 +581,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
      *  @return     (xp,yp,zp)
      */
 	@NoEdit		// returns a new instance so should not edit
-    public  R3  getMomentum()   { return new R3(getxp(), getyp(), getzp()); };
+    public  R3  getMomentum()   { return new R3(getxp(), getyp(), getzp()); }
         
     
     
@@ -808,7 +811,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
             dblSum += Math.abs( this.getElem(i) );
         
         return dblSum;
-    };
+    }
     
     /**
      * Return the <i>l</i><sub>2</sub> norm of the vector.
@@ -892,6 +895,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
      *
      *  @param  os      output stream object 
      */
+    @Override
     public void print(PrintWriter os)   {
 
         // Create vector string
@@ -907,6 +911,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
      *
      *  @param  os      output stream object 
      */
+    @Override
     public void println(PrintWriter os)   {
 
         // Create vector string
@@ -914,7 +919,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements java.io.Seri
 
         // Send to output stream
         os.println(strVec);
-    };
+    }
     
     /**
      * Print the vector contents to a String.

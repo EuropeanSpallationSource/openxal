@@ -1,7 +1,5 @@
 package xal.extension.widgets.plot;
 
-import java.util.*;
-
 /*
  * This class is a container class for data used in the FunctionGraphsJPanel class.
  * This class can produce synchronous unwrapped phase graphics data.
@@ -39,6 +37,7 @@ public class UnwrappedGeneratorGraphData extends BasicGraphData{
     /** add (x,y, error of y) point to the data set and 
      *  an unwrapped data point to the external container
      */
+    @Override
     public void addPoint(double x, double y, double err){
 	super.addPoint(x,y,err);
 	double yUnwrapped = y;
@@ -90,6 +89,7 @@ public class UnwrappedGeneratorGraphData extends BasicGraphData{
     }
 
     /** remove all points from the data set */
+    @Override
     public void removeAllPoints(){
 	super.removeAllPoints();
  	if(extUnwrappedData != null) {

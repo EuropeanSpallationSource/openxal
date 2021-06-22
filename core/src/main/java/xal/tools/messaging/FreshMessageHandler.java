@@ -10,7 +10,6 @@ package xal.tools.messaging;
 
 import xal.tools.FreshProcessor;
 
-import java.util.*;
 import java.util.logging.*;
 import java.lang.reflect.*;
 
@@ -21,7 +20,7 @@ class FreshMessageHandler<T> extends MessageHandler<T> implements java.io.Serial
     private static final long serialVersionUID = 1L;
     
 	/** event processor which processes the most recent pending event on of a single thread */
-	final private FreshProcessor EVENT_PROCESSOR;
+	private final FreshProcessor eventProcessor;
 	
 	
     /** Creates new AsynchronousMessageHandler */
@@ -34,13 +33,14 @@ class FreshMessageHandler<T> extends MessageHandler<T> implements java.io.Serial
     public FreshMessageHandler( final TargetDirectory directory, final Object source, final Class<T> newInterface, final int threadPoolSize ) {
         super( directory, source, newInterface, threadPoolSize );
 		
-		EVENT_PROCESSOR = new FreshProcessor();
+		eventProcessor = new FreshProcessor();
     }
 	
 	
 	/** Subclasses should override this method to perform any cleanup prior to removal. */
+    @Override
 	public void terminate() {
-		EVENT_PROCESSOR.terminate();
+		eventProcessor.terminate();
 	}
 	
     
@@ -50,10 +50,11 @@ class FreshMessageHandler<T> extends MessageHandler<T> implements java.io.Serial
 	 * @param method method to invoke on the targets
 	 * @param args arguments supplied to the method
 	 */
+    @Override
 	public Object invoke( final Object proxy, final Method method, final Object[] args ) {
         method.setAccessible( true );     // allow access to private, protected, default access methods
         final Invoker invoker = new Invoker( method, args );
-        EVENT_PROCESSOR.post( invoker );
+        eventProcessor.post( invoker );
         
         return null;
     }
@@ -63,15 +64,16 @@ class FreshMessageHandler<T> extends MessageHandler<T> implements java.io.Serial
      * identifies the message handler as asynchronous
 	 * @return false since this handler is asynchronous
      */
-    final public boolean isSynchronous() {
+    @Override
+    public final boolean isSynchronous() {
         return false;
     }
     
     
     /** Helper class for executing the invoke method in a thread */
     private class Invoker implements Runnable {
-        final private Method method;
-        final private Object[] args;
+        private final Method method;
+        private final Object[] args;
         
 		/** Constructor */
         public Invoker( final Method newMethod, final Object[] newArgs ) {
@@ -81,14 +83,15 @@ class FreshMessageHandler<T> extends MessageHandler<T> implements java.io.Serial
 		
 		
 		/** forward messages to the targets */
+        @Override
         public void run() {
             try {
 				for( final Object target : targets() ) {
                     method.invoke( target, args );
                 }
             }
-            catch( Exception exception ) {
-				final String message = "Error invoking method: " + method + " for protocol " + _protocol + " for source " + source;
+            catch( IllegalAccessException | IllegalArgumentException | InvocationTargetException exception ) {
+				final String message = "Error invoking method: " + method + " for protocol " + protocol + " for source " + source;
 				Logger.getLogger("global").log( Level.SEVERE, message, exception );
                 System.err.println( message );
                 exception.printStackTrace();

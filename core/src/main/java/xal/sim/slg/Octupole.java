@@ -12,7 +12,7 @@ package xal.sim.slg;
  * @author  wdklotz
  */
 public class Octupole extends Element {
-    private static final String type="octupole";
+    private static final String TYPE = "octupole";
     
     /** Creates a new instance of Octupole */
     public Octupole(double position, double len, String name) {
@@ -38,17 +38,19 @@ public class Octupole extends Element {
     /*
      * Return the element type.
      */
+    @Override
     public String getType() {
-        return type;
+        return TYPE;
     }
     
     /**
-     * When called with a Visitor reference the implementor can either
+     * When called with a Visitor reference the implementer can either
      * reject to be visited (empty method body) or call the Visitor by
      * passing its own object reference.
      *
      *@param v the Visitor which wants to visit this object.
      */
+    @Override
     public void accept(Visitor v) {
         v.visit( this );
     }

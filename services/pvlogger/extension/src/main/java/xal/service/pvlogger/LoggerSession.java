@@ -33,24 +33,24 @@ public class LoggerSession {
 	protected final int INITIAL_DELAY = 1000;
 	
 	/** default logging period in seconds */
-	static protected final double DEFAULT_LOGGING_PERIOD = 5.0;
+	protected static final double DEFAULT_LOGGING_PERIOD = 5.0;
 	
 	/** publisher of snapshots to the persistent store */
-	protected SnapshotPublisher SNAPSHOT_PUBLISHER;
+	protected final SnapshotPublisher SNAPSHOT_PUBLISHER;
 	
 	/** latest snapshot taken which may or may not have been published */
-	protected volatile MachineSnapshot _latestMachineSnapshot;
+	protected volatile MachineSnapshot latestMachineSnapshot;
 	
 	// messaging
-	final protected MessageCenter MESSAGE_CENTER;
-	final protected LoggerChangeListener EVENT_PROXY;
+	protected final MessageCenter MESSAGE_CENTER;
+	protected final LoggerChangeListener EVENT_PROXY;
 	
 	// state variables
-	protected ChannelGroup _group;
-	final protected Timer LOG_TIMER;
-	protected TimerTask _logTask;
-	protected double _loggingPeriod;	// logging period in seconds
-	protected boolean _enabled;
+	protected ChannelGroup group;
+	protected final Timer LOG_TIMER;
+	protected TimerTask logTask;
+	protected double loggingPeriod;	// logging period in seconds
+	protected boolean enabled;
 	
 	
 	/**
@@ -66,7 +66,7 @@ public class LoggerSession {
 		
 		LOG_TIMER = new Timer();
 		
-		_enabled = false;
+		enabled = false;
 		setChannelGroup( group );
 	}
 	
@@ -93,9 +93,9 @@ public class LoggerSession {
 	public void resumeLogging() {
 		if ( isEnabled() ) {
 			disposeLoggingTask();
-			_logTask = newLoggingTask();
-			final long delay = (long)( _loggingPeriod * 1000 );
-			LOG_TIMER.schedule( _logTask, delay, delay );
+			logTask = newLoggingTask();
+			final long delay = (long)( loggingPeriod * 1000 );
+			LOG_TIMER.schedule( logTask, delay, delay );
 			EVENT_PROXY.stateChanged( this, LoggerChangeListener.LOGGING_CHANGED );
 		}
 	}
@@ -104,7 +104,7 @@ public class LoggerSession {
 	/** Start periodically logging machine state to the persistent storage. */
 	public void startLogging() {
 		final double loggingPeriod = getLoggingPeriod();
-		final String message = "Start logging \"" + _group.getLabel() + "\" with period " + loggingPeriod + " seconds";
+		final String message = "Start logging \"" + group.getLabel() + "\" with period " + loggingPeriod + " seconds";
 		System.out.println( message );
 		Logger.getLogger("global").log( Level.INFO, message );
 		resumeLogging();
@@ -123,7 +123,7 @@ public class LoggerSession {
 	
 	/** Stop the periodic machine state logging. */
 	public void stopLogging() {
-		if ( _logTask != null ) {
+		if ( logTask != null ) {
 			disposeLoggingTask();
 			EVENT_PROXY.stateChanged( this, LoggerChangeListener.LOGGING_CHANGED );
 		}
@@ -135,7 +135,7 @@ public class LoggerSession {
 	 * @return true if the logger is scheduled to run periodically or false otherwise
 	 */
 	public boolean isLogging() {
-		return _logTask != null;
+		return logTask != null;
 	}
 	
 	
@@ -146,9 +146,9 @@ public class LoggerSession {
 	public void setLoggingPeriod( final double period ) {
 		setEnabled( period > 0 );
 		boolean isRunning = isLogging();
-		if ( period != _loggingPeriod ) {
-			_loggingPeriod = period;
-			if ( isRunning && _logTask != null ) {
+		if ( period != loggingPeriod ) {
+			loggingPeriod = period;
+			if ( isRunning && logTask != null ) {
 				disposeLoggingTask();
 				resumeLogging();
 			}
@@ -162,7 +162,7 @@ public class LoggerSession {
 	 * @return The period in seconds between events where we take and store machine snapshots.
 	 */
 	public double getLoggingPeriod() {
-		return _loggingPeriod;
+		return loggingPeriod;
 	}
 	
 	
@@ -171,7 +171,7 @@ public class LoggerSession {
 	 * @return true if this logger session is enabled and false if not
 	 */
 	public boolean isEnabled() {
-		return _enabled;
+		return enabled;
 	}
 	
 	
@@ -180,7 +180,7 @@ public class LoggerSession {
 	 * @param enable true to enable this session and false to disable it 
 	 */
 	protected void setEnabled( final boolean enable ) {
-		_enabled = enable;
+		this.enabled = enable;
 		if ( isLogging() )  stopLogging();
 		EVENT_PROXY.stateChanged( this, LoggerChangeListener.ENABLE_CHANGED );
 	}
@@ -191,7 +191,7 @@ public class LoggerSession {
 	 * @return the channel group
 	 */
 	public ChannelGroup getChannelGroup() {
-		return _group;
+		return group;
 	}
 	
 	
@@ -203,7 +203,7 @@ public class LoggerSession {
 		final boolean shouldLog = isLogging();
 		if ( shouldLog )  stopLogging();
 		
-		final ChannelGroup oldGroup = _group;
+		final ChannelGroup oldGroup = group;
 		if ( oldGroup != null && group != oldGroup ) {
 			oldGroup.dispose();
 		}
@@ -216,7 +216,7 @@ public class LoggerSession {
 			setLoggingPeriod( DEFAULT_LOGGING_PERIOD );
 		}
 		
-		_group = group;
+		this.group = group;
 		if ( shouldLog )  resumeLogging();
 		EVENT_PROXY.stateChanged( this, LoggerChangeListener.GROUP_CHANGED );
 	}
@@ -227,7 +227,7 @@ public class LoggerSession {
 	 * @return a collection of the channels we wish to monitor and log
 	 */
 	public Collection<Channel> getChannels() {
-		return _group.getChannels();
+		return group.getChannels();
 	}
 	
 	
@@ -236,7 +236,7 @@ public class LoggerSession {
 	 * @return the latest machine snapshot
 	 */
 	public MachineSnapshot getLatestMachineSnapshot() {
-		return _latestMachineSnapshot;
+		return latestMachineSnapshot;
 	}
 	
 	
@@ -244,7 +244,7 @@ public class LoggerSession {
 	 * Take a snapshot and publish it immediately
 	 * @return the published snapshot
 	 */
-	final public MachineSnapshot takeAndPublishSnapshot() {
+	public final MachineSnapshot takeAndPublishSnapshot() {
 		return takeAndPublishSnapshot( "" );
 	}
 	
@@ -254,7 +254,7 @@ public class LoggerSession {
 	 * @param comment machine snapshot comment
 	 * @return the published snapshot
 	 */
-	final public MachineSnapshot takeAndPublishSnapshot( final String comment ) {
+	public final MachineSnapshot takeAndPublishSnapshot( final String comment ) {
 		final MachineSnapshot machineSnapshot = takeSnapshot();
 		machineSnapshot.setComment( comment );
 		publishSnapshot( machineSnapshot );
@@ -266,7 +266,7 @@ public class LoggerSession {
 	 * Take a snapshot and schedule it for publication
 	 * @return the scheduled snapshot
 	 */
-	final protected MachineSnapshot takeAndScheduleSnapshotForPublication() {
+	protected final MachineSnapshot takeAndScheduleSnapshotForPublication() {
 		final MachineSnapshot machineSnapshot = takeSnapshot();
 		SNAPSHOT_PUBLISHER.scheduleSnapshotPublication( machineSnapshot );
 		return machineSnapshot;
@@ -277,10 +277,10 @@ public class LoggerSession {
 	 * Take a snapshot of the current machine state.
 	 * @return A snapshot of the current machine state.
 	 */
-	final public MachineSnapshot takeSnapshot() {
-		final ChannelWrapper[] channelWrappers = _group.getChannelWrappers();
+	public final MachineSnapshot takeSnapshot() {
+		final ChannelWrapper[] channelWrappers = group.getChannelWrappers();
 		MachineSnapshot machineSnapshot = new MachineSnapshot( channelWrappers.length );
-		machineSnapshot.setType( _group.getLabel() );
+		machineSnapshot.setType( group.getLabel() );
 		for ( int index = 0 ; index < channelWrappers.length ; index++ ) {
 			ChannelWrapper channelWrapper = channelWrappers[index];
 			if ( channelWrapper == null )  continue;
@@ -290,7 +290,7 @@ public class LoggerSession {
 			machineSnapshot.setChannelSnapshot( index, snapshot );
 		}
 		
-		_latestMachineSnapshot = machineSnapshot;
+		latestMachineSnapshot = machineSnapshot;
 		EVENT_PROXY.snapshotTaken( this, machineSnapshot );
 		return machineSnapshot;
 	}
@@ -300,7 +300,7 @@ public class LoggerSession {
 	 * Publish the machine snapshot to the persistent storage.
 	 * @param machineSnapshot The machine snapshot to publish.
 	 */
-	final public void publishSnapshot( final MachineSnapshot machineSnapshot ) {
+	public final void publishSnapshot( final MachineSnapshot machineSnapshot ) {
 		SNAPSHOT_PUBLISHER.scheduleSnapshotPublication( machineSnapshot );
 		SNAPSHOT_PUBLISHER.publishSnapshots();
 		EVENT_PROXY.snapshotPublished( this, machineSnapshot );
@@ -309,18 +309,18 @@ public class LoggerSession {
 	
 	/** dispose of the logging task */
 	protected void disposeLoggingTask() {
-		if ( _logTask != null ) {
-			_logTask.cancel();
+		if ( logTask != null ) {
+			logTask.cancel();
 		}
 		LOG_TIMER.purge();
-		_logTask = null;
+		logTask = null;
 	}
 	
 	
 	/** get a new timer task for periodic logging */
-	final protected TimerTask newLoggingTask() {
+	protected final TimerTask newLoggingTask() {
 		return new TimerTask() {
-			final public void run() {
+			public final void run() {
 				// must catch exceptions to avoid the timer stopping
 				try {
 					final MachineSnapshot machineSnapshot = takeSnapshot();

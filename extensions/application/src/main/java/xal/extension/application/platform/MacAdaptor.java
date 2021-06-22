@@ -8,6 +8,7 @@
 package xal.extension.application.platform;
 
 import java.lang.reflect.*;
+import xal.extension.application.Application;
 
 
 /** MacAdaptor provides Mac OS X specific support using reflection so it only gets loaded for Mac OS X */
@@ -18,7 +19,7 @@ public class MacAdaptor {
 	
 	/** perform Mac initialization */
     @SuppressWarnings( { "unchecked", "rawtypes" } )	// no way around it since newProxyInstance takes an array of typed Class and which isn't allowed
-	static public void initialize() {
+	public static void initialize() {
 		// display the menu bar at the top of the screen consistent with the Mac look and feel
 		System.setProperty( "apple.laf.useScreenMenuBar", "true" );
 		
@@ -49,16 +50,7 @@ public class MacAdaptor {
 		catch ( ClassNotFoundException exception ) {
             initializeFallback();
 		}
-		catch ( NoSuchMethodException exception ) {
-			exception.printStackTrace();
-		}
-		catch ( IllegalAccessException exception ) {
-			exception.printStackTrace();
-		}
-		catch ( IllegalArgumentException exception ) {
-			exception.printStackTrace();
-		}
-		catch ( InvocationTargetException exception ) {
+		catch ( NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException exception ) {
 			exception.printStackTrace();
 		}
 	}
@@ -67,6 +59,7 @@ public class MacAdaptor {
 	
 	/** handle the Mac quit event */
 	private static class MacQuitHandler implements InvocationHandler {
+                @Override
 		public Object invoke( final Object proxy, final Method method, final Object[] args ) {
 			try {
 				final String methodName = method.getName();
@@ -82,16 +75,7 @@ public class MacAdaptor {
                     response.getClass().getMethod( "cancelQuit" ).invoke( response );
 				}
 			}
-			catch ( NoSuchMethodException exception ) {
-				exception.printStackTrace();
-			}
-			catch ( IllegalAccessException exception ) {
-				exception.printStackTrace();
-			}
-			catch ( IllegalArgumentException exception ) {
-				exception.printStackTrace();
-			}
-			catch ( InvocationTargetException exception ) {
+			catch ( NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException exception ) {
 				exception.printStackTrace();
 			}
             
@@ -103,13 +87,14 @@ public class MacAdaptor {
 	
 	/** handle the Mac about event */
 	private static class MacAboutHandler implements InvocationHandler {
+                @Override
 		public Object invoke( final Object proxy, final Method method, final Object[] args ) {
             final String methodName = method.getName();
             final Object event = args[0];
             
             // show the about box if the method matches this request
             if ( methodName.equals( "handleAbout" ) ) {
-                xal.extension.application.Application.showAboutBox();
+                Application.showAboutBox();
             }
             
             return null;
@@ -118,7 +103,7 @@ public class MacAdaptor {
     
     
     
-    /** Perform initialization for the fallback event sytem. Called when the modern event system is not present. This method should be removed at a reasonable time in the future. */
+    /** Perform initialization for the fallback event system. Called when the modern event system is not present. This method should be removed at a reasonable time in the future. */
     @SuppressWarnings( { "unchecked", "rawtypes" } )	// no way around it since newProxyInstance takes an array of typed Class and which isn't allowed
     private static void initializeFallback() {
 		try {
@@ -135,19 +120,7 @@ public class MacAdaptor {
 			final Method registrationMethod = macApplicationClass.getMethod( "addApplicationListener", new Class[] { macEventListenerClass } );
 			registrationMethod.invoke( macApplication, proxy );
 		}
-		catch ( ClassNotFoundException exception ) {
-			exception.printStackTrace();
-		}
-		catch ( NoSuchMethodException exception ) {
-			exception.printStackTrace();
-		}
-		catch ( IllegalAccessException exception ) {
-			exception.printStackTrace();
-		}
-		catch ( IllegalArgumentException exception ) {
-			exception.printStackTrace();
-		}
-		catch ( InvocationTargetException exception ) {
+		catch ( ClassNotFoundException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException exception ) {
 			exception.printStackTrace();
 		}
     }
@@ -156,6 +129,7 @@ public class MacAdaptor {
 	/** Obsolete class to handle old style Mac Events (quit and show about box) ignoring other events. This class should be removed at a reasonable time in the future. */
 	private static class MacEventHandler implements InvocationHandler {
 		@SuppressWarnings( { "unchecked", "rawtypes" } )	// no way around it since getMethod takes an array of typed Class and which isn't allowed
+                @Override
 		public Object invoke( final Object proxy, final Method method, final Object[] args ) {
 			try {
 				final String methodName = method.getName();
@@ -165,28 +139,23 @@ public class MacAdaptor {
 				// get the XAL application
 				final xal.extension.application.Application xalApp = xal.extension.application.Application.getApp();
 				
-				if ( methodName.equals( "handleQuit" ) ) {	// attempt to quit the application using the default XAL behavior
-					xalApp.quit();
-					markMethod.invoke( event, false );		// if we get to this point then we haven't quit the application
-				}
-				else if ( methodName.equals( "handleAbout" ) ) {	// display the about box
-					xal.extension.application.Application.showAboutBox();
-					markMethod.invoke( event, true );
-				}
-				else {
-					markMethod.invoke( event, false );		// no other events are handled
-				}
+                            switch (methodName) {
+                                case "handleQuit":
+                                    // attempt to quit the application using the default XAL behavior
+                                    xalApp.quit();
+                                    markMethod.invoke( event, false );		// if we get to this point then we haven't quit the application
+                                    break;
+                                case "handleAbout":
+                                    // display the about box
+                                    xal.extension.application.Application.showAboutBox();
+                                    markMethod.invoke( event, true );
+                                    break;
+                                default:
+                                    markMethod.invoke( event, false );		// no other events are handled
+                                    break;
+                            }
 			}
-			catch ( NoSuchMethodException exception ) {
-				exception.printStackTrace();
-			}
-			catch ( IllegalAccessException exception ) {
-				exception.printStackTrace();
-			}
-			catch ( IllegalArgumentException exception ) {
-				exception.printStackTrace();
-			}
-			catch ( InvocationTargetException exception ) {
+			catch ( NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException exception ) {
 				exception.printStackTrace();
 			}
             

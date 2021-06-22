@@ -14,13 +14,13 @@ import java.util.*;
 /** DispatchGroup */
 public class DispatchGroup implements DispatchOperationListener {
 	/** groups that are currently entered for new operations */
-	static private final LocalGroups LOCAL_CURRENT_GROUPS;
+	private static final LocalGroups LOCAL_CURRENT_GROUPS;
 	
 	/** count of pending operations belonging to this group which have not yet completed */
-	private volatile int _pendingOperationCount;
+	private volatile int pendingOperationCount;
 	
 	/** lock for waiting on empty */
-	private final Object EMPTY_WAIT_LOCK;
+	private final Object emptyWaitLock;
 	
 	
 	// static initializer
@@ -31,13 +31,13 @@ public class DispatchGroup implements DispatchOperationListener {
 	
 	/** Constructor */
     public DispatchGroup() {
-		EMPTY_WAIT_LOCK = new Object();
-		_pendingOperationCount = 0;
+		emptyWaitLock = new Object();
+		pendingOperationCount = 0;
 	}
 	
 	
 	/** Get the set of current groups */
-	static protected Set<DispatchGroup> getCurrentGroups() {
+	protected static Set<DispatchGroup> getCurrentGroups() {
 		return LOCAL_CURRENT_GROUPS.get();
 	}
 	
@@ -62,13 +62,13 @@ public class DispatchGroup implements DispatchOperationListener {
 	
 	/** wait indefinitely for all operations to complete */
 	public void waitForCompletion() {
-		while ( _pendingOperationCount > 0 ) {		// while loop protects against accidental wake since wait is not guaranteed
+		while ( pendingOperationCount > 0 ) {		// while loop protects against accidental wake since wait is not guaranteed
 			try {
-				synchronized( EMPTY_WAIT_LOCK ) {
-					EMPTY_WAIT_LOCK.wait();
+				synchronized( emptyWaitLock ) {
+					emptyWaitLock.wait();
 				}				
 			}
-			catch ( Exception exception ) {}
+			catch ( InterruptedException exception ) {}
 		}
 	}
 	
@@ -85,15 +85,15 @@ public class DispatchGroup implements DispatchOperationListener {
 	 */
 	public void waitForCompletionWithTimeout( final long timeout ) {
 		final long maxTime = new Date().getTime() + timeout;	// maximum time until expiration
-		while ( _pendingOperationCount > 0 && new Date().getTime() < maxTime ) {		// while loop protects against accidental wake since wait is not guaranteed
+		while ( pendingOperationCount > 0 && new Date().getTime() < maxTime ) {		// while loop protects against accidental wake since wait is not guaranteed
 			final long remainingTime = Math.max( 0, maxTime - new Date().getTime() );
 			if ( remainingTime > 0 ) {		// remaining time must be strictly greater than zero otherwise the wait will wait forever until notified
 				try {
-					synchronized( EMPTY_WAIT_LOCK ) {
-						EMPTY_WAIT_LOCK.wait( remainingTime );
+					synchronized( emptyWaitLock ) {
+						emptyWaitLock.wait( remainingTime );
 					}				
 				}
-				catch ( Exception exception ) {}
+				catch ( InterruptedException exception ) {}
 			}
 		}
 	}
@@ -108,13 +108,13 @@ public class DispatchGroup implements DispatchOperationListener {
 	
 	
 	/** add the operation to the current groups */
-	static public <ReturnType> void addOperationToCurrentGroups( final DispatchOperation<ReturnType> operation ) {
+	public static <ReturnType> void addOperationToCurrentGroups( final DispatchOperation<ReturnType> operation ) {
 		addOperationToGroups( operation, getCurrentGroups() );
 	}
 	
 	
 	/** add the operation to the specified groups */
-	static public <ReturnType> void addOperationToGroups( final DispatchOperation<ReturnType> operation, final Set<DispatchGroup> groups ) {
+	public static <ReturnType> void addOperationToGroups( final DispatchOperation<ReturnType> operation, final Set<DispatchGroup> groups ) {
 		if ( !operation.isComplete() ) {
 			for ( final DispatchGroup group : groups ) {
 				operation.addDispatchOperationListener( group );
@@ -126,18 +126,18 @@ public class DispatchGroup implements DispatchOperationListener {
 	
 	/** increment the pending operation count */
 	private void incrementPendingOperationCount() {
-		synchronized( EMPTY_WAIT_LOCK ) {
-			_pendingOperationCount++;		
+		synchronized( emptyWaitLock ) {
+			pendingOperationCount++;		
 		}
 	}
 	
 	
 	/** increment the pending operation count */
 	synchronized private void decrementPendingOperationCount() {
-		synchronized( EMPTY_WAIT_LOCK ) {
-			_pendingOperationCount--;
+		synchronized( emptyWaitLock ) {
+			pendingOperationCount--;
 			try {
-				if ( _pendingOperationCount == 0 )  EMPTY_WAIT_LOCK.notifyAll();
+				if ( pendingOperationCount == 0 )  emptyWaitLock.notifyAll();
 			}
 			catch ( Exception exception ) {
 				System.err.println( "Failed attempt to awake threads waiting on this group." );
@@ -157,6 +157,7 @@ public class DispatchGroup implements DispatchOperationListener {
 	
 	
 	/** Event indicating that an operation in this group has completed */
+        @Override
 	public <ReturnType> void operationCompleted( final DispatchOperation<ReturnType> operation ) {
 		decrementPendingOperationCount();
 	}
@@ -167,8 +168,9 @@ public class DispatchGroup implements DispatchOperationListener {
 /** ThreadLocal list of groups that are currently entered and accepting new operations */
 class LocalGroups extends ThreadLocal<Set<DispatchGroup>> {
 	/** override the initial value to create an empty list */
+        @Override
 	protected Set<DispatchGroup> initialValue() {
-		return new HashSet<DispatchGroup>();
+		return new HashSet<>();
 	}
 	
 	

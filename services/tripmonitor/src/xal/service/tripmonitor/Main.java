@@ -19,7 +19,7 @@ import java.util.Date;
  */
 public class Main {
 	/** The time at which the application was launched */
-	final static protected Date LAUNCH_TIME;
+	protected static final Date LAUNCH_TIME;
 	
 	/** The trip monitor model */
 	protected TripMonitorManager MODEL;
@@ -50,7 +50,7 @@ public class Main {
 	 * Main entry point to the service.  Run the service.
 	 * @param args The launch arguments to the service.
 	 */
-	static public void main( final String[] args ) {
+	public static void main( final String[] args ) {
 		new Main().run();
 	}
 	
@@ -59,7 +59,7 @@ public class Main {
 	 * Get the time when this application was launched.
 	 * @return the time when this application was launched
 	 */
-	static public Date getLaunchTime() {
+	public static Date getLaunchTime() {
 		return LAUNCH_TIME;
 	}
 }

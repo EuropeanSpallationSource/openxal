@@ -85,20 +85,20 @@ public class TestCompareDesignAndProduction {
     
 
     /** Location of the design accelerator configuration */
-    static final private String         STR_CFGFILE_DSGN = "/site/optics/design/main.xal";
+    private static final String         STR_CFGFILE_DSGN = "/site/optics/design/main.xal";
 
     /** Location of the design accelerator configuration */
-    static final private String         STR_CFGFILE_PROD = "/site/optics/production/main.xal";
+    private static final String         STR_CFGFILE_PROD = "/site/optics/production/main.xal";
     
     
     /** Output file name */
-    static final private String         STR_FILENAME_OUTPUT = TestCompareDesignAndProduction.class.getName() + ".txt";
+    private static final String         STR_FILENAME_OUTPUT = TestCompareDesignAndProduction.class.getName() + ".txt";
 
    
     
     /** The sequence we are testing in both accelerator configurations */
-    static final private String         STR_ID_TESTSEQ = "SCLMed";
-//    static final private String         STR_ID_TESTSEQ = "CCL1";
+    private static final String         STR_ID_TESTSEQ = "SCLMed";
+//    private static final String         STR_ID_TESTSEQ = "CCL1";
 
     
     /*
@@ -106,28 +106,28 @@ public class TestCompareDesignAndProduction {
      */
     
     /** The design Accelerator under test */
-    static private Accelerator          ACCEL_DSGN;
+    private static Accelerator          ACCEL_DSGN;
     
     /** The production Accelerator under test */
-    static private Accelerator          ACCEL_PROD;
+    private static Accelerator          ACCEL_PROD;
     
     
     /** The design Accelerator Sequence under test */
-    static private AcceleratorSeq       SEQ_PROD;
+    private static AcceleratorSeq       SEQ_PROD;
 
     /** The design Accelerator Sequence under test */
-    static private AcceleratorSeq     SEQ_DSGN;
+    private static AcceleratorSeq     SEQ_DSGN;
     
     
     /** The online model of the design accelerator sequence */
-    static private Scenario           MOD_DSGN;
+    private static Scenario           MOD_DSGN;
 
     /** The online model of the production accelerator sequence */
-    static private Scenario           MOD_PROD;
+    private static Scenario           MOD_PROD;
     
     
     /** The results output file stream */
-    static private PrintStream        PRN_OUTPUT;
+    private static PrintStream        PRN_OUTPUT;
 
 
     /*

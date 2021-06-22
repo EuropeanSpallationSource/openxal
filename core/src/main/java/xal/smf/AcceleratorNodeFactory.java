@@ -20,21 +20,21 @@ import java.lang.reflect.InvocationTargetException;
 
 public final class AcceleratorNodeFactory {
 	/** channel factory from which the nodes will generate channels */
-	final private ChannelFactory CHANNEL_FACTORY;
+	private final ChannelFactory channelFactory;
 
 	/** map of constructors keyed by node type */
-	private Map<String,Constructor<? extends Object>> _constructors = new HashMap<String,Constructor<? extends Object>>();
+	private Map<String,Constructor<? extends Object>> constructors = new HashMap<>();
 
 	/** map of classes keyed by node type */
-	private Map<String,Class<?>> _classTable;
+	private Map<String,Class<?>> classTable;
 
 
 	/** Constructor */
 	public AcceleratorNodeFactory( final ChannelFactory channelFactory ) {
-		this.CHANNEL_FACTORY = channelFactory != null ? channelFactory : ChannelFactory.defaultFactory();
+		this.channelFactory = channelFactory != null ? channelFactory : ChannelFactory.defaultFactory();
 
-		_constructors = new HashMap<String,Constructor<? extends Object>>();
-		_classTable = new HashMap<String,Class<?>>();
+		constructors = new HashMap<>();
+		classTable = new HashMap<>();
 	}
 
 
@@ -62,19 +62,14 @@ public final class AcceleratorNodeFactory {
      *  @param  nodeClass   Class class for the AcceleratorNode
      */
     private <T extends AcceleratorNode> void registerNodeClass( final String nodeType, final Class<T> nodeClass )   {
-        _classTable.put( nodeType, nodeClass );
+        classTable.put( nodeType, nodeClass );
 
         try {
 			@SuppressWarnings( "rawtypes" )
             final Constructor<T> constructor = nodeClass.getConstructor( new Class[] { String.class, ChannelFactory.class } );
-            _constructors.put( nodeType, constructor );
+            constructors.put( nodeType, constructor );
         }
-		catch ( NoSuchMethodException exception ) {
-			final String message = "AcceleratorNodeFactory: class registeration failure for type: " + nodeType;
-            System.err.println( message );
-			Logger.getLogger("global").log( Level.SEVERE, message, exception );
-        }
-		catch ( SecurityException exception )    {
+		catch ( NoSuchMethodException | SecurityException exception ) {
 			final String message = "AcceleratorNodeFactory: class registeration failure for type: " + nodeType;
             System.err.println( message );
 			Logger.getLogger("global").log( Level.SEVERE, message, exception );
@@ -89,18 +84,18 @@ public final class AcceleratorNodeFactory {
      */
     private AcceleratorNode createNode( final String nodeID, final String nodeType ) throws ClassNotFoundException {
         // Check if this node type is known; if not then substitute a generic node
-        if ( !_constructors.containsKey( nodeType ) ) {
+        if ( !constructors.containsKey( nodeType ) ) {
 			final String message = "Unknown AcceleratorNode type : \"" + nodeType + "\" for ID: " + nodeID + ".  Will substitute a GenericNode!";
             System.err.println( message );
 			Logger.getLogger("global").log( Level.WARNING, message );
-            final AcceleratorNode node = new GenericNode( nodeType, nodeID, CHANNEL_FACTORY );
-            _classTable.put( nodeType, GenericNode.class );
+            final AcceleratorNode node = new GenericNode( nodeType, nodeID, channelFactory );
+            classTable.put( nodeType, GenericNode.class );
             return node;
         }
 
-        final Constructor<?> constructor = _constructors.get( nodeType );
+        final Constructor<?> constructor = constructors.get( nodeType );
 		//TODO: need to account for custom channel factory
-        final Object[] args = new Object[] { nodeID, CHANNEL_FACTORY };
+        final Object[] args = new Object[] { nodeID, channelFactory };
 
         try {
             return (AcceleratorNode)constructor.newInstance( args );
@@ -126,7 +121,7 @@ public final class AcceleratorNodeFactory {
      * @return
      */
     public Map<String, Class<?>> getClassTable() {
-        return _classTable;
+        return classTable;
     }
 
     public static AcceleratorNodeFactory getDefaultFactory() {

@@ -108,7 +108,7 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
          */
 
         /** the set of IND constants that only include phase space variables (not the homogeneous coordinate) */
-        private final static EnumSet<IND> SET_PHASE = EnumSet.of(X, Xp, Y, Yp, Z, Zp);
+        private static final EnumSet<IND> SET_PHASE = EnumSet.of(X, Xp, Y, Yp, Z, Zp);
         
         
         /*
@@ -139,7 +139,8 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
         /** 
          * Return the integer value of the index position 
          */
-        public int val()    { return i; };
+        @Override
+        public int val()    { return i; }
 
         
         /*
@@ -762,6 +763,7 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
      *
      *  @return         element wise sum of two matrices
      */
+    @Override
     public PhaseMatrix  plus(PhaseMatrix matAddend)   {
         PhaseMatrix matSum = super.plus(matAddend);
         matSum.setElem(IND.HOM,IND.HOM, 1.00);
@@ -781,6 +783,7 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
      *
      *  @param  matAddend     matrix to be added to this (result replaces this)
      */
+    @Override
     public void plusEquals(PhaseMatrix  matAddend)    {
         super.plusEquals(matAddend);
         this.setElem(IND.HOM,IND.HOM, 1.00);
@@ -801,6 +804,7 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
      *
      *  @return         difference of this matrix and the given one
      */
+    @Override
     public PhaseMatrix  minus(PhaseMatrix matSub)   {
         PhaseMatrix matDif = super.minus(matSub);
         matDif.setElem(IND.HOM,IND.HOM, 1.00);
@@ -820,6 +824,7 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
      *
      *  @param  matSub     matrix to be subtracted from this matrix (result replaces this)
      */
+    @Override
     public void minusEquals(PhaseMatrix  matSub)    {
         super.minusEquals( matSub );
         this.setElem(IND.HOM,IND.HOM, 1.00);

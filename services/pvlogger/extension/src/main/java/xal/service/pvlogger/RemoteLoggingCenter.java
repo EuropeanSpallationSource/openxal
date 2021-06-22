@@ -20,12 +20,12 @@ import xal.extension.service.ServiceRef;
 /** Center for communicating with a remote PV logger */
 public class RemoteLoggingCenter {
 	/** list of remote services */
-	final private Map<String,RemoteLogging> REMOTE_SERVICES_MAP;
+	private final Map<String,RemoteLogging> REMOTE_SERVICES_MAP;
 	
 	
 	/** Constructor */
 	public RemoteLoggingCenter() {
-		REMOTE_SERVICES_MAP = new Hashtable<String,RemoteLogging>();
+		REMOTE_SERVICES_MAP = new Hashtable<>();
 		monitorLoggers();
 	}
 	

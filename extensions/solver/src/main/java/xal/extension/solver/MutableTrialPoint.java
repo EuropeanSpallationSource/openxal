@@ -35,7 +35,7 @@ public class MutableTrialPoint extends TrialPoint {
 	 * @param trialPoint  the trial point to copy
 	 */
 	public MutableTrialPoint( final TrialPoint trialPoint ) {
-		this( trialPoint._values );
+		this( trialPoint.values );
 	}
 
 
@@ -72,7 +72,7 @@ public class MutableTrialPoint extends TrialPoint {
 	 * @param value     The value of the specified variable
 	 */
 	public void setValue( final Variable variable, final double value ) {
-		_values.put( variable, value );
+		values.put( variable, value );
 	}
 }
 

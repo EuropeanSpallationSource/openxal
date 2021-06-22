@@ -23,7 +23,7 @@ public class ProblemFactory {
 	 * @param scorer the scorer
 	 * @param tolerance the score corresponding to 90% satisfaction
 	 */
-	static public Problem getInverseSquareMinimizerProblem( final List<Variable> variables, final Scorer scorer, final double tolerance ) {
+	public static Problem getInverseSquareMinimizerProblem( final List<Variable> variables, final Scorer scorer, final double tolerance ) {
 		final Objective objective = getInverseSquareObjectiveWithTolerance( tolerance );
 		return getProblem( variables, scorer, objective );
 	}
@@ -35,7 +35,7 @@ public class ProblemFactory {
 	 * @param scorer the scorer
 	 * @param tolerance the score corresponding to 90% satisfaction
 	 */
-	static public Problem getInverseSquareMaximizerProblem( final List<Variable> variables, final Scorer scorer, final double tolerance ) {
+	public static Problem getInverseSquareMaximizerProblem( final List<Variable> variables, final Scorer scorer, final double tolerance ) {
 		final Objective objective = getInverseSquareRisingObjectiveWithTolerance( tolerance );
 		return getProblem( variables, scorer, objective );
 	}
@@ -47,7 +47,7 @@ public class ProblemFactory {
 	 * @param scorer the scorer
 	 * @param slope the slope of the satisfaction curve at the center
 	 */
-	static public Problem getSCurveProblem( final List<Variable> variables, final Scorer scorer, final double slope ) {
+	public static Problem getSCurveProblem( final List<Variable> variables, final Scorer scorer, final double slope ) {
 		return getSCurveProblem( variables, scorer, 0.0, slope );
 	}
 	
@@ -59,7 +59,7 @@ public class ProblemFactory {
 	 * @param center the center value of the satisfaction curve
 	 * @param slope the slope of the satisfaction curve at the center
 	 */
-	static public Problem getSCurveProblem( final List<Variable> variables, final Scorer scorer, final double center, final double slope ) {
+	public static Problem getSCurveProblem( final List<Variable> variables, final Scorer scorer, final double center, final double slope ) {
 		final Objective objective = getSCurveObjectiveWithCenterAndSlope( center, slope );
 		return getProblem( variables, scorer, objective );
 	}
@@ -72,7 +72,7 @@ public class ProblemFactory {
 	 * @param minScore the minimum score
 	 * @param maxScore the maximum score
 	 */
-	static public Problem getLinearMaximizerProblem( final List<Variable> variables, final Scorer scorer, final double minScore, final double maxScore ) {
+	public static Problem getLinearMaximizerProblem( final List<Variable> variables, final Scorer scorer, final double minScore, final double maxScore ) {
 		final Objective objective = getLinearRisingObjective( minScore, maxScore );
 		return getProblem( variables, scorer, objective );
 	}
@@ -85,7 +85,7 @@ public class ProblemFactory {
 	 * @param minScore the minimum score
 	 * @param maxScore the maximum score
 	 */
-	static public Problem getLinearMinimizerProblem( final List<Variable> variables, final Scorer scorer, final double minScore, final double maxScore ) {
+	public static Problem getLinearMinimizerProblem( final List<Variable> variables, final Scorer scorer, final double minScore, final double maxScore ) {
 		final Objective objective = getLinearFallingObjective( minScore, maxScore );
 		return getProblem( variables, scorer, objective );
 	}
@@ -99,7 +99,7 @@ public class ProblemFactory {
 	 * @param maxScore the maximum score
 	 * @param endSlope the slope of the satisfaction curve at the maximum score
 	 */
-	static public Problem getAcceleratingProblem( final List<Variable> variables, final Scorer scorer, final double minScore, final double maxScore, final double endSlope ) {
+	public static Problem getAcceleratingProblem( final List<Variable> variables, final Scorer scorer, final double minScore, final double maxScore, final double endSlope ) {
 		final Objective objective = getAcceleratingObjective( minScore, maxScore, endSlope );
 		return getProblem( variables, scorer, objective );
 	}
@@ -113,7 +113,7 @@ public class ProblemFactory {
 	 * @param maxScore the maximum score
 	 * @param startSlope the slope of the satisfaction curve at the minimum score
 	 */
-	static public Problem getDeceleratingProblem( final List<Variable> variables, final Scorer scorer, final double minScore, final double maxScore, final double startSlope ) {
+	public static Problem getDeceleratingProblem( final List<Variable> variables, final Scorer scorer, final double minScore, final double maxScore, final double startSlope ) {
 		final Objective objective = getDeceleratingObjective( minScore, maxScore, startSlope );
 		return getProblem( variables, scorer, objective );
 	}
@@ -126,8 +126,8 @@ public class ProblemFactory {
 	 * @param objective the objective
 	 * @return a new problem
 	 */
-	static private Problem getProblem( final List<Variable> variables, final Scorer scorer, final Objective objective ) {
-		final List<Objective> objectives = new ArrayList<Objective>( 1 );
+	private static Problem getProblem( final List<Variable> variables, final Scorer scorer, final Objective objective ) {
+		final List<Objective> objectives = new ArrayList<>( 1 );
 		objectives.add( objective );
 		return new Problem( objectives, variables, getEvaluator( scorer, variables, objective ) );
 	}
@@ -139,8 +139,9 @@ public class ProblemFactory {
 	 * @param objective the objective to use
 	 * @return an evaluator
 	 */
-	static private Evaluator getEvaluator( final Scorer scorer, final List<Variable> variables, final Objective objective ) {
+	private static Evaluator getEvaluator( final Scorer scorer, final List<Variable> variables, final Objective objective ) {
 		return new Evaluator() {
+                        @Override
 			public void evaluate( final Trial trial ) {
 				final double score = scorer.score( trial, variables );
 				trial.setScore( objective, score );
@@ -154,13 +155,14 @@ public class ProblemFactory {
 	 * @param minScore the minimum score
 	 * @param maxScore the maximum score
 	 */
-	static private Objective getLinearRisingObjective( final double minScore, final double maxScore ) {
+	private static Objective getLinearRisingObjective( final double minScore, final double maxScore ) {
 		return new Objective( "Rising Linear" ) {			
 			/**
 			 * Determines how satisfied the user is with the specified value for this objective.
 			 * @param value  The value associated with this objective for a particular trial
 			 * @return       the user satisfaction for the specified value
 			 */
+                        @Override
 			public double satisfaction( final double score ) {
 				return SatisfactionCurve.linearRisingSatisfaction( score, minScore, maxScore );
 			}
@@ -173,13 +175,14 @@ public class ProblemFactory {
 	 * @param minScore the minimum score
 	 * @param maxScore the maximum score
 	 */
-	static private Objective getLinearFallingObjective( final double minScore, final double maxScore ) {
+	private static Objective getLinearFallingObjective( final double minScore, final double maxScore ) {
 		return new Objective( "Falling Linear" ) {			
 			/**
 			 * Determines how satisfied the user is with the specified value for this objective.
 			 * @param value  The value associated with this objective for a particular trial
 			 * @return       the user satisfaction for the specified value
 			 */
+                        @Override
 			public double satisfaction( final double score ) {
 				return SatisfactionCurve.linearFallingSatisfaction( score, minScore, maxScore );
 			}
@@ -193,13 +196,14 @@ public class ProblemFactory {
 	 * @param maxScore the maximum score
 	 * @param endSlope the slope of the satisfaction curve at the maximum score
 	 */
-	static private Objective getAcceleratingObjective( final double minScore, final double maxScore, final double endSlope ) {
+	private static Objective getAcceleratingObjective( final double minScore, final double maxScore, final double endSlope ) {
 		return new Objective( "Accelerating" ) {			
 			/**
 			 * Determines how satisfied the user is with the specified value for this objective.
 			 * @param value  The value associated with this objective for a particular trial
 			 * @return       the user satisfaction for the specified value
 			 */
+                        @Override
 			public double satisfaction( final double score ) {
 				return SatisfactionCurve.acceleratingSatisfaction( score, minScore, maxScore, endSlope );
 			}
@@ -213,13 +217,14 @@ public class ProblemFactory {
 	 * @param maxScore the maximum score
 	 * @param startSlope the slope of the satisfaction curve at the minimum score
 	 */
-	static private Objective getDeceleratingObjective( final double minScore, final double maxScore, final double startSlope ) {
+	private static Objective getDeceleratingObjective( final double minScore, final double maxScore, final double startSlope ) {
 		return new Objective( "Decelerating" ) {			
 			/**
 			 * Determines how satisfied the user is with the specified value for this objective.
 			 * @param value  The value associated with this objective for a particular trial
 			 * @return       the user satisfaction for the specified value
 			 */
+                        @Override
 			public double satisfaction( final double score ) {
 				return SatisfactionCurve.deceleratingSatisfaction( score, minScore, maxScore, startSlope );
 			}
@@ -232,13 +237,14 @@ public class ProblemFactory {
 	 * @param center the center value of the satisfaction curve
 	 * @param slope the slope of the satisfaction curve at the center
 	 */
-	static private Objective getSCurveObjectiveWithCenterAndSlope( final double center, final double slope ) {
+	private static Objective getSCurveObjectiveWithCenterAndSlope( final double center, final double slope ) {
 		return new Objective( "S-Curve" ) {			
 			/**
 			 * Determines how satisfied the user is with the specified value for this objective.
 			 * @param value  The value associated with this objective for a particular trial
 			 * @return       the user satisfaction for the specified value
 			 */
+                        @Override
 			public double satisfaction( final double score ) {
 				return SatisfactionCurve.sCurveSatisfactionWithCenterAndSlope( score, center, slope );
 			}
@@ -250,13 +256,14 @@ public class ProblemFactory {
 	 * Generate an objective which uses an inverse square satisfaction curve with the specified tolerance
 	 * @param tolerance the score corresponding to 90% satisfaction
 	 */
-	static private Objective getInverseSquareObjectiveWithTolerance( final double tolerance ) {
+	private static Objective getInverseSquareObjectiveWithTolerance( final double tolerance ) {
 		return new Objective( "Inverse Square" ) {			
 			/**
 			 * Determines how satisfied the user is with the specified value for this objective.
 			 * @param value  The value associated with this objective for a particular trial
 			 * @return       the user satisfaction for the specified value
 			 */
+                        @Override
 			public double satisfaction( final double score ) {
 				return SatisfactionCurve.inverseSquareSatisfaction( score, tolerance );
 			}
@@ -268,13 +275,14 @@ public class ProblemFactory {
 	 * Generate an objective which uses an inverse square rising satisfaction curve with the specified tolerance
 	 * @param tolerance the score corresponding to 90% satisfaction
 	 */
-	static private Objective getInverseSquareRisingObjectiveWithTolerance( final double tolerance ) {
+	private static Objective getInverseSquareRisingObjectiveWithTolerance( final double tolerance ) {
 		return new Objective( "Inverse Square Rising" ) {			
 			/**
 			 * Determines how satisfied the user is with the specified value for this objective.
 			 * @param value  The value associated with this objective for a particular trial
 			 * @return       the user satisfaction for the specified value
 			 */
+                        @Override
 			public double satisfaction( final double score ) {
 				return SatisfactionCurve.inverseSquareRisingSatisfaction( score, tolerance );
 			}

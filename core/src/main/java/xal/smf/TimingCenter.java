@@ -106,10 +106,10 @@ public class TimingCenter implements DataListener {
         
     }
 	
-	static final public String DATA_LABEL = "timing";
+	public static final String DATA_LABEL = "timing";
 	
     /** channel suite associated with this node */
-    protected ChannelSuite _channelSuite;
+    protected ChannelSuite channelSuite;
 	
     // ------------------- handles ------------------------------------------------
 	/** beam trigger PV: 0=Trigger, 1=Counting */
@@ -199,7 +199,7 @@ public class TimingCenter implements DataListener {
 	 * Create an empty TimingCenter
 	 */
 	public TimingCenter( final ChannelFactory channelFactory ) {
-		_channelSuite = channelFactory != null ? new ChannelSuite( channelFactory ) : new ChannelSuite();
+		channelSuite = channelFactory != null ? new ChannelSuite( channelFactory ) : new ChannelSuite();
 	}
 
 
@@ -216,7 +216,7 @@ public class TimingCenter implements DataListener {
 	 * @return the default TimingCenter or null if no default has been specified
 	 * @throws xal.tools.ExceptionWrapper if an exception occurs while parsing the data source
 	 */
-	static public TimingCenter getDefaultTimingCenter() throws ExceptionWrapper {
+	public static TimingCenter getDefaultTimingCenter() throws ExceptionWrapper {
 		XMLDataManager dataManager = XMLDataManager.getDefaultInstance();
 		return (dataManager != null) ? dataManager.getTimingCenter() : null;
 	}
@@ -227,6 +227,7 @@ public class TimingCenter implements DataListener {
      * external data source.
      * @return a tag that identifies the receiver's type
      */
+    @Override
     public String dataLabel() {
 		return DATA_LABEL;
 	}
@@ -236,11 +237,12 @@ public class TimingCenter implements DataListener {
      * Update the data based on the information provided by the data provider.
      * @param adaptor The adaptor from which to update the data
      */
+    @Override
     public void update(DataAdaptor adaptor) {		
         // read the channel suites
         DataAdaptor suiteAdaptor = adaptor.childAdaptor(ChannelSuite.DATA_LABEL);
         if ( suiteAdaptor != null ) {
-            _channelSuite.update(suiteAdaptor);
+            channelSuite.update(suiteAdaptor);
         }
 	}
     
@@ -249,8 +251,9 @@ public class TimingCenter implements DataListener {
      * Write data to the data adaptor for storage.
      * @param adaptor The adaptor to which the receiver's data is written
      */
+    @Override
     public void write(DataAdaptor adaptor) {
-        adaptor.writeNode(_channelSuite);
+        adaptor.writeNode(channelSuite);
 	}
 	
 	
@@ -259,13 +262,13 @@ public class TimingCenter implements DataListener {
 	 * @return this timing center's channel suite
 	 */
 	public ChannelSuite getChannelSuite() {
-		return _channelSuite;
+		return channelSuite;
 	}
     
     
     /** accessor to channel suite handles */
     public Collection<String> getHandles() {
-        return _channelSuite.getHandles();
+        return channelSuite.getHandles();
     }
 	
     
@@ -275,7 +278,7 @@ public class TimingCenter implements DataListener {
      * @return The channel for the specified handle or null if there is no match.
      */
     public Channel findChannel( final String handle ) {
-		return _channelSuite.getChannel( handle );
+		return channelSuite.getChannel( handle );
     }
 	
 	

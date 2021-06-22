@@ -11,6 +11,7 @@ package xal.tools.apputils.pvselection;
 
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Vector;
 import xal.ca.Channel;
 import xal.smf.Accelerator;
@@ -57,7 +58,7 @@ public class XALTreeNode extends HandleNode {
             for (AcceleratorSeq allSeq : allSeqs) {
                 if (!"Bnch".equals(allSeq.getType())) {
                     Vector<String> typeV = new Vector<>();
-                    java.util.List<AcceleratorNode> nodes = allSeq.getAllNodes();
+                    List<AcceleratorNode> nodes = allSeq.getAllNodes();
                     for ( final AcceleratorNode node : nodes ) {
                         String type = node.getType();
                         if( !typeV.contains(type) )
@@ -85,7 +86,7 @@ class SeqNode extends HandleNode {
     private void defineTypeNodes( Vector<String> types, AcceleratorSeq accSeq ) {
         for (int j=0; j<types.size(); j++) {
             // try vector instead of hashtable
-            java.util.List<AcceleratorNode> nodesOfType = accSeq.getAllNodesOfType( types.elementAt(j) );
+            List<AcceleratorNode> nodesOfType = accSeq.getAllNodesOfType( types.elementAt(j) );
             Vector<String> devIdV = new Vector<>();
             Vector<AcceleratorNode> deviceV = new Vector<>();
             for (int jj=0; jj<nodesOfType.size(); jj++) {
@@ -149,15 +150,15 @@ class DeviceNode extends HandleNode {
 		for (int k=0; k < handles.size(); k++) {
 			Channel channel = dev.getChannel( handles.elementAt(k) );
 			if(channel != null){
-				HandleNode h_node =  new HandleNode( handles.elementAt(k) );
-				h_node.setAsSignal(true);
-				h_node.setChannel(channel);
+				HandleNode hNode =  new HandleNode( handles.elementAt(k) );
+				hNode.setAsSignal(true);
+				hNode.setChannel(channel);
 
 				// get the channel name
-				h_node.setSignalName( dev.getChannel( handles.elementAt(k) ).getId() );
+				hNode.setSignalName( dev.getChannel( handles.elementAt(k) ).getId() );
 				//h_node.setSignalName(dev.getId()+":"+(String)(handles.elementAt(k)));
 
-				add(h_node);
+				add(hNode);
 			}
 	    }
     }

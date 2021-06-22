@@ -20,13 +20,13 @@ import java.text.*;
  * @author  tap
  */
 public class MachineSnapshot {
-	static final protected DateFormat TIME_FORMAT;
+	protected static final DateFormat TIME_FORMAT;
 	
-	protected long _id;
-	protected Date _timestamp;
-	protected ChannelSnapshot[] _channelSnapshots;
-	protected String _type;
-	protected String _comment;
+	protected long id;
+	protected Date timestamp;
+	protected ChannelSnapshot[] channelSnapshots;
+	protected String type;
+	protected String comment;
 	
 	
 	/**
@@ -46,11 +46,11 @@ public class MachineSnapshot {
 	 * @param channelSnapshots The channel snapshots associated with this machine snapshot.
 	 */
 	public MachineSnapshot(long id, String type, Date timestamp, String comment, ChannelSnapshot[] channelSnapshots) {
-		_id = id;
-		_type = type;
-		_timestamp = timestamp;
-		_comment = comment;
-		_channelSnapshots = channelSnapshots;
+		this.id = id;
+		this.type = type;
+		this.timestamp = timestamp;
+		this.comment = comment;
+		this.channelSnapshots = channelSnapshots;
 	}
 	
 	
@@ -92,7 +92,7 @@ public class MachineSnapshot {
 	 * @param channelSnapshot The channel snapshot to associate with this machine snapshot.
 	 */
 	public void setChannelSnapshot(int index, ChannelSnapshot channelSnapshot) {
-		_channelSnapshots[index] = channelSnapshot;
+		this.channelSnapshots[index] = channelSnapshot;
 	}
 	
 	
@@ -101,7 +101,7 @@ public class MachineSnapshot {
 	 * @param channelSnapshots The array of channel snapshots to associate with the machine snapshot
 	 */
 	void setChannelSnapshots(final ChannelSnapshot[] channelSnapshots) {
-		_channelSnapshots = channelSnapshots;
+		this.channelSnapshots = channelSnapshots;
 	}
 	
 	
@@ -110,7 +110,7 @@ public class MachineSnapshot {
 	 * @return The array of channel snapshots.
 	 */
 	public ChannelSnapshot[] getChannelSnapshots() {
-		return _channelSnapshots;
+		return channelSnapshots;
 	}
 	
 	
@@ -119,7 +119,7 @@ public class MachineSnapshot {
 	 * @return the number of channel snapshot placeholders.
 	 */
 	public int getChannelCount() {
-		return _channelSnapshots.length;
+		return channelSnapshots.length;
 	}
 	
 	
@@ -128,7 +128,7 @@ public class MachineSnapshot {
 	 * @return The unique identifier of this machine snapshot.
 	 */
 	public long getId() {
-		return _id;
+		return id;
 	}
 	
 	
@@ -137,7 +137,7 @@ public class MachineSnapshot {
 	 * @param id The unique identifier to use for this machine snapshot
 	 */
 	public void setId(long id) {
-		_id = id;
+		this.id = id;
 	}
 	
 	
@@ -146,7 +146,7 @@ public class MachineSnapshot {
 	 * @return the group id identifying the type of snapshot
 	 */
 	public String getType() {
-		return _type;
+		return type;
 	}
 	
 	
@@ -155,7 +155,7 @@ public class MachineSnapshot {
 	 * @param type type of snapshot
 	 */
 	public void setType(final String type) {
-		_type = type;
+		this.type = type;
 	}
 	
 	
@@ -164,7 +164,7 @@ public class MachineSnapshot {
 	 * @return the comment assigned to this machine snapshot.
 	 */
 	public String getComment() {
-		return _comment;
+		return comment;
 	}
 	
 	
@@ -173,7 +173,7 @@ public class MachineSnapshot {
 	 * @param comment The comment to assign to this machine snapshot.
 	 */
 	public void setComment(String comment) {
-		_comment = comment;
+		this.comment = comment;
 	}
 	
 	
@@ -182,7 +182,7 @@ public class MachineSnapshot {
 	 * @return The time when this machine snapshot was taken.
 	 */
 	public Date getTimestamp() {
-		return _timestamp;
+		return timestamp;
 	}
 	
 	
@@ -190,17 +190,18 @@ public class MachineSnapshot {
 	 * Override toString() to get a textual description of the machine snapshot.
 	 * @return a textual description of the machine snapshot.
 	 */
+        @Override
 	public String toString() {
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		
-		buffer.append("id: " + _id + "\n");
-		buffer.append("type:  " + _type + "\n");
-		buffer.append("Timestamp:  " + TIME_FORMAT.format(_timestamp) + "\n");
-		buffer.append("Comment:  " + _comment + "\n");
-		for ( int index = 0 ; index < _channelSnapshots.length ; index++ ) {
-			ChannelSnapshot channelSnapshot = _channelSnapshots[index];
+		buffer.append("id: ").append(id).append("\n");
+		buffer.append("type:  ").append(type).append("\n");
+		buffer.append("Timestamp:  ").append(TIME_FORMAT.format(timestamp)).append("\n");
+		buffer.append("Comment:  ").append(comment).append("\n");
+		for ( int index = 0 ; index < channelSnapshots.length ; index++ ) {
+			ChannelSnapshot channelSnapshot = channelSnapshots[index];
 			if ( channelSnapshot != null ) {
-				buffer.append( channelSnapshot + "\n" );
+				buffer.append(channelSnapshot).append("\n");
 			}
 		}
 		

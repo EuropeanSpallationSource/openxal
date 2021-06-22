@@ -16,12 +16,12 @@ import java.util.HashMap;
 /** Factory for generating border proxies */
 public class BorderProxyFactory {
 	/** table of proxies keyed by type */
-	static protected Map<String,BorderProxy<Border>> PROXY_TABLE;
+	protected static Map<String,BorderProxy<Border>> proxyTable;
 	
 	
 	// static initializer
 	static {
-		PROXY_TABLE = new HashMap<String,BorderProxy<Border>>();
+		proxyTable = new HashMap<>();
 		
 		register( getBorderProxy( EtchedBorder.class, "Etched Border" )  );
 		register( getLoweredBevelBorderProxy( "Lowered Bevel" ) );
@@ -32,26 +32,27 @@ public class BorderProxyFactory {
 	
 	/** register the proxy in the proxy table */
 	@SuppressWarnings( "unchecked" )	// must convert border proxy subtypes to the subtype of Border
-	static protected void register( final BorderProxy<? extends Border> proxy ) {
-		PROXY_TABLE.put( proxy.getType(), (BorderProxy<Border>)proxy );
+	protected static void register( final BorderProxy<? extends Border> proxy ) {
+		proxyTable.put( proxy.getType(), (BorderProxy<Border>)proxy );
 	}
 	
 	
 	/** get a border proxy with the specified type */
-	static public BorderProxy<Border> getBorderProxy( final String type ) {
-		if ( PROXY_TABLE.containsKey( type ) ) {
-			return PROXY_TABLE.get( type );
+	public static BorderProxy<Border> getBorderProxy( final String type ) {
+		if ( proxyTable.containsKey( type ) ) {
+			return proxyTable.get( type );
 		}
 		else {
 			final String swingType = "javax.swing.border." + type;
-			return PROXY_TABLE.get( swingType );
+			return proxyTable.get( swingType );
 		}
 	}
 	
 	
 	/** Create a border proxy for a border with an empty constructor */
-	static public <T extends Border> BorderProxy<T> getBorderProxy( final Class<T> borderClass, final String name ) {
+	public static <T extends Border> BorderProxy<T> getBorderProxy( final Class<T> borderClass, final String name ) {
 		return new BorderProxy<T>( borderClass ) {			
+                        @Override
 			public String getName() {
 				return name;
 			}
@@ -60,20 +61,23 @@ public class BorderProxyFactory {
 	
 	
 	/** Create a title border proxy */
-	static public BorderProxy<TitledBorder> getTitledBorderProxy( final String name ) {
+	public static BorderProxy<TitledBorder> getTitledBorderProxy( final String name ) {
 		return new BorderProxy<TitledBorder>( TitledBorder.class ) {			
 			/** Get the array of constructor arguments */
+                        @Override
 			public Class<?>[] getConstructorParameterTypes() {
 				return new Class<?>[] { String.class };
 			}
 			
 			
 			/** Get the array of constructor arguments */
+                        @Override
 			public Object[] getConstructorParameters() {
 				return new Object[] { "title" };
 			}
 			
 			
+                        @Override
 			public String getName() {
 				return name;
 			}
@@ -82,26 +86,30 @@ public class BorderProxyFactory {
 	
 	
 	/** Create a title border proxy */
-	static public BorderProxy<BevelBorder> getLoweredBevelBorderProxy( final String name ) {
+	public static BorderProxy<BevelBorder> getLoweredBevelBorderProxy( final String name ) {
 		return new BorderProxy<BevelBorder>( BevelBorder.class ) {
 			/** Get the array of constructor arguments */
+                        @Override
 			public Class<?>[] getConstructorParameterTypes() {
 				return new Class<?>[] { Integer.TYPE };
 			}
 			
 			
 			/** Get the array of constructor arguments */
+                        @Override
 			public Object[] getConstructorParameters() {
 				return new Object[] { BevelBorder.LOWERED };
 			}
 			
 			
+                        @Override
 			public String getName() {
 				return name;
 			}
 			
 			
 			/** get the type of the prototype */
+                        @Override
 			public String getType() {
 				return "javax.swing.border.BevelBorder_Lowered";
 			}
@@ -110,26 +118,30 @@ public class BorderProxyFactory {
 	
 	
 	/** Create a title border proxy */
-	static public BorderProxy<BevelBorder> getRaisedBevelBorderProxy( final String name ) {
+	public static BorderProxy<BevelBorder> getRaisedBevelBorderProxy( final String name ) {
 		return new BorderProxy<BevelBorder>( BevelBorder.class ) {
 			/** Get the array of constructor arguments */
+                        @Override
 			public Class<?>[] getConstructorParameterTypes() {
 				return new Class<?>[] { Integer.TYPE };
 			}
 			
 			
 			/** Get the array of constructor arguments */
+                        @Override
 			public Object[] getConstructorParameters() {
 				return new Object[] { BevelBorder.RAISED };
 			}
 			
 			
+                        @Override
 			public String getName() {
 				return name;
 			}
 			
 			
 			/** get the type of the prototype */
+                        @Override
 			public String getType() {
 				return "javax.swing.border.BevelBorder_Raised";
 			}

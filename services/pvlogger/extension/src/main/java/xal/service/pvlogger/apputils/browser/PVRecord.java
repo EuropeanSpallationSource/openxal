@@ -15,13 +15,13 @@ public class PVRecord {
 	private final String SIGNAL;
 
 	/** indicates the enabled status of the signal */
-	private boolean _enabled;
+	private boolean enabled;
 
 
 	/** Primary Constructor */
     public PVRecord( final String signal, final boolean enabled ) {
 		SIGNAL = signal;
-		_enabled = enabled;
+		this.enabled = enabled;
     }
 
 
@@ -39,12 +39,12 @@ public class PVRecord {
 
 	/** determine whether the signal is enabled */
 	public boolean getEnabled() {
-		return _enabled;
+		return enabled;
 	}
 
 
 	/** set the signal enable status */
 	public void setEnabled( final boolean enabled ) {
-		_enabled = enabled;
+		this.enabled = enabled;
 	}
 }

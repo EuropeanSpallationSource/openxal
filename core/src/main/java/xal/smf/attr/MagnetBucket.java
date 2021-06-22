@@ -28,9 +28,9 @@ public class MagnetBucket extends AttributeBucket {
      *  Constants
      */
     
-    private final static String     c_strType = "magnet"; 
+    private static final String     TYPE = "magnet"; 
 
-    private final static String[]   c_arrNames = {  "len",      // effective length
+    private static final String[]   ARR_NAMES = {  "len",      // effective length
                                                     "dfltMagFld", // default field value
                                                     "polarity", // default polarity value
                                                     "multFieldNorm",      // normal field components
@@ -41,45 +41,46 @@ public class MagnetBucket extends AttributeBucket {
      
     
     /** Override virtual to provide type signature */
-    public String getType()         { return c_strType; };
+    @Override
+    public String getType()         { return TYPE; }
         
     public MagnetBucket() {
         super();
         
-        m_attLenEff  = new Attribute(0.0);
-        m_attFldDflt = new Attribute(0.0 );
-        m_attPolarity = new Attribute(1.0 );
-        m_attFldNorm = new Attribute(new double[] {} );
-        m_attFldTang = new Attribute(new double[] {} );
+        attLenEff  = new Attribute(0.0);
+        attFldDflt = new Attribute(0.0 );
+        attPolarity = new Attribute(1.0 );
+        attFldNorm = new Attribute(new double[] {} );
+        attFldTang = new Attribute(new double[] {} );
 	
-        super.registerAttribute(c_arrNames[0], m_attLenEff, "Effective length (m).");
-        super.registerAttribute(c_arrNames[1], m_attFldDflt, "Design field strength (T/m^(n-1)), n=1 for dipole, 2 for quad...");
-        super.registerAttribute(c_arrNames[2], m_attPolarity, "Magnet polarity ( 1 or -1).");
-        super.registerAttribute(c_arrNames[3], m_attFldNorm, "Normal field multipole coefficients.");
-        super.registerAttribute(c_arrNames[4], m_attFldTang, "Skew field multipole coefficients.");
+        super.registerAttribute(ARR_NAMES[0], attLenEff, "Effective length (m).");
+        super.registerAttribute(ARR_NAMES[1], attFldDflt, "Design field strength (T/m^(n-1)), n=1 for dipole, 2 for quad...");
+        super.registerAttribute(ARR_NAMES[2], attPolarity, "Magnet polarity ( 1 or -1).");
+        super.registerAttribute(ARR_NAMES[3], attFldNorm, "Normal field multipole coefficients.");
+        super.registerAttribute(ARR_NAMES[4], attFldTang, "Skew field multipole coefficients.");
     }
     
      
     /** return the magnetic length (in m) */
-    public double   getEffLength()  { return m_attLenEff.getDouble(); };
+    public double   getEffLength()  { return attLenEff.getDouble(); }
     /** return the design magnetic field strength (in Tesla) */
-    public double   getDfltField()  { return m_attFldDflt.getDouble(); };
+    public double   getDfltField()  { return attFldDflt.getDouble(); }
     /** return the magnet polarity ( 1 or -1) */
-    public double   getPolarity()   { return m_attPolarity.getDouble(); };
-    public double[] getNormField()  { return m_attFldNorm.getArrDbl(); };
-    public double[] getTangField()  { return m_attFldTang.getArrDbl(); };
+    public double   getPolarity()   { return attPolarity.getDouble(); }
+    public double[] getNormField()  { return attFldNorm.getArrDbl(); }
+    public double[] getTangField()  { return attFldTang.getArrDbl(); }
     
     /** set the magnetic length (in m) 
      * @param dblVal magnetic length in meters
      */
-    public void setEffLength(double dblVal)     { m_attLenEff.set(dblVal); };
+    public void setEffLength(double dblVal)     { attLenEff.set(dblVal); }
     /** set the magnet polarity 
      * @param dblVal magnet polarity (1 or -1)
      */
-    public void setPolarity(double dblVal)      { m_attPolarity.set(dblVal); };
-    public void setNormField(double[] arrVal)   { m_attFldNorm.set(arrVal); };
-    public void setTangField(double[] arrVal)   { m_attFldTang.set(arrVal); };
-    public void setDfltField(double dblVal)   { m_attFldDflt.set(dblVal); };   
+    public void setPolarity(double dblVal)      { attPolarity.set(dblVal); }
+    public void setNormField(double[] arrVal)   { attFldNorm.set(arrVal); }
+    public void setTangField(double[] arrVal)   { attFldTang.set(arrVal); }
+    public void setDfltField(double dblVal)   { attFldDflt.set(dblVal); }
     /** set the dipole rotation angle for entrance pole face (in degrees) 
      * @param dblVal dipole rotation angle for entrance pole face in degrees
      */
@@ -89,14 +90,14 @@ public class MagnetBucket extends AttributeBucket {
      */
     
     /** effective magnetic length (m) */
-    private Attribute       m_attLenEff;            
+    private Attribute       attLenEff;            
     /**  design field strength (T/m^(n-1)), n=1 for dipole, 2 for quad,... */
-    private Attribute       m_attFldDflt;           
+    private Attribute       attFldDflt;           
     /** polarity */
-    private Attribute       m_attPolarity;           
+    private Attribute       attPolarity;           
     /**  normal field multipole coefficients */
-    private Attribute       m_attFldNorm;           
+    private Attribute       attFldNorm;           
     /** tangential field multipole coefficients */
-    private Attribute       m_attFldTang;
+    private Attribute       attFldTang;
 
 }

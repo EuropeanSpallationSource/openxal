@@ -328,10 +328,10 @@ public final class ElementaryFunction {
     public static double sinc(double x) {
         
         if (Math.abs(x) < 0.1) {    // avoid singularity at zero
-            double      x_2 = x*x;
-            double      x_4 = x_2*x_2;
+            double      x2 = x*x;
+            double      x4 = x2*x2;
             
-            return 1.0 - x_2/6.0 + x_4/120.0 - x_2*x_4/5040.0;
+            return 1.0 - x2/6.0 + x4/120.0 - x2*x4/5040.0;
         }
         
         return Math.sin(x)/x;
@@ -372,9 +372,9 @@ public final class ElementaryFunction {
         	// System.out.println("sinch, x = "+x);
         }
         
-        double      x_2 = x*x;
+        double      x2 = x*x;
         
-        return 1.0 + x_2/6.0 + x_2*x_2/120.0 + x_2*x_2*x_2/5040.0;
+        return 1.0 + x2/6.0 + x2*x2/120.0 + x2*x2*x2/5040.0;
     }
 
     /**
@@ -397,9 +397,9 @@ public final class ElementaryFunction {
         	//System.out.println("sinchm, x = "+x);
         }
         
-        double      x_2 = x*x;
+        double      x2 = x*x;
         
-        return 1.0 + x_2/6.0 + x_2*x_2/120.0 + x_2*x_2*x_2/5040.0;
+        return 1.0 + x2/6.0 + x2*x2/120.0 + x2*x2*x2/5040.0;
     }
 
 
@@ -414,7 +414,7 @@ public final class ElementaryFunction {
      * 
      * @return &frac12;(<i>e</i><sup>+<i>x</i></sup> - <i>e</i><sup>-<i>x</i></sup>) 
      */
-    public final static double sinh(double x) {
+    public static final double sinh(double x) {
         return 0.5*(Math.exp(x)-Math.exp(-x));
     };
     
@@ -425,7 +425,7 @@ public final class ElementaryFunction {
      * 
      * @return &frac12;(<i>e</i><sup>+<i>x</i></sup> + <i>e</i><sup>-<i>x</i></sup>) 
      */
-    public final static double cosh(double x) {
+    public static final double cosh(double x) {
         return 0.5*(Math.exp(x)+Math.exp(-x));
     };
     
@@ -436,7 +436,7 @@ public final class ElementaryFunction {
      * 
      * @return sinh(<i>x</i>)/cosh(<i>x</i>)
      */
-    public final static double tanh(double x)   {
+    public static final double tanh(double x)   {
         return sinh(x)/cosh(x);
     }
 
@@ -454,7 +454,7 @@ public final class ElementaryFunction {
      * 
      * @return log[<i>x</i> + (<i>x</i><sup>2</sup> + 1)<sup>1/2</sup>]
      */
-    public final static double  asinh(double x) {
+    public static final double  asinh(double x) {
         return Math.log(x + Math.sqrt(x*x + 1.0));
     }
     
@@ -471,7 +471,7 @@ public final class ElementaryFunction {
      * 
      * @exception   IllegalArgumentException    argument value is outside the domain of definition
      */
-    public final static double  acosh(double x)
+    public static final double  acosh(double x)
         throws IllegalArgumentException 
     {
         if (x < 1.0)
@@ -493,7 +493,7 @@ public final class ElementaryFunction {
      * 
      * @author Christopher K. Allen
      */
-    public final static double atanh(double x)
+    public static final double atanh(double x)
         throws IllegalArgumentException  
     {
         if (x>=1.0 || x<=-1.0)
@@ -501,4 +501,4 @@ public final class ElementaryFunction {
         
         return 0.5*Math.log((1.0+x)/(1.0-x));
     }
-};
+}

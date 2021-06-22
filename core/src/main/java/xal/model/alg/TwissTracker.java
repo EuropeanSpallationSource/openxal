@@ -62,27 +62,27 @@ public class TwissTracker extends Tracker {
     
     // EditContext
     /** EditContext table name containing EnvelopeTracker parameters */
-    protected final static String      TBL_LBL_TWISSTRACKER = "TwissTracker";
+    protected static final String      TBL_LBL_TWISSTRACKER = "TwissTracker";
     
     /** Table record primary key name */
-    protected final static String      TBL_PRIM_KEY_NAME = "name";
+    protected static final String      TBL_PRIM_KEY_NAME = "name";
     
     
     // Archiving
     /** data node label for EnvelopeTracker settings */
-    protected final static String      LABEL_OPTIONS   = "options";
+    protected static final String      LABEL_OPTIONS   = "options";
     
     /** label for simulating space charge effects */
-    protected final static String      ATTR_SCHEFF   = "scheff";
+    protected static final String      ATTR_SCHEFF   = "scheff";
     
     /** label for simulating space charge effects */
-    protected final static String      ATTR_USESPACECHARGE = "useSpaceCharge";
+    protected static final String      ATTR_USESPACECHARGE = "useSpaceCharge";
     
     /** label for emittance growth flag */
-    protected final static String      ATTR_EMITGROWTH = "emitgrowth";
+    protected static final String      ATTR_EMITGROWTH = "emitgrowth";
     
     /** label for maxstepsize **/
-    protected final static String      ATTR_STEPSIZE   = "stepsize";
+    protected static final String      ATTR_STEPSIZE   = "stepsize";
 
     
     
@@ -91,13 +91,13 @@ public class TwissTracker extends Tracker {
      */
     
     /** string type identifier for algorithm */
-    public static final String      s_strTypeId = TwissTracker.class.getName();
+    public static final String      TYPE_ID = TwissTracker.class.getName();
     
     /** current algorithm version */
-    public static final int         s_intVersion = 1;
+    public static final int         VERSION = 1;
     
     /** probe type recognized by this algorithm */
-    public static final Class<TwissProbe>       s_clsProbeType = TwissProbe.class;
+    public static final Class<TwissProbe>       CLS_PROBE_TYPE = TwissProbe.class;
     
     
     
@@ -131,8 +131,8 @@ public class TwissTracker extends Tracker {
      *  Creates a new instance of EnvelopeTracker 
      */
     public TwissTracker() { 
-        super(s_strTypeId, s_intVersion, s_clsProbeType);
-    };
+        super(TYPE_ID, VERSION, CLS_PROBE_TYPE);
+    }
     
     /** 
      *  Creates a new, empty, instance of EnvelopeTracker.
@@ -467,7 +467,7 @@ public class TwissTracker extends Tracker {
             probe.setTwiss(twiss1);
             probe.setBetatronPhase( vecPhs1 );
         }
-    };
+    }
     
     
     /**
@@ -819,7 +819,7 @@ public class TwissTracker extends Tracker {
         double betagammaf =Math.sqrt(wf/m*(2+wf/m));
         
         
-        double clight = IProbe.LightSpeed;
+        double clight = IProbe.LIGHT_SPEED;
         double freq = elem.getFrequency();
         double lambda = clight/freq;
         
@@ -863,7 +863,7 @@ public class TwissTracker extends Tracker {
         double gammaa = (wa+m)/m;
         double betagammaa = Math.sqrt(wa/m*(2+wa/m));
 //        double betagamma0 = Math.sqrt(w/m*(2+w/m));
-        double clight = IProbe.LightSpeed;
+        double clight = IProbe.LIGHT_SPEED;
         double freq = elem.getFrequency();
         double lambda = clight/freq;
         
@@ -910,7 +910,7 @@ public class TwissTracker extends Tracker {
      * 
      * CKA Notes:
      * - This method needs to be optimized now that I understand what it is doing.
-     * In XAL, longitundinal coordinate <i>z</i> is the "phase spread", but in meters. 
+     * In XAL, longitudinal coordinate <i>z</i> is the "phase spread", but in meters. 
      * To convert to phase spread <i>dphi</i> in radians we have
      * 
      *      dphi = (z/(beta*lambda))*2*pi

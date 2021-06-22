@@ -8,12 +8,6 @@ package xal.extension.application;
 
 import xal.extension.bricks.WindowReference;
 
-import java.net.*;
-import java.awt.print.*;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import javax.swing.JOptionPane;
 
 
 /**
@@ -24,18 +18,11 @@ import javax.swing.JOptionPane;
  * @author  t6p
  */
 abstract public class XalDocument extends XalAbstractDocument {
-	/** wildcard file extension */
-	static public final String WILDCARD_FILE_EXTENSION = XalAbstractDocument.WILDCARD_FILE_EXTENSION;
-	
-	// public static constants for confirmation dialogs
-	final static public int YES_OPTION = XalAbstractDocument.YES_OPTION;
-	final static public int NO_OPTION = XalAbstractDocument.NO_OPTION;
-	
     // basic document instance variables
     public XalWindow mainWindow;     // The main window for the document
     
     /** proxy for dispatching document events */
-    private XalDocumentListener DOCUMENT_LISTENER_PROXY;    //
+    private XalDocumentListener documentListenerProxy;    //
     
     
     /** Constructor for new documents */
@@ -45,25 +32,27 @@ abstract public class XalDocument extends XalAbstractDocument {
     
     
     /** Register this document as a source of DocumentListener events. */
+    @Override
     public void registerEvents() {
 		super.registerEvents();
-        DOCUMENT_LISTENER_PROXY = MESSAGE_CENTER.registerSource( this, XalDocumentListener.class );
+        documentListenerProxy = messageCenter.registerSource( this, XalDocumentListener.class );
     }
     
     
     /** Add the listener for events from this document. */
     public void addXalDocumentListener( final XalDocumentListener listener ) {
-        MESSAGE_CENTER.registerTarget( listener, this, XalDocumentListener.class );
+        messageCenter.registerTarget( listener, this, XalDocumentListener.class );
     }
     
     
     /** Remove the listener from event from this document. */
     public void removeXalDocumentListener( final XalDocumentListener listener ) {
-        MESSAGE_CENTER.removeTarget( listener, this, XalDocumentListener.class );
+        messageCenter.removeTarget( listener, this, XalDocumentListener.class );
     }
     
     
     /** Construct the main window and associate it with this document. */
+    @Override
 	void setupMainWindow() {
         makeMainWindow();
         addXalDocumentListener( mainWindow );
@@ -72,7 +61,7 @@ abstract public class XalDocument extends XalAbstractDocument {
  	
 	
 	/** Get the window reference from the resource if any */
-	static public WindowReference getDefaultWindowReference( final String tag, final Object... parameters ) {
+	public static WindowReference getDefaultWindowReference( final String tag, final Object... parameters ) {
 		return Application.getAdaptor().getDefaultWindowReference( tag, parameters );
 	}
 	
@@ -81,9 +70,10 @@ abstract public class XalDocument extends XalAbstractDocument {
      * Set the document title.
      * @param newTitle The new title for this document.
      */
+    @Override
     public void setTitle( final String newTitle ) {
 		super.setTitle( newTitle );
-        if ( DOCUMENT_LISTENER_PROXY != null )  DOCUMENT_LISTENER_PROXY.titleChanged( this, newTitle );
+        if ( documentListenerProxy != null )  documentListenerProxy.titleChanged( this, newTitle );
     }	
     
     
@@ -91,10 +81,11 @@ abstract public class XalDocument extends XalAbstractDocument {
      * Set the whether this document has changes.
      * @param changeStatus Status to set whether this document has changes that need saving.
      */
+    @Override
     public void setHasChanges( final boolean changeStatus ) {
         if ( changeStatus != hasChanges() ) {
 			super.setHasChanges( changeStatus );
-            if ( DOCUMENT_LISTENER_PROXY != null )  DOCUMENT_LISTENER_PROXY.hasChangesChanged( this, changeStatus );
+            if ( documentListenerProxy != null )  documentListenerProxy.hasChangesChanged( this, changeStatus );
         }
     }
 
@@ -112,14 +103,15 @@ abstract public class XalDocument extends XalAbstractDocument {
      * user is given an opportunity to not close the document so they can save 
      * the changes.
      */
+    @Override
     public boolean closeDocument() {
 		if ( warnUserOfUnsavedChangesWhenClosing() && hasChanges() ) {
 			if ( !mainWindow.userPermitsCloseWithUnsavedChanges() )  return false;
 		}
 		
-        DOCUMENT_LISTENER_PROXY.documentWillClose(this);
+        documentListenerProxy.documentWillClose(this);
         willClose();
-        DOCUMENT_LISTENER_PROXY.documentHasClosed(this);
+        documentListenerProxy.documentHasClosed(this);
 		
 		freeResources();
 		
@@ -130,10 +122,11 @@ abstract public class XalDocument extends XalAbstractDocument {
 	/**
 	 * Free document resources.
 	 */
-	final public void freeResources() {
+    @Override
+	public final void freeResources() {
 		super.freeResources();
 		
-		DOCUMENT_LISTENER_PROXY = null;
+		documentListenerProxy = null;
 		mainWindow = null;		
 	}
     
@@ -151,6 +144,7 @@ abstract public class XalDocument extends XalAbstractDocument {
 	 * Implement the method for XalAbstractDocument.
      * @return The main window for this document.
      */
+    @Override
     public XalDocumentView getDocumentView() {
         return mainWindow;
     }

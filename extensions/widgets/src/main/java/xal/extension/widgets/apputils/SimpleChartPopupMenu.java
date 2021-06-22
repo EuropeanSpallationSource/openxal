@@ -6,6 +6,7 @@
 
 package xal.extension.widgets.apputils;
 
+import java.awt.AWTException;
 import xal.tools.apputils.*;
 import xal.tools.apputils.ImageCaptureManager;
 
@@ -13,11 +14,12 @@ import java.awt.Frame;
 import java.awt.Dialog;
 import java.awt.Component;
 import java.awt.event.*;
-import java.awt.Toolkit;
 import java.awt.Window;
 import javax.swing.*;
 import java.util.*;
 import java.io.*;
+import xal.extension.widgets.plot.FunctionGraphsJPanel;
+import xal.extension.widgets.plot.FunctionGraphsPopupAdaptor;
 
 
 /**
@@ -36,19 +38,19 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
     private static final long serialVersionUID = 1L;
     
 	// action ID constants
-	static final public String SCALE_ONCE_ID = "scale-once";
-	static final public String X_AUTOSCALE_ID = "x-autoscale";
-	static final public String Y_AUTOSCALE_ID = "y-autoscale";
-	static final public String X_GRID_ID = "x-grid-toggle";
-	static final public String Y_GRID_ID = "y-grid-toggle";
-	static final public String OPTIONS_DIALOG_ID = "options-dialog";
-	static final public String IMAGE_CAPTURE_ID = "save-image";
+	public static final String SCALE_ONCE_ID = "scale-once";
+	public static final String X_AUTOSCALE_ID = "x-autoscale";
+	public static final String Y_AUTOSCALE_ID = "y-autoscale";
+	public static final String X_GRID_ID = "x-grid-toggle";
+	public static final String Y_GRID_ID = "y-grid-toggle";
+	public static final String OPTIONS_DIALOG_ID = "options-dialog";
+	public static final String IMAGE_CAPTURE_ID = "save-image";
 	
     // Chart references
     protected ChartPopupAdaptor chartAdaptor;
     
 	// Menu action table keyed by action ID
-	protected Map<String,Action> _actionTable;
+	protected Map<String,Action> actionTable;
 	
     // Menu actions
     protected Action scaleOnceAction;
@@ -60,7 +62,7 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
     protected Action imageCaptureAction;
 
     // Other components
-	protected Component _chart;
+	protected Component chart;
     protected SimpleChartDialog chartDialog;
     protected JFileChooser fileChooser;
 
@@ -69,7 +71,7 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
 	 * Primary constructor
 	 */
     public SimpleChartPopupMenu(Component aChart, ChartPopupAdaptor anAdaptor) {
-		_chart = aChart;
+		chart = aChart;
         chartAdaptor = anAdaptor;
 		setup();
     }
@@ -78,8 +80,8 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
     /**
      * Create a simple chart popup menu for a FunctionGraphsJPanel chart
      */
-    public SimpleChartPopupMenu(xal.extension.widgets.plot.FunctionGraphsJPanel aChart) {
-		this( aChart, new xal.extension.widgets.plot.FunctionGraphsPopupAdaptor(aChart) );
+    public SimpleChartPopupMenu(FunctionGraphsJPanel aChart) {
+		this( aChart, new FunctionGraphsPopupAdaptor(aChart) );
     }
     
     
@@ -90,7 +92,7 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
 	 * @param anAdaptor The chart popup adaptor to use
      * @return The popup menu instance
      */
-    static public SimpleChartPopupMenu addPopupMenuTo(Component aChart, ChartPopupAdaptor anAdaptor) {
+    public static SimpleChartPopupMenu addPopupMenuTo(Component aChart, ChartPopupAdaptor anAdaptor) {
         SimpleChartPopupMenu menu = new SimpleChartPopupMenu(aChart, anAdaptor);
         aChart.addMouseListener(menu);
         return menu;
@@ -103,8 +105,8 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
      * @param aChart The chart to manage
      * @return The popup menu instance
      */
-    static public SimpleChartPopupMenu addPopupMenuTo(xal.extension.widgets.plot.FunctionGraphsJPanel aChart) {
-		return addPopupMenuTo( aChart, new xal.extension.widgets.plot.FunctionGraphsPopupAdaptor(aChart) );
+    public static SimpleChartPopupMenu addPopupMenuTo(FunctionGraphsJPanel aChart) {
+		return addPopupMenuTo( aChart, new FunctionGraphsPopupAdaptor(aChart) );
     }
     
     
@@ -112,7 +114,7 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
      * Initialize the popup menu.
      */
     protected void setup() {		
-		_actionTable = new HashMap<String,Action>(8);
+		actionTable = new HashMap<>(8);
         initComponents();
     }
 	
@@ -124,16 +126,16 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
 	private SimpleChartDialog getChartDialog() {
 		if ( chartDialog != null )  return chartDialog;
 		
-		Window owner = SwingUtilities.windowForComponent(_chart);
+		Window owner = SwingUtilities.windowForComponent(chart);
 		
 		if (owner instanceof Frame) {
-			chartDialog = new SimpleChartDialog((Frame)owner, _chart, chartAdaptor);
+			chartDialog = new SimpleChartDialog((Frame)owner, chart, chartAdaptor);
 		}
 		else if (owner instanceof Dialog) {
-			chartDialog = new SimpleChartDialog((Dialog)owner, _chart, chartAdaptor);
+			chartDialog = new SimpleChartDialog((Dialog)owner, chart, chartAdaptor);
 		}
 		else {
-			chartDialog = new SimpleChartDialog(_chart, chartAdaptor);
+			chartDialog = new SimpleChartDialog(chart, chartAdaptor);
 		}
 		
 		return chartDialog;
@@ -157,7 +159,8 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
             /** serialization ID */
             private static final long serialVersionUID = 1L;
             
-            public void actionPerformed(java.awt.event.ActionEvent event) {
+            @Override
+            public void actionPerformed(ActionEvent event) {
                 chartAdaptor.scaleXandY();
             }
         };
@@ -168,7 +171,8 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
             /** serialization ID */
             private static final long serialVersionUID = 1L;
             
-            public void actionPerformed(java.awt.event.ActionEvent event) {
+            @Override
+            public void actionPerformed(ActionEvent event) {
                 chartAdaptor.setXAutoScale( !chartAdaptor.isXAutoScale() );
             }
         };
@@ -179,7 +183,8 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
             /** serialization ID */
             private static final long serialVersionUID = 1L;
             
-            public void actionPerformed(java.awt.event.ActionEvent event) {
+            @Override
+            public void actionPerformed(ActionEvent event) {
                 chartAdaptor.setYAutoScale( !chartAdaptor.isYAutoScale() );
             }
         };
@@ -190,7 +195,8 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
             /** serialization ID */
             private static final long serialVersionUID = 1L;
             
-            public void actionPerformed(java.awt.event.ActionEvent event) {
+            @Override
+            public void actionPerformed(ActionEvent event) {
                 chartAdaptor.setXGridVisible( !chartAdaptor.isXGridVisible() );
             }
         };
@@ -201,7 +207,8 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
             /** serialization ID */
             private static final long serialVersionUID = 1L;
             
-            public void actionPerformed(java.awt.event.ActionEvent event) {
+            @Override
+            public void actionPerformed(ActionEvent event) {
                 chartAdaptor.setYGridVisible( !chartAdaptor.isYGridVisible() );
             }
         };
@@ -212,7 +219,8 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
             /** serialization ID */
             private static final long serialVersionUID = 1L;
             
-            public void actionPerformed(java.awt.event.ActionEvent event) {
+            @Override
+            public void actionPerformed(ActionEvent event) {
                 getChartDialog().showDialog();
             }
         };
@@ -223,15 +231,12 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
             /** serialization ID */
             private static final long serialVersionUID = 1L;
             
-            public void actionPerformed(java.awt.event.ActionEvent event) {
+            @Override
+            public void actionPerformed(ActionEvent event) {
                 try {
                     ImageCaptureManager.defaultManager().saveSnapshot( chartAdaptor.getChartComponent() );
                 }
-                catch(java.awt.AWTException exception) {
-                    System.err.println(exception);
-                    JOptionPane.showMessageDialog(chartAdaptor.getChartComponent(), exception.getMessage(), exception.getClass().getName(), JOptionPane.WARNING_MESSAGE);
-                }
-                catch(IOException exception) {
+                catch(AWTException | IOException exception) {
                     System.err.println(exception);
                     JOptionPane.showMessageDialog(chartAdaptor.getChartComponent(), exception.getMessage(), exception.getClass().getName(), JOptionPane.WARNING_MESSAGE);
                 }
@@ -244,13 +249,13 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
 	 * Put the actions in the table.
 	 */
 	protected void storeActions() {
-		_actionTable.put( SCALE_ONCE_ID, scaleOnceAction );
-		_actionTable.put( X_AUTOSCALE_ID, xAutoScaleAction );
-		_actionTable.put( Y_AUTOSCALE_ID, yAutoScaleAction );
-		_actionTable.put( X_GRID_ID, xGridAction );
-        _actionTable.put( Y_GRID_ID, yGridAction );
-		_actionTable.put( OPTIONS_DIALOG_ID, optionsAction );
-		_actionTable.put( IMAGE_CAPTURE_ID, imageCaptureAction );
+		actionTable.put( SCALE_ONCE_ID, scaleOnceAction );
+		actionTable.put( X_AUTOSCALE_ID, xAutoScaleAction );
+		actionTable.put( Y_AUTOSCALE_ID, yAutoScaleAction );
+		actionTable.put( X_GRID_ID, xGridAction );
+        actionTable.put( Y_GRID_ID, yGridAction );
+		actionTable.put( OPTIONS_DIALOG_ID, optionsAction );
+		actionTable.put( IMAGE_CAPTURE_ID, imageCaptureAction );
 	}
 	
 	
@@ -289,26 +294,31 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
 	 * @param enableState The desired enable/disable state.
 	 */
 	public void setActionEnabled( final String actionID, final boolean enableState ) {
-		Action action = _actionTable.get( actionID );
+		Action action = actionTable.get( actionID );
 		action.setEnabled( enableState );
 	}
     
     
     /** implement MouseListener interface */
+    @Override
     public void mouseClicked(MouseEvent event) {}
     
     /** implement MouseListener interface */
+    @Override
     public void mouseEntered(MouseEvent event) {}
 
     /** implement MouseListener interface */
+    @Override
     public void mouseExited(MouseEvent event) {}
     
     /** implement MouseListener interface */
+    @Override
     public void mousePressed(MouseEvent event) {
 		handleMouseEvent( event );
     }
     
     /** implement MouseListener interface */
+    @Override
     public void mouseReleased(MouseEvent event) {
 		handleMouseEvent( event );
 	}

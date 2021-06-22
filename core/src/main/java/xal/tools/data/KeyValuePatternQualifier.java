@@ -14,10 +14,10 @@ import java.util.regex.*;
 /** Qualifier to filter (based on the specified pattern) a record's value associated with a specified key. */
 public class KeyValuePatternQualifier implements Qualifier {
 	/** the key for which to fetch the record's value */
-	private final String _key;
+	private final String key;
 	
 	/** the pattern with which to test for matches */
-	private final Pattern _pattern;
+	private final Pattern pattern;
 	
 	
 	/**
@@ -27,8 +27,8 @@ public class KeyValuePatternQualifier implements Qualifier {
 	 * @param flags pattern flags
 	 */
 	public KeyValuePatternQualifier( final String key, final String regularExpression, int flags ) {
-		_key = key;
-		_pattern = Pattern.compile( regularExpression, flags );
+		this.key = key;
+		pattern = Pattern.compile( regularExpression, flags );
 	}
 	
 	
@@ -48,9 +48,10 @@ public class KeyValuePatternQualifier implements Qualifier {
 	* @param object The object to test for matching.  The object must be a keyed record.
 	* @return true if the object matches the criteria and false if not.
 	*/
+        @Override
 	public boolean matches( final Object object ) {
-		final CharSequence value = (CharSequence)((KeyedRecord)object).valueForKey( _key );
-		return _pattern.matcher( value ).matches();
+		final CharSequence value = (CharSequence)((KeyedRecord)object).valueForKey( key );
+		return pattern.matcher( value ).matches();
 	}	
 	
 	
@@ -58,8 +59,9 @@ public class KeyValuePatternQualifier implements Qualifier {
 	 * Get a string representation of this qualifier.
 	 * @return a string representation of this qualifier.
 	 */
+        @Override
 	public String toString() {		
-		return _key + " like \"" + _pattern.pattern() + "\"";
+		return key + " like \"" + pattern.pattern() + "\"";
 	}
 }
 

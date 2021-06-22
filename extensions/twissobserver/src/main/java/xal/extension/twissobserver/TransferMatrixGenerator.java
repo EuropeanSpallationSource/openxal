@@ -344,7 +344,7 @@ public class TransferMatrixGenerator {
 	 *
      * @param strDevIdStart    ID of device with which to start the simulation,
      *                         or <code>null</code> for the beginning of the sequence 
-	 * @param dblBnchChg       beam bunch charge in Coulombs
+	 * @param dblBeamCurr       beam bunch current in Amps
 	 * @param matInitState     initial state of the beam, initial covariance matrix
 	 * 
      * @throws ModelException  general error during model synchronization or simulation
@@ -357,28 +357,27 @@ public class TransferMatrixGenerator {
 	    throws ModelException 
 	{
 	    
-	    // Initialize the probe
+	// Initialize the probe
         this.mdlEnvProbe.reset();
-	    this.mdlEnvProbe.setCovariance(matInitState);
+        this.mdlEnvProbe.setCovariance(matInitState);
 //	    this.mdlEnvProbe.setBeamCharge(dblBnchChg);
-	    this.mdlEnvProbe.setBunchFrequency(dblBnchFreq);
-	    this.mdlEnvProbe.setBeamCurrent(dblBeamCurr);
-	    
+        this.mdlEnvProbe.setBunchFrequency(dblBnchFreq);
+        this.mdlEnvProbe.setBeamCurrent(dblBeamCurr);
 
-	    // Load the probe into the model, synchronize the model parameters, 
-	    //     set the start location, and run
-	    this.mdlBeamline.setProbe(this.mdlEnvProbe);
-	    this.mdlBeamline.resyncFromCache();
-        if (strDevIdStart != null)
+        // Load the probe into the model, synchronize the model parameters, 
+        //     set the start location, and run
+        this.mdlBeamline.setProbe(this.mdlEnvProbe);
+        this.mdlBeamline.resyncFromCache();
+        if (strDevIdStart != null) {
             this.mdlBeamline.setStartNode(strDevIdStart);
-	    this.mdlBeamline.run();
-	    
-	    
-	    // Save the trajectory
-	    this.mdlTrjEnv = this.mdlBeamline.getTrajectory();
-	    this.bolScheff = true;
-	}
-	
+        }
+        this.mdlBeamline.run();
+
+        // Save the trajectory
+        this.mdlTrjEnv = this.mdlBeamline.getTrajectory();
+        this.bolScheff = true;
+    }
+
 	/**
 	 *
      * Compute and return the transfer matrix from the beginning 

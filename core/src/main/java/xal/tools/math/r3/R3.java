@@ -6,6 +6,7 @@
 
 package xal.tools.math.r3;
 
+import java.io.Serializable;
 import xal.tools.data.DataAdaptor;
 import xal.tools.math.BaseVector;
 import xal.tools.math.IIndex;
@@ -16,7 +17,7 @@ import xal.tools.math.IIndex;
  * @author  Christopher Allen
  */
 
-public class R3 extends BaseVector<R3> implements java.io.Serializable {
+public class R3 extends BaseVector<R3> implements Serializable {
     
     
     /*

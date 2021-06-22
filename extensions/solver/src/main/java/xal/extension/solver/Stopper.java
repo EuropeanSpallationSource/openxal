@@ -10,8 +10,6 @@
    
  package xal.extension.solver; 
  
- import java.util.*;
- 
  /**
  * Stopper is an interface for an object than can be used to stop a solver.
  *

@@ -5,6 +5,7 @@
  */
 package xal.ca;
 
+import java.lang.reflect.InvocationTargetException;
 import xal.tools.transforms.ValueTransform;
 
 import java.lang.reflect.Method;
@@ -23,12 +24,13 @@ abstract public class ChannelFactory {
     /**
      * default channel factory instance
      */
-    static private ChannelFactory DEFAULT_FACTORY;
+    private static ChannelFactory defaultFactory;
 
-    static final private List<ChannelFactory> FACTORY_LIST = new ArrayList<>();
+    private static final List<ChannelFactory> FACTORY_LIST = new ArrayList<>();
 
     private boolean test = false;
-    protected String TEST_SUFFIX = ":TEST";
+
+    protected String testSuffix = ":TEST";
 
     /**
      * map of channels keyed by signal name
@@ -36,7 +38,7 @@ abstract public class ChannelFactory {
     private final Map<String, Channel> CHANNEL_MAP;
 
     static {
-        DEFAULT_FACTORY = newFactory();
+        defaultFactory = newFactory();
     }
 
     /**
@@ -57,8 +59,8 @@ abstract public class ChannelFactory {
 
     public void destroy() {
         dispose();
-        if (this == DEFAULT_FACTORY) {
-            DEFAULT_FACTORY = null;
+        if (this == defaultFactory) {
+            defaultFactory = null;
         }
         synchronized (FACTORY_LIST) {
             FACTORY_LIST.remove(this);
@@ -75,7 +77,7 @@ abstract public class ChannelFactory {
             }
             FACTORY_LIST.clear();
         }
-        DEFAULT_FACTORY = null;
+        defaultFactory = null;
     }
 
     /**
@@ -156,11 +158,11 @@ abstract public class ChannelFactory {
      *
      * @return The default channel factory
      */
-    static public ChannelFactory defaultFactory() {
-        if (DEFAULT_FACTORY == null) {
-            DEFAULT_FACTORY = newFactory();
+    public static ChannelFactory defaultFactory() {
+        if (defaultFactory == null) {
+            defaultFactory = newFactory();
         }
-        return DEFAULT_FACTORY;
+        return defaultFactory;
     }
 
     /**
@@ -172,15 +174,15 @@ abstract public class ChannelFactory {
     abstract protected ChannelSystem channelSystem();
 
     /**
-     * get the defualt system which handles static behavior of Channels
+     * get the default system which handles static behavior of Channels
      *
      * @return the channel system associated with the default channel factory
      */
     static ChannelSystem defaultSystem() {
-        if (DEFAULT_FACTORY == null) {
+        if (defaultFactory == null) {
             defaultFactory();
         }
-        return DEFAULT_FACTORY.channelSystem();
+        return defaultFactory.channelSystem();
     }
 
     /**
@@ -188,7 +190,7 @@ abstract public class ChannelFactory {
      *
      * @return a new channel factory
      */
-    static protected ChannelFactory newFactory() {
+    protected static ChannelFactory newFactory() {
         try {
             // effectively returns ChannelFactoryPlugin.getChannelFactoryInstance()
             final Class<?> pluginClass = Class.forName("xal.ca.ChannelFactoryPlugin");
@@ -198,7 +200,7 @@ abstract public class ChannelFactory {
                 FACTORY_LIST.add(channelFactory);
             }
             return channelFactory;
-        } catch (Exception exception) {
+        } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException exception) {
             exception.printStackTrace();
             throw new RuntimeException("Failed to load the ChannelFactoryPlugin: " + exception.getMessage());
         }
@@ -219,7 +221,7 @@ abstract public class ChannelFactory {
                 FACTORY_LIST.add(channelFactory);
             }
             return channelFactory;
-        } catch (Exception exception) {
+        } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException exception) {
             exception.printStackTrace();
             throw new RuntimeException("Failed to load the ChannelFactoryPlugin: " + exception.getMessage());
         }
@@ -243,7 +245,7 @@ abstract public class ChannelFactory {
         this.test = test;
         if (test) {
             for (Channel channel : CHANNEL_MAP.values()) {
-                channel.setChannelName(channel.channelName() + TEST_SUFFIX);
+                channel.setChannelName(channel.channelName() + testSuffix);
                 channel.disconnect();
                 channel.requestConnection();
             }
@@ -268,10 +270,10 @@ abstract public class ChannelFactory {
      * @param suffix
      */
     public void setTestSuffix(String suffix) {
-        this.TEST_SUFFIX = suffix;
+        this.testSuffix = suffix;
     }
 
     public String getTestSuffix() {
-        return this.TEST_SUFFIX;
+        return this.testSuffix;
     }
 }

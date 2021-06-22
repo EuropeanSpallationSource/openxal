@@ -12,7 +12,6 @@ package xal.service.mpstool;
 import java.util.*;
 import java.util.logging.*;
 import java.sql.*;
-import java.lang.reflect.Array;
 
 import xal.tools.database.*;
 
@@ -24,10 +23,10 @@ import xal.tools.database.*;
  */
 public class SQLSignalSource implements SignalSource {
 	/** database adaptor to use for the database source */
-	protected DatabaseAdaptor _databaseAdaptor;
+	protected DatabaseAdaptor databaseAdaptor;
 	
 	/** database connection dictionary */
-	protected ConnectionDictionary _connectionDictionary;
+	protected ConnectionDictionary connectionDictionary;
 		
 
 	/**
@@ -45,8 +44,8 @@ public class SQLSignalSource implements SignalSource {
 	 * @throws DatabaseException the database exception
 	 */
 	public SQLSignalSource( final ConnectionDictionary dictionary ) throws DatabaseException {
-		_connectionDictionary = dictionary;
-		_databaseAdaptor = dictionary.getDatabaseAdaptor();
+		connectionDictionary = dictionary;
+		databaseAdaptor = dictionary.getDatabaseAdaptor();
 	}
 	
 
@@ -57,12 +56,12 @@ public class SQLSignalSource implements SignalSource {
 	 */
 	synchronized protected Connection newConnection() throws DatabaseException {
 		try {
-			final Connection connection = _databaseAdaptor.getConnection( _connectionDictionary );
+			final Connection connection = databaseAdaptor.getConnection( connectionDictionary );
 			connection.setAutoCommit( false );
 			return connection;			
 		}
 		catch ( SQLException exception ) {
-			throw new DatabaseException( "Exception while making a new database connection.", _databaseAdaptor, exception );
+			throw new DatabaseException( "Exception while making a new database connection.", databaseAdaptor, exception );
 		}
 	}
 	
@@ -78,7 +77,7 @@ public class SQLSignalSource implements SignalSource {
 			}
 		}
 		catch ( SQLException exception ) {
-			throw new DatabaseException( "Exception while attempting to close a database exception.", _databaseAdaptor, exception );
+			throw new DatabaseException( "Exception while attempting to close a database exception.", databaseAdaptor, exception );
 		}
 	}
 	
@@ -89,10 +88,11 @@ public class SQLSignalSource implements SignalSource {
 	 * @return    The array of MPS PVs
 	 * @throws DatabaseException  if the fetch fails
 	 */
+        @Override
 	synchronized public String[] fetchMPSSignals( final String type ) throws DatabaseException {
 		final Connection connection = newConnection();
 		try {
-			final String sql = "{? = call epics.epics_mps_pkg.mps_signals_to_monitor (?)}";
+			final String sql = "{? = call epics.epicsmps_pkg.mpssignals_tomonitor (?)}";
 			final CallableStatement procedure = connection.prepareCall( sql );
 			procedure.registerOutParameter( 1, Types.ARRAY, "EPICS.SGNL_ID_TAB" );
 			procedure.setString( 2, type );
@@ -102,7 +102,7 @@ public class SQLSignalSource implements SignalSource {
 		}
 		catch ( SQLException exception ) {
 			final String message = "Exception while fetching MPS signals of type, " + type;
-			throw new DatabaseException( message, _databaseAdaptor, exception );
+			throw new DatabaseException( message, databaseAdaptor, exception );
 		}
 		finally {
 			closeConnection( connection );
@@ -116,12 +116,13 @@ public class SQLSignalSource implements SignalSource {
 	 * @return  The input monitor map keyed by MPS signal.
 	 * @throws DatabaseException  if the fetch fails
 	 */
+        @Override
 	 synchronized public Map<String,InputMonitor> fetchInputMonitors( final String type ) throws DatabaseException {
 		 final Connection connection = newConnection();
 		 try {
-			 final Map<String,InputMonitor> signalMap = new HashMap<String,InputMonitor>();
+			 final Map<String,InputMonitor> signalMap = new HashMap<>();
 			 
-			 final String sql = "{ ? = call epics.epics_mps_pkg.mps_trip_signals_to_monitor(?) }";
+			 final String sql = "{ ? = call epics.epicsmps_pkg.mps_tripsignals_tomonitor(?) }";
 			 final CallableStatement procedure = connection.prepareCall( sql );
 			 procedure.registerOutParameter( 1, Types.ARRAY, "EPICS.MPS_TRIPS_SGNL_TAB" );
 			 procedure.setString( 2, type );
@@ -155,7 +156,7 @@ public class SQLSignalSource implements SignalSource {
 		 }
 		 catch ( SQLException exception ) {
 			 final String message = "Exception while fetching MPS input signals for MPS type, " + type;	
-			 throw new DatabaseException( message, _databaseAdaptor, exception );
+			 throw new DatabaseException( message, databaseAdaptor, exception );
 		 }
 		 finally {
 			 closeConnection( connection );
@@ -169,10 +170,11 @@ public class SQLSignalSource implements SignalSource {
 	 * @param statistics  The daily trip statistics
 	 * @exception DatabaseException  if the publish attempt fails
 	 */
+        @Override
 	 synchronized public void publishDailyStatistics( final java.util.Date day, final Collection<TripStatistics> statistics ) throws DatabaseException {
 		 final Connection connection = newConnection();
 		 try {
-			 final PreparedStatement STATS_INSERT = connection.prepareStatement( "INSERT INTO epics.mps_daily_stat ( sgnl_id, cur_dte, mps_inp_sgnl_id, mps_inp_trips, mps_trips, mps_first_hit ) VALUES (?, ?, ?, ?, ?, ?)" );
+			 final PreparedStatement STATS_INSERT = connection.prepareStatement( "INSERT INTO epics.mps_dailystat ( sgnlid, cur_dte, mps_inp_sgnlid, mps_inp_trips, mps_trips, mpsfirst_hit ) VALUES (?, ?, ?, ?, ?, ?)" );
 			 
 			 for( final TripStatistics stats : statistics ) {
 				 final String inputSignal = stats.getInputSignal();
@@ -191,7 +193,7 @@ public class SQLSignalSource implements SignalSource {
 		 }
 		 catch( SQLException exception ) {
 			 final String message = "Exception while publishing daily trip statistics";	
-			 throw new DatabaseException( message, _databaseAdaptor, exception );
+			 throw new DatabaseException( message, databaseAdaptor, exception );
 		 }
 		 finally {
 			 closeConnection( connection );

@@ -7,7 +7,6 @@
 package xal.tools.messaging;
 
 
-import java.util.*;
 import java.util.logging.*;
 import java.lang.reflect.*;
 
@@ -43,6 +42,7 @@ class AsynchronousMessageHandler<T> extends MessageHandler<T> implements java.io
 	 * @param method method to invoke on the targets
 	 * @param args arguments supplied to the method
 	 */
+    @Override
 	public Object invoke( final Object proxy, final Method method, final Object[] args ) {
         method.setAccessible( true );     // allow access to private, protected, default access methods
         Invoker invoker = new Invoker( method, args );
@@ -58,15 +58,16 @@ class AsynchronousMessageHandler<T> extends MessageHandler<T> implements java.io
      * identifies the message handler as asynchronous
      * overrides the abstract version
      */
-    final public boolean isSynchronous() {
+    @Override
+    public final boolean isSynchronous() {
         return false;
     }
     
     
     /** Helper class for executing the invoke method in a thread */
     private class Invoker implements Runnable {
-        final private Method method;
-        final private Object[] args;
+        private final Method method;
+        private final Object[] args;
         
 		
 		/** Constructor */
@@ -76,14 +77,15 @@ class AsynchronousMessageHandler<T> extends MessageHandler<T> implements java.io
         }
     
 		/** forward messages to the targets */
+        @Override
         public void run() {
             try {
 				for( final Object target : targets() ) {
                     method.invoke( target, args );
                 }
             }
-            catch(Exception exception) {
-				final String message = "Error invoking method: " + method + " for protocol " + _protocol + " for source " + source;
+            catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
+				final String message = "Error invoking method: " + method + " for protocol " + protocol + " for source " + source;
 				Logger.getLogger("global").log( Level.SEVERE, message, exception );
                 System.err.println( message );
                 exception.printStackTrace();

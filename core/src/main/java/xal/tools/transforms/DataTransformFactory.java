@@ -6,8 +6,6 @@
 
 package xal.tools.transforms;
 
-import xal.tools.ArrayValue;
-
 /**
  * Factory for instantiating DataTransforms implementing common transformations
  * such as linear, scale and offset transformations.
@@ -21,20 +19,22 @@ public class DataTransformFactory {
     
     
     /** Transform that does nothing.  Suitable as a default transform. */
-    static public DataTransform noOperationTransform() {
-        return DataTransform.noOperationTransform;
+    public static DataTransform noOperationTransform() {
+        return DataTransform.NO_OPERATION_TRANSFORM;
     }
     
         
     // ------ DoubleTransforms ----------------------------------------------------
     
     /** Convert double values with a simple scale conversion */
-    static public DoubleTransform doubleScaleTransform(final double scale) {
+    public static DoubleTransform doubleScaleTransform(final double scale) {
         return new DoubleTransformAdaptor() {
+            @Override
             public double convertFromRaw(double rawValue) {
                 return scale * rawValue;
             }
             
+            @Override
             public double convertToRaw(double physicalValue) {
                 return physicalValue / scale;
             }
@@ -43,12 +43,14 @@ public class DataTransformFactory {
     
     
     /** Convert double values with a simple translation conversion */
-    static public DoubleTransform doubleTranslationTransform(final double offset) {
+    public static DoubleTransform doubleTranslationTransform(final double offset) {
         return new DoubleTransformAdaptor() {
+            @Override
             public double convertFromRaw(double rawValue) {
                 return rawValue + offset;
             }
             
+            @Override
             public double convertToRaw(double physicalValue) {
                 return physicalValue - offset;
             }
@@ -57,12 +59,14 @@ public class DataTransformFactory {
     
     
     /** Convert double values with a simple linear conversion */
-    static public DoubleTransform doubleLinearTransform(final double scale, final double offset) {
+    public static DoubleTransform doubleLinearTransform(final double scale, final double offset) {
         return new DoubleTransformAdaptor() {
+            @Override
             public double convertFromRaw(double rawValue) {
                 return scale * rawValue + offset;
             }
             
+            @Override
             public double convertToRaw(double physicalValue) {
                 return (physicalValue - offset) / scale;
             }
@@ -75,8 +79,9 @@ public class DataTransformFactory {
     // ------ DoubleArrayTransforms ----------------------------------------------------
     
     /** Convert a double precision array with a simple scale conversion */
-    static public DoubleArrayTransform doubleArrayScaleTransform(final double scale) {
+    public static DoubleArrayTransform doubleArrayScaleTransform(final double scale) {
         return new DoubleArrayTransformAdaptor() {
+            @Override
             public double[] convertFromRaw(double[] rawArray) {
                 double[] physicalArray = new double[rawArray.length];
                 
@@ -87,6 +92,7 @@ public class DataTransformFactory {
                 return physicalArray;
             }
             
+            @Override
             public double[] convertToRaw(double[] physicalArray) {
                 double[] rawArray = new double[physicalArray.length];
                 
@@ -101,8 +107,9 @@ public class DataTransformFactory {
 
     
     /** Convert a double precision array with a simple translation conversion */
-    static public DoubleArrayTransform doubleArrayTranslationTransform(final double offset) {
+    public static DoubleArrayTransform doubleArrayTranslationTransform(final double offset) {
         return new DoubleArrayTransformAdaptor() {
+            @Override
             public double[] convertFromRaw(double[] rawArray) {
                 double[] physicalArray = new double[rawArray.length];
                 
@@ -113,6 +120,7 @@ public class DataTransformFactory {
                 return physicalArray;
             }
             
+            @Override
             public double[] convertToRaw(double[] physicalArray) {
                 double[] rawArray = new double[physicalArray.length];
                 
@@ -127,8 +135,9 @@ public class DataTransformFactory {
     
 
     /** Convert a double precision array with a simple linear conversion */
-    static public DoubleArrayTransform doubleArrayLinearTransform(final double scale, final double offset) {
+    public static DoubleArrayTransform doubleArrayLinearTransform(final double scale, final double offset) {
         return new DoubleArrayTransformAdaptor() {
+            @Override
             public double[] convertFromRaw(double[] rawArray) {
                 double[] physicalArray = new double[rawArray.length];
                 
@@ -139,6 +148,7 @@ public class DataTransformFactory {
                 return physicalArray;
             }
             
+            @Override
             public double[] convertToRaw(double[] physicalArray) {
                 double[] rawArray = new double[physicalArray.length];
                 

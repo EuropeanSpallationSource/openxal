@@ -17,28 +17,28 @@ import xal.tools.messaging.MessageCenter;
 /** monitor a single channel */
 public class ChannelMonitor {
 	/** synchronization lock */
-	final protected Object EVENT_LOCK;
+	protected final Object EVENT_LOCK;
 	
 	/** event message center */
-	final protected MessageCenter MESSAGE_CENTER;
+	protected final MessageCenter MESSAGE_CENTER;
 	
 	/** proxy for posting channel events */
-	final protected ChannelEventListener EVENT_PROXY;
+	protected final ChannelEventListener EVENT_PROXY;
 	
 	/** PV channel */
-	final protected Channel CHANNEL;
+	protected final Channel CHANNEL;
 	
 	/** trip filter */
-	final protected TripFilter TRIP_FILTER;
+	protected final TripFilter TRIP_FILTER;
 	
 	/** event monitor */
-	protected Monitor _monitor;
+	protected Monitor monitor;
 	
 	/** last record captured */
-	protected ChannelTimeRecord _lastRecord;
+	protected ChannelTimeRecord lastRecord;
 	
 	/** connection listener */
-	protected ConnectionListener _connectionListener;
+	protected ConnectionListener connectionListener;
 	
 	
 	/** constructor */
@@ -50,8 +50,8 @@ public class ChannelMonitor {
 		CHANNEL = ChannelFactory.defaultFactory().getChannel( pv );
 		TRIP_FILTER = tripFilter;
 		
-		_lastRecord = null;
-		_connectionListener = null;
+		lastRecord = null;
+		connectionListener = null;
 	}
 	
 	
@@ -67,7 +67,7 @@ public class ChannelMonitor {
 			
 			synchronized( EVENT_LOCK ) {
 				isConnected = isConnected();
-				lastRecord = _lastRecord;
+				lastRecord = lastRecord;
 			}
 			
 			listener.connectionChanged( this, isConnected );
@@ -127,7 +127,7 @@ public class ChannelMonitor {
 	 */
 	public ChannelTimeRecord getLatestRecord() {
 		synchronized( EVENT_LOCK ) {
-			return _lastRecord;
+			return lastRecord;
 		}
 	}
 	
@@ -159,7 +159,7 @@ public class ChannelMonitor {
 	/** clear the trip count */
 	protected void clearTrips() {
 		synchronized( EVENT_LOCK ) {
-			_lastRecord = null;
+			lastRecord = null;
 		}
 	} 
 	
@@ -170,16 +170,16 @@ public class ChannelMonitor {
 			System.out.println( "Request connection for channel:  " + CHANNEL.channelName() );
 		}
 		
-		if ( _connectionListener == null ) {
-			_connectionListener = new ConnectionListener() {
+		if ( connectionListener == null ) {
+			connectionListener = new ConnectionListener() {
 				/**
 				 * Indicates that a connection to the specified channel has been established.
 				 * @param channel  The channel which has been connected.
 				 */
 				public void connectionMade( final Channel channel ) {
 					synchronized( EVENT_LOCK ) {
-						_lastRecord = null;
-						if ( _monitor == null ) {
+						lastRecord = null;
+						if ( monitor == null ) {
 							makeMonitor();
 						}
 					}
@@ -194,14 +194,14 @@ public class ChannelMonitor {
 				 */
 				public void connectionDropped( final Channel channel ) {
 					synchronized(EVENT_LOCK) {
-						_lastRecord = null;
+						lastRecord = null;
 					}
 					TripMonitorManager.printlnIfVerbose( channel + " is disconnected." );
 					EVENT_PROXY.connectionChanged( ChannelMonitor.this, false );
 				}
 			};
 			
-			CHANNEL.addConnectionListener( _connectionListener );
+			CHANNEL.addConnectionListener( connectionListener );
 		}
 		
 		if ( !CHANNEL.isConnected() ) {		// initiate a connection
@@ -216,7 +216,7 @@ public class ChannelMonitor {
 	 */
 	protected void makeMonitor() {
 		try {
-			_monitor = CHANNEL.addMonitorValTime( new IEventSinkValTime() {
+			monitor = CHANNEL.addMonitorValTime( new IEventSinkValTime() {
 				/**
 				* Process the monitor event by caching the latest channel record
 				* @param record   Description of the Parameter
@@ -225,8 +225,8 @@ public class ChannelMonitor {
 				public void eventValue( final ChannelTimeRecord record, final Channel channel ) {
 					ChannelTimeRecord oldRecord;
 					synchronized ( EVENT_LOCK ) {
-						oldRecord = _lastRecord;
-						_lastRecord = record;
+						oldRecord = lastRecord;
+						lastRecord = record;
 					}
 					if ( EVENT_PROXY != null ) {
 						EVENT_PROXY.valueChanged( ChannelMonitor.this, record );
@@ -250,14 +250,14 @@ public class ChannelMonitor {
 	/** Dispose of the channel wrapper resources by clearing the monitor (if any) and disposing of the messaging resources. */
 	public void dispose() {
 		synchronized ( EVENT_LOCK ) {
-			if ( _connectionListener != null ) {
-				CHANNEL.removeConnectionListener( _connectionListener );
-				_connectionListener = null;
+			if ( connectionListener != null ) {
+				CHANNEL.removeConnectionListener( connectionListener );
+				connectionListener = null;
 			}
-			if ( _monitor != null ) {
-				_monitor.clear();
+			if ( monitor != null ) {
+				monitor.clear();
 			}
-			_monitor = null;
+			monitor = null;
 		}
 	}
 }

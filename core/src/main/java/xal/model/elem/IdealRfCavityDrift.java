@@ -199,14 +199,14 @@ public class IdealRfCavityDrift extends IdealDrift {
      */
     @Override
     public String toString() {
-        StringBuffer    bufOut = new StringBuffer();
+        StringBuilder    bufOut = new StringBuilder();
         
         bufOut.append(super.toString());
         
-        bufOut.append("  Frequency          : " + this.getFrequency());
+        bufOut.append("  Frequency          : ").append(this.getFrequency());
         bufOut.append('\n');
 
-        bufOut.append("  Cavity mode const. : " + this.getCavityModeConstant());
+        bufOut.append("  Cavity mode const. : ").append(this.getCavityModeConstant());
         bufOut.append('\n');
         
         return bufOut.toString();

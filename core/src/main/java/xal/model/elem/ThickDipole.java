@@ -38,14 +38,14 @@ public class ThickDipole extends ThickElectromagnet {
      */
 
     /** string type identifier for all ThickDipole objects */
-    public static final String s_strType = "ThickDipole";
+    public static final String TYPE = "ThickDipole";
 
     /** Parameters for XAL MODEL LATTICE dtd */
-    public static final String s_strPathLength = "PathLength";  // all thick elements have length - CKA
-    public static final String s_strField = "MagField";
-    public static final String s_strEntranceAngle = "EntranceAngle";
-    public static final String s_strExitAngle = "ExitAngle";
-    public static final String s_strQuadComponent = "QuadComponent";
+    public static final String PATH_LENGTH = "PathLength";  // all thick elements have length - CKA
+    public static final String FIELD = "MagField";
+    public static final String ENTRANCE_ANGLE = "EntranceAngle";
+    public static final String EXIT_ANGLE = "ExitAngle";
+    public static final String QUAD_COMPONENT = "QuadComponent";
 
     /*
      *  Attributes
@@ -144,7 +144,7 @@ public class ThickDipole extends ThickElectromagnet {
      */
     public ThickDipole(
             String strId, double fld, double len, double entAng, double exitAng, double gap, double fInt) {
-        super(s_strType, strId, len);
+        super(TYPE, strId, len);
         this.setMagField(fld);
         entranceAngle = entAng;
         exitAngle = exitAng;
@@ -153,14 +153,14 @@ public class ThickDipole extends ThickElectromagnet {
     }
 
     /** 
-     *  JavaBean constructor - creates a new unitialized instance of ThickDipole     * 
+     *  JavaBean constructor - creates a new uninitialized instance of ThickDipole     * 
      * This is the constructor called in automatic lattice generation.  Thus, all
      * element properties are set following construction.
      *
      *  <b>BE CAREFUL</b>
      */
     public ThickDipole() {
-        super(s_strType);
+        super(TYPE);
     }
 
     /**
@@ -236,7 +236,7 @@ public class ThickDipole extends ThickElectromagnet {
     }
 
 
-    /** set the fring field integral factor 
+    /** set the fringe field integral factor 
      * @param fint the field integral a la MAD
      * = 1/6 for linear drop off
      * = 0.4 for clamped Rogowski coil

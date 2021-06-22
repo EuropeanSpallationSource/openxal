@@ -8,7 +8,6 @@
 
 package xal.extension.bricks;
 
-import java.beans.*;
 import java.lang.reflect.*;
 import javax.swing.*;
 
@@ -18,12 +17,12 @@ import xal.tools.data.*;
 /** proxy for generating a Java Bean object */
 abstract public class BeanProxy<ViewType> implements DataListener {
 	/** prototype class */
-	final protected Class<ViewType> PROTOTYPE_CLASS;
+	protected final Class<ViewType> prototypeClass;
 	
 	
 	/** Constructor */
 	public BeanProxy( final Class<ViewType> prototypeClass ) {
-		PROTOTYPE_CLASS = prototypeClass;
+		this.prototypeClass = prototypeClass;
 	}
 	
 	
@@ -34,7 +33,7 @@ abstract public class BeanProxy<ViewType> implements DataListener {
 			final Object[] parameters = getConstructorParameters();
 			return getBeanInstance( theClass, constructor, parameters );
 		}
-		catch( Exception exception ) {
+		catch( NoSuchMethodException | SecurityException exception ) {
 			throw new RuntimeException( "Can't instantiate class:  " + theClass.toString() );
 		}
 	}
@@ -48,7 +47,7 @@ abstract public class BeanProxy<ViewType> implements DataListener {
 			setup( object );
 			return object;
 		}
-		catch( Exception exception ) {
+		catch( IllegalAccessException | IllegalArgumentException | InstantiationException | InvocationTargetException exception ) {
 			exception.printStackTrace();
 			throw new RuntimeException( "Can't instantiate class:  " + theClass.toString(), exception );
 		}
@@ -64,8 +63,8 @@ abstract public class BeanProxy<ViewType> implements DataListener {
 	
 	
 	/** Get the class of the view */
-	final public Class<ViewType> getPrototypeClass() {
-		return PROTOTYPE_CLASS;
+	public final Class<ViewType> getPrototypeClass() {
+		return prototypeClass;
 	}
 	
 	
@@ -73,8 +72,8 @@ abstract public class BeanProxy<ViewType> implements DataListener {
 	 * Get the prototype view
 	 * @return the prototype view
 	 */
-	final public ViewType getPrototype() {
-		final ViewType object = getBeanInstance( PROTOTYPE_CLASS );
+	public final ViewType getPrototype() {
+		final ViewType object = getBeanInstance(prototypeClass );
 		setupPrototype( object );
 		return object;
 	}
@@ -107,13 +106,13 @@ abstract public class BeanProxy<ViewType> implements DataListener {
 	
 	/** get the name of the prototype */
 	public String getType() {
-		return PROTOTYPE_CLASS.getName();
+		return prototypeClass.getName();
 	}
 	
 	
 	/** get the name of the prototype */
 	public String getName() {
-		return PROTOTYPE_CLASS.getName();
+		return prototypeClass.getName();
 	}
 	
 	
@@ -126,15 +125,15 @@ abstract public class BeanProxy<ViewType> implements DataListener {
 	
 	/** Get a textual representation of the view  */
 	public String getText() {
-		return PROTOTYPE_CLASS.getName();
+		return prototypeClass.getName();
 	}
 	
 	
-	/** get the jython reference snippet */
+	/** get the Jython reference snippet */
 	public String getJythonReferenceSnippet( final BeanNode<?> node ) {
 		final String symbol = node.getTag().toLowerCase().replaceAll( " ", "_" );	// lower the case of the tag and replace spaces with underscores
 		
-		final StringBuffer buffer = new StringBuffer();
+		final StringBuilder buffer = new StringBuilder();
 		buffer.append( symbol );
 		buffer.append( " = " );
 		buffer.append( "window_reference." );
@@ -149,7 +148,7 @@ abstract public class BeanProxy<ViewType> implements DataListener {
 	
 	/** get the java reference snippet */
 	public String getJavaReferenceSnippet( final BeanNode<?> node ) {
-		final StringBuffer buffer = new StringBuffer();
+		final StringBuilder buffer = new StringBuilder();
 		buffer.append( "final " );
 		buffer.append( node.getShortClassName() );
 		buffer.append( " " );
@@ -166,8 +165,11 @@ abstract public class BeanProxy<ViewType> implements DataListener {
 		return buffer.toString();
 	}
 	
-	
-	/** Generate the Java symbol for the specified node by lowering the case of the first character, stripping whitespace and capitalizing the first word character */
+	    /**
+            * Generate the Java symbol for the specified node by lowering the case of
+            * the first character, stripping white space and capitalizing the first
+            * word character
+            */
 	private static String generateJavaReferenceSymbol( final BeanNode<?> node ) {
 		final String tag = node.getTag();
 		final int tagLength = tag.length();
@@ -240,6 +242,7 @@ abstract public class BeanProxy<ViewType> implements DataListener {
 	* Provides the name used to identify the class in an external data source.
 	* @return a tag that identifies the receiver's type
 	*/
+        @Override
 	abstract public String dataLabel();
     
     
@@ -247,6 +250,7 @@ abstract public class BeanProxy<ViewType> implements DataListener {
 	 * Update the data based on the information provided by the data provider.
      * @param adaptor The adaptor from which to update the data
      */
+        @Override
     public void update( final DataAdaptor adaptor ) {		
 	}
     
@@ -255,12 +259,14 @@ abstract public class BeanProxy<ViewType> implements DataListener {
 	 * Write data to the data adaptor for storage.
      * @param adaptor The adaptor to which the receiver's data is written
      */
+        @Override
     public void write( final DataAdaptor adaptor ) {
 		adaptor.setValue( "type", getType() );
 	}
 	
 	
 	/** get string representation */
+        @Override
 	public String toString() {
 		return getName();
 	}

@@ -29,7 +29,7 @@ import javax.swing.JLabel;
 
 
 /**
- * A text area in which the text can dynamicaly adjust its font size to fill
+ * A text area in which the text can dynamically adjust its font size to fill
  * the whole area available.
  *
  * @author <a href="mailto:jernej.kamenik@cosylab.com">Jernej Kamenik</a>
@@ -49,7 +49,7 @@ public class ResizableTextLabel extends JLabel
 	private Font userFont;
 
 	/**
-	 * Helper class that notifies the resizable text label to  resize its font
+	 * Helper class that notifies the resizable text label to resize its font
 	 * when itself is being resized.
 	 *
 	 * @author <a href="mailto:jernej.kamenik@cosylab.com">Jernej Kamenik</a>

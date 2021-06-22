@@ -42,7 +42,7 @@ public class Lattice implements Cloneable {
 	public Lattice(String name, double base) {
 		this.name= name;
 		this.base= base;
-		elements= new ArrayList<Element>();
+		elements= new ArrayList<>();
 		cout= System.out;
 		debug= false;
 		verbose= false;
@@ -84,7 +84,7 @@ public class Lattice implements Cloneable {
 		try {
 			Lattice cloned= (Lattice) super.clone();
 			//make a deep copy of the list of lattice elements
-			cloned.elements= new ArrayList<Element>();
+			cloned.elements= new ArrayList<>();
 			LatticeIterator liter= latticeIterator();
 			while (liter.hasNext()) {
 				Element elm= (Element) liter.next().clone();
@@ -311,10 +311,10 @@ public class Lattice implements Cloneable {
 	}
 
 	/**
-	 * Join neighbouring drift spaces into a single one.
+	 * Join neighboring drift spaces into a single one.
 	 */
 	public void joinDrifts() {
-		ArrayList<Element> lattice= new ArrayList<Element>();
+		ArrayList<Element> lattice= new ArrayList<>();
 		//pass1
 		Element end= getItem(len() - 1);
 		int ix= 0;
@@ -459,14 +459,17 @@ public class Lattice implements Cloneable {
 			liter = elements.listIterator();
 		}
 
+                @Override
 		public boolean hasNext() {
 			return liter.hasNext();
 		}
 
+                @Override
 		public Element next() {
 			return liter.next();
 		}
 
+                @Override
 		public void remove() {
 			liter.remove();
 		}

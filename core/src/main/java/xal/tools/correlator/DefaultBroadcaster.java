@@ -30,10 +30,10 @@ class DefaultBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
 	 * @param sender The bin agent that published the new correlation.
 	 * @param correlation The new correlation.
      */
+    @Override
     synchronized public void newCorrelation( final BinAgent<RecordType> sender, final Correlation<RecordType> correlation ) {
         if ( correlation.numRecords() == fullCount ) {    // broadcast the correlation
             postCorrelation( correlation );
         }
     }
 }
-

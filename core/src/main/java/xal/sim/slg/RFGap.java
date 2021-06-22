@@ -12,7 +12,7 @@ package xal.sim.slg;
  * @author  wdklotz
  */
 public class RFGap extends ThinElement {
-    private static final String type="rfgap";
+    private static final String TYPE = "rfgap";
     
     /** Creates a new instance of RFGap */
     public RFGap(double position,double len, String name) {
@@ -52,26 +52,28 @@ public class RFGap extends ThinElement {
     /**
      * Return the element type.
      */
+    @Override
     public String getType() {
-        return type;
+        return TYPE;
     } 
 
+    @Override
     public String toCoutString() {
         //NumberFormat fmt=NumberFormat.getNumberInstance();
         //((DecimalFormat)fmt).applyPattern("0.0000");
         String retval="";
-        double el_pos=getPosition();
-        double el_len=getEffLength();
-		double a_start = toAbsolutePosition(getStartPosition());
+        double elPos=getPosition();
+        double elLen=getEffLength();
+		double aStart = toAbsolutePosition(getStartPosition());
         String name=getName();
         String type=getType();
-        retval +="s="+fmt.format(a_start)+" m\t"+name+"\t"+type+" p="+fmt.format(el_pos)+" leff="+fmt.format(el_len);
+        retval +="s="+fmt.format(aStart)+" m\t"+name+"\t"+type+" p="+fmt.format(elPos)+" leff="+fmt.format(elLen);
         return retval;
     }
 
     /**  
      * Implementation of interface xal.tools.data.DataListener:
-     * Instructs the implementor to write its data to the adaptor for external
+     * Instructs the implementer to write its data to the adaptor for external
      * storage.
      */
     /*public void write(DataAdaptor adaptor) {
@@ -96,12 +98,13 @@ public class RFGap extends ThinElement {
     }*/
     
     /**
-     * When called with a Visitor reference the implementor can either
+     * When called with a Visitor reference the implementer can either
      * reject to be visited (empty method body) or call the Visitor by
      * passing its own object reference.
      *
      *@param v the Visitor which wants to visit this object.
      */
+    @Override
     public void accept(Visitor v) {
         v.visit( this );
     }

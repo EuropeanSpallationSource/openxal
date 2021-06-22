@@ -138,7 +138,7 @@ public class EnvelopeProbe extends BunchProbe<EnvelopeProbeState> {
 		this.setResponseMatrixNoSpaceCharge(PhaseMatrix.identity());
 		this.setCurrentResponseMatrix(PhaseMatrix.identity());
 		this.setCovariance(CovarianceMatrix.newIdentity());
-	};
+	}
 
 	/**
 	 * Copy constructor - clones the argument
@@ -154,7 +154,7 @@ public class EnvelopeProbe extends BunchProbe<EnvelopeProbeState> {
 		this.setResponseMatrix( probe.getResponseMatrix().clone() );
 		this.setResponseMatrixNoSpaceCharge( probe.getResponseMatrixNoSpaceCharge().clone() );
 		this.setCurrentResponseMatrix( probe.getCurrentResponseMatrix().clone() );
-	};
+	}
     
     /**
      * Create a deep copy of this probe with all state information.
@@ -170,7 +170,7 @@ public class EnvelopeProbe extends BunchProbe<EnvelopeProbeState> {
     }
     
     /**
-     * Set the twiss parameters for each phase plane.
+     * Set the Twiss parameters for each phase plane.
      * 
      * CKA NOTES:
      * - The current method signature is misleading.  If there is
@@ -258,7 +258,7 @@ public class EnvelopeProbe extends BunchProbe<EnvelopeProbeState> {
 	 */
 	public void setCovariance(CovarianceMatrix matTau) {
 		this.stateCurrent.setCovariance(matTau);
-	};
+	}
 
 //	/**
 //	 * Set the twiss parameters for each phase plane.
@@ -534,7 +534,7 @@ public class EnvelopeProbe extends BunchProbe<EnvelopeProbeState> {
 	 */
     @Override
 	public Trajectory<EnvelopeProbeState> createTrajectory() {
-		return new Trajectory<EnvelopeProbeState>(EnvelopeProbeState.class);
+		return new Trajectory<>(EnvelopeProbeState.class);
     }
     
 //	/**

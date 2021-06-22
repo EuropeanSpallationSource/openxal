@@ -20,35 +20,35 @@ import java.util.*;
  */
 public interface MPSPortal {
 	/** Date format for passing dates as strings */
-	public final static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'T'Z";
+	public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'T'Z";
 
 	/** size of the MPS event buffer */
-//    public final static int MPS_EVENT_BUFFER_SIZE = MPSMonitor.MPS_EVENT_BUFFER_SIZE;
-    public final static int MPS_EVENT_BUFFER_SIZE = 1000;
+//    public static final int MPS_EVENT_BUFFER_SIZE = MPSMonitor.MPS_EVENT_BUFFER_SIZE;
+    public static final int MPS_EVENT_BUFFER_SIZE = 1000;
     
 	/** Description of the Field */
-	public final static String CHANNEL_PV_KEY = "PV";
+	public static final String CHANNEL_PV_KEY = "PV";
 	
 	/** Description of the Field */
-	public final static String CHANNEL_CONNECTED_KEY = "CONNECTED";
+	public static final String CHANNEL_CONNECTED_KEY = "CONNECTED";
 
 	/** key used in the latest MPS event table */
-	public final static String TIMESTAMP_KEY = "TIMESTAMP";
+	public static final String TIMESTAMP_KEY = "TIMESTAMP";
 
 	/** key used in the event time table to indicate signal events */
-	public final static String SIGNAL_EVENTS_KEY = "SIGNAL_EVENTS";
+	public static final String SIGNAL_EVENTS_KEY = "SIGNAL_EVENTS";
 
 	/** key used in the event time table to indicate an MPS channel event */
-	public final static int MPS_CHANNEL_EVENT_ID = 0;
+	public static final int MPS_CHANNEL_EVENT_ID = 0;
 
 	/** key used in the event time table to indicate an MPS channel event */
-	public final static int INPUT_CHANNEL_EVENT_ID = MPS_CHANNEL_EVENT_ID + 1;
+	public static final int INPUT_CHANNEL_EVENT_ID = MPS_CHANNEL_EVENT_ID + 1;
 
 	/** key used in the event time table to indicate an MPS event */
-	public final static int MPS_EVENT_ID = INPUT_CHANNEL_EVENT_ID + 1;
+	public static final int MPS_EVENT_ID = INPUT_CHANNEL_EVENT_ID + 1;
 
 	/** count of the event IDs */
-	public final static int EVENT_ID_COUNT = MPS_EVENT_ID + 1;
+	public static final int EVENT_ID_COUNT = MPS_EVENT_ID + 1;
 	
 	
 	/** Get the process ID of the process in which the service runs or 0 if it is unknown */

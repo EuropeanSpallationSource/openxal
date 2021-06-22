@@ -32,7 +32,7 @@ public class BendingMagnet {
 
         // Get  parameters
         double B0 = dblFld;
-        double c  = IConstants.LightSpeed;
+        double c  = IConstants.LIGHT_SPEED;
         
         double e = probe.getSpeciesCharge();
         double Er = probe.getSpeciesRestEnergy();

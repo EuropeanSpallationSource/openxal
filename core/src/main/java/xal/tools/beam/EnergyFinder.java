@@ -35,7 +35,7 @@ public class EnergyFinder {
 	
 	/** constructor 
 	* @param probe for the beam
-	* @param the BPM frequency (MHz)
+	* @param freq the BPM frequency (MHz)
 	*/
 	public EnergyFinder(IProbe probe, double freq) {
 	    restMass = probe.getSpeciesRestEnergy()/1.e6;
@@ -49,15 +49,15 @@ public class EnergyFinder {
     }
     
    /** solve the problem, using a simple linear step scheme
-    * @param the phase difference between BPMs in deg
-    * @param the starting guess for energy (MeV) */
+    * @param targetPhase the phase difference between BPMs in deg
+    * @param E the starting guess for energy (MeV) */
     
     public double findEnergy(double targetPhase, double E) {
 	    EGuess = E;
 	    return findEnergy(targetPhase);
     }
 	    /** solve the problem, using a simple linear step scheme
-    * @param the phase difference between BPMs in deg*/
+    * @param targetPhase the phase difference between BPMs in deg*/
     public double findEnergy(double targetPhase) {
 	    double error, errorOld = 1.;
 	    double ENew, slope, b, step, temp;
@@ -98,7 +98,7 @@ public class EnergyFinder {
     private double findPhase(double E) {
 	    double gamma = 1 + E/restMass;
 	    double beta = Math.sqrt(1.0 - 1.0/(gamma*gamma));
-	    double time = length/(beta*IConstants.LightSpeed);
+	    double time = length/(beta*IConstants.LIGHT_SPEED);
 	    double phase = ((time * frequency)%1.) * 360.;
 	    return phase;
     }

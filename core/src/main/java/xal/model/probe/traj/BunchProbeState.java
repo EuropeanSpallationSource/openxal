@@ -147,7 +147,7 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
      */
     public double getBunchFrequency()  {
         return this.dlbBunFreq;
-    };
+    }
     
     /** 
      * Returns the total beam current, which is the bunch charge <i>Q</i> times
@@ -385,7 +385,6 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
         datBunch.setValue(ATTR_BUNCHFREQ,   getBunchFrequency());
         datBunch.setValue(ATTR_BEAMCURRENT, getBeamCurrent());
 //        datBunch.setValue(ATTR_BETAPHASE,   getBunchBetatronPhase().toString());
-        
     }
     
     /**

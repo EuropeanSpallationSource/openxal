@@ -71,7 +71,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      */
     
     /** Text format for outputting debug info */
-    final static private DecimalFormat SCI_FORMAT = new DecimalFormat("0.000000E00");
+    private static final DecimalFormat SCI_FORMAT = new DecimalFormat("0.000000E00");
    
     
     /*
@@ -202,7 +202,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     	for (int i=0; i<this.getRowCnt(); i++)
     		for (int j=0; j<this.getColCnt(); j++) {
     			String  strVal = tokArgs.nextToken();
-    			double  dblVal = Double.valueOf(strVal).doubleValue();
+    			double  dblVal = Double.parseDouble(strVal);
     			
     			this.setElem(i,j, dblVal);
     		}
@@ -354,7 +354,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * </p>
      *   
      * @param   matTest the matrix being compared to this one.
-     * @param   the number of Units in the Last Place to ignore
+     * @param   cntUlp number of Units in the Last Place to ignore
      * 
      * @return  <code>true</code> if the given matrix is equal to this one with the
      *          given number of significant digits, <code>false</code> otherwise.
@@ -1015,7 +1015,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * copy of the given object.  The dimensions are set and the 
      * internal array is cloned. 
      *
-     * @param matTemplate     the matrix to be cloned
+     * @param matParent     the matrix to be cloned
      *
      * @author Christopher K. Allen
      * @since  Sep 25, 2013
@@ -1056,7 +1056,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
         for (int i=0; i<this.getRowCnt(); i++)
             for (int j=0; j<this.getColCnt(); j++) {
                 String  strVal = tokArgs.nextToken();
-                double  dblVal = Double.valueOf(strVal).doubleValue();
+                double  dblVal = Double.parseDouble(strVal);
             
                 this.setElem(i,j, dblVal);
             }
@@ -1091,7 +1091,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * so should no longer be referenced after presenting it to this constructor.
      * </p>
      * 
-     * @param arrMatrix   Java primitive array to be new internal matrix value representation
+     * @param arrVals   Java primitive array to be new internal matrix value representation
      * 
      * @exception  IllegalArgumentException  the argument is degenerate and cannot represent a matrix
      *

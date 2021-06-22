@@ -17,19 +17,19 @@ package xal.tools.math;
 */
 public class DifferentialVariable {
 	/** representation of the constant zero */
-	static final public DifferentialVariable ZERO = newConstant( 0.0 );
+	public static final DifferentialVariable ZERO = newConstant( 0.0 );
 
 	/** representation of the constant one */
-	static final public DifferentialVariable ONE = newConstant( 1.0 );
+	public static final DifferentialVariable ONE = newConstant( 1.0 );
 
     /** offset of first independent variable for this differential relative to the array of all independent variables */
-    final private int OFFSET;
+    private final int offset;
     
     /** differentials */
-    final private double[] DERIVATIVES;
+    private final double[] derivatives;
     
     /** value of the variable */
-    final private double VALUE;
+    private final double value;
     
     
     /** 
@@ -39,9 +39,9 @@ public class DifferentialVariable {
      * @param derivatives  array of derivatives beginning with this differential's first independent variable
      */
     public DifferentialVariable( final double value, final int offset, final double ... derivatives ) {
-        OFFSET = offset;
-        VALUE = value; 
-        DERIVATIVES = derivatives;
+        this.offset = offset;
+        this.value = value; 
+        this.derivatives = derivatives;
     }
     
     
@@ -50,34 +50,34 @@ public class DifferentialVariable {
      * @param value the value of the variable
      * @param derivatives  array of derivatives beginning with the first independent variable
      */
-    static public DifferentialVariable getInstance( final double value, final double ... derivatives ) {
+    public static DifferentialVariable getInstance( final double value, final double ... derivatives ) {
         return new DifferentialVariable( value, 0, derivatives );
     }
 	
 	
 	/** get a constant value */
-	static public DifferentialVariable newConstant( final double value ) {
+	public static DifferentialVariable newConstant( final double value ) {
 		return new DifferentialVariable( value, 0, 0.0 );
 	}
     
     
     /** get the value */
     public double getValue() {
-        return VALUE;
+        return value;
     }
     
     
     /** get the derivative for the independent variable at the specified index */
     public double getDerivative( final int index ) {
-        final int localIndex = index - OFFSET;
-        return localIndex < 0 ? 0.0 : localIndex < DERIVATIVES.length ? DERIVATIVES[ localIndex ] : 0.0;
+        final int localIndex = index - offset;
+        return localIndex < 0 ? 0.0 : localIndex < derivatives.length ? derivatives[ localIndex ] : 0.0;
     }
     
     
     /** calculate the variance for this variable given a common variance for each independent variable */
     public double varianceWithSignalVariance( final double commonVariance ) {
         double sumSquareDerivatives = 0.0;
-        for ( final double derivative : DERIVATIVES ) {
+        for ( final double derivative : derivatives ) {
             sumSquareDerivatives += derivative * derivative;
         }
         
@@ -94,8 +94,8 @@ public class DifferentialVariable {
     /** calculate the variance for this variable given the independent variables starting at the specified offset among all independent variables */
     public double varianceWithSignalVariances( final int offset, final double ... variances ) {
         double variance = 0.0;
-        int vindex = OFFSET - offset;
-        for ( int index = OFFSET ; index < DERIVATIVES.length ; index++ ) {
+        int vindex = offset - offset;
+        for ( int index = offset ; index < derivatives.length ; index++ ) {
             final double derivative = getDerivative( index );
             variance += derivative * derivative * variances[ vindex ];
             ++vindex;
@@ -106,26 +106,26 @@ public class DifferentialVariable {
     
     
     /** perform the addition operation between a variable and a scalar value */
-    static public DifferentialVariable add( final DifferentialVariable variable, final double value ) {
-        return new DifferentialVariable( variable.VALUE + value, variable.OFFSET, variable.DERIVATIVES );
+    public static DifferentialVariable add( final DifferentialVariable variable, final double value ) {
+        return new DifferentialVariable( variable.value + value, variable.offset, variable.derivatives );
     }
     
     
     /** perform the addition operation between a variable and a scalar value */
-    static public DifferentialVariable add( final double value, final DifferentialVariable variable ) {
+    public static DifferentialVariable add( final double value, final DifferentialVariable variable ) {
         return DifferentialVariable.add( variable, value );
     }
     
     
     /** perform the addition operation between two variables */
-    static public DifferentialVariable add( final DifferentialVariable ... addends ) {
+    public static DifferentialVariable add( final DifferentialVariable ... addends ) {
         double value = 0.0;
         int offset = Integer.MAX_VALUE;
         int maxIndex = 0;
         for ( final DifferentialVariable addend : addends ) {
-            value += addend.VALUE;
-            if ( addend.OFFSET < offset )  offset = addend.OFFSET;
-            final int topAddendIndex = addend.OFFSET + addend.DERIVATIVES.length - 1;   // index of the addend's last independent variable
+            value += addend.value;
+            if ( addend.offset < offset )  offset = addend.offset;
+            final int topAddendIndex = addend.offset + addend.derivatives.length - 1;   // index of the addend's last independent variable
             if ( topAddendIndex > maxIndex )  maxIndex = topAddendIndex;
         }
         
@@ -144,57 +144,57 @@ public class DifferentialVariable {
 
     
     /** subtract the scalar value from the variable */
-    static public DifferentialVariable subtract( final DifferentialVariable variable, final double subtrahend ) {
+    public static DifferentialVariable subtract( final DifferentialVariable variable, final double subtrahend ) {
         return DifferentialVariable.add( variable, - subtrahend );
     }
 
     
     /** subtract the variable from the scalar value */
-    static public DifferentialVariable subtract( final double value, final DifferentialVariable variable ) {
+    public static DifferentialVariable subtract( final double value, final DifferentialVariable variable ) {
         return DifferentialVariable.add( variable.negate(), value );
     }
     
     
     /** subtract the subtrahend variable from the minuend variable */
-    static public DifferentialVariable subtract( final DifferentialVariable minuend, final DifferentialVariable subtrahend ) {
+    public static DifferentialVariable subtract( final DifferentialVariable minuend, final DifferentialVariable subtrahend ) {
         return DifferentialVariable.add( minuend, subtrahend.negate() );
     }
     
     
     /** perform the multiplication operation between a variable and a scalar value */
-    static public DifferentialVariable multiply( final DifferentialVariable variable, final double value ) {
-        final double[] derivatives = new double[ variable.DERIVATIVES.length ];
+    public static DifferentialVariable multiply( final DifferentialVariable variable, final double value ) {
+        final double[] derivatives = new double[ variable.derivatives.length ];
         for ( int index = 0 ; index < derivatives.length ; index++ ) {
-            derivatives[ index ] = value * variable.DERIVATIVES[ index ];
+            derivatives[ index ] = value * variable.derivatives[ index ];
         }
-        return new DifferentialVariable( variable.VALUE * value, variable.OFFSET, derivatives );
+        return new DifferentialVariable( variable.value * value, variable.offset, derivatives );
     }
     
     
     /** perform the multiplication operation between a variable and a scalar value */
-    static public DifferentialVariable multiply( final double value, final DifferentialVariable variable ) {
+    public static DifferentialVariable multiply( final double value, final DifferentialVariable variable ) {
         return DifferentialVariable.multiply( variable, value );
     }
     
     
     /** multiply the variables */
-    static public DifferentialVariable multiply( final DifferentialVariable ... multiplicands ) {
+    public static DifferentialVariable multiply( final DifferentialVariable ... multiplicands ) {
         double value = 1.0;
         int offset = Integer.MAX_VALUE;
         int maxIndex = 0;
         final double[] sensitivities = new double[ multiplicands.length ];
         for ( int termIndex = 0 ; termIndex < multiplicands.length ; termIndex++ ) {
             final DifferentialVariable multiplicand = multiplicands[ termIndex ];
-            value *= multiplicand.VALUE;
-            if ( multiplicand.OFFSET < offset )  offset = multiplicand.OFFSET;
-            final int topMultiplicandIndex = multiplicand.OFFSET + multiplicand.DERIVATIVES.length - 1;   // index of the multiplicand's last independent variable
+            value *= multiplicand.value;
+            if ( multiplicand.offset < offset )  offset = multiplicand.offset;
+            final int topMultiplicandIndex = multiplicand.offset + multiplicand.derivatives.length - 1;   // index of the multiplicand's last independent variable
             if ( topMultiplicandIndex > maxIndex )  maxIndex = topMultiplicandIndex;
             
             // special care must be taken if the value is zero since the differential is multiplied by the product of all other values
-            if ( multiplicand.VALUE == 0.0 ) {
+            if ( multiplicand.value == 0.0 ) {
                 double sensitivity = 1.0;
                 for ( int otherIndex = 0 ; otherIndex < multiplicands.length ; otherIndex++ ) {
-                    if ( otherIndex != termIndex )  sensitivity *= multiplicands[ otherIndex ].VALUE;
+                    if ( otherIndex != termIndex )  sensitivity *= multiplicands[ otherIndex ].value;
                 }
                 sensitivities[ termIndex ] = sensitivity;
             }
@@ -206,8 +206,8 @@ public class DifferentialVariable {
             double derivative = 0.0;
             for ( int termIndex = 0 ; termIndex < multiplicands.length ; termIndex++ ) {
                 final DifferentialVariable multiplicand = multiplicands[ termIndex ];
-                if ( multiplicand.VALUE != 0.0 ) {
-                    derivative += value * multiplicand.getDerivative( index ) / multiplicand.VALUE;
+                if ( multiplicand.value != 0.0 ) {
+                    derivative += value * multiplicand.getDerivative( index ) / multiplicand.value;
                 }
                 else {
                     derivative += sensitivities[ termIndex ] * multiplicand.getDerivative( index );
@@ -221,42 +221,42 @@ public class DifferentialVariable {
     
     
     /** divide the variable by the scalar value */
-    static public DifferentialVariable divide( final DifferentialVariable variable, final double value ) {
+    public static DifferentialVariable divide( final DifferentialVariable variable, final double value ) {
         return DifferentialVariable.multiply( variable, 1 / value );
     }
     
     
     /** divide the scalar value by the variable */
-    static public DifferentialVariable divide( final double value, final DifferentialVariable variable ) {
+    public static DifferentialVariable divide( final double value, final DifferentialVariable variable ) {
         return DifferentialVariable.multiply( variable.reciprocal(), value );
     }
     
     
     /** divide the dividend by the divisor */
-    static public DifferentialVariable divide( final DifferentialVariable dividend, final DifferentialVariable divisor ) {
+    public static DifferentialVariable divide( final DifferentialVariable dividend, final DifferentialVariable divisor ) {
         return DifferentialVariable.multiply( dividend, divisor.reciprocal() );
     }
     
     
     /** negate the variable */
     public DifferentialVariable negate() {
-        final double[] derivatives = new double[ DERIVATIVES.length ];
+        final double[] derivatives = new double[ this.derivatives.length ];
         for ( int index = 0 ; index < derivatives.length ; index++ ) {
-            derivatives[ index ] = - DERIVATIVES[ index ];
+            derivatives[ index ] = - derivatives[ index ];
         }
-        return new DifferentialVariable( - this.VALUE, this.OFFSET, derivatives );
+        return new DifferentialVariable( - this.value, this.offset, derivatives );
     }
     
     
-    /** calculate and return the reciprocol of this variable */
+    /** calculate and return the reciprocal of this variable */
     public DifferentialVariable reciprocal() {
-        final double value = 1.0 / VALUE;
+        final double value = 1.0 / this.value;
         final double inverseFactor = - value * value;   // f = 1/u -> df = - du / u^2
-        final double[] derivatives = new double[ DERIVATIVES.length ];
+        final double[] derivatives = new double[ this.derivatives.length ];
         for ( int index = 0 ; index < derivatives.length ; index++ ) {
-            derivatives[ index ] = inverseFactor * DERIVATIVES[ index ];
+            derivatives[ index ] = inverseFactor * this.derivatives[ index ];
         }
-        return new DifferentialVariable( value, this.OFFSET, derivatives );
+        return new DifferentialVariable( value, this.offset, derivatives );
     }
 	
 	
@@ -309,121 +309,121 @@ public class DifferentialVariable {
 	
 	
 	/** Perform a unary math operation with the resulting value and the differential factor from the chain rule */
-	final private DifferentialVariable unaryOperation( final double value, final double differentialFactor ) {
-		final double[] derivatives = new double[ DERIVATIVES.length ];
-        for ( int index = 0 ; index < derivatives.length ; index++ ) {
-            derivatives[ index ] = differentialFactor * DERIVATIVES[ index ];
+	private final DifferentialVariable unaryOperation( final double value, final double differentialFactor ) {
+		final double[] derivatives = new double[ this.derivatives.length ];
+        for ( int index = 0 ; index < this.derivatives.length ; index++ ) {
+            derivatives[ index ] = differentialFactor * this.derivatives[ index ];
         }
-        return new DifferentialVariable( value, this.OFFSET, derivatives );
+        return new DifferentialVariable( value, this.offset, derivatives );
 	}
 	
 	
 	/** raise this variable to the specified power */
-	final public DifferentialVariable pow( final double power ) {
-		final double value = Math.pow( VALUE, power );
-		final double differentialFactor = power * Math.pow( VALUE, power - 1.0 );
+	public final DifferentialVariable pow( final double power ) {
+		final double value = Math.pow( this.value, power );
+		final double differentialFactor = power * Math.pow( this.value, power - 1.0 );
 		return unaryOperation( value, differentialFactor );
 	}
 	
 	
 	/** get the square root of this variable */
-	final public DifferentialVariable sqrt() {
+	public final DifferentialVariable sqrt() {
 		return this.pow( 0.5 );
 	}
 	
 	
 	/** get the absolute value of this variable */
-	final public DifferentialVariable abs() {
-		final double value = Math.abs( VALUE );
-		final double differentialFactor = VALUE / value;
+	public final DifferentialVariable abs() {
+		final double value = Math.abs( this.value );
+		final double differentialFactor = this.value / value;
 		return unaryOperation( value, differentialFactor );
 	}
 	
 	
 	/** get the natural logarithm (base e) of this variable */
-	final public DifferentialVariable log() {
-		final double value = Math.log( VALUE );
-		final double differentialFactor = 1.0 / VALUE;
+	public final DifferentialVariable log() {
+		final double value = Math.log( this.value );
+		final double differentialFactor = 1.0 / this.value;
 		return unaryOperation( value, differentialFactor );
 	}
 	
 	
 	/** get the exponential (base e) of this variable */
-	final public DifferentialVariable exp() {
-		final double value = Math.exp( VALUE );
+	public final DifferentialVariable exp() {
+		final double value = Math.exp( this.value );
 		return unaryOperation( value, value );
 	}
 	
 	
 	/** get the sine of this variable */
-	final public DifferentialVariable sin() {
-		final double value = Math.sin( VALUE );
-		final double differentialFactor = Math.cos( VALUE );
+	public final DifferentialVariable sin() {
+		final double value = Math.sin( this.value );
+		final double differentialFactor = Math.cos( this.value );
 		return unaryOperation( value, differentialFactor );
 	}
 	
 	
 	/** get the cosine of this variable */
-	final public DifferentialVariable cos() {
-		final double value = Math.cos( VALUE );
-		final double differentialFactor = - Math.sin( VALUE );
+	public final DifferentialVariable cos() {
+		final double value = Math.cos( this.value );
+		final double differentialFactor = - Math.sin( this.value );
 		return unaryOperation( value, differentialFactor );
 	}
 	
 	
 	/** get the tangent of this variable */
-	final public DifferentialVariable tan() {
-		final double value = Math.tan( VALUE );
-		final double secant = 1.0 / Math.cos( VALUE );
+	public final DifferentialVariable tan() {
+		final double value = Math.tan( this.value );
+		final double secant = 1.0 / Math.cos( this.value );
 		final double differentialFactor = secant * secant;
 		return unaryOperation( value, differentialFactor );
 	}
 	
 	
 	/** get the arc sine of this variable */
-	final public DifferentialVariable asin() {
-		final double value = Math.asin( VALUE );
-		final double differentialFactor = 1.0 / Math.sqrt( 1.0 - VALUE * VALUE );
+	public final DifferentialVariable asin() {
+		final double value = Math.asin( this.value );
+		final double differentialFactor = 1.0 / Math.sqrt( 1.0 - this.value * this.value );
 		return unaryOperation( value, differentialFactor );
 	}
 	
 	
 	/** get the arc cosine of this variable */
-	final public DifferentialVariable acos() {
-		final double value = Math.acos( VALUE );
-		final double differentialFactor = - 1.0 / Math.sqrt( 1.0 - VALUE * VALUE );
+	public final DifferentialVariable acos() {
+		final double value = Math.acos( this.value );
+		final double differentialFactor = - 1.0 / Math.sqrt( 1.0 - this.value * this.value );
 		return unaryOperation( value, differentialFactor );
 	}
 	
 	
 	/** get the arc tangent of this variable */
-	final public DifferentialVariable atan() {
-		final double value = Math.atan( VALUE );
-		final double differentialFactor = 1.0 / ( 1.0 + VALUE * VALUE );
+	public final DifferentialVariable atan() {
+		final double value = Math.atan( this.value );
+		final double differentialFactor = 1.0 / ( 1.0 + this.value * this.value );
 		return unaryOperation( value, differentialFactor );
 	}
 	
 	
 	/** get the hyperbolic sine of this variable */
-	final public DifferentialVariable sinh() {
-		final double value = Math.sinh( VALUE );
-		final double differentialFactor = Math.cosh( VALUE );
+	public final DifferentialVariable sinh() {
+		final double value = Math.sinh( this.value );
+		final double differentialFactor = Math.cosh( this.value );
 		return unaryOperation( value, differentialFactor );
 	}
 	
 	
 	/** get the hyperbolic cosine of this variable */
-	final public DifferentialVariable cosh() {
-		final double value = Math.cosh( VALUE );
-		final double differentialFactor = Math.sinh( VALUE );
+	public final DifferentialVariable cosh() {
+		final double value = Math.cosh( this.value );
+		final double differentialFactor = Math.sinh( this.value );
 		return unaryOperation( value, differentialFactor );
 	}
 	
 	
 	/** get the hyperbolic tangent of this variable */
-	final public DifferentialVariable tanh() {
-		final double value = Math.tanh( VALUE );
-		final double sech = 1.0 / Math.cosh( VALUE );
+	public final DifferentialVariable tanh() {
+		final double value = Math.tanh( this.value );
+		final double sech = 1.0 / Math.cosh( this.value );
 		final double differentialFactor = sech * sech;
 		return unaryOperation( value, differentialFactor );
 	}

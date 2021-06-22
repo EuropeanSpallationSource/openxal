@@ -1,13 +1,12 @@
 package xal.smf.impl;
 
 import xal.ca.ChannelFactory;
-import xal.tools.data.DataAdaptor;
 import xal.smf.impl.qualify.ElementTypeManager;
 import xal.smf.impl.qualify.MagnetType;
 
 
 public class Solenoid extends Electromagnet {
-    public static final String      s_strType   = "SOL";
+    public static final String      TYPE   = "SOL";
 
 
 	// static initializer
@@ -18,7 +17,7 @@ public class Solenoid extends Electromagnet {
     
     /** Register type for qualification */
     private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( Solenoid.class, s_strType, MagnetType.SOLENOID );
+		ElementTypeManager.defaultManager().registerTypes( Solenoid.class, TYPE, MagnetType.SOLENOID );
     }
 
 
@@ -43,6 +42,6 @@ public class Solenoid extends Electromagnet {
 
 	@Override
 	public String getType() {
-		return s_strType;
+		return TYPE;
 	}
 }

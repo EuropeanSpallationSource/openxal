@@ -15,32 +15,32 @@ import xal.tools.statistics.*;
  * Fit a set of x,y data pairs to a line where <code>y = slope * x + intercept</code>.
  */
 public class LinearFit {
-	final protected MutableUnivariateStatistics _xStats;
-	final protected MutableUnivariateStatistics _yStats;
-	final protected MutableUnivariateStatistics _xxStats;
-	final protected MutableUnivariateStatistics _xyStats;
-	final protected MutableUnivariateStatistics _yyStats;
+	protected final MutableUnivariateStatistics xStats;
+	protected final MutableUnivariateStatistics yStats;
+	protected final MutableUnivariateStatistics xxStats;
+	protected final MutableUnivariateStatistics xyStats;
+	protected final MutableUnivariateStatistics yyStats;
 	
-	protected boolean _needsUpdate;
-	protected double _slope;
-	protected double _intercept;
-	protected double _correlationCoefficient;
+	protected boolean needsUpdate;
+	protected double slope;
+	protected double intercept;
+	protected double correlationCoefficient;
 	
 	
 	/**
 	 * Constructor
 	 */
 	public LinearFit() {
-		_needsUpdate = false;
-		_slope = Double.NaN;
-		_intercept = Double.NaN;
-		_correlationCoefficient = Double.NaN;
+		needsUpdate = false;
+		slope = Double.NaN;
+		intercept = Double.NaN;
+		correlationCoefficient = Double.NaN;
 		
-		_xStats = new MutableUnivariateStatistics();
-		_yStats = new MutableUnivariateStatistics();
-		_xxStats = new MutableUnivariateStatistics();
-		_xyStats = new MutableUnivariateStatistics();
-		_yyStats = new MutableUnivariateStatistics();
+		xStats = new MutableUnivariateStatistics();
+		yStats = new MutableUnivariateStatistics();
+		xxStats = new MutableUnivariateStatistics();
+		xyStats = new MutableUnivariateStatistics();
+		yyStats = new MutableUnivariateStatistics();
 	}
 	
 	
@@ -48,13 +48,13 @@ public class LinearFit {
 	 * Add a new x,y pair.
 	 */
 	synchronized public void addSample( final double x, final double y ) {
-		_xStats.addSample( x );
-		_yStats.addSample( y );
-		_xxStats.addSample( x * x );
-		_xyStats.addSample( x * y );
-		_yyStats.addSample( y * y );
+		xStats.addSample( x );
+		yStats.addSample( y );
+		xxStats.addSample( x * x );
+		xyStats.addSample( x * y );
+		yyStats.addSample( y * y );
 		
-		_needsUpdate = true;
+		needsUpdate = true;
 	}
 	
 	
@@ -65,7 +65,7 @@ public class LinearFit {
 	synchronized public double getSlope() {
 		performFitIfNeeded();
 		
-		return _slope;
+		return slope;
 	}
 	
 	
@@ -76,7 +76,7 @@ public class LinearFit {
 	synchronized public double getIntercept() {
 		performFitIfNeeded();
 		
-		return _intercept;
+		return intercept;
 	}
 	
 	
@@ -87,7 +87,7 @@ public class LinearFit {
 	synchronized public double getCorrelationCoefficient() {
 		performFitIfNeeded();
 		
-		return _correlationCoefficient;
+		return correlationCoefficient;
 	}
 	
 	
@@ -99,7 +99,7 @@ public class LinearFit {
 	synchronized public double estimateY( final double x ) {
 		performFitIfNeeded();
 		
-		return _slope * x + _intercept;
+		return slope * x + intercept;
 	}
 	
 	
@@ -111,11 +111,9 @@ public class LinearFit {
 	synchronized public double getMeanSquareOrdinateError() {
 		performFitIfNeeded();
 		
-		final double slope = _slope;
-		final double intercept = _intercept;
-		final double xyMean = _xyStats.mean();
-		final double xxMean = _xxStats.mean();
-		final double yyMean = _yyStats.mean();
+		final double xyMean = xyStats.mean();
+		final double xxMean = xxStats.mean();
+		final double yyMean = yyStats.mean();
 		
 		return yyMean - 2 * slope * xyMean + slope * slope * xxMean - intercept * intercept;
 	}
@@ -123,7 +121,7 @@ public class LinearFit {
 	
 	/** Perform a linear fit if the the fit needs to be updated due to newly added data. */
 	synchronized protected void performFitIfNeeded() {
-		if ( _needsUpdate ) {
+		if ( needsUpdate ) {
 			performFit();
 		}
 	}
@@ -131,17 +129,17 @@ public class LinearFit {
 	
 	/** Calculate the slope and intercept. */
 	synchronized protected void performFit() {
-		final double xMean = _xStats.mean();
-		final double yMean = _yStats.mean();
-		final double xyMean = _xyStats.mean();
-		final double xxMean = _xxStats.mean();
-		final double yyMean = _yyStats.mean();
+		final double xMean = xStats.mean();
+		final double yMean = yStats.mean();
+		final double xyMean = xyStats.mean();
+		final double xxMean = xxStats.mean();
+		final double yyMean = yyStats.mean();
 		
-		_slope = ( xyMean - xMean * yMean ) / ( xxMean - xMean * xMean );
-		_intercept = yMean - _slope * xMean;
-		_correlationCoefficient = ( xyMean - xMean * yMean ) / Math.sqrt( ( xxMean - xMean * xMean ) * ( yyMean - yMean * yMean ) );
+		slope = ( xyMean - xMean * yMean ) / ( xxMean - xMean * xMean );
+		intercept = yMean - slope * xMean;
+		correlationCoefficient = ( xyMean - xMean * yMean ) / Math.sqrt( ( xxMean - xMean * xMean ) * ( yyMean - yMean * yMean ) );
 		
-		_needsUpdate = false;
+		needsUpdate = false;
 	}
 	
 	
@@ -149,14 +147,15 @@ public class LinearFit {
 	 * Generate a string representation of the linear equation.
 	 * @return a string representation of the linear equation
 	 */
+        @Override
 	synchronized public String toString() {
 		performFitIfNeeded();
 		
-		StringBuffer buffer = new StringBuffer();
-		buffer.append( "y = " + _slope + " * x + " + _intercept );
-		buffer.append( "\n" + "r = " + _correlationCoefficient );
-		buffer.append( "\n" + "<x> = " + _xStats.mean() + ", <y> = " + _yStats.mean() );
-		buffer.append( "\n" + "<xx> = " + _xxStats.mean() + ", <xy> = " + _xyStats.mean() + ", <yy> = " + _yyStats.mean() );
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("y = ").append(slope).append(" * x + ").append(intercept);
+		buffer.append("\nr = ").append(correlationCoefficient);
+		buffer.append("\n<x> = ").append(xStats.mean()).append(", <y> = ").append(yStats.mean());
+		buffer.append("\n<xx> = ").append(xxStats.mean()).append(", <xy> = ").append(xyStats.mean()).append(", <yy> = ").append(yyStats.mean());
 		return buffer.toString();
 	}
 }

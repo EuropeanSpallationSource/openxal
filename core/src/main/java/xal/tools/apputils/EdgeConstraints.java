@@ -34,6 +34,7 @@ public class EdgeConstraints implements Cloneable {
     
     
     /** Implement toString() to print summary of constraint */
+    @Override
     public String toString() {
         return "grow behavior: " + growBehavior + ", strut behavior: " + strutBehavior + 
         ", top strut: " + topStrut + ", left strut: " + leftStrut + 

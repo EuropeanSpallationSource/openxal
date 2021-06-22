@@ -6,16 +6,16 @@
 
 package xal.extension.application.smf;
 
+import java.awt.Component;
 import xal.ca.ChannelFactory;
 import xal.smf.*;
 import xal.smf.data.*;
 import xal.extension.application.*;
-import xal.tools.xml.XmlDataAdaptor;
 
 import java.io.*;
 import java.util.*;
 import javax.swing.JOptionPane;
-import javax.swing.JFileChooser;
+import xal.tools.xml.XmlDataAdaptor.WriteException;
 
 
 /**
@@ -23,6 +23,11 @@ import javax.swing.JFileChooser;
  * @author  tap
  */
 abstract public class AcceleratorDocument extends XalDocument {
+    
+    private static final String USE_DEFAULT_ACCELERATOR = "Use the Default Accelerator";
+    private static final String SELECT_ACCELERATOR = "Select an Accelerator...";
+    private static final String CANCEL_OPTION = "Cancel";
+    
     protected Accelerator accelerator;
     protected AcceleratorSeq selectedSequence;
     protected String acceleratorFilePath;
@@ -34,7 +39,7 @@ abstract public class AcceleratorDocument extends XalDocument {
         super();
         accelerator = null;
         acceleratorFilePath = null;
-        selectedSequenceList = new ArrayList<AcceleratorSeq>();
+        selectedSequenceList = new ArrayList<>();
     }
 
 
@@ -60,6 +65,7 @@ abstract public class AcceleratorDocument extends XalDocument {
 
 
     /** Generate and set the title for this document. */
+    @Override
     public void generateDocumentTitle() {
         final String filePath = getDisplayFilePath();
         final String title = selectedSequence != null ? " (" + selectedSequence.getId() + ") - " + filePath : filePath;
@@ -71,6 +77,7 @@ abstract public class AcceleratorDocument extends XalDocument {
      * Get the prefix for a new file (precedes timestamp) defaulting to the selected sequence ID if any or the super class's default if no sequence is selected.
      * @return prefix for a new file
      */
+    @Override
     public String getNewFileNamePrefix() {
         return selectedSequence != null ? selectedSequence.getId().replace( ":", "-" ) : super.getNewFileNamePrefix();
     }
@@ -104,10 +111,8 @@ abstract public class AcceleratorDocument extends XalDocument {
      * @param message the text to display in the dialog box
      */
     private Accelerator requestAndSetAccelerator( final String message ) {
-        final java.awt.Component targetWindow = getMainWindow();
-        final String USE_DEFAULT_ACCELERATOR = "Use the Default Accelerator";
-        final String SELECT_ACCELERATOR = "Select an Accelerator...";
-        final String CANCEL_OPTION = "Cancel";
+        final Component targetWindow = getMainWindow();
+        
         final Object[] options = new Object[] { USE_DEFAULT_ACCELERATOR, SELECT_ACCELERATOR, CANCEL_OPTION };
         final int selectedOptionIndex = JOptionPane.showOptionDialog( targetWindow, message, "Select a Substitute Accelerator", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, USE_DEFAULT_ACCELERATOR );
         switch( selectedOptionIndex ) {
@@ -141,7 +146,7 @@ abstract public class AcceleratorDocument extends XalDocument {
      */
     public void setAccelerator( final Accelerator newAccelerator, final String newPath ) {
         selectedSequence = null;
-        selectedSequenceList = new ArrayList<AcceleratorSeq>();
+        selectedSequenceList = new ArrayList<>();
         accelerator = newAccelerator;
         setAcceleratorFilePath( newPath );
         acceleratorChanged();       // hook for possible further processing
@@ -223,7 +228,7 @@ abstract public class AcceleratorDocument extends XalDocument {
      */
     public void setSelectedSequence( final AcceleratorSeq selection ) {
         selectedSequence = selection;
-        final List<AcceleratorSeq> sequences = new ArrayList<AcceleratorSeq>();
+        final List<AcceleratorSeq> sequences = new ArrayList<>();
         if ( selection != null ) {
             sequences.add( selection );
         }
@@ -295,12 +300,12 @@ abstract public class AcceleratorDocument extends XalDocument {
     /**
      * Standard way of catching XML Write exceptions
      */
-    protected void catchXmlDataAdaptorException(XmlDataAdaptor.WriteException exception) {
-        if ( exception.getCause() instanceof java.io.FileNotFoundException ) {
+    protected void catchXmlDataAdaptorException(WriteException exception) {
+        if ( exception.getCause() instanceof FileNotFoundException ) {
             System.err.println( exception );
             displayError( "Save Failed!", "Save failed due to a file access exception!", exception );
         }
-        else if ( exception.getCause() instanceof java.io.IOException ) {
+        else if ( exception.getCause() instanceof IOException ) {
             System.err.println( exception );
             displayError( "Save Failed!", "Save failed due to a file IO exception!", exception );
         }

@@ -6,8 +6,10 @@
 
 package xal.sim.slg;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 /**
  * A lookup table that maps element ids as used by this lattice generator
  * to element ids as used by the on-line model for its xml presentation.
@@ -15,10 +17,10 @@ import java.util.Map;
  * @author  wdklotz
  */
 public class ModelTypeLookUp implements Map<String,String> {
-    private final static Map<String,String> map;
+    private static final Map<String,String> map;
     
     static {
-        map=new HashMap<String,String>();
+        map=new HashMap<>();
         map.put("marker","Marker");
         map.put("pmarker","Marker");
         map.put("VIW", "Marker");
@@ -45,49 +47,65 @@ public class ModelTypeLookUp implements Map<String,String> {
     public ModelTypeLookUp() {
     }
     
+    @Override
     public void clear() {
     }
     
+    @Override
     public boolean containsKey(Object obj) {
         return map.containsKey(obj);
     }
     
+    @Override
     public boolean containsValue(Object obj) {
         return map.containsValue(obj);
     }
     
-    public java.util.Set<Map.Entry<String,String>> entrySet() {
+    @Override
+    public Set<Map.Entry<String,String>> entrySet() {
         return map.entrySet();
     }
     
+    @Override
     public String get( final Object key ) {
         return map.get(key);
     }
     
+    @Override
     public boolean isEmpty() {
         return map.isEmpty();
     }
     
-    public java.util.Set<String> keySet() {
+    @Override
+    public Set<String> keySet() {
         return map.keySet();
     }
     
+    @Override
     public String put(String obj, String obj1) {
         return  null;
     }
     
-    public void putAll(java.util.Map<? extends String,? extends String> map) {
+    /**
+     *
+     * @param map
+     */
+    @Override
+    public void putAll(Map<? extends String,? extends String> map) {
     }
     
+    @Override
     public String remove(Object obj) {
         return null;
     }
     
+    @Override
     public int size() {
         return map.size();
     }
     
-    public java.util.Collection<String> values() {
+    @Override
+    public Collection<String> values() {
         return map.values();
     }
     

@@ -19,28 +19,28 @@ import java.util.logging.*;
  */
 public class EditContext {
 	/** tag for a table group within a data adaptor */
-	static final public String GROUP_TAG = "tablegroup";
+	public static final String GROUP_TAG = "tablegroup";
 	
 	/** message center for dispatching events from this edit context */
-    final protected MessageCenter MESSAGE_CENTER;
+    protected final MessageCenter messageCenter;
 	
 	/** proxy which forwards events from this edit context */
-    final protected EditContextListener NOTICE_PROXY;
+    protected final EditContextListener noticeProxy;
 	
 	/** Map of tables associated with group */
-    final private Map<String,Collection<DataTable>> TABLE_MAP_BY_GROUP;
+    private final Map<String,Collection<DataTable>> tableMapByGroup;
 	
 	/** Map of tables by name */
-    final private Map<String,DataTable> TABLE_MAP_BY_NAME;
+    private final Map<String,DataTable> tableMapByName;
 	
 	
     /** Constructor */
     public EditContext() {
-        TABLE_MAP_BY_GROUP = new HashMap<String,Collection<DataTable>>();
-        TABLE_MAP_BY_NAME = new HashMap<String,DataTable>();
+        tableMapByGroup = new HashMap<>();
+        tableMapByName = new HashMap<>();
         
-		MESSAGE_CENTER = new MessageCenter( "Edit Context" );
-        NOTICE_PROXY = MESSAGE_CENTER.registerSource( this, EditContextListener.class );
+		messageCenter = new MessageCenter( "Edit Context" );
+        noticeProxy = messageCenter.registerSource( this, EditContextListener.class );
     }
     
     
@@ -49,7 +49,7 @@ public class EditContext {
 	 * @param listener the listener to receive edit context events from this context
 	 */
     public void addEditContextListener( final EditContextListener listener ) {
-        MESSAGE_CENTER.registerTarget( listener, this, EditContextListener.class );
+        messageCenter.registerTarget( listener, this, EditContextListener.class );
     }
     
     
@@ -58,7 +58,7 @@ public class EditContext {
 	 * @param listener the listener to remove from receving edit context events from this context
 	 */
     public void removeEditContextListener( final EditContextListener listener ) {
-        MESSAGE_CENTER.removeTarget( listener, this, EditContextListener.class );
+        messageCenter.removeTarget( listener, this, EditContextListener.class );
     }
 	
 	
@@ -76,7 +76,7 @@ public class EditContext {
 	public void importTablesFromDataAdaptor( final DataAdaptor docAdaptor, final String tableGroup ) {        		
         final DataAdaptor tableGroupAdaptor = docAdaptor.childAdaptor( EditContext.GROUP_TAG );
         final List<DataAdaptor> tableAdaptors = tableGroupAdaptor.childAdaptors( DataTable.DATA_LABEL );
-        final Collection<DataTable> tableSet = new ArrayList<DataTable>(tableAdaptors.size());
+        final Collection<DataTable> tableSet = new ArrayList<>(tableAdaptors.size());
         
         for( final DataAdaptor tableAdaptor : tableAdaptors ) {
             try {
@@ -117,26 +117,26 @@ public class EditContext {
     
     
     public void clear() {
-        TABLE_MAP_BY_GROUP.clear();
-        TABLE_MAP_BY_NAME.clear();
+        tableMapByGroup.clear();
+        tableMapByName.clear();
     }
     
     
     /** Get the table associated with the specified table name. */
     public DataTable getTable( final String name ) {
-        return TABLE_MAP_BY_NAME.get( name );
+        return tableMapByName.get( name );
     }
     
     
     /** Get the collection of all table names associated with this context. */
     public Collection<String> getTableNames() {
-        return TABLE_MAP_BY_NAME.keySet();
+        return tableMapByName.keySet();
     }
     
     
     /** Get the collection of all tables in the edit context. */
     public Collection<DataTable> getTables() {
-        return TABLE_MAP_BY_NAME.values();
+        return tableMapByName.values();
     }
     
     
@@ -147,12 +147,12 @@ public class EditContext {
     private Collection<DataTable> tableSetForGroup( final String group ) {
     	Collection<DataTable> tableSet = null;
 
-        if ( !TABLE_MAP_BY_GROUP.containsKey( group ) ) {
-            tableSet = new ArrayList<DataTable>();
-            TABLE_MAP_BY_GROUP.put( group, tableSet );
+        if ( !tableMapByGroup.containsKey( group ) ) {
+            tableSet = new ArrayList<>();
+            tableMapByGroup.put( group, tableSet );
         }
         else {
-            tableSet = TABLE_MAP_BY_GROUP.get( group );
+            tableSet = tableMapByGroup.get( group );
         }
 
         return tableSet;
@@ -162,11 +162,11 @@ public class EditContext {
     /** Add the table to the edit context. */
     public void addTableToGroup( final DataTable newTable, final String group ) {
         final String name = newTable.name();
-        TABLE_MAP_BY_NAME.put( name, newTable );
+        tableMapByName.put( name, newTable );
         final Collection<DataTable> tableSet = tableSetForGroup( group );
         tableSet.add( newTable );
         
-        NOTICE_PROXY.tableAdded( this, newTable );
+        noticeProxy.tableAdded( this, newTable );
     }
     
     
@@ -180,13 +180,13 @@ public class EditContext {
     
     /** Get all table groups */
     public Collection<String> getTableGroups() {
-        return TABLE_MAP_BY_GROUP.keySet();
+        return tableMapByGroup.keySet();
     }
 
 
     /** Get all tables associated with the specified group */
     public Collection<DataTable> getTablesForGroup( final String group ) {
-        final Collection<DataTable> tables = TABLE_MAP_BY_GROUP.get( group );
+        final Collection<DataTable> tables = tableMapByGroup.get( group );
         return Collections.unmodifiableCollection( tables );
     }
 
@@ -194,7 +194,7 @@ public class EditContext {
     /** Remove the table from the edit context. */
     public void remove( final DataTable aTable ) {
         String name = aTable.name();
-        TABLE_MAP_BY_NAME.remove( name );
+        tableMapByName.remove( name );
         
         // Now remove the table from all groups (even though it only exists in one)
         final Collection<String> groups = getTableGroups();
@@ -203,7 +203,7 @@ public class EditContext {
             tableSet.remove( aTable );
         }
 
-        NOTICE_PROXY.tableRemoved( this, aTable );
+        noticeProxy.tableRemoved( this, aTable );
     }
 
 
@@ -246,7 +246,3 @@ public class EditContext {
         return getTable(tableName).recordForNode(nodeId);
     }
 }
-
-
-
-

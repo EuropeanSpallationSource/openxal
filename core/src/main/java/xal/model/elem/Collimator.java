@@ -27,10 +27,10 @@ public class Collimator extends ThinElement {
      */
     
     /** type string identifier for all Marker objects */
-    public static final String          s_strType = "Collimator";
+    public static final String          TYPE = "Collimator";
     
     /** identity phase map used by all Markers as the transfer map */
-    private static final PhaseMap s_mapId = PhaseMap.identity();
+    private static final PhaseMap MAP_ID = PhaseMap.identity();
     
     
 
@@ -45,7 +45,7 @@ public class Collimator extends ThinElement {
      *
      */
     public Collimator(String strId) {
-        super(s_strType, strId);
+        super(TYPE, strId);
     }
     
     /** 
@@ -54,7 +54,7 @@ public class Collimator extends ThinElement {
      *  <b>BE CAREFUL</b>
      */
     public Collimator() {
-        super(s_strType);
+        super(TYPE);
     }
 
     
@@ -96,6 +96,6 @@ public class Collimator extends ThinElement {
      *  @exception  PropagationException  this should not occur
      */
     @Override
-    protected PhaseMap transferMap(IProbe probe) throws PropagationException { return s_mapId; }
+    protected PhaseMap transferMap(IProbe probe) throws PropagationException { return MAP_ID; }
     
 }

@@ -1,8 +1,5 @@
 package xal.extension.widgets.plot;
 
-import java.util.*;
-import java.awt.*;
-
 /**
  * This class is a data class for data used in the FunctionGraphsJPanel class.
  * This class contains 2D grid with values at the grid points. These values
@@ -21,6 +18,7 @@ public class SmoothData3D extends ColorSurfaceData{
     }
 
     /**  Returns the interpolated value of the 2D array for x and y. */
+    @Override
     public double getValue(double x, double y){
 
 	int i,j;
@@ -29,20 +27,20 @@ public class SmoothData3D extends ColorSurfaceData{
 	double Vm,  V0,  Vp;
 
 
-	if(x < x_min || y < y_min || x > x_max || y > y_max){
-	    return z_min;
+	if(x < xMin || y < yMin || x > xMax || y > yMax){
+	    return zMin;
 	}
 
-        i = (int) ((x-x_min)/x_step + 0.5);
-        j = (int) ((y-y_min)/y_step + 0.5);
+        i = (int) ((x-xMin)/xStep + 0.5);
+        j = (int) ((y-yMin)/yStep + 0.5);
 
         if( i < 1) i = 1;
         if( i > (nX-2)) i = nX-2;
         if( j < 1) j = 1;
         if( j > (nY-2)) j = nY-2;	        
 
-        fracX = (x - x_min - i*x_step)/x_step;
-        fracY = (y - y_min - j*y_step)/y_step;
+        fracX = (x - xMin - i*xStep)/xStep;
+        fracY = (y - yMin - j*yStep)/yStep;
 
 	Wxm = 0.5*(0.5 - fracX)*(0.5 - fracX);
 	Wxp = 0.5*(0.5 + fracX)*(0.5 + fracX);
@@ -60,21 +58,22 @@ public class SmoothData3D extends ColorSurfaceData{
     }
 
     /**  Bins value into the 2D array for x and y with weight = value. */
+    @Override
     public void addValue(double x, double y, double value){
 	int i,j;
 	double fracX,fracY;
 	double Wxm,Wx0,Wxp,Wym,Wy0,Wyp,tmp;
 
-        i = (int) ((x-x_min)/x_step + 0.5);
-        j = (int) ((y-y_min)/y_step + 0.5);
+        i = (int) ((x-xMin)/xStep + 0.5);
+        j = (int) ((y-yMin)/yStep + 0.5);
 
         if( i < 1) i = 1;
         if( i > (nX-2)) i = nX-2;
         if( j < 1) j = 1;
         if( j > (nY-2)) j = nY-2;
 
-        fracX = (x - x_min - i*x_step)/x_step;
-        fracY = (y - y_min - j*y_step)/y_step;
+        fracX = (x - xMin - i*xStep)/xStep;
+        fracY = (y - yMin - j*yStep)/yStep;
 
 	Wxm = 0.5 * (0.5 - fracX) * (0.5 - fracX);
 	Wx0 = 0.75 - fracX * fracX;
@@ -98,8 +97,8 @@ public class SmoothData3D extends ColorSurfaceData{
 
 	for(int ii = -1; ii < 2; ii++){
 	    for(int jj = -1; jj < 2; jj++){
-		if(z_min > gridData[i+ii][j+jj]) z_min = gridData[i+ii][j+jj];
-		if(z_max < gridData[i+ii][j+jj]) z_max = gridData[i+ii][j+jj];        
+		if(zMin > gridData[i+ii][j+jj]) zMin = gridData[i+ii][j+jj];
+		if(zMax < gridData[i+ii][j+jj]) zMax = gridData[i+ii][j+jj];        
 	    }
 	}
 

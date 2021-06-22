@@ -6,7 +6,6 @@
 
 package xal.smf.impl;
 
-import xal.smf.*;
 import xal.smf.impl.qualify.*;
 import xal.ca.*;
 import xal.tools.data.*;
@@ -18,7 +17,7 @@ import xal.tools.data.*;
  * type (PMQH and PMQV) as specified by the naming convention.  
  * In order to support this feature we override the getType(),
  * update() and isKindOf() methods.  The vertical and horizontal 
- * reference to a quadrapole isn't of consequence to behavior since the 
+ * reference to a quadrupole isn't of consequence to behavior since the 
  * field of the quadrupole (including its sign) and its length characterizes 
  * the quadrupole.
  *
@@ -26,7 +25,7 @@ import xal.tools.data.*;
  */
 public class PermQuadrupole extends PermanentMagnet {
     // Constants
-    public static final String s_strType  = "PQ";
+    public static final String TYPE  = "PQ";
     public static final String HORIZONTAL_TYPE = "PMQH";
     public static final String VERTICAL_TYPE = "PMQV";
 
@@ -47,7 +46,7 @@ public class PermQuadrupole extends PermanentMagnet {
      * @see #isKindOf
      */
     private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( PermQuadrupole.class, s_strType, "permquad", MagnetType.QUADRUPOLE );
+		ElementTypeManager.defaultManager().registerTypes( PermQuadrupole.class, TYPE, "permquad", MagnetType.QUADRUPOLE );
     }
 
 
@@ -73,6 +72,7 @@ public class PermQuadrupole extends PermanentMagnet {
      * official type (PMQH or PMQV).
      * @return The official type consistent with the naming convention.
      */
+    @Override
     public String getType()   { 
         return type; 
     }
@@ -84,6 +84,7 @@ public class PermQuadrupole extends PermanentMagnet {
      * quadrupole type can be either "PMQH" or "PMQV".
      * @param adaptor The data provider.
      */
+    @Override
     public void update(DataAdaptor adaptor) {
         if ( adaptor.hasAttribute("type") ) {
             type = adaptor.stringValue("type");
@@ -97,6 +98,7 @@ public class PermQuadrupole extends PermanentMagnet {
      * @param compPole The pole against which this magnet is being compared.
      * @return true if this magnet matches the specified pole.
      */ 
+    @Override
     public boolean isPole(String compPole) {
         return compPole.equals( MagnetType.QUADRUPOLE );
     }    
@@ -107,8 +109,9 @@ public class PermQuadrupole extends PermanentMagnet {
      * of the quad is determined by its type: PMQH or PMQV
      * @return One of HORIZONTAL or VERTICAL
      */
+    @Override
     public int getOrientation() {
-        if (type.equalsIgnoreCase(s_strType))
+        if (type.equalsIgnoreCase(TYPE))
             return NO_ORIENTATION;
         else
             return ( type.equalsIgnoreCase(HORIZONTAL_TYPE) ) ? HORIZONTAL : VERTICAL;
@@ -123,6 +126,7 @@ public class PermQuadrupole extends PermanentMagnet {
      * @param compType The type to compare against.
      * @return true if the node is a match and false otherwise.
      */
+    @Override
     public boolean isKindOf(String compType) {
         return compType.equalsIgnoreCase(this.type) || super.isKindOf(compType);
     }

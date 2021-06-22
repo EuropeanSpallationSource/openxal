@@ -26,19 +26,19 @@ class SnapshotPublisher {
 	final List<MachineSnapshot> SNAPSHOT_BUFFER;
 	
 	/** timer which signals a log operation */
-	final protected Timer LOG_TIMER;
+	protected final Timer LOG_TIMER;
 	
 	/** handles timer events */
-	protected TimerTask _publishingTask;
+	protected TimerTask publishingTask;
 	
 	/** publishing period in seconds */
-	protected double _publishingPeriod;
+	protected double publishingPeriod;
 	
 	/** database store */
-	final protected PersistentStore PERSISTENT_STORE;
+	protected final PersistentStore PERSISTENT_STORE;
 	
 	/** connection dictionary */
-	protected ConnectionDictionary _connectionDictionary;
+	protected ConnectionDictionary connectionDictionary;
 	
 	
 	/** Primary Constructor */
@@ -49,7 +49,7 @@ class SnapshotPublisher {
 		
 		SNAPSHOT_BUFFER = new ArrayList<MachineSnapshot>();
 		
-		_publishingPeriod = adaptor.doubleValue( "publishPeriod" );
+		publishingPeriod = adaptor.doubleValue( "publishPeriod" );
 		
 		LOG_TIMER = new Timer();
 	}
@@ -57,29 +57,29 @@ class SnapshotPublisher {
 	
 	/** set the connection dictionary */
 	protected void setConnectionDictionary( final ConnectionDictionary dictionary ) {
-		_connectionDictionary = dictionary;
+		connectionDictionary = dictionary;
 	}
 	
 	
 	/** determine if the logger is publishing */
 	public boolean isPublishing() {
-		return _publishingTask != null;
+		return publishingTask != null;
 	}
 	
 	
 	/** start the publishing */
 	public void start() {
 		if ( !isPublishing() ) {
-			final long delay = toMillisecondsFromSeconds( _publishingPeriod );
-			_publishingTask = newPublishingTask();
-			LOG_TIMER.schedule( _publishingTask, delay, delay );
+			final long delay = toMillisecondsFromSeconds( publishingPeriod );
+			publishingTask = newPublishingTask();
+			LOG_TIMER.schedule( publishingTask, delay, delay );
 		}
 	}
 	
 	
 	/** stop the publishing */
 	public void stop() {
-		if ( _publishingTask != null ) {
+		if ( publishingTask != null ) {
 			disposePublishingTask();
 		}
 	}
@@ -90,7 +90,7 @@ class SnapshotPublisher {
 	 * @return publishing period in seconds
 	 */
 	public double getPublishingPeriod() {
-		return _publishingPeriod;
+		return publishingPeriod;
 	}
 	
 	
@@ -99,8 +99,8 @@ class SnapshotPublisher {
 	 * @param period publishing period in seconds
 	 */
 	public void setPublishingPeriod( final double period ) {
-		if ( period != _publishingPeriod ) {
-			_publishingPeriod = period;
+		if ( period != publishingPeriod ) {
+			publishingPeriod = period;
 			if ( isPublishing() ) {
 				stop();
 				start();
@@ -111,7 +111,7 @@ class SnapshotPublisher {
 	
 	/** publish machine snapshots to the persistent storage */
 	public void publishSnapshots() {
-		publishSnapshots( _connectionDictionary );
+		publishSnapshots( connectionDictionary );
 	}
 	
 	
@@ -185,18 +185,18 @@ class SnapshotPublisher {
 	
 	/** dispose of the publishing task */
 	protected void disposePublishingTask() {
-		if ( _publishingTask != null ) {
-			_publishingTask.cancel();
+		if ( publishingTask != null ) {
+			publishingTask.cancel();
 		}
 		LOG_TIMER.purge();
-		_publishingTask = null;
+		publishingTask = null;
 	}
 
 	
 	/** get a new timer task for periodic publishing */
-	final protected TimerTask newPublishingTask() {
+	protected final TimerTask newPublishingTask() {
 		return new TimerTask() {
-			final public void run() {
+			public final void run() {
 				publishSnapshots();
 			}
 		};

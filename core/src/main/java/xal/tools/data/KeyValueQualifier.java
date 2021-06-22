@@ -12,28 +12,28 @@ package xal.tools.data;
 /** Check that a record's value corresponding to the specified key compares to the specified value based on the comparison type. */
 public class KeyValueQualifier implements Qualifier {
 	/** comparison operation - record's value corresponding to qualifier's key must be less than the qualifier's value */
-	static public final int COMPARE_LESS_THAN = -2;
+	public static final int COMPARE_LESS_THAN = -2;
 	
 	/** comparison operation - record's value corresponding to qualifier's key must be less than or equal to the qualifier's value */
-	static public final int COMPARE_LESS_THAN_OR_EQUALS = -1;
+	public static final int COMPARE_LESS_THAN_OR_EQUALS = -1;
 	
 	/** comparison operation - record's value corresponding to qualifier's key must be equal to the qualifier's value */
-	static public final int COMPARE_EQUALS = 0;
+	public static final int COMPARE_EQUALS = 0;
 	
 	/** comparison operation - record's value corresponding to qualifier's key must be greater than or equal to the qualifier's value */
-	static public final int COMPARE_GREATER_THAN_OR_EQUALS = 1;
+	public static final int COMPARE_GREATER_THAN_OR_EQUALS = 1;
 	
 	/** comparison operation - record's value corresponding to qualifier's key must be greater than the qualifier's value */
-	static public final int COMPARE_GREATER_THAN = 2;
+	public static final int COMPARE_GREATER_THAN = 2;
 	
 	/** the key for which to fetch the record's value */
-	private final String _key;
+	private final String key;
 	
 	/** the value with which to compare against */
-	private final Comparable<Object> _value;
+	private final Comparable<Object> value;
 	
 	/** comparison operation */
-	private final int _operation;
+	private final int operation;
 	
 	
 	/**
@@ -43,9 +43,9 @@ public class KeyValueQualifier implements Qualifier {
 	 * @param operation the code corresponding to the comparison operation
 	 */
 	public KeyValueQualifier( final String key, final Comparable<Object> value, final int operation ) {
-		_key = key;
-		_value = value;
-		_operation = operation;
+		this.key = key;
+		this.value = value;
+		this.operation = operation;
 	}
 	
 	
@@ -68,11 +68,12 @@ public class KeyValueQualifier implements Qualifier {
 	 * @throws java.lang.ClassCastException if the object does not implement the Comparable interface
 	 */
     @SuppressWarnings( "unchecked" ) //valueForKey cannot be resolved to a specific type since it returns Object
+        @Override
 	public boolean matches( final Object object ) {
-		final Comparable<Object> value = (Comparable<Object>)((KeyedRecord)object).valueForKey( _key );
-		final int comparisonResult = value.compareTo( _value );
+		final Comparable<Object> value = (Comparable<Object>)((KeyedRecord)object).valueForKey( key );
+		final int comparisonResult = value.compareTo( this.value );
 		
-		switch( _operation ) {
+		switch( operation ) {
 			case COMPARE_LESS_THAN:
 				return comparisonResult < 0;
 			case COMPARE_LESS_THAN_OR_EQUALS:
@@ -93,10 +94,11 @@ public class KeyValueQualifier implements Qualifier {
 	 * Get a string representation of this instance
 	 * @return a string representation of this instance.
 	 */
+        @Override
 	public String toString() {
 		String operationToken;
 		
-		switch( _operation ) {
+		switch( operation ) {
 			case COMPARE_LESS_THAN:
 				operationToken = "<";
 				break;
@@ -117,6 +119,6 @@ public class KeyValueQualifier implements Qualifier {
 				break;
 		}
 		
-		return _key + " " + operationToken + " " + _value;
+		return key + " " + operationToken + " " + value;
 	}
 }

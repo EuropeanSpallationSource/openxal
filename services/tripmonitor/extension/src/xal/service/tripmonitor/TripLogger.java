@@ -21,16 +21,16 @@ import xal.tools.data.*;
 /** logs trips to persistent storage */
 public class TripLogger {
 	/** data label identifying the trip logger */
-	final static public String DATA_LABEL = "TripLogger";
+	public static final String DATA_LABEL = "TripLogger";
 	
 	/** timer which signals a log operation */
-	final protected Timer LOG_TIMER;
+	protected final Timer LOG_TIMER;
 	
 	/** handles timer events */
-	final protected TimerHandler TIMER_HANDLER;
+	protected final TimerHandler TIMER_HANDLER;
 	
 	/** trip monitor filters */
-	final protected List<TripMonitor> TRIP_MONITORS;
+	protected final List<TripMonitor> TRIP_MONITORS;
 	
 	
 	/** Constructor */

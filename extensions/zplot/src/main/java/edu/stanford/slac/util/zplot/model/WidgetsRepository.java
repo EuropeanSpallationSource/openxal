@@ -24,7 +24,7 @@ import edu.stanford.slac.util.zplot.cartoon.model.widget.WireScannerWidget;
 
 public final class WidgetsRepository {
 
-	public final static Shape[] DEFAULT_SHAPES = DefaultDrawingSupplier
+	public static final Shape[] DEFAULT_SHAPES = DefaultDrawingSupplier
 			.createStandardSeriesShapes();
 	
 	private static Shape createLargeCircle(){
@@ -33,7 +33,7 @@ public final class WidgetsRepository {
 		return new Ellipse2D.Double(-SIZE, -SIZE, SIZE, SIZE);
 	}
 	
-	public final static Shape LARGE_CIRCLE = createLargeCircle();
+	public static final Shape LARGE_CIRCLE = createLargeCircle();
 	
 	private static Shape createLargeDispersionBpmShape() {
 		final int SIZE = 8;
@@ -48,7 +48,7 @@ public final class WidgetsRepository {
 		return result;
 	}
 
-	public final static Shape LARGE_DISPERSION_BPM_SHAPE = createLargeDispersionBpmShape();
+	public static final Shape LARGE_DISPERSION_BPM_SHAPE = createLargeDispersionBpmShape();
 
 	private static Shape[] createMagnetShapes() {
 		Shape[] result = new Shape[6];
@@ -80,7 +80,7 @@ public final class WidgetsRepository {
 
 	}
 
-	public final static Shape[] MAGNET_SHAPES = createMagnetShapes();
+	public static final Shape[] MAGNET_SHAPES = createMagnetShapes();
 
 	private static Shape createStopperShape() {
 		final int HEIGHT = 48;
@@ -116,9 +116,9 @@ public final class WidgetsRepository {
 		return result;
 	}
 
-	public final static Shape STOPPER_SHAPE = createStopperShape();
+	public static final Shape STOPPER_SHAPE = createStopperShape();
 	
-	public final static Stroke[] DEFAULT_STROKES = new Stroke[] {
+	public static final Stroke[] DEFAULT_STROKES = new Stroke[] {
 			DefaultDrawingSupplier.DEFAULT_STROKE_SEQUENCE[0],
 			// dashed - - -
 			new BasicStroke(1.0f, // Width
@@ -128,10 +128,10 @@ public final class WidgetsRepository {
 					new float[] { 1, 3 }, // Dash pattern
 					0.0f) };
 
-	public final static Widget UNKNOWN_WIDGET = new Widget(Color.RED,
+	public static final Widget UNKNOWN_WIDGET = new Widget(Color.RED,
 			DEFAULT_SHAPES[0], DEFAULT_STROKES[0]);
 
-	private final static HashMap<Object, Widget> bpmsMap = new HashMap<Object, Widget>();
+	private static final HashMap<Object, Widget> bpmsMap = new HashMap<Object, Widget>();
 
 	/**
 	 * @param o
@@ -164,7 +164,7 @@ public final class WidgetsRepository {
 		return w;
 	}
 
-	private final static HashMap<Object, Widget> largeDispersionBpmsMap = new HashMap<Object, Widget>();
+	private static final HashMap<Object, Widget> largeDispersionBpmsMap = new HashMap<Object, Widget>();
 
 	/**
 	 * @param o
@@ -197,7 +197,7 @@ public final class WidgetsRepository {
 
 	}
 
-	private final static HashMap<Object, Widget> fittedDevicesMap = new HashMap<Object, Widget>();
+	private static final HashMap<Object, Widget> fittedDevicesMap = new HashMap<Object, Widget>();
 
 	/**
 	 * @param o
@@ -222,7 +222,7 @@ public final class WidgetsRepository {
 
 	}
 
-	private final static HashMap<Object, Widget> markersMap = new HashMap<Object, Widget>();
+	private static final HashMap<Object, Widget> markersMap = new HashMap<Object, Widget>();
 
 	/**
 	 * Try to reuse the returned <code>Widget</code>.
@@ -247,7 +247,7 @@ public final class WidgetsRepository {
 		}
 		return w;
 	}
-	private final static HashMap<Object, Widget> valvesMap = new HashMap<Object, Widget>();
+	private static final HashMap<Object, Widget> valvesMap = new HashMap<Object, Widget>();
 
 	/**
 	 * Try to reuse the returned <code>Widget</code>.
@@ -265,7 +265,7 @@ public final class WidgetsRepository {
 		return w;
 	}
 
-	private final static HashMap<Object, Widget> profMonScreensMap = new HashMap<Object, Widget>();
+	private static final HashMap<Object, Widget> profMonScreensMap = new HashMap<Object, Widget>();
 
 	/**
 	 * @param o
@@ -282,7 +282,7 @@ public final class WidgetsRepository {
 	}
 	
 
-	private final static HashMap<Object, Widget> stoppersMap = new HashMap<Object, Widget>();
+	private static final HashMap<Object, Widget> stoppersMap = new HashMap<Object, Widget>();
 	
 	public static Widget getStopperWidget(Object o){
 		Widget w = stoppersMap.get(o);
@@ -293,7 +293,7 @@ public final class WidgetsRepository {
 		return w;
 	}
 
-	private final static HashMap<Object, Widget> toroidsMap = new HashMap<Object, Widget>();
+	private static final HashMap<Object, Widget> toroidsMap = new HashMap<Object, Widget>();
 
 	/**
 	 * @param o
@@ -317,7 +317,7 @@ public final class WidgetsRepository {
 		return w;
 	}
 	
-	private final static HashMap<Object, Widget> wiresMap = new HashMap<Object, Widget>();
+	private static final HashMap<Object, Widget> wiresMap = new HashMap<Object, Widget>();
 
 	/**
 	 * @param o
@@ -353,7 +353,7 @@ public final class WidgetsRepository {
 		return color;
 	}
 
-	private final static HashMap<Object, Widget> xcorMap = new HashMap<Object, Widget>();
+	private static final HashMap<Object, Widget> xcorMap = new HashMap<Object, Widget>();
 
 	/**
 	 * @param o
@@ -370,7 +370,7 @@ public final class WidgetsRepository {
 		return w;
 	}
 
-	private final static HashMap<Object, Widget> ycorMap = new HashMap<Object, Widget>();
+	private static final HashMap<Object, Widget> ycorMap = new HashMap<Object, Widget>();
 
 	/**
 	 * @param o
@@ -387,7 +387,7 @@ public final class WidgetsRepository {
 		return w;
 	}
 
-	private final static HashMap<Object, Widget> solnMap = new HashMap<Object, Widget>();
+	private static final HashMap<Object, Widget> solnMap = new HashMap<Object, Widget>();
 
 	/**
 	 * @param o
@@ -404,7 +404,7 @@ public final class WidgetsRepository {
 		return w;
 	}
 
-	private final static HashMap<Object, Widget> fquadMap = new HashMap<Object, Widget>();
+	private static final HashMap<Object, Widget> fquadMap = new HashMap<Object, Widget>();
 
 	/**
 	 * @param o
@@ -421,7 +421,7 @@ public final class WidgetsRepository {
 		return w;
 	}
 
-	private final static HashMap<Object, Widget> dquadMap = new HashMap<Object, Widget>();
+	private static final HashMap<Object, Widget> dquadMap = new HashMap<Object, Widget>();
 
 	/**
 	 * @param o
@@ -438,7 +438,7 @@ public final class WidgetsRepository {
 		return w;
 	}
 
-	private final static HashMap<Object, Widget> dipoleMap = new HashMap<Object, Widget>();
+	private static final HashMap<Object, Widget> dipoleMap = new HashMap<Object, Widget>();
 
 	/**
 	 * @param o

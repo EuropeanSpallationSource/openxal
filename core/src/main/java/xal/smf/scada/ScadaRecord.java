@@ -196,8 +196,8 @@ public abstract class ScadaRecord implements DataListener, Cloneable {
      */
     @Override
     public String toString() {
-        StringBuffer    bufStr = new StringBuffer();
-        bufStr.append(this.getClass().getName() + " values\n"); //$NON-NLS-1$
+        StringBuilder    bufStr = new StringBuilder();
+        bufStr.append(this.getClass().getName()).append(" values\n"); //$NON-NLS-1$
         
         for (ScadaFieldDescriptor pktFld : this.lstFldDscr) {
             String          strFldNm   = pktFld.getFieldName();
@@ -220,21 +220,12 @@ public abstract class ScadaRecord implements DataListener, Cloneable {
                     
                 }
 
-                bufStr.append(strFldNm + " = " + strFldVal + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+                bufStr.append(strFldNm).append(" = ").append(strFldVal).append("\n"); //$NON-NLS-1$ //$NON-NLS-2$
                 
-            } catch (SecurityException e) {
-                bufStr.append(strFldNm + " = ERROR\n"); //$NON-NLS-1$
-
-            } catch (NoSuchFieldException e) {
-                bufStr.append(strFldNm + " = ERROR\n"); //$NON-NLS-1$
-                
-            } catch (IllegalArgumentException e) {
-                bufStr.append(strFldNm + " = ERROR\n"); //$NON-NLS-1$
-                
-            } catch (IllegalAccessException e) {
-                bufStr.append(strFldNm + " = ERROR\n"); //$NON-NLS-1$
-                
+            } catch (SecurityException | NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+                bufStr.append(strFldNm).append(" = ERROR\n"); //$NON-NLS-1$
             }
+            
         }
 
         return bufStr.toString();
@@ -325,15 +316,8 @@ public abstract class ScadaRecord implements DataListener, Cloneable {
                     fldDataFld.set(this, strVal);
                 }
 
-            } catch (IllegalAccessException e) {
+            } catch (IllegalAccessException | SecurityException | NoSuchFieldException e) {
                 throw new BadStructException("Data field " + strFldName + " is ill-defined.", e); //$NON-NLS-1$ //$NON-NLS-2$
-                
-            } catch (SecurityException e) {
-                throw new BadStructException("Data field " + strFldName + " is ill-defined.", e); //$NON-NLS-1$ //$NON-NLS-2$
-
-            } catch (NoSuchFieldException e) {
-                throw new BadStructException("Data field " + strFldName + " is ill-defined.", e); //$NON-NLS-1$ //$NON-NLS-2$
-                
             }
         }
     }
@@ -379,15 +363,8 @@ public abstract class ScadaRecord implements DataListener, Cloneable {
 
                 }
 
-            } catch (IllegalAccessException e) {
-                throw new BadStructException("Data field " + strFldName + " is ill-defined.", e); //$NON-NLS-1$ //$NON-NLS-2$
-                
-            } catch (SecurityException e) {
-                throw new BadStructException("Data field " + strFldName + " is ill-defined.", e); //$NON-NLS-1$ //$NON-NLS-2$
-
-            } catch (NoSuchFieldException e) {
-                throw new BadStructException("Data field " + strFldName + " is ill-defined.", e); //$NON-NLS-1$ //$NON-NLS-2$
-                
+            } catch (IllegalAccessException | SecurityException | NoSuchFieldException e) {
+                throw new BadStructException("Data field " + strFldName + " is ill-defined.", e); //$NON-NLS-1$ //$NON-NLS-2$   
             }
         }
     }
@@ -409,8 +386,8 @@ public abstract class ScadaRecord implements DataListener, Cloneable {
     protected Object clone() throws CloneNotSupportedException {
         ScadaRecord     strCopy = (ScadaRecord)super.clone();
 
-        strCopy.lstFldDscr = new LinkedList<ScadaFieldDescriptor>();
-        strCopy.mapNm2Fd   = new HashMap<String, ScadaFieldDescriptor>();
+        strCopy.lstFldDscr = new LinkedList<>();
+        strCopy.mapNm2Fd   = new HashMap<>();
 
         for (ScadaFieldDescriptor sfd : this.lstFldDscr) {
             String                  strName = sfd.getFieldName();
@@ -460,8 +437,8 @@ public abstract class ScadaRecord implements DataListener, Cloneable {
      */
     protected ScadaRecord(ScadaRecord clone) throws CloneNotSupportedException {
         
-        this.lstFldDscr = new LinkedList<ScadaFieldDescriptor>();
-        this.mapNm2Fd   = new HashMap<String, ScadaFieldDescriptor>();
+        this.lstFldDscr = new LinkedList<>();
+        this.mapNm2Fd   = new HashMap<>();
 
         for (ScadaFieldDescriptor sfd : clone.lstFldDscr) {
             ScadaFieldDescriptor    sfdCopy = (ScadaFieldDescriptor) sfd.clone();
@@ -549,8 +526,8 @@ public abstract class ScadaRecord implements DataListener, Cloneable {
      * @author    Christopher K. Allen
      */
     protected ScadaRecord(ScadaFieldDescriptor... arrFldDscr) {
-        this.lstFldDscr = new LinkedList<ScadaFieldDescriptor>();
-        this.mapNm2Fd   = new HashMap<String, ScadaFieldDescriptor>();
+        this.lstFldDscr = new LinkedList<>();
+        this.mapNm2Fd   = new HashMap<>();
         
         if (arrFldDscr.length == 0)
             throw new BadStructException("No SCADA fields in argument."); //$NON-NLS-1$
@@ -665,25 +642,7 @@ public abstract class ScadaRecord implements DataListener, Cloneable {
                 throw new BadStructException(strMsg);
             }
 
-        } catch (SecurityException e) {
-            String  strMsg = "ScadaStruct#getHardwareValues:" //$NON-NLS-1$
-                + " unable to initialize field " + strFldName //$NON-NLS-1$
-                + ", incompatible types for " + strHndPv; //$NON-NLS-1$
-            throw new BadStructException(strMsg, e);
-            
-        } catch (NoSuchFieldException e) {
-            String  strMsg = "ScadaStruct#getHardwareValues:" //$NON-NLS-1$
-                + " unable to initialize field " + strFldName //$NON-NLS-1$
-                + ", incompatible types for " + strHndPv; //$NON-NLS-1$
-            throw new BadStructException(strMsg, e);
-            
-        } catch (IllegalArgumentException e) {
-            String  strMsg = "ScadaStruct#getHardwareValues:" //$NON-NLS-1$
-                + " unable to initialize field " + strFldName //$NON-NLS-1$
-                + ", incompatible types for " + strHndPv; //$NON-NLS-1$
-            throw new BadStructException(strMsg, e);
-            
-        } catch (IllegalAccessException e) {
+        } catch (SecurityException | NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
             String  strMsg = "ScadaStruct#getHardwareValues:" //$NON-NLS-1$
                 + " unable to initialize field " + strFldName //$NON-NLS-1$
                 + ", incompatible types for " + strHndPv; //$NON-NLS-1$
@@ -795,5 +754,3 @@ public abstract class ScadaRecord implements DataListener, Cloneable {
     }
 
 }
-
-

@@ -25,27 +25,27 @@ import xal.model.probe.TransferMapProbe;
 @Deprecated
 public class RingModel extends ElementSeq {
     /** default number of element positions to reserve in list array */
-    public static final int    s_szDefReserve = 100;
+    public static final int    SIZE_DEF_RESERVE = 100;
     
     /** the string type identifier for all Lattice objects */
-    public static final String      s_strType = "RingModel";
+    public static final String      TYPE = "RingModel";
     
     
     /** version of lattice */
-    private String      m_strVersion;
+    private String      strVersion;
     
     /** lattice author */
-    private String      m_strAuthor;
+    private String      strAuthor;
     
     /** lattice date */
-    private String      m_strDate;
+    private String      strDate;
     
     
     /**
      * Creates a new, empty instance of <code>RingModel</code>.
      */
     public RingModel() {
-        this(null, s_szDefReserve);
+        this(null, SIZE_DEF_RESERVE);
     }
  
 	
@@ -56,7 +56,7 @@ public class RingModel extends ElementSeq {
      *  @param  strId       identifier of the lattice
      */
     public RingModel(String strId) {
-        this(strId, s_szDefReserve);
+        this(strId, SIZE_DEF_RESERVE);
     }
  
 	
@@ -68,7 +68,7 @@ public class RingModel extends ElementSeq {
      *  @param  szReserve   number of Element spaces to reserve
      */
     public RingModel(String strId, int szReserve) {
-        super(s_strType, strId, szReserve);
+        super(TYPE, strId, szReserve);
     }
  
 	
@@ -78,7 +78,7 @@ public class RingModel extends ElementSeq {
      *  @param  strVersion      revision number of lattice
      */
     public void setVersion(String strVersion)   {
-        m_strVersion = strVersion;
+        this.strVersion = strVersion;
     }
     
 	
@@ -88,7 +88,7 @@ public class RingModel extends ElementSeq {
      *  @param  strAuthor       author of lattice description
      */
     public void setAuthor(String strAuthor)     {
-        m_strAuthor = strAuthor;
+        this.strAuthor = strAuthor;
     }
     
 	
@@ -98,7 +98,7 @@ public class RingModel extends ElementSeq {
      *  @param  strDate         date string of lattice description
      */
     public void setDate(String strDate)         {
-        m_strDate = strDate;
+        this.strDate = strDate;
     }
     
     
@@ -184,7 +184,7 @@ public class RingModel extends ElementSeq {
 		}
 		
 		if ( startIndex > 0 ) {
-			final List<IComponent> newElements = new ArrayList<IComponent>( numElements );
+			final List<IComponent> newElements = new ArrayList<>( numElements );
 			newElements.addAll( elements.subList( startIndex, numElements ) );
 			newElements.addAll( elements.subList( 0, startIndex ) );			
 			setCompList( newElements );
@@ -199,7 +199,7 @@ public class RingModel extends ElementSeq {
      *  
      *  @return     lattice revision number
      */
-    public String   getVersion()        { return m_strVersion==null? "":m_strVersion; }
+    public String   getVersion()        { return strVersion==null? "":strVersion; }
     
 	
     /**
@@ -207,7 +207,7 @@ public class RingModel extends ElementSeq {
      *
      *  @return     lattice author
      */
-    public String   getAuthor()         { return m_strAuthor==null? "":m_strAuthor; }
+    public String   getAuthor()         { return strAuthor==null? "":strAuthor; }
     
 	
     /**
@@ -215,7 +215,7 @@ public class RingModel extends ElementSeq {
      *
      *  @return     lattice model date
      */
-    public String   getDate()           { return m_strDate==null? "":m_strDate; }
+    public String   getDate()           { return strDate==null? "":strDate; }
     
     
     /**

@@ -19,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Window;
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -28,38 +27,38 @@ import javax.swing.border.Border;
 /** loads resources for a single window instance */
 public class WindowReference {
 	/** context in which this window reference was made */
-	final private BricksContext CONTEXT;
+	private final BricksContext context;
 	
 	/** table of views tagged by their tag */
-	final private Map<String,List<Object>> VIEW_TABLE;
+	private final Map<String,List<Object>> viewTable;
 	
 	/** the window reference */
-	final private Window WINDOW;
+	private final Window window;
 	
 	
 	/** Constructor */
 	public WindowReference( final URL url, final String tag, Object... windowParameters ) {
-		CONTEXT = new BricksContext( url );
-		VIEW_TABLE = new HashMap<String,List<Object>>();
-		WINDOW = loadWindow( url, tag, windowParameters );
+		context = new BricksContext( url );
+		viewTable = new HashMap<String,List<Object>>();
+		window = loadWindow( url, tag, windowParameters );
 	}
 	
 	
 	/** Get the default window reference using the default window constructor */
-	static public WindowReference getDefaultInstance( final URL url, final String tag ) {
+	public static WindowReference getDefaultInstance( final URL url, final String tag ) {
 		return new WindowReference( url, tag );
 	}
 	
 	
 	/** get the window */
 	public Window getWindow() {
-		return WINDOW;
+		return window;
 	}
 	
 	
 	/** get the views with the associated tag */
 	public List<Object> getViews( final String tag ) {
-		return VIEW_TABLE.get( tag );
+		return viewTable.get( tag );
 	}
 	
 	
@@ -73,12 +72,12 @@ public class WindowReference {
 	/** register the view with the table */
 	protected void registerView( final Object view, final String tag ) {
 		final List<Object> views;
-		if ( VIEW_TABLE.containsKey( tag ) ) {
-			views = VIEW_TABLE.get( tag );
+		if ( viewTable.containsKey( tag ) ) {
+			views = viewTable.get( tag );
 		}
 		else {
 			views = new ArrayList<Object>();
-			VIEW_TABLE.put( tag, views );
+			viewTable.put( tag, views );
 		}
 		views.add( view );
 	}
@@ -112,7 +111,7 @@ public class WindowReference {
 			final DataAdaptor documentAdaptor = XmlDataAdaptor.adaptorForUrl( url, false );
 			final DataAdaptor mainAdaptor = documentAdaptor.childAdaptor( "BricksDocument" );
 			final DataAdaptor rootAdaptor = mainAdaptor.childAdaptor( RootBrick.DATA_LABEL );
-			final List<DataAdaptor> windowAdaptors = rootAdaptor.childAdaptors( ViewNode.DATA_LABEL );
+			final List<DataAdaptor> windowAdaptors = rootAdaptor.childAdaptors(ViewNode.dataLabel );
 			for ( final DataAdaptor windowAdaptor : windowAdaptors ) {
 				final String windowTag = windowAdaptor.stringValue( "tag" );
 				if ( windowTag.equals( tag ) )  return windowAdaptor;
@@ -160,14 +159,14 @@ public class WindowReference {
 		registerView( view, tag );
 		
 		if ( viewProxy.isContainer() ) {
-			final List<DataAdaptor> viewAdaptors = adaptor.childAdaptors( ViewNode.DATA_LABEL );
+			final List<DataAdaptor> viewAdaptors = adaptor.childAdaptors(ViewNode.dataLabel );
 			for ( final DataAdaptor viewAdaptor : viewAdaptors ) {
 				final Component subView = getView( viewAdaptor );
 				viewProxy.getContainer( view ).add( subView );
 			}
 		}
 		
-		final DataAdaptor borderAdaptor = adaptor.childAdaptor( BorderNode.DATA_LABEL );
+		final DataAdaptor borderAdaptor = adaptor.childAdaptor(BorderNode.dataLabel );
 		if ( view instanceof JComponent && borderAdaptor != null ) {
 			final Border border = getBorder( borderAdaptor );
 			((JComponent)view).setBorder( border );
@@ -175,7 +174,7 @@ public class WindowReference {
 		
 		final List<DataAdaptor> beanAdaptors = adaptor.childAdaptors( BeanNode.BEAN_DATA_LABEL );
 		for ( final DataAdaptor beanAdaptor : beanAdaptors ) {
-			beanAdaptor.setValue( "contextURL", CONTEXT.getSourceURL().toString() );
+			beanAdaptor.setValue( "contextURL", context.getSourceURL().toString() );
 		}
 		applyBeanPropertiesTo( view, beanAdaptors );
 		
@@ -196,7 +195,7 @@ public class WindowReference {
 			constructor.setAccessible( true );
 			return constructor;
 		}
-		catch ( Exception exception ) {
+		catch ( NoSuchMethodException | SecurityException exception ) {
 			final Constructor[] constructors = theClass.getConstructors();
 			for ( final Constructor constructor : constructors ) {
 				if ( constructorCanOperateOn( constructor, parameters ) ) {
@@ -227,7 +226,7 @@ public class WindowReference {
 	/** process adaptors to get borders */
     @SuppressWarnings( { "unchecked", "rawtypes" } )
 	protected Border getBorder( final DataAdaptor adaptor ) {
-		final DataAdaptor proxyAdaptor = adaptor.childAdaptor( BorderProxy.DATA_LABEL );
+		final DataAdaptor proxyAdaptor = adaptor.childAdaptor(BorderProxy.dataLabel );
 		final BorderProxy borderProxy = BorderProxy.getInstance( proxyAdaptor );
 		final String tag = adaptor.stringValue( "tag" );
 		
@@ -237,7 +236,7 @@ public class WindowReference {
 				final String customClassName = adaptor.stringValue( "customBeanClass" );
 				borderClass = Class.forName( customClassName );
 			}
-			catch( Exception exception ) {
+			catch( ClassNotFoundException exception ) {
 				exception.printStackTrace();
 			}
 		}
@@ -253,7 +252,7 @@ public class WindowReference {
 	
 	
 	/** apply property settings to the bean object */
-	static protected void applyBeanPropertiesTo( final Object object, final List<DataAdaptor> beanAdaptors ) {
+	protected static void applyBeanPropertiesTo( final Object object, final List<DataAdaptor> beanAdaptors ) {
 		final Map<String,PropertyDescriptor>descriptorTable = getProperyDescriptorTable( object );
 		
 		for ( final DataAdaptor beanAdaptor : beanAdaptors ) {
@@ -263,7 +262,7 @@ public class WindowReference {
 	
 	
 	/** Apply the property settings to the specified bean object */
-	static protected void applyBeanPropertyTo( final Object object, final DataAdaptor beanAdaptor, final Map<String,PropertyDescriptor>descriptorTable ) {
+	protected static void applyBeanPropertyTo( final Object object, final DataAdaptor beanAdaptor, final Map<String,PropertyDescriptor>descriptorTable ) {
 		try {
 			final PropertyValueEditorManager editorManager = PropertyValueEditorManager.getDefaultManager();
 			final String name = beanAdaptor.stringValue( "name" );
@@ -275,24 +274,24 @@ public class WindowReference {
 			final Method method = propertyDescriptor.getWriteMethod();
 			method.invoke( object, value );
 		}
-		catch( Exception exception ) {
+		catch( IllegalAccessException | IllegalArgumentException | InvocationTargetException exception ) {
 			exception.printStackTrace();
 		}
 	}
 	
 	
 	/** Get the property descriptor table keyed by property name */
-	static protected Map<String,PropertyDescriptor> getProperyDescriptorTable( final Object object ) {
+	protected static Map<String,PropertyDescriptor> getProperyDescriptorTable( final Object object ) {
 		try {
 			final BeanInfo beanInfo = Introspector.getBeanInfo( object.getClass() );;
 			final PropertyDescriptor[] descriptors = beanInfo != null ? beanInfo.getPropertyDescriptors() : new PropertyDescriptor[0];
-			final Map<String,PropertyDescriptor> descriptorTable = new HashMap<String,PropertyDescriptor>();
+			final Map<String,PropertyDescriptor> descriptorTable = new HashMap<>();
 			for ( final PropertyDescriptor descriptor : descriptors ) {
 				descriptorTable.put( descriptor.getName(), descriptor );
 			}
 			return descriptorTable;
 		}
-		catch( Exception exception ) {
+		catch( IntrospectionException exception ) {
 			return null;
 		}
 	}

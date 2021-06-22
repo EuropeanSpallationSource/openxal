@@ -83,8 +83,8 @@ public class PvAccessMonitorRequesterImpl extends Monitor implements MonitorRequ
             }
 
             if (isFirst
-                    || ((m_intMaskEvent & VALUE) > 0 && isValueChanged)
-                    || ((m_intMaskEvent & ALARM) > 0 && isAlarmChanged)) {
+                    || ((intMaskEvent & VALUE) > 0 && isValueChanged)
+                    || ((intMaskEvent & ALARM) > 0 && isAlarmChanged)) {
                 if (isFirst) {
                     isFirst = false;
                 }

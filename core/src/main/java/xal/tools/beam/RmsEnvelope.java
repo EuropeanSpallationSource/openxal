@@ -11,21 +11,21 @@ package xal.tools.beam;
 public class RmsEnvelope {
 
 	/** Beam current */
-	private double m_dblBmI = 0.0;
+	private double dblBmI = 0.0;
     
 	/** Beam charge */
-	private double m_dblBmQ = 0.0;
+	private double dblBmQ = 0.0;
     
     /** envelope state - covariance matrix in homogeneous phase coordinates */
-    private PhaseMatrix m_matSigma;
+    private PhaseMatrix matSigma;
     
     
     // ********* constructors
     
     
     public RmsEnvelope() {
-    	m_matSigma = new PhaseMatrix();
-    	m_matSigma.setElem(6,6, 1.0);
+    	matSigma = new PhaseMatrix();
+    	matSigma.setElem(6,6, 1.0);
     }
     
     /**
@@ -47,11 +47,11 @@ public class RmsEnvelope {
     };  
     
     public PhaseMatrix getSigma() {
-    	return m_matSigma;
+    	return matSigma;
     }
     
     public void setCorrelation(PhaseMatrix m) {
-    	m_matSigma = m;
+    	matSigma = m;
     }  
        
 

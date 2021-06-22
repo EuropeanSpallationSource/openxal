@@ -87,7 +87,7 @@ public class FortranNumberFormat extends DecimalFormat {
 
 
     /**
-     *  Constructor for the FortranNumberFormat objectwith a formatting pattern
+     *  Constructor for the FortranNumberFormat object with a formatting pattern
      *  as parameter
      *
      *@param  pattern  The formatting pattern
@@ -127,6 +127,7 @@ public class FortranNumberFormat extends DecimalFormat {
      *
      *@return    The formatting pattern
      */
+    @Override
     public String toPattern() {
         return pattern;
     }
@@ -137,16 +138,18 @@ public class FortranNumberFormat extends DecimalFormat {
      *
      *@return    The formatting pattern
      */
+    @Override
     public String toLocalizedPattern() {
         return pattern;
     }
 
 
     /**
-     *  Applys the format pattern
+     *  Applies the format pattern
      *
      *@param  pattern  The format pattern
      */
+    @Override
     public void applyPattern( String pattern ) {
         Pattern p = Pattern.compile( "[G|g]\\d+\\.+\\d+" );
         if ( p.matcher( pattern ).matches() ) {
@@ -177,10 +180,11 @@ public class FortranNumberFormat extends DecimalFormat {
 
 
     /**
-     *  Applys the format pattern
+     *  Applies the format pattern
      *
      *@param  pattern  The format pattern
      */
+    @Override
     public void applyLocalizedPattern( String pattern ) {
         applyPattern( pattern );
     }
@@ -216,6 +220,7 @@ public class FortranNumberFormat extends DecimalFormat {
      *      the offsets of the alignment field
      *@return             The text that will be displayed
      */
+    @Override
     public StringBuffer format( double val, StringBuffer toAppendTo, FieldPosition pos ) {
         DecimalFormat df = simpleFormats[0];
 

@@ -38,16 +38,16 @@ public class IdealEQuad extends ThickElectrostatic {
     
     
     /** string type identifier for all IdealEQuad objects */
-    public static final String s_strType = "IdealEQuad";
+    public static final String TYPE = "IdealEQuad";
 
     /** Parameter for XAL MODEL LATTICE dtd */
-    public static final String s_strParamOrient = "Orientation";
+    public static final String PARAM_ORIENT = "Orientation";
     
     /** Parameter for XAL MODEL LATTICE dtd */
-    public static final String s_strParamVoltage = "Voltage";
+    public static final String PARAM_VOLTAGE = "Voltage";
 
     /** Parameter for XAL MODEL LATTICE dtd */
-    public static final String s_strParamAperture = "ApertureRadius";
+    public static final String PARAM_APERTURE = "ApertureRadius";
     
     
     /*
@@ -55,13 +55,13 @@ public class IdealEQuad extends ThickElectrostatic {
      */
     
     /** Orientation of quadrupole */
-    private int m_enmOrient = ORIENT_NONE;
+    private int enmOrient = ORIENT_NONE;
 
     /** Applied Voltage */
-    private double m_dblVoltage = 0.0;
+    private double dblVoltage = 0.0;
 
     /** Aperture radius */
-    private double m_dblAperture = 0.0;
+    private double dblAperture = 0.0;
 
 
     /*
@@ -85,12 +85,12 @@ public class IdealEQuad extends ThickElectrostatic {
         double dblVol,
         double dblLen,
         double dblApt) {
-        super(s_strType, strId, dblLen);
+        super(TYPE, strId, dblLen);
 
         this.setOrientation(enmOrient);
         this.setVoltage(dblVol);
         this.setAperture(dblApt);
-    };
+    }
 
     /** 
      *  JavaBean constructor - creates a new uninitialized instance of IdealEQuad
@@ -98,8 +98,8 @@ public class IdealEQuad extends ThickElectrostatic {
      *  <b>BE CAREFUL</b>
      */
     public IdealEQuad() {
-        super(s_strType);
-    };
+        super(TYPE);
+    }
 
 
 
@@ -114,18 +114,20 @@ public class IdealEQuad extends ThickElectrostatic {
      *              ORIENT_VER  - quadrupole focuses in y ( vertical ) plane
      *              ORIENT_NONE - error
      */
+    @Override
     public int getOrientation() {
-        return m_enmOrient;
-    };
+        return enmOrient;
+    }
 
     /**  
      *  Get the voltage applied to the electrostatic quad pole tips.
      *
      *  @return     Voltage (in <b>kV</b>).
      */
+    @Override
     public double getVoltage() {
-        return m_dblVoltage;
-    };
+        return dblVoltage;
+    }
 
     /**
      *  Set the electrostatic quad orientation.
@@ -134,18 +136,20 @@ public class IdealEQuad extends ThickElectrostatic {
      *
      *  @see    #getOrientation
      */
+    @Override
     public void setOrientation(int enmOrient) {
-        m_enmOrient = enmOrient;
-    };
+        this.enmOrient = enmOrient;
+    }
 
     /**  
      *  Set the applied Voltage on the electrostatic quad.
      *
      *  @param  dblVoltage    Voltage (in <b>kV</b>).
      */
+    @Override
     public void setVoltage(double dblVoltage) {
-        m_dblVoltage = dblVoltage;
-    };
+        this.dblVoltage = dblVoltage;
+    }
 
     /**  
      *  Get the Aperture radius of the electrostatic quad.
@@ -154,8 +158,8 @@ public class IdealEQuad extends ThickElectrostatic {
      */
     
     public double getAperture() {
-        return m_dblAperture;
-    };
+        return dblAperture;
+    }
 
     /**  
      *  Set the Aperture radius of the electrostatic quad.
@@ -163,8 +167,8 @@ public class IdealEQuad extends ThickElectrostatic {
      *  @param  dblAperture     Aperture Radius (in <b>m</b>).
      */
     public void setAperture(double dblAperture) {
-        m_dblAperture = dblAperture;
-    };
+        this.dblAperture = dblAperture;
+    }
     
     /*
      *  ThickElement Protocol
@@ -179,6 +183,7 @@ public class IdealEQuad extends ThickElectrostatic {
      *  
      *  @return         the elapsed time through section<b>Units: seconds</b> 
      */
+    @Override
     public double elapsedTime(IProbe probe, double dblLen)  {
         return super.compDriftingTime(probe, dblLen);
     }
@@ -190,6 +195,7 @@ public class IdealEQuad extends ThickElectrostatic {
      *  @param  dblLen  dummy argument
      *  @return         returns a zero value
      */
+    @Override
     public double energyGain(IProbe probe, double dblLen) {
         return 0.0;
     }
@@ -203,6 +209,7 @@ public class IdealEQuad extends ThickElectrostatic {
      *  @param  length  compute transfer matrix for section of this length
      *  @return         transfer map of ideal Equadrupole for particular probe
      */
+    @Override
     public PhaseMap transferMap( final IProbe probe, final double length) {
         double charge = probe.getSpeciesCharge();
         double Er = probe.getSpeciesRestEnergy();
@@ -210,7 +217,7 @@ public class IdealEQuad extends ThickElectrostatic {
         double beta = probe.getBeta();
         double gamma = probe.getGamma();
         double bg = beta * gamma;
-        double brho = ( Er * bg ) / LightSpeed;
+        double brho = ( Er * bg ) / LIGHT_SPEED;
         double dLz = length / (bg * bg);
         
         // mass number 1.073e-9~=10e-6/931.494
@@ -259,12 +266,13 @@ public class IdealEQuad extends ThickElectrostatic {
      *
      *  @param  os      output stream object
      */
+    @Override
     public void print(PrintWriter os) {
         super.print(os);
 
         os.println("  Voltage     : " + this.getVoltage());
         os.println("  EQuad orientation : " + this.getOrientation());
-    };
+    }
     
     /**
 	 * Conversion method to be provided by the user
@@ -276,4 +284,4 @@ public class IdealEQuad extends ThickElectrostatic {
 		super.initializeFrom(element);				
 		setAperture(element.getHardwareNode().getAper().getAperX()[0]);
 	}    
-};
+}

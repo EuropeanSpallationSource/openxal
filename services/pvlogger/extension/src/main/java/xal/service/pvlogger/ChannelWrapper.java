@@ -29,16 +29,16 @@ import xal.ca.MonitorException;
  */
 public class ChannelWrapper {
 	/** The channel to wrap */
-	protected Channel _channel;
+	protected Channel channel;
 	
 	/** The monitor for the channel */
-	protected Monitor _monitor;
+	protected Monitor monitor;
 	
 	/** The latest channel record found by the monitor */
-	protected volatile ChannelTimeRecord _record;
+	protected volatile ChannelTimeRecord record;
 	
 	/** The handler handles channel connection events */
-	protected ConnectionHandler _connectionHandler;
+	protected ConnectionHandler connectionHandler;
 	
     
 	/**
@@ -46,9 +46,9 @@ public class ChannelWrapper {
 	 * @param pv The PV for which to create a channel.
 	 */
 	public ChannelWrapper( final String pv ) {
-		_channel = ChannelFactory.defaultFactory().getChannel( pv );
-		_connectionHandler = new ConnectionHandler();
-		_channel.addConnectionListener( _connectionHandler );		
+		channel = ChannelFactory.defaultFactory().getChannel( pv );
+		connectionHandler = new ConnectionHandler();
+		channel.addConnectionListener( connectionHandler );		
 	}
 	
 	
@@ -57,10 +57,10 @@ public class ChannelWrapper {
 	 * Remove the connection handler as a connection listener of the channel.
 	 */
 	public void dispose() {
-		_channel.removeConnectionListener( _connectionHandler );
-		if ( _channel.isConnected() && _monitor != null ) {
-			_monitor.clear();
-			_monitor = null;
+		channel.removeConnectionListener( connectionHandler );
+		if ( channel.isConnected() && monitor != null ) {
+			monitor.clear();
+			monitor = null;
 		}
 	}
 	
@@ -71,7 +71,7 @@ public class ChannelWrapper {
 	 * @param listener the object to add as a connection listener.
 	 */
 	public void addConnectionListener( final ConnectionListener listener ) {
-		_channel.addConnectionListener( listener );
+		channel.addConnectionListener( listener );
 	}
 	
 	
@@ -81,7 +81,7 @@ public class ChannelWrapper {
 	 * @param listener the object to remove from being a connection listener
 	 */
 	public void removeConnectionListener( final ConnectionListener listener ) {
-		_channel.removeConnectionListener( listener );
+		channel.removeConnectionListener( listener );
 	}
 	 
 	 
@@ -90,7 +90,7 @@ public class ChannelWrapper {
 	* a channel is dropped then clear the record.
 	*/
 	protected void requestConnection() {
-		_channel.requestConnection();
+		channel.requestConnection();
 	}
 	
 	
@@ -100,17 +100,15 @@ public class ChannelWrapper {
 	*/
 	protected void makeMonitor() {
 		try {
-			_monitor = _channel.addMonitorValTime( new IEventSinkValTime() {
+			monitor = channel.addMonitorValTime( new IEventSinkValTime() {
 				/** handle the monitor event by caching the latest channel record */
-				public void eventValue( final ChannelTimeRecord record, final Channel chan ) {
-					_record = isValid( record ) ? record : null;
+                                @Override
+				public void eventValue( final ChannelTimeRecord aRecord, final Channel chan ) {
+					record = isValid( aRecord ) ? aRecord : null;
 				}
 			}, Monitor.VALUE );
 		}
-		catch( ConnectionException exception ) {
-			exception.printStackTrace();
-		}
-		catch( MonitorException exception ) {
+		catch( ConnectionException | MonitorException exception ) {
 			exception.printStackTrace();
 		}
 	}
@@ -121,7 +119,7 @@ public class ChannelWrapper {
 	 * @param record the record to validate
 	 * @return true if the record is valid and false if not
 	 */
-	static private boolean isValid( final ChannelTimeRecord record ) {
+	private static boolean isValid( final ChannelTimeRecord record ) {
 		final double[] array = record.doubleArray();
 		for ( int index = 0 ; index < array.length ; index++ ) {
 			if ( !isValidValue( array[index] ) ) return false;
@@ -136,7 +134,7 @@ public class ChannelWrapper {
 	 * @param value the value to validate
 	 * @return true if the value is valid and false if not
 	 */
-	static private boolean isValidValue( final double value ) {
+	private static boolean isValidValue( final double value ) {
 		return !Double.isNaN( value ) && !Double.isInfinite( value );
 	}
 	
@@ -146,7 +144,7 @@ public class ChannelWrapper {
 	* @return the PV
 	*/
 	public String getPV() {
-		return _channel.channelName();
+		return channel.channelName();
 	}
 	
 	
@@ -155,7 +153,7 @@ public class ChannelWrapper {
 	* @return the wrapped channel
 	*/
 	public Channel getChannel() {
-		return _channel;
+		return channel;
 	}
 	
 	
@@ -164,7 +162,7 @@ public class ChannelWrapper {
 	* @return the latest channel record cached.
 	*/
 	public ChannelTimeRecord getRecord() {
-		return _record;
+		return record;
 	}
 	
 	
@@ -179,8 +177,9 @@ public class ChannelWrapper {
 		 * If the monitor is null make a new monitor.
 		 * @param channel The channel which has been connected.
 		 */
+                @Override
 		public void connectionMade( final Channel channel ) {
-			if ( _monitor == null )  makeMonitor();
+			if ( monitor == null )  makeMonitor();
 		}
 		
 		/**
@@ -188,8 +187,9 @@ public class ChannelWrapper {
 		 * If the connection is dropped, clear the latest record.
 		 * @param channel The channel which has been disconnected.
 		 */
+                @Override
 		public void connectionDropped( final Channel channel ) {
-			_record = null;
+			record = null;
 		}
 	}
 }

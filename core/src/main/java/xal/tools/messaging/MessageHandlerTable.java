@@ -20,12 +20,12 @@ class MessageHandlerTable implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
     
     /** table keyed by protocol name and mapped to the source table */
-    final private Map<String,Map<Object,MessageHandler<?>>> PROTOCOL_TABLE;
+    private final Map<String,Map<Object,MessageHandler<?>>> protocolTable;
 
     
     /** Creates new MessageHandlerTable */
     public MessageHandlerTable() {
-        PROTOCOL_TABLE = new Hashtable<String,Map<Object,MessageHandler<?>>>();
+        protocolTable = new Hashtable<>();
     }
     
     
@@ -36,12 +36,12 @@ class MessageHandlerTable implements java.io.Serializable {
         final Object source = handler.getSource();
         Map<Object,MessageHandler<?>> sourceTable;     // table of handlers keyed by source
         
-        if ( PROTOCOL_TABLE.containsKey( protocolKey ) ) {
-            sourceTable = PROTOCOL_TABLE.get( protocolKey );
+        if ( protocolTable.containsKey( protocolKey ) ) {
+            sourceTable = protocolTable.get( protocolKey );
         }
         else {
-            sourceTable = new HashMap<Object,MessageHandler<?>>();
-            PROTOCOL_TABLE.put( protocolKey, sourceTable );
+            sourceTable = new HashMap<>();
+            protocolTable.put( protocolKey, sourceTable );
         }
         
         if ( sourceTable.containsKey( source ) ) {
@@ -58,8 +58,8 @@ class MessageHandlerTable implements java.io.Serializable {
         final String protocolKey = protocolKey( protocol );
         final Object source = handler.getSource();
         
-        if ( PROTOCOL_TABLE.containsKey( protocolKey ) ) {
-            final Map<Object,MessageHandler<?>> sourceTable = PROTOCOL_TABLE.get( protocolKey );
+        if ( protocolTable.containsKey( protocolKey ) ) {
+            final Map<Object,MessageHandler<?>> sourceTable = protocolTable.get( protocolKey );
             sourceTable.remove( source );
         }    
     }
@@ -83,12 +83,12 @@ class MessageHandlerTable implements java.io.Serializable {
     public <ProtocolType> Set<Map.Entry<Object,MessageHandler<?>>> getHandlers( final Class<ProtocolType> protocol ) {
         final String protocolKey = protocolKey( protocol );
         
-        if ( PROTOCOL_TABLE.containsKey( protocolKey ) ) {
-            final Map<Object,MessageHandler<?>> sourceTable = PROTOCOL_TABLE.get( protocolKey );
+        if ( protocolTable.containsKey( protocolKey ) ) {
+            final Map<Object,MessageHandler<?>> sourceTable = protocolTable.get( protocolKey );
             return sourceTable.entrySet();
         }
         else {
-            return new HashSet<Map.Entry<Object,MessageHandler<?>>>();
+            return new HashSet<>();
         }
 	}
 
@@ -98,8 +98,8 @@ class MessageHandlerTable implements java.io.Serializable {
     public <T> MessageHandler<T> getHandler( final Object source, final Class<T> protocol ) {
         Object protocolKey = protocolKey( protocol );
         
-        if ( PROTOCOL_TABLE.containsKey( protocolKey ) ) {
-            final Map<Object,MessageHandler<?>> sourceTable = PROTOCOL_TABLE.get( protocolKey );
+        if ( protocolTable.containsKey( protocolKey ) ) {
+            final Map<Object,MessageHandler<?>> sourceTable = protocolTable.get( protocolKey );
             return (MessageHandler<T>)sourceTable.get( source );
         }
         else {

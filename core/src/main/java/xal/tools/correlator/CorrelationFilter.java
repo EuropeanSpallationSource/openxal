@@ -8,7 +8,7 @@ package xal.tools.correlator;
 
 /**
  * Interface for a filter which can accept or reject a correlation based on 
- * some criteria detemined by the implementation of the filter.
+ * some criteria determined by the implementation of the filter.
  *
  * @author  tap
  */

@@ -31,16 +31,16 @@ public class TestR2x2 {
     
     
     /** Static identity matrix */
-    static private R2x2     MAT_I;
+    private static R2x2     MAT_I;
     
     /** static symplectic matrix */
-    static private R2x2     MAT_J;
+    private static R2x2     MAT_J;
     
     /** Static testing matrix */
-    static private R2x2     MAT_2;
+    private static R2x2     MAT_2;
     
     /** static testing matrix - a rotation */
-    static private R2x2     MAT_R;
+    private static R2x2     MAT_R;
     
 
     @BeforeClass

@@ -12,7 +12,7 @@ package xal.sim.slg;
 /** vertical extraction kicker as a thin element */
 public class EKicker extends ThinElement {
 	/** extraction kicker type */
-    private static final String type = "EKick";
+    private static final String TYPE = "EKick";
     
 	
     /** Creates a new instance of EKicker */
@@ -53,15 +53,17 @@ public class EKicker extends ThinElement {
     
 	
     /** Return the element type. */
+    @Override
     public String getType() {
-        return type;
+        return TYPE;
     } 
 
     
     /**
-	 * When called with a Visitor reference the implementor can either reject to be visited (empty method body) or call the Visitor by passing its own object reference.
+	 * When called with a Visitor reference the implementer can either reject to be visited (empty method body) or call the Visitor by passing its own object reference.
      * @param v the Visitor which wants to visit this object.
      */
+    @Override
     public void accept( final Visitor v ) {
         v.visit( this );
     }

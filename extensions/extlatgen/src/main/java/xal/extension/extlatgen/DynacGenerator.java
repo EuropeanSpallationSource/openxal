@@ -88,7 +88,7 @@ public class DynacGenerator {
         if (myLatticeName == null)
             myLatticeName = myLattice.getName();
         
-        FileWriter dynac_input = new FileWriter(myLatticeName+".in");
+        FileWriter dynacInput = new FileWriter(myLatticeName+".in");
         Date today = new Date();
         //       int elementCount = myLattice.len();
         
@@ -152,7 +152,7 @@ public class DynacGenerator {
         
         char buffer_header[] = new char[str.length()];
         str.getChars(0, str.length(), buffer_header, 0);
-        dynac_input.write(buffer_header);
+        dynacInput.write(buffer_header);
         
         // run online model here so we don't propagate the probe before we set all the initial conditions
         runOnlineModel();
@@ -383,7 +383,7 @@ public class DynacGenerator {
             
             char buffer[] = new char[str.length()];
             str.getChars(0, str.length(), buffer, 0);
-            dynac_input.write(buffer);	
+            dynacInput.write(buffer);	
             
             counter++;
         }
@@ -391,9 +391,9 @@ public class DynacGenerator {
         
         char buffer_end[] = new char[str.length()];
         str.getChars(0, str.length(), buffer_end, 0);
-        dynac_input.write(buffer_end);	
+        dynacInput.write(buffer_end);	
         
-        dynac_input.close();   
+        dynacInput.close();   
         
     }
     

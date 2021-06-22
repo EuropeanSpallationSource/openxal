@@ -20,49 +20,49 @@ public class DispatchTimer {
 	private enum DispatchTimerRunState { PROCESSING, SUSPENDED, DISPOSED }
 
 	/** queue to which to dispatch events */
-	final private DispatchQueue EVENT_QUEUE;
+	private final DispatchQueue eventQueue;
 
 	/** internal queue used to schedule the timer events */
-	final private DispatchQueue SCHEDULE_QUEUE;
+	private final DispatchQueue scheduleQueue;
 
 	/** event to execute when this timer fires */
-	private Runnable _eventHandler;
+	private Runnable eventHandler;
 
 	/** event to execute when this timer is canceled */
-	private Runnable _cancelHandler;
+	private Runnable cancelHandler;
 
 	/** indicates whether this timer is canceled */
-	private volatile boolean _isCanceled;
+	private volatile boolean isCanceled;
 
 	/** run state of this timer */
-	private volatile DispatchTimerRunState _runState;
+	private volatile DispatchTimerRunState runState;
 
 	/** milliseconds of the interval between when the timer fires */
-	private volatile long _milliInterval;
+	private volatile long milliInterval;
 
 	/** nanoseconds of the interval between when the timer fires */
-	private volatile int _nanoInterval;
+	private volatile int nanoInterval;
 
 	/** next scheduled event */
-	private ScheduledEvent _nextScheduledEvent;
+	private ScheduledEvent nextScheduledEvent;
 
 	/** delegate for handling the specified dispatch mode */
-	final private DispatchTimerModeDelegate DISPATCH_MODE_DELEGATE;
+	private final DispatchTimerModeDelegate dispatchModeDelegate;
 
 
 	/** Primary Constructor */
     public DispatchTimer( final DispatchTimerMode dispatchMode, final DispatchQueue eventQueue, final Runnable eventHandler ) {
-		DISPATCH_MODE_DELEGATE = getDispatchModeDelegate( dispatchMode );
+		dispatchModeDelegate = getDispatchModeDelegate( dispatchMode );
 
-		EVENT_QUEUE = eventQueue;
-		_eventHandler = eventHandler;
+		this.eventQueue = eventQueue;
+		this.eventHandler = eventHandler;
 
-		SCHEDULE_QUEUE = DispatchQueue.createSerialQueue( "Dispatch Timer Scheduling Queue" );
+		scheduleQueue = DispatchQueue.createSerialQueue( "Dispatch Timer Scheduling Queue" );
 
-		_runState = DispatchTimerRunState.PROCESSING;
-		_isCanceled = false;
+		runState = DispatchTimerRunState.PROCESSING;
+		isCanceled = false;
 
-		_nextScheduledEvent = null;
+		nextScheduledEvent = null;
     }
 
 
@@ -73,13 +73,13 @@ public class DispatchTimer {
 
 
 	/** Create a new fixed rate timer */
-	static public DispatchTimer getFixedRateInstance( final DispatchQueue eventQueue, final Runnable eventHandler ) {
+	public static DispatchTimer getFixedRateInstance( final DispatchQueue eventQueue, final Runnable eventHandler ) {
 		return new DispatchTimer( DispatchTimerMode.FIXED_RATE, eventQueue, eventHandler );
 	}
 
 
 	/** Create a new coalescing timer */
-	static public DispatchTimer getCoalescingInstance( final DispatchQueue eventQueue, final Runnable eventHandler ) {
+	public static DispatchTimer getCoalescingInstance( final DispatchQueue eventQueue, final Runnable eventHandler ) {
 		return new DispatchTimer( DispatchTimerMode.COALESCING, eventQueue, eventHandler );
 	}
 
@@ -98,6 +98,7 @@ public class DispatchTimer {
 
 
 	/** release resources held by this timer */
+        @Override
 	protected void finalize() throws Throwable {
 		try {
 			dispose();
@@ -110,13 +111,13 @@ public class DispatchTimer {
 
 	/** Set the event handler which is dispatched to the queue when the timer fires */
 	public void setEventHandler( final Runnable eventHandler ) {
-		_eventHandler = eventHandler;
+		this.eventHandler = eventHandler;
 	}
 
 
-	/** Set the cancel handler which is dipsatched to the queue when the timer is canceled */
+	/** Set the cancel handler which is dispatched to the queue when the timer is canceled */
 	public void setCancelHandler( final Runnable cancelHandler ) {
-		_cancelHandler = cancelHandler;
+		this.cancelHandler = cancelHandler;
 	}
 
 
@@ -138,16 +139,17 @@ public class DispatchTimer {
 	public void setStartTimeAndInterval( final Date startTime, final long milliInterval, final int nanoInterval ) {
 		cancelNextScheduledEvent();		// Since the start time is changing, we need to immediately cancel the next pending event here plus later on the schedule queue (see code below).
 
-		SCHEDULE_QUEUE.dispatchAsync( new Runnable() {
+		scheduleQueue.dispatchAsync( new Runnable() {
+                        @Override
 			public void run() {
 				cancelNextScheduledEvent();		// Cancel any currently scheduled event on the schedule queue in addition to immediately (see code above)
 
-				_milliInterval = milliInterval;
-				_nanoInterval = nanoInterval;
+				DispatchTimer.this.milliInterval = milliInterval;
+				DispatchTimer.this.nanoInterval = nanoInterval;
 
 				final ScheduledEvent nextScheduledEvent = new ScheduledEvent( startTime );		// schedule an event that will execute immediately upon dispatch
-				_nextScheduledEvent = nextScheduledEvent;
-				SCHEDULE_QUEUE.dispatchAfter( startTime, nextScheduledEvent );		// dispatch after the start time
+				DispatchTimer.this.nextScheduledEvent = nextScheduledEvent;
+				scheduleQueue.dispatchAfter( startTime, nextScheduledEvent );		// dispatch after the start time
 			}
 		});
 	}
@@ -155,10 +157,11 @@ public class DispatchTimer {
 
 	/** Schedule the next event */
 	private void scheduleNextEvent( final ScheduledEvent nextScheduledEvent ) {
-		SCHEDULE_QUEUE.dispatchAsync( new Runnable() {
+		scheduleQueue.dispatchAsync( new Runnable() {
+                        @Override
 			public void run() {
-				_nextScheduledEvent = nextScheduledEvent;
-				SCHEDULE_QUEUE.dispatchAsync( nextScheduledEvent );
+				DispatchTimer.this.nextScheduledEvent = nextScheduledEvent;
+				scheduleQueue.dispatchAsync( nextScheduledEvent );
 			}
 		});
 	}
@@ -166,38 +169,38 @@ public class DispatchTimer {
 
 	/** Cancel this timer */
 	public void cancel() {
-		_isCanceled = true;
+		isCanceled = true;
 
 		cancelNextScheduledEvent();
 
-		final Runnable cancelHandler = _cancelHandler;
+		final Runnable cancelHandler = this.cancelHandler;
 		if ( cancelHandler != null ) {
-			EVENT_QUEUE.dispatchAsync( cancelHandler );
+			eventQueue.dispatchAsync( cancelHandler );
 		}
 	}
 
 
 	/** Cancel the next scheduled event if any */
 	private void cancelNextScheduledEvent() {
-		final ScheduledEvent nextScheduledEvent = _nextScheduledEvent;
+		final ScheduledEvent nextScheduledEvent = this.nextScheduledEvent;
 		if ( nextScheduledEvent != null ) {
 			nextScheduledEvent.cancel();
 		}
-		_nextScheduledEvent = null;
+		this.nextScheduledEvent = null;
 	}
 
 
 	/** Determines whether this queue is suspended (disposed implies suspended) */
 	public boolean isSuspended() {
-		return _runState != DispatchTimerRunState.PROCESSING;	// disposed states are also suspended
+		return runState != DispatchTimerRunState.PROCESSING;	// disposed states are also suspended
 	}
 
 
 	/** suspend this timer if it is processing (do nothing if disposed or already suspended) */
 	public void suspend() {
-		switch( _runState ) {
+		switch( runState ) {
 			case PROCESSING:
-				_runState = DispatchTimerRunState.SUSPENDED;
+				runState = DispatchTimerRunState.SUSPENDED;
 				break;
 			default:
 				break;
@@ -207,9 +210,9 @@ public class DispatchTimer {
 
 	/** resume this timer */
 	public void resume() {
-		switch( _runState ) {
+		switch( runState ) {
 			case SUSPENDED:
-				_runState = DispatchTimerRunState.PROCESSING;
+				runState = DispatchTimerRunState.PROCESSING;
 				resumeScheduling();
 				break;
 			case DISPOSED:
@@ -222,7 +225,7 @@ public class DispatchTimer {
 
 	/** resume scheduling events */
 	private void resumeScheduling() {
-		final ScheduledEvent nextScheduledEvent = _nextScheduledEvent;
+		final ScheduledEvent nextScheduledEvent = this.nextScheduledEvent;
 		if ( nextScheduledEvent != null ) {
 			nextScheduledEvent.resume();
 		}
@@ -231,15 +234,15 @@ public class DispatchTimer {
 
 	/** dispose of this timer's resources */
 	public void dispose() {
-		_runState = DispatchTimerRunState.DISPOSED;
+		runState = DispatchTimerRunState.DISPOSED;
 
-		SCHEDULE_QUEUE.dispose();
+		scheduleQueue.dispose();
 	}
 
 
 	/** determine whether this timer has been disposed */
 	public boolean isDisposed() {
-		return _runState == DispatchTimerRunState.DISPOSED;
+		return runState == DispatchTimerRunState.DISPOSED;
 	}
 
 
@@ -247,25 +250,25 @@ public class DispatchTimer {
 	/** Event scheduled for execution */
 	private class ScheduledEvent implements Runnable {
 		/** indicates whether the event would have fired if it had not been suspended */
-		private boolean _isPastDue;
+		private boolean isPastDue;
 
 		/** indicates whether this event is canceled */
-		private volatile boolean _isCanceled;
+		private volatile boolean isCanceled;
 
 		/** time at which the event should fire */
-		private final long TARGET_TIME;
+		private final long targetTime;
 
 		/** additional nanosecond time */
-		private final int NANO_OFFSET;
+		private final int nanoOffset;
 
 
 		/** Primary Constructor */
 		public ScheduledEvent( final long targetTime, final int nanoOffset ) {
-			TARGET_TIME = targetTime;
-			NANO_OFFSET = nanoOffset;
+			this.targetTime = targetTime;
+			this.nanoOffset = nanoOffset;
 
-			_isCanceled = false;
-			_isPastDue = false;
+			isCanceled = false;
+			isPastDue = false;
 		}
 
 
@@ -295,21 +298,21 @@ public class DispatchTimer {
 
 		/** Get the target time */
 		public long getTargetTime() {
-			return TARGET_TIME;
+			return targetTime;
 		}
 
 
 		/** Get the next scheduled event relative to this one using the timer's millisecond and nanosecond intervals */
 		public ScheduledEvent nextScheduledEvent() {
-			return nextScheduledEvent( _milliInterval, _nanoInterval );
+			return nextScheduledEvent( milliInterval, nanoInterval );
 		}
 
 
 		/** Get the next scheduled event relative to this one using the specified delays */
 		public ScheduledEvent nextScheduledEvent( final long milliDelay, final int nanoDelay ) {
 			// Calculate the new target time and nano offset. If nanos accumulate more than a millisecond, shift that amount to the milliseconds.
-			final int nanoShift = NANO_OFFSET + nanoDelay;
-			final long targetTime = TARGET_TIME + milliDelay + nanoShift / 1000000;
+			final int nanoShift = nanoOffset + nanoDelay;
+			final long targetTime = this.targetTime + milliDelay + nanoShift / 1000000;
 			final int nanoOffset = nanoShift % 1000000;
 			return new ScheduledEvent( targetTime, nanoOffset );
 		}
@@ -317,10 +320,10 @@ public class DispatchTimer {
 
 		/** Cancel this timer */
 		public void cancel() {
-			_isCanceled = true;
-			synchronized( SCHEDULE_QUEUE ) {
+			isCanceled = true;
+			synchronized( scheduleQueue ) {
 				try {
-					SCHEDULE_QUEUE.notifyAll();
+					scheduleQueue.notifyAll();
 				}
 				catch( Exception exception  ) {}
 			}
@@ -329,7 +332,7 @@ public class DispatchTimer {
 
 		/** Resume the timer and fire the event if it is past due */
 		public void resume() {
-			if ( _isPastDue ) {
+			if ( isPastDue ) {
 				dispatchEventIfEnabled();
 			}
 		}
@@ -337,13 +340,13 @@ public class DispatchTimer {
 
 		/** dispatch the event if timer is active */
 		private void dispatchEventIfEnabled() {
-			if ( !_isCanceled ) {
-				switch ( _runState ) {
+			if ( !isCanceled ) {
+				switch ( runState ) {
 					case PROCESSING:
-						DISPATCH_MODE_DELEGATE.processTimerEvent( _eventHandler );
+						dispatchModeDelegate.processTimerEvent( eventHandler );
 						break;
 					default:
-						_isPastDue = true;
+						isPastDue = true;
 						break;
 				}
 			}
@@ -351,19 +354,20 @@ public class DispatchTimer {
 
 
 		/** Executes the event */
+                @Override
 		public void run() {
-			synchronized( SCHEDULE_QUEUE ) {
-				if ( !_isCanceled ) {
+			synchronized( scheduleQueue ) {
+				if ( !isCanceled ) {
 					try {
-						while ( !_isCanceled ) {
-							final long milliTimeout = TARGET_TIME - new Date().getTime();	// milliseconds left to wait
-							final int nanoTimeout = NANO_OFFSET;
+						while ( !isCanceled ) {
+							final long milliTimeout = targetTime - new Date().getTime();	// milliseconds left to wait
+							final int nanoTimeout = nanoOffset;
 
 							if ( milliTimeout > 0 ) {
-								SCHEDULE_QUEUE.wait( milliTimeout, 0 );		// wait the remaining millisecond timeout
+								scheduleQueue.wait( milliTimeout, 0 );		// wait the remaining millisecond timeout
 							}
 							else if ( milliTimeout == 0 && nanoTimeout > 0 ) {
-								SCHEDULE_QUEUE.wait( 0, nanoTimeout );		// wait the remaining nano interval
+								scheduleQueue.wait( 0, nanoTimeout );		// wait the remaining nano interval
 								break;		// assume the nano timeout was successful as we have no way to verify otherwise
 							}
 							else {
@@ -371,7 +375,7 @@ public class DispatchTimer {
 							}
 						}
 					}
-					catch ( Exception exception ) {
+					catch ( InterruptedException exception ) {
 						exception.printStackTrace();
 					}
 					finally {
@@ -385,7 +389,7 @@ public class DispatchTimer {
 
 	/** Make the next scheduled event */
 	private ScheduledEvent makeNextScheduledEvent() {
-		final ScheduledEvent nextEvent = _nextScheduledEvent;
+		final ScheduledEvent nextEvent = nextScheduledEvent;
 		return nextEvent != null ? nextEvent.nextScheduledEvent() : null;
 	}
 
@@ -402,14 +406,15 @@ public class DispatchTimer {
 	/** Dispatches events at a fixed rate */
 	private class DispatchTimerFixedRateDispatch implements DispatchTimerModeDelegate {
 		/** process the current timer event */
+                @Override
 		public void processTimerEvent( final Runnable eventHandler ) {
 			final ScheduledEvent nextEvent = makeNextScheduledEvent();
 
 			if ( eventHandler != null ) {
-				EVENT_QUEUE.dispatchAsync( eventHandler );
+				eventQueue.dispatchAsync( eventHandler );
 			}
 
-			if ( !_isCanceled && nextEvent != null )  scheduleNextEvent( nextEvent );
+			if ( !isCanceled && nextEvent != null )  scheduleNextEvent( nextEvent );
 		}
 	}
 
@@ -418,16 +423,17 @@ public class DispatchTimer {
 	/** Dispatches events at a fixed rate but coalesces events that are concurrent thus preventing events from backing up in the queue */
 	private class DispatchTimerCoalescingDispatch implements DispatchTimerModeDelegate {
 		/** process the current timer event */
+                @Override
 		public void processTimerEvent( final Runnable eventHandler ) {
 			final ScheduledEvent nextEvent = makeNextScheduledEvent();
 
 			try {
 				if ( eventHandler != null ) {
-					EVENT_QUEUE.dispatchSync( eventHandler );
+					eventQueue.dispatchSync( eventHandler );
 				}
 			}
 			finally {
-				if ( !_isCanceled && nextEvent != null )  scheduleNextEvent( nextEvent );
+				if ( !isCanceled && nextEvent != null )  scheduleNextEvent( nextEvent );
 			}
 		}
 	}

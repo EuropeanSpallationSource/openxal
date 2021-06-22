@@ -12,13 +12,13 @@ package xal.tools.correlator;
  */
 public class CorrelationFilterFactory {
     
-    static public <RecordType> CorrelationFilter<RecordType> defaultFilter() {
+    public static <RecordType> CorrelationFilter<RecordType> defaultFilter() {
         return maxMissingFilter( 0 );
     }
     
     
     /** accept correlations with no more than maxMissing records */
-    static public <RecordType> CorrelationFilter<RecordType> maxMissingFilter( final int maxMissing ) {
+    public static <RecordType> CorrelationFilter<RecordType> maxMissingFilter( final int maxMissing ) {
         return new CorrelationFilter<RecordType>() {
             public boolean accept( final Correlation<RecordType> correlation, final int fullCount ) {
                 return correlation.numRecords() >= fullCount - maxMissing;
@@ -28,8 +28,9 @@ public class CorrelationFilterFactory {
     
     
     /** accept correlations with at least minCount records */
-    static public <RecordType> CorrelationFilter<RecordType> minCountFilter( final int minCount ) {
+    public static <RecordType> CorrelationFilter<RecordType> minCountFilter( final int minCount ) {
         return new CorrelationFilter<RecordType>() {
+            @Override
             public boolean accept( final Correlation<RecordType> correlation, final int fullCount ) {
                 return correlation.numRecords() >= minCount;
             }
@@ -40,8 +41,9 @@ public class CorrelationFilterFactory {
     /** 
      * Convert a record filter to a correlation filter. This is useful when stacking correlators and a correlation of one  correlator is the record of another.
      */
-    static public <RecordType> CorrelationFilter<RecordType> correlationFilter( final RecordFilter<Correlation<RecordType>> recordFilter ) {
+    public static <RecordType> CorrelationFilter<RecordType> correlationFilter( final RecordFilter<Correlation<RecordType>> recordFilter ) {
         return new CorrelationFilter<RecordType>() {
+            @Override
             public boolean accept( final Correlation<RecordType> correlation, final int fullCount ) {
                 return recordFilter.accept( correlation );
             }

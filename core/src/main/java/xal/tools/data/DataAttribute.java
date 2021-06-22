@@ -14,7 +14,7 @@ import java.util.logging.*;
  * @author  tap
  */
 public class DataAttribute {
-	private String DEFAULT_VALUE;
+	private String defaultValueStr;
     private String name;
     private Class<?> type;
     private boolean isPrimaryKey;
@@ -26,7 +26,7 @@ public class DataAttribute {
         name = aName;
         type = aType;
         isPrimaryKey = primaryState;
-		DEFAULT_VALUE = defaultValue;
+        defaultValueStr = defaultValue;
     }
 
 	
@@ -67,7 +67,7 @@ public class DataAttribute {
 	 * @return the default value for this attribute
 	 */
 	public String getDefaultStringValue() {
-		return DEFAULT_VALUE;
+		return defaultValueStr;
 	}
     
 	/**
@@ -76,9 +76,9 @@ public class DataAttribute {
 	 */
 	public Object getDefaultValue()
 	{
-		if (DEFAULT_VALUE == null) return null;
+		if (defaultValueStr == null) return null;
 		if (defaultValue == null) {
-			defaultValue = GenericRecord.valueOfTypeFromString( type, DEFAULT_VALUE );
+			defaultValue = GenericRecord.valueOfTypeFromString( type, defaultValueStr );
 		}
 		return defaultValue;
 	}
@@ -89,18 +89,20 @@ public class DataAttribute {
      * object based on a DataAdaptor adaptor.
      */
     private class ReaderWriter implements DataListener {
+        @Override
         public String dataLabel() {
             return "attribute";
         }
         
         
+        @Override
         public void update( DataAdaptor adaptor ) {
             name = adaptor.stringValue("name");
             try {
                 String typeName = adaptor.stringValue("type");
                 type = Class.forName(typeName);
             }
-            catch( Exception exception ) {
+            catch( ClassNotFoundException exception ) {
                 System.err.println( exception );
 				Logger.getLogger("global").log( Level.SEVERE, "Error during update.", exception );
                 exception.printStackTrace();
@@ -114,11 +116,12 @@ public class DataAttribute {
             }
 			
 			if ( adaptor.hasAttribute( "defaultValue" ) ) {
-				DEFAULT_VALUE = adaptor.stringValue( "defaultValue" );
+				defaultValueStr = adaptor.stringValue( "defaultValue" );
 			}
         }
         
         
+        @Override
         public void write( DataAdaptor adaptor ) {
             adaptor.setValue("name", name);
             
@@ -127,8 +130,8 @@ public class DataAttribute {
             
             adaptor.setValue("isPrimaryKey", isPrimaryKey);
 			
-			if ( DEFAULT_VALUE != null ) {
-				adaptor.setValue( "defaultValue", DEFAULT_VALUE );
+			if ( defaultValueStr != null ) {
+				adaptor.setValue( "defaultValue", defaultValueStr );
 			}
         }
     }

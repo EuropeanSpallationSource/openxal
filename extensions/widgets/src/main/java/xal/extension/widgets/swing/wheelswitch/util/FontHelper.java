@@ -57,8 +57,8 @@ public final class FontHelper {
      * to the specified style.
      *
      * @return Font
-     * @param int style
-     * @param Font inFont
+     * @param style
+     * @param inFont
      */
     public static Font getFontWithStyle(int style, Font inFont) {
         for (int i = 0; i < fonts.size(); i++) {
@@ -79,8 +79,8 @@ public final class FontHelper {
      * to the specified name.
      *
      * @return Font
-     * @param String name
-     * @param Font inFont
+     * @param name
+     * @param inFont
      */
     public static Font getFontWithName(String name, Font inFont) {
         for (int i = 0; i < fonts.size(); i++) {
@@ -101,8 +101,8 @@ public final class FontHelper {
      * to the specified size.
      *
      * @return Font
-     * @param int size
-     * @param Font inFont
+     * @param size
+     * @param inFont
      */
     public static Font getFontWithSize(int size, Font inFont) {
         for (int i = 0; i < fonts.size(); i++) {
@@ -122,9 +122,9 @@ public final class FontHelper {
      * Returns a new Font with the specified attributes
      *
      * @return Font
-     * @param String name
-     * @param int style
-     * @param int size
+     * @param name
+     * @param style
+     * @param size
      */
     public static Font getFont(String name, int style, int size) {
         for (int i = 0; i < fonts.size(); i++) {

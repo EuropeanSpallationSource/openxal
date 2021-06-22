@@ -19,8 +19,6 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.ArrayList;
 
-import java.math.BigDecimal;
-
 import xal.tools.database.DatabaseAdaptor;
 
 
@@ -119,7 +117,7 @@ class ChannelSnapshotTable {
 	 * @return The channel snapshots associated with the machine snapshop
 	 */
 	public ChannelSnapshot[] fetchChannelSnapshotsForMachineSnapshotID( final Connection connection, final long machineSnapshotID ) throws SQLException {
-		final List<ChannelSnapshot> snapshots = new ArrayList<ChannelSnapshot>();
+		final List<ChannelSnapshot> snapshots = new ArrayList<>();
 
 		final PreparedStatement snapshotQuery = getQueryByMachineSnapshotStatement( connection );
 		snapshotQuery.setLong( 1, machineSnapshotID );
@@ -167,7 +165,7 @@ class ChannelSnapshotTable {
 	 * @param numbers array of numbers to convert
 	 * @return array of double values corresponding to the input array of numbers.
 	 */
-	static protected double[] toDoubleArray( final Number[] numbers ) {
+	protected static double[] toDoubleArray( final Number[] numbers ) {
 		final double[] array = new double[numbers.length];
 
 		for ( int index = 0; index < numbers.length; index++ ) {

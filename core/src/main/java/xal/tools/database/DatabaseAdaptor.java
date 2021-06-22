@@ -47,7 +47,7 @@ public abstract class DatabaseAdaptor {
 	/**
 	 * Get a new database connection
 	 * @param urlSpec The URL to which to connect
-	 * @param user The user loggin into the database
+	 * @param user The user login into the database
 	 * @param password the user's password
 	 * @throws xal.tools.database.DatabaseException if a database exception is thrown
 	 */
@@ -76,21 +76,21 @@ public abstract class DatabaseAdaptor {
 	 * Get a new database adaptor using the default database adaptor. Site specific code should provide an implementation of this method using the site specific database drivers.
 	 * @return return a new instance of the default database adaptor (OracleDatabaseAdaptor)
 	 */
-	static public DatabaseAdaptor getInstance() {
+	public static DatabaseAdaptor getInstance() {
 		final DBConfiguration dbConfiguration = DBConfiguration.getInstance();
 		return dbConfiguration != null ? dbConfiguration.getDefaultDatabaseAdaptor() : null;
 	}
 
 	
 	/**
-	 * Fetch all schemas from the connected database
-	 * @return  list of all schemas in the database
+	 * Fetch all schema from the connected database
+	 * @return  list of all schema in the database
 	 * @exception DatabaseException
 	 * @throws xal.tools.database.DatabaseException  if the schema fetch fails
 	 */
 	public List<String> fetchAllSchemas( final Connection connection ) throws DatabaseException {
 		try {
-			final List<String> schemas = new ArrayList<String>();
+			final List<String> schemas = new ArrayList<>();
 			final DatabaseMetaData metaData = connection.getMetaData();
 			final ResultSet result = metaData.getSchemas();
 			while ( result.next() ) {
@@ -106,7 +106,7 @@ public abstract class DatabaseAdaptor {
 	
 	
 	/**
-	 * Fetch the list of nontrivial schemas. By default, fetch all schemas. Driver specific subclasses should provide a more accurate implementation.
+	 * Fetch the list of nontrivial schema. By default, fetch all schema. Driver specific subclasses should provide a more accurate implementation.
 	 * @param connection database connection
 	 * @return list of nontrivial schema names
 	 */
@@ -125,7 +125,7 @@ public abstract class DatabaseAdaptor {
 	 */
 	public List<String> fetchTables( final Connection connection, final String schema ) throws DatabaseException {
 		try {
-			final List<String> tables = new ArrayList<String>();
+			final List<String> tables = new ArrayList<>();
 			final DatabaseMetaData metaData = connection.getMetaData();
 			final ResultSet result = getTablesResultSet( metaData, schema );
 			while ( result.next() ) {
@@ -163,7 +163,7 @@ public abstract class DatabaseAdaptor {
 	 */
 	public List<String> fetchPrimaryKeys( final Connection connection, final String schema, final String table ) throws DatabaseException {
 		try {
-			final List<String> primaryKeys = new ArrayList<String>();
+			final List<String> primaryKeys = new ArrayList<>();
 			final DatabaseMetaData metaData = connection.getMetaData();
 			final ResultSet result = getPrimaryKeysResultSet( metaData, schema, table );
 			while ( result.next() ) {
@@ -184,4 +184,3 @@ public abstract class DatabaseAdaptor {
 		return metaData.getPrimaryKeys( null, schema, table );
 	}
 }
-

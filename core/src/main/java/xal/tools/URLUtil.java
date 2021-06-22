@@ -8,6 +8,8 @@ package xal.tools;
 
 import java.net.URL;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 /**
  * URLUtil is a convenience class of static methods that allow the user to 
@@ -22,45 +24,45 @@ public class URLUtil {
     
 
     /** Convert a file to a URL specification */
-    static public String urlSpecForFile(File file) throws FilePathException {
+    public static String urlSpecForFile(File file) throws FilePathException {
         try {
             return file.toURI().toURL().toString();
         }
-        catch(Exception excpt) {
+        catch(MalformedURLException excpt) {
             throw new FilePathException( file.getPath() );
         }
     }
     
     
     /** Convert a file path to a URL specification */
-    static public String urlSpecForFilePath( final String filePath ) throws FilePathException {
+    public static String urlSpecForFilePath( final String filePath ) throws FilePathException {
         try {
             final File mainFile = new File( filePath );			
 			return mainFile.toURI().toURL().toString();
         }
-        catch( Exception exception ) {
+        catch( MalformedURLException exception ) {
             throw new FilePathException( filePath );
         }
     }
     
     
     /** Convert a URL specification to a file path */
-    static public String filePathForUrlSpec( final String urlSpec ) throws UrlSpecException {
+    public static String filePathForUrlSpec( final String urlSpec ) throws UrlSpecException {
 		try {
 			return filePathForUrl( new URL( urlSpec ) );
 		}
-		catch( Exception exception ) {
+		catch( MalformedURLException exception ) {
 			throw new UrlSpecException( urlSpec );
 		}
     }
     
     
     /** Convert a URL to a file path */
-    static public String filePathForUrl( final URL url ) {
+    public static String filePathForUrl( final URL url ) {
         try {
             return new File( url.toURI() ).getAbsolutePath();
         }
-        catch( Exception exception ) {
+        catch( URISyntaxException exception ) {
 			exception.printStackTrace();
 			return null;
         }
@@ -71,7 +73,7 @@ public class URLUtil {
     /** 
      * Exception for bad file path specification.
      */
-    static public class FilePathException extends RuntimeException {
+    public static class FilePathException extends RuntimeException {
         /** serialization ID */
         private static final long serialVersionUID = 1L;
         
@@ -85,6 +87,7 @@ public class URLUtil {
             return filePath;
         }
         
+        @Override
         public String toString() {
             return "Invalid file path specification: " + filePath;
         }
@@ -95,7 +98,7 @@ public class URLUtil {
     /** 
      * Exception for bad file path specification.
      */
-    static public class UrlSpecException extends RuntimeException {
+    public static class UrlSpecException extends RuntimeException {
         /** serialization ID */
         private static final long serialVersionUID = 1L;
         
@@ -109,6 +112,7 @@ public class URLUtil {
             return urlSpec;
         }
         
+        @Override
         public String toString() {
             return "Invalid URL path specification: " + urlSpec;
         }

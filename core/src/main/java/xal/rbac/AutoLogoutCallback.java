@@ -16,7 +16,7 @@ public interface AutoLogoutCallback {
      * 
      * @param subject the subject that will be logged out
      * @param timeoutInSeconds the timeout in seconds after which RBAC will assume the answer was true
-     * @return true if the user can be loggedout or false otherwise
+     * @return true if the user can be logged out or false otherwise
      */
     boolean autoLogoutConfirm(RBACSubject subject, int timeoutInSeconds);
 }

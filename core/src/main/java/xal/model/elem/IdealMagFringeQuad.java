@@ -8,7 +8,6 @@ package xal.model.elem;
 
 import xal.sim.scenario.LatticeElement;
 import xal.smf.impl.Bend;
-import xal.tools.math.r3.R3;
 
 /**
  * Represents a quadrupole magnet with thin face elements which represent fringe field.
@@ -33,10 +32,10 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
      */
 
     /** string type identifier for all IdealMagSectorDipole objects */
-    public static final String  s_strType = "IdealMagFringeQuad";
+    public static final String  TYPE = "IdealMagFringeQuad";
     
     /** storage to reserve for child components */
-    public static final int     s_szReserve = 3; 
+    public static final int     SIZE_RESERVE = 3; 
 
 
     /*
@@ -60,7 +59,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
      */
 
     /**
-     * Default constructor - creates a new unitialized instance of 
+     * Default constructor - creates a new uninitialized instance of 
      * <code>IdealMagWedgeDipole</code>.
      */
     public IdealMagFringeQuad() {
@@ -74,7 +73,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
      * @param strId     instance identifier string
      */
     public IdealMagFringeQuad(String strId) {
-        super(s_strType, strId, s_szReserve);
+        super(TYPE, strId, SIZE_RESERVE);
         
         this.addChild(this.polEntr);
         this.addChild(this.magBody);
@@ -378,18 +377,20 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
      *              ORIENT_VER  - dipole has steering action in y (vertical) plane
      *              ORIENT_NONE - error
      */
+    @Override
     public int getOrientation() {
         return this.getMagBody().getOrientation();
-    };
+    }
 
     /**  
      *  Get the magnetic field strength of the dipole electromagnet
      *
      *  @return     magnetic field (in <b>Tesla</b>).
      */
+    @Override
     public double getMagField() {
         return this.getMagBody().getMagField();
-    };
+    }
 
 
 
@@ -400,22 +401,24 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
      *
      *  @see    #getOrientation
      */
+    @Override
     public void setOrientation(int enmOrient) {
         this.getFaceEntr().setOrientation(enmOrient);
         this.getMagBody().setOrientation(enmOrient);
         this.getFaceExit().setOrientation(enmOrient);
-    };
+    }
 
     /**  
      *  Set the magnetic field strength of the dipole electromagnet.
      *
      *  @param  dblField    magnetic field (in <b>Tesla</b>).
      */
+    @Override
     public void setMagField(double dblField) {
         this.getFaceEntr().setMagField(dblField);
         this.getMagBody().setMagField(dblField);
         this.getFaceExit().setMagField(dblField);
-    };
+    }
 
 
 
@@ -476,20 +479,20 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
 
 		// Replace ThickDipole object with an IdealMagWedgeDipole2
 		// First retrieve all the physical parameters for a bending dipole				
-		double len_sect = element.getLength();		
-		double len_path0 = magnet.getDfltPathLength();
-		double ang_bend0 = magnet.getDfltBendAngle() * Math.PI / 180.0;
-		double k_quad0 = magnet.getQuadComponent();
+		double lenSect = element.getLength();		
+		double lenPath0 = magnet.getDfltPathLength();
+		double angBend0 = magnet.getDfltBendAngle() * Math.PI / 180.0;
+		double kQuad0 = magnet.getQuadComponent();
 
 		// Now compute the dependent parameters
-		double R_bend0 = len_path0 / ang_bend0;
-		double fld_ind0 = -k_quad0 * R_bend0 * R_bend0;
+		double RBend0 = lenPath0 / angBend0;
+		double fldInd0 = -kQuad0 * RBend0 * RBend0;
 
-		double ang_bend = ang_bend0 * (len_sect / len_path0);
-		double len_path = R_bend0 * ang_bend;
+		double angBend = angBend0 * (lenSect / lenPath0);
+		double lenPath = RBend0 * angBend;
 
 		// Set the parameters for the new model element				
-		setPhysicalLength(len_sect);
+		setPhysicalLength(lenSect);
 	/*	setDesignPathLength(len_path);		
 		setFieldIndex(fld_ind0);
 		setDesignBendAngle(ang_bend);*/

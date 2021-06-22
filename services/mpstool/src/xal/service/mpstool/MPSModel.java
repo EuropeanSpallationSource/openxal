@@ -18,13 +18,13 @@ package xal.service.mpstool;
  */
 public class MPSModel {
 	/** Source of MPS signals */
-	final private SignalSource SIGNAL_SOURCE;
+	private final SignalSource SIGNAL_SOURCE;
 	
 	/** MPS Monitors */
-	final private MPSMonitor[] MONITORS;
+	private final MPSMonitor[] MONITORS;
 	
-	/** flag indicating whether the first faults statisics should be logged */
-	final private boolean LOG_STATISTICS;
+	/** flag indicating whether the first faults statistics should be logged */
+	private final boolean LOG_STATISTICS;
 	
 	
 	/**

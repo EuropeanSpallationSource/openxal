@@ -22,7 +22,7 @@ public class BasicGraphData {
 	/**
 	 *  Description of the Field
 	 */
-	protected HashMap<Object,Object> propertyMap = new HashMap<Object,Object>();
+	protected HashMap<Object,Object> propertyMap = new HashMap<>();
 
 	/**
 	 *  Description of the Field
@@ -146,9 +146,9 @@ public class BasicGraphData {
 	 *@param  nInterpPoints  Description of the Parameter
 	 */
 	protected void init(int nPoint, int nInterpPoints) {
-		graphDataContainerV = new Vector<Object>();
-		xyPointV = new Vector<XYpoint>(nPoint, 50);
-		xyInterpPointV = new Vector<XYpoint>(nInterpPoints, 50);
+		graphDataContainerV = new Vector<>();
+		xyPointV = new Vector<>(nPoint, 50);
+		xyInterpPointV = new Vector<>(nInterpPoints, 50);
 		xMax = -Double.MAX_VALUE;
 		xMin = Double.MAX_VALUE;
 		yMax = -Double.MAX_VALUE;
@@ -1275,6 +1275,7 @@ public class BasicGraphData {
 		 *@param  obj2  Description of the Parameter
 		 *@return       Description of the Return Value
 		 */
+                @Override
 		public int compare( final XYpoint obj1, final XYpoint obj2 ) {
 			if ( obj1.getY() > obj2.getY() ) {
 				return 1;
@@ -1301,6 +1302,7 @@ public class BasicGraphData {
 		 *@param  obj2  Description of the Parameter
 		 *@return       Description of the Return Value
 		 */
+                @Override
 		public int compare( final XYpoint obj1, final XYpoint obj2 ) {
 			if ( obj1.getYerr() > obj2.getYerr() ) {
 				return 1;

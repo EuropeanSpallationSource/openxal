@@ -13,23 +13,23 @@ import java.util.*;
 
 /** manage the property value editor relationship to classes to render */
 public class PropertyValueEditorManager {
-	final protected Map<String, PropertyValueEditor<?>> EDITOR_TABLE;
+	protected final Map<String, PropertyValueEditor<?>> editorTable;
 	
-	final protected PropertyValueEditor<?> DEFAULT_EDITOR;
+	protected final PropertyValueEditor<?> defaultEditor;
 	
-	final static PropertyValueEditorManager DEFAULT_MANAGER;
+	static final PropertyValueEditorManager defaultManager;
 	
 	
 	// static initializer
 	static {
-		DEFAULT_MANAGER = new PropertyValueEditorManager();
+		defaultManager = new PropertyValueEditorManager();
 	}
 	
 	
 	/** Constructor */
 	public PropertyValueEditorManager() {
-		EDITOR_TABLE = new HashMap<String, PropertyValueEditor<?>>();
-		DEFAULT_EDITOR = PropertyValueEditorFactory.getSimpleRenderer();
+		editorTable = new HashMap<>();
+		defaultEditor = PropertyValueEditorFactory.getSimpleRenderer();
 		
 		register( String.class, PropertyValueEditorFactory.getStringEditor() );
 		register( Double.class, PropertyValueEditorFactory.getDoubleEditor() );
@@ -49,27 +49,27 @@ public class PropertyValueEditorManager {
 	
 	
 	/** Get the default manager */
-	static public PropertyValueEditorManager getDefaultManager() {
-		return DEFAULT_MANAGER;
+	public static PropertyValueEditorManager getDefaultManager() {
+		return defaultManager;
 	}
 	
 	
 	/** register editors for classes */
 	public void register( final Class<?> theClass, final PropertyValueEditor<?> editor ) {
-		EDITOR_TABLE.put( theClass.toString(), editor );
+		editorTable.put( theClass.toString(), editor );
 	}
 	
 	
 	/** determine if the there is an editor registered for the specified class */
 	public boolean hasEditor( final Class<?> theClass ) {
-		return EDITOR_TABLE.containsKey( theClass.toString() );
+		return editorTable.containsKey( theClass.toString() );
 	}
 	
 	
 	/** get the editor for a given class */
 	public PropertyValueEditor<?> getEditor( final Class<?> theClass ) {
-		final PropertyValueEditor<?> editor = EDITOR_TABLE.get( theClass.toString() );
-		return editor != null ? editor : DEFAULT_EDITOR;
+		final PropertyValueEditor<?> editor = editorTable.get( theClass.toString() );
+		return editor != null ? editor : defaultEditor;
 	}
 	
 	
@@ -78,7 +78,7 @@ public class PropertyValueEditorManager {
 		try {
 			return getEditor( Class.forName( className ) );
 		}
-		catch( Exception exception ) {
+		catch( ClassNotFoundException exception ) {
 			return null;
 		}
 	}

@@ -25,20 +25,21 @@ public class FormattedNumber extends Number implements Comparable<FormattedNumbe
     private static final long serialVersionUID = 1L;
 
     /** default number format when none is specified */
-	final static protected NumberFormat DEFAULT_NUMBER_FORMAT = new DecimalFormat( "0.0000E0" );
+	protected static final NumberFormat DEFAULT_NUMBER_FORMAT = new DecimalFormat( "0.0000E0" );
 
 	/** comparator which compares FormattedNumber instances according to their double value */
-	final static private Comparator<FormattedNumber> DOUBLE_VALUE_COMPARATOR = new Comparator<FormattedNumber>() {
+	private static final Comparator<FormattedNumber> DOUBLE_VALUE_COMPARATOR = new Comparator<FormattedNumber>() {
+                @Override
 		public int compare( final FormattedNumber left, final FormattedNumber right ) {
 			return Double.compare( left.doubleValue(), right.doubleValue() );
 		}
 	};
 
 	/** the number */
-	final protected Number _number;
+	protected final Number number;
 	
 	/** the format for displaying the number */
-	final protected NumberFormat _format;
+	protected final NumberFormat format;
 
 
 	/**
@@ -47,8 +48,8 @@ public class FormattedNumber extends Number implements Comparable<FormattedNumbe
 	 * @param value the value to represent
 	 */
 	public FormattedNumber( final NumberFormat format, final Number value ) {
-		_number = value;
-		_format = format;
+		number = value;
+		this.format = format;
 	}
 	
 	
@@ -86,7 +87,7 @@ public class FormattedNumber extends Number implements Comparable<FormattedNumbe
 	 * @return the format
 	 */
 	public NumberFormat getFormat() {
-		return _format;
+		return format;
 	}
 	
 	
@@ -96,7 +97,7 @@ public class FormattedNumber extends Number implements Comparable<FormattedNumbe
 	 */
 	@Override
     public byte byteValue() {
-		return _number.byteValue();
+		return number.byteValue();
 	}
 	
 	
@@ -106,7 +107,7 @@ public class FormattedNumber extends Number implements Comparable<FormattedNumbe
 	 */
 	@Override
     public double doubleValue() {
-		return _number.doubleValue();
+		return number.doubleValue();
 	}
 	
 	
@@ -116,7 +117,7 @@ public class FormattedNumber extends Number implements Comparable<FormattedNumbe
 	 */
 	@Override
     public float floatValue() {
-		return _number.floatValue();
+		return number.floatValue();
 	}
 	
 	
@@ -126,7 +127,7 @@ public class FormattedNumber extends Number implements Comparable<FormattedNumbe
 	 */
 	@Override
     public int intValue() {
-		return _number.intValue();
+		return number.intValue();
 	}
 	
 	
@@ -136,7 +137,7 @@ public class FormattedNumber extends Number implements Comparable<FormattedNumbe
 	 */
 	@Override
     public short shortValue() {
-		return _number.shortValue();
+		return number.shortValue();
 	}
 	
 	
@@ -146,7 +147,7 @@ public class FormattedNumber extends Number implements Comparable<FormattedNumbe
 	 */
 	@Override
     public long longValue() {
-		return _number.longValue();
+		return number.longValue();
 	}
 	
 	
@@ -156,11 +157,12 @@ public class FormattedNumber extends Number implements Comparable<FormattedNumbe
 	 */
 	@Override
     public String toString() {
-		return _format.format( _number );
+		return format.format(number );
 	}
 
 
 	/** compare this number with the specified other number */
+    @Override
 	public int compareTo(final FormattedNumber other) {
 		return DOUBLE_VALUE_COMPARATOR.compare( this, other );
 	}

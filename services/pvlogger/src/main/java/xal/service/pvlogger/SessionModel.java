@@ -10,9 +10,6 @@
 
 package xal.service.pvlogger;
 
-import xal.tools.database.*;
-import xal.extension.service.ServiceDirectory;
-
 import java.util.*;
 
 
@@ -24,23 +21,23 @@ import java.util.*;
  */
 public class SessionModel {
 	/** handler of logger change events */
-	final private LoggerEventHandler LOGGER_EVENT_HANDLER;
+	private final LoggerEventHandler LOGGER_EVENT_HANDLER;
 	
 	/** Logger Session */
-	protected LoggerSession _loggerSession;
+	protected LoggerSession loggerSession;
 	
 	/** Last snapshot published */
-	protected MachineSnapshot _lastPublishedSnapshot;
+	protected MachineSnapshot lastPublishedSnapshot;
 		
 	/** wall clock time of the last MPS event */
-	private Date _lastLoggerEventTime;
+	private Date lastLoggerEventTime;
 
 	
 	/** Constructor */
 	public SessionModel( final LoggerSession loggerSession  ) {
 		LOGGER_EVENT_HANDLER = new LoggerEventHandler();
 		
-		_lastLoggerEventTime = new Date();
+		lastLoggerEventTime = new Date();
 		
 		setLoggerSession( loggerSession );
 	}
@@ -51,17 +48,17 @@ public class SessionModel {
 	 * @return the logger session
 	 */
 	public LoggerSession getLoggerSession() {
-		return _loggerSession;
+		return loggerSession;
 	}
 	
 	
 	/** set the logger session */
 	public void setLoggerSession( final LoggerSession loggerSession ) {
-		if ( _loggerSession != null ) {
-			_loggerSession.removeLoggerChangeListener( LOGGER_EVENT_HANDLER );
+		if ( loggerSession != null ) {
+			loggerSession.removeLoggerChangeListener( LOGGER_EVENT_HANDLER );
 		}
 		
-		_loggerSession = loggerSession;
+		this.loggerSession = loggerSession;
 		
 		loggerSession.addLoggerChangeListener( LOGGER_EVENT_HANDLER );
 	}
@@ -72,7 +69,7 @@ public class SessionModel {
 	 * @return the label of the channel group managed by this model
 	 */
 	public String getChannelGroupType() {
-		return _loggerSession.getChannelGroup().getLabel();
+		return loggerSession.getChannelGroup().getLabel();
 	}
 	
 	
@@ -81,7 +78,7 @@ public class SessionModel {
 	 * @return The most recently published machine snapshot.
 	 */
 	public MachineSnapshot getLastPublishedSnapshot() {
-		return _lastPublishedSnapshot;
+		return lastPublishedSnapshot;
 	}
 	
 	
@@ -90,7 +87,7 @@ public class SessionModel {
 	 * @return the wall clock timestamp of the last logger event
 	 */
 	public Date getLastLoggerEventTime() {
-		return _lastLoggerEventTime;
+		return lastLoggerEventTime;
 	}
 	
 	
@@ -98,8 +95,8 @@ public class SessionModel {
 	/** handle logger change events */
 	protected class LoggerEventHandler extends LoggerChangeAdapter {
 		public void snapshotTaken( final LoggerSession logger, final MachineSnapshot snapshot ) {
-			_lastPublishedSnapshot = snapshot;
-			_lastLoggerEventTime = new Date();
+			lastPublishedSnapshot = snapshot;
+			lastLoggerEventTime = new Date();
 		}		
 	}
 }

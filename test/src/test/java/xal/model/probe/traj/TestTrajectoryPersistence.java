@@ -73,10 +73,10 @@ public class TestTrajectoryPersistence {
     
     
 //    /** Output file name */
-//    static final private String         STR_FILENAME_OUTPUT = "Trajectory.txt";
+//    private static final String         STR_FILENAME_OUTPUT = "Trajectory.txt";
 //
 //    /** The results output file stream */
-//    static private PrintStream        PSTR_OUTPUT;
+//    private static PrintStream        PSTR_OUTPUT;
 
     
     

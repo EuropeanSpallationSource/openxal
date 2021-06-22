@@ -16,7 +16,7 @@ import org.junit.*;
 /** Test ErrorPropagator */
 public class TestErrorPropagator {
     /** maximum error allowed between test and control evaluations */
-    final static private double ERROR_TOLERANCE = 1.0e-6;
+    private static final double ERROR_TOLERANCE = 1.0e-6;
     
     
     @Test
@@ -34,7 +34,7 @@ public class TestErrorPropagator {
     
     
     /** test error propagation for the specified value and variance */
-    static private void checkErrorPropagation( final double xValue, final double xVariance ) {
+    private static void checkErrorPropagation( final double xValue, final double xVariance ) {
         final DifferentiableVariable xVariable = DifferentiableOperation.getVariable( "x", xValue );
         
         // variance for 5x is 25 * dx^2
@@ -46,7 +46,7 @@ public class TestErrorPropagator {
     
     
     /** test error propagation for the specified values and variances */
-    static private void checkErrorPropagation( final double xValue, final double xVariance, final double yValue, final double yVariance ) {
+    private static void checkErrorPropagation( final double xValue, final double xVariance, final double yValue, final double yVariance ) {
         final DifferentiableVariable xVariable = DifferentiableOperation.getVariable( "x", xValue );
         final DifferentiableVariable yVariable = DifferentiableOperation.getVariable( "y", yValue );
         
@@ -68,7 +68,7 @@ public class TestErrorPropagator {
      * Assert true if the test value result matches the control value 
      * @param controlVariance value against which the comparison is made
      */
-    static private void assertResult( final double controlVariance, final ErrorPropagator errorPropagator, final double ... sourceVariances ) {
+    private static void assertResult( final double controlVariance, final ErrorPropagator errorPropagator, final double ... sourceVariances ) {
         final double variance = errorPropagator.getVarianceWithSourceVariances( sourceVariances );
         assertResult( variance, controlVariance );
     }
@@ -79,7 +79,7 @@ public class TestErrorPropagator {
      * @param testValue value to test
      * @param controlValue value against which the comparison is made
      */
-    static private void assertResult( final double testValue, final double controlValue ) {
+    private static void assertResult( final double testValue, final double controlValue ) {
 //        System.out.println( "test: " + testValue + ", control: " + controlValue );
         Assert.assertTrue( testValue == controlValue || Math.abs( testValue - controlValue ) < ERROR_TOLERANCE || ( Double.isNaN( testValue ) && Double.isNaN( controlValue ) ) );
     }

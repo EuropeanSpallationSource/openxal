@@ -280,7 +280,7 @@ public class BendTest extends TestCommon {
         double quadComp = -N / (rho * rho);
 
         // following are used to calculate field		
-        double c = IConstants.LightSpeed;
+        double c = IConstants.LIGHT_SPEED;
         double e = probe.getSpeciesCharge();
         double Er = probe.getSpeciesRestEnergy();
         double gamma = probe.getGamma();

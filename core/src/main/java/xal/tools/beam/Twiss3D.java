@@ -77,6 +77,7 @@ public class Twiss3D implements IArchive {
          *  
          * @return  Integer value of enumeration constant
          */
+        @Override
         public int val()    { return i; };
         
     }    
@@ -86,7 +87,7 @@ public class Twiss3D implements IArchive {
      * Global Constants
      */
 
-    /** element tag for envelope twiss parameters */
+    /** element tag for envelope Twiss parameters */
     protected static final String LABEL_TWISS = "twiss";
     
     /** attribute tags for Twiss parameters */
@@ -261,6 +262,7 @@ public class Twiss3D implements IArchive {
      * 
      * @see xal.tools.data.IArchive#save(xal.tools.data.DataAdaptor)
      */
+    @Override
     public void save(DataAdaptor daSink) {
         
         DataAdaptor daTwiss = daSink.createChild(Twiss3D.LABEL_TWISS);
@@ -285,6 +287,7 @@ public class Twiss3D implements IArchive {
      *  
      * @see xal.tools.data.IArchive#load(xal.tools.data.DataAdaptor)
      */
+    @Override
     public void load(DataAdaptor daSource) throws DataFormatException  {
         
         // Recover the Twiss parameter node and load them

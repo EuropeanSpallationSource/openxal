@@ -1,9 +1,7 @@
 package xal.smf;
 
-import xal.tools.messaging.MessageCenter;
 import xal.sim.scenario.ElementMapping;
 import xal.smf.impl.*;
-import xal.smf.impl.qualify.*;
 import xal.tools.data.*;
 import xal.ca.ChannelFactory;
 
@@ -19,15 +17,15 @@ import xal.sim.scenario.DefaultElementMapping;
 
 public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataListener {
     /** accelerator system unique identifier */
-    private String              m_strSysId;
+    private String              strSysId;
     /** date stamp */
-    private String              m_strDate;
+    private String              strDate;
     /** version stamp */
-    private String              m_strVer;
+    private String              strVer;
 
 
 	/** Map of predefined combo sequences mapped by combo sequence ID */
-	private Map<String,AcceleratorSeqCombo> _comboSequences;
+	private Map<String,AcceleratorSeqCombo> comboSequences;
 
     /** Map of main power supplies keyed by the power supply id */
     private Map<String,MagnetMainSupply> magnetMainSupplies;
@@ -39,10 +37,10 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
     private EditContext editContext;
 
 	/** timing center for this accelerator */
-	private TimingCenter _timingCenter;
+	private TimingCenter timingCenter;
 
 	/** factory for generating accelerator nodes */
-	private AcceleratorNodeFactory _nodeFactory;
+	private AcceleratorNodeFactory nodeFactory;
 
 	/** Model element mapping */
 	private ElementMapping     elementMapping;
@@ -61,6 +59,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
      * external data source.
      * @return The accelerator's tag
      */
+    @Override
     public String dataLabel() { return "xdxf"; }
 
     public boolean hasStatusFile() {
@@ -84,16 +83,17 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
      * Instructs the accelerator to update its data based on the given adaptor.
      * @param adaptor The adaptor from which to update the accelerator's data
      */
+    @Override
     public void update( final DataAdaptor adaptor ) throws NumberFormatException {
         // only the primary optics should supply this data
         if ( adaptor.hasAttribute( "system" ) ) {
-            m_strSysId = adaptor.stringValue( "system" );
+            strSysId = adaptor.stringValue( "system" );
         }
         if ( adaptor.hasAttribute( "ver" ) ) {
-            m_strVer = adaptor.stringValue( "ver" );
+            strVer = adaptor.stringValue( "ver" );
         }
 		if ( adaptor.hasAttribute( "date") ) {
-			m_strDate = adaptor.stringValue( "date" );
+			strDate = adaptor.stringValue( "date" );
 		}
 
         DataAdaptor powerSuppliesAdaptor = adaptor.childAdaptor("powersupplies");
@@ -177,6 +177,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
      * storage.
      * @param adaptor The adaptor to which the accelerator's data is written
      */
+    @Override
     public void write(DataAdaptor adaptor) {
         // Combo sequences are problematic as they are only defined in Accelerator
         for (AcceleratorSeqCombo seq : getComboSequences()) {
@@ -188,7 +189,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 
         // Write power supplies into the same file if this flag is false. Otherwise, they will be saved on a separated file.
         if (powerSuppliesFile == false) {
-            _writePowerSupplies(adaptor);
+            writeAllPowerSupplies(adaptor);
         }
     }
 
@@ -202,18 +203,19 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
         String tagName = dataLabel();
         DataAdaptor childAdaptor = adaptor.createChild(tagName);
         writeAttributes(childAdaptor);
-        _writePowerSupplies(childAdaptor);
+        writeAllPowerSupplies(childAdaptor);
     }
 
-    private void _writePowerSupplies(DataAdaptor adaptor) {
+    private void writeAllPowerSupplies(DataAdaptor adaptor) {
         // write out power supplies
         DataAdaptor powerSuppliesAdaptor = adaptor.createChild("powersupplies");
         getMagnetMainSupplies().forEach(mps -> mps.write(powerSuppliesAdaptor.createChild("ps")));
     }
 
+    @Override
     protected void writeAttributes(DataAdaptor adaptor) {
-        adaptor.setValue("system", m_strSysId);
-        adaptor.setValue("ver", m_strVer);
+        adaptor.setValue("system", strSysId);
+        adaptor.setValue("ver", strVer);
 
         Date today = new Date();
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd");
@@ -224,10 +226,11 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
     /**
      * method to write status of the node into a separate file
      */
+    @Override
     public void writeStatus(DataAdaptor adaptor) {
         DataAdaptor seqAdaptor = adaptor.createChild(dataLabel());
         writeAttributes(seqAdaptor);
-        m_arrNodes.forEach(node -> {
+        arrNodes.forEach(node -> {
             node.writeStatus(seqAdaptor);
         });
 
@@ -275,7 +278,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 			final Constructor<?> constructor = comboClass.getConstructor( new Class[] {String.class, Accelerator.class, DataAdaptor.class} );
 			return (AcceleratorSeqCombo)constructor.newInstance( new Object[] {comboID, this, comboAdaptor} );
 		}
-		catch(Exception exception) {
+		catch(ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException exception) {
 			System.err.println(exception);
 			exception.printStackTrace();
 			return null;
@@ -310,20 +313,20 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 
 		//System.out.println( "Instantiating Accelerator with channel factory: " + channelFactory );
 
-		m_strSysId = sysId;
-		_comboSequences = new LinkedHashMap<String,AcceleratorSeqCombo>();
+		strSysId = sysId;
+		comboSequences = new LinkedHashMap<>();
 
 		// Create hash maps to hold the main and trim power supplies
-		magnetMainSupplies = new LinkedHashMap<String,MagnetMainSupply>();
-		magnetTrimSupplies = new LinkedHashMap<String,MagnetTrimSupply>();
+		magnetMainSupplies = new LinkedHashMap<>();
+		magnetTrimSupplies = new LinkedHashMap<>();
 
 		// Create an edit context to hold dynamic data -tap 6/7/2002
 		editContext = new EditContext();
 
 		// initialize the timing center
-		_timingCenter = new TimingCenter();
+		timingCenter = new TimingCenter();
 
-                _nodeFactory = AcceleratorNodeFactory.getDefaultFactory();
+                nodeFactory = AcceleratorNodeFactory.getDefaultFactory();
 
                 elementMapping = DefaultElementMapping.getInstance();
 	}
@@ -345,28 +348,29 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
     }
 
 
-    public String           getSystemId()   { return m_strSysId; };
-    public String           getDate()       { return m_strDate; };
-    public String           getVersion()    { return m_strVer; };
+    public String           getSystemId()   { return strSysId; }
+    public String           getDate()       { return strDate; }
+    public String           getVersion()    { return strVer; }
 
 
-    public AcceleratorSeq   getRoot()       { return this; };
+    public AcceleratorSeq   getRoot()       { return this; }
+    @Override
     public Accelerator getAccelerator() { return this; }
 
 
-    public void setDate(String strDate)     { m_strDate = strDate; };
-    public void setVersion(String strVer)   { m_strVer = strVer; };
+    public void setDate(String strDate)     { this.strDate = strDate; }
+    public void setVersion(String strVer)   { this.strVer = strVer; }
 
 
 	/** Get the accelerator node factory */
 	public AcceleratorNodeFactory getNodeFactory() {
-		return _nodeFactory;
+		return nodeFactory;
 	}
 
 
 	/** Set the factory used to generate new accelerator nodes */
 	public void setNodeFactory( final AcceleratorNodeFactory nodeFactory ) {
-		_nodeFactory = nodeFactory;
+		this.nodeFactory = nodeFactory;
 	}
 
 	/**
@@ -429,7 +433,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	 * @return This accelerator's timing center
 	 */
 	public TimingCenter getTimingCenter() {
-		return _timingCenter;
+		return timingCenter;
 	}
 
 
@@ -438,7 +442,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	 * @param timingCenter the accelerator's new timing center
 	 */
 	public void setTimingCenter( final TimingCenter timingCenter ) {
-		_timingCenter = timingCenter;
+		this.timingCenter = timingCenter;
 	}
 
 
@@ -447,7 +451,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	 * @param comboSequence The combo sequence to add
 	 */
     public void addComboSequence( final AcceleratorSeqCombo comboSequence ) {
-		_comboSequences.put( comboSequence.getId(), comboSequence );
+		comboSequences.put( comboSequence.getId(), comboSequence );
 	}
 
 
@@ -456,7 +460,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	 * @param comboSequenceId The ID of the combo sequence to remove.
 	 */
         public void removeComboSequence( String comboSequenceId ) {
-		_comboSequences.remove(comboSequenceId);
+		comboSequences.remove(comboSequenceId);
 	}
 
 
@@ -466,7 +470,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	 * @return the combo sequence for the ID or null if none matches
 	 */
 	public AcceleratorSeqCombo getComboSequence( final String comboID ) {
-		return _comboSequences.get( comboID );
+		return comboSequences.get( comboID );
 	}
 
 
@@ -475,8 +479,9 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	 * @return the list of predefined combo sequences ordered by ID.
 	 */
 	public List<AcceleratorSeqCombo> getComboSequences() {
-		final List<AcceleratorSeqCombo> sequences = new ArrayList<AcceleratorSeqCombo>( _comboSequences.values() );
+		final List<AcceleratorSeqCombo> sequences = new ArrayList<>( comboSequences.values() );
 		Collections.sort( sequences, new Comparator<AcceleratorSeqCombo>() {
+                        @Override
 			public int compare( final AcceleratorSeqCombo combo1, final AcceleratorSeqCombo combo2 ) {
 				return combo1.getId().compareTo( combo2.getId() );
 			}
@@ -501,7 +506,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 	 */
 	public List<Ring> getRings() {
 		final List<AcceleratorSeqCombo> comboSequences = getComboSequences();
-		final List<Ring> rings = new ArrayList<Ring>();
+		final List<Ring> rings = new ArrayList<>();
 
         for ( final AcceleratorSeqCombo candidate : comboSequences ) {
 			if ( candidate instanceof Ring ) rings.add( (Ring)candidate );
@@ -533,7 +538,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 
 
     /**
-	 * Returns the AcceleratorNode with a requsted name
+	 * Returns the AcceleratorNode with a requested name
      * @param nodeID - the name to match
      */
     public AcceleratorNode  getNode( final String nodeID )   {

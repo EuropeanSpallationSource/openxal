@@ -39,9 +39,9 @@ public class DipoleCorr extends xal.smf.impl.DipoleCorr {
     /**
      * standard type for nodes of this class
      */
-    public static final String s_strType = "DC";
-    public static final String[] s_strType_DCH = {"dch", "horzcorr", "hcorr"};
-    public static final String[] s_strType_DCV = {"dcv", "vertcorr", "vcorr"};
+    public static final String TYPE = "DC";
+    public static final String[] TYPE_DCH = {"dch", "horzcorr", "hcorr"};
+    public static final String[] TYPE_DCV = {"dcv", "vertcorr", "vcorr"};
 
     // static initializer
     static {
@@ -52,14 +52,14 @@ public class DipoleCorr extends xal.smf.impl.DipoleCorr {
      * Register type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes(DipoleCorr.class, s_strType);
+        ElementTypeManager.defaultManager().registerTypes(DipoleCorr.class, TYPE);
     }
 
     /**
      * Override to provide type signature
      */
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /**
@@ -86,9 +86,9 @@ public class DipoleCorr extends xal.smf.impl.DipoleCorr {
     @Override
     public boolean isKindOf(String type) {
         if (getOrientation() == Magnet.HORIZONTAL) {
-            return type.equalsIgnoreCase(s_strType) || Arrays.asList(s_strType_DCH).contains(type.toLowerCase()) || super.isKindOf(type);
+            return type.equalsIgnoreCase(TYPE) || Arrays.asList(TYPE_DCH).contains(type.toLowerCase()) || super.isKindOf(type);
         } else {
-            return type.equalsIgnoreCase(s_strType) || Arrays.asList(s_strType_DCV).contains(type.toLowerCase()) || super.isKindOf(type);
+            return type.equalsIgnoreCase(TYPE) || Arrays.asList(TYPE_DCV).contains(type.toLowerCase()) || super.isKindOf(type);
         }
     }
 }

@@ -14,12 +14,9 @@ import java.util.Date;
 import java.text.NumberFormat;
 import java.text.DecimalFormat;
 
-import xal.smf.*;
-import xal.smf.impl.*;
 import xal.ca.*;
 import xal.sim.slg.*;   // for lattice generation
 import xal.model.probe.*;  // Probe for t3d header
-import xal.model.probe.traj.EnvelopeProbeState;
 import xal.sim.scenario.Scenario;
 import xal.tools.beam.TraceXalUnitConverter;
 import xal.tools.beam.CovarianceMatrix;
@@ -51,13 +48,13 @@ public class T3dGenerator {
     public T3dGenerator(Lattice lattice, EnvelopeProbe envProbe) {
         myLattice = lattice;
         myProbe = envProbe;
-    };
+    }
     
     public T3dGenerator(String latticeName, Lattice lattice, EnvelopeProbe envProbe) {
         myLattice = lattice;
         myLatticeName = latticeName;
         myProbe = envProbe;
-    };
+    }
     
     /** beam initial condition */
     protected double beamci[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
@@ -75,8 +72,8 @@ public class T3dGenerator {
         if (myLatticeName == null)
             myLatticeName = myLattice.getName();
         
-        FileWriter t3d_input = new FileWriter(myLatticeName+".t3d");
-        //       FileWriter t3d_input = new FileWriter("combo.t3d");
+        FileWriter t3dInput = new FileWriter(myLatticeName+".t3d");
+        //       FileWriter t3dInput = new FileWriter("combo.t3d");
         Date today = new Date();
         int elementCount = myLattice.len();
         
@@ -93,7 +90,7 @@ public class T3dGenerator {
         
         Twiss[] twiss = covarianceMatrix.computeTwiss();
         // for T3d header
-        String t3d_header =
+        String t3dHeader =
         " $DATA\n"
         //       + " ER= " + (myProbe.getSpeciesRestEnergy()/1.e6) + ", Q= " + (myProbe.getSpeciesCharge() /1.602e-19)
         + " ER= " + (myProbe.getSpeciesRestEnergy()/1.e6) + ", Q= " + (myProbe.getSpeciesCharge())
@@ -125,13 +122,13 @@ public class T3dGenerator {
         
         LatticeIterator ilat=myLattice.latticeIterator();
         int counter = 1;
-        String str = t3d_header;
+        String str = t3dHeader;
         int devTypeInd = 1;
         String devStr = "";
         
-        char buffer_header[] = new char[str.length()];
-        str.getChars(0, str.length(), buffer_header, 0);
-        t3d_input.write(buffer_header);
+        char bufferHeader[] = new char[str.length()];
+        str.getChars(0, str.length(), bufferHeader, 0);
+        t3dInput.write(bufferHeader);
         
         while(ilat.hasNext()) {
             Element element = ilat.next();
@@ -297,7 +294,7 @@ public class T3dGenerator {
             
             char buffer[] = new char[str.length()];
             str.getChars(0, str.length(), buffer, 0);
-            t3d_input.write(buffer);	
+            t3dInput.write(buffer);	
             
             counter++;
         }
@@ -309,11 +306,11 @@ public class T3dGenerator {
             str = " COMMENT='" + today.toString() + "  Measured Lattice" + "'\n"
             + " $END";
         
-        char buffer_end[] = new char[str.length()];
-        str.getChars(0, str.length(), buffer_end, 0);
-        t3d_input.write(buffer_end);	
+        char bufferEnd[] = new char[str.length()];
+        str.getChars(0, str.length(), bufferEnd, 0);
+        t3dInput.write(bufferEnd);	
         
-        t3d_input.close();   
+        t3dInput.close();   
         
     }
     

@@ -21,7 +21,6 @@ import java.util.List;
 import xal.extension.jels.smf.impl.FieldMap;
 import xal.extension.jels.smf.impl.RfFieldMap;
 import xal.model.IProbe;
-import xal.model.ModelException;
 import xal.model.elem.ThickElement;
 import xal.model.elem.sync.IRfCavityCell;
 import xal.model.elem.sync.IRfGap;
@@ -49,29 +48,29 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     private double energyGain = 0;
     private double synchronousPhase = 0;
 
-    private double[] a_deltaPhi = null;
-    private double[] a_energyGain = null;
-    private double[] a_sinIntegral = null;
+    private double[] deltaPhiArr = null;
+    private double[] energyGainArr = null;
+    private double[] sinIntegralArr = null;
 
-    private double m_dblAmpFactor;
-    private double m_dblPhaseFactor;
+    private double dblAmpFactor;
+    private double dblPhaseFactor;
 
     /**
      * ETL product of gap
      */
-    private double m_dblETL = 0.0;
+    private double dblETL = 0.0;
 
-    private double m_dblE0 = 0.0;
+    private double dblE0 = 0.0;
 
     /**
      * phase delay of gap w.r.t. the synchronous particle
      */
-    private double m_dblPhase = 0.0;
+    private double dblPhase = 0.0;
 
     /**
      * operating frequency of the gap
      */
-    private double m_dblFreq = 0.0;
+    private double dblFreq = 0.0;
 
     /**
      * flag indicating that this is the leading gap of a cavity
@@ -108,13 +107,13 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
         rfFieldmap = fieldmap.getFieldMap();
         cellLength = fieldmap.getSliceLength();
 
-        m_dblETL = fieldmap.getGapDfltE0TL() * 1e6;
-        m_dblFreq = fieldmap.getGapDfltFrequency() * 1e6;
-        m_dblPhase = fieldmap.getGapDfltPhase() * Math.PI / 180.;
-        m_dblE0 = fieldmap.getGapDfltAmp() * 1e6;
+        dblETL = fieldmap.getGapDfltE0TL() * 1e6;
+        dblFreq = fieldmap.getGapDfltFrequency() * 1e6;
+        dblPhase = fieldmap.getGapDfltPhase() * Math.PI / 180.;
+        dblE0 = fieldmap.getGapDfltAmp() * 1e6;
 
-        m_dblAmpFactor = fieldmap.getRfGap().getAmpFactor();
-        m_dblPhaseFactor = fieldmap.getRfGap().getPhaseFactor();
+        dblAmpFactor = fieldmap.getRfGap().getAmpFactor();
+        dblPhaseFactor = fieldmap.getRfGap().getPhaseFactor();
     }
 
     /**
@@ -146,19 +145,19 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
         double gamma;
         double beta;
 
-        a_deltaPhi = new double[numberOfPoints + 1];
-        a_energyGain = new double[numberOfPoints + 1];
-        a_sinIntegral = new double[numberOfPoints + 1];
+        deltaPhiArr = new double[numberOfPoints + 1];
+        energyGainArr = new double[numberOfPoints + 1];
+        sinIntegralArr = new double[numberOfPoints + 1];
 
-        a_deltaPhi[0] = 0;
-        a_energyGain[0] = 0;
-        a_sinIntegral[0] = 0;
+        deltaPhiArr[0] = 0;
+        energyGainArr[0] = 0;
+        sinIntegralArr[0] = 0;
 
         for (int i = 0; i < numberOfPoints; i++) {
-            gamma = (probe.getKineticEnergy() + a_energyGain[i]) / probe.getSpeciesRestEnergy() + 1.0;
+            gamma = (probe.getKineticEnergy() + energyGainArr[i]) / probe.getSpeciesRestEnergy() + 1.0;
             beta = Math.sqrt(1.0 - 1.0 / (gamma * gamma));
 
-            a_deltaPhi[i + 1] = a_deltaPhi[i] + 2 * Math.PI * getFrequency() * dz / (beta * LightSpeed);
+            deltaPhiArr[i + 1] = deltaPhiArr[i] + 2 * Math.PI * getFrequency() * dz / (beta * LIGHT_SPEED);
 
             // Set the length of the following kick.
             dz = getCellLength();
@@ -166,9 +165,9 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
             FieldMapPoint fieldMapPoint = rfFieldmap.getFieldAt(fieldMapPointPositions.get(i));
 
             if (fieldMapPoint == null) {
-                a_energyGain[i + 1] = a_energyGain[i] + 0;
-                a_sinIntegral[i + 1] = a_sinIntegral[i] + 0;
-                a_deltaPhi[i + 1] = a_deltaPhi[i] + 0;
+                energyGainArr[i + 1] = energyGainArr[i] + 0;
+                sinIntegralArr[i + 1] = sinIntegralArr[i] + 0;
+                deltaPhiArr[i + 1] = deltaPhiArr[i] + 0;
                 continue;
             }
 
@@ -179,8 +178,8 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
                 dz /= 2.;
             }
 
-            a_energyGain[i + 1] = a_energyGain[i] + fieldMapPoint.getEz() * dz * Math.cos(initialPhase + a_deltaPhi[i + 1]);
-            a_sinIntegral[i + 1] = a_sinIntegral[i] + fieldMapPoint.getEz() * dz * Math.sin(initialPhase + a_deltaPhi[i + 1]);
+            energyGainArr[i + 1] = energyGainArr[i] + fieldMapPoint.getEz() * dz * Math.cos(initialPhase + deltaPhiArr[i + 1]);
+            sinIntegralArr[i + 1] = sinIntegralArr[i] + fieldMapPoint.getEz() * dz * Math.sin(initialPhase + deltaPhiArr[i + 1]);
 
             // Set the length of the following drift spaces.
             dz = getCellLength();
@@ -188,12 +187,12 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
         dz = (numberOfPoints > 0 ? probe.getPosition() - startPosition + dblLen - fieldMapPointPositions.get(numberOfPoints - 1) : dblLen);
 
-        gamma = (probe.getKineticEnergy() + a_energyGain[numberOfPoints]) / probe.getSpeciesRestEnergy() + 1.0;
+        gamma = (probe.getKineticEnergy() + energyGainArr[numberOfPoints]) / probe.getSpeciesRestEnergy() + 1.0;
         beta = Math.sqrt(1.0 - 1.0 / (gamma * gamma));
 
-        deltaPhi = a_deltaPhi[numberOfPoints] + 2 * Math.PI * getFrequency() * dz / (beta * LightSpeed);
-        energyGain = a_energyGain[numberOfPoints];
-        synchronousPhase = Math.atan2(a_sinIntegral[numberOfPoints], a_energyGain[numberOfPoints]);
+        deltaPhi = deltaPhiArr[numberOfPoints] + 2 * Math.PI * getFrequency() * dz / (beta * LIGHT_SPEED);
+        energyGain = energyGainArr[numberOfPoints];
+        synchronousPhase = Math.atan2(sinIntegralArr[numberOfPoints], energyGainArr[numberOfPoints]);
     }
 
     /**
@@ -239,11 +238,11 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
             FieldMapPoint fieldMapPoint = rfFieldmap.getFieldAt(fieldMapPointPositions.get(i));
 
-            fieldMapPoint.setAmplitudeFactorE(getE0() * Math.cos(phiS + a_deltaPhi[i + 1]));
-            fieldMapPoint.setAmplitudeFactorB(2.0 * Math.PI * getFrequency() / (LightSpeed * LightSpeed) * getE0() * Math.sin(phiS + a_deltaPhi[i + 1]));
+            fieldMapPoint.setAmplitudeFactorE(getE0() * Math.cos(phiS + deltaPhiArr[i + 1]));
+            fieldMapPoint.setAmplitudeFactorB(2.0 * Math.PI * getFrequency() / (LIGHT_SPEED * LIGHT_SPEED) * getE0() * Math.sin(phiS + deltaPhiArr[i + 1]));
 
             // Kick
-            integrator.timesKick(probe, dz, fieldMapPoint, a_energyGain[i]);
+            integrator.timesKick(probe, dz, fieldMapPoint, energyGainArr[i]);
 
             // Set the length of the following drift spaces.
             dz = getCellLength();
@@ -287,12 +286,12 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
     @Override
     public void setETL(double dblETL) {
-        m_dblETL = dblETL;
+        this.dblETL = dblETL;
     }
 
     @Override
     public void setE0(double cavAmp) {
-        m_dblE0 = cavAmp * m_dblAmpFactor;
+        dblE0 = cavAmp * dblAmpFactor;
     }
 
     /**
@@ -301,32 +300,32 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
      */
     @Override
     public void setPhase(double cavPhase) {
-        m_dblPhase = cavPhase + m_dblPhaseFactor;
+        dblPhase = cavPhase + dblPhaseFactor;
     }
 
     @Override
     public void setFrequency(double dblFreq) {
-        m_dblFreq = dblFreq;
+        this.dblFreq = dblFreq;
     }
 
     @Override
     public double getETL() {
-        return m_dblETL;
+        return dblETL;
     }
 
     @Override
     public double getPhase() {
-        return m_dblPhase;
+        return dblPhase;
     }
 
     @Override
     public double getFrequency() {
-        return m_dblFreq;
+        return dblFreq;
     }
 
     @Override
     public double getE0() {
-        return m_dblE0;
+        return dblE0;
     }
 
     @Override

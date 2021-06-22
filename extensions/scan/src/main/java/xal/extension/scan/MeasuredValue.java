@@ -26,10 +26,10 @@ public class MeasuredValue{
     
     private MeasuredValue offSetVal = null;
     
-    private Map<Object,Object> propertyMap = new HashMap<Object,Object>();
+    private Map<Object,Object> propertyMap = new HashMap<>();
     
-    private Vector<BasicGraphData> graphDataV   = new Vector<BasicGraphData>();
-    private Vector<BasicGraphData> graphDataRBV = new Vector<BasicGraphData>();
+    private Vector<BasicGraphData> graphDataV   = new Vector<>();
+    private Vector<BasicGraphData> graphDataRBV = new Vector<>();
     
     private boolean drawLinesOn = true;
     
@@ -277,11 +277,11 @@ public class MeasuredValue{
     }
     
     public Vector<BasicGraphData> getDataContainers(){
-        return new Vector<BasicGraphData>( graphDataV );
+        return new Vector<>( graphDataV );
     }
     
     public Vector<BasicGraphData> getDataContainersRB(){
-        return new Vector<BasicGraphData>( graphDataRBV );
+        return new Vector<>( graphDataRBV );
     }
     
     public void removeAllDataContainers(){
@@ -355,13 +355,13 @@ public class MeasuredValue{
             }
             else{
                 int np = gd.getNumbOfPoints();
-                double y_last = 0.;
+                double ylast = 0.;
                 if( np != 0 ){
-                    y_last = gd.getY(np-1);
+                    ylast = gd.getY(np-1);
                 }
-                double y_new = getMeasurement();
-                y_new = unwrap(y_new,y_last);
-                gd.addPoint(x,y_new,getMeasurementSigma());
+                double yNew = getMeasurement();
+                yNew = unwrap(yNew,ylast);
+                gd.addPoint(x,yNew,getMeasurementSigma());
             }
         }
     }
@@ -374,13 +374,13 @@ public class MeasuredValue{
             }
             else{
                 int np = gd.getNumbOfPoints();
-                double y_last = 0.;
+                double ylast = 0.;
                 if( np != 0 ){
-                    y_last = gd.getY(np-1);
+                    ylast = gd.getY(np-1);
                 }
-                double y_new = getMeasurement();
-                y_new = unwrap(y_new,y_last);
-                gd.addPoint(xRB,y_new,getMeasurementSigma());
+                double yNew = getMeasurement();
+                yNew = unwrap(yNew,ylast);
+                gd.addPoint(xRB,yNew,getMeasurementSigma());
             }
         }
     }
@@ -390,13 +390,13 @@ public class MeasuredValue{
     private double unwrap(double y,double yIn){
         if( y == yIn) return y;
         int n = 0;
-        double diff_min = Math.abs(yIn - y);
-        double diff = diff_min;
-        int n_max = 1 + ((int) (diff_min/360.));
-        for(int i = - n_max; i <= n_max; i++){
+        double diffMin = Math.abs(yIn - y);
+        double diff = diffMin;
+        int nMax = 1 + ((int) (diffMin/360.));
+        for(int i = - nMax; i <= nMax; i++){
             diff = Math.abs(y + i*360. - yIn);
-            if(diff < diff_min){
-                diff_min = diff;
+            if(diff < diffMin){
+                diffMin = diff;
                 n = i;
             }
         }

@@ -223,12 +223,12 @@ public abstract class TestCommon {
         Assert.assertTrue("TW transfer matrix", n < errTolerance);
     }
 
-    private void ROpenXal2TW(double gamma_start, double gamma_end, PhaseMap pm) {
+    private void ROpenXal2TW(double gammaStart, double gammaEnd, PhaseMap pm) {
         PhaseMatrix r = pm.getFirstOrder();
 
         for (int i = 0; i < 6; i++) {
-            r.setElem(i, 5, r.getElem(i, 5) / gamma_start / gamma_start);
-            r.setElem(5, i, r.getElem(5, i) * gamma_end * gamma_end);
+            r.setElem(i, 5, r.getElem(i, 5) / gammaStart / gammaStart);
+            r.setElem(5, i, r.getElem(5, i) * gammaEnd * gammaEnd);
         }
         pm.setLinearPart(r);
     }

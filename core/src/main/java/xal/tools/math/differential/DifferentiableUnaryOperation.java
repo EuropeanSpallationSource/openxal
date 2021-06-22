@@ -12,18 +12,18 @@ package xal.tools.math.differential;
 /** DifferentiableUnaryOperation */
 abstract public class DifferentiableUnaryOperation extends DifferentiableSymbol {
     /** argument on which the operation is performed */
-    final protected DifferentiableOperation ARGUMENT;
+    protected final DifferentiableOperation argument;
     
     
     /** Constructor */
     protected DifferentiableUnaryOperation( final DifferentiableOperation argument ) {
-        ARGUMENT = argument;
+        this.argument = argument;
     }
     
     
     /** get the argument to negate */
     protected DifferentiableOperation getArgument() {
-        return ARGUMENT;
+        return argument;
     }
     
     
@@ -36,19 +36,22 @@ abstract public class DifferentiableUnaryOperation extends DifferentiableSymbol 
     
     
     /** Get the derivative with respect to the specified variable applying the chain rule for the argument */
-    final public DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
-        return ARGUMENT.getDerivative( variable ).times( getDirectDerivative( variable ) );
+    @Override
+    public final DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
+        return argument.getDerivative( variable ).times( getDirectDerivative( variable ) );
     }
     
     
     /** Test whether this operation is equivalent to the specified operation when the two operations are different instances. Returns true if the arguments match. */
+    @Override
     protected boolean isEquivalentTo( final DifferentiableOperation operation ) {
-        return ARGUMENT.isEqualTo( ((DifferentiableUnaryOperation)operation).ARGUMENT );
+        return argument.isEqualTo(((DifferentiableUnaryOperation)operation).argument );
     }
     
     
     /** get the string representation */
+    @Override
     public String toString() {
-        return getLabel() + "(" + ARGUMENT + ")";
+        return getLabel() + "(" + argument + ")";
     }
 }

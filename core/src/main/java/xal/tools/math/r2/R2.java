@@ -6,12 +6,15 @@
 
 package xal.tools.math.r2;
 
+import java.io.PrintWriter;
+import java.io.Serializable;
+
 /**
  *  Class representing a point on the plane in R2.
  *
  * @author  Christopher Allen
  */
-public class R2 implements java.io.Serializable {
+public class R2 implements Serializable {
     
     
     /** ID for serializable version */
@@ -245,7 +248,7 @@ public class R2 implements java.io.Serializable {
      *
      *  @param  os      output stream receive content dump
      */
-    public void print(java.io.PrintWriter os)   {
+    public void print(PrintWriter os)   {
         os.print(this.toString());
     }
     
@@ -254,7 +257,7 @@ public class R2 implements java.io.Serializable {
      *
      *  @param  os      output stream receive content dump
      */
-    public void println(java.io.PrintWriter os)   {
+    public void println(PrintWriter os)   {
         os.println(this.toString());
     }
     

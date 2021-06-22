@@ -36,7 +36,7 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
     /**
      * The container for the magnet information
      */
-    protected MagnetBucket       m_bucMagnet; 
+    protected MagnetBucket       bucMagnet; 
 
 
 	/** Primary Constructor */
@@ -57,7 +57,7 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
      * @return    the attribute bucket containing the machine multipole fields
      */
 
-    public MagnetBucket  getMagBucket()   { return m_bucMagnet; };
+    public MagnetBucket  getMagBucket()   { return bucMagnet; };
 
  
    /**
@@ -66,10 +66,10 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
      */
 
     public void setMagBucket(MagnetBucket buc) {
-        if (m_bucMagnet != null) {
-            m_mapAttrs.remove(m_bucMagnet.getType(), m_bucMagnet);
+        if (bucMagnet != null) {
+            mapAttrs.remove(bucMagnet.getType(), bucMagnet);
         }
-        m_bucMagnet = buc;
+        bucMagnet = buc;
         super.addBucket(buc);
     }
 
@@ -79,13 +79,14 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
      * Override AcceleratorNode implementation to check for a MultipoleBucket
      */
 
+    @Override
     public void addBucket(AttributeBucket buc)  {
 
         if (buc.getClass().equals(MagnetBucket.class))
               setMagBucket((MagnetBucket)buc);
 
         super.addBucket(buc);
-    };    
+    }
 
 
     /**
@@ -93,6 +94,7 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
      * magnet type.
      * @return true
      */
+    @Override
     public boolean isMagnet() {
         return true;
     }
@@ -104,6 +106,7 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
      * @param compPole Comparison pole which should be one of MagnetType.poles
      * @return true if the magnet is of the specified pole.
      */
+    @Override
     public boolean isPole(String compPole) {
         return false;
     }
@@ -113,6 +116,7 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
      * Get the orientation of the magnet as defined by MagnetType.
      * @return One of HORIZONTAL, VERTICAL or NO_ORIENTATION
      */
+    @Override
     public int getOrientation() {
         return NO_ORIENTATION;
     }
@@ -122,7 +126,8 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
      * Determine whether this magnet is oriented horizontally.
      * @return true if this magnet is oriented horizontally; false otherwise.
      */
-    final public boolean isHorizontal() {
+    @Override
+    public final boolean isHorizontal() {
         return getOrientation() == HORIZONTAL;
     }
     
@@ -131,7 +136,8 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
      * Determine whether this magnet is oriented vertically.
      * @return true if this magnet is oriented vertically; false otherwise.
      */
-    final public boolean isVertical() {
+    @Override
+    public final boolean isVertical() {
         return getOrientation() == VERTICAL;
     }
     
@@ -140,6 +146,7 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
      * Determine whether this magnet is a skew magnet.
      * @return true if the magnet is skew and false otherwise.
      */
+    @Override
     public boolean isSkew() {
         return false;
     }
@@ -149,6 +156,7 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
      * Get whether this magnet is a permanent magnet or an electromagnet.
      * @return true if the magnet is permanent and false otherwise.
      */
+    @Override
     public boolean isPermanent() {
         return false;
     }
@@ -158,6 +166,7 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
      * Determine whether this magnet is a corrector.
      * @return true if this magnet is a corrector.
      */
+    @Override
     public boolean isCorrector() {
         return false;
     }
@@ -168,7 +177,7 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
      */
 
     public double getDesignField() {
-        return m_bucMagnet.getDfltField() ;
+        return bucMagnet.getDfltField() ;
     }
 
     /** 
@@ -176,14 +185,14 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
      */
 
     public double getEffLength() {
-        return m_bucMagnet.getEffLength() ;
+        return bucMagnet.getEffLength() ;
     } 
     
     /**
      * get the default magnetic field
      */       
     public double getDfltField() {
-        return m_bucMagnet.getDfltField() ;
+        return bucMagnet.getDfltField() ;
     }
     
     /**
@@ -191,7 +200,7 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
      */
     public double   getPolarity() {
         try{
-            return m_bucMagnet.getPolarity();
+            return bucMagnet.getPolarity();
         }  
         catch (Exception e) {	    
             System.out.println(" Polarity not set on " + this.getId() 
@@ -204,14 +213,14 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
      * get Normal fields
      */
     public double[] getNormField() {
-        return m_bucMagnet.getNormField() ;
+        return bucMagnet.getNormField() ;
     }
     
     /**
      * get tangential fields
      */
     public double[] getTangField() {
-        return m_bucMagnet.getTangField() ;
+        return bucMagnet.getTangField() ;
     }
     
     /**
@@ -219,20 +228,7 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
      * @param field the default magnetic field to be changed to.
      */
     public void setDfltField(double field) {
-    	m_bucMagnet.setDfltField(field);
+    	bucMagnet.setDfltField(field);
     }
     
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

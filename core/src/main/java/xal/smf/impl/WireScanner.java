@@ -503,12 +503,12 @@ public class WireScanner extends ProfileDevice {
          */
         @Override
         public String toString() {
-            StringBuffer        bufText = new StringBuffer();
+            StringBuilder        bufText = new StringBuilder();
 
-            bufText.append("CMD=" + this.getCommand()); //$NON-NLS-1$
+            bufText.append("CMD=").append(this.getCommand()); //$NON-NLS-1$
             bufText.append("Args=("); //$NON-NLS-1$
             for (int i=0; i<this.getArgumentCount(); i++)
-                bufText.append( "," + this.getArgument(i) ); //$NON-NLS-1$
+                bufText.append(",").append(this.getArgument(i)); //$NON-NLS-1$
             bufText.append(")"); //$NON-NLS-1$
 
             return bufText.toString();
@@ -521,7 +521,7 @@ public class WireScanner extends ProfileDevice {
      */
     
     /** device type */
-    public static final String s_strType = "WS"; //$NON-NLS-1$
+    public static final String TYPE = "WS"; //$NON-NLS-1$
     
     /** software type for the Wire Scanner class */
     public static final String SOFTWARE_TYPE = "Version 2.0.0"; //$NON-NLS-1$
@@ -554,7 +554,7 @@ public class WireScanner extends ProfileDevice {
      * recognizes.
      */
     static {
-		ElementTypeManager.defaultManager().registerTypes( WireScanner.class, s_strType, HARDWARE_TYPE );
+		ElementTypeManager.defaultManager().registerTypes( WireScanner.class, TYPE, HARDWARE_TYPE );
     }
 
 
@@ -1263,7 +1263,7 @@ public class WireScanner extends ProfileDevice {
          * Global Attributes
          */
         /** Map of field names to SCADA field Descriptors */
-        final public static ScadaFieldMap  FLD_MAP = new ScadaFieldMap(WireScanner.PrcgConfig.class);
+        public static final ScadaFieldMap  FLD_MAP = new ScadaFieldMap(WireScanner.PrcgConfig.class);
         
         
         /*
@@ -1387,7 +1387,7 @@ public class WireScanner extends ProfileDevice {
          */
         
         /** Map of field names to SCADA field Descriptors */
-        public final static ScadaFieldMap  FLD_MAP = new ScadaFieldMap(WireScanner.TrgConfig.class);
+        public static final ScadaFieldMap  FLD_MAP = new ScadaFieldMap(WireScanner.TrgConfig.class);
         
         
         
@@ -1538,7 +1538,7 @@ public class WireScanner extends ProfileDevice {
          */
         
         /** Map of field names to field SCADA descriptors for this structure */
-        public final static ScadaFieldMap   FLD_MAP = new ScadaFieldMap(WireScanner.DevStatus.class);
+        public static final ScadaFieldMap   FLD_MAP = new ScadaFieldMap(WireScanner.DevStatus.class);
         
         
         /**
@@ -2863,7 +2863,7 @@ public class WireScanner extends ProfileDevice {
      */
     @Override
     public String getType()  { 
-        return s_strType; 
+        return TYPE; 
     }
 
 
@@ -2987,6 +2987,7 @@ public class WireScanner extends ProfileDevice {
      * @author Christopher K. Allen
      * @since  Feb 4, 2011
      */
+    @Override
     public synchronized boolean  testConnection(Collection<ScadaFieldDescriptor> setFds, double dblTmOut) 
         throws BadChannelException
     {
@@ -3056,6 +3057,7 @@ public class WireScanner extends ProfileDevice {
      *  @throws xal.ca.ConnectionException     channel is not connected
      *  @throws xal.ca.MonitorException        general monitor failure
      */
+    @Override
     public Monitor      createMonitor(XalPvDescriptor.IPvDescriptor pvdFld, IEventSinkValue snkEvents, int ...mskEvtType)
         throws ConnectionException, MonitorException, NoSuchChannelException
     {
@@ -3087,6 +3089,7 @@ public class WireScanner extends ProfileDevice {
      * @since  Dec 17, 2009
      * @author Christopher K. Allen
      */
+    @Override
     public synchronized void configureHardware(ParameterSet datPvFlds) 
         throws PutException, ConnectionException 
     {

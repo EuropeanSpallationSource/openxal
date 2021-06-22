@@ -1,11 +1,8 @@
 package xal.tools.apputils.pvselection;
 
-import java.util.*;
 import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.tree.*;
-import javax.swing.event.*;
 import javax.swing.border.*;
 
 public class SignalCellRenderer implements TreeCellRenderer{
@@ -14,6 +11,7 @@ public class SignalCellRenderer implements TreeCellRenderer{
 
     public SignalCellRenderer(){};
  
+    @Override
     public Component getTreeCellRendererComponent(JTree tree,
 						  Object value,
 						  boolean selected,

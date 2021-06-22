@@ -28,16 +28,16 @@ public interface IElement extends IComponent {
      */
     
     /** Speed of light in a vacuum (meters/second) */
-    public final double LightSpeed = 299792458;   
+    public static final double LIGHT_SPEED = 299792458;   
     
     /** The unit electric charge (Farads) */
-    public final double UnitCharge = 1.602e-19;
+    public static final double UNIT_CHARGE = 1.602e-19;
     
     /** Electric permittivity of free space (Farad/meter) */
-    public final double Permittivity = 8.854187817e-12;
+    public static final double PERMITTIVITY = 8.854187817e-12;
   
     /** Magnetic permeability of free space (Henries/meter) */
-    public final double Permeability = 4.0*Math.PI*1.0e-7;
+    public static final double PERMEABILITY = 4.0*Math.PI*1.0e-7;
     
 
 
@@ -64,7 +64,7 @@ public interface IElement extends IComponent {
      * Returns the longitudinal phase advance of the given probe with respect to the RF phase
      * while propagation through this element section.  
      * Typically used to account for phase delay/advance in cavities incurred due to 
-     * finite time while propagating throught the given distance.  For example  
+     * finite time while propagating through the given distance.  For example  
      * <br/>
      * <br/>
      * &nbsp; &nbsp; &phi; &#8796; &phi;<sub>0</sub> - &Delta;&phi; 
@@ -78,7 +78,7 @@ public interface IElement extends IComponent {
      * the synchronous particle).
      * </p>
      * 
-     * @param probe         the probe progating through this element     
+     * @param probe         the probe propagating through this element     
      * @param dblLen        distance the probe propagates through the element
      * 
      * @return              longitudinal phase advance of the probe through given distance
@@ -114,4 +114,4 @@ public interface IElement extends IComponent {
      *  @see    #transferMap(IProbe, double)
      */
     public PhaseMap transferMap(IProbe probe, double dblLen) throws ModelException;
-};
+}

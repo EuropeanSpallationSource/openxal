@@ -9,11 +9,13 @@
 
 package xal.extension.application;
 
+import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.beans.PropertyVetoException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,16 +39,16 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
 	static final long serialVersionUID = 1L;
 
 	// public static constants for confirmation dialogs
-	final static public int YES_OPTION = JOptionPane.YES_OPTION;
-	final static public int NO_OPTION = JOptionPane.NO_OPTION;
+	public static final int YES_OPTION = JOptionPane.YES_OPTION;
+	public static final int NO_OPTION = JOptionPane.NO_OPTION;
 	
     //------------- instance variables -----------------------------------------
     
 	/** The toolbar associated with this window */
-	private JToolBar _toolBar;
+	private JToolBar toolBar;
 	
     /** The document corresponding to this main window */
-    protected XalInternalDocument _document;
+    protected XalInternalDocument document;
 	    
     
     /** Creates a new instance of WindowAdaptor */
@@ -55,7 +57,7 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
 		
 		positionWindow();
         registerEvents();
-        _document = aDocument;
+        document = aDocument;
         makeFrame();
     }
 	
@@ -84,7 +86,7 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
 	 * @return this window's internal document
 	 */
 	XalInternalDocument getInternalDocument() {
-		return _document;
+		return document;
 	}
     
     
@@ -95,13 +97,13 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
         
         Commander commander = makeCommander();
         customizeCommands( commander );
-        _document.customizeCommands( commander );
+        document.customizeCommands( commander );
 		
         setJMenuBar( commander.getMenubar() );			
 		
         if ( usesToolbar() )  { 
-            _toolBar = commander.getToolbar();
-            getContentPane().add( _toolBar, "North" );
+            toolBar = commander.getToolbar();
+            getContentPane().add(toolBar, "North" );
         }
     }
     
@@ -109,7 +111,7 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
     /** Subclasses should override this method to provide a custom Commander. */
     public Commander makeCommander() {
         // create a document commander off of the application commander and a document
-        return new Commander( _document );
+        return new Commander( document );
     }
 	
 	
@@ -117,8 +119,9 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
 	 * Get the toolbar associated with this window.
 	 * @return This window's toolbar or null if none was added.
 	 */
+        @Override
 	public JToolBar getToolBar() {
-		return _toolBar;
+		return toolBar;
 	}
 	
 	
@@ -142,11 +145,12 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
 	
     
     /** Capture the window content as a PNG.  Present the user with a save dialog box so the image can be saved to a file. */
+        @Override
     public void captureAsImage() {
         try {
             ImageCaptureManager.defaultManager().saveSnapshot( this.getContentPane() );
         }
-        catch( java.awt.AWTException exception ) {
+        catch( AWTException exception ) {
 			Logger.getLogger("global").log( Level.WARNING, "Failed to capture image.", exception ); 
             System.err.println( exception );
             displayWarning( exception );
@@ -160,6 +164,7 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
 	
     
     /** Show this window.  Make it visible (de-iconify if necessary) and bring it to the front. */
+        @Override
     public void showWindow() {
 		try {
 			setIcon( false );    // de-iconify this window
@@ -174,6 +179,7 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
     
     
     /** Iconify this window. */
+        @Override
     public void hideWindow() {
 		try {
 			setIcon( true );     // iconify the window			
@@ -198,13 +204,13 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
     /**
 	 * Dispose of this window and remove its association with the document.
      */
-    final public void releaseWindow() {
+    public final void releaseWindow() {
 		freeCustomResources();
 		
         dispose();
 		
-        _document.removeXalInternalDocumentListener( this );
-		_document = null;
+        document.removeXalInternalDocumentListener( this );
+		document = null;
     }
     
 	
@@ -223,12 +229,12 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
 	 */
 	public void generateWindowTitle() {
 		String windowTitle = "Untitled";
-		final String documentTitle = _document.getTitle();
+		final String documentTitle = document.getTitle();
 		
 		if ( documentTitle != null && !documentTitle.isEmpty() ) {
 			windowTitle = documentTitle;
 			
-			if ( _document.hasChanges() ) {
+			if ( document.hasChanges() ) {
 				windowTitle += "*";
 			}
 		}
@@ -242,12 +248,13 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
 		else {
 			try {
 				SwingUtilities.invokeAndWait( new Runnable() {
+                                        @Override
 					public void run() {
 						setTitle( theTitle );
 					}
 				});
 			}
-			catch( Exception exception ) {
+			catch( InterruptedException | InvocationTargetException exception ) {
 				exception.printStackTrace();
 				throw new RuntimeException( "Exception updating the window title.", exception );
 			}
@@ -262,7 +269,8 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
 	 * @param document The document initiating the title changed event.
 	 * @param documentTitle The new document title.
 	 */
-    final public void titleChanged( final XalInternalDocument document, final String documentTitle ) {
+        @Override
+    public final void titleChanged( final XalInternalDocument document, final String documentTitle ) {
 		generateWindowTitle();
     }
     
@@ -270,21 +278,24 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
     /** 
 	* Update the title on the title bar to reflect whether the document has changes that need saving.
 	* @param document The document initiating the event.
-	* @param newHasChangesStatus The new status identifying whethe the document has changes to be saved
+	* @param newHasChangesStatus The new status identifying whether the document has changes to be saved
 	* @see #titleChanged
 	*/
+        @Override
     public void hasChangesChanged( final XalInternalDocument document, final boolean newHasChangesStatus ) {
         titleChanged( document, document.getTitle() );
     }
     
     
     /** Handle the event indicating that the document will close by closing the window in response. */
+        @Override
     public void documentWillClose( final XalInternalDocument document ) {
         closeWindow();
     }
     
     
     /** Handle document closed event.  Does nothing. */
+        @Override
     public void documentHasClosed( final XalInternalDocument document ) {}
 	
 	
@@ -292,6 +303,7 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
 	 * Handle the document activated event.
 	 * @param document the document that has been activated.
 	 */
+        @Override
 	public void documentActivated( XalInternalDocument document ) {}
 	
 	
@@ -299,6 +311,7 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
 	 * Handle the document activated event.
 	 * @param document the document that has been activated.
 	 */
+        @Override
 	public void documentDeactivated( XalInternalDocument document ) {}
     
     
@@ -319,6 +332,7 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
 	 * @param message The message to display
 	 * @return YES_OPTION or NO_OPTION 
 	 */
+        @Override
 	public int displayConfirmDialog( final String title, final String message ) {
         Toolkit.getDefaultToolkit().beep();
         return JOptionPane.showInternalConfirmDialog( this, message, title, JOptionPane.YES_NO_OPTION );		
@@ -330,6 +344,7 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
      * @param aTitle Title of the warning dialog box.
      * @param message The warning message to appear in the warning dialog box.
      */
+        @Override
     public void displayWarning( final String aTitle, final String message ) {
         Toolkit.getDefaultToolkit().beep();
         JOptionPane.showInternalMessageDialog( this, message, aTitle, JOptionPane.WARNING_MESSAGE );
@@ -341,6 +356,7 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
      * has been thrown and provide an audible alert.
      * @param exception The exception whose description is being displayed.
      */
+        @Override
     public void displayWarning( final Exception exception ) {
         Toolkit.getDefaultToolkit().beep();
         JOptionPane.showInternalMessageDialog( this, exception.getMessage(), exception.getClass().getName(), JOptionPane.WARNING_MESSAGE );
@@ -352,9 +368,10 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
      * an audible alert.  This method allows
      * clarification about the consequences of the exception (e.g. "Save Failed:").
      * @param aTitle Title of the warning dialog box.
-     * @param prefix Text that should appear in the dialog box before the exception messasge.
+     * @param prefix Text that should appear in the dialog box before the exception message.
      * @param exception The exception about which the warning dialog is displayed.
      */
+        @Override
     public void displayWarning( final String aTitle, final String prefix, final Exception exception ) {
         Toolkit.getDefaultToolkit().beep();
         String message = prefix + "\n" + "Exception: " + exception.getClass().getName() + "\n" + exception.getMessage();
@@ -369,6 +386,7 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
      * @param aTitle Title of the warning dialog box.
      * @param message The warning message to appear in the warning dialog box.
      */
+        @Override
     public void displayError( final String aTitle, final String message ) {
         Toolkit.getDefaultToolkit().beep();
         JOptionPane.showInternalMessageDialog( this, message, aTitle, JOptionPane.ERROR_MESSAGE );
@@ -380,6 +398,7 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
      * provide an audible alert.
      * @param exception The exception about which the warning dialog is displayed.
      */
+        @Override
     public void displayError( final Exception exception ) {
         Toolkit.getDefaultToolkit().beep();
         String message = "Exception: " + exception.getClass().getName() + "\n" + exception.getMessage();
@@ -392,9 +411,10 @@ abstract public class XalInternalWindow extends JInternalFrame implements XalDoc
      * provide an audible alert.  This method allows
      * clarification about the consequences of the exception (e.g. "Save Failed:").
      * @param aTitle Title of the warning dialog box.
-     * @param prefix Text that should appear in the dialog box before the exception messasge.
+     * @param prefix Text that should appear in the dialog box before the exception message.
      * @param exception The exception about which the warning dialog is displayed.
      */
+        @Override
     public void displayError( final String aTitle, final String prefix, final Exception exception ) {
         Toolkit.getDefaultToolkit().beep();
         String message = prefix + "\n" + "Exception: " + exception.getClass().getName() + "\n" + exception.getMessage();

@@ -17,8 +17,8 @@ import xal.tools.beam.PhaseMatrix;
 
 /** Sextupole magnets element */
 public class IdealMagSextupole extends ThickElement {
-    /** type string identifier for all sextople elements */
-    public static final String s_strType = "IdealMagSextupole";
+    /** type string identifier for all sextupole elements */
+    public static final String TYPE = "IdealMagSextupole";
 	
 	
 	/** 
@@ -27,13 +27,13 @@ public class IdealMagSextupole extends ThickElement {
 	 * @param length magnetic length of the magnet
 	 */
     public IdealMagSextupole( final String strID, final double length ) {
-        super( s_strType, strID, length );
+        super( TYPE, strID, length );
     }
     
 	
     /** Constructor */
     public IdealMagSextupole() {
-        super( s_strType );
+        super( TYPE );
     }
     
     
@@ -43,6 +43,7 @@ public class IdealMagSextupole extends ThickElement {
 	 * @param length of the magnet
      * @return         the value zero 
      */
+    @Override
     public double elapsedTime( final IProbe probe, final double length )  {
         return super.compDriftingTime( probe, length );
     }
@@ -54,6 +55,7 @@ public class IdealMagSextupole extends ThickElement {
 	 * @param length of the magnet
      * @return         returns zero
      */
+    @Override
     public double energyGain( final IProbe probe, final double length ) { return 0.0;  }
 	
     
@@ -64,6 +66,7 @@ public class IdealMagSextupole extends ThickElement {
 	 * @return transfer map
 	 * @exception  PropagationException  this should not occur
 	 */
+    @Override
     public PhaseMap transferMap( final IProbe probe, final double length ) throws PropagationException { 
         // Build transfer matrix
         PhaseMatrix  matPhi  = new PhaseMatrix();

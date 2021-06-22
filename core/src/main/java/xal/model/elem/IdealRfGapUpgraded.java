@@ -107,7 +107,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
     /**
      *  the string type identifier for all IdealRfGapUpgraded objects
      */
-    public final static String s_strType = "IdealRfGapUpgraded"; //$NON-NLS-1$
+    public static final String TYPE = "IdealRfGapUpgraded"; //$NON-NLS-1$
 
 
     //
@@ -117,17 +117,17 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
     /**
      *  Parameters for XAL MODEL LATTICE dtd
      */
-    public final static String s_strParamETL = "ETL"; //$NON-NLS-1$
+    public static final String PARAM_ETL = "ETL"; //$NON-NLS-1$
 
     /**
      *  Description of the Field
      */
-    public final static String s_strParamPhase = "Phase"; //$NON-NLS-1$
+    public static final String PARAM_PHASE = "Phase"; //$NON-NLS-1$
 
     /**
      *  Description of the Field
      */
-    public final static String s_strParamFreq = "Frequency"; //$NON-NLS-1$
+    public static final String PARAM_FREQ = "Frequency"; //$NON-NLS-1$
 
 
     //
@@ -135,7 +135,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
     //
 
     /** The number 2&pi; */
-    public final static double  DBL_2PI = 2.0*Math.PI;
+    public static final double  DBL_2PI = 2.0*Math.PI;
 
 
     /** Error tolerance in the iterative search for phase change through RF gap */
@@ -313,12 +313,12 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
     /**
      *  ETL product of gap
      */
-    private double m_dblETL = 0.0;
+    private double dblETL = 0.0;
 
     /**
      *  phase delay of gap w.r.t. the synchronous particle
      */
-    private double m_dblPhase = 0.0;
+    private double dblPhase = 0.0;
 
     /**
      *  the on axis accelerating field (V)
@@ -328,7 +328,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
     /**
      *  operating frequency of the gap
      */
-    private double m_dblFreq = 0.0;
+    private double dblFreq = 0.0;
 
 
     //
@@ -429,7 +429,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      *@param  dblFreq   operating RF frequency of gap (in <b>Hertz</b> )
      */
     public IdealRfGapUpgraded(String strId, double dblETL, double dblPhase, double dblFreq) {
-        super(s_strType, strId);
+        super(TYPE, strId);
 
         this.setETL(dblETL);
         this.setPhase(dblPhase);
@@ -441,7 +441,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      *  BE CAREFUL</b>
      */
     public IdealRfGapUpgraded() {
-        super(s_strType);
+        super(TYPE);
     }
 
 
@@ -512,7 +512,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
     public double   wavelengthRF()  {
 
         // Compute the RF wavelength
-        double c      = IElement.LightSpeed;
+        double c      = IElement.LIGHT_SPEED;
         double f      = getFrequency();
         double lambda = c/f;
 
@@ -631,7 +631,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         double W_mid   = varMidGap.W;
         double phi_mid = varMidGap.phi;
 
-        double c = IElement.LightSpeed;
+        double c = IElement.LIGHT_SPEED;
 
         double Q  = Math.abs(probe.getSpeciesCharge());
         double Er = probe.getSpeciesRestEnergy();
@@ -700,7 +700,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      */
     @Override
     public double getETL() {
-        return m_dblETL;
+        return dblETL;
     }
 
     /**
@@ -711,7 +711,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      */
     @Override
     public double getPhase() {
-        return m_dblPhase;
+        return dblPhase;
     }
 
     /**
@@ -721,7 +721,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      */
     @Override
     public double getFrequency() {
-        return m_dblFreq;
+        return dblFreq;
     }
 
     /**
@@ -736,7 +736,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      */
     @Override
     public void setETL(double dblETL) {
-        m_dblETL = dblETL;
+        this.dblETL = dblETL;
     }
 
     /**
@@ -749,7 +749,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      */
     @Override
     public void setPhase(double dblPhase) {
-        m_dblPhase = dblPhase;
+        this.dblPhase = dblPhase;
     }
 
     /**
@@ -759,7 +759,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      */
     @Override
     public void setFrequency(double dblFreq) {
-        m_dblFreq = dblFreq;
+        this.dblFreq = dblFreq;
     }
 
     /**
@@ -870,6 +870,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      * @author Christopher K. Allen
      * @since  Nov 20, 2014
      */
+    @Override
     public double getCavityModeConstant() {
         return this.dblCavModeConst;
     }
@@ -1119,7 +1120,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
     /**
      * Conversion method to be provided by the user
      *
-     * @param latticeElement the SMF node to convert
+     * @param element the SMF node to convert
      */
     @Override
     public void initializeFrom(LatticeElement element) {
@@ -1151,22 +1152,22 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      */
     @Override
     public String toString() {
-        StringBuffer    bufOut = new StringBuffer();
+        StringBuilder    bufOut = new StringBuilder();
 
         bufOut.append(super.toString());
 
-        bufOut.append("  Gap ETL product    : " + this.getETL()); //$NON-NLS-1$
+        bufOut.append("  Gap ETL product    : ").append(this.getETL()); //$NON-NLS-1$
         bufOut.append('\n');
-        bufOut.append("  Gap phase shift    : " + this.getPhase()); //$NON-NLS-1$
-        bufOut.append('\n');
-
-        bufOut.append("  RF frequency       : " + this.getFrequency()); //$NON-NLS-1$
+        bufOut.append("  Gap phase shift    : ").append(this.getPhase()); //$NON-NLS-1$
         bufOut.append('\n');
 
-        bufOut.append("  Axial field dblFieldE0     : " + this.getE0() );
+        bufOut.append("  RF frequency       : ").append(this.getFrequency()); //$NON-NLS-1$
         bufOut.append('\n');
 
-        bufOut.append("  Gap offset         : " + this.getGapOffset() );
+        bufOut.append("  Axial field dblFieldE0     : ").append(this.getE0());
+        bufOut.append('\n');
+
+        bufOut.append("  Gap offset         : ").append(this.getGapOffset());
         bufOut.append('\n');
 
         return bufOut.toString();
@@ -1480,7 +1481,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      * where &phi;<sub>0</sub> is the probe phase at the gap entrance and
      * <i>W</i><sub>0</sub> is the probe energy at the gap entrance;
      *
-     * @param probe     probe progating through the gap
+     * @param probe     probe propagating through the gap
      *
      * @return          mid-gap longitudinal phase coordinates (&phi;<sub>mid</sub>,<i>W</i><sub>mid</sub>)
      *
@@ -1662,7 +1663,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
 
     // TODO Remove this after debugging
     private boolean bolMethodCalled = true;
-    private int CNT_CALLS = 0;
+    private int cntCalls = 0;
     /**
      * <p>
      * Computes and returns the longitudinal phase change &delta;&phi; energy
@@ -1784,11 +1785,11 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         double d_phi = -(qAEL/Er)*r_mid*b_mid*( d_T*Math.sin(phi) - d_S*Math.cos(phi) );
 
         // TODO Remove this
-        double k_mid = DBL_2PI /(b_mid*IElement.LightSpeed/this.getFrequency());
+        double k_mid = DBL_2PI /(b_mid*IElement.LIGHT_SPEED/this.getFrequency());
 
         // TODO Remove type out
         if (!this.bolMethodCalled) {
-            double ki = DBL_2PI /(bi*IElement.LightSpeed/this.getFrequency());
+            double ki = DBL_2PI /(bi*IElement.LIGHT_SPEED/this.getFrequency());
             double db = 0.01*bi;
 //            double dT = (this.fitTTF.evaluateAt(bi + db) - ttf)/db;
 //            double dS = (this.fitSTF.evaluateAt(bi + db) - stf)/db;
@@ -1846,7 +1847,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         // TODO Remove type out
         if (!this.bolMethodCalled) {
             double  bf = RelativisticParameterConverter.computeBetaFromEnergies(Wi + dW, Er);
-            double  kf = DBL_2PI /(bf*IElement.LightSpeed/this.getFrequency());
+            double  kf = DBL_2PI /(bf*IElement.LIGHT_SPEED/this.getFrequency());
             System.out.println("    kf=" + kf);
             System.out.println("    Tcos(phi)-Ssin(phi)=" + (T*Math.cos(phi)-S*Math.sin(phi)) + ", dphi=" + d_phi + ", dW=" + dW + ", W=" + Wi+dW);
             System.out.println();
@@ -1995,7 +1996,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
          */
         private double   compDriftingPhaseAdvance(double beta, double len) {
 
-            double c = IElement.LightSpeed;       // speed of light
+            double c = IElement.LIGHT_SPEED;       // speed of light
             double f = this.getFrequency();
 
             //the correction for the gap offset needed
@@ -2387,7 +2388,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
          * @since  Feb 16, 2015   by Christopher K. Allen
          */
         private double waveNumber(double beta) {
-            double lambda = LightSpeed/this.getFrequency();
+            double lambda = LIGHT_SPEED/this.getFrequency();
             double k      = DBL_2PI/(beta*lambda);
 
             return k;
@@ -2519,11 +2520,11 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
             double d_phi = -(qAEL/Er)*r_mid*b_mid*( d_T*Math.sin(phi) - d_S*Math.cos(phi) );
 
             // TODO Remove this
-            double k_mid = DBL_2PI /(b_mid*IElement.LightSpeed/this.getFrequency());
+            double k_mid = DBL_2PI /(b_mid*IElement.LIGHT_SPEED/this.getFrequency());
 
             // TODO Remove type out
             if (!this.bolMethodCalled) {
-                double ki = DBL_2PI /(bi*IElement.LightSpeed/this.getFrequency());
+                double ki = DBL_2PI /(bi*IElement.LIGHT_SPEED/this.getFrequency());
                 double db = 0.01*bi;
 //                double dT = (this.fitTTF.evaluateAt(bi + db) - ttf)/db;
 //                double dS = (this.fitSTF.evaluateAt(bi + db) - stf)/db;
@@ -2581,7 +2582,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
             // TODO Remove type out
             if (!this.bolMethodCalled) {
                 double  bf = RelativisticParameterConverter.computeBetaFromEnergies(Wi + dW, Er);
-                double  kf = DBL_2PI /(bf*IElement.LightSpeed/this.getFrequency());
+                double  kf = DBL_2PI /(bf*IElement.LIGHT_SPEED/this.getFrequency());
                 System.out.println("    kf=" + kf);
                 System.out.println("    Tcos(phi)-Ssin(phi)=" + (ttf*Math.cos(phi)-stf*Math.sin(phi)) + ", dphi=" + d_phi + ", dW=" + dW + ", W=" + Wi+dW);
                 System.out.println();

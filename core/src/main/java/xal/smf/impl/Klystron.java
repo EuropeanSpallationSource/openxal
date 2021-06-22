@@ -24,7 +24,7 @@ public class Klystron implements DataListener {
 	protected Accelerator accelerator;
     protected ChannelSuite channelSuite;
     protected String strId;
-    public static final String      s_strType = "KLYS";
+    public static final String      TYPE = "KLYS";
 
     private Channel klysAmpSetC = null;
     private Channel klysPhaseSetC = null;
@@ -47,8 +47,9 @@ public class Klystron implements DataListener {
 
     
 //    @Override
+        @Override
 	public String dataLabel() {
-		return "KLYS";
+		return TYPE;
 	}
 
     /**
@@ -150,7 +151,7 @@ public class Klystron implements DataListener {
      * @return klystron type
      */
     public String getType() {
-    	return s_strType;
+    	return TYPE;
     }
     
     public boolean getStatus() {

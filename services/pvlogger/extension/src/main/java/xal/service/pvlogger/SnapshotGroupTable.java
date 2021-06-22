@@ -41,7 +41,7 @@ class SnapshotGroupTable {
 	protected final String SERVICE_COLUMN;
 	
 	/** proxy to the table of channel - channel group relationships */
-	protected SnapshotGroupChannelTable SNAPSHOT_GROUP_CHANNEL_TABLE;
+	protected SnapshotGroupChannelTable snapshotGroupChannelTable;
 	
 	
 	/** Constructor */
@@ -52,7 +52,7 @@ class SnapshotGroupTable {
 	
 	/** Constructor */
 	public SnapshotGroupTable( final DBTableConfiguration configuration, final SnapshotGroupChannelTable groupChannelTable ) {
-		SNAPSHOT_GROUP_CHANNEL_TABLE = groupChannelTable;
+		snapshotGroupChannelTable = groupChannelTable;
 		
 		TABLE_NAME = configuration.getTableName();
 		
@@ -67,7 +67,7 @@ class SnapshotGroupTable {
 	
 	/** fetch all channel groups */
 	public List<ChannelGroup> fetchChannelGroups( final Connection connection ) throws SQLException {
-		final ArrayList<ChannelGroup> groups = new ArrayList<ChannelGroup>();
+		final ArrayList<ChannelGroup> groups = new ArrayList<>();
 		final PreparedStatement groupsQueryStatement = getGroupsQueryStatement( connection );
 		final ResultSet resultSet = groupsQueryStatement.executeQuery();
 		while ( resultSet.next() ) {
@@ -108,7 +108,7 @@ class SnapshotGroupTable {
 		final double retention = resultSet.getDouble( RETENTION_COLUMN );
 		final String serviceID = resultSet.getString( SERVICE_COLUMN );
 		
-		final String[] pvArray = SNAPSHOT_GROUP_CHANNEL_TABLE.fetchActivePVsByType( connection, groupID );
+		final String[] pvArray = snapshotGroupChannelTable.fetchActivePVsByType( connection, groupID );
 		
 		return new ChannelGroup( groupID, serviceID, description, pvArray, loggingPeriod, retention );			
 	}
@@ -120,7 +120,7 @@ class SnapshotGroupTable {
 	 * @return array of types corresponding to all of the channel groups
 	 */
 	public String[] fetchTypes( final Connection connection )  throws SQLException {
-		final List<String> types = new ArrayList<String>();
+		final List<String> types = new ArrayList<>();
 		final ResultSet result = getGroupsQueryStatement( connection ).executeQuery();
 		while ( result.next() ) {
 			types.add( result.getString( PRIMARY_KEY ) );

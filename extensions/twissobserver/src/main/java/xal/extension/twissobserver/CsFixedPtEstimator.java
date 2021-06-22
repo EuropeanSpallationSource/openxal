@@ -23,7 +23,7 @@ import java.util.Map;
 
 /**
  * <p>
- * Computes the twiss parameters from wire scanner data.  
+ * Computes the Twiss parameters from wire scanner data.  
  * </p>
  * <p>
  * Computes the covariance matrix <b>&sigma;</b> of second moments at the given device location 
@@ -38,18 +38,12 @@ import java.util.Map;
  * for the construction of one of these objects.  This is done because of
  * the variety of options that exist when creating the transfer matrix
  * generator.  It is safer to require pre-construction of the matrix
- * generator rather than offer all the opions for such generation here.
+ * generator rather than offer all the options for such generation here.
  * </p>
  * <h3>NOTES:</h3>
  * <p>
  * &middot; Bunch charge <i>Q</i> is given by beam current <i>I</i> divided by
  *          machine frequency <i>f</i>.  Specifically, <i>Q</i> = <i>I</i>/<i>f</i>.
- * <br>
- * &middot; A <code>{@link TransferMatrixGenerator}</code> object must be supplied
- * for the construction of one of these objects.  This is done because of
- * the variety of options that exist when creating the transfer matrix
- * generator.  It is safer to require pre-construction of the matrix
- * generator rather than offer all the opions for such generation here.
  * </p>
  * 
  * @author Eric Dai
@@ -166,6 +160,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
          * @author Christopher K. Allen
          * @since  Oct 22, 2014
          */
+        @Override
         public void run() {
             this.lsnUpdate.iterationUpdate(this.cntIter, this.dblError, this.dblAlpha);
         }
@@ -203,7 +198,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
         public MomentVectorBuffer() {
             for ( PHASEPLANE plane : PHASEPLANE.values() ) {
                 int                     cntSize = plane.getCovariantBasisSize();
-                LinearBuffer<GenericMatrix>  bufVec  = new LinearBuffer<GenericMatrix>(cntSize);
+                LinearBuffer<GenericMatrix>  bufVec  = new LinearBuffer<>(cntSize);
                 
                 this.put(plane, bufVec);
             }
@@ -504,7 +499,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
      *
      * @param strRecDevId   ID of the device where the reconstruction is to be performed
      * @param dblBnchFreq   bunch arrival frequency (in Hz)
-     * @param dblBmCurr     beam current (in Hz)
+     * @param dblBmCurr     beam current (in A)
      * @param arrData       the profile measurement data used for the reconstruction
      *  
      * @return  block diagonal covariance matrix (uncoupled in the phase planes) containing the second-order
@@ -516,6 +511,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
      * @author Christopher K. Allen
      * @since  Aug 30, 2012
      */
+    @Override
     public CovarianceMatrix computeReconstruction(String strRecDevId, double dblBnchFreq, double dblBmCurr, ArrayList<Measurement> arrData)
         throws ModelException, ConvergenceException
     {
@@ -650,7 +646,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
         this.genTransMat.generateWithSpaceCharge(null, dblBnchFreq, dblBmCurr, matSig0);
 
         // Recurse through all the phase planes computing the new value of the recursion function
-        Map<PHASEPLANE, GenericMatrix> mapFcurr = new HashMap<PHASEPLANE, GenericMatrix>();
+        Map<PHASEPLANE, GenericMatrix> mapFcurr = new HashMap<>();
         
         for ( PHASEPLANE plane : PHASEPLANE.values() ) {
 
@@ -668,9 +664,9 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
         
         // Construct the new covariance matrix computed from the data and the observation matrix
         //  Algorithm for generating new covariance matrix from old
-        double              dblAlpha = this.computeAlpha();
+        double              alpha = this.computeAlpha();
         
-        PhaseMatrix         matSig1 = covF1.times(dblAlpha).plus( matSig0.times( 1.0 - dblAlpha ) ); 
+        PhaseMatrix         matSig1 = covF1.times(alpha).plus( matSig0.times( 1.0 - alpha ) ); 
         CovarianceMatrix    covSig1 = new CovarianceMatrix( matSig1 );
 
         //  Recurse through all the phase planes computing the change in the recursion function from
@@ -692,7 +688,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
         }
         
         // Record the current solution iterates
-        this.dblCurrAlpha  = dblAlpha;
+        this.dblCurrAlpha  = alpha;
         super.matCurrF     = covF1;
         super.matCurrSigma = covSig1;
         
@@ -710,7 +706,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
      * @since  Apr 12, 2013
      */
     private double  computeAlpha() {
-        double      dblAlpha = this.dblAlpha;
+        double      alpha = this.dblAlpha;
         
         for (PHASEPLANE plane : PHASEPLANE.values()) {
             
@@ -743,11 +739,11 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
             
             double  dblAlphaNew = dblNumer/(dblDenom);
             
-            if (dblAlphaNew > dblAlpha)
-                dblAlpha = dblAlphaNew;
+            if (dblAlphaNew > alpha)
+                alpha = dblAlphaNew;
         }
         
-        return dblAlpha;
+        return alpha;
     }
     
     /**

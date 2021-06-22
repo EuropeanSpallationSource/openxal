@@ -52,7 +52,7 @@ class SnapshotGroupChannelTable {
 		final PreparedStatement queryStatement = getGroupChannelQueryByGroupStatement( connection );
 		queryStatement.setString( 1, type );
 		
-		final List<String> pvs = new ArrayList<String>();
+		final List<String> pvs = new ArrayList<>();
 		final ResultSet resultSet = queryStatement.executeQuery();
 		while ( resultSet.next() ) {
 			pvs.add( resultSet.getString( CHANNEL_COLUMN ) );
@@ -72,7 +72,7 @@ class SnapshotGroupChannelTable {
 		final PreparedStatement queryStatement = getActiveGroupChannelQueryByGroupStatement( connection );
 		queryStatement.setString( 1, type );
 
-		final List<String> pvs = new ArrayList<String>();
+		final List<String> pvs = new ArrayList<>();
 		final ResultSet resultSet = queryStatement.executeQuery();
 		while ( resultSet.next() ) {
 			pvs.add( resultSet.getString( CHANNEL_COLUMN ) );

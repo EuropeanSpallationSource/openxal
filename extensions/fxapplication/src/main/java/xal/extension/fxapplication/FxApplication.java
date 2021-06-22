@@ -94,7 +94,7 @@ abstract public class FxApplication extends Application {
 
     protected XalFxDocument DOCUMENT;
 
-    final private Date LAUNCH_TIME;
+    private final Date LAUNCH_TIME;
 
     // Set to false if this application doesn't save/load xml files
     protected boolean HAS_DOCUMENTS = true;
@@ -128,10 +128,10 @@ abstract public class FxApplication extends Application {
     }
 
     private void setStage(Stage stage) {
-        this.stage = stage;
+        FxApplication.stage = stage;
     }
 
-    static public Stage getStage() {
+    public static Stage getStage() {
         return stage;
     }
 
@@ -389,7 +389,7 @@ abstract public class FxApplication extends Application {
             DOCUMENT.sourceString.addListener((observable, oldValue, newValue) -> stage.setTitle(STAGE_TITLE + ": " + newValue));
 
             loader.<Controller>getController().setApplication(this);
-        } catch (Exception e) {
+        } catch (IOException e) {
             Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error loading the scene.", e);
             throw (e);
         }
@@ -447,11 +447,11 @@ abstract public class FxApplication extends Application {
      * Register the application status service so clients on the network can
      * query the status of this application instance.
      */
-    final protected void registerApplicationStatusService() {
+    protected final void registerApplicationStatusService() {
         // check to see if the startup flag has disabled application services
         Boolean shouldRegister = Boolean.valueOf(System.getProperty("registerApplicationService", "true"));
 
-        if (shouldRegister.booleanValue()) {
+        if (shouldRegister) {
             try {
                 ServiceDirectory.defaultDirectory().registerService(ApplicationStatus.class, STAGE_TITLE, new FxApplicationStatusService(this));
                 Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Registered application services...");
@@ -800,7 +800,7 @@ abstract public class FxApplication extends Application {
             dialog.getDialogPane().setContent(grid);
 
             dialog.showAndWait();
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             ex.printStackTrace();
         }
     }

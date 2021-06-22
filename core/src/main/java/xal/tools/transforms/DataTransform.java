@@ -11,7 +11,7 @@ package xal.tools.transforms;
  * While ValueTransform provides the recognized means for transforming between 
  * raw and physical values it requires a transformation of ArrayValue which is 
  * a general wrapper for value types including primitives and arrays of primitives.
- * Often this is invconvenient to code.  It is often much more convenient to code 
+ * Often this is inconvenient to code.  It is often much more convenient to code 
  * with a particular primitive value type (e.g. double)  and hence implement 
  * a more specific transform (e.g. DoubleTransform).  DataTransform facilitates 
  * the conversion from the specific transform to the more general ValueTransform.
@@ -22,9 +22,10 @@ package xal.tools.transforms;
  */
 public interface DataTransform {
     /** No Operation Transform suitable as a default transform */
-    final static public DataTransform noOperationTransform = new DataTransform() {
+    public static final DataTransform NO_OPERATION_TRANSFORM = new DataTransform() {
+        @Override
         public ValueTransform valueTransform() {
-            return ValueTransform.noOperationTransform;
+            return ValueTransform.NO_OPERATION_TRANSFORM;
         }
     };
     

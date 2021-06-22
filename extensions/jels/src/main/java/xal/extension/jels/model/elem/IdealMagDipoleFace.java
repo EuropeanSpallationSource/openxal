@@ -43,22 +43,22 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
     /**
      * the string type identifier for all IdealMagSteeringDipole's
      */
-    public static final String s_strType = "IdealMagDipoleFace";
+    public static final String TYPE = "IdealMagDipoleFace";
 
     /**
      * Tags for parameters in the XML configuration file
      */
-    public static final String s_strParamLenEff = "EffLength";
+    public static final String PARAM_LEN_EFF = "EffLength";
 
     /**
      * Tags for parameters in the XML configuration file
      */
-    public static final String s_strParamOrient = "Orientation";
+    public static final String PARAM_ORIENT = "Orientation";
 
     /**
      * Tags for parameters in the XML configuration file
      */
-    public static final String s_strParamField = "MagField";
+    public static final String PARAM_FIELD = "MagField";
 
     /*
      *  Local Attributes
@@ -111,7 +111,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * generation. Thus, all element properties are set following construction.
      */
     public IdealMagDipoleFace() {
-        super(s_strType);
+        super(TYPE);
     }
 
     /**
@@ -120,7 +120,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * @param strId string identifier for element
      */
     public IdealMagDipoleFace(String strId) {
-        super(s_strType, strId);
+        super(TYPE, strId);
     }
 
     /**

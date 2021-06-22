@@ -138,10 +138,10 @@ public abstract class Tracker implements IAlgorithm, IArchive {
     // Archiving
      
      /** data node label for algorithm data */
-     public final static String      NODETAG_ALG = "algorithm";
+     public static final String      NODETAG_ALG = "algorithm";
      
      /** attribute label for type string identifier */
-     public final static String      ATTRTAG_TYPE = "type";
+     public static final String      ATTRTAG_TYPE = "type";
      
      /** attribute tag for the algorithm version number */
      public static final String      ATTRTAG_VER = "ver";
@@ -166,7 +166,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
     public static final String     TBL_LBL_ALGORITHM = "Algorithm";
       
     /** Table record primary key name */
-    public final static String      TBL_PRIM_KEY_NAME = "name";
+    public static final String      TBL_PRIM_KEY_NAME = "name";
     
     
     
@@ -334,20 +334,20 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      */
 
     /** string type identifier of this algorithm */
-    private String              m_strType;
+    private String              strType;
     
     /** version of this algorithm */
-    private int                 m_intVersion;
+    private int                 version;
     
     /** 
      * List of all probe classes recognized by this algorithm 
      */
-    private List<Class<? extends IProbe>>   m_lstProbes;
+    private List<Class<? extends IProbe>>   lstProbes;
 
     /** 
      * flag to track the beam phase in multi gap cavities 
      */
-    private boolean            m_bolCalcRfGapPhase = false;
+    private boolean            bolCalcRfGapPhase = false;
 
     /*
      * Tracker Settings
@@ -356,22 +356,22 @@ public abstract class Tracker implements IAlgorithm, IArchive {
     /**
      * The frequency of storing probe states
      */
-    private int         m_enmUpdatePolicy = Tracker.UPDATE_ALWAYS;
+    private int         enmUpdatePolicy = Tracker.UPDATE_ALWAYS;
     
     /**
      * Debugging output flag
      */
-    private boolean     m_bolDebug = false;
+    private boolean     bolDebug = false;
     
     /** 
      * id of element from which to start propagation 
      */
-    private String      m_strElemStart = null;
+    private String      strElemStart = null;
     
     /** 
      * id of element at which to stop propagation 
      */
-    private String      m_strElemStop = null;
+    private String      strElemStop = null;
     
     /**
      * Flag indicating that propagation should stop at the entrance of
@@ -382,12 +382,12 @@ public abstract class Tracker implements IAlgorithm, IArchive {
     /** 
      * have we started propagating 
      */
-    private boolean     m_bolIsStarted = true;
+    private boolean     bolIsStarted = true;
     
     /**
      * has stop element already been encountered in propagation?
      */
-    private boolean     m_bolIsStopped = false;
+    private boolean     bolIsStopped = false;
     
     
 
@@ -398,7 +398,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
     /** 
      * The tracking position of the within the current element    
      */
-    private double      m_dblPosElem = 0.0;
+    private double      dblPosElem = 0.0;
     
     /**
      * Class type of the current probe.
@@ -426,11 +426,11 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      *  @param      clsProbeType    class object for probe handled by this algorithm.
      */
     protected Tracker(String strType, int intVersion, Class<? extends IProbe> clsProbeType) {
-        this.m_strType = strType;
-        this.m_intVersion = intVersion;
-        this.m_lstProbes = new ArrayList<Class<? extends IProbe>>();
+        this.strType = strType;
+        this.version = intVersion;
+        this.lstProbes = new ArrayList<Class<? extends IProbe>>();
         this.probeType = clsProbeType;
-        this.m_bolDebug = false;
+        this.bolDebug = false;
         
         this.registerProbeType(clsProbeType);
     };
@@ -441,16 +441,16 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * @param       sourceTracker   Tracker that is being copied
      */
     protected Tracker(Tracker sourceTracker) {
-        this(sourceTracker.m_strType, sourceTracker.m_intVersion, sourceTracker.probeType);
+        this(sourceTracker.strType, sourceTracker.version, sourceTracker.probeType);
         
-        this.m_bolCalcRfGapPhase = sourceTracker.m_bolCalcRfGapPhase;
-        this.m_enmUpdatePolicy = sourceTracker.m_enmUpdatePolicy;
-        this.m_bolDebug = sourceTracker.m_bolDebug;
-        this.m_strElemStart = sourceTracker.m_strElemStart;
-        this.m_strElemStop = sourceTracker.m_strElemStop;
-        this.m_bolIsStopped = sourceTracker.m_bolIsStopped;
-        this.m_bolIsStarted = sourceTracker.m_bolIsStarted;
-        this.m_dblPosElem = sourceTracker.m_dblPosElem;
+        this.bolCalcRfGapPhase = sourceTracker.bolCalcRfGapPhase;
+        this.enmUpdatePolicy = sourceTracker.enmUpdatePolicy;
+        this.bolDebug = sourceTracker.bolDebug;
+        this.strElemStart = sourceTracker.strElemStart;
+        this.strElemStop = sourceTracker.strElemStop;
+        this.bolIsStopped = sourceTracker.bolIsStopped;
+        this.bolIsStarted = sourceTracker.bolIsStarted;
+        this.dblPosElem = sourceTracker.dblPosElem;
     }
     
     /**
@@ -468,7 +468,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * @param enmPolicy  probe update policy enumeration code
      */
     public void setProbeUpdatePolicy(int enmPolicy) {
-        this.m_enmUpdatePolicy = enmPolicy;
+        this.enmUpdatePolicy = enmPolicy;
     }
     
     /**
@@ -477,7 +477,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * @param bolDebug
      */
     public void setDebugMode(boolean bolDebug)  {
-        this.m_bolDebug = bolDebug;
+        this.bolDebug = bolDebug;
     }
     
     
@@ -495,7 +495,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * @return  enumeration code for the update policy
      */ 
     public int  getProbeUpdatePolicy()  {
-        return this.m_enmUpdatePolicy;
+        return this.enmUpdatePolicy;
     }
     
     /**
@@ -504,7 +504,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * @return  <code>true</code> if in debug mode
      */
     public boolean getDebugMode()   {
-        return this.m_bolDebug;
+        return this.bolDebug;
     }
     
     /**
@@ -575,7 +575,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * 
      * @return <code>true</code> if phase calculations are made, <code>false</code> otherwise
      */  
-    public boolean getRfGapPhaseCalculation() { return m_bolCalcRfGapPhase;}
+    public boolean getRfGapPhaseCalculation() { return bolCalcRfGapPhase;}
 
 
     /**
@@ -584,7 +584,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      *  @return     name of the integration algorithm
      */
     @Override
-    public String getType() { return m_strType; };
+    public String getType() { return strType; }
     
     /** 
      *  Returns the version number of this algorithm
@@ -592,7 +592,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      *  @return     version number of the integration algorithm 
      */
     @Override
-    public int getVersion() { return m_intVersion; };
+    public int getVersion() { return version; }
     
     /**  
      *  Check if probe can be handled by this algorithm.
@@ -601,7 +601,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      *  @return             true if algorithm supports the probe type
      */
     public boolean validProbe(IProbe ifcProbe)  {
-        return m_lstProbes.contains( ifcProbe.getClass() );
+        return lstProbes.contains( ifcProbe.getClass() );
     }
     
     /**
@@ -611,7 +611,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      */
     @Override
     public String getStartElementId() {
-        return m_strElemStart;
+        return strElemStart;
     }
 
     /**
@@ -621,7 +621,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      */
     @Override
     public String getStopElementId() {
-        return m_strElemStop;
+        return strElemStop;
     }
 
     
@@ -632,7 +632,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * @param   tf  flag for turning on/off the phase calculations
      */
     @Override
-    public void setRfGapPhaseCalculation(boolean tf) { m_bolCalcRfGapPhase=tf;}
+    public void setRfGapPhaseCalculation(boolean tf) { bolCalcRfGapPhase=tf;}
 
     /**
      * Sets the element from which to start propagation.
@@ -641,15 +641,15 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      */
     @Override
     public void setStartElementId(String id) {
-        this.m_strElemStart = id;
+        this.strElemStart = id;
         
         if (id == null) {
-            this.m_bolIsStarted = true;
-            this.m_bolIsStopped = false;
+            this.bolIsStarted = true;
+            this.bolIsStopped = false;
 
         } else  {
-            this.m_bolIsStarted = false;
-            this.m_bolIsStopped = false;
+            this.bolIsStarted = false;
+            this.bolIsStopped = false;
         }
     }
 
@@ -660,8 +660,8 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      */
     @Override
     public void setStopElementId(String id) {
-        this.m_strElemStop = id;
-        this.m_bolIsStopped = false;
+        this.strElemStop = id;
+        this.bolIsStopped = false;
     }
     
     /**
@@ -704,13 +704,13 @@ public abstract class Tracker implements IAlgorithm, IArchive {
     @Override
     public void initialize()    {
         if (this.getStartElementId() == null)   {
-            this.m_bolIsStarted = false;
+            this.bolIsStarted = false;
             
         }   else {
-            this.m_bolIsStarted = true;
+            this.bolIsStarted = true;
         }
 
-        this.m_bolIsStopped = false;
+        this.bolIsStopped = false;
     }
 
     /**
@@ -755,7 +755,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
         
         if ((this.getProbeUpdatePolicy() & Tracker.UPDATE_EXIT) == Tracker.UPDATE_EXIT)
             probe.update();
-    };
+    }
 
     
 
@@ -835,7 +835,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
             this.setDebugMode( daTracker.booleanValue(ATTRTAG_DEBUG) );
  
         if (daTracker.hasAttribute(ATTRTAG_RFGAP_PHASE))
-            m_bolCalcRfGapPhase = daTracker.booleanValue(ATTRTAG_RFGAP_PHASE);
+            bolCalcRfGapPhase = daTracker.booleanValue(ATTRTAG_RFGAP_PHASE);
     }
 
     /**
@@ -916,7 +916,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
         // Update probe trajectory
         if (this.getProbeUpdatePolicy() == Tracker.UPDATE_ALWAYS)
             probe.update();
-    };
+    }
     
     /** 
      * <p>Override of xal.model.alg.Tracker#advanceProbe(xal.model.IProbe, xal.model.IElement, double)</p>
@@ -1000,17 +1000,17 @@ public abstract class Tracker implements IAlgorithm, IArchive {
     protected boolean validElement(IElement elem) {
 
         // Check if we're already stopped
-        if (this.m_bolIsStopped) {  
+        if (this.bolIsStopped) {  
             return false;
         }
 
         // Check if there is a starting element defined and 
-        if (!this.m_bolIsStarted) {                     // we haven't started propagating yet         
+        if (!this.bolIsStarted) {                     // we haven't started propagating yet         
                
             if (this.getStartElementId().equals(elem.getId()) 
             		|| this.getStartElementId().equals("BEGIN_"+elem.getParent().getId())) {  // IL: backward compatibility with BEGIN_section markers  
             	// reached the starting element
-                this.m_bolIsStarted = true;                
+                this.bolIsStarted = true;                
                 
             } else {                // we haven't started and we haven't reached the start element
                 return false;
@@ -1022,7 +1022,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
         // Check if this is the last element to propagate (still propagate, but set flag) 
         if (this.getStopElementId() != null )
             if (this.getStopElementId().equals(elem.getId())) {
-                this.m_bolIsStopped = true;
+                this.bolIsStopped = true;
                 
                 if(this.isStopElementIncluded() == false)
                     return false;
@@ -1050,7 +1050,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      *  @param  clsProbeType    class object of probe which this algorithm can propagate
      */
     protected void  registerProbeType(Class<? extends IProbe> clsProbeType)   {
-        m_lstProbes.add(clsProbeType);
+        lstProbes.add(clsProbeType);
     }
     
     
@@ -1061,7 +1061,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
       * @return     the current element position in <b>meters</b>
       */
     protected double getElemPosition() {
-        return m_dblPosElem;
+        return dblPosElem;
     }
     
     /**
@@ -1071,7 +1071,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * @param dblPosElem    current element position in <b>meters</b>
      */
     public void setElemPosition(double dblPosElem) {
-        this.m_dblPosElem = dblPosElem;
+        this.dblPosElem = dblPosElem;
     }
 
 }

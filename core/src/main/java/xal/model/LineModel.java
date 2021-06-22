@@ -25,7 +25,7 @@ public class LineModel extends ElementSeq {
      */
     
     /** I believe this is set of allowable characters for device IDs */
-    private static final Pattern validElementPattern = Pattern.compile("^[a-zA-Z:_].*$");
+    private static final Pattern VALID_ELEMENT_PATTERN = Pattern.compile("^[a-zA-Z:_].*$");
 
 
     /*
@@ -35,7 +35,7 @@ public class LineModel extends ElementSeq {
     /**
      * I believe Sako-san wrote this to check for "valid" elements
      * by looking at their string identifiers
-     * (see <code>{@link #validElementPattern}</code>).  I'm not 
+     * (see <code>{@link #VALID_ELEMENT_PATTERN}</code>).  I'm not 
      * sure what valid is, however.
      *
      * @param elem0     modeling element string identifier ?
@@ -48,7 +48,7 @@ public class LineModel extends ElementSeq {
      * @since  Unknown
      */
     private static boolean isValidElement(String elem0) {
-        return elem0 != null && validElementPattern.matcher(elem0).matches();
+        return elem0 != null && VALID_ELEMENT_PATTERN.matcher(elem0).matches();
     }
 
     

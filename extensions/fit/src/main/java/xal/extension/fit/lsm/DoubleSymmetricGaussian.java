@@ -5,6 +5,8 @@
  */
 package xal.extension.fit.lsm;
 
+import java.util.Date;
+
 /**
  *  This class is for data fitting with two Gaussian functions with the same center. 
  *  The function form used in this class is 
@@ -23,17 +25,17 @@ public class DoubleSymmetricGaussian {
 	private double center1 = 0.;
 	private double pedestal = 0.;
 
-	private double sigma_err = 0.;
-	private double amp_err = 0.;
-	private double center0_err = 0.;
-	private double center1_err = 0.;
-	private double pedestal_err = 0.;
+	private double sigmaErr = 0.;
+	private double ampErr = 0.;
+	private double center0Err = 0.;
+	private double center1Err = 0.;
+	private double pedestalErr = 0.;
 
-	private boolean sigma_incl = true;
-	private boolean amp_incl = true;
-	private boolean center0_incl = true;
-	private boolean center1_incl = true;
-	private boolean pedestal_incl = true;
+	private boolean sigmaIncl = true;
+	private boolean ampIncl = true;
+	private boolean center0Incl = true;
+	private boolean center1Incl = true;
+	private boolean pedestalIncl = true;
 
 	private ModelFunction1D mf = null;
 
@@ -42,34 +44,34 @@ public class DoubleSymmetricGaussian {
 	private DataStore ds = new DataStore();
 
 	private double[] a = new double[5];
-	private double[] a_err = new double[5];
+	private double[] aErr = new double[5];
 
-	private double[] x_tmp = new double[1];
+	private double[] xTmp = new double[1];
 
 	/**
 	 *  The "sigma0" parameter
 	 */
-	public static String SIGMA = "sigma";
+	public static final String SIGMA = "sigma";
 	/**
 	 *  The "amplitude0" parameter
 	 */
-	public static String AMP = "amplitude";
+	public static final String AMP = "amplitude";
 	/**
 	 *  The "center" parameter
 	 */
-	public static String CENTER = "center";	
+	public static final String CENTER = "center";	
 	/**
 	 *  The "center0" parameter
 	 */
-	public static String CENTER0 = "center0";
+	public static final String CENTER0 = "center0";
 	/**
 	 *  The "center1" parameter
 	 */
-	public static String CENTER1 = "center1";
+	public static final String CENTER1 = "center1";
 	/**
 	 *  The "pedestal" parameter
 	 */
-	public static String PEDESTAL = "pedestal";
+	public static final String PEDESTAL = "pedestal";
 
 
 	/**
@@ -88,6 +90,7 @@ public class DoubleSymmetricGaussian {
 		mf =
 			new ModelFunction1D() {
 
+                                @Override
 				public double getValue(double x, double[] a) {
 					if (a.length != 5) {
 						return 0.;
@@ -99,12 +102,13 @@ public class DoubleSymmetricGaussian {
 				}
 
 
-				public double getDerivative(double x, double[] a, int a_index) {
+                                @Override
+				public double getDerivative(double x, double[] a, int indexArr) {
 					double res = 0.;
 					if (a.length != 5) {
 						return 0.;
 					}
-					switch (a_index) {
+					switch (indexArr) {
 						case 0:
 							res = a[1] * (x - a[2]) * (x - a[2]) * Math.exp(-(x - a[2]) * (x - a[2]) / (2.0 * a[0] * a[0])) / (a[0] * a[0] * a[0]);
 							res = res + a[1] * (x - a[4]) * (x - a[4]) * Math.exp(-(x - a[4]) * (x - a[4]) / (2.0 * a[0] * a[0])) / (a[0] * a[0] * a[0]);
@@ -174,17 +178,17 @@ public class DoubleSymmetricGaussian {
 	 */
 	public double getParameterError(String key) {
 		if (key.equals(SIGMA)) {
-			return sigma_err;
+			return sigmaErr;
 		} else if (key.equals(AMP)) {
-			return amp_err;
+			return ampErr;
 		} else if (key.equals(CENTER)) {
-			return (center0_err+center1_err)/2.0;
+			return (center0Err+center1Err)/2.0;
 		} else if (key.equals(CENTER0)) {
-			return center0_err;
+			return center0Err;
 		} else if (key.equals(CENTER1)) {
-			return center1_err;
+			return center1Err;
 		} else if (key.equals(PEDESTAL)) {
-			return pedestal_err;
+			return pedestalErr;
 		}
 		return 0.;
 	}
@@ -194,42 +198,42 @@ public class DoubleSymmetricGaussian {
 	 *  Includes or excludes the parameter into fitting
 	 *
 	 *@param  key   The parameter name
-	 *@param  incl  The boolean vaiable about including variable into the fitting
+	 *@param  incl  The boolean variable about including variable into the fitting
 	 */
 	public void fitParameter(String key, boolean incl) {
 		if (key.equals(SIGMA)) {
-			sigma_incl = incl;
+			sigmaIncl = incl;
 		} else if (key.equals(AMP)) {
-			amp_incl = incl;
+			ampIncl = incl;
 		} else if (key.equals(CENTER)) {
-			center0_incl = incl;
-			center1_incl = incl;
+			center0Incl = incl;
+			center1Incl = incl;
 		} else if (key.equals(CENTER0)) {
-			center0_incl = incl;
+			center0Incl = incl;
 		} else if (key.equals(CENTER1)) {
-			center1_incl = incl;
+			center1Incl = incl;
 		} else if (key.equals(PEDESTAL)) {
-			pedestal_incl = incl;
+			pedestalIncl = incl;
 		}
 	}
 
 
 	/**
-	 *  Returns the boolean vaiable about including variable into the fitting
+	 *  Returns the boolean variable about including variable into the fitting
 	 *
 	 *@param  key  The parameter name
 	 */
 	public boolean fitParameter(String key) {
 		if (key.equals(SIGMA)) {
-			return sigma_incl;
+			return sigmaIncl;
 		} else if (key.equals(AMP)) {
-			return amp_incl;
+			return ampIncl;
 		} else if (key.equals(CENTER0)) {
-			return center0_incl;
+			return center0Incl;
 		} else if (key.equals(CENTER1)) {
-			return center1_incl;
+			return center1Incl;
 		} else if (key.equals(PEDESTAL)) {
-			return pedestal_incl;
+			return pedestalIncl;
 		}
 		return false;
 	}
@@ -261,28 +265,28 @@ public class DoubleSymmetricGaussian {
 	/**
 	 *  Sets the data attribute of the Gaussian object
 	 *
-	 *@param  y_arr      Y data array
-	 *@param  y_err_arr  Y values error array
-	 *@param  x_arr      The new data value
+	 *@param  yArr      Y data array
+	 *@param  yErrArr  Y values error array
+	 *@param  xArr      The new data value
 	 */
-	public void setData(double[] x_arr,
-			double[] y_arr,
-			double[] y_err_arr) {
+	public void setData(double[] xArr,
+			double[] yArr,
+			double[] yErrArr) {
 
 		ds.clear();
 
-		if (x_arr.length != y_arr.length) {
+		if (xArr.length != yArr.length) {
 			return;
 		}
 
 		double[] x = new double[1];
 
-		for (int i = 0; i < x_arr.length; i++) {
-			x[0] = x_arr[i];
-			if (y_err_arr != null) {
-				ds.addRecord(y_arr[i], y_err_arr[i], x);
+		for (int i = 0; i < xArr.length; i++) {
+			x[0] = xArr[i];
+			if (yErrArr != null) {
+				ds.addRecord(yArr[i], yErrArr[i], x);
 			} else {
-				ds.addRecord(y_arr[i], x);
+				ds.addRecord(yArr[i], x);
 			}
 		}
 	}
@@ -291,12 +295,12 @@ public class DoubleSymmetricGaussian {
 	/**
 	 *  Sets the data attribute of the Gaussian object
 	 *
-	 *@param  y_arr  Y data array
-	 *@param  x_arr  The new data value
+	 *@param  yArr  Y data array
+	 *@param  xArr  The new data value
 	 */
-	public void setData(double[] x_arr,
-			double[] y_arr) {
-		setData(x_arr, y_arr, null);
+	public void setData(double[] xArr,
+			double[] yArr) {
+		setData(xArr, yArr, null);
 	}
 
 
@@ -315,8 +319,8 @@ public class DoubleSymmetricGaussian {
 	 *@param  y  The y value
 	 */
 	public void addData(double x, double y) {
-		x_tmp[0] = x;
-		ds.addRecord(y, x_tmp);
+		xTmp[0] = x;
+		ds.addRecord(y, xTmp);
 	}
 
 
@@ -324,12 +328,12 @@ public class DoubleSymmetricGaussian {
 	 *  Adds a data point to the internal data
 	 *
 	 *@param  x      The x value
-	 *@param  y      The y valu
-	 *@param  y_err  The error of the y value
+	 *@param  y      The y value
+	 *@param  yErr  The error of the y value
 	 */
-	public void addData(double x, double y, double y_err) {
-		x_tmp[0] = x;
-		ds.addRecord(y, y_err, x_tmp);
+	public void addData(double x, double y, double yErr) {
+		xTmp[0] = x;
+		ds.addRecord(y, yErr, xTmp);
 	}
 
 
@@ -358,22 +362,22 @@ public class DoubleSymmetricGaussian {
 	public boolean fit() {
 
 		boolean[] mask = new boolean[6];
-		mask[0] = sigma_incl;
-		mask[1] = amp_incl;
-		mask[2] = center0_incl;
-		mask[3] = pedestal_incl;
-		mask[4] = center1_incl;
+		mask[0] = sigmaIncl;
+		mask[1] = ampIncl;
+		mask[2] = center0Incl;
+		mask[3] = pedestalIncl;
+		mask[4] = center1Incl;
 
 		updateParams();
 
-		a_err[0] = 0.;
-		a_err[1] = 0.;
-		a_err[2] = 0.;
-		a_err[3] = 0.;
-		a_err[4] = 0.;
+		aErr[0] = 0.;
+		aErr[1] = 0.;
+		aErr[2] = 0.;
+		aErr[3] = 0.;
+		aErr[4] = 0.;
 
 		solver = new SolverLM();
-		boolean res = solver.solve(ds, mf, a, a_err, mask);
+		boolean res = solver.solve(ds, mf, a, aErr, mask);
 
 		if (res) {
 			sigma = a[0];
@@ -382,11 +386,11 @@ public class DoubleSymmetricGaussian {
 			center1 = a[4];
 			pedestal = a[3];
 
-			sigma_err = a_err[0];
-			amp_err = a_err[1];
-			center0_err = a_err[2];
-			center1_err = a_err[4];
-			pedestal_err = a_err[3];
+			sigmaErr = aErr[0];
+			ampErr = aErr[1];
+			center0Err = aErr[2];
+			center1Err = aErr[4];
+			pedestalErr = aErr[3];
 		}
 
 		return res;
@@ -422,96 +426,96 @@ public class DoubleSymmetricGaussian {
 	 */
 	public boolean guessAndFit() {
 		int n = ds.size();
-		double y_min = Double.MAX_VALUE;
-		double y_max = -Double.MAX_VALUE;
+		double yMin = Double.MAX_VALUE;
+		double yMax = -Double.MAX_VALUE;
 		double y = 0.;
 		for (int i = 0; i < n; i++) {
 			y = ds.getY(i);
-			if (y > y_max) {
-				y_max = y;
+			if (y > yMax) {
+				yMax = y;
 			}
-			if (y < y_min) {
-				y_min = y;
+			if (y < yMin) {
+				yMin = y;
 			}
 		}
-		if (y_min > y_max) {
+		if (yMin > yMax) {
 			return false;
 		}
-		double y_level = 0.607 * (y_max - y_min) + y_min;
-		int n_cross = 0;
-		double x_min = Double.MAX_VALUE;
-		double x_max = -Double.MAX_VALUE;
-		int i_x_min = -1;
-		int i_x_max = -1;		
+		double yLevel = 0.607 * (yMax - yMin) + yMin;
+		int nCross = 0;
+		double xMin = Double.MAX_VALUE;
+		double xMax = -Double.MAX_VALUE;
+		int iXMin = -1;
+		int iXMax = -1;		
 		for (int i = 1; i < n; i++) {
-			if ((y_level - ds.getY(i - 1)) * (y_level - ds.getY(i)) <= 0.) {
-				n_cross++;
-				if (x_min > ds.getArrX(i)[0]) {
-					x_min = ds.getArrX(i)[0];
-					i_x_min = i;
+			if ((yLevel - ds.getY(i - 1)) * (yLevel - ds.getY(i)) <= 0.) {
+				nCross++;
+				if (xMin > ds.getArrX(i)[0]) {
+					xMin = ds.getArrX(i)[0];
+					iXMin = i;
 				}
-				if (x_max < ds.getArrX(i)[0]) {
-					x_max = ds.getArrX(i)[0];
-					i_x_max = i;
+				if (xMax < ds.getArrX(i)[0]) {
+					xMax = ds.getArrX(i)[0];
+					iXMax = i;
 				}
 			}
 		}
-		if (x_max <= x_min || i_x_min < 0 || i_x_max < 0) {
+		if (xMax <= xMin || iXMin < 0 || iXMax < 0) {
 			return false;
 		}
 		
-		if( (i_x_max - i_x_min) < 3){
-			sigma = Math.abs(x_min - x_max) / 2.0;
-			center0 = (x_min + x_max) / 2.0 - sigma*0.1;
-			center1 = (x_min + x_max) / 2.0 + sigma*0.1;
-			pedestal = Math.min(Math.abs(y_min), Math.abs(y_max));
-			amp = (y_max - y_min);
+		if( (iXMax - iXMin) < 3){
+			sigma = Math.abs(xMin - xMax) / 2.0;
+			center0 = (xMin + xMax) / 2.0 - sigma*0.1;
+			center1 = (xMin + xMax) / 2.0 + sigma*0.1;
+			pedestal = Math.min(Math.abs(yMin), Math.abs(yMax));
+			amp = (yMax - yMin);
 		} else {
-			//System.out.println("Debug  i_x_min = " + i_x_min + " i_x_max=" + i_x_max);
-			int i_cent = (i_x_min + i_x_max)/2;
-			int i_min = -1;
-			for (int i = i_x_min; i < i_cent; i++) {
+			//System.out.println("Debug  i_xMin = " + i_xMin + " i_xMax=" + i_xMax);
+			int iCent = (iXMin + iXMax)/2;
+			int iMin = -1;
+			for (int i = iXMin; i < iCent; i++) {
 				if(ds.getY(i+1) > ds.getY(i)){
-					i_min = i+1;
+					iMin = i+1;
 				}
 			}
-			if(i_min <0){
+			if(iMin <0){
 				return false;
 			}
-			center0 = ds.getArrX(i_min)[0];
-			double sig0 = ds.getArrX(i_min)[0] - ds.getArrX(i_x_min)[0];
+			center0 = ds.getArrX(iMin)[0];
+			double sig0 = ds.getArrX(iMin)[0] - ds.getArrX(iXMin)[0];
 			
-			int i_max = -1;
-			for (int i = i_x_max; i > i_cent; i--) {
+			int iMax = -1;
+			for (int i = iXMax; i > iCent; i--) {
 				if(ds.getY(i-1) > ds.getY(i)){
-					i_max = i-1;
+					iMax = i-1;
 				}
 			}
-			if(i_max < 0){
+			if(iMax < 0){
 				return false;
 			}
-			center1 = ds.getArrX(i_max)[0];
-			double sig1 = ds.getArrX(i_max)[0] - ds.getArrX(i_x_max)[0];
+			center1 = ds.getArrX(iMax)[0];
+			double sig1 = ds.getArrX(iMax)[0] - ds.getArrX(iXMax)[0];
 			
 			//System.out.println("Debug  i_min = " + i_min + " i_max=" + i_max);
 			
 			sigma = (Math.abs(sig0)+Math.abs(sig1))/2.0;
 			
-			pedestal = Math.min(Math.abs(y_min), Math.abs(y_max));
-			amp = (y_max - y_min);			
+			pedestal = Math.min(Math.abs(yMin), Math.abs(yMax));
+			amp = (yMax - yMin);			
 		}
 		
-		boolean sigma_incl_ini = sigma_incl;
-		boolean amp_incl_ini = amp_incl;
-		boolean center0_incl_ini = center0_incl;
-		boolean center1_incl_ini = center1_incl;
-		boolean pedestal_incl_ini = pedestal_incl;
+		boolean sigmaInclIni = sigmaIncl;
+		boolean ampInclIni = ampIncl;
+		boolean center0InclIni = center0Incl;
+		boolean center1InclIni = center1Incl;
+		boolean pedestalInclIni = pedestalIncl;
 		
-		sigma_incl = false;
-		amp_incl = true;
-		center0_incl = false;
-		center1_incl = false;
-		pedestal_incl = false;
+		sigmaIncl = false;
+		ampIncl = true;
+		center0Incl = false;
+		center1Incl = false;
+		pedestalIncl = false;
 		
 		boolean res = fit(4);
 		if(res == false) {
@@ -526,11 +530,11 @@ public class DoubleSymmetricGaussian {
 		System.out.println("Debug  p  = " + getParameter(DoubleSymmetricGaussian.PEDESTAL) + " +- " + getParameterError(DoubleSymmetricGaussian.PEDESTAL));
 		*/
 		
-		sigma_incl =  sigma_incl_ini;
-		amp_incl = amp_incl_ini;
-		center0_incl =  center0_incl_ini;
-		center1_incl =  center1_incl_ini;
-		pedestal_incl =  pedestal_incl_ini;		
+		sigmaIncl =  sigmaInclIni;
+		ampIncl = ampInclIni;
+		center0Incl =  center0InclIni;
+		center1Incl =  center1InclIni;
+		pedestalIncl =  pedestalInclIni;		
 		
 		res = fit(1);
 		if(res == false) {
@@ -567,26 +571,26 @@ public class DoubleSymmetricGaussian {
 
 
 		int n = 100;
-		double x_min = c0 - 3 * s;
-		double x_max = c1 + 3 * s;
-		double step = (x_max - x_min) / (n - 1);
+		double xMin = c0 - 3 * s;
+		double xMax = c1 + 3 * s;
+		double step = (xMax - xMin) / (n - 1);
 
-		double[] x_a = new double[n];
-		double[] y_a = new double[n];
+		double[] xArr = new double[n];
+		double[] yArr = new double[n];
 
 		double x = 0.;
-		double err_level = 0.0;
+		double errLevel = 0.0;
 
 		for (int i = 0; i < n; i++) {
-			x = x_min + step * i;
-			x_a[i] = x;
-			y_a[i] = p + a * Math.exp(-(x-c0) * (x-c0) / (2.0*s*s)) + a * Math.exp(-(x-c1) * (x-c1) / (2.0*s*s));
-			y_a[i] = y_a[i] * (1.0 + err_level * 2.0 * (Math.random() - 0.5));
+			x = xMin + step * i;
+			xArr[i] = x;
+			yArr[i] = p + a * Math.exp(-(x-c0) * (x-c0) / (2.0*s*s)) + a * Math.exp(-(x-c1) * (x-c1) / (2.0*s*s));
+			yArr[i] = yArr[i] * (1.0 + errLevel * 2.0 * (Math.random() - 0.5));
 		}
 
 		DoubleSymmetricGaussian gs = new DoubleSymmetricGaussian();
 
-		gs.setData(x_a, y_a);
+		gs.setData(xArr, yArr);
 
 		gs.setParameter(DoubleSymmetricGaussian.SIGMA, s * 1.1);
 		gs.setParameter(DoubleSymmetricGaussian.AMP, a * 1.1);
@@ -601,14 +605,14 @@ public class DoubleSymmetricGaussian {
 		gs.fitParameter(DoubleSymmetricGaussian.PEDESTAL, true);
 
 		System.out.println("================START================");
-		System.out.println("data error level [%]= " + err_level * 100);
+		System.out.println("data error level [%]= " + errLevel * 100);
 		System.out.println("Main ini: s  = " + s);
 		System.out.println("Main ini: a  = " + a);
 		System.out.println("Main ini: c0 = " + c0);
 		System.out.println("Main ini: c1 = " + c1);
 		System.out.println("Main ini: p  = " + p);
 
-		int n_iter = 8;
+		int nIter = 8;
 
 		boolean res = false;
 
@@ -616,7 +620,7 @@ public class DoubleSymmetricGaussian {
 		//when two peaks are not separated clearly
 		res = gs.guessAndFit();
 
-		for (int j = 0; j < n_iter; j++) {
+		for (int j = 0; j < nIter; j++) {
 			System.out.println("Main: iteration =" + j + "  res = " + res);
 			System.out.println("Main: s = " + gs.getParameter(DoubleSymmetricGaussian.SIGMA) + " +- " + gs.getParameterError(DoubleSymmetricGaussian.SIGMA));
 			System.out.println("Main: a = " + gs.getParameter(DoubleSymmetricGaussian.AMP) + " +- " + gs.getParameterError(DoubleSymmetricGaussian.AMP));
@@ -627,18 +631,18 @@ public class DoubleSymmetricGaussian {
 		}
 
 		for (int i = 0; i < n; i++) {
-			x = x_min + step * i;
-			System.out.println("i=" + i + " x=" + x + " y_ini=" + y_a[i] + " model=" + gs.getValue(x));
+			x = xMin + step * i;
+			System.out.println("i=" + i + " x=" + x + " yIni=" + yArr[i] + " model=" + gs.getValue(x));
 		}
 
-		n_iter = 100;
+		nIter = 100;
 		java.util.Date start = new java.util.Date();
-		for (int j = 0; j < n_iter; j++) {
+		for (int j = 0; j < nIter; j++) {
 			res = gs.fit();
 		}
-		java.util.Date stop = new java.util.Date();
+		Date stop = new Date();
 		double time = (stop.getTime() - start.getTime()) / 1000.;
-		time /= n_iter;
+		time /= nIter;
 		System.out.println("time for one step [sec] =" + time);
 
 	}

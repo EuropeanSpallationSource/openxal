@@ -21,8 +21,8 @@ import java.util.logging.Logger;
  * @author  tap
  */
 public abstract class MagnetPowerSupply implements DataListener {
-    final protected Accelerator accelerator;
-    final protected ChannelSuite channelSuite;
+    protected final Accelerator accelerator;
+    protected final ChannelSuite channelSuite;
 	protected String strId;
 
     // cycle state constants
@@ -82,6 +82,7 @@ public abstract class MagnetPowerSupply implements DataListener {
      * external data source.
      * @return a tag that identifies the receiver's type
      */
+    @Override
     public String dataLabel() {
         return "PS";
     }
@@ -91,6 +92,7 @@ public abstract class MagnetPowerSupply implements DataListener {
      * Instructs the receiver to update its data based on the given adaptor.
      * @param adaptor The adaptor from which to update the receiver's data
      */
+    @Override
     public void update(DataAdaptor adaptor) {
         strId = adaptor.stringValue("id");
         DataAdaptor suiteAdaptor = adaptor.childAdaptor("channelsuite");
@@ -103,6 +105,7 @@ public abstract class MagnetPowerSupply implements DataListener {
      * storage.
      * @param adaptor The adaptor to which the receiver's data is written
      */
+    @Override
     public void write(DataAdaptor adaptor) {
         adaptor.setValue("id", strId);
         adaptor.setValue("type", getType());
@@ -219,7 +222,7 @@ public abstract class MagnetPowerSupply implements DataListener {
      * @return The collection of nodes that use this supply.
      */
     public Collection<AcceleratorNode> getNodes() {
-        return getNodes( accelerator.getAllNodesOfType(Electromagnet.s_strType) );
+        return getNodes( accelerator.getAllNodesOfType(Electromagnet.TYPE) );
     }
         
         
@@ -229,7 +232,7 @@ public abstract class MagnetPowerSupply implements DataListener {
      * @return The collection of nodes that use this supply.
      */
     public <NodeType extends AcceleratorNode> Collection<NodeType> getNodes( final Collection<NodeType> trialNodes ) {
-        final Collection<NodeType> nodes = new HashSet<NodeType>();
+        final Collection<NodeType> nodes = new HashSet<>();
                 
         for ( final NodeType trialNode : trialNodes ) {
             if ( suppliesNode( trialNode ) ) {

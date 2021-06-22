@@ -26,7 +26,8 @@ public class RecordFilterFactory {
 	 */
 	public static RecordFilter<ChannelTimeRecord> notFilter( final RecordFilter<ChannelTimeRecord> filter ) {
 		return
-			new RecordFilter<ChannelTimeRecord>() {
+			new RecordFilter<>() {
+                                @Override
 				public boolean accept( final ChannelTimeRecord rawRecord ) {
 					return !filter.accept( rawRecord );
 				}
@@ -41,7 +42,8 @@ public class RecordFilterFactory {
 	 */
 	public static RecordFilter<ChannelTimeRecord> equalityDoubleFilter( final double target ) {
 		return
-			new RecordFilter<ChannelTimeRecord>() {
+			new RecordFilter<>() {
+                                @Override
 				public boolean accept( final ChannelTimeRecord record ) {
 					return record.doubleValue() == target;
 				}
@@ -56,7 +58,8 @@ public class RecordFilterFactory {
 	 */
 	public static RecordFilter<ChannelTimeRecord> minDoubleFilter( final double minValue ) {
 		return
-			new RecordFilter<ChannelTimeRecord>() {
+			new RecordFilter<>() {
+                                @Override
 				public boolean accept( final ChannelTimeRecord record ) {
 					return record.doubleValue() >= minValue;
 				}
@@ -71,7 +74,8 @@ public class RecordFilterFactory {
 	 */
 	public static RecordFilter<ChannelTimeRecord> exlusiveMinDoubleFilter( final double minValue ) {
 		return
-		new RecordFilter<ChannelTimeRecord>() {
+		new RecordFilter<>() {
+                        @Override
 			public boolean accept( final ChannelTimeRecord record ) {
 				return record.doubleValue() > minValue;
 			}
@@ -86,7 +90,8 @@ public class RecordFilterFactory {
 	 */
 	public static RecordFilter<ChannelTimeRecord> maxDoubleFilter( final double maxValue ) {
 		return
-			new RecordFilter<ChannelTimeRecord>() {
+			new RecordFilter<>() {
+                                @Override
 				public boolean accept( final ChannelTimeRecord record ) {
 					return record.doubleValue() <= maxValue;
 				}
@@ -101,7 +106,8 @@ public class RecordFilterFactory {
 	 */
 	public static RecordFilter<ChannelTimeRecord> exclusiveMaxDoubleFilter( final double maxValue ) {
 		return
-		new RecordFilter<ChannelTimeRecord>() {
+		new RecordFilter<>() {
+                        @Override
 			public boolean accept( final ChannelTimeRecord record ) {
 				return record.doubleValue() < maxValue;
 			}
@@ -117,7 +123,8 @@ public class RecordFilterFactory {
 	 */
 	public static RecordFilter<ChannelTimeRecord> rangeDoubleFilter( final double minValue, final double maxValue ) {
 		return
-			new RecordFilter<ChannelTimeRecord>() {
+			new RecordFilter<>() {
+                                @Override
 				public boolean accept( final ChannelTimeRecord record ) {
 					double value = record.doubleValue();
 					return value >= minValue && value <= maxValue;
@@ -133,7 +140,8 @@ public class RecordFilterFactory {
 	 */
 	public static RecordFilter<ChannelTimeRecord> maxStatusFilter( final int maxStatus ) {
 		return
-			new RecordFilter<ChannelTimeRecord>() {
+			new RecordFilter<>() {
+                                @Override
 				public boolean accept( final ChannelTimeRecord record ) {
 					int status = record.status();
 					return status <= maxStatus;
@@ -149,7 +157,8 @@ public class RecordFilterFactory {
 	 */
 	public static RecordFilter<ChannelTimeRecord> maxSeverityFilter( final int maxSeverity ) {
 		return
-			new RecordFilter<ChannelTimeRecord>() {
+			new RecordFilter<>() {
+                                @Override
 				public boolean accept( final ChannelTimeRecord record ) {
 					int severity = record.severity();
 					return severity <= maxSeverity;

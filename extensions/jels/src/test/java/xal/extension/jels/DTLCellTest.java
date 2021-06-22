@@ -497,12 +497,12 @@ public class DTLCellTest extends SingleElementTest {
         if (betas == 0.0) {
             dtlTank.getRfField().setTTFCoefs(new double[]{0.0});
         } else {
-            dtlTank.getRfField().setTTF_startCoefs(new double[]{betas, Ts, kTs, k2Ts});
+            dtlTank.getRfField().setTTFStartCoefs(new double[]{betas, Ts, kTs, k2Ts});
             dtlTank.getRfField().setTTFCoefs(new double[]{betas, Ts, kTs, k2Ts});
-            dtlTank.getRfField().setTTF_endCoefs(new double[]{betas, Ts, kTs, k2Ts});
+            dtlTank.getRfField().setTTFEndCoefs(new double[]{betas, Ts, kTs, k2Ts});
             dtlTank.getRfField().setSTFCoefs(new double[]{betas, 0., kS, k2S});
-            dtlTank.getRfField().setSTF_startCoefs(new double[]{betas, 0., kS, k2S});
-            dtlTank.getRfField().setSTF_endCoefs(new double[]{betas, 0., kS, k2S});
+            dtlTank.getRfField().setSTFStartCoefs(new double[]{betas, 0., kS, k2S});
+            dtlTank.getRfField().setSTFEndCoefs(new double[]{betas, 0., kS, k2S});
         }
 
         dtlTank.setLength(L);

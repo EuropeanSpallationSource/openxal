@@ -15,16 +15,16 @@ import java.util.*;
 /** Provides methods to set and get an object's values for its named properties */
 public class KeyValueAdaptor {
 	/** table of keyed getters */
-	final private Map<String,KeyedAccessing> GETTER_TABLE;
+	private final Map<String,KeyedAccessing> getterTable;
 
 	/** table of keyed setters */
-	final private Map<String,KeyedSetting> SETTER_TABLE;
+	private final Map<String,KeyedSetting> setterTable;
 	
 	
 	/** Constructor */
 	public KeyValueAdaptor() {
-		GETTER_TABLE = new HashMap<String,KeyedAccessing>();
-		SETTER_TABLE = new HashMap<String,KeyedSetting>();
+		getterTable = new HashMap<>();
+		setterTable = new HashMap<>();
 	}
 	
 	
@@ -145,27 +145,27 @@ public class KeyValueAdaptor {
 		final Class<?> targetClass = target.getClass();
 		final String accessorID = getAccessorID( targetClass, key );	// generate a unique ID for the target class/key pair
 		
-		synchronized ( GETTER_TABLE ) {
-			if ( !GETTER_TABLE.containsKey( accessorID ) ) {	// check whether we have the selector cached and if not find the method and cache it
+		synchronized ( getterTable ) {
+			if ( !getterTable.containsKey( accessorID ) ) {	// check whether we have the selector cached and if not find the method and cache it
 				// first try to find a method accessor corresponding to the key
 				final KeyedAccessing methodAccessor = KeyedMethodAccessor.getInstance( targetClass, key );
 				if ( methodAccessor != null ) {
-					GETTER_TABLE.put( accessorID, methodAccessor );
+					getterTable.put( accessorID, methodAccessor );
 				}
 				else {	// no method accessor was found for the key
 					// if the target implements the Map interface then use the Map's get method for access
 					final KeyedAccessing mapAccessor = KeyedMapAccessor.getInstance( targetClass, key );
                     if ( mapAccessor != null ) {
-                        GETTER_TABLE.put( accessorID, mapAccessor );
+                        getterTable.put( accessorID, mapAccessor );
                     }
                     else {
                         final KeyedAccessing arrayItemAccessor = KeyedArrayItemAccessor.getInstance( targetClass, key );
-                        GETTER_TABLE.put( accessorID, arrayItemAccessor );
+                        getterTable.put( accessorID, arrayItemAccessor );
                     }
 				}
 			}
 			
-			return GETTER_TABLE.get( accessorID );	// get the method from the cache
+			return getterTable.get( accessorID );	// get the method from the cache
 		}
 	}
 	
@@ -180,39 +180,39 @@ public class KeyValueAdaptor {
 		final Class<?> targetClass = target.getClass();
 		final String setterID = getSetterID( targetClass, key, argumentClass );	// generate a unique ID for the target class/key/argument class group
 		
-		synchronized ( SETTER_TABLE ) {
-			if ( !SETTER_TABLE.containsKey( setterID ) ) {	// check whether we have the selector cached and if not find the method and cache it
+		synchronized ( setterTable ) {
+			if ( !setterTable.containsKey( setterID ) ) {	// check whether we have the selector cached and if not find the method and cache it
 				// first try to find a method setter corresponding to the key
 				final KeyedSetting methodSetter = KeyedMethodSetter.getInstance( targetClass, key, argumentClass );
 				if ( methodSetter != null ) {
-					SETTER_TABLE.put( setterID, methodSetter );
+					setterTable.put( setterID, methodSetter );
 				}
 				else {	// no method setter was found for the key
 					// if the target implements the Map interface then use the Map's put method for setting values
 					final KeyedSetting mapSetter = KeyedMapSetter.getInstance( targetClass, key, argumentClass );
                     if ( mapSetter != null ) {
-                        SETTER_TABLE.put( setterID, mapSetter );
+                        setterTable.put( setterID, mapSetter );
                     }
                     else {
                         final KeyedSetting arrayItemSetter = KeyedArrayItemSetter.getInstance( targetClass, key, argumentClass );
-                        SETTER_TABLE.put( setterID, arrayItemSetter );
+                        setterTable.put( setterID, arrayItemSetter );
                     }
 				}
 			}
 			
-			return SETTER_TABLE.get( setterID );	// get the method from the cache
+			return setterTable.get( setterID );	// get the method from the cache
 		}
 	}
 	
 	
 	/** generate the accessor ID for the target class/key pair */
-	static private String getAccessorID( final Class<?> targetClass, final String key ) {
+	private static String getAccessorID( final Class<?> targetClass, final String key ) {
 		return targetClass.toString() + "#" + key;
 	}
 	
 	
 	/** generate the setter ID for the target class/key/argument class group */
-	static private String getSetterID( final Class<?> targetClass, final String key, final Class<?> argumentClass ) {
+	private static String getSetterID( final Class<?> targetClass, final String key, final Class<?> argumentClass ) {
 		return targetClass.toString() + "#" + key + "#" + argumentClass.toString();
 	}	
 	
@@ -224,29 +224,29 @@ public class KeyValueAdaptor {
         private static final long serialVersionUID = 1L;
         
 		/** key which identifies the desired accessor method */
-		final private String KEY;
+		private final String key;
 		
 		/** object on which we are trying to get a value */
-		final private Object TARGET;
+		private final Object target;
 		
 		
 		/** Constructor */
 		public InvalidAccessorException( final Object target, final String key ) {
 			super( "Could not find a suitable accessible method named: \"" + key + "\" or \"" + KeyedMethodAccessor.toGetMethodName( key ) + "\" for target: \"" + target + "\", nor does the target implement the java.util.Map interface." );
-			KEY = key;
-			TARGET = target;
+			this.key = key;
+			this.target = target;
 		}
 		
 		
 		/** get the invalid key */
 		public String getKey() {
-			return KEY;
+			return key;
 		}
 		
 		
 		/** get the object on which we attempted to get the accessor */
 		public Object getTarget() {
-			return TARGET;
+			return target;
 		}
 	}
 	
@@ -258,39 +258,39 @@ public class KeyValueAdaptor {
         private static final long serialVersionUID = 1L;
         
 		/** key which identifies the desired accessor method */
-		final private String KEY;
+		private final String key;
 		
 		/** object on which we are trying to get a value */
-		final private Object TARGET;
+		private final Object target;
 		
 		/** value to pass to the setter method */
-		final private Object VALUE;
+		private final Object value;
 		
 		
 		/** Constructor */
 		public InvalidSetterException( final Object target, final String key, final Object value ) {
 			super( "Could not find a suitable setter method named: \"" + KeyedMethodSetter.toSetMethodName( key ) + "\" for target: \"" + target + "\"" + " with value: \"" + value + "\", nor does the target implement the java.util.Map interface." );
-			KEY = key;
-			TARGET = target;
-			VALUE = value;
+			this.key = key;
+			this.target = target;
+			this.value = value;
 		}
 		
 		
 		/** get the invalid key */
 		public String getKey() {
-			return KEY;
+			return key;
 		}
 		
 		
 		/** get the object on which we attempted to get the accessor */
 		public Object getTarget() {
-			return TARGET;
+			return target;
 		}
 		
 		
 		/** get the value to pass to the setter method */
 		public Object getValue() {
-			return VALUE;
+			return value;
 		}
 	}
 }
@@ -338,22 +338,22 @@ interface KeyedSetting {
 /** Keyed access using methods */
 class KeyedMethodAccessor implements KeyedAccessing {
 	/** method for accessing a keyed value */
-	final private Method ACCESS_METHOD;
+	private final Method accessMethod;
 	
 	/** key for the method */
-	final private String METHOD_KEY;
+	private final String methodKey;
 	
 	
 	/** Constructor */
 	protected KeyedMethodAccessor( final Method method, final String key ) {
 		method.setAccessible( true );
-		ACCESS_METHOD = method;
-		METHOD_KEY = key;
+		accessMethod = method;
+		methodKey = key;
 	}
 	
 	
 	/** attempt to get an instance for the class and a method matching the key */
-	static public KeyedMethodAccessor getInstance( final Class<?> targetClass, final String methodName ) {
+	public static KeyedMethodAccessor getInstance( final Class<?> targetClass, final String methodName ) {
 		final Method method = findAccessorMethodForKey( targetClass, methodName );
 		return method != null ? new KeyedMethodAccessor( method, methodName ) : null;
 	}
@@ -365,18 +365,16 @@ class KeyedMethodAccessor implements KeyedAccessing {
 	 * the key is "betaX" it will first look for a method called "betaX" and if none is found then look for a method of name "getBetaX". 
 	 * @param target object from which to get the value
 	 */
+        @Override
 	public Object valueForTarget( final Object target ) throws InvalidKeyException {
 		try {
-			return ACCESS_METHOD.invoke( target );
+			return accessMethod.invoke( target );
 		}
-		catch ( IllegalAccessException exception ) {
-			throw new InvalidKeyException( exception );
-		}
-		catch ( IllegalArgumentException exception ) {
+		catch ( IllegalAccessException | IllegalArgumentException exception ) {
 			throw new InvalidKeyException( exception );
 		}
 		catch ( InvocationTargetException exception ) {
-			throw new RuntimeException( "Exception during evaluation of the accessor: " + METHOD_KEY + " on the target: " + target, exception );
+			throw new RuntimeException( "Exception during evaluation of the accessor: " + methodKey + " on the target: " + target, exception );
 		}		
 	}
 	
@@ -386,7 +384,7 @@ class KeyedMethodAccessor implements KeyedAccessing {
 	 * @param targetClass class of the target object from which to get the accessor method
 	 * @param keyPath series of keys joined by "." in between.
 	 */
-	static private Method findAccessorMethodForKey( final Class<?> targetClass, final String key ) {
+	private static Method findAccessorMethodForKey( final Class<?> targetClass, final String key ) {
 		try {
 			return targetClass.getMethod( key );
 		}
@@ -404,15 +402,12 @@ class KeyedMethodAccessor implements KeyedAccessing {
 	 * @param targetClass class of the target object from which to get the accessor method
 	 * @param keyPath series of keys joined by "." in between.
 	 */
-	static private Method getterForKey( final Class<?> targetClass, final String key ) {
+	private static Method getterForKey( final Class<?> targetClass, final String key ) {
 		try {
 			final String methodName = toGetMethodName( key );
 			return targetClass.getMethod( methodName );
 		}
-		catch ( NoSuchMethodException exception ) {
-			return null;
-		}
-		catch ( SecurityException exception ) {
+		catch ( NoSuchMethodException | SecurityException exception ) {
 			return null;
 		}
 	}
@@ -432,22 +427,22 @@ class KeyedMethodAccessor implements KeyedAccessing {
 /** Keyed access using methods */
 class KeyedMethodSetter implements KeyedSetting {
 	/** method for setting a keyed value */
-	final private Method SET_METHOD;
+	private final Method setMethod;
 	
 	/** key for the method */
-	final private String METHOD_KEY;
+	private final String methodKey;
 	
 	
 	/** Constructor */
 	protected KeyedMethodSetter( final Method method, final String key ) {
 		method.setAccessible( true );
-		SET_METHOD = method;
-		METHOD_KEY = key;
+		setMethod = method;
+		methodKey = key;
 	}
 	
 	
 	/** attempt to get an instance for the class and a method matching the key */
-	static public KeyedMethodSetter getInstance( final Class<?> targetClass, final String methodName, final Class<?> argumentClass ) {
+	public static KeyedMethodSetter getInstance( final Class<?> targetClass, final String methodName, final Class<?> argumentClass ) {
 		final Method method = findSetterMethodForKey( targetClass, methodName, argumentClass );
 		return method != null ? new KeyedMethodSetter( method, methodName ) : null;
 	}
@@ -459,18 +454,16 @@ class KeyedMethodSetter implements KeyedSetting {
 	 * @param target object from which to get the value
 	 * @param value the value to set
 	 */
+        @Override
 	public void setValueForTarget( final Object target, final Object value ) throws InvalidKeyException {
 		try {
-			SET_METHOD.invoke( target, value );
+			setMethod.invoke( target, value );
 		}
-		catch ( IllegalAccessException exception ) {
-			throw new InvalidKeyException( exception );
-		}
-		catch ( IllegalArgumentException exception ) {
+		catch ( IllegalAccessException | IllegalArgumentException exception ) {
 			throw new InvalidKeyException( exception );
 		}
 		catch ( InvocationTargetException exception ) {
-			throw new RuntimeException( "Exception during evaluation of the setter: " + METHOD_KEY + " on the target: " + target, exception );
+			throw new RuntimeException( "Exception during evaluation of the setter: " + methodKey + " on the target: " + target, exception );
 		}		
 	}	
 	
@@ -481,7 +474,7 @@ class KeyedMethodSetter implements KeyedSetting {
 	 * @param keyPath series of keys joined by "." in between.
 	 * @param argumentClass class of the argument
 	 */
-	static private Method findSetterMethodForKey( final Class<?> targetClass, final String key, final Class<?> argumentClass ) {
+	private static Method findSetterMethodForKey( final Class<?> targetClass, final String key, final Class<?> argumentClass ) {
 		final String methodName = toSetMethodName( key );
 		try {
 			return targetClass.getMethod( methodName, argumentClass );
@@ -514,10 +507,7 @@ class KeyedMethodSetter implements KeyedSetting {
 					return targetClass.getMethod( methodName, Object.class );
 				}
 			}
-			catch ( NoSuchMethodException subException ) {
-				return null;
-			}
-			catch ( SecurityException subException ) {
+			catch ( NoSuchMethodException | SecurityException subException ) {
 				return null;
 			}
 		}
@@ -541,17 +531,17 @@ class KeyedMethodSetter implements KeyedSetting {
 /** Keyed access using maps */
 class KeyedMapAccessor implements KeyedAccessing {
 	/** key for the get method call */
-	final private String VALUE_KEY;
+	private final String valueKey;
 	
 	
 	/** Constructor */
 	protected KeyedMapAccessor( final String key ) {
-		VALUE_KEY = key;
+		valueKey = key;
 	}
 	
 	
 	/** attempt to get an instance for the class if the target implements the java.util.Map interface */
-	static public KeyedMapAccessor getInstance( final Class<?> targetClass, final String key ) {
+	public static KeyedMapAccessor getInstance( final Class<?> targetClass, final String key ) {
 		return Map.class.isAssignableFrom( targetClass ) ? new KeyedMapAccessor( key ) : null;
 	}
 	
@@ -561,10 +551,11 @@ class KeyedMapAccessor implements KeyedAccessing {
 	 * @param target object from which to get the value
 	 */
     @SuppressWarnings( "unchecked" )    // no way to predetermine the target class, so we must suppress this warning
+        @Override
 	public Object valueForTarget( final Object target ) throws InvalidKeyException {
 		try {
 			final Map<String,Object> targetMap = (Map<String,Object>)target;
-			return targetMap.get( VALUE_KEY );
+			return targetMap.get( valueKey );
 		}
 		catch ( ClassCastException exception ) {
 			throw new InvalidKeyException( exception );
@@ -577,17 +568,17 @@ class KeyedMapAccessor implements KeyedAccessing {
 /** Keyed access using maps */
 class KeyedMapSetter implements KeyedSetting {
 	/** key for the put method call */
-	final private String VALUE_KEY;
+	private final String valueKey;
 	
 	
 	/** Constructor */
 	protected KeyedMapSetter( final String key ) {
-		VALUE_KEY = key;
+		valueKey = key;
 	}
 	
 	
 	/** attempt to get an instance for the class if the target implements the java.util.Map interface */
-	static public KeyedMapSetter getInstance( final Class<?> targetClass, final String key, final Class<?> argumentClass ) {
+	public static KeyedMapSetter getInstance( final Class<?> targetClass, final String key, final Class<?> argumentClass ) {
 		return Map.class.isAssignableFrom( targetClass ) ? new KeyedMapSetter( key ) : null;
 	}
 	
@@ -598,10 +589,11 @@ class KeyedMapSetter implements KeyedSetting {
 	 * @param value the value to set
 	 */
     @SuppressWarnings( "unchecked" )    // no way to predetermine the target class, so we must suppress this warning
+        @Override
 	public void setValueForTarget( final Object target, final Object value ) throws InvalidKeyException {
 		try {
 			final Map<String,Object> targetMap = (Map<String,Object>)target;
-			targetMap.put( VALUE_KEY, value );
+			targetMap.put( valueKey, value );
 		}
 		catch ( ClassCastException exception ) {
 			throw new InvalidKeyException( exception );
@@ -614,17 +606,17 @@ class KeyedMapSetter implements KeyedSetting {
 /** Keyed access for an item of an Array */
 class KeyedArrayItemAccessor implements KeyedAccessing {
     /** index of the array item to access */
-    final private int ITEM_INDEX;
+    private final int itemIndex;
     
     
     /** Constructor */
     protected KeyedArrayItemAccessor( final int itemIndex ) {
-        ITEM_INDEX = itemIndex;
+        this.itemIndex = itemIndex;
     }
     
     
     /** attempt to get an instance for the class if the target is a primitive array */
-    static public KeyedArrayItemAccessor getInstance( final Class<?> targetClass, final String key ) {
+    public static KeyedArrayItemAccessor getInstance( final Class<?> targetClass, final String key ) {
         try {
             final int itemIndex = Integer.parseInt( key );
             return targetClass.isArray() ? new KeyedArrayItemAccessor( itemIndex ) : null;
@@ -639,9 +631,10 @@ class KeyedArrayItemAccessor implements KeyedAccessing {
      * Get the target's array item. 
      * @param target object from which to get the value
      */
+    @Override
     public Object valueForTarget( final Object target ) throws InvalidKeyException {
         try {
-            return java.lang.reflect.Array.get( target, ITEM_INDEX );
+            return Array.get(target, itemIndex );
         }
         catch ( ArrayIndexOutOfBoundsException exception ) {
             throw new InvalidKeyException( exception );
@@ -654,17 +647,17 @@ class KeyedArrayItemAccessor implements KeyedAccessing {
 /** Keyed setter for an item of an Array */
 class KeyedArrayItemSetter implements KeyedSetting {
     /** index of the array item to set */
-    final private int ITEM_INDEX;
+    private final int itemIndex;
     
     
     /** Constructor */
     protected KeyedArrayItemSetter( final int itemIndex ) {
-        ITEM_INDEX = itemIndex;
+        this.itemIndex = itemIndex;
     }
     
     
     /** attempt to get an instance for the class if the target is a primitive array */
-    static public KeyedArrayItemSetter getInstance( final Class<?> targetClass, final String key, final Class<?> argumentClass ) {
+    public static KeyedArrayItemSetter getInstance( final Class<?> targetClass, final String key, final Class<?> argumentClass ) {
         try {
             final int itemIndex = Integer.parseInt( key );
             return targetClass.isArray() ? new KeyedArrayItemSetter( itemIndex ) : null;
@@ -680,14 +673,12 @@ class KeyedArrayItemSetter implements KeyedSetting {
      * @param target object from which to get the value
      * @param value the value to set
      */
+    @Override
     public void setValueForTarget( final Object target, final Object value ) throws InvalidKeyException {
         try {
-            java.lang.reflect.Array.set( target, ITEM_INDEX, value );
+            Array.set(target, itemIndex, value );
         }
-        catch ( ArrayIndexOutOfBoundsException exception ) {
-            throw new InvalidKeyException( exception );
-        }		
-        catch ( IllegalArgumentException exception ) {
+        catch ( ArrayIndexOutOfBoundsException | IllegalArgumentException exception ) {
             throw new InvalidKeyException( exception );
         }		
     }

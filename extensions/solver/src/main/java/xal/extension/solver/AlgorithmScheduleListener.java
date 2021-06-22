@@ -7,15 +7,9 @@
  * Oak Ridge National Laboratory
  * Oak Ridge, TN 37830
  */
- 
-package xal.extension.solver;
-
-import xal.extension.solver.market.*;
+ package xal.extension.solver;
 
 import xal.extension.solver.algorithm.*;
-
-import java.util.*;
-
 
 /**
  * The interface implemented by listeners of algorithm schedule events.

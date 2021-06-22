@@ -277,14 +277,12 @@ public class AcceleratingRfGap {
      * defining the RF accelerating gap are provided.
      *
      * @param f         time-harmonic frequency of the accelerating field (Hz)
-     * @param L         length of gap, used for initial approximation of phase (meters)
      * @param V0        total potential drop across gap axial field (Volts)
      * @param spcRfFld  spectrum of the RF field along design axis
      *
      * @since  Oct 1, 2015,   Christopher K. Allen
      */
     public AcceleratingRfGap(double f, double V0, AxialFieldSpectrum spcRfFld) {
-//        this.dblGapLen = L;
         this.dblFldFrq = f;
         this.dblFldMag = V0;
         this.spcFldSpc = spcRfFld;

@@ -6,6 +6,7 @@
 
 package xal.sim.slg;
 
+import java.io.PrintStream;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.smf.AcceleratorSeqCombo;
@@ -20,15 +21,15 @@ import java.util.Map;
 import java.util.Set;
 /**
  * Factory to create a complete lattice from an XAL accelerator sequence
- * or acclerator combo sequence.
+ * or accelerator combo sequence.
  *
  * @author  wdklotz
  */
 public class LatticeFactory {
-	private static java.io.PrintStream cout = System.out;
+	private static PrintStream cout = System.out;
 	private Lattice lattice;
-	private final List<String> THICK_KINDS;
-	private final List<String> THIN_KINDS;
+	private final List<String> thickKinds;
+	private final List<String> thinKinds;
 	private static final List<String> STANDARD_THICK_KINDS;
 	private static final List<String> STANDARD_THIN_KINDS;
 	private boolean debug;
@@ -38,8 +39,8 @@ public class LatticeFactory {
 	private AcceleratorSeq accelSeq;
 
 	static {
-		STANDARD_THICK_KINDS = new ArrayList<String>();
-		STANDARD_THIN_KINDS = new ArrayList<String>();
+		STANDARD_THICK_KINDS = new ArrayList<>();
+		STANDARD_THIN_KINDS = new ArrayList<>();
 
 		STANDARD_THICK_KINDS.add("DH");
 //		STANDARD_THICK_KINDS.add("QH");
@@ -54,8 +55,8 @@ public class LatticeFactory {
 		STANDARD_THICK_KINDS.add("BCM");   //slim 
 		STANDARD_THICK_KINDS.add("SOL");
 		STANDARD_THICK_KINDS.add("QUAD");
-		STANDARD_THICK_KINDS.add(xal.smf.impl.EQuad.s_strType);
-		STANDARD_THICK_KINDS.add(xal.smf.impl.EDipole.s_strType);
+		STANDARD_THICK_KINDS.add(xal.smf.impl.EQuad.TYPE);
+		STANDARD_THICK_KINDS.add(xal.smf.impl.EDipole.TYPE);
 
 //		STANDARD_THIN_KINDS.add("SH");
 //		STANDARD_THIN_KINDS.add("SV");
@@ -84,8 +85,8 @@ public class LatticeFactory {
 	 * <code>Example: ["DCH","DCV","RG","BCM","BPM","WS","Foil","VacuumWindow"].</code>
 	 */
 	public LatticeFactory( final List<String> thickKinds, final List<String> thinKinds ) {
-		this.THICK_KINDS = thickKinds;
-		this.THIN_KINDS = thinKinds;
+		this.thickKinds = thickKinds;
+		this.thinKinds = thinKinds;
 		this.debug = false;
 		this.verbose = false;
 		this.halfmag = true;
@@ -202,9 +203,9 @@ public class LatticeFactory {
 		if (debug) {
 			cout.println("processing THICK elements");
 		}
-		ArrayList<Element> allElements = new ArrayList<Element>();
+		ArrayList<Element> allElements = new ArrayList<>();
 		//walk the XAL object tree to get all nodes of a given kind
-		nodesOfKind(sequence, THICK_KINDS, allElements);
+		nodesOfKind(sequence, thickKinds, allElements);
 		//sort all Elements by their position
 		sortElementsByPosition(allElements);
 		//append all elements to the lattice
@@ -226,16 +227,16 @@ public class LatticeFactory {
 	/**
 	 * Process all thin nodes. Filter them from 'sequence' and insert them into
 	 * the lattice.
-	 *@param sequence the XAL acclerator sequence.
+	 *@param sequence the XAL accelerator sequence.
 	 * @throws LatticeError
 	 */
 	private void processThinElements(AcceleratorSeq sequence) throws LatticeError {
 		if (debug) {
 			cout.println("processing THIN elements");
 		}
-		ArrayList<Element> allElements = new ArrayList<Element>();
+		ArrayList<Element> allElements = new ArrayList<>();
 		//walk the XAL object tree to get all nodes of a given kind
-		nodesOfKind(sequence, THIN_KINDS, allElements);
+		nodesOfKind(sequence, thinKinds, allElements);
 		//sort all Elements by their position
 		sortElementsByPosition(allElements);
 		//insert all elements to the lattice
@@ -351,7 +352,7 @@ public class LatticeFactory {
 				result.add(dipole);
 			}
 			
-		} else if (node.isKindOf(xal.smf.impl.EDipole.s_strType)) {  // EDipole
+		} else if (node.isKindOf(xal.smf.impl.EDipole.TYPE)) {  // EDipole
 			
 			Element dipole = new EDipole(position, effLength, name);
 			dipole.setAcceleratorNode(node);
@@ -412,7 +413,7 @@ public class LatticeFactory {
 				result.add(quadrupole);
 			}
 			
-		} else if (node.isKindOf(xal.smf.impl.EQuad.s_strType)) { 
+		} else if (node.isKindOf(xal.smf.impl.EQuad.TYPE)) { 
 		    //electrostatic quadrupoles
 			//we use only effective lengths for magnets
 			//			length= ((Magnet) node).getEffLength();
@@ -587,6 +588,7 @@ public class LatticeFactory {
 	private void sortElementsByPosition(ArrayList<Element> allElements) {
 		Collections.sort(allElements, new Comparator<Element>() {
 			/** Comparator for the sortElementsByPosition member function. */
+                        @Override
 			public int compare(Element obj1, Element obj2) {
 				double p1 = obj1.getPosition();
 				double p2 = obj2.getPosition();

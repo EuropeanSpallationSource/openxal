@@ -40,7 +40,7 @@ public interface IBoundedList<T> extends Iterable<T> {
      * Adds an object to the list, potentially pushing off the oldest object
      * if the buffer is full.
      * 
-     * @param   objNew      object to be inserted into the list
+     * @param   item      object to be inserted into the list
      *
      * @author Christopher K. Allen
      * @since  Apr 11, 2013

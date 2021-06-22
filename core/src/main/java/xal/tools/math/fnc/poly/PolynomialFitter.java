@@ -6,7 +6,6 @@
  */
 package xal.tools.math.fnc.poly;
 
-import java.util.List;
 
 import xal.tools.math.Interval;
 import xal.tools.math.fnc.RealFunctionSamples;
@@ -34,7 +33,7 @@ public class PolynomialFitter  {
      * Global Methods
      */
     
-//    static public UnivariatePolynomial  fit(int nOrder, List<FunctionSample> lstSmps) {
+//    public static UnivariatePolynomial  fit(int nOrder, List<FunctionSample> lstSmps) {
 //        int     mRows = lstSmps.size();
 //        int     nCols = nOrder;
 //        
@@ -61,7 +60,7 @@ public class PolynomialFitter  {
      * is used to create a least-squares fit up to the given polynomial order. 
      *
      * @param nDegree   degree of the polynomial used to fit the data
-     * @param lstSmps   data of function samples 
+     * @param fncSmps   data of function samples 
      *
      * @since  Sep 25, 2015   by Christopher K. Allen
      */

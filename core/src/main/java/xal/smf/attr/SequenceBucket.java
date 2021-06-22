@@ -24,9 +24,9 @@ public class SequenceBucket extends AttributeBucket {
      *  Constants
      */
 
-    public final static String  c_strType = "sequence"; 
+    public static final String  TYPE = "sequence"; 
 
-    final static String[]       c_arrNames = {"predecessors"
+    static final String[]       ARR_NAMES = {"predecessors"
                                 };
     
     
@@ -34,7 +34,7 @@ public class SequenceBucket extends AttributeBucket {
      *  Local Attributes
      */
     
-    private Attribute m_attPredecessors;
+    private Attribute attPredecessors;
 
     
     /*
@@ -42,7 +42,8 @@ public class SequenceBucket extends AttributeBucket {
      */
     
     /** Furnish a unique type id  */
-    public String getType()         { return c_strType; };
+    @Override
+    public String getType()         { return TYPE; }
     
 
      
@@ -52,14 +53,14 @@ public class SequenceBucket extends AttributeBucket {
         super();
         
         String sa[] = new String[2]; // can have at most 2 predecessors
-        m_attPredecessors  = new Attribute(sa);
+        attPredecessors  = new Attribute(sa);
         
-        super.registerAttribute(c_arrNames[0], m_attPredecessors, "Preceding sequences (max 2).");
-    };
+        super.registerAttribute(ARR_NAMES[0], attPredecessors, "Preceding sequences (max 2).");
+    }
 
     
-    public String[]   getPredecessors()  { return m_attPredecessors.getArrStr(); };
+    public String[]   getPredecessors()  { return attPredecessors.getArrStr(); }
     
-    public void setPredecessors(String [] sa) { m_attPredecessors.set(sa); };
+    public void setPredecessors(String [] sa) { attPredecessors.set(sa); }
     
-};
+}

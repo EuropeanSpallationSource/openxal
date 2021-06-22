@@ -18,25 +18,26 @@ import java.util.logging.*;
 
 public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	/** indicates the node type as being a sequence */
-    public static final String    s_strType = "sequence";
+    public static final String    TYPE = "sequence";
 
     /**    bucket for sequence parameters  */
-    protected SequenceBucket   m_bucSequence;
+    protected SequenceBucket   bucSequence;
 
     /** Container of immediate nodes in this sequence */
-    protected List<AcceleratorNode> m_arrNodes;
+    protected List<AcceleratorNode> arrNodes;
 	
 	/** table of nodes keyed by ID */
 	protected Map<String, AcceleratorNode> nodeTable;
 	
 	/** Container of immediate subsequences */
-	protected List<AcceleratorSeq> _sequences;
+	protected List<AcceleratorSeq> sequences;
   
     
     /*
      * Bucket Support
      */
 
+    @Override
     public void addBucket(AttributeBucket buc)  {
 		super.addBucket(buc);
         if (buc.getClass().equals( SequenceBucket.class )) {
@@ -47,7 +48,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 
     /** returns the bucket containing the sequence parameters
      *   - see attr. SequenceBucket  */
-    public SequenceBucket      getSequenceBuc()          { return m_bucSequence; };
+    public SequenceBucket      getSequenceBuc()          { return bucSequence; }
     /* sets the bucket containing the twiss parameters
      *   - see attr.TwissBucket  */
 
@@ -59,16 +60,18 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
      * @since  May 3, 2011
      */
     public void setSequence(SequenceBucket buc)   { 
-        m_bucSequence = buc; 
-        m_mapAttrs.put(buc.getType(), buc); 
-        };
+        bucSequence = buc; 
+        mapAttrs.put(buc.getType(), buc); 
+        }
 
 
     /** data adaptor label */
+    @Override
     public String dataLabel() { return "sequence"; }
     
     
     /** Update this sequence from the specified data adaptor */ 
+    @Override
     public void update( final DataAdaptor adaptor )  throws NumberFormatException {
         super.update( adaptor );
 		
@@ -92,7 +95,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
                 addChildSequence( sequenceAdaptor, accelerator, nodeFactory );
             }
             catch ( ClassNotFoundException exception ) {
-				final String message = "Error reading child sequence for parent: " + m_strId;
+				final String message = "Error reading child sequence for parent: " + strId;
 				Logger.getLogger( "global" ).log( Level.SEVERE, message, exception );
                 exception.printStackTrace();
             }
@@ -115,7 +118,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
                 addChildNode( nodeAdaptor, accelerator, nodeFactory );
             }
             catch (ClassNotFoundException exception) {
-				final String message = "Error reading child node for sequence: " + m_strId;
+				final String message = "Error reading child node for sequence: " + strId;
 				Logger.getLogger( "global" ).log( Level.SEVERE, message, exception );
                 exception.printStackTrace();
             }
@@ -171,20 +174,22 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	 */
 	public void writeDeeply( final DataAdaptor adaptor ) {
         super.write( adaptor );
-        adaptor.writeNodes( m_arrNodes );
+        adaptor.writeNodes( arrNodes );
 	}
         
 
     /** write the acceleratorSeq to the data adaptor */
+    @Override
     public void write( final DataAdaptor adaptor ) {
 		writeDeeply( adaptor );
     }
         
+    @Override
     protected void writeAttributes(DataAdaptor adaptor) {
-        adaptor.setValue("id", m_strId);
-        adaptor.setValue("len", m_dblLen);
-        adaptor.setValue("pos", m_dblPos);
-        if (!getType().equals(s_strType)) {
+        adaptor.setValue("id", strId);
+        adaptor.setValue("len", dblLen);
+        adaptor.setValue("pos", dblPos);
+        if (!getType().equals(TYPE)) {
             adaptor.setValue("type", getType());
         }
     }
@@ -192,10 +197,11 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
     /**
      * method to write status of the node into a separate file
      */
+    @Override
     public void writeStatus(DataAdaptor adaptor) {
         DataAdaptor seqAdaptor = adaptor.createChild(dataLabel());
-        seqAdaptor.setValue("id", m_strId);
-        m_arrNodes.forEach(node -> {
+        seqAdaptor.setValue("id", strId);
+        arrNodes.forEach(node -> {
             node.writeStatus(seqAdaptor);
         });
 
@@ -226,14 +232,15 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	public AcceleratorSeq( final String strId, final ChannelFactory channelFactory, int intReserve ) {
 		super( strId, channelFactory );
 
-		m_arrNodes = new ArrayList<AcceleratorNode>( intReserve );
-		_sequences = new ArrayList<AcceleratorSeq>();
-		nodeTable = new HashMap<String, AcceleratorNode>( intReserve );
+		arrNodes = new ArrayList<>( intReserve );
+		sequences = new ArrayList<>();
+		nodeTable = new HashMap<>( intReserve );
 	}
 
 
     /** Support the node type */
-    public String getType() { return s_strType; };
+    @Override
+    public String getType() { return TYPE; }
 	
 		
 	/** 
@@ -247,8 +254,9 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
  	
 	
 	/** get the primary ancestor sequence that is a direct child of the accelerator */
+    @Override
 	public AcceleratorSeq getPrimaryAncestor() {
-		return ( getParent() == m_objAccel ) ? this : getParent().getPrimaryAncestor();
+		return ( getParent() == objAccel ) ? this : getParent().getPrimaryAncestor();
 	}
 
 
@@ -279,9 +287,9 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
      */
     protected int indexToAddNode( final AcceleratorNode newNode ) {
         int insertIndex = 0;
-        for ( int index = m_arrNodes.size()-1 ; index >= 0 ; index-- ) {
-            AcceleratorNode node = m_arrNodes.get(index);
-            if ( newNode.m_dblPos >= node.m_dblPos ) {
+        for ( int index = arrNodes.size()-1 ; index >= 0 ; index-- ) {
+            AcceleratorNode node = arrNodes.get(index);
+            if ( newNode.dblPos >= node.dblPos ) {
                 insertIndex = index + 1;
                 break;
             }
@@ -301,7 +309,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
             addNodeAt( insertIndex, newNode );
 			nodeTable.put( newNode.getId(), newNode );
 			if ( newNode instanceof AcceleratorSeq ) { 
-				_sequences.add( (AcceleratorSeq)newNode );
+				sequences.add( (AcceleratorSeq)newNode );
 			}
             return true;
         }
@@ -318,14 +326,14 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
     protected boolean addSoft( final AcceleratorSeq node ){
    
 		final int insertIndex = indexToAddNode( node );
-        m_arrNodes.add( insertIndex, node );
+        arrNodes.add( insertIndex, node );
 		nodeTable.put( node.getId(), node );
         
         this.setAccelerator( node.getAccelerator() ); // set to the same accelerator as added node
  
-        this.m_bolIsSoft = true;
+        this.bolIsSoft = true;
         return true;
-    };
+    }
     
 
     /**
@@ -343,7 +351,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
      * @param node - the node to insert
      */
     public void addNodeAt( int iIndex, AcceleratorNode node ) throws IndexOutOfBoundsException {
-        m_arrNodes.add( iIndex, node );
+        arrNodes.add( iIndex, node );
         
         // Set new parent sequence
         node.setParent( this );
@@ -356,13 +364,13 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
      * @param node the node to remove
      */
     public boolean removeNode( final AcceleratorNode node ) {
-        if( !m_arrNodes.remove( node ) )
+        if( !arrNodes.remove( node ) )
             return false;
         
 		nodeTable.remove( node.getId() );
 		
 		if ( node instanceof AcceleratorSeq ) {
-			_sequences.remove( node );
+			sequences.remove( node );
 		}
 		
         node.setParent( null );
@@ -375,14 +383,14 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
     /** Remove all nodes from the this sequence. */
     public void removeAllNodes() {      
         // remove parent and accelerator data for each node
-		for ( final AcceleratorNode node : m_arrNodes ) {
+		for ( final AcceleratorNode node : arrNodes ) {
             node.setParent( null );
             node.setAccelerator( null );
         }
     
         // Clean collection of nodes
-        m_arrNodes.clear();
-		_sequences.clear();
+        arrNodes.clear();
+		sequences.clear();
 		nodeTable.clear();
     }
 
@@ -421,8 +429,8 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	 * @return the list of nodes matching the qualifier criteria
 	 */
     @SuppressWarnings( "unchecked" )    // we do check the class cast, but the compiler has no way of knowing
-    static public <SourceType extends AcceleratorNode,NodeType extends SourceType> List<NodeType> filterNodesByClass( final Class<NodeType> resultClass, final List<SourceType> sourceNodes ) {
-        final List<NodeType> matchedNodes = new ArrayList<NodeType>();    // returned list
+    public static <SourceType extends AcceleratorNode,NodeType extends SourceType> List<NodeType> filterNodesByClass( final Class<NodeType> resultClass, final List<SourceType> sourceNodes ) {
+        final List<NodeType> matchedNodes = new ArrayList<>();    // returned list
         
 		for ( final SourceType node : sourceNodes ) {
             if ( resultClass.isInstance( node ) ) {
@@ -441,8 +449,8 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	 * @param qualifier the qualifier used to filter the nodes
 	 * @return the list of nodes matching the qualifier criteria
 	 */
-    static public <SourceType extends AcceleratorNode,NodeType extends SourceType> List<NodeType> getNodesOfClassWithQualifier( final Class<NodeType> resultClass, final List<SourceType> sourceNodes, final TypeQualifier qualifier ) {
-        return appendNodesOfClassWithQualifier( resultClass, new ArrayList<NodeType>(), sourceNodes, qualifier );
+    public static <SourceType extends AcceleratorNode,NodeType extends SourceType> List<NodeType> getNodesOfClassWithQualifier( final Class<NodeType> resultClass, final List<SourceType> sourceNodes, final TypeQualifier qualifier ) {
+        return appendNodesOfClassWithQualifier( resultClass, new ArrayList<>(), sourceNodes, qualifier );
     }
 
 
@@ -456,7 +464,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	 * @return the list of nodes matching the qualifier criteria
 	 */
     @SuppressWarnings( "unchecked" )    // we do check the class cast, but the compiler has no way of knowing
-	static public <SourceType extends AcceleratorNode,NodeType extends SourceType> List<NodeType> appendNodesOfClassWithQualifier( final Class<NodeType> resultClass, final List<NodeType> matchedNodes, final List<SourceType> sourceNodes, final TypeQualifier qualifier ) {
+	public static <SourceType extends AcceleratorNode,NodeType extends SourceType> List<NodeType> appendNodesOfClassWithQualifier( final Class<NodeType> resultClass, final List<NodeType> matchedNodes, final List<SourceType> sourceNodes, final TypeQualifier qualifier ) {
         // for performance reasons, we handle NodeType for Accelerator nodes separately from AcceleratorNode subclasses
         if ( resultClass == null || AcceleratorNode.class.equals( resultClass ) ) {     // we don't need to check the node class since the source nodes are all accelerator nodes
             for ( final SourceType node : sourceNodes ) {
@@ -485,7 +493,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	 * @param qualifier the qualifier used to filter the nodes
 	 * @return the list of nodes matching the qualifier criteria
 	 */
-	static public <SourceType extends AcceleratorNode,NodeType extends SourceType> List<NodeType> appendNodesWithQualifier( final List<NodeType> matchedNodes, final List<SourceType> sourceNodes, final TypeQualifier qualifier ) {
+	public static <SourceType extends AcceleratorNode,NodeType extends SourceType> List<NodeType> appendNodesWithQualifier( final List<NodeType> matchedNodes, final List<SourceType> sourceNodes, final TypeQualifier qualifier ) {
 		return appendNodesOfClassWithQualifier( null, matchedNodes, sourceNodes, qualifier );
 	}
 
@@ -518,8 +526,8 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	 * @param qualifier the qualifier used to filter the nodes
 	 * @return the list of nodes matching the qualifier criteria
 	 */
-    static public <SourceType extends AcceleratorNode,NodeType extends SourceType> List<NodeType> getNodesWithQualifier( final List<SourceType> sourceNodes, final TypeQualifier qualifier ) {
-		return appendNodesWithQualifier( new ArrayList<NodeType>(), sourceNodes, qualifier );
+    public static <SourceType extends AcceleratorNode,NodeType extends SourceType> List<NodeType> getNodesWithQualifier( final List<SourceType> sourceNodes, final TypeQualifier qualifier ) {
+		return appendNodesWithQualifier( new ArrayList<>(), sourceNodes, qualifier );
     }
     
     
@@ -529,7 +537,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	* @param statusFilter the status for which to filter nodes
 	* @return the list of nodes matching the status criterion
 	*/
-    static public <NodeType extends AcceleratorNode> List<NodeType> filterNodesByStatus( final List<NodeType> nodes, final boolean statusFilter ) {
+    public static <NodeType extends AcceleratorNode> List<NodeType> filterNodesByStatus( final List<NodeType> nodes, final boolean statusFilter ) {
         return getNodesWithQualifier( nodes, QualifierFactory.getStatusQualifier( statusFilter ) );        
     }
 	
@@ -563,7 +571,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	 * @return a list of this sequence's nodes which match the qualifier criteria
 	 */
     public <NodeType extends AcceleratorNode> List<NodeType> getNodesWithQualifier( final TypeQualifier qualifier ) {
-		return appendNodesWithQualifier( new ArrayList<NodeType>(), getNodes(), qualifier );
+		return appendNodesWithQualifier( new ArrayList<>(), getNodes(), qualifier );
     }
         
     
@@ -585,7 +593,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	 * @return the list of all inclusive nodes which match the qualifier criteria
 	 */
     public <NodeType extends AcceleratorNode> List<NodeType> getAllNodesWithQualifier( final TypeQualifier qualifier ) {
-		return appendNodesWithQualifier( new ArrayList<NodeType>(), getAllNodes(), qualifier );
+		return appendNodesWithQualifier( new ArrayList<>(), getAllNodes(), qualifier );
     }
     
     
@@ -595,7 +603,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	* @return the list of all inclusive nodes
 	*/
     public List<AcceleratorNode> getAllInclusiveNodes() {
-		List<AcceleratorNode> allNodes = new ArrayList<AcceleratorNode>();
+		List<AcceleratorNode> allNodes = new ArrayList<>();
 		allNodes.add( this );
 		allNodes.addAll( getAllNodes() );
         
@@ -621,7 +629,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	 * @return the list of all inclusive nodes which match the qualifier criteria
 	 */
     public <NodeType extends AcceleratorNode> List<NodeType> getAllInclusiveNodesWithQualifier( final TypeQualifier qualifier ) {
-		return appendNodesWithQualifier( new ArrayList<NodeType>(), getAllInclusiveNodes(), qualifier );
+		return appendNodesWithQualifier( new ArrayList<>(), getAllInclusiveNodes(), qualifier );
     }
     
     
@@ -639,7 +647,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	 * @return a list of this sequence's immediate child nodes
 	 */
     public List<AcceleratorNode> getNodes() {
-        return Collections.<AcceleratorNode>unmodifiableList( m_arrNodes );
+        return Collections.<AcceleratorNode>unmodifiableList( arrNodes );
     }
 	
 	
@@ -657,7 +665,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	 * @return a list of all nodes contained in this sequence
 	 */
     public List<AcceleratorNode> getAllNodes()   {
-        return recurNodeSearch( new LinkedList<AcceleratorNode>(), this );
+        return recurNodeSearch( new LinkedList<>(), this );
     }
 	
 	
@@ -675,19 +683,20 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
      * Return the total length (m) of this sequence 
      * @return the length of this sequence along the closed orbit
      */
+    @Override
     public double getLength() {
-		return m_dblLen;
+		return dblLen;
     }
 	
 	
     /**
      * Return the allowed predecessor sequences of a sequence 
      * At most there can be 2 predecessors.
-	 * @return an array of allowed predessesor sequences
+	 * @return an array of allowed predecessor sequences
      */
     public String[] getPredecessors() {
-        if ( m_bucSequence != null ) {
-            return m_bucSequence.getPredecessors();
+        if ( bucSequence != null ) {
+            return bucSequence.getPredecessors();
         }
         else {
             return new String[] {};
@@ -703,21 +712,21 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	public boolean canPrecede( final AcceleratorSeq sequence ) {
 		String[] predecessors = sequence.getPredecessors();
 		for ( int index = 0 ; index < predecessors.length ; index++ ) {
-			if ( m_strId.equals( predecessors[index] ) )  return true;
+			if ( strId.equals( predecessors[index] ) )  return true;
 		}
 		return false;
 	}
 	
 	
 	/**
-	 * Determing if the ordered list of sequences forms a closed loop.  The determination
+	 * Determining if the ordered list of sequences forms a closed loop.  The determination
 	 * is based on whether each successive sequence has a predecessor (based on
 	 * the getPredecessors() method) that precedes it in the list, and the last item in
 	 * the list is a predecessor of the first item in the list.
 	 * @param sequences an ordered list of sequences to test for forming a ring
 	 * @return true if the sequences form a ring and false if not
 	 */
-	static public boolean formsRing( final List<AcceleratorSeq> sequences ) {
+	public static boolean formsRing( final List<AcceleratorSeq> sequences ) {
 		final int count = sequences.size();
 		
 		// test if we have more than one sequence
@@ -740,8 +749,8 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	 * @param sequences a collection of contiguous sequences to order from start to finish
 	 * @return the ordered list of sequences
      */
-    static public List<AcceleratorSeq> orderSequences( final Collection<AcceleratorSeq> sequences ) throws SequenceOrderingException {
-        final Map<String,AcceleratorSeq> sequenceMap = new HashMap<String,AcceleratorSeq>( sequences.size() );
+    public static List<AcceleratorSeq> orderSequences( final Collection<AcceleratorSeq> sequences ) throws SequenceOrderingException {
+        final Map<String,AcceleratorSeq> sequenceMap = new HashMap<>( sequences.size() );
         Iterator<AcceleratorSeq> sequenceIter = sequences.iterator();
          
         AcceleratorSeq sequence = null;
@@ -752,14 +761,14 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
          
         if ( sequence == null )  return Collections.<AcceleratorSeq>emptyList();
          
-        final LinkedList<AcceleratorSeq> orderedSequences = new LinkedList<AcceleratorSeq>();
+        final LinkedList<AcceleratorSeq> orderedSequences = new LinkedList<>();
         sequence.addSequenceChain( orderedSequences, sequenceMap );
         
         while ( !sequenceMap.isEmpty() ) {
             Collection<AcceleratorSeq> remainingSequences = sequenceMap.values();
             sequenceIter = remainingSequences.iterator();
             sequence = sequenceIter.next();
-            final LinkedList<AcceleratorSeq> localList = new LinkedList<AcceleratorSeq>();
+            final LinkedList<AcceleratorSeq> localList = new LinkedList<>();
             sequence.addSequenceChain( localList, sequenceMap );
             
             // verify that the local list can be linked to the main list
@@ -784,7 +793,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
             }
         }
          
-        return new ArrayList<AcceleratorSeq>( orderedSequences );
+        return new ArrayList<>( orderedSequences );
     }
     
     
@@ -817,7 +826,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
      * return a list of all of this sequence's subsequences
      */
     public List<AcceleratorSeq> getAllSeqs() {
-        return recurSeqSearch( new LinkedList<AcceleratorSeq>(), this ); 
+        return recurSeqSearch( new LinkedList<>(), this ); 
     }
     
 
@@ -836,7 +845,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
     
     /** Get the sequences that are immediate children of this sequence */
     public List<AcceleratorSeq> getSequences() {
-        return _sequences;
+        return sequences;
     }
     
     
@@ -857,7 +866,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	
 		// If this sequence is not the node's parent sequence then add the parent sequence's position.
 		// Calling "getPosition()" takes care of nested sequences.
-		return ( parent == this ) ? node.m_dblPos : node.m_dblPos + getPosition( parent );
+		return ( parent == this ) ? node.dblPos : node.dblPos + getPosition( parent );
     }
 	
 	
@@ -919,6 +928,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
      */
     public void sortNodes( final List<? extends AcceleratorNode> nodes )  {
 		Collections.sort( nodes, new Comparator<AcceleratorNode>() {
+                        @Override
 			public int compare( final AcceleratorNode node1, final AcceleratorNode node2 ) {
 				final double position1 = getPosition( node1 );
 				final double position2 = getPosition( node2 );
@@ -935,6 +945,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	 */
     public void sortNodesByProximity( final List<? extends AcceleratorNode> nodes, final AcceleratorNode referenceNode )  {
 		Collections.sort( nodes, new Comparator<AcceleratorNode>() {
+                        @Override
 			public int compare( final AcceleratorNode node1, final AcceleratorNode node2 ) {
 				final double node1Proximity = Math.abs( getShortestRelativePosition( node1, referenceNode ) );
 				final double node2Proximity = Math.abs( getShortestRelativePosition( node2, referenceNode ) );
@@ -951,6 +962,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	 */
     public void sortNodesByRelativePosition( final List<? extends AcceleratorNode> nodes, final AcceleratorNode referenceNode )  {
 		Collections.sort( nodes, new Comparator<AcceleratorNode>() {
+                        @Override
 			public int compare( final AcceleratorNode node1, final AcceleratorNode node2 ) {
 				final double node1Proximity = getShortestRelativePosition( node1, referenceNode );
 				final double node2Proximity = getShortestRelativePosition( node2, referenceNode );
@@ -966,7 +978,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	 * @param branch the sequence branch down which to search for more sequences
 	 * @return the collection of all sequences found; returned for convenience
 	 */
-    static protected LinkedList<AcceleratorSeq> recurSeqSearch( final LinkedList<AcceleratorSeq> sequences, final AcceleratorSeq branch )  {
+    protected static LinkedList<AcceleratorSeq> recurSeqSearch( final LinkedList<AcceleratorSeq> sequences, final AcceleratorSeq branch )  {
 		for ( AcceleratorSeq sequence : branch.getSequences() ) {
 			sequences.add( sequence );
 			recurSeqSearch( sequences, sequence );
@@ -982,7 +994,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	 * @param sequence the branch down which to search for nodes
 	 * @return the collection of all nodes found; returned for convenience
 	 */
-    static protected LinkedList<AcceleratorNode> recurNodeSearch( final LinkedList<AcceleratorNode> nodes, final AcceleratorSeq sequence )  {
+    protected static LinkedList<AcceleratorNode> recurNodeSearch( final LinkedList<AcceleratorNode> nodes, final AcceleratorSeq sequence )  {
 		for ( AcceleratorNode node : sequence.getNodes() ) {
 			nodes.add( node );
 			if ( node instanceof AcceleratorSeq ) {

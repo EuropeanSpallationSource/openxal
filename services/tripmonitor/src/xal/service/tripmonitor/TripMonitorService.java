@@ -17,10 +17,10 @@ import java.text.*;
 /** service which broadcasts trip monitor status */
 public class TripMonitorService implements TripMonitorPortal {
 	/** identifies the service type */
-	protected final static String IDENTITY = "Trip Monitor";
+	protected static final String IDENTITY = "Trip Monitor";
 	
 	/** Formatter for translating a date to and from a string */
-	protected final static DateFormat DATE_FORMATTER;
+	protected static final DateFormat DATE_FORMATTER;
 	
 	/** The trip monitor manager */
 	protected final TripMonitorManager TRIP_MANAGER;

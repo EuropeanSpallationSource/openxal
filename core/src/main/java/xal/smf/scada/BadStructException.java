@@ -76,4 +76,3 @@ public class BadStructException extends RuntimeException {
         super(strMsg, e);
     }
 }
-

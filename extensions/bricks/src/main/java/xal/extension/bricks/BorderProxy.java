@@ -16,7 +16,7 @@ import xal.tools.data.*;
 /** interface for providing border node behavior */
 abstract public class BorderProxy<T extends Border> extends BeanProxy<T> {
 	/** data label */
-	public static String DATA_LABEL = "BorderProxy";
+	public static String dataLabel = "BorderProxy";
 	
 	
 	/** Constructor */
@@ -26,7 +26,7 @@ abstract public class BorderProxy<T extends Border> extends BeanProxy<T> {
 	
 	
 	/** generator */
-	static public BorderProxy<Border> getInstance( final DataAdaptor adaptor ) {
+	public static BorderProxy<Border> getInstance( final DataAdaptor adaptor ) {
 		return BorderProxyFactory.getBorderProxy( adaptor.stringValue( "type" ) );
 	}
 	
@@ -35,7 +35,8 @@ abstract public class BorderProxy<T extends Border> extends BeanProxy<T> {
 	* Provides the name used to identify the class in an external data source.
 	* @return a tag that identifies the receiver's type
 	*/
+        @Override
 	public String dataLabel() {
-		return DATA_LABEL;
+		return dataLabel;
 	}
 }

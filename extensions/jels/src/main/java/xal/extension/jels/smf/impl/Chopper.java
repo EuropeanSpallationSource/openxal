@@ -36,7 +36,7 @@ public class Chopper extends AcceleratorNode {
     /*
      *  Constants
      */
-    public static final String s_strType = "CHP";
+    public static final String TYPE = "CHP";
 
     public static final String LENGTH_RB_HANDLE = "lengthRB";
     private Channel lengthRC = null;
@@ -65,7 +65,7 @@ public class Chopper extends AcceleratorNode {
      * Register type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes(Chopper.class, s_strType);
+        ElementTypeManager.defaultManager().registerTypes(Chopper.class, TYPE);
     }
 
     /**
@@ -73,7 +73,7 @@ public class Chopper extends AcceleratorNode {
      */
     @Override
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /**

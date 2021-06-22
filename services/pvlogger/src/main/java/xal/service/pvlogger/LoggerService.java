@@ -27,14 +27,14 @@ public class LoggerService implements RemoteLogging {
 	protected final String IDENTITY = "PV Logger";
 	
 	// model
-	protected final LoggerModel _model;
+	protected final LoggerModel model;
 	
 	
 	/**
 	 * LoggerService constructor
 	 */
 	public LoggerService( final LoggerModel model ) {
-		_model = model;
+		this.model = model;
 		broadcast();
 	}
 	
@@ -54,7 +54,7 @@ public class LoggerService implements RemoteLogging {
 	 * @param period The period in seconds between events where we take and store machine snapshots.
 	 */
 	public void setLoggingPeriod(String groupType, double period) {
-		final LoggerSession session = _model.getLoggerSession( groupType );
+		final LoggerSession session = model.getLoggerSession( groupType );
 		if ( session != null ) {
 			session.setLoggingPeriod( period );
 		}
@@ -67,7 +67,7 @@ public class LoggerService implements RemoteLogging {
 	 * @return The period in seconds between events where we take and store machine snapshots.
 	 */
 	public double getLoggingPeriod(String groupType) {
-		final LoggerSession session = _model.getLoggerSession( groupType );
+		final LoggerSession session = model.getLoggerSession( groupType );
 		if ( session != null ) {
 			return session.getLoggingPeriod();
 		}
@@ -85,7 +85,7 @@ public class LoggerService implements RemoteLogging {
 	 */
 	public int takeAndPublishSnapshot( final String groupID, final String comment ) {
 		try {
-			final LoggerSession loggerSession = _model.getPVLogger().getLoggerSession( groupID );
+			final LoggerSession loggerSession = model.getPVLogger().getLoggerSession( groupID );
 			return loggerSession != null ? (int)loggerSession.takeAndPublishSnapshot( comment ).getId() : -1;
 		}
 		catch( Exception exception ) {
@@ -96,7 +96,7 @@ public class LoggerService implements RemoteLogging {
 	
 	/** publish snapshots in the snapshot buffer */
 	public void publishSnapshots() {
-		_model.publishSnapshots();
+		model.publishSnapshots();
 	}
 
 	
@@ -106,7 +106,7 @@ public class LoggerService implements RemoteLogging {
 	 * @return true if a session exists for the group and false if not
 	 */
 	public boolean hasLoggerSession( final String groupID ) {
-		return _model.getPVLogger().hasLoggerSession( groupID );
+		return model.getPVLogger().hasLoggerSession( groupID );
 	}
 	
 	
@@ -116,7 +116,7 @@ public class LoggerService implements RemoteLogging {
 	 * @return true if the logger is logging and false if not
 	 */
 	public boolean isLogging( final String groupType ) {
-		final LoggerSession session = _model.getLoggerSession( groupType );
+		final LoggerSession session = model.getLoggerSession( groupType );
 		if ( session != null ) {
 			return session.isLogging();
 		}
@@ -128,25 +128,25 @@ public class LoggerService implements RemoteLogging {
 	
 	/** reload the logger session identified by the group type */
 	public boolean reloadLoggerSession( final String groupType ) {
-		return _model.reloadLoggerSession( groupType );
+		return model.reloadLoggerSession( groupType );
 	}
 	
 	
 	/** Stop logging, reload groups from the database and resume logging. */
 	public void restartLogger() {
-		_model.restartLogger();
+		model.restartLogger();
 	}
 	
 	
 	/** Resume the logger logging. */
 	public void resumeLogging() {
-		_model.resumeLogging();
+		model.resumeLogging();
 	}
 	
 	
 	/** Stop the logger. */
 	public void stopLogging() {
-		_model.stopLogging();
+		model.stopLogging();
 	}
 	
 	
@@ -155,7 +155,7 @@ public class LoggerService implements RemoteLogging {
 	 * @param code The shutdown code which is normally just 0.
 	 */
 	public void shutdown( final int code ) {
-		_model.shutdown(code);
+		model.shutdown(code);
 	}
 	
 	
@@ -197,7 +197,7 @@ public class LoggerService implements RemoteLogging {
 	 * @return the wall clock timestamp of the last channel event
 	 */
 	public Date getLastChannelEventTime( final String groupType ) {
-		final LoggerSession session = _model.getLoggerSession( groupType );
+		final LoggerSession session = model.getLoggerSession( groupType );
 		if ( session != null ) {
 			return session.getChannelGroup().getLastChannelEventTime();
 		}
@@ -213,7 +213,7 @@ public class LoggerService implements RemoteLogging {
 	 * @return the wall clock timestamp of the last logger event
 	 */
 	public Date getLastLoggerEventTime( final String groupType ) {
-		return _model.getSessionModel(groupType).getLastLoggerEventTime();
+		return model.getSessionModel(groupType).getLastLoggerEventTime();
 	}
 	
 	
@@ -222,7 +222,7 @@ public class LoggerService implements RemoteLogging {
 	 * @return a list of the group types
 	 */
 	public List<String> getGroupTypes() {
-		return new ArrayList<String>( _model.getSessionTypes() );
+		return new ArrayList<String>( model.getSessionTypes() );
 	}
 	
 	
@@ -232,7 +232,7 @@ public class LoggerService implements RemoteLogging {
 	 * @return the number of channels we wish to log
 	 */
 	public int getChannelCount( final String groupType ) {
-		return _model.getLoggerSession(groupType).getChannelGroup().getChannelCount();
+		return model.getLoggerSession(groupType).getChannelGroup().getChannelCount();
 	}
 	
 	
@@ -243,7 +243,7 @@ public class LoggerService implements RemoteLogging {
 	 * @return The list channel info tables corresponding to the channels we wish to log
 	 */
 	public List<Map<String,Object>> getChannels( final String groupType ) {
-		final LoggerSession session = _model.getLoggerSession( groupType );
+		final LoggerSession session = model.getLoggerSession( groupType );
 		if ( session != null ) {
 			final Collection<Channel> channels = session.getChannels();
 			final List<Map<String,Object>> channelInfoList = new ArrayList<Map<String,Object>>( channels.size() );
@@ -268,7 +268,7 @@ public class LoggerService implements RemoteLogging {
 	 * @return the timestamp of the last published snapshot
 	 */
 	public Date getTimestampOfLastPublishedSnapshot(String groupType) {
-		MachineSnapshot snapshot = _model.getSessionModel(groupType).getLastPublishedSnapshot();
+		MachineSnapshot snapshot = model.getSessionModel(groupType).getLastPublishedSnapshot();
 		return (snapshot != null) ? snapshot.getTimestamp() : new Date(0);
 	}
 	
@@ -279,7 +279,7 @@ public class LoggerService implements RemoteLogging {
 	 * @return the textual dump of the last published snapshot or null if none exists
 	 */
 	public String getLastPublishedSnapshotDump(String groupType) {
-		Object snapshot = _model.getSessionModel(groupType).getLastPublishedSnapshot();
+		Object snapshot = model.getSessionModel(groupType).getLastPublishedSnapshot();
 		return (snapshot != null) ? snapshot.toString() : "";
 	}
 }

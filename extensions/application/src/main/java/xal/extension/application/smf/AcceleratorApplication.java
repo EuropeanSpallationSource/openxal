@@ -14,8 +14,6 @@ import xal.smf.*;
 import javax.swing.*;
 import java.io.File;
 import java.net.URL;
-import java.util.*;
-import java.util.logging.*;
 
 
 /**
@@ -25,10 +23,10 @@ import java.util.logging.*;
  */
 public class AcceleratorApplication extends FrameApplication {
 	/** file chooser for selecting an accelerator file */
-    private JFileChooser _acceleratorFileChooser;
+    private JFileChooser acceleratorFileChooser;
 	
 	/** keep track of the default accelerator folder */
-	private DefaultFolderAccessory _defaultFolderAccessory;
+	private DefaultFolderAccessory defaultFolderAccessory;
      
     
     /** Creates a new instance of AcceleratorApplication */
@@ -39,15 +37,16 @@ public class AcceleratorApplication extends FrameApplication {
 	
     /** 
 	 * Initialize the Application and open the documents specified by the URL array. 
-	 * Overides the inherited version to perform initializations that should occur prior to opening files.
+	 * Overrides the inherited version to perform initializations that should occur prior to opening files.
 	 * @param urls An array of document URLs to open.
 	 */
+    @Override
 	protected void setup( final URL[] urls ) {
-		_acceleratorFileChooser = new JFileChooser();
-		_defaultFolderAccessory = new DefaultFolderAccessory( this.getClass() );
-		_defaultFolderAccessory.applyTo( _acceleratorFileChooser );
-		FileFilterFactory.applyFileFilters( _acceleratorFileChooser, new String[] {"xal"} );
-        _acceleratorFileChooser.setMultiSelectionEnabled( false );
+		acceleratorFileChooser = new JFileChooser();
+		defaultFolderAccessory = new DefaultFolderAccessory( this.getClass() );
+		defaultFolderAccessory.applyTo(acceleratorFileChooser );
+		FileFilterFactory.applyFileFilters(acceleratorFileChooser, new String[] {"xal"} );
+        acceleratorFileChooser.setMultiSelectionEnabled( false );
 		
 		super.setup( urls );
 	}
@@ -57,6 +56,7 @@ public class AcceleratorApplication extends FrameApplication {
     /**
      * Make an application commander
      */
+    @Override
     protected Commander makeCommander() {
         return new AcceleratorCommander( this );
     }
@@ -67,7 +67,7 @@ public class AcceleratorApplication extends FrameApplication {
      * @return The file chooser used for opening accelerator input files.
      */
     public JFileChooser getAcceleratorFileChooser() {
-        return _acceleratorFileChooser;
+        return acceleratorFileChooser;
     }
 	
 		
@@ -75,7 +75,7 @@ public class AcceleratorApplication extends FrameApplication {
 	 * Get the accelerator application for this session
 	 * @return the accelerator application for this session
 	 */
-	static public AcceleratorApplication getAcceleratorApp() {
+	public static AcceleratorApplication getAcceleratorApp() {
 		return (AcceleratorApplication)Application.getApp();
 	}
     
@@ -85,7 +85,7 @@ public class AcceleratorApplication extends FrameApplication {
      * and performing application initialization.
      * @param adaptor The custom application adaptor.
      */
-    static public void launch( final ApplicationAdaptor adaptor ) {
+    public static void launch( final ApplicationAdaptor adaptor ) {
         try {
             launch( adaptor, AbstractApplicationAdaptor.getDocURLs() );
         }
@@ -101,7 +101,7 @@ public class AcceleratorApplication extends FrameApplication {
      * @param adaptor The custom application adaptor.
 	 * @param urls The URLs of documents to open upon launching the application
      */
-    static public void launch( final ApplicationAdaptor adaptor, final URL[] urls ) {
+    public static void launch( final ApplicationAdaptor adaptor, final URL[] urls ) {
         new AcceleratorApplication( adaptor, urls );
     }
 	
@@ -110,6 +110,7 @@ public class AcceleratorApplication extends FrameApplication {
 	 * Create and open a new empty document of the specified type. 
 	 * @param type the type of document to create.
 	 */
+    @Override
     protected void newDocument( final String type ) {
         final AcceleratorDocument document = (AcceleratorDocument)((ApplicationAdaptor)getAdaptor()).generateEmptyDocument( type );
 		
@@ -127,7 +128,7 @@ public class AcceleratorApplication extends FrameApplication {
 		}
 		final String selectedAcceleratorPath = document.getAcceleratorFilePath();
 		if ( selectedAcceleratorPath != null && selectedAcceleratorPath.length() > 0 ) {
-			_acceleratorFileChooser.setSelectedFile( new File( selectedAcceleratorPath ) );
+			acceleratorFileChooser.setSelectedFile( new File( selectedAcceleratorPath ) );
 		}
         
        	produceDocument( document ); 

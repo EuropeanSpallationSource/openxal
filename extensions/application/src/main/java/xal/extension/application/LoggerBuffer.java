@@ -22,16 +22,16 @@ import xal.tools.messaging.MessageCenter;
  */
 class LoggerBuffer extends Handler {
 	/** root handler */
-	protected static LoggerBuffer _rootHandler;
+	protected static LoggerBuffer rootHandler;
 
 	/** list of captured records */
-	protected List<LogRecord> _records;
+	protected List<LogRecord> records;
 
 	/** message center for dispatching messages to registered listeners */
-	protected MessageCenter _messageCenter;
+	protected MessageCenter messageCenter;
 
 	/** proxy which forwards events to registered listeners */
-	protected LoggerBufferListener _eventProxy;
+	protected LoggerBufferListener eventProxy;
 
 	/** static constructor */
 	static {
@@ -41,10 +41,10 @@ class LoggerBuffer extends Handler {
 
 	/** Constructor */
 	public LoggerBuffer() {
-		_messageCenter = new MessageCenter( "Logger Buffer" );
-		_eventProxy = _messageCenter.registerSource( this, LoggerBufferListener.class );
+		messageCenter = new MessageCenter( "Logger Buffer" );
+		eventProxy = messageCenter.registerSource( this, LoggerBufferListener.class );
 
-		_records = new ArrayList<LogRecord>();
+		records = new ArrayList<>();
 	}
 
 
@@ -54,9 +54,9 @@ class LoggerBuffer extends Handler {
 	 * @param listener  The listener to register to receive events from this instance
 	 */
 	public void addLoggerBufferListener( final LoggerBufferListener listener ) {
-		_messageCenter.registerTarget( listener, this, LoggerBufferListener.class );
-		synchronized( _records ) {
-			listener.recordsChanged( this, new ArrayList<LogRecord>( _records ) );
+		messageCenter.registerTarget( listener, this, LoggerBufferListener.class );
+		synchronized( records ) {
+			listener.recordsChanged( this, new ArrayList<>( records ) );
 		}
 	}
 
@@ -67,7 +67,7 @@ class LoggerBuffer extends Handler {
 	 * @param listener  The listener to remove from receiving events from this instance.
 	 */
 	public void removeLoggerBufferListener( final LoggerBufferListener listener ) {
-		_messageCenter.removeTarget( listener, this, LoggerBufferListener.class );
+		messageCenter.removeTarget( listener, this, LoggerBufferListener.class );
 	}
 
 
@@ -76,10 +76,10 @@ class LoggerBuffer extends Handler {
 	 * logger.
 	 */
 	public static void setupRootLogger() {
-		if ( _rootHandler == null ) {
-			_rootHandler = new LoggerBuffer();
-			_rootHandler.setLevel( Level.FINEST );
-			Logger.getLogger( "" ).addHandler( _rootHandler );
+		if ( rootHandler == null ) {
+			rootHandler = new LoggerBuffer();
+			rootHandler.setLevel( Level.FINEST );
+			Logger.getLogger( "" ).addHandler(rootHandler );
 		}
 	}
 
@@ -90,20 +90,21 @@ class LoggerBuffer extends Handler {
 	 * @return   The rootHandler value
 	 */
 	public static LoggerBuffer getRootHandler() {
-		return _rootHandler;
+		return rootHandler;
 	}
 
 
 	/** Flush the buffer. Presently does nothing. */
+        @Override
 	public void flush() {
 	}
 	
 	
 	/** Clear the log */
 	public void clear() {
-		synchronized( _records ) {
-			_records.clear();
-			_eventProxy.recordsChanged( this, Collections.<LogRecord>emptyList() );
+		synchronized( records ) {
+			records.clear();
+			eventProxy.recordsChanged( this, Collections.<LogRecord>emptyList() );
 		}
 	}
 
@@ -113,6 +114,7 @@ class LoggerBuffer extends Handler {
 	 *
 	 * @exception SecurityException  presently doesn't get thrown
 	 */
+        @Override
 	public void close() throws SecurityException {
 	}
 
@@ -122,10 +124,11 @@ class LoggerBuffer extends Handler {
 	 *
 	 * @param record  the new log record
 	 */
+        @Override
 	public void publish( final LogRecord record ) {
-		synchronized ( _records ) {
-			_records.add( record );
-			_eventProxy.recordsChanged( this, new ArrayList<LogRecord>(_records) );
+		synchronized ( records ) {
+			records.add( record );
+			eventProxy.recordsChanged( this, new ArrayList<>(records) );
 		}
 	}
 }

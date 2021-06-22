@@ -1,6 +1,5 @@
 package xal.extension.widgets.plot;
 
-import java.util.*;
 import java.awt.*;
 
 /**
@@ -20,11 +19,11 @@ abstract public class ColorSurfaceData{
 
     protected int nX, nY;
 
-    protected double x_step, y_step;
+    protected double xStep, yStep;
 
-    protected double x_min,x_max;
-    protected double y_min,y_max;
-    protected double z_min,z_max;
+    protected double xMin,xMax;
+    protected double yMin,yMax;
+    protected double zMin,zMax;
 
     private int nScreenX;
     private int nScreenY;
@@ -36,21 +35,21 @@ abstract public class ColorSurfaceData{
 	this.nX = nX;
         this.nY = nY;
         gridData = new double[nX][nY];
-        x_min = -0.5; x_max = 0.5; 
-        y_min =  0.5; y_max = 0.5;
-	z_min =   0.; 
-        z_max =   0.;
+        xMin = -0.5; xMax = 0.5; 
+        yMin =  0.5; yMax = 0.5;
+	zMin =   0.; 
+        zMax =   0.;
 	if(nX > 1){
-	    x_step = (x_max - x_min)/(nX-1);
+	    xStep = (xMax - xMin)/(nX-1);
 	}
 	else{
-	    x_step = (x_max - x_min);
+	    xStep = (xMax - xMin);
 	}
 	if(nY > 1){
-	    y_step = (y_max - y_min)/(nY-1); 
+	    yStep = (yMax - yMin)/(nY-1); 
 	}
 	else{
-	    y_step = (y_max - y_min); 
+	    yStep = (yMax - yMin); 
 	}
 	nScreenX = 30;
 	nScreenY = 30;
@@ -77,19 +76,19 @@ abstract public class ColorSurfaceData{
 	this.nX = nX;
         this.nY = nY;
 	if(nX > 1){
-	    x_step = (x_max - x_min)/(nX-1);
+	    xStep = (xMax - xMin)/(nX-1);
 	}
 	else{
-	    x_step = (x_max - x_min);
+	    xStep = (xMax - xMin);
 	}
 	if(nY > 1){
-	    y_step = (y_max - y_min)/(nY-1); 
+	    yStep = (yMax - yMin)/(nY-1); 
 	}
 	else{
-	    y_step = (y_max - y_min); 
+	    yStep = (yMax - yMin); 
 	}
-	z_min =   0.; 
-        z_max =   0.;
+	zMin =   0.; 
+        zMax =   0.;
         setZero();
     }
 
@@ -122,65 +121,65 @@ abstract public class ColorSurfaceData{
 
     /**  Returns the X value of the grid for the index i.*/
     public double getX(int i){
-	return (x_min + i*x_step);
+	return (xMin + i*xStep);
     }
 
     /**  Returns the Y value of the grid for the index j.*/
     public double getY(int j){
-	return (y_min + j*y_step);
+	return (yMin + j*yStep);
     }
 
     /**  Returns the minimal X value of the grid. */
     public double getMinX(){
-	return x_min;
+	return xMin;
     }
 
     /**  Returns the maximal X value of the grid. */
     public double getMaxX(){
-	return x_max;
+	return xMax;
     }
 
     /**  Returns the minimal Y value of the grid. */
     public double getMinY(){
-	return y_min;
+	return yMin;
     }
 
     /**  Returns the maximal Y value of the grid. */
     public double getMaxY(){
-	return y_max;
+	return yMax;
     }
 
     /**  Returns the minimal Z value. */
     public double getMinZ(){
-	return z_min;
+	return zMin;
     }
 
     /**  Returns the maximal Z value. */
     public double getMaxZ(){
-	return z_max;
+	return zMax;
     }
 
     /**  Sets the minimal maximal X value of the grid. */
-    public void setMinMaxX(double x_min, double x_max){
-	this.x_min = x_min;
-	this.x_max = x_max;
+    public void setMinMaxX(double xMin, double xMax){
+	this.xMin = xMin;
+	this.xMax = xMax;
 	if(nX > 1){
-	    x_step = (x_max - x_min)/(nX-1);
+	    xStep = (xMax - xMin)/(nX-1);
 	}
 	else{
-	    x_step = (x_max - x_min);
+	    xStep = (xMax - xMin);
 	}
     }
 
     /**  Sets the minimal maximal Y value of the grid. */
-    public void setMinMaxY(double y_min, double y_max){
-	this.y_min = y_min;
-	this.y_max = y_max;
+    public void setMinMaxY(double yMin, double yMax){
+	this.yMin = yMin;
+	this.yMax = yMax;
 	if(nY > 1){
-	    y_step = (y_max - y_min)/(nY-1);
+	    yStep = (yMax - yMin)/(nY-1);
 	}
 	else{
-	    y_step = (y_max - y_min);
+	    yStep = (yMax - yMin);
 	}
     }
 
@@ -191,15 +190,15 @@ abstract public class ColorSurfaceData{
 		gridData[i][j] = 0.;
 	    }
 	}
-	z_min =   0.; 
-        z_max =   0.;
+	zMin =   0.; 
+        zMax =   0.;
     }
 
     /**  Sets value of the 2D array with indexes i and j. */
     public void setValue(int i, int j, double value){
 	gridData[i][j] = value;
-        if(z_min > gridData[i][j]) z_min = gridData[i][j];
-        if(z_max < gridData[i][j]) z_max = gridData[i][j];
+        if(zMin > gridData[i][j]) zMin = gridData[i][j];
+        if(zMax < gridData[i][j]) zMax = gridData[i][j];
     }
 
 
@@ -229,29 +228,29 @@ abstract public class ColorSurfaceData{
 
    /**  Multiplies all values of the 2D array by constant factor = value. */
     public void multiplyBy(double value){
- 	z_min =   Double.MAX_VALUE; 
-        z_max = - Double.MAX_VALUE;
+ 	zMin =   Double.MAX_VALUE; 
+        zMax = - Double.MAX_VALUE;
 	for(int i =0,j; i < nX; i++){
 	    for(j = 0; j < nY; j++){
 		gridData[i][j] *= value;
-		if(z_min > gridData[i][j]) z_min = gridData[i][j];
-		if(z_max < gridData[i][j]) z_max = gridData[i][j];
+		if(zMin > gridData[i][j]) zMin = gridData[i][j];
+		if(zMax < gridData[i][j]) zMax = gridData[i][j];
 	    }
 	} 
     }
 
    /**  Calculates minimal and maximal Z values. 
-    *   In the begining all data = 0., and 
+    *   In the beginning all data = 0., and 
     *   if you want to get real min and max for Z
     *   you should use this method first.
     */
     public void calcMaxMinZ(){
- 	z_min =   Double.MAX_VALUE; 
-        z_max = - Double.MAX_VALUE;
+ 	zMin =   Double.MAX_VALUE; 
+        zMax = - Double.MAX_VALUE;
 	for(int i =0,j; i < nX; i++){
 	    for(j = 0; j < nY; j++){
-		if(z_min > gridData[i][j]) z_min = gridData[i][j];
-		if(z_max < gridData[i][j]) z_max = gridData[i][j];
+		if(zMin > gridData[i][j]) zMin = gridData[i][j];
+		if(zMax < gridData[i][j]) zMax = gridData[i][j];
 	    }
 	} 
     }
@@ -259,8 +258,8 @@ abstract public class ColorSurfaceData{
    /**  Returns the color for (x,y) point. */
     public Color getColor(double x, double y){
         double value = getValue(x,y);
-	if(z_max != z_min){
-	    value = (value - z_min)/(z_max - z_min);
+	if(zMax != zMin){
+	    value = (value - zMin)/(zMax - zMin);
 	    if(value > 1.0) value = 1.0;
 	    if(value < 0.0) value = 0.0;
 	}

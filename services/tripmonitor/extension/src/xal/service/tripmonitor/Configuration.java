@@ -19,10 +19,10 @@ import xal.tools.xml.XmlDataAdaptor;
 /** Get basic configuration information */
 public class Configuration {
 	/** trip monitor filters */
-	final protected List<TripMonitorFilter> TRIP_MONITOR_FILTERS;
+	protected final List<TripMonitorFilter> TRIP_MONITOR_FILTERS;
 	
 	/** trip monitor filter table keyed by name */
-	final protected HashMap<String,TripMonitorFilter> TRIP_MONITOR_FILTER_TABLE;
+	protected final HashMap<String,TripMonitorFilter> TRIP_MONITOR_FILTER_TABLE;
 	
 	
 	/** Constructor */

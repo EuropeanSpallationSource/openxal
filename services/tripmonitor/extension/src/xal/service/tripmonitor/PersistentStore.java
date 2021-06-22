@@ -20,19 +20,19 @@ import xal.tools.database.*;
 /** contains information about the persistent storage */
 public class PersistentStore {
 	/** data label */
-	public final static String DATA_LABEL = "PersistentStore";
+	public static final String DATA_LABEL = "PersistentStore";
 	
 	/** Trips table */
-	final protected String TRIPS_TABLE;
+	protected final String TRIPS_TABLE;
 	
 	/** PV Column */
-	final protected String PV_COLUMN;
+	protected final String PV_COLUMN;
 	
 	/** Timestamp Column */
-	final protected String TIMESTAMP_COLUMN;
+	protected final String TIMESTAMP_COLUMN;
 	
 	/** SQL text for the insert statement */
-	final protected String INSERT_SQL;
+	protected final String INSERT_SQL;
 	
 	
 	/** Constructor */
@@ -46,7 +46,7 @@ public class PersistentStore {
 	
 	
 	/** get a new connection using the default dictionary */
-	static public Connection connectionInstance() {
+	public static Connection connectionInstance() {
 		// use the "tripmonitor" account if available, otherwise fallback to "monitor" and finally the default account
 		final ConnectionDictionary dictionary = ConnectionDictionary.getPreferredInstance( "tripmonitor", "monitor" );
 		final DatabaseAdaptor databaseAdaptor = dictionary.getDatabaseAdaptor();

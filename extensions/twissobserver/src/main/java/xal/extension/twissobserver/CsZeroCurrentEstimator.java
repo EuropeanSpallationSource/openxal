@@ -28,7 +28,7 @@ public class CsZeroCurrentEstimator extends CourantSnyderEstimator {
     /**
      * Creates a new instance of <code>ZeroCurrentSolution</code>.
      *
-     * @param genTransMat   a pre-configured transfer matrix engine used internally.   
+     * @param genTransMatrix   a pre-configured transfer matrix engine used internally.   
      *
      * @author Christopher K. Allen
      * @since  Apr 18, 2013
@@ -125,7 +125,7 @@ public class CsZeroCurrentEstimator extends CourantSnyderEstimator {
      * @param strRecDevId   ID of the device where the reconstruction is performed
      * @param dblBnchFreq   bunch arrival frequency - <em>Ignored</em>
      * @param dblBmCurr     beam current - <em>Ignored</em>
-     * @param arrData       measurement data consisting of RMS beam sizes
+     * @param arrMsmts       measurement data consisting of RMS beam sizes
      * 
      * @return              block diagonal covariance matrix containing second-order moments
      *                      at the reconstruction location
@@ -135,6 +135,7 @@ public class CsZeroCurrentEstimator extends CourantSnyderEstimator {
      * @author Christopher K. Allen
      * @since  May 1, 2013
      */
+    @Override
     public CovarianceMatrix    computeReconstruction(String strRecDevId, double dblBnchFreq, double dblBmCurr, ArrayList<Measurement> arrMsmts) 
         throws ModelException 
     {

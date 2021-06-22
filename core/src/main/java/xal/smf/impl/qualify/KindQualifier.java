@@ -15,20 +15,20 @@ import xal.smf.*;
  * for various elements in the accelerator (e.g. "Q" for quadrupole, "BPM" for
  * a "beam position monitor".  The user can construct a qualifier by specifying
  * an element type by either its name or short name (usually given by the node's
- * "s_strType" property). 
+ * "TYPE" property). 
  * @author  tap
  */
 public class KindQualifier implements TypeQualifier {
 	/** the node type against which to qualify for matches */
-    final String _kind;
+    final String kind;
 	
 	
     /** 
 	 * Creates new KindQualifier 
-	 * @param newKind The official element type of nodes to match (e.g. BPM.s_strType)
+	 * @param newKind The official element type of nodes to match (e.g. BPM.TYPE)
 	 */
     public KindQualifier( final String newKind ) {
-        _kind = newKind;
+        kind = newKind;
     }
 	
 	
@@ -38,7 +38,7 @@ public class KindQualifier implements TypeQualifier {
 	 * @param type the node type
 	 * @return a qualifier restricted to both the status and type specified
 	 */
-	static public TypeQualifier qualifierWithStatusAndType( final boolean nodeStatus, final String type ) {
+	public static TypeQualifier qualifierWithStatusAndType( final boolean nodeStatus, final String type ) {
 		return AndTypeQualifier.qualifierWithStatusAndType( nodeStatus, type );
 	}
     
@@ -48,7 +48,8 @@ public class KindQualifier implements TypeQualifier {
 	 * @param node The node to test
 	 * @return true if the node is a match and false if not
 	 */
+    @Override
     public boolean match( final AcceleratorNode node ) {
-        return node.isKindOf( _kind );
+        return node.isKindOf(kind );
     }
 }

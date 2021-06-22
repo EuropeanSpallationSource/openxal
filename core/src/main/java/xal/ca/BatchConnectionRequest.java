@@ -18,69 +18,70 @@ import java.util.concurrent.Callable;
 /** BatchConnectionRequest */
 public class BatchConnectionRequest extends java.lang.Object {
 	/** time (msec) to periodically watch for status when waiting for connections */
-	static final private long WATCH_TIME = 100;
+	private static final long WATCH_TIME = 100;
 	
 	/** message center for dispatching events */
-	final private MessageCenter MESSAGE_CENTER;
+	private final MessageCenter messageCenter;
 	
 	/** proxy which forwards events to registered listeners */
-	final private BatchConnectionRequestListener EVENT_PROXY;
+	private final BatchConnectionRequestListener eventProxy;
 	
 	/** set of channels for which to request batch operations */
-	final private Set<Channel> CHANNELS;
+	private final Set<Channel> channels;
 	
 	/** table of get request exceptions keyed by channel */
-	final private Map<Channel,Exception> EXCEPTIONS;
+	private final Map<Channel,Exception> exceptions;
 	
 	/** channels pending completion */
-	final private Set<Channel> PENDING_CHANNELS;
+	private final Set<Channel> pendingChannels;
 	
 	/** channels that have been connected */
-	final private Set<Channel> CONNECTED_CHANNELS;
+	private final Set<Channel> connectedChannels;
 	
 	/** channels that have been connected */
-	final private Set<Channel> DISCONNECTED_CHANNELS;
+	private final Set<Channel> disconnectedChannels;
 	
 	/** object used for waiting and notification */
-	final private Object COMPLETION_LOCK;
+	private final Object completionLock;
 	
 	/** queue to synchronize access to resources */
-	final private DispatchQueue RESOURCE_SYNC_QUEUE;
+	private final DispatchQueue resourceSyncQueue;
 	
 	/** request handler */
-	final private RequestHandler REQUEST_HANDLER;
+	private final RequestHandler requestHandler;
 	
 	/** indicates whether this request has been canceled */
-	private volatile boolean _isCanceled;
+	private volatile boolean isCanceled;
 
 	
 	/** 
 	 * Constructor 
-	 * @param channels for which the connections will be requrested
+	 * @param channels for which the connections will be requested
 	 */
     public BatchConnectionRequest( final Collection<Channel> channels ) {
-		MESSAGE_CENTER = new MessageCenter( "BatchConnectionRequest" );
-		EVENT_PROXY = MESSAGE_CENTER.registerSource( this, BatchConnectionRequestListener.class );
+		messageCenter = new MessageCenter( "BatchConnectionRequest" );
+		eventProxy = messageCenter.registerSource( this, BatchConnectionRequestListener.class );
 		
-		COMPLETION_LOCK = new Object();
-		RESOURCE_SYNC_QUEUE = DispatchQueue.createConcurrentQueue( "Resource Synchronization" );
+		completionLock = new Object();
+		resourceSyncQueue = DispatchQueue.createConcurrentQueue( "Resource Synchronization" );
 		
-		CONNECTED_CHANNELS = new HashSet<Channel>();
-		DISCONNECTED_CHANNELS = new HashSet<Channel>();
-		EXCEPTIONS = new HashMap<Channel,Exception>();
-		PENDING_CHANNELS = new HashSet<Channel>();
+		connectedChannels = new HashSet<>();
+		disconnectedChannels = new HashSet<>();
+		exceptions = new HashMap<>();
+		pendingChannels = new HashSet<>();
 		
-		CHANNELS = new HashSet<Channel>( channels.size() );
-		CHANNELS.addAll( channels );
+		this.channels = new HashSet<>( channels.size() );
+		this.channels.addAll( channels );
 		
-		REQUEST_HANDLER = new RequestHandler();
+		requestHandler = new RequestHandler();
     }
 
 
 	/** dispose of the queue */
+        @Override
 	protected void finalize() throws Throwable {
 		try {
-			RESOURCE_SYNC_QUEUE.dispose();
+			resourceSyncQueue.dispose();
 		}
 		finally {
 			super.finalize();
@@ -93,7 +94,7 @@ public class BatchConnectionRequest extends java.lang.Object {
 	 * @param listener to receive connection events
 	 */
 	public void addBatchConnectionRequestListener( final BatchConnectionRequestListener listener ) {
-		MESSAGE_CENTER.registerTarget( listener, this, BatchConnectionRequestListener.class );
+		messageCenter.registerTarget( listener, this, BatchConnectionRequestListener.class );
 	}
 	
 	
@@ -102,7 +103,7 @@ public class BatchConnectionRequest extends java.lang.Object {
 	 * @param listener to remove from receiving connection events
 	 */
 	public void removeBatchConnectionRequestListener( final BatchConnectionRequestListener listener ) {
-		MESSAGE_CENTER.removeTarget( listener, this, BatchConnectionRequestListener.class );
+		messageCenter.removeTarget( listener, this, BatchConnectionRequestListener.class );
 	}
 	
 	
@@ -111,7 +112,7 @@ public class BatchConnectionRequest extends java.lang.Object {
 	 * @return channels for which connections are requested
 	 */
 	public Set<Channel> getChannels() {
-		return Collections.unmodifiableSet( CHANNELS );
+		return Collections.unmodifiableSet( channels );
 	}
 	
 	
@@ -120,9 +121,10 @@ public class BatchConnectionRequest extends java.lang.Object {
 	 * @return the number of channels for which connections are requested
 	 */
 	public int getChannelCount() {
-		return RESOURCE_SYNC_QUEUE.dispatchSync( new Callable<Integer>() {
+		return resourceSyncQueue.dispatchSync( new Callable<Integer>() {
+                        @Override
 			public Integer call() {
-				return CHANNELS.size();
+				return channels.size();
 			}
 		});
 	}
@@ -133,9 +135,10 @@ public class BatchConnectionRequest extends java.lang.Object {
 	 * @return set of connected channels
 	 */
 	public Set<Channel> getConnectedChannels() {
-		return RESOURCE_SYNC_QUEUE.dispatchSync( new Callable<HashSet<Channel>>() {
+		return resourceSyncQueue.dispatchSync( new Callable<HashSet<Channel>>() {
+                        @Override
 			public HashSet<Channel> call() {
-				return new HashSet<Channel>( CONNECTED_CHANNELS );
+				return new HashSet<>( connectedChannels );
 			}
 		});
 	}
@@ -146,9 +149,10 @@ public class BatchConnectionRequest extends java.lang.Object {
 	 * @return the number of channels that were connected
 	 */
 	public int getConnectedCount() {
-		return RESOURCE_SYNC_QUEUE.dispatchSync( new Callable<Integer>() {
+		return resourceSyncQueue.dispatchSync( new Callable<Integer>() {
+                        @Override
 			public Integer call() {
-				return CONNECTED_CHANNELS.size();
+				return connectedChannels.size();
 			}
 		});
 	}
@@ -159,9 +163,10 @@ public class BatchConnectionRequest extends java.lang.Object {
 	 * @return set of channels that were connected
 	 */
 	public Set<Channel> getDisconnectedChannels() {
-		return RESOURCE_SYNC_QUEUE.dispatchSync( new Callable<HashSet<Channel>>() {
+		return resourceSyncQueue.dispatchSync( new Callable<HashSet<Channel>>() {
+                        @Override
 			public HashSet<Channel> call() {
-				return new HashSet<Channel>( DISCONNECTED_CHANNELS );
+				return new HashSet<>( disconnectedChannels );
 			}
 		});
 	}
@@ -172,9 +177,10 @@ public class BatchConnectionRequest extends java.lang.Object {
 	 * @return the number of disconnected channels
 	 */
 	public int getDisconnectedCount() {
-		return RESOURCE_SYNC_QUEUE.dispatchSync( new Callable<Integer>() {
+		return resourceSyncQueue.dispatchSync( new Callable<Integer>() {
+                        @Override
 			public Integer call() {
-				return DISCONNECTED_CHANNELS.size();
+				return disconnectedChannels.size();
 			}
 		});
 	}
@@ -185,9 +191,10 @@ public class BatchConnectionRequest extends java.lang.Object {
 	 * @return set of channels that are pending connection
 	 */
 	public Set<Channel> getPendingChannels() {
-		return RESOURCE_SYNC_QUEUE.dispatchSync( new Callable<HashSet<Channel>>() {
+		return resourceSyncQueue.dispatchSync( new Callable<HashSet<Channel>>() {
+                        @Override
 			public HashSet<Channel> call() {
-				return new HashSet<Channel>( PENDING_CHANNELS );
+				return new HashSet<>( pendingChannels );
 			}
 		});
 	}
@@ -199,9 +206,10 @@ public class BatchConnectionRequest extends java.lang.Object {
 	 * @return the exception for the specified channel or null if none
 	 */
 	public Exception getException( final Channel channel ) {
-		return RESOURCE_SYNC_QUEUE.dispatchSync( new Callable<Exception>() {
+		return resourceSyncQueue.dispatchSync( new Callable<Exception>() {
+                        @Override
 			public Exception call() {
-				return EXCEPTIONS.get( channel );
+				return exceptions.get( channel );
 			}
 		});
 	}
@@ -212,9 +220,10 @@ public class BatchConnectionRequest extends java.lang.Object {
 	 * @return set of channels that failed to connect
 	 */
 	public Set<Channel> getFailedChannels() {
-		return RESOURCE_SYNC_QUEUE.dispatchSync( new Callable<HashSet<Channel>>() {
+		return resourceSyncQueue.dispatchSync( new Callable<HashSet<Channel>>() {
+                        @Override
 			public HashSet<Channel> call() {
-				return new HashSet<Channel>( EXCEPTIONS.keySet() );
+				return new HashSet<>( exceptions.keySet() );
 			}
 		});
 	}
@@ -225,9 +234,10 @@ public class BatchConnectionRequest extends java.lang.Object {
 	 * @return the number of channels that had exceptions connecting
 	 */
 	public int getExceptionCount() {
-		return RESOURCE_SYNC_QUEUE.dispatchSync( new Callable<Integer>() {
+		return resourceSyncQueue.dispatchSync( new Callable<Integer>() {
+                        @Override
 			public Integer call() {
-				return EXCEPTIONS.size();
+				return exceptions.size();
 			}
 		});
 	}
@@ -235,18 +245,19 @@ public class BatchConnectionRequest extends java.lang.Object {
 	
 	/** submit this batch for processing */
 	public void submit() {
-		RESOURCE_SYNC_QUEUE.dispatchBarrierSync( new Runnable() {
+		resourceSyncQueue.dispatchBarrierSync( new Runnable() {
+                        @Override
 			public void run() {
-				_isCanceled = false;
-				PENDING_CHANNELS.clear();
-				PENDING_CHANNELS.addAll( CHANNELS );
-				DISCONNECTED_CHANNELS.addAll( CHANNELS );	// assume all channels disconnected until notified otherwise
-				CONNECTED_CHANNELS.clear();
+				isCanceled = false;
+				pendingChannels.clear();
+				pendingChannels.addAll( channels );
+				disconnectedChannels.addAll( channels );	// assume all channels disconnected until notified otherwise
+				connectedChannels.clear();
 			}
 		});
 		
 		try {
-			for ( final Channel channel : CHANNELS ) {
+			for ( final Channel channel : channels ) {
 				processRequest( channel );
 			}
 			Channel.flushIO();
@@ -280,16 +291,16 @@ public class BatchConnectionRequest extends java.lang.Object {
 	public boolean await( final double timeout ) {
 		final long milliTimeout = (long) ( 1000 * timeout );		// timeout in milliseconds
 		final long maxTime = new Date().getTime() + milliTimeout;	// maximum time until expiration
-		while( !_isCanceled && !isComplete() && new Date().getTime() < maxTime ) {
+		while( !isCanceled && !isComplete() && new Date().getTime() < maxTime ) {
 			final long remainingTime = Math.max( 0, maxTime - new Date().getTime() );
 			if ( remainingTime > 0 ) {		// remaining time must be strictly greater than zero to prevent waiting forever should it be identically zero
 				final long waitTime = remainingTime > WATCH_TIME ? WATCH_TIME : remainingTime;	// want to watch for cancel periodically when the remaining time is long
 				try {
-					synchronized( COMPLETION_LOCK ) {
-						COMPLETION_LOCK.wait( waitTime );
+					synchronized( completionLock ) {
+						completionLock.wait( waitTime );
 					}
 				}
-				catch( Exception exception ) {
+				catch( InterruptedException exception ) {
 					throw new RuntimeException( "Exception waiting for the batch get requests to be completed.", exception );
 				}
 			}
@@ -300,21 +311,22 @@ public class BatchConnectionRequest extends java.lang.Object {
 	
 	
 	/** 
-	 * Determine whether this request has been caceled 
+	 * Determine whether this request has been canceled 
 	 * @return true if canceled and false otherwise
 	 */
 	public boolean isCanceled() {
-		return _isCanceled;
+		return isCanceled;
 	}
 	
 	
 	/** Cancel this request to stop monitoring and dispatching events. */
 	public void cancel() {
-		_isCanceled = true;
-		RESOURCE_SYNC_QUEUE.dispatchBarrierSync( new Runnable() {
+		isCanceled = true;
+		resourceSyncQueue.dispatchBarrierSync( new Runnable() {
+                        @Override
 			public void run() {
-				for ( final Channel channel : CHANNELS ) {
-					channel.removeConnectionListener( REQUEST_HANDLER );
+				for ( final Channel channel : channels ) {
+					channel.removeConnectionListener( requestHandler );
 				}
 			}
 		});
@@ -324,18 +336,19 @@ public class BatchConnectionRequest extends java.lang.Object {
 	/** process the get request for a single channel */
 	private void processRequest( final Channel channel ) {
 		try {
-			channel.addConnectionListener( REQUEST_HANDLER );
+			channel.addConnectionListener( requestHandler );
 			channel.requestConnection();
 		}
 		catch ( final Exception exception ) {
-			RESOURCE_SYNC_QUEUE.dispatchBarrierAsync( new Runnable() {
+			resourceSyncQueue.dispatchBarrierAsync( new Runnable() {
+                                @Override
 				public void run() {
-					EXCEPTIONS.put( channel, exception );
-					PENDING_CHANNELS.remove( channel );
+					exceptions.put( channel, exception );
+					pendingChannels.remove( channel );
 				}
 			});			
 			
-			if ( !_isCanceled )  EVENT_PROXY.connectionExceptionInBatch( this, channel, exception );
+			if ( !isCanceled )  eventProxy.connectionExceptionInBatch( this, channel, exception );
 			processCurrentStatus();
 		}
 	}
@@ -346,9 +359,10 @@ public class BatchConnectionRequest extends java.lang.Object {
 	 * @return true if complete and false otherwise
 	 */
 	public boolean isComplete() {
-		return RESOURCE_SYNC_QUEUE.dispatchSync( new Callable<Boolean>() {
+		return resourceSyncQueue.dispatchSync( new Callable<Boolean>() {
+                        @Override
 			public Boolean call() {
-				return PENDING_CHANNELS.isEmpty();
+				return pendingChannels.isEmpty();
 			}
 		});
 	}
@@ -357,9 +371,9 @@ public class BatchConnectionRequest extends java.lang.Object {
 	/** check for the current status and post notifications if necessary */
 	private void processCurrentStatus() {
 		if ( isComplete() ) {
-			synchronized( COMPLETION_LOCK ) {
+			synchronized( completionLock ) {
 				try {
-					COMPLETION_LOCK.notifyAll();
+					completionLock.notifyAll();
 				}
 				catch( Exception exception ) {
 					System.out.println( "Excepting notifying " );
@@ -367,14 +381,15 @@ public class BatchConnectionRequest extends java.lang.Object {
 				}
 			}
 			
-			if ( !_isCanceled ) {
-				int[] counts = RESOURCE_SYNC_QUEUE.dispatchSync( new Callable<int[]>() {
+			if ( !isCanceled ) {
+				int[] counts = resourceSyncQueue.dispatchSync( new Callable<int[]>() {
+                                        @Override
 					public int[] call() {
-						return new int[] { CONNECTED_CHANNELS.size(), DISCONNECTED_CHANNELS.size(), EXCEPTIONS.size() };
+						return new int[] { connectedChannels.size(), disconnectedChannels.size(), exceptions.size() };
 					}
 				});
 			
-				if ( !_isCanceled )  EVENT_PROXY.batchConnectionRequestCompleted( this, counts[0], counts[1], counts[2] );
+				if ( !isCanceled )  eventProxy.batchConnectionRequestCompleted( this, counts[0], counts[1], counts[2] );
 			}
 		}
 	}
@@ -386,16 +401,18 @@ public class BatchConnectionRequest extends java.lang.Object {
 		 * Indicates that a connection to the specified channel has been established.
 		 * @param channel The channel which has been connected.
 		 */
+                @Override
 		public void connectionMade( final Channel channel ) {
-			RESOURCE_SYNC_QUEUE.dispatchBarrierAsync( new Runnable() {
+			resourceSyncQueue.dispatchBarrierAsync( new Runnable() {
+                                @Override
 				public void run() {
-					CONNECTED_CHANNELS.add( channel );
-					DISCONNECTED_CHANNELS.remove( channel );
-					PENDING_CHANNELS.remove( channel );
+					connectedChannels.add( channel );
+					disconnectedChannels.remove( channel );
+					pendingChannels.remove( channel );
 				}
 			});
 			
-			if ( !_isCanceled )  EVENT_PROXY.connectionChangeInBatch( BatchConnectionRequest.this, channel, true ); 
+			if ( !isCanceled )  eventProxy.connectionChangeInBatch( BatchConnectionRequest.this, channel, true ); 
 			processCurrentStatus();
 		}
 		
@@ -403,18 +420,19 @@ public class BatchConnectionRequest extends java.lang.Object {
 		 * Indicates that a connection to the specified channel has been dropped.
 		 * @param channel The channel which has been disconnected.
 		 */
+                @Override
 		public void connectionDropped( final Channel channel ) {
-			RESOURCE_SYNC_QUEUE.dispatchBarrierAsync( new Runnable() {
+			resourceSyncQueue.dispatchBarrierAsync( new Runnable() {
+                                @Override
 				public void run() {
-					DISCONNECTED_CHANNELS.add( channel );
-					CONNECTED_CHANNELS.remove( channel );
-					PENDING_CHANNELS.remove( channel );
+					disconnectedChannels.add( channel );
+					connectedChannels.remove( channel );
+					pendingChannels.remove( channel );
 				}
 			});
 			
-			if ( _isCanceled )  EVENT_PROXY.connectionChangeInBatch( BatchConnectionRequest.this, channel, false ); 
+			if ( isCanceled )  eventProxy.connectionChangeInBatch( BatchConnectionRequest.this, channel, false ); 
 			processCurrentStatus();
 		}
 	}
 }
-

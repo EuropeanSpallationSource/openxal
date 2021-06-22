@@ -421,8 +421,8 @@ public class ProfileData {
     void allocStorage(int szArrData) {
         this.szArrData = szArrData;
         this.arrPosActr = new double[szArrData];
-        this.arrPosAxes = new ArrayList<double[]>(Angle.getCount());;
-        this.arrPrjData = new ArrayList<double[]>(Angle.getCount());
+        this.arrPosAxes = new ArrayList<>(Angle.getCount());
+        this.arrPrjData = new ArrayList<>(Angle.getCount());
         for (Angle view : Angle.values()) {
         	this.arrPosAxes.add(new double[szArrData]);
             this.arrPrjData.add(new double[szArrData]);

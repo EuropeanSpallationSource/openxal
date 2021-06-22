@@ -12,11 +12,9 @@ package xal.extension.solver.algorithm;
 import xal.extension.solver.*;
 import xal.extension.solver.hint.*;
 import xal.extension.solver.solutionjudge.*;
-import xal.extension.solver.market.*;
 
 import java.util.*;
 
-import java.lang.*;
 
 /**
  * RandomSearchAlgorithm looks for points bounded by the specified variable limits. Every
@@ -35,16 +33,16 @@ import java.lang.*;
  */
 public class RandomShrinkSearch extends SearchAlgorithm {
 	/** The current best point. */
-	protected TrialPoint _bestPoint;
+	protected TrialPoint bestPoint;
 	
 	/** The active search technique (random or shrink). */
-	protected Searcher _searcher;
+	protected Searcher searcher;
 
     /** keeps track of internal best Satisfaction */
-    protected double _bestSatisfaction;
+    protected double bestSatisfaction;
 
 	/** keeps track if the last run is being executed */
-	protected boolean _isLastEvaluation = false;
+	protected boolean isLastEvaluation = false;
 
 	/** Empty constructor. */
 	public RandomShrinkSearch() {
@@ -55,6 +53,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 	 * Set the specified problem to solve.  Override the inherited method to look for hints.
 	 * @param problem the problem to solve
 	 */
+        @Override
 	public void setProblem( final Problem problem ) {
 		super.setProblem( problem );
 	}
@@ -64,22 +63,24 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 	 * Get the label for this search algorithm.
 	 * @return   The label for this algorithm
 	 */
+        @Override
 	public String getLabel() {
 		return "Random Shrink Search";
 	}
 
 
 	/** reset for searching from scratch; forget history */
+        @Override
 	public void reset() {
-		_searcher = new ComboSearcher();
+		searcher = new ComboSearcher();
 		resetBestPoint();
-        _isLastEvaluation = false;
+        isLastEvaluation = false;
 	}
 
 
 	/** Reset the trial point's variables to their starting values.  */
 	protected void resetBestPoint() {
-		final List<Variable> variables = _problem.getVariables();
+		final List<Variable> variables = problem.getVariables();
 		final MutableTrialPoint trialPoint = new MutableTrialPoint( variables.size() );
         
         for ( final Variable variable : variables ) {
@@ -87,27 +88,28 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 			trialPoint.setValue( variable, value );
 		}
 
-		_bestPoint = trialPoint.getTrialPoint();
-        _bestSatisfaction = 0;
+		bestPoint = trialPoint.getTrialPoint();
+        bestSatisfaction = 0;
 	}
 	
 	
 	/**
 	 * Calculate the next few trial points.
-	 * @param algorithmRun the algorithm run to perform the evaluation
+	 * @param algorithmSchedule the algorithm run to perform the evaluation
 	 */
+        @Override
 	public void performRun(AlgorithmSchedule algorithmSchedule) {
 		try {
-			_isLastEvaluation = false;		// reset this flag for the new run
+			isLastEvaluation = false;		// reset this flag for the new run
             int runCount = getEvaluationsLeft();
             while( runCount > 0 && !algorithmSchedule.shouldStop() ){
                 if(runCount == 1){
-                    _isLastEvaluation = true;
+                    isLastEvaluation = true;
                 }
                 evaluateTrialPoint( nextTrialPoint() );
                 runCount = getEvaluationsLeft();
             }
-			_isLastEvaluation = false;		// clear the flag to avoid side effects
+			isLastEvaluation = false;		// clear the flag to avoid side effects
 		}
 		catch ( RunTerminationException exception ) {}
 	}
@@ -118,7 +120,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 	 * @return   The next trial point to evaluate.
 	 */
 	public TrialPoint nextTrialPoint() {
-		return _searcher.nextTrialPoint();
+		return searcher.nextTrialPoint();
 	}
 	
 
@@ -127,6 +129,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 	 * performs on global searches.
 	 * @return   The global search rating for this algorithm.
 	 */
+        @Override
 	public int globalRating() {
 		return 8;
 	}
@@ -137,6 +140,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 	 * performs on local searches.
 	 * @return   The local search rating for this algorithm.
 	 */
+        @Override
 	public int localRating() {
 		return 5;
 	}
@@ -163,10 +167,11 @@ public class RandomShrinkSearch extends SearchAlgorithm {
      *
      * This is for operating this algorithm completely independently of any other algorithm
      */
+        @Override
     public void trialScored( final AlgorithmSchedule schedule, final Trial trial ) {
-        if(_bestPoint == null){
-            _bestPoint = trial.getTrialPoint();
-            _bestSatisfaction = trial.getSatisfaction();
+        if(bestPoint == null){
+            bestPoint = trial.getTrialPoint();
+            bestSatisfaction = trial.getSatisfaction();
         }
         
         double satisfaction = trial.getSatisfaction();
@@ -174,18 +179,18 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 		// the internal search window if we have a better solution (initial algorithm is always best
 		// since it is run exactly once and is our starting point).
         if ( trial.getAlgorithm() == this || trial.getAlgorithm() instanceof InitialAlgorithm ) {
-            if ( satisfaction >= _bestSatisfaction ) {
+            if ( satisfaction >= bestSatisfaction ) {
                 internalNewOptimalSolution( trial.getTrialPoint(), satisfaction );
             }
 
 			// wait until the last evaluation to avoid being trapped in a local extremum by another algorithm
 			// during the last evaluation of this algorithm, check whether we still lag the best solution significantly
-			if ( _isLastEvaluation && trial.getAlgorithm() == this ) {
+			if ( isLastEvaluation && trial.getAlgorithm() == this ) {
 				// check the score board for the best solution found so far by any algorithm
 				// adopt that solution if that solution's satisfaction is better than this algorithm's best satisfaction by more than 25% of the possible remaining satisfaction to achieve
 				final Trial bestSolution = schedule.getScoreBoard().getBestSolution();
-				if ( bestSolution != null && bestSolution.getSatisfaction() > (_bestSatisfaction + 0.25 * (1 - _bestSatisfaction))  ) {
-					_searcher.shouldShift();
+				if ( bestSolution != null && bestSolution.getSatisfaction() > (bestSatisfaction + 0.25 * (1 - bestSatisfaction))  ) {
+					searcher.shouldShift();
 					internalNewOptimalSolution( bestSolution.getTrialPoint(), bestSolution.getSatisfaction() );
 				}
 			}
@@ -199,6 +204,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 	 * @param solutions  The list of solutions.
 	 * @param solution   The new optimal solution.
 	 */
+        @Override
     public void foundNewOptimalSolution( final SolutionJudge source, final List<Trial> solutions, final Trial solution ) {}
 
 
@@ -208,42 +214,39 @@ public class RandomShrinkSearch extends SearchAlgorithm {
      * it will not changed based on their results
      */
     private void internalNewOptimalSolution( final TrialPoint newPoint, final double satisfaction ){
-        _bestSatisfaction = satisfaction;
-        TrialPoint oldPoint = _bestPoint;
-        _searcher.newTopSolution( oldPoint, newPoint );
-        _bestPoint = newPoint;
+        bestSatisfaction = satisfaction;
+        TrialPoint oldPoint = bestPoint;
+        searcher.newTopSolution( oldPoint, newPoint );
+        bestPoint = newPoint;
     }
 
-
-	/** Interface for classes that search for solutions.  */
-	protected interface Searcher {
-		/** reset for searching from scratch; forget history */
-		public void reset();
-        
-        /** tells the ShrinkSearcher to only shift the window */
-        public boolean _shouldShift = false;
+    /**
+     * Interface for classes that search for solutions.
+     */
+    protected interface Searcher {
+	/** reset for searching from scratch; forget history */
+        public void reset();
         
         /** turns shouldShift on */
         public void shouldShift();
 
+        /**
+         * An event indicating that a new solution has been found which is
+         * better than the previous best solution according to the score given
+         * by the evaluator.
+         *
+         * @param oldPoint The old best point.
+         * @param newPoint The new best point.
+         */
+        public void newTopSolution(final TrialPoint oldPoint, final TrialPoint newPoint);
 
-		/**
-		 * An event indicating that a new solution has been found which is better than the previous
-		 * best solution according to the score given by the evaluator.
-		 *
-		 * @param oldPoint  The old best point.
-		 * @param newPoint  The new best point.
-		 */
-		public void newTopSolution( final TrialPoint oldPoint, final TrialPoint newPoint );
-
-
-		/**
-		 * Get the next trial point.
-		 *
-		 * @return   the next trial point.
-		 */
-		public TrialPoint nextTrialPoint();
-	}
+        /**
+         * Get the next trial point.
+         *
+         * @return the next trial point.
+         */
+        public TrialPoint nextTrialPoint();
+    }
 
 
 	/** A searcher that performs a simple random search in the entire search space.  */
@@ -252,32 +255,34 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 		protected final int NUM_VARIABLES;
 
 		/** Description of the Field */
-		protected Random _randomGenerator;
+		protected Random randomGenerator;
         
 		/** Description of the Field */
-		protected double _changeProbabilityBase;
+		protected double changeProbabilityBase;
         
 		/** Map of values keyed by variable */
-		protected Map<Variable,Number> _values;
+		protected Map<Variable,Number> values;
 
         
         /** tells the ShrinkSearcher to only shift the window */
-        public boolean _shouldShift = false;
+        public boolean shouldShift = false;
         
         /** turns shouldShift on */
+                @Override
         public void shouldShift(){};
         
 
 		/** Constructor  */
 		public RandomSearcher() {
-			NUM_VARIABLES = _problem.getVariables().size();
-			_changeProbabilityBase = 1 / (double)NUM_VARIABLES;
-			_values = new HashMap<Variable,Number>( NUM_VARIABLES );
-			_randomGenerator = new Random( 0 );
+			NUM_VARIABLES = problem.getVariables().size();
+			changeProbabilityBase = 1 / (double)NUM_VARIABLES;
+			values = new HashMap<>( NUM_VARIABLES );
+			randomGenerator = new Random( 0 );
 		}
 
 
 		/** reset for searching from scratch; forget history */
+                @Override
 		public void reset() { }
 
 
@@ -288,6 +293,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 		 * @param oldPoint  The old best point.
 		 * @param newPoint  The new best point.
 		 */
+                @Override
 		public void newTopSolution( final TrialPoint oldPoint, final TrialPoint newPoint ) { }
 		
 
@@ -296,6 +302,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 		 *
 		 * @return   the next trial point.
 		 */
+                @Override
 		public TrialPoint nextTrialPoint() {
 			return nextPoint();
 		}
@@ -307,7 +314,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 		 * @return   the next trial point.
 		 */
 		public TrialPoint nextPoint() {
-			_values.putAll( _bestPoint.getValueMap() );
+			values.putAll( bestPoint.getValueMap() );
 			return nextPoint( 1 );
 		}
 
@@ -325,22 +332,22 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 		 */
 		public TrialPoint nextPoint( int expectedNumToChange ) {
 			boolean elementChanged = false;
-			double changeProbability = expectedNumToChange * _changeProbabilityBase;
+			double changeProbability = expectedNumToChange * changeProbabilityBase;
 
-			for ( final Variable variable : _problem.getVariables() ) {
-				boolean shouldChange = ( _randomGenerator.nextDouble() <= changeProbability );
+			for ( final Variable variable : problem.getVariables() ) {
+				boolean shouldChange = ( randomGenerator.nextDouble() <= changeProbability );
 				if ( shouldChange ) {
 					elementChanged = true;
 					double value = proposeValue( variable );
-					_values.put( variable, new Double( value ) );
+					values.put( variable, new Double( value ) );
 				}
 			}
 
 			if ( elementChanged ) {
-				return new TrialPoint( _values );
+				return new TrialPoint( values );
 			}
 			else {
-				expectedNumToChange = _randomGenerator.nextInt( NUM_VARIABLES ) + 1;
+				expectedNumToChange = randomGenerator.nextInt( NUM_VARIABLES ) + 1;
 				return nextPoint( expectedNumToChange );
 			}
 		}
@@ -356,7 +363,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 		protected double proposeValue( final Variable variable ) {
 			double lowerLimit = variable.getLowerLimit();
 			double upperLimit = variable.getUpperLimit();
-			double rawValue = _randomGenerator.nextDouble();
+			double rawValue = randomGenerator.nextDouble();
 
 			return lowerLimit + rawValue * ( upperLimit - lowerLimit );
 		}
@@ -371,14 +378,14 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 	 */
 	protected class ShrinkSearcher extends RandomSearcher {
 		/** Description of the Field */
-		protected Map<Variable,VariableWindow> _variableWindows;
+		protected Map<Variable,VariableWindow> variableWindows;
         
         /** tells the ShrinkSearcher to only shift the window */
-        public boolean _shouldShift = false;
+        public boolean shouldShift = false;
         
         /** turns shouldShift on */
-        public void shouldShift(){
-            _shouldShift = true;
+        public void shouldShsift(){
+            shouldShift = true;
         }
 
 
@@ -389,6 +396,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 
 
 		/** reset for searching from scratch; forget history */
+                @Override
 		public void reset() {
 			buildWindows();
 		}
@@ -401,7 +409,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 		 * @return          the variable's search window
 		 */
 		public VariableWindow getSearchWindow( final Variable variable ) {
-			return _variableWindows.get( variable );
+			return variableWindows.get( variable );
 		}
 		
 		
@@ -412,7 +420,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 			System.out.println( "********* Printing variable search windows *********" );
 			System.out.println( message );
 
-			for ( final Variable variable : _problem.getVariables() ) {
+			for ( final Variable variable : problem.getVariables() ) {
 				VariableWindow window = getSearchWindow( variable );
 				System.out.println( variable.getName() + " lower limit: " + window.getLowerLimit() );
 				System.out.println( variable.getName() + " upper limit: " + window.getUpperLimit() );
@@ -428,12 +436,13 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 		 * @param oldPoint  The old best point.
 		 * @param newPoint  The new best point.
 		 */
+                @Override
 		public void newTopSolution( final TrialPoint oldPoint, final TrialPoint newPoint ) {
-            if(_shouldShift){
+            if(shouldShift){
                 shiftWindow(newPoint);
             }
             else{
-                for ( final Variable variable : _problem.getVariables() ) {
+                for ( final Variable variable : problem.getVariables() ) {
                     final double newValue = newPoint.getValue( variable );
                     final double oldValue = oldPoint.getValue( variable );
                     
@@ -453,11 +462,11 @@ public class RandomShrinkSearch extends SearchAlgorithm {
                     window.setUpperLimit( Math.min( upperLimit, newValue + upperRange ) );
                 }
             }
-            _shouldShift = false;
+            shouldShift = false;
 		}
         
         public void shiftWindow(TrialPoint newPoint){
-            for(final Variable variable: _problem.getVariables()){
+            for(final Variable variable: problem.getVariables()){
                 double newValue = newPoint.getValue(variable);
                 
                 VariableWindow window = getSearchWindow(variable);
@@ -478,8 +487,8 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 		 * specified search domain and the algorithm's search space.
 		 */
 		protected void buildWindows() {
-			final InitialDomain domainHint = (InitialDomain)_problem.getHint( InitialDomain.TYPE );
-			final InitialDelta deltaHint = (InitialDelta)_problem.getHint( InitialDelta.TYPE );
+			final InitialDomain domainHint = (InitialDomain)problem.getHint( InitialDomain.TYPE );
+			final InitialDelta deltaHint = (InitialDelta)problem.getHint( InitialDelta.TYPE );
 			DomainHint hint;
 			
 			if ( deltaHint != null ) {
@@ -492,13 +501,13 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 				hint = new InitialDelta();
 			}
 			
-			final List<Variable> variables = _problem.getVariables();
-			_variableWindows = new HashMap<Variable,VariableWindow>( variables.size() );
+			final List<Variable> variables = problem.getVariables();
+			variableWindows = new HashMap<>( variables.size() );
             
             for ( final Variable variable : variables ) {
 				final double[] limits = hint.getRange( variable );				
 				VariableWindow window = new VariableWindow( limits[DomainHint.LOWER_IND], limits[DomainHint.UPPER_IND] );
-				_variableWindows.put( variable, window );
+				variableWindows.put( variable, window );
 			}
 		}
 
@@ -509,8 +518,9 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 		 * @param variable  the variable for which to propose a new value
 		 * @return          the new value to propose for the variable
 		 */
+                @Override
 		protected double proposeValue( final Variable variable ) {
-			double rawValue = _randomGenerator.nextDouble();
+			double rawValue = randomGenerator.nextDouble();
 			final VariableWindow window = getSearchWindow( variable );
 			double lowerLimit = window.getLowerLimit();
 			double upperLimit = window.getUpperLimit();
@@ -523,31 +533,32 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 	/** Use a combination of search engines to search for the best solution.  */
 	public class ComboSearcher extends RandomSearcher {
 		/** Description of the Field */
-		protected ShrinkSearcher _shrinkSearcher;
+		protected ShrinkSearcher shrinkSearcher;
 		/** Description of the Field */
-		protected RandomSearcher _randomSearcher;
+		protected RandomSearcher randomSearcher;
 		/** Description of the Field */
-		protected final static double SHRINK_THRESHOLD = 0.9;
+		protected static final double SHRINK_THRESHOLD = 0.9;
         
         /** tells the ShrinkSearcher to only shift the window */
-        public boolean _shouldShift = false;
+        public boolean shouldShift = false;
         
         /** turns shouldShift on */
         public void shouldShift(){
-            _shouldShift = true;
+            shouldShift = true;
         }
 
 
 		/** Constructor  */
 		public ComboSearcher() {
-			_shrinkSearcher = new ShrinkSearcher();
-			_randomSearcher = new RandomSearcher();
+			shrinkSearcher = new ShrinkSearcher();
+			randomSearcher = new RandomSearcher();
 		}
 
 
 		/** reset for searching from scratch; forget history */
+                @Override
 		public void reset() {
-			_shrinkSearcher.reset();
+			shrinkSearcher.reset();
 		}
 
 
@@ -558,12 +569,13 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 		 * @param oldPoint  The old best point.
 		 * @param newPoint  The new best point.
 		 */
+                @Override
 		public void newTopSolution( final TrialPoint oldPoint, final TrialPoint newPoint ) {
-            if(_shouldShift){
-                _shrinkSearcher.shouldShift();
+            if(shouldShift){
+                shrinkSearcher.shouldShift();
             }
-            _shrinkSearcher.newTopSolution( oldPoint, newPoint );
-            _shouldShift = false;
+            shrinkSearcher.newTopSolution( oldPoint, newPoint );
+            shouldShift = false;
 		}
 
 
@@ -573,13 +585,14 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 		 * @param variable  the variable for which to propose a new value
 		 * @return          the new value to propose for the variable
 		 */
+                @Override
 		protected double proposeValue( final Variable variable ) {
-			double selection = _randomGenerator.nextDouble();
+			double selection = randomGenerator.nextDouble();
 			if ( selection < SHRINK_THRESHOLD ) {
-				return _shrinkSearcher.proposeValue( variable );
+				return shrinkSearcher.proposeValue( variable );
 			}
 			else {
-				return _randomSearcher.proposeValue( variable );
+				return randomSearcher.proposeValue( variable );
 			}
 		}
 	}
@@ -593,8 +606,8 @@ public class RandomShrinkSearch extends SearchAlgorithm {
  */
 final class VariableWindow {
 
-	private double _lowerLimit;
-	private double _upperLimit;
+	private double lowerLimit;
+	private double upperLimit;
 
 
 	/**
@@ -604,8 +617,8 @@ final class VariableWindow {
 	 * @param upper  Description of the Parameter
 	 */
 	public VariableWindow( double lower, double upper ) {
-		_lowerLimit = lower;
-		_upperLimit = upper;
+		lowerLimit = lower;
+		upperLimit = upper;
 	}
 
 
@@ -615,7 +628,7 @@ final class VariableWindow {
 	 * @param limit  The new lowerLimit value
 	 */
 	public void setLowerLimit( final double limit ) {
-		_lowerLimit = limit;
+		lowerLimit = limit;
 	}
 
 
@@ -625,7 +638,7 @@ final class VariableWindow {
 	 * @return   The lowerLimit value
 	 */
 	public double getLowerLimit() {
-		return _lowerLimit;
+		return lowerLimit;
 	}
 
 
@@ -635,7 +648,7 @@ final class VariableWindow {
 	 * @param limit  The new upperLimit value
 	 */
 	public void setUpperLimit( final double limit ) {
-		_upperLimit = limit;
+		upperLimit = limit;
 	}
 
 
@@ -645,7 +658,7 @@ final class VariableWindow {
 	 * @return   The upperLimit value
 	 */
 	public double getUpperLimit() {
-		return _upperLimit;
+		return upperLimit;
 	}
 
 
@@ -654,8 +667,9 @@ final class VariableWindow {
 	 *
 	 * @return   Description of the Return Value
 	 */
+        @Override
 	public String toString() {
-		return "lower limit: " + _lowerLimit + ", upper limit: " + _upperLimit;
+		return "lower limit: " + lowerLimit + ", upper limit: " + upperLimit;
 	}
 }
 

@@ -40,7 +40,7 @@ public class ArrayMath {
     
     
     /** 
-     * Transform an array by mutlitplying by a scale and adding an offset
+     * Transform an array by multiplying by a scale and adding an offset
      * v(i) = scale * array(i) + offset
      */
     public static double[] transform(final double[] array, final double scale, final double offset) {
@@ -295,7 +295,7 @@ public class ArrayMath {
 
 
 	/** Invert the matrix in place - copied from reverseMatrix() in the the plot framework's GraphDataOperations */
-    static public boolean invertMatrix(double[][] a){
+    public static boolean invertMatrix(double[][] a){
         if( a == null ) return false;
 		int n = a.length;
         int i,icol,irow,j,k,l,ll;
@@ -354,4 +354,3 @@ public class ArrayMath {
 		return true;
     }
 }
-

@@ -10,7 +10,6 @@ package xal.extension.application;
 
 import javax.swing.*;
 import java.awt.Point;
-import java.util.*;
 
 
 /** Interface of XAL windows. */

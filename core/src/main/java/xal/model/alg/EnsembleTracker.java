@@ -34,16 +34,16 @@ public class EnsembleTracker extends Tracker {
 
     
     /** string type identifier for algorithm */
-    public static final String      s_strTypeId = EnsembleTracker.class.getName();
+    public static final String      TYPE_ID = EnsembleTracker.class.getName();
     
     /** current algorithm version */
-    public static final int         s_intVersion = 1;
+    public static final int         VERSION = 1;
 
     /** probe type recognized by this algorithm */
-    public static final Class<EnsembleProbe>       s_clsProbeType = EnsembleProbe.class;
+    public static final Class<EnsembleProbe>       CLS_PROBE_TYPE = EnsembleProbe.class;
     
     /** maximum distance to advance probe before applying space charge kick */
-    private static final double     s_dblMaxStepSize = 0.01;  
+    private static final double     MAX_STEP_SIZE = 0.01;  
        
     
        
@@ -57,7 +57,7 @@ public class EnsembleTracker extends Tracker {
      *  Creates a new instance of EnsembleTracker 
      */
     public EnsembleTracker() {
-        super(s_strTypeId, s_intVersion, s_clsProbeType);
+        super(TYPE_ID, VERSION, CLS_PROBE_TYPE);
     }
     
     /**
@@ -86,7 +86,7 @@ public class EnsembleTracker extends Tracker {
      * may be advanced before applying a space charge kick.
      */
     private double getMaxStepSize() {
-    	return s_dblMaxStepSize;
+    	return MAX_STEP_SIZE;
     }    
     
     

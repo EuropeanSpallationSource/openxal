@@ -43,13 +43,13 @@ public class EnvelopeTrackerPmq extends EnvelopeTracker {
      */
     
     /** string type identifier for algorithm */
-    public static final String      s_strTypeId = EnvelopeTrackerPmq.class.getName();
+    public static final String      TYPE_ID = EnvelopeTrackerPmq.class.getName();
     
     /** current algorithm version */
-    public static final int         s_intVersion = 1;
+    public static final int         VERSION = 1;
     
     /** probe type recognized by this algorithm */
-    public static final Class<EnvelopeProbe>       s_clsProbeType = EnvelopeProbe.class;
+    public static final Class<EnvelopeProbe>       CLS_PROBE_TYPE = EnvelopeProbe.class;
     
     
     
@@ -68,8 +68,8 @@ public class EnvelopeTrackerPmq extends EnvelopeTracker {
      *  Creates a new instance of EnvelopeTracker 
      */
     public EnvelopeTrackerPmq() { 
-        super(s_strTypeId, s_intVersion, s_clsProbeType);
-    };
+        super(TYPE_ID, VERSION, CLS_PROBE_TYPE);
+    }
     
     /**
      * Copy constructor for EnvelopeTrackerPmq

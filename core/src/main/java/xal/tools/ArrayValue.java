@@ -17,7 +17,7 @@ import java.lang.reflect.Array;
  */
 public abstract class ArrayValue extends Number {
 	/** required for Serializable */
-	static final private long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 	/** the array of data */
     protected Object array;
@@ -34,25 +34,27 @@ public abstract class ArrayValue extends Number {
     
     
     /** get the length of the array */
-    final public int getCount() {
+    public final int getCount() {
         return Array.getLength( array );
     }
     
     
     /** get the native type of the array */
-    final public Class<?> getType() {
+    public final Class<?> getType() {
         return array.getClass().getComponentType();
     }
 	
 	
 	/** override toString() to return a string value */
+        @Override
 	public String toString() {
 		return stringValue();
 	}
     
     
     /** get the first element value as a byte */
-    final public byte byteValue() {
+        @Override
+    public final byte byteValue() {
         return byteValueAt( 0 );
     }
     
@@ -60,7 +62,8 @@ public abstract class ArrayValue extends Number {
     abstract public byte[] byteArray();
     
     /** get the first element value as a short */
-    final public short shortValue() {
+        @Override
+    public final short shortValue() {
         return shortValueAt(0);
     }
     
@@ -68,7 +71,8 @@ public abstract class ArrayValue extends Number {
     abstract public short[] shortArray();
     
     /** get the first element value as an int */
-    final public int intValue() {
+        @Override
+    public final int intValue() {
         return intValueAt(0);
     }    
     
@@ -76,7 +80,8 @@ public abstract class ArrayValue extends Number {
     abstract public int[] intArray();
 
     /** get the first element value as a long */
-    final public long longValue() {
+        @Override
+    public final long longValue() {
         return longValueAt(0);
     }    
     
@@ -84,7 +89,8 @@ public abstract class ArrayValue extends Number {
     abstract public long[] longArray();
 
     /** get the first element value as a float */
-    final public float floatValue() {
+        @Override
+    public final float floatValue() {
         return floatValueAt(0);
     }    
     
@@ -92,7 +98,8 @@ public abstract class ArrayValue extends Number {
     abstract public float[] floatArray();
     
     /** get the first element value as a double */
-    final public double doubleValue() {
+        @Override
+    public final double doubleValue() {
         return doubleValueAt(0);
     }
     
@@ -100,7 +107,7 @@ public abstract class ArrayValue extends Number {
     abstract public double[] doubleArray();
     
     /** get the first element value as a String */
-    final public String stringValue() {
+    public final String stringValue() {
         return stringValueAt(0);
     }
     
@@ -109,73 +116,73 @@ public abstract class ArrayValue extends Number {
     
     
     /** Factory method to instantiate a new ArrayValue store for the byte array type */
-    static public ArrayValue byteStore( final byte[] newArray ) {
+    public static ArrayValue byteStore( final byte[] newArray ) {
         return new ByteStore( newArray );
     }
 
     
     /** Factory method to instantiate a new ArrayValue store for the byte scalar type */
-    static public ArrayValue byteStore( final byte scalar ) {
+    public static ArrayValue byteStore( final byte scalar ) {
         return byteStore( new byte[] {scalar} );
     }
 
     
     /** Factory method to instantiate a new ArrayValue store for the short array type */
-    static public ArrayValue shortStore( final short[] newArray ) {
+    public static ArrayValue shortStore( final short[] newArray ) {
         return new ShortStore( newArray );
     }
 
     
     /** Factory method to instantiate a new ArrayValue store for the short scalar type */
-    static public ArrayValue shortStore( final short scalar ) {
+    public static ArrayValue shortStore( final short scalar ) {
         return shortStore( new short[] {scalar} );
     }
 
     
     /** Factory method to instantiate a new ArrayValue store for the int array type */
-    static public ArrayValue intStore( final int[] newArray ) {
+    public static ArrayValue intStore( final int[] newArray ) {
         return new IntStore( newArray );
     }
 
     
     /** Factory method to instantiate a new ArrayValue store for the int scalar type */
-    static public ArrayValue intStore( final int scalar ) {
+    public static ArrayValue intStore( final int scalar ) {
         return intStore( new int[] {scalar} );
     }
 	
     
     /** Factory method to instantiate a new ArrayValue store for the long array type */
-    static public ArrayValue longStore( final long[] newArray ) {
+    public static ArrayValue longStore( final long[] newArray ) {
         return new LongStore( newArray );
     }
 	
     
     /** Factory method to instantiate a new ArrayValue store for the long scalar type */
-    static public ArrayValue longStore( final long scalar ) {
+    public static ArrayValue longStore( final long scalar ) {
         return longStore( new long[] {scalar} );
     }
 	
     
     /** Factory method to instantiate a new ArrayValue store for the float array type */
-    static public ArrayValue floatStore( final float[] newArray ) {
+    public static ArrayValue floatStore( final float[] newArray ) {
         return new FloatStore( newArray );
     }
 
     
     /** Factory method to instantiate a new ArrayValue store for the float scalar type */
-    static public ArrayValue floatStore( final float scalar ) {
+    public static ArrayValue floatStore( final float scalar ) {
         return floatStore( new float[] {scalar} );
     }
 
     
     /** Factory method to instantiate a new ArrayValue store for the double array type */
-    static public ArrayValue doubleStore( final double[] newArray ) {
+    public static ArrayValue doubleStore( final double[] newArray ) {
         return new DoubleStore( newArray );
     }
 
     
     /** Factory method to instantiate a new ArrayValue store for the double scalar type */
-    static public ArrayValue doubleStore( final double scalar ) {
+    public static ArrayValue doubleStore( final double scalar ) {
         return doubleStore( new double[] {scalar} );
     }
     
@@ -185,7 +192,7 @@ public abstract class ArrayValue extends Number {
      * @param number The number to represent.
      * @return The ArrayValue representation
      */
-    static public ArrayValue numberStore( final Number number ) {
+    public static ArrayValue numberStore( final Number number ) {
         if ( number instanceof Double ) {
             return doubleStore( number.doubleValue() );
         }
@@ -207,13 +214,13 @@ public abstract class ArrayValue extends Number {
 
     
     /** Factory method to instantiate a new ArrayValue store for the String array type */
-    static public ArrayValue stringStore( final String[] newArray ) {
+    public static ArrayValue stringStore( final String[] newArray ) {
         return new StringStore( newArray );
     }
     
     
     /** Factory method to instantiate a new ArrayValue store for the String scalar type */
-    static public ArrayValue stringStore( final String scalar ) {
+    public static ArrayValue stringStore( final String scalar ) {
         return stringStore( new String[] {scalar} );
     }
     
@@ -222,7 +229,7 @@ public abstract class ArrayValue extends Number {
      * Create a new ArrayValue from an Object array.  Inspect the array type 
      * to create the proper kind of storage.
      */
-    static public ArrayValue arrayValueFromArray( final Object newArray ) throws IllegalArgumentException {
+    public static ArrayValue arrayValueFromArray( final Object newArray ) throws IllegalArgumentException {
         final Class<?> componentType = newArray.getClass().getComponentType();
         
         if ( componentType == null ) {
@@ -260,7 +267,7 @@ public abstract class ArrayValue extends Number {
  */
 abstract class NumericStore extends ArrayValue {
 	/** required for Serializable */
-	static final private long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
 
 	/** Constructor */
@@ -270,12 +277,14 @@ abstract class NumericStore extends ArrayValue {
 
 
     /** return the value at the index as a byte */
-    final public byte byteValueAt( final int index ) {
+        @Override
+    public final byte byteValueAt( final int index ) {
         return ((Number)Array.get( array, index )).byteValue();
     }
 
 
     /** return the array converted to a byte array */
+        @Override
     public byte[] byteArray() {
         int count = getCount();
         byte[] newArray = new byte[count];
@@ -286,11 +295,13 @@ abstract class NumericStore extends ArrayValue {
     }
 
     /** return the value at the index as a short */
-    final public short shortValueAt(int index) {
+        @Override
+    public final short shortValueAt(int index) {
         return ((Number)Array.get(array, index)).shortValue();
     }
 
     /** return the array converted to a short array */
+        @Override
     public short[] shortArray() {
         int count = getCount();
         short[] newArray = new short[count];
@@ -301,11 +312,13 @@ abstract class NumericStore extends ArrayValue {
     }
 
     /** return the value at the index as an int */
-    final public int intValueAt( final int index ) {
+        @Override
+    public final int intValueAt( final int index ) {
         return ((Number)Array.get( array, index )).intValue();
     }
 
     /** return the array converted to an int array */
+        @Override
     public int[] intArray() {
         int count = getCount();
         int[] newArray = new int[count];
@@ -316,11 +329,13 @@ abstract class NumericStore extends ArrayValue {
     }
     
     /** return the value at the index as a long */
-    final public long longValueAt( final int index ) {
+        @Override
+    public final long longValueAt( final int index ) {
         return ((Number)Array.get( array, index )).longValue();
     }
     
     /** return the array converted to a long array */
+        @Override
     public long[] longArray() {
         int count = getCount();
         long[] newArray = new long[count];
@@ -331,11 +346,13 @@ abstract class NumericStore extends ArrayValue {
     }
 
     /** return the value at the index as a float */
-    final public float floatValueAt(int index) {
+        @Override
+    public final float floatValueAt(int index) {
         return ((Number)Array.get(array, index)).floatValue();
     }
 
     /** return the array converted to a float array */
+        @Override
     public float[] floatArray() {
         int count = getCount();
         float[] newArray = new float[count];
@@ -346,11 +363,13 @@ abstract class NumericStore extends ArrayValue {
     }
 
     /** return the value at the index as a double */
-    final public double doubleValueAt( final int index ) {
+        @Override
+    public final double doubleValueAt( final int index ) {
         return ((Number)Array.get( array, index )).doubleValue();
     }
 
     /** return the array converted to a double array */
+        @Override
     public double[] doubleArray() {
         int count = getCount();
         double[] newArray = new double[count];
@@ -362,7 +381,8 @@ abstract class NumericStore extends ArrayValue {
 
 
     /** return the array converted to a String array */
-    final public String[] stringArray() {
+        @Override
+    public final String[] stringArray() {
         int count = getCount();
         String[] newArray = new String[count];
         for ( int index = 0 ; index < count ; index++ ) {
@@ -390,13 +410,15 @@ final class ByteStore extends NumericStore {
     
     
     /** Override numeric store by directly returning the byte array for best performance */
+    @Override
     public byte[] byteArray() {
         return (byte[])array;
     }
 
 
     /** Return the string equivalent of the byte value at the specified index */
-    final public String stringValueAt( final int index ) {
+    @Override
+    public final String stringValueAt( final int index ) {
 		final byte value = byteValueAt( index );
         return String.valueOf( value );
     }
@@ -406,7 +428,8 @@ final class ByteStore extends NumericStore {
 	 * Get the string representation of this storage data.
 	 * @return a string representation of the data
 	 */
-	final public String toString() {
+    @Override
+	public final String toString() {
 		return getCount() == 1 ? stringValueAt( 0 ) : ArrayTool.asString( (byte[])array );
 	}
 }
@@ -427,13 +450,15 @@ final class ShortStore extends NumericStore {
     
     
     /** Override numeric store by directly returning the short array for best performance */
+    @Override
     public short[] shortArray() {
         return (short[])array;
     }
 
 
     /** Return the string equivalent of the short value at the specified index */
-    final public String stringValueAt( final int index ) {
+    @Override
+    public final String stringValueAt( final int index ) {
         final short value = shortValueAt( index );
         return String.valueOf( value );
     }
@@ -443,7 +468,8 @@ final class ShortStore extends NumericStore {
 	 * Get the string representation of this storage data.
 	 * @return a string representation of the data
 	 */
-	final public String toString() {
+    @Override
+	public final String toString() {
 		return getCount() == 1 ? stringValueAt( 0 ) : ArrayTool.asString( (short[])array );
 	}
 }
@@ -464,13 +490,15 @@ final class IntStore extends NumericStore {
     
     
     /** Override numeric store by directly returning the int array for best performance */
+    @Override
     public int[] intArray() {
         return (int[])array;
     }
 
 
     /** Return the string equivalent of the int value at the specified index */
-    final public String stringValueAt( final int index ) {
+    @Override
+    public final String stringValueAt( final int index ) {
         final int value = intValueAt( index );
         return String.valueOf( value );
     }
@@ -480,7 +508,8 @@ final class IntStore extends NumericStore {
 	 * Get the string representation of this storage data.
 	 * @return a string representation of the data
 	 */
-	final public String toString() {
+    @Override
+	public final String toString() {
 		return getCount() == 1 ? stringValueAt( 0 ) : ArrayTool.asString( (int[])array );
 	}
 }
@@ -501,13 +530,15 @@ final class LongStore extends NumericStore {
     
     
     /** Override numeric store by directly returning the long array for best performance */
+    @Override
     public long[] longArray() {
         return (long[])array;
     }
 
 
     /** Return the string equivalent of the long value at the specified index */
-    final public String stringValueAt( final int index ) {
+    @Override
+    public final String stringValueAt( final int index ) {
         final long value = longValueAt( index );
         return String.valueOf( value );
     }
@@ -517,7 +548,8 @@ final class LongStore extends NumericStore {
 	 * Get the string representation of this storage data.
 	 * @return a string representation of the data
 	 */
-	final public String toString() {
+    @Override
+	public final String toString() {
 		return getCount() == 1 ? stringValueAt( 0 ) : ArrayTool.asString( (long[])array );
 	}
 }
@@ -538,13 +570,15 @@ final class FloatStore extends NumericStore {
     
     
     /** Override numeric store by directly returning the float array for best performance */
+    @Override
     public float[] floatArray() {
         return (float[])array;
     }
 
 
     /** Return the string equivalent of the float value at the specified index */
-    final public String stringValueAt(int index) {
+    @Override
+    public final String stringValueAt(int index) {
         final float value = floatValueAt( index );
         return String.valueOf( value );
     }
@@ -554,7 +588,8 @@ final class FloatStore extends NumericStore {
 	 * Get the string representation of this storage data.
 	 * @return a string representation of the data
 	 */
-	final public String toString() {
+    @Override
+	public final String toString() {
 		return getCount() == 1 ? stringValueAt( 0 ) : ArrayTool.asString( (float[])array );
 	}
 }
@@ -575,13 +610,15 @@ final class DoubleStore extends NumericStore {
     
     
     /** Override numeric store by directly returning the double array for best performance */
+    @Override
     public double[] doubleArray() {
         return (double[])array;
     }
 
 
     /** Return the string equivalent of the double value at the specified index */
-    final public String stringValueAt( final int index ) {
+    @Override
+    public final String stringValueAt( final int index ) {
         final double value = doubleValueAt( index );
         return String.valueOf( value );
     }
@@ -590,7 +627,8 @@ final class DoubleStore extends NumericStore {
 	 * Get the string representation of this storage data.
 	 * @return a string representation of the data
 	 */
-	final public String toString() {
+    @Override
+	public final String toString() {
 		return getCount() == 1 ? stringValueAt( 0 ) : ArrayTool.asString( (double[])array );
 	}
 }
@@ -611,14 +649,16 @@ final class StringStore extends ArrayValue {
 
 
     /** convert the value at the index to a byte */
-    final public byte byteValueAt( final int index ) {
+    @Override
+    public final byte byteValueAt( final int index ) {
         final String string = stringValueAt( index );
         return Byte.parseByte( string );
     }
 
 
     /** convert the array to a byte array */
-    final public byte[] byteArray() {
+    @Override
+    public final byte[] byteArray() {
         final int count = getCount();
         final byte[] newArray = new byte[count];
         for ( int index = 0 ; index < count ; index++ ) {
@@ -629,14 +669,16 @@ final class StringStore extends ArrayValue {
 
 	
     /** convert the value at the index to a short */
-    final public short shortValueAt( final int index ) {
+    @Override
+    public final short shortValueAt( final int index ) {
         final String string = stringValueAt( index );
         return Short.parseShort( string );
     }
 
 	
     /** convert the array to a short array */
-    final public short[] shortArray() {
+    @Override
+    public final short[] shortArray() {
         final int count = getCount();
         final short[] newArray = new short[count];
         for ( int index = 0 ; index < count ; index++ ) {
@@ -647,14 +689,16 @@ final class StringStore extends ArrayValue {
 
 	
     /** convert the value at the index to an int */
-    final public int intValueAt( final int index ) {
+    @Override
+    public final int intValueAt( final int index ) {
         final String string = stringValueAt( index );
         return Integer.parseInt( string );
     }
 
 	
     /** convert the array to an int array */
-    final public int[] intArray() {
+    @Override
+    public final int[] intArray() {
         final int count = getCount();
         final int[] newArray = new int[count];
         for ( int index = 0 ; index < count ; index++ ) {
@@ -665,14 +709,16 @@ final class StringStore extends ArrayValue {
 
 	
     /** convert the value at the index to a long */
-    final public long longValueAt( final int index ) {
+    @Override
+    public final long longValueAt( final int index ) {
         final String string = stringValueAt( index);
         return Long.parseLong( string );
     }
 
 	
     /** convert the array to a long array */
-    final public long[] longArray() {
+    @Override
+    public final long[] longArray() {
         final int count = getCount();
         final long[] newArray = new long[count];
         for ( int index = 0 ; index < count ; index++ ) {
@@ -683,7 +729,8 @@ final class StringStore extends ArrayValue {
 
 	
     /** convert the value at the index to a float */
-    final public float floatValueAt( final int index ) {
+    @Override
+    public final float floatValueAt( final int index ) {
         final String string = stringValueAt( index );
 		try {
 			return Float.parseFloat( string );
@@ -695,7 +742,8 @@ final class StringStore extends ArrayValue {
 
 	
     /** convert the array to a float array */
-    final public float[] floatArray() {
+    @Override
+    public final float[] floatArray() {
         final int count = getCount();
         final float[] newArray = new float[count];
         for ( int index = 0 ; index < count ; index++ ) {
@@ -706,7 +754,8 @@ final class StringStore extends ArrayValue {
 
 	
     /** convert the value at the index to a double */
-    final public double doubleValueAt( final int index ) {
+    @Override
+    public final double doubleValueAt( final int index ) {
         final String string = stringValueAt( index );
 		try {
 			return Double.parseDouble( string );
@@ -718,7 +767,8 @@ final class StringStore extends ArrayValue {
 
 	
     /** convert the array to a double array */
-    final public double[] doubleArray() {
+    @Override
+    public final double[] doubleArray() {
         final int count = getCount();
         final double[] newArray = new double[count];
         for ( int index = 0 ; index < count ; index++ ) {
@@ -729,13 +779,15 @@ final class StringStore extends ArrayValue {
 
 
     /** return the String value at the specified index */
-    final public String stringValueAt( final int index ) {
+    @Override
+    public final String stringValueAt( final int index ) {
         return (String)Array.get( array, index );
     }
     
     
     /** return the String array */
-    final public String[] stringArray() {
+    @Override
+    public final String[] stringArray() {
         return (String[])array;
     }    
 	
@@ -744,7 +796,8 @@ final class StringStore extends ArrayValue {
 	 * Get the string representation of this storage data.
 	 * @return a string representation of the data
 	 */
-	final public String toString() {
+    @Override
+	public final String toString() {
 		return getCount() == 1 ? stringValueAt( 0 ) : ArrayTool.asString( (Object[])array );
 	}
 }

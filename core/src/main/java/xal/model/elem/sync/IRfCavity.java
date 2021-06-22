@@ -3,8 +3,6 @@
  */
 package xal.model.elem.sync;
 
-import xal.model.IProbe;
-
 /**
  * Common parameters of RF Cavity structures.
  * 

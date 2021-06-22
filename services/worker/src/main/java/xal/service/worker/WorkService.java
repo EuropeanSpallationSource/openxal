@@ -19,12 +19,14 @@ import java.util.Date;
  */
 public class WorkService implements Working {
     /** add two numbers */
+    @Override
     public double add( final double summand, final double addend ) {
         return summand + addend;
     }
 
 
 	/** add the integers and return the resulting sum */
+    @Override
 	public int sumIntegers( final int[] summands ) {
 		int sum = 0;
 
@@ -37,12 +39,14 @@ public class WorkService implements Working {
 
     
     /** get the launch time */
+    @Override
     public Date getLaunchTime() {
         return Main.getLaunchTime();
     }
 
 	
 	/** calculate the sinusoid waveform from zero to 2pi */
+    @Override
 	public double[] generateSinusoid( final double amplitude, final double frequency, final double phase, final int numPoints ) {
 		final double omega = 2 * Math.PI * frequency;
 		final double step = 1.0 / ( numPoints - 1 );
@@ -59,12 +63,14 @@ public class WorkService implements Working {
 
 
 	/** say hello to the person with the specified name */
+    @Override
 	public String sayHelloTo( final String name ) {
 		return name != null && !name.isEmpty() ? "Hello, " + name + "!" : "Greetings!";
 	}
 
     
     /** shutdown the service */
+    @Override
     public void shutdown( final int code ) {
         Main.shutdown( code );
     }

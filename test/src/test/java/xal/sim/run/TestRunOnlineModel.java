@@ -56,28 +56,28 @@ public class TestRunOnlineModel {
      */
     
     /** PV Logger ID of machine state when data was taken */
-    static public final long        LNG_PVLOGID = 19650065;
+    public static final long        LNG_PVLOGID = 19650065;
     
     
     /** URL of the accelerator hardware description file */
-    static public String            STRL_URL_ACCEL   = ResourceManager.getTestAcceleratorURL().toString();
+    public static String            STRL_URL_ACCEL   = ResourceManager.getTestAcceleratorURL().toString();
 
     
     /** Output file location */
-    static private String           STR_FILE_OUTPUT = TestRunOnlineModel.class.getName() + ".txt";
+    private static String           STR_FILE_OUTPUT = TestRunOnlineModel.class.getName() + ".txt";
     
     
     /** URL where we are dumping the output */
-    static public File              FILE_OUTPUT    = ResourceManager.getOutputFile(TestRunOnlineModel.class, STR_FILE_OUTPUT);
+    public static File              FILE_OUTPUT    = ResourceManager.getOutputFile(TestRunOnlineModel.class, STR_FILE_OUTPUT);
     
     
     /** String identifier for accelerator sequence used in testing */
-//    static public String            STR_SEQ_ID       = "HEBT1";
-//    static public String            STR_SEQ_ID       = "MEBT-SCL";
-    static public String            STR_SEQ_ID       = "CCL";
+//    public static String            STR_SEQ_ID       = "HEBT1";
+//    public static String            STR_SEQ_ID       = "MEBT-SCL";
+    public static String            STR_SEQ_ID       = "CCL";
     
 //    /** String identifier where Courant-Snyder parameters are to be reconstructed */
-//    static public String            STR_TARG_ELEM_ID = "Begin_Of_HEBT1";
+//    public static String            STR_TARG_ELEM_ID = "Begin_Of_HEBT1";
     
     
     /*

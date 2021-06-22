@@ -9,6 +9,7 @@
 package xal.tools.math.r2;
 
 
+import java.io.Serializable;
 import xal.tools.math.IIndex;
 import xal.tools.math.SquareMatrix;
 
@@ -26,7 +27,7 @@ import xal.tools.math.SquareMatrix;
  *  @see    xal.tools.r3.R3
  */
 
-public class R2x2 extends SquareMatrix<R2x2> implements java.io.Serializable {
+public class R2x2 extends SquareMatrix<R2x2> implements Serializable {
     
     /**
      * Enumeration of the allowed index positions for objects of type
@@ -135,7 +136,7 @@ public class R2x2 extends SquareMatrix<R2x2> implements java.io.Serializable {
      * Create and return the generator element of SO(2) which is
      * a counter-clockwise rotation.
      * 
-     * @param   rotation angle in radians
+     * @param   dblAng angle in radians
      * 
      * @return  x-plane counter-clockwise rotation matrix 
      */
@@ -249,7 +250,7 @@ public class R2x2 extends SquareMatrix<R2x2> implements java.io.Serializable {
      * @param   iRow	matrix row location
      * @param	iCol	matrix column index
      * 
-     * @param   val     matrix element at given row and column will be set to this value
+     * @param   dblAng     matrix element at given row and column will be set to this value
      */
     public void setElem(IND iRow, IND iCol, double dblVal)   {
         super.setElem(iRow, iCol, dblVal);
@@ -311,6 +312,4 @@ public class R2x2 extends SquareMatrix<R2x2> implements java.io.Serializable {
 		return new R2x2();
 	}
 
-    
-    
 }

@@ -1,8 +1,6 @@
 package xal.extension.scan.analysis;
 
 import java.util.*;
-import java.awt.*;
-import java.text.*;
 import javax.swing.*;
 
 import xal.tools.data.DataAdaptor;
@@ -71,85 +69,94 @@ public class AnalysisControllerFactory {
 
 		AnalysisController AC = null;
 
-		if (analysisIndex == 0) {
-			AC = new AnalysisCntrlManagement(mainController,
-					analysisConf,
-					parentAnalysisPanel,
-					customControlPanel,
-					customGraphPanel,
-					globalButtonsPanel,
-					scanVariableParameter,
-					scanVariable,
-					measuredValuesV,
-					graphAnalysis,
-					messageTextLocal,
-					graphDataLocal);
-		} else if (analysisIndex == 1) {
-			AC = new AnalysisCntrlFindMinMax(mainController,
-					analysisConf,
-					parentAnalysisPanel,
-					customControlPanel,
-					customGraphPanel,
-					globalButtonsPanel,
-					scanVariableParameter,
-					scanVariable,
-					measuredValuesV,
-					graphAnalysis,
-					messageTextLocal,
-					graphDataLocal);
-		} else if (analysisIndex == 2) {
-			AC = new AnalysisCntrlPolynomFit(mainController,
-					analysisConf,
-					parentAnalysisPanel,
-					customControlPanel,
-					customGraphPanel,
-					globalButtonsPanel,
-					scanVariableParameter,
-					scanVariable,
-					measuredValuesV,
-					graphAnalysis,
-					messageTextLocal,
-					graphDataLocal);
-		} else if (analysisIndex == 3) {
-			AC = new AnalysisCntrlFindIntersection(mainController,
-					analysisConf,
-					parentAnalysisPanel,
-					customControlPanel,
-					customGraphPanel,
-					globalButtonsPanel,
-					scanVariableParameter,
-					scanVariable,
-					measuredValuesV,
-					graphAnalysis,
-					messageTextLocal,
-					graphDataLocal);
-		} else if (analysisIndex == 4) {
-			AC = new AnalysisCntrlDTLPhase(mainController,
-					analysisConf,
-					parentAnalysisPanel,
-					customControlPanel,
-					customGraphPanel,
-					globalButtonsPanel,
-					scanVariableParameter,
-					scanVariable,
-					measuredValuesV,
-					graphAnalysis,
-					messageTextLocal,
-					graphDataLocal);
-		} else if (analysisIndex == 5) {
-			AC = new AnalysisCntrlTDProcedure(mainController,
-					analysisConf,
-					parentAnalysisPanel,
-					customControlPanel,
-					customGraphPanel,
-					globalButtonsPanel,
-					scanVariableParameter,
-					scanVariable,
-					measuredValuesV,
-					graphAnalysis,
-					messageTextLocal,
-					graphDataLocal);
-		}
+            switch (analysisIndex) {
+                case 0:
+                    AC = new AnalysisCntrlManagement(mainController,
+                            analysisConf,
+                            parentAnalysisPanel,
+                            customControlPanel,
+                            customGraphPanel,
+                            globalButtonsPanel,
+                            scanVariableParameter,
+                            scanVariable,
+                            measuredValuesV,
+                            graphAnalysis,
+                            messageTextLocal,
+                            graphDataLocal);
+                    break;
+                case 1:
+                    AC = new AnalysisCntrlFindMinMax(mainController,
+                            analysisConf,
+                            parentAnalysisPanel,
+                            customControlPanel,
+                            customGraphPanel,
+                            globalButtonsPanel,
+                            scanVariableParameter,
+                            scanVariable,
+                            measuredValuesV,
+                            graphAnalysis,
+                            messageTextLocal,
+                            graphDataLocal);
+                    break;
+                case 2:
+                    AC = new AnalysisCntrlPolynomFit(mainController,
+                            analysisConf,
+                            parentAnalysisPanel,
+                            customControlPanel,
+                            customGraphPanel,
+                            globalButtonsPanel,
+                            scanVariableParameter,
+                            scanVariable,
+                            measuredValuesV,
+                            graphAnalysis,
+                            messageTextLocal,
+                            graphDataLocal);
+                    break;
+                case 3:
+                    AC = new AnalysisCntrlFindIntersection(mainController,
+                            analysisConf,
+                            parentAnalysisPanel,
+                            customControlPanel,
+                            customGraphPanel,
+                            globalButtonsPanel,
+                            scanVariableParameter,
+                            scanVariable,
+                            measuredValuesV,
+                            graphAnalysis,
+                            messageTextLocal,
+                            graphDataLocal);
+                    break;
+                case 4:
+                    AC = new AnalysisCntrlDTLPhase(mainController,
+                            analysisConf,
+                            parentAnalysisPanel,
+                            customControlPanel,
+                            customGraphPanel,
+                            globalButtonsPanel,
+                            scanVariableParameter,
+                            scanVariable,
+                            measuredValuesV,
+                            graphAnalysis,
+                            messageTextLocal,
+                            graphDataLocal);
+                    break;
+                case 5:
+                    AC = new AnalysisCntrlTDProcedure(mainController,
+                            analysisConf,
+                            parentAnalysisPanel,
+                            customControlPanel,
+                            customGraphPanel,
+                            globalButtonsPanel,
+                            scanVariableParameter,
+                            scanVariable,
+                            measuredValuesV,
+                            graphAnalysis,
+                            messageTextLocal,
+                            graphDataLocal);
+                    break;
+                default:
+                    break;
+            }
 
 		if (AC != null) {
 			AC.setTypeName(analysisTypes[analysisIndex]);

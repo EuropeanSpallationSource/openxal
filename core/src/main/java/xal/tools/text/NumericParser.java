@@ -19,7 +19,7 @@ import java.util.Map;
  */
 abstract public class NumericParser {
 	/** map of parsers keyed by numeric class */
-    static protected Map<Class<? extends Number>, NumericParser> PARSER_CLASS_MAP;
+    protected static final Map<Class<? extends Number>, NumericParser> PARSER_CLASS_MAP;
 
 
 	// static initializer
@@ -40,10 +40,10 @@ abstract public class NumericParser {
      * @param stringValue String representation of a number
      * @param numericType The type of number to instantiate
      * @return numeric value of the string value
-     * @throws java.lang.NumberFormatException if the string cannot be parsed into a number
+     * @throws NumberFormatException if the string cannot be parsed into a number
      * @throws java.lang.IllegalArgumentException if the numeric type specified is unsupported
      */
-    static public Number getNumericValue( final String stringValue, final Class<? extends Number> numericType ) throws NumberFormatException, IllegalArgumentException {
+    public static Number getNumericValue( final String stringValue, final Class<? extends Number> numericType ) throws NumberFormatException, IllegalArgumentException {
         final NumericParser parser = PARSER_CLASS_MAP.get( numericType );
         try {
             return parser.getNumericValue(stringValue);
@@ -58,7 +58,7 @@ abstract public class NumericParser {
      * Parse the string value as a number
      * @param stringValue String representation of a number
      * @return numeric value of the string value
-     * @throws java.lang.NumberFormatException if the string cannot be parsed into a number
+     * @throws NumberFormatException if the string cannot be parsed into a number
      */
     abstract public Number getNumericValue(String stringValue) throws NumberFormatException;
 }
@@ -74,10 +74,11 @@ class ByteParser extends NumericParser {
 	 * Parse the string value as a number
      * @param stringValue String representation of a number
      * @return numeric value of the string value
-     * @throws java.lang.NumberFormatException if the string cannot be parsed into a number
+     * @throws NumberFormatException if the string cannot be parsed into a number
      */
+    @Override
     public Number getNumericValue(String stringValue) throws NumberFormatException {
-        return Byte.valueOf( Byte.parseByte(stringValue) );
+        return Byte.parseByte(stringValue);
     }
 }
 
@@ -92,10 +93,11 @@ class DoubleParser extends NumericParser {
      * Parse the string value as a number
      * @param stringValue String representation of a number
      * @return numeric value of the string value
-     * @throws java.lang.NumberFormatException if the string cannot be parsed into a number
+     * @throws NumberFormatException if the string cannot be parsed into a number
      */
+    @Override
     public Number getNumericValue(String stringValue) throws NumberFormatException {
-        return Double.valueOf( Double.parseDouble(stringValue) );
+        return Double.parseDouble(stringValue);
     }
 }
 
@@ -110,10 +112,11 @@ class FloatParser extends NumericParser {
 	 * Parse the string value as a number.
      * @param stringValue String representation of a number
      * @return numeric value of the string value
-     * @throws java.lang.NumberFormatException if the string cannot be parsed into a number
+     * @throws NumberFormatException if the string cannot be parsed into a number
      */
+    @Override
     public Number getNumericValue(String stringValue) throws NumberFormatException {
-        return Float.valueOf( Float.parseFloat(stringValue) );
+        return Float.parseFloat(stringValue);
     }
 }
 
@@ -128,10 +131,11 @@ class IntegerParser extends NumericParser {
      * Parse the string value as a number
      * @param stringValue String representation of a number
      * @return numeric value of the string value
-     * @throws java.lang.NumberFormatException if the string cannot be parsed into a number
+     * @throws NumberFormatException if the string cannot be parsed into a number
      */
+    @Override
     public Number getNumericValue(String stringValue) throws NumberFormatException {
-        return Integer.valueOf( Integer.parseInt(stringValue) );
+        return Integer.parseInt(stringValue);
     }
 }
 
@@ -145,10 +149,11 @@ class LongParser extends NumericParser {
      * Parse the string value as a number
      * @param stringValue String representation of a number
      * @return numeric value of the string value
-     * @throws java.lang.NumberFormatException if the string cannot be parsed into a number
+     * @throws NumberFormatException if the string cannot be parsed into a number
      */
+    @Override
     public Number getNumericValue(String stringValue) throws NumberFormatException {
-        return Long.valueOf( Long.parseLong(stringValue) );
+        return Long.parseLong(stringValue);
     }
 }
 
@@ -163,10 +168,10 @@ class ShortParser extends NumericParser {
      * Parse the string value as a number
      * @param stringValue String representation of a number
      * @return numeric value of the string value
-     * @throws java.lang.NumberFormatException if the string cannot be parsed into a number
+     * @throws NumberFormatException if the string cannot be parsed into a number
      */
+    @Override
     public Number getNumericValue(String stringValue) throws NumberFormatException {
-        return Short.valueOf( Short.parseShort(stringValue) );
+        return Short.parseShort(stringValue);
     }
 }
-

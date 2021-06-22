@@ -12,7 +12,7 @@ import java.awt.RenderingHints;
 
 
 /**
- * Static helper class for painting standardised syimbols over
+ * Static helper class for painting standardised symbols over
  * existing Graphics objects.
  *
  * @author <a href="mailto:jernej.kamenik@cosylab.com">Jernej Kamenik</a>

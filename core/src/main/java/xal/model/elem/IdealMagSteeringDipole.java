@@ -42,17 +42,17 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
     /** Parameters for XAL MODEL LATTICE dtd */
     
     /** the string type identifier for all IdealMagSteeringDipole's */
-    public static final String      s_strType = "IdealMagSteeringDipole";
+    public static final String      TYPE = "IdealMagSteeringDipole";
     
     
     /** Tag for the parameter within the XML configuration file */
-    public static final String      s_strParamLenEff = "EffLength";
+    public static final String      PARAM_LEN_EFF = "EffLength";
     
     /** Tag for the parameter within the XML configuration file */
-    public static final String      s_strParamOrient = "Orientation";
+    public static final String      PARAM_ORIENT = "Orientation";
     
     /** Tag for the parameter within the XML configuration file */
-    public static final String      s_strParamField  = "MagField";
+    public static final String      PARAM_FIELD  = "MagField";
     
     
     
@@ -63,13 +63,13 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
      */
 
     /** effective length of the dipole magnet */
-    private double              m_dblLenEff = 0.0;
+    private double              dblLenEff = 0.0;
     
     /** the instantaneous position displacement going through the magnet */
-    private double				m_dblPositionKick = 0.0;
+    private double				dblPositionKick = 0.0;
 
     /** the instantaneous momentum displacement going through the magnet */
-    private double				m_dblAngleKick = 0.0;
+    private double				dblAngleKick = 0.0;
     
     
     
@@ -83,7 +83,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
      * generation.
      */
     public IdealMagSteeringDipole() {
-        super(s_strType);
+        super(TYPE);
     }
     
     /**
@@ -93,7 +93,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
      * @param   strId   string instance identifier of element
      */
     public IdealMagSteeringDipole(String strId) {
-        super(s_strType, strId);
+        super(TYPE, strId);
     }
     
     /** 
@@ -106,12 +106,12 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
      *  @param  dblLenEff   effective length of dipole magnet
      */
     public IdealMagSteeringDipole(String strId, double dblLenEff, int enmOrient, double dblFld) {
-        super(s_strType, strId);
+        super(TYPE, strId);
         
         this.setOrientation(enmOrient);
         this.setEffLength(dblLenEff);
         this.setMagField(dblFld);
-    };
+    }
     
     /**
      *  Set the effective length of the dipole magnet.  This value, along with the
@@ -120,7 +120,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
      *  @param  dblLenEff       effective length (in <b>meters</b>)
      */
     public void setEffLength(double dblLenEff)  {
-        m_dblLenEff = dblLenEff;
+        this.dblLenEff = dblLenEff;
     }
     
     
@@ -133,7 +133,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
      *
      *  @return     effective length (<b>in meters</b>)
      */
-    public double   getEffLength()  { return m_dblLenEff; };
+    public double   getEffLength()  { return dblLenEff; }
     
     
     
@@ -144,7 +144,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
      *  @param  dblPosKick       change in position going through magnet (in <b>meters</b>)
      */
     public void setPositionKick(double dblPosKick)  {
-        m_dblPositionKick = dblPosKick;
+        dblPositionKick = dblPosKick;
     }
     
     /**
@@ -154,7 +154,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
      *  @param  dblAngKick       effective length (in <b>meters</b>)
      */
     public void setAngleKick(double dblAngKick)  {
-        m_dblAngleKick = dblAngKick;
+        dblAngleKick = dblAngKick;
     }
     
     
@@ -167,7 +167,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
      *
      *  @return     kick displacement (<b>in meters</b>)
      */
-    public double   getPositionKick()  { return m_dblPositionKick; };
+    public double   getPositionKick()  { return dblPositionKick; }
     
     
     /**
@@ -175,7 +175,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
      *
      *  @return     angle kick (<b>in rad</b>)
      */
-    public double   getAngleKick()  { return m_dblAngleKick; };    
+    public double   getAngleKick()  { return dblAngleKick; }
     
     /*
      *  IElement Interface
@@ -203,7 +203,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
     @Override
     public double   energyGain(IProbe probe)     { 
         return 0.0; 
-    };
+    }
     
     /**
      *  Computes the transfer map for an ideal magnetic dipole.
@@ -219,7 +219,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
 
         // Get constants
 //        double e  = UnitCharge;
-        double c  = IConstants.LightSpeed;
+        double c  = IConstants.LIGHT_SPEED;
         
         // Get element parameters
         double B  = this.getMagField();
@@ -242,9 +242,9 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
 // angle polarity was opposite up to 27 Nov 07
         //changed so that angle + is x+, angle - is y- for negatives
         // on 28 Nov 07
-        if (m_dblAngleKick != 0.) {
-        	System.out.println("***use anglekick ("+m_dblAngleKick+") instead of dp "+dp);
-        	dp  = m_dblAngleKick; 
+        if (dblAngleKick != 0.) {
+        	System.out.println("***use anglekick ("+dblAngleKick+") instead of dp "+dp);
+        	dp  = dblAngleKick; 
         }                           // then B polarity is defined in J-PARC also dp>0 for B>0 in x and y
         
         // Build transfer matrix

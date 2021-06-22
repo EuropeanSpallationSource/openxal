@@ -13,10 +13,10 @@ public class TraceXalUnitConverter {
      */
 
     /** Speed of light in a vacuum (meters/second) */
-    private final double LightSpeed = IConstants.LightSpeed;
+    private final double lightSpeed = IConstants.LIGHT_SPEED;
 
-    static public final double xalToTraceDimension = 1000; // m to mm
-    static public final double traceToXalDimension = 0.001; //mm to m
+    public static final double XAL_TO_TRACE_DIMENSION = 1000; // m to mm
+    public static final double TRACE_TO_XAL_DIMENSION = 0.001; //mm to m
 
     /*
      * Global Methods
@@ -88,7 +88,7 @@ public class TraceXalUnitConverter {
      *
      */
     private void computeAuxiliaryParameters()   {
-        lambda = LightSpeed / f;
+        lambda = lightSpeed / f;
         gamma = 1.0 + (W / ER);
         vnorm = Math.sqrt(1.0 - (1.0 / (gamma * gamma)));
     }
@@ -161,7 +161,7 @@ public class TraceXalUnitConverter {
      *  </pre>
      * </p>
      *
-     *  @param   vecCoord    coordinate phase vector in Trace3D units
+     *  @param   vecCoords    coordinate phase vector in Trace3D units
      *
      *  @return              coordinate phase vector in XAL (MKS) units
      */
@@ -171,10 +171,10 @@ public class TraceXalUnitConverter {
         double      x, xp;      // x phase plane coordinates
         double      y, yp;      // y phase plane coordinates
 
-        x  = vecCoords.getx()*traceToXalDimension;
-        xp = vecCoords.getxp()*traceToXalDimension;
-        y  = vecCoords.gety()*traceToXalDimension;
-        yp = vecCoords.getyp()*traceToXalDimension;
+        x  = vecCoords.getx()*TRACE_TO_XAL_DIMENSION;
+        xp = vecCoords.getxp()*TRACE_TO_XAL_DIMENSION;
+        y  = vecCoords.gety()*TRACE_TO_XAL_DIMENSION;
+        yp = vecCoords.getyp()*TRACE_TO_XAL_DIMENSION;
 
 
         // Convert the longitudinal coordinates
@@ -216,7 +216,7 @@ public class TraceXalUnitConverter {
      *  </pre>
      * </p>
      *
-     *  @param   vecCoord    coordinate phase vector in MKS units
+     *  @param   vecCoords    coordinate phase vector in MKS units
      *
      *  @return              coordinate phase vector in Trace3D units
      */
@@ -226,10 +226,10 @@ public class TraceXalUnitConverter {
         double      x, xp;      // x phase plane coordinates
         double      y, yp;      // y phase plane coordinates
 
-        x  = vecCoords.getx()*xalToTraceDimension;
-        xp = vecCoords.getxp()*xalToTraceDimension;
-        y  = vecCoords.gety()*xalToTraceDimension;
-        yp = vecCoords.getyp()*xalToTraceDimension;
+        x  = vecCoords.getx()*XAL_TO_TRACE_DIMENSION;
+        xp = vecCoords.getxp()*XAL_TO_TRACE_DIMENSION;
+        y  = vecCoords.gety()*XAL_TO_TRACE_DIMENSION;
+        yp = vecCoords.getyp()*XAL_TO_TRACE_DIMENSION;
 
 
         // Convert the longitudinal coordinates
@@ -284,7 +284,7 @@ public class TraceXalUnitConverter {
         alpha = t3dTwiss.getAlpha();
         beta = t3dTwiss.getBeta();
 
-        emittance = t3dTwiss.getEmittance() * (traceToXalDimension*traceToXalDimension);   // from mm-mrad to m-rad
+        emittance = t3dTwiss.getEmittance() * (TRACE_TO_XAL_DIMENSION*TRACE_TO_XAL_DIMENSION);   // from mm-mrad to m-rad
         emittance = emittance / 5.;              // to rms emittance
 
         return new Twiss(alpha, beta, emittance);
@@ -398,7 +398,7 @@ public class TraceXalUnitConverter {
         alpha = twissXal.getAlpha();
         beta = twissXal.getBeta();
 
-        emittance = twissXal.getEmittance() * (xalToTraceDimension*xalToTraceDimension);     // to mm-mrad
+        emittance = twissXal.getEmittance() * (XAL_TO_TRACE_DIMENSION*XAL_TO_TRACE_DIMENSION);     // to mm-mrad
         emittance = emittance * 5.0;                        // to effective emittance
 
         return new Twiss(alpha, beta, emittance);
@@ -667,7 +667,7 @@ public class TraceXalUnitConverter {
      *  and return the Twiss parameters as projections that one would observe in
      *  experiments.
      *
-     * @param matCorrel     correlation matrix &lt;zz<sup>T</sup>&gt; in MKS units
+     * @param mat   correlation matrix &lt;zz<sup>T</sup>&gt; in MKS units
      *
      *  @return     array of Twiss with length 3 where<br>
      *              array[0] = Twiss parameters in x plane<br>
@@ -692,27 +692,27 @@ public class TraceXalUnitConverter {
     /**
      * calculate 1-sigma in xal unit from beta and emittance of xal unit
      */
-    static public double calcSigmaXalFromTrace(double beta, double emit) {
-        return Math.sqrt(beta*emit)*traceToXalDimension;
+    public static double calcSigmaXalFromTrace(double beta, double emit) {
+        return Math.sqrt(beta*emit)*TRACE_TO_XAL_DIMENSION;
     }
 
     /**
      * calculate 1-sigma in trace3d unit from beta and emittance of trace3d unit
      */
-    static public double calcSigmaTraceFromTrace(double beta, double emit) {
+    public static double calcSigmaTraceFromTrace(double beta, double emit) {
         return Math.sqrt(beta*emit/5);
     }
     /**
      * calculate 1-sigma in xal unit from beta and emittance of xal unit
      */
-    static public double calcSigmaXalFromXal(double beta, double emit) {
+    public static double calcSigmaXalFromXal(double beta, double emit) {
         return Math.sqrt(beta*emit);
     }
 
     /**
      * calculate 1-sigma in trace3d unit from beta and emittance of trace3d unit
      */
-    static public double calcSigmaTraceFromXal(double beta, double emit) {
-        return Math.sqrt(beta*emit/5)*xalToTraceDimension;
+    public static double calcSigmaTraceFromXal(double beta, double emit) {
+        return Math.sqrt(beta*emit/5)*XAL_TO_TRACE_DIMENSION;
     }
 }

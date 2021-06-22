@@ -39,7 +39,7 @@ public class ESSRfCavity extends RfCavity {
 
     @Override
     public ESSRfCavityBucket getRfField() {
-        return (ESSRfCavityBucket) m_bucRfCavity;
+        return (ESSRfCavityBucket) bucRfCavity;
     }
 
     /**
@@ -85,7 +85,7 @@ public class ESSRfCavity extends RfCavity {
     @Override
     public InverseRealPolynomial getTTFFitEnd() {
         RfCavityBucket rfCavBuc = this.getRfField();
-        return new InverseRealPolynomial(rfCavBuc.getTTF_endCoefs());
+        return new InverseRealPolynomial(rfCavBuc.getTTFEndCoefs());
     }
 
     /**
@@ -95,7 +95,7 @@ public class ESSRfCavity extends RfCavity {
     @Override
     public InverseRealPolynomial getTTFPrimeFitEnd() {
         RfCavityBucket rfCavBuc = this.getRfField();
-        return new InverseRealPolynomial(rfCavBuc.getTTFPrime_endCoefs());
+        return new InverseRealPolynomial(rfCavBuc.getTTFPrimeEndCoefs());
     }
 
     /**
@@ -105,7 +105,7 @@ public class ESSRfCavity extends RfCavity {
     @Override
     public InverseRealPolynomial getSTFFitEnd() {
         RfCavityBucket rfCavBuc = this.getRfField();
-        return new InverseRealPolynomial(rfCavBuc.getSTF_endCoefs());
+        return new InverseRealPolynomial(rfCavBuc.getSTFEndCoefs());
     }
 
     /**
@@ -115,7 +115,7 @@ public class ESSRfCavity extends RfCavity {
     @Override
     public InverseRealPolynomial getSTFPrimeFitEnd() {
         RfCavityBucket rfCavBuc = this.getRfField();
-        return new InverseRealPolynomial(rfCavBuc.getSTFPrime_endCoefs());
+        return new InverseRealPolynomial(rfCavBuc.getSTFPrimeEndCoefs());
     }
 
     /**
@@ -124,7 +124,7 @@ public class ESSRfCavity extends RfCavity {
      */
     public InverseRealPolynomial getTTFFitStart() {
         ESSRfCavityBucket rfCavBuc = this.getRfField();
-        return new InverseRealPolynomial(rfCavBuc.getTTF_startCoefs());
+        return new InverseRealPolynomial(rfCavBuc.getTTFStartCoefs());
     }
 
     /**
@@ -133,7 +133,7 @@ public class ESSRfCavity extends RfCavity {
      */
     public InverseRealPolynomial getTTFPrimeFitStart() {
         ESSRfCavityBucket rfCavBuc = this.getRfField();
-        return new InverseRealPolynomial(rfCavBuc.getTTFPrime_startCoefs());
+        return new InverseRealPolynomial(rfCavBuc.getTTFPrimeStartCoefs());
     }
 
     /**
@@ -142,7 +142,7 @@ public class ESSRfCavity extends RfCavity {
      */
     public InverseRealPolynomial getSTFFitStart() {
         ESSRfCavityBucket rfCavBuc = this.getRfField();
-        return new InverseRealPolynomial(rfCavBuc.getSTF_startCoefs());
+        return new InverseRealPolynomial(rfCavBuc.getSTFStartCoefs());
     }
 
     /**
@@ -151,6 +151,6 @@ public class ESSRfCavity extends RfCavity {
      */
     public InverseRealPolynomial getSTFPrimeFitStart() {
         ESSRfCavityBucket rfCavBuc = this.getRfField();
-        return new InverseRealPolynomial(rfCavBuc.getSTFPrime_startCoefs());
+        return new InverseRealPolynomial(rfCavBuc.getSTFPrimeStartCoefs());
     }
 }

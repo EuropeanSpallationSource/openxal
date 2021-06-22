@@ -55,7 +55,7 @@ public class IdealDrift extends ThickElement {
      */
     
     /** string type identifier for all IdealDrift objects */
-    public static final String      s_strType = "IdealDrift";
+    public static final String      TYPE = "IdealDrift";
     
     
     
@@ -95,8 +95,8 @@ public class IdealDrift extends ThickElement {
      *  @param  dblLen    length of the drift
      */
     public IdealDrift(String strId, double dblLen) {
-        super(s_strType, strId, dblLen);
-    };
+        super(TYPE, strId, dblLen);
+    }
     
     /** 
      *  JavaBean constructor - creates a new uninitialized instance of IdealDrift
@@ -104,8 +104,8 @@ public class IdealDrift extends ThickElement {
      *  <b>BE CAREFUL</b>
      */
     public IdealDrift() {
-        super(s_strType);
-    };
+        super(TYPE);
+    }
     
 
     /*
@@ -116,7 +116,7 @@ public class IdealDrift extends ThickElement {
      * I guess this is the strength of the adjacent PMQ quadrupole
      * magnet if it exists.
      *
-     * @return      adjacant PMQ magnet strength ?
+     * @return      adjacent PMQ magnet strength ?
      *
      * @author Christopher K. Allen
      * @since  Apr 19, 2011
@@ -187,10 +187,10 @@ public class IdealDrift extends ThickElement {
      *  @return         returns a zero value
      */
     @Override
-    public double energyGain(IProbe probe, double dblLen)    { return 0.0; };
+    public double energyGain(IProbe probe, double dblLen)    { return 0.0; }
     
     /**
-     *  Computes the partial tranfer map for an ideal drift space.  Computes the 
+     *  Computes the partial transfer map for an ideal drift space.  Computes the 
      *  transfer map for a drift of length <code>dblLen</code>.
      *
      *  @param  dblLen  length of drift
@@ -379,7 +379,7 @@ public class IdealDrift extends ThickElement {
         default :
             throw new ModelException("IdealMagQuad::computeTransferMatrix() - Bad magnet orientation.");
     }
-    } catch(Exception e) {
+    } catch(ModelException e) {
     	e.printStackTrace();
     	System.exit(-1);
     }
@@ -513,7 +513,7 @@ public class IdealDrift extends ThickElement {
          * new variable represents for PQEXT parameter in Trace3d
          * which shows the extent of fringe field. This is taken from pqExt of IdealPermQuad
          */
-	static private final double pqExt = IdealPermMagQuad.pqExt;
+	private static final double pqExt = IdealPermMagQuad.pqExt;
 
     	public double fringe(double s) {
 
@@ -644,7 +644,7 @@ public class IdealDrift extends ThickElement {
     	    	if (p0==0) {
     	    		k0 = 0;
     	    	} else {
-    	    		k0 = Math.sqrt(LightSpeed*G/p0);
+    	    		k0 = Math.sqrt(LIGHT_SPEED*G/p0);
     	    	}
     	    }
     		
@@ -656,13 +656,11 @@ public class IdealDrift extends ThickElement {
     	    // focusing constant (radians/meter)
 
     	    if (bPathFlag == 0) {//if bpathflag =1, then use nominal k0 from nominal kine energy
-    	    	KNorm = Math.sqrt((LightSpeed * G) / mbetagamma);
+    	    	KNorm = Math.sqrt((LIGHT_SPEED * G) / mbetagamma);
     	    } else {
     	    	KNorm = k0;
     	    }
 
     	}
-    }
-
-        
-};
+    }       
+}

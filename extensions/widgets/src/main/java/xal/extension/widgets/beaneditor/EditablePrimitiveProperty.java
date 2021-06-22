@@ -8,7 +8,7 @@ import xal.tools.annotation.AProperty.Units;
 /** editable property representing a primitive that is directly editable */
 class EditablePrimitiveProperty extends EditableProperty {
 	/** property's units */
-	final private String UNITS;
+	private final String UNITS;
 
 
 	/** Constructor */
@@ -65,18 +65,21 @@ class EditablePrimitiveProperty extends EditableProperty {
 
 
 	/** determine whether the property is a container */
+        @Override
 	public boolean isContainer() {
 		return false;
 	}
 
 
 	/** determine whether the property is a primitive */
+        @Override
 	public boolean isPrimitive() {
 		return true;
 	}
 
 
 	/** Set the value for this property */
+        @Override
 	public void setValue( final Object value ) {
 		if ( TARGET != null && PROPERTY_DESCRIPTOR != null ) {
 			final Method setter = PROPERTY_DESCRIPTOR.getWriteMethod();
@@ -102,12 +105,14 @@ class EditablePrimitiveProperty extends EditableProperty {
 
 
 	/** Get the units */
+        @Override
 	public String getUnits() {
 		return UNITS;
 	}
 
 
-	/** Get a string represenation of this property */
+	/** Get a string representation of this property */
+        @Override
 	public String toString() {
 		return getPath() + ": " + getValue() + " " + getUnits();
 	}

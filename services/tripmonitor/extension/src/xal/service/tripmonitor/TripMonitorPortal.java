@@ -15,16 +15,16 @@ import java.util.HashMap;
 /** interface to the trip monitor service */
 public interface TripMonitorPortal {
 	/** Date format for passing dates as strings */
-	public final static String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'T'Z";
+	public static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'T'Z";
 	
 	/** key for the timestamp */
-	public final static String TIMESTAMP_KEY = "TIMESTAMP";
+	public static final String TIMESTAMP_KEY = "TIMESTAMP";
 	
 	/** key for the PV */
-	public final static String PV_KEY = "PV";
+	public static final String PV_KEY = "PV";
 	
 	/** channel info key for the connection status */
-	public final static String CHANNEL_CONNECTION_KEY = "CHANNEL_CONNECTION";
+	public static final String CHANNEL_CONNECTION_KEY = "CHANNEL_CONNECTION";
 	
 	
 	/**

@@ -21,28 +21,28 @@ import xal.ca.*;
  */
 public class InputMonitor extends ChannelWrapper {
 	/** the PV's field to monitor so that we get an integer value */
-	static protected final String PV_FIELD = ".RVAL";
+	protected static final String PV_FIELD = ".RVAL";
 	
 	/** the target value which indicates that the input is okay */
 	protected final int OKAY_VALUE;
 
 	/** MPS PV */
-	protected final String _mpsSignal;
+	protected final String mpsSignal;
 
 	/** the base input signal excluding the PV field */
-	protected final String _inputSignal;
+	protected final String inputSignal;
 
 	/** handle value request callbacks */
-	protected ValueHandler _valueHandler;
+	protected ValueHandler valueHandler;
 
 	/** last value fetched for the signal */
-	protected int _lastValue;
+	protected int lastValue;
 
 	/** indicates whether the value is measured or unset */
-	protected boolean _measured;
+	protected boolean measured;
 
 	/** lock for synchronizing access to the last value */
-	protected final Object _valueLock;
+	protected final Object valueLock;
 
 
 	/**
@@ -57,14 +57,14 @@ public class InputMonitor extends ChannelWrapper {
 
 		OKAY_VALUE = okayValue;
 
-		_inputSignal = signal;
-		_mpsSignal = mpsSignal;
+		inputSignal = signal;
+		this.mpsSignal = mpsSignal;
 
-		_measured = false;    // no values have been measured yet
-		_lastValue = 0;
-		_valueLock = new Object();
+		measured = false;    // no values have been measured yet
+		lastValue = 0;
+		valueLock = new Object();
 
-		_valueHandler = new ValueHandler();
+		valueHandler = new ValueHandler();
 	}
 
 
@@ -74,7 +74,7 @@ public class InputMonitor extends ChannelWrapper {
 	 * @return   The MPS PV
 	 */
 	public String getMPSPV() {
-		return _mpsSignal;
+		return mpsSignal;
 	}
 	
 	
@@ -84,7 +84,7 @@ public class InputMonitor extends ChannelWrapper {
 	 * @return the input signal
 	 */
 	public String getSignal() {
-		return _inputSignal;
+		return inputSignal;
 	}
 
 
@@ -94,7 +94,7 @@ public class InputMonitor extends ChannelWrapper {
 	 * @return   true if the last request has been completed and false if not.
 	 */
 	public boolean hasRequestCompleted() {
-		return !Double.isNaN( _lastValue );
+		return !Double.isNaN( lastValue );
 	}
 
 
@@ -104,8 +104,8 @@ public class InputMonitor extends ChannelWrapper {
 	 * @return   the signal's last value
 	 */
 	public double getLastValue() {
-		synchronized ( _valueLock ) {
-			return _lastValue;
+		synchronized ( valueLock ) {
+			return lastValue;
 		}
 	}
 
@@ -118,8 +118,8 @@ public class InputMonitor extends ChannelWrapper {
 	 * @return   true if the input has tripped and false otherwise
 	 */
 	public boolean isInputTripped() {
-		synchronized ( _valueLock ) {
-			return _measured && ( _lastValue != OKAY_VALUE );
+		synchronized ( valueLock ) {
+			return measured && ( lastValue != OKAY_VALUE );
 		}
 	}
 
@@ -130,25 +130,24 @@ public class InputMonitor extends ChannelWrapper {
 	 * @return   true if the input signal value is a measure value
 	 */
 	public boolean isMeasured() {
-		return _measured;
+		return measured;
 	}
 
 
 	/** Request the latest value for the input signal. */
 	public void requestValueUpdate() {
-		synchronized ( _valueLock ) {
-			_lastValue = 0;    // clear the last value
-			_measured = false;    // indicate that we are awaiting a new measurement
-			if ( _channel.isConnected() ) {
+		synchronized ( valueLock ) {
+			lastValue = 0;    // clear the last value
+			measured = false;    // indicate that we are awaiting a new measurement
+			if ( channel.isConnected() ) {
 				try {
-					_channel.getValIntCallback( _valueHandler );
+					channel.getValIntCallback( valueHandler );
 				}
-				catch ( ConnectionException exception ) {
+				catch ( ConnectionException | GetException exception ) {
 					// since the value has already been cleared we don't need to do anything
 				}
-				catch ( GetException exception ) {
-					// since the value has already been cleared we don't need to do anything
-				}
+                            // since the value has already been cleared we don't need to do anything
+
 			}
 		}
 	}
@@ -156,8 +155,8 @@ public class InputMonitor extends ChannelWrapper {
 
 	/** Dispose of resources held by this instance. */
 	public void dispose() {
-		_valueHandler = null;
-		_measured = false;
+		valueHandler = null;
+		measured = false;
 	}
 
 
@@ -169,10 +168,11 @@ public class InputMonitor extends ChannelWrapper {
 		 * @param value    the new value
 		 * @param channel  the channel whose latest value has been returned
 		 */
+                @Override
 		public void eventValue( final int value, final Channel channel ) {
-			synchronized ( _valueLock ) {
-				_lastValue = value;
-				_measured = true;
+			synchronized ( valueLock ) {
+				lastValue = value;
+				measured = true;
 			}
 		}
 	}

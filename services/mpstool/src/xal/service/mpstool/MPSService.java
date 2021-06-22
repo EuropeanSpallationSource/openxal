@@ -24,10 +24,10 @@ public class MPSService implements MPSPortal {
 	protected final String IDENTITY = "MPS Monitor";
 
 	/** The MPS model */
-	protected final MPSModel _model;
+	protected final MPSModel model;
 
 	/** Formatter for translating a date to and from a string */
-	protected final static DateFormat DATE_FORMATTER;
+	protected static final DateFormat DATE_FORMATTER;
 
 	/*
 	 *  static initializer
@@ -43,7 +43,7 @@ public class MPSService implements MPSPortal {
 	 * @param model  The MPS model
 	 */
 	public MPSService( final MPSModel model ) {
-		_model = model;
+		this.model = model;
 		broadcast();
 	}
 
@@ -69,7 +69,7 @@ public class MPSService implements MPSPortal {
 	 * @param code  The shutdown code which is normally just 0.
 	 */
 	public void shutdown( int code ) {
-		_model.shutdown( code );
+		model.shutdown( code );
 	}
 
 
@@ -98,7 +98,7 @@ public class MPSService implements MPSPortal {
 	
 	/** determine whether the monitors log statistics */
 	public boolean logsStatistics() {
-		return _model.logsStatistics();
+		return model.logsStatistics();
 	}
 
 
@@ -108,7 +108,7 @@ public class MPSService implements MPSPortal {
 	 * @return   the list of MPS latch types as strings (e.g. "FPL", "FPAR")
 	 */
 	public Vector<String> getMPSTypes() {
-		MPSMonitor[] monitors = _model.getMonitors();
+		MPSMonitor[] monitors = model.getMonitors();
 		final Vector<String> types = new Vector<>( monitors.length );
 		for ( int index = 0; index < monitors.length; index++ ) {
 			types.add( monitors[index].getMPSType() );
@@ -123,7 +123,7 @@ public class MPSService implements MPSPortal {
 	 * @return              true if the correlator is running and false otherwise.
 	 */
 	public boolean isRunning( final int monitorIndex ) {
-		return _model.getMonitor( monitorIndex ).isRunning();
+		return model.getMonitor( monitorIndex ).isRunning();
 	}
 
 
@@ -132,7 +132,7 @@ public class MPSService implements MPSPortal {
 	 * @param monitorIndex  index of the monitor that should stop its correlator
 	 */
 	public void stopCorrelator( final int monitorIndex ) {
-		_model.getMonitor( monitorIndex ).stopCorrelator();
+		model.getMonitor( monitorIndex ).stopCorrelator();
 	}
 
 
@@ -141,7 +141,7 @@ public class MPSService implements MPSPortal {
 	 * @param monitorIndex  index of the monitor that should restart its correlator
 	 */
 	public void restartCorrelator( final int monitorIndex ) {
-		_model.getMonitor( monitorIndex ).restartCorrelator();
+		model.getMonitor( monitorIndex ).restartCorrelator();
 	}
 
 
@@ -153,7 +153,7 @@ public class MPSService implements MPSPortal {
 	 * @return an array of timestamps
 	 */
 	public Date[] getLastEventTimes( int monitorIndex ) {
-		final MPSMonitor monitor = _model.getMonitor( monitorIndex );
+		final MPSMonitor monitor = model.getMonitor( monitorIndex );
 		
 		final Date[] eventTimes = new Date[EVENT_ID_COUNT];
 		eventTimes[MPS_CHANNEL_EVENT_ID] = monitor.getLastMPSChannelEventTime();
@@ -174,7 +174,7 @@ public class MPSService implements MPSPortal {
 	 *      attempting to monitor and log
 	 */
 	public List<Map<String, Object>> getMPSChannelInfo( int monitorIndex ) {
-		final ChannelWrapper[] wrappers = _model.getMonitor( monitorIndex ).getMPSChannelWrappers();
+		final ChannelWrapper[] wrappers = model.getMonitor( monitorIndex ).getMPSChannelWrappers();
 		final List<Map<String, Object>> channelInfo = new ArrayList<>( wrappers.length );
 
 		for ( int index = 0; index < wrappers.length; index++ ) {
@@ -199,7 +199,7 @@ public class MPSService implements MPSPortal {
 	 *      attempting to monitor and log
 	 */
 	public List<Map<String, Object>> getInputChannelInfo( int monitorIndex ) {
-		final Collection<InputMonitor> inputs = new HashSet<>( _model.getMonitor( monitorIndex ).getInputMonitors() );
+		final Collection<InputMonitor> inputs = new HashSet<>( model.getMonitor( monitorIndex ).getInputMonitors() );
 		final List<Map<String, Object>> channelInfo = new ArrayList<>( inputs.size() );
 
 		final Iterator<InputMonitor> inputIter = inputs.iterator();
@@ -220,7 +220,7 @@ public class MPSService implements MPSPortal {
 	 * @param monitorIndex  index of the monitor that should reload its signals
 	 */
 	public void reloadSignals( int monitorIndex ) {
-		_model.getMonitor( monitorIndex ).reloadSignals();
+		model.getMonitor( monitorIndex ).reloadSignals();
 	}
 
 
@@ -230,7 +230,7 @@ public class MPSService implements MPSPortal {
 	 * @return              the first hit statistics summary
 	 */
 	public String getFirstHitText( int monitorIndex ) {
-		return _model.getMonitor( monitorIndex ).getFirstHitText();
+		return model.getMonitor( monitorIndex ).getFirstHitText();
 	}
 
 
@@ -250,7 +250,7 @@ public class MPSService implements MPSPortal {
 	 * @return              summary of MPS trips
 	 */
 	public String getMPSTripSummary( int monitorIndex ) {
-		return _model.getMonitor( monitorIndex ).getMPSTripSummary();
+		return model.getMonitor( monitorIndex ).getMPSTripSummary();
 	}
 
 
@@ -264,7 +264,7 @@ public class MPSService implements MPSPortal {
 	 */
 	public List<Map<String, Object>> getMPSEventsSince( final int monitorIndex, final String timeStr ) {
 		final Date time = asDate(timeStr);
-		final List<MPSEvent> events = _model.getMonitor( monitorIndex ).getMPSEventsSince( time );
+		final List<MPSEvent> events = model.getMonitor( monitorIndex ).getMPSEventsSince( time );
 
 		return processMPSEvents( events );
 	}
@@ -276,7 +276,7 @@ public class MPSService implements MPSPortal {
 	 * @return              the latest list of processed MPS events
 	 */
 	public List<Map<String, Object>> getLatestMPSEvents( final int monitorIndex ) {
-		final List<MPSEvent> events = _model.getMonitor( monitorIndex ).getMPSEventBuffer();
+		final List<MPSEvent> events = model.getMonitor( monitorIndex ).getMPSEventBuffer();
 
 		return processMPSEvents( events );
 	}
@@ -287,7 +287,7 @@ public class MPSService implements MPSPortal {
 	 * @param dateStr  String representation of a date.
 	 * @return         The date represented by the specified string.
 	 */
-	static protected Date asDate( String dateStr ) {
+	protected static Date asDate( String dateStr ) {
 		try {
 			synchronized(DATE_FORMATTER) {     // date format access must be synchronized
 				return DATE_FORMATTER.parse( dateStr );
@@ -310,7 +310,7 @@ public class MPSService implements MPSPortal {
 		for ( Iterator<MPSEvent> iter = mpsEvents.iterator(); iter.hasNext();  ) {
 			final MPSEvent event = iter.next();
 			final List<Map<String, Object>> signalEvents = packageMPSEvent( event );
-			final Map<String, Object> info = new HashMap<String, Object>();
+			final Map<String, Object> info = new HashMap<>();
 			info.put( TIMESTAMP_KEY, event.getTimestamp() );
 			info.put( SIGNAL_EVENTS_KEY, signalEvents );
 			eventList.add( info );
@@ -332,8 +332,8 @@ public class MPSService implements MPSPortal {
 		for ( Iterator<SignalEvent> iter = events.iterator(); iter.hasNext();  ) {
 			final SignalEvent event = iter.next();
 			final Map<String, Object> info = new HashMap<>();
-			info.put( CHANNEL_PV_KEY, event._signal );
-			info.put( TIMESTAMP_KEY, event._timestamp.getFullSeconds().toString() );
+			info.put( CHANNEL_PV_KEY, event.signal );
+			info.put( TIMESTAMP_KEY, event.timestamp.getFullSeconds().toString() );
 			eventList.add( info );
 		}
 

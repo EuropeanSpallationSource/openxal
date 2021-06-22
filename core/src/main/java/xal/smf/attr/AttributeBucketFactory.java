@@ -17,8 +17,8 @@ public final class AttributeBucketFactory {
      *  Global Attributes
      */
 
-    static private HashSet<AttributeBucket>                  m_setBuckTypes;     // set of all AttributeBucket derived classes
-    static private HashMap<String,Constructor<?>>                  m_mapCtors;         // map of node type ids to constructors
+    private static HashSet<AttributeBucket>                  setBuckTypes;     // set of all AttributeBucket derived classes
+    private static HashMap<String,Constructor<?>>                  mapCtors;         // map of node type ids to constructors
 
 
 
@@ -38,7 +38,7 @@ public final class AttributeBucketFactory {
 
 
         buildCtorMap();
-  };
+  }
 
 
 
@@ -50,20 +50,20 @@ public final class AttributeBucketFactory {
 
 
         // Allocate the string array
-        nTypes   = m_mapCtors.size();
+        nTypes   = mapCtors.size();
         arrTypes = new String[nTypes];
 
 
         // Build the string array
         int                 iType;      // index of current type
-        final Set<String> nodeTypes = m_mapCtors.keySet();
+        final Set<String> nodeTypes = mapCtors.keySet();
         iType    = 0;
 		for ( final String nodeType : nodeTypes ) {
             arrTypes[iType++] = nodeType;
         }
 
         return arrTypes;
-    };
+    }
 
 
 
@@ -71,7 +71,7 @@ public final class AttributeBucketFactory {
     public static AttributeBucket create(String strType) throws ClassNotFoundException {
 
         // Error check
-        if (!m_mapCtors.containsKey(strType))
+        if (!mapCtors.containsKey(strType))
             throw new ClassNotFoundException("Unknown AttributeBucket type : " + strType);
 
 
@@ -80,7 +80,7 @@ public final class AttributeBucketFactory {
         Object[]            arrArgs;    // constructor arguments
         AttributeBucket     buck;       // the returned object
 
-        ctor    = m_mapCtors.get(strType);
+        ctor    = mapCtors.get(strType);
         arrArgs = null;
 
         try {
@@ -92,7 +92,7 @@ public final class AttributeBucketFactory {
 
         // Return new node
         return buck;
-    };
+    }
 
 
 
@@ -101,24 +101,24 @@ public final class AttributeBucketFactory {
      */
 
     private static void registerClass(AttributeBucket objInst)   {
-        if (m_setBuckTypes == null)
-            m_setBuckTypes = new HashSet<AttributeBucket>();
+        if (setBuckTypes == null)
+            setBuckTypes = new HashSet<>();
 
-        m_setBuckTypes.add(objInst);
-    };
+        setBuckTypes.add(objInst);
+    }
 
 
 	@SuppressWarnings( "rawtypes" )		// generics aren't supported in arrays
     private static void buildCtorMap()  {
-        m_mapCtors = new HashMap<String,Constructor<?>>();
+        mapCtors = new HashMap<>();
 
-		for ( final AttributeBucket bucType : m_setBuckTypes ) {
+		for ( final AttributeBucket bucType : setBuckTypes ) {
             try {
                 Class<?>           clsType = bucType.getClass();
                 String          strType = bucType.getType();
                 Constructor<?>     ctrType = clsType.getConstructor(new Class[] { });
 
-                m_mapCtors.put(strType, ctrType);
+                mapCtors.put(strType, ctrType);
 
            } catch (NoSuchMethodException e) {
                 System.out.println("NoSuchMethodException: " + e.getMessage());
@@ -127,10 +127,10 @@ public final class AttributeBucketFactory {
            }
 
         }
-    };
+    }
 
     /** Hide the constructor - should never be called */
     private AttributeBucketFactory() {};
 
 
-};
+}

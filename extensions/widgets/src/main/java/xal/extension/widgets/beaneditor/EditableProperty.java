@@ -11,19 +11,19 @@ import java.util.Set;
 /** base class for a editable property */
 public abstract class EditableProperty {
     /** array of classes for which the property can be edited directly */
-    final static protected Set<Class<?>> EDITABLE_PROPERTY_TYPES = new HashSet<>();
+    protected static final Set<Class<?>> EDITABLE_PROPERTY_TYPES = new HashSet<>();
 
 	/** property name */
-	final protected String NAME;
+	protected final String NAME;
 
 	/** path to this property */
-	final protected String PATH;
+	protected final String PATH;
 
 	/** target object which is assigned the property */
-	final protected Object TARGET;
+	protected final Object TARGET;
 
 	/** property descriptor */
-	final protected PropertyDescriptor PROPERTY_DESCRIPTOR;
+	protected final PropertyDescriptor PROPERTY_DESCRIPTOR;
 
 
 	// static initializer
@@ -52,7 +52,7 @@ public abstract class EditableProperty {
 
 
 	/** Get an instance starting at the root object */
-	static public EditablePropertyContainer getInstanceWithRoot( final String name, final Object root ) {
+	public static EditablePropertyContainer getInstanceWithRoot( final String name, final Object root ) {
 		return EditablePropertyContainer.getInstanceWithRoot( name, root );
 	}
 
@@ -115,7 +115,7 @@ public abstract class EditableProperty {
      * @param target object for which to get the descriptors
 	 * @return the property descriptors for non-null beanInfo otherwise null
      */
-    static protected PropertyDescriptor[] getPropertyDescriptors( final Object target ) {
+    protected static PropertyDescriptor[] getPropertyDescriptors( final Object target ) {
 		if ( target != null ) {
 			final BeanInfo beanInfo = getBeanInfo( target );
 			return getPropertyDescriptorsForBeanInfo( beanInfo );
@@ -131,13 +131,13 @@ public abstract class EditableProperty {
      * @param beanInfo bean info
 	 * @return the property descriptors for non-null beanInfo otherwise null
      */
-    static private PropertyDescriptor[] getPropertyDescriptorsForBeanInfo( final BeanInfo beanInfo ) {
+    private static PropertyDescriptor[] getPropertyDescriptorsForBeanInfo( final BeanInfo beanInfo ) {
 		return beanInfo != null ? beanInfo.getPropertyDescriptors() : null;
 	}
 
 
     /** Convenience method to get the BeanInfo for an object's class */
-	static private BeanInfo getBeanInfo( final Object object ) {
+	private static BeanInfo getBeanInfo( final Object object ) {
 		if ( object != null ) {
 			return getBeanInfoForType( object.getClass() );
 		}
@@ -148,7 +148,7 @@ public abstract class EditableProperty {
 
 
     /** Convenience method to get the BeanInfo for the given type */
-	static private BeanInfo getBeanInfoForType( final Class<?> propertyType ) {
+	private static BeanInfo getBeanInfoForType( final Class<?> propertyType ) {
 		if ( propertyType != null ) {
 			try {
 				return Introspector.getBeanInfo( propertyType );
@@ -163,7 +163,8 @@ public abstract class EditableProperty {
 	}
 
 
-	/** Get a string represenation of this property */
+	/** Get a string representation of this property */
+    @Override
 	public String toString() {
 		return getPath();
 	}

@@ -28,7 +28,7 @@ public class FunctionGraphsXALSynopticAdaptor {
 	 * @param sequence the accelerator sequence for which to generate the synoptic view
 	 * @return the synoptic view
 	 */
-	static public XALSynopticPanel assignXALSynopticViewTo( final FunctionGraphsJPanel chart, final AcceleratorSeq sequence ) {
+	public static XALSynopticPanel assignXALSynopticViewTo( final FunctionGraphsJPanel chart, final AcceleratorSeq sequence ) {
 		final XALSynopticPanel synopticView = new XALSynopticPanel();
 		synopticView.setAcceleratorSequence( sequence );
 		
@@ -38,6 +38,7 @@ public class FunctionGraphsXALSynopticAdaptor {
 		synopticView.setBackground( chart.getBackground() );
 		
 		chart.addHorLimitsListener( new ActionListener() {
+                        @Override
 			public void actionPerformed( final ActionEvent event ) {
 				synchronizeSynopticView( synopticView, chart );
 			}
@@ -48,7 +49,7 @@ public class FunctionGraphsXALSynopticAdaptor {
 	
 	
 	/** Synchronize the node view with the chart's horizontal axis. */
-	static private void synchronizeSynopticView( final XALSynopticPanel synopticView, final FunctionGraphsJPanel chart ) {
+	private static void synchronizeSynopticView( final XALSynopticPanel synopticView, final FunctionGraphsJPanel chart ) {
         final double start = chart.getCurrentMinX();
         final double end = chart.getCurrentMaxX();
         

@@ -9,8 +9,6 @@
  */
 package xal.extension.solver;
 
-import xal.tools.messaging.MessageCenter;
-
 import java.util.*;
 
 
@@ -21,14 +19,14 @@ import java.util.*;
  */
 public class TrialPoint {
 	/** A table of trial values keyed by variable */
-	protected final Map<Variable,Number> _values;
+	protected final Map<Variable,Number> values;
 
 	/**
 	 * Primary constructor.
 	 * @param values  The new values used to map trial points
 	 */
 	public TrialPoint( final Map<Variable,Number> values ) {
-		_values = new HashMap<Variable,Number>( values );
+		this.values = new HashMap<>( values );
 	}
 
 
@@ -37,7 +35,7 @@ public class TrialPoint {
 	 * @param trialPoint  the trial point to copy
 	 */
 	public TrialPoint( final TrialPoint trialPoint ) {
-		this( trialPoint._values );
+		this( trialPoint.values );
 	}
 
 
@@ -47,7 +45,7 @@ public class TrialPoint {
 	 * @return          The value of the specified variable.
 	 */
 	public double getValue( final Variable variable ) {
-		return _values.get( variable ).doubleValue();
+		return values.get( variable ).doubleValue();
 	}
 
 
@@ -56,7 +54,7 @@ public class TrialPoint {
 	 * @return   the map of variable/value pairs.
 	 */
 	public Map<Variable,Number> getValueMap() {
-		return Collections.unmodifiableMap( _values );
+		return Collections.unmodifiableMap( values );
 	}
 
 
@@ -64,9 +62,10 @@ public class TrialPoint {
 	 * A string for displaying a trial point. The string consist of the values for the trial point.
 	 * @return   The string representation of a trial point.
 	 */
+        @Override
 	public String toString() {
-		StringBuffer buffer = new StringBuffer();
-		buffer.append( "Values: " + _values + "\n" );
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("Values: ").append(values).append("\n");
 
 		return buffer.toString();
 	}

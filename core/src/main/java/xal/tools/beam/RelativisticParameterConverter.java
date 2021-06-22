@@ -36,9 +36,9 @@ public class RelativisticParameterConverter {
      *  @param  beta    speed of probe w.r.t. the speed of light
      *  @return         relativistic factor gamma
      */
-    static public double computeGammaFromBeta(double beta) { 
+    public static double computeGammaFromBeta(double beta) { 
         return 1.0/Math.sqrt(1.0 - beta*beta); 
-    };
+    }
     
     /**
      *  Convenience function for computing the relativistic factor gamma from a 
@@ -49,24 +49,24 @@ public class RelativisticParameterConverter {
      * 
      *  @return         relativistic factor gamma
      */
-    static public double computeGammaFromEnergies(double W, double Er)   {
+    public static double computeGammaFromEnergies(double W, double Er)   {
         double gamma = W/Er + 1.0;
         
         return gamma;
-    };
+    }
     
     /**
      *  Convenience function for computing the probe's velocity beta (w.r.t. the 
      *  speed of light) from the relativistic factor gamma.
      *
-     *  @param beta     relativistic factor gamma
+     *  @param gamma     relativistic factor gamma
      *  @return         speed of probe (w.r.t. speed of light)
      */
-    static public double computeBetaFromGamma(double gamma) {
+    public static double computeBetaFromGamma(double gamma) {
         double beta = Math.sqrt(1.0 - 1.0/(gamma*gamma));
 
         return beta;
-    };
+    }
     
 
     /**
@@ -77,12 +77,12 @@ public class RelativisticParameterConverter {
      * @param  Er      rest energy of particle (eV)
      *  @return         speed of probe (w.r.t. speed of light)
      */
-    static public double computeBetaFromEnergies(double W, double Er) {
+    public static double computeBetaFromEnergies(double W, double Er) {
         double gamma = computeGammaFromEnergies(W, Er);
         double beta  = computeBetaFromGamma(gamma);
 
         return beta;
-    };
+    }
     
 
     /**
@@ -104,7 +104,7 @@ public class RelativisticParameterConverter {
      *
      * @since  Feb 16, 2015   by Christopher K. Allen
      */
-    static public double computeWavenumberFromBeta(double beta, double freq) {
+    public static double computeWavenumberFromBeta(double beta, double freq) {
         double lambda = DBL_LGHT_SPD/freq;
         double k      = DBL_2PI/(beta*lambda);
 
@@ -122,7 +122,7 @@ public class RelativisticParameterConverter {
      *
      * @since  Sep 28, 2015   by Christopher K. Allen
      */
-    static public double computeBetaFromWavenumber(double k, double freq) {
+    public static double computeBetaFromWavenumber(double k, double freq) {
         double  lambda = DBL_LGHT_SPD/freq;
         double  beta   = DBL_2PI/(k*lambda);
         
@@ -136,7 +136,7 @@ public class RelativisticParameterConverter {
      * @param  Er      rest energy of particle (eV)
      * @return         particle momentum in eV where is the speed of light
      */ 
-    static public double computeMomentumFromEnergies(double W, double Er) {
+    public static double computeMomentumFromEnergies(double W, double Er) {
        double gamma = computeGammaFromEnergies(W, Er);
        double beta = computeBetaFromGamma(gamma);
        
@@ -163,7 +163,7 @@ public class RelativisticParameterConverter {
      *
      * @since  Oct 1, 2015,   Christopher K. Allen
      */
-    static public double    computeStandardMomentumFromEnergies(double W, double Er) {
+    public static double    computeStandardMomentumFromEnergies(double W, double Er) {
         double gamma = computeGammaFromEnergies(W, Er);
         double beta = computeBetaFromGamma(gamma);
         

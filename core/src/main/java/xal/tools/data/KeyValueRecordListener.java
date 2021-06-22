@@ -8,12 +8,6 @@
 
 package xal.tools.data;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
-
 
 /** Listener for key value record modifications */
 public interface KeyValueRecordListener<SourceType,RecordType> {

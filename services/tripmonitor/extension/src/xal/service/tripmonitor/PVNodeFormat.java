@@ -19,13 +19,13 @@ import xal.smf.data.*;
 /** pattern for matching PVs based on a node name */
 public class PVNodeFormat {
 	/** tag for the data adaptor */
-	final static public String DATA_LABEL = "PVNodeFormat";
+	public static final String DATA_LABEL = "PVNodeFormat";
 	
 	/** PV pattern to match */
-	final protected Pattern PV_PATTERN;
+	protected final Pattern PV_PATTERN;
 	
 	/** converts the matching PV segment to a node-key */
-	final protected NodeKeyConverter NODE_KEY_CONVERTER;
+	protected final NodeKeyConverter NODE_KEY_CONVERTER;
 	
 	
 	/** Constructor */

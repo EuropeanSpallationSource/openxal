@@ -14,28 +14,28 @@ import xal.ca.*;
 /** ScanChannelMonitor */
 public class ScanChannelMonitor {
 	/** synchronization lock */
-	final private Object SYNC_LOCK;
+	private final Object syncLock;
 
 	/** channel to monitor */
-	final private Channel CHANNEL;
+	private final Channel channel;
 
 	/** handler of events */
-	final private EventHandler EVENT_HANDLER;
+	private final EventHandler eventHandler;
 
 	/** channel event monitor */
-	private Monitor _monitor;
+	private Monitor monitor;
 
 	/** indicates whether this wrapper is viable or disposed */
-	volatile private boolean _viable;
+	volatile private boolean viable;
 
 	/** indicates whether the monitor is allowed */
-	volatile private boolean _allowsMonitor;
+	volatile private boolean allowsMonitor;
 
 	/** handler of the monitor events */
-	volatile private ScanChannelMonitorDelegate _delegate;
+	volatile private ScanChannelMonitorDelegate delegate;
 
 	/** latest record captured */
-	volatile private ChannelTimeRecord _latestRecord;
+	volatile private ChannelTimeRecord latestRecord;
 
 
 	/** Constructor with null delegate */
@@ -52,20 +52,20 @@ public class ScanChannelMonitor {
 
 	/** Primary Constructor */
 	public ScanChannelMonitor( final Channel channel, final ScanChannelMonitorDelegate delegate, final boolean requestEvents ) {
-		SYNC_LOCK = new Object();
-		EVENT_HANDLER = new EventHandler();
+		syncLock = new Object();
+		eventHandler = new EventHandler();
 
-		_viable = true;
+		viable = true;
 
-		_allowsMonitor = requestEvents;
+		allowsMonitor = requestEvents;
 
-		_latestRecord = null;
-		_monitor = null;
-		_delegate = delegate;
+		latestRecord = null;
+		monitor = null;
+		this.delegate = delegate;
 
 		if ( channel == null )	throw new IllegalArgumentException( "Channel Wrapper cannot be assigned a null channel" );
 
-		CHANNEL = channel;
+		this.channel = channel;
 
 		if ( requestEvents ) {
 			start();
@@ -75,67 +75,66 @@ public class ScanChannelMonitor {
 
 	/** Get the channel */
 	public Channel getChannel() {
-		return CHANNEL;
+		return channel;
 	}
 
 
 	/** set the delegate */
 	public void setDelegate( final ScanChannelMonitorDelegate delegate ) {
-		_delegate = delegate;
+		this.delegate = delegate;
 	}
 
 
 	/** determine whether the channel is connected */
 	public boolean isConnected() {
-		return CHANNEL.isConnected();
+		return channel.isConnected();
 	}
 
 
 	/** determine whether the channel is valid (has a record and is connected) */
 	public boolean isValid() {
-		return _latestRecord != null && CHANNEL.isConnected();
+		return latestRecord != null && channel.isConnected();
 	}
 
 
 	/** Get the latest record */
 	public ChannelTimeRecord getLatestRecord() {
-		return _latestRecord;
+		return latestRecord;
 	}
 
 
 	/** stop the monitor */
 	public void stop() {
-		synchronized( SYNC_LOCK	) {
-			CHANNEL.removeConnectionListener( EVENT_HANDLER );
-			_allowsMonitor = false;
+		synchronized( syncLock	) {
+			channel.removeConnectionListener( eventHandler );
+			allowsMonitor = false;
 
-			final Monitor monitor = _monitor;
-			_monitor = null;
 			if ( monitor != null )  monitor.clear();
+                        monitor = null;
 		}
 	}
 
 
 	/** start the monitor */
 	public void start() {
-		synchronized( SYNC_LOCK	) {
-			_allowsMonitor = true;
-			CHANNEL.addConnectionListener( EVENT_HANDLER );
-			CHANNEL.requestConnection();
+		synchronized( syncLock	) {
+			allowsMonitor = true;
+			channel.addConnectionListener( eventHandler );
+			channel.requestConnection();
 		}
 	}
 
 
 	/** start the monitor */
 	public void createMonitor() {
-		synchronized( SYNC_LOCK	) {
-			if ( _allowsMonitor && _viable && _monitor == null ) {
+		synchronized( syncLock	) {
+			if ( allowsMonitor && viable && monitor == null ) {
 				try {
-					_monitor = CHANNEL.addMonitorValTime( EVENT_HANDLER, Monitor.VALUE );
+					monitor = channel.addMonitorValTime( eventHandler, Monitor.VALUE );
 					Channel.flushIO();
 				}
 				catch( Exception exception ) {
-					System.err.println( "Exception creating monitor for channel: " + CHANNEL.getId() );
+					System.err.println( "Exception creating monitor for channel: " + channel.getId() );
 					exception.printStackTrace();
 				}
 			}
@@ -145,9 +144,9 @@ public class ScanChannelMonitor {
 
 	/** Dispose of the channel */
 	public void dispose() {
-		synchronized( SYNC_LOCK ) {
-			_viable = false;
-			_delegate = null;
+		synchronized( syncLock ) {
+			viable = false;
+			delegate = null;
 
 			stop();
 		}
@@ -160,12 +159,12 @@ public class ScanChannelMonitor {
 		 * Indicates that a connection to the specified channel has been established.
 		 * @param channel The channel which has been connected.
 		 */
+                @Override
 		public void connectionMade( final Channel channel ) {
 			createMonitor();
 
-			final ScanChannelMonitorDelegate delegate = _delegate;
 			if ( delegate != null ) {
-				delegate.channelStateChanged( ScanChannelMonitor.this, _latestRecord != null );
+				delegate.channelStateChanged( ScanChannelMonitor.this, latestRecord != null );
 			}
 		}
 
@@ -174,8 +173,8 @@ public class ScanChannelMonitor {
 		 * Indicates that a connection to the specified channel has been dropped.
 		 * @param channel The channel which has been disconnected.
 		 */
+                @Override
 		public void connectionDropped( final Channel channel ) {
-			final ScanChannelMonitorDelegate delegate = _delegate;
 			if ( delegate != null ) {
 				delegate.channelStateChanged( ScanChannelMonitor.this, false );
 			}
@@ -183,11 +182,11 @@ public class ScanChannelMonitor {
 
 
 		/** Handle monitor event */
+                @Override
 		public void eventValue( final ChannelTimeRecord record, final Channel channel ) {
-			_latestRecord = record;
+			latestRecord = record;
 			//System.out.println( "Captured record: " + record );
 
-			final ScanChannelMonitorDelegate delegate = _delegate;
 			if ( delegate != null ) {
 				delegate.channelRecordUpdate( ScanChannelMonitor.this, record );		// forward the event to the delegate
 			}

@@ -20,16 +20,16 @@ import xal.tools.correlator.*;
  */
 public class ProfileMonitor extends AcceleratorNode {
 	/** identifies instances of this ProfileMonitor class in contrast to the WireScanner class */
-	static final public String PROFILE_MONITOR_TYPE = "profilemonitor";
+	public static final String PROFILE_MONITOR_TYPE = "profilemonitor";
 	
 	/** software type for the Profile Monitor class */
-	static final public String SOFTWARE_TYPE = "Version 1.0.0";
+	public static final String SOFTWARE_TYPE = "Version 1.0.0";
 	
     /*
      *  Constants
      */
     
-    public static final String      s_strType = "WS";
+    public static final String      TYPE = "WS";
   
 
     static {
@@ -41,15 +41,17 @@ public class ProfileMonitor extends AcceleratorNode {
      * Register type for qualification
      */
     private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( ProfileMonitor.class, s_strType, "wirescanner", PROFILE_MONITOR_TYPE );
+		ElementTypeManager.defaultManager().registerTypes( ProfileMonitor.class, TYPE, "wirescanner", PROFILE_MONITOR_TYPE );
     }
     
 
     /** Override to provide type signature */
-    public String getType()         { return s_strType; };
+        @Override
+    public String getType()         { return TYPE; }
 	
 	
 	/** Overriden to provide the software type */
+        @Override
 	public String getSoftType() {
 		return SOFTWARE_TYPE;
 	}
@@ -816,7 +818,7 @@ public class ProfileMonitor extends AcceleratorNode {
     }
 
     /**
-     * use this to get the v offst fit
+     * use this to get the v offset fit
      */
     public double getVOffsetF() throws ConnectionException, GetException {
 	VOffstFC = this.lazilyGetAndConnect(V_OFFST_F_HANDLE, VOffstFC);
@@ -824,7 +826,7 @@ public class ProfileMonitor extends AcceleratorNode {
     }
 
     /**
-     * use this to get the d offst fit
+     * use this to get the d offset fit
      */
     public double getDOffsetF() throws ConnectionException, GetException {
 	DOffstFC = this.lazilyGetAndConnect(D_OFFST_F_HANDLE, DOffstFC);
@@ -832,7 +834,7 @@ public class ProfileMonitor extends AcceleratorNode {
     }
 
     /**
-     * use this to get the h offst fit
+     * use this to get the h offset fit
      */
     public double getHOffsetF() throws ConnectionException, GetException {
 	HOffstFC = this.lazilyGetAndConnect(H_OFFST_F_HANDLE, HOffstFC);
@@ -840,7 +842,7 @@ public class ProfileMonitor extends AcceleratorNode {
     }
 
     /**
-     * use this to get the v offst rms
+     * use this to get the v offset rms
      */
     public double getVOffsetM() throws ConnectionException, GetException {
 	VOffstMC = this.lazilyGetAndConnect(V_OFFST_M_HANDLE, VOffstMC);
@@ -848,7 +850,7 @@ public class ProfileMonitor extends AcceleratorNode {
     }
 
     /**
-     * use this to get the d offst rms
+     * use this to get the d offset rms
      */
     public double getDOffsetM() throws ConnectionException, GetException {
 	DOffstMC = this.lazilyGetAndConnect(D_OFFST_M_HANDLE, DOffstMC);
@@ -856,7 +858,7 @@ public class ProfileMonitor extends AcceleratorNode {
     }
 
     /**
-     * use this to get the h offst rms
+     * use this to get the h offset rms
      */
     public double getHOffsetM() throws ConnectionException, GetException {
 	HOffstMC = this.lazilyGetAndConnect(H_OFFST_M_HANDLE, HOffstMC);
@@ -956,8 +958,8 @@ public class ProfileMonitor extends AcceleratorNode {
        	return HRealDataC.getValDbl();
     }
 
-    /** this method updates the horizonyal profile 
-     * ploynomial fitted information from the instrument
+    /** this method updates the horizontal profile 
+     * polynomial fitted information from the instrument
      */
     public void updateFits() {
 

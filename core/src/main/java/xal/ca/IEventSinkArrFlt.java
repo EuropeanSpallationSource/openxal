@@ -16,5 +16,4 @@ public interface IEventSinkArrFlt {
 
     public void eventArray(float[] arrNew, Channel chan);
     
-};
-
+}

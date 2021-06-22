@@ -13,6 +13,7 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.image.*;
+import java.awt.Window;
 import javax.swing.*;
 import java.beans.*;
 
@@ -22,38 +23,38 @@ import xal.tools.data.*;
 /** interface for providing view node behavior */
 abstract public class ViewProxy<ViewType extends Component> extends BeanProxy<ViewType> {
 	/** data label */
-	final static public String DATA_LABEL = "ViewProxy";
+	public static final String DATA_LABEL = "ViewProxy";
 	
 	/** indicates whether the component should accept components */
-	final protected boolean IS_CONTAINER;
+	protected final boolean isContainer;
 	
 	/** indicates whether to display a prototype icon */
-	final protected boolean MAKE_ICON;
+	protected final boolean makeIcon;
 	
 	
 	/** Constructor */
 	public ViewProxy( final Class<ViewType> prototypeClass, final boolean isContainer, final boolean makeIcon ) {
 		super( prototypeClass );
-		IS_CONTAINER = isContainer;
-		MAKE_ICON = makeIcon;
+		this.isContainer = isContainer;
+		this.makeIcon = makeIcon;
 	}
 	
 	
 	/** generator */
-	static public ViewProxy<?> getInstance( final DataAdaptor adaptor ) {
+	public static ViewProxy<?> getInstance( final DataAdaptor adaptor ) {
 		return ViewProxyFactory.getViewProxy( adaptor.stringValue( "type" ) );
 	}
 	
 	
 	/** Determine whether the view should be treated as a container */
 	public boolean isContainer() {
-		return IS_CONTAINER;
+		return isContainer;
 	}
 	
 	
 	/** determine if the view is a window */
 	public boolean isWindow() {
-		return java.awt.Window.class.isAssignableFrom( PROTOTYPE_CLASS );
+		return Window.class.isAssignableFrom(prototypeClass );
 	}
 	
 	
@@ -72,8 +73,9 @@ abstract public class ViewProxy<ViewType extends Component> extends BeanProxy<Vi
 	
 	
 	/** Get an icon representation for the view */
+        @Override
 	public Icon getIcon()  {
-		if ( MAKE_ICON && JComponent.class.isAssignableFrom( PROTOTYPE_CLASS ) ) {
+		if ( makeIcon && JComponent.class.isAssignableFrom(prototypeClass ) ) {
 			return new ImageIcon( getIconImage() );
 		}
 		else {
@@ -85,7 +87,7 @@ abstract public class ViewProxy<ViewType extends Component> extends BeanProxy<Vi
 	/** Get an image representation for the view */
 	public Image getIconImage()  {
 		try {
-			final BeanInfo beanInfo = Introspector.getBeanInfo( PROTOTYPE_CLASS );
+			final BeanInfo beanInfo = Introspector.getBeanInfo(prototypeClass );
 			final Image image = beanInfo.getIcon( BeanInfo.ICON_COLOR_16x16 );
 			return image != null ? image : makeImage();
 		}
@@ -112,6 +114,7 @@ abstract public class ViewProxy<ViewType extends Component> extends BeanProxy<Vi
 	 * Provides the name used to identify the class in an external data source.
 	 * @return a tag that identifies the receiver's type
 	 */
+        @Override
     public String dataLabel() {
 		return DATA_LABEL;
 	}

@@ -36,12 +36,12 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      */
 
     /** the string type identifier for all IdealMagSteeringDipole's */
-    public static final String      s_strType = "IdealMagDipoleFace";
+    public static final String      TYPE = "IdealMagDipoleFace";
 
     /** Parameters for XAL MODEL LATTICE dtd */
-    public static final String      s_strParamLenEff = "EffLength";
-    public static final String      s_strParamOrient = "Orientation";
-    public static final String      s_strParamField  = "MagField";
+    public static final String      PARAM_LEN_EFF = "EffLength";
+    public static final String      PARAM_ORIENT = "Orientation";
+    public static final String      PARAM_FIELD  = "MagField";
 
 
 
@@ -53,13 +53,13 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
 
 
     /** The dipole gap height (m) */
-    private double              m_dblGap = 0.0;
+    private double              dblGap = 0.0;
 
     /** internal pole face angle made with respect to the design trajectory */
-    private double              m_dblAngFace = 0.0;
+    private double              dblAngFace = 0.0;
 
     /** second moment of fringe field defined a al Carey */
-    private double              m_dblMmtFrng = 0.0;
+    private double              dblMmtFrng = 0.0;
 
 
 
@@ -68,13 +68,13 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      */
 
     /**
-     * Default constructor - creates a new unitialized instance of
+     * Default constructor - creates a new uninitialized instance of
      * IdealMagSectorDipole.
      * This is the constructor called in automatic lattice generation.
      * Thus, all element properties are set following construction.
      */
     public IdealMagDipoleFace() {
-        super(s_strType);
+        super(TYPE);
     }
 
     /**
@@ -83,7 +83,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * @param strId     string identifier for element
      */
     public IdealMagDipoleFace(String strId) {
-        super(s_strType, strId);
+        super(TYPE, strId);
     }
 
     /**
@@ -95,7 +95,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      *
      */
     public void setPoleFaceAngle(double dblAngPole) {
-        this.m_dblAngFace = dblAngPole;
+        this.dblAngFace = dblAngPole;
     }
 
     /**
@@ -104,7 +104,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * @param dblGap    gap size in <b>meters</b>
      */
     public void setGapHeight(double dblGap)  {
-        this.m_dblGap = dblGap;
+        this.dblGap = dblGap;
     }
 
     /**
@@ -166,7 +166,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * @return      gap height in <b>meters</b>
      */
     public double  getGapHeight()  {
-        return this.m_dblGap;
+        return this.dblGap;
      }
 
     /**
@@ -177,7 +177,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * @return       pole face angle in <b>radians</b>
      */
     public double   getPoleFaceAngle()  {
-        return this.m_dblAngFace;
+        return this.dblAngFace;
     }
 
     /**
@@ -190,7 +190,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * @see IdealMagDipoleFace#setFringeIntegral(double)
      */
     public double  getFringeIntegral() {
-        return this.m_dblMmtFrng;
+        return this.dblMmtFrng;
     }
 
 
@@ -222,7 +222,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
     @Override
     public double   energyGain(IProbe probe)     {
         return 0.0;
-    };
+    }
 
 
 

@@ -15,7 +15,7 @@ import xal.extension.widgets.swing.wheelswitch.comp.ArrowButton;
 import xal.extension.widgets.swing.wheelswitch.util.ColorHelper;
 
 /**
- * Descedant of <code>javax.swing.JComponent</code> that contains two 
+ * Descendant of <code>javax.swing.JComponent</code> that contains two 
  * <code>ArrowButton</code>s acting as a two-way (up/down) control. 
  * 
  * @author <a href="mailto:jernej.kamenik@cosylab.com">Jernej Kamenik</a>

@@ -11,7 +11,7 @@ package xal.tools.data;
 import java.util.List;
 
 
-/** Generate a compound qualifer using the "and" operation. */
+/** Generate a compound qualifier using the "and" operation. */
 public class AndQualifier extends CompoundQualifier {
 	/**
 	 * Primary Constructor
@@ -57,10 +57,11 @@ public class AndQualifier extends CompoundQualifier {
 	* @param object The object to test
 	* @return true if the object is a match and false if not
 	*/
+        @Override
     public boolean matches( final Object object ) {
 		// verify that every qualifier's criteria is satisfied
-        for ( int index = 0 ; index < _qualifierCount ; index++ ) {
-			if ( !_qualifiers[index].matches( object ) ) {
+        for ( int index = 0 ; index < qualifierCount ; index++ ) {
+			if ( !qualifiers[index].matches( object ) ) {
 				return false;
 			}
         }
@@ -73,9 +74,8 @@ public class AndQualifier extends CompoundQualifier {
 	 * The binary operator token.
 	 * @return "&" to represent this "and" operation.
 	 */
+        @Override
 	public String binaryToken() {
 		return "&";
 	}
 }
-
-

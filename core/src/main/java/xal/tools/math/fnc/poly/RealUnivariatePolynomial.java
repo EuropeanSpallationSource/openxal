@@ -35,7 +35,7 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
      */
 
      /** the vector of coefficients */
-     private double[]   m_arrCoef = null;
+     private double[]   arrCoef = null;
 
 
      /*
@@ -51,7 +51,7 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
     /**
      * Creates and initializes a polynomial to the specified coefficients.
      *
-     * @param iOrder
+     * @param arrCoef
      * @return
      */
     public RealUnivariatePolynomial(double[] arrCoef)   {
@@ -65,7 +65,7 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
      * @param arrCoef   double array of coefficients.
      */
     public void setCoefArray(double[] arrCoef)   {
-        this.m_arrCoef = arrCoef;
+        this.arrCoef = arrCoef;
     }
 
 
@@ -94,12 +94,12 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
      * @return          coefficient of the specified indeterminate order
      */
     public double getCoef(int iOrder)   {
-        if (this.m_arrCoef.length == 0)
+        if (this.arrCoef.length == 0)
             return 0.0;
-        if (iOrder >= this.m_arrCoef.length)
+        if (iOrder >= this.arrCoef.length)
             return 0.0;
 
-        return this.m_arrCoef[iOrder];
+        return this.arrCoef[iOrder];
     }
 
     /**
@@ -109,7 +109,7 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
      * @return      the entire coefficient array
      */
     public double[] getCoefs()      {
-        return this.m_arrCoef;
+        return this.arrCoef;
     }
 
 
@@ -128,10 +128,10 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
      */
     @Override
     public double evaluateAt(double dblVal) {
-        if (this.m_arrCoef == null)
+        if (this.arrCoef == null)
             return 0.0;
 
-        int     N = this.m_arrCoef.length;      // number of coefficients
+        int     N = this.arrCoef.length;      // number of coefficients
         double  dblAccum = 0.0;                 // accumulator
 
         for (int n=N-1; n>=0; n--)
@@ -153,10 +153,10 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
      */
     @Override
     public double derivativeAt(double dblVal) {
-        if (this.m_arrCoef == null)
+        if (this.arrCoef == null)
             return 0.0;
 
-        int     N = this.m_arrCoef.length;      // number of coefficients
+        int     N = this.arrCoef.length;      // number of coefficients
         double  dblPow = 1.0;                 // the the nomial
         double  dblSum = 0.0;                 // accumulator
 
@@ -187,7 +187,7 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
         // Compute the derivative by starting at the polynomial coefficient with index equal to the
         //  order of the derivative.  The monomial coefficient is the combinatoric of the coefficient
         //  degree with the derivative order
-        double      x_k    = 1.0;        // monomial of order k - n
+        double      xK    = 1.0;        // monomial of order k - n
         double      dblSum = 0.0;        // accumulator for polynomial summation
         for (int k=0; k<=this.getDegree(); k++) {
             if (k<nOrder)
@@ -195,14 +195,14 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
             
             double  kFac   = ElementaryFunction.factorial(k);
             double  kmnFac = ElementaryFunction.factorial(k - nOrder);
-            double  ck = kFac/kmnFac;
+            double  cK = kFac/kmnFac;
             
-            double  ak = this.getCoef(k);
-            double  tk = ck * ak * x_k;
+            double  aK = this.getCoef(k);
+            double  tK = cK * aK * xK;
             
-            dblSum += tk;
+            dblSum += tK;
             
-            x_k *= dblLoc;
+            xK *= dblLoc;
         }
         
         return dblSum;
@@ -327,6 +327,5 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
         System.out.println("poly1(2.0) = " + poly1.evaluateAt(2.0));
         System.out.println("poly2(1.0) = " + poly2.evaluateAt(1.0));
     }
-
 
 }

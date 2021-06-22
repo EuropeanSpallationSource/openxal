@@ -21,62 +21,62 @@ import xal.tools.math.GenericMatrix;
 /** using the online model (ignoring coupling), determines a beam position and momentum at an element which best matches the measured positions at a series of specified elements */
 public class OrbitMatcher {
 	/** node for which we wish to determine the matching beam position and momentum */
-	final AcceleratorNode TARGET_NODE;
+	final AcceleratorNode targetNode;
 	
 	/** list of nodes for which we have measured beam positions */
-	final List<? extends AcceleratorNode> MEASURED_NODES;
+	final List<? extends AcceleratorNode> measuredNodes;
 	
 	/** trajectory from which to get the transfer matrices */
-	protected Trajectory<TransferMapState> _trajectory;
+	protected Trajectory<TransferMapState> trajectory;
 
 	/** horizontal beam position transform */
-	protected BeamPositionTransform _xBeamPositionTransform;
+	protected BeamPositionTransform xBeamPositionTransform;
 	
 	/** vertical beam position transform */
-	protected BeamPositionTransform _yBeamPositionTransform;
+	protected BeamPositionTransform yBeamPositionTransform;
 
 
 	/** Constructor */
 	public OrbitMatcher( final AcceleratorNode targetNode, final List<? extends AcceleratorNode> measuredNodes, final Trajectory<TransferMapState> trajectory ) {
-		TARGET_NODE = targetNode;
-		MEASURED_NODES = measuredNodes;
+		this.targetNode = targetNode;
+		this.measuredNodes = measuredNodes;
 		setTrajectory( trajectory );
 	}
 
 	
 	/** get the best matching horizontal beam position in mm at the target node based on the beam position measurements in mm at the measurement nodes */
 	public double getHorizontalTargetBeamPosition( final double[] measuredBeamPositions ) {
-		return _xBeamPositionTransform.getTargetBeamPosition( measuredBeamPositions );
+		return xBeamPositionTransform.getTargetBeamPosition( measuredBeamPositions );
 	}
 	
 	
 	/** get the best matching vertical beam position in mm at the target node based on the beam position measurements in mm at the measurement nodes */
 	public double getVerticalTargetBeamPosition( final double[] measuredBeamPositions ) {
-		return _yBeamPositionTransform.getTargetBeamPosition( measuredBeamPositions );
+		return yBeamPositionTransform.getTargetBeamPosition( measuredBeamPositions );
 	}
 	
 	
 	/** set the trajectory */
 	public void setTrajectory( final Trajectory<TransferMapState> trajectory ) {
-		_trajectory = trajectory;
+		this.trajectory = trajectory;
 		
-		final List<TransferRow> xTransferRows = new ArrayList<TransferRow>( MEASURED_NODES.size() );
-		final List<TransferRow> yTransferRows = new ArrayList<TransferRow>( MEASURED_NODES.size() );
+		final List<TransferRow> xTransferRows = new ArrayList<>( measuredNodes.size() );
+		final List<TransferRow> yTransferRows = new ArrayList<>( measuredNodes.size() );
 
-		for ( final AcceleratorNode node : MEASURED_NODES ) {
+		for ( final AcceleratorNode node : measuredNodes ) {
 			// we need to get the transfer matrix from the target node to the measurement node (see the equations)
-			final PhaseMatrix transferMatrix = getTransferMatrix( TARGET_NODE, node );
+			final PhaseMatrix transferMatrix = getTransferMatrix(targetNode, node );
 			xTransferRows.add( extractHorizontalSubMatrix( transferMatrix ) );
 			yTransferRows.add( extractVerticalSubMatrix( transferMatrix ) );
 		}
 
-		_xBeamPositionTransform = new BeamPositionTransform( xTransferRows );
-		_yBeamPositionTransform = new BeamPositionTransform( yTransferRows );
+		xBeamPositionTransform = new BeamPositionTransform( xTransferRows );
+		yBeamPositionTransform = new BeamPositionTransform( yTransferRows );
 	}
 	
 	
 	/** extract the horizontal sub matrix */
-	static protected TransferRow extractHorizontalSubMatrix( final PhaseMatrix transferMatrix ) {
+	protected static TransferRow extractHorizontalSubMatrix( final PhaseMatrix transferMatrix ) {
 		final double t11 = transferMatrix.getElem( PhaseMatrix.IND_X, PhaseMatrix.IND_X );
 		final double t12 = transferMatrix.getElem( PhaseMatrix.IND_X, PhaseMatrix.IND_XP );
 		final double t13 = 1000 * transferMatrix.getElem( PhaseMatrix.IND_X, PhaseMatrix.IND_HOM );
@@ -86,7 +86,7 @@ public class OrbitMatcher {
 	
 	
 	/** extract the vertical sub matrix */
-	static protected TransferRow extractVerticalSubMatrix( final PhaseMatrix transferMatrix ) {
+	protected static TransferRow extractVerticalSubMatrix( final PhaseMatrix transferMatrix ) {
 		final double t11 = transferMatrix.getElem( PhaseMatrix.IND_Y, PhaseMatrix.IND_Y );
 		final double t12 = transferMatrix.getElem( PhaseMatrix.IND_Y, PhaseMatrix.IND_YP );
 		final double t13 = 1000 * transferMatrix.getElem( PhaseMatrix.IND_Y, PhaseMatrix.IND_HOM );
@@ -97,8 +97,8 @@ public class OrbitMatcher {
 	
 	/** get the transfer matrix from the transfer map trajectory */
 	protected PhaseMatrix getTransferMatrix( final AcceleratorNode fromNode, final AcceleratorNode toNode ) {
-	    final TransferMapState   fromState = this._trajectory.stateForElement(fromNode.getId());
-	    final TransferMapState   toState = this._trajectory.stateForElement(toNode.getId() );
+	    final TransferMapState   fromState = this.trajectory.stateForElement(fromNode.getId());
+	    final TransferMapState   toState = this.trajectory.stateForElement(toNode.getId() );
 
 		// get the transfer matricies for the "from" and "to" states
 	    final PhaseMatrix fromTransferMatrix = fromState.getTransferMap().getFirstOrder();
@@ -115,8 +115,8 @@ public class OrbitMatcher {
 
 /** best fit transform (in one plane) from a set of beam positions to a beam position at a specified point */
 class BeamPositionTransform {
-	final protected GenericMatrix KICK_TRANSFORM;
-	final protected GenericMatrix PROJECTION_TRANSFORM;
+	protected final GenericMatrix kickTransform;
+	protected final GenericMatrix projectionTransform;
 	
 	
 	/** Constructor */
@@ -134,11 +134,11 @@ class BeamPositionTransform {
 			++row;
 		}
 		
-		KICK_TRANSFORM = kickTransform;
+		this.kickTransform = kickTransform;
 		
 		// projection transform:  (A<sup>T</sup> A)<sup>-1</sup> A<sup>T</sup>
 		final GenericMatrix phaseTransformTranspose = phaseTransform.transpose();
-		PROJECTION_TRANSFORM = phaseTransformTranspose.times( phaseTransform ).inverse().times( phaseTransformTranspose );
+		projectionTransform = phaseTransformTranspose.times( phaseTransform ).inverse().times( phaseTransformTranspose );
 	}
 	
 	
@@ -150,7 +150,7 @@ class BeamPositionTransform {
 			beamPositionVector.setElem( row, 0, measuredBeamPositions[row] );
 		}
 		
-		return PROJECTION_TRANSFORM.times( beamPositionVector.minus( KICK_TRANSFORM ) ).getElem( 0, 0 );
+		return projectionTransform.times(beamPositionVector.minus(kickTransform ) ).getElem( 0, 0 );
 	}
 }
 
@@ -158,9 +158,9 @@ class BeamPositionTransform {
 
 /** three elements of the transfer matrix */
 class TransferRow {
-	final public double T11;
-	final public double T12;
-	final public double T13;
+	public final double T11;
+	public final double T12;
+	public final double T13;
 	
 	
 	/** Constructor */

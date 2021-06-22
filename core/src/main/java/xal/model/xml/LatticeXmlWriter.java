@@ -37,21 +37,21 @@ public class LatticeXmlWriter {
 	// share constants with <code>LatticeParser</code> for consistency
 	private static final String DOC_TYPE = "Lattice";
 	private static final String DTD_URI = "Lattice.mod.xal.dtd";
-	private static final String LATTICE_LABEL = LatticeXmlParser.s_strElemLatt;
-	private static final String SEQUENCE_LABEL = LatticeXmlParser.s_strElemSeq;
-	private static final String ELEMENT_LABEL = LatticeXmlParser.s_strElemElem;
-	private static final String COMMENT_LABEL = LatticeXmlParser.s_strElemComm;
-	private static final String PARAM_LABEL = LatticeXmlParser.s_strElemParam;
-	private static final String COMMENT_DELIMITER = LatticeXmlParser.s_strAttrSep;
-	private static final String ID_LABEL = LatticeXmlParser.s_strAttrId;
-	private static final String VERSION_LABEL = LatticeXmlParser.s_strAttrVer;	
-	private static final String AUTHOR_LABEL = LatticeXmlParser.s_strAttrAuth;
-	private static final String DATE_LABEL = LatticeXmlParser.s_strAttrDate;
-	private static final String TEXT_LABEL = LatticeXmlParser.s_strAttrText;
-	private static final String TYPE_LABEL = LatticeXmlParser.s_strAttrType;
-	private static final String LENGTH_LABEL = LatticeXmlParser.s_strAttrLen;
-	private static final String NAME_LABEL = LatticeXmlParser.s_strAttrName;
-	private static final String VALUE_LABEL = LatticeXmlParser.s_strAttrVal;
+	private static final String LATTICE_LABEL = LatticeXmlParser.ELEM_LATT;
+	private static final String SEQUENCE_LABEL = LatticeXmlParser.ELEM_SEQ;
+	private static final String ELEMENT_LABEL = LatticeXmlParser.ELEM_ELEM;
+	private static final String COMMENT_LABEL = LatticeXmlParser.ELEM_COMM;
+	private static final String PARAM_LABEL = LatticeXmlParser.ELEM_PARAM;
+	private static final String COMMENT_DELIMITER = LatticeXmlParser.ATTR_SEP;
+	private static final String ID_LABEL = LatticeXmlParser.ATTR_ID;
+	private static final String VERSION_LABEL = LatticeXmlParser.ATTR_VER;	
+	private static final String AUTHOR_LABEL = LatticeXmlParser.ATTR_AUTH;
+	private static final String DATE_LABEL = LatticeXmlParser.ATTR_DATE;
+	private static final String TEXT_LABEL = LatticeXmlParser.ATTR_TEXT;
+	private static final String TYPE_LABEL = LatticeXmlParser.ATTR_TYPE;
+	private static final String LENGTH_LABEL = LatticeXmlParser.ATTR_LEN;
+	private static final String NAME_LABEL = LatticeXmlParser.ATTR_NAME;
+	private static final String VALUE_LABEL = LatticeXmlParser.ATTR_VAL;
 	
 	/**
 	 * Writes supplied <code>Lattice</code> to the specified XML file.
@@ -241,11 +241,7 @@ public class LatticeXmlWriter {
 		// property types used in introspection are taken directly from the Java
 		// system, as opposed to using arbitrary strings that one might expect
 		// to generate introspection errors.
-		} catch (IntrospectionException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
+		} catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
 	}

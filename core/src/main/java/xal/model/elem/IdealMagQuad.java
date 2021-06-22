@@ -28,11 +28,11 @@ import xal.model.IProbe;
  */
 public class IdealMagQuad extends ThickElectromagnet {
     /** string type identifier for all IdealMagQuad objects */
-    public static final String s_strType = "IdealMagQuad";
+    public static final String TYPE = "IdealMagQuad";
 
     /** Parameters for XAL MODEL LATTICE dtd */
-    public static final String s_strParamOrient = "Orientation";
-    public static final String s_strParamField = "MagField";
+    public static final String PARAM_ORIENT = "Orientation";
+    public static final String PARAM_FIELD = "MagField";
     
     /** BRho Scaling factor (only valid when fieldpathflag=1 */
     private double bRhoScaling = 1;
@@ -142,20 +142,20 @@ public class IdealMagQuad extends ThickElectromagnet {
         int enmOrient,
         double dblFld,
         double dblLen) {
-        super(s_strType, strId, dblLen);
+        super(TYPE, strId, dblLen);
 
         this.setOrientation(enmOrient);
         this.setMagField(dblFld);
-    };
+    }
 
     /** 
-     *  JavaBean constructor - creates a new unitialized instance of IdealMagQuad
+     *  JavaBean constructor - creates a new uninitialized instance of IdealMagQuad
      *
      *  <b>BE CAREFUL</b>
      */
     public IdealMagQuad() {
-        super(s_strType);
-    };
+        super(TYPE);
+    }
 
 
     /*
@@ -224,9 +224,9 @@ public class IdealMagQuad extends ThickElectromagnet {
        double k = 0;
        
        if (bPathFlag == 0) {
-    	   k = (charge * LightSpeed * getMagField() ) / p;
+    	   k = (charge * LIGHT_SPEED * getMagField() ) / p;
        } else if (bPathFlag == 1) {//brhoscaling
-    	   k =  (charge * LightSpeed * getMagField() *getBRhoScaling())/p;
+    	   k =  (charge * LIGHT_SPEED * getMagField() *getBRhoScaling())/p;
        } else {
     	   k = K1;
        }
@@ -279,13 +279,13 @@ public class IdealMagQuad extends ThickElectromagnet {
     @Override
     public String   toString() {
 
-        StringBuffer    bufOut = new StringBuffer();
+        StringBuilder    bufOut = new StringBuilder();
         
         bufOut.append( super.toString() );
 
-        bufOut.append("  magnetic field     : " + this.getMagField() );
+        bufOut.append("  magnetic field     : ").append(this.getMagField());
         bufOut.append('\n');
-        bufOut.append("  magnet orientation : " + this.getOrientation() );
+        bufOut.append("  magnet orientation : ").append(this.getOrientation());
         bufOut.append('\n');
         
         return bufOut.toString();
@@ -307,7 +307,5 @@ public class IdealMagQuad extends ThickElectromagnet {
 
         os.println("  magnetic field     : " + this.getMagField());
         os.println("  magnet orientation : " + this.getOrientation());
-    };
-    
-    
-};
+    }  
+}

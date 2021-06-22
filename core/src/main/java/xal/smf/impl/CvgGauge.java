@@ -1,7 +1,5 @@
 package xal.smf.impl;
 
-import xal.smf.*;
-import xal.smf.attr.*;
 import xal.smf.impl.qualify.*;
 import xal.ca.*;
 
@@ -22,7 +20,7 @@ public class CvgGauge extends Vacuum  {
 
 
 	/** standard type for instances of this class */
-    public static final String s_strType   = "CVG";
+    public static final String TYPE   = "CVG";
 
 
     /*
@@ -30,12 +28,13 @@ public class CvgGauge extends Vacuum  {
      */
     private static void registerType() {
         ElementTypeManager typeManager = ElementTypeManager.defaultManager();
-        typeManager.registerType(CvgGauge.class, s_strType);
+        typeManager.registerType(CvgGauge.class, TYPE);
     }
 
 
     /** Override to provide type signature */
-    public String getType()   { return s_strType; };
+    @Override
+    public String getType()   { return TYPE; }
 
 
 	/** Primary Constructor */

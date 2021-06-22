@@ -22,58 +22,58 @@ import java.awt.event.*;
 /** Displays a dialog box which allows the user to compose a combo sequence by selecting the end sequences. */
 class ComboSequenceComposer {
 	/** accelerator */
-	final private Accelerator ACCELERATOR;
+	private final Accelerator accelerator;
 	
 	/** sequence at the head of the combo */
-	private AcceleratorSeq _startSequence;
+	private AcceleratorSeq startSequence;
 	
 	/** sequence at the end of the combo */
-	private AcceleratorSeq _endSequence;
+	private AcceleratorSeq endSequence;
 	
 	/** indicates whether the user has confirmed the combo */
-	private boolean _confirmed;
+	private boolean confirmed;
 	
 	
 	/** Constructor */
 	private ComboSequenceComposer( final Accelerator accelerator ) {
-		ACCELERATOR = accelerator;
-		_confirmed = false;
+		this.accelerator = accelerator;
+		confirmed = false;
 	}
 	
 	
 	/** determine whether the user has confirmed the combo sequence */
 	private boolean isConfirmed() {
-		return _confirmed;
+		return confirmed;
 	}
 	
 	
 	/** set whether the current combo is confirmed */
 	private void setConfirmed( final boolean confirmed ) {
-		_confirmed = confirmed;
+		this.confirmed = confirmed;
 	}
 	
 	
 	/** get the accelerator */
 	private Accelerator getAccelerator() {
-		return ACCELERATOR;
+		return accelerator;
 	}
 	
 	
 	/** set the start sequence */
 	private void setStartSequence( final AcceleratorSeq sequence ) {
-		_startSequence = sequence;
+		startSequence = sequence;
 	}
 	
 	
 	/** set the end sequence */
 	private void setEndSequence( final AcceleratorSeq sequence ) {
-		_endSequence = sequence;
+		endSequence = sequence;
 	}
 	
 	
 	/** determine whether a combo sequence is possible between the start and end sequences */
 	private boolean isValidCombo() {
-		if ( _startSequence != null && _endSequence != null && _startSequence != _endSequence ) {
+		if ( startSequence != null && endSequence != null && startSequence != endSequence ) {
 			return generateCombo( "validate" ) != null;
 		}
 		else {
@@ -85,7 +85,7 @@ class ComboSequenceComposer {
 	/** generate a combo sequence using the given name and the sequences between the start and end sequences */
 	private AcceleratorSeqCombo generateCombo( final String name ) {
 		final String comboID = name != null ? name : suggestedComboName();
-		return _startSequence != null && _endSequence != null ? AcceleratorSeqCombo.getInstanceForRange( comboID, _startSequence, _endSequence ) : null;
+		return startSequence != null && endSequence != null ? AcceleratorSeqCombo.getInstanceForRange(comboID, startSequence, endSequence ) : null;
 	}
 	
 	
@@ -93,9 +93,9 @@ class ComboSequenceComposer {
 	private String suggestedComboName() {
 		final StringBuffer buffer = new StringBuffer();
 		
-		if ( _startSequence != null )  buffer.append( _startSequence.getId() );
+		if ( startSequence != null )  buffer.append( startSequence.getId() );
 		buffer.append( ":" );
-		if ( _endSequence != null )  buffer.append( _endSequence.getId() );
+		if ( endSequence != null )  buffer.append(endSequence.getId() );
 		
 		return buffer.toString();
 	}
@@ -107,7 +107,7 @@ class ComboSequenceComposer {
 	 * @param owner the window that owns the sequence selector
 	 */
 	@SuppressWarnings( "unchecked" )		// need to cast from untyped JList
-	static public AcceleratorSeqCombo composeComboSequence( final Accelerator accelerator, final JFrame owner ) {
+	public static AcceleratorSeqCombo composeComboSequence( final Accelerator accelerator, final JFrame owner ) {
 		final ComboSequenceComposer composer = new ComboSequenceComposer( accelerator );
 		
 		final List<AcceleratorSeq> sequences = accelerator.getSequences();
@@ -120,6 +120,7 @@ class ComboSequenceComposer {
 		
 		final JButton cancelButton = (JButton)windowReference.getView( "CancelButton" );
 		cancelButton.addActionListener( new ActionListener() {
+                        @Override
 			public void actionPerformed( final ActionEvent event ) {
 				dialog.setVisible( false );
 			}
@@ -127,13 +128,14 @@ class ComboSequenceComposer {
 		
 		final JButton okayButton = (JButton)windowReference.getView( "OkayButton" );
 		okayButton.addActionListener( new ActionListener() {
+                        @Override
 			public void actionPerformed( final ActionEvent event ) {
 				composer.setConfirmed( true );
 				dialog.setVisible( false );
 			}
 		 });
 		
-		final Vector<String> sequenceNames = new Vector<String>();
+		final Vector<String> sequenceNames = new Vector<>();
 		for ( final AcceleratorSeq sequence : sequences ) {
 			sequenceNames.add( sequence.getId() );
 		}
@@ -141,6 +143,7 @@ class ComboSequenceComposer {
 		final JList<String> startSequenceList = (JList<String>)windowReference.getView( "Start Sequence List" );
 		startSequenceList.setListData( sequenceNames );
 		startSequenceList.addListSelectionListener( new ListSelectionListener() {
+                   @Override
 		   public void valueChanged( final ListSelectionEvent event ) {
 				if ( !event.getValueIsAdjusting() ) {
 					final Object selection = startSequenceList.getSelectedValue();
@@ -155,6 +158,7 @@ class ComboSequenceComposer {
 		final JList<String> endSequenceList = (JList<String>)windowReference.getView( "End Sequence List" );
 		endSequenceList.setListData( sequenceNames );
 	    endSequenceList.addListSelectionListener( new ListSelectionListener() {
+                          @Override
 			  public void valueChanged( final ListSelectionEvent event ) {
 				  if ( !event.getValueIsAdjusting() ) {
 					  final Object selection = endSequenceList.getSelectedValue();

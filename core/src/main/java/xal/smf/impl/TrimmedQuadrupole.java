@@ -23,12 +23,12 @@ import xal.tools.data.DataAdaptor;
  * @author  tap
  */
 public class TrimmedQuadrupole extends Quadrupole implements TrimmedMagnet {
-	public static final String s_strType   = "QT";
+	public static final String TYPE   = "QT";
 	public static final String HORIZONTAL_TYPE = "QTH";
 	public static final String VERTICAL_TYPE = "QTV";
 
 	/** unique ID for this magnet's trim supply */
-	protected String _trimSupplyID;
+	protected String trimSupplyID;
 
 
 	// static initializer
@@ -43,7 +43,7 @@ public class TrimmedQuadrupole extends Quadrupole implements TrimmedMagnet {
 	 * @see #isKindOf
 	 */
 	private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( TrimmedQuadrupole.class, s_strType, "trimmedquad" );
+		ElementTypeManager.defaultManager().registerTypes( TrimmedQuadrupole.class, TYPE, "trimmedquad" );
 	}
 
 
@@ -70,9 +70,10 @@ public class TrimmedQuadrupole extends Quadrupole implements TrimmedMagnet {
      * Update data from the power supply data adaptor.
      * @param powerSupplyAdaptor The data provider of power supply information.
      */
+        @Override
     protected void updatePowerSupplies( final DataAdaptor powerSupplyAdaptor ) {
         super.updatePowerSupplies( powerSupplyAdaptor );
-        _trimSupplyID = powerSupplyAdaptor.stringValue( "trim" );
+        trimSupplyID = powerSupplyAdaptor.stringValue( "trim" );
     }
     
     
@@ -80,9 +81,10 @@ public class TrimmedQuadrupole extends Quadrupole implements TrimmedMagnet {
      * Write data to the power supply data adaptor.
      * @param powerSupplyAdaptor The data sink for the power supply information
      */
+        @Override
     protected void writePowerSupplies( final DataAdaptor powerSupplyAdaptor ) {
         super.writePowerSupplies( powerSupplyAdaptor );
-        powerSupplyAdaptor.setValue( "trim", _trimSupplyID );
+        powerSupplyAdaptor.setValue("trim", trimSupplyID );
     }
     
     
@@ -90,8 +92,9 @@ public class TrimmedQuadrupole extends Quadrupole implements TrimmedMagnet {
      * Get the channel handles.  Overrides the default method to add handles from the trim power supply.
      * @return The channel handles associated with this node
      */
+        @Override
     public Collection<String> getHandles() {
-        final Collection<String> handles = new HashSet<String>( super.getHandles() );
+        final Collection<String> handles = new HashSet<>( super.getHandles() );
 		try {
 			handles.addAll( getTrimSupply().getChannelSuite().getHandles() );
 		}
@@ -108,6 +111,7 @@ public class TrimmedQuadrupole extends Quadrupole implements TrimmedMagnet {
      * @param handle The handle for the channel to get.
      * @return The channel associated with this node and the specified handle or null if there is no match.
      */
+        @Override
     public Channel findChannel( final String handle ) {
 		final Channel channel = super.findChannel( handle );
 		return channel != null ? channel : getTrimSupply().getChannelSuite().getChannel( handle );
@@ -118,8 +122,9 @@ public class TrimmedQuadrupole extends Quadrupole implements TrimmedMagnet {
      * Get the trim power supply for this magnet.
      * @return The trim power supply for this magnet
      */
+        @Override
     public MagnetTrimSupply getTrimSupply() {
-        return getAccelerator().getMagnetTrimSupply( _trimSupplyID );
+        return getAccelerator().getMagnetTrimSupply(trimSupplyID );
     }
 
 
@@ -220,7 +225,8 @@ public class TrimmedQuadrupole extends Quadrupole implements TrimmedMagnet {
      * of the quad is determined by its type: QTH or QTV
      * @return One of HORIZONTAL or VERTICAL
      */
+        @Override
     public int getOrientation() {
-        return ( _type.equalsIgnoreCase( HORIZONTAL_TYPE ) ) ? HORIZONTAL : VERTICAL;
+        return ( type.equalsIgnoreCase( HORIZONTAL_TYPE ) ) ? HORIZONTAL : VERTICAL;
     }
 }

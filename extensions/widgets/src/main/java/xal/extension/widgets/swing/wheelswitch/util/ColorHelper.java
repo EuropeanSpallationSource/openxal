@@ -19,7 +19,7 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
  * @see javax.swing.plaf.metal.MetalLookAndFeel
  */
 public final class ColorHelper {
-    public final static String[] COLOR_NAMES = new String[] {
+    public static final String[] COLOR_NAMES = new String[] {
             "Alarm", "AlarmOutline", "Control", "ControlDarkShadow",
             "ControlHighlight", "ControlShadow", "ControlText", "CosyControl",
             "CosyControlDarkShadow", "CosyControlHighlight", "CosyControlShadow",
@@ -28,23 +28,23 @@ public final class ColorHelper {
             "Hyperlink", "Text", "TextHighlight", "TimeOut", "Warning",
             "WarningOutline", "WindowBackground"
         };
-    public final static String[] JAVA_COLOR_NAMES = new String[] {
+    public static final String[] JAVA_COLOR_NAMES = new String[] {
             "BLACK", "BLUE", "CYAN", "DARK_GRAY", "GRAY", "GREEN", "LIGHT_GRAY",
             "MAGENTA", "ORANGE", "PINK", "RED", "WHITE", "YELLOW"
         };
-    private final static Color COSY_CONTROL = new Color(206, 206, 227);
-    private final static Color COSY_CONTROL_SHADOW = new Color(126, 126, 177);
-    private final static Color COSY_CONTROL_HIGHLIGHT = new Color(246, 246, 255);
-    private final static Color COSY_CONTROL_DARK_SHADOW = new Color(86, 86, 157);
-    private final static Color HYPERLINK = new Color(0, 0, 255);
-    private final static Color ALARM = new Color(255, 128, 128);
-    private final static Color ALARM_OUTLINE = new Color(255, 0, 0);
-    private final static Color EMERGENCY = new Color(255, 64, 64);
-    private final static Color EMERGENCY_OUTLINE = new Color(255, 0, 0);
-    private final static Color WARNING = new Color(250, 230, 6);
-    private final static Color WARNING_OUTLINE = new Color(160, 128, 8);
-    private final static Color TIMEOUT = new Color(0, 5, 212);
-    private final static Color TIMEOUT_OUTLINE = new Color(0, 4, 170);
+    private static final Color COSY_CONTROL = new Color(206, 206, 227);
+    private static final Color COSY_CONTROL_SHADOW = new Color(126, 126, 177);
+    private static final Color COSY_CONTROL_HIGHLIGHT = new Color(246, 246, 255);
+    private static final Color COSY_CONTROL_DARK_SHADOW = new Color(86, 86, 157);
+    private static final Color HYPERLINK = new Color(0, 0, 255);
+    private static final Color ALARM = new Color(255, 128, 128);
+    private static final Color ALARM_OUTLINE = new Color(255, 0, 0);
+    private static final Color EMERGENCY = new Color(255, 64, 64);
+    private static final Color EMERGENCY_OUTLINE = new Color(255, 0, 0);
+    private static final Color WARNING = new Color(250, 230, 6);
+    private static final Color WARNING_OUTLINE = new Color(160, 128, 8);
+    private static final Color TIMEOUT = new Color(0, 5, 212);
+    private static final Color TIMEOUT_OUTLINE = new Color(0, 4, 170);
 
     /**
      * Returns the default control Color, which should be

@@ -107,12 +107,8 @@ public class SignalAttrs extends ScadaRecord {
 
                 return sfdFld;
 
-            } catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException | IllegalAccessException e) {
                 LOGGER.log(Level.SEVERE, "Unspecified channel handle for signal attribute " + this.strPropNm, e);
-
-            } catch (IllegalAccessException e) {
-                LOGGER.log(Level.SEVERE, "Unspecified channel handle for signal attribute " + this.strPropNm, e);
-
             } catch (InvocationTargetException e) {
                 LOGGER.log(Level.SEVERE,"Unable to extract property value " + this.mthAnn.getName() + " from " + annSig.getClass(), e);
             }
@@ -157,17 +153,9 @@ public class SignalAttrs extends ScadaRecord {
 
                 return dblFldVal;
 
-            } catch (SecurityException e) {
+            } catch (SecurityException | NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
                 LOGGER.log(Level.SEVERE, "SERIOUS ERROR: WireScanner$SignalAttrs#getFieldValue()", e); //$NON-NLS-1$
 
-            } catch (NoSuchFieldException e) {
-                LOGGER.log(Level.SEVERE,"SERIOUS ERROR: WireScanner$SignalAttrs#getFieldValue()", e); //$NON-NLS-1$
-
-            } catch (IllegalArgumentException e) {
-                LOGGER.log(Level.SEVERE, "SERIOUS ERROR: WireScanner$SignalAttrs#getFieldValue()", e); //$NON-NLS-1$
-
-            } catch (IllegalAccessException e) {
-                LOGGER.log(Level.SEVERE, "SERIOUS ERROR: WireScanner$SignalAttrs#getFieldValue()", e); //$NON-NLS-1$
             }
 
             return 0.0;
@@ -192,17 +180,9 @@ public class SignalAttrs extends ScadaRecord {
                 fldAttrFld.setDouble(attrs,  dblVal);;
 
 
-            } catch (SecurityException e) {
+            } catch (SecurityException | NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
                 LOGGER.log(Level.SEVERE, "SERIOUS ERROR: WireScanner$SignalAttrs#setFieldValue()", e); //$NON-NLS-1$
 
-            } catch (NoSuchFieldException e) {
-                LOGGER.log(Level.SEVERE, "SERIOUS ERROR: WireScanner$SignalAttrs#setFieldValue()", e); //$NON-NLS-1$
-
-            } catch (IllegalArgumentException e) {
-                LOGGER.log(Level.SEVERE, "SERIOUS ERROR: WireScanner$SignalAttrs#setFieldValue()", e); //$NON-NLS-1$
-
-            } catch (IllegalAccessException e) {
-                LOGGER.log(Level.SEVERE, "SERIOUS ERROR: WireScanner$SignalAttrs#setFieldValue()", e); //$NON-NLS-1$
             }
 
             return 0.0;
@@ -241,9 +221,7 @@ public class SignalAttrs extends ScadaRecord {
                 this.strPropNm = strPropNm;
                 this.mthAnn    = ASignalAttrs.class.getMethod(strAnnFldNm);
 
-            } catch (NoSuchMethodException e) {
-                LOGGER.log(Level.SEVERE, strErrMsg, e);
-            } catch (SecurityException e) {
+            } catch (NoSuchMethodException | SecurityException e) {
                 LOGGER.log(Level.SEVERE, strErrMsg, e);
             }
         }
@@ -265,14 +243,12 @@ public class SignalAttrs extends ScadaRecord {
      *
      * @return          fully operational <code>ScadaRecord</code> class capable of data acquisition
      *
-     * @throws IllegalAccessException   a needed field in the annotation is not publicly accessible
-     *
      * @author Christopher K. Allen
      * @since  Feb 7, 2013
      */
-    static public SignalAttrs    createConnectedSignal(ASignalAttrs annAttrs)
+    public static SignalAttrs    createConnectedSignal(ASignalAttrs annAttrs)
     {
-        List<ScadaFieldDescriptor>  lstDscr = new LinkedList<ScadaFieldDescriptor>();
+        List<ScadaFieldDescriptor>  lstDscr = new LinkedList<>();
 
         for ( SignalAttrs.ATTRS enmFld : ATTRS.values() ) {
 
@@ -383,7 +359,7 @@ public class SignalAttrs extends ScadaRecord {
      * </p>
      * <h3>NOTES:</h3>
      * <p>
-     * &middot; The standard deviation is weighted vectorally.
+     * &middot; The standard deviation is weighted vectorially.
      * </p>
      *
      * @param sigAcq       signal <i>u</i> to average into this one <i>v</i>
@@ -471,6 +447,5 @@ public class SignalAttrs extends ScadaRecord {
     public void write(DataAdaptor daptSink) throws BadStructException {
         super.write(daptSink);
     }
-
 
 }

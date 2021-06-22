@@ -28,7 +28,7 @@ public class GaussFitter{
 	
 	private double wCoeff = 5.0;
 	
-	private boolean [] fit_on_arr = {true,true,true,true};
+	private boolean [] fitOnArr = {true,true,true,true};
 	
 	/** Constructor of a default wire scanner data fitter */
 	public GaussFitter(){	
@@ -38,11 +38,11 @@ public class GaussFitter{
 	    is an 4-elements boolean array with true or false for the base line, 
 			center position, sigma, and amplitude of the Gaussian approximation. 
 	*/ 
-	public void setVariablesOn(boolean [] fit_on_arr){
-		this.fit_on_arr[0] = fit_on_arr[0];
-		this.fit_on_arr[1] = fit_on_arr[1];
-		this.fit_on_arr[2] = fit_on_arr[2];
-		this.fit_on_arr[3] = fit_on_arr[3];
+	public void setVariablesOn(boolean [] fitOnArr){
+		this.fitOnArr[0] = fitOnArr[0];
+		this.fitOnArr[1] = fitOnArr[1];
+		this.fitOnArr[2] = fitOnArr[2];
+		this.fitOnArr[3] = fitOnArr[3];
 	}
 	
 	/** Guess initial Gauss parameters and fit for both planes: X and Y */
@@ -158,33 +158,34 @@ public class GaussFitter{
 		return true;		
 	}	
 	
-	private boolean gaussFit( double [] params_arr, final BasicGraphData gD, BasicGraphData fit_gD,BasicGraphData fit_log_gD){		
-		final double base = params_arr[0];
-		final double center = params_arr[1];			
-		final double sigma = params_arr[2];
-		final double amp = params_arr[3];
+	private boolean gaussFit( double [] paramsArr, final BasicGraphData gD, BasicGraphData fitGD,BasicGraphData fitLogGD){		
+		final double base = paramsArr[0];
+		final double center = paramsArr[1];			
+		final double sigma = paramsArr[2];
+		final double amp = paramsArr[3];
 		
-		int ind_start0 = gD.getNumbOfPoints();
+		int indstart0 = gD.getNumbOfPoints();
 		int ind_stop0 = 0;
 		for(int ix = 0; ix <  gD.getNumbOfPoints() ; ix++){
 			double x = gD.getX(ix);
 			if( Math.abs(x-center) < wCoeff*sigma){
-				if(ind_start0 > ix) ind_start0 = ix;
+				if(indstart0 > ix) indstart0 = ix;
 				if(ind_stop0 < ix) ind_stop0 = ix;
 			}
 		}
-		if( (ind_stop0 - ind_start0) < 3 ) return false;
+		if( (ind_stop0 - indstart0) < 3 ) return false;
 		
-		final int ind_start = ind_start0;
+		final int indstart = indstart0;
 		final int ind_stop = ind_stop0;
-		//System.out.println("debug fit x_min="+gD.getX(ind_start)+" x_max="+gD.getX(ind_stop));
-		final ArrayList<Variable> variables = new ArrayList<Variable>();
+		//System.out.println("debug fit xMin="+gD.getX(indstart)+" xMax="+gD.getX(ind_stop));
+		final ArrayList<Variable> variables = new ArrayList<>();
 		variables.add(new Variable( "base",   base,   - Double.MAX_VALUE, Double.MAX_VALUE ) );
 		variables.add(new Variable( "center", center, - Double.MAX_VALUE, Double.MAX_VALUE ) );
 		variables.add(new Variable( "sigma",  sigma,  - Double.MAX_VALUE, Double.MAX_VALUE ) );
 		variables.add(new Variable( "amp",    amp,    - Double.MAX_VALUE, Double.MAX_VALUE ) )	;			
 		
 		Scorer scorer = new Scorer(){
+                        @Override
 			public double score( final Trial trial, final List<Variable> variables_tmp ){
 				double diff = 0.;
 				java.util.Map<Variable,java.lang.Number> var_map = trial.getTrialPoint().getValueMap();
@@ -205,7 +206,7 @@ public class GaussFitter{
 					amp0 = trial.getTrialPoint().getValue(variables.get(3));
 				}
 				double y_th,x,y;
-				for(int ix = ind_start; ix <= ind_stop; ix++){
+				for(int ix = indstart; ix <= ind_stop; ix++){
 					x = gD.getX(ix);
 					y = gD.getY(ix);
 					y_th = base0 + amp0*Math.exp(-(x-center0)*(x-center0)/(2*sigma0*sigma0));
@@ -219,9 +220,9 @@ public class GaussFitter{
 		
 		Stopper maxSolutionStopper = SolveStopperFactory.maxEvaluationsStopper(nIterations); 
 		Solver solver = new Solver(new SimplexSearchAlgorithm(),maxSolutionStopper);
-		ArrayList<Variable> variables_on = new ArrayList<Variable>();
+		ArrayList<Variable> variables_on = new ArrayList<>();
 		for(int iv = 0; iv < 4; iv++){
-			if(fit_on_arr[iv]) variables_on.add(variables.get(iv));
+			if(fitOnArr[iv]) variables_on.add(variables.get(iv));
 		}
 		Problem problem = ProblemFactory.getInverseSquareMinimizerProblem(variables_on,scorer,amp*0.0001);
 		InitialDelta hint = new InitialDelta();
@@ -250,18 +251,18 @@ public class GaussFitter{
 		if(var_map.containsKey(variables.get(3))){
 			amp0 = trial.getTrialPoint().getValue(variables.get(3));
 		}		
-		params_arr[0] = base0;
-		params_arr[1] = center0;
-		params_arr[2] = sigma0;
-		params_arr[3] = amp0;	
+		paramsArr[0] = base0;
+		paramsArr[1] = center0;
+		paramsArr[2] = sigma0;
+		paramsArr[3] = amp0;	
 		//System.out.println("debug end fit base="+base0+" center="+center0+" sigma="+sigma0+" amp="+amp0);
-		double step = (gD.getX(ind_stop) - gD.getX(ind_start))/(nGraphPoints-1);
+		double step = (gD.getX(ind_stop) - gD.getX(indstart))/(nGraphPoints-1);
 		for(int ix = 0; ix < nGraphPoints; ix++){
-			double x = gD.getX(ind_start) + step*ix;
+			double x = gD.getX(indstart) + step*ix;
 			double y = base0 + amp0*Math.exp(-(x-center0)*(x-center0)/(2*sigma0*sigma0));
-			fit_gD.addPoint(x,y);
+			fitGD.addPoint(x,y);
 			if(y > 0.){
-				fit_log_gD.addPoint(x,Math.log10(y));
+				fitLogGD.addPoint(x,Math.log10(y));
 			}
 		}
 		return true;
@@ -299,49 +300,49 @@ public class GaussFitter{
 	
 	private double [] guessParams(BasicGraphData gD){
 		if(gD.getNumbOfPoints() < 4) return null;
-		double x_max = - Double.MAX_VALUE;
-		double y_max = - Double.MAX_VALUE;
-		double y_min = + Double.MAX_VALUE;
+		double xMax = - Double.MAX_VALUE;
+		double yMax = - Double.MAX_VALUE;
+		double yMin = + Double.MAX_VALUE;
 		for(int ix = 0; ix <  gD.getNumbOfPoints() ; ix++){
 					double x = gD.getX(ix);
 					double y = gD.getY(ix);
-					if(y_max < y){
-						y_max = y;
-						x_max = x;
+					if(yMax < y){
+						yMax = y;
+						xMax = x;
 					}
-					if(y_min > y) { 
-						y_min = y;
+					if(yMin > y) { 
+						yMin = y;
 					}
 		}
-		//System.out.println("debug x_max="+x_max+" y_max="+y_max+" y_min="+y_min);
-		double y_level = y_min + (y_max - y_min)*0.7;
-		double x_lower = gD.getX(0);
-		double x_upper = gD.getX(gD.getNumbOfPoints() -1);
+		//System.out.println("debug xMax="+xMax+" yMax="+yMax+" yMin="+yMin);
+		double yLevel = yMin + (yMax - yMin)*0.7;
+		double xLower = gD.getX(0);
+		double xUpper = gD.getX(gD.getNumbOfPoints() -1);
 		for(int ix = 0; ix <  (gD.getNumbOfPoints() - 1) ; ix++){
 			double x0 = gD.getX(ix);
 			double x1 = gD.getX(ix+1);
 			double y0 = gD.getY(ix);
 			double y1 = gD.getY(ix+1);
-			if( (y_level -  y0)*(y_level -  y1) <= 0.){
-				if( (y_level -  y0) >= 0.){
+			if( (yLevel -  y0)*(yLevel -  y1) <= 0.){
+				if( (yLevel -  y0) >= 0.){
 					double x = x0 - y0*(x1-x0)/(y1-y0);
-					if((x - x_max) < 0. && Math.abs(x_lower - x_max) > Math.abs(x - x_max)){
-						x_lower = x;
+					if((x - xMax) < 0. && Math.abs(xLower - xMax) > Math.abs(x - xMax)){
+						xLower = x;
 					}
 				}
-				if( (y_level -  y0) <= 0.){
+				if( (yLevel -  y0) <= 0.){
 					double x = x0 - y0*(x1-x0)/(y1-y0);
-					if((x - x_max) > 0. && Math.abs(x_upper - x_max) > Math.abs(x - x_max)){
-						x_upper = x;
+					if((x - xMax) > 0. && Math.abs(xUpper - xMax) > Math.abs(x - xMax)){
+						xUpper = x;
 					}	
 				}
 			}
 		}		
-		//System.out.println("debug x_lower="+x_lower+" x_upper="+x_upper);
+		//System.out.println("debug xLower="+xLower+" xUpper="+xUpper);
 		double base = 0.;
-		double center = (x_upper + x_lower)/2.0;			
-		double sigma = (x_upper - x_lower)/2.0;
-		double amp = (y_max - y_min);
+		double center = (xUpper + xLower)/2.0;			
+		double sigma = (xUpper - xLower)/2.0;
+		double amp = (yMax - yMin);
 		if(sigma < 0.) return null;
 		double [] res_arr = new double[4];
 		res_arr[0] = base;
@@ -370,7 +371,7 @@ public class GaussFitter{
 		this.wCoeff = wCoeff;
 	}	
 	
-	/** Returns the number of iterations diring the fitting */ 
+	/** Returns the number of iterations during the fitting */ 
 	public void getIterations(int nIterations){
 		this.nIterations = nIterations;
 	}

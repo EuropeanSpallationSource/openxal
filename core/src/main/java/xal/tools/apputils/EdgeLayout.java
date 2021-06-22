@@ -7,7 +7,6 @@
 package xal.tools.apputils;
 
 import java.awt.*;
-import javax.swing.*;
 import java.util.*;
 
 /**
@@ -28,28 +27,28 @@ import java.util.*;
  */
 public class EdgeLayout implements LayoutManager {
     // strut behaviors
-    final static public int NO_STRUTS = 0;
-    final static public int LEFT = 1;
-    final static public int RIGHT = 2;
-    final static public int TOP = 4;
-    final static public int BOTTOM = 8;
-    final static public int TOP_LEFT = TOP | LEFT;
-    final static public int TOP_BOTTOM = TOP | BOTTOM;
-    final static public int TOP_RIGHT = TOP | RIGHT;
-    final static public int LEFT_BOTTOM = LEFT | BOTTOM;
-    final static public int LEFT_RIGHT = LEFT | RIGHT;
-    final static public int BOTTOM_RIGHT = BOTTOM | RIGHT;
-    final static public int TOP_LEFT_BOTTOM = TOP | LEFT | BOTTOM;
-    final static public int TOP_BOTTOM_RIGHT = TOP | BOTTOM | RIGHT;
-    final static public int LEFT_BOTTOM_RIGHT = LEFT | BOTTOM | RIGHT;
-    final static public int TOP_LEFT_RIGHT = TOP | LEFT | RIGHT;
-    final static public int ALL_SIDES = LEFT | RIGHT | TOP | BOTTOM;
+    public static final int NO_STRUTS = 0;
+    public static final int LEFT = 1;
+    public static final int RIGHT = 2;
+    public static final int TOP = 4;
+    public static final int BOTTOM = 8;
+    public static final int TOP_LEFT = TOP | LEFT;
+    public static final int TOP_BOTTOM = TOP | BOTTOM;
+    public static final int TOP_RIGHT = TOP | RIGHT;
+    public static final int LEFT_BOTTOM = LEFT | BOTTOM;
+    public static final int LEFT_RIGHT = LEFT | RIGHT;
+    public static final int BOTTOM_RIGHT = BOTTOM | RIGHT;
+    public static final int TOP_LEFT_BOTTOM = TOP | LEFT | BOTTOM;
+    public static final int TOP_BOTTOM_RIGHT = TOP | BOTTOM | RIGHT;
+    public static final int LEFT_BOTTOM_RIGHT = LEFT | BOTTOM | RIGHT;
+    public static final int TOP_LEFT_RIGHT = TOP | LEFT | RIGHT;
+    public static final int ALL_SIDES = LEFT | RIGHT | TOP | BOTTOM;
     
     // growth behaviors
-    final static public int NO_GROWTH = 0;
-    final static public int GROW_HORIZONTAL = 1;
-    final static public int GROW_VERTICAL = 2;
-    final static public int GROW_BOTH = GROW_HORIZONTAL | GROW_VERTICAL;
+    public static final int NO_GROWTH = 0;
+    public static final int GROW_HORIZONTAL = 1;
+    public static final int GROW_VERTICAL = 2;
+    public static final int GROW_BOTH = GROW_HORIZONTAL | GROW_VERTICAL;
     
     // instance variables
     protected Map<Object,Object> constraintTable;
@@ -57,7 +56,7 @@ public class EdgeLayout implements LayoutManager {
     
     /** Creates a new instance of SimpleLayout */
     public EdgeLayout() {
-        constraintTable = new Hashtable<Object, Object>();
+        constraintTable = new Hashtable<>();
     }
     
     
@@ -126,11 +125,13 @@ public class EdgeLayout implements LayoutManager {
     
     
     /** Implement LayoutManager interface */
+    @Override
     public void addLayoutComponent(String name, Component component) {
     }
     
     
     /** Implement LayoutManager interface */
+    @Override
     public void layoutContainer(Container parent) {
         Component[] components = parent.getComponents();
         int count = components.length;
@@ -191,6 +192,7 @@ public class EdgeLayout implements LayoutManager {
     
     
     /** Implement LayoutManager interface */
+    @Override
     public Dimension minimumLayoutSize(Container parent) {
         int minWidth = 0;
         int minHeight = 0;
@@ -216,6 +218,7 @@ public class EdgeLayout implements LayoutManager {
     
     
     /** Implement LayoutManager interface */
+    @Override
     public Dimension preferredLayoutSize(Container parent) {
         int prefWidth = 0;
         int prefHeight = 0;
@@ -241,6 +244,7 @@ public class EdgeLayout implements LayoutManager {
     
     
     /** Implement LayoutManager interface */
+    @Override
     public void removeLayoutComponent(Component component) {
     }
 }

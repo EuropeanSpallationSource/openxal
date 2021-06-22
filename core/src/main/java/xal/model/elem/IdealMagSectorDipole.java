@@ -49,15 +49,15 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      */
 
     /** string type identifier for all IdealMagSectorDipole objects */
-    public static final String s_strType = "IdealMagSectorDipole";
+    public static final String TYPE = "IdealMagSectorDipole";
 
 
     /** Parameters for XAL MODEL LATTICE dtd */
-    public static final String s_strPathLength = "PathLength";  // all thick elements have length - CKA
-    public static final String s_strField = "MagField";
-    public static final String s_strEntranceAngle = "EntranceAngle";
-    public static final String s_strExitAngle = "ExitAngle";
-    public static final String s_strQuadComponent = "QuadComponent";
+    public static final String PATH_LENGTH = "PathLength";  // all thick elements have length - CKA
+    public static final String FIELD = "MagField";
+    public static final String ENTRANCE_ANGLE = "EntranceAngle";
+    public static final String EXIT_ANGLE = "ExitAngle";
+    public static final String QUAD_COMPONENT = "QuadComponent";
 
 
 
@@ -66,11 +66,11 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      */
 
     /** The gap height (m) */
-    private double m_dblGap = 0.0;
+    private double dblGap = 0.0;
 
 
     /** magnet field index -(R0/B0)(dB/dR) */
-    private double m_dblFldInd = 0.0;
+    private double dblFldInd = 0.0;
 
     
     //hs
@@ -84,23 +84,23 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
     
     
     /** 
-     * Default constructor - creates a new unitialized instance of 
+     * Default constructor - creates a new uninitialized instance of 
      * IdealMagSectorDipole.      
      * This is the constructor called in automatic lattice generation.
      * Thus, all element properties are set following construction.
      */
     public IdealMagSectorDipole() {
-	super(s_strType);
-    };
+	super(TYPE);
+    }
     /** 
-     * Default constructor - creates a new unitialized instance of 
+     * Default constructor - creates a new uninitialized instance of 
      * IdealMagSectorDipole.      
      * This is the constructor called in automatic lattice generation.
      * Thus, all element properties are set following construction.
      */
     public IdealMagSectorDipole(String strId) {
-        super(s_strType, strId);
-    };
+        super(TYPE, strId);
+    }
     
     /** 
      *  Creates a new instance of IdealMagSectorDipole 
@@ -117,13 +117,13 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
                                 int enmOrient, double dblFld, 
                                 double dblGap, double dblFldInd) 
     {
-    super(s_strType, strId, dblLen);
+        super(TYPE, strId, dblLen);
 
         this.setGapHeight(dblGap);
         this.setMagField(dblFld);
         this.setFieldIndex(dblFldInd);
         this.setOrientation(enmOrient);
-    };
+    }
 
 
 
@@ -142,7 +142,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * @param dblFldInd     field index of the magnet (unitless)     
      */
     public void setFieldIndex(double dblFldInd) {
-        this.m_dblFldInd = dblFldInd;
+        this.dblFldInd = dblFldInd;
     }
     
     /**
@@ -151,7 +151,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * @param dblGap    gap size in <b>meters</b>
      */
     public void setGapHeight(double dblGap)  {
-        this.m_dblGap = dblGap;
+        this.dblGap = dblGap;
     }
     
 
@@ -203,7 +203,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * @return  field index of the magnet at the design orbit (unitless)     
      */
     public double getFieldIndex()   {
-        return this.m_dblFldInd;
+        return this.dblFldInd;
     }
 
     /**
@@ -212,7 +212,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * @return  gap size in <b>meters</b>
      */
     public double getGapHeight()  {
-        return this.m_dblGap;
+        return this.dblGap;
     }
 
     /**
@@ -275,7 +275,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
     @Override
     public double energyGain(IProbe probe, double dblLen) {
 	return 0.0;
-    };
+    }
 
 
 
@@ -305,7 +305,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
         double gamma = probe.getGamma();
 	double beta  = probe.getBeta();
 
-	double c = IProbe.LightSpeed;
+	double c = IProbe.LIGHT_SPEED;
 	double path = this.getPathLength();
 	double alpha = this.getBendAngle();
 //	double rhof = 0;
@@ -482,7 +482,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
 	
 	double beta = probe.getBeta();
 
-	final double c = IProbe.LightSpeed;
+	final double c = IProbe.LIGHT_SPEED;
 	double Beff = alpha/path*Etotal*beta/(c*charge);
 	//System.out.println("id, B, Beff = "+getId()+" "+B+" "+Beff);
 	
@@ -618,6 +618,6 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
 
 	os.println("  magnetic field     : " + this.getMagField());
 	os.println("  magnet orientation : " + this.getOrientation());
-    };
+    }
 
-};
+}

@@ -37,7 +37,7 @@ public class PredefinedConfController {
 	//-------------------------------------------------
 	//GUI elements
 	//-------------------------------------------------
-	private JPanel predefConf_Panel = new JPanel();
+	private JPanel predefConfPanel = new JPanel();
 
 	private JButton setConfigButton = new JButton("SET CONFIGURATION");
 
@@ -95,6 +95,7 @@ public class PredefinedConfController {
 			//Listen for when the selection changes.
 			tree.addTreeSelectionListener(
 				new TreeSelectionListener() {
+                                        @Override
 					public void valueChanged(TreeSelectionEvent e) {
 						System.out.println( "Configuration item selected..." );
 						ConfigNode node = (ConfigNode)tree.getLastSelectedPathComponent();
@@ -114,6 +115,7 @@ public class PredefinedConfController {
 			//Mouse listener for tree
 			MouseListener ml =
 				new MouseAdapter() {
+                                        @Override
 					public void mouseClicked(MouseEvent e) {
 						if (e.getClickCount() != 2) {
 							return;
@@ -159,6 +161,7 @@ public class PredefinedConfController {
 			setConfigButton.setForeground(Color.red);
 			ActionListener internalListener =
 				new ActionListener() {
+                                        @Override
 					public void actionPerformed(ActionEvent e) {
 						URL url = getSelectedConfigFileURL();
 						if (extSelectionListener != null && url != null) {
@@ -201,9 +204,9 @@ public class PredefinedConfController {
 			splitPane.setOneTouchExpandable(true);
 			splitPane.setDividerLocation(0.5);
 
-			predefConf_Panel.setLayout(new BorderLayout());
+			predefConfPanel.setLayout(new BorderLayout());
 			splitPane.setPreferredSize(new Dimension(0, 0));
-			predefConf_Panel.add(splitPane, BorderLayout.CENTER);
+			predefConfPanel.add(splitPane, BorderLayout.CENTER);
 		}
 	}
 
@@ -259,7 +262,7 @@ public class PredefinedConfController {
 	 *@return    The jPanel value
 	 */
 	public JPanel getJPanel() {
-		return predefConf_Panel;
+		return predefConfPanel;
 	}
 
 
@@ -379,6 +382,7 @@ public class PredefinedConfController {
 		 *@param  hasFocus  Description of the Parameter
 		 *@return           The treeCellRendererComponent value
 		 */
+                @Override
 		public Component getTreeCellRendererComponent(JTree tree,
 				Object value,
 				boolean selected,

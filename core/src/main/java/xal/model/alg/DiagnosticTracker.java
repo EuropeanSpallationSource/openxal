@@ -15,13 +15,13 @@ import xal.model.probe.DiagnosticProbe;
 public class DiagnosticTracker extends Tracker {
 
     /** string type identifier for this algorithm */
-    public static final String      s_strTypeId = DiagnosticTracker.class.getName();
+    public static final String      TYPE_ID = DiagnosticTracker.class.getName();
     
     /** current version of this algorithm */
-    public static final int         s_intVersion = 1;
+    public static final int         VERSION = 1;
 
     /** probe type recognized by this algorithm */
-    public static final Class<DiagnosticProbe>       s_clsProbeType = DiagnosticProbe.class;
+    public static final Class<DiagnosticProbe>       CLS_PROBE_TYPE = DiagnosticProbe.class;
     
     
     
@@ -34,7 +34,7 @@ public class DiagnosticTracker extends Tracker {
      *  Creates a new instance of ParticleTracker 
      */
     public DiagnosticTracker() { 
-        super(s_strTypeId, s_intVersion, s_clsProbeType);
+        super(TYPE_ID, VERSION, CLS_PROBE_TYPE);
     }
     
     /**

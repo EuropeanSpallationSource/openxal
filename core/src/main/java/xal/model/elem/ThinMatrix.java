@@ -14,10 +14,10 @@ import xal.tools.beam.PhaseMatrix;
 
 
 /**
- *  User element represent a general beamline element.  Arbitrary beamline elements
- *  are specified by providing the energy gain and tranfer matrix a priori.  Note that
- *  for this element the transfer matrix and energy gain are independent of any probe
- *  objects.  Thus, this class should be used carefully.
+ * User element represent a general beamline element. Arbitrary beamline
+ * elements are specified by providing the energy gain and transfer matrix a
+ * priori. Note that for this element the transfer matrix and energy gain are
+ * independent of any probe objects. Thus, this class should be used carefully.
  *  <p>
  *  Since this is a thin element there are no space charge kicks in the particle 
  *  dynamics.  If 
@@ -31,7 +31,7 @@ public class ThinMatrix extends ThinElement {
      */
     
     /** string type identifier for all TranferMatrix objects */
-    public static final String          s_strType = "ThinMatrix";
+    public static final String          TYPE = "ThinMatrix";
     
     
     
@@ -40,13 +40,13 @@ public class ThinMatrix extends ThinElement {
      */
     
     /** elapsed time for all probes to propagate this element */
-    private double          m_dblDelT = 0.0;
+    private double          dblDelT = 0.0;
      
     /** energy gain imparted to all probes */
-    private double          m_dblDelW = 0.0;
+    private double          dblDelW = 0.0;
     
     /** transfer map for all probes */
-    private PhaseMap        m_mapPhi = PhaseMap.identity();
+    private PhaseMap        mapPhi = PhaseMap.identity();
     
     
     
@@ -62,11 +62,11 @@ public class ThinMatrix extends ThinElement {
      *  @param  dblDelW     energy gain of element (<b>in electron-volts</b>)
      */
     public ThinMatrix(String strId, PhaseMatrix matPhi, double dblDelW)    {
-        super(s_strType, strId);
+        super(TYPE, strId);
         
         this.setTransferMatrix( matPhi );
-        m_dblDelW = dblDelW;
-    };
+        this.dblDelW = dblDelW;
+    }
         
     /**
      *  Creates a new instance of TransferMatrix.
@@ -77,7 +77,7 @@ public class ThinMatrix extends ThinElement {
      */
     public ThinMatrix(String strId, PhaseMatrix matPhi)    {
         this(strId, matPhi, 0.0);
-    };
+    }
         
     /**
      *  Creates a new instance of TransferMatrix.
@@ -88,7 +88,7 @@ public class ThinMatrix extends ThinElement {
      */
     public ThinMatrix(String strId)    {
         this(strId, PhaseMatrix.identity(), 0.0);
-    };
+    }
     
     /**
      *  JavaBean constructor - creates a new uninitialized instance of ThinMatrix
@@ -96,8 +96,8 @@ public class ThinMatrix extends ThinElement {
      *  <b>BE CAREFUL</b>
      */
     public ThinMatrix()   {
-        super(s_strType);
-    };
+        super(TYPE);
+    }
     
 
     /** 
@@ -106,7 +106,7 @@ public class ThinMatrix extends ThinElement {
      * @param   dblDelT     elapsed time through element in <b>seconds</b>  
      */
     public void setElapsedTime(double dblDelT)  {
-        this.m_dblDelT = dblDelT;
+        this.dblDelT = dblDelT;
     }
     
     /**
@@ -115,7 +115,7 @@ public class ThinMatrix extends ThinElement {
      *  @param  dblDelW     energy gain (<b>in electron-volts</b>)
      */
     public void setEnergyGain(double dblDelW)   {
-        this.m_dblDelW = dblDelW; 
+        this.dblDelW = dblDelW; 
     }
     
     /**
@@ -124,7 +124,7 @@ public class ThinMatrix extends ThinElement {
      *  @param  matPhi      7x7 transfer matrix in homogeneous phase space coordinates
      */
     public void setTransferMatrix(PhaseMatrix matPhi)    {
-        this.m_mapPhi = new PhaseMap(matPhi);
+        this.mapPhi = new PhaseMap(matPhi);
     }
     
     
@@ -141,7 +141,7 @@ public class ThinMatrix extends ThinElement {
      */
     @Override
     public double elapsedTime(IProbe probe)  {
-        return this.m_dblDelT;
+        return this.dblDelT;
     }
     
     /**
@@ -154,8 +154,8 @@ public class ThinMatrix extends ThinElement {
      */
     @Override
     public double   energyGain(IProbe probe)    { 
-        return this.m_dblDelW; 
-    };
+        return this.dblDelW; 
+    }
     
     /**  
      *  <p>
@@ -174,8 +174,7 @@ public class ThinMatrix extends ThinElement {
      */
     @Override
     protected PhaseMap transferMap(IProbe probe) throws ModelException {
-        return this.m_mapPhi;
+        return this.mapPhi;
     }
-    
     
 }

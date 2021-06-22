@@ -183,7 +183,7 @@ public class CovarianceMatrix extends PhaseMatrix {
         matCorr.setElem(6, 6, 1.0);
 
         return matCorr;
-    };
+    }
 
     /**
      * <p>
@@ -550,7 +550,7 @@ public class CovarianceMatrix extends PhaseMatrix {
         matCov.setElem(2,0, covXZ);  matCov.setElem(2,1, covYZ);  matCov.setElem(2,2, covZZ);
         
         return matCov;
-    };
+    }
     
     
     /**
@@ -649,7 +649,7 @@ public class CovarianceMatrix extends PhaseMatrix {
         arrEmitt[2] = java.lang.Math.sqrt(ez_2);
 
         return arrEmitt;
-    };
+    }
 
     /**
      *  Return the Twiss parameters for each plane that correspond to the current 

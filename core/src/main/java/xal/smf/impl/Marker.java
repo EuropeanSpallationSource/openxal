@@ -8,22 +8,23 @@ import xal.ca.ChannelFactory;
 
 /** node representing a simple marker */
 public class Marker extends AcceleratorNode {
-	/** for generaic marker */
-    public static String s_strType   = "marker";
+	/** for generic marker */
+    public static final String TYPE   = "marker";
+    public String type   =  TYPE;
     
-    public static String s_strSoftType   = null;
+    public String softType   = null;
 	
     /** for vacuum window */
     public static final String VIW = "VIW";
 	
     /** for strip foil */
-    public static final String Foil = "Foil";
+    public static final String FOIL = "Foil";
 	
     /** for target */
-    public static final String Tgt = "Tgt";
+    public static final String TARGET = "Tgt";
 	
     /** for harp */
-    public static final String Harp = "Harp";
+    public static final String HARP = "Harp";
 	
     /** Chumps */
     public static final String CHUMPS = "ChMPS";
@@ -53,10 +54,12 @@ public class Marker extends AcceleratorNode {
 
 
     /** Overriden to provide type signature */
-    public String getType()   { return s_strType; }
+    @Override
+    public String getType()   { return type; }
 
     /** Overriden to provide type signature */
-    public String getSoftType()   { return s_strSoftType; }
+    @Override
+    public String getSoftType()   { return softType; }
 
 
 	// static initializer
@@ -71,7 +74,7 @@ public class Marker extends AcceleratorNode {
 	 * @see #isKindOf
 	 */
 	private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( Marker.class, s_strType );
+		ElementTypeManager.defaultManager().registerTypes(Marker.class, TYPE );
 	}
 
 
@@ -80,14 +83,15 @@ public class Marker extends AcceleratorNode {
  	 * set the marker type since a marker type can be "Foil", "VIW" "Tgt", etc.
       * @param adaptor The data provider.
       */
+    @Override
      public void update( final DataAdaptor adaptor ) {
          if (adaptor.hasAttribute("type")) {
-             s_strType = adaptor.stringValue("type");
+             type = adaptor.stringValue("type");
          }
          if (adaptor.hasAttribute("softType")) {
-             s_strSoftType = adaptor.stringValue("softType");
-             if (s_strSoftType.equals("")) {
-                 s_strSoftType = null;
+             softType = adaptor.stringValue("softType");
+             if (softType.equals("")) {
+                 softType = null;
              }
          }
          super.update(adaptor);
@@ -100,8 +104,9 @@ public class Marker extends AcceleratorNode {
       * @param type The type to compare against.
       * @return true if the node is a match and false otherwise.
       */
+    @Override
      public boolean isKindOf( final String type ) {
-         return type.equalsIgnoreCase( s_strType ) || super.isKindOf( type );
+         return type.equalsIgnoreCase(this.type ) || super.isKindOf( type );
      }
           
 }

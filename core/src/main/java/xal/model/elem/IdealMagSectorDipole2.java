@@ -69,25 +69,25 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      */
 
     /** string type identifier for all IdealMagSectorDipole objects */
-    public static final String s_strType = "IdealMagSectorDipole";
+    public static final String TYPE = "IdealMagSectorDipole";
 
 
     /** Parameters for XAL MODEL LATTICE dtd */
     
     /** Tag for parameters in the XML configuration file */
-    public static final String s_strPathLength = "PathLength";  // all thick elements have length - CKA
+    public static final String PATH_LENGTH = "PathLength";  // all thick elements have length - CKA
     
     /** Tag for parameters in the XML configuration file */
-    public static final String s_strField = "MagField";
+    public static final String FIELD = "MagField";
     
     /** Tag for parameters in the XML configuration file */
-    public static final String s_strEntranceAngle = "EntranceAngle";
+    public static final String ENTRANCE_ANGLE = "EntranceAngle";
     
     /** Tag for parameters in the XML configuration file */
-    public static final String s_strExitAngle = "ExitAngle";
+    public static final String EXIT_ANGLE = "ExitAngle";
 
     /** Tag for parameters in the XML configuration file */
-    public static final String s_strQuadComponent = "QuadComponent";
+    public static final String QUAD_COMPONENT = "QuadComponent";
 
 
 
@@ -135,8 +135,8 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * Thus, all element properties are set following construction.
      */
     public IdealMagSectorDipole2() {
-	super(s_strType);
-    };
+	super(TYPE);
+    }
     
     /** 
      * Default constructor - creates a new uninitialized instance of 
@@ -145,8 +145,8 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * Thus, all element properties are set following construction.
      */
     public IdealMagSectorDipole2(String strId) {
-        super(s_strType, strId);
-    };
+        super(TYPE, strId);
+    }
     
     /** 
      *  Creates a new instance of IdealMagSectorDipole 
@@ -164,13 +164,13 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
                                 int enmOrient, double dblFld, 
                                 double dblGap, double dblFldInd) 
     {
-    super(s_strType, strId, dblLen);
+    super(TYPE, strId, dblLen);
 
         this.setGapHeight(dblGap);
         this.setMagField(dblFld);
         this.setFieldIndex(dblFldInd);
         this.setOrientation(enmOrient);
-    };
+    }
 
 
 
@@ -540,7 +540,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
     @Override
     public double energyGain(IProbe probe, double dblLen) {
         return 0.0;
-    };
+    }
 
 
 
@@ -938,7 +938,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      *  
      *  @author Christopher K. Allen
      *  
-     *  @see    IdealMagSectorDipole2#compCurrentAngle(doube)
+     *  @see    IdealMagSectorDipole2#compCurrentAngle(double)
      */
     @SuppressWarnings("unused")
     private double approxCurrentAngle(double s) {
@@ -968,6 +968,6 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
 
 	os.println("  magnetic field     : " + this.getMagField());
 	os.println("  magnet orientation : " + this.getOrientation());
-    };
+    }
 
-};
+}

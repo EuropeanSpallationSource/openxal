@@ -129,7 +129,7 @@ public class AuthenticationPane extends JOptionPane {
             return null;
         }
         if (o instanceof Integer) {
-            return ((Integer) o).intValue() == JOptionPane.OK_OPTION ? ((LoginPanel) pane.getMessage()).getCredentials()
+            return ((Integer) o) == JOptionPane.OK_OPTION ? ((LoginPanel) pane.getMessage()).getCredentials()
                     : null;
         }
         return null;

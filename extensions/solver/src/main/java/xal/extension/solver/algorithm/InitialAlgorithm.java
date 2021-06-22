@@ -12,7 +12,6 @@ package xal.extension.solver.algorithm;
 
 import xal.extension.solver.*;
 
-import java.util.*;
 
 /**
  * InitialAlgorithm
@@ -33,6 +32,7 @@ public class InitialAlgorithm extends SearchAlgorithm {
 	  * Return the label for a search algorithm.
 	  * @return a label for the algorithm
 	  */
+         @Override
 	 public String getLabel() {
 		 return "Initial Algorithm";
 	 }
@@ -42,6 +42,7 @@ public class InitialAlgorithm extends SearchAlgorithm {
 	 * Calculate the next few trial points.
 	 * @param schedule the schedule of runs
 	 */
+         @Override
 	public void performRun( final AlgorithmSchedule schedule ) {
 		evaluateTrialPoint( nextTrialPoint() );
 	}
@@ -52,7 +53,7 @@ public class InitialAlgorithm extends SearchAlgorithm {
 	  * @return a new trial point
 	  */
 	 public TrialPoint nextTrialPoint() {
-		 return _problem.generateInitialTrialPoint();
+		 return problem.generateInitialTrialPoint();
 	 }
 	
 	
@@ -60,6 +61,7 @@ public class InitialAlgorithm extends SearchAlgorithm {
 	 * Get the minimum number of evaluations per run.  Subclasses may want to override this method.
 	 * @return the minimum number of evaluation per run.
 	 */
+         @Override
 	public int getMinEvaluationsPerRun() {
 		return 0;
 	}
@@ -69,6 +71,7 @@ public class InitialAlgorithm extends SearchAlgorithm {
 	 * Get the maximum number of evaluations per run.  Subclasses may want to override this method.
 	 * @return the maximum number of evaluation per run.
 	 */
+         @Override
 	public int getMaxEvaluationsPerRun() {
 		return 1;
 	}
@@ -78,6 +81,7 @@ public class InitialAlgorithm extends SearchAlgorithm {
 	  * Returns the global rating which in an integer
 	  * between 0 and 10.
 	  */
+         @Override
 	 int globalRating() {
 		 return 0;
 	 }
@@ -87,6 +91,7 @@ public class InitialAlgorithm extends SearchAlgorithm {
 	  * Returns the local rating which is an integer 
 	  * between 0 and 10. 
 	  */
+         @Override
 	 int localRating() {
 		 return 0;
 	 }

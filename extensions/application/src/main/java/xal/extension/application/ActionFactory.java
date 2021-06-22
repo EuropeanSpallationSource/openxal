@@ -16,7 +16,6 @@ import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.net.URL;
-import java.util.*;
 import java.beans.*;
 
 /**
@@ -49,6 +48,7 @@ public class ActionFactory {
         final Action action = new AbstractAction() {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 Application.getApp().newDocument();
             }
@@ -70,6 +70,7 @@ public class ActionFactory {
         final Action action = new AbstractAction() {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 Application.getApp().newDocumentFromTemplate();
             }
@@ -91,6 +92,7 @@ public class ActionFactory {
         final Action action = new AbstractAction() {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
 				final JMenuItem menuItem = (JMenuItem)event.getSource();
                 Application.getApp().newDocument( menuItem.getText() );
@@ -114,6 +116,7 @@ public class ActionFactory {
         final Action action = new AbstractAction( "open-document" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 Application.getApp().openDocument();
             }
@@ -137,10 +140,11 @@ public class ActionFactory {
      * @return An action that opens a file corresponding to the given URL specification
      * @see #openRecentHandler
      */
-    static protected Action openURLAction( final String urlSpec ) {
+    protected static Action openURLAction( final String urlSpec ) {
         final Action action = new AbstractAction( "open-file" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 Application.getApp().openURL( urlSpec );
             }
@@ -160,8 +164,10 @@ public class ActionFactory {
      * @see #openURLAction
      */
     static MenuListener openRecentHandler() {
-        MenuListener handler = new MenuListener() {
+        MenuListener handler;
+        handler = new MenuListener() {
             /** MenuListener interface */
+            @Override
             public void menuSelected( final MenuEvent event ) {
                 final JMenu menu = (JMenu)event.getSource();
                 menu.removeAll();
@@ -184,6 +190,7 @@ public class ActionFactory {
                 clearItem.setAction( new AbstractAction() {
                     private static final long serialVersionUID = 1L;
                     
+                    @Override
                     public void actionPerformed( final ActionEvent event ) {
                         Application.getApp().clearRecentItems();
                     }
@@ -191,13 +198,15 @@ public class ActionFactory {
                 clearItem.setText( "Clear" );
                 menu.add( clearItem );
             }
-
-
+            
+            
             /** MenuListener interface */
+            @Override
             public void menuCanceled( final MenuEvent event ) {}
-
+            
 
             /** MenuListener interface */
+            @Override
             public void menuDeselected( final MenuEvent event ) {}
         };
         
@@ -214,6 +223,7 @@ public class ActionFactory {
         final Action action = new AbstractAction( "open-version" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 Application.getApp().openDocumentVersion( document );
             }
@@ -222,12 +232,16 @@ public class ActionFactory {
         
         // listen if the document has changes to be saved
         document.addXalDocumentListener( new XalDocumentListener() {
+            @Override
             public void titleChanged( final XalDocument document, final String newTitle ) {
                 action.setEnabled( document.getSource() != null && Application.getApp().getDefaultDocumentFolder() != null );
             }
             
+            @Override
             public void hasChangesChanged( final XalDocument document, final boolean newHasChangesStatus ) {}
+            @Override
             public void documentWillClose( final XalDocument document ) {}
+            @Override
             public void documentHasClosed( final XalDocument document ) {}
         });
         
@@ -248,6 +262,7 @@ public class ActionFactory {
         final Action action = new AbstractAction( "close-document" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 Application.getApp().closeDocument( document );
             }
@@ -269,6 +284,7 @@ public class ActionFactory {
         final Action action = new AbstractAction( "close-all-documents" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 Application.getApp().closeAllDocuments();
             }
@@ -293,6 +309,7 @@ public class ActionFactory {
         final Action action = new AbstractAction( "save-document" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 Application.getApp().saveDocument( document );
             }
@@ -300,13 +317,17 @@ public class ActionFactory {
         
         // listen if the document has changes to be saved
         document.addXalDocumentListener( new XalDocumentListener() {
+            @Override
             public void titleChanged( final XalDocument document, final String newTitle ) {}
             
+            @Override
             public void hasChangesChanged( final XalDocument document, final boolean newHasChangesStatus ) {
                 action.setEnabled( document.hasChanges() );
             }
             
+            @Override
             public void documentWillClose( final XalDocument document ) {}
+            @Override
             public void documentHasClosed( final XalDocument document ) {}
         });
         
@@ -318,7 +339,7 @@ public class ActionFactory {
     
     
     /**
-	 * Make an action that presents the user with an save file dialog for a new document or
+     * Make an action that presents the user with an save file dialog for a new document or
      * just save the present document to its existing file source if it is not new.  
      * In the case were the document is new: if the user 
      * selects "Save" after navigating to a folder and naming a new file, the present 
@@ -332,6 +353,7 @@ public class ActionFactory {
         final Action action = new AbstractAction( "save-document" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 Application.getApp().saveDocument( document );
             }
@@ -339,15 +361,21 @@ public class ActionFactory {
         
         // listen if the document has changes to be saved
         document.addXalInternalDocumentListener( new XalInternalDocumentListener() {
+            @Override
             public void titleChanged( final XalInternalDocument document, final String newTitle ) {}
             
+            @Override
             public void hasChangesChanged( final XalInternalDocument document, final boolean newHasChangesStatus ) {
                 action.setEnabled( document.hasChanges() );
             }
             
+            @Override
             public void documentWillClose( final XalInternalDocument document ) {}
+            @Override
             public void documentHasClosed( final XalInternalDocument document ) {}
+            @Override
 			public void documentActivated( XalInternalDocument document ) {}
+            @Override
 			public void documentDeactivated( XalInternalDocument document ) {}
 		});
         
@@ -371,6 +399,7 @@ public class ActionFactory {
         final Action action = new AbstractAction( "save-as-document" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 Application.getApp().saveAsDocument( document );
             }
@@ -391,6 +420,7 @@ public class ActionFactory {
         final Action action = new AbstractAction( "save-all-documents" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 Application.getApp().saveAllDocuments();
             }
@@ -412,6 +442,7 @@ public class ActionFactory {
         final Action action = new AbstractAction( "revert-to-saved" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 Application.getApp().revertToSaved( document );
             }
@@ -421,14 +452,18 @@ public class ActionFactory {
         
         // listen if the document has changes to be saved
         document.addXalDocumentListener( new XalDocumentListener() {
+            @Override
             public void titleChanged( final XalDocument document, final String newTitle ) {
 				action.setEnabled( shouldEnableRevert() );
 			}
             
+            @Override
             public void hasChangesChanged( final XalDocument document, final boolean newHasChangesStatus ) {
 				action.setEnabled( shouldEnableRevert() );
 			}
+            @Override
             public void documentWillClose( final XalDocument document ) {}
+            @Override
             public void documentHasClosed( final XalDocument document ) {}
 			public boolean shouldEnableRevert() {
 				return ( document.getSource() != null ) && ( document.hasChanges() );
@@ -449,6 +484,7 @@ public class ActionFactory {
         final Action action = new AbstractAction( "revert-to-saved" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 Application.getApp().revertToSaved( document );
             }
@@ -458,21 +494,27 @@ public class ActionFactory {
         
         // listen if the document has changes to be saved
         document.addXalInternalDocumentListener( new XalInternalDocumentListener() {
+            @Override
             public void titleChanged( final XalInternalDocument document, final String newTitle ) {
 				action.setEnabled( shouldEnableRevert() );
 			}
             
+            @Override
             public void hasChangesChanged( final XalInternalDocument document, final boolean newHasChangesStatus ) {
 				action.setEnabled( shouldEnableRevert() );
 			}
+            @Override
             public void documentWillClose( final XalInternalDocument document ) {}
+            @Override
             public void documentHasClosed( final XalInternalDocument document ) {}
 			
 			public boolean shouldEnableRevert() {
 				return ( document.getSource() != null ) && ( document.hasChanges() );
 			}
 			
+            @Override
 			public void documentActivated( XalInternalDocument document ) {}
+            @Override
 			public void documentDeactivated( XalInternalDocument document ) {}
         });
         
@@ -488,6 +530,7 @@ public class ActionFactory {
         final Action action = new AbstractAction( "print-document" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 PrintManager.defaultManager().print( document );
             }
@@ -507,6 +550,7 @@ public class ActionFactory {
         return new AbstractAction( "page-setup" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 PrintManager.defaultManager().pageSetup();
             }
@@ -522,6 +566,7 @@ public class ActionFactory {
         final Action action = new AbstractAction( "quit-application" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 Application.getApp().quit();
             }
@@ -547,6 +592,7 @@ public class ActionFactory {
         final Action action = new AbstractAction( "copy-to-clipboard" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
 				final TransferHandler transferHandler = focusTracker.getLastTransferHandler();
 				if ( transferHandler != null ) {
@@ -566,6 +612,7 @@ public class ActionFactory {
 		action.setEnabled( canPerformCopyOnComponent( focusTracker.getLastFocusedComponent() ) );
  		
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener( "permanentFocusOwner", new PropertyChangeListener() {
+                        @Override
 			public void propertyChange( final PropertyChangeEvent event ) {
 				action.setEnabled( canPerformCopyOnComponent( focusTracker.getLastFocusedComponent() ) );
 			}
@@ -603,6 +650,7 @@ public class ActionFactory {
         final Action action = new AbstractAction( "cut-to-clipboard" ) {
            private static final long serialVersionUID = 1L;
            
+           @Override
             public void actionPerformed( final ActionEvent event ) {
 				final TransferHandler transferHandler = focusTracker.getLastTransferHandler();
 				if ( transferHandler != null ) {
@@ -622,6 +670,7 @@ public class ActionFactory {
 		action.setEnabled( canPerformCutOnComponent( focusTracker.getLastFocusedComponent() ) );
 		
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener( "permanentFocusOwner", new PropertyChangeListener() {
+                        @Override
 			public void propertyChange( final PropertyChangeEvent event ) {
 				action.setEnabled( canPerformCutOnComponent( focusTracker.getLastFocusedComponent() ) );
 			}
@@ -659,6 +708,7 @@ public class ActionFactory {
        final Action action = new AbstractAction( "paste-from-clipboard" ) {
            private static final long serialVersionUID = 1L;
            
+           @Override
            public void actionPerformed( final ActionEvent event ) {
                final TransferHandler transferHandler = focusTracker.getLastTransferHandler();
                if ( transferHandler != null ) {
@@ -671,6 +721,7 @@ public class ActionFactory {
 		action.setEnabled( canPerformPasteOnComponent( focusTracker.getLastFocusedComponent() ) );
 		
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener( "permanentFocusOwner", new PropertyChangeListener() {
+                        @Override
 			public void propertyChange( final PropertyChangeEvent event ) {
 				action.setEnabled( canPerformPasteOnComponent( focusTracker.getLastFocusedComponent() ) );
 			}
@@ -706,6 +757,7 @@ public class ActionFactory {
         final Action action = new AbstractAction( "edit-preferences" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 ((ApplicationAdaptor)Application.getAdaptor()).editPreferences( document );
             }
@@ -731,6 +783,7 @@ public class ActionFactory {
         final Action action = new AbstractAction( "edit-preferences" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 ((DesktopApplicationAdaptor)Application.getAdaptor()).editPreferences( document );
             }
@@ -759,6 +812,7 @@ public class ActionFactory {
         return new AbstractAction( "show-console" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 Console.showNear( Application.getActiveWindow() );
             }
@@ -774,6 +828,7 @@ public class ActionFactory {
         return new AbstractAction( "show-logger" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 LoggerWindow.getDefault().showFirstTimeNear( Application.getActiveWindow() );
             }
@@ -791,6 +846,7 @@ public class ActionFactory {
     static MenuListener documentsHandler() {
         MenuListener handler = new MenuListener() {
             /** MenuListener interface */
+            @Override
             public void menuSelected( final MenuEvent event ) {
                 JMenu menu = (JMenu)event.getSource();
                 menu.removeAll();
@@ -805,10 +861,12 @@ public class ActionFactory {
             
             
             /** MenuListener interface */
+            @Override
             public void menuCanceled( final MenuEvent event ) {}
             
             
             /** MenuListener interface */
+            @Override
             public void menuDeselected( final MenuEvent event ) {}
         };
         
@@ -823,10 +881,11 @@ public class ActionFactory {
      * @return An action that displays the window of the specified document 
      * @see #documentsHandler
      */
-    static protected Action showDocumentAction( final XalAbstractDocument document ) {
+    protected static Action showDocumentAction( final XalAbstractDocument document ) {
         return new AbstractAction( "show-document" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 document.showDocument();
             }
@@ -840,10 +899,11 @@ public class ActionFactory {
      * @param document The document about whose window all other windows will cascade
      * @return An action that cascades all windows in the application 
      */
-    static protected Action cascadeWindowsAction( final XalAbstractDocument document ) {
+    protected static Action cascadeWindowsAction( final XalAbstractDocument document ) {
         return new AbstractAction( "cascade-windows" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 Application.getApp().cascadeWindowsAbout( document );
             }
@@ -859,6 +919,7 @@ public class ActionFactory {
         return new AbstractAction( "show-all-windows" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 Application.getApp().showAllWindows();
             }
@@ -874,6 +935,7 @@ public class ActionFactory {
         final Action action = new AbstractAction( "hide-all-windows" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 Application.getApp().hideAllWindows();
             }
@@ -891,10 +953,11 @@ public class ActionFactory {
      * @param document The document whose main window should be captured
      * @return An action that captures the main window as a PNG image
      */
-    static public Action captureWindowAsImageAction( final XalAbstractDocument document ) {
+    public static Action captureWindowAsImageAction( final XalAbstractDocument document ) {
         return new AbstractAction( "capture-as-image" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 document.getDocumentView().captureAsImage();
             }
@@ -913,6 +976,7 @@ public class ActionFactory {
         final Action action = new AbstractAction( "show-about-box" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 Application.showAboutBox();
             }
@@ -932,6 +996,7 @@ public class ActionFactory {
         final Action action = new AbstractAction( "show-help-contents" ) {
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 HelpWindow.showNear( Application.getActiveWindow() );
             }
@@ -950,10 +1015,10 @@ public class ActionFactory {
 /** track the last non-button, non-null component which was focused for purposes of edit operations */
 class ComponentFocusTracker {
 	/** last swing component to be focused which is not a button */
-	protected JComponent _lastFocusedComponent;
+	protected JComponent lastFocusedComponent;
 	
 	/** last window to be in focus */
-	protected Window _focusedWindow;
+	protected Window focusedWindow;
 	
 	
 	/** refresh the last focused component based on rules to avoid defocusing a component when a button is pressed */
@@ -962,38 +1027,37 @@ class ComponentFocusTracker {
 		final Window focusedWindow = keyboardManager.getFocusedWindow();
 		final Component component = keyboardManager.getPermanentFocusOwner();
 		
-		if ( focusedWindow != _focusedWindow ) {	// if the window changes, accept the new focused swing component
+		if ( focusedWindow != this.focusedWindow ) {	// if the window changes, accept the new focused swing component
 			if ( component != null ) {
-				_lastFocusedComponent = component instanceof JComponent ? (JComponent)component : null;	// only accept swing components
+				lastFocusedComponent = component instanceof JComponent ? (JComponent)component : null;	// only accept swing components
 			}
 			else {
-				_lastFocusedComponent = null;
+				lastFocusedComponent = null;
 			}
 		}
 		else if ( component == null || component instanceof AbstractButton ) {	// don't consider buttons as having meaningful focus for editing
 		}
 		else if ( component instanceof JComponent )  {	// only accept swing components
-			_lastFocusedComponent = (JComponent)component;
+			lastFocusedComponent = (JComponent)component;
 		}
 		else {
-			_lastFocusedComponent = null;
+			lastFocusedComponent = null;
 		}
 				  
-		_focusedWindow = focusedWindow;
+		this.focusedWindow = focusedWindow;
 	}
 	
 	
 	/** get the last focused component */
 	public JComponent getLastFocusedComponent() {
 		refresh();
-		return _lastFocusedComponent;
+		return lastFocusedComponent;
 	}
 	
 	
 	/** get the last transfer handler */
 	public TransferHandler getLastTransferHandler() {
 		refresh();
-		return _lastFocusedComponent != null ? _lastFocusedComponent.getTransferHandler() : null;
+		return lastFocusedComponent != null ? lastFocusedComponent.getTransferHandler() : null;
 	}
 }
-

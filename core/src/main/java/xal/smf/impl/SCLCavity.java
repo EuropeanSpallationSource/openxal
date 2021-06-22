@@ -17,7 +17,7 @@ import xal.ca.ChannelFactory;
  */
 public class SCLCavity extends RfCavity {
 	/** identifies this class */
-	public static final String s_strType = "SCLCavity";
+	public static final String TYPE = "SCLCavity";
 
 	// register this class for qualification of nodes by type
 	static {
@@ -28,7 +28,7 @@ public class SCLCavity extends RfCavity {
 	 * Register SCLCavity's type for qualification
 	 */
 	private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( SCLCavity.class, s_strType );
+		ElementTypeManager.defaultManager().registerTypes( SCLCavity.class, TYPE );
 	}
 
 
@@ -61,8 +61,9 @@ public class SCLCavity extends RfCavity {
 	 * 
 	 * @return the type ID of this node.
 	 */
+        @Override
 	public String getType() {
-		return s_strType;
+		return TYPE;
 	}
 
 	/**
@@ -70,7 +71,7 @@ public class SCLCavity extends RfCavity {
 	 * @return constant TTF used in the accelerator LLRF
 	 */
 	public double getStructureTTF() {
-		return m_bucRfCavity.getStructureTTF();
+		return bucRfCavity.getStructureTTF();
 	}
 
 	/**
@@ -78,7 +79,7 @@ public class SCLCavity extends RfCavity {
 	 * @return Q external
 	 */
 	public double getQLoaded() {
-		return m_bucRfCavity.getQLoaded();
+		return bucRfCavity.getQLoaded();
 	}
 
 	/**
@@ -178,6 +179,7 @@ public class SCLCavity extends RfCavity {
 	 * @param rawValue the raw channel value
 	 * @return the cavity amplitude in MV/m
 	 */
+        @Override
 	public double toCavAmpAvgFromCA( final double rawValue ) {
         return rawValue / getStructureTTF(); 
 	}
@@ -188,6 +190,7 @@ public class SCLCavity extends RfCavity {
 	 * @param value the cavity amplitude
 	 * @return the channel access value
 	 */
+        @Override
 	public double toCAFromCavAmpAvg( final double value ) {
         return value * getStructureTTF(); 
 	}
@@ -201,7 +204,7 @@ public class SCLCavity extends RfCavity {
     @Deprecated()
 	public double getAvgTTF(double beta) {
 		double ttf = 0.;
-		int cavNum = (Integer.valueOf(getId().substring(10,12))).intValue();
+		int cavNum = (Integer.parseInt(getId().substring(10,12)));
 		if(cavNum < 12) {
 			ttf = -22.05 * Math.pow(beta, 2.) + 28.539*beta - 8.5272;
 		}

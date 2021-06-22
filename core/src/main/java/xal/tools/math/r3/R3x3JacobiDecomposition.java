@@ -27,7 +27,7 @@ import xal.tools.math.r3.R3x3.POS;
  * <br>
  *  where <b>A</b> is the target matrix, <b>R</b> is an orthogonal 
  *  matrix in <i>SO</i>(3), and <b>D</b> is the diagonal matrix of real 
- *  eigenvales of <b>A</b>.
+ *  eigenvalues of <b>A</b>.
  *  </p>
  *  The JAMA matrix package is <em>not</em> explicitly used in this class.
  *  <p>
@@ -51,13 +51,13 @@ public class R3x3JacobiDecomposition {
      */
 
     /** the value of one degree in radians */
-    public final static double     ONE_DEGREE = Math.PI/180.0;
+    public static final double     ONE_DEGREE = Math.PI/180.0;
     
     /** Stopping error criterion */
-    public final static double     ROTATION_TOLERANCE = 0.00001 * Math.PI/180.0;
+    public static final double     ROTATION_TOLERANCE = 0.00001 * Math.PI/180.0;
     
     /** small numerical tolerance */
-    public final static double     ERROR_TOLERANCE = 1.0e5*Double.MIN_VALUE;
+    public static final double     ERROR_TOLERANCE = 1.0e5*Double.MIN_VALUE;
     
     
     /*
@@ -245,7 +245,6 @@ public class R3x3JacobiDecomposition {
         // Save the answer
         this.matDiag = D;
     }
-    
     
 
 }

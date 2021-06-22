@@ -16,14 +16,14 @@ import java.util.*;
  * @author  tap
  */
 public class Correlation<RecordType> {
-    final private Map<String,RecordType> RECORD_TABLE;
-    final private UnivariateStatistics TIME_STATISTICS;
+    private final Map<String,RecordType> recordTable;
+    private final UnivariateStatistics timeStatistics;
     
 	
     /** Creates new Correlation */
     public Correlation( final Map<String,RecordType> newRecordTable, final UnivariateStatistics newTimeStatistics ) {
-        RECORD_TABLE = Collections.unmodifiableMap( new HashMap<String,RecordType>( newRecordTable ) );
-        TIME_STATISTICS = new UnivariateStatistics( newTimeStatistics );
+        recordTable = Collections.unmodifiableMap( new HashMap<>( newRecordTable ) );
+        timeStatistics = new UnivariateStatistics( newTimeStatistics );
     }
     
     
@@ -42,7 +42,7 @@ public class Correlation<RecordType> {
 	 * @return the number of records correlated.
 	 */
     public int numRecords() {
-        return RECORD_TABLE.size();
+        return recordTable.size();
     }
     
     
@@ -51,7 +51,7 @@ public class Correlation<RecordType> {
 	 * @return The collection of names for correlated records.
 	 */
     public Collection<String> names() {
-        return RECORD_TABLE.keySet();
+        return recordTable.keySet();
     }
     
     
@@ -60,8 +60,8 @@ public class Correlation<RecordType> {
      * @return Collection of records in the correlation.
      * @see #getRecord
      */
-    final public Collection<RecordType> getRecords() {
-        return RECORD_TABLE.values();
+    public final Collection<RecordType> getRecords() {
+        return recordTable.values();
     }
     
     
@@ -73,8 +73,8 @@ public class Correlation<RecordType> {
 	 * @param name The name that identifies the desired record.
 	 * @return The record corresponding to the specified name.
      */
-    final public RecordType getRecord( final String name ) {
-        return RECORD_TABLE.get( name );
+    public final RecordType getRecord( final String name ) {
+        return recordTable.get( name );
     }
 	
 	
@@ -93,7 +93,7 @@ public class Correlation<RecordType> {
 	 * @return The mean time in seconds.
 	 */
     public double meanTimeInSeconds() {
-        return TIME_STATISTICS.mean();
+        return timeStatistics.mean();
     }
     
     
@@ -113,11 +113,12 @@ public class Correlation<RecordType> {
 	 * String representation of the correlation useful for printing
 	 * @return The string representation of this correlation.
 	 */
+    @Override
     public String toString() {
-        final StringBuffer buffer = new StringBuffer();
-        final Collection<Map.Entry<String,RecordType>> recordEntries = RECORD_TABLE.entrySet();
+        final StringBuilder buffer = new StringBuilder();
+        final Collection<Map.Entry<String,RecordType>> recordEntries = recordTable.entrySet();
         for ( final Map.Entry<String,RecordType> entry : recordEntries ) {
-            buffer.append("name: " + entry.getKey() + ", ");
+            buffer.append("name: ").append(entry.getKey()).append(", ");
             buffer.append(entry.getValue());
             buffer.append("\n");
         }

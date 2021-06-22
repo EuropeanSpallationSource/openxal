@@ -17,13 +17,13 @@ import java.util.regex.Matcher;
 /** Provides a reference to a channel within a node */
 public class NodeChannelRef {
 	/** pattern for parsing a node channel reference from a string */
-	final static Pattern PARSE_PATTERN;
+	static final Pattern PARSE_PATTERN;
 	
 	/** the node whose channel is being referenced */
-	final protected AcceleratorNode _node;
+	protected final AcceleratorNode node;
 	
 	/** the handle referencing the node's channel */
-	final protected String _handle;
+	protected final String handle;
 	
 	
 	// static initializer
@@ -34,8 +34,8 @@ public class NodeChannelRef {
 	
 	/** Constructor */
 	public NodeChannelRef( final AcceleratorNode node, final String handle ) {
-		_node = node;
-		_handle = handle;
+		this.node = node;
+		this.handle = handle;
 	}
 	
 	
@@ -45,7 +45,7 @@ public class NodeChannelRef {
 	 * @param refString the string to parse for the node and handle
 	 * @return a node channel ref or null if no match can be found
 	 */
-	static public NodeChannelRef getInstance( final Accelerator accelerator, final String refString ) {
+	public static NodeChannelRef getInstance( final Accelerator accelerator, final String refString ) {
 		final Matcher matcher = PARSE_PATTERN.matcher( refString );
 		if ( matcher.matches() ) {
 			final String nodeID = refString.substring( 0, matcher.end(1) );
@@ -65,7 +65,7 @@ public class NodeChannelRef {
 	 * @return the node
 	 */
 	public AcceleratorNode getNode() {
-		return _node;
+		return node;
 	}
 	
 	
@@ -74,7 +74,7 @@ public class NodeChannelRef {
 	 * @return the handle
 	 */
 	public String getHandle() {
-		return _handle;
+		return handle;
 	}
 	
 	
@@ -83,7 +83,7 @@ public class NodeChannelRef {
 	 * @return the node's channel corresponding to the handle
 	 */
 	public Channel getChannel() {
-		return _node.getChannel( _handle );
+		return node.getChannel(handle );
 	}
 	
 	
@@ -91,7 +91,8 @@ public class NodeChannelRef {
 	 * Get a string representation of the node/channel reference
 	 * @return a string representation of the node/channel reference
 	 */
+        @Override
 	public String toString() {
-		return _node.getId() + "[" + _handle + "]";  
+		return node.getId() + "[" + handle + "]";  
 	}
 }

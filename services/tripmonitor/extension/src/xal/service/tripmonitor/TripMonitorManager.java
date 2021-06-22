@@ -19,11 +19,11 @@ import xal.tools.xml.XmlDataAdaptor;
 /** manage trip monitors */
 public class TripMonitorManager {
 	/** trip monitor filters */
-	final protected List<TripMonitor> TRIP_MONITORS;
+	protected final List<TripMonitor> TRIP_MONITORS;
     
     
 	/** indicates whether verbose printing is enabled */
-	final static protected boolean IS_VERBOSE;
+	protected static final boolean IS_VERBOSE;
 	
 	/** trip logger */
 	protected TripLogger TRIP_LOGGER;
@@ -50,13 +50,13 @@ public class TripMonitorManager {
 	}
 
     /** determine if verbose mode is set */
-	static public boolean isVerbose() {
+	public static boolean isVerbose() {
 		return IS_VERBOSE;
 	}
 	
 	
 	/** print line to standard out if verbose mode is set */
-	static public boolean printlnIfVerbose( final Object object ) {
+	public static boolean printlnIfVerbose( final Object object ) {
 		if ( IS_VERBOSE ) {
 			System.out.println( object );
 		}

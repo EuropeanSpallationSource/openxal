@@ -25,7 +25,7 @@ import xal.tools.dsp.LtiDigitalFilter;
  * </p>
  * <p>
  * The objective of this class is to interpolate any missing data (represented by a 
- * value <code>Double.NaN</cod>), remove the noise baseline, decouple the cross-talk
+ * value <code>Double.NaN</code>), remove the noise baseline, decouple the cross-talk
  * between the signals, then gate the noise in the signal.  Thus, it is expected that 
  * the data is processed by the following
  * sequence of method calls:
@@ -90,16 +90,16 @@ public class ProfileDataProcessor {
      */
     
     /** Amplitude of signal indicator used when determining noise floor */
-    public final static double    DBL_SIG_INDICATOR_THRESHOLD = 0.03;
+    public static final double    DBL_SIG_INDICATOR_THRESHOLD = 0.03;
     
     /** Maximum number of samples to use when computing coupling coefficients */
-    public final static int       INT_CPL_MAX_SAMPLE_COUNT = 3;
+    public static final int       INT_CPL_MAX_SAMPLE_COUNT = 3;
     
     /** Minimum fractional signal amplitude necessary to include sample for coupling coefficient calc. */
-    public final static double    DBL_CPL_MIN_FRAC_SIGNAL_AMPL = 0.5;
+    public static final double    DBL_CPL_MIN_FRAC_SIGNAL_AMPL = 0.5;
     
     /** Maximum fractional signal amplitude for threshold filtering */
-    public final static double	  DBL_THR_MAX_FRAC_SIGNAL_AMPL = 0.03; 
+    public static final double	  DBL_THR_MAX_FRAC_SIGNAL_AMPL = 0.03; 
     
     
     
@@ -108,17 +108,17 @@ public class ProfileDataProcessor {
     //
     
     /** Order of the filter */
-    public final static int         INT_DSP_LOWPASS_ORDER = 2;
+    public static final int         INT_DSP_LOWPASS_ORDER = 2;
     
     /** Coefficients of the filter input */
-    public final static double[]    ARR_DBL_LOWPASS_INP_COEFFS = {
+    public static final double[]    ARR_DBL_LOWPASS_INP_COEFFS = {
                                      1.0,
                                     -2.0,
                                      1.0
                                     };
     
     /** Coefficients of the filter output */
-    public final static double[]    ARR_DBL_LOWPASS_OUT_COEFFS = {
+    public static final double[]    ARR_DBL_LOWPASS_OUT_COEFFS = {
                                      1.0,
                                     -1.9988,
                                      0.9988
@@ -130,17 +130,17 @@ public class ProfileDataProcessor {
     //
     
     /** Order of the filter */
-    public final static int         INT_DSP_HIGHPASS_ORDER = 2;
+    public static final int         INT_DSP_HIGHPASS_ORDER = 2;
     
     /** Coefficients of the filter input */
-    public final static double[]    ARR_DBL_HIGHPASS_INP_COEFFS = {
+    public static final double[]    ARR_DBL_HIGHPASS_INP_COEFFS = {
                                      0.5690356,
                                      1.380712,
                                      0.5690356
                                     };
     
     /** Coefficients of the filter output */
-    public final static double[]    ARR_DBL_HIGHPASS_OUT_COEFFS = {
+    public static final double[]    ARR_DBL_HIGHPASS_OUT_COEFFS = {
                                      1.0,
                                      0.94280905,
                                      0.33333333,
@@ -383,7 +383,7 @@ public class ProfileDataProcessor {
     public void removeBaselineNoise(double dblSigThreshold) {
 
         // Compute the indicator functions
-        ArrayList<double[]> lstSigInd = new ArrayList<double[]>();
+        ArrayList<double[]> lstSigInd = new ArrayList<>();
         
         for (ProfileData.Angle view : ProfileData.Angle.values())
             lstSigInd.add(this.indicatorFunction(view));
@@ -528,7 +528,7 @@ public class ProfileDataProcessor {
     public String toString() {
 
         // Create a string buffer 
-        String          strBuf   = "";
+        String strBuf;
 
         
         // Create the column header and argument array
@@ -566,12 +566,12 @@ public class ProfileDataProcessor {
      * @return  the initialized low-pass filter object. 
      */
     private LtiDigitalFilter    initLowPassFilter() {
-        LtiDigitalFilter    fltLow = new LtiDigitalFilter( this.getDataSize() );
+        LtiDigitalFilter    newFltLow = new LtiDigitalFilter( this.getDataSize() );
         
-        fltLow.setInputCoefficients(ProfileDataProcessor.ARR_DBL_LOWPASS_INP_COEFFS);
-        fltLow.setOutputCoefficients(ProfileDataProcessor.ARR_DBL_LOWPASS_OUT_COEFFS);
+        newFltLow.setInputCoefficients(ProfileDataProcessor.ARR_DBL_LOWPASS_INP_COEFFS);
+        newFltLow.setOutputCoefficients(ProfileDataProcessor.ARR_DBL_LOWPASS_OUT_COEFFS);
         
-        return fltLow;
+        return newFltLow;
     }
     
     /**
@@ -580,12 +580,12 @@ public class ProfileDataProcessor {
      * @return  the initialized high-pass filter object. 
      */
     private LtiDigitalFilter    initHighPassFilter() {
-        LtiDigitalFilter    fltHigh = new LtiDigitalFilter( this.getDataSize() );
+        LtiDigitalFilter    newFltHigh = new LtiDigitalFilter( this.getDataSize() );
         
-        fltHigh.setInputCoefficients(ProfileDataProcessor.ARR_DBL_HIGHPASS_INP_COEFFS);
-        fltHigh.setOutputCoefficients(ProfileDataProcessor.ARR_DBL_HIGHPASS_OUT_COEFFS);
+        newFltHigh.setInputCoefficients(ProfileDataProcessor.ARR_DBL_HIGHPASS_INP_COEFFS);
+        newFltHigh.setOutputCoefficients(ProfileDataProcessor.ARR_DBL_HIGHPASS_OUT_COEFFS);
         
-        return fltHigh;
+        return newFltHigh;
     }
     
     /**
@@ -662,7 +662,7 @@ public class ProfileDataProcessor {
         
         // Instantiate the cross talk matrix
         int                 szArray = ProfileData.Angle.getCount();
-        DoubleSquareMatrix  matXTlk = new DoubleSquareMatrix(szArray);
+        DoubleSquareMatrix  newMatXTlk = new DoubleSquareMatrix(szArray);
         
         // Search for the maximum signal amplitude - compute coefficients there
         for (ProfileData.Angle view1 : ProfileData.Angle.values()) {
@@ -692,11 +692,11 @@ public class ProfileDataProcessor {
                     }
                 }
                 dblCpl = dblCpl/cntSamples;
-                matXTlk.setElement(view1.getIndex(), view2.getIndex(), dblCpl);
+                newMatXTlk.setElement(view1.getIndex(), view2.getIndex(), dblCpl);
             }
         }
         
-        this.matXTlk = matXTlk;
+        matXTlk = newMatXTlk;
     }
     
     /**
@@ -717,7 +717,7 @@ public class ProfileDataProcessor {
         
         // Instantiate the gain matrix
         int                 szArray = ProfileData.Angle.getCount();
-        DoubleSquareMatrix  matGain = new DoubleSquareMatrix(szArray);
+        DoubleSquareMatrix  newMatGain = new DoubleSquareMatrix(szArray);
 
         // Compute the integral of the signal and remove the contributions from cross-talk
         for (ProfileData.Angle view1 : ProfileData.Angle.values()) {
@@ -726,12 +726,12 @@ public class ProfileDataProcessor {
             double dblInt = DigitalFunctionUtility.integral(arrPrj);
             for (ProfileData.Angle view2 : ProfileData.Angle.values())
                 if (!view2.equals(view1))
-                    dblInt -= this.matXTlk.getElement(view1.getIndex(), view2.getIndex());
+                    dblInt -= matXTlk.getElement(view1.getIndex(), view2.getIndex());
             
-            matGain.setElement(view1.getIndex(), view1.getIndex(), dblInt);
+            newMatGain.setElement(view1.getIndex(), view1.getIndex(), dblInt);
         }
         
-        this.matGain = matGain;
+        matGain = newMatGain;
     }
     
     /**

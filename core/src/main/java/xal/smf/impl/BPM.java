@@ -8,7 +8,7 @@ import xal.smf.impl.qualify.*;
 
 /**
  * The implementation of the BPM class. This class contains the methods
- * members, attributes, and signal sets pertinant to modeling Beam
+ * members, attributes, and signal sets pertinent to modeling Beam
  * Position monitors.
  *
  * @author  J. Galambos (jdg@ornl.gov)
@@ -19,7 +19,7 @@ public class BPM extends AcceleratorNode {
      *  Constants
      */
 
-    public static final String      s_strType   = "BPM";
+    public static final String      TYPE   = "BPM";
 
     /**
      * The container for the bpm information
@@ -82,12 +82,13 @@ public class BPM extends AcceleratorNode {
      * Register type for qualification
      */
     private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( BPM.class, s_strType );
+		ElementTypeManager.defaultManager().registerTypes( BPM.class, TYPE );
     }
 
 
     /** Override to provide type signature */
-    public String getType()   { return s_strType; }
+    @Override
+    public String getType()   { return TYPE; }
 
 
     /** Constructor */
@@ -115,6 +116,7 @@ public class BPM extends AcceleratorNode {
      *
      * Override AcceleratorNode implementation to check for a BPMBucket
      */
+    @Override
     public void addBucket(AttributeBucket buc)  {
 
         if (buc.getClass().equals(BPMBucket.class))

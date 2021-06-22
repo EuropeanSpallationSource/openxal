@@ -16,10 +16,10 @@ import java.util.*;
 /** factory for generating trip filters */
 class TripFilterFactory {
 	/** data adator label */
-	final static public String DATA_LABEL = "TripFilterFactory";
+	public static final String DATA_LABEL = "TripFilterFactory";
 	
 	/** trip filters keyed by name */
-	final protected HashMap<String,TripFilter> TRIP_FILTERS;
+	protected final HashMap<String,TripFilter> TRIP_FILTERS;
 	
 		
 	/** Constructor */
@@ -50,7 +50,7 @@ class TripFilterFactory {
 	
 	
 	/** get a trip filter which filters based on a trip counter */
-	static public TripFilter getTripCounterFilter() {
+	public static TripFilter getTripCounterFilter() {
 		return new TripFilter() {
 			/** a new trip is indicated by the new value being greater than the old value and also greater than zero */
 			public boolean isTripped( final int oldValue, final int newValue ) {
@@ -61,7 +61,7 @@ class TripFilterFactory {
 	
 	
 	/** get a trip filter which filters based on a particular value indicating okay */
-	static public TripFilter getOkayValueFilter( final int okayValue ) {
+	public static TripFilter getOkayValueFilter( final int okayValue ) {
 		return new TripFilter() {
 			/** a new trip is indicated by the new value being greater than the old value and also greater than zero */
 			public boolean isTripped( final int oldValue, final int newValue ) {

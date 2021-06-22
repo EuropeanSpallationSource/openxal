@@ -9,7 +9,7 @@ import xal.ca.Channel;
 import xal.smf.AcceleratorNode;
 
 /**
- * Specifies interface for property accessors that return acclerator node property values.
+ * Specifies interface for property accessors that return accelerator node property values.
  * @author Craig McChesney
  * @author Tom Pelaia
  */

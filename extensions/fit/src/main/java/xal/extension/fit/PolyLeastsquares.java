@@ -43,14 +43,14 @@ public class PolyLeastsquares{
 
    private double[] dX, dY;      //points to fit
 
-   private GenericVector mC;		//equation coefficent vector
+   private GenericVector mC;		//equation coefficient vector
    private double dR; 		//correlation coefficient factor
 
     /**
      * constructor
      */
 
-   public PolyLeastsquares(double[] dX, double[] dY, int k) throws Exception {
+   public PolyLeastsquares(double[] dX, double[] dY, int k) throws PolyLeastsquaresException {
 
       this.dY= dY;
       this.dX= dX;
@@ -157,7 +157,7 @@ public class PolyLeastsquares{
      */
 
    public String Equation(){
-      String eq= new String();
+      String eq;
 
       //round the constants to two decimal places
       double dz;

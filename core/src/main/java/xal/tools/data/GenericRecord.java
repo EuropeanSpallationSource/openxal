@@ -7,31 +7,31 @@
 package xal.tools.data;
 
 import java.util.*;
-import java.util.Map.Entry;
 import java.util.logging.*;
 import java.lang.reflect.*;
 
 
 /**
- * GenericRecord is the default record class for DataTable.  This class can be used
- * directly for the records or a subclass of GenericRecord may be used for convenience.
- * GenericRecord stores its data as key/value pairs.
- * Note that GenericRecord is not thread safe.  This is due to the fact that DataTable is not thread safe.
+ * GenericRecord is the default record class for DataTable. This class can be
+ * used directly for the records or a subclass of GenericRecord may be used for
+ * convenience. GenericRecord stores its data as key/value pairs. Note that
+ * GenericRecord is not thread safe. This is due to the fact that DataTable is
+ * not thread safe.
  *
  * @author  tap
  */
 public class GenericRecord implements KeyedRecord, DataListener {
     /** data table to which this record belongs */
-    final protected DataTable DATA_TABLE;
+    protected final DataTable dataTable;
     
     /** table of attributes by attribute ID */
-    final protected Map<String,Object> ATTRIBUTE_TABLE;
+    protected final Map<String,Object> attributeTable;
 
 	
     /** Creates new GenericRecord */
     public GenericRecord( final DataTable aTable ) {
-        DATA_TABLE = aTable;
-        ATTRIBUTE_TABLE = new HashMap<String,Object>();
+        dataTable = aTable;
+        attributeTable = new HashMap<>();
     }
 
 	
@@ -40,8 +40,8 @@ public class GenericRecord implements KeyedRecord, DataListener {
 	 * @return The keys used in this record.
 	 */
     public Set<String> keys() {
-		synchronized ( ATTRIBUTE_TABLE ) {
-			return ATTRIBUTE_TABLE.keySet();			
+		synchronized ( attributeTable ) {
+			return attributeTable.keySet();			
 		}
     }
     
@@ -51,15 +51,15 @@ public class GenericRecord implements KeyedRecord, DataListener {
 	 * @return The collection of values held in this record.
 	 */
     public Collection<Object> values() {
-		synchronized ( ATTRIBUTE_TABLE ) {
-			return ATTRIBUTE_TABLE.values();			
+		synchronized ( attributeTable ) {
+			return attributeTable.values();			
 		}
     }
 
 
 	/** Determine whether this record has the specified attribute */
 	public boolean hasAttributeForKey( final String key ) {
-		return ATTRIBUTE_TABLE.containsKey( key );
+		return attributeTable.containsKey( key );
 	}
     
     
@@ -68,11 +68,12 @@ public class GenericRecord implements KeyedRecord, DataListener {
 	 * @param key The key for which to get the associated value.
 	 * @return The value as an Object.
 	 */
+    @Override
     public Object valueForKey( final String key ) {
-		synchronized ( ATTRIBUTE_TABLE ) {
-			if (ATTRIBUTE_TABLE.containsKey(key)) return ATTRIBUTE_TABLE.get( key );			
+		synchronized ( attributeTable ) {
+			if (attributeTable.containsKey(key)) return attributeTable.get( key );			
 		}
-		return DATA_TABLE.getSchema().ATTRIBUTE_TABLE.get(key).getDefaultValue();		
+		return dataTable.getSchema().attributeTable.get(key).getDefaultValue();		
     }
     
     
@@ -84,11 +85,11 @@ public class GenericRecord implements KeyedRecord, DataListener {
 	 */
     public void setValueForKey( final Object value, final String key) {
 		final Object oldValue = valueForKey(key);
-		synchronized ( ATTRIBUTE_TABLE ) {
-			ATTRIBUTE_TABLE.put( key, value );			
+		synchronized ( attributeTable ) {
+			attributeTable.put( key, value );			
 		}
-		if( DATA_TABLE != null ) {
-			DATA_TABLE.reIndex( this, key, oldValue );
+		if( dataTable != null ) {
+			dataTable.reIndex( this, key, oldValue );
 		}
     }
     
@@ -112,7 +113,7 @@ public class GenericRecord implements KeyedRecord, DataListener {
 	 */
     public boolean booleanValueForKey( final String key ) {
         final Boolean booleanObject = (Boolean)valueForKey( key );
-        return booleanObject.booleanValue();
+        return booleanObject;
     }
     
     
@@ -208,8 +209,9 @@ public class GenericRecord implements KeyedRecord, DataListener {
 	 * Overrides toString() to show key/value pairs.
 	 * @return The string representation of the record.
 	 */
+    @Override
     public String toString() {
-        return ATTRIBUTE_TABLE.toString();
+        return attributeTable.toString();
     }
     
     
@@ -218,6 +220,7 @@ public class GenericRecord implements KeyedRecord, DataListener {
      * external data source.
      * @return a tag that identifies the receiver's type
      */
+    @Override
     public String dataLabel() {
         return "record";
     }
@@ -227,8 +230,9 @@ public class GenericRecord implements KeyedRecord, DataListener {
      * Update the data based on the information provided by the data provider.
      * @param adaptor The adaptor from which to update the data
      */
+    @Override
     public void update( final DataAdaptor adaptor ) throws ParseException {
-        final Collection<DataAttribute> attributes = DATA_TABLE.attributes();
+        final Collection<DataAttribute> attributes = dataTable.attributes();
 		for ( final DataAttribute attribute : attributes ) {
             final String key = attribute.name();
             final Class<?> type = attribute.type();
@@ -241,7 +245,7 @@ public class GenericRecord implements KeyedRecord, DataListener {
             	}
             }
             catch ( ParseException exception ) {
-                System.out.println( "Error during record upate when parsing value for \"" + key + "\" attribute in table, \"" + DATA_TABLE.name() + "\"" );
+                System.out.println("Error during record upate when parsing value for \"" + key + "\" attribute in table, \"" + dataTable.name() + "\"" );
                 throw exception;
             }
         }
@@ -305,6 +309,7 @@ public class GenericRecord implements KeyedRecord, DataListener {
      * Write data to the data adaptor for storage.
      * @param adaptor The adaptor to which the receiver's data is written
      */
+    @Override
     public void write( final DataAdaptor adaptor ) {
         final Set<String> keys = keys();
 		for ( final String key : keys ) {

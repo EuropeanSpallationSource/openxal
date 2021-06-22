@@ -14,7 +14,7 @@ import java.util.*;
 /** batch of CA Get requests including value only with convenient batch operations */
 public class BatchGetValueRequest extends AbstractBatchGetRequest<ChannelRecord> {
 	/** request handler */
-	final protected RequestHandler REQUEST_HANDLER;
+	protected final RequestHandler REQUEST_HANDLER;
 
 	
 	/** 
@@ -35,6 +35,7 @@ public class BatchGetValueRequest extends AbstractBatchGetRequest<ChannelRecord>
 	
 	
 	/** request to get the data for the channel */
+        @Override
 	protected void requestChannelData( final Channel channel ) throws Exception {
 		channel.getValueCallback( REQUEST_HANDLER, false );
 	}
@@ -42,6 +43,7 @@ public class BatchGetValueRequest extends AbstractBatchGetRequest<ChannelRecord>
 	
 	/** handle get request events */
 	protected class RequestHandler implements IEventSinkValue {
+                @Override
 		public void eventValue( final ChannelRecord record, final Channel channel ) {
 			processRecordEvent( channel, record );
 		}

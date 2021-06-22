@@ -27,12 +27,12 @@ import java.util.*;
  * @author  tap
  */
 public class SignalHistoryPlotWindow extends JFrame implements SwingConstants {
-	/** specify the serializable version as requied */
-	static private final long serialVersionUID = 1;
+	/** specify the serializable version as required */
+	private static final long serialVersionUID = 1;
 
-	protected FunctionGraphsJPanel _chart;
-	protected BrowserController _controller;
-	protected BrowserModel _model;
+	protected FunctionGraphsJPanel chart;
+	protected BrowserController controller;
+	protected BrowserModel model;
 	
 	
 	/**
@@ -41,8 +41,8 @@ public class SignalHistoryPlotWindow extends JFrame implements SwingConstants {
 	 */
 	public SignalHistoryPlotWindow(final BrowserController controller) {
 		super("Signal History Plot");
-		_controller = controller;
-		_model = controller.getModel();
+		this.controller = controller;
+		model = controller.getModel();
 		
 		makeContent();
 	}
@@ -76,22 +76,22 @@ public class SignalHistoryPlotWindow extends JFrame implements SwingConstants {
 	 * @return the chart view
 	 */
 	protected Container buildChartView() {
-		_chart = new FunctionGraphsJPanel();
-		_chart.setSmartGL(false);
-		_chart.addMouseListener(new SimpleChartPopupMenu(_chart));
+		chart = new FunctionGraphsJPanel();
+		chart.setSmartGL(false);
+		chart.addMouseListener(new SimpleChartPopupMenu(chart));
 		
-		//_chart.setBackground(Color.black);
+		//chart.setBackground(Color.black);
 		
-		_chart.setNumberFormatX( new DateGraphFormat("MMM dd, yyyy HH:mm") );
+		chart.setNumberFormatX( new DateGraphFormat("MMM dd, yyyy HH:mm") );
 
 		// add legend support
-		_chart.setLegendPosition( FunctionGraphsJPanel.LEGEND_POSITION_ARBITRARY );
-		_chart.setLegendKeyString( "Legend" );
-		_chart.setLegendBackground( Color.lightGray );
-		_chart.setLegendColor( Color.black );
-		_chart.setLegendVisible( true );
+		chart.setLegendPosition( FunctionGraphsJPanel.LEGEND_POSITION_ARBITRARY );
+		chart.setLegendKeyString( "Legend" );
+		chart.setLegendBackground( Color.lightGray );
+		chart.setLegendColor( Color.black );
+		chart.setLegendVisible( true );
 		
-		return _chart;
+		return chart;
 	}
 	
 	
@@ -99,18 +99,18 @@ public class SignalHistoryPlotWindow extends JFrame implements SwingConstants {
 	 * Update the chart with the latest data.
 	 */
 	public void updateChart() {
-		final List<String> signals = new ArrayList<String>( _controller.getSelectedSignals() );
+		final List<String> signals = new ArrayList<>( controller.getSelectedSignals() );
 		final int numSignals = signals.size();
-		final MachineSnapshot[] machineSnapshots = _model.getSnapshots();
+		final MachineSnapshot[] machineSnapshots = model.getSnapshots();
 				
 		final Map<String,List<ChannelSnapshot>> signalMap = new HashMap<String,List<ChannelSnapshot>>( numSignals );
 		for ( int signalIndex = 0 ; signalIndex < numSignals ; signalIndex++ ) {
 			final String signal = signals.get( signalIndex );
-			signalMap.put( signal, new ArrayList<ChannelSnapshot>() );
+			signalMap.put( signal, new ArrayList<>() );
 		}
 		
 		try {
-			_model.populateSnapshots();
+			model.populateSnapshots();
 		}
 		catch( Exception exception ) {
 			throw new RuntimeException( exception );
@@ -129,7 +129,7 @@ public class SignalHistoryPlotWindow extends JFrame implements SwingConstants {
 			}
 		}
 		
-		final Vector<BasicGraphData> seriesData = new Vector<BasicGraphData>();
+		final Vector<BasicGraphData> seriesData = new Vector<>();
 		for ( int signalIndex = 0 ; signalIndex < numSignals ; signalIndex++ ) {
 			final String signal = signals.get(signalIndex);
 			final List<ChannelSnapshot> snapshots = signalMap.get(signal);
@@ -146,24 +146,24 @@ public class SignalHistoryPlotWindow extends JFrame implements SwingConstants {
 				BasicGraphData graphData = new BasicGraphData();
 				graphData.addPoint(timestamps, values);
 				graphData.setGraphColor( color );
-				graphData.setGraphProperty( _chart.getLegendKeyString(), signal );
+				graphData.setGraphProperty( chart.getLegendKeyString(), signal );
 				graphData.setGraphName(signal);
 				seriesData.add( graphData );
 			}
 		}
-		_chart.removeAllGraphData();
-		_chart.addGraphData( seriesData );
+		chart.removeAllGraphData();
+		chart.addGraphData( seriesData );
 		
 		// set the plot X range to only the selected snapshot range (exclude PV values with timestamps outside this range).
 		double stepSize = (machineSnapshots[machineSnapshots.length-1].getTimestamp().getTime()/1000. -
 				machineSnapshots[0].getTimestamp().getTime()/1000.)/3.;
-		_chart.setLimitsAndTicksX(machineSnapshots[0].getTimestamp().getTime()/1000., 
+		chart.setLimitsAndTicksX(machineSnapshots[0].getTimestamp().getTime()/1000., 
 				machineSnapshots[machineSnapshots.length-1].getTimestamp().getTime()/1000.,
 				stepSize);
 	}
 	
 	public FunctionGraphsJPanel getChart() {
-		return _chart;
+		return chart;
 	}
 }
 

@@ -10,15 +10,13 @@
  
  package xal.extension.solver.constraint;
 
- import xal.tools.messaging.MessageCenter;
  
  import xal.extension.solver.Trial;
  import xal.extension.solver.TrialVeto;
 
- import java.util.*;
 
  /**
- * Constraint is the class which holds the users's constraint.
+ * Constraint is the class which holds the users' constraint.
  * 
  * @author  ky6
  */

@@ -77,7 +77,7 @@ public class Rn extends BaseVector<Rn> {
      * constructor.
      * </p>
      * 
-     * @param arrMatrix   Java primitive array containing new vector values
+     * @param arrVals   Java primitive array containing new vector values
      *
      * @since  Jul 22, 2015   by Christopher K. Allen
      */

@@ -5,7 +5,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -20,19 +19,18 @@ import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 import xal.smf.impl.*;
 import xal.tools.beam.RelativisticParameterConverter;
-import xal.tools.beam.TraceXalUnitConverter;
 
 public class ImpactGenerator {
 	/** speed of light constant in 10^9 m/s */
-	final static double LIGHT_SPEED = 0.2997925;
+	static final double LIGHT_SPEED = 0.2997925;
 	
 	/** default number format */
-	final static NumberFormat NUMBER_FORMAT;
+	static final NumberFormat NUMBER_FORMAT;
     
 	/** Probe for initial condition */
 	protected Probe<?> myProbe;
 
-	protected java.util.List<AcceleratorSeq> _sequenceChain = null;
+	protected List<AcceleratorSeq> sequenceChain = null;
     
 	/** for design values */
 	public static final int PARAMSRC_DESIGN = 2;
@@ -49,7 +47,7 @@ public class ImpactGenerator {
 	protected double beamci[] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
     
 	/** indicates whether to use design bend angles regardless of the specified data source */
-	private boolean _useDesignBendAngles;
+	private boolean useDesignBendAngles;
 	
 	// device types
 	/** drift */
@@ -84,26 +82,26 @@ public class ImpactGenerator {
 	}
 	
 	/** Constructor */
-	public ImpactGenerator( java.util.List<AcceleratorSeq> sequenceChain, EnvelopeProbe envProbe ) {
+	public ImpactGenerator( List<AcceleratorSeq> sequenceChain, EnvelopeProbe envProbe ) {
 		this( null, sequenceChain, envProbe );
 	}
 	
 	/** Constructor */
-	public ImpactGenerator(String latticeName, java.util.List<AcceleratorSeq> sequenceChain, EnvelopeProbe envProbe) {
+	public ImpactGenerator(String latticeName, List<AcceleratorSeq> sequenceChain, EnvelopeProbe envProbe) {
 		this( latticeName, sequenceChain, (Probe)envProbe );
 	}
     
 	/** Constructor */
-	public ImpactGenerator( final String latticeName, final java.util.List<AcceleratorSeq> sequenceChain, final Probe<?> envProbe) {
+	public ImpactGenerator( final String latticeName, final List<AcceleratorSeq> sequenceChain, final Probe<?> envProbe) {
 		myLatticeName = latticeName;
 		myProbe = envProbe;
-		_sequenceChain = sequenceChain;
-		_useDesignBendAngles = true;
+		this.sequenceChain = sequenceChain;
+		useDesignBendAngles = true;
 	}
     
 	/** Set whether to use the design bend angles independent of the specified data source */
 	public void setUseDesignBendAngles( final boolean useDesignBendAngles ) {
-		_useDesignBendAngles = useDesignBendAngles;
+		this.useDesignBendAngles = useDesignBendAngles;
 	}
 	
 	
@@ -126,10 +124,10 @@ public class ImpactGenerator {
 	 */
 	public void createImpactInput( final AbstractDeviceDataSource deviceDataSource, final File outputFile ) throws IOException {
 		// select the data source for bends depending on whether the flag has been set to use design bend angles
-		final AbstractDeviceDataSource bendDataSource = _useDesignBendAngles ? AbstractDeviceDataSource.getDesignDataSourceInstance() : deviceDataSource;
+		final AbstractDeviceDataSource bendDataSource = useDesignBendAngles ? AbstractDeviceDataSource.getDesignDataSourceInstance() : deviceDataSource;
         
 		if (myLatticeName == null) {
-			myLatticeName = _sequenceChain.get(0).getId() + "-" + _sequenceChain.get( _sequenceChain.size() - 1 ).getId();
+			myLatticeName = sequenceChain.get(0).getId() + "-" + sequenceChain.get( sequenceChain.size() - 1 ).getId();
 		}
         
 		File impact_file = outputFile != null ? outputFile : new File( "test.in" );
@@ -166,8 +164,8 @@ public class ImpactGenerator {
 		
 //		int driftCounter = 0;
         
-		for (int i = 0; i < _sequenceChain.size(); i++) {
-			Lattice myLattice = createLattice( _sequenceChain.get(i) );
+		for (int i = 0; i < sequenceChain.size(); i++) {
+			Lattice myLattice = createLattice( sequenceChain.get(i) );
 			int elementCount = myLattice.len();
 			LatticeIterator ilat = myLattice.latticeIterator();
 			int counter = 1;

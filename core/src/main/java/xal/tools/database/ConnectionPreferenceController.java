@@ -21,10 +21,10 @@ import java.util.prefs.*;
  */
 public class ConnectionPreferenceController {
 	// constants
-	final static private String URL_KEY;
-	final static private Preferences DEFAULTS;
-	final static private String SUFFIX = ".dbconfig";
-	final static private String DESCRIPTION = "Database Configuration";
+	private static final String URL_KEY;
+	private static final Preferences DEFAULTS;
+	private static final String SUFFIX = ".dbconfig";
+	private static final String DESCRIPTION = "Database Configuration";
 	
 	
 	static {
@@ -42,7 +42,7 @@ public class ConnectionPreferenceController {
 	 * @param owner The owner of the PathPreferenceSelector dialog.
 	 * @return true if the the user has committed changes
 	 */
-	static public boolean displayPathPreferenceSelector( final java.awt.Frame owner ) {
+	public static boolean displayPathPreferenceSelector( final java.awt.Frame owner ) {
 		final PathPreferenceSelector selector;
 		selector = new PathPreferenceSelector( owner, DEFAULTS, URL_KEY, SUFFIX, DESCRIPTION );
 		selector.setLocationRelativeTo( owner );
@@ -56,7 +56,7 @@ public class ConnectionPreferenceController {
 	 * @param owner The owner of the PathPreferenceSelector dialog.
 	 * @return true if the the user has committed changes
 	 */
-	static public boolean displayPathPreferenceSelector( final java.awt.Dialog owner ) {
+	public static boolean displayPathPreferenceSelector( final java.awt.Dialog owner ) {
 		final PathPreferenceSelector selector;
 		selector = new PathPreferenceSelector( owner, DEFAULTS, URL_KEY, SUFFIX, DESCRIPTION );
 		selector.setLocationRelativeTo( owner );
@@ -69,11 +69,10 @@ public class ConnectionPreferenceController {
 	 * Display the PathPreferenceSelector with no owner.
 	 * @return true if the the user has committed changes
 	 */
-	static public boolean displayPathPreferenceSelector() {
+	public static boolean displayPathPreferenceSelector() {
 		final PathPreferenceSelector selector;
 		selector = new PathPreferenceSelector( DEFAULTS, URL_KEY, SUFFIX, DESCRIPTION );
 		selector.setVisible( true );
 		return selector.hasSavedChanges();
 	}
 }
-

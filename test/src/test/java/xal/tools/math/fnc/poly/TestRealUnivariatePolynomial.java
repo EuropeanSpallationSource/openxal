@@ -31,7 +31,7 @@ public class TestRealUnivariatePolynomial {
      */
     
     /** A test polynomial */
-    static private RealUnivariatePolynomial     POLY_TEST;
+    private static RealUnivariatePolynomial     POLY_TEST;
     
     
     /*

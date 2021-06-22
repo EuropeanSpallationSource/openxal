@@ -8,7 +8,7 @@ import java.awt.geom.Rectangle2D;
 
 public class ProfileMonitorWidget extends CartoonWidget {
 
-	private final static int HOLE_DIAMETER = REF_HEIGHT / 5;
+	private static final int HOLE_DIAMETER = REF_HEIGHT / 5;
 
 	private static Shape createShape() {
 		Shape screen = new Rectangle2D.Double(-REF_WIDTH/2, -2 * REF_HEIGHT, REF_WIDTH,

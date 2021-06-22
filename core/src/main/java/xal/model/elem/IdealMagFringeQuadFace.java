@@ -32,12 +32,12 @@ public class IdealMagFringeQuadFace extends ThinElectromagnet {
      */
     
     /** the string type identifier for all IdealMagSteeringDipole's */
-    public static final String      s_strType = "IdealMagFringeQuadFace";
+    public static final String      TYPE = "IdealMagFringeQuadFace";
     
     /** Parameters for XAL MODEL LATTICE dtd */
-    public static final String      s_strParamLenEff = "EffLength";
-    public static final String      s_strParamOrient = "Orientation";
-    public static final String      s_strParamField  = "MagField";
+    public static final String      PARAM_LEN_EFF = "EffLength";
+    public static final String      PARAM_ORIENT = "Orientation";
+    public static final String      PARAM_FIELD  = "MagField";
     
     
     /*
@@ -90,13 +90,13 @@ public class IdealMagFringeQuadFace extends ThinElectromagnet {
      */
     
     /**
-     * Default constructor - creates a new unitialized instance of 
+     * Default constructor - creates a new uninitialized instance of 
      * IdealMagSectorDipole.      
      * This is the constructor called in automatic lattice generation.
      * Thus, all element properties are set following construction.
      */
     public IdealMagFringeQuadFace() {
-        super(s_strType);
+        super(TYPE);
     }
 
     
@@ -121,7 +121,7 @@ public class IdealMagFringeQuadFace extends ThinElectromagnet {
      * @param strId     string identifier for element
      */
     public IdealMagFringeQuadFace(String strId) {
-        super(s_strType, strId);
+        super(TYPE, strId);
     }
     
  
@@ -198,7 +198,7 @@ public class IdealMagFringeQuadFace extends ThinElectromagnet {
    
     public boolean getEntr() {
         return this.entrFlag;
-    };
+    }
 
 
     
@@ -242,7 +242,7 @@ public class IdealMagFringeQuadFace extends ThinElectromagnet {
     @Override
     public double   energyGain(IProbe probe)     { 
         return 0.0; 
-    };
+    }
     
 
 
@@ -285,9 +285,9 @@ public class IdealMagFringeQuadFace extends ThinElectromagnet {
         double k = 0;
         
         if (bPathFlag == 0) {
-     	   k = (q * LightSpeed * getMagField() ) / p;
+     	   k = (q * LIGHT_SPEED * getMagField() ) / p;
         } else if (bPathFlag == 1) {//brhoscaling
-     	   k =  (q * LightSpeed * getMagField() *getBRhoScaling())/p;
+     	   k =  (q * LIGHT_SPEED * getMagField() *getBRhoScaling())/p;
         } else {
      	   k = getK1();
         }

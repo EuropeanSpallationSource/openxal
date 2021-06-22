@@ -52,13 +52,13 @@ public class SynchronousTracker extends Tracker {
 
     //  Global Constants
     // string type identifier for this algorithm
-    public static final String s_strTypeId = SynchronousTracker.class.getName();
+    public static final String TYPE_ID = SynchronousTracker.class.getName();
 
     // current version of this algorithm
-    public static final int s_intVersion = 1;
+    public static final int VERSION = 1;
 
     // probe type recognized by this algorithm
-    public static final Class<SynchronousProbe> s_clsProbeType = SynchronousProbe.class;
+    public static final Class<SynchronousProbe> CLS_PROBE_TYPE = SynchronousProbe.class;
 
     /**
      * Default constructor for a <code>SynchronousTracker</code> objects. These
@@ -66,7 +66,7 @@ public class SynchronousTracker extends Tracker {
      *
      */
     public SynchronousTracker() {
-        super(s_strTypeId, s_intVersion, s_clsProbeType);
+        super(TYPE_ID, VERSION, CLS_PROBE_TYPE);
     }
 
     /**

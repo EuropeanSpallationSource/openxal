@@ -35,10 +35,10 @@ public class PVLogSnapshotChooser {
     JDialog pvLogDialog;
         
     /** browser model */
-    protected BrowserModel _model = new BrowserModel();
+    protected BrowserModel model = new BrowserModel();
     
     /** controller of the selection state */
-    protected BrowserController _controller;
+    protected BrowserController controller;
     
     private JTextField pvLogIdField = new JTextField(8);
     
@@ -70,7 +70,7 @@ public class PVLogSnapshotChooser {
 		}
 		pvLogDialog.setTitle( "PV Logger Snapshot Chooser" );
 		pvLogDialog.setModal( modal );
-        _controller = new BrowserController( _model );
+        controller = new BrowserController( model );
     }
     
 	
@@ -100,8 +100,8 @@ public class PVLogSnapshotChooser {
         ConnectionDictionary dict = PVLogger.newBrowsingConnectionDictionary();
         
         Connection conn = dict.getDatabaseAdaptor().getConnection(dict);
-        _model.setDatabaseConnection(conn, dict);
-        _model.connect();
+        model.setDatabaseConnection(conn, dict);
+        model.connect();
     }
 
     /**
@@ -122,7 +122,7 @@ public class PVLogSnapshotChooser {
         queryView.add(fromSpinner);
         
 		try {
-			_model.selectGroup(groupName);
+			model.selectGroup(groupName);
 		}
 		catch( Exception exception ) {
 			throw new RuntimeException( exception );
@@ -140,11 +140,12 @@ public class PVLogSnapshotChooser {
         JButton fetchButton = new JButton("Fetch");
         queryView.add(fetchButton);
         fetchButton.addActionListener( new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent event) {
 					try {
                         Date startDate = fromDateModel.getDate();
                         Date endDate = toDateModel.getDate();
-                        _model.fetchMachineSnapshots(startDate, endDate);
+                        model.fetchMachineSnapshots(startDate, endDate);
 					}
 					catch( Exception exception )  {
 						throw new RuntimeException( exception );
@@ -167,23 +168,24 @@ public class PVLogSnapshotChooser {
         listView.add( new JLabel("Machine Snapshots:") );
         Box tableView = new Box(BoxLayout.Y_AXIS);
         listView.add(tableView);
-		final KeyValueTableModel<MachineSnapshot> machineSnapshotTableModel = _controller.getMachineSnapshotTableModel();
+		final KeyValueTableModel<MachineSnapshot> machineSnapshotTableModel = controller.getMachineSnapshotTableModel();
         final JTable snapshotTable = new JTable( machineSnapshotTableModel );
         snapshotTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         tableView.add( snapshotTable.getTableHeader() );
         tableView.add( new JScrollPane(snapshotTable) );
 
         snapshotTable.getSelectionModel().addListSelectionListener( new ListSelectionListener() {
+                        @Override
 			public void valueChanged(ListSelectionEvent event) {
 				if ( !event.getValueIsAdjusting() ) {
 					final int selectedRow = snapshotTable.getSelectedRow();
 					final int selectedModelRow = snapshotTable.convertRowIndexToModel( selectedRow );
 					if ( selectedModelRow < 0 ) {
-						_controller.setSelectedSnapshot( null );
+						controller.setSelectedSnapshot( null );
 					}
 					else if ( selectedModelRow < machineSnapshotTableModel.getRowCount() ) {
 						final MachineSnapshot selectedSnapshot = machineSnapshotTableModel.getRecordAtRow( selectedModelRow );
-						_controller.setSelectedSnapshot( selectedSnapshot );
+						controller.setSelectedSnapshot( selectedSnapshot );
 					}
 					else {
 						snapshotTable.clearSelection();
@@ -209,17 +211,18 @@ public class PVLogSnapshotChooser {
         commentTextView.setEditable(false);
 
         Box tableBox = new Box(BoxLayout.Y_AXIS);		
-		final KeyValueTableModel<ChannelSnapshot> detailTableModel = _controller.getChannelSnapshotTableModel();
+		final KeyValueTableModel<ChannelSnapshot> detailTableModel = controller.getChannelSnapshotTableModel();
         final JTable dataTable = new JTable( detailTableModel );
         tableBox.add( dataTable.getTableHeader() );
         tableBox.add( new JScrollPane( dataTable ) );
 
-        _controller.addBrowserControllerListener( new BrowserControllerListener() {
+        controller.addBrowserControllerListener( new BrowserControllerListener() {
                 /** 
                  * event indicating that a snapshot has been selected
                  * @param controller The controller managing selection state
                  * @param snapshot The snapshot that has been selected
                  */
+                @Override
                 public void snapshotSelected(BrowserController controller, MachineSnapshot snapshot) {
                         if ( snapshot != null ) {
                                 commentTextView.setText( snapshot.getComment() );
@@ -236,6 +239,7 @@ public class PVLogSnapshotChooser {
                  * @param source the browser controller sending this notice
                  * @param newGroup the newly selected channel group
                  */
+                @Override
                 public void selectedChannelGroupChanged(BrowserController source, ChannelGroup newGroup) {}
 
 
@@ -244,6 +248,7 @@ public class PVLogSnapshotChooser {
                  * @param source the controller sending the event
                  * @param selectedSignals the new collection of selected signals
                  */
+                @Override
                 public void selectedSignalsChanged(BrowserController source, Collection<String> selectedSignals) {}
         });
         JSplitPane mainPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, commentTextView, tableBox);
@@ -263,8 +268,9 @@ public class PVLogSnapshotChooser {
         result.add( Box.createHorizontalStrut(20) );
         JButton done = new JButton("Select");
         done.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent event) {
-                pvLogId = (new Long(pvLogIdField.getText())).longValue();
+                pvLogId = Long.parseLong(pvLogIdField.getText());
                 pvLogDialog.setVisible(false);
                 System.out.println("pvLogId = " + pvLogId);
                 // for testing purpose

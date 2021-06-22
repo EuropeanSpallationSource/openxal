@@ -17,11 +17,13 @@ import xal.tools.ArrayValue;
  * @author  tap
  */
 public interface ValueTransform {
-    final static public ValueTransform noOperationTransform = new ValueTransform() {
+    public static final ValueTransform NO_OPERATION_TRANSFORM = new ValueTransform() {
+        @Override
         public ArrayValue convertFromRaw(ArrayValue rawValue) {
             return rawValue;
         }
 
+        @Override
         public ArrayValue convertToRaw(ArrayValue physicalValue) {
             return physicalValue;
         }

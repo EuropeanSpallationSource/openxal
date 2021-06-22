@@ -11,7 +11,7 @@ import java.util.*;
 public class OnLeafComparator implements Comparator<Subsystem>{
 	
 	
-	private Map<Integer, Integer> systemPos = new HashMap<Integer, Integer>();
+	private Map<Integer, Integer> systemPos = new HashMap<>();
 	
 	public OnLeafComparator(){
 	}
@@ -62,7 +62,7 @@ public class OnLeafComparator implements Comparator<Subsystem>{
 	 *         .
 	 */
 	public List<Subsystem> sortSubsystems(Collection<Subsystem> subsystems) {
-		List<Subsystem> sortedList = new ArrayList<Subsystem>();
+		List<Subsystem> sortedList = new ArrayList<>();
 		sortedList.addAll(subsystems);
 
 		//HashSet<Subsystem> addedTracker = new HashSet<>();
@@ -71,6 +71,7 @@ public class OnLeafComparator implements Comparator<Subsystem>{
 		
 		Collections.sort(sortedList, new Comparator<Subsystem>() {
 
+                @Override
 	        public int compare(Subsystem o1, Subsystem o2) {
 	        	if(o2.getPreviousSubsystem() == null && o1.getPreviousSubsystem() == null)
 	        		return 0;

@@ -7,7 +7,7 @@ import eu.ess.bled.Subsystem;
 /**
  * 
  * <code>Section</code> defines a single section within the lattice file. The
- * section is composed of varoius components (elements and commands) as well as
+ * section is composed of various components (elements and commands) as well as
  * slots and beamlines.
  * 
  * @author <a href="mailto:jakob.battelino@cosylab.com">Jakob Battelino
@@ -39,9 +39,9 @@ public class Section {
 
 	public final String radiusData;
 
-	private ArrayList<Subsystem> components = new ArrayList<Subsystem>();
-	private ArrayList<Subsystem> slots = new ArrayList<Subsystem>();
-	private ArrayList<Subsystem> beamlines = new ArrayList<Subsystem>();
+	private ArrayList<Subsystem> components = new ArrayList<>();
+	private ArrayList<Subsystem> slots = new ArrayList<>();
+	private ArrayList<Subsystem> beamlines = new ArrayList<>();
 
 	/**
 	 * Constructs a new Section containing the lattice data. The arguments for

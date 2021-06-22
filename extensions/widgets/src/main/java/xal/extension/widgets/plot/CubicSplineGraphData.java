@@ -28,6 +28,7 @@ public class CubicSplineGraphData extends BasicGraphData{
     }
 
     /** returns the y-value for a certain x-value by using the spline interpolation schema*/
+    @Override
     public double getValueY(double x){
 	synchronized(lockUpObj){
 	    if( xyPointV.size() == 0 ) return (-Double.MAX_VALUE);
@@ -46,6 +47,7 @@ public class CubicSplineGraphData extends BasicGraphData{
     }
 
     /** returns the y'-value for a certain x-value by using the spline interpolation schema*/
+    @Override
     public double getValueDerivativeY(double x){
 	synchronized(lockUpObj){
 	    if( xyPointV.size() == 0 ) return (-Double.MAX_VALUE);
@@ -65,6 +67,7 @@ public class CubicSplineGraphData extends BasicGraphData{
 
 
     /** calculates the spline coefficients */
+    @Override
     protected void calculateRepresentation(){
         int i;
 
@@ -78,7 +81,7 @@ public class CubicSplineGraphData extends BasicGraphData{
         double[]    z = new double[n1];
 
         if(cY == null){ 
-	    cY= new Vector<Cubic>(this.getCapacity());
+	    cY= new Vector<>(this.getCapacity());
 	}
 
         if(cY.size() < n1 ){

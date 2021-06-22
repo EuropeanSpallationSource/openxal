@@ -13,16 +13,16 @@ import java.awt.event.*;
 
 public class UpdatingEventController {
 
-	private Object syncObj = new Object();
+	private final Object syncObj = new Object();
 
 	//Internal synch object for purpose this class instance only
-	private Object syncObjInernal = new Object();
+	private final Object syncObjInernal = new Object();
 
 	private volatile boolean updateInProgress = false;
 
 	private volatile boolean threadInProgress = false;
 
-	private Vector<ActionListener> listenersV = new Vector<ActionListener>();
+	private Vector<ActionListener> listenersV = new Vector<>();
 
 	private ActionEvent updateEvent = null;
 
@@ -47,6 +47,7 @@ public class UpdatingEventController {
 
 		updateRun =
 			new Runnable() {
+                                @Override
 				public void run() {
 					boolean hasToStop = false;
 					while (!hasToStop) {
@@ -117,7 +118,7 @@ public class UpdatingEventController {
 
 
 	/**
-	 *  Retirns the stop flag
+	 *  Returns the stop flag
 	 *
 	 *@return    The stop value
 	 */
@@ -190,24 +191,8 @@ public class UpdatingEventController {
 	 *@return    The vector with references to ActionListeners
 	 */
 	public Vector<ActionListener> getActionListeners() {
-		return new Vector<ActionListener>(listenersV);
+		return new Vector<>(listenersV);
 	}
-
-
-	/**
-	 *  Sets the synchronization object without any others actions
-	 *
-	 *@param  syncObjNew  The new syncObj value
-	 */
-	private void setSyncObj(Object syncObjNew) {
-		synchronized (syncObj) {
-			synchronized (syncObjNew) {
-				syncObj = syncObjNew;
-			}
-		}
-	}
-
-
 
 	/**
 	 *  Gets the syncObj attribute of the UpdatingEventController object
@@ -233,6 +218,7 @@ public class UpdatingEventController {
 
 		uc.addActionListener(
 			new ActionListener() {
+                                @Override
 				public void actionPerformed(ActionEvent e) {
 					System.out.println("Call performed!!! Freq. = 1 Hz! Update call Freq.= 10Hz!");
 				}

@@ -75,7 +75,7 @@ public class EnergyVector extends BaseVector<EnergyVector> {
          */
         
         /** the set of IND constants that only include synchronous phase space variables (not the homogeneous coordinate) */
-        private final static EnumSet<IND> SET_PHASE = EnumSet.of(PHI, W);
+        private static final EnumSet<IND> SET_PHASE = EnumSet.of(PHI, W);
 
         
         /*
@@ -112,6 +112,7 @@ public class EnergyVector extends BaseVector<EnergyVector> {
          * @author Christopher K. Allen
          * @since  Sep 25, 2013
          */
+        @Override
         public int val() {
             return this.val;
         }
@@ -121,7 +122,7 @@ public class EnergyVector extends BaseVector<EnergyVector> {
          */
         
         /** The numerical value of this enumeration index */
-        final public    int     val; 
+        public final    int     val; 
         
         /**
          * Creates a new <code>IND</code> enumeration constant

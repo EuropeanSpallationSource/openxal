@@ -16,17 +16,17 @@ import java.util.*;
 
 /** A hint that indicates a good initial search space */
 public class InitialDomain extends DomainHint {
-	final static public String TYPE = "InitialDomain";
+	public static final String TYPE = "InitialDomain";
 	
-	final protected Map<Variable, VariableDomain> _variableDomains;
-	final protected VariableDomain _defaultDomain;
+	protected final Map<Variable, VariableDomain> variableDomains;
+	protected final VariableDomain defaultDomain;
 	
 	
 	/** Primary Constructor */
 	protected InitialDomain( final VariableDomain domain ) {
 		super( "Initial Domain" );
-		_defaultDomain = domain;
-		_variableDomains = new HashMap<Variable, VariableDomain>();
+		defaultDomain = domain;
+		variableDomains = new HashMap<>();
 	}
 	
 	
@@ -43,7 +43,7 @@ public class InitialDomain extends DomainHint {
 	
 	
 	/** Get an initial domain hint whose range for each variable is the specified fraction of the variable's limits. */
-	static public InitialDomain getFractionalDomainHint( final double fraction ) {
+	public static InitialDomain getFractionalDomainHint( final double fraction ) {
 		return new InitialDomain( new FractionDomain( fraction ) );
 	}
 		
@@ -59,32 +59,34 @@ public class InitialDomain extends DomainHint {
 	
 	
 	/** Determine if there is an entry for the variable */
+        @Override
 	public boolean hasVariable( final Variable variable ) {
-		return _variableDomains.containsKey( variable );
+		return variableDomains.containsKey( variable );
 	}
 	
 	
 	/** add the initial range for the specified variable */
 	public void addRange( final Variable variable, final double lowerLimit, final double upperLimit ) {
-		_variableDomains.put( variable, new RangeDomain( lowerLimit, upperLimit ) );
+		variableDomains.put( variable, new RangeDomain( lowerLimit, upperLimit ) );
 	}
 	
 	
 	/** add the initial fraction range for the specified variable */
 	public void addFractionRange( final Variable variable, final double fraction ) {
-		_variableDomains.put( variable, new FractionDomain( fraction ) );		
+		variableDomains.put( variable, new FractionDomain( fraction ) );		
 	}
 	
 	
 	/** Get the domain for the specified variable. */
+        @Override
 	public double[] getRange( final Variable variable ) {
-		final VariableDomain domain = _variableDomains.get( variable );
+		final VariableDomain domain = variableDomains.get( variable );
 		if ( domain != null ) {
 			return domain.getRange( variable );
 		}
 		
-		if ( _defaultDomain != null ) {
-			return _defaultDomain.getRange( variable );
+		if ( defaultDomain != null ) {
+			return defaultDomain.getRange( variable );
 		}
 		
 		return new double[] { variable.getLowerLimit(), variable.getUpperLimit() };
@@ -104,27 +106,28 @@ interface VariableDomain {
 /** a domain specified as a fraction of the variable domain */
 class FractionDomain implements VariableDomain {
 	/** a fraction of the domain */
-	final private double _fraction;
+	private final double fraction;
 	
 	
 	/** Primary Constructor */
 	public FractionDomain( final double fraction ) {
-		_fraction = fraction;
+		this.fraction = fraction;
 	}
 	
 	
 	/** get the fraction */
 	public double getFraction() {
-		return _fraction;
+		return this.fraction;
 	}
 	
 	
 	/** get the range restricted to the variable's limits */
+        @Override
 	public double[] getRange( final Variable variable ) {
 		final double lowerLimit = variable.getLowerLimit();
 		final double upperLimit = variable.getUpperLimit();
-		final double lowerEnd = 0.5 * ( ( 1.0 + _fraction ) * lowerLimit + ( 1.0 - _fraction ) * upperLimit );
-		final double upperEnd = 0.5 * ( ( 1.0 - _fraction ) * lowerLimit + ( 1.0 + _fraction ) * upperLimit );
+		final double lowerEnd = 0.5 * ( ( 1.0 + this.fraction ) * lowerLimit + ( 1.0 - this.fraction ) * upperLimit );
+		final double upperEnd = 0.5 * ( ( 1.0 - this.fraction ) * lowerLimit + ( 1.0 + this.fraction ) * upperLimit );
 		return new double[] { lowerEnd, upperEnd  };
 	}
 }
@@ -134,30 +137,31 @@ class FractionDomain implements VariableDomain {
 /** The variable range domain for searching. */
 class RangeDomain implements VariableDomain {
 	/** the range to apply to variables */
-	final private double[] _range;
+	private final double[] range;
 	
 	
 	/** Primary Constructor */
 	protected RangeDomain( final double lowerLimit, final double upperLimit ) {
-		_range = new double[] { lowerLimit, upperLimit };
+		this.range = new double[] { lowerLimit, upperLimit };
 	}
 	
 	
 	/** Get an instance or null if either limit is NaN */
-	static public RangeDomain getInstance( final double lowerLimit, final double upperLimit ) {
+	public static RangeDomain getInstance( final double lowerLimit, final double upperLimit ) {
 		return !Double.isNaN( lowerLimit ) && !Double.isNaN( upperLimit ) ? new RangeDomain( lowerLimit, upperLimit ) : null;
 	}
 	
 	
 	/** get the lower limit */
 	public double[] getRange() {
-		return _range;
+		return this.range;
 	}
 	
 	
 	/** get the range restricted to the variable's limits */
+        @Override
 	public double[] getRange( final Variable variable ) {
-		return new double[] { Math.max( _range[InitialDomain.LOWER_IND], variable.getLowerLimit() ), Math.min( _range[InitialDomain.UPPER_IND], variable.getUpperLimit() ) };
+		return new double[] { Math.max( this.range[InitialDomain.LOWER_IND], variable.getLowerLimit() ), Math.min( this.range[InitialDomain.UPPER_IND], variable.getUpperLimit() ) };
 	}
 }
 

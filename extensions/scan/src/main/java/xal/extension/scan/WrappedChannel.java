@@ -2,7 +2,6 @@ package xal.extension.scan;
 
 import xal.ca.*;
 
-import java.util.*;
 import java.awt.event.*;
 
 /**
@@ -41,31 +40,32 @@ public class WrappedChannel extends MonitoredPV {
 	 * @param  value  The new value
 	 */
 	public void setValue( final double value ) {
-		final ScanChannelMonitor monitor = _monitor;
-		final Channel channel = monitor != null ? monitor.getChannel() : null;
+		final ScanChannelMonitor scanMonitor = this.monitor;
+		final Channel channel = scanMonitor != null ? scanMonitor.getChannel() : null;
 		if( channel != null && channel.isConnected() ) {
 			try {
 				channel.putVal( value );
-				_latestEventSuccessful = true;
+				latestEventSuccessful = true;
 			}
 			catch( ConnectionException exception ) {
-				_latestEventSuccessful = false;
+				latestEventSuccessful = false;
 				final ActionEvent stateChangedAction = makeEvent( null, channel );
-				STATE_EVENT_DISPATCH.actionPerformed( stateChangedAction );
+				stateEventDispatch.actionPerformed( stateChangedAction );
 			}
 			catch( PutException exception ) {
-				_latestEventSuccessful = false;
+				latestEventSuccessful = false;
 				final ActionEvent stateChangedAction = makeEvent( null, channel );
-				STATE_EVENT_DISPATCH.actionPerformed( stateChangedAction );
+				stateEventDispatch.actionPerformed( stateChangedAction );
 			}
 		}
 		else {
-			_currentValue = value;
+			currentValue = value;
 		}
 	}
 
 
 	/** Make an event for the given record and channel */
+        @Override
 	ActionEvent makeEvent( final ChannelTimeRecord record, final Channel channel ) {
 		return new PV_Event( this, record, channel );
 	}

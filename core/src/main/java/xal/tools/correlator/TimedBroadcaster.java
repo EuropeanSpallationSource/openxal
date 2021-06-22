@@ -27,7 +27,7 @@ import java.awt.event.*;
 class TimedBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
 	private Correlation<RecordType> bestPartialCorrelation;   // less than full count
     private boolean isFresh;
-    protected javax.swing.Timer timer;
+    protected Timer timer;
 	
 	
     /** Creates a new instance of Broadcaster */
@@ -38,6 +38,7 @@ class TimedBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
         
         int msecPeriod = (int)(period * 1000);
         timer = new Timer(msecPeriod, new ActionListener() {
+                        @Override
 			public void actionPerformed(ActionEvent event) {
 				postBestPartialCorrelation();
        		}
@@ -111,6 +112,7 @@ class TimedBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
 	 * @param sender The bin agent that published the new correlation.
 	 * @param correlation The new correlation.
      */
+        @Override
     synchronized public void newCorrelation( final BinAgent<RecordType> sender, final Correlation<RecordType> correlation ) {
         int numRecords = correlation.numRecords();
         
@@ -131,6 +133,7 @@ class TimedBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
 	 * Handle the advance notice of the correlator stopping.
 	 * @param sender The correlator that will stop.
 	 */
+        @Override
     public void willStopMonitoring( final Correlator<?,RecordType,?> sender ) {
 		timer.stop();
 	}
@@ -140,8 +143,8 @@ class TimedBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
 	 * Handle the advance notice of the correlator starting.
 	 * @param sender The correlator that will start.
 	 */
+        @Override
     public void willStartMonitoring( final Correlator<?,RecordType,?> sender ) {
 		timer.start();
 	}
 }
-

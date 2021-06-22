@@ -24,10 +24,10 @@ import xal.tools.xml.XmlDataAdaptor;
 /** Manage the configuration of the PV Logger */
 public class LoggerConfiguration {
 	/** database store */
-	final protected PersistentStore PERSISTENT_STORE;
+	protected final PersistentStore PERSISTENT_STORE;
 	
 	/** current database connection */
-	private Connection _connection;
+	private Connection connection;
 	
 	
 	/** Constructor */
@@ -47,10 +47,10 @@ public class LoggerConfiguration {
 	
 	/** fetch the channel groups */
 	public List<ChannelGroup> fetchChannelGroups() throws SQLException {
-		final String[] types = PERSISTENT_STORE.fetchTypes( _connection );
-		final List<ChannelGroup> groups = new ArrayList<ChannelGroup>();
+		final String[] types = PERSISTENT_STORE.fetchTypes( connection );
+		final List<ChannelGroup> groups = new ArrayList<>();
 		for ( final String type : types ) {
-			groups.add( PERSISTENT_STORE.fetchChannelGroup( _connection, type ) );
+			groups.add( PERSISTENT_STORE.fetchChannelGroup( connection, type ) );
 		}
 		
 		return groups;
@@ -63,38 +63,38 @@ public class LoggerConfiguration {
 	 * @param groupID Channel Group ID
 	 */
 	public void publishChannelsToGroup( final List<String> channelNames, final String groupID ) throws SQLException {
-		PERSISTENT_STORE.insertChannels( _connection, channelNames, groupID );
-		_connection.commit();
+		PERSISTENT_STORE.insertChannels( connection, channelNames, groupID );
+		connection.commit();
 	}
 	
 	
 	/** Publish the group records as groups */
 	public void publishGroupEdits( final Set<ChannelGroupRecord> groupRecords ) throws SQLException {
-		PERSISTENT_STORE.publishGroupEdits( _connection, groupRecords );
-		_connection.commit();
+		PERSISTENT_STORE.publishGroupEdits( connection, groupRecords );
+		connection.commit();
 	}
 	
 	
 	/** get the database connection */
 	public Connection getConnection() {
-		return _connection;
+		return connection;
 	}
 	
 	
 	/** set the connection */
 	public void setConnection( final Connection connection ) {
-		_connection = connection;
+		this.connection = connection;
 	}
 	
 	
 	/** close the database connection */
 	public void closeConnection() {
 		try {
-			if ( _connection != null ) {
-				_connection.close();
+			if ( connection != null ) {
+				connection.close();
 			}
 		}
-		catch ( Exception exception ) {
+		catch ( SQLException exception ) {
 			exception.printStackTrace();
 		}
 		

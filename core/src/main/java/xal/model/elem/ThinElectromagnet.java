@@ -43,18 +43,20 @@ public abstract class ThinElectromagnet extends ThinElement implements IElectrom
      *              ORIENT_VER  - dipole has steering action in y (vertical) plane
      *              ORIENT_NONE - error
      */
+    @Override
     public int getOrientation() {
         return this.enmOrient;
-    };
+    }
 
     /**  
      *  Get the magnetic field strength of the associated dipole
      *
      *  @return     magnetic field (in <b>Tesla</b>).
      */
+    @Override
     public double getMagField() {
         return this.dblField;
-    };
+    }
 	
 
     /**
@@ -64,18 +66,20 @@ public abstract class ThinElectromagnet extends ThinElement implements IElectrom
      *
      *  @see    #getOrientation
      */
+    @Override
     public void setOrientation(int enmOrient) {
         this.enmOrient = enmOrient;
-    };
+    }
 
     /**  
      *  Set the magnetic field strength of the dipole electromagnet.
      *
      *  @param  dblField    magnetic field (in <b>Tesla</b>).
      */
+    @Override
     public void setMagField(double dblField) {
         this.dblField = dblField;
-    };
+    }
 
 	
 	/**

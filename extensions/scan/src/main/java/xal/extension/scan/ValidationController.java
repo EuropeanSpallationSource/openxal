@@ -1,11 +1,9 @@
 package xal.extension.scan;
 
-import xal.ca.*;
 import xal.extension.widgets.swing.*;
 
 import java.text.*;
 import javax.swing.*;
-import javax.swing.text.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.event.*;
@@ -29,7 +27,7 @@ public class ValidationController{
 
     private boolean isOn = false;
 
-    private Vector<ChangeListener> changeListenerV = new Vector<ChangeListener>();
+    private Vector<ChangeListener> changeListenerV = new Vector<>();
     private ChangeEvent changeEvent = null;
 
     public ValidationController(){
@@ -61,6 +59,7 @@ public class ValidationController{
 	changeEvent = new ChangeEvent(this);
 
 	lowLimText.addActionListener(new ActionListener(){
+                @Override
 		public void actionPerformed(ActionEvent e){
 		    lowLim = lowLimText.getValue(); 
 		    notifyChanges();   		    
@@ -68,6 +67,7 @@ public class ValidationController{
 	    });
 
         uppLimText.addActionListener(new ActionListener(){
+                @Override
 		public void actionPerformed(ActionEvent e){
 		    uppLim = uppLimText.getValue(); 
 		    notifyChanges();    
@@ -75,6 +75,7 @@ public class ValidationController{
 	    });
 
 	validationButton.addItemListener(new ItemListener(){
+                @Override
 		public void itemStateChanged(ItemEvent e) {
 		    if (e.getStateChange() == ItemEvent.SELECTED) {
 			setOnOff(true);
@@ -116,14 +117,14 @@ public class ValidationController{
 	    tmp.add(uppLimLabel);
 	    tmp.add(uppLimText);
 
-	    JPanel tmp_1 = new JPanel();
-            tmp_1.setLayout(new BorderLayout());
-            tmp_1.add(tmp,BorderLayout.NORTH);
+	    JPanel tmp1 = new JPanel();
+            tmp1.setLayout(new BorderLayout());
+            tmp1.add(tmp,BorderLayout.NORTH);
 
 	    validatorLimitsPanel.setLayout(new BorderLayout());
 	    validatorLimitsPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),null));
 	    validatorLimitsPanel.setBackground(validatorLimitsPanel.getBackground().darker());
-	    validatorLimitsPanel.add(tmp_1,BorderLayout.NORTH);
+	    validatorLimitsPanel.add(tmp1,BorderLayout.NORTH);
 
 	    notifyChanges();
 	}
@@ -135,14 +136,14 @@ public class ValidationController{
 	    tmp.add(validationButton);
 	    tmp.add(lowLimText);
 
-	    JPanel tmp_1 = new JPanel();
-            tmp_1.setLayout(new BorderLayout());
-            tmp_1.add(tmp,BorderLayout.NORTH);
+	    JPanel tmp1 = new JPanel();
+            tmp1.setLayout(new BorderLayout());
+            tmp1.add(tmp,BorderLayout.NORTH);
 
 	    validatorLimitsPanel.setLayout(new BorderLayout());
 	    validatorLimitsPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),null)); 
 	    validatorLimitsPanel.setBackground(validatorLimitsPanel.getBackground().darker());
-	    validatorLimitsPanel.add(tmp_1,BorderLayout.NORTH);
+	    validatorLimitsPanel.add(tmp1,BorderLayout.NORTH);
 
 	    uppLim = Double.MAX_VALUE;
 	    notifyChanges();
@@ -218,6 +219,7 @@ public class ValidationController{
 	JFrame mainFrame = new JFrame("Valuator Limits Manager Class");
 	mainFrame.addWindowListener(
 	    new java.awt.event.WindowAdapter() {
+                @Override
 		public void windowClosing(java.awt.event.WindowEvent evt) {
 		    System.exit(0);
 		}

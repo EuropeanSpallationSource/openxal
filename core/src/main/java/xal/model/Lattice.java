@@ -36,10 +36,10 @@ public class Lattice extends ElementSeq {
      */
     
     /** default number of element positions to reserve in list array */
-    public static final int    s_szDefReserve = 100;
+    public static final int    SIZE_DEF_RESERVE = 100;
     
     /** the string type identifier for all Lattice objects */
-    public static final String      s_strType = "Lattice";
+    public static final String      TYPE = "Lattice";
     
     
     
@@ -49,13 +49,13 @@ public class Lattice extends ElementSeq {
      */
     
     /** version of lattice */
-    private String      m_strVersion;
+    private String      strVersion;
     
     /** lattice author */
-    private String      m_strAuthor;
+    private String      strAuthor;
     
     /** lattice date */
-    private String      m_strDate;
+    private String      strDate;
     
     
     /*
@@ -67,8 +67,8 @@ public class Lattice extends ElementSeq {
      *  Creates a new instance of Lattice
      */
     public Lattice() {
-        this(null, s_szDefReserve);
-    };
+        this(null, SIZE_DEF_RESERVE);
+    }
  
     /**
      *  Creates a new instance of Lattice
@@ -76,8 +76,8 @@ public class Lattice extends ElementSeq {
      *  @param  strId       identifier of the lattice
      */
     public Lattice(String strId) {
-        this(strId, s_szDefReserve);
-    };
+        this(strId, SIZE_DEF_RESERVE);
+    }
  
     /**
      *  Creates a new instance of Lattice and reserves space for a 
@@ -87,8 +87,8 @@ public class Lattice extends ElementSeq {
      *  @param  szReserve   number of Element spaces to reserve
      */
     public Lattice(String strId, int szReserve) {
-        super(s_strType, strId, szReserve);
-    };
+        super(TYPE, strId, szReserve);
+    }
  
     /**
      *  Sets the version tag
@@ -96,7 +96,7 @@ public class Lattice extends ElementSeq {
      *  @param  strVersion      revision number of lattice
      */
     public void setVersion(String strVersion)   {
-        m_strVersion = strVersion;
+        this.strVersion = strVersion;
     }
     
     /**
@@ -105,7 +105,7 @@ public class Lattice extends ElementSeq {
      *  @param  strAuthor       author of lattice description
      */
     public void setAuthor(String strAuthor)     {
-        m_strAuthor = strAuthor;
+        this.strAuthor = strAuthor;
     }
     
     /**
@@ -114,7 +114,7 @@ public class Lattice extends ElementSeq {
      *  @param  strDate         date string of lattice description
      */
     public void setDate(String strDate)         {
-        m_strDate = strDate;
+        this.strDate = strDate;
     }
     
 
@@ -127,21 +127,21 @@ public class Lattice extends ElementSeq {
      *  
      *  @return     lattice revision number
      */
-    public String   getVersion()        { return m_strVersion==null? "":m_strVersion; }
+    public String   getVersion()        { return strVersion==null? "":strVersion; }
     
     /**
      *  Get the author of the lattice definition
      *
      *  @return     lattice author
      */
-    public String   getAuthor()         { return m_strAuthor==null? "":m_strAuthor; }
+    public String   getAuthor()         { return strAuthor==null? "":strAuthor; }
     
     /**
      *  Get the date of lattice description
      *
      *  @return     lattice model date
      */
-    public String   getDate()           { return m_strDate==null? "":m_strDate; }
+    public String   getDate()           { return strDate==null? "":strDate; }
     
     
     
@@ -154,7 +154,7 @@ public class Lattice extends ElementSeq {
      */
     @Deprecated
     public List<RingModel> getRings()  {
-        List<RingModel> lstRings = new LinkedList<RingModel>();
+        List<RingModel> lstRings = new LinkedList<>();
         
         Iterator<IComponent> iterLoc = this.localIterator();
         while (iterLoc.hasNext())   {
@@ -176,7 +176,7 @@ public class Lattice extends ElementSeq {
      */
     @Deprecated
     public List<LineModel> getLines()  {
-        List<LineModel> lstRings = new LinkedList<LineModel>();
+        List<LineModel> lstRings = new LinkedList<>();
         
         Iterator<IComponent> iterLoc = this.localIterator();
         while (iterLoc.hasNext())   {
@@ -216,7 +216,7 @@ public class Lattice extends ElementSeq {
 //     *
 //     *  @return     type identifier for ElementSeq
 //     */
-//    public String getType() { return s_strType==null? "":s_strType; }
+//    public String getType() { return TYPE==null? "":TYPE; }
     
     /**
      * <p>

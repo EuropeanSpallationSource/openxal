@@ -110,6 +110,7 @@ public class AccessibleProperty {
         return getters;
     }
 
+    @Override
     public String toString() {
         return String.format("%s: {rb=%s, s=%s}", name, Arrays.toString(readbackHandles), setHandle);
     }

@@ -20,12 +20,12 @@ import xal.tools.transforms.ValueTransform;
  */
 abstract public class Channel {
     /** Static variables */
-    static protected ChannelSystem channelSystem;
+    protected static ChannelSystem channelSystem;
 
     /**  Local Attributes */
-    protected String          m_strId;                // channel name
-    protected double          m_dblTmIO;              // pend IO timeout
-    protected double          m_dblTmEvt;             // pend event timeout
+    protected String          strId;                // channel name
+    protected double          dblTmIO;              // pend IO timeout
+    protected double          dblTmEvt;             // pend event timeout
     private ValueTransform valueTransform;            // transform between raw and physical values
 
     /** Notify listeners when connection is made or dropped */
@@ -33,14 +33,14 @@ abstract public class Channel {
 
 
     /** One MessageCenter for all Channel events */
-    static protected MessageCenter messageCenter;
+    protected static MessageCenter messageCenter;
 
 
     /** hold connection status */
     protected volatile boolean connectionFlag;
 
 	/** indicates whether this channel is marked as being valid */
-	private boolean _valid;
+	private boolean valid;
 
 
     static {
@@ -102,7 +102,7 @@ abstract public class Channel {
      *  @param  name     EPICS channel name
      */
     protected Channel(String name) {
-        this( name, ValueTransform.noOperationTransform );
+        this(name, ValueTransform.NO_OPERATION_TRANSFORM );
     }
 
 
@@ -113,9 +113,9 @@ abstract public class Channel {
      */
     protected Channel( String name, ValueTransform aTransform ) {
         // Initialize attributes
-		_valid = true;		// by default a channel is valid unless marked otherwise
+		valid = true;		// by default a channel is valid unless marked otherwise
         connectionFlag = false;
-        m_strId   = name;
+        strId   = name;
         valueTransform = aTransform;
     }
 
@@ -125,7 +125,7 @@ abstract public class Channel {
 	 * @param signalName the PV for which to get the channel
 	 * @return a channel for the specified PV
 	 */
-	static public Channel getInstance( final String signalName ) {
+	public static Channel getInstance( final String signalName ) {
 		return ChannelFactory.defaultFactory().getChannel( signalName );
 	}
 
@@ -133,10 +133,10 @@ abstract public class Channel {
 	/**
 	 * From the default channel factory, get a channel for the specified signal name and value transform.
 	 * @param signalName the PV for which to get the channel
-	 * @param transform to transfrom the value between raw and physical
+	 * @param transform to transform the value between raw and physical
 	 * @return a channel for the specified PV
 	 */
-	static public Channel getInstance( final String signalName, final ValueTransform transform ) {
+	public static Channel getInstance( final String signalName, final ValueTransform transform ) {
 		return ChannelFactory.defaultFactory().getChannel( signalName, transform );
 	}
 
@@ -146,7 +146,7 @@ abstract public class Channel {
 	 * @param valid marks whether the channel is valid (true) or not (false)
 	 */
 	public void setValid( final boolean valid ) {
-		_valid = valid;
+		this.valid = valid;
 	}
 
 
@@ -155,7 +155,7 @@ abstract public class Channel {
 	 * @return true if it the channel is valid and false if not
 	 */
 	public boolean isValid() {
-		return _valid;
+		return valid;
 	}
 
 
@@ -211,7 +211,7 @@ abstract public class Channel {
 
 	/** generate an ID for a channel transform pair */
 	static String generateId( final String signal, final ValueTransform transform ) {
-        if ( transform != null && transform != ValueTransform.noOperationTransform ) {
+        if ( transform != null && transform != ValueTransform.NO_OPERATION_TRANSFORM ) {
             return signal + "_transform" + transform.hashCode();
         }
         else {
@@ -225,7 +225,7 @@ abstract public class Channel {
      *  @return     string descriptor for EPICS channel
      */
     public String  channelName() {
-        return m_strId;
+        return strId;
     }
 
 
@@ -234,7 +234,7 @@ abstract public class Channel {
      *  @param  strNameChan     EPICS channel name
      */
     public void setChannelName(String strNameChan)  {
-        m_strId = strNameChan;
+        strId = strNameChan;
     }
 
 
@@ -247,25 +247,25 @@ abstract public class Channel {
      *  Set the channel access Pend IO timeout
      *  @param  dblTm       I/O timeout
      */
-    public void setIoTimeout(double dblTm)      { m_dblTmIO = dblTm; }
+    public void setIoTimeout(double dblTm)      { dblTmIO = dblTm; }
 
     /**
      *  Set the channel access Pend Event timeout
      *  @param  dblTm       event timeout
      */
-    public void setEventTimeout(double dblTm)   { m_dblTmEvt = dblTm; }
+    public void setEventTimeout(double dblTm)   { dblTmEvt = dblTm; }
 
     /**
      *  Get the channel access Pend IO timeout
      *  @return       I/O timeout
      */
-    public double getIoTimeout()      { return m_dblTmIO; }
+    public double getIoTimeout()      { return dblTmIO; }
 
     /**
      *  Get the channel access Pend Event timeout
      *  @return       event timeout
      */
-    public double getEventTimeout()   { return m_dblTmEvt; }
+    public double getEventTimeout()   { return dblTmEvt; }
 
 
 	/**
@@ -273,7 +273,7 @@ abstract public class Channel {
 	 * @return true if the connection was made within the timeout and false if not
 	 */
 	public boolean connectAndWait() {
-		return connectAndWait( m_dblTmIO );
+		return connectAndWait( dblTmIO );
 	}
 
 
@@ -316,7 +316,7 @@ abstract public class Channel {
 	 */
     public void checkConnection() throws ConnectionException  {
         if ( !connectAndWait() ) {
-            throw new ConnectionException(this, "Channel Error - The channel \"" + m_strId + "\" must be connected to use this feature.");
+            throw new ConnectionException(this, "Channel Error - The channel \"" + strId + "\" must be connected to use this feature.");
         }
     }
 
@@ -344,7 +344,7 @@ abstract public class Channel {
 				checkConnection( methodName, false );
 			}
 			else {
-				throw new ConnectionException( this, "Channel#" + methodName + " - The channel \"" + m_strId + "\" must be connected to use this feature." );
+				throw new ConnectionException( this, "Channel#" + methodName + " - The channel \"" + strId + "\" must be connected to use this feature." );
 			}
 		}
     }
@@ -505,7 +505,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
 	 */
-    final public Number upperDisplayLimit() throws ConnectionException, GetException {
+    public final Number upperDisplayLimit() throws ConnectionException, GetException {
         ArrayValue rawValue = ArrayValue.numberStore( rawUpperDisplayLimit() );
         return valueTransform.convertFromRaw(rawValue);
     }
@@ -517,7 +517,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
 	 */
-    final public Number lowerDisplayLimit() throws ConnectionException, GetException {
+    public final Number lowerDisplayLimit() throws ConnectionException, GetException {
         ArrayValue rawValue = ArrayValue.numberStore( rawLowerDisplayLimit() );
         return valueTransform.convertFromRaw(rawValue);
     }
@@ -529,7 +529,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
 	 */
-    final public Number upperAlarmLimit() throws ConnectionException, GetException {
+    public final Number upperAlarmLimit() throws ConnectionException, GetException {
         ArrayValue rawValue = ArrayValue.numberStore( rawUpperAlarmLimit() );
         return valueTransform.convertFromRaw(rawValue);
     }
@@ -541,7 +541,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
 	 */
-    final public Number lowerAlarmLimit() throws ConnectionException, GetException {
+    public final Number lowerAlarmLimit() throws ConnectionException, GetException {
         ArrayValue rawValue = ArrayValue.numberStore( rawLowerAlarmLimit() );
         return valueTransform.convertFromRaw(rawValue);
     }
@@ -553,7 +553,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
 	 */
-    final public Number upperWarningLimit() throws ConnectionException, GetException {
+    public final Number upperWarningLimit() throws ConnectionException, GetException {
         ArrayValue rawValue = ArrayValue.numberStore( rawUpperWarningLimit() );
         return valueTransform.convertFromRaw(rawValue);
     }
@@ -565,7 +565,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
 	 */
-    final public Number lowerWarningLimit() throws ConnectionException, GetException {
+    public final Number lowerWarningLimit() throws ConnectionException, GetException {
         ArrayValue rawValue = ArrayValue.numberStore( rawLowerWarningLimit() );
         return valueTransform.convertFromRaw(rawValue);
     }
@@ -577,7 +577,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
 	 */
-    final public Number upperControlLimit() throws ConnectionException, GetException {
+    public final Number upperControlLimit() throws ConnectionException, GetException {
         ArrayValue rawValue = ArrayValue.numberStore( rawUpperControlLimit() );
         return valueTransform.convertFromRaw(rawValue);
     }
@@ -589,7 +589,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
 	 */
-    final public Number lowerControlLimit() throws ConnectionException, GetException {
+    public final Number lowerControlLimit() throws ConnectionException, GetException {
         ArrayValue rawValue = ArrayValue.numberStore( rawLowerControlLimit() );
         return valueTransform.convertFromRaw(rawValue);
     }
@@ -748,7 +748,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
      */
-    final public ChannelRecord getValueRecord()  throws ConnectionException, GetException {
+    public final ChannelRecord getValueRecord()  throws ConnectionException, GetException {
         return getRawValueRecord().applyTransform( valueTransform );
     }
 
@@ -759,7 +759,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
 	 */
-    final public ChannelRecord getStringValueRecord()  throws ConnectionException, GetException {
+    public final ChannelRecord getStringValueRecord()  throws ConnectionException, GetException {
         return getRawStringValueRecord().applyTransform( valueTransform );
     }
 
@@ -770,7 +770,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
 	 */
-    final public ChannelRecord getStringStatusRecord()  throws ConnectionException, GetException {
+    public final ChannelRecord getStringStatusRecord()  throws ConnectionException, GetException {
         return getRawStringStatusRecord().applyTransform( valueTransform );
     }
 
@@ -781,7 +781,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
 	 */
-    final public ChannelRecord getStringTimeRecord()  throws ConnectionException, GetException {
+    public final ChannelRecord getStringTimeRecord()  throws ConnectionException, GetException {
         return getRawStringTimeRecord().applyTransform( valueTransform );
     }
 
@@ -793,7 +793,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
      */
-    final public ChannelStatusRecord getStatusRecord()  throws ConnectionException, GetException {
+    public final ChannelStatusRecord getStatusRecord()  throws ConnectionException, GetException {
         ChannelStatusRecord record = getRawStatusRecord();
         record.applyTransform( valueTransform );
         return record;
@@ -807,7 +807,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
      */
-    final public ChannelTimeRecord getTimeRecord()  throws ConnectionException, GetException {
+    public final ChannelTimeRecord getTimeRecord()  throws ConnectionException, GetException {
         ChannelTimeRecord record = getRawTimeRecord();
         record.applyTransform( valueTransform );
         return record;
@@ -849,7 +849,7 @@ abstract public class Channel {
      *  @throws  xal.ca.ConnectionException     channel is not connected
      *  @throws  xal.ca.GetException            general channel access failure
      */
-    final public void getValueCallback( final IEventSinkValue listener ) throws ConnectionException, GetException {
+    public final void getValueCallback( final IEventSinkValue listener ) throws ConnectionException, GetException {
 		getValueCallback( listener, true );
     }
 
@@ -861,7 +861,7 @@ abstract public class Channel {
      * @throws  xal.ca.ConnectionException     channel is not connected
      * @throws  xal.ca.GetException            general channel access failure
      */
-    final public void getValueCallback( final IEventSinkValue listener, final boolean attemptConnection ) throws ConnectionException, GetException {
+    public final void getValueCallback( final IEventSinkValue listener, final boolean attemptConnection ) throws ConnectionException, GetException {
         getRawValueCallback((final ChannelRecord record, final Channel channel) -> {
             listener.eventValue( record.applyTransform(valueTransform), Channel.this );
         }, attemptConnection );
@@ -875,7 +875,7 @@ abstract public class Channel {
      * @throws  xal.ca.ConnectionException     channel is not connected
      * @throws  xal.ca.GetException            general channel access failure
      */
-    final public void getValueTimeCallback( final IEventSinkValTime listener, final boolean attemptConnection ) throws ConnectionException, GetException {
+    public final void getValueTimeCallback( final IEventSinkValTime listener, final boolean attemptConnection ) throws ConnectionException, GetException {
         getRawValueTimeCallback((final ChannelTimeRecord record, final Channel channel) -> {
             record.applyTransform( valueTransform );
             listener.eventValue( record, Channel.this );
@@ -889,7 +889,7 @@ abstract public class Channel {
      *  @throws  xal.ca.ConnectionException     channel is not connected
      *  @throws  xal.ca.GetException            general channel access failure
      */
-    final public void getValByteCallback( final IEventSinkValByte listener ) throws ConnectionException, GetException {
+    public final void getValByteCallback( final IEventSinkValByte listener ) throws ConnectionException, GetException {
         getRawValueCallback((final ChannelRecord record, Channel channel) -> {
             listener.eventValue(record.applyTransform(valueTransform).byteValue(), Channel.this);
         });
@@ -902,7 +902,7 @@ abstract public class Channel {
      *  @throws  xal.ca.ConnectionException     channel is not connected
      *  @throws  xal.ca.GetException            general channel access failure
      */
-    final public void getValIntCallback( final IEventSinkValInt listener ) throws ConnectionException, GetException {
+    public final void getValIntCallback( final IEventSinkValInt listener ) throws ConnectionException, GetException {
         getRawValueCallback((final ChannelRecord record, Channel channel) -> {
             listener.eventValue(record.applyTransform(valueTransform).intValue(), Channel.this);
         });
@@ -915,7 +915,7 @@ abstract public class Channel {
      *  @throws  xal.ca.ConnectionException     channel is not connected
      *  @throws  xal.ca.GetException            general channel access failure
      */
-    final public void getValFltCallback( final IEventSinkValFlt listener ) throws ConnectionException, GetException {
+    public final void getValFltCallback( final IEventSinkValFlt listener ) throws ConnectionException, GetException {
         getRawValueCallback((final ChannelRecord record, Channel channel) -> {
             final float value = record.applyTransform( valueTransform ).floatValue();
             listener.eventValue( value, Channel.this );
@@ -929,7 +929,7 @@ abstract public class Channel {
      *  @throws  xal.ca.ConnectionException     channel is not connected
      *  @throws  xal.ca.GetException            general channel access failure
      */
-    final public void getValDblCallback( final IEventSinkValDbl listener ) throws ConnectionException, GetException {
+    public final void getValDblCallback( final IEventSinkValDbl listener ) throws ConnectionException, GetException {
         getRawValueCallback((final ChannelRecord record, Channel channel) -> {
             final double value = record.applyTransform( valueTransform ).doubleValue();
             listener.eventValue( value, Channel.this );
@@ -943,7 +943,7 @@ abstract public class Channel {
      *  @throws  xal.ca.ConnectionException     channel is not connected
      *  @throws  xal.ca.GetException            general channel access failure
      */
-    final public void getArrByteCallback( final IEventSinkArrByte listener) throws ConnectionException, GetException {
+    public final void getArrByteCallback( final IEventSinkArrByte listener) throws ConnectionException, GetException {
         getRawValueCallback((final ChannelRecord record, Channel channel) -> {
             listener.eventArray(record.applyTransform(valueTransform).byteArray(), Channel.this);
         });
@@ -956,7 +956,7 @@ abstract public class Channel {
      *  @throws  xal.ca.ConnectionException     channel is not connected
      *  @throws  xal.ca.GetException            general channel access failure
      */
-    final public void getArrIntCallback( final IEventSinkArrInt listener ) throws ConnectionException, GetException {
+    public final void getArrIntCallback( final IEventSinkArrInt listener ) throws ConnectionException, GetException {
         getRawValueCallback((final ChannelRecord record, Channel channel) -> {
             listener.eventArray(record.applyTransform(valueTransform).intArray(), Channel.this);
         });
@@ -969,7 +969,7 @@ abstract public class Channel {
      *  @throws  xal.ca.ConnectionException     channel is not connected
      *  @throws  xal.ca.GetException            general channel access failure
      */
-    final public void getArrFltCallback( final IEventSinkArrFlt listener ) throws ConnectionException, GetException {
+    public final void getArrFltCallback( final IEventSinkArrFlt listener ) throws ConnectionException, GetException {
         getRawValueCallback((final ChannelRecord record, Channel channel) -> {
             listener.eventArray(record.applyTransform(valueTransform).floatArray(), Channel.this);
         });
@@ -982,7 +982,7 @@ abstract public class Channel {
      *  @throws  xal.ca.ConnectionException     channel is not connected
      *  @throws  xal.ca.GetException            general channel access failure
      */
-    final public void getArrDblCallback( final IEventSinkArrDbl listener )  throws ConnectionException, GetException {
+    public final void getArrDblCallback( final IEventSinkArrDbl listener )  throws ConnectionException, GetException {
         getRawValueCallback((final ChannelRecord record, Channel channel) -> {
             listener.eventArray(record.applyTransform(valueTransform).doubleArray(), Channel.this);
         });
@@ -1198,7 +1198,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    final public void putValCallback(Object newVal, PutListener listener) throws ConnectionException, PutException {
+    public final void putValCallback(Object newVal, PutListener listener) throws ConnectionException, PutException {
         if (newVal instanceof String) {
             this.putValCallback((String) newVal, listener);
         } else if (newVal instanceof Byte) {
@@ -1240,7 +1240,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    final public void putValCallback(String newVal, PutListener listener) throws ConnectionException, PutException {
+    public final void putValCallback(String newVal, PutListener listener) throws ConnectionException, PutException {
         String rawValue = valueTransform.convertToRaw( ArrayValue.stringStore(newVal) ).stringValue();
         putRawValCallback(rawValue, listener);
     }
@@ -1254,7 +1254,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    final public void putValCallback(byte newVal, PutListener listener) throws ConnectionException, PutException {
+    public final void putValCallback(byte newVal, PutListener listener) throws ConnectionException, PutException {
         byte rawValue = valueTransform.convertToRaw( ArrayValue.byteStore(newVal) ).byteValue();
         putRawValCallback(rawValue, listener);
     }
@@ -1268,7 +1268,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    final public void putValCallback(short newVal, PutListener listener) throws ConnectionException, PutException {
+    public final void putValCallback(short newVal, PutListener listener) throws ConnectionException, PutException {
         short rawValue = valueTransform.convertToRaw( ArrayValue.shortStore(newVal) ).shortValue();
         putRawValCallback(rawValue, listener);
     }
@@ -1282,7 +1282,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    final public void putValCallback(int newVal, PutListener listener) throws ConnectionException, PutException {
+    public final void putValCallback(int newVal, PutListener listener) throws ConnectionException, PutException {
         int rawValue = valueTransform.convertToRaw( ArrayValue.intStore(newVal) ).intValue();
         putRawValCallback(rawValue, listener);
     }
@@ -1296,7 +1296,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    final public void putValCallback(long newVal, PutListener listener) throws ConnectionException, PutException {
+    public final void putValCallback(long newVal, PutListener listener) throws ConnectionException, PutException {
         long rawValue = valueTransform.convertToRaw( ArrayValue.longStore(newVal) ).longValue();
         putRawValCallback(rawValue, listener);
     }
@@ -1310,7 +1310,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    final public void putValCallback(float newVal, PutListener listener) throws ConnectionException, PutException {
+    public final void putValCallback(float newVal, PutListener listener) throws ConnectionException, PutException {
         float rawValue = valueTransform.convertToRaw( ArrayValue.floatStore(newVal) ).floatValue();
         putRawValCallback(rawValue, listener);
     }
@@ -1324,7 +1324,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    final public void putValCallback(double newVal, PutListener listener) throws ConnectionException, PutException {
+    public final void putValCallback(double newVal, PutListener listener) throws ConnectionException, PutException {
         double rawValue = valueTransform.convertToRaw( ArrayValue.doubleStore(newVal) ).doubleValue();
         putRawValCallback(rawValue, listener);
     }
@@ -1338,7 +1338,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    final public void putValCallback(String[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public final void putValCallback(String[] newVal, PutListener listener) throws ConnectionException, PutException {
         String[] rawArray = valueTransform.convertToRaw(ArrayValue.stringStore(newVal)).stringArray();
         putRawValCallback(rawArray, listener);
     }
@@ -1352,7 +1352,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    final public void putValCallback(byte[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public final void putValCallback(byte[] newVal, PutListener listener) throws ConnectionException, PutException {
         byte[] rawArray = valueTransform.convertToRaw( ArrayValue.byteStore(newVal) ).byteArray();
         putRawValCallback(rawArray, listener);
     }
@@ -1366,7 +1366,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    final public void putValCallback(short[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public final void putValCallback(short[] newVal, PutListener listener) throws ConnectionException, PutException {
         short[] rawArray = valueTransform.convertToRaw( ArrayValue.shortStore(newVal) ).shortArray();
         putRawValCallback(rawArray, listener);
     }
@@ -1380,7 +1380,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    final public void putValCallback(int[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public final void putValCallback(int[] newVal, PutListener listener) throws ConnectionException, PutException {
         int[] rawArray = valueTransform.convertToRaw( ArrayValue.intStore(newVal) ).intArray();
         putRawValCallback(rawArray, listener);
     }
@@ -1394,7 +1394,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    final public void putValCallback(long[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public final void putValCallback(long[] newVal, PutListener listener) throws ConnectionException, PutException {
         long[] rawArray = valueTransform.convertToRaw( ArrayValue.longStore(newVal) ).longArray();
         putRawValCallback(rawArray, listener);
     }
@@ -1408,7 +1408,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    final public void putValCallback(float[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public final void putValCallback(float[] newVal, PutListener listener) throws ConnectionException, PutException {
         float[] rawArray = valueTransform.convertToRaw( ArrayValue.floatStore(newVal) ).floatArray();
         putRawValCallback(rawArray, listener);
     }
@@ -1422,7 +1422,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    final public void putValCallback(double[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public final void putValCallback(double[] newVal, PutListener listener) throws ConnectionException, PutException {
         double[] rawArray = valueTransform.convertToRaw( ArrayValue.doubleStore(newVal) ).doubleArray();
         putRawValCallback(rawArray, listener);
     }

@@ -21,7 +21,7 @@ import java.io.*;
  */
 public class Info {
     /** Label for this version of Open XAL */
-    final private static String LABEL;
+    private static final String LABEL;
     private static final Logger LOGGER = Logger.getLogger(Info.class.getName());
 
     // static initializer
@@ -57,9 +57,9 @@ public class Info {
                 //System.out.println( "Info map: " + infoMap );
 
                 label = (String)infoMap.get("label");
-            } catch( Exception exception ) {
+            } catch( IOException exception ) {
                 LOGGER.log(Level.SEVERE, "Exception attempting to load Open XAL info from: " + infoLocation, exception);
-                LOGGER.info("Will revert to default info label: " + label );
+                LOGGER.log(Level.INFO, "Will revert to default info label: {0}", label);
             }
         }
 
@@ -69,7 +69,7 @@ public class Info {
 
 
     /** Get the label for this version of Open XAL */
-    static public String getLabel() {
+    public static String getLabel() {
         return LABEL;
     }
 }

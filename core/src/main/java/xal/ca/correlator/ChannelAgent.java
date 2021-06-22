@@ -10,7 +10,6 @@ import xal.tools.correlator.*;
 import xal.tools.messaging.MessageCenter;
 import xal.ca.*;
 
-import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -22,13 +21,13 @@ import java.util.logging.Level;
  * @author  tap
  */
 public class ChannelAgent extends SourceAgent<ChannelTimeRecord> {
-    private String _name;
-    private Channel _channel;
-    private Monitor _monitor;
-    private volatile boolean _enabled;
-    private volatile boolean _activeFlag;
-    private EventHandler _eventHandler;
-    private ConnectionListener _connectionHandler;
+    private String name;
+    private Channel channel;
+    private Monitor monitor;
+    private volatile boolean enabled;
+    private volatile boolean activeFlag;
+    private EventHandler eventHandler;
+    private ConnectionListener connectionHandler;
     private static final Logger LOGGER = Logger.getLogger(ChannelAgent.class.getName());
 
 
@@ -42,8 +41,8 @@ public class ChannelAgent extends SourceAgent<ChannelTimeRecord> {
      */
     public ChannelAgent( final MessageCenter localCenter, final Channel newChannel, final String newName, final RecordFilter<ChannelTimeRecord> recordFilter, final CorrelationTester<ChannelTimeRecord> tester ) {
         super( localCenter, newName, recordFilter, tester );
-        _channel = newChannel;
-        _monitor = null;
+        channel = newChannel;
+        monitor = null;
     }
 
 
@@ -52,14 +51,15 @@ public class ChannelAgent extends SourceAgent<ChannelTimeRecord> {
      * monitor events for this channel.
      * @param recordFilter The filter to use for this channel.
      */
+    @Override
     protected void setupEventHandler( final RecordFilter<ChannelTimeRecord> recordFilter ) {
-        _activeFlag = false;
+        activeFlag = false;
 
         if ( recordFilter == null ) {
-            _eventHandler = new EventHandler();
+            eventHandler = new EventHandler();
         }
         else {
-            _eventHandler = new FilteredEventHandler( recordFilter );
+            eventHandler = new FilteredEventHandler( recordFilter );
         }
     }
 
@@ -69,7 +69,7 @@ public class ChannelAgent extends SourceAgent<ChannelTimeRecord> {
      * @return true if the channel is enabled for correlations.
      */
     public boolean isEnabled() {
-        return _enabled;
+        return enabled;
     }
 
 
@@ -78,7 +78,7 @@ public class ChannelAgent extends SourceAgent<ChannelTimeRecord> {
      * @return true if the channel is being monitored and false otherwise.
      */
     public boolean isActive() {
-        return _activeFlag;
+        return activeFlag;
     }
 
 
@@ -86,41 +86,43 @@ public class ChannelAgent extends SourceAgent<ChannelTimeRecord> {
      * Start monitoring the channel.
      * @return true if the channel is successfully being monitored and false otherwise.
      */
+    @Override
     public boolean startMonitor() {
-        _enabled = true;
-        if ( _connectionHandler == null ) {
-            _connectionHandler = new ConnectionHandler();
-            _channel.addConnectionListener( _connectionHandler );
+        enabled = true;
+        if ( connectionHandler == null ) {
+            connectionHandler = new ConnectionHandler();
+            channel.addConnectionListener( connectionHandler );
         }
 
         // try to connect the channel
-        _activeFlag = false;
-        if ( !_channel.isConnected() ) {
-            _channel.requestConnection();
+        activeFlag = false;
+        if ( !channel.isConnected() ) {
+            channel.requestConnection();
             Channel.flushIO();
         }
         else {
             makeMonitor();
         }
 
-        return _activeFlag;
+        return activeFlag;
     }
 
 
     /**
      * Stop monitoring the channel
      */
+    @Override
     public void stopMonitor() {
-        _enabled = false;
-        if ( _connectionHandler != null ) {
-            _channel.removeConnectionListener( _connectionHandler );
-            _connectionHandler = null;
+        enabled = false;
+        if ( connectionHandler != null ) {
+            channel.removeConnectionListener( connectionHandler );
+            connectionHandler = null;
         }
-        if ( _monitor != null ) {
-            _monitor.clear();
-            _monitor = null;
+        if ( monitor != null ) {
+            monitor.clear();
+            monitor = null;
         }
-        _activeFlag = false;
+        activeFlag = false;
     }
 
 
@@ -129,20 +131,20 @@ public class ChannelAgent extends SourceAgent<ChannelTimeRecord> {
     */
     synchronized protected void makeMonitor() {
         try {
-            if ( _enabled && _channel.isConnected() ) {
-                if ( _monitor == null ) {
-                    _monitor = _channel.addMonitorValTime( _eventHandler, Monitor.VALUE );
+            if ( enabled && channel.isConnected() ) {
+                if ( monitor == null ) {
+                    monitor = channel.addMonitorValTime( eventHandler, Monitor.VALUE );
                 }
-                _activeFlag = true;
+                activeFlag = true;
             }
         }
         catch( ConnectionException exception ) {
             LOGGER.log(Level.WARNING, "Connection exception caught, turning off active flag", exception);
-            _activeFlag = false;
+            activeFlag = false;
         }
         catch( MonitorException exception ) {
             LOGGER.log(Level.WARNING, "Monitoring exception caught, turning off active flag", exception);
-            _activeFlag = false;
+            activeFlag = false;
         }
     }
 
@@ -155,6 +157,7 @@ public class ChannelAgent extends SourceAgent<ChannelTimeRecord> {
          * Make a monitor when the channel is connected.
          * @param channel The channel which has been connected.
          */
+        @Override
         public void connectionMade( final Channel channel ) {
             makeMonitor();
         }
@@ -164,8 +167,9 @@ public class ChannelAgent extends SourceAgent<ChannelTimeRecord> {
          * Indicates that a connection to the specified channel has been dropped.
          * @param channel The channel which has been disconnected.
          */
+        @Override
         public void connectionDropped( final Channel channel ) {
-            _activeFlag = false;
+            activeFlag = false;
         }
     }
 
@@ -181,8 +185,9 @@ public class ChannelAgent extends SourceAgent<ChannelTimeRecord> {
          * Broadcast the event within the correlation world so that bins of all
          * channel agents (not just this one) are notified of the event.
          */
+        @Override
         synchronized public void eventValue( final ChannelTimeRecord record, final Channel channel ) {
-            if ( !_activeFlag ) return;
+            if ( !activeFlag ) return;
 
             double timestamp = record.getTimestamp().getSeconds();
             postEvent( record, timestamp );
@@ -201,6 +206,7 @@ public class ChannelAgent extends SourceAgent<ChannelTimeRecord> {
             filter = newFilter;
         }
 
+        @Override
         synchronized public void eventValue( final ChannelTimeRecord record, final Channel channel ) {
             /** Handle only those events accepted by the filter */
             if ( filter.accept( record ) ) {

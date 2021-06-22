@@ -14,7 +14,7 @@ public class IncrementalColor{
 	//Color.yellow,
 	//Color.red
 
-    static private Color[] incrColor = {
+    private static Color[] incrColor = {
 	Color.blue,
 	Color.green,
 	Color.red,
@@ -26,7 +26,7 @@ public class IncrementalColor{
     private IncrementalColor(){
     }
 
-    static public Color getColor(int index){
+    public static Color getColor(int index){
 	index = index %  incrColor.length;
         return incrColor[index];
     }

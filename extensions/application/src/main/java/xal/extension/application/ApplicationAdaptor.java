@@ -22,7 +22,7 @@ import java.net.*;
  */
 abstract public class ApplicationAdaptor extends AbstractApplicationAdaptor {
     /** wildcard file extension */
-    static public final String WILDCARD_FILE_EXTENSION = FileFilterFactory.WILDCARD_FILE_EXTENSION;
+    public static final String WILDCARD_FILE_EXTENSION = FileFilterFactory.WILDCARD_FILE_EXTENSION;
     
     
     /**
@@ -64,7 +64,7 @@ abstract public class ApplicationAdaptor extends AbstractApplicationAdaptor {
      * Generate a new empty document.
      * @return an instance of the custom subclass of XalAbstractDocument
      */
-    final public XalAbstractDocument generateEmptyDocument( final String type ) {
+    public final XalAbstractDocument generateEmptyDocument( final String type ) {
         return newEmptyDocument( type );
     }
     

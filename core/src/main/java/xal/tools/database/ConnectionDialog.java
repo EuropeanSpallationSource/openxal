@@ -11,11 +11,7 @@ package xal.tools.database;
 
 import java.util.*;
 import java.util.logging.*;
-import java.io.File;
-import java.io.IOException;
-import java.net.*;
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 import java.awt.event.*;
 import java.awt.Frame;
 import java.awt.Dialog;
@@ -34,37 +30,37 @@ public class ConnectionDialog extends JDialog {
     private static final long serialVersionUID = 1L;
     
 	/** label for the submit button */
-	private final String SUBMIT_LABEL;
+	private final String submitLabel;
 
 	/** the connection dictionary selected by the user */
-	private ConnectionDictionary _dictionary;
+	private ConnectionDictionary dictionary;
 	
 	/** database configuration */
-	private DBConfiguration _configuration;
+	private DBConfiguration configuration;
 	
 	/** file chooser for browsing to a connection dictionary */
-	private JFileChooser _dictionaryBrowser;
+	private JFileChooser dictionaryBrowser;
 	
 	/** box for the server menu */
-	private Box SERVER_OPTION_BOX;
+	private Box serverOptionBox;
 	
 	/** box containing a form of custom server fields */
-	private Box SERVER_CUSTOM_FORM;
+	private Box serverCustomForm;
 	
 	/** menu of available servers */
-	private JComboBox<String> SERVER_MENU;
+	private JComboBox<String> serverMenu;
 
 	/** field for entering the adaptor specification */
-	private JTextField _adaptorField;
+	private JTextField adaptorField;
 	
 	/** field for entering the database URL */
-	private JTextField _URLField;
+	private JTextField urlField;
 	
 	/** field for entering the user's ID */
-	private JTextField _userField;
+	private JTextField userField;
 	
 	/** field for entering the user's Password */
-	private JPasswordField _passwordField;
+	private JPasswordField passwordField;
 
 
 	/**
@@ -76,7 +72,7 @@ public class ConnectionDialog extends JDialog {
 	protected ConnectionDialog( Frame owner, final ConnectionDictionary dictionary, final String submitLabel ) {
 		super( owner, "Connection Dialog", true );
 
-		SUBMIT_LABEL = submitLabel;
+		this.submitLabel = submitLabel;
 		setup( dictionary );
 	}
 
@@ -109,7 +105,7 @@ public class ConnectionDialog extends JDialog {
 	protected ConnectionDialog( Dialog owner, final ConnectionDictionary dictionary, final String submitLabel ) {
 		super( owner, "Connection Dialog", true );
 		
-		SUBMIT_LABEL = submitLabel;
+		this.submitLabel = submitLabel;
 		setup( dictionary );
 	}
 
@@ -138,7 +134,7 @@ public class ConnectionDialog extends JDialog {
 	 * @param dictionary   The initial connection dictionary.
 	 */
 	protected void setup( final ConnectionDictionary dictionary ) {
-		_dictionary = null;
+		this.dictionary = null;
 
 		final ConnectionDictionary baseDictionary = ( dictionary != null ) ? dictionary : new ConnectionDictionary();
 
@@ -161,10 +157,10 @@ public class ConnectionDialog extends JDialog {
 			Logger.getLogger("global").log( Level.SEVERE, "Error constructing dialog contents.", exception );
 		}
 		
-		_adaptorField.setText( adaptorClass );		
-		_URLField.setText( dictionary.getURLSpec() );
-		_userField.setText( dictionary.getUser() );
-		_passwordField.setText( dictionary.getPassword() );
+		adaptorField.setText( adaptorClass );		
+		urlField.setText( dictionary.getURLSpec() );
+		userField.setText( dictionary.getUser() );
+		passwordField.setText( dictionary.getPassword() );
 		
 		loadDefaultConfiguration();
 	}
@@ -173,24 +169,24 @@ public class ConnectionDialog extends JDialog {
 	/** load the default configuration */
 	private void loadDefaultConfiguration() {
 		final DBConfiguration configuration = DBConfiguration.getInstance();
-		_configuration = configuration;
+		this.configuration = configuration;
 		String selectedServerItem = null;
 		if ( configuration != null ) {
-			final List<String> servers = new Vector<String>( configuration.getServerNames() );
+			final List<String> servers = new Vector<>( configuration.getServerNames() );
 			servers.add( 0, "Custom" );
-			SERVER_MENU.removeAllItems();
+			serverMenu.removeAllItems();
 			for ( final String server : servers ) {
-				SERVER_MENU.addItem( server );
+				serverMenu.addItem( server );
 				final ConnectionDictionary serverDictionary = configuration.newConnectionDictionary( null, server );
 				if ( serverDictionary != null ) {
 					final String urlSpec = serverDictionary.getURLSpec();
-					if ( urlSpec != null && urlSpec.equals( _URLField.getText() ) ) {
+					if ( urlSpec != null && urlSpec.equals( urlField.getText() ) ) {
 						selectedServerItem = server;
 					}
 				}
 			}
 			if ( selectedServerItem != null ) {
-				SERVER_MENU.setSelectedItem( selectedServerItem );
+				serverMenu.setSelectedItem( selectedServerItem );
 			}
 			
 			// display the server options if there are options available other than the trivial custom option
@@ -204,7 +200,7 @@ public class ConnectionDialog extends JDialog {
 			}
 		}
 		else {
-			SERVER_OPTION_BOX.setVisible( false );
+			serverOptionBox.setVisible( false );
 		}		
 	}
 	
@@ -214,7 +210,7 @@ public class ConnectionDialog extends JDialog {
 	 * @param shouldDisplay true to display server options and false to display the custom options instead
 	 */
 	private void setDisplayServerOptions( final boolean shouldDisplay ) {
-		SERVER_OPTION_BOX.setVisible( shouldDisplay );
+		serverOptionBox.setVisible( shouldDisplay );
 		pack();
 	}
 	
@@ -224,7 +220,7 @@ public class ConnectionDialog extends JDialog {
 	 * @param shouldDisplay true to display server options and false to display the custom options instead
 	 */
 	private void setDisplayServerCustomForm( final boolean shouldDisplay ) {
-		SERVER_CUSTOM_FORM.setVisible( shouldDisplay );
+		serverCustomForm.setVisible( shouldDisplay );
 		pack();
 	}
 	
@@ -234,7 +230,7 @@ public class ConnectionDialog extends JDialog {
 	 * @return   the user's connection dictionary
 	 */
 	public ConnectionDictionary getConnectionDictionary() {
-		return _dictionary;
+		return dictionary;
 	}
 
 
@@ -245,9 +241,9 @@ public class ConnectionDialog extends JDialog {
 	protected ConnectionDictionary showDialog() {
 		pack();
 		setLocationRelativeTo( getOwner() );
-		_userField.requestFocusInWindow();	// put the user field in focus since it is the most likely to be edited first by the user
+		userField.requestFocusInWindow();	// put the user field in focus since it is the most likely to be edited first by the user
 		setVisible( true );
-		return _dictionary;
+		return dictionary;
 	}
 
 
@@ -271,7 +267,7 @@ public class ConnectionDialog extends JDialog {
 		catch ( Exception exception ) {
 			JOptionPane.showMessageDialog( getOwner(), exception.getMessage(), "Connection Error!", JOptionPane.ERROR_MESSAGE );
 			Logger.getLogger("global").log( Level.SEVERE, "Database connection error.", exception );
-			return showConnectionDialog( (JFrame)getOwner(), databaseAdaptor, _dictionary );
+			return showConnectionDialog( (JFrame)getOwner(), databaseAdaptor, dictionary );
 		}
 	}
 
@@ -366,53 +362,53 @@ public class ConnectionDialog extends JDialog {
 
 		Dimension fieldSize;
 		
-		SERVER_OPTION_BOX = new Box( BoxLayout.X_AXIS );
-		SERVER_OPTION_BOX.add( Box.createGlue() );
-		SERVER_MENU = new JComboBox<String>();
-		SERVER_OPTION_BOX.add( new JLabel( "Server: " ) );
-		SERVER_OPTION_BOX.add( SERVER_MENU );
-		mainView.add( SERVER_OPTION_BOX );
+		serverOptionBox = new Box( BoxLayout.X_AXIS );
+		serverOptionBox.add( Box.createGlue() );
+		serverMenu = new JComboBox<>();
+		serverOptionBox.add( new JLabel( "Server: " ) );
+		serverOptionBox.add( serverMenu );
+		mainView.add( serverOptionBox );
 		
-		SERVER_CUSTOM_FORM = new Box( BoxLayout.Y_AXIS );
-		mainView.add( SERVER_CUSTOM_FORM );
+		serverCustomForm = new Box( BoxLayout.Y_AXIS );
+		mainView.add( serverCustomForm );
 		
 		Box adaptorBox = new Box( BoxLayout.X_AXIS );
-		_adaptorField = new JTextField( 30 );
-		fieldSize = _adaptorField.getPreferredSize();
-		_adaptorField.setMinimumSize( fieldSize );
-		_adaptorField.setMaximumSize( fieldSize );
+		adaptorField = new JTextField( 30 );
+		fieldSize = adaptorField.getPreferredSize();
+		adaptorField.setMinimumSize( fieldSize );
+		adaptorField.setMaximumSize( fieldSize );
 		adaptorBox.add( Box.createGlue() );
 		adaptorBox.add( new JLabel( "Adaptor (optional): " ) );
-		adaptorBox.add( _adaptorField );
-		SERVER_CUSTOM_FORM.add( adaptorBox );
+		adaptorBox.add( adaptorField );
+		serverCustomForm.add( adaptorBox );
 		
 		Box urlBox = new Box( BoxLayout.X_AXIS );
-		_URLField = new JTextField( 30 );
-		fieldSize = _URLField.getPreferredSize();
-		_URLField.setMinimumSize( fieldSize );
-		_URLField.setMaximumSize( fieldSize );
+		urlField = new JTextField( 30 );
+		fieldSize = urlField.getPreferredSize();
+		urlField.setMinimumSize( fieldSize );
+		urlField.setMaximumSize( fieldSize );
 		urlBox.add( Box.createGlue() );
 		urlBox.add( new JLabel( "Database URL: " ) );
-		urlBox.add( _URLField );
-		SERVER_CUSTOM_FORM.add( urlBox );
+		urlBox.add( urlField );
+		serverCustomForm.add( urlBox );
 				
 		Box userBox = new Box( BoxLayout.X_AXIS );
-		_userField = new JTextField( 20 );
-		_userField.setMinimumSize( fieldSize );
-		_userField.setMaximumSize( fieldSize );
+		userField = new JTextField( 20 );
+		userField.setMinimumSize( fieldSize );
+		userField.setMaximumSize( fieldSize );
 		userBox.add( Box.createGlue() );
 		userBox.add( new JLabel( "User: " ) );
-		userBox.add( _userField );
+		userBox.add( userField );
 		mainView.add( userBox );
 
 		Box passBox = new Box( BoxLayout.X_AXIS );
 		passBox.add( Box.createGlue() );
 		passBox.add( new JLabel( "Password: " ) );
-		_passwordField = new JPasswordField( 20 );
-		fieldSize = _passwordField.getPreferredSize();
-		_passwordField.setMinimumSize( fieldSize );
-		_passwordField.setMaximumSize( fieldSize );
-		passBox.add( _passwordField );
+		passwordField = new JPasswordField( 20 );
+		fieldSize = passwordField.getPreferredSize();
+		passwordField.setMinimumSize( fieldSize );
+		passwordField.setMaximumSize( fieldSize );
+		passBox.add( passwordField );
 		mainView.add( passBox );
 		mainView.add( Box.createGlue() );
 
@@ -421,6 +417,7 @@ public class ConnectionDialog extends JDialog {
 		
 		final JButton configureButton = new JButton( "Configure..." );
 		configureButton.addActionListener( new ActionListener() {
+                        @Override
 			public void actionPerformed( final ActionEvent event ) {
 				final boolean changed = ConnectionPreferenceController.displayPathPreferenceSelector( ConnectionDialog.this );
 				if ( changed ) {
@@ -436,30 +433,32 @@ public class ConnectionDialog extends JDialog {
 		final JButton cancelButton = new JButton( "Cancel" );
 		buttonBox.add( cancelButton );
 		cancelButton.addActionListener( new ActionListener() {
+                        @Override
 			public void actionPerformed( final ActionEvent event ) {
 				setVisible( false );
 				dispose();
 			}
 		} );
 		
-		final JButton submitButton = new JButton( SUBMIT_LABEL );
+		final JButton submitButton = new JButton( submitLabel );
 		getRootPane().setDefaultButton( submitButton );
 		buttonBox.add( submitButton );
 		submitButton.addActionListener( new ActionListener() {
+                        @Override
 			public void actionPerformed( final ActionEvent event ) {
-				_dictionary = new ConnectionDictionary();
+				dictionary = new ConnectionDictionary();
 
-				if ( _userField.getText() != null ) {
-					_dictionary.setUser( _userField.getText() );
+				if ( userField.getText() != null ) {
+					dictionary.setUser( userField.getText() );
 				}
-				if ( _passwordField.getPassword() != null ) {
-					_dictionary.setPassword( String.valueOf( _passwordField.getPassword() ) );
+				if ( passwordField.getPassword() != null ) {
+					dictionary.setPassword( String.valueOf( passwordField.getPassword() ) );
 				}
-				if ( _URLField.getText() != null ) {
-					_dictionary.setURLSpec( _URLField.getText() );
+				if ( urlField.getText() != null ) {
+					dictionary.setURLSpec( urlField.getText() );
 				}
-				if ( _adaptorField.getText() != null ) {
-					_dictionary.setDatabaseAdaptorClass( _adaptorField.getText() );
+				if ( adaptorField.getText() != null ) {
+					dictionary.setDatabaseAdaptorClass( adaptorField.getText() );
 				}
 				setVisible( false );
 				dispose();
@@ -467,17 +466,18 @@ public class ConnectionDialog extends JDialog {
 		} );
 		
 		
-		SERVER_MENU.addActionListener( new ActionListener() {
+		serverMenu.addActionListener( new ActionListener() {
+                        @Override
 			public void actionPerformed( final ActionEvent event ) {
-				final int selectedIndex = SERVER_MENU.getSelectedIndex();
+				final int selectedIndex = serverMenu.getSelectedIndex();
 				if ( selectedIndex > 0 ) {
-					final Object selection = SERVER_MENU.getSelectedItem();
-					if ( selection != null && _configuration != null ) {
+					final Object selection = serverMenu.getSelectedItem();
+					if ( selection != null && configuration != null ) {
 						final String serverName = selection.toString();
-						final ConnectionDictionary dictionary = _configuration.newConnectionDictionary( null, serverName );
+						final ConnectionDictionary dictionary = configuration.newConnectionDictionary( null, serverName );
 						final DatabaseAdaptor adaptor = dictionary.getDatabaseAdaptor();
-						_adaptorField.setText( adaptor != null ? adaptor.getClass().getCanonicalName() : "" );
-						_URLField.setText( dictionary.getURLSpec() );
+						adaptorField.setText( adaptor != null ? adaptor.getClass().getCanonicalName() : "" );
+						urlField.setText( dictionary.getURLSpec() );
 						setDisplayServerCustomForm( false );
 					}
 					else {
@@ -493,7 +493,3 @@ public class ConnectionDialog extends JDialog {
 		setResizable( false );
 	}
 }
-
-
-
-

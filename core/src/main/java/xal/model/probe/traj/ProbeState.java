@@ -25,47 +25,47 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
     // *********** I/O Support
 
     /** element tag for the probe state data */        
-    public final static String STATE_LABEL = "state";
+    public static final String STATE_LABEL = "state";
     
     /** attribute tag for concrete type of probe state */
-    protected final static String TYPE_LABEL = "type";    
+    protected static final String TYPE_LABEL = "type";    
     
     
     /** element tag for locate state data */
-    private final static String LOCATION_LABEL = "location";
+    private static final String LOCATION_LABEL = "location";
     
     /** attribute tag for associated lattice element */
-    private final static String ELEMENT_LABEL = "elem";
+    private static final String ELEMENT_LABEL = "elem";
     
     /** attribute tag for probe elapsed time */
-    private final static String TIME_LABEL = "t";
+    private static final String TIME_LABEL = "t";
 
     /** attribute tag for probe position */
-    private final static String POSITION_LABEL = "s";
+    private static final String POSITION_LABEL = "s";
     
     /** attribute tag for phase correction parameter (due to finite time propagation between cavities) */
-    private final static String LNG_PHASE_LABEL = "phase";
+    private static final String LNG_PHASE_LABEL = "phase";
     
     /** attribute tag for probe kinetic energy */
-    private final static String KINETICENERGY_LABEL = "W";
+    private static final String KINETICENERGY_LABEL = "W";
     
     
     
     /** element tag for particle species data */
-    private final static String SPECIES_LABEL = "species";
+    private static final String SPECIES_LABEL = "species";
     
     /** attribute tag for particle charge */
-    private final static String PARTCHARGE_LABEL="q";
+    private static final String PARTCHARGE_LABEL="q";
     
     /** attribute tag for particle rest energy */
-    private final static String PARTRESTENERGY_LABEL="Er";
+    private static final String PARTRESTENERGY_LABEL="Er";
     
     /*
      * Local Attributes
      */
      
     /** element id */
-    private String m_strElemId = "";
+    private String strElemId = "";
     
     /** The element type identifier string */
     private String  strElemTypeId = "";
@@ -75,30 +75,30 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
 
 
     /** Species charge */
-    private double  m_dblParQ = 0.0;
+    private double  dblParQ = 0.0;
     
     /** Species rest energy */
-    private double  m_dblParEr = 0.0;
+    private double  dblParEr = 0.0;
     
 
     /** Current probe position in beamline */
-    private double m_dblPos = 0.0;
+    private double dblPos = 0.0;
     	    
     /** The time elapsed from the beginning of the tracking (sec) */
-     private double m_dblTime = 0.0;
+     private double dblTime = 0.0;
 
      /** The longitudinal phase due to propagation and accelerating cavities */
      private double dblPhsLng = 0.0;
      
      
     /** Probe's average kinetic Energy */
-    private double  m_dblW = 0.0;
+    private double  dblW = 0.0;
 
     /** Probe's relativistic gamma */
-    private double  m_dblGamma = Double.NaN;
+    private double  dblGamma = Double.NaN;
     
     /** Probe velocity with respect to the speed of light */
-    private double m_dblBeta = 0.0;
+    private double dblBeta = 0.0;
     
     /*
      * Abstract Methods
@@ -137,21 +137,21 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      */
     public ProbeState(final S state) {
         
-        this.m_strElemId = state.getElementId();
+        this.strElemId = state.getElementId();
         this.strElemTypeId = state.getElementTypeId();
         this.strSmfId = state.getHardwareNodeId();
 
-        this.m_dblParQ = state.getSpeciesCharge();
-        this.m_dblParEr = state.getSpeciesRestEnergy();
+        this.dblParQ = state.getSpeciesCharge();
+        this.dblParEr = state.getSpeciesRestEnergy();
 
-        this.m_dblPos = state.getPosition();
-        this.m_dblTime = state.getTime();
+        this.dblPos = state.getPosition();
+        this.dblTime = state.getTime();
         
         this.dblPhsLng = state.getLongitudinalPhase();
 
-        this.m_dblW = state.getKineticEnergy();
-        this.m_dblGamma = state.getGamma();
-        this.m_dblBeta = state.getBeta();
+        this.dblW = state.getKineticEnergy();
+        this.dblGamma = state.getGamma();
+        this.dblBeta = state.getBeta();
     }
     
     /**
@@ -234,7 +234,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      *  @return     normalized probe velocity v/c (<b>unitless</b>
      */
     public double getBeta() { 
-        return m_dblBeta;  
+        return dblBeta;  
     }
     
     /**
@@ -246,12 +246,12 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      */
     public double getGamma() {
 
-        if (Double.isNaN(m_dblGamma))  {
+        if (Double.isNaN(dblGamma))  {
             
-            m_dblGamma = 1. + m_dblW / m_dblParEr;
+            dblGamma = 1. + dblW / dblParEr;
         }
         
-        return m_dblGamma;
+        return dblGamma;
     }
 
     
@@ -267,7 +267,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      */
     @Override
     public void setSpeciesCharge(double q) { 
-       this.m_dblParQ = q; 
+       this.dblParQ = q; 
     }
     
     
@@ -278,7 +278,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      */
     @Override
     public void setSpeciesRestEnergy(double Er) { 
-        this.m_dblParEr = Er; 
+        this.dblParEr = Er; 
     }
 
     
@@ -291,7 +291,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      */
     @Override
     public void setPosition(double s) {
-    	this.m_dblPos = s;
+    	this.dblPos = s;
     }
     
     /** 
@@ -301,7 +301,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      */
     @Override
     public void setTime(double dblTime) {
-        this.m_dblTime = dblTime; 
+        this.dblTime = dblTime; 
      }
 
     /**
@@ -340,10 +340,10 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      */
     @Override
     public void setKineticEnergy(double W) {
-        this.m_dblW = W;
+        this.dblW = W;
         
-        this.m_dblGamma = this.computeGammaFromW(m_dblW);
-        this.m_dblBeta = this.computeBetaFromGamma(m_dblGamma);
+        this.dblGamma = this.computeGammaFromW(dblW);
+        this.dblBeta = this.computeBetaFromGamma(dblGamma);
     }
     
     /**
@@ -353,7 +353,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      */
     @Override
     public void setElementId(String id) {
-        m_strElemId = id;
+        strElemId = id;
     }
     
     /**
@@ -374,7 +374,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      */
     @Override
     public double getSpeciesCharge() { 
-    	return m_dblParQ; 
+    	return dblParQ; 
     }
     
     /** 
@@ -384,7 +384,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      */
     @Override
     public double getSpeciesRestEnergy() { 
-    	return m_dblParEr; 
+    	return dblParEr; 
     }
     
     /**
@@ -394,7 +394,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      */
     @Override
     public String getElementId() {
-        return m_strElemId;
+        return strElemId;
     }
     
     /**
@@ -418,7 +418,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      */
     @Override
     public double getPosition() {
-        return m_dblPos;
+        return dblPos;
     }
     
     /** 
@@ -428,7 +428,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      */
     @Override
     public double getTime() { 
-        return m_dblTime;
+        return dblTime;
     }
     
     /**
@@ -466,7 +466,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      */
     @Override
     public double getKineticEnergy() {
-    	return m_dblW;
+    	return dblW;
     }
     
     /*
@@ -558,13 +558,13 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
     
     /**
      *  Convenience function for computing the relativistic factor gamma from the 
-     *  probe's kinetic energy (using the particle species rest energy m_dblParEr).
+     *  probe's kinetic energy (using the particle species rest energy dblParEr).
      *
      *  @param  W       kinetic energy of the probe
      *  @return         relativistic factor gamma
      */
     protected double computeGammaFromW(double W)   {
-        double gamma = W/m_dblParEr + 1.0;
+        double gamma = W/dblParEr + 1.0;
         
         return gamma;
     }
@@ -586,7 +586,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      *  Convenience function for multiplication of beta * gamma
      */
     protected double getBetaGamma() { 
-    	return m_dblBeta*m_dblGamma; 
+    	return dblBeta*dblGamma; 
     }
 
 

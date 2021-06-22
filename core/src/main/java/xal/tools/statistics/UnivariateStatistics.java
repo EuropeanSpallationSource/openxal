@@ -14,9 +14,10 @@ package xal.tools.statistics;
  */
 public class UnivariateStatistics {
 	/** the number of samples */
-	protected int _population;
+	protected int population;
 	/** the mean and mean square of the samples */
-	protected double _mean, _meanSquare;
+	protected double mean;
+        protected double meanSquare;
 
 	/** Constructor with no samples. */
 	public UnivariateStatistics() {
@@ -30,7 +31,7 @@ public class UnivariateStatistics {
 	 * @param stats  the statistics to copy
 	 */
 	public UnivariateStatistics( final UnivariateStatistics stats ) {
-		this( stats._population, stats._mean, stats._meanSquare );
+		this(stats.population, stats.mean, stats.meanSquare );
 	}
 
 
@@ -41,7 +42,7 @@ public class UnivariateStatistics {
 	 * @param scale  factor which is used to scale the copied statistics
 	 */
 	public UnivariateStatistics( final UnivariateStatistics stats, final double scale ) {
-		this( stats._population, scale * stats._mean, scale * scale * stats._meanSquare );
+		this(stats.population, scale * stats.mean, scale * scale * stats.meanSquare );
 	}
 
 
@@ -53,9 +54,9 @@ public class UnivariateStatistics {
 	 * @param averageSquare  the mean square of the samples
 	 */
 	public UnivariateStatistics( final int size, final double average, final double averageSquare ) {
-		_population = size;
-		_mean = average;
-		_meanSquare = averageSquare;
+		population = size;
+		mean = average;
+		meanSquare = averageSquare;
 	}
 
 
@@ -64,7 +65,7 @@ public class UnivariateStatistics {
 	 * @return   the number of samples
 	 */
 	public int population() {
-		return _population;
+		return population;
 	}
 
 
@@ -73,7 +74,7 @@ public class UnivariateStatistics {
 	 * @return   the mean of the samples
 	 */
 	public double mean() {
-		return _mean;
+		return mean;
 	}
 	
 	
@@ -82,7 +83,7 @@ public class UnivariateStatistics {
 	 * @return   the mean of the samples
 	 */
 	public double meanSquare() {
-		return _meanSquare;
+		return meanSquare;
 	}
 
 
@@ -102,7 +103,7 @@ public class UnivariateStatistics {
 	 * @return   the variance of the samples
 	 */
 	public double variance() {
-		return _meanSquare - _mean * _mean;
+		return meanSquare - mean * mean;
 	}
 
 
@@ -125,7 +126,7 @@ public class UnivariateStatistics {
 	public double sampleVariance() {
 		double sampleVariance = 0;
 		try {
-			final double scale = ( (double)_population ) / ( _population - 1 );
+			final double scale = ( (double)population ) / ( population - 1 );
 			sampleVariance = scale * variance();
 		}
 		catch ( ArithmeticException excption ) {
@@ -142,7 +143,7 @@ public class UnivariateStatistics {
 	 * @return   the variance of the mean from the actual value
 	 */
 	public double varianceOfMean() {
-		return variance() / _population;
+		return variance() / population;
 	}
 
 
@@ -163,7 +164,7 @@ public class UnivariateStatistics {
 	 * @return   the sample variance of the mean
 	 */
 	public double sampleVarianceOfMean() {
-		return sampleVariance() / _population;
+		return sampleVariance() / population;
 	}
 
 
@@ -177,4 +178,3 @@ public class UnivariateStatistics {
 		return Math.sqrt( sampleVarianceOfMean() );
 	}
 }
-

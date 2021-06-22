@@ -8,7 +8,7 @@ import java.awt.geom.Rectangle2D;
 
 public class LossMonitorWidget extends CartoonWidget {
 
-	private final static int DIAMETER = REF_WIDTH / 2;
+	private static final int DIAMETER = REF_WIDTH / 2;
 
 	private static Shape createShape() {
 		Shape circle = new Ellipse2D.Double(-DIAMETER / 2, -REF_HEIGHT

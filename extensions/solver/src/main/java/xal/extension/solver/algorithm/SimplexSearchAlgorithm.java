@@ -9,11 +9,9 @@
  */
 package xal.extension.solver.algorithm;
 
-import xal.tools.messaging.MessageCenter;
 
 import xal.extension.solver.*;
 import xal.extension.solver.solutionjudge.*;
-import xal.extension.solver.market.*;
 import xal.extension.solver.hint.*;
 
 import java.util.*;
@@ -28,9 +26,9 @@ public class SimplexSearchAlgorithm extends SearchAlgorithm {
 	/**
 	 *  The current best point.
 	 */
-	private TrialPoint _bestPoint;
+	private TrialPoint bestPoint;
 
-	private SimplexSearcher _searcher = new SimplexSearcher(this);
+	private SimplexSearcher searcher = new SimplexSearcher(this);
 
 	private boolean algorithmChanged = false;
 
@@ -45,24 +43,26 @@ public class SimplexSearchAlgorithm extends SearchAlgorithm {
 
 	/**
 	 *  Set the specified problem to solve. Override the inherited method to
-	 *  initialize the sercher.
+	 *  initialize the searcher.
 	 *
 	 *@param  problem  the problem to solve
 	 */
+        @Override
 	public void setProblem(final Problem problem) {
 		super.setProblem(problem);
-		_searcher.setProblem(problem);
+		searcher.setProblem(problem);
 	}
 
 
 	/**
 	 *  Reset this algorithm.
 	 */
+        @Override
 	public void reset() {
-		if (_bestPoint != null) {
-			_searcher.reset(_bestPoint);
+		if (bestPoint != null) {
+			searcher.reset(bestPoint);
 		} else {
-			_searcher.setProblem(_problem);
+			searcher.setProblem(problem);
 		}
 	}
 
@@ -72,6 +72,7 @@ public class SimplexSearchAlgorithm extends SearchAlgorithm {
 	 *
 	 *@return    The label for this algorithm
 	 */
+        @Override
 	public String getLabel() {
 		return "Simplex Search Algorithm";
 	}
@@ -80,19 +81,20 @@ public class SimplexSearchAlgorithm extends SearchAlgorithm {
 	/**
 	 *  Calculate the next few trial points.
 	 */
+        @Override
 	public void performRun(AlgorithmSchedule algorithmSchedule) {
         int initialCount = getEvaluationsLeft();
         while(getEvaluationsLeft() > 0){
             if(algorithmSchedule.shouldStop()) return;
             if (algorithmChanged) {
-                if (_bestPoint != null) {
-                    _searcher.reset(_bestPoint);
+                if (bestPoint != null) {
+                    searcher.reset(bestPoint);
                 }
                 algorithmChanged = false;
             }
             
-            if (!_searcher.makeStep()) {
-                _searcher.setWantToStop(true);
+            if (!searcher.makeStep()) {
+                searcher.setWantToStop(true);
             }
             
             if(getEvaluationsLeft() == initialCount){
@@ -108,9 +110,10 @@ public class SimplexSearchAlgorithm extends SearchAlgorithm {
 	 *
 	 *@return    the minimum number of evaluation per run.
 	 */
+        @Override
 	public int getMinEvaluationsPerRun() {
-		if (_problem != null && !_searcher.getWantToStop()) {
-			return 5*(_problem.getVariables().size() + 1) + 40;
+		if (problem != null && !searcher.getWantToStop()) {
+			return 5*(problem.getVariables().size() + 1) + 40;
 		}
 		return 0;
 	}
@@ -121,9 +124,10 @@ public class SimplexSearchAlgorithm extends SearchAlgorithm {
 	 *
 	 *@return    the maximum number of evaluation per run.
 	 */
+        @Override
 	public int getMaxEvaluationsPerRun() {
-		if (_problem != null && !_searcher.getWantToStop()) {
-			return 8 * (_problem.getVariables().size() + 40);
+		if (problem != null && !searcher.getWantToStop()) {
+			return 8 * (problem.getVariables().size() + 40);
 		}
 		return 0;
 	}
@@ -135,6 +139,7 @@ public class SimplexSearchAlgorithm extends SearchAlgorithm {
 	 *
 	 *@return    The global search rating for this algorithm.
 	 */
+        @Override
 	public int globalRating() {
 		return 3;
 	}
@@ -146,6 +151,7 @@ public class SimplexSearchAlgorithm extends SearchAlgorithm {
 	 *
 	 *@return    The local search rating for this algorithm.
 	 */
+        @Override
 	public int localRating() {
 		return 5;
 	}
@@ -157,6 +163,7 @@ public class SimplexSearchAlgorithm extends SearchAlgorithm {
 	 *@param  schedule  Description of the Parameter
 	 *@param  trial     Description of the Parameter
 	 */
+        @Override
 	public void trialScored(final AlgorithmSchedule schedule, Trial trial) {
 		SearchAlgorithm s_a = trial.getAlgorithm();
 		if (s_a.getLabel().equals(getLabel())) {
@@ -177,8 +184,9 @@ public class SimplexSearchAlgorithm extends SearchAlgorithm {
 	 *@param  schedule  Description of the Parameter
 	 *@param  trial     Description of the Parameter
 	 */
+        @Override
 	public void trialVetoed(final AlgorithmSchedule schedule, final Trial trial) {
-		_searcher.setWantToStop(true);
+		searcher.setWantToStop(true);
 	}
 
 
@@ -189,9 +197,10 @@ public class SimplexSearchAlgorithm extends SearchAlgorithm {
 	 *@param  solutions  The list of solutions.
 	 *@param  solution   The new optimal solution.
 	 */
+        @Override
 	public void foundNewOptimalSolution(final SolutionJudge source, final List<Trial> solutions, final Trial solution) {
 		TrialPoint newPoint = solution.getTrialPoint();
-		_bestPoint = newPoint;
+		bestPoint = newPoint;
 		SearchAlgorithm s_a = solution.getAlgorithm();
 		if (s_a.getLabel().equals(getLabel())) {
 			SimplexSearchAlgorithm s_s_a = (SimplexSearchAlgorithm) s_a;
@@ -199,13 +208,13 @@ public class SimplexSearchAlgorithm extends SearchAlgorithm {
 				//the simplex should be moved to the new point
 				//that was found by other algorithm
 				//The simplex vertexes should be generated from the scratch.
-				_searcher.reset(_bestPoint);
+				searcher.reset(bestPoint);
 			}
 		} else {
 			//the simplex should be moved to the new point
 			//that was found by other algorithm
 			//The simplex vertexes should be generated from the scratch.
-			_searcher.reset(_bestPoint);
+			searcher.reset(bestPoint);
 		}
 	}
 }
@@ -241,7 +250,7 @@ class SimplexSearcher {
 
 	private CompareVertex comparator = new CompareVertex();
     
-    private SearchAlgorithm _simplexAlgorithm;
+    private SearchAlgorithm simplexAlgorithm;
 
 	//dimension
 	private int nD = 0;
@@ -253,7 +262,7 @@ class SimplexSearcher {
 	private double sigma = 0.5;
 
 	//vertexes
-	private Vector<Vertex> vertexesV = new Vector<Vertex>();
+	private Vector<Vertex> vertexesV = new Vector<>();
 	private double[] stepArr = new double[0];
 
 	private double[] coord_r = new double[0];
@@ -276,14 +285,14 @@ class SimplexSearcher {
 	/**
 	 *  the problem to solve
 	 */
-	private Problem _problem = null;
+	private Problem problem = null;
 
 
 	/**
 	 *  Creates a new instance of SimplexSearcher
 	 */
 	public SimplexSearcher(SearchAlgorithm algorithm) {
-        _simplexAlgorithm = algorithm;
+        simplexAlgorithm = algorithm;
     }
 
 
@@ -316,7 +325,7 @@ class SimplexSearcher {
 
 		iniSimplexReady = false;
 
-		if (_problem == null) {
+		if (problem == null) {
 			setWantToStop(true);
 			return;
 		}
@@ -324,7 +333,7 @@ class SimplexSearcher {
 		bestScore = Double.MAX_VALUE;
 		shrinkCount = 0;
 
-		nD = _problem.getVariables().size();
+		nD = problem.getVariables().size();
 
 		if (nD == 0) {
 			setWantToStop(true);
@@ -344,25 +353,25 @@ class SimplexSearcher {
 		vt_oc.setCoords(coord_oc);
 		vt_ic.setCoords(coord_ic);
 
-		vt_r.setProblem(_problem);
-		vt_e.setProblem(_problem);
-		vt_oc.setProblem(_problem);
-		vt_ic.setProblem(_problem);
+		vt_r.setProblem(problem);
+		vt_e.setProblem(problem);
+		vt_oc.setProblem(problem);
+		vt_ic.setProblem(problem);
 
 		//create vertixes
 		vertexesV.clear();
 		for (int i = 0; i <= nD; i++) {
 			Vertex vt = new Vertex();
-			vt.setProblem(_problem);
+			vt.setProblem(problem);
 			vertexesV.add(vt);
 		}
 
 		//define steps and cooordinates for first vertex
 		Vertex centerVertex = vertexesV.firstElement();
 		//use initial delta hint
-		InitialDelta hint = (InitialDelta) _problem.getHint(InitialDelta.TYPE);
+		InitialDelta hint = (InitialDelta) problem.getHint(InitialDelta.TYPE);
 		int ind = 0;
-		for ( final Variable variable : _problem.getVariables() ) {
+		for ( final Variable variable : problem.getVariables() ) {
 			double value = variable.getInitialValue();
 			centerVertex.getCoords()[ind] = value;
 			//this is our approach - it is guess only
@@ -403,9 +412,9 @@ class SimplexSearcher {
 	 * @param  problem  The problem to solve
 	 */
 	protected void setProblem( final Problem problem ) {
-		_problem = problem;
+		this.problem = problem;
 
-		final List<Variable> variables = _problem.getVariables();
+		final List<Variable> variables = problem.getVariables();
 		final MutableTrialPoint trialPoint = new MutableTrialPoint(variables.size());
         
         for ( final Variable variable : variables ) {
@@ -564,7 +573,7 @@ class SimplexSearcher {
 		if (getWantToStop()) {
 			return false;
 		}
-		boolean res = vr.findScore(_simplexAlgorithm);
+		boolean res = vr.findScore(simplexAlgorithm);
 		if (getWantToStop()) {
 			return false;
 		}
@@ -616,7 +625,7 @@ class SimplexSearcher {
 	 *@return    Description of the Return Value
 	 */
 	private boolean acceptSimplex() {
-		int nVars = _problem.getVariables().size();
+		int nVars = problem.getVariables().size();
 		if (nVars != nD || (nD + 1) != vertexesV.size()) {
 			return false;
 		}
@@ -638,7 +647,7 @@ class SimplexSearcher {
 	}
 
 
-	//calculates x = x_avg + coeff*(x_avg - x_last)
+	//calculates x = xAvg + coeff*(xAvg - xLast)
 	/**
 	 *  Description of the Method
 	 *
@@ -659,7 +668,7 @@ class SimplexSearcher {
 	}
 
 
-	//calculates x = x_avg + coeff*(x_avg - x_last)
+	//calculates x = xAvg + coeff*(xAvg - xLast)
 	//               for last vertex of the simplex
 	/**
 	 *  Description of the Method
@@ -817,7 +826,7 @@ class SimplexSearcher {
 
 
 	/**
-	 *  Returnss the shinkage factor for this instance of the simplex algorithm.
+	 *  Returns the shinkage factor for this instance of the simplex algorithm.
 	 *
 	 *@return    The shinkage value
 	 */
@@ -864,14 +873,14 @@ class SimplexSearcher {
 		/**
 		 *  the problem to solve
 		 */
-		private Problem _problem = null;
+		private Problem problem = null;
 
 
 		/**
 		 *  Constructor for the Vertex object
 		 */
 		protected Vertex() {
-			_problem = null;
+			problem = null;
 			nDim = 0;
 			coords = new double[nDim];
 		}
@@ -884,7 +893,7 @@ class SimplexSearcher {
 		 */
 		protected void setProblem(Problem problem) {
 			if (problem != null) {
-				_problem = problem;
+				this.problem = problem;
 				nDim = problem.getVariables().size();
 				coords = new double[nDim];
 			}
@@ -899,13 +908,13 @@ class SimplexSearcher {
 		 */
 		protected boolean findScore(SearchAlgorithm algorithm) {
 			score = Double.MAX_VALUE;
-			if (_problem == null) {
+			if (problem == null) {
 				return false;
 			}
-			int n = _problem.getVariables().size();
+			int n = problem.getVariables().size();
 			if (n == nDim) {
 
-				final List<Variable> variables = _problem.getVariables();
+				final List<Variable> variables = problem.getVariables();
 				MutableTrialPoint trialPoint = new MutableTrialPoint(variables.size());
 
 				int i = 0;
@@ -1014,6 +1023,7 @@ class SimplexSearcher {
 		 *@param  obj2  The second vertex
 		 *@return       result of comparison
 		 */
+                @Override
 		public int compare( final Vertex obj1, final Vertex obj2 ) {
 			if ( obj1.getScore() > obj2.getScore() ) {
 				return 1;

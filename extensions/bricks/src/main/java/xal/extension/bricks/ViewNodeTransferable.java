@@ -8,26 +8,22 @@
 
 package xal.extension.bricks;
 
-import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.datatransfer.*;
-import java.awt.event.*;
-import javax.swing.event.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 
-/** transferable for transfering view nodes */
+/** transferable for transferring view nodes */
 public class ViewNodeTransferable implements Transferable {
 	/** define the view node flavor */
-	static public final DataFlavor VIEW_NODE_FLAVOR;
+	public static final DataFlavor VIEW_NODE_FLAVOR;
 	
 	/** the list of flavors associated with view node transfer */
-	static public final DataFlavor[] FLAVORS;
+	public static final DataFlavor[] FLAVORS;
 	
 	/** The view nodes being transferred */
-	protected final List<BeanNode<?>> _viewNodes;
+	protected final List<BeanNode<?>> viewNodes;
 	
 	
 	// static initializer
@@ -42,7 +38,7 @@ public class ViewNodeTransferable implements Transferable {
 	 * @param nodes The nodes being transferred
 	 */
 	public ViewNodeTransferable( final List<BeanNode<?>> nodes ) {
-		_viewNodes = new ArrayList<BeanNode<?>>( nodes );
+		viewNodes = new ArrayList<>( nodes );
 	}
 	
 	
@@ -56,12 +52,13 @@ public class ViewNodeTransferable implements Transferable {
 	
 	
 	/**
-	 * Get the data being transfered which in this case is simply the list of view nodes
+	 * Get the data being transferred which in this case is simply the list of view nodes
 	 * @param flavor The flavor of the transfer
 	 * @return The nodes to transfer
 	 */
+        @Override
 	public Object getTransferData( final DataFlavor flavor ) {
-		return _viewNodes;
+		return viewNodes;
 	}
 	
 	
@@ -69,6 +66,7 @@ public class ViewNodeTransferable implements Transferable {
 	 * The flavors handled by this transferable which is presently just VIEW_FLAVOR
 	 * @return the array of flavors handled
 	 */
+        @Override
 	public DataFlavor[] getTransferDataFlavors() {
 		return FLAVORS;
 	}
@@ -79,6 +77,7 @@ public class ViewNodeTransferable implements Transferable {
 	 * @param flavor The flavor to test.
 	 * @return true if the flavor is among the supported flavors and false otherwise.
 	 */
+        @Override
 	public boolean isDataFlavorSupported( final DataFlavor flavor ) {
 		for ( int index = 0 ; index < FLAVORS.length ; index++ ) {
 			if ( FLAVORS[index].equals( flavor ) )  return true;

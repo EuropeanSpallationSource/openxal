@@ -30,6 +30,7 @@ class VerboseBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
 	 * @param sender The bin agent that published the new correlation.
 	 * @param correlation The new correlation.
      */
+    @Override
     synchronized public void newCorrelation( final BinAgent<RecordType> sender, final Correlation<RecordType> correlation ) {
 		postCorrelation( correlation );
     }

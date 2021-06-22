@@ -22,7 +22,7 @@ abstract public class AbstractPropertyAccessor implements PropertyAccessor {
 
 	/** get the map of design values keyed by property name */
 	protected Map<String,Double> getDesignValueMap( final AcceleratorNode node, final List<String> propertyNames ) {
-		final Map<String,Double> valueMap = new HashMap<String,Double>();
+		final Map<String,Double> valueMap = new HashMap<>();
 		for( final String propertyName : propertyNames	) {
 			final double scale = getPropertyScale( propertyName );
 			final double value = scale * node.getDesignPropertyValue( propertyName );
@@ -36,7 +36,7 @@ abstract public class AbstractPropertyAccessor implements PropertyAccessor {
 	/** get the map of live values keyed by property name */
 	protected Map<String,Double> getLiveValueMap( final AcceleratorNode node, final Map<Channel,Double> channelValues, final List<String> propertyNames ) {
 		// property values keyed by property name
-		final Map<String,Double> valueMap = new HashMap<String,Double>();
+		final Map<String,Double> valueMap = new HashMap<>();
 
 		// loop over each property by name
 		propertyLoop: for( final String propertyName : propertyNames	) {
@@ -51,7 +51,7 @@ abstract public class AbstractPropertyAccessor implements PropertyAccessor {
 				final Channel channel = propertyChannels[index];
 				final Double value = channelValues.get( channel );
 				if ( value != null ) {
-					propertyChannelValues[index] = value.doubleValue();
+					propertyChannelValues[index] = value;
 				} else {
 					// Missing property values will likely cause a SynchronizationException later if and when the property is needed, so no need to throw any exceptions here.
 					// Just print to standard error for extra diagnostics.
@@ -74,7 +74,7 @@ abstract public class AbstractPropertyAccessor implements PropertyAccessor {
 
 	/** get the channels for live property access */
 	protected Collection<Channel> getLiveChannels( final AcceleratorNode node, final List<String> propertyNames ) {
-		final Set<Channel> channels = new HashSet<Channel>();
+		final Set<Channel> channels = new HashSet<>();
 
 		for( final String propertyName : propertyNames	) {
 			final Channel[] propertyChannels = node.getLivePropertyChannels( propertyName );

@@ -47,8 +47,8 @@ public class OpenXalExporter {
     // Those are the constants used during export and depend on the initial beam
     // parameters.
 
-    public static final double InitialFrequency = 352.21 * 1e6;
-    public static final double beta_gamma_Er_by_e0_c = -0.08980392292066133;
+    public static final double INITIAL_FREQUENCY = 352.21 * 1e6;
+    public static final double BETA_GAMMA_ER_BY_E0_C = -0.08980392292066133;
 
     private static List<String> expSections = Arrays.asList("lebt", "rfq",
             "mebt", "dtl", "spk", "mbl", "hbl", "hebt", "a2t");
@@ -70,7 +70,7 @@ public class OpenXalExporter {
         leafComparator.init(systems);
 
         // Getting lattice commands
-        latticeCommands = new ArrayList<LatticeCommand>();
+        latticeCommands = new ArrayList<>();
         for (Subsystem component : systems) {
             if (component instanceof LatticeCommand) {
                 latticeCommands.add((LatticeCommand) component);
@@ -81,7 +81,7 @@ public class OpenXalExporter {
         acc = new ESSAccelerator("ESS");
         AcceleratorSeq seq = export(parentSystem, systems, 0., leafComparator);
         AcceleratorSeq previousSeq = null;
-        for (AcceleratorSeq s : new ArrayList<AcceleratorSeq>(seq.getSequences())) {
+        for (AcceleratorSeq s : new ArrayList<>(seq.getSequences())) {
             acc.addNode(s);
             if (previousSeq != null) {
                 SequenceBucket sequenceBucket = new SequenceBucket();
@@ -90,7 +90,7 @@ public class OpenXalExporter {
             }
             previousSeq = s;
         }
-        for (AcceleratorNode n : new ArrayList<AcceleratorNode>(seq.getNodes())) {
+        for (AcceleratorNode n : new ArrayList<>(seq.getNodes())) {
             acc.addNode(n);
         }
 
@@ -108,7 +108,7 @@ public class OpenXalExporter {
      * @param accelerator
      */
     private void addSDisplayPositions(ESSAccelerator accelerator) {
-        AcceleratorNode node = null;
+        AcceleratorNode node;
         for (AcceleratorNode element : accelerator.getAllInclusiveNodes()) {
             double position = 0;
             node = element;
@@ -140,7 +140,7 @@ public class OpenXalExporter {
         }
 
         if (lastBefore == null) {
-            return InitialFrequency; // initial frequency
+            return INITIAL_FREQUENCY; // initial frequency
         }
         // parse the lattice command
         String command = lastBefore.getValue();
@@ -170,7 +170,7 @@ public class OpenXalExporter {
         AcceleratorSeq seq = new AcceleratorSeq(parentSystemName);
 
         double currentPosition = 0.;
-        List<Subsystem> sortedSubsystemList = new ArrayList<Subsystem>();
+        List<Subsystem> sortedSubsystemList = new ArrayList<>();
         for (Subsystem component : systems) {
             if (component.getParentSubsystem() == parentSystem) {
                 sortedSubsystemList.add(component);
@@ -178,10 +178,9 @@ public class OpenXalExporter {
         }
         Collections.sort(sortedSubsystemList, comparator);
 
-        AcceleratorSeq old_seq = null;
         Integer dtlTankNumber = 1;
-        AcceleratorSeq dtlTank = null;
-        AcceleratorNode prev_node = null;
+        AcceleratorSeq dtlTank;
+        AcceleratorNode prevNode;
         // Export according to class.
         for (Subsystem subsystem : sortedSubsystemList) {
             AcceleratorNode node = null;
@@ -229,10 +228,10 @@ public class OpenXalExporter {
                     // Adding to the dtl tank any element found in between
                     while (i > 1) {
                         i--;
-                        prev_node = seq.getNodeAt(seq.getNodeCount() - i);
-                        seq.removeNode(prev_node);
-                        prev_node.setPosition(prev_node.getPosition() - dtlTank.getPosition());
-                        dtlTank.addNode(prev_node);
+                        prevNode = seq.getNodeAt(seq.getNodeCount() - i);
+                        seq.removeNode(prevNode);
+                        prevNode.setPosition(prevNode.getPosition() - dtlTank.getPosition());
+                        dtlTank.addNode(prevNode);
                     }
                 }
 
@@ -308,11 +307,11 @@ public class OpenXalExporter {
             if (node != null) {
                 if (node.getClass().equals(AcceleratorSeq.class) && !expSections.contains(node.getId().toLowerCase())) {
                     double offset = node.getPosition();
-                    for (AcceleratorNode n : new ArrayList<AcceleratorSeq>(((AcceleratorSeq) node).getSequences())) {
+                    for (AcceleratorNode n : new ArrayList<>(((AcceleratorSeq) node).getSequences())) {
                         n.setPosition(n.getPosition() + offset);
                         seq.addNode(n);
                     }
-                    for (AcceleratorNode n : new ArrayList<AcceleratorNode>(((AcceleratorSeq) node).getNodes())) {
+                    for (AcceleratorNode n : new ArrayList<>(((AcceleratorSeq) node).getNodes())) {
                         n.setPosition(n.getPosition() + offset);
                         seq.addNode(n);
                     }
@@ -405,7 +404,7 @@ public class OpenXalExporter {
         double rho = element.getCurvatureRadius() * 1e-3;
         double entry_angle_deg = element.getEntranceAngle();
         double exit_angle_deg = element.getExitAngle();
-        double k = beta_gamma_Er_by_e0_c;
+        double k = BETA_GAMMA_ER_BY_E0_C;
         double G = element.getGap() * 1e-3;
         int orientation = Orientation.HORIZONTAL.equals(element.getOrientation()) ? MagnetType.HORIZONTAL : MagnetType.VERTICAL;
         double len = Math.abs(rho * alpha_deg * Math.PI / 180.);
@@ -435,14 +434,14 @@ public class OpenXalExporter {
                 getFrequency(element) * 1e-6, currentPosition);
         if (betas == 0.0) {
             cavity.getRfField().setTTFCoefs(new double[]{});
-            cavity.getRfField().setTTF_endCoefs(new double[]{});
+            cavity.getRfField().setTTFEndCoefs(new double[]{});
         } else {
             cavity.getRfField().setTTFCoefs(new double[]{betas, Ts, kTs, k2Ts});
-            cavity.getRfField().setTTF_startCoefs(new double[]{betas, Ts, kTs, k2Ts});
-            cavity.getRfField().setTTF_endCoefs(new double[]{betas, Ts, kTs, k2Ts});
+            cavity.getRfField().setTTFStartCoefs(new double[]{betas, Ts, kTs, k2Ts});
+            cavity.getRfField().setTTFEndCoefs(new double[]{betas, Ts, kTs, k2Ts});
             cavity.getRfField().setSTFCoefs(new double[]{betas, 0, kS, k2S});
-            cavity.getRfField().setSTF_startCoefs(new double[]{betas, Ts, kTs, k2Ts});
-            cavity.getRfField().setSTF_endCoefs(new double[]{betas, 0, kS, k2S});
+            cavity.getRfField().setSTFStartCoefs(new double[]{betas, Ts, kTs, k2Ts});
+            cavity.getRfField().setSTFEndCoefs(new double[]{betas, 0, kS, k2S});
         }
         return cavity;
     }
@@ -492,7 +491,7 @@ public class OpenXalExporter {
         int n = element.getCellNumber();
         int m = element.getMode();
 
-        double lambda = IElement.LightSpeed / frequency;
+        double lambda = IElement.LIGHT_SPEED / frequency;
         double Lc0, Lc, Lcn;
         double amp0 = 1 + kE0Ti;
         double ampn = 1 + kE0To;
@@ -545,13 +544,13 @@ public class OpenXalExporter {
                 frequency * 1e-6, currentPosition);
 
         if (betas == 0.0) {
-            cavity.getRfField().setTTF_startCoefs(new double[]{});
+            cavity.getRfField().setTTFStartCoefs(new double[]{});
             cavity.getRfField().setTTFCoefs(new double[]{});
-            cavity.getRfField().setTTF_endCoefs(new double[]{});
+            cavity.getRfField().setTTFEndCoefs(new double[]{});
         } else {
-            cavity.getRfField().setTTF_startCoefs(new double[]{betas, Ti, kTi, k2Ti});
+            cavity.getRfField().setTTFStartCoefs(new double[]{betas, Ti, kTi, k2Ti});
             cavity.getRfField().setTTFCoefs(new double[]{betas, Ts, kTs, k2Ts});
-            cavity.getRfField().setTTF_endCoefs(new double[]{betas, To, kTo, k2To});
+            cavity.getRfField().setTTFEndCoefs(new double[]{betas, To, kTo, k2To});
         }
 
         if (m == 1) {

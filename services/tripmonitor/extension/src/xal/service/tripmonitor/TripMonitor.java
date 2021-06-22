@@ -16,16 +16,16 @@ import xal.smf.AcceleratorNode;
 /** montor trips */
 public class TripMonitor implements NodeMonitorListener {
 	/** trip monitor filter */
-	final protected TripMonitorFilter MONITOR_FILTER;
+	protected final TripMonitorFilter MONITOR_FILTER;
 	
 	/** list of node monitors */
-	final protected List<NodeMonitor> NODE_MONITORS;
+	protected final List<NodeMonitor> NODE_MONITORS;
 	
 	/** trip records */
-	final protected List<TripRecord> TRIP_HISTORY;
+	protected final List<TripRecord> TRIP_HISTORY;
 	
 	/** indicates whether this monitor is enabled */
-	volatile protected boolean _isEnabled;
+	volatile protected boolean isEnabled;
 	
 	
 	/** Constructor */
@@ -106,13 +106,13 @@ public class TripMonitor implements NodeMonitorListener {
 	
 	/** determine if this monitor is enabled */
 	public boolean isEnabled() {
-		return _isEnabled;
+		return isEnabled;
 	}
 	
 	
 	/** set whether this monitor is enabled */
 	public void setEnabled( final boolean shouldEnable ) {
-		_isEnabled = shouldEnable;
+		isEnabled = shouldEnable;
 		
 		if ( shouldEnable ) {
 			for ( final NodeMonitor nodeMonitor : NODE_MONITORS ) {

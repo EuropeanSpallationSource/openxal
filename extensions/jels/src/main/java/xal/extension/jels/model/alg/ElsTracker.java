@@ -28,17 +28,17 @@ public class ElsTracker extends EnvelopeTracker {
     /**
      * string type identifier for algorithm
      */
-    public static final String s_strTypeId = ElsTracker.class.getName();
+    public static final String TYPE_ID = ElsTracker.class.getName();
 
     /**
      * current algorithm version
      */
-    public static final int s_intVersion = 4;
+    public static final int VERSION = 4;
 
     /**
      * probe type recognized by this algorithm
      */
-    public static final Class<EnvelopeProbe> s_clsProbeType = EnvelopeProbe.class;
+    public static final Class<EnvelopeProbe> CLS_PROBE_TYPE = EnvelopeProbe.class;
 
     /*
      *  Local Attributes
@@ -47,7 +47,7 @@ public class ElsTracker extends EnvelopeTracker {
      * Creates a new instance of EnvelopeTracker
      */
     public ElsTracker() {
-        super(s_strTypeId, s_intVersion, s_clsProbeType);
+        super(TYPE_ID, VERSION, CLS_PROBE_TYPE);
         registerProbeType(ElsProbe.class);
     }
 

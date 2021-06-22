@@ -26,6 +26,8 @@ import java.io.StringWriter;
 import java.text.NumberFormat;
 
 import org.w3c.dom.Document;
+import xal.ca.ConnectionException;
+import xal.ca.GetException;
 /**
  * A visitor generating an XML document for the lattice. This document
  * is not compatible with the on-line model. To make the document compatible
@@ -43,20 +45,20 @@ public class LatticeSynchronizer implements Visitor {
 	private String paramSrc;
 //	private static ModelTypeLookUp modelType; //look-up for LANL types
 	private static NumberFormat fmt; //number formater
-	private static final String docType;
-	private static final String seqTag;
-	private static final String elmTag;
-	private static final String parTag;
-	private static final String comTag;
-	private static final String dtd;
+	private static final String DOC_TYPE;
+	private static final String SEQ_TAG;
+	private static final String ELM_TAG;
+	private static final String PAR_TAG;
+	private static final String COM_TAG;
+	private static final String DTD;
 
 	static {
-		docType= "Lattice";
-		seqTag= "Sequence";
-		elmTag= "Element";
-		parTag= "Parameter";
-		comTag= "comment";
-		dtd= "Lattice.mod.xal.dtd";
+		DOC_TYPE= "Lattice";
+		SEQ_TAG= "Sequence";
+		ELM_TAG= "Element";
+		PAR_TAG= "Parameter";
+		COM_TAG= "comment";
+		DTD= "Lattice.mod.xal.dtd";
 //		modelType= new ModelTypeLookUp();
 	}
 
@@ -72,16 +74,16 @@ public class LatticeSynchronizer implements Visitor {
 		fmt= Lattice.fmt; // number format is defined in Lattice
 
 		//the xml-document-adaptor: creates the <!DOCTYPE ...> declaration
-		docAdptr= XmlDataAdaptor.newEmptyDocumentAdaptor(docType, dtd);
+		docAdptr= XmlDataAdaptor.newEmptyDocumentAdaptor(DOC_TYPE, DTD);
 
 		// the Lattice tag: creates the <Lattice .../> root tag
-		latAdptr= docAdptr.createChild(docType);
+		latAdptr= docAdptr.createChild(DOC_TYPE);
 		latAdptr.setValue("id", lattice.getName());
 		latAdptr.setValue( "ver", " " );
 		latAdptr.setValue("author", "W.-D. Klotz");
 
 		// the comment tag: creates a <comment ..../> tag
-		comAdptr= latAdptr.createChild(comTag);
+		comAdptr= latAdptr.createChild(COM_TAG);
 		comAdptr.setValue("text", "document generated from " + Lattice.version());
 
 		// the Sequence tag: creates the <Sequence id="xxx" ..../> tag
@@ -99,7 +101,7 @@ public class LatticeSynchronizer implements Visitor {
 	 * Writes the <Element .../> tag to the xml document.
 	 */
 	private void writeElementTag(Element e) {
-		elmAdptr= seqAdptr.createChild(elmTag);
+		elmAdptr= seqAdptr.createChild(ELM_TAG);
 		elmAdptr.setValue("fam", e.getFam());
 		//        elmAdptr.setValue("type",modelType.ValueForKey(e.getType()));
 		elmAdptr.setValue("type", e.getType());
@@ -120,6 +122,7 @@ public class LatticeSynchronizer implements Visitor {
 	/**
 	 * Returns the whole lattice document as a string.
 	 */
+        @Override
 	public String toString() {
 		StringWriter sout= new StringWriter();
 		docAdptr.writeTo(sout);
@@ -147,7 +150,7 @@ public class LatticeSynchronizer implements Visitor {
 	public void writeToUrlSpec(String urlSpec) throws WriteException {
 		try {
 			XmlWriter.writeToUrlSpec(docAdptr.document(), urlSpec);
-		} catch (Exception excpt) {
+		} catch (IOException excpt) {
 			throw new WriteException(excpt);
 		}
 	}
@@ -156,12 +159,13 @@ public class LatticeSynchronizer implements Visitor {
 	public void writeToUrl(java.net.URL url) throws WriteException {
 		try {
 			XmlWriter.writeToUrl(docAdptr.document(), url);
-		} catch (Exception excpt) {
+		} catch (IOException excpt) {
 			throw new WriteException(excpt);
 		}
 	}
 
 	/** Writes the parameters of a RFGap lattice element  */
+        @Override
 	public void visit(RFGap e) {
 		writeElementTag(e);
 		RfGap rfgap= (RfGap) e.getAcceleratorNode();
@@ -182,33 +186,39 @@ public class LatticeSynchronizer implements Visitor {
 		parAdptr.setValue("value", Double.toString(getRfGapE0TLWrapper(rfgap)));
 	}
 
-	/** Writes the element- and paramter-tags of a PermMarker lattice element  */
+	/** Writes the element- and parameter-tags of a PermMarker lattice element  */
+        @Override
 	public void visit(PermMarker e) {
 		writeElementTag(e);
 	}
 
-	/** Writes the element- and paramter-tags of a SkewSext lattice element  */
+	/** Writes the element- and parameter-tags of a SkewSext lattice element  */
+        @Override
 	public void visit(SkewSext e) {
 		writeElementTag(e);
 	}
 
-	/** Writes the element- and paramter-tags of an Octupole lattice element  */
+	/** Writes the element- and parameter-tags of an Octupole lattice element  */
+        @Override
 	public void visit(Octupole e) {
 		writeElementTag(e);
 	}
 
-	/** Writes the element- and paramter-tags of a BCMonitor lattice element  */
+	/** Writes the element- and parameter-tags of a BCMonitor lattice element  */
+        @Override
 	public void visit(BCMonitor e) {
 		writeElementTag(e);
 	}
 	
 	
-	/** Writes the element- and paramter-tags of a BSMonitor lattice element  */
+	/** Writes the element- and parameter-tags of a BSMonitor lattice element  */
+        @Override
 	public void visit( final BSMonitor element ) {
 		writeElementTag( element );
 	}
 	
-	/** Writes the element- and paramter-tags of a HSteerer lattice element  */
+	/** Writes the element- and parameter-tags of a HSteerer lattice element  */
+        @Override
 	public void visit(HSteerer e) {
 		writeElementTag(e);
 		Magnet magnet= (Magnet) e.getAcceleratorNode();
@@ -238,7 +248,8 @@ public class LatticeSynchronizer implements Visitor {
 		parAdptr.setValue("value", Integer.toString(orientation));
 	}
 
-	/** Writes the element- and paramter-tags of a Dipole lattice element  */
+	/** Writes the element- and parameter-tags of a Dipole lattice element  */
+        @Override
 	public void visit(Dipole e) {
 		writeElementTag(e);
 		Magnet magnet= (Magnet) e.getAcceleratorNode();
@@ -300,7 +311,8 @@ public class LatticeSynchronizer implements Visitor {
 		
 	}
 
-	/** Writes the element- and paramter-tags of a VSteerer lattice element  */
+	/** Writes the element- and parameter-tags of a VSteerer lattice element  */
+        @Override
 	public void visit(VSteerer e) {
 		writeElementTag(e);
 		Magnet magnet= (Magnet) e.getAcceleratorNode();
@@ -330,7 +342,8 @@ public class LatticeSynchronizer implements Visitor {
 		parAdptr.setValue("value", Integer.toString(orientation));
 	}
 	
-	/** Writes the element- and paramter-tags of a EKicker lattice element  */
+	/** Writes the element- and parameter-tags of a EKicker lattice element  */
+        @Override
 	public void visit( final EKicker element ) {
 		writeElementTag( element );
 		final Magnet magnet= (Magnet)element.getAcceleratorNode();
@@ -360,12 +373,14 @@ public class LatticeSynchronizer implements Visitor {
 		parAdptr.setValue( "value", Integer.toString( orientation ) );
 	}
 
-	/** Writes the element- and paramter-tags of a Drift lattice element  */
+	/** Writes the element- and parameter-tags of a Drift lattice element  */
+        @Override
 	public void visit(Drift e) {
 		writeElementTag(e);
 	}
 
-	/** Writes the element- and paramter-tags of a Quadrupole lattice element  */
+	/** Writes the element- and parameter-tags of a Quadrupole lattice element  */
+        @Override
 	public void visit(Quadrupole e) {
 		writeElementTag(e);
 		Magnet magnet= (Magnet) e.getAcceleratorNode();
@@ -395,7 +410,8 @@ public class LatticeSynchronizer implements Visitor {
 		parAdptr.setValue("value", Integer.toString(orientation));
 	}
 
-	/** Writes the element- and paramter-tags of a Quadrupole lattice element  */
+	/** Writes the element- and parameter-tags of a Quadrupole lattice element  */
+        @Override
 	public void visit(EQuad e) {
 		writeElementTag(e);
 		xal.smf.impl.EQuad magnet= (xal.smf.impl.EQuad) e.getAcceleratorNode();
@@ -425,7 +441,8 @@ public class LatticeSynchronizer implements Visitor {
 		parAdptr.setValue("value", Integer.toString(orientation));
 	}
 
-	/** Writes the element- and paramter-tags of a Quadrupole lattice element  */
+	/** Writes the element- and parameter-tags of a Quadrupole lattice element  */
+        @Override
 	public void visit(Solenoid e) {
 		writeElementTag(e);
 		Magnet magnet= (Magnet) e.getAcceleratorNode();
@@ -455,47 +472,53 @@ public class LatticeSynchronizer implements Visitor {
 		parAdptr.setValue("value", Integer.toString(orientation));
 */	}
 
-	/** Writes the element- and paramter-tags of a WScanner lattice element  */
+	/** Writes the element- and parameter-tags of a WScanner lattice element  */
+        @Override
 	public void visit(WScanner e) {
 		writeElementTag(e);
 	}
 	
-	/** Writes the element- and paramter-tags of a WScanner lattice element  */
+	/** Writes the element- and parameter-tags of a WScanner lattice element  */
 /*	public void visit(Harp e) {
 		writeElementTag(e);
 	}	
 */
-	/** Writes the element- and paramter-tags of a BPMonitor lattice element  */
+	/** Writes the element- and parameter-tags of a BPMonitor lattice element  */
+        @Override
 	public void visit(BPMonitor e) {
 		writeElementTag(e);
 	}
 
-	/** Writes the element- and paramter-tags of a BLMonitor lattice element  */
+	/** Writes the element- and parameter-tags of a BLMonitor lattice element  */
+        @Override
 	public void visit(BLMonitor e) {
 		writeElementTag(e);
 	}
 
-	/** Writes the element- and paramter-tags of a Foil lattice element  */
+	/** Writes the element- and parameter-tags of a Foil lattice element  */
 /*	public void visit(Foil e) {
 		writeElementTag(e);
 	}
 */
-	/** Writes the element- and paramter-tags of a Foil lattice element  */
+	/** Writes the element- and parameter-tags of a Foil lattice element  */
 /*	public void visit(VacuumWindow e) {
 		writeElementTag(e);
 	}
 */
-	/** Writes the element- and paramter-tags of a SkewQuad lattice element  */
+	/** Writes the element- and parameter-tags of a SkewQuad lattice element  */
+        @Override
 	public void visit(SkewQuad e) {
 		writeElementTag(e);
 	}
 
-	/** Writes the element- and paramter-tags of a Sextupole lattice element  */
+	/** Writes the element- and parameter-tags of a Sextupole lattice element  */
+        @Override
 	public void visit(Sextupole e) {
 		writeElementTag(e);
 	}
 
-	/** Writes the element- and paramter-tags of a Marker lattice element  */
+	/** Writes the element- and parameter-tags of a Marker lattice element  */
+        @Override
 	public void visit(Marker e) {
 		writeElementTag(e);
 	}
@@ -515,7 +538,7 @@ public class LatticeSynchronizer implements Visitor {
 			try {
 				return rfgap.getGapPhaseAvg()*Math.PI/180.;
 				//				return -99.d;
-			} catch (Exception e) {
+			} catch (ConnectionException | GetException e) {
 				//				throw new Error(e.getMessage());
 				if (e.getMessage() != null) {
 					System.out.println(e.getMessage());
@@ -540,7 +563,7 @@ public class LatticeSynchronizer implements Visitor {
 			try {
 				return rfgap.getGapE0TL()*1.e6;
 				//				return -99.d;
-			} catch (Exception e) {
+			} catch (ConnectionException | GetException e) {
 				//				throw new Error(e.getMessage());
 				if (e.getMessage() != null) {
 					System.out.println(e.getMessage());
@@ -570,7 +593,7 @@ public class LatticeSynchronizer implements Visitor {
 				} else {
                                     return magnet.getDesignField();
 				}
-			} catch (Exception e) {
+			} catch (ConnectionException | GetException e) {
 				//				throw new Error(e.getMessage());
 				if (e.getMessage() != null) {
 					System.out.println(e.getMessage());
@@ -598,7 +621,7 @@ public class LatticeSynchronizer implements Visitor {
 				} else {
                                     return magnet.getDesignField();
 				}
-			} catch (Exception e) {
+			} catch (ConnectionException | GetException e) {
 				//				throw new Error(e.getMessage());
 				if (e.getMessage() != null) {
 					System.out.println(e.getMessage());

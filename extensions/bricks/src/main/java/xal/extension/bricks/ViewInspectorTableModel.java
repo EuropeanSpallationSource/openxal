@@ -9,19 +9,7 @@
 package xal.extension.bricks;
 
 import java.beans.*;
-import java.lang.reflect.*;
-import javax.swing.*;
 import javax.swing.table.*;
-import javax.swing.border.*;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.Rectangle;
-import java.awt.event.*;
-import java.awt.image.*;
-import java.awt.Window;
-import javax.swing.event.*;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -33,44 +21,45 @@ class ViewInspectorTableModel extends AbstractTableModel implements PropertyTabl
     /** serialization ID */
     private static final long serialVersionUID = 1L;
     
-	final static public int NAME_COLUMN = 0;
-	final static public int VALUE_COLUMN = 1;
+	public static final int NAME_COLUMN = 0;
+	public static final int VALUE_COLUMN = 1;
 	
-	final protected PropertyDescriptor[] PROPERTY_DESCRIPTORS;
-	final protected BeanNode<?> BEAN_NODE;
-	final protected PropertyValueEditorManager PROPERTY_VALUE_EDITOR_MANAGER;
+	protected final PropertyDescriptor[] propertyDescriptors;
+	protected final BeanNode<?> beanNode;
+	protected final PropertyValueEditorManager propertyValueEditorManager;
 	
 	
 	/** Constructor */
 	public ViewInspectorTableModel( final BeanNode<?> node, final PropertyValueEditorManager propertyEditorManager ) {
-		BEAN_NODE = node;
-		PROPERTY_VALUE_EDITOR_MANAGER = propertyEditorManager;
+		beanNode = node;
+		propertyValueEditorManager = propertyEditorManager;
 		
 		if ( node != null ) {
 			final BeanInfo beanInfo = node.getBeanObjectBeanInfo();
 			final PropertyDescriptor[] descriptors = beanInfo != null ? beanInfo.getPropertyDescriptors() : new PropertyDescriptor[0];
-			final List<PropertyDescriptor> editableDescriptors = new ArrayList<PropertyDescriptor>( descriptors.length );
+			final List<PropertyDescriptor> editableDescriptors = new ArrayList<>( descriptors.length );
 			for ( final PropertyDescriptor descriptor : descriptors ) {
 				if ( isPropertyEditable( descriptor ) && isPropertyReadable( descriptor ) ) {
 					editableDescriptors.add( descriptor );
 				}
 			}
-			PROPERTY_DESCRIPTORS = new PropertyDescriptor[editableDescriptors.size()];
-			editableDescriptors.toArray( PROPERTY_DESCRIPTORS );
+			propertyDescriptors = new PropertyDescriptor[editableDescriptors.size()];
+			editableDescriptors.toArray(propertyDescriptors );
 		}
 		else {
-			PROPERTY_DESCRIPTORS = new PropertyDescriptor[0];
+			propertyDescriptors = new PropertyDescriptor[0];
 		}
 	}
 	
 	
 	/** get the property descriptor for the specified row */
 	public PropertyDescriptor getPropertyDescriptor( final int row ) {
-		return PROPERTY_DESCRIPTORS[row];
+		return propertyDescriptors[row];
 	}
 	
 	
 	/** get the property descriptor for the specified row */
+    @Override
 	public Class<?> getPropertyClass( final int row ) {
 		return getPropertyDescriptor( row ).getPropertyType();
 	}
@@ -80,7 +69,7 @@ class ViewInspectorTableModel extends AbstractTableModel implements PropertyTabl
 	protected boolean isPropertyEditable( final PropertyDescriptor descriptor ) {
 		if ( descriptor.getWriteMethod() != null ) {
 			//System.out.println( descriptor.getPropertyType() );
-			return PROPERTY_VALUE_EDITOR_MANAGER.hasEditor( descriptor.getPropertyType() );
+			return propertyValueEditorManager.hasEditor( descriptor.getPropertyType() );
 		}
 		else {
 			return false;
@@ -91,7 +80,7 @@ class ViewInspectorTableModel extends AbstractTableModel implements PropertyTabl
 	/** determine if the property descriptor is readable */
 	protected boolean isPropertyReadable( final PropertyDescriptor descriptor ) {
 		if ( descriptor.getReadMethod() != null ) {
-			return PROPERTY_VALUE_EDITOR_MANAGER.hasEditor( descriptor.getPropertyType() );
+			return propertyValueEditorManager.hasEditor( descriptor.getPropertyType() );
 		}
 		else {
 			return false;
@@ -105,6 +94,7 @@ class ViewInspectorTableModel extends AbstractTableModel implements PropertyTabl
 	 * @param column the index of the column for which to get the name.
 	 * @return the name of the specified column
 	 */
+    @Override
 	public String getColumnName( final int column ) {
 		switch ( column ) {
 			case NAME_COLUMN:
@@ -120,6 +110,7 @@ class ViewInspectorTableModel extends AbstractTableModel implements PropertyTabl
 	/**
 		* Get the data class for the specified column.
 	 */
+    @Override
 	public Class<?> getColumnClass( final int column ) {
 		switch( column ) {
 			default:
@@ -131,10 +122,11 @@ class ViewInspectorTableModel extends AbstractTableModel implements PropertyTabl
 	/**
 		* Determine if the specified cell is editable.
 	 */
+    @Override
 	public boolean isCellEditable( final int row, final int column ) {
 		switch( column ) {
 			case VALUE_COLUMN:
-				final PropertyDescriptor propertyDescriptor = PROPERTY_DESCRIPTORS[row];
+				final PropertyDescriptor propertyDescriptor = propertyDescriptors[row];
 				return isPropertyEditable( propertyDescriptor );
 			default:
 				return false;
@@ -146,8 +138,9 @@ class ViewInspectorTableModel extends AbstractTableModel implements PropertyTabl
 		* Get the number of rows to display.
 	 * @return the number of rows to display.
 	 */
+    @Override
 	public int getRowCount() {
-		return PROPERTY_DESCRIPTORS.length;
+		return propertyDescriptors.length;
 	}
 	
 	
@@ -155,6 +148,7 @@ class ViewInspectorTableModel extends AbstractTableModel implements PropertyTabl
 		* Get the number of columns to display.
 	 * @return the number of columns to display.
 	 */
+    @Override
 	public int getColumnCount() {
 		return 2;
 	}
@@ -166,14 +160,15 @@ class ViewInspectorTableModel extends AbstractTableModel implements PropertyTabl
 	 * @param column the column of the cell to update.
 	 * @return the value to display in the specified cell.
 	 */
+    @Override
 	public Object getValueAt( final int row, final int column ) {
 		switch ( column ) {
 			case NAME_COLUMN:
-				return PROPERTY_DESCRIPTORS[row].getName();
+				return propertyDescriptors[row].getName();
 			case VALUE_COLUMN:
 				try {
-					final PropertyDescriptor propertyDescriptor = PROPERTY_DESCRIPTORS[row];
-					return BEAN_NODE.getPropertyValue( propertyDescriptor );
+					final PropertyDescriptor propertyDescriptor = propertyDescriptors[row];
+					return beanNode.getPropertyValue( propertyDescriptor );
 				}
 				catch ( Exception exception ) {
 					exception.printStackTrace();
@@ -186,12 +181,13 @@ class ViewInspectorTableModel extends AbstractTableModel implements PropertyTabl
 	
 	
 	/** set the cell value */
+    @Override
 	public void setValueAt( final Object value, final int row, final int column ) {
 		switch ( column ) {
 			case VALUE_COLUMN:
 				try {
-					final PropertyDescriptor propertyDescriptor = PROPERTY_DESCRIPTORS[row];
-					BEAN_NODE.setPropertyValue( propertyDescriptor, value );
+					final PropertyDescriptor propertyDescriptor = propertyDescriptors[row];
+					beanNode.setPropertyValue( propertyDescriptor, value );
                     break;
 				}
 				catch ( Exception exception ) {

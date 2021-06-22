@@ -11,7 +11,7 @@ import xal.smf.impl.qualify.*;
  */
 public class BunchShapeMonitor extends AcceleratorNode {
 	/** device type */
-	public static final String s_strType = "BSM";
+	public static final String TYPE = "BSM";
 	
 	
 	// static initializer
@@ -22,13 +22,14 @@ public class BunchShapeMonitor extends AcceleratorNode {
 	
 	/* Register type for qualification */
 	private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( BunchShapeMonitor.class, s_strType );
+		ElementTypeManager.defaultManager().registerTypes( BunchShapeMonitor.class, TYPE );
 	}
 	
 	
 	/** Override to provide type signature */
+        @Override
 	public String getType() {
-		return s_strType;
+		return TYPE;
 	}
 	
 	

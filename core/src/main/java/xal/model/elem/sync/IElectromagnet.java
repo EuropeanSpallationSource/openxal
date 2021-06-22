@@ -63,4 +63,4 @@ public interface IElectromagnet  {
      */
     public void setMagField(double dblField);
     
-};
+}

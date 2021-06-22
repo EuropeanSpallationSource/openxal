@@ -18,7 +18,7 @@ import xal.rbac.RBACUserInfo;
  */
 public class DummyRbacSubject implements RBACSubject {
 
-    private final static String DUMMY_USERNAME = "dummy_user";
+    private static final String DUMMY_USERNAME = "dummy_user";
 
     DummyRbacSubject() {
     }

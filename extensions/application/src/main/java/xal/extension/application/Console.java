@@ -27,36 +27,36 @@ import java.util.prefs.Preferences;
  */
 class Console {
 	/** console character limit */
-	final static private int CHAR_LIMIT = 250000;
+	private static final int CHAR_LIMIT = 250000;
 	
     /** the console instance */
-    final static private Console CONSOLE;
+    private static final Console CONSOLE;
 	
 	/** preference key for logging */
-	final static private String LOGGING_KEY = "LogOutput";
+	private static final String LOGGING_KEY = "LogOutput";
 	
 	/** logging preferences */
-	final static private Preferences LOG_PREFS;
+	private static final Preferences LOG_PREFS;
     
 	/** file writer where log files are stored */
-	private Writer _logWriter;
+	private Writer logWriter;
 	
 	/** indicates whether the output should be logged to a file */
-	private boolean _logsOutput;
+	private boolean logsOutput;
 	
     // stream variables
-    final private PrintStream _standardOut;
-    final private PrintStream _standardErr;
-    final private ConsoleOutHandler _outStream;
-    final private ConsoleErrHandler _errStream;
+    private final PrintStream standardOut;
+    private final PrintStream standardErr;
+    private final ConsoleOutHandler outStream;
+    private final ConsoleErrHandler errStream;
     
     // view variables
-    private JFrame _frame;
-    private boolean _neverShown;
-    private JTextPane _textView;
-    private Style _outStyle;
-    private Style _errStyle;
-    private DefaultStyledDocument _document;
+    private JFrame frame;
+    private boolean neverShown;
+    private JTextPane textView;
+    private Style outStyle;
+    private Style errStyle;
+    private DefaultStyledDocument document;
     
 	
 	// static initializer
@@ -68,14 +68,14 @@ class Console {
 	
     /** Constructor */
     public Console() {
-        _neverShown = true;
-        _outStream = new ConsoleOutHandler();
-        _errStream = new ConsoleErrHandler();
-        _standardOut = System.out;
-        _standardErr = System.err;
+        neverShown = true;
+        outStream = new ConsoleOutHandler();
+        errStream = new ConsoleErrHandler();
+        standardOut = System.out;
+        standardErr = System.err;
 		
-		_logsOutput = LOG_PREFS.getBoolean( LOGGING_KEY, false );
-		if ( _logsOutput )  configureLogs();
+		logsOutput = LOG_PREFS.getBoolean( LOGGING_KEY, false );
+		if ( logsOutput )  configureLogs();
 
         makeTextView();
         makeFrame();		
@@ -84,7 +84,7 @@ class Console {
 	
 	/** configure the logs for recording output */
 	private void configureLogs() {
-		if ( _logWriter == null ) {
+		if ( logWriter == null ) {
 			try {
 				final String homePath = System.getProperty( "user.home" );
 				final Date now = new Date();
@@ -96,9 +96,9 @@ class Console {
 					logDirectory.mkdirs();
 				}
 				final File logFile = new File( logDirectory, appName + "_" + new SimpleDateFormat( "yyyyMMdd'_'HHmmss'_'SSS" ).format( now ) + ".log" );
-				_logWriter = new BufferedWriter( new FileWriter( logFile ) );
+				logWriter = new BufferedWriter( new FileWriter( logFile ) );
 			}
-			catch( Exception exception ) {
+			catch( IOException exception ) {
 				exception.printStackTrace();
 			}			
 		}
@@ -107,13 +107,13 @@ class Console {
     
     /** Make the frame for the console. */
     private void makeFrame() {
-        _frame = new JFrame( "Console" );
-        _frame.setDefaultCloseOperation( WindowConstants.HIDE_ON_CLOSE );
-        _frame.setSize( 640, 480 );
-        _frame.setTitle( Application.getAdaptor().applicationName() + " - Console" );
-        _frame.getContentPane().setLayout( new BorderLayout() );
+        frame = new JFrame( "Console" );
+        frame.setDefaultCloseOperation( WindowConstants.HIDE_ON_CLOSE );
+        frame.setSize( 640, 480 );
+        frame.setTitle( Application.getAdaptor().applicationName() + " - Console" );
+        frame.getContentPane().setLayout( new BorderLayout() );
 		
-		generateContentsFor( _frame.getContentPane() );
+		generateContentsFor( frame.getContentPane() );
     }
 	
 	
@@ -128,11 +128,12 @@ class Console {
 		clearButton.setToolTipText( "Clear the console..." );
 		
         clearButton.addActionListener( new ActionListener() {
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 try {
-                    _document.remove( 0, _document.getLength() );
+                    document.remove( 0, document.getLength() );
                 }
-                catch( Exception exception ) {
+                catch( BadLocationException exception ) {
                 }
             }
         });
@@ -142,13 +143,14 @@ class Console {
 
 		final JCheckBox logCheckBox = new JCheckBox( "Persistent Log" );
 		logCheckBox.setToolTipText( "Enable/disable persistent logging for all applications. Launch an application using -Dxal.admin=true to enable this option." );
-		logCheckBox.setSelected( _logsOutput );
+		logCheckBox.setSelected( logsOutput );
 		
 		logCheckBox.addActionListener( new ActionListener() {
+                        @Override
 			public void actionPerformed( final ActionEvent event ) {
-				_logsOutput = logCheckBox.isSelected();
-				if ( _logsOutput )  configureLogs();
-				LOG_PREFS.putBoolean( LOGGING_KEY, _logsOutput );
+				logsOutput = logCheckBox.isSelected();
+				if ( logsOutput )  configureLogs();
+				LOG_PREFS.putBoolean( LOGGING_KEY, logsOutput );
 			}
 		});
 		buttonBar.add( logCheckBox );
@@ -160,7 +162,7 @@ class Console {
         Box box = new Box( BoxLayout.Y_AXIS );
         container.add( box, "Center" );
         
-        JScrollPane scrollPane = new JScrollPane( _textView );
+        JScrollPane scrollPane = new JScrollPane( textView );
         box.add( scrollPane, "Center" );		
 	}
     
@@ -170,15 +172,15 @@ class Console {
      */
     private void makeTextView() {
         StyleContext context = new StyleContext();
-        _document = new DefaultStyledDocument( context );
-        _textView = new JTextPane( _document );
-        _textView.setEditable( false );
+        document = new DefaultStyledDocument( context );
+        textView = new JTextPane( document );
+        textView.setEditable( false );
         
-        _outStyle = context.addStyle( null, null );
-        StyleConstants.setForeground( _outStyle, Color.black );
+        outStyle = context.addStyle( null, null );
+        StyleConstants.setForeground( outStyle, Color.black );
         
-        _errStyle = context.addStyle( null, null );
-        StyleConstants.setForeground( _errStyle, Color.red );
+        errStyle = context.addStyle( null, null );
+        StyleConstants.setForeground( errStyle, Color.red );
     }
     
     
@@ -186,7 +188,7 @@ class Console {
      * Sets the console to capture standard output.
      */
     static void captureOutput() {
-        System.setOut( new PrintStream( CONSOLE._outStream ) );
+        System.setOut( new PrintStream( CONSOLE.outStream ) );
     }
     
     
@@ -194,7 +196,7 @@ class Console {
      * Sets the console to capture standard error.
      */
     static void captureErr() {
-        System.setErr( new PrintStream( CONSOLE._errStream ) );
+        System.setErr( new PrintStream( CONSOLE.errStream ) );
     }
     
     
@@ -204,22 +206,22 @@ class Console {
 	 * @param sender The component relative to which the console should be positioned
      */
     static void showNear( final java.awt.Component sender ) {
-        if ( CONSOLE._neverShown ) {
-            CONSOLE._frame.setLocationRelativeTo( sender );
-            CONSOLE._neverShown = false;
+        if ( CONSOLE.neverShown ) {
+            CONSOLE.frame.setLocationRelativeTo( sender );
+            CONSOLE.neverShown = false;
         }
-        else if ( !sender.getGraphicsConfiguration().getDevice().getIDstring().equals(CONSOLE._frame.getGraphicsConfiguration().getDevice().getIDstring()) ) {
+        else if ( !sender.getGraphicsConfiguration().getDevice().getIDstring().equals(CONSOLE.frame.getGraphicsConfiguration().getDevice().getIDstring()) ) {
             // if the console window is on a different screen bring it to the same screen as the sender
-            CONSOLE._frame.setVisible( false );
-            CONSOLE._frame.setLocationRelativeTo( sender );
+            CONSOLE.frame.setVisible( false );
+            CONSOLE.frame.setLocationRelativeTo( sender );
         }
-        CONSOLE._frame.setVisible( true );
+        CONSOLE.frame.setVisible( true );
     }
     
     
     /** Hide the console. */
     static void hide() {
-        CONSOLE._frame.setVisible( false );
+        CONSOLE.frame.setVisible( false );
     }
     
     
@@ -230,19 +232,20 @@ class Console {
          * Write output to both standard out and the Console view
          * @param character The character to write
          */
+        @Override
         public void write( final int character ) {
             try {
-                _standardOut.write( character );
-                _document.insertString( _document.getLength(), String.valueOf( (char)character ), _outStyle );
-				if ( _document.getLength() > CHAR_LIMIT ) {
-					_document.remove( 0, CHAR_LIMIT / 10 );		// shed the first 10 percent
+                standardOut.write( character );
+                document.insertString( document.getLength(), String.valueOf( (char)character ), outStyle );
+				if ( document.getLength() > CHAR_LIMIT ) {
+					document.remove( 0, CHAR_LIMIT / 10 );		// shed the first 10 percent
 				}
-				if ( _logsOutput ) {
-					_logWriter.write( character );
-					_logWriter.flush();
+				if ( logsOutput ) {
+					logWriter.write( character );
+					logWriter.flush();
 				}
             }
-            catch( Exception exception ) {}
+            catch( IOException | BadLocationException exception ) {}
         }
     }
     
@@ -253,19 +256,20 @@ class Console {
          * Write output to both standard err and the Console view
          * @param character The character to write
          */
+        @Override
         public void write( final int character ) {
             try {
-                _standardErr.write(character);
-                _document.insertString( _document.getLength(), String.valueOf( (char)character ), _errStyle );
-				if ( _document.getLength() > CHAR_LIMIT ) {
-					_document.remove( 0, CHAR_LIMIT / 10 );		// shed the first 10 percent
+                standardErr.write(character);
+                document.insertString( document.getLength(), String.valueOf( (char)character ), errStyle );
+				if ( document.getLength() > CHAR_LIMIT ) {
+					document.remove( 0, CHAR_LIMIT / 10 );		// shed the first 10 percent
 				}
-				if ( _logsOutput ) {
-					_logWriter.write( character );
-					_logWriter.flush();
+				if ( logsOutput ) {
+					logWriter.write( character );
+					logWriter.flush();
 				}
             }
-            catch( Exception exception ) {}
+            catch( IOException | BadLocationException exception ) {}
         }
     }
 }

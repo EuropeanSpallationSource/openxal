@@ -29,24 +29,24 @@ import xal.tools.xml.XmlDataAdaptor;
 /** Provides a public interface to the PV Logger package */
 public class PVLogger {
 	/** database store */
-	final protected PersistentStore PERSISTENT_STORE;
+	protected final PersistentStore PERSISTENT_STORE;
 
 	/** snapshot publisher */
-	final protected SnapshotPublisher SNAPSHOT_PUBLISHER;
+	protected final SnapshotPublisher SNAPSHOT_PUBLISHER;
 
 	/** connection dictionary */
-	protected ConnectionDictionary _connectionDictionary;
+	protected ConnectionDictionary connectionDictionary;
 
 	/** logger sessions keyed by channel group ID */
-	protected Map<String,LoggerSession> LOGGER_SESSIONS;
+	protected final Map<String,LoggerSession> LOGGER_SESSIONS;
 
 	/** current database connection */
-	protected Connection _connection;
+	protected Connection connection;
 
 
 	/** Primary Constructor */
 	public PVLogger( final ConnectionDictionary connectionDictionary ) {
-		LOGGER_SESSIONS = new HashMap<String,LoggerSession>();
+		LOGGER_SESSIONS = new HashMap<>();
 
 		URL configurationURL = null;
 		DBConfiguration dbConfig = DBConfiguration.getInstance();
@@ -71,26 +71,26 @@ public class PVLogger {
 	
 	
 	/** get an instance for browsing the PV Logger data */
-	static public PVLogger getBrowsingInstance() {
+	public static PVLogger getBrowsingInstance() {
 		final ConnectionDictionary dictionary = newBrowsingConnectionDictionary();
 		return dictionary != null ? new PVLogger( dictionary ) : null;
 	}
 	
 	
 	/** get an instance for logging PV data to the database */
-	static public PVLogger getLoggingInstance() {
+	public static PVLogger getLoggingInstance() {
 		return new PVLogger();
 	}
 	
 	
 	/** generate a new connection dictionary appropriate for logging */
-	static public ConnectionDictionary newLoggingConnectionDictionary() {
+	public static ConnectionDictionary newLoggingConnectionDictionary() {
 		return ConnectionDictionary.getInstance( "pvlogger" );
 	}
 	
 	
 	/** generate a new connection dictionary appropriate for browsing logged data */
-	static public ConnectionDictionary newBrowsingConnectionDictionary() {
+	public static ConnectionDictionary newBrowsingConnectionDictionary() {
 		// use the reports account if available, otherwise use the default account
 		return ConnectionDictionary.getPreferredInstance( "pvlogger-reports", "reports" );
 	}
@@ -98,13 +98,13 @@ public class PVLogger {
 	
 	/** get the connection dictionary */
 	public ConnectionDictionary getConnectionDictionary() {
-		return _connectionDictionary;
+		return connectionDictionary;
 	}
 	
 	
 	/** set the connection dictionary */
 	public void setConnectionDictionary( final ConnectionDictionary dictionary ) {
-		_connectionDictionary = dictionary;
+		connectionDictionary = dictionary;
 		SNAPSHOT_PUBLISHER.setConnectionDictionary( dictionary );
 	}
 	
@@ -135,7 +135,7 @@ public class PVLogger {
 	/** remove all logger sessions */
 	public void removeAllLoggerSessions() {
 		synchronized ( LOGGER_SESSIONS ) {
-			final Collection<LoggerSession> loggerSessions = new HashSet<LoggerSession>( getLoggerSessions() );
+			final Collection<LoggerSession> loggerSessions = new HashSet<>( getLoggerSessions() );
 			for ( final LoggerSession session : loggerSessions ) {
 				removeLoggerSession( session.getChannelGroup().getLabel() );
 			}
@@ -177,10 +177,10 @@ public class PVLogger {
 	 */
 	public List<LoggerSession> requestEnabledLoggerSessionsForService( final String serviceID ) throws SQLException {
 		final String[] types = fetchTypes( serviceID );
-		final List<LoggerSession> sessions = new ArrayList<LoggerSession>( types.length );
-		final Connection connection = getDatabaseConnection();
+		final List<LoggerSession> sessions = new ArrayList<>( types.length );
+		final Connection dbConnection = getDatabaseConnection();
 		for ( final String groupID : types ) {
-			final ChannelGroup group = PERSISTENT_STORE.fetchChannelGroup( connection, groupID );
+			final ChannelGroup group = PERSISTENT_STORE.fetchChannelGroup( dbConnection, groupID );
 			if ( group.getDefaultLoggingPeriod() > 0 ) {
 				sessions.add( requestLoggerSession( groupID ) );
 			}
@@ -197,7 +197,7 @@ public class PVLogger {
 	 */
 	public List<LoggerSession> requestLoggerSessionsForService( final String serviceID ) throws SQLException {
 		final String[] types = fetchTypes( serviceID );
-		final List<LoggerSession> sessions = new ArrayList<LoggerSession>( types.length );
+		final List<LoggerSession> sessions = new ArrayList<>( types.length );
 		for ( final String groupID : types ) {
 			sessions.add( requestLoggerSession( groupID ) );
 		}
@@ -217,9 +217,9 @@ public class PVLogger {
 				return getLoggerSession( groupID );
 			}
 
-			final Connection connection = getDatabaseConnection();
-			if ( connection == null )  return null;
-			final ChannelGroup group = PERSISTENT_STORE.fetchChannelGroup( connection, groupID );
+			final Connection dbConnection = getDatabaseConnection();
+			if ( dbConnection == null )  return null;
+			final ChannelGroup group = PERSISTENT_STORE.fetchChannelGroup( dbConnection, groupID );
 			if ( group != null ) {
 				final LoggerSession session = new LoggerSession( group, SNAPSHOT_PUBLISHER );
 				LOGGER_SESSIONS.put( groupID, session );
@@ -240,9 +240,9 @@ public class PVLogger {
 	public LoggerSession reloadLoggerSession( final String groupID ) throws SQLException {
 		synchronized( LOGGER_SESSIONS ) {
 			if ( LOGGER_SESSIONS.containsKey( groupID ) ) {
-				final Connection connection = getDatabaseConnection();
-				if ( connection == null )  return null;
-				final ChannelGroup group = PERSISTENT_STORE.fetchChannelGroup( connection, groupID );
+				final Connection dbConnection = getDatabaseConnection();
+				if ( dbConnection == null )  return null;
+				final ChannelGroup group = PERSISTENT_STORE.fetchChannelGroup( dbConnection, groupID );
 				final LoggerSession session = getLoggerSession( groupID );
 				session.setChannelGroup( group );
 				return session;
@@ -333,8 +333,8 @@ public class PVLogger {
 	 * @return machine snapshot corresponding to the specified ID
 	 */
 	public MachineSnapshot fetchMachineSnapshot( final long snapshotID ) throws SQLException {
-		final Connection connection = getDatabaseConnection();
-		return PERSISTENT_STORE.fetchMachineSnapshot( connection, snapshotID );
+		final Connection dbConnection = getDatabaseConnection();
+		return PERSISTENT_STORE.fetchMachineSnapshot( dbConnection, snapshotID );
 	}
 	
 	
@@ -347,8 +347,8 @@ public class PVLogger {
 	 * @return An array of machine snapshots meeting the specified criteria
 	 */
 	public MachineSnapshot[] fetchMachineSnapshotsInRange( final String type, final Date startTime, final Date endTime ) throws SQLException {
-		final Connection connection = getDatabaseConnection();
-		return PERSISTENT_STORE.fetchMachineSnapshotsInRange( connection, type, startTime, endTime );
+		final Connection dbConnection = getDatabaseConnection();
+		return PERSISTENT_STORE.fetchMachineSnapshotsInRange( dbConnection, type, startTime, endTime );
 	}
 	
 	
@@ -358,8 +358,8 @@ public class PVLogger {
 	 * @return the machineSnapshot which is the same as the parameter returned for convenience
 	 */
 	public MachineSnapshot loadChannelSnapshotsInto( final MachineSnapshot machineSnapshot ) throws SQLException {
-		final Connection connection = getDatabaseConnection();
-		return PERSISTENT_STORE.loadChannelSnapshotsInto( connection, machineSnapshot );
+		final Connection dbConnection = getDatabaseConnection();
+		return PERSISTENT_STORE.loadChannelSnapshotsInto( dbConnection, machineSnapshot );
 	}
 	
 	
@@ -368,8 +368,8 @@ public class PVLogger {
 	 * @return array of types corresponding to all of the channel groups
 	 */
 	public String[] fetchTypes()  throws SQLException {
-		final Connection connection = getDatabaseConnection();
-		return PERSISTENT_STORE.fetchTypes( connection );
+		final Connection dbConnection = getDatabaseConnection();
+		return PERSISTENT_STORE.fetchTypes( dbConnection );
 	}
 	
 	
@@ -379,8 +379,8 @@ public class PVLogger {
 	 * @return array of types corresponding to channel groups with the specified service ID
 	 */
 	public String[] fetchTypes( final String serviceID ) throws SQLException {
-		final Connection connection = getDatabaseConnection();
-		return PERSISTENT_STORE.fetchTypes( connection, serviceID );
+		final Connection dbConnection = getDatabaseConnection();
+		return PERSISTENT_STORE.fetchTypes( dbConnection, serviceID );
 	}
 	
 	
@@ -389,26 +389,26 @@ public class PVLogger {
 	 * @param type channel group type
 	 */
 	public ChannelGroup getChannelGroup( final String type ) throws SQLException {
-		final Connection connection = getDatabaseConnection();
-		return PERSISTENT_STORE.getChannelGroup( connection, type );
+		final Connection dbConnection = getDatabaseConnection();
+		return PERSISTENT_STORE.getChannelGroup( dbConnection, type );
 	}
 	
 	
 	/** get the current database connection creating it if necessary */
 	protected Connection getDatabaseConnection() {
-		if ( _connection == null || !testConnection( _connection ) ) {
+		if ( connection == null || !testConnection( connection ) ) {
 			closeConnection();
-			_connection = getNewDatabaseConnection();
+			connection = getNewDatabaseConnection();
 		}
 
-		return _connection;
+		return connection;
 	}
 	
 	
 	/** make a new database connection */
 	protected Connection getNewDatabaseConnection() {
 		try {
-			Connection con = _connectionDictionary.hasRequiredInfo() ? PersistentStore.connectionInstance( _connectionDictionary ) : null; 
+			Connection con = connectionDictionary.hasRequiredInfo() ? PersistentStore.connectionInstance( connectionDictionary ) : null; 
 			System.out.println("Connection is "+ con == null ? "null" : con.toString());
 			return con;
 		}
@@ -422,15 +422,15 @@ public class PVLogger {
 	/** close the database connection if a connection exists and set the connection to null */
 	public void closeConnection() {
 		try {
-			if ( _connection != null ) {
-				_connection.close();
+			if ( connection != null ) {
+				connection.close();
 			}
 		}
 		catch ( Exception exception ) {
 			exception.printStackTrace();
 		}
 		finally {
-			_connection = null;
+			connection = null;
 		}
 		
 	}
@@ -441,7 +441,7 @@ public class PVLogger {
 	 * @param connection the connection to test
 	 * @return true if the connection is good and false if not
 	 */
-	static protected boolean testConnection( final Connection connection ) {
+	protected static boolean testConnection( final Connection connection ) {
 		try {
 			return !connection.isClosed();
 		}

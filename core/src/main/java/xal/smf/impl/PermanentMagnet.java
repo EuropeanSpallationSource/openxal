@@ -54,6 +54,7 @@ abstract public class PermanentMagnet extends Magnet {
      * advertise this characteristic.
      * @return true since all PermanentMagnet instances are permanent magnets.
      */
+    @Override
     public boolean isPermanent() {
         return true;
     }

@@ -24,34 +24,33 @@ import java.util.*;
  */
 public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudgeListener {
 	/** the probability ratio for picking algorithms sorted by efficiency */
-	final static private double PROBABILITY_RATIO = 0.25;
+	private static final double PROBABILITY_RATIO = 0.25;
 	
 	/** natural logarithm of the probability ratio  */
-	final static private double PROBABILITY_RATIO_LOG = Math.log( PROBABILITY_RATIO );
+	private static final double PROBABILITY_RATIO_LOG = Math.log( PROBABILITY_RATIO );
 	
 	/** the random number generator */
-	final private Random RANDOM_GENERATOR;
+	private final Random RANDOM_GENERATOR;
 	
 	/** the random number generator seed for reproducibility */
-	static final private long RANDOM_SEED = 12345678901234L;
+	private static final long RANDOM_SEED = 12345678901234L;
 	
 	/** the list of algorithms in the market sorted by efficiency so the most efficient algorithms appear first */
-	private List<SearchAlgorithm> _algorithmsByEfficiency;
+	private List<SearchAlgorithm> algorithmsByEfficiency;
 	
 	/** the pool of algorithms from which to pick an algorithm */
-	private AlgorithmPool _algorithmPool;
+	private AlgorithmPool algorithmPool;
 	
 	/** message center which dispatches events to registered listeners */
-	final private MessageCenter MESSAGE_CENTER;
+	private final MessageCenter MESSAGE_CENTER;
 	
 	/** proxy which forwards events to registered listeners */
-	final private AlgorithmMarketListener EVENT_PROXY;
+	private final AlgorithmMarketListener EVENT_PROXY;
 
 	
 	/**
 	 * Primary Constructor
 	 * @param pool        the pool of algorithms
-	 * @param algorithms  the list of algorithms
 	 */
 	public AlgorithmMarket( final AlgorithmPool pool ) {
 		RANDOM_GENERATOR = new Random( RANDOM_SEED );		
@@ -59,7 +58,7 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
 		MESSAGE_CENTER = new MessageCenter("Algorithm Market");
 		EVENT_PROXY = MESSAGE_CENTER.registerSource( this, AlgorithmMarketListener.class );
 		
-		_algorithmsByEfficiency = new ArrayList<SearchAlgorithm>();
+		algorithmsByEfficiency = new ArrayList<>();
 		setAlgorithmPool( pool );
 	}
 
@@ -81,7 +80,7 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
 	
 	/** reset the market */
 	public void reset() {
-		_algorithmPool.reset();
+		algorithmPool.reset();
 		RANDOM_GENERATOR.setSeed( RANDOM_SEED );
 	}
 	
@@ -109,7 +108,7 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
 	 * @param problem the new problem
 	 */
 	public void setProblem( final Problem problem ) {
-		_algorithmPool.setProblem( problem );
+		algorithmPool.setProblem( problem );
 	}
 	
 
@@ -119,7 +118,7 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
 	 * @return   The algorithm pool.
 	 */
 	public AlgorithmPool getAlgorithmPool() {
-		return _algorithmPool;
+		return algorithmPool;
 	}
 
 
@@ -128,7 +127,7 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
 	 * @return   The list of algorithms.
 	 */
 	public List<SearchAlgorithm> getAlgorithms() {
-		return _algorithmsByEfficiency;
+		return algorithmsByEfficiency;
 	}
 
 
@@ -137,8 +136,8 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
 	 * @param algorithmsList  The list of algorithms.
 	 */
 	private void setAlgorithms( final List<SearchAlgorithm> algorithms ) {
-		_algorithmsByEfficiency.clear();
-		_algorithmsByEfficiency.addAll( algorithms );
+		algorithmsByEfficiency.clear();
+		algorithmsByEfficiency.addAll( algorithms );
 	}
 
 
@@ -147,12 +146,12 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
 	 * @param pool  The algorithm pool used to set the local algorithm pool.
 	 */
 	public void setAlgorithmPool( final AlgorithmPool pool ) {
-		final AlgorithmPool oldPool = _algorithmPool;
-		_algorithmPool = pool;
+		final AlgorithmPool oldPool = algorithmPool;
+		algorithmPool = pool;
 
 		// add algorithms
-		_algorithmsByEfficiency.clear();
-		_algorithmsByEfficiency.addAll( pool.getAlgorithms() );
+		algorithmsByEfficiency.clear();
+		algorithmsByEfficiency.addAll( pool.getAlgorithms() );
 
 		EVENT_PROXY.poolChanged( this, oldPool, pool );
 	}
@@ -164,10 +163,10 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
 	 * @return the next algorithm
 	 */
 	public SearchAlgorithm nextAlgorithm() {
-		Collections.sort( _algorithmsByEfficiency, SearchAlgorithm.EFFICIENCY_COMPARATOR );
-		final int count = _algorithmsByEfficiency.size();
+		Collections.sort(algorithmsByEfficiency, SearchAlgorithm.EFFICIENCY_COMPARATOR );
+		final int count = algorithmsByEfficiency.size();
 		final int selectedIndex = (int)( Math.log( 1.0 - RANDOM_GENERATOR.nextDouble() * ( 1.0 - Math.pow( PROBABILITY_RATIO, count ) ) ) / PROBABILITY_RATIO_LOG );
-		return _algorithmsByEfficiency.get( Math.min( selectedIndex, count - 1 ) );
+		return algorithmsByEfficiency.get( Math.min( selectedIndex, count - 1 ) );
 	}
 	
 	
@@ -177,6 +176,7 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
 	 * @param algorithm the algorithm which will execute
 	 * @param scoreBoard the scoreboard
 	 */
+        @Override
 	public void algorithmRunWillExecute( final AlgorithmSchedule schedule, final SearchAlgorithm algorithm, final ScoreBoard scoreBoard ) {}
 	
 	
@@ -186,6 +186,7 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
 	 * @param algorithm the algorithm that has executed
 	 * @param scoreBoard the scoreboard
 	 */
+        @Override
 	public void algorithmRunExecuted( final AlgorithmSchedule schedule, final SearchAlgorithm algorithm, final ScoreBoard scoreBoard ) {}
 	
 
@@ -194,8 +195,9 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
 	 * @param algorithmSchedule  The algorithm schedule that holds the trial scored.
 	 * @param trial              The trial that was scored.
 	 */
+        @Override
 	public void trialScored( final AlgorithmSchedule algorithmSchedule, final Trial trial ) {
-		_algorithmPool.trialScored( algorithmSchedule, trial );
+		algorithmPool.trialScored( algorithmSchedule, trial );
 	}
 
 
@@ -204,8 +206,9 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
 	 * @param algorithmSchedule  The algorithm schedule that holds the trial vetoed.
 	 * @param trial              The trial that was vetoed.
 	 */
+        @Override
 	public void trialVetoed( final AlgorithmSchedule algorithmSchedule, final Trial trial ) { 
-		_algorithmPool.trialVetoed( algorithmSchedule, trial );
+		algorithmPool.trialVetoed( algorithmSchedule, trial );
 	}
 
 
@@ -215,8 +218,9 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
 	 * @param solutions  The list of solutions.
 	 * @param solution   The new optimal solution.
 	 */
+        @Override
 	public void foundNewOptimalSolution( final SolutionJudge source, final List<Trial> solutions, final Trial solution ) { 
-		_algorithmPool.foundNewOptimalSolution( source, solutions, solution );
+		algorithmPool.foundNewOptimalSolution( source, solutions, solution );
 	}
 }
 

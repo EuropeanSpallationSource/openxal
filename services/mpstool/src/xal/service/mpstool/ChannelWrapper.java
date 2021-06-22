@@ -11,8 +11,6 @@
 package xal.service.mpstool;
 
 import xal.ca.*;
-import xal.ca.correlator.*;
-import xal.tools.correlator.*;
 
 
 /**
@@ -23,7 +21,7 @@ import xal.tools.correlator.*;
  */
 public class ChannelWrapper {
 	/** The channel to wrap */
-	protected Channel _channel;
+	protected Channel channel;
 	
 	
 	/**
@@ -31,7 +29,7 @@ public class ChannelWrapper {
 	* @param pv The PV for which to wrap.
 	*/
 	public ChannelWrapper( final String pv ) {
-		_channel = ChannelFactory.defaultFactory().getChannel( pv );
+		channel = ChannelFactory.defaultFactory().getChannel( pv );
 	}
 	
 	
@@ -40,7 +38,7 @@ public class ChannelWrapper {
 	 * @param listener The listener of connection events.
 	 */
 	public void addConnectionListener( final ConnectionListener listener ) {
-		_channel.addConnectionListener( listener );
+		channel.addConnectionListener( listener );
 	}
 	
 	
@@ -49,7 +47,7 @@ public class ChannelWrapper {
 	 * @param listener The listener to remove
 	 */
 	public void removeConnectionListener( final ConnectionListener listener ) {
-		_channel.removeConnectionListener( listener );
+		channel.removeConnectionListener( listener );
 	}
 	
 	
@@ -58,7 +56,7 @@ public class ChannelWrapper {
 	* @return the PV
 	*/
 	public String getPV() {
-		return _channel.channelName();
+		return channel.channelName();
 	}
 	
 	
@@ -67,7 +65,7 @@ public class ChannelWrapper {
 	* @return the wrapped channel
 	*/
 	public Channel getChannel() {
-		return _channel;
+		return channel;
 	}
 	
 	
@@ -76,7 +74,7 @@ public class ChannelWrapper {
 	 * @return true if the channel is connected and false if not.
 	 */
 	public boolean isConnected() {
-		return _channel.isConnected();
+		return channel.isConnected();
 	}
 	
 	
@@ -87,7 +85,7 @@ public class ChannelWrapper {
 	 * connection listeners when the connection has been established.
 	 */
 	public void requestConnection() {		
-		_channel.requestConnection();
+		channel.requestConnection();
 	}
 }
 

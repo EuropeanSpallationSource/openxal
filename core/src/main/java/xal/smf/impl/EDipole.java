@@ -7,12 +7,12 @@ import xal.smf.attr.DipoleBucket;
 
 public class EDipole extends Electrostatic {
 	/** standard type for instances of this class */
-    public static String      s_strType   = "EDipole";
+    public static String      TYPE   = "EDipole";
 
     // orientation constants
-    public final static int NO_ORIENTATION = 0;
-    public final static int HORIZONTAL = 1;
-    public final static int VERTICAL = 2;
+    public static final int NO_ORIENTATION = 0;
+    public static final int HORIZONTAL = 1;
+    public static final int VERTICAL = 2;
 
 	/** horizontal dipole type */
     public static final String HORIZONTAL_TYPE = "DHE";
@@ -31,7 +31,7 @@ public class EDipole extends Electrostatic {
      * Register type for qualification
      */
     private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( EDipole.class, s_strType );
+		ElementTypeManager.defaultManager().registerTypes( EDipole.class, TYPE );
     }
 
 
@@ -50,7 +50,7 @@ public class EDipole extends Electrostatic {
 
 	@Override
 	public String getType() {
-		return s_strType;
+		return TYPE;
 	}
 
     /**
@@ -60,7 +60,7 @@ public class EDipole extends Electrostatic {
      */
 	@Override
     public int getOrientation() {
-    	return s_strType.equalsIgnoreCase( HORIZONTAL_TYPE ) ? HORIZONTAL : VERTICAL;
+    	return TYPE.equalsIgnoreCase( HORIZONTAL_TYPE ) ? HORIZONTAL : VERTICAL;
     }          
       
     /**
@@ -80,18 +80,20 @@ public class EDipole extends Electrostatic {
 	 * set the quadrupole type since a quadrupole type can be either "QHE" or "QVE".
      * @param adaptor The data provider.
      */
+    @Override
     public void update( final DataAdaptor adaptor ) {
     	if ( adaptor.hasAttribute( "type" ) ) {
-            s_strType = adaptor.stringValue( "type" );
+            TYPE = adaptor.stringValue( "type" );
         }
         super.update( adaptor );
         ElementTypeManager typeManager = ElementTypeManager.defaultManager();
         // check if this type already registered first.  If not, register it.
-        if (!(typeManager.match(EQuad.class, s_strType)))
-        	typeManager.registerType(EQuad.class, s_strType);
+        if (!(typeManager.match(EQuad.class, TYPE)))
+        	typeManager.registerType(EQuad.class, TYPE);
     }
     
+    @Override
     public boolean isKindOf( final String type ) {
-        return type.equalsIgnoreCase( s_strType ) || super.isKindOf( type );
+        return type.equalsIgnoreCase( TYPE ) || super.isKindOf( type );
     }
 }

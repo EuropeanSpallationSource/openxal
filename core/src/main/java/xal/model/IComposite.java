@@ -135,6 +135,7 @@ public interface IComposite extends IComponent, Iterable<IComponent> {
      *  
      *  @see    IComponent#propagate(IProbe)
      */
+    @Override
     public void propagate(IProbe probe) throws ModelException;
     
 

@@ -9,7 +9,6 @@ package xal.tools;
 import xal.tools.StringJoiner;
 
 import java.lang.reflect.Array;
-import java.util.*;
 
 /**
  * ArrayTool is a class that adds common convenience methods for dealing with arrays.
@@ -114,7 +113,7 @@ public class ArrayTool {
     
     
     /** convenience method for getting a string description of an integer array */
-    static public String asString( final byte[] array ) {
+    public static String asString( final byte[] array ) {
         final StringJoiner joiner = new StringJoiner( ", " );
         joiner.append( array );
         return "{" + joiner.toString() + "}";
@@ -122,7 +121,7 @@ public class ArrayTool {
     
     
     /** convenience method for getting a string description of an integer array */
-    static public String asString( final int[] array ) {
+    public static String asString( final int[] array ) {
         final StringJoiner joiner = new StringJoiner( ", " );
         joiner.append( array );
         return "{" + joiner.toString() + "}";
@@ -130,7 +129,7 @@ public class ArrayTool {
     
     
     /** convenience method for getting a string description of an integer array */
-    static public String asString( final short[] array ) {
+    public static String asString( final short[] array ) {
         final StringJoiner joiner = new StringJoiner( ", " );
         joiner.append( array );
         return "{" + joiner.toString() + "}";
@@ -138,7 +137,7 @@ public class ArrayTool {
     
     
     /** convenience method for getting a string description of an integer array */
-    static public String asString( final long[] array ) {
+    public static String asString( final long[] array ) {
         final StringJoiner joiner = new StringJoiner( ", " );
         joiner.append( array );
         return "{" + joiner.toString() + "}";
@@ -146,7 +145,7 @@ public class ArrayTool {
 	
     
     /** convenience method for getting a string description of an integer array */
-    static public String asString( final float[] array ) {
+    public static String asString( final float[] array ) {
         final StringJoiner joiner = new StringJoiner( ", " );
         joiner.append( array );
         return "{" + joiner.toString() + "}";
@@ -154,7 +153,7 @@ public class ArrayTool {
 	
     
     /** convenience method for getting a string description of a double array */
-    static public String asString( final double[] array ) {
+    public static String asString( final double[] array ) {
         final StringJoiner joiner = new StringJoiner( ", " );
         joiner.append( array );
         return "{" + joiner.toString() + "}";
@@ -166,7 +165,7 @@ public class ArrayTool {
 	 * @param array The array of objects
 	 * @return A string representation of the array
 	 */
-    static public String asString( final Object[] array ) {
+    public static String asString( final Object[] array ) {
         final StringJoiner joiner = new StringJoiner( ", " );
         joiner.append( array );
         return "{" + joiner.toString() + "}";
@@ -174,8 +173,8 @@ public class ArrayTool {
     
     
     /** convenience method for getting a string description of a double two dimensional array */
-    static public String asString( final double[][] array ) {
-        final StringBuffer buffer = new StringBuffer();
+    public static String asString( final double[][] array ) {
+        final StringBuilder buffer = new StringBuilder();
         for ( int index = 0 ; index < array.length ; index++ ) {
             final StringJoiner joiner = new StringJoiner( ", " );
             joiner.append( array[index] );

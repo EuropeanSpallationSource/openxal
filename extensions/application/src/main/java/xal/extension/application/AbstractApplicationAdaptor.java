@@ -16,6 +16,7 @@ import xal.extension.bricks.WindowReference;
 import java.util.logging.*;
 import java.io.File;
 import java.net.*;
+import java.util.ArrayList;
 import java.util.prefs.Preferences;
 
 
@@ -27,16 +28,16 @@ import java.util.prefs.Preferences;
  */
 abstract public class AbstractApplicationAdaptor implements ApplicationListener {
     /** wildcard file extension */
-    static public final String WILDCARD_FILE_EXTENSION = FileFilterFactory.WILDCARD_FILE_EXTENSION;
+    public static final String WILDCARD_FILE_EXTENSION = FileFilterFactory.WILDCARD_FILE_EXTENSION;
 
     /** name for the gui bricks resource which may or may not exist */
-    static public final String GUI_BRICKS_RESOURCE = "gui.bricks";
+    public static final String GUI_BRICKS_RESOURCE = "gui.bricks";
 
     /** location of the resources directory */
-    private ApplicationResourceManager _resourceManager;
+    private ApplicationResourceManager resourceManager;
 
     /** accessory for this application's default document folder */
-    private DefaultFolderAccessory DEFAULT_FOLDER_ACCESSORY = null;
+    private DefaultFolderAccessory defaultFolderAccessory = null;
 
 
     /** Constructor */
@@ -54,10 +55,10 @@ abstract public class AbstractApplicationAdaptor implements ApplicationListener 
         // lazily instantiate the accessory for the default document folder for this application
         // It is necessary for this to be lazy (not in the adaptor's constructor) to support script based applications
         // as they (e.g. JRuby) don't call the overriden methods via the super construtor within the inherited constructor.
-        if ( DEFAULT_FOLDER_ACCESSORY == null ) {
-            DEFAULT_FOLDER_ACCESSORY = new DefaultFolderAccessory( XalDocument.class, null, applicationName() );
+        if ( defaultFolderAccessory == null ) {
+            defaultFolderAccessory = new DefaultFolderAccessory( XalDocument.class, null, applicationName() );
         }
-        return DEFAULT_FOLDER_ACCESSORY;
+        return defaultFolderAccessory;
     }
 
 
@@ -65,7 +66,7 @@ abstract public class AbstractApplicationAdaptor implements ApplicationListener 
      * Get the default document folder.
      * @return the default folder for documents or null if none has been set.
      */
-    final public File getDefaultDocumentFolder() {
+    public final File getDefaultDocumentFolder() {
         return getDefaultFolderAccessory().getDefaultFolder();
     }
 
@@ -74,7 +75,7 @@ abstract public class AbstractApplicationAdaptor implements ApplicationListener 
      * Get the default document folder as a URL.
      * @return the default folder for documents as a URL or null if none has been set.
      */
-    final public URL getDefaultDocumentFolderURL() {
+    public final URL getDefaultDocumentFolderURL() {
         return getDefaultFolderAccessory().getDefaultFolderURL();
     }
 
@@ -107,7 +108,7 @@ abstract public class AbstractApplicationAdaptor implements ApplicationListener 
 
 
     /** Determine whether this application can open documents */
-    final public boolean canOpenDocuments() {
+    public final boolean canOpenDocuments() {
         final String[] documentTypes = readableDocumentTypes();
         return documentTypes != null && documentTypes.length > 0;
     }
@@ -144,7 +145,7 @@ abstract public class AbstractApplicationAdaptor implements ApplicationListener 
 
 
     /** Get the node for this application's preferences */
-    final public Preferences getUserPreferencesNode() {
+    public final Preferences getUserPreferencesNode() {
         if ( this.getClass().getName().startsWith("xal.app.") ) {   // standard Java based Open XAL application
             return xal.tools.apputils.Preferences.userNodeForPackage( this.getClass() );
         } else {        // class is not from XAL so probably a script (e.g. jruby)
@@ -167,7 +168,7 @@ abstract public class AbstractApplicationAdaptor implements ApplicationListener 
     public boolean usesConsole() {
         String usesConsoleProperty = System.getProperty("XAL_USE_CONSOLE");
         if ( usesConsoleProperty != null ) {
-            return Boolean.valueOf(usesConsoleProperty).booleanValue();
+            return Boolean.valueOf(usesConsoleProperty);
         }
         return true;
     }
@@ -189,7 +190,7 @@ abstract public class AbstractApplicationAdaptor implements ApplicationListener 
     public static void setOptions( String[] args ){
         if (args.length > 0){
 
-            final java.util.ArrayList<String> docPaths = new java.util.ArrayList<String>();
+            final ArrayList<String> docPaths = new ArrayList<>();
             for ( final String arg : args ) {
                 if ( !arg.startsWith( "-" ) ) {
                     docPaths.add( arg );
@@ -233,6 +234,7 @@ abstract public class AbstractApplicationAdaptor implements ApplicationListener 
      * Event indicating that the application will open any initial documents.  These documents may include a new empty document if appropriate or any documents passed at the command line.
      * Subclasses may override this method to handle this event if needed.
      */
+    @Override
     public void applicationWillOpenInitialDocuments() {}
 
 
@@ -242,19 +244,22 @@ abstract public class AbstractApplicationAdaptor implements ApplicationListener 
      * The default implementation prints a simple info to logger
      **/
     public void applicationFinishedLaunching() {
-        Logger.getLogger("global").log( Level.INFO, "Application" + applicationName() + " finished launching." );
+        Logger.getLogger("global").log(Level.INFO, "Application{0} finished launching.", applicationName());
     }
 
 
     /** Implement ApplicationListener.  Subclasses may implement this method to handle a document closed event at the application level.  The default implementation does nothing. */
+    @Override
     public void documentClosed( final XalAbstractDocument document ) {}
 
 
     /** Implement ApplicationListener.  Subclasses may implement this method to handle a document created event at the application level.  The default implementation does nothing. */
+    @Override
     public void documentCreated( final XalAbstractDocument document ) {}
 
 
     /** Implement ApplicationListener.  Subclasses may implement this method to handle an "application will quit" event at the application level.  The default implementation does nothing. */
+    @Override
     public void applicationWillQuit() {}
 
 
@@ -306,10 +311,10 @@ abstract public class AbstractApplicationAdaptor implements ApplicationListener 
     /** Subclasses can set the location of the resources directory. Setting it to null will use the default resource manager. */
     public void setResourcesLocation( final URL resourcesLocation ) {
         if ( resourcesLocation != null ) {
-            _resourceManager = new LocationApplicationResourceManager( resourcesLocation );
+            resourceManager = new LocationApplicationResourceManager( resourcesLocation );
         }
         else {
-            _resourceManager = ApplicationResourceManager.getDefaultInstance();
+            resourceManager = ApplicationResourceManager.getDefaultInstance();
         }
     }
 
@@ -320,7 +325,7 @@ abstract public class AbstractApplicationAdaptor implements ApplicationListener 
      * @return the full URL to the specified resource
      */
     public URL getResourceURL( final String resourceSpec ) {
-        return _resourceManager.getResourceURL( this, resourceSpec );
+        return resourceManager.getResourceURL( this, resourceSpec );
     }
 }
 
@@ -333,7 +338,7 @@ abstract class ApplicationResourceManager {
 
 
     /** get the singleton instance */
-    static public DefaultApplicationResourceManager getDefaultInstance() {
+    public static DefaultApplicationResourceManager getDefaultInstance() {
         return DefaultApplicationResourceManager.getInstance();
     }
 }
@@ -343,7 +348,7 @@ abstract class ApplicationResourceManager {
 /** resource manager for applications that uses the default resource manager */
 class DefaultApplicationResourceManager extends ApplicationResourceManager {
     /** singleton resource manager */
-    final static private DefaultApplicationResourceManager DEFAULT_RESOURCE_MANAGER;
+    private static final DefaultApplicationResourceManager DEFAULT_RESOURCE_MANAGER;
 
 
     // static initializer
@@ -353,12 +358,13 @@ class DefaultApplicationResourceManager extends ApplicationResourceManager {
 
 
     /** get the singleton instance */
-    static public DefaultApplicationResourceManager getInstance() {
+    public static DefaultApplicationResourceManager getInstance() {
         return DEFAULT_RESOURCE_MANAGER;
     }
 
 
     /** get the named resource for the specified application */
+    @Override
     public URL getResourceURL( final AbstractApplicationAdaptor adaptor, final String resourceSpec ) {
         return ResourceManager.getResourceURL( adaptor.getClass(), resourceSpec );
     }
@@ -368,19 +374,20 @@ class DefaultApplicationResourceManager extends ApplicationResourceManager {
 /** resource manager for applications that uses a specific location to search for resources (suitable for script based applications) */
 class LocationApplicationResourceManager extends ApplicationResourceManager {
     /** location of the resources directory */
-    final private URL RESOURCES_LOCATION;
+    private final URL resourcesLocation;
 
 
     /** Constructor */
     public LocationApplicationResourceManager( final URL resourcesLocation ) {
-        RESOURCES_LOCATION = resourcesLocation;
+        this.resourcesLocation = resourcesLocation;
     }
 
 
     /** get the named resource for the specified application */
+    @Override
     public URL getResourceURL( final AbstractApplicationAdaptor adaptor, final String resourceSpec ) {
         try {
-            return new URL( RESOURCES_LOCATION, resourceSpec );
+            return new URL( resourcesLocation, resourceSpec );
         }
         catch( MalformedURLException exception ) {
             throw new RuntimeException( "Bad URL to the application resource: " + resourceSpec, exception );

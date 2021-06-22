@@ -112,8 +112,8 @@ class PvAccessChannel extends Channel {
        
         // Load default timeouts from preferences if available, otherwise use hardcoded values.
         java.util.prefs.Preferences defaults = Preferences.nodeForPackage(Channel.class);
-        m_dblTmIO = defaults.getDouble( DEF_TIME_IO, DEFAULT_IO_TIMEOUT);
-        m_dblTmEvt = defaults.getDouble( DEF_TIME_EVENT, DEFAULT_EVENT_TIMEOUT);   
+        dblTmIO = defaults.getDouble( DEF_TIME_IO, DEFAULT_IO_TIMEOUT);
+        dblTmEvt = defaults.getDouble( DEF_TIME_EVENT, DEFAULT_EVENT_TIMEOUT);   
         
         connectionFlag = false;
     }
@@ -202,7 +202,7 @@ class PvAccessChannel extends Channel {
                 connectAndWait();
                 checkConnection(false);
             } else {
-                throw new ConnectionException(this, "The channel " + m_strId + " must be connected for this operation.");
+                throw new ConnectionException(this, "The channel " + strId + " must be connected for this operation.");
             }
         }
     }
@@ -212,7 +212,7 @@ class PvAccessChannel extends Channel {
      */
     @Override
     public boolean connectAndWait(double timeout) {
-        if (m_strId == null || isConnected()) {
+        if (strId == null || isConnected()) {
             return false;
         }
 
@@ -222,7 +222,7 @@ class PvAccessChannel extends Channel {
             connectionLatch = new CountDownLatch(1);
 
             channel = ChannelProviderRegistryFactory.getChannelProviderRegistry().
-                    createProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME).createChannel(m_strId,
+                    createProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME).createChannel(strId,
                     new PvAccessChannel.ChannelRequesterImpl(), ChannelProvider.PRIORITY_DEFAULT);
         }
 
@@ -485,13 +485,13 @@ class PvAccessChannel extends Channel {
 
         getRawValueTimeCallback(listener, true);
         try {
-            if (latch.await((long) m_dblTmIO, TimeUnit.SECONDS)) {
+            if (latch.await((long) dblTmIO, TimeUnit.SECONDS)) {
                 return listener.getRecord();
             }
         } catch (InterruptedException e) {
             throw new GetException("Concurrency error" + e.getMessage());
         }
-        throw new GetException("Timeout on get operation. No data recieved in " + m_dblTmIO + " seconds.");
+        throw new GetException("Timeout on get operation. No data recieved in " + dblTmIO + " seconds.");
     }
 
     /**

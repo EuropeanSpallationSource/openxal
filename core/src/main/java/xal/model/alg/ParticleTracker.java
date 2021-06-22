@@ -43,13 +43,13 @@ public class ParticleTracker extends Tracker {
     
 
     /** string type identifier for this algorithm */
-    public static final String      s_strTypeId = ParticleTracker.class.getName();
+    public static final String      TYPE_ID = ParticleTracker.class.getName();
     
     /** current version of this algorithm */
-    public static final int         s_intVersion = 1;
+    public static final int         VERSION = 1;
 
     /** probe type recognized by this algorithm */
-    public static final Class<ParticleProbe>       s_clsProbeType = ParticleProbe.class;
+    public static final Class<ParticleProbe>       CLS_PROBE_TYPE = ParticleProbe.class;
 
 
     
@@ -69,8 +69,8 @@ public class ParticleTracker extends Tracker {
      *  Creates a new instance of ParticleTracker 
      */
     public ParticleTracker() { 
-        super(s_strTypeId, s_intVersion, s_clsProbeType);
-    }; 
+        super(TYPE_ID, VERSION, CLS_PROBE_TYPE);
+    } 
     
     /**
      * Copy constructor for ParticleTracker
@@ -99,7 +99,7 @@ public class ParticleTracker extends Tracker {
 //     * may be advanced before saving particle state.
 //     */
 //    private double getMaxStepSize() {
-//        return this.m_dblMaxStep;
+//        return this.dblMaxStep;
 //    }
     
 
@@ -192,7 +192,7 @@ public class ParticleTracker extends Tracker {
 //        this.advanceProbe(probe, elem, sectionSize);
 //        probe.update();
 //      }
-    };
+    }
   
 
 

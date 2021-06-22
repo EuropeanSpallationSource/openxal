@@ -49,10 +49,10 @@ import xal.tools.xml.XmlDataAdaptor;
  */
 public class MagFieldMap extends Electromagnet implements ISplittable, IFileBasedFieldMap {
 
-    public static final String s_strType = "MFM";
+    public static final String TYPE = "MFM";
 
     // FieldMap parameters
-    protected FieldMapBucket m_bucFieldMap;
+    protected FieldMapBucket bucFieldMap;
     // field map
     private FieldMap fieldMap;
 
@@ -71,7 +71,7 @@ public class MagFieldMap extends Electromagnet implements ISplittable, IFileBase
 
     @Override
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /*
@@ -79,15 +79,15 @@ public class MagFieldMap extends Electromagnet implements ISplittable, IFileBase
      */
     private static void registerType() {
         ElementTypeManager typeManager = ElementTypeManager.defaultManager();
-        typeManager.registerTypes(MagFieldMap.class, s_strType, "magfieldmap");
+        typeManager.registerTypes(MagFieldMap.class, TYPE, "magfieldmap");
     }
 
     public FieldMapBucket getFieldMapBucket() {
-        return m_bucFieldMap;
+        return bucFieldMap;
     }
 
     public final void setFieldMapBucket(FieldMapBucket buc) {
-        m_bucFieldMap = buc;
+        bucFieldMap = buc;
         super.addBucket(buc);
     }
 
@@ -109,14 +109,14 @@ public class MagFieldMap extends Electromagnet implements ISplittable, IFileBase
      * @return FieldMap file
      */
     public String getFieldMapFile() {
-        return m_bucFieldMap.getFieldMapFile();
+        return bucFieldMap.getFieldMapFile();
     }
 
     /**
      * @param strVal FieldMap file
      */
     public void setFieldMapFile(String strVal) {
-        m_bucFieldMap.setFieldMapFile(strVal);
+        bucFieldMap.setFieldMapFile(strVal);
     }
 
     /**
@@ -145,8 +145,8 @@ public class MagFieldMap extends Electromagnet implements ISplittable, IFileBase
         }
 
         fieldMap = FieldMapFactory.getInstance(fieldMapPath, getFieldMapFile(),
-                m_bucFieldMap.getDynamic(), m_bucFieldMap.getFieldType(),
-                m_bucFieldMap.getDimensions(), m_bucFieldMap.getNumberOfPoints());
+                bucFieldMap.getDynamic(), bucFieldMap.getFieldType(),
+                bucFieldMap.getDimensions(), bucFieldMap.getNumberOfPoints());
     }
 
     @Override
@@ -160,11 +160,11 @@ public class MagFieldMap extends Electromagnet implements ISplittable, IFileBase
     }
 
     public void setDimensions(int i) {
-        m_bucFieldMap.setDimensions(i);
+        bucFieldMap.setDimensions(i);
     }
 
     public void setDynamic(boolean b) {
-        m_bucFieldMap.setDynamic(b);
+        bucFieldMap.setDynamic(b);
     }
 
     @Override

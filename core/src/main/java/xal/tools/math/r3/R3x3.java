@@ -9,6 +9,7 @@
 package xal.tools.math.r3;
 
 
+import java.io.Serializable;
 import java.util.EnumSet;
 
 import xal.tools.math.IIndex;
@@ -29,7 +30,7 @@ import xal.tools.math.SquareMatrix;
  *  @see    xal.tools.r3.R3
  */
 
-public class R3x3 extends SquareMatrix<R3x3> implements java.io.Serializable {
+public class R3x3 extends SquareMatrix<R3x3> implements Serializable {
     
     
     /*
@@ -321,7 +322,7 @@ public class R3x3 extends SquareMatrix<R3x3> implements java.io.Serializable {
      * Create and return the generator element of SO(3) which is
      * a counter-clockwise rotation about the x axis.
      * 
-     * @param   rotation angle in radians
+     * @param   dblAng angle in radians
      * 
      * @return  x-plane counter-clockwise rotation matrix 
      */
@@ -342,7 +343,7 @@ public class R3x3 extends SquareMatrix<R3x3> implements java.io.Serializable {
      * Create and return the generator element of SO(3) which is
      * a counter-clockwise rotation about the y axis.
      * 
-     * @param   rotation angle in radians
+     * @param   dblAng angle in radians
      * 
      * @return  y-plane counter-clockwise rotation matrix 
      */
@@ -363,7 +364,7 @@ public class R3x3 extends SquareMatrix<R3x3> implements java.io.Serializable {
      * Create and return the generator element of SO(3) which is
      * a counter-clockwise rotation about the z axis.
      * 
-     * @param   rotation angle in radians
+     * @param   dblAng angle in radians
      * 
      * @return  z-plane counter-clockwise rotation matrix 
      */
@@ -520,9 +521,6 @@ public class R3x3 extends SquareMatrix<R3x3> implements java.io.Serializable {
     /**
      *  Return matrix element value.  Get matrix element value at specified 
      *  position.
-     *
-     *  @param  i       row index
-     *  @param  j       column index
      */
     public double getElem(POS pos)   {
         return super.getElem(pos.row(), pos.col());

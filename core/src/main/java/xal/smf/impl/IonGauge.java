@@ -1,7 +1,5 @@
 package xal.smf.impl;
 
-import xal.smf.*;
-import xal.smf.attr.*;
 import xal.smf.impl.qualify.*;
 import xal.ca.*;
 
@@ -15,7 +13,7 @@ import xal.ca.*;
 
 public class IonGauge extends Vacuum  {
 	/** standard type for nodes of this class */
-	public static final String s_strType   = "IG";
+	public static final String TYPE   = "IG";
 
 
     // static initialization
@@ -28,12 +26,13 @@ public class IonGauge extends Vacuum  {
      * Register type for qualification
      */
     private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( IonGauge.class, s_strType );
+		ElementTypeManager.defaultManager().registerTypes( IonGauge.class, TYPE );
     }
 
 
     /** Override to provide type signature */
-    public String getType()   { return s_strType; };
+        @Override
+    public String getType()   { return TYPE; }
 
 
 	/** Constructor */
@@ -47,16 +46,3 @@ public class IonGauge extends Vacuum  {
         this( strId, null );
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -18,16 +18,16 @@ import xal.tools.data.*;
 /** filter to get a trip channel PV for a specific node */
 public class TripChannelFilter {
 	/** data label */
-	final public static String DATA_LABEL = "TripChannelFilter";
+	public static final String DATA_LABEL = "TripChannelFilter";
 	
 	/** PV pattern */
-	final protected String PV_FORMAT;
+	protected final String PV_FORMAT;
 	
 	/** filter used to determine trips */
-	final protected TripFilter TRIP_FILTER;
+	protected final TripFilter TRIP_FILTER;
 	
 	/** converts the matching PV segment to a node-key */
-	final protected NodeKeyConverter NODE_KEY_CONVERTER;
+	protected final NodeKeyConverter NODE_KEY_CONVERTER;
 	
 	
 	/** Constructor */

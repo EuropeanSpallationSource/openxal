@@ -25,29 +25,29 @@ import java.util.logging.*;
  */
 //public class RpcServer extends WebServer {
 public class RpcServer {
-    /** delimeter for encoding remote messages */
-    final static private String REMOTE_MESSAGE_DELIMITER = "#";
+    /** delimiter for encoding remote messages */
+    private static final String REMOTE_MESSAGE_DELIMITER = "#";
     
     /** socket which listens for and dispatches remote requests */
-    final private ServerSocket SERVER_SOCKET;
+    private final ServerSocket SERVER_SOCKET;
     
     /** set of active sockets serving remote requests */
-    final private Set<Socket> REMOTE_SOCKETS;
+    private final Set<Socket> REMOTE_SOCKETS;
     
     /** remote request handlers keyed by service name */
-    final private Map<String,RemoteRequestHandler<?>> REMOTE_REQUEST_HANDLERS;
+    private final Map<String,RemoteRequestHandler<?>> REMOTE_REQUEST_HANDLERS;
     
     /** coder for encoding and decoding messages for remote transport */
-    final private Coder MESSAGE_CODER;
+    private final Coder MESSAGE_CODER;
     
     
     /** Constructor */
     public RpcServer( final Coder messageCoder ) throws java.io.IOException {
         MESSAGE_CODER = messageCoder;
         
-        REMOTE_REQUEST_HANDLERS = new Hashtable<String,RemoteRequestHandler<?>>();
+        REMOTE_REQUEST_HANDLERS = new Hashtable<>();
         SERVER_SOCKET = new ServerSocket( 0 );
-        REMOTE_SOCKETS = new HashSet<Socket>();
+        REMOTE_SOCKETS = new HashSet<>();
 
 //		System.out.println( "Listening on: " + getHost() + ":" + getPort() );
     }
@@ -82,6 +82,7 @@ public class RpcServer {
     /** start the server, listen for remote requests and dispatch them to the appropriate handlers */
     public void start() {
         new Thread( new Runnable() {
+            @Override
             public void run() {
                 try {
                     while ( !SERVER_SOCKET.isClosed() ) {
@@ -110,7 +111,7 @@ public class RpcServer {
         SERVER_SOCKET.close();
 
 		// close the existing remote sockets
-		final Set<Socket> sockets = new HashSet<Socket>();
+		final Set<Socket> sockets = new HashSet<>();
 		synchronized( REMOTE_SOCKETS ) {
 			sockets.addAll( REMOTE_SOCKETS );
 		}
@@ -140,7 +141,7 @@ public class RpcServer {
 
 	/** add a handler to associate with the specified service and provider */
     public <ProtocolType> void addHandler( final String serviceName, final Class<ProtocolType> protocol, final ProtocolType provider ) {
-        final RemoteRequestHandler<ProtocolType> handler = new RemoteRequestHandler<ProtocolType>( serviceName, protocol, provider );
+        final RemoteRequestHandler<ProtocolType> handler = new RemoteRequestHandler<>( serviceName, protocol, provider );
         REMOTE_REQUEST_HANDLERS.put( serviceName, handler );
     }
 
@@ -155,6 +156,7 @@ public class RpcServer {
     @SuppressWarnings( "unchecked" )    // need to cast generic request object to Map
     private void processRemoteEvents( final Socket remoteSocket ) {
         new Thread( new Runnable() {
+            @Override
             public void run() {
 				if ( !remoteSocket.isClosed() ) {
 					// process the initial handshake
@@ -194,7 +196,7 @@ public class RpcServer {
                             final boolean provideResponse = !result.isOneWay();
                             
                             if ( provideResponse ) {
-                                final Map<String,Object> response = new HashMap<String,Object>();
+                                final Map<String,Object> response = new HashMap<>();
                                 response.put( "result", result.getValue() );
                                 response.put( "id", requestID );                                
                                 response.put( "error", result.getRuntimeExceptionWrapper() );
@@ -240,19 +242,19 @@ public class RpcServer {
 /** Handles remote requests */
 class RemoteRequestHandler<ProtocolType> {
     /** primitive type wrappers keyed by type */
-    final static private Map<Class<?>,Class<?>> PRIMITIVE_TYPE_WRAPPERS;
+    private static final Map<Class<?>,Class<?>> PRIMITIVE_TYPE_WRAPPERS;
 
     /** identifier of the service */
-    final private String SERVICE_NAME;
+    private final String SERVICE_NAME;
     
     /** protocol of available methods */
-    final private Class<ProtocolType> PROTOCOL;
+    private final Class<ProtocolType> PROTOCOL;
     
     /** object to message */
-    final private ProtocolType PROVIDER;
+    private final ProtocolType PROVIDER;
     
     /** cache of methods keyed by their signature */
-    final private Map<String,Method> METHOD_CACHE;
+    private final Map<String,Method> METHOD_CACHE;
         
     
     // static initializer
@@ -266,13 +268,13 @@ class RemoteRequestHandler<ProtocolType> {
         SERVICE_NAME = serviceName;
         PROTOCOL = protocol;
         PROVIDER = provider;
-        METHOD_CACHE = new Hashtable<String,Method>();
+        METHOD_CACHE = new Hashtable<>();
     }
     
     
     /** populate the table of primitive type wrappers */
     private static Map<Class<?>,Class<?>> populatePrimitiveTypeWrappers() {
-        final Map<Class<?>,Class<?>> table = new Hashtable<Class<?>,Class<?>>();
+        final Map<Class<?>,Class<?>> table = new Hashtable<>();
         
         table.put( Integer.TYPE, Integer.class );
         table.put( Long.TYPE, Long.class );
@@ -323,7 +325,7 @@ class RemoteRequestHandler<ProtocolType> {
     
     
     /** Get the method signature for the specified method name and parameter types */
-    static private String getMethodSignature( final String methodName, final Class<?>[] parameterTypes ) {
+    private static String getMethodSignature( final String methodName, final Class<?>[] parameterTypes ) {
         final StringBuilder buffer = new StringBuilder();
         buffer.append( methodName );
         for ( final Class<?> parameterType : parameterTypes ) {
@@ -343,7 +345,7 @@ class RemoteRequestHandler<ProtocolType> {
         catch ( NoSuchMethodException exception ) {
             try {
                 final Method[] methods = PROTOCOL.getMethods();
-                final List<Method> methodCandidates = new ArrayList<Method>();
+                final List<Method> methodCandidates = new ArrayList<>();
                 int bestScore = 0;
                 Method bestMethod = null;
                 for ( final Method method : methods ) {
@@ -369,7 +371,7 @@ class RemoteRequestHandler<ProtocolType> {
     
     
     /** Score the match between the method and the specified method name and parameter types. Higher scores are better and zero means no match. */
-    static private int matchScore( final Method method, final String methodName, final Class<?>[] parameterTypes ) {
+    private static int matchScore( final Method method, final String methodName, final Class<?>[] parameterTypes ) {
         int score = 0;
         
         final Class<?>[] methodParamTypes = method.getParameterTypes();
@@ -420,13 +422,13 @@ class RemoteRequestHandler<ProtocolType> {
 /** result of evaluating the requested method */
 class EvaluationResult {
     /** result of the method evaluation */
-    final private Object VALUE;
+    private final Object VALUE;
     
     /** indicates whether the method is one way (no response to remote caller) */
-    final private boolean IS_ONE_WAY;
+    private final boolean IS_ONE_WAY;
     
     /** exception */
-    final private Throwable EXCEPTION;
+    private final Throwable EXCEPTION;
     
     
     /** Constructor */

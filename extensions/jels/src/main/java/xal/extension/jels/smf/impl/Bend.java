@@ -34,9 +34,9 @@ public class Bend extends xal.smf.impl.Bend {
     /**
      * device type
      */
-    public static final String s_strType = "D";
-    public static final String[] s_strType_DH = {"dh", "horzbend", "hbend"};
-    public static final String[] s_strType_DV = {"dv", "vertbend", "vbend"};
+    public static final String TYPE = "D";
+    public static final String[] TYPE_DH = {"dh", "horzbend", "hbend"};
+    public static final String[] TYPE_DV = {"dv", "vertbend", "vbend"};
 
     static {
         registerType();
@@ -47,7 +47,7 @@ public class Bend extends xal.smf.impl.Bend {
      */
     private static void registerType() {
         ElementTypeManager typeManager = ElementTypeManager.defaultManager();
-        typeManager.registerType(Bend.class, s_strType);
+        typeManager.registerType(Bend.class, TYPE);
     }
 
     /**
@@ -103,7 +103,7 @@ public class Bend extends xal.smf.impl.Bend {
      */
     @Override
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /**
@@ -209,9 +209,9 @@ public class Bend extends xal.smf.impl.Bend {
     @Override
     public boolean isKindOf(String type) {
         if (getOrientation() == Magnet.HORIZONTAL) {
-            return type.equalsIgnoreCase(s_strType) || Arrays.asList(s_strType_DH).contains(type.toLowerCase()) || super.isKindOf(type);
+            return type.equalsIgnoreCase(TYPE) || Arrays.asList(TYPE_DH).contains(type.toLowerCase()) || super.isKindOf(type);
         } else {
-            return type.equalsIgnoreCase(s_strType) || Arrays.asList(s_strType_DV).contains(type.toLowerCase()) || super.isKindOf(type);
+            return type.equalsIgnoreCase(TYPE) || Arrays.asList(TYPE_DV).contains(type.toLowerCase()) || super.isKindOf(type);
         }
     }
 }

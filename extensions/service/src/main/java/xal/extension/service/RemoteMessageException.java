@@ -12,7 +12,7 @@ package xal.extension.service;
 
 
 /**
- * RemoteMessageException wraps exeptions thrown during exectution of a remote message.
+ * RemoteMessageException wraps exceptions thrown during execution of a remote message.
  * @author  tap
  */
 public class RemoteMessageException extends RuntimeException {

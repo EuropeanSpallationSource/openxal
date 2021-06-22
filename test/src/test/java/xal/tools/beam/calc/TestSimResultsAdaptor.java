@@ -51,10 +51,10 @@ public class TestSimResultsAdaptor {
      */
     
     /** Output file location */
-    static private String             STR_OUTPUT = TestSimResultsAdaptor.class.getName().replace('.', '/') + ".txt";
+    private static String             STR_OUTPUT = TestSimResultsAdaptor.class.getName().replace('.', '/') + ".txt";
     
     /** String identifier for accelerator sequence used in testing */
-    static private String            STR_SEQ_ID       = "Ring";
+    private static String            STR_SEQ_ID       = "Ring";
     
 
     /*

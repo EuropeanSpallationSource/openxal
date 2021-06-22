@@ -17,7 +17,7 @@ import java.util.*;
 
 /**
  * SolutionJudge decides whether the latest scored solution is an optimal solution. In many
- * casses only one solution can be the optimal solution at any time. In other cases, there may
+ * cases only one solution can be the optimal solution at any time. In other cases, there may
  * be a surface of optimal solutions at any time.
  *
  * @author   ky6
@@ -25,16 +25,16 @@ import java.util.*;
  */
 public abstract class SolutionJudge {
 	/** message center for dispatching events to registered listeners */
-	protected MessageCenter _messageCenter;
+	protected MessageCenter messageCenter;
 	
-	/** proxy which forwards events to registed listeners */
-	protected SolutionJudgeListener _eventProxy;
+	/** proxy which forwards events to registered listeners */
+	protected SolutionJudgeListener eventProxy;
 	
 	
 	/** Creates a new instance of SolutionJudge */
 	public SolutionJudge() {
-		_messageCenter = new MessageCenter( "Solution Judge" );
-		_eventProxy = _messageCenter.registerSource( this, SolutionJudgeListener.class );
+		messageCenter = new MessageCenter( "Solution Judge" );
+		eventProxy = messageCenter.registerSource( this, SolutionJudgeListener.class );
 		reset();
 	}
 
@@ -57,7 +57,7 @@ public abstract class SolutionJudge {
 	 * @param aListener  The listener to add.
 	 */
 	public void addSolutionJudgeListener( SolutionJudgeListener aListener ) {
-		_messageCenter.registerTarget( aListener, this, SolutionJudgeListener.class );
+		messageCenter.registerTarget( aListener, this, SolutionJudgeListener.class );
 	}
 
 
@@ -66,7 +66,7 @@ public abstract class SolutionJudge {
 	 * @param aListener  The listener to remove.
 	 */
 	public void removeSolutionJudgeListener( SolutionJudgeListener aListener ) {
-		_messageCenter.removeTarget( aListener, this, SolutionJudgeListener.class );
+		messageCenter.removeTarget( aListener, this, SolutionJudgeListener.class );
 	}
 
 

@@ -20,7 +20,7 @@ public class Polynomial {
 	
 
 	private double[] a = new double[0];
-	private double[] a_err = new double[0];
+	private double[] errArr = new double[0];
 	private boolean[] mask = new boolean[0];
 
 	private ModelFunction1D mf = null;
@@ -28,9 +28,9 @@ public class Polynomial {
 	private SolverLSM solver = new SolverLSM();
 
 	private DataStore ds = new DataStore();
-	private DataStore ds_tmp = new DataStore();
+	private DataStore dsTmp = new DataStore();
 	
-	private double[] x_tmp = new double[1];
+	private double[] xTmp = new double[1];
 
 	private ScientificNumberFormat frmt = new ScientificNumberFormat(4);
 
@@ -62,6 +62,7 @@ public class Polynomial {
 
 		mf =
 			new ModelFunction1D() {
+                                @Override
 				public double getValue(double x, double[] a) {
 					double res = 0.;
 					double x_pow = 1.;
@@ -73,9 +74,10 @@ public class Polynomial {
 				}
 
 
-				public double getDerivative(double x, double[] a, int a_index) {
+                                @Override
+				public double getDerivative(double x, double[] a, int indexArr) {
 					double res = 1.;
-					for (int i = 0; i < a_index; i++) {
+					for (int i = 0; i < indexArr; i++) {
 						res *= x;
 					}
 					return res;
@@ -104,7 +106,7 @@ public class Polynomial {
 	 *@return        The parameter value error
 	 */
 	public double getParameterError(int index) {
-		return a_err[index];
+		return errArr[index];
 	}
 
 
@@ -113,7 +115,7 @@ public class Polynomial {
 	 *
 	 *@param  index    The coefficient index for power equals to "index" in the
 	 *      polynomial
-	 *@param  fitting  The boolean vaiable about including the coefficient into the
+	 *@param  fitting  The boolean variable about including the coefficient into the
 	 *      fitting
 	 */
 	public void fitParameter(int index, boolean fitting) {
@@ -122,12 +124,12 @@ public class Polynomial {
 
 
 	/**
-	 *  Returns the boolean vaiable about including the coefficient into the
+	 *  Returns the boolean variable about including the coefficient into the
 	 *  fitting
 	 *
 	 *@param  index  The coefficient index for power equals to "index" in the
 	 *      polynomial
-	 *@return        fitting The boolean vaiable about including the coefficient
+	 *@return        fitting The boolean variable about including the coefficient
 	 *      into the fitting
 	 */
 	public boolean fitParameter(int index) {
@@ -151,29 +153,29 @@ public class Polynomial {
 	/**
 	 *  Sets the data attribute of the Polynomial object
 	 *
-	 *@param  y_arr      Y data array
-	 *@param  y_err_arr  Y values error array
-	 *@param  x_arr      The new data value
+	 *@param  yArr      Y data array
+	 *@param  yErrArr  Y values error array
+	 *@param  xArr      The new data value
 	 */
-	public void setData(double[] x_arr,
-			double[] y_arr,
-			double[] y_err_arr) {
+	public void setData(double[] xArr,
+			double[] yArr,
+			double[] yErrArr) {
 
 		ds.clear();
 		setToZero();
 
-		if (x_arr.length != y_arr.length) {
+		if (xArr.length != yArr.length) {
 			return;
 		}
 
 		double[] x = new double[1];
 
-		for (int i = 0; i < x_arr.length; i++) {
-			x[0] = x_arr[i];
-			if (y_err_arr != null) {
-				ds.addRecord(y_arr[i], y_err_arr[i], x);
+		for (int i = 0; i < xArr.length; i++) {
+			x[0] = xArr[i];
+			if (yErrArr != null) {
+				ds.addRecord(yArr[i], yErrArr[i], x);
 			} else {
-				ds.addRecord(y_arr[i], x);
+				ds.addRecord(yArr[i], x);
 			}
 		}
 	}
@@ -182,12 +184,12 @@ public class Polynomial {
 	/**
 	 *  Sets the data attribute of the Polynomial object
 	 *
-	 *@param  y_arr  Y data array
-	 *@param  x_arr  The new data value
+	 *@param  yArr  Y data array
+	 *@param  xArr  The new data value
 	 */
-	public void setData(double[] x_arr,
-			double[] y_arr) {
-		setData(x_arr, y_arr, null);
+	public void setData(double[] xArr,
+			double[] yArr) {
+		setData(xArr, yArr, null);
 	}
 
 
@@ -208,7 +210,7 @@ public class Polynomial {
 			if (mask[i]) {
 				a[i] = 0.;
 			}
-			a_err[i] = 0.;
+			errArr[i] = 0.;
 		}
 	}
 
@@ -221,7 +223,7 @@ public class Polynomial {
 	 */
 	public void setOrder(int n) {
 		a = new double[n + 1];
-		a_err = new double[n + 1];
+		errArr = new double[n + 1];
 		mask = new boolean[n + 1];
 		for (int i = 0; i < mask.length; i++) {
 			mask[i] = true;
@@ -247,8 +249,8 @@ public class Polynomial {
 	 *@param  y  The y value
 	 */
 	public void addData(double x, double y) {
-		x_tmp[0] = x;
-		ds.addRecord(y, x_tmp);
+		xTmp[0] = x;
+		ds.addRecord(y, xTmp);
 	}
 
 
@@ -256,12 +258,12 @@ public class Polynomial {
 	 *  Adds a data point to the internal data
 	 *
 	 *@param  x      The x value
-	 *@param  y      The y valu
+	 *@param  y      The y value
 	 *@param  y_err  The error of the y value
 	 */
 	public void addData(double x, double y, double y_err) {
-		x_tmp[0] = x;
-		ds.addRecord(y, y_err, x_tmp);
+		xTmp[0] = x;
+		ds.addRecord(y, y_err, xTmp);
 	}
 
 	/**
@@ -271,7 +273,7 @@ public class Polynomial {
 	 */
 	public boolean fit() {
 		setToZero();
-		boolean res = solver.solve(ds, mf, a, a_err, mask);
+		boolean res = solver.solve(ds, mf, a, errArr, mask);
 		return res;
 	}	
 	
@@ -287,34 +289,34 @@ public class Polynomial {
 		setToZero();
 		if(a.length >= fact.length) return false;
 		//center data and store in the temporary data container
-		double x_avg = 0.;
-		double y_avg = 0.;
-		int n_data = ds.size();
-		if(n_data == 0) return false;
+		double xAvg = 0.;
+		double yAvg = 0.;
+		int nData = ds.size();
+		if(nData == 0) return false;
 		
-		for(int i = 0; i < n_data; i++){
-			x_avg = x_avg + ds.getArrX(i)[0];
-			y_avg = y_avg + ds.getY(i);
+		for(int i = 0; i < nData; i++){
+			xAvg = xAvg + ds.getArrX(i)[0];
+			yAvg = yAvg + ds.getY(i);
 		}
-		x_avg = x_avg / n_data;
-		y_avg = y_avg / n_data;
+		xAvg = xAvg / nData;
+		yAvg = yAvg / nData;
 		
-		ds_tmp.clear();
-		for(int i = 0; i < n_data; i++){
-			ds_tmp.addRecord(ds.getY(i) - y_avg,ds.getErrY(i),ds.getArrX(i)[0] - x_avg);
+		dsTmp.clear();
+		for(int i = 0; i < nData; i++){
+			dsTmp.addRecord(ds.getY(i) - yAvg,ds.getErrY(i),ds.getArrX(i)[0] - xAvg);
 		}	
 		
 		//prepare resulting arrays
-		double[] a_tmp = new double[a.length];
-		double[] a_err_tmp = new double[a.length];
-		boolean[] mask_tmp = new boolean[a.length];
+		double[] tmpArr = new double[a.length];
+		double[] errTmpArr = new double[a.length];
+		boolean[] maskTmp = new boolean[a.length];
 		for(int i = 0; i < a.length; i++){
-			a_tmp[i] = 0.;
-			a_err_tmp[i] = 0.;
-			mask_tmp[i] = true;
+			tmpArr[i] = 0.;
+			errTmpArr[i] = 0.;
+			maskTmp[i] = true;
 		}
 		
-		boolean res = solver.solve(ds_tmp, mf, a_tmp, a_err_tmp, mask_tmp);
+		boolean res = solver.solve(dsTmp, mf, tmpArr, errTmpArr, maskTmp);
 		
 		//shift x and y back 
 		if(res != false){
@@ -325,14 +327,14 @@ public class Polynomial {
 				double cij = 0.;
 				for(int i = j; i < a.length; i++){
 					cij = fact[i]/(fact[j]*fact[i-j]);
-					s = s + a_tmp[i]*x*cij;
-					s2 = s2 + (a_err_tmp[i]*x*cij)*(a_err_tmp[i]*x*cij);
-					x = -x*x_avg;
+					s = s + tmpArr[i]*x*cij;
+					s2 = s2 + (errTmpArr[i]*x*cij)*(errTmpArr[i]*x*cij);
+					x = -x*xAvg;
 				}
 				a[j] = s;
-				a_err[j] = Math.sqrt(s2);
+				errArr[j] = Math.sqrt(s2);
 			}
-			a[0] = a[0] + y_avg;
+			a[0] = a[0] + yAvg;
 		}
 		return res;
 	}
@@ -342,7 +344,7 @@ public class Polynomial {
 	 *  Returns the value of Polynomial function
 	 *
 	 *@param  x  The x-value
-	 *@return    The polynimial function value
+	 *@return    The polynomial function value
 	 */
 	public double getValue(double x) {
 		return mf.getValue(x, a);
@@ -367,9 +369,9 @@ public class Polynomial {
 	 *@return    The array with the coefficients of the Polynomial
 	 */
 	public double[] getCoefficients() {
-		double[] a_new = new double[a.length];
-		System.arraycopy(a, 0, a_new, 0, a.length);
-		return a_new;
+		double[] newArr = new double[a.length];
+		System.arraycopy(a, 0, newArr, 0, a.length);
+		return newArr;
 	}
 
 
@@ -379,35 +381,35 @@ public class Polynomial {
 	 *@return    The array with the errors of the coefficients of the Polynomial
 	 */
 	public double[] getCoefficientsErr() {
-		double[] a_err_new = new double[a_err.length];
-		System.arraycopy(a_err, 0, a_err_new, 0, a_err.length);
-		return a_err_new;
+		double[] errNewArr = new double[errArr.length];
+		System.arraycopy(errArr, 0, errNewArr, 0, errArr.length);
+		return errNewArr;
 	}
 
 
 	/**
 	 *  Return the characteristic equation as a String
 	 *
-	 *@param  frmt_loc  The format for coefficients
+	 *@param  frmtLoc  The format for coefficients
 	 *@return           The characteristic equation as a String
 	 */
-	private String equation(final ScientificNumberFormat frmt_loc ) {
-		String eq = new String();
+	private String equation(final ScientificNumberFormat frmtLoc ) {
+		String eq;
 		eq = "Y = ";
 		if (a.length <= 0) {
 			return eq;
 		}
 		if (mask[0] == false && a[0] == 0.) {
 		} else {
-			eq += "(" + frmt_loc.format(a[0]) +
-					" +- " + frmt_loc.format(a_err[0]) + ")";
+			eq += "(" + frmtLoc.format(a[0]) +
+					" +- " + frmtLoc.format(errArr[0]) + ")";
 		}
 		for (int i = 1; i < a.length; i++) {
 			if (mask[i] == false && a[i] == 0.) {
 			} else {
 				eq += " + x^" + i +
-						"*(" + frmt_loc.format(a[i]) +
-						" +- " + frmt_loc.format(a_err[i]) + ")";
+						"*(" + frmtLoc.format(a[i]) +
+						" +- " + frmtLoc.format(errArr[i]) + ")";
 			}
 		}
 		return eq;
@@ -446,7 +448,7 @@ public class Polynomial {
 		int n = 4;
 		double[] x = new double[n];
 		double[] y = new double[n];
-		double[] y_err = new double[n];
+		double[] yErr = new double[n];
 
 		double a0 = 0.5;
 		double a3 = 1.5;
@@ -455,7 +457,7 @@ public class Polynomial {
 		for (int i = 0; i < n; i++) {
 			x[i] = i;
 			y[i] = a0 + a3 * Math.pow(x[i], 3.0) + a5 * Math.pow(x[i], 5.0);
-			y_err[i] = 1;
+			yErr[i] = 1;
 		}
 
 		int nPoly = 6;
@@ -466,7 +468,7 @@ public class Polynomial {
 		gs.fitParameter(4, false);
 		gs.fitParameter(6, false);
 
-		gs.setData(x, y, y_err);
+		gs.setData(x, y, yErr);
 		boolean res = gs.fit();
 
 		System.out.println("result = " + res);

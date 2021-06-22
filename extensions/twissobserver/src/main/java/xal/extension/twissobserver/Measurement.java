@@ -107,7 +107,7 @@ public class Measurement implements Cloneable {
      * @since  Apr 26, 2013
      */
     @Override
-    public Measurement clone() {
+    public Measurement clone() throws CloneNotSupportedException {
         
         Measurement mstClone = new Measurement();
         

@@ -22,14 +22,14 @@ public class NumericCellRenderer extends JLabel implements TableCellRenderer {
     private static final long serialVersionUID = 1L;
     
 	/** keeps track of whether this cell should be drawn opaque or not */
-	private boolean _isOpaque;
+	private boolean isOpaque;
 	
 	
 	/** Constructor */
 	public NumericCellRenderer( final JTable table) {
 		super( "", SwingConstants.RIGHT );
 		
-		_isOpaque = false;
+		isOpaque = false;
 		setBackground( table.getSelectionBackground() );
 	}
 	
@@ -37,42 +37,50 @@ public class NumericCellRenderer extends JLabel implements TableCellRenderer {
 	/**
 		* Get the table component.
 	 */
-	final public Component getTableCellRendererComponent( final JTable table, final Object value, final boolean isSelected, final boolean hasFocus, final int row, final int column ) {
+    @Override
+	public final Component getTableCellRendererComponent( final JTable table, final Object value, final boolean isSelected, final boolean hasFocus, final int row, final int column ) {
 		
 		setText( ( value != null ) ? value.toString() : "" );
 		
-		_isOpaque = isSelected;
+		isOpaque = isSelected;
 				
 		return this;
 	}
 	
 	
 	/** override for performance reasons */
-	final public boolean isOpaque() {
-		return _isOpaque;
+    @Override
+	public final boolean isOpaque() {
+		return isOpaque;
 	}
 	
 	
 	/** do nothing */
-	final public void validate() {}
+    @Override
+	public final void validate() {}
 	
 	
 	/** do nothing */
-	final public void revalidate() {}
+    @Override
+	public final void revalidate() {}
 	
 	
 	/** do nothing */
-	final public void repaint( final Rectangle rectangle ) {}
+    @Override
+	public final void repaint( final Rectangle rectangle ) {}
 	
 	
 	/** do nothing */
-	final public void repaint( final long tm, final int x, final int y, final int width, final int height ) {}
+    @Override
+	public final void repaint( final long tm, final int x, final int y, final int width, final int height ) {}
 	
 	
 	/** do nothing */
-	final protected void firePropertyChange( final String name, final Object oldValue, final Object newValue ) {}
+    @Override
+	protected final void firePropertyChange( final String name, final Object oldValue, final Object newValue ) {}
 	
 	
 	/** do nothing */
-	final public void firePropertyChange( final String name, final boolean oldValue, final boolean newValue ) {} 
+    @Override
+	public final void firePropertyChange( final String name, final boolean oldValue, final boolean newValue ) {} 
 }

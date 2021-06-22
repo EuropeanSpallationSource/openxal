@@ -10,7 +10,6 @@
 package xal.extension.solver;
 
 import xal.extension.solver.algorithm.*;
-import xal.extension.solver.market.*;
 import xal.extension.solver.solutionjudge.*;
 
 import xal.tools.messaging.MessageCenter;
@@ -24,16 +23,16 @@ import java.util.*;
  */
 public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeListener, AlgorithmScheduleListener {
 	/** The list of all algorithms */
-	private Collection<SearchAlgorithm> _algorithms;
+	private Collection<SearchAlgorithm> algorithms;
 	
 	/** The collection of algorithms available for scheduling */
-	private Collection<SearchAlgorithm> _availableAlgorithms;
+	private Collection<SearchAlgorithm> availableAlgorithms;
 	
-	/** Message center for dispatching events to registerd listeners */
-	final private MessageCenter MESSAGE_CENTER;
+	/** Message center for dispatching events to registered listeners */
+	private final MessageCenter MESSAGE_CENTER;
 	
 	/** Proxy which forwards events to registered listeners */
-	final private AlgorithmPoolListener EVENT_PROXY;
+	private final AlgorithmPoolListener EVENT_PROXY;
 
 
 	/**
@@ -41,8 +40,8 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 	 * @param algorithms  the collection of algorithms to populate the pool
 	 */
 	public AlgorithmPool( final Collection<SearchAlgorithm> algorithms ) {
-		_algorithms = new HashSet<SearchAlgorithm>();
-		_availableAlgorithms = new HashSet<SearchAlgorithm>();
+		this.algorithms = new HashSet<>();
+		availableAlgorithms = new HashSet<>();
 
 		MESSAGE_CENTER = new MessageCenter( "Algorithm Pool" );
 		EVENT_PROXY = MESSAGE_CENTER.registerSource( this, AlgorithmPoolListener.class );
@@ -71,7 +70,7 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 	 * @return The default set of algorithms
 	 */
 	public static Collection<SearchAlgorithm> generateDefaultAlgorithms() {
-		final Collection<SearchAlgorithm> allAlgorithms = new HashSet<SearchAlgorithm>();
+		final Collection<SearchAlgorithm> allAlgorithms = new HashSet<>();
 		
 		allAlgorithms.add( new RandomSearch() );
 		allAlgorithms.add( new RandomShrinkSearch() );
@@ -84,7 +83,7 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 
 	/** Reset the algorithm pool by resetting all the algorithms. */
 	public void reset() {
-        for ( final SearchAlgorithm algorithm : _algorithms ) {
+        for ( final SearchAlgorithm algorithm : algorithms ) {
 			algorithm.reset();
 		}
 	}
@@ -95,7 +94,7 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 	 * @param problem the problem to solve
 	 */
 	public void setProblem( final Problem problem ) {
-        for ( final SearchAlgorithm algorithm : _algorithms ) {
+        for ( final SearchAlgorithm algorithm : algorithms ) {
 			algorithm.setProblem( problem );
 		}
 	}
@@ -103,7 +102,7 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 
 	/**
 	 * Add an algorithm pool listener.
-	 * @param listener  The listerner to add.
+	 * @param listener  The listener to add.
 	 */
 	public void addAlgorithmPoolListener( final AlgorithmPoolListener listener ) {
 		MESSAGE_CENTER.registerTarget( listener, this, AlgorithmPoolListener.class );
@@ -145,7 +144,7 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 	 * @param algorithm     The feature to be added to the Algorithm attribute
 	 */
 	public void addAlgorithm( final SearchAlgorithm algorithm ) {
-		_algorithms.add( algorithm );
+		algorithms.add( algorithm );
 		algorithm.addSearchAlgorithmListener( this );
 		EVENT_PROXY.algorithmAdded( this, algorithm );
 	}
@@ -157,8 +156,8 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 	 */
 	public void removeAlgorithm( final SearchAlgorithm algorithm ) {
 		algorithm.removeSearchAlgorithmListener( this );
-		_algorithms.remove( algorithm );
-		_availableAlgorithms.remove( algorithm );
+		algorithms.remove( algorithm );
+		availableAlgorithms.remove( algorithm );
 		EVENT_PROXY.algorithmRemoved( this, algorithm );
 	}
 
@@ -176,7 +175,7 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 	
 	/** Remove all algorithms. */
 	public void removeAllAlgorithms() {
-		removeAlgorithms( new HashSet<SearchAlgorithm>(_algorithms) );
+		removeAlgorithms(new HashSet<>(algorithms) );
 	}
 
 
@@ -185,7 +184,7 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 	 * @return   The list of algorithms.
 	 */
 	public Collection<SearchAlgorithm> getAlgorithms() {
-		return new HashSet<SearchAlgorithm>( _algorithms );
+		return new HashSet<>( algorithms );
 	}
 
 
@@ -194,7 +193,7 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 	 * @return   The list of available algorithm.
 	 */
 	public Collection<SearchAlgorithm> getAvailableAlgorithms() {
-		return new HashSet<SearchAlgorithm>( _availableAlgorithms );
+		return new HashSet<>( availableAlgorithms );
 	}
 	
 	
@@ -203,6 +202,7 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 	 * @param algorithmSchedule The algorithm schedule that holds the trial scored.
 	 * @param trial The trial that was scored.	  
 	 */
+        @Override
 	public void trialScored( final AlgorithmSchedule algorithmSchedule, final Trial trial ) {
 		for ( final SearchAlgorithm algorithm : getAlgorithms() ) {
 			algorithm.trialScored( algorithmSchedule, trial );
@@ -215,6 +215,7 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 	 * @param algorithmSchedule The algorithm schedule that holds the trial vetoed.
 	 * @param trial The trial that was vetoed.
 	 */
+        @Override
 	public void trialVetoed( final AlgorithmSchedule algorithmSchedule, final Trial trial ) {
 		for ( final SearchAlgorithm algorithm : getAlgorithms() ) {
 			algorithm.trialVetoed( algorithmSchedule, trial );
@@ -228,6 +229,7 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 	 * @param algorithm the algorithm which will execute
 	 * @param scoreBoard the scoreboard
 	 */
+        @Override
 	public void algorithmRunWillExecute( final AlgorithmSchedule schedule, final SearchAlgorithm algorithm, final ScoreBoard scoreBoard ) {}
 	
 	
@@ -237,6 +239,7 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 	 * @param algorithm the algorithm that has executed
 	 * @param scoreBoard the scoreboard
 	 */
+        @Override
 	public void algorithmRunExecuted( final AlgorithmSchedule schedule, final SearchAlgorithm algorithm, final ScoreBoard scoreBoard ) {}
 	
 
@@ -245,8 +248,9 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 	 * data it needs to propose a new trial.
 	 * @param source  The source of the available algorithm.
 	 */
+        @Override
 	public void algorithmAvailable( final SearchAlgorithm source ) {
-		_availableAlgorithms.add( source );
+		availableAlgorithms.add( source );
 		EVENT_PROXY.algorithmAvailable( this, source );
 	}
 
@@ -255,8 +259,9 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 	 * Send a message that an algorithm is not available.
 	 * @param source  The source of the available algorithm.
 	 */
+        @Override
 	public void algorithmUnavailable( SearchAlgorithm source ) {
-		_availableAlgorithms.remove( source );
+		availableAlgorithms.remove( source );
 		EVENT_PROXY.algorithmUnavailable( this, source );
 	}
 	
@@ -267,8 +272,9 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 	 * @param solutions  The list of solutions.
 	 * @param solution   The new optimal solution.
 	 */
+        @Override
 	public void foundNewOptimalSolution( final SolutionJudge source, final List<Trial> solutions, final Trial solution ) {
-		for ( final SearchAlgorithm algorithm : _algorithms ) {
+		for ( final SearchAlgorithm algorithm : algorithms ) {
 			algorithm.foundNewOptimalSolution( source, solutions, solution );
 		}
 	}

@@ -4,38 +4,32 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.text.NumberFormat;
 import java.text.DecimalFormat;
+import java.util.List;
 
 import xal.smf.*;
 import xal.smf.impl.Magnet;
-import xal.smf.impl.Electromagnet;
 import xal.smf.impl.RfGap;
 import xal.smf.impl.RfCavity;
-import xal.ca.*;
 import xal.sim.slg.*; // for lattice generation
 import xal.model.probe.*; // Probe for Mad header
 // import xal.model.probe.traj.EnvelopeProbeState;
-import xal.sim.scenario.Scenario;
 import xal.tools.beam.Twiss;
-import xal.tools.beam.TraceXalUnitConverter;
 import xal.tools.beam.RelativisticParameterConverter;
 import xal.tools.beam.CovarianceMatrix;
 
 public class MadXGenerator {
 	/** speed of light constant in 10^9 m/s */
-	final static double LIGHT_SPEED = 0.2997925;
+	static final double LIGHT_SPEED = 0.2997925;
 	
 	/** default number format */
-	final static NumberFormat NUMBER_FORMAT;
+	static final NumberFormat NUMBER_FORMAT;
     
 	/** Probe for initial condition */
 	protected Probe<?> myProbe;
     
-	protected java.util.List<AcceleratorSeq> _sequenceChain = null;
+	protected List<AcceleratorSeq> sequenceChain = null;
     
 	/** for design values */
 	public static final int PARAMSRC_DESIGN = 2;
@@ -55,7 +49,7 @@ public class MadXGenerator {
 	protected double beamci[] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
     
 	/** indicates whether to use design bend angles regardless of the specified data source */
-	private boolean _useDesignBendAngles;
+	private boolean useDesignBendAngles;
 	
 	
 	// static initializer
@@ -70,13 +64,13 @@ public class MadXGenerator {
 	 * @param sequenceChain sequence list
 	 * @param envProbe envelope probe
 	 */
-	public MadXGenerator( java.util.List<AcceleratorSeq> sequenceChain, TransferMapProbe envProbe ) {
+	public MadXGenerator( List<AcceleratorSeq> sequenceChain, TransferMapProbe envProbe ) {
 		this ( null, sequenceChain, envProbe );
 	}
 	
 	
 	/** Constructor */
-	public MadXGenerator( java.util.List<AcceleratorSeq> sequenceChain, EnvelopeProbe envProbe ) {
+	public MadXGenerator( List<AcceleratorSeq> sequenceChain, EnvelopeProbe envProbe ) {
 		this( null, sequenceChain, envProbe );
 	}
 	
@@ -87,29 +81,29 @@ public class MadXGenerator {
 	 * @param sequenceChain sequence list
 	 * @param envProbe envelope probe
 	 */
-	public MadXGenerator( String latticeName, java.util.List<AcceleratorSeq> sequenceChain, TransferMapProbe envProbe ) {
+	public MadXGenerator( String latticeName, List<AcceleratorSeq> sequenceChain, TransferMapProbe envProbe ) {
 		this( latticeName, sequenceChain, (Probe)envProbe );
 	}
     
 	
 	/** Constructor */
-	public MadXGenerator(String latticeName, java.util.List<AcceleratorSeq> sequenceChain, EnvelopeProbe envProbe) {
+	public MadXGenerator(String latticeName, List<AcceleratorSeq> sequenceChain, EnvelopeProbe envProbe) {
 		this( latticeName, sequenceChain, (Probe)envProbe );
 	}
     
     
 	/** Constructor */
-	public MadXGenerator( final String latticeName, final java.util.List<AcceleratorSeq> sequenceChain, final Probe<?> envProbe) {
+	public MadXGenerator( final String latticeName, final List<AcceleratorSeq> sequenceChain, final Probe<?> envProbe) {
 		myLatticeName = latticeName;
 		myProbe = envProbe;
-		_sequenceChain = sequenceChain;
-		_useDesignBendAngles = true;
+		this.sequenceChain = sequenceChain;
+		useDesignBendAngles = true;
 	}
     
     
 	/** Set whether to use the design bend angles independent of the specified data source */
 	public void setUseDesignBendAngles( final boolean useDesignBendAngles ) {
-		_useDesignBendAngles = useDesignBendAngles;
+		this.useDesignBendAngles = useDesignBendAngles;
 	}
 	
 	
@@ -152,10 +146,10 @@ public class MadXGenerator {
 	 */
 	public void createMadInput( final AbstractDeviceDataSource deviceDataSource, final File outputFile ) throws IOException {
 		// select the data source for bends depending on whether the flag has been set to use design bend angles
-		final AbstractDeviceDataSource bendDataSource = _useDesignBendAngles ? AbstractDeviceDataSource.getDesignDataSourceInstance() : deviceDataSource;
+		final AbstractDeviceDataSource bendDataSource = useDesignBendAngles ? AbstractDeviceDataSource.getDesignDataSourceInstance() : deviceDataSource;
         
 		if (myLatticeName == null) {
-			myLatticeName = _sequenceChain.get(0).getId() + "-" + _sequenceChain.get( _sequenceChain.size() - 1 ).getId();
+			myLatticeName = sequenceChain.get(0).getId() + "-" + sequenceChain.get( sequenceChain.size() - 1 ).getId();
 		}
         
 		File mad_file = outputFile != null ? outputFile : new File( myLatticeName + ".mad" );
@@ -177,14 +171,14 @@ public class MadXGenerator {
 		// no need to put drift spaces in the file
 //		int driftCounter = 0;
         
-		MADX_ELEMENTS = new ArrayList<MadXElement>();
+		MADX_ELEMENTS = new ArrayList<>();
 		
 		ArrayList<Double> lat_lengths = new ArrayList<>();
 		HashMap<String, Double> elem_pos_map = new HashMap<>();
 		ArrayList<String> allNames = new ArrayList<>();
 		
-		for (int i = 0; i < _sequenceChain.size(); i++) {
-			Lattice myLattice = createLattice( _sequenceChain.get(i) );
+		for (int i = 0; i < sequenceChain.size(); i++) {
+			Lattice myLattice = createLattice( sequenceChain.get(i) );
 			lat_lengths.add(myLattice.getLength());
 //			int elementCount = myLattice.len();
 			LatticeIterator ilat = myLattice.latticeIterator();
@@ -347,7 +341,7 @@ public class MadXGenerator {
 		List<MadXElement> line = null;	// current line
 		for ( final MadXElement element : MADX_ELEMENTS ) {
 			if ( lineIndex >= MAX_LINE_LENGTH ) {
-				line = new ArrayList<MadXElement>( MAX_LINE_LENGTH );
+				line = new ArrayList<>( MAX_LINE_LENGTH );
 				lines.add( line );
 				lineIndex = 1;
 			}
@@ -375,12 +369,12 @@ public class MadXGenerator {
 //		}
 //		MADX_WRITER.write( "SEGMENT" + lineCount + ");\n" );
         
-		final StringBuffer footerBuffer = new StringBuffer();
-		footerBuffer.append( "BEAM, PARTICLE=" + myProbe.getSpeciesName() + ", MASS=" + NUMBER_FORMAT.format(myProbe.getSpeciesRestEnergy() / 1.e9) );
+		final StringBuilder footerBuffer = new StringBuilder();
+		footerBuffer.append("BEAM, PARTICLE=").append(myProbe.getSpeciesName()).append(", MASS=").append(NUMBER_FORMAT.format(myProbe.getSpeciesRestEnergy() / 1.e9));
 //		footerBuffer.append( ", PARTICLE=" + myProbe.
-		footerBuffer.append( ", CHARGE=" + NUMBER_FORMAT.format( myProbe.getSpeciesCharge() ) );
-		footerBuffer.append( ", ENERGY=" + NUMBER_FORMAT.format( ( RelativisticParameterConverter.computeGammaFromEnergies(myProbe.getKineticEnergy(), myProbe.getSpeciesRestEnergy() ) * myProbe.getSpeciesRestEnergy() ) / 1.e9 ) + ";\n" );
-		footerBuffer.append( "USE, sequence=" + formatName(myLatticeName) + ";\n" );
+footerBuffer.append(", CHARGE=").append(NUMBER_FORMAT.format( myProbe.getSpeciesCharge() ));
+		footerBuffer.append(", ENERGY=").append(NUMBER_FORMAT.format( ( RelativisticParameterConverter.computeGammaFromEnergies(myProbe.getKineticEnergy(), myProbe.getSpeciesRestEnergy() ) * myProbe.getSpeciesRestEnergy() ) / 1.e9 )).append(";\n");
+		footerBuffer.append("USE, sequence=").append(formatName(myLatticeName)).append(";\n");
 		if ( myProbe instanceof EnvelopeProbe ) {
             CovarianceMatrix covarianceMatrix = ((EnvelopeProbe)myProbe).createProbeState().getCovarianceMatrix();
             
@@ -388,12 +382,12 @@ public class MadXGenerator {
             
 			footerBuffer.append( "   SELECT, flag=twiss, COLUMN = NAME,KEYWORD,S,L,K1,x,y,BETX,ALFX,DX,BETY,ALFY,DY,ENERGY;\n" );
 			footerBuffer.append( "   TWISS" );
-			footerBuffer.append( ",BETX=" + inputTwiss[0].getBeta() );
-			footerBuffer.append( ",ALFX=" + inputTwiss[0].getAlpha() );
-			footerBuffer.append( ",BETY=" + inputTwiss[1].getBeta() );
-			footerBuffer.append( ",ALFY=" + inputTwiss[1].getAlpha() );
-			footerBuffer.append( ",DX=" + 0.0 );
-			footerBuffer.append( ",DPX=" + 0.0 );
+			footerBuffer.append(",BETX=").append(inputTwiss[0].getBeta());
+			footerBuffer.append(",ALFX=").append(inputTwiss[0].getAlpha());
+			footerBuffer.append(",BETY=").append(inputTwiss[1].getBeta());
+			footerBuffer.append(",ALFY=").append(inputTwiss[1].getAlpha());
+			footerBuffer.append(",DX=").append(0.0);
+			footerBuffer.append(",DPX=").append(0.0);
 			footerBuffer.append( ", file='twiss.out';\n" );
 		}
 		else {
@@ -447,13 +441,13 @@ public class MadXGenerator {
 
 
 
-/** MAD element name and defintion */
+/** MAD element name and definition */
 class MadXElement {
 	/** name of the MAD element */
-	final public String NAME;
+	public final String NAME;
 	
 	/** definition of the MAD element */
-	final public String DEFINITION;
+	public final String DEFINITION;
 	
 	
 	/** Constructor */

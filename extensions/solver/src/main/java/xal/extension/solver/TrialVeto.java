@@ -12,7 +12,6 @@
   
  import xal.extension.solver.constraint.Constraint;
  
- import java.util.*;
  
 
  /**
@@ -20,11 +19,11 @@
  * @author ky6  
  * @author t6p
  */
- final public class TrialVeto {
-	 final protected String _reason;
-	 final protected Object _userInfo;
-	 final protected Trial _trial;
-	 final protected Constraint _constraint;
+ public final class TrialVeto {
+	 protected final String reason;
+	 protected final Object userInfo;
+	 protected final Trial trial;
+	 protected final Constraint constraint;
 	 
 	 
 	 /**
@@ -32,13 +31,13 @@
 	  * @param trial The trial to veto.
 	  * @param constraint The constraint to base the veto on.
 	  * @param reason describing why the veto was made
-	  * @param userInfo supplying additional user inforamtion to associate with the veto
+	  * @param userInfo supplying additional user information to associate with the veto
 	  */
 	 public TrialVeto( final Trial trial, final Constraint constraint, final String reason, final Object userInfo ) {
-		 _trial = trial;
-		 _constraint = constraint;
-		 _reason = reason;
-		 _userInfo = userInfo;
+		 this.trial = trial;
+		 this.constraint = constraint;
+		 this.reason = reason;
+		 this.userInfo = userInfo;
 	 }
 	 
 	 
@@ -68,7 +67,7 @@
 	 * @return trialPoint.
 	 */
 	 public TrialPoint getTrialPoint() {
-		 return _trial.getTrialPoint();
+		 return trial.getTrialPoint();
 	 }
 	 
 	 
@@ -77,16 +76,16 @@
 	 * @return trial.
 	 */
 	 public Trial getTrial() {
-		 return _trial;
+		 return trial;
 	 }
 	 
 	 
 	 /**
-	 * Get the constaint.
+	 * Get the constraint.
 	 * @return constraint.
 	 */
 	 public Constraint getConstraint() {
-		 return _constraint;
+		 return constraint;
 	 }
 	 
 	 
@@ -95,7 +94,7 @@
 	  * @return the reason for the veto
 	  */
 	 public String getReason() {
-		 return _reason;
+		 return reason;
 	 }
 	 
 	 
@@ -104,6 +103,6 @@
 	  * @return the user info
 	  */
 	 public Object getUserInfo() {
-		 return _userInfo;
+		 return userInfo;
 	 }
  }

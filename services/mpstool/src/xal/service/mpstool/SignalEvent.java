@@ -10,7 +10,6 @@
 package xal.service.mpstool;
 
 import xal.ca.Timestamp;
-import xal.ca.ChannelTimeRecord;
 
 
 /**
@@ -20,10 +19,10 @@ import xal.ca.ChannelTimeRecord;
  */
 public class SignalEvent implements Comparable<Object> {
 	/** the event's timestamp */
-	protected final Timestamp _timestamp;
+	protected final Timestamp timestamp;
 
 	/** the PV name */
-	protected final String _signal;
+	protected final String signal;
 
 
 	/**
@@ -33,8 +32,8 @@ public class SignalEvent implements Comparable<Object> {
 	 * @param timestamp  The timestamp of the event
 	 */
 	public SignalEvent( String signal, Timestamp timestamp ) {
-		_timestamp = timestamp;
-		_signal = signal;
+		this.timestamp = timestamp;
+		this.signal = signal;
 	}
 
 
@@ -44,7 +43,7 @@ public class SignalEvent implements Comparable<Object> {
 	 * @return   the signal
 	 */
 	public String getSignal() {
-		return _signal;
+		return signal;
 	}
 
 
@@ -54,7 +53,7 @@ public class SignalEvent implements Comparable<Object> {
 	 * @return   the timestamp of the signal event
 	 */
 	public Timestamp getTimestamp() {
-		return _timestamp;
+		return timestamp;
 	}
 
 
@@ -65,10 +64,11 @@ public class SignalEvent implements Comparable<Object> {
 	 * @return       -1 if this is earlier than the specified record or +1 if it is
 	 *      later or the same
 	 */
+        @Override
 	public int compareTo( Object other ) {
-		Timestamp otherTimestamp = ( (SignalEvent)other )._timestamp;
+		Timestamp otherTimestamp = ( (SignalEvent)other ).timestamp;
 		// Do not provide 0 val for the case when they are ==
-		return ( _timestamp.compareTo( otherTimestamp ) < 0 ) ? -1 : 1;
+		return ( timestamp.compareTo( otherTimestamp ) < 0 ) ? -1 : 1;
 	}
 
 
@@ -77,11 +77,12 @@ public class SignalEvent implements Comparable<Object> {
 	 *
 	 * @return   description of this instance
 	 */
+        @Override
 	public String toString() {
-		StringBuffer buffer = new StringBuffer();
+		StringBuilder buffer = new StringBuilder();
 		
-		buffer.append("signal: " + _signal);
-		buffer.append(", timestamp: " + _timestamp);
+		buffer.append("signal: ").append(signal);
+		buffer.append(", timestamp: ").append(timestamp);
 		
 		return buffer.toString();
 	}

@@ -6,6 +6,7 @@
 
 package xal.extension.application;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
@@ -28,7 +29,7 @@ public class Util {
      * @param resourceURL The URL to the properties file
      * @return The map equivalent of the resource bundle or null if the resource was not found
      */
-    static public Map<String,String> loadResourceBundle( final URL resourceURL ) throws RuntimeException {
+    public static Map<String,String> loadResourceBundle( final URL resourceURL ) throws RuntimeException {
 		final Map<String,String> infoMap = new HashMap<>();
 
 		if ( resourceURL == null )  return infoMap;
@@ -53,18 +54,18 @@ public class Util {
 			// this may be fine as the resource may be optional
 			return null;	// return null to indicate that the resource was missing
 		}
-		catch( Exception exception ) {
+		catch( IOException exception ) {
 			throw new RuntimeException( "Exception loading bundle from resource: " + resourceURL, exception );
 		}
     }
 	
 	
 	/**
-	 * Merge the resource bundle from the specified source into the specified map. If the file does not exist at the source, then nothing is merged as this is intened for optional modifications.
+	 * Merge the resource bundle from the specified source into the specified map. If the file does not exist at the source, then nothing is merged as this is intended for optional modifications.
 	 * @param map the map into which the resources should be merged
 	 * @param source URL to the resource to merge
 	 */
-    static public void mergeResourceBundle( final Map<String,String> map, final URL source ) {
+    public static void mergeResourceBundle( final Map<String,String> map, final URL source ) {
 		final Map<String,String> sourceBundle = loadResourceBundle( source );
 
 		// if the bundle at the source was not found then we have nothing to merge so we are done
@@ -111,7 +112,7 @@ public class Util {
      * @throws java.util.MissingResourceException If the resource bundle cannot be found.
 	 * @see #loadResourceBundle
 	 */
-	static public Map<String,String> getPropertiesForResource( final String propertyFile ) {
+	public static Map<String,String> getPropertiesForResource( final String propertyFile ) {
 		return loadResourceBundle( Application.getAdaptor().getResourceURL( propertyFile ) );
 	}
     
@@ -121,7 +122,7 @@ public class Util {
      * @param string The string to parse.
      * @return The array of tokens.
      */
-    static protected String[] getTokens(String string) {
+    protected static String[] getTokens(String string) {
         return getTokens(string, " \t");
     }
     
@@ -132,7 +133,7 @@ public class Util {
      * @param delim The delimiter
      * @return The array of tokens.
      */
-    static protected String[] getTokens(String string, String delim) {
+    protected static String[] getTokens(String string, String delim) {
         StringTokenizer tokenizer = new StringTokenizer(string, delim);
         int numTokens = tokenizer.countTokens();
         String[] tokens = new String[ numTokens ];

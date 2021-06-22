@@ -6,7 +6,6 @@
  */
 package xal.tools.math.r4;
 
-import xal.tools.math.IIndex;
 import xal.tools.math.BaseVector;
 import xal.tools.math.IIndex;
 
@@ -130,7 +129,6 @@ public class R4 extends BaseVector<R4> {
     /**
      * Constructor for <code>R6</code>.
      *
-     * @param intSize
      * @throws UnsupportedOperationException
      *
      * @author Christopher K. Allen
@@ -152,7 +150,7 @@ public class R4 extends BaseVector<R4> {
      * inconsistent, an exception is thrown.
      * </p>
      * 
-     * @param arrMatrix   Java primitive array containing new vector values
+     * @param arrVals   Java primitive array containing new vector values
      * 
      * @exception  IllegalArgumentException  the argument must have the same dimensions as this matrix
      * 

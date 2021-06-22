@@ -103,7 +103,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * Sets the entire vector to the values given to the value of the new
      * vector.
      *
-     * @param arrVector Java primitive array containing new vector values
+     * @param vecParent Java primitive array containing new vector values
      *
      * @exception  ArrayIndexOutOfBoundsException  the argument must have the same dimensions as this matrix
      *
@@ -144,7 +144,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
         // Extract initial phase coordinate values
         for (int i=0; i<this.getSize(); i++) {
             String  strVal = tokArgs.nextToken();
-            double  dblVal = Double.valueOf(strVal).doubleValue();
+            double  dblVal = Double.parseDouble(strVal);
 
             this.setElem(i,dblVal);
         }
@@ -160,7 +160,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      */
     public void setElem(int intIndex, double dblVal) throws ArrayIndexOutOfBoundsException {
         this.vecImpl.set(intIndex, 0, dblVal);
-    };
+    }
 
     /**
      * Set individual element of a vector to given value.  The index is assumed
@@ -175,7 +175,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      */
     public void setElem(IIndex iIndex, double dblVal) throws ArrayIndexOutOfBoundsException {
         this.setElem(iIndex.val(), dblVal);
-    };
+    }
 
 
 
@@ -190,7 +190,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      */
     public int getSize()    {
         return this.vecImpl.numRows;
-    };
+    }
 
     /**
      * Get individual element of a vector at specified index
@@ -203,7 +203,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      */
     public double getElem(int iIndex) throws ArrayIndexOutOfBoundsException {
         return this.vecImpl.get(iIndex, 0);
-    };
+    }
 
 
     /**
@@ -233,7 +233,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      */
     public double getElem(IIndex iIndex) throws ArrayIndexOutOfBoundsException {
         return this.getElem( iIndex.val() );
-    };
+    }
 
     /**
      * Returns a copy of the internal Java array containing
@@ -324,6 +324,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *
      * @return True if obj is equal to this
      */
+    @Override
     public boolean equals(Object obj) {
         if (! (obj instanceof BaseVector)) {
                 return false;
@@ -526,7 +527,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
         CommonOps.add(this.vecImpl, vecAdd.getVector(), result.getVector());
 
         return result;
-    };
+    }
 
     /**
      *  Vector in-place subtraction. Subtracts the given vector from this vector which
@@ -537,7 +538,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      */
     public void minusEquals(V vecSub) {
     	CommonOps.subtractEquals(this.vecImpl, vecSub.getVector());
-    };
+    }
 
     /**
      *  Vector subtraction without destruction
@@ -622,7 +623,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
         }
 
         return result;
-    };
+    }
 
     /**
      *  Vector right multiplication, or contra-variant operation of the
@@ -652,7 +653,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
         }
 
         return result;
-    };
+    }
 
 
     /*
@@ -673,7 +674,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
             dblSum += Math.abs( this.getElem(i) );
 
         return dblSum;
-    };
+    }
 
     /**
      *  Return the <i>l</i><sub>2</sub> norm of the vector.
@@ -723,6 +724,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *
      * @see xal.tools.data.IArchive#save(xal.tools.data.DataAdaptor)
      */
+    @Override
     public void save(DataAdaptor daptArchive) {
         daptArchive.setValue(ATTR_DATA, this.toString());
     }
@@ -737,6 +739,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *
      * @see xal.tools.data.IArchive#load(xal.tools.data.DataAdaptor)
      */
+    @Override
     public void load(DataAdaptor daptArchive) throws DataFormatException {
         if ( daptArchive.hasAttribute(ATTR_DATA) )  {
             String  strValues = daptArchive.stringValue(ATTR_DATA);
@@ -776,7 +779,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
 
         // Send to output stream
         os.print(strVec);
-    };
+    }
 
     /**
      *  Print the vector contents to an output stream,
@@ -796,7 +799,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
 
         // Send to output stream
         os.println(strVec);
-    };
+    }
 
 
     /*
@@ -874,7 +877,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
         // Extract initial phase coordinate values
         for (int i=0; i<this.getSize(); i++) {
             String  strVal = tokArgs.nextToken();
-            double  dblVal = Double.valueOf(strVal).doubleValue();
+            double  dblVal = Double.parseDouble(strVal);
 
             this.setElem(i,dblVal);
         }
@@ -890,7 +893,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * The dimensions of the new vector will be the length of the given Java double array.
      * </p>
      *
-     * @param arrMatrix   Java primitive array containing new vector values
+     * @param arrVals   Java primitive array containing new vector values
      *
      * @author Christopher K. Allen
      * @since  Oct 4, 2013

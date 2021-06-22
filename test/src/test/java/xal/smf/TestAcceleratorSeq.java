@@ -22,7 +22,7 @@ import xal.test.ResourceManager;
 /** test the AcceleratorSeq class */
 public class TestAcceleratorSeq {
     /** default accelerator */
-    static private Accelerator DEFAULT_ACCELERATOR;
+    private static Accelerator DEFAULT_ACCELERATOR;
     
     
     @BeforeClass

@@ -13,8 +13,11 @@ import javax.swing.text.html.*;
 import java.awt.Cursor;
 import java.awt.event.*;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Frame;
+import java.io.IOException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.LinkedList;
 import java.util.logging.*;
 
@@ -30,36 +33,36 @@ class HelpWindow extends JFrame implements SwingConstants {
     private static final long serialVersionUID = 1L;
 
 	/** name for the help starting point resource which may or may not exist */
-	static public final String HELP_START_RESOURCE = "Help.html";
+	public static final String HELP_START_RESOURCE = "Help.html";
 
 
     // -------- static variables -----------------------------------------------
-	final static private URL _homePage;
-    static private HelpWindow _helpWindow;
-    static private JTextPane _textPane;
+	private static final URL homePage;
+    private static HelpWindow helpWindow;
+    private static JTextPane textPane;
     
     // -------- instance variables ---------------------------------------------
-    private boolean _neverShown;
-	private LinkedList<URL> _pageHistory;
-	private int _pageHistoryIndex;
+    private boolean neverShown;
+	private LinkedList<URL> pageHistory;
+	private int pageHistoryIndex;
 	
 	// visual components
-	private JButton _backButton;
-	private JButton _forwardButton;
-	private JButton _homeButton;
+	private JButton backButton;
+	private JButton forwardButton;
+	private JButton homeButton;
     
     
     static {
-        _homePage = getHelpSource();
+        homePage = getHelpSource();
     }
     
 
     /** Creates new form HelpWindow */
     public HelpWindow() {
-		_pageHistory = new LinkedList<URL>();
+		pageHistory = new LinkedList<>();
 		
         makeView();
-        _neverShown = true;
+        neverShown = true;
         setTitle( Application.getAdaptor().applicationName() + " - Help" );
         loadHome();
     }
@@ -71,13 +74,13 @@ class HelpWindow extends JFrame implements SwingConstants {
      */
     private void loadHome() {
         try {
-            _textPane.setPage( _homePage );
-            _textPane.setEditable( false );
-			_pageHistory.add( _homePage );
-			_pageHistoryIndex = 0;
+            textPane.setPage( homePage );
+            textPane.setEditable( false );
+			pageHistory.add( homePage );
+			pageHistoryIndex = 0;
 			updateView();
         }
-        catch( java.io.IOException exception ) {
+        catch( IOException exception ) {
 			Logger.getLogger("global").log( Level.SEVERE, "Error loading the help page.", exception );
             System.err.println( exception );
             exception.printStackTrace();
@@ -91,7 +94,7 @@ class HelpWindow extends JFrame implements SwingConstants {
 	 * @return true if we can navigate forward in history and false if not.
 	 */
 	public boolean canNavigateForward() {
-		return _pageHistoryIndex < ( _pageHistory.size() - 1 );
+		return pageHistoryIndex < ( pageHistory.size() - 1 );
 	}
 	
 	
@@ -100,7 +103,7 @@ class HelpWindow extends JFrame implements SwingConstants {
 	 * @return true if we can navigate back in history and false if not.
 	 */
 	public boolean canNavigateBack() {
-		return _pageHistoryIndex > 0;
+		return pageHistoryIndex > 0;
 	}
 	
 	
@@ -109,17 +112,17 @@ class HelpWindow extends JFrame implements SwingConstants {
 	 * @param index The history index of the page to load.
 	 */
 	public void goToPage( final int index ) {
-		final URL link = _pageHistory.get( index );
+		final URL link = pageHistory.get( index );
 		
 		final Cursor lastCursor = getCursor();
 		try {
 			setCursor( new Cursor( Cursor.WAIT_CURSOR ) );
-			_textPane.setPage( link );
-			EditorKit editorKit = _textPane.getEditorKit();
-			_pageHistoryIndex = index;
+			textPane.setPage( link );
+			EditorKit editorKit = textPane.getEditorKit();
+			pageHistoryIndex = index;
 			updateView();
 		}
-		catch(java.io.IOException exception) {
+		catch(IOException exception) {
 			final String message = "Help is unable to hyperlink to " + link;
 			Logger.getLogger("global").log( Level.WARNING, message, exception );
 			System.err.println( message );
@@ -138,7 +141,7 @@ class HelpWindow extends JFrame implements SwingConstants {
 	 * @param increment the offset from the present history index.
 	 */
 	public void incrementPage( final int increment ) {
-		goToPage( _pageHistoryIndex + increment );
+		goToPage( pageHistoryIndex + increment );
 	}
 	
 	
@@ -147,9 +150,9 @@ class HelpWindow extends JFrame implements SwingConstants {
 	 * @param link The URL of the link to load.
 	 */
 	public void loadLink( final URL link ) {
-		_pageHistory = new LinkedList<URL>( _pageHistory.subList( 0, _pageHistoryIndex + 1 ) );
-		_pageHistory.add( link );
-		goToPage( _pageHistoryIndex + 1 );
+		pageHistory = new LinkedList<>( pageHistory.subList( 0, pageHistoryIndex + 1 ) );
+		pageHistory.add( link );
+		goToPage( pageHistoryIndex + 1 );
 	}
     
     
@@ -158,7 +161,7 @@ class HelpWindow extends JFrame implements SwingConstants {
      * @return true if the HelpWindow is enabled and false otherwise.
      */
     static boolean isAvailable() {
-        return _homePage != null;
+        return homePage != null;
     }
     
     
@@ -166,7 +169,7 @@ class HelpWindow extends JFrame implements SwingConstants {
      * Get the source URL for the help contents.
      * @return The URL of the help contents.
      */
-    static private URL getHelpSource() {
+    private static URL getHelpSource() {
         return Application.getAdaptor().getResourceURL( HELP_START_RESOURCE );
     }
     
@@ -179,9 +182,9 @@ class HelpWindow extends JFrame implements SwingConstants {
      * @param sender The component near which the help window should be shown
      */
     private void showWindowNear( final Component sender ) {
-        if ( _neverShown ) {
+        if ( neverShown ) {
             setLocationRelativeTo( sender );
-            _neverShown = false;
+            neverShown = false;
         }
         else if ( !sender.getGraphicsConfiguration().getDevice().getIDstring().equals(getGraphicsConfiguration().getDevice().getIDstring()) ) {
             // if the help window is on a different screen bring it to the same screen as the sender
@@ -189,7 +192,7 @@ class HelpWindow extends JFrame implements SwingConstants {
             setLocationRelativeTo( sender );
         }
         
-        setState( java.awt.Frame.NORMAL );    // don't iconify this window
+        setState( Frame.NORMAL );    // don't iconify this window
         setVisible( true );   // make the window visible
     }
     
@@ -201,11 +204,11 @@ class HelpWindow extends JFrame implements SwingConstants {
      * method.
      * @param sender The component near which the help window should be shown
      */
-    static public void showNear( final Component sender ) {
-		if ( _helpWindow == null ) {
-			_helpWindow = new HelpWindow();
+    public static void showNear( final Component sender ) {
+		if ( helpWindow == null ) {
+			helpWindow = new HelpWindow();
 		}
-		_helpWindow.showWindowNear( sender );
+		helpWindow.showWindowNear( sender );
     }
 	
 	
@@ -213,8 +216,8 @@ class HelpWindow extends JFrame implements SwingConstants {
 	 * Update the view to reflect the present state.
 	 */
 	private void updateView() {
-		_backButton.setEnabled( canNavigateBack() );
-		_forwardButton.setEnabled( canNavigateForward() );
+		backButton.setEnabled( canNavigateBack() );
+		forwardButton.setEnabled( canNavigateForward() );
 	}
     
     
@@ -223,51 +226,55 @@ class HelpWindow extends JFrame implements SwingConstants {
      */
     private void makeView() {		
         JScrollPane scrollPane = new JScrollPane();
-        _textPane = new JTextPane();
+        textPane = new JTextPane();
 		
         setTitle("Help");
 		
 		Box buttonRow = new Box( BoxLayout.X_AXIS );
 		
-		_backButton = new JButton( "<" );
-		_backButton.addActionListener( new ActionListener() {
+		backButton = new JButton( "<" );
+		backButton.addActionListener( new ActionListener() {
+                        @Override
 			public void actionPerformed( final ActionEvent event ) {
 				incrementPage( -1 );
 			}
 		});
 		
-		_forwardButton = new JButton( ">" );
-		_forwardButton.addActionListener( new ActionListener() {
+		forwardButton = new JButton( ">" );
+		forwardButton.addActionListener( new ActionListener() {
+                        @Override
 			public void actionPerformed( final ActionEvent event ) {
 				incrementPage( 1 );
 			}
 		});
 		
-		_homeButton = new JButton( "Home" );
-		_homeButton.addActionListener( new ActionListener() {
+		homeButton = new JButton( "Home" );
+		homeButton.addActionListener( new ActionListener() {
+                        @Override
 			public void actionPerformed( final ActionEvent event ) {
-				loadLink( _homePage );
+				loadLink( homePage );
 			}
 		});
 		
-		buttonRow.add( _backButton );
-		buttonRow.add( _forwardButton );
+		buttonRow.add( backButton );
+		buttonRow.add( forwardButton );
 		buttonRow.add(  Box.createHorizontalStrut(5) );
-		buttonRow.add( _homeButton );
+		buttonRow.add( homeButton );
 		buttonRow.add( Box.createHorizontalGlue() );
 		
-        scrollPane.setPreferredSize( new java.awt.Dimension( 600, 400 ) );
-        _textPane.setEditable( false );
-        _textPane.setFont( new java.awt.Font( "TimesNewRoman", 0, 12 ) );
-        _textPane.setPreferredSize( new java.awt.Dimension( 6, 6 ) );
+        scrollPane.setPreferredSize( new Dimension( 600, 400 ) );
+        textPane.setEditable( false );
+        textPane.setFont( new Font( "TimesNewRoman", 0, 12 ) );
+        textPane.setPreferredSize( new Dimension( 6, 6 ) );
         
-        _textPane.addHyperlinkListener( new javax.swing.event.HyperlinkListener() {
-            public void hyperlinkUpdate( javax.swing.event.HyperlinkEvent event ) {
+        textPane.addHyperlinkListener( new HyperlinkListener() {
+            @Override
+            public void hyperlinkUpdate( HyperlinkEvent event ) {
                 handleHyperlink( event );
             }
         });
 		
-        scrollPane.setViewportView( _textPane );
+        scrollPane.setViewportView( textPane );
 		
         JSplitPane mainView = new JSplitPane( JSplitPane.VERTICAL_SPLIT, true, buttonRow, scrollPane );
 		mainView.setDividerSize( 1 );
@@ -285,11 +292,11 @@ class HelpWindow extends JFrame implements SwingConstants {
      * within the help contents.  The event is handled by displaying the target
      * of the hyperlink in the help window.
      */
-    private void handleHyperlink( final javax.swing.event.HyperlinkEvent event ) {
+    private void handleHyperlink( final HyperlinkEvent event ) {
 		if ( event instanceof HTMLFrameHyperlinkEvent ) {
 			Cursor lastCursor = getCursor();
 			setCursor( new Cursor( Cursor.WAIT_CURSOR ) );
-			HTMLDocument document = (HTMLDocument)_textPane.getDocument();
+			HTMLDocument document = (HTMLDocument)textPane.getDocument();
 			document.processHTMLFrameHyperlinkEvent( (HTMLFrameHyperlinkEvent)event );
 			setCursor( lastCursor );
 		}

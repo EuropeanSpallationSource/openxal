@@ -43,7 +43,7 @@ public class ProbeXmlParser {
 	 * 
 	 * @return             new probe object with properties specified by the data source
 	 * 
-	 * @throws ParsingException    general formating error in the data source
+	 * @throws ParsingException    general formatting error in the data source
 	 *
 	 * @author Christopher K. Allen
 	 * @since  Apr 14, 2011
@@ -80,7 +80,7 @@ public class ProbeXmlParser {
      * 
      * @return             new probe object with properties specified by the data source
      * 
-     * @throws ParsingException    general formating error in the data source
+     * @throws ParsingException    general formatting error in the data source
      *
 	 * @author Christopher K. Allen
 	 * @since  Apr 14, 2011

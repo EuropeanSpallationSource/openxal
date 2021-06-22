@@ -16,7 +16,6 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.logging.*;
 import java.lang.reflect.*;
 import java.lang.reflect.Proxy;
 
@@ -27,28 +26,28 @@ import java.lang.reflect.Proxy;
  */
 class ClientHandler<ProxyType> implements InvocationHandler {
     /** protocol implemented by the remote service and dispatched through the proxy */
-    final private Class<ProxyType> SERVICE_PROTOCOL;
+    private final Class<ProxyType> SERVICE_PROTOCOL;
 
     /** name of the remote service */
-    final private String SERVICE_NAME;
+    private final String SERVICE_NAME;
 
     /** proxy which forwards invocations to the remote service */
-    final private ProxyType PROXY;
+    private final ProxyType PROXY;
 
     /** remote host */
-    final private String REMOTE_HOST;
+    private final String REMOTE_HOST;
 
     /** remote port */
-    final private int REMOTE_PORT;
+    private final int REMOTE_PORT;
 
 	/** message processors which are available */
-	final private ConcurrentLinkedQueue<SerialRemoteMessageProcessor> MESSAGE_PROCESSORS;
+	private final ConcurrentLinkedQueue<SerialRemoteMessageProcessor> MESSAGE_PROCESSORS;
 
     /** request ID counter is incremented to provide a unique ID for each request */
-    private volatile int _requestIDCounter;
+    private volatile int requestIDCounter;
 
     /** coder for encoding and decoding messages for remote transport */
-    final private Coder MESSAGE_CODER;
+    private final Coder MESSAGE_CODER;
 
 
     /**
@@ -68,15 +67,15 @@ class ClientHandler<ProxyType> implements InvocationHandler {
 
         PROXY = createProxy();
 
-		MESSAGE_PROCESSORS = new ConcurrentLinkedQueue<SerialRemoteMessageProcessor>();
+		MESSAGE_PROCESSORS = new ConcurrentLinkedQueue<>();
 
-        _requestIDCounter = 0;
+        requestIDCounter = 0;
     }
 
 
     /** Get the next request ID and increment it */
     private int getNextRequestID() {
-        return _requestIDCounter++;
+        return requestIDCounter++;
     }
 
 
@@ -140,7 +139,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
 
     /** dispose of resources */
     public void dispose() {
-		final List<SerialRemoteMessageProcessor> processors = new ArrayList<SerialRemoteMessageProcessor>();
+		final List<SerialRemoteMessageProcessor> processors = new ArrayList<>();
 
 		synchronized( MESSAGE_PROCESSORS ) {
 			processors.addAll( MESSAGE_PROCESSORS );
@@ -154,6 +153,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
 
 
     /** dispose of resources upon collection */
+    @Override
     protected void finalize() throws Throwable {
         dispose();
 		super.finalize();
@@ -195,6 +195,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
 	 * @throws xal.extension.service.RemoteMessageException if an exception occurs while invoking this remote message.
      */
     @SuppressWarnings( "unchecked" )    // must cast generic response object to Map
+    @Override
 	public Object invoke( final Object proxy, final Method method, final Object[] args ) throws RemoteMessageException, RemoteServiceDroppedException {
 		try {
 			SERVICE_PROTOCOL.getMethod( method.getName(), method.getParameterTypes() );		// test whether the remote service implements the method
@@ -213,7 +214,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
 			final Object[] params = args != null ? args : new Object[0];
 
             final String methodName = method.getName();
-            final Map<String,Object> request = new HashMap<String,Object>();
+            final Map<String,Object> request = new HashMap<>();
             final String message = RpcServer.encodeRemoteMessage( SERVICE_NAME, methodName );
             request.put( "message", message );
             request.put( "params", params );
@@ -246,15 +247,9 @@ class ClientHandler<ProxyType> implements InvocationHandler {
                 return null;
             }
         }
-        catch ( IllegalArgumentException exception ) {
+        catch ( IllegalArgumentException | RemoteMessageException | RemoteServiceDroppedException exception ) {
             throw exception;
         }
-		catch ( RemoteMessageException exception ) {
-			throw exception;
-		}
-		catch ( RemoteServiceDroppedException exception ) {
-			throw exception;
-		}
         catch ( Exception exception ) {
             exception.printStackTrace();
             throw new RuntimeException( "Exception performing invocation for remote request.", exception );
@@ -281,6 +276,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
 			 * Get the name of the remote service.
 			 * @return The name of the remote service.
 			 */
+                        @Override
 			public String getServiceName() {
 				return ClientHandler.this.getServiceName();
 			}
@@ -290,6 +286,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
 			 * Get the host name of the remote service.
 			 * @return The host name of the remote service.
 			 */
+                        @Override
 			public String getServiceHost() {
 				return ClientHandler.this.getHost();
 			}
@@ -299,12 +296,14 @@ class ClientHandler<ProxyType> implements InvocationHandler {
 			 * Get the port of the remote service.
 			 * @return The port of the remote service.
 			 */
+                        @Override
 			public int getServicePort() {
 				return ClientHandler.this.getPort();
 			}
 
 
 			/** dispose of this proxy's resources */
+                        @Override
 			public void disposeServiceResources() {
 				ClientHandler.this.dispose();
 			}
@@ -317,33 +316,33 @@ class ClientHandler<ProxyType> implements InvocationHandler {
 /** pending result */
 class PendingResult {
     /** result value */
-    private Object _value;
+    private Object value;
 
     /** remote exception */
-    private RuntimeException _remoteException;
+    private RuntimeException remoteException;
 
 
     /** set the result's value */
     public void setValue( final Object value ) {
-        _value = value;
+        this.value = value;
     }
 
 
     /** get the result's value */
     public Object getValue() {
-        return _value;
+        return value;
     }
 
 
     /** set the error message */
     public void setRemoteException( final RuntimeException exception ) {
-        _remoteException = exception;
+        remoteException = exception;
     }
 
 
     /** get the error message */
     public RuntimeException getRemoteException() {
-        return _remoteException;
+        return remoteException;
     }
 }
 
@@ -352,10 +351,10 @@ class PendingResult {
 /** Remote message processor that can handle serial (noncurrent) requests over the same socket. */
 class SerialRemoteMessageProcessor {
     /** socket for sending and receiving remote messages */
-    final private Socket REMOTE_SOCKET;
+    private final Socket REMOTE_SOCKET;
 
     /** coder for encoding and decoding messages for remote transport */
-    final private Coder MESSAGE_CODER;
+    private final Coder MESSAGE_CODER;
 
 
     /**
@@ -379,7 +378,7 @@ class SerialRemoteMessageProcessor {
 
 
     /** make a new remote socket */
-    static private Socket makeRemoteSocket( final String host, final int port ) {
+    private static Socket makeRemoteSocket( final String host, final int port ) {
         try {
             final Socket remoteSocket = new Socket( host, port );
             remoteSocket.setKeepAlive( true );
@@ -417,6 +416,7 @@ class SerialRemoteMessageProcessor {
 
 
     /** dispose of resources upon collection */
+    @Override
     protected void finalize() throws Throwable {
 		try {
 			dispose();

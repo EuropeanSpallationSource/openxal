@@ -6,7 +6,7 @@ import xal.ca.*;
 
 /** 
  * The abstract Vacuum Class element. Different types of 
- * vacuum guages are derived from this class.
+ * vacuum gauges are derived from this class.
  * 
  * @author  J. Galambos
  * 
@@ -20,7 +20,7 @@ public abstract class Vacuum extends AcceleratorNode  {
     
 
 	/** Standard type for instances of this class */
-    public static final String      s_strType   = "vacuum";
+    public static final String      TYPE   = "vacuum";
 
 
     /**
@@ -28,7 +28,7 @@ public abstract class Vacuum extends AcceleratorNode  {
      */
     private static void registerType() {
         ElementTypeManager typeManager = ElementTypeManager.defaultManager();
-        typeManager.registerType(Vacuum.class, s_strType);
+        typeManager.registerType(Vacuum.class, TYPE);
     }
   
 
@@ -42,7 +42,8 @@ public abstract class Vacuum extends AcceleratorNode  {
 
 
     /** Override to provide type signature */
-    public String getType()   { return s_strType; };
+    @Override
+    public String getType()   { return TYPE; }
 
 
 	/** Primary Constructor */

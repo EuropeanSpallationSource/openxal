@@ -160,8 +160,8 @@ public class BatchConnectionTest {
     public BatchConnectionTest(AcceleratorNode smfDev) {
         this.smfDev = smfDev;
         
-        this.setPassed  = new HashSet<Channel>();
-        this.setPending = new HashSet<Channel>();
+        this.setPassed  = new HashSet<>();
+        this.setPending = new HashSet<>();
         this.objLock    = new Object();
         
         this.bolChecking = true;
@@ -277,7 +277,7 @@ public class BatchConnectionTest {
         
         // We launch all the connection requests from a critical code
         //      but first we have to convert from seconds (double) to nanoseconds (int)
-        Double      dblMsec  = new Double(dblTmOut*1000.0);
+        Double      dblMsec  = dblTmOut*1000.0;
         int         intTmOut = dblMsec.intValue();
         synchronized (this.objLock) {
             this.thdCurr = Thread.currentThread();  // save the current execution thread
@@ -315,7 +315,7 @@ public class BatchConnectionTest {
      * @since  Mar 11, 2011
      */
     public Set<Channel>    getConnectedChannels() {
-        Set<Channel>    setConnected = new HashSet<Channel>();
+        Set<Channel>    setConnected = new HashSet<>();
         
         synchronized (this.objLock) {
             setConnected.addAll(this.setPassed);
@@ -394,6 +394,5 @@ public class BatchConnectionTest {
                 this.thdCurr.interrupt();
         }
     }
-    
-    
+      
 }

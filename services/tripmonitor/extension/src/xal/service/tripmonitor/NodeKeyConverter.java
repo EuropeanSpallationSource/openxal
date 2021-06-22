@@ -14,7 +14,7 @@ import java.util.*;
 /** convert between a segment of a PV and a node key */
 public class NodeKeyConverter {
 	/** table of node-key converters keyed by name */
-	final static HashMap<String,NodeKeyConverter> CONVERTERS;
+	static final HashMap<String,NodeKeyConverter> CONVERTERS;
 	
 	
 	// static initializer
@@ -26,13 +26,13 @@ public class NodeKeyConverter {
 	
 	
 	/** get the default converter */
-	static public NodeKeyConverter defaultConverter() {
+	public static NodeKeyConverter defaultConverter() {
 		return CONVERTERS.get( "default" );
 	}
 	
 	
 	/** get a converter with the specified name */
-	static public NodeKeyConverter getConverter( final String name ) {
+	public static NodeKeyConverter getConverter( final String name ) {
 		return CONVERTERS.get( name );
 	}
 	

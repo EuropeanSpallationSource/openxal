@@ -8,6 +8,7 @@
 
 package xal.extension.bricks;
 
+import java.net.MalformedURLException;
 import javax.swing.ImageIcon;
 import java.net.URL;
 
@@ -20,22 +21,22 @@ public class IconResource extends ImageIcon {
     private static final long serialVersionUID = 1L;
     
 	/** URL of the image for the icon */
-	final private URL IMAGE_URL;
+	private final URL imageUrl;
 	
 	/** group of icons */
-	final protected String GROUP;
+	protected final String group;
 	
 	/** icon name */
-	final protected String ICON_NAME;
+	protected final String iconName;
 	
 	
 	/** Constructor */
 	private IconResource( final URL imageURL, final String group, final String iconName ) {
 		super( imageURL );
 		
-		IMAGE_URL = imageURL;
-		GROUP = group;
-		ICON_NAME = iconName;
+		imageUrl = imageURL;
+		this.group = group;
+		this.iconName = iconName;
 	}
 	
 	
@@ -45,7 +46,7 @@ public class IconResource extends ImageIcon {
 			final URL imageURL = group != null && !group.isEmpty() ? IconLib.getIconURL( group, iconName ) : new URL( contextURL, iconName );
 			return new IconResource( imageURL, group, iconName );
 		}
-		catch ( Exception exception ) {
+		catch ( MalformedURLException exception ) {
 			exception.printStackTrace();
 			return null;
 		}
@@ -57,7 +58,7 @@ public class IconResource extends ImageIcon {
 	 * @return the icon's URL
 	 */
 	public URL getURL() {
-		return IMAGE_URL;
+		return imageUrl;
 	}
 	
 	
@@ -66,7 +67,7 @@ public class IconResource extends ImageIcon {
 	 * @return the icon's group
 	 */
 	public String getGroup() {
-		return GROUP;
+		return group;
 	}
 	
 	
@@ -75,7 +76,7 @@ public class IconResource extends ImageIcon {
 	 * @return the icon's name
 	 */
 	public String getIconName() {
-		return ICON_NAME;
+		return iconName;
 	}
 	
 	
@@ -83,7 +84,8 @@ public class IconResource extends ImageIcon {
 	 * Description of this icon
 	 * @return the description of this icon
 	 */
+    @Override
 	public String toString() {
-		return "group:  "  + GROUP + ", icon name:  " + ICON_NAME;
+		return "group:  "  + group + ", icon name:  " + iconName;
 	}
 }

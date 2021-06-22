@@ -7,6 +7,7 @@
 package xal.tools.beam.ens;
 
 import java.io.PrintWriter;
+import java.io.Serializable;
 
 import xal.tools.beam.IConstants;
 import xal.tools.beam.PhaseVector;
@@ -14,11 +15,11 @@ import xal.tools.math.r3.R3;
 
 
 /**
- * Represents a particle in six-dimesional phase space.
+ * Represents a particle in six-dimensional phase space.
  *
  * @author  CKAllen
  */
-public class Particle implements java.io.Serializable {
+public class Particle implements Serializable {
 
     
     /** Serialization version */
@@ -30,10 +31,10 @@ public class Particle implements java.io.Serializable {
      */
     
     /** Coefficient for electrical properties */
-    public static final double s_dblFacElec = 1.0/(4.0*Math.PI*IConstants.Permittivity);
+    public static final double FAC_ELEC = 1.0/(4.0*Math.PI*IConstants.PERMITTIVITY);
     
     /** Coefficient for magnetic properties */
-    public static final double s_dblFacMag = 1.0/(4.0*Math.PI*IConstants.Permeability);
+    public static final double FAC_MAG = 1.0/(4.0*Math.PI*IConstants.PERMEABILITY);
         
 
     /*
@@ -41,13 +42,13 @@ public class Particle implements java.io.Serializable {
      */
     
     /** Particle mass */
-    private double  m_dblMass = 0.0;
+    private double  dblMass = 0.0;
     
     /** Particle charge */
-    private double  m_dblChrg = 0.0;
+    private double  dblChrg = 0.0;
     
     /** Particle (homogeneous) phase space coordinates */
-    private PhaseVector  m_vecPhase = null;
+    private PhaseVector  vecPhase = null;
     
     
 
@@ -56,8 +57,8 @@ public class Particle implements java.io.Serializable {
      *  Creates a new instance of Particle 
      */
     public Particle() {
-        m_vecPhase = new PhaseVector();
-    };
+        vecPhase = new PhaseVector();
+    }
     
     /** 
      *  Creates a new instance of Particle
@@ -66,19 +67,19 @@ public class Particle implements java.io.Serializable {
      *  @param  z   phase space coordinates (homogeneous coordinates)
      */
     public Particle(double q, double m, PhaseVector z) {
-        m_dblChrg = q;
-        m_dblMass = m;
-        m_vecPhase = z;
-    };
+        dblChrg = q;
+        dblMass = m;
+        vecPhase = z;
+    }
     
     /**
      *  Creates a new instance, a deep copy, of this object
      *  @param  p   particle object to be deep copied
      */
     public Particle(Particle p) {
-        this.m_dblChrg = p.m_dblChrg;
-        this.m_dblMass = p.m_dblMass;
-        this.m_vecPhase = new PhaseVector(p.m_vecPhase);
+        this.dblChrg = p.dblChrg;
+        this.dblMass = p.dblMass;
+        this.vecPhase = new PhaseVector(p.vecPhase);
     }
     
     
@@ -87,7 +88,7 @@ public class Particle implements java.io.Serializable {
      */
     public Particle copy()  {
         return new Particle(this);
-    };
+    }
 
     
     
@@ -98,42 +99,42 @@ public class Particle implements java.io.Serializable {
     /**
      *  Set mass of particle
      */
-    public void setMass(double m)   { m_dblMass = m; };
+    public void setMass(double m)   { dblMass = m; }
     
     /**
      *  Set charge of particle
      */
-    public void setCharge(double q) { m_dblChrg = q; };
+    public void setCharge(double q) { dblChrg = q; }
     
     /**
      *  Set (homogeneous) phase space coordinates of particle
      */
-    public void setPhase(PhaseVector z)  { m_vecPhase = z; };
+    public void setPhase(PhaseVector z)  { vecPhase = z; }
     
     /**
      *  Get charge of particle
      */
-    public double getCharge()   { return m_dblChrg; };
+    public double getCharge()   { return dblChrg; }
     
     /**
      *  Get mass of particle
      */
-    public double getMass()     { return m_dblMass; };
+    public double getMass()     { return dblMass; }
     
     /**
      *  Get the position vector of the particle
      */
-    public R3   getPosition()   { return this.getPhase().getPosition(); };
+    public R3   getPosition()   { return this.getPhase().getPosition(); }
     
     /**
      *  Get the velocity vector of the particle
      */
-    public R3   getMomentum()   { return this.getPhase().getMomentum(); };
+    public R3   getMomentum()   { return this.getPhase().getMomentum(); }
     
     /**
      *  Get the entire (homogeneous) phase space coordinates of particle
      */
-    public PhaseVector getPhase()   { return m_vecPhase; };
+    public PhaseVector getPhase()   { return vecPhase; }
     
     
     
@@ -146,7 +147,7 @@ public class Particle implements java.io.Serializable {
      *  Computes the Coulomb potential of the particle at the given field point.
      *  Note that very large potential exist sufficiently close to the particle.
      *
-     *  To avoid numerical singularites the particle is assumed to have a finite
+     *  To avoid numerical singularities the particle is assumed to have a finite
      *  radius equal to the "classical proton radius", which is ~1e-18.  Thus, the 
      *  potential of a uniform sphere is substituted for field points closer than
      *  this radius.
@@ -156,7 +157,7 @@ public class Particle implements java.io.Serializable {
      *  @return         the coulomb potential in volts
      */
     public double   electricPotential(R3 ptFld) {
-        return this.electricPotential(ptFld, IConstants.ProtonRadius);
+        return this.electricPotential(ptFld, IConstants.PROTON_RADIUS);
     }
     
     
@@ -188,7 +189,7 @@ public class Particle implements java.io.Serializable {
         
         // Return coulomb potential if field point is more distant than R
         if (dblDis > R)         
-            return s_dblFacElec*getCharge()/dblDis;
+            return FAC_ELEC*getCharge()/dblDis;
         
         
         // Field point is within R, must use potential of a sphere
@@ -196,7 +197,7 @@ public class Particle implements java.io.Serializable {
         double      V;          // electric potential
         
         r = dblDis/R;
-        V = 0.5*s_dblFacElec*getCharge()/R;
+        V = 0.5*FAC_ELEC*getCharge()/R;
         V = V*(3.0 - r*r);
         
         return V;
@@ -205,9 +206,9 @@ public class Particle implements java.io.Serializable {
     
     /**
      *  Computes the Coulomb electric field of the particle at the given field point.
-     *  Note that very large fiels exist sufficiently close to the particle.
+     *  Note that very large fields exist sufficiently close to the particle.
      *
-     *  To avoid numerical singularites the particle is assumed to have a finite
+     *  To avoid numerical singularities the particle is assumed to have a finite
      *  radius equal to the "classical proton radius", which is ~1e-18.  Thus, the 
      *  field of a uniform sphere is substituted for field points closer than
      *  this radius.
@@ -217,7 +218,7 @@ public class Particle implements java.io.Serializable {
      *  @return         electric field vector in volts/meter
      */
     public R3   electricField(R3 ptFld) {
-        return this.electricField(ptFld, IConstants.ProtonRadius);
+        return this.electricField(ptFld, IConstants.PROTON_RADIUS);
     }
     
     
@@ -250,7 +251,7 @@ public class Particle implements java.io.Serializable {
         // Compute the electric field
         double      dblCoef;            // scalar coefficient of displacement vector
         
-        dblCoef = s_dblFacElec*getCharge();
+        dblCoef = FAC_ELEC*getCharge();
         
         if (dblDis > R) {       // Return coulomb electric field if field point is more distant than R
             dblCoef *= 1.0/(dblDis*dblDis*dblDis);
@@ -269,10 +270,10 @@ public class Particle implements java.io.Serializable {
      *  Computes magnetic field assuming the particle is an uniform sphere of 
      *  charge with radius R.  Note that we compute magnetic field H, and not the
      *  magnetic flux vector B.  Giving the particle a finite size removes the singularity
-     *  in the field at the particle position.  Note that very large fiels exist sufficiently 
+     *  in the field at the particle position.  Note that very large fields exist sufficiently 
      *  close to the particle.
      *
-     *  To avoid numerical singularites the particle is assumed to have a finite
+     *  To avoid numerical singularities the particle is assumed to have a finite
      *  radius equal to the "classical proton radius", which is ~1e-18.  Thus, the 
      *  field of a uniform sphere is substituted for field points closer than
      *  this radius.
@@ -286,7 +287,7 @@ public class Particle implements java.io.Serializable {
      *  @return             magnetic field vector of "smeared" particle in Amperes/Meter
      */
     public R3   magneticField(R3 ptFld) {
-        return magneticField(ptFld, IConstants.ProtonRadius);
+        return magneticField(ptFld, IConstants.PROTON_RADIUS);
     }    
     
     
@@ -362,6 +363,6 @@ public class Particle implements java.io.Serializable {
         os.println("  mass   = " + this.getMass() );
         os.println("  charge = " + this.getCharge() );
         os.print("  coords = "); this.getPhase().println(os);
-    };
+    }
         
 }

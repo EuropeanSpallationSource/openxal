@@ -15,16 +15,16 @@ import xal.tools.beam.Twiss;
 /** base class for a container of editable properties */
 public class EditablePropertyContainer extends EditableProperty {
 	/** target for child properties */
-	final protected Object CHILD_TARGET;
+	protected final Object CHILD_TARGET;
 
 	/** set of ancestors to reference to prevent cycles */
-	final private Set<Object> ANCESTORS;
+	private final Set<Object> ANCESTORS;
 	
 	/** list of child primitive properties */
-	protected List<EditablePrimitiveProperty> _childPrimitiveProperties;
+	protected List<EditablePrimitiveProperty> childPrimitiveProperties;
 
 	/** list of child property containers */
-	protected List<EditablePropertyContainer> _childPropertyContainers;
+	protected List<EditablePropertyContainer> childPropertyContainers;
 
 
 	/** Primary Constructor */
@@ -49,14 +49,14 @@ public class EditablePropertyContainer extends EditableProperty {
 
 
 	/** Create an instance with the specified root Object */
-	static public EditablePropertyContainer getInstanceWithRoot( final String name, final Object rootObject ) {
-		final Set<Object> ancestors = new HashSet<Object>();
+	public static EditablePropertyContainer getInstanceWithRoot( final String name, final Object rootObject ) {
+		final Set<Object> ancestors = new HashSet<>();
 		return new EditablePropertyContainer( "", name, null, null, rootObject, ancestors );
 	}
 
 
-	/** Generat the child target from the target and descriptor */
-	static private Object generateChildTarget( final Object target, final PropertyDescriptor descriptor ) {
+	/** Generate the child target from the target and descriptor */
+	private static Object generateChildTarget( final Object target, final PropertyDescriptor descriptor ) {
 		try {
 			final Method readMethod = descriptor.getReadMethod();
 			return readMethod.invoke( target );
@@ -68,18 +68,21 @@ public class EditablePropertyContainer extends EditableProperty {
 
 	
 	/** determine whether the property is a container */
+        @Override
 	public boolean isContainer() {
 		return true;
 	}
 
 
 	/** determine whether the property is a primitive */
+        @Override
 	public boolean isPrimitive() {
 		return false;
 	}
 
 
 	/** set the value */
+        @Override
 	public void setValue( final Object value ) {
 		throw new RuntimeException( "Usupported operation attempting to set the value of the editable property container: " + getPath() + " with value " + value );
 	}
@@ -94,7 +97,7 @@ public class EditablePropertyContainer extends EditableProperty {
 	/** get the number of child properties */
 	public int getChildCount() {
 		generateChildPropertiesIfNeeded();
-		return _childPrimitiveProperties.size() + _childPropertyContainers.size();
+		return childPrimitiveProperties.size() + childPropertyContainers.size();
 	}
 
 
@@ -102,8 +105,8 @@ public class EditablePropertyContainer extends EditableProperty {
 	public List<EditableProperty> getChildProperties() {
 		generateChildPropertiesIfNeeded();
 		final List<EditableProperty> properties = new ArrayList<>();
-		properties.addAll( _childPrimitiveProperties );
-		properties.addAll( _childPropertyContainers );
+		properties.addAll( childPrimitiveProperties );
+		properties.addAll( childPropertyContainers );
 		return properties;
 	}
 
@@ -111,20 +114,20 @@ public class EditablePropertyContainer extends EditableProperty {
 	/** Get the list of child primitive properties */
 	public List<EditablePrimitiveProperty> getChildPrimitiveProperties() {
 		generateChildPropertiesIfNeeded();
-		return _childPrimitiveProperties;
+		return childPrimitiveProperties;
 	}
 
 
 	/** Get the list of child property containers */
 	public List<EditablePropertyContainer> getChildPropertyContainers() {
 		generateChildPropertiesIfNeeded();
-		return _childPropertyContainers;
+		return childPropertyContainers;
 	}
 
 
 	/** generate the child properties if needed */
 	protected void generateChildPropertiesIfNeeded() {
-		if ( _childPrimitiveProperties == null ) {
+		if ( childPrimitiveProperties == null ) {
 			generateChildProperties();
 		}
 	}
@@ -132,8 +135,8 @@ public class EditablePropertyContainer extends EditableProperty {
 
 	/** Generate the child properties this container's child target */
 	protected void generateChildProperties() {
-		_childPrimitiveProperties = new ArrayList<>();
-		_childPropertyContainers = new ArrayList<>();
+		childPrimitiveProperties = new ArrayList<>();
+		childPropertyContainers = new ArrayList<>();
 
 		final PropertyDescriptor[] descriptors = getPropertyDescriptors( CHILD_TARGET );
 		if ( descriptors != null ) { 
@@ -161,7 +164,7 @@ public class EditablePropertyContainer extends EditableProperty {
 				final Method setter = descriptor.getWriteMethod();
 				// include only properties if the setter exists and is not deprecated (getter was already filtered in an enclosing block) and not marked hidden
 				if ( setter != null && setter.getAnnotation( Deprecated.class ) == null && setter.getAnnotation( NoEdit.class ) == null ) {
-					_childPrimitiveProperties.add( new EditablePrimitiveProperty( PATH, CHILD_TARGET, descriptor ) );
+					childPrimitiveProperties.add( new EditablePrimitiveProperty( PATH, CHILD_TARGET, descriptor ) );
 				}
 				return;		// reached end of branch so we are done
 			}
@@ -187,7 +190,7 @@ public class EditablePropertyContainer extends EditableProperty {
 					ancestors.add( target );
 					final EditablePropertyContainer container = new EditablePropertyContainer( PATH, CHILD_TARGET, descriptor, target, ancestors );
 					if ( container.getChildCount() > 0 ) {	// only care about containers that lead to editable properties
-						_childPropertyContainers.add( container );
+						childPropertyContainers.add( container );
 					}
 				}
 			
@@ -197,12 +200,13 @@ public class EditablePropertyContainer extends EditableProperty {
 	}
 
 
-	/** Get a string represenation of this property */
+	/** Get a string representation of this property */
+        @Override
 	public String toString() {
 		final StringBuilder buffer = new StringBuilder();
-		buffer.append( getPath() + ":\n" );
+		buffer.append(getPath()).append(":\n");
 		for ( final EditableProperty property : getChildProperties() ) {
-			buffer.append( "\t" + property.toString() + "\n" );
+			buffer.append("\t").append(property.toString()).append("\n");
 		}
 		return buffer.toString();
 	}

@@ -7,7 +7,6 @@
 package xal.tools.messaging;
 
 
-import java.util.*;
 import java.util.logging.*;
 import java.lang.reflect.*;
 
@@ -36,6 +35,7 @@ class SynchronousMessageHandler<T> extends MessageHandler<T> implements java.io.
     
 
     /** implement InvocationHandler interface to invoke the specified method with the given arguments */
+    @Override
 	public Object invoke( final Object proxy, final Method method, final Object[] args ) throws IllegalArgumentException {
         try {
             method.setAccessible( true );     // allow access to private, protected, default access methods
@@ -44,7 +44,7 @@ class SynchronousMessageHandler<T> extends MessageHandler<T> implements java.io.
 			}
         }
         catch( InvocationTargetException exception ) {
-			final String message = "Error invoking method: " + method + " for protocol " + _protocol + " for source " + source;
+			final String message = "Error invoking method: " + method + " for protocol " + protocol + " for source " + source;
 			Logger.getLogger("global").log( Level.SEVERE, message, exception );
             System.err.println( message );
             exception.printStackTrace();
@@ -64,6 +64,7 @@ class SynchronousMessageHandler<T> extends MessageHandler<T> implements java.io.
      * identifies the message handler as synchronous
      * overrides the abstract version
      */
+    @Override
     public boolean isSynchronous() {
         return true;
     }

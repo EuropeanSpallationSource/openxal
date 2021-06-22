@@ -96,11 +96,11 @@ public abstract class Digit extends SimpleButton
 		super();
 
 		if (images == null) {
-			images = new HashMap<Dimension,Map<String,BufferedImage>>();
+			images = new HashMap<>();
 		}
 
 		if (backgroundImages == null) {
-			backgroundImages = new HashMap<Dimension,BufferedImage[]>();
+			backgroundImages = new HashMap<>();
 		}
 
 		setResizable(true);
@@ -312,7 +312,7 @@ public abstract class Digit extends SimpleButton
 
 			if (animationCompleted < 1.f) {
 				if (images.get(size) == null) {
-					images.put(size, new HashMap<String,BufferedImage>());
+					images.put(size, new HashMap<>());
 				}
 
 				if(images.get(size).get(newText) == null) {
@@ -392,9 +392,9 @@ public abstract class Digit extends SimpleButton
 	/**
 	 * The method combines two images and paints them onto the selected
 	 * <code>Graphics</code> object based on the value of parameter between 0
-	 * and 1.f. When paramter equals 0, oldImage should be painted completely
+	 * and 1.f. When parameter equals 0, oldImage should be painted completely
 	 * and newImage not at all, and opposite when parameter equals 1.f.
-	 * Descedants of <code>Digit</code> should override this method to
+	 * Descendants of <code>Digit</code> should override this method to
 	 * implement different types of image transitions.
 	 *
 	 * @param oldImage

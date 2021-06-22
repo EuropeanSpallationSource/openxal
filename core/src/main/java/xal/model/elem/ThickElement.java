@@ -41,10 +41,11 @@ public abstract class ThickElement extends Element {
      */
 
     /** total length of the element */
-    private double      m_dblLen = 0.0;
+    private double      dblLen = 0.0;
     
     /** position of the element slice within the node */
-    private boolean firstSlice = true, lastSlice = true;
+    private boolean firstSlice = true;
+    private boolean lastSlice = true;
     
 
     /*
@@ -83,7 +84,7 @@ public abstract class ThickElement extends Element {
     public ThickElement(String strType, String strId, double dblLen) { 
         super(strType, strId);        
         this.setLength(dblLen);
-    };
+    }
 
     /**
      * Conversion method to be provided by the user
@@ -106,8 +107,8 @@ public abstract class ThickElement extends Element {
      *
      */
     public void setLength(double dblLen)    {
-        this.m_dblLen = dblLen;
-    };
+        this.dblLen = dblLen;
+    }
 
 
     /*
@@ -120,7 +121,7 @@ public abstract class ThickElement extends Element {
      *   @return    total element length (in <b>meters</b>)
      */
     @Override
-    public double getLength() { return m_dblLen; };
+    public double getLength() { return dblLen; }
 
     /**
      *  Return the energy gain of the beamline element over a subsection of the
@@ -242,6 +243,7 @@ public abstract class ThickElement extends Element {
         return matPhi;
     }
     
+    @Override
     public abstract double elapsedTime(IProbe probe, double dblLen);
 
     /**
@@ -297,5 +299,5 @@ public abstract class ThickElement extends Element {
     //    @Override
     //    public abstract PhaseMap transferMap(IProbe probe, double dblLen) throws ModelException;
 
-};
+}
 

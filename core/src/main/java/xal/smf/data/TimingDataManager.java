@@ -24,10 +24,10 @@ import xal.smf.*;
  */
 class TimingDataManager {
 	/** factory from which to generate the channels */
-	final private ChannelFactory CHANNEL_FACTORY;
+	private final ChannelFactory channelFactory;
 
-	protected String _urlSpec;
-	protected TimingCenter _timingCenter;
+	protected String urlSpec;
+	protected TimingCenter timingCenter;
 	protected String timingSchema = "/xal/schemas/xdxf.xsd";
 
 
@@ -37,9 +37,9 @@ class TimingDataManager {
 	 * @param channelFactory factory from which to generate channels
 	 */
 	public TimingDataManager( final String urlSpec, final ChannelFactory channelFactory ) {
-		CHANNEL_FACTORY = channelFactory;
-		_urlSpec = urlSpec;
-		_timingCenter = null;
+		this.channelFactory = channelFactory;
+		this.urlSpec = urlSpec;
+		timingCenter = null;
 	}
 
 
@@ -74,7 +74,7 @@ class TimingDataManager {
 	 * @param urlSpec The new URL spec of the timing data source
 	 */
 	public void setURLSpec(String urlSpec, String schemaUrl) {
-		_urlSpec = urlSpec;
+		this.urlSpec = urlSpec;
 		timingSchema = schemaUrl;
 	}
 	
@@ -84,7 +84,7 @@ class TimingDataManager {
 	 * @return the timing center generated from this manager's timing data source
 	 */
 	public TimingCenter getTimingCenter() {
-		return (_timingCenter != null) ? _timingCenter : parseTimingCenter();
+		return (timingCenter != null) ? timingCenter : parseTimingCenter();
 	}
 	
 	
@@ -93,9 +93,9 @@ class TimingDataManager {
 	 * @return The timing center parsed from this manager's timing data source
 	 */
 	protected TimingCenter parseTimingCenter() {
-		_timingCenter = new TimingCenter( CHANNEL_FACTORY );
-		updateTimingCenter( _timingCenter );
-		return _timingCenter;
+		timingCenter = new TimingCenter( channelFactory );
+		updateTimingCenter(timingCenter );
+		return timingCenter;
 	}
 	
 	
@@ -104,8 +104,8 @@ class TimingDataManager {
 	 * @param timingCenter The timing center to update
 	 */
 	protected void updateTimingCenter( final TimingCenter timingCenter ) {
-		if ( _urlSpec != null ) {
-			XmlDataAdaptor documentAdaptor = XmlDataAdaptor.adaptorForUrl(_urlSpec, false, timingSchema);
+		if ( urlSpec != null ) {
+			XmlDataAdaptor documentAdaptor = XmlDataAdaptor.adaptorForUrl(urlSpec, false, timingSchema);
 			DataAdaptor timingAdaptor = documentAdaptor.childAdaptor(TimingCenter.DATA_LABEL);
 			timingCenter.update(timingAdaptor);
 		}
@@ -118,7 +118,7 @@ class TimingDataManager {
 	 * @param dtdURISpec The URI spec of the DTD used for validating the XML
         */
         public void writeTimingCenterToURL(final String urlSpec, final String dtdURISpec) {
-                XmlDataAdaptor adaptor = XmlDataAdaptor.newDocumentAdaptor(_timingCenter, dtdURISpec);
+                XmlDataAdaptor adaptor = XmlDataAdaptor.newDocumentAdaptor(timingCenter, dtdURISpec);
                 adaptor.writeToUrlSpec(urlSpec);
         }
 	
@@ -127,7 +127,7 @@ class TimingDataManager {
 	 * @param dtdURISpec The URI spec of the DTD used for validating the XML
 	 */
 	public void writeTimingCenter(final String dtdURISpec) {
-		writeTimingCenterToURL(_urlSpec, dtdURISpec);
+		writeTimingCenterToURL(urlSpec, dtdURISpec);
 	}
 }
 

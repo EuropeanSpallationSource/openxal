@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 
 public class MySQLDatabaseAdaptor extends DatabaseAdaptor {
 	/** Table of cached array descriptors keyed by type. The value class is actually oracle.sql.ArrayDescriptor, but Object is used since the Oracle driver is reflected. */
-	final private Map<String,Object> ARRAY_DESCRIPTOR_TABLE;
+	private final Map<String,Object> ARRAY_DESCRIPTOR_TABLE;
 
 	/**
 	 * Public Constructor

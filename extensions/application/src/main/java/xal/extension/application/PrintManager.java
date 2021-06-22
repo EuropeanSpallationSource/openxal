@@ -6,8 +6,8 @@
 
 package xal.extension.application;
 
+import java.awt.HeadlessException;
 import java.awt.print.*;
-import javax.swing.JOptionPane;
 import java.util.logging.*;
 
 
@@ -18,7 +18,7 @@ import java.util.logging.*;
  */
 class PrintManager {
     //- static variables  ------------------------------------------------------
-    static protected PrintManager defaultManager;
+    protected static PrintManager defaultManager;
     
     //- instance variables -----------------------------------------------------
     protected PageFormat pageFormat;
@@ -40,7 +40,7 @@ class PrintManager {
      * Get the default print manager.  The print manager is shared by the application.
      * @return The default print manager instance.
      */
-    static public PrintManager defaultManager() {
+    public static PrintManager defaultManager() {
         return defaultManager;
     }
     
@@ -74,7 +74,7 @@ class PrintManager {
                 printJob.print();
             }
         }
-		catch( Exception exception ) {
+		catch( HeadlessException | PrinterException | NullPointerException exception ) {
 			System.err.println( exception );
 			document.displayError( "Print error", "Print Exception...", exception );
 			Logger.getLogger("global").log( Level.WARNING, "Print error.", exception );

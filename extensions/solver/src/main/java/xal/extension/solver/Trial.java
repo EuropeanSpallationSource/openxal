@@ -10,8 +10,6 @@
 package xal.extension.solver;
 
 import xal.extension.solver.algorithm.*;
-import xal.extension.solver.constraint.*;
-import xal.extension.solver.market.*;
 
 import java.util.*;
 
@@ -24,25 +22,25 @@ import java.util.*;
  */
 public class Trial {
 	/** trial point of variable values */
-	protected final TrialPoint _trialPoint;
+	protected final TrialPoint trialPoint;
 	
 	/** the problem being solved */
-	protected final Problem _problem;
+	protected final Problem problem;
 	
 	/** the algorithm that generated this trial */
-	protected final SearchAlgorithm _searchAlgorithm;
+	protected final SearchAlgorithm searchAlgorithm;
 	
 	/** a veto if any */
-	protected TrialVeto _veto;
+	protected TrialVeto veto;
 	
 	/** table of objective scores */
 	protected final Map<Objective,Score> OBJECTIVE_SCORES;
 	
 	/** overall satisfaction provided by some solution judges */
-	protected double _satisfaction;
+	protected double satisfaction;
 	
 	/** optional, custom information that an objective or evaluator may choose to store here for convenience */
-	protected Object _customInfo;
+	protected Object customInfo;
 
 	
 	/**
@@ -52,11 +50,11 @@ public class Trial {
 	 * @param algorithm            the algorithm that generated this trial
 	 */
 	public Trial( final Problem problem, final TrialPoint trialPoint, final SearchAlgorithm algorithm ) {
-		_problem = problem;
-		_trialPoint = trialPoint;
-		_searchAlgorithm = algorithm;
-		OBJECTIVE_SCORES = new HashMap<Objective,Score>();
-		_veto = null;
+		this.problem = problem;
+		this.trialPoint = trialPoint;
+		searchAlgorithm = algorithm;
+		OBJECTIVE_SCORES = new HashMap<>();
+		veto = null;
 	}
 	
 	
@@ -75,7 +73,7 @@ public class Trial {
 	 * @param veto the veto
 	 */
 	public void vetoTrial( final TrialVeto veto ) {
-		_veto = veto;
+		this.veto = veto;
 	}
 	
 	
@@ -84,7 +82,7 @@ public class Trial {
 	 * @return the trial veto or null if there is none
 	 */
 	public TrialVeto getVeto() {
-		return _veto;
+		return veto;
 	}
 	
 	
@@ -93,7 +91,7 @@ public class Trial {
 	 * @return true if the trial has been vetoed and false if not
 	 */
 	public boolean isVetoed() {
-		return _veto != null;
+		return veto != null;
 	}
 	
 
@@ -134,13 +132,13 @@ public class Trial {
 	 */
 	public double getSatisfaction( final Objective objective ) {
 		final Score score = OBJECTIVE_SCORES.get( objective );
-		final double satisfaction = score.getSatisfaction();
+		final double newSatisfaction = score.getSatisfaction();
 
-		if ( !validateSatisfaction( satisfaction ) ) {
-			throw new RuntimeException( "Objective \"" + objective.getName() + "\" has satisfaction of " + satisfaction + " which is outside the accepted range of 0 to 1." );
+		if ( !validateSatisfaction( newSatisfaction ) ) {
+			throw new RuntimeException( "Objective \"" + objective.getName() + "\" has satisfaction of " + newSatisfaction + " which is outside the accepted range of 0 to 1." );
 		}
 
-		return satisfaction;
+		return newSatisfaction;
 	}
 	
 	
@@ -153,12 +151,12 @@ public class Trial {
 			throw new IllegalArgumentException( "Attempting to set trial satisfaction to " + satisfaction + " which is outside the accepted range of 0 to 1." );
 		}
 
-		_satisfaction = satisfaction;
+		this.satisfaction = satisfaction;
 	}
 
 
 	/** Validate that the satisfaciton is within the accepted bounds of 0 to 1. */
-	static private boolean validateSatisfaction( final double satisfaction ) {
+	private static boolean validateSatisfaction( final double satisfaction ) {
 		return satisfaction >= 0 && satisfaction <= 1.0;
 	}
 	
@@ -168,7 +166,7 @@ public class Trial {
 	 * @return the overall satisfaction of this solution
 	 */
 	public double getSatisfaction()  {
-		return _satisfaction;
+		return satisfaction;
 	}
 	
 
@@ -177,7 +175,7 @@ public class Trial {
 	 * @return   The problem.
 	 */
 	public Problem getProblem() {
-		return _problem;
+		return problem;
 	}
 
 
@@ -186,7 +184,7 @@ public class Trial {
 	 * @return   The trial point.
 	 */
 	public TrialPoint getTrialPoint() {
-		return _trialPoint;
+		return trialPoint;
 	}
 
 
@@ -195,7 +193,7 @@ public class Trial {
 	 * @return   The search algorithm.
 	 */
 	public SearchAlgorithm getAlgorithm() {
-		return _searchAlgorithm;
+		return searchAlgorithm;
 	}
 
 
@@ -213,7 +211,7 @@ public class Trial {
 	 * @return optional, custom information
 	 */
 	public Object getCustomInfo() {
-		return _customInfo;
+		return customInfo;
 	}
 	
 	
@@ -222,7 +220,7 @@ public class Trial {
 	 * @param customInfo the custom information to provide
 	 */
 	public void setCustomInfo( final Object customInfo ) {
-		_customInfo = customInfo;
+		this.customInfo = customInfo;
 	}
 
 
@@ -230,11 +228,12 @@ public class Trial {
 	 * A string for displaying a trial. The string consist of a trial point and a score.
 	 * @return   The string representation of a trial.
 	 */
+        @Override
 	public String toString() {
-		StringBuffer buffer = new StringBuffer();
-		buffer.append( "\nTrial Point: " + _trialPoint + "\n " );
-		buffer.append( "Satisfaction: " + _satisfaction + "\n" );
-		buffer.append( "Scores: " + OBJECTIVE_SCORES + "\n" );
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("\nTrial Point: ").append(trialPoint).append("\n ");
+		buffer.append("Satisfaction: ").append(satisfaction).append("\n");
+		buffer.append("Scores: ").append(OBJECTIVE_SCORES).append("\n");
 
 		return buffer.toString();
 	}

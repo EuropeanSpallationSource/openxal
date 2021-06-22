@@ -18,10 +18,10 @@ import xal.smf.data.*;
 /** group of patterns for matching PVs based on a node name */
 public class PVNodeFormatGroup {
 	/** tag for the data adaptor */
-	final static public String DATA_LABEL = "PVNodeFormatGroup";
+	public static final String DATA_LABEL = "PVNodeFormatGroup";
 	
 	/** list of formats which can generate PVs from node names */
-	final protected List<PVNodeFormat> PV_NDOE_FORMATS;
+	protected final List<PVNodeFormat> PV_NDOE_FORMATS;
 	
 	
 	/** Constructor */

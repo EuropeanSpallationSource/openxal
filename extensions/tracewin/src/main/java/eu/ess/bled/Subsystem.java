@@ -38,10 +38,10 @@ package eu.ess.bled;
  * Each {@link Subsystem} also has a {@link SubsystemType} which further
  * describes it. The type defines the group of {@link Subsystem}s that this
  * {@link Subsystem} belongs to, such as for instance vacuum or pump. The
- * {@link SubsystemType} defines also a part of the naming convention complient
+ * {@link SubsystemType} defines also a part of the naming convention compliant
  * name of this {@link Subsystem}. The {@link ProcessVariable} name that is
  * associated with this {@link Subsystem} is composed of the hierarchical
- * composition of the naming convetion complient name of the type and the
+ * composition of the naming convention compliant name of the type and the
  * instance name of this {@link Subsystem}.
  * </p>
  * <p>

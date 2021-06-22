@@ -37,19 +37,22 @@ public class CompositeGlobalIterator implements Iterator<IComponent> {
      * @param   composite     interface to composite element to iterate
      */
     public CompositeGlobalIterator(IComposite  composite)   {
-        List<IComponent> compList = new LinkedList<IComponent>();
+        List<IComponent> compList = new LinkedList<>();
         buildFlatList(composite, compList);
         iterator = compList.iterator();
      }
 
+    @Override
     public boolean hasNext() {
         return iterator.hasNext();
     }
 
+    @Override
     public IComponent next() {
         return iterator.next();
     }
 
+    @Override
     public void remove() {
         iterator.remove();
     }

@@ -22,8 +22,8 @@ public interface BatchConnectionRequestListener {
 	
 	/** 
 	 * Event indicating that an exception has been thrown for a channel 
-	 * @param request in which the exception occured
-	 * @param channel for which the exception occured
+	 * @param request in which the exception occurred
+	 * @param channel for which the exception occurred
 	 * @param exception the exception thrown while attempting to connect
 	 */
 	public void connectionExceptionInBatch( BatchConnectionRequest request, Channel channel, Exception exception );

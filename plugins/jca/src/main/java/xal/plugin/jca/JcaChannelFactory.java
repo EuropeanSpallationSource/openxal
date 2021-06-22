@@ -18,10 +18,10 @@ import xal.tools.apputils.Preferences;
  */
 public class JcaChannelFactory extends ChannelFactory {
 	/** JCA channel system */
-	final private JcaSystem JCA_SYSTEM;
+	private final JcaSystem JCA_SYSTEM;
 	
 	/** cache of native JCA channels */
-	final private JcaNativeChannelCache NATIVE_CHANNEL_CACHE;
+	private final JcaNativeChannelCache NATIVE_CHANNEL_CACHE;
 	
 	
 	/** Constructor */

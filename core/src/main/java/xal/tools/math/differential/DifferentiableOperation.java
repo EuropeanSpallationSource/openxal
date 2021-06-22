@@ -15,32 +15,32 @@ import java.util.HashMap;
 /** DifferentiableOperation */
 abstract public class DifferentiableOperation {
     /** precedence at addition level */
-    static public final int ADDITION_PRECEDENCE = 0;
+    public static final int ADDITION_PRECEDENCE = 0;
     
     /** precedence at subtraction level */
-    static public final int SUBTRACTION_PRECEDENCE = ADDITION_PRECEDENCE + 1;
+    public static final int SUBTRACTION_PRECEDENCE = ADDITION_PRECEDENCE + 1;
         
     /** precedence at product level */
-    static public final int PRODUCT_PRECEDENCE = SUBTRACTION_PRECEDENCE + 1;
+    public static final int PRODUCT_PRECEDENCE = SUBTRACTION_PRECEDENCE + 1;
     
     /** precedence at quotient level */
-    static public final int QUOTIENT_PRECEDENCE = PRODUCT_PRECEDENCE + 1;
+    public static final int QUOTIENT_PRECEDENCE = PRODUCT_PRECEDENCE + 1;
     
     /** precedence at power level */
-    static public final int POWER_PRECEDENCE = QUOTIENT_PRECEDENCE + 1;
+    public static final int POWER_PRECEDENCE = QUOTIENT_PRECEDENCE + 1;
     
     /** precedence at symbol level */
-    static public final int SYMBOL_PRECEDENCE = POWER_PRECEDENCE + 1;
+    public static final int SYMBOL_PRECEDENCE = POWER_PRECEDENCE + 1;
     
     
     /** get a constant operation representing the specified constant value */
-    static public DifferentiableOperation getConstant( final double value ) {
+    public static DifferentiableOperation getConstant( final double value ) {
         return DifferentiableConstant.getInstance( value );
     }
     
     
     /** get an operation representing the variable */
-    static public DifferentiableVariable getVariable( final String name, final double defaultValue ) {
+    public static DifferentiableVariable getVariable( final String name, final double defaultValue ) {
         return DifferentiableVariable.getInstance( name, defaultValue );
     }
     
@@ -50,9 +50,9 @@ abstract public class DifferentiableOperation {
      * @param userSubstitutions a user supplied map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted if the map is not null and not empty otherwise just return this operation
      */
-    final public DifferentiableOperation copyWithSubstitutions( final Map<DifferentiableVariable,DifferentiableOperation> userSubstitutions ) {
+    public final DifferentiableOperation copyWithSubstitutions( final Map<DifferentiableVariable,DifferentiableOperation> userSubstitutions ) {
         // copy the user supplied map as the substitution map will modify the substitutions
-        final Map<DifferentiableOperation,DifferentiableOperation> substitutions = new HashMap<DifferentiableOperation,DifferentiableOperation>( userSubstitutions );
+        final Map<DifferentiableOperation,DifferentiableOperation> substitutions = new HashMap<>( userSubstitutions );
         return substitutions != null && !substitutions.isEmpty() ? copySubstituting( substitutions ) : this;
     }
     
@@ -70,7 +70,7 @@ abstract public class DifferentiableOperation {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
-    final protected DifferentiableOperation copySubstitutingWithCache( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
+    protected final DifferentiableOperation copySubstitutingWithCache( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
         final DifferentiableOperation cachedSubstitute = substitutions.get( this );
         if ( cachedSubstitute != null ) {
             return cachedSubstitute;
@@ -84,14 +84,14 @@ abstract public class DifferentiableOperation {
 
     
     /** Evaluate the operation with the default variable values */
-    final public double evaluate() {
+    public final double evaluate() {
         return evaluate( null );
     }
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
     public double evaluate( final DifferentiableVariableValues valueMap ) {
-        final Map<DifferentiableOperation,Double> cache = new HashMap<DifferentiableOperation,Double>();
+        final Map<DifferentiableOperation,Double> cache = new HashMap<>();
         return evaluate( valueMap, cache );
     }
     
@@ -105,10 +105,10 @@ abstract public class DifferentiableOperation {
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
-    final protected double evaluateWithCache( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
+    protected final double evaluateWithCache( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
         final Double cachedValue = cache.get( this );
         if ( cachedValue != null ) {
-            return cachedValue.doubleValue();
+            return cachedValue;
         }
         else {
             final double value = evaluate( valueMap, cache );
@@ -123,7 +123,7 @@ abstract public class DifferentiableOperation {
     
     
     /** add the arguments */
-    static private DifferentiableOperation sum( final DifferentiableOperation firstAddend, final DifferentiableOperation ... addends ) {
+    private static DifferentiableOperation sum( final DifferentiableOperation firstAddend, final DifferentiableOperation ... addends ) {
         DifferentiableOperation sum = firstAddend;
         for ( final DifferentiableOperation addend : addends ) {
             sum = sum.plus( addend );
@@ -133,7 +133,7 @@ abstract public class DifferentiableOperation {
     
     
     /** add the arguments */
-    static public DifferentiableOperation sum( final DifferentiableOperation ... addends ) {
+    public static DifferentiableOperation sum( final DifferentiableOperation ... addends ) {
         return sum( DifferentiableZero.getInstance(), addends );
     }
     
@@ -195,13 +195,13 @@ abstract public class DifferentiableOperation {
     
     
     /** multiply the arguments */
-    static public DifferentiableOperation multiply( final DifferentiableOperation ... multiplicands ) {
+    public static DifferentiableOperation multiply( final DifferentiableOperation ... multiplicands ) {
         return multiply( DifferentiableOne.getInstance(), multiplicands );
     }
     
     
     /** multiply the arguments */
-    static private DifferentiableOperation multiply( final DifferentiableOperation firstMultiplicand, final DifferentiableOperation ... multiplicands ) {
+    private static DifferentiableOperation multiply( final DifferentiableOperation firstMultiplicand, final DifferentiableOperation ... multiplicands ) {
         DifferentiableOperation product = firstMultiplicand;
         for ( final DifferentiableOperation multiplicand : multiplicands ) {
             product = product.times( multiplicand );
@@ -379,7 +379,7 @@ abstract public class DifferentiableOperation {
     
     
     /** Test whether this operation is equal to or equivalent to the specified operation. */
-    final public boolean isEqualTo( final DifferentiableOperation operation ) {
+    public final boolean isEqualTo( final DifferentiableOperation operation ) {
         return this.equals( operation ) || ( this.getClass().equals( operation.getClass() ) && this.isEquivalentTo( operation ) );
     }
     
@@ -402,12 +402,12 @@ abstract public class DifferentiableOperation {
 /** constant operation */
 class DifferentiableConstant extends DifferentiableSymbol {
     /** constant value */
-    final private double VALUE;
+    private final double value;
     
     
     /** Constructor */
     public DifferentiableConstant( final double value ) {
-        VALUE = value;
+        this.value = value;
     }
     
     
@@ -416,13 +416,14 @@ class DifferentiableConstant extends DifferentiableSymbol {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
         return this;
     }
     
     
     /** generate a new constant operation for the specified constant value */
-    static public DifferentiableConstant getInstance( final double value ) {
+    public static DifferentiableConstant getInstance( final double value ) {
         if ( value == 0.0 ) {
             return DifferentiableZero.getInstance();
         }
@@ -437,23 +438,26 @@ class DifferentiableConstant extends DifferentiableSymbol {
     
     /** get the constant value */
     public double getValue() {
-        return VALUE;
+        return value;
     }
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
+    @Override
     public double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
-        return VALUE;
+        return value;
     }
     
     
     /** Get the derivative with respect to the specified variable */
-    final public DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
+    @Override
+    public final DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
         return DifferentiableZero.getInstance();
     }
     
     
     /** add the addend to this operation returning the new operation */
+    @Override
     public DifferentiableOperation plus( final DifferentiableOperation addend ) {
         return addend instanceof DifferentiableConstant ? plus( (DifferentiableConstant)addend ) : super.plus( addend );
     }
@@ -461,17 +465,19 @@ class DifferentiableConstant extends DifferentiableSymbol {
     
     /** add the addend to this operation returning the new operation */
     public DifferentiableOperation plus( final DifferentiableConstant addend ) {
-        return DifferentiableConstant.getInstance( this.VALUE + addend.VALUE );
+        return DifferentiableConstant.getInstance( this.value + addend.value );
     }
     
     
     /** add the addend to this operation returning the new operation */
+    @Override
     public DifferentiableOperation plus( final double value ) {
-        return DifferentiableConstant.getInstance( this.VALUE + value );
+        return DifferentiableConstant.getInstance( this.value + value );
     }
     
     
     /** perform constant subtraction */
+    @Override
     public DifferentiableOperation minus( final DifferentiableOperation subtrahend ) {
         return subtrahend instanceof DifferentiableConstant ? minus( (DifferentiableConstant)subtrahend ) : super.minus( subtrahend );
     }
@@ -479,17 +485,19 @@ class DifferentiableConstant extends DifferentiableSymbol {
     
     /** perform constant subtraction */
     public DifferentiableOperation minus( final DifferentiableConstant subtrahend ) {
-        return DifferentiableConstant.getInstance( this.VALUE - subtrahend.VALUE );
+        return DifferentiableConstant.getInstance( this.value - subtrahend.value );
     }
     
     
     /** perform constant subtraction */
+    @Override
     public DifferentiableOperation minus( final double subtrahend ) {
-        return DifferentiableConstant.getInstance( this.VALUE - subtrahend );
+        return DifferentiableConstant.getInstance( this.value - subtrahend );
     }
     
     
     /** multiply the multiplicand to this operation returning the new operation */
+    @Override
     public DifferentiableOperation times( final DifferentiableOperation multiplicand ) {
         return multiplicand instanceof DifferentiableConstant ? times( (DifferentiableConstant)multiplicand ) : super.times( multiplicand );
     }
@@ -497,17 +505,19 @@ class DifferentiableConstant extends DifferentiableSymbol {
     
     /** multiply the multiplicand to this operation returning the new operation */
     public DifferentiableOperation times( final DifferentiableConstant multiplicand ) {
-        return DifferentiableConstant.getInstance( this.VALUE * multiplicand.VALUE );
+        return DifferentiableConstant.getInstance( this.value * multiplicand.value );
     }
     
     
     /** multiply the multiplicand to this operation returning the new operation */
+    @Override
     public DifferentiableOperation times( final double value ) {
-        return DifferentiableConstant.getInstance( this.VALUE * value );
+        return DifferentiableConstant.getInstance( this.value * value );
     }
     
     
     /** perform constant division */
+    @Override
     public DifferentiableOperation over( final DifferentiableOperation divisor ) {
         return divisor instanceof DifferentiableConstant ? over( (DifferentiableConstant)divisor ) : super.over( divisor );
     }
@@ -515,37 +525,42 @@ class DifferentiableConstant extends DifferentiableSymbol {
     
     /** perform constant division */
     public DifferentiableOperation over( final DifferentiableConstant divisor ) {
-        return DifferentiableConstant.getInstance( this.VALUE / divisor.VALUE );
+        return DifferentiableConstant.getInstance( this.value / divisor.value );
     }
     
     
     /** perform constant division */
+    @Override
     public DifferentiableOperation over( final double divisor ) {
-        return DifferentiableConstant.getInstance( this.VALUE / divisor );
+        return DifferentiableConstant.getInstance( this.value / divisor );
     }
     
     
     /** get the absolute value of this operation */
+    @Override
     public DifferentiableOperation abs() {
-        return VALUE >= 0 ? this : getInstance( -VALUE );
+        return value >= 0 ? this : getInstance( -value );
     }
     
     
     /** get the absolute value of this operation */
+    @Override
     public DifferentiableOperation negate() {
-        return getInstance( -VALUE );
+        return getInstance( -value );
     }
     
     
     /** Test whether this operation is equivalent to the specified operation when the two operations are different instances. Indicates whether the internal values are equal. */
+    @Override
     protected boolean isEquivalentTo( final DifferentiableOperation operation ) {
-        return VALUE == ((DifferentiableConstant)operation).VALUE;
+        return value == ((DifferentiableConstant)operation).value;
     }
     
     
     /** get the string representation */
+    @Override
     public String toString() {
-        return String.valueOf( VALUE );
+        return String.valueOf( value );
     }
 }
 
@@ -570,36 +585,41 @@ class DifferentiableZero extends DifferentiableConstant {
     
     
     /** get the singleton instance */
-    static public DifferentiableZero getInstance() {
+    public static DifferentiableZero getInstance() {
         return ZERO_OPERATION;
     }
     
     
     /** add the addend to this operation returning the new operation */
+    @Override
     public DifferentiableOperation plus( final DifferentiableOperation addend ) {
         return addend;
     }
     
     
     /** subtract the operation from this */
+    @Override
     public DifferentiableOperation minus( final DifferentiableOperation subtrahend ) {
         return subtrahend.negate();
     }
     
     
     /** multiply the multiplicand to this operation returning the new operation */
+    @Override
     public DifferentiableOperation times( final DifferentiableOperation multiplicand ) {
         return this;
     }
     
     
     /** Divide the operation from this */
+    @Override
     public DifferentiableOperation over( final DifferentiableOperation divisor ) {
         return this;
     }
     
     
     /** multiply the operation by negative one */
+    @Override
     public DifferentiableOperation negate() {
         return this;
     }
@@ -626,12 +646,13 @@ class DifferentiableOne extends DifferentiableConstant {
     
     
     /** get the singleton instance */
-    static public DifferentiableOne getInstance() {
+    public static DifferentiableOne getInstance() {
         return ONE_OPERATION;
     }
     
     
     /** multiply the multiplicand to this operation returning the new operation */
+    @Override
     public DifferentiableOperation times( final DifferentiableOperation multiplicand ) {
         return multiplicand;
     }
@@ -641,19 +662,19 @@ class DifferentiableOne extends DifferentiableConstant {
 
 /** Operation for adding operation addends */
 class DifferentiableAddition extends DifferentiableOperation {
-    final private DifferentiableOperation SUMMAND;
-    final private DifferentiableOperation ADDEND;
+    private final DifferentiableOperation summand;
+    private final DifferentiableOperation addend;
     
     
     /** Constructor */
     public DifferentiableAddition( final DifferentiableOperation summand, final DifferentiableOperation addend ) {
         if ( summand instanceof DifferentiableConstant ) {  // always put constants at the end
-            ADDEND = summand;
-            SUMMAND = addend;
+            this.addend = summand;
+            this.summand = addend;
         }
         else {
-            SUMMAND = summand;
-            ADDEND = addend;
+            this.summand = summand;
+            this.addend = addend;
         }
     }
     
@@ -663,19 +684,21 @@ class DifferentiableAddition extends DifferentiableOperation {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
-        return new DifferentiableAddition( SUMMAND.copySubstitutingWithCache( substitutions ), ADDEND.copySubstitutingWithCache( substitutions ) );
+        return new DifferentiableAddition( summand.copySubstitutingWithCache( substitutions ), addend.copySubstitutingWithCache( substitutions ) );
     }
     
     
     /** get the operation precedence */
+    @Override
     protected int getPrecedence() {
         return DifferentiableOperation.ADDITION_PRECEDENCE;
     }
     
     
     /** generate the addition operation */
-    static public DifferentiableOperation add( final DifferentiableOperation summand, final DifferentiableOperation addend ) {
+    public static DifferentiableOperation add( final DifferentiableOperation summand, final DifferentiableOperation addend ) {
         if ( addend instanceof DifferentiableNegation )  return summand.minus( addend.negate() );
         
         if ( summand.isEqualTo( addend.negate() ) )  return DifferentiableOperation.getConstant( 0.0 );
@@ -688,9 +711,9 @@ class DifferentiableAddition extends DifferentiableOperation {
         // test whether the summand is an addition operation so any constants can be collected and coalesced
         if ( summand instanceof DifferentiableAddition ) {
             final DifferentiableAddition summandAddition = (DifferentiableAddition)summand;
-            if ( summandAddition.ADDEND instanceof DifferentiableConstant ) {
-                constantSum += ((DifferentiableConstant)summandAddition.ADDEND).getValue();
-                operationSum = summandAddition.SUMMAND;
+            if ( summandAddition.addend instanceof DifferentiableConstant ) {
+                constantSum += ((DifferentiableConstant)summandAddition.addend).getValue();
+                operationSum = summandAddition.summand;
             }
             else {
                 operationSum = summand;
@@ -706,9 +729,9 @@ class DifferentiableAddition extends DifferentiableOperation {
         // test whether the addend is an addition operation so any constants can be collected and coalesced
         if ( addend instanceof DifferentiableAddition ) {
             final DifferentiableAddition addendAddition = (DifferentiableAddition)addend;
-            if ( addendAddition.ADDEND instanceof DifferentiableConstant ) {
-                constantSum += ((DifferentiableConstant)addendAddition.ADDEND).getValue();
-                operationSum = operationSum != null ? new DifferentiableAddition( operationSum, addendAddition.SUMMAND ) : addendAddition.SUMMAND;
+            if ( addendAddition.addend instanceof DifferentiableConstant ) {
+                constantSum += ((DifferentiableConstant)addendAddition.addend).getValue();
+                operationSum = operationSum != null ? new DifferentiableAddition( operationSum, addendAddition.summand ) : addendAddition.summand;
             }
             else {
                 operationSum = operationSum != null ? new DifferentiableAddition( operationSum, addend ) : addend;
@@ -732,28 +755,32 @@ class DifferentiableAddition extends DifferentiableOperation {
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
+    @Override
     public double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
-        return SUMMAND.evaluateWithCache( valueMap, cache ) + ADDEND.evaluateWithCache( valueMap, cache );
+        return summand.evaluateWithCache( valueMap, cache ) + addend.evaluateWithCache( valueMap, cache );
     }
     
     
     /** Get the derivative with respect to the specified variable */
-    final public DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
-        return SUMMAND.getDerivative( variable ).plus( ADDEND.getDerivative( variable ) );
+    @Override
+    public final DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
+        return summand.getDerivative( variable ).plus( addend.getDerivative( variable ) );
     }
     
     
     /** Test whether this operation is equivalent to the specified operation when the two operations are different instances. The summands and addends must be equal but the order doesn't matter. */
+    @Override
     protected boolean isEquivalentTo( final DifferentiableOperation operation ) {
-        return ( SUMMAND.isEqualTo( ((DifferentiableAddition)operation).SUMMAND ) && ADDEND.isEqualTo( ((DifferentiableAddition)operation).ADDEND ) ) || 
-            ( SUMMAND.isEqualTo( ((DifferentiableAddition)operation).ADDEND ) && ADDEND.isEqualTo( ((DifferentiableAddition)operation).SUMMAND ) );
+        return ( summand.isEqualTo( ((DifferentiableAddition)operation).summand ) && addend.isEqualTo( ((DifferentiableAddition)operation).addend ) ) || 
+            ( summand.isEqualTo( ((DifferentiableAddition)operation).addend ) && addend.isEqualTo( ((DifferentiableAddition)operation).summand ) );
     }
     
     
     /** get the string representation */
+    @Override
     public String toString() {
         final int precedence = getPrecedence();
-        return SUMMAND.toString( precedence ) + " + " + ADDEND.toString( precedence );
+        return summand.toString( precedence ) + " + " + addend.toString( precedence );
     }
 }
 
@@ -761,14 +788,14 @@ class DifferentiableAddition extends DifferentiableOperation {
 
 /** Operation for subtracting operations */
 class DifferentiableSubtraction extends DifferentiableOperation {
-    final private DifferentiableOperation MINUEND;
-    final private DifferentiableOperation SUBTRAHEND;
+    private final DifferentiableOperation minuend;
+    private final DifferentiableOperation subtrahend;
     
     
     /** Constructor */
     public DifferentiableSubtraction( final DifferentiableOperation minuend, final DifferentiableOperation subtrahend ) {
-        MINUEND = minuend;
-        SUBTRAHEND = subtrahend;
+        this.minuend = minuend;
+        this.subtrahend = subtrahend;
     }
     
     
@@ -777,45 +804,51 @@ class DifferentiableSubtraction extends DifferentiableOperation {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
-        return new DifferentiableSubtraction( MINUEND.copySubstitutingWithCache( substitutions ), SUBTRAHEND.copySubstitutingWithCache( substitutions ) );
+        return new DifferentiableSubtraction( minuend.copySubstitutingWithCache( substitutions ), subtrahend.copySubstitutingWithCache( substitutions ) );
     }
     
     
     /** get the operation precedence */
+    @Override
     protected int getPrecedence() {
         return DifferentiableOperation.SUBTRACTION_PRECEDENCE;
     }
     
     
     /** generate the addition operation */
-    static public DifferentiableOperation subtract( final DifferentiableOperation minuend, final DifferentiableOperation subtrahend ) {
+    public static DifferentiableOperation subtract( final DifferentiableOperation minuend, final DifferentiableOperation subtrahend ) {
         return minuend.isEqualTo( subtrahend ) ? DifferentiableOperation.getConstant( 0.0 ) : new DifferentiableSubtraction( minuend, subtrahend );
     }
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
+    @Override
     public double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
-        return MINUEND.evaluateWithCache( valueMap, cache ) - SUBTRAHEND.evaluateWithCache( valueMap, cache );
+        return minuend.evaluateWithCache( valueMap, cache ) - subtrahend.evaluateWithCache( valueMap, cache );
     }
     
     
     /** Get the derivative with respect to the specified variable */
-    final public DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
-        return MINUEND.getDerivative( variable ).minus( SUBTRAHEND.getDerivative( variable ) );
+    @Override
+    public final DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
+        return minuend.getDerivative( variable ).minus( subtrahend.getDerivative( variable ) );
     }
     
     
     /** Test whether this operation is equivalent to the specified operation when the two operations are different instances. Indicates whether the minuend and subtrahend are equal to those of the specified operation. */
+    @Override
     protected boolean isEquivalentTo( final DifferentiableOperation operation ) {
-        return MINUEND.isEqualTo( ((DifferentiableSubtraction)operation).MINUEND ) && SUBTRAHEND.isEqualTo( ((DifferentiableSubtraction)operation).SUBTRAHEND );
+        return minuend.isEqualTo( ((DifferentiableSubtraction)operation).minuend ) && subtrahend.isEqualTo( ((DifferentiableSubtraction)operation).subtrahend );
     }
     
     
     /** get the string representation */
+    @Override
     public String toString() {
         final int precedence = getPrecedence();
-        return MINUEND.toString( precedence ) + " - " + SUBTRAHEND.toString( precedence, true );
+        return minuend.toString( precedence ) + " - " + subtrahend.toString( precedence, true );
     }
 }
 
@@ -823,19 +856,19 @@ class DifferentiableSubtraction extends DifferentiableOperation {
 
 /** Operation for multiplying two operations */
 class DifferentiableMultiplication extends DifferentiableOperation {
-    final private DifferentiableOperation MULTIPLICAND;
-    final private DifferentiableOperation MULTIPLIER;
+    private final DifferentiableOperation multiplicand;
+    private final DifferentiableOperation multiplier;
     
     
     /** Constructor */
     public DifferentiableMultiplication( final DifferentiableOperation multiplicand, final DifferentiableOperation multiplier ) {
         if ( multiplier instanceof DifferentiableConstant ) {   // always put constants at the front
-            MULTIPLICAND = multiplier;
-            MULTIPLIER = multiplicand;
+            this.multiplicand = multiplier;
+            this.multiplier = multiplicand;
         }
         else {
-            MULTIPLICAND = multiplicand;
-            MULTIPLIER = multiplier;
+            this.multiplicand = multiplicand;
+            this.multiplier = multiplier;
         }
     }
     
@@ -845,19 +878,21 @@ class DifferentiableMultiplication extends DifferentiableOperation {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
-        return new DifferentiableMultiplication( MULTIPLICAND.copySubstitutingWithCache( substitutions ), MULTIPLIER.copySubstitutingWithCache( substitutions ) );
+        return new DifferentiableMultiplication( multiplicand.copySubstitutingWithCache( substitutions ), multiplier.copySubstitutingWithCache( substitutions ) );
     }
     
     
     /** get the operation precedence */
+    @Override
     protected int getPrecedence() {
         return DifferentiableOperation.PRODUCT_PRECEDENCE;
     }
     
     
     /** generate the multiplication operation */
-    static public DifferentiableOperation multiply( final DifferentiableOperation multiplicand, final DifferentiableOperation multiplier ) {
+    public static DifferentiableOperation multiply( final DifferentiableOperation multiplicand, final DifferentiableOperation multiplier ) {
         // collect all constants if any and place them at the front so constants can be coalesced into a single constant
         
         double constantProduct = 1.0;                       // coalesce constants to this variable
@@ -866,9 +901,9 @@ class DifferentiableMultiplication extends DifferentiableOperation {
         // test whether the multiplicand is a multiplication operation so any constants can be collected and coalesced
         if ( multiplicand instanceof DifferentiableMultiplication ) {
             final DifferentiableMultiplication multiplicandProduct = (DifferentiableMultiplication)multiplicand;
-            if ( multiplicandProduct.MULTIPLICAND instanceof DifferentiableConstant ) {
-                constantProduct *= ((DifferentiableConstant)multiplicandProduct.MULTIPLICAND).getValue();
-                operationProduct = multiplicandProduct.MULTIPLIER;
+            if ( multiplicandProduct.multiplicand instanceof DifferentiableConstant ) {
+                constantProduct *= ((DifferentiableConstant)multiplicandProduct.multiplicand).getValue();
+                operationProduct = multiplicandProduct.multiplier;
             }
             else {
                 operationProduct = multiplicand;
@@ -884,9 +919,9 @@ class DifferentiableMultiplication extends DifferentiableOperation {
         // test whether the multiplier is a multiplication operation so any constants can be collected and coalesced
         if ( multiplier instanceof DifferentiableMultiplication ) {
             final DifferentiableMultiplication multiplierProduct = (DifferentiableMultiplication)multiplier;
-            if ( multiplierProduct.MULTIPLICAND instanceof DifferentiableConstant ) {
-                constantProduct *= ((DifferentiableConstant)multiplierProduct.MULTIPLICAND).getValue();
-                operationProduct = operationProduct != null ? new DifferentiableMultiplication( operationProduct, multiplierProduct.MULTIPLIER ) : multiplierProduct.MULTIPLIER;
+            if ( multiplierProduct.multiplicand instanceof DifferentiableConstant ) {
+                constantProduct *= ((DifferentiableConstant)multiplierProduct.multiplicand).getValue();
+                operationProduct = operationProduct != null ? new DifferentiableMultiplication( operationProduct, multiplierProduct.multiplier ) : multiplierProduct.multiplier;
             }
             else {
                 operationProduct = operationProduct != null ? new DifferentiableMultiplication( operationProduct, multiplier ) : multiplier;
@@ -913,28 +948,32 @@ class DifferentiableMultiplication extends DifferentiableOperation {
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
+    @Override
     public double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
-        return MULTIPLICAND.evaluateWithCache( valueMap, cache ) * MULTIPLIER.evaluateWithCache( valueMap, cache );
+        return multiplicand.evaluateWithCache( valueMap, cache ) * multiplier.evaluateWithCache( valueMap, cache );
     }
     
     
     /** Get the derivative with respect to the specified variable */
-    final public DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
-        return MULTIPLICAND.getDerivative( variable ).times( MULTIPLIER ).plus( MULTIPLICAND.times( MULTIPLIER.getDerivative( variable ) ) );
+    @Override
+    public final DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
+        return multiplicand.getDerivative( variable ).times( multiplier ).plus( multiplicand.times( multiplier.getDerivative( variable ) ) );
     }
     
     
-    /** Test whether this operation is equivalent to the specified operation when the two operations are different instances. Indicates whether the multiplicands and multipiers match those of the specified operation. */
+    /** Test whether this operation is equivalent to the specified operation when the two operations are different instances. Indicates whether the multiplicands and multipliers match those of the specified operation. */
+    @Override
     protected boolean isEquivalentTo( final DifferentiableOperation operation ) {
-        return ( MULTIPLICAND.isEqualTo( ((DifferentiableMultiplication)operation).MULTIPLICAND ) && MULTIPLIER.isEqualTo( ((DifferentiableMultiplication)operation).MULTIPLIER ) ) || 
-              ( MULTIPLICAND.isEqualTo( ((DifferentiableMultiplication)operation).MULTIPLIER ) && MULTIPLIER.isEqualTo( ((DifferentiableMultiplication)operation).MULTIPLICAND ) );
+        return ( multiplicand.isEqualTo( ((DifferentiableMultiplication)operation).multiplicand ) && multiplier.isEqualTo( ((DifferentiableMultiplication)operation).multiplier ) ) || 
+              ( multiplicand.isEqualTo( ((DifferentiableMultiplication)operation).multiplier ) && multiplier.isEqualTo( ((DifferentiableMultiplication)operation).multiplicand ) );
     }
     
     
     /** get the string representation */
+    @Override
     public String toString() {
         final int precedence = getPrecedence();
-        return MULTIPLICAND.toString( precedence ) + " * " + MULTIPLIER.toString( precedence );
+        return multiplicand.toString( precedence ) + " * " + multiplier.toString( precedence );
     }
 }
 
@@ -942,14 +981,14 @@ class DifferentiableMultiplication extends DifferentiableOperation {
 
 /** Operation for dividing two operations */
 class DifferentiableDivision extends DifferentiableOperation {
-    final private DifferentiableOperation DIVIDEND;
-    final private DifferentiableOperation DIVISOR;
+    private final DifferentiableOperation dividend;
+    private final DifferentiableOperation divisor;
     
     
     /** Constructor */
     public DifferentiableDivision( final DifferentiableOperation dividend, final DifferentiableOperation divisor ) {
-        DIVIDEND = dividend;
-        DIVISOR = divisor;
+        this.dividend = dividend;
+        this.divisor = divisor;
     }
     
     
@@ -958,57 +997,64 @@ class DifferentiableDivision extends DifferentiableOperation {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
-        return new DifferentiableDivision( DIVIDEND.copySubstitutingWithCache( substitutions ), DIVISOR.copySubstitutingWithCache( substitutions ) );
+        return new DifferentiableDivision( dividend.copySubstitutingWithCache( substitutions ), divisor.copySubstitutingWithCache( substitutions ) );
     }
     
     
     /** get the operation precedence */
+    @Override
     protected int getPrecedence() {
         return DifferentiableOperation.QUOTIENT_PRECEDENCE;
     }
     
     
     /** generate the division operation */
-    static public DifferentiableOperation divide( final DifferentiableOperation dividend, final DifferentiableOperation divisor ) {
+    public static DifferentiableOperation divide( final DifferentiableOperation dividend, final DifferentiableOperation divisor ) {
         return dividend.isEqualTo( divisor ) ? DifferentiableOperation.getConstant( 1.0 ) : new DifferentiableDivision( dividend, divisor );
     }
     
     
     /** generate the division operation */
-    static public DifferentiableOperation divide( final double dividend, final DifferentiableOperation divisor ) {
+    public static DifferentiableOperation divide( final double dividend, final DifferentiableOperation divisor ) {
         return new DifferentiableDivision( getConstant( dividend ), divisor );
     }
     
     
     /** get the reciprocal operation */
+    @Override
     public DifferentiableOperation reciprocal() {
-        return DIVISOR.over( DIVIDEND );
+        return divisor.over( dividend );
     }
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
+    @Override
     public double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
-        return DIVIDEND.evaluateWithCache( valueMap, cache ) / DIVISOR.evaluateWithCache( valueMap, cache );
+        return dividend.evaluateWithCache( valueMap, cache ) / divisor.evaluateWithCache( valueMap, cache );
     }
     
     
     /** Get the derivative with respect to the specified variable */
-    final public DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
-        return DIVIDEND.getDerivative( variable ).minus( DIVISOR.getDerivative( variable ).times( DIVIDEND ).over( DIVISOR ) ).over( DIVISOR );
+    @Override
+    public final DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
+        return dividend.getDerivative( variable ).minus( divisor.getDerivative( variable ).times( dividend ).over( divisor ) ).over( divisor );
     }
     
     
     /** Test whether this operation is equivalent to the specified operation when the two operations are different instances. Indicates whether the dividend and divers match those of the specified operation. */
+    @Override
     protected boolean isEquivalentTo( final DifferentiableOperation operation ) {
-        return DIVIDEND.isEqualTo( ((DifferentiableDivision)operation).DIVIDEND ) && DIVISOR.isEqualTo( ((DifferentiableDivision)operation).DIVISOR ); 
+        return dividend.isEqualTo( ((DifferentiableDivision)operation).dividend ) && divisor.isEqualTo( ((DifferentiableDivision)operation).divisor ); 
     }
     
     
     /** get the string representation */
+    @Override
     public String toString() {
         final int precedence = getPrecedence();
-        return DIVIDEND.toString( precedence ) + " / " + DIVISOR.toString( precedence, true );
+        return dividend.toString( precedence ) + " / " + divisor.toString( precedence, true );
     }
 }
 
@@ -1016,12 +1062,12 @@ class DifferentiableDivision extends DifferentiableOperation {
 
 /** Operation for getting the negative of an operation */
 class DifferentiableNegation extends DifferentiableOperation {
-    final private DifferentiableOperation ARGUMENT;
+    private final DifferentiableOperation argument;
     
     
     /** Constructor */
     public DifferentiableNegation( final DifferentiableOperation argument ) {
-        ARGUMENT = argument;
+        this.argument = argument;
     }
     
     
@@ -1030,12 +1076,14 @@ class DifferentiableNegation extends DifferentiableOperation {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
-        return new DifferentiableNegation( ARGUMENT.copySubstitutingWithCache( substitutions ) );
+        return new DifferentiableNegation( argument.copySubstitutingWithCache( substitutions ) );
     }
     
     
     /** get the operation precedence */
+    @Override
     protected int getPrecedence() {
         return DifferentiableOperation.PRODUCT_PRECEDENCE;
     }
@@ -1043,56 +1091,63 @@ class DifferentiableNegation extends DifferentiableOperation {
     
     /** get the argument to negate */
     DifferentiableOperation getArgument() {
-        return ARGUMENT;
+        return argument;
     }
     
     
     /** generate the division operation */
-    static public DifferentiableOperation negate( final DifferentiableOperation argument ) {
+    public static DifferentiableOperation negate( final DifferentiableOperation argument ) {
         return new DifferentiableNegation( argument );
     }
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
+    @Override
     public double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
-        return - ARGUMENT.evaluateWithCache( valueMap, cache );
+        return - argument.evaluateWithCache( valueMap, cache );
     }
     
     
     /** Get the derivative with respect to the specified variable */
-    final public DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
-        return ARGUMENT.getDerivative( variable ).negate();
+    @Override
+    public final DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
+        return argument.getDerivative( variable ).negate();
     }
     
     
     /** get the negation value of this operation */
+    @Override
     public DifferentiableOperation negate() {
-        return ARGUMENT;
+        return argument;
     }
     
     
     /** get the absolute value of this operation */
+    @Override
     public DifferentiableOperation abs() {
-        return ARGUMENT.abs();
+        return argument.abs();
     }
     
     
     /** get the cosine of this operation */
+    @Override
     public DifferentiableOperation cos() {
-        return ARGUMENT.cos();
+        return argument.cos();
     }
     
     
     /** Test whether this operation is equivalent to the specified operation when the two operations are different instances.*/
+    @Override
     protected boolean isEquivalentTo( final DifferentiableOperation operation ) {
-        return ARGUMENT.isEqualTo( ((DifferentiableNegation)operation).ARGUMENT );
+        return argument.isEqualTo( ((DifferentiableNegation)operation).argument );
     }
     
     
     /** get the string representation */
+    @Override
     public String toString() {
         final int precedence = getPrecedence();
-        return "-" + ARGUMENT.toString( precedence );
+        return "-" + argument.toString( precedence );
     }
 }
 
@@ -1100,12 +1155,12 @@ class DifferentiableNegation extends DifferentiableOperation {
 
 /** Operation for getting the absolute value of an operation */
 class DifferentiableAbsoluteValue extends DifferentiableSymbol {
-    final private DifferentiableOperation ARGUMENT;
+    private final DifferentiableOperation argument;
     
     
     /** Constructor */
     public DifferentiableAbsoluteValue( final DifferentiableOperation argument ) {
-        ARGUMENT = argument;
+        this.argument = argument;
     }
     
     
@@ -1114,50 +1169,56 @@ class DifferentiableAbsoluteValue extends DifferentiableSymbol {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
-        return new DifferentiableAbsoluteValue( ARGUMENT.copySubstitutingWithCache( substitutions ) );
+        return new DifferentiableAbsoluteValue( argument.copySubstitutingWithCache( substitutions ) );
     }
     
     
     /** get the argument to negate */
     DifferentiableOperation getArgument() {
-        return ARGUMENT;
+        return argument;
     }
     
     
     /** generate the operation */
-    static public DifferentiableOperation abs( final DifferentiableOperation argument ) {
+    public static DifferentiableOperation abs( final DifferentiableOperation argument ) {
         return new DifferentiableAbsoluteValue( argument );
     }
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
+    @Override
     public double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
-        return Math.abs( ARGUMENT.evaluateWithCache( valueMap, cache ) );
+        return Math.abs( argument.evaluateWithCache( valueMap, cache ) );
     }
     
     
     /** Get the derivative with respect to the specified variable */
-    final public DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
-        return ARGUMENT.getDerivative( variable ).times( ARGUMENT ).over( ARGUMENT.abs() );
+    @Override
+    public final DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
+        return argument.getDerivative( variable ).times( argument ).over( argument.abs() );
     }
     
     
     /** get the absolute value of this operation */
+    @Override
     public DifferentiableOperation abs() {
         return this;
     }
     
     
     /** Test whether this operation is equivalent to the specified operation when the two operations are different instances. */
+    @Override
     protected boolean isEquivalentTo( final DifferentiableOperation operation ) {
-        return ARGUMENT.isEqualTo( ((DifferentiableAbsoluteValue)operation).ARGUMENT );
+        return argument.isEqualTo( ((DifferentiableAbsoluteValue)operation).argument );
     }
     
     
     /** get the string representation */
+    @Override
     public String toString() {
-        return "|" + ARGUMENT + "|";
+        return "|" + argument + "|";
     }
 }
 
@@ -1176,30 +1237,34 @@ class DifferentiableSine extends DifferentiableUnaryOperation {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
-        return new DifferentiableSine( ARGUMENT.copySubstitutingWithCache( substitutions ) );
+        return new DifferentiableSine( argument.copySubstitutingWithCache( substitutions ) );
     }
     
     
     /** generate the operation */
-    static public DifferentiableOperation sin( final DifferentiableOperation argument ) {
+    public static DifferentiableOperation sin( final DifferentiableOperation argument ) {
         return new DifferentiableSine( argument );
     }
     
     
     /** Get the label for the operation */
-    final public String getLabel() { return "sin"; }
+    @Override
+    public final String getLabel() { return "sin"; }
     
     
     /** Get the derivative for just this operation without regard for the chain rule */
-    final public DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
-        return ARGUMENT.cos();
+    @Override
+    public final DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
+        return argument.cos();
     }
 
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
+    @Override
     public double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
-        return Math.sin( ARGUMENT.evaluateWithCache( valueMap, cache ) );
+        return Math.sin( argument.evaluateWithCache( valueMap, cache ) );
     }
 }
 
@@ -1218,42 +1283,46 @@ class DifferentiableCosine extends DifferentiableUnaryOperation {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
-        return new DifferentiableCosine( ARGUMENT.copySubstitutingWithCache( substitutions ) );
+        return new DifferentiableCosine( argument.copySubstitutingWithCache( substitutions ) );
     }
     
     
     /** generate the operation */
-    static public DifferentiableOperation cos( final DifferentiableOperation argument ) {
+    public static DifferentiableOperation cos( final DifferentiableOperation argument ) {
         return argument instanceof DifferentiableAbsoluteValue ? cos( (DifferentiableAbsoluteValue)argument ) : argument instanceof DifferentiableNegation ? cos( (DifferentiableNegation)argument ) : new DifferentiableCosine( argument );
     }
     
     
     /** generate the operation */
-    static public DifferentiableOperation cos( final DifferentiableAbsoluteValue argument ) {
+    public static DifferentiableOperation cos( final DifferentiableAbsoluteValue argument ) {
         return new DifferentiableCosine( argument.getArgument() );
     }
     
     
     /** generate the division operation */
-    static public DifferentiableOperation cos( final DifferentiableNegation argument ) {
+    public static DifferentiableOperation cos( final DifferentiableNegation argument ) {
         return new DifferentiableCosine( argument.getArgument() );
     }
     
     
     /** Get the label for the operation */
-    final public String getLabel() { return "cos"; }
+    @Override
+    public final String getLabel() { return "cos"; }
     
     
     /** Get the derivative for just this operation without regard for the chain rule */
-    final public DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
-        return ARGUMENT.sin().negate();
+    @Override
+    public final DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
+        return argument.sin().negate();
     }
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
+    @Override
     public double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
-        return Math.cos( ARGUMENT.evaluateWithCache( valueMap, cache ) );
+        return Math.cos( argument.evaluateWithCache( valueMap, cache ) );
     }
 }
 
@@ -1272,30 +1341,34 @@ class DifferentiableTangent extends DifferentiableUnaryOperation {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
-        return new DifferentiableTangent( ARGUMENT.copySubstitutingWithCache( substitutions ) );
+        return new DifferentiableTangent( argument.copySubstitutingWithCache( substitutions ) );
     }
     
     
     /** generate the operation */
-    static public DifferentiableOperation tan( final DifferentiableOperation argument ) {
+    public static DifferentiableOperation tan( final DifferentiableOperation argument ) {
         return new DifferentiableTangent( argument );
     }
     
     
     /** Get the label for the operation */
-    final public String getLabel() { return "tan"; }
+    @Override
+    public final String getLabel() { return "tan"; }
     
     
     /** Get the derivative for just this operation without regard for the chain rule */
-    final public DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
-        return ARGUMENT.cos().pow( -2.0 );
+    @Override
+    public final DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
+        return argument.cos().pow( -2.0 );
     }
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
+    @Override
     public double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
-        return Math.tan( ARGUMENT.evaluateWithCache( valueMap, cache ) );
+        return Math.tan( argument.evaluateWithCache( valueMap, cache ) );
     }
 }
 
@@ -1314,30 +1387,34 @@ class DifferentiableArcSine extends DifferentiableUnaryOperation {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
-        return new DifferentiableArcSine( ARGUMENT.copySubstitutingWithCache( substitutions ) );
+        return new DifferentiableArcSine( argument.copySubstitutingWithCache( substitutions ) );
     }
     
     
     /** generate the operation */
-    static public DifferentiableOperation asin( final DifferentiableOperation argument ) {
+    public static DifferentiableOperation asin( final DifferentiableOperation argument ) {
         return new DifferentiableArcSine( argument );
     }
     
     
     /** Get the label for the operation */
-    final public String getLabel() { return "asin"; }
+    @Override
+    public final String getLabel() { return "asin"; }
     
     
     /** Get the derivative for just this operation without regard for the chain rule */
-    final public DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
-        return DifferentiableOne.getInstance().minus( ARGUMENT.pow( 2 ) ).sqrt().reciprocal();
+    @Override
+    public final DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
+        return DifferentiableOne.getInstance().minus( argument.pow( 2 ) ).sqrt().reciprocal();
     }
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
+    @Override
     public double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
-        return Math.asin( ARGUMENT.evaluateWithCache( valueMap, cache ) );
+        return Math.asin( argument.evaluateWithCache( valueMap, cache ) );
     }
 }
 
@@ -1356,30 +1433,34 @@ class DifferentiableArcCosine extends DifferentiableUnaryOperation {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
-        return new DifferentiableArcCosine( ARGUMENT.copySubstitutingWithCache( substitutions ) );
+        return new DifferentiableArcCosine( argument.copySubstitutingWithCache( substitutions ) );
     }
     
     
     /** generate the operation */
-    static public DifferentiableOperation acos( final DifferentiableOperation argument ) {
+    public static DifferentiableOperation acos( final DifferentiableOperation argument ) {
         return new DifferentiableArcCosine( argument );
     }
     
     
     /** Get the label for the operation */
-    final public String getLabel() { return "acos"; }
+    @Override
+    public final String getLabel() { return "acos"; }
     
     
     /** Get the derivative for just this operation without regard for the chain rule */
-    final public DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
-        return DifferentiableConstant.getInstance( -1.0 ).over( DifferentiableOne.getInstance().minus( ARGUMENT.pow( 2 ) ).sqrt() );
+    @Override
+    public final DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
+        return DifferentiableConstant.getInstance( -1.0 ).over( DifferentiableOne.getInstance().minus( argument.pow( 2 ) ).sqrt() );
     }
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
+    @Override
     public double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
-        return Math.acos( ARGUMENT.evaluateWithCache( valueMap, cache ) );
+        return Math.acos( argument.evaluateWithCache( valueMap, cache ) );
     }
 }
 
@@ -1398,30 +1479,34 @@ class DifferentiableArcTangent extends DifferentiableUnaryOperation {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
-        return new DifferentiableArcTangent( ARGUMENT.copySubstitutingWithCache( substitutions ) );
+        return new DifferentiableArcTangent( argument.copySubstitutingWithCache( substitutions ) );
     }
     
     
     /** generate the operation */
-    static public DifferentiableOperation atan( final DifferentiableOperation argument ) {
+    public static DifferentiableOperation atan( final DifferentiableOperation argument ) {
         return new DifferentiableArcTangent( argument );
     }
     
     
     /** Get the label for the operation */
-    final public String getLabel() { return "atan"; }
+    @Override
+    public final String getLabel() { return "atan"; }
     
     
     /** Get the derivative for just this operation without regard for the chain rule */
-    final public DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
-        return DifferentiableOne.getInstance().plus( ARGUMENT.pow( 2 ) ).reciprocal();
+    @Override
+    public final DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
+        return DifferentiableOne.getInstance().plus( argument.pow( 2 ) ).reciprocal();
     }
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
+    @Override
     public double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
-        return Math.atan( ARGUMENT.evaluateWithCache( valueMap, cache ) );
+        return Math.atan( argument.evaluateWithCache( valueMap, cache ) );
     }
 }
 
@@ -1440,30 +1525,34 @@ class DifferentiableSinh extends DifferentiableUnaryOperation {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
-        return new DifferentiableSinh( ARGUMENT.copySubstitutingWithCache( substitutions ) );
+        return new DifferentiableSinh( argument.copySubstitutingWithCache( substitutions ) );
     }
     
     
     /** generate the operation */
-    static public DifferentiableOperation sinh( final DifferentiableOperation argument ) {
+    public static DifferentiableOperation sinh( final DifferentiableOperation argument ) {
         return new DifferentiableSinh( argument );
     }
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
+    @Override
     public double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
-        return Math.sinh( ARGUMENT.evaluateWithCache( valueMap, cache ) );
+        return Math.sinh( argument.evaluateWithCache( valueMap, cache ) );
     }
     
     
     /** Get the label for the operation */
-    final public String getLabel() { return "sinh"; }
+    @Override
+    public final String getLabel() { return "sinh"; }
     
     
     /** Get the derivative for just this operation without regard for the chain rule */
-    final public DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
-        return ARGUMENT.cosh();
+    @Override
+    public final DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
+        return argument.cosh();
     }
 }
 
@@ -1482,42 +1571,46 @@ class DifferentiableCosh extends DifferentiableUnaryOperation {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
-        return new DifferentiableCosh( ARGUMENT.copySubstitutingWithCache( substitutions ) );
+        return new DifferentiableCosh( argument.copySubstitutingWithCache( substitutions ) );
     }
    
     
     /** generate the operation */
-    static public DifferentiableOperation cosh( final DifferentiableOperation argument ) {
+    public static DifferentiableOperation cosh( final DifferentiableOperation argument ) {
         return argument instanceof DifferentiableAbsoluteValue ? cosh( (DifferentiableAbsoluteValue)argument ) : argument instanceof DifferentiableNegation ? cosh( (DifferentiableNegation)argument ) : new DifferentiableCosh( argument );
     }
     
     
     /** generate the operation */
-    static public DifferentiableOperation cosh( final DifferentiableAbsoluteValue argument ) {
+    public static DifferentiableOperation cosh( final DifferentiableAbsoluteValue argument ) {
         return new DifferentiableCosh( argument.getArgument() );
     }
     
     
     /** generate the division operation */
-    static public DifferentiableOperation cosh( final DifferentiableNegation argument ) {
+    public static DifferentiableOperation cosh( final DifferentiableNegation argument ) {
         return new DifferentiableCosh( argument.getArgument() );
     }
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
+    @Override
     public double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
-        return Math.cosh( ARGUMENT.evaluateWithCache( valueMap, cache ) );
+        return Math.cosh( argument.evaluateWithCache( valueMap, cache ) );
     }
     
     
     /** Get the label for the operation */
-    final public String getLabel() { return "cosh"; }
+    @Override
+    public final String getLabel() { return "cosh"; }
     
     
     /** Get the derivative for just this operation without regard for the chain rule */
-    final public DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
-        return ARGUMENT.sinh();
+    @Override
+    public final DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
+        return argument.sinh();
     }
 }
 
@@ -1536,30 +1629,34 @@ class DifferentiableTanh extends DifferentiableUnaryOperation {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
-        return new DifferentiableTanh( ARGUMENT.copySubstitutingWithCache( substitutions ) );
+        return new DifferentiableTanh( argument.copySubstitutingWithCache( substitutions ) );
     }
     
     
     /** generate the operation */
-    static public DifferentiableOperation tanh( final DifferentiableOperation argument ) {
+    public static DifferentiableOperation tanh( final DifferentiableOperation argument ) {
         return new DifferentiableTanh( argument );
     }
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
+    @Override
     public double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
-        return Math.tanh( ARGUMENT.evaluateWithCache( valueMap, cache ) );
+        return Math.tanh( argument.evaluateWithCache( valueMap, cache ) );
     }
     
     
     /** Get the label for the operation */
-    final public String getLabel() { return "tanh"; }
+    @Override
+    public final String getLabel() { return "tanh"; }
     
     
     /** Get the derivative for just this operation without regard for the chain rule */
-    final public DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
-        return ARGUMENT.cosh().pow( -2.0 );
+    @Override
+    public final DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
+        return argument.cosh().pow( -2.0 );
     }
 }
 
@@ -1568,15 +1665,15 @@ class DifferentiableTanh extends DifferentiableUnaryOperation {
 /** Operation for raising the argument to a constant power */
 class DifferentiableConstantPower extends DifferentiableSymbol {
     /** argument to raise to the power */
-    final protected DifferentiableOperation ARGUMENT;
+    protected final DifferentiableOperation argument;
     
     /** power to which to raise the argument */
-    final private double POWER;
+    private final double POWER;
     
     
     /** Constructor */
     public DifferentiableConstantPower( final DifferentiableOperation argument, final double power ) {
-        ARGUMENT = argument;
+        this.argument = argument;
         POWER = power;
     }
     
@@ -1586,50 +1683,56 @@ class DifferentiableConstantPower extends DifferentiableSymbol {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
-        return new DifferentiableConstantPower( ARGUMENT.copySubstitutingWithCache( substitutions ), POWER );
+        return new DifferentiableConstantPower( argument.copySubstitutingWithCache( substitutions ), POWER );
     }
     
     
     /** get the operation precedence */
+    @Override
     protected int getPrecedence() {
         return DifferentiableOperation.POWER_PRECEDENCE;
     }
     
     
     /** generate the operation */
-    static public DifferentiableOperation pow( final DifferentiableOperation argument, final double power ) {
+    public static DifferentiableOperation pow( final DifferentiableOperation argument, final double power ) {
         return power == 0.0 ? DifferentiableOne.getInstance() : power == 1.0 ? argument : power == 0.5 ? DifferentiableSquareRoot.sqrt( argument ) : new DifferentiableConstantPower( argument, power );
     }
     
     
     /** generate the operation */
-    static public DifferentiableOperation pow( final DifferentiableOperation argument, final DifferentiableConstant power ) {
+    public static DifferentiableOperation pow( final DifferentiableOperation argument, final DifferentiableConstant power ) {
         return DifferentiableConstantPower.pow( argument, power.getValue() );
     }
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
+    @Override
     public double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
-        return Math.pow( ARGUMENT.evaluateWithCache( valueMap, cache ), POWER );
+        return Math.pow(argument.evaluateWithCache( valueMap, cache ), POWER );
     }
     
     
     /** Get the derivative with respect to the specified variable */
-    final public DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
-        return new DifferentiableConstant( POWER ).times( ARGUMENT.getDerivative( variable ) ).times( DifferentiableConstantPower.pow( ARGUMENT, POWER - 1.0 ) );
+    @Override
+    public final DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
+        return new DifferentiableConstant( POWER ).times(argument.getDerivative( variable ) ).times(DifferentiableConstantPower.pow(argument, POWER - 1.0 ) );
     }
     
     
     /** Test whether this operation is equivalent to the specified operation when the two operations are different instances.*/
+    @Override
     protected boolean isEquivalentTo( final DifferentiableOperation operation ) {
-        return ARGUMENT.isEqualTo( ((DifferentiableConstantPower)operation).ARGUMENT ) && POWER == ((DifferentiableConstantPower)operation).POWER;
+        return argument.isEqualTo(((DifferentiableConstantPower)operation).argument ) && POWER == ((DifferentiableConstantPower)operation).POWER;
     }
    
     
     /** get the string representation */
+    @Override
     public String toString() {
-        return ARGUMENT.toString( getPrecedence() ) + " ^ " + POWER;
+        return argument.toString( getPrecedence() ) + " ^ " + POWER;
     }
 }
 
@@ -1638,16 +1741,16 @@ class DifferentiableConstantPower extends DifferentiableSymbol {
 /** Operation for raising the argument to an arbitrary power */
 class DifferentiablePower extends DifferentiableSymbol {
     /** argument to raise to the power */
-    final protected DifferentiableOperation ARGUMENT;
+    protected final DifferentiableOperation argument;
     
     /** power to which to raise the argument */
-    final protected DifferentiableOperation POWER;
+    protected final DifferentiableOperation power;
     
     
     /** Constructor */
     public DifferentiablePower( final DifferentiableOperation argument, final DifferentiableOperation power ) {
-        ARGUMENT = argument;
-        POWER = power;
+        this.argument = argument;
+        this.power = power;
     }
     
     
@@ -1656,56 +1759,62 @@ class DifferentiablePower extends DifferentiableSymbol {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
-        return new DifferentiablePower( ARGUMENT.copySubstitutingWithCache( substitutions ), POWER.copySubstitutingWithCache( substitutions ) );
+        return new DifferentiablePower( argument.copySubstitutingWithCache( substitutions ), power.copySubstitutingWithCache( substitutions ) );
     }
     
     
     /** get the operation precedence */
+    @Override
     protected int getPrecedence() {
         return DifferentiableOperation.POWER_PRECEDENCE;
     }
     
     /** generate the operation */
-    static public DifferentiableOperation pow( final DifferentiableOperation argument, final DifferentiableOperation power ) {
+    public static DifferentiableOperation pow( final DifferentiableOperation argument, final DifferentiableOperation power ) {
         return power instanceof DifferentiableConstant ? pow( argument, (DifferentiableConstant)power ) : new DifferentiablePower( argument, power );
     }
     
     
     /** generate the operation */
-    static public DifferentiableOperation pow( final DifferentiableOperation argument, final double power ) {
+    public static DifferentiableOperation pow( final DifferentiableOperation argument, final double power ) {
         return DifferentiableConstantPower.pow( argument, power );
     }
     
     
     /** generate the operation */
-    static public DifferentiableOperation pow( final DifferentiableOperation argument, final DifferentiableConstant power ) {
+    public static DifferentiableOperation pow( final DifferentiableOperation argument, final DifferentiableConstant power ) {
         return DifferentiableConstantPower.pow( argument, power.getValue() );
     }
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
+    @Override
     public double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
-        return Math.pow( ARGUMENT.evaluateWithCache( valueMap, cache ), POWER.evaluateWithCache( valueMap, cache ) );
+        return Math.pow(argument.evaluateWithCache( valueMap, cache ), power.evaluateWithCache( valueMap, cache ) );
     }
     
     
     /** Get the derivative with respect to the specified variable */
-    final public DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
-        return this.times( POWER.getDerivative( variable ).times( ARGUMENT.log() ).plus( POWER.times( ARGUMENT.getDerivative( variable ) ).over( ARGUMENT ) ) );
+    @Override
+    public final DifferentiableOperation getDerivative( final DifferentiableVariable variable ) {
+        return this.times(power.getDerivative( variable ).times(argument.log() ).plus(power.times(argument.getDerivative( variable ) ).over(argument ) ) );
     }
     
     
     /** Test whether this operation is equivalent to the specified operation when the two operations are different instances.*/
+    @Override
     protected boolean isEquivalentTo( final DifferentiableOperation operation ) {
-        return ARGUMENT.isEqualTo( ((DifferentiablePower)operation).ARGUMENT ) && POWER == ((DifferentiablePower)operation).POWER;
+        return argument.isEqualTo(((DifferentiablePower)operation).argument ) && power == ((DifferentiablePower)operation).power;
     }
     
     
     /** get the string representation */
+    @Override
     public String toString() {
         final int precedence = getPrecedence();
-        return ARGUMENT.toString( precedence ) + " ^ " + POWER.toString( precedence, true );
+        return argument.toString( precedence ) + " ^ " + power.toString( precedence, true );
     }
 }
 
@@ -1724,20 +1833,22 @@ class DifferentiableSquareRoot extends DifferentiableConstantPower {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
-        return new DifferentiableSquareRoot( ARGUMENT.copySubstitutingWithCache( substitutions ) );
+        return new DifferentiableSquareRoot( argument.copySubstitutingWithCache( substitutions ) );
     }
     
     
     /** generate the operation */
-    static public DifferentiableOperation sqrt( final DifferentiableOperation argument ) {
+    public static DifferentiableOperation sqrt( final DifferentiableOperation argument ) {
         return new DifferentiableSquareRoot( argument );
     }
     
     
     /** get the string representation */
+    @Override
     public String toString() {
-        return "sqrt(" + ARGUMENT + ")";
+        return "sqrt(" + argument + ")";
     }
 }
 
@@ -1756,29 +1867,33 @@ class DifferentiableExponential extends DifferentiableUnaryOperation {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
-        return new DifferentiableExponential( ARGUMENT.copySubstitutingWithCache( substitutions ) );
+        return new DifferentiableExponential( argument.copySubstitutingWithCache( substitutions ) );
     }
     
     
     /** generate the operation */
-    static public DifferentiableOperation exp( final DifferentiableOperation argument ) {
+    public static DifferentiableOperation exp( final DifferentiableOperation argument ) {
         return new DifferentiableExponential( argument );
     }
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
+    @Override
     public double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
-        return Math.exp( ARGUMENT.evaluateWithCache( valueMap, cache ) );
+        return Math.exp( argument.evaluateWithCache( valueMap, cache ) );
     }
     
     
     /** Get the label for the operation */
-    final public String getLabel() { return "exp"; }
+    @Override
+    public final String getLabel() { return "exp"; }
     
     
     /** Get the derivative for just this operation without regard for the chain rule */
-    final public DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
+    @Override
+    public final DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
         return this;
     }
 }
@@ -1798,32 +1913,33 @@ class DifferentiableLogarithm extends DifferentiableUnaryOperation {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
+    @Override
     protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions ) {
-        return new DifferentiableLogarithm( ARGUMENT.copySubstitutingWithCache( substitutions ) );
+        return new DifferentiableLogarithm( argument.copySubstitutingWithCache( substitutions ) );
     }
     
     
     /** generate the operation */
-    static public DifferentiableOperation log( final DifferentiableOperation argument ) {
+    public static DifferentiableOperation log( final DifferentiableOperation argument ) {
         return new DifferentiableLogarithm( argument );
     }
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
+    @Override
     public double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache ) {
-        return Math.log( ARGUMENT.evaluateWithCache( valueMap, cache ) );
+        return Math.log( argument.evaluateWithCache( valueMap, cache ) );
     }
     
     
     /** Get the label for the operation */
-    final public String getLabel() { return "ln"; }
+    @Override
+    public final String getLabel() { return "ln"; }
     
     
     /** Get the derivative for just this operation without regard for the chain rule */
-    final public DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
-        return ARGUMENT.reciprocal();
+    @Override
+    public final DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable ) {
+        return argument.reciprocal();
     }
 }
-
-
-

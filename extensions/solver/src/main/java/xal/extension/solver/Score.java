@@ -9,8 +9,6 @@
  */
 package xal.extension.solver;
 
-import java.util.*;
-
 /**
  * Score is a collection of objectives with scores mapped to those objectives.
  *
@@ -18,11 +16,11 @@ import java.util.*;
  */
 public class Score {
 	/** Description of the Field */
-	protected final Objective _objective;
+	protected final Objective objective;
 	/** Description of the Field */
-	protected final double _value;
+	protected final double value;
 	/** Description of the Field */
-	protected final double _satisfaction;
+	protected final double satisfaction;
 
 	/**
 	 * Creates a new instance of Score.
@@ -31,9 +29,9 @@ public class Score {
 	 * @param aValue       The value given to the objective.
 	 */
 	public Score( Objective anObjective, double aValue ) {
-		_objective = anObjective;
-		_value = aValue;
-		_satisfaction = _objective.satisfaction( _value );
+		objective = anObjective;
+		value = aValue;
+		satisfaction = objective.satisfaction( value );
 	}
 
 
@@ -43,7 +41,7 @@ public class Score {
 	 * @return   The satisfaction as a double.
 	 */
 	public double getSatisfaction() {
-		return _satisfaction;
+		return satisfaction;
 	}
 
 
@@ -53,7 +51,7 @@ public class Score {
 	 * @return   The objective to be scored.
 	 */
 	public Objective getObjective() {
-		return _objective;
+		return objective;
 	}
 
 
@@ -63,7 +61,7 @@ public class Score {
 	 * @return   The value
 	 */
 	public double getValue() {
-		return _value;
+		return value;
 	}
 
 
@@ -72,11 +70,12 @@ public class Score {
 	 *
 	 * @return   The string representation of a score.
 	 */
+        @Override
 	public String toString() {
-		StringBuffer buffer = new StringBuffer();
-		buffer.append( "Objective: " + _objective.toString() + ", " );
-		buffer.append( "Value: " + _value + ", " );
-		buffer.append( "Satisfaction: " + _satisfaction );
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("Objective: ").append(objective.toString()).append(", ");
+		buffer.append("Value: ").append(value).append(", ");
+		buffer.append("Satisfaction: ").append(satisfaction);
 
 		return buffer.toString();
 	}

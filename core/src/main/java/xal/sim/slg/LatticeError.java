@@ -30,10 +30,12 @@ public class LatticeError extends java.lang.Exception {
         message+=": "+msg;
     }
     
+    @Override
     public String toString() {
         return message;
     }
     
+    @Override
     public String getMessage() {
         return toString();
     }

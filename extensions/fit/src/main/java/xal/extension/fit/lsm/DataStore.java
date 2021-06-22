@@ -9,9 +9,9 @@ import java.util.*;
  */
 public class DataStore {
 
-	private int n_args = 0;
-	private Vector<double[]> recordV = new Vector<double[]>();
-	private double[] x_tmp_arr = new double[1];
+	private int nArgs = 0;
+	private Vector<double[]> recordV = new Vector<>();
+	private double[] xTmpArr = new double[1];
 
 
 	/**
@@ -36,11 +36,11 @@ public class DataStore {
 	 *  Constructor for the DataStore object with initial data
 	 *
 	 *@param  y      The y-values array
-	 *@param  y_err  The y-errors values array
+	 *@param  yErr  The y-errors values array
 	 *@param  x      The x-variables two-dimensional array
 	 */
-	public DataStore(double[] y, double[] y_err, double[][] x) {
-		init(y, y_err, x);
+	public DataStore(double[] y, double[] yErr, double[][] x) {
+		init(y, yErr, x);
 	}
 
 
@@ -49,20 +49,20 @@ public class DataStore {
 	 *
 	 *@param  y      The y-values array
 	 *@param  x      The x-variables two-dimensional array
-	 *@param  y_err  Description of the Parameter
+	 *@param  yErr  Description of the Parameter
 	 */
-	private void init(double[] y, double[] y_err, double[][] x) {
-		n_args = x[0].length;
+	private void init(double[] y, double[] yErr, double[][] x) {
+		nArgs = x[0].length;
 		double[] arr = null;
 		int nd = y.length;
 		for (int i = 0; i < nd; i++) {
-			arr = new double[n_args + 2];
+			arr = new double[nArgs + 2];
 			arr[0] = y[i];
 			arr[1] = 0.;
-			if (y_err != null) {
-				arr[1] = Math.abs(y_err[i]);
+			if (yErr != null) {
+				arr[1] = Math.abs(yErr[i]);
 			}
-			for (int j = 0; j < n_args; j++) {
+			for (int j = 0; j < nArgs; j++) {
 				arr[j + 2] = x[i][j];
 			}
 			recordV.add( arr );
@@ -86,7 +86,7 @@ public class DataStore {
 	 *@return    The size of x_arr array
 	 */
 	public int detVarsNumber() {
-		return n_args;
+		return nArgs;
 	}
 
 
@@ -122,8 +122,8 @@ public class DataStore {
 	 */
 	public double[] getArrX(int i) {
 		double[] arr = recordV.get(i);
-		double[] arrX = new double[n_args];
-		System.arraycopy(arr, 2, arrX, 0, n_args);
+		double[] arrX = new double[nArgs];
+		System.arraycopy(arr, 2, arrX, 0, nArgs);
 		return arrX;
 	}
 
@@ -132,7 +132,7 @@ public class DataStore {
 	 *  Removes all records
 	 */
 	public void clear() {
-		n_args = 0;
+		nArgs = 0;
 		recordV.clear();
 	}
 
@@ -155,8 +155,8 @@ public class DataStore {
 	 *@param  x  The independent x value
 	 */
 	public void addRecord(double y, double x) {
-		x_tmp_arr[0] = x;
-		addRecord(y, 0., x_tmp_arr);
+		xTmpArr[0] = x;
+		addRecord(y, 0., xTmpArr);
 	}
 
 
@@ -164,19 +164,19 @@ public class DataStore {
 	 *  Adds a record to the DataStore object
 	 *
 	 *@param  y      The y-value
-	 *@param  y_err  The y_value error
+	 *@param  yErr  The y_value error
 	 *@param  x      The independent values array
 	 */
-	public void addRecord(double y, double y_err, double[] x) {
-		if (n_args == 0) {
-			n_args = x.length;
+	public void addRecord(double y, double yErr, double[] x) {
+		if (nArgs == 0) {
+			nArgs = x.length;
 		}
 
-		if (n_args == x.length && n_args != 0) {
-			double[] arr = new double[n_args + 2];
+		if (nArgs == x.length && nArgs != 0) {
+			double[] arr = new double[nArgs + 2];
 			arr[0] = y;
-			arr[1] = Math.abs(y_err);
-			for (int j = 0; j < n_args; j++) {
+			arr[1] = Math.abs(yErr);
+			for (int j = 0; j < nArgs; j++) {
 				arr[j + 2] = x[j];
 			}
 			recordV.add( arr );
@@ -188,12 +188,12 @@ public class DataStore {
 	 *  Adds a record to the DataStore object
 	 *
 	 *@param  y      The y-value
-	 *@param  y_err  The y_value error
+	 *@param  yErr  The y_value error
 	 *@param  x      The independent x value
 	 */
-	public void addRecord(double y, double y_err, double x) {
-		x_tmp_arr[0] = x;
-		addRecord(y, y_err, x_tmp_arr);
+	public void addRecord(double y, double yErr, double x) {
+		xTmpArr[0] = x;
+		addRecord(y, yErr, xTmpArr);
 	}
 
 }

@@ -13,7 +13,7 @@ package xal.sim.slg;
  * @author  wdklotz
  */
 public class Quadrupole extends Element {
-    private static final String type="quadrupole";
+    private static final String TYPE = "quadrupole";
     
     /** Creates a new instance of Quadrupole */
     public Quadrupole(double position, double len, String name) {
@@ -39,13 +39,14 @@ public class Quadrupole extends Element {
     /*
      * Getter for the element type property.
      */
+    @Override
     public String getType() {
-        return type;
+        return TYPE;
     }
 
     /**  
      * Implementation of interface xal.tools.data.DataListener:
-     * Instructs the implementor to write its data to the adaptor for external
+     * Instructs the implementer to write its data to the adapter for external
      * storage.
      */
     /*public void write(DataAdaptor adaptor) {
@@ -75,12 +76,13 @@ public class Quadrupole extends Element {
     }*/
     
     /**
-     * When called with a Visitor reference the implementor can either
+     * When called with a Visitor reference the implementer can either
      * reject to be visited (empty method body) or call the Visitor by
      * passing its own object reference.
      *
      *@param v the Visitor which wants to visit this object.
      */
+    @Override
     public void accept(Visitor v) {
         v.visit( this );
     }

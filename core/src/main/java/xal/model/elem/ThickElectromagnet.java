@@ -51,18 +51,20 @@ public abstract class ThickElectromagnet extends ThickElement implements IElectr
      *                            dipole has steering action in y (vertical) plane
      *              ORIENT_NONE - error
      */
+        @Override
    public int getOrientation() {
        return this.enmOrient;
-   };
+   }
 
    /**  
     *  Get the magnetic field strength of the electromagnet
     *
     *  @return     magnetic field (in <b>Tesla/meter</b> for quads, <b>Tesla</b> for dipoles).
     */
+        @Override
    public double getMagField() {
        return this.dblField;
-   };
+   }
 
    /**
     *  Set the dipole bending plane orientation
@@ -71,18 +73,20 @@ public abstract class ThickElectromagnet extends ThickElement implements IElectr
     *
     *  @see    #getOrientation
     */
+        @Override
    public void setOrientation(int enmOrient) {
        this.enmOrient = enmOrient;
-   };
+   }
 
    /**  
     *  Set the magnetic field strength of the electromagnet.
     *
     *  @param  dblField    magnetic field (in <b>Tesla/meter</b> for quads, <b>Tesla</b> for dipoles).
     */
+        @Override
    public void setMagField(double dblField) {
        this.dblField = dblField;
-   };
+   }
 
 	
 	/**

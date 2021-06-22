@@ -13,7 +13,7 @@ package xal.sim.slg;
  * @author  wdklotz
  */
 public class VSteerer extends ThinElement {
-    private static final String type="vsteerer";
+    private static final String TYPE = "vsteerer";
     
     /** Creates a new instance of VSteerer */
     public VSteerer(double position,double len, String name) {
@@ -49,13 +49,14 @@ public class VSteerer extends ThinElement {
     /**
      * Return the element type.
      */
+    @Override
     public String getType() {
-        return type;
+        return TYPE;
     } 
 
     /**  
      * Implementation of interface xal.tools.data.DataListener:
-     * Instructs the implementor to write its data to the adaptor for external
+     * Instructs the implementer to write its data to the adaptor for external
      * storage.
      */
     /*public void write(DataAdaptor adaptor) {
@@ -79,12 +80,13 @@ public class VSteerer extends ThinElement {
     }*/
     
     /**
-     * When called with a Visitor reference the implementor can either
+     * When called with a Visitor reference the implementer can either
      * reject to be visited (empty method body) or call the Visitor by
      * passing its own object reference.
      *
      *@param v the Visitor which wants to visit this object.
      */
+    @Override
     public void accept(Visitor v) {
         v.visit( this );
     }

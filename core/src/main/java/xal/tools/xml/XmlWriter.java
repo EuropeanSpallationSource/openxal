@@ -56,7 +56,7 @@ public class XmlWriter {
 
 
     /** write the XML document to the URL */
-    static public void writeToUrl( final Document document, final URL url ) throws MalformedURLException, IOException {  
+    public static void writeToUrl( final Document document, final URL url ) throws MalformedURLException, IOException {  
 		try {
 			final File file = new File( url.toURI() );
 			writeToFile( document, file );
@@ -68,14 +68,14 @@ public class XmlWriter {
     
         
     /** write the XML document to the URL spec */
-    static public void writeToUrlSpec(Document newDocument, String urlSpec) throws MalformedURLException, IOException {  
+    public static void writeToUrlSpec(Document newDocument, String urlSpec) throws MalformedURLException, IOException {  
         URL url = new URL(urlSpec);
         writeToUrl(newDocument, url);
     }
     
     
     /** write the XML document to the UNIX file path */
-    static public void writeToPath(Document newDocument, String filePath) throws IOException {
+    public static void writeToPath(Document newDocument, String filePath) throws IOException {
         Writer fileWriter = new FileWriter(filePath);
         writeToWriter(newDocument, fileWriter);
     }
@@ -86,7 +86,7 @@ public class XmlWriter {
 	 * @param document the document to write
 	 * @param file the file to be written
 	 */
-    static public void writeToFile( final Document document, final File file ) throws IOException {
+    public static void writeToFile( final Document document, final File file ) throws IOException {
         Writer fileWriter = new FileWriter( file );
         writeToWriter( document, fileWriter );
         fileWriter.flush();
@@ -95,7 +95,7 @@ public class XmlWriter {
     
         
     /** return a string representation of the XML document */
-    static public String writeToString(Document newDocument) {
+    public static String writeToString(Document newDocument) {
         Writer stringWriter = new StringWriter();
         writeToWriter( newDocument, stringWriter );
         return stringWriter.toString();
@@ -103,7 +103,7 @@ public class XmlWriter {
     
    
     /** write the XML document to the specified writer */
-    static public void writeToWriter(Document newDocument, Writer aWriter) {
+    public static void writeToWriter(Document newDocument, Writer aWriter) {
         XmlWriter xmlWriter = new XmlWriter( newDocument, aWriter );
         xmlWriter.write();
     }
@@ -115,7 +115,7 @@ public class XmlWriter {
             DocumentWriter docWriter = new DocumentWriter();
             docWriter.write();
         }
-        catch (java.io.IOException exception) {
+        catch (IOException exception) {
 			Logger.getLogger("global").log( Level.SEVERE, "I/O Error writing XML.", exception );
             System.err.println(exception);
             exception.printStackTrace();
@@ -145,7 +145,7 @@ public class XmlWriter {
         /** get the children nodes associated with the rootNode */
         protected void readChildren() {
             NodeList nodeList = rootNode.getChildNodes();
-            childNodes = new ArrayList<Node>();
+            childNodes = new ArrayList<>();
             
             int numChildren = nodeList.getLength();
             for ( int index = 0 ; index < numChildren ; index++ ) {
@@ -159,7 +159,7 @@ public class XmlWriter {
         
         
         /** write a node */
-        public void write() throws java.io.IOException {
+        public void write() throws IOException {
             writeOpenTag();
             writeChildren();
             writeCloseTag();
@@ -167,7 +167,7 @@ public class XmlWriter {
 
         
         /** write an opening XML tag (e.g. &lt;img src="some.gif"&gt; ) */
-        protected void writeOpenTag() throws java.io.IOException {
+        protected void writeOpenTag() throws IOException {
             String name = rootNode.getNodeName();       
             if ( name == null || !(rootNode instanceof Element) )  return;
             writer.write(indent + "<" + name);
@@ -184,7 +184,7 @@ public class XmlWriter {
         
         
         /** write XML node attributes within the opening tag */
-        protected void writeAttributes() throws java.io.IOException {
+        protected void writeAttributes() throws IOException {
             NamedNodeMap attributeMap = rootNode.getAttributes();
             if ( attributeMap == null )  return;
             int numAttributes = attributeMap.getLength();
@@ -216,7 +216,7 @@ public class XmlWriter {
         
         
         /** write child nodes */
-        protected void writeChildren() throws java.io.IOException {
+        protected void writeChildren() throws IOException {
             for ( final Node nextNode : childNodes ) {
                 if ( !(nextNode instanceof Element) )  continue;
                 Element element = (Element)nextNode;
@@ -229,7 +229,7 @@ public class XmlWriter {
         
         
         /** write the closing XML tag if any (e.g. &lt;/table&gt;) */
-        protected void writeCloseTag() throws java.io.IOException {
+        protected void writeCloseTag() throws IOException {
             // no child nodes => no closing tag
             if ( childNodes.size() == 0 )  return;
 
@@ -276,21 +276,22 @@ public class XmlWriter {
         
         
         /** override write to prepend a document header */
-        public void write() throws java.io.IOException {
+        @Override
+        public void write() throws IOException {
             writeHeader();  // prepend with an XML header
             super.write();
         }
         
         
         /** write a standard XML header */
-        public void writeHeader() throws java.io.IOException {
+        public void writeHeader() throws IOException {
             writer.write("<?xml version = '1.0' encoding = 'UTF-8'?>\n");
             writeDoctype();
             writer.flush();
         }
         
         
-        protected void writeDoctype() throws java.io.IOException {
+        protected void writeDoctype() throws IOException {
             DocumentType docType = document.getDoctype();
             
             if ( docType == null )  return;

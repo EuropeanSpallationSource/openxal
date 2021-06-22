@@ -70,31 +70,31 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
     private static final String TBL_LBL_ENVTRACKERADAPT = "EnvTrackerAdapt";
     
     /** attribute label for maximum step size */
-    private final static String      ATTRTAG_MAXSTEP = "maxstep";
+    private static final String      ATTRTAG_MAXSTEP = "maxstep";
     
     /** attribute label for maximum step size for drift space with pmq , sako 21 jul 06 */
-    private final static String      ATTRTAG_MAXSTEP_DRIFTPMQ = "maxstepdriftpmq";
+    private static final String      ATTRTAG_MAXSTEP_DRIFTPMQ = "maxstepdriftpmq";
     
     /** attribute label for initial step size */
-    private final static String      ATTRTAG_INITSTEP= "initstep";
+    private static final String      ATTRTAG_INITSTEP= "initstep";
     
     /** attribute label for error tolerance */
-    private final static String      ATTRTAG_ERRTOL  = "errortol"; 
+    private static final String      ATTRTAG_ERRTOL  = "errortol"; 
     
     /** attribute label for slack tolerance */
-    private final static String      ATTRTAG_SLACK   = "slack";
+    private static final String      ATTRTAG_SLACK   = "slack";
     
     /** attribute label for residual norm */
-    private final static String      ATTRTAG_NORM    = "norm";
+    private static final String      ATTRTAG_NORM    = "norm";
     
     /** attribute label for maximum iteration count */
-    private final static String      ATTRTAG_MAXITER = "maxiter";
+    private static final String      ATTRTAG_MAXITER = "maxiter";
     
     /** data node label for EnvTrackerAdapt settings */
-    private final static String      NODETAG_ADAPT   = "adapt";
+    private static final String      NODETAG_ADAPT   = "adapt";
     
     /** attribute label for order of accuracy in algorithm */
-    private final static String      ATTRTAG_ORDER   = "order";
+    private static final String      ATTRTAG_ORDER   = "order";
     
     /*
      * Global Constants
@@ -124,7 +124,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
     /** 2nd order accurate integration algorithm */
     public static final int     ACCUR_ORDER2 = 2; 
     
-    /** Range of avaible integration accuracies */
+    /** Range of available integration accuracies */
     public static final int     ACCUR_RANGE  = 3;
     
     
@@ -133,13 +133,13 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
     // IAlgorithm Parameters
         
     /** string type identifier for algorithm */
-    public static final String      s_strTypeId = EnvTrackerAdapt.class.getName();
+    public static final String      TYPE_ID = EnvTrackerAdapt.class.getName();
     
     /** current algorithm version */
-    public static final int         s_intVersion = 2;
+    public static final int         VERSION = 2;
     
     /** probe type recognized by this algorithm */
-    public static final Class<EnvelopeProbe>       s_clsProbeType = EnvelopeProbe.class;
+    public static final Class<EnvelopeProbe>       CLS_PROBE_TYPE = EnvelopeProbe.class;
 
     
     /**
@@ -150,34 +150,34 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
     /** 
      * The current step size. 
      */
-    private double m_dblStepSize;
+    private double dblStepSize;
     
     /** 
      * Maximum distance we may travel before requiring another space charge kick.
      *  If zero than stepping distance is not bound. 
      */
-    private double m_dblMaxStep;
+    private double dblMaxStep;
     
-    /** m_dbleMaxStep for drift field from PMQ */
-    private double m_dblMaxStepDriftPmq;       
+    /** dbleMaxStep for drift field from PMQ */
+    private double dblMaxStepDriftPmq;       
     
     /**
      * Residual error tolerance parameter.  Errors in the the residual between
      * a full step and half step can be no larger than this.
      */
-    private double m_dblErrTol;
+    private double dblErrTol;
     
     /**
      * Step size adjustment slack tolerance.  If adjustments in the step size
      * are less than this percentage, we take special action.
      */
-    private double m_dblSlack;
+    private double dblSlack;
     
     /**
      * The type of Lebesque norm used in the residual calculations.  Since the 
      * residual is a matrix in R7x7 this is a matrix norm.
      */
-    private int m_enmNorm;
+    private int enmNorm;
     
     /**
      * The maximum number of iterations through an element before the algorithm
@@ -185,13 +185,13 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * is assumed that a race condition has occurred.
      * If zero, then there is no maximum iteration count enforced. 
      */
-    private int  m_intMaxIter;
+    private int  intMaxIter;
 	
     /** The order of accuracy used in the integration algorithm */
-    private int m_intOrder;
+    private int intOrder;
 
     /**  total number of steps taken by algorithm */
-    private int m_nDbgSteps;                      
+    private int nDbgSteps;                      
     
     
     
@@ -205,10 +205,10 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      *  Creates a new, uninitialized instance of <code>EnvTrackerAdapt</code> 
      */
     public EnvTrackerAdapt() { 
-        super(s_strTypeId, s_intVersion, s_clsProbeType);
-		m_intMaxIter = 50;
-		m_intOrder = EnvTrackerAdapt.ACCUR_ORDER2;
-		m_nDbgSteps = 0;
+        super(TYPE_ID, VERSION, CLS_PROBE_TYPE);
+		intMaxIter = 50;
+		intOrder = EnvTrackerAdapt.ACCUR_ORDER2;
+		nDbgSteps = 0;
 		
     }
     
@@ -220,16 +220,16 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
     public EnvTrackerAdapt(EnvTrackerAdapt sourceTracker) {
         super(sourceTracker);
         
-        this.m_intMaxIter = sourceTracker.m_intMaxIter;
-        this.m_intOrder = sourceTracker.m_intOrder;
-        this.m_nDbgSteps = sourceTracker.m_nDbgSteps;
+        this.intMaxIter = sourceTracker.intMaxIter;
+        this.intOrder = sourceTracker.intOrder;
+        this.nDbgSteps = sourceTracker.nDbgSteps;
         this.dlbStepSizeInit = sourceTracker.dlbStepSizeInit;
-        this.m_dblStepSize = sourceTracker.m_dblStepSize;
-        this.m_dblMaxStep = sourceTracker.m_dblMaxStep;
-        this.m_dblMaxStepDriftPmq = sourceTracker.m_dblMaxStepDriftPmq;
-        this.m_dblErrTol = sourceTracker.m_dblErrTol;
-        this.m_dblSlack = sourceTracker.m_dblSlack;
-        this.m_enmNorm = sourceTracker.m_enmNorm;
+        this.dblStepSize = sourceTracker.dblStepSize;
+        this.dblMaxStep = sourceTracker.dblMaxStep;
+        this.dblMaxStepDriftPmq = sourceTracker.dblMaxStepDriftPmq;
+        this.dblErrTol = sourceTracker.dblErrTol;
+        this.dblSlack = sourceTracker.dblSlack;
+        this.enmNorm = sourceTracker.enmNorm;
     }
     
     /**
@@ -264,7 +264,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 //	 * Primary Constructor
 //	 */
 //	public EnvTrackerAdapt( final String locationID, final AcceleratorSeq sequence ) {
-//        super( s_strTypeId, s_intVersion, s_clsProbeType, locationID, sequence );
+//        super( TYPE_ID, VERSION, CLS_PROBE_TYPE, locationID, sequence );
 //	}
 //	
 //	
@@ -330,8 +330,9 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * 
      * @param dblStepSize   initial step size in <b>meters</b>
      */
+    @Override
     public void setStepSize( final double dblStepSize ) {
-        m_dblStepSize = dblStepSize;
+        this.dblStepSize = dblStepSize;
     }
         
     /**
@@ -344,7 +345,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * @param dblMaxStep    maximum allowable step size in <b>meters</b>
      */
     public void setMaxStepSize( final double dblMaxStep )   {
-        m_dblMaxStep = dblMaxStep;
+        this.dblMaxStep = dblMaxStep;
     }
     
     /**
@@ -357,22 +358,22 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * @param dblMaxStepDriftPmq    maximum allowable step size in <b>meters</b>
      */
     public void setMaxStepSizeDriftPmq( final double dblMaxStepDriftPmq )   {
-        m_dblMaxStepDriftPmq = dblMaxStepDriftPmq;
+        this.dblMaxStepDriftPmq = dblMaxStepDriftPmq;
     }
     
     
     /**
-     * Sets the maximum allowable number of steps to progate a probe through
+     * Sets the maximum allowable number of steps to propagate a probe through
      * an element.  If the number of steps increases beyond this number a
      * race condition is assumed and an exception is thrown during the 
      * propagation.
      * 
      * If the value is zero then no maximum step count is enforced.
      * 
-     * @param   intMaxIter maximum alllowable single-element step count 
+     * @param   intMaxIter maximum allowable single-element step count 
      */
     public void setMaxIterations(int intMaxIter)  {
-        this.m_intMaxIter = intMaxIter;
+        this.intMaxIter = intMaxIter;
     }
     
     
@@ -384,13 +385,13 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * 
      * The step size is continually adjusted to keep the resulting
      * residual error at or about this given tolerance value.  Thus,
-     * yeild a more accurate solution however they also result in small 
+     * yield a more accurate solution however they also result in small 
      * step sizes.
      *  
      * @param dblErr    acceptable residual error
      */
     public void setErrorTolerance( final double dblErr )   {
-        m_dblErrTol = dblErr;
+        dblErrTol = dblErr;
     }
     
     /**
@@ -405,7 +406,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
         if (intOrder >= ACCUR_RANGE || intOrder <= ACCUR_ERROR)
             return;
             
-        this.m_intOrder = intOrder;
+        this.intOrder = intOrder;
     }
     
     
@@ -421,7 +422,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * @param dblSlack  size of the slack region in <b>meters</b>  
      */
     public void setSlackTolerance( final double dblSlack )   {
-        m_dblSlack = dblSlack;
+        this.dblSlack = dblSlack;
     }
     
     
@@ -434,7 +435,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
         if (enmNorm <0 || enmNorm > 2) 
             return;
         
-        m_enmNorm = enmNorm;
+        this.enmNorm = enmNorm;
     }
     
     
@@ -444,7 +445,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
     
     /**
      * Return the initial step size for this algorithm.  This is the
-     * step size when beginning a propagation.  Note that the atual
+     * step size when beginning a propagation.  Note that the actual
      * step size used afterwards will likely change due to the adaptive
      * nature of the algorithm.
      * 
@@ -461,43 +462,44 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      *   
      * @return  the current step size in <b>meters</b>
      */
+    @Override
     public double getStepSize() {
-        return m_dblStepSize;
+        return dblStepSize;
     }
     
     
     /**
-     * Return the maximum allowable number of steps to progate a probe through
+     * Return the maximum allowable number of steps to propagate a probe through
      * an element.  If the number of steps increases beyond this number a
      * race condition is assumed and an exception is thrown during the 
      * propagation.
      * 
      * If the value is zero then no maximum step count is enforced.
      * 
-     * @return  maximum alllowable step count while propagating thru a single element
+     * @return  maximum allowable step count while propagating thru a single element
      */
     public int  getMaxIterations()  {
-        return this.m_intMaxIter;
+        return this.intMaxIter;
     }
     
     /**
-     * Return the maximum allowable step size.  The step sizing aglorithm
+     * Return the maximum allowable step size.  The step sizing algorithm
      * is bound by this value, or unbounded if zero.
      * 
      * @return  maximum allowable step size in <b>meters</b>
      */
     public double getMaxStepSize()  {
-        return this.m_dblMaxStep;
+        return this.dblMaxStep;
     }
     
     /**
-     * Return the maximum allowable step size.  The step sizing aglorithm
+     * Return the maximum allowable step size.  The step sizing algorithm
      * is bound by this value, or unbounded if zero.
      * 
      * @return  maximum allowable step size in <b>meters</b>
      */
     public double getMaxStepSizeDriftPmq()  {
-        return this.m_dblMaxStepDriftPmq;
+        return this.dblMaxStepDriftPmq;
     }
     
     /**
@@ -509,7 +511,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * @see #setAccuracyOrder 
      */
     public int  getAccuracyOrder()   {
-        return this.m_intOrder;
+        return this.intOrder;
     }
 
     
@@ -521,7 +523,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * @return  tolerable residual error
      */
     public double getErrorTolerance()   {
-        return m_dblErrTol;    
+        return dblErrTol;    
     }
     
     
@@ -532,7 +534,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * @return      size of the slack region in <b>meters</b>
      */
     public double getSlackTolerance()   {
-        return m_dblSlack;
+        return dblSlack;
     }
     
     
@@ -542,7 +544,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * @return  0 for l-inf norm, 1 for l-1 norm, 2 for l2 norm
      */
     public int  getMatrixNorm()       {
-        return m_enmNorm;
+        return enmNorm;
     }
     
     
@@ -663,7 +665,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
                 if (elem instanceof IdealDrift) {
                     System.out.println("IdealDrift, hp = "+hp);
                 }
-                System.out.println("propagate s=" + probe.getPosition() + " h=" + h + " hp=" + hp + " N=" + m_nDbgSteps++);
+                System.out.println("propagate s=" + probe.getPosition() + " h=" + h + " hp=" + hp + " N=" + nDbgSteps++);
             }
 
             if (iMaxCnt!=0 && ++iCurCnt >= iMaxCnt)
@@ -1159,7 +1161,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 
     /**
      * Compute the new step size from the error residual and the current
-     * step size assuming that the stepping algorthim is first-order
+     * step size assuming that the stepping algorithm is first-order
      * accurate.  The new step size is determined from the prescribed
      * error tolerance value recovered from <code>#getErrorTolerance()</code>
      * and the norm of the residual (note that the type of norm used
@@ -1266,7 +1268,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * Perform an internal extrapolation to generate an estimate of the 
      * probe state (correlation matrix) that is one order higher in 
      * accuracy than the algorithm provides.  Although the estimate might
-     * be higer-order accurate this does not guarantee that it is any closer
+     * be higher-order accurate this does not guarantee that it is any closer
      * to the real answer.  And we have no way of enforcing any error
      * tolerance.
      *  

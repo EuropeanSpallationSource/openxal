@@ -28,7 +28,7 @@ public class RfGap extends AcceleratorNode {
      *  Constants
      */
     
-    public static final String      s_strType = "RG";
+    public static final String      TYPE = "RG";
   
 
     static {
@@ -40,7 +40,7 @@ public class RfGap extends AcceleratorNode {
      * Register type for qualification
      */
     private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( RfGap.class, s_strType, "rfgap" );
+		ElementTypeManager.defaultManager().registerTypes( RfGap.class, TYPE, "rfgap" );
     }
     
 
@@ -50,13 +50,14 @@ public class RfGap extends AcceleratorNode {
 
     /** The rf  gap bucket containing the length, ampFactor, phaseFactor and TTF*/
     
-    protected RfGapBucket           m_bucRfGap;           // RfGap parameters
+    protected RfGapBucket           bucRfGap;           // RfGap parameters
     
     /** a flag indicating whether this gap is the first gap in a cavity string */
     private boolean firstGap = false;
     
     /** Override to provide type signature */
-    public String getType()         { return s_strType; };
+    @Override
+    public String getType()         { return TYPE; }
 
 
 	/** Primary Constructor */
@@ -77,17 +78,18 @@ public class RfGap extends AcceleratorNode {
      */
   
     public RfGapBucket getRfGap() { 
-        return m_bucRfGap; 
+        return bucRfGap; 
     }
     
     
     public void setRfGap(RfGapBucket buc) { 
-        m_bucRfGap = buc; 
+        bucRfGap = buc; 
         super.addBucket(buc); 
     }
     
     
     /** Override AcceleratorNode implementation to check for a RfGapBucket */
+    @Override
     public void addBucket(AttributeBucket buc)  {
         if (buc.getClass().equals( RfGapBucket.class )) 
             setRfGap((RfGapBucket)buc);
@@ -161,7 +163,7 @@ public class RfGap extends AcceleratorNode {
 	 * @return this RF gap's amplitude
 	 */
 	public double toGapAmpFromCavityAmp( final double cavityAmp ) {
-		return cavityAmp * m_bucRfGap.getAmpFactor();	
+		return cavityAmp * bucRfGap.getAmpFactor();	
 	}
 	
 	
@@ -171,7 +173,7 @@ public class RfGap extends AcceleratorNode {
 	 * @return this RF gap's phase
 	 */
 	public double toGapPhaseFromCavityPhase( final double cavityPhase ) {
-		return cavityPhase + m_bucRfGap.getPhaseFactor();
+		return cavityPhase + bucRfGap.getPhaseFactor();
 	}
 	
 	
@@ -181,7 +183,7 @@ public class RfGap extends AcceleratorNode {
 	 * @return the E0TL product (kV)
 	 */
 	public double toE0TLFromGapField( final double field ) {
-		return field * m_bucRfGap.getLength() * m_bucRfGap.getTTF();
+		return field * bucRfGap.getLength() * bucRfGap.getTTF();
 	}
 	
     
@@ -199,18 +201,18 @@ public class RfGap extends AcceleratorNode {
      *
      */
     public double getGapLength() {
-        return m_bucRfGap.getLength() ;
+        return bucRfGap.getLength() ;
     }
 
 	
     /** return TTF */
     public double getGapTTF() {
-        return m_bucRfGap.getTTF();
+        return bucRfGap.getTTF();
     }
     
     //JAMES CODE: sets the gap TTF value for the given gap
     public void setGapTTF(double gapTTFval) {
-    	m_bucRfGap.setTTF(gapTTFval);
+    	bucRfGap.setTTF(gapTTFval);
     }
 	
     /** 
@@ -224,7 +226,7 @@ public class RfGap extends AcceleratorNode {
      * @param cavAmp The amplitude  of the first gap (kV/m)
      */
     public void setGapAmp(double cavAmp){ 
-    	//       	ampAvg = cavAmp *  m_bucRfGap.getAmpFactor();
+    	//       	ampAvg = cavAmp *  bucRfGap.getAmpFactor();
     }
 
     /** Set the  RF phase in the gap  (deg) 
@@ -232,7 +234,7 @@ public class RfGap extends AcceleratorNode {
     * @param cavPhase The phase of the first gap (deg)
     */              
     public void setGapPhase(double cavPhase){ 
-//       	phaseAvg = cavPhase + m_bucRfGap.getPhaseFactor();
+//       	phaseAvg = cavPhase + bucRfGap.getPhaseFactor();
     }
  
     
@@ -265,7 +267,7 @@ public class RfGap extends AcceleratorNode {
     */  
     public RealUnivariatePolynomial getTTFFit() {
 
-        double[] arrCoeffs = this.m_bucRfGap.getTCoefficients();
+        double[] arrCoeffs = this.bucRfGap.getTCoefficients();
 
         // Defaults to the RF cavity transit time factor if none is 
         //  defined for this gap.
@@ -319,7 +321,7 @@ public class RfGap extends AcceleratorNode {
      */  
     public RealUnivariatePolynomial getTTFPrimeFit() { 
 
-        double[] arrCoeffs = this.m_bucRfGap.getTpCoefficients();
+        double[] arrCoeffs = this.bucRfGap.getTpCoefficients();
 
         // Defaults to the RF cavity transit time factor if none is 
         //  defined for this gap.
@@ -351,7 +353,7 @@ public class RfGap extends AcceleratorNode {
      */  
     public RealUnivariatePolynomial getSFit() {
 
-        double[] arrCoeffs = this.m_bucRfGap.getSCoefficients();
+        double[] arrCoeffs = this.bucRfGap.getSCoefficients();
 
         // Defaults to the RF cavity transit time factor if none is 
         //  defined for this gap.
@@ -399,7 +401,7 @@ public class RfGap extends AcceleratorNode {
      * @version June 1, 2015
      */  
     public RealUnivariatePolynomial getSPrimeFit() { 
-        double[] arrCoeffs = this.m_bucRfGap.getSpCoefficients();
+        double[] arrCoeffs = this.bucRfGap.getSpCoefficients();
 
         // Defaults to the RF cavity transit time factor derivative if none is 
         //  defined for this gap.
@@ -436,7 +438,7 @@ public class RfGap extends AcceleratorNode {
      * @return the offset of the gap center from the cell center (m) 
      */
     public double getGapOffset() { 
-        return  m_bucRfGap.getGapOffset();
+        return  bucRfGap.getGapOffset();
     }
 
     /** sets the flag indicating whether this is the first gap in a cavity */
@@ -447,7 +449,7 @@ public class RfGap extends AcceleratorNode {
 
     /** returns whether this is the <b>last</b> gap of a cavity string */
     public boolean isEndCell() {
-	    if (m_bucRfGap.getEndCell() == 1)
+	    if (bucRfGap.getEndCell() == 1)
 		    return true;
 	    else
 		    return false;
@@ -469,7 +471,7 @@ public class RfGap extends AcceleratorNode {
         double  phi = this.getGapDfltPhase();
         
         return ETL*Math.cos(phi);
-    };
+    }
     
  
 }

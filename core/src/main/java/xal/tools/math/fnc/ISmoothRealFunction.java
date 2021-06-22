@@ -29,7 +29,7 @@ public interface ISmoothRealFunction extends IRealFunction {
      * 
      * @param dblLoc        the location <i>x</i> at which to evaluate the derivative
      *  
-     * @return              the derivative <i>f</i>'(<i>x</i>) of the funciton <i>f</i>
+     * @return              the derivative <i>f</i>'(<i>x</i>) of the function <i>f</i>
      *
      * @since  Sep 25, 2015   by Christopher K. Allen
      */

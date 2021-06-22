@@ -8,6 +8,9 @@
 
 package xal.tools.math;
 
+import java.io.PrintWriter;
+import java.io.Serializable;
+
 
 
 
@@ -28,7 +31,7 @@ package xal.tools.math;
  *
  * @author  Christopher K. Allen
  */
-public class Interval implements java.io.Serializable {
+public class Interval implements Serializable {
 
     /*
      * Global Constants
@@ -164,7 +167,7 @@ public class Interval implements java.io.Serializable {
      */
     public void setMin(double min)  { 
         dblMin = min; 
-    };
+    }
 
     /**
      *  Set the right end point
@@ -173,7 +176,7 @@ public class Interval implements java.io.Serializable {
      */
     public void setMax(double max)  { 
         dblMax = max; 
-    };
+    }
 
 
     /*
@@ -187,7 +190,7 @@ public class Interval implements java.io.Serializable {
      */
     public double getMin()      { 
         return dblMin; 
-    };
+    }
 
     /**
      *  Get maximum value of interval.
@@ -196,7 +199,7 @@ public class Interval implements java.io.Serializable {
      */
     public double getMax()      { 
         return dblMax; 
-    };
+    }
 
 
 
@@ -209,7 +212,7 @@ public class Interval implements java.io.Serializable {
      */
     public double measure()        { 
         return getMax() - getMin(); 
-    };
+    }
 
     /**
      * Compute the interval midpoint.  This is the
@@ -219,7 +222,7 @@ public class Interval implements java.io.Serializable {
      */
     public double midpoint()       { 
         return (getMax() + getMin())/2.0; 
-    };
+    }
 
 
     /*
@@ -499,7 +502,7 @@ public class Interval implements java.io.Serializable {
      *
      *  @param  os      output stream receiving content dump
      */
-    public void print(java.io.PrintWriter os)   {
+    public void print(PrintWriter os)   {
         os.print(this.toString());
     }
 
@@ -508,7 +511,7 @@ public class Interval implements java.io.Serializable {
      *
      *  @param  os      output stream receiving content dump
      */
-    public void println(java.io.PrintWriter os)   {
+    public void println(PrintWriter os)   {
         os.println(this.toString());
     }
 

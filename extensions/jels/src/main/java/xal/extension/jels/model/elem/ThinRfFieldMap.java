@@ -50,25 +50,25 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
     private double centerPosition = 0;
     private double position = 0;
 
-    private double m_dblAmpFactor;
-    private double m_dblPhaseFactor;
+    private double dblAmpFactor;
+    private double dblPhaseFactor;
 
     /**
      * ETL product of gap
      */
-    private double m_dblETL = 0.0;
+    private double dblETL = 0.0;
 
-    private double m_dblE0 = 0.0;
+    private double dblE0 = 0.0;
 
     /**
      * phase delay of gap w.r.t. the synchronous particle
      */
-    private double m_dblPhase = 0.0;
+    private double dblPhase = 0.0;
 
     /**
      * operating frequency of the gap
      */
-    private double m_dblFreq = 0.0;
+    private double dblFreq = 0.0;
 
     /**
      * flag indicating that this is the leading gap of a cavity
@@ -117,13 +117,13 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
         // Always 0. This is valid only if the energy gain is small enough.
         deltaPhi = 0;
 
-        m_dblETL = fieldmap.getGapDfltE0TL() * 1e6;
-        m_dblFreq = fieldmap.getGapDfltFrequency() * 1e6;
-        m_dblPhase = fieldmap.getGapDfltPhase() * Math.PI / 180.;
-        m_dblE0 = fieldmap.getGapDfltAmp() * 1e6;
+        dblETL = fieldmap.getGapDfltE0TL() * 1e6;
+        dblFreq = fieldmap.getGapDfltFrequency() * 1e6;
+        dblPhase = fieldmap.getGapDfltPhase() * Math.PI / 180.;
+        dblE0 = fieldmap.getGapDfltAmp() * 1e6;
 
-        m_dblAmpFactor = fieldmap.getRfGap().getAmpFactor();
-        m_dblPhaseFactor = fieldmap.getRfGap().getPhaseFactor();
+        dblAmpFactor = fieldmap.getRfGap().getAmpFactor();
+        dblPhaseFactor = fieldmap.getRfGap().getPhaseFactor();
     }
 
     /**
@@ -154,7 +154,7 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
         FieldMapPoint fieldMapPoint = rfFieldmap.getFieldAt(position - startPosition);
 
         fieldMapPoint.setAmplitudeFactorE(getE0() * Math.cos(phiS));
-        fieldMapPoint.setAmplitudeFactorB(2.0 * Math.PI * getFrequency() / (LightSpeed * LightSpeed) * getE0() * Math.sin(phiS));
+        fieldMapPoint.setAmplitudeFactorB(2.0 * Math.PI * getFrequency() / (LIGHT_SPEED * LIGHT_SPEED) * getE0() * Math.sin(phiS));
 
         // Set energy gain and phase
         energyGain = fieldMapPoint.getEz() * dz;
@@ -203,42 +203,42 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
 
     @Override
     public void setETL(double dblETL) {
-        m_dblETL = dblETL;
+        this.dblETL = dblETL;
     }
 
     @Override
     public void setE0(double cavAmp) {
-        m_dblE0 = cavAmp * m_dblAmpFactor;
+        dblE0 = cavAmp * dblAmpFactor;
     }
 
     @Override
     public void setPhase(double cavPhase) {
-        m_dblPhase = cavPhase + m_dblPhaseFactor;
+        dblPhase = cavPhase + dblPhaseFactor;
     }
 
     @Override
     public void setFrequency(double dblFreq) {
-        m_dblFreq = dblFreq;
+        this.dblFreq = dblFreq;
     }
 
     @Override
     public double getETL() {
-        return m_dblETL;
+        return dblETL;
     }
 
     @Override
     public double getPhase() {
-        return m_dblPhase;
+        return dblPhase;
     }
 
     @Override
     public double getFrequency() {
-        return m_dblFreq;
+        return dblFreq;
     }
 
     @Override
     public double getE0() {
-        return m_dblE0;
+        return dblE0;
     }
 
     @Override

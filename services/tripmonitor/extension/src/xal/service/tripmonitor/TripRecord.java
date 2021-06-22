@@ -17,10 +17,10 @@ import xal.ca.Timestamp;
 /** record of a trip */
 public class TripRecord {
 	/** PV which indicates the trip */
-	final protected String PV;
+	protected final String PV;
 	
 	/** the timestamp of the trip */
-	final protected Timestamp TIME_STAMP;
+	protected final Timestamp TIME_STAMP;
 	
 	/** value */
 	final int VALUE;
@@ -41,7 +41,7 @@ public class TripRecord {
 	
 	
 	/** get the trip record from the record map */
-	static public TripRecord getInstanceFromRecordMap( final java.util.HashMap<String, Object> recordMap ) {
+	public static TripRecord getInstanceFromRecordMap( final java.util.HashMap<String, Object> recordMap ) {
 		final String pv = (String)recordMap.get( TripMonitorPortal.PV_KEY );
 		final long time = ((Date)recordMap.get( TripMonitorPortal.TIMESTAMP_KEY )).getTime();
 		
@@ -104,7 +104,7 @@ public class TripRecord {
 	
 	
 	/** get the timestamp based comparator */
-	static public Comparator<TripRecord> timestampComparator() {
+	public static Comparator<TripRecord> timestampComparator() {
 		return new Comparator<TripRecord>() {
 			public int compare( final TripRecord record1, final TripRecord record2 ) {
 				return record1.TIME_STAMP.compareTo( record2.TIME_STAMP );
@@ -118,7 +118,7 @@ public class TripRecord {
 	
 	
 	/** get the PV based comparator */
-	static public Comparator<TripRecord> pvComparator() {
+	public static Comparator<TripRecord> pvComparator() {
 		return new Comparator<TripRecord>() {
 			/** compare first by PV and then by time stamp */
 			public int compare( final TripRecord record1, final TripRecord record2 ) {

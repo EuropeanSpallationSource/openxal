@@ -24,7 +24,7 @@ public class BucketParser implements DataListener {
 
     /** Creates new BucketParser */
     public BucketParser() {
-        bucketTable = new HashMap<String,AttributeBucket>();
+        bucketTable = new HashMap<>();
     }
     
     
@@ -48,10 +48,12 @@ public class BucketParser implements DataListener {
     // DataListener interface ---------------
     
     /** DataListener interface support */
+    @Override
     public String dataLabel() { return "attributes"; }
         
     
     /** DataListener interface support */
+    @Override
     public void update(DataAdaptor adaptor) throws NumberFormatException {
         final List<DataAdaptor> bucketAdaptors = adaptor.childAdaptors();
         for ( final DataAdaptor bucketAdaptor : bucketAdaptors ) {
@@ -72,6 +74,7 @@ public class BucketParser implements DataListener {
     
     
     /** DataListener interface support */
+    @Override
     public void write(DataAdaptor adaptor) {
         adaptor.writeNodes( bucketTable.values() );
     }

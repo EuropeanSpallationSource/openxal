@@ -6,13 +6,10 @@
 
 package xal.extension.application;
 
-import java.net.URL;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.*;
-import javax.swing.text.html.HTMLEditorKit;
 import java.awt.Component;
-import java.awt.Dimension;
 
 
 /**
@@ -24,27 +21,27 @@ import java.awt.Dimension;
  */
 class AboutBox {
 	/** the about box instance */
-    final static private AboutBox _aboutBox;
+    private static final AboutBox aboutBox;
 
 	/** resource for the About box information */
-	final static public String ABOUT_INFO_RESOURCE = "About.properties";
+	public static final String ABOUT_INFO_RESOURCE = "About.properties";
 	
 	/** information to display */
-	final protected String _message;
+	protected final String message;
 	
 	/** dialog title */
-	final protected String _title;
+	protected final String title;
     
 	
     static {
-		_aboutBox = new AboutBox();
+		aboutBox = new AboutBox();
     }
     
     
     /** Creates a new instance of AboutBox */
     public AboutBox() {
-        _title = "About " + Application.getAdaptor().applicationName();
-        _message = generateMessage();
+        title = "About " + Application.getAdaptor().applicationName();
+        message = generateMessage();
     }
     
     
@@ -53,7 +50,7 @@ class AboutBox {
      * @return true if the about box exists and false otherwise
      */
     static boolean isAvailable() {
-        return _aboutBox != null;
+        return aboutBox != null;
     }
     
     
@@ -64,7 +61,7 @@ class AboutBox {
     private String generateMessage() {
         final Map<String,String> appInfo = loadApplicationInfo();
         
-        StringBuffer message = new StringBuffer( "<html>" );
+        StringBuilder message = new StringBuilder( "<html>" );
         message.append( "<head>" );
         message.append( "<style type=\"text/css\">" );
         message.append( "P.title {text-align: center; font-size: large;}" );
@@ -78,20 +75,20 @@ class AboutBox {
         message.append( "<body class=normal>" );
         
         String appName = getValue( "name", appInfo );
-        message.append( "<P class=title>" + appName + "</P>" );
+        message.append("<P class=title>").append(appName).append("</P>");
         
         String version = getValue( "version", appInfo );
-        message.append( "<P class=version> <b>Version:</b> " + version + "</P>" );
+        message.append("<P class=version> <b>Version:</b> ").append(version).append("</P>");
         
         String description = getValue( "description", appInfo );
-        message.append( "<dl><dt><b>Description:</b></dt><dd>" + description + "</dd></dl>" );
+        message.append("<dl><dt><b>Description:</b></dt><dd>").append(description).append("</dd></dl>");
         
         String authorList = getValue( "authors", appInfo );
         String[] authors = Util.getTokens( authorList, "," );
         message.append( "<p> <b>Authors:</b>" );
         for ( int index = 0 ; index < authors.length ; index++ ) {
             String author = authors[index];
-            message.append( "<li class=author>" + author + "</li>" );
+            message.append("<li class=author>").append(author).append("</li>");
         }
         message.append( "</p>");
         
@@ -99,10 +96,10 @@ class AboutBox {
         message.append( "<tr><td class=footer> <hr> </td></tr>" );
         
         String organization = getValue( "organization", appInfo );
-        message.append( "<tr><td class=footer>" + organization + "</td></tr>" );
+        message.append("<tr><td class=footer>").append(organization).append("</td></tr>");
         
         String date = getValue( "date", appInfo );
-        message.append( "<tr><td class=footer>" + date + "</td></tr>" );
+        message.append("<tr><td class=footer>").append(date).append("</td></tr>");
         
         message.append( "</table> </P>" );
         
@@ -148,7 +145,7 @@ class AboutBox {
             System.err.println( message );
             
             // substitute with default information
-            infoMap = new HashMap<String,String>();
+            infoMap = new HashMap<>();
             infoMap.put( "name", Application.getAdaptor().getClass().getName() );
         }
         
@@ -161,7 +158,7 @@ class AboutBox {
      * @param component The component near which the about box should be displayed
      */
     protected void displayNear( final Component component ) {
-		JOptionPane.showMessageDialog( component, _message, _title, JOptionPane.INFORMATION_MESSAGE );
+		JOptionPane.showMessageDialog(component, message, title, JOptionPane.INFORMATION_MESSAGE );
     }
     
     
@@ -170,7 +167,7 @@ class AboutBox {
      * @param component The component near which the about box should be displayed
      */
     protected void displayInternalNear( final Component component ) {
-		JOptionPane.showInternalMessageDialog( component, _message, _title, JOptionPane.INFORMATION_MESSAGE );
+		JOptionPane.showInternalMessageDialog(component, message, title, JOptionPane.INFORMATION_MESSAGE );
     }
     
     
@@ -178,8 +175,8 @@ class AboutBox {
      * Show the about box near the specified component.
      * @param component The component near which the about box should be displayed
      */
-    static public void showNear( final Component component ) {
-		_aboutBox.displayNear( component );
+    public static void showNear( final Component component ) {
+		aboutBox.displayNear( component );
     }
     
     
@@ -187,7 +184,7 @@ class AboutBox {
 	 * Show an internal about box near the specified component.
      * @param component The component near which the about box should be displayed
      */
-    static public void showInternalNear( final Component component ) {
-		_aboutBox.displayInternalNear( component );
+    public static void showInternalNear( final Component component ) {
+		aboutBox.displayInternalNear( component );
     }
 }

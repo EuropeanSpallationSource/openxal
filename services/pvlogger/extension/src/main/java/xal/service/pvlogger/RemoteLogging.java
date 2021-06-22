@@ -14,8 +14,8 @@ import xal.extension.service.OneWay;
 
 /** Interface for communicating with a remote PV logger */
 public interface RemoteLogging {
-	final static public String CHANNEL_SIGNAL = "SIGNAL";
-	final static public String CHANNEL_CONNECTED = "CONNECTED";
+	public static final String CHANNEL_SIGNAL = "SIGNAL";
+	public static final String CHANNEL_CONNECTED = "CONNECTED";
 	
 	
 	/**

@@ -74,7 +74,7 @@ public interface IServerChannel {
 	void setUpperWarningLimit( final Number upperLimit );
 	
 	/** 
-	 * Set wheather the value of this channel can be changed by the clients.
+	 * Set whether the value of this channel can be changed by the clients.
 	 * @param settable true if it can be changed
 	 */
 	void setSettable( final boolean settable );

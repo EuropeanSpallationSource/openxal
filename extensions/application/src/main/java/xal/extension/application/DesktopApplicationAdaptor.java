@@ -8,14 +8,12 @@
 
 package xal.extension.application;
 
-import xal.tools.apputils.files.*;
 
-import java.util.logging.*;
 import java.net.*;
 
 
 /**
- * DesktopApplicationAdaptor is the abstract superclass of the custom applicaton adaptors each of which acts as a 
+ * DesktopApplicationAdaptor is the abstract superclass of the custom application adaptors each of which acts as a 
  * delegate for its corresponding desktop application.  It contains hooks for handling application events.  It also provides 
  * application wide information about the application.
  *
@@ -26,6 +24,7 @@ abstract public class DesktopApplicationAdaptor extends AbstractApplicationAdapt
 	 * Launch the application with the specified document URLs.
 	 * @param urls The document URLs to open upon launching the application.
 	 */
+        @Override
 	void launchApplication( final URL[] urls ) {
 		DesktopApplication.launch( this, urls );
 	}
@@ -61,7 +60,8 @@ abstract public class DesktopApplicationAdaptor extends AbstractApplicationAdapt
 	 * Generate a new empty document.
      * @return an instance of the custom subclass of XalAbstractDocument
      */
-    final public XalAbstractDocument generateEmptyDocument( final String type ) {
+        @Override
+    public final XalAbstractDocument generateEmptyDocument( final String type ) {
 		return newEmptyDocument( type );
 	}
     
@@ -70,6 +70,7 @@ abstract public class DesktopApplicationAdaptor extends AbstractApplicationAdapt
 	 * Generate a document from the specified URL.
      * @return An instance of the custom subclass of XalDocument
      */
+        @Override
     final XalAbstractDocument generateDocument( final URL url ) {
 		return newDocument( url );
 	}
@@ -78,7 +79,7 @@ abstract public class DesktopApplicationAdaptor extends AbstractApplicationAdapt
     /**
 	 * Override this method to show your application's preference panel.  The preference panel may optionally be 
 	 * document specific or application wide depending on the application's specific implementation.
-     * The default implementaion displays a warning dialog box that now preference panel exists.
+     * The default implementation displays a warning dialog box that now preference panel exists.
      * @param document The document whose preferences are being changed.  Subclasses may ignore.
      */
     public void editPreferences( final XalInternalDocument document ) {

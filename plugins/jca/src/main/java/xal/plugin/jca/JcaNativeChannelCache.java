@@ -17,10 +17,10 @@ import gov.aps.jca.Context;
 /** Cache JCA native channels for reuse among several XAL channels.  JCA won't allow us to create more than one channel for the same PV signal. */
 class JcaNativeChannelCache {
 	/** JCA System */
-	final protected JcaSystem JCA_SYSTEM;
+	protected final JcaSystem JCA_SYSTEM;
 	
 	/** map of native channel's keyed by PV signal name */
-	final protected Map<String,Channel> CHANNEL_MAP;
+	protected final Map<String,Channel> CHANNEL_MAP;
 	
 	
 	/** Constructor */

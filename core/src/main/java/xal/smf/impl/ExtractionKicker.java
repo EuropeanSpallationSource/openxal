@@ -16,7 +16,7 @@ import xal.smf.impl.qualify.*;
 /** the extraction kicker represents a pulsed magnet for extracting the beam vertically from the ring */
 public class ExtractionKicker extends Dipole {
 	/** node type */
-    public static final String s_strType   = "EKick";
+    public static final String TYPE   = "EKick";
     
     /** voltage readback handle */
     public static final String VOLTAGE_RB_HANDLE = "voltageRB";
@@ -47,18 +47,20 @@ public class ExtractionKicker extends Dipole {
     
     /** Register type for qualification */
     private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( ExtractionKicker.class, s_strType, "kicker", "vertkicker", "extractionkicker" );
+		ElementTypeManager.defaultManager().registerTypes( ExtractionKicker.class, TYPE, "kicker", "vertkicker", "extractionkicker" );
     }
 	
 	
     /** Override to provide type signature */
-    public String getType()   { return s_strType; };
+    @Override
+    public String getType()   { return TYPE; }
 	
     
     /**
 	 * Get the orientation of the magnet as defined by MagnetType.  The orientation of all vertical correctors is VERTICAL.
      * @return VERTICAL
      */
+    @Override
     public int getOrientation() {
         return VERTICAL;
     }
@@ -68,6 +70,7 @@ public class ExtractionKicker extends Dipole {
 	 * Determine whether this magnet is a corrector.
      * @return false     
 	 */
+    @Override
     public boolean isCorrector() {
         return false;
     }

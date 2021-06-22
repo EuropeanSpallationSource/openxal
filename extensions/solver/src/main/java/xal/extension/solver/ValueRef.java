@@ -9,8 +9,6 @@
  */
 package xal.extension.solver;
 
-import java.util.*;
-
 /**
  * ValueRef class is a reference to the current value for a single variable in the current
  * trial point. Value reference provides an alternative way for models to evaluate the trial
@@ -22,7 +20,7 @@ import java.util.*;
  */
 public class ValueRef {
 	/** the current value */
-	protected double _value;
+	protected double value;
 
 
 	/**
@@ -31,7 +29,7 @@ public class ValueRef {
 	 * @param value  The new value
 	 */
 	protected void setValue( final double value ) {
-		_value = value;
+		this.value = value;
 	}
 
 
@@ -41,7 +39,7 @@ public class ValueRef {
 	 * @return   the current value
 	 */
 	public double getValue() {
-		return _value;
+		return value;
 	}
 }
 

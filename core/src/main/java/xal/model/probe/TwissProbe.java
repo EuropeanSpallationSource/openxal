@@ -55,7 +55,7 @@ public class TwissProbe extends BunchProbe<TwissProbeState> {
         this.setResponseMatrix(PhaseMatrix.identity());
         this.setBetatronPhase(R3.zero());
         this.setTwiss(new Twiss3D());
-	};
+	}
 
 	/**
 	 * Copy constructor - clones the argument
@@ -70,7 +70,7 @@ public class TwissProbe extends BunchProbe<TwissProbeState> {
         this.setResponseMatrix(new PhaseMatrix( prbParent.getResponseMatrix() ));
         this.setBetatronPhase(new R3(prbParent.getBetatronPhase()));
         this.setTwiss(new Twiss3D( prbParent.getTwiss() ));
-	};
+	}
     
     /**
      * Initializing constructor - initialize from data adaptor
@@ -296,7 +296,7 @@ public class TwissProbe extends BunchProbe<TwissProbeState> {
 	 */
     @Override
 	public Trajectory<TwissProbeState> createTrajectory() {
-		return new Trajectory<TwissProbeState>(TwissProbeState.class);
+		return new Trajectory<>(TwissProbeState.class);
 	}
 
 //	/**

@@ -7,11 +7,9 @@
 package xal.ca.correlator;
 
 import xal.tools.correlator.*;
-import xal.tools.messaging.MessageCenter;
 import xal.ca.*;
 
 import java.util.*;
-import java.text.DateFormat;
 
 /**
  * ChannelCorrelator is a subclass of the Correlator specifically for correlating
@@ -52,6 +50,7 @@ public class ChannelCorrelator extends Correlator<Channel,ChannelTimeRecord,Chan
      * @param sourceName The name to be associated with the source.
      * @param recordFilter The filter to apply to the source's records.
      */
+    @Override
     protected ChannelAgent newSourceAgent( final Channel channel, final String sourceName, final RecordFilter<ChannelTimeRecord> recordFilter ) {
         return new ChannelAgent( localCenter, channel, sourceName, recordFilter, correlationTester );
     }
@@ -84,11 +83,11 @@ public class ChannelCorrelator extends Correlator<Channel,ChannelTimeRecord,Chan
     
     /** 
      * Get the names of channels that are not being monitored due to connection 
-     * or monitor failure or simply not monitoried.
+     * or monitor failure or simply not monitored.
      * @return The collection of names of channels that are not active.
      */
     synchronized public Collection<String> inactiveChannelsByName() {
-        final Collection<String> failedChannelNames = new HashSet<String>();
+        final Collection<String> failedChannelNames = new HashSet<>();
         final Collection<ChannelAgent> allSources = getSourceAgents();
         
 		for ( final ChannelAgent channelAgent : allSources ) {
@@ -117,7 +116,7 @@ public class ChannelCorrelator extends Correlator<Channel,ChannelTimeRecord,Chan
      * @param channelId The PV name to monitor.
      * @param recordFilter The filter to apply to the channel's records.
      */
-    final public void addChannel( final String channelId, final RecordFilter<ChannelTimeRecord> recordFilter ) {
+    public final void addChannel( final String channelId, final RecordFilter<ChannelTimeRecord> recordFilter ) {
         if ( hasSource(channelId) )  return;
         
         Channel channel = ChannelFactory.defaultFactory().getChannel(channelId);
@@ -130,7 +129,7 @@ public class ChannelCorrelator extends Correlator<Channel,ChannelTimeRecord,Chan
      * @param channel The channel to monitor for correlations.
      */
 	@SuppressWarnings( "unchecked" )	// must cast null to call the correct overloaded method
-    final public void addChannel( final Channel channel ) {
+    public final void addChannel( final Channel channel ) {
         addChannel( channel, (RecordFilter<ChannelTimeRecord>)null );
     }
     
@@ -142,7 +141,7 @@ public class ChannelCorrelator extends Correlator<Channel,ChannelTimeRecord,Chan
      * @param channel The channel to monitor for correlations.
      * @param recordFilter The filter to apply to the channel's records.
      */
-    final public void addChannel( final Channel channel, final RecordFilter<ChannelTimeRecord> recordFilter ) {
+    public final void addChannel( final Channel channel, final RecordFilter<ChannelTimeRecord> recordFilter ) {
         String channelId = channel.getId();
         addChannel( channel, channelId, recordFilter );
     }
@@ -155,7 +154,7 @@ public class ChannelCorrelator extends Correlator<Channel,ChannelTimeRecord,Chan
      * @param channel The channel to monitor for correlations.
      * @param channelId A unique identifier of the channel.
      */
-    final public void addChannel( final Channel channel, final String channelId ) {
+    public final void addChannel( final Channel channel, final String channelId ) {
         addChannel( channel, channelId, null );
     }
     
@@ -167,7 +166,7 @@ public class ChannelCorrelator extends Correlator<Channel,ChannelTimeRecord,Chan
 	 * @param channelId ID to associate with the channel.
      * @param recordFilter The filter to apply to the channel's records.
      */
-    synchronized final public void addChannel( final Channel channel, final String channelId, final RecordFilter<ChannelTimeRecord> recordFilter ) {
+    synchronized public final void addChannel( final Channel channel, final String channelId, final RecordFilter<ChannelTimeRecord> recordFilter ) {
         addSource( channel, channelId, recordFilter );
     }
     

@@ -12,7 +12,7 @@ import xal.ca.ChannelFactory;
  * This is a container to be used in handling Drift Tube Linacs
  * These devices have RfGaps in them, which are controlled by a single
  * RfCavity. That is, the RfCavity contains the hooks to the klystron
- * signals, which controll all of the RfGaps together.
+ * signals, which control all of the RfGaps together.
  * As the DTLTank is also a sequence, it is possible for it to contain
  * other types of nodes, such as quads and BPMs.
  * 
@@ -21,7 +21,7 @@ import xal.ca.ChannelFactory;
 
 public class DTLTank extends RfCavity {
 	/** standard type for instances of this class */
-    public static final String    s_strType = "DTLTank";
+    public static final String    TYPE = "DTLTank";
 
 
 	// static initialization
@@ -34,7 +34,7 @@ public class DTLTank extends RfCavity {
      * Register type for qualification
      */
     private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( DTLTank.class, s_strType );
+		ElementTypeManager.defaultManager().registerTypes( DTLTank.class, TYPE );
     }
 
 
@@ -79,6 +79,7 @@ public class DTLTank extends RfCavity {
     
     
     /** Support the node type */
-    public String getType() { return s_strType; };
+    @Override
+    public String getType() { return TYPE; }
 }
 

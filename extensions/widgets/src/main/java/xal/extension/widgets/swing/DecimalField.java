@@ -7,7 +7,7 @@ import java.text.*;
 /** Convenient preconfigured formatted text field for handling double values */
 public class DecimalField extends JFormattedTextField {
     /** variable required for serializable objects */
-    final private static long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     
     
     /** Empty constructor */

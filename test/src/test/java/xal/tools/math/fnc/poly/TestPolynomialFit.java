@@ -35,16 +35,16 @@ public class TestPolynomialFit {
      */
     
     /** Minimum beta to use */
-    final private static double BETA_MIN = 0.0651533;
+    private static final double BETA_MIN = 0.0651533;
     
     /** maximum beta */
-    final private static double BETA_MAX = 0.07958691;
+    private static final double BETA_MAX = 0.07958691;
 
     /** Polynomial order */
-    final private static int  DEG_POLY = 4;
+    private static final int  DEG_POLY = 4;
     
     /** Number of samples */
-    final private static int CNT_SMPS = 10;
+    private static final int CNT_SMPS = 10;
 
 //    db = (bmax - bmin)/(Ns - 1);
 //    dk = (kmax - kmin)/(Ns - 1);
@@ -58,7 +58,7 @@ public class TestPolynomialFit {
      */
     
     /** Stream for outputting test results */
-    static private PrintStream      OSTR_OUTPUT;
+    private static PrintStream      OSTR_OUTPUT;
     
     
     

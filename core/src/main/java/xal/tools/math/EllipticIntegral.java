@@ -40,19 +40,19 @@ public class EllipticIntegral {
      * @return  the value of RD(x,y,z)
      */
     public static double RD(double x, double y, double z)   {
-        final double ERRTOL   = 0.05;
-        final double TINY     = 1.0e-25;
-        final double BIG      = 4.5e21;
-        final double C1       = (3.0/14.0);
-        final double C2       = (1.0/6.0);
-        final double C3       = (9.0/22.0);
-        final double C4       = (3.0/26.0);
-        final double C5       = (0.25*C3);
-        final double C6       = (1.5*C4);
+        final double errTol   = 0.05;
+        final double tiny     = 1.0e-25;
+        final double big      = 4.5e21;
+        final double c1       = (3.0/14.0);
+        final double c2       = (1.0/6.0);
+        final double c3       = (9.0/22.0);
+        final double c4       = (3.0/26.0);
+        final double c5       = (0.25*c3);
+        final double c6       = (1.5*c4);
         
         double alamb,ave,delx,dely,delz,ea,eb,ec,ed,ee,fac,sqrtx,sqrty,sqrtz,sum,xt,yt,zt;
         
-        if(Math.min(x, y) < 0.0 || Math.min(x+y, z) < TINY || Math.max(Math.max(x,y), z) > BIG)
+        if(Math.min(x, y) < 0.0 || Math.min(x+y, z) < tiny || Math.max(Math.max(x,y), z) > big)
             return 0.0;
         
         xt=x;
@@ -74,16 +74,15 @@ public class EllipticIntegral {
             delx=(ave-xt)/ave;
             dely=(ave-yt)/ave;
             delz=(ave-zt)/ave;
-        } while (Math.max(Math.max(Math.abs(delx),Math.abs(dely)),Math.abs(delz)) > ERRTOL);
+        } while (Math.max(Math.max(Math.abs(delx),Math.abs(dely)),Math.abs(delz)) > errTol);
         
         ea=delx*dely;
         eb=delz*delz;
         ec=ea-eb;
         ed=ea-6.0*eb;
         ee=ed+ec+ec;
-        return 3.0*sum+fac*(1.0+ed*(-C1+C5*ed-C6*delz*ee)
-                +delz*(C2*ee+delz*(-C3*ec+delz*C4*ea)))/(ave*Math.sqrt(ave));
-        
+        return 3.0*sum+fac*(1.0+ed*(-c1+c5*ed-c6*delz*ee)
+                +delz*(c2*ee+delz*(-c3*ec+delz*c4*ea)))/(ave*Math.sqrt(ave));
     }
     
     /**
@@ -260,4 +259,3 @@ public class EllipticIntegral {
         }
     }
 }
-

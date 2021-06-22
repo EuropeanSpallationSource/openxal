@@ -17,16 +17,16 @@ package xal.extension.solver;
  */
 public class Variable {
 	/** the name of the variable */
-	protected final String _name;
+	protected final String name;
 	
 	/** the initial value/guess assigned to the variable */
-	protected double _initialValue;
+	protected double initialValue;
 	
 	/** the lowest value that can be assigned to the variable */
-	protected double _lowerLimit;
+	protected double lowerLimit;
 	
 	/** the highest value that can be assigned to the variable */
-	protected double _upperLimit;
+	protected double upperLimit;
 	
 	
 	/**
@@ -37,10 +37,10 @@ public class Variable {
 	 * @param upperLimit    the highest value that should be assigned to the variable
 	 */
 	public Variable( String name, double initialValue, double lowerLimit, double upperLimit ) {
-		_name = name;
-		_initialValue = initialValue;
-		_lowerLimit = lowerLimit;
-		_upperLimit = upperLimit;
+		this.name = name;
+		this.initialValue = initialValue;
+		this.lowerLimit = lowerLimit;
+		this.upperLimit = upperLimit;
 	}
 	
 	
@@ -50,7 +50,7 @@ public class Variable {
 	 * @return new variable with the same properties as this instance but substituting the specified initial value
 	 */
 	public Variable copyWithInitialValue( final double initialValue ) {
-		return new Variable( _name, initialValue, _lowerLimit, _upperLimit );
+		return new Variable( name, initialValue, lowerLimit, upperLimit );
 	}
 	
 	
@@ -59,7 +59,7 @@ public class Variable {
 	 * @return   this variable's name
 	 */
 	public String getName() {
-		return _name;
+		return name;
 	}
 	
 	
@@ -68,7 +68,7 @@ public class Variable {
 	 * @return   the initial value
 	 */
 	public double getInitialValue() {
-		return _initialValue;
+		return initialValue;
 	}
 	
 	
@@ -77,7 +77,7 @@ public class Variable {
 	 * @return   the lower limit
 	 */
 	public double getLowerLimit() {
-		return _lowerLimit;
+		return lowerLimit;
 	}
 	
 	
@@ -86,19 +86,19 @@ public class Variable {
 	 * @return   the upper limit
 	 */
 	public double getUpperLimit() {
-		return _upperLimit;
+		return upperLimit;
 	}
 	
 	public void setInitialValue(double initialValue) {
-		_initialValue = initialValue;
+		this.initialValue = initialValue;
 	}
 	
 	public void setLowerLimit(double lowerLimit) {
-		_lowerLimit = lowerLimit;
+		this.lowerLimit = lowerLimit;
 	}
 	
 	public void setUpperLimit(double upperLimit) {
-		_upperLimit = upperLimit;
+		this.upperLimit = upperLimit;
 	}
 	
 	
@@ -109,12 +109,13 @@ public class Variable {
 	 * lower limit and an upper limit.
 	 * @return   The string representation of a variable.
 	 */
+        @Override
 	public String toString() {
-		StringBuffer buffer = new StringBuffer();
-		buffer.append( "Variable: " + _name + ", " );
-		buffer.append( "Initial Value: " + _initialValue + ", " );
-		buffer.append( "Lower Limit: " + _lowerLimit + ", " );
-		buffer.append( "Upper Limit: " + _upperLimit );
+		StringBuilder buffer = new StringBuilder();
+		buffer.append("Variable: ").append(name).append(", ");
+		buffer.append("Initial Value: ").append(initialValue).append(", ");
+		buffer.append("Lower Limit: ").append(lowerLimit).append(", ");
+		buffer.append("Upper Limit: ").append(upperLimit);
 
 		return buffer.toString();
 	}

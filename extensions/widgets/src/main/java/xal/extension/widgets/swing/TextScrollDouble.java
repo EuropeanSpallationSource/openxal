@@ -4,12 +4,8 @@ package xal.extension.widgets.swing;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.NumberFormat;
-import java.text.*;
-import java.util.*;
-import java.io.*;
 import xal.extension.widgets.swing.*;
 import javax.swing.*; 
-import javax.swing.event.*; 
 
 /**
  * This is a class for creating a scroll bar and text box combination
@@ -151,6 +147,7 @@ public class TextScrollDouble extends JPanel{
 	scrollBar.setBlockIncrement(increment);
 	
 	textField.addActionListener(new ActionListener(){
+                @Override
 		public void actionPerformed(ActionEvent e) {
 		    if(textField.getDoubleValue() > drangemax ||
 		       textField.getDoubleValue() < drangemin){
@@ -168,6 +165,7 @@ public class TextScrollDouble extends JPanel{
 	    });
 
 	scrollBar.addAdjustmentListener(new AdjustmentListener(){
+                @Override
 		public void adjustmentValueChanged(AdjustmentEvent e){
 		    int ivalue = scrollBar.getValue();
 		    double dvalue = convertScrollBarNumber(ivalue, increment);
@@ -341,8 +339,8 @@ public class TextScrollDouble extends JPanel{
 	drangeDelta = drangemax-drangemin;
 	
 	irangeDelta = scrollrange;
-	iRangeDelta = new Integer(irangeDelta);
-	iPrecision = new Integer(iprecision);
+	iRangeDelta = irangeDelta;
+	iPrecision = iprecision;
 
 	dValue = drangemin + iValue/iRangeDelta.doubleValue()*drangeDelta;
 

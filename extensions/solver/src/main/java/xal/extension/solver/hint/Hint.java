@@ -9,10 +9,6 @@
  */
  
  package xal.extension.solver.hint;
-
- import xal.tools.messaging.MessageCenter;
-
- import java.util.*;
  
  /**
  * Hint is the abstract class used for implementing hints.
@@ -21,12 +17,12 @@
  */
  abstract public class Hint {
 	 /** the Hint's label */
-	 protected String _label;
+	 protected String label;
 	 
 	 
 	 /**Creates a new instance of Hint*/
 	 public Hint( final String aHint ) {
-		 _label = aHint;
+		 label = aHint;
 	 }
 	 
 	 
@@ -35,7 +31,7 @@
 	  * @return this hint's label.
 	  */
 	 public String getLabel() {
-		 return _label;
+		 return label;
 	 }
 	 
 	 

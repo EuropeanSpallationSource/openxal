@@ -14,7 +14,7 @@ import java.util.*;
 /** batch of CA Get requests including value, status, severity and timestamp with convenient batch operations */
 public class BatchGetValueTimeRequest extends AbstractBatchGetRequest<ChannelTimeRecord> {
 	/** request handler */
-	final protected RequestHandler REQUEST_HANDLER;
+	protected final RequestHandler REQUEST_HANDLER;
 	
 	
 	/** 
@@ -35,6 +35,7 @@ public class BatchGetValueTimeRequest extends AbstractBatchGetRequest<ChannelTim
 	
 	
 	/** request to get the data for the channel */
+        @Override
 	protected void requestChannelData( final Channel channel ) throws Exception {
 		channel.getValueTimeCallback( REQUEST_HANDLER, false );
 	}
@@ -42,6 +43,7 @@ public class BatchGetValueTimeRequest extends AbstractBatchGetRequest<ChannelTim
 	
 	/** handle get request events */
 	protected class RequestHandler implements IEventSinkValTime {
+                @Override
 		public void eventValue( final ChannelTimeRecord record, final Channel channel ) {
 			processRecordEvent( channel, record );
 		}

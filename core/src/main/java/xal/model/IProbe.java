@@ -24,13 +24,13 @@ public interface IProbe {
      */
     
     /** Speed of light in vacuum (meters/second) */
-    public final double LightSpeed = 299792458;   
+    public static final double LIGHT_SPEED = 299792458;   
     
     /** The unit electric charge (Farads) */
-    public final double UnitCharge = 1.602e-19;
+    public static final double UNIT_CHARGE = 1.602e-19;
     
     /** Electric permittivity of free space (Farad/meter) */
-    public final double Permittivity = 8.854187817e-12;
+    public static final double PERMITTIVITY = 8.854187817e-12;
   
     
     /*
@@ -411,6 +411,5 @@ public interface IProbe {
      */
     public IArchive getArchive();
 
-    
-    
-};
+   
+}

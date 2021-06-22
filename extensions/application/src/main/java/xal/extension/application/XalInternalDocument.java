@@ -22,21 +22,18 @@ import javax.swing.event.InternalFrameEvent;
  * @author  t6p
  */
 abstract public class XalInternalDocument extends XalAbstractDocument {
-	// public static constants for confirmation dialogs
-	final static public int YES_OPTION = XalAbstractDocument.YES_OPTION;
-	final static public int NO_OPTION = XalAbstractDocument.NO_OPTION;
 	
     /** this document's associated window */
-    protected XalInternalWindow _mainWindow;     // The main window for the document
+    protected XalInternalWindow mainWindow;     // The main window for the document
 	
 	/** this document's window event handler */
-	protected WindowEventHandler _windowEventHandler;
+	protected WindowEventHandler windowEventHandler;
 	
 	/** desktop menubar to display when this document is selected */
-	private JMenuBar _desktopMenubar;
+	private JMenuBar desktopMenubar;
 	    
     /** proxy for dispatching document events */
-    private XalInternalDocumentListener DOCUMENT_LISTENER_PROXY;
+    private XalInternalDocumentListener documentListenerProxy;
     
     
     /** Constructor for new documents */
@@ -46,32 +43,34 @@ abstract public class XalInternalDocument extends XalAbstractDocument {
     
     
     /** Register this document as a source of DocumentListener events. */
+    @Override
     public void registerEvents() {
 		super.registerEvents();
-        DOCUMENT_LISTENER_PROXY = MESSAGE_CENTER.registerSource( this, XalInternalDocumentListener.class );
+        documentListenerProxy = messageCenter.registerSource( this, XalInternalDocumentListener.class );
     }
     
     
     /** Add the listener for events from this document. */
     public void addXalInternalDocumentListener( final XalInternalDocumentListener listener ) {
-        MESSAGE_CENTER.registerTarget( listener, this, XalInternalDocumentListener.class );
+        messageCenter.registerTarget( listener, this, XalInternalDocumentListener.class );
     }
     
     
     /** Remove the listener from event from this document. */
     public void removeXalInternalDocumentListener( final XalInternalDocumentListener listener ) {
-        MESSAGE_CENTER.removeTarget( listener, this, XalInternalDocumentListener.class );
+        messageCenter.removeTarget( listener, this, XalInternalDocumentListener.class );
     }
     
     
     /** Construct the main window and associate it with this document. */
+    @Override
 	void setupMainWindow() {
         makeMainWindow();
 		makeDesktopMenubar();
-		_windowEventHandler = new WindowEventHandler();
-		_mainWindow.addInternalFrameListener( _windowEventHandler );
-        addXalInternalDocumentListener( _mainWindow );
-        _mainWindow.titleChanged( this, getTitle() );
+		windowEventHandler = new WindowEventHandler();
+		mainWindow.addInternalFrameListener(windowEventHandler );
+        addXalInternalDocumentListener(mainWindow );
+        mainWindow.titleChanged( this, getTitle() );
     }
 	
 	
@@ -79,7 +78,7 @@ abstract public class XalInternalDocument extends XalAbstractDocument {
 	private void makeDesktopMenubar() {
 		final Commander commander = makeCommander();
 		customizeDesktopCommands( commander );
-		_desktopMenubar = commander.getMenubar();
+		desktopMenubar = commander.getMenubar();
 	}
     
     
@@ -95,7 +94,7 @@ abstract public class XalInternalDocument extends XalAbstractDocument {
 	 * @return the desktop menubar to display when this document is selected.
 	 */
 	JMenuBar getDesktopMenubar() {
-		return _desktopMenubar;
+		return desktopMenubar;
 	}
     
     
@@ -103,9 +102,10 @@ abstract public class XalInternalDocument extends XalAbstractDocument {
 	 * Set the document title.
      * @param newTitle The new title for this document.
      */
+    @Override
     public void setTitle( final String newTitle ) {
 		super.setTitle( newTitle );
-        if ( DOCUMENT_LISTENER_PROXY != null )  DOCUMENT_LISTENER_PROXY.titleChanged( this, newTitle );
+        if ( documentListenerProxy != null )  documentListenerProxy.titleChanged( this, newTitle );
     }	
     
     
@@ -113,10 +113,11 @@ abstract public class XalInternalDocument extends XalAbstractDocument {
 	 * Set the whether this document has changes.
      * @param changeStatus Status to set whether this document has changes that need saving.
      */
+    @Override
     public void setHasChanges( final boolean changeStatus ) {
         if ( changeStatus != hasChanges() ) {
 			super.setHasChanges( changeStatus );
-            if ( DOCUMENT_LISTENER_PROXY != null )  DOCUMENT_LISTENER_PROXY.hasChangesChanged( this, changeStatus );
+            if ( documentListenerProxy != null )  documentListenerProxy.hasChangesChanged( this, changeStatus );
         }
     }
 	
@@ -134,14 +135,15 @@ abstract public class XalInternalDocument extends XalAbstractDocument {
      * user is given an opportunity to not close the document so they can save 
      * the changes.
      */
+    @Override
     public boolean closeDocument() {
 		if ( warnUserOfUnsavedChangesWhenClosing() && hasChanges() ) {
-			if ( !_mainWindow.userPermitsCloseWithUnsavedChanges() )  return false;
+			if ( !mainWindow.userPermitsCloseWithUnsavedChanges() )  return false;
 		}
 		
-        DOCUMENT_LISTENER_PROXY.documentWillClose( this );
+        documentListenerProxy.documentWillClose( this );
         willClose();
-        DOCUMENT_LISTENER_PROXY.documentHasClosed( this );
+        documentListenerProxy.documentHasClosed( this );
 		
 		freeResources();
 		
@@ -150,14 +152,15 @@ abstract public class XalInternalDocument extends XalAbstractDocument {
 	
 	
 	/** Free document resources. */
-	final public void freeResources() {
+    @Override
+	public final void freeResources() {
 		super.freeResources();
 		
-		_mainWindow.removeInternalFrameListener( _windowEventHandler );
+		mainWindow.removeInternalFrameListener(windowEventHandler );
 		
-		_windowEventHandler = null;
-		DOCUMENT_LISTENER_PROXY = null;
-		_mainWindow = null;
+		windowEventHandler = null;
+		documentListenerProxy = null;
+		mainWindow = null;
 	}
     
     
@@ -166,7 +169,7 @@ abstract public class XalInternalDocument extends XalAbstractDocument {
      * @return The main window for this document.
      */
     public XalInternalWindow getMainWindow() {
-        return _mainWindow;
+        return mainWindow;
     }
     
     
@@ -174,8 +177,9 @@ abstract public class XalInternalDocument extends XalAbstractDocument {
 		* Implement the method for XalAbstractDocument.
      * @return The main window for this document.
      */
+    @Override
     public XalDocumentView getDocumentView() {
-        return _mainWindow;
+        return mainWindow;
     }
     
     
@@ -206,18 +210,21 @@ abstract public class XalInternalDocument extends XalAbstractDocument {
 	/** window event handler **/
 	private class WindowEventHandler extends InternalFrameAdapter {
 		/** Handle window closing events. */
+                @Override
 		public void internalFrameClosing( final InternalFrameEvent event ) {
 			closeDocument();
 		}
 		
 		/** Handle the window being activated. */
+                @Override
 		public void internalFrameActivated( final InternalFrameEvent event ) {
-			DOCUMENT_LISTENER_PROXY.documentActivated( XalInternalDocument.this );
+			documentListenerProxy.documentActivated( XalInternalDocument.this );
 		}
 		
 		/** Handle the window being deactivated. */
+                @Override
 		public void internalFrameDeactivated( final InternalFrameEvent event ) {
-			DOCUMENT_LISTENER_PROXY.documentDeactivated( XalInternalDocument.this );
+			documentListenerProxy.documentDeactivated( XalInternalDocument.this );
 		}		
 	}
 }

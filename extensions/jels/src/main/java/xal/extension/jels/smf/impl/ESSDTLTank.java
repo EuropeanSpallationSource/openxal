@@ -36,7 +36,7 @@ public class ESSDTLTank extends ESSRfCavity {
     /**
      * standard type for instances of this class
      */
-    public static final String s_strType = "DTLTank";
+    public static final String TYPE = "DTLTank";
 
     // static initialization
     static {
@@ -47,7 +47,7 @@ public class ESSDTLTank extends ESSRfCavity {
      * Register type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes(ESSDTLTank.class, s_strType);
+        ElementTypeManager.defaultManager().registerTypes(ESSDTLTank.class, TYPE);
     }
 
     /**
@@ -86,6 +86,6 @@ public class ESSDTLTank extends ESSRfCavity {
      */
     @Override
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 }

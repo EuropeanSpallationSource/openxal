@@ -120,13 +120,8 @@ public class ScadaFieldDescriptor extends XalPvDescriptor {
         Field   fldTgt;
         try {
             fldTgt = clsScada.getField(strFldName);
-
-        } catch (SecurityException e) {
+        } catch (SecurityException | NoSuchFieldException e) {
             return null;
-
-        } catch (NoSuchFieldException e) {
-            return null;
-
         }
 
         if ( !fldTgt.isAnnotationPresent(AScada.Field.class) )
@@ -328,6 +323,5 @@ public class ScadaFieldDescriptor extends XalPvDescriptor {
         
         return sfdCopy;
     }
-    
     
 }

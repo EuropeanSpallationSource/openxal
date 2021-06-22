@@ -13,7 +13,6 @@ import xal.model.IComponent;
 import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.alg.SynchronousTracker;
-import xal.model.alg.Tracker;
 import xal.model.elem.sync.IRfCavity;
 import xal.model.elem.sync.IRfCavityCell;
 import xal.model.elem.sync.IRfGap;
@@ -76,8 +75,6 @@ public class IdealRfCavity extends ElementSeq  implements IRfCavity {
     
     /**
      * Zero constructor for <code>IdealRfCavity</code>.
-     *
-     * @param strType
      *
      * @author Christopher K. Allen
      * @since  Dec 3, 2014
@@ -488,6 +485,7 @@ public class IdealRfCavity extends ElementSeq  implements IRfCavity {
         synchronousPhase = Math.atan2(synchronousPhase, energyGain);
     }
 
+    @Override
     public double getSynchronousPhase() {
         return synchronousPhase;
     }
@@ -497,6 +495,7 @@ public class IdealRfCavity extends ElementSeq  implements IRfCavity {
      *
      * @return
      */
+    @Override
     public double getEnergyGain() {
         return energyGain;
     }

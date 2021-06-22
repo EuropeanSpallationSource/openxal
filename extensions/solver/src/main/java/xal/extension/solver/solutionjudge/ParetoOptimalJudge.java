@@ -10,7 +10,6 @@
  
  package xal.extension.solver.solutionjudge;
   
- import xal.tools.messaging.MessageCenter;
   
  import xal.extension.solver.Objective;
  import xal.extension.solver.Trial;
@@ -26,12 +25,13 @@
  * @author t6p
  */
  public class ParetoOptimalJudge extends SolutionJudge {
-	 protected List<Trial> _optimalSolutions;
+	 protected List<Trial> optimalSolutions;
 	 
 	 
 	 /** Reset the pareto optimal judge. */
+         @Override
 	 public void reset() {
-		 _optimalSolutions.clear();
+		 optimalSolutions.clear();
 	 }
 	 
 	 	 
@@ -39,8 +39,9 @@
 	 * Get the optimal solutions.
 	 * @return The optimal solutions as a List.
 	 */
+         @Override
 	 public List<Trial> getOptimalSolutions() {
-		 return _optimalSolutions;
+		 return optimalSolutions;
 	 }
 		 
 			 
@@ -67,12 +68,13 @@
 	 * @param solution The new solution to
 	 * update the pareto optimal judge with. 
 	 */
+         @Override
 	 public void judge( final Trial solution ) {
 		 if ( solution.isVetoed() ) {
 			 solution.setSatisfaction( 0.0 );
 		 }
 		 else {
-			 final Iterator<Trial> optimalSolutionIter = _optimalSolutions.iterator();
+			 final Iterator<Trial> optimalSolutionIter = optimalSolutions.iterator();
 			 final List<Objective> objectives = solution.getProblem().getObjectives();
 			 boolean foundOptimal = false;
 			 
@@ -90,11 +92,11 @@
 				 while( optimalSolutionIter.hasNext() ) {
 					 final Trial optimalSolution = optimalSolutionIter.next();
 					 if( !isBetter( optimalSolution, solution, objectives ) ) {
-						 _optimalSolutions.remove( optimalSolution );
+						 optimalSolutions.remove( optimalSolution );
 					 }
 				 }
-				 _optimalSolutions.add( solution );
-				 _eventProxy.foundNewOptimalSolution( this, _optimalSolutions, solution );
+				 optimalSolutions.add( solution );
+				 eventProxy.foundNewOptimalSolution( this, optimalSolutions, solution );
 			 }
 		 }
 	 }

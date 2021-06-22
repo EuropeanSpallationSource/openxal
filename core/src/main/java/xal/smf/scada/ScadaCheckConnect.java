@@ -42,17 +42,17 @@ public class ScadaCheckConnect {
      * @author Christopher K. Allen
      * @since   Feb 4, 2011
      */
-    public final static class ConnectionMonitor implements ConnectionListener {
+    public static final class ConnectionMonitor implements ConnectionListener {
 
         /*
          * Local Attributes
          */
         
         /** the channel we are monitoring */
-        final private Channel             chnFld;
+        private final Channel             chnFld;
         
         /** list of channels that have had a connection request issued */
-        final private TestChannelList     lstReqs;
+        private final TestChannelList     lstReqs;
         
        
         /*
@@ -150,7 +150,7 @@ public class ScadaCheckConnect {
      * @author Christopher K. Allen
      * @since   Mar 7, 2011
      */
-    public final static class TestChannelList {
+    public static final class TestChannelList {
         
         /*
          * Local Attributes
@@ -182,9 +182,9 @@ public class ScadaCheckConnect {
          * @since   Mar 7, 2011
          */
         public TestChannelList() {
-            this.lstChnPend  = new LinkedList<Channel>();
-            this.lstChnPass  = new LinkedList<Channel>();
-            this.lstLsnCon   = new LinkedList<ConnectionMonitor>();
+            this.lstChnPend  = new LinkedList<>();
+            this.lstChnPass  = new LinkedList<>();
+            this.lstLsnCon   = new LinkedList<>();
         }
         
         
@@ -287,7 +287,7 @@ public class ScadaCheckConnect {
          * @since  Mar 7, 2011
          */
         public boolean testChannelConnects(double dblTmOut) {
-            Double      dblMsec  = new Double(dblTmOut*1000.0);
+            Double      dblMsec  = dblTmOut*1000.0;
             int         intTmOut = dblMsec.intValue();
             
             synchronized (this.lstChnPend) {
@@ -494,7 +494,6 @@ public class ScadaCheckConnect {
     
         // We are going to request connection for this channel
         lstRequests.add(chnReq);
-    }
-    
+    } 
     
 }

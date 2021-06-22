@@ -63,11 +63,11 @@ public class Epics7ChannelSystemTest {
         System.out.println("loadJcaConfig");
         Epics7ChannelSystem instance = new Epics7ChannelSystem();
 
-        instance.loadConfig(false);
+        Epics7ChannelSystem.loadConfig(false);
         String property = System.getProperty(CAJContext.class.getName() + ".repeater_port", null);
         assertEquals(String.valueOf(CAConstants.CA_REPEATER_PORT), property);
 
-        instance.loadConfig(true);
+        Epics7ChannelSystem.loadConfig(true);
         property = System.getProperty(CAJContext.class.getName() + ".server_port", null);
         assertEquals(String.valueOf(CAConstants.CA_SERVER_PORT), property);
     }

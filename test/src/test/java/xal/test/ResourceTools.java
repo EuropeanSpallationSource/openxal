@@ -67,7 +67,7 @@ public abstract class ResourceTools {
          */
         
         /** acceleration configuration file name for this constant */
-        final private String    strFileName;
+        private final String    strFileName;
         
         /*
          * Initialization
@@ -89,13 +89,13 @@ public abstract class ResourceTools {
      */
     
     /** Location of the design accelerator configuration */
-    static final private String         STR_CFGFILE_TEST = "/core/test/resources/config/main.xal";
+    private static final String         STR_CFGFILE_TEST = "/core/test/resources/config/main.xal";
    
     /** Location of the design accelerator configuration */
-    static final private String         STR_CFGFILE_DSGN = "/site/optics/design/main.xal";
+    private static final String         STR_CFGFILE_DSGN = "/site/optics/design/main.xal";
 
     /** Location of the design accelerator configuration */
-    static final private String         STR_CFGFILE_PROD = "/site/optics/production/main.xal";
+    private static final String         STR_CFGFILE_PROD = "/site/optics/production/main.xal";
     
     
     /*

@@ -48,7 +48,7 @@ public class FileBasedElementMapping extends ElementMapping {
      */
     
     /** Model Configuration schema */
-    final public static String elementMappingSchema = "/xal/schemas/ModelConfig.xsd";
+    public static final String ELEMENT_MAPPING_SCHEMA = "/xal/schemas/ModelConfig.xsd";
     
     /*
      * Global Attributes
@@ -363,6 +363,7 @@ public class FileBasedElementMapping extends ElementMapping {
 
     }
 
+    @Override
     public Class<? extends IComponent> getDriftType() {
         return clsDriftElem;
     }
@@ -371,6 +372,7 @@ public class FileBasedElementMapping extends ElementMapping {
         this.clsRfCavDriftElem = (Class<? extends IComponent>) Class.forName(strClsName);
     }
 
+    @Override
     public  Class<? extends IComponent> getRfCavityDriftType() {
         return clsRfCavDriftElem;
     }

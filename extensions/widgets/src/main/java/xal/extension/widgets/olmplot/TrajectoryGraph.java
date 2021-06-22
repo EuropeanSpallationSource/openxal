@@ -54,7 +54,7 @@ public class TrajectoryGraph extends FunctionGraphsJPanel {
     //
     
     /** The dimensions of the solution graph */
-    static private Dimension                    DIM_GRAPH_SOLN = new Dimension(600,450);
+    private static Dimension                    DIM_GRAPH_SOLN = new Dimension(600,450);
     
     
     /*

@@ -34,7 +34,7 @@ public class RepellerElectrode extends AcceleratorNode {
     /*
      *  Constants
      */
-    public static final String s_strType = "REP";
+    public static final String TYPE = "REP";
 
     public static final String STATUS_RB_HANDLE = "statusRB";
     private Channel statusRC = null;
@@ -51,7 +51,7 @@ public class RepellerElectrode extends AcceleratorNode {
      * Register type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes(RepellerElectrode.class, s_strType);
+        ElementTypeManager.defaultManager().registerTypes(RepellerElectrode.class, TYPE);
     }
 
     /**
@@ -60,7 +60,7 @@ public class RepellerElectrode extends AcceleratorNode {
      */
     @Override
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /**

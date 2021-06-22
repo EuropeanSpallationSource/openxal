@@ -57,7 +57,7 @@ public class IdealEDipole extends ThickElectrostatic
    *
    */
 
-  public static final String s_strType = "IdealEDipole";
+  public static final String TYPE = "IdealEDipole";
 
   /**
    *
@@ -65,20 +65,20 @@ public class IdealEDipole extends ThickElectrostatic
    *
    */
 
-  public static final String s_strPathLength = "PathLength";
+  public static final String PATH_LENGTH = "PathLength";
     /**
      *
      * all thick elements have length - CKA.
      *
      */
 
-  public static final String s_strParamVoltage = "Voltage";
-  public static final String s_strEntranceAngle = "EntranceAngle";
-  public static final String s_strExitAngle = "ExitAngle";
-  public static final String s_strQuadComponent = "QuadComponent";
+  public static final String PARAM_VOLTAGE = "Voltage";
+  public static final String ENTRANCE_ANGLE = "EntranceAngle";
+  public static final String EXIT_ANGLE = "ExitAngle";
+  public static final String QUAD_COMPONENT = "QuadComponent";
 
   /** Applied Voltage */
-  private double m_dblVoltage = 0.0;
+  private double dblVoltage = 0.0;
 
   /**
    *
@@ -140,7 +140,7 @@ public class IdealEDipole extends ThickElectrostatic
    *
    */
 
-  private int m_enmOrient = ORIENT_HOR;
+  private int enmOrient = ORIENT_HOR;
 
   /**
    *
@@ -160,7 +160,7 @@ public class IdealEDipole extends ThickElectrostatic
    *  Creates a new instance of IdealEDipole.
    *
    *  @param  strId  identifier for this IdealEDipole object
-   *  @param  m_dblVoltage    voltage applied to pole tip (in <b>kV</b>)
+   *  @param  dblVoltage    voltage applied to pole tip (in <b>kV</b>)
    *  @param  len    pathLength of the dipole (in m)
    *  @param  entAng entrance angle of the dipole (in rad)
    *  @param  exitAng exit angle of the dipole (in rad)
@@ -175,10 +175,10 @@ public class IdealEDipole extends ThickElectrostatic
    *
    */
 
-  public IdealEDipole(String strId, double m_dblVoltage, double len, double entAng, double exitAng, double gap, double fInt)
+  public IdealEDipole(String strId, double dblVoltage, double len, double entAng, double exitAng, double gap, double fInt)
   {
-    super( s_strType, strId, len );
-    this.setVoltage(m_dblVoltage);
+    super( TYPE, strId, len );
+    this.setVoltage(dblVoltage);
     entranceAngle = entAng;
     exitAngle = exitAng;
     gapHeight = gap;
@@ -198,7 +198,7 @@ public class IdealEDipole extends ThickElectrostatic
 
   public IdealEDipole()
   {
-    super( s_strType );
+    super( TYPE );
   }
 
   /**
@@ -332,9 +332,10 @@ public class IdealEDipole extends ThickElectrostatic
    *
    */
 
+  @Override
   public void setOrientation(int enmOrient)
   {
-    m_enmOrient = enmOrient;
+    this.enmOrient = enmOrient;
   }
 
   /**
@@ -356,9 +357,10 @@ public class IdealEDipole extends ThickElectrostatic
    *
    */
 
+  @Override
   public int getOrientation()
   {
-    return m_enmOrient;
+    return enmOrient;
   }
 
 
@@ -370,9 +372,10 @@ public class IdealEDipole extends ThickElectrostatic
    *
    */
 
+  @Override
   public void setVoltage(double voltage)
   {
-    m_dblVoltage = voltage;
+    dblVoltage = voltage;
   }
 
   /**
@@ -383,9 +386,10 @@ public class IdealEDipole extends ThickElectrostatic
    *
    */
 
+  @Override
   public double getVoltage()
   {
-    return m_dblVoltage;
+    return dblVoltage;
   }
 
 
@@ -404,10 +408,11 @@ public class IdealEDipole extends ThickElectrostatic
    *  @param  probe   propagating probe
    *  @param  dblLen  subsection propagation length <b>meters</b>
    *
-   *  @return         elapsed propagaton time<b>Units: seconds</b>
+   *  @return         elapsed propagation time<b>Units: seconds</b>
    *
    */
 
+  @Override
   public double elapsedTime(IProbe probe, double dblLen)
   {
     return super.compDriftingTime(probe, dblLen);
@@ -426,6 +431,7 @@ public class IdealEDipole extends ThickElectrostatic
    *
    */
 
+  @Override
   public double energyGain(IProbe probe, double dblLen)
   {
     return 0.0;
@@ -480,6 +486,7 @@ public class IdealEDipole extends ThickElectrostatic
    *
    */
 
+  @Override
   public PhaseMap transferMap(final IProbe probe, final double dL) throws ModelException
   {
 
@@ -749,6 +756,7 @@ public class IdealEDipole extends ThickElectrostatic
    *  @param  os      output stream object
    */
 
+  @Override
   public void print(PrintWriter os)
   {
     super.print(os);
@@ -762,16 +770,16 @@ public class IdealEDipole extends ThickElectrostatic
     super.initializeFrom(element);
 
     EDipole edp = (EDipole) element.getHardwareNode();
-    double len_sect = element.getLength();
-    double len_path0 = edp.getDfltPathLength();
-    double ang_bend0 = edp.getDfltBendAngle() * Math.PI / 180.0;
+    double lenSect = element.getLength();
+    double lenPath0 = edp.getDfltPathLength();
+    double angBend0 = edp.getDfltBendAngle() * Math.PI / 180.0;
 
-    double R_bend0 = len_path0 / ang_bend0;
-    double ang_bend = ang_bend0 * (len_sect / len_path0);
-    double len_path = R_bend0 * ang_bend;
+    double RBend0 = lenPath0 / angBend0;
+    double angBend = angBend0 * (lenSect / lenPath0);
+    double lenPath = RBend0 * angBend;
 
-    setPathLength(len_path);
-    setDesignBendAngle(ang_bend);
+    setPathLength(lenPath);
+    setDesignBendAngle(angBend);
 
   }
 
@@ -782,4 +790,4 @@ public class IdealEDipole extends ThickElectrostatic
   public double getPathLength() {
       return pathLength;
   }
-};
+}

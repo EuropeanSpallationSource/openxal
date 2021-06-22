@@ -12,7 +12,6 @@ import xal.model.ModelException;
 import xal.model.elem.ThickElement;
 import xal.model.elem.ThinElement;
 import xal.smf.AcceleratorNode;
-import xal.smf.AcceleratorSeq;
 import xal.smf.impl.Bend;
 import xal.smf.impl.Magnet;
 

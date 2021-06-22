@@ -15,15 +15,15 @@ import javax.script.ScriptException;
  * FormulaInterpreter is a class used to evaluate a formula with a given set of variables provided by the user.
  * @author  tap
  */
-final public class FormulaInterpreter {
+public final class FormulaInterpreter {
 	/** standard script header */
-	static final private String STANDARD_SCRIPT_HEADER;
+	private static final String STANDARD_SCRIPT_HEADER;
 
 	/** script engine to perform the formula evaluation */
-	final private ScriptEngine SCRIPT_ENGINE;
+	private final ScriptEngine scriptEngine;
 
 	/** formula to evaluate */
-	private String _formula;
+	private String formula;
 
 
 	// static initializer
@@ -34,15 +34,15 @@ final public class FormulaInterpreter {
 	
     /** Creates a new instance of FormulaInterpreter */
     public FormulaInterpreter() {
-        SCRIPT_ENGINE = new ScriptEngineManager().getEngineByName( "JavaScript" );		// standard scrip engine shipped with Java
-		if ( SCRIPT_ENGINE == null ) {
+        scriptEngine = new ScriptEngineManager().getEngineByName( "JavaScript" );		// standard scrip engine shipped with Java
+		if ( scriptEngine == null ) {
 			System.err.println( "Error: JavaScript engine is missing!" );
 			throw new RuntimeException( "JavaScript engine is missing and needed for the Formula Interpreter!" );
 		}
 
 		try {
-			SCRIPT_ENGINE.eval( STANDARD_SCRIPT_HEADER );
-			_formula = "";
+			scriptEngine.eval( STANDARD_SCRIPT_HEADER );
+			formula = "";
 		}
 		catch ( ScriptException exception ) {
 			throw new RuntimeException( exception );
@@ -50,8 +50,8 @@ final public class FormulaInterpreter {
     }
 
 
-	/** getnerate the standard script header */
-	static private String generateStandardScriptHeader() {
+	/** generate the standard script header */
+	private static String generateStandardScriptHeader() {
 		final StringBuffer buffer = new StringBuffer();
 		appendMappedMathFunctionToGlobal( "min", buffer );
 		appendMappedMathFunctionToGlobal( "max", buffer );
@@ -70,13 +70,13 @@ final public class FormulaInterpreter {
 
 
 	/** append the mapped math function to the specified buffer */
-	static private void appendMappedMathFunctionToGlobal( final String name, final StringBuffer buffer ) {
+	private static void appendMappedMathFunctionToGlobal( final String name, final StringBuffer buffer ) {
 		buffer.append( mapMathFunctionToGlobal( name ) );
 	}
 
 
 	/** Map the Math function to a global function */
-	static private String mapMathFunctionToGlobal( final String name ) {
+	private static String mapMathFunctionToGlobal( final String name ) {
 		return "var " + name + " = Math." + name + "; ";
 	}
     
@@ -86,8 +86,8 @@ final public class FormulaInterpreter {
      * @param name      name of the variable
      * @param value     value assigned to the variable
      */
-    final public void setVariable( final String name, final double value ) {
-        SCRIPT_ENGINE.put( name, value );
+    public final void setVariable( final String name, final double value ) {
+        scriptEngine.put( name, value );
     }
     
     
@@ -96,14 +96,14 @@ final public class FormulaInterpreter {
      * @param name The name of the variable for which to check.
      * @return true if the variable exists; false otherwise.
      */
-    final public boolean hasVariable( final String name ) {
-        return SCRIPT_ENGINE.get( name ) != null;
+    public final boolean hasVariable( final String name ) {
+        return scriptEngine.get( name ) != null;
     }
 
 
 	/** compile the specified formula */
 	public void compile( final String formula ) {
-		_formula = formula;
+		this.formula = formula;
 	}
     
     
@@ -119,14 +119,14 @@ final public class FormulaInterpreter {
 
 	/** evaluate the compiled formula */
 	public double evaluate() {
-		return performEvaluation( _formula );
+		return performEvaluation( formula );
 	}
 
 
 	/** perform the evaluation internally */
 	private double performEvaluation( final String formula ) {
 		try {
-			final Object result = SCRIPT_ENGINE.eval( formula );
+			final Object result = scriptEngine.eval( formula );
 			if ( result instanceof Number ) {
 				return ((Number)result).doubleValue();
 			}

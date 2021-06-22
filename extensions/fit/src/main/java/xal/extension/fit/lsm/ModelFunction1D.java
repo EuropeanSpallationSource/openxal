@@ -44,6 +44,7 @@ public abstract class ModelFunction1D implements ModelFunction {
 	 *@param  a  The array with set of parameters that should be found
 	 *@return    The value of the function
 	 */
+        @Override
 	public final double getValue(double[] x, double[] a) {
 		return getValue(x[0], a);
 	}
@@ -60,6 +61,7 @@ public abstract class ModelFunction1D implements ModelFunction {
 	 *      calculated
 	 *@return          The value of the function
 	 */
+        @Override
 	public final double getDerivative(double[] x, double[] a, int a_index) {
 		return getDerivative(x[0], a, a_index);
 	}

@@ -25,11 +25,11 @@ public class PVsTreePanel extends JPanel{
     private ActionListener extTreeSelectionListener = null;
 
     private int renderMode;
-    static public int RENDER_MODE_EDIT    = 0;
-    static public int RENDER_MODE_CONTROL = 1;
+    public static final int RENDER_MODE_EDIT    = 0;
+    public static final int RENDER_MODE_CONTROL = 1;
 
     /** The constructor.
-     *  @param pvNode - the root PV node, specifiing all structure of PVs
+     *  @param pvNode - the root PV node, specifying all structure of PVs
      */
     public PVsTreePanel(PVTreeNode pvNode){
 
@@ -54,6 +54,7 @@ public class PVsTreePanel extends JPanel{
 
 	//Action listener
 	MouseListener ml = new MouseAdapter() {
+                @Override
 		public void mousePressed(MouseEvent e) {
 		    int selRow = tree.getRowForLocation(e.getX(), e.getY());
 		    TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
@@ -75,6 +76,7 @@ public class PVsTreePanel extends JPanel{
 
 	//listeners
         editTreeSelectionListener =  new TreeSelectionListener(){
+                @Override
 		public void valueChanged(TreeSelectionEvent e){
 		    TreePath path_new = e.getNewLeadSelectionPath();
 		    if(path_new != null){
@@ -94,6 +96,7 @@ public class PVsTreePanel extends JPanel{
 	    };
 
 	controlTreeSelectionListener  =  new TreeSelectionListener(){
+                @Override
 		public void valueChanged(TreeSelectionEvent e){
 		    TreePath path = e.getNewLeadSelectionPath();
 		    if(path != null){
@@ -161,6 +164,7 @@ class EditModeTreeCellRenderer implements TreeCellRenderer{
 
     public EditModeTreeCellRenderer(){}
  
+    @Override
     public Component getTreeCellRendererComponent(JTree tree,
 						  Object value,
 						  boolean selected,
@@ -176,30 +180,30 @@ class EditModeTreeCellRenderer implements TreeCellRenderer{
 
         if(value instanceof PVTreeNode){
 	    if(((PVTreeNode) value).isPVName()){
-                JLabel pv_label   = new JLabel("PV : ",JLabel.LEFT);
-		pv_label.setForeground(Color.blue);
-                JLabel name_label = new JLabel(((PVTreeNode) value).getName(),JLabel.LEFT);
-                treecell.add(pv_label);
-                treecell.add(name_label);
+                JLabel pvLabel   = new JLabel("PV : ",JLabel.LEFT);
+		pvLabel.setForeground(Color.blue);
+                JLabel nameLabel = new JLabel(((PVTreeNode) value).getName(),JLabel.LEFT);
+                treecell.add(pvLabel);
+                treecell.add(nameLabel);
 		if(selected){
-		    pv_label.setBackground(treecell.getBackground().brighter());
+		    pvLabel.setBackground(treecell.getBackground().brighter());
 		    treecell.setBackground(treecell.getBackground().brighter());
-		    name_label.setBackground(treecell.getBackground().brighter());
+		    nameLabel.setBackground(treecell.getBackground().brighter());
 		}
 		if(((PVTreeNode) value).getColor() != null){
-		    name_label.setForeground(((PVTreeNode) value).getColor());
+		    nameLabel.setForeground(((PVTreeNode) value).getColor());
 		}
-                pv_label.setFont(fnt);
-		name_label.setFont(fnt);
+                pvLabel.setFont(fnt);
+		nameLabel.setFont(fnt);
 	    }
 	    else{
-		JLabel name_label = new JLabel(((PVTreeNode) value).getName(),JLabel.LEFT);
-		name_label.setFont(fnt);
-		treecell.add(name_label);
+		JLabel nameLabel = new JLabel(((PVTreeNode) value).getName(),JLabel.LEFT);
+		nameLabel.setFont(fnt);
+		treecell.add(nameLabel);
 		if(((PVTreeNode) value).isPVNamesAllowed()){
 		    if(selected){
-                        name_label.setForeground(Color.blue);
-			name_label.setBackground(treecell.getBackground().brighter());
+                        nameLabel.setForeground(Color.blue);
+			nameLabel.setBackground(treecell.getBackground().brighter());
 			treecell.setBackground(treecell.getBackground().brighter());            
 		    }
 		}
@@ -212,10 +216,11 @@ class EditModeTreeCellRenderer implements TreeCellRenderer{
 
 class ControlModeTreeCellRenderer implements TreeCellRenderer{
 
-    static private EmptyBorder epmtyBorder = new EmptyBorder(0,0,0,0);
+    private static final EmptyBorder EMPTY_BORDER = new EmptyBorder(0,0,0,0);
 
     public ControlModeTreeCellRenderer(){}
  
+    @Override
     public Component getTreeCellRendererComponent(JTree tree,
 						  Object value,
 						  boolean selected,
@@ -243,7 +248,7 @@ class ControlModeTreeCellRenderer implements TreeCellRenderer{
 			chckB = new JCheckBox("");
 		    }
 		    chckB.setBackground(bkgColor);
-		    chckB.setBorder(epmtyBorder);
+		    chckB.setBorder(EMPTY_BORDER);
 		    chckB.setFont(fnt);
 		    if(((PVTreeNode) value).isSwitchedOn()){
 			chckB.setSelected(true);
@@ -257,22 +262,22 @@ class ControlModeTreeCellRenderer implements TreeCellRenderer{
 		    }
 		}
 		else{
-		    JLabel name_label = null;
+		    JLabel nameLabel = null;
 		    if(name != null){
-			name_label = new JLabel(name,JLabel.LEFT);
+			nameLabel = new JLabel(name,JLabel.LEFT);
 		    }
 		    else{
-                       name_label = new JLabel("",JLabel.LEFT);
+                       nameLabel = new JLabel("",JLabel.LEFT);
 		    }
-                    name_label.setForeground(((PVTreeNode) value).getColor());
-		    name_label.setFont(fnt);
-                    treecell.add(name_label);
+                    nameLabel.setForeground(((PVTreeNode) value).getColor());
+		    nameLabel.setFont(fnt);
+                    treecell.add(nameLabel);
 		}
 	    }
 	    else{
-		JLabel name_label = new JLabel(((PVTreeNode) value).getName(),JLabel.LEFT);
-		name_label.setFont(fnt);
-		treecell.add(name_label);
+		JLabel nameLabel = new JLabel(((PVTreeNode) value).getName(),JLabel.LEFT);
+		nameLabel.setFont(fnt);
+		treecell.add(nameLabel);
 	    }
 	}
 	return treecell;     

@@ -139,7 +139,6 @@ public class R6 extends BaseVector<R6> {
     /**
      * Constructor for <code>R6</code>.
      *
-     * @param intSize
      * @throws UnsupportedOperationException
      *
      * @author Christopher K. Allen
@@ -161,7 +160,7 @@ public class R6 extends BaseVector<R6> {
      * inconsistent, an exception is thrown.
      * </p>
      * 
-     * @param arrMatrix   Java primitive array containing new vector values
+     * @param arrVals   Java primitive array containing new vector values
      * 
      * @exception  IllegalArgumentException  the argument must have the same dimensions as this matrix
      * 

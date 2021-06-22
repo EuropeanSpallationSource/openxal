@@ -160,7 +160,7 @@ public class SynchronizationManager {
 	private void addComponentMappedTo(IComponent aComp, AcceleratorNode aNode) {
 		List<IComponent> components = allComponentsMappedTo(aNode);
 		if (components == null) {
-			components = new ArrayList<IComponent>();
+			components = new ArrayList<>();
 			allNodeComps.put(aNode, components);
 		}
 		components.add(aComp);
@@ -173,7 +173,7 @@ public class SynchronizationManager {
 	private void addSynchronizedComponentMappedTo(IComponent aComp, AcceleratorNode aNode) {
 		List<IComponent> components = synchronizedComponentsMappedTo(aNode);
 		if (components == null) {
-			components = new ArrayList<IComponent>();
+			components = new ArrayList<>();
 			synchronizedNodeComps.put(aNode, components);
 		}
 		components.add(aComp);

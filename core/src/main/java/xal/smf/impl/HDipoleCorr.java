@@ -13,7 +13,7 @@ import xal.smf.impl.qualify.ElementTypeManager;
 
 public class HDipoleCorr extends DipoleCorr {
 	/** standard type for nodes of this class */
-    public static final String s_strType   = "DCH";
+    public static final String TYPE   = "DCH";
   
 
 	// static initialization
@@ -26,12 +26,13 @@ public class HDipoleCorr extends DipoleCorr {
      * Register type for qualification
      */
     private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( HDipoleCorr.class, s_strType, "horzcorr", "hcorr" );
+		ElementTypeManager.defaultManager().registerTypes( HDipoleCorr.class, TYPE, "horzcorr", "hcorr" );
     }
 
     
     /** Override to provide type signature */
-    public String getType()   { return s_strType; }
+    @Override
+    public String getType()   { return TYPE; }
 
 
 	/** Primary Constructor */
@@ -51,6 +52,7 @@ public class HDipoleCorr extends DipoleCorr {
      * of all horizontal correctors is HORIZONTAL.
      * @return HORIZONTAL
      */
+    @Override
     public int getOrientation() {
         return HORIZONTAL;
     }

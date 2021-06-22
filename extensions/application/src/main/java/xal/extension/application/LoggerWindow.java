@@ -29,25 +29,25 @@ class LoggerWindow extends JFrame {
     private static final long serialVersionUID = 1L;
     
 	/** default logger window */
-	protected static LoggerWindow _defaultWindow;
+	protected static LoggerWindow defaultWindow;
 
 	/** logger handler */
-	protected LoggerBuffer _loggerHandler;
+	protected LoggerBuffer loggerHandler;
 
 	/** indicates whether this window has ever been shown */
-	protected boolean _neverShown;
+	protected boolean neverShown;
 
 	/** logger table model */
-	protected LogTableModel _logTableModel;
+	protected LogTableModel logTableModel;
 
 	/** the selected log record */
-	protected LogRecord _selectedRecord;
+	protected LogRecord selectedRecord;
 
 	/** text view for displaying the selected log record's message */
-	protected JTextArea _selectedRecordMessageView;
+	protected JTextArea selectedRecordMessageView;
 
 	/** text view for displaying the selected log record's exception if any */
-	protected JTextArea _selectedRecordExceptionView;
+	protected JTextArea selectedRecordExceptionView;
 
 
 	/**
@@ -59,10 +59,10 @@ class LoggerWindow extends JFrame {
 	public LoggerWindow( final String title, final LoggerBuffer handler ) {
 		super( title );
 
-		_logTableModel = new LogTableModel();
+		logTableModel = new LogTableModel();
 
 		setLoggerHandler( handler );
-		_neverShown = true;
+		neverShown = true;
 
 		makeView();
 	}
@@ -106,8 +106,9 @@ class LoggerWindow extends JFrame {
 		bar.add( clearButton );
 		clearButton.addActionListener(
 			new ActionListener() {
+                                @Override
 				public void actionPerformed( final ActionEvent event ) {
-					_loggerHandler.clear();
+					loggerHandler.clear();
 				}
 			} );
 
@@ -123,12 +124,13 @@ class LoggerWindow extends JFrame {
 	protected Component makeTable() {
 		Box view = new Box( BoxLayout.Y_AXIS );
 		view.add( Box.createHorizontalStrut(10000) );		// force the table to fill horizontally
-		final JTable table = new JTable( _logTableModel );
+		final JTable table = new JTable( logTableModel );
 		JScrollPane scrollPane = new JScrollPane( table );
 		view.add( scrollPane );
 
 		table.getSelectionModel().addListSelectionListener(
 			new ListSelectionListener() {
+                                @Override
 				public void valueChanged( ListSelectionEvent event ) {
 					int selectedRow = table.getSelectedRow();
 					if ( selectedRow >= 0 ) {
@@ -151,12 +153,12 @@ class LoggerWindow extends JFrame {
 	 * @return   a log record inspector
 	 */
 	protected Component makeRecordInspector() {
-		_selectedRecordMessageView = new JTextArea();
-		_selectedRecordExceptionView = new JTextArea();
+		selectedRecordMessageView = new JTextArea();
+		selectedRecordExceptionView = new JTextArea();
 
 		JTabbedPane tabbedView = new JTabbedPane();
-		tabbedView.addTab( "Message", new JScrollPane( _selectedRecordMessageView ) );
-		tabbedView.addTab( "Exception", new JScrollPane( _selectedRecordExceptionView ) );
+		tabbedView.addTab( "Message", new JScrollPane( selectedRecordMessageView ) );
+		tabbedView.addTab( "Exception", new JScrollPane( selectedRecordExceptionView ) );
 
 		return tabbedView;
 	}
@@ -168,11 +170,11 @@ class LoggerWindow extends JFrame {
 	 * @return   The default logger window
 	 */
 	public static LoggerWindow getDefault() {
-		if ( _defaultWindow == null ) {
-			_defaultWindow = new LoggerWindow();
+		if ( defaultWindow == null ) {
+			defaultWindow = new LoggerWindow();
 		}
 
-		return _defaultWindow;
+		return defaultWindow;
 	}
 
 
@@ -183,9 +185,9 @@ class LoggerWindow extends JFrame {
 	 * @param sender  The component relative to which the logger should be positioned
 	 */
 	public void showFirstTimeNear( final Component sender ) {
-		if ( _neverShown ) {
+		if ( neverShown ) {
 			setLocationRelativeTo( sender );
-			_neverShown = false;
+			neverShown = false;
 		}
 		setVisible( true );
 	}
@@ -197,14 +199,14 @@ class LoggerWindow extends JFrame {
 	 * @param handler  The new logger handler
 	 */
 	public void setLoggerHandler( final LoggerBuffer handler ) {
-		if ( _loggerHandler != null ) {
-			_loggerHandler.removeLoggerBufferListener( _logTableModel );
+		if ( loggerHandler != null ) {
+			loggerHandler.removeLoggerBufferListener( logTableModel );
 		}
 
-		_loggerHandler = handler;
+		loggerHandler = handler;
 
 		if ( handler != null ) {
-			handler.addLoggerBufferListener( _logTableModel );
+			handler.addLoggerBufferListener( logTableModel );
 		}
 	}
 
@@ -215,18 +217,18 @@ class LoggerWindow extends JFrame {
 	 * @param record  the new selected record
 	 */
 	public void setSelectedRecord( final LogRecord record ) {
-		if ( record != _selectedRecord ) {
-			_selectedRecord = record;
+		if ( record != selectedRecord ) {
+			selectedRecord = record;
 
 			if ( record != null ) {
-				_selectedRecordMessageView.setText( record.getMessage() );
+				selectedRecordMessageView.setText( record.getMessage() );
 				Throwable exception = record.getThrown();
 				String exceptionText = exception != null ? exception.toString() : "";
-				_selectedRecordExceptionView.setText( exceptionText );
+				selectedRecordExceptionView.setText( exceptionText );
 			}
 			else {
-				_selectedRecordMessageView.setText( "" );
-				_selectedRecordExceptionView.setText( "" );
+				selectedRecordMessageView.setText( "" );
+				selectedRecordExceptionView.setText( "" );
 			}
 		}
 	}
@@ -238,18 +240,18 @@ class LogTableModel extends AbstractTableModel implements LoggerBufferListener {
     /** serialization ID */
     private static final long serialVersionUID = 1L;
 
-	final static int LEVEL_COLUMN = 0;
-	final static int TIMESTAMP_COLUMN = 1;
-	final static int CLASS_COLUMN = 2;
-	final static int METHOD_COLUMN = 3;
-	final static int MESSAGE_COLUMN = 4;
-	final static int EXCEPTION_COLUMN = 5;
+	static final int LEVEL_COLUMN = 0;
+	static final int TIMESTAMP_COLUMN = 1;
+	static final int CLASS_COLUMN = 2;
+	static final int METHOD_COLUMN = 3;
+	static final int MESSAGE_COLUMN = 4;
+	static final int EXCEPTION_COLUMN = 5;
 
 	/** log records */
-	protected List<LogRecord> _records;
+	protected List<LogRecord> records;
 
 	/** Map of level colors keyed by level */
-	protected static Map<Level,String> _levelColors;
+	protected static Map<Level,String> levelColors;
 
 	/** static initializer */
 	static {
@@ -259,22 +261,22 @@ class LogTableModel extends AbstractTableModel implements LoggerBufferListener {
 
 	/** Constructor */
 	public LogTableModel() {
-		_records = new ArrayList<LogRecord>();
+		records = new ArrayList<>();
 	}
 
 
 	/** Populate the map of HTML colors corresponding to each log level. */
 	protected static void populateLevelColors() {
-		_levelColors = new HashMap<Level,String>();
+		levelColors = new HashMap<>();
 
-		_levelColors.put( Level.CONFIG, "purple" );
-		_levelColors.put( Level.FINE, "blue" );
-		_levelColors.put( Level.FINER, "aqua" );
-		_levelColors.put( Level.FINEST, "lime" );
-		_levelColors.put( Level.INFO, "black" );
-		_levelColors.put( Level.WARNING, "ff8800" );
-		_levelColors.put( Level.SEVERE, "red" );
-		_levelColors.put( null, "black" );
+		levelColors.put( Level.CONFIG, "purple" );
+		levelColors.put( Level.FINE, "blue" );
+		levelColors.put( Level.FINER, "aqua" );
+		levelColors.put( Level.FINEST, "lime" );
+		levelColors.put( Level.INFO, "black" );
+		levelColors.put( Level.WARNING, "ff8800" );
+		levelColors.put( Level.SEVERE, "red" );
+		levelColors.put( null, "black" );
 	}
 
 
@@ -283,9 +285,10 @@ class LogTableModel extends AbstractTableModel implements LoggerBufferListener {
 	 *
 	 * @return   the table row count
 	 */
+    @Override
 	public int getRowCount() {
-		synchronized ( _records ) {
-			return _records.size();
+		synchronized ( records ) {
+			return records.size();
 		}
 	}
 
@@ -295,6 +298,7 @@ class LogTableModel extends AbstractTableModel implements LoggerBufferListener {
 	 *
 	 * @return   the table column count
 	 */
+    @Override
 	public int getColumnCount() {
 		return 6;
 	}
@@ -306,6 +310,7 @@ class LogTableModel extends AbstractTableModel implements LoggerBufferListener {
 	 * @param column  the column for which to get the name
 	 * @return        the name for the column
 	 */
+    @Override
 	public String getColumnName( final int column ) {
 		switch ( column ) {
 			case LEVEL_COLUMN:
@@ -333,6 +338,7 @@ class LogTableModel extends AbstractTableModel implements LoggerBufferListener {
 	 * @param column  the cell's column
 	 * @return        the value to display in the cell
 	 */
+    @Override
 	public Object getValueAt( final int row, final int column ) {
 		final LogRecord record = getRecord( row );
 		if ( record == null ) {
@@ -392,7 +398,7 @@ class LogTableModel extends AbstractTableModel implements LoggerBufferListener {
 	 * @return       The HTML color to use for the specified level
 	 */
 	protected static String getColor( final Level level ) {
-		return _levelColors.get( level );
+		return levelColors.get( level );
 	}
 
 
@@ -403,9 +409,9 @@ class LogTableModel extends AbstractTableModel implements LoggerBufferListener {
 	 * @return       the log record at the specified index
 	 */
 	public LogRecord getRecord( final int index ) {
-		synchronized ( _records ) {
+		synchronized ( records ) {
 			try {
-				return _records.get( index );
+				return records.get( index );
 			}
 			catch ( ArrayIndexOutOfBoundsException exception ) {
 				return null;
@@ -420,10 +426,11 @@ class LogTableModel extends AbstractTableModel implements LoggerBufferListener {
 	 * @param buffer   the buffer whose records have changed
 	 * @param records  the new records in the buffer
 	 */
+    @Override
 	public void recordsChanged( LoggerBuffer buffer, List<LogRecord> records ) {
-		synchronized ( _records ) {
-			_records.clear();
-			_records.addAll( records );
+		synchronized ( records ) {
+			records.clear();
+			records.addAll( records );
 			fireTableDataChanged();
 		}
 	}

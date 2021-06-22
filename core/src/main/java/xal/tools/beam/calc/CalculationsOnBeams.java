@@ -69,7 +69,7 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      * Constructor for <cod>CalculationsOnBeams</code>. Creates object
      * and computes all the static simulation results.
      * 
-     * @param   trjSimul    results for an <code>EnvelopeProbe</code> simulation
+     * @param   datSim    results for an <code>EnvelopeProbe</code> simulation
      *
      * @author Christopher K. Allen
      * @since  Oct 22, 2013

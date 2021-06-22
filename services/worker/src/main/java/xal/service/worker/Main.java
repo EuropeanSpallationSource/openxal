@@ -21,10 +21,10 @@ import java.util.Date;
  */
 public class Main {
 	/** The time at which the application was launched */
-	final static protected Date LAUNCH_TIME;
+	protected static final Date LAUNCH_TIME;
 	
 	/** indicates whether verbose printing is enabled */
-	final static protected boolean IS_VERBOSE;
+	protected static final boolean IS_VERBOSE;
 	
 	
 	/**
@@ -49,7 +49,7 @@ public class Main {
 	 * Main entry point to the service.  Run the service.
 	 * @param args The launch arguments to the service.
 	 */
-	static public void main( final String[] args ) {
+	public static void main( final String[] args ) {
 		new Main().run();
 	}
 	
@@ -58,13 +58,13 @@ public class Main {
 	 * Get the time when this application was launched.
 	 * @return the time when this application was launched
 	 */
-	static public Date getLaunchTime() {
+	public static Date getLaunchTime() {
 		return LAUNCH_TIME;
 	}
     
     
     /** Shutdown the application */
-    static public void shutdown( final int code ) {
+    public static void shutdown( final int code ) {
         System.out.println( "Shutting down work service..." );
         System.exit( code );
     }

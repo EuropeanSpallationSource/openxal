@@ -23,7 +23,7 @@ public class Sector extends ElementSeq {
      */
     
     /** the string type identifier for all Sector objects */
-    public static final String      s_strType = "Sector";
+    public static final String      TYPE = "Sector";
     
     
     /*
@@ -35,7 +35,7 @@ public class Sector extends ElementSeq {
      * no string identifier.
      */
     public Sector() {
-        super(s_strType);
+        super(TYPE);
     }
 
     /**
@@ -45,7 +45,7 @@ public class Sector extends ElementSeq {
      * @param strId     string identifier of this sector
      */
     public Sector(String strId) {
-        super(s_strType, strId);
+        super(TYPE, strId);
     }
 
     /**
@@ -57,7 +57,7 @@ public class Sector extends ElementSeq {
      * @param szReserve     number of storage positions to reserve for children 
      */
     public Sector(String strId, int szReserve) {
-        super(s_strType, strId, szReserve);
+        super(TYPE, strId, szReserve);
     }
 
 

@@ -104,19 +104,7 @@ public class Twiss implements java.io.Serializable {
 
                 return dblFldVal;
 
-            } catch (SecurityException e) {
-                System.err.println("SERIOUS ERROR: Twiss$PROP#getPropertyValue()"); //$NON-NLS-1$
-                e.printStackTrace();
-
-            } catch (IllegalArgumentException e) {
-                System.err.println("SERIOUS ERROR: Twiss$PROP#getPropertyValue()"); //$NON-NLS-1$
-                e.printStackTrace();
-
-            } catch (IllegalAccessException e) {
-                System.err.println("SERIOUS ERROR: Twiss$PROP#getPropertyValue()"); //$NON-NLS-1$
-                e.printStackTrace();
-
-            } catch (InvocationTargetException e) {
+            } catch (SecurityException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
                 System.err.println("SERIOUS ERROR: Twiss$PROP#getPropertyValue()"); //$NON-NLS-1$
                 e.printStackTrace();
 
@@ -256,23 +244,23 @@ public class Twiss implements java.io.Serializable {
      */
 
     /** Courant-Snyder alpha parameter */
-    private double m_dblAlpha = 0.0;
+    private double dblAlpha = 0.0;
 
     /** Courant-Snyder beta parameter */
-    private double m_dblBeta = 0.0;
+    private double dblBeta = 0.0;
 
     /** Courant-Snyder gamma parameter */
-    private double m_dblGamma = 0.0;
+    private double dblGamma = 0.0;
 
     /** beam emittance */
-    private double m_dblEmitt = 0.0;
+    private double dblEmitt = 0.0;
 
 
     /** envelope radius corresponding to twiss parameters */
-    private double m_dblEnvRad = 0.0;
+    private double dblEnvRad = 0.0;
 
     /** envelope slope corresponding to twiss parameters */
-    private double m_dblEnvSlp = 0.0;
+    private double dblEnvSlp = 0.0;
 
 
 
@@ -315,13 +303,13 @@ public class Twiss implements java.io.Serializable {
      *  @param  dblEmitt    beam emittance (phase space area)
      */
     public void setTwiss(double dblAlpha, double dblBeta, double dblEmitt) {
-        m_dblAlpha = dblAlpha;
-        m_dblBeta  = dblBeta;
-        m_dblEmitt = dblEmitt;
+        this.dblAlpha = dblAlpha;
+        this.dblBeta  = dblBeta;
+        this.dblEmitt = dblEmitt;
 
-        this.m_dblGamma  = (1.0 + m_dblAlpha*m_dblAlpha)/m_dblBeta;
-        this.m_dblEnvRad = Math.sqrt(dblBeta*dblEmitt);
-        this.m_dblEnvSlp = -dblAlpha*Math.sqrt(dblEmitt/dblBeta);
+        this.dblGamma  = (1.0 + dblAlpha*dblAlpha)/dblBeta;
+        this.dblEnvRad = Math.sqrt(dblBeta*dblEmitt);
+        this.dblEnvSlp = -dblAlpha*Math.sqrt(dblEmitt/dblBeta);
     }
 
     /**
@@ -333,13 +321,13 @@ public class Twiss implements java.io.Serializable {
      *  @param  dblEmitt    beam emittance
      */
     public void setEnvelope(double dblEnvRad, double dblEnvSlp, double dblEmitt) {
-        this.m_dblEnvRad = dblEnvRad;
-        this.m_dblEnvSlp = dblEnvSlp;
-        this.m_dblEmitt  = dblEmitt;
+        this.dblEnvRad = dblEnvRad;
+        this.dblEnvSlp = dblEnvSlp;
+        this.dblEmitt  = dblEmitt;
 
-        this.m_dblAlpha  = -dblEnvRad*dblEnvSlp/dblEmitt;
-        this.m_dblBeta   = dblEnvRad*dblEnvRad/dblEmitt;
-        this.m_dblGamma  = (1.0 + m_dblAlpha*m_dblAlpha)/m_dblBeta;
+        this.dblAlpha  = -dblEnvRad*dblEnvSlp/dblEmitt;
+        this.dblBeta   = dblEnvRad*dblEnvRad/dblEmitt;
+        this.dblGamma  = (1.0 + dblAlpha*dblAlpha)/dblBeta;
     }
 
 
@@ -350,32 +338,32 @@ public class Twiss implements java.io.Serializable {
     /**
      *  Return the alpha Twiss parameter
      */
-    public double getAlpha()    { return m_dblAlpha; };
+    public double getAlpha()    { return dblAlpha; }
 
     /**
      *  Return the beta Twiss parameter
      */
-    public double getBeta()     { return m_dblBeta; };
+    public double getBeta()     { return dblBeta; }
 
     /**
      *  Return the gamma Twiss parameter
      */
-    public double getGamma()    { return m_dblGamma; };
+    public double getGamma()    { return dblGamma; }
 
     /**
      *  Return the beam emittance
      */
-    public double getEmittance()    { return m_dblEmitt; };
+    public double getEmittance()    { return dblEmitt; }
 
     /**
      *  Return the envelope radius extent
      */
-    public double getEnvelopeRadius()   { return m_dblEnvRad; };
+    public double getEnvelopeRadius()   { return dblEnvRad; }
 
     /**
      *  Return the envelope slope
      */
-    public double getEnvelopeSlope()    { return m_dblEnvSlp; };
+    public double getEnvelopeSlope()    { return dblEnvSlp; }
 
 
     /**
@@ -572,11 +560,11 @@ public class Twiss implements java.io.Serializable {
 
 
     /**
-     * Get the twiss parameters as a string
+     * Get the Twiss parameters as a string
      */
     @Override
     public String toString() {
-        return "alpha: " + m_dblAlpha + ", beta: " + m_dblBeta + ", emittance: " + m_dblEmitt;
+        return "alpha: " + dblAlpha + ", beta: " + dblBeta + ", emittance: " + dblEmitt;
     }
 
 }

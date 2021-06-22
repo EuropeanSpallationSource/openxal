@@ -13,12 +13,9 @@ import java.awt.event.*;
 import java.io.*;
 import javax.swing.border.*;
 
-import xal.extension.application.*;
 import xal.extension.scan.*;
 import xal.extension.widgets.plot.*;
-import xal.extension.widgets.swing.*;
 import xal.tools.data.DataAdaptor;
-import xal.tools.xml.*;
 
 /**
  *  AnalysisController is a class to handle analysis of the scan data.
@@ -31,8 +28,8 @@ public class MainAnalysisController {
 	//variables from upper level application
 	private Object mainScanDocument = null;
 
-	private boolean scanPV_ShowState = false;
-	private boolean scanPV_RB_ShowState = false;
+	private boolean scanPVShowState = false;
+	private boolean scanPVRBShowState = false;
 
 	private JPanel parentAnalysisPanel = null;
 	private JPanel analysisControlPanel = null;
@@ -73,16 +70,16 @@ public class MainAnalysisController {
 	 */
 	protected JPanel dataReaderPanel = null;
 
-	private JLabel xValPanel_Main_Label = new JLabel(" X value : ");
-	private JLabel yValPanel_Main_Label = new JLabel(" Y value : ");
-	private JTextField xValPanel_Main_Text = null;
-	private JTextField yValPanel_Main_Text = null;
+	private JLabel xValPanelMainLabel = new JLabel(" X value : ");
+	private JLabel yValPanelMainLabel = new JLabel(" Y value : ");
+	private JTextField xValPanelMainText = null;
+	private JTextField yValPanelMainText = null;
 
-	private static DecimalFormat xyPanel_Main_Format = new DecimalFormat("0.00000E0");
+	private static DecimalFormat xyPanelMainFormat = new DecimalFormat("0.00000E0");
 
 	private static TitledBorder dataReaderBorder = null;
 
-	private static String phase_shift_graph_property_key = "X_PHASE_SHIFT";
+	private static String phaseShiftGraphPropertyKey = "X_PHASE_SHIFT";
 
 	//------------------------------------------------
 	//CuSTOM ANALYSIS PANELS
@@ -125,38 +122,38 @@ public class MainAnalysisController {
 	 *  instances. The 6-th includes masks specifying should be shown graphs from
 	 *  MeasuredValues or not. The 7-th is the graph panel to show graph data.
 	 *
-	 *@param  mainScanDocument_In          Description of the Parameter
-	 *@param  parentAnalysisPanel_In       Description of the Parameter
-	 *@param  analysisControlPanel_In      Description of the Parameter
-	 *@param  customGraphPanel_In          Description of the Parameter
-	 *@param  scanVariableParameter_In     Description of the Parameter
-	 *@param  scanVariable_In              Description of the Parameter
-	 *@param  measuredValuesV_In           Description of the Parameter
-	 *@param  measuredValuesShowStateV_In  Description of the Parameter
-	 *@param  graphScan_In                 Description of the Parameter
-	 *@param  graphAnalysis_In             Description of the Parameter
+	 *@param  mainScanDocumentIn          Description of the Parameter
+	 *@param  parentAnalysisPanelIn       Description of the Parameter
+	 *@param  analysisControlPanelIn      Description of the Parameter
+	 *@param  customGraphPanelIn          Description of the Parameter
+	 *@param  scanVariableParameterIn     Description of the Parameter
+	 *@param  scanVariableIn              Description of the Parameter
+	 *@param  measuredValuesVIn           Description of the Parameter
+	 *@param  measuredValuesShowStateVIn  Description of the Parameter
+	 *@param  graphScanIn                 Description of the Parameter
+	 *@param  graphAnalysisIn             Description of the Parameter
 	 */
-	public MainAnalysisController(Object mainScanDocument_In,
-			JPanel parentAnalysisPanel_In,
-			JPanel analysisControlPanel_In,
-			JPanel customGraphPanel_In,
-			ScanVariable scanVariableParameter_In,
-			ScanVariable scanVariable_In,
-			Vector<MeasuredValue> measuredValuesV_In,
-			Vector<Boolean> measuredValuesShowStateV_In,
-			FunctionGraphsJPanel graphScan_In,
-			FunctionGraphsJPanel graphAnalysis_In) {
+	public MainAnalysisController(Object mainScanDocumentIn,
+			JPanel parentAnalysisPanelIn,
+			JPanel analysisControlPanelIn,
+			JPanel customGraphPanelIn,
+			ScanVariable scanVariableParameterIn,
+			ScanVariable scanVariableIn,
+			Vector<MeasuredValue> measuredValuesVIn,
+			Vector<Boolean> measuredValuesShowStateVIn,
+			FunctionGraphsJPanel graphScanIn,
+			FunctionGraphsJPanel graphAnalysisIn) {
 
-		mainScanDocument = mainScanDocument_In;
-		parentAnalysisPanel = parentAnalysisPanel_In;
-		analysisControlPanel = analysisControlPanel_In;
-		customGraphPanel = customGraphPanel_In;
-		scanVariableParameter = scanVariableParameter_In;
-		scanVariable = scanVariable_In;
-		measuredValuesV = measuredValuesV_In;
-		measuredValuesShowStateV = measuredValuesShowStateV_In;
-		graphScan = graphScan_In;
-		graphAnalysis = graphAnalysis_In;
+		mainScanDocument = mainScanDocumentIn;
+		parentAnalysisPanel = parentAnalysisPanelIn;
+		analysisControlPanel = analysisControlPanelIn;
+		customGraphPanel = customGraphPanelIn;
+		scanVariableParameter = scanVariableParameterIn;
+		scanVariable = scanVariableIn;
+		measuredValuesV = measuredValuesVIn;
+		measuredValuesShowStateV = measuredValuesShowStateVIn;
+		graphScan = graphScanIn;
+		graphAnalysis = graphAnalysisIn;
 
 		//set analysis graph panel proterty
 		graphAnalysis.setLegendButtonVisible(true);
@@ -178,25 +175,26 @@ public class MainAnalysisController {
 		//create data reader panel
 
 		dataReaderPanel = new JPanel();
-		xValPanel_Main_Text = graphAnalysis.getClickedPointObject().xValueText;
-		yValPanel_Main_Text = graphAnalysis.getClickedPointObject().yValueText;
-		graphAnalysis.getClickedPointObject().xValueFormat = xyPanel_Main_Format;
-		graphAnalysis.getClickedPointObject().yValueFormat = xyPanel_Main_Format;
+		xValPanelMainText = graphAnalysis.getClickedPointObject().xValueText;
+		yValPanelMainText = graphAnalysis.getClickedPointObject().yValueText;
+		graphAnalysis.getClickedPointObject().xValueFormat = xyPanelMainFormat;
+		graphAnalysis.getClickedPointObject().yValueFormat = xyPanelMainFormat;
 		Border etchedBorder = BorderFactory.createEtchedBorder();
 		dataReaderBorder = BorderFactory.createTitledBorder(etchedBorder, "GRAPH DATA READER");
 		dataReaderPanel.setBackground(dataReaderPanel.getBackground().darker());
 		dataReaderPanel.setBorder(dataReaderBorder);
 		dataReaderPanel.setLayout(new GridLayout(2, 2, 1, 1));
-		dataReaderPanel.add(xValPanel_Main_Label);
-		dataReaderPanel.add(xValPanel_Main_Text);
-		dataReaderPanel.add(yValPanel_Main_Label);
-		dataReaderPanel.add(yValPanel_Main_Text);
+		dataReaderPanel.add(xValPanelMainLabel);
+		dataReaderPanel.add(xValPanelMainText);
+		dataReaderPanel.add(yValPanelMainLabel);
+		dataReaderPanel.add(yValPanelMainText);
 
 		//define main chooser
 		operationChooser = new JComboBox<>(operationList);
 		operationChooser.setBackground(Color.cyan);
 		operationChooser.addActionListener(
 			new ActionListener() {
+                                @Override
 				public void actionPerformed(ActionEvent e) {
 					int index = operationChooser.getSelectedIndex();
 					setAnalysisControlPanel(index);
@@ -227,7 +225,7 @@ public class MainAnalysisController {
 	 *@return    The phase shift key string
 	 */
 	public static String getPhaseShiftKey() {
-		return phase_shift_graph_property_key;
+		return phaseShiftGraphPropertyKey;
 	}
 
 
@@ -264,10 +262,10 @@ public class MainAnalysisController {
 		chooserLabel.setFont(fnt);
 
 		//data reader panel
-		xValPanel_Main_Label.setFont(fnt);
-		yValPanel_Main_Label.setFont(fnt);
-		xValPanel_Main_Text.setFont(fnt);
-		yValPanel_Main_Text.setFont(fnt);
+		xValPanelMainLabel.setFont(fnt);
+		yValPanelMainLabel.setFont(fnt);
+		xValPanelMainText.setFont(fnt);
+		yValPanelMainText.setFont(fnt);
 		dataReaderBorder.setTitleFont(fnt);
 
 		//repaint
@@ -317,7 +315,7 @@ public class MainAnalysisController {
 	 */
 	public void createChildAnalysis(DataAdaptor analysisConfig) {
 
-		Vector<AnalysisController> analysisContrV = new Vector<AnalysisController>();
+		Vector<AnalysisController> analysisContrV = new Vector<>();
 
 		analysisControlPanel.removeAll();
 		customControlPanel.removeAll();
@@ -352,6 +350,7 @@ public class MainAnalysisController {
 		operationChooser.setBackground(Color.cyan);
 		operationChooser.addActionListener(
 			new ActionListener() {
+                                @Override
 				public void actionPerformed(ActionEvent e) {
 					int index = operationChooser.getSelectedIndex();
 					setAnalysisControlPanel(index);
@@ -392,14 +391,14 @@ public class MainAnalysisController {
 	 *  Sets mask specifying if the data for scan PV scan read back PV should be
 	 *  shown.
 	 *
-	 *@param  scanPV_ShowState     The new scanPVandScanPV_RB_State value
-	 *@param  scanPV_RB_ShowState  The new scanPVandScanPV_RB_State value
+	 *@param  scanPVShowState     The new scanPVandScanPV_RB_State value
+	 *@param  scanPVRBShowState  The new scanPVandScanPV_RB_State value
 	 */
-	public void setScanPVandScanPV_RB_State(boolean scanPV_ShowState, boolean scanPV_RB_ShowState) {
-		this.scanPV_ShowState = scanPV_ShowState;
-		this.scanPV_RB_ShowState = scanPV_RB_ShowState;
+	public void setScanPVandScanPV_RB_State(boolean scanPVShowState, boolean scanPVRBShowState) {
+		this.scanPVShowState = scanPVShowState;
+		this.scanPVRBShowState = scanPVRBShowState;
 		for (int i = 0; i < analysisControllers.length; i++) {
-			analysisControllers[i].setScanPVandScanPV_RB_State(scanPV_ShowState, scanPV_RB_ShowState);
+			analysisControllers[i].setScanPVandScanPV_RB_State(scanPVShowState, scanPVRBShowState);
 		}
 	}
 
@@ -412,12 +411,12 @@ public class MainAnalysisController {
 		graphAnalysis.removeAllGraphData();
 		graphAnalysis.clearZoomStack();
 		for (int i = 0, n = measuredValuesV.size(); i < n; i++) {
-			if ( measuredValuesShowStateV.get(i).booleanValue() ) {
+			if ( measuredValuesShowStateV.get(i) ) {
 				MeasuredValue mv_tmp = measuredValuesV.get(i);
-				if (scanPV_ShowState || scanVariable.getChannel() == null) {
+				if (scanPVShowState || scanVariable.getChannel() == null) {
 					graphAnalysis.addGraphData(mv_tmp.getDataContainers());
 				}
-				if (scanPV_RB_ShowState) {
+				if (scanPVRBShowState) {
 					graphAnalysis.addGraphData(mv_tmp.getDataContainersRB());
 				}
 			}
@@ -516,6 +515,7 @@ public class MainAnalysisController {
 		//"HIDE" button
 		hideGlobalButton.addActionListener(
 			new ActionListener() {
+                                @Override
 				public void actionPerformed(ActionEvent e) {
 					BasicGraphData gd = getChoosenDraphData();
 					if (gd != null) {
@@ -532,6 +532,7 @@ public class MainAnalysisController {
 		//"SHOW ALL" button
 		showAllGlobalButton.addActionListener(
 			new ActionListener() {
+                                @Override
 				public void actionPerformed(ActionEvent e) {
 					updateDataSetOnGraphPanel();
 					messageTextLocal.setText(null);
@@ -541,6 +542,7 @@ public class MainAnalysisController {
 		//"REMOVE POINT" button
 		removePointGlobalButton.addActionListener(
 			new ActionListener() {
+                                @Override
 				public void actionPerformed(ActionEvent e) {
 					Object[] choosenObjArr = getChoosenDraphDataAndPoint();
 					BasicGraphData gd = (BasicGraphData) choosenObjArr[0];
@@ -559,6 +561,7 @@ public class MainAnalysisController {
 		//"REMOVE GRAPH" button
 		removeGraphGlobalButton.addActionListener(
 			new ActionListener() {
+                                @Override
 				public void actionPerformed(ActionEvent e) {
 					BasicGraphData gd = getChoosenDraphData();
 					Integer Ind = graphAnalysis.getGraphChosenIndex();
@@ -583,16 +586,16 @@ public class MainAnalysisController {
 			});
 
 		//"REMOVE ALL" button
-		removeAllGlobalButton.addActionListener(
-			new ActionListener() {
+		removeAllGlobalButton.addActionListener(new ActionListener() {
+                                @Override
 				public void actionPerformed(ActionEvent e) {
 					for (int i = 0, n = measuredValuesV.size(); i < n; i++) {
-						if ( measuredValuesShowStateV.get(i).booleanValue() ) {
+						if ( measuredValuesShowStateV.get(i) ) {
 							MeasuredValue mv_tmp = measuredValuesV.get(i);
-							if (scanPV_ShowState || scanVariable.getChannel() == null) {
+							if (scanPVShowState || scanVariable.getChannel() == null) {
 								mv_tmp.removeAllDataContainersNonRB();
 							}
-							if (scanPV_RB_ShowState) {
+							if (scanPVRBShowState) {
 								mv_tmp.removeAllDataContainersRB();
 							}
 						}
@@ -605,6 +608,7 @@ public class MainAnalysisController {
 		//"WRAP DATA" button
 		wrapGraphGlobalButton.addActionListener(
 			new ActionListener() {
+                                @Override
 				public void actionPerformed(ActionEvent e) {
 					BasicGraphData gd = getChoosenDraphData();
 					if (gd != null) {
@@ -620,8 +624,8 @@ public class MainAnalysisController {
 			});
 
 		//"EXPORT ASCII"
-		exportGraphGlobalButton.addActionListener(
-			new ActionListener() {
+		exportGraphGlobalButton.addActionListener(new ActionListener() {
+                                @Override
 				public void actionPerformed(ActionEvent e) {
 					BasicGraphData gd = getChoosenDraphData();
 					if (gd != null) {
@@ -663,7 +667,7 @@ public class MainAnalysisController {
 									BufferedWriter out = new BufferedWriter(new FileWriter(dataFile));
 									Vector<BasicGraphData> gdV_tmp = graphAnalysis.getAllGraphData();
 
-									Vector<BasicGraphData> gdV = new Vector<BasicGraphData>();
+									Vector<BasicGraphData> gdV = new Vector<>();
 									for (int i = 0; i < gdV_tmp.size(); i++) {
 										gd = gdV_tmp.get(i);
 										if (gd.getNumbOfPoints() > 0) {
@@ -690,11 +694,11 @@ public class MainAnalysisController {
 
 									for (int j = 0; j < nP; j++) {
 										gd = gdV.get(0);
-										out.write(" " + xyPanel_Main_Format.format(gd.getX(j)));
+										out.write(" " + xyPanelMainFormat.format(gd.getX(j)));
 
 										for (int i = 0; i < gdV.size(); i++) {
 											gd = gdV.get(i);
-											out.write(" " + xyPanel_Main_Format.format(gd.getY(j)));
+											out.write(" " + xyPanelMainFormat.format(gd.getY(j)));
 
 										}
 
@@ -721,6 +725,7 @@ public class MainAnalysisController {
 		
 		exportGraphToCSVGlobalButton.addActionListener( 
 			new ActionListener() {
+                                @Override
 				public void actionPerformed( final ActionEvent event ) {
 					if (canSaveAsTable()) {
 						exportDisplayedGraphToCSV();
@@ -736,6 +741,7 @@ public class MainAnalysisController {
 		//"INCR. COLOR" button
 		incrColorGlobalButton.addActionListener(
 			new ActionListener() {
+                                @Override
 				public void actionPerformed(ActionEvent e) {
 					Vector<BasicGraphData> gdV = graphAnalysis.getAllGraphData();
 					int count = 0;
@@ -754,6 +760,7 @@ public class MainAnalysisController {
 		//"DATA COLOR" button
 		dataColorGlobalButton.addActionListener(
 			new ActionListener() {
+                                @Override
 				public void actionPerformed(ActionEvent e) {
 					restoreDataColoring();
 					messageTextLocal.setText(null);
@@ -763,6 +770,7 @@ public class MainAnalysisController {
 		//"REMOVE TEMP." button
 		removeTmpGlobalButton.addActionListener(
 			new ActionListener() {
+                                @Override
 				public void actionPerformed(ActionEvent e) {
 					graphDataLocal.removeAllPoints();
 					graphAnalysis.refreshGraphJPanel();
@@ -773,6 +781,7 @@ public class MainAnalysisController {
 		//SHIFT x-Phase button
 		phaseShiftGlobalButton.addActionListener(
 			new ActionListener() {
+                                @Override
 				public void actionPerformed(ActionEvent e) {
 					Vector<BasicGraphData> gdV = graphAnalysis.getAllGraphData();
 					for (int i = 0, n = gdV.size(); i < n; i++) {
@@ -789,6 +798,7 @@ public class MainAnalysisController {
 		//UN-SHIFT button
 		removePhaseShiftGlobalButton.addActionListener(
 			new ActionListener() {
+                                @Override
 				public void actionPerformed(ActionEvent e) {
 					Vector<BasicGraphData> gdV = graphAnalysis.getAllGraphData();
 					for (int i = 0, n = gdV.size(); i < n; i++) {
@@ -821,7 +831,7 @@ public class MainAnalysisController {
 			try {
 				final Vector<BasicGraphData> allGraphData = graphAnalysis.getAllGraphData();
 				
-				final Vector<BasicGraphData> validGraphData = new Vector<BasicGraphData>();
+				final Vector<BasicGraphData> validGraphData = new Vector<>();
 				for (int i = 0; i < allGraphData.size(); i++) {
 					final BasicGraphData graphData = allGraphData.get(i);
 					if ( graphData.getNumbOfPoints() > 0 ) {
@@ -843,11 +853,11 @@ public class MainAnalysisController {
 					out.newLine();
 					
 					for ( int row = 0; row < numPoints; row++ ) {
-						out.write( " " + xyPanel_Main_Format.format( validGraphData.get(0).getX(row) ) );
+						out.write(" " + xyPanelMainFormat.format( validGraphData.get(0).getX(row) ) );
 						
 						for ( int column = 0; column < validGraphData.size(); column++ ) {
 							final BasicGraphData graphData = validGraphData.get( column );
-							out.write( ", " + xyPanel_Main_Format.format( graphData.getY(row) ) );
+							out.write(", " + xyPanelMainFormat.format( graphData.getY(row) ) );
 							
 						}					
 						out.newLine();
@@ -887,9 +897,9 @@ public class MainAnalysisController {
 	private static void shiftGraphData(BasicGraphData gd, double shiftVal) {
 		String key = getPhaseShiftKey();
 		if (gd.getGraphProperty(key) == null) {
-			gd.setGraphProperty(key, new Double(0.));
+			gd.setGraphProperty(key, 0.);
 		}
-		double shiftOld = ((Double) gd.getGraphProperty(key)).doubleValue();
+		double shiftOld = ((Double) gd.getGraphProperty(key));
 		double shiftTotal = shiftOld + shiftVal;
 		shiftTotal += 180.;
 		while (shiftTotal < 0.) {
@@ -897,7 +907,7 @@ public class MainAnalysisController {
 		}
 		shiftTotal = shiftTotal % 360.;
 		shiftTotal -= 180.;
-		gd.setGraphProperty(key, new Double(shiftTotal));
+		gd.setGraphProperty(key, shiftTotal);
 		int nP = gd.getNumbOfPoints();
 		double[] x = new double[nP];
 		double[] y = new double[nP];
@@ -926,7 +936,7 @@ public class MainAnalysisController {
 	private static void unShiftGraphData(BasicGraphData gd) {
 		String key = getPhaseShiftKey();
 		if (gd.getGraphProperty(key) != null) {
-			double shift = ((Double) gd.getGraphProperty(key)).doubleValue();
+			double shift = ((Double) gd.getGraphProperty(key));
 			shift = shift % 360;
 			int nP = gd.getNumbOfPoints();
 			double[] x = new double[nP];
@@ -965,7 +975,7 @@ public class MainAnalysisController {
 			int nP = gd.getNumbOfPoints();
 			if (nP > 0) {
 				if (gd.getGraphProperty(key) != null) {
-					shift += ((Double) gd.getGraphProperty(key)).doubleValue();
+					shift += ((Double) gd.getGraphProperty(key));
 					nCount++;
 				}
 			}
@@ -989,7 +999,7 @@ public class MainAnalysisController {
 		int nP = gd.getNumbOfPoints();
 		if (nP > 0) {
 			if (gd.getGraphProperty(key) != null) {
-				shift = ((Double) gd.getGraphProperty(key)).doubleValue();
+				shift = ((Double) gd.getGraphProperty(key));
 			}
 		}
 		return shift;
@@ -1003,9 +1013,9 @@ public class MainAnalysisController {
 	 */
 	protected BasicGraphData getChoosenDraphData() {
 		BasicGraphData gd = null;
-		Integer Ind = graphAnalysis.getGraphChosenIndex();
-		if (Ind != null && Ind.intValue() >= 0) {
-			gd = graphAnalysis.getInstanceOfGraphData(Ind.intValue());
+		Integer ind = graphAnalysis.getGraphChosenIndex();
+		if (ind != null && ind >= 0) {
+			gd = graphAnalysis.getInstanceOfGraphData(ind);
 			if (gd == graphDataLocal) {
 				return null;
 			}
@@ -1046,18 +1056,18 @@ public class MainAnalysisController {
 		Object[] objArr = new Object[2];
 		objArr[0] = null;
 		objArr[1] = null;
-		Integer Ind = graphAnalysis.getGraphChosenIndex();
-		Integer IndP = graphAnalysis.getPointChosenIndex();
-		if (Ind != null &&
-				IndP != null &&
-				Ind.intValue() >= 0 &&
-				IndP.intValue() >= 0 &&
-				graphAnalysis.getInstanceOfGraphData(Ind.intValue()) != graphDataLocal) {
-			objArr[0] = graphAnalysis.getInstanceOfGraphData(Ind.intValue());
-			objArr[1] = IndP;
+		Integer ind = graphAnalysis.getGraphChosenIndex();
+		Integer indP = graphAnalysis.getPointChosenIndex();
+		if (ind != null &&
+				indP != null &&
+				ind >= 0 &&
+				indP >= 0 &&
+				graphAnalysis.getInstanceOfGraphData(ind) != graphDataLocal) {
+			objArr[0] = graphAnalysis.getInstanceOfGraphData(ind);
+			objArr[1] = indP;
 		} else {
 			BasicGraphData gd = getChoosenDraphData();
-			Vector<BasicGraphData> oneV = new Vector<BasicGraphData>();
+			Vector<BasicGraphData> oneV = new Vector<>();
 			oneV.add(gd);
 			objArr =
 					GraphDataOperations.getGraphDataAndPointIndexInside(
@@ -1078,7 +1088,7 @@ public class MainAnalysisController {
 	 */
 	private boolean canSaveAsTable() {
 		Vector<BasicGraphData> gdV_tmp = graphAnalysis.getAllGraphData();
-		Vector<BasicGraphData> gdV = new Vector<BasicGraphData>();
+		Vector<BasicGraphData> gdV = new Vector<>();
 		for (int i = 0; i < gdV_tmp.size(); i++) {
 			BasicGraphData gd = gdV_tmp.get(i);
 			if (gd.getNumbOfPoints() > 0) {

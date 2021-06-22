@@ -28,8 +28,8 @@ public class ScanController1D {
 
   private ScanVariable scanVariable = null;
 
-  private Vector<MeasuredValue> measuredValuesV = new Vector<MeasuredValue>();
-  private Vector<MeasuredValue> validationValuesV = new Vector<MeasuredValue>();
+  private Vector<MeasuredValue> measuredValuesV = new Vector<>();
+  private Vector<MeasuredValue> validationValuesV = new Vector<>();
 
   //time of sleeping between settings variables and measurements
   private double sleepTime = 0.2;
@@ -64,10 +64,10 @@ public class ScanController1D {
   BeamTrigger beamTrigger = new BeamTrigger();
 
   //public GUI components
-  private JPanel phaseScanAndRB_Panel = new JPanel();
-  private JRadioButton phaseScan_Button = new JRadioButton("Phase. ");
-  private JLabel valueRB_Label = new JLabel(" This is a Read Back Value:  ");
-  private JLabel scanStep_Label = new JLabel("SCAN with step:  ");
+  private JPanel phaseScanAndRBPanel = new JPanel();
+  private JRadioButton phaseScanButton = new JRadioButton("Phase. ");
+  private JLabel valueRBLabel = new JLabel(" This is a Read Back Value:  ");
+  private JLabel scanStepLabel = new JLabel("SCAN with step:  ");
 
   private DoubleInputTextField lowLimText = new DoubleInputTextField(10);
   private DoubleInputTextField uppLimText = new DoubleInputTextField(10);
@@ -102,8 +102,8 @@ public class ScanController1D {
   //-----------------------------------------------------------------
   private ActionEvent newSetOfDataAction = null;
   private ActionEvent newPointOfDataAction = null;
-  private Vector<ActionListener> newSetOfDataListenersV = new Vector<ActionListener>();
-  private Vector<ActionListener> newPointOfDataListenersV = new Vector<ActionListener>();
+  private Vector<ActionListener> newSetOfDataListenersV = new Vector<>();
+  private Vector<ActionListener> newPointOfDataListenersV = new Vector<>();
 
   //-----------------------------------------------------------------
   //actions and listeners for the START button
@@ -111,9 +111,9 @@ public class ScanController1D {
   private ActionEvent startButtonAction = null;
   private ActionEvent stopButtonAction = null;
   private ActionEvent resumeButtonAction = null;
-  private Vector<ActionListener> startListenersV = new Vector<ActionListener>();
-  private Vector<ActionListener> stopListenersV = new Vector<ActionListener>();
-  private Vector<ActionListener> resumeListenersV = new Vector<ActionListener>();
+  private Vector<ActionListener> startListenersV = new Vector<>();
+  private Vector<ActionListener> stopListenersV = new Vector<>();
+  private Vector<ActionListener> resumeListenersV = new Vector<>();
 
   //This is stop scan listener. It should be used to stop scan from anywhere.
   private ActionListener stopScanListener = null;
@@ -139,14 +139,14 @@ public class ScanController1D {
   private static int RESUME_BUTTONS_STATE = 1;
   private static int SCAN_BUTTONS_STATE = 2;
 
-  private int CURRENT_BUTTONS_STATE = 0;
+  private int currentButtonsState = 0;
 
   //key defining if the memory value should be restored
   private boolean scanVarShouldBeRestored = true;
   private boolean scanVarShouldBeMemorized = true;
 
   //synchronizing lock
-  private Object lockObj = new Object();
+  private final Object lockObj = new Object();
 
 
   /**
@@ -180,6 +180,7 @@ public class ScanController1D {
 
     valueText.addActionListener(
       new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           if (scanOn == false) {
             try {
@@ -217,6 +218,7 @@ public class ScanController1D {
 
     valueText.addMouseListener(
       new MouseAdapter() {
+        @Override
         public void mouseClicked(MouseEvent e) {
           if (e.getClickCount() == 2) {
             if (scanOn == false) {
@@ -228,13 +230,13 @@ public class ScanController1D {
               boolean containersCreated = false;
 
               for (int i = 0, n = measuredValuesV.size(); i < n; i++) {
-                MeasuredValue mv_tmp = measuredValuesV.get(i);
-                if (mv_tmp != null && mv_tmp.getNumberOfDataContainers() == 0) {
-                  mv_tmp.createNewDataContainer();
+                MeasuredValue mvTmp = measuredValuesV.get(i);
+                if (mvTmp != null && mvTmp.getNumberOfDataContainers() == 0) {
+                  mvTmp.createNewDataContainer();
                   containersCreated = true;
                   if (scanVariable.getChannelRB() != null &&
-                      mv_tmp.getNumberOfDataContainersRB() == 0) {
-                    mv_tmp.createNewDataContainerRB();
+                      mvTmp.getNumberOfDataContainersRB() == 0) {
+                    mvTmp.createNewDataContainerRB();
                   }
                 }
               }
@@ -256,6 +258,7 @@ public class ScanController1D {
 
     valueTextRB.addMouseListener(
       new MouseAdapter() {
+        @Override
         public void mouseClicked(MouseEvent e) {
           valueTextRB.setText(null);
           if (scanVariable != null && scanOn == false) {
@@ -280,6 +283,7 @@ public class ScanController1D {
 
     uppLimText.addActionListener(
       new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           uppLim = uppLimText.getValue();
           setSliderValue(scanValue);
@@ -290,6 +294,7 @@ public class ScanController1D {
 
     stepText.addActionListener(
       new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           step = stepText.getValue();
           continueMode = false;
@@ -299,6 +304,7 @@ public class ScanController1D {
 
     sleepTimeText.addActionListener(
       new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           sleepTime = sleepTimeText.getValue();
         }
@@ -307,10 +313,11 @@ public class ScanController1D {
     scrollBar.setBlockIncrement((scrollBar.getMaximum() - scrollBar.getMinimum()) / 50);
     scrollBar.getModel().addChangeListener(
       new ChangeListener() {
+        @Override
         public void stateChanged(ChangeEvent e) {
           if (!scrollBarLocked) {
-            int i_val = scrollBar.getValue();
-            double val = lowLim + i_val * (uppLim - lowLim) / (scrollBar.getMaximum() - scrollBar.getMinimum());
+            int iVal = scrollBar.getValue();
+            double val = lowLim + iVal * (uppLim - lowLim) / (scrollBar.getMaximum() - scrollBar.getMinimum());
             valueText.setText(null);
             valueText.setText(valueFormat.format(val));
           }
@@ -326,6 +333,7 @@ public class ScanController1D {
 
     startButtonListener =
       new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           if (scanOn == true) {
             Toolkit.getDefaultToolkit().beep();
@@ -335,7 +343,7 @@ public class ScanController1D {
           continueMode = false;
           scanVarShouldBeRestored = true;
 
-          if (CURRENT_BUTTONS_STATE == START_BUTTONS_STATE) {
+          if (currentButtonsState == START_BUTTONS_STATE) {
             scanVarShouldBeMemorized = true;
           } else {
             scanVarShouldBeMemorized = false;
@@ -353,9 +361,10 @@ public class ScanController1D {
 
     resumeButtonListener =
       new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           scanVarShouldBeMemorized = false;
-          if (CURRENT_BUTTONS_STATE == RESUME_BUTTONS_STATE) {
+          if (currentButtonsState == RESUME_BUTTONS_STATE) {
             if (scanOn == true) {
               Toolkit.getDefaultToolkit().beep();
               return;
@@ -386,6 +395,7 @@ public class ScanController1D {
 
     stopButtonListener =
       new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           scanVarShouldBeMemorized = false;
           if (scanOn == false) {
@@ -405,6 +415,7 @@ public class ScanController1D {
     //stop scan listener definition
     stopScanListener =
       new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           scanOn = false;
           if (measurementThread != null && measurementThread.isAlive()) {
@@ -431,7 +442,7 @@ public class ScanController1D {
     setSleepTime(sleepTime);
 
     //Tool tip setting
-    phaseScan_Button.setToolTipText("Use this button to indicate a phase scan");
+    phaseScanButton.setToolTipText("Use this button to indicate a phase scan");
 
     //Layout and Border definition
     controllerPanel.setLayout(new BorderLayout());
@@ -439,61 +450,61 @@ public class ScanController1D {
 
     FlowLayout flwC = new FlowLayout(FlowLayout.LEFT, 1, 1);
 
-    JPanel panel_1 = phaseScanAndRB_Panel;
-    panel_1.setBorder(BorderFactory.createEmptyBorder());
-    panel_1.setLayout(flwC);
-    panel_1.add(valueRB_Label);
-    panel_1.add(valueTextRB);
+    JPanel panel1 = phaseScanAndRBPanel;
+    panel1.setBorder(BorderFactory.createEmptyBorder());
+    panel1.setLayout(flwC);
+    panel1.add(valueRBLabel);
+    panel1.add(valueTextRB);
 
-    JPanel panel_2 = new JPanel();
-    panel_2.setBorder(BorderFactory.createEmptyBorder());
-    panel_2.setLayout(new GridLayout(1, 3, 1, 1));
-    panel_2.add(lowLimText);
-    panel_2.add(valueText);
-    panel_2.add(uppLimText);
+    JPanel panel2 = new JPanel();
+    panel2.setBorder(BorderFactory.createEmptyBorder());
+    panel2.setLayout(new GridLayout(1, 3, 1, 1));
+    panel2.add(lowLimText);
+    panel2.add(valueText);
+    panel2.add(uppLimText);
 
-    JPanel panel_3 = new JPanel();
-    panel_3.setBorder(BorderFactory.createEmptyBorder());
-    panel_3.setLayout(new BorderLayout());
-    panel_3.add(scrollBar, BorderLayout.NORTH);
+    JPanel panel3 = new JPanel();
+    panel3.setBorder(BorderFactory.createEmptyBorder());
+    panel3.setLayout(new BorderLayout());
+    panel3.add(scrollBar, BorderLayout.NORTH);
 
-    JPanel panel_4 = new JPanel();
-    panel_4.setBorder(BorderFactory.createEmptyBorder());
-    panel_4.setLayout(flwC);
-    panel_4.add(scanStep_Label);
-    panel_4.add(stepText);
-    panel_4.add(unitsLabel);
+    JPanel panel4 = new JPanel();
+    panel4.setBorder(BorderFactory.createEmptyBorder());
+    panel4.setLayout(flwC);
+    panel4.add(scanStepLabel);
+    panel4.add(stepText);
+    panel4.add(unitsLabel);
 
-    JPanel panel_5 = new JPanel();
-    panel_5.setBorder(BorderFactory.createEmptyBorder());
-    panel_5.setLayout(flwC);
-    panel_5.add(sleepTimeLabel);
-    panel_5.add(sleepTimeText);
+    JPanel panel5 = new JPanel();
+    panel5.setBorder(BorderFactory.createEmptyBorder());
+    panel5.setLayout(flwC);
+    panel5.add(sleepTimeLabel);
+    panel5.add(sleepTimeText);
 
-    JPanel panel_6 = new JPanel();
-    panel_6.setBorder(BorderFactory.createEmptyBorder());
-    panel_6.setLayout(new GridLayout(1, 3, 1, 1));
-    panel_6.add(startButton);
-    panel_6.add(resumeButton);
-    panel_6.add(stopButton);
+    JPanel panel6 = new JPanel();
+    panel6.setBorder(BorderFactory.createEmptyBorder());
+    panel6.setLayout(new GridLayout(1, 3, 1, 1));
+    panel6.add(startButton);
+    panel6.add(resumeButton);
+    panel6.add(stopButton);
 
-    JPanel panel_7 = new JPanel();
-    panel_7.setBorder(BorderFactory.createEmptyBorder());
-    panel_7.setLayout(flwC);
-    panel_7.add(beamTrigger.getJPanel());
+    JPanel panel7 = new JPanel();
+    panel7.setBorder(BorderFactory.createEmptyBorder());
+    panel7.setLayout(flwC);
+    panel7.add(beamTrigger.getJPanel());
 
-    JPanel inner_panel = new JPanel();
-    inner_panel.setLayout(new VerticalLayout());
+    JPanel innerPanel = new JPanel();
+    innerPanel.setLayout(new VerticalLayout());
 
-    inner_panel.add(panel_1);
-    inner_panel.add(panel_2);
-    inner_panel.add(panel_3);
-    inner_panel.add(panel_4);
-    inner_panel.add(panel_5);
-    inner_panel.add(panel_6);
-    inner_panel.add(panel_7);
+    innerPanel.add(panel1);
+    innerPanel.add(panel2);
+    innerPanel.add(panel3);
+    innerPanel.add(panel4);
+    innerPanel.add(panel5);
+    innerPanel.add(panel6);
+    innerPanel.add(panel7);
 
-    controllerPanel.add(inner_panel, BorderLayout.WEST);
+    controllerPanel.add(innerPanel, BorderLayout.WEST);
 
     setFontForAll(new Font("Monospaced", Font.PLAIN, 10));
     controllerPanel.setBackground(controllerPanel.getBackground().darker());
@@ -516,9 +527,9 @@ public class ScanController1D {
    *@param  fnt  The new fontForAll value
    */
   public void setFontForAll(Font fnt) {
-    phaseScan_Button.setFont(fnt);
-    valueRB_Label.setFont(fnt);
-    scanStep_Label.setFont(fnt);
+    phaseScanButton.setFont(fnt);
+    valueRBLabel.setFont(fnt);
+    scanStepLabel.setFont(fnt);
     lowLimText.setFont(fnt);
     uppLimText.setFont(fnt);
     stepText.setFont(fnt);
@@ -636,6 +647,7 @@ public class ScanController1D {
       if (avgParamChangeListener == null) {
         avgParamChangeListener =
           new ChangeListener() {
+            @Override
             public void stateChanged(ChangeEvent changeEvent) {
               AvgController avgCntr = (AvgController) changeEvent.getSource();
               avrgTime = avgCntr.getTimeDelay();
@@ -665,6 +677,7 @@ public class ScanController1D {
       if (validationParamChangeListener == null) {
         validationParamChangeListener =
           new ChangeListener() {
+            @Override
             public void stateChanged(ChangeEvent changeEvent) {
               ValidationController validCntr = (ValidationController) changeEvent.getSource();
               validateMeasurement = validCntr.isOn();
@@ -772,18 +785,18 @@ public class ScanController1D {
    *@param  val  The new sliderValue value
    */
   private void setSliderValue(double val) {
-    int i_val = (scrollBar.getMaximum() + scrollBar.getMinimum()) / 2;
+    int iVal = (scrollBar.getMaximum() + scrollBar.getMinimum()) / 2;
     if (lowLim < uppLim) {
-      i_val = (int) (((val - lowLim) / (uppLim - lowLim)) * (scrollBar.getMaximum() - scrollBar.getMinimum()));
-      if (i_val < scrollBar.getMinimum()) {
-        i_val = scrollBar.getMinimum();
+      iVal = (int) (((val - lowLim) / (uppLim - lowLim)) * (scrollBar.getMaximum() - scrollBar.getMinimum()));
+      if (iVal < scrollBar.getMinimum()) {
+        iVal = scrollBar.getMinimum();
       }
-      if (i_val > scrollBar.getMaximum()) {
-        i_val = scrollBar.getMaximum();
+      if (iVal > scrollBar.getMaximum()) {
+        iVal = scrollBar.getMaximum();
       }
     }
     scrollBarLocked = true;
-    scrollBar.setValue(i_val);
+    scrollBar.setValue(iVal);
     scrollBarLocked = false;
   }
 
@@ -1056,7 +1069,7 @@ public class ScanController1D {
    *@return    true if it is possible
    */
   public boolean startScan() {
-    if (CURRENT_BUTTONS_STATE != START_BUTTONS_STATE) {
+    if (currentButtonsState != START_BUTTONS_STATE) {
       return false;
     }
     startButtonListener.actionPerformed(startButtonAction);
@@ -1070,7 +1083,7 @@ public class ScanController1D {
    *@return    true if it is possible
    */
   public boolean resumeScan() {
-    if (CURRENT_BUTTONS_STATE != RESUME_BUTTONS_STATE) {
+    if (currentButtonsState != RESUME_BUTTONS_STATE) {
       return false;
     }
     resumeButtonListener.actionPerformed(resumeButtonAction);
@@ -1084,7 +1097,7 @@ public class ScanController1D {
    *@return    true if it is possible
    */
   public boolean stopScan() {
-    if (CURRENT_BUTTONS_STATE != SCAN_BUTTONS_STATE) {
+    if (currentButtonsState != SCAN_BUTTONS_STATE) {
       return false;
     }
     stopButtonListener.actionPerformed(stopButtonAction);
@@ -1207,17 +1220,16 @@ public class ScanController1D {
    */
   private void setButtonsState(int BUTTONS_STATE) {
 
-    int OLD_BUTTONS_STATE = CURRENT_BUTTONS_STATE;
-    CURRENT_BUTTONS_STATE = BUTTONS_STATE;
+    currentButtonsState = BUTTONS_STATE;
 
-    if (CURRENT_BUTTONS_STATE == START_BUTTONS_STATE) {
+    if (currentButtonsState == START_BUTTONS_STATE) {
       startButton.setEnabled(true);
       resumeButton.setEnabled(false);
       stopButton.setEnabled(false);
 
       resumeButton.setText("PAUSE");
     } else {
-      if (CURRENT_BUTTONS_STATE == RESUME_BUTTONS_STATE) {
+      if (currentButtonsState == RESUME_BUTTONS_STATE) {
         startButton.setEnabled(true);
         resumeButton.setEnabled(true);
         stopButton.setEnabled(false);
@@ -1269,6 +1281,7 @@ public class ScanController1D {
   public void measure() {
     Runnable runMeasure =
       new Runnable() {
+        @Override
         public void run() {
           synchronized (lockObj) {
             scanOn = true;
@@ -1302,6 +1315,7 @@ public class ScanController1D {
               if (scanVariable.getChannel() != null) {
                 Thread localUpDateThread = new Thread(
                   new Runnable() {
+                    @Override
                     public void run() {
                       try {
                         Thread.sleep(1000);
@@ -1358,6 +1372,7 @@ public class ScanController1D {
   private void measure(final double val) {
     Runnable runMeasure =
       new Runnable() {
+        @Override
         public void run() {
           synchronized (lockObj) {
 
@@ -1613,20 +1628,20 @@ public class ScanController1D {
   //Access to GUI elements methods
   //-------------------------------------------
   /**
-   *  Shows or removes the phase scan button on the pannel
+   *  Shows or removes the phase scan button on the panel
    *
    *@param  vis  The new phaseScanButtonVisible value
    */
   public void setPhaseScanButtonVisible(boolean vis) {
-    Component[] cmpArr = phaseScanAndRB_Panel.getComponents();
-    phaseScanAndRB_Panel.removeAll();
+    Component[] cmpArr = phaseScanAndRBPanel.getComponents();
+    phaseScanAndRBPanel.removeAll();
     if (vis) {
-      phaseScanAndRB_Panel.add(phaseScan_Button);
+      phaseScanAndRBPanel.add(phaseScanButton);
     }
     if (cmpArr != null) {
       for (int i = 0; i < cmpArr.length; i++) {
-        if (((Component) phaseScan_Button) != cmpArr[i]) {
-          phaseScanAndRB_Panel.add(cmpArr[i]);
+        if (((Component) phaseScanButton) != cmpArr[i]) {
+          phaseScanAndRBPanel.add(cmpArr[i]);
         }
       }
     }
@@ -1651,7 +1666,7 @@ public class ScanController1D {
    *@return    The boolean True if the phase scan button is visible
    */
   public boolean getPhaseScanButtonVizible() {
-    if (phaseScanAndRB_Panel.getComponentCount() == 2) {
+    if (phaseScanAndRBPanel.getComponentCount() == 2) {
       return false;
     }
     return true;
@@ -1664,7 +1679,7 @@ public class ScanController1D {
    *@return    The phase scan button state on(true) off(false)
    */
   public boolean getPhaseScanButtonOn() {
-    return phaseScan_Button.isSelected();
+    return phaseScanButton.isSelected();
   }
 
 
@@ -1674,19 +1689,19 @@ public class ScanController1D {
    *@param  onOff  The new phase scan button value
    */
   public void setPhaseScanButtonOn(boolean onOff) {
-    phaseScan_Button.setSelected(onOff);
+    phaseScanButton.setSelected(onOff);
   }
 
 
   /**
-   *  Wrapps the phase if the phase button is on
+   *  Wraps the phase if the phase button is on
    *
    *@param  inValue  Input scan value
    *@return          Wrapped value ( if prescribed )
    */
   private double phaseWrappingFunction(double inValue) {
     double outValue = inValue;
-    if (phaseScan_Button.isSelected()) {
+    if (phaseScanButton.isSelected()) {
       if (Math.abs(inValue) > 180.) {
         outValue += 180.;
         while (outValue < 0.) {
@@ -1701,22 +1716,22 @@ public class ScanController1D {
 
 
   /**
-   *  Returns the valueRB_Label attribute of the ScanController1D object
+   *  Returns the valueRBLabel attribute of the ScanController1D object
    *
-   *@return    The valueRB_Label value
+   *@return    The valueRBLabel value
    */
-  public JLabel getValueRB_Label() {
-    return valueRB_Label;
+  public JLabel getValueRBLabel() {
+    return valueRBLabel;
   }
 
 
   /**
-   *  Returns the scanStep_Label attribute of the ScanController1D object
+   *  Returns the scanStepLabel attribute of the ScanController1D object
    *
-   *@return    The scanStep_Label value
+   *@return    The scanStepLabel value
    */
-  public JLabel getScanStep_Label() {
-    return scanStep_Label;
+  public JLabel getScanStepLabel() {
+    return scanStepLabel;
   }
 
 
@@ -1772,6 +1787,7 @@ public class ScanController1D {
     JFrame mainFrame = new JFrame("Test of the IndependentValueRange class");
     mainFrame.addWindowListener(
       new java.awt.event.WindowAdapter() {
+        @Override
         public void windowClosing(java.awt.event.WindowEvent evt) {
           System.exit(0);
         }
@@ -1780,9 +1796,9 @@ public class ScanController1D {
 
     mainFrame.getContentPane().setLayout(new BorderLayout());
 
-    JPanel tmp_p = new JPanel();
-    tmp_p.setLayout(new BorderLayout());
-    mainFrame.getContentPane().add(tmp_p, BorderLayout.WEST);
+    JPanel tmpP = new JPanel();
+    tmpP.setLayout(new BorderLayout());
+    mainFrame.getContentPane().add(tmpP, BorderLayout.WEST);
 
     ScanController1D iRange = new ScanController1D("SCAN CONTROL PANEL");
     iRange.getUnitsLabel().setText(" kV ");
@@ -1792,7 +1808,7 @@ public class ScanController1D {
     iRange.setSleepTime(2.0);
     iRange.setBeamTriggerState(false);
 
-    tmp_p.add(iRange.getJPanel(), BorderLayout.NORTH);
+    tmpP.add(iRange.getJPanel(), BorderLayout.NORTH);
 
     mainFrame.pack();
     mainFrame.setSize(new Dimension(300, 430));
@@ -1801,6 +1817,7 @@ public class ScanController1D {
     //add listeners
     iRange.addStartListener(
       new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           ScanController1D scc = (ScanController1D) e.getSource();
           System.out.println("Start Listener is scanOn = " +
@@ -1812,6 +1829,7 @@ public class ScanController1D {
 
     iRange.addStopListener(
       new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           ScanController1D scc = (ScanController1D) e.getSource();
           System.out.println("Stop Listener is scanOn = " +
@@ -1823,6 +1841,7 @@ public class ScanController1D {
 
     iRange.addResumeListener(
       new ActionListener() {
+        @Override
         public void actionPerformed(ActionEvent e) {
           ScanController1D scc = (ScanController1D) e.getSource();
           System.out.println("Resume Listener is scanOn = " +

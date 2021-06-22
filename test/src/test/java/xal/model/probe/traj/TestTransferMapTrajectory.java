@@ -49,7 +49,7 @@ public class TestTransferMapTrajectory {
      */
     
     /** The results output file stream */
-    static private PrintStream        PSTR_OUTPUT;
+    private static PrintStream        PSTR_OUTPUT;
 
     
     private static Accelerator     ACCEL;

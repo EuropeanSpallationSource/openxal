@@ -6,7 +6,6 @@
 
 package xal.tools.correlator;
 
-import xal.tools.messaging.MessageCenter;
 
 import java.util.*;
 
@@ -23,7 +22,7 @@ import java.util.*;
  */
 public class CorrelationStack<RecordType> {
     /** buffer is a LILO stack of correlations with the oldest correlations having the smallest indices. */
-    protected LinkedList<Correlation<RecordType>> buffer;
+    protected final LinkedList<Correlation<RecordType>> buffer;
     protected int stackSize;
 	protected Correlation<RecordType> lastCorrelation;
     
@@ -34,16 +33,18 @@ public class CorrelationStack<RecordType> {
     /** Creates a new instance of CorrelationStack */
     public CorrelationStack( final Correlator<?,RecordType,?> aCorrelator, final int aStackSize ) {
         stackSize = aStackSize;
-        buffer = new LinkedList<Correlation<RecordType>>();
+        buffer = new LinkedList<>();
 		lastCorrelation = null;
 		
         correlator = aCorrelator;
 		correlator.usePatientBroadcaster();
 		correlator.addListener( new CorrelationNotice<RecordType>() {
+                        @Override
 			public void newCorrelation( final Object sender, final Correlation<RecordType> correlation ) {
 				push( correlation );
 			}
 			
+                        @Override
 			public void noCorrelationCaught( Object sender ) {}
 		});
     }

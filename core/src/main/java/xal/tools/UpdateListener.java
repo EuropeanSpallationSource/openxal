@@ -8,9 +8,11 @@
 
 package xal.tools;
 
+import java.util.EventListener;
+
 
 /** UpdateListener */
-public interface UpdateListener extends java.util.EventListener {
+public interface UpdateListener extends EventListener {
 	/** called when the source posts an update to this observer */
 	public void observedUpdate( final Object source );
 }

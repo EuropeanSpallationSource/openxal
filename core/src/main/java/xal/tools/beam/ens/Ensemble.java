@@ -80,7 +80,7 @@ public class Ensemble implements Serializable {
             if (n1 < n2)  return -1;
             //if (n1 == n2) return 0;
             else          return +1;
-        };
+        }
         
         
         /*
@@ -88,7 +88,7 @@ public class Ensemble implements Serializable {
          */
         
         /**
-         * Equality of comparitors. This is also part of the <code>Comparitor</code>
+         * Equality of comparators. This is also part of the <code>Comparitor</code>
          * interface.
          * 
          * @since Apr 19, 2011
@@ -108,10 +108,9 @@ public class Ensemble implements Serializable {
         @Override
         public int hashCode() {
             return super.hashCode();
-        };
-        
-        
-    };
+        }
+           
+    }
     
     
     /*
@@ -144,7 +143,7 @@ public class Ensemble implements Serializable {
      */
     
     /** The container for the ensemble coordinates */
-    private TreeSet<Particle>     m_setEns;
+    private TreeSet<Particle>     setEns;
     
     
     
@@ -156,16 +155,16 @@ public class Ensemble implements Serializable {
      *  Creates a new instance of Ensemble 
      */
     public Ensemble() {
-        m_setEns = new TreeSet<Particle>(new SortByNorm());
-    };
+        setEns = new TreeSet<>(new SortByNorm());
+    }
     
     /**
      *  Create a deep copy clone of an ensemble object
      *  @param  ens ensemble object to be deep copied
      */
     public Ensemble(Ensemble ens)   {
-        m_setEns = this.deepCopyParticles(ens);
-    };
+        setEns = this.deepCopyParticles(ens);
+    }
     
     
     /**
@@ -173,23 +172,23 @@ public class Ensemble implements Serializable {
      */
     public Ensemble deepCopy()  {
         return new Ensemble(this);
-    };
+    }
     
 
     /**
      *  Add a particle to ensemble
      */
     public void add(Particle p) {
-        m_setEns.add(p);
-    };
+        setEns.add(p);
+    }
 
     
     /**
      *  Iterate through ensemble
      */
     public Iterator<Particle> iterator()  {
-        return m_setEns.iterator();
-    };
+        return setEns.iterator();
+    }
 
     
     
@@ -202,8 +201,8 @@ public class Ensemble implements Serializable {
      *  Get size of ensemble
      */
     public int  getCount()  {
-        return m_setEns.size();
-    };
+        return setEns.size();
+    }
     
 
     /**
@@ -223,7 +222,7 @@ public class Ensemble implements Serializable {
         
         vecSum.timesEquals(1.0/N);
         return vecSum;
-    };
+    }
 
     
     /**
@@ -247,7 +246,7 @@ public class Ensemble implements Serializable {
         
         matSigma.timesEquals(1.0/N);
         return matSigma;
-    };
+    }
     
     
     /**
@@ -264,7 +263,7 @@ public class Ensemble implements Serializable {
         arrEmit[2] = Math.sqrt( matSig.getElem(4,4)*matSig.getElem(5,5) - matSig.getElem(4,5)*matSig.getElem(5,4) );
         
         return arrEmit;
-    };
+    }
     
     
     
@@ -303,7 +302,7 @@ public class Ensemble implements Serializable {
         }
         
         return new R3(Ix, Iy, Iz);
-    };
+    }
     
     /**
      *  Get the total charge of the ensemble
@@ -322,7 +321,7 @@ public class Ensemble implements Serializable {
         }
         
         return Q;
-    };
+    }
 
     /**
      *  Computes the Coulomb potential of the ensemble at the given field point.
@@ -415,7 +414,7 @@ public class Ensemble implements Serializable {
         V /= R5;
         V += 1.0/R;
 
-        V *= Q/(4.0*Math.PI*IConstants.Permittivity);
+        V *= Q/(4.0*Math.PI*IConstants.PERMITTIVITY);
         
         return V;
     }
@@ -453,7 +452,7 @@ public class Ensemble implements Serializable {
             FileInputStream     is = new FileInputStream(file);
             ObjectInputStream   p  = new ObjectInputStream(is);
         
-            m_setEns = (TreeSet<Particle>)p.readObject();
+            setEns = (TreeSet<Particle>)p.readObject();
             is.close();
             return true;
             
@@ -468,10 +467,10 @@ public class Ensemble implements Serializable {
         
         }
         
-    };
+    }
     
     /**
-     *  Save ensemble state to persisten disk file.  All ensemble particles have
+     *  Save ensemble state to persistent disk file.  All ensemble particles have
      *  phase space coordinates saved.
      *
      *  @param  file    file containing persistent data
@@ -483,7 +482,7 @@ public class Ensemble implements Serializable {
             FileOutputStream    os = new FileOutputStream( file );
             ObjectOutputStream  p  = new ObjectOutputStream( os );
 
-            p.writeObject(m_setEns); 
+            p.writeObject(setEns); 
             p.flush();
             os.close();
             return true;
@@ -495,7 +494,7 @@ public class Ensemble implements Serializable {
             return false;
             
         }
-    };
+    }
     
     
     
@@ -531,7 +530,7 @@ public class Ensemble implements Serializable {
     /**
      *  Test driver for testing Ensemble class.
      */
-    static public void main(String arg[])   {
+    public static void main(String arg[])   {
         PrintWriter     osLog = new PrintWriter(System.out);
 
         // Test persistent storage mechanism
@@ -545,7 +544,7 @@ public class Ensemble implements Serializable {
      *
      *  @param  osLog   output stream to send logging information
      */
-    static public void testPersistence(PrintWriter osLog) {
+    public static void testPersistence(PrintWriter osLog) {
         final String    strFileTest = "TestCoords.ens";  // persistence file name
 
         
@@ -614,7 +613,7 @@ public class Ensemble implements Serializable {
      *  @return         TreeSet container of cloned particles
      */
     protected TreeSet<Particle> deepCopyParticles(Ensemble ens)   {
-        TreeSet<Particle>  set = new TreeSet<Particle>();
+        TreeSet<Particle>  set = new TreeSet<>();
         Iterator<Particle> iter = ens.iterator();
         while (iter.hasNext())  {
             Particle p = iter.next();
@@ -623,7 +622,7 @@ public class Ensemble implements Serializable {
         }
         
         return set;
-    };
+    }
     
     
 }

@@ -14,7 +14,7 @@ import java.net.URL;
 /** Context within which Bricks was loaded */
 public class BricksContext {
 	/** URL of the bricks source definition file */
-	private URL _sourceURL;
+	private URL sourceURL;
 	
 	
 	/** Constructor */
@@ -25,12 +25,12 @@ public class BricksContext {
 	
 	/** get the source URL */
 	public URL getSourceURL() {
-		return _sourceURL;
+		return sourceURL;
 	}
 	
 	
 	/** set the source URL */
 	public void setSourceURL( final URL sourceURL ) {
-		_sourceURL = sourceURL;
+		this.sourceURL = sourceURL;
 	}
 }

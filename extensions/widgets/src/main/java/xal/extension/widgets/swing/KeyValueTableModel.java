@@ -26,31 +26,31 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
     private static final long serialVersionUID = 1L;
     
 	/** pattern for matching a lower case letter followed immediately by an upper case letter */
-	final static private Pattern LOWER_UPPER_PATTERN;
+	private static final Pattern LOWER_UPPER_PATTERN;
 	
 	/** message center for posting events */
-	final private MessageCenter MESSAGE_CENTER;
+	private final MessageCenter MESSAGE_CENTER;
 	
 	/** proxy for events to be forwarded to registered listeners */
-	final private KeyValueRecordListener<KeyValueTableModel<RecordType>,RecordType> EVENT_PROXY;
+	private final KeyValueRecordListener<KeyValueTableModel<RecordType>,RecordType> EVENT_PROXY;
 	
 	/** key value adaptor to get the value from a record (row) for the specified key path (column property) */
-	final protected KeyValueAdaptor KEY_VALUE_ADAPTOR;
+	protected final KeyValueAdaptor KEY_VALUE_ADAPTOR;
 	
 	/** column names keyed by key path */
-	final private Map<String,String> COLUMN_NAME_MAP;
+	private final Map<String,String> COLUMN_NAME_MAP;
 	
 	/** column class keyed by key path */
-	final private Map<String,Class<?>> COLUMN_CLASS_MAP;
+	private final Map<String,Class<?>> COLUMN_CLASS_MAP;
 	
 	/** column edit indicator map keyed by key path */
-	final private Map<String,ColumnEditRule<RecordType>> COLUMN_EDITABLE_MAP;
+	private final Map<String,ColumnEditRule<RecordType>> COLUMN_EDITABLE_MAP;
 	
 	/** list of records to display (one record for each table row) */
-	private List<RecordType> _records;
+	private List<RecordType> records;
 	
 	/** array of key paths to get the data to display (one key path for each column) */
-	private String[] _keyPaths;
+	private String[] keyPaths;
 	
 	
 	// static initializer
@@ -71,9 +71,9 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
 		
 		KEY_VALUE_ADAPTOR = new KeyValueAdaptor();
 		
-		COLUMN_NAME_MAP = new HashMap<String,String>();
-		COLUMN_CLASS_MAP = new HashMap<String,Class<?>>();
-		COLUMN_EDITABLE_MAP = new HashMap<String,ColumnEditRule<RecordType>>();
+		COLUMN_NAME_MAP = new HashMap<>();
+		COLUMN_CLASS_MAP = new HashMap<>();
+		COLUMN_EDITABLE_MAP = new HashMap<>();
 		
 		setDataSource( records, keyPaths );
 	}
@@ -116,13 +116,13 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
 	
 	/** Get the record at the specified row index */
 	public RecordType getRecordAtRow( final int row ) {
-		return _records.get( row );
+		return records.get( row );
 	}
 
 
 	/** Get the records indexed by row */
 	public List<RecordType> getRowRecords() {
-		return _records;
+		return records;
 	}
 	
 	
@@ -131,7 +131,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
 	 * @param records the list of objects (one record for each table row)
 	 */
 	public void setRecords( final List<RecordType> records ) {
-		_records = records;
+		this.records = records;
 		fireTableDataChanged();
 	}
 
@@ -142,7 +142,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
 	 * @return key path for the specified model column or null if the column is out of bounds
 	 */
 	public String getKeyPathForColumn( final int column ) {
-		return column >= 0 && column < _keyPaths.length ? _keyPaths[column] : null;
+		return column >= 0 && column < keyPaths.length ? keyPaths[column] : null;
 	}
 
 
@@ -154,8 +154,8 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
 	public int getColumnForKeyPath( final String keyPath ) {
 		if ( keyPath == null )  return -1;	// nothing to match
 
-		for ( int column = 0 ; column < _keyPaths.length ; column++  ) {
-			if ( keyPath.equals( _keyPaths[column] ) )  return column;
+		for ( int column = 0 ; column < this.keyPaths.length ; column++  ) {
+			if ( keyPath.equals( this.keyPaths[column] ) )  return column;
 		}
 
 		// no match was found
@@ -168,7 +168,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
 	 * @param keyPaths specifies the array of key paths to get the data to display (one key path for each column)
 	 */
 	public void setKeyPaths( final String ... keyPaths ) {
-		_keyPaths = keyPaths;
+		this.keyPaths = keyPaths;
 		if ( keyPaths != null ) {
 			for ( final String keyPath : keyPaths ) {
                 // generate a default column name if one has not already been set
@@ -183,7 +183,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
 	
 	
 	/** Generate a column name from the specified key path */
-	static private String toColumnName( final String keyPath ) {
+	private static String toColumnName( final String keyPath ) {
 		final StringJoiner nameBuffer = new StringJoiner( " " );
 		final String[] keys = keyPath.split( "\\." );
 		for ( final String key : keys ) {
@@ -195,7 +195,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
 	
 	
 	/** Capitalize the first word and split the text into words where word boundaries are identified by a lower case letter followed by an upper case letter. */
-	static private String toTitle( final String text ) {
+	private static String toTitle( final String text ) {
 		final Matcher matcher = LOWER_UPPER_PATTERN.matcher( text );
 		final StringJoiner titleBuffer = new StringJoiner( " " );
 		int lastLocation = 0;
@@ -211,7 +211,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
 	
 	
 	/** capitalize the first letter of the text */
-	static private String capitalizeFirstLetter( final String text ) {
+	private static String capitalizeFirstLetter( final String text ) {
 		return text.substring( 0, 1 ).toUpperCase() + ( text.length() > 1 ? text.substring( 1 ) : "" );
 	}
 	
@@ -228,8 +228,9 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
 	
 	
 	/** Get the name of the specified column */
+    @Override
 	public String getColumnName( final int column ) {
-		return COLUMN_NAME_MAP.get( _keyPaths[column] );
+		return COLUMN_NAME_MAP.get( keyPaths[column] );
 	}
 	
 	
@@ -257,21 +258,24 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
 	
 	
 	/** Get the data class for the specified column */
+    @Override
 	public Class<?> getColumnClass( final int column ) {
-		final Class<?> customClass = COLUMN_CLASS_MAP.get( _keyPaths[column] );
+		final Class<?> customClass = COLUMN_CLASS_MAP.get( keyPaths[column] );
 		return customClass != null ? customClass : super.getColumnClass( column );
 	}
 	
 	
 	/** Get the number of rows to display */
+    @Override
 	public int getRowCount() {
-		return _records != null ? _records.size() : 0;
+		return records != null ? records.size() : 0;
 	}
 	
 	
 	/** Get the number of columns to display */
+    @Override
 	public int getColumnCount() {
-		return _keyPaths != null ? _keyPaths.length : 0;
+		return keyPaths != null ? keyPaths.length : 0;
 	}
 	
 	
@@ -299,16 +303,17 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
 	 * @param negation indicates whether to reverse the boolean indication of the edit column
 	 */
 	public void setColumnEditKeyPath( final String columnKeyPath, final String editKeyPath, final boolean negation ) {
-		COLUMN_EDITABLE_MAP.put( columnKeyPath, new KeyedColumnEditRule<RecordType>( editKeyPath, negation ) );
+		COLUMN_EDITABLE_MAP.put( columnKeyPath, new KeyedColumnEditRule<>( editKeyPath, negation ) );
 		fireTableDataChanged();
 	}
 	
 	
 	/** Determine whether the cell is editable */
+    @Override
 	public boolean isCellEditable( final int row, final int column ) {
-		final String keyPath = _keyPaths[column];
+		final String keyPath = keyPaths[column];
 		final ColumnEditRule<RecordType> editRule = COLUMN_EDITABLE_MAP.get( keyPath );
-		final List<RecordType> records = _records;
+		final List<RecordType> records = this.records;
 		if ( row < records.size() ) {
 			final RecordType record = records.get( row );
 			return editRule != null && editRule.isCellEditable( record );
@@ -320,11 +325,12 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
 	
 	
 	/** get the value for the specified cell */
+    @Override
 	public Object getValueAt( final int row, final int column ) {
-		final List<RecordType> records = _records;
+		final List<RecordType> records = this.records;
 		if ( row < records.size() ) {
 			final RecordType record = records.get( row );
-			return KEY_VALUE_ADAPTOR.valueForKeyPath( record, _keyPaths[column] );
+			return KEY_VALUE_ADAPTOR.valueForKeyPath( record, keyPaths[column] );
 		}
 		else {
 			return null;
@@ -333,12 +339,13 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
 	
 	
 	/** Set the value of the specified cell */
+    @Override
 	public void setValueAt( final Object value, final int row, final int column ) {
-		final List<RecordType> records = _records;
+		final List<RecordType> records = this.records;
 		if ( row < records.size() ) {
 			final RecordType record = records.get( row );
-			KEY_VALUE_ADAPTOR.setValueForKeyPath( record, _keyPaths[column], value );
-			EVENT_PROXY.recordModified( this, record, _keyPaths[column], value );
+			KEY_VALUE_ADAPTOR.setValueForKeyPath( record, keyPaths[column], value );
+			EVENT_PROXY.recordModified( this, record, keyPaths[column], value );
 		}
 	}
 	
@@ -355,7 +362,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
 	/** rule to determine whether a column's cells are editable regardless of the record */
 	private class SimpleColumnEditRule<RecordType> implements ColumnEditRule<RecordType> {
 		/** indicates whether the column's cells are editable */
-		final private boolean EDITABLE;
+		private final boolean EDITABLE;
 		
 		/** Constructor */
 		public SimpleColumnEditRule( final boolean editable ) {
@@ -363,6 +370,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
 		}
 		
 		/** indicates whether the column's cell for the specified record is editable */
+                @Override
 		public boolean isCellEditable( final RecordType record ) {
 			return EDITABLE;
 		}
@@ -373,10 +381,10 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
 	/** rule to determine whether a column's cells are editable based on a specified keyed value of the record */
 	private class KeyedColumnEditRule<RecordType> implements ColumnEditRule<RecordType> {
 		/** record key whose corresponding value determines whether a cell is editable */
-		final private String EDIT_KEYPATH;
+		private final String EDIT_KEYPATH;
 		
 		/** indicates whether to reverse the edit value */
-		final private boolean NEGATION;
+		private final boolean NEGATION;
 		
 		/** Constructor */
 		public KeyedColumnEditRule( final String editKeypath, final boolean negation ) {
@@ -385,6 +393,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
 		}
 		
 		/** indicates whether the column's cell for the specified record is editable */
+                @Override
 		public boolean isCellEditable( final RecordType record ) {
 			try {
 				final Object value = KEY_VALUE_ADAPTOR.valueForKeyPath( record, EDIT_KEYPATH );

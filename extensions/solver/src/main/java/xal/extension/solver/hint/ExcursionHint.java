@@ -16,13 +16,13 @@ import java.util.*;
 /** ExcursionHint */
 public class ExcursionHint extends Hint {
     /** type identifier for this kind of hint */
-    final static public String TYPE = "ExcursionHint";
+    public static final String TYPE = "ExcursionHint";
     
     /** map of domain to use keyed by variable */
-	final private Map<Variable, VariableExcursionDomain> VARIABLE_DOMAINS;
+	private final Map<Variable, VariableExcursionDomain> VARIABLE_DOMAINS;
     
     /** default domain to use for a variable if one isn't specified specifically for the variable */
-	final private VariableExcursionDomain DEFAULT_DOMAIN;
+	private final VariableExcursionDomain DEFAULT_DOMAIN;
     
     
 	/** Primary Constructor */
@@ -30,7 +30,7 @@ public class ExcursionHint extends Hint {
         super( "Excursion Hint" );
         
         DEFAULT_DOMAIN = defaultDomain;
-        VARIABLE_DOMAINS = new HashMap<Variable,VariableExcursionDomain>();
+        VARIABLE_DOMAINS = new HashMap<>();
     }
     
     
@@ -41,13 +41,13 @@ public class ExcursionHint extends Hint {
     
 	
 	/** Get an excursion hint specifying a default fractional excursion about the current value. */
-	static public ExcursionHint getFractionalExcursionHint( final double fraction ) {
+	public static ExcursionHint getFractionalExcursionHint( final double fraction ) {
 		return new ExcursionHint( new FractionExcursionDomain( fraction ) );
 	}
     
 	
 	/** Get an excursion hint specifying a default maximum absolute excursion about the current value. */
-	static public ExcursionHint getAbsoluteMaxExcursionHint( final double maxExcursion ) {
+	public static ExcursionHint getAbsoluteMaxExcursionHint( final double maxExcursion ) {
 		return new ExcursionHint( new AbsoluteMaxExcursionDomain( maxExcursion ) );
 	}
 
@@ -56,6 +56,7 @@ public class ExcursionHint extends Hint {
      * Get the type identifier of this Hint which will be used to fetch this hint in a table of hints.
      * @return the type identifier of this kind of Hint
      */
+    @Override
 	public String getType() {
 		return TYPE;
 	}
@@ -110,7 +111,7 @@ interface VariableExcursionDomain {
 /** a domain specified as a fraction of the variable domain about the current value */
 class FractionExcursionDomain implements VariableExcursionDomain {
 	/** a fraction of the domain */
-	final private double FRACTION;
+	private final double FRACTION;
 	
 	
 	/** Primary Constructor */
@@ -126,6 +127,7 @@ class FractionExcursionDomain implements VariableExcursionDomain {
 	
 	
 	/** get the range restricted to the variable's limits */
+        @Override
 	public double[] getRange( final double value, final Variable variable ) {
 		final double lowerLimit = variable.getLowerLimit();
 		final double upperLimit = variable.getUpperLimit();
@@ -140,7 +142,7 @@ class FractionExcursionDomain implements VariableExcursionDomain {
 /** The variable range domain for searching about the current value. */
 class AbsoluteMaxExcursionDomain implements VariableExcursionDomain {
 	/** the change about the current value */
-	final private double MAX_EXCURSION;
+	private final double MAX_EXCURSION;
 	
 	
 	/** Primary Constructor */
@@ -156,6 +158,7 @@ class AbsoluteMaxExcursionDomain implements VariableExcursionDomain {
 	
 	
 	/** get the range restricted to the variable's limits */
+        @Override
 	public double[] getRange( final double value, final Variable variable ) {
         final double[] deltaRange = getRange( value );
 		return new double[] { Math.max( deltaRange[0], variable.getLowerLimit() ), Math.min( deltaRange[1], variable.getUpperLimit() ) };

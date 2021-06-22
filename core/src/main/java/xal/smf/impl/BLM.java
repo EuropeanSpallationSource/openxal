@@ -7,7 +7,7 @@ import xal.smf.impl.qualify.*;
 
 /** 
  * The implementation of the BLM class. This class contains the methods
- * members, attributes, and signal sets pertinant to modeling Beam
+ * members, attributes, and signal sets pertinent to modeling Beam
  * Loss monitors.
  * 
  * @author  J. Galambos (jdg@ornl.gov)
@@ -19,7 +19,7 @@ public class BLM extends AcceleratorNode {
      *  Constants
      */
     
-    public static final String      s_strType   = "BLM";
+    public static final String      TYPE   = "BLM";
   
 
     // BLM channel handles
@@ -53,7 +53,7 @@ public class BLM extends AcceleratorNode {
      * Register type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes( BLM.class, s_strType );
+        ElementTypeManager.defaultManager().registerTypes( BLM.class, TYPE );
     }
 
 
@@ -64,7 +64,8 @@ public class BLM extends AcceleratorNode {
     
     
     /** Override to provide type signature */
-    public String getType()   { return s_strType; };
+    @Override
+    public String getType()   { return TYPE; }
   
   
 
@@ -94,7 +95,7 @@ public class BLM extends AcceleratorNode {
     }
 
     /**
-     * returns integreated loss
+     * returns integrated loss
      */
     public double   getLossInt()  throws ConnectionException, GetException {
 	lossIntC = lazilyGetAndConnect(LOSS_INT_HANDLE, lossIntC);

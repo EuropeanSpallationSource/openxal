@@ -35,7 +35,7 @@ public class EMU extends AcceleratorNode {
     /*
      *  Constants
      */
-    public static final String s_strType = "EMU";
+    public static final String TYPE = "EMU";
 
     // EMU channel handles           
     public static final String EMITT_X_HANDLE = "xEmitt";
@@ -71,14 +71,14 @@ public class EMU extends AcceleratorNode {
      * Register type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes(EMU.class, s_strType);
+        ElementTypeManager.defaultManager().registerTypes(EMU.class, TYPE);
     }
 
     /**
      * Override to provide type signature
      */
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /**

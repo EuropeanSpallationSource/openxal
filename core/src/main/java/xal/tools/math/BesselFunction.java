@@ -190,7 +190,7 @@ public final class BesselFunction {
      * @return the Bessel function of order 1 of the argument,
      *         <i>J</i><sub>1</sub>(<i>x</i>).
      */
-    static public double J1(final double x) {
+    public static double J1(final double x) {
 
         double ax;
         double y;
@@ -243,14 +243,14 @@ public final class BesselFunction {
      * @see BesselFunction#J0(double)
      * @see BesselFunction#J1(double)
      */
-    static public double Jn(final int n, final double x) {
+    public static double Jn(final int n, final double x) {
         int j, m;
         double ax, bj, bjm, bjp, sum, tox, ans;
         boolean jsum;
 
-        double ACC = 40.0;
-        double BIGNO = 1.0e+10;
-        double BIGNI = 1.0e-10;
+        double acc = 40.0;
+        double bigNo = 1.0e+10;
+        double bigNi = 1.0e-10;
 
         if (n == 0)return J0(x);
         if (n == 1)return J1(x);
@@ -270,7 +270,7 @@ public final class BesselFunction {
                 ans = bj;
             } else {
                 tox = 2.0 / ax;
-                m = 2 * ( (n + (int) Math.sqrt(ACC * n)) / 2);
+                m = 2 * ( (n + (int) Math.sqrt(acc * n)) / 2);
                 jsum = false;
                 bjp = ans = sum = 0.0;
                 bj = 1.0;
@@ -278,11 +278,11 @@ public final class BesselFunction {
                     bjm = j * tox * bj - bjp;
                     bjp = bj;
                     bj = bjm;
-                    if (Math.abs(bj) > BIGNO) {
-                        bj *= BIGNI;
-                        bjp *= BIGNI;
-                        ans *= BIGNI;
-                        sum *= BIGNI;
+                    if (Math.abs(bj) > bigNo) {
+                        bj *= bigNi;
+                        bjp *= bigNi;
+                        ans *= bigNi;
+                        sum *= bigNi;
                     }
                     if (jsum) sum += bj;
                     jsum = !jsum;
@@ -311,7 +311,7 @@ public final class BesselFunction {
      *          
      * @see BesselFunction#J0(double)
      */
-    static public double Y0(final double x) {
+    public static double Y0(final double x) {
 
         if (x < 8.0) {
             double y = x * x;
@@ -355,7 +355,7 @@ public final class BesselFunction {
      *  
      * @see BesselFunction#J1(double)
      */
-    static public double Y1(final double x) {
+    public static double Y1(final double x) {
 
         if (x < 8.0) {
             double y = x * x;
@@ -404,7 +404,7 @@ public final class BesselFunction {
      *          of order <i>n</i> of the argument, 
      *          <i>Y</i><sub><i>n</i></sub>(<i>x</i>).
      */
-    static public double Yn(final int n, final double x) {
+    public static double Yn(final int n, final double x) {
         double by, bym, byp, tox;
 
         if (n == 0)return Y0(x);
@@ -461,7 +461,7 @@ public final class BesselFunction {
      *  <strong>NOTE</strong>: (CKA)
      *  <br>
      *  &middot; The sinc function is the zero<sup>th</sup> order
-     *  spherical bessel function <i>j</i><sub>0</sub>.
+     *  spherical Bessel function <i>j</i><sub>0</sub>.
      *  </p>
      * 
      * @param   x   any real number
@@ -471,10 +471,10 @@ public final class BesselFunction {
     public static double sinc(final double x) {
         
         if (Math.abs(x) < BesselFunction.SMALL_ARG) {    // avoid singularity at zero
-            double      x_2 = x*x;
-            double      x_4 = x_2*x_2;
+            double      x2 = x*x;
+            double      x4 = x2*x2;
             
-            return 1.0 - x_2/6.0 + x_4/120.0 - x_2*x_4/5040.0;
+            return 1.0 - x2/6.0 + x4/120.0 - x2*x4/5040.0;
         } else {
         
             return Math.sin(x)/x;
@@ -541,20 +541,20 @@ public final class BesselFunction {
         if (Math.abs(x) < BesselFunction.SMALL_ARG) {    // avoid singularity at zero
             
             // Numerically unstable at x=0, compute expansion
-            double      x_2 = x*x;
-            double      x_3 = x_2*x;
-            double      x_5 = x_2*x_3;
-            double      x_7 = x_2*x_5;
+            double      x2 = x*x;
+            double      x3 = x2*x;
+            double      x5 = x2*x3;
+            double      x7 = x2*x5;
 
             
-            return x/3.0 - x_3/30.0 + x_5/840.0 - x_7/45360.0;
+            return x/3.0 - x3/30.0 + x5/840.0 - x7/45360.0;
             
         } else {
         
             // Numerically stable use exact expression
-            double      x_2 = x*x;
+            double      x2 = x*x;
             
-            return Math.sin(x)/x_2 - Math.cos(x)/x;
+            return Math.sin(x)/x2 - Math.cos(x)/x;
         }
     }
     
@@ -596,19 +596,19 @@ public final class BesselFunction {
         if (Math.abs(x) < BesselFunction.SMALL_ARG) {    // avoid singularity at zero
 
             // Numerically unstable at x=0, compute expansion
-            double      x_2 = x*x;
-            double      x_4 = x_2*x_2;
-            double      x_6 = x_2*x_4;
-            double      x_8 = x_2*x_6;
+            double      x2 = x*x;
+            double      x4 = x2*x2;
+            double      x6 = x2*x4;
+            double      x8 = x2*x6;
             
-            return x_2/15.0 - x_4/210.0 + x_6/7560.0 - x_8/498960.0;
+            return x2/15.0 - x4/210.0 + x6/7560.0 - x8/498960.0;
             
         } else {
         
             // Numerically stable use exact expression
-            double      x_2 = x*x;
+            double      x2 = x*x;
 
-            return  (3.0/x_2 - 1.0)*Math.sin(x)/x - 3.0*Math.cos(x)/x_2;
+            return  (3.0/x2 - 1.0)*Math.sin(x)/x - 3.0*Math.cos(x)/x2;
         }
     }
     
@@ -650,20 +650,20 @@ public final class BesselFunction {
         if (Math.abs(x) < BesselFunction.SMALL_ARG) {    // avoid singularity at zero
             
             // Numerically unstable at x=0, compute expansion
-            double      x_2 = x*x;
-            double      x_3 = x_2*x;
-            double      x_5 = x_2*x_3;
-            double      x_7 = x_2*x_5;
+            double      x2 = x*x;
+            double      x3 = x2*x;
+            double      x5 = x2*x3;
+            double      x7 = x2*x5;
 
-            return x_3/105.0 - x_5/1890.0 + x_7/83160.0;
+            return x3/105.0 - x5/1890.0 + x7/83160.0;
             
         } else {
 
             // Numerically stable, use exact expression
-            double      x_2 = x*x;
-            double      x_3 = x_2*x;
+            double      x2 = x*x;
+            double      x3 = x2*x;
             
-            return (15.0/x_3 - 6.0/x)*Math.sin(x)/x + (1.0 - 15.0/x_2)*Math.cos(x)/x;
+            return (15.0/x3 - 6.0/x)*Math.sin(x)/x + (1.0 - 15.0/x2)*Math.cos(x)/x;
         }
     }
     
@@ -705,27 +705,24 @@ public final class BesselFunction {
         if (Math.abs(x) < BesselFunction.SMALL_ARG) {    // avoid singularity at zero
             
             // Numerically unstable at x=0, compute expansion
-            double      x_2 = x*x;
-            double      x_3 = x_2*x;
-            double      x_4 = x_2*x_2;
-            double      x_6 = x_2*x_4;
-            double      x_8 = x_2*x_6;
+            double      x2 = x*x;
+            double      x3 = x2*x;
+            double      x4 = x2*x2;
+            double      x6 = x2*x4;
+            double      x8 = x2*x6;
 
-            return x_4/945.0 - x_6/20790.0 + x_8/1081080.0;
+            return x4/945.0 - x6/20790.0 + x8/1081080.0;
             
         } else {
         
             // Numerically stable, use exact expression
-            double      x_2 = x*x;
-            double      x_3 = x_2*x;
-            double      x_4 = x_2*x_2;
+            double      x2 = x*x;
+            double      x3 = x2*x;
+            double      x4 = x2*x2;
 
-            return (1.0 - 45.0/x_2 + 105.0/x_4)*Math.sin(x)/x 
-                 + (10.0/x - 105.0/x_3)*Math.cos(x)/x;
+            return (1.0 - 45.0/x2 + 105.0/x4)*Math.sin(x)/x 
+                 + (10.0/x - 105.0/x3)*Math.cos(x)/x;
         }
     }
-    
-    
-    
-    
-};
+   
+}

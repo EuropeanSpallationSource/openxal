@@ -7,30 +7,31 @@
 package xal.tools.messaging;
 
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * TargetDirectory is a utility class for convenient storage and retrieval of targets keyed by source and protocol.
  * @author  tap
  */
-class TargetDirectory implements java.io.Serializable {
+class TargetDirectory implements Serializable {
     /** serialization ID */
     private static final long serialVersionUID = 1L;
     
     /** Map of target sets keyed by source which are keyed by protocol name */
-    final private Map<String,Map<Object,Set<Object>>> PROTOCOL_TABLE;
+    private final Map<String,Map<Object,Set<Object>>> protocolTable;
     
 
     /** Creates new TargetDirectory */
     public TargetDirectory() {
-        PROTOCOL_TABLE = new Hashtable<String,Map<Object,Set<Object>>>();
+        protocolTable = new Hashtable<>();
     }
 
     
     /** get an unmodifiable set of targets */
     synchronized <T> Set<T> targets( final Object source, final Class<T> protocol ) {
         final Set<T> targetSet = targetSet( source, protocol );
-        return Collections.unmodifiableSet( new HashSet<T>( targetSet ) );
+        return Collections.unmodifiableSet( new HashSet<>( targetSet ) );
     }
     
     
@@ -40,8 +41,8 @@ class TargetDirectory implements java.io.Serializable {
         Map<Object,Set<Object>> sourceTable;
         final String protocolKey = protocolKey( protocol );
         
-        if ( PROTOCOL_TABLE.containsKey( protocolKey ) ) {
-            sourceTable = PROTOCOL_TABLE.get( protocolKey );
+        if ( protocolTable.containsKey( protocolKey ) ) {
+            sourceTable = protocolTable.get( protocolKey );
         }
         else {
             return emptySet( protocol );
@@ -58,7 +59,7 @@ class TargetDirectory implements java.io.Serializable {
 	
     /** an emptySet */
     private <T> Set<T> emptySet( final Class<T> protocol ) {
-        return new HashSet<T>();
+        return new HashSet<>();
     }
     
     
@@ -67,12 +68,12 @@ class TargetDirectory implements java.io.Serializable {
         Map<Object,Set<Object>> sourceTable;
         final String protocolKey = protocolKey( protocol );
         
-        if ( PROTOCOL_TABLE.containsKey( protocolKey ) ) {
-            sourceTable = PROTOCOL_TABLE.get( protocolKey );
+        if ( protocolTable.containsKey( protocolKey ) ) {
+            sourceTable = protocolTable.get( protocolKey );
         }
         else {
-            sourceTable = new HashMap<Object,Set<Object>>();
-            PROTOCOL_TABLE.put( protocolKey, sourceTable );
+            sourceTable = new HashMap<>();
+            protocolTable.put( protocolKey, sourceTable );
         }
         
         Set<Object> targetSet;
@@ -80,7 +81,7 @@ class TargetDirectory implements java.io.Serializable {
             targetSet = sourceTable.get( source );
         }
         else {
-            targetSet = new HashSet<Object>();
+            targetSet = new HashSet<>();
             sourceTable.put( source, targetSet );
         }
         targetSet.add( target );
@@ -104,8 +105,8 @@ class TargetDirectory implements java.io.Serializable {
         Map<Object,Set<Object>> sourceTable;
         final String protocolKey = protocolKey( protocol );
         
-        if ( PROTOCOL_TABLE.containsKey( protocolKey ) ) {
-            sourceTable = PROTOCOL_TABLE.get( protocolKey );
+        if ( protocolTable.containsKey( protocolKey ) ) {
+            sourceTable = protocolTable.get( protocolKey );
         }
         else {
             return;

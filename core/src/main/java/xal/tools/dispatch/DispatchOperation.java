@@ -15,104 +15,105 @@ import java.util.concurrent.*;
 
 /** Wraps a operation so status can be monitored */
 abstract class DispatchOperation<ReturnType> implements Callable<ReturnType> {
-	/** indicates whether the taks is a barrier operation */
-	final private boolean IS_BARRIER;
+	/** indicates whether the task is a barrier operation */
+	private final boolean isBarrier;
 	
 	/** flag indicating whether this operation is currently running */
-	private volatile boolean _isRunning;
+	private volatile boolean isRunning;
 	
 	/** flag indicating whether this operation is done execution */
-	private volatile boolean _isComplete;
+	private volatile boolean isComplete;
 	
 	/** listeners for events from this operation (e.g. queue and groups) */
-	private final Set<DispatchOperationListener> EVENT_LISTENERS;
+	private final Set<DispatchOperationListener> eventListeners;
 	
 	/** result of the operation upon successful completion */
-	private ReturnType _result;
+	private ReturnType result;
 	
 	
 	/** Primary Constructor */
 	protected DispatchOperation( final DispatchOperationListener delegate, final boolean isBarrier ) {
-		IS_BARRIER = isBarrier;
+		this.isBarrier = isBarrier;
 		
-		EVENT_LISTENERS = new HashSet<DispatchOperationListener>();
+		eventListeners = new HashSet<>();
 		addDispatchOperationListener( delegate );
 		
-		_isRunning = false;
-		_isComplete = false;
-		_result = null;
+		isRunning = false;
+		isComplete = false;
+		result = null;
 	}
 	
 	
 	/** Get a new dispatch operation that wraps the specified raw operation */
-	static public DispatchOperation<Void> getInstance( final Runnable rawOperation, final DispatchOperationListener delegate, final boolean isBarrier ) {
+	public static DispatchOperation<Void> getInstance( final Runnable rawOperation, final DispatchOperationListener delegate, final boolean isBarrier ) {
 		return new DispatchOperationRawRunnable( rawOperation, delegate, isBarrier );
 	}
 	
 	
 	/** Get a new dispatch operation that wraps the specified raw operation */
-	static public <ReturnType> DispatchOperation<ReturnType> getInstance( final Callable<ReturnType> rawOperation, final DispatchOperationListener delegate, final boolean isBarrier ) {
-		return new DispatchOperationRawCallable<ReturnType>( rawOperation, delegate, isBarrier );
+	public static <ReturnType> DispatchOperation<ReturnType> getInstance( final Callable<ReturnType> rawOperation, final DispatchOperationListener delegate, final boolean isBarrier ) {
+		return new DispatchOperationRawCallable<>( rawOperation, delegate, isBarrier );
 	}
 	
 	
 	/** wait for this operation to complete */
-	final public void waitForCompletion() {
-		while( !_isComplete ) {
+	public final void waitForCompletion() {
+		while( !isComplete ) {
 			try {
 				synchronized( this ) {
 					this.wait();
 				}
 			}
-			catch( Exception exception ) {}
+			catch( InterruptedException exception ) {}
 		}
 	}
 	
 	
 	/** Add the event listener */
-	final public void addDispatchOperationListener( final DispatchOperationListener listener ) {
-		EVENT_LISTENERS.add( listener );
+	public final void addDispatchOperationListener( final DispatchOperationListener listener ) {
+		eventListeners.add( listener );
 	}
 	
 	
 	/** determine whether this operation is a barrier operation */
-	final public boolean isBarrier() {
-		return IS_BARRIER;
+	public final boolean isBarrier() {
+		return isBarrier;
 	}
 	
 	
 	/** Determine whether this operation is currently running */
-	final public boolean isRunning() {
-		return _isRunning;
+	public final boolean isRunning() {
+		return isRunning;
 	}
 	
 	
 	/** Determine whether this operation is done execution */
-	final public boolean isComplete() {
-		return _isComplete;
+	public final boolean isComplete() {
+		return isComplete;
 	}
 	
 	
 	/** Get the result */
-	final public ReturnType getResult() {
-		return _result;
+	public final ReturnType getResult() {
+		return result;
 	}
 	
 	
 	/** perform the operation */
-	final public ReturnType call() {
+        @Override
+	public final ReturnType call() {
 		try {
-			_isRunning = true;
+			isRunning = true;
 			final ReturnType result = executeRawOperation();
-			_result = result;
+			this.result = result;
 			return result;
 		}
 		catch ( Exception exception ) {
 			throw new RuntimeException( exception );
 		}
 		finally {
-			_isRunning = false;
-			_isComplete = true;
+			isRunning = false;
+			isComplete = true;
 			
 			try {
 				synchronized( this ) {
@@ -134,7 +135,7 @@ abstract class DispatchOperation<ReturnType> implements Callable<ReturnType> {
 	
 	/** notify the queue and groups that the operation has completed */
 	private void sendCompletionNotification() {
-		for ( final DispatchOperationListener handler : EVENT_LISTENERS ) {
+		for ( final DispatchOperationListener handler : eventListeners ) {
 			handler.operationCompleted( this );
 		}
 	}
@@ -145,19 +146,20 @@ abstract class DispatchOperation<ReturnType> implements Callable<ReturnType> {
 /** Dispatch operation built to execute a raw runnable operation */
 class DispatchOperationRawRunnable extends DispatchOperation<Void> {
 	/** wrapped operation */
-	final private Runnable RAW_OPERATION;
+	private final Runnable rawOperation;
 	
 	
 	/** Primary Constructor */
 	public DispatchOperationRawRunnable( final Runnable rawOperation, final DispatchOperationListener delegate, final boolean isBarrier ) {
 		super( delegate, isBarrier );
 		
-		RAW_OPERATION = rawOperation;
+		this.rawOperation = rawOperation;
 	}
 	
 	
+        @Override
 	protected Void executeRawOperation() throws java.lang.Exception {
-		RAW_OPERATION.run();
+		rawOperation.run();
 		return null;
 	}
 }
@@ -167,18 +169,19 @@ class DispatchOperationRawRunnable extends DispatchOperation<Void> {
 /** Dispatch operation built to execute a raw runnable operation */
 class DispatchOperationRawCallable<ReturnType> extends DispatchOperation<ReturnType> {
 	/** wrapped operation */
-	final private Callable<ReturnType> RAW_OPERATION;
+	private final Callable<ReturnType> rawOperation;
 	
 	
 	/** Primary Constructor */
 	public DispatchOperationRawCallable( final Callable<ReturnType> rawOperation, final DispatchOperationListener delegate, final boolean isBarrier ) {
 		super( delegate, isBarrier );
 		
-		RAW_OPERATION = rawOperation;
+		this.rawOperation = rawOperation;
 	}
 	
 	
+        @Override
 	protected ReturnType executeRawOperation() throws java.lang.Exception {
-		return RAW_OPERATION.call();
+		return rawOperation.call();
 	}
 }

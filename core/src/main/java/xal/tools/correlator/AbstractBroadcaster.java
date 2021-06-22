@@ -8,22 +8,21 @@ package xal.tools.correlator;
 
 import xal.tools.messaging.MessageCenter;
 
-import java.util.*;
 
 
 /**
  * AbstractBroadcaster is an abstract delegate for the Correlator and is responsible for filtering notifications 
  * from the bin agents and rebroadcasting the notifications to the CorrelationNotice listeners.  Concrete subclasses 
- * provide for different broadcasting behaviors.  For example, a broacaster may post every correlation, passively 
+ * provide for different broadcasting behaviors.  For example, a broadcaster may post every correlation, passively 
  * wait for an event before posting only the most recent best correlation, or maintain a buffer of the best correlations
  * with mutually exclusive channels.
  *
  * @author  tap
  */
 abstract class AbstractBroadcaster<RecordType> implements BinListener<RecordType>, StateNotice<RecordType> {
-	private final MessageCenter LOCAL_CENTER;
+	private final MessageCenter localCenter;
 	
-	private final MessageCenter BROADCAST_CENTER;
+	private final MessageCenter broadcastCenter;
 	
     transient protected int fullCount;
 	
@@ -35,23 +34,23 @@ abstract class AbstractBroadcaster<RecordType> implements BinListener<RecordType
     /** Creates a new instance of Broadcaster */
 	@SuppressWarnings( "unchecked" )	// must cast proxy for Generics
     public AbstractBroadcaster( final MessageCenter localCenter ) {
-        BROADCAST_CENTER = new MessageCenter( "Correlator Broadcast" );      // external broadcast center  
-        LOCAL_CENTER = localCenter;     // internal correlator messaging
+        broadcastCenter = new MessageCenter( "Correlator Broadcast" );      // external broadcast center  
+        this.localCenter = localCenter;     // internal correlator messaging
         
         fullCount = 0;
 		
         // listen for internal bin events from all of the bins registered with the local message center
-        LOCAL_CENTER.registerTarget(this, BinListener.class);
+        this.localCenter.registerTarget(this, BinListener.class);
         
         // register to broadcast correlations
-        correlationProxy = (CorrelationNotice<RecordType>)BROADCAST_CENTER.registerSource( this, CorrelationNotice.class );
+        correlationProxy = (CorrelationNotice<RecordType>)broadcastCenter.registerSource( this, CorrelationNotice.class );
     }
     
     
     /** Dispose of this delegate and all of its overhead */
     void dispose() {
-        BROADCAST_CENTER.removeSource( this, CorrelationNotice.class );		// stop posting correlation notices
-		LOCAL_CENTER.removeTarget( this, BinListener.class );				// stop listening for bin correlations
+        broadcastCenter.removeSource( this, CorrelationNotice.class );		// stop posting correlation notices
+		localCenter.removeTarget( this, BinListener.class );				// stop listening for bin correlations
     }
     
     
@@ -60,7 +59,7 @@ abstract class AbstractBroadcaster<RecordType> implements BinListener<RecordType
      * correlator.
      */
     public void addCorrelationNoticeListener( final CorrelationNotice<RecordType> listener ) {
-        BROADCAST_CENTER.registerTarget( listener, this, CorrelationNotice.class );
+        broadcastCenter.registerTarget( listener, this, CorrelationNotice.class );
     }
     
     
@@ -69,7 +68,7 @@ abstract class AbstractBroadcaster<RecordType> implements BinListener<RecordType
      * correlator.
      */
     public void removeCorrelationNoticeListener( final CorrelationNotice<RecordType> listener ) {
-        BROADCAST_CENTER.removeTarget( listener, this, CorrelationNotice.class );
+        broadcastCenter.removeTarget( listener, this, CorrelationNotice.class );
     }
     
     
@@ -114,6 +113,7 @@ abstract class AbstractBroadcaster<RecordType> implements BinListener<RecordType
 	 * @param sender The bin agent that published the new correlation.
 	 * @param correlation The new correlation.
      */
+        @Override
     abstract public void newCorrelation( final BinAgent<RecordType> sender, final Correlation<RecordType> correlation );
     
     
@@ -121,6 +121,7 @@ abstract class AbstractBroadcaster<RecordType> implements BinListener<RecordType
 	 * Implement BinListener interface.  This method does nothing.
 	 * @param sender The bin agent who sent this message.
 	 */
+        @Override
     public void willReset( final BinAgent<RecordType> sender ) {}
 	
 	
@@ -130,6 +131,7 @@ abstract class AbstractBroadcaster<RecordType> implements BinListener<RecordType
 	 * @param name The name identifying the new source.
 	 * @param newCount The new number of sources correlated.
 	 */
+        @Override
     public void sourceAdded( final Correlator<?,RecordType,?> sender, final String name, final int newCount ) {
 		setFullCount( newCount );
 	}
@@ -141,6 +143,7 @@ abstract class AbstractBroadcaster<RecordType> implements BinListener<RecordType
 	 * @param name The name identifying the new source.
 	 * @param newCount The new number of sources correlated.
 	 */
+        @Override
     public void sourceRemoved( final Correlator<?,RecordType,?> sender, final String name, final int newCount ) {
 		setFullCount(newCount);
 	}
@@ -151,6 +154,7 @@ abstract class AbstractBroadcaster<RecordType> implements BinListener<RecordType
 	 * @param sender The correlator whose timespan bin has changed.
 	 * @param newTimespan The new timespan used by the correlator.
 	 */
+        @Override
     public void binTimespanChanged( final Correlator<?,RecordType,?> sender, final double newTimespan ) {}
 	
 	
@@ -158,6 +162,7 @@ abstract class AbstractBroadcaster<RecordType> implements BinListener<RecordType
 	 * Handle the advance notice of the correlator stopping.
 	 * @param sender The correlator that will stop.
 	 */
+        @Override
     public void willStopMonitoring( final Correlator<?,RecordType,?> sender ) {}
 	
 	
@@ -165,6 +170,7 @@ abstract class AbstractBroadcaster<RecordType> implements BinListener<RecordType
 	 * Handle the advance notice of the correlator starting.
 	 * @param sender The correlator that will start.
 	 */
+        @Override
     public void willStartMonitoring( final Correlator<?,RecordType,?> sender ) {}
 	
 	
@@ -173,5 +179,6 @@ abstract class AbstractBroadcaster<RecordType> implements BinListener<RecordType
 	 * @param sender The correlator whose correlation filter has changed.
 	 * @param newFilter The new correlation filter to use.
 	 */
+        @Override
     public void correlationFilterChanged( final Correlator<?,RecordType,?> sender, final CorrelationFilter<RecordType> newFilter ) {}
 }

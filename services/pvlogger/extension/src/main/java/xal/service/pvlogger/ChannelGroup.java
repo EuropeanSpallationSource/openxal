@@ -44,13 +44,13 @@ public class ChannelGroup {
 	protected final String DESCRIPTION;
 	
 	/** array of channel wrappers */
-	protected ChannelWrapper[] _channelWrappers;
+	protected ChannelWrapper[] channelWrappers;
 	
 	/** handler of channel connection events */
-	protected ConnectionHandler _connectionHandler;
+	protected ConnectionHandler connectionHandler;
 	
 	/** time of last channel connection event */
-	private Date _lastChannelEventTime;
+	private Date lastChannelEventTime;
 	
 	
 	/**
@@ -68,8 +68,8 @@ public class ChannelGroup {
 		DEFAULT_LOGGING_PERIOD = loggingPeriod;
 		RETENTION = retention;
 		
-		_lastChannelEventTime = new Date();
-		_connectionHandler = new ConnectionHandler();
+		lastChannelEventTime = new Date();
+		connectionHandler = new ConnectionHandler();
 		wrapPVs( pvs );
 	}
 	
@@ -101,8 +101,8 @@ public class ChannelGroup {
 	 * Dispose of this channel group's resources
 	 */
 	public void dispose() {
-		for ( int index = 0 ; index < _channelWrappers.length ; index++ ) {
-			_channelWrappers[index].removeConnectionListener(_connectionHandler);
+		for ( int index = 0 ; index < channelWrappers.length ; index++ ) {
+			channelWrappers[index].removeConnectionListener(connectionHandler);
 		}
 	}
 	
@@ -154,15 +154,15 @@ public class ChannelGroup {
 	 * @param pvs the list of PVs to wrap
 	 */
 	protected void wrapPVs( final String[] pvs ) {		
-		List<ChannelWrapper> wrappers = new ArrayList<ChannelWrapper>(pvs.length);
+		List<ChannelWrapper> wrappers = new ArrayList<>(pvs.length);
 		
 		for ( int index = 0 ; index < pvs.length ; index++ ) {
 			ChannelWrapper wrapper = new ChannelWrapper(pvs[index]);
-			wrapper.addConnectionListener(_connectionHandler);
+			wrapper.addConnectionListener(connectionHandler);
 			wrappers.add(wrapper);
 		}
 		
-		_channelWrappers = wrappers.toArray( new ChannelWrapper[wrappers.size()] );
+		channelWrappers = wrappers.toArray( new ChannelWrapper[wrappers.size()] );
 	}
 	
 	
@@ -170,8 +170,8 @@ public class ChannelGroup {
 	 * Request connections to the channel wrappers.
 	 */
 	public void requestConnections() {			
-		for ( int index = 0 ; index < _channelWrappers.length ; index++ ) {
-			_channelWrappers[index].requestConnection();
+		for ( int index = 0 ; index < channelWrappers.length ; index++ ) {
+			channelWrappers[index].requestConnection();
 		}
 		Channel.flushIO();
 	}
@@ -182,7 +182,7 @@ public class ChannelGroup {
 	 * @return The array of channel wrappers of this group.
 	 */
 	public ChannelWrapper[] getChannelWrappers() {
-		return _channelWrappers;
+		return channelWrappers;
 	}
 	
 	
@@ -191,10 +191,10 @@ public class ChannelGroup {
 	 * @return a collection of channels corresponding to the channel wrappers
 	 */
 	public Collection<Channel> getChannels() {
-		Set<Channel> channels = new HashSet<Channel>(_channelWrappers.length);
+		Set<Channel> channels = new HashSet<>(channelWrappers.length);
 		
-		for ( int index = 0 ; index < _channelWrappers.length ; index++ ) {
-			channels.add( _channelWrappers[index].getChannel() );
+		for ( int index = 0 ; index < channelWrappers.length ; index++ ) {
+			channels.add( channelWrappers[index].getChannel() );
 		}
 		
 		return channels;
@@ -206,7 +206,7 @@ public class ChannelGroup {
 	 * @return The number of channels in this group
 	 */
 	public int getChannelCount() {
-		return _channelWrappers.length;
+		return channelWrappers.length;
 	}
 	
 	
@@ -215,7 +215,7 @@ public class ChannelGroup {
 	 * @return the wall clock timestamp of the last channel event
 	 */
 	public Date getLastChannelEventTime() {
-		return _lastChannelEventTime;
+		return lastChannelEventTime;
 	}
 	
 	
@@ -238,7 +238,7 @@ public class ChannelGroup {
 		 * @param channel The channel which has been connected.
 		 */
 		public void connectionMade(Channel channel) {
-			_lastChannelEventTime = new Date();
+			lastChannelEventTime = new Date();
 		}
 		
 		/**
@@ -246,7 +246,7 @@ public class ChannelGroup {
 		 * @param channel The channel which has been disconnected.
 		 */
 		public void connectionDropped(Channel channel) {
-			_lastChannelEventTime = new Date();
+			lastChannelEventTime = new Date();
 		}
 	}
 }

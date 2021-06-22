@@ -51,13 +51,13 @@ public class TwissTrackerPmq extends TwissTracker {
      */
     
     /** string type identifier for algorithm */
-    public static final String      s_strTypeId = TwissTrackerPmq.class.getName();
+    public static final String      TYPE_ID = TwissTrackerPmq.class.getName();
     
     /** current algorithm version */
-    public static final int         s_intVersion = 1;
+    public static final int         VERSION = 1;
     
     /** probe type recognized by this algorithm */
-    public static final Class<TwissProbe>       s_clsProbeType = TwissProbe.class;
+    public static final Class<TwissProbe>       CLS_PROBE_TYPE = TwissProbe.class;
     
     
     
@@ -76,8 +76,8 @@ public class TwissTrackerPmq extends TwissTracker {
      *  Creates a new instance of TwissTrackerPmq 
      */
     public TwissTrackerPmq() { 
-        super(s_strTypeId, s_intVersion, s_clsProbeType);
-    };
+        super(TYPE_ID, VERSION, CLS_PROBE_TYPE);
+    }
     
     /**
      * Copy constructor for TwissTrackerPmq

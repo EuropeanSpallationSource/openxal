@@ -13,8 +13,8 @@ import xal.smf.*;
 
 /** Factory to create qualifiers. */
 public class QualifierFactory {
-	static protected TypeQualifier GOOD_STATUS_QUALIFIER;
-	static protected TypeQualifier BAD_STATUS_QUALIFIER;
+	protected static TypeQualifier goodStatusQualifier;
+	protected static TypeQualifier badStatusQualifier;
 	
 	
 	/** Protected constructor */
@@ -26,9 +26,9 @@ public class QualifierFactory {
 	 * @param statusFilter the status against which to qualify nodes
 	 * @return the status qualifier
 	 */
-	static public TypeQualifier getStatusQualifier( final boolean statusFilter ) {
+	public static TypeQualifier getStatusQualifier( final boolean statusFilter ) {
 		populateStatusQualifiers();
-		return statusFilter ? GOOD_STATUS_QUALIFIER : BAD_STATUS_QUALIFIER;
+		return statusFilter ? goodStatusQualifier : badStatusQualifier;
 	}
 	
 	
@@ -36,8 +36,9 @@ public class QualifierFactory {
 	 * Get a qualifier for testing whether a node's software type matches the specified software type
 	 * @param softType software type for comparison
 	 */
-	static public TypeQualifier getSoftTypeQualifier( final String softType ) {
+	public static TypeQualifier getSoftTypeQualifier( final String softType ) {
 		return new TypeQualifier() {
+                        @Override
 			public boolean match( final AcceleratorNode node ) {
                 final String nodeSoftType = node.getSoftType();
                 // if neither soft type is null, then compare strings for equality for best reliability otherwise compare pointers
@@ -53,7 +54,7 @@ public class QualifierFactory {
 	 * @param type the node type
 	 * @return a qualifier restricted to both the status and type specified
 	 */
-	static public TypeQualifier qualifierWithStatusAndType( final boolean nodeStatus, final String type ) {
+	public static TypeQualifier qualifierWithStatusAndType( final boolean nodeStatus, final String type ) {
 		return AndTypeQualifier.qualifierWithStatusAndType( nodeStatus, type );
 	}
 	
@@ -64,7 +65,7 @@ public class QualifierFactory {
 	 * @param kinds the array of node types
 	 * @return a qualifier that matches for any of the given node types
 	 */
-	static public TypeQualifier qualifierWithStatusAndTypes( final boolean nodeStatus, final String ... kinds ) {
+	public static TypeQualifier qualifierWithStatusAndTypes( final boolean nodeStatus, final String ... kinds ) {
 		return new AndTypeQualifier().andStatus( nodeStatus ).and( OrTypeQualifier.qualifierForKinds( kinds ) );
 	}
 	
@@ -75,21 +76,23 @@ public class QualifierFactory {
 	 * @param qualifiers the array of node qualifiers
 	 * @return a qualifier that matches for any of the given qualifiers
 	 */
-	static public TypeQualifier qualifierForQualifiers( final boolean nodeStatus, final TypeQualifier ... qualifiers ) {
+	public static TypeQualifier qualifierForQualifiers( final boolean nodeStatus, final TypeQualifier ... qualifiers ) {
 		return new AndTypeQualifier().andStatus( nodeStatus ).and( OrTypeQualifier.qualifierForQualifiers( qualifiers ) );
 	}
 	
 	
 	/** populate status qualifiers */
-	static protected void populateStatusQualifiers() {
-		if ( GOOD_STATUS_QUALIFIER == null ) {
-			GOOD_STATUS_QUALIFIER = new TypeQualifier() {
+	protected static void populateStatusQualifiers() {
+		if ( goodStatusQualifier == null ) {
+			goodStatusQualifier = new TypeQualifier() {
+                                @Override
 				public boolean match( final AcceleratorNode node ) {
 					return node.getStatus();
 				}
 			};
 			
-			BAD_STATUS_QUALIFIER = new TypeQualifier() {
+			badStatusQualifier = new TypeQualifier() {
+                                @Override
 				public boolean match( final AcceleratorNode node ) {
 					return !node.getStatus();
 				}

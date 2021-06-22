@@ -2,7 +2,7 @@ package xal.sim.slg;
 
 public class EDipole extends Element {
 
-    private static final String type="EDipole";
+    private static final String TYPE = "EDipole";
 
     protected EDipole(double position, double len, String name) {
 		// TODO Auto-generated constructor stub
@@ -28,7 +28,7 @@ public class EDipole extends Element {
 	@Override
 	public String getType() {
 		// TODO Auto-generated method stub
-        return type;
+        return TYPE;
 	}
 
 	@Override

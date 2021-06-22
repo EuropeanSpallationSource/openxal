@@ -8,6 +8,8 @@
 
 package xal.tools.math.r3;
 
+import java.io.PrintWriter;
+
 /**
  *  Represents an element of Z^3, the three-dimensional cartesian product of integers.
  *
@@ -68,7 +70,7 @@ public class Z3 implements java.io.Serializable {
     }
     
     /**
-     *  Performs a deep copk operation.
+     *  Performs a deep copy operation.
      *
      *  @return     cloned Z3 object
      */
@@ -241,7 +243,7 @@ public class Z3 implements java.io.Serializable {
      *
      *  @param  os      output stream receive content dump
      */
-    public void print(java.io.PrintWriter os)   {
+    public void print(PrintWriter os)   {
         os.print("(" + i + "," + j + "," + k + ")");
     }
 
@@ -250,7 +252,7 @@ public class Z3 implements java.io.Serializable {
      *
      *  @param  os      output stream receive content dump
      */
-    public void println(java.io.PrintWriter os)   {
+    public void println(PrintWriter os)   {
         os.println("(" + i + "," + j + "," + k + ")");
     }
 }

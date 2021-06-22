@@ -93,7 +93,7 @@ public class Rmxn extends BaseMatrix<Rmxn> {
      * so should no longer be referenced after presenting it to this constructor.
      * </p>
      * 
-     * @param arrMatrix   Java primitive array to be new internal matrix value representation
+     * @param arrVals   Java primitive array to be new internal matrix value representation
      * 
      * @exception  IllegalArgumentException  the argument is degenerate and cannot represent a matrix
      *

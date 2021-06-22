@@ -10,12 +10,12 @@ import xal.smf.*;
 import xal.smf.data.*;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.event.*;
 import java.awt.event.*;
 import java.io.File;
 import java.util.*;
 import java.util.logging.*;
+import xal.tools.URLUtil.FilePathException;
 
 
 /**
@@ -37,9 +37,10 @@ public class AcceleratorActionFactory {
     public static MenuListener sequenceHandler( final AcceleratorDocument document ) {
         return new MenuListener() {
             /** MenuListener interface */
+            @Override
             public void menuSelected( final MenuEvent event ) {
                 final Accelerator accelerator = document.getAccelerator();
-                final List<AcceleratorSeq> sequences = accelerator != null ? new ArrayList<AcceleratorSeq>( accelerator.getSequences() ) : Collections.<AcceleratorSeq>emptyList();
+                final List<AcceleratorSeq> sequences = accelerator != null ? new ArrayList<>( accelerator.getSequences() ) : Collections.<AcceleratorSeq>emptyList();
                 
                 final JMenu menu = (JMenu)event.getSource();
                 menu.removeAll();
@@ -62,7 +63,7 @@ public class AcceleratorActionFactory {
 				menu.addSeparator();
                 
 				// fetch the pre-defined combo sequences and make sure we don't overwrite the list
-				final List<AcceleratorSeqCombo> comboSequences = (accelerator != null) ? new ArrayList<AcceleratorSeqCombo>( accelerator.getComboSequences() ) : Collections.<AcceleratorSeqCombo>emptyList();
+				final List<AcceleratorSeqCombo> comboSequences = (accelerator != null) ? new ArrayList<>( accelerator.getComboSequences() ) : Collections.<AcceleratorSeqCombo>emptyList();
 				
                 // If the selected sequence is a combo sequence make sure there is an appropriate menu item
                 if ( selectedSequence != null && selectedSequence instanceof AcceleratorSeqCombo && !comboSequences.contains( selectedSequence ) ) {
@@ -84,10 +85,12 @@ public class AcceleratorActionFactory {
 
 
             /** MenuListener interface */
+            @Override
             public void menuCanceled( final MenuEvent event ) {}
 
 
             /** MenuListener interface */
+            @Override
             public void menuDeselected( final MenuEvent event ) {}
         };
     }
@@ -103,6 +106,7 @@ public class AcceleratorActionFactory {
             /** serialization ID */
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
 				try {
 					document.loadDefaultAccelerator();
@@ -131,6 +135,7 @@ public class AcceleratorActionFactory {
             /** serialization ID */
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
 				final JFileChooser fileChooser = ((AcceleratorApplication)AcceleratorApplication.getApp()).getAcceleratorFileChooser();
 				int status = fileChooser.showOpenDialog( document.getMainWindow() );
@@ -148,7 +153,7 @@ public class AcceleratorActionFactory {
 							break;
 					}
 				}
-				catch(Exception exception) {
+				catch(FilePathException exception) {
 					final String message = "Exception while loading the selected accelerator: ";
 					System.err.println( message + '\n' + exception );
 					Logger.getLogger( "global" ).log( Level.SEVERE, message, exception );
@@ -168,13 +173,14 @@ public class AcceleratorActionFactory {
      * @param document The document for which the menu item applies the selected sequence.
      * @return The menu item used to select the specific sequence.
      */
-    static private JMenuItem selectSequenceMenuItem( final AcceleratorSeq sequence, final AcceleratorDocument document ) {
+    private static JMenuItem selectSequenceMenuItem( final AcceleratorSeq sequence, final AcceleratorDocument document ) {
         final String label = sequence.getId();
         final JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem( label );
         menuItem.setAction( new AbstractAction() {
             /** serialization ID */
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
                 document.setSelectedSequence( sequence );
             }
@@ -190,13 +196,14 @@ public class AcceleratorActionFactory {
      * @param document The document into which the combo sequence is selected.
      * @return The menu item used to construct the combo sequence.
      */
-    static private JMenuItem comboSequenceSelectorMenuItem( final AcceleratorDocument document ) {
+    private static JMenuItem comboSequenceSelectorMenuItem( final AcceleratorDocument document ) {
         final String label = "New Combo Sequence";
         final JMenuItem menuItem = new JMenuItem( label );
         menuItem.setAction( new AbstractAction() {
             /** serialization ID */
             private static final long serialVersionUID = 1L;
             
+            @Override
             public void actionPerformed( final ActionEvent event ) {
 				final AcceleratorSeqCombo comboSequence = ComboSequenceComposer.composeComboSequence( document.getAccelerator(), document.getMainWindow() );
 				if ( comboSequence != null ) {

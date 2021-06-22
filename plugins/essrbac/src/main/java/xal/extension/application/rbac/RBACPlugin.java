@@ -24,7 +24,7 @@ public class RBACPlugin {
     private static final String USE_RBAC_KEY = "useRbac";
 
     // Return default settings for RBAC plugin
-    static protected java.util.prefs.Preferences getDefaults() {
+    protected static java.util.prefs.Preferences getDefaults() {
         return xal.tools.apputils.Preferences.nodeForPackage(RBACPlugin.class);
     }
 

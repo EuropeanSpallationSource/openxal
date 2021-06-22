@@ -44,7 +44,7 @@ public class DipoleBucket extends xal.smf.attr.DipoleBucket {
     /*
      *  Constants
      */
-    private final static String[] c_arrNames = {
+    private static final String[] ARR_NAMES = {
         // Total gap of magnet
         "gap",
         // entry Fringe-field factor K1
@@ -61,66 +61,66 @@ public class DipoleBucket extends xal.smf.attr.DipoleBucket {
     public DipoleBucket() {
         super();
 
-        m_attGap = new Attribute(0.0);
-        m_attEntrFringeFieldFactorK1 = new Attribute(0.45);
-        m_attEntrFringeFieldFactorK2 = new Attribute(2.8);
-        m_attExitFringeFieldFactorK1 = new Attribute(0.45);
-        m_attExitFringeFieldFactorK2 = new Attribute(2.8);
-        m_attOrientation = new Attribute("");
+        attGap = new Attribute(0.0);
+        attEntrFringeFieldFactorK1 = new Attribute(0.45);
+        attEntrFringeFieldFactorK2 = new Attribute(2.8);
+        attExitFringeFieldFactorK1 = new Attribute(0.45);
+        attExitFringeFieldFactorK2 = new Attribute(2.8);
+        attOrientation = new Attribute("");
 
-        super.registerAttribute(c_arrNames[0], m_attGap, "Total gap of magnet (m).");
-        super.registerAttribute(c_arrNames[1], m_attEntrFringeFieldFactorK1, "Entry Fringe-field factor K1.");
-        super.registerAttribute(c_arrNames[2], m_attEntrFringeFieldFactorK2, "Entry Fringe-field factor K2.");
-        super.registerAttribute(c_arrNames[3], m_attExitFringeFieldFactorK1, "Exit Fringe-field factor K1.");
-        super.registerAttribute(c_arrNames[4], m_attExitFringeFieldFactorK2, "Exit Fringe-field factor K2.");
-        super.registerAttribute(c_arrNames[5], m_attOrientation, "Orientation of the magnet (H/V).");
+        super.registerAttribute(ARR_NAMES[0], attGap, "Total gap of magnet (m).");
+        super.registerAttribute(ARR_NAMES[1], attEntrFringeFieldFactorK1, "Entry Fringe-field factor K1.");
+        super.registerAttribute(ARR_NAMES[2], attEntrFringeFieldFactorK2, "Entry Fringe-field factor K2.");
+        super.registerAttribute(ARR_NAMES[3], attExitFringeFieldFactorK1, "Exit Fringe-field factor K1.");
+        super.registerAttribute(ARR_NAMES[4], attExitFringeFieldFactorK2, "Exit Fringe-field factor K2.");
+        super.registerAttribute(ARR_NAMES[5], attOrientation, "Orientation of the magnet (H/V).");
     }
 
     /**
      * total gap of the magnet (m)
      */
-    private Attribute m_attGap;
+    private Attribute attGap;
     /**
      * Orientation of the magnet (H/V)
      */
-    private Attribute m_attOrientation;
+    private Attribute attOrientation;
     /**
      * Upstream edge face Fringe-field factor (default = 0.45 for a square-edged
      * magnet)
      */
-    private Attribute m_attEntrFringeFieldFactorK1;
+    private Attribute attEntrFringeFieldFactorK1;
     /**
      * Upstream edge face Fringe-field factor (default = 2.80 for a square-edged
      * magnet)
      */
-    private Attribute m_attEntrFringeFieldFactorK2;
+    private Attribute attEntrFringeFieldFactorK2;
     /**
      * Downstream edge face Fringe-field factor (default = 0.45 for a
      * square-edged magnet)
      */
-    private Attribute m_attExitFringeFieldFactorK1;
+    private Attribute attExitFringeFieldFactorK1;
     /**
      * Downstream edge face Fringe-field factor (default = 2.80 for a
      * square-edged magnet)
      */
-    private Attribute m_attExitFringeFieldFactorK2;
+    private Attribute attExitFringeFieldFactorK2;
 
     /**
      * @return total gap of magnet (m)
      */
     public double getGap() {
-        return m_attGap.getDouble();
+        return attGap.getDouble();
     }
 
     /**
      * @param value total gap of magnet (m)
      */
     public void setGap(double value) {
-        m_attGap.set(value);
+        attGap.set(value);
     }
 
     public int getOrientation() {
-        String strFieldType = m_attOrientation.getString();
+        String strFieldType = attOrientation.getString();
         if ("horizontal".equalsIgnoreCase(strFieldType) || "H".equalsIgnoreCase(strFieldType)) {
             return MagnetType.HORIZONTAL;
         } else if ("vertical".equalsIgnoreCase(strFieldType) || "V".equalsIgnoreCase(strFieldType)) {
@@ -130,12 +130,16 @@ public class DipoleBucket extends xal.smf.attr.DipoleBucket {
     }
 
     public void setOrientation(int intVal) {
-        if (intVal == MagnetType.HORIZONTAL) {
-            m_attOrientation.set("horizontal");
-        } else if (intVal == MagnetType.VERTICAL) {
-            m_attOrientation.set("vertical");
-        } else {
-            m_attOrientation.set("");
+        switch (intVal) {
+            case MagnetType.HORIZONTAL:
+                attOrientation.set("horizontal");
+                break;
+            case MagnetType.VERTICAL:
+                attOrientation.set("vertical");
+                break;
+            default:
+                attOrientation.set("");
+                break;
         }
     }
 
@@ -143,55 +147,55 @@ public class DipoleBucket extends xal.smf.attr.DipoleBucket {
      * @return Upstream edge face Fringe-field factor (default = 0.45)
      */
     public double getEntrFringeFieldFactorK1() {
-        return m_attEntrFringeFieldFactorK1.getDouble();
+        return attEntrFringeFieldFactorK1.getDouble();
     }
 
     /**
      * @param value Upstream edge face Fringe-field factor (default = 0.45)
      */
     public void setEntrFringeFieldFactorK1(double value) {
-        m_attEntrFringeFieldFactorK1.set(value);
+        attEntrFringeFieldFactorK1.set(value);
     }
 
     /**
      * @return Upstream edge face Fringe-field factor (default = 2.80)
      */
     public double getEntrFringeFieldFactorK2() {
-        return m_attEntrFringeFieldFactorK2.getDouble();
+        return attEntrFringeFieldFactorK2.getDouble();
     }
 
     /**
      * @param value Upstream edge face Fringe-field factor (default = 2.80)
      */
     public void setEntrFringeFieldFactorK2(double value) {
-        m_attEntrFringeFieldFactorK2.set(value);
+        attEntrFringeFieldFactorK2.set(value);
     }
 
     /**
      * @return Downstream edge face Fringe-field factor (default = 0.45)
      */
     public double getExitFringeFieldFactorK1() {
-        return m_attExitFringeFieldFactorK1.getDouble();
+        return attExitFringeFieldFactorK1.getDouble();
     }
 
     /**
      * @param value Downstream edge face Fringe-field factor (default = 0.45)
      */
     public void setExitFringeFieldFactorK1(double value) {
-        m_attExitFringeFieldFactorK1.set(value);
+        attExitFringeFieldFactorK1.set(value);
     }
 
     /**
      * @return Downstream edge face Fringe-field factor (default = 2.80)
      */
     public double getExitFringeFieldFactorK2() {
-        return m_attExitFringeFieldFactorK2.getDouble();
+        return attExitFringeFieldFactorK2.getDouble();
     }
 
     /**
      * @param value Downstream edge face Fringe-field factor (default = 2.80)
      */
     public void setExitFringeFieldFactorK2(double value) {
-        this.m_attExitFringeFieldFactorK2.set(value);
+        this.attExitFringeFieldFactorK2.set(value);
     }
 }

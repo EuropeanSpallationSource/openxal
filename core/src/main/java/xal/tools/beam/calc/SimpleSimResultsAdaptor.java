@@ -76,7 +76,7 @@ public class SimpleSimResultsAdaptor extends SimResultsAdaptor {
         if ( clsTrajState.equals(TransferMapState.class) ) {
             @SuppressWarnings("unchecked")
             CalculationsOnRings calRings  = new CalculationsOnRings((Trajectory<TransferMapState>)trajectory);
-            super.registerCalcEngine(TransferMapState.class, calRings);;
+            super.registerCalcEngine(TransferMapState.class, calRings);
 
         } else if (clsTrajState.equals(EnvelopeProbeState.class)) {
             @SuppressWarnings("unchecked")

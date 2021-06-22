@@ -34,7 +34,7 @@ public abstract class ThinElement extends Element {
      */
     public ThinElement(String strType) {
         super(strType);
-    };
+    }
     
     /** 
      * Creates a new instance of ThinElement specifying with the element
@@ -45,7 +45,7 @@ public abstract class ThinElement extends Element {
      */
     public ThinElement(String strType, String strId) {
         super(strType, strId);
-    };
+    }
     
     
     /*
@@ -112,7 +112,7 @@ public abstract class ThinElement extends Element {
      *  @return     a value of zero
      */
     @Override
-    public double getLength() { return 0.0; };
+    public double getLength() { return 0.0; }
     
     /*
      *  IElement Interface
@@ -244,4 +244,4 @@ public abstract class ThinElement extends Element {
         return matPhi;
     }
 
-};
+}

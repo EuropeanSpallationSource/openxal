@@ -33,7 +33,7 @@ public class Doppler extends AcceleratorNode {
     /*
      *  Constants
      */
-    public static final String s_strType = "DPL";
+    public static final String TYPE = "DPL";
     
     public static final String FRACTION_H_R_HANDLE = "fractionH+";
     public final AccessibleProperty fractionH = new AccessibleProperty("fractionH", FRACTION_H_R_HANDLE);
@@ -55,7 +55,7 @@ public class Doppler extends AcceleratorNode {
      * Register type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes(Doppler.class, s_strType);
+        ElementTypeManager.defaultManager().registerTypes(Doppler.class, TYPE);
     }
 
     /**
@@ -64,7 +64,7 @@ public class Doppler extends AcceleratorNode {
      */
     @Override
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /**

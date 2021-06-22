@@ -8,6 +8,7 @@
 
 package xal.extension.application;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 
 import javax.swing.SwingUtilities;
@@ -15,7 +16,7 @@ import javax.swing.SwingUtilities;
 
 /** Application subclass for JFrame based applications. */
 public class FrameApplication extends Application implements XalDocumentListener {
-    private volatile int _retainCount;   // counts items that want to keep the application alive
+    private volatile int retainCount;   // counts items that want to keep the application alive
 	
 	
     /** 
@@ -35,7 +36,7 @@ public class FrameApplication extends Application implements XalDocumentListener
     protected FrameApplication( final ApplicationAdaptor adaptor, final URL[] urls ) {
 		super( adaptor, urls );
 		
-        _retainCount = 0;
+        retainCount = 0;
     }
     
     /** 
@@ -44,11 +45,13 @@ public class FrameApplication extends Application implements XalDocumentListener
 	* 
 	* @param urls An array of document URLs to open.
 	*/
+    @Override
     protected void setup( final URL[] urls ) {		
         registerEvents();		
 		
 		try {
 			SwingUtilities.invokeAndWait( new Runnable() {
+                                @Override
 				public void run() {
 					setupConsole();
 					
@@ -57,11 +60,11 @@ public class FrameApplication extends Application implements XalDocumentListener
 					makeFileChoosers();
 					
 					// setup the application commander and load custom application commands
-					_commander = makeCommander();
-					_applicationAdaptor.customizeCommands( _commander );
+					commander = makeCommander();
+					applicationAdaptor.customizeCommands(commander );
 					
 					// notify listeners that the initial documents, if any, will be opened
-					_noticeProxy.applicationWillOpenInitialDocuments();
+					noticeProxy.applicationWillOpenInitialDocuments();
 
 					if ( urls == null || urls.length == 0 ) {
                         if ( showsWelcomeDialogAtLaunch() ) {
@@ -78,24 +81,20 @@ public class FrameApplication extends Application implements XalDocumentListener
 					}
 					
 					// if multiple documents are opened then cascade them
-					if ( _openDocuments.size() > 1 ) {
-						cascadeWindowsAbout( _openDocuments.get(0) );
+					if ( openDocuments.size() > 1 ) {
+						cascadeWindowsAbout( openDocuments.get(0) );
 					}					
 				}
 			});
 		}
-		catch ( InterruptedException exception ) {
-			exception.printStackTrace();
-			throw new RuntimeException( exception );
-		}
-		catch ( java.lang.reflect.InvocationTargetException exception ) {
+		catch ( InterruptedException | InvocationTargetException exception ) {
 			exception.printStackTrace();
 			throw new RuntimeException( exception );
 		}
 		
 		registerApplicationStatusService();   // comment out application service registration until it is developed -tap
 		
-        _applicationAdaptor.applicationFinishedLaunching();
+        applicationAdaptor.applicationFinishedLaunching();
     }
     
 	
@@ -104,18 +103,20 @@ public class FrameApplication extends Application implements XalDocumentListener
 	 * @param document the document to produce
 	 * @param makeVisible make the document visible
      */
+    @Override
     public void produceDocument( final XalAbstractDocument document, final boolean makeVisible ) {
-        _openDocuments.add( document );
+        openDocuments.add( document );
         ((XalDocument)document).addXalDocumentListener( this );
 		document.initMainWindow();
 		if ( makeVisible ) {
 			document.showDocument();
 		}
-        _noticeProxy.documentCreated( (XalDocument)document );
+        noticeProxy.documentCreated( (XalDocument)document );
     }
 
 	
     /** Create and open a new empty document. */
+    @Override
     protected void newDocument() {
         updateNextDocumentOpenLocation();
 		newDocument("");
@@ -126,8 +127,9 @@ public class FrameApplication extends Application implements XalDocumentListener
 	 * Create and open a new empty document of the specified type. 
 	 * @param type the type of document to create.
 	 */
+    @Override
     protected void newDocument( final String type ) {
-        XalDocument document = (XalDocument)_applicationAdaptor.generateEmptyDocument( type );
+        XalDocument document = (XalDocument)applicationAdaptor.generateEmptyDocument( type );
 		produceDocument( document );
     }
     
@@ -137,6 +139,7 @@ public class FrameApplication extends Application implements XalDocumentListener
      * to that of its source file.
      * @param document The document to revert.
      */
+    @Override
     protected void revertToSaved( final XalAbstractDocument document ) {
         // don't revert if there are no changes
         if ( !document.hasChanges() ) {
@@ -164,6 +167,7 @@ public class FrameApplication extends Application implements XalDocumentListener
     
     
     /** Handle the "Close All" action by closing all open documents and opening a new empty document. */
+    @Override
     protected void closeAllDocuments() {
 		try {
 			retainApp();
@@ -178,16 +182,19 @@ public class FrameApplication extends Application implements XalDocumentListener
 	
 	
     /** Implement XalDocumentListener.  Empty implementation. */
+    @Override
     public void titleChanged( final XalDocument document, final String newTitle ) {
     }
     
     
     /** Implement XalDocumentListener.  Empty implementation. */
+    @Override
     public void hasChangesChanged( final XalDocument document, final boolean newHasChangesStatus ) {
     }
     
     
     /** Implement XalDocumentListener.  Empty implementation. */
+    @Override
     public void documentWillClose( final XalDocument document ) {
     }
     
@@ -198,10 +205,11 @@ public class FrameApplication extends Application implements XalDocumentListener
 	* If there are no documents remaining, the application quits.
 	* @param document The document that has closed.
 	*/
+    @Override
     public void documentHasClosed( final XalDocument document ) {
         document.removeXalDocumentListener( this );
-        _openDocuments.remove( document );
-        _noticeProxy.documentClosed( document );
+        openDocuments.remove( document );
+        noticeProxy.documentClosed( document );
         
         terminateOnStatus();
     }
@@ -215,7 +223,7 @@ public class FrameApplication extends Application implements XalDocumentListener
      * be prevented from terminating by incrementing the retain count.
      */
     synchronized private void retainApp() {
-        ++_retainCount;
+        ++retainCount;
     }
     
     
@@ -225,7 +233,7 @@ public class FrameApplication extends Application implements XalDocumentListener
      * @see retainApp
      */
     synchronized private void releaseApp() {
-        --_retainCount;
+        --retainCount;
         terminateOnStatus();
     }
     
@@ -237,7 +245,7 @@ public class FrameApplication extends Application implements XalDocumentListener
      * application.
      */
     private void terminateOnStatus() {
-        if ( _openDocuments.size() == 0 && _retainCount < 1 ) {
+        if ( openDocuments.size() == 0 && retainCount < 1 ) {
             quit();
         }
     }
@@ -249,7 +257,7 @@ public class FrameApplication extends Application implements XalDocumentListener
      * @param adaptor The custom application adaptor.
 	 * @param urls The URLs of documents to open upon launching the application
      */
-    static public void launch( final ApplicationAdaptor adaptor, final URL[] urls ) {
+    public static void launch( final ApplicationAdaptor adaptor, final URL[] urls ) {
         new FrameApplication( adaptor, urls );
     }	
 }

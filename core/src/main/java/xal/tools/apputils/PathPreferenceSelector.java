@@ -9,12 +9,10 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
-import java.util.*;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.io.*;
 import java.net.*;
-import java.text.*;
 
 
 /**
@@ -30,7 +28,7 @@ public class PathPreferenceSelector extends JDialog implements ScrollPaneConstan
     private static final long serialVersionUID = 1L;
     
 	/** indicates whether the user saved changes */
-	private boolean _userSavedChanges;
+	private boolean userSavedChanges;
 	
 	// file browser
 	protected CustomChooser chooser;
@@ -92,7 +90,7 @@ public class PathPreferenceSelector extends JDialog implements ScrollPaneConstan
 	 * @param description  The description used to label the files.
 	 */
 	protected void setup(final Preferences defaults, final String urlKey, final String suffix, final String description) {
-		_userSavedChanges = false;
+		userSavedChanges = false;
 		setModal( true );
 		chooser = new CustomChooser( defaults, urlKey, suffix, description );
         initComponents();
@@ -129,6 +127,7 @@ public class PathPreferenceSelector extends JDialog implements ScrollPaneConstan
         
         // browse button event handler
         browseButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent event) {
                 browsePath();
             }
@@ -138,12 +137,15 @@ public class PathPreferenceSelector extends JDialog implements ScrollPaneConstan
         
         // add listener of text field actions
         urlField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
             public void changedUpdate(DocumentEvent event) {
                 textChanged(event);
             }
+            @Override
             public void removeUpdate(DocumentEvent event) {
                 textChanged(event);
             }
+            @Override
             public void insertUpdate(DocumentEvent event) {
                 textChanged(event);
             }
@@ -159,6 +161,7 @@ public class PathPreferenceSelector extends JDialog implements ScrollPaneConstan
 		
 		// close button event handler
 		closeButton.addActionListener(new ActionListener() {
+                        @Override
 			public void actionPerformed(ActionEvent event) {
 				close();
 			}
@@ -170,6 +173,7 @@ public class PathPreferenceSelector extends JDialog implements ScrollPaneConstan
 
         // commit button event handler
         revertButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent event) {
                 revertPath();
             }
@@ -181,6 +185,7 @@ public class PathPreferenceSelector extends JDialog implements ScrollPaneConstan
 
         // commit button event handler
         commitButton.addActionListener(new ActionListener() {
+            @Override
             public void actionPerformed(ActionEvent event) {
                 commitChanges();
             }
@@ -193,6 +198,7 @@ public class PathPreferenceSelector extends JDialog implements ScrollPaneConstan
         updateView();
 		
 		addWindowListener( new WindowAdapter() {
+                        @Override
 			public void windowOpened(WindowEvent event) {
 				revertPath();
 			}
@@ -216,7 +222,7 @@ public class PathPreferenceSelector extends JDialog implements ScrollPaneConstan
 			try {
 				urlField.setText( file.toURI().toURL().toString() );
 			}
-			catch( Exception exception ) {
+			catch( MalformedURLException exception ) {
 				revertPath();
 			}
         }
@@ -230,7 +236,7 @@ public class PathPreferenceSelector extends JDialog implements ScrollPaneConstan
 		try {
 			chooser.setDefaultURLSpec( urlField.getText() );     // make this file the new default
 			updateView();
-			_userSavedChanges = true;
+			userSavedChanges = true;
 		}
 		catch(Exception exception) {
 			Toolkit.getDefaultToolkit().beep();
@@ -277,7 +283,7 @@ public class PathPreferenceSelector extends JDialog implements ScrollPaneConstan
 	 * @return true if the user has saved changes
 	 */
 	public boolean hasSavedChanges() {
-		return _userSavedChanges;
+		return userSavedChanges;
 	}
 	
 	
@@ -315,8 +321,8 @@ class CustomChooser extends JFileChooser {
     private static final long serialVersionUID = 1L;
     
 	// constants
-	final protected Preferences DEFAULTS;
-	final protected String URL_KEY;
+	protected final Preferences DEFAULTS;
+	protected final String urlKey;
 	
 	// state variables
     protected int status;
@@ -333,11 +339,12 @@ class CustomChooser extends JFileChooser {
         super();
 		
 		DEFAULTS = defaults;
-		URL_KEY = urlKey;
+		this.urlKey = urlKey;
         
         // only accept files of the correct type
         setFileFilter(
             new javax.swing.filechooser.FileFilter() {
+                @Override
                 public boolean accept(File file) { 
                     String name = file.getName().toLowerCase();
                     if ( file.isDirectory() || name.endsWith(suffix) ) {
@@ -345,6 +352,7 @@ class CustomChooser extends JFileChooser {
                     }
                     return false;
                 }
+                @Override
                 public String getDescription() { return description; } 
         });
 		
@@ -354,10 +362,7 @@ class CustomChooser extends JFileChooser {
 				setSelectedFile( defaultFile );
 			}
 		}
-		catch( MalformedURLException exception ) {
-			exception.printStackTrace();
-		}
-		catch( URISyntaxException exception ) {
+		catch( MalformedURLException | URISyntaxException exception ) {
 			exception.printStackTrace();
 		}
     }
@@ -413,7 +418,7 @@ class CustomChooser extends JFileChooser {
 	 * @return the default URL spec.
 	 */
 	public String getDefaultURLSpec() {
-		return DEFAULTS.get(URL_KEY, "");
+		return DEFAULTS.get(urlKey, "");
 	}
 	
 	
@@ -452,7 +457,7 @@ class CustomChooser extends JFileChooser {
 	 */
 	public void setDefaultURLSpec(final String urlSpec) {
 		try {
-			DEFAULTS.put(URL_KEY, urlSpec);
+			DEFAULTS.put(urlKey, urlSpec);
 			DEFAULTS.flush();
 		}
 		catch(BackingStoreException exception) {
@@ -496,5 +501,3 @@ class CustomChooser extends JFileChooser {
         return status == JFileChooser.CANCEL_OPTION;
     }    
 }
-
-

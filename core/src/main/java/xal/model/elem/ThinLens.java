@@ -32,15 +32,12 @@ import xal.tools.beam.PhaseMatrix;
  */
 public class ThinLens extends ThinElement {
     
-    
     /*
      *  Global Attributes
      */
     
     /** string type identifier for all ThinLens objects */
-    public static final String      s_strType = "ThinLens";
-    
-    
+    public static final String      TYPE = "ThinLens";
     
     
     /*
@@ -48,13 +45,13 @@ public class ThinLens extends ThinElement {
      */
     
     /** focal length of the thin lens in the x phase plane */
-    private double m_dblFocX = 0.0;
+    private double dblFocX = 0.0;
     
     /** focal length of the thin lens in the y phase plane */
-    private double m_dblFocY = 0.0;
+    private double dblFocY = 0.0;
     
     /** focal length of the thin lens in the z phase plane */
-    private double m_dblFocZ = 0.0;
+    private double dblFocZ = 0.0;
     
     
     /*
@@ -72,7 +69,7 @@ public class ThinLens extends ThinElement {
      *  @param  dblFz   focal length in the z phase plane (<b>in meters</b>)
      */
     public ThinLens(String strId, double dblFx, double dblFy, double dblFz) {
-        super(s_strType, strId);
+        super(TYPE, strId);
         
         this.setFocalLengthX(dblFx);
         this.setFocalLengthY(dblFy);
@@ -80,13 +77,13 @@ public class ThinLens extends ThinElement {
     }
     
     /** 
-     *  JavaBean Constructor - creates a new unitialized instance of ThinLens
+     *  JavaBean Constructor - creates a new uninitialized instance of ThinLens
      *  
      *  <b>BE CAREFUL</b>
      */
     public ThinLens() 
     {
-        super(s_strType);
+        super(TYPE);
     }
 
     /**
@@ -95,7 +92,7 @@ public class ThinLens extends ThinElement {
      *  @param  dblFx   focal length in the x phase plane (<b>in meters</b>)
      */
     public void setFocalLengthX(double dblFx) {
-        m_dblFocX = dblFx;
+        dblFocX = dblFx;
     }
     
     /**
@@ -104,7 +101,7 @@ public class ThinLens extends ThinElement {
      *  @param  dblFy   focal length in the y phase plane (<b>in meters</b>)
      */
     public void setFocalLengthY(double dblFy) {
-        m_dblFocY = dblFy;
+        dblFocY = dblFy;
     }
     
     /**
@@ -113,7 +110,7 @@ public class ThinLens extends ThinElement {
      *  @param  dblFz   focal length in the z phase plane (<b>in meters</b>)
      */
     public void setFocalLengthZ(double dblFz) {
-        m_dblFocZ = dblFz;
+        dblFocZ = dblFz;
     }
 
     
@@ -129,7 +126,7 @@ public class ThinLens extends ThinElement {
      *
      *  @return     lens focal length (in <b>meters</b>)
      */
-    double getFocalLengthX() { return m_dblFocX; };
+    double getFocalLengthX() { return dblFocX; }
     
     /**
      *  Return the focal length of thin lens in the y phase plane.
@@ -138,7 +135,7 @@ public class ThinLens extends ThinElement {
      *
      *  @return     lens focal length (in <b>meters</b>)
      */
-    double getFocalLengthY() { return m_dblFocY; };
+    double getFocalLengthY() { return dblFocY; }
     
     /**
      *  Return the focal length of thin lens in the z phase plane.
@@ -147,7 +144,7 @@ public class ThinLens extends ThinElement {
      *
      *  @return     lens focal length (in <b>meters</b>)
      */
-    double getFocalLengthZ() { return m_dblFocZ; };
+    double getFocalLengthZ() { return dblFocZ; }
     
 
     
@@ -175,7 +172,7 @@ public class ThinLens extends ThinElement {
      *  @return         a value of zero
      */
     @Override
-    public double   energyGain(IProbe probe)    { return 0.0; };
+    public double   energyGain(IProbe probe)    { return 0.0; }
     
     /**
      *  Compute and return the block-diagonal transfer matrix representing  
@@ -192,23 +189,23 @@ public class ThinLens extends ThinElement {
         PhaseMatrix  matPhi = PhaseMatrix.identity();       // linear portion of phase map
         
         // The x phase plane
-        if (m_dblFocX != 0.0)
-            matPhi.setElem(1,0, -1.0/m_dblFocX);
+        if (dblFocX != 0.0)
+            matPhi.setElem(1,0, -1.0/dblFocX);
         
         // The y phase plane
-        if (m_dblFocY != 0.0)
-            matPhi.setElem(3,2, -1.0/m_dblFocY);
+        if (dblFocY != 0.0)
+            matPhi.setElem(3,2, -1.0/dblFocY);
         
         // The z phase plane
-        if (m_dblFocZ != 0.0)
-            matPhi.setElem(5,4, -1.0/m_dblFocZ);
+        if (dblFocZ != 0.0)
+            matPhi.setElem(5,4, -1.0/dblFocZ);
         
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors
         matPhi = applyErrors(matPhi,0.0);
         
         return new PhaseMap( matPhi );
-    };
+    }
 
 
 

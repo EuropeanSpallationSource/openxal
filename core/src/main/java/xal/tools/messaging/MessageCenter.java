@@ -7,6 +7,7 @@
 package xal.tools.messaging;
 
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -15,36 +16,36 @@ import java.util.*;
  *
  * @author  tap
  */
-public class MessageCenter implements java.io.Serializable {
+public class MessageCenter implements Serializable {
     /** required for serializable objects */
     private static final long serialVersionUID = 1L;
     
 	/** forward events on the invoking thread */
-	static final public int SYNCHRONOUS = 0;
+	public static final int SYNCHRONOUS = 0;
 	
 	/** forward events from a new thread */
-	static final public int ASYNCHRONOUS = 1;
+	public static final int ASYNCHRONOUS = 1;
 	
 	/** forward fresh events (drop old unprocessed pending events) on a common thread per protocol */
-	static final public int FRESH = 2;
+	public static final int FRESH = 2;
 	
 	/** default message center that can be accessed throughout the process */
-    static final private MessageCenter DEFAULT_CENTER;
+    private static final MessageCenter DEFAULT_CENTER;
 	
 	/** The default thread pool size - currently not used */
     static final int DEFAULT_THREAD_POOL_SIZE = 5;
 	
     /** table of registered handlers */
-    private final MessageHandlerTable HANDLER_TABLE;
+    private final MessageHandlerTable handlerTable;
 	
     /** directory of registered targets */
-    private final TargetDirectory TARGET_DIRECTORY;
+    private final TargetDirectory targetDirectory;
 	
     /** name to identify the MessageCenter instance */
-    private final String NAME;
+    private final String name;
 	
     /** unimplemented, but will be used to reduce bottlenecks */
-    private int _threadPoolSize;
+    private int threadPoolSize;
 	
     
 	/** 
@@ -86,10 +87,10 @@ public class MessageCenter implements java.io.Serializable {
 	 * @param newThreadPoolSize The thread pool size of this message center 
 	 */
     public MessageCenter( final String newName, final int newThreadPoolSize ) {
-        NAME = newName;
+        name = newName;
         setThreadPoolSize( newThreadPoolSize );
-        HANDLER_TABLE = new MessageHandlerTable();
-        TARGET_DIRECTORY = new TargetDirectory();
+        handlerTable = new MessageHandlerTable();
+        targetDirectory = new TargetDirectory();
     }
     
     
@@ -170,7 +171,7 @@ public class MessageCenter implements java.io.Serializable {
             throw new UnimplementedProtocolException( target, protocol );
         }
         
-        TARGET_DIRECTORY.registerTarget( target, source, protocol );
+        targetDirectory.registerTarget( target, source, protocol );
     }
     
     
@@ -193,7 +194,7 @@ public class MessageCenter implements java.io.Serializable {
 	 * @param protocol The protocol identifying the message type being received
      */
     synchronized public <T> void removeTarget( final T target, final Object source, final Class<T> protocol ) {
-        TARGET_DIRECTORY.removeTarget( target, source, protocol );
+        targetDirectory.removeTarget( target, source, protocol );
     }
 	
 	
@@ -203,7 +204,7 @@ public class MessageCenter implements java.io.Serializable {
 	 * @param protocol The protocol identifying the message type being received
 	 */
     synchronized public <T> void removeTargetFromAllSources( final T target, final Class<T> protocol ) {
-		TARGET_DIRECTORY.removeTargetFromAllSources( target, protocol );
+		targetDirectory.removeTargetFromAllSources( target, protocol );
     }
 
 
@@ -225,12 +226,12 @@ public class MessageCenter implements java.io.Serializable {
      * Removes the target from listening for the specified protocol.
      * It only removes the target from listening to the protocol from anonymous sources.
      * For example, it unregisters a call of registerTarget(target, protocol).
-     * This method does NOT remove the target from listenting to directly registered sources.
+     * This method does NOT remove the target from listening to directly registered sources.
 	 * @param target The target receiving messages
 	 * @param protocol The protocol identifying the message type being received
      */
     synchronized public <T> void removeTarget( final T target, final Class<T> protocol ) {
-        TARGET_DIRECTORY.removeTarget( target, protocol );
+        targetDirectory.removeTarget( target, protocol );
     }
     
     
@@ -275,11 +276,11 @@ public class MessageCenter implements java.io.Serializable {
         }
         
         // see if the handler already exists
-        MessageHandler<T> handler = HANDLER_TABLE.getHandler( source, protocol );
+        MessageHandler<T> handler = handlerTable.getHandler( source, protocol );
 		
         if ( handler == null ) {
             handler = createHandler( source, protocol, synchronousType );
-            HANDLER_TABLE.addHandler( handler );
+            handlerTable.addHandler( handler );
         }
         
         return handler.getProxy();
@@ -296,11 +297,11 @@ public class MessageCenter implements java.io.Serializable {
     private <T> MessageHandler<T> createHandler( final Object source, final Class<T> protocol, final int synchronousType ) {
 		switch( synchronousType ) {
 			case SYNCHRONOUS:
-				return new SynchronousMessageHandler<T>( TARGET_DIRECTORY, source, protocol, _threadPoolSize );
+				return new SynchronousMessageHandler<>( targetDirectory, source, protocol, threadPoolSize );
 			case ASYNCHRONOUS:
-				return new AsynchronousMessageHandler<T>( TARGET_DIRECTORY, source, protocol, _threadPoolSize );
+				return new AsynchronousMessageHandler<>( targetDirectory, source, protocol, threadPoolSize );
 			case FRESH:
-				return new FreshMessageHandler<T>( TARGET_DIRECTORY, source, protocol, _threadPoolSize );
+				return new FreshMessageHandler<>( targetDirectory, source, protocol, threadPoolSize );
 			default:
 				return null;
 		}
@@ -315,9 +316,9 @@ public class MessageCenter implements java.io.Serializable {
 	 * @param protocol The interface/type of messages
 	 */
     synchronized public <T> void removeSource( final Object source, final Class<T> protocol ) {
-		final MessageHandler<T> handler = HANDLER_TABLE.getHandler( source, protocol );
+		final MessageHandler<T> handler = handlerTable.getHandler( source, protocol );
 		handler.terminate();
-        HANDLER_TABLE.removeHandler( handler );
+        handlerTable.removeHandler( handler );
     }
     
     
@@ -330,7 +331,7 @@ public class MessageCenter implements java.io.Serializable {
 	 * @return The proxy (implementing protocol) to call on behalf of the source to broadcast messages
      */
     public <T> T getProxy( final Object source, final Class<T> protocol ) {
-        MessageHandler<T> handler = HANDLER_TABLE.getHandler( source, protocol );
+        MessageHandler<T> handler = handlerTable.getHandler( source, protocol );
         
         return handler.getProxy();
     }
@@ -341,7 +342,7 @@ public class MessageCenter implements java.io.Serializable {
 	 * @return the name of the message center
 	 */
     public String name() {
-        return NAME;
+        return name;
     }
     
     
@@ -350,6 +351,7 @@ public class MessageCenter implements java.io.Serializable {
 	 * it simply returns the name of the message center.
 	 * @return the description of the MessageCenter instance 
 	 */
+    @Override
     public String toString() {
         return name();
     }

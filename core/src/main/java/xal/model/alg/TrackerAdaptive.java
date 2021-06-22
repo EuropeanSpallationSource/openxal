@@ -24,59 +24,59 @@ abstract public class TrackerAdaptive extends Tracker {
     // Archiving constants 
 	
     /** data node label for EnvTrackerAdapt settings */
-    public final static String      NODETAG_ADAPT   = "adapt";
+    public static final String      NODETAG_ADAPT   = "adapt";
     
     /** attribute label for order of accuracy in algorithm */
-    public final static String      ATTRTAG_ORDER   = "order";
+    public static final String      ATTRTAG_ORDER   = "order";
     
     /** attribute label for maximum step size */
-    public final static String      ATTRTAG_MAXSTEP = "maxstep";
+    public static final String      ATTRTAG_MAXSTEP = "maxstep";
     /** attribute label for maximum step size for drift space with pmq , sako 21 jul 06 */
-    public final static String      ATTRTAG_MAXSTEP_DRIFTPMQ = "maxstepdriftpmq";
+    public static final String      ATTRTAG_MAXSTEP_DRIFTPMQ = "maxstepdriftpmq";
     
     /** attribute label for initial step size */
-    public final static String      ATTRTAG_INITSTEP= "initstep";
+    public static final String      ATTRTAG_INITSTEP= "initstep";
     
     /** attribute label for error tolerance */
-    public final static String      ATTRTAG_ERRTOL  = "errortol"; 
+    public static final String      ATTRTAG_ERRTOL  = "errortol"; 
     
     /** attribute label for slack tolerance */
-    public final static String      ATTRTAG_SLACK   = "slack";
+    public static final String      ATTRTAG_SLACK   = "slack";
     
     /** attribute label for residual norm */
-    public final static String      ATTRTAG_NORM    = "norm";
+    public static final String      ATTRTAG_NORM    = "norm";
     
     /** attribute label for maximum iteration count */
-    public final static String      ATTRTAG_MAXITER = "maxiter";
+    public static final String      ATTRTAG_MAXITER = "maxiter";
 	
     /** 
 	 * Maximum distance we may travel before requiring another space charge kick.
 	 *  If zero than stepping distance is not bound. 
 	 */
-    protected double m_dblMaxStep;       
-    /** m_dbleMaxStep for drift field from PMQ */
-    protected double m_dblMaxStepDriftPmq;       
+    protected double dblMaxStep;       
+    /** dbleMaxStep for drift field from PMQ */
+    protected double dblMaxStepDriftPmq;       
     
     /** The current step size. */
-    protected double m_dblStepSize;
+    protected double dblStepSize;
 	
     /**
 	 * Residual error tolerance parameter.  Errors in the the residual between
      * a full step and half step can be no larger than this.
      */
-    protected double m_dblErrTol;
+    protected double dblErrTol;
     
     /**
 	 * Step size adjustment slack tolerance.  If adjustments in the step size
      * are less than this percentage, we take special action.
      */
-    protected double m_dblSlack;
+    protected double dblSlack;
     
     /**
 	 * The type of Lebesque norm used in the residual calculations.  Since the 
      * residual is a matrix in R7x7 this is a matrix norm.
      */
-    protected int m_enmNorm;
+    protected int enmNorm;
 	
     private double initStepSize;
     
@@ -154,7 +154,7 @@ abstract public class TrackerAdaptive extends Tracker {
      * @param dblMaxStep    maximum allowable step size in <b>meters</b>
      */
     public void setMaxStepSize( final double dblMaxStep )   {
-        m_dblMaxStep = dblMaxStep;
+        this.dblMaxStep = dblMaxStep;
     }
     
     /**
@@ -181,12 +181,12 @@ abstract public class TrackerAdaptive extends Tracker {
      * @param dblMaxStepDriftPmq    maximum allowable step size in <b>meters</b>
      */
     public void setMaxStepSizeDriftPmq( final double dblMaxStepDriftPmq )   {
-        m_dblMaxStepDriftPmq = dblMaxStepDriftPmq;
+        this.dblMaxStepDriftPmq = dblMaxStepDriftPmq;
     }
     
 	
     /**
-	 * Sets the maximum allowable number of steps to progate a probe through
+	 * Sets the maximum allowable number of steps to propagate a probe through
      * an element.  If the number of steps increases beyond this number a
      * race condition is assumed and an exception is thrown during the 
      * propagation.
@@ -206,13 +206,13 @@ abstract public class TrackerAdaptive extends Tracker {
      * 
      * The step size is continually adjusted to keep the resulting
      * residual error at or about this given tolerance value.  Thus,
-     * yeild a more accurate solution however they also result in small 
+     * yield a more accurate solution however they also result in small 
      * step sizes.
      *  
      * @param dblErr    acceptable residual error
      */
     public void setErrorTolerance( final double dblErr )   {
-        m_dblErrTol = dblErr;
+        dblErrTol = dblErr;
     }
     
 	
@@ -228,7 +228,7 @@ abstract public class TrackerAdaptive extends Tracker {
      * @param dblSlack  size of the slack region in <b>meters</b>  
      */
     public void setSlackTolerance( final double dblSlack )   {
-        m_dblSlack = dblSlack;
+        this.dblSlack = dblSlack;
     }
 	
 	
@@ -241,7 +241,7 @@ abstract public class TrackerAdaptive extends Tracker {
      * @param dblStepSize   initial step size in <b>meters</b>
      */
     public void setStepSize( final double dblStepSize ) {
-        m_dblStepSize = dblStepSize;
+        this.dblStepSize = dblStepSize;
     }
     
 	
@@ -254,7 +254,7 @@ abstract public class TrackerAdaptive extends Tracker {
         if (enmNorm <0 || enmNorm > 2) 
             return;
 		
-        m_enmNorm = enmNorm;
+        this.enmNorm = enmNorm;
     }
 	
     
@@ -279,41 +279,41 @@ abstract public class TrackerAdaptive extends Tracker {
      * @return  the current step size in <b>meters</b>
      */
     public double getStepSize() {
-        return m_dblStepSize;
+        return dblStepSize;
     }
     
 	
     /**
-	 * Return the maximum allowable step size.  The step sizing aglorithm
+	 * Return the maximum allowable step size.  The step sizing algorithm
      * is bound by this value, or unbounded if zero.
      * 
      * @return  maximum allowable step size in <b>meters</b>
      */
     public double getMaxStepSize()  {
-        return this.m_dblMaxStep;
+        return this.dblMaxStep;
     }
     
 	
     /**
-	 * Return the maximum allowable step size.  The step sizing aglorithm
+	 * Return the maximum allowable step size.  The step sizing algorithm
      * is bound by this value, or unbounded if zero.
      * 
      * @return  maximum allowable step size in <b>meters</b>
      */
     public double getMaxStepSizeDriftPmq()  {
-        return this.m_dblMaxStepDriftPmq;
+        return this.dblMaxStepDriftPmq;
     }
     
 	
     /**
-	 * Return the maximum allowable number of steps to progate a probe through
+	 * Return the maximum allowable number of steps to propagate a probe through
      * an element.  If the number of steps increases beyond this number a
      * race condition is assumed and an exception is thrown during the 
      * propagation.
      * 
      * If the value is zero then no maximum step count is enforced.
      * 
-     * @return  maximum alllowable step count while propagating thru a single element
+     * @return  maximum allowable step count while propagating thru a single element
      */
     abstract public int  getMaxIterations();
 	
@@ -325,7 +325,7 @@ abstract public class TrackerAdaptive extends Tracker {
      * @return  tolerable residual error
      */
     public double getErrorTolerance()   {
-        return m_dblErrTol;    
+        return dblErrTol;    
     }
 	
 	
@@ -336,7 +336,7 @@ abstract public class TrackerAdaptive extends Tracker {
      * @return      size of the slack region in <b>meters</b>
      */
     public double getSlackTolerance()   {
-        return m_dblSlack;
+        return dblSlack;
     }
 	
 	
@@ -346,7 +346,7 @@ abstract public class TrackerAdaptive extends Tracker {
      * @return  0 for l-inf norm, 1 for l-1 norm, 2 for l2 norm
      */
     public int  getMatrixNorm()       {
-        return m_enmNorm;
+        return enmNorm;
     }
     
 	

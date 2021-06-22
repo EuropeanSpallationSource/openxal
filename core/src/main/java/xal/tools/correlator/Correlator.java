@@ -8,7 +8,6 @@ package xal.tools.correlator;
 
 import xal.tools.messaging.MessageCenter;
 
-import java.awt.event.*;
 import java.util.*;
 import java.util.logging.*;
 
@@ -24,7 +23,7 @@ import java.util.logging.*;
  */
 abstract public class Correlator<SourceType, RecordType, SourceAgentType extends SourceAgent<RecordType>> {
     protected MessageCenter localCenter;
-    protected double _binTimespan;
+    protected double binTimespan;
     protected CorrelationTester<RecordType> correlationTester;
 	
     // one binQueue for each channel
@@ -44,8 +43,8 @@ abstract public class Correlator<SourceType, RecordType, SourceAgentType extends
 	/** Correlator constructor */
     public Correlator( final double aBinTimespan, final CorrelationFilter<RecordType> aFilter ) {
         isMonitoring = false;
-        sourceAgentTable = new Hashtable<String,SourceAgentType>();
-        correlationTester = new CorrelationTester<RecordType>( 0, aFilter );
+        sourceAgentTable = new Hashtable<>();
+        correlationTester = new CorrelationTester<>( 0, aFilter );
         
         registerEvents();
         
@@ -110,7 +109,7 @@ abstract public class Correlator<SourceType, RecordType, SourceAgentType extends
 		localCenter.registerTarget( broadcaster, StateNotice.class );
 		broadcaster.addCorrelationNoticeListener( poster );
 		
-		broadcaster.binTimespanChanged( this, _binTimespan );		// make sure interested broadcasters get this info
+		broadcaster.binTimespanChanged(this, binTimespan );		// make sure interested broadcasters get this info
 	}
 	
 	
@@ -120,7 +119,7 @@ abstract public class Correlator<SourceType, RecordType, SourceAgentType extends
 	 */
 	DefaultBroadcaster<RecordType> useDefaultBroadcaster() {
 		if ( !(broadcaster instanceof DefaultBroadcaster) ) { 
-			setBroadcaster( new DefaultBroadcaster<RecordType>( localCenter ) );
+			setBroadcaster( new DefaultBroadcaster<>( localCenter ) );
 		}
 		return (DefaultBroadcaster<RecordType>)broadcaster;
 	}
@@ -133,7 +132,7 @@ abstract public class Correlator<SourceType, RecordType, SourceAgentType extends
 	@SuppressWarnings( "unchecked" )	// enforces type internally
 	PassiveBroadcaster<RecordType> usePassiveBroadcaster() {
 		if ( !(broadcaster instanceof PassiveBroadcaster) ) {
-			setBroadcaster( new PassiveBroadcaster<RecordType>( localCenter ) );
+			setBroadcaster( new PassiveBroadcaster<>( localCenter ) );
 		}
 		return (PassiveBroadcaster)broadcaster;
 	}
@@ -145,7 +144,7 @@ abstract public class Correlator<SourceType, RecordType, SourceAgentType extends
 	 */
 	PatientBroadcaster<RecordType> usePatientBroadcaster() {
 		if ( !(broadcaster instanceof PatientBroadcaster) ) {
-			setBroadcaster( new PatientBroadcaster<RecordType>( localCenter ) );
+			setBroadcaster( new PatientBroadcaster<>( localCenter ) );
 		}
 		return (PatientBroadcaster<RecordType>)broadcaster;
 	}
@@ -157,7 +156,7 @@ abstract public class Correlator<SourceType, RecordType, SourceAgentType extends
 	 */
 	VerboseBroadcaster<RecordType> useVerboseBroadcaster() {
 		if ( !(broadcaster instanceof VerboseBroadcaster) ) {
-			setBroadcaster( new VerboseBroadcaster<RecordType>( localCenter ) );
+			setBroadcaster( new VerboseBroadcaster<>( localCenter ) );
 		}
 		return (VerboseBroadcaster<RecordType>)broadcaster;
 	}
@@ -168,7 +167,7 @@ abstract public class Correlator<SourceType, RecordType, SourceAgentType extends
 	 * @return the bin timespan
 	 */
     public double binTimespan() {
-        return _binTimespan;
+        return binTimespan;
     }
     
     
@@ -177,7 +176,7 @@ abstract public class Correlator<SourceType, RecordType, SourceAgentType extends
 	 * @param timespan of the bins
 	 */
     public void setBinTimespan(double timespan) {
-        _binTimespan = timespan;
+        binTimespan = timespan;
         stateProxy.binTimespanChanged(this, timespan);
     }
     
@@ -260,7 +259,7 @@ abstract public class Correlator<SourceType, RecordType, SourceAgentType extends
         final SourceAgentType sourceAgent = newSourceAgent( source, sourceName, recordFilter );
 
         sourceAgentTable.put(sourceName, sourceAgent);
-        sourceAgent.setBinTimespan(_binTimespan);
+        sourceAgent.setBinTimespan(binTimespan);
         int numSources = numSources();
         if ( isMonitoring ) {
             sourceAgent.startMonitor();
@@ -289,7 +288,7 @@ abstract public class Correlator<SourceType, RecordType, SourceAgentType extends
     
     /** Stop managing all registered sources */
     synchronized public void removeAllSources() {
-        final Collection<String> sourceNames = new ArrayList<String>( getNamesOfSources() );
+        final Collection<String> sourceNames = new ArrayList<>( getNamesOfSources() );
         
 		for ( final String sourceName : sourceNames ) {
             removeSource( sourceName );
@@ -306,13 +305,15 @@ abstract public class Correlator<SourceType, RecordType, SourceAgentType extends
         // make sure we stop existing monitor if any (e.g. destroy other timed task)
         stopMonitoring();
 		
-		final TimedBroadcaster<RecordType> timedBroadcaster = (broadcaster instanceof TimedBroadcaster) ? (TimedBroadcaster<RecordType>)broadcaster : new TimedBroadcaster<RecordType>( localCenter, timeout );
+		final TimedBroadcaster<RecordType> timedBroadcaster = (broadcaster instanceof TimedBroadcaster) ? (TimedBroadcaster<RecordType>)broadcaster : new TimedBroadcaster<>( localCenter, timeout );
 		final CorrelationNotice<RecordType> correlationListener = new CorrelationNotice<RecordType>() {
+                        @Override
 			public void newCorrelation( final Object sender, final Correlation<RecordType> correlation ) {
 				stopMonitoring();
 				timedBroadcaster.removeCorrelationNoticeListener( this );
 			}
 			
+                        @Override
 			public void noCorrelationCaught( final Object sender ) {
 				stopMonitoring();
 				timedBroadcaster.removeCorrelationNoticeListener( this );
@@ -340,7 +341,7 @@ abstract public class Correlator<SourceType, RecordType, SourceAgentType extends
         // make sure we stop existing monitor if any (e.g. destroy other timed task)
         stopMonitoring();
 		
-		final TimedBroadcaster<RecordType> timedBroadcaster = (broadcaster instanceof TimedBroadcaster) ? (TimedBroadcaster<RecordType>)broadcaster : new TimedBroadcaster<RecordType>( localCenter, timeout );
+		final TimedBroadcaster<RecordType> timedBroadcaster = (broadcaster instanceof TimedBroadcaster) ? (TimedBroadcaster<RecordType>)broadcaster : new TimedBroadcaster<>( localCenter, timeout );
 		timedBroadcaster.setPeriod(timeout);	// in case timedBroadcaster was reused
 		timedBroadcaster.setRepeats(true);		// in case timedBroadcaster was reused
 		
@@ -452,6 +453,7 @@ abstract public class Correlator<SourceType, RecordType, SourceAgentType extends
 		 * @param sender The poster of the correlation event.
 		 * @param correlation The correlation that was posted.
 		 */
+                @Override
 		public void newCorrelation( final Object sender, final Correlation<RecordType> correlation ) {
 			postProxy.newCorrelation( Correlator.this, correlation );
 		}
@@ -462,6 +464,7 @@ abstract public class Correlator<SourceType, RecordType, SourceAgentType extends
 		 * was found within some prescribed time period.
 		 * @param sender The poster of the "no correlation" event.
 		 */
+                @Override
 		public void noCorrelationCaught( final Object sender ) {
 			postProxy.noCorrelationCaught(Correlator.this);
 		}
@@ -519,6 +522,7 @@ abstract public class Correlator<SourceType, RecordType, SourceAgentType extends
         
 		
 		/** Handle the latest captured correlation */
+        @Override
 		public void newCorrelation( final Object sender, final Correlation<RecordType> newCorrelation ) {
             correlation = newCorrelation;
 			synchronized( WaitingListener.this ) {
@@ -528,6 +532,7 @@ abstract public class Correlator<SourceType, RecordType, SourceAgentType extends
 		
         
 		/** No correlation was caught within the timeout */
+        @Override
 		public void noCorrelationCaught( final Object sender ) {
 			synchronized( WaitingListener.this ) {
 				WaitingListener.this.notifyAll();

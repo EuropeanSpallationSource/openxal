@@ -2,10 +2,9 @@ package xal.extension.widgets.plot.barchart;
 
 import java.awt.*;
 
-import xal.extension.widgets.plot.*;
 
 /**
- *  The bar coulumn interface for the Bar Chart Class
+ *  The bar column interface for the Bar Chart Class
  *
  *@author     shishlo
  *created    October 10, 2005

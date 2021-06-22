@@ -33,7 +33,7 @@ public class AvgController{
 
     private volatile boolean isOn = false;
 
-    private Vector<ChangeListener> ChangeListenerV = new Vector<ChangeListener>();
+    private Vector<ChangeListener> ChangeListenerV = new Vector<>();
     private ChangeEvent changeEvent = null;
 
     public AvgController(){
@@ -58,6 +58,7 @@ public class AvgController{
 	changeEvent = new ChangeEvent(this);
 
         timeDelayText.addActionListener(new ActionListener(){
+                @Override
 		public void actionPerformed(ActionEvent e){
 		    timeDelay = timeDelayText.getValue();
 		    notifyChanges();
@@ -65,6 +66,7 @@ public class AvgController{
 	    });
 
         avgNumberText.addActionListener(new ActionListener(){
+                @Override
 		public void actionPerformed(ActionEvent e){
 		    avgNumber = avgNumberText.getValue();
 		    notifyChanges();
@@ -72,6 +74,7 @@ public class AvgController{
 	    });
 
 	avgCntrButton.addItemListener(new ItemListener(){
+                @Override
 		public void itemStateChanged(ItemEvent e) {
 		    if (e.getStateChange() == ItemEvent.SELECTED) {
 			setOnOff(true);
@@ -190,23 +193,23 @@ public class AvgController{
 	avgCntrPanel.removeAll();
 
 	if(index == 0){
-	    JPanel tmp_ButtonPanel = new JPanel();
-	    tmp_ButtonPanel.setLayout(new FlowLayout(FlowLayout.LEFT,0,0));
-	    tmp_ButtonPanel.add(avgCntrButton);
-	    JPanel tmp_ParamPanel = new JPanel();
-	    tmp_ParamPanel.setLayout(new FlowLayout(FlowLayout.CENTER,0,0));
-	    tmp_ParamPanel.add(avgNumberLabel);
-	    tmp_ParamPanel.add(avgNumberText);
-	    tmp_ParamPanel.add(timeDelayLabel);
-	    tmp_ParamPanel.add(timeDelayText);
+	    JPanel tmpButtonPanel = new JPanel();
+	    tmpButtonPanel.setLayout(new FlowLayout(FlowLayout.LEFT,0,0));
+	    tmpButtonPanel.add(avgCntrButton);
+	    JPanel tmpParamPanel = new JPanel();
+	    tmpParamPanel.setLayout(new FlowLayout(FlowLayout.CENTER,0,0));
+	    tmpParamPanel.add(avgNumberLabel);
+	    tmpParamPanel.add(avgNumberText);
+	    tmpParamPanel.add(timeDelayLabel);
+	    tmpParamPanel.add(timeDelayText);
 
-	    JPanel tmp_Panel = new JPanel();
-	    tmp_Panel.setLayout(new BorderLayout());
-	    tmp_Panel.add(tmp_ButtonPanel,BorderLayout.NORTH);
-	    tmp_Panel.add(tmp_ParamPanel,BorderLayout.SOUTH);
+	    JPanel tmpPanel = new JPanel();
+	    tmpPanel.setLayout(new BorderLayout());
+	    tmpPanel.add(tmpButtonPanel,BorderLayout.NORTH);
+	    tmpPanel.add(tmpParamPanel,BorderLayout.SOUTH);
 
 	    avgCntrPanel.setLayout(new BorderLayout());
-	    avgCntrPanel.add(tmp_Panel,BorderLayout.NORTH);
+	    avgCntrPanel.add(tmpPanel,BorderLayout.NORTH);
 	    avgCntrPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),null));
 	    avgCntrPanel.setBackground(avgCntrPanel.getBackground().darker());
 	}
@@ -235,6 +238,7 @@ public class AvgController{
 
 	mainFrame.addWindowListener(
 	    new java.awt.event.WindowAdapter() {
+                @Override
 		public void windowClosing(java.awt.event.WindowEvent evt) {
 		    System.exit(0);
 		}
@@ -247,11 +251,11 @@ public class AvgController{
         JPanel avgPanel = avgCnt.getJPanel();
         avgPanel.setBackground(Color.getHSBColor(0.8f, 0.8f,0.8f));
 
-	JPanel tmp_p = new JPanel();
-        tmp_p.setLayout(new BorderLayout());
-        tmp_p.add(avgPanel,BorderLayout.NORTH);
+	JPanel tmpP = new JPanel();
+        tmpP.setLayout(new BorderLayout());
+        tmpP.add(avgPanel,BorderLayout.NORTH);
 
-	mainFrame.getContentPane().add(tmp_p,BorderLayout.WEST);
+	mainFrame.getContentPane().add(tmpP,BorderLayout.WEST);
 
 	mainFrame.pack();
 	mainFrame.setSize(new Dimension(300,430));

@@ -6,10 +6,8 @@
 
 package xal.tools.correlator;
 
-import xal.tools.messaging.MessageCenter;
-
-import javax.swing.Timer;
 import java.awt.event.*;
+import javax.swing.Timer;
 
 
 /**
@@ -20,9 +18,9 @@ import java.awt.event.*;
  * @author  tap
  */
 public class PeriodicPoster<RecordType> implements ActionListener {
-    final private Correlator<?, RecordType, ? extends SourceAgent<RecordType>> CORRELATOR;
-    final private PassiveBroadcaster<RecordType> BROADCASTER;
-    final private javax.swing.Timer TIMER;
+    private final Correlator<?, RecordType, ? extends SourceAgent<RecordType>> CORRELATOR;
+    private final PassiveBroadcaster<RecordType> BROADCASTER;
+    private final Timer TIMER;
     
 	
     /** 
@@ -128,9 +126,8 @@ public class PeriodicPoster<RecordType> implements ActionListener {
 	 * Implement ActionListener interface to rebroadcast the best correlation.
 	 * @param event The timer event indicating that it is time to post a correlation.
 	 */
+    @Override
     synchronized public void actionPerformed( final ActionEvent event ) {
         BROADCASTER.postBestPartialCorrelation();
     }    
 }
-
-

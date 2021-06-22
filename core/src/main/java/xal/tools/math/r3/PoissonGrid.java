@@ -9,6 +9,8 @@
 
 package xal.tools.math.r3;
 
+import java.io.Serializable;
+
 
 
 /**
@@ -24,16 +26,16 @@ package xal.tools.math.r3;
  *  -   The vector field derived from the potential function is calculated by 
  *      taking the gradient of the interpolated potential.  
  *
- *  -   Potential values at grid points may be set manuallly.
+ *  -   Potential values at grid points may be set manually.
  *
  *  -   Potential values at grid points can be determined by solving Poisson's equation.
  *      The values of the source term must be set at each grid point, along with the type
- *      of field point (open, dirichlet, neumann).  
+ *      of field point (open, Dirichlet, Neumann).  
  *
  *
  * @author  Christopher Allen
  */
-public class PoissonGrid extends Grid implements java.io.Serializable {
+public class PoissonGrid extends Grid implements Serializable {
     /** ID for serializable version */
     private static final long serialVersionUID = 1L;
     
@@ -100,10 +102,10 @@ public class PoissonGrid extends Grid implements java.io.Serializable {
      */
     
     /** number if relaxation iterations to achieve current solution */
-    private int         m_intSolnIter = 0;
+    private int         intSolnIter = 0;
     
     /** residual error in the solution of Poisson's equation */
-    private double      m_dblSolnErr = 0.0;
+    private double      dblSolnErr = 0.0;
 
     
     
@@ -171,7 +173,7 @@ public class PoissonGrid extends Grid implements java.io.Serializable {
      */
 
     /**
-     *  Solve for the potential on the grid using a gauss-seidel relaxation technique.
+     *  Solve for the potential on the grid using a Gauss-Seidel relaxation technique.
      *
      *  @param  intIterMax      maximum number of iterations
      *  @param  dblErrMax       maximum residual error
@@ -191,8 +193,8 @@ public class PoissonGrid extends Grid implements java.io.Serializable {
 
         //  Initialize relaxation
         arrWts = this.relaxWeightsCartesian();
-        m_dblSolnErr  = 0.0;
-        m_intSolnIter = 0;
+        dblSolnErr  = 0.0;
+        intSolnIter = 0;
 
         I    = super.getGridSize().geti() - 1;
         J    = super.getGridSize().getj() - 1;
@@ -202,7 +204,7 @@ public class PoissonGrid extends Grid implements java.io.Serializable {
         do      {
 
             // Average each grid point
-            m_dblSolnErr = 0.0;
+            dblSolnErr = 0.0;
 
             for (i=1; i<I; i++)
                 for (j=1; j<J; j++)
@@ -220,7 +222,7 @@ public class PoissonGrid extends Grid implements java.io.Serializable {
 
                         gpt.aux = dblValNew;
 
-                        m_dblSolnErr += (dblValNew - dblValPrev)*(dblValNew - dblValPrev);
+                        dblSolnErr += (dblValNew - dblValPrev)*(dblValNew - dblValPrev);
                     }
 
             // Set the new potential
@@ -234,13 +236,13 @@ public class PoissonGrid extends Grid implements java.io.Serializable {
                         gpt.val =  gpt.aux;
                     }
 
-        } while (m_dblSolnErr>dblErrMax && m_intSolnIter++<intIterMax);
+        } while (dblSolnErr>dblErrMax && intSolnIter++<intIterMax);
 
-        return m_dblSolnErr;
+        return dblSolnErr;
     }
 
     /**
-     *  Solve for the potential on the grid using a gauss-seidel relaxation technique.
+     *  Solve for the potential on the grid using a Gauss-Seidel relaxation technique.
      *
      *  @param  intIterMax      maximum number of iterations
      *  @param  dblErrMax       maximum residual error
@@ -260,8 +262,8 @@ public class PoissonGrid extends Grid implements java.io.Serializable {
 
 
         //  Initialize relaxation
-        m_dblSolnErr  = 0.0;
-        m_intSolnIter = 0;
+        dblSolnErr  = 0.0;
+        intSolnIter = 0;
 
         I    = super.getGridSize().geti() - 1;
         J    = super.getGridSize().getj() - 1;
@@ -271,7 +273,7 @@ public class PoissonGrid extends Grid implements java.io.Serializable {
         do      {
 
             // Average each grid point
-            m_dblSolnErr = 0.0;
+            dblSolnErr = 0.0;
 
             for (i=1; i<I; i++) {
                 pt     = super.compPtCoords(i, 0, 0);
@@ -292,7 +294,7 @@ public class PoissonGrid extends Grid implements java.io.Serializable {
 
                         gpt.aux = dblValNew;
 
-                        m_dblSolnErr += (dblValNew - dblValPrev)*(dblValNew - dblValPrev);
+                        dblSolnErr += (dblValNew - dblValPrev)*(dblValNew - dblValPrev);
                     }   // for k
             }           // for i
 
@@ -317,7 +319,7 @@ public class PoissonGrid extends Grid implements java.io.Serializable {
 
                         gpt.aux = dblValNew;
 
-                        m_dblSolnErr += (dblValNew - dblValPrev)*(dblValNew - dblValPrev);
+                        dblSolnErr += (dblValNew - dblValPrev)*(dblValNew - dblValPrev);
                     
                 }       // for k
             }           // for i
@@ -351,7 +353,7 @@ public class PoissonGrid extends Grid implements java.io.Serializable {
                     for (j=0; j<=J; j++)
                         getPt(0,j,k).aux = dblValNew;
 
-                    m_dblSolnErr += (dblValNew - dblValPrev)*(dblValNew - dblValPrev);
+                    dblSolnErr += (dblValNew - dblValPrev)*(dblValNew - dblValPrev);
                 }
             }
 
@@ -366,9 +368,9 @@ public class PoissonGrid extends Grid implements java.io.Serializable {
                         gpt.val =  gpt.aux;
                     }
 
-        } while (m_dblSolnErr>dblErrMax && m_intSolnIter++<intIterMax);
+        } while (dblSolnErr>dblErrMax && intSolnIter++<intIterMax);
 
-        return m_dblSolnErr;
+        return dblSolnErr;
     }
     
     
@@ -601,7 +603,5 @@ public class PoissonGrid extends Grid implements java.io.Serializable {
         
         return arrW;
     }
-    
-    
     
 }

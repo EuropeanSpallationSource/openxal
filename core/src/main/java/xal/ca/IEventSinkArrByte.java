@@ -16,5 +16,4 @@ public interface IEventSinkArrByte {
 
     public void eventArray(byte[] arrNew, Channel chan);
     
-};
-
+}

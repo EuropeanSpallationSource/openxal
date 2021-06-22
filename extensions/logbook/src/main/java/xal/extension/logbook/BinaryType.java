@@ -16,18 +16,18 @@ import java.net.*;
  */
 class BinaryType {
 	/** primary key for the binary image/attachment type */
-	final private long _ID;
+	private final long id;
 	
 	/** file extension for the binary type */
-	final private String _extension;
+	private final String extension;
 	
 	
 	/**
 	 * Constructor
 	 */
-	public BinaryType( final long ID, final String extension ) {
-		_ID = ID;
-		_extension = extension;
+	public BinaryType( final long id, final String extension ) {
+		this.id = id;
+		this.extension = extension;
 	}
 	
 	
@@ -37,7 +37,7 @@ class BinaryType {
 	 * @return ID
 	 */
 	public long getID() {
-		return _ID;
+		return id;
 	}
 	
 	
@@ -47,7 +47,7 @@ class BinaryType {
 	 * @return the file extension
 	 */
 	public String getExtension() {
-		return _extension;
+		return extension;
 	}
 	
 	
@@ -57,7 +57,7 @@ class BinaryType {
 	 * @return the MIME type
 	 */
 	public String getMIMEType() {
-		return URLConnection.getFileNameMap().getContentTypeFor( "abc." + _extension );
+		return URLConnection.getFileNameMap().getContentTypeFor("abc." + extension );
 	}
 	
 	
@@ -86,7 +86,8 @@ class BinaryType {
 	 * 
 	 * @return the extension
 	 */
+        @Override
 	public String toString() {
-		return "ID: " + _ID + ", extension: " + _extension;
+		return "ID: " + id + ", extension: " + extension;
 	}
 }

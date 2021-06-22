@@ -16,22 +16,22 @@ import java.util.*;
 
 /** A hint that indicates a good initial search space about the initial variable values. */
 public class InitialDelta extends DomainHint {
-	final static public String TYPE = "InitialDelta";
+	public static final String TYPE = "InitialDelta";
 	
     /** delta keyed by variable */
-	final protected Map<Variable,Double> VARIABLE_DELTAS;
+	protected final Map<Variable,Double> VARIABLE_DELTAS;
     
     /** default delta */
-	final protected double _defaultDelta;
+	protected final double defaultDelta;
 	
 	
 	/** Primary Constructor */
 	public InitialDelta( final double delta ) {
 		super( "Initial Delta" );
 
-		_defaultDelta = delta;
+		defaultDelta = delta;
 		
-		VARIABLE_DELTAS = new HashMap<Variable,Double>();
+		VARIABLE_DELTAS = new HashMap<>();
 	}
 	
 	
@@ -45,12 +45,14 @@ public class InitialDelta extends DomainHint {
 	 * Get the type identifier of this Hint which will be used to fetch this hint in a table of hints.
 	 * @return the unique type identifier of this Hint
 	 */
+        @Override
 	public String getType() {
 		return TYPE;
 	}
 	
 	
 	/** Determine if there is an entry for the variable */
+        @Override
 	public boolean hasVariable( final Variable variable ) {
 		return VARIABLE_DELTAS.containsKey( variable );
 	}
@@ -58,19 +60,20 @@ public class InitialDelta extends DomainHint {
 	
 	/** add the initial delta for the specified variable */
 	public void addInitialDelta( final Variable variable, final double delta ) {
-		VARIABLE_DELTAS.put( variable, new Double( delta ) );
+		VARIABLE_DELTAS.put(variable, delta);
 	}
 	
 	
 	/** Get the domain for the specified variable. */
+        @Override
 	public double[] getRange( final Variable variable ) {
 		final Double deltaD = VARIABLE_DELTAS.get( variable );
 		
 		if ( deltaD != null ) {
-			return getRange( variable, deltaD.doubleValue() );
+			return getRange(variable, deltaD);
 		}
-		else if ( !Double.isNaN( _defaultDelta ) ) {
-			return getRange( variable, _defaultDelta );
+		else if ( !Double.isNaN( defaultDelta ) ) {
+			return getRange( variable, defaultDelta );
 		}
 		else {
 			return new double[] { variable.getLowerLimit(), variable.getUpperLimit() };			
@@ -79,7 +82,7 @@ public class InitialDelta extends DomainHint {
 	
 	
 	/** Get the range given the variable's initial value, limits and the specified delta. */
-	static private double[] getRange( final Variable variable, final double delta ) {
+	private static double[] getRange( final Variable variable, final double delta ) {
 		final double initialValue = variable.getInitialValue();
 		final double lowerLimit = Math.max( initialValue - delta, variable.getLowerLimit() );
 		final double upperLimit = Math.min( initialValue + delta, variable.getUpperLimit() );

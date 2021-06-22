@@ -32,16 +32,16 @@ public class SimpleBeanEditor<T> extends JDialog {
     private static final long serialVersionUID = 1L;
 
     /** Table model of property records */
-    final private KeyValueFilteredTableModel<PropertyRecord> PROPERTY_TABLE_MODEL;
+    private final KeyValueFilteredTableModel<PropertyRecord> PROPERTY_TABLE_MODEL;
 
     /** List of properties that appear in the properties table */
-    final private List<PropertyRecord> BEAN_PROPERTY_RECORDS;
+    private final List<PropertyRecord> BEAN_PROPERTY_RECORDS;
 
     /** Bean that is being edited */
-    final private T BEAN;
+    private final T BEAN;
 
 	/** model column for the value in the property table */
-	final private int PROPERTY_TABLE_VALUE_COLUMN;
+	private final int PROPERTY_TABLE_VALUE_COLUMN;
 
 	private JTable propertyTable;
 	private Box controlPanel; 
@@ -168,12 +168,13 @@ public class SimpleBeanEditor<T> extends JDialog {
                     return super.getCellRenderer( row, column );
 				}
 				else if ( value instanceof Enum) {					
-					final JComboBox<Object> combo = new JComboBox<Object>(((Enum<?>)value).getDeclaringClass().getEnumConstants());
+					final JComboBox<Object> combo = new JComboBox<>(((Enum<?>)value).getDeclaringClass().getEnumConstants());
 					setRowHeight(row, (int)combo.getPreferredSize().getHeight());
 					
 					return new TableCellRenderer() {
 						
 
+                                                @Override
 						public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
 								boolean hasFocus, int row, int column) {
 
@@ -219,6 +220,7 @@ public class SimpleBeanEditor<T> extends JDialog {
         		setHorizontalAlignment(JLabel.RIGHT);
         	}
         	
+                        @Override
             public void setValue(Object value) {                
                 setText((value == null) ? "" : String.format(Locale.ROOT, "%10.7g", value));
             }
@@ -273,6 +275,7 @@ public class SimpleBeanEditor<T> extends JDialog {
 
         //Add the action listener as the ApplyButtonListener
         revertButton.addActionListener( new ActionListener() {
+                        @Override
 			public void actionPerformed( final ActionEvent event ) {
 				revertFromBean();
 				revertButton.setEnabled( false );
@@ -282,6 +285,7 @@ public class SimpleBeanEditor<T> extends JDialog {
 
         //Add the action listener as the ApplyButtonListener
         publishButton.addActionListener( new ActionListener() {
+                        @Override
 			public void actionPerformed( final ActionEvent event ) {
 				publishToBean();
 				revertButton.setEnabled( false );
@@ -291,6 +295,7 @@ public class SimpleBeanEditor<T> extends JDialog {
 
         //Add the action listener as the ApplyButtonListener
         okayButton.addActionListener( new ActionListener() {
+                        @Override
 			public void actionPerformed( final ActionEvent event ) {
 				try {
 					publishToBean();
@@ -305,6 +310,7 @@ public class SimpleBeanEditor<T> extends JDialog {
         
 
 		PROPERTY_TABLE_MODEL.addKeyValueRecordListener( new KeyValueRecordListener<KeyValueTableModel<PropertyRecord>,PropertyRecord>() {
+                        @Override
 			public void recordModified( final KeyValueTableModel<PropertyRecord> source, final PropertyRecord record, final String keyPath, final Object value ) {
 				revertButton.setEnabled( true );
 				publishButton.setEnabled( true );

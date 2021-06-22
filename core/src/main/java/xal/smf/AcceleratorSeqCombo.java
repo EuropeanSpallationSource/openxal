@@ -26,10 +26,10 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
     /*
      *  Constants
      */
-    public static final String    s_strType = "sequenceCombo";
+    public static final String    TYPE = "sequenceCombo";
 
 	/** map of dummy sequences keyed by constituent sequences */
-	private Map<AcceleratorSeq,AcceleratorSeq> _dummyMap;
+	private Map<AcceleratorSeq,AcceleratorSeq> dummyMap;
 
     /** total length of all primary sequences combined */
     private double totalLen;
@@ -38,10 +38,10 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
     private List<String> constituentNames;
 	
 	/** list of base constituents */
-	private List<AcceleratorSeq> _baseConstituents;
+	private List<AcceleratorSeq> baseConstituents;
 	
 	/** list of immediate constituents */
-	private List<AcceleratorSeq> _constituents;
+	private List<AcceleratorSeq> constituents;
 	
 	
     /** Primary constructor */
@@ -63,7 +63,7 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
 	 * @param sequences The sequences to flatten into a combo sequence
 	 * @return a new AcceleratorSeqCombo instance if the sequences do not form a ring and a Ring if they do
 	 */
-	static public AcceleratorSeqCombo getInstance( final String strID, final List<AcceleratorSeq> sequences ) {
+	public static AcceleratorSeqCombo getInstance( final String strID, final List<AcceleratorSeq> sequences ) {
 		return AcceleratorSeq.formsRing( sequences ) ? new Ring( strID, sequences ) : new AcceleratorSeqCombo( strID, sequences );
 	}
 	
@@ -75,7 +75,7 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
 	 * @param adaptor the data adaptor for specifying the sequences to combine
 	 * @return a new AcceleratorSeqCombo instance if the sequences do not form a ring and a Ring if they do
 	 */
-	static public AcceleratorSeqCombo getInstance( final String strID, final Accelerator accelerator, final DataAdaptor adaptor ) {
+	public static AcceleratorSeqCombo getInstance( final String strID, final Accelerator accelerator, final DataAdaptor adaptor ) {
 		final List<AcceleratorSeq> sequences = getSequences( accelerator, adaptor );
 		return getInstance( strID, sequences ); 
 	}
@@ -87,7 +87,7 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
 	 * @param adaptor the data adaptor for specifying the sequences to combine
 	 * @return a new AcceleratorSeqCombo instance if the sequences do not form a ring and a Ring if they do
 	 */
-	static public AcceleratorSeqCombo getInstance( final Accelerator accelerator, final DataAdaptor adaptor ) {
+	public static AcceleratorSeqCombo getInstance( final Accelerator accelerator, final DataAdaptor adaptor ) {
 		final String ID = adaptor.stringValue( "id" );
 		return getInstance( ID, accelerator, adaptor );
 	}
@@ -100,7 +100,7 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
 	 * @param endSequence last sequence in combo
 	 * @return a combo sequence ranging from the first sequence to the last sequence or null if none can be found
 	 */
-	static public AcceleratorSeqCombo getInstanceForRange( final String comboID, final AcceleratorSeq startSequence, final AcceleratorSeq endSequence ) {
+	public static AcceleratorSeqCombo getInstanceForRange( final String comboID, final AcceleratorSeq startSequence, final AcceleratorSeq endSequence ) {
 		final List<AcceleratorSeqCombo> combos = getInstancesForRange( comboID, startSequence, endSequence );
 		return combos.size() > 0 ? combos.get( 0 ) : null;
 	}
@@ -113,16 +113,16 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
 	 * @param endSequence last sequence in combo
 	 * @return list of combo sequences ranging from the first sequence to the last sequence
 	 */
-	static public List<AcceleratorSeqCombo> getInstancesForRange( final String comboID, final AcceleratorSeq startSequence, final AcceleratorSeq endSequence ) {
+	public static List<AcceleratorSeqCombo> getInstancesForRange( final String comboID, final AcceleratorSeq startSequence, final AcceleratorSeq endSequence ) {
 		// create a sequence chain with just the end sequence
-		final List<AcceleratorSeq> primerChain = new ArrayList<AcceleratorSeq>();
+		final List<AcceleratorSeq> primerChain = new ArrayList<>();
 		primerChain.add( endSequence );
 		
 		// extend the sequence chain to get all chains which terminate back to the start sequence
 		final List<List<AcceleratorSeq>> sequenceChains = extendChains( startSequence, primerChain );
 		
 		// construct a combo sequence for each sequence chain
-		final List<AcceleratorSeqCombo> combos = new ArrayList<AcceleratorSeqCombo>( sequenceChains.size() );
+		final List<AcceleratorSeqCombo> combos = new ArrayList<>( sequenceChains.size() );
 		for ( final List<AcceleratorSeq> sequenceChain : sequenceChains ) {
 			final AcceleratorSeqCombo combo = getInstance( comboID, sequenceChain );
 			combos.add( combo );
@@ -137,8 +137,8 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
 	 * @param sequenceChain initial chain of sequences to extend
 	 * @return all non-cycling sequence chains extending the given sequence chain to the terminal sequence
 	 */
-	static private List<List<AcceleratorSeq>> extendChains( final AcceleratorSeq terminalSequence, final List<AcceleratorSeq> sequenceChain ) {
-		final List<List<AcceleratorSeq>> viableChains = new ArrayList<List<AcceleratorSeq>>();
+	private static List<List<AcceleratorSeq>> extendChains( final AcceleratorSeq terminalSequence, final List<AcceleratorSeq> sequenceChain ) {
+		final List<List<AcceleratorSeq>> viableChains = new ArrayList<>();
 		final AcceleratorSeq firstSequence = sequenceChain.get( 0 );
 		
 		// if the first sequence is the terminal sequence then we are done
@@ -153,7 +153,7 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
 					final AcceleratorSeq predecessor = terminalSequence.getAccelerator().getSequence( predecessorID );
 					if ( predecessor != null && !sequenceChain.contains( predecessor ) ) {
 						// populate the extended chain with the predecessor followed by the original chain of sequences
-						final List<AcceleratorSeq> extendedChain = new ArrayList<AcceleratorSeq>();
+						final List<AcceleratorSeq> extendedChain = new ArrayList<>();
 						extendedChain.add( predecessor );
 						extendedChain.addAll( sequenceChain );
 						// get all chains which extend from the current extended chain and terminate at the terminal sequence
@@ -178,9 +178,9 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
 		String [] predescrs;
 		boolean match;
 		totalLen = 0.;
-		constituentNames = new ArrayList<String>();
-		_constituents = new ArrayList<AcceleratorSeq>();
-		_dummyMap = new HashMap<AcceleratorSeq,AcceleratorSeq>();
+		constituentNames = new ArrayList<>();
+		constituents = new ArrayList<>();
+		dummyMap = new HashMap<>();
 	
 		// Loop through the list of sequences:
 	
@@ -197,10 +197,10 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
 	
 			dummySeq = new AcceleratorSeq("dummy" + seq.getId());
 			constituentNames.add(seq.getId());
-			_constituents.add( seq );
+			constituents.add( seq );
 	
 			dummySeq.addSoft(seq);
-			_dummyMap.put( seq, dummySeq );
+			dummyMap.put( seq, dummySeq );
 			dummySeq.setLength(seq.getLength());
 	
 	// set the position to location in new concatenated seq
@@ -228,8 +228,8 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
 	 * @param accelerator the accelerator from which to get the sequences
 	 * @param adaptor the combo sequence adaptor
 	 */
-	static protected List<AcceleratorSeq> getSequences( final Accelerator accelerator, final DataAdaptor adaptor ) {
-		List<AcceleratorSeq> sequences = new ArrayList<AcceleratorSeq>();
+	protected static List<AcceleratorSeq> getSequences( final Accelerator accelerator, final DataAdaptor adaptor ) {
+		List<AcceleratorSeq> sequences = new ArrayList<>();
 		
         // read all sequence references
         final List<DataAdaptor> sequenceAdaptors = adaptor.childAdaptors( "sequence" );
@@ -245,6 +245,7 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
 	 * Write this sequence's definition to a data adaptor.
 	 * @param adaptor the adaptor to which to write out this combo sequence's definition.
 	 */
+    @Override
 	public void write( final DataAdaptor adaptor ) {
 		adaptor.setValue( "id", getId() );
 
@@ -259,16 +260,18 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
 	 * Override to identify this sequence as a combo sequence
 	 * @return the combo sequence type identifier
 	 */
+    @Override
 	public String getType() {
-		return s_strType;
+		return TYPE;
 	}
 
 
     /** override the total length for this combo sequence */
+    @Override
     public double getLength() { return totalLen;}
     
 
-    /** gets the list of the names of the constituent seqnences */
+    /** gets the list of the names of the constituent sequences */
     public List<String> getConstituentNames() { return constituentNames; }
 	
 	
@@ -277,17 +280,18 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
      * the extra length of the sequence starting position itself
      *  
      *  Note: this way could also be done in the parent AcceleratorSeq class,
-     *  be we choose to use a more efficient scheme there, specfic to 
+     *  be we choose to use a more efficient scheme there, specific to 
      *  primary sequences.
      *
      * @param node - the node for which the position is wanted
      */
+    @Override
     public double getPosition( final AcceleratorNode node ) {
-    	if (node == this) return m_dblPos;
-        if( m_arrNodes == null || m_arrNodes.isEmpty() )  return m_dblPos + node.m_dblPos;
+    	if (node == this) return dblPos;
+        if( arrNodes == null || arrNodes.isEmpty() )  return dblPos + node.dblPos;
 
 		final AcceleratorSeq baseSequence = node.getPrimaryAncestor();
-		final AcceleratorSeq dummySequence = _dummyMap.get( baseSequence );
+		final AcceleratorSeq dummySequence = dummyMap.get( baseSequence );
 		
 		return dummySequence.getPosition() + baseSequence.getPosition( node );
     }
@@ -297,6 +301,7 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
 	 * Get the ID of the first base constituent sequence of this combo sequence.
 	 * @return the ID of first base constituent sequence
 	 */
+    @Override
 	public String getEntranceID() {
 		final List<AcceleratorSeq> baseConstituents = getBaseConstituents();
 		
@@ -314,6 +319,7 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
 	 * @param label The id of the node we are seeking.
 	 * @return the node corresponding to the requested id or null if no such node is found.
 	 */    
+    @Override
     public AcceleratorNode getNodeWithId( final String label ) {
 		// first check if this sequence is itself a match
 		if ( getId().equals( label ) )  return this;
@@ -331,8 +337,9 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
      * Shallow fetch of nodes.  Override the AcceleratorSeq version to only return
      * the list of nodes which are a union of those nodes which belong to the base constituent sub-sequences.
      */
+    @Override
     public List<AcceleratorNode> getNodes() {
-        final List<AcceleratorNode> nodes = new ArrayList<AcceleratorNode>();
+        final List<AcceleratorNode> nodes = new ArrayList<>();
 		for ( final AcceleratorSeq constituent : getBaseConstituents() ) {
             nodes.addAll( constituent.getNodes() );
         }
@@ -344,8 +351,9 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
      * Shallow fetch of sequences.  Override the AcceleratorSeq version to only return the list of
 	 * sequences which are a union of those nodes which belong to the base constituent sub-sequences.
      */
+    @Override
     public List<AcceleratorSeq> getSequences() {
-        final List<AcceleratorSeq> sequences = new ArrayList<AcceleratorSeq>();
+        final List<AcceleratorSeq> sequences = new ArrayList<>();
 		for ( final AcceleratorSeq constituent : getBaseConstituents() ) {
             sequences.addAll( constituent.getSequences() );
         }
@@ -358,7 +366,7 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
 	 * @return the list of constituent sequences that make the primary sequence
      */
     public List<AcceleratorSeq> getConstituents() {
-		return _constituents;
+		return constituents;
     }
     
     
@@ -369,11 +377,11 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
      */
     public List<AcceleratorSeq> getConstituentsWithQualifier( final TypeQualifier qualifier ) {
         final List<AcceleratorSeq> dummySequences = super.getSequences();
-        final List<AcceleratorSeq> constituents = new ArrayList<AcceleratorSeq>();
+        final List<AcceleratorSeq> constituents = new ArrayList<>();
 		
 		for ( AcceleratorSeq dummySequence : dummySequences ) {
             final List<AcceleratorNode> matchingNodes = dummySequence.getNodesWithQualifier( qualifier );
-            final List<AcceleratorSeq> matchingSequences = new ArrayList<AcceleratorSeq>();
+            final List<AcceleratorSeq> matchingSequences = new ArrayList<>();
             for ( final AcceleratorNode node : matchingNodes ) {
                 if ( node instanceof AcceleratorSeq ) {
                     matchingSequences.add( (AcceleratorSeq)node );
@@ -382,23 +390,23 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
             constituents.addAll( matchingSequences );
 		}
 		
-        return Collections.unmodifiableList( new ArrayList<AcceleratorSeq>( constituents ) );
+        return Collections.unmodifiableList( new ArrayList<>( constituents ) );
     }
     
     
     /** Generate the constituent sequences looking deeply even if the combo sequences are nested in many layers. */
     private void generateBaseConstituents() {
-		final TypeQualifier comboQualifier = new KindQualifier( s_strType );
-		final List<AcceleratorSeq> baseConstituents = new ArrayList<AcceleratorSeq>();
-		baseConstituents.addAll( getConstituentsWithQualifier( new NotTypeQualifier( comboQualifier ) ) );
+		final TypeQualifier comboQualifier = new KindQualifier( TYPE );
+		final List<AcceleratorSeq> newBaseConstituents = new ArrayList<>();
+		newBaseConstituents.addAll( getConstituentsWithQualifier( new NotTypeQualifier( comboQualifier ) ) );
 		
         final List<AcceleratorSeq> combos = getConstituentsWithQualifier( comboQualifier );
 		for ( final AcceleratorSeq constituent : combos ) {
 			final AcceleratorSeqCombo combo = (AcceleratorSeqCombo)constituent;
-			baseConstituents.addAll( combo.getBaseConstituents() );
+			newBaseConstituents.addAll( combo.getBaseConstituents() );
 		}
 		
-		_baseConstituents = Collections.unmodifiableList( baseConstituents );
+		baseConstituents = Collections.unmodifiableList( newBaseConstituents );
     }
     
     
@@ -407,7 +415,7 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
 	 * @return the list of constituent sequences that make the combo sequence
      */
     public List<AcceleratorSeq> getBaseConstituents() {
-		return _baseConstituents;
+		return baseConstituents;
     }
     
     
@@ -419,8 +427,8 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
 	 * @return the list of qualified constituent sequences that make the combo sequence
      */
     public List<AcceleratorSeq> getBaseConstituentsWithQualifier( final TypeQualifier qualifier ) {
-		final TypeQualifier comboQualifier = new KindQualifier( s_strType );
-		final List<AcceleratorSeq> baseConstituents = new ArrayList<AcceleratorSeq>();
+		final TypeQualifier comboQualifier = new KindQualifier( TYPE );
+		final List<AcceleratorSeq> baseConstituents = new ArrayList<>();
 		baseConstituents.addAll( getConstituentsWithQualifier( qualifier ) );
 		
         final List<AcceleratorSeq> combos = getConstituentsWithQualifier( comboQualifier );
@@ -437,8 +445,9 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
 	 * Get all nodes including this sequence and constituent sequences and all of their children.
 	 * @return the list of all inclusive nodes
 	 */
+    @Override
     public List<AcceleratorNode> getAllInclusiveNodes() {
-		final List<AcceleratorNode> allNodes = new ArrayList<AcceleratorNode>();
+		final List<AcceleratorNode> allNodes = new ArrayList<>();
 		allNodes.add( this );
 		
 		final List<AcceleratorSeq> constituents = getConstituents();
@@ -451,18 +460,19 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
     
     
     /** 
-	 * Fetch all nodes looking deeply through nested child sequences.  Filter out constituent seqences.
+	 * Fetch all nodes looking deeply through nested child sequences.  Filter out constituent sequences.
 	 * @return all child nodes looking deeply through nested child sequences
 	 */
+    @Override
     public List<AcceleratorNode> getAllNodes()   {
-        LinkedList<AcceleratorNode> lstNodes = new LinkedList<AcceleratorNode>();
-		LinkedList<AcceleratorNode> extraNodes = new LinkedList<AcceleratorNode>();
+        LinkedList<AcceleratorNode> lstNodes = new LinkedList<>();
+		LinkedList<AcceleratorNode> extraNodes = new LinkedList<>();
         
         recurNodeSearch( lstNodes, this ); // get all nodes in this seq.
 	      
 	  	// Locate and prune soft nodes + primary sequences
 		for ( AcceleratorNode node : lstNodes ) {
-			if ( node.m_bolIsSoft )  extraNodes.add( node );
+			if ( node.bolIsSoft )  extraNodes.add( node );
 		}
 		lstNodes.removeAll( extraNodes );
 	
@@ -476,6 +486,7 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
 	 * @param sequence the sequence against which to compare
 	 * @return true if and only if the two sequences are equal
 	 */
+    @Override
 	public boolean equals( final Object sequence ) {
 		// check that the sequence is indeed a combo sequence
 		if ( !(sequence instanceof AcceleratorSeqCombo) )  return false;
@@ -491,9 +502,10 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
 
 
 	/** Override hashCode() as required when overriding equals() */
+    @Override
 	public int hashCode() {
 		// hashCode must be consistent with equality which is based on base constituents
-		return _baseConstituents.hashCode();
+		return baseConstituents.hashCode();
 	}   
         
     /** 
@@ -503,6 +515,7 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
     * @author Natalia Milas - 2018-11
     * 
     */
+    @Override
     public ApertureProfile getAperProfile(){
 
         ApertureProfile aperProfile = new ApertureProfile();    
@@ -534,12 +547,4 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
         return aperProfile;        
     }
     
-    
-        
 }
-
-
-
-
-	       
-	       

@@ -113,8 +113,8 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
         // Load default timeouts from preferences if available, otherwise use hardcoded values.
         java.util.prefs.Preferences defaults = Preferences.nodeForPackage(xal.ca.Channel.class);
-        m_dblTmIO = defaults.getDouble(DEF_TIME_IO, C_DBL_DEF_TIME_IO);
-        m_dblTmEvt = defaults.getDouble(DEF_TIME_EVENT, C_DBL_DEF_TIME_EVENT);
+        dblTmIO = defaults.getDouble(DEF_TIME_IO, C_DBL_DEF_TIME_IO);
+        dblTmEvt = defaults.getDouble(DEF_TIME_EVENT, C_DBL_DEF_TIME_EVENT);
     }
 
     protected Channel getNativeChannel() {
@@ -143,16 +143,16 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         if (!isConnected() && connectionLatch == null) {
             connectionLatch = new CountDownLatch(1);
 
-            if (!m_strId.startsWith(CA_PREFIX)) {
+            if (!strId.startsWith(CA_PREFIX)) {
                 synchronized (connectionLock) {
                     pvaChannel = epics7ChannelSystem.getPvaChannelProvider().createChannel(
-                            m_strId.startsWith(PVA_PREFIX) ? m_strId.substring(PVA_PREFIX.length()) : m_strId, this, ChannelProvider.PRIORITY_DEFAULT);
+                            strId.startsWith(PVA_PREFIX) ? strId.substring(PVA_PREFIX.length()) : strId, this, ChannelProvider.PRIORITY_DEFAULT);
                 }
             }
-            if (!m_strId.startsWith(PVA_PREFIX)) {
+            if (!strId.startsWith(PVA_PREFIX)) {
                 synchronized (connectionLock) {
                     caChannel = epics7ChannelSystem.getCaChannelProvider().createChannel(
-                            m_strId.startsWith(CA_PREFIX) ? m_strId.substring(CA_PREFIX.length()) : m_strId, this, ChannelProvider.PRIORITY_DEFAULT);
+                            strId.startsWith(CA_PREFIX) ? strId.substring(CA_PREFIX.length()) : strId, this, ChannelProvider.PRIORITY_DEFAULT);
                 }
             }
         }
@@ -395,7 +395,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         getCallback(request, listener, attemptConnection);
 
         try {
-            listener.await((long) (1000 * m_dblTmIO), TimeUnit.MILLISECONDS);
+            listener.await((long) (1000 * dblTmIO), TimeUnit.MILLISECONDS);
         } catch (InterruptedException ex) {
             Logger.getLogger(Epics7Channel.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -528,7 +528,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
         if (listener instanceof PutListenerImpl) {
             try {
-                ((PutListenerImpl) listener).await((long) (1000 * m_dblTmIO), TimeUnit.MILLISECONDS);
+                ((PutListenerImpl) listener).await((long) (1000 * dblTmIO), TimeUnit.MILLISECONDS);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Epics7Channel.class.getName()).log(Level.SEVERE, null, ex);
                 throw new PutException("Timeout");

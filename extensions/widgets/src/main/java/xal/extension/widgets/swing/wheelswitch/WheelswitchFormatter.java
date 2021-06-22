@@ -71,7 +71,7 @@ public class WheelswitchFormatter
 	}
 
 	/**
-	 * Sets the format string specifiing the format of <code>Wheelswitch</code>
+	 * Sets the format string specifying the format of <code>Wheelswitch</code>
 	 * display. The format is first checked for validity by the
 	 * <code>checkFormat(String)</code> method.
 	 *

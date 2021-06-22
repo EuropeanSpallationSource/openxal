@@ -24,7 +24,7 @@ public class WireScanData{
 	private int pvlogId = -1;
 	
 	//name of WS file 
-	private String ws_file_name = "none";
+	private String wsFilename = "none";
 	
 	//fitting parameters	
 	private double sigmaX = 0.;
@@ -46,16 +46,16 @@ public class WireScanData{
 	private double centerRmsY = 0.;
 	
 	//the log(wf) logarithms of the raw waveform
-	private BasicGraphData log_wfX = new BasicGraphData();
-	private BasicGraphData log_wfY = new BasicGraphData();
+	private BasicGraphData logWfX = new BasicGraphData();
+	private BasicGraphData logWfY = new BasicGraphData();
 	
 	//fitted curve
-	private BasicGraphData fit_wfX = new BasicGraphData();
-	private BasicGraphData fit_wfY = new BasicGraphData();
+	private BasicGraphData fitWfX = new BasicGraphData();
+	private BasicGraphData fitWfY = new BasicGraphData();
 	
 	//logarithm of fitted curve
-	private BasicGraphData log_fit_wfX = new BasicGraphData();
-	private BasicGraphData log_fit_wfY = new BasicGraphData();
+	private BasicGraphData logFitWfX = new BasicGraphData();
+	private BasicGraphData logFitWfY = new BasicGraphData();
 	
 	/** Constructor of an empty wire scanner data object */
 	public WireScanData(){		
@@ -63,43 +63,43 @@ public class WireScanData{
 	}
 	
 	private void setLegendToGraphs(){
-		String str = " file=" + ws_file_name + "ws=" + wsId + " pvLog= " + pvlogId + " dir= ";
+		String str = " file=" + wsFilename + "ws=" + wsId + " pvLog= " + pvlogId + " dir= ";
 		wfX.setGraphProperty("Legend",str + "X  raw");
 		wfY.setGraphProperty("Legend",str + "Y  raw");
-		log_wfX.setGraphProperty("Legend",str + "X  log(raw)");
-		log_wfY.setGraphProperty("Legend",str + "Y  log(raw)");
-		fit_wfX.setGraphProperty("Legend",str + "X  Gauss Fit");
-		fit_wfY.setGraphProperty("Legend",str + "Y  Gauss Fit");
-		log_fit_wfX.setGraphProperty("Legend",str + "X  log(Gauss Fit)");
-		log_fit_wfY.setGraphProperty("Legend",str + "Y  log(Gauss Fit)");
+		logWfX.setGraphProperty("Legend",str + "X  log(raw)");
+		logWfY.setGraphProperty("Legend",str + "Y  log(raw)");
+		fitWfX.setGraphProperty("Legend",str + "X  Gauss Fit");
+		fitWfY.setGraphProperty("Legend",str + "Y  Gauss Fit");
+		logFitWfX.setGraphProperty("Legend",str + "X  log(Gauss Fit)");
+		logFitWfY.setGraphProperty("Legend",str + "Y  log(Gauss Fit)");
 		
 		wfX.setGraphColor(Color.black);
 		wfY.setGraphColor(Color.black);
-		log_wfX.setGraphColor(Color.black);
-		log_wfY.setGraphColor(Color.black);
-		fit_wfX.setGraphColor(Color.red);
-		fit_wfY.setGraphColor(Color.red);
-		log_fit_wfX.setGraphColor(Color.red);
-		log_fit_wfY.setGraphColor(Color.red);
+		logWfX.setGraphColor(Color.black);
+		logWfY.setGraphColor(Color.black);
+		fitWfX.setGraphColor(Color.red);
+		fitWfY.setGraphColor(Color.red);
+		logFitWfX.setGraphColor(Color.red);
+		logFitWfY.setGraphColor(Color.red);
 		
 		
 		wfX.setDrawLinesOn(false);
 		wfY.setDrawLinesOn(false);
-		log_wfX.setDrawLinesOn(false);
-		log_wfY.setDrawLinesOn(false);
-		fit_wfX.setDrawPointsOn(false);
-		fit_wfY.setDrawPointsOn(false);
-		log_fit_wfX.setDrawPointsOn(false);
-		log_fit_wfY.setDrawPointsOn(false);	
+		logWfX.setDrawLinesOn(false);
+		logWfY.setDrawLinesOn(false);
+		fitWfX.setDrawPointsOn(false);
+		fitWfY.setDrawPointsOn(false);
+		logFitWfX.setDrawPointsOn(false);
+		logFitWfY.setDrawPointsOn(false);	
 		
 		wfX.setGraphPointSize(4);
 		wfY.setGraphPointSize(4);
-		log_wfX.setGraphPointSize(4);
-		log_wfY.setGraphPointSize(4);
-		fit_wfX.setLineThick(2);
-		fit_wfY.setLineThick(2);
-		log_fit_wfX.setLineThick(2);
-		log_fit_wfY.setLineThick(2);	
+		logWfX.setGraphPointSize(4);
+		logWfY.setGraphPointSize(4);
+		fitWfX.setLineThick(2);
+		fitWfY.setLineThick(2);
+		logFitWfX.setLineThick(2);
+		logFitWfY.setLineThick(2);	
 	}
 	
 	/** Returns the Id of the Wire Scanner */
@@ -126,12 +126,12 @@ public class WireScanData{
 	
 	/** Returns the name of WS data file */	
 	public String getWSFileName(){
-		return ws_file_name;
+		return wsFilename;
 	}
 	
 	/** Sets the name of WS data file */	
-	public void setWSFileName(String ws_file_name){
-		this.ws_file_name = ws_file_name;
+	public void setWSFileName(String ws_filename){
+		this.wsFilename = ws_filename;
 		setLegendToGraphs();		
 	}
 	
@@ -147,32 +147,32 @@ public class WireScanData{
 	
 	/** Returns a reference to the BasicGraphData instance with the log of raw waveform for X-direction */		
 	public BasicGraphData getLogRawWFX(){
-		return log_wfX;
+		return logWfX;
 	}
 	
 	/** Returns a reference to the BasicGraphData instance with the log of raw waveform for Y-direction */		
 	public BasicGraphData getLogRawWFY(){
-		return log_wfY;
+		return logWfY;
 	}	
 
 	/** Returns a reference to the BasicGraphData instance with the fitting waveform for X-direction */	
 	public BasicGraphData getFitWFX(){
-		return fit_wfX;
+		return fitWfX;
 	}
 	
 	/** Returns a reference to the BasicGraphData instance with the fitting waveform for Y-direction */		
 	public BasicGraphData getFitWFY(){
-		return fit_wfY;
+		return fitWfY;
 	}	
 	
 	/** Returns a reference to the BasicGraphData instance with the log of fitting waveform for X-direction */	
 	public BasicGraphData getLogFitWFX(){
-		return log_fit_wfX;
+		return logFitWfX;
 	}
 	
 	/** Returns a reference to the BasicGraphData instance with the log of fitting waveform for Y-direction */		
 	public BasicGraphData getLogFitWFY(){
-		return log_fit_wfY;
+		return logFitWfY;
 	}	
 	
 	

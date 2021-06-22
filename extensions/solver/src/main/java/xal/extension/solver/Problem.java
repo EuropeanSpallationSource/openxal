@@ -22,31 +22,31 @@ import java.util.*;
  */
 public class Problem {
 	/** The objectives we are trying to optimize. */
-	protected List<Objective> _objectives;
+	protected List<Objective> objectives;
 	
 	/** The variables which identify the controls for optimizing the solution. */
-	protected final List<Variable> _variables;
+	protected final List<Variable> variables;
 	
 	/** Constraints which identify unacceptable solutions. */
-	protected List<Constraint> _constraints;
+	protected List<Constraint> constraints;
 	
 	/** A table of hints the algorithms may use to adjust their search. */
-	protected Map<String, Hint> _hints;
+	protected Map<String, Hint> hints;
 	
 	/** The user provided object which evaluates the trial solutions. */
-	protected Evaluator _evaluator;
+	protected Evaluator evaluator;
 	
 	/** A table of reference values keyed by variable */
-	protected Map<Variable,ValueRef> _valueRefs;
+	protected Map<Variable,ValueRef> valueRefs;
 	
 	
 	/**
 	 * Construct a problem using an objective list, variable list, constraint list, hint list, and an evaluator.
 	 */
 	public Problem( final List<Objective> objectives, final List<Variable> variables, final Evaluator evaluator, final List<Constraint> constraints, final List<Hint> hints ) {
-		_valueRefs = new HashMap<Variable,ValueRef>();
-		_variables = new ArrayList<Variable>();
-		_hints = new HashMap<String,Hint>();
+		valueRefs = new HashMap<>();
+		this.variables = new ArrayList<>();
+		this.hints = new HashMap<>();
 
 		setObjectives( objectives );
 		setVariables( variables );
@@ -75,7 +75,7 @@ public class Problem {
 	 * @param anObjective  The objective of the problem.
 	 */
 	public void addObjective( Objective anObjective ) {
-		_objectives.add( anObjective );
+		objectives.add( anObjective );
 	}
 
 
@@ -84,7 +84,7 @@ public class Problem {
 	 * @param objectives  The new objectives value
 	 */
 	public void setObjectives( final List<? extends Objective> objectives ) {
-		_objectives = new ArrayList<Objective>( objectives.size() );
+		this.objectives = new ArrayList<>( objectives.size() );
 		for ( Objective objective : objectives ) {
 			addObjective( objective );
 		}
@@ -96,7 +96,7 @@ public class Problem {
 	 * @return   objectiveList.
 	 */
 	public List<Objective> getObjectives() {
-		return _objectives;
+		return objectives;
 	}
 
 
@@ -105,8 +105,8 @@ public class Problem {
 	 * @param variable   The feature to be added to the Variable attribute
 	 */
 	public void addVariable( final Variable variable ) {
-		_variables.add( variable );
-		_valueRefs.put( variable, new ValueRef() );
+		variables.add( variable );
+		valueRefs.put( variable, new ValueRef() );
 	}
 
 
@@ -115,7 +115,7 @@ public class Problem {
 	 * @param variables  The new variables value
 	 */
 	public void setVariables( final List<Variable> variables ) {
-		_variables.clear();
+		this.variables.clear();
 
 		for ( Variable variable : variables ) {
 			addVariable( variable );
@@ -129,7 +129,7 @@ public class Problem {
 	 * @return           A double representing the value.
 	 */
 	public ValueRef getValueReference( final Variable variable ) {
-		return _valueRefs.get( variable );
+		return valueRefs.get( variable );
 	}
 
 
@@ -138,7 +138,7 @@ public class Problem {
 	 * @return   The list of variables.
 	 */
 	public final List<Variable> getVariables() {
-		return _variables;
+		return variables;
 	}
 
 
@@ -147,7 +147,7 @@ public class Problem {
 	 * @param aConstraint  One constraint of the problem.
 	 */
 	public void addConstraint( final Constraint aConstraint ) {
-		_constraints.add( aConstraint );
+		constraints.add( aConstraint );
 	}
 
 
@@ -156,7 +156,7 @@ public class Problem {
 	 * @param constraints  The new constraints value
 	 */
 	public void setConstraints( final List<Constraint> constraints ) {
-		_constraints = new ArrayList<Constraint>( constraints.size() );
+		this.constraints = new ArrayList<>( constraints.size() );
 		for ( Constraint constraint : constraints ) {
 			addConstraint( constraint );
 		}
@@ -168,7 +168,7 @@ public class Problem {
 	 * @return   constraintList The list of constraints.
 	 */
 	public List<Constraint> getConstraints() {
-		return _constraints;
+		return constraints;
 	}
 
 
@@ -177,7 +177,7 @@ public class Problem {
 	 * @param aHint  One hint for the problem.
 	 */
 	public void addHint( final Hint aHint ) {
-		_hints.put( aHint.getType(), aHint );
+		hints.put( aHint.getType(), aHint );
 	}
 	
 	
@@ -197,7 +197,7 @@ public class Problem {
 	 * @param hints  The new hints to set for this problem.
 	 */
 	public void setHints( final List<Hint> hints ) {
-		_hints.clear();
+		this.hints.clear();
 		addHints( hints );
 	}
 
@@ -208,7 +208,7 @@ public class Problem {
 	 * @return The hint corresponding to the specified type.
 	 */
 	public Hint getHint( final String type ) {
-		return _hints.get( type );
+		return hints.get( type );
 	}
 
 
@@ -218,7 +218,7 @@ public class Problem {
 	 * @param anEvaluator  The new evaluator value
 	 */
 	public void setEvaluator( final Evaluator anEvaluator ) {
-		_evaluator = anEvaluator;
+		evaluator = anEvaluator;
 	}
 
 
@@ -227,7 +227,7 @@ public class Problem {
 	 * @return   The evaluator.
 	 */
 	public Evaluator getEvaluator() {
-		return _evaluator;
+		return evaluator;
 	}
 	
 	
@@ -245,9 +245,9 @@ public class Problem {
 	 * @return a new trial point
 	 */
 	public TrialPoint generateInitialTrialPoint() {
-		final MutableTrialPoint trialPoint = new MutableTrialPoint( _variables.size() );
+		final MutableTrialPoint trialPoint = new MutableTrialPoint( variables.size() );
 		
-		for ( final Variable variable : _variables ) {
+		for ( final Variable variable : variables ) {
 			final double value = variable.getInitialValue();
 			trialPoint.setValue( variable, value );
 		}			 
@@ -259,11 +259,11 @@ public class Problem {
 	/**
 	 * Validate the trial.
 	 * @param trial  The trial to be validated.
-	 * @return A trial veto if any of the constraints vetos the trial or null if there is no veto.
+	 * @return A trial veto if any of the constraints vetoes the trial or null if there is no veto.
 	 */
 	protected TrialVeto validate( final Trial trial ) {
 		updateValueReference( trial );
-		for ( final Constraint constraint : _constraints ) {
+		for ( final Constraint constraint : constraints ) {
 			final TrialVeto veto = constraint.validate( trial );
 			if ( veto != null ) {
 				return veto;
@@ -294,8 +294,8 @@ public class Problem {
 		if ( veto != null ) {
 			trial.vetoTrial( veto );
 			return false;
-		};
-		_evaluator.evaluate( trial );
+		}
+		evaluator.evaluate( trial );
 		return true;
 	}
 	
@@ -305,7 +305,7 @@ public class Problem {
 	 * @param trial  the trial with which to update the reference
 	 */
 	private void updateValueReference( final Trial trial ) {
-		for ( final Variable variable : _variables ) {
+		for ( final Variable variable : variables ) {
 			final ValueRef referenceVariable = getValueReference( variable );
 			referenceVariable.setValue( trial.getTrialPoint().getValue( variable ) );
 		}

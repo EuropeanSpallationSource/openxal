@@ -19,8 +19,8 @@ public class WireDataFileParser {
     boolean readingRawArrays = false;
     boolean readingFitArrays = false;
     boolean zeroData = false;
-    ArrayList<WireData> wires = new ArrayList<WireData>();
-    HashMap<String, WireData> wireMap = new HashMap<String, WireData>();
+    ArrayList<WireData> wires = new ArrayList<>();
+    HashMap<String, WireData> wireMap = new HashMap<>();
     
     String name = "";
     String header = "";
@@ -40,33 +40,33 @@ public class WireDataFileParser {
     double[] posFit;
     
     String[] xFitS = {};
-    LinkedList<String> xFitL= new LinkedList<String>(Arrays.asList(xFitS));
+    LinkedList<String> xFitL= new LinkedList<>(Arrays.asList(xFitS));
     String[] yFitS = {};
-    LinkedList<String> yFitL= new LinkedList<String>(Arrays.asList(yFitS));
+    LinkedList<String> yFitL= new LinkedList<>(Arrays.asList(yFitS));
     String[] zFitS = {};
-    LinkedList<String> zFitL= new LinkedList<String>(Arrays.asList(zFitS));
+    LinkedList<String> zFitL= new LinkedList<>(Arrays.asList(zFitS));
     String[] xRMSS = {};
-    LinkedList<String> xRMSL= new LinkedList<String>(Arrays.asList(xRMSS));
+    LinkedList<String> xRMSL= new LinkedList<>(Arrays.asList(xRMSS));
     String[] yRMSS = {};
-    LinkedList<String> yRMSL= new LinkedList<String>(Arrays.asList(yRMSS));
+    LinkedList<String> yRMSL= new LinkedList<>(Arrays.asList(yRMSS));
     String[] zRMSS = {};
-    LinkedList<String> zRMSL= new LinkedList<String>(Arrays.asList(zRMSS));
+    LinkedList<String> zRMSL= new LinkedList<>(Arrays.asList(zRMSS));
     String[] xRawS = {};
-    LinkedList<String> xRawL= new LinkedList<String>(Arrays.asList(xRawS));
+    LinkedList<String> xRawL= new LinkedList<>(Arrays.asList(xRawS));
     String[] yRawS = {};
-    LinkedList<String> yRawL= new LinkedList<String>(Arrays.asList(yRawS));
+    LinkedList<String> yRawL= new LinkedList<>(Arrays.asList(yRawS));
     String[] zRawS = {};
-    LinkedList<String> zRawL= new LinkedList<String>(Arrays.asList(zRawS));
+    LinkedList<String> zRawL= new LinkedList<>(Arrays.asList(zRawS));
     String[] xFitDataS = {};
-    LinkedList<String> xFitDataL= new LinkedList<String>(Arrays.asList(xFitDataS));
+    LinkedList<String> xFitDataL= new LinkedList<>(Arrays.asList(xFitDataS));
     String[] yFitDataS = {};
-    LinkedList<String> yFitDataL= new LinkedList<String>(Arrays.asList(yFitDataS));
+    LinkedList<String> yFitDataL= new LinkedList<>(Arrays.asList(yFitDataS));
     String[] zFitDataS = {};
-    LinkedList<String> zFitDataL= new LinkedList<String>(Arrays.asList(zFitDataS));
+    LinkedList<String> zFitDataL= new LinkedList<>(Arrays.asList(zFitDataS));
     String[] posRawS = {};
-    LinkedList<String> posRawL= new LinkedList<String>(Arrays.asList(posRawS));
+    LinkedList<String> posRawL= new LinkedList<>(Arrays.asList(posRawS));
     String[] posFitS = {};
-    LinkedList<String> posFitL= new LinkedList<String>(Arrays.asList(posFitS));
+    LinkedList<String> posFitL= new LinkedList<>(Arrays.asList(posFitS));
             
     DecimalFormat float1 = new DecimalFormat("###.####");
     DecimalFormat float2 = new DecimalFormat("#.########");
@@ -104,9 +104,9 @@ public class WireDataFileParser {
                     double num2;
                     double num3;
                     try {
-                        num1 = (new Double(tokens[0])).doubleValue();
-			num2 = (new Double(tokens[1])).doubleValue();
-			num3 = (new Double(tokens[2])).doubleValue();
+                        num1 = Double.parseDouble(tokens[0]);
+			num2 = Double.parseDouble(tokens[1]);
+			num3 = Double.parseDouble(tokens[2]);
 
                         if(num1 == 0. && num2 == 0. && num3 == 0.)
                             zeroData = true;
@@ -182,14 +182,11 @@ public class WireDataFileParser {
                 }
                 else if (firstName.equals("Position") && tokens[2].equals("Raw")) {
                     readingRawArrays = true;
-                    continue;
                 }
                 else if (firstName.equals("Position") && tokens[2].equals("Fit")) {
                     readingFitArrays = true;
-                    continue;
                 }
                 else if (firstName.startsWith("---")) {
-                    continue;
                 }
 		else if (firstName.equals("PVLoggerID")) {
 		    String pvLoggerIdS = tokens[2];

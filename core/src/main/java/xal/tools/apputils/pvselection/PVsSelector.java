@@ -11,10 +11,8 @@ package xal.tools.apputils.pvselection;
 
 import javax.swing.*;
 import javax.swing.tree.*;
-import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.border.*;
 import java.io.*;
 import java.net.*;
 
@@ -22,6 +20,7 @@ import xal.ca.*;
 import xal.ca.view.*;
 import xal.smf.data.*;
 import xal.smf.*;
+import xal.tools.xml.XmlDataAdaptor.ParseException;
 
 /** 
  * PVSelector is a GUI component creating a tree-like PV selection and shows  
@@ -118,19 +117,19 @@ public class PVsSelector extends JPanel{
         tmp.add(setPVButton,BorderLayout.NORTH);
         tmp.add(removePVButton,BorderLayout.SOUTH);
 
-        JPanel tmp_1 = new JPanel();
-        tmp_1.setLayout(new BorderLayout());
-        tmp_1.add(tmp,BorderLayout.NORTH);
+        JPanel tmp1 = new JPanel();
+        tmp1.setLayout(new BorderLayout());
+        tmp1.add(tmp,BorderLayout.NORTH);
 
-        JPanel tmp_2 = new JPanel();
-        tmp_2.setLayout(new BorderLayout());
-        tmp_2.add(tmp_1,BorderLayout.EAST);
+        JPanel tmp2 = new JPanel();
+        tmp2.setLayout(new BorderLayout());
+        tmp2.add(tmp1,BorderLayout.EAST);
 
-        JPanel tmp_3 = new JPanel();
-        tmp_3.setLayout(new FlowLayout(FlowLayout.CENTER,0,0));
-        tmp_3.add(tmp_2);
+        JPanel tmp3 = new JPanel();
+        tmp3.setLayout(new FlowLayout(FlowLayout.CENTER,0,0));
+        tmp3.add(tmp2);
 
-        centerLeftPanel.add(tmp_3,BorderLayout.WEST);
+        centerLeftPanel.add(tmp3,BorderLayout.WEST);
 
         centerPanel.add(scrollPane);
         centerPanel.add(centerLeftPanel);
@@ -144,8 +143,9 @@ public class PVsSelector extends JPanel{
         removePVButton.setToolTipText("delete PV name from the left PV tree");
 
 	//button action listener definition
-	addPVActionListener = new java.awt.event.ActionListener() {
-		public void actionPerformed(java.awt.event.ActionEvent evt) {
+	addPVActionListener = new ActionListener() {
+                @Override
+		public void actionPerformed(ActionEvent evt) {
                     showMessage(null);
                     PVTreeNode pvNode = PVTreeNode.getSelectedPVTreeNode(pvRoot);
                     if(pvNode == null){
@@ -153,8 +153,8 @@ public class PVsSelector extends JPanel{
 			return;                      
 		    }
 		    if(rawPVButton.isSelected()){
-			String pv_name = pvNameJText.getText();
-			if(pv_name.length() == 0){
+			String pvName = pvNameJText.getText();
+			if(pvName.length() == 0){
 			    showMessage("PV name field is empty.");
 			    return;
 			} 
@@ -167,8 +167,8 @@ public class PVsSelector extends JPanel{
 				return;                     
 			    }
 			    //create new node
-			    PVTreeNode pvNodeNew = new PVTreeNode(pv_name);
-			    Channel channel = ChannelFactory.defaultFactory().getChannel(pv_name);
+			    PVTreeNode pvNodeNew = new PVTreeNode(pvName);
+			    Channel channel = ChannelFactory.defaultFactory().getChannel(pvName);
                             pvNodeNew.setChannel(channel);
 			    pvNodeNew.setAsPVName(true);
 			    pvNodeNew.setCheckBoxVisible(pvNode.isCheckBoxVisible());
@@ -187,9 +187,9 @@ public class PVsSelector extends JPanel{
 			    //change pv name for existing node
 			    pvNode.setColor(null);
 			    pvNode.setCheckBoxVisible(((PVTreeNode) pvNode.getParent()).isCheckBoxVisible());
-			    Channel channel = ChannelFactory.defaultFactory().getChannel(pv_name);
+			    Channel channel = ChannelFactory.defaultFactory().getChannel(pvName);
                             pvNode.setChannel(channel);
-			    pvNode.setName(pv_name);
+			    pvNode.setName(pvName);
 			    JTree pvTree = pvTreePanel.getJTree();
 			    DefaultTreeModel treeModel = (DefaultTreeModel) pvTree.getModel();
 			    treeModel.reload(pvNode.getParent());                        
@@ -246,8 +246,9 @@ public class PVsSelector extends JPanel{
 
         pvNameJText.addActionListener(addPVActionListener);
 
-	removePVButton.addActionListener(new java.awt.event.ActionListener() {
-		public void actionPerformed(java.awt.event.ActionEvent evt) {
+	removePVButton.addActionListener(new ActionListener() {
+                @Override
+		public void actionPerformed(ActionEvent evt) {
                     showMessage(null);
                     PVTreeNode pvNode = PVTreeNode.getSelectedPVTreeNode(pvRoot);
                     if(pvNode == null || !pvNode.isPVName()){
@@ -259,28 +260,30 @@ public class PVsSelector extends JPanel{
 		    pvNode.removingOccurred();
                     pvNode_Parent.remove(pvNode); 
 		    Channel channel = pvNode.getChannel();
-		    String pv_name = null;
+		    String pvName = null;
 		    if(channel != null){
-			pv_name = channel.channelName();
+			pvName = channel.channelName();
 		    }
 		    else{
-			pv_name = pvNode.getName();
+			pvName = pvNode.getName();
 		    }
-                    pvNameJText.setText(pv_name);
+                    pvNameJText.setText(pvName);
 		    JTree pvTree = pvTreePanel.getJTree();
 		    DefaultTreeModel treeModel = (DefaultTreeModel) pvTree.getModel();
 		    treeModel.reload(pvNode_Parent);
 		}
 	    });
 
-	rawPVButton.addActionListener(new java.awt.event.ActionListener() {
-		public void actionPerformed(java.awt.event.ActionEvent evt) {
+	rawPVButton.addActionListener(new ActionListener() {
+                @Override
+		public void actionPerformed(ActionEvent evt) {
 		    pvNameJText.setEditable(rawPVButton.isSelected());
 		}
 	    });
 
 
         ActionListener extTreeSelectionListener =  new ActionListener(){
+                @Override
 		public void actionPerformed(ActionEvent e){
 		    Object source  = e.getSource();
                     if(source instanceof PVTreeNode){
@@ -305,7 +308,7 @@ public class PVsSelector extends JPanel{
 	setAllFonts(fnt);
     }
 
-    /** The constructor. Just craete objects we need internally.
+    /** The constructor. Just create objects we need internally.
      *
      * @param accel - The XAL accelerator object to build a tree from
      * @param pvRoot - the root node of the pv's tree
@@ -359,7 +362,7 @@ public class PVsSelector extends JPanel{
 	return messageJText;
     }
 
-    /** set an accelertor to this PVsSelector 
+    /** set an accelerator to this PVsSelector 
      * @param accel - the accelerator sequence
      */
     public void setAccelerator(Accelerator accel) {
@@ -389,6 +392,7 @@ public class PVsSelector extends JPanel{
 	tree.setFont(fnt);
 	scrollPane.setViewportView(tree);
 	MouseListener ml = new MouseAdapter() {
+                @Override
 		public void mousePressed(MouseEvent e) {
 		    selectedHandleNode = null;
 		    int selRow = tree.getRowForLocation(e.getX(), e.getY());
@@ -428,7 +432,7 @@ public class PVsSelector extends JPanel{
 		accel = dMgr.getAccelerator();
             
 	    }
-	    catch (Exception e){
+	    catch (ParseException e){
 		System.err.println("Cannot get accelerator: Exeption - " + e.getMessage());
 		Toolkit.getDefaultToolkit().beep();
 		return;

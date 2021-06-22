@@ -8,7 +8,6 @@
 
 package xal.extension.solver.solutionjudge;
 
-import xal.tools.messaging.MessageCenter;
 
 import xal.extension.solver.*;
 
@@ -22,16 +21,16 @@ import java.util.*;
  */
 public class WorstObjectiveBiasedJudge extends SolutionJudge {
 	/** the bias weight */
-	final protected double BIAS_WEIGHT;
+	protected final double BIAS_WEIGHT;
 	
 	/** the current best satisfaction */
-	protected double _bestSatisfaction;
+	protected double bestSatisfaction;
 	
 	/** used to normalize the total satisfaction to a scale of 0 to 1 */
-	protected double _totalWeight;
+	protected double totalWeight;
 	
 	/** the current list of the most optimal solutions */
-	protected List<Trial> _optimalSolutions;
+	protected List<Trial> optimalSolutions;
 	
 	
 	/** Constructor */
@@ -43,19 +42,20 @@ public class WorstObjectiveBiasedJudge extends SolutionJudge {
 	/** Constructor */
 	public WorstObjectiveBiasedJudge( final double biasWeight ) {
 		BIAS_WEIGHT = biasWeight;
-		_bestSatisfaction = 0.0;
-		_totalWeight = 0.0;
-		_optimalSolutions = new ArrayList<Trial>();
+		bestSatisfaction = 0.0;
+		totalWeight = 0.0;
+		optimalSolutions = new ArrayList<>();
 	}
 	
 	
 	/**
 	 * Reset the satisfaction sum judge.
 	 */
+        @Override
 	public void reset() {
-		_bestSatisfaction = 0.0;
-		_totalWeight = 0.0;
-		_optimalSolutions = new ArrayList<Trial>();
+		bestSatisfaction = 0.0;
+		totalWeight = 0.0;
+		optimalSolutions = new ArrayList<>();
 	}
 	
 	
@@ -63,8 +63,9 @@ public class WorstObjectiveBiasedJudge extends SolutionJudge {
 	 * Get the optimal solutions.
 	 * @return a list of solutions
 	 */
+        @Override
 	public List<Trial> getOptimalSolutions() {
-		return _optimalSolutions;	 	 
+		return optimalSolutions;	 	 
 	}
 	
 	
@@ -72,6 +73,7 @@ public class WorstObjectiveBiasedJudge extends SolutionJudge {
 	 * Judge the trial.
 	 * @param trial The trial with which to update the solution judge.
 	 */
+        @Override
 	public void judge( final Trial trial ) {
 		if ( trial.isVetoed() ) {
 			trial.setSatisfaction( 0.0 );
@@ -79,7 +81,7 @@ public class WorstObjectiveBiasedJudge extends SolutionJudge {
 		else {
 			final List<Objective> objectives = trial.getProblem().getObjectives();
 			final int numObjectives = objectives.size();
-			final List<Double> satisfactions = new ArrayList<Double>( numObjectives );
+			final List<Double> satisfactions = new ArrayList<>( numObjectives );
 			
 			// collect the list of each satisfaction
 			for ( final Objective objective : objectives ) {
@@ -93,29 +95,29 @@ public class WorstObjectiveBiasedJudge extends SolutionJudge {
 			double weight = 1.0;
 			final Iterator<Double> satisfactionIter = satisfactions.iterator();
 			while ( satisfactionIter.hasNext() ) {
-				final double satisfaction = satisfactionIter.next().doubleValue();
+				final double satisfaction = satisfactionIter.next();
 				weightedSum += weight * satisfaction;
 				weight *= BIAS_WEIGHT;	// weight the worst satisfactions most
 			}
 			
 			// make sure we do this at least once and then cache it
-			if (  _totalWeight == 0.0 ) {
-				_totalWeight = ( 1.0 - Math.pow( BIAS_WEIGHT, numObjectives ) ) / ( 1.0 - BIAS_WEIGHT );
+			if (  totalWeight == 0.0 ) {
+				totalWeight = ( 1.0 - Math.pow( BIAS_WEIGHT, numObjectives ) ) / ( 1.0 - BIAS_WEIGHT );
 			}
 			
 			// generate the overall satisfaction which is scaled from 0 to 1
-			final double totalSatisfaction = weightedSum / _totalWeight;
+			final double totalSatisfaction = weightedSum / totalWeight;
 			trial.setSatisfaction( totalSatisfaction );
 			
-			if( totalSatisfaction == _bestSatisfaction ) {
-				_optimalSolutions.add( trial );
-				_eventProxy.foundNewOptimalSolution( this, _optimalSolutions, trial );
+			if( totalSatisfaction == bestSatisfaction ) {
+				optimalSolutions.add( trial );
+				eventProxy.foundNewOptimalSolution( this, optimalSolutions, trial );
 			}
-			else if( totalSatisfaction > _bestSatisfaction ) {
-				_bestSatisfaction = totalSatisfaction;
-				_optimalSolutions.clear();
-				_optimalSolutions.add( trial );
-				_eventProxy.foundNewOptimalSolution( this, _optimalSolutions, trial );
+			else if( totalSatisfaction > bestSatisfaction ) {
+				bestSatisfaction = totalSatisfaction;
+				optimalSolutions.clear();
+				optimalSolutions.add( trial );
+				eventProxy.foundNewOptimalSolution( this, optimalSolutions, trial );
 			}
 		}
 	}

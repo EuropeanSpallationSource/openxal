@@ -21,7 +21,7 @@ import java.util.*;
  */
 abstract public class Electromagnet extends Magnet {
     /** the node type */
-    public static final String      s_strType   = "emag";
+    public static final String      TYPE   = "emag";
 	
     // field readback handle
     public static final String FIELD_RB_HANDLE = "fieldRB";
@@ -30,7 +30,7 @@ abstract public class Electromagnet extends Magnet {
     
     // indicates whether to use the actual field readback or the field setting in the getField() method
     // by default use the field readback
-    protected boolean _useFieldReadback = true;
+    protected boolean useFieldReadback = true;
     
     /** the ID of this magnet's main power supply */
     protected String mainSupplyId;
@@ -43,7 +43,7 @@ abstract public class Electromagnet extends Magnet {
     
     // Register types for qualification
     private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( Electromagnet.class, s_strType, "electromagnet" );
+		ElementTypeManager.defaultManager().registerTypes( Electromagnet.class, TYPE, "electromagnet" );
     }
 
 
@@ -63,6 +63,7 @@ abstract public class Electromagnet extends Magnet {
      * Update the node with data from the provided adaptor.
 	 * @param adaptor The data provider
      */
+    @Override
     public void update( final DataAdaptor adaptor ) throws NumberFormatException {
         super.update(adaptor);
         final DataAdaptor powerSupplyAdaptor = adaptor.childAdaptor( "ps" );
@@ -87,6 +88,7 @@ abstract public class Electromagnet extends Magnet {
      * support for power supplies.
      * @param adaptor The data store
      */
+    @Override
     public void write( final DataAdaptor adaptor ) {
         super.write(adaptor);
         DataAdaptor powerSupplyAdaptor = adaptor.createChild( "ps" );
@@ -109,7 +111,7 @@ abstract public class Electromagnet extends Magnet {
 	 * @param useFieldReadback true to use the field readback and false to use the field setting.
 	 */
         public void setUseFieldReadback(final boolean useFieldReadback) {
-            _useFieldReadback = useFieldReadback;
+            this.useFieldReadback = useFieldReadback;
             if (useFieldReadback) {
                 field.setSetHandle(MagnetMainSupply.FIELD_SET_HANDLE);
             } else {
@@ -123,7 +125,7 @@ abstract public class Electromagnet extends Magnet {
 	 * @return true if the field readback is used in getField() and false if instead the field setting is used.
 	 */
 	public boolean useFieldReadback() {
-		return _useFieldReadback;
+		return useFieldReadback;
 	}
     
     
@@ -132,8 +134,9 @@ abstract public class Electromagnet extends Magnet {
      * the main power supply.
      * @return The channel handles associated with this node
      */
+    @Override
     public Collection<String> getHandles() {
-        final Collection<String> handles = new HashSet<String>( super.getHandles() );
+        final Collection<String> handles = new HashSet<>( super.getHandles() );
 		try {
 			final MagnetMainSupply supply = getMainSupply();
 			if ( supply != null ) {
@@ -164,6 +167,7 @@ abstract public class Electromagnet extends Magnet {
      * setHandle) {
      * @return The corresponding readback handle.
      */
+    @Override
     public String[] getReadbackHandles(String setHandle) {
         String[] readbackHandles = super.getReadbackHandles(setHandle);
         if (readbackHandles == null) {
@@ -186,6 +190,7 @@ abstract public class Electromagnet extends Magnet {
      * @param readbackHandle The readback handle.
      * @return The corresponding set handle.
      */
+    @Override
     public String getSetHandle(String readbackHandle) {
         String setHandle = super.getSetHandle(readbackHandle);
         if (setHandle == null) {
@@ -207,6 +212,7 @@ abstract public class Electromagnet extends Magnet {
      * @param handle The handle for the channel to get.
      * @return The channel associated with this node and the specified handle or null if there is no match.
      */
+    @Override
     public Channel findChannel( final String handle ) {
 		final Channel channel = super.findChannel( handle );
 		if ( channel != null ) {
@@ -278,7 +284,7 @@ abstract public class Electromagnet extends Magnet {
 	 * @return the field in T/(m^(n-1)), where n = 1 for dipole, 2 for quad, etc. 
 	 */
     public double getField() throws ConnectionException, GetException {
-        return ( _useFieldReadback ) ? getFieldReadback() : getTotalFieldSetting();
+        return ( useFieldReadback ) ? getFieldReadback() : getTotalFieldSetting();
     }
     
     
@@ -333,7 +339,7 @@ abstract public class Electromagnet extends Magnet {
 	 * @param rawValue the raw channel value
 	 * @return the magnetic field in T/m^(n-1)
 	 */
-	final public double toFieldFromCA( final double rawValue ) {
+	public final double toFieldFromCA( final double rawValue ) {
         return rawValue * getPolarity(); 
 	}
 	
@@ -343,7 +349,7 @@ abstract public class Electromagnet extends Magnet {
 	 * @param field the magnetic field in T/m^(n-1)
 	 * @return the channel access value
 	 */
-	final public double toCAFromField( final double field ) {
+	public final double toCAFromField( final double field ) {
         return field * getPolarity(); 
 	}
 	
@@ -439,6 +445,7 @@ abstract public class Electromagnet extends Magnet {
      * advertise this characteristic.
      * @return false since all Electromagnet instances are not permanent magnets.
      */
+    @Override
     public boolean isPermanent() {
         return false;
     }

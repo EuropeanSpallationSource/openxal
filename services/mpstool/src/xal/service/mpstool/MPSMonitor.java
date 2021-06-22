@@ -16,7 +16,6 @@ import xal.extension.logbook.ElogUtility;
 
 import java.util.*;
 import java.text.*;
-import java.math.*;
 
 /**
  * MPSMonitor
@@ -25,76 +24,76 @@ import java.math.*;
  */
 public class MPSMonitor {
 	/** format for displaying timestamps */
-	private final static DateFormat TIMESTAMP_FORMAT;
+	private static final DateFormat TIMESTAMP_FORMAT;
 
 	/** size of the MPS event buffer */
-	public final static int MPS_EVENT_BUFFER_SIZE = xal.service.mpstool.MPSPortal.MPS_EVENT_BUFFER_SIZE;
+	public static final int MPS_EVENT_BUFFER_SIZE = xal.service.mpstool.MPSPortal.MPS_EVENT_BUFFER_SIZE;
 
 	//-------------- Member variables --------------//
 	
-	/** flag indicating whether the first faults statisics should be logged */
-	final private boolean LOG_STATISTICS;
+	/** flag indicating whether the first faults statistics should be logged */
+	private final boolean LOG_STATISTICS;
 	
-	/** Chanenl wrappers */
-	protected volatile ChannelWrapper[] _mpsChannelWrappers;
+	/** Channel wrappers */
+	protected volatile ChannelWrapper[] mpsChannelWrappers;
 
 	/** Map of input monitors keyed by MPS signal */
-	protected Map<String,InputMonitor> _inputMonitors;
+	protected Map<String,InputMonitor> inputMonitors;
 
 	/** Type of MPS signals to monitor (e.g. FPL or FPAR) */
-	protected String _mpsType;
+	protected String mpsType;
 
 	/** Source of MPS signals */
-	protected SignalSource _signalSource;
+	protected SignalSource signalSource;
 
 	/** the correlator to use to gather MPS signals in a single macropulse */
-	private ChannelCorrelator _correlator;
+	private ChannelCorrelator correlator;
 
 	/** the ordered list of most recent MPS events sorted by timestamp */
-	private volatile LinkedList<MPSEvent> _mpsEventBuffer;
+	private volatile LinkedList<MPSEvent> mpsEventBuffer;
 
 	/** Filter used to set the amount of missing MPS PVs allowed to constitute a legitimate correlation set */
-	private CorrelationFilter<ChannelTimeRecord> _filter;
+	private CorrelationFilter<ChannelTimeRecord> filter;
 
 	/** The poster to grab + post correlations every 60 Hz */
-	private PeriodicPoster<ChannelTimeRecord> _poster;
+	private PeriodicPoster<ChannelTimeRecord> poster;
 
 	/** time to wait while monitoring a correlated set (sec) */
-	private Double _dwellTime;
+	private Double dwellTime;
 
-	/** max timeStamp difference to consitute a correlated set (sec) */
-	private Double _deltaT;
+	/** max timeStamp difference to constitute a correlated set (sec) */
+	private Double deltaT;
 
 	/** Map of first hit trip statistics keyed by PV. This map gets cleared daily. */
-	private Map<String,TripStatistics> _firstHitStats;
+	private Map<String,TripStatistics> firstHitStats;
 	
 	/** Map of trip statistics keyed by PV. This map gets cleared daily. */
-	private Map<String,TripStatistics> _mpsTripStats;
+	private Map<String,TripStatistics> mpsTripStats;
 
 
 	/** time of last MPS event */
-	private volatile Date _lastMPSEventTime;
+	private volatile Date lastMPSEventTime;
 
 	/** time of last MPS channel connection event */
-	private volatile Date _lastMPSConnectionEventTime;
+	private volatile Date lastMPSConnectionEventTime;
 
 	/** time of last Input channel connection event */
-	private volatile Date _lastInputConnectionEventTime;
+	private volatile Date lastInputConnectionEventTime;
 
 	/** handler of connection events of MPS channels for this monitor */
-	private MPSConnectionHandler _mpsConnectionHandler;
+	private MPSConnectionHandler mpsConnectionHandler;
 
 	/** handler of connection events of input channels for this monitor */
-	private InputConnectionHandler _inputConnectionHandler;
+	private InputConnectionHandler inputConnectionHandler;
 
 	/** The start time for populating daily statistics */
-	protected Calendar _startTime;
+	protected Calendar startTime;
 
 	/** Synchronization lock for accessing daily statistics */
-	protected Object _statsLock;
+	protected final Object statsLock;
 
 	/** Timer for updating daily statistics */
-	protected final Timer _statsUpdateTimer;
+	protected final Timer statsUpdateTimer;
 
 	
 	// static initializer
@@ -112,27 +111,27 @@ public class MPSMonitor {
 		LOG_STATISTICS = logStatistics;
 		
 		// Coles recommends 16ms since it is the shortest time between pulses
-		_deltaT = new Double( 0.016 );
+		deltaT = 0.016;
 
-		_dwellTime = new Double( 0.1 );
+		dwellTime = 0.1;
 
 		// Some internal stuff:
-		_mpsEventBuffer = new LinkedList<>();
-		_firstHitStats = new HashMap<String,TripStatistics>();
-		_mpsTripStats = new HashMap<String,TripStatistics>();
+		mpsEventBuffer = new LinkedList<>();
+		firstHitStats = new HashMap<>();
+		mpsTripStats = new HashMap<>();
 
-		_mpsType = mpsType;
-		_signalSource = signalSource;
+		this.mpsType = mpsType;
+		this.signalSource = signalSource;
 
-		_statsLock = new Object();
-		_startTime = Calendar.getInstance();
-		_lastMPSEventTime = _startTime.getTime();
-		_lastMPSConnectionEventTime = _startTime.getTime();
-		_lastInputConnectionEventTime = _startTime.getTime();
+		statsLock = new Object();
+		startTime = Calendar.getInstance();
+		lastMPSEventTime = startTime.getTime();
+		lastMPSConnectionEventTime = startTime.getTime();
+		lastInputConnectionEventTime = startTime.getTime();
 
-		_statsUpdateTimer = startStatsUpdateTimer();
+		statsUpdateTimer = startStatsUpdateTimer();
 		
-		_inputConnectionHandler = new InputConnectionHandler();
+		inputConnectionHandler = new InputConnectionHandler();
 
 		loadSignals();
 		setupCorrelator();
@@ -145,7 +144,7 @@ public class MPSMonitor {
 	/** Dispose of this monitor and its resources */
 	public void dispose() {
 		stopCorrelator();
-		_statsUpdateTimer.cancel();
+		statsUpdateTimer.cancel();
 		checkDayUpdateDailyStats();    // flush any remaining stats
 	}
 
@@ -156,24 +155,24 @@ public class MPSMonitor {
 	 * @return   The type of MPS signal to monitor (e.g. "FPL" or "FPAR")
 	 */
 	public String getMPSType() {
-		return _mpsType;
+		return mpsType;
 	}
 
 
 	/** Load the signals to monitor from the data source */
 	public void loadSignals() {
-		String[] signals = _signalSource.fetchMPSSignals( _mpsType );
-		_mpsChannelWrappers = new ChannelWrapper[signals.length];
+		String[] signals = signalSource.fetchMPSSignals( mpsType );
+		mpsChannelWrappers = new ChannelWrapper[signals.length];
 		for ( int index = 0; index < signals.length; index++ ) {
-			_mpsChannelWrappers[index] = new ChannelWrapper( signals[index] );
+			mpsChannelWrappers[index] = new ChannelWrapper( signals[index] );
 		}
-		_lastMPSConnectionEventTime = new Date();
+		lastMPSConnectionEventTime = new Date();
 
-		_inputMonitors = _signalSource.fetchInputMonitors( _mpsType );
-		if ( _inputMonitors != null ) {
-			_inputConnectionHandler.requestConnections( _inputMonitors.values() );
+		inputMonitors = signalSource.fetchInputMonitors( mpsType );
+		if ( inputMonitors != null ) {
+			inputConnectionHandler.requestConnections( inputMonitors.values() );
 		}
-		_lastInputConnectionEventTime = new Date();
+		lastInputConnectionEventTime = new Date();
 	}
 
 
@@ -183,9 +182,9 @@ public class MPSMonitor {
 	 */
 	public void reloadSignals() {
 		stopCorrelator();
-		_mpsConnectionHandler.ignoreAll( _mpsChannelWrappers );
-		_correlator.dispose();
-		_inputConnectionHandler.ignoreAll( _inputMonitors.values() );
+		mpsConnectionHandler.ignoreAll( mpsChannelWrappers );
+		correlator.dispose();
+		inputConnectionHandler.ignoreAll( inputMonitors.values() );
 		
 		loadSignals();
 		setupCorrelator();
@@ -196,28 +195,29 @@ public class MPSMonitor {
 	/** set up the correlator from the PV list */
 	private void setupCorrelator() {
 		// we still want to catch MPS events, even if the macropulse just has 1 MPS PV
-		_filter = CorrelationFilterFactory.minCountFilter( 1 );
+		filter = CorrelationFilterFactory.minCountFilter( 1 );
 
 		// Set up the Correlator;
-		_correlator = new ChannelCorrelator( _deltaT.doubleValue(), _filter );
+		correlator = new ChannelCorrelator( deltaT.doubleValue(), filter );
 		// a trip is indicated by a value of 0 and the signal is okay if is 1
 		RecordFilter<ChannelTimeRecord> recordFilter = RecordFilterFactory.equalityDoubleFilter( 0.0 );
-		_mpsConnectionHandler = new MPSConnectionHandler( recordFilter );
+		mpsConnectionHandler = new MPSConnectionHandler( recordFilter );
 
-		for ( int index = 0; index < _mpsChannelWrappers.length; index++ ) {
-			final ChannelWrapper wrapper = _mpsChannelWrappers[index];
-			_mpsConnectionHandler.requestToCorrelate( wrapper );
+		for ( int index = 0; index < mpsChannelWrappers.length; index++ ) {
+			final ChannelWrapper wrapper = mpsChannelWrappers[index];
+			mpsConnectionHandler.requestToCorrelate( wrapper );
 		}
 
 		// create the poster object:
-		_poster = new PeriodicPoster<ChannelTimeRecord>( _correlator, _dwellTime.doubleValue() );
-		_poster.addCorrelationNoticeListener(
+		poster = new PeriodicPoster<>( correlator, dwellTime);
+		poster.addCorrelationNoticeListener(
 			new CorrelationNotice<ChannelTimeRecord>() {
 				/**
 				 * handle no correlation found events
 				 *
 				 * @param sender  - the provider of the correlation
 				 */
+                                @Override
 				public void noCorrelationCaught( Object sender ) {
 				}
 
@@ -228,6 +228,7 @@ public class MPSMonitor {
 				 * @param sender       - the provider of the correlation
 				 * @param correlation  - the correlation object containing the answer !
 				 */
+                                @Override
 				public synchronized void newCorrelation( Object sender, Correlation<ChannelTimeRecord> correlation ) {
 					checkDayUpdateDailyStats();
 					MPSEvent newEvent = new MPSEvent( correlation );
@@ -236,7 +237,7 @@ public class MPSMonitor {
 					updateStats( newEvent );
 
 					// mark the MPS event time to indicate that new event data is available
-					_lastMPSEventTime = newEvent.getTimestamp();
+					lastMPSEventTime = newEvent.getTimestamp();
 				}
 			} );
 	}
@@ -247,7 +248,7 @@ public class MPSMonitor {
 	 * @return   The correlator which correlates MPS events
 	 */
 	public ChannelCorrelator getCorrelator() {
-		return _correlator;
+		return correlator;
 	}
 
 
@@ -256,8 +257,8 @@ public class MPSMonitor {
 	 * @param aTime  new dwell time (sec)
 	 */
 	public void setDwellTime( Double aTime ) {
-		_poster.setPeriod( aTime.doubleValue() );
-		_dwellTime = aTime;
+		poster.setPeriod( aTime.doubleValue() );
+		dwellTime = aTime;
 	}
 
 
@@ -266,7 +267,7 @@ public class MPSMonitor {
 	 * @return   dwell time in seconds
 	 */
 	public Double getDwellTime() {
-		return _dwellTime;
+		return dwellTime;
 	}
 
 
@@ -275,8 +276,8 @@ public class MPSMonitor {
 	 * @param delta  correlation time window (sec)
 	 */
 	public void setDeltaT( Double delta ) {
-		_deltaT = delta;
-		_correlator.setBinTimespan( delta.doubleValue() );
+		deltaT = delta;
+		correlator.setBinTimespan(delta);
 	}
 
 
@@ -285,7 +286,7 @@ public class MPSMonitor {
 	 * @return   The correlation time window in seconds
 	 */
 	public Double getDeltaT() {
-		return _deltaT;
+		return deltaT;
 	}
 
 
@@ -294,7 +295,7 @@ public class MPSMonitor {
 	 * @return   the array of monitored MPS channel wrappers
 	 */
 	public ChannelWrapper[] getMPSChannelWrappers() {
-		return _mpsChannelWrappers;
+		return mpsChannelWrappers;
 	}
 
 
@@ -303,7 +304,7 @@ public class MPSMonitor {
 	 * @return   the collection of input monitors
 	 */
 	public Collection<InputMonitor> getInputMonitors() {
-		return _inputMonitors.values();
+		return inputMonitors.values();
 	}
 
 
@@ -313,7 +314,7 @@ public class MPSMonitor {
 	 * @return           the input monitor for the MPS signal or null if none exists
 	 */
 	public InputMonitor getInputMonitor( final String mpsSignal ) {
-		return _inputMonitors.get( mpsSignal );
+		return inputMonitors.get( mpsSignal );
 	}
 
 
@@ -333,7 +334,7 @@ public class MPSMonitor {
 	 * @return   true if the correlator is running and false otherwise.
 	 */
 	public boolean isRunning() {
-		return _correlator.isRunning();
+		return correlator.isRunning();
 	}
 
 
@@ -342,28 +343,28 @@ public class MPSMonitor {
 	 * @return   true if the poster is running and false otherwise.
 	 */
 	public boolean isPosting() {
-		return _poster.isRunning();
+		return poster.isRunning();
 	}
 
 
 	/** Stops the poster from posting, but the correlator is still running behind the scene */
 	public void pausePoster() {
-		_poster.stop();
+		poster.stop();
 	}
 
 
 	/** Stop looking for MPS trips */
 	public void stopCorrelator() {
-		_poster.stop();
-		_correlator.stopMonitoring();
+		poster.stop();
+		correlator.stopMonitoring();
 	}
 
 
 	/** Restart the poster after a pause */
 	public void restartCorrelator() {
 		// make sure correlator is really going
-		_correlator.startMonitoring();
-		_poster.start();
+		correlator.startMonitoring();
+		poster.start();
 	}
 
 
@@ -376,7 +377,7 @@ public class MPSMonitor {
 		// check to see if the stats need to be cleared and clear them if necessary
 		checkDayUpdateDailyStats();
 
-		return _lastMPSEventTime;
+		return lastMPSEventTime;
 	}
 
 
@@ -387,7 +388,7 @@ public class MPSMonitor {
 	 * @return   the wall clock timestamp of the latest channel event.
 	 */
 	public Date getLastMPSChannelEventTime() {
-		return _lastMPSConnectionEventTime;
+		return lastMPSConnectionEventTime;
 	}
 
 
@@ -398,7 +399,7 @@ public class MPSMonitor {
 	 * @return   the wall clock timestamp of the latest channel event.
 	 */
 	public Date getLastInputChannelEventTime() {
-		return _lastInputConnectionEventTime;
+		return lastInputConnectionEventTime;
 	}
 
 
@@ -407,11 +408,11 @@ public class MPSMonitor {
 	 * @param newEvent  the latest MPS event
 	 */
 	private void updateEventBuffer( final MPSEvent newEvent ) {
-		synchronized ( _mpsEventBuffer ) {
-			_mpsEventBuffer.addFirst( newEvent );
+		synchronized ( mpsEventBuffer ) {
+			mpsEventBuffer.addFirst( newEvent );
 
-			while ( _mpsEventBuffer.size() > MPS_EVENT_BUFFER_SIZE ) {
-				_mpsEventBuffer.removeLast();
+			while ( mpsEventBuffer.size() > MPS_EVENT_BUFFER_SIZE ) {
+				mpsEventBuffer.removeLast();
 			}
 		}
 	}
@@ -422,7 +423,7 @@ public class MPSMonitor {
 	 * @param newEvent  The new MPS event to include in the statistics
 	 */
 	private void updateStats( final MPSEvent newEvent ) {
-		synchronized ( _statsLock ) {
+		synchronized ( statsLock ) {
 			updateFirstHitStats( newEvent );
 			updateMPSTripStats( newEvent );
 		}
@@ -434,7 +435,7 @@ public class MPSMonitor {
 	 * @param newEvent  The new MPS event to include in the daily statistics.
 	 */
 	private void updateFirstHitStats( final MPSEvent newEvent ) {
-		synchronized ( _statsLock ) {
+		synchronized ( statsLock ) {
 			final String firstPV = newEvent.getFirstSignalEvent().getSignal();
 			incrementFirstHits( firstPV );
 		}
@@ -447,11 +448,11 @@ public class MPSMonitor {
 	 * @param mpsPV   The MPS PV for which to increment the first hit trips
 	 */
 	protected final void incrementFirstHits( final String mpsPV ) {
-		synchronized ( _statsLock ) {
-			TripStatistics stats = _firstHitStats.get( mpsPV );
+		synchronized ( statsLock ) {
+			TripStatistics stats = firstHitStats.get( mpsPV );
 			if ( stats == null ) {
 				stats = getMPSTripStats( mpsPV );
-				_firstHitStats.put( mpsPV, stats );
+				firstHitStats.put( mpsPV, stats );
 			}
 			stats.incrementFirstHits();
 		}
@@ -459,24 +460,24 @@ public class MPSMonitor {
 
 
 	/**
-	 * Incrment the number of times the MPS signal tripped.
+	 * Increment the number of times the MPS signal tripped.
 	 * The stats are only valid for the present day.
 	 * @param mpsPV   The MPS PV for which to increment the trips
 	 */
 	protected final void incrementMPSTrips( final String mpsPV ) {
-		synchronized ( _statsLock ) {
+		synchronized ( statsLock ) {
 			getMPSTripStats( mpsPV ).incrementMPSTrips();
 		}
 	}
 
 
 	/**
-	 * Incrment the number of times the MPS signal's input has tripped.
+	 * Increment the number of times the MPS signal's input has tripped.
 	 * The stats are only valid for the present day.
 	 * @param mpsPV   The MPS PV for which to increment the input statistics
 	 */
 	protected final void incrementInputTrips( final String mpsPV ) {
-		synchronized ( _statsLock ) {
+		synchronized ( statsLock ) {
 			getMPSTripStats( mpsPV ).incrementInputTrips();
 		}
 	}
@@ -488,11 +489,11 @@ public class MPSMonitor {
 	 * @return the trip statistics for the specified MPS PV
 	 */
 	protected final TripStatistics getMPSTripStats( final String mpsPV ) {
-		synchronized ( _statsLock ) {
-			TripStatistics stats = _mpsTripStats.get( mpsPV );
+		synchronized ( statsLock ) {
+			TripStatistics stats = mpsTripStats.get( mpsPV );
 			if ( stats == null ) {
 				stats = new TripStatistics( mpsPV, getInputSignal(mpsPV) );
-				_mpsTripStats.put( mpsPV, stats );
+				mpsTripStats.put( mpsPV, stats );
 			}
 			
 			return stats;
@@ -506,7 +507,7 @@ public class MPSMonitor {
 	 * @param mpsEvent  The new MPS event to include in the statistics.
 	 */
 	private void updateMPSTripStats( final MPSEvent mpsEvent ) {
-		synchronized ( _statsLock ) {
+		synchronized ( statsLock ) {
 			final List<SignalEvent> signalEvents = mpsEvent.getSignalEvents();
 			final List<InputMonitor> inputMonitors = new ArrayList<>( signalEvents.size() );
 			//final Iterator<SignalEvent> eventIter = signalEvents.iterator();
@@ -540,8 +541,8 @@ public class MPSMonitor {
 	 * @return        The number of times the MPS signal has tripped.
 	 */
 //	public final int getMPSTripCount( final String signal ) {
-//		synchronized ( _statsLock ) {
-//			return _mpsTripStats.containsKey( signal ) ? ( (Integer)_mpsTripStats.get( signal ) ).intValue() : 0;
+//		synchronized ( statsLock ) {
+//			return mpsTripStats.containsKey( signal ) ? ( (Integer)mpsTripStats.get( signal ) ).intValue() : 0;
 //		}
 //	}
 
@@ -551,7 +552,7 @@ public class MPSMonitor {
 	 * @param signalEvent  The new signal event to include in the statistics.
 	 */
 	private void incrementMPSTrips( final SignalEvent signalEvent ) {
-		synchronized ( _statsLock ) {
+		synchronized ( statsLock ) {
 			final String signal = signalEvent.getSignal();
 			incrementMPSTrips( signal );
 		}
@@ -580,9 +581,9 @@ public class MPSMonitor {
 	 * be the start of the new day and clear the daily statistics.
 	 */
 	private void checkDayUpdateDailyStats() {
-		synchronized ( _statsLock ) {
+		synchronized ( statsLock ) {
 			int today = Calendar.getInstance().get( Calendar.DATE );
-			int startDay = _startTime.get( Calendar.DATE );
+			int startDay = startTime.get( Calendar.DATE );
 
 			if ( today != startDay ) {
 				if ( LOG_STATISTICS ) {
@@ -613,12 +614,12 @@ public class MPSMonitor {
 			final int textLimit = logbookUtility.getMaxBodySize() - 200;	// account of safety margin
 			final String entryText = summary.length() < textLimit ? summary : summary.substring( 0, textLimit ) + "\n\nToo many more trips to fit complete summary here...";
 			
-			final String title = "MPS " + _mpsType + " Daily Statistics";
+			final String title = "MPS " + mpsType + " Daily Statistics";
 			
 			final String tripReport = getFirstHitReport();
 			
 			if ( tripReport != null ) {
-				final String reportName = "MPS " + _mpsType + " First Hit Report";
+				final String reportName = "MPS " + mpsType + " First Hit Report";
 				logbookUtility.postEntry( ElogUtility.CONTROLS_LOGBOOK, title, entryText, reportName, "html", tripReport.getBytes() );
 			}
 			else {
@@ -634,8 +635,8 @@ public class MPSMonitor {
 	/** Publish the latest daily stats.  */
 	private void publishDailyStatsToDatabase() {
 		try {
-			final Collection<TripStatistics> stats = _mpsTripStats.values();
-			_signalSource.publishDailyStatistics( _startTime.getTime(), stats );
+			final Collection<TripStatistics> stats = mpsTripStats.values();
+			signalSource.publishDailyStatistics( startTime.getTime(), stats );
 		}
 		catch ( Exception exception ) {
 			System.err.println( "Exception while publishing daily stats to database: " + exception );
@@ -645,14 +646,14 @@ public class MPSMonitor {
 
 	/** Reset the daily statistics by clearing them and setting the startTime to the beginning of the day. */
 	private synchronized void resetDailyStats() {
-		synchronized ( _statsLock ) {
-			_firstHitStats.clear();
-			_mpsTripStats.clear();
+		synchronized ( statsLock ) {
+			firstHitStats.clear();
+			mpsTripStats.clear();
 			
 			Calendar newStartTime = Calendar.getInstance();
 			// since the day changed, the new start time must be valid since midnight
-			_startTime = new GregorianCalendar( newStartTime.get( Calendar.YEAR ), newStartTime.get( Calendar.MONTH ), newStartTime.get( Calendar.DATE ) );
-			_lastMPSEventTime = new Date();
+			startTime = new GregorianCalendar( newStartTime.get( Calendar.YEAR ), newStartTime.get( Calendar.MONTH ), newStartTime.get( Calendar.DATE ) );
+			lastMPSEventTime = new Date();
 		}
 	}
 
@@ -662,8 +663,8 @@ public class MPSMonitor {
 	 * @return   the buffer of MPS events
 	 */
 	public List<MPSEvent> getMPSEventBuffer() {
-		synchronized ( _mpsEventBuffer ) {
-			return new ArrayList<MPSEvent>( _mpsEventBuffer );
+		synchronized ( mpsEventBuffer ) {
+			return new ArrayList<MPSEvent>( mpsEventBuffer );
 		}
 	}
 
@@ -675,16 +676,16 @@ public class MPSMonitor {
 	 * @return      the list of events since the specified time
 	 */
 	public List<MPSEvent> getMPSEventsSince( final Date time ) {
-		synchronized ( _mpsEventBuffer ) {
-			final int count = _mpsEventBuffer.size();
+		synchronized ( mpsEventBuffer ) {
+			final int count = mpsEventBuffer.size();
 			int index;
 			for ( index = 0; index < count; index++ ) {
-				final MPSEvent event = _mpsEventBuffer.get( index );
+				final MPSEvent event = mpsEventBuffer.get( index );
 				if ( !event.getTimestamp().after( time ) ) {
 					break;
 				}
 			}
-			return _mpsEventBuffer.subList( 0, index );
+			return mpsEventBuffer.subList( 0, index );
 		}
 	}
 	
@@ -695,12 +696,12 @@ public class MPSMonitor {
 	 * @return the top count trip records ordered from most to least MPS first hits
 	 */
 	private List<TripStatistics> getTopFirstHitStats( final int count ) {
-		synchronized ( _statsLock ) {
-			if ( _firstHitStats.isEmpty() ) {
+		synchronized ( statsLock ) {
+			if ( firstHitStats.isEmpty() ) {
 				return Collections.<TripStatistics>emptyList();
 			}
 			else {
-				final List<TripStatistics> records = new ArrayList<TripStatistics>( _firstHitStats.values() );
+				final List<TripStatistics> records = new ArrayList<TripStatistics>( firstHitStats.values() );
 				Collections.sort( records, TripStatistics.firstHitComparator() );
 				Collections.reverse( records );
 				return records.size() <= count ? records : records.subList( 0, count );	// get the top "count" trip records
@@ -735,9 +736,9 @@ public class MPSMonitor {
 	 * @return summary of the first hit statistics
 	 */
 	public String getFirstHitText() {
-		synchronized ( _statsLock ) {
+		synchronized ( statsLock ) {
 			final List<TripStatistics> topRecords = getTopFirstHitStats( 10 );
-			return getFirstHitText( _startTime, topRecords );
+			return getFirstHitText( startTime, topRecords );
 		}
 	}
 	
@@ -747,9 +748,9 @@ public class MPSMonitor {
 	 * @return HTML report of the top first hit statistics
 	 */
 	private String getFirstHitReport() {
-		synchronized ( _statsLock ) {
+		synchronized ( statsLock ) {
 			final List<TripStatistics> topRecords = getTopFirstHitStats( 10 );
-			return getTripReport( "Top 10 " + _mpsType +  " MPS First Hits", _startTime, topRecords );
+			return getTripReport( "Top 10 " + mpsType +  " MPS First Hits", startTime, topRecords );
 		}
 	}
 	
@@ -815,12 +816,12 @@ public class MPSMonitor {
 	 * @return the top count trip records ordered from most to least MPS trips
 	 */
 	private List<TripStatistics> getTopMPSTripStats( final int count ) {
-		synchronized ( _statsLock ) {
-			if ( _mpsTripStats.isEmpty() ) {
+		synchronized ( statsLock ) {
+			if ( mpsTripStats.isEmpty() ) {
 				return Collections.<TripStatistics>emptyList();
 			}
 			else {
-				final List<TripStatistics> records = new ArrayList<TripStatistics>( _mpsTripStats.values() );
+				final List<TripStatistics> records = new ArrayList<TripStatistics>( mpsTripStats.values() );
 				Collections.sort( records, TripStatistics.mpsTripComparator() );
 				Collections.reverse( records );
 				return records.size() <= count ? records : records.subList( 0, count );	// get the top "count" trip records
@@ -866,9 +867,9 @@ public class MPSMonitor {
 	 * @return a summary of the MPS trips
 	 */
 	public String getMPSTripSummary() {
-		synchronized ( _statsLock ) {
+		synchronized ( statsLock ) {
 			final List<TripStatistics> topRecords = getTopMPSTripStats( 10 );
-			return getMPSTripSummary( _startTime, topRecords );
+			return getMPSTripSummary( startTime, topRecords );
 		}
 	}
 
@@ -890,6 +891,7 @@ public class MPSMonitor {
 		timer.scheduleAtFixedRate(
 			new TimerTask() {
 				/** update the daily statistics */
+                                @Override
 				public void run() {
 					checkDayUpdateDailyStats();
 				}
@@ -905,7 +907,7 @@ public class MPSMonitor {
 	 */
 	private class MPSConnectionHandler implements ConnectionListener {
 		/** Record filter to use for connected channels with the correlator */
-		protected RecordFilter<ChannelTimeRecord> _recordFilter;
+		protected RecordFilter<ChannelTimeRecord> recordFilter;
 
 
 		/**
@@ -913,7 +915,7 @@ public class MPSMonitor {
 		 * @param recordFilter  The record filter to apply to connected channels with the correlator
 		 */
 		public MPSConnectionHandler( final RecordFilter<ChannelTimeRecord> recordFilter ) {
-			_recordFilter = recordFilter;
+			this.recordFilter = recordFilter;
 		}
 
 
@@ -957,11 +959,12 @@ public class MPSMonitor {
 		 * to the correlator with the record filter. Update the connection event timestamp.
 		 * @param channel  The channel which has been connected.
 		 */
+                @Override
 		public void connectionMade( Channel channel ) {
-			if ( !_correlator.hasSource( channel.channelName() ) ) {
-				_correlator.addChannel( channel, _recordFilter );
+			if ( !correlator.hasSource( channel.channelName() ) ) {
+				correlator.addChannel( channel, recordFilter );
 			}
-			_lastMPSConnectionEventTime = new Date();
+			lastMPSConnectionEventTime = new Date();
 		}
 
 
@@ -970,8 +973,9 @@ public class MPSMonitor {
 		 * connection event timestamp.
 		 * @param channel  The channel which has been disconnected.
 		 */
+                @Override
 		public void connectionDropped( Channel channel ) {
-			_lastMPSConnectionEventTime = new Date();
+			lastMPSConnectionEventTime = new Date();
 		}
 	}
 
@@ -1031,8 +1035,9 @@ public class MPSMonitor {
 		 * to the correlator with the record filter. Update the connection event timestamp.
 		 * @param channel  The channel which has been connected.
 		 */
+                @Override
 		public void connectionMade( final Channel channel ) {
-			_lastInputConnectionEventTime = new Date();
+			lastInputConnectionEventTime = new Date();
 		}
 		
 		
@@ -1041,8 +1046,9 @@ public class MPSMonitor {
 		 * connection event timestamp.
 		 * @param channel  The channel which has been disconnected.
 		 */
+                @Override
 		public void connectionDropped( final Channel channel ) {
-			_lastInputConnectionEventTime = new Date();
+			lastInputConnectionEventTime = new Date();
 		}
 	}
 }

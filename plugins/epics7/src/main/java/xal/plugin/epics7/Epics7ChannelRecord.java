@@ -47,7 +47,7 @@ import xal.tools.transforms.ValueTransform;
  */
 public class Epics7ChannelRecord extends ChannelRecordImpl {
 
-    protected PVStructure store;
+    protected PVStructure pvStructureStore;
     protected String channelName;
     protected String fieldName;
 
@@ -64,7 +64,7 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
             return null;
         });
 
-        store = pvStructure;
+        pvStructureStore = pvStructure;
         this.channelName = channelName;
         this.fieldName = VALUE_FIELD_NAME;
     }
@@ -75,7 +75,7 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
      * @return The internal data storage.
      */
     public PVStructure getStore() {
-        return store;
+        return pvStructureStore;
     }
 
     public String getFieldName() {
@@ -84,14 +84,14 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
 
     @Override
     public int getCount() {
-        if (store != null) {
-            PVField valueField = store.getSubField(VALUE_FIELD_NAME);
+        if (pvStructureStore != null) {
+            PVField valueField = pvStructureStore.getSubField(VALUE_FIELD_NAME);
             Type type = valueField.getField().getType();
             switch (type) {
                 case scalar:
                     return 1;
                 case scalarArray:
-                    return getCountArray(store, valueField);
+                    return getCountArray(pvStructureStore, valueField);
                 default:
                     break;
             }
@@ -133,8 +133,8 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
 
     @Override
     public Class<?> getType() {
-        if (store != null) {
-            PVField valueField = store.getSubField(fieldName);
+        if (pvStructureStore != null) {
+            PVField valueField = pvStructureStore.getSubField(fieldName);
             Type type = valueField.getField().getType();
             switch (type) {
                 case scalar:
@@ -207,8 +207,8 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
     }
 
     private Object getValue() {
-        if (store != null) {
-            PVField valueField = store.getSubField(VALUE_FIELD_NAME);
+        if (pvStructureStore != null) {
+            PVField valueField = pvStructureStore.getSubField(VALUE_FIELD_NAME);
             Type type = valueField.getField().getType();
             switch (type) {
                 case scalar:
@@ -226,25 +226,25 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
         ScalarType type = pvScalar.getScalar().getScalarType();
         switch (type) {
             case pvBoolean:
-                return new boolean[]{store.getBooleanField(fieldName).get()};
+                return new boolean[]{pvStructureStore.getBooleanField(fieldName).get()};
             case pvByte:
             case pvUByte:
-                return new byte[]{store.getByteField(fieldName).get()};
+                return new byte[]{pvStructureStore.getByteField(fieldName).get()};
             case pvDouble:
-                return new double[]{store.getDoubleField(fieldName).get()};
+                return new double[]{pvStructureStore.getDoubleField(fieldName).get()};
             case pvFloat:
-                return new float[]{store.getFloatField(fieldName).get()};
+                return new float[]{pvStructureStore.getFloatField(fieldName).get()};
             case pvInt:
             case pvUInt:
-                return new int[]{store.getIntField(fieldName).get()};
+                return new int[]{pvStructureStore.getIntField(fieldName).get()};
             case pvLong:
             case pvULong:
-                return new long[]{store.getLongField(fieldName).get()};
+                return new long[]{pvStructureStore.getLongField(fieldName).get()};
             case pvShort:
             case pvUShort:
-                return new short[]{store.getShortField(fieldName).get()};
+                return new short[]{pvStructureStore.getShortField(fieldName).get()};
             case pvString:
-                return new String[]{store.getStringField(fieldName).get()};
+                return new String[]{pvStructureStore.getStringField(fieldName).get()};
             default:
                 break;
         }
@@ -256,33 +256,33 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
         switch (type) {
             case pvByte:
             case pvUByte:
-                PVByteArray byteArray = (PVByteArray) store.getScalarArrayField(fieldName, ScalarType.pvByte);
+                PVByteArray byteArray = (PVByteArray) pvStructureStore.getScalarArrayField(fieldName, ScalarType.pvByte);
                 return byteArray.get().toArray(new byte[byteArray.getLength()]);
             case pvDouble:
-                PVDoubleArray doubleArray = (PVDoubleArray) store.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvDouble);
+                PVDoubleArray doubleArray = (PVDoubleArray) pvStructureStore.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvDouble);
                 return doubleArray.get().toArray(new double[doubleArray.getLength()]);
             case pvFloat:
-                PVFloatArray floatArray = (PVFloatArray) store.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvFloat);
+                PVFloatArray floatArray = (PVFloatArray) pvStructureStore.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvFloat);
                 return floatArray.get().toArray(new float[floatArray.getLength()]);
             case pvInt:
             case pvUInt:
-                PVIntArray intArray = (PVIntArray) store.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvInt);
+                PVIntArray intArray = (PVIntArray) pvStructureStore.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvInt);
                 return intArray.get().toArray(new int[intArray.getLength()]);
             case pvLong:
             case pvULong:
-                PVLongArray longArray = (PVLongArray) store.getScalarArrayField(fieldName, ScalarType.pvLong);
+                PVLongArray longArray = (PVLongArray) pvStructureStore.getScalarArrayField(fieldName, ScalarType.pvLong);
                 return longArray.get().toArray(new long[longArray.getLength()]);
             case pvShort:
             case pvUShort:
-                PVShortArray shortArray = (PVShortArray) store.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvShort);
+                PVShortArray shortArray = (PVShortArray) pvStructureStore.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvShort);
                 return shortArray.get().toArray(new short[shortArray.getLength()]);
             case pvString:
-                PVStringArray stringArray = (PVStringArray) store.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvString);
+                PVStringArray stringArray = (PVStringArray) pvStructureStore.getScalarArrayField(VALUE_FIELD_NAME, ScalarType.pvString);
                 StringArrayData stringArrayData = new StringArrayData();
                 stringArray.get(0, stringArray.getLength(), stringArrayData);
                 return stringArrayData.data;
             case pvBoolean:
-                PVBooleanArray booleanArray = (PVBooleanArray) store.getScalarArrayField(fieldName, ScalarType.pvBoolean);
+                PVBooleanArray booleanArray = (PVBooleanArray) pvStructureStore.getScalarArrayField(fieldName, ScalarType.pvBoolean);
                 BooleanArrayData booleanArrayData = new BooleanArrayData();
                 booleanArray.get(0, booleanArray.getLength(), booleanArrayData);
                 return booleanArrayData.data;
@@ -399,8 +399,8 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
 
     @Override
     public String toString() {
-        if (store != null) {
-            return "value: " + store.toString();
+        if (pvStructureStore != null) {
+            return "value: " + pvStructureStore.toString();
         }
         return "";
     }

@@ -212,7 +212,7 @@ public class Complex {
      * 
      * @param   s   complex number on which to operate
      * 
-     * @return  the complex hyberbolic sine of the argument
+     * @return  the complex hyperbolic sine of the argument
      *
      * @since  Sep 30, 2015,   Christopher K. Allen
      */
@@ -227,7 +227,7 @@ public class Complex {
 
     /**
      * <p>
-     * Compute and return the trigonometric cossine function of the given complex number <i>s</i>.
+     * Compute and return the trigonometric cosine function of the given complex number <i>s</i>.
      * The formula for the returned value is
      * <br/>
      * <br/>
@@ -268,7 +268,7 @@ public class Complex {
      * 
      * @param   s   complex number on which to operate
      * 
-     * @return  the complex hyberbolic sine of the argument
+     * @return  the complex hyperbolic sine of the argument
      *
      * @since  Sep 30, 2015,   Christopher K. Allen
      */
@@ -290,10 +290,10 @@ public class Complex {
      */
     
     /** real part of the complex number */
-	final private double dblReal;
+	private final double dblReal;
 	
 	/** imaginary part of the complex number */
-	final private double dblImag;
+	private final double dblImag;
 	
 		
 	/*
@@ -330,37 +330,37 @@ public class Complex {
 	 */
 	
 	/** get the real part */
-	final public double real() {
+	public final double real() {
 		return dblReal;
 	}
 	
 	
 	/** get the imaginary part */
-	final public double imaginary() {
+	public final double imaginary() {
 		return dblImag;
 	}
 	
 	
 	/** modulus of this complex number */
-	final public double modulus() {
+	public final double modulus() {
 		return Math.sqrt( dblReal * dblReal + dblImag * dblImag );
 	}
 	
 	
 	/** get the phase */
-	final public double phase() {
+	public final double phase() {
 		return Math.atan2( dblImag, dblReal );
 	}
 	
 	
 	/** modulus squared of this complex number */
-	final public double modulusSquared() {
+	public final double modulusSquared() {
 		return dblReal * dblReal + dblImag * dblImag;
 	}
 	
 	
 	/** complex conjugate */
-	final public Complex conjugate() {
+	public final Complex conjugate() {
 		return new Complex( dblReal, -dblImag );
 	}
 	
@@ -370,25 +370,25 @@ public class Complex {
 	 */
 	
 	/** calculate the reciprocal of this complex number */
-	final public Complex reciprocal() {
+	public final Complex reciprocal() {
 		final double denominator = modulusSquared();
 		return new Complex( dblReal / denominator, -dblImag / denominator );
 	}
 	
     /** complex multiplication */
-	final public Complex times( final Complex multiplier ) {
+	public final Complex times( final Complex multiplier ) {
 		return new Complex( dblReal * multiplier.dblReal - dblImag * multiplier.dblImag, dblReal * multiplier.dblImag + dblImag * multiplier.dblReal );
 	}
 	
 	
 	/** complex multiplication */
-	final public Complex times( final double multiplier ) {
+	public final Complex times( final double multiplier ) {
 		return new Complex( dblReal * multiplier, dblImag * multiplier );
 	}
 	
 	
 	/** complex division */
-	final public Complex divide( final Complex divisor ) {
+	public final Complex divide( final Complex divisor ) {
 		final double denominator = divisor.modulusSquared();
 		final double real = ( dblReal * divisor.dblReal + dblImag * divisor.dblImag ) / denominator;
 		final double imaginary = ( dblImag * divisor.dblReal - dblReal * divisor.dblImag ) / denominator;
@@ -396,36 +396,35 @@ public class Complex {
 	}
 	
 	/** complex division */
-	final public Complex divide( final double divisor ) {
+	public final Complex divide( final double divisor ) {
 		return new Complex( dblReal / divisor, dblImag / divisor );
 	}
 	
 	
 	/** complex addition */
-	final public Complex plus( final Complex addend ) {
+	public final Complex plus( final Complex addend ) {
 		return new Complex( dblReal + addend.dblReal, dblImag + addend.dblImag );
 	}
 	
 	/** complex addition */
-	final public Complex plus( final double addend ) {
+	public final Complex plus( final double addend ) {
 		return new Complex( dblReal + addend, dblImag );
 	}
 	
     /** calculate the negative of this complex number */
-    final public Complex negate() {
+    public final Complex negate() {
         return new Complex( -dblReal, -dblImag );
     }
 
 	/** complex subtraction */
-	final public Complex minus( final Complex subtrahend ) {
+	public final Complex minus( final Complex subtrahend ) {
 		return new Complex( dblReal - subtrahend.dblReal, dblImag - subtrahend.dblImag );
 	}
 	
 	
 	/** complex subtraction */
-	final public Complex minus( final double subtrahend ) {
+	public final Complex minus( final double subtrahend ) {
 		return new Complex( dblReal - subtrahend, dblImag );
 	}
-	
-	
+
 }

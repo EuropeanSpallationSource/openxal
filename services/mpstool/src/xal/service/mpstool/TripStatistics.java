@@ -20,19 +20,19 @@ import java.util.*;
  */
 public class TripStatistics {
 	/** the MPS PV */
-	protected final String _mpsSignal;
+	protected final String mpsSignal;
 
 	/** the Input PV */
-	protected final String _inputSignal;
+	protected final String inputSignal;
 
 	/** the number of MPS trips recorded */
-	protected int _mpsTrips;
+	protected int mpsTrips;
 
 	/** the number of times the MPS signal has been the first to trip among a correlated set */
-	protected int _firstHits;
+	protected int firstHits;
 
 	/** the number of times the related input has tripped */
-	protected int _inputTrips;
+	protected int inputTrips;
 
 
 	/**
@@ -44,12 +44,12 @@ public class TripStatistics {
 	 * @param inputTrips   the initial number of input trips
 	 */
 	public TripStatistics( final String mpsSignal, final String inputSignal, final int mpsTrips, final int firstHits, final int inputTrips ) {
-		_mpsSignal = mpsSignal;
-		_inputSignal = inputSignal;
+		this.mpsSignal = mpsSignal;
+		this.inputSignal = inputSignal;
 
-		_mpsTrips = mpsTrips;
-		_firstHits = firstHits;
-		_inputTrips = inputTrips;
+		this.mpsTrips = mpsTrips;
+		this.firstHits = firstHits;
+		this.inputTrips = inputTrips;
 	}
 
 
@@ -68,7 +68,7 @@ public class TripStatistics {
 	 * @return the MPS PV
 	 */
 	public String getMPSPV() {
-		return _mpsSignal;
+		return mpsSignal;
 	}
 	
 	
@@ -77,13 +77,13 @@ public class TripStatistics {
 	 * @return the input PV
 	 */
 	public String getInputSignal() {
-		return _inputSignal;
+		return inputSignal;
 	}
 
 
 	/** Increment by one the number of MPS trips. */
 	public void incrementMPSTrips() {
-		++_mpsTrips;
+		++mpsTrips;
 	}
 
 
@@ -91,14 +91,14 @@ public class TripStatistics {
 	 * Get the number of MPS trips.
 	 * @return   The the number of MPS trips recorded
 	 */
-	final public int getMPSTrips() {
-		return _mpsTrips;
+	public final int getMPSTrips() {
+		return mpsTrips;
 	}
 
 
 	/** Increment by one the number of MPS trips. */
 	public void incrementInputTrips() {
-		++_inputTrips;
+		++inputTrips;
 	}
 
 
@@ -106,14 +106,14 @@ public class TripStatistics {
 	 * Get the number of Input trips.
 	 * @return   The number of input trips
 	 */
-	final public int getInputTrips() {
-		return _inputTrips;
+	public final int getInputTrips() {
+		return inputTrips;
 	}
 
 
 	/** Increment by one the number of MPS first hit trips. */
 	public void incrementFirstHits() {
-		++_firstHits;
+		++firstHits;
 	}
 
 
@@ -121,8 +121,8 @@ public class TripStatistics {
 	 * Get the number of times the MPS signal was the first to trip among a correlate set of MPS trips.
 	 * @return   The number of times the MPS signal was the first to trip
 	 */
-	final public int getFirstHits() {
-		return _firstHits;
+	public final int getFirstHits() {
+		return firstHits;
 	}
 
 
@@ -157,6 +157,7 @@ public class TripStatistics {
 				return trips1 < trips2 ? -1 : trips1 > trips2 ? 1 : 0;
 			}
 			
+                        @Override
 			public boolean equals( final Object comparator ) {
 				return this == comparator;
 			}
@@ -176,6 +177,7 @@ public class TripStatistics {
 				return trips1 < trips2 ? -1 : trips1 > trips2 ? 1 : 0;
 			}
 			
+                        @Override
 			public boolean equals( final Object comparator ) {
 				return this == comparator;
 			}

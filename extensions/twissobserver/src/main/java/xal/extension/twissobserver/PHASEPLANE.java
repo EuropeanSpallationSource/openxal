@@ -66,7 +66,7 @@ public enum PHASEPLANE {
      * @author Christopher K. Allen
      * @since  Aug 31, 2012
      */
-    static public CovarianceMatrix   constructCovariance(GenericMatrix vecMmtsHor, 
+    public static CovarianceMatrix   constructCovariance(GenericMatrix vecMmtsHor, 
     		GenericMatrix vecMmtsVer, GenericMatrix vecMmtsLng) {
         CovarianceMatrix       matSig = CovarianceMatrix.newZero();
         
@@ -228,19 +228,13 @@ public enum PHASEPLANE {
             
             return dblBmSz;
             
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | IllegalAccessException e) {
             System.err.println("Serious error - Exiting. " + e.getMessage());
             e.printStackTrace();
             System.exit(1);
             
             return 0.0;
             
-        } catch (IllegalAccessException e) {
-            System.err.println("Serious error - Exiting. " + e.getMessage());
-            e.printStackTrace();
-            System.exit(1);
-            
-            return 0.0;
         }
     }
     
@@ -298,8 +292,8 @@ public enum PHASEPLANE {
      */
     private PHASEPLANE(final int indCovMat, String strFldNm) {
         this.iMatOffset  = indCovMat;
-        this.arrStdBasis = new ArrayList<PhaseMatrix>();
-        this.arrCovBasis = new ArrayList<CovarianceMatrix>();
+        this.arrStdBasis = new ArrayList<>();
+        this.arrCovBasis = new ArrayList<>();
         
         this.initBmSzFld(strFldNm);
         this.initStdBasis();

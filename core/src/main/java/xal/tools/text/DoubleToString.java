@@ -55,13 +55,13 @@ public class DoubleToString
   };
 
   //And required double related constants.  
-  private static final long  DoubleSignMask = 0x8000000000000000L;
-  private static final long  DoubleExpMask  = 0x7ff0000000000000L;
-  private static final long  DoubleFractMask= ~(DoubleSignMask|DoubleExpMask);
-  private static final int  DoubleExpShift = 52;
-  private static final int  DoubleExpBias = 1023;
+  private static final long  DOUBLE_SIGN_MASK = 0x8000000000000000L;
+  private static final long  DOUBLE_EXP_MASK  = 0x7ff0000000000000L;
+  private static final long  DOUBLE_FRACT_MASK= ~(DOUBLE_SIGN_MASK|DOUBLE_EXP_MASK);
+  private static final int  DOUBLE_SIGN_SHIFT = 52;
+  private static final int  DOUBLE_EXP_BIAS = 1023;
 
-  private static final double[] d_tenthPowers = {
+  private static final double[] dTenthPowers = {
 1e-323D, 1e-322D, 1e-321D, 1e-320D, 1e-319D, 1e-318D, 1e-317D, 1e-316D, 1e-315D, 1e-314D, 
 1e-313D, 1e-312D, 1e-311D, 1e-310D, 1e-309D, 1e-308D, 1e-307D, 1e-306D, 1e-305D, 1e-304D, 
 1e-303D, 1e-302D, 1e-301D, 1e-300D, 1e-299D, 1e-298D, 1e-297D, 1e-296D, 1e-295D, 1e-294D, 
@@ -167,7 +167,7 @@ public class DoubleToString
           s.append(NaN);
       else if (d == 0.0)
       {
-          if ( (Double.doubleToLongBits(d) & DoubleSignMask) != 0)
+          if ( (Double.doubleToLongBits(d) & DOUBLE_SIGN_MASK) != 0)
           {
               //d == -0.0
               if (negativePrefix != '\uFFFF')
@@ -216,32 +216,32 @@ public class DoubleToString
           //This test is unlikely to ever be true. It would require numFractDigits
           //to be 305 or more, which is pretty unlikely.
           if (magnitude < -305)
-              l = (long) ((d*1E18) / d_tenthPowers[magnitude + 324]);
+              l = (long) ((d*1E18) / dTenthPowers[magnitude + 324]);
           else
-              l = (long) (d / d_tenthPowers[magnitude + 323 - 17]);
+              l = (long) (d / dTenthPowers[magnitude + 323 - 17]);
 
           //And round up if necessary. Add one to the numFractDigits digit if the
           //numFractDigits+1 digit is 5 or greater. It is useful to know that
           //given a long, l, the nth digit is obtained using the formula
           //  nthDigit = (l/(tenthPower(l)/l_tenthPowers[n-1]))%10;
 
-          long l_tenthPower = tenthPower(l);
+          long lTenthPower = tenthPower(l);
           //The numFractDigits+1 digit of the double is the 
           //numFractDigits+1+magnitude digit of the long.
           //We only need worry about digits within the long. Very large numbers are
           //not rounded because all the digits after the decimal points are 0 anyway
-          if (numFractDigits+magnitude+1 < l_tenthPowers.length)
+          if (numFractDigits+magnitude+1 < lTenthPowers.length)
           {
-              long digit = (l/(l_tenthPower/l_tenthPowers[numFractDigits+magnitude+1]))%10;
+              long digit = (l/(lTenthPower/lTenthPowers[numFractDigits+magnitude+1]))%10;
               if (digit >= 5)
               {
-                  l += l_tenthPower/l_tenthPowers[numFractDigits+magnitude];
+                  l += lTenthPower/lTenthPowers[numFractDigits+magnitude];
               }
           }      
 
           //And now we just print out our long, with the decimal point character
           //inserted in the right place, using as many places as we wanted.
-          appendAsDouble(s, l, l_tenthPower, magnitude, numFractDigits, decimalPoint, thousandsSeparator,
+          appendAsDouble(s, l, lTenthPower, magnitude, numFractDigits, decimalPoint, thousandsSeparator,
                   numDigitsSeparated, negativePrefix, negativeSuffix);
 
           //Finally, append the negativeSuffix if necessary
@@ -256,8 +256,8 @@ public class DoubleToString
    *
    * @param s
    * @param l
-   * @param l_mag
-   * @param d_magnitude
+   * @param lMag
+   * @param dMagnitude
    * @param numFractDigits
    * @param decimalPoint
    * @param thousandsSeparator
@@ -268,81 +268,81 @@ public class DoubleToString
    * @author Christopher K. Allen
    * @since  Apr 19, 2011
    */
-  public static void appendAsDouble(StringBuffer s, long l, long l_mag, int d_magnitude,
+  public static void appendAsDouble(StringBuffer s, long l, long lMag, int dMagnitude,
           int numFractDigits, char decimalPoint, char thousandsSeparator,
           int numDigitsSeparated, char negativePrefix, char negativeSuffix)
   {
       //If the magnitude is negative, we have a 0.xxx number
-      if (d_magnitude < 0)
+      if (dMagnitude < 0)
       {
-          s.append('0').append(decimalPoint).append(ZEROS[-d_magnitude-1]);
+          s.append('0').append(decimalPoint).append(ZEROS[-dMagnitude-1]);
           //And just print successive digits until we have reached numFractDigits
           //First decrement numFractDigits by the number of digits already printed
-          numFractDigits += d_magnitude;
+          numFractDigits += dMagnitude;
 
           //get the magnitude of l
           long c;
           while(numFractDigits-- >= 0)
           {
               //Get the leading character (e.g. '62345/10000 = 6' using integer-divide)
-              c = l/l_mag;
+              c = l/lMag;
               //Append the digit character for this digit (e.g. number is 6, so character is '6')
               s.append(charForDigit[(int) c]);
               //Multiply by the leading digit by the magnitude so that we can eliminate the leading digit
               //(e.g. 6 * 10000 = 60000)
-              c *= l_mag;
+              c *= lMag;
               //and eliminate the leading digit (e.g. 62345-60000 = 2345)
               if ( c <= l)
                   l -= c;
               //Decrease the magnitude by 10, and repeat the loop.
-              l_mag = l_mag/10;
+              lMag = lMag/10;
           }
       }
       else
       {
           //Just keep printing until magnitude is 0
           long c;
-          while(d_magnitude-- >= 0)
+          while(dMagnitude-- >= 0)
           {
-              if (l_mag == 0) {s.append('0');continue;}
+              if (lMag == 0) {s.append('0');continue;}
               //Get the leading character (e.g. '62345/10000 = 6' using integer-divide)
-              c = l/l_mag;
+              c = l/lMag;
               //Append the digit character for this digit (e.g. number is 6, so character is '6')
               s.append(charForDigit[(int) c]);
 
               //Don't forget about the thousands separator
-              if (d_magnitude % numDigitsSeparated == (numDigitsSeparated-1))
+              if (dMagnitude % numDigitsSeparated == (numDigitsSeparated-1))
                   s.append(thousandsSeparator);
 
               //Multiply by the leading digit by the magnitude so that we can eliminate the leading digit
               //(e.g. 6 * 10000 = 60000)
-              c *= l_mag;
+              c *= lMag;
               //and eliminate the leading digit (e.g. 62345-60000 = 2345)
               if ( c <= l)
                   l -= c;
               //Decrease the magnitude by 10, and repeat the loop.
-              l_mag = l_mag/10;
+              lMag = lMag/10;
           }
           s.append(decimalPoint);
-          if (l_mag == 0)
+          if (lMag == 0)
               s.append(ZEROS[numFractDigits]);
           else
           {
               while(numFractDigits-- > 0)
               {
-                  if (l_mag == 0) {s.append('0');continue;}
+                  if (lMag == 0) {s.append('0');continue;}
                   //Get the leading character (e.g. '62345/10000 = 6' using integer-divide)
-                  c = l/l_mag;
+                  c = l/lMag;
                   //Append the digit character for this digit (e.g. number is 6, so character is '6')
                   s.append(charForDigit[(int) c]);
                   //Multiply by the leading digit by the magnitude so that we can eliminate the leading digit
                   //(e.g. 6 * 10000 = 60000)
-                  c *= l_mag;
+                  c *= lMag;
                   //and eliminate the leading digit (e.g. 62345-60000 = 2345)
                   if ( c <= l)
                       l -= c;
                   //Decrease the magnitude by 10, and repeat the loop.
-                  l_mag = l_mag/10;
+                  lMag = lMag/10;
               }
           }
       }
@@ -359,9 +359,9 @@ public class DoubleToString
           int i;
           if (d_magnitude < -305)
               //Probably not necessary. Who is going to print 305 places?
-              i = (int) ((d*1E19) / d_tenthPowers[d_magnitude + 324 + 18]);
+              i = (int) ((d*1E19) / dTenthPowers[d_magnitude + 324 + 18]);
           else
-              i = (int) (d / d_tenthPowers[d_magnitude + 323]);
+              i = (int) (d / dTenthPowers[d_magnitude + 323]);
 
           if (i >= 5)
           {
@@ -414,29 +414,29 @@ public class DoubleToString
       //It works. What else can I say.
       long doubleToLongBits = Double.doubleToLongBits(d);
       int magnitude = 
-          (int) ((((doubleToLongBits & DoubleExpMask) >> DoubleExpShift) - DoubleExpBias) * 0.301029995663981);
+          (int) ((((doubleToLongBits & DOUBLE_EXP_MASK) >> DOUBLE_SIGN_SHIFT) - DOUBLE_EXP_BIAS) * 0.301029995663981);
 
       if (magnitude < -323)
           magnitude = -323;
       else if (magnitude > 308)
           magnitude = 308;
 
-      if (d >= d_tenthPowers[magnitude+323])
+      if (d >= dTenthPowers[magnitude+323])
       {
-          while(magnitude < 309 && d >= d_tenthPowers[magnitude+323])
+          while(magnitude < 309 && d >= dTenthPowers[magnitude+323])
               magnitude++;
           magnitude--;
           return magnitude;
       }
       else
       {
-          while(magnitude > -324 && d < d_tenthPowers[magnitude+323])
+          while(magnitude > -324 && d < dTenthPowers[magnitude+323])
               magnitude--;
           return magnitude;
       }
   }
 
-  static long[] l_tenthPowers = {
+  static long[] lTenthPowers = {
       1,
       10L,
       100L,
@@ -460,7 +460,7 @@ public class DoubleToString
 
   public static long getNthDigit(long l, int n)
   {
-      return (l/(tenthPower(l)/l_tenthPowers[n-1]))%10;
+      return (l/(tenthPower(l)/lTenthPowers[n-1]))%10;
   }
 
   public static void main(String args[])
@@ -478,15 +478,15 @@ public class DoubleToString
       int repeat = 1000;
       //	  int repeat = 1;
 
-      main_adj(repeat*5,"doubles",ds, "");
-      main_adj(repeat*5,"doubles",ds, "");
+      mainAdj(repeat*5,"doubles",ds, "");
+      mainAdj(repeat*5,"doubles",ds, "");
   }
 
-  private static void main_adj(int repeat,String name,double[] arr, String list)
+  private static void mainAdj(int repeat,String name,double[] arr, String list)
   {
       long time1, time2;
       StringBuffer s;
-      int NumDigits = 4;
+      int numDigits = 4;
 
       System.out.println("The " + name);
       System.out.println("    " + list);
@@ -533,7 +533,7 @@ public class DoubleToString
               format.format(arr[j], s, f);
       time2 = System.currentTimeMillis() - time2;
       System.out.println("  The DecimalFormat  took " + time2 + " milliseconds");
-      s = new StringBuffer();
+
       Runtime.getRuntime().gc();
 
       s = new StringBuffer();
@@ -588,7 +588,7 @@ public class DoubleToString
           s.append(NaN);
       else if (d == 0.0)
       {
-          if ( (Double.doubleToLongBits(d) & DoubleSignMask) != 0)
+          if ( (Double.doubleToLongBits(d) & DOUBLE_SIGN_MASK) != 0)
               s.append('-');
           s.append(DOUBLE_ZERO);
       }
@@ -668,9 +668,9 @@ public class DoubleToString
               int magnitude = magnitude(d);
               long i;
               if (magnitude < -305)
-                  i = (long) (d*1E18 / d_tenthPowers[magnitude + 324]);
+                  i = (long) (d*1E18 / dTenthPowers[magnitude + 324]);
               else
-                  i = (long) (d / d_tenthPowers[magnitude + 323 - 17]);
+                  i = (long) (d / dTenthPowers[magnitude + 323 - 17]);
               i = i%100 >= 50 ? (i/100) + 1 : i/100;
               appendFractDigits(s, i, 1);
               s.append('E');

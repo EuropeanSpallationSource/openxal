@@ -28,9 +28,9 @@ import xal.smf.impl.qualify.ElementTypeManager;
  */
 public class RfqDummy extends AcceleratorNode {
 
-    public static final String s_strType = "RFQ";
+    public static final String TYPE = "RFQ";
 
-    private RfqDummyBucket m_bucRfqDummy;
+    private RfqDummyBucket bucRfqDummy;
 
     static {
         registerType();
@@ -46,13 +46,13 @@ public class RfqDummy extends AcceleratorNode {
     }
 
     public final void setRfqDummyBucket(RfqDummyBucket buc) {
-        m_bucRfqDummy = buc;
+        bucRfqDummy = buc;
         super.addBucket(buc);
     }
 
     @Override
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /*
@@ -60,47 +60,47 @@ public class RfqDummy extends AcceleratorNode {
      */
     private static void registerType() {
         ElementTypeManager typeManager = ElementTypeManager.defaultManager();
-        typeManager.registerTypes(RfqDummy.class, s_strType);
+        typeManager.registerTypes(RfqDummy.class, TYPE);
     }
 
     public double getC11() {
-        return m_bucRfqDummy.getAttC11();
+        return bucRfqDummy.getAttC11();
     }
 
     public double getC12() {
-        return m_bucRfqDummy.getAttC12();
+        return bucRfqDummy.getAttC12();
     }
 
     public double getC22() {
-        return m_bucRfqDummy.getAttC22();
+        return bucRfqDummy.getAttC22();
     }
 
     public double getC33() {
-        return m_bucRfqDummy.getAttC33();
+        return bucRfqDummy.getAttC33();
     }
 
     public double getC34() {
-        return m_bucRfqDummy.getAttC34();
+        return bucRfqDummy.getAttC34();
     }
 
     public double getC44() {
-        return m_bucRfqDummy.getAttC44();
+        return bucRfqDummy.getAttC44();
     }
 
     public double getC55() {
-        return m_bucRfqDummy.getAttC55();
+        return bucRfqDummy.getAttC55();
     }
 
     public double getC56() {
-        return m_bucRfqDummy.getAttC56();
+        return bucRfqDummy.getAttC56();
     }
 
     public double getC66() {
-        return m_bucRfqDummy.getAttC66();
+        return bucRfqDummy.getAttC66();
     }
 
     public double getEnergy() {
-        return m_bucRfqDummy.getAttEnergy();
+        return bucRfqDummy.getAttEnergy();
     }
 
 }

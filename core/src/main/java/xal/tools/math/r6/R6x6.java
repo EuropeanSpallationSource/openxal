@@ -68,6 +68,7 @@ public class R6x6 extends SquareMatrix<R6x6> {
         /** 
          * Return the integer value of the index position 
          */
+        @Override
         public int val()    { return i; };
 
         
@@ -301,9 +302,4 @@ public class R6x6 extends SquareMatrix<R6x6> {
 	protected R6x6 newInstance(int row, int cnt) {
 		return new R6x6();
 	}
-    
-    
-    
-    
-
 }

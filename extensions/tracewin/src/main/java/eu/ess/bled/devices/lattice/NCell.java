@@ -1,7 +1,7 @@
 package eu.ess.bled.devices.lattice;
 
 /**
- * <code>NCell</code> describes a multiple cavitity cell as used and defined in
+ * <code>NCell</code> describes a multiple cavity cell as used and defined in
  * the TraceWin.
  * 
  * @see for more info see TraceWin documentation

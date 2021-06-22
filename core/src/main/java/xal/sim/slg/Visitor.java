@@ -8,7 +8,7 @@ package xal.sim.slg;
 
 /**
  * The Visitor gets called by objects that implement the VisitorListener
- * interface and that have accepted to be visited. The implementor of
+ * interface and that have accepted to be visited. The implementer of
  * Visitor has to provide a visit() member function for each class (or
  * type) that implements VisitorListener. This gives the implementing
  * class the possibility to construct complex operations on a collection

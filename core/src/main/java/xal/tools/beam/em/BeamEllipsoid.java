@@ -169,7 +169,7 @@ public class BeamEllipsoid {
      * 
      * @author  Christopher K. Allen
      */
-    static public double[] compDefocusConstants(double dblGamma, double[] arrMoments)    {
+    public static double[] compDefocusConstants(double dblGamma, double[] arrMoments)    {
 
 //        // Get relativistic factor, and factor squared
 //        double  gamma   = this.getGamma();
@@ -214,7 +214,7 @@ public class BeamEllipsoid {
      * 
      * @see #compDefocusConstants
      */
-    static public double[]    compDefocusConstantsAlaTrace3D(double dblGamma, double[] arrMoments)    {
+    public static double[]    compDefocusConstantsAlaTrace3D(double dblGamma, double[] arrMoments)    {
 
         // Get relativistic factor, and factor squared
         //      double  gamma   = this.getGamma();
@@ -336,8 +336,6 @@ public class BeamEllipsoid {
      * 
      *  @param  dblGamma        relativistic factor
      *  @param  matSigLab       envelope correlation matrix in homogeneous phase space coordinates
-     * 
-     * @throws InstantiationException   could not copy the given covariance matrix
      *  
      * @author Christopher K. Allen
      * @version Oct, 2013
@@ -370,7 +368,7 @@ public class BeamEllipsoid {
 
         // Compute the normalized space-charge defocusing lengths
         this.arrDefocus = BeamEllipsoid.compDefocusConstants(this.getGamma(), this.arrMoments);
-    };
+    }
 
     /**
      * <p>
@@ -454,7 +452,7 @@ public class BeamEllipsoid {
      * 
      * @return  relativistic parameter &gamma; = (1 + <i>v</i><sup>2</sup>/<i>c</i><sup>2</sup>)<sup>1/2</sup>
      */
-    public double   getGamma()      { return this.dblGamma; };
+    public double   getGamma()      { return this.dblGamma; }
 
     /**
      * Return the original correlation matrix for the beam in the 
@@ -462,7 +460,7 @@ public class BeamEllipsoid {
      * 
      * @return      beam correlation matrix in laboratory frame
      */
-    public CovarianceMatrix  getCorrelationLab() { return this.matSigLab; };
+    public CovarianceMatrix  getCorrelationLab() { return this.matSigLab; }
 
 
     /**
@@ -475,7 +473,7 @@ public class BeamEllipsoid {
      *  
      *  @return     second moment <x*x>
      */
-    public double   get2ndMomentX() { return this.arrMoments[0]; };
+    public double   get2ndMomentX() { return this.arrMoments[0]; }
 
     /**
      * Return the value of the second ellipsoid second spatial moment in the
@@ -487,7 +485,7 @@ public class BeamEllipsoid {
      *  
      *  @return     second moment <y*y>
      */
-    public double   get2ndMomentY() { return this.arrMoments[1]; };
+    public double   get2ndMomentY() { return this.arrMoments[1]; }
 
     /**
      * Return the value of the third ellipsoid second spatial moment in the
@@ -499,7 +497,7 @@ public class BeamEllipsoid {
      *  
      *  @return     second moment <z*z>
      */
-    public double   get2ndMomentZ() { return this.arrMoments[2]; };
+    public double   get2ndMomentZ() { return this.arrMoments[2]; }
 
     /**
      * Return all the ellipsoid second spatial moments in the
@@ -511,10 +509,10 @@ public class BeamEllipsoid {
      *  
      *  @return     three-array (<x*x>,<y*y>,<z*z>) second moments
      */
-    public double[] get2ndMoments() { return this.arrMoments; };
+    public double[] get2ndMoments() { return this.arrMoments; }
 
     /**
-     *  Return the value of the first ellispoid semi-axis in the
+     *  Return the value of the first ellipsoid semi-axis in the
      *  stationary beam frame.  The first value of <code>getSemiAxes()</code>.
      *  
      *  NOTE
@@ -525,10 +523,10 @@ public class BeamEllipsoid {
      *  
      *  @see        BeamEllipsoid#getSemiAxes()
      */     
-    public double   getSemiAxisX()  { return Math.sqrt( this.arrMoments[0] ); };
+    public double   getSemiAxisX()  { return Math.sqrt( this.arrMoments[0] ); }
 
     /**
-     *  Return the value of the second ellispoid semi-axis in the 
+     *  Return the value of the second ellipsoid semi-axis in the 
      *  stationary beam frame.  The second value of <code>getSemiAxes()</code>.
      *  
      *  NOTE
@@ -539,10 +537,10 @@ public class BeamEllipsoid {
      *  
      *  @see        BeamEllipsoid#getSemiAxes()
      */     
-    public double   getSemiAxisY()  { return Math.sqrt( this.arrMoments[1] ); };
+    public double   getSemiAxisY()  { return Math.sqrt( this.arrMoments[1] ); }
 
     /**
-     *  Return the value of the third ellispoid semi-axis in the
+     *  Return the value of the third ellipsoid semi-axis in the
      *  stationary beam frame.  The third value of <code>getSemiAxes()</code>.
      *  
      *  NOTE
@@ -655,7 +653,7 @@ public class BeamEllipsoid {
      */
     public CovarianceMatrix  getCorrelationBeam() { 
         return this.matSigBeam; 
-    };
+    }
 
     /**
      * Get the Lorentz transform matrix which takes the laboratory coordinates
@@ -748,7 +746,7 @@ public class BeamEllipsoid {
 
     /**
      * Return the complete transformation from the beam inertial
-     * coordinates to the ellipsoid inertial coordinates.  The tranform takes coordinates
+     * coordinates to the ellipsoid inertial coordinates.  The transform takes coordinates
      * in the beam frame to the natural coordinates of the ellipsoid - this 
      * coordinate system has the centroid as the origin and the ellipsoid semi-axes
      * are aligned to the coordinate axes.  Denoting the returned transformation as
@@ -760,10 +758,10 @@ public class BeamEllipsoid {
      * <br/>
      * where <b>T<sub>0</sub></b> is
      * the Galilean transform to the ellipsoid centroid coordinates, and <b>R<sub>0</sub></b>
-     * is the rotation that aligns the ellipsoid semi-axes to the coorinates axes 
+     * is the rotation that aligns the ellipsoid semi-axes to the coordinates axes 
      * putting it into standard position.
      * 
-     * @return  tranformation taking beam inertial coordinates to ellipse inertial coordinates
+     * @return  transformation taking beam inertial coordinates to ellipse inertial coordinates
      * 
      * @see BeamEllipsoid#getTranslation()
      * @see BeamEllipsoid#getRotation()
@@ -861,12 +859,12 @@ public class BeamEllipsoid {
         PhaseMatrix     G = Mi.times(G0.times(M));
 
         return G;
-    };
+    }
 
     /**
      * <p>
      * Compute and return the transfer matrix for space charge effects due to 
-     * this beam ellipsoid for the given incremental path lenth <code>dblLen</code>
+     * this beam ellipsoid for the given incremental path length <code>dblLen</code>
      * and generalized beam <code>dblPerveance</code>.
      * </p>
      * <p>
@@ -894,7 +892,7 @@ public class BeamEllipsoid {
      * <br>
      * where <b>L<sub>0</sub></b> is the Lorentz transform into the beam frame, <b>T<sub>0</sub></b> is
      * the Galilean transform to the ellipsoid centroid coordinates, and <b>R<sub>0</sub></b>
-     * is the rotation that aligns the ellipsoid semi-axes to the coorinates axes 
+     * is the rotation that aligns the ellipsoid semi-axes to the coordinates axes 
      * putting it into standard position.
      * </p>
      * <h3>NOTES:</h3>
@@ -1016,7 +1014,7 @@ public class BeamEllipsoid {
      * 
      * @param matSigLab  correlation matrix in the (moving) laboratory frame
      *  
-     * @return          correltation matrix in the (stationary) beam frame
+     * @return          correlation matrix in the (stationary) beam frame
      */
     private CovarianceMatrix computeLorentzTransform(CovarianceMatrix matSigLab) {
         PhaseMatrix L   = this.getLorentzTransform();

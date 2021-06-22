@@ -11,7 +11,7 @@ import java.util.logging.Level;
 import java.util.prefs.AbstractPreferences;
 import java.util.prefs.BackingStoreException;
 
-public class Preferences extends java.util.prefs.AbstractPreferences {
+public class Preferences extends AbstractPreferences {
     protected java.util.prefs.Preferences userPrefs;
     protected Properties sysPrefs;
     protected Set<String> usrKeys;

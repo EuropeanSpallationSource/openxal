@@ -13,7 +13,7 @@ public class ConnectionException extends ChannelException {
     /** required for serializable objects */
     private static final long serialVersionUID = 1L;
     
-    private Channel _channel;
+    private Channel channel;
 
     /**
      * Creates new <code>ConnectionException</code> without detail message.
@@ -29,7 +29,7 @@ public class ConnectionException extends ChannelException {
      */
     public ConnectionException(Channel channel, String msg) {
         super(msg);
-        _channel = channel;
+        this.channel = channel;
     }
     
     
@@ -38,7 +38,7 @@ public class ConnectionException extends ChannelException {
      * @return The channel for which the connection exception was thrown.
      */
     public Channel getChannel() {
-        return _channel;
+        return channel;
     }
 }
 

@@ -6,12 +6,10 @@
  */
 package xal.smf.impl.profile;
 
-import java.util.MissingResourceException;
 
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.tools.data.DataAdaptor;
-import xal.smf.scada.BadStructException;
 import xal.smf.scada.ScadaRecord;
 
 /**

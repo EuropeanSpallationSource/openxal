@@ -17,7 +17,7 @@
  */
 package xal.extension.jels.model.elem;
 
-import static xal.model.IElement.LightSpeed;
+import static xal.model.IElement.LIGHT_SPEED;
 import xal.model.IProbe;
 import xal.tools.beam.PhaseMatrix;
 
@@ -80,11 +80,11 @@ public class FieldMapIntegrator extends PhaseMatrix {
         // Building the infinitesimal transfer matrix (X' = F*X)
         double[] infTransferMatrixArray = new double[NDIM * NDIM];
         // Horizontal plane;
-        infTransferMatrixArray[1 * NDIM + 0] = k * (fieldMapPoint.getdExdx() - beta * LightSpeed * fieldMapPoint.getdBydx());
+        infTransferMatrixArray[1 * NDIM + 0] = k * (fieldMapPoint.getdExdx() - beta * LIGHT_SPEED * fieldMapPoint.getdBydx());
         infTransferMatrixArray[1 * NDIM + 1] = -k * fieldMapPoint.getEz();
 
         // Vertical plane
-        infTransferMatrixArray[3 * NDIM + 2] = k * (fieldMapPoint.getdEydy() + beta * LightSpeed * fieldMapPoint.getdBxdy());
+        infTransferMatrixArray[3 * NDIM + 2] = k * (fieldMapPoint.getdEydy() + beta * LIGHT_SPEED * fieldMapPoint.getdBxdy());
         infTransferMatrixArray[3 * NDIM + 3] = -k * fieldMapPoint.getEz();
 
         // Longitudinal plane
@@ -94,16 +94,16 @@ public class FieldMapIntegrator extends PhaseMatrix {
         // Coupling terms
         if (coupled) {
             // Horizontal plane;
-            infTransferMatrixArray[1 * NDIM + 2] = k * (fieldMapPoint.getdExdy() - beta * LightSpeed * fieldMapPoint.getdBydy());
-            infTransferMatrixArray[1 * NDIM + 3] = k * beta * LightSpeed * fieldMapPoint.getBz();
-            infTransferMatrixArray[1 * NDIM + 4] = k * (fieldMapPoint.getdExdz() - beta * LightSpeed * fieldMapPoint.getdBydz());
-            infTransferMatrixArray[1 * NDIM + 5] = -k * (fieldMapPoint.getEx() + beta * LightSpeed * fieldMapPoint.getBy());
+            infTransferMatrixArray[1 * NDIM + 2] = k * (fieldMapPoint.getdExdy() - beta * LIGHT_SPEED * fieldMapPoint.getdBydy());
+            infTransferMatrixArray[1 * NDIM + 3] = k * beta * LIGHT_SPEED * fieldMapPoint.getBz();
+            infTransferMatrixArray[1 * NDIM + 4] = k * (fieldMapPoint.getdExdz() - beta * LIGHT_SPEED * fieldMapPoint.getdBydz());
+            infTransferMatrixArray[1 * NDIM + 5] = -k * (fieldMapPoint.getEx() + beta * LIGHT_SPEED * fieldMapPoint.getBy());
 
             // Vertical plane
-            infTransferMatrixArray[3 * NDIM + 0] = k * (fieldMapPoint.getdEydx() + beta * LightSpeed * fieldMapPoint.getdBxdx());
-            infTransferMatrixArray[3 * NDIM + 1] = -k * beta * LightSpeed * fieldMapPoint.getBz();
-            infTransferMatrixArray[3 * NDIM + 4] = k * (fieldMapPoint.getdEydz() + beta * LightSpeed * fieldMapPoint.getdBxdz());
-            infTransferMatrixArray[3 * NDIM + 5] = -k * (fieldMapPoint.getEy() - beta * LightSpeed * fieldMapPoint.getBx());
+            infTransferMatrixArray[3 * NDIM + 0] = k * (fieldMapPoint.getdEydx() + beta * LIGHT_SPEED * fieldMapPoint.getdBxdx());
+            infTransferMatrixArray[3 * NDIM + 1] = -k * beta * LIGHT_SPEED * fieldMapPoint.getBz();
+            infTransferMatrixArray[3 * NDIM + 4] = k * (fieldMapPoint.getdEydz() + beta * LIGHT_SPEED * fieldMapPoint.getdBxdz());
+            infTransferMatrixArray[3 * NDIM + 5] = -k * (fieldMapPoint.getEy() - beta * LIGHT_SPEED * fieldMapPoint.getBx());
 
             // Longitudinal plane
             infTransferMatrixArray[5 * NDIM + 0] = k * fieldMapPoint.getdEzdx();
@@ -122,10 +122,10 @@ public class FieldMapIntegrator extends PhaseMatrix {
         }
 
         // Dipole strengths
-        double dph = length * k * (fieldMapPoint.getEx() - beta * LightSpeed * fieldMapPoint.getBy());
+        double dph = length * k * (fieldMapPoint.getEx() - beta * LIGHT_SPEED * fieldMapPoint.getBy());
         infTransferMatrixArray[1 * NDIM + 6] = dph;
 
-        double dpv = length * k * (fieldMapPoint.getEy() + beta * LightSpeed * fieldMapPoint.getBx());
+        double dpv = length * k * (fieldMapPoint.getEy() + beta * LIGHT_SPEED * fieldMapPoint.getBx());
         infTransferMatrixArray[3 * NDIM + 6] = dpv;
 
         getMatrix().data = operations.matrixMultiplication(infTransferMatrixArray, getMatrix().data);

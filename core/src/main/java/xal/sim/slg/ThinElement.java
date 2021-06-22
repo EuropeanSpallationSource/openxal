@@ -91,7 +91,7 @@ public abstract class ThinElement extends Element {
      * Return the slim element as a tuple (drift,element,drift).
      */
     public List<Element> asTuple() {
-        ArrayList<Element> retval=new ArrayList<Element>();
+        ArrayList<Element> retval=new ArrayList<>();
         retval.add(getUpstreamDrift());
         retval.add(this);
         retval.add(getDownstreamDrift());
@@ -103,23 +103,23 @@ public abstract class ThinElement extends Element {
      */
     @Override
     public List<Element> split(Element insert) {
-        ArrayList<Element> retval=new ArrayList<Element>();
+        ArrayList<Element> retval=new ArrayList<>();
         retval.add(this);
         retval.add(insert);
         return retval;
     }
     
     /**
-     * Return a printable String of the elment.
+     * Return a printable String of the element.
      */
     @Override
     public String toCoutString() {
         String retval="";
-        double el_pos=getPosition();
-		double a_start = toAbsolutePosition(getPosition());
+        double elPos=getPosition();
+		double aStart = toAbsolutePosition(getPosition());
         String name=getName();
         String type=getType();
-        retval +="s="+fmt.format(a_start)+" m\t"+name+"\t"+type+" p="+fmt.format(el_pos);
+        retval +="s="+fmt.format(aStart)+" m\t"+name+"\t"+type+" p="+fmt.format(elPos);
         return retval;
     }
     
@@ -143,7 +143,7 @@ public abstract class ThinElement extends Element {
     }
     
     /**
-     * When called with a Visitor reference the implementor can either
+     * When called with a Visitor reference the implementer can either
      * reject to be visited (empty method body) or call the Visitor by
      * passing its own object reference.
      *

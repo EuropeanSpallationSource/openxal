@@ -16,7 +16,7 @@ import xal.tools.data.DataAdaptor;
  * than one official type (QH and QV) as specified by the naming convention.  
  * In order to support this feature we override the getType(),
  * update() and isKindOf() methods.  The vertical and horizontal 
- * reference to a quadrapole isn't of consequence to behavior since the 
+ * reference to a quadrupole isn't of consequence to behavior since the 
  * field of the quadrupole (including its sign) and its length characterizes 
  * the quadrupole.
  * 
@@ -26,7 +26,7 @@ import xal.tools.data.DataAdaptor;
  */
 
 public class Quadrupole extends Electromagnet {
-	public static final String s_strType   = "Q";
+	public static final String TYPE   = "Q";
 
 	/** horizontal quadrupole type */
 	public static final String HORIZONTAL_TYPE = "QH";
@@ -41,7 +41,7 @@ public class Quadrupole extends Electromagnet {
 
 	/** the type of quadrupole (horizontal or vertical)
 	 * The default value is used if Quadrupole is never updated. */
-	protected String _type = "Q";
+	protected String type = "Q";
 
 
 	// static initializer
@@ -56,7 +56,7 @@ public class Quadrupole extends Electromagnet {
 	 * @see #isKindOf
 	 */
 	private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( Quadrupole.class, s_strType, "emquad", "quad", "quadrupole", MagnetType.QUADRUPOLE );
+		ElementTypeManager.defaultManager().registerTypes( Quadrupole.class, TYPE, "emquad", "quad", "quadrupole", MagnetType.QUADRUPOLE );
 	}
 
 
@@ -84,8 +84,9 @@ public class Quadrupole extends Electromagnet {
      * official type (QH or QV).
      * @return The official type consistent with the naming convention.
      */
+        @Override
     public String getType()   { 
-        return _type; 
+        return type; 
     }
     
     
@@ -94,9 +95,10 @@ public class Quadrupole extends Electromagnet {
 	 * set the quadrupole type since a quadrupole type can be either "QH" or "QV".
      * @param adaptor The data provider.
      */
+        @Override
     public void update( final DataAdaptor adaptor ) {
         if ( adaptor.hasAttribute( "type" ) ) {
-            _type = adaptor.stringValue( "type" );
+            type = adaptor.stringValue( "type" );
         }
         super.update( adaptor );
     }
@@ -107,6 +109,7 @@ public class Quadrupole extends Electromagnet {
      * @param compPole The pole against which this magnet is being compared.
      * @return true if this magnet matches the specified pole.
      */ 
+        @Override
     public boolean isPole( final String compPole ) {
         return compPole.equals( MagnetType.QUADRUPOLE );
     }
@@ -117,11 +120,12 @@ public class Quadrupole extends Electromagnet {
      * of the quad is determined by its type: QH or QV
      * @return One of HORIZONTAL or VERTICAL
      */
+        @Override
     public int getOrientation() {
-    	if (_type.equalsIgnoreCase(SKEW_TYPE))
+    	if (type.equalsIgnoreCase(SKEW_TYPE))
     		return NO_ORIENTATION;
     	else
-    		return _type.equalsIgnoreCase( HORIZONTAL_TYPE ) ? HORIZONTAL : VERTICAL;
+    		return type.equalsIgnoreCase( HORIZONTAL_TYPE ) ? HORIZONTAL : VERTICAL;
     }
         
     
@@ -132,7 +136,8 @@ public class Quadrupole extends Electromagnet {
      * @param type The type against which to compare this quadrupole's type.
      * @return true if the node is a match and false otherwise.
      */
+        @Override
     public boolean isKindOf( final String type ) {
-        return type.equalsIgnoreCase( _type ) || super.isKindOf( type );
+        return type.equalsIgnoreCase( this.type ) || super.isKindOf( type );
     }
 }

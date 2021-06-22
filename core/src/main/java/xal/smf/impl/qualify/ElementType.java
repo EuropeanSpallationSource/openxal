@@ -15,4 +15,3 @@ public interface ElementType {
     public boolean isKindOf(String compName);   
     public boolean isMagnet();
 }
-

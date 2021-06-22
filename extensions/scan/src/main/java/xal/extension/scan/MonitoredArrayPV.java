@@ -5,7 +5,6 @@
  */
 package xal.extension.scan;
 
-import java.util.*;
 import java.awt.event.*;
 
 import xal.ca.*;
@@ -40,6 +39,7 @@ public class MonitoredArrayPV {
 	public MonitoredArrayPV() {
 		updateListener =
 			new ActionListener() {
+                                @Override
 				public void actionPerformed(ActionEvent e) {
 					synchronized(syncObj) {
 
@@ -233,6 +233,7 @@ public class MonitoredArrayPV {
 	 *  Removes the monitored PV.
 	 * @throws Throwable 
 	 */
+        @Override
 	protected void finalize() throws Throwable {
 		try {
 			MonitoredPV.removeMonitoredPV(mpv);

@@ -72,13 +72,13 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
 
     
     /** string type identifier for algorithm */
-    public static final String      s_strTypeId = EnvelopeTracker.class.getName();
+    public static final String      TYPE_ID = EnvelopeTracker.class.getName();
     
     /** current algorithm version */
-    public static final int         s_intVersion = 4;
+    public static final int         VERSION = 4;
     
     /** probe type recognized by this algorithm */
-    public static final Class<EnvelopeProbe>       s_clsProbeType = EnvelopeProbe.class;
+    public static final Class<EnvelopeProbe>       CLS_PROBE_TYPE = EnvelopeProbe.class;
     
 
     
@@ -94,7 +94,7 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
      * </p>
      */
     public EnvelopeBacktracker() {
-        super(s_strTypeId, s_intVersion, s_clsProbeType);
+        super(TYPE_ID, VERSION, CLS_PROBE_TYPE);
     }
 
     /**
@@ -477,7 +477,7 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
      * <strong>NOTES</strong>: CKA
      * <br>
      * &middot; Since we are modeling the RF gap as a thin lens, only the 
-     * momentum (divergance angle) is modified, &lt;<i>x</i><sup>2</sup>&gt;,
+     * momentum (divergence angle) is modified, &lt;<i>x</i><sup>2</sup>&gt;,
      * &lt;<i>y</i><sup>2</sup>&gt;, and &lt;<i>z</i><sup>2</sup>&gt; remain
      * unaffected.  Thus, &lt;<i>x<sub>f</sub></i><sup>2</sup>&gt;
      * = &lt;<i>x<sub>i</sub></i><sup>2</sup>&gt; and
@@ -491,8 +491,8 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
      * &nbsp; &lt;<i>x'</i><sup>2</sup>&gt; = &lt;<i>x'</i><sup>2</sup>&gt; + <i>c<sub>eg</sub></i>&lt;<i>x</i><sup>2</sup>&gt;
      * <br>
      * <br>
-     * where <i>c<sub>eg</sub></i> is the emittance growth coefficent.  There are similar 
-     * equations for the other phase planes.  The emittance growth coefficents are computed
+     * where <i>c<sub>eg</sub></i> is the emittance growth coefficient.  There are similar 
+     * equations for the other phase planes.  The emittance growth coefficients are computed
      * in the base class <code>EnvelopeTrackerBase</code> by the methods 
      * <code>emitGrowthCoefTrans(EnvelopeProbe, IdealRfGap)</code> and 
      * <code>emitGrowthCoefLong(EnvelopeProbe, IdealRfGap)</code>.

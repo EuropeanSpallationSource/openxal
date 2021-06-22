@@ -6,7 +6,6 @@ import xal.tools.beam.optics.DriftSpace;
 import xal.model.IProbe;
 
 import java.io.PrintWriter;
-import xal.tools.beam.PhaseVector;
 
 /**
  * <p>
@@ -24,10 +23,10 @@ public class IdealMagSolenoid  extends ThickElectromagnet {
      * Global Attributes
      */
     /** string type identifier for all IdealMagSolenoid objects */
-    public static final String s_strType = "IdealMagSolenoid";
+    public static final String TYPE = "IdealMagSolenoid";
 
     /** Parameters for XAL MODEL LATTICE dtd */
-    public static final String s_strParamField = "MagField";
+    public static final String PARAM_FIELD = "MagField";
 
     
     /*
@@ -43,19 +42,19 @@ public class IdealMagSolenoid  extends ThickElectromagnet {
      *  @param  dblLen    length of the solenoid
      */
     public IdealMagSolenoid(String strId, double dblFld, double dblLen) {
-        super(s_strType, strId, dblLen);
+        super(TYPE, strId, dblLen);
 
         this.setMagField(dblFld);
-    };
+    }
 
     /** 
-     *  JavaBean constructor - creates a new unitialized instance of IdealMagSolenoid
+     *  JavaBean constructor - creates a new uninitialized instance of IdealMagSolenoid
      *
      *  <b>BE CAREFUL</b>
      */
     public IdealMagSolenoid() {
-        super(s_strType);
-    };
+        super(TYPE);
+    }
 
 
     /*
@@ -105,7 +104,7 @@ public class IdealMagSolenoid  extends ThickElectromagnet {
         
         // focusing constant (radians/meter)
         //final double k = ( charge * LightSpeed * getMagField() ) / ( Er * beta * gamma )/2.;
-        final double k = ( charge * LightSpeed * getMagField() ) / (2.* Er * beta * gamma );
+        final double k = ( charge * LIGHT_SPEED * getMagField() ) / (2.* Er * beta * gamma );
 
         // Compute the transfer matrix components
 
@@ -200,6 +199,5 @@ public class IdealMagSolenoid  extends ThickElectromagnet {
         os.println("  magnetic field     : " + this.getMagField());
         os.println("  magnet orientation : " + this.getOrientation());
     }
-    
 
 }

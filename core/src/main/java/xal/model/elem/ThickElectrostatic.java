@@ -55,9 +55,10 @@ public abstract class ThickElectrostatic extends ThickElement implements IElectr
     *              ORIENT_VER  - dipole has steering action in y (vertical) plane
     *              ORIENT_NONE - error
     */
+        @Override
    public int getOrientation() {
        return this.enmOrient;
-   };
+   }
 
    
    /**  
@@ -73,7 +74,7 @@ public abstract class ThickElectrostatic extends ThickElement implements IElectr
     */
    public double getMagField() {
        return this.dblField;
-   };
+   }
 	
    /**
     *  Return the orientation enumeration code specifying the bending plane.
@@ -89,9 +90,10 @@ public abstract class ThickElectrostatic extends ThickElement implements IElectr
     *
     *  @see    #getOrientation
     */
+        @Override
    public void setOrientation(int enmOrient) {
        this.enmOrient = enmOrient;
-   };
+   }
 
    /**  
     *  Set the magnetic field strength of the electromagnet.
@@ -106,7 +108,7 @@ public abstract class ThickElectrostatic extends ThickElement implements IElectr
     */
    public void setMagField(double dblField) {
        this.dblField = dblField;
-   };
+   }
 
 	
 	/**

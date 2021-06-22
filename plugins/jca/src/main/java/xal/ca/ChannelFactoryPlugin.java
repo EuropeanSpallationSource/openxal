@@ -20,7 +20,7 @@ public class ChannelFactoryPlugin {
 	 * Instantiate a new ChannelFactory
 	 * @return a new channel factory
 	 */
-    static public ChannelFactory getChannelFactoryInstance() {
+    public static ChannelFactory getChannelFactoryInstance() {
         return new JcaChannelFactory();
     }
 
@@ -29,7 +29,7 @@ public class ChannelFactoryPlugin {
      * 
      * @return a new serverChannel factory
      */
-    static public ChannelFactory getServerChannelFactoryInstance() {
+    public static ChannelFactory getServerChannelFactoryInstance() {
         return new JcaServerChannelFactory();
     }
 }

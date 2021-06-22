@@ -7,6 +7,7 @@
 package xal.extension.widgets.plot;
 
 import java.text.*;
+import java.util.Date;
 
 /**
  * DateGraphFormat is the subclass of the NumberFormat class.
@@ -50,6 +51,7 @@ public class DateGraphFormat extends NumberFormat{
     }
 
 	/** Don't call. Just returns null. Satisfied abstract method requirement. */
+    @Override
 	public Number parse( final String input, final ParsePosition position ) {
 		return null;
 	}
@@ -58,6 +60,7 @@ public class DateGraphFormat extends NumberFormat{
     /**
      * The overridden format method of the NumberFormat class.
      */
+    @Override
     public StringBuffer format(double t_sec, StringBuffer toAppendTo, FieldPosition pos){
 		return format( (long)t_sec, toAppendTo, pos );
     }
@@ -66,9 +69,10 @@ public class DateGraphFormat extends NumberFormat{
 	/**
 	 * The overridden format method of the NumberFormat class.
 	 */
+    @Override
 	public StringBuffer format(long t_sec, StringBuffer toAppendTo, FieldPosition pos){
 		long t_l = 1000 * t_sec;
-		return dateFormat.format(new java.util.Date(t_l), toAppendTo, pos);
+		return dateFormat.format(new Date(t_l), toAppendTo, pos);
 	}
 
 
@@ -94,7 +98,7 @@ public class DateGraphFormat extends NumberFormat{
      * Transforms the date to the seconds since January 1, 1970, 00:00:00 GMT.
      * @return double as a number of seconds
      */
-    static public double getSeconds(java.util.Date date){
+    public static double getSeconds(Date date){
 	return (double) (date.getTime()/1000L); 
     }
 
@@ -102,7 +106,7 @@ public class DateGraphFormat extends NumberFormat{
      * Transforms the seconds since January 1, 1970, 00:00:00 GMT to the date.
      * @return an instance of the Date class.
      */
-    static public java.util.Date getDate(double seconds){
-	return new java.util.Date(1000L * ((long)(seconds))); 
+    public static Date getDate(double seconds){
+	return new Date(1000L * ((long)(seconds))); 
     }
 }

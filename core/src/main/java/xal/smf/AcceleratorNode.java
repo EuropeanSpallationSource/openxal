@@ -18,58 +18,58 @@ import java.util.logging.Logger;
  * The base class in the hierarchy of different accelerator node types.
  * @author  Nikolay Malitsky, Christopher K. Allen, Nick D. Pattengale
  */
-public abstract class AcceleratorNode implements /* IElement, */ ElementType, DataListener {   
+public abstract class AcceleratorNode implements ElementType, DataListener {   
     /*
      *  Local Attributes
      */
 
     /** node identifier  */
-    protected String            m_strId;
+    protected String            strId;
 
     /** physics identifier  */
-    protected String            m_strPId;
+    protected String            strPId;
 
     /** engineering identifier  */
-    protected String            m_strEId;
+    protected String            strEId;
 
     /** position of node   */
-    protected double            m_dblPos;
+    protected double            dblPos;
 
     /** length of node */
-    protected double            m_dblLen;
+    protected double            dblLen;
 
 
 
     /**   parent sequence object  */
-    protected AcceleratorSeq    m_seqParent;
+    protected AcceleratorSeq    seqParent;
 
     /**   the associated Accelerator object  */
-    protected Accelerator       m_objAccel;
+    protected Accelerator       objAccel;
 
     /**   all attribute buckets for node   */
-    protected Map<String,AttributeBucket>   m_mapAttrs;
+    protected Map<String,AttributeBucket>   mapAttrs;
 
     /**   alignment attribute bucket for node */
-    protected AlignmentBucket   m_bucAlign;
+    protected AlignmentBucket   bucAlign;
 
     /**    twiss parameter bucket for node   */
-    protected TwissBucket       m_bucTwiss;
+    protected TwissBucket       bucTwiss;
 
     /**                  aperture parameters for node   */
-    protected ApertureBucket    m_bucAper;
+    protected ApertureBucket    bucAper;
 
     /** Indicator as to whether the Accelerator Node is functional */
-    protected boolean            m_bolStatus;
+    protected boolean            bolStatus;
 
     /** Indicator as to whether accelerator node is valid */
-    protected boolean            m_bolValid;
+    protected boolean            bolValid;
 
     /** "s" position for global display */
-    protected double 			m_dblS;
+    protected double 			dblS;
 
 
     /** Indicator if this node is a "softNode" copy */
-    protected boolean       m_bolIsSoft=false;
+    protected boolean       bolIsSoft=false;
 
 
     /** channel suite associated with this node */
@@ -96,12 +96,12 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
 	 * @param channelFactory channel factory (null for default) for generating this node's channels
 	 */
 	public AcceleratorNode( final String strId, final ChannelFactory channelFactory ) {
-		m_strId = strId;
+		this.strId = strId;
 
-		m_bolStatus = true;
-		m_bolValid = true;
+		bolStatus = true;
+		bolValid = true;
 
-		m_mapAttrs = new HashMap<String,AttributeBucket>();
+		mapAttrs = new HashMap<>();
 
 		channelSuite = new ChannelSuite( channelFactory );
 	}
@@ -119,29 +119,31 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
     // DataListener interface -tap
 
     /** implement DataListener interface */
+    @Override
     public String dataLabel() { return "node"; }
 
 
     /** implement DataListener interface */
+    @Override
     public void update(DataAdaptor adaptor) throws NumberFormatException {
         // set the id only the first time
-        if ( m_strId == null ) {
-            m_strId = adaptor.stringValue("id");
+        if ( strId == null ) {
+            strId = adaptor.stringValue("id");
         }
 
         // update physics id
         if ( adaptor.hasAttribute("pid") ) {
-        	m_strPId = adaptor.stringValue("pid");
+        	strPId = adaptor.stringValue("pid");
         }
 
         // update engineering id
         if ( adaptor.hasAttribute("eid") ) {
-        	m_strEId = adaptor.stringValue("eid");
+        	strEId = adaptor.stringValue("eid");
         }
 
         // get the status of the node which identifies whether the node is operational
         if ( adaptor.hasAttribute("status") ) {
-            m_bolStatus = adaptor.booleanValue("status");
+            bolStatus = adaptor.booleanValue("status");
         }
 
 
@@ -152,7 +154,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
                 newLength = adaptor.doubleValue("len");
             }
             catch(NumberFormatException exception) {
-				final String message = "Error reading node: " + m_strId;
+				final String message = "Error reading node: " + strId;
                 System.err.println( message );
                 System.err.println( exception );
 				Logger.getLogger("global").log( Level.SEVERE, message, exception );
@@ -200,6 +202,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
 
 
     /** implement DataListener interface */
+    @Override
     public void write(DataAdaptor adaptor) {
         writeAttributes(adaptor);
 
@@ -217,10 +220,10 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * method to write status of the node into a separate file
      */
     public void writeStatus(DataAdaptor adaptor) {
-        if (m_bolStatus == false && getAccelerator().hasStatusFile()) {
+        if (bolStatus == false && getAccelerator().hasStatusFile()) {
             DataAdaptor childAdaptor = adaptor.createChild(dataLabel());
-            childAdaptor.setValue("id", m_strId);
-            childAdaptor.setValue("status", m_bolStatus);
+            childAdaptor.setValue("id", strId);
+            childAdaptor.setValue("status", bolStatus);
         }
     }
     
@@ -232,24 +235,24 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @param adaptor 
      */
     protected void writeAttributes(DataAdaptor adaptor) {
-        adaptor.setValue("id", m_strId);
-        adaptor.setValue("len", m_dblLen);
-        adaptor.setValue("pos", m_dblPos);
+        adaptor.setValue("id", strId);
+        adaptor.setValue("len", dblLen);
+        adaptor.setValue("pos", dblPos);
         adaptor.setValue("type", getType());
-        if (m_strPId != null) {
-            adaptor.setValue("pid", m_strPId);
+        if (strPId != null) {
+            adaptor.setValue("pid", strPId);
         }
-        if (m_strEId != null) {
-            adaptor.setValue("eid", m_strEId);
+        if (strEId != null) {
+            adaptor.setValue("eid", strEId);
         }
         if (getSoftType() != null) {
             adaptor.setValue("softType", getSoftType());
         }
-        if (m_bolStatus == false && getAccelerator().hasStatusFile()) {
-            adaptor.setValue("status", m_bolStatus);
+        if (bolStatus == false && getAccelerator().hasStatusFile()) {
+            adaptor.setValue("status", bolStatus);
         }
-        if (m_dblS != 0) {
-            adaptor.setValue("s", m_dblS);
+        if (dblS != 0) {
+            adaptor.setValue("s", dblS);
         }
     }
     // end DataListener interface -tap
@@ -593,33 +596,33 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      */
 
     /** return the ID of this node */
-    public String           getId()             { return m_strId;  };
+    public String           getId()             { return strId;  }
 
     /** return the engineering ID of this node */
-    public String           getEId()             { return m_strEId;  };
+    public String           getEId()             { return strEId;  }
 
     /** return the physics ID of this node */
-    public String           getPId()             { return m_strPId;  };
+    public String           getPId()             { return strPId; }
 
     /** return the physical length of this node (m) */
-    public double           getLength()         { return m_dblLen; };
+    public double           getLength()         { return dblLen; }
 
     /** return the position of this node,  along the reference orbit
      * within its sequence (m) */
-    public double           getPosition()       { return m_dblPos; };
+    public double           getPosition()       { return dblPos; }
 
 
     /**
      * return global "s" display coordinate
      * @return s coordinate
      */
-    public double 			getSDisplay()		{ return m_dblS;};
+    public double 			getSDisplay()		{ return dblS;}
 
     /** return the top level accelerator that this node belongs to */
-    public Accelerator      getAccelerator()    { return m_objAccel; };
+    public Accelerator      getAccelerator()    { return objAccel; }
 
     /** return the parent sequence that this node belongs to */
-    public AcceleratorSeq  getParent()         { return m_seqParent; }
+    public AcceleratorSeq  getParent()         { return seqParent; }
 
 
 	/** get the primary ancestor sequence that is a direct child of the accelerator */
@@ -630,7 +633,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
 
     /** Indicates if the node has a parent set */
     public boolean  hasParent()         {
-        return (m_seqParent != null);
+        return (seqParent != null);
     }
 
     /**
@@ -638,31 +641,31 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      *  @return         true(up and running)
      *                  false(down)
      */
-    public boolean          getStatus()         { return m_bolStatus; };
+    public boolean          getStatus()         { return bolStatus; }
 
     /**
-     *  Runtime indication of the validatity of component operation
+     *  Runtime indication of the validity of component operation
      *  @return         true(valid operation)
      *                  false(questionable operation)
      */
-    public boolean          getValid()          { return m_bolValid; };
+    public boolean          getValid()          { return bolValid; }
 
 
-    void     setPId(String value)         { m_strPId = value; }
-    void     setEId(String value)         { m_strEId = value; }
+    void     setPId(String value)         { strPId = value; }
+    void     setEId(String value)         { strEId = value; }
 
     /** set the position of this accelerator node within its parent sequence */
-	public void setPosition( final double position )  { m_dblPos = position; };
+	public void setPosition( final double position )  { dblPos = position; }
 
 
 	/** set the length of this accelerator node  */
-	public void setLength( final double length )    { m_dblLen = length; };
+	public void setLength( final double length )    { dblLen = length; }
 
     /**
      * set "s" coordinate
      * @param dblS s coordinate
      */
-    public void 	setSDisplay(double dblS) { m_dblS = dblS; };
+    public void 	setSDisplay(double dblS) { this.dblS = dblS; }
 
 
     /**
@@ -670,15 +673,15 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      *  @param      bolStatus       true(up and running)
      *                              false(down)
      */
-    public void     setStatus(boolean bolStatus)    { m_bolStatus = bolStatus; };
+    public void     setStatus(boolean bolStatus)    { this.bolStatus = bolStatus; }
 
 
     /**
-     *  Runtime indication of the validatity of component operation
+     *  Runtime indication of the validity of component operation
      *  @param  bolValid    true(valid operation)
      *                      false(questionable operation)
      */
-    public void     setValid(boolean bolValid)      { m_bolValid = bolValid; };
+    public void     setValid(boolean bolValid)      { this.bolValid = bolValid; }
 
 
     /*
@@ -699,11 +702,11 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
         }
 
         // List of all attribute buckets
-        m_mapAttrs.put( buc.getType(), buc );
-    };
+        mapAttrs.put( buc.getType(), buc );
+    }
 
-    public Collection<AttributeBucket>       getBuckets()            { return m_mapAttrs.values(); };
-    public AttributeBucket  getBucket(String type)  { return m_mapAttrs.get(type); };
+    public Collection<AttributeBucket>       getBuckets()            { return mapAttrs.values(); }
+    public AttributeBucket  getBucket(String type)  { return mapAttrs.get(type); }
     public boolean hasBucket(AttributeBucket bucket) {
         String bucketType = bucket.getType();
         return bucket == getBucket(bucketType);
@@ -712,17 +715,17 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
 
     // Specific Buckets
 
-    /** returns the bucket containing the twiss parameters
+    /** returns the bucket containing the Twiss parameters
      *   - see attr.TwissBucket  */
-    public TwissBucket      getTwiss()          { return m_bucTwiss; };
+    public TwissBucket      getTwiss()          { return bucTwiss; }
 
     /** returns the bucket containing the alignment parameters
      *   - see attr.AlignBucket  */
     public AlignmentBucket getAlign() {
-        if (m_bucAlign == null) {
+        if (bucAlign == null) {
             setAlign(new AlignmentBucket());
         }
-        return m_bucAlign;
+        return bucAlign;
     }
 
     /**
@@ -731,7 +734,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @return pitch angle
      */
     public double getPitchAngle() {
-        if (m_bucAlign != null) {
+        if (bucAlign != null) {
             return getAlign().getPitch();
         } else {
             return new AlignmentBucket().getPitch();
@@ -744,7 +747,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @return yaw angle
      */
     public double getYawAngle() {
-        if (m_bucAlign != null) {
+        if (bucAlign != null) {
             return getAlign().getYaw();
         } else {
             return new AlignmentBucket().getYaw();
@@ -757,7 +760,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @return roll angle
      */
     public double getRollAngle() {
-        if (m_bucAlign != null) {
+        if (bucAlign != null) {
             return getAlign().getRoll();
         } else {
             return new AlignmentBucket().getRoll();
@@ -770,7 +773,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @return x offset
      */
     public double getXOffset() {
-        if (m_bucAlign != null) {
+        if (bucAlign != null) {
             return getAlign().getX();
         } else {
             return new AlignmentBucket().getX();
@@ -783,7 +786,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @return y offset
      */
     public double getYOffset() {
-        if (m_bucAlign != null) {
+        if (bucAlign != null) {
             return getAlign().getY();
         } else {
             return new AlignmentBucket().getY();
@@ -796,8 +799,8 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @return z offset
      */
     public double getZOffset() {
-        if (m_bucAlign != null) {
-            return m_bucAlign.getZ();
+        if (bucAlign != null) {
+            return bucAlign.getZ();
         } else {
             return new AlignmentBucket().getZ();
         }
@@ -806,24 +809,24 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
     /** returns the bucket containing the Aperture parameters
      *   - see attr.ApertureBucket  */
     public ApertureBucket getAper() {
-        if (m_bucAper == null) {
+        if (bucAper == null) {
             setAper(new ApertureBucket());
         }
-        return m_bucAper;
+        return bucAper;
     }
 
     /** sets the bucket containing the twiss parameters
      *   - see attr.TwissBucket  */
 
-    public void setAlign(AlignmentBucket buc)   { m_bucAlign = buc; m_mapAttrs.put(buc.getType(), buc); };
+    public void setAlign(AlignmentBucket buc)   { bucAlign = buc; mapAttrs.put(buc.getType(), buc); }
 
     /** sets the bucket containing the alignment parameters
      *   - see attr.AlignBucket  */
-    public void setTwiss(TwissBucket buc)       { m_bucTwiss = buc; m_mapAttrs.put(buc.getType(), buc); };
+    public void setTwiss(TwissBucket buc)       { bucTwiss = buc; mapAttrs.put(buc.getType(), buc); }
 
     /** sets the bucket containing the Aperture parameters
      *   - see attr.ApertureBucket  */
-    public void setAper(ApertureBucket buc)     { m_bucAper = buc;  m_mapAttrs.put(buc.getType(), buc); };
+    public void setAper(ApertureBucket buc)     { bucAper = buc;  mapAttrs.put(buc.getType(), buc); }
 
     /**
      * set device pitch angle
@@ -882,33 +885,33 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      */
     public void clear() {
         removeFromParent();
-    };
+    }
 
     /**
      * remove this node from its immediate parent sequence
      */
     protected void removeFromParent()  {
-        if(m_seqParent == null) return;
-        m_seqParent.removeNode(this);
-    };
+        if(seqParent == null) return;
+        seqParent.removeNode(this);
+    }
 
     /**
      * define the parent sequence for this node
      */
     protected void  setParent(AcceleratorSeq parent)   {
         removeFromParent();
-        m_seqParent = parent;
-    };
+        seqParent = parent;
+    }
 
     /**
      * set the top level accelerator for this node
      */
     protected void setAccelerator(Accelerator accel) {
-        if ( m_objAccel != null ) {
-            m_objAccel.nodeRemoved(this);
+        if ( objAccel != null ) {
+            objAccel.nodeRemoved(this);
         }
 
-        m_objAccel = accel;
+        objAccel = accel;
 
         if ( accel != null ) {
             accel.nodeAdded(this);
@@ -941,6 +944,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @param compType The type against which to compare.
      * @return true if the node is of the specified type; false otherwise.
      */
+    @Override
     public boolean isKindOf(String compType) {
         return ElementTypeManager.defaultManager().match(this.getClass(), compType);
     }
@@ -950,6 +954,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * Determine if the node is a magnet.
      * @return true if the node is a magnet; false other.
      */
+    @Override
     public boolean isMagnet() {
         return false;   // by default, a node is not an magnet
     }

@@ -42,23 +42,23 @@ import xal.tools.ResourceManager;
  */
 public class Commander {
 	/** name for the menu definition resource which may or may not exist */
-	static public final String MENU_DEFINITION_RESOURCE = "menudef.properties";
+	public static final String MENU_DEFINITION_RESOURCE = "menudef.properties";
 
 	/** map equivalent of the resource bundle properties */
-    private Map<String,String> _controlMap;
+    private Map<String,String> controlMap;
 	
 	/** (action-name, event listener) map */
-    private Map<String,EventListener> _commands;
+    private Map<String,EventListener> commands;
 	
 	/** (action-name, button model) map */
-	private Map<String,ButtonModel> _buttonModelMap;
+	private Map<String,ButtonModel> buttonModelMap;
     
 	
     /** Primary Constructor for generating a document commander. */
     protected Commander( final Commander appCommander, final XalAbstractDocument document ) {
-        _controlMap = new HashMap<String,String>( appCommander._controlMap );
-        _commands = new HashMap<String,EventListener>( appCommander._commands );
-		_buttonModelMap = new HashMap<String,ButtonModel>( appCommander._buttonModelMap );
+        controlMap = new HashMap<>( appCommander.controlMap );
+        commands = new HashMap<>( appCommander.commands );
+		buttonModelMap = new HashMap<>( appCommander.buttonModelMap );
         
 		loadCustomBundle( document );		// document additions
     }
@@ -80,9 +80,9 @@ public class Commander {
 	
     /** Constructor for generating a document commander. */
     protected Commander( final XalInternalDocument document ) {
-        _controlMap = new HashMap<String,String>();
-        _commands = new HashMap<String,EventListener>();
-		_buttonModelMap = new HashMap<String,ButtonModel>();
+        controlMap = new HashMap<>();
+        commands = new HashMap<>();
+		buttonModelMap = new HashMap<>();
 		
 		loadCustomDocumentBundle( document );		// document additions
 		registerCustomCommands( document );
@@ -91,9 +91,9 @@ public class Commander {
     
     /** Constructor for generating an application commander. */
     protected Commander( final Application application ) {
-        _controlMap = new HashMap<String,String>();
-        _commands = new HashMap<String,EventListener>();
-		_buttonModelMap = new HashMap<String,ButtonModel>();
+        controlMap = new HashMap<>();
+        commands = new HashMap<>();
+		buttonModelMap = new HashMap<>();
         
         loadDefaultBundle();
         loadCustomBundle( application );
@@ -104,9 +104,9 @@ public class Commander {
     
     /** Constructor for generating a desktop application commander. */
     protected Commander( final DesktopApplication application ) {
-        _controlMap = new HashMap<String,String>();
-        _commands = new HashMap<String,EventListener>();
-		_buttonModelMap = new HashMap<String,ButtonModel>();
+        controlMap = new HashMap<>();
+        commands = new HashMap<>();
+		buttonModelMap = new HashMap<>();
         
         loadDefaultBundle();
         loadCustomBundle( application );
@@ -137,7 +137,7 @@ public class Commander {
      * Load a custom bundle if one exists.  If a custom bundle exists, it will override and extend the
 	 * properties found in the default bundle.  You can use it to customize your toolbar, menubar and menus.
 	 * @param application the application for which to load the custom bundle.
-	 * @param resourceName name of the properites resource to load.
+	 * @param resourceName name of the properties resource to load.
      */
     protected void loadCustomBundle( final Application application, final String resourceName ) {
         final URL resourceURL = application.getApplicationAdaptor().getResourceURL( resourceName );
@@ -178,7 +178,7 @@ public class Commander {
      * @param resourceURL URL to the resource bundle to load
      */
     protected void loadBundle( final URL resourceURL ) {
-		Util.mergeResourceBundle( _controlMap, resourceURL );
+		Util.mergeResourceBundle( controlMap, resourceURL );
     }
     
     /**
@@ -189,7 +189,7 @@ public class Commander {
     public JMenuBar getMenubar() {
         final JMenuBar menuBar = new JMenuBar();
 
-        final String menubarStr = _controlMap.get("menubar");
+        final String menubarStr = controlMap.get("menubar");
         if (menubarStr == null || menubarStr.isEmpty())
             return null; // check if a menubar definition was found
 
@@ -290,7 +290,7 @@ public class Commander {
 				final String actionKey = ( explicitActionKey != null ) ? explicitActionKey : defaultActionKey;
 				
 				if ( actionKey != null ) {
-					final ButtonModel model = _buttonModelMap.get( actionKey );
+					final ButtonModel model = buttonModelMap.get( actionKey );
 					
 					if ( model != null ) {
 						if ( model instanceof ToggleButtonModel ) {
@@ -307,7 +307,7 @@ public class Commander {
 					}
 					
 					final String label = menuItem.getText();
-                    final Action action = (Action)_commands.get( actionKey );
+                    final Action action = (Action)commands.get( actionKey );
 					if ( action != null ) {
 						menuItem.setAction( action );
 					}
@@ -344,7 +344,7 @@ public class Commander {
      * @return The new toolbar
      */
     public JToolBar getToolbar() {        
-        final String[] buttonKeys = Util.getTokens( _controlMap.get( "toolbar" ) );
+        final String[] buttonKeys = Util.getTokens( controlMap.get( "toolbar" ) );
 		if ( buttonKeys.length == 0 )  return null;		// there is no toolbar defined
         
 		final JToolBar toolBar = new JToolBar();
@@ -364,8 +364,8 @@ public class Commander {
                 
                 final String actionKey = getItemFieldProperty( buttonKey, "action" );
                 if ( actionKey != null ) {
-					final ButtonModel model = _buttonModelMap.get( actionKey );
-                    final Action action = (Action)_commands.get( actionKey );
+					final ButtonModel model = buttonModelMap.get( actionKey );
+                    final Action action = (Action)commands.get( actionKey );
 					
 					if ( model != null ) {
 						if ( model instanceof ToggleButtonModel ) {
@@ -436,10 +436,10 @@ public class Commander {
 			
 			String actionKey = getItemFieldProperty( itemKey, "action" );
 			if ( actionKey != null ) {
-				final Action action = (Action)_commands.get( actionKey );
+				final Action action = (Action)commands.get( actionKey );
 				button.setAction( action );
 				
-				final ButtonModel model = _buttonModelMap.get( actionKey );
+				final ButtonModel model = buttonModelMap.get( actionKey );
 				if ( model != null && ( model instanceof ToggleButtonModel ) ) {
 					button.setModel( model );
 					buttonGroup.add( button );
@@ -517,7 +517,7 @@ public class Commander {
 	private MenuListener getMenuHandlerForMenuKey( final String menuKey ) {
         final String menuHandlerKey = getItemFieldProperty( menuKey, "handler" );
 		try {
-			return menuHandlerKey != null ? (MenuListener)_commands.get( menuHandlerKey ) : null;
+			return menuHandlerKey != null ? (MenuListener)commands.get( menuHandlerKey ) : null;
 		}
 		catch ( ClassCastException exception ) {
 			System.err.println( "Excepting casting menu handler item to MenuListener for key: " + menuHandlerKey );
@@ -542,13 +542,13 @@ public class Commander {
 	 * @return the button model.
 	 */
 	public ButtonModel getModel( final String actionKey ) {
-		return _buttonModelMap.get( actionKey );
+		return buttonModelMap.get( actionKey );
 	}
 	
 	
 	/** get the item's property for the specified field */
 	private String getItemFieldProperty( final String itemID, final String field ) {
-        return _controlMap.get( itemID + "." + field );
+        return controlMap.get( itemID + "." + field );
 	}
 	
 	
@@ -662,11 +662,11 @@ public class Commander {
 			
 			String actionKey = getItemFieldProperty( menuItemKey, "action" );
 			if ( actionKey != null ) {
-				final Action action = (Action)_commands.get( actionKey );
+				final Action action = (Action)commands.get( actionKey );
 				menuItem.setAction( action );
 				menuItem.setText( label );
 				
-				final ButtonModel model = _buttonModelMap.get( actionKey );
+				final ButtonModel model = buttonModelMap.get( actionKey );
 				if ( model != null && ( model instanceof ToggleButtonModel ) ) {
 					menuItem.setModel( model );
 					buttonGroup.add( menuItem );
@@ -883,7 +883,7 @@ public class Commander {
      * @return The action with the given name.
      */
     public Action getAction( final String actionName ) {
-        return (Action)_commands.get( actionName );
+        return (Action)commands.get( actionName );
     }
     
     
@@ -894,7 +894,7 @@ public class Commander {
      */
     public void registerAction( final Action action ) {
         final String name = (String)action.getValue( Action.NAME );
-        _commands.put( name, action );
+        commands.put( name, action );
     }
     
     
@@ -918,7 +918,7 @@ public class Commander {
 	 * @param model The button model to associate with the action.
      */
     public void registerModel(final String name, final ButtonModel model ) {
-		_buttonModelMap.put( name, model );
+		buttonModelMap.put( name, model );
     }
 	
 	
@@ -928,7 +928,7 @@ public class Commander {
      * @param name The unique name to associate with the handler
      */
     public void registerMenuHandler( final MenuListener handler, final String name ) {
-        _commands.put( name, handler );
+        commands.put( name, handler );
     }
     
     
@@ -955,9 +955,9 @@ public class Commander {
 
 /** Class to represent the state of a menu, menu item or toolbar item. */
 class ItemState {
-	final static private ItemState DEFAULT_STATE;
+	private static final ItemState DEFAULT_STATE;
 	
-	final private boolean _included;
+	private final boolean included;
 	
 	static {
 		DEFAULT_STATE = new ItemState( true );
@@ -966,7 +966,7 @@ class ItemState {
 	
 	/** Primary Constructor */
 	public ItemState( final boolean include ) {
-		_included = include;
+		included = include;
 	}
 	
 	
@@ -996,6 +996,6 @@ class ItemState {
 	
 	/** Determine if the item is included */
 	public boolean isIncluded() {
-		return _included;
+		return included;
 	}
 }

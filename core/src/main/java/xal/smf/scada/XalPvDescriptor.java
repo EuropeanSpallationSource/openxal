@@ -112,7 +112,7 @@ public class XalPvDescriptor {
     }
     
     /**
-     * Copy constructor.  Creats a new a deep copy of
+     * Copy constructor.  Create a new a deep copy of
      * the given PV Descriptor.
      * 
      * <p>
@@ -148,8 +148,8 @@ public class XalPvDescriptor {
      * @author  Christopher K. Allen
      */
     public String getRbHandle() {
-        return this.strHandleRb;
-    };
+        return strHandleRb;
+    }
 
     /**
      * Returns the channel handle of the channel
@@ -161,7 +161,7 @@ public class XalPvDescriptor {
      * @author  Christopher K. Allen
      */
     public String getSetHandle() {
-        return this.strHandleSet;
+        return strHandleSet;
     }
 
     /**

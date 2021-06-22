@@ -26,10 +26,10 @@ public class Marker extends ThinElement {
      */
     
     /** type string identifier for all Marker objects */
-    public static final String          s_strType = "Marker";
+    public static final String          TYPE = "Marker";
     
     /** identity phase map used by all Markers as the transfer map */
-    private static final PhaseMap s_mapId = PhaseMap.identity();
+    private static final PhaseMap MAP_ID = PhaseMap.identity();
     
     
 
@@ -44,7 +44,7 @@ public class Marker extends ThinElement {
      *
      */
     public Marker(String strId) {
-        super(s_strType, strId);
+        super(TYPE, strId);
     }
     
     /** 
@@ -53,7 +53,7 @@ public class Marker extends ThinElement {
      *  <b>BE CAREFUL</b>
      */
     public Marker() {
-        super(s_strType);
+        super(TYPE);
     }
 
     
@@ -95,6 +95,6 @@ public class Marker extends ThinElement {
      *  @exception  PropagationException  this should not occur
      */
     @Override
-    protected PhaseMap transferMap(IProbe probe) throws PropagationException { return s_mapId; }
+    protected PhaseMap transferMap(IProbe probe) throws PropagationException { return MAP_ID; }
     
 }

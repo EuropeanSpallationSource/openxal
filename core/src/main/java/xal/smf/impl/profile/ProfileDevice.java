@@ -814,10 +814,7 @@ public abstract class ProfileDevice extends AcceleratorNode {
 
             return cfgAcq;
 
-        } catch (SecurityException e) {
-            throw new BadStructException("Could not access constructor for " + clsType.getName(), e);
-
-        } catch (NoSuchMethodException e) {
+        } catch (SecurityException | NoSuchMethodException | IllegalAccessException e) {
             throw new BadStructException("Could not access constructor for " + clsType.getName(), e);
 
         } catch (IllegalArgumentException e) {
@@ -825,9 +822,6 @@ public abstract class ProfileDevice extends AcceleratorNode {
 
         } catch (InstantiationException e) {
             throw new BadStructException("Could not access instantiate instance of " + clsType.getName(), e);
-
-        } catch (IllegalAccessException e) {
-            throw new BadStructException("Could not access constructor for " + clsType.getName(), e);
 
         } catch (InvocationTargetException e) {
             throw new BadStructException("An exception was thrown by constructor for " + clsType.getName(), e);
@@ -864,10 +858,7 @@ public abstract class ProfileDevice extends AcceleratorNode {
 
             return dataAcq;
 
-        } catch (SecurityException e) {
-            throw new BadStructException("Could not access constructor for " + clsType.getName(), e);
-
-        } catch (NoSuchMethodException e) {
+        } catch (SecurityException | NoSuchMethodException | IllegalAccessException e) {
             throw new BadStructException("Could not access constructor for " + clsType.getName(), e);
 
         } catch (IllegalArgumentException e) {
@@ -875,9 +866,6 @@ public abstract class ProfileDevice extends AcceleratorNode {
 
         } catch (InstantiationException e) {
             throw new BadStructException("Could not access instantiate instance of " + clsType.getName(), e);
-
-        } catch (IllegalAccessException e) {
-            throw new BadStructException("Could not access constructor for " + clsType.getName(), e);
 
         } catch (InvocationTargetException e) {
             throw new BadStructException("An exception was thrown by constructor for " + clsType.getName(), e);
@@ -975,7 +963,6 @@ public abstract class ProfileDevice extends AcceleratorNode {
      * @throws BadChannelException  An unbound channel handle within a field descriptor 
      *
      * @author Christopher K. Allen
-     * @throws BadChannelException 
      * @since  Feb 4, 2011
      */
     public synchronized boolean testConnection(Class<?> clsScada, double dblTmOut)

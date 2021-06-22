@@ -167,7 +167,7 @@ public class PhaseMap implements IArchive {
     public PhaseMap(PhaseVector vecDispl) {
         this.vecRngDspl = vecDispl;
         this.matLinear  = PhaseMatrix.identity();
-    };
+    }
 
 
     /**
@@ -180,7 +180,7 @@ public class PhaseMap implements IArchive {
         this.vecDomCntr = PhaseVector.newZero();
         this.vecRngDspl = PhaseVector.newZero();
         this.matLinear  = matTrans;
-    };
+    }
 
     /**
       * Initializing constructor for <code>PhaseMap</code> class. Sets the 
@@ -298,6 +298,7 @@ public class PhaseMap implements IArchive {
      * 
      * @see xal.tools.data.IArchive#save(xal.tools.data.DataAdaptor)
      */
+    @Override
     public void save(DataAdaptor daptArchive) {
         DataAdaptor daptCntr = daptArchive.createChild(LBL_CNTR);
         this.getDomainCenter().save(daptCntr);
@@ -320,6 +321,7 @@ public class PhaseMap implements IArchive {
      * 
      * @see xal.tools.data.IArchive#load(xal.tools.data.DataAdaptor)
      */
+    @Override
     public void load(DataAdaptor daptArchive) 
         throws DataFormatException, IllegalArgumentException 
     {

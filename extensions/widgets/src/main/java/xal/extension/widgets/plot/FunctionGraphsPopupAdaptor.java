@@ -156,6 +156,7 @@ public class FunctionGraphsPopupAdaptor implements ChartPopupAdaptor {
      * Get the state of x-axis auto-scaling
      * @return true if the x-axis has auto-scaling enabled; false if not
      */
+    @Override
     public boolean isXAutoScale() {
         return !chart.getCurrentGL().isSetXmin();
     }
@@ -165,6 +166,7 @@ public class FunctionGraphsPopupAdaptor implements ChartPopupAdaptor {
      * Set the auto-scale state of the x-axis
      * @param autoScale true to enable x-axis auto-scaling; false to disable auto-scaling
      */
+    @Override
     public void setXAutoScale(boolean autoScale) {
         // if we are presently auto scaling and we are changing to a fixed scale
         // then set the fixed scale to be consistent with the existing scale
@@ -183,6 +185,7 @@ public class FunctionGraphsPopupAdaptor implements ChartPopupAdaptor {
      * Get the state of y-axis auto-scaling
      * @return true if the y-axis has auto-scaling enabled; false if not
      */
+    @Override
     public boolean isYAutoScale() {
         return !chart.getCurrentGL().isSetYmin();
     }
@@ -192,6 +195,7 @@ public class FunctionGraphsPopupAdaptor implements ChartPopupAdaptor {
      * Set the auto-scale state of the y-axis
      * @param autoScale true to enable y-axis auto-scaling; false to disable auto-scaling
      */
+    @Override
     public void setYAutoScale(boolean autoScale) {
         // if we are presently auto scaling and we are changing to a fixed scale
         // then set the fixed scale to be consistent with the existing scale
@@ -210,6 +214,7 @@ public class FunctionGraphsPopupAdaptor implements ChartPopupAdaptor {
      * Get the number of minor ticks per major step on the x-axis.
      * @return the number of minor ticks
      */
+    @Override
     public int getXNumMinorTicks() {
 		return chart.getCurrentGL().getNumMinorTicksX();
 	}
@@ -219,6 +224,7 @@ public class FunctionGraphsPopupAdaptor implements ChartPopupAdaptor {
      * Set the number of minor ticks on the x-axis.
      * @param count number of minor ticks
      */
+    @Override
     public void setXNumMinorTicks(int count) {
 		chart.getCurrentGL().setNumMinorTicksX(count);
 	}
@@ -228,6 +234,7 @@ public class FunctionGraphsPopupAdaptor implements ChartPopupAdaptor {
      * Get the number of major ticks on the x-axis.
      * @return the spacing per minor tick
      */
+    @Override
     public int getXNumMajorTicks() {
 		return chart.getCurrentGL().getNumMajorTicksX();
 	}
@@ -237,6 +244,7 @@ public class FunctionGraphsPopupAdaptor implements ChartPopupAdaptor {
      * Set the number of major ticks on the x-axis.
      * @param count number of major ticks
      */
+    @Override
     public void setXNumMajorTicks(int count) {
 		chart.getCurrentGL().setNumMajorTicksX(count);
 	}
@@ -246,6 +254,7 @@ public class FunctionGraphsPopupAdaptor implements ChartPopupAdaptor {
      * Get the number of minor ticks per major step on the y-axis.
      * @return the number of minor ticks
      */
+    @Override
     public int getYNumMinorTicks() {
 		return chart.getCurrentGL().getNumMinorTicksY();
 	}
@@ -255,6 +264,7 @@ public class FunctionGraphsPopupAdaptor implements ChartPopupAdaptor {
      * Set the number of minor ticks on the y-axis.
      * @param count the number of minor ticks
      */
+    @Override
     public void setYNumMinorTicks(int count) {
 		chart.getCurrentGL().setNumMinorTicksY(count);
 	}
@@ -264,6 +274,7 @@ public class FunctionGraphsPopupAdaptor implements ChartPopupAdaptor {
      * Get the number of minor ticks on the y-axis.
      * @return the number of major ticks
      */
+    @Override
     public int getYNumMajorTicks() {
 		return chart.getCurrentGL().getNumMajorTicksY();
 	}
@@ -273,6 +284,7 @@ public class FunctionGraphsPopupAdaptor implements ChartPopupAdaptor {
      * Set the number of major ticks on the y-axis.
      * @param count the number of major ticks
      */
+    @Override
     public void setYNumMajorTicks(int count) {
 		chart.getCurrentGL().setNumMajorTicksY(count);
 	}
@@ -282,6 +294,7 @@ public class FunctionGraphsPopupAdaptor implements ChartPopupAdaptor {
      * Get the visibility state of the x-axis grid.
      * @return true if the grid is visible
      */
+    @Override
     public boolean isXGridVisible() {
         return chart.getGridLinesVisibleX();
     }
@@ -291,6 +304,7 @@ public class FunctionGraphsPopupAdaptor implements ChartPopupAdaptor {
      * Set the visibility of the x-axis grid.
      * @param visibility true to enable the grid; false to disable the grid
      */
+    @Override
     public void setXGridVisible(boolean visibility) {
         chart.setGridLinesVisibleX(visibility);
     }
@@ -300,6 +314,7 @@ public class FunctionGraphsPopupAdaptor implements ChartPopupAdaptor {
      * Get the visibility state of the y-axis grid.
      * @return true if the grid is visible
      */
+    @Override
     public boolean isYGridVisible() {
         return chart.getGridLinesVisibleY();
     }
@@ -309,6 +324,7 @@ public class FunctionGraphsPopupAdaptor implements ChartPopupAdaptor {
      * Set the visibility of the y-axis grid.
      * @param visibility true to enable the grid; false to disable the grid
      */
+    @Override
     public void setYGridVisible(boolean visibility) {
         chart.setGridLinesVisibleY(visibility);
     }

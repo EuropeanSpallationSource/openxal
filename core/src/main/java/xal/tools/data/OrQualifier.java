@@ -24,7 +24,7 @@ public class OrQualifier extends CompoundQualifier {
 	
 	/**
 	 * Constructor with a variable number of qualifiers.
-	 * @param qualifiers the qualfiers to append.
+	 * @param qualifiers the qualifiers to append.
 	 */
 	public OrQualifier( final Qualifier ... qualifiers ) {
 		this( qualifiers.length );
@@ -36,7 +36,7 @@ public class OrQualifier extends CompoundQualifier {
 	
 	/**
 	 * Constructor with a list of qualifiers.
-	 * @param qualifiers the qualfiers to append.
+	 * @param qualifiers the qualifiers to append.
 	 */
 	public OrQualifier( final List<? extends Qualifier> qualifiers ) {
 		this( qualifiers.size() );
@@ -53,14 +53,17 @@ public class OrQualifier extends CompoundQualifier {
 	
     
     /** 
-	* Determine if the specified object satisfies the criteria of atleast one of the sub qualifiers.
-	* @param object The object to test
-	* @return true if the object is a match and false if not
-	*/
+    * Determine if the specified object satisfies the criteria of at least one
+    * of the sub qualifiers.
+    *
+    * @param object The object to test
+    * @return true if the object is a match and false if not
+    */
+    @Override
     public boolean matches( final Object object ) {
 		// verify whether any qualifier matches otherwise return false
-        for ( int index = 0 ; index < _qualifierCount ; index++ ) {
-			if ( _qualifiers[index].matches( object ) ) {
+        for ( int index = 0 ; index < qualifierCount ; index++ ) {
+			if ( qualifiers[index].matches( object ) ) {
 				return true;
 			}
         }
@@ -73,6 +76,7 @@ public class OrQualifier extends CompoundQualifier {
 	 * The binary operator token.
 	 * @return "|" to represent this "or" operation.
 	 */
+        @Override
 	public String binaryToken() {
 		return "|";
 	}

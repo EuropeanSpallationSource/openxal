@@ -2,12 +2,9 @@ package xal.extension.scan.analysis;
 
 import java.util.*;
 import java.awt.*;
-import java.text.*;
 import javax.swing.*;
-import javax.swing.border.*;
 
 import xal.tools.data.DataAdaptor;
-import xal.tools.xml.*;
 import xal.extension.scan.*;
 import xal.extension.widgets.plot.*;
 
@@ -24,8 +21,8 @@ public class AnalysisController{
     protected String typeName = "EMPTY_TYPE";
 
     //variables from upper level application
-    protected boolean scanPV_ShowState    = false;
-    protected boolean scanPV_RB_ShowState = false;
+    protected boolean scanPVShowState    = false;
+    protected boolean scanPVRBShowState = false;
 
     protected MainAnalysisController mainController = null;
 
@@ -47,31 +44,31 @@ public class AnalysisController{
     protected BasicGraphData graphDataLocal = null;
 
     /**  The constructor.*/   
-    public AnalysisController( MainAnalysisController mainController_In,
+    public AnalysisController( MainAnalysisController mainControllerIn,
 			       DataAdaptor analysisConf,
-			       JPanel parentAnalysisPanel_In,
-			       JPanel customControlPanel_In,
-			       JPanel customGraphPanel_In,
-			       JPanel globalButtonsPanel_In,
-			       ScanVariable scanVariableParameter_In,
-			       ScanVariable scanVariable_In,
-			       Vector<MeasuredValue> measuredValuesV_In,
-			       FunctionGraphsJPanel graphAnalysis_In,
-			       JTextField messageTextLocal_In,
-			       BasicGraphData graphDataLocal_In){
+			       JPanel parentAnalysisPanelIn,
+			       JPanel customControlPanelIn,
+			       JPanel customGraphPanelIn,
+			       JPanel globalButtonsPanelIn,
+			       ScanVariable scanVariableParameterIn,
+			       ScanVariable scanVariableIn,
+			       Vector<MeasuredValue> measuredValuesVIn,
+			       FunctionGraphsJPanel graphAnalysisIn,
+			       JTextField messageTextLocalIn,
+			       BasicGraphData graphDataLocalIn){
 
 
-	mainController = mainController_In;
-	parentAnalysisPanel = parentAnalysisPanel_In;
-	customControlPanel = customControlPanel_In;
-	customGraphPanel = customGraphPanel_In;
-	globalButtonsPanel = globalButtonsPanel_In;
-	scanVariableParameter = scanVariableParameter_In;
-	scanVariable = scanVariable_In;
-	measuredValuesV = measuredValuesV_In;
-	graphAnalysis = graphAnalysis_In;
-	messageTextLocal = messageTextLocal_In;
-	graphDataLocal = graphDataLocal_In;
+	mainController = mainControllerIn;
+	parentAnalysisPanel = parentAnalysisPanelIn;
+	customControlPanel = customControlPanelIn;
+	customGraphPanel = customGraphPanelIn;
+	globalButtonsPanel = globalButtonsPanelIn;
+	scanVariableParameter = scanVariableParameterIn;
+	scanVariable = scanVariableIn;
+	measuredValuesV = measuredValuesVIn;
+	graphAnalysis = graphAnalysisIn;
+	messageTextLocal = messageTextLocalIn;
+	graphDataLocal = graphDataLocalIn;
         dataReaderPanel = mainController.getDataReaderPanel();
 
     }
@@ -99,9 +96,9 @@ public class AnalysisController{
     /**
      * Sets mask specifying if the data for scan PV  scan read back PV should be shown.
      */
-    public void setScanPVandScanPV_RB_State(boolean scanPV_ShowState,boolean scanPV_RB_ShowState) {
-        this.scanPV_ShowState = scanPV_ShowState;
-        this.scanPV_RB_ShowState = scanPV_RB_ShowState;
+    public void setScanPVandScanPV_RB_State(boolean scanPVShowState,boolean scanPVRBShowState) {
+        this.scanPVShowState = scanPVShowState;
+        this.scanPVRBShowState = scanPVRBShowState;
     }
 
     /**

@@ -18,7 +18,7 @@ public interface IEventSinkValByte {
 
     public void eventValue(byte valNew, Channel chan);
     
-};
+}
 
 
 

@@ -8,8 +8,6 @@ package xal.model.elem;
 
 import java.io.PrintWriter;
 
-import xal.sim.scenario.LatticeElement;
-import xal.smf.impl.Magnet;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.optics.DriftSpace;
@@ -120,10 +118,10 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
 
     
     /** Phase coordinate rotation in SO(6) taking beam coordinates to natural quadrupole coordinates */
-    private static PhaseMatrix  MAT_SO6_TOQUAD_COORDS;
+    private static final PhaseMatrix  MAT_SO6_TOQUAD_COORDS;
     
     /** Phase coordinate rotation in SO(6) natural quadrupole coordinates to beam coordinates */
-    private static PhaseMatrix  MAT_SO6_TOBEAM_COORDS;
+    private static final PhaseMatrix  MAT_SO6_TOBEAM_COORDS;
     
 
     
@@ -198,12 +196,12 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
         // Or, rather, they all have the same orientation.
 
         this.setMagField(dblFld);
-    };
+    }
 
 
     /**
      * Create new, uninitialized <code>IdealMagSkewQuad3</code> object.
-     * Use this contructor with caution as the length of the magnet is
+     * Use this constructor with caution as the length of the magnet is
      * uninitialized.
      *  
      * @author Christopher K. Allen
@@ -215,7 +213,7 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
 
     /**
      * Create new, uninitialized <code>IdealMagSkewQuad3</code> object.
-     * Use this contructor with caution as the length of the magnet is
+     * Use this constructor with caution as the length of the magnet is
      * uninitialized.
      *  
      * @author Christopher K. Allen
@@ -251,7 +249,6 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
     public double   getSkewAngle() {
         return DBL_SKEW_ANGLE;
     }
-       
     
 
 
@@ -280,7 +277,7 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
     @Override
     public int getOrientation() {
         return IElectromagnet.ORIENT_NONE;
-    };
+    }
 
     /**
      * <p>
@@ -299,10 +296,9 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
      *  @see    IdealMagSkewQuad3#getOrientation
      */
     @Override
-    public void setOrientation(int enmOrient) {};
+    public void setOrientation(int enmOrient) {}
 
-    
-
+  
 
     /*
      *  ThickElement Protocol
@@ -367,7 +363,7 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
         double gamma = probe.getGamma();
         
         // focusing constant (radians/meter)
-        final double k = ( charge * LightSpeed * getMagField() ) / ( Er * beta * gamma );
+        final double k = ( charge * LIGHT_SPEED * getMagField() ) / ( Er * beta * gamma );
         final double kSqrt = Math.sqrt( Math.abs( k ) );
 
         // Compute the transfer matrix components
@@ -409,18 +405,12 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
      *
      *  @param  os      output stream object
      */
+    @Override
     public void print(PrintWriter os) {
         super.print(os);
 
         os.println("  magnetic field     : " + this.getMagField());
         os.println("  skew angle         : " + this.getSkewAngle());
-    };
+    }
 
-    
-    
-    
-    /*
-     * Internal Support
-     */
-     
 }

@@ -11,33 +11,31 @@ package xal.tools.apputils.files;
 import java.io.*;
 import java.beans.*;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.*;
 import java.util.prefs.Preferences;
 import java.net.*;
 
 /** Manage the default folder for an application's documents */
 public class DefaultFolderAccessory implements PropertyChangeListener {
 	/** default preference ID */
-	final static private String DEFAULT_ID = "DEFAULT_FOLDER";
+	private static final String DEFAULT_ID = "DEFAULT_FOLDER";
 	
 	/** file tracker for the default folder */
-	protected RecentFileTracker _folderTracker;
+	protected RecentFileTracker folderTracker;
 	
 	/** optional subfolder name */
-	protected String _subfolderName;
+	protected String subfolderName;
 	
 	/** the active file chooser */
-	protected JFileChooser _activeFileChooser;
+	protected JFileChooser activeFileChooser;
 	
 	
 	/** Primary Constructor */
 	public DefaultFolderAccessory( final Preferences prefs, final String preferenceID, final String subfolderName ) {
-		_subfolderName = subfolderName;
+		this.subfolderName = subfolderName;
 		final String prefID = ( preferenceID != null ) ? preferenceID : DEFAULT_ID;
-		_folderTracker = new RecentFileTracker( 1, prefs, prefID );
+		folderTracker = new RecentFileTracker( 1, prefs, prefID );
 	}
 	
 	
@@ -73,17 +71,17 @@ public class DefaultFolderAccessory implements PropertyChangeListener {
 	
 	/** Determine if the default folder has been specified. */
 	public boolean defaultFolderSpecified() {
-		return _folderTracker.getMostRecentFile() != null;
+		return folderTracker.getMostRecentFile() != null;
 	}
 	
 	
 	/** Get the default folder */
 	public File getDefaultFolder() {
-		final File recentFolder = _folderTracker.getMostRecentFile();
+		final File recentFolder = folderTracker.getMostRecentFile();
 		
 		if ( recentFolder != null && recentFolder.exists() ) {
-			if ( _subfolderName != null ) {
-				final File defaultFolder = new File( recentFolder, _subfolderName );
+			if ( subfolderName != null ) {
+				final File defaultFolder = new File( recentFolder, subfolderName );
 				if ( !defaultFolder.exists() ) {
 					defaultFolder.mkdir();
 				}
@@ -125,25 +123,26 @@ public class DefaultFolderAccessory implements PropertyChangeListener {
 	
 	
 	/** Implement the propertyChange event handler for this listener */
+        @Override
 	public void propertyChange( final PropertyChangeEvent event ) {
-		_activeFileChooser = (JFileChooser)event.getSource();
+		activeFileChooser = (JFileChooser)event.getSource();
 	}
 	
 	
 	/** view for displaying the buttons */
 	private class AccessoryView {
-		final private Box _view;
+		private final Box view;
 		
 		/** Constructor */
 		public AccessoryView() {
-			_view = new Box( BoxLayout.Y_AXIS );
+			view = new Box( BoxLayout.Y_AXIS );
 			makeContents();
 		}
 		
 		
 		/** get the component */
 		public JComponent getComponent() {
-			return _view;
+			return view;
 		}
 		
 		
@@ -151,11 +150,11 @@ public class DefaultFolderAccessory implements PropertyChangeListener {
 		protected void handleToDefaultFolderAction() throws Exception {
 			if ( !defaultFolderSpecified() ) {
 				String message = "A default folder has not been specified.  Would you like to specify one now?\n";
-				if ( _subfolderName != null ) {
-					message += "Note that you will be specifying the parent folder of " + _subfolderName + ".\n";
-					message += _subfolderName + " under the selected folder will hold your files.";
+				if ( subfolderName != null ) {
+					message += "Note that you will be specifying the parent folder of " + subfolderName + ".\n";
+					message += subfolderName + " under the selected folder will hold your files.";
 				}
-				final int confirm = JOptionPane.showConfirmDialog( _view, message, "Specify Default Folder", JOptionPane.YES_NO_OPTION );
+				final int confirm = JOptionPane.showConfirmDialog( view, message, "Specify Default Folder", JOptionPane.YES_NO_OPTION );
 				
 				try {
 					switch ( confirm ) {
@@ -171,7 +170,7 @@ public class DefaultFolderAccessory implements PropertyChangeListener {
 				}
 			}
 			
-			applyDefaultFolder( _activeFileChooser );		
+			applyDefaultFolder(activeFileChooser );		
 		}
 		
 		
@@ -180,17 +179,17 @@ public class DefaultFolderAccessory implements PropertyChangeListener {
 		 * @return true if the user selected a default folder and false if not.
 		 */
 		protected boolean showDefaultFolderSelector() throws Exception {
-			final JFileChooser selector = new JFileChooser( _activeFileChooser.getCurrentDirectory() );
+			final JFileChooser selector = new JFileChooser( activeFileChooser.getCurrentDirectory() );
 			selector.setFileSelectionMode( JFileChooser.DIRECTORIES_ONLY );
-			final String title = ( _subfolderName == null ) ? "Default Folder" : "Default Parent Folder of " + _subfolderName;
+			final String title = ( subfolderName == null ) ? "Default Folder" : "Default Parent Folder of " + subfolderName;
 			selector.setDialogTitle( title );
-			final int status = selector.showDialog( _view, "Make Default" );
+			final int status = selector.showDialog( view, "Make Default" );
 			
 			switch ( status ) {
 				case JFileChooser.APPROVE_OPTION:
 					final File defaultFolder = selector.getSelectedFile();
 					if ( defaultFolder != null ) {
-						_folderTracker.cacheURL( defaultFolder.toURI().toURL() );
+						folderTracker.cacheURL( defaultFolder.toURI().toURL() );
 						return true;						
 					}
 					else {
@@ -204,9 +203,9 @@ public class DefaultFolderAccessory implements PropertyChangeListener {
 		
 		/** make the box view */
 		protected void makeContents() {
-			_view.add( makeDefaultFolderNavigationButton() );
+			view.add( makeDefaultFolderNavigationButton() );
 			
-			_view.add( Box.createVerticalGlue() );
+			view.add( Box.createVerticalGlue() );
 		}
 		
 		
@@ -215,6 +214,7 @@ public class DefaultFolderAccessory implements PropertyChangeListener {
 			final JButton goButton = new JButton( "Default Folder" );
 			goButton.setToolTipText( "Navigate to the default folder." );
 			goButton.addActionListener( new ActionListener() {
+                                @Override
 				public void actionPerformed( final ActionEvent event ) {
 					try {
 						handleToDefaultFolderAction();
@@ -232,7 +232,7 @@ public class DefaultFolderAccessory implements PropertyChangeListener {
 		/** report exceptions */
 		protected void reportException( final Exception exception ) {
 			final String message = exception.getMessage();
-			JOptionPane.showMessageDialog( _view, message, "Default Folder Error", JOptionPane.ERROR_MESSAGE );
+			JOptionPane.showMessageDialog( view, message, "Default Folder Error", JOptionPane.ERROR_MESSAGE );
 		}
 	}
 }

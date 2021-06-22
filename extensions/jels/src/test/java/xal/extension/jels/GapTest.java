@@ -443,14 +443,14 @@ public class GapTest extends SingleElementTest {
         // TTF		
         if (betas == 0.0) {
             cavity.getRfField().setTTFCoefs(new double[]{});
-            cavity.getRfField().setTTF_endCoefs(new double[]{});
+            cavity.getRfField().setTTFEndCoefs(new double[]{});
         } else {
             cavity.getRfField().setTTFCoefs(new double[]{betas, Ts, kTs, k2Ts});
-            cavity.getRfField().setTTF_startCoefs(new double[]{betas, Ts, kTs, k2Ts});
-            cavity.getRfField().setTTF_endCoefs(new double[]{betas, Ts, kTs, k2Ts});
+            cavity.getRfField().setTTFStartCoefs(new double[]{betas, Ts, kTs, k2Ts});
+            cavity.getRfField().setTTFEndCoefs(new double[]{betas, Ts, kTs, k2Ts});
             cavity.getRfField().setSTFCoefs(new double[]{betas, 0., kS, k2S});
-            cavity.getRfField().setSTF_startCoefs(new double[]{betas, 0., kS, k2S});
-            cavity.getRfField().setSTF_endCoefs(new double[]{betas, 0., kS, k2S});
+            cavity.getRfField().setSTFStartCoefs(new double[]{betas, 0., kS, k2S});
+            cavity.getRfField().setSTFEndCoefs(new double[]{betas, 0., kS, k2S});
         }
 
         sequence.addNode(cavity);

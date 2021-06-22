@@ -8,15 +8,9 @@
 
 package xal.extension.orbit;
 
-import java.util.*;
 
 import xal.smf.*;
-import xal.model.IElement;
-import xal.model.alg.*;
-import xal.model.probe.*;
-import xal.sim.scenario.*;
 import xal.model.probe.traj.*;
-import xal.smf.impl.*;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.calc.*;
 
@@ -24,28 +18,28 @@ import xal.tools.beam.calc.*;
 /** maps coordinates from two nodes to a third node */
 public class CoordinateMap {
 	/** Accelerator sequence */
-	final protected AcceleratorSeq SEQUENCE;
+	protected final AcceleratorSeq sequence;
 
 	/** first reference node */
-	final protected AcceleratorNode NODE_A;
+	protected final AcceleratorNode nodeA;
 
 	/** second reference node */
-	final protected AcceleratorNode NODE_B;
+	protected final AcceleratorNode nodeB;
 
 	/** the element to which to transfer coordinate information */
-	final protected AcceleratorNode TARGET_NODE;
+	protected final AcceleratorNode targetNode;
 
 	/** horizontal transfer map */
-	final protected double[] X_TRANSFER_MAP;
+	protected final double[] xTransferMap;
 
 	/** vertical transfer map */
-	final protected double[] Y_TRANSFER_MAP;
+	protected final double[] yTransferMap;
 
 	/** horizontal angle transfer map */
-	final protected double[] XP_TRANSFER_MAP;
+	protected final double[] xpTransferMap;
 
 	/** vertical angle transfer map */
-	final protected double[] YP_TRANSFER_MAP;
+	protected final double[] ypTransferMap;
 
 	/** scenario used to get the node to element map */
 	//private Scenario _scenario;	// Hopefully this can be removed if the mapping can be done internally in Trajectory
@@ -60,16 +54,16 @@ public class CoordinateMap {
 	 * @param sequence accelerator sequence which is necessary to handle the ring correctly
 	 */
 	public CoordinateMap( final AcceleratorNode targetNode, final AcceleratorNode nodeA, final AcceleratorNode nodeB, final Trajectory<TransferMapState> trajectory, final AcceleratorSeq sequence ) {
-		SEQUENCE = sequence;
+		this.sequence = sequence;
 
-		TARGET_NODE = targetNode;
-		NODE_A = nodeA;
-		NODE_B = nodeB;
+		this.targetNode = targetNode;
+		this.nodeA = nodeA;
+		this.nodeB = nodeB;
 
-		X_TRANSFER_MAP = new double[] { 0.5, 0.5, 0.0 };
-		Y_TRANSFER_MAP = new double[] { 0.5, 0.5, 0.0 };
-		XP_TRANSFER_MAP = new double[] { 0.0, 0.0, 0.0 };
-		YP_TRANSFER_MAP = new double[] { 0.0, 0.0, 0.0 };
+		xTransferMap = new double[] { 0.5, 0.5, 0.0 };
+		yTransferMap = new double[] { 0.5, 0.5, 0.0 };
+		xpTransferMap = new double[] { 0.0, 0.0, 0.0 };
+		ypTransferMap = new double[] { 0.0, 0.0, 0.0 };
 
 		if ( trajectory != null ) {
 			setTrajectory( trajectory );
@@ -96,7 +90,7 @@ public class CoordinateMap {
 	 * @param nodeB second accelerator node for which we have a position
 	 * @param sequence accelerator sequence which is necessary to handle the ring correctly
 	 */
-	static public CoordinateMap getInstance( final AcceleratorNode targetNode, final AcceleratorNode nodeA, final AcceleratorNode nodeB, final AcceleratorSeq sequence ) {
+	public static CoordinateMap getInstance( final AcceleratorNode targetNode, final AcceleratorNode nodeA, final AcceleratorNode nodeB, final AcceleratorSeq sequence ) {
 		return new CoordinateMap( targetNode, nodeA, nodeB, null, sequence );
 	}
 
@@ -108,7 +102,7 @@ public class CoordinateMap {
 	 * @return horizontal coordinate at the target in millimeters
 	 */
 	public double getX( final double x1, final double x2 ) {
-		return getCoordinate( X_TRANSFER_MAP, x1, x2 );
+		return getCoordinate(xTransferMap, x1, x2 );
 	}
 
 
@@ -119,7 +113,7 @@ public class CoordinateMap {
 	 * @return vertical coordinate at the target in millimeters
 	 */
 	public double getY( final double y1, final double y2 ) {
-		return getCoordinate( Y_TRANSFER_MAP, y1, y2 );
+		return getCoordinate(yTransferMap, y1, y2 );
 	}
 
 
@@ -130,7 +124,7 @@ public class CoordinateMap {
 	 * @return horizontal angle at the target in milliradians
 	 */
 	public double getXAngle( final double x1, final double x2 ) {
-		return getCoordinate( XP_TRANSFER_MAP, x1,  x2 );
+		return getCoordinate(xpTransferMap, x1,  x2 );
 	}
 
 
@@ -141,12 +135,12 @@ public class CoordinateMap {
 	 * @return vertical angle at the target in milliradians
 	 */
 	public double getYAngle( final double y1, final double y2 ) {
-		return getCoordinate( YP_TRANSFER_MAP, y1,  y2 );
+		return getCoordinate(ypTransferMap, y1,  y2 );
 	}
 
 
 	/** get the target coordinate from the coordinates in the two reference nodes */
-	static private double getCoordinate( final double[] transferMap, final double q1, final double q2 ) {
+	private static double getCoordinate( final double[] transferMap, final double q1, final double q2 ) {
 		return q1 * transferMap[0] + q2 * transferMap[1] + transferMap[2];
 	}
 
@@ -154,10 +148,10 @@ public class CoordinateMap {
 	/** set the trajectory */
 	public void setTrajectory( final Trajectory<TransferMapState> trajectory ) {
 		// get the transfer matrix from A to B
-		final PhaseMatrix transferAB = getTransferMatrix( trajectory, NODE_A, NODE_B );
+		final PhaseMatrix transferAB = getTransferMatrix(trajectory, nodeA, nodeB );
 
 		// get the transfer matrix from A to the target
-		final PhaseMatrix transferATarget = getTransferMatrix( trajectory, NODE_A, TARGET_NODE );
+		final PhaseMatrix transferATarget = getTransferMatrix(trajectory, nodeA, targetNode );
 
 		generateXTransferMap( transferAB, transferATarget );
 		generateYTransferMap( transferAB, transferATarget );
@@ -184,9 +178,9 @@ public class CoordinateMap {
 		final double t12 = transferAB.getElem( PhaseMatrix.IND_X, PhaseMatrix.IND_XP );
 		final double t13 = transferAB.getElem( PhaseMatrix.IND_X, PhaseMatrix.IND_HOM );
 
-		X_TRANSFER_MAP[0] = r11 - r12 * t11 / t12;
-		X_TRANSFER_MAP[1] = r12 / t12;
-		X_TRANSFER_MAP[2] = 1000 * ( r13 - r12 * t13 / t12 );
+		xTransferMap[0] = r11 - r12 * t11 / t12;
+		xTransferMap[1] = r12 / t12;
+		xTransferMap[2] = 1000 * ( r13 - r12 * t13 / t12 );
 	}
 
 
@@ -202,9 +196,9 @@ public class CoordinateMap {
 		final double t12 = transferAB.getElem( PhaseMatrix.IND_Y, PhaseMatrix.IND_YP );
 		final double t13 = transferAB.getElem( PhaseMatrix.IND_Y, PhaseMatrix.IND_HOM );
 
-		Y_TRANSFER_MAP[0] = r11 - r12 * t11 / t12;
-		Y_TRANSFER_MAP[1] = r12 / t12;
-		Y_TRANSFER_MAP[2] = 1000 * ( r13 - r12 * t13 / t12 );
+		yTransferMap[0] = r11 - r12 * t11 / t12;
+		yTransferMap[1] = r12 / t12;
+		yTransferMap[2] = 1000 * ( r13 - r12 * t13 / t12 );
 	}
 
 
@@ -220,9 +214,9 @@ public class CoordinateMap {
 		final double t12 = transferAB.getElem( PhaseMatrix.IND_X, PhaseMatrix.IND_XP );
 		final double t13 = transferAB.getElem( PhaseMatrix.IND_X, PhaseMatrix.IND_HOM );
 
-		XP_TRANSFER_MAP[0] = r21 - r22 * t11 / t12;
-		XP_TRANSFER_MAP[1] = r22 / t12;
-		XP_TRANSFER_MAP[2] = 1000 * ( r23 - r22 * t13 / t12 );
+		xpTransferMap[0] = r21 - r22 * t11 / t12;
+		xpTransferMap[1] = r22 / t12;
+		xpTransferMap[2] = 1000 * ( r23 - r22 * t13 / t12 );
 	}
 
 
@@ -238,15 +232,15 @@ public class CoordinateMap {
 		final double t12 = transferAB.getElem( PhaseMatrix.IND_Y, PhaseMatrix.IND_YP );
 		final double t13 = transferAB.getElem( PhaseMatrix.IND_Y, PhaseMatrix.IND_HOM );
 
-		YP_TRANSFER_MAP[0] = r21 - r22 * t11 / t12;
-		YP_TRANSFER_MAP[1] = r22 / t12;
-		YP_TRANSFER_MAP[2] = 1000 * ( r23 - r22 * t13 / t12 );
+		ypTransferMap[0] = r21 - r22 * t11 / t12;
+		ypTransferMap[1] = r22 / t12;
+		ypTransferMap[2] = 1000 * ( r23 - r22 * t13 / t12 );
 	}
 
 
 	/** get the transfer matrix from the transfer map trajectory */
 	private PhaseMatrix getTransferMatrix( final Trajectory<TransferMapState> trajectory, final AcceleratorNode fromNode, final AcceleratorNode toNode ) {
-		if ( SEQUENCE.isLinear() ) {
+		if ( sequence.isLinear() ) {
 			return getLinearTransferMatrix( trajectory, fromNode, toNode );
 		}
 		else {
@@ -319,8 +313,8 @@ public class CoordinateMap {
 		final PhaseMatrix toMatrix = getProbeState( trajectory, toNode ).getTransferMap().getFirstOrder();
 
 		// shortest distance on the ring between "to" and "from" nodes where it is positive if the "from" node position is greater than the "to" node position and negative otherwise
-		final double distance = SEQUENCE.getShortestRelativePosition( fromNode, toNode );	// reference node is the "to" node
-		final double toLocation = SEQUENCE.getPosition( toNode );	// postion of the "to" node with respect to the sequence origin
+		final double distance = sequence.getShortestRelativePosition( fromNode, toNode );	// reference node is the "to" node
+		final double toLocation = sequence.getPosition( toNode );	// postion of the "to" node with respect to the sequence origin
 		final double fromPath = toLocation + distance;	// path to the "from" node relative to origin along the shortest path to the "to" node
 
 		// Xo:  coordinate at the origin during the current turn
@@ -338,7 +332,7 @@ public class CoordinateMap {
 			//final PhaseMatrix fullTurnOriginMatrix = trajectory.getFullTurnMapAtOrigin().getFirstOrder();
 			return toMatrix.times( fullTurnOriginMatrix ).times( fromMatrix.inverse() );
 		}
-		else if ( fromPath > SEQUENCE.getLength() ) { // "from" node is across the origin near the front of the sequence, and the "to" node is near the end of the sequence
+		else if ( fromPath > sequence.getLength() ) { // "from" node is across the origin near the front of the sequence, and the "to" node is near the end of the sequence
 			// Xo = F * Xp, Xf = Tf * Xo, Xt = Tt * Xp  ->  Xf = Tf * F * Xp  ->  Xp = (Tf * F)^-1 * Xf  ->  Xt = Tt * (Tf * F)^-1 * Xf  ->  Tft = Tt * (Tf * F)^-1
 			final TransferMapState originState = trajectory.initialState();
 			final PhaseMatrix fullTurnOriginMatrix = new CalculationsOnRings( trajectory ).getFullTransferMap().getFirstOrder();
@@ -352,8 +346,8 @@ public class CoordinateMap {
 	}
 
 
-	/** get the transfer matrix between the two response matricies */
-	static private PhaseMatrix getTransferMatrix( final PhaseMatrix fromMatrix, final PhaseMatrix toMatrix ) {
+	/** get the transfer matrix between the two response matrices */
+	private static PhaseMatrix getTransferMatrix( final PhaseMatrix fromMatrix, final PhaseMatrix toMatrix ) {
 		return toMatrix.times( fromMatrix.inverse() );
 	}
 }

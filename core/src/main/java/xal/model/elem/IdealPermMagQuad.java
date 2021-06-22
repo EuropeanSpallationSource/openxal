@@ -35,7 +35,7 @@ import xal.model.elem.sync.IElectromagnet;
 public class IdealPermMagQuad extends ThickElectromagnet {
 
 
-    static final boolean debugT3d = false;
+    static final boolean DEBUG_T3D = false;
 
     /*
      *  Global Attributes
@@ -43,12 +43,12 @@ public class IdealPermMagQuad extends ThickElectromagnet {
 
 
     /** string type identifier for all IdealMagQuad objects */
-    public  final static String s_strType = "IdealMagQuad";
+    public  static final String TYPE = "IdealMagQuad";
 
 
     /** Parameters for XAL MODEL LATTICE dtd */
-    public static final String s_strParamOrient = "Orientation";
-    public static final String s_strParamField = "MagField";
+    public static final String PARAM_ORIENT = "Orientation";
+    public static final String PARAM_FIELD = "MagField";
 
 
     /*
@@ -198,20 +198,20 @@ public class IdealPermMagQuad extends ThickElectromagnet {
      *  @param  dblLen    length of the quadrupole
      */
     public IdealPermMagQuad(String strId, int enmOrient, double dblFld, double dblLen) {
-        super(s_strType, strId, dblLen);
+        super(TYPE, strId, dblLen);
 
         this.setOrientation(enmOrient);
         this.setMagField(dblFld);
-    };
+    }
 
     /**
-     *  JavaBean constructor - creates a new unitialized instance of IdealMagQuad
+     *  JavaBean constructor - creates a new uninitialized instance of IdealMagQuad
      *
      *  <b>BE CAREFUL</b>
      */
     public IdealPermMagQuad() {
-        super(s_strType);
-    };
+        super(TYPE);
+    }
 
     /*
      *  ThickElement Protocol
@@ -244,7 +244,7 @@ in imparted to a particular probe.  For an ideal quadrupole
     @Override
     public double energyGain(IProbe probe, double dblLen) {
         return 0.0;
-    };
+    }
 
 
     /**
@@ -256,7 +256,7 @@ in imparted to a particular probe.  For an ideal quadrupole
      *  @param  orientation 
      *  @return         transfer map of ideal quadrupole for particular probe
      */
-    //static public PhaseMap transferMap(IProbe probe, double dL, double k, int orientation, double alignx, double aligny, double alignz) {
+    //public static PhaseMap transferMap(IProbe probe, double dL, double k, int orientation, double alignx, double aligny, double alignz) {
     public PhaseMap transferMap(IProbe probe, double dL, double k, int orientation) {    
         // Compute the transfer matrix components
         double[][] arrF = QuadrupoleLens.transferFocPlane(k, dL);
@@ -287,7 +287,7 @@ in imparted to a particular probe.  For an ideal quadrupole
             default :
                 throw new ModelException("IdealMagQuad::computeTransferMatrix() - Bad magnet orientation.");
         }
-        } catch(Exception e) {
+        } catch(ModelException e) {
             e.printStackTrace();
             System.exit(-1);
         }
@@ -298,7 +298,7 @@ in imparted to a particular probe.  For an ideal quadrupole
    
 
         return new PhaseMap(matPhi);
-    };
+    }
 
 
 
@@ -374,7 +374,7 @@ in imparted to a particular probe.  For an ideal quadrupole
     }
 
 /** Removed - Jan 2019 Natalia Milas
-static private PhaseMatrix applyAlignErrorStatic(PhaseMatrix matPhi, double delx, double dely, double delz) {
+private static PhaseMatrix applyAlignErrorStatic(PhaseMatrix matPhi, double delx, double dely, double delz) {
 
     if ((delx==0)&&(dely==0)&&(delz==0)) {
         return matPhi;
@@ -492,14 +492,14 @@ public double calcK(IProbe probe, double dblLen) {
     // Compute focusing constant
     // focusing constant (radians/meter)
 
-    double k = Math.sqrt((LightSpeed * G) / p);
+    double k = Math.sqrt((LIGHT_SPEED * G) / p);
 
     if (K1!=0.) {//sako!!
        System.out.println("K1, k = "+K1+" "+k);
        k = Math.sqrt(Math.abs(K1)*f);
      }
 
-    if (debugT3d) {
+    if (DEBUG_T3D) {
         System.out.println("XAL element,z,grad = "+probe.getCurrentElement()+" "+s*1000+" "+G);
     }
 
@@ -555,7 +555,7 @@ public double calcK(IProbe probe, double dblLen) {
    }
 
     /**
-     *  Compute the partial transfer map of permenant magnet quadrupole
+     *  Compute the partial transfer map of permanent magnet quadrupole
      *  for the particular probe.
      *  Computes transfer map for a section of quadrupole <code>dblLen</code> meters
      *  in length.
@@ -567,9 +567,9 @@ public double calcK(IProbe probe, double dblLen) {
      *
      *  @exception  ModelException    unknown quadrupole orientation
      */
-    static final boolean useApproxLens = true; //def=false
-    static public boolean getUseApproxLens() {
-        return useApproxLens;
+    static final boolean USE_APPROX_LENS = true; //def=false
+    public static boolean getUseApproxLens() {
+        return USE_APPROX_LENS;
     }
     @Override
     public PhaseMap transferMap(IProbe probe, double dblLen)
@@ -626,7 +626,7 @@ public double calcK(IProbe probe, double dblLen) {
         //double[][] arrFPrec = QuadrupoleLens.transferFocPlane(K, dL);
 
 
-        if (useApproxLens) {
+        if (USE_APPROX_LENS) {
             //arrF = QuadrupoleLens.transferFocPlaneApprox(K, dL);
             arrF = QuadrupoleLens.transferFocPlaneApproxSandWitch(K*assymmetryF, dL);
         //          arrF = QuadrupoleLens.transferFocPlaneExact(K, dL);
@@ -641,7 +641,7 @@ public double calcK(IProbe probe, double dblLen) {
        // double[][] arrDPrec = QuadrupoleLens.transferDefPlane(K, dL);
     //sako
 
-        if (useApproxLens) {
+        if (USE_APPROX_LENS) {
             //arrD= QuadrupoleLens.transferDefPlaneApprox(K, dL);
             arrD= QuadrupoleLens.transferDefPlaneApproxSandWitch(K*assymmetryD, dL);
           //        arrD= QuadrupoleLens.transferDefPlaneExact(K, dL);
@@ -688,7 +688,7 @@ public double calcK(IProbe probe, double dblLen) {
      * based on trace3d pmqf subroutine
      *
      */
-    private final double fringe(double s, double z1, double z2, double r1, double r2) {
+    private double fringe(double s, double z1, double z2, double r1, double r2) {
 
     if (r1<=0 && r2<=0) {
             if (z1<=0 && z2>=0) {
@@ -766,7 +766,7 @@ public double calcK(IProbe probe, double dblLen) {
         double wtemp = (w1s*w2s*(w1s+w2s+w12m+4+8/w12m))/w12a;
         double f2 = 0.5*(1-0.125*z2*(1/r1+1/r2)*wtemp);
 
-        if (debugT3d) {
+        if (DEBUG_T3D) {
         System.out.println("XAL: s,z1,z2,r1,r2 ="
                 +s*1000+" "+z1*1000+" "+z2*1000+" "+r1*1000+" "+r2*1000);
     }
@@ -789,7 +789,6 @@ public double calcK(IProbe probe, double dblLen) {
 
         os.println("  magnetic field     : " + this.getMagField());
         os.println("  magnet orientation : " + this.getOrientation());
-    };
+    }
 
-
-};
+}

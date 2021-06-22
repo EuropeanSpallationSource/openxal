@@ -18,7 +18,7 @@ public interface IEventSinkValDbl {
 
     public void eventValue(double valNew, Channel chan);
     
-};
+}
 
 
 

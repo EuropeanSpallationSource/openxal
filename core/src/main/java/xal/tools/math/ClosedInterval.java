@@ -84,9 +84,10 @@ public class ClosedInterval extends Interval {
      *
      * @return         true if x is in interval
      */
+    @Override
     public boolean membership(double x)    { 
         return (getMax()>=x) && (getMin()<=x); 
-    };
+    }
 
      
     /**
@@ -125,7 +126,7 @@ public class ClosedInterval extends Interval {
      */
     public boolean equals(ClosedInterval I)      { 
         return (this.getMin()==I.getMin()) && (this.getMax()==I.getMax()); 
-    };
+    }
 
 
     /*

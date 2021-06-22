@@ -10,7 +10,6 @@ package xal.extension.fit;
 import xal.tools.math.DifferentialVariable;
 import xal.extension.solver.*;
 import xal.extension.solver.hint.InitialDelta;
-import xal.tools.statistics.MutableUnivariateStatistics;
 
 import java.util.*;
 
@@ -18,90 +17,90 @@ import java.util.*;
 /** 
  DampedSinusoid provides an exact closed form solution for fitting a waveform to a damped sinusoid of the form <b><code><i>q</i> = <i>A</i>e<i><sup>&gamma;t</sup></i>sin(<i>&mu;t</i> + <i>&phi;</i>) + <i>C</i></code></b> which is adapted for efficient fitting in the presence of noise. The fits for frequency, offset and growth rate are good in the presence of relatively small noise. However, the estimation of phase and amplitude are relatively poor in the presence of noise. Also, the estimation breaks down when the frequency is near an integer or half integer.
  */
-final public class DampedSinusoidFit {
+public final class DampedSinusoidFit {
 	/** raw waveform */
-	final private double[] WAVEFORM;
+	private final double[] waveform;
 	
 	/** number of points to use */
-	final private int NUM_POINTS;
+	private final int numPoints;
 	
 	/** waveform with the offset removed */
-	private DifferentialVariable[] _initialZeroedWaveform;
+	private DifferentialVariable[] initialZeroedWaveform;
 	
 	/** optimized waveform error */
-	private double[] _waveformError;
+	private double[] waveformError;
 	
 	/** initial waveform error */
-	private double[] _initialWaveformError;
+	private double[] initialWaveformError;
 	
 	/** indicates whether the initial waveform error has been calculated */
-	private boolean _initialWaveformErrorCalculated;
+	private boolean initialWaveformErrorCalculated;
 	
 	/** initial fitted offset */
-	private DifferentialVariable _initialOffset;
+	private DifferentialVariable initialOffset;
 	
 	/** initial estimate of the signal variance */
-	private double _initialSignalVariance;
+	private double initialSignalVariance;
 	
 	/** indicates whether the offset has been calculated */
-	private boolean _initialOffsetCalculated;
+	private boolean initialOffsetCalculated;
 	
 	/** optimal offset */
-	private double _offset;
+	private double offset;
 	
 	/** optimized estimate of the signal variance */
-	private double _signalVariance;
+	private double signalVariance;
 	
 	/** initial fitted growth rate */
-	private DifferentialVariable _initialGrowthRate;
+	private DifferentialVariable initialGrowthRate;
 	
 	/** initial value of the exponent of the growth rate */
-	private DifferentialVariable _initialGrowthFactor;
+	private DifferentialVariable initialGrowthFactor;
 	
 	/** array of initial growth factors demonstrating the variation in the growth factor calculations */
-	private List<Double> _initialGrowthFactorArray;
+	private List<Double> initialGrowthFactorArray;
 	
 	/** indicates whether the growth rate has been calculated */
-	private boolean _initialGrowthRateCalculated;
+	private boolean initialGrowthRateCalculated;
 	
 	/** optimized growth rate */
-	private double _growthRate;
+	private double growthRate;
 	
 	/** optimized growth factor */
-	private double _growthFactor;
+	private double growthFactor;
 	
 	/** fitted frequency */
-	private DifferentialVariable _initialFrequency;
+	private DifferentialVariable initialFrequency;
 	
 	/** initial fitted cosine of the angular frequency */
-	private DifferentialVariable _initialCosineMu;
+	private DifferentialVariable initialCosineMu;
 	
 	/** indicates whether the frequency has been calculated */
-	private boolean _initialFrequencyCalculated;
+	private boolean initialFrequencyCalculated;
 	
 	/** optimized frequency */
-	private double _frequency;
+	private double frequency;
 	
 	/** optimized cosine mu */
-	private double _cosineMu;
+	private double cosineMu;
 	
 	/** fitted phase for the sine-like wave */
-	private double _initialPhase;
+	private double initialPhase;
 	
 	/** indicates whether the phase has been calculated */
-	private boolean _initialPhaseCalculated;
+	private boolean initialPhaseCalculated;
 	
 	/** optimized phase */
-	private double _phase;
+	private double phase;
 	
 	/** fitted amplitude */
-	private double _initialAmplitude;
+	private double initialAmplitude;
 	
 	/** indicates whether the amplitude has been calculated */
-	private boolean _initialAmplitudeCalculated;
+	private boolean initialAmplitudeCalculated;
 	
 	/** optimized amplitude */
-	private double _amplitude;
+	private double amplitude;
 	
 	
 	/** 
@@ -113,41 +112,41 @@ final public class DampedSinusoidFit {
 		if ( count < 6 )  throw new IllegalArgumentException( "The element count must be at least six. The supplied element count was: " + count );
 		if ( count > waveform.length )  throw new IllegalArgumentException( "The element count " + count + " is greater than the waveform length: " + waveform.length );
 		
-		WAVEFORM = waveform;
-		NUM_POINTS = count;
+		this.waveform = waveform;
+		numPoints = count;
 		
-		_waveformError = new double[count];
+		waveformError = new double[count];
 
-		_initialOffsetCalculated = false;
-		_initialOffset = null;
-		_offset = Double.NaN;
+		initialOffsetCalculated = false;
+		initialOffset = null;
+		offset = Double.NaN;
 
-		_initialSignalVariance = Double.NaN;
-		_signalVariance = Double.NaN;
+		initialSignalVariance = Double.NaN;
+		signalVariance = Double.NaN;
 
-		_initialGrowthRateCalculated = false;
-		_initialGrowthRate = null;
-		_initialGrowthFactor = null;
-		_initialGrowthFactorArray = new ArrayList<Double>();
-		_growthFactor = Double.NaN;
-		_growthRate = Double.NaN;
+		initialGrowthRateCalculated = false;
+		initialGrowthRate = null;
+		initialGrowthFactor = null;
+		initialGrowthFactorArray = new ArrayList<>();
+		growthFactor = Double.NaN;
+		growthRate = Double.NaN;
 		
-		_initialFrequencyCalculated = false;
-		_initialFrequency = null;
-		_initialCosineMu = null;
-		_frequency = Double.NaN;
-		_cosineMu = Double.NaN;
+		initialFrequencyCalculated = false;
+		initialFrequency = null;
+		initialCosineMu = null;
+		frequency = Double.NaN;
+		cosineMu = Double.NaN;
 		
-		_initialWaveformErrorCalculated = false;
-		_initialWaveformError = new double[count];
+		initialWaveformErrorCalculated = false;
+		initialWaveformError = new double[count];
 		
-		_initialPhaseCalculated = false;
-		_initialPhase = Double.NaN;
-		_phase = Double.NaN;
+		initialPhaseCalculated = false;
+		initialPhase = Double.NaN;
+		phase = Double.NaN;
 		
-		_initialAmplitudeCalculated = false;
-		_initialAmplitude = Double.NaN;
-		_amplitude = Double.NaN;
+		initialAmplitudeCalculated = false;
+		initialAmplitude = Double.NaN;
+		amplitude = Double.NaN;
     }
 	
 	
@@ -165,7 +164,7 @@ final public class DampedSinusoidFit {
 	 * @param waveform data to fit
 	 * @param count starting from the beginning of the waveform, the number of items in the waveform to use in the fit
 	 */
-	static public DampedSinusoidFit getInstance( final double[] waveform, final int count ) {
+	public static DampedSinusoidFit getInstance( final double[] waveform, final int count ) {
 		return new DampedSinusoidFit( waveform, count );
 	}
 	
@@ -174,7 +173,7 @@ final public class DampedSinusoidFit {
 	 * Get a new instance of the damped sinusoid using the entire waveform
 	 * @param waveform data to fit
 	 */
-	static public DampedSinusoidFit getInstance( final double[] waveform ) {
+	public static DampedSinusoidFit getInstance( final double[] waveform ) {
 		return new DampedSinusoidFit( waveform );
 	}
 	
@@ -200,7 +199,7 @@ final public class DampedSinusoidFit {
 			errorSum += epsilon * epsilon;
 		}
 		
-		return Math.sqrt( errorSum / NUM_POINTS );
+		return Math.sqrt( errorSum / numPoints );
 	}
 	
 	
@@ -222,9 +221,9 @@ final public class DampedSinusoidFit {
 		final double growthFactor = getInitialGrowthFactor();
 		final double cosmu = getInitialCosineMu();
 		
-		_initialWaveformError = calculateLeastWaveformError( offset, cosmu, growthFactor );
+		initialWaveformError = calculateLeastWaveformError( offset, cosmu, growthFactor );
 		
-		_initialWaveformErrorCalculated = true;	
+		initialWaveformErrorCalculated = true;	
 	}
 	
 	
@@ -233,9 +232,9 @@ final public class DampedSinusoidFit {
 		final double growthFactorSquared = growthFactor * growthFactor;
 		final double alpha = 2.0 * growthFactor * cosmu;
 		
-		final double[] f = new double[NUM_POINTS];
-		final double[] g = new double[NUM_POINTS];
-		final double[] h = new double[NUM_POINTS];
+		final double[] f = new double[numPoints];
+		final double[] g = new double[numPoints];
+		final double[] h = new double[numPoints];
 		
 		f[0] = 1.0;
 		f[1] = 0.0;
@@ -249,7 +248,7 @@ final public class DampedSinusoidFit {
 		double fg_sum = 0.0;
 		double gh_sum = 0.0;
 		double fh_sum = 0.0;
-		for ( int index = 2 ; index < NUM_POINTS ; index++ ) {
+		for ( int index = 2 ; index < numPoints ; index++ ) {
 			final double f0 = f[index - 2];
 			final double f1 = f[index - 1];
 			final double g0 = g[index - 2];
@@ -258,7 +257,7 @@ final public class DampedSinusoidFit {
 			final double h1 = h[index - 1];
 			f[index] = alpha * f1 - growthFactorSquared * f0;
 			g[index] = alpha * g1 - growthFactorSquared * g0;
-			h[index] = alpha * h1 - growthFactorSquared * h0 + alpha * ( WAVEFORM[index - 1] - offset ) - growthFactorSquared * ( WAVEFORM[index - 2] - offset ) + offset - WAVEFORM[index];
+			h[index] = alpha * h1 - growthFactorSquared * h0 + alpha * ( waveform[index - 1] - offset ) - growthFactorSquared * ( waveform[index - 2] - offset ) + offset - waveform[index];
 			
 			ff_sum += f[index] * f[index];
 			gg_sum += g[index] * g[index];
@@ -267,13 +266,13 @@ final public class DampedSinusoidFit {
 			fh_sum += f[index] * h[index];
 		}
 		
-		final double[] leastErrors = new double[NUM_POINTS];
+		final double[] leastErrors = new double[numPoints];
 		final double wronskian = ff_sum * gg_sum - fg_sum * fg_sum;		
 		leastErrors[0] = wronskian != 0.0 ? ( gh_sum * fg_sum - gg_sum * fh_sum ) / wronskian : 0.0;
 		leastErrors[1] = wronskian != 0.0 ? ( fh_sum * fg_sum - ff_sum * gh_sum ) / wronskian : 0.0;
 		
 //		final double[] compErrors = calculateWaveformError( offset, cosmu, growthFactor, leastErrors[0], leastErrors[1] );
-		for ( int index = 2; index < NUM_POINTS ; index++ ) {
+		for ( int index = 2; index < numPoints ; index++ ) {
 			leastErrors[index] = f[index] * leastErrors[0] + g[index] * leastErrors[1] + h[index];
 //			System.out.println( "comp[" + index + "] = " + compErrors[index] + ", least[" + index + "] = " + leastErrors[index] );
 		}
@@ -292,15 +291,15 @@ final public class DampedSinusoidFit {
 	private double[] calculateWaveformError( final double offset, final double cosmu, final double growthFactor, final double error0, final double error1 ) {
 		final double growthFactorSquared = growthFactor * growthFactor;
 				
-		final double[] waveformError = new double[NUM_POINTS];
+		final double[] waveformError = new double[numPoints];
 		waveformError[0] = error0;
 		waveformError[1] = error1;
 //		System.out.println( "error[0] = " + waveformError[0] );
 //		System.out.println( "error[1] = " + waveformError[1] );
 		
-		final int count = NUM_POINTS - 2;
+		final int count = numPoints - 2;
 		for ( int index = 0 ; index < count ; index++ ) {
-			final double epsilon = 2.0 * growthFactor * cosmu * ( WAVEFORM[index + 1] + waveformError[index + 1] - offset ) - ( WAVEFORM[index] + waveformError[index] - offset ) * growthFactorSquared + offset - WAVEFORM[index + 2];
+			final double epsilon = 2.0 * growthFactor * cosmu * ( waveform[index + 1] + waveformError[index + 1] - offset ) - ( waveform[index] + waveformError[index] - offset ) * growthFactorSquared + offset - waveform[index + 2];
 			waveformError[index + 2] = epsilon;
 //			System.out.println( "error[" + (index + 2) + "] = " + epsilon );
 //			System.out.println( "error[" + (index + 2) + "] = " + ( estimateWaveformWithInitialParameters(index+2) - WAVEFORM[index+2] ) );
@@ -314,13 +313,13 @@ final public class DampedSinusoidFit {
 	/** scores the RMS error */
 	private class ErrorScorer implements Scorer {
 		/** offset variable */
-		final private Variable OFFSET_VARIABLE;
+		private final Variable OFFSET_VARIABLE;
 		
 		/** variable for exponent of the growth rate */
-		final private Variable GROWTH_FACTOR_VARIABLE;
+		private final Variable GROWTH_FACTOR_VARIABLE;
 		
 		/** variable for cosine mu */
-		final private Variable COSINE_MU_VARIABLE;
+		private final Variable COSINE_MU_VARIABLE;
 				
 		
 		/** Constructor */
@@ -332,6 +331,7 @@ final public class DampedSinusoidFit {
 		
 		
 		/** score the RMS error */
+                @Override
 		public double score( final Trial trial, final List<Variable> variables ) {							   
 			final TrialPoint trialPoint = trial.getTrialPoint();
 			final double offset = trialPoint.getValue( OFFSET_VARIABLE );
@@ -430,9 +430,9 @@ final public class DampedSinusoidFit {
 		final double cosmu = Double.isNaN( initialCosMu ) ? 0.0 : initialCosMu < -1.0 ? -1.0 : initialCosMu > 1.0 ? 1.0 : initialCosMu;
 		
 		final double signalVariance = noiseLevel > 0.0 ? noiseLevel * noiseLevel : getInitialSignalVariance();
-		final double initialOffsetSigma = Math.sqrt( _initialOffset.varianceWithSignalVariance( signalVariance ) );
-		final double initialGrowthFactorSigma =  Math.sqrt( _initialGrowthFactor.varianceWithSignalVariance( signalVariance ) );
-		final double initialCosMuSigma = Math.sqrt( _initialCosineMu.varianceWithSignalVariance( signalVariance ) );
+		final double initialOffsetSigma = Math.sqrt( initialOffset.varianceWithSignalVariance( signalVariance ) );
+		final double initialGrowthFactorSigma =  Math.sqrt( this.initialGrowthFactor.varianceWithSignalVariance( signalVariance ) );
+		final double initialCosMuSigma = Math.sqrt( initialCosineMu.varianceWithSignalVariance( signalVariance ) );
 		
 		// if the initial sigmas are indeterminate we attempt to guess, but better guesses are needed
 		final double offsetSigma = Double.isNaN( initialOffsetSigma ) ? 10.0 : initialOffsetSigma;
@@ -453,7 +453,7 @@ final public class DampedSinusoidFit {
 		final Variable cosineMuVariable =  new Variable( "cosmu", cosmu, lowerCosine, upperCosine );
 		final Variable growthFactorVariable = new Variable( "growthFactor", growthFactor, lowerGrowthFactor, growthFactor + growthFactorSlack );
 		
-		final List<Variable> variables = new ArrayList<Variable>();
+		final List<Variable> variables = new ArrayList<>();
 		variables.add( offsetVariable );
 		variables.add( cosineMuVariable );
 		variables.add( growthFactorVariable );
@@ -472,125 +472,125 @@ final public class DampedSinusoidFit {
 //		System.out.println( solver.getScoreBoard() );
 				
 		final TrialPoint solution = solver.getScoreBoard().getBestSolution().getTrialPoint();
-		_offset = solution.getValue( offsetVariable );
-		_growthFactor = solution.getValue( growthFactorVariable );
-		_growthRate = Math.log( _growthFactor );
-		_cosineMu = solution.getValue( cosineMuVariable );
-		_frequency = 0.5 * Math.acos( _cosineMu ) / Math.PI;
+		this.offset = solution.getValue( offsetVariable );
+		this.growthFactor = solution.getValue( growthFactorVariable );
+		growthRate = Math.log( growthFactor );
+		cosineMu = solution.getValue( cosineMuVariable );
+		frequency = 0.5 * Math.acos( cosineMu ) / Math.PI;
 		
-		_waveformError = calculateLeastWaveformError( _offset, _cosineMu, _growthFactor );
-		final double signalSigma = calculateRMSError( _waveformError );
-		_signalVariance = signalSigma * signalSigma;
+		waveformError = calculateLeastWaveformError(this.offset, cosineMu, growthFactor );
+		final double signalSigma = calculateRMSError(waveformError );
+		this.signalVariance = signalSigma * signalSigma;
 //		System.out.println( "Final RMS Error: " + calculateRMSError( _waveformError ) );
-		final double[] zeroedWaveform = new double[NUM_POINTS];
-		for ( int index = 0 ; index < NUM_POINTS ; index++ ) {
-			zeroedWaveform[index] = WAVEFORM[index] - _offset;
+		final double[] zeroedWaveform = new double[numPoints];
+		for ( int index = 0 ; index < numPoints ; index++ ) {
+			zeroedWaveform[index] = waveform[index] - this.offset;
 		}
 		
-		final double mu = _frequency * 2.0 * Math.PI;
-		fitPhaseAndAmplitude( _growthFactor, mu, zeroedWaveform, _waveformError );
+		final double mu = frequency * 2.0 * Math.PI;
+		fitPhaseAndAmplitude(growthFactor, mu, zeroedWaveform, waveformError );
 	}
 	
 	
 	/** get the fitted offset calculating it if necessary */
 	public double getInitialOffset() {
-		if ( !_initialOffsetCalculated ) {
+		if ( !initialOffsetCalculated ) {
 			fitInitialOffset();
 		}
 		
-		return _initialOffset.getValue();
+		return initialOffset.getValue();
 	}
 	
 	
 	/** get the variance in the initial offset estimate using the initial estimate of the signal variance */
 	public double getInitialOffsetVariance() {
-		if ( !_initialOffsetCalculated ) {
+		if ( !initialOffsetCalculated ) {
 			fitInitialOffset();
 		}
 		
-		return _initialOffset.varianceWithSignalVariance( _initialSignalVariance );
+		return initialOffset.varianceWithSignalVariance(initialSignalVariance );
 	}
 	
 	
-	/** get the initial estimat of the signal variance */
+	/** get the initial estimate of the signal variance */
 	public double getInitialSignalVariance() {
-		if ( !_initialOffsetCalculated ) {
+		if ( !initialOffsetCalculated ) {
 			fitInitialOffset();
 		}
 		
-		return _initialSignalVariance;
+		return initialSignalVariance;
 	}
 	
 	
 	/** get an estimate of the initial offset's variance */
 	public double estimateInitialOffsetVariance( final double signalVariance ) {
-		if ( !_initialOffsetCalculated ) {
+		if ( !initialOffsetCalculated ) {
 			fitInitialOffset();
 		}
 		
-		return _initialOffset.varianceWithSignalVariance( signalVariance );
+		return initialOffset.varianceWithSignalVariance( signalVariance );
 	}
 	
 	
 	/** get the optimized offset */
 	public double getOffset() {
-		return _offset;
+		return offset;
 	}
 	
 	
 	/** get the optimized estimate of the signal variance */
 	public double getSignalVariance() {
-		return _signalVariance;
+		return signalVariance;
 	}
 	
 	
 	/** get the initial growth factor */
 	private double getInitialGrowthFactor() {
-		if ( !_initialGrowthRateCalculated ) {
+		if ( !initialGrowthRateCalculated ) {
 			fitInitialGrowthRate();
 		}
 		
-		return _initialGrowthFactor.getValue();
+		return initialGrowthFactor.getValue();
 	}
 	
 	
 	/** get the fitted growth rate calculating it if necessary */
 	public double getInitialGrowthRate() {
-		if ( !_initialGrowthRateCalculated ) {
+		if ( !initialGrowthRateCalculated ) {
 			fitInitialGrowthRate();
 		}
 		
-		return _initialGrowthRate.getValue();
+		return initialGrowthRate.getValue();
 	}
 	
 	
 	/** get the variance in the initial growth rate estimate using the initial estimate of the signal variance */
 	public double getInitialGrowthRateVariance() {
-		if ( !_initialGrowthRateCalculated ) {
+		if ( !initialGrowthRateCalculated ) {
 			fitInitialGrowthRate();
 		}
 		
-		return _initialGrowthRate.varianceWithSignalVariance( _initialSignalVariance );
+		return initialGrowthRate.varianceWithSignalVariance(initialSignalVariance );
 	}	
 	
 	
 	/** get an estimate of the initial growth rate's variance */
 	public double estimateInitialGrowthRateVariance( final double signalVariance ) {
-		if ( !_initialGrowthRateCalculated ) {
+		if ( !initialGrowthRateCalculated ) {
 			fitInitialGrowthRate();
 		}
 		
-		return _initialGrowthRate.varianceWithSignalVariance( signalVariance );
+		return initialGrowthRate.varianceWithSignalVariance( signalVariance );
 	}
 	
 	
 	/** get the initial waveform error calculating it if necessary */
 	public double[] getInitialWaveformError() {
-		if ( !_initialWaveformErrorCalculated ) {
+		if ( !initialWaveformErrorCalculated ) {
 			fitInitialWaveformError();
 		}
 		
-		return _initialWaveformError;
+		return initialWaveformError;
 	}
 	
 	
@@ -602,69 +602,69 @@ final public class DampedSinusoidFit {
 	
 	/** get the optimized growth rate */
 	public double getGrowthRate() {
-		return _growthRate;
+		return growthRate;
 	}
 	
 	
 	/** get the initial fitted cosine of the angular frequency calculating it if necessary */
 	private double getInitialCosineMu() {
-		if ( !_initialFrequencyCalculated ) {
+		if ( !initialFrequencyCalculated ) {
 			fitInitialFrequency();
 		}
 		
-		return _initialCosineMu.getValue();
+		return initialCosineMu.getValue();
 	}
 	
 	
 	/** get the fitted frequency calculating it if necessary */
 	public double getInitialFrequency() {
-		if ( !_initialFrequencyCalculated ) {
+		if ( !initialFrequencyCalculated ) {
 			fitInitialFrequency();
 		}
 		
-		return _initialFrequency.getValue();
+		return initialFrequency.getValue();
 	}
 	
 	
 	/** get the variance in the initial frequency estimate using the initial estimate of the signal variance */
 	public double getInitialFrequencyVariance() {
-		if ( !_initialFrequencyCalculated ) {
+		if ( !initialFrequencyCalculated ) {
 			fitInitialFrequency();
 		}
 		
-		return _initialFrequency.varianceWithSignalVariance( _initialSignalVariance );
+		return initialFrequency.varianceWithSignalVariance(initialSignalVariance );
 	}	
 	
 	
 	/** get an estimate of the initial frequency's variance */
 	public double estimateInitialFrequencyVariance( final double signalVariance ) {
-		if ( !_initialFrequencyCalculated ) {
+		if ( !initialFrequencyCalculated ) {
 			fitInitialFrequency();
 		}
 		
-		return _initialFrequency.varianceWithSignalVariance( signalVariance );
+		return initialFrequency.varianceWithSignalVariance( signalVariance );
 	}
 	
 	
 	/** get the optimized frequency */
 	public double getFrequency() {
-		return _frequency;
+		return frequency;
 	}
 	
 	
 	/** Get the sine-like phase estimation calculating it if necessary. Note that this estimation is relatively poor. */
 	public double getInitialPhase() {
-		if ( !_initialPhaseCalculated ) {
+		if ( !initialPhaseCalculated ) {
 			fitInitialPhaseAndAmplitude();
 		}
 		
-		return _initialPhase;
+		return initialPhase;
 	}
 	
 	
 	/** get the optimized phase */
 	public double getPhase() {
-		return _phase;
+		return phase;
 	}
 	
 	
@@ -682,7 +682,7 @@ final public class DampedSinusoidFit {
 	
 	/** get the waveform error */
 	public double[] getWaveformError() {
-		return _waveformError;
+		return waveformError;
 	}
 	
 	
@@ -713,34 +713,34 @@ final public class DampedSinusoidFit {
 	
 	/** Get the sine-like amplitude calculating it if necessary. Note that this estimation is relatively poor. */
 	public double getInitialAmplitude() {
-		if ( !_initialAmplitudeCalculated ) {
+		if ( !initialAmplitudeCalculated ) {
 			fitInitialPhaseAndAmplitude();
 		}
 		
-		return _initialAmplitude;
+		return initialAmplitude;
 	}
 
 	
 	/** Get the optimized sine-like amplitude */
 	public double getAmplitude() {
-		return _amplitude;
+		return amplitude;
 	}
 
 	
 	/** calculate the constant offset */
 	private void fitInitialOffset() {        
-		final int wcount = NUM_POINTS - 2;
+		final int wcount = numPoints - 2;
 		final DifferentialVariable[] w = new DifferentialVariable[wcount];
 		final DifferentialVariable[] z = new DifferentialVariable[wcount];
 		for ( int index = 0 ; index < wcount ; index++ ) {
-			final double q0 = WAVEFORM[index];
-			final double q1 = WAVEFORM[index+1];
-			final double q2 = WAVEFORM[index+2];
+			final double q0 = waveform[index];
+			final double q1 = waveform[index+1];
+			final double q2 = waveform[index+2];
 			w[index] = new DifferentialVariable( q0 * q2 - q1 * q1, index, q2, -2.0 * q1, q0 );
 			z[index] = new DifferentialVariable( 2 * q1 - q0 - q2, index, -1.0, 2.0, -1.0 );
 		}
 		
-		final int rcount = NUM_POINTS - 4;
+		final int rcount = numPoints - 4;
 		final DifferentialVariable[] r = new DifferentialVariable[rcount];
 		final DifferentialVariable[] s = new DifferentialVariable[rcount];
 		final DifferentialVariable[] t = new DifferentialVariable[rcount];
@@ -756,7 +756,7 @@ final public class DampedSinusoidFit {
             t[index] = w1.pow( 2.0 ).minus( w0.times( w2 ) );
 		}
 		
-		final int count = NUM_POINTS - 5;
+		final int count = numPoints - 5;
         
         DifferentialVariable offsetSum = DifferentialVariable.ZERO;
 		DifferentialVariable offsetEstimates[] = new DifferentialVariable[count]; 
@@ -786,12 +786,12 @@ final public class DampedSinusoidFit {
 //        final double sigma = Math.sqrt( offset.varianceWithCommonVariance( 0.25 ) );
 //        System.out.println( "Offset Estimate: " + offset.getValue() + " +/- " + sigma );
 		
-		_initialOffset = offset;
+		initialOffset = offset;
 		
-		_initialZeroedWaveform = new DifferentialVariable[NUM_POINTS];
+		initialZeroedWaveform = new DifferentialVariable[numPoints];
 		final DifferentialVariable negativeOffset = offset.negate();
-		for ( int index = 0 ; index < NUM_POINTS ; index++ ) {
-			_initialZeroedWaveform[index] = new DifferentialVariable( WAVEFORM[index], index, 1.0 ).plus( negativeOffset );
+		for ( int index = 0 ; index < numPoints ; index++ ) {
+			initialZeroedWaveform[index] = new DifferentialVariable( waveform[index], index, 1.0 ).plus( negativeOffset );
 		}
 		
 		final double offsetValue = offset.getValue();
@@ -802,9 +802,9 @@ final public class DampedSinusoidFit {
 			final double error = offsetValue - offsetEstimate.getValue();
 			penaltySum += error * error / offsetEstimate.varianceWithSignalVariance( 1.0 );
 		}
-		_initialSignalVariance = penaltySum / count;
+		initialSignalVariance = penaltySum / count;
         
-		_initialOffsetCalculated = true;
+		initialOffsetCalculated = true;
 	}
 	
 	
@@ -812,14 +812,14 @@ final public class DampedSinusoidFit {
 	private void fitInitialGrowthRate() {
 		getInitialOffset();	// make sure the zeroed waveform is calculated
 		
-		final int count = NUM_POINTS - 3;		
+		final int count = numPoints - 3;		
 		DifferentialVariable growthFactorSquareSum = DifferentialVariable.ZERO;
 		double totalWeight = 0.0;
 		for ( int index = 0 ; index < count ; index++ ) {
-			final DifferentialVariable q0 = _initialZeroedWaveform[index];
-			final DifferentialVariable q1 = _initialZeroedWaveform[index+1];
-			final DifferentialVariable q2 = _initialZeroedWaveform[index+2];
-			final DifferentialVariable q3 = _initialZeroedWaveform[index+3];
+			final DifferentialVariable q0 = initialZeroedWaveform[index];
+			final DifferentialVariable q1 = initialZeroedWaveform[index+1];
+			final DifferentialVariable q2 = initialZeroedWaveform[index+2];
+			final DifferentialVariable q3 = initialZeroedWaveform[index+3];
 			
 			final DifferentialVariable numerator = q1.times( q3 ).minus( q2.pow( 2 ) );
 			final DifferentialVariable denominator = q0.times( q2 ).minus( q1.pow( 2 ) );
@@ -832,26 +832,26 @@ final public class DampedSinusoidFit {
 		}
 		
 		final DifferentialVariable growthFactor = growthFactorSquareSum.over( totalWeight ).sqrt();
-		_initialGrowthFactor = growthFactor;
+		initialGrowthFactor = growthFactor;
 		
-		_initialGrowthRate = _initialGrowthFactor.log();
-		_initialGrowthRateCalculated = true;
+		initialGrowthRate = initialGrowthFactor.log();
+		initialGrowthRateCalculated = true;
 	}
 	
 	
 	/** fit the frequency to the waveform */
 	private void fitInitialFrequency() {
 		getInitialGrowthFactor();
-		final DifferentialVariable growthFactor = _initialGrowthFactor;
+		final DifferentialVariable growthFactor = initialGrowthFactor;
 		final DifferentialVariable reciprocolGrowthFactor = growthFactor.reciprocal();
-		final double count = NUM_POINTS - 2;
+		final double count = numPoints - 2;
 		
 		DifferentialVariable cosMuSum = DifferentialVariable.ZERO;
 		double totalWeight = 0.0;
 		for ( int index = 0 ; index < count ; index++ ) {
-			final DifferentialVariable q0 = _initialZeroedWaveform[index];
-			final DifferentialVariable q1 = _initialZeroedWaveform[index+1];
-			final DifferentialVariable q2 = _initialZeroedWaveform[index+2];
+			final DifferentialVariable q0 = initialZeroedWaveform[index];
+			final DifferentialVariable q1 = initialZeroedWaveform[index+1];
+			final DifferentialVariable q2 = initialZeroedWaveform[index+2];
 			
 			if ( q1.getValue() != 0.0 ) {	// exclude points where the denominator goes to zero
 				final DifferentialVariable numerator = q0.times( growthFactor ).plus( q2.times( reciprocolGrowthFactor ) );
@@ -868,9 +868,9 @@ final public class DampedSinusoidFit {
 		// restrict the frequency to the real part of the arc cosine
 		final DifferentialVariable mu = cosMuValue > 1.0 ? DifferentialVariable.ZERO : cosMuValue < -1.0 ? DifferentialVariable.newConstant( Math.PI ) : cosMu.acos();
 				
-		_initialCosineMu = cosMu;
-		_initialFrequency = mu.over( 2.0 * Math.PI );
-		_initialFrequencyCalculated = true;
+		initialCosineMu = cosMu;
+		initialFrequency = mu.over( 2.0 * Math.PI );
+		initialFrequencyCalculated = true;
 	}
 	
 	
@@ -884,8 +884,8 @@ final public class DampedSinusoidFit {
 		final double cosAmp = isZeroSineMu ? 0.0 : ( q1 - q0 * Math.cos( mu ) ) / Math.sin( mu );
 		final double sinAmp = q0;
 		
-		_amplitude = Math.sqrt( cosAmp * cosAmp + sinAmp * sinAmp );
-		_phase = Math.atan2( sinAmp, cosAmp );
+		amplitude = Math.sqrt( cosAmp * cosAmp + sinAmp * sinAmp );
+		phase = Math.atan2( sinAmp, cosAmp );
 	}
 	
 	
@@ -894,13 +894,13 @@ final public class DampedSinusoidFit {
 		getInitialGrowthFactor();
 		getInitialFrequency();
 		
-		final DifferentialVariable growthFactor = _initialGrowthFactor;
+		final DifferentialVariable growthFactor = initialGrowthFactor;
 		final DifferentialVariable reciprocolGrowthFactor = growthFactor.reciprocal();
-		final DifferentialVariable tune = _initialFrequency;
+		final DifferentialVariable tune = initialFrequency;
 		final DifferentialVariable mu = tune.times( 2.0 * Math.PI );
 		final DifferentialVariable sinMu = mu.sin();
 		
-		final double count = NUM_POINTS - 1;
+		final double count = numPoints - 1;
 
 		DifferentialVariable sinAmpSum = DifferentialVariable.ZERO;
 		DifferentialVariable cosAmpSum = DifferentialVariable.ZERO;
@@ -909,8 +909,8 @@ final public class DampedSinusoidFit {
 		DifferentialVariable growth = DifferentialVariable.newConstant( 1.0 );
 		final boolean isZeroSineMu = Math.abs( sinMu.getValue() ) < 0.0001;	// sine is too close to zero, so need to use approximation about it to avoid catastrophe
 		for ( int turn = 0 ; turn < count ; turn++ ) {
-			final DifferentialVariable q0 = _initialZeroedWaveform[turn].times( growth );
-			final DifferentialVariable q1 = _initialZeroedWaveform[turn+1].times( growth ).times( reciprocolGrowthFactor );
+			final DifferentialVariable q0 = initialZeroedWaveform[turn].times( growth );
+			final DifferentialVariable q1 = initialZeroedWaveform[turn+1].times( growth ).times( reciprocolGrowthFactor );
 			
 			final DifferentialVariable muN = mu.times( turn );
 			final DifferentialVariable muNP1 = mu.times( turn + 1 );
@@ -935,16 +935,16 @@ final public class DampedSinusoidFit {
 		final double cosAmp = cosAmpSum.over( totalCosWeight ).getValue();
 		final double sinAmp = sinAmpSum.over( totalSinWeight ).getValue();
 		
-		_initialAmplitude = Math.sqrt( cosAmp * cosAmp + sinAmp * sinAmp );
-		_initialPhase = Math.atan2( sinAmp, cosAmp );
+		initialAmplitude = Math.sqrt( cosAmp * cosAmp + sinAmp * sinAmp );
+		initialPhase = Math.atan2( sinAmp, cosAmp );
 		
-		_initialAmplitudeCalculated = true;
-		_initialPhaseCalculated = true;
+		initialAmplitudeCalculated = true;
+		initialPhaseCalculated = true;
 	}
 	
 	
 	/** calculate the amplitude */
-	static private double calculateAmplitude( final double growthFactor, final double mu, final double phase, final double[] zeroedWaveform, final double[] waveformErrors ) {
+	private static double calculateAmplitude( final double growthFactor, final double mu, final double phase, final double[] zeroedWaveform, final double[] waveformErrors ) {
 		double nsum = 0.0;
 		double dsum = 0.0;
 		double growth = 1.0;
@@ -966,12 +966,12 @@ final public class DampedSinusoidFit {
 		final double mu = 2 * Math.PI * getInitialFrequency();
 		final double phase = getInitialPhase();
 		final double gfactor = Math.exp( getInitialGrowthRate() );		
-		final double[] zeroedWaveform = new double[ _initialZeroedWaveform.length ];
+		final double[] zeroedWaveform = new double[ initialZeroedWaveform.length ];
 		for ( int index = 0 ; index < zeroedWaveform.length ; index++ ) {
-			zeroedWaveform[index] = _initialZeroedWaveform[index].getValue();
+			zeroedWaveform[index] = initialZeroedWaveform[index].getValue();
 		}
-		_initialAmplitude = calculateAmplitude( gfactor, mu, phase, zeroedWaveform, getInitialWaveformError() );
-		_initialAmplitudeCalculated = true;
+		initialAmplitude = calculateAmplitude( gfactor, mu, phase, zeroedWaveform, getInitialWaveformError() );
+		initialAmplitudeCalculated = true;
 	}
 
 
@@ -990,14 +990,14 @@ final public class DampedSinusoidFit {
 	/** 
 	 * Convenience method to calculate the fitted waveform over the specified positions 
 	 * @param positions array of positions over which to calculate the waveform
-	 * @param array big enough to hold the calculated waveform over each of the positions
+	 * @param waveform big enough to hold the calculated waveform over each of the positions
 	 */
 	public void calculateFittedWaveform( final double[] positions, double[] waveform ) {
-		final double offset = Double.isNaN( _offset ) ? getInitialOffset() : _offset;
-		final double growthFactor = Double.isNaN( _growthFactor ) ? getInitialGrowthFactor() : _growthFactor;
-		final double frequency = Double.isNaN( _frequency ) ? getInitialFrequency() : _frequency;
-		final double amplitude = Double.isNaN( _amplitude ) ? getInitialAmplitude() : _amplitude;
-		final double phase = Double.isNaN( _phase ) ? getInitialPhase() : _phase;
+		final double offset = Double.isNaN(this.offset ) ? getInitialOffset() : this.offset;
+		final double growthFactor = Double.isNaN( this.growthFactor ) ? getInitialGrowthFactor() : this.growthFactor;
+		final double frequency = Double.isNaN(this.frequency ) ? getInitialFrequency() : this.frequency;
+		final double amplitude = Double.isNaN(this.amplitude ) ? getInitialAmplitude() : this.amplitude;
+		final double phase = Double.isNaN(this.phase ) ? getInitialPhase() : this.phase;
 
 		for ( int index = 0 ; index < waveform.length ; index++ ) {
 			final double position = positions[index];

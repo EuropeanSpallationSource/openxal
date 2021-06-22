@@ -12,13 +12,13 @@ package xal.tools.data;
 /** Merge multiple qualifiers to form a single qualifier */
 abstract public class CompoundQualifier implements Qualifier {
 	/** the default initial reserve capacity */
-	static final protected int DEFAULT_RESERVE_CAPACITY = 2;
+	protected static final int DEFAULT_RESERVE_CAPACITY = 2;
 	
 	/** set of qualifiers that define this compound qualifier */
-	protected Qualifier[] _qualifiers;
+	protected Qualifier[] qualifiers;
 	
 	/** the actual number of qualifiers that form this compound qualifier */
-	protected int _qualifierCount;
+	protected int qualifierCount;
 	
 	
     /**
@@ -26,8 +26,8 @@ abstract public class CompoundQualifier implements Qualifier {
 	 * @param reserve the initial reserve estimate for the number of qualifiers that form this compound qualifier.
 	 */
     public CompoundQualifier( final int reserve ) {
-		_qualifierCount = 0;
-        _qualifiers = new Qualifier[reserve];
+		qualifierCount = 0;
+        qualifiers = new Qualifier[reserve];
     }
 	
 	
@@ -45,18 +45,18 @@ abstract public class CompoundQualifier implements Qualifier {
     public CompoundQualifier append( final Qualifier qualifier ) {
 		Qualifier[] qualifiers;
 		
-		if ( _qualifiers.length <= _qualifierCount ) {
+		if ( this.qualifiers.length <= qualifierCount ) {
 			// increase the size by atleast two and roughly 10% more
-			qualifiers = new Qualifier[ 2 + (int)(1.1 * _qualifiers.length) ];
-			System.arraycopy( _qualifiers, 0, qualifiers, 0, _qualifiers.length );			
+			qualifiers = new Qualifier[ 2 + (int)(1.1 * this.qualifiers.length) ];
+			System.arraycopy(this.qualifiers, 0, qualifiers, 0, this.qualifiers.length );			
 		}
 		else {
-			qualifiers = _qualifiers;
+			qualifiers = this.qualifiers;
 		}
 		
-		qualifiers[_qualifierCount] = qualifier;
-		_qualifiers = qualifiers;
-		++_qualifierCount;
+		qualifiers[qualifierCount] = qualifier;
+		this.qualifiers = qualifiers;
+		++qualifierCount;
 		
 		return this;
     }
@@ -73,17 +73,18 @@ abstract public class CompoundQualifier implements Qualifier {
 	 * Get a string representation of this instance.
 	 * @return a string representing this compound qualifier.
 	 */
+        @Override
 	public String toString() {
-		if ( _qualifierCount > 1 ) {
-			final StringBuffer buffer = new StringBuffer( "(" + _qualifiers[0].toString() + ")" );
-			for ( int index = 1 ; index < _qualifierCount ; index++ ) {
-				buffer.append( " " + binaryToken() + " (" );
-				buffer.append( _qualifiers[index] + ")" );
+		if ( qualifierCount > 1 ) {
+			final StringBuilder buffer = new StringBuilder( "(" + qualifiers[0].toString() + ")" );
+			for ( int index = 1 ; index < qualifierCount ; index++ ) {
+				buffer.append(" ").append(binaryToken()).append(" (");
+				buffer.append(qualifiers[index]).append(")");
 			}
 			return buffer.toString();
 		}
-		else if ( _qualifierCount == 1 ) {
-			return _qualifiers[0].toString();
+		else if ( qualifierCount == 1 ) {
+			return qualifiers[0].toString();
 		}
 		else {
 			return "";

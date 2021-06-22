@@ -42,7 +42,7 @@ public class TransferMapState extends ProbeState<TransferMapState> {
      */
     
 //    /** number of modes */
-//    static final private int NUM_MODES = 3;
+//    private static final int NUM_MODES = 3;
 
     /** element tag for RF phase */
     protected static final String LABEL_STATE = "transfer";

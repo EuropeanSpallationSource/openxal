@@ -7,7 +7,6 @@
 package xal.tools.xml;
 
 import java.util.*;
-import java.util.regex.PatternSyntaxException;
 import java.io.*;
 import java.net.*;
 
@@ -17,6 +16,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.w3c.dom.*;
+import xal.tools.ExceptionWrapper;
 
 import xal.tools.ResourceManager;
 import xal.tools.data.*;
@@ -127,7 +127,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     /** fetch and store non-null child nodes as a list */
     private void createChildren() {
         int numNodes = rawNodeCount();
-        childNodes = new ArrayList<Node>();
+        childNodes = new ArrayList<>();
         
         for ( int index = 0 ; index < numNodes ; index++ ) {
             Node node = nodeList.item(index);
@@ -153,13 +153,14 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     
     
     /** get the tag name for the specified XML node */
-    static private String nameForNode(Node node) {
+    private static String nameForNode(Node node) {
         return node.getNodeName();
         //return node.getLocalName();
     }
                 
     
     /** get the tag name for the main node */
+    @Override
     public String name() {
         return nameForNode(mainNode);
     }
@@ -172,6 +173,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     
     
     /** check whether the main node has the specified attribute */
+    @Override
     public boolean hasAttribute(String attribute) {
         return asElement().hasAttribute(attribute);
     }
@@ -182,7 +184,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
 	 * @param attribute The node attribute.
 	 * @return the raw string value associated with the attribute or null if the attribute does not exist
 	 */
-    final protected String rawValue(final String attribute) {
+    protected final String rawValue(final String attribute) {
         //return (String)asElement().getAttribute(attribute);
 		Attr attributeNode = ((Attr)mainNode.getAttributes().getNamedItem(attribute));
 		return (attributeNode != null) ? attributeNode.getValue() : null;
@@ -194,12 +196,14 @@ public class XmlDataAdaptor implements FileDataAdaptor {
 	 * @param attribute The node attribute.
 	 * @return the raw string value associated with the attribute 
 	 */
+    @Override
     public String stringValue(final String attribute) {
 		return rawValue(attribute);
     }
     
     
     /** return the double value associated with the attribute */
+    @Override
     public double doubleValue(final String attribute) throws NumberFormatException {
         String strValue = rawValue(attribute);
         
@@ -207,7 +211,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
             try {
                 return Double.parseDouble(strValue);
             }
-            catch(java.lang.NumberFormatException excpt) {
+            catch(NumberFormatException excpt) {
                 String message;
                 message = "Error parsing as double attribute: " + attribute + 
                 ", from string: " + strValue + ", for XML node: " + name();
@@ -221,6 +225,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     
     
     /** return the long value associated with the attribute */
+    @Override
     public long longValue(final String attribute) throws NumberFormatException {
         String strValue = rawValue(attribute);
         
@@ -228,7 +233,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
             try {
                 return Long.parseLong(strValue);
             }
-            catch(java.lang.NumberFormatException excpt) {
+            catch(NumberFormatException excpt) {
                 String message;
                 message = "Error parsing as long attribute: " + attribute + 
                 ", from string: " + strValue + ", for XML node: " + name();
@@ -242,6 +247,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     
     
     /** return the integer value associated with the attribute */
+    @Override
     public int intValue(final String attribute) throws NumberFormatException {
         String strValue = rawValue(attribute);
         
@@ -249,7 +255,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
             try {
                 return Integer.parseInt(strValue);
             }
-            catch(java.lang.NumberFormatException excpt) {
+            catch(NumberFormatException excpt) {
                 String message;
                 message = "Error parsing as integer attribute: " + attribute + 
                 ", from string: " + strValue + ", for XML node: " + name();
@@ -263,13 +269,14 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     
     
     /** return the boolean value associated with the attribute */
+    @Override
     public boolean booleanValue(final String attribute) throws NumberFormatException {
         String strValue = rawValue(attribute);
         
         try {
-            return Boolean.valueOf(strValue).booleanValue();
+            return Boolean.parseBoolean(strValue);
         }
-        catch(java.lang.NumberFormatException excpt) {
+        catch(NumberFormatException excpt) {
             String message;
             message = "Error parsing as boolean attribute: " + attribute + 
             ", from string: " + strValue + ", for XML node: " + name();
@@ -283,6 +290,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
      * @param attribute   the attribute name
      * @return  Array of double values, a <code>null</code> value is returned if the value string is empty.
      */
+    @Override
     public double[] doubleArray( final String attribute ) throws NumberFormatException {
         final String strValue = rawValue( attribute );
         try {
@@ -294,7 +302,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
             }
             return array;
         }
-        catch ( java.lang.NumberFormatException exception ) {
+        catch ( NumberFormatException exception ) {
             final String message = "Error parsing as double array attribute: " + attribute + ", from string: " + strValue + ", for XML node: " + name();
             throw new NumberFormatException( message );
         }
@@ -306,7 +314,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
 	 * @param attribute The node attribute.
 	 * @param value The string value to associate with the attribute.
 	 */
-	final protected void setRawValue(String attribute, String value) {
+	protected final void setRawValue(String attribute, String value) {
         //asElement().setAttribute(attribute, value);
 		Attr attributeNode = document.createAttribute(attribute);
 		attributeNode.setValue(value);
@@ -320,12 +328,14 @@ public class XmlDataAdaptor implements FileDataAdaptor {
 	 * @param attribute The node attribute.
 	 * @param value The string value to associate with the attribute.
 	 */
+    @Override
     public void setValue(final String attribute, final String value) {
 		setRawValue(attribute, value);
     }
     
     
     /** set the double value to be associated with the attribute */
+    @Override
     public void setValue(final String attribute, final double doubleValue) {
         String strValue = String.valueOf(doubleValue);
         setRawValue(attribute, strValue);
@@ -333,6 +343,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     
     
     /** set the long value to be associated with the attribute */
+    @Override
     public void setValue(final String attribute, final long longValue) {
         String strValue = String.valueOf(longValue);
         setRawValue(attribute, strValue);
@@ -340,6 +351,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     
     
     /** set the integer value to be associated with the attribute */
+    @Override
     public void setValue(final String attribute, final int intValue) {
         String strValue = String.valueOf(intValue);
         setRawValue(attribute, strValue);
@@ -347,6 +359,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     
     
     /** set the boolean value to be associated with the attribute */
+    @Override
     public void setValue(final String attribute, final boolean boolValue) {
         String strValue = String.valueOf(boolValue);
         setRawValue(attribute, strValue);
@@ -354,6 +367,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     
     
     /** set the value of the specified attribute to the specified value */
+    @Override
     public void setValue(final String attribute, final Object value) {
         String strValue = value.toString();
         setValue(attribute, strValue);
@@ -365,6 +379,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
      * @param attribute   attribute name
      * @param array    attribute value
      */
+    @Override
     public void setValue( final String attribute, final double[] array ) {
         final StringJoiner joiner = new StringJoiner( ", " );
         joiner.append( array );
@@ -373,6 +388,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
 
 
     /** return an array of attribute names */
+    @Override
     public String[] attributes() {
         NamedNodeMap attributeMap = mainNode.getAttributes();
         int numAttributes = attributeMap.getLength();
@@ -400,7 +416,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     
     
     /** create a new adaptor for the specified node */
-    static private XmlDataAdaptor newAdaptor(Node node) {
+    private static XmlDataAdaptor newAdaptor(Node node) {
         XmlDataAdaptor adaptor = new XmlDataAdaptor(node);
         return adaptor;
     }
@@ -410,8 +426,9 @@ public class XmlDataAdaptor implements FileDataAdaptor {
      * Create a list of child adaptors (one adaptor for each non-null child node).
 	 * @return a list of child adaptors
      */
+    @Override
     public List<DataAdaptor> childAdaptors() {
-        List<DataAdaptor> childAdaptors = new ArrayList<DataAdaptor>();
+        List<DataAdaptor> childAdaptors = new ArrayList<>();
         
 		for ( Node node : childNodes ) {
             XmlDataAdaptor adaptor = newAdaptor( node );
@@ -427,8 +444,9 @@ public class XmlDataAdaptor implements FileDataAdaptor {
 	 * @param label the label for which to match the node's tag
 	 * @return a list of child adaptors
      */
+    @Override
     public List<DataAdaptor> childAdaptors( final String label ) {
-        List<DataAdaptor> childAdaptors = new ArrayList<DataAdaptor>();
+        List<DataAdaptor> childAdaptors = new ArrayList<>();
 		
 		for ( Node node : childNodes ) {
             if ( nameForNode( node ).equals( label ) ) {
@@ -445,6 +463,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
 	 * @param label the label which identifies the tag of the nodes to fetch
 	 * @return a data adaptor for the specified child node
      */
+    @Override
     public DataAdaptor childAdaptor( final String label ) {
         final List<DataAdaptor> adaptors = childAdaptors( label );
         return adaptors.isEmpty() ? null : adaptors.get( 0 );
@@ -452,6 +471,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     
     
     /** Create a new offspring DataAdaptor given the tagName */
+    @Override
     public DataAdaptor createChild(String tagName) {
         Node node = document.createElement(tagName);
         XmlDataAdaptor childAdaptor = newAdaptor(node);
@@ -468,6 +488,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     /**
      * Remove a child DataAdaptor
      */
+    @Override
     public void removeChild(DataAdaptor adaptor) {
         XmlDataAdaptor childAdaptor = (XmlDataAdaptor) adaptor;
 
@@ -478,6 +499,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     
     
     /** append a node associated with the listener */
+    @Override
     public void writeNode(DataListener listener) {
         String tagName = listener.dataLabel();
         
@@ -487,6 +509,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     
     
     /** append a node for each listener in the listener list */
+    @Override
     public void writeNodes( final Collection<? extends DataListener> nodes ) {
 		for ( DataListener node : nodes ) {
 			writeNode( node );
@@ -495,22 +518,24 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     
     
     /** Write XML to the specified url */
+    @Override
     public void writeToUrlSpec(String urlSpec) throws WriteException {
         try {
             XmlWriter.writeToUrlSpec(document, urlSpec);
         }
-        catch(Exception excpt) {
+        catch(IOException excpt) {
             throw new WriteException(excpt);
         }
     }
     
     
     /** Write XML to the specified url */
-    public void writeToUrl(java.net.URL url) throws WriteException {
+    @Override
+    public void writeToUrl(URL url) throws WriteException {
         try {
             XmlWriter.writeToUrl(document, url);
         }
-        catch(Exception excpt) {
+        catch(IOException excpt) {
             throw new WriteException(excpt);
         }
     }
@@ -521,7 +546,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
      *    java.io.IOException
      *    java.net.MalformedURLException
      */
-    static public class WriteException extends xal.tools.ExceptionWrapper {
+    public static class WriteException extends ExceptionWrapper {
         /** serialization ID */
         private static final long serialVersionUID = 1L;
         
@@ -532,12 +557,13 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     
     
     /** Write XML to the specified url */
-    public void writeTo(java.io.Writer writer) {
+    public void writeTo(Writer writer) {
         XmlWriter.writeToWriter(document, writer);
     }
     
     
     /** Convenience method for writing an XML file */
+    @Override
     public void writeTo(File file) throws IOException { 
         writeTo( new FileWriter(file) );
     }
@@ -546,14 +572,14 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     /**
      * Generate an XmlDataAdaptor from a urlPath and given dtd validating option
      */
-    static public XmlDataAdaptor adaptorForUrl( final String urlPath, final boolean isValidating ) throws ParseException, ResourceNotFoundException {
+    public static XmlDataAdaptor adaptorForUrl( final String urlPath, final boolean isValidating ) throws ParseException, ResourceNotFoundException {
 		return adaptorForUrl( urlPath, isValidating, null );
     }
     
     /**
      * Generate an XmlDataAdaptor from a urlPath, given dtd validating option, and given schemaUrl
      */
-    static public XmlDataAdaptor adaptorForUrl( final String urlPath, final boolean isValidating, final String schemaPath ) throws ParseException, ResourceNotFoundException {
+    public static XmlDataAdaptor adaptorForUrl( final String urlPath, final boolean isValidating, final String schemaPath ) throws ParseException, ResourceNotFoundException {
         try {
 			final URL schemaURL = schemaPath != null ? ResourceManager.getResourceURL( XmlDataAdaptor.class, schemaPath ) : null;
             DocumentBuilder builder = newDocumentBuilder( isValidating, schemaURL );
@@ -561,7 +587,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
 
             return new XmlDataAdaptor( document );
         }
-        catch( java.io.FileNotFoundException exception ) {
+        catch( FileNotFoundException exception ) {
             throw new ResourceNotFoundException( exception );
         }
         catch( Exception exception ) {
@@ -574,7 +600,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     /**
      * Generate an XmlDataAdaptor from a urlPath and given dtd validating option
      */
-    static public XmlDataAdaptor adaptorForUrl( final URL url, final boolean isValidating ) throws ParseException, ResourceNotFoundException {
+    public static XmlDataAdaptor adaptorForUrl( final URL url, final boolean isValidating ) throws ParseException, ResourceNotFoundException {
         return XmlDataAdaptor.adaptorForUrl( url.toString(), isValidating );
     }
     
@@ -582,7 +608,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     /**
      * Generate an XmlDataAdaptor from a urlPath and given dtd validating option
      */
-    static public XmlDataAdaptor adaptorForFile( final File file, final boolean isValidating ) throws MalformedURLException, ParseException, ResourceNotFoundException {
+    public static XmlDataAdaptor adaptorForFile( final File file, final boolean isValidating ) throws MalformedURLException, ParseException, ResourceNotFoundException {
         return XmlDataAdaptor.adaptorForUrl( file.toURI().toURL(), isValidating );
     }
     
@@ -590,7 +616,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     /**
      * Generate an XmlDataAdaptor from an XML string and given dtd validating option
      */
-    static public XmlDataAdaptor adaptorForString( final String source, final boolean isValidating ) throws ParseException, ResourceNotFoundException {
+    public static XmlDataAdaptor adaptorForString( final String source, final boolean isValidating ) throws ParseException, ResourceNotFoundException {
         try {
             DocumentBuilder builder = newDocumentBuilder( isValidating );
             Document document = builder.parse(new ByteArrayInputStream( source.getBytes() ));
@@ -607,13 +633,13 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     
     
     /** Create a new document builder with the given DTD validation */
-    static protected DocumentBuilder newDocumentBuilder( final boolean isValidating ) throws Exception {
+    protected static DocumentBuilder newDocumentBuilder( final boolean isValidating ) throws Exception {
 		return newDocumentBuilder( isValidating, null );
     }
     
     
     /** Create a new document builder with the given DTD validation, and schemaUrl */
-    static protected DocumentBuilder newDocumentBuilder( final boolean isValidating, final URL schemaURL ) throws Exception {
+    protected static DocumentBuilder newDocumentBuilder( final boolean isValidating, final URL schemaURL ) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setValidating( isValidating );
 
@@ -634,7 +660,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     /*
      * Exception to wrap any exceptions thrown by adaptorForUrl()
      */
-    static public class ParseException extends xal.tools.ExceptionWrapper {
+    public static class ParseException extends xal.tools.ExceptionWrapper {
         /** serialization ID */
         private static final long serialVersionUID = 1L;
         
@@ -648,7 +674,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     /*
      * Exception when the source of the URL does not exist
      */
-    static public class ResourceNotFoundException extends xal.tools.ExceptionWrapper {
+    public static class ResourceNotFoundException extends xal.tools.ExceptionWrapper {
         /** serialization ID */
         private static final long serialVersionUID = 1L;
         
@@ -661,7 +687,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     
     
     /** Create a new XmlDataAdaptor given a DataListener and a dtd URI */
-    static public XmlDataAdaptor newDocumentAdaptor(DataListener dataHandler, String dtdUri) throws CreationException {
+    public static XmlDataAdaptor newDocumentAdaptor(DataListener dataHandler, String dtdUri) throws CreationException {
         XmlDataAdaptor adaptor = null;
 
         try {
@@ -690,7 +716,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     
     
     /** Create an XML document with only the doc tag and DTD URI specified */
-    static public XmlDataAdaptor newEmptyDocumentAdaptor(String docTag, String dtdURI) {
+    public static XmlDataAdaptor newEmptyDocumentAdaptor(String docTag, String dtdURI) {
         XmlDataAdaptor adaptor;
         
         try {
@@ -718,7 +744,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     
   
     /** Create an empty XML document */
-    static public XmlDataAdaptor newEmptyDocumentAdaptor() {
+    public static XmlDataAdaptor newEmptyDocumentAdaptor() {
         return newEmptyDocumentAdaptor(null, null);
     }
 
@@ -726,7 +752,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     /*
      * Exception to wrap any DOM exceptions
      */
-    static public class CreationException extends xal.tools.ExceptionWrapper {
+    public static class CreationException extends ExceptionWrapper {
         /** serialization ID */
         private static final long serialVersionUID = 1L;
         

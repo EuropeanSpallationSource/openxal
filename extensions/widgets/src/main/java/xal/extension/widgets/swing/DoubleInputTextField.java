@@ -217,6 +217,7 @@ public class DoubleInputTextField extends JTextField{
         normalColor = getBackground();
 
 	MouseAdapter mAdpt = new MouseAdapter(){
+                @Override
 		public void mousePressed(MouseEvent e){
 		    if(!isEditable()) return;
                    setBackground(alertColor);
@@ -227,6 +228,7 @@ public class DoubleInputTextField extends JTextField{
 
 	//we need this empty listener to fire action
 	ActionListener emptyListener = new ActionListener(){
+                @Override
 		public void actionPerformed(ActionEvent e){
 		}
 	    }; 
@@ -234,6 +236,7 @@ public class DoubleInputTextField extends JTextField{
 	addActionListener(emptyListener);
 
 	innerListener = new ActionListener(){
+                @Override
 		public void actionPerformed(ActionEvent e){
 		    try{
 			val = Double.parseDouble(getText());
@@ -246,7 +249,9 @@ public class DoubleInputTextField extends JTextField{
 
 
 	innerFocusListener = new FocusListener(){
+                @Override
 		public void focusGained(FocusEvent e){}
+                @Override
 		public void focusLost(FocusEvent e) {
 		    if(!isEditable()) return;
 		    try{
@@ -262,8 +267,11 @@ public class DoubleInputTextField extends JTextField{
 	addFocusListener(innerFocusListener);
 
 	docListener = new DocumentListener(){
+                @Override
 		public void changedUpdate(DocumentEvent e){ setBackground(alertColor);}
+                @Override
 		public void insertUpdate(DocumentEvent e) { setBackground(alertColor);}
+                @Override
 		public void removeUpdate(DocumentEvent e) { setBackground(alertColor);}
 
 	    };

@@ -64,10 +64,10 @@ public final class AlgorithmFactory {
     
     
     /** data node label for algorithm data */
-    public final static String      NODETAG_ALG = "algorithm";
+    public static final String      NODETAG_ALG = "algorithm";
     
     /** attribute label for type string identifier */
-    public final static String      ATTRTAG_TYPE = "type";
+    public static final String      ATTRTAG_TYPE = "type";
     
     
     
@@ -293,7 +293,7 @@ public final class AlgorithmFactory {
      * @author Christopher K. Allen
      * @since  Oct 25, 2012
      */
-    static public Trace3dTracker    createTrace3dTracker(AcceleratorSeq smfSeq) throws InstantiationException {
+    public static Trace3dTracker    createTrace3dTracker(AcceleratorSeq smfSeq) throws InstantiationException {
         
         Trace3dTracker  algEnv = AlgorithmFactory.createTrackerFor(smfSeq, Trace3dTracker.class);
         

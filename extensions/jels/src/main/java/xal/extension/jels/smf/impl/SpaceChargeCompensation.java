@@ -35,7 +35,7 @@ public class SpaceChargeCompensation extends AcceleratorNode {
     /*
      *  Constants
      */
-    public static final String s_strType = "SCC";
+    public static final String TYPE = "SCC";
 
     public static final String N2FLOW_RB_HANDLE = "n2flowRB";    
 
@@ -53,7 +53,7 @@ public class SpaceChargeCompensation extends AcceleratorNode {
      * Register type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes(SpaceChargeCompensation.class, s_strType);
+        ElementTypeManager.defaultManager().registerTypes(SpaceChargeCompensation.class, TYPE);
     }
 
     /**
@@ -63,7 +63,7 @@ public class SpaceChargeCompensation extends AcceleratorNode {
      */
     @Override
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /**

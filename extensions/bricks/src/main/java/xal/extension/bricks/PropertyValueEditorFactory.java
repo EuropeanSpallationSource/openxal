@@ -8,23 +8,16 @@
 
 package xal.extension.bricks;
 
-import java.beans.*;
 import java.net.URL;
-import java.lang.reflect.*;
 import javax.swing.*;
-import javax.swing.table.*;
-import javax.swing.border.*;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.*;
-import java.awt.image.*;
-import javax.swing.event.*;
+import java.net.MalformedURLException;
 
 import xal.tools.data.*;
 
@@ -35,12 +28,14 @@ public class PropertyValueEditorFactory {
 	static PropertyValueEditor<String> getStringEditor() {
 		return new PropertyValueTextEditor<String>() {
 			/** get the cell editor value */
+                        @Override
 			public String getEditorValue( final BricksContext context ) {
 				return ((JTextField)getEditorComponent()).getText();
 			}
 			
 			
 			/** write to a data adaptor */
+                        @Override
 			public void writeValue( final String name, final Object value, final DataAdaptor adaptor ) {
 				super.writeValue( name, value, adaptor );
 				adaptor.setValue( "value", value.toString() );
@@ -48,6 +43,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** read from a data adaptor */
+                        @Override
 			public String readValue( final DataAdaptor adaptor ) {
 				return adaptor.stringValue( "value" );
 			}
@@ -59,6 +55,7 @@ public class PropertyValueEditorFactory {
 	static PropertyValueEditor<Double> getDoubleEditor() {
 		return new PropertyValueNumberEditor<Double>() {
 			/** get the cell editor value */
+                        @Override
 			public Double getEditorValue( final BricksContext context ) {
 				final String text = ((JTextField)getEditorComponent()).getText();
 				return new Double( text );
@@ -66,6 +63,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** write to a data adaptor */
+                        @Override
 			public void writeValue( final String name, final Object value, final DataAdaptor adaptor ) {
 				super.writeValue( name, value, adaptor );
 				adaptor.setValue( "value", (Double)value );
@@ -73,6 +71,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** read from a data adaptor */
+                        @Override
 			public Double readValue( final DataAdaptor adaptor ) {
 				return adaptor.doubleValue( "value" );
 			}
@@ -84,13 +83,15 @@ public class PropertyValueEditorFactory {
 	static PropertyValueEditor<Integer> getIntegerEditor() {
 		return new PropertyValueNumberEditor<Integer>() {
 			/** get the cell editor value */
+                        @Override
 			public Integer getEditorValue( final BricksContext context ) {
 				final String text = ((JTextField)getEditorComponent()).getText();
-				return new Integer( text );
+				return Integer.parseInt(text );
 			}
 			
 			
 			/** write to a data adaptor */
+                        @Override
 			public void writeValue( final String name, final Object value, final DataAdaptor adaptor ) {
 				super.writeValue( name, value, adaptor );
 				adaptor.setValue( "value", (Integer)value );
@@ -98,6 +99,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** read from a data adaptor */
+                        @Override
 			public Integer readValue( final DataAdaptor adaptor ) {
 				return adaptor.intValue( "value" );
 			}
@@ -109,18 +111,21 @@ public class PropertyValueEditorFactory {
 	static PropertyValueEditor<String> getSimpleRenderer() {
 		return new PropertyValueTextEditor<String>() {
 			/** get the cell editor value */
+                        @Override
 			public String getEditorValue( final BricksContext context ) {
 				return null;
 			}
 			
 			
 			/** instantiate a component */
+                        @Override
 			public Component getEditorComponentInstance() {
 				return null;
 			}
 			
 			
 			/** read from a data adaptor */
+                        @Override
 			public String readValue( final DataAdaptor adaptor ) {
 				return null;
 			}
@@ -132,11 +137,13 @@ public class PropertyValueEditorFactory {
 	static PropertyValueEditor<Boolean> getBooleanEditor() {
 		return new PropertyValueEditor<Boolean>() {
 			/** instantiate a component */
+                        @Override
 			public Component getEditorComponentInstance() {
 				final JCheckBox checkBox = new JCheckBox();
 				checkBox.addActionListener( new ActionListener() {
+                                        @Override
 					public void actionPerformed( final ActionEvent event ) {
-						if ( _currentCellEditor != null )  _currentCellEditor.fireEditingStopped();
+						if ( currentCellEditor != null )  currentCellEditor.fireEditingStopped();
 					}
 				});
 				return checkBox;
@@ -144,24 +151,28 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** get the cell editor value */
+                        @Override
 			public Boolean getEditorValue( final BricksContext context ) {
-				return new Boolean( ((JCheckBox)getEditorComponent()).isSelected() );
+                            return ((JCheckBox) getEditorComponent()).isSelected();
 			}
 			
 			
 			/** set the editor value */
+                        @Override
 			public void setEditorValue( final Object value ) {
-				((JCheckBox)getEditorComponent()).setSelected( ((Boolean)value).booleanValue() );
+				((JCheckBox)getEditorComponent()).setSelected(((Boolean)value));
 			}
 			
 			
 			/** set the rendering value */
+                        @Override
 			public void setRenderingValue( final Object value ) {
-				((JCheckBox)getRenderingComponent()).setSelected( ((Boolean)value).booleanValue() );
+				((JCheckBox)getRenderingComponent()).setSelected(((Boolean)value));
 			}
 			
 			
 			/** write to a data adaptor */
+                        @Override
 			public void writeValue( final String name, final Object value, final DataAdaptor adaptor ) {
 				super.writeValue( name, value, adaptor );
 				adaptor.setValue( "value", (Boolean)value );
@@ -169,6 +180,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** read from a data adaptor */
+                        @Override
 			public Boolean readValue( final DataAdaptor adaptor ) {
 				return adaptor.booleanValue( "value" );
 			}
@@ -186,6 +198,7 @@ public class PropertyValueEditorFactory {
 	static PropertyValueEditor<Font> getFontEditor() {
 		return new PropertyValueTextEditor<Font>() {
 			/** get the cell editor value */
+                        @Override
 			public Font getEditorValue( final BricksContext context ) {
 				final JTextField textField = (JTextField)getEditorComponent();
 				final String[] valueStrings = textField.getText().split( "," );
@@ -197,6 +210,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** set the editor value */
+                        @Override
 			public void setEditorValue( final Object value ) {
 				final JTextField textField = (JTextField)getEditorComponent();
 				if ( value != null ) {
@@ -210,6 +224,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** set the rendering value */
+                        @Override
 			public void setRenderingValue( final Object value ) {
 				final JLabel textLabel = (JLabel)getRenderingComponent();
 				if ( value != null ) {
@@ -223,6 +238,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** write to a data adaptor */
+                        @Override
 			public void writeValue( final String name, final Object rawValue, final DataAdaptor adaptor ) {
 				final Font value = (Font)rawValue;
 				super.writeValue( name, value, adaptor );
@@ -233,6 +249,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** read from a data adaptor */
+                        @Override
 			public Font readValue( final DataAdaptor adaptor ) {
 				final String fontName = adaptor.stringValue( "fontName" );
 				final int style = adaptor.intValue( "style" );
@@ -247,6 +264,7 @@ public class PropertyValueEditorFactory {
 	static PropertyValueEditor<Dimension> getDimensionEditor() {
 		return new PropertyValueTextEditor<Dimension>() {
 			/** get the cell editor value */
+                        @Override
 			public Dimension getEditorValue( final BricksContext context ) {
 				final JTextField textField = (JTextField)getEditorComponent();
 				final String[] valueStrings = textField.getText().split( "," );
@@ -257,6 +275,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** set the editor value */
+                        @Override
 			public void setEditorValue( final Object value ) {
 				final JTextField textField = (JTextField)getEditorComponent();
 				if ( value != null ) {
@@ -270,6 +289,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** set the rendering value */
+                        @Override
 			public void setRenderingValue( final Object value ) {
 				final JLabel textLabel = (JLabel)getRenderingComponent();
 				if ( value != null ) {
@@ -283,6 +303,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** write to a data adaptor */
+                        @Override
 			public void writeValue( final String name, final Object rawValue, final DataAdaptor adaptor ) {
 				final Dimension value = (Dimension)rawValue;
 				super.writeValue( name, value, adaptor );
@@ -292,6 +313,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** read from a data adaptor */
+                        @Override
 			public Dimension readValue( final DataAdaptor adaptor ) {
 				final int width = adaptor.intValue( "width" );
 				final int height = adaptor.intValue( "height" );
@@ -305,6 +327,7 @@ public class PropertyValueEditorFactory {
 	static PropertyValueEditor<Rectangle> getRectangleEditor() {
 		return new PropertyValueTextEditor<Rectangle>() {
 			/** get the cell editor value */
+                        @Override
 			public Rectangle getEditorValue( final BricksContext context ) {
 				final JTextField textField = (JTextField)getEditorComponent();
 				final String[] valueStrings = textField.getText().split( "," );
@@ -317,6 +340,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** set the editor value */
+                        @Override
 			public void setEditorValue( final Object value ) {
 				final JTextField textField = (JTextField)getEditorComponent();
 				if ( value != null ) {
@@ -330,6 +354,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** set the rendering value */
+                        @Override
 			public void setRenderingValue( final Object value ) {
 				final JLabel textLabel = (JLabel)getRenderingComponent();
 				if ( value != null ) {
@@ -343,6 +368,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** write to a data adaptor */
+                        @Override
 			public void writeValue( final String name, final Object rawValue, final DataAdaptor adaptor ) {
 				final Rectangle value = (Rectangle)rawValue;
 				super.writeValue( name, value, adaptor );
@@ -354,6 +380,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** read from a data adaptor */
+                        @Override
 			public Rectangle readValue( final DataAdaptor adaptor ) {
 				final int x = adaptor.intValue( "x" );
 				final int y = adaptor.intValue( "y" );
@@ -369,6 +396,7 @@ public class PropertyValueEditorFactory {
 	static PropertyValueEditor<Insets> getInsetsEditor() {
 		return new PropertyValueTextEditor<Insets>() {
 			/** get the cell editor value */
+                        @Override
 			public Insets getEditorValue( final BricksContext context ) {
 				final JTextField textField = (JTextField)getEditorComponent();
 				final String[] valueStrings = textField.getText().split( "," );
@@ -381,6 +409,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** set the editor value */
+                        @Override
 			public void setEditorValue( final Object value ) {
 				final JTextField textField = (JTextField)getEditorComponent();
 				if ( value != null ) {
@@ -394,6 +423,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** set the rendering value */
+                        @Override
 			public void setRenderingValue( final Object value ) {
 				final JLabel textLabel = (JLabel)getRenderingComponent();
 				if ( value != null ) {
@@ -407,6 +437,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** write to a data adaptor */
+                        @Override
 			public void writeValue( final String name, final Object rawValue, final DataAdaptor adaptor ) {
 				final Insets value = (Insets)rawValue;
 				super.writeValue( name, value, adaptor );
@@ -418,6 +449,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** read from a data adaptor */
+                        @Override
 			public Insets readValue( final DataAdaptor adaptor ) {
 				final int top = adaptor.intValue( "top" );
 				final int left = adaptor.intValue( "left" );
@@ -433,6 +465,7 @@ public class PropertyValueEditorFactory {
 	static PropertyValueEditor<Icon> getIconEditor() {
 		return new PropertyValueTextEditor<Icon>() {
 			/** get the cell editor value */
+                        @Override
 			public Icon getEditorValue( final BricksContext context ) {
 				try {
 					final JTextField textField = (JTextField)getEditorComponent();
@@ -450,6 +483,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** set the editor value */
+                        @Override
 			public void setEditorValue( final Object value ) {
 				final JTextField textField = (JTextField)getEditorComponent();
 				if ( value != null && value instanceof IconResource ) {
@@ -465,6 +499,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** set the rendering value */
+                        @Override
 			public void setRenderingValue( final Object value ) {
 				final JLabel iconLabel = (JLabel)getRenderingComponent();
 				if ( value != null && value instanceof IconResource ) {
@@ -478,6 +513,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** write to a data adaptor */
+                        @Override
 			public void writeValue( final String name, final Object rawValue, final DataAdaptor adaptor ) {
 				final IconResource value = (IconResource)rawValue;
 				super.writeValue( name, value, adaptor );
@@ -487,6 +523,7 @@ public class PropertyValueEditorFactory {
 			
 			
 			/** read from a data adaptor */
+                        @Override
 			public Icon readValue( final DataAdaptor adaptor ) {
 				final String group = adaptor.stringValue( "group" );
 				final String iconName = adaptor.stringValue( "iconName" );
@@ -495,7 +532,7 @@ public class PropertyValueEditorFactory {
 					final URL contextURL = contextURLSpec != null ? new URL( contextURLSpec ) : null;
 					return IconResource.getInstance( contextURL, group, iconName );
 				}
-				catch( Exception exception ) {
+				catch( MalformedURLException exception ) {
 					exception.printStackTrace();
 					return null;
 				}
@@ -507,7 +544,7 @@ public class PropertyValueEditorFactory {
 
 /** color property editor */
 class PropertyValueColorEditor extends PropertyValueEditor<Color> {
-	protected JColorChooser COLOR_CHOOSER;
+	protected JColorChooser colorChooser;
 	
 	
 	/** Constructor */
@@ -518,24 +555,27 @@ class PropertyValueColorEditor extends PropertyValueEditor<Color> {
 	
 	/** get the color chooser */
 	protected JColorChooser getColorChooser() {
-		if ( COLOR_CHOOSER == null ) {
-			COLOR_CHOOSER = new JColorChooser();
+		if ( colorChooser == null ) {
+			colorChooser = new JColorChooser();
 		}
-		return COLOR_CHOOSER;
+		return colorChooser;
 	}
 	
 	
 	/** instantiate a component */
+        @Override
 	public Component getEditorComponentInstance() {
 		final JButton button = new JButton( "Color" );
 		final ActionListener handler = new ActionListener() {
+                        @Override
 			public void actionPerformed( final ActionEvent event ) {}
 		};
 		final JDialog dialog = JColorChooser.createDialog( button, "Pick a Color", true, getColorChooser(), handler, null );				
 		button.addActionListener( new ActionListener() {
+                        @Override
 			public void actionPerformed( final ActionEvent event ) {
 				dialog.setVisible( true );
-				if ( _currentCellEditor != null )  _currentCellEditor.fireEditingStopped();
+				if ( currentCellEditor != null )  currentCellEditor.fireEditingStopped();
 			}
 		} );
 		
@@ -544,12 +584,14 @@ class PropertyValueColorEditor extends PropertyValueEditor<Color> {
 	
 	
 	/** instantiate a component */
+        @Override
 	public Component getRenderingComponentInstance() {
 		return new JButton( "Color" );
 	}
 	
 	
 	/** get the cell editor value */
+        @Override
 	public Color getEditorValue( final BricksContext context ) {
 		final Color color = getColorChooser().getColor();
 		return color;
@@ -557,6 +599,7 @@ class PropertyValueColorEditor extends PropertyValueEditor<Color> {
 	
 	
 	/** set the editor value */
+        @Override
 	public void setEditorValue( final Object value ) {
 		getColorChooser().setColor( (Color)value );
 		((JButton)getRenderingComponent()).setForeground( (Color)value );
@@ -564,12 +607,14 @@ class PropertyValueColorEditor extends PropertyValueEditor<Color> {
 	
 	
 	/** set the rendering value */
+        @Override
 	public void setRenderingValue( final Object value ) {
 		((JButton)getRenderingComponent()).setForeground( (Color)value );
 	}
 	
 	
 	/** write to a data adaptor */
+        @Override
 	public void writeValue( final String name, final Object rawValue, final DataAdaptor adaptor ) {
 		final Color value = (Color)rawValue;
 		super.writeValue( name, value, adaptor );
@@ -581,6 +626,7 @@ class PropertyValueColorEditor extends PropertyValueEditor<Color> {
 	
 	
 	/** read from a data adaptor */
+        @Override
 	public Color readValue( final DataAdaptor adaptor ) {
 		final int red = adaptor.intValue( "red" );
 		final int green = adaptor.intValue( "green" );

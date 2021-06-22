@@ -27,22 +27,22 @@ import xal.smf.attr.AttributeBucket;
  */
 public class RfqDummyBucket extends AttributeBucket {
 
-    private Attribute m_attC11;
-    private Attribute m_attC12;
-    private Attribute m_attC22;
-    private Attribute m_attC33;
-    private Attribute m_attC34;
-    private Attribute m_attC44;
-    private Attribute m_attC55;
-    private Attribute m_attC56;
-    private Attribute m_attC66;
-    private Attribute m_attEnergy;
+    private Attribute attC11;
+    private Attribute attC12;
+    private Attribute attC22;
+    private Attribute attC33;
+    private Attribute attC34;
+    private Attribute attC44;
+    private Attribute attC55;
+    private Attribute attC56;
+    private Attribute attC66;
+    private Attribute attEnergy;
 
     private static final long serialVersionUID = 1;
 
     public static final String c_strType = "rfq";
 
-    static final String[] c_arrNames = {
+    static final String[] ARR_NAMES = {
         "c11",
         "c12",
         "c22",
@@ -58,27 +58,27 @@ public class RfqDummyBucket extends AttributeBucket {
     public RfqDummyBucket() {
         super();
 
-        m_attC11 = new Attribute(0.);
-        m_attC12 = new Attribute(0.);
-        m_attC22 = new Attribute(0.);
-        m_attC33 = new Attribute(0.);
-        m_attC34 = new Attribute(0.);
-        m_attC44 = new Attribute(0.);
-        m_attC55 = new Attribute(0.);
-        m_attC56 = new Attribute(0.);
-        m_attC66 = new Attribute(0.);
-        m_attEnergy = new Attribute(0.);
+        attC11 = new Attribute(0.);
+        attC12 = new Attribute(0.);
+        attC22 = new Attribute(0.);
+        attC33 = new Attribute(0.);
+        attC34 = new Attribute(0.);
+        attC44 = new Attribute(0.);
+        attC55 = new Attribute(0.);
+        attC56 = new Attribute(0.);
+        attC66 = new Attribute(0.);
+        attEnergy = new Attribute(0.);
 
-        super.registerAttribute(c_arrNames[0], m_attC11);
-        super.registerAttribute(c_arrNames[1], m_attC12);
-        super.registerAttribute(c_arrNames[2], m_attC22);
-        super.registerAttribute(c_arrNames[3], m_attC33);
-        super.registerAttribute(c_arrNames[4], m_attC34);
-        super.registerAttribute(c_arrNames[5], m_attC44);
-        super.registerAttribute(c_arrNames[6], m_attC55);
-        super.registerAttribute(c_arrNames[7], m_attC56);
-        super.registerAttribute(c_arrNames[8], m_attC66);
-        super.registerAttribute(c_arrNames[9], m_attEnergy);
+        super.registerAttribute(ARR_NAMES[0], attC11);
+        super.registerAttribute(ARR_NAMES[1], attC12);
+        super.registerAttribute(ARR_NAMES[2], attC22);
+        super.registerAttribute(ARR_NAMES[3], attC33);
+        super.registerAttribute(ARR_NAMES[4], attC34);
+        super.registerAttribute(ARR_NAMES[5], attC44);
+        super.registerAttribute(ARR_NAMES[6], attC55);
+        super.registerAttribute(ARR_NAMES[7], attC56);
+        super.registerAttribute(ARR_NAMES[8], attC66);
+        super.registerAttribute(ARR_NAMES[9], attEnergy);
     }
 
 
@@ -94,83 +94,83 @@ public class RfqDummyBucket extends AttributeBucket {
     }
 
     public double getAttC11() {
-        return m_attC11.getDouble();
+        return attC11.getDouble();
     }
 
-    public void setAttC11(double m_attC11) {
-        this.m_attC11.set(m_attC11);
+    public void setAttC11(double attC11) {
+        this.attC11.set(attC11);
     }
 
     public double getAttC12() {
-        return m_attC12.getDouble();
+        return attC12.getDouble();
     }
 
-    public void setAttC12(double m_attC12) {
-        this.m_attC12.set(m_attC12);
+    public void setAttC12(double attC12) {
+        this.attC12.set(attC12);
     }
 
     public double getAttC22() {
-        return m_attC22.getDouble();
+        return attC22.getDouble();
     }
 
-    public void setAttC22(double m_attC22) {
-        this.m_attC22.set(m_attC22);
+    public void setAttC22(double attC22) {
+        this.attC22.set(attC22);
     }
 
     public double getAttC33() {
-        return m_attC33.getDouble();
+        return attC33.getDouble();
     }
 
-    public void setAttC33(double m_attC33) {
-        this.m_attC33.set(m_attC33);
+    public void setAttC33(double attC33) {
+        this.attC33.set(attC33);
     }
 
     public double getAttC34() {
-        return m_attC34.getDouble();
+        return attC34.getDouble();
     }
 
-    public void setAttC34(double m_attC34) {
-        this.m_attC34.set(m_attC34);
+    public void setAttC34(double attC34) {
+        this.attC34.set(attC34);
     }
 
     public double getAttC44() {
-        return m_attC44.getDouble();
+        return attC44.getDouble();
     }
 
-    public void setAttC44(double m_attC44) {
-        this.m_attC44.set(m_attC44);
+    public void setAttC44(double attC44) {
+        this.attC44.set(attC44);
     }
 
     public double getAttC55() {
-        return m_attC55.getDouble();
+        return attC55.getDouble();
     }
 
-    public void setAttC55(double m_attC55) {
-        this.m_attC55.set(m_attC55);
+    public void setAttC55(double attC55) {
+        this.attC55.set(attC55);
     }
 
     public double getAttC56() {
-        return m_attC56.getDouble();
+        return attC56.getDouble();
     }
 
-    public void setAttC56(double m_attC56) {
-        this.m_attC56.set(m_attC56);
+    public void setAttC56(double attC56) {
+        this.attC56.set(attC56);
     }
 
     public double getAttC66() {
-        return m_attC66.getDouble();
+        return attC66.getDouble();
     }
 
-    public void setAttC66(double m_attC66) {
-        this.m_attC66.set(m_attC66);
+    public void setAttC66(double attC66) {
+        this.attC66.set(attC66);
     }
 
     public double getAttEnergy() {
-        return m_attEnergy.getDouble();
+        return attEnergy.getDouble();
     }
 
-    public void setAttEnergy(double m_attEnergy) {
-        this.m_attEnergy.set(m_attEnergy);
+    public void setAttEnergy(double attEnergy) {
+        this.attEnergy.set(attEnergy);
     }
 
 }

@@ -12,6 +12,7 @@ package xal.extension.application;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 
 import javax.swing.JDesktopPane;
@@ -27,10 +28,10 @@ import xal.Info;
 /** Application subclass for JDesktopPane based applications. */
 public class DesktopApplication extends Application implements XalInternalDocumentListener {
 	/** desktop pane that contains the document windows. */
-	private JFrame _desktopFrame;
+	private JFrame desktopFrame;
 	
 	/** default desktop menubar */
-	private JMenuBar _defaultDesktopMenu;
+	private JMenuBar defaultDesktopMenu;
 	
 	
     /** 
@@ -57,9 +58,11 @@ public class DesktopApplication extends Application implements XalInternalDocume
 	* If the URL array is empty, then create one empty document.
 	* @param urls An array of document URLs to open.
 	*/
+        @Override
     protected void setup( final URL[] urls ) {
 		try {
 			SwingUtilities.invokeAndWait( new Runnable() {
+                                @Override
 				public void run() {
 					createDesktopFrame();
 					
@@ -71,18 +74,18 @@ public class DesktopApplication extends Application implements XalInternalDocume
 					makeFileChoosers();
 					
 					// setup the application commander and load custom application commands
-					_commander = makeCommander();
-					_applicationAdaptor.customizeCommands( _commander );
-					setupMenuBar( _commander );
+					commander = makeCommander();
+					applicationAdaptor.customizeCommands(commander );
+					setupMenuBar(commander );
 					
 					// notify the adaptor that the desktop frame will be displayed
-					((DesktopApplicationAdaptor)_applicationAdaptor).applicationWillDisplayDesktopPane();
+					((DesktopApplicationAdaptor)applicationAdaptor).applicationWillDisplayDesktopPane();
 					
-					_desktopFrame.setVisible( true );
-					_desktopFrame.toFront();
+					desktopFrame.setVisible( true );
+					desktopFrame.toFront();
 					
 					// notify listeners that the initial documents, if any, will be opened
-					_noticeProxy.applicationWillOpenInitialDocuments();
+					noticeProxy.applicationWillOpenInitialDocuments();
 					
 					if ( urls.length > 0 ) {
 						for ( int index = 0 ; index < urls.length ; index++ ) {
@@ -91,22 +94,19 @@ public class DesktopApplication extends Application implements XalInternalDocume
 					}
 					
 					// if multiple documents are opened then cascade them
-					if ( _openDocuments.size() > 1 ) {
-						cascadeWindowsAbout( _openDocuments.get(0) );
+					if ( openDocuments.size() > 1 ) {
+						cascadeWindowsAbout( openDocuments.get(0) );
 					}					
 				}
 			});
 		}
-		catch ( InterruptedException exception ) {
-			throw new RuntimeException( exception );
-		}
-		catch ( java.lang.reflect.InvocationTargetException exception ) {
+		catch ( InterruptedException | InvocationTargetException exception ) {
 			throw new RuntimeException( exception );
 		}
 		
 		//registerApplicationStatusService();   // comment out application service registration until it is developed -tap
 		
-        _applicationAdaptor.applicationFinishedLaunching();
+        applicationAdaptor.applicationFinishedLaunching();
     }
     
     
@@ -114,6 +114,7 @@ public class DesktopApplication extends Application implements XalInternalDocume
 	 * Make an application commander
      * @return the commander that loads default and custom actions.
      */
+        @Override
     protected Commander makeCommander() {
         return new Commander( this );
     }
@@ -121,28 +122,28 @@ public class DesktopApplication extends Application implements XalInternalDocume
 	
 	/** Setup the menubar */
 	private void setupMenuBar( final Commander commander ) {
-		_defaultDesktopMenu = commander.getMenubar();
-		_desktopFrame.setJMenuBar( _defaultDesktopMenu );
+		defaultDesktopMenu = commander.getMenubar();
+		desktopFrame.setJMenuBar( defaultDesktopMenu );
 	}
 	
 	
 	/** Create the top level desktop frame */
 	private void createDesktopFrame() {
 		final JDesktopPane desktop = new JDesktopPane();
-		desktop.setDragMode( ((DesktopApplicationAdaptor)_applicationAdaptor).drawsDocumentContentOnDrag() ? JDesktopPane.LIVE_DRAG_MODE : JDesktopPane.OUTLINE_DRAG_MODE );
+		desktop.setDragMode( ((DesktopApplicationAdaptor)applicationAdaptor).drawsDocumentContentOnDrag() ? JDesktopPane.LIVE_DRAG_MODE : JDesktopPane.OUTLINE_DRAG_MODE );
 		
-		_desktopFrame = new JFrame( Info.getLabel() + " - " + _applicationAdaptor.applicationName() );
-		_desktopFrame.setSize( 1024, 768 );
-		_desktopFrame.setContentPane( desktop );
+		desktopFrame = new JFrame( Info.getLabel() + " - " + applicationAdaptor.applicationName() );
+		desktopFrame.setSize( 1024, 768 );
+		desktopFrame.setContentPane( desktop );
 		
-		_desktopFrame.setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
-		_desktopFrame.addWindowListener( newDesktopWindowHandler() );
+		desktopFrame.setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
+		desktopFrame.addWindowListener( newDesktopWindowHandler() );
 	}
 	
 	
 	/** Get the desktop pane */
 	private JDesktopPane getDesktopPane() {
-		return (JDesktopPane)_desktopFrame.getContentPane();
+		return (JDesktopPane)desktopFrame.getContentPane();
 	}
 	
 	
@@ -169,6 +170,7 @@ public class DesktopApplication extends Application implements XalInternalDocume
     /** Create a new window listener. */
     private WindowListener newDesktopWindowHandler() {
         return new WindowAdapter() {
+            @Override
             public void windowClosing( final WindowEvent event ) {
                 quit();
             }
@@ -181,19 +183,21 @@ public class DesktopApplication extends Application implements XalInternalDocume
 	 * @param document the document to produce
 	 * @param makeVisible make the document visible
      */
+        @Override
     public void produceDocument( final XalAbstractDocument document, final boolean makeVisible ) {
-        _openDocuments.add( document );
+        openDocuments.add( document );
         ((XalInternalDocument)document).addXalInternalDocumentListener( this );
 		document.initMainWindow();
 		getDesktopPane().add( (XalInternalWindow)document.getDocumentView() );
 		if ( makeVisible ) {
 			document.showDocument();
 		}
-        _noticeProxy.documentCreated( document );
+        noticeProxy.documentCreated( document );
     }
 	
 	
     /** Create and open a new empty document. */
+        @Override
     protected void newDocument() {
 		newDocument("");
     }
@@ -203,8 +207,9 @@ public class DesktopApplication extends Application implements XalInternalDocume
 	 * Create and open a new empty document of the specified type. 
 	 * @param type the type of document to create.
 	 */
+        @Override
 	protected void newDocument( final String type ) {
-        final XalInternalDocument document = (XalInternalDocument)_applicationAdaptor.generateEmptyDocument( type );
+        final XalInternalDocument document = (XalInternalDocument)applicationAdaptor.generateEmptyDocument( type );
 		produceDocument( document );		
 	}
 	
@@ -215,20 +220,23 @@ public class DesktopApplication extends Application implements XalInternalDocume
      * @param adaptor The custom application adaptor.
 	 * @param urls The URLs of documents to open upon launching the application
      */
-    static public void launch( final DesktopApplicationAdaptor adaptor, final URL[] urls ) {
+    public static void launch( final DesktopApplicationAdaptor adaptor, final URL[] urls ) {
         new DesktopApplication( adaptor, urls );
     }
 	
 	
     /** Handle document title change event.  Empty implementation. */
+        @Override
     public void titleChanged( final XalInternalDocument document, final String newTitle ) {}
     
     
     /** Handle document change event.  Empty implementation. */
+        @Override
     public void hasChangesChanged( final XalInternalDocument document, final boolean newHasChangesStatus ) {}
     
     
     /** Handle document closing event.  Empty implementation. */
+        @Override
     public void documentWillClose( final XalInternalDocument document ) {}
     
     
@@ -237,10 +245,11 @@ public class DesktopApplication extends Application implements XalInternalDocume
 	 * If there are no documents remaining, the application quits.
 	 * @param document The document that has closed.
 	 */
+        @Override
     public void documentHasClosed( final XalInternalDocument document ) {
         document.removeXalInternalDocumentListener( this );
-        _openDocuments.remove( document );
-        _noticeProxy.documentClosed( document );
+        openDocuments.remove( document );
+        noticeProxy.documentClosed( document );
     }
 	
 	
@@ -248,9 +257,10 @@ public class DesktopApplication extends Application implements XalInternalDocume
 	 * Handle the document activated event.
 	 * @param document the document that has been activated.
 	 */
+        @Override
 	public void documentActivated( final XalInternalDocument document ) {
-		_desktopFrame.setJMenuBar( document.getDesktopMenubar() );
-		_desktopFrame.validate();
+		desktopFrame.setJMenuBar( document.getDesktopMenubar() );
+		desktopFrame.validate();
 	}
 	
 	
@@ -258,8 +268,9 @@ public class DesktopApplication extends Application implements XalInternalDocume
 	 * Handle the document activated event.
 	 * @param document the document that has been activated.
 	 */
+        @Override
 	public void documentDeactivated( final XalInternalDocument document ) {
-		_desktopFrame.setJMenuBar( _defaultDesktopMenu );
-		_desktopFrame.validate();
+		desktopFrame.setJMenuBar( defaultDesktopMenu );
+		desktopFrame.validate();
 	}
 }

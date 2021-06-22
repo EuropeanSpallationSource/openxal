@@ -49,10 +49,10 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     public static final String PROBE_LABEL = "probe";
     
     /** attribute tag for probe type name */ 
-    protected final static String TYPE_LABEL = "type";
+    protected static final String TYPE_LABEL = "type";
     
     /** attribute tag for the time stamp*/
-    protected final static String TIME_LABEL = "time";
+    protected static final String TIME_LABEL = "time";
     
     
     /** element tag for comment data */
@@ -105,7 +105,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
         try {
             Class<?> probeClass = Class.forName(type);
             probe = (Probe<?>) probeClass.newInstance();
-        } catch (Exception e) {
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
             e.printStackTrace();
             throw new DataFormatException(e.getMessage());
         }
@@ -139,37 +139,14 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
             
             return pNew;
             
-        } catch (InstantiationException e) {
-            System.err.println("Unable to intialize from " + probeInit.toString());
-            e.printStackTrace();
-            return null;
-            
-        } catch (IllegalAccessException e) {
-            System.err.println("Unable to intialize from " + probeInit.toString());
-            e.printStackTrace();
-            return null;
-            
-        } catch (NoSuchMethodException e) {
-            System.err.println("Unable to intialize from " + probeInit.toString());
-            e.printStackTrace();
-            return null;
-
-        } catch (SecurityException e) {
-            System.err.println("Unable to intialize from " + probeInit.toString());
-            e.printStackTrace();
-            return null;
-
-        } catch (IllegalArgumentException e) {
-            System.err.println("Unable to intialize from " + probeInit.toString());
-            e.printStackTrace();
-            return null;
-
-        } catch (InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException e) {
             System.err.println("Unable to intialize from " + probeInit.toString());
             e.printStackTrace();
             return null;
             
         }
+//      pNew.initializeFrom( probeInit );
+        
         
 //      pNew.initializeFrom( probeInit );
     }
@@ -185,13 +162,13 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     //
     
     /** User comment associated with probe */
-    private String      m_strComment = "";
+    private String      strComment = "";
     
     /** Time stamp associated with probe */
-    private Date        m_dateStamp = new Date();
+    private Date        dateStamp = new Date();
 
 	/** Species name */
-	private String     m_speciesName = "";
+	private String     speciesName = "";
 
 	
 	//
@@ -353,21 +330,21 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      *
      *  @param  strComment  user comment string
      */
-    public void setComment(String strComment)   { m_strComment = strComment; };
+    public void setComment(String strComment)   { this.strComment = strComment; }
 
     /**
      *  Sets a time stamp for the probe.
      *
      *  @param  dateStamp   time stamp for probe
      */
-    public void setTimestamp(Date dateStamp)    { m_dateStamp = dateStamp; };
+    public void setTimestamp(Date dateStamp)    { this.dateStamp = dateStamp; }
 
 	
 	/**
 	 * Set the species name
 	 * @param name the species name
 	 */
-	public void setSpeciesName(String name) {m_speciesName = name; }
+	public void setSpeciesName(String name) {speciesName = name; }
 
 
     /**
@@ -380,14 +357,14 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
         
         algTracker = ifcAlg;
         return true;
-    };
+    }
    
     /**
      *  Set particle trajHist tracking for probes.
      *
      *  @param  bolTrack    turn tracking on or off
      */
-    public void setTracking(boolean bolTrack) { this.bolTrack = bolTrack; };
+    public void setTracking(boolean bolTrack) { this.bolTrack = bolTrack; }
 
     
     /**
@@ -492,7 +469,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      *
      *  @return     comment string
      */
-    public String   getComment()                { return m_strComment; };
+    public String   getComment()                { return strComment; }
     
     /**
      *  Returns the time stamp of the probe.
@@ -500,7 +477,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      *  @return     time stamp
      */
 	@NoEdit	// editors should not access this property
-    public Date     getTimestamp()              { return m_dateStamp; };
+    public Date     getTimestamp()              { return dateStamp; }
 
     /** 
      * Returns the momentum
@@ -544,6 +521,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      *  @return     Trajectory object of the proper sub-type for the probe type 
      */
     @NoEdit // editors should not access this property
+    @Override
     public Trajectory<S> getTrajectory() {
         return trajHist; 
     }
@@ -583,7 +561,8 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
 	 * returns the species name
 	 * @return species name
 	 */
-	public String getSpeciesName() { return m_speciesName; }
+    @Override
+	public String getSpeciesName() { return speciesName; }
 
     /**
      *  Returns the charge of probe's particle species
@@ -738,6 +717,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      *
      * @since  Dec 17, 2014   by Christopher K. Allen
      */
+    @Override
     public ProbeState<?> lookupLastStateFor(String strElemTypeId) {
         Trajectory<S>   trjProbe  = this.getTrajectory();
         ProbeState<?>   stateLast = trjProbe.peakLastByType(strElemTypeId);
@@ -980,7 +960,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      *  @return         interface to probe dynamics
      */
     @Override
-    public IAlgorithm getAlgorithm()    { return algTracker; };
+    public IAlgorithm getAlgorithm()    { return algTracker; }
 
     /**
      * Return the archiving interface for this object.
@@ -989,7 +969,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      */
     @NoEdit // hide this property so it doesn't appear in editors
     @Override
-    public IArchive getArchive()        { return this; };
+    public IArchive getArchive()        { return this; }
 
 
     
@@ -1032,6 +1012,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      *
      *  @exception  DataFormatException     bad probe type, missing child data node, or bad number format
      */
+    @Override
     public void load(DataAdaptor daptSource) throws DataFormatException {
         
         // Make sure we have the correct data source
@@ -1094,7 +1075,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
             throw new DataFormatException("Probe#load() - exception parsing state element");
         }
         this.applyState(state);
-    };
+    }
     
   
 //
@@ -1138,6 +1119,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      *
      *  @param  daSink      data archive to receive probe information
      */
+    @Override
     public void save(DataAdaptor daSink) {
         
         DataAdaptor daProbe = daSink.createChild(Probe.PROBE_LABEL);
@@ -1190,6 +1172,5 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
         if ( algorithm != null )   {
             this.setAlgorithm( algorithm.copy() );
         }
-    };
-    
-};
+    }   
+}

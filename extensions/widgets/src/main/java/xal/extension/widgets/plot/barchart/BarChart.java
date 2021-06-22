@@ -9,7 +9,6 @@ import java.text.*;
 
 import xal.tools.text.ScientificNumberFormat;
 import xal.extension.widgets.plot.*;
-import xal.extension.widgets.swing.*;
 
 /**
  *  The wrapper for the FunctionGraphsJPanel to show the bar chart
@@ -25,7 +24,7 @@ public class BarChart {
 
 	private BarColumnColor bcColor = new BarColumnColor();
 
-	private Vector<BarColumn> barColumns = new java.util.Vector<BarColumn>();
+	private Vector<BarColumn> barColumns = new java.util.Vector<>();
 
 	private TitledBorder border = null;
 
@@ -39,9 +38,9 @@ public class BarChart {
 	private volatile int width = 3;
 
 	//internal curve data
-	private Vector<CurveData> cvV = new Vector<CurveData>();
+	private Vector<CurveData> cvV = new Vector<>();
 
-	private String emptyStr = new String(" ");
+	private String emptyStr = " ";
 
 
 	/**
@@ -68,6 +67,7 @@ public class BarChart {
 
 		GP.addHorLimitsListener(
 								new ActionListener() {
+                        @Override
 			public void actionPerformed(ActionEvent e) {
 
 				int nClmns = barColumns.size();
@@ -190,7 +190,7 @@ public class BarChart {
 	 *  Clear all data
 	 */
 	public void clear() {
-		final Vector<BarColumn> v = new Vector<BarColumn>();
+		final Vector<BarColumn> v = new Vector<>();
 		setBarColumns(v);
 	}
 
@@ -237,7 +237,7 @@ public class BarChart {
 	public void updateChart() {
 		double val_min = Double.MAX_VALUE;
 		double val_max = -Double.MAX_VALUE;
-		Vector<CurveData> cdV = new Vector<CurveData>();
+		Vector<CurveData> cdV = new Vector<>();
 
 		int maxMarkLength = 1;
 		int nClmns = barColumns.size();
@@ -390,6 +390,7 @@ public class BarChart {
 		JFrame mainFrame = new JFrame("Test of the BarChart class");
 		mainFrame.addWindowListener(
 									new java.awt.event.WindowAdapter() {
+                        @Override
 			public void windowClosing(java.awt.event.WindowEvent evt) {
 				System.exit(0);
 			}
@@ -403,35 +404,41 @@ public class BarChart {
 
 		int nCol = 15;
 		final int nLines = 5;
-		Vector<BarColumn> barsV = new Vector<BarColumn>();
+		Vector<BarColumn> barsV = new Vector<>();
 		for (int i = 0; i < nCol; i++) {
 			BarColumn bc =
 			new BarColumn() {
+                                @Override
 				public int size() {
 					return nLines;
 				}
 
 
+                                @Override
 				public boolean show(int index) {
 					return true;
 				}
 
 
+                                @Override
 				public boolean show() {
 					return true;
 				}
 
 
+                                @Override
 				public double value(int index) {
 					return 1.23333 * (index + 1);
 				}
 
 
+                                @Override
 				public String marker() {
 					return "A00";
 				}
 
 
+                                @Override
 				public Color getColor(int index) {
 					return null;
 				}
@@ -499,6 +506,7 @@ public class BarChart {
 
 
 		/** Don't call. Just returns null. Satisfied abstract method requirement. */
+        @Override
 		public Number parse( final String input, final ParsePosition position ) {
 			return null;
 		}
@@ -539,8 +547,9 @@ public class BarChart {
          *@param  val         The value to format
          *@param  toAppendTo  The string buffer to add to
          *@param  pos         The position where to add
-         *@return             The formated string
+         *@return             The formatted string
          */
+        @Override
         public StringBuffer format(double val, StringBuffer toAppendTo, FieldPosition pos) {
 			return formattedStringBuffer( val );
         }
@@ -556,6 +565,7 @@ public class BarChart {
          *      the offsets of the alignment field
          *@return             The text that will be displayed
          */
+        @Override
         public StringBuffer format(long val, StringBuffer toAppendTo, FieldPosition pos) {
 			return formattedStringBuffer( val );
         }
@@ -564,18 +574,18 @@ public class BarChart {
 
 	/**
 	 *  The smart formatter calculates min, max, step values and chooses the right
-	 *  format for two initial parameters v_min, v_max.
+	 *  format for two initial parameters vMin, vMax.
 	 *
 	 *@author     shishlo
 	 *created    October 10, 2005
 	 */
 	class SmartFormater {
 
-		private double value_min = 0.;
-		private double value_max = 0.;
+		private double valueMin = 0.;
+		private double valueMax = 0.;
 		private double scale = 0.0;
 
-		private NumberFormat fmt_result = new DecimalFormat("#.###E0");
+		private NumberFormat fmtResult = new DecimalFormat("#.###E0");
 
 		private NumberFormat[] simpleFormats = new NumberFormat[5];
 
@@ -605,45 +615,45 @@ public class BarChart {
 		/**
 		 *  Analyzes the limits and calculates suggestion for new limits and formats
 		 *
-		 *@param  v_min  The min value
-		 *@param  v_max  The max value
+		 *@param  vMin  The min value
+		 *@param  vMax  The max value
 		 */
-		void makeAnalysis(double v_min, double v_max) {
-			fmt_result = universalFormat;
-			double range = v_max - v_min;
+		void makeAnalysis(double vMin, double vMax) {
+			fmtResult = universalFormat;
+			double range = vMax - vMin;
 			scale = 0.;
 			if (range > 0.) {
 				scale = Math.pow(10., Math.floor(1.000001 * Math.log(range) / Math.log(10.0)));
 			}
 			if (scale == 0.) {
 				scale = 1.;
-				value_min = -1.0;
-				value_max = +1.0;
+				valueMin = -1.0;
+				valueMax = +1.0;
 				return;
 			}
-			value_min = scale * Math.floor(v_min / scale);
-			value_max = scale * Math.ceil(v_max / scale);
-			if (value_min * value_max == 0. && (scale == Math.abs(value_max) || scale == Math.abs(value_min))) {
+			valueMin = scale * Math.floor(vMin / scale);
+			valueMax = scale * Math.ceil(vMax / scale);
+			if (valueMin * valueMax == 0. && (scale == Math.abs(valueMax) || scale == Math.abs(valueMin))) {
 				scale = scale / 5.0;
-				value_min = scale * Math.floor(v_min / scale);
-				value_max = scale * Math.ceil(v_max / scale);
+				valueMin = scale * Math.floor(vMin / scale);
+				valueMax = scale * Math.ceil(vMax / scale);
 			}
 
 			double[] arr = new double[3];
 			arr[0] = scale;
-			arr[1] = value_min;
-			arr[2] = value_max;
+			arr[1] = valueMin;
+			arr[2] = valueMax;
 
-			double zz_max = Math.max(Math.abs(arr[1]), Math.abs(arr[2]));
-			int nV = (int) (Math.floor(1.0001 * Math.log(zz_max) / Math.log(10.0)));
+			double zzMax = Math.max(Math.abs(arr[1]), Math.abs(arr[2]));
+			int nV = (int) (Math.floor(1.0001 * Math.log(zzMax) / Math.log(10.0)));
 			if (nV >= 0) {
 				nV += 1;
 			} else {
 				nV -= 1;
 			}
 
-			zz_max = zz_max / Math.abs(arr[0]);
-			int nD = (int) (Math.floor(1.0001 * Math.log(zz_max) / Math.log(10.0)));
+			zzMax = zzMax / Math.abs(arr[0]);
+			int nD = (int) (Math.floor(1.0001 * Math.log(zzMax) / Math.log(10.0)));
 			if (nD >= 0) {
 				nD += 1;
 			}
@@ -653,17 +663,17 @@ public class BarChart {
 
 			if (nV >= 4) {
 				int n = Math.min(4, Math.abs(nD));
-				fmt_result = scientificFormats[n];
+				fmtResult = scientificFormats[n];
 				return;
 			}
 
 			if (nV > 0 && nV < 4) {
 				if (nV >= nD) {
-					fmt_result = simpleFormats[0];
+					fmtResult = simpleFormats[0];
 					return;
 				} else {
 					int n = Math.min(4, Math.abs(nV - nD));
-					fmt_result = simpleFormats[n];
+					fmtResult = simpleFormats[n];
 					return;
 				}
 			}
@@ -671,7 +681,7 @@ public class BarChart {
 			if (nV < 0 && nV > -4) {
 				int n = Math.abs(nV) + Math.abs(nD) - 2;
 				if (n <= 4) {
-					fmt_result = simpleFormats[n];
+					fmtResult = simpleFormats[n];
 					return;
 				}
 			}
@@ -694,7 +704,7 @@ public class BarChart {
 		 *@return    The min value
 		 */
 		double getMin() {
-			return value_min;
+			return valueMin;
 		}
 
 
@@ -704,7 +714,7 @@ public class BarChart {
 		 *@return    The max value
 		 */
 		double getMax() {
-			return value_max;
+			return valueMax;
 		}
 
 
@@ -714,7 +724,7 @@ public class BarChart {
 		 *@return    The decimal format
 		 */
 		NumberFormat getFormat() {
-			return fmt_result;
+			return fmtResult;
 		}
 	}
 }

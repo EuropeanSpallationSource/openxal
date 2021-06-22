@@ -20,7 +20,7 @@ import javax.xml.bind.DatatypeConverter;
 /** Utility for processing messages passed through sockets on top of the WebSocket protocol */
 class WebSocketIO {
 	/** key with which to encode the web socket header key for completing the handshake */
-	static final private String HANDSHAKE_ENCODE_KEY = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+	private static final String HANDSHAKE_ENCODE_KEY = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
 
 
@@ -56,7 +56,7 @@ class WebSocketIO {
 
 
 	/** process the handshake (on the server) */
-	static private boolean sendHandshakeResponse( final Socket socket, final String requestHeader ) throws java.net.SocketException, java.io.IOException {
+	private static boolean sendHandshakeResponse( final Socket socket, final String requestHeader ) throws java.net.SocketException, java.io.IOException {
 		final Map<String,String> headerMap = new HashMap<>();
 		final BufferedReader reader = new BufferedReader( new StringReader( requestHeader ) );
 		while( true ) {
@@ -301,7 +301,7 @@ class WebSocketIO {
 
 
 	/** Encode the the specified input string as Base64 */
-	static private String toBase64( final String input ) {
+	private static String toBase64( final String input ) {
 		final byte[] rawInputBytes = input.getBytes( Charset.forName( "UTF-8" ) );
 		return DatatypeConverter.printBase64Binary( rawInputBytes );
 	}
@@ -309,7 +309,7 @@ class WebSocketIO {
 
 
 	/** Exception indicating that the socket closed prematurely */
-	static public class SocketPrematurelyClosedException extends Exception {
+	public static class SocketPrematurelyClosedException extends Exception {
 		/** required serial version ID */
 		static final long serialVersionUID = 0L;
 
@@ -326,7 +326,7 @@ class WebSocketIO {
 /** Reads the payload when there is a mask */
 class MaskPayloadReader {
 	/** mask to use */
-	final private byte[] MASK;
+	private final byte[] MASK;
 
 
 	/** Constructor */
@@ -346,16 +346,16 @@ class MaskPayloadReader {
 /** read bytes from a stream as requested */
 class StreamByteReader {
 	/** stream of data from which to read */
-	final private InputStream SOURCE_STREAM;
+	private final InputStream SOURCE_STREAM;
 
 	/** buffer size for reading from the stream */
-	final private int BUFFER_SIZE;
+	private final int BUFFER_SIZE;
 
 	/** current position */
-	private int _position;
+	private int position;
 
 	/** stack of bytes */
-	private byte[] _byteStack;
+	private byte[] byteStack;
 
 
 	/** Constructor */
@@ -363,20 +363,20 @@ class StreamByteReader {
 		SOURCE_STREAM = inputStream;
 		BUFFER_SIZE = bufferSize;
 
-		_position = 0;
-		_byteStack = new byte[0];
+		position = 0;
+		byteStack = new byte[0];
 	}
 
 
 	/** read the next byte waiting for data from the stream if necessary */
 	public byte nextByte() throws java.io.IOException, StreamPrematurelyClosedException {
-		final int position = _position;
-		if ( position >= _byteStack.length ) {
+		final int newPosition = position;
+		if ( newPosition >= byteStack.length ) {
 			popNextBytes();
 		}
 
-		final byte nextByte = _byteStack[_position];
-		_position += 1;
+		final byte nextByte = byteStack[position];
+		position += 1;
 
 		return nextByte;
 	}
@@ -403,8 +403,8 @@ class StreamByteReader {
 			}
 		} while ( true );
 
-		_byteStack = rawByteBuffer.toByteArray();
-		_position = 0;
+		byteStack = rawByteBuffer.toByteArray();
+		position = 0;
 	}
 
 
@@ -424,15 +424,15 @@ class StreamByteReader {
 
 	/** read the next bytes into the specified destination */
 	public void nextBytes( final byte[] destination, final int offset, final int count ) throws java.io.IOException, StreamPrematurelyClosedException {
-		int position = offset;
+		int newPosition = offset;
 		for ( int index = 0 ; index < count ; index++ ) {
-			destination[position++] = nextByte();
+			destination[newPosition++] = nextByte();
 		}
 	}
 
 
 	/** Exception indicating that the socket closed prematurely */
-	static public class StreamPrematurelyClosedException extends Exception {
+	public static class StreamPrematurelyClosedException extends Exception {
 		/** required serial version ID */
 		static final long serialVersionUID = 0L;
 

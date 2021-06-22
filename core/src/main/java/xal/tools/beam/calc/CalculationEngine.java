@@ -42,21 +42,21 @@ public abstract class CalculationEngine {
 
 
     /** small number used to determine the conditioning of the linear system */
-    static final private double         DBL_CND_MIN = 1.0e12;
+    private static final double         DBL_CND_MIN = 1.0e12;
 
     /** small number used to define a zero phase advance */
-    static final private double         DBL_EPS_PHSADV = 1.0e-2;
+    private static final double         DBL_EPS_PHSADV = 1.0e-2;
 
     /** the number 2&pi; */
-    static final private double         DBL_2PI = 2 * Math.PI;
+    private static final double         DBL_2PI = 2 * Math.PI;
 
     /** The zero vector that we use for comparisons for numerical checks */
-    static final private R4             VEC_ZERO = R4.newZero();
+    private static final R4             VEC_ZERO = R4.newZero();
 
 
 
     /** This is an artifact of <code>TransferMapState</code> number of (phase plane) modes */
-    static final private int NUM_MODES = 3;
+    private static final int NUM_MODES = 3;
 
 
     /*

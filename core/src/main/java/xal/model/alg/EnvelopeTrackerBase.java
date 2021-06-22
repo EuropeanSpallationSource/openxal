@@ -27,7 +27,6 @@ import xal.model.IElement;
 import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.elem.IdealRfGap;
-import xal.model.elem.IdealRfGapUpgraded;
 import xal.model.probe.EnvelopeProbe;
 
 
@@ -76,14 +75,14 @@ public abstract class EnvelopeTrackerBase extends Tracker {
          * 
          * @param i     Enumeration constant for phase plane
          */
-        PhasePlane(int i)        { this.i = i; };
+        PhasePlane(int i)        { this.i = i; }
         
         /** 
          * Return the integer value of the index position
          *  
          * @return  Integer value of enumeration constant
          */
-        public int val()    { return i; };
+        public int val()    { return i; }
     }
     
     
@@ -133,7 +132,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * [3] C.K. Allen, H. Sako, M. Ikegami, and G. Shen, "Emittance Growth
      *         Due to Phase Spread 
      *         for Proton Beams in Radio Frequency Accelerating Gaps", 
-     *         (in preperation).
+     *         (in preparation).
      * </p>
      * 
      * @author Christopher K. Allen
@@ -361,7 +360,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * [3] C.K. Allen, H. Sako, M. Ikegami, and G. Shen, "Emittance Growth
      *         Due to Phase Spread 
      *         for Proton Beams in Radio Frequency Accelerating Gaps", 
-     *         (in preperation).
+     *         (in preparation).
      * </p>
      * 
      * @param    enmModel  use the <code>Trace3D</code> method or the 
@@ -469,7 +468,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * [3] C.K. Allen, H. Sako, M. Ikegami, and G. Shen, "Emittance Growth
      *         Due to Phase Spread 
      *         for Proton Beams in Radio Frequency Accelerating Gaps", 
-     *         (in preperation).
+     *         (in preparation).
      * </p>
      * 
      * @return enumeration code for particular emittance growth mechanism
@@ -1041,7 +1040,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * <strong>NOTES</strong>: CKA
      * <br>
      * &middot; Since we are modeling the RF gap as a thin lens, only the 
-     * momentum (divergance angle) is modified, &lt;<i>x</i><sup>2</sup>&gt;,
+     * momentum (divergence angle) is modified, &lt;<i>x</i><sup>2</sup>&gt;,
      * &lt;<i>y</i><sup>2</sup>&gt;, and &lt;<i>z</i><sup>2</sup>&gt; remain
      * unaffected.  Thus, &lt;<i>x<sub>f</sub></i><sup>2</sup>&gt;
      * = &lt;<i>x<sub>i</sub></i><sup>2</sup>&gt; and
@@ -1063,7 +1062,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * [3] C.K. Allen, H. Sako, M. Ikegami, and G. Shen, "Emittance Growth
      *         Due to Phase Spread 
      *         for Proton Beams in Radio Frequency Accelerating Gaps", 
-     *         (in preperation).
+     *         (in preparation).
      * </p>
      * 
      *
@@ -1077,7 +1076,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      *         <i>G<sub>t</sub></i>(<i>&phi;<sub>s</sub></i>,&Delta;<i>&phi;</i>) or
      *         <i>G<sub>z</sub></i>(<i>&phi;<sub>s</sub></i>,&Delta;<i>&phi;</i>)
      * 
-     * @throws ModelException   unknown/unsupport emittance growth model,
+     * @throws ModelException   unknown/unsupported emittance growth model,
      *                          or unknown/unsupported phase plane
      *                          
      * @author Christopher K. Allen
@@ -1142,7 +1141,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * M. Weiss (see references below). 
      * </p>
      * <p>
-     * When considering only one (tranverse) phase plane beams the 
+     * When considering only one (transverse) phase plane beams the 
      * transform 
      * <i>F<sub>t</sub></i>(&Delta;<i>&phi;</i>)
      * evaluated here is given as follows:
@@ -1247,7 +1246,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * [3] C.K. Allen, H. Sako, M. Ikegami, and G. Shen, "Emittance Growth
      *         Due to Phase Spread 
      *         for Proton Beams in Radio Frequency Accelerating Gaps", 
-     *         (in preperation).
+     *         (in preparation).
      * </p>
      * 
      *
@@ -1382,7 +1381,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * <br>
      * &middot; This method falls out of the computation
      * for &lt;x<sup>2</sup>sin <i>&phi;</i>(<i>z</i>)&gt;. 
-     * At least when considering the longitudinal phase plane independly, 
+     * At least when considering the longitudinal phase plane independently, 
      * it can be shown that 
      * <br>
      * <br>
@@ -1422,7 +1421,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * [3] C.K. Allen, H. Sako, M. Ikegami, and G. Shen, "Emittance Growth
      *         Due to Phase Spread 
      *         for Proton Beams in Radio Frequency Accelerating Gaps", 
-     *         (in preperation).
+     *         (in preparation).
      * </p>
      * 
      *
@@ -1622,7 +1621,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * [3] C.K. Allen, H. Sako, M. Ikegami, and G. Shen, "Emittance Growth
      *         Due to Phase Spread 
      *         for Proton Beams in Radio Frequency Accelerating Gaps", 
-     *         (in preperation).
+     *         (in preparation).
      * </p>
      * 
      * @param   dphi    effective phase spread &Delta;<i>&phi;</i> (half-width) 
@@ -2119,7 +2118,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * (see below).
      * </p>
      * <p>
-     * In XAL, longitundinal coordinate <i>z</i> is the "phase spread", but in meters. 
+     * In XAL, longitudinal coordinate <i>z</i> is the "phase spread", but in meters. 
      * To convert to phase spread <i>d&phi;</i> in radians we have
      * <br>
      * <br>
@@ -2228,7 +2227,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * <h3>CKA Notes:</h3>
      * <p>
      * - This method needs to be optimized now that I understand what it is doing.
-     * In XAL, longitundinal coordinate <i>z</i> is the "phase spread", but in meters. 
+     * In XAL, longitudinal coordinate <i>z</i> is the "phase spread", but in meters. 
      * To convert to phase spread <i>&delta;&phi;</i> in radians we have
      * <br>
      * <br>
@@ -2288,7 +2287,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
             
             double gbar = Wbar/Er + 1.0;
             double bbar = Math.sqrt(1.0 - 1.0/(gbar*gbar));
-            double clight = IProbe.LightSpeed;
+            double clight = IProbe.LIGHT_SPEED;
             double freq = gap.getFrequency();
             double wavel = clight/freq;
             
@@ -2320,7 +2319,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
     }
     
     /**
-     * new implementation by sako, 7 Aug 06, to do trans/long simultanously
+     * new implementation by sako, 7 Aug 06, to do trans/long simultaneously
      * used in EnvTrackerAdapt, EnvelopeTracker
      *
      * @param probe     envelope probe object (something with emittance and moments)
@@ -2367,7 +2366,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         double wf = w+dw;
         double betagammaf =Math.sqrt(wf/m*(2+wf/m));
         
-        double clight = IProbe.LightSpeed;
+        double clight = IProbe.LIGHT_SPEED;
         double freq = gap.getFrequency();
         double lambda = clight/freq;
         
@@ -2450,7 +2449,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         double betagammaf =Math.sqrt(wf/m*(2+wf/m));
         
         
-        double clight = IProbe.LightSpeed;
+        double clight = IProbe.LIGHT_SPEED;
         double freq = gap.getFrequency();
         double lambda = clight/freq;
         //      double cay = h*Math.PI*getETL()*Math.abs(Q)/(m*betagammaa*betagammaa*betagammaa*lambda); //Kx'
@@ -2513,7 +2512,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         double gammaa = (wa+m)/m;
         double betagammaa = Math.sqrt(wa/m*(2+wa/m));
 //        double betagamma0 = Math.sqrt(w/m*(2+w/m));
-        double clight = IProbe.LightSpeed;
+        double clight = IProbe.LIGHT_SPEED;
         double freq = gap.getFrequency();
         double lambda = clight/freq;
         

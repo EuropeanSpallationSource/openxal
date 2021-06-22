@@ -6,6 +6,8 @@
 
 package xal.extension.application;
 
+import java.awt.Container;
+import java.awt.HeadlessException;
 import java.awt.Point;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -16,6 +18,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
@@ -40,6 +43,7 @@ import xal.extension.application.platform.MacAdaptor;
 import xal.extension.application.rbac.AuthenticationPane;
 import xal.extension.application.rbac.RBACPlugin;
 import xal.extension.service.ServiceDirectory;
+import xal.extension.service.ServiceException;
 import xal.rbac.AccessDeniedException;
 import xal.rbac.Credentials;
 import xal.rbac.RBACException;
@@ -68,37 +72,37 @@ import xal.tools.messaging.MessageCenter;
  */
 abstract public class Application {
 	// public static constants for confirmation dialogs
-	final static public int YES_OPTION = JOptionPane.YES_OPTION;
-	final static public int NO_OPTION = JOptionPane.NO_OPTION;
+	public static final int YES_OPTION = JOptionPane.YES_OPTION;
+	public static final int NO_OPTION = JOptionPane.NO_OPTION;
 	
 	// private constants
-	final private Date LAUNCH_TIME;
+	private final Date LAUNCH_TIME;
 	
     // static variables
-    static private Application _application;
+    private static Application application;
     
     // instance variables
-    protected AbstractApplicationAdaptor _applicationAdaptor;  // custom application adaptor
-    protected List<XalAbstractDocument> _openDocuments;         // list of open documents
-	protected Commander _commander;
+    protected AbstractApplicationAdaptor applicationAdaptor;  // custom application adaptor
+    protected List<XalAbstractDocument> openDocuments;         // list of open documents
+	protected Commander commander;
 	
-    private JFileChooser _openFileChooser;   // file chooser for open 
-    private JFileChooser _saveFileChooser;   // file chooser for save
+    private JFileChooser openFileChooser;   // file chooser for open 
+    private JFileChooser saveFileChooser;   // file chooser for save
 	/** cache and retrieve recently accessed files */
-	private RecentFileTracker _recentFileTracker;
+	private RecentFileTracker recentFileTracker;
 
     // messaging instance variables
-    private MessageCenter _messageCenter;        // local message center
-    protected ApplicationListener _noticeProxy;    // proxy for broadcasting ApplicationListener events
+    private MessageCenter messageCenter;        // local message center
+    protected ApplicationListener noticeProxy;    // proxy for broadcasting ApplicationListener events
     
     /** location of the next document to open */
-    private Point _nextDocumentOpenLocation;
+    private Point nextDocumentOpenLocation;
     
     /** template folder */
-    private File _templateFolder;
+    private File templateFolder;
     
     /** default folder */
-    private File _defaultDocumentFolder;
+    private File defaultDocumentFolder;
     
 
     /* RBAC service */
@@ -135,15 +139,15 @@ abstract public class Application {
 	 * @param urls An array of document URLs to open upon startup. 
 	 */
     protected Application( final AbstractApplicationAdaptor adaptor, final URL[] urls ) {
-        _nextDocumentOpenLocation = new Point( 0, 0 );
+        nextDocumentOpenLocation = new Point( 0, 0 );
         
 		LAUNCH_TIME = new Date();
         
-        _applicationAdaptor = adaptor;
-        _openDocuments = new LinkedList<XalAbstractDocument>();
+        applicationAdaptor = adaptor;
+        openDocuments = new LinkedList<>();
         
         // assign the global application instance before the setup since it is referenced there (among other places).
-        Application._application = this;
+        Application.application = this;
         
         while (true) { 
         	if (authenticateWithRBAC()) {
@@ -193,7 +197,7 @@ abstract public class Application {
 	        	rbacSubject = rbacLogin.authenticate(null, null);
 	        	System.out.println("Already logged in.");
 	        	if (rbacSubject != null) return true;
-	        } catch (Exception e) {
+	        } catch (AccessDeniedException | RBACException e) {
 	        	// Fall to authentication pane
 	        }
         }
@@ -271,7 +275,7 @@ abstract public class Application {
     }
 
     /** Load the user's custom properties and set them as the defaults, but do not override existing properties. */
-	static private void loadUserProperties() {
+	private static void loadUserProperties() {
 		final Preferences prefs = xal.tools.apputils.Preferences.nodeForPackage( Application.class );
 		final String propertiesPath = prefs.get( "UserPropertiesFile", "" );
 		
@@ -295,7 +299,7 @@ abstract public class Application {
 				}
 			}
 			System.setProperties( userProperties );
-			Logger.getLogger("global").log( Level.INFO, "Applied user properties from file: " + propertiesPath );
+			Logger.getLogger("global").log(Level.INFO, "Applied user properties from file: {0}", propertiesPath);
 		}
 		catch( FileNotFoundException exception ) {
 			exception.printStackTrace();
@@ -321,7 +325,7 @@ abstract public class Application {
 	 * by having set the "DisableDoubleBuffering" property to true.  This may be useful for
 	 * remote X display.  If the the property is true then disable double buffering.
 	 */
-	static private void setupDoubleBufferingMode() {
+	private static void setupDoubleBufferingMode() {
 		final boolean disableDoubleBuffering = Boolean.getBoolean( "DisableDoubleBuffering" );
 		if ( disableDoubleBuffering ) {
 			javax.swing.RepaintManager.currentManager( null ).setDoubleBufferingEnabled( false );
@@ -345,19 +349,19 @@ abstract public class Application {
      * @return the application commander
      */
     public Commander getCommander() {
-        return _commander;
+        return commander;
     }
     
     
     /** Determine whether this application can open documents */
     protected boolean canOpenDocuments() {
-        return _applicationAdaptor.canOpenDocuments();
+        return applicationAdaptor.canOpenDocuments();
     }
     
     
     /** Indicates whether the welcome dialog should be displayed at launch */
     protected boolean showsWelcomeDialogAtLaunch() {
-        return _applicationAdaptor.showsWelcomeDialogAtLaunch();
+        return applicationAdaptor.showsWelcomeDialogAtLaunch();
     }
     
     
@@ -389,17 +393,17 @@ abstract public class Application {
 	
 	
 	/** Register the application status service so clients on the network can query the status of this application instance. */
-	final protected void registerApplicationStatusService() {
+	protected final void registerApplicationStatusService() {
 		// check to see if the startup flag has disabled application services
 		Boolean shouldRegister = Boolean.valueOf( System.getProperty("registerApplicationService", "true") );
 		
-		if ( shouldRegister.booleanValue() ) {
+		if ( shouldRegister ) {
 			try {
-				ServiceDirectory.defaultDirectory().registerService( ApplicationStatus.class, _applicationAdaptor.applicationName(), new ApplicationStatusService() );
+				ServiceDirectory.defaultDirectory().registerService(ApplicationStatus.class, applicationAdaptor.applicationName(), new ApplicationStatusService() );
 				System.out.println( "Registered application services..." );
 				Logger.getLogger( "xal.extension.application" ).log( Level.INFO, "Registered application services..." );
 			}
-			catch(Exception exception) {
+			catch(ServiceException exception) {
 				exception.printStackTrace();
 				System.err.println("Service registration failed due to " + exception);
 				Logger.getLogger( "xal.extension.application" ).log( Level.SEVERE, "Service registration failed...", exception );
@@ -414,7 +418,7 @@ abstract public class Application {
     
     /** Setup the console to capture standard output and standard error */
     protected void setupConsole() {
-        if ( _applicationAdaptor.usesConsole() ) {
+        if ( applicationAdaptor.usesConsole() ) {
             Console.captureOutput();
             Console.captureErr();
         }
@@ -426,7 +430,7 @@ abstract public class Application {
 	 * @return The file chooser with which the user interacts when saving a document.
 	 */
 	public JFileChooser getSaveFileChooser() {
-		return _saveFileChooser;
+		return saveFileChooser;
 	}
 	
 	
@@ -435,8 +439,8 @@ abstract public class Application {
 	 * @param fileChooser The file chooser with which the user will interact when saving a document.
 	 */
 	public void setSaveFileChooser( final JFileChooser fileChooser ) {
-		_saveFileChooser = fileChooser;
-		_applicationAdaptor.getDefaultFolderAccessory().applyTo( _saveFileChooser );
+		saveFileChooser = fileChooser;
+		applicationAdaptor.getDefaultFolderAccessory().applyTo(saveFileChooser );
 	}
 	
 	
@@ -445,7 +449,7 @@ abstract public class Application {
 	 * @return The file chooser with which the user interacts when opening a document.
 	 */
 	public JFileChooser getOpenFileChooser() {
-		return _openFileChooser;
+		return openFileChooser;
 	}
 	
 	
@@ -454,34 +458,34 @@ abstract public class Application {
 	 * @param fileChooser The file chooser with which the user will interact when opening a document.
 	 */
 	public void setOpenFileChooser( final JFileChooser fileChooser ) {
-		_openFileChooser = fileChooser;
-		_applicationAdaptor.getDefaultFolderAccessory().applyTo( _openFileChooser );
+		openFileChooser = fileChooser;
+		applicationAdaptor.getDefaultFolderAccessory().applyTo(openFileChooser );
 	}
     
     
     /** Create a file chooser for opening and saving documents. */
     protected void makeFileChoosers() {
-		_recentFileTracker = new RecentFileTracker( 10, getAdaptor().getUserPreferencesNode(), "recent_files" );
+		recentFileTracker = new RecentFileTracker( 10, getAdaptor().getUserPreferencesNode(), "recent_files" );
 
 		setOpenFileChooser( new JFileChooser() );
-		FileFilterFactory.applyFileFilters( _openFileChooser, _applicationAdaptor.readableDocumentTypes() );
-        _openFileChooser.setMultiSelectionEnabled( true );
+		FileFilterFactory.applyFileFilters(openFileChooser, applicationAdaptor.readableDocumentTypes() );
+        openFileChooser.setMultiSelectionEnabled( true );
 		
 		setSaveFileChooser( new JFileChooser() );
-		FileFilterFactory.applyFileFilters( _saveFileChooser, _applicationAdaptor.writableDocumentTypes() );
-        _saveFileChooser.setMultiSelectionEnabled( false );
+		FileFilterFactory.applyFileFilters(saveFileChooser, applicationAdaptor.writableDocumentTypes() );
+        saveFileChooser.setMultiSelectionEnabled( false );
     }
     
     
     /** get the location of the next document to open */
     protected Point getNextDocumentOpenLocation() {
-        return _nextDocumentOpenLocation;
+        return nextDocumentOpenLocation;
     }
     
     
     /** Set the next document open location */
     protected void setNextDocumentOpenLocation( final Point location ) {
-        _nextDocumentOpenLocation = location;
+        nextDocumentOpenLocation = location;
     }
     
     
@@ -528,10 +532,10 @@ abstract public class Application {
      * Register the application adaptor as an ApplicationListener.
      */
     protected void registerEvents() {
-        _messageCenter = new MessageCenter();
-        _noticeProxy = _messageCenter.registerSource( this, ApplicationListener.class );
+        messageCenter = new MessageCenter();
+        noticeProxy = messageCenter.registerSource( this, ApplicationListener.class );
         
-        addApplicationListener( _applicationAdaptor );
+        addApplicationListener(applicationAdaptor );
     }
     
     
@@ -540,7 +544,7 @@ abstract public class Application {
      * @param listener Object to register as a listener of application events.
      */
     public void addApplicationListener( final ApplicationListener listener ) {
-        _messageCenter.registerTarget( listener, this, ApplicationListener.class );
+        messageCenter.registerTarget( listener, this, ApplicationListener.class );
     }
     
     
@@ -549,7 +553,7 @@ abstract public class Application {
      * @param listener Object to un-register as a listener of application events.
      */
     public void removeApplicationListener( final ApplicationListener listener ) {
-        _messageCenter.removeTarget( listener, this, ApplicationListener.class );
+        messageCenter.removeTarget( listener, this, ApplicationListener.class );
     }
     
     
@@ -561,7 +565,7 @@ abstract public class Application {
      * @return An immutable list of the open documents.
      */
     public List<XalAbstractDocument> getDocuments() {
-        return Collections.unmodifiableList( _openDocuments );
+        return Collections.unmodifiableList(openDocuments );
     }
     
     /**
@@ -571,7 +575,7 @@ abstract public class Application {
     @SuppressWarnings( "unchecked" )    // suppress unchecked casting to DocumentType since there is not way around it
     public <DocumentType extends XalAbstractDocument> List<DocumentType> getDocumentsCopy() {
         final List<XalAbstractDocument> documents = getDocuments();
-        final List<DocumentType> documentsCopy = new ArrayList<DocumentType>( documents.size() );
+        final List<DocumentType> documentsCopy = new ArrayList<>( documents.size() );
         for ( final XalAbstractDocument document : documents ) {
             documentsCopy.add( (DocumentType)document );
         }
@@ -586,7 +590,7 @@ abstract public class Application {
      * @see #getAdaptor
      */
     public AbstractApplicationAdaptor getApplicationAdaptor() {
-        return _applicationAdaptor;
+        return applicationAdaptor;
     }
     
     
@@ -612,7 +616,7 @@ abstract public class Application {
         final File templateFolder = getTemplateFolder();
         final File chooserFolder = templateFolder != null && templateFolder.exists() ? templateFolder : defaultFolder;
         final JFileChooser templateChooser = new JFileChooser( chooserFolder );
-        FileFilterFactory.applyFileFilters( templateChooser, _applicationAdaptor.readableDocumentTypes() );
+        FileFilterFactory.applyFileFilters(templateChooser, applicationAdaptor.readableDocumentTypes() );
         templateChooser.setMultiSelectionEnabled( true );
         templateChooser.setDialogTitle( "Open Template" );
         templateChooser.setApproveButtonText( "Open Template" );
@@ -633,10 +637,10 @@ abstract public class Application {
 	 * @return the user's option (e.g. cancel, approve, error) for the file chooser.
 	 */
 	protected int showOpenFileChooser() {
-		final int status = showOpenFileChooser( _openFileChooser );
+		final int status = showOpenFileChooser(openFileChooser );
 		
 		// reconcile current directory for open and save file choosers
-		_saveFileChooser.setCurrentDirectory( _openFileChooser.getCurrentDirectory() );
+		saveFileChooser.setCurrentDirectory(openFileChooser.getCurrentDirectory() );
 		
 		return status;
 	}
@@ -647,7 +651,7 @@ abstract public class Application {
      */
     protected void openDocument() {
         updateNextDocumentOpenLocation();
-        openDocuments( _openFileChooser, false, true, true );
+        openDocuments(openFileChooser, false, true, true );
     }
     
     
@@ -662,7 +666,7 @@ abstract public class Application {
         final int status = showOpenFileChooser( fileChooser );
         
         if ( syncSaveChooser ) {
-            _saveFileChooser.setCurrentDirectory( fileChooser.getCurrentDirectory() );
+            saveFileChooser.setCurrentDirectory( fileChooser.getCurrentDirectory() );
         }
         
         switch( status ) {
@@ -782,7 +786,7 @@ abstract public class Application {
      */
     private void openDocument( final URL url, final boolean copyDocument, final boolean trackRecent ) {
         try {
-            XalAbstractDocument document = _applicationAdaptor.generateDocument( url );
+            XalAbstractDocument document = applicationAdaptor.generateDocument( url );
             if ( copyDocument )  document.setSource( null );    // mark the document as independent form the source URL (e.g. opened from template)
 			produceDocument( document );
             if ( trackRecent && !URLReference.isRootedIn( getTemplateFolderURL(), url ) )  registerRecentURL( url );    // never track files under the template folder regardless of the flag
@@ -808,7 +812,7 @@ abstract public class Application {
     
     /** Handle the "Close All" action by closing all open documents and opening a new empty document. */
     protected void closeAllDocuments() {        
-        final LinkedList<XalAbstractDocument> docList = new LinkedList<XalAbstractDocument>( _openDocuments );
+        final LinkedList<XalAbstractDocument> docList = new LinkedList<>( openDocuments );
 	
 		for( final XalAbstractDocument document : docList ) {
 			closeDocument( document );
@@ -821,10 +825,10 @@ abstract public class Application {
 	 * @return the user's option (e.g. cancel, approve, error) for the file chooser.
 	 */
 	protected int showSaveFileChooser( final XalAbstractDocument document ) {
-        final int status = _saveFileChooser.showSaveDialog( (java.awt.Container)document.getDocumentView() );
+        final int status = saveFileChooser.showSaveDialog( (Container)document.getDocumentView() );
 		
 		// reconcile current directory between open and save file choosers
-		_openFileChooser.setCurrentDirectory( _saveFileChooser.getCurrentDirectory() );
+		openFileChooser.setCurrentDirectory(saveFileChooser.getCurrentDirectory() );
 		
 		return status;
 	}
@@ -864,7 +868,7 @@ abstract public class Application {
             if ( latestFolder.exists() ) {
                 // present a file chooser and open the document selected by the user
                 final JFileChooser versionChooser = new JFileChooser( latestFolder );
-                FileFilterFactory.applyFileFilters( versionChooser, _applicationAdaptor.readableDocumentTypes() );
+                FileFilterFactory.applyFileFilters(versionChooser, applicationAdaptor.readableDocumentTypes() );
                 versionChooser.setMultiSelectionEnabled( true );
                 openDocuments( versionChooser, false, false, false );
             }
@@ -898,7 +902,7 @@ abstract public class Application {
                 return null;
             }
         }
-        catch( Exception exception ) {
+        catch( URISyntaxException exception ) {
             exception.printStackTrace();
             throw new RuntimeException( "Exception generating source version info for document.", exception );
         }
@@ -921,7 +925,7 @@ abstract public class Application {
                 }
             }
         }
-        catch( Exception exception ) {
+        catch( IOException exception ) {
             System.err.println( "Exception saving document version..." );
             exception.printStackTrace();
         }
@@ -934,17 +938,17 @@ abstract public class Application {
      */
     protected void saveAsDocument( final XalAbstractDocument document ) {
 		final String defaultName = document.getFileNameForSaving();
-		final File defaultFolder = _saveFileChooser.getCurrentDirectory();
+		final File defaultFolder = saveFileChooser.getCurrentDirectory();
 		final File defaultFile = new File( defaultFolder, defaultName );
 		
-		_saveFileChooser.setSelectedFile( defaultFile );
+		saveFileChooser.setSelectedFile( defaultFile );
         final int status = showSaveFileChooser( document );
         
         switch( status ) {
             case JFileChooser.CANCEL_OPTION:
                 break;
             case JFileChooser.APPROVE_OPTION:
-                File fileSelection = _saveFileChooser.getSelectedFile();
+                File fileSelection = saveFileChooser.getSelectedFile();
 				if ( fileSelection.exists() ) {
 					int confirm = document.displayConfirmDialog( "Overwrite Confirmation", "The selected file:  " + fileSelection + " already exists! \n Overwrite selection?" );
 					if ( confirm == NO_OPTION ) {
@@ -964,7 +968,7 @@ abstract public class Application {
      * Handle the "Save All" action by saving all open documents.
      */
     protected void saveAllDocuments() {
-        for ( final XalAbstractDocument document : _openDocuments ) {
+        for ( final XalAbstractDocument document : openDocuments ) {
             saveDocument( document );
         }
     }
@@ -1033,7 +1037,7 @@ abstract public class Application {
                 if (status == JOptionPane.NO_OPTION) {
                     return;
                 }
-            } catch (java.awt.HeadlessException exception) {
+            } catch (HeadlessException exception) {
                 Logger.getLogger("global").log(Level.SEVERE, "Exception while quitting the application.", exception);
                 System.err.println(exception);
                 exception.printStackTrace();
@@ -1042,8 +1046,8 @@ abstract public class Application {
 
         rbacLogout();
 
-        if (_noticeProxy != null)
-            _noticeProxy.applicationWillQuit();
+        if (noticeProxy != null)
+            noticeProxy.applicationWillQuit();
 
         System.exit(0);
     }
@@ -1141,7 +1145,7 @@ abstract public class Application {
      * un-collapsed as necessary.
      */
     protected void showAllWindows() {
-        for ( final XalAbstractDocument document : _openDocuments ) {
+        for ( final XalAbstractDocument document : openDocuments ) {
             document.showDocument();
         }
     }
@@ -1154,14 +1158,14 @@ abstract public class Application {
     protected void hideAllWindows() {
         Console.hide();     // hide the console
         
-        for ( final XalAbstractDocument document : _openDocuments ) {
+        for ( final XalAbstractDocument document : openDocuments ) {
             document.hideDocument();
         }
     }
 	
 	
 	/** show the about box */
-	static public void showAboutBox() {
+	public static void showAboutBox() {
 		AboutBox.showNear( getActiveWindow() );
 	}
 	
@@ -1179,7 +1183,7 @@ abstract public class Application {
 		// if the url is from inside a jar file then don't cache it
 		if ( url.getProtocol().equalsIgnoreCase( "jar" ) )  return;
 		
-		_recentFileTracker.cacheURL( url );
+		recentFileTracker.cacheURL( url );
     }
     
     
@@ -1190,7 +1194,7 @@ abstract public class Application {
      * @return The array of recent URLs.
      */
     String[] getRecentURLSpecs() {
-		return _recentFileTracker.getRecentURLSpecs();
+		return recentFileTracker.getRecentURLSpecs();
     }
     
     
@@ -1200,7 +1204,7 @@ abstract public class Application {
      * @return The most recently visited folder.
      */
     private File getRecentFolder() {
-		return _recentFileTracker.getRecentFolder();
+		return recentFileTracker.getRecentFolder();
     }
     
     
@@ -1210,13 +1214,13 @@ abstract public class Application {
      * Clear the list in the user's preferences for this application.
      */
     void clearRecentItems() {
-		_recentFileTracker.clearCache();
+		recentFileTracker.clearCache();
     }
     
     
     /** Get this application's template folder creating it if possible and necessary */
     private File getTemplateFolder() {
-        if ( _templateFolder == null ) {
+        if ( templateFolder == null ) {
             final File defaultFolder = getDefaultDocumentFolder();
             final File templateFolder = defaultFolder != null && defaultFolder.exists() ? new File( defaultFolder, "Templates" ) : null;
             
@@ -1227,10 +1231,10 @@ abstract public class Application {
                 }
             }
             
-            _templateFolder = templateFolder;
+            this.templateFolder = templateFolder;
         }
         
-        return _templateFolder;
+        return templateFolder;
     }
     
     
@@ -1240,7 +1244,7 @@ abstract public class Application {
         try {
             return templateFolder != null ? templateFolder.toURI().toURL() : null;
         }
-        catch( Exception exception ) {
+        catch( MalformedURLException exception ) {
             exception.printStackTrace();
             throw new RuntimeException( "Exception getting the template URL", exception );
         }
@@ -1252,11 +1256,11 @@ abstract public class Application {
 	 * @return the default folder for documents or null if none has been set.
 	 */
 	public File getDefaultDocumentFolder() {
-        if ( _defaultDocumentFolder == null ) {
-            _defaultDocumentFolder = _applicationAdaptor.getDefaultDocumentFolder();
+        if ( defaultDocumentFolder == null ) {
+            defaultDocumentFolder = applicationAdaptor.getDefaultDocumentFolder();
         }
         
-        return _defaultDocumentFolder;
+        return defaultDocumentFolder;
 	}
     
 	
@@ -1265,7 +1269,7 @@ abstract public class Application {
 	 * @return the default folder for documents as a URL or null if none has been set.
 	 */
 	public URL getDefaultDocumentFolderURL() {
-		return _applicationAdaptor.getDefaultDocumentFolderURL();
+		return applicationAdaptor.getDefaultDocumentFolderURL();
 	}
     
     
@@ -1277,7 +1281,7 @@ abstract public class Application {
      * and performing application initialization.
      * @param adaptor The custom application adaptor.
      */
-    static public void launch( final AbstractApplicationAdaptor adaptor ) {
+    public static void launch( final AbstractApplicationAdaptor adaptor ) {
         try {
 			// get the document URLs passed at the command line
 			final URL[] docURLs = AbstractApplicationAdaptor.getDocURLs();
@@ -1297,7 +1301,7 @@ abstract public class Application {
      * @param adaptor The custom application adaptor.
 	 * @param urls The URLs of documents to open upon launching the application
      */
-    static public void launch( final AbstractApplicationAdaptor adaptor, final URL[] urls ) {
+    public static void launch( final AbstractApplicationAdaptor adaptor, final URL[] urls ) {
 		adaptor.launchApplication( urls );
     }
     
@@ -1308,8 +1312,8 @@ abstract public class Application {
      * @return The custom application adaptor.
      * @see #getApplicationAdaptor
      */
-    static public AbstractApplicationAdaptor getAdaptor() {
-        return _application.getApplicationAdaptor();
+    public static AbstractApplicationAdaptor getAdaptor() {
+        return application.getApplicationAdaptor();
     }
     
     
@@ -1318,8 +1322,8 @@ abstract public class Application {
      * per application.
      * @return The application instance.
      */
-    static public Application getApp() {
-        return _application;
+    public static Application getApp() {
+        return application;
     }
     
     
@@ -1328,7 +1332,7 @@ abstract public class Application {
      * window relative to which you can place application warning dialog boxes.
      * @return The active window
      */
-    static public Window getActiveWindow() {
+    public static Window getActiveWindow() {
 		return ApplicationSupport.getActiveWindow();
     }
     
@@ -1354,7 +1358,7 @@ abstract public class Application {
     
     
     /** Copy the source file to the target file */
-    static private void copyFile( final File sourceFile, final File targetFile ) {
+    private static void copyFile( final File sourceFile, final File targetFile ) {
         try {
             final FileChannel sourceChannel = new FileInputStream( sourceFile ).getChannel();
             final FileChannel targetChannel = new FileOutputStream( targetFile ).getChannel();
@@ -1364,7 +1368,7 @@ abstract public class Application {
             sourceChannel.close();
             targetChannel.close();
         }
-        catch( Exception exception ) {
+        catch( IOException exception ) {
             exception.printStackTrace();
             throw new RuntimeException( "Exception attempting to copy the source file to the target file.", exception );
         }
@@ -1377,7 +1381,7 @@ abstract public class Application {
 	 * @param message The message to display
 	 * @return YES_OPTION or NO_OPTION 
 	 */
-	static public int displayConfirmDialog( final String title, final String message ) {
+	public static int displayConfirmDialog( final String title, final String message ) {
 		return ApplicationSupport.displayConfirmDialog( title, message );
 	}
 	
@@ -1386,7 +1390,7 @@ abstract public class Application {
      * Display a warning dialog box with information about the exception.
      * @param exception The exception about which the warning dialog is displayed.
      */
-    static public void displayWarning( final Exception exception ) {
+    public static void displayWarning( final Exception exception ) {
 		ApplicationSupport.displayWarning( exception );
     }
 
@@ -1396,8 +1400,8 @@ abstract public class Application {
      * @param title Title of the warning dialog box.
      * @param message The warning message to appear in the warning dialog box.
      */
-    static public void displayWarning( final String title, final String message ) {
-		displayWarning( title, message );
+    public static void displayWarning( final String title, final String message ) {
+		ApplicationSupport.displayWarning( title, message );
     }
     
     
@@ -1405,10 +1409,10 @@ abstract public class Application {
      * Display a warning dialog box with information about the exception.  This method allows
      * clarification about the consequences of the exception (e.g. "Save Failed:").
      * @param title Title of the warning dialog box.
-     * @param prefix Text that should appear in the dialog box before the exception messasge.
+     * @param prefix Text that should appear in the dialog box before the exception message.
      * @param exception The exception about which the warning dialog is displayed.
      */
-    static public void displayWarning( final String title, final String prefix, final Exception exception ) {
+    public static void displayWarning( final String title, final String prefix, final Exception exception ) {
 		ApplicationSupport.displayWarning( title, prefix, exception );
     }
 
@@ -1418,7 +1422,7 @@ abstract public class Application {
      * @param title Title of the warning dialog box.
      * @param message The warning message to appear in the warning dialog box.
      */
-    static public void displayError( final String title, final String message ) {
+    public static void displayError( final String title, final String message ) {
 		ApplicationSupport.displayError( title, message );
     }
     
@@ -1427,7 +1431,7 @@ abstract public class Application {
      * Display an error dialog box with information about the exception.
      * @param exception The exception about which the warning dialog is displayed.
      */
-    static public void displayError( final Exception exception ) {
+    public static void displayError( final Exception exception ) {
 		ApplicationSupport.displayError( exception );
     }
     
@@ -1439,7 +1443,7 @@ abstract public class Application {
      * @param prefix Text that should appear in the dialog box before the exception messasge.
      * @param exception The exception about which the warning dialog is displayed.
      */
-    static public void displayError( final String title, final String prefix, final Exception exception ) {
+    public static void displayError( final String title, final String prefix, final Exception exception ) {
 		ApplicationSupport.displayError( title, prefix, exception );
     }
     
@@ -1451,7 +1455,7 @@ abstract public class Application {
      * @param prefix Text that should appear in the dialog box before the exception messasge.
      * @param exception The exception about which the warning dialog is displayed.
      */
-    static public void displayApplicationError( final String title, final String prefix, final Exception exception ) {
+    public static void displayApplicationError( final String title, final String prefix, final Exception exception ) {
 		displayError( title, prefix, exception );
     }
     
@@ -1460,22 +1464,22 @@ abstract public class Application {
     /** manage the welcome dialog */
     private class WelcomeController {
         /** Open a new empty document */
-        final private int NEW_MODE = 0;
-        
+        private static final int NEW_MODE = 0;
+
         /** Open a document for read/write */
-        final private int DOCUMENT_MODE = NEW_MODE + 1;
+        private static final int DOCUMENT_MODE = NEW_MODE + 1;
         
         /** Create a new document based on a template */
-        final private int TEMPLATE_MODE = DOCUMENT_MODE + 1;
+        private static final int TEMPLATE_MODE = DOCUMENT_MODE + 1;
         
         /** Open a recently viewed document */
-        final private int RECENT_MODE = TEMPLATE_MODE + 1;
+        private static final int RECENT_MODE = TEMPLATE_MODE + 1;
         
         /** DOCUMENT_CHOOSER for the display */
-        final private JFileChooser DOCUMENT_CHOOSER;
+        private final JFileChooser documentChooser;
         
         /** indicates the mode for which to open a document */
-        private int _openMode;
+        private int openMode;
         
         
         /** Constructor */
@@ -1502,11 +1506,11 @@ abstract public class Application {
             final URLReference[] recentURLReferences = getValidRecentURLReferences();
             if ( recentURLReferences == null || recentURLReferences.length == 0 ) recentButton.setEnabled( false );
             
-            DOCUMENT_CHOOSER = new WelcomeFileChooser( location );
-            DOCUMENT_CHOOSER.setAccessory( accessory );
-            DOCUMENT_CHOOSER.setMultiSelectionEnabled( true );
-            DOCUMENT_CHOOSER.setDialogTitle( "Select " + getAdaptor().applicationName() + " documents to open" );
-            FileFilterFactory.applyFileFilters( DOCUMENT_CHOOSER, _applicationAdaptor.readableDocumentTypes() );
+            documentChooser = new WelcomeFileChooser( location );
+            documentChooser.setAccessory( accessory );
+            documentChooser.setMultiSelectionEnabled( true );
+            documentChooser.setDialogTitle( "Select " + getAdaptor().applicationName() + " documents to open" );
+            FileFilterFactory.applyFileFilters(documentChooser, applicationAdaptor.readableDocumentTypes() );
             
             final File templateFolder = getTemplateFolder();
             final File documentFolder = getDefaultDocumentFolder();
@@ -1514,11 +1518,11 @@ abstract public class Application {
             setOpenMode( TEMPLATE_MODE );
             
             if ( templateFolder != null && templateFolder.exists() && templateFolder.isDirectory() && templateFolder.list().length > 0 ) {
-                DOCUMENT_CHOOSER.setCurrentDirectory( templateFolder );
+                documentChooser.setCurrentDirectory( templateFolder );
                 setOpenMode( TEMPLATE_MODE );
             }
             else if ( documentFolder != null && documentFolder.exists() && documentFolder.isDirectory() ) {
-                DOCUMENT_CHOOSER.setCurrentDirectory( documentFolder );
+                documentChooser.setCurrentDirectory( documentFolder );
                 setOpenMode( DOCUMENT_MODE );
             }
             else {
@@ -1529,14 +1533,14 @@ abstract public class Application {
                 @Override
                 public void actionPerformed( final ActionEvent event ) {
                     setOpenMode( NEW_MODE );
-                    DOCUMENT_CHOOSER.approveSelection();
+                    documentChooser.approveSelection();
                 }
             });
             
             openButton.addActionListener( new ActionListener() {
                 @Override
                 public void actionPerformed( final ActionEvent event ) {
-                    DOCUMENT_CHOOSER.setCurrentDirectory( documentFolder );
+                    documentChooser.setCurrentDirectory( documentFolder );
                     setOpenMode( DOCUMENT_MODE );
                 }
             });
@@ -1544,7 +1548,7 @@ abstract public class Application {
             templateButton.addActionListener( new ActionListener() {
                 @Override
                 public void actionPerformed( final ActionEvent event ) {
-                    DOCUMENT_CHOOSER.setCurrentDirectory( templateFolder );
+                    documentChooser.setCurrentDirectory( templateFolder );
                     setOpenMode( TEMPLATE_MODE );
                 }
             });
@@ -1552,23 +1556,23 @@ abstract public class Application {
             recentButton.addActionListener( new ActionListener() {
                 @Override
                 public void actionPerformed( final ActionEvent event ) {
-                    final URLReference selection = (URLReference)JOptionPane.showInputDialog( DOCUMENT_CHOOSER, "Open the selected document", "Recent Documents", JOptionPane.PLAIN_MESSAGE, null, recentURLReferences, null );
+                    final URLReference selection = (URLReference)JOptionPane.showInputDialog( documentChooser, "Open the selected document", "Recent Documents", JOptionPane.PLAIN_MESSAGE, null, recentURLReferences, null );
                     if ( selection != null ) {
                         setOpenMode( RECENT_MODE );
-                        DOCUMENT_CHOOSER.approveSelection();
+                        documentChooser.approveSelection();
                         openURL( selection.getFullURLSpec() );
                     }
                 }
             });
             
-            int status = DOCUMENT_CHOOSER.showOpenDialog( null );
+            int status = documentChooser.showOpenDialog( null );
             
             switch( status ) {
                 case JFileChooser.CANCEL_OPTION:
                     System.exit( 0 );
                     break;
                 case JFileChooser.APPROVE_OPTION:
-                    processSelections( DOCUMENT_CHOOSER.getSelectedFiles() );
+                    processSelections( documentChooser.getSelectedFiles() );
                     break;
                 default:
                     newDocument();
@@ -1579,16 +1583,16 @@ abstract public class Application {
         
         /** Set the open mode */
         private void setOpenMode( final int mode ) {
-            _openMode = mode;
+            openMode = mode;
             
             switch( mode ) {
                 case TEMPLATE_MODE:
-                    DOCUMENT_CHOOSER.setApproveButtonText( "Open Template" );
-                    DOCUMENT_CHOOSER.setApproveButtonToolTipText( "Open new copies of the selected templates" );
+                    documentChooser.setApproveButtonText( "Open Template" );
+                    documentChooser.setApproveButtonToolTipText( "Open new copies of the selected templates" );
                     break;
                 case DOCUMENT_MODE:
-                    DOCUMENT_CHOOSER.setApproveButtonText( "Open" );
-                    DOCUMENT_CHOOSER.setApproveButtonToolTipText( "Open the documents for editing" );
+                    documentChooser.setApproveButtonText( "Open" );
+                    documentChooser.setApproveButtonToolTipText( "Open the documents for editing" );
                     break;
                 default:
                     break;
@@ -1598,12 +1602,12 @@ abstract public class Application {
         
         /** perform the operation indicated by the mode */
         private void processSelections( final File[] selections ) {            
-            if ( _openMode != RECENT_MODE && ( selections == null || selections.length == 0 ) ) {
+            if ( openMode != RECENT_MODE && ( selections == null || selections.length == 0 ) ) {
                 newDocument();
                 return;
             }
             
-            switch( _openMode ) {
+            switch( openMode ) {
                 case NEW_MODE:
                     newDocument();
                     break;
@@ -1665,12 +1669,12 @@ abstract public class Application {
 
 
 
-/** constainer of file versions info */
+/** container of file versions info */
 class FileVersionInfo {
-    final private String BASE_NAME;
-    final private File CURRENT_FOLDER;
-    final private Date TIMESTAMP;
-    final private File SOURCE_FILE;
+    private final String BASE_NAME;
+    private final File CURRENT_FOLDER;
+    private final Date TIMESTAMP;
+    private final File SOURCE_FILE;
     
     /** Constructor */
     public FileVersionInfo( final File sourceFile, final File defaultFolder, final Date timestamp ) {

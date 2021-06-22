@@ -14,7 +14,7 @@ import org.junit.*;
 /** Test DifferentiableOperation */
 public class TestDifferentiableOperation {
     /** maximum error allowed between test and control evaluations */
-    final static private double ERROR_TOLERANCE = 1.0e-6;
+    private static final double ERROR_TOLERANCE = 1.0e-6;
     
     
     @Test
@@ -62,7 +62,7 @@ public class TestDifferentiableOperation {
     
     
     /** test arithmetic evaluation for the specified variable values */
-    static private void checkArithmeticEvaluation( final double xValue, final double yValue ) {
+    private static void checkArithmeticEvaluation( final double xValue, final double yValue ) {
         final DifferentiableVariable xVar = DifferentiableOperation.getVariable( "x", xValue );
         final DifferentiableVariable yVar = DifferentiableOperation.getVariable( "y", yValue );
         
@@ -74,7 +74,7 @@ public class TestDifferentiableOperation {
     
     
     /** test operation evaluation for the specified variable value */
-    static private void checkOperationEvaluation( final double xValue ) {
+    private static void checkOperationEvaluation( final double xValue ) {
         final DifferentiableVariable xVar = DifferentiableOperation.getVariable( "x", xValue );
         
         assertResult( xVar.evaluate(), xValue );
@@ -99,7 +99,7 @@ public class TestDifferentiableOperation {
     
     
     /** test single derivative evaluation for the specified variable value */
-    static private void checkDerivativeEvaluation( final double xValue ) {
+    private static void checkDerivativeEvaluation( final double xValue ) {
         final DifferentiableVariable xVar = DifferentiableOperation.getVariable( "x", xValue );
         
         // test polynomials
@@ -118,7 +118,7 @@ public class TestDifferentiableOperation {
     
     
     /** test partial derivative evaluation for the specified variable values */
-    static private void checkPartialDerivativeEvaluation( final double xValue, final double yValue, final double zValue ) {
+    private static void checkPartialDerivativeEvaluation( final double xValue, final double yValue, final double zValue ) {
         final DifferentiableVariable xVar = DifferentiableOperation.getVariable( "x", xValue );
         final DifferentiableVariable yVar = DifferentiableOperation.getVariable( "y", yValue );
         final DifferentiableVariable zVar = DifferentiableOperation.getVariable( "z", zValue );
@@ -140,7 +140,7 @@ public class TestDifferentiableOperation {
      * @param testValue value to test
      * @param controlValue value against which the comparison is made
      */
-    static private void assertResult( final double testValue, final double controlValue ) {
+    private static void assertResult( final double testValue, final double controlValue ) {
         Assert.assertTrue( testValue == controlValue || Math.abs( testValue - controlValue ) < ERROR_TOLERANCE || ( Double.isNaN( testValue ) && Double.isNaN( controlValue ) ) );
     }
 }

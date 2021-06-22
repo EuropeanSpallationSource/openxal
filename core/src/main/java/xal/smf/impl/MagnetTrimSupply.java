@@ -7,7 +7,6 @@
 package xal.smf.impl;
 
 import xal.smf.*;
-import xal.tools.data.*;
 import xal.ca.*;
 
 
@@ -33,6 +32,7 @@ public class MagnetTrimSupply extends MagnetPowerSupply {
      * Get the power supply type
      * @return The power supply type
      */
+    @Override
     public String getType() {
         return "trim";
     }
@@ -122,6 +122,7 @@ public class MagnetTrimSupply extends MagnetPowerSupply {
      * @param node The electromagnet to check
      * @return true if the node is supplied by this supply and false otherwise
      */
+    @Override
     public boolean suppliesNode( final AcceleratorNode node ) {
         if ( node instanceof TrimmedMagnet ) {
             return this == ((TrimmedMagnet)node).getTrimSupply();

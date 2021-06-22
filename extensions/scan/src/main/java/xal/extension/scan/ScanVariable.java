@@ -1,7 +1,6 @@
 package xal.extension.scan;
 
 import javax.swing.*;
-import java.util.*;
 import java.awt.event.*;
 
 import xal.ca.*;
@@ -23,8 +22,8 @@ public class ScanVariable{
     private Object lockObj = new Object();
 
     public ScanVariable(String alias, String aliasRB){
-	mpv   =MonitoredPV.getMonitoredPV(alias);
- 	mpvRB =MonitoredPV.getMonitoredPV(aliasRB);
+	mpv   = MonitoredPV.getMonitoredPV(alias);
+ 	mpvRB = MonitoredPV.getMonitoredPV(aliasRB);
 	stopActionEvent = new ActionEvent(this,0,"stop");
     }
 
@@ -103,13 +102,8 @@ public class ScanVariable{
 	    try {
 		ch.putVal(val);
 	    }
-	    catch (ConnectionException e){
+	    catch (ConnectionException | PutException e){
 		stopScanWithMessage("Cannot put value to the channel: "+chanName);
-                return;
-	    }
-	    catch (PutException e){
-		stopScanWithMessage("Cannot put value to the channel: "+chanName);
-                return;
 	    }
 	}
     }

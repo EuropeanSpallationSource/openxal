@@ -63,7 +63,7 @@ public class TestTrajectory {
     private static final boolean        BOL_TYPE_STOUT = false;
     
     /** Output file name */
-    static final private String         STR_FILENAME_OUTPUT = TestTrajectory.class.getName() + ".txt";
+    private static final String         STR_FILENAME_OUTPUT = TestTrajectory.class.getName() + ".txt";
 
     
     /** Accelerator sequence used for testing */
@@ -90,7 +90,7 @@ public class TestTrajectory {
 
     
     /** The results output file stream */
-    static private PrintStream        PSTR_OUTPUT;
+    private static PrintStream        PSTR_OUTPUT;
 
     
     /*

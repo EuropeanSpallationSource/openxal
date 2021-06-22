@@ -34,7 +34,7 @@ import xal.smf.impl.qualify.ElementTypeManager;
  */
 public class ESSIonSourceMagnetron extends AcceleratorNode {
 
-    public static final String s_strType = "ISM";
+    public static final String TYPE = "ISM";
 
     // Ion Source's magnetron channel handles
     public static final String FORWD_PRW_RB_HANDLE = "forwdPrwRB";
@@ -54,14 +54,14 @@ public class ESSIonSourceMagnetron extends AcceleratorNode {
      * Register type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes(ESSIonSourceMagnetron.class, s_strType);
+        ElementTypeManager.defaultManager().registerTypes(ESSIonSourceMagnetron.class, TYPE);
     }
 
     /**
      * Override to provide type signature
      */
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /**

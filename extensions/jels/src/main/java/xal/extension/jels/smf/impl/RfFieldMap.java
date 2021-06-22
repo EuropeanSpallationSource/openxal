@@ -49,13 +49,13 @@ import xal.tools.xml.XmlDataAdaptor;
  */
 public class RfFieldMap extends RfGap implements ISplittable, IFileBasedFieldMap {
 
-    public static final String s_strType = "RFM";
+    public static final String TYPE = "RFM";
 
     /*
      *  Local Attributes
      */
     // FieldMap parameters
-    protected FieldMapBucket m_bucFieldMap;
+    protected FieldMapBucket bucFieldMap;
     // field map     
     private FieldMap fieldMap;
 
@@ -74,7 +74,7 @@ public class RfFieldMap extends RfGap implements ISplittable, IFileBasedFieldMap
 
     @Override
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /*
@@ -82,18 +82,18 @@ public class RfFieldMap extends RfGap implements ISplittable, IFileBasedFieldMap
      */
     private static void registerType() {
         ElementTypeManager typeManager = ElementTypeManager.defaultManager();
-        typeManager.registerTypes(RfFieldMap.class, s_strType, "rffieldmap");
+        typeManager.registerTypes(RfFieldMap.class, TYPE, "rffieldmap");
     }
 
     /*
      *  Attributes
      */
     public FieldMapBucket getFieldMapBucket() {
-        return m_bucFieldMap;
+        return bucFieldMap;
     }
 
     public final void setFieldMapBucket(FieldMapBucket buc) {
-        m_bucFieldMap = buc;
+        bucFieldMap = buc;
         super.addBucket(buc);
     }
 
@@ -115,14 +115,14 @@ public class RfFieldMap extends RfGap implements ISplittable, IFileBasedFieldMap
      * @return FieldMap file
      */
     public String getFieldMapFile() {
-        return m_bucFieldMap.getFieldMapFile();
+        return bucFieldMap.getFieldMapFile();
     }
 
     /**
      * @param strVal FieldMap file
      */
     public void setFieldMapFile(String strVal) {
-        m_bucFieldMap.setFieldMapFile(strVal);
+        bucFieldMap.setFieldMapFile(strVal);
     }
 
     /**
@@ -141,7 +141,7 @@ public class RfFieldMap extends RfGap implements ISplittable, IFileBasedFieldMap
 
     @Override
     public double toE0TLFromGapField(final double field) {
-        return field * m_bucRfGap.getLength();
+        return field * bucRfGap.getLength();
     }
 
     /**
@@ -157,8 +157,8 @@ public class RfFieldMap extends RfGap implements ISplittable, IFileBasedFieldMap
             if (adaptor instanceof XmlDataAdaptor) {
                 String fieldMapPath = new URI(((XmlDataAdaptor) adaptor).document().getDocumentURI()).resolve(".").toString();
                 fieldMap = FieldMapFactory.getInstance(fieldMapPath, getFieldMapFile(),
-                        m_bucFieldMap.getDynamic(), m_bucFieldMap.getFieldType(),
-                        m_bucFieldMap.getDimensions(), m_bucFieldMap.getNumberOfPoints());
+                        bucFieldMap.getDynamic(), bucFieldMap.getFieldType(),
+                        bucFieldMap.getDimensions(), bucFieldMap.getNumberOfPoints());
             }
         } catch (URISyntaxException ex) {
             Logger.getLogger(RfFieldMap.class.getName()).log(Level.SEVERE, null, ex);
@@ -176,11 +176,11 @@ public class RfFieldMap extends RfGap implements ISplittable, IFileBasedFieldMap
     }
 
     public void setDimensions(int i) {
-        m_bucFieldMap.setDimensions(i);
+        bucFieldMap.setDimensions(i);
     }
 
     public void setDynamic(boolean b) {
-        m_bucFieldMap.setDynamic(b);
+        bucFieldMap.setDynamic(b);
     }
 
     @Override

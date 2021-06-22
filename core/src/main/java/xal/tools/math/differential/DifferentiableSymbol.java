@@ -12,6 +12,7 @@ package xal.tools.math.differential;
 /** Operation for a symbol */
 abstract class DifferentiableSymbol extends DifferentiableOperation {
     /** get the operation precedence */
+    @Override
     protected int getPrecedence() {
         return DifferentiableOperation.SYMBOL_PRECEDENCE;
     }

@@ -75,7 +75,7 @@ public class LinearBuffer<T> implements IBoundedList<T> {
      */
     public LinearBuffer(int szBuffLen) {
         this.szBuffer = szBuffLen;
-        this.lstBuffer = new LinkedList<T>();
+        this.lstBuffer = new LinkedList<>();
     }
     
     /**
@@ -108,6 +108,7 @@ public class LinearBuffer<T> implements IBoundedList<T> {
      * @author Christopher K. Allen
      * @since  Apr 11, 2013
      */
+    @Override
     public int  size() {
         return this.szBuffer;
     }
@@ -118,6 +119,7 @@ public class LinearBuffer<T> implements IBoundedList<T> {
      * 
      * @param   objNew      object to be inserted at buffer head
      */
+    @Override
     public void add(T objNew)    {
         this.lstBuffer.addFirst(objNew);
         
@@ -136,6 +138,7 @@ public class LinearBuffer<T> implements IBoundedList<T> {
      * 
      * @throws IndexOutOfBoundsException    index value exceeds buffer size
      */
+    @Override
     public T    get(int index)  throws IndexOutOfBoundsException {
         return this.lstBuffer.get(index);
     }
@@ -143,6 +146,7 @@ public class LinearBuffer<T> implements IBoundedList<T> {
     /**
      * Clear out the contents of the data buffer.
      */
+    @Override
     public void clear() {
         this.lstBuffer.clear();
     }
@@ -159,6 +163,7 @@ public class LinearBuffer<T> implements IBoundedList<T> {
      * 
      * @return      iterator for  buffer
      */
+    @Override
     public Iterator<T> iterator()  {
         return this.lstBuffer.listIterator();
     }
@@ -200,7 +205,5 @@ public class LinearBuffer<T> implements IBoundedList<T> {
         
         return strBuffer;
     }
-    
-    
-    
+   
 }

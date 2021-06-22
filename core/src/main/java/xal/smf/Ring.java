@@ -23,7 +23,7 @@ import java.util.*;
  */
 public class Ring extends AcceleratorSeqCombo {
     /** node type */
-    public static final String    s_strType = "Ring";
+    public static final String    TYPE = "Ring";
 	
 	
 	/**
@@ -46,6 +46,7 @@ public class Ring extends AcceleratorSeqCombo {
      * downstream from another.
 	 * @return false since by definition the ring is not a linear section
      */
+    @Override
     public boolean isLinear() {
         return false;
     }
@@ -56,6 +57,7 @@ public class Ring extends AcceleratorSeqCombo {
 	 * @param position the position of a location relative to the sequence's start
 	 * @param referenceNode the node relative to which we wish to get the position
 	 */
+    @Override
 	public double getRelativePosition( final double position, final AcceleratorNode referenceNode ) {
 		final double relativePosition = position - getPosition( referenceNode );
 		return ( relativePosition >= 0 ) ? relativePosition : getLength() + relativePosition;
@@ -63,15 +65,15 @@ public class Ring extends AcceleratorSeqCombo {
 	
 	
 	/**
-	 * Get the shortest relative postion of one node with respect to a reference node.  This is really useful for ring sequences.
+	 * Get the shortest relative position of one node with respect to a reference node.  This is really useful for ring sequences.
 	 * @param node the node whose relative position is sought
 	 * @param referenceNode the reference node relative to which the node's position is calculated
 	 * @return the distance (positive or negative) of the node with respect to the reference node whose magnitude is shortest 
 	 */
+    @Override
 	public double getShortestRelativePosition( final AcceleratorNode node, final AcceleratorNode referenceNode ) {
 		final double distanceTo = Math.abs( getDistanceBetween( node, referenceNode ) );
 		final double distanceFrom = Math.abs( getDistanceBetween( referenceNode, node ) );
 		return distanceTo < distanceFrom ? - distanceTo : distanceFrom;
 	}
 }
-

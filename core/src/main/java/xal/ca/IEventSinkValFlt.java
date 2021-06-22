@@ -18,7 +18,7 @@ public interface IEventSinkValFlt {
 
     public void eventValue(float valNew, Channel chan);
     
-};
+}
 
 
 

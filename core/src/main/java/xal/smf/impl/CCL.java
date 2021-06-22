@@ -22,7 +22,7 @@ import xal.smf.impl.qualify.ElementTypeManager;
  */
 public class CCL extends RfCavity {
     // ----- Constants ----------------------------------
-    public static final String    s_strType = "CCL";
+    public static final String    TYPE = "CCL";
 	
 	
     static {
@@ -34,7 +34,7 @@ public class CCL extends RfCavity {
      * Register CCL's type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes( CCL.class, s_strType );
+        ElementTypeManager.defaultManager().registerTypes( CCL.class, TYPE );
     }
 
 
@@ -74,8 +74,9 @@ public class CCL extends RfCavity {
 	 * Support the node type
 	 * @return The CCL type
 	 */
+    @Override
     public String getType() { 
-		return s_strType; 
+		return TYPE; 
 	}
 }
 

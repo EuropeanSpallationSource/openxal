@@ -90,7 +90,7 @@ public abstract class SignalSet implements DataListener {
     public static List<ScadaFieldDescriptor>  getFieldDescriptorList(Class<? extends SignalSet> clsData)
         throws ScadaAnnotationException
     {
-        List<ScadaFieldDescriptor>  lstFds = new LinkedList<ScadaFieldDescriptor>();
+        List<ScadaFieldDescriptor>  lstFds = new LinkedList<>();
         
         
         if ( !clsData.isAnnotationPresent(ASignal.ASet.class) )
@@ -98,7 +98,7 @@ public abstract class SignalSet implements DataListener {
         
         ASignal.ASet annSigSet = clsData.getAnnotation(ASignal.ASet.class);
         
-        List<ASignal>   lstSigAnn = new LinkedList<ASignal>();
+        List<ASignal>   lstSigAnn = new LinkedList<>();
         lstSigAnn.add( annSigSet.sigHor() );
         lstSigAnn.add( annSigSet.sigVer() );
         lstSigAnn.add( annSigSet.sigDia() );
@@ -169,7 +169,7 @@ public abstract class SignalSet implements DataListener {
         List<ScadaFieldDescriptor>   lstFdVer = this.ver.getFieldDescriptors();
         List<ScadaFieldDescriptor>   lstFdDia = this.dia.getFieldDescriptors();
         
-        List<ScadaFieldDescriptor>   lstFds = new LinkedList<ScadaFieldDescriptor>();
+        List<ScadaFieldDescriptor>   lstFds = new LinkedList<>();
 
         lstFds.addAll(lstFdHor);
         lstFds.addAll(lstFdVer);
@@ -406,12 +406,12 @@ public abstract class SignalSet implements DataListener {
      */
     @Override
     public String toString() {
-        StringBuffer    bufStr = new StringBuffer();
-        bufStr.append(this.getClass().getName() + " values\n"); //$NON-NLS-1$
+        StringBuilder    bufStr = new StringBuilder();
+        bufStr.append(this.getClass().getName()).append(" values\n"); //$NON-NLS-1$
 
-        bufStr.append("hor signal = " + this.hor.toString() + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
-        bufStr.append("ver signal = " + this.ver.toString() + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
-        bufStr.append("dia signal = " + this.dia.toString() + "\n"); //$NON-NLS-1$ //$NON-NLS-2$
+        bufStr.append("hor signal = ").append(this.hor.toString()).append("\n"); //$NON-NLS-1$ //$NON-NLS-2$
+        bufStr.append("ver signal = ").append(this.ver.toString()).append("\n"); //$NON-NLS-1$ //$NON-NLS-2$
+        bufStr.append("dia signal = ").append(this.dia.toString()).append("\n"); //$NON-NLS-1$ //$NON-NLS-2$
 
         return bufStr.toString();
     }

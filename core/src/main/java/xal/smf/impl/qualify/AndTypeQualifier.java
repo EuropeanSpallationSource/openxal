@@ -19,14 +19,14 @@ import java.util.*;
  */
 public class AndTypeQualifier implements TypeQualifier {
 	/** set of qualifiers to "and" */
-    private Set<TypeQualifier> _qualifiers;
+    private Set<TypeQualifier> qualifiers;
 	
 	
     /** 
 	 * Creates a new AndTypeQualifier with no initial root qualifiers
 	 */
     public AndTypeQualifier() {
-        _qualifiers = new HashSet<TypeQualifier>();
+        qualifiers = new HashSet<>();
     }
     
     
@@ -46,7 +46,7 @@ public class AndTypeQualifier implements TypeQualifier {
 	 * @return This instance for convenience of chaining "and" operations.
 	 */
     public AndTypeQualifier and( final TypeQualifier qualifier ) {
-        _qualifiers.add( qualifier );
+        qualifiers.add( qualifier );
 		return this;
     }
 	
@@ -70,7 +70,7 @@ public class AndTypeQualifier implements TypeQualifier {
 	 * @param qualifiers the array of node qualifiers
 	 * @return a qualifier that matches for each of the qualifiers
 	 */
-	static public AndTypeQualifier qualifierWithQualifiers( final TypeQualifier ... qualifiers ) {
+	public static AndTypeQualifier qualifierWithQualifiers( final TypeQualifier ... qualifiers ) {
 		return new AndTypeQualifier().and( qualifiers );
 	}
 	
@@ -81,7 +81,7 @@ public class AndTypeQualifier implements TypeQualifier {
 	 * @return this instance
 	 */
 	public AndTypeQualifier andStatus( final boolean nodeStatus ) {
-		_qualifiers.add( QualifierFactory.getStatusQualifier( nodeStatus ) );
+		qualifiers.add( QualifierFactory.getStatusQualifier( nodeStatus ) );
 		return this;
 	}
 	
@@ -92,7 +92,7 @@ public class AndTypeQualifier implements TypeQualifier {
 	 * @param type the node type
 	 * @return a qualifier restricted to both the status and type specified
 	 */
-	static public AndTypeQualifier qualifierWithStatusAndType( final boolean nodeStatus, final String type ) {
+	public static AndTypeQualifier qualifierWithStatusAndType( final boolean nodeStatus, final String type ) {
 		return new AndTypeQualifier().andStatus( nodeStatus ).and( type );
 	}
 
@@ -104,8 +104,9 @@ public class AndTypeQualifier implements TypeQualifier {
 	 * @param node The node to test
 	 * @return true if the node is a match and false if not
 	 */
+    @Override
     public boolean match( final AcceleratorNode node ) {
-        for ( TypeQualifier qualifier : _qualifiers ) {
+        for ( TypeQualifier qualifier : qualifiers ) {
             if ( !qualifier.match(node) )  return false;
         }
         

@@ -11,7 +11,6 @@
 package xal.service.mpstool;
 
 import java.util.Date;
-import xal.extension.service.ServiceDirectory;
 
 
 /**
@@ -21,10 +20,10 @@ import xal.extension.service.ServiceDirectory;
  */
 public class Main {
 	/** The time at which the application was launched */
-	final static protected Date LAUNCH_TIME;
+	protected static final Date LAUNCH_TIME;
 	
 	/** The MPS Model */
-	protected MPSModel _model;
+	protected MPSModel model;
 	
 	
 	/**
@@ -39,7 +38,7 @@ public class Main {
 	 * Main Constructor
 	 */
 	public Main() {
-		_model = new MPSModel();
+		model = new MPSModel();
 	}
 	
 	
@@ -47,7 +46,7 @@ public class Main {
 	 * run the service by starting the logger
 	 */
 	protected void run() {
-		new MPSService(_model);
+		new MPSService(model);
 	}
 	
 	
@@ -55,7 +54,7 @@ public class Main {
 	 * Main entry point to the service.  Run the service.
 	 * @param args The launch arguments to the service.
 	 */
-	static public void main(String[] args) {
+	public static void main(String[] args) {
 		new Main().run();
 	}
 	
@@ -64,7 +63,7 @@ public class Main {
 	 * Get the time when this application was launched.
 	 * @return the time when this application was launched
 	 */
-	static public Date getLaunchTime() {
+	public static Date getLaunchTime() {
 		return LAUNCH_TIME;
 	}
 }

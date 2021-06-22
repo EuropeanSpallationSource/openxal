@@ -16,13 +16,13 @@ package xal.extension.fit;
  *
  * @author  tap
  */
-final public class LinearInterpolator {
+public final class LinearInterpolator {
     /** epsilonWeight is the fraction resolution of the step. */
-    static final private double epsilonWeight = 1.0e-6;
+    private static final double EPSILON_WEIGHT = 1.0e-6;
     
-    final protected double[] _values;
-    final protected double _start;
-    final protected double _step;
+    protected final double[] values;
+    protected final double start;
+    protected final double step;
     
     
     /** 
@@ -32,9 +32,9 @@ final public class LinearInterpolator {
      * @param step is the step in the domain for each successive element in the array
      */
     public LinearInterpolator(final double[] values, final double start, double step) {
-        _values = values;
-        _start = start;
-        _step = step;
+        this.values = values;
+        this.start = start;
+        this.step = step;
     }
     
     
@@ -46,10 +46,10 @@ final public class LinearInterpolator {
      * @throws java.lang.ArrayIndexOutOfBoundsException if the point does not fall int the accepted domain
      */
     public double calcValueAt(final double point) throws ArrayIndexOutOfBoundsException {
-        final double element = (point - _start) / _step;
+        final double element = (point - start) / step;
         final double weight = element - Math.floor(element);
         final int index = (int)element;
         
-        return (weight < epsilonWeight) ? _values[index] : (1-weight) * _values[index] + weight * _values[index+1];
+        return (weight < EPSILON_WEIGHT) ? values[index] : (1-weight) * values[index] + weight * values[index+1];
     }
 }

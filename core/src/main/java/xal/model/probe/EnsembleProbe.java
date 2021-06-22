@@ -29,16 +29,16 @@ public class EnsembleProbe extends BunchProbe<EnsembleProbeState> {
      */
     
     /** no field calculation scheme specified */
-    public final static int     FLDCALC_NONE = 0;
+    public static final int     FLDCALC_NONE = 0;
     
     /** use a full potential summation of each particle */
-    public final static int     FLDCALC_SUMMATION = 1;
+    public static final int     FLDCALC_SUMMATION = 1;
     
     /** use grid finite difference scheme */
-    public final static int     FLDCALC_GRIDFD = 2;
+    public static final int     FLDCALC_GRIDFD = 2;
     
     /** use grid Fourier transform method */
-    public final static int     FLDCALC_GRIDFT = 3;
+    public static final int     FLDCALC_GRIDFT = 3;
     
     
     /*
@@ -83,7 +83,7 @@ public class EnsembleProbe extends BunchProbe<EnsembleProbeState> {
      */
     @Override
     public Trajectory<EnsembleProbeState> createTrajectory() {
-        return new Trajectory<EnsembleProbeState>(EnsembleProbeState.class);
+        return new Trajectory<>(EnsembleProbeState.class);
     }
 
     // BunchProbe Base Support =================================================
@@ -122,7 +122,7 @@ public class EnsembleProbe extends BunchProbe<EnsembleProbeState> {
         super( );
         
         this.setEnsemble(new Ensemble());
-    };
+    }
     
     /**
      *  Copy Constructor.  Create a new instance of <code>EnsembleProbe</code>
@@ -136,7 +136,7 @@ public class EnsembleProbe extends BunchProbe<EnsembleProbeState> {
         super(probe);
         
         this.setEnsemble( new Ensemble( probe.getEnsemble() ) );
-    };
+    }
     
     @Override
     public EnsembleProbe copy() {

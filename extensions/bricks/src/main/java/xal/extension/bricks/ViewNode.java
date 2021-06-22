@@ -10,18 +10,18 @@ package xal.extension.bricks;
 
 import java.beans.*;
 import javax.swing.*;
-import javax.swing.border.*;
 import java.awt.*;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.*;
 import java.awt.event.*;
-import java.io.*;
-import javax.swing.event.*;
+import java.io.IOException;
 import javax.swing.tree.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Enumeration;
+import java.util.TooManyListenersException;
 
 import xal.tools.data.*;
 
@@ -29,10 +29,10 @@ import xal.tools.data.*;
 /** brick which represents a view */
 public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	/** data label */
-	public static String DATA_LABEL = "ViewNode";
+	public static String dataLabel = "ViewNode";
 	
 	/** the associated border node if any */
-	protected BorderNode _borderNode;
+	protected BorderNode borderNode;
 	
 	
 	/** Primary Constructor */
@@ -43,12 +43,12 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 		final DropTarget dropTarget = new DropTarget();
 		try {
 			dropTarget.addDropTargetListener( new DropHandler() );
-			BEAN_OBJECT.setDropTarget( dropTarget );
+			beanObject.setDropTarget( dropTarget );
 			if ( isWindow() ) {
 				getView().addComponentListener( new ComponentEventHandler() );
 			}
 		}
-		catch( Exception exception ) {
+		catch( TooManyListenersException exception ) {
 			exception.printStackTrace();
 		}
 	}
@@ -63,11 +63,11 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	/** Constructor */
 	@SuppressWarnings( "rawtypes" )		// DefaultMutableTreeNode returns an untyped Enumeration
 	public ViewNode( final ViewNode node ) {
-		this ( node.getViewProxy(), node.BEAN_SETTINGS, node.getTag() );
+		this (node.getViewProxy(), node.beanSettings, node.getTag() );
 		
 		setCustomBeanClassName( node.getCustomBeanClassName() );
 		
-		final List<BeanNode<?>> beanNodes = new ArrayList<BeanNode<?>>( TREE_NODE.getChildCount() );
+		final List<BeanNode<?>> beanNodes = new ArrayList<>( treeNode.getChildCount() );
 		final Enumeration childNodeEnumerator = node.getTreeNode().children();
 		while ( childNodeEnumerator.hasMoreElements() ) {
 			final DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode)childNodeEnumerator.nextElement();
@@ -91,7 +91,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	
 	/** generator */
 	@SuppressWarnings( "unchecked" )	// must cast view proxy to have Component type
-	static public ViewNode getInstance( final DataAdaptor adaptor ) {		
+	public static ViewNode getInstance( final DataAdaptor adaptor ) {		
 		final DataAdaptor proxyAdaptor = adaptor.childAdaptor( ViewProxy.DATA_LABEL );
 		final ViewProxy<Component> viewProxy = (ViewProxy<Component>)ViewProxy.getInstance( proxyAdaptor );
 		final String tag = adaptor.stringValue( "tag" );
@@ -104,6 +104,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	
 	
 	/** get the bean instance */
+        @Override
 	protected Component getPrototypeBean( final BeanProxy<Component> beanProxy ) {
 		final Component view = (Component)((ViewProxy)beanProxy).getPrototype();
 		view.setName( beanProxy.getName() );
@@ -116,7 +117,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	 * @return the view
 	 */
 	public Component getView() {
-		return BEAN_OBJECT;
+		return beanObject;
 	}
 	
 	
@@ -125,7 +126,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	 * @return the view proxy
 	 */
 	public ViewProxy<Component> getViewProxy() {
-		return (ViewProxy<Component>)BEAN_PROXY;
+		return (ViewProxy<Component>)beanProxy;
 	}
 	
 	
@@ -168,12 +169,13 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	 * Determine if the brick can add the specified view
 	 * @return true if it can add the specified view and false if not
 	 */
+        @Override
 	public boolean canAdd( final BeanProxy<?> beanProxy ) {
 		if ( beanProxy instanceof ViewProxy ) {
 			return !((ViewProxy)beanProxy).isWindow() && getViewProxy().isContainer();
 		}
 		else if ( beanProxy instanceof BorderProxy ) {
-			return BEAN_OBJECT instanceof JComponent;
+			return beanObject instanceof JComponent;
 		}
 		else {
 			return false;
@@ -186,8 +188,9 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	 * @param beanProxies the beans to add to this node
 	 */
 	@SuppressWarnings( "unchecked" )	// must cast bean proxy to view proxy
+        @Override
 	public void add( final List<BeanProxy<?>> beanProxies ) {
-		final List<BeanNode<?>> nodes = new ArrayList<BeanNode<?>>( beanProxies.size() );
+		final List<BeanNode<?>> nodes = new ArrayList<>( beanProxies.size() );
 		final Container container = getContainer();
 		for ( final BeanProxy<?> beanProxy : beanProxies ) {
 			if ( beanProxy instanceof ViewProxy ) {
@@ -196,7 +199,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 				container.add( node.getView() );
 				node.addBrickListener( this );
 				nodes.add( node );
-				TREE_NODE.add( node.getTreeNode() );
+				treeNode.add( node.getTreeNode() );
 			}
 			else if ( beanProxy instanceof BorderProxy ) {
 				final BorderNode node = new BorderNode( (BorderProxy)beanProxy );
@@ -205,8 +208,8 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 			}
 		}
 		refreshDisplay();
-		EVENT_PROXY.nodesAdded( this, this, nodes );
-		EVENT_PROXY.treeNeedsRefresh( this, this );
+		eventProxy.nodesAdded( this, this, nodes );
+		eventProxy.treeNeedsRefresh( this, this );
 	}
 	
 	
@@ -214,8 +217,9 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	 * Add the views nodes to this node
 	 * @param nodes the nodes to add to this node
 	 */
+        @Override
 	public void addNodes( final List<BeanNode<?>> nodes ) {
-		final List<BeanNode<?>> nodeCopies = new ArrayList<BeanNode<?>>( nodes.size() );
+		final List<BeanNode<?>> nodeCopies = new ArrayList<>( nodes.size() );
 		final Container container = getContainer();
 		for ( final BeanNode<?> node : nodes ) {
 			if ( node instanceof ViewNode ) {
@@ -224,7 +228,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 				container.add( nodeCopy.getView() );
 				nodeCopy.addBrickListener( this );
 				nodeCopies.add( nodeCopy );
-				TREE_NODE.add( nodeCopy.getTreeNode() );
+				treeNode.add( nodeCopy.getTreeNode() );
 			}
 			else if ( node instanceof BorderNode ) {
 				final BorderNode nodeCopy = new BorderNode( (BorderNode)node );
@@ -233,8 +237,8 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 			}
 		}
 		refreshDisplay();
-		EVENT_PROXY.nodesAdded( this, this, nodeCopies );
-		EVENT_PROXY.treeNeedsRefresh( this, this );
+		eventProxy.nodesAdded( this, this, nodeCopies );
+		eventProxy.treeNeedsRefresh( this, this );
 	}
 	
 	
@@ -243,12 +247,13 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	 * @param beanProxies the views to add to this node
 	 */
 	@SuppressWarnings( "unchecked" )	// must cast bean proxy to view proxy
+        @Override
 	public void insertSiblings( final List<BeanProxy<?>> beanProxies ) {
-		int treeIndex = TREE_NODE.getParent().getIndex( TREE_NODE );
+		int treeIndex = treeNode.getParent().getIndex(treeNode );
 		final ViewNodeContainer target = getViewNodeContainer();
 		int viewIndex = treeIndex - target.getTreeIndexOffsetFromViewIndex();
 		
-		final List<BeanNode<?>> nodes = new ArrayList<BeanNode<?>>( beanProxies.size() );
+		final List<BeanNode<?>> nodes = new ArrayList<>( beanProxies.size() );
 		for ( final BeanProxy<?> beanProxy : beanProxies ) {
 			if ( beanProxy instanceof ViewProxy ) {
 				final ViewNode node = new ViewNode( (ViewProxy<Component>)beanProxy );
@@ -257,8 +262,8 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 			}
 		}
 		refreshDisplay();
-		EVENT_PROXY.nodesAdded( this, (Brick)target, nodes );
-		EVENT_PROXY.treeNeedsRefresh( this, (Brick)target );
+		eventProxy.nodesAdded( this, (Brick)target, nodes );
+		eventProxy.treeNeedsRefresh( this, (Brick)target );
 	}
 	
 	
@@ -266,8 +271,9 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	 * Get the tree index offset from the view index
 	 * @return the tree index offset
 	 */
+        @Override
 	public int getTreeIndexOffsetFromViewIndex() {
-		return _borderNode != null ? 1 : 0;
+		return borderNode != null ? 1 : 0;
 	}
 	
 	
@@ -276,13 +282,14 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	 * @param node the node to add to this node
 	 * @param viewIndex the initial index at which to insert the node
 	 */
+        @Override
 	public void insertViewNode( final ViewNode node, final int viewIndex ) {
 		if ( getContainer() != null ) {
 			node.addBrickListener( this );
 			final int treeIndex = viewIndex + getTreeIndexOffsetFromViewIndex();
-			TREE_NODE.insert( node.getTreeNode(), treeIndex );
+			treeNode.insert( node.getTreeNode(), treeIndex );
 			reconstructContainer( false );
-			EVENT_PROXY.treeNeedsRefresh( this, this );
+			eventProxy.treeNeedsRefresh( this, this );
 		}
 	}
 	
@@ -291,12 +298,13 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	 * Insert the specified view nodes immediately above this node
 	 * @param nodes the nodes to add to this node
 	 */
+        @Override
 	public void insertSiblingNodes( final List<BeanNode<?>> nodes ) {
-		int treeIndex = TREE_NODE.getParent().getIndex( TREE_NODE );
+		int treeIndex = treeNode.getParent().getIndex(treeNode );
 		final ViewNodeContainer target = getViewNodeContainer();
 		int viewIndex = treeIndex - target.getTreeIndexOffsetFromViewIndex();
 		
-		final List<BeanNode<?>> nodeCopies = new ArrayList<BeanNode<?>>( nodes.size() );
+		final List<BeanNode<?>> nodeCopies = new ArrayList<>( nodes.size() );
 		for ( final BeanNode<?> node : nodes ) {
 			if ( node instanceof ViewNode ) {
 				final ViewNode nodeCopy = new ViewNode( (ViewNode)node );
@@ -310,19 +318,20 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 			}
 		}
 		redrawView();
-		EVENT_PROXY.nodesAdded( this, (Brick)target, nodeCopies );
-		EVENT_PROXY.treeNeedsRefresh( this, (Brick)target );
+		eventProxy.nodesAdded( this, (Brick)target, nodeCopies );
+		eventProxy.treeNeedsRefresh( this, (Brick)target );
 	}
 	
 	
 	/** Move the specified nodes down */
+        @Override
 	public void moveDownNodes( final List<BeanNode<?>> nodes ) {
 		if ( nodes.size() > 0 ) {
-			final int brickCount = TREE_NODE.getChildCount();
+			final int brickCount = treeNode.getChildCount();
 			
-			final List<Integer> indicesToMove = new ArrayList<Integer>( nodes.size() );
+			final List<Integer> indicesToMove = new ArrayList<>( nodes.size() );
 			for ( final BeanNode<?> node : nodes ) {
-				final int index = TREE_NODE.getIndex( node.TREE_NODE );
+				final int index = treeNode.getIndex(node.treeNode );
 				indicesToMove.add( index );
 			}
 			
@@ -334,30 +343,31 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 				if ( container == null )  return;
 				
 				for ( final int index : indicesToMove ) {
-					final TreeNode treeNode = TREE_NODE.getChildAt( index );
+					final TreeNode treeNode = this.treeNode.getChildAt( index );
 					if ( treeNode instanceof DefaultMutableTreeNode ) {
 						final ViewNode viewNode = (ViewNode)((DefaultMutableTreeNode)treeNode).getUserObject();
 						final int nodeIndex = index + 1;
-						TREE_NODE.insert( (MutableTreeNode)treeNode, nodeIndex );
+						this.treeNode.insert( (MutableTreeNode)treeNode, nodeIndex );
 					}
 				}
 				reconstructContainer( true );
 				
-				EVENT_PROXY.nodesAdded( this, this, nodes );
-				EVENT_PROXY.treeNeedsRefresh( this, this );
+				eventProxy.nodesAdded( this, this, nodes );
+				eventProxy.treeNeedsRefresh( this, this );
 			}
 		}
 	}
 	
 	
 	/** Move the specified nodes up */
+        @Override
 	public void moveUpNodes( final List<BeanNode<?>> nodes ) {
 		if ( nodes.size() > 0 ) {
-			final int brickCount = TREE_NODE.getChildCount();
+			final int brickCount = treeNode.getChildCount();
 			
-			final List<Integer> indicesToMove = new ArrayList<Integer>( nodes.size() );
+			final List<Integer> indicesToMove = new ArrayList<>( nodes.size() );
 			for ( final BeanNode<?> node : nodes ) {
-				final int index = TREE_NODE.getIndex( node.TREE_NODE );
+				final int index = treeNode.getIndex(node.treeNode );
 				indicesToMove.add( index );
 			}
 			
@@ -369,17 +379,17 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 				if ( container == null )  return;
 				
 				for ( final int index : indicesToMove ) {
-					final TreeNode treeNode = TREE_NODE.getChildAt( index );
+					final TreeNode treeNode = this.treeNode.getChildAt( index );
 					if ( treeNode instanceof DefaultMutableTreeNode ) {
 						final ViewNode viewNode = (ViewNode)((DefaultMutableTreeNode)treeNode).getUserObject();
 						final int nodeIndex = index - 1;
-						TREE_NODE.insert( (MutableTreeNode)treeNode, nodeIndex );
+						this.treeNode.insert( (MutableTreeNode)treeNode, nodeIndex );
 					}
 				}
 				reconstructContainer( true );
 				
-				EVENT_PROXY.nodesAdded( this, this, nodes );
-				EVENT_PROXY.treeNeedsRefresh( this, this );
+				eventProxy.nodesAdded( this, this, nodes );
+				eventProxy.treeNeedsRefresh( this, this );
 			}
 		}
 	}
@@ -391,11 +401,11 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 		if ( container != null ) {
 			final int treeIndexViewIndexOffset = getTreeIndexOffsetFromViewIndex();
 			container.removeAll();
-			final int nodeCount = TREE_NODE.getChildCount();
+			final int nodeCount = treeNode.getChildCount();
 			for ( int index = 0 ; index < nodeCount ; index++ ) {
 				final int viewIndex = index - treeIndexViewIndexOffset;
 				if ( viewIndex >= 0 ) {
-					final TreeNode treeNode = TREE_NODE.getChildAt( index );
+					final TreeNode treeNode = this.treeNode.getChildAt( index );
 					if ( treeNode instanceof DefaultMutableTreeNode ) {
 						final ViewNode viewNode = (ViewNode)((DefaultMutableTreeNode)treeNode).getUserObject();
 						container.add( viewNode.getView() );
@@ -424,6 +434,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	 * Remove the view node from this container
 	 * @param node the node to remove
 	 */
+        @Override
 	public void removeNode( final BeanNode<?> node ) {
 		final List<BeanNode<?>> nodes = Collections.<BeanNode<?>>singletonList( node );
 		removeNodes( nodes );
@@ -434,6 +445,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	 * Remove the view nodes from this container
 	 * @param nodes the nodes to remove
 	 */
+        @Override
 	public void removeNodes( final List<BeanNode<?>> nodes ) {
 		final Container container = getContainer();
 		if ( container == null )  return;
@@ -441,7 +453,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 			node.removeBrickListener( this );
 			if ( node instanceof ViewNode ) {
 				container.remove( ((ViewNode)node).getView() );
-				TREE_NODE.remove( node.getTreeNode() );
+				treeNode.remove( node.getTreeNode() );
 			}
 			else if ( node instanceof BorderNode ) {
 				setBorderNode( null );
@@ -449,45 +461,45 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 		}
 		container.repaint();
 		SwingUtilities.getWindowAncestor( container ).validate();
-		EVENT_PROXY.nodesRemoved( this, this, nodes );
-		EVENT_PROXY.treeNeedsRefresh( this, this );
+		eventProxy.nodesRemoved( this, this, nodes );
+		eventProxy.treeNeedsRefresh( this, this );
 	}
 	
 	
 	/** get the border node */
 	protected BorderNode getBorderNode() {
-		return _borderNode;
+		return borderNode;
 	}
 	
 	
 	/** set the border node */
 	protected void setBorderNode( final BorderNode node ) {
-		final BorderNode oldNode = _borderNode;
-		if ( _borderNode != null ) {
-			TREE_NODE.remove( _borderNode.getTreeNode() );
+		final BorderNode oldNode = borderNode;
+		if ( borderNode != null ) {
+			treeNode.remove(borderNode.getTreeNode() );
 		}
 		
 		final JComponent view = (JComponent)getView();
 		
-		_borderNode = node;
+		borderNode = node;
 		if ( node != null ) {
 			view.setBorder( node.getBorder() );
-			TREE_NODE.insert( node.getTreeNode(), 0 );
+			treeNode.insert( node.getTreeNode(), 0 );
 		}
 		else {
 			view.setBorder( null );
 		}
 		if ( node != null ) {
-			final List<BeanNode<?>> nodesAdded = new ArrayList<BeanNode<?>>(1);
+			final List<BeanNode<?>> nodesAdded = new ArrayList<>(1);
 			nodesAdded.add( node );
-			EVENT_PROXY.nodesAdded( this, this, nodesAdded );
-			EVENT_PROXY.treeNeedsRefresh( this, this );
+			eventProxy.nodesAdded( this, this, nodesAdded );
+			eventProxy.treeNeedsRefresh( this, this );
 		}
 		if ( oldNode != null ) {
-			final List<BeanNode<?>> nodesRemoved = new ArrayList<BeanNode<?>>(1);
+			final List<BeanNode<?>> nodesRemoved = new ArrayList<>(1);
 			nodesRemoved.add( node );
-			EVENT_PROXY.nodesRemoved( this, this, nodesRemoved );
-			EVENT_PROXY.treeNeedsRefresh( this, this );
+			eventProxy.nodesRemoved( this, this, nodesRemoved );
+			eventProxy.treeNeedsRefresh( this, this );
 		}
 	}
 	
@@ -500,6 +512,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	
 	
 	/** refresh display */
+        @Override
 	public void refreshDisplay() {
 		final Component view = getView();
 		if ( view != null ) {
@@ -520,6 +533,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	 * @param container the node to which nodes have been added
 	 * @param nodes the nodes which have been added
 	 */
+        @Override
 	public void nodesAdded( final Object source, final Brick container, final List<BeanNode<?>> nodes ) {
 	}
 	
@@ -530,6 +544,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	 * @param container the node from which nodes have been removed
 	 * @param nodes the nodes which have been removed
 	 */
+        @Override
 	public void nodesRemoved( final Object source, final Brick container, final List<BeanNode<?>> nodes ) {
 	}
 	
@@ -540,6 +555,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	 * @param propertyDescriptor the property which has changed
 	 * @param value the new value
 	 */
+        @Override
 	public void propertyChanged( final BeanNode<?> beanNode, final PropertyDescriptor propertyDescriptor, final Object value ) {
 		getViewProxy().handleChildNodePropertyChange( this, beanNode, propertyDescriptor, value );
 		treeNeedsRefresh( this, beanNode );
@@ -551,18 +567,21 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	 * @param source the source of the event
 	 * @param brick the brick at which the refresh needs to be done
 	 */
+        @Override
 	public void treeNeedsRefresh( final Object source, final Brick brick ) {
-		EVENT_PROXY.treeNeedsRefresh( this, brick );
+		eventProxy.treeNeedsRefresh( this, brick );
 	}
 	
 	
 	/** Remove this brick from its parent */
+        @Override
 	public void removeFromParent() {
 		getViewNodeContainer().removeNode( this );
 	}
 	
 	
 	/** Display the bean's window */
+        @Override
 	public void display() {
 		final Component view = getView();
 		final Component window = view instanceof Window ? view : SwingUtilities.getWindowAncestor( view );
@@ -577,8 +596,9 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	 * Provides the name used to identify the class in an external data source.
 	 * @return a tag that identifies the receiver's type
 	 */
+        @Override
 	public String dataLabel() {
-		return DATA_LABEL;
+		return dataLabel;
 	}
     
     
@@ -586,14 +606,15 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	 * Update the data based on the information provided by the data provider.
      * @param adaptor The adaptor from which to update the data
      */
+        @Override
     public void update( final DataAdaptor adaptor ) {		
-		final DataAdaptor borderAdaptor = adaptor.childAdaptor( BorderNode.DATA_LABEL );
+		final DataAdaptor borderAdaptor = adaptor.childAdaptor(BorderNode.dataLabel );
 		if ( borderAdaptor != null ) {
 			final BorderNode borderNode = BorderNode.getInstance( borderAdaptor );
 			setBorderNode( borderNode );
 		}
 		
-		final List<DataAdaptor> nodeAdaptors = adaptor.childAdaptors( ViewNode.DATA_LABEL );
+		final List<DataAdaptor> nodeAdaptors = adaptor.childAdaptors(ViewNode.dataLabel );
 		final List<BeanNode<?>> nodes = new ArrayList<BeanNode<?>>( nodeAdaptors.size() );
 		for ( final DataAdaptor nodeAdaptor : nodeAdaptors ) {
 			nodeAdaptor.setValue( "contextURL", adaptor.stringValue( "contextURL" ) );
@@ -616,6 +637,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
      * @param adaptor The adaptor to which the receiver's data is written
      */
  	@SuppressWarnings( "rawtypes" )		// DefaultMutableTreeNode returns an untyped Enumeration
+        @Override
    public void write( final DataAdaptor adaptor ) {
 		super.write( adaptor );
 		
@@ -639,6 +661,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	
 	/** handle component events */
 	protected class ComponentEventHandler extends ComponentAdapter {
+                @Override
 		public void componentResized( final ComponentEvent event ) {
 			ViewNode.this.treeNeedsRefresh( ViewNode.this, ViewNode.this );
 		}
@@ -648,9 +671,11 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	
 	/** handle drop events */
 	protected class DropHandler extends DropTargetAdapter {
+                @Override
 		public void dragEnter( final DropTargetDragEvent event ) {}
 		
         @SuppressWarnings( "unchecked" )    // we have no choice but to cast the transfered data
+                @Override
 		public void drop( final DropTargetDropEvent event ) {
 			try {
 				final List<BeanProxy<?>> beanProxies = (List<BeanProxy<?>>)event.getTransferable().getTransferData( ViewTransferable.VIEW_FLAVOR );
@@ -662,7 +687,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 					event.dropComplete( false );
 				}
 			}
-			catch( Exception exception ) {
+			catch( UnsupportedFlavorException | IOException exception ) {
 				exception.printStackTrace();
 				event.dropComplete( false );
 			}

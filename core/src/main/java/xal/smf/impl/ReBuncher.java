@@ -19,7 +19,7 @@ public class ReBuncher extends RfCavity {
      *  Constants
      */
     
-    public static final String s_strType = "Bnch";  // ??? no table entry for the type
+    public static final String TYPE = "Bnch";  // ??? no table entry for the type
   
 
     static {
@@ -31,13 +31,14 @@ public class ReBuncher extends RfCavity {
      * Register type for qualification
      */
     private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( ReBuncher.class, s_strType, "rebuncher" );
+		ElementTypeManager.defaultManager().registerTypes( ReBuncher.class, TYPE, "rebuncher" );
     }
     
 
     /** Override to provide type signature */
+    @Override
     public String getType() { 
-        return s_strType; 
+        return TYPE; 
     }
 
 

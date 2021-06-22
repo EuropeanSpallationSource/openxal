@@ -113,11 +113,11 @@ public class DefaultElementMapping extends ElementMapping {
 
     protected void initialize() {
 		putMap("dh",IdealMagWedgeDipole2.class);
-		putMap(xal.smf.impl.EDipole.s_strType, IdealEDipole.class);
+		putMap(xal.smf.impl.EDipole.TYPE, IdealEDipole.class);
 		putMap("QSC", IdealMagSkewQuad3.class);		
 		putMap("q", IdealMagQuad.class);
 		putMap("qt", IdealMagQuad.class);
-		putMap(xal.smf.impl.EQuad.s_strType, IdealEQuad.class);
+		putMap(xal.smf.impl.EQuad.TYPE, IdealEQuad.class);
 		putMap("pq", IdealMagQuad.class);
 		putMap("S", IdealMagSextupole.class);
 		putMap("SOL", IdealMagQuad.class);

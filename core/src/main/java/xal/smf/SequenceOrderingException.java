@@ -21,17 +21,18 @@ public class SequenceOrderingException extends RuntimeException {
     private static final long serialVersionUID = 1L;
     
     /** sequences for which the ordering exception was thrown */
-    final private Collection<AcceleratorSeq> SEQUENCES;
+    private final Collection<AcceleratorSeq> sequences;
     
     
     /** Creates a new instance of SequenceOrderingException */
     public SequenceOrderingException( final Collection<AcceleratorSeq> sequences ) {
         super();
-        SEQUENCES = Collections.unmodifiableCollection( sequences );
+        this.sequences = Collections.unmodifiableCollection( sequences );
     }
     
     
     /** Override getMessage() to be meaningful. */
+    @Override
     public String getMessage() {
         return "Attempt to create an ordered sequence list from a collection of sequences " +
         "that cannot be linked due to the predecessor constraint.";
@@ -40,6 +41,6 @@ public class SequenceOrderingException extends RuntimeException {
     
     /** Get the sequences that were attempted to be ordered */
     public Collection<AcceleratorSeq> getSequences() {
-        return SEQUENCES;
+        return sequences;
     }
 }

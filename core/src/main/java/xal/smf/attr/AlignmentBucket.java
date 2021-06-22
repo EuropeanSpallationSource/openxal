@@ -24,9 +24,9 @@ public class AlignmentBucket extends AttributeBucket  {
      *  Constants
      */
     
-    public final static String  c_strType = "align"; 
+    public static final String  TYPE = "align"; 
 
-    final static String[]       c_arrNames = {  "x", 
+    static final String[]       ARR_NAMES = {  "x", 
                                                 "y",
                                                 "z",
                                                 "pitch",
@@ -39,13 +39,13 @@ public class AlignmentBucket extends AttributeBucket  {
      *  Local Attributes
      */
     
-    private Attribute       m_attDspX;          // x plane offset
-    private Attribute       m_attDspY;          // y plane offset
-    private Attribute       m_attDspZ;          // z plane offset
+    private Attribute       attDspX;          // x plane offset
+    private Attribute       attDspY;          // y plane offset
+    private Attribute       attDspZ;          // z plane offset
     
-    private Attribute       m_attAngPitch;      // pitch angle offset
-    private Attribute       m_attAngYaw;        // yaw angle offset
-    private Attribute       m_attAngRoll;       // roll angle offset
+    private Attribute       attAngPitch;      // pitch angle offset
+    private Attribute       attAngYaw;        // yaw angle offset
+    private Attribute       attAngRoll;       // roll angle offset
 
     
     
@@ -54,9 +54,11 @@ public class AlignmentBucket extends AttributeBucket  {
      */
     
     /** Override virtual to provide type signature */
-    public String getType()         { return c_strType; };
+    @Override
+    public String getType()         { return TYPE; }
     
-    public String[] getAttrNames()  { return c_arrNames; };
+    @Override
+    public String[] getAttrNames()  { return ARR_NAMES; }
     
     
     
@@ -64,43 +66,42 @@ public class AlignmentBucket extends AttributeBucket  {
     public AlignmentBucket() {
         super();
         
-        m_attDspX = new Attribute(0.0);
-        m_attDspY = new Attribute(0.0);
-        m_attDspZ = new Attribute(0.0);
+        attDspX = new Attribute(0.0);
+        attDspY = new Attribute(0.0);
+        attDspZ = new Attribute(0.0);
         
-        m_attAngPitch = new Attribute(0.0);
-        m_attAngYaw   = new Attribute(0.0);
-        m_attAngRoll  = new Attribute(0.0);
+        attAngPitch = new Attribute(0.0);
+        attAngYaw   = new Attribute(0.0);
+        attAngRoll  = new Attribute(0.0);
         
-        super.registerAttribute(c_arrNames[0], m_attDspX, "X plane offset (m).");
-        super.registerAttribute(c_arrNames[1], m_attDspY, "Y plane offset (m).");
-        super.registerAttribute(c_arrNames[2], m_attDspZ, "Z plane offset (m).");
+        super.registerAttribute(ARR_NAMES[0], attDspX, "X plane offset (m).");
+        super.registerAttribute(ARR_NAMES[1], attDspY, "Y plane offset (m).");
+        super.registerAttribute(ARR_NAMES[2], attDspZ, "Z plane offset (m).");
         
-        super.registerAttribute(c_arrNames[3], m_attAngPitch, "Pitch angle (deg).");
-        super.registerAttribute(c_arrNames[4], m_attAngYaw, "Yaw angle (deg).");
-        super.registerAttribute(c_arrNames[5], m_attAngRoll, "Roll angle (deg).");
-    };
+        super.registerAttribute(ARR_NAMES[3], attAngPitch, "Pitch angle (deg).");
+        super.registerAttribute(ARR_NAMES[4], attAngYaw, "Yaw angle (deg).");
+        super.registerAttribute(ARR_NAMES[5], attAngRoll, "Roll angle (deg).");
+    }
     
 
     /** Returns the displacement offsets */
-    public double getX()    { return m_attDspX.getDouble(); };
-    public double getY()    { return m_attDspY.getDouble(); };
-    public double getZ()    { return m_attDspZ.getDouble(); };
+    public double getX()    { return attDspX.getDouble(); }
+    public double getY()    { return attDspY.getDouble(); }
+    public double getZ()    { return attDspZ.getDouble(); }
     
     /** Returns the offset angles */
-    public double getPitch()    { return m_attAngPitch.getDouble(); };
-    public double getYaw()      { return m_attAngYaw.getDouble(); };
-    public double getRoll()     { return m_attAngRoll.getDouble(); };
+    public double getPitch()    { return attAngPitch.getDouble(); }
+    public double getYaw()      { return attAngYaw.getDouble(); }
+    public double getRoll()     { return attAngRoll.getDouble(); }
     
     
-    public void setX(double dblVal)     { m_attDspX.set(dblVal); };
-    public void setY(double dblVal)     { m_attDspY.set(dblVal); };
-    public void setZ(double dblVal)     { m_attDspZ.set(dblVal); };
+    public void setX(double dblVal)     { attDspX.set(dblVal); }
+    public void setY(double dblVal)     { attDspY.set(dblVal); }
+    public void setZ(double dblVal)     { attDspZ.set(dblVal); }
     
-    public void setPitch(double dblVal) { m_attAngPitch.set(dblVal); };
-    public void setYaw(double dblVal)   { m_attAngYaw.set(dblVal); };
-    public void setRoll(double dblVal)  { m_attAngRoll.set(dblVal); };
-    
+    public void setPitch(double dblVal) { attAngPitch.set(dblVal); }
+    public void setYaw(double dblVal)   { attAngYaw.set(dblVal); }
+    public void setRoll(double dblVal)  { attAngRoll.set(dblVal); }   
     
    
-};
+}

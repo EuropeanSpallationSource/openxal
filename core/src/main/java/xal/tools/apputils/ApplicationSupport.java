@@ -24,7 +24,7 @@ public class ApplicationSupport {
      * Get the active window which is in focus for this application.  It is typically a good window relative to which you can place application warning dialog boxes.
      * @return The active window
      */
-    static public Window getActiveWindow() {
+    public static Window getActiveWindow() {
         return KeyboardFocusManager.getCurrentKeyboardFocusManager().getActiveWindow();
     }
 
@@ -35,7 +35,7 @@ public class ApplicationSupport {
 	 * @param message The message to display
 	 * @return YES_OPTION or NO_OPTION
 	 */
-	static public int displayConfirmDialog( final String title, final String message ) {
+	public static int displayConfirmDialog( final String title, final String message ) {
         Toolkit.getDefaultToolkit().beep();
         return JOptionPane.showConfirmDialog( getActiveWindow(), message, title, JOptionPane.YES_NO_OPTION );
 	}
@@ -45,7 +45,7 @@ public class ApplicationSupport {
      * Display a warning dialog box with information about the exception.
      * @param exception The exception about which the warning dialog is displayed.
      */
-    static public void displayWarning( final Exception exception ) {
+    public static void displayWarning( final Exception exception ) {
         Toolkit.getDefaultToolkit().beep();
         String message = "Exception: " + exception.getClass().getName() + "\n" + exception.getMessage();
         displayWarning( exception.getClass().getName(), message );
@@ -57,7 +57,7 @@ public class ApplicationSupport {
      * @param title Title of the warning dialog box.
      * @param message The warning message to appear in the warning dialog box.
      */
-    static public void displayWarning( final String title, final String message ) {
+    public static void displayWarning( final String title, final String message ) {
         Toolkit.getDefaultToolkit().beep();
         JOptionPane.showMessageDialog( getActiveWindow(), message, title, JOptionPane.WARNING_MESSAGE );
     }
@@ -66,10 +66,10 @@ public class ApplicationSupport {
     /**
      * Display a warning dialog box with information about the exception.
      * @param title Title of the warning dialog box.
-     * @param prefix Text that should appear in the dialog box before the exception messasge.
+     * @param prefix Text that should appear in the dialog box before the exception message.
      * @param exception The exception about which the warning dialog is displayed.
      */
-    static public void displayWarning( final String title, final String prefix, final Exception exception ) {
+    public static void displayWarning( final String title, final String prefix, final Exception exception ) {
         Toolkit.getDefaultToolkit().beep();
         final String message = prefix + "\n" + "Exception: " + exception.getClass().getName() + "\n" + exception.getMessage();
         JOptionPane.showMessageDialog( getActiveWindow(), message, title, JOptionPane.WARNING_MESSAGE );
@@ -81,7 +81,7 @@ public class ApplicationSupport {
      * @param title Title of the warning dialog box.
      * @param message The warning message to appear in the warning dialog box.
      */
-    static public void displayError( final String title, final String message ) {
+    public static void displayError( final String title, final String message ) {
         Toolkit.getDefaultToolkit().beep();
         JOptionPane.showMessageDialog( getActiveWindow(), message, title, JOptionPane.ERROR_MESSAGE );
     }
@@ -91,7 +91,7 @@ public class ApplicationSupport {
      * Display an error dialog box with information about the exception.
      * @param exception The exception about which the warning dialog is displayed.
      */
-    static public void displayError( final Exception exception ) {
+    public static void displayError( final Exception exception ) {
         Toolkit.getDefaultToolkit().beep();
         String message = "Exception: " + exception.getClass().getName() + "\n" + exception.getMessage();
         displayError( exception.getClass().getName(), message );
@@ -102,10 +102,10 @@ public class ApplicationSupport {
      * Display an error dialog box with information about the exception.  This method allows
      * clarification about the consequences of the exception (e.g. "Save Failed:").
      * @param title Title of the warning dialog box.
-     * @param prefix Text that should appear in the dialog box before the exception messasge.
+     * @param prefix Text that should appear in the dialog box before the exception message.
      * @param exception The exception about which the warning dialog is displayed.
      */
-    static public void displayError( final String title, final String prefix, final Exception exception ) {
+    public static void displayError( final String title, final String prefix, final Exception exception ) {
         Toolkit.getDefaultToolkit().beep();
         String message = prefix + "\n" + "Exception: " + exception.getClass().getName() + "\n" + exception.getMessage();
         JOptionPane.showMessageDialog( getActiveWindow(), message, title, JOptionPane.ERROR_MESSAGE );
@@ -116,10 +116,10 @@ public class ApplicationSupport {
      * Display an error dialog box with information about the exception.  This method allows
      * clarification about the consequences of the exception (e.g. "Save Failed:").
      * @param title Title of the warning dialog box.
-     * @param prefix Text that should appear in the dialog box before the exception messasge.
+     * @param prefix Text that should appear in the dialog box before the exception message.
      * @param exception The exception about which the warning dialog is displayed.
      */
-    static public void displayApplicationError( final String title, final String prefix, final Exception exception ) {
+    public static void displayApplicationError( final String title, final String prefix, final Exception exception ) {
         Toolkit.getDefaultToolkit().beep();
         String message = prefix + "\n" + "Exception: " + exception.getClass().getName() + "\n" + exception.getMessage();
         JOptionPane.showMessageDialog( getActiveWindow(), message, title, JOptionPane.ERROR_MESSAGE );

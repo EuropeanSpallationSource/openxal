@@ -25,7 +25,7 @@ public class MutableUnivariateStatistics extends UnivariateStatistics {
 	 * @param stats  the statistics to copy
 	 */
 	public MutableUnivariateStatistics( final UnivariateStatistics stats ) {
-		this( stats._population, stats._mean, stats._meanSquare );
+		this(stats.population, stats.mean, stats.meanSquare );
 	}
 
 
@@ -36,7 +36,7 @@ public class MutableUnivariateStatistics extends UnivariateStatistics {
 	 * @param scale  factor which is used to scale the copied statistics
 	 */
 	public MutableUnivariateStatistics( final UnivariateStatistics stats, final double scale ) {
-		this( stats._population, scale * stats._mean, scale * scale * stats._meanSquare );
+		this(stats.population, scale * stats.mean, scale * scale * stats.meanSquare );
 	}
 
 
@@ -54,9 +54,9 @@ public class MutableUnivariateStatistics extends UnivariateStatistics {
 
 	/** Clear the samples  */
 	public void clear() {
-		_population = 0;
-		_mean = 0;
-		_meanSquare = 0;
+		population = 0;
+		mean = 0;
+		meanSquare = 0;
 	}
 
 
@@ -66,9 +66,9 @@ public class MutableUnivariateStatistics extends UnivariateStatistics {
 	 * @param value  The new sample measurement
 	 */
 	public void addSample( final double value ) {
-		final double weight = 1.0D / ++_population;
-		_mean = weight * value + ( 1 - weight ) * _mean;
-		_meanSquare = weight * value * value + ( 1 - weight ) * _meanSquare;
+		final double weight = 1.0D / ++population;
+		mean = weight * value + ( 1 - weight ) * mean;
+		meanSquare = weight * value * value + ( 1 - weight ) * meanSquare;
 	}
 
 
@@ -78,11 +78,11 @@ public class MutableUnivariateStatistics extends UnivariateStatistics {
 	 * @param stats  the statistics which should be merged into these statistics
 	 */
 	public void addSamples( final UnivariateStatistics stats ) {
-		_population += stats._population;
-		final double weight = stats._population / _population;
+		population += stats.population;
+		final double weight = stats.population / population;
 
-		_mean = ( 1 - weight ) * _mean + weight * stats._mean;
-		_meanSquare = ( 1 - weight ) * _meanSquare + weight * stats._meanSquare;
+		mean = ( 1 - weight ) * mean + weight * stats.mean;
+		meanSquare = ( 1 - weight ) * meanSquare + weight * stats.meanSquare;
 	}
 
 
@@ -94,9 +94,9 @@ public class MutableUnivariateStatistics extends UnivariateStatistics {
 	 * @param newValue  the new sample measurement
 	 */
 	public void replaceSample( final double oldValue, final double newValue ) {
-		final double weight = 1.0D / _population;
-		_mean += weight * ( newValue - oldValue );
-		_meanSquare += weight * ( newValue * newValue - oldValue * oldValue );
+		final double weight = 1.0D / population;
+		mean += weight * ( newValue - oldValue );
+		meanSquare += weight * ( newValue * newValue - oldValue * oldValue );
 	}
 
 
@@ -106,9 +106,9 @@ public class MutableUnivariateStatistics extends UnivariateStatistics {
 	 * @param value  the sample measurement to remove
 	 */
 	public void removeSample( final double value ) {
-		final double weight = 1.0D / --_population;
-		_mean += weight * ( _mean - value );
-		_meanSquare += weight * ( _meanSquare - value * value );
+		final double weight = 1.0D / --population;
+		mean += weight * ( mean - value );
+		meanSquare += weight * ( meanSquare - value * value );
 	}
 
 
@@ -121,8 +121,8 @@ public class MutableUnivariateStatistics extends UnivariateStatistics {
 	 * @param scale  the amount by which to scale the existing sample measurements
 	 */
 	public void scaleData( final double scale ) {
-		_mean *= scale;
-		_meanSquare *= scale * scale;
+		mean *= scale;
+		meanSquare *= scale * scale;
 	}
 }
 

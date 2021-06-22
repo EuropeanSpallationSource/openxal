@@ -30,16 +30,16 @@ public final class EnsembleDescriptor {
     /** Parabolic distribution - parabolic in 6D phase space */
     public static final int DIST_PARABOLIC = 3;
     
-    /** Semi-Gaussian distribution - uniform in 3D configuration, gaussian in momentum w/ 3 std cutoff */
+    /** Semi-Gaussian distribution - uniform in 3D configuration, Gaussian in momentum w/ 3 std cutoff */
     public static final int DIST_SEMIGAUSSIAN_3 = 4;
     
-    /** Semi-Gaussian distribution - uniform in 3D configuration, gaussian in momentum w/ 4 std cutoff */
+    /** Semi-Gaussian distribution - uniform in 3D configuration, Gaussian in momentum w/ 4 std cutoff */
     public static final int DIST_SEMIGAUSSIAN_4 = 5;
     
-    /** Gaussian distribution - gaussian in 6D phase space w/ 3 standard deviations cutoff */
+    /** Gaussian distribution - Gaussian in 6D phase space w/ 3 standard deviations cutoff */
     public static final int DIST_GAUSSIAN_3 = 6;
     
-    /** Gaussian distribution - gaussian in 6D phase space w/ 3 standard deviations cutoff */
+    /** Gaussian distribution - Gaussian in 6D phase space w/ 3 standard deviations cutoff */
     public static final int DIST_GAUSSIAN_4 = 7;
 
     
@@ -81,4 +81,4 @@ public final class EnsembleDescriptor {
     /** beam rms emittance in z plane */
     public double   ez = 0.0;
     
-};
+}

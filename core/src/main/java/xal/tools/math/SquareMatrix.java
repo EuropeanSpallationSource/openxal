@@ -219,7 +219,7 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
         }
         
         return ans;
-    };
+    }
     
     /**
      *  <p>
@@ -253,7 +253,7 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
         CommonOps.mult(impPhi, impTemp, ans.getMatrix());
         
         return ans;
-    };
+    }
     
 
     /*
@@ -322,7 +322,7 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      * inconsistent, an exception is thrown.
      * </p>
      * 
-     * @param arrMatrix   Java primitive array containing new matrix values
+     * @param arrVals   Java primitive array containing new matrix values
      * 
      * @exception  ArrayIndexOutOfBoundsException  the argument must have the same dimensions as this matrix
      * @exception  IllegalArgumentException        the argument is degenerate, not fully allocated

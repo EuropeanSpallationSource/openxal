@@ -10,13 +10,11 @@
 
 package xal.service.pvlogger.apputils.browser;
 
-import xal.tools.ArrayTool;
 import xal.service.pvlogger.*;
 import xal.tools.database.*;
 import xal.tools.messaging.MessageCenter;
 
 import java.sql.*;
-import java.util.*;
 
 
 /**
@@ -25,16 +23,16 @@ import java.util.*;
  * @author  tap
  */
 public class BrowserModel {
-	final protected MessageCenter MESSAGE_CENTER;
-	final protected BrowserModelListener EVENT_PROXY;
+	protected final MessageCenter MESSAGE_CENTER;
+	protected final BrowserModelListener EVENT_PROXY;
 	
-	protected boolean _hasConnected = false;
+	protected boolean hasConnected = false;
 	
-	protected PVLogger _pvLogger;
-	protected String[] _loggerTypes;
+	protected PVLogger pvLogger;
+	protected String[] loggerTypes;
 	
-	protected MachineSnapshot[] _snapshots;
-	protected ChannelGroup _group;
+	protected MachineSnapshot[] snapshots;
+	protected ChannelGroup group;
 	
 	
 	/**
@@ -44,8 +42,8 @@ public class BrowserModel {
 		MESSAGE_CENTER = new MessageCenter( "Browser Model" );
 		EVENT_PROXY = MESSAGE_CENTER.registerSource( this, BrowserModelListener.class );
 		
-		_snapshots = new MachineSnapshot[0];
-		_group = null;
+		snapshots = new MachineSnapshot[0];
+		group = null;
 	}
 	
 	
@@ -72,13 +70,13 @@ public class BrowserModel {
 	 * @param connection the new database connection
 	 */
 	 public void setDatabaseConnection( final Connection connection, final ConnectionDictionary dictionary ) {
-		_hasConnected = false;
+		hasConnected = false;
 		
-		_group = null;
-		_snapshots = new MachineSnapshot[0];
-		_loggerTypes = null;
-		_pvLogger = new PVLogger( dictionary );
-		_hasConnected = true;
+		group = null;
+		snapshots = new MachineSnapshot[0];
+		loggerTypes = null;
+		pvLogger = new PVLogger( dictionary );
+		hasConnected = true;
 		EVENT_PROXY.connectionChanged( this );
 	 }
 	
@@ -109,7 +107,7 @@ public class BrowserModel {
 	 * @return true if we have successfully connected to the database and false if not
 	 */
 	public boolean hasConnected() {
-		return _hasConnected;
+		return hasConnected;
 	}
 	
 	
@@ -118,8 +116,8 @@ public class BrowserModel {
 	 * @return an array of available logger types.
 	 */
 	protected String[] fetchLoggerTypes() throws SQLException {
-		_loggerTypes = _pvLogger.fetchTypes();
-		return _loggerTypes;
+		loggerTypes = pvLogger.fetchTypes();
+		return loggerTypes;
 	}
 	
 	
@@ -128,7 +126,7 @@ public class BrowserModel {
 	 * @return the array of available logger types.
 	 */
 	public String[] getLoggerTypes() throws SQLException {
-		return ( _hasConnected && _loggerTypes == null ) ? fetchLoggerTypes() : _loggerTypes;
+		return ( hasConnected && loggerTypes == null ) ? fetchLoggerTypes() : loggerTypes;
 	}
 	
 	
@@ -139,14 +137,14 @@ public class BrowserModel {
 	 */
 	public ChannelGroup selectGroup( final String type ) throws SQLException {
 		if ( type == null ) {
-			_group = null;
-			EVENT_PROXY.selectedChannelGroupChanged( this, _group );
+			group = null;
+			EVENT_PROXY.selectedChannelGroupChanged( this, group );
 		}
-		else if ( _group == null || !_group.getLabel().equals( type ) ) {
-			_group = _pvLogger.getChannelGroup( type );
-			EVENT_PROXY.selectedChannelGroupChanged( this, _group );
+		else if ( group == null || !group.getLabel().equals( type ) ) {
+			group = pvLogger.getChannelGroup( type );
+			EVENT_PROXY.selectedChannelGroupChanged( this, group );
 		}
-		return _group;
+		return group;
 	}
 	
 	
@@ -155,7 +153,7 @@ public class BrowserModel {
 	 * @return the selected channel group
 	 */
 	public ChannelGroup getSelectedGroup() {
-		return _group;
+		return group;
 	}
 	
 	
@@ -164,7 +162,7 @@ public class BrowserModel {
 	 * @return the array of machine snapshots
 	 */
 	public MachineSnapshot[] getSnapshots() {
-		return _snapshots;
+		return snapshots;
 	}
 	
 	
@@ -175,9 +173,9 @@ public class BrowserModel {
 	 * @param endTime the end time of the range
 	 */
 	public void fetchMachineSnapshots( final java.util.Date startTime, final java.util.Date endTime ) throws SQLException {
-		_snapshots = _pvLogger.fetchMachineSnapshotsInRange( _group.getLabel(), startTime, endTime );
-		System.out.println( "Found " + _snapshots.length + " snapshots..." );
-		EVENT_PROXY.machineSnapshotsFetched( this, _snapshots );
+		snapshots = pvLogger.fetchMachineSnapshotsInRange( group.getLabel(), startTime, endTime );
+		System.out.println( "Found " + snapshots.length + " snapshots..." );
+		EVENT_PROXY.machineSnapshotsFetched( this, snapshots );
 	}
 	
 	
@@ -185,8 +183,8 @@ public class BrowserModel {
 	 * Populate all fetched machine snapshots with all of their data.
 	 */
 	public void populateSnapshots() throws SQLException {
-		for ( int index = 0 ; index < _snapshots.length ; index++ ) {
-			populateSnapshot( _snapshots[index] );
+		for ( int index = 0 ; index < snapshots.length ; index++ ) {
+			populateSnapshot( snapshots[index] );
 		}
 	}
 	
@@ -197,7 +195,7 @@ public class BrowserModel {
 	 * @return the machine snapshot that was populated (same object as the parameter)
 	 */
 	public MachineSnapshot populateSnapshot( final MachineSnapshot snapshot ) throws SQLException {
-		return snapshot.getChannelCount() == 0 ? _pvLogger.loadChannelSnapshotsInto( snapshot ) : snapshot;
+		return snapshot.getChannelCount() == 0 ? pvLogger.loadChannelSnapshotsInto( snapshot ) : snapshot;
 	}
 }
 

@@ -34,7 +34,7 @@ import xal.tools.math.fnc.IRealFunction;
  * @since Aug 11, 2003
  * @version Sep 25, 2015
  */
-final public class GridInterpolation implements IRealFunction {
+public final class GridInterpolation implements IRealFunction {
     
     
     
@@ -43,7 +43,7 @@ final public class GridInterpolation implements IRealFunction {
      */
     
     /** epsilonWeight is the fraction resolution of the step. */
-    static final private double DBL_WGT_EPS = 1.0e-6;
+    private static final double DBL_WGT_EPS = 1.0e-6;
     
     
     /*
@@ -51,17 +51,17 @@ final public class GridInterpolation implements IRealFunction {
      */
     
     /** Array of function values across grid */
-    final private double[] arrValues;
+    private final double[] arrValues;
     
     /** Grid domain for the function samples */
-    final private Interval  ivlDomain;
+    private final Interval  ivlDomain;
     
     /** Stride of the interpolation grid */
-    final private double dblStep;
+    private final double dblStep;
 
     
 //  /** The left-hand side of the domain */
-//  final protected double dblDomStart;
+//  protected final double dblDomStart;
 //  
 
     

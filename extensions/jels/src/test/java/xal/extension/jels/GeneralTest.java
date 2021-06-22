@@ -259,14 +259,14 @@ public class GeneralTest {
             dataOX[Column.GAMA_1.openxal][i] = ps.getGamma() - 1.;
             dataOX[Column.RMSX.openxal][i] = twiss[0].getEnvelopeRadius() * 1e3;
             dataOX[Column.RMSY.openxal][i] = twiss[1].getEnvelopeRadius() * 1e3;
-            dataOX[Column.RMSZ.openxal][i] = twiss[2].getEnvelopeRadius() * 360 * ps.getBunchFrequency() / (beta * IElement.LightSpeed);
+            dataOX[Column.RMSZ.openxal][i] = twiss[2].getEnvelopeRadius() * 360 * ps.getBunchFrequency() / (beta * IElement.LIGHT_SPEED);
 
             PhaseVector mean = ps.phaseMean();
             dataOX[Column.CENTX.openxal][i] = mean.getx() * 1e3;
             dataOX[Column.CENTXp.openxal][i] = mean.getxp() * 1e3;
             dataOX[Column.CENTY.openxal][i] = mean.gety() * 1e3;
             dataOX[Column.CENTYp.openxal][i] = mean.getyp() * 1e3;
-            dataOX[Column.CENTZ.openxal][i] = -mean.getz() * 360 * ps.getBunchFrequency() / (beta * IElement.LightSpeed) * Math.sqrt(1 + Math.pow(mean.getx(), 2) / 4 + Math.pow(mean.gety(), 2) / 4);
+            dataOX[Column.CENTZ.openxal][i] = -mean.getz() * 360 * ps.getBunchFrequency() / (beta * IElement.LIGHT_SPEED) * Math.sqrt(1 + Math.pow(mean.getx(), 2) / 4 + Math.pow(mean.gety(), 2) / 4);
             dataOX[Column.CENTdpp.openxal][i] = mean.getzp() * gamma * gamma * gamma * beta * beta * ps.getSpeciesRestEnergy() * 1e-6;
 
             i = i + 1;
