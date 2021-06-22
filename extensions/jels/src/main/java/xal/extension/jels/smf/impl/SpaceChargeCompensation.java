@@ -23,7 +23,7 @@ import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
-import xal.smf.ChannelHandle;
+import xal.smf.AccessibleProperty;
 import xal.smf.impl.qualify.ElementTypeManager;
 
 /**
@@ -36,12 +36,14 @@ public class SpaceChargeCompensation extends AcceleratorNode {
      *  Constants
      */
     public static final String s_strType = "SCC";
-    @ChannelHandle
-    public static final String N2FLOW_RB_HANDLE = "n2flowRB";
+
+    public static final String N2FLOW_RB_HANDLE = "n2flowRB";    
+
     private Channel n2flowRC = null;
-    @ChannelHandle(readback=SpaceChargeCompensation.N2FLOW_RB_HANDLE)
     public static final String N2FLOW_SET_HANDLE = "n2flowS";
     private Channel n2flowSC = null;
+    
+    public final AccessibleProperty n2flow = new AccessibleProperty("n2flow", N2FLOW_RB_HANDLE, N2FLOW_SET_HANDLE);
 
     static {
         registerType();

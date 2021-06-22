@@ -18,7 +18,7 @@ import xal.smf.impl.VDipoleCorr;
 import xal.smf.impl.qualify.MagnetType;
 
 /**
- * Factory class for creation of AcceleratorNode elements, primarly designed to
+ * Factory class for creation of AcceleratorNode elements, primarily designed to
  * be used by importers from external accelerator formats to openxal.
  *
  * @author Blaz Kranjc
@@ -28,8 +28,6 @@ public class ElementFactory {
     /* This class should not be instanced. */
     private ElementFactory() {
     }
-
-    ;
 
 	/**
 	 * Add channels for a BPM to the channelSuite.

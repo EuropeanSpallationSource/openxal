@@ -1,7 +1,6 @@
 package xal.smf.impl;
 
 import xal.smf.*;
-import xal.smf.attr.*;
 import xal.smf.impl.qualify.*;
 import xal.ca.*;
 
@@ -37,8 +36,8 @@ public abstract class Vacuum extends AcceleratorNode  {
     /**
      * vacuum official pressure channel handle
      */
-    @ChannelHandle
-    public static final String PRESS_HANDLE = "P";
+    public static final String PRESS_HANDLE = "P"; 
+    public final AccessibleProperty press = new AccessibleProperty("press", PRESS_HANDLE);
     private Channel pressC = null;
 
 

@@ -23,7 +23,7 @@ import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
-import xal.smf.ChannelHandle;
+import xal.smf.AccessibleProperty;
 import xal.smf.impl.qualify.ElementTypeManager;
 
 /**
@@ -37,12 +37,12 @@ public class ESSIonSourceCoil extends AcceleratorNode {
     public static final String s_strType = "ISC";
 
     // Coils channel handles 
-    @ChannelHandle
     public static final String I_HANDLE = "I";
     private Channel iC = null;
-    @ChannelHandle(readback=ESSIonSourceCoil.I_HANDLE)
     public static final String I_SET_HANDLE = "I_Set";
-    private Channel iSetC = null;
+    private Channel iSetC = null;    
+    public final AccessibleProperty current = new AccessibleProperty("current", I_HANDLE, I_SET_HANDLE);
+
 
     static {
         registerType();

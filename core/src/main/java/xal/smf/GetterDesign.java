@@ -17,20 +17,12 @@
  */
 package xal.smf;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**
- * Annotation to identify fields that contains a channel handle.
- * <p>
- * The readback key associates the handle to a readback handle.
+ *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.FIELD)
-public @interface ChannelHandle {
+@FunctionalInterface
+public interface GetterDesign {
 
-    public String readback() default "";
+    double get();
 }

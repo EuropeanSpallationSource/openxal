@@ -41,7 +41,7 @@ import xal.smf.scada.ScadaFieldMap;
 import java.util.Collection;
 import java.util.MissingResourceException;
 import java.util.concurrent.RejectedExecutionException;
-import xal.smf.ChannelHandle;
+import xal.smf.AccessibleProperty;
 
 
 /**
@@ -176,12 +176,12 @@ public class WireScanner extends ProfileDevice {
         };
 
         /** Command-issuing handle */
-        @ChannelHandle
         public static final String HANDLE_CMD = "Command"; //$NON-NLS-1$
+        public final AccessibleProperty cmd = new AccessibleProperty("command", HANDLE_CMD);
 
         /** command result handle */
-        @ChannelHandle
         public static final String HANDLE_RESULT = "CommandResult"; //$NON-NLS-1$
+        public final AccessibleProperty cmdResult = new AccessibleProperty("cmdResult", HANDLE_RESULT);
 
 
         /**
@@ -524,20 +524,18 @@ public class WireScanner extends ProfileDevice {
     public static final String s_strType = "WS"; //$NON-NLS-1$
     
     /** software type for the Wire Scanner class */
-	static final public String SOFTWARE_TYPE = "Version 2.0.0"; //$NON-NLS-1$
+    public static final String SOFTWARE_TYPE = "Version 2.0.0"; //$NON-NLS-1$
 	
-	/** Hardware type for the WireScanner class */
-	static final public String HARDWARE_TYPE = "wirescanner"; //$NON-NLS-1$
+    /** Hardware type for the WireScanner class */
+    public static final String HARDWARE_TYPE = "wirescanner"; //$NON-NLS-1$
 
-	
     
     /** handle for the horizontal sigma Gauss channel */
-    @ChannelHandle
-    static final public String HORIZONTAL_SIGMA_GAUSS_HANDLE = "SigHorGaussStd"; //$NON-NLS-1$
-    
+    public static final String HORIZONTAL_SIGMA_GAUSS_HANDLE = "SigHorGaussStd"; //$NON-NLS-1$
+    public final AccessibleProperty horSigGauss = new AccessibleProperty("horSigGauss", HORIZONTAL_SIGMA_GAUSS_HANDLE);
     /** handle for the vertical sigma Gauss channel */
-    @ChannelHandle
-    static final public String VERTICAL_SIGMA_GAUSS_HANDLE = "SigVerGaussStd"; //$NON-NLS-1$
+    public static final String VERTICAL_SIGMA_GAUSS_HANDLE = "SigVerGaussStd"; //$NON-NLS-1$
+    public final AccessibleProperty vertSigGauss = new AccessibleProperty("vertSigGauss", VERTICAL_SIGMA_GAUSS_HANDLE);
 
     
     /** The data processing window offset caused by (analog) filtering   */

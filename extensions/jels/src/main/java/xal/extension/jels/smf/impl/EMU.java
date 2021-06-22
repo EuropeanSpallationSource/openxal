@@ -22,7 +22,7 @@ import xal.ca.ChannelFactory;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.smf.AcceleratorNode;
-import xal.smf.ChannelHandle;
+import xal.smf.AccessibleProperty;
 import xal.smf.impl.qualify.ElementTypeManager;
 
 /**
@@ -38,24 +38,30 @@ public class EMU extends AcceleratorNode {
     public static final String s_strType = "EMU";
 
     // EMU channel handles           
-    @ChannelHandle   
     public static final String EMITT_X_HANDLE = "xEmitt";
-    private Channel emittXC = null;
-    @ChannelHandle
+    private Channel emittXC = null;   
+    public final AccessibleProperty xEmitt = new AccessibleProperty("xEmitt", EMITT_X_HANDLE);
+    
     public static final String EMITT_Y_HANDLE = "yEmitt";
-    private Channel emittYC = null;
-    @ChannelHandle
+    private Channel emittYC = null;   
+    public final AccessibleProperty yEmitt = new AccessibleProperty("yEmitt", EMITT_Y_HANDLE);
+    
     public static final String ALPHA_Y_TWISS_HANDLE = "yAlphaTwiss";
-    private Channel alphayTwissC = null;
-    @ChannelHandle
+    private Channel alphayTwissC = null;   
+    public final AccessibleProperty yAlphaTwiss = new AccessibleProperty("yAlphaTwiss", ALPHA_Y_TWISS_HANDLE);
+    
     public static final String BETA_Y_TWISS_HANDLE = "yBetaTwiss";
-    private Channel betayTwissC = null;
-    @ChannelHandle
+    private Channel betayTwissC = null;   
+    public final AccessibleProperty yBetaTwiss = new AccessibleProperty("yBetaTwiss", BETA_Y_TWISS_HANDLE);
+    
     public static final String ALPHA_X_TWISS_HANDLE = "xAlphaTwiss";
-    private Channel alphaxTwissC = null;
-    @ChannelHandle
+    private Channel alphaxTwissC = null;   
+    public final AccessibleProperty xAlphaTwiss = new AccessibleProperty("xAlphaTwiss", ALPHA_X_TWISS_HANDLE);
+    
     public static final String BETA_X_TWISS_HANDLE = "xBetaTwiss";
-    private Channel betaxTwissC = null;
+    private Channel betaxTwissC = null;    
+    public final AccessibleProperty xBetaTwiss = new AccessibleProperty("xBetaTwiss", BETA_X_TWISS_HANDLE);
+
 
     static {
         registerType();

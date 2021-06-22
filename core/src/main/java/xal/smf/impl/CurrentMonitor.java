@@ -2,7 +2,6 @@ package xal.smf.impl;
 
 import xal.ca.*;
 import xal.smf.*;
-import xal.smf.attr.*;
 import xal.smf.impl.qualify.*;
 
 /**
@@ -48,34 +47,28 @@ public class CurrentMonitor extends AcceleratorNode {
 		this( strId, null );
 	}
 
-        @ChannelHandle
 	public static final String Q_INTEGRAL_HANDLE = "Particles";
-
+        public final AccessibleProperty particles = new AccessibleProperty("Particles", Q_INTEGRAL_HANDLE);
 	private Channel qIntegralC = null;
 
-        @ChannelHandle
 	public static final String T_AVG_LEN_HANDLE = "DisplayLength";
-
+        public final AccessibleProperty displayLength = new AccessibleProperty("DisplayLength", T_AVG_LEN_HANDLE);
 	private Channel tAvgLenC = null;
 
-        @ChannelHandle
 	public static final String I_TBT_HANDLE = "currentTBT";
-
+        public final AccessibleProperty currentTBT = new AccessibleProperty("currentTBT", I_TBT_HANDLE);
 	private Channel iTBTC = null;
 
-        @ChannelHandle
 	public static final String T_DELAY_HANDLE = "tDelay";
-
+        public final AccessibleProperty tDelay = new AccessibleProperty("tDelay", T_DELAY_HANDLE);
 	private Channel tDelayC = null;
 
-        @ChannelHandle
 	public static final String I_AVG_HANDLE = "currentAvg";
-
+        public final AccessibleProperty currentAvg = new AccessibleProperty("currentAvg", I_AVG_HANDLE);
 	private Channel iAvgC = null;
 
-        @ChannelHandle
 	public static final String I_MAX_HANDLE = "currentMax";
-
+        public final AccessibleProperty currentMax = new AccessibleProperty("currentMax", I_MAX_HANDLE);
 	private Channel iMaxC = null;
 
 

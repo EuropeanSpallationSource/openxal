@@ -31,7 +31,4 @@ public interface PropertyAccessor {
 
 	/** get the channels for live property access with design RF */
 	public Collection<Channel> getLiveRFDesignChannels( final AcceleratorNode node );
-
-	/** get the list of property names */
-	List<String> propertyNames();
 }

@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
@@ -14,13 +12,12 @@ import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
-import xal.smf.ChannelHandle;
+import xal.smf.AccessibleProperty;
 import xal.smf.attr.AttributeBucket;
 import xal.smf.attr.RfCavityBucket;
 import xal.smf.impl.qualify.ElementTypeManager;
 import xal.tools.data.DataAdaptor;
 import xal.tools.math.fnc.poly.RealUnivariatePolynomial;
-
 
 
 /**
@@ -36,29 +33,22 @@ import xal.tools.math.fnc.poly.RealUnivariatePolynomial;
  */
 
 public class RfCavity extends AcceleratorSeq {
-	/** accessible properties */
-	public enum Property { AMPLITUDE, PHASE }
 
-
-    /*
-     * Constant PV signal names
-     */
-    @ChannelHandle(readback=RfCavity.CAV_AMP_AVG_HANDLE)
     public static final String CAV_AMP_SET_HANDLE = "cavAmpSet";
-    @ChannelHandle(readback=RfCavity.CAV_PHASE_AVG_HANDLE)
     public static final String CAV_PHASE_SET_HANDLE = "cavPhaseSet";
-    @ChannelHandle
     public static final String CAV_AMP_AVG_HANDLE = "cavAmpAvg";
-    @ChannelHandle
     public static final String CAV_PHASE_AVG_HANDLE = "cavPhaseAvg";
-    @ChannelHandle
     public static final String DELTA_TRF_START_HANDLE = "deltaTRFStart";
-    @ChannelHandle
     public static final String DELTA_TRF_END_HANDLE = "deltaTRFEnd";
-    @ChannelHandle
     public static final String T_DELAY_HANDLE = "tDelay";
-    @ChannelHandle
     public static final String BLANK_BEAM_HANDLE = "blankBeam";
+
+    public final AccessibleProperty amplitude = new AccessibleProperty("amplitude", CAV_AMP_AVG_HANDLE, CAV_AMP_SET_HANDLE, () -> getDfltCavAmp(), (channelValues) -> toCavAmpAvgFromCA(channelValues[0]));
+    public final AccessibleProperty phase = new AccessibleProperty("phase", CAV_PHASE_AVG_HANDLE, CAV_PHASE_SET_HANDLE, () -> getDfltAvgCavPhase(), (channelValues) -> toCavPhaseAvgFromCA(channelValues[0]));
+    public final AccessibleProperty deltaTRFStart = new AccessibleProperty("deltaTRFStart", DELTA_TRF_START_HANDLE);
+    public final AccessibleProperty deltaTRFEnd = new AccessibleProperty("deltaTRFEnd", DELTA_TRF_END_HANDLE);
+    public final AccessibleProperty tDelay = new AccessibleProperty("tDelay", T_DELAY_HANDLE);
+    public final AccessibleProperty blankBeam = new AccessibleProperty("blankBeam", BLANK_BEAM_HANDLE);
 
     /** accelerator node type */
     public static final String      s_strType = "RF";
@@ -195,74 +185,6 @@ public class RfCavity extends AcceleratorSeq {
 
         super.addBucket(buc);
     }
-
-
-    /**
-     * @return properties that can be accessed via EPICS.
-     */
-    @Override
-    public List<String> getAccesibleProperties() {
-        return Stream.of(Property.values())
-                .map(Property::name)
-                .collect(Collectors.toList());
-    }
-    
-	/** Get the design value for the specified property */
-	public double getDesignPropertyValue( final String propertyName ) {
-		try {
-			final Property property = Property.valueOf( propertyName );		// throws IllegalArgumentException if no matching property
-			switch( property ) {
-				case AMPLITUDE:
-					return getDfltCavAmp();
-				case PHASE:
-					return getDfltCavPhase();
-				default:
-					throw new IllegalArgumentException( "Unsupported RfCavity design value property: " + propertyName );
-			}
-		}
-		catch( IllegalArgumentException exception ) {
-			return getDesignPropertyValue( propertyName );
-		}
-	}
-
-
-	/** Get the live property value for the corresponding array of channel values in the order given by getLivePropertyChannels() */
-	public double getLivePropertyValue( final String propertyName, final double[] channelValues ) {
-		try {
-			final Property property = Property.valueOf( propertyName );		// throws IllegalArgumentException if no matching property
-			switch( property ) {
-				case AMPLITUDE:
-					return toCavAmpAvgFromCA( channelValues[0] );
-				case PHASE:
-					return toCavPhaseAvgFromCA( channelValues[0] );
-				default:
-					throw new IllegalArgumentException( "Unsupported RfCavity live value property: " + propertyName );
-			}
-		}
-		catch( IllegalArgumentException exception ) {
-			return super.getLivePropertyValue( propertyName, channelValues );
-		}
-	}
-
-
-	/** Get the array of channels for the specified property */
-	public Channel[] getLivePropertyChannels( final String propertyName ) {
-		try {
-			final Property property = Property.valueOf( propertyName );		// throws IllegalArgumentException if no matching property
-			switch( property ) {
-                    case AMPLITUDE:
-					return new Channel[] { findChannel( CAV_AMP_AVG_HANDLE ) };
-                    case PHASE:
-					return new Channel[] { findChannel( CAV_PHASE_AVG_HANDLE ) };
-                    default:
-					throw new IllegalArgumentException( "Unsupported RfCavity live channels property: " + propertyName );
-                }
-            }
-		catch( IllegalArgumentException exception ) {
-			return super.getLivePropertyChannels( propertyName );
-        }
-	}
-
 
     private Channel cavAmpSetC = null;
     private Channel cavPhaseSetC = null;
@@ -438,7 +360,7 @@ public class RfCavity extends AcceleratorSeq {
      * where ampFactor is a calibration factor determined experimentally
      */     
     public void setCavAmp(double newAmp) throws ConnectionException, PutException {
-        cavAmpSetC = this.lazilyGetAndConnect(CAV_AMP_SET_HANDLE, cavAmpSetC);
+        cavAmpSetC = this.lazilyGetAndConnect(amplitude.getSetHandle(), cavAmpSetC);
         cavAmpSetC.putVal( toCAFromCavAmpAvg( newAmp ) );
     }
     
@@ -449,19 +371,19 @@ public class RfCavity extends AcceleratorSeq {
      */
     
     public void setCavPhase(double newPhase) throws ConnectionException, PutException {
-        cavPhaseSetC = this.lazilyGetAndConnect(CAV_PHASE_SET_HANDLE, cavPhaseSetC);
+        cavPhaseSetC = this.lazilyGetAndConnect(phase.getSetHandle(), cavPhaseSetC);
         cavPhaseSetC.putVal( toCAFromCavPhaseAvg( newPhase ) );
     }
     
     /** return the present live set point for the amplitude */
     public double getCavAmpSetPoint() throws ConnectionException, GetException {
-	cavAmpSetC = this.lazilyGetAndConnect(CAV_AMP_SET_HANDLE, cavAmpSetC);
+	cavAmpSetC = this.lazilyGetAndConnect(amplitude.getSetHandle(), cavAmpSetC);
         return cavAmpSetC.getValDbl() * m_bucRfCavity.getAmpFactor();
     }
     
     /** return the present live set point for the phase */
     public double getCavPhaseSetPoint() throws ConnectionException, GetException {
-	cavPhaseSetC = this.lazilyGetAndConnect(CAV_PHASE_SET_HANDLE, cavPhaseSetC);
+	cavPhaseSetC = this.lazilyGetAndConnect(phase.getSetHandle(), cavPhaseSetC);
         return cavPhaseSetC.getValDbl();
     }	
 
@@ -480,7 +402,7 @@ public class RfCavity extends AcceleratorSeq {
      * @param mode true to blank the beam and false for continuous on
      */
     public void setBlankBeam( final boolean mode ) throws ConnectionException, PutException {
-        final Channel blankBeamChannel = getAndConnectChannel( BLANK_BEAM_HANDLE );
+        final Channel blankBeamChannel = getAndConnectChannel( blankBeam.getSetHandle() );
         if ( blankBeamChannel != null ) {
             blankBeamChannel.putVal( mode ? 1 : 0 );
         }

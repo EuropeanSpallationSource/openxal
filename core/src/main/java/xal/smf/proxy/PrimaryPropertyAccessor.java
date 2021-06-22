@@ -97,16 +97,6 @@ public class PrimaryPropertyAccessor {
 		return valueMap;
 	}
 	
-	
-	/**
-	 * Returns a List of property names for the supplied node.
-	 * @param aNode AcceleratorNode whose property names to return
-	 * @return a List of property names for aNode
-	 */
-	public List<String> propertyNamesFor( final AcceleratorNode aNode ) {
-		return _batchAccessor.propertyNamesFor( aNode );
-	}
-
 
 	/** get the accessor for the specified node */
 	public PropertyAccessor getAccessorFor( final AcceleratorNode node ) {
@@ -225,19 +215,6 @@ abstract class BatchPropertyAccessor {
 	/** register the property accessor for each supported node class */
 	private static void registerAccessorInstance( final Class<?> nodeClass, final PropertyAccessor accessor ) {
 		NODE_ACCESSORS.put( nodeClass, accessor );
-	}
-
-
-	/**
-	 * Returns a List of property names for the supplied node.
-	 * @param aNode AcceleratorNode whose property names to return
-	 * @return a List of property names for aNode
-	 */
-	public List<String> propertyNamesFor( final AcceleratorNode aNode ) {
-		if ( aNode == null )  throw new IllegalArgumentException("can't get property names for null node");
-		final PropertyAccessor nodeAccessor = getAccessorFor( aNode );
-		if (nodeAccessor == null)  throw new IllegalArgumentException( "unregistered node type: " + aNode.getClass().getName() );
-		return nodeAccessor.propertyNames();
 	}
 
 

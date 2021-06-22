@@ -9,7 +9,6 @@
 package xal.smf.impl;
 
 import xal.smf.*;
-import xal.smf.attr.*;
 import xal.smf.impl.qualify.*;
 import xal.ca.correlator.*;
 import xal.ca.*;
@@ -69,217 +68,266 @@ public class ProfileMonitor extends AcceleratorNode {
 
 
     // real time readback signals     
-    @ChannelHandle
-    public static final String POS_HANDLE =    "position"; 
+    public static final String POS_HANDLE =    "position";
+    public final AccessibleProperty position = new AccessibleProperty("position", POS_HANDLE);
     public Channel PosC = null;
-    @ChannelHandle
+
     public static final String RT_GRAPH_HANDLE =    "RTGraph"; 
-    private Channel RTGraphC = null;
+    public final AccessibleProperty rtGraph = new AccessibleProperty("RTGraph", RT_GRAPH_HANDLE);
 
     // action signals
-    @ChannelHandle
     public static final String ABORT_SCAN_HANDLE =    "abortScan"; 
+    public final AccessibleProperty abortScan = new AccessibleProperty("abortScan", ABORT_SCAN_HANDLE);
     private Channel AbortScanC = null;
-    @ChannelHandle
+
     public static final String BEGIN_SCAN_HANDLE =    "beginScan"; 
+    public final AccessibleProperty beginScan = new AccessibleProperty("beginScan", BEGIN_SCAN_HANDLE);
     private Channel BeginScanC = null;
-    @ChannelHandle
+
     public static final String CHANGE_PARAMS_HANDLE =    "ChangeParams"; 
-    private Channel ChangeParamsC = null;
-    @ChannelHandle
+    public final AccessibleProperty changeParams = new AccessibleProperty("ChangeParams", CHANGE_PARAMS_HANDLE);
+
     public static final String ACCEPT_PARAMS_HANDLE =    "AcceptParams"; 
-    private Channel AcceptParamsC = null;
-    @ChannelHandle
+    public final AccessibleProperty acceptParams = new AccessibleProperty("AcceptParams", ACCEPT_PARAMS_HANDLE);
+
     public static final String STAT_ARRAD_HANDLE =    "statusArray"; 
+    public final AccessibleProperty statusArray = new AccessibleProperty("statusArray", STAT_ARRAD_HANDLE);
     public Channel StatArrayC = null;
-    @ChannelHandle
+
     public static final String VDATA_ARRAD_HANDLE =    "vDataArray"; 
+    public final AccessibleProperty vDataArray = new AccessibleProperty("vDataArray", VDATA_ARRAD_HANDLE);
     public Channel VDataArrayC = null;
-    @ChannelHandle
+
     public static final String DDATA_ARRAD_HANDLE =    "dDataArray"; 
+    public final AccessibleProperty dDataArray = new AccessibleProperty("dDataArray", DDATA_ARRAD_HANDLE);
     public Channel DDataArrayC = null;
-    @ChannelHandle
+    
     public static final String HDATA_ARRAD_HANDLE =    "hDataArray"; 
+    public final AccessibleProperty hDataArray = new AccessibleProperty("hDataArray", HDATA_ARRAD_HANDLE);
     public Channel HDataArrayC = null;
-    @ChannelHandle
+
     public static final String POS_ARRAD_HANDLE =    "positionArray"; 
+    public final AccessibleProperty positionArray = new AccessibleProperty("positionArray", POS_ARRAD_HANDLE);
     public Channel PosArrayC = null;
 
     // wire setting signals
-    @ChannelHandle
     public static final String STEPS_HANDLE =    "nSteps"; 
+    public final AccessibleProperty nSteps = new AccessibleProperty("nSteps", STEPS_HANDLE);
     private Channel StepsC = null;
-    @ChannelHandle
+
     public static final String STEP1_POS_HANDLE =    "Step1Pos"; 
+    public final AccessibleProperty step1Pos = new AccessibleProperty("Step1Pos", STEP1_POS_HANDLE);
     private Channel Step1PosC = null;
-    @ChannelHandle
+
     public static final String POS_SPACING_HANDLE =    "PosSpacing"; 
-    private Channel PosSpacingC = null;
-    @ChannelHandle
+    public final AccessibleProperty posSpacing = new AccessibleProperty("PosSpacing", POS_SPACING_HANDLE);
+
+    
     public static final String NO_MEAS_HANDLE =    "NoMeas"; 
+    public final AccessibleProperty noMeas = new AccessibleProperty("NoMeas", NO_MEAS_HANDLE);
     private Channel NoMeasC = null;
-    @ChannelHandle
+
     public static final String SCAN_LEN_HANDLE =    "scanLength"; 
+    public final AccessibleProperty scanLength = new AccessibleProperty("scanLength", SCAN_LEN_HANDLE);
     private Channel ScanLengthC = null;
-    @ChannelHandle
+
     public static final String BIAS_HANDLE =    "Bias"; 
+    public final AccessibleProperty bias = new AccessibleProperty("Bias", BIAS_HANDLE);
     private Channel BiasC = null;
 
     // Fitted data signals
-    @ChannelHandle
     public static final String V_AREA_F_HANDLE =    "vAreaF"; 
+    public final AccessibleProperty vAreaF = new AccessibleProperty("vAreaF", V_AREA_F_HANDLE);
     private Channel VAreaFC = null;
-    @ChannelHandle
+
     public static final String V_AMP_F_HANDLE =    "vAmpF"; 
+    public final AccessibleProperty vAmpF = new AccessibleProperty("vAmpF", V_AMP_F_HANDLE);
     private Channel VAmpFC = null;
-    @ChannelHandle
+
     public static final String V_MEAN_F_HANDLE =    "vMeanF"; 
+    public final AccessibleProperty vMeanF = new AccessibleProperty("vMeanF", V_MEAN_F_HANDLE);
     private Channel VMeanFC = null;
-    @ChannelHandle
+
     public static final String V_SIGMA_F_HANDLE =    "vSigmaF"; 
+    public final AccessibleProperty vSigmaF = new AccessibleProperty("vSigmaF", V_SIGMA_F_HANDLE);
     private Channel VSigmaFC = null;
-    @ChannelHandle
+
     public static final String V_OFFST_F_HANDLE =    "vOffstF"; 
+    public final AccessibleProperty vOffstF = new AccessibleProperty("vOffstF", V_OFFST_F_HANDLE);
     private Channel VOffstFC = null;
-    @ChannelHandle
+
     public static final String V_SLOPE_F_HANDLE =    "vSlopeF"; 
+    public final AccessibleProperty vSlopeF = new AccessibleProperty("vSlopeF", V_SLOPE_F_HANDLE);
     private Channel VSlopeFC = null;
 
-    @ChannelHandle
     public static final String V_AREA_M_HANDLE =    "vAreaM"; 
+    public final AccessibleProperty vAreaM = new AccessibleProperty("vAreaM", V_AREA_M_HANDLE);
     private Channel VAreaMC = null;
-    @ChannelHandle
+
     public static final String V_AMP_M_HANDLE =    "vAmpM"; 
+    public final AccessibleProperty vAmpM = new AccessibleProperty("vAmpM", V_AMP_M_HANDLE);
     private Channel VAmpMC = null;
-    @ChannelHandle
+
     public static final String V_MEAN_M_HANDLE =    "vMeanM"; 
+    public final AccessibleProperty vMeanM = new AccessibleProperty("vMeanM", V_MEAN_M_HANDLE);
     private Channel VMeanMC = null;
-    @ChannelHandle
+
     public static final String V_SIGMA_M_HANDLE =    "vSigmaM"; 
+    public final AccessibleProperty vSigmaM = new AccessibleProperty("vSigmaM", V_SIGMA_M_HANDLE);
     private Channel VSigmaMC = null;
-    @ChannelHandle
+
     public static final String V_OFFST_M_HANDLE =    "vOffstM"; 
+    public final AccessibleProperty vOffstM = new AccessibleProperty("vOffstM", V_OFFST_M_HANDLE);
     private Channel VOffstMC = null;
-    @ChannelHandle
+
     public static final String V_SLOPE_M_HANDLE =    "vSlopeM"; 
+    public final AccessibleProperty vSlopeM = new AccessibleProperty("vSlopeM", V_SLOPE_M_HANDLE);
     private Channel VSlopeMC = null;
 
-    @ChannelHandle
     public static final String D_AREA_F_HANDLE =    "dAreaF"; 
+    public final AccessibleProperty dAreaF = new AccessibleProperty("dAreaF", D_AREA_F_HANDLE);
     private Channel DAreaFC = null;
-    @ChannelHandle
+
     public static final String D_AMP_F_HANDLE =    "dAmpF"; 
+    public final AccessibleProperty dAmpF = new AccessibleProperty("dAmpF", D_AMP_F_HANDLE);
     private Channel DAmpFC = null;
-    @ChannelHandle
+
     public static final String D_MEAN_F_HANDLE =    "dMeanF"; 
+    public final AccessibleProperty dMeanF = new AccessibleProperty("dMeanF", D_MEAN_F_HANDLE);
     private Channel DMeanFC = null;
-    @ChannelHandle
+
     public static final String D_SIGMA_F_HANDLE =    "dSigmaF"; 
+    public final AccessibleProperty dSigmaF = new AccessibleProperty("dSigmaF", D_SIGMA_F_HANDLE);
     private Channel DSigmaFC = null;
-    @ChannelHandle
+
     public static final String D_OFFST_F_HANDLE =    "dOffstF"; 
+    public final AccessibleProperty dOffstF = new AccessibleProperty("dOffstF", D_OFFST_F_HANDLE);
     private Channel DOffstFC = null;
-    @ChannelHandle
+
     public static final String D_SLOPE_F_HANDLE =    "dSlopeF"; 
+    public final AccessibleProperty dSlopeF = new AccessibleProperty("dSlopeF", D_SLOPE_F_HANDLE);
     private Channel DSlopeFC = null;
 
-    @ChannelHandle
     public static final String D_AREA_M_HANDLE =    "dAreaM"; 
+    public final AccessibleProperty dAreaM = new AccessibleProperty("dAreaM", D_AREA_M_HANDLE);
     private Channel DAreaMC = null;
-    @ChannelHandle
+
     public static final String D_AMP_M_HANDLE =    "dAmpM"; 
+    public final AccessibleProperty dAmpM = new AccessibleProperty("dAmpM", D_AMP_M_HANDLE);
     private Channel DAmpMC = null;
-    @ChannelHandle
+
     public static final String D_MEAN_M_HANDLE =    "dMeanM"; 
+    public final AccessibleProperty dMeanM = new AccessibleProperty("dMeanM", D_MEAN_M_HANDLE);
     private Channel DMeanMC = null;
-    @ChannelHandle
+
     public static final String D_SIGMA_M_HANDLE =    "dSigmaM"; 
+    public final AccessibleProperty dSigmaM = new AccessibleProperty("dSigmaM", D_SIGMA_M_HANDLE);
     private Channel DSigmaMC = null;
-    @ChannelHandle
+
     public static final String D_OFFST_M_HANDLE =    "dOffstM"; 
+    public final AccessibleProperty dOffstM = new AccessibleProperty("dOffstM", D_OFFST_M_HANDLE);
     private Channel DOffstMC = null;
-    @ChannelHandle
+
     public static final String D_SLOPE_M_HANDLE =    "dSlopeM"; 
+    public final AccessibleProperty dSlopeM = new AccessibleProperty("dSlopeM", D_SLOPE_M_HANDLE);
     private Channel DSlopeMC = null;
 
-    @ChannelHandle
     public static final String H_AREA_F_HANDLE =    "hAreaF"; 
+    public final AccessibleProperty hAreaF = new AccessibleProperty("hAreaF", H_AREA_F_HANDLE);
     private Channel HAreaFC = null;
-    @ChannelHandle
+
     public static final String H_AMP_F_HANDLE =    "hAmpF"; 
+    public final AccessibleProperty hAmpF = new AccessibleProperty("hAmpF", H_AMP_F_HANDLE);
     private Channel HAmpFC = null;
-    @ChannelHandle
+
     public static final String H_MEAN_F_HANDLE =    "hMeanF"; 
+    public final AccessibleProperty hMeanF = new AccessibleProperty("hMeanF", H_MEAN_F_HANDLE);
     private Channel HMeanFC = null;
-    @ChannelHandle
+
     public static final String H_SIGMA_F_HANDLE =    "hSigmaF"; 
+    public final AccessibleProperty hSigmaF = new AccessibleProperty("hSigmaF", H_SIGMA_F_HANDLE);
     private Channel HSigmaFC = null;
-    @ChannelHandle
+
     public static final String H_OFFST_F_HANDLE =    "hOffstF"; 
+    public final AccessibleProperty hOffstF = new AccessibleProperty("hOffstF", H_OFFST_F_HANDLE);
     private Channel HOffstFC = null;
-    @ChannelHandle
+
     public static final String H_SLOPE_F_HANDLE =    "hSlopeF"; 
+    public final AccessibleProperty hSlopeF = new AccessibleProperty("hSlopeF", H_SLOPE_F_HANDLE);
     private Channel HSlopeFC = null;
 
-    @ChannelHandle
     public static final String H_AREA_M_HANDLE =    "hAreaM"; 
+    public final AccessibleProperty hAreaM = new AccessibleProperty("hAreaM", H_AREA_M_HANDLE);
     private Channel HAreaMC = null;
-    @ChannelHandle
+
     public static final String H_AMP_M_HANDLE =    "hAmpM"; 
+    public final AccessibleProperty hAmpM = new AccessibleProperty("hAmpM", H_AMP_M_HANDLE);
     private Channel HAmpMC = null;
-    @ChannelHandle
+
     public static final String H_MEAN_M_HANDLE =    "hMeanM"; 
+    public final AccessibleProperty hMeanM = new AccessibleProperty("hMeanM", H_MEAN_M_HANDLE);
     private Channel HMeanMC = null;
-    @ChannelHandle
+
     public static final String H_SIGMA_M_HANDLE =    "hSigmaM"; 
+    public final AccessibleProperty hSigmaM = new AccessibleProperty("hSigmaM", H_SIGMA_M_HANDLE);
     private Channel HSigmaMC = null;
-    @ChannelHandle
+
     public static final String H_OFFST_M_HANDLE =    "hOffstM"; 
+    public final AccessibleProperty hOffstM = new AccessibleProperty("hOffstM", H_OFFST_M_HANDLE);
     private Channel HOffstMC = null;
-    @ChannelHandle
+
     public static final String H_SLOPE_M_HANDLE =    "hSlopeM"; 
+    public final AccessibleProperty hSlopeM = new AccessibleProperty("hSlopeM", H_SLOPE_M_HANDLE);
     private Channel HSlopeMC = null;
 
-    @ChannelHandle
     public static final String V_FIT_HANDLE =    "vFit"; 
+    public final AccessibleProperty vFit = new AccessibleProperty("vFit", V_FIT_HANDLE);
     public Channel VFitC = null;
-    @ChannelHandle
+
     public static final String D_FIT_HANDLE =    "dFit"; 
+    public final AccessibleProperty dFit = new AccessibleProperty("dFit", D_FIT_HANDLE);
     public Channel DFitC = null;
-    @ChannelHandle
+
     public static final String H_FIT_HANDLE =    "hFit"; 
+    public final AccessibleProperty hFit = new AccessibleProperty("hFit", H_FIT_HANDLE);
     public Channel HFitC = null;
 
     // wire position signals
-    @ChannelHandle
     public static final String V_POS_HANDLE =    "vPos"; 
+    public final AccessibleProperty vPos = new AccessibleProperty("vPos", V_POS_HANDLE);
     private Channel VPosC = null;
-    @ChannelHandle
+
     public static final String D_POS_HANDLE =	 "dPos"; 
+    public final AccessibleProperty dPos = new AccessibleProperty("dPos", D_POS_HANDLE);
     private Channel DPosC = null;
-    @ChannelHandle
+
     public static final String H_POS_HANDLE =    "hPos";
+    public final AccessibleProperty hPos = new AccessibleProperty("hPos", H_POS_HANDLE);
     private Channel HPosC = null;
 
     // raw data signals
-    @ChannelHandle
     public static final String V_RAW_HANDLE =    "vRaw"; 
+    public final AccessibleProperty vRaw = new AccessibleProperty("vRaw", V_RAW_HANDLE);
     private Channel VRawC = null;
-    @ChannelHandle
+
     public static final String D_RAW_HANDLE =	 "dRaw"; 
+    public final AccessibleProperty dRaw = new AccessibleProperty("dRaw", D_RAW_HANDLE);
     private Channel DRawC = null;
-    @ChannelHandle
+
     public static final String H_RAW_HANDLE =    "hRaw";
+    public final AccessibleProperty hRaw = new AccessibleProperty("hRaw", H_RAW_HANDLE);
     private Channel HRawC = null;
     
-    @ChannelHandle
     public static final String V_REAL_DATA_HANDLE =    "vRealData"; 
+    public final AccessibleProperty vRealData = new AccessibleProperty("vRealData", V_REAL_DATA_HANDLE);
     private Channel VRealDataC = null;    
-    @ChannelHandle
+
     public static final String D_REAL_DATA_HANDLE =    "dRealData"; 
+    public final AccessibleProperty dRealData = new AccessibleProperty("dRealData", D_REAL_DATA_HANDLE);
     private Channel DRealDataC = null; 
-    @ChannelHandle
+
     public static final String H_REAL_DATA_HANDLE =    "hRealData"; 
+    public final AccessibleProperty hRealData = new AccessibleProperty("hRealData", H_REAL_DATA_HANDLE);
     private Channel HRealDataC = null;     
     
 

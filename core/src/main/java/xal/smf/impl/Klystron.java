@@ -7,21 +7,20 @@ import xal.ca.PutException;
 import xal.tools.data.DataAdaptor;
 import xal.tools.data.DataListener;
 import xal.smf.Accelerator;
-import xal.smf.ChannelHandle;
+import xal.smf.AccessibleProperty;
 import xal.smf.ChannelSuite;
 import xal.smf.NoSuchChannelException;
 
 public class Klystron implements DataListener {
 
-        @ChannelHandle(readback=Klystron.KLYS_AMP_RB_HANDLE)
-	public static final String KLYS_AMP_SET_HANDLE = "klysAmpSet";
-        @ChannelHandle(readback=Klystron.KLYS_PHASE_SET_HANDLE)
+	public static final String KLYS_AMP_SET_HANDLE = "klysAmpSet";    
+        public final AccessibleProperty amplitude = new AccessibleProperty("amplitude", KLYS_AMP_RB_HANDLE, KLYS_AMP_SET_HANDLE);
+
 	public static final String KLYS_PHASE_SET_HANDLE = "klysPhaseSet";
-        @ChannelHandle
+        public final AccessibleProperty phase = new AccessibleProperty("phase", KLYS_PHASE_RB_HANDLE, KLYS_PHASE_SET_HANDLE);
 	public static final String KLYS_AMP_RB_HANDLE = "klysAmp";
-        @ChannelHandle
 	public static final String KLYS_PHASE_RB_HANDLE = "klysPhase";
-	
+
 	protected Accelerator accelerator;
     protected ChannelSuite channelSuite;
     protected String strId;
@@ -200,14 +199,14 @@ public class Klystron implements DataListener {
     	this.stat = stat;
     }
     
-//    @Override
+    @Override
 	public void update(DataAdaptor adaptor) {
         strId = adaptor.stringValue("id");
         DataAdaptor suiteAdaptor = adaptor.childAdaptor("channelsuite");
         channelSuite.update(suiteAdaptor);		
 	}
 
-//	@Override
+	@Override
 	public void write(DataAdaptor adaptor) {
         adaptor.setValue("id", strId);
         adaptor.setValue("type", getType());

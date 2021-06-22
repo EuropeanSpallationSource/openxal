@@ -19,12 +19,12 @@ public class ExtractionKicker extends Dipole {
     public static final String s_strType   = "EKick";
     
     /** voltage readback handle */
-    @ChannelHandle
     public static final String VOLTAGE_RB_HANDLE = "voltageRB";
     
     /** voltage setting handle */
-    @ChannelHandle(readback=ExtractionKicker.VOLTAGE_RB_HANDLE)
-    public static final String VOLTAGE_SET_HANDLE = "voltageSet";
+    public static final String VOLTAGE_SET_HANDLE = "voltageSet";    
+
+    public final AccessibleProperty voltage = new AccessibleProperty("voltage", VOLTAGE_RB_HANDLE, VOLTAGE_SET_HANDLE);
 	
     
 	// static initializer

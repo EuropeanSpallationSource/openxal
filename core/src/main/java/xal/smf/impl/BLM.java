@@ -2,7 +2,6 @@ package xal.smf.impl;
 
 import xal.ca.*;
 import xal.smf.*;
-import xal.smf.attr.*;
 import xal.smf.impl.qualify.*;
 
 
@@ -27,22 +26,22 @@ public class BLM extends AcceleratorNode {
     /**
      * BLMs official avg channel handle
      */
-    @ChannelHandle
     public static final String LOSS_AVG_HANDLE = "lossAvg";
+    public final AccessibleProperty lossAvg = new AccessibleProperty("lossAvg", LOSS_AVG_HANDLE);
     private Channel lossAvgC = null;
 
     /**
      * BLMs official integrated channel handle
      */
-    @ChannelHandle
     public static final String LOSS_INT_HANDLE = "lossInt";
+    public final AccessibleProperty lossInt = new AccessibleProperty("lossInt", LOSS_INT_HANDLE);
     private Channel lossIntC = null;
     
    /**
      * BLM official tAvgLen channel handle
      */
-    @ChannelHandle
     public static final String T_AVG_LEN_HANDLE = "tAvgLen";
+    public final AccessibleProperty tAvgLen = new AccessibleProperty("tAvgLen", T_AVG_LEN_HANDLE);
     private Channel tAvgLenC = null;
 
     static {
