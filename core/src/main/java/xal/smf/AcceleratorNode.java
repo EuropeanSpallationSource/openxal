@@ -325,6 +325,8 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
     }
 
     /**
+     * Get a list of properties that can be accessed through EPICS.
+     *
      * @return properties that can be accessed via EPICS.
      */
     public List<AccessibleProperty> getAccessibleProperties() {
@@ -527,6 +529,9 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
     }
 
     /**
+     * Get a list with the names of properties that can be accessed through
+     * EPICS and that are used by the model.
+       * 
      * @return properties that can be accessed via EPICS.
      */
     public List<String> getProperties() {
