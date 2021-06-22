@@ -22,7 +22,7 @@ import xal.ca.ChannelFactory;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.extension.jels.smf.attr.NPMBucket;
-import xal.smf.ChannelHandle;
+import xal.smf.AccessibleProperty;
 import xal.smf.attr.AttributeBucket;
 import xal.smf.impl.BPM;
 import xal.smf.impl.qualify.ElementTypeManager;
@@ -46,29 +46,36 @@ public class NPM extends BPM {
     protected NPMBucket npmBucket;
 
     // NPM channel handles
-    @ChannelHandle
     public static final String Y_P_AVG_HANDLE = "ypAvg";
+    public final AccessibleProperty ypAvg = new AccessibleProperty("ypAvg", Y_P_AVG_HANDLE);
     private Channel ypAvgC = null;
-    @ChannelHandle
+
     public static final String X_P_AVG_HANDLE = "xpAvg";
+    public final AccessibleProperty xpAvg = new AccessibleProperty("xpAvg", X_P_AVG_HANDLE);
     private Channel xpAvgC = null;
-    @ChannelHandle
+
     public static final String SIGMA_Y_AVG_HANDLE = "ySigma";
+    public final AccessibleProperty ySigma = new AccessibleProperty("ySigma", SIGMA_Y_AVG_HANDLE);
     private Channel sigmayAvgC = null;
-    @ChannelHandle
+
     public static final String SIGMA_X_AVG_HANDLE = "xSigma";
+    public final AccessibleProperty xSigma = new AccessibleProperty("xSigma", SIGMA_X_AVG_HANDLE);
     private Channel sigmaxAvgC = null;
-    @ChannelHandle
+
     public static final String ALPHA_Y_TWISS_HANDLE = "yAlphaTwiss";
+    public final AccessibleProperty yAlphaTwiss = new AccessibleProperty("yAlphaTwiss", ALPHA_Y_TWISS_HANDLE);
     private Channel alphayTwissC = null;
-    @ChannelHandle
+
     public static final String BETA_Y_TWISS_HANDLE = "yBetaTwiss";
+    public final AccessibleProperty yBetaTwiss = new AccessibleProperty("yBetaTwiss", BETA_Y_TWISS_HANDLE);
     private Channel betayTwissC = null;
-    @ChannelHandle
+
     public static final String ALPHA_X_TWISS_HANDLE = "xAlphaTwiss";
+    public final AccessibleProperty xAlphaTwiss = new AccessibleProperty("xAlphaTwiss", ALPHA_X_TWISS_HANDLE);
     private Channel alphaxTwissC = null;
-    @ChannelHandle
+
     public static final String BETA_X_TWISS_HANDLE = "xBetaTwiss";
+    public final AccessibleProperty xBetaTwiss = new AccessibleProperty("xBetaTwiss", BETA_X_TWISS_HANDLE);
     private Channel betaxTwissC = null;
 
     static {

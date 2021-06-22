@@ -23,7 +23,7 @@ import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
-import xal.smf.ChannelHandle;
+import xal.smf.AccessibleProperty;
 import xal.smf.impl.qualify.ElementTypeManager;
 
 /**
@@ -38,24 +38,24 @@ public class Chopper extends AcceleratorNode {
      */
     public static final String s_strType = "CHP";
 
-    @ChannelHandle
     public static final String LENGTH_RB_HANDLE = "lengthRB";
     private Channel lengthRC = null;
-    @ChannelHandle(readback=Chopper.LENGTH_RB_HANDLE)
     public static final String LENGTH_SET_HANDLE = "lengthS";
     private Channel lengthSC = null;
-    @ChannelHandle
+    public final AccessibleProperty length = new AccessibleProperty("length", LENGTH_RB_HANDLE, LENGTH_SET_HANDLE);
+
     public static final String DELAY_RB_HANDLE = "delayRB";
     private Channel delayRC = null;
-    @ChannelHandle(readback=Chopper.DELAY_RB_HANDLE)
     public static final String DELAY_SET_HANDLE = "delayS";
     private Channel delaySC = null;
-    @ChannelHandle
+    public final AccessibleProperty delay = new AccessibleProperty("delay", DELAY_RB_HANDLE, DELAY_SET_HANDLE);
+
     public static final String STATUS_RB_HANDLE = "statusRB";
     private Channel statusRC = null;
-    @ChannelHandle(readback=Chopper.STATUS_RB_HANDLE)
     public static final String STATUS_SET_HANDLE = "statusS";
     private Channel statusSC = null;
+    public final AccessibleProperty status = new AccessibleProperty("status", STATUS_RB_HANDLE, STATUS_SET_HANDLE);
+
 
     static {
         registerType();

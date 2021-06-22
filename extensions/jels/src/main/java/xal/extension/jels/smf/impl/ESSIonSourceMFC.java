@@ -23,7 +23,7 @@ import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
-import xal.smf.ChannelHandle;
+import xal.smf.AccessibleProperty;
 import xal.smf.impl.qualify.ElementTypeManager;
 
 /**
@@ -36,35 +36,35 @@ public class ESSIonSourceMFC extends AcceleratorNode {
     public static final String s_strType = "ISMFC";
 
     // Ion Source's mass flow controller channel handles
-    @ChannelHandle
     public static final String H_2_FLOW_RB_HANDLE = "h2FlowRB";
-    @ChannelHandle
     public static final String H_2_FLOW_R_HANDLE = "h2FlowR";
-    @ChannelHandle(readback=ESSIonSourceMFC.H_2_FLOW_RB_HANDLE)
     public static final String H_2_FLOW_S_HANDLE = "h2FlowS";
     private Channel h2FlowRBC = null;
     private Channel h2FlowRC = null;
     private Channel h2FlowSC = null;
+    public final AccessibleProperty h2Flow = new AccessibleProperty("h2Flow", H_2_FLOW_R_HANDLE, H_2_FLOW_S_HANDLE);
+    public final AccessibleProperty h2FlowRB = new AccessibleProperty("h2FlowRB", H_2_FLOW_RB_HANDLE, H_2_FLOW_S_HANDLE);
+
 
     // High-voltage power supply channel handles
-    @ChannelHandle(readback=ESSIonSourceMFC.VOLTAGE_RB_HANDLE)
     public static final String VOLTAGE_SET_HANDLE = "volS";
-    @ChannelHandle
     public static final String VOLTAGE_READ_HANDLE = "volR";
-    @ChannelHandle
     public static final String VOLTAGE_RB_HANDLE = "volRB";
-    @ChannelHandle(readback=ESSIonSourceMFC.CURRENT_RB_HANDLE)
-    public static final String CURRENT_SET_HANDLE = "currS";
-    @ChannelHandle
-    public static final String CURRENT_READ_HANDLE = "currR";
-    @ChannelHandle
-    public static final String CURRENT_RB_HANDLE = "currRB";
     Channel voltageSetChannel = null;
     Channel voltageReadChannel = null;
     Channel voltageRBChannel = null;
+    public final AccessibleProperty voltqge = new AccessibleProperty("voltqge", VOLTAGE_READ_HANDLE, VOLTAGE_SET_HANDLE);
+    public final AccessibleProperty voltqgeRB = new AccessibleProperty("voltqgeRB", VOLTAGE_RB_HANDLE, VOLTAGE_SET_HANDLE);
+
+    public static final String CURRENT_SET_HANDLE = "currS";
+    public static final String CURRENT_READ_HANDLE = "currR";
+    public static final String CURRENT_RB_HANDLE = "currRB";
     Channel currentSetChannel = null;
     Channel currentReadChannel = null;
     Channel currentRBChannel = null;
+    public final AccessibleProperty curr = new AccessibleProperty("curr", CURRENT_READ_HANDLE, CURRENT_SET_HANDLE);
+    public final AccessibleProperty currRB = new AccessibleProperty("currRB", CURRENT_RB_HANDLE, CURRENT_SET_HANDLE);
+
     /**
      * the ID of this magnet's main power supply
      */
