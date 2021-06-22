@@ -6,7 +6,6 @@ package xal.smf.proxy;
 import java.util.*;
 
 import xal.smf.AcceleratorNode;
-import xal.smf.impl.Electromagnet;
 import xal.ca.Channel;
 
 /**
@@ -15,46 +14,30 @@ import xal.ca.Channel;
  * @author Tom Pelaia
  */
 public class ElectromagnetPropertyAccessor extends AbstractPropertyAccessor {
-	
-	// Constants ===============================================================
-	
-	// Property Names
-	public static final String PROPERTY_FIELD = Electromagnet.Property.FIELD.name();
-	
-	
-	// Static Variables ========================================================
-
-	final private static List<String> PROPERTY_NAMES;
 		
-	
-	// Static Initialization ===================================================
-	
-	static {
-		PROPERTY_NAMES = new ArrayList<String>();
-		PROPERTY_NAMES.add( PROPERTY_FIELD );
-	}
-
+	// Property Names
+	public static final String PROPERTY_FIELD = "field";
 
 	/** get the map of design values keyed by property name */
 	public Map<String,Double> getDesignValueMap( final AcceleratorNode node ) {
-		return getDesignValueMap( node, PROPERTY_NAMES );
+		return getDesignValueMap( node, node.getProperties() );
 	}
 
 
 	/** get the map of live values keyed by property name */
 	public Map<String,Double> getLiveValueMap( final AcceleratorNode node, final Map<Channel,Double> channelValues ) {
-		return getLiveValueMap( node, channelValues, PROPERTY_NAMES );
+		return getLiveValueMap( node, channelValues, node.getProperties() );
 	}
 
 
 	/** get the channels for live property access */
 	public Collection<Channel> getLiveChannels( final AcceleratorNode node ) {
-		return getLiveChannels( node, PROPERTY_NAMES );
+		return getLiveChannels( node, node.getProperties() );
 	}
 
 
 	/** get the map of live RF design values keyed by property name */
-	public Map<String,Double> getLiveRFDesignValueMap( final AcceleratorNode node, final Map<Channel,Double> channelValues ) {
+	public Map<String,Double> getLiveRFDesignValueMap( final AcceleratorNode node, final Map<Channel,Double> channelValues ){
 		return getLiveValueMap( node, channelValues );
 	}
 
@@ -63,12 +46,4 @@ public class ElectromagnetPropertyAccessor extends AbstractPropertyAccessor {
 	public Collection<Channel> getLiveRFDesignChannels( final AcceleratorNode node ) {
 		return getLiveChannels( node );
 	}
-
-
-	/** get the list of property names */
-    @SuppressWarnings( "unchecked" )    // clone doesn't support generics, so we must cast
-	public List<String> propertyNames() {
-		return new ArrayList<String>( PROPERTY_NAMES );
-	}
-
 }
