@@ -74,7 +74,7 @@ public class UpdatingSwingWorker {
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
 		//System.out.println("Setup exit-" + setup_count);
 	}
@@ -315,7 +315,7 @@ public class UpdatingSwingWorker {
 					Thread.sleep(WAIT);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOGGER.log(Level.SEVERE, null, exception);
 				}
 			}
 			

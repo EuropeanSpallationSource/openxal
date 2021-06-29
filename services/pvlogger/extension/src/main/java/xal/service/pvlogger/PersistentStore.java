@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.ArrayList;
 import java.util.Set;
 import java.sql.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.data.*;
 import xal.tools.database.*;
@@ -22,38 +24,40 @@ import xal.tools.database.*;
 /** contains information about the persistent storage */
 class PersistentStore {
 	/** proxy to a database table of snapshot group channels */
-	private final SnapshotGroupChannelTable SNAPSHOT_GROUP_CHANNEL_TABLE;
+	private final SnapshotGroupChannelTable snapshotGroupChannelTable;
 	
 	/** proxy to a database table of snapshot groups */
-	protected final SnapshotGroupTable SNAPSHOT_GROUP_TABLE;
+	protected final SnapshotGroupTable snapshotGroupTable;
 	
 	/** channel snapshot tables keyed by service ID */
-	protected final Map<String,ChannelSnapshotTable> CHANNEL_SNAPSHOT_TABLES;
+	protected final Map<String,ChannelSnapshotTable> channelSnapshotTables;
 	
 	/** machine snapshot table */
-	protected final MachineSnapshotTable MACHINE_SNAPSHOT_TABLE;
+	protected final MachineSnapshotTable machineSnapshotTable;
 	
 	/** map of channel groups keyed by group ID */
-	protected final Map<String,ChannelGroup> CHANNEL_GROUPS;
-	
+	protected final Map<String,ChannelGroup> channelGroups;
+        
+        private static final Logger LOGGER = Logger.getLogger(PersistentStore.class.getName());
+
 	
 	/** Constructor */
 	public PersistentStore( final DataAdaptor storeAdaptor ) {
 		final Map<String,DBTableConfiguration> tableConfigurations = loadTableConfigurations( storeAdaptor );
-		SNAPSHOT_GROUP_CHANNEL_TABLE = new SnapshotGroupChannelTable( tableConfigurations.get( "SnapshotGroupChannel" ) );
-		SNAPSHOT_GROUP_TABLE = new SnapshotGroupTable( tableConfigurations.get( "SnapshotGroup" ), SNAPSHOT_GROUP_CHANNEL_TABLE );
-		MACHINE_SNAPSHOT_TABLE = new MachineSnapshotTable( tableConfigurations.get( "MachineSnapshot" ) );
+		snapshotGroupChannelTable = new SnapshotGroupChannelTable( tableConfigurations.get( "SnapshotGroupChannel" ) );
+		snapshotGroupTable = new SnapshotGroupTable( tableConfigurations.get( "SnapshotGroup" ), snapshotGroupChannelTable );
+		machineSnapshotTable = new MachineSnapshotTable( tableConfigurations.get( "MachineSnapshot" ) );
 		
-		CHANNEL_SNAPSHOT_TABLES = loadChannelSnapshotTables( storeAdaptor );
+		channelSnapshotTables = loadChannelSnapshotTables( storeAdaptor );
 		
-		CHANNEL_GROUPS = new HashMap<>();
+		channelGroups = new HashMap<>();
 	}
 	
 	
 	/** get the table configurations from the configuration */
 	private static Map<String,DBTableConfiguration> loadTableConfigurations( final DataAdaptor storeAdaptor ) {
 		final List<DataAdaptor> tableAdaptors = storeAdaptor.childAdaptors( "dbtable" );
-		final Map<String,DBTableConfiguration> tableConfigurations = new HashMap<String,DBTableConfiguration>(2);
+		final Map<String,DBTableConfiguration> tableConfigurations = new HashMap<>(2);
 		for ( final DataAdaptor tableAdaptor : tableAdaptors ) {
 			final String entity = tableAdaptor.stringValue( "entity" );
 			tableConfigurations.put( entity, new DBTableConfiguration( tableAdaptor ) );
@@ -65,7 +69,7 @@ class PersistentStore {
 	
 	/** load the machine snapshot tables from the configuration */
 	private static Map<String,ChannelSnapshotTable> loadChannelSnapshotTables( final DataAdaptor storeAdaptor ) {
-		final Map<String,ChannelSnapshotTable> channelSnapshotTables = new HashMap<String,ChannelSnapshotTable>();
+		final Map<String,ChannelSnapshotTable> channelSnapshotTables = new HashMap<>();
 		final List<DataAdaptor> serviceAdaptors = storeAdaptor.childAdaptors( "service" );
 		for ( final DataAdaptor serviceAdaptor : serviceAdaptors ) {
 			final String serviceID = serviceAdaptor.stringValue( "name" );
@@ -89,16 +93,16 @@ class PersistentStore {
 	
 	
 	/**
-	 * Fetch the machine snapshot corresponding to the specified snasphot ID
+	 * Fetch the machine snapshot corresponding to the specified snapshot ID
 	 * @param connection database connection
-	 * @param snapshotID machine snaspshot ID
+	 * @param snapshotID machine snapshot ID
 	 * @return machine snapshot corresponding to the specified ID
 	 */
 	public MachineSnapshot fetchMachineSnapshot( final Connection connection, final long snapshotID ) throws SQLException {
-		final MachineSnapshot machineSnapshot = MACHINE_SNAPSHOT_TABLE.fetchMachineSnapshot( connection, snapshotID );
+		final MachineSnapshot machineSnapshot = machineSnapshotTable.fetchMachineSnapshot( connection, snapshotID );
 		final ChannelSnapshotTable channelSnapshotTable = getChannelSnapshotTable( connection, machineSnapshot );
 		
-		MACHINE_SNAPSHOT_TABLE.loadChannelSnapshotsInto( connection, channelSnapshotTable, machineSnapshot );
+		machineSnapshotTable.loadChannelSnapshotsInto( connection, channelSnapshotTable, machineSnapshot );
 		
 		return machineSnapshot;
 	}
@@ -114,7 +118,7 @@ class PersistentStore {
 	 * @return An array of machine snapshots meeting the specified criteria
 	 */
 	public MachineSnapshot[] fetchMachineSnapshotsInRange( final Connection connection, final String type, final java.util.Date startTime, final java.util.Date endTime ) throws SQLException {
-		return MACHINE_SNAPSHOT_TABLE.fetchMachineSnapshotsInRange( connection, type, startTime, endTime );
+		return machineSnapshotTable.fetchMachineSnapshotsInRange( connection, type, startTime, endTime );
 	}
 	
 	
@@ -126,7 +130,7 @@ class PersistentStore {
 	 */
 	public MachineSnapshot loadChannelSnapshotsInto( final Connection connection, final MachineSnapshot machineSnapshot ) throws SQLException {
 		final ChannelSnapshotTable channelSnapshotTable = getChannelSnapshotTable( connection, machineSnapshot );
-		return MACHINE_SNAPSHOT_TABLE.loadChannelSnapshotsInto( connection, channelSnapshotTable, machineSnapshot );
+		return machineSnapshotTable.loadChannelSnapshotsInto( connection, channelSnapshotTable, machineSnapshot );
 	}
 	
 	
@@ -136,7 +140,7 @@ class PersistentStore {
 	 * @return array of types corresponding to all of the channel groups
 	 */
 	public String[] fetchTypes( final Connection connection )  throws SQLException {
-		return SNAPSHOT_GROUP_TABLE.fetchTypes( connection );		
+		return snapshotGroupTable.fetchTypes( connection );		
 	}
 	
 	
@@ -147,7 +151,7 @@ class PersistentStore {
 	 * @return array of types corresponding to channel groups with the specified service ID
 	 */
 	public String[] fetchTypes( final Connection connection, final String serviceID ) throws SQLException {
-		return SNAPSHOT_GROUP_TABLE.fetchTypes( connection, serviceID );
+		return snapshotGroupTable.fetchTypes( connection, serviceID );
 	}
 	
 	
@@ -157,11 +161,11 @@ class PersistentStore {
 	 * @param type channel group type
 	 */
 	public ChannelGroup getChannelGroup( final Connection connection, final String type ) throws SQLException {
-		synchronized( CHANNEL_GROUPS ) {
-			if ( !CHANNEL_GROUPS.containsKey( type ) ) {
+		synchronized( channelGroups ) {
+			if ( !channelGroups.containsKey( type ) ) {
 				fetchChannelGroup( connection, type );
 			}
-			return CHANNEL_GROUPS.get( type );
+			return channelGroups.get( type );
 		}
 	}
 	
@@ -173,8 +177,8 @@ class PersistentStore {
 	 * @return list of all channel groups
 	 */
 	protected ChannelGroup fetchChannelGroup( final Connection connection, final String type ) throws SQLException {
-		final ChannelGroup channelGroup = SNAPSHOT_GROUP_TABLE.fetchChannelGroup( connection, type );
-		CHANNEL_GROUPS.put( type, channelGroup );
+		final ChannelGroup channelGroup = snapshotGroupTable.fetchChannelGroup( connection, type );
+		channelGroups.put( type, channelGroup );
 		return channelGroup;
 	}
 	
@@ -186,13 +190,13 @@ class PersistentStore {
 	 * @param groupID Channel Group ID
 	 */
 	public void insertChannels( final Connection connection, final List<String> channelNames, final String groupID ) throws SQLException {
-		SNAPSHOT_GROUP_CHANNEL_TABLE.insertChannels( connection, channelNames, groupID );
+		snapshotGroupChannelTable.insertChannels( connection, channelNames, groupID );
 	}
 	
 	
 	/** Publish the channel group edits */
 	public void publishGroupEdits( final Connection connection, final Set<ChannelGroupRecord> records ) throws SQLException {
-		SNAPSHOT_GROUP_TABLE.publishGroupEdits( connection, records );
+		snapshotGroupTable.publishGroupEdits( connection, records );
 	}
 	
 	
@@ -202,7 +206,7 @@ class PersistentStore {
 		final ChannelGroup group = getChannelGroup( connection, groupID );
 		final String serviceID = group.getServiceID();
 		
-		return CHANNEL_SNAPSHOT_TABLES.get( serviceID );		
+		return channelSnapshotTables.get( serviceID );		
 	}
 	
 	
@@ -215,7 +219,7 @@ class PersistentStore {
 	public List<MachineSnapshot> publish( final Connection connection, final DatabaseAdaptor databaseAdaptor, final List<MachineSnapshot> machineSnapshots ) {
 		if ( machineSnapshots.size() == 0 )  return null;
 		
-		final List<MachineSnapshot> successfulSnapshots = new ArrayList<MachineSnapshot>( machineSnapshots.size() );
+		final List<MachineSnapshot> successfulSnapshots = new ArrayList<>( machineSnapshots.size() );
 		for ( final MachineSnapshot machineSnapshot : machineSnapshots ) {
 			if ( publish( connection, databaseAdaptor, machineSnapshot ) ) {
 				successfulSnapshots.add( machineSnapshot );
@@ -234,12 +238,12 @@ class PersistentStore {
 	protected boolean publish( final Connection connection, final DatabaseAdaptor databaseAdaptor, final MachineSnapshot machineSnapshot ) {
 		try {
 			final ChannelSnapshotTable channelSnapshotTable = getChannelSnapshotTable( connection, machineSnapshot );
-			MACHINE_SNAPSHOT_TABLE.insert( connection, databaseAdaptor, channelSnapshotTable, machineSnapshot );
+			machineSnapshotTable.insert( connection, databaseAdaptor, channelSnapshotTable, machineSnapshot );
 			
 			return true;
 		}
 		catch( SQLException exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 			return false;
 		}
 	}

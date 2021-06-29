@@ -35,6 +35,8 @@ import javax.jmdns.ServiceInfo;
  * @author  tap
  */
 public final class ServiceDirectory {
+        private static final Logger LOGGER = Logger.getLogger(ServiceDirectory.class.getName());
+
 	/** The default directory */
 	private static final ServiceDirectory DEFAULT_DIRECTORY;
 	
@@ -75,10 +77,9 @@ public final class ServiceDirectory {
 				bonjour = JmDNS.create( InetAddress.getLocalHost() );
 				isLoopback = false;
 			}
-			catch( Exception exception ) {
+			catch( IOException exception ) {
 				final String message = "Error attempting to initialize JmDNS.  Will attempt to try loopback mode instead of networked mode.";
-				Logger.getLogger("global").log( Level.WARNING, message, exception );
-				System.err.println( message );
+				LOGGER.log( Level.WARNING, message, exception );
 				isLoopback = true;
 				bonjour = JmDNS.create( InetAddress.getByName( "127.0.0.1" ) );
 			}
@@ -92,11 +93,9 @@ public final class ServiceDirectory {
 				}
 			});
 		}
-		catch( Exception exception ) {
+		catch( IOException exception ) {
 			final String message = "JmDNS initialization failed.  Services are disabled.";
-			Logger.getLogger("global").log( Level.SEVERE, message, exception );
-			System.err.println( message);
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, message, exception);
 		}
 	}
 	
@@ -216,7 +215,7 @@ public final class ServiceDirectory {
 			bonjour.registerService( info );
 			return new ServiceRef( info );
 		}
-		catch( Exception exception ) {
+		catch( IOException exception ) {
 			throw new ServiceException( exception, "Exception while attempting to register a service..." );
 		}
     }
@@ -248,7 +247,7 @@ public final class ServiceDirectory {
 	public <T> T getProxy( final Class<T> protocol, final ServiceRef serviceRef ) {
         final ServiceInfo info = serviceRef.getServiceInfo();
         final String hostAddress = serviceRef.getHostAddress();		
-		return new ClientHandler<T>( hostAddress, info.getPort(), serviceRef.getServiceName(), protocol, MESSAGE_CODER ).getProxy();
+		return new ClientHandler<>( hostAddress, info.getPort(), serviceRef.getServiceName(), protocol, MESSAGE_CODER ).getProxy();
 	}
 	
 	
@@ -343,8 +342,7 @@ public final class ServiceDirectory {
 		}
 		catch( InterruptedException exception ) {
 			removeServiceListener( listener );
-			Logger.getLogger("global").log( Level.SEVERE, "Error attempting to find services for service type: " + serviceType, exception );
-			System.err.println( exception );
+			LOGGER.log( Level.SEVERE, "Error attempting to find services for service type: " + serviceType, exception );
 		}
 		
 		return new ServiceRef[0];
@@ -384,6 +382,7 @@ public final class ServiceDirectory {
 				public void serviceAdded( final ServiceEvent event ) {
 					System.out.println( "Service added: " + event.getName() );
 					THREAD_POOL.execute( new Runnable() {
+                                                @Override
 						public void run() {
 							event.getDNS().requestServiceInfo( event.getType(), event.getName() );		
 						}
@@ -419,7 +418,7 @@ public final class ServiceDirectory {
 			});
 		}
 		catch(Exception exception) {
-			Logger.getLogger("global").log( Level.SEVERE, "Error attempting to add a service listener of service type: " + type, exception );
+			LOGGER.log( Level.SEVERE, "Error attempting to add a service listener of service type: " + type, exception );
 			throw new ServiceException(exception, "Exception while trying to add a service listener...");
 		}
 	}

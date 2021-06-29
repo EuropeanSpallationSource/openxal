@@ -44,6 +44,8 @@ public class Commander {
 	/** name for the menu definition resource which may or may not exist */
 	public static final String MENU_DEFINITION_RESOURCE = "menudef.properties";
 
+        private static final Logger LOGGER = Logger.getLogger(Commander.class.getName());
+
 	/** map equivalent of the resource bundle properties */
     private Map<String,String> controlMap;
 	
@@ -447,8 +449,7 @@ public class Commander {
 				else {
 					button.setEnabled( false );
 					final String message = "Warning: No ToggleButtonModel provided for the toolbar button: " + label + " of group: " + groupKey;
-					Logger.getLogger("global").log( Level.SEVERE, message );
-					System.err.println( message );
+					LOGGER.log( Level.SEVERE, message);
 				}
 			}
 			else {
@@ -674,8 +675,7 @@ public class Commander {
 				else {
 					menuItem.setEnabled( false );
 					final String message = "Warning: No ButtonModel provided for the menu item: " + label + " of group: " + groupKey;
-					Logger.getLogger("global").log( Level.SEVERE, message );
-					System.err.println( message );
+					LOGGER.log( Level.SEVERE, message );
 				}
 			}
 			else {

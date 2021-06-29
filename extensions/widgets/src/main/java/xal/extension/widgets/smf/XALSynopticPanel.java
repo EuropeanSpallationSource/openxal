@@ -22,6 +22,7 @@ import xal.smf.impl.*;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.HeadlessException;
 import java.awt.Insets;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -30,6 +31,8 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -50,6 +53,9 @@ import javax.swing.JPanel;
  * TODO Implement SNS official color code
  */
 public class XALSynopticPanel extends JPanel {
+    
+    private static final Logger LOGGER = Logger.getLogger(XALSynopticPanel.class.getName());
+
     /** serialization ID */
     private static final long serialVersionUID = 1L;
     
@@ -105,8 +111,8 @@ public class XALSynopticPanel extends JPanel {
 					}
 				});
 			frame.setVisible( true );
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (HeadlessException e) {
+			LOGGER.log(Level.SEVERE, null, e);
 		}
 	}
 
@@ -120,7 +126,7 @@ public class XALSynopticPanel extends JPanel {
 	}
 
 	/**
-	 * Sets accelerator sequence. Note that this method migth take some
+	 * Sets accelerator sequence. Note that this method might take some
 	 * time to finish, if sequence contains a lot of elements.
 	 * Uses beginning and end of this sequence for initial start and end position. 
 	 *
@@ -134,7 +140,7 @@ public class XALSynopticPanel extends JPanel {
 
 	/**
 	 * Sets accelerator sequence and initial start and end position in sequence. 
-	 * Note that this method migth take some
+	 * Note that this method might take some
 	 * time to finish, if sequence contains a lot of elements.
 	 *
 	 * @param seq

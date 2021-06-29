@@ -38,6 +38,7 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.RepaintManager;
 
 import xal.extension.application.platform.MacAdaptor;
 import xal.extension.application.rbac.AuthenticationPane;
@@ -51,7 +52,6 @@ import xal.rbac.RBACLogin;
 import xal.rbac.RBACSubject;
 import xal.tools.URLReference;
 import xal.tools.apputils.ApplicationSupport;
-import xal.tools.apputils.files.DefaultFolderAccessory;
 import xal.tools.apputils.files.FileFilterFactory;
 import xal.tools.apputils.files.RecentFileTracker;
 import xal.tools.messaging.MessageCenter;
@@ -75,6 +75,8 @@ public abstract class Application {
 	public static final int YES_OPTION = JOptionPane.YES_OPTION;
 	public static final int NO_OPTION = JOptionPane.NO_OPTION;
 	
+        private static final Logger LOGGER = Logger.getLogger(Application.class.getName());
+
 	// private constants
 	private final Date LAUNCH_TIME;
 	
@@ -299,23 +301,23 @@ public abstract class Application {
 				}
 			}
 			System.setProperties( userProperties );
-			Logger.getLogger("global").log(Level.INFO, "Applied user properties from file: {0}", propertiesPath);
+			LOGGER.log(Level.INFO, "Applied user properties from file: {0}", propertiesPath);
 		}
 		catch( FileNotFoundException exception ) {
-			exception.printStackTrace();
-			Logger.getLogger("global").log( Level.WARNING, "Failed to load user properties from file: " + propertiesPath, exception );
+			LOGGER.log(Level.SEVERE, null, exception);
+			LOGGER.log( Level.WARNING, "Failed to load user properties from file: " + propertiesPath, exception );
 		}
 		catch( IOException exception ) {
-			exception.printStackTrace();
-			Logger.getLogger("global").log( Level.WARNING, "Failed to load user properties from file: " + propertiesPath, exception );
+			LOGGER.log(Level.SEVERE, null, exception);
+			LOGGER.log( Level.WARNING, "Failed to load user properties from file: " + propertiesPath, exception );
 		}
 		catch( SecurityException exception ) {
-			exception.printStackTrace();
-			Logger.getLogger("global").log( Level.WARNING, "Failed to load user properties from file: " + propertiesPath, exception );
+			LOGGER.log(Level.SEVERE, null, exception);
+			LOGGER.log( Level.WARNING, "Failed to load user properties from file: " + propertiesPath, exception );
 		}
 		catch( Exception exception ) {
-			exception.printStackTrace();
-			Logger.getLogger("global").log( Level.WARNING, "Failed to load user properties from file: " + propertiesPath, exception );
+			LOGGER.log(Level.SEVERE, null, exception);
+			LOGGER.log( Level.WARNING, "Failed to load user properties from file: " + propertiesPath, exception );
 		}
 	}
 	
@@ -328,9 +330,8 @@ public abstract class Application {
 	private static void setupDoubleBufferingMode() {
 		final boolean disableDoubleBuffering = Boolean.getBoolean( "DisableDoubleBuffering" );
 		if ( disableDoubleBuffering ) {
-			javax.swing.RepaintManager.currentManager( null ).setDoubleBufferingEnabled( false );
-			Logger.getLogger("global").log( Level.CONFIG, "Double buffering disabled..." );
-			System.out.println( "Double buffering disabled..." );
+			RepaintManager.currentManager( null ).setDoubleBufferingEnabled( false );
+			LOGGER.log( Level.CONFIG, "Double buffering disabled..." );
 		}
 	}
 	
@@ -400,17 +401,14 @@ public abstract class Application {
 		if ( shouldRegister ) {
 			try {
 				ServiceDirectory.defaultDirectory().registerService(ApplicationStatus.class, applicationAdaptor.applicationName(), new ApplicationStatusService() );
-				System.out.println( "Registered application services..." );
-				Logger.getLogger( "xal.extension.application" ).log( Level.INFO, "Registered application services..." );
+				LOGGER.log( Level.INFO, "Registered application services..." );
 			}
 			catch(ServiceException exception) {
-				exception.printStackTrace();
-				System.err.println("Service registration failed due to " + exception);
-				Logger.getLogger( "xal.extension.application" ).log( Level.SEVERE, "Service registration failed...", exception );
+				LOGGER.log(Level.SEVERE, "Service registration...", exception);
 			}			
 		}
 		else {
-			Logger.getLogger("global").log( Level.CONFIG, "Application services disabled." );
+			LOGGER.log( Level.CONFIG, "Application services disabled." );
 			System.out.println( "Application services not registerd because of startup flag..." );
 		}
 	}
@@ -703,8 +701,7 @@ public abstract class Application {
             openDocument( url, copySource, trackRecent );
         }
         catch(MalformedURLException exception) {
-			Logger.getLogger("global").log( Level.WARNING, "Error opening URL: " + urlSpec, exception );
-            System.err.println( exception );
+            LOGGER.log( Level.WARNING, "Error opening URL: " + urlSpec, exception );
             displayError( exception );
         }
     }
@@ -733,8 +730,7 @@ public abstract class Application {
             openDocument( url, copySource, trackRecent );
         }
         catch( MalformedURLException exception ) {
-			Logger.getLogger("global").log( Level.WARNING, "Error opening file: " + file, exception );
-            System.err.println( exception );
+            LOGGER.log( Level.WARNING, "Error opening file: " + file, exception );
             displayError( exception );
         }
     }
@@ -793,9 +789,7 @@ public abstract class Application {
             updateNextDocumentOpenLocationOffsetFrom( document );
         }
         catch(Exception exception) { 
-			Logger.getLogger("global").log( Level.WARNING, "Error opening document: " + url, exception );
-            System.err.println( "Open failed due to an internal exception: " + exception );
-			exception.printStackTrace();
+            LOGGER.log( Level.WARNING, "Error opening document: " + url, exception );
             displayError( "Open Failed!", "Open failed due to an internal exception!", exception );
         }
     }
@@ -903,7 +897,7 @@ public abstract class Application {
             }
         }
         catch( URISyntaxException exception ) {
-            exception.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, exception);
             throw new RuntimeException( "Exception generating source version info for document.", exception );
         }
     }
@@ -926,8 +920,7 @@ public abstract class Application {
             }
         }
         catch( IOException exception ) {
-            System.err.println( "Exception saving document version..." );
-            exception.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Exception saving document version...", exception);
         }
     }
     
@@ -990,8 +983,8 @@ public abstract class Application {
             saveDocumentVersion( document );
         }
         catch( MalformedURLException exception ) {
-			Logger.getLogger("global").log( Level.WARNING, "Failed to save document to file: " + file, exception );
-            System.err.println( exception );
+			LOGGER.log( Level.WARNING, "Failed to save document to file: " + file, exception );
+            LOGGER.log(Level.SEVERE, null, exception);
 			document.displayError( "Save Error" , "Error attempting to save the document." , exception );
         }
     }
@@ -1038,9 +1031,7 @@ public abstract class Application {
                     return;
                 }
             } catch (HeadlessException exception) {
-                Logger.getLogger("global").log(Level.SEVERE, "Exception while quitting the application.", exception);
-                System.err.println(exception);
-                exception.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Exception while quitting the application.", exception);
             }
         }
 
@@ -1245,7 +1236,7 @@ public abstract class Application {
             return templateFolder != null ? templateFolder.toURI().toURL() : null;
         }
         catch( MalformedURLException exception ) {
-            exception.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, exception);
             throw new RuntimeException( "Exception getting the template URL", exception );
         }
     }
@@ -1369,7 +1360,7 @@ public abstract class Application {
             targetChannel.close();
         }
         catch( IOException exception ) {
-            exception.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, exception);
             throw new RuntimeException( "Exception attempting to copy the source file to the target file.", exception );
         }
     }

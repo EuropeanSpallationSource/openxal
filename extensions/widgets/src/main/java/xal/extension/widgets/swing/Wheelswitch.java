@@ -186,7 +186,7 @@ public class Wheelswitch extends JPanel
         @Override
 		public void mouseWheelMoved(MouseWheelEvent e)
 		{
-			logger.log(Level.FINE, "mousewheel");
+			LOGGER.log(Level.FINE, "mousewheel");
 
 			if (editable && isEnabled()) {
 				int i = getSelectedDigit();
@@ -244,7 +244,7 @@ public class Wheelswitch extends JPanel
 		private int numberOfTilts = MAX_NUMBER_OF_TILTS;
 
 		/**
-		 * Scedules a new tilting task if the user value equals any of the
+		 * Schedules a new tilting task if the user value equals any of the
 		 * bounds.
 		 */
 		public void tilt()
@@ -316,7 +316,9 @@ public class Wheelswitch extends JPanel
 
 	/** DOCUMENT ME! */
 	public static final String EDITABLE = "editable";
-    private static final Logger logger = Logger.getLogger("global");
+        
+        private static final Logger LOGGER = Logger.getLogger(Wheelswitch.class.getName());
+
 	protected FocusHandler focusHandler;
 	protected KeyHandler keyHandler;
 	protected MouseHandler mouseHandler;
@@ -492,7 +494,7 @@ public class Wheelswitch extends JPanel
 		try {
 			formatter.setFormat(newFormat);
 		} catch (IllegalArgumentException e) {
-			logger.log(Level.WARNING, "Exception setting new format: " + newFormat, e);
+			LOGGER.log(Level.WARNING, "Exception setting new format: " + newFormat, e);
 
 			return;
 		}
@@ -1036,7 +1038,7 @@ public class Wheelswitch extends JPanel
 					if (digits.get(i) instanceof ValueDigit) {
 						((ValueDigit)digits.get(i)).setValue(Integer.parseInt(stringValue.substring(i, i + 1)));
 					} else {
-						logger.log(Level.WARNING,"Wheelswitch#initDigits(): digits improperly synchronized");
+						LOGGER.log(Level.WARNING,"Wheelswitch#initDigits(): digits improperly synchronized");
 						setupValueDigits();
 						setupLayout();
 						validate();

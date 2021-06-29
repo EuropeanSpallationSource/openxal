@@ -18,6 +18,8 @@ import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.MissingResourceException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -51,7 +53,7 @@ import java.util.MissingResourceException;
  * @since  Jan 30, 2013
  */
 public class Signal extends ScadaRecord {
-
+    private static final Logger LOGGER = Logger.getLogger(Signal.class.getName());
     
     /*
      * Internal Classes
@@ -262,8 +264,7 @@ public class Signal extends ScadaRecord {
                 this.fldAnnVal  = ASignal.class.getMethod(strChanHnd);
                 
             } catch (NoSuchMethodException | SecurityException e) {     
-                System.err.println(strErrMsg);
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, null, e);
             }
         }
     }

@@ -10,6 +10,8 @@ package xal.extension.service;
 
 import java.util.concurrent.Callable;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.UpdateListener;
 import xal.tools.dispatch.DispatchQueue;
@@ -17,6 +19,8 @@ import xal.tools.dispatch.DispatchQueue;
 
 /** RemoteDataCache is a utility for managing calls to remote services to avoid deadlock if a service is down. */
 public class RemoteDataCache<DataType> {
+        private static final Logger LOGGER = Logger.getLogger(RemoteDataCache.class.getName());
+
 	/** remote operation to perform */
 	private final Callable<DataType> REMOTE_OPERATION;
 
@@ -113,7 +117,7 @@ public class RemoteDataCache<DataType> {
 					isConnected = false;
 				}
 				catch ( Exception exception ) {
-					exception.printStackTrace();
+					LOGGER.log(Level.SEVERE, null, exception);
 					cachedData = null;
 				}
 				finally {
@@ -135,16 +139,16 @@ public class RemoteDataCache<DataType> {
 /** data from a remote fetch */
 class RemoteData<DataType> {
 	/** latest data that has been cached */
-	private final DataType VALUE;
+	private final DataType value;
 
 	/** time of the last fetch from which the expiration should be measured */
-	private final Date FETCH_TIMESTAMP;
+	private final Date fetchTimestamp;
 
 
 	/** Primary Constructor */
 	public RemoteData( final DataType value, final Date timestamp ) {
-		VALUE = value;
-		FETCH_TIMESTAMP = timestamp;
+		this.value = value;
+		fetchTimestamp = timestamp;
 	}
 
 
@@ -156,19 +160,19 @@ class RemoteData<DataType> {
 
 	/** get the value */
 	public DataType getValue() {
-		return VALUE;
+		return value;
 	}
 
 
 	/** get the timestamp */
 	public Date getTimestamp() {
-		return FETCH_TIMESTAMP;
+		return fetchTimestamp;
 	}
 
 
 	/** get string representation */
         @Override
 	public String toString() {
-		return "Cached value: " + VALUE + ", timestamp: " + FETCH_TIMESTAMP;
+		return "Cached value: " + value + ", timestamp: " + fetchTimestamp;
 	}
 }

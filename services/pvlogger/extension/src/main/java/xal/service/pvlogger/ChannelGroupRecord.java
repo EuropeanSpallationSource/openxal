@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class ChannelGroupRecord {
 	/** represented channel group */
-	private final ChannelGroup CHANNEL_GROUP;
+	private final ChannelGroup channelGroup;
 	
 	/** default logging period (seconds) for the group */
 	private double defaultLoggingPeriod;
@@ -35,14 +35,14 @@ public class ChannelGroupRecord {
 	
 	/** Constructor */
 	public ChannelGroupRecord( final ChannelGroup group ) {
-		CHANNEL_GROUP = group;
+		channelGroup = group;
 		revert();
 	}
 	
 	
 	/** convert the list of groups to a list of records */
 	public static List<ChannelGroupRecord> toRecords( final List<ChannelGroup> groups ) {
-		final List<ChannelGroupRecord> records = new ArrayList<ChannelGroupRecord>( groups.size() );
+		final List<ChannelGroupRecord> records = new ArrayList<>( groups.size() );
 		for ( final ChannelGroup group : groups ) {
 			records.add( new ChannelGroupRecord( group ) );
 		}
@@ -53,16 +53,16 @@ public class ChannelGroupRecord {
 	
 	/** revert to the group settings */
 	public void revert() {
-		defaultLoggingPeriod = CHANNEL_GROUP.getDefaultLoggingPeriod();
-		retention = CHANNEL_GROUP.getRetention();
-		serviceID = CHANNEL_GROUP.getServiceID();
-		description = CHANNEL_GROUP.getDescription();
+		defaultLoggingPeriod = channelGroup.getDefaultLoggingPeriod();
+		retention = channelGroup.getRetention();
+		serviceID = channelGroup.getServiceID();
+		description = channelGroup.getDescription();
 	}
 	
 	
 	/** get the represented channel group */
 	public ChannelGroup getGroup() {
-		return CHANNEL_GROUP;
+		return channelGroup;
 	}
 	
 	
@@ -92,7 +92,7 @@ public class ChannelGroupRecord {
 	
 	/** get the label */
 	public String getLabel() {
-		return CHANNEL_GROUP.getLabel();
+		return channelGroup.getLabel();
 	}
 	
 	

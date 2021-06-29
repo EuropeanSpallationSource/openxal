@@ -9,12 +9,15 @@ package xal.tools.beam.calc;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import xal.model.ModelException;
 
 import xal.model.alg.EnvTrackerAdapt;
 import xal.model.alg.ParticleTracker;
@@ -44,7 +47,7 @@ import xal.tools.math.r3.R3;
  * @since  Nov 19, 2013
  */
 public class TestCalculationsOnRings {
-
+    private static final Logger LOGGER = Logger.getLogger(TestCalculationsOnRings.class.getName());
     
     /*
      * Global Constants
@@ -149,9 +152,8 @@ public class TestCalculationsOnRings {
 //            Trajectory<EnvelopeProbeState> trjEnv = (Trajectory<EnvelopeProbeState>) MODEL_TEST.getTrajectory();
 //            System.out.println(trjEnv);
             
-        } catch (Exception e) {
-			System.out.println( "Exception: " + e );
-			e.printStackTrace();
+        } catch (IOException | InstantiationException | ModelException e) {
+			LOGGER.log(Level.SEVERE, null, e);
             System.err.println("Unable to initial the static test resources");
             Assert.fail();
         }

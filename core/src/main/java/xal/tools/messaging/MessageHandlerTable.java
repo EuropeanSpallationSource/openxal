@@ -18,6 +18,8 @@ import java.util.logging.*;
 class MessageHandlerTable implements java.io.Serializable {
     /** serialization ID */
     private static final long serialVersionUID = 1L;
+
+    private static final Logger LOGGER = Logger.getLogger(MessageHandlerTable.class.getName());
     
     /** table keyed by protocol name and mapped to the source table */
     private final Map<String,Map<Object,MessageHandler<?>>> protocolTable;
@@ -73,8 +75,7 @@ class MessageHandlerTable implements java.io.Serializable {
         }
         else {
 			final String ERROR_MESSAGE = "Error!  Attempt to remove nonexistant message handler for source: " + source + " and protocol: " + protocol.getName();
-			Logger.getLogger("global").log( Level.WARNING, ERROR_MESSAGE );
-            System.err.println( ERROR_MESSAGE );
+			LOGGER.log( Level.WARNING, ERROR_MESSAGE );
         }
     }
     

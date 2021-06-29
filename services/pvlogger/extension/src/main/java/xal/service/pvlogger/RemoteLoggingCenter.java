@@ -20,12 +20,12 @@ import xal.extension.service.ServiceRef;
 /** Center for communicating with a remote PV logger */
 public class RemoteLoggingCenter {
 	/** list of remote services */
-	private final Map<String,RemoteLogging> REMOTE_SERVICES_MAP;
+	private final Map<String,RemoteLogging> remoteServicesMap;
 	
 	
 	/** Constructor */
 	public RemoteLoggingCenter() {
-		REMOTE_SERVICES_MAP = new Hashtable<>();
+		remoteServicesMap = new Hashtable<>();
 		monitorLoggers();
 	}
 	
@@ -72,8 +72,8 @@ public class RemoteLoggingCenter {
 	 * @return collection of remote services
 	 */
 	private Collection<RemoteLogging> getRemoteServices() {
-		synchronized ( REMOTE_SERVICES_MAP ) {
-			return REMOTE_SERVICES_MAP.values();
+		synchronized ( remoteServicesMap ) {
+			return remoteServicesMap.values();
 		}
 	}
 	
@@ -115,11 +115,12 @@ public class RemoteLoggingCenter {
 			 * @param directory The service directory.
 			 * @param serviceRef A reference to the new service.
 			 */
+                        @Override
 			public void serviceAdded( final ServiceDirectory directory, final ServiceRef serviceRef ) {
 				final RemoteLogging proxy = directory.getProxy( RemoteLogging.class, serviceRef );
 				final String name = serviceRef.getRawName();
-				synchronized( REMOTE_SERVICES_MAP ) {
-					REMOTE_SERVICES_MAP.put( name, proxy );
+				synchronized( remoteServicesMap ) {
+					remoteServicesMap.put( name, proxy );
 				}
 			}
 			
@@ -128,9 +129,10 @@ public class RemoteLoggingCenter {
 			 * @param directory The service directory.
 			 * @param name The unique name of the service.
 			 */
+                        @Override
 			public void serviceRemoved( final ServiceDirectory directory, final String type, final String name ) {
-				synchronized( REMOTE_SERVICES_MAP ) {
-					REMOTE_SERVICES_MAP.remove( name );
+				synchronized( remoteServicesMap ) {
+					remoteServicesMap.remove( name );
 				}
 			}
 		};

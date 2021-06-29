@@ -1,5 +1,7 @@
 package xal.plugins.essrbac;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import se.esss.ics.rbac.access.Credentials;
 import se.esss.ics.rbac.access.SecurityCallbackAdapter;
 import se.esss.ics.rbac.access.SecurityFacade;
@@ -19,6 +21,8 @@ import xal.rbac.RBACSubject;
  * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
  */
 public class EssRbacLogin extends RBACLogin {
+        private static final Logger LOGGER = Logger.getLogger(EssRbacLogin.class.getName());
+
 
 	public EssRbacLogin() {
 		System.setProperty("rbac.useLocalService", "true");
@@ -29,8 +33,8 @@ public class EssRbacLogin extends RBACLogin {
     public String[] getRolesForUser(final String username) throws RBACException {
         try {
             return SecurityFacade.getDefaultInstance().getRolesForUser(username);
-        } catch (Exception e) {
-            System.err.println(e.getMessage());
+        } catch (IllegalArgumentException | SecurityFacadeException e) {
+            LOGGER.log(Level.SEVERE, null, e);
             throw new RBACException("Couldn't get roles for user: " + username + "\n\r\t");
         }
     }
@@ -69,10 +73,9 @@ public class EssRbacLogin extends RBACLogin {
             return new EssRbacSubject(t);
 
         } catch (SecurityFacadeException e) {
-            System.err.println(e.getMessage());
-            //e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             throw new AccessDeniedException("Unable to authenticate.");
-        } catch (Exception e){
+        } catch (AccessDeniedException e){
             throw new RBACException("Error while trying to authenticate.");
         }
     }

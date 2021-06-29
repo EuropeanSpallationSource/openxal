@@ -222,7 +222,7 @@ public class TestTwissProbe {
 //            ProbeXmlWriter.writeXml(probe, TestTwissProbe.STR_FILE_SAVE);
 //
 //        } catch (IOException e) {
-//            e.printStackTrace();
+//            LOGGER.log(Level.SEVERE, null, exception);
 //            Assert.fail("TestTwissProbe#testArchiveSave() - unable to save probe to " + STR_FILE_SAVE);
 //            return;
 //            
@@ -240,7 +240,7 @@ public class TestTwissProbe {
 //            Assert.assertTrue(probe instanceof TwissProbe);
 //            
 //        } catch (ParsingException e) {
-//            e.printStackTrace();
+//            LOGGER.log(Level.SEVERE, null, exception);
 //            Assert.fail("TestTwissProbe#testArchiveLoad() - unable to parse file " + STR_FILE_LOAD);
 //            return;
 //            
@@ -263,12 +263,12 @@ public class TestTwissProbe {
 //            probeRest = (TwissProbe)ProbeXmlParser.parse(TestTwissProbe.STR_FILE_SAVELOAD);
 //            
 //        } catch (IOException e) {
-//            e.printStackTrace();
+//            LOGGER.log(Level.SEVERE, null, exception);
 //            Assert.fail("TestTwissProbe#testArchiveSaveRestore() - unable to save probe to " + STR_FILE_SAVELOAD);
 //            return;
 //
 //        } catch (ParsingException e) {
-//            e.printStackTrace();
+//            LOGGER.log(Level.SEVERE, null, exception);
 //            Assert.fail("TestTwissProbe#testArchiveSaveRestore() - unable to parse file " + STR_FILE_SAVELOAD);
 //            return;
 //            

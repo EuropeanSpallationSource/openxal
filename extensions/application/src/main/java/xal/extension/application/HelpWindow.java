@@ -35,6 +35,7 @@ class HelpWindow extends JFrame implements SwingConstants {
 	/** name for the help starting point resource which may or may not exist */
 	public static final String HELP_START_RESOURCE = "Help.html";
 
+    private static final Logger LOGGER = Logger.getLogger(HelpWindow.class.getName());
 
     // -------- static variables -----------------------------------------------
 	private static final URL homePage;
@@ -81,9 +82,8 @@ class HelpWindow extends JFrame implements SwingConstants {
 			updateView();
         }
         catch( IOException exception ) {
-			Logger.getLogger("global").log( Level.SEVERE, "Error loading the help page.", exception );
-            System.err.println( exception );
-            exception.printStackTrace();
+			LOGGER.log( Level.SEVERE, "Error loading the help page.", exception );
+            LOGGER.log(Level.SEVERE, null, exception);
             JOptionPane.showMessageDialog( this, exception.getMessage(), exception.getClass().getName(), JOptionPane.WARNING_MESSAGE );
         }
     }
@@ -124,9 +124,7 @@ class HelpWindow extends JFrame implements SwingConstants {
 		}
 		catch(IOException exception) {
 			final String message = "Help is unable to hyperlink to " + link;
-			Logger.getLogger("global").log( Level.WARNING, message, exception );
-			System.err.println( message );
-			exception.printStackTrace();
+			LOGGER.log( Level.WARNING, message, exception );
 			Application.displayError( "Link Error", "Error accessing link:", exception );
 		}
 		finally {

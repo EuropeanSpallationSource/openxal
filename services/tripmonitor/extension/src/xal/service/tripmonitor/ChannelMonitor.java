@@ -238,11 +238,11 @@ public class ChannelMonitor {
 		}
 		catch ( ConnectionException exception ) {
 			Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log( Level.SEVERE, "Connection exception.", exception );
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
 		catch ( MonitorException exception ) {
 			Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log( Level.SEVERE, "Monitor exception.", exception );
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
 	}
 	

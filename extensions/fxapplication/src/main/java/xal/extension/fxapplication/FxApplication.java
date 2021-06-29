@@ -80,6 +80,7 @@ import xal.tools.xml.XmlDataAdaptor.ParseException;
  * @author Yngve Levinsen <yngve.levinsen@ess.eu>
  */
 public abstract class FxApplication extends Application {
+    private static final Logger LOGGER = Logger.getLogger(FxApplication.class.getName());
 
     protected String MAIN_SCENE = "/fxml/Scene.fxml";
     protected static String CSS_STYLE = "/styles/Styles.css";
@@ -460,7 +461,7 @@ public abstract class FxApplication extends Application {
                 Logger.getLogger(FxApplication.class.getName()).log(Level.SEVERE, "Service registration failed due to ", exception);
             }
         } else {
-            Logger.getLogger("global").log(Level.CONFIG, "Application services disabled.");
+            LOGGER.log(Level.CONFIG, "Application services disabled.");
         }
     }
 

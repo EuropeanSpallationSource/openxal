@@ -10,6 +10,8 @@ package xal.extension.application;
 
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 
@@ -18,7 +20,8 @@ import javax.swing.SwingUtilities;
 public class FrameApplication extends Application implements XalDocumentListener {
     private volatile int retainCount;   // counts items that want to keep the application alive
 	
-	
+    private static final Logger LOGGER = Logger.getLogger(FrameApplication.class.getName());
+
     /** 
 	* Constructor
 	* @param adaptor The application adaptor used for customization.
@@ -88,7 +91,7 @@ public class FrameApplication extends Application implements XalDocumentListener
 			});
 		}
 		catch ( InterruptedException | InvocationTargetException exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 			throw new RuntimeException( exception );
 		}
 		

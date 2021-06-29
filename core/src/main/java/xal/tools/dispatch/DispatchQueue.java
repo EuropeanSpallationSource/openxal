@@ -14,6 +14,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 
 
@@ -440,6 +442,8 @@ public abstract class DispatchQueue implements DispatchOperationListener {
 
 /** concurrent queue */
 class ConcurrentDispatchQueue extends DispatchQueue {
+        private static final Logger LOGGER = Logger.getLogger(ConcurrentDispatchQueue.class.getName());
+
 	/** indicates that a barrier operation is currently running */
 	private boolean isRunningBarrierOperation;
 
@@ -482,8 +486,7 @@ class ConcurrentDispatchQueue extends DispatchQueue {
 					throw new RuntimeException( "Null operaiton in pending operations queue of size: " + pendingOperationQueue.size() );
 				}
 				catch( RuntimeException exception ) {
-					System.err.println( exception.getMessage() );
-					exception.printStackTrace();
+					LOGGER.log(Level.SEVERE, null, exception);
 				}
 				try {
 					pendingOperationQueue.remove();	// remove the null operation

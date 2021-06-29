@@ -22,7 +22,9 @@ class PrintManager {
     
     //- instance variables -----------------------------------------------------
     protected PageFormat pageFormat;
-    
+
+    private static final Logger LOGGER = Logger.getLogger(PrintManager.class.getName());
+
     
     /** static constructor */
     static {
@@ -75,9 +77,8 @@ class PrintManager {
             }
         }
 		catch( HeadlessException | PrinterException | NullPointerException exception ) {
-			System.err.println( exception );
 			document.displayError( "Print error", "Print Exception...", exception );
-			Logger.getLogger("global").log( Level.WARNING, "Print error.", exception );
+			LOGGER.log( Level.WARNING, "Print error.", exception );
 		}
     }
 }

@@ -19,6 +19,8 @@ import java.util.logging.Logger;
  * @author  Nikolay Malitsky, Christopher K. Allen, Nick D. Pattengale
  */
 public abstract class AcceleratorNode implements ElementType, DataListener {   
+    private static final Logger LOGGER = Logger.getLogger(AcceleratorNode.class.getName());
+
     /*
      *  Local Attributes
      */
@@ -155,9 +157,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
             }
             catch(NumberFormatException exception) {
 				final String message = "Error reading node: " + strId;
-                System.err.println( message );
-                System.err.println( exception );
-				Logger.getLogger("global").log( Level.SEVERE, message, exception );
+                LOGGER.log( Level.SEVERE, message, exception );
                 newLength = Double.NaN;
             }
 

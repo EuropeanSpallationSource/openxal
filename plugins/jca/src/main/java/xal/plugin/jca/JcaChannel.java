@@ -315,7 +315,7 @@ class JcaChannel extends Channel {
 			}
 			catch( CAException exception ) {
 				final String message = "Error attempting to connect to: " + strId;
-				Logger.getLogger("global").log( Level.SEVERE, message, exception );
+				LOGGER.log( Level.SEVERE, message, exception );
 			}
         }
 	}
@@ -341,8 +341,8 @@ class JcaChannel extends Channel {
 			}
         }
         catch(InterruptedException exception) {
-			Logger.getLogger("global").log( Level.SEVERE, "Error waiting for connection to: " + strId, exception );
-			exception.printStackTrace();
+			LOGGER.log( Level.SEVERE, "Error waiting for connection to: " + strId, exception );
+			LOGGER.log(Level.SEVERE, null, exception);
         }
     }
     
@@ -369,7 +369,7 @@ class JcaChannel extends Channel {
 				jcaChannel.destroy();
 			} 
 			catch (CAException exception)  {
-				Logger.getLogger("global").log( Level.SEVERE, "Error disconnecting: " + strId, exception );
+				LOGGER.log( Level.SEVERE, "Error disconnecting: " + strId, exception );
 			}			
 		}
 		finally {
@@ -976,7 +976,7 @@ class JcaChannel extends Channel {
 			return dbr;
         } 
 		catch ( CAException exception )    {
-			Logger.getLogger("global").log( Level.WARNING, "Error getting value from: " + strId, exception );
+			LOGGER.log( Level.WARNING, "Error getting value from: " + strId, exception );
             throw new RuntimeException( exception );
 		}
     }
@@ -1066,7 +1066,7 @@ class JcaChannel extends Channel {
 			if ( listener == null )  flushPutIO();
         } 
 		catch (CAException exception)    {
-			Logger.getLogger("global").log( Level.WARNING, "Error putting value to: " + strId, exception );
+			LOGGER.log( Level.WARNING, "Error putting value to: " + strId, exception );
             throw new PutException("JcaChannel.putValCallback(): " + exception.getMessage());
         }         
     }
@@ -1088,7 +1088,7 @@ class JcaChannel extends Channel {
 			if ( listener == null )  flushPutIO();
         } 
 		catch (CAException exception)    {
-			Logger.getLogger("global").log( Level.WARNING, "Error putting value to: " + strId, exception );
+			LOGGER.log( Level.WARNING, "Error putting value to: " + strId, exception );
             throw new PutException("JcaChannel.putValCallback(): " + exception.getMessage());
         } 
     }
@@ -1110,7 +1110,7 @@ class JcaChannel extends Channel {
 			if ( listener == null )  flushPutIO();
         } 
 		catch (CAException exception)    {
-			Logger.getLogger("global").log( Level.WARNING, "Error putting value to: " + strId, exception );
+			LOGGER.log( Level.WARNING, "Error putting value to: " + strId, exception );
             throw new PutException("JcaChannel.putValCallback(): " + exception.getMessage());
         }         
     }
@@ -1132,7 +1132,7 @@ class JcaChannel extends Channel {
 			if ( listener == null )  flushPutIO();
         } 
 		catch (CAException exception)    {
-			Logger.getLogger("global").log( Level.WARNING, "Error putting value to: " + strId, exception );
+			LOGGER.log( Level.WARNING, "Error putting value to: " + strId, exception );
             throw new PutException("JcaChannel.putValCallback(): " + exception.getMessage());
         }         
     }
@@ -1154,7 +1154,7 @@ class JcaChannel extends Channel {
 			if ( listener == null )  flushPutIO();
         }
 		catch (CAException exception)    {
-			Logger.getLogger("global").log( Level.WARNING, "Error putting value to: " + strId, exception );
+			LOGGER.log( Level.WARNING, "Error putting value to: " + strId, exception );
             throw new PutException("JcaChannel.putValCallback(): " + exception.getMessage());
         }         
     }
@@ -1176,7 +1176,7 @@ class JcaChannel extends Channel {
 			if ( listener == null )  flushPutIO();
         } 
 		catch (CAException exception)    {
-			Logger.getLogger("global").log( Level.WARNING, "Error putting value to: " + strId, exception );
+			LOGGER.log( Level.WARNING, "Error putting value to: " + strId, exception );
             throw new PutException("JcaChannel.putValCallback(): Incompatible types - " + exception.getMessage());
         }        
     }
@@ -1198,7 +1198,7 @@ class JcaChannel extends Channel {
 			if ( listener == null )  flushPutIO();
         } 
 		catch (CAException exception)    {
-			Logger.getLogger("global").log( Level.WARNING, "Error putting value to: " + strId, exception );
+			LOGGER.log( Level.WARNING, "Error putting value to: " + strId, exception );
             throw new PutException("JcaChannel.putValCallback(): Incompatible types - " + exception.getMessage());
         } 
     }
@@ -1220,7 +1220,7 @@ class JcaChannel extends Channel {
 			if ( listener == null )  flushPutIO();
         } 
 		catch (CAException exception)    {
-			Logger.getLogger("global").log( Level.WARNING, "Error putting value to: " + strId, exception );
+			LOGGER.log( Level.WARNING, "Error putting value to: " + strId, exception );
             throw new PutException("JcaChannel.putValCallback(): Incompatible types - " + exception.getMessage());
         }         
     }
@@ -1242,7 +1242,7 @@ class JcaChannel extends Channel {
 			if ( listener == null )  flushPutIO();
         } 
 		catch (CAException exception)    {
-			Logger.getLogger("global").log( Level.WARNING, "Error putting value to: " + strId, exception );
+			LOGGER.log( Level.WARNING, "Error putting value to: " + strId, exception );
             throw new PutException("JcaChannel.putValCallback(): Incompatible types - " + exception.getMessage());
         }         
     }
@@ -1264,7 +1264,7 @@ class JcaChannel extends Channel {
 			if ( listener == null )  flushPutIO();
         } 
 		catch (CAException exception)    {
-			Logger.getLogger("global").log( Level.WARNING, "Error putting value to: " + strId, exception );
+			LOGGER.log( Level.WARNING, "Error putting value to: " + strId, exception );
             throw new PutException("JcaChannel.putValCallback(): Incompatible types - " + exception.getMessage());
         } 
         
@@ -1319,8 +1319,8 @@ class JcaChannel extends Channel {
 			jcaContext.pendEvent(dblTmEvt);
 		}
 		catch(CAException exception) {
-			Logger.getLogger("global").log( Level.SEVERE, "Error flushing the channel access request buffer.", exception );
-			exception.printStackTrace();
+			LOGGER.log( Level.SEVERE, "Error flushing the channel access request buffer.", exception );
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
      }
      
@@ -1334,13 +1334,13 @@ class JcaChannel extends Channel {
 			jcaContext.pendIO( dblTmIO );
 		}
 		catch( CAException exception ) {
-			exception.printStackTrace();
-			Logger.getLogger("global").log( Level.SEVERE, "Error flushing the channel access GET I/O buffer.", exception );
+			LOGGER.log(Level.SEVERE, null, exception);
+			LOGGER.log( Level.SEVERE, "Error flushing the channel access GET I/O buffer.", exception );
 			throw new GetException( "JcaChannel.flushGetIO() - channel access time out occurred" );
 		}
 		catch( TimeoutException exception ) {
-			exception.printStackTrace();
-			Logger.getLogger("global").log( Level.SEVERE, "Error flushing the channel access GET I/O buffer.", exception );
+			LOGGER.log(Level.SEVERE, null, exception);
+			LOGGER.log( Level.SEVERE, "Error flushing the channel access GET I/O buffer.", exception );
 			throw new GetException( "JcaChannel.flushGetIO() - channel access time out occurred" );
 		}
      }
@@ -1355,13 +1355,13 @@ class JcaChannel extends Channel {
 			jcaContext.pendIO( dblTmIO );
 		}
 		catch(CAException exception) {
-			exception.printStackTrace();
-			Logger.getLogger("global").log( Level.SEVERE, "Error flushing the channel access PUT I/O buffer.", exception );
+			LOGGER.log(Level.SEVERE, null, exception);
+			LOGGER.log( Level.SEVERE, "Error flushing the channel access PUT I/O buffer.", exception );
             throw new PutException( "JcaChannel.flushPutIO() - channel access time out occurred" );
 		}
 		catch(TimeoutException exception) {
-			exception.printStackTrace();
-			Logger.getLogger("global").log( Level.SEVERE, "Error flushing the channel access PUT I/O buffer.", exception );
+			LOGGER.log(Level.SEVERE, null, exception);
+			LOGGER.log( Level.SEVERE, "Error flushing the channel access PUT I/O buffer.", exception );
             throw new PutException( "JcaChannel.flushPutIO() - channel access time out occurred" );
 		}
      }

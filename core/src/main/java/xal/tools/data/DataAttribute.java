@@ -14,7 +14,9 @@ import java.util.logging.*;
  * @author  tap
  */
 public class DataAttribute {
-	private String defaultValueStr;
+    private static final Logger LOGGER = Logger.getLogger(DataAttribute.class.getName());
+	
+    private String defaultValueStr;
     private String name;
     private Class<?> type;
     private boolean isPrimaryKey;
@@ -103,9 +105,7 @@ public class DataAttribute {
                 type = Class.forName(typeName);
             }
             catch( ClassNotFoundException exception ) {
-                System.err.println( exception );
-				Logger.getLogger("global").log( Level.SEVERE, "Error during update.", exception );
-                exception.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Error during update.", exception);
             }
             
             if ( adaptor.hasAttribute("isPrimaryKey") ) {

@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * ChannelFactory is a factory for generating channels.
@@ -28,6 +30,7 @@ public abstract class ChannelFactory {
     private static volatile ChannelFactory defaultFactory;
 
     private static final List<ChannelFactory> FACTORY_LIST = new ArrayList<>();
+    private static final Logger LOGGER = Logger.getLogger(ChannelFactory.class.getName());
 
     private boolean test = false;
 
@@ -201,7 +204,7 @@ public abstract class ChannelFactory {
             }
             return channelFactory;
         } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException exception) {
-            exception.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, exception);
             throw new RuntimeException("Failed to load the ChannelFactoryPlugin: " + exception.getMessage());
         }
     }
@@ -222,7 +225,7 @@ public abstract class ChannelFactory {
             }
             return channelFactory;
         } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException exception) {
-            exception.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, exception);
             throw new RuntimeException("Failed to load the ChannelFactoryPlugin: " + exception.getMessage());
         }
     }

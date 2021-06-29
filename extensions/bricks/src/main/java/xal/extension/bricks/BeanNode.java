@@ -11,12 +11,16 @@ package xal.extension.bricks;
 import java.beans.*;
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.data.*;
 
 
 /** brick which represents a Java Bean */
 public abstract class BeanNode<T> extends Brick implements DataListener {
+        private static final Logger LOGGER = Logger.getLogger(BeanNode.class.getName());
+
 	/** data label from bean properties */
 	protected static final String BEAN_DATA_LABEL = "BeanProperty";
 	
@@ -211,7 +215,7 @@ public abstract class BeanNode<T> extends Brick implements DataListener {
 				setPropertyValue( descriptor, value );
 			}
 			catch( Exception exception ) {
-				exception.printStackTrace();
+				LOGGER.log(Level.SEVERE, null, exception);
 			}
 		}
 	}
@@ -308,7 +312,7 @@ public abstract class BeanNode<T> extends Brick implements DataListener {
 				setPropertyValue( propertyDescriptor, value );
 			}
 			catch( Exception exception ) {
-				exception.printStackTrace();
+				LOGGER.log(Level.SEVERE, null, exception);
 			}
 		}
 	}
@@ -318,6 +322,7 @@ public abstract class BeanNode<T> extends Brick implements DataListener {
 		* Write data to the data adaptor for storage.
      * @param adaptor The adaptor to which the receiver's data is written
      */
+        @Override
     public void write( final DataAdaptor adaptor ) {
 		adaptor.setValue("tag", tag );
 		
@@ -336,7 +341,7 @@ public abstract class BeanNode<T> extends Brick implements DataListener {
 	}
 	
 	
-	/** get the archiver of bean propertiers */
+	/** get the archiver of bean properties */
 	public static DataListener getPropertyArchiver( final String name, final Object value ) {
 		return new DataListener() {
 			/** 

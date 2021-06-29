@@ -13,6 +13,8 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.io.*;
 import java.net.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -326,7 +328,9 @@ class CustomChooser extends JFileChooser {
 	
 	// state variables
     protected int status;
-    
+
+    private static final Logger LOGGER = Logger.getLogger(CustomChooser.class.getName());
+
     
 	/**
 	 * Constructor
@@ -363,7 +367,7 @@ class CustomChooser extends JFileChooser {
 			}
 		}
 		catch( MalformedURLException | URISyntaxException exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
     }
 	
@@ -388,7 +392,7 @@ class CustomChooser extends JFileChooser {
 			return defaultFile != null ? defaultFile.getPath() : null;
 		}
 		catch( URISyntaxException exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 			return null;
 		}
 	}
@@ -461,7 +465,7 @@ class CustomChooser extends JFileChooser {
 			DEFAULTS.flush();
 		}
 		catch(BackingStoreException exception) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
 	}
     

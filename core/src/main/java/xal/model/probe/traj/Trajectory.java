@@ -7,6 +7,7 @@ import xal.tools.data.IArchive;
 import xal.model.probe.Probe;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,6 +18,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Manages the history for a probe.  Saves <code>ProbeState</code> objects,
@@ -33,7 +36,7 @@ import java.util.TreeMap;
  * 
  */
 public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S> {
-	
+    private static final Logger LOGGER = Logger.getLogger(Trajectory.class.getName());
     /*
      * Global Constants
      */
@@ -128,7 +131,6 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
             // Create the comparator for ordering the tree map nodes according to node IDs
             //  Then create the map itself
             this.cmpKeyOrder = new Comparator<String>() {
-
                 @Override
                 public int compare(String strId1, String strId2) {
                     
@@ -148,14 +150,14 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
                 
             };
             
-            this.mapNodeToStates = new TreeMap<String, RealNumericIndexer<S>>(cmpKeyOrder);
+            this.mapNodeToStates = new TreeMap<>(cmpKeyOrder);
             
             // Create a blank last map entry
-            String                  ideEmpty   = new String("XXX - Root Node");
-            RealNumericIndexer<S>   setIdEmpty = new RealNumericIndexer<S>();
+            String                  ideEmpty   = "XXX - Root Node";
+            RealNumericIndexer<S>   setIdEmpty = new RealNumericIndexer<>();
             
 //            this.mapNodeToStates.put(ideEmpty, setIdEmpty);
-            this.entryLast = new AbstractMap.SimpleEntry<String, RealNumericIndexer<S>>(ideEmpty, setIdEmpty);
+            this.entryLast = new AbstractMap.SimpleEntry<>(ideEmpty, setIdEmpty);
         }
 
         /*
@@ -264,7 +266,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
          * @since  Aug 26, 2014
          */
         public List<S>  getAllStates() {
-            List<S>     lstStates = new LinkedList<S>();
+            List<S>     lstStates = new LinkedList<>();
             Collection< RealNumericIndexer<S> > setLists = this.mapNodeToStates.values();
             
             for (RealNumericIndexer<S> rni : setLists) {
@@ -298,7 +300,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
             
             // Create the set of probe states (indexed by position)
             //  and add the given state to this new set
-            RealNumericIndexer<S>   setStates = new RealNumericIndexer<S>();
+            RealNumericIndexer<S>   setStates = new RealNumericIndexer<>();
 
             double  dblPos = stateFirst.getPosition();
             setStates.add(dblPos, stateFirst);
@@ -311,7 +313,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
         }
         
         /**
-         * Convenience method for reseting the last entry maintained by this class.
+         * Convenience method for resetting the last entry maintained by this class.
          * Saves the space of having to write out all the nested types and
          * generic information.
          *
@@ -323,7 +325,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
          * @since  Aug 14, 2014
          */
         private void updateLastEntry(String strDevId, RealNumericIndexer<S> setStates) {
-            this.entryLast = new AbstractMap.SimpleEntry<String, RealNumericIndexer<S>>(strDevId, setStates);
+            this.entryLast = new AbstractMap.SimpleEntry<>(strDevId, setStates);
         }
     }
     
@@ -352,7 +354,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
          DataAdaptor daptTraj = daptSrc.childAdaptor(Trajectory.TRAJ_LABEL);
          if (daptTraj == null) {
              DataFormatException e = new DataFormatException("Trajectory#createFrom() - DataAdaptor contains no trajectory node");
-             e.printStackTrace();
+             LOGGER.log(Level.SEVERE, null, e);
              
              throw e;
          }
@@ -361,13 +363,13 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
          //  If there are missing we have no way
          if (!daptTraj.hasAttribute(TYPE_TRAJ_TAG)) {
              DataFormatException e = new DataFormatException("Trajectory node must conatain trajectory type attribute " + TYPE_TRAJ_TAG);
-             e.printStackTrace();
+             LOGGER.log(Level.SEVERE, null, e);
 
              throw e;
          }
          if (!daptTraj.hasAttribute(TYPE_STATE_TAG)) {
              DataFormatException e = new DataFormatException("Trajectory node must conatain probe state type attribute " + TYPE_STATE_TAG);
-             e.printStackTrace();
+             LOGGER.log(Level.SEVERE, null, e);
 
              throw e;
          }
@@ -390,8 +392,8 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
              
              return trjNew;
              
-         } catch (Exception e) {
-             e.printStackTrace();
+         } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException | DataFormatException e) {
+             LOGGER.log(Level.SEVERE, null, e);
              throw new DataFormatException(e.getMessage());
          }
      }
@@ -449,7 +451,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
     public Trajectory(final Class<S> clsStates) {
         this.clsStates = clsStates;
 
-        this.rniStateHistory     = new RealNumericIndexer<S>();
+        this.rniStateHistory     = new RealNumericIndexer<>();
         this.mapSmfIdToStates    = new ElemStateMap();
         this.mapElemTypeToStates = new ElemStateMap();
     }
@@ -707,7 +709,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
         boolean        bolStart1 = false;
 
         // The returned sub-trajectory
-        Trajectory<S>  trjSub = new Trajectory<S>(this.clsStates);
+        Trajectory<S>  trjSub = new Trajectory<>(this.clsStates);
         
         // For every state in this trajectory...
         for (S state : this) {
@@ -768,7 +770,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
 	    boolean        bolStop2  = false;
 
 	    // The returned sub-trajectory
-	    Trajectory<S>  trjSub = new Trajectory<S>(this.clsStates);
+	    Trajectory<S>  trjSub = new Trajectory<>(this.clsStates);
 	    
 	    // For every state in this trajectory...
 	    for (S state : this) {
@@ -856,7 +858,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
     public List<S> statesInPositionRange( final double low, final double high ) {
 		final int[] range = rniStateHistory.getIndicesWithinLocationRange( low, high );
 		if ( range != null ) {
-			final List<S> result = new ArrayList<S>( range[1] - range[0] + 1 );
+			final List<S> result = new ArrayList<>( range[1] - range[0] + 1 );
 			for ( int index = range[0] ; index <= range[1] ; index++ ) {
 				result.add( rniStateHistory.get( index ) );
 			}
@@ -867,7 +869,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
 		}
 		else {
 //			return new ProbeState[0];
-		    return new LinkedList<S>();
+		    return new LinkedList<>();
 		}
     }
 	
@@ -996,7 +998,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
      * @return an array of integer indices corresponding to that element
      */
     public int[] indicesForElement(String element) {
-        List<Integer> indices = new ArrayList<Integer>();
+        List<Integer> indices = new ArrayList<>();
         int c1 = 0;
         Iterator<S> it = stateIterator();
         while (it.hasNext()) {
@@ -1098,7 +1100,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
             readStatesFrom(daptTraj);
             
         } catch (DataFormatException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             throw new DataFormatException( "Exception loading from adaptor: " + e.getMessage());
             
         }
@@ -1115,14 +1117,14 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
      */
     @Override
     public String toString() {
-    StringBuffer buf = new StringBuffer();
-        buf.append("Trajectory: " + getClass().getName() + "\n");
-        buf.append("Time: " + getTimestamp() + "\n");
-        buf.append("Description: " + getDescription() + "\n");
-        buf.append("States: " + rniStateHistory.size() + "\n");
+    StringBuilder buf = new StringBuilder();
+        buf.append("Trajectory: ").append(getClass().getName()).append("\n");
+        buf.append("Time: ").append(getTimestamp()).append("\n");
+        buf.append("Description: ").append(getDescription()).append("\n");
+        buf.append("States: ").append(rniStateHistory.size()).append("\n");
         Iterator<S> it = stateIterator();
         while (it.hasNext()) {
-            buf.append(it.next().toString() + "\n");
+            buf.append(it.next().toString()).append("\n");
         }
         return buf.toString();
     }
@@ -1192,8 +1194,8 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
 //                saveState(probeState);
                 addState(probeState);
                 
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | DataFormatException e) {
+                LOGGER.log(Level.SEVERE, null, e);
                 throw new DataFormatException(e.getMessage());
             }
             

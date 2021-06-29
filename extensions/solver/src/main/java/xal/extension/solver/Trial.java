@@ -34,7 +34,7 @@ public class Trial {
 	protected TrialVeto veto;
 	
 	/** table of objective scores */
-	protected final Map<Objective,Score> OBJECTIVE_SCORES;
+	protected final Map<Objective,Score> objectiveScores;
 	
 	/** overall satisfaction provided by some solution judges */
 	protected double satisfaction;
@@ -53,7 +53,7 @@ public class Trial {
 		this.problem = problem;
 		this.trialPoint = trialPoint;
 		searchAlgorithm = algorithm;
-		OBJECTIVE_SCORES = new HashMap<>();
+		objectiveScores = new HashMap<>();
 		veto = null;
 	}
 	
@@ -101,7 +101,7 @@ public class Trial {
 	 */
 	public void setScore( final Score score ) {
 		Objective objective = score.getObjective();
-		OBJECTIVE_SCORES.put( objective, score );
+		objectiveScores.put( objective, score );
 	}
 
 
@@ -121,7 +121,7 @@ public class Trial {
 	 * @return             The score of the specified objective.
 	 */
 	public Score getScore( final Objective objective ) {
-		return OBJECTIVE_SCORES.get( objective );
+		return objectiveScores.get( objective );
 	}
 
 
@@ -131,7 +131,7 @@ public class Trial {
 	 * @return             The satisfaction.
 	 */
 	public double getSatisfaction( final Objective objective ) {
-		final Score score = OBJECTIVE_SCORES.get( objective );
+		final Score score = objectiveScores.get( objective );
 		final double newSatisfaction = score.getSatisfaction();
 
 		if ( !validateSatisfaction( newSatisfaction ) ) {
@@ -202,7 +202,7 @@ public class Trial {
 	 * @return   Table of scores keyed by objective.
 	 */
 	public Map<Objective,Score> getScores() {
-		return OBJECTIVE_SCORES;
+		return objectiveScores;
 	}
 	
 	
@@ -233,7 +233,7 @@ public class Trial {
 		StringBuilder buffer = new StringBuilder();
 		buffer.append("\nTrial Point: ").append(trialPoint).append("\n ");
 		buffer.append("Satisfaction: ").append(satisfaction).append("\n");
-		buffer.append("Scores: ").append(OBJECTIVE_SCORES).append("\n");
+		buffer.append("Scores: ").append(objectiveScores).append("\n");
 
 		return buffer.toString();
 	}

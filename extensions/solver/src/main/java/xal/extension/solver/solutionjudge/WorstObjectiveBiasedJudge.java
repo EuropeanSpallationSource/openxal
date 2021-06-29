@@ -21,7 +21,7 @@ import java.util.*;
  */
 public class WorstObjectiveBiasedJudge extends SolutionJudge {
 	/** the bias weight */
-	protected final double BIAS_WEIGHT;
+	protected final double biasWeight;
 	
 	/** the current best satisfaction */
 	protected double bestSatisfaction;
@@ -41,7 +41,7 @@ public class WorstObjectiveBiasedJudge extends SolutionJudge {
 	
 	/** Constructor */
 	public WorstObjectiveBiasedJudge( final double biasWeight ) {
-		BIAS_WEIGHT = biasWeight;
+		this.biasWeight = biasWeight;
 		bestSatisfaction = 0.0;
 		totalWeight = 0.0;
 		optimalSolutions = new ArrayList<>();
@@ -97,12 +97,12 @@ public class WorstObjectiveBiasedJudge extends SolutionJudge {
 			while ( satisfactionIter.hasNext() ) {
 				final double satisfaction = satisfactionIter.next();
 				weightedSum += weight * satisfaction;
-				weight *= BIAS_WEIGHT;	// weight the worst satisfactions most
+				weight *= biasWeight;	// weight the worst satisfactions most
 			}
 			
 			// make sure we do this at least once and then cache it
 			if (  totalWeight == 0.0 ) {
-				totalWeight = ( 1.0 - Math.pow( BIAS_WEIGHT, numObjectives ) ) / ( 1.0 - BIAS_WEIGHT );
+				totalWeight = ( 1.0 - Math.pow(biasWeight, numObjectives ) ) / ( 1.0 - biasWeight );
 			}
 			
 			// generate the overall satisfaction which is scaled from 0 to 1

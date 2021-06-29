@@ -9,6 +9,8 @@
  */
 package xal.extension.solver;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.tools.messaging.MessageCenter;
 
 import xal.extension.solver.algorithm.*;
@@ -23,11 +25,13 @@ import xal.extension.solver.market.*;
  * @author   t6p
  */
 public class AlgorithmSchedule {
+        private static final Logger LOGGER = Logger.getLogger(AlgorithmSchedule.class.getName());
+    
 	/** message center for dispatching messages */
-	private final MessageCenter MESSAGE_CENTER;
+	private final MessageCenter messageCenter;
 	
 	/** proxy which forwarding messages to registered listeners */
-	private final AlgorithmScheduleListener EVENT_PROXY;
+	private final AlgorithmScheduleListener eventProxy;
 	
 	/** determines when to stop the trials */
 	volatile protected Stopper stopper;
@@ -52,8 +56,8 @@ public class AlgorithmSchedule {
 	 * @param stopper The stopper which can terminate the schedule.
 	 */
 	public AlgorithmSchedule( final Solver solver, final AlgorithmMarket market, final Stopper stopper ) {
-		MESSAGE_CENTER = new MessageCenter( "Algorithm Schedule" );
-		EVENT_PROXY = MESSAGE_CENTER.registerSource( this, AlgorithmScheduleListener.class );
+		messageCenter = new MessageCenter( "Algorithm Schedule" );
+		eventProxy = messageCenter.registerSource( this, AlgorithmScheduleListener.class );
 		
 		this.solver = solver;
 		this.market = market;
@@ -75,7 +79,7 @@ public class AlgorithmSchedule {
 	 * @param aListener  The listener to add.
 	 */
 	public void addAlgorithmScheduleListener( AlgorithmScheduleListener aListener ) {
-		MESSAGE_CENTER.registerTarget( aListener, this, AlgorithmScheduleListener.class );
+		messageCenter.registerTarget( aListener, this, AlgorithmScheduleListener.class );
 	}
 
 
@@ -84,7 +88,7 @@ public class AlgorithmSchedule {
 	 * @param aListener  The listener to remove.
 	 */
 	public void removeAlgorithmScheduleListener( AlgorithmScheduleListener aListener ) {
-		MESSAGE_CENTER.removeTarget( aListener, this, AlgorithmScheduleListener.class );
+		messageCenter.removeTarget( aListener, this, AlgorithmScheduleListener.class );
 	}
 	
 	
@@ -181,7 +185,7 @@ public class AlgorithmSchedule {
 			}			
 		}
 		catch ( RunTerminationException exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
 	}
 	
@@ -194,9 +198,9 @@ public class AlgorithmSchedule {
 		if ( algorithm != null ) {
             algorithm.setProposedEvaluations( proposedEvaluations );
             
-			EVENT_PROXY.algorithmRunWillExecute(this, algorithm, solver.getScoreBoard() );
+			eventProxy.algorithmRunWillExecute(this, algorithm, solver.getScoreBoard() );
 			algorithm.executeRun(this, solver.getScoreBoard() );
-			EVENT_PROXY.algorithmRunExecuted(this, algorithm, solver.getScoreBoard() );
+			eventProxy.algorithmRunExecuted(this, algorithm, solver.getScoreBoard() );
 		}
 	}
 	
@@ -224,9 +228,9 @@ public class AlgorithmSchedule {
 	 */
 	private void score( final Trial trial ) {
 		final boolean isSuccessful = problem.evaluate( trial );
-		if ( !isSuccessful )  EVENT_PROXY.trialVetoed( this, trial );
+		if ( !isSuccessful )  eventProxy.trialVetoed( this, trial );
 		solver.judge( trial );
-		EVENT_PROXY.trialScored( this, trial );
+		eventProxy.trialScored( this, trial );
 	}
 }
 

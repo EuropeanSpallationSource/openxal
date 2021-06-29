@@ -15,6 +15,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.util.prefs.Preferences;
 import java.net.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** Manage the default folder for an application's documents */
 public class DefaultFolderAccessory implements PropertyChangeListener {
@@ -29,7 +31,9 @@ public class DefaultFolderAccessory implements PropertyChangeListener {
 	
 	/** the active file chooser */
 	protected JFileChooser activeFileChooser;
-	
+        
+        private static final Logger LOGGER = Logger.getLogger(DefaultFolderAccessory.class.getName());
+
 	
 	/** Primary Constructor */
 	public DefaultFolderAccessory( final Preferences prefs, final String preferenceID, final String subfolderName ) {
@@ -166,7 +170,7 @@ public class DefaultFolderAccessory implements PropertyChangeListener {
 					}					
 				}
 				catch ( Exception exception ) {
-					exception.printStackTrace();
+					LOGGER.log(Level.SEVERE, null, exception);
 				}
 			}
 			

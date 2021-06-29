@@ -12,6 +12,8 @@ import java.util.prefs.AbstractPreferences;
 import java.util.prefs.BackingStoreException;
 
 public class Preferences extends AbstractPreferences {
+    private static final Logger LOGGER = Logger.getLogger(Preferences.class.getName());
+    
     protected java.util.prefs.Preferences userPrefs;
     protected Properties sysPrefs;
     protected Set<String> usrKeys;
@@ -66,13 +68,14 @@ public class Preferences extends AbstractPreferences {
             String confDir = System.getenv("OPENXAL_CONFIG_DIR");
             if (confDir == null) confDir = "/etc/openxal";
             File confFile = new File(confDir + "/" + fullName() + ".prefs");
-            Logger.getLogger("global").log( Level.CONFIG, String.format("sysPrefs: %s", confFile.toString()) );
+            LOGGER.log( Level.CONFIG, String.format("sysPrefs: %s", confFile.toString()) );
             if (confFile.exists()) {
-                Logger.getLogger("global").log( Level.INFO, "Configuration file found, loading..");
+                LOGGER.log( Level.INFO, "Configuration file found, loading..");
                 sysPrefs = new Properties();
                 try {
                     sysPrefs.load(new FileReader(confFile));
                 } catch (IOException e) {
+                    LOGGER.log(Level.SEVERE, null, e);
                 }
             }
         }

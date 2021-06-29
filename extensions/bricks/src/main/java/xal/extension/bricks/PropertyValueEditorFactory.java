@@ -18,12 +18,16 @@ import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.event.*;
 import java.net.MalformedURLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.data.*;
 
 
 /** Factory for creating property value editor instances */
 public class PropertyValueEditorFactory {
+    private static final Logger LOGGER = Logger.getLogger(PropertyValueEditorFactory.class.getName());
+    
 	/** Get an editor of strings */
 	static PropertyValueEditor<String> getStringEditor() {
 		return new PropertyValueTextEditor<String>() {
@@ -476,7 +480,7 @@ public class PropertyValueEditorFactory {
 					return IconResource.getInstance( context.getSourceURL(), group, iconName );
 				}
 				catch ( Exception exception ) {
-					exception.printStackTrace();
+					LOGGER.log(Level.SEVERE, null, exception);
 					return null;
 				}
 			}
@@ -533,7 +537,7 @@ public class PropertyValueEditorFactory {
 					return IconResource.getInstance( contextURL, group, iconName );
 				}
 				catch( MalformedURLException exception ) {
-					exception.printStackTrace();
+					LOGGER.log(Level.SEVERE, null, exception);
 					return null;
 				}
 			}

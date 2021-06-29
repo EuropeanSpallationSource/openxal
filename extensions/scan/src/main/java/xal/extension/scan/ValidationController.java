@@ -220,7 +220,7 @@ public class ValidationController{
 	mainFrame.addWindowListener(
 	    new java.awt.event.WindowAdapter() {
                 @Override
-		public void windowClosing(java.awt.event.WindowEvent evt) {
+		public void windowClosing(WindowEvent evt) {
 		    System.exit(0);
 		}
 	    }

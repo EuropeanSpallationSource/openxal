@@ -9,10 +9,15 @@
 package xal.tools.dispatch;
 
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /** DispatchTimer */
-public class DispatchTimer {
+public class DispatchTimer {       
+    
+    private static final Logger LOGGER = Logger.getLogger(DispatchTimer.class.getName());
+
 	/** possible dispatch modes */
 	public enum DispatchTimerMode { FIXED_RATE, COALESCING }
 
@@ -376,7 +381,7 @@ public class DispatchTimer {
 						}
 					}
 					catch ( InterruptedException exception ) {
-						exception.printStackTrace();
+						LOGGER.log(Level.SEVERE, null, exception);
 					}
 					finally {
 						dispatchEventIfEnabled();

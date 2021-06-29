@@ -41,7 +41,9 @@ public abstract class XalInternalWindow extends JInternalFrame implements XalDoc
 	// public static constants for confirmation dialogs
 	public static final int YES_OPTION = JOptionPane.YES_OPTION;
 	public static final int NO_OPTION = JOptionPane.NO_OPTION;
-	
+        
+        private static final Logger LOGGER = Logger.getLogger(XalInternalWindow.class.getName());
+
     //------------- instance variables -----------------------------------------
     
 	/** The toolbar associated with this window */
@@ -150,14 +152,8 @@ public abstract class XalInternalWindow extends JInternalFrame implements XalDoc
         try {
             ImageCaptureManager.defaultManager().saveSnapshot( this.getContentPane() );
         }
-        catch( AWTException exception ) {
-			Logger.getLogger("global").log( Level.WARNING, "Failed to capture image.", exception ); 
-            System.err.println( exception );
-            displayWarning( exception );
-        }
-        catch( IOException exception ) {
-			Logger.getLogger("global").log( Level.WARNING, "Failed to capture image.", exception ); 
-            System.err.println( exception );
+        catch( AWTException | IOException exception ) {
+            LOGGER.log( Level.WARNING, "Failed to capture image.", exception ); 
             displayWarning( exception );
         }
     }
@@ -255,7 +251,7 @@ public abstract class XalInternalWindow extends JInternalFrame implements XalDoc
 				});
 			}
 			catch( InterruptedException | InvocationTargetException exception ) {
-				exception.printStackTrace();
+				LOGGER.log(Level.SEVERE, null, exception);
 				throw new RuntimeException( "Exception updating the window title.", exception );
 			}
 			

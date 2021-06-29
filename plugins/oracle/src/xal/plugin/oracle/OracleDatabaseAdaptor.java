@@ -119,7 +119,7 @@ public class OracleDatabaseAdaptor extends DatabaseAdaptor {
 			return (Array)arrayConstructor.newInstance( descriptor, connection, array );
 		}
 		catch( Exception exception ) {
-			Logger.getLogger("global").log( Level.SEVERE, "Error instantiating an SQL array of type: " + type, exception );
+			LOGGER.log( Level.SEVERE, "Error instantiating an SQL array of type: " + type, exception );
 			if ( exception instanceof SQLException ) {
 				throw new DatabaseException( "Exception generating an SQL array.", this, (SQLException)exception );
 			}

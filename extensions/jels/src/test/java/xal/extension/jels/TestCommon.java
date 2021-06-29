@@ -6,6 +6,8 @@ import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.Assert;
 import org.junit.runners.Parameterized.Parameters;
@@ -33,6 +35,7 @@ import xal.tools.beam.Twiss;
 import xal.tools.xml.XmlDataAdaptor;
 
 public abstract class TestCommon {
+    private static final Logger LOGGER = Logger.getLogger(TestCommon.class.getName());    
 
     protected static double SpeciesCharge = 1;
     protected Probe probe;
@@ -119,8 +122,8 @@ public abstract class TestCommon {
     public static void saveLattice(Lattice lattice, String file) {
         try {
             LatticeXmlWriter.writeXml(lattice, file);
-        } catch (IOException e1) {
-            e1.printStackTrace();
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, null, e);
         }
     }
 
@@ -128,8 +131,8 @@ public abstract class TestCommon {
         XmlDataAdaptor da = XmlDataAdaptor.newDocumentAdaptor(sequence, null);
         try {
             da.writeTo(new File(file));
-        } catch (IOException e1) {
-            e1.printStackTrace();
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, null, e);
         }
     }
 
@@ -148,8 +151,8 @@ public abstract class TestCommon {
             scenario.resync();
 
             scenario.run();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ModelException e) {
+            LOGGER.log(Level.SEVERE, null, e);
         }
 
 //        // Prints transfer matrices

@@ -11,6 +11,8 @@ package xal.extension.bricks;
 import java.net.MalformedURLException;
 import javax.swing.ImageIcon;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.IconLib;
 
@@ -19,7 +21,9 @@ import xal.tools.IconLib;
 public class IconResource extends ImageIcon {
     /** serialization ID */
     private static final long serialVersionUID = 1L;
-    
+
+    private static final Logger LOGGER = Logger.getLogger(IconResource.class.getName());
+
 	/** URL of the image for the icon */
 	private final URL imageUrl;
 	
@@ -47,7 +51,7 @@ public class IconResource extends ImageIcon {
 			return new IconResource( imageURL, group, iconName );
 		}
 		catch ( MalformedURLException exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 			return null;
 		}
 	}

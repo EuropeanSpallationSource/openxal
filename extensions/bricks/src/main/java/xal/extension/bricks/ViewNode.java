@@ -22,14 +22,19 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Enumeration;
 import java.util.TooManyListenersException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.data.*;
 
 
 /** brick which represents a view */
 public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
+    
+    private static final Logger LOGGER = Logger.getLogger(ViewNode.class.getName());
+
 	/** data label */
-	public static String dataLabel = "ViewNode";
+	public static final String DATA_LABEL = "ViewNode";
 	
 	/** the associated border node if any */
 	protected BorderNode borderNode;
@@ -49,7 +54,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 			}
 		}
 		catch( TooManyListenersException exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
 	}
 	
@@ -598,7 +603,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 	 */
         @Override
 	public String dataLabel() {
-		return dataLabel;
+		return DATA_LABEL;
 	}
     
     
@@ -608,14 +613,14 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
      */
         @Override
     public void update( final DataAdaptor adaptor ) {		
-		final DataAdaptor borderAdaptor = adaptor.childAdaptor(BorderNode.dataLabel );
+		final DataAdaptor borderAdaptor = adaptor.childAdaptor(BorderNode.DATA_LABEL );
 		if ( borderAdaptor != null ) {
 			final BorderNode borderNode = BorderNode.getInstance( borderAdaptor );
 			setBorderNode( borderNode );
 		}
 		
-		final List<DataAdaptor> nodeAdaptors = adaptor.childAdaptors(ViewNode.dataLabel );
-		final List<BeanNode<?>> nodes = new ArrayList<BeanNode<?>>( nodeAdaptors.size() );
+		final List<DataAdaptor> nodeAdaptors = adaptor.childAdaptors(ViewNode.DATA_LABEL );
+		final List<BeanNode<?>> nodes = new ArrayList<>( nodeAdaptors.size() );
 		for ( final DataAdaptor nodeAdaptor : nodeAdaptors ) {
 			nodeAdaptor.setValue( "contextURL", adaptor.stringValue( "contextURL" ) );
 			nodes.add( ViewNode.getInstance( nodeAdaptor ) );
@@ -688,7 +693,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 				}
 			}
 			catch( UnsupportedFlavorException | IOException exception ) {
-				exception.printStackTrace();
+				LOGGER.log(Level.SEVERE, null, exception);
 				event.dropComplete( false );
 			}
 		}

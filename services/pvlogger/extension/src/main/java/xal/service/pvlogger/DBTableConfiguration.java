@@ -19,24 +19,24 @@ import xal.tools.data.DataAdaptor;
 /** database table configuration */
 class DBTableConfiguration {
 	/** database table name */
-	protected final String TABLE_NAME;
+	protected final String tableName;
 	
 	/** map of table column names keyed by attributes */
-	protected final Map<String,String> COLUMN_ATTRIBUTE_MAP;
+	protected final Map<String,String> columnAttributeMap;
 	
 	/** map of SQL queries keyed by name */
-	protected final Map<String,String> QUERY_MAP;
+	protected final Map<String,String> queryMap;
 	
 	/** map of database data types keyed by name */
-	protected final Map<String,String> DATA_TYPE_MAP;
+	protected final Map<String,String> dataTypeMap;
 	
 	
 	/** Constructor */
 	protected DBTableConfiguration( final DataAdaptor tableAdaptor ) {
-		TABLE_NAME = tableAdaptor.stringValue( "name" );
-		COLUMN_ATTRIBUTE_MAP = getColumnAttributeMap( tableAdaptor );
-		QUERY_MAP = getQueryMap( tableAdaptor );
-		DATA_TYPE_MAP = getDataTypes( tableAdaptor );
+		tableName = tableAdaptor.stringValue( "name" );
+		columnAttributeMap = getColumnAttributeMap( tableAdaptor );
+		queryMap = getQueryMap( tableAdaptor );
+		dataTypeMap = getDataTypes( tableAdaptor );
 	}
 	
 	
@@ -51,7 +51,7 @@ class DBTableConfiguration {
 	 * @return the database table name
 	 */
 	public String getTableName() {
-		return TABLE_NAME;
+		return tableName;
 	}
 	
 	
@@ -61,7 +61,7 @@ class DBTableConfiguration {
 	 * @return column corresponding to the specified attribute
 	 */
 	public String getColumn( final String attribute ) {
-		return COLUMN_ATTRIBUTE_MAP.get( attribute );
+		return columnAttributeMap.get( attribute );
 	}
 	
 	
@@ -71,7 +71,7 @@ class DBTableConfiguration {
 	 * @return the SQL for the specified query
 	 */
 	public String getQuerySQL( final String queryName ) {
-		return QUERY_MAP.get( queryName );
+		return queryMap.get( queryName );
 	}
 	
 	
@@ -81,7 +81,7 @@ class DBTableConfiguration {
 	 * @return database data type
 	 */
 	public String getDataType( final String name ) {
-		return DATA_TYPE_MAP.get( name );
+		return dataTypeMap.get( name );
 	}
 	
 	

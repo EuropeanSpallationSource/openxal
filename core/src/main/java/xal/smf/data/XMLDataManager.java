@@ -12,6 +12,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import org.w3c.dom.Document;
@@ -55,6 +57,7 @@ import xal.tools.xml.XmlTableIO;
 public class XMLDataManager {
 
     private static final String MAIN_PATH_PREF_KEY = "mainPath";
+    private static final Logger LOGGER = Logger.getLogger(XMLDataManager.class.getName());
 
     /**
      * manage the bindings of device types to AcceleratorNode subclasses
@@ -86,8 +89,7 @@ public class XMLDataManager {
             mainManager.refresh();
         } catch (ResourceNotFoundException exception) {
             // if the file doesn't exist, don't load it
-            System.err.println(exception);
-            exception.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, exception);
         }
     }
 
@@ -1256,7 +1258,7 @@ public class XMLDataManager {
                     final Class<AcceleratorNode> deviceClass = (Class<AcceleratorNode>) Class.forName(deviceClassName);
                     nodeFactory.registerNodeClass(deviceType, softType, deviceClass);
                 } catch (ClassNotFoundException exception) {
-                    exception.printStackTrace();
+                    LOGGER.log(Level.SEVERE, null, exception);
                 }
             }
 

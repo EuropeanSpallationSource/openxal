@@ -23,7 +23,7 @@
  * @author t6p
  */
  public class SatisfactionSumJudge extends SolutionJudge {
-	 protected final double DEFAULT_WEIGHT = 1.0;
+	 protected static final double DEFAULT_WEIGHT = 1.0;
 	 protected double bestWeightedSum;
 	 protected List<Trial> optimalSolutions;
 	 protected Map<Objective,Double> objectiveWeightMap;

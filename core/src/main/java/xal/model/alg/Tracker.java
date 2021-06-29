@@ -22,6 +22,8 @@ import xal.smf.AcceleratorSeq;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 
@@ -78,7 +80,8 @@ import java.util.List;
  * @see xal.model.IAlgorithm
  */
 public abstract class Tracker implements IAlgorithm, IArchive {
-
+    
+    private static final Logger LOGGER = Logger.getLogger(Tracker.class.getName());
 
     /*
      *  Abstract Methods
@@ -205,8 +208,8 @@ public abstract class Tracker implements IAlgorithm, IArchive {
             Class<?> clsAlg = Class.forName(strTypeName);
             algorithm = (IAlgorithm)clsAlg.newInstance();
             
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+            LOGGER.log(Level.SEVERE, null, e);
             throw new DataFormatException("Tracker#newInstance() - unknown algorithm type " + strTypeName);
             
         }
@@ -316,8 +319,8 @@ public abstract class Tracker implements IAlgorithm, IArchive {
             Class<?> clsTracker = Class.forName(strClsAlg);
             algorithm = (IAlgorithm) clsTracker.newInstance();
             
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+            LOGGER.log(Level.SEVERE, null, e);
             throw new DataFormatException("Tracker.newFromEditContext(): unknow algorithm type " + strClsAlg);
             
         }
@@ -575,6 +578,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * 
      * @return <code>true</code> if phase calculations are made, <code>false</code> otherwise
      */  
+    @Override
     public boolean getRfGapPhaseCalculation() { return bolCalcRfGapPhase;}
 
 
@@ -600,6 +604,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      *  @param  ifcProbe    probe interface to be validated
      *  @return             true if algorithm supports the probe type
      */
+    @Override
     public boolean validProbe(IProbe ifcProbe)  {
         return lstProbes.contains( ifcProbe.getClass() );
     }

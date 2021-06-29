@@ -23,7 +23,8 @@ import xal.tools.URLUtil.FilePathException;
  * @author  tap
  */
 public class AcceleratorActionFactory {
-    
+    private static final Logger LOGGER = Logger.getLogger(AcceleratorActionFactory.class.getName());
+
     /** Creates a new instance of AcceleratorActionFactory */
     protected AcceleratorActionFactory() {} 
     
@@ -113,8 +114,7 @@ public class AcceleratorActionFactory {
 				}
 				catch( Exception exception ) {
 					final String message = "Exception while loading the default accelerator: ";
-					System.err.println( message + '\n' + exception );
-					Logger.getLogger("global").log( Level.SEVERE, message, exception );
+					LOGGER.log( Level.SEVERE, message, exception );
 					document.displayError( "Exception", message, exception );
 				}
             }

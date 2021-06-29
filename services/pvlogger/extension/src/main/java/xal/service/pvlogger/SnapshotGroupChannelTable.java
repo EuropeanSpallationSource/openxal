@@ -15,30 +15,35 @@ import java.sql.SQLException;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /** represent the snapshot group (type) - PV relationship database table */
 class SnapshotGroupChannelTable {
+        private static final Logger LOGGER = Logger.getLogger(SnapshotGroupChannelTable.class.getName());
+
+    
 	/** database table name */
-	private final String TABLE_NAME;
+	private final String tableName;
 	
 	/** Group primary key */
-	private final String GROUP_COLUMN;
+	private final String groupColumn;
 
 	/** Active indicator column */
-	private final String ACTIVE_INDICATOR_COLUMN;
+	private final String activeIndicatorColumn;
 	
 	/** PV primary key */
-	private final String CHANNEL_COLUMN;
+	private final String channelColumn;
 	
 	
 	/** Constructor */
 	public SnapshotGroupChannelTable( final DBTableConfiguration configuration ) {
-		TABLE_NAME = configuration.getTableName();
+		tableName = configuration.getTableName();
 		
-		GROUP_COLUMN = configuration.getColumn( "group" );
-		CHANNEL_COLUMN = configuration.getColumn( "channel" );
-		ACTIVE_INDICATOR_COLUMN = configuration.getColumn( "active" );
+		groupColumn = configuration.getColumn( "group" );
+		channelColumn = configuration.getColumn( "channel" );
+		activeIndicatorColumn = configuration.getColumn( "active" );
 	}
 	
 	
@@ -55,7 +60,7 @@ class SnapshotGroupChannelTable {
 		final List<String> pvs = new ArrayList<>();
 		final ResultSet resultSet = queryStatement.executeQuery();
 		while ( resultSet.next() ) {
-			pvs.add( resultSet.getString( CHANNEL_COLUMN ) );
+			pvs.add( resultSet.getString( channelColumn ) );
 		}
 		resultSet.close();
 		return pvs.toArray( new String[pvs.size()] );
@@ -75,7 +80,7 @@ class SnapshotGroupChannelTable {
 		final List<String> pvs = new ArrayList<>();
 		final ResultSet resultSet = queryStatement.executeQuery();
 		while ( resultSet.next() ) {
-			pvs.add( resultSet.getString( CHANNEL_COLUMN ) );
+			pvs.add( resultSet.getString( channelColumn ) );
 		}
 		resultSet.close();
 		return pvs.toArray( new String[pvs.size()] );
@@ -101,9 +106,8 @@ class SnapshotGroupChannelTable {
 					insertStatement.addBatch();
 					needsInsert = true;
 				}
-				catch( Exception exception ) {
-					System.err.println( "Exception publishing channel:  " + channelName );
-					System.err.println( exception );
+				catch( SQLException exception ) {
+					LOGGER.log(Level.SEVERE, "Exception publishing channel:  " + channelName , exception);
 				}
 			}
 		}
@@ -123,7 +127,7 @@ class SnapshotGroupChannelTable {
 	 * @throws java.sql.SQLException  if an exception occurs during a SQL evaluation
 	 */
 	protected PreparedStatement getGroupChannelQueryByGroupStatement( final Connection connection ) throws SQLException {
-		return connection.prepareStatement( "SELECT * FROM " + TABLE_NAME + " WHERE " + GROUP_COLUMN + " = ?" );
+		return connection.prepareStatement( "SELECT * FROM " + tableName + " WHERE " + groupColumn + " = ?" );
 	}
 
 
@@ -133,7 +137,7 @@ class SnapshotGroupChannelTable {
 	 * @throws java.sql.SQLException  if an exception occurs during a SQL evaluation
 	 */
 	protected PreparedStatement getActiveGroupChannelQueryByGroupStatement( final Connection connection ) throws SQLException {
-		return connection.prepareStatement( "SELECT * FROM " + TABLE_NAME + " WHERE " + GROUP_COLUMN + " = ? AND " + ACTIVE_INDICATOR_COLUMN + " = \'Y\'" );
+		return connection.prepareStatement( "SELECT * FROM " + tableName + " WHERE " + groupColumn + " = ? AND " + activeIndicatorColumn + " = \'Y\'" );
 	}
 
 	
@@ -143,6 +147,6 @@ class SnapshotGroupChannelTable {
 	 * @throws java.sql.SQLException  if an exception occurs during a SQL evaluation
 	 */
 	protected PreparedStatement getInsertStatement( final Connection connection ) throws SQLException {
-		return connection.prepareStatement( "INSERT INTO " + TABLE_NAME + "(" + GROUP_COLUMN + ", " + CHANNEL_COLUMN + ") VALUES (?, ?)" );
+		return connection.prepareStatement( "INSERT INTO " + tableName + "(" + groupColumn + ", " + channelColumn + ") VALUES (?, ?)" );
 	}	
 }

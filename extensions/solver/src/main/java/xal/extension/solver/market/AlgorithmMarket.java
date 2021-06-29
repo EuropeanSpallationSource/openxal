@@ -30,7 +30,7 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
 	private static final double PROBABILITY_RATIO_LOG = Math.log( PROBABILITY_RATIO );
 	
 	/** the random number generator */
-	private final Random RANDOM_GENERATOR;
+	private final Random randomGenerator;
 	
 	/** the random number generator seed for reproducibility */
 	private static final long RANDOM_SEED = 12345678901234L;
@@ -42,10 +42,10 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
 	private AlgorithmPool algorithmPool;
 	
 	/** message center which dispatches events to registered listeners */
-	private final MessageCenter MESSAGE_CENTER;
+	private final MessageCenter messsageCenter;
 	
 	/** proxy which forwards events to registered listeners */
-	private final AlgorithmMarketListener EVENT_PROXY;
+	private final AlgorithmMarketListener eventProxy;
 
 	
 	/**
@@ -53,10 +53,10 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
 	 * @param pool        the pool of algorithms
 	 */
 	public AlgorithmMarket( final AlgorithmPool pool ) {
-		RANDOM_GENERATOR = new Random( RANDOM_SEED );		
+		randomGenerator = new Random( RANDOM_SEED );		
 
-		MESSAGE_CENTER = new MessageCenter("Algorithm Market");
-		EVENT_PROXY = MESSAGE_CENTER.registerSource( this, AlgorithmMarketListener.class );
+		messsageCenter = new MessageCenter("Algorithm Market");
+		eventProxy = messsageCenter.registerSource( this, AlgorithmMarketListener.class );
 		
 		algorithmsByEfficiency = new ArrayList<>();
 		setAlgorithmPool( pool );
@@ -81,7 +81,7 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
 	/** reset the market */
 	public void reset() {
 		algorithmPool.reset();
-		RANDOM_GENERATOR.setSeed( RANDOM_SEED );
+		randomGenerator.setSeed( RANDOM_SEED );
 	}
 	
 	
@@ -90,7 +90,7 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
 	 * @param listener the listener to add for receiving algorithm market events
 	 */
 	public void addAlgorithmMarketListener( final AlgorithmMarketListener listener ) {
-		MESSAGE_CENTER.registerTarget( listener, this, AlgorithmMarketListener.class );
+		messsageCenter.registerTarget( listener, this, AlgorithmMarketListener.class );
 	}
 	
 	
@@ -99,7 +99,7 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
 	 * @param listener the listener to remove from receiving algorithm market events
 	 */
 	public void removeAlgorithmMarketListener( final AlgorithmMarketListener listener ) {
-		MESSAGE_CENTER.removeTarget( listener, this, AlgorithmMarketListener.class );
+		messsageCenter.removeTarget( listener, this, AlgorithmMarketListener.class );
 	}
 	
 	
@@ -153,7 +153,7 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
 		algorithmsByEfficiency.clear();
 		algorithmsByEfficiency.addAll( pool.getAlgorithms() );
 
-		EVENT_PROXY.poolChanged( this, oldPool, pool );
+		eventProxy.poolChanged( this, oldPool, pool );
 	}
 	
 	
@@ -165,7 +165,7 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
 	public SearchAlgorithm nextAlgorithm() {
 		Collections.sort(algorithmsByEfficiency, SearchAlgorithm.EFFICIENCY_COMPARATOR );
 		final int count = algorithmsByEfficiency.size();
-		final int selectedIndex = (int)( Math.log( 1.0 - RANDOM_GENERATOR.nextDouble() * ( 1.0 - Math.pow( PROBABILITY_RATIO, count ) ) ) / PROBABILITY_RATIO_LOG );
+		final int selectedIndex = (int)( Math.log( 1.0 - randomGenerator.nextDouble() * ( 1.0 - Math.pow( PROBABILITY_RATIO, count ) ) ) / PROBABILITY_RATIO_LOG );
 		return algorithmsByEfficiency.get( Math.min( selectedIndex, count - 1 ) );
 	}
 	

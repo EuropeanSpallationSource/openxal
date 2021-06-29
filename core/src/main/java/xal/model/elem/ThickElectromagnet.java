@@ -112,7 +112,7 @@ public abstract class ThickElectromagnet extends ThickElement implements IElectr
 		    //    have no orientation and always throw this warning
 //			    String    strSrc = magnetNode.getId() + "/" + magnetNode.getClass().getName();
 //			    String    strMsg = "Encountered an un-oriented electromagnet hardware object";
-//			    Logger    logGbl = Logger.getLogger("global");
+//			    Logger    logGbl = LOGGER;
 //			    
 //			    logGbl.log(Level.WARNING, strMsg + " : " + strSrc);
 //	            System.out.println("WARNING!: " + strMsg + " : " + strSrc);		

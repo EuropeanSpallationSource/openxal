@@ -24,6 +24,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -40,7 +42,8 @@ import java.util.Date;
  */
 public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive {
 
-    
+    private static final Logger LOGGER = Logger.getLogger(Probe.class.getName());
+
     /*
      * Global Constants
      */
@@ -106,7 +109,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
             Class<?> probeClass = Class.forName(type);
             probe = (Probe<?>) probeClass.newInstance();
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             throw new DataFormatException(e.getMessage());
         }
         probe.load(daptProbe);
@@ -140,8 +143,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
             return pNew;
             
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException e) {
-            System.err.println("Unable to intialize from " + probeInit.toString());
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Unable to intialize from " + probeInit.toString(), e);
             return null;
             
         }

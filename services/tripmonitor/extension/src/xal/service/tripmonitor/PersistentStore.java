@@ -71,7 +71,7 @@ public class PersistentStore {
 			return true;
 		}
 		catch( Exception exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 			return false;
 		}
 	}
@@ -99,7 +99,7 @@ public class PersistentStore {
 			return tripRecords;
 		}
 		catch( Exception exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 			return null;
 		}
 	}

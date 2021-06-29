@@ -9,6 +9,8 @@ package xal.tools.text;
 import java.io.IOException;
 import java.text.*;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -35,6 +37,8 @@ public class ScientificNumberFormat extends NumberFormat {
 
 	/** format the number padding with spaces to the left (right justification) as needed to fill out the field width */
 	private boolean fixedLength;
+        
+        private static final Logger LOGGER = Logger.getLogger(ScientificNumberFormat.class.getName());
 
 
 	/**
@@ -223,8 +227,7 @@ public class ScientificNumberFormat extends NumberFormat {
 			appendToIO( output, separator, values );
 		}
 		catch( IOException exception ) {
-			System.err.println( "Error appending formatted values to an appendable output." );
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, "Error appending formatted values to an appendable output.", exception);
 		}
 	}
 

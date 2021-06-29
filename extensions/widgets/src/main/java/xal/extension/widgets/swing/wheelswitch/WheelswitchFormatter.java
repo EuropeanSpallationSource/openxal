@@ -32,7 +32,8 @@ import java.util.logging.Logger;
  */
 public class WheelswitchFormatter
 {
-    private static final Logger logger = Logger.getLogger("global");
+    private static final Logger LOGGER = Logger.getLogger(WheelswitchFormatter.class.getName());
+
 	protected PrintfFormat defFormatter;
 	protected PrintfFormat formatter;
 	protected String formatString = null;
@@ -178,8 +179,8 @@ public class WheelswitchFormatter
 	 */
 	public void setString(String newValueString)
 	{
-		logger.log(Level.FINE, "WheelswitchFormatter#setString(): newValueString={0}", newValueString);
-		logger.log(Level.FINE, "WheelswitchFormatter#setString(): formatString={0}", formatString);
+		LOGGER.log(Level.FINE, "WheelswitchFormatter#setString(): newValueString={0}", newValueString);
+		LOGGER.log(Level.FINE, "WheelswitchFormatter#setString(): formatString={0}", formatString);
 
 		double newValue = Double.parseDouble(newValueString);
 
@@ -371,8 +372,8 @@ public class WheelswitchFormatter
 		value = newValue;
 		valueString = newValueString;
 
-		logger.log(Level.FINE, "WheelswitchFormatter#setString(): value={0}", value);
-		logger.log(Level.FINE, "WheelswitchFormatter#setString(): finalValueString={0}", valueString);
+		LOGGER.log(Level.FINE, "WheelswitchFormatter#setString(): value={0}", value);
+		LOGGER.log(Level.FINE, "WheelswitchFormatter#setString(): finalValueString={0}", valueString);
 	}
 
 	/**

@@ -14,6 +14,8 @@
  */
 package xal.sim.scenario;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static org.junit.Assert.fail;
 
 import org.junit.Before;
@@ -36,7 +38,7 @@ import xal.test.ResourceManager;
  * @since   Nov 9, 2011
  */
 public class TestScenario {
-
+    private static final Logger LOGGER = Logger.getLogger(TestScenario.class.getName());
     
     /** Accelerator sequence used for testing */
     public static final String     STR_ACCL_SEQ_ID = "MEBT";
@@ -90,9 +92,8 @@ public class TestScenario {
             Scenario        model = Scenario.newScenarioFor(seq);
             
         } catch (ModelException e) {
-
             fail("Unable to create Scenario");
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
         }
         
     }
@@ -118,9 +119,8 @@ public class TestScenario {
             model.run();
             
         } catch (ModelException | InstantiationException e) {
-
             fail("Unable to run Scenario");
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
         }
     }
 
@@ -145,9 +145,8 @@ public class TestScenario {
             model.run();
             
         } catch (ModelException | InstantiationException e) {
-
             fail("Unable to run Scenario");
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
         }
     }
 
@@ -172,9 +171,8 @@ public class TestScenario {
             model.run();
             
         } catch (ModelException | InstantiationException e) {
-
             fail("Unable to run Scenario");
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
         }
     }
 
@@ -203,9 +201,8 @@ public class TestScenario {
             model.run();
             
         } catch (ModelException e) {
-
             fail("Unable to run Scenario");
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
         }
         
     }

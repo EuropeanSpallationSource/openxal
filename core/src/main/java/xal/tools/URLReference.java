@@ -13,6 +13,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /** URLReference */
@@ -23,7 +25,8 @@ public class URLReference {
     /** URL spec */
     private final String urlSpec;
     
-    
+    private static final Logger LOGGER = Logger.getLogger(URLReference.class.getName());
+
     /**
      * Create a new reference testing whether the url spec is rooted in the root.
      * @param rootSpec  root URL spec if any
@@ -71,7 +74,7 @@ public class URLReference {
             return directory != null && file != null ? isRootedIn( directory.toURI().toURL(), file.toURI().toURL() ) : false;
         }
         catch( MalformedURLException exception ) {
-            exception.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, exception);
             throw new RuntimeException( "Exception testing whether the file is rooted in the directory.", exception );
         }
     }

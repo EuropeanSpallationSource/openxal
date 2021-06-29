@@ -7,6 +7,7 @@
 package xal.tools.messaging;
 
 
+import java.io.Serializable;
 import java.util.logging.*;
 import java.lang.reflect.*;
 
@@ -19,10 +20,12 @@ import java.lang.reflect.*;
  * Note that multiple recipients may also be notified concurrently.
  * @author  tap
  */
-class AsynchronousMessageHandler<T> extends MessageHandler<T> implements java.io.Serializable {
+class AsynchronousMessageHandler<T> extends MessageHandler<T> implements Serializable {
     /** serialization ID */
     private static final long serialVersionUID = 1L;
     
+    private static final Logger LOGGER = Logger.getLogger(AsynchronousMessageHandler.class.getName());
+
 
     /** Creates new AsynchronousMessageHandler */
     public AsynchronousMessageHandler( final TargetDirectory directory, final Class<T> newInterface, final int threadPoolSize ) {
@@ -85,10 +88,8 @@ class AsynchronousMessageHandler<T> extends MessageHandler<T> implements java.io
                 }
             }
             catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
-				final String message = "Error invoking method: " + method + " for protocol " + protocol + " for source " + source;
-				Logger.getLogger("global").log( Level.SEVERE, message, exception );
-                System.err.println( message );
-                exception.printStackTrace();
+                final String message = "Error invoking method: " + method + " for protocol " + protocol + " for source " + source;
+                LOGGER.log(Level.SEVERE, message, exception);
             }
         }
     }

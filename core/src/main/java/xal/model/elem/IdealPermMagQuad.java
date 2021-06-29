@@ -12,6 +12,8 @@ package xal.model.elem;
 
 import java.io.PrintWriter;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
@@ -33,6 +35,7 @@ import xal.model.elem.sync.IElectromagnet;
  * @author  Hiroyuki Sako
  */
 public class IdealPermMagQuad extends ThickElectromagnet {
+    private static final Logger LOGGER = Logger.getLogger(IdealPermMagQuad.class.getName());
 
 
     static final boolean DEBUG_T3D = false;
@@ -288,7 +291,7 @@ in imparted to a particular probe.  For an ideal quadrupole
                 throw new ModelException("IdealMagQuad::computeTransferMatrix() - Bad magnet orientation.");
         }
         } catch(ModelException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             System.exit(-1);
         }
 

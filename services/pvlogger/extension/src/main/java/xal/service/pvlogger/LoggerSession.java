@@ -29,6 +29,9 @@ import xal.tools.messaging.MessageCenter;
  * @author  tap
  */
 public class LoggerSession {
+        private static final Logger LOGGER = Logger.getLogger(LoggerSession.class.getName());
+
+    
 	/** initial timer delay */
 	protected final int INITIAL_DELAY = 1000;
 	
@@ -106,7 +109,7 @@ public class LoggerSession {
 		final double loggingPeriod = getLoggingPeriod();
 		final String message = "Start logging \"" + group.getLabel() + "\" with period " + loggingPeriod + " seconds";
 		System.out.println( message );
-		Logger.getLogger("global").log( Level.INFO, message );
+		LOGGER.log( Level.INFO, message );
 		resumeLogging();
 	}
 	
@@ -320,6 +323,7 @@ public class LoggerSession {
 	/** get a new timer task for periodic logging */
 	protected final TimerTask newLoggingTask() {
 		return new TimerTask() {
+                        @Override
 			public final void run() {
 				// must catch exceptions to avoid the timer stopping
 				try {
@@ -327,8 +331,7 @@ public class LoggerSession {
 					SNAPSHOT_PUBLISHER.scheduleSnapshotPublication( machineSnapshot );
 				}
 				catch( Exception exception ) {
-					Logger.getLogger( "global" ).log( Level.WARNING, "Error publishing snapshot: ", exception );
-					System.err.println( exception );
+					LOGGER.log( Level.WARNING, "Error publishing snapshot: ", exception );
 				}				
 			}
 		};

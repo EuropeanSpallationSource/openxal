@@ -9,6 +9,8 @@
 package xal.tools;
 
 import java.util.concurrent.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /** process on a separate thread pending requests dropping any previous ones */
@@ -18,7 +20,9 @@ public class FreshProcessor {
 	
 	/** indicates whether the processor should keep running */
 	private volatile boolean keepRunning;
-	
+        
+        private static final Logger LOGGER = Logger.getLogger(FreshProcessor.class.getName());
+
 	
 	/** Constructor */
 	public FreshProcessor() {
@@ -52,8 +56,8 @@ public class FreshProcessor {
 			requestQueue.put( request );
 			return true;
 		}
-		catch( Exception exception ) {
-			exception.printStackTrace();
+		catch( InterruptedException exception ) {
+			LOGGER.log(Level.SEVERE, null, exception);
 			return false;
 		}
 	}
@@ -75,7 +79,7 @@ public class FreshProcessor {
 					postProcess();
 				}
 				catch( Exception exception ) {
-					exception.printStackTrace();
+					LOGGER.log(Level.SEVERE, null, exception);
 				}
 			}
 		}

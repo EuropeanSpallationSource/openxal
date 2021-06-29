@@ -1,5 +1,7 @@
 package xal.model.probe.traj;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.PhaseVector;
 import xal.tools.beam.PhaseMatrix;
@@ -20,7 +22,7 @@ import xal.model.probe.EnvelopeProbe;
 public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> { 
 //    implements ProbeStateFactory<EnvelopeProbeState> /* implements IPhaseState */ {
 
-
+    private static final Logger LOGGER = Logger.getLogger(EnvelopeProbeState.class.getName());
 
     /*
      * Global Constants
@@ -659,11 +661,11 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
             
 
         } catch (DataFormatException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             throw new DataFormatException("The source data was corrupted - " + e.getMessage());
 
         } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             throw new DataFormatException("The provided covariance matrix was asymmetric - " + e.getMessage());
             
         }

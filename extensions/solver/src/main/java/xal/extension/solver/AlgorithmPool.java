@@ -29,10 +29,10 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 	private Collection<SearchAlgorithm> availableAlgorithms;
 	
 	/** Message center for dispatching events to registered listeners */
-	private final MessageCenter MESSAGE_CENTER;
+	private final MessageCenter messageCenter;
 	
 	/** Proxy which forwards events to registered listeners */
-	private final AlgorithmPoolListener EVENT_PROXY;
+	private final AlgorithmPoolListener eventProxy;
 
 
 	/**
@@ -43,8 +43,8 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 		this.algorithms = new HashSet<>();
 		availableAlgorithms = new HashSet<>();
 
-		MESSAGE_CENTER = new MessageCenter( "Algorithm Pool" );
-		EVENT_PROXY = MESSAGE_CENTER.registerSource( this, AlgorithmPoolListener.class );
+		messageCenter = new MessageCenter( "Algorithm Pool" );
+		eventProxy = messageCenter.registerSource( this, AlgorithmPoolListener.class );
 
 		addAlgorithms( algorithms );
 	}
@@ -105,7 +105,7 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 	 * @param listener  The listener to add.
 	 */
 	public void addAlgorithmPoolListener( final AlgorithmPoolListener listener ) {
-		MESSAGE_CENTER.registerTarget( listener, this, AlgorithmPoolListener.class );
+		messageCenter.registerTarget( listener, this, AlgorithmPoolListener.class );
 	}
 
 
@@ -114,7 +114,7 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 	 * @param listener  The listener to remove.
 	 */
 	public void removeAlgorithmPoolListener( final AlgorithmPoolListener listener ) {
-		MESSAGE_CENTER.removeTarget( listener, this, AlgorithmPoolListener.class );
+		messageCenter.removeTarget( listener, this, AlgorithmPoolListener.class );
 	}
 	
 	
@@ -146,7 +146,7 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 	public void addAlgorithm( final SearchAlgorithm algorithm ) {
 		algorithms.add( algorithm );
 		algorithm.addSearchAlgorithmListener( this );
-		EVENT_PROXY.algorithmAdded( this, algorithm );
+		eventProxy.algorithmAdded( this, algorithm );
 	}
 
 
@@ -158,7 +158,7 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
 		algorithm.removeSearchAlgorithmListener( this );
 		algorithms.remove( algorithm );
 		availableAlgorithms.remove( algorithm );
-		EVENT_PROXY.algorithmRemoved( this, algorithm );
+		eventProxy.algorithmRemoved( this, algorithm );
 	}
 
 	
@@ -251,7 +251,7 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
         @Override
 	public void algorithmAvailable( final SearchAlgorithm source ) {
 		availableAlgorithms.add( source );
-		EVENT_PROXY.algorithmAvailable( this, source );
+		eventProxy.algorithmAvailable( this, source );
 	}
 
 
@@ -262,7 +262,7 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
         @Override
 	public void algorithmUnavailable( SearchAlgorithm source ) {
 		availableAlgorithms.remove( source );
-		EVENT_PROXY.algorithmUnavailable( this, source );
+		eventProxy.algorithmUnavailable( this, source );
 	}
 	
 	

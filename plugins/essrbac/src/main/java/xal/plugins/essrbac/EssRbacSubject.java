@@ -1,6 +1,8 @@
 package xal.plugins.essrbac;
 
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import se.esss.ics.rbac.access.SecurityCallbackAdapter;
 import se.esss.ics.rbac.access.SecurityFacade;
@@ -21,7 +23,8 @@ import xal.rbac.RBACUserInfo;
  * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
  */
 public class EssRbacSubject implements RBACSubject {
-
+    private static final Logger LOGGER = Logger.getLogger(EssRbacSubject.class.getName());
+    
     private Token token;
 
     /**
@@ -99,7 +102,7 @@ public class EssRbacSubject implements RBACSubject {
         try {
             this.token = SecurityFacade.getDefaultInstance().renewToken();
         } catch (SecurityFacadeException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
         }
     }
     

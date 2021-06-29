@@ -8,10 +8,13 @@
  */
 package xal.service.pvlogger.sim;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.ca.Channel;
 import xal.service.pvlogger.ChannelSnapshot;
@@ -52,6 +55,8 @@ import xal.tools.transforms.ValueTransform;
  * TODO Things with hardcoded PV names should be redesigned
  */
 public class PVLoggerDataSource {
+        private static final Logger LOGGER = Logger.getLogger(PVLoggerDataSource.class.getName());
+
 	/** PV Logger */
 	private final PVLogger PV_LOGGER;
     
@@ -127,7 +132,7 @@ public class PVLoggerDataSource {
 			PV_LOGGER.closeConnection();
 		}
 		catch ( Exception exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
 	}
 
@@ -144,7 +149,7 @@ public class PVLoggerDataSource {
 			magnetFields = getMagnetMap();
 			magnetPowerSupplyValues = getMagnetPSMap();
 		}
-		catch ( Exception exception ) {
+		catch ( SQLException exception ) {
 			throw new RuntimeException( exception );
 		}
 	}
@@ -298,7 +303,7 @@ public class PVLoggerDataSource {
 			scenario.resync();
 		} 
 		catch ( SynchronizationException exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
 	}
 	

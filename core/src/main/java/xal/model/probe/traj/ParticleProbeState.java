@@ -1,5 +1,7 @@
 package xal.model.probe.traj;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.PhaseVector;
 import xal.tools.data.DataAdaptor;
@@ -16,6 +18,7 @@ import xal.model.probe.ParticleProbe;
  */
 public class ParticleProbeState extends ProbeState<ParticleProbeState> /*implements ICoordinateState */ {
 
+    private static final Logger LOGGER = Logger.getLogger(ParticleProbeState.class.getName());
 
 
     /*
@@ -259,7 +262,7 @@ public class ParticleProbeState extends ProbeState<ParticleProbeState> /*impleme
         this.getPhaseCoordinates().save(nodeCoords);
         
         DataAdaptor nodeResp = nodePart.createChild(LABEL_RESP);
-        this.getResponseMatrix().save(nodeResp);;
+        this.getResponseMatrix().save(nodeResp);
     }
     
     /**
@@ -313,7 +316,7 @@ public class ParticleProbeState extends ProbeState<ParticleProbeState> /*impleme
             }
             
         } catch (DataFormatException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             throw new DataFormatException("The source data was corrupted - " + e.getMessage());
             
         }

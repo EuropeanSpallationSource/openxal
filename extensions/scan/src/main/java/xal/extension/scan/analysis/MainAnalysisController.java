@@ -11,6 +11,8 @@ import java.text.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.border.*;
 
 import xal.extension.scan.*;
@@ -24,6 +26,8 @@ import xal.tools.data.DataAdaptor;
  */
 
 public class MainAnalysisController {
+        private static final Logger LOGGER = Logger.getLogger(MainAnalysisController.class.getName());
+
 
 	//variables from upper level application
 	private Object mainScanDocument = null;
@@ -869,7 +873,7 @@ public class MainAnalysisController {
 			} 
 			catch ( IOException exception ) {
 				Toolkit.getDefaultToolkit().beep();
-				exception.printStackTrace();
+				LOGGER.log(Level.SEVERE, null, exception);
 			}
 		}
 	}

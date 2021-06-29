@@ -15,6 +15,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.data.DataAdaptor;
 
@@ -23,26 +25,27 @@ import xal.tools.data.DataAdaptor;
 /** represent the snapshot group (type) database table */
 class SnapshotGroupTable {
 	/** database table name */
-	protected final String TABLE_NAME;
+	protected final String tableName;
 	
 	/** primary key */
-	protected final String PRIMARY_KEY;
+	protected final String primaryKey;
 	
 	/** group description */
-	protected final String DESCRIPTION_COLUMN;
+	protected final String descriptionColumn;
 	
 	/** snapshot period column */
-	protected final String PERIOD_COLUMN;
+	protected final String periodColumn;
 	
 	/** snapshot retention column */
-	protected final String RETENTION_COLUMN;
+	protected final String retentionColumn;
 	
 	/** service ID foreign key column */
-	protected final String SERVICE_COLUMN;
+	protected final String serviceColumn;
 	
 	/** proxy to the table of channel - channel group relationships */
 	protected SnapshotGroupChannelTable snapshotGroupChannelTable;
-	
+
+        private static final Logger LOGGER = Logger.getLogger(SnapshotGroupTable.class.getName());
 	
 	/** Constructor */
 	public SnapshotGroupTable( final DataAdaptor tableAdaptor, final SnapshotGroupChannelTable groupChannelTable ) {
@@ -54,14 +57,14 @@ class SnapshotGroupTable {
 	public SnapshotGroupTable( final DBTableConfiguration configuration, final SnapshotGroupChannelTable groupChannelTable ) {
 		snapshotGroupChannelTable = groupChannelTable;
 		
-		TABLE_NAME = configuration.getTableName();
+		tableName = configuration.getTableName();
 		
-		PRIMARY_KEY = configuration.getColumn( "group" );
+		primaryKey = configuration.getColumn( "group" );
 		
-		DESCRIPTION_COLUMN = configuration.getColumn( "description" );
-		PERIOD_COLUMN = configuration.getColumn( "period" );
-		RETENTION_COLUMN = configuration.getColumn( "retention" );
-		SERVICE_COLUMN = configuration.getColumn( "service" );
+		descriptionColumn = configuration.getColumn( "description" );
+		periodColumn = configuration.getColumn( "period" );
+		retentionColumn = configuration.getColumn( "retention" );
+		serviceColumn = configuration.getColumn( "service" );
 	}
 	
 	
@@ -102,11 +105,11 @@ class SnapshotGroupTable {
 	
 	/** produce a new channel group from the specified result set */
 	private ChannelGroup newChannelGroup( final Connection connection, final ResultSet resultSet ) throws SQLException {
-		final String groupID = resultSet.getString( PRIMARY_KEY );		// should match type
-		final String description = resultSet.getString( DESCRIPTION_COLUMN );
-		final double loggingPeriod = resultSet.getDouble( PERIOD_COLUMN );
-		final double retention = resultSet.getDouble( RETENTION_COLUMN );
-		final String serviceID = resultSet.getString( SERVICE_COLUMN );
+		final String groupID = resultSet.getString(primaryKey );		// should match type
+		final String description = resultSet.getString(descriptionColumn );
+		final double loggingPeriod = resultSet.getDouble(periodColumn );
+		final double retention = resultSet.getDouble(retentionColumn );
+		final String serviceID = resultSet.getString(serviceColumn );
 		
 		final String[] pvArray = snapshotGroupChannelTable.fetchActivePVsByType( connection, groupID );
 		
@@ -123,7 +126,7 @@ class SnapshotGroupTable {
 		final List<String> types = new ArrayList<>();
 		final ResultSet result = getGroupsQueryStatement( connection ).executeQuery();
 		while ( result.next() ) {
-			types.add( result.getString( PRIMARY_KEY ) );
+			types.add(result.getString(primaryKey ) );
 		}
 		result.close();
 		return types.toArray( new String[types.size()] );		
@@ -140,10 +143,10 @@ class SnapshotGroupTable {
 		final PreparedStatement statement = getGroupsQueryByServiceStatement( connection );
 		statement.setString( 1, serviceID );
 		
-		final List<String> types = new ArrayList<String>();
+		final List<String> types = new ArrayList<>();
 		final ResultSet result = statement.executeQuery();
 		while ( result.next() ) {
-			types.add( result.getString( PRIMARY_KEY ) );
+			types.add(result.getString(primaryKey ) );
 		}
 		result.close();
 		statement.close();
@@ -157,7 +160,7 @@ class SnapshotGroupTable {
 	 * @throws java.sql.SQLException  if an exception occurs during a SQL evaluation
 	 */
 	protected PreparedStatement getGroupsQueryStatement( final Connection connection ) throws SQLException {
-		return connection.prepareStatement( "SELECT * FROM " + TABLE_NAME );
+		return connection.prepareStatement("SELECT * FROM " + tableName );
 	}
 	
 	
@@ -167,7 +170,7 @@ class SnapshotGroupTable {
 	 * @throws java.sql.SQLException  if an exception occurs during a SQL evaluation
 	 */
 	protected PreparedStatement getGroupQueryByNameStatement( final Connection connection ) throws SQLException {
-		return connection.prepareStatement( "SELECT * FROM " + TABLE_NAME + " WHERE " + PRIMARY_KEY + " = ?" );
+		return connection.prepareStatement("SELECT * FROM " + tableName + " WHERE " + primaryKey + " = ?" );
 	}
 	
 	
@@ -177,7 +180,7 @@ class SnapshotGroupTable {
 	 * @throws java.sql.SQLException  if an exception occurs during a SQL evaluation
 	 */
 	protected PreparedStatement getGroupsQueryByServiceStatement( final Connection connection ) throws SQLException {
-		return connection.prepareStatement( "SELECT * FROM " + TABLE_NAME + " WHERE " + SERVICE_COLUMN + " = ?" );
+		return connection.prepareStatement("SELECT * FROM " + tableName + " WHERE " + serviceColumn + " = ?" );
 	}
 	
 	
@@ -189,7 +192,7 @@ class SnapshotGroupTable {
 	 * @throws java.sql.SQLException  if an exception occurs during a SQL evaluation
 	 */
 	protected PreparedStatement getUpdateStatement( final Connection connection ) throws SQLException {
-		return connection.prepareStatement( "UPDATE " + TABLE_NAME + " SET " + DESCRIPTION_COLUMN + " = ?, " + SERVICE_COLUMN + " = ?, " + PERIOD_COLUMN + " = ?, " + RETENTION_COLUMN + " = ? where " + PRIMARY_KEY + " = ?" );
+		return connection.prepareStatement("UPDATE " + tableName + " SET " + descriptionColumn + " = ?, " + serviceColumn + " = ?, " + periodColumn + " = ?, " + retentionColumn + " = ? where " + primaryKey + " = ?" );
 	}	
 	
 	
@@ -215,9 +218,8 @@ class SnapshotGroupTable {
 					updateStatement.addBatch();
 					needsUpdate = true;
 				}
-				catch( Exception exception ) {
-					System.err.println( "Exception publishing update for group:  " + groupRecord.getLabel() );
-					System.err.println( exception );
+				catch( SQLException exception ) {
+					LOGGER.log(Level.SEVERE, "Exception publishing update for group:  " + groupRecord.getLabel(), exception);
 				}
 			}
 		}

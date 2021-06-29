@@ -8,12 +8,16 @@
 package xal.extension.application.platform;
 
 import java.lang.reflect.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.extension.application.Application;
 
 
 /** MacAdaptor provides Mac OS X specific support using reflection so it only gets loaded for Mac OS X */
 public class MacAdaptor {
-	/** Constructor */
+    private static final Logger LOGGER = Logger.getLogger(MacAdaptor.class.getName());
+
+    /** Constructor */
     private MacAdaptor() {}
 	
 	
@@ -51,7 +55,7 @@ public class MacAdaptor {
             initializeFallback();
 		}
 		catch ( NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
 	}
 	
@@ -76,7 +80,7 @@ public class MacAdaptor {
 				}
 			}
 			catch ( NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException exception ) {
-				exception.printStackTrace();
+				LOGGER.log(Level.SEVERE, null, exception);
 			}
             
             return null;
@@ -121,7 +125,7 @@ public class MacAdaptor {
 			registrationMethod.invoke( macApplication, proxy );
 		}
 		catch ( ClassNotFoundException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
     }
 	
@@ -156,7 +160,7 @@ public class MacAdaptor {
                             }
 			}
 			catch ( NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException exception ) {
-				exception.printStackTrace();
+				LOGGER.log(Level.SEVERE, null, exception);
 			}
             
             return null;

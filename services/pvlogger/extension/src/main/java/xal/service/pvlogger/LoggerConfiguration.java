@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.ResourceManager;
 import xal.tools.data.DataAdaptor;
@@ -23,8 +25,10 @@ import xal.tools.xml.XmlDataAdaptor;
 
 /** Manage the configuration of the PV Logger */
 public class LoggerConfiguration {
+        private static final Logger LOGGER = Logger.getLogger(LoggerConfiguration.class.getName());
+    
 	/** database store */
-	protected final PersistentStore PERSISTENT_STORE;
+	protected final PersistentStore persistentStore;
 	
 	/** current database connection */
 	private Connection connection;
@@ -39,7 +43,7 @@ public class LoggerConfiguration {
 		final DataAdaptor configurationAdaptor = XmlDataAdaptor.adaptorForUrl( configurationURL, false ).childAdaptor( "Configuration" );
 		
 		final DataAdaptor persistentStoreAdaptor = configurationAdaptor.childAdaptor( "persistentStore" );
-		PERSISTENT_STORE = new PersistentStore( persistentStoreAdaptor );
+		persistentStore = new PersistentStore( persistentStoreAdaptor );
 		
 		setConnection( connection );
 	}
@@ -47,10 +51,10 @@ public class LoggerConfiguration {
 	
 	/** fetch the channel groups */
 	public List<ChannelGroup> fetchChannelGroups() throws SQLException {
-		final String[] types = PERSISTENT_STORE.fetchTypes( connection );
+		final String[] types = persistentStore.fetchTypes( connection );
 		final List<ChannelGroup> groups = new ArrayList<>();
 		for ( final String type : types ) {
-			groups.add( PERSISTENT_STORE.fetchChannelGroup( connection, type ) );
+			groups.add(persistentStore.fetchChannelGroup( connection, type ) );
 		}
 		
 		return groups;
@@ -63,14 +67,14 @@ public class LoggerConfiguration {
 	 * @param groupID Channel Group ID
 	 */
 	public void publishChannelsToGroup( final List<String> channelNames, final String groupID ) throws SQLException {
-		PERSISTENT_STORE.insertChannels( connection, channelNames, groupID );
+		persistentStore.insertChannels( connection, channelNames, groupID );
 		connection.commit();
 	}
 	
 	
 	/** Publish the group records as groups */
 	public void publishGroupEdits( final Set<ChannelGroupRecord> groupRecords ) throws SQLException {
-		PERSISTENT_STORE.publishGroupEdits( connection, groupRecords );
+		persistentStore.publishGroupEdits( connection, groupRecords );
 		connection.commit();
 	}
 	
@@ -95,7 +99,7 @@ public class LoggerConfiguration {
 			}
 		}
 		catch ( SQLException exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
 		
 	}

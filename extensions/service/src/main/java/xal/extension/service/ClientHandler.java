@@ -18,6 +18,8 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.lang.reflect.*;
 import java.lang.reflect.Proxy;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -25,29 +27,31 @@ import java.lang.reflect.Proxy;
  * @author  tap
  */
 class ClientHandler<ProxyType> implements InvocationHandler {
+    private static final Logger LOGGER = Logger.getLogger(ClientHandler.class.getName());
+
     /** protocol implemented by the remote service and dispatched through the proxy */
-    private final Class<ProxyType> SERVICE_PROTOCOL;
+    private final Class<ProxyType> serviceProtocol;
 
     /** name of the remote service */
-    private final String SERVICE_NAME;
+    private final String serviceName;
 
     /** proxy which forwards invocations to the remote service */
-    private final ProxyType PROXY;
+    private final ProxyType proxy;
 
     /** remote host */
-    private final String REMOTE_HOST;
+    private final String remoteHost;
 
     /** remote port */
-    private final int REMOTE_PORT;
+    private final int remotePort;
 
 	/** message processors which are available */
-	private final ConcurrentLinkedQueue<SerialRemoteMessageProcessor> MESSAGE_PROCESSORS;
+	private final ConcurrentLinkedQueue<SerialRemoteMessageProcessor> messageProcessors;
 
     /** request ID counter is incremented to provide a unique ID for each request */
     private volatile int requestIDCounter;
 
     /** coder for encoding and decoding messages for remote transport */
-    private final Coder MESSAGE_CODER;
+    private final Coder messageCoder;
 
 
     /**
@@ -59,15 +63,15 @@ class ClientHandler<ProxyType> implements InvocationHandler {
      * @param messageCoder coder for encoding and decoding messages for remote transport
 	 */
     public ClientHandler( final String host, final int port, final String name, final Class<ProxyType> newProtocol, final Coder messageCoder ) {
-        REMOTE_HOST = host;
-        REMOTE_PORT = port;
-        SERVICE_NAME = name;
-        SERVICE_PROTOCOL = newProtocol;
-        MESSAGE_CODER = messageCoder;
+        remoteHost = host;
+        remotePort = port;
+        serviceName = name;
+        serviceProtocol = newProtocol;
+        this.messageCoder = messageCoder;
 
-        PROXY = createProxy();
+        proxy = createProxy();
 
-		MESSAGE_PROCESSORS = new ConcurrentLinkedQueue<>();
+		messageProcessors = new ConcurrentLinkedQueue<>();
 
         requestIDCounter = 0;
     }
@@ -84,7 +88,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
      * @return The interface managed by this handler.
      */
     public Class<?> getProtocol() {
-        return SERVICE_PROTOCOL;
+        return serviceProtocol;
     }
 
 
@@ -93,7 +97,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
      * @return The name of the remote service.
      */
     public String getServiceName() {
-        return SERVICE_NAME;
+        return serviceName;
     }
 
 
@@ -102,7 +106,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
      * @return The host name of the remote service.
      */
     public String getHost() {
-        return REMOTE_HOST;
+        return remoteHost;
     }
 
 
@@ -111,7 +115,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
      * @return The port of the remote service.
      */
     public int getPort() {
-        return REMOTE_PORT;
+        return remotePort;
     }
 
 
@@ -120,7 +124,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
      * @return The proxy that will forward requests to the remote service.
      */
     public ProxyType getProxy() {
-        return PROXY;
+        return proxy;
     }
 
 
@@ -131,7 +135,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
     @SuppressWarnings( { "unchecked", "rawtypes" } )   // we have not choice but to cast since newProxyInstance does not support generics
     private ProxyType createProxy() {
 		ClassLoader loader = this.getClass().getClassLoader();
-        Class[] protocols = new Class[] { SERVICE_PROTOCOL, ServiceState.class };
+        Class[] protocols = new Class[] { serviceProtocol, ServiceState.class };
 
         return (ProxyType)Proxy.newProxyInstance( loader, protocols, this );
     }
@@ -141,9 +145,9 @@ class ClientHandler<ProxyType> implements InvocationHandler {
     public void dispose() {
 		final List<SerialRemoteMessageProcessor> processors = new ArrayList<>();
 
-		synchronized( MESSAGE_PROCESSORS ) {
-			processors.addAll( MESSAGE_PROCESSORS );
-			MESSAGE_PROCESSORS.clear();
+		synchronized( messageProcessors ) {
+			processors.addAll( messageProcessors );
+			messageProcessors.clear();
 		}
 
 		for ( final SerialRemoteMessageProcessor processor : processors ) {
@@ -164,23 +168,23 @@ class ClientHandler<ProxyType> implements InvocationHandler {
 	private SerialRemoteMessageProcessor nextRemoteMessageProcessor() {
 		SerialRemoteMessageProcessor processor = null;
 
-		synchronized( MESSAGE_PROCESSORS ) {
-			processor = MESSAGE_PROCESSORS.poll();
+		synchronized( messageProcessors ) {
+			processor = messageProcessors.poll();
 		}
 
 		if ( processor != null ) {
 			return processor;
 		}
 		else {
-			return new SerialRemoteMessageProcessor( REMOTE_HOST, REMOTE_PORT, MESSAGE_CODER );
+			return new SerialRemoteMessageProcessor( remoteHost, remotePort, messageCoder );
 		}
 	}
 
 
 	/** recycle a message processor which is no longer in use */
 	private void recycleRemoteMessageProcessor( final SerialRemoteMessageProcessor processor ) {
-		synchronized( MESSAGE_PROCESSORS ) {
-			MESSAGE_PROCESSORS.add( processor );
+		synchronized( messageProcessors ) {
+			messageProcessors.add( processor );
 		}
 	}
 
@@ -191,14 +195,14 @@ class ClientHandler<ProxyType> implements InvocationHandler {
      * @param proxy The instance on which the method is invoked.  This argument is unused.
      * @param method The method to implement.
      * @param args The array of arguments to pass to the method.
-     * @return The result of the method invokation.
+     * @return The result of the method invocation.
 	 * @throws xal.extension.service.RemoteMessageException if an exception occurs while invoking this remote message.
      */
     @SuppressWarnings( "unchecked" )    // must cast generic response object to Map
     @Override
 	public Object invoke( final Object proxy, final Method method, final Object[] args ) throws RemoteMessageException, RemoteServiceDroppedException {
 		try {
-			SERVICE_PROTOCOL.getMethod( method.getName(), method.getParameterTypes() );		// test whether the remote service implements the method
+			serviceProtocol.getMethod( method.getName(), method.getParameterTypes() );		// test whether the remote service implements the method
 			return performRemoteServiceCall( method, args );
 		}
 		catch( NoSuchMethodException exception ) {
@@ -215,11 +219,11 @@ class ClientHandler<ProxyType> implements InvocationHandler {
 
             final String methodName = method.getName();
             final Map<String,Object> request = new HashMap<>();
-            final String message = RpcServer.encodeRemoteMessage( SERVICE_NAME, methodName );
+            final String message = RpcServer.encodeRemoteMessage(serviceName, methodName );
             request.put( "message", message );
             request.put( "params", params );
             request.put( "id", requestID );
-            final String jsonRequest = MESSAGE_CODER.encode( request );
+            final String jsonRequest = messageCoder.encode( request );
 
             // methods marked with the OneWay annotation return immediately and do not wait for a response from the service
             final boolean waitForResponse = !method.isAnnotationPresent( OneWay.class );
@@ -250,8 +254,8 @@ class ClientHandler<ProxyType> implements InvocationHandler {
         catch ( IllegalArgumentException | RemoteMessageException | RemoteServiceDroppedException exception ) {
             throw exception;
         }
-        catch ( Exception exception ) {
-            exception.printStackTrace();
+        catch ( RuntimeException exception ) {
+            LOGGER.log(Level.SEVERE, null, exception);
             throw new RuntimeException( "Exception performing invocation for remote request.", exception );
         }
 	}
@@ -262,8 +266,8 @@ class ClientHandler<ProxyType> implements InvocationHandler {
 		try {
 			return method.invoke( newServiceState(), args );
 		}
-		catch( Exception exception ) {
-            exception.printStackTrace();
+		catch( IllegalAccessException | IllegalArgumentException | InvocationTargetException exception ) {
+            LOGGER.log(Level.SEVERE, null, exception);
             throw new RuntimeException( "Exception performing local service state call on proxy to remote.", exception );
 		}
 	}
@@ -351,10 +355,12 @@ class PendingResult {
 /** Remote message processor that can handle serial (noncurrent) requests over the same socket. */
 class SerialRemoteMessageProcessor {
     /** socket for sending and receiving remote messages */
-    private final Socket REMOTE_SOCKET;
+    private final Socket remoteSocket;
 
     /** coder for encoding and decoding messages for remote transport */
-    private final Coder MESSAGE_CODER;
+    private final Coder messageCoder;
+    
+    private static final Logger LOGGER = Logger.getLogger(SerialRemoteMessageProcessor.class.getName());
 
 
     /**
@@ -364,14 +370,14 @@ class SerialRemoteMessageProcessor {
      * @param messageCoder coder for encoding and decoding messages for remote transport
 	 */
     public SerialRemoteMessageProcessor( final String host, final int port, final Coder messageCoder ) {
-        MESSAGE_CODER = messageCoder;
+        this.messageCoder = messageCoder;
 
-        REMOTE_SOCKET = makeRemoteSocket( host, port );
+        remoteSocket = makeRemoteSocket( host, port );
 
 		try {
-			WebSocketIO.performHandshake( REMOTE_SOCKET );
+			WebSocketIO.performHandshake( remoteSocket );
 		}
-		catch ( Exception exception ) {
+		catch ( IOException | WebSocketIO.SocketPrematurelyClosedException exception ) {
 			throw new RuntimeException( "Exception creating new remote socket.", exception );
 		}
     }
@@ -398,17 +404,17 @@ class SerialRemoteMessageProcessor {
 
 	/** determine whether the socket is closed */
 	public boolean isClosed() {
-		return REMOTE_SOCKET.isClosed();
+		return remoteSocket.isClosed();
 	}
 
 
     /** dispose of resources */
     public void dispose() {
-        if ( !REMOTE_SOCKET.isClosed() ) {
+        if ( !remoteSocket.isClosed() ) {
             try {
-                REMOTE_SOCKET.close();
+                remoteSocket.close();
             }
-            catch( Exception exception ) {
+            catch( IOException exception ) {
                 throw new RuntimeException( "Excepting closing remote client socket.", exception );
             }
         }
@@ -431,9 +437,9 @@ class SerialRemoteMessageProcessor {
     @SuppressWarnings( "unchecked" )    // no way to know response Object type at compile time
     private void processRemoteResponse( final PendingResult pendingResult ) throws java.net.SocketException, java.io.IOException {
 		try {
-			final String jsonResponse = WebSocketIO.readMessage( REMOTE_SOCKET );
+			final String jsonResponse = WebSocketIO.readMessage( remoteSocket );
 			if ( jsonResponse != null ) {
-				final Object responseObject = MESSAGE_CODER.decode( jsonResponse );
+				final Object responseObject = messageCoder.decode( jsonResponse );
 				if ( responseObject instanceof Map ) {
 					final Map<String,Object> response = (Map<String,Object>)responseObject;
 					final Object result = response.get( "result" );
@@ -465,7 +471,7 @@ class SerialRemoteMessageProcessor {
     /** Submit the remote request */
     public PendingResult submitRemoteRequest( final String jsonRequest, final boolean hasResponse ) {
 		try {
-			WebSocketIO.sendMessage( REMOTE_SOCKET, jsonRequest );
+			WebSocketIO.sendMessage( remoteSocket, jsonRequest );
 
 			if ( hasResponse ) {
 				final PendingResult pendingResult = new PendingResult();
@@ -477,13 +483,13 @@ class SerialRemoteMessageProcessor {
 				catch( SocketException exception ) {
 					return pendingResult;	// no need to flood output when we expect socket exceptions when remote services drop
 				}
-				catch( Exception exception ) {
-					exception.printStackTrace();
+				catch( IOException exception ) {
+					LOGGER.log(Level.SEVERE, null, exception);
 					return pendingResult;
 				}
 				finally {
 					// if the socket closes, cleanup the connection resources and forward the exception to the client
-					if ( REMOTE_SOCKET.isClosed() ) {
+					if ( remoteSocket.isClosed() ) {
 						cleanupClosedSocket( pendingResult, new RemoteServiceDroppedException( "The remote socket has closed while processing the remote response..." ) );
 					}
 				}
@@ -493,11 +499,11 @@ class SerialRemoteMessageProcessor {
 			}
 		}
 		catch( SocketException exception ) {
-			if ( !REMOTE_SOCKET.isClosed() ) {
+			if ( !remoteSocket.isClosed() ) {
 				try {
-					REMOTE_SOCKET.close();
+					remoteSocket.close();
 				}
-				catch( Exception closeException ) {}
+				catch( IOException closeException ) {}
 			}
 			if ( hasResponse ) {
 				final PendingResult pendingResult = new PendingResult();
@@ -508,8 +514,8 @@ class SerialRemoteMessageProcessor {
 				return null;
 			}
 		}
-		catch( Exception exception ) {
-			exception.printStackTrace();
+		catch( IOException exception ) {
+			LOGGER.log(Level.SEVERE, null, exception);
 			return null;
 		}
     }

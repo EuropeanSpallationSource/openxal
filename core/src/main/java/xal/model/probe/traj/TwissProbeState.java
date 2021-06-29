@@ -8,6 +8,8 @@
  */
 package xal.model.probe.traj;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.model.probe.TwissProbe;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.PhaseVector;
@@ -29,7 +31,7 @@ import xal.tools.math.r3.R3;
  */
 public class TwissProbeState extends BunchProbeState<TwissProbeState> {
 
-
+    private static final Logger LOGGER = Logger.getLogger(TwissProbeState.class.getName());
 
     /*
      * Global Constants
@@ -40,7 +42,7 @@ public class TwissProbeState extends BunchProbeState<TwissProbeState> {
     //  Data Persistence
     //
     
-    /** element label for twiss probe data */
+    /** element label for Twiss probe data */
     private static final String   LABEL_TWISSPROBE = "twissprobe";
     
     /** element label for centroid vector */
@@ -521,7 +523,7 @@ public class TwissProbeState extends BunchProbeState<TwissProbeState> {
             this.setTwiss(envTwiss);
             
         } catch (DataFormatException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             throw new DataFormatException(e.getMessage());
             
         }

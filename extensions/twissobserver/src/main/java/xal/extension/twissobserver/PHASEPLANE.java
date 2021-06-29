@@ -16,6 +16,8 @@ package xal.extension.twissobserver;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.PhaseMatrix;
@@ -229,8 +231,7 @@ public enum PHASEPLANE {
             return dblBmSz;
             
         } catch (IllegalArgumentException | IllegalAccessException e) {
-            System.err.println("Serious error - Exiting. " + e.getMessage());
-            e.printStackTrace();
+            Logger.getLogger(PHASEPLANE.class.getName()).log(Level.SEVERE, "Serious error - Exiting.", e);
             System.exit(1);
             
             return 0.0;
@@ -315,13 +316,11 @@ public enum PHASEPLANE {
             this.fldMsmtBmSz = Measurement.class.getDeclaredField(strFldNm);
             
         } catch (NoSuchFieldException e) {
-            System.err.println("Measurement field '" + strFldNm + "' not found.  Exiting.");
-            e.printStackTrace();
+            Logger.getLogger(PHASEPLANE.class.getName()).log(Level.SEVERE, "Measurement field '" + strFldNm + "' not found.  Exiting.", e);
             System.exit(1);
 
         } catch (SecurityException e) {
-            System.err.println("Measurement field '" + strFldNm + "' not accessible.  Exiting.");
-            e.printStackTrace();
+            Logger.getLogger(PHASEPLANE.class.getName()).log(Level.SEVERE, "Measurement field '" + strFldNm + "' not accessible.  Exiting.", e);
             System.exit(1);
         
         }

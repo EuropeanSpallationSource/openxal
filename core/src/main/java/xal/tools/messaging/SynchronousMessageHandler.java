@@ -21,6 +21,7 @@ import java.lang.reflect.*;
 class SynchronousMessageHandler<T> extends MessageHandler<T> implements java.io.Serializable {
     /** serialization ID */
     private static final long serialVersionUID = 1L;
+    private static final Logger LOGGER = Logger.getLogger(SynchronousMessageHandler.class.getName());
     
     /** Creates new SynchronousMessageHandler */
     public SynchronousMessageHandler( final TargetDirectory directory, final Class<T> newInterface, final int threadPoolSize ) {
@@ -44,13 +45,11 @@ class SynchronousMessageHandler<T> extends MessageHandler<T> implements java.io.
 			}
         }
         catch( InvocationTargetException exception ) {
-			final String message = "Error invoking method: " + method + " for protocol " + protocol + " for source " + source;
-			Logger.getLogger("global").log( Level.SEVERE, message, exception );
-            System.err.println( message );
-            exception.printStackTrace();
+            final String message = "Error invoking method: " + method + " for protocol " + protocol + " for source " + source;
+            LOGGER.log(Level.SEVERE, message, exception);
         }
         catch(IllegalAccessException exception) {
-            System.err.println(exception);
+            LOGGER.log(Level.SEVERE, null, exception);
         }
         catch(IllegalArgumentException exception) {
             throw exception;

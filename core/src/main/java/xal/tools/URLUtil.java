@@ -10,6 +10,8 @@ import java.net.URL;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * URLUtil is a convenience class of static methods that allow the user to 
@@ -22,6 +24,8 @@ public class URLUtil {
     /** Creates new URLUtil */
     protected URLUtil() {}
     
+    private static final Logger LOGGER = Logger.getLogger(URLUtil.class.getName());
+
 
     /** Convert a file to a URL specification */
     public static String urlSpecForFile(File file) throws FilePathException {
@@ -63,7 +67,7 @@ public class URLUtil {
             return new File( url.toURI() ).getAbsolutePath();
         }
         catch( URISyntaxException exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 			return null;
         }
     }

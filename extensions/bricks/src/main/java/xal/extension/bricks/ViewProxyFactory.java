@@ -91,6 +91,7 @@ public class ViewProxyFactory {
 	/** Create a view proxy for a component with an empty constructor */
 	public static <T extends Component> ViewProxy<T> getViewProxy( final Class<T> viewClass, final String name, final boolean isContainer, final boolean makeIcon ) {
 		return new ViewProxy<T>( viewClass, isContainer, makeIcon ) {			
+                        @Override
 			public String getName() {
 				return name;
 			}
@@ -324,6 +325,7 @@ public class ViewProxyFactory {
 			
 			
 			/** get the name of the prototype */
+                        @Override
 			public String getName() {
 				return "Tree";
 			}

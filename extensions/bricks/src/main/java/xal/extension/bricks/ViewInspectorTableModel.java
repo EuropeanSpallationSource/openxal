@@ -12,6 +12,8 @@ import java.beans.*;
 import javax.swing.table.*;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.apputils.ApplicationSupport;
 
@@ -20,6 +22,8 @@ import xal.tools.apputils.ApplicationSupport;
 class ViewInspectorTableModel extends AbstractTableModel implements PropertyTableModel {
     /** serialization ID */
     private static final long serialVersionUID = 1L;
+
+    private static final Logger LOGGER = Logger.getLogger(ViewInspectorTableModel.class.getName());
     
 	public static final int NAME_COLUMN = 0;
 	public static final int VALUE_COLUMN = 1;
@@ -171,7 +175,7 @@ class ViewInspectorTableModel extends AbstractTableModel implements PropertyTabl
 					return beanNode.getPropertyValue( propertyDescriptor );
 				}
 				catch ( Exception exception ) {
-					exception.printStackTrace();
+					LOGGER.log(Level.SEVERE, null, exception);
 					return "None";
 				}
 			default:
@@ -191,7 +195,7 @@ class ViewInspectorTableModel extends AbstractTableModel implements PropertyTabl
                     break;
 				}
 				catch ( Exception exception ) {
-					exception.printStackTrace();
+					LOGGER.log(Level.SEVERE, "Error Setting Value", exception);
 					ApplicationSupport.displayWarning( "Error Setting Value", "Property Setting Exception:", exception );
 					return;
 				}

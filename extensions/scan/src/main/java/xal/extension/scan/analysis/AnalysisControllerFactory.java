@@ -16,7 +16,7 @@ import xal.extension.widgets.plot.*;
 
 public class AnalysisControllerFactory {
 
-	private static String[] analysisTypes = {"MANAGEMENT",
+	private static final String[] ANALYSIS_TYPES = {"MANAGEMENT",
 			"FIND_MIN_MAX",
 			"POLYNOMIAL_FITTING",
 			"INTERSECTION_FINDING",
@@ -61,8 +61,8 @@ public class AnalysisControllerFactory {
 			BasicGraphData graphDataLocal) {
 
 		int analysisIndex = -1;
-		for (int i = 0; i < analysisTypes.length; i++) {
-			if (analysisTypes[i].equals(analysisConf.name())) {
+		for (int i = 0; i < ANALYSIS_TYPES.length; i++) {
+			if (ANALYSIS_TYPES[i].equals(analysisConf.name())) {
 				analysisIndex = i;
 			}
 		}
@@ -159,7 +159,7 @@ public class AnalysisControllerFactory {
             }
 
 		if (AC != null) {
-			AC.setTypeName(analysisTypes[analysisIndex]);
+			AC.setTypeName(ANALYSIS_TYPES[analysisIndex]);
 		}
 
 		return AC;

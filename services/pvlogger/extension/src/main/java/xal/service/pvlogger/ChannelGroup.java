@@ -29,19 +29,19 @@ import xal.ca.ConnectionListener;
  */
 public class ChannelGroup {
 	/** default logging period (seconds) for the group */
-	protected final double DEFAULT_LOGGING_PERIOD;
+	protected final double defaultLoggingPeriod;
 	
 	/** retention time in days (or zero for permanent retention) for snapshots associated with this group */
-	protected final double RETENTION;
+	protected final double retention;
 	
 	/** label of the channel group */
-	protected final String LABEL;
+	protected final String label;
 	
 	/** service ID */
-	protected final String SERVICE_ID;
+	protected final String serviceId;
 	
 	/** description of the channel group */
-	protected final String DESCRIPTION;
+	protected final String description;
 	
 	/** array of channel wrappers */
 	protected ChannelWrapper[] channelWrappers;
@@ -62,11 +62,11 @@ public class ChannelGroup {
 	 * @param retention the rentention time in days (or zero for permanent retention) for snapshots associated with this group
 	 */
 	public ChannelGroup( final String label, final String serviceID, final String description, final String[] pvs, final double loggingPeriod, final double retention ) {
-		LABEL = label;
-		SERVICE_ID = serviceID;
-		DESCRIPTION = description;
-		DEFAULT_LOGGING_PERIOD = loggingPeriod;
-		RETENTION = retention;
+		this.label = label;
+		serviceId = serviceID;
+		this.description = description;
+		defaultLoggingPeriod = loggingPeriod;
+		this.retention = retention;
 		
 		lastChannelEventTime = new Date();
 		connectionHandler = new ConnectionHandler();
@@ -112,7 +112,7 @@ public class ChannelGroup {
 	 * @return the group label.
 	 */
 	public String getLabel() {
-		return LABEL;
+		return label;
 	}
 	
 	
@@ -121,7 +121,7 @@ public class ChannelGroup {
 	 * @return the service ID
 	 */
 	public String getServiceID() {
-		return SERVICE_ID;
+		return serviceId;
 	}
 	
 	
@@ -130,7 +130,7 @@ public class ChannelGroup {
 	 * @return a description of this group
 	 */
 	public String getDescription() {
-		return DESCRIPTION;
+		return description;
 	}
 	
 	
@@ -139,13 +139,13 @@ public class ChannelGroup {
 	 * @return the default logging period in seconds
 	 */
 	public double getDefaultLoggingPeriod() {
-		return DEFAULT_LOGGING_PERIOD;
+		return defaultLoggingPeriod;
 	}
 	
 	
 	/** get the retention in days (or 0 for permanent) of the snapshots associated with this group */
 	public double getRetention() {
-		return RETENTION;
+		return retention;
 	}
 	
 	
@@ -223,8 +223,9 @@ public class ChannelGroup {
 	 * Override toString() to return the group label and a description
 	 * @return the group label and description
 	 */
+        @Override
 	public String toString() {
-		return "[label: " + LABEL + ", description: " + DESCRIPTION + "]";  
+		return "[label: " + label + ", description: " + description + "]";  
 	}
 	
 	
@@ -237,6 +238,7 @@ public class ChannelGroup {
 		 * Indicates that a connection to the specified channel has been established.
 		 * @param channel The channel which has been connected.
 		 */
+                @Override
 		public void connectionMade(Channel channel) {
 			lastChannelEventTime = new Date();
 		}
@@ -245,6 +247,7 @@ public class ChannelGroup {
 		 * Indicates that a connection to the specified channel has been dropped.
 		 * @param channel The channel which has been disconnected.
 		 */
+                @Override
 		public void connectionDropped(Channel channel) {
 			lastChannelEventTime = new Date();
 		}

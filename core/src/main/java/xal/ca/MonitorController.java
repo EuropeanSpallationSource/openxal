@@ -43,6 +43,8 @@ public class MonitorController {
 	/** connection listener */
 	protected ConnectionListener connectionListener;
 	
+        private static final Logger LOGGER = Logger.getLogger(MonitorController.class.getName());
+
 	
 	/**
 	 * Primary constructor.
@@ -221,12 +223,10 @@ public class MonitorController {
 				}, monitorMask );
 		}
 		catch ( ConnectionException exception ) {
-			Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log( Level.SEVERE, "Connection exception.", exception );
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, "Connection exception.", exception);
 		}
 		catch ( MonitorException exception ) {
-			Logger.getLogger(Logger.GLOBAL_LOGGER_NAME).log( Level.SEVERE, "Monitor exception.", exception );
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, "Monitor exception.", exception);
 		}
 	}
 	

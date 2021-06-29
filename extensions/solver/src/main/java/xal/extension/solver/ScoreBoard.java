@@ -26,10 +26,10 @@ import java.util.*;
  */
 public final class ScoreBoard implements AlgorithmScheduleListener, SolutionJudgeListener {
 	/** center for broadcasting events */
-	private final MessageCenter MESSAGE_CENTER;
+	private final MessageCenter messageCenter;
 	
 	/** proxy which forwards events to registered listeners */
-	private final ScoreBoardListener EVENT_PROXY;
+	private final ScoreBoardListener eventProxy;
 	
 	/** time when the solver started */
 	private Date startTime;
@@ -63,8 +63,8 @@ public final class ScoreBoard implements AlgorithmScheduleListener, SolutionJudg
 	 * @param solutionJudge  the solution judge
 	 */
 	public ScoreBoard( final SolutionJudge solutionJudge ) {
-		MESSAGE_CENTER = new MessageCenter( "Scoreboard" );
-		EVENT_PROXY = MESSAGE_CENTER.registerSource( this, ScoreBoardListener.class );
+		messageCenter = new MessageCenter( "Scoreboard" );
+		eventProxy = messageCenter.registerSource( this, ScoreBoardListener.class );
 		
 		setSolutionJudge( solutionJudge );
 		reset();
@@ -75,7 +75,7 @@ public final class ScoreBoard implements AlgorithmScheduleListener, SolutionJudg
 	 * Add the specified listener as a receiver of ScoreBoard events from this instance. 
 	 */
 	public void addScoreBoardListener( final ScoreBoardListener listener ) {
-		MESSAGE_CENTER.registerTarget( listener, this, ScoreBoardListener.class );
+		messageCenter.registerTarget( listener, this, ScoreBoardListener.class );
 	}
 	
 	
@@ -83,7 +83,7 @@ public final class ScoreBoard implements AlgorithmScheduleListener, SolutionJudg
 	 * Remove the specified listener from receiving ScoreBoard events from this instance. 
 	 */
 	public void removeScoreBoardListener( final ScoreBoardListener listener ) {
-		MESSAGE_CENTER.removeTarget( listener, this, ScoreBoardListener.class );
+		messageCenter.removeTarget( listener, this, ScoreBoardListener.class );
 	}
 
 
@@ -185,7 +185,7 @@ public final class ScoreBoard implements AlgorithmScheduleListener, SolutionJudg
         @Override
 	public void trialScored( final AlgorithmSchedule algorithmSchedule, final Trial trial ) {
 		++evaluations;
-        EVENT_PROXY.trialScored( this, trial );
+        eventProxy.trialScored( this, trial );
         
         SearchAlgorithm algorithm = trial.getAlgorithm();
         String label = algorithm.getLabel();
@@ -210,7 +210,7 @@ public final class ScoreBoard implements AlgorithmScheduleListener, SolutionJudg
         @Override
 	public void trialVetoed( final AlgorithmSchedule algorithmSchedule, final Trial trial ) {
 		++vetoes;
-		EVENT_PROXY.trialVetoed( this, trial );
+		eventProxy.trialVetoed( this, trial );
 	}
 	
 	
@@ -246,7 +246,7 @@ public final class ScoreBoard implements AlgorithmScheduleListener, SolutionJudg
 	public void foundNewOptimalSolution( final SolutionJudge source, final List<Trial> solutions, final Trial solution ) {
 		++optimalSolutionsFound;
 		bestSolution = solution;
-		EVENT_PROXY.newOptimalSolution( this, solution );
+		eventProxy.newOptimalSolution( this, solution );
 	}
 
 

@@ -20,13 +20,18 @@
 package xal.extension.tracewinimporter;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.apache.commons.io.IOUtils;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.json.JSONException;
 
 /**
  * Class to parse the lattice repository using the JSON interface
@@ -34,7 +39,8 @@ import java.util.List;
  * @author emanuelelaface
  */
 public class GitParser {
-
+    private static final Logger LOGGER = Logger.getLogger(GitParser.class.getName());
+    
     private URI[] sourceFileNames;
     private String[] sequenceNames;
     private String basePath;
@@ -93,8 +99,8 @@ public class GitParser {
             basePath = new URL(sourceFileNames[0].toURL().getProtocol(), sourceFileNames[0].toURL().getHost(), sourceFileNames[0].toURL().getPort(), basePath).toString();
 
             return true;
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException | NumberFormatException | URISyntaxException | JSONException e) {
+            LOGGER.log(Level.SEVERE, null, e);
         }
 
         return false;

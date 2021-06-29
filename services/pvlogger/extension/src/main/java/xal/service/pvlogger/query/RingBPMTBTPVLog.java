@@ -1,11 +1,16 @@
 package xal.service.pvlogger.query;
 
+import java.sql.SQLException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.service.pvlogger.*;
 import xal.tools.database.*;
 
 public class RingBPMTBTPVLog {
+        private static final Logger LOGGER = Logger.getLogger(RingBPMTBTPVLog.class.getName());
+    
 	MachineSnapshot mss;
 
 
@@ -37,8 +42,8 @@ public class RingBPMTBTPVLog {
 				css = mss.getChannelSnapshots();
 			}		
 		}
-		catch ( Exception exception ) {
-			exception.printStackTrace();
+		catch ( SQLException exception ) {
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
 	}
 

@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -36,6 +38,7 @@ import xal.sim.scenario.ProbeFactory;
 import xal.sim.scenario.Scenario;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
+import xal.test.ResourceManager;
 import xal.tools.beam.PhaseVector;
 
 /**
@@ -68,7 +71,7 @@ import xal.tools.beam.PhaseVector;
  * @since  Sep 12, 2014
  */
 public class TestCompareDesignAndProduction {
-
+    private static final Logger LOGGER = Logger.getLogger(TestCompareDesignAndProduction.class.getName());
     /*
      * Global Constants
      */
@@ -153,7 +156,7 @@ public class TestCompareDesignAndProduction {
 //        String  strFileAccel = strPathXal + strPathRel;
 //        
 //        Accelerator accel = XMLDataManager.acceleratorWithPath(strFileAccel);
-        Accelerator accel = xal.test.ResourceManager.getTestAccelerator();
+        Accelerator accel = ResourceManager.getTestAccelerator();
         return accel;
     }
     
@@ -172,7 +175,7 @@ public class TestCompareDesignAndProduction {
         String  strPack     = TestCompareDesignAndProduction.class.getPackage().getName();
         String  strPathRel  = strPack.replace('.', '/');
         String  strPathFile = strPathRel + '/' + strFileName; 
-        File    fileOutput  = xal.test.ResourceManager.getOutputFile(strPathFile);
+        File    fileOutput  = ResourceManager.getOutputFile(strPathFile);
         
         return fileOutput;
     }
@@ -203,8 +206,8 @@ public class TestCompareDesignAndProduction {
             MOD_PROD.setProbe(prbProd);
             MOD_PROD.run();
             
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (InstantiationException | ModelException e) {
+            LOGGER.log(Level.SEVERE, null, e);
             
             fail("Unable to run model");
         }
@@ -379,9 +382,8 @@ public class TestCompareDesignAndProduction {
                 this.writeTrajectory("PRODUCTION TRAJECTORY", trjProd);
             }
 
-        } catch (Exception e) {
-            
-            e.printStackTrace();
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, null, e);
             fail("Unable to write out trajectory");
         }
     }

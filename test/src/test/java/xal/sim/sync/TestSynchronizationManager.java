@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -27,7 +29,6 @@ import xal.model.probe.TransferMapProbe;
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.model.probe.traj.ProbeState;
 import xal.model.probe.traj.Trajectory;
-import xal.sim.run.TestRunOnlineModel;
 import xal.sim.scenario.AlgorithmFactory;
 import xal.sim.scenario.ProbeFactory;
 import xal.sim.scenario.Scenario;
@@ -46,6 +47,7 @@ import xal.test.ResourceManager;
  * @since  Oct 13, 2014
  */
 public class TestSynchronizationManager {
+    private static final Logger LOGGER = Logger.getLogger(TestSynchronizationManager.class.getName());
 
     /*
      * Global Constants
@@ -246,12 +248,12 @@ public class TestSynchronizationManager {
                     
 
         } catch (SynchronizationException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             
             fail("Synchronziation exception " + e.getMessage());
             
         } catch (ModelException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             
             fail("Online model run exception " + e.getMessage());
         }

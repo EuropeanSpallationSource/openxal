@@ -17,7 +17,7 @@ import xal.tools.data.*;
 /** brick which represents a view */
 public class BorderNode extends BeanNode<Border> {
 	/** data label */
-	public static String dataLabel = "BorderNode";
+	public static final String DATA_LABEL = "BorderNode";
 	
 	/** Primary Constructor */
     @SuppressWarnings( "unchecked" )    // nothing we can do to type BorderNode any tighter without introducing a type on BorderNode
@@ -49,7 +49,7 @@ public class BorderNode extends BeanNode<Border> {
 	
 	/** generator */
 	public static BorderNode getInstance( final DataAdaptor adaptor ) {		
-		final DataAdaptor proxyAdaptor = adaptor.childAdaptor(BorderProxy.dataLabel );
+		final DataAdaptor proxyAdaptor = adaptor.childAdaptor(BorderProxy.DATA_LABEL );
 		final BorderProxy<Border> borderProxy = BorderProxy.getInstance( proxyAdaptor );
 		final String tag = adaptor.stringValue( "tag" );
 		final BorderNode node = new BorderNode( borderProxy, null, tag );
@@ -124,6 +124,6 @@ public class BorderNode extends BeanNode<Border> {
 	 */
         @Override
 	public String dataLabel() {
-		return dataLabel;
+		return DATA_LABEL;
 	}
 }

@@ -27,10 +27,10 @@ public abstract class SearchAlgorithm implements AlgorithmScheduleListener, Solu
     public static final Comparator<SearchAlgorithm> EFFICIENCY_COMPARATOR = makeEfficiencyComparator();
     
     /** the message center for dispatching messages */
-    private final MessageCenter MESSAGE_CENTER;
+    private final MessageCenter messageCenter;
     
     /** the proxy for forwarding messages to registered listeners */
-    private final SearchAlgorithmListener EVENT_PROXY;
+    private final SearchAlgorithmListener eventProxy;
     
     /** the minimum evaluations that an algorithm can choose to execute */
     private int proposedEvaluations = 1;
@@ -51,8 +51,8 @@ public abstract class SearchAlgorithm implements AlgorithmScheduleListener, Solu
 
 	/** Empty constructor. */
 	public SearchAlgorithm() {
-		MESSAGE_CENTER = new MessageCenter( "Search Algorithm" );
-		EVENT_PROXY = MESSAGE_CENTER.registerSource( this, SearchAlgorithmListener.class );
+		messageCenter = new MessageCenter( "Search Algorithm" );
+		eventProxy = messageCenter.registerSource( this, SearchAlgorithmListener.class );
 	}
 	
 	
@@ -217,7 +217,7 @@ public abstract class SearchAlgorithm implements AlgorithmScheduleListener, Solu
      * @param listener  The listener to add.
      */
     public void addSearchAlgorithmListener( final SearchAlgorithmListener listener ) {
-        MESSAGE_CENTER.registerTarget( listener, this, SearchAlgorithmListener.class );
+        messageCenter.registerTarget( listener, this, SearchAlgorithmListener.class );
 
 		// immediately post whether this algorithm is available
         if ( getMinEvaluationsPerRun() > 0 ) {
@@ -234,7 +234,7 @@ public abstract class SearchAlgorithm implements AlgorithmScheduleListener, Solu
      * @param listener  The listener to remove.
      */
     public void removeSearchAlgorithmListener( final SearchAlgorithmListener listener ) {
-        MESSAGE_CENTER.removeTarget( listener, this, SearchAlgorithmListener.class );
+        messageCenter.removeTarget( listener, this, SearchAlgorithmListener.class );
     }
 
 	/**

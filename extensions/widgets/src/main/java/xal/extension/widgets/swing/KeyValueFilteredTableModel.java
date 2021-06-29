@@ -12,6 +12,8 @@ import xal.tools.FreshProcessor;
 import xal.tools.data.*;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.text.*;
 import javax.swing.event.*;
 
@@ -20,6 +22,9 @@ import javax.swing.event.*;
 public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
     /** serialization ID */
     private static final long serialVersionUID = 1L;
+    
+    private static final Logger LOGGER = Logger.getLogger(KeyValueFilteredTableModel.class.getName());
+
     
 	/** handles the input events and filters the table records accordingly */
 	private final InputFilterHandler INPUT_FILTER_HANDLER;
@@ -146,7 +151,7 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
 			return document.getText( 0, document.getLength() );
 		}
 		catch( BadLocationException exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 			return "";
 		}		
 	}

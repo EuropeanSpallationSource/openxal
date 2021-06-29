@@ -103,11 +103,13 @@ public class RootBrick extends Brick implements ViewNodeContainer, DataListener 
 	
 	/** move the specified nodes down
      * @param nodes */
+        @Override
 	public void moveDownNodes( final List<BeanNode<?>> nodes ) {}
 	
 	
 	/** move the specified nodes up
      * @param nodes */
+        @Override
 	public void moveUpNodes( final List<BeanNode<?>> nodes ) {}
 	
 	
@@ -216,7 +218,7 @@ public class RootBrick extends Brick implements ViewNodeContainer, DataListener 
      */
         @Override
     public void update( final DataAdaptor adaptor ) {
-		final List<DataAdaptor> nodeAdaptors = adaptor.childAdaptors(ViewNode.dataLabel );
+		final List<DataAdaptor> nodeAdaptors = adaptor.childAdaptors(ViewNode.DATA_LABEL );
 		final List<BeanNode<?>> nodes = new ArrayList<>( nodeAdaptors.size() );
 		for ( final DataAdaptor nodeAdaptor : nodeAdaptors ) {
 			nodeAdaptor.setValue( "contextURL", adaptor.stringValue( "contextURL" ) );

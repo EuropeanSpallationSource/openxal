@@ -18,6 +18,8 @@ import java.util.regex.Matcher;
 import java.util.prefs.Preferences;
 import java.net.*;
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 
 
@@ -34,6 +36,8 @@ public class RecentFileTracker {
 	
 	/** pattern for storing the URL spec in a string */
 	private static final Pattern URL_SPEC_STORE_PATTERN;
+
+        private static final Logger LOGGER = Logger.getLogger(RecentFileTracker.class.getName());
 	
 	/** buffer size for this tracker */
 	protected final int recentUrlsBufferSize;
@@ -227,7 +231,7 @@ public class RecentFileTracker {
 			}
 		}
 		catch( MalformedURLException | URISyntaxException exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 			return null;
 		}
 	}

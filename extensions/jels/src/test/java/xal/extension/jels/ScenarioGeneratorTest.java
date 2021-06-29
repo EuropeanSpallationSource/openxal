@@ -1,6 +1,8 @@
 package xal.extension.jels;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,8 +18,9 @@ import xal.smf.data.XMLDataManager;
 
 @RunWith(JUnit4.class)
 public class ScenarioGeneratorTest {
+    private static final Logger LOGGER = Logger.getLogger(ScenarioGeneratorTest.class.getName());    
 
-	@Test
+        @Test
 	public void doScenarioGeneratorTest() throws InstantiationException, ModelException {
 		System.out.println("Running\n");
 		
@@ -46,8 +49,8 @@ public class ScenarioGeneratorTest {
 	private static void saveLattice(Lattice lattice, String file) {		
 		try {
 			LatticeXmlWriter.writeXml(lattice, file);
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		} catch (IOException e) {
+                    LOGGER.log(Level.SEVERE, null, e);
 			return;
 		}
 	}
@@ -58,7 +61,7 @@ public class ScenarioGeneratorTest {
                 try{
                     accelerator = XMLDataManager.acceleratorWithUrlSpec(JElsDemo.class.getResource("main.xal").toString());
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    LOGGER.log(Level.SEVERE, null, e);
                 }
 		if (accelerator == null)
 		{			

@@ -342,7 +342,7 @@ public class TwissProbe extends BunchProbe<TwissProbeState> {
 //                
 //            } catch (ModelException e) {
 //                System.err.println("TwissProbe#reset() - Unable to initialize algorithm");
-//                e.printStackTrace();
+//                LOGGER.log(Level.SEVERE, null, exception);
 //                
 //            }
     }

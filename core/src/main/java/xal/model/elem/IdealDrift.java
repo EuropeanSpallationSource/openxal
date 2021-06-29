@@ -14,6 +14,8 @@ package xal.model.elem;
 
 
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.model.IProbe;
 import xal.model.ModelException;
@@ -42,7 +44,8 @@ import xal.tools.beam.optics.QuadrupoleLens;
  * @author  Christopher Allen
  */
 public class IdealDrift extends ThickElement {
-	
+    private static final Logger LOGGER = Logger.getLogger(IdealDrift.class.getName());
+
     
     
     /** Debugging flag */
@@ -380,7 +383,7 @@ public class IdealDrift extends ThickElement {
             throw new ModelException("IdealMagQuad::computeTransferMatrix() - Bad magnet orientation.");
     }
     } catch(ModelException e) {
-    	e.printStackTrace();
+    	LOGGER.log(Level.SEVERE, null, e);
     	System.exit(-1);
     }
     

@@ -9,6 +9,8 @@
 package xal.extension.bricks;
 
 import java.lang.reflect.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 
 import xal.tools.data.*;
@@ -16,6 +18,8 @@ import xal.tools.data.*;
 
 /** proxy for generating a Java Bean object */
 public abstract class BeanProxy<ViewType> implements DataListener {
+        private static final Logger LOGGER = Logger.getLogger(BeanProxy.class.getName());
+
 	/** prototype class */
 	protected final Class<ViewType> prototypeClass;
 	
@@ -48,7 +52,7 @@ public abstract class BeanProxy<ViewType> implements DataListener {
 			return object;
 		}
 		catch( IllegalAccessException | IllegalArgumentException | InstantiationException | InvocationTargetException exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 			throw new RuntimeException( "Can't instantiate class:  " + theClass.toString(), exception );
 		}
 	}

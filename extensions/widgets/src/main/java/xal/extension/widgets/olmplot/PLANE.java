@@ -2,7 +2,10 @@ package xal.extension.widgets.olmplot;
 
 
 import java.awt.Color;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.model.probe.traj.ParticleProbeState;
@@ -16,8 +19,7 @@ import xal.tools.beam.PhaseVector;
  * @author Christopher K. Allen
  * @since   Nov 26, 2012
  */
-public enum PLANE {
-    
+public enum PLANE {    
     /** Enumeration for the horizontal plane */
     HOR("getx", "getSigmaX", Color.RED),
     
@@ -63,10 +65,9 @@ public enum PLANE {
 
             return dblPosVal;
             
-        } catch (Exception e) {
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
             String  strMsg = this.getClass().getName() + " is unable to invoke method " + this.strMthPar;
-            System.err.println(strMsg);
-            e.printStackTrace();
+            Logger.getLogger(PLANE.class.getName()).log(Level.SEVERE, strMsg, e);
             
             throw new RuntimeException(strMsg, e);
         }
@@ -91,10 +92,10 @@ public enum PLANE {
 
             return dblEnvVal;
             
-        } catch (Exception e) {
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
             String  strMsg = this.getClass().getName() + " is unable to invoke method " + this.strMthEnv;
             System.err.println(strMsg);
-            e.printStackTrace();
+            Logger.getLogger(PLANE.class.getName()).log(Level.SEVERE, strMsg, e);
             
             throw new RuntimeException(strMsg, e);
         }

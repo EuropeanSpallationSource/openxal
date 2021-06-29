@@ -39,6 +39,7 @@ public abstract class AbstractApplicationAdaptor implements ApplicationListener 
     /** accessory for this application's default document folder */
     private DefaultFolderAccessory defaultFolderAccessory = null;
 
+    private static final Logger LOGGER = Logger.getLogger(AbstractApplicationAdaptor.class.getName());
 
     /** Constructor */
     public AbstractApplicationAdaptor() {
@@ -203,8 +204,7 @@ public abstract class AbstractApplicationAdaptor implements ApplicationListener 
                         docURLs[index] = new URL( "file://" + docPaths.get( index ) );
                     }
                     catch ( MalformedURLException exception ) {
-                        Logger.getLogger("global").log( Level.WARNING, "Error setting the documents to open passed by the user.", exception );
-                        System.err.println( exception );
+                        LOGGER.log( Level.WARNING, "Error setting the documents to open passed by the user.", exception );
                     }
                 }
             }
@@ -244,7 +244,7 @@ public abstract class AbstractApplicationAdaptor implements ApplicationListener 
      * The default implementation prints a simple info to logger
      **/
     public void applicationFinishedLaunching() {
-        Logger.getLogger("global").log(Level.INFO, "Application{0} finished launching.", applicationName());
+        LOGGER.log(Level.INFO, "Application{0} finished launching.", applicationName());
     }
 
 

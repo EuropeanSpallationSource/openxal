@@ -20,12 +20,16 @@ import java.util.List;
 import java.util.Map;
 import java.awt.Component;
 import java.awt.Window;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.border.Border;
 
 
 /** loads resources for a single window instance */
 public class WindowReference {
+    private static final Logger LOGGER = Logger.getLogger(WindowReference.class.getName());
+
 	/** context in which this window reference was made */
 	private final BricksContext context;
 	
@@ -39,7 +43,7 @@ public class WindowReference {
 	/** Constructor */
 	public WindowReference( final URL url, final String tag, Object... windowParameters ) {
 		context = new BricksContext( url );
-		viewTable = new HashMap<String,List<Object>>();
+		viewTable = new HashMap<>();
 		window = loadWindow( url, tag, windowParameters );
 	}
 	
@@ -76,7 +80,7 @@ public class WindowReference {
 			views = viewTable.get( tag );
 		}
 		else {
-			views = new ArrayList<Object>();
+			views = new ArrayList<>();
 			viewTable.put( tag, views );
 		}
 		views.add( view );
@@ -111,7 +115,7 @@ public class WindowReference {
 			final DataAdaptor documentAdaptor = XmlDataAdaptor.adaptorForUrl( url, false );
 			final DataAdaptor mainAdaptor = documentAdaptor.childAdaptor( "BricksDocument" );
 			final DataAdaptor rootAdaptor = mainAdaptor.childAdaptor( RootBrick.DATA_LABEL );
-			final List<DataAdaptor> windowAdaptors = rootAdaptor.childAdaptors(ViewNode.dataLabel );
+			final List<DataAdaptor> windowAdaptors = rootAdaptor.childAdaptors(ViewNode.DATA_LABEL );
 			for ( final DataAdaptor windowAdaptor : windowAdaptors ) {
 				final String windowTag = windowAdaptor.stringValue( "tag" );
 				if ( windowTag.equals( tag ) )  return windowAdaptor;
@@ -134,8 +138,8 @@ public class WindowReference {
 				final String customClassName = adaptor.stringValue( "customBeanClass" );
 				viewClass = Class.forName( customClassName );
 			}
-			catch( Exception exception ) {
-				exception.printStackTrace();
+			catch( ClassNotFoundException exception ) {
+				LOGGER.log(Level.SEVERE, null, exception);
 			}
 		}
 		
@@ -148,7 +152,7 @@ public class WindowReference {
 				}
 				view = (Component)viewProxy.getBeanInstance( viewClass, viewConstructor, viewParameters );
 			}
-			catch ( Exception exception ) {
+			catch ( RuntimeException exception ) {
 				throw new RuntimeException( "Can't instantiate class:  " + viewClass.toString() );
 			}
 		}
@@ -159,14 +163,14 @@ public class WindowReference {
 		registerView( view, tag );
 		
 		if ( viewProxy.isContainer() ) {
-			final List<DataAdaptor> viewAdaptors = adaptor.childAdaptors(ViewNode.dataLabel );
+			final List<DataAdaptor> viewAdaptors = adaptor.childAdaptors(ViewNode.DATA_LABEL );
 			for ( final DataAdaptor viewAdaptor : viewAdaptors ) {
 				final Component subView = getView( viewAdaptor );
 				viewProxy.getContainer( view ).add( subView );
 			}
 		}
 		
-		final DataAdaptor borderAdaptor = adaptor.childAdaptor(BorderNode.dataLabel );
+		final DataAdaptor borderAdaptor = adaptor.childAdaptor(BorderNode.DATA_LABEL );
 		if ( view instanceof JComponent && borderAdaptor != null ) {
 			final Border border = getBorder( borderAdaptor );
 			((JComponent)view).setBorder( border );
@@ -226,7 +230,7 @@ public class WindowReference {
 	/** process adaptors to get borders */
     @SuppressWarnings( { "unchecked", "rawtypes" } )
 	protected Border getBorder( final DataAdaptor adaptor ) {
-		final DataAdaptor proxyAdaptor = adaptor.childAdaptor(BorderProxy.dataLabel );
+		final DataAdaptor proxyAdaptor = adaptor.childAdaptor(BorderProxy.DATA_LABEL );
 		final BorderProxy borderProxy = BorderProxy.getInstance( proxyAdaptor );
 		final String tag = adaptor.stringValue( "tag" );
 		
@@ -237,7 +241,7 @@ public class WindowReference {
 				borderClass = Class.forName( customClassName );
 			}
 			catch( ClassNotFoundException exception ) {
-				exception.printStackTrace();
+				LOGGER.log(Level.SEVERE, null, exception);
 			}
 		}
 		
@@ -275,7 +279,7 @@ public class WindowReference {
 			method.invoke( object, value );
 		}
 		catch( IllegalAccessException | IllegalArgumentException | InvocationTargetException exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
 	}
 	

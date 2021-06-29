@@ -1,5 +1,7 @@
 package xal.model.probe.traj;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.tools.data.DataAdaptor;
 import xal.tools.data.DataFormatException;
 import xal.model.probe.Probe;
@@ -16,7 +18,7 @@ import xal.model.probe.Probe;
  */
 public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState {
 
-
+    private static final Logger LOGGER = Logger.getLogger(ProbeState.class.getName());
 
     /*
      * Global Constants
@@ -518,6 +520,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      * 
      * @param   daSink   data source to receive state information
      */
+    @Override
     public final void save(DataAdaptor daSink) {
         
         DataAdaptor stateNode = daSink.createChild(STATE_LABEL);
@@ -535,11 +538,12 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      * 
      *  @exception DataFormatException  data in <code>container</code> is malformated
      */    
+    @Override
     public final void load(DataAdaptor container) throws DataFormatException {
         try {
             readPropertiesFrom(container);
         } catch (DataFormatException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             throw new DataFormatException("error loading from adaptor: " + 
                     e.getMessage());
         }
@@ -571,9 +575,9 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
     
     /**
      *  Convenience function for computing the probe's velocity beta (w.r.t. the 
-     *  speed of light) from the relatistic factor gamma.
+     *  speed of light) from the relativistic factor gamma.
      *
-     *  @param gamma     relatavistic factor gamma
+     *  @param gamma     relativistic factor gamma
      *  @return         speed of probe (w.r.t. speed of light)
      */
     protected double computeBetaFromGamma(double gamma) {

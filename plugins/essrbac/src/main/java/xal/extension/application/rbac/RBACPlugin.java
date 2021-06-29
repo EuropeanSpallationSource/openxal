@@ -20,6 +20,7 @@ import java.util.prefs.BackingStoreException;
  * @author Blaz Kranjc <blaz.kranjc@cosylab.com>
  */
 public class RBACPlugin {
+    private static final Logger LOGGER = Logger.getLogger(RBACPlugin.class.getName());
 
     private static final String USE_RBAC_KEY = "useRbac";
 
@@ -49,7 +50,7 @@ public class RBACPlugin {
         try {
             defaults.sync();
         } catch (BackingStoreException ex) {
-            Logger.getLogger(RBACPlugin.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
     
@@ -60,7 +61,7 @@ public class RBACPlugin {
         try {
             defaults.sync();
         } catch (BackingStoreException ex) {
-            Logger.getLogger(RBACPlugin.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -75,15 +76,15 @@ public class RBACPlugin {
      */
     public static RBACLogin getRBACLoginInstance() {
         if (useRBACLogin()) {
-            Logger.getLogger("global").log( Level.CONFIG, "Using proper RBAC login..." );
+            LOGGER.log( Level.CONFIG, "Using proper RBAC login..." );
             try {
                 SingleSignOnServerManager.startSSO();
             } catch (XalException e) {
-                Logger.getLogger("global").log( Level.WARNING, "SSO server couldn't be started: " + e.getMessage());
+                LOGGER.log( Level.WARNING, "SSO server couldn't be started: ", e);
             }
             return new EssRbacLogin();
         } else {
-            Logger.getLogger("global").log( Level.CONFIG, "Using dummy RBAC..." );
+            LOGGER.log( Level.CONFIG, "Using dummy RBAC..." );
             return new DummyRbacLogin();
         }
     }

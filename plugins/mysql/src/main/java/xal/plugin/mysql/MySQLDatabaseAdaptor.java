@@ -10,21 +10,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
 public class MySQLDatabaseAdaptor extends DatabaseAdaptor {
-	/** Table of cached array descriptors keyed by type. The value class is actually oracle.sql.ArrayDescriptor, but Object is used since the Oracle driver is reflected. */
-	private final Map<String,Object> ARRAY_DESCRIPTOR_TABLE;
+    private static final Logger LOGGER = Logger.getLogger(MySQLDatabaseAdaptor.class.getName());
 
 	/**
 	 * Public Constructor
 	 */
 	public MySQLDatabaseAdaptor() {
-		ARRAY_DESCRIPTOR_TABLE = new HashMap<String,Object>();
 	}
 
 	
@@ -37,7 +33,7 @@ public class MySQLDatabaseAdaptor extends DatabaseAdaptor {
 //			return new ARRAY(descriptor, connection, array);
 //		}
 //		catch(SQLException exception) {
-//			Logger.getLogger("global").log( Level.SEVERE, "Error instantiating an SQL array of type: " + type, exception );
+//			LOGGER.log( Level.SEVERE, "Error instantiating an SQL array of type: " + type, exception );
 //			throw new DatabaseException("Exception generating an SQL array.", this, exception);
 //		}
 		
@@ -51,7 +47,7 @@ public class MySQLDatabaseAdaptor extends DatabaseAdaptor {
 			return DriverManager.getConnection(urlSpec, user, password);
 		}
 		catch(SQLException exception) {
-			Logger.getLogger("global").log( Level.SEVERE, "Error connecting to the database at URL: \"" + urlSpec + "\" as user: " + user , exception );
+			LOGGER.log( Level.SEVERE, "Error connecting to the database at URL: \"" + urlSpec + "\" as user: " + user , exception );
 			throw new DatabaseException("Exception connecting to the database.", this, exception);
 		}
 	}
@@ -63,9 +59,10 @@ public class MySQLDatabaseAdaptor extends DatabaseAdaptor {
 	 * @exception DatabaseException
 	 * @throws xal.tools.database.DatabaseException  if the schema fetch fails
 	 */
+    @Override
 	public List<String> fetchAllSchemas( final Connection connection ) throws DatabaseException {
 		try {
-			final List<String> schemas = new ArrayList<String>();
+			final List<String> schemas = new ArrayList<>();
 			final DatabaseMetaData metaData = connection.getMetaData();
 			final ResultSet result = metaData.getCatalogs();
 
@@ -82,18 +79,21 @@ public class MySQLDatabaseAdaptor extends DatabaseAdaptor {
 
 
 	/** Get the result set for tables for the specified meta data and schema. MySQL adaptor uses the catalog in place of schema. */
+    @Override
 	public ResultSet getTablesResultSet( final DatabaseMetaData metaData, final String schema ) throws SQLException {
 		return metaData.getTables( schema, null, null, null );
 	}
 
 
 	/** Get the result set of columns for the specified meta data, schema and table. MySQL adaptor uses the catalog in place of schema. */
+    @Override
 	public ResultSet getColumnsResultSet( final DatabaseMetaData metaData, final String schema, final String table ) throws SQLException {
 		return metaData.getColumns( schema, null, table, null );
 	}
 
 
 	/** Get the result set of primary keys for the specified meta data, schema and table. MySQL adaptor uses the catalog in place of schema. */
+    @Override
 	public ResultSet getPrimaryKeysResultSet( final DatabaseMetaData metaData, final String schema, final String table ) throws SQLException {
 		return metaData.getPrimaryKeys( schema, null, table );
 	}

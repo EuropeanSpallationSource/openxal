@@ -8,6 +8,8 @@
 
 package xal.extension.extlatgen;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.service.pvlogger.PvLoggerException;
@@ -145,6 +147,8 @@ class PVLoggerSnapshotDeviceDataSource extends MeasurementDataSource {
 
 /** Device Data Source which is based on the Live Machine */
 class LiveMachineDesignRFDeviceDataSource extends MeasurementDataSource {
+        private static final Logger LOGGER = Logger.getLogger(LiveMachineDesignRFDeviceDataSource.class.getName());
+
 	/** Get this source's label */
         @Override
 	public String getLabel() {
@@ -164,7 +168,7 @@ class LiveMachineDesignRFDeviceDataSource extends MeasurementDataSource {
 				//return ((Electromagnet)magnet).getField();	// use the field readback
 			}
 			catch( ConnectionException | GetException exception ) {
-				exception.printStackTrace();
+				LOGGER.log(Level.SEVERE, null, exception);
 				return 0.0;
 			}
 		}

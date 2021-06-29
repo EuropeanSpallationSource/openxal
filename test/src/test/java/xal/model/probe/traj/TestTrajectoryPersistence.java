@@ -11,6 +11,8 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -33,7 +35,6 @@ import xal.sim.scenario.Scenario;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
 import xal.test.ResourceManager;
-import xal.tools.data.DataAdaptor;
 import xal.tools.xml.XmlDataAdaptor;
 import xal.tools.xml.XmlDataAdaptor.ParseException;
 import xal.tools.xml.XmlDataAdaptor.ResourceNotFoundException;
@@ -46,23 +47,23 @@ import xal.tools.xml.XmlDataAdaptor.ResourceNotFoundException;
  * @since  Dec 29, 2015
  */
 public class TestTrajectoryPersistence {
-    
+    private static final Logger LOGGER = Logger.getLogger(TestTrajectoryPersistence.class.getName());
     
     /*
      * Global Variables
      */
     
     /** Probe state used in persistence test */
-    private static Trajectory<ParticleProbeState>       TRAJ_PART;
+    private static Trajectory<ParticleProbeState>       trajPart;
     
     /** Probe state used in persistence test */
-    private static Trajectory<TransferMapState>         TRAJ_XFER;
+    private static Trajectory<TransferMapState>         trajXfer;
     
     /** Probe state used in persistence test */
-    private static Trajectory<EnvelopeProbeState>       TRAJ_ENV;
+    private static Trajectory<EnvelopeProbeState>       trajEnv;
     
     /** Probe state used in persistence test */
-    private static Trajectory<TwissProbeState>          TRAJ_TWISS;
+    private static Trajectory<TwissProbeState>          trajTwiss;
     
 
     
@@ -105,23 +106,22 @@ public class TestTrajectoryPersistence {
             
             ParticleTracker algPart = AlgorithmFactory.createParticleTracker(seq);
             ParticleProbe   prbPart = ProbeFactory.createParticleProbe(seq, algPart);
-            TRAJ_PART = createTrajectory(prbPart);
+            trajPart = createTrajectory(prbPart);
 
             TransferMapTracker  algXfer = AlgorithmFactory.createTransferMapTracker(seq);
             TransferMapProbe    prbXfer = ProbeFactory.getTransferMapProbe(seq, algXfer);
-            TRAJ_XFER = createTrajectory(prbXfer);
+            trajXfer = createTrajectory(prbXfer);
             
             EnvTrackerAdapt algEnv = AlgorithmFactory.createEnvTrackerAdapt(seq);
             EnvelopeProbe   prbEnv = ProbeFactory.getEnvelopeProbe(seq, algEnv);
-            TRAJ_ENV = createTrajectory(prbEnv);
+            trajEnv = createTrajectory(prbEnv);
             
             TwissTracker    algTws = AlgorithmFactory.createTwissTracker(seq);
             TwissProbe      prbTws = ProbeFactory.getTwissProbe(seq, algTws);
-            TRAJ_TWISS = createTrajectory(prbTws);
+            trajTwiss = createTrajectory(prbTws);
 
         } catch (InstantiationException e) {
-
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             fail("Unable to create Trajectory - " + e.getMessage());
         }
     }
@@ -170,10 +170,10 @@ public class TestTrajectoryPersistence {
     @Test
     public final void testTrajectorySave() {
         
-        this.saveTrajectory("ParticleProbeState.xml", TRAJ_PART);
-        this.saveTrajectory("TransferMapState.xml", TRAJ_XFER);
-        this.saveTrajectory("EnvelopeProbeState.xml", TRAJ_ENV);
-        this.saveTrajectory("TwissProbeState.xml", TRAJ_TWISS);
+        this.saveTrajectory("ParticleProbeState.xml", trajPart);
+        this.saveTrajectory("TransferMapState.xml", trajXfer);
+        this.saveTrajectory("EnvelopeProbeState.xml", trajEnv);
+        this.saveTrajectory("TwissProbeState.xml", trajTwiss);
     }
     
     /**
@@ -184,7 +184,7 @@ public class TestTrajectoryPersistence {
         String  strFileName = "ParticleTrajectory.xml";
         
         // Save the test trajectory
-        this.saveTrajectory(strFileName, TRAJ_PART);
+        this.saveTrajectory(strFileName, trajPart);
         
         // Recover the test trajectory from file
         Trajectory<ParticleProbeState> trjRes = this.loadTrajectory(strFileName);
@@ -203,7 +203,7 @@ public class TestTrajectoryPersistence {
         String  strFileName = "TransferMapTrajectory.xml";
         
         // Save the test trajectory
-        this.saveTrajectory(strFileName, TRAJ_XFER);
+        this.saveTrajectory(strFileName, trajXfer);
         
         // Recover the test trajectory from file
         Trajectory<TransferMapState> trjRes = this.loadTrajectory(strFileName);
@@ -222,7 +222,7 @@ public class TestTrajectoryPersistence {
         String  strFileName = "EnvelopeProbeTrajectory.xml";
         
         // Save the test trajectory
-        this.saveTrajectory(strFileName, TRAJ_ENV);
+        this.saveTrajectory(strFileName, trajEnv);
         
         // Recover the test trajectory from file
         Trajectory<EnvelopeProbeState> trjRes = this.loadTrajectory(strFileName);
@@ -241,7 +241,7 @@ public class TestTrajectoryPersistence {
         String  strFileName = "TwissProbeTrajectory.xml";
         
         // Save the test trajectory
-        this.saveTrajectory(strFileName, TRAJ_TWISS);
+        this.saveTrajectory(strFileName, trajTwiss);
         
         // Recover the test trajectory from file
         Trajectory<TwissProbeState> trjRes = this.loadTrajectory(strFileName);
@@ -281,7 +281,7 @@ public class TestTrajectoryPersistence {
             this.saveTrajectory(strFileName.replace(".xml", "Restored.xml"), trjRes);
             
         } catch (ModelException | InstantiationException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             fail("Unable to run model and/or store/restore results");
             
         }
@@ -306,7 +306,7 @@ public class TestTrajectoryPersistence {
      *
      * @since  Dec 29, 2015,   Christopher K. Allen
      */
-    private final <S extends ProbeState<S>> boolean saveTrajectory(String strFileName, Trajectory<S> traj)  {
+    private <S extends ProbeState<S>> boolean saveTrajectory(String strFileName, Trajectory<S> traj)  {
         try {
             XmlDataAdaptor  daptSink = XmlDataAdaptor.newEmptyDocumentAdaptor();
             
@@ -318,7 +318,7 @@ public class TestTrajectoryPersistence {
             return true;
             
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             fail("Unable to write trajectory data for " + strFileName);
             return false;
         }
@@ -338,7 +338,7 @@ public class TestTrajectoryPersistence {
      *
      * @since  Jan 5, 2016,   Christopher K. Allen
      */
-    private final <S extends ProbeState<S>> Trajectory<S> loadTrajectory(String strFileName)  {
+    private <S extends ProbeState<S>> Trajectory<S> loadTrajectory(String strFileName)  {
         try {
             File            fileSrc = ResourceManager.getOutputFile(this.getClass(), strFileName);
             XmlDataAdaptor  daptSrc = XmlDataAdaptor.adaptorForFile(fileSrc, false);
@@ -348,13 +348,12 @@ public class TestTrajectoryPersistence {
             return trajSrc;
             
         } catch (IllegalArgumentException | ParseException | ResourceNotFoundException | MalformedURLException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             fail("Unable to load trajectory data for " + strFileName);
             
             return null;
         }
         
     }
-    
 
 }

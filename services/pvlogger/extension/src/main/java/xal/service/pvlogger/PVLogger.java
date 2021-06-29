@@ -18,6 +18,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.ResourceManager;
 import xal.tools.data.DataAdaptor;
@@ -28,17 +30,19 @@ import xal.tools.xml.XmlDataAdaptor;
 
 /** Provides a public interface to the PV Logger package */
 public class PVLogger {
+        private static final Logger LOGGER = Logger.getLogger(PVLogger.class.getName());
+    
 	/** database store */
-	protected final PersistentStore PERSISTENT_STORE;
+	protected final PersistentStore persistentStore;
 
 	/** snapshot publisher */
-	protected final SnapshotPublisher SNAPSHOT_PUBLISHER;
+	protected final SnapshotPublisher snapshotPublisher;
 
 	/** connection dictionary */
 	protected ConnectionDictionary connectionDictionary;
 
 	/** logger sessions keyed by channel group ID */
-	protected final Map<String,LoggerSession> LOGGER_SESSIONS;
+	protected final Map<String,LoggerSession> loggerSessions;
 
 	/** current database connection */
 	protected Connection connection;
@@ -46,7 +50,7 @@ public class PVLogger {
 
 	/** Primary Constructor */
 	public PVLogger( final ConnectionDictionary connectionDictionary ) {
-		LOGGER_SESSIONS = new HashMap<>();
+		loggerSessions = new HashMap<>();
 
 		URL configurationURL = null;
 		DBConfiguration dbConfig = DBConfiguration.getInstance();
@@ -55,10 +59,10 @@ public class PVLogger {
 		final DataAdaptor configurationAdaptor = XmlDataAdaptor.adaptorForUrl( configurationURL, false ).childAdaptor( "Configuration" );
 
 		final DataAdaptor persistentStoreAdaptor = configurationAdaptor.childAdaptor( "persistentStore" );
-		PERSISTENT_STORE = new PersistentStore( persistentStoreAdaptor );
+		persistentStore = new PersistentStore( persistentStoreAdaptor );
 
 		final DataAdaptor publisherAdaptor = configurationAdaptor.childAdaptor( "publisher" );
-		SNAPSHOT_PUBLISHER = new SnapshotPublisher( publisherAdaptor, PERSISTENT_STORE, connectionDictionary );
+		snapshotPublisher = new SnapshotPublisher( publisherAdaptor, persistentStore, connectionDictionary );
 
 		setConnectionDictionary( connectionDictionary );
 	}
@@ -105,7 +109,7 @@ public class PVLogger {
 	/** set the connection dictionary */
 	public void setConnectionDictionary( final ConnectionDictionary dictionary ) {
 		connectionDictionary = dictionary;
-		SNAPSHOT_PUBLISHER.setConnectionDictionary( dictionary );
+		snapshotPublisher.setConnectionDictionary( dictionary );
 	}
 	
 	
@@ -115,8 +119,8 @@ public class PVLogger {
 	 * @return the logger session with the specified group ID or null if none exists
 	 */
 	public LoggerSession getLoggerSession( final String groupID ) {
-		synchronized( LOGGER_SESSIONS ) {
-			return LOGGER_SESSIONS.get( groupID );
+		synchronized( loggerSessions ) {
+			return loggerSessions.get( groupID );
 		}
 	}
 	
@@ -126,15 +130,15 @@ public class PVLogger {
 	 * @return the collection of logger sessions
 	 */
 	public Collection<LoggerSession> getLoggerSessions() {
-		synchronized( LOGGER_SESSIONS ) {
-			return LOGGER_SESSIONS.values();
+		synchronized( loggerSessions ) {
+			return loggerSessions.values();
 		}
 	}
 	
 	
 	/** remove all logger sessions */
 	public void removeAllLoggerSessions() {
-		synchronized ( LOGGER_SESSIONS ) {
+		synchronized ( loggerSessions ) {
 			final Collection<LoggerSession> loggerSessions = new HashSet<>( getLoggerSessions() );
 			for ( final LoggerSession session : loggerSessions ) {
 				removeLoggerSession( session.getChannelGroup().getLabel() );
@@ -148,11 +152,11 @@ public class PVLogger {
 	 * @param groupID group ID of the logger session to remove
 	 */
 	public void removeLoggerSession( final String groupID ) {
-		synchronized ( LOGGER_SESSIONS ) {
+		synchronized ( loggerSessions ) {
 			final LoggerSession session = getLoggerSession( groupID );
 			if ( session != null ) {
 				session.setEnabled( false );
-				LOGGER_SESSIONS.remove( groupID );
+				loggerSessions.remove( groupID );
 			}
 		}
 	}
@@ -164,8 +168,8 @@ public class PVLogger {
 	 * @return true if a session exists for the group and false if not
 	 */
 	public boolean hasLoggerSession( final String groupID ) {
-		synchronized ( LOGGER_SESSIONS ) {
-			return LOGGER_SESSIONS.containsKey( groupID );
+		synchronized ( loggerSessions ) {
+			return loggerSessions.containsKey( groupID );
 		}
 	}
 	
@@ -180,7 +184,7 @@ public class PVLogger {
 		final List<LoggerSession> sessions = new ArrayList<>( types.length );
 		final Connection dbConnection = getDatabaseConnection();
 		for ( final String groupID : types ) {
-			final ChannelGroup group = PERSISTENT_STORE.fetchChannelGroup( dbConnection, groupID );
+			final ChannelGroup group = persistentStore.fetchChannelGroup( dbConnection, groupID );
 			if ( group.getDefaultLoggingPeriod() > 0 ) {
 				sessions.add( requestLoggerSession( groupID ) );
 			}
@@ -212,17 +216,17 @@ public class PVLogger {
 	 * @return an existing logger session if one exists otherwise a new logger session or null if one could not be created
 	 */
 	public LoggerSession requestLoggerSession( final String groupID ) throws SQLException {
-		synchronized( LOGGER_SESSIONS ) {
-			if ( LOGGER_SESSIONS.containsKey( groupID ) ) {
+		synchronized( loggerSessions ) {
+			if ( loggerSessions.containsKey( groupID ) ) {
 				return getLoggerSession( groupID );
 			}
 
 			final Connection dbConnection = getDatabaseConnection();
 			if ( dbConnection == null )  return null;
-			final ChannelGroup group = PERSISTENT_STORE.fetchChannelGroup( dbConnection, groupID );
+			final ChannelGroup group = persistentStore.fetchChannelGroup( dbConnection, groupID );
 			if ( group != null ) {
-				final LoggerSession session = new LoggerSession( group, SNAPSHOT_PUBLISHER );
-				LOGGER_SESSIONS.put( groupID, session );
+				final LoggerSession session = new LoggerSession( group, snapshotPublisher );
+				loggerSessions.put( groupID, session );
 				return session;
 			}
 			else {
@@ -238,11 +242,11 @@ public class PVLogger {
 	 * @return the corresponding logger session or null if a corresponding logger session cannot be found or generated
 	 */
 	public LoggerSession reloadLoggerSession( final String groupID ) throws SQLException {
-		synchronized( LOGGER_SESSIONS ) {
-			if ( LOGGER_SESSIONS.containsKey( groupID ) ) {
+		synchronized( loggerSessions ) {
+			if ( loggerSessions.containsKey( groupID ) ) {
 				final Connection dbConnection = getDatabaseConnection();
 				if ( dbConnection == null )  return null;
-				final ChannelGroup group = PERSISTENT_STORE.fetchChannelGroup( dbConnection, groupID );
+				final ChannelGroup group = persistentStore.fetchChannelGroup( dbConnection, groupID );
 				final LoggerSession session = getLoggerSession( groupID );
 				session.setChannelGroup( group );
 				return session;
@@ -256,16 +260,16 @@ public class PVLogger {
 	
 	/** determine if the snapshot publisher is publishing snapshots periodically */
 	public boolean isPublishing() {
-		return SNAPSHOT_PUBLISHER.isPublishing();
+		return snapshotPublisher.isPublishing();
 	}
 	
 	
 	/** start logging sessions and publishing snapshots */
 	public void start() {
-		SNAPSHOT_PUBLISHER.start();
+		snapshotPublisher.start();
 
-		synchronized( LOGGER_SESSIONS ) {
-			final Collection<LoggerSession> sessions = LOGGER_SESSIONS.values();
+		synchronized( loggerSessions ) {
+			final Collection<LoggerSession> sessions = loggerSessions.values();
 			for ( final LoggerSession session : sessions ) {
 				if ( !session.isLogging() ) {
 					session.startLogging();
@@ -277,10 +281,10 @@ public class PVLogger {
 	
 	/** restart logging sessions and publishing snapshots */
 	public void restart() {
-		SNAPSHOT_PUBLISHER.start();
+		snapshotPublisher.start();
 
-		synchronized( LOGGER_SESSIONS ) {
-			final Collection<LoggerSession> sessions = LOGGER_SESSIONS.values();
+		synchronized( loggerSessions ) {
+			final Collection<LoggerSession> sessions = loggerSessions.values();
 			for ( final LoggerSession session : sessions ) {
 				if ( !session.isLogging() ) {
 					session.resumeLogging();
@@ -292,20 +296,20 @@ public class PVLogger {
 	
 	/** stop logging sessions and publishing snapshots but publish any scheduled snapshots */
 	public void stop() {
-		SNAPSHOT_PUBLISHER.stop();
-		synchronized( LOGGER_SESSIONS ) {
-			final Collection<LoggerSession> sessions = LOGGER_SESSIONS.values();
+		snapshotPublisher.stop();
+		synchronized( loggerSessions ) {
+			final Collection<LoggerSession> sessions = loggerSessions.values();
 			for ( final LoggerSession session : sessions ) {
 				session.stopLogging();
 			}
 		}
-		SNAPSHOT_PUBLISHER.publishSnapshots();
+		snapshotPublisher.publishSnapshots();
 	}
 	
 	
 	/** publish any scheduled snapshots remaining in the queue */
 	public void publishSnapshots() {
-		SNAPSHOT_PUBLISHER.publishSnapshots();
+		snapshotPublisher.publishSnapshots();
 	}
 	
 	
@@ -314,7 +318,7 @@ public class PVLogger {
 	 * @return publishing period in seconds
 	 */
 	public double getPublishingPeriod() {
-		return SNAPSHOT_PUBLISHER.getPublishingPeriod();
+		return snapshotPublisher.getPublishingPeriod();
 	}
 	
 	
@@ -323,7 +327,7 @@ public class PVLogger {
 	 * @param period publishing period in seconds
 	 */
 	public void setPublishingPeriod( final double period ) {
-		SNAPSHOT_PUBLISHER.setPublishingPeriod( period );
+		snapshotPublisher.setPublishingPeriod( period );
 	}
 	
 	
@@ -334,7 +338,7 @@ public class PVLogger {
 	 */
 	public MachineSnapshot fetchMachineSnapshot( final long snapshotID ) throws SQLException {
 		final Connection dbConnection = getDatabaseConnection();
-		return PERSISTENT_STORE.fetchMachineSnapshot( dbConnection, snapshotID );
+		return persistentStore.fetchMachineSnapshot( dbConnection, snapshotID );
 	}
 	
 	
@@ -348,7 +352,7 @@ public class PVLogger {
 	 */
 	public MachineSnapshot[] fetchMachineSnapshotsInRange( final String type, final Date startTime, final Date endTime ) throws SQLException {
 		final Connection dbConnection = getDatabaseConnection();
-		return PERSISTENT_STORE.fetchMachineSnapshotsInRange( dbConnection, type, startTime, endTime );
+		return persistentStore.fetchMachineSnapshotsInRange( dbConnection, type, startTime, endTime );
 	}
 	
 	
@@ -359,7 +363,7 @@ public class PVLogger {
 	 */
 	public MachineSnapshot loadChannelSnapshotsInto( final MachineSnapshot machineSnapshot ) throws SQLException {
 		final Connection dbConnection = getDatabaseConnection();
-		return PERSISTENT_STORE.loadChannelSnapshotsInto( dbConnection, machineSnapshot );
+		return persistentStore.loadChannelSnapshotsInto( dbConnection, machineSnapshot );
 	}
 	
 	
@@ -369,7 +373,7 @@ public class PVLogger {
 	 */
 	public String[] fetchTypes()  throws SQLException {
 		final Connection dbConnection = getDatabaseConnection();
-		return PERSISTENT_STORE.fetchTypes( dbConnection );
+		return persistentStore.fetchTypes( dbConnection );
 	}
 	
 	
@@ -380,7 +384,7 @@ public class PVLogger {
 	 */
 	public String[] fetchTypes( final String serviceID ) throws SQLException {
 		final Connection dbConnection = getDatabaseConnection();
-		return PERSISTENT_STORE.fetchTypes( dbConnection, serviceID );
+		return persistentStore.fetchTypes( dbConnection, serviceID );
 	}
 	
 	
@@ -390,7 +394,7 @@ public class PVLogger {
 	 */
 	public ChannelGroup getChannelGroup( final String type ) throws SQLException {
 		final Connection dbConnection = getDatabaseConnection();
-		return PERSISTENT_STORE.getChannelGroup( dbConnection, type );
+		return persistentStore.getChannelGroup( dbConnection, type );
 	}
 	
 	
@@ -412,8 +416,8 @@ public class PVLogger {
 			System.out.println("Connection is "+ con == null ? "null" : con.toString());
 			return con;
 		}
-		catch( Exception exception ) {
-			exception.printStackTrace();
+		catch( SQLException exception ) {
+			LOGGER.log(Level.SEVERE, null, exception);
 			return null;
 		}
 	}
@@ -426,8 +430,8 @@ public class PVLogger {
 				connection.close();
 			}
 		}
-		catch ( Exception exception ) {
-			exception.printStackTrace();
+		catch ( SQLException exception ) {
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
 		finally {
 			connection = null;
@@ -453,6 +457,7 @@ public class PVLogger {
 	
 	/** sql connections should be closed manually 
 	 * @throws Throwable */
+        @Override
 	protected void finalize() throws Throwable{
 		try {
 			closeConnection();

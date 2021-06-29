@@ -37,7 +37,7 @@ public class DummyRbacSubject implements RBACSubject {
     @Override
     public Map<String, Boolean> hasPermissions(String resource, String... permissions) throws AccessDeniedException,
             RBACException {
-        Map<String,Boolean> map = new HashMap<String,Boolean>();
+        Map<String,Boolean> map = new HashMap<>();
         for (String permission : permissions){
             map.put(permission, true);
         }

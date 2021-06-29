@@ -296,7 +296,7 @@ public class UpdatingSingleThreaded {
 					Thread.sleep(WAIT);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
-					e.printStackTrace();
+					LOGGER.log(Level.SEVERE, null, exception);
 				}
 			}
 

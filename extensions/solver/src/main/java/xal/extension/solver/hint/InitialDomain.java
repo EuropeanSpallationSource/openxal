@@ -53,6 +53,7 @@ public class InitialDomain extends DomainHint {
 	* override this method to return a unique string identifying the hint.
 	* @return the unique type identifier of this Hint
 	*/
+        @Override
 	public String getType() {
 		return TYPE;
 	}

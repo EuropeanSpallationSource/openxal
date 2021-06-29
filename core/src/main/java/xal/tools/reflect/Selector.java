@@ -31,7 +31,6 @@ public class Selector {
 	/** argument classes */
     protected Class<?>[] argumentTypes;
 
-    
     /** Constructor for a method that takes multiple arguments */
 	@SuppressWarnings( "rawtypes" )		// cannot mix generics with arrays
     public Selector( final String methodName, final Class<?> ... argumentTypes ) {

@@ -8,11 +8,15 @@
 
 package xal.extension.scan;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.ca.*;
 
 
 /** ScanChannelMonitor */
 public class ScanChannelMonitor {
+        private static final Logger LOGGER = Logger.getLogger(ScanChannelMonitor.class.getName());
+    
 	/** synchronization lock */
 	private final Object syncLock;
 
@@ -133,9 +137,8 @@ public class ScanChannelMonitor {
 					monitor = channel.addMonitorValTime( eventHandler, Monitor.VALUE );
 					Channel.flushIO();
 				}
-				catch( Exception exception ) {
-					System.err.println( "Exception creating monitor for channel: " + channel.getId() );
-					exception.printStackTrace();
+				catch( ConnectionException | MonitorException exception ) {
+					LOGGER.log(Level.SEVERE, "Exception creating monitor for channel: " + channel.getId(), exception);
 				}
 			}
 		}

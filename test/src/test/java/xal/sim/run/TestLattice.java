@@ -12,6 +12,8 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -51,7 +53,7 @@ import xal.test.ResourceManager;
  * @since  Aug 25, 2014
  */
 public class TestLattice {
-
+    private static final Logger LOGGER = Logger.getLogger(TestLattice.class.getName());
     
     /*
      * Global Constants
@@ -86,14 +88,14 @@ public class TestLattice {
      */
     
     /** The file where we send the testing output */
-    private static PrintStream    PRN_OUTPUT;
+    private static PrintStream    prnOutput;
     
     
     /** Accelerator hardware under test */
-    private static Accelerator    ACCEL_TEST;
+    private static Accelerator    accelTest;
     
     /** Accelerator sequence under test */
-    private static AcceleratorSeq SEQ_TEST;
+    private static AcceleratorSeq seqTest;
 
     
     /*
@@ -101,16 +103,16 @@ public class TestLattice {
      */
 
     /** The online model scenario for the given accelerator sequence */
-    private static Scenario         MODEL_TEST;
+    private static Scenario         modelTest;
     
     /** Envelope probe used for simulations */
-    private static EnvelopeProbe    PROBE_ENV;
+    private static EnvelopeProbe    probeEnv;
     
     /** Particle probe used for simulations */
-    private static ParticleProbe    PROBE_PARTC;
+    private static ParticleProbe    probePartc;
     
     /** Transfer map probe used for simulations */
-    private static TransferMapProbe PROBE_XFER;
+    private static TransferMapProbe probeXfer;
     
     
     
@@ -129,35 +131,32 @@ public class TestLattice {
     public static void setUpBeforeClass() throws Exception {
         try {
 //            ACCEL_TEST = XMLDataManager.loadDefaultAccelerator();
-            ACCEL_TEST = ResourceManager.getTestAccelerator();
-            SEQ_TEST   = ACCEL_TEST.getSequence(STR_ACCL_SEQ_ID);
-            MODEL_TEST = Scenario.newScenarioFor(SEQ_TEST);
-            MODEL_TEST.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
+            accelTest = ResourceManager.getTestAccelerator();
+            seqTest   = accelTest.getSequence(STR_ACCL_SEQ_ID);
+            modelTest = Scenario.newScenarioFor(seqTest);
+            modelTest.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
             
-            IAlgorithm      algor = AlgorithmFactory.createEnvTrackerAdapt(SEQ_TEST);
-            PROBE_ENV = ProbeFactory.getEnvelopeProbe(SEQ_TEST, algor);
-            PROBE_ENV.initialize();
+            IAlgorithm      algor = AlgorithmFactory.createEnvTrackerAdapt(seqTest);
+            probeEnv = ProbeFactory.getEnvelopeProbe(seqTest, algor);
+            probeEnv.initialize();
 
-            algor = AlgorithmFactory.createParticleTracker(SEQ_TEST);
-            PROBE_PARTC = ProbeFactory.createParticleProbe(SEQ_TEST, algor);
-            PROBE_PARTC.initialize();
+            algor = AlgorithmFactory.createParticleTracker(seqTest);
+            probePartc = ProbeFactory.createParticleProbe(seqTest, algor);
+            probePartc.initialize();
 
-            algor = AlgorithmFactory.createTransferMapTracker(SEQ_TEST);
-            PROBE_XFER = ProbeFactory.getTransferMapProbe(SEQ_TEST, algor);
-            PROBE_ENV.initialize();
+            algor = AlgorithmFactory.createTransferMapTracker(seqTest);
+            probeXfer = ProbeFactory.getTransferMapProbe(seqTest, algor);
+            probeEnv.initialize();
             
-            if (BOL_TYPE_STOUT) {
-                PRN_OUTPUT = PRN_OUTPUT;
-            } else {
+            if (!BOL_TYPE_STOUT) {
                 File       fileOut = ResourceManager.getOutputFile(TestLattice.class, STR_FILENAME_OUTPUT);
                 
-                PRN_OUTPUT = new PrintStream(fileOut);
+                prnOutput = new PrintStream(fileOut);
             }
             
         } catch (ModelException | InstantiationException e) {
-
             fail("Unable to create Scenario");
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
         }
     }
 
@@ -186,18 +185,18 @@ public class TestLattice {
      */
     @Test
     public final void testModel() throws ModelException {
-        Lattice              latTest = MODEL_TEST.getLattice();
+        Lattice              latTest = modelTest.getLattice();
         Iterator<IComponent> itrCmps = latTest.globalIterator();
         
         int index = 0;
-        PRN_OUTPUT.println();
-        PRN_OUTPUT.println("ELEMENTS contained in MODEL");
+        prnOutput.println();
+        prnOutput.println("ELEMENTS contained in MODEL");
         while (itrCmps.hasNext()) {
             IComponent cmp = itrCmps.next();
             if (cmp instanceof Element)
-                PRN_OUTPUT.println("  " + index + " " + (Element)cmp);
+                prnOutput.println("  " + index + " " + (Element)cmp);
             else
-                PRN_OUTPUT.println("  " + index + " " + cmp.getId());
+                prnOutput.println("  " + index + " " + cmp.getId());
             index++;
         }
     }
@@ -211,19 +210,19 @@ public class TestLattice {
      */
     @Test
     public final void testSimulation() {
-        Trajectory<ParticleProbeState>  trjPartc = this.runModel(PROBE_PARTC);
+        Trajectory<ParticleProbeState>  trjPartc = this.runModel(probePartc);
         
-        PRN_OUTPUT.println();
-        PRN_OUTPUT.println("PARTICLE PROBE STATES retrieved iteration using the Iterable<> interface");
+        prnOutput.println();
+        prnOutput.println("PARTICLE PROBE STATES retrieved iteration using the Iterable<> interface");
         int index = 0;
         for (ParticleProbeState state : trjPartc) {
-            PRN_OUTPUT.println("  " + index 
+            prnOutput.println("  " + index 
                     + " " + state.getElementId()
                     + " from " + state.getHardwareNodeId() );
-            PRN_OUTPUT.println("    position  " + state.getPosition());
-            PRN_OUTPUT.println("    energy    " + state.getKineticEnergy());
-            PRN_OUTPUT.println("    phase     " + (180.0/Math.PI)*state.getLongitudinalPhase());
-            PRN_OUTPUT.println("    phase|360 " + (180.0/Math.PI) *Math.IEEEremainder(state.getLongitudinalPhase(), 2.0*Math.PI) );
+            prnOutput.println("    position  " + state.getPosition());
+            prnOutput.println("    energy    " + state.getKineticEnergy());
+            prnOutput.println("    phase     " + (180.0/Math.PI)*state.getLongitudinalPhase());
+            prnOutput.println("    phase|360 " + (180.0/Math.PI) *Math.IEEEremainder(state.getLongitudinalPhase(), 2.0*Math.PI) );
             index++;
         }
     }
@@ -242,7 +241,7 @@ public class TestLattice {
             return;
         
         
-        Trajectory<ParticleProbeState>  trjDsgn = runModel(PROBE_PARTC);
+        Trajectory<ParticleProbeState>  trjDsgn = runModel(probePartc);
     
         for (PLANE plane : PLANE.values()) {
             final ParticleCurve crvSim = new ParticleCurve(plane, trjDsgn);
@@ -288,20 +287,20 @@ public class TestLattice {
         }
         
         try {
-            MODEL_TEST.setProbe( prbTest );
-            MODEL_TEST.resync();
-            MODEL_TEST.run();
+            modelTest.setProbe( prbTest );
+            modelTest.resync();
+            modelTest.run();
             
-            Trajectory<S>   trjTest = MODEL_TEST.getTrajectory();
+            Trajectory<S>   trjTest = modelTest.getTrajectory();
             
             return trjTest;
             
         } catch (SynchronizationException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             fail("Unable to synchronize model values");
             
         } catch (ModelException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             fail("Error running the online model");
         }
         

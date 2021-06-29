@@ -11,6 +11,8 @@ package xal.tools.dispatch;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.concurrent.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /** Wraps a operation so status can be monitored */
@@ -29,7 +31,8 @@ abstract class DispatchOperation<ReturnType> implements Callable<ReturnType> {
 	
 	/** result of the operation upon successful completion */
 	private ReturnType result;
-	
+        
+        private static final Logger LOGGER = Logger.getLogger(DispatchOperation.class.getName());	
 	
 	/** Primary Constructor */
 	protected DispatchOperation( final DispatchOperationListener delegate, final boolean isBarrier ) {
@@ -121,8 +124,7 @@ abstract class DispatchOperation<ReturnType> implements Callable<ReturnType> {
 				}
 			}
 			catch( Exception exception ) {
-				System.err.println( "Failed attempt to awake threads waiting on this operation to complete." );
-				exception.printStackTrace();
+				LOGGER.log(Level.SEVERE, "Failed attempt to awake threads waiting on this operation to complete.", exception);
 			}
 			
 			sendCompletionNotification();

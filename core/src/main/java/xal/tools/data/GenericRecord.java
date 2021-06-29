@@ -23,7 +23,9 @@ import java.lang.reflect.*;
 public class GenericRecord implements KeyedRecord, DataListener {
     /** data table to which this record belongs */
     protected final DataTable dataTable;
-    
+
+    private static final Logger LOGGER = Logger.getLogger(GenericRecord.class.getName());
+
     /** table of attributes by attribute ID */
     protected final Map<String,Object> attributeTable;
 
@@ -271,32 +273,30 @@ public class GenericRecord implements KeyedRecord, DataListener {
 		}
 		catch(NoSuchMethodException exception) {
 			final String message = "The valueOf() method was not found for the attribute of type:" + type;
-			Logger.getLogger("global").log( Level.SEVERE, message, exception );
+			LOGGER.log( Level.SEVERE, message, exception );
 			throw new ParseException(message);
 		}
 		catch(SecurityException exception) {
 			final String message = "The valueOf() method was not accessible for the attribute of type: " + type;
-			Logger.getLogger("global").log( Level.SEVERE, message, exception );
+			LOGGER.log( Level.SEVERE, message, exception );
 			throw new ParseException(message);
 		}
 		catch(IllegalArgumentException exception) {
 			// this should never get thrown since we would have received a NoSuchMethodException earlier
 			final String message = "The valueOf() method does not take the correct single String argument for the type: " + type;
 			System.err.println( message );
-			Logger.getLogger("global").log( Level.SEVERE, message, exception );
-			exception.printStackTrace();
+			LOGGER.log( Level.SEVERE, message, exception );
 		}
 		catch(IllegalAccessException exception) {
 			// this should never get thrown since we would have received a NoSuchMethodException earlier
 			final String message = "The valueOf() method does not have public access for the type: " + type;
 			System.err.println( message );
-			Logger.getLogger("global").log( Level.SEVERE, message, exception );
-			exception.printStackTrace();
+			LOGGER.log( Level.SEVERE, message, exception );
 		}
 		catch(InvocationTargetException exception) {
 			// this exception gets called if the valueOf() method throws an exception
 			String message = "The valueOf() method for type: " + type + " with value >>" + stringValue + "<< threw an exception: " + exception.getTargetException();
-			Logger.getLogger("global").log( Level.SEVERE, message, exception );
+			LOGGER.log( Level.SEVERE, message, exception );
 			throw new ParseException(message);
 		}
 

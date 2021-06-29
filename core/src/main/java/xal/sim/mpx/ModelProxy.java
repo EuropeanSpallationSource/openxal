@@ -26,6 +26,8 @@ import xal.smf.AcceleratorSeq;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.event.EventListenerList;
 
@@ -38,6 +40,8 @@ import org.w3c.dom.Document;
  * @author wdklotz
  */
 public class ModelProxy {
+    private static final Logger LOGGER = Logger.getLogger(ModelProxy.class.getName());
+
 	protected AcceleratorSeq acceleratorSequence;
 	private File probeMasterFile;
 	private final EventListenerList listeners;
@@ -197,7 +201,7 @@ public class ModelProxy {
 			probe.initialize();
 			bPropagated = false;
 		} catch (LatticeError e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, e);
 		}
 	}
 
@@ -316,7 +320,7 @@ public class ModelProxy {
 		try {
 			checkLattice();
 		} catch (LatticeError e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, e);
 			return null;
 		}
 		return acceleratorSequence;
@@ -334,7 +338,7 @@ public class ModelProxy {
 		try {
 			checkLattice();
 		} catch (LatticeError e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, e);
 			return null;
 		}
 		return scenario.getLattice();
@@ -351,7 +355,7 @@ public class ModelProxy {
 		try {
 			checkProbe();
 		} catch (LatticeError e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, e);
 			return -1;
 		}
 		// find the probe type
@@ -376,7 +380,7 @@ public class ModelProxy {
 		try {
 			checkProbe();
 		} catch (LatticeError e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, e);
 			return null;
 		}
 		return probe;
@@ -413,13 +417,13 @@ public class ModelProxy {
 		try {
 			checkProbe();
 		} catch (LatticeError e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, e);
 			return null;
 		}
 		try {
 			return ProbeXmlWriter.documentForProbe(probe);
 		} catch (IOException e1) {
-			e1.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, e1);
 			return null;
 		}
 	}

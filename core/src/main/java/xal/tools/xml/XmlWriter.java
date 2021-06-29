@@ -38,7 +38,8 @@ public class XmlWriter {
     Document document;
     Writer writer;	
 	
-	
+    private static final Logger LOGGER = Logger.getLogger(XmlWriter.class.getName());
+
 	static {
 		AMPERSAND_PATTERN = Pattern.compile("&");
 		LEFT_ANGLE_BRACKET_PATTERN = Pattern.compile("<");
@@ -116,9 +117,7 @@ public class XmlWriter {
             docWriter.write();
         }
         catch (IOException exception) {
-			Logger.getLogger("global").log( Level.SEVERE, "I/O Error writing XML.", exception );
-            System.err.println(exception);
-            exception.printStackTrace();
+            LOGGER.log(Level.SEVERE, "I/O Error writing XML.", exception);
         }
     }
 

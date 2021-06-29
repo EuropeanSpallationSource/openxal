@@ -15,6 +15,9 @@ import java.awt.print.*;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.io.FileNotFoundException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 import xal.tools.messaging.MessageCenter;
@@ -30,6 +33,8 @@ abstract class XalAbstractDocument implements Pageable {
 	// public static constants for confirmation dialogs
 	public static final int YES_OPTION = JOptionPane.YES_OPTION;
 	public static final int NO_OPTION = JOptionPane.NO_OPTION;
+        
+        private static final Logger LOGGER = Logger.getLogger(XalAbstractDocument.class.getName());
 
 	/** Local message center */
 	protected MessageCenter messageCenter;
@@ -296,21 +301,21 @@ abstract class XalAbstractDocument implements Pageable {
             setHasChanges( false );
         }
         catch( XmlDataAdaptor.WriteException exception ) {
-			if ( exception.getCause() instanceof java.io.FileNotFoundException ) {
-				System.err.println( exception );
+			if ( exception.getCause() instanceof FileNotFoundException ) {
+				LOGGER.log(Level.SEVERE, "Save failed due to a file access exception!", exception);
 				displayError( "Save Failed!", "Save failed due to a file access exception!", exception );
 			}
 			else if ( exception.getCause() instanceof java.io.IOException ) {
-				System.err.println( exception );
+				LOGGER.log(Level.SEVERE, "Save failed due to a file IO exception!", exception);
 				displayError( "Save Failed!", "Save failed due to a file IO exception!", exception );
 			}
 			else {
-				exception.printStackTrace();
+				LOGGER.log(Level.SEVERE, "Save failed due to an internal write exception!" , exception);
 				displayError( "Save Failed!", "Save failed due to an internal write exception!", exception );
 			}
         }
         catch(Exception exception) {
-			exception.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Save failed due to an internal exception!", exception);
             displayError( "Save Failed!", "Save failed due to an internal exception!", exception );
         }
     }

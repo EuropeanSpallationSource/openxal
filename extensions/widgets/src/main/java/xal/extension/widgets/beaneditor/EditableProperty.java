@@ -4,14 +4,19 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** base class for a editable property */
 public abstract class EditableProperty {
     /** array of classes for which the property can be edited directly */
     protected static final Set<Class<?>> EDITABLE_PROPERTY_TYPES = new HashSet<>();
+    
+    private static final Logger LOGGER = Logger.getLogger(EditableProperty.class.getName());
 
 	/** property name */
 	protected final String NAME;
@@ -82,8 +87,8 @@ public abstract class EditableProperty {
 			try {
 				return getter.invoke( TARGET );
 			}
-			catch( Exception exception ) {
-				System.err.println( exception );
+			catch( IllegalAccessException | IllegalArgumentException | InvocationTargetException exception ) {
+				LOGGER.log(Level.SEVERE, null, exception);
 				return null;
 			}
 		}

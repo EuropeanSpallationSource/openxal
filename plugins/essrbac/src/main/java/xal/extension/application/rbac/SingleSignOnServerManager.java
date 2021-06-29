@@ -111,7 +111,7 @@ public class SingleSignOnServerManager {
 
         try {
             Runtime.getRuntime().exec(commandLine);
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             throw new XalException("Failed to execute the start SSO server.");
         }
     }

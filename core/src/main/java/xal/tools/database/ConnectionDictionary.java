@@ -24,7 +24,9 @@ import java.util.Properties;
 public class ConnectionDictionary extends Properties {
     /** serialization ID */
     private static final long serialVersionUID = 1L;
-    
+
+    private static final Logger LOGGER = Logger.getLogger(ConnectionDictionary.class.getName());
+
 	// public dictionary keys
 	public static final String USER_KEY = "user";
 	public static final String PASSWORD_KEY = "password";
@@ -61,7 +63,7 @@ public class ConnectionDictionary extends Properties {
 	
 	/**
 	 * Get the connection dictionary from the URL specified in the user's preferences and for the specified account.
-	 * @param accountName name of the account for which to initializae the connection dictionary (or null to use the default account if any)
+	 * @param accountName name of the account for which to initialize the connection dictionary (or null to use the default account if any)
 	 * @return the user's default connection dictionary
 	 */
 	public static ConnectionDictionary getInstance( final String accountName ) {
@@ -168,7 +170,7 @@ public class ConnectionDictionary extends Properties {
 		}
 		catch(ClassNotFoundException | IllegalAccessException | InstantiationException exception) {
 			final String message = "Failed to instantiate database adaptor for class:  " + className;
-			Logger.getLogger("global").log( Level.SEVERE, message, exception );
+			LOGGER.log( Level.SEVERE, message, exception );
 			throw new RuntimeException( message, exception );
 		}
 	}

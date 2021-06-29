@@ -22,6 +22,8 @@ import java.util.logging.*;
  * @author  tap
  */
 public abstract class Correlator<SourceType, RecordType, SourceAgentType extends SourceAgent<RecordType>> {
+    private static final Logger LOGGER = Logger.getLogger(Correlator.class.getName());
+            
     protected MessageCenter localCenter;
     protected double binTimespan;
     protected CorrelationTester<RecordType> correlationTester;
@@ -504,8 +506,7 @@ public abstract class Correlator<SourceType, RecordType, SourceAgentType extends
 				}
             }
             catch( InterruptedException exception ) {
-				Logger.getLogger("global").log( Level.SEVERE, "Error while waiting for a correlation.", exception );
-                System.err.println( exception );
+                LOGGER.log(Level.SEVERE, "Error while waiting for a correlation.", exception);
             }
             finally {
                 removeListener( this );

@@ -18,51 +18,56 @@ import java.sql.Timestamp;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.database.DatabaseAdaptor;
+import xal.tools.database.DatabaseException;
 
 
 
 /** represent the channel snapshot database table */
 class ChannelSnapshotTable {
+        private static final Logger LOGGER = Logger.getLogger(ChannelSnapshotTable.class.getName());
+    
 	/** database table name */
-	protected final String TABLE_NAME;
+	protected final String tableName;
 
 	/** time stamp column */
-	protected final String TIMESTAMP_COLUMN;
+	protected final String timestampColumn;
 
 	/** machine snapshot primary key */
-	protected final String MACHINE_SNAPSHOT_COLUMN;
+	protected final String machineSnapshotColumn;
 
 	/** PV primary key */
-	protected final String PV_COLUMN;
+	protected final String pvColumn;
 
 	/** value column */
-	protected final String VALUE_COLUMN;
+	protected final String valueColumn;
 
 	/** status column */
-	protected final String STATUS_COLUMN;
+	protected final String statusColumn;
 
 	/** severity column */
-	protected final String SEVERITY_COLUMN;
+	protected final String severityColumn;
 
 	/** value array type (value holds an array of doubles) */
-	protected final String VALUE_ARRAY_TYPE;
+	protected final String valueArrayType;
 
 
 	/** Constructor */
 	public ChannelSnapshotTable( final DBTableConfiguration configuration ) {
-		TABLE_NAME = configuration.getTableName();
+		tableName = configuration.getTableName();
 
-		MACHINE_SNAPSHOT_COLUMN = configuration.getColumn( "machineSnapshot" );
-		PV_COLUMN = configuration.getColumn( "pv" );
+		machineSnapshotColumn = configuration.getColumn( "machineSnapshot" );
+		pvColumn = configuration.getColumn( "pv" );
 
-		TIMESTAMP_COLUMN = configuration.getColumn( "timestamp" );
-		VALUE_COLUMN = configuration.getColumn( "value" );
-		STATUS_COLUMN = configuration.getColumn( "status" );
-		SEVERITY_COLUMN = configuration.getColumn( "severity" );
+		timestampColumn = configuration.getColumn( "timestamp" );
+		valueColumn = configuration.getColumn( "value" );
+		statusColumn = configuration.getColumn( "status" );
+		severityColumn = configuration.getColumn( "severity" );
 
-		VALUE_ARRAY_TYPE = configuration.getDataType( "valueArray" );
+		valueArrayType = configuration.getDataType( "valueArray" );
 	}
 
 
@@ -80,7 +85,7 @@ class ChannelSnapshotTable {
 			if ( channelSnapshot != null ) {
 				final Timestamp timeStamp = channelSnapshot.getTimestamp().getSQLTimestamp();
 				try {
-					final Array valueArray = databaseAdaptor.getArray( VALUE_ARRAY_TYPE, connection, channelSnapshot.getValue() );
+					final Array valueArray = databaseAdaptor.getArray(valueArrayType, connection, channelSnapshot.getValue() );
 					insertStatement.setLong( 1, machineSnapshotID );
 					insertStatement.setString( 2, channelSnapshot.getPV() );
 					insertStatement.setTimestamp( 3, timeStamp );
@@ -93,9 +98,9 @@ class ChannelSnapshotTable {
 					insertStatement.addBatch();
 					needsInsert = true;
 				}
-				catch( Exception exception ) {
+				catch( SQLException | DatabaseException exception ) {
 					System.err.println( "Exception publishing channel snapshot:  " + channelSnapshot );
-					System.err.println( exception );
+					LOGGER.log(Level.SEVERE, null, exception);
 				}
 
 			}
@@ -124,12 +129,12 @@ class ChannelSnapshotTable {
 
 		final ResultSet resultSet = snapshotQuery.executeQuery();
 		while ( resultSet.next() ) {
-			final String pv = resultSet.getString( PV_COLUMN );
-			final Timestamp timestamp = resultSet.getTimestamp( TIMESTAMP_COLUMN );
-			final Number[] bigValue = (Number[])resultSet.getArray( VALUE_COLUMN ).getArray();
+			final String pv = resultSet.getString(pvColumn );
+			final Timestamp timestamp = resultSet.getTimestamp(timestampColumn );
+			final Number[] bigValue = (Number[])resultSet.getArray(valueColumn ).getArray();
 			final double[] value = toDoubleArray( bigValue );
-			final short status = resultSet.getShort( STATUS_COLUMN );
-			final short severity = resultSet.getShort( SEVERITY_COLUMN );
+			final short status = resultSet.getShort(statusColumn );
+			final short severity = resultSet.getShort(severityColumn );
 			snapshots.add( new ChannelSnapshot( pv, value, status, severity, new xal.ca.Timestamp( timestamp ) ) );
 		}
 		if( snapshotQuery != null) {
@@ -146,7 +151,7 @@ class ChannelSnapshotTable {
 	 * @throws java.sql.SQLException  if an exception occurs during a SQL evaluation
 	 */
 	protected PreparedStatement getInsertStatement( final Connection connection ) throws SQLException {
-		return connection.prepareStatement( "INSERT INTO " + TABLE_NAME + "(" + MACHINE_SNAPSHOT_COLUMN + ", " + PV_COLUMN + ", " + TIMESTAMP_COLUMN + ", " + VALUE_COLUMN + ", " + STATUS_COLUMN + ", " + SEVERITY_COLUMN + ") VALUES (?, ?, ?, ?, ?, ?)" );
+		return connection.prepareStatement("INSERT INTO " + tableName + "(" + machineSnapshotColumn + ", " + pvColumn + ", " + timestampColumn + ", " + valueColumn + ", " + statusColumn + ", " + severityColumn + ") VALUES (?, ?, ?, ?, ?, ?)" );
 	}
 
 
@@ -156,7 +161,7 @@ class ChannelSnapshotTable {
 	 * @throws java.sql.SQLException  if an exception occurs during a SQL evaluation
 	 */
 	protected PreparedStatement getQueryByMachineSnapshotStatement( final Connection connection ) throws SQLException {
-		return connection.prepareStatement( "SELECT * FROM " + TABLE_NAME + " WHERE " + MACHINE_SNAPSHOT_COLUMN + " = ?" );
+		return connection.prepareStatement("SELECT * FROM " + tableName + " WHERE " + machineSnapshotColumn + " = ?" );
 	}
 
 

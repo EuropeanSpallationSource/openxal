@@ -8,8 +8,11 @@ package xal.tools.beam;
 
 
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.math.r2.R2;
 
@@ -37,8 +40,8 @@ import xal.tools.math.r2.R2;
  * @since   Nov 12, 2002
  * @version Sep 25, 2014
  */
-public class Twiss implements java.io.Serializable {
-
+public class Twiss implements Serializable {
+    private static final Logger LOGGER = Logger.getLogger(Twiss.class.getName());
 
     /*
      *  Global Constants
@@ -106,7 +109,7 @@ public class Twiss implements java.io.Serializable {
 
             } catch (SecurityException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
                 System.err.println("SERIOUS ERROR: Twiss$PROP#getPropertyValue()"); //$NON-NLS-1$
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, null, e);
 
             }
 
@@ -134,14 +137,10 @@ public class Twiss implements java.io.Serializable {
 
             try {
                 this.mthFldGtr = Twiss.class.getMethod( strFldGtr );
-
             } catch (SecurityException e) {
-                System.err.println("SERIOUS ERROR: Twiss$PROP#PROP() - getter inaccessible: " + strFldGtr); //$NON-NLS-1$
-                e.printStackTrace();
-
+                LOGGER.log(Level.SEVERE, "SERIOUS ERROR: Twiss$PROP#PROP() - getter inaccessible: " + strFldGtr, e);
             } catch (NoSuchMethodException e) {
-                System.err.println("SERIOUS ERROR: Twiss$PROP#PROP() no getter method " + strFldGtr); //$NON-NLS-1$
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "SERIOUS ERROR: Twiss$PROP#PROP() no getter method " + strFldGtr, e);
             }
         }
     }

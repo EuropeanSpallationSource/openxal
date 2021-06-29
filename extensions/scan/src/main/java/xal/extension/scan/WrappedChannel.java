@@ -47,12 +47,7 @@ public class WrappedChannel extends MonitoredPV {
 				channel.putVal( value );
 				latestEventSuccessful = true;
 			}
-			catch( ConnectionException exception ) {
-				latestEventSuccessful = false;
-				final ActionEvent stateChangedAction = makeEvent( null, channel );
-				stateEventDispatch.actionPerformed( stateChangedAction );
-			}
-			catch( PutException exception ) {
+			catch( ConnectionException | PutException exception ) {
 				latestEventSuccessful = false;
 				final ActionEvent stateChangedAction = makeEvent( null, channel );
 				stateEventDispatch.actionPerformed( stateChangedAction );

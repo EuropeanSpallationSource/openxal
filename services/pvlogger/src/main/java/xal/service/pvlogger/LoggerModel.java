@@ -10,7 +10,10 @@
 
 package xal.service.pvlogger;
 
+import java.sql.SQLException;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -18,17 +21,19 @@ import java.util.*;
  * @author  tap
  */
 public class LoggerModel {
+    private static final Logger LOGGER = Logger.getLogger(LoggerModel.class.getName());
+    
 	/** The time when this process was launched in seconds since the Java epoch */
 	private static final Date LAUNCH_TIME;
 	
 	/** PV Logger */
-	private final PVLogger PV_LOGGER;
+	private final PVLogger pvLogger;
 	
 	/** session models keyed by group ID */
-	private final Map<String,SessionModel> SESSION_MODELS;
+	private final Map<String,SessionModel> sessionModels;
 	
 	/** ID of the service to log */
-	private final String SERVICE_ID;
+	private final String serviceId;
 
 	
 	/**
@@ -43,10 +48,10 @@ public class LoggerModel {
 	 * LoggerModel constructor
 	 */
 	public LoggerModel() {
-		SESSION_MODELS = new HashMap<String,SessionModel>();
-		SERVICE_ID = System.getProperty( "serviceID", "PHYSICS" );
+		sessionModels = new HashMap<>();
+		serviceId = System.getProperty( "serviceID", "PHYSICS" );
 		
-		PV_LOGGER = new PVLogger();
+		pvLogger = new PVLogger();
 		
 		reloadGroups();
 	}
@@ -54,7 +59,7 @@ public class LoggerModel {
 	
 	/** Start logging */
 	public void startLogging() {
-		PV_LOGGER.start();
+		pvLogger.start();
 	}
 	
 	
@@ -68,19 +73,19 @@ public class LoggerModel {
 	
 	/** Reload the channel groups from the persistent store */
 	public void reloadGroups() {
-		SESSION_MODELS.clear();
+		sessionModels.clear();
 		
-		PV_LOGGER.removeAllLoggerSessions();
+		pvLogger.removeAllLoggerSessions();
 		
 		try {
-			final List<LoggerSession> loggerSessions = PV_LOGGER.requestEnabledLoggerSessionsForService( SERVICE_ID );
+			final List<LoggerSession> loggerSessions = pvLogger.requestEnabledLoggerSessionsForService( serviceId );
 			for ( final LoggerSession session : loggerSessions ) {
 				final String groupType = session.getChannelGroup().getLabel();
-				SESSION_MODELS.put( groupType, new SessionModel( session ) );
+				sessionModels.put( groupType, new SessionModel( session ) );
 			}
 		}
-		catch( Exception exception ) {
-			exception.printStackTrace();
+		catch( SQLException exception ) {
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
 	}
 	
@@ -88,11 +93,11 @@ public class LoggerModel {
 	/** reload the group identified by the group ID */
 	public boolean reloadLoggerSession( final String groupID ) {
 		try {
-			PV_LOGGER.reloadLoggerSession( groupID );
+			pvLogger.reloadLoggerSession( groupID );
 			return true;
 		}
-		catch( Exception exception ) {
-			exception.printStackTrace();
+		catch( SQLException exception ) {
+			LOGGER.log(Level.SEVERE, null, exception);
 			return false;
 		}
 	}
@@ -104,9 +109,9 @@ public class LoggerModel {
 	 */
 	protected String[] fetchChannelGroupTypes() {
 		try {
-			return PV_LOGGER.fetchTypes( SERVICE_ID );
+			return pvLogger.fetchTypes( serviceId );
 		}
-		catch( Exception exception ) {
+		catch( SQLException exception ) {
 			return new String[0];
 		}
 	}
@@ -118,7 +123,7 @@ public class LoggerModel {
 	 * @return the session model for the specified type or null if there is no match
 	 */
 	public SessionModel getSessionModel( final String groupType ) {
-		return SESSION_MODELS.get( groupType );
+		return sessionModels.get( groupType );
 	}
 	
 	
@@ -138,7 +143,7 @@ public class LoggerModel {
 	 * @return the PV Logger
 	 */
 	public PVLogger getPVLogger() {
-		return PV_LOGGER;
+		return pvLogger;
 	}
 	
 	
@@ -147,13 +152,13 @@ public class LoggerModel {
 	 * @return the list of session types
 	 */
 	public Collection<String> getSessionTypes() {
-		return SESSION_MODELS.keySet();
+		return sessionModels.keySet();
 	}
 	
 	
 	/** publish snapshots in the buffer */
 	public void publishSnapshots() {
-		PV_LOGGER.publishSnapshots();
+		pvLogger.publishSnapshots();
 	}
 	
 	
@@ -161,13 +166,13 @@ public class LoggerModel {
 	 * Resume logging.
 	 */
 	public void resumeLogging() {
-		PV_LOGGER.restart();
+		pvLogger.restart();
 	}
 	
 	
 	/** Stop logging */
 	public void stopLogging() {
-		PV_LOGGER.stop();
+		pvLogger.stop();
 	}
 	
 	
@@ -188,4 +193,3 @@ public class LoggerModel {
 		return LAUNCH_TIME;
 	}
 }
-

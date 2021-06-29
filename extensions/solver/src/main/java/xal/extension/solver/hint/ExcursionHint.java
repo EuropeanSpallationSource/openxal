@@ -19,18 +19,18 @@ public class ExcursionHint extends Hint {
     public static final String TYPE = "ExcursionHint";
     
     /** map of domain to use keyed by variable */
-	private final Map<Variable, VariableExcursionDomain> VARIABLE_DOMAINS;
+	private final Map<Variable, VariableExcursionDomain> variableDomains;
     
     /** default domain to use for a variable if one isn't specified specifically for the variable */
-	private final VariableExcursionDomain DEFAULT_DOMAIN;
+	private final VariableExcursionDomain defaultDomain;
     
     
 	/** Primary Constructor */
     protected ExcursionHint( final VariableExcursionDomain defaultDomain ) {
         super( "Excursion Hint" );
         
-        DEFAULT_DOMAIN = defaultDomain;
-        VARIABLE_DOMAINS = new HashMap<>();
+        this.defaultDomain = defaultDomain;
+        variableDomains = new HashMap<>();
     }
     
     
@@ -64,33 +64,33 @@ public class ExcursionHint extends Hint {
 	
 	/** Determine if there is an entry for the variable */
 	public boolean hasVariable( final Variable variable ) {
-		return VARIABLE_DOMAINS.containsKey( variable );
+		return variableDomains.containsKey( variable );
 	}
 	
 	
 	/** add the absolute maximum excursion for a variable */
 	public void addAbsoluteMaxExcursion( final Variable variable, final double maxExcursion ) {
-		VARIABLE_DOMAINS.put( variable, new AbsoluteMaxExcursionDomain( maxExcursion ) );
+		variableDomains.put( variable, new AbsoluteMaxExcursionDomain( maxExcursion ) );
 	}
 	
 	
 	/** add fraction excursion range for the specified variable */
 	public void addFractionExcursion( final Variable variable, final double fraction ) {
-		VARIABLE_DOMAINS.put( variable, new FractionExcursionDomain( fraction ) );		
+		variableDomains.put( variable, new FractionExcursionDomain( fraction ) );		
 	}
 	
 	
 	/** Get the domain for the specified variable and the current value. */
 	public double[] getRange( final double value, final Variable variable ) {
-		final VariableExcursionDomain domain = VARIABLE_DOMAINS.get( variable );
+		final VariableExcursionDomain domain = variableDomains.get( variable );
         // if a domain is specified for the variable, then use it
 		if ( domain != null ) {
 			return domain.getRange( value, variable );
 		}
 		
         // if no domain is specified for the variable then default to the default domain if available
-		if ( DEFAULT_DOMAIN != null ) {
-			return DEFAULT_DOMAIN.getRange( value, variable );
+		if ( defaultDomain != null ) {
+			return defaultDomain.getRange( value, variable );
 		}
 		
         // as a last resort, use the variable limits as the range
@@ -111,18 +111,18 @@ interface VariableExcursionDomain {
 /** a domain specified as a fraction of the variable domain about the current value */
 class FractionExcursionDomain implements VariableExcursionDomain {
 	/** a fraction of the domain */
-	private final double FRACTION;
+	private final double fraction;
 	
 	
 	/** Primary Constructor */
 	public FractionExcursionDomain( final double fraction ) {
-		FRACTION = fraction;
+		this.fraction = fraction;
 	}
 	
 	
 	/** get the fraction */
 	public double getFraction() {
-		return FRACTION;
+		return fraction;
 	}
 	
 	
@@ -132,7 +132,7 @@ class FractionExcursionDomain implements VariableExcursionDomain {
 		final double lowerLimit = variable.getLowerLimit();
 		final double upperLimit = variable.getUpperLimit();
         
-        final double delta = FRACTION * ( upperLimit - lowerLimit );
+        final double delta = fraction * ( upperLimit - lowerLimit );
 		return new double[] { Math.max( value - delta, lowerLimit ), Math.min( value + delta, upperLimit )  };
 	}
 }

@@ -14,6 +14,8 @@ import java.lang.reflect.Array;
 import java.util.*;
 import java.util.regex.*;
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /** encode and decode objects with JSON */
@@ -23,7 +25,6 @@ public class JSONCoder implements Coder {
 
     /** adaptors between all custom types and representation JSON types */
     final MutableConversionAdaptorStore conversionAdaptorStore;
-
 
     // static initializer
     static {
@@ -62,6 +63,7 @@ public class JSONCoder implements Coder {
 
 
     /** Get a list of all types which are supported for coding and decoding */
+    @Override
     public List<String> getSupportedTypes() {
         return conversionAdaptorStore.getSupportedTypes();
     }
@@ -1346,7 +1348,8 @@ class ArrayDecoder extends AbstractDecoder<Object[]> {
 class DictionaryDecoder extends AbstractDecoder<Object> {
     /** default dictionary decoder */
     private static final DictionaryDecoder DEFAULT_DECODER;
-
+    
+    private static final Logger LOGGER = Logger.getLogger(DictionaryDecoder.class.getName());	
 
     // static initializer
     static {
@@ -1396,7 +1399,7 @@ class DictionaryDecoder extends AbstractDecoder<Object> {
                 return array;
             }
             catch( ArrayIndexOutOfBoundsException | ClassNotFoundException | IllegalArgumentException | NegativeArraySizeException exception ) {
-                exception.printStackTrace();
+                LOGGER.log(Level.SEVERE, null, exception);
                 throw new RuntimeException( "Exception decoding a typed array of type: " + componentType, exception );
             }
         }

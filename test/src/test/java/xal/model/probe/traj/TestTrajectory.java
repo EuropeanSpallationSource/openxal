@@ -12,6 +12,8 @@ import java.io.File;
 import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -53,7 +55,7 @@ import xal.tools.beam.PhaseVector;
  * @since  Aug 25, 2014
  */
 public class TestTrajectory {
-
+    private static final Logger LOGGER = Logger.getLogger(TestTrajectory.class.getName());
     
     /*
      * Global Constants
@@ -83,14 +85,14 @@ public class TestTrajectory {
      */
     
     /** Accelerator hardware under test */
-    private static Accelerator    ACCEL_TEST;
+    private static Accelerator    accelTest;
     
     /** Accelerator sequence under test */
-    private static AcceleratorSeq SEQ_TEST;
+    private static AcceleratorSeq seqTest;
 
     
     /** The results output file stream */
-    private static PrintStream        PSTR_OUTPUT;
+    private static PrintStream        pstrOutput;
 
     
     /*
@@ -98,16 +100,16 @@ public class TestTrajectory {
      */
 
     /** The online model scenario for the given accelerator sequence */
-    private static Scenario         MODEL_TEST;
+    private static Scenario         modelTest;
     
     /** Envelope probe used for simulations */
-    private static EnvelopeProbe    PROBE_ENV;
+    private static EnvelopeProbe    probeEnv;
     
     /** Particle probe used for simulations */
-    private static ParticleProbe    PROBE_PARTC;
+    private static ParticleProbe    probePartc;
     
     /** Transfer map probe used for simulations */
-    private static TransferMapProbe PROBE_XFER;
+    private static TransferMapProbe probeXfer;
     
     
     
@@ -126,37 +128,36 @@ public class TestTrajectory {
     public static void setUpBeforeClass() throws Exception {
         
         if (BOL_TYPE_STOUT) {
-            PSTR_OUTPUT = System.out;
+            pstrOutput = System.out;
             
         } else {
             
             File fileOutput = ResourceManager.getOutputFile(TestTrajectory.class, STR_FILENAME_OUTPUT);
             
-            PSTR_OUTPUT = new PrintStream(fileOutput);
+            pstrOutput = new PrintStream(fileOutput);
         }
         
         try {
 //            ACCEL_TEST = XMLDataManager.loadDefaultAccelerator();
-            ACCEL_TEST = ResourceManager.getTestAccelerator();
-            SEQ_TEST   = ACCEL_TEST.getSequence(STR_ACCL_SEQ_ID);
-            MODEL_TEST = Scenario.newScenarioFor(SEQ_TEST);
+            accelTest = ResourceManager.getTestAccelerator();
+            seqTest   = accelTest.getSequence(STR_ACCL_SEQ_ID);
+            modelTest = Scenario.newScenarioFor(seqTest);
             
-            IAlgorithm      algor = AlgorithmFactory.createEnvTrackerAdapt(SEQ_TEST);
-            PROBE_ENV = ProbeFactory.getEnvelopeProbe(SEQ_TEST, algor);
-            PROBE_ENV.initialize();
+            IAlgorithm      algor = AlgorithmFactory.createEnvTrackerAdapt(seqTest);
+            probeEnv = ProbeFactory.getEnvelopeProbe(seqTest, algor);
+            probeEnv.initialize();
 
-            algor = AlgorithmFactory.createParticleTracker(SEQ_TEST);
-            PROBE_PARTC = ProbeFactory.createParticleProbe(SEQ_TEST, algor);
-            PROBE_PARTC.initialize();
+            algor = AlgorithmFactory.createParticleTracker(seqTest);
+            probePartc = ProbeFactory.createParticleProbe(seqTest, algor);
+            probePartc.initialize();
 
-            algor = AlgorithmFactory.createTransferMapTracker(SEQ_TEST);
-            PROBE_XFER = ProbeFactory.getTransferMapProbe(SEQ_TEST, algor);
-            PROBE_XFER.initialize();
+            algor = AlgorithmFactory.createTransferMapTracker(seqTest);
+            probeXfer = ProbeFactory.getTransferMapProbe(seqTest, algor);
+            probeXfer.initialize();
             
         } catch (ModelException | InstantiationException e) {
-
             fail("Unable to create Scenario");
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
         }
     }
 
@@ -185,18 +186,18 @@ public class TestTrajectory {
      */
     @Test
     public final void TestModel() throws ModelException {
-        Lattice              latTest = MODEL_TEST.getLattice();
+        Lattice              latTest = modelTest.getLattice();
         Iterator<IComponent> itrCmps = latTest.globalIterator();
         
         int index = 0;
-        PSTR_OUTPUT.println();
-        PSTR_OUTPUT.println("ELEMENTS contained in MODEL");
+        pstrOutput.println();
+        pstrOutput.println("ELEMENTS contained in MODEL");
         while (itrCmps.hasNext()) {
             IComponent cmp = itrCmps.next();
             if (cmp instanceof Element)
-                PSTR_OUTPUT.println("  " + index + " " + (Element)cmp);
+                pstrOutput.println("  " + index + " " + (Element)cmp);
             else
-                PSTR_OUTPUT.println("  " + index + " " + cmp.getId());
+                pstrOutput.println("  " + index + " " + cmp.getId());
             index++;
         }
     }
@@ -210,13 +211,13 @@ public class TestTrajectory {
      */
     @Test
     public final void testStateIterator() {
-        Trajectory<ParticleProbeState>  trjPartc = this.runModel(PROBE_PARTC);
+        Trajectory<ParticleProbeState>  trjPartc = this.runModel(probePartc);
         
-        PSTR_OUTPUT.println();
-        PSTR_OUTPUT.println("STATES retrieved iteratation using the Iterable<> interface");
+        pstrOutput.println();
+        pstrOutput.println("STATES retrieved iteratation using the Iterable<> interface");
         int index = 0;
         for (ParticleProbeState state : trjPartc) {
-            PSTR_OUTPUT.println("  " + index 
+            pstrOutput.println("  " + index 
                     + " " + state.getElementId()
                     + " from " + state.getHardwareNodeId()
                     + " at position " + state.getPosition()
@@ -230,17 +231,17 @@ public class TestTrajectory {
      */
     @Test
     public final void testStateForElement() {
-        Trajectory<TransferMapState>    trjXfer = this.runModel(PROBE_XFER);
+        Trajectory<TransferMapState>    trjXfer = this.runModel(probeXfer);
         
-        PSTR_OUTPUT.println();
-        PSTR_OUTPUT.println("SINGLE STATE for " + STR_DH1_ID);
+        pstrOutput.println();
+        pstrOutput.println("SINGLE STATE for " + STR_DH1_ID);
         TransferMapState state1 = trjXfer.stateForElement(STR_DH1_ID);
-        PSTR_OUTPUT.println("  " + state1.getElementId() + " at position " + state1.getPosition());
+        pstrOutput.println("  " + state1.getElementId() + " at position " + state1.getPosition());
         
-        PSTR_OUTPUT.println();
-        PSTR_OUTPUT.println("SINGLE STATE for " + STR_DH2_ID);
+        pstrOutput.println();
+        pstrOutput.println("SINGLE STATE for " + STR_DH2_ID);
         TransferMapState state2 = trjXfer.stateForElement(STR_DH2_ID);
-        PSTR_OUTPUT.println("  " + state2.getElementId() + " at position " + state2.getPosition());
+        pstrOutput.println("  " + state2.getElementId() + " at position " + state2.getPosition());
     }
 
     /**
@@ -248,18 +249,18 @@ public class TestTrajectory {
      */
     @Test
     public final void testStatesForElement() {
-        Trajectory<TransferMapState>    trjXfer = this.runModel(PROBE_XFER);
+        Trajectory<TransferMapState>    trjXfer = this.runModel(probeXfer);
         
-        PSTR_OUTPUT.println();
-        PSTR_OUTPUT.println("STATES for " + STR_DH1_ID);
+        pstrOutput.println();
+        pstrOutput.println("STATES for " + STR_DH1_ID);
         for (TransferMapState state : trjXfer.statesForElement(STR_DH1_ID)) {
-            PSTR_OUTPUT.println("  " + state.getElementId() + " at position " + state.getPosition());
+            pstrOutput.println("  " + state.getElementId() + " at position " + state.getPosition());
         }
         
-        PSTR_OUTPUT.println();
-        PSTR_OUTPUT.println("STATES for " + STR_DH2_ID);
+        pstrOutput.println();
+        pstrOutput.println("STATES for " + STR_DH2_ID);
         for (TransferMapState state : trjXfer.statesForElement(STR_DH2_ID)) {
-            PSTR_OUTPUT.println("  " + state.getElementId() + " at position " + state.getPosition());
+            pstrOutput.println("  " + state.getElementId() + " at position " + state.getPosition());
         }
         
     }
@@ -280,14 +281,14 @@ public class TestTrajectory {
      */
     @Test
     public final void testGetStateViaIndexer() {
-        Trajectory<TransferMapState>    trjXfer = this.runModel(PROBE_XFER);
+        Trajectory<TransferMapState>    trjXfer = this.runModel(probeXfer);
         
         List<TransferMapState>     lstStates = trjXfer.getStatesViaIndexer();
-        PSTR_OUTPUT.println();
-        PSTR_OUTPUT.println("STATES retrieved by the INDEXER");
+        pstrOutput.println();
+        pstrOutput.println("STATES retrieved by the INDEXER");
         int index = 0;
         for (TransferMapState state : lstStates) {
-            PSTR_OUTPUT.println("  " + index 
+            pstrOutput.println("  " + index 
                              + " " + state.getElementId()
                              + " from " + state.getHardwareNodeId()
                              + " at position " + state.getPosition()
@@ -305,14 +306,14 @@ public class TestTrajectory {
      */
     @Test
     public final void testGetStateViaMap() {
-        Trajectory<TransferMapState>    trjXfer = this.runModel(PROBE_XFER);
+        Trajectory<TransferMapState>    trjXfer = this.runModel(probeXfer);
         
         List<TransferMapState>     lstStates = trjXfer.getStatesViaStateMap();
-        PSTR_OUTPUT.println();
-        PSTR_OUTPUT.println("STATES retrieved by the STATE MAP");
+        pstrOutput.println();
+        pstrOutput.println("STATES retrieved by the STATE MAP");
         int index = 0;
         for (TransferMapState state : lstStates) {
-            PSTR_OUTPUT.println("  " + index + " " + state.getElementId() + " at position " + state.getPosition());
+            pstrOutput.println("  " + index + " " + state.getElementId() + " at position " + state.getPosition());
             index++;
         }
     }
@@ -322,13 +323,13 @@ public class TestTrajectory {
      */
     @Test
     public final void testStatesForElement_OLD() {
-        Trajectory<TransferMapState>    trjXfer = this.runModel(PROBE_XFER);
+        Trajectory<TransferMapState>    trjXfer = this.runModel(probeXfer);
         
         List<TransferMapState>     lstStates = trjXfer.statesForElement(STR_DH1_ID);
-        PSTR_OUTPUT.println();
-        PSTR_OUTPUT.println("STATES for " + STR_DH1_ID);
+        pstrOutput.println();
+        pstrOutput.println("STATES for " + STR_DH1_ID);
         for (TransferMapState state : lstStates) {
-            PSTR_OUTPUT.println("  " + state.getElementId() + " at position " + state.getPosition());
+            pstrOutput.println("  " + state.getElementId() + " at position " + state.getPosition());
         }
     }
     
@@ -340,20 +341,20 @@ public class TestTrajectory {
      */
     @Test
     public final void testSubTrajectory() {
-        Trajectory<TransferMapState>    trjXfer  = this.runModel(PROBE_XFER);
+        Trajectory<TransferMapState>    trjXfer  = this.runModel(probeXfer);
         
         Trajectory<TransferMapState>    trjSubEx = trjXfer.subTrajectory(STR_DH1_ID, STR_DH2_ID);
-        PSTR_OUTPUT.println();
-        PSTR_OUTPUT.println("SUBTRAJECTORY (EXCLUSIVE): STATES between " + STR_DH1_ID + " and " + STR_DH2_ID);
+        pstrOutput.println();
+        pstrOutput.println("SUBTRAJECTORY (EXCLUSIVE): STATES between " + STR_DH1_ID + " and " + STR_DH2_ID);
         for (TransferMapState state : trjSubEx) {
-            PSTR_OUTPUT.println("  " + state.getElementId() + " at position " + state.getPosition());
+            pstrOutput.println("  " + state.getElementId() + " at position " + state.getPosition());
         }
 
         Trajectory<TransferMapState>    trjSubIn = trjXfer.subTrajectoryInclusive(STR_DH1_ID, STR_DH2_ID);
-        PSTR_OUTPUT.println();
-        PSTR_OUTPUT.println("SUBTRAJECTORY (INCLUSIVE): STATES between " + STR_DH1_ID + " and " + STR_DH2_ID);
+        pstrOutput.println();
+        pstrOutput.println("SUBTRAJECTORY (INCLUSIVE): STATES between " + STR_DH1_ID + " and " + STR_DH2_ID);
         for (TransferMapState state : trjSubIn) {
-            PSTR_OUTPUT.println("  " + state.getElementId() + " at position " + state.getPosition());
+            pstrOutput.println("  " + state.getElementId() + " at position " + state.getPosition());
         }
     }
 
@@ -362,15 +363,15 @@ public class TestTrajectory {
      */
     @Test
     public final void testParticleProbe() {
-        PROBE_PARTC.setPhaseCoordinates(new PhaseVector(0.001, 0, 0, 0, 0, 0) );
-        PROBE_PARTC.initialize();
+        probePartc.setPhaseCoordinates(new PhaseVector(0.001, 0, 0, 0, 0, 0) );
+        probePartc.initialize();
         
-        Trajectory<ParticleProbeState>    trjPartc = this.runModel(PROBE_PARTC);
+        Trajectory<ParticleProbeState>    trjPartc = this.runModel(probePartc);
         
-        PSTR_OUTPUT.println();
-        PSTR_OUTPUT.println("PARTICLE PROBE STATES");
+        pstrOutput.println();
+        pstrOutput.println("PARTICLE PROBE STATES");
         for (ParticleProbeState state : trjPartc.getStatesViaIndexer()) {
-            PSTR_OUTPUT.println("  " + state.getElementId() + " at position " + state.getPosition() + ": z = " + state.getPhaseCoordinates());
+            pstrOutput.println("  " + state.getElementId() + " at position " + state.getPosition() + ": z = " + state.getPhaseCoordinates());
         }
         
     }
@@ -383,12 +384,12 @@ public class TestTrajectory {
 //        PROBE_ENV.setPhaseCoordinates(new PhaseVector(0.001, 0, 0, 0, 0, 0) );
 //        PROBE_ENV.initialize();
         
-        Trajectory<EnvelopeProbeState>    trjEnv = this.runModel(PROBE_ENV);
+        Trajectory<EnvelopeProbeState>    trjEnv = this.runModel(probeEnv);
         
-        PSTR_OUTPUT.println();
-        PSTR_OUTPUT.println("ENVELOPE PROBE STATES");
+        pstrOutput.println();
+        pstrOutput.println("ENVELOPE PROBE STATES");
         for (EnvelopeProbeState state : trjEnv.getStatesViaIndexer()) {
-            PSTR_OUTPUT.println("  " + state.getElementId() + " at position " + state.getPosition() + ": sigma = " + state.getCovarianceMatrix());
+            pstrOutput.println("  " + state.getElementId() + " at position " + state.getPosition() + ": sigma = " + state.getCovarianceMatrix());
         }
         
     }
@@ -414,20 +415,20 @@ public class TestTrajectory {
         
         try {
             prbTest.reset();
-            MODEL_TEST.setProbe( prbTest );
-            MODEL_TEST.resync();
-            MODEL_TEST.run();
+            modelTest.setProbe( prbTest );
+            modelTest.resync();
+            modelTest.run();
             
-            Trajectory<S>   trjTest = MODEL_TEST.getTrajectory();
+            Trajectory<S>   trjTest = modelTest.getTrajectory();
             
             return trjTest;
             
         } catch (SynchronizationException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             fail("Unable to synchronize model values");
             
         } catch (ModelException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             fail("Error running the online model");
         }
         

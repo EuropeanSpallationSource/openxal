@@ -78,7 +78,7 @@ public class TripLogger {
 			}
 		}
 		catch( Exception exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
 	}
 	
@@ -97,7 +97,7 @@ public class TripLogger {
 			}
 		}
 		catch( Exception exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
 	}
 	

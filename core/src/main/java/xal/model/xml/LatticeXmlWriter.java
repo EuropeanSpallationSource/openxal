@@ -10,6 +10,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Document;
 
@@ -33,8 +35,9 @@ import xal.model.elem.Element;
  * 
  */
 public class LatticeXmlWriter {
-	
-	// share constants with <code>LatticeParser</code> for consistency
+    private static final Logger LOGGER = Logger.getLogger(LatticeXmlWriter.class.getName());
+
+    // share constants with <code>LatticeParser</code> for consistency
 	private static final String DOC_TYPE = "Lattice";
 	private static final String DTD_URI = "Lattice.mod.xal.dtd";
 	private static final String LATTICE_LABEL = LatticeXmlParser.ELEM_LATT;
@@ -242,7 +245,7 @@ public class LatticeXmlWriter {
 		// system, as opposed to using arbitrary strings that one might expect
 		// to generate introspection errors.
 		} catch (IntrospectionException | IllegalAccessException | InvocationTargetException e) {
-			e.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, e);
 		}
 	}
 }

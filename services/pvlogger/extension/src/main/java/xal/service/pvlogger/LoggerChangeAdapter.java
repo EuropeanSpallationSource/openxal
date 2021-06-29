@@ -37,7 +37,7 @@ public class LoggerChangeAdapter implements LoggerChangeListener {
 	
 	/**
 	 * Notification that a machine snapshot has been published.
-	 * @param logger The logger which publshed the snapshot.
+	 * @param logger The logger which published the snapshot.
 	 * @param snapshot The machine snapshot published.
 	 */
         @Override

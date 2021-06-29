@@ -21,7 +21,7 @@ import java.util.*;
  */
 public class SessionModel {
 	/** handler of logger change events */
-	private final LoggerEventHandler LOGGER_EVENT_HANDLER;
+	private final LoggerEventHandler loggerEventHandler;
 	
 	/** Logger Session */
 	protected LoggerSession loggerSession;
@@ -35,7 +35,7 @@ public class SessionModel {
 	
 	/** Constructor */
 	public SessionModel( final LoggerSession loggerSession  ) {
-		LOGGER_EVENT_HANDLER = new LoggerEventHandler();
+		loggerEventHandler = new LoggerEventHandler();
 		
 		lastLoggerEventTime = new Date();
 		
@@ -55,12 +55,12 @@ public class SessionModel {
 	/** set the logger session */
 	public void setLoggerSession( final LoggerSession loggerSession ) {
 		if ( loggerSession != null ) {
-			loggerSession.removeLoggerChangeListener( LOGGER_EVENT_HANDLER );
+			loggerSession.removeLoggerChangeListener( loggerEventHandler );
 		}
 		
 		this.loggerSession = loggerSession;
 		
-		loggerSession.addLoggerChangeListener( LOGGER_EVENT_HANDLER );
+		loggerSession.addLoggerChangeListener( loggerEventHandler );
 	}
 	
 	
@@ -94,6 +94,7 @@ public class SessionModel {
 	
 	/** handle logger change events */
 	protected class LoggerEventHandler extends LoggerChangeAdapter {
+                @Override
 		public void snapshotTaken( final LoggerSession logger, final MachineSnapshot snapshot ) {
 			lastPublishedSnapshot = snapshot;
 			lastLoggerEventTime = new Date();

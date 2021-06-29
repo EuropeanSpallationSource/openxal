@@ -10,6 +10,8 @@
 
 package xal.service.pvlogger;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
 import xal.ca.ChannelTimeRecord;
@@ -28,6 +30,8 @@ import xal.ca.MonitorException;
  * @author  tap
  */
 public class ChannelWrapper {
+        private static final Logger LOGGER = Logger.getLogger(ChannelWrapper.class.getName());
+    
 	/** The channel to wrap */
 	protected Channel channel;
 	
@@ -109,7 +113,7 @@ public class ChannelWrapper {
 			}, Monitor.VALUE );
 		}
 		catch( ConnectionException | MonitorException exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
 	}
 	

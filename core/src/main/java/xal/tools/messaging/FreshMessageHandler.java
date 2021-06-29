@@ -8,6 +8,7 @@
 
 package xal.tools.messaging;
 
+import java.io.Serializable;
 import xal.tools.FreshProcessor;
 
 import java.util.logging.*;
@@ -15,10 +16,11 @@ import java.lang.reflect.*;
 
 
 /** Asynchronous Message Handler which posts only the most recent pending event and drops earlier ones. */
-class FreshMessageHandler<T> extends MessageHandler<T> implements java.io.Serializable {
+class FreshMessageHandler<T> extends MessageHandler<T> implements Serializable {
     /** serialization ID */
     private static final long serialVersionUID = 1L;
-    
+    private static final Logger LOGGER = Logger.getLogger(FreshMessageHandler.class.getName());
+
 	/** event processor which processes the most recent pending event on of a single thread */
 	private final FreshProcessor eventProcessor;
 	
@@ -91,10 +93,8 @@ class FreshMessageHandler<T> extends MessageHandler<T> implements java.io.Serial
                 }
             }
             catch( IllegalAccessException | IllegalArgumentException | InvocationTargetException exception ) {
-				final String message = "Error invoking method: " + method + " for protocol " + protocol + " for source " + source;
-				Logger.getLogger("global").log( Level.SEVERE, message, exception );
-                System.err.println( message );
-                exception.printStackTrace();
+                final String message = "Error invoking method: " + method + " for protocol " + protocol + " for source " + source;
+                LOGGER.log(Level.SEVERE, message, exception);
             }
         }
     }	

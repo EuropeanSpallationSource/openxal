@@ -9,12 +9,17 @@
 package xal.tools.dispatch;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /** DispatchGroup */
 public class DispatchGroup implements DispatchOperationListener {
 	/** groups that are currently entered for new operations */
 	private static final LocalGroups LOCAL_CURRENT_GROUPS;
+        
+        private static final Logger LOGGER = Logger.getLogger(DispatchGroup.class.getName());
+
 	
 	/** count of pending operations belonging to this group which have not yet completed */
 	private volatile int pendingOperationCount;
@@ -140,8 +145,7 @@ public class DispatchGroup implements DispatchOperationListener {
 				if ( pendingOperationCount == 0 )  emptyWaitLock.notifyAll();
 			}
 			catch ( Exception exception ) {
-				System.err.println( "Failed attempt to awake threads waiting on this group." );
-				exception.printStackTrace();
+				LOGGER.log(Level.SEVERE, "Failed attempt to awake threads waiting on this group.", exception);
 			}
 		}
 	}

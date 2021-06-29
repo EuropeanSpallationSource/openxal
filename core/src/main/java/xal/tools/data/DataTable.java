@@ -20,6 +20,8 @@ import java.lang.reflect.*;
  * @author  tap
  */
 public class DataTable {
+    private static final Logger LOGGER = Logger.getLogger(DataTable.class.getName());
+
 	/** table label inside of a data adaptor */
 	public static final String DATA_LABEL = "table";
 	
@@ -135,8 +137,7 @@ public class DataTable {
 						final String message = "Warning, the specified record class, \"" 
                         + recordClassName + "\" was not found, will substitute " + 
                         DEFAULT_RECORD_CLASS.getName();
-                        System.err.println( message );
-						Logger.getLogger("global").log( Level.WARNING, message, exception );
+                        LOGGER.log( Level.WARNING, message, exception );
                        recordClass = DEFAULT_RECORD_CLASS;
                     }
                 }
@@ -164,8 +165,7 @@ public class DataTable {
                         add( record );
                     }
                     catch(IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException | AddRecordException | GenericRecord.ParseException exception) {
-						Logger.getLogger("global").log( Level.SEVERE, "Error reading record.", exception );
-						exception.printStackTrace();
+                        LOGGER.log(Level.SEVERE, "Error reading record.", exception);
                     }
                 }
             }

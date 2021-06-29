@@ -306,10 +306,10 @@ public class MadXGenerator {
 					//											field = ((RfCavity) node.getParent()).getCavAmpAvg();
 					//										} catch (ConnectionException e) {
 					//											// TODO Auto-generated catch block
-					//											e.printStackTrace();
+					//											LOGGER.log(Level.SEVERE, null, exception);
 					//										} catch (GetException e) {
 					//											// TODO Auto-generated catch block
-					//											e.printStackTrace();
+					//											LOGGER.log(Level.SEVERE, null, exception);
 					//										}
 					//                					}
 					final double phase = ((RfGap) node).getGapDfltPhase();

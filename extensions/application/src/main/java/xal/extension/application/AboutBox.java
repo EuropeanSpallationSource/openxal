@@ -20,6 +20,8 @@ import java.awt.Component;
  * @author  tap
  */
 class AboutBox {
+        private static final Logger LOGGER = Logger.getLogger(AboutBox.class.getName());
+
 	/** the about box instance */
     private static final AboutBox aboutBox;
 
@@ -140,9 +142,8 @@ class AboutBox {
             infoMap = Util.getPropertiesForResource( ABOUT_INFO_RESOURCE );
         }
         catch( MissingResourceException exception ) {
-			final String message = "No application \"About Box\" information resource found in the application's resources directory: " + ABOUT_INFO_RESOURCE;
-			Logger.getLogger("global").log( Level.WARNING, message, exception );
-            System.err.println( message );
+            final String message = "No application \"About Box\" information resource found in the application's resources directory: " + ABOUT_INFO_RESOURCE;
+            LOGGER.log( Level.WARNING, message, exception );
             
             // substitute with default information
             infoMap = new HashMap<>();

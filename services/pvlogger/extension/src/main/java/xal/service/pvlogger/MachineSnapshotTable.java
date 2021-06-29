@@ -23,38 +23,38 @@ import xal.tools.database.DatabaseAdaptor;
 /** represent the machine snapshot database table */
 class MachineSnapshotTable {
 	/** database table name */
-	protected final String TABLE_NAME;
+	protected final String tableName;
 
 	/** Machine snapshot Primary Key column */
-	protected final String PRIMARY_KEY;
+	protected final String primaryKey;
 
 	/** time stamp column */
-	protected final String TIMESTAMP_COLUMN;
+	protected final String timestampColumn;
 
 	/** type column */
-	protected final String TYPE_COLUMN;
+	protected final String typeColumn;
 
 	/** comment column */
-	protected final String COMMENT_COLUMN;
+	protected final String commentColumn;
 
 	/** SQL to get the next primary key */
-	protected final String NEXT_PRIMARY_KEY_SQL;
+	protected final String nextPrimaryKeySql;
 
 
 	/** Constructor */
 	public MachineSnapshotTable( final DBTableConfiguration configuration ) {
-		TABLE_NAME = configuration.getTableName();
+		tableName = configuration.getTableName();
 
-		PRIMARY_KEY = configuration.getColumn( "primaryKey" );
-		TIMESTAMP_COLUMN = configuration.getColumn( "timestamp" );
-		TYPE_COLUMN = configuration.getColumn( "type" );
-		COMMENT_COLUMN = configuration.getColumn( "comment" );
+		primaryKey = configuration.getColumn( "primaryKey" );
+		timestampColumn = configuration.getColumn( "timestamp" );
+		typeColumn = configuration.getColumn( "type" );
+		commentColumn = configuration.getColumn( "comment" );
 
-		NEXT_PRIMARY_KEY_SQL = configuration.getQuerySQL( "nextPrimaryKey" );
+		nextPrimaryKeySql = configuration.getQuerySQL( "nextPrimaryKey" );
 	}
 
 
-	/** insert the machine snapshot and update its ID upone success */
+	/** insert the machine snapshot and update its ID upon success */
 	public void insert( final Connection connection, final DatabaseAdaptor databaseAdaptor,  final ChannelSnapshotTable channelSnapshotTable, final MachineSnapshot machineSnapshot ) throws SQLException {
 		final long primaryKey = fetchNextPrimaryKey( connection );
 		final String type = machineSnapshot.getType();
@@ -90,19 +90,19 @@ class MachineSnapshotTable {
 
 
 	/**
-	 * Fetch a machine snaspshot with the specified primary key.
+	 * Fetch a machine snapshot with the specified primary key.
 	 * @param connection database connection
 	 * @param primaryKey The unique machine snapshot identifier
-	 * @return The machine snapshop read from the persistent store.
+	 * @return The machine snapshot read from the persistent store.
 	 */
 	public MachineSnapshot fetchMachineSnapshot( final Connection connection, final long primaryKey ) throws SQLException {
 		final PreparedStatement queryStatement  = getQueryByPrimaryKeyStatement( connection );
 		queryStatement.setLong( 1, primaryKey );
 		final ResultSet record = queryStatement.executeQuery();
 		if ( record.next() ) {
-			final String type = record.getString( TYPE_COLUMN );
-			final Timestamp timestamp = record.getTimestamp( TIMESTAMP_COLUMN );
-			final String comment = record.getString( COMMENT_COLUMN );
+			final String type = record.getString(typeColumn );
+			final Timestamp timestamp = record.getTimestamp(timestampColumn );
+			final String comment = record.getString(commentColumn );
 			if(queryStatement != null) {
 				queryStatement.close();
 			}
@@ -147,7 +147,7 @@ class MachineSnapshotTable {
 			return fetchMachineSnapshotsInRange( connection, startTime, endTime );
 		}
 
-		final List<MachineSnapshot> snapshots = new ArrayList<MachineSnapshot>();
+		final List<MachineSnapshot> snapshots = new ArrayList<>();
 
 		final PreparedStatement queryStatement = getQueryByTypeAndTimerangeStatement( connection );
 		queryStatement.setString( 1, type );
@@ -156,10 +156,10 @@ class MachineSnapshotTable {
 
 		final ResultSet snapshotResult = queryStatement.executeQuery();
 		while ( snapshotResult.next() ) {
-			final long id = snapshotResult.getLong( PRIMARY_KEY );
-			final String foundType = snapshotResult.getString( TYPE_COLUMN );
-			final Timestamp timestamp = snapshotResult.getTimestamp( TIMESTAMP_COLUMN	);
-			final String comment = snapshotResult.getString( COMMENT_COLUMN );
+			final long id = snapshotResult.getLong(primaryKey );
+			final String foundType = snapshotResult.getString(typeColumn );
+			final Timestamp timestamp = snapshotResult.getTimestamp(timestampColumn	);
+			final String comment = snapshotResult.getString(commentColumn );
 			snapshots.add( new MachineSnapshot( id, foundType, timestamp, comment, new ChannelSnapshot[0] ) );
 		}
 		if(queryStatement != null) {
@@ -179,7 +179,7 @@ class MachineSnapshotTable {
 	 * @return An array of machine snapshots meeting the specified criteria
 	 */
 	protected MachineSnapshot[] fetchMachineSnapshotsInRange( final Connection connection, final java.util.Date startTime, final java.util.Date endTime ) throws SQLException {
-		final List<MachineSnapshot> snapshots = new ArrayList<MachineSnapshot>();
+		final List<MachineSnapshot> snapshots = new ArrayList<>();
 
 		final PreparedStatement queryStatement = getQueryByTimerangeStatement( connection );
 		queryStatement.setTimestamp( 1, new Timestamp( startTime.getTime() ) );
@@ -187,10 +187,10 @@ class MachineSnapshotTable {
 
 		final ResultSet snapshotResult = queryStatement.executeQuery();
 		while ( snapshotResult.next() ) {
-			final long id = snapshotResult.getLong( PRIMARY_KEY );
-			final String foundType = snapshotResult.getString( TYPE_COLUMN );
-			final Timestamp timestamp = snapshotResult.getTimestamp( TIMESTAMP_COLUMN	);
-			final String comment = snapshotResult.getString( COMMENT_COLUMN );
+			final long id = snapshotResult.getLong(primaryKey );
+			final String foundType = snapshotResult.getString(typeColumn );
+			final Timestamp timestamp = snapshotResult.getTimestamp(timestampColumn	);
+			final String comment = snapshotResult.getString(commentColumn );
 			snapshots.add( new MachineSnapshot( id, foundType, timestamp, comment, new ChannelSnapshot[0] ) );
 		}
 		if(queryStatement != null) {
@@ -207,7 +207,7 @@ class MachineSnapshotTable {
 	 * @throws java.sql.SQLException  if an exception occurs during a SQL evaluation
 	 */
 	protected PreparedStatement getNextPrimaryKeyStatement( final Connection connection ) throws SQLException {
-		return connection.prepareStatement( NEXT_PRIMARY_KEY_SQL );
+		return connection.prepareStatement(nextPrimaryKeySql );
 	}
 
 
@@ -217,7 +217,7 @@ class MachineSnapshotTable {
 	 * @throws java.sql.SQLException  if an exception occurs during a SQL evaluation
 	 */
 	protected PreparedStatement getInsertStatement( final Connection connection ) throws SQLException {
-		return connection.prepareStatement( "INSERT INTO " + TABLE_NAME + "(" + PRIMARY_KEY + ", " + TIMESTAMP_COLUMN + ", " + TYPE_COLUMN + ", " + COMMENT_COLUMN + ")" + " VALUES (?, ?, ?, ?)" );
+		return connection.prepareStatement("INSERT INTO " + tableName + "(" + primaryKey + ", " + timestampColumn + ", " + typeColumn + ", " + commentColumn + ")" + " VALUES (?, ?, ?, ?)" );
 	}
 
 
@@ -227,7 +227,7 @@ class MachineSnapshotTable {
 	 * @throws java.sql.SQLException  if an exception occurs during a SQL evaluation
 	 */
 	protected PreparedStatement getQueryStatement( final Connection connection ) throws SQLException {
-		return connection.prepareStatement( "SELECT * FROM " + TABLE_NAME );
+		return connection.prepareStatement("SELECT * FROM " + tableName );
 	}
 
 
@@ -237,7 +237,7 @@ class MachineSnapshotTable {
 	 * @throws java.sql.SQLException  if an exception occurs during a SQL evaluation
 	 */
 	protected PreparedStatement getQueryByPrimaryKeyStatement( final Connection connection ) throws SQLException {
-			return connection.prepareStatement( "SELECT * FROM " + TABLE_NAME + " WHERE " + PRIMARY_KEY + " = ?" );
+			return connection.prepareStatement("SELECT * FROM " + tableName + " WHERE " + primaryKey + " = ?" );
 	}
 
 
@@ -247,7 +247,7 @@ class MachineSnapshotTable {
 	 * @throws java.sql.SQLException  if an exception occurs during a SQL evaluation
 	 */
 	protected PreparedStatement getQueryByTypeAndTimerangeStatement( final Connection connection ) throws SQLException {
-			return connection.prepareStatement( "SELECT * FROM " + TABLE_NAME + " WHERE " + TYPE_COLUMN + " = ? AND " + TIMESTAMP_COLUMN + " > ? AND " + TIMESTAMP_COLUMN + " < ? order by " + TIMESTAMP_COLUMN );
+			return connection.prepareStatement("SELECT * FROM " + tableName + " WHERE " + typeColumn + " = ? AND " + timestampColumn + " > ? AND " + timestampColumn + " < ? order by " + timestampColumn );
 	}
 
 
@@ -257,6 +257,6 @@ class MachineSnapshotTable {
 	 * @throws java.sql.SQLException  if an exception occurs during a SQL evaluation
 	 */
 	protected PreparedStatement getQueryByTimerangeStatement( final Connection connection ) throws SQLException {
-			return connection.prepareStatement( "SELECT * FROM " + TABLE_NAME + " WHERE " + TIMESTAMP_COLUMN + " > ? AND " + TIMESTAMP_COLUMN + " < ? order by " + TIMESTAMP_COLUMN );
+			return connection.prepareStatement("SELECT * FROM " + tableName + " WHERE " + timestampColumn + " > ? AND " + timestampColumn + " < ? order by " + timestampColumn );
 	}
 }

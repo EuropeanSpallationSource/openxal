@@ -18,6 +18,8 @@ import java.awt.Window;
 import javax.swing.*;
 import java.util.*;
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.extension.widgets.plot.FunctionGraphsJPanel;
 import xal.extension.widgets.plot.FunctionGraphsPopupAdaptor;
 
@@ -36,6 +38,8 @@ import xal.extension.widgets.plot.FunctionGraphsPopupAdaptor;
 public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
     /** serialization ID */
     private static final long serialVersionUID = 1L;
+
+    private static final Logger LOGGER = Logger.getLogger(SimpleChartPopupMenu.class.getName());
     
 	// action ID constants
 	public static final String SCALE_ONCE_ID = "scale-once";
@@ -237,7 +241,7 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
                     ImageCaptureManager.defaultManager().saveSnapshot( chartAdaptor.getChartComponent() );
                 }
                 catch(AWTException | IOException exception) {
-                    System.err.println(exception);
+                    LOGGER.log(Level.SEVERE, null, exception);
                     JOptionPane.showMessageDialog(chartAdaptor.getChartComponent(), exception.getMessage(), exception.getClass().getName(), JOptionPane.WARNING_MESSAGE);
                 }
             }

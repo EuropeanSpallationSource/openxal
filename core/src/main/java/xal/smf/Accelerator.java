@@ -8,6 +8,8 @@ import xal.ca.ChannelFactory;
 import java.util.*;
 import java.lang.reflect.*;
 import java.text.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.sim.scenario.DefaultElementMapping;
 
 /**
@@ -50,6 +52,8 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 
         // by default, power supplies are exported to a different file.
         private boolean powerSuppliesFile;
+        
+        private static final Logger LOGGER = Logger.getLogger(Accelerator.class.getName());
 
 
     // DataAdaptor interface ----------------------
@@ -279,8 +283,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 			return (AcceleratorSeqCombo)constructor.newInstance( new Object[] {comboID, this, comboAdaptor} );
 		}
 		catch(ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException exception) {
-			System.err.println(exception);
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 			return null;
 		}
 	}

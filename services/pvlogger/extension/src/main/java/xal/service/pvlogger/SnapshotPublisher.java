@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.data.DataAdaptor;
 import xal.tools.database.ConnectionDictionary;
@@ -23,10 +25,10 @@ import xal.tools.database.DatabaseAdaptor;
 /** publishes machine snapshots to the persistent store */
 class SnapshotPublisher {
 	/** buffer of machine snapshots pending publishing */
-	final List<MachineSnapshot> SNAPSHOT_BUFFER;
+	final List<MachineSnapshot> snapshotBuffer;
 	
 	/** timer which signals a log operation */
-	protected final Timer LOG_TIMER;
+	protected final Timer logTimer;
 	
 	/** handles timer events */
 	protected TimerTask publishingTask;
@@ -35,23 +37,25 @@ class SnapshotPublisher {
 	protected double publishingPeriod;
 	
 	/** database store */
-	protected final PersistentStore PERSISTENT_STORE;
+	protected final PersistentStore persistentStore;
 	
 	/** connection dictionary */
 	protected ConnectionDictionary connectionDictionary;
+        
+        private static final Logger LOGGER = Logger.getLogger(SnapshotPublisher.class.getName());
 	
 	
 	/** Primary Constructor */
 	protected SnapshotPublisher( final DataAdaptor adaptor, final PersistentStore persistentStore, final ConnectionDictionary connectionDictionary ) {
-		PERSISTENT_STORE = persistentStore;
+		this.persistentStore = persistentStore;
 		
 		setConnectionDictionary( connectionDictionary );
 		
-		SNAPSHOT_BUFFER = new ArrayList<MachineSnapshot>();
+		snapshotBuffer = new ArrayList<>();
 		
 		publishingPeriod = adaptor.doubleValue( "publishPeriod" );
 		
-		LOG_TIMER = new Timer();
+		logTimer = new Timer();
 	}
 	
 	
@@ -72,7 +76,7 @@ class SnapshotPublisher {
 		if ( !isPublishing() ) {
 			final long delay = toMillisecondsFromSeconds( publishingPeriod );
 			publishingTask = newPublishingTask();
-			LOG_TIMER.schedule( publishingTask, delay, delay );
+			logTimer.schedule( publishingTask, delay, delay );
 		}
 	}
 	
@@ -132,14 +136,14 @@ class SnapshotPublisher {
 			}
 		}
 		catch( Exception exception ) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
 	}
 	
 	
 	/** publish machine snapshots to the persistent storage */
 	protected void publishSnapshots( final Connection connection, final DatabaseAdaptor databaseAdaptor, final List<MachineSnapshot> machineSnapshots ) throws SQLException {
-		final List<MachineSnapshot> publishedSnapshots = PERSISTENT_STORE.publish( connection, databaseAdaptor, machineSnapshots );
+		final List<MachineSnapshot> publishedSnapshots = persistentStore.publish( connection, databaseAdaptor, machineSnapshots );
 		removeFromBuffer( publishedSnapshots );
 	}
 	
@@ -159,8 +163,8 @@ class SnapshotPublisher {
 	
 	/** add the specified snapshots to the buffer */
 	public void scheduleSnapshotPublication( final MachineSnapshot snapshot ) {
-		synchronized( SNAPSHOT_BUFFER ) {
-			SNAPSHOT_BUFFER.add( snapshot );
+		synchronized( snapshotBuffer ) {
+			snapshotBuffer.add( snapshot );
 		}		
 	}
 	
@@ -168,8 +172,8 @@ class SnapshotPublisher {
 	/** clear the buffer of the specified snapshots */
 	protected void removeFromBuffer( final List<MachineSnapshot> snapshots ) {
 		if ( snapshots != null && snapshots.size() > 0 ) {
-			synchronized( SNAPSHOT_BUFFER ) {
-				SNAPSHOT_BUFFER.removeAll( snapshots );
+			synchronized( snapshotBuffer ) {
+				snapshotBuffer.removeAll( snapshots );
 			}
 		}
 	}
@@ -177,8 +181,8 @@ class SnapshotPublisher {
 	
 	/** get a copy of the snapshot buffer */
 	protected List<MachineSnapshot> getSnapshotBufferCopy() {
-		synchronized( SNAPSHOT_BUFFER ) {
-			return new ArrayList<MachineSnapshot>( SNAPSHOT_BUFFER );
+		synchronized( snapshotBuffer ) {
+			return new ArrayList<>( snapshotBuffer );
 		}
 	}
 	
@@ -188,7 +192,7 @@ class SnapshotPublisher {
 		if ( publishingTask != null ) {
 			publishingTask.cancel();
 		}
-		LOG_TIMER.purge();
+		logTimer.purge();
 		publishingTask = null;
 	}
 
@@ -196,6 +200,7 @@ class SnapshotPublisher {
 	/** get a new timer task for periodic publishing */
 	protected final TimerTask newPublishingTask() {
 		return new TimerTask() {
+                        @Override
 			public final void run() {
 				publishSnapshots();
 			}

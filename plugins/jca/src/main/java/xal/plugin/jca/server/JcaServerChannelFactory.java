@@ -43,7 +43,7 @@ public class JcaServerChannelFactory extends ChannelFactory {
             CONTEXT = JCALibrary.getInstance().createServerContext(JCALibrary.CHANNEL_ACCESS_SERVER_JAVA, CHANNEL_SERVER);
             JCA_SERVER_SYSTEM = new JcaServerChannelSystem(CONTEXT);
         } catch (CAException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, exception);
         }
     }
 

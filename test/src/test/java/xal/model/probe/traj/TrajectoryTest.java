@@ -54,7 +54,7 @@ public class TrajectoryTest extends TestCase {
 //		try {
 //			lattice = parser.parseUrl(XML_IN, false);
 //		} catch (ParsingException e) {
-//			e.printStackTrace();
+//			LOGGER.log(Level.SEVERE, null, exception);
 //			fail("Lattice Parsing Exception: " + e.getMessage());
 //			return;
 //		}

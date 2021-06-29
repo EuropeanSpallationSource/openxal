@@ -14,6 +14,8 @@ import xal.extension.application.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import xal.tools.xml.XmlDataAdaptor.WriteException;
 
@@ -27,6 +29,8 @@ public abstract class AcceleratorDocument extends XalDocument {
     private static final String USE_DEFAULT_ACCELERATOR = "Use the Default Accelerator";
     private static final String SELECT_ACCELERATOR = "Select an Accelerator...";
     private static final String CANCEL_OPTION = "Cancel";
+
+    private static final Logger LOGGER = Logger.getLogger(AcceleratorDocument.class.getName());
     
     protected Accelerator accelerator;
     protected AcceleratorSeq selectedSequence;
@@ -200,7 +204,7 @@ public abstract class AcceleratorDocument extends XalDocument {
             defaultAccelerator = XMLDataManager.loadDefaultAccelerator( nextChannelFactory() );
         }
         catch( Exception exception ) {
-            exception.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Exception loading default accelerator: Failed to load default accelerator", exception);
             Application.displayError("Exception loading default accelerator", "Failed to load default accelerator", exception);
         }
 
@@ -302,15 +306,15 @@ public abstract class AcceleratorDocument extends XalDocument {
      */
     protected void catchXmlDataAdaptorException(WriteException exception) {
         if ( exception.getCause() instanceof FileNotFoundException ) {
-            System.err.println( exception );
+            LOGGER.log(Level.SEVERE,  "Save failed due to a file access exception!", exception);
             displayError( "Save Failed!", "Save failed due to a file access exception!", exception );
         }
         else if ( exception.getCause() instanceof IOException ) {
-            System.err.println( exception );
+            LOGGER.log(Level.SEVERE, "Save failed due to a file IO exception!", exception);
             displayError( "Save Failed!", "Save failed due to a file IO exception!", exception );
         }
         else {
-            exception.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Save failed due to an internal write exception!", exception);
             displayError( "Save Failed!", "Save failed due to an internal write exception!", exception );
         }
     }

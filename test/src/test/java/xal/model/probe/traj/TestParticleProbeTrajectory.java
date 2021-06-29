@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -119,6 +121,8 @@ public class TestParticleProbeTrajectory {
     /** The results output file stream */
     private static PrintStream        PRN_OUTPUT;
 
+    private static final Logger LOGGER = Logger.getLogger(TestParticleProbeTrajectory.class.getName());
+
 
     /*
      * Global Methods
@@ -193,8 +197,8 @@ public class TestParticleProbeTrajectory {
             MOD_PROD.setProbe(prbProd);
             MOD_PROD.run();
             
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (InstantiationException | ModelException e) {
+            LOGGER.log(Level.SEVERE, null, e);
             
             fail("Unable to run model");
         }
@@ -368,9 +372,8 @@ public class TestParticleProbeTrajectory {
                 this.writeTrajectory("PRODUCTION TRAJECTORY", trjProd);
             }
 
-        } catch (Exception e) {
-            
-            e.printStackTrace();
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, null, e);
             fail("Unable to write out trajectory");
         }
     }

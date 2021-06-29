@@ -14,31 +14,34 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.security.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.bind.DatatypeConverter;
 
 
 /** Utility for processing messages passed through sockets on top of the WebSocket protocol */
 class WebSocketIO {
+        private static final Logger LOGGER = Logger.getLogger(WebSocketIO.class.getName());
 	/** key with which to encode the web socket header key for completing the handshake */
 	private static final String HANDSHAKE_ENCODE_KEY = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
 
 
 	/** Send the handshake (from the client) generating a random security value and process the response. Returns true upon success. */
-	static boolean performHandshake( final Socket socket ) throws java.net.SocketException, java.io.IOException, SocketPrematurelyClosedException {
+	static boolean performHandshake( final Socket socket ) throws java.net.SocketException, IOException, SocketPrematurelyClosedException {
 		sendHandshakeRequest( socket );
 		return processResponseHandshake( socket );
 	}
 
 
 	/** Send the handshake (from the client) generating a random security value. Use this method when you don't need to valide the header response. */
-	static void sendHandshakeRequest( final Socket socket ) throws java.net.SocketException, java.io.IOException {
+	static void sendHandshakeRequest( final Socket socket ) throws java.net.SocketException, IOException {
 		sendHandshakeRequest( socket, new Random().nextLong() );
 	}
 
 
 	/** Initiate the handshake (from the client) passing a random value for the security key. Use this method when you want to validate the header response. */
-	static void sendHandshakeRequest( final Socket socket, final long randomSecurityValue ) throws java.net.SocketException, java.io.IOException {
+	static void sendHandshakeRequest( final Socket socket, final long randomSecurityValue ) throws java.net.SocketException, IOException {
 		final String randomKey = String.valueOf( randomSecurityValue );
 		final String encodedRandomKey = toBase64( randomKey );	// base64 encoded random key
 
@@ -56,7 +59,7 @@ class WebSocketIO {
 
 
 	/** process the handshake (on the server) */
-	private static boolean sendHandshakeResponse( final Socket socket, final String requestHeader ) throws java.net.SocketException, java.io.IOException {
+	private static boolean sendHandshakeResponse( final Socket socket, final String requestHeader ) throws java.net.SocketException, IOException {
 		final Map<String,String> headerMap = new HashMap<>();
 		final BufferedReader reader = new BufferedReader( new StringReader( requestHeader ) );
 		while( true ) {
@@ -97,7 +100,7 @@ class WebSocketIO {
 
 
 	/** process the handshake with the socket */
-	static boolean processRequestHandshake( final Socket socket ) throws java.net.SocketException, java.io.IOException {
+	static boolean processRequestHandshake( final Socket socket ) throws java.net.SocketException, IOException {
 		final int BUFFER_SIZE = socket.getReceiveBufferSize();
 		final char[] streamBuffer = new char[BUFFER_SIZE];
 		final InputStream readStream = socket.getInputStream();
@@ -120,7 +123,7 @@ class WebSocketIO {
 
 
 	/** process the handshake response for the socket without any validation */
-	static boolean processResponseHandshake( final Socket socket ) throws java.net.SocketException, java.io.IOException, WebSocketIO.SocketPrematurelyClosedException {
+	static boolean processResponseHandshake( final Socket socket ) throws java.net.SocketException, IOException, WebSocketIO.SocketPrematurelyClosedException {
 		final int BUFFER_SIZE = socket.getReceiveBufferSize();
 		final char[] streamBuffer = new char[BUFFER_SIZE];
 		final InputStream readStream = socket.getInputStream();
@@ -145,7 +148,7 @@ class WebSocketIO {
 
 
 	/** send the message */
-	static void sendMessage( final Socket socket, final String message ) throws java.net.SocketException, java.io.IOException {
+	static void sendMessage( final Socket socket, final String message ) throws java.net.SocketException, IOException {
 		//System.out.println( "Sending message of length: " + message.length() );
 
 		final OutputStream output = socket.getOutputStream();
@@ -171,8 +174,7 @@ class WebSocketIO {
 				output.write( lenBytes, 0, 2 );
 			}
 			catch( RuntimeException exception ) {
-				System.err.println( "Exception writing short message length: " + exception );
-				exception.printStackTrace();
+				LOGGER.log(Level.SEVERE, "Exception writing short message", exception);
 				throw exception;
 			}
 		}
@@ -188,8 +190,7 @@ class WebSocketIO {
 				output.write( lenBytes, 0, 8 );
 			}
 			catch( RuntimeException exception ) {
-				System.err.println( "Exception writing long message length: " + exception );
-				exception.printStackTrace();
+				LOGGER.log(Level.SEVERE, "Exception writing long message", exception);
 				throw exception;
 			}
 		}
@@ -202,7 +203,7 @@ class WebSocketIO {
 
 
 	/** Read the message from the socket and return it */
-	static String readMessage( final Socket socket ) throws java.net.SocketException, java.io.IOException, WebSocketIO.SocketPrematurelyClosedException {
+	static String readMessage( final Socket socket ) throws java.net.SocketException, IOException, WebSocketIO.SocketPrematurelyClosedException {
 		//System.out.println( "Reading message..." );
 
 		final int BUFFER_SIZE = socket.getReceiveBufferSize();
@@ -233,8 +234,7 @@ class WebSocketIO {
 						dataLength = shortLen >= 0 ? shortLen : 65536 + shortLen;
 					}
 					catch( RuntimeException exception ) {
-						System.err.println( "Exception getting short message length: " + exception );
-						exception.printStackTrace();
+						LOGGER.log(Level.SEVERE, "Exception getting short message", exception);
 						throw exception;
 					}
 					break;
@@ -248,8 +248,7 @@ class WebSocketIO {
 						dataLength = (int)lenByteBuffer.getLong();	// cast the long to int since arrays only allow 32 bit lengths
 					}
 					catch( RuntimeException exception ) {
-						System.err.println( "Exception getting long message length: " + exception );
-						exception.printStackTrace();
+						LOGGER.log(Level.SEVERE, "Exception getting long message", exception);
 						throw exception;
 					}
 					break;
@@ -288,9 +287,8 @@ class WebSocketIO {
 				final String result = new String( dataBytes, 0, dataLength, "UTF-8" );
 				return result;
 			}
-			catch( Exception exception ) {
-				System.err.println( "Exception reading characters: " + exception );
-				exception.printStackTrace();
+			catch( IOException | StreamByteReader.StreamPrematurelyClosedException exception ) {
+				LOGGER.log(Level.SEVERE, "Exception reading characters", exception);
 				return "";
 			}
 		}
@@ -346,10 +344,10 @@ class MaskPayloadReader {
 /** read bytes from a stream as requested */
 class StreamByteReader {
 	/** stream of data from which to read */
-	private final InputStream SOURCE_STREAM;
+	private final InputStream sourceStream;
 
 	/** buffer size for reading from the stream */
-	private final int BUFFER_SIZE;
+	private final int bufferSize;
 
 	/** current position */
 	private int position;
@@ -360,8 +358,8 @@ class StreamByteReader {
 
 	/** Constructor */
 	public StreamByteReader( final InputStream inputStream, final int bufferSize ) {
-		SOURCE_STREAM = inputStream;
-		BUFFER_SIZE = bufferSize;
+		sourceStream = inputStream;
+		this.bufferSize = bufferSize;
 
 		position = 0;
 		byteStack = new byte[0];
@@ -369,7 +367,7 @@ class StreamByteReader {
 
 
 	/** read the next byte waiting for data from the stream if necessary */
-	public byte nextByte() throws java.io.IOException, StreamPrematurelyClosedException {
+	public byte nextByte() throws IOException, StreamPrematurelyClosedException {
 		final int newPosition = position;
 		if ( newPosition >= byteStack.length ) {
 			popNextBytes();
@@ -382,14 +380,14 @@ class StreamByteReader {
 	}
 
 
-	private void popNextBytes() throws java.io.IOException, StreamPrematurelyClosedException {
-		final byte[] streamBuffer = new byte[BUFFER_SIZE];
-		final InputStream readStream = SOURCE_STREAM;
+	private void popNextBytes() throws IOException, StreamPrematurelyClosedException {
+		final byte[] streamBuffer = new byte[bufferSize];
+		final InputStream readStream = sourceStream;
 		final BufferedInputStream reader = new BufferedInputStream( readStream );
 		final ByteArrayOutputStream rawByteBuffer = new ByteArrayOutputStream();
 
 		do {
-			final int readCount = reader.read( streamBuffer, 0, BUFFER_SIZE );
+			final int readCount = reader.read( streamBuffer, 0, bufferSize );
 
 			if ( readCount == -1 ) {     // the session has been closed
 				throw new StreamPrematurelyClosedException( "The stream has closed while reading the remote response..." );
@@ -398,7 +396,7 @@ class StreamByteReader {
 				rawByteBuffer.write( streamBuffer, 0, readCount );
 			}
 
-			if ( readCount < BUFFER_SIZE ) {
+			if ( readCount < bufferSize ) {
 				break;
 			}
 		} while ( true );
@@ -409,7 +407,7 @@ class StreamByteReader {
 
 
 	/** read and return the next specified count of bytes */
-	public byte[] nextBytes( final int count ) throws java.io.IOException, StreamPrematurelyClosedException {
+	public byte[] nextBytes( final int count ) throws IOException, StreamPrematurelyClosedException {
 		final byte[] result = new byte[count];
 		nextBytes( result );
 		return result;
@@ -417,13 +415,13 @@ class StreamByteReader {
 
 
 	/** read the next bytes into the specified destination */
-	public void nextBytes( final byte[] destination ) throws java.io.IOException, StreamPrematurelyClosedException {
+	public void nextBytes( final byte[] destination ) throws IOException, StreamPrematurelyClosedException {
 		nextBytes( destination, 0, destination.length );
 	}
 
 
 	/** read the next bytes into the specified destination */
-	public void nextBytes( final byte[] destination, final int offset, final int count ) throws java.io.IOException, StreamPrematurelyClosedException {
+	public void nextBytes( final byte[] destination, final int offset, final int count ) throws IOException, StreamPrematurelyClosedException {
 		int newPosition = offset;
 		for ( int index = 0 ; index < count ; index++ ) {
 			destination[newPosition++] = nextByte();

@@ -28,6 +28,7 @@ public final class AcceleratorNodeFactory {
 	/** map of classes keyed by node type */
 	private Map<String,Class<?>> classTable;
 
+        private static final Logger LOGGER = Logger.getLogger(AcceleratorNodeFactory.class.getName());
 
 	/** Constructor */
 	public AcceleratorNodeFactory( final ChannelFactory channelFactory ) {
@@ -71,8 +72,7 @@ public final class AcceleratorNodeFactory {
         }
 		catch ( NoSuchMethodException | SecurityException exception ) {
 			final String message = "AcceleratorNodeFactory: class registeration failure for type: " + nodeType;
-            System.err.println( message );
-			Logger.getLogger("global").log( Level.SEVERE, message, exception );
+            LOGGER.log( Level.SEVERE, message, exception );
         }
     }
 
@@ -86,8 +86,7 @@ public final class AcceleratorNodeFactory {
         // Check if this node type is known; if not then substitute a generic node
         if ( !constructors.containsKey( nodeType ) ) {
 			final String message = "Unknown AcceleratorNode type : \"" + nodeType + "\" for ID: " + nodeID + ".  Will substitute a GenericNode!";
-            System.err.println( message );
-			Logger.getLogger("global").log( Level.WARNING, message );
+            LOGGER.log( Level.WARNING, message );
             final AcceleratorNode node = new GenericNode( nodeType, nodeID, channelFactory );
             classTable.put( nodeType, GenericNode.class );
             return node;

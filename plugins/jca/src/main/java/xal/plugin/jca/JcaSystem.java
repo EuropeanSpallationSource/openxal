@@ -47,7 +47,7 @@ class JcaSystem extends ChannelSystem {
 			JCA_CONTEXT = JCA_LIBRARY.createContext( contextType );
 		}
 		catch(CAException exception) {
-			exception.printStackTrace();
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
     }
 
@@ -120,7 +120,7 @@ class JcaSystem extends ChannelSystem {
 			return true;
 		}
 		catch(CAException exception) {
-			System.err.println(exception);
+			LOGGER.log(Level.SEVERE, null, exception);
 			return false;
 		}
 	}
@@ -184,7 +184,7 @@ class JcaSystem extends ChannelSystem {
 			JCA_CONTEXT.pendEvent( timeout );
 		}
 		catch( CAException exception ) {
-			System.err.println( exception );
+			LOGGER.log(Level.SEVERE, null, exception);
 		}
     }
 }

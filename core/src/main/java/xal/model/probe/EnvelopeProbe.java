@@ -6,6 +6,8 @@
 
 package xal.model.probe;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.model.ModelException;
 import xal.model.alg.EnvTrackerAdapt;
 import xal.model.probe.traj.EnvelopeProbeState;
@@ -55,7 +57,8 @@ import xal.tools.data.DataFormatException;
 
 public class EnvelopeProbe extends BunchProbe<EnvelopeProbeState> {
 
-    
+        private static final Logger LOGGER = Logger.getLogger(EnvelopeProbe.class.getName());
+
     
     
     /*
@@ -581,8 +584,7 @@ public class EnvelopeProbe extends BunchProbe<EnvelopeProbeState> {
                 getAlgorithm().initialize();
                 
             } catch (ModelException e) {
-                System.err.println("EnvelopeProbe#reset() - Unable to initialize algorithm");
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "EnvelopeProbe#reset() - Unable to initialize algorithm", e);
                 
             }
     }

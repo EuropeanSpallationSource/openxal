@@ -25,6 +25,8 @@ import java.util.logging.*;
  */
 //public class RpcServer extends WebServer {
 public class RpcServer {
+    private static final Logger LOGGER = Logger.getLogger(RpcServer.class.getName());
+
     /** delimiter for encoding remote messages */
     private static final String REMOTE_MESSAGE_DELIMITER = "#";
     
@@ -73,7 +75,7 @@ public class RpcServer {
         catch(UnknownHostException exception) {
 			final String message = "Error getting the host name of the RPC Server.";
 			Logger.getLogger( "global" ).log( Level.SEVERE, message, exception );
-            System.err.println( exception );
+            LOGGER.log(Level.SEVERE, null, exception);
             return null;
         }
     }
@@ -98,7 +100,7 @@ public class RpcServer {
                     // server being shutdown
                 }
                 catch ( IOException exception ) {
-                    exception.printStackTrace();
+                    LOGGER.log(Level.SEVERE, null, exception);
                 }
             }
         }).start();
@@ -119,8 +121,8 @@ public class RpcServer {
             try {
                 socket.close();
             }
-            catch( Exception exception ) {
-                exception.printStackTrace();
+            catch( IOException exception ) {
+                LOGGER.log(Level.SEVERE, null, exception);
             }
         }
 
@@ -163,7 +165,7 @@ public class RpcServer {
 					try {
 						WebSocketIO.processRequestHandshake( remoteSocket );
 					}
-					catch ( Exception exception ) {
+					catch ( IOException exception ) {
 						throw new RuntimeException( "Exception handling handshake", exception );
 					}
 				}
@@ -175,7 +177,7 @@ public class RpcServer {
 						try {
 							jsonRequest = WebSocketIO.readMessage( remoteSocket );
 						}
-						catch( Exception exception ) {
+						catch( IOException | WebSocketIO.SocketPrematurelyClosedException exception ) {
 							throw new RemoteClientDroppedException( "Session has been closed during read..." );
 						}
 						
@@ -206,13 +208,13 @@ public class RpcServer {
                             }
                         }
                     }
-                    catch ( Exception exception ) {
+                    catch ( IOException | RemoteClientDroppedException exception ) {
 						if ( !remoteSocket.isClosed() ) {
 							try {
 								remoteSocket.close();
 							}
-							catch( Exception closeException ) {
-								closeException.printStackTrace();
+							catch( IOException closeException ) {
+                                                            LOGGER.log(Level.SEVERE, null, closeException);
 							}
 						}
 
@@ -262,6 +264,8 @@ class RemoteRequestHandler<ProtocolType> {
         PRIMITIVE_TYPE_WRAPPERS = populatePrimitiveTypeWrappers();
     }
     
+    private static final Logger LOGGER = Logger.getLogger(RemoteRequestHandler.class.getName());
+    
     
     /** Constructor */
     public RemoteRequestHandler( final String serviceName, final Class<ProtocolType> protocol, final ProtocolType provider ) {
@@ -304,8 +308,8 @@ class RemoteRequestHandler<ProtocolType> {
             final Object value = method.invoke( PROVIDER, methodParams );
             return new EvaluationResult( value, isOneWay );
         }
-        catch ( Exception exception ) {
-            exception.printStackTrace();
+        catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException exception ) {
+            LOGGER.log(Level.SEVERE, null, exception);
             return new EvaluationResult( null, isOneWay, exception.getCause() );
         }
     }
@@ -363,7 +367,7 @@ class RemoteRequestHandler<ProtocolType> {
                     throw new RuntimeException( "No matching method found for <" + methodName + "" + parameterTypes + ">", exception );
                 }                                
             }
-            catch ( Exception searchException ) {
+            catch ( RuntimeException searchException ) {
                 throw new RuntimeException( "Exception evaluating the remote request with the request handler.", searchException );
             }
         }
@@ -422,13 +426,13 @@ class RemoteRequestHandler<ProtocolType> {
 /** result of evaluating the requested method */
 class EvaluationResult {
     /** result of the method evaluation */
-    private final Object VALUE;
+    private final Object value;
     
     /** indicates whether the method is one way (no response to remote caller) */
-    private final boolean IS_ONE_WAY;
+    private final boolean isOneWay;
     
     /** exception */
-    private final Throwable EXCEPTION;
+    private final Throwable exception;
     
     
     /** Constructor */
@@ -439,32 +443,32 @@ class EvaluationResult {
     
     /** Constructor */
     public EvaluationResult( final Object value, final boolean isOneWay, final Throwable exception ) {
-        VALUE = value;
-        IS_ONE_WAY = isOneWay;
-        EXCEPTION = exception;
+        this.value = value;
+        this.isOneWay = isOneWay;
+        this.exception = exception;
     }
     
     
     /** determine whether the call is one way */
     public boolean isOneWay() {
-        return IS_ONE_WAY;
+        return isOneWay;
     }
     
     /** get the value */
     public Object getValue() {
-        return VALUE;
+        return value;
     }
     
     /** get the exception */
     public Throwable getException() {
-        return EXCEPTION;
+        return exception;
     }
     
     /** wrap the raw exception as runtime exception */
     public RuntimeException getRuntimeExceptionWrapper() {
-        if ( EXCEPTION != null ) {
-            final RuntimeException wrapper = new RuntimeException( EXCEPTION );
-            wrapper.setStackTrace( EXCEPTION.getStackTrace() );
+        if ( exception != null ) {
+            final RuntimeException wrapper = new RuntimeException( exception );
+            wrapper.setStackTrace(exception.getStackTrace() );
             return wrapper;
         }
         else {

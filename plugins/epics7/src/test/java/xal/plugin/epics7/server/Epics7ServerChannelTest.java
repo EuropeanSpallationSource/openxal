@@ -32,7 +32,6 @@ import xal.ca.Timestamp;
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 public class Epics7ServerChannelTest {
-
     private boolean methodCalled = false;
 
     /**

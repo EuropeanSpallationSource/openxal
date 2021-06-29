@@ -15,11 +15,15 @@ import xal.tools.data.DataAdaptor;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.*;
 
 
 /** load a database configuration */
 public class DBConfiguration {
+        private static final Logger LOGGER = Logger.getLogger(DBConfiguration.class.getName());
+
 	/** key for getting the URL from the preferences */
 	protected static final String PREFERENCES_URL_KEY = "configURL";
 
@@ -238,7 +242,7 @@ public class DBConfiguration {
 				URL url = new URL(baseURL, schemaAdaptor.stringValue( "url" ));
 				schemaUrls.put( name, url );
 			} catch (MalformedURLException e) { 
-				e.printStackTrace();
+				LOGGER.log(Level.SEVERE, null, e);
 			}						
 		}
 		
@@ -253,7 +257,7 @@ public class DBConfiguration {
 			urlSpec = getDefaultURLSpec();
 			return urlSpec != null && !urlSpec.isEmpty() && new File( new URL( urlSpec ).toURI() ).exists();
 		}
-		catch ( Exception exception ) {
+		catch ( MalformedURLException | URISyntaxException exception ) {
 			System.out.println("Database configuration: "+urlSpec);
 			return false;
 		}

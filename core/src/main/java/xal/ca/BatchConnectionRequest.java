@@ -13,6 +13,8 @@ import xal.tools.dispatch.*;
 
 import java.util.*;
 import java.util.concurrent.Callable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /** BatchConnectionRequest */
@@ -53,7 +55,8 @@ public class BatchConnectionRequest extends java.lang.Object {
 	/** indicates whether this request has been canceled */
 	private volatile boolean isCanceled;
 
-	
+        private static final Logger LOGGER = Logger.getLogger(BatchConnectionRequest.class.getName());
+
 	/** 
 	 * Constructor 
 	 * @param channels for which the connections will be requested
@@ -376,8 +379,7 @@ public class BatchConnectionRequest extends java.lang.Object {
 					completionLock.notifyAll();
 				}
 				catch( Exception exception ) {
-					System.out.println( "Excepting notifying " );
-					exception.printStackTrace();
+					LOGGER.log(Level.SEVERE, "Excepting notifying ", exception);
 				}
 			}
 			

@@ -18,6 +18,7 @@ import xal.tools.database.DatabaseAdaptor;
 import xal.tools.database.DatabaseException;
 
 public class PostgresDatabaseAdaptor extends DatabaseAdaptor {	
+        private static final Logger LOGGER = Logger.getLogger(PostgresDatabaseAdaptor.class.getName());    
 	/**
 	 * Public Constructor
 	 */
@@ -32,6 +33,7 @@ public class PostgresDatabaseAdaptor extends DatabaseAdaptor {
 	 * @return the SQL array which wraps the primitive array
 	 * @throws xal.tools.database.DatabaseException if a database exception is thrown
 	 */	
+        @Override
 	public Array getArray( final String type, final Connection connection, final Object array ) throws DatabaseException {
         Object[] newArray=null;
         
@@ -81,7 +83,7 @@ public class PostgresDatabaseAdaptor extends DatabaseAdaptor {
 		try {
 			return connection.createArrayOf(type, newArray);
 		} catch (SQLException exception) {
-			Logger.getLogger("global").log( Level.SEVERE, "Error instantiating an SQL array of type: " + type, exception );			
+			LOGGER.log( Level.SEVERE, "Error instantiating an SQL array of type: " + type, exception );			
 			throw new DatabaseException( "Exception generating an SQL array.", this, exception );			
 		}		
 	}

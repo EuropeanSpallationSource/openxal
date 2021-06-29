@@ -146,7 +146,7 @@ public class SQLSignalSource implements SignalSource {
 						 }
 						 catch( Exception exception ) {
 							 final String message = "Exception generating input info for MPS signal: " + mpsAttribute;
-							 Logger.getLogger("global").log( Level.SEVERE, message, exception );
+							 LOGGER.log( Level.SEVERE, message, exception );
 						 }
 					 }
 				 }

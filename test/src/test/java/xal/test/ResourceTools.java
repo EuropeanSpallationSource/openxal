@@ -9,6 +9,8 @@ package xal.test;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.smf.Accelerator;
 import xal.smf.data.XMLDataManager;
@@ -23,7 +25,7 @@ import xal.tools.ResourceManager;
  * @since  Jul 10, 2015
  */
 public abstract class ResourceTools {
-    
+    private static final Logger LOGGER = Logger.getLogger(ResourceTools.class.getName());
     
     /*
      * Internal Classes
@@ -186,8 +188,7 @@ public abstract class ResourceTools {
             return ostrOutput;
             
         } catch (FileNotFoundException e) {
-            System.err.println("Unable to create output file " + strFileName + " for stream");
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Unable to create output file " + strFileName + " for stream", e);
             
             return null;
         }

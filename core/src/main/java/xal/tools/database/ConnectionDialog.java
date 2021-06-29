@@ -26,6 +26,8 @@ import java.sql.Connection;
  * @author   tap
  */
 public class ConnectionDialog extends JDialog {
+    private static final Logger LOGGER = Logger.getLogger(ConnectionDialog.class.getName());
+
     /** serialization ID */
     private static final long serialVersionUID = 1L;
     
@@ -154,7 +156,7 @@ public class ConnectionDialog extends JDialog {
 			adaptorClass = ( adaptor != null ) ? adaptor.getClass().getName() : null;
 		}
 		catch ( Exception exception ) {
-			Logger.getLogger("global").log( Level.SEVERE, "Error constructing dialog contents.", exception );
+			LOGGER.log( Level.SEVERE, "Error constructing dialog contents.", exception );
 		}
 		
 		adaptorField.setText( adaptorClass );		
@@ -264,9 +266,9 @@ public class ConnectionDialog extends JDialog {
 		try {
 			return databaseAdaptor.getConnection( dictionary );
 		}
-		catch ( Exception exception ) {
+		catch ( DatabaseException exception ) {
 			JOptionPane.showMessageDialog( getOwner(), exception.getMessage(), "Connection Error!", JOptionPane.ERROR_MESSAGE );
-			Logger.getLogger("global").log( Level.SEVERE, "Database connection error.", exception );
+			LOGGER.log( Level.SEVERE, "Database connection error.", exception );
 			return showConnectionDialog( (JFrame)getOwner(), databaseAdaptor, dictionary );
 		}
 	}

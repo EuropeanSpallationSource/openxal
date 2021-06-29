@@ -252,7 +252,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 	/** A searcher that performs a simple random search in the entire search space.  */
 	protected class RandomSearcher implements Searcher {
 		/** Description of the Field */
-		protected final int NUM_VARIABLES;
+		protected final int numVariables;
 
 		/** Description of the Field */
 		protected Random randomGenerator;
@@ -274,9 +274,9 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 
 		/** Constructor  */
 		public RandomSearcher() {
-			NUM_VARIABLES = problem.getVariables().size();
-			changeProbabilityBase = 1 / (double)NUM_VARIABLES;
-			values = new HashMap<>( NUM_VARIABLES );
+			numVariables = problem.getVariables().size();
+			changeProbabilityBase = 1 / (double)numVariables;
+			values = new HashMap<>( numVariables );
 			randomGenerator = new Random( 0 );
 		}
 
@@ -347,7 +347,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
 				return new TrialPoint( values );
 			}
 			else {
-				expectedNumToChange = randomGenerator.nextInt( NUM_VARIABLES ) + 1;
+				expectedNumToChange = randomGenerator.nextInt(numVariables ) + 1;
 				return nextPoint( expectedNumToChange );
 			}
 		}

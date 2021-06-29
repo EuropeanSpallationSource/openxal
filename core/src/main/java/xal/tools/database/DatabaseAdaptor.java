@@ -23,6 +23,8 @@ import java.util.logging.*;
  * @author  tap
  */
 public abstract class DatabaseAdaptor {
+        private static final Logger LOGGER = Logger.getLogger(DatabaseAdaptor.class.getName());
+
 	/**
 	 * Instantiate an empty Blob.
 	 * @param connection the database connection
@@ -56,7 +58,7 @@ public abstract class DatabaseAdaptor {
 			return DriverManager.getConnection( urlSpec, user, password );
 		}
 		catch( SQLException exception ) {
-			Logger.getLogger("global").log( Level.SEVERE, "Error connecting to the database at URL: \"" + urlSpec + "\" as user: " + user , exception );
+			LOGGER.log( Level.SEVERE, "Error connecting to the database at URL: \"" + urlSpec + "\" as user: " + user , exception );
 			throw new DatabaseException( "Exception connecting to the database.", this, exception );
 		}
 	}

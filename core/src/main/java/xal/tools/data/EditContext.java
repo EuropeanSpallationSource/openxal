@@ -18,6 +18,8 @@ import java.util.logging.*;
  * @author  tap
  */
 public class EditContext {
+    private static final Logger LOGGER = Logger.getLogger(EditContext.class.getName());
+
 	/** tag for a table group within a data adaptor */
 	public static final String GROUP_TAG = "tablegroup";
 	
@@ -87,8 +89,7 @@ public class EditContext {
             catch ( MissingPrimaryKeyException exception ) {
 				final String name = tableAdaptor.stringValue( "name" );
 				final String message = "Will skip reading table: " + name + " due to missing primary key!";
-				Logger.getLogger("global").log( Level.WARNING, message, exception );
-                System.err.println(message);
+				LOGGER.log( Level.WARNING, message, exception );
             }
         }
 		
@@ -109,8 +110,7 @@ public class EditContext {
             }
             catch ( MissingPrimaryKeyException exception ) {
 				final String message = "Will skip writing table: " + table.name() + " due to missing primary key!";
-                System.err.println( message );
-				Logger.getLogger("global").log( Level.WARNING, message, exception );
+				LOGGER.log( Level.WARNING, message, exception );
             }
         }
     }	

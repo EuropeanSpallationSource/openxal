@@ -10,6 +10,8 @@
 
 package xal.service.pvlogger;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import xal.extension.service.ServiceDirectory;
 import xal.ca.Channel;
 
@@ -24,7 +26,7 @@ import java.util.*;
  */
 public class LoggerService implements RemoteLogging {
 	// constants
-	protected final String IDENTITY = "PV Logger";
+	protected final String identity = "PV Logger";
 	
 	// model
 	protected final LoggerModel model;
@@ -43,7 +45,7 @@ public class LoggerService implements RemoteLogging {
 	 * Begin broadcasting the service
 	 */
 	public void broadcast() {
-		ServiceDirectory.defaultDirectory().registerService( RemoteLogging.class, IDENTITY, this );
+		ServiceDirectory.defaultDirectory().registerService(RemoteLogging.class, identity, this );
 		System.out.println( "broadcasting..." );
 	}
 	
@@ -53,6 +55,7 @@ public class LoggerService implements RemoteLogging {
 	 * @param groupType identifies the group by type 
 	 * @param period The period in seconds between events where we take and store machine snapshots.
 	 */
+        @Override
 	public void setLoggingPeriod(String groupType, double period) {
 		final LoggerSession session = model.getLoggerSession( groupType );
 		if ( session != null ) {
@@ -66,6 +69,7 @@ public class LoggerService implements RemoteLogging {
 	 * @param groupType identifies the group by type 
 	 * @return The period in seconds between events where we take and store machine snapshots.
 	 */
+        @Override
 	public double getLoggingPeriod(String groupType) {
 		final LoggerSession session = model.getLoggerSession( groupType );
 		if ( session != null ) {
@@ -83,6 +87,7 @@ public class LoggerService implements RemoteLogging {
 	 * @param comment snapshot comment
 	 * @return machine snapshot ID or an error code (less than 0) if the attempt fails
 	 */
+        @Override
 	public int takeAndPublishSnapshot( final String groupID, final String comment ) {
 		try {
 			final LoggerSession loggerSession = model.getPVLogger().getLoggerSession( groupID );
@@ -95,6 +100,7 @@ public class LoggerService implements RemoteLogging {
 	
 	
 	/** publish snapshots in the snapshot buffer */
+        @Override
 	public void publishSnapshots() {
 		model.publishSnapshots();
 	}
@@ -105,6 +111,7 @@ public class LoggerService implements RemoteLogging {
 	 * @param groupID group ID of the logger session for which to look
 	 * @return true if a session exists for the group and false if not
 	 */
+        @Override
 	public boolean hasLoggerSession( final String groupID ) {
 		return model.getPVLogger().hasLoggerSession( groupID );
 	}
@@ -115,6 +122,7 @@ public class LoggerService implements RemoteLogging {
 	 * @param groupType identifies the group by type 
 	 * @return true if the logger is logging and false if not
 	 */
+        @Override
 	public boolean isLogging( final String groupType ) {
 		final LoggerSession session = model.getLoggerSession( groupType );
 		if ( session != null ) {
@@ -127,24 +135,28 @@ public class LoggerService implements RemoteLogging {
 	
 	
 	/** reload the logger session identified by the group type */
+        @Override
 	public boolean reloadLoggerSession( final String groupType ) {
 		return model.reloadLoggerSession( groupType );
 	}
 	
 	
 	/** Stop logging, reload groups from the database and resume logging. */
+        @Override
 	public void restartLogger() {
 		model.restartLogger();
 	}
 	
 	
 	/** Resume the logger logging. */
+        @Override
 	public void resumeLogging() {
 		model.resumeLogging();
 	}
 	
 	
 	/** Stop the logger. */
+        @Override
 	public void stopLogging() {
 		model.stopLogging();
 	}
@@ -154,6 +166,7 @@ public class LoggerService implements RemoteLogging {
 	 * Shutdown the process.
 	 * @param code The shutdown code which is normally just 0.
 	 */
+        @Override
 	public void shutdown( final int code ) {
 		model.shutdown(code);
 	}
@@ -163,11 +176,12 @@ public class LoggerService implements RemoteLogging {
 	 * Get the name of the host where the application is running.
 	 * @return The name of the host where the application is running.
 	 */
+        @Override
 	public String getHostName() {
 		try {
-			return java.net.InetAddress.getLocalHost().getHostName();
+			return InetAddress.getLocalHost().getHostName();
 		}
-		catch(java.net.UnknownHostException exception) {
+		catch(UnknownHostException exception) {
 			return "";
 		}
 	}
@@ -177,6 +191,7 @@ public class LoggerService implements RemoteLogging {
 	 * Get the launch time of the service.
 	 * @return the launch time in seconds since the Java epoch of January 1, 1970.
 	 */
+        @Override
 	public Date getLaunchTime() {
 		return LoggerModel.getLaunchTime();
 	}
@@ -186,6 +201,7 @@ public class LoggerService implements RemoteLogging {
 	 * Get a heartbeat from the service.
 	 * @return the time measured from the service at which the heartbeat was sent
 	 */
+        @Override
 	public Date getHeartbeat() {
 		return new Date();
 	}
@@ -196,6 +212,7 @@ public class LoggerService implements RemoteLogging {
 	 * @param groupType identifies the group by type 
 	 * @return the wall clock timestamp of the last channel event
 	 */
+        @Override
 	public Date getLastChannelEventTime( final String groupType ) {
 		final LoggerSession session = model.getLoggerSession( groupType );
 		if ( session != null ) {
@@ -212,6 +229,7 @@ public class LoggerService implements RemoteLogging {
 	 * @param groupType identifies the group by type 
 	 * @return the wall clock timestamp of the last logger event
 	 */
+        @Override
 	public Date getLastLoggerEventTime( final String groupType ) {
 		return model.getSessionModel(groupType).getLastLoggerEventTime();
 	}
@@ -221,8 +239,9 @@ public class LoggerService implements RemoteLogging {
 	 * Get the list of group types
 	 * @return a list of the group types
 	 */
+        @Override
 	public List<String> getGroupTypes() {
-		return new ArrayList<String>( model.getSessionTypes() );
+		return new ArrayList<>( model.getSessionTypes() );
 	}
 	
 	
@@ -231,6 +250,7 @@ public class LoggerService implements RemoteLogging {
 	 * @param groupType identifies the group by type 
 	 * @return the number of channels we wish to log
 	 */
+        @Override
 	public int getChannelCount( final String groupType ) {
 		return model.getLoggerSession(groupType).getChannelGroup().getChannelCount();
 	}
@@ -242,22 +262,24 @@ public class LoggerService implements RemoteLogging {
 	 * @param groupType identifies the group by type 
 	 * @return The list channel info tables corresponding to the channels we wish to log
 	 */
+        @Override
 	public List<Map<String,Object>> getChannels( final String groupType ) {
 		final LoggerSession session = model.getLoggerSession( groupType );
 		if ( session != null ) {
 			final Collection<Channel> channels = session.getChannels();
-			final List<Map<String,Object>> channelInfoList = new ArrayList<Map<String,Object>>( channels.size() );
+			final List<Map<String,Object>> channelInfoList = new ArrayList<>( channels.size() );
 			for ( final Channel channel : channels ) {
-				final Map<String,Object> info = new HashMap<String,Object>();
+				final Map<String,Object> info;
+                            info = new HashMap<>();
 				info.put( CHANNEL_SIGNAL, channel.channelName() );
-				info.put( CHANNEL_CONNECTED, new Boolean( channel.isConnected() ) );
+				info.put(CHANNEL_CONNECTED, channel.isConnected());
 				channelInfoList.add( info );
 			}
 			
 			return channelInfoList;
 		}
 		else {
-			return new ArrayList<Map<String,Object>>();
+			return new ArrayList<>();
 		}
 	}
 	
@@ -267,6 +289,7 @@ public class LoggerService implements RemoteLogging {
 	 * @param groupType identifies the group by type 
 	 * @return the timestamp of the last published snapshot
 	 */
+        @Override
 	public Date getTimestampOfLastPublishedSnapshot(String groupType) {
 		MachineSnapshot snapshot = model.getSessionModel(groupType).getLastPublishedSnapshot();
 		return (snapshot != null) ? snapshot.getTimestamp() : new Date(0);
@@ -278,9 +301,9 @@ public class LoggerService implements RemoteLogging {
 	 * @param groupType identifies the group by type 
 	 * @return the textual dump of the last published snapshot or null if none exists
 	 */
+        @Override
 	public String getLastPublishedSnapshotDump(String groupType) {
 		Object snapshot = model.getSessionModel(groupType).getLastPublishedSnapshot();
 		return (snapshot != null) ? snapshot.toString() : "";
 	}
 }
-

@@ -32,7 +32,8 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 	/** Container of immediate subsequences */
 	protected List<AcceleratorSeq> sequences;
   
-    
+        private static final Logger LOGGER = Logger.getLogger(AcceleratorSeq.class.getName());
+
     /*
      * Bucket Support
      */
@@ -96,8 +97,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
             }
             catch ( ClassNotFoundException exception ) {
 				final String message = "Error reading child sequence for parent: " + strId;
-				Logger.getLogger( "global" ).log( Level.SEVERE, message, exception );
-                exception.printStackTrace();
+                LOGGER.log(Level.SEVERE, message, exception);
             }
         }
 
@@ -119,8 +119,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
             }
             catch (ClassNotFoundException exception) {
 				final String message = "Error reading child node for sequence: " + strId;
-				Logger.getLogger( "global" ).log( Level.SEVERE, message, exception );
-                exception.printStackTrace();
+                LOGGER.log(Level.SEVERE, message, exception);
             }
         }
     }

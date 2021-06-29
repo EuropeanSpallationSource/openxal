@@ -12,6 +12,8 @@ import xal.tools.messaging.MessageCenter;
 import xal.tools.dispatch.DispatchQueue;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /** AbstractBatchGetRequest */
@@ -49,7 +51,8 @@ public abstract class AbstractBatchGetRequest<RecordType extends ChannelRecord> 
 	/** batch request for connecting to the pending channels */
 	private BatchConnectionRequest batchConnectionRequest;
 	
-	
+        private static final Logger LOGGER = Logger.getLogger(AbstractBatchGetRequest.class.getName());
+
 	/** 
 	 * Primary Constructor 
 	 * @param channels the channels for which get requests will be handled
@@ -374,8 +377,7 @@ public abstract class AbstractBatchGetRequest<RecordType extends ChannelRecord> 
 					completionLock.notifyAll();
 				}
 				catch( Exception exception ) {
-					System.out.println( "Excepting notifying " );
-					exception.printStackTrace();
+					LOGGER.log(Level.SEVERE, "Excepting notifying", exception);
 				}
 			}
 
@@ -419,7 +421,7 @@ public abstract class AbstractBatchGetRequest<RecordType extends ChannelRecord> 
 							Thread.yield();		// yield to other threads so we can accumulate a batch of channels to process 
 						}
 						catch( Exception exception ) {
-							exception.printStackTrace();
+							LOGGER.log(Level.SEVERE, null, exception);
 						}
 					}
 				}

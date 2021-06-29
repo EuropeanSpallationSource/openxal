@@ -43,6 +43,8 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
 	// public static constants for confirmation dialogs
 	public static final int YES_OPTION = JOptionPane.YES_OPTION;
 	public static final int NO_OPTION = JOptionPane.NO_OPTION;
+
+        private static final Logger LOGGER = Logger.getLogger(XalWindow.class.getName());
 	    
     /** indicates whether to display a toolbar */
     private final boolean displayToolbar;
@@ -148,14 +150,8 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
 			final String imageName = applicationName.replaceAll( " ", "" ) + "_" + new SimpleDateFormat("yyyyMMdd'T'HHmmss").format( now );
             ImageCaptureManager.defaultManager().saveSnapshot( this.getContentPane(), imageName );
         }
-        catch( AWTException exception ) {
-			Logger.getLogger("global").log( Level.WARNING, "Failed to capture image.", exception ); 
-            System.err.println( exception );
-            displayWarning( exception );
-        }
-        catch( IOException exception ) {
-			Logger.getLogger("global").log( Level.WARNING, "Failed to capture image.", exception ); 
-            System.err.println( exception );
+        catch( AWTException | IOException exception ) {
+            LOGGER.log( Level.WARNING, "Failed to capture image.", exception ); 
             displayWarning( exception );
         }
     }
@@ -257,7 +253,7 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
 				});
 			}
 			catch( InterruptedException | InvocationTargetException exception ) {
-				exception.printStackTrace();
+				LOGGER.log(Level.SEVERE, null, exception);
 				throw new RuntimeException( "Exception updating the window title.", exception );
 			}
 			
@@ -288,7 +284,7 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
                     }
                 }
                 catch( URISyntaxException exception ) {
-                    exception.printStackTrace();
+                    LOGGER.log(Level.SEVERE, null, exception);
                 }
 			}
 		}

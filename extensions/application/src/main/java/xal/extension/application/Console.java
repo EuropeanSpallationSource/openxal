@@ -17,6 +17,8 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 
@@ -37,6 +39,9 @@ class Console {
 	
 	/** logging preferences */
 	private static final Preferences LOG_PREFS;
+      
+        private static final Logger LOGGER = Logger.getLogger(Console.class.getName());
+
     
 	/** file writer where log files are stored */
 	private Writer logWriter;
@@ -99,7 +104,7 @@ class Console {
 				logWriter = new BufferedWriter( new FileWriter( logFile ) );
 			}
 			catch( IOException exception ) {
-				exception.printStackTrace();
+				LOGGER.log(Level.SEVERE, null, exception);
 			}			
 		}
 	}
