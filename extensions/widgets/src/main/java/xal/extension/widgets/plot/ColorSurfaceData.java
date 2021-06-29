@@ -11,7 +11,7 @@ import java.awt.*;
  * @author  A. Shishlo
  */
 
-abstract public class ColorSurfaceData{
+public abstract class ColorSurfaceData{
 
 
     /** The values on the 2D grid. */
@@ -211,13 +211,13 @@ abstract public class ColorSurfaceData{
      *   The subclasses should implement this method to provide specific
      *   interpolation scheme.
      */
-    abstract public double getValue(double x, double y);
+    public abstract double getValue(double x, double y);
 
     /**  Bins value into the 2D array for x and y with weight = value.
      *   The subclasses should implement this method to provide specific
      *   interpolation scheme.
      */
-    abstract public void addValue(double x, double y, double value);
+    public abstract void addValue(double x, double y, double value);
 
     /**  Bins value into the 2D array for x and y with weight = 1.
      */

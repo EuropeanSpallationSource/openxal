@@ -21,7 +21,7 @@ import java.util.logging.*;
  *
  * @author  tap
  */
-abstract public class Correlator<SourceType, RecordType, SourceAgentType extends SourceAgent<RecordType>> {
+public abstract class Correlator<SourceType, RecordType, SourceAgentType extends SourceAgent<RecordType>> {
     protected MessageCenter localCenter;
     protected double binTimespan;
     protected CorrelationTester<RecordType> correlationTester;
@@ -269,7 +269,7 @@ abstract public class Correlator<SourceType, RecordType, SourceAgentType extends
     }
     
     
-    abstract protected SourceAgentType newSourceAgent( final SourceType source, final String sourceName, final RecordFilter<RecordType> recordFilter );
+    protected abstract SourceAgentType newSourceAgent( final SourceType source, final String sourceName, final RecordFilter<RecordType> recordFilter );
     
 
     /** 

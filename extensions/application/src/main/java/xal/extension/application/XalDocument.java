@@ -17,7 +17,7 @@ import xal.extension.bricks.WindowReference;
  *
  * @author  t6p
  */
-abstract public class XalDocument extends XalAbstractDocument {
+public abstract class XalDocument extends XalAbstractDocument {
     // basic document instance variables
     public XalWindow mainWindow;     // The main window for the document
     

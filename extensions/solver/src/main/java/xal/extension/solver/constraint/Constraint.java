@@ -20,7 +20,7 @@
  * 
  * @author  ky6
  */
- abstract public class Constraint {
+ public abstract class Constraint {
 	 protected String name;
 	
 	 /**
@@ -37,5 +37,5 @@
 	 * @param trial The trial to be validated.
 	 * @return A trial veto.
 	 */
-	 abstract public TrialVeto validate(Trial trial);
+	 public abstract TrialVeto validate(Trial trial);
  }

@@ -21,7 +21,7 @@ import xal.tools.data.*;
 
 
 /** interface for providing view node behavior */
-abstract public class ViewProxy<ViewType extends Component> extends BeanProxy<ViewType> {
+public abstract class ViewProxy<ViewType extends Component> extends BeanProxy<ViewType> {
 	/** data label */
 	public static final String DATA_LABEL = "ViewProxy";
 	

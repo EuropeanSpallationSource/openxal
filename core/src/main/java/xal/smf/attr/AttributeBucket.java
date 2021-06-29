@@ -29,7 +29,7 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
     
     
     /** Derived class must furnish a unique type id */
-    abstract public String getType();
+    public abstract String getType();
     
 
     // DataListener interface

@@ -13,18 +13,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * ChannelFactory is a factory for generating channels.
  *
  * @author tap
  */
-abstract public class ChannelFactory {
+public abstract class ChannelFactory {
 
     /**
      * default channel factory instance
      */
-    private static ChannelFactory defaultFactory;
+    private static volatile ChannelFactory defaultFactory;
 
     private static final List<ChannelFactory> FACTORY_LIST = new ArrayList<>();
 
@@ -35,7 +36,7 @@ abstract public class ChannelFactory {
     /**
      * map of channels keyed by signal name
      */
-    private final Map<String, Channel> CHANNEL_MAP;
+    private final Map<String, Channel> channelMap;
 
     static {
         defaultFactory = newFactory();
@@ -45,7 +46,7 @@ abstract public class ChannelFactory {
      * Creates a new instance of ChannelFactory
      */
     protected ChannelFactory() {
-        CHANNEL_MAP = new HashMap<>();
+        channelMap = new HashMap<>();
     }
 
     /**
@@ -53,9 +54,9 @@ abstract public class ChannelFactory {
      *
      * @return true if the initialization was successful and false if not
      */
-    abstract public boolean init();
+    public abstract boolean init();
 
-    abstract protected void dispose();
+    protected abstract void dispose();
 
     public void destroy() {
         dispose();
@@ -89,15 +90,15 @@ abstract public class ChannelFactory {
      * @return The channel corresponding to the signal name
      */
     public Channel getChannel(final String signalName) {
-        if (signalName.equals("")) {
+        if ("".equals(signalName)) {
             return null;
         }        Channel channel;
-        synchronized (CHANNEL_MAP) {
-            if (!CHANNEL_MAP.containsKey(signalName)) {
+        synchronized (channelMap) {
+            if (!channelMap.containsKey(signalName)) {
                 channel = newChannel(signalName);
-                CHANNEL_MAP.put(signalName, channel);
+                channelMap.put(signalName, channel);
             } else {
-                channel = CHANNEL_MAP.get(signalName);
+                channel = channelMap.get(signalName);
             }
         }
 
@@ -114,18 +115,17 @@ abstract public class ChannelFactory {
      * @return The channel corresponding to the signal name
      */
     public Channel getChannel(final String signalName, final ValueTransform transform) {
-        if (signalName.equals("")) {
+        if ("".equals(signalName)) {
             return null;
         }
         final String channelID = Channel.generateId(signalName, transform);
-        synchronized (CHANNEL_MAP) {
-            if (!CHANNEL_MAP.containsKey(channelID)) {
+        synchronized (channelMap) {
+            if (!channelMap.containsKey(channelID)) {
                 final Channel channel = newChannel(signalName, transform);
-                CHANNEL_MAP.put(channelID, channel);
+                channelMap.put(channelID, channel);
                 return channel;
             } else {
-                final Channel channel = CHANNEL_MAP.get(channelID);
-                return channel;
+                return channelMap.get(channelID);
             }
         }
     }
@@ -136,7 +136,7 @@ abstract public class ChannelFactory {
      * @param signalName PV for which to create a new channel
      * @return a new channel for the specified signal name
      */
-    abstract protected Channel newChannel(final String signalName);
+    protected abstract Channel newChannel(final String signalName);
 
     /**
      * Create a new channel for the given signal name and set its value
@@ -171,7 +171,7 @@ abstract public class ChannelFactory {
      *
      * @return The channel system
      */
-    abstract protected ChannelSystem channelSystem();
+    protected abstract ChannelSystem channelSystem();
 
     /**
      * get the default system which handles static behavior of Channels
@@ -230,7 +230,7 @@ abstract public class ChannelFactory {
     /**
      * Print information about this factory
      */
-    abstract public void printInfo();
+    public abstract void printInfo();
 
     /**
      * Sets the test flag. If the test flag is on, the factory will add a suffix
@@ -244,14 +244,15 @@ abstract public class ChannelFactory {
     public void setTest(boolean test) {
         this.test = test;
         if (test) {
-            for (Channel channel : CHANNEL_MAP.values()) {
+            for (Channel channel : channelMap.values()) {
                 channel.setChannelName(channel.channelName() + testSuffix);
                 channel.disconnect();
                 channel.requestConnection();
             }
-        } else {
-            for (String channelName : CHANNEL_MAP.keySet()) {
-                Channel channel = CHANNEL_MAP.get(channelName);
+        } else {            
+            for (Entry<String, Channel> entry : channelMap.entrySet()) {
+                String channelName = entry.getKey();
+                Channel channel = entry.getValue();
                 channel.setChannelName(channelName);
                 channel.disconnect();
                 channel.requestConnection();

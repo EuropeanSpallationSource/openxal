@@ -14,7 +14,7 @@ import xal.tools.data.*;
 
 
 /** interface for providing border node behavior */
-abstract public class BorderProxy<T extends Border> extends BeanProxy<T> {
+public abstract class BorderProxy<T extends Border> extends BeanProxy<T> {
 	/** data label */
 	public static String dataLabel = "BorderProxy";
 	

@@ -13,7 +13,7 @@ import xal.ca.Channel;
  * Access property values for a node
  * @author Tom Pelaia
  */
-abstract public class AbstractPropertyAccessor implements PropertyAccessor {
+public abstract class AbstractPropertyAccessor implements PropertyAccessor {
 	/** Get the scale factor for the specified property */
 	protected double getPropertyScale( final String propertyName ) {
 		return 1.0;

@@ -70,7 +70,7 @@ import xal.tools.messaging.MessageCenter;
  * @author  t6p
  * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
  */
-abstract public class Application {
+public abstract class Application {
 	// public static constants for confirmation dialogs
 	public static final int YES_OPTION = JOptionPane.YES_OPTION;
 	public static final int NO_OPTION = JOptionPane.NO_OPTION;
@@ -380,7 +380,7 @@ abstract public class Application {
 	 * 
 	 * @param urls An array of document URLs to open.
 	 */
-    abstract protected void setup( final URL[] urls );
+    protected abstract void setup( final URL[] urls );
     
     
     /**
@@ -598,14 +598,14 @@ abstract public class Application {
     // --------- File menu actions ---------------------------------------------
     
     /** Create and open a new empty document. */
-    abstract protected void newDocument();
+    protected abstract void newDocument();
 	
 	
     /** 
 	 * Create and open a new empty document of the specified type. 
 	 * @param type the type of document to create.
 	 */
-    abstract protected void newDocument( final String type );
+    protected abstract void newDocument( final String type );
     
     
     /** Create a new document based on a user selected document */
@@ -1351,7 +1351,7 @@ abstract public class Application {
 	 * @param document the document to produce
 	 * @param makeVisible make the document visible
      */
-    abstract public void produceDocument( final XalAbstractDocument document, final boolean makeVisible );
+    public abstract void produceDocument( final XalAbstractDocument document, final boolean makeVisible );
     
     
     //------------------- Convenience methods -----------------------------------

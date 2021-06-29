@@ -15,5 +15,5 @@ public interface TrimmedMagnet {
 	 * Get the trim power supply for this magnet.
      * @return The trim power supply for this magnet
      */
-    abstract public MagnetTrimSupply getTrimSupply();
+    public abstract MagnetTrimSupply getTrimSupply();
 }

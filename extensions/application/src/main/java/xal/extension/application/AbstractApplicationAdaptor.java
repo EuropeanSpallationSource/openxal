@@ -26,7 +26,7 @@ import java.util.prefs.Preferences;
  *
  * @author  t6p
  */
-abstract public class AbstractApplicationAdaptor implements ApplicationListener {
+public abstract class AbstractApplicationAdaptor implements ApplicationListener {
     /** wildcard file extension */
     public static final String WILDCARD_FILE_EXTENSION = FileFilterFactory.WILDCARD_FILE_EXTENSION;
 
@@ -97,14 +97,14 @@ abstract public class AbstractApplicationAdaptor implements ApplicationListener 
      * Subclasses should implement this method to return the array of file suffixes identifying the files that can be read by the application.
      * @return An array of file suffixes corresponding to readable files
      */
-    abstract public String[] readableDocumentTypes();
+    public abstract String[] readableDocumentTypes();
 
 
     /**
      * Subclasses should implement this method to return the array of file suffixes identifying the files that can be written by the application.
      * @return An array of file suffixes corresponding to writable files
      */
-    abstract public String[] writableDocumentTypes();
+    public abstract String[] writableDocumentTypes();
 
 
     /** Determine whether this application can open documents */
@@ -125,7 +125,7 @@ abstract public class AbstractApplicationAdaptor implements ApplicationListener 
      * @param type the type of document to create.
      * @return an instance of the custom subclass of XalAbstractDocument
      */
-    abstract public XalAbstractDocument generateEmptyDocument( final String type );
+    public abstract XalAbstractDocument generateEmptyDocument( final String type );
 
 
     /**
@@ -141,7 +141,7 @@ abstract public class AbstractApplicationAdaptor implements ApplicationListener 
      * Subclasses must implement this method to return the name of their application.
      * @return The name of the application
      */
-    abstract public String applicationName();
+    public abstract String applicationName();
 
 
     /** Get the node for this application's preferences */
@@ -334,7 +334,7 @@ abstract public class AbstractApplicationAdaptor implements ApplicationListener 
 /** abstract resource manager for applications */
 abstract class ApplicationResourceManager {
     /** get the named resource for the specified application */
-    abstract public URL getResourceURL( final AbstractApplicationAdaptor adaptor, final String resourceSpec );
+    public abstract URL getResourceURL( final AbstractApplicationAdaptor adaptor, final String resourceSpec );
 
 
     /** get the singleton instance */

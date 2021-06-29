@@ -27,7 +27,7 @@ import java.util.regex.*;
  * - The file based resource manager can be set as the default if the environment variable OPENXAL_FIND_RESOURCES_IN_ROOT is set to true. The OPENXAL_HOME environment variable must be set to the root of the project. The file based resource manager searches for resources directly on the file system relative to the project. This may be useful in development for IDE's that compile code in real time and do not generate the usual jar files. This option should not be used in production.
  * </p>
  */
-abstract public class ResourceManager {
+public abstract class ResourceManager {
 	protected static final String RESOURCES_FILE_SEARCH_PROPERTY = "OPENXAL_FIND_RESOURCES_IN_ROOT";
 
 	/** default resource manager */
@@ -86,7 +86,7 @@ abstract public class ResourceManager {
 	 * @param resourcePath to the resource relative to the group's resources directory
 	 * @return URL to the resource
 	 */
-	abstract public URL fetchResourceURL( final String subdomain, final Class<?> rootClass, final String resourcePath );
+	public abstract URL fetchResourceURL( final String subdomain, final Class<?> rootClass, final String resourcePath );
 
 
 	/**

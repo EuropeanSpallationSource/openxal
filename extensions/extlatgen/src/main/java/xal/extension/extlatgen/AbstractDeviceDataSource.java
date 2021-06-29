@@ -19,7 +19,7 @@ import xal.tools.beam.IConstants;
 
 
 /** Abstract Device Data Source */
-abstract public class AbstractDeviceDataSource {
+public abstract class AbstractDeviceDataSource {
 	/** singleton design data source which carries no state */
 	private static final DesignDeviceDataSource DESIGN_DATA_SOURCE;
     
@@ -35,23 +35,23 @@ abstract public class AbstractDeviceDataSource {
     
 	
 	/** Get the field for the specified magnet */
-	abstract public double getField( final Magnet magnet );
+	public abstract double getField( final Magnet magnet );
     
     
 	/** Get this source's label */
-	abstract public String getLabel();
+	public abstract String getLabel();
     
     
 	/** Get the magnet's bend angle per unit element length */
-	abstract public double getBendAnglePerLength( final Bend bend, final double unitCharge, final double momentum );
+	public abstract double getBendAnglePerLength( final Bend bend, final double unitCharge, final double momentum );
     
     
 	/** Get the magnet's bend angle per unit element length */
-	abstract public double getBendEntranceAngle( final Bend bend, final double unitCharge, final double momentum );
+	public abstract double getBendEntranceAngle( final Bend bend, final double unitCharge, final double momentum );
     
     
 	/** Get the magnet's bend angle per unit element length */
-	abstract public double getBendExitAngle( final Bend bend, final double unitCharge, final double momentum );
+	public abstract double getBendExitAngle( final Bend bend, final double unitCharge, final double momentum );
     
     
 	/** Get an instance of the design data source */

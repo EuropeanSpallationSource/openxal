@@ -39,7 +39,7 @@ import xal.smf.data.XMLDataManager;
  *
  * @author Yngve Levinsen <yngve.levinsen@ess.eu>
  */
-abstract public class XalFxDocument {
+public abstract class XalFxDocument {
 
     /**
      * wildcard file extension
@@ -143,7 +143,7 @@ abstract public class XalFxDocument {
      *
      * @param url The File to which this document should be saved.
      */
-    abstract public void saveDocumentAs(final URL url);
+    public abstract void saveDocumentAs(final URL url);
 
     /**
      * Subclasses need to implement this method for saving the document to a
@@ -151,13 +151,13 @@ abstract public class XalFxDocument {
      *
      * @param url The URL to which this document should be saved.
      */
-    abstract public void loadDocument(final URL url);
+    public abstract void loadDocument(final URL url);
 
     /**
      * Subclasses need to implement this method for creating a new document.
      *
      */
-    abstract public void newDocument();
+    public abstract void newDocument();
 
     /**
      * Save this document to its persistent storage source.

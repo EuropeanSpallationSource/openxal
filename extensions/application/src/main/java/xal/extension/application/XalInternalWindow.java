@@ -34,7 +34,7 @@ import xal.tools.apputils.ImageCaptureManager;
  *
  * @author  t6p
  */
-abstract public class XalInternalWindow extends JInternalFrame implements XalDocumentView, XalInternalDocumentListener {
+public abstract class XalInternalWindow extends JInternalFrame implements XalDocumentView, XalInternalDocumentListener {
 	/** serial version ID required for Serializable */
 	static final long serialVersionUID = 1L;
 

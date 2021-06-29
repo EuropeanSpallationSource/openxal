@@ -75,7 +75,7 @@ abstract class XalAbstractDocument implements Pageable {
     
     
     /** Subclasses must implement this method to make their custom main window. */
-    abstract public void makeMainWindow();
+    public abstract void makeMainWindow();
     
     
     /**
@@ -271,7 +271,7 @@ abstract class XalAbstractDocument implements Pageable {
 	 * Subclasses need to implement this method for saving the document to a URL.
      * @param url The URL to which this document should be saved.
      */
-    abstract public void saveDocumentAs( final URL url );
+    public abstract void saveDocumentAs( final URL url );
     
     
     /**
@@ -337,7 +337,7 @@ abstract class XalAbstractDocument implements Pageable {
      * user is given an opportunity to not close the document so they can save 
      * the changes.
      */
-    abstract public boolean closeDocument();
+    public abstract boolean closeDocument();
 	
 	
 	/**
@@ -386,7 +386,7 @@ abstract class XalAbstractDocument implements Pageable {
 	 * Get the main window for this document.
      * @return The main window for this document.
      */
-    abstract public XalDocumentView getDocumentView();
+    public abstract XalDocumentView getDocumentView();
 	
 	
 	/**

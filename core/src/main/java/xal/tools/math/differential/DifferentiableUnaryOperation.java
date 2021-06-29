@@ -10,7 +10,7 @@ package xal.tools.math.differential;
 
 
 /** DifferentiableUnaryOperation */
-abstract public class DifferentiableUnaryOperation extends DifferentiableSymbol {
+public abstract class DifferentiableUnaryOperation extends DifferentiableSymbol {
     /** argument on which the operation is performed */
     protected final DifferentiableOperation argument;
     
@@ -28,11 +28,11 @@ abstract public class DifferentiableUnaryOperation extends DifferentiableSymbol 
     
     
     /** Get the label for the operation */
-    abstract public String getLabel();
+    public abstract String getLabel();
     
     
     /** Get the derivative for just this operation without regard for the chain rule */
-    abstract public DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable );
+    public abstract DifferentiableOperation getDirectDerivative( final DifferentiableVariable variable );
     
     
     /** Get the derivative with respect to the specified variable applying the chain rule for the argument */

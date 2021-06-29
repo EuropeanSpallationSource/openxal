@@ -108,7 +108,7 @@ public abstract class FieldMap {
      * @param path
      * @param filename
      */
-    abstract public void saveFieldMap(String path, String filename) throws IOException, URISyntaxException;
+    public abstract void saveFieldMap(String path, String filename) throws IOException, URISyntaxException;
 
     /**
      * This method returns the length of the field map.

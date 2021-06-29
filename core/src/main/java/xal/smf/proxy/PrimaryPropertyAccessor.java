@@ -240,7 +240,7 @@ abstract class BatchPropertyAccessor {
 
 
 	/** make the request for values for the specified nodes */
-	abstract public void requestValuesForNodes( final Collection<AcceleratorNode> nodes );
+	public abstract void requestValuesForNodes( final Collection<AcceleratorNode> nodes );
 
 
 	/**
@@ -248,7 +248,7 @@ abstract class BatchPropertyAccessor {
 	 * @param node the AcclereatorNode whose properties to return
 	 * @return a Map of node property values keyed by property name
 	 */
-	abstract public Map<String,Double> valueMapFor( final AcceleratorNode node );
+	public abstract Map<String,Double> valueMapFor( final AcceleratorNode node );
 	
 
 	/** get the instance for the specified synchronization mode */

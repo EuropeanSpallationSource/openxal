@@ -15,7 +15,7 @@ import xal.tools.messaging.MessageCenter;
 
 
 /** Base node for holding views and other items */
-abstract public class Brick {
+public abstract class Brick {
 	/** the tree node */
 	protected final DefaultMutableTreeNode treeNode;
 	
@@ -104,7 +104,7 @@ abstract public class Brick {
 	 * Determine if the brick can add the specified view
 	 * @return true if it can add the specified view and false if not
 	 */
-	abstract public boolean canAdd( final BeanProxy<?> beanProxy );
+	public abstract boolean canAdd( final BeanProxy<?> beanProxy );
 	
 	
 	/**
@@ -188,5 +188,5 @@ abstract public class Brick {
 	
 	
 	/** Remove this brick from its parent */
-	abstract public void removeFromParent();
+	public abstract void removeFromParent();
 }

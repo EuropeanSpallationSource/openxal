@@ -15,7 +15,7 @@ import java.util.*;
 
 
 /** AbstractBatchGetRequest */
-abstract public class AbstractBatchGetRequest<RecordType extends ChannelRecord> implements BatchConnectionRequestListener {
+public abstract class AbstractBatchGetRequest<RecordType extends ChannelRecord> implements BatchConnectionRequestListener {
 	/** message center for dispatching events */
 	private final MessageCenter messageCenter;
 	
@@ -221,7 +221,7 @@ abstract public class AbstractBatchGetRequest<RecordType extends ChannelRecord> 
 	 * @param channel the channel for which to request data
 	 * @throws Exception when the request fails
 	 */
-	abstract protected void requestChannelData( final Channel channel ) throws Exception;
+	protected abstract void requestChannelData( final Channel channel ) throws Exception;
 	
 	
 	/** 

@@ -58,8 +58,8 @@ public abstract class ArrayValue extends Number {
         return byteValueAt( 0 );
     }
     
-    abstract public byte byteValueAt(int index);
-    abstract public byte[] byteArray();
+    public abstract byte byteValueAt(int index);
+    public abstract byte[] byteArray();
     
     /** get the first element value as a short */
         @Override
@@ -67,8 +67,8 @@ public abstract class ArrayValue extends Number {
         return shortValueAt(0);
     }
     
-    abstract public short shortValueAt(int index);
-    abstract public short[] shortArray();
+    public abstract short shortValueAt(int index);
+    public abstract short[] shortArray();
     
     /** get the first element value as an int */
         @Override
@@ -76,8 +76,8 @@ public abstract class ArrayValue extends Number {
         return intValueAt(0);
     }    
     
-    abstract public int intValueAt(int index);
-    abstract public int[] intArray();
+    public abstract int intValueAt(int index);
+    public abstract int[] intArray();
 
     /** get the first element value as a long */
         @Override
@@ -85,8 +85,8 @@ public abstract class ArrayValue extends Number {
         return longValueAt(0);
     }    
     
-    abstract public long longValueAt(int index);
-    abstract public long[] longArray();
+    public abstract long longValueAt(int index);
+    public abstract long[] longArray();
 
     /** get the first element value as a float */
         @Override
@@ -94,8 +94,8 @@ public abstract class ArrayValue extends Number {
         return floatValueAt(0);
     }    
     
-    abstract public float floatValueAt(int index);
-    abstract public float[] floatArray();
+    public abstract float floatValueAt(int index);
+    public abstract float[] floatArray();
     
     /** get the first element value as a double */
         @Override
@@ -103,16 +103,16 @@ public abstract class ArrayValue extends Number {
         return doubleValueAt(0);
     }
     
-    abstract public double doubleValueAt(int index);
-    abstract public double[] doubleArray();
+    public abstract double doubleValueAt(int index);
+    public abstract double[] doubleArray();
     
     /** get the first element value as a String */
     public final String stringValue() {
         return stringValueAt(0);
     }
     
-    abstract public String stringValueAt(int index);
-    abstract public String[] stringArray();
+    public abstract String stringValueAt(int index);
+    public abstract String[] stringArray();
     
     
     /** Factory method to instantiate a new ArrayValue store for the byte array type */

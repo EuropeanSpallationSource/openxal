@@ -13,7 +13,7 @@ import xal.ca.*;
  * @author  J. Galambos (jdg@ornl.gov)
  */
 
-abstract public class Dipole extends Electromagnet {
+public abstract class Dipole extends Electromagnet {
 	/** type for this device */
     public static final String TYPE = MagnetType.DIPOLE;
 

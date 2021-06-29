@@ -233,15 +233,15 @@ class JSONEncoder {
 /** Base class of encoders */
 abstract class AbstractEncoder<DataType> {
     /** preprocess the object graph prior to encoding so the references can be resolved and encoded in order (definition first then any references to it) */
-    abstract public void preprocess( final JSONEncoder encoder, final Object value );
+    public abstract void preprocess( final JSONEncoder encoder, final Object value );
 
 
     /** encode the specified object to the JSON builder */
-    abstract public void encode( final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value );
+    public abstract void encode( final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value );
 
 
     /** encode the specified object to the JSON builder */
-    abstract public void encodeRaw( final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value );
+    public abstract void encodeRaw( final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value );
 }
 
 
@@ -339,7 +339,7 @@ abstract class SoftValueEncoder<DataType> extends AbstractEncoder<DataType> {
 
     /** encode the raw value directly */
     @Override
-    abstract public void encodeRaw( final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value );
+    public abstract void encodeRaw( final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value );
 }
 
 
@@ -1056,7 +1056,7 @@ class JSONDecoder {
 /** Base class of decoders */
 abstract class AbstractDecoder<DataType> {
     /** decode the source to extract the next object */
-    abstract protected DataType decode( final JSONDecoder source );
+    protected abstract DataType decode( final JSONDecoder source );
 }
 
 

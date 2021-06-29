@@ -17,7 +17,7 @@ import java.util.*;
  *
  * @author  tap
  */
-abstract public class SourceAgent<RecordType> implements StateNotice<RecordType> {
+public abstract class SourceAgent<RecordType> implements StateNotice<RecordType> {
 	/** number of bins to store events for correlation comparison */
     private static final int BIN_POOL_SIZE = 10;
 	
@@ -69,7 +69,7 @@ abstract public class SourceAgent<RecordType> implements StateNotice<RecordType>
 	 * @param recordFilter filter for records to accept or reject
      * @see #postEvent
      */
-    abstract protected void setupEventHandler(RecordFilter<RecordType> recordFilter);
+    protected abstract void setupEventHandler(RecordFilter<RecordType> recordFilter);
     
     
     /** clear memory of all events */
@@ -178,11 +178,11 @@ abstract public class SourceAgent<RecordType> implements StateNotice<RecordType>
 	 * Start monitoring the channel 
 	 * @return true upon success and false upon failure
 	 */
-    abstract public boolean startMonitor();
+    public abstract boolean startMonitor();
     
     
     /** Stop monitoring the channel */
-    abstract public void stopMonitor();
+    public abstract void stopMonitor();
     
     
     /** shutdown this channel agent and remove itself */

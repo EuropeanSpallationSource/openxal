@@ -79,7 +79,7 @@ import xal.tools.xml.XmlDataAdaptor.ParseException;
  *
  * @author Yngve Levinsen <yngve.levinsen@ess.eu>
  */
-abstract public class FxApplication extends Application {
+public abstract class FxApplication extends Application {
 
     protected String MAIN_SCENE = "/fxml/Scene.fxml";
     protected static String CSS_STYLE = "/styles/Styles.css";

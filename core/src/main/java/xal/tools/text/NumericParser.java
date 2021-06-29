@@ -17,7 +17,7 @@ import java.util.Map;
  *
  * @author  tap
  */
-abstract public class NumericParser {
+public abstract class NumericParser {
 	/** map of parsers keyed by numeric class */
     protected static final Map<Class<? extends Number>, NumericParser> PARSER_CLASS_MAP;
 
@@ -60,7 +60,7 @@ abstract public class NumericParser {
      * @return numeric value of the string value
      * @throws NumberFormatException if the string cannot be parsed into a number
      */
-    abstract public Number getNumericValue(String stringValue) throws NumberFormatException;
+    public abstract Number getNumericValue(String stringValue) throws NumberFormatException;
 }
 
 

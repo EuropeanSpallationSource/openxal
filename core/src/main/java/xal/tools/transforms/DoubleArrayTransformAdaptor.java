@@ -20,11 +20,11 @@ import xal.tools.ArrayValue;
 public abstract class DoubleArrayTransformAdaptor implements DoubleArrayTransform {
     /** DoubleTransform interface */
     @Override
-    abstract public double[] convertFromRaw(double[] rawValue);
+    public abstract double[] convertFromRaw(double[] rawValue);
     
     /** DoubleTransform interface */
     @Override
-    abstract public double[] convertToRaw(double[] physicalValue);
+    public abstract double[] convertToRaw(double[] physicalValue);
     
     /** Implement DataTransform interface */
     @Override

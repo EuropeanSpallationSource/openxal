@@ -10,7 +10,7 @@ package xal.tools.data;
 
 
 /** Merge multiple qualifiers to form a single qualifier */
-abstract public class CompoundQualifier implements Qualifier {
+public abstract class CompoundQualifier implements Qualifier {
 	/** the default initial reserve capacity */
 	protected static final int DEFAULT_RESERVE_CAPACITY = 2;
 	
@@ -66,7 +66,7 @@ abstract public class CompoundQualifier implements Qualifier {
 	 * The binary operator token.
 	 * @return a token representing the binary operator.
 	 */
-	abstract public String binaryToken();
+	public abstract String binaryToken();
 	
 	
 	/**

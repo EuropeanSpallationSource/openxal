@@ -268,7 +268,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      *
      *  @param  daptState   the "state" parent adaptor containing probe data
      */
-//    abstract public void loadState(DataAdaptor daptState) throws DataFormatException;
+//    public abstract void loadState(DataAdaptor daptState) throws DataFormatException;
     
     /**
      *  <p>
@@ -278,7 +278,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      *
      *  @param  daptState   the "state" parent adaptor to receive probe data
      */
-//    abstract public void saveState(DataAdaptor daptState);
+//    public abstract void saveState(DataAdaptor daptState);
 
     
     

@@ -21,7 +21,7 @@ import javax.swing.event.InternalFrameEvent;
  *
  * @author  t6p
  */
-abstract public class XalInternalDocument extends XalAbstractDocument {
+public abstract class XalInternalDocument extends XalAbstractDocument {
 	
     /** this document's associated window */
     protected XalInternalWindow mainWindow;     // The main window for the document

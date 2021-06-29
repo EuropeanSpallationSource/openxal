@@ -16,7 +16,7 @@ import xal.ca.*;
  * PermanentMagnet is the superclass of all permanent magnet classes.
  * @author  tap
  */
-abstract public class PermanentMagnet extends Magnet {
+public abstract class PermanentMagnet extends Magnet {
 
     // accessible properties
     private String[] readbackHandle = new String[]{};

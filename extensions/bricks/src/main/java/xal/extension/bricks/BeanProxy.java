@@ -15,7 +15,7 @@ import xal.tools.data.*;
 
 
 /** proxy for generating a Java Bean object */
-abstract public class BeanProxy<ViewType> implements DataListener {
+public abstract class BeanProxy<ViewType> implements DataListener {
 	/** prototype class */
 	protected final Class<ViewType> prototypeClass;
 	
@@ -243,7 +243,7 @@ abstract public class BeanProxy<ViewType> implements DataListener {
 	* @return a tag that identifies the receiver's type
 	*/
         @Override
-	abstract public String dataLabel();
+	public abstract String dataLabel();
     
     
     /**

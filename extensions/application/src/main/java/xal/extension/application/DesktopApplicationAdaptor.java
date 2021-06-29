@@ -19,7 +19,7 @@ import java.net.*;
  *
  * @author  t6p
  */
-abstract public class DesktopApplicationAdaptor extends AbstractApplicationAdaptor {
+public abstract class DesktopApplicationAdaptor extends AbstractApplicationAdaptor {
 	/**
 	 * Launch the application with the specified document URLs.
 	 * @param urls The document URLs to open upon launching the application.
@@ -35,7 +35,7 @@ abstract public class DesktopApplicationAdaptor extends AbstractApplicationAdapt
      * custom subclass of XalDocument.
      * @return An instance of the custom subclass of XalDocument
      */
-    abstract public XalInternalDocument newEmptyDocument();
+    public abstract XalInternalDocument newEmptyDocument();
     
 	
     /**
@@ -53,7 +53,7 @@ abstract public class DesktopApplicationAdaptor extends AbstractApplicationAdapt
      * custom subclass of XalDocument loaded from the specified URL.
      * @return An instance of the custom subclass of XalDocument
      */
-    abstract public XalInternalDocument newDocument( URL url );
+    public abstract XalInternalDocument newDocument( URL url );
     
 	
     /**

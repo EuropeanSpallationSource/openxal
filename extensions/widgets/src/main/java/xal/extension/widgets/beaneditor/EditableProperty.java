@@ -94,7 +94,7 @@ public abstract class EditableProperty {
 
 
 	/** set the value */
-	abstract public void setValue( final Object value );
+	public abstract void setValue( final Object value );
 
 
 	/** Get the units */
@@ -104,10 +104,10 @@ public abstract class EditableProperty {
 
 
 	/** determine whether the property is a container */
-	abstract public boolean isContainer();
+	public abstract boolean isContainer();
 
 	/** determine whether the property is a primitive */
-	abstract public boolean isPrimitive();
+	public abstract boolean isPrimitive();
 
 
     /*

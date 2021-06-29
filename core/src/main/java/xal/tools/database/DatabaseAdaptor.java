@@ -41,7 +41,7 @@ public abstract class DatabaseAdaptor {
 	 * @return the SQL array which wraps the primitive array
 	 * @throws xal.tools.database.DatabaseException if a database exception is thrown
 	 */
-	abstract public Array getArray( final String type, final Connection connection, final Object array ) throws DatabaseException;
+	public abstract Array getArray( final String type, final Connection connection, final Object array ) throws DatabaseException;
 	
 	
 	/**

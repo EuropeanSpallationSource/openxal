@@ -18,7 +18,7 @@ import xal.tools.transforms.ValueTransform;
  * @author Tom Pelaia
  * @version 1.1
  */
-abstract public class Channel {
+public abstract class Channel {
     /** Static variables */
     protected static ChannelSystem channelSystem;
 
@@ -282,7 +282,7 @@ abstract public class Channel {
 	 * @param timeout seconds to wait for a connection before giving up
 	 * @return true if the connection was made within the timeout and false if not
 	 */
-	abstract public boolean connectAndWait( final double timeout );
+	public abstract boolean connectAndWait( final double timeout );
 
 
 	/**
@@ -291,14 +291,14 @@ abstract public class Channel {
 	 * made in the future as soon as possible.  A connection event will be sent to registered
 	 * connection listeners when the connection has been established.
 	 */
-	abstract public void requestConnection();
+	public abstract void requestConnection();
 
 
     /**
      *  Terminate the network channel connection and clear all events associated
      *  with process variable
      */
-    abstract public void disconnect();
+    public abstract void disconnect();
 
 
     /**
@@ -360,7 +360,7 @@ abstract public class Channel {
 	 * @return the native element type
 	 * @throws xal.ca.ConnectionException accordingly
 	 */
-    abstract public Class<?> elementType() throws ConnectionException;
+    public abstract Class<?> elementType() throws ConnectionException;
 
 
     /**
@@ -368,7 +368,7 @@ abstract public class Channel {
      * @return     number of values in process variable
 	 * @throws xal.ca.ConnectionException accordingly
      */
-    abstract public int elementCount() throws ConnectionException;
+    public abstract int elementCount() throws ConnectionException;
 
 
     /**
@@ -378,7 +378,7 @@ abstract public class Channel {
      *  @exception  ConnectionException     channel not connected
      */
 
-    abstract public boolean readAccess() throws ConnectionException;
+    public abstract boolean readAccess() throws ConnectionException;
 
 
     /**
@@ -387,7 +387,7 @@ abstract public class Channel {
      *
      *  @exception  ConnectionException     channel not connected
      */
-    abstract public boolean writeAccess() throws ConnectionException;
+    public abstract boolean writeAccess() throws ConnectionException;
 
 
     /**
@@ -396,35 +396,35 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException	accordingly
 	 */
-    abstract public String getUnits() throws ConnectionException, GetException;
+    public abstract String getUnits() throws ConnectionException, GetException;
 
 
     /**
      * Get the lower and upper operation limit PVs
      * @return two element array of PVs with the lower and upper limit PVs
      */
-    abstract public String[] getOperationLimitPVs();
+    public abstract String[] getOperationLimitPVs();
 
 
     /**
      * Get the lower and upper warning limit PVs
      * @return two element array of PVs with the lower and upper limit PVs
      */
-    abstract public String[] getWarningLimitPVs();
+    public abstract String[] getWarningLimitPVs();
 
 
     /**
      * Get the lower and upper alarm limit PVs
      * @return two element array of PVs with the lower and upper limit PVs
      */
-    abstract public String[] getAlarmLimitPVs();
+    public abstract String[] getAlarmLimitPVs();
 
 
     /**
      * Get the lower and upper drive limit PVs
      * @return two element array of PVs with the lower and upper limit PVs
      */
-    abstract public String[] getDriveLimitPVs();
+    public abstract String[] getDriveLimitPVs();
 
 
     /**
@@ -433,7 +433,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
 	 */
-    abstract public Number rawUpperDisplayLimit() throws ConnectionException, GetException;
+    public abstract Number rawUpperDisplayLimit() throws ConnectionException, GetException;
 
 
     /**
@@ -442,7 +442,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
 	 */
-    abstract public Number rawLowerDisplayLimit() throws ConnectionException, GetException;
+    public abstract Number rawLowerDisplayLimit() throws ConnectionException, GetException;
 
 
     /**
@@ -451,7 +451,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
 	 */
-    abstract public Number rawUpperAlarmLimit() throws ConnectionException, GetException;
+    public abstract Number rawUpperAlarmLimit() throws ConnectionException, GetException;
 
 
     /**
@@ -460,7 +460,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
 	 */
-    abstract public Number rawLowerAlarmLimit() throws ConnectionException, GetException;
+    public abstract Number rawLowerAlarmLimit() throws ConnectionException, GetException;
 
 
     /**
@@ -469,7 +469,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
 	 */
-    abstract public Number rawUpperWarningLimit() throws ConnectionException, GetException;
+    public abstract Number rawUpperWarningLimit() throws ConnectionException, GetException;
 
 
     /**
@@ -478,7 +478,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
 	 */
-    abstract public Number rawLowerWarningLimit() throws ConnectionException, GetException;
+    public abstract Number rawLowerWarningLimit() throws ConnectionException, GetException;
 
 
     /**
@@ -487,7 +487,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
 	 */
-    abstract public Number rawUpperControlLimit() throws ConnectionException, GetException;
+    public abstract Number rawUpperControlLimit() throws ConnectionException, GetException;
 
 
     /**
@@ -496,7 +496,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
 	 */
-    abstract public Number rawLowerControlLimit() throws ConnectionException, GetException;
+    public abstract Number rawLowerControlLimit() throws ConnectionException, GetException;
 
 
     /**
@@ -689,7 +689,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
      */
-    abstract public ChannelRecord getRawValueRecord()  throws ConnectionException, GetException;
+    public abstract ChannelRecord getRawValueRecord()  throws ConnectionException, GetException;
 
 
 	/**
@@ -698,7 +698,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
      */
-	abstract protected ChannelRecord getRawStringValueRecord()  throws ConnectionException, GetException;
+	protected abstract ChannelRecord getRawStringValueRecord()  throws ConnectionException, GetException;
 
 
 	/**
@@ -707,7 +707,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
      */
-	abstract protected ChannelStatusRecord getRawStringStatusRecord()  throws ConnectionException, GetException;
+	protected abstract ChannelStatusRecord getRawStringStatusRecord()  throws ConnectionException, GetException;
 
 
 	/**
@@ -716,7 +716,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
      */
-	abstract protected ChannelTimeRecord getRawStringTimeRecord()  throws ConnectionException, GetException;
+	protected abstract ChannelTimeRecord getRawStringTimeRecord()  throws ConnectionException, GetException;
 
 
     /**
@@ -727,7 +727,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
      */
-    abstract public ChannelStatusRecord getRawStatusRecord()  throws ConnectionException, GetException;
+    public abstract ChannelStatusRecord getRawStatusRecord()  throws ConnectionException, GetException;
 
 
     /**
@@ -738,7 +738,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
      */
-    abstract public ChannelTimeRecord getRawTimeRecord()  throws ConnectionException, GetException;
+    public abstract ChannelTimeRecord getRawTimeRecord()  throws ConnectionException, GetException;
 
 
     /**
@@ -820,7 +820,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
      */
-    abstract protected void getRawValueCallback( final IEventSinkValue listener ) throws ConnectionException, GetException;
+    protected abstract void getRawValueCallback( final IEventSinkValue listener ) throws ConnectionException, GetException;
 
 
     /**
@@ -830,7 +830,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
      */
-    abstract protected void getRawValueCallback( final IEventSinkValue listener, final boolean attemptConnection ) throws ConnectionException, GetException;
+    protected abstract void getRawValueCallback( final IEventSinkValue listener, final boolean attemptConnection ) throws ConnectionException, GetException;
 
 
 	/**
@@ -840,7 +840,7 @@ abstract public class Channel {
 	 * @throws xal.ca.ConnectionException accordingly
 	 * @throws xal.ca.GetException accordingly
 	 */
-	abstract public void getRawValueTimeCallback( final IEventSinkValTime listener, final boolean attemptConnection ) throws ConnectionException, GetException;
+	public abstract void getRawValueTimeCallback( final IEventSinkValTime listener, final boolean attemptConnection ) throws ConnectionException, GetException;
 
 
     /**
@@ -997,7 +997,7 @@ abstract public class Channel {
      *  @throws xal.ca.ConnectionException     channel is not connected
      *  @throws xal.ca.MonitorException        general monitor failure
      */
-    abstract public xal.ca.Monitor addMonitorValTime(IEventSinkValTime listener, int intMaskFire)
+    public abstract xal.ca.Monitor addMonitorValTime(IEventSinkValTime listener, int intMaskFire)
         throws ConnectionException, MonitorException;
 
 
@@ -1009,7 +1009,7 @@ abstract public class Channel {
      *  @throws xal.ca.ConnectionException     channel is not connected
      *  @throws xal.ca.MonitorException        general monitor failure
      */
-    abstract public xal.ca.Monitor addMonitorValStatus(IEventSinkValStatus listener, int intMaskFire)
+    public abstract xal.ca.Monitor addMonitorValStatus(IEventSinkValStatus listener, int intMaskFire)
         throws ConnectionException, MonitorException;
 
 
@@ -1021,7 +1021,7 @@ abstract public class Channel {
      *  @throws xal.ca.ConnectionException     channel is not connected
      *  @throws xal.ca.MonitorException        general monitor failure
      */
-    abstract public xal.ca.Monitor addMonitorValue(IEventSinkValue listener, int intMaskFire)
+    public abstract xal.ca.Monitor addMonitorValue(IEventSinkValue listener, int intMaskFire)
         throws ConnectionException, MonitorException;
 
 
@@ -1436,7 +1436,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    abstract public void putRawValCallback(String newVal, PutListener listener) throws ConnectionException, PutException;
+    public abstract void putRawValCallback(String newVal, PutListener listener) throws ConnectionException, PutException;
 
 
     /**
@@ -1447,7 +1447,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    abstract public void putRawValCallback(byte newVal, PutListener listener) throws ConnectionException, PutException;
+    public abstract void putRawValCallback(byte newVal, PutListener listener) throws ConnectionException, PutException;
 
 
     /**
@@ -1458,7 +1458,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    abstract public void putRawValCallback(short newVal, PutListener listener) throws ConnectionException, PutException;
+    public abstract void putRawValCallback(short newVal, PutListener listener) throws ConnectionException, PutException;
 
 
     /**
@@ -1469,7 +1469,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    abstract public void putRawValCallback(int newVal, PutListener listener) throws ConnectionException, PutException;
+    public abstract void putRawValCallback(int newVal, PutListener listener) throws ConnectionException, PutException;
 
     
     /**
@@ -1480,7 +1480,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    abstract public void putRawValCallback(long newVal, PutListener listener) throws ConnectionException, PutException;
+    public abstract void putRawValCallback(long newVal, PutListener listener) throws ConnectionException, PutException;
 
 
     /**
@@ -1491,7 +1491,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    abstract public void putRawValCallback(float newVal, PutListener listener) throws ConnectionException, PutException;
+    public abstract void putRawValCallback(float newVal, PutListener listener) throws ConnectionException, PutException;
 
 
     /**
@@ -1502,7 +1502,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    abstract public void putRawValCallback(double newVal, PutListener listener) throws ConnectionException, PutException;
+    public abstract void putRawValCallback(double newVal, PutListener listener) throws ConnectionException, PutException;
 
     /**
      * Asynchronously put a raw value to the channel process variable. Fire the
@@ -1513,7 +1513,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException channel is not connected
      * @throws xal.ca.PutException general put failure
      */
-    abstract public void putRawValCallback(String[] newVal, PutListener listener) throws ConnectionException, PutException;
+    public abstract void putRawValCallback(String[] newVal, PutListener listener) throws ConnectionException, PutException;
 
     /**
      * Asynchronously put a raw value to the channel process variable.  Fire the specified callback
@@ -1523,18 +1523,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    abstract public void putRawValCallback(byte[] newVal, PutListener listener) throws ConnectionException, PutException;
-
-
-    /**
-     * Asynchronously put a raw value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
-     */
-    abstract public void putRawValCallback(short[] newVal, PutListener listener) throws ConnectionException, PutException;
+    public abstract void putRawValCallback(byte[] newVal, PutListener listener) throws ConnectionException, PutException;
 
 
     /**
@@ -1545,7 +1534,18 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    abstract public void putRawValCallback(int[] newVal, PutListener listener) throws ConnectionException, PutException;
+    public abstract void putRawValCallback(short[] newVal, PutListener listener) throws ConnectionException, PutException;
+
+
+    /**
+     * Asynchronously put a raw value to the channel process variable.  Fire the specified callback
+     * when put is complete.
+     * @param  newVal      value sent to process variable
+     * @param  listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException     channel is not connected
+     * @throws xal.ca.PutException        general put failure
+     */
+    public abstract void putRawValCallback(int[] newVal, PutListener listener) throws ConnectionException, PutException;
   
 
     /**
@@ -1556,7 +1556,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    abstract public void putRawValCallback(long[] newVal, PutListener listener) throws ConnectionException, PutException;
+    public abstract void putRawValCallback(long[] newVal, PutListener listener) throws ConnectionException, PutException;
 
 
     /**
@@ -1567,7 +1567,7 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    abstract public void putRawValCallback(float[] newVal, PutListener listener) throws ConnectionException, PutException;
+    public abstract void putRawValCallback(float[] newVal, PutListener listener) throws ConnectionException, PutException;
 
 
     /**
@@ -1578,6 +1578,6 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException     channel is not connected
      * @throws xal.ca.PutException        general put failure
      */
-    abstract public void putRawValCallback(double[] newVal, PutListener listener) throws ConnectionException, PutException;
+    public abstract void putRawValCallback(double[] newVal, PutListener listener) throws ConnectionException, PutException;
 }
 

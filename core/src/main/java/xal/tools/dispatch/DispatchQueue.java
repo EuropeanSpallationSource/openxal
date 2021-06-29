@@ -18,7 +18,7 @@ import javax.swing.SwingUtilities;
 
 
 /** DispatchQueue which attempts to implement a subset of the open source libdispatch library */
-abstract public class DispatchQueue implements DispatchOperationListener {
+public abstract class DispatchQueue implements DispatchOperationListener {
 	/** possible states of the dispatch queue */
 	public enum DispatchQueueState { PROCESSING, SUSPENDED, DISPOSED }
 
@@ -161,7 +161,7 @@ abstract public class DispatchQueue implements DispatchOperationListener {
 
 
 	/** create the executor for dispatching operations */
-	abstract protected ExecutorService createDispatchExecutor();
+	protected abstract ExecutorService createDispatchExecutor();
 
 
 	/**
@@ -384,7 +384,7 @@ abstract public class DispatchQueue implements DispatchOperationListener {
 
 
 	/** Process the operation queue by processing the next pending operation using the serial queue processor to guarantee the operations are queue serially */
-	abstract protected void processOperationQueue();
+	protected abstract void processOperationQueue();
 
 
 	/** call this method when an operation has completed execution */

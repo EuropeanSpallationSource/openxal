@@ -130,7 +130,7 @@ abstract class DispatchOperation<ReturnType> implements Callable<ReturnType> {
 	}
 	
 	
-	abstract protected ReturnType executeRawOperation() throws java.lang.Exception;
+	protected abstract ReturnType executeRawOperation() throws java.lang.Exception;
 	
 	
 	/** notify the queue and groups that the operation has completed */

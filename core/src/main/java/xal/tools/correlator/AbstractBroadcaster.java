@@ -114,7 +114,7 @@ abstract class AbstractBroadcaster<RecordType> implements BinListener<RecordType
 	 * @param correlation The new correlation.
      */
         @Override
-    abstract public void newCorrelation( final BinAgent<RecordType> sender, final Correlation<RecordType> correlation );
+    public abstract void newCorrelation( final BinAgent<RecordType> sender, final Correlation<RecordType> correlation );
     
     
 	/**

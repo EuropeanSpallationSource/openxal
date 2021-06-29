@@ -13,7 +13,7 @@ import java.awt.Component;
 
 
 /** property value editor */
-abstract public class PropertyValueTextEditor<T> extends PropertyValueEditor<T> {
+public abstract class PropertyValueTextEditor<T> extends PropertyValueEditor<T> {
 	/** instantiate a component */
         @Override
 	public Component getRenderingComponentInstance() {
@@ -30,7 +30,7 @@ abstract public class PropertyValueTextEditor<T> extends PropertyValueEditor<T> 
 	
 	/** get the cell editor value */
         @Override
-	abstract public T getEditorValue( final BricksContext context );
+	public abstract T getEditorValue( final BricksContext context );
 	
 	
 	/** set the editor value */

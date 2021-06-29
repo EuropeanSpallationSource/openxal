@@ -16,7 +16,7 @@ import xal.tools.data.*;
 
 
 /** brick which represents a Java Bean */
-abstract public class BeanNode<T> extends Brick implements DataListener {
+public abstract class BeanNode<T> extends Brick implements DataListener {
 	/** data label from bean properties */
 	protected static final String BEAN_DATA_LABEL = "BeanProperty";
 	
@@ -281,7 +281,7 @@ abstract public class BeanNode<T> extends Brick implements DataListener {
 	 * @return a tag that identifies the receiver's type
 	 */
         @Override
-    abstract public String dataLabel();
+    public abstract String dataLabel();
     
     
     /**

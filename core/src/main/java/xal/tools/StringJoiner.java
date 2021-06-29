@@ -184,7 +184,7 @@ public class StringJoiner {
 	 * concrete subclass of Joiner to join the strings.  Joiner is abstract
 	 * since it is never appropriate to instantiate.
 	 */
-	abstract private class Joiner {
+	private abstract class Joiner {
 		public void append( final String string ) {
 			buffer.append( string );
 		}

@@ -81,13 +81,13 @@ abstract class MessageHandler<ProtocolType> implements InvocationHandler, Serial
      * subclasses must override whether they support synchronous or asynchronous messages
 	 * @return true if the messaging is synchronous and false if not
      */
-    abstract public boolean isSynchronous();
+    public abstract boolean isSynchronous();
     
     
     /** implement InvocationHandler interface */
     /** invoke method */
         @Override
-    abstract public Object invoke( final Object proxy, final Method method, final Object[] args );
+    public abstract Object invoke( final Object proxy, final Method method, final Object[] args );
         
     
     /** get all targets associated with the source and protocol and just the protocol */

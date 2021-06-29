@@ -74,7 +74,7 @@ public abstract class MagnetPowerSupply implements DataListener {
      * Get the power supply type
      * @return The power supply type
      */
-    abstract public String getType();
+    public abstract String getType();
     
     
     /** 
@@ -268,7 +268,7 @@ public abstract class MagnetPowerSupply implements DataListener {
      * @param node The electromagnet to check
      * @return true if the node is supplied by this supply and false otherwise
      */
-    abstract public boolean suppliesNode(AcceleratorNode node);
+    public abstract boolean suppliesNode(AcceleratorNode node);
 
     /**
      * Get the readback handle corresponding to a set channel.

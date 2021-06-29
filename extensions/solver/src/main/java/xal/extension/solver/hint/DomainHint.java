@@ -14,7 +14,7 @@ import xal.extension.solver.*;
 
 
 /** A hint that indicates a variable domain. */
-abstract public class DomainHint extends Hint {
+public abstract class DomainHint extends Hint {
 	public static final int LOWER_IND = 0;
 	public static final int UPPER_IND = 1;
 	
@@ -26,9 +26,9 @@ abstract public class DomainHint extends Hint {
 	
 	
 	/** Determine if there is an entry for the variable */
-	abstract public boolean hasVariable( final Variable variable );	
+	public abstract boolean hasVariable( final Variable variable );	
 		
 	
 	/** Get the domain for the specified variable. */
-	abstract public double[] getRange( final Variable variable );
+	public abstract double[] getRange( final Variable variable );
 }

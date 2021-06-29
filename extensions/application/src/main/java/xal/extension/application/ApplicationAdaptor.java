@@ -20,7 +20,7 @@ import java.net.*;
  *
  * @author  t6p
  */
-abstract public class ApplicationAdaptor extends AbstractApplicationAdaptor {
+public abstract class ApplicationAdaptor extends AbstractApplicationAdaptor {
     /** wildcard file extension */
     public static final String WILDCARD_FILE_EXTENSION = FileFilterFactory.WILDCARD_FILE_EXTENSION;
     
@@ -39,7 +39,7 @@ abstract public class ApplicationAdaptor extends AbstractApplicationAdaptor {
      * custom subclass of XalDocument.
      * @return An instance of the custom subclass of XalDocument
      */
-    abstract public XalDocument newEmptyDocument();
+    public abstract XalDocument newEmptyDocument();
     
     
     /**
@@ -57,7 +57,7 @@ abstract public class ApplicationAdaptor extends AbstractApplicationAdaptor {
      * custom subclass of XalDocument loaded from the specified URL.
      * @return An instance of the custom subclass of XalDocument
      */
-    abstract public XalDocument newDocument( URL url );
+    public abstract XalDocument newDocument( URL url );
     
     
     /**

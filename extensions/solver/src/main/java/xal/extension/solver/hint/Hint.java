@@ -15,7 +15,7 @@
  * 
  * @author ky6
  */
- abstract public class Hint {
+ public abstract class Hint {
 	 /** the Hint's label */
 	 protected String label;
 	 
@@ -40,5 +40,5 @@
 	  * override this method to return a unique string identifying the hint.
 	  * @return the unique type identifier of this Hint
 	  */
-	 abstract public String getType();
+	 public abstract String getType();
  }

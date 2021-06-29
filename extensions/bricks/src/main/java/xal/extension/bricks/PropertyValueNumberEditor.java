@@ -12,7 +12,7 @@ import javax.swing.*;
 
 
 /** property value editor */
-abstract public class PropertyValueNumberEditor<T> extends PropertyValueTextEditor<T> {
+public abstract class PropertyValueNumberEditor<T> extends PropertyValueTextEditor<T> {
 	/** Constructor */
 	public PropertyValueNumberEditor() {
 		((JTextField)editorComponent).setHorizontalAlignment( JTextField.RIGHT );

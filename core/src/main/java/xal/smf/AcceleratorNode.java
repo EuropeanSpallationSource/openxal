@@ -81,7 +81,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
     };
 
     /** Derived class must furnish a unique type id */
-    abstract public String getType();
+    public abstract String getType();
 
 
     /** Derived class may furnish a unique software type */

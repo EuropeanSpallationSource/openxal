@@ -14,7 +14,7 @@ package xal.ca;
  * @author Tom Pelaia
  * @version 1.0
  */
-abstract public class Monitor {
+public abstract class Monitor {
     /** The monitor is triggered when the PV value change. */
     public static final int VALUE             = 1;
   
@@ -47,7 +47,7 @@ abstract public class Monitor {
     /**
      *  Stop the monitoring of PV
      */
-    abstract public void clear();
+    public abstract void clear();
     
     
     /**
@@ -64,7 +64,7 @@ abstract public class Monitor {
      *
      *  @exception  MonitorException    unable to setup the channel access monitor
      */
-    abstract protected void begin() throws MonitorException;
+    protected abstract void begin() throws MonitorException;
     
     
     /**

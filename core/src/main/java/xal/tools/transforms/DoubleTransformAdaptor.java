@@ -17,14 +17,14 @@ import xal.tools.ArrayValue;
  * @author  tap
  * @see DataTransformFactory
  */
-abstract public class DoubleTransformAdaptor implements DoubleTransform {
+public abstract class DoubleTransformAdaptor implements DoubleTransform {
     /** DoubleTransform interface */
     @Override
-    abstract public double convertFromRaw(double rawValue);
+    public abstract double convertFromRaw(double rawValue);
     
     /** DoubleTransform interface */
     @Override
-    abstract public double convertToRaw(double physicalValue);
+    public abstract double convertToRaw(double physicalValue);
     
     /** Implement DataTransform interface */
     @Override

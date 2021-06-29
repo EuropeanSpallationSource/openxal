@@ -22,7 +22,7 @@ import xal.tools.xml.XmlDataAdaptor.WriteException;
  * AcceleratorDocument is a subclass of XalDocument for accelerator based applications.
  * @author  tap
  */
-abstract public class AcceleratorDocument extends XalDocument {
+public abstract class AcceleratorDocument extends XalDocument {
     
     private static final String USE_DEFAULT_ACCELERATOR = "Use the Default Accelerator";
     private static final String SELECT_ACCELERATOR = "Select an Accelerator...";

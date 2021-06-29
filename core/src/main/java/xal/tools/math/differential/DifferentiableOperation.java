@@ -13,7 +13,7 @@ import java.util.HashMap;
 
 
 /** DifferentiableOperation */
-abstract public class DifferentiableOperation {
+public abstract class DifferentiableOperation {
     /** precedence at addition level */
     public static final int ADDITION_PRECEDENCE = 0;
     
@@ -62,7 +62,7 @@ abstract public class DifferentiableOperation {
      * @param substitutions map of the new operations keyed by the current operations to be substituted
      * @return a new operation with operations substituted
      */
-    abstract protected DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions );
+    protected abstract DifferentiableOperation copySubstituting( final Map<DifferentiableOperation,DifferentiableOperation> substitutions );
     
     
     /** 
@@ -97,11 +97,11 @@ abstract public class DifferentiableOperation {
     
     
     /** get the operation precedence */
-    abstract protected int getPrecedence();
+    protected abstract int getPrecedence();
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
-    abstract protected double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache );
+    protected abstract double evaluate( final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation,Double> cache );
     
     
     /** Evaluate the operation for the specified variable values using the default value if this variable is not specified in the map */
@@ -119,7 +119,7 @@ abstract public class DifferentiableOperation {
     
     
     /** Get the derivative with respect to the specified variable */
-    abstract public DifferentiableOperation getDerivative( final DifferentiableVariable variable );
+    public abstract DifferentiableOperation getDerivative( final DifferentiableVariable variable );
     
     
     /** add the arguments */
@@ -375,7 +375,7 @@ abstract public class DifferentiableOperation {
     
     
     /** Test whether this operation is equivalent to the specified operation when the two operations are different instances. */
-    abstract protected boolean isEquivalentTo( final DifferentiableOperation operation );
+    protected abstract boolean isEquivalentTo( final DifferentiableOperation operation );
     
     
     /** Test whether this operation is equal to or equivalent to the specified operation. */

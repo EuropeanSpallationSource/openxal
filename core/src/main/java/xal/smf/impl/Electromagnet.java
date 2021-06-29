@@ -19,7 +19,7 @@ import java.util.*;
  *
  * @author  tap
  */
-abstract public class Electromagnet extends Magnet {
+public abstract class Electromagnet extends Magnet {
     /** the node type */
     public static final String      TYPE   = "emag";
 	

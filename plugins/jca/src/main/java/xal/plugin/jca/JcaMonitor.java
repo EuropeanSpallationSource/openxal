@@ -64,7 +64,7 @@ abstract class JcaMonitor extends Monitor implements gov.aps.jca.event.MonitorLi
      *  will catch the jca.MonitorEvent, convert to appropriate data type, and
      *  forward to the appropriate data sink interface (IEventSinkXxxXxx).
      */
-    abstract public void monitorChanged( MonitorEvent event );
+    public abstract void monitorChanged( MonitorEvent event );
     
     
     /**

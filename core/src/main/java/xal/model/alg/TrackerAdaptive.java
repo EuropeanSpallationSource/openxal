@@ -20,7 +20,7 @@ import xal.smf.AcceleratorSeq;
  * @deprecated  functionality pushed down into child class class <code>{@link EnvTrackerAdapt}</code>
  */
 @Deprecated
-abstract public class TrackerAdaptive extends Tracker {
+public abstract class TrackerAdaptive extends Tracker {
     // Archiving constants 
 	
     /** data node label for EnvTrackerAdapt settings */
@@ -130,7 +130,7 @@ abstract public class TrackerAdaptive extends Tracker {
 	 * Determine whether this algorithm supports the optional accuracy odrer and maximum iteration methods.
 	 * @return true if the optional methods are supported and false if not.
 	 */
-	abstract public boolean supportsConditionalTermination();
+	public abstract boolean supportsConditionalTermination();
 	
     
     /**
@@ -141,7 +141,7 @@ abstract public class TrackerAdaptive extends Tracker {
      * 
      * @param intOrder      integration order
      */
-    abstract public void setAccuracyOrder( int intOrder );
+    public abstract void setAccuracyOrder( int intOrder );
     
 	
     /**
@@ -195,7 +195,7 @@ abstract public class TrackerAdaptive extends Tracker {
      * 
      * @param   intMaxIter maximum allowable single-element step count 
      */
-    abstract public void setMaxIterations( final int intMaxIter );
+    public abstract void setMaxIterations( final int intMaxIter );
 	
 	
     /**
@@ -270,7 +270,7 @@ abstract public class TrackerAdaptive extends Tracker {
      * 
      * @see #setAccuracyOrder 
      */
-    abstract public int  getAccuracyOrder();
+    public abstract int  getAccuracyOrder();
     
 	
     /**
@@ -315,7 +315,7 @@ abstract public class TrackerAdaptive extends Tracker {
      * 
      * @return  maximum allowable step count while propagating thru a single element
      */
-    abstract public int  getMaxIterations();
+    public abstract int  getMaxIterations();
 	
 	
     /**
