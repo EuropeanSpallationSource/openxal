@@ -399,7 +399,7 @@ public class JcaServerChannel extends Channel implements IServerChannel {
             super(JcaServerChannel.this, intMaskEvent);
             this.listener = listener;
             this.maskEvent = intMaskEvent;
-            
+
             this.begin();
         }
 

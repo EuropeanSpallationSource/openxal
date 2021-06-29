@@ -18,56 +18,57 @@ import xal.tools.data.TransientDataAdaptor;
 
 @RunWith(JUnit4.class)
 public class BendSerializationTest {
-	@Test
-	public void doBendSerializationTest() throws InstantiationException, ModelException, ClassNotFoundException {		
-		AcceleratorSeq sequence = new AcceleratorSeq("BendTest");
-		
-		// input from TraceWin
-		double entry_angle_deg = -5.5;
-		double exit_angle_deg = -5.5;
-		double alpha_deg = -11; // angle in degrees
-		double rho = 9375.67*1e-3; // absolute curvature radius (in m)
-		double N = 0.; // field Index
-		 
-		double G = 50;
-		double entrK1 = 1.23;
-		double entrK2 = 4.56;
-		double exitK1 = 7.89;
-		double exitK2 = 9.01;
-		
-		// calculations
-		double alpha = alpha_deg * Math.PI/180.0;		
-		double len = Math.abs(rho*alpha);
-		double quadComp = N / (rho*rho);
-		double B0 = 10;
-		double k = B0 / rho * Math.signum(alpha);
-		
-	    for (int HV = 1; HV <= 2; HV++) {
-			Bend bend = ESSElementFactory.createESSBend("b", alpha_deg, k, rho, entry_angle_deg,
-					exit_angle_deg, entrK1, entrK2, exitK1, exitK2, quadComp, new ApertureBucket(), null, HV, G, len/2);
-			
-			sequence.addNode(bend);
-			sequence.setLength(len);
-					
-			TransientDataAdaptor da = new TransientDataAdaptor("test");
-			bend.write(da);
-			
-			AcceleratorNodeFactory factory = new AcceleratorNodeFactory();
-			factory.registerNodeClass("D", null, Bend.class);
+
+    @Test
+    public void doBendSerializationTest() throws InstantiationException, ModelException, ClassNotFoundException {
+        AcceleratorSeq sequence = new AcceleratorSeq("BendTest");
+
+        // input from TraceWin
+        double entry_angle_deg = -5.5;
+        double exit_angle_deg = -5.5;
+        double alpha_deg = -11; // angle in degrees
+        double rho = 9375.67 * 1e-3; // absolute curvature radius (in m)
+        double N = 0.; // field Index
+
+        double G = 50;
+        double entrK1 = 1.23;
+        double entrK2 = 4.56;
+        double exitK1 = 7.89;
+        double exitK2 = 9.01;
+
+        // calculations
+        double alpha = alpha_deg * Math.PI / 180.0;
+        double len = Math.abs(rho * alpha);
+        double quadComp = N / (rho * rho);
+        double B0 = 10;
+        double k = B0 / rho * Math.signum(alpha);
+
+        for (int HV = 1; HV <= 2; HV++) {
+            Bend bend = ESSElementFactory.createESSBend("b", alpha_deg, k, rho, entry_angle_deg,
+                    exit_angle_deg, entrK1, entrK2, exitK1, exitK2, quadComp, new ApertureBucket(), null, HV, G, len / 2);
+
+            sequence.addNode(bend);
+            sequence.setLength(len);
+
+            TransientDataAdaptor da = new TransientDataAdaptor("test");
+            bend.write(da);
+
+            AcceleratorNodeFactory factory = new AcceleratorNodeFactory();
+            factory.registerNodeClass("D", null, Bend.class);
 //			factory.registerNodeClass("DH", null, Bend.class);
-			AcceleratorNode node = factory.createNode(da);
-			node.update(da);
-			
-			assertTrue(node instanceof Bend);
-			
-			Bend bend2 = (Bend)node;
-			assertEquals(bend.getOrientation(), bend2.getOrientation());
-			assertEquals(bend.getGap(), bend2.getGap(), 1e-12);
-			assertEquals(bend.getEntrK1(), bend2.getEntrK1(), 1e-12);
-			assertEquals(bend.getEntrK2(), bend2.getEntrK2(), 1e-12);
-			assertEquals(bend.getExitK1(), bend2.getExitK1(), 1e-12);
-			assertEquals(bend.getExitK2(), bend2.getExitK2(), 1e-12);
-	    }
-		
-	}
+            AcceleratorNode node = factory.createNode(da);
+            node.update(da);
+
+            assertTrue(node instanceof Bend);
+
+            Bend bend2 = (Bend) node;
+            assertEquals(bend.getOrientation(), bend2.getOrientation());
+            assertEquals(bend.getGap(), bend2.getGap(), 1e-12);
+            assertEquals(bend.getEntrK1(), bend2.getEntrK1(), 1e-12);
+            assertEquals(bend.getEntrK2(), bend2.getEntrK2(), 1e-12);
+            assertEquals(bend.getExitK1(), bend2.getExitK1(), 1e-12);
+            assertEquals(bend.getExitK2(), bend2.getExitK2(), 1e-12);
+        }
+
+    }
 }

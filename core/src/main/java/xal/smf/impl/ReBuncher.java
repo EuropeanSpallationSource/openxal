@@ -3,69 +3,66 @@
  *
  * Created on January 24, 2002, 5:17 PM
  */
-
 package xal.smf.impl;
 
 import xal.ca.ChannelFactory;
 import xal.smf.impl.qualify.ElementTypeManager;
 
-
 /**
  *
- * @author  tap
+ * @author tap
  */
 public class ReBuncher extends RfCavity {
+
     /*
      *  Constants
      */
-    
-    public static final String TYPE = "Bnch";  // ??? no table entry for the type
-  
+    /**
+     * type
+     */
+    public static final String TYPE = "Bnch";
 
     static {
         registerType();
     }
 
-    
     /*
      * Register type for qualification
      */
     private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( ReBuncher.class, TYPE, "rebuncher" );
+        ElementTypeManager.defaultManager().registerTypes(ReBuncher.class, TYPE, "rebuncher");
     }
-    
 
-    /** Override to provide type signature */
+    /**
+     * Override to provide type signature
+     */
     @Override
-    public String getType() { 
-        return TYPE; 
+    public String getType() {
+        return TYPE;
     }
 
-
-	/**
-	 * Primary Constructor.
-	 * @param strId node identifier
-	 * @param channelFactory factory for generating channels
-	 */
-	public ReBuncher( final String strId, final ChannelFactory channelFactory ) {
-		super( strId, channelFactory );
-	}
-
+    /**
+     * Primary Constructor.
+     *
+     * @param strId node identifier
+     * @param channelFactory factory for generating channels
+     */
+    public ReBuncher(final String strId, final ChannelFactory channelFactory) {
+        super(strId, channelFactory);
+    }
 
     /**
      * I just added this comment - didn't do any work.
-     * 
-     * @param strId     identifier string of the DTL
      *
-     * @author  Christopher K. Allen
-     * @since   May 3, 2011
+     * @param strId identifier string of the DTL
+     *
+     * @author Christopher K. Allen
+     * @since May 3, 2011
      */
-    public ReBuncher( final String strId ) {
-        this( strId, null );
+    public ReBuncher(final String strId) {
+        this(strId, null);
     }
-    
-    
-    
+
     /*
      *  Attributes
      */

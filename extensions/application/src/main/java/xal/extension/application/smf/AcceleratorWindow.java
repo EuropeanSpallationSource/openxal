@@ -3,30 +3,33 @@
  *
  * Created on May 20, 2003, 12:37 PM
  */
-
 package xal.extension.application.smf;
 
 import xal.extension.application.*;
 
 /**
- * AcceleratorWindow is the subclass of XalWindow that is specific to 
+ * AcceleratorWindow is the subclass of XalWindow that is specific to
  * accelerator based applications.
  *
- * @author  tap
+ * @author tap
  */
 public abstract class AcceleratorWindow extends XalWindow {
-	/** serial version ID required for Serializable */
-	static final long serialVersionUID = 1L;
 
+    /**
+     * serial version ID required for Serializable
+     */
+    static final long serialVersionUID = 1L;
 
-    /** Creates a new instance of AcceleratorWindow */
+    /**
+     * Creates a new instance of AcceleratorWindow
+     */
     public AcceleratorWindow(XalDocument aDocument) {
         super(aDocument);
     }
-    
-    
+
     /**
      * Subclasses should override this method to provide a custom Commander.
+     *
      * @return The commander with support for Accelerator based applications.
      */
     public Commander makeCommander() {

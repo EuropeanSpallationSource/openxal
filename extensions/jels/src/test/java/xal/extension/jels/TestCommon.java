@@ -35,7 +35,8 @@ import xal.tools.beam.Twiss;
 import xal.tools.xml.XmlDataAdaptor;
 
 public abstract class TestCommon {
-    private static final Logger LOGGER = Logger.getLogger(TestCommon.class.getName());    
+
+    private static final Logger LOGGER = Logger.getLogger(TestCommon.class.getName());
 
     protected static double SpeciesCharge = 1;
     protected Probe probe;

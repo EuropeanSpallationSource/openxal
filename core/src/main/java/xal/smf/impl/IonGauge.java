@@ -3,18 +3,18 @@ package xal.smf.impl;
 import xal.smf.impl.qualify.*;
 import xal.ca.*;
 
-/** 
- * The IonGauge Class element. This class contains
- * the Ion Gauge implementation.
- * 
- * @author  J. Galambos
- * 
+/**
+ * The IonGauge Class element. This class contains the Ion Gauge implementation.
+ *
+ * @author J. Galambos
+ *
  */
+public class IonGauge extends Vacuum {
 
-public class IonGauge extends Vacuum  {
-	/** standard type for nodes of this class */
-	public static final String TYPE   = "IG";
-
+    /**
+     * standard type for nodes of this class
+     */
+    public static final String TYPE = "IG";
 
     // static initialization
     static {
@@ -26,23 +26,28 @@ public class IonGauge extends Vacuum  {
      * Register type for qualification
      */
     private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( IonGauge.class, TYPE );
+        ElementTypeManager.defaultManager().registerTypes(IonGauge.class, TYPE);
     }
 
+    /**
+     * Override to provide type signature
+     */
+    @Override
+    public String getType() {
+        return TYPE;
+    }
 
-    /** Override to provide type signature */
-        @Override
-    public String getType()   { return TYPE; }
+    /**
+     * Constructor
+     */
+    public IonGauge(final String strId, final ChannelFactory channelFactory) {
+        super(strId, channelFactory);
+    }
 
-
-	/** Constructor */
-	public IonGauge( final String strId, final ChannelFactory channelFactory )     {
-		super( strId, channelFactory );
-	}
-
-
-	/** Constructor */
-    public IonGauge( final String strId )     {
-        this( strId, null );
+    /**
+     * Constructor
+     */
+    public IonGauge(final String strId) {
+        this(strId, null);
     }
 }

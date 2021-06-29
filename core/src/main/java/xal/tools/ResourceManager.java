@@ -469,23 +469,32 @@ class PackagePartition {
 
     /**
      * prefix to the package
+     *
+     * e.g. xal
      */
-    public final String packagePrefix;		// e.g. xal
+    public final String packagePrefix;
 
     /**
      * component type
+     *
+     * e.g. app, extension, plugin, service
      */
-    public final String componentType;		// e.g. app, extension, plugin, service
+    public final String componentType;
 
     /**
      * name of the component
      */
-    public final String componentName;		// e.g. application, widgets, pvlogger, scan1d, launcher
+    /**
+     * e.g. application, widgets, pvlogger, scan1d, launcher
+     */
+    public final String componentName;
 
     /**
      * package suffix
+     *
+     * e.g. smf in xal.extension.application.smf
      */
-    public final String packageSuffix;		// e.g. smf in xal.extension.application.smf
+    public final String packageSuffix;
 
     /**
      * Constructor

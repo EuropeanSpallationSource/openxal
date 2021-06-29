@@ -12,8 +12,9 @@ import java.util.prefs.AbstractPreferences;
 import java.util.prefs.BackingStoreException;
 
 public class Preferences extends AbstractPreferences {
+
     private static final Logger LOGGER = Logger.getLogger(Preferences.class.getName());
-    
+
     protected java.util.prefs.Preferences userPrefs;
     protected Properties sysPrefs;
     protected Set<String> usrKeys;
@@ -25,7 +26,9 @@ public class Preferences extends AbstractPreferences {
 
     private static Preferences parentPrefs(java.util.prefs.Preferences userPrefs) {
         java.util.prefs.Preferences parentPrefs = userPrefs.parent();
-        if (parentPrefs == null) return null;
+        if (parentPrefs == null) {
+            return null;
+        }
         return new Preferences(parentPrefs, parentPrefs.name());
     }
 
@@ -49,28 +52,34 @@ public class Preferences extends AbstractPreferences {
         String keys[];
         try {
             keys = userPrefs.keys();
-            for (String userKey : keys)
-                if (key.equals(userKey)) return true;
+            for (String userKey : keys) {
+                if (key.equals(userKey)) {
+                    return true;
+                }
+            }
         } catch (BackingStoreException e) {
         }
         return false;
     }
 
     protected String fullName() {
-        if ("".equals(name())) return "xal";
-        Preferences parent = (Preferences)parent();
+        if ("".equals(name())) {
+            return "xal";
+        }
+        Preferences parent = (Preferences) parent();
         return parent == null || "".equals(parent.name()) ? name() : parent.fullName() + "." + name();
     }
 
-    protected Properties getSysPrefs()
-    {
+    protected Properties getSysPrefs() {
         if (sysPrefs == null) {
             String confDir = System.getenv("OPENXAL_CONFIG_DIR");
-            if (confDir == null) confDir = "/etc/openxal";
+            if (confDir == null) {
+                confDir = "/etc/openxal";
+            }
             File confFile = new File(confDir + "/" + fullName() + ".prefs");
-            LOGGER.log( Level.CONFIG, String.format("sysPrefs: %s", confFile.toString()) );
+            LOGGER.log(Level.CONFIG, String.format("sysPrefs: %s", confFile.toString()));
             if (confFile.exists()) {
-                LOGGER.log( Level.INFO, "Configuration file found, loading..");
+                LOGGER.log(Level.INFO, "Configuration file found, loading..");
                 sysPrefs = new Properties();
                 try {
                     sysPrefs.load(new FileReader(confFile));
@@ -84,7 +93,9 @@ public class Preferences extends AbstractPreferences {
 
     @Override
     protected String getSpi(String key) {
-        if (usrContains(key) || !getSysPrefs().containsKey(key)) return userPrefs.get(key, null);
+        if (usrContains(key) || !getSysPrefs().containsKey(key)) {
+            return userPrefs.get(key, null);
+        }
         return getSysPrefs().getProperty(key);
     }
 
@@ -115,8 +126,7 @@ public class Preferences extends AbstractPreferences {
         userPrefs.sync();
     }
 
-    public static java.util.prefs.Preferences nodeForPackage(Class<?> c)
-    {
+    public static java.util.prefs.Preferences nodeForPackage(Class<?> c) {
         java.util.prefs.Preferences userPrefs = Preferences.userNodeForPackage(c);
         return new Preferences(userPrefs, userPrefs.name());
     }

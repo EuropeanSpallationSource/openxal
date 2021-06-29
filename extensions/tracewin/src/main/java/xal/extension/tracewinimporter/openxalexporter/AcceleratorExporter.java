@@ -151,24 +151,24 @@ public class AcceleratorExporter {
 
         // Field Maps - get a list of unique field maps.
         List<AcceleratorNode> fieldMapNodes = acc.getAllNodesOfType("RFM");
-        Map<String,FieldMap> fieldMaps = new HashMap<>();
+        Map<String, FieldMap> fieldMaps = new HashMap<>();
         for (AcceleratorNode fieldMapNode : fieldMapNodes) {
             RfFieldMap fieldMap = (RfFieldMap) fieldMapNode;
-            if(!fieldMaps.containsValue(fieldMap.getFieldMap())){
-                fieldMaps.put(fieldMap.getFieldMapFile(),fieldMap.getFieldMap());
+            if (!fieldMaps.containsValue(fieldMap.getFieldMap())) {
+                fieldMaps.put(fieldMap.getFieldMapFile(), fieldMap.getFieldMap());
             }
         }
         // Solenoid Field Maps
         fieldMapNodes = acc.getAllNodesOfType("MFM");
         for (AcceleratorNode fieldMapNode : fieldMapNodes) {
             MagFieldMap fieldMap = (MagFieldMap) fieldMapNode;
-            if(!fieldMaps.containsValue(fieldMap.getFieldMap())){
-                fieldMaps.put(fieldMap.getFieldMapFile(),fieldMap.getFieldMap());
+            if (!fieldMaps.containsValue(fieldMap.getFieldMap())) {
+                fieldMaps.put(fieldMap.getFieldMapFile(), fieldMap.getFieldMap());
             }
         }
-        
+
         // Export each field map only once.
-        for (String fieldMapFile: fieldMaps.keySet()){
+        for (String fieldMapFile : fieldMaps.keySet()) {
             fieldMaps.get(fieldMapFile).saveFieldMap(dir.toURI().toURL().toString(), fieldMapFile);
         }
     }

@@ -19,7 +19,8 @@ public final class AcceleratorSector extends AcceleratorSeq {
     /**
      * List of legal predecessors (AcceleratorSectors) to this AcceleratorSector
      */
-    private LinkedList<AcceleratorSector> lstPred;		// TODO: doesn't look like this ever gets initialized or populated
+    //TODO: doesn't look like this ever gets initialized or populated
+    private LinkedList<AcceleratorSector> lstPred;
 
     /**
      * Charge of beam in this sequence (+-1)

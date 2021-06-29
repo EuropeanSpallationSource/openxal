@@ -68,17 +68,17 @@
                 <channel handle="I" settable="false" signal="ISrc-010:PwrC-CoilPS-03:CurR" valid="true" />
             </channelsuite>
         </node>
-      <node id="ISrc-010:PBI-BCM-001" len="0.0" pos="0.0" s="0.0" type="BCM" status="false">
-          <channelsuite>
-              <channel handle="DisplayLength" signal="ISrc-010:PBI-BCM:CURR:WIDTH" settable="false" valid="true" />
-              <channel handle="currentAvg" signal="ISrc-010:PBI-BCM:CURR:AVG" settable="false" valid="true" />
-              <channel handle="currentMax" signal="ISrc-010:PBI-BCM:CURR:MAX" settable="false" valid="true" />
-              <channel handle="currentArray" signal="ISrc-010:PBI-BCM-001:AI4-ArrayData" settable="false" valid="true" />
-              <channel handle="currentArrayCompressed" signal="ISrc-010:PBI-BCM-001:AI4-Compressed" settable="false" valid="true" />
-              <channel handle="Particles" signal="ISrc-010:PBI-BCM:CURR:INTEGRAL" settable="false" valid="true" />
-              <channel handle="tDelay" signal="ISrc-010:PBI-BCM:CURR:tAvgDelay" settable="false" valid="true" />
-          </channelsuite>
-      </node>
+        <node id="ISrc-010:PBI-BCM-001" len="0.0" pos="0.0" s="0.0" type="BCM" status="false">
+            <channelsuite>
+                <channel handle="DisplayLength" signal="ISrc-010:PBI-BCM:CURR:WIDTH" settable="false" valid="true" />
+                <channel handle="currentAvg" signal="ISrc-010:PBI-BCM:CURR:AVG" settable="false" valid="true" />
+                <channel handle="currentMax" signal="ISrc-010:PBI-BCM:CURR:MAX" settable="false" valid="true" />
+                <channel handle="currentArray" signal="ISrc-010:PBI-BCM-001:AI4-ArrayData" settable="false" valid="true" />
+                <channel handle="currentArrayCompressed" signal="ISrc-010:PBI-BCM-001:AI4-Compressed" settable="false" valid="true" />
+                <channel handle="Particles" signal="ISrc-010:PBI-BCM:CURR:INTEGRAL" settable="false" valid="true" />
+                <channel handle="tDelay" signal="ISrc-010:PBI-BCM:CURR:tAvgDelay" settable="false" valid="true" />
+            </channelsuite>
+        </node>
         <node id="END-ISRC" len="0.0" pos="0.0" type="marker" />
     </sequence>
     <sequence id="LEBT" len="2.505899999999999" pos="0.0">

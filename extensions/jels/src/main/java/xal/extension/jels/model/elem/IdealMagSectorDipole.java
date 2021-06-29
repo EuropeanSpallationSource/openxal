@@ -67,7 +67,10 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
     /**
      * Tag for parameters in the XML configuration file
      */
-    public static final String PATH_LENGTH = "PathLength";  // all thick elements have length - CKA
+    /**
+     * all thick elements have length - CKA
+     */
+    public static final String PATH_LENGTH = "PathLength";
 
     /**
      * Tag for parameters in the XML configuration file
@@ -144,6 +147,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * Default constructor - creates a new uninitialized instance of
      * IdealMagSectorDipole. This is the constructor called in automatic lattice
      * generation. Thus, all element properties are set following construction.
+     *
      * @param strId
      */
     public IdealMagSectorDipole(String strId) {
@@ -220,6 +224,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
 
     /**
      * quad K1 component defined in SAD (=normal k1 * L)
+     *
      * @param dbl
      */
     public void setQuadComponent(double dbl) {
@@ -472,10 +477,10 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
 
             matPhi.setElem(2, 5, Math.pow(gamma, 2) * h * (1 - Math.cos(kx * Deltas)) / Math.pow(kx, 2));
             matPhi.setElem(3, 5, Math.pow(gamma, 2) * h * Math.sin(kx * Deltas) / kx);
-        }      
-        
+        }
+
         matPhi.setElem(6, 6, 1);
-        
+
         return new PhaseMap(matPhi);
     }
 

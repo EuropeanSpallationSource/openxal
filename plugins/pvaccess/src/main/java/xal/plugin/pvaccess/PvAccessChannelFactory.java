@@ -19,6 +19,7 @@ public class PvAccessChannelFactory extends ChannelFactory {
 
     /**
      * {@inheritDoc}
+     *
      * @deprecated
      */
     @Deprecated
@@ -49,6 +50,7 @@ public class PvAccessChannelFactory extends ChannelFactory {
 
     /**
      * {@inheritDoc}
+     *
      * @deprecated
      */
     @Deprecated

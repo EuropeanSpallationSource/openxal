@@ -7,26 +7,26 @@
  * Oak Ridge National Laboratory
  * Oak Ridge, TN 37830
  */
-  
- package xal.extension.solver.algorithm;
+package xal.extension.solver.algorithm;
 
- /**
+/**
  * The interface implemented by listeners of search algorithm events.
  *
- * @author  ky6
+ * @author ky6
  */
- public interface SearchAlgorithmListener {
-	 
-	 /**
-	 * Send a message that an algorithm is available.
-	 * @param source The source of the available algorithm.
-	 */
-	 public void algorithmAvailable( SearchAlgorithm source );
-	 
-	 
-	 /**
-	 * Send a message that an algorithm is not available.
-	 * @param source The source of the available algorithm.
-	 */
-	 public void algorithmUnavailable( SearchAlgorithm source );
- }
+public interface SearchAlgorithmListener {
+
+    /**
+     * Send a message that an algorithm is available.
+     *
+     * @param source The source of the available algorithm.
+     */
+    public void algorithmAvailable(SearchAlgorithm source);
+
+    /**
+     * Send a message that an algorithm is not available.
+     *
+     * @param source The source of the available algorithm.
+     */
+    public void algorithmUnavailable(SearchAlgorithm source);
+}

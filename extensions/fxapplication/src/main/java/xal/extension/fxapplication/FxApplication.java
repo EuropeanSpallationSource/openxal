@@ -80,6 +80,7 @@ import xal.tools.xml.XmlDataAdaptor.ParseException;
  * @author Yngve Levinsen <yngve.levinsen@ess.eu>
  */
 public abstract class FxApplication extends Application {
+
     private static final Logger LOGGER = Logger.getLogger(FxApplication.class.getName());
 
     protected String MAIN_SCENE = "/fxml/Scene.fxml";
@@ -108,7 +109,10 @@ public abstract class FxApplication extends Application {
 
     protected MenuBar MENU_BAR;
 
-    private static Stage stage; // **Declare static Stage**
+    /**
+     * **Declare static Stage**
+     */
+    private static Stage stage;
 
     /**
      * Application constructor.

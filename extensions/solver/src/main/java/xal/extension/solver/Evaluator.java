@@ -12,15 +12,14 @@ package xal.extension.solver;
 /**
  * Evaluator is an interface to a custom evaluator for a specific problem.
  *
- * @author   ky6
+ * @author ky6
  */
 public interface Evaluator {
 
-	/**
-	 * Score the trial.
-	 *
-	 * @param trial  The trial to evaluate.
-	 */
-	public void evaluate( Trial trial );
+    /**
+     * Score the trial.
+     *
+     * @param trial The trial to evaluate.
+     */
+    public void evaluate(Trial trial);
 }
-

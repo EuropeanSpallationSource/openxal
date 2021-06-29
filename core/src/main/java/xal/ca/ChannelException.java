@@ -5,7 +5,6 @@ package xal.ca;
  *
  * Created on October 19, 2001, 11:17 AM
  */
-
 /**
  * Base exception for channel operations
  *

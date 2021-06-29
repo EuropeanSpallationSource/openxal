@@ -6,175 +6,172 @@
 package xal.tools.statistics;
 
 /**
- * UnivariateStatistics calculates statistics of a series of measurements. UnivariateStatistics
- * is immutable. Use MutableUnivariateStatistics if you need to update the statistics with
- * measurements. Only simple statistics are generated (mean and standard deviation).
+ * UnivariateStatistics calculates statistics of a series of measurements.
+ * UnivariateStatistics is immutable. Use MutableUnivariateStatistics if you
+ * need to update the statistics with measurements. Only simple statistics are
+ * generated (mean and standard deviation).
  *
- * @author   tap
+ * @author tap
  */
 public class UnivariateStatistics {
-	/** the number of samples */
-	protected int population;
-	/** the mean and mean square of the samples */
-	protected double mean;
-        protected double meanSquare;
 
-	/** Constructor with no samples. */
-	public UnivariateStatistics() {
-		this( 0, 0, 0 );
-	}
+    /**
+     * the number of samples
+     */
+    protected int population;
+    /**
+     * the mean and mean square of the samples
+     */
+    protected double mean;
+    protected double meanSquare;
 
+    /**
+     * Constructor with no samples.
+     */
+    public UnivariateStatistics() {
+        this(0, 0, 0);
+    }
 
-	/**
-	 * Copy constructor
-	 *
-	 * @param stats  the statistics to copy
-	 */
-	public UnivariateStatistics( final UnivariateStatistics stats ) {
-		this(stats.population, stats.mean, stats.meanSquare );
-	}
+    /**
+     * Copy constructor
+     *
+     * @param stats the statistics to copy
+     */
+    public UnivariateStatistics(final UnivariateStatistics stats) {
+        this(stats.population, stats.mean, stats.meanSquare);
+    }
 
+    /**
+     * Constructor which scales the samples from an existing set of statistics.
+     *
+     * @param stats the statistics against which to scale
+     * @param scale factor which is used to scale the copied statistics
+     */
+    public UnivariateStatistics(final UnivariateStatistics stats, final double scale) {
+        this(stats.population, scale * stats.mean, scale * scale * stats.meanSquare);
+    }
 
-	/**
-	 * Constructor which scales the samples from an existing set of statistics.
-	 *
-	 * @param stats  the statistics against which to scale
-	 * @param scale  factor which is used to scale the copied statistics
-	 */
-	public UnivariateStatistics( final UnivariateStatistics stats, final double scale ) {
-		this(stats.population, scale * stats.mean, scale * scale * stats.meanSquare );
-	}
+    /**
+     * Primary Constructor with a starting set of statistics.
+     *
+     * @param size the number of samples
+     * @param average the mean
+     * @param averageSquare the mean square of the samples
+     */
+    public UnivariateStatistics(final int size, final double average, final double averageSquare) {
+        population = size;
+        mean = average;
+        meanSquare = averageSquare;
+    }
 
+    /**
+     * Get the population of the samples (i.e. the number of samples)
+     *
+     * @return the number of samples
+     */
+    public int population() {
+        return population;
+    }
 
-	/**
-	 * Primary Constructor with a starting set of statistics.
-	 *
-	 * @param size           the number of samples
-	 * @param average        the mean
-	 * @param averageSquare  the mean square of the samples
-	 */
-	public UnivariateStatistics( final int size, final double average, final double averageSquare ) {
-		population = size;
-		mean = average;
-		meanSquare = averageSquare;
-	}
+    /**
+     * Get the mean of the samples.
+     *
+     * @return the mean of the samples
+     */
+    public double mean() {
+        return mean;
+    }
 
+    /**
+     * Get the mean square of the samples.
+     *
+     * @return the mean of the samples
+     */
+    public double meanSquare() {
+        return meanSquare;
+    }
 
-	/**
-	 * Get the population of the samples (i.e. the number of samples)
-	 * @return   the number of samples
-	 */
-	public int population() {
-		return population;
-	}
+    /**
+     * Get the standard deviation of the samples.
+     *
+     * @return the standard deviation of the samples
+     */
+    public double standardDeviation() {
+        return Math.sqrt(variance());
+    }
 
+    /**
+     * Get the variance of the samples.
+     *
+     * @return the variance of the samples
+     */
+    public double variance() {
+        return meanSquare - mean * mean;
+    }
 
-	/**
-	 * Get the mean of the samples.
-	 * @return   the mean of the samples
-	 */
-	public double mean() {
-		return mean;
-	}
-	
-	
-	/**
-	 * Get the mean square of the samples.
-	 * @return   the mean of the samples
-	 */
-	public double meanSquare() {
-		return meanSquare;
-	}
+    /**
+     * Get the sample standard deviation of the measurements (implies a random
+     * subset of all data).
+     *
+     * @return the sample standard deviation
+     */
+    public double sampleStandardDeviation() {
+        return Math.sqrt(sampleVariance());
+    }
 
+    /**
+     * Get the sample variance of the measurements (implies a random subset of
+     * all data).
+     *
+     * @return the sample variance of the measurements
+     */
+    public double sampleVariance() {
+        double sampleVariance = 0;
+        try {
+            final double scale = ((double) population) / (population - 1);
+            sampleVariance = scale * variance();
+        } catch (ArithmeticException excption) {
+            sampleVariance = Double.POSITIVE_INFINITY;
+        }
 
-	/**
-	 * Get the standard deviation of the samples.
-	 *
-	 * @return   the standard deviation of the samples
-	 */
-	public double standardDeviation() {
-		return Math.sqrt( variance() );
-	}
+        return sampleVariance;
+    }
 
+    /**
+     * Get the variance of the mean from the actual value.
+     *
+     * @return the variance of the mean from the actual value
+     */
+    public double varianceOfMean() {
+        return variance() / population;
+    }
 
-	/**
-	 * Get the variance of the samples.
-	 *
-	 * @return   the variance of the samples
-	 */
-	public double variance() {
-		return meanSquare - mean * mean;
-	}
+    /**
+     * Get the standard deviation of the mean from the actual value.
+     *
+     * @return the standard deviation of the mean from the actual value
+     */
+    public double standardDeviationOfMean() {
+        return Math.sqrt(varianceOfMean());
+    }
 
+    /**
+     * Get the variance of the mean from the actual value assuming the
+     * supporting data is a random subset of all the data.
+     *
+     * @return the sample variance of the mean
+     */
+    public double sampleVarianceOfMean() {
+        return sampleVariance() / population;
+    }
 
-	/**
-	 *  Get the sample standard deviation of the measurements (implies a random subset of
-	 *  all data).
-	 *
-	 * @return   the sample standard deviation
-	 */
-	public double sampleStandardDeviation() {
-		return Math.sqrt( sampleVariance() );
-	}
-
-
-	/**
-	 *  Get the sample variance of the measurements (implies a random subset of all data).
-	 *
-	 * @return   the sample variance of the measurements
-	 */
-	public double sampleVariance() {
-		double sampleVariance = 0;
-		try {
-			final double scale = ( (double)population ) / ( population - 1 );
-			sampleVariance = scale * variance();
-		}
-		catch ( ArithmeticException excption ) {
-			sampleVariance = Double.POSITIVE_INFINITY;
-		}
-
-		return sampleVariance;
-	}
-
-
-	/**
-	 * Get the variance of the mean from the actual value.
-	 *
-	 * @return   the variance of the mean from the actual value
-	 */
-	public double varianceOfMean() {
-		return variance() / population;
-	}
-
-
-	/**
-	 * Get the standard deviation of the mean from the actual value.
-	 *
-	 * @return   the standard deviation of the mean from the actual value
-	 */
-	public double standardDeviationOfMean() {
-		return Math.sqrt( varianceOfMean() );
-	}
-
-
-	/**
-	 *  Get the variance of the mean from the actual value assuming the supporting
-	 *  data is a random subset of all the data.
-	 *
-	 * @return   the sample variance of the mean
-	 */
-	public double sampleVarianceOfMean() {
-		return sampleVariance() / population;
-	}
-
-
-	/**
-	 *  Get the standard deviation of the mean from the actual value assuming the
-	 *  supporting data is a random subset of all the data.
-	 *
-	 * @return   the sample standard deviation of the mean
-	 */
-	public double sampleStandardDeviationOfMean() {
-		return Math.sqrt( sampleVarianceOfMean() );
-	}
+    /**
+     * Get the standard deviation of the mean from the actual value assuming the
+     * supporting data is a random subset of all the data.
+     *
+     * @return the sample standard deviation of the mean
+     */
+    public double sampleStandardDeviationOfMean() {
+        return Math.sqrt(sampleVarianceOfMean());
+    }
 }

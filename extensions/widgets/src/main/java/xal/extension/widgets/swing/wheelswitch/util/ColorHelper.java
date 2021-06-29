@@ -8,10 +8,9 @@ import java.awt.Color;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
-
 /**
- * Helper class that provides simple access to most often
- * used Color UI resources
+ * Helper class that provides simple access to most often used Color UI
+ * resources
  *
  * @author <a href="mailto:jernej.kamenik@cosylab.com">Jernej Kamenik</a>
  * @version $id$
@@ -19,19 +18,20 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
  * @see javax.swing.plaf.metal.MetalLookAndFeel
  */
 public final class ColorHelper {
-    public static final String[] COLOR_NAMES = new String[] {
-            "Alarm", "AlarmOutline", "Control", "ControlDarkShadow",
-            "ControlHighlight", "ControlShadow", "ControlText", "CosyControl",
-            "CosyControlDarkShadow", "CosyControlHighlight", "CosyControlShadow",
-            "CosyControlText", "CosyErrorText", "CosyInputBackground",
-            "CosyOverlay", "Error", "EmergencyOutline", "Emergency", "Focus",
-            "Hyperlink", "Text", "TextHighlight", "TimeOut", "Warning",
-            "WarningOutline", "WindowBackground"
-        };
-    public static final String[] JAVA_COLOR_NAMES = new String[] {
-            "BLACK", "BLUE", "CYAN", "DARK_GRAY", "GRAY", "GREEN", "LIGHT_GRAY",
-            "MAGENTA", "ORANGE", "PINK", "RED", "WHITE", "YELLOW"
-        };
+
+    public static final String[] COLOR_NAMES = new String[]{
+        "Alarm", "AlarmOutline", "Control", "ControlDarkShadow",
+        "ControlHighlight", "ControlShadow", "ControlText", "CosyControl",
+        "CosyControlDarkShadow", "CosyControlHighlight", "CosyControlShadow",
+        "CosyControlText", "CosyErrorText", "CosyInputBackground",
+        "CosyOverlay", "Error", "EmergencyOutline", "Emergency", "Focus",
+        "Hyperlink", "Text", "TextHighlight", "TimeOut", "Warning",
+        "WarningOutline", "WindowBackground"
+    };
+    public static final String[] JAVA_COLOR_NAMES = new String[]{
+        "BLACK", "BLUE", "CYAN", "DARK_GRAY", "GRAY", "GREEN", "LIGHT_GRAY",
+        "MAGENTA", "ORANGE", "PINK", "RED", "WHITE", "YELLOW"
+    };
     private static final Color COSY_CONTROL = new Color(206, 206, 227);
     private static final Color COSY_CONTROL_SHADOW = new Color(126, 126, 177);
     private static final Color COSY_CONTROL_HIGHLIGHT = new Color(246, 246, 255);
@@ -47,10 +47,9 @@ public final class ColorHelper {
     private static final Color TIMEOUT_OUTLINE = new Color(0, 4, 170);
 
     /**
-     * Returns the default control Color, which should be
-    * used to render the background of controls used in
-    * applications
-    *
+     * Returns the default control Color, which should be used to render the
+     * background of controls used in applications
+     *
      * @return Control color
      */
     public static Color getControl() {
@@ -183,19 +182,19 @@ public final class ColorHelper {
         return MetalLookAndFeel.getTextHighlightColor();
     }
 
-	/**
-	 * @return
-	 */
-	public static Color getTextHighlightText() {
-		Color ret = UIManager.getColor("textHighlightText");
+    /**
+     * @return
+     */
+    public static Color getTextHighlightText() {
+        Color ret = UIManager.getColor("textHighlightText");
 
-		if (ret != null) {
-			return ret;
-		}
+        if (ret != null) {
+            return ret;
+        }
 
-		return MetalLookAndFeel.getUserTextColor();
-	}    
-    
+        return MetalLookAndFeel.getUserTextColor();
+    }
+
     /**
      * Returns the default focus Color
      *

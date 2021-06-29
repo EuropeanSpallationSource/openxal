@@ -29,8 +29,10 @@ public class TTFComparison {
      */
     /**
      * The seq id.
+     *
+     * To choose a different sequence or combosequence, change the seqID string
      */
-    private static String seqID = "MEBT";  // To choose a different sequence or combosequence, change the seqID string
+    private static String seqID = "MEBT";
 
     /**
      * The ostr typeout.

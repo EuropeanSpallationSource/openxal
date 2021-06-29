@@ -5,17 +5,20 @@ import xal.ca.ChannelSystem;
 
 /**
  * JcaServerChannelSystem is the same as JcaSystem
- * 
+ *
  * @version 0.1 13 Jul 2015
  * @author Blaz Kranjc <blaz.kranjc@cosylab.com>
  */
 class JcaServerChannelSystem extends ChannelSystem {
 
-    /** Java Channel Access Context */
+    /**
+     * Java Channel Access Context
+     */
     private ServerContext JCA_CONTEXT;
 
- 
-    /** Constructor */
+    /**
+     * Constructor
+     */
     public JcaServerChannelSystem(ServerContext JCA_CONTEXT) {
         this.JCA_CONTEXT = JCA_CONTEXT;
     }

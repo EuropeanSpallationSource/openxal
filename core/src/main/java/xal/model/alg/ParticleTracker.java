@@ -3,9 +3,7 @@
  *
  * Created on September 9, 2002, 11:16 AM
  */
-
 package xal.model.alg;
-
 
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
@@ -20,80 +18,74 @@ import xal.model.IProbe;
 import xal.model.ModelException;
 import xal.model.probe.ParticleProbe;
 
-
-
 /**
  * Algorithm for tracking a single particle, represented by the class
- * <code>ParticleProbe</code> through a XAL modeling element, represented
- * by an object exposing the <code>IComponent</code> interface.
+ * <code>ParticleProbe</code> through a XAL modeling element, represented by an
+ * object exposing the <code>IComponent</code> interface.
  *
- * @author  Christopher K. Allen
+ * @author Christopher K. Allen
  * @author Craig McChesney
  */
-
-
 public class ParticleTracker extends Tracker {
 
     /*
      *  Global Attributes
      */
-
-    /** Label for edit context table containing algorithm parameters - i.e., in "model.params" file */ 
+    /**
+     * Label for edit context table containing algorithm parameters - i.e., in
+     * "model.params" file
+     */
     private static final String STR_LBL_TABLE = "ParticleTracker";
-    
 
-    /** string type identifier for this algorithm */
-    public static final String      TYPE_ID = ParticleTracker.class.getName();
-    
-    /** current version of this algorithm */
-    public static final int         VERSION = 1;
+    /**
+     * string type identifier for this algorithm
+     */
+    public static final String TYPE_ID = ParticleTracker.class.getName();
 
-    /** probe type recognized by this algorithm */
-    public static final Class<ParticleProbe>       CLS_PROBE_TYPE = ParticleProbe.class;
+    /**
+     * current version of this algorithm
+     */
+    public static final int VERSION = 1;
 
+    /**
+     * probe type recognized by this algorithm
+     */
+    public static final Class<ParticleProbe> CLS_PROBE_TYPE = ParticleProbe.class;
 
-    
     /*
      *  Local Attributes
      */
-     
-    
-    
-    
-    /*
+ /*
      * Initialization
      */
-     
-    
-    /** 
-     *  Creates a new instance of ParticleTracker 
+    /**
+     * Creates a new instance of ParticleTracker
      */
-    public ParticleTracker() { 
+    public ParticleTracker() {
         super(TYPE_ID, VERSION, CLS_PROBE_TYPE);
-    } 
-    
+    }
+
     /**
      * Copy constructor for ParticleTracker
      *
-     * @param       sourceTracker   Tracker that is being copied
+     * @param sourceTracker Tracker that is being copied
      */
-    public ParticleTracker( ParticleTracker sourceTracker ) {
-        super( sourceTracker );
+    public ParticleTracker(ParticleTracker sourceTracker) {
+        super(sourceTracker);
     }
-    
+
     /**
      * Create a deep copy of ParticleTracker
      */
     @Override
     public ParticleTracker copy() {
-        return new ParticleTracker( this );
+        return new ParticleTracker(this);
     }
 
 
     /*
      *  Data Queries
-     */    
-    
+     */
 //    /**
 //     * Returns the maximum element subsection length (in meters) that the probe 
 //     * may be advanced before saving particle state.
@@ -101,36 +93,33 @@ public class ParticleTracker extends Tracker {
 //    private double getMaxStepSize() {
 //        return this.dblMaxStep;
 //    }
-    
-
     /*
      * IArchive Interface
      */
-    
     /**
      * Place holder for loading additional parameters from an edit context.
-     *  
+     *
      * @since Oct 26, 2012
-     * @see xal.model.alg.Tracker#load(java.lang.String, xal.tools.data.EditContext)
+     * @see xal.model.alg.Tracker#load(java.lang.String,
+     * xal.tools.data.EditContext)
      */
     @Override
     public void load(String strPrimKeyVal, EditContext ecTableData) throws DataFormatException {
         super.load(strPrimKeyVal, ecTableData);
-        
-        // Get the algorithm class name from the EditContext
-        DataTable     tblAlgorithm = ecTableData.getTable( STR_LBL_TABLE );
-        GenericRecord recTracker = tblAlgorithm.record( Tracker.TBL_PRIM_KEY_NAME,  strPrimKeyVal );
-    
-        if ( recTracker == null ) {
-            recTracker = tblAlgorithm.record( Tracker.TBL_PRIM_KEY_NAME, "default" );  // just use the default record
-        }
-        
-    }
 
+        // Get the algorithm class name from the EditContext
+        DataTable tblAlgorithm = ecTableData.getTable(STR_LBL_TABLE);
+        GenericRecord recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, strPrimKeyVal);
+
+        if (recTracker == null) {
+            recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");  // just use the default record
+        }
+
+    }
 
     /**
      * Place holder for loading additional parameters from a data adaptor.
-     * 
+     *
      * @since Oct 26, 2012
      * @see xal.model.alg.Tracker#load(xal.tools.data.DataAdaptor)
      */
@@ -139,10 +128,9 @@ public class ParticleTracker extends Tracker {
         super.load(daSource);
     }
 
-
     /**
      * Place holder for loading additional parameters from a data adaptor.
-     * 
+     *
      * @since Oct 26, 2012
      * @see xal.model.alg.Tracker#save(xal.tools.data.DataAdaptor)
      */
@@ -151,37 +139,31 @@ public class ParticleTracker extends Tracker {
         super.save(daptArchive);
     }
 
-
-    
-
     /*
      *  Tracker Abstract Protocol
      */
-
-
     /**
      * Propagates the probe through the element.
      *
-     *  @param  iProbe  probe to propagate
-     *  @param  elem    element acting on probe
+     * @param iProbe probe to propagate
+     * @param elem element acting on probe
      *
-     *  @exception  ModelException  invalid probe type or error in advancing probe
+     * @exception ModelException invalid probe type or error in advancing probe
      */
     @Override
     public void doPropagation(IProbe iProbe, IElement elem) throws ModelException {
-        
-        if (!this.validProbe(iProbe))
+
+        if (!this.validProbe(iProbe)) {
             throw new ModelException("ParticleTracker::propagate() - cannot propagate, invalid probe type.");
-        ParticleProbe probe = (ParticleProbe)iProbe;
+        }
+        ParticleProbe probe = (ParticleProbe) iProbe;
 
 //        probe.setCurrentElement(elem.getId());
-      
-        double    dblLen = elem.getLength();
-        
+        double dblLen = elem.getLength();
+
         this.advanceState(probe, elem, dblLen);
         this.advanceProbe(probe, elem, dblLen);
 
-            
 //      // take snapshot at beginning of element
 //      probe.update();
 //        
@@ -193,13 +175,10 @@ public class ParticleTracker extends Tracker {
 //        probe.update();
 //      }
     }
-  
-
 
     /*
      * Support Methods
      */
-  
 //    /**
 //     * Returns the number of subsections to break the specified element into for
 //     * propagation. Always one for a particle tracker.
@@ -214,36 +193,33 @@ public class ParticleTracker extends Tracker {
 //        
 //        return nSecs;
 //    }
-        
-    /** 
-     * Advances the probe state through the element.  
+    /**
+     * Advances the probe state through the element.
      *
-     *  @param  probe       probe being modified
-     *  @param  elem        element acting on probe
-     *  @param  dblLen      length of element to advance
+     * @param probe probe being modified
+     * @param elem element acting on probe
+     * @param dblLen length of element to advance
      *
-     *  @exception ModelException     bad element transfer matrix/corrupt probe state
+     * @exception ModelException bad element transfer matrix/corrupt probe state
      */
     protected void advanceState(ParticleProbe probe, IElement elem, double dblLen)
-    		throws ModelException {
-        
+            throws ModelException {
+
         // Properties of the element
-        PhaseMap  mapPhi = elem.transferMap(probe, dblLen);
-        
+        PhaseMap mapPhi = elem.transferMap(probe, dblLen);
+
         // Advance state vector
-        PhaseVector  z0 = probe.getPhaseCoordinates();
-        PhaseVector  z1 = mapPhi.apply(z0);
-        
+        PhaseVector z0 = probe.getPhaseCoordinates();
+        PhaseVector z1 = mapPhi.apply(z0);
+
         probe.setPhaseCoordinates(z1);
-        
+
         // Advance response matrix
         PhaseMatrix matPhi = mapPhi.getFirstOrder();
         PhaseMatrix R0 = probe.getResponseMatrix();
-        PhaseMatrix R1 = matPhi.times( R0 );
-        
+        PhaseMatrix R1 = matPhi.times(R0);
+
         probe.setResponseMatrix(R1);
     }
-
-
 
 }

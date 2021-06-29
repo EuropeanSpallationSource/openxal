@@ -24,27 +24,29 @@ import xal.ca.GetException;
 import xal.smf.AcceleratorNode;
 import xal.smf.AccessibleProperty;
 import xal.smf.impl.qualify.ElementTypeManager;
+
 /**
  * The implementation of the Repeller Electrode class.
- * 
+ *
  * @author Natalia Milas <natalia.milas@esss.se>
  */
 public class Doppler extends AcceleratorNode {
+
     /*
      *  Constants
      */
     public static final String TYPE = "DPL";
-    
+
     public static final String FRACTION_H_R_HANDLE = "fractionH+";
     public final AccessibleProperty fractionH = new AccessibleProperty("fractionH", FRACTION_H_R_HANDLE);
     private Channel fractionHRC = null;
 
     public static final String FRACTION_H2_R_HANDLE = "fractionH2+";
     public final AccessibleProperty fractionH2 = new AccessibleProperty("fractionH2", FRACTION_H2_R_HANDLE);
-    private Channel fractionH2RC = null; 
+    private Channel fractionH2RC = null;
 
     public static final String FRACTION_H3_R_HANDLE = "fractionH3+";
-    private Channel fractionH3RC = null; 
+    private Channel fractionH3RC = null;
     public final AccessibleProperty fractionH3 = new AccessibleProperty("fractionH3", FRACTION_H3_R_HANDLE);
 
     static {
@@ -60,6 +62,7 @@ public class Doppler extends AcceleratorNode {
 
     /**
      * Override to provide type signature
+     *
      * @return String type
      */
     @Override
@@ -88,16 +91,15 @@ public class Doppler extends AcceleratorNode {
         fractionHRC = lazilyGetAndConnect(FRACTION_H_R_HANDLE, fractionHRC);
         return fractionHRC.getValDbl();
     }
-    
+
     public double getFraction_H2() throws ConnectionException, GetException {
         fractionH2RC = lazilyGetAndConnect(FRACTION_H2_R_HANDLE, fractionH2RC);
         return fractionH2RC.getValDbl();
     }
-    
+
     public double getFraction_H3() throws ConnectionException, GetException {
         fractionH3RC = lazilyGetAndConnect(FRACTION_H_R_HANDLE, fractionH3RC);
         return fractionH3RC.getValDbl();
     }
-  
-   
+
 }

@@ -304,12 +304,12 @@ class SignalSuite {
     /**
      * map of signal entries keyed by handle
      */
-    private final Map<String, SignalEntry> signalMap;        // handle-PV name table
+    private final Map<String, SignalEntry> signalMap;
 
     /**
      * map of transforms keyed by name
      */
-    private final Map<String, ValueTransform> transformMap;     // handle-value transform table
+    private final Map<String, ValueTransform> transformMap;
 
     /**
      * Creates a new instance of SignalSuite
@@ -554,10 +554,22 @@ class SignalSuite {
  */
 class SignalEntry {
 
-    private String signal;			// the PV signal name
-    private boolean settable;		// whether the PV is settable
-    private boolean valid;			// whether the channel is marked valid
-    private String transformKey;   // Name of the transform if any
+    /**
+     * the PV signal name
+     */
+    private String signal;
+    /**
+     * whether the PV is settable
+     */
+    private boolean settable;
+    /**
+     * whether the channel is marked valid
+     */
+    private boolean valid;
+    /**
+     * Name of the transform if any
+     */
+    private String transformKey;
 
     /**
      * Primary Constructor

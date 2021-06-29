@@ -14,20 +14,20 @@ import xal.rbac.RBACSubject;
 
 /**
  * EssRbacLogin extends {@link RBACLogin}.
- * 
+ *
  * Basically just a wrapper for {@link SecurityFacade} to authenticate.
- * 
+ *
  * @version 0.1 27 Jul 2015
  * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
  */
 public class EssRbacLogin extends RBACLogin {
-        private static final Logger LOGGER = Logger.getLogger(EssRbacLogin.class.getName());
 
+    private static final Logger LOGGER = Logger.getLogger(EssRbacLogin.class.getName());
 
-	public EssRbacLogin() {
-		System.setProperty("rbac.useLocalService", "true");
-		SecurityFacade.getDefaultInstance().initLocalServiceUsage();
-	}
+    public EssRbacLogin() {
+        System.setProperty("rbac.useLocalService", "true");
+        SecurityFacade.getDefaultInstance().initLocalServiceUsage();
+    }
 
     @Override
     public String[] getRolesForUser(final String username) throws RBACException {
@@ -64,18 +64,18 @@ public class EssRbacLogin extends RBACLogin {
         });
 
         try {
-        	Token t = SecurityFacade.getDefaultInstance().authenticate();
-        	if (!SecurityFacade.getDefaultInstance().isTokenValid()) {
-        		SecurityFacade.getDefaultInstance().logout();
-        		throw new AccessDeniedException("Token expired.");
-        	}
-        	SecurityFacade.getDefaultInstance().setDefaultSecurityCallback(null);
+            Token t = SecurityFacade.getDefaultInstance().authenticate();
+            if (!SecurityFacade.getDefaultInstance().isTokenValid()) {
+                SecurityFacade.getDefaultInstance().logout();
+                throw new AccessDeniedException("Token expired.");
+            }
+            SecurityFacade.getDefaultInstance().setDefaultSecurityCallback(null);
             return new EssRbacSubject(t);
 
         } catch (SecurityFacadeException e) {
             LOGGER.log(Level.SEVERE, null, e);
             throw new AccessDeniedException("Unable to authenticate.");
-        } catch (AccessDeniedException e){
+        } catch (AccessDeniedException e) {
             throw new RBACException("Error while trying to authenticate.");
         }
     }

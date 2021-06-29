@@ -9,7 +9,6 @@ import java.util.List;
 
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
-
 /**
  * Helper class that provides simple access to Font UI resources
  *
@@ -20,6 +19,7 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
  * @see java.awt.Font
  */
 public final class FontHelper {
+
     private static List<Font> fonts = new ArrayList<Font>();
 
     /**
@@ -53,8 +53,7 @@ public final class FontHelper {
     }
 
     /**
-     * Returns the specified Font with its style changed
-     * to the specified style.
+     * Returns the specified Font with its style changed to the specified style.
      *
      * @return Font
      * @param style
@@ -62,9 +61,9 @@ public final class FontHelper {
      */
     public static Font getFontWithStyle(int style, Font inFont) {
         for (int i = 0; i < fonts.size(); i++) {
-            if (fonts.get(i).getName().equals(inFont.getName()) &&
-                    (fonts.get(i).getSize() == inFont.getSize()) &&
-                    (fonts.get(i).getStyle() == style)) {
+            if (fonts.get(i).getName().equals(inFont.getName())
+                    && (fonts.get(i).getSize() == inFont.getSize())
+                    && (fonts.get(i).getStyle() == style)) {
                 return fonts.get(i);
             }
         }
@@ -75,8 +74,7 @@ public final class FontHelper {
     }
 
     /**
-     * Returns the specified Font with its name changed
-     * to the specified name.
+     * Returns the specified Font with its name changed to the specified name.
      *
      * @return Font
      * @param name
@@ -84,9 +82,9 @@ public final class FontHelper {
      */
     public static Font getFontWithName(String name, Font inFont) {
         for (int i = 0; i < fonts.size(); i++) {
-            if (fonts.get(i).getName().equals(name) &&
-                    (fonts.get(i).getSize() == inFont.getSize()) &&
-                    (fonts.get(i).getStyle() == inFont.getStyle())) {
+            if (fonts.get(i).getName().equals(name)
+                    && (fonts.get(i).getSize() == inFont.getSize())
+                    && (fonts.get(i).getStyle() == inFont.getStyle())) {
                 return fonts.get(i);
             }
         }
@@ -97,8 +95,7 @@ public final class FontHelper {
     }
 
     /**
-     * Returns the specified Font with its size changed
-     * to the specified size.
+     * Returns the specified Font with its size changed to the specified size.
      *
      * @return Font
      * @param size
@@ -106,9 +103,9 @@ public final class FontHelper {
      */
     public static Font getFontWithSize(int size, Font inFont) {
         for (int i = 0; i < fonts.size(); i++) {
-            if (fonts.get(i).getName().equals(inFont.getName()) &&
-                    (fonts.get(i).getSize() == size) &&
-                    (fonts.get(i).getStyle() == inFont.getStyle())) {
+            if (fonts.get(i).getName().equals(inFont.getName())
+                    && (fonts.get(i).getSize() == size)
+                    && (fonts.get(i).getStyle() == inFont.getStyle())) {
                 return fonts.get(i);
             }
         }
@@ -128,9 +125,9 @@ public final class FontHelper {
      */
     public static Font getFont(String name, int style, int size) {
         for (int i = 0; i < fonts.size(); i++) {
-            if (fonts.get(i).getName().equals(name) &&
-                    (fonts.get(i).getSize() == size) &&
-                    (fonts.get(i).getStyle() == style)) {
+            if (fonts.get(i).getName().equals(name)
+                    && (fonts.get(i).getSize() == size)
+                    && (fonts.get(i).getStyle() == style)) {
                 return fonts.get(i);
             }
         }

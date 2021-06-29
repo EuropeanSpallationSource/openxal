@@ -64,7 +64,6 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
 
     /* sets the bucket containing the twiss parameters
      *   - see attr.TwissBucket  */
-
     /**
      *
      * @param buc

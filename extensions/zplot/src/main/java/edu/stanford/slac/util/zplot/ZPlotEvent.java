@@ -9,22 +9,20 @@ import java.util.EventObject;
  * @version %I%, %G%
  * @since
  */
-public class ZPlotEvent extends EventObject{
+public class ZPlotEvent extends EventObject {
 
-	/**
-	 * My Field (please, document me!)
-	 */
-	private static final long serialVersionUID = -7602688628460665326L;
-	
-	
-	public ZPlotEvent(ZPlotPanel zpp){
-		super(zpp);
-	}
-	
-	@Override
-	public ZPlotPanel getSource() {
-		return (ZPlotPanel) super.getSource();
-	}	
-	
+    /**
+     * My Field (please, document me!)
+     */
+    private static final long serialVersionUID = -7602688628460665326L;
+
+    public ZPlotEvent(ZPlotPanel zpp) {
+        super(zpp);
+    }
+
+    @Override
+    public ZPlotPanel getSource() {
+        return (ZPlotPanel) super.getSource();
+    }
 
 }

@@ -29,9 +29,18 @@ public abstract class Monitor {
      */
     public static final int ALARM = 4;
 
-    protected boolean bolMonitoring;  // monitoring flag
-    protected int intMaskEvent;   // event mask for firing monitor    
-    protected Channel xalChan;        // Channel to monitor
+    /**
+     * monitoring flag
+     */
+    protected boolean bolMonitoring;
+    /**
+     * event mask for firing monitor
+     */
+    protected int intMaskEvent;
+    /**
+     * Channel to monitor
+     */
+    protected Channel xalChan;
 
     /**
      * Creates new Monitor

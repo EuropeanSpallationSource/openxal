@@ -9,13 +9,15 @@ import xal.rbac.ExclusiveAccess;
 import xal.rbac.RBACException;
 
 /**
- * EssExclusiveAccess implements {@link se.esss.ics.rbac.access.ExclusiveAccess}.
- * Basically just a wrapper for {@link ExclusiveAccess} and {@link SecurityFacade}.
- *  
+ * EssExclusiveAccess implements
+ * {@link se.esss.ics.rbac.access.ExclusiveAccess}. Basically just a wrapper for
+ * {@link ExclusiveAccess} and {@link SecurityFacade}.
+ *
  * @version 0.1 27 Jul 2015
  * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
  */
 public class EssExclusiveAccess extends ExclusiveAccess {
+
     private static final Logger LOGGER = Logger.getLogger(EssExclusiveAccess.class.getName());
 
     public EssExclusiveAccess(final se.esss.ics.rbac.access.ExclusiveAccess exclusiveAccess) {
@@ -31,7 +33,7 @@ public class EssExclusiveAccess extends ExclusiveAccess {
             throw new AccessDeniedException("User not loged in.");
         } catch (SecurityFacadeException e) {
             LOGGER.log(Level.SEVERE, "Error releasing exclusive access", e);
-            throw new RBACException("Error releasing exclusive access");            
+            throw new RBACException("Error releasing exclusive access");
         }
     }
 

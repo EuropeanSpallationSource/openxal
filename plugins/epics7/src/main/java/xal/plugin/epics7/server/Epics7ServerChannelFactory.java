@@ -91,5 +91,5 @@ public class Epics7ServerChannelFactory extends ChannelFactory {
     @Override
     protected ChannelSystem channelSystem() {
         return channelSystem;
-    }    
+    }
 }

@@ -40,9 +40,8 @@ public class ESSIonSourceCoil extends AcceleratorNode {
     public static final String I_HANDLE = "I";
     private Channel iC = null;
     public static final String I_SET_HANDLE = "I_Set";
-    private Channel iSetC = null;    
+    private Channel iSetC = null;
     public final AccessibleProperty current = new AccessibleProperty("current", I_HANDLE, I_SET_HANDLE);
-
 
     static {
         registerType();
@@ -55,13 +54,12 @@ public class ESSIonSourceCoil extends AcceleratorNode {
     public ESSIonSourceCoil(String strId, ChannelFactory channelFactory) {
         super(strId, channelFactory);
     }
-    
-    
+
     public double getCurrent() throws ConnectionException, GetException {
         iC = lazilyGetAndConnect(I_HANDLE, iC);
         return iC.getValDbl();
     }
-    
+
     public void setCurrent(double dblValue) throws ConnectionException, PutException {
         iSetC = lazilyGetAndConnect(I_SET_HANDLE, iSetC);
         iSetC.putVal(dblValue);

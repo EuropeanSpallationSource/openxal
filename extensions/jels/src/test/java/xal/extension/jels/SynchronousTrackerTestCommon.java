@@ -99,7 +99,6 @@ public class SynchronousTrackerTestCommon extends TestCommon {
         super(data.probe, data.elementMapping);
         this.data = data;
     }
-    
 
     public static SynchronousProbe setupOpenXALProbe(double energy, double frequency) {
         // Synchronous probe and tracker

@@ -7,27 +7,27 @@ import java.awt.geom.Ellipse2D;
 
 public class ToroidWidget extends CartoonWidget {
 
-	private static final int DIAMETER = 2;
+    private static final int DIAMETER = 2;
 
-	private static Shape createShape() {
-		Shape bpm = BPMWidget.SHAPE;
-		Shape hole = new Ellipse2D.Double(-DIAMETER/2, -DIAMETER/2,
-				DIAMETER, DIAMETER);
+    private static Shape createShape() {
+        Shape bpm = BPMWidget.SHAPE;
+        Shape hole = new Ellipse2D.Double(-DIAMETER / 2, -DIAMETER / 2,
+                DIAMETER, DIAMETER);
 
-		Area result = new Area(bpm);
-		result.subtract(new Area(hole));
-		return result;
+        Area result = new Area(bpm);
+        result.subtract(new Area(hole));
+        return result;
 
-	}
+    }
 
-	public static final Shape SHAPE = createShape();
+    public static final Shape SHAPE = createShape();
 
-	public ToroidWidget() {
-		super(Color.CYAN);
-	}
+    public ToroidWidget() {
+        super(Color.CYAN);
+    }
 
-	@Override
-	public Shape getShape(int length) {
-		return SHAPE;
-	}
+    @Override
+    public Shape getShape(int length) {
+        return SHAPE;
+    }
 }

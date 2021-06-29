@@ -16,20 +16,21 @@ import xal.rbac.RBACSubject;
 import xal.rbac.RBACUserInfo;
 
 /**
- * Implementation of {@link RBACSubject}. A wrapper to {@link SecurityFacade} for getting permissions,
- * and log out.
- * 
+ * Implementation of {@link RBACSubject}. A wrapper to {@link SecurityFacade}
+ * for getting permissions, and log out.
+ *
  * @version 0.2 28 Jul 2015
  * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
  */
 public class EssRbacSubject implements RBACSubject {
+
     private static final Logger LOGGER = Logger.getLogger(EssRbacSubject.class.getName());
-    
+
     private Token token;
 
     /**
      * Constructor
-     * 
+     *
      * @param token of the authenticated user.
      */
     EssRbacSubject(Token token) {
@@ -105,13 +106,13 @@ public class EssRbacSubject implements RBACSubject {
             LOGGER.log(Level.SEVERE, null, e);
         }
     }
-    
+
     @Override
     public RBACUserInfo getUserInfo() {
-    	if (token == null) {
-    		return null;
-    	}
-   		return new RBACUserInfo(token.getUsername(), token.getFirstName(), token.getLastName());
+        if (token == null) {
+            return null;
+        }
+        return new RBACUserInfo(token.getUsername(), token.getFirstName(), token.getLastName());
     }
 
 }

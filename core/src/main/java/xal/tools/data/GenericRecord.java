@@ -3,13 +3,11 @@
  *
  * Created on May 10, 2002, 2:20 PM
  */
-
 package xal.tools.data;
 
 import java.util.*;
 import java.util.logging.*;
 import java.lang.reflect.*;
-
 
 /**
  * GenericRecord is the default record class for DataTable. This class can be
@@ -18,208 +16,230 @@ import java.lang.reflect.*;
  * GenericRecord is not thread safe. This is due to the fact that DataTable is
  * not thread safe.
  *
- * @author  tap
+ * @author tap
  */
 public class GenericRecord implements KeyedRecord, DataListener {
-    /** data table to which this record belongs */
+
+    /**
+     * data table to which this record belongs
+     */
     protected final DataTable dataTable;
 
     private static final Logger LOGGER = Logger.getLogger(GenericRecord.class.getName());
 
-    /** table of attributes by attribute ID */
-    protected final Map<String,Object> attributeTable;
+    /**
+     * table of attributes by attribute ID
+     */
+    protected final Map<String, Object> attributeTable;
 
-	
-    /** Creates new GenericRecord */
-    public GenericRecord( final DataTable aTable ) {
+    /**
+     * Creates new GenericRecord
+     */
+    public GenericRecord(final DataTable aTable) {
         dataTable = aTable;
         attributeTable = new HashMap<>();
     }
 
-	
-	/**
-	 * Get the keys used in this record.
-	 * @return The keys used in this record.
-	 */
+    /**
+     * Get the keys used in this record.
+     *
+     * @return The keys used in this record.
+     */
     public Set<String> keys() {
-		synchronized ( attributeTable ) {
-			return attributeTable.keySet();			
-		}
+        synchronized (attributeTable) {
+            return attributeTable.keySet();
+        }
     }
-    
-    
-	/**
-	 * Get the collection of values held in this record.
-	 * @return The collection of values held in this record.
-	 */
+
+    /**
+     * Get the collection of values held in this record.
+     *
+     * @return The collection of values held in this record.
+     */
     public Collection<Object> values() {
-		synchronized ( attributeTable ) {
-			return attributeTable.values();			
-		}
+        synchronized (attributeTable) {
+            return attributeTable.values();
+        }
     }
 
+    /**
+     * Determine whether this record has the specified attribute
+     */
+    public boolean hasAttributeForKey(final String key) {
+        return attributeTable.containsKey(key);
+    }
 
-	/** Determine whether this record has the specified attribute */
-	public boolean hasAttributeForKey( final String key ) {
-		return attributeTable.containsKey( key );
-	}
-    
-    
-	/**
-	 * Get the value associated with the specified key.
-	 * @param key The key for which to get the associated value.
-	 * @return The value as an Object.
-	 */
+    /**
+     * Get the value associated with the specified key.
+     *
+     * @param key The key for which to get the associated value.
+     * @return The value as an Object.
+     */
     @Override
-    public Object valueForKey( final String key ) {
-		synchronized ( attributeTable ) {
-			if (attributeTable.containsKey(key)) return attributeTable.get( key );			
-		}
-		return dataTable.getSchema().attributeTable.get(key).getDefaultValue();		
+    public Object valueForKey(final String key) {
+        synchronized (attributeTable) {
+            if (attributeTable.containsKey(key)) {
+                return attributeTable.get(key);
+            }
+        }
+        return dataTable.getSchema().attributeTable.get(key).getDefaultValue();
     }
-    
-    
-	/**
-	 * Set the value to associate with the specified key.  If the value associated with a primary key is 
-	 * changed we must be careful to force the table to re-index the record.
-	 * @param value The new value to associate with the specified key.
-	 * @param key The key for which to associated the new value.
-	 */
-    public void setValueForKey( final Object value, final String key) {
-		final Object oldValue = valueForKey(key);
-		synchronized ( attributeTable ) {
-			attributeTable.put( key, value );			
-		}
-		if( dataTable != null ) {
-			dataTable.reIndex( this, key, oldValue );
-		}
+
+    /**
+     * Set the value to associate with the specified key. If the value
+     * associated with a primary key is changed we must be careful to force the
+     * table to re-index the record.
+     *
+     * @param value The new value to associate with the specified key.
+     * @param key The key for which to associated the new value.
+     */
+    public void setValueForKey(final Object value, final String key) {
+        final Object oldValue = valueForKey(key);
+        synchronized (attributeTable) {
+            attributeTable.put(key, value);
+        }
+        if (dataTable != null) {
+            dataTable.reIndex(this, key, oldValue);
+        }
     }
-    
-    
-	/**
-	 * Convenience method to get the value cast as a number associated with the specified key.
-	 * @param key The key for which to get the associated value.
-	 * @return The value as an Number.
-	 * @throws java.lang.ClassCastException if the value cannot be cast as a Number. 
-	 */
-    public Number numberForKey( final String key ) {
-        return (Number)valueForKey( key );
+
+    /**
+     * Convenience method to get the value cast as a number associated with the
+     * specified key.
+     *
+     * @param key The key for which to get the associated value.
+     * @return The value as an Number.
+     * @throws java.lang.ClassCastException if the value cannot be cast as a
+     * Number.
+     */
+    public Number numberForKey(final String key) {
+        return (Number) valueForKey(key);
     }
-    
-    
-	/**
-	 * Convenience method to get the value as a boolean associated with the specified key.
-	 * @param key The key for which to get the associated value.
-	 * @return The value as an boolean.
-	 * @throws java.lang.ClassCastException if the value cannot be cast as a Boolean. 
-	 */
-    public boolean booleanValueForKey( final String key ) {
-        final Boolean booleanObject = (Boolean)valueForKey( key );
+
+    /**
+     * Convenience method to get the value as a boolean associated with the
+     * specified key.
+     *
+     * @param key The key for which to get the associated value.
+     * @return The value as an boolean.
+     * @throws java.lang.ClassCastException if the value cannot be cast as a
+     * Boolean.
+     */
+    public boolean booleanValueForKey(final String key) {
+        final Boolean booleanObject = (Boolean) valueForKey(key);
         return booleanObject;
     }
-    
-    
-	/**
-	 * Set the boolean value to associate with the specified key.
-	 * @param value The new boolean value to associate with the specified key.
-	 * @param key The key for which to associated the new value.
-	 */
-    public void setValueForKey( final boolean value, final String key ) {
-        setValueForKey( new Boolean( value ), key );
+
+    /**
+     * Set the boolean value to associate with the specified key.
+     *
+     * @param value The new boolean value to associate with the specified key.
+     * @param key The key for which to associated the new value.
+     */
+    public void setValueForKey(final boolean value, final String key) {
+        setValueForKey(new Boolean(value), key);
     }
-    
-    
-	/**
-	 * Convenience method to get the value as an int associated with the specified key.
-	 * @param key The key for which to get the associated value.
-	 * @return The value as an int.
-	 * @throws java.lang.ClassCastException if the value cannot be cast as a Number. 
-	 */
-    public int intValueForKey( final String key ) {
-        Number number = numberForKey( key );
+
+    /**
+     * Convenience method to get the value as an int associated with the
+     * specified key.
+     *
+     * @param key The key for which to get the associated value.
+     * @return The value as an int.
+     * @throws java.lang.ClassCastException if the value cannot be cast as a
+     * Number.
+     */
+    public int intValueForKey(final String key) {
+        Number number = numberForKey(key);
         return number.intValue();
     }
-    
-    
-	/**
-	 * Set the int value to associate with the specified key.
-	 * @param value The new int value to associate with the specified key.
-	 * @param key The key for which to associated the new value.
-	 */
-    public void setValueForKey( final int value, final String key ) {
-        setValueForKey( Integer.valueOf( value ), key );
+
+    /**
+     * Set the int value to associate with the specified key.
+     *
+     * @param value The new int value to associate with the specified key.
+     * @param key The key for which to associated the new value.
+     */
+    public void setValueForKey(final int value, final String key) {
+        setValueForKey(Integer.valueOf(value), key);
     }
-    
-    
-	/**
-	 * Convenience method to get the value as a long associated with the specified key.
-	 * @param key The key for which to get the associated value.
-	 * @return The value as a long.
-	 * @throws java.lang.ClassCastException if the value cannot be cast as a Number. 
-	 */
-    public long longValueForKey( final String key ) {
-        Number number = numberForKey( key );
+
+    /**
+     * Convenience method to get the value as a long associated with the
+     * specified key.
+     *
+     * @param key The key for which to get the associated value.
+     * @return The value as a long.
+     * @throws java.lang.ClassCastException if the value cannot be cast as a
+     * Number.
+     */
+    public long longValueForKey(final String key) {
+        Number number = numberForKey(key);
         return number.intValue();
     }
-    
-    
-	/**
-	 * Set the long value to associate with the specified key.
-	 * @param value The new long value to associate with the specified key.
-	 * @param key The key for which to associated the new value.
-	 */
-    public void setValueForKey( final long value, final String key ) {
-        setValueForKey( Long.valueOf( value ), key );
+
+    /**
+     * Set the long value to associate with the specified key.
+     *
+     * @param value The new long value to associate with the specified key.
+     * @param key The key for which to associated the new value.
+     */
+    public void setValueForKey(final long value, final String key) {
+        setValueForKey(Long.valueOf(value), key);
     }
-    
-    
-	/**
-	 * Convenience method to get the value as a double associated with the specified key.
-	 * @param key The key for which to get the associated value.
-	 * @return The value as a double.
-	 * @throws java.lang.ClassCastException if the value cannot be cast as a Number. 
-	 */
-    public double doubleValueForKey( final String key ) {
-        Number number = numberForKey( key );
+
+    /**
+     * Convenience method to get the value as a double associated with the
+     * specified key.
+     *
+     * @param key The key for which to get the associated value.
+     * @return The value as a double.
+     * @throws java.lang.ClassCastException if the value cannot be cast as a
+     * Number.
+     */
+    public double doubleValueForKey(final String key) {
+        Number number = numberForKey(key);
         return number.doubleValue();
     }
-    
-    
-	/**
-	 * Set the double value to associate with the specified key.
-	 * @param value The new double value to associate with the specified key.
-	 * @param key The key for which to associated the new value.
-	 */
-    public void setValueForKey( final double value, final String key ) {
-        setValueForKey( new Double( value ), key );
+
+    /**
+     * Set the double value to associate with the specified key.
+     *
+     * @param value The new double value to associate with the specified key.
+     * @param key The key for which to associated the new value.
+     */
+    public void setValueForKey(final double value, final String key) {
+        setValueForKey(new Double(value), key);
     }
-    
-    
-	/**
-	 * Convenience method to get the value as a String associated with the specified key.
-	 * @param key The key for which to get the associated value.
-	 * @return The value as an String.
-	 * @throws java.lang.ClassCastException if the value cannot be cast as a String. 
-	 */
-    public String stringValueForKey( final String key ) {
-        return (String)valueForKey( key );
+
+    /**
+     * Convenience method to get the value as a String associated with the
+     * specified key.
+     *
+     * @param key The key for which to get the associated value.
+     * @return The value as an String.
+     * @throws java.lang.ClassCastException if the value cannot be cast as a
+     * String.
+     */
+    public String stringValueForKey(final String key) {
+        return (String) valueForKey(key);
     }
     // --- end value conversions
-    
-    
-    /** 
-	 * Overrides toString() to show key/value pairs.
-	 * @return The string representation of the record.
-	 */
+
+    /**
+     * Overrides toString() to show key/value pairs.
+     *
+     * @return The string representation of the record.
+     */
     @Override
     public String toString() {
         return attributeTable.toString();
     }
-    
-    
-    /** 
-     * dataLabel() provides the name used to identify the class in an 
-     * external data source.
+
+    /**
+     * dataLabel() provides the name used to identify the class in an external
+     * data source.
+     *
      * @return a tag that identifies the receiver's type
      */
     @Override
@@ -227,110 +247,109 @@ public class GenericRecord implements KeyedRecord, DataListener {
         return "record";
     }
 
-
     /**
      * Update the data based on the information provided by the data provider.
+     *
      * @param adaptor The adaptor from which to update the data
      */
     @Override
-    public void update( final DataAdaptor adaptor ) throws ParseException {
+    public void update(final DataAdaptor adaptor) throws ParseException {
         final Collection<DataAttribute> attributes = dataTable.attributes();
-		for ( final DataAttribute attribute : attributes ) {
+        for (final DataAttribute attribute : attributes) {
             final String key = attribute.name();
             final Class<?> type = attribute.type();
-			
+
             try {
-            	if (adaptor.hasAttribute(key)) {
-            		final String stringValue = adaptor.stringValue( key );
-            		final Object value = valueOfTypeFromString( type, stringValue );
-            		setValueForKey( value, key );
-            	}
-            }
-            catch ( ParseException exception ) {
-                System.out.println("Error during record upate when parsing value for \"" + key + "\" attribute in table, \"" + dataTable.name() + "\"" );
+                if (adaptor.hasAttribute(key)) {
+                    final String stringValue = adaptor.stringValue(key);
+                    final Object value = valueOfTypeFromString(type, stringValue);
+                    setValueForKey(value, key);
+                }
+            } catch (ParseException exception) {
+                System.out.println("Error during record upate when parsing value for \"" + key + "\" attribute in table, \"" + dataTable.name() + "\"");
                 throw exception;
             }
         }
     }
-    
-    
-	/**
-	 * Parses the given string value as appropriate for the specified type and returns the object.  All such types must implement the <code>valueOf</code> method which 
-	 * should complement the object's <code>toString()</code> method.  This method is called internally and is used by the update() method for decoding a data adaptor.
-	 * @param type The class of the Object.
-	 * @param stringValue The Object's string representation.
-	 * @return The Object from the specified string.
-	 */    
-	static Object valueOfTypeFromString( final Class<?> type, final String stringValue ) throws ParseException {
-        if ( type.equals(String.class) )  return stringValue;
-        
-        Object value = null;
-        
-		try {
-			final Method valueOfMethod = type.getMethod( "valueOf", new Class[] {java.lang.String.class} );		// suppress raw type warning since Class array can't be generic
-			// convert the value to the Object of the appropriate class
-			value = valueOfMethod.invoke( null, new Object[] {stringValue} );
-		}
-		catch(NoSuchMethodException exception) {
-			final String message = "The valueOf() method was not found for the attribute of type:" + type;
-			LOGGER.log( Level.SEVERE, message, exception );
-			throw new ParseException(message);
-		}
-		catch(SecurityException exception) {
-			final String message = "The valueOf() method was not accessible for the attribute of type: " + type;
-			LOGGER.log( Level.SEVERE, message, exception );
-			throw new ParseException(message);
-		}
-		catch(IllegalArgumentException exception) {
-			// this should never get thrown since we would have received a NoSuchMethodException earlier
-			final String message = "The valueOf() method does not take the correct single String argument for the type: " + type;
-			System.err.println( message );
-			LOGGER.log( Level.SEVERE, message, exception );
-		}
-		catch(IllegalAccessException exception) {
-			// this should never get thrown since we would have received a NoSuchMethodException earlier
-			final String message = "The valueOf() method does not have public access for the type: " + type;
-			System.err.println( message );
-			LOGGER.log( Level.SEVERE, message, exception );
-		}
-		catch(InvocationTargetException exception) {
-			// this exception gets called if the valueOf() method throws an exception
-			String message = "The valueOf() method for type: " + type + " with value >>" + stringValue + "<< threw an exception: " + exception.getTargetException();
-			LOGGER.log( Level.SEVERE, message, exception );
-			throw new ParseException(message);
-		}
 
-        
+    /**
+     * Parses the given string value as appropriate for the specified type and
+     * returns the object. All such types must implement the
+     * <code>valueOf</code> method which should complement the object's
+     * <code>toString()</code> method. This method is called internally and is
+     * used by the update() method for decoding a data adaptor.
+     *
+     * @param type The class of the Object.
+     * @param stringValue The Object's string representation.
+     * @return The Object from the specified string.
+     */
+    static Object valueOfTypeFromString(final Class<?> type, final String stringValue) throws ParseException {
+        if (type.equals(String.class)) {
+            return stringValue;
+        }
+
+        Object value = null;
+
+        try {
+            final Method valueOfMethod = type.getMethod("valueOf", new Class[]{java.lang.String.class});		// suppress raw type warning since Class array can't be generic
+            // convert the value to the Object of the appropriate class
+            value = valueOfMethod.invoke(null, new Object[]{stringValue});
+        } catch (NoSuchMethodException exception) {
+            final String message = "The valueOf() method was not found for the attribute of type:" + type;
+            LOGGER.log(Level.SEVERE, message, exception);
+            throw new ParseException(message);
+        } catch (SecurityException exception) {
+            final String message = "The valueOf() method was not accessible for the attribute of type: " + type;
+            LOGGER.log(Level.SEVERE, message, exception);
+            throw new ParseException(message);
+        } catch (IllegalArgumentException exception) {
+            // this should never get thrown since we would have received a NoSuchMethodException earlier
+            final String message = "The valueOf() method does not take the correct single String argument for the type: " + type;
+            System.err.println(message);
+            LOGGER.log(Level.SEVERE, message, exception);
+        } catch (IllegalAccessException exception) {
+            // this should never get thrown since we would have received a NoSuchMethodException earlier
+            final String message = "The valueOf() method does not have public access for the type: " + type;
+            System.err.println(message);
+            LOGGER.log(Level.SEVERE, message, exception);
+        } catch (InvocationTargetException exception) {
+            // this exception gets called if the valueOf() method throws an exception
+            String message = "The valueOf() method for type: " + type + " with value >>" + stringValue + "<< threw an exception: " + exception.getTargetException();
+            LOGGER.log(Level.SEVERE, message, exception);
+            throw new ParseException(message);
+        }
+
         return value;
     }
 
-
     /**
      * Write data to the data adaptor for storage.
+     *
      * @param adaptor The adaptor to which the receiver's data is written
      */
     @Override
-    public void write( final DataAdaptor adaptor ) {
+    public void write(final DataAdaptor adaptor) {
         final Set<String> keys = keys();
-		for ( final String key : keys ) {
+        for (final String key : keys) {
             final Object value = valueForKey(key);
-            adaptor.setValue( key, value );
+            adaptor.setValue(key, value);
         }
     }
     // end DataListener methods
-	
-	
-	
-	/**
-	 * A runtime exception thrown while attempting to parse values stored as strings into an object of 
-	 * the appropriate type.
-	 */
-	public static class ParseException extends RuntimeException {
-        /** serialization ID */
+
+    /**
+     * A runtime exception thrown while attempting to parse values stored as
+     * strings into an object of the appropriate type.
+     */
+    public static class ParseException extends RuntimeException {
+
+        /**
+         * serialization ID
+         */
         private static final long serialVersionUID = 1L;
-        
-		public ParseException(String description) {
-			super(description);
-		}
-	}
+
+        public ParseException(String description) {
+            super(description);
+        }
+    }
 }

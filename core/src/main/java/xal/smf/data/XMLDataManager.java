@@ -168,8 +168,8 @@ public class XMLDataManager {
      * Read the timing center from the timing URL.
      *
      * @return a timing center read from the timing URL.
-     * @throws xal.tools.xml.ParseException if the TimingCenter
-     * cannot be generated
+     * @throws xal.tools.xml.ParseException if the TimingCenter cannot be
+     * generated
      */
     public TimingCenter getTimingCenter() throws ParseException {
         return timingManager.getTimingCenter();

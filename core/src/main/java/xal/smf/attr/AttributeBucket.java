@@ -4,243 +4,267 @@ import java.util.Map;
 import java.util.HashMap;
 import xal.tools.data.*;
 
-
-
-/** 
- * The root class in the inheritance hierarchy of orthogonal sets 
- * of element attributes (such as a set of multipole harmonics, 
- * a set of aperture parameters, and others). 
+/**
+ * The root class in the inheritance hierarchy of orthogonal sets of element
+ * attributes (such as a set of multipole harmonics, a set of aperture
+ * parameters, and others).
  *
- *  Derived classes should call registerAttribute() in their constructor on all 
- *  Attribute objects belonging to the attribute bucket.
+ * Derived classes should call registerAttribute() in their constructor on all
+ * Attribute objects belonging to the attribute bucket.
  *
- * @author  Nikolay Malitsky, Christopher K. Allen
+ * @author Nikolay Malitsky, Christopher K. Allen
  */
-
 public abstract class AttributeBucket implements java.io.Serializable, DataListener {
-	/** required for Serializable */
-	private static final long serialVersionUID = 1L;
-	
-    /** map of attributes keyed by value */
-    private Map<String,Attribute> mapAttrs = new HashMap<>();
-    
-    /** map of attribute descriptions keyed by value */
-    private Map<String,String> mapDescriptions = new HashMap<>();
-    
-    
-    /** Derived class must furnish a unique type id */
+
+    /**
+     * required for Serializable
+     */
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * map of attributes keyed by value
+     */
+    private Map<String, Attribute> mapAttrs = new HashMap<>();
+
+    /**
+     * map of attribute descriptions keyed by value
+     */
+    private Map<String, String> mapDescriptions = new HashMap<>();
+
+    /**
+     * Derived class must furnish a unique type id
+     */
     public abstract String getType();
-    
 
     // DataListener interface
-    
-    /** implement DataListener interface */
-        @Override
-    public String dataLabel() { return getType(); }
-    
-    
-    /** implement DataListener interface */
-        @Override
+    /**
+     * implement DataListener interface
+     */
+    @Override
+    public String dataLabel() {
+        return getType();
+    }
+
+    /**
+     * implement DataListener interface
+     */
+    @Override
     public void update(DataAdaptor adaptor) throws NumberFormatException {
         String[] attributeArray = adaptor.attributes();
-        
-        for ( int index = 0 ; index < attributeArray.length ; index++ ) {
+
+        for (int index = 0; index < attributeArray.length; index++) {
             String name = attributeArray[index];
             String stringValue = adaptor.stringValue(name);
             parseAttrValue(name, stringValue);
         }
     }
-    
-    
-    /** implement DataListener interface */
-        @Override
+
+    /**
+     * implement DataListener interface
+     */
+    @Override
     public void write(DataAdaptor adaptor) {
         String[] attributeNames = getAttrNames();
         int numAttributes = attributeNames.length;
-        
-        for ( int index = 0 ; index < numAttributes ; index++ ) {
+
+        for (int index = 0; index < numAttributes; index++) {
             String name = attributeNames[index];
             Attribute attribute = getAttr(name);
-            if ( attribute == null ) {
+            if (attribute == null) {
                 continue;
             }
 
             String stringValue = attribute.stringValue();
-            
-            if ( stringValue.length() > 0 ) {
+
+            if (stringValue.length() > 0) {
                 adaptor.setValue(name, stringValue);
             }
-            
+
         }
     }
-    
-    // end DataListener interface
 
-    
-    
-    
+    // end DataListener interface
     /*
      *  Attribute Query
      */
-    
-    public Attribute   getAttr(String strName)  { 
-        return mapAttrs.get(strName); 
+    public Attribute getAttr(String strName) {
+        return mapAttrs.get(strName);
     }
-    
-    public String getAttrDescription(String strName)  { 
-        return mapDescriptions.get(strName); 
+
+    public String getAttrDescription(String strName) {
+        return mapDescriptions.get(strName);
     }
-    
-    public String[]  getAttrNames()    {
-        int             nNames;             // number of attribute names
-        java.util.Set<String>   setKeys;            // keys of the map (i.e., attribute names)
-        
+
+    public String[] getAttrNames() {
+        int nNames;             // number of attribute names
+        java.util.Set<String> setKeys;            // keys of the map (i.e., attribute names)
+
         setKeys = mapAttrs.keySet();
-        nNames  = setKeys.size();
-        
-        return setKeys.toArray( new String[] {} );
+        nNames = setKeys.size();
+
+        return setKeys.toArray(new String[]{});
     }
-    
-    
+
     /*
      *  Parsing attribute values (Attribute know their own type)
      */
-    
-    public boolean parseAttrValue(String strName, String strVal)  throws NumberFormatException   {
-        if ( !mapAttrs.containsKey( strName ) ) return false;
-      
-        return mapAttrs.get( strName ).parse( strVal );
+    public boolean parseAttrValue(String strName, String strVal) throws NumberFormatException {
+        if (!mapAttrs.containsKey(strName)) {
+            return false;
+        }
+
+        return mapAttrs.get(strName).parse(strVal);
     }
-       
-    
-    
+
     /*
      *  Setting attribute values directly
      */
-    
-    public boolean setAttrValue(String strName, int newVal)  {
-        if (!checkAttribute(strName, Attribute.iInteger)) return false;
-      
-        mapAttrs.get(strName).set(newVal);
-        return true;
-    }
-        
-    public boolean setAttrValue(String strName, long newVal)  {
-        if (!checkAttribute(strName, Attribute.iLong)) return false;
-      
+    public boolean setAttrValue(String strName, int newVal) {
+        if (!checkAttribute(strName, Attribute.iInteger)) {
+            return false;
+        }
+
         mapAttrs.get(strName).set(newVal);
         return true;
     }
 
-    public boolean setAttrValue(String strName, float newVal)  {
-        if (!checkAttribute(strName, Attribute.iFloat)) return false;
-      
+    public boolean setAttrValue(String strName, long newVal) {
+        if (!checkAttribute(strName, Attribute.iLong)) {
+            return false;
+        }
+
         mapAttrs.get(strName).set(newVal);
         return true;
     }
-        
-    public boolean setAttrValue(String strName, double newVal)  {
-        if (!checkAttribute(strName, Attribute.iDouble)) return false;
-      
+
+    public boolean setAttrValue(String strName, float newVal) {
+        if (!checkAttribute(strName, Attribute.iFloat)) {
+            return false;
+        }
+
         mapAttrs.get(strName).set(newVal);
         return true;
     }
-        
-    public boolean setAttrValue(String strName, String newVal)  {
-        if (!checkAttribute(strName, Attribute.iString)) return false;
-      
+
+    public boolean setAttrValue(String strName, double newVal) {
+        if (!checkAttribute(strName, Attribute.iDouble)) {
+            return false;
+        }
+
         mapAttrs.get(strName).set(newVal);
         return true;
     }
-        
+
+    public boolean setAttrValue(String strName, String newVal) {
+        if (!checkAttribute(strName, Attribute.iString)) {
+            return false;
+        }
+
+        mapAttrs.get(strName).set(newVal);
+        return true;
+    }
 
     // Arrays...
-    
-    public boolean setAttrValue(String strName, int[] newVal)   {
-        if (!checkAttribute(strName, Attribute.iArrInt)) return false;
-      
+    public boolean setAttrValue(String strName, int[] newVal) {
+        if (!checkAttribute(strName, Attribute.iArrInt)) {
+            return false;
+        }
+
         mapAttrs.get(strName).set(newVal);
         return true;
     }
 
-    public boolean setAttrValue(String strName, long[] newVal)   {
-        if (!checkAttribute(strName, Attribute.iArrLng)) return false;
-      
+    public boolean setAttrValue(String strName, long[] newVal) {
+        if (!checkAttribute(strName, Attribute.iArrLng)) {
+            return false;
+        }
+
         mapAttrs.get(strName).set(newVal);
         return true;
     }
 
-    public boolean setAttrValue(String strName, float[] newVal)   {
-        if (!checkAttribute(strName, Attribute.iArrFlt)) return false;
-      
+    public boolean setAttrValue(String strName, float[] newVal) {
+        if (!checkAttribute(strName, Attribute.iArrFlt)) {
+            return false;
+        }
+
         mapAttrs.get(strName).set(newVal);
         return true;
     }
 
-    public boolean setAttrValue(String strName, double[] newVal)   {
-        if (!checkAttribute(strName, Attribute.iArrDbl)) return false;
-      
+    public boolean setAttrValue(String strName, double[] newVal) {
+        if (!checkAttribute(strName, Attribute.iArrDbl)) {
+            return false;
+        }
+
         mapAttrs.get(strName).set(newVal);
         return true;
     }
 
-    public boolean setAttrValue(String strName, String[] newVal)   {
-        if (!checkAttribute(strName, Attribute.iArrStr)) return false;
-      
+    public boolean setAttrValue(String strName, String[] newVal) {
+        if (!checkAttribute(strName, Attribute.iArrStr)) {
+            return false;
+        }
+
         mapAttrs.get(strName).set(newVal);
         return true;
     }
 
-    
-   
     /*
      *  Protected Members
      */
-    
-    
-    /** AttributeBucket should only be instantiated by a derived class */
+    /**
+     * AttributeBucket should only be instantiated by a derived class
+     */
     protected AttributeBucket() {
     }
 
-    
-    /** Used by derived classes to define particular attributes  */
-    protected void registerAttribute(String strName, Attribute attr)    {
+    /**
+     * Used by derived classes to define particular attributes
+     */
+    protected void registerAttribute(String strName, Attribute attr) {
         registerAttribute(strName, attr, new String());
     }
-    
-    /** Used by derived classes to define particular attributes  */
-    protected void registerAttribute(String strName, Attribute attr, String description)    {
+
+    /**
+     * Used by derived classes to define particular attributes
+     */
+    protected void registerAttribute(String strName, Attribute attr, String description) {
         mapAttrs.put(strName, attr);
         mapDescriptions.put(strName, description);
     }
-    
-    
-    
+
     // Auxilary Functions
-    
-    /** Check attribute validity */
-    protected boolean   checkAttribute(String strName, int iType)   {
-        if (!mapAttrs.containsKey(strName)) return false;
-      
+    /**
+     * Check attribute validity
+     */
+    protected boolean checkAttribute(String strName, int iType) {
+        if (!mapAttrs.containsKey(strName)) {
+            return false;
+        }
+
         Attribute attr = mapAttrs.get(strName);
-        if (attr.getType() != iType) return false;
-        
+        if (attr.getType() != iType) {
+            return false;
+        }
+
         return true;
     }
-    
-    
-    
+
     public static class MissingAttributeException extends RuntimeException {
-        /** ID for serializable version */
+
+        /**
+         * ID for serializable version
+         */
         private static final long serialVersionUID = 1L;
-        
+
         public MissingAttributeException(String message) {
             super(message);
         }
-        
+
         private static MissingAttributeException newException(AttributeBucket bucket, String attributeName) {
-            String message = "Error, missing attribute: " + attributeName + 
-                ", for bucket type: " + bucket.getType();
+            String message = "Error, missing attribute: " + attributeName
+                    + ", for bucket type: " + bucket.getType();
             return new MissingAttributeException(message);
         }
     }

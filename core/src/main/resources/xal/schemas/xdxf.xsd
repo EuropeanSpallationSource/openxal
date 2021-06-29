@@ -906,9 +906,9 @@
         </xs:annotation>
         <xs:choice maxOccurs="unbounded">
             <xs:element minOccurs="0" maxOccurs="unbounded" name="node"
-                                    type="acceleratorNode" />
+                        type="acceleratorNode" />
             <xs:element minOccurs="0" maxOccurs="unbounded" name="sequence"
-                                    type="acceleratorSeq" />
+                        type="acceleratorSeq" />
             <!-- derived from acceleratorNode -->
             <xs:element minOccurs="0" maxOccurs="1" ref="channelsuite" />
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="attributes" />
@@ -986,7 +986,7 @@
     <xs:complexType name="accelerator">
         <xs:sequence>
             <xs:element minOccurs="0" maxOccurs="unbounded" name="comboseq"
-                                    type="acceleratorComboSeq" />
+                        type="acceleratorComboSeq" />
 						
             <xs:element minOccurs="0" maxOccurs="unbounded" name="sequence" type="acceleratorSeq" /> <!-- derived from acceleratorSeq -->
 				

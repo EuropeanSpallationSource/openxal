@@ -126,7 +126,7 @@ public class Hdf5Reader {
      */
     private void readAttribute(DataAdaptor adaptor, Dataset dataset) throws Exception {
         dataset.init();
-        
+
         switch (dataset.getDatatype().getDatatypeClass()) {
             case Datatype.CLASS_INTEGER:
                 switch ((int) dataset.getDatatype().getDatatypeSize()) {

@@ -5,12 +5,12 @@ import java.awt.Shape;
 
 public class DipoleWidget extends CartoonWidget {
 
-	public DipoleWidget() {
-		super(Color.BLUE);
-	}
+    public DipoleWidget() {
+        super(Color.BLUE);
+    }
 
-	@Override
-	public Shape getShape(int length) {
-		return createSymmetricalRectangle(length, REF_HEIGHT * 2);
-	}
+    @Override
+    public Shape getShape(int length) {
+        return createSymmetricalRectangle(length, REF_HEIGHT * 2);
+    }
 }

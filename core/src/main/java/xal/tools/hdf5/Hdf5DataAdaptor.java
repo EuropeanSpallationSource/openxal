@@ -51,9 +51,18 @@ import xal.tools.data.FileDataAdaptor;
  */
 public class Hdf5DataAdaptor implements FileDataAdaptor {
 
-    private H5Node document;  // root document
-    private H5Node mainNode;      // could be a document or an element
-    private List<H5Node> childNodes;    // child nodes as a List
+    /**
+     * root document
+     */
+    private H5Node document;
+    /**
+     * could be a document or an element
+     */
+    private H5Node mainNode;
+    /**
+     * child nodes as a List
+     */
+    private List<H5Node> childNodes;
 
     private Hdf5DataAdaptor(String name) {
         mainNode = new H5Node(name);

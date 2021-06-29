@@ -5,7 +5,6 @@
 //  Created by Thomas Pelaia on 3/28/05.
 //  Copyright 2005 Oak Ridge National Lab. All rights reserved.
 //
-
 package xal.extension.application;
 
 import java.lang.reflect.InvocationTargetException;
@@ -15,252 +14,260 @@ import java.util.logging.Logger;
 
 import javax.swing.SwingUtilities;
 
-
-/** Application subclass for JFrame based applications. */
+/**
+ * Application subclass for JFrame based applications.
+ */
 public class FrameApplication extends Application implements XalDocumentListener {
-    private volatile int retainCount;   // counts items that want to keep the application alive
-	
+
+    /**
+     * counts items that want to keep the application alive
+     */
+    private volatile int retainCount;
+
     private static final Logger LOGGER = Logger.getLogger(FrameApplication.class.getName());
 
-    /** 
-	* Constructor
-	* @param adaptor The application adaptor used for customization.
-	*/
-    protected FrameApplication( final ApplicationAdaptor adaptor ) {
-		this( adaptor, new URL[]{} );
+    /**
+     * Constructor
+     *
+     * @param adaptor The application adaptor used for customization.
+     */
+    protected FrameApplication(final ApplicationAdaptor adaptor) {
+        this(adaptor, new URL[]{});
     }
-    
-    
-    /** 
-	* Constructor 
-	* @param adaptor The application adaptor used for customization.
-	* @param urls An array of document URLs to open upon startup. 
-	*/
-    protected FrameApplication( final ApplicationAdaptor adaptor, final URL[] urls ) {
-		super( adaptor, urls );
-		
+
+    /**
+     * Constructor
+     *
+     * @param adaptor The application adaptor used for customization.
+     * @param urls An array of document URLs to open upon startup.
+     */
+    protected FrameApplication(final ApplicationAdaptor adaptor, final URL[] urls) {
+        super(adaptor, urls);
+
         retainCount = 0;
     }
-    
-    /** 
-	* Initialize the Application and open the documents specified by the URL array.
-	* If the URL array is empty, then create one empty document.
-	* 
-	* @param urls An array of document URLs to open.
-	*/
-    @Override
-    protected void setup( final URL[] urls ) {		
-        registerEvents();		
-		
-		try {
-			SwingUtilities.invokeAndWait( new Runnable() {
-                                @Override
-				public void run() {
-					setupConsole();
-					
-					// Make the open/save file choosers as early as possible since JFileChooser has a known
-					// race condition bug.
-					makeFileChoosers();
-					
-					// setup the application commander and load custom application commands
-					commander = makeCommander();
-					applicationAdaptor.customizeCommands(commander );
-					
-					// notify listeners that the initial documents, if any, will be opened
-					noticeProxy.applicationWillOpenInitialDocuments();
 
-					if ( urls == null || urls.length == 0 ) {
-                        if ( showsWelcomeDialogAtLaunch() ) {
-                            showWelcomeDialog();
-                        }
-                        else {
-                            newDocument();
-                        }
-					}
-					else {
-						for ( int index = 0 ; index < urls.length ; index++ ) {
-							openDocument( urls[index] );
-						}
-					}
-					
-					// if multiple documents are opened then cascade them
-					if ( openDocuments.size() > 1 ) {
-						cascadeWindowsAbout( openDocuments.get(0) );
-					}					
-				}
-			});
-		}
-		catch ( InterruptedException | InvocationTargetException exception ) {
-			LOGGER.log(Level.SEVERE, null, exception);
-			throw new RuntimeException( exception );
-		}
-		
-		registerApplicationStatusService();   // comment out application service registration until it is developed -tap
-		
-        applicationAdaptor.applicationFinishedLaunching();
-    }
-    
-	
     /**
-	 * Add a new document to this application and if makeVisible is true, show it
-	 * @param document the document to produce
-	 * @param makeVisible make the document visible
+     * Initialize the Application and open the documents specified by the URL
+     * array. If the URL array is empty, then create one empty document.
+     *
+     * @param urls An array of document URLs to open.
      */
     @Override
-    public void produceDocument( final XalAbstractDocument document, final boolean makeVisible ) {
-        openDocuments.add( document );
-        ((XalDocument)document).addXalDocumentListener( this );
-		document.initMainWindow();
-		if ( makeVisible ) {
-			document.showDocument();
-		}
-        noticeProxy.documentCreated( (XalDocument)document );
+    protected void setup(final URL[] urls) {
+        registerEvents();
+
+        try {
+            SwingUtilities.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    setupConsole();
+
+                    // Make the open/save file choosers as early as possible since JFileChooser has a known
+                    // race condition bug.
+                    makeFileChoosers();
+
+                    // setup the application commander and load custom application commands
+                    commander = makeCommander();
+                    applicationAdaptor.customizeCommands(commander);
+
+                    // notify listeners that the initial documents, if any, will be opened
+                    noticeProxy.applicationWillOpenInitialDocuments();
+
+                    if (urls == null || urls.length == 0) {
+                        if (showsWelcomeDialogAtLaunch()) {
+                            showWelcomeDialog();
+                        } else {
+                            newDocument();
+                        }
+                    } else {
+                        for (int index = 0; index < urls.length; index++) {
+                            openDocument(urls[index]);
+                        }
+                    }
+
+                    // if multiple documents are opened then cascade them
+                    if (openDocuments.size() > 1) {
+                        cascadeWindowsAbout(openDocuments.get(0));
+                    }
+                }
+            });
+        } catch (InterruptedException | InvocationTargetException exception) {
+            LOGGER.log(Level.SEVERE, null, exception);
+            throw new RuntimeException(exception);
+        }
+
+        registerApplicationStatusService();   // comment out application service registration until it is developed -tap
+
+        applicationAdaptor.applicationFinishedLaunching();
     }
 
-	
-    /** Create and open a new empty document. */
+    /**
+     * Add a new document to this application and if makeVisible is true, show
+     * it
+     *
+     * @param document the document to produce
+     * @param makeVisible make the document visible
+     */
+    @Override
+    public void produceDocument(final XalAbstractDocument document, final boolean makeVisible) {
+        openDocuments.add(document);
+        ((XalDocument) document).addXalDocumentListener(this);
+        document.initMainWindow();
+        if (makeVisible) {
+            document.showDocument();
+        }
+        noticeProxy.documentCreated((XalDocument) document);
+    }
+
+    /**
+     * Create and open a new empty document.
+     */
     @Override
     protected void newDocument() {
         updateNextDocumentOpenLocation();
-		newDocument("");
+        newDocument("");
     }
-	
-	
-    /** 
-	 * Create and open a new empty document of the specified type. 
-	 * @param type the type of document to create.
-	 */
-    @Override
-    protected void newDocument( final String type ) {
-        XalDocument document = (XalDocument)applicationAdaptor.generateEmptyDocument( type );
-		produceDocument( document );
-    }
-    
-    
+
     /**
-	 * Handle the "Revert To Saved" action by reverting the specified document 
+     * Create and open a new empty document of the specified type.
+     *
+     * @param type the type of document to create.
+     */
+    @Override
+    protected void newDocument(final String type) {
+        XalDocument document = (XalDocument) applicationAdaptor.generateEmptyDocument(type);
+        produceDocument(document);
+    }
+
+    /**
+     * Handle the "Revert To Saved" action by reverting the specified document
      * to that of its source file.
+     *
      * @param document The document to revert.
      */
     @Override
-    protected void revertToSaved( final XalAbstractDocument document ) {
+    protected void revertToSaved(final XalAbstractDocument document) {
         // don't revert if there are no changes
-        if ( !document.hasChanges() ) {
-            document.displayWarning( "No revert!", "This document reports no changes from the original." );
+        if (!document.hasChanges()) {
+            document.displayWarning("No revert!", "This document reports no changes from the original.");
             return;
         }
-        
+
         URL source = document.getSource();
-        
-        if ( source == null ) {
-            document.displayWarning( "No revert!", "There is no source to revert to." );
+
+        if (source == null) {
+            document.displayWarning("No revert!", "There is no source to revert to.");
             return;
         }
-        
+
         retainApp();
         try {
-            if ( document.closeDocument() ) {
-                openDocument( source );
+            if (document.closeDocument()) {
+                openDocument(source);
             }
-        }
-        finally {   //do this regardless of thrown exceptions
+        } finally {   //do this regardless of thrown exceptions
             releaseApp();
         }
     }
-    
-    
-    /** Handle the "Close All" action by closing all open documents and opening a new empty document. */
+
+    /**
+     * Handle the "Close All" action by closing all open documents and opening a
+     * new empty document.
+     */
     @Override
     protected void closeAllDocuments() {
-		try {
-			retainApp();
+        try {
+            retainApp();
             updateNextDocumentOpenLocation();
             super.closeAllDocuments();
             showWelcomeDialog();
-		}
-		finally {
-			releaseApp();
-		}
+        } finally {
+            releaseApp();
+        }
     }
-	
-	
-    /** Implement XalDocumentListener.  Empty implementation. */
+
+    /**
+     * Implement XalDocumentListener. Empty implementation.
+     */
     @Override
-    public void titleChanged( final XalDocument document, final String newTitle ) {
+    public void titleChanged(final XalDocument document, final String newTitle) {
     }
-    
-    
-    /** Implement XalDocumentListener.  Empty implementation. */
+
+    /**
+     * Implement XalDocumentListener. Empty implementation.
+     */
     @Override
-    public void hasChangesChanged( final XalDocument document, final boolean newHasChangesStatus ) {
+    public void hasChangesChanged(final XalDocument document, final boolean newHasChangesStatus) {
     }
-    
-    
-    /** Implement XalDocumentListener.  Empty implementation. */
+
+    /**
+     * Implement XalDocumentListener. Empty implementation.
+     */
     @Override
-    public void documentWillClose( final XalDocument document ) {
+    public void documentWillClose(final XalDocument document) {
     }
-    
-    
-    /** 
-	* Implement XalDocumentListener.  When a document has closed, the application 
-	* receives this event and removes the document from its open documents list.
-	* If there are no documents remaining, the application quits.
-	* @param document The document that has closed.
-	*/
+
+    /**
+     * Implement XalDocumentListener. When a document has closed, the
+     * application receives this event and removes the document from its open
+     * documents list. If there are no documents remaining, the application
+     * quits.
+     *
+     * @param document The document that has closed.
+     */
     @Override
-    public void documentHasClosed( final XalDocument document ) {
-        document.removeXalDocumentListener( this );
-        openDocuments.remove( document );
-        noticeProxy.documentClosed( document );
-        
+    public void documentHasClosed(final XalDocument document) {
+        document.removeXalDocumentListener(this);
+        openDocuments.remove(document);
+        noticeProxy.documentClosed(document);
+
         terminateOnStatus();
     }
-    
-	
+
     /**
-	 * Increment the retain count.  The application will not quit while the 
-     * retain count is at least 1.  This method gets called to keep the application
-     * alive when other properties indicate the application should quit.
-     * For example if the application has no open documents, the application can 
-     * be prevented from terminating by incrementing the retain count.
+     * Increment the retain count. The application will not quit while the
+     * retain count is at least 1. This method gets called to keep the
+     * application alive when other properties indicate the application should
+     * quit. For example if the application has no open documents, the
+     * application can be prevented from terminating by incrementing the retain
+     * count.
      */
     synchronized private void retainApp() {
         ++retainCount;
     }
-    
-    
+
     /**
-	 * Decrement the retain count. The application will not quit while the 
+     * Decrement the retain count. The application will not quit while the
      * retain count is at least 1.
+     *
      * @see retainApp
      */
     synchronized private void releaseApp() {
         --retainCount;
         terminateOnStatus();
     }
-    
-    
+
     /**
-	 * Check the status of the application to see if the application should quit.
-     * Check whether there are any open documents or if the application retain 
-     * count is greater than zero.  If these criteria are not met, terminate the 
-     * application.
+     * Check the status of the application to see if the application should
+     * quit. Check whether there are any open documents or if the application
+     * retain count is greater than zero. If these criteria are not met,
+     * terminate the application.
      */
     private void terminateOnStatus() {
-        if ( openDocuments.size() == 0 && retainCount < 1 ) {
+        if (openDocuments.size() == 0 && retainCount < 1) {
             quit();
         }
     }
-    
-    
+
     /**
-	 * Handle the launching of the application by creating the application instance
-     * and performing application initialization.
+     * Handle the launching of the application by creating the application
+     * instance and performing application initialization.
+     *
      * @param adaptor The custom application adaptor.
-	 * @param urls The URLs of documents to open upon launching the application
+     * @param urls The URLs of documents to open upon launching the application
      */
-    public static void launch( final ApplicationAdaptor adaptor, final URL[] urls ) {
-        new FrameApplication( adaptor, urls );
-    }	
+    public static void launch(final ApplicationAdaptor adaptor, final URL[] urls) {
+        new FrameApplication(adaptor, urls);
+    }
 }

@@ -10,53 +10,55 @@
 package xal.extension.solver;
 
 /**
- * Objective represents a goal to achieve in optimization.  An objective corresponds to some
- * specified measure and determines that satisfaction achieved by a particular value of the measure. 
+ * Objective represents a goal to achieve in optimization. An objective
+ * corresponds to some specified measure and determines that satisfaction
+ * achieved by a particular value of the measure.
  *
- * @author   ky6
- * @author   t6p
+ * @author ky6
+ * @author t6p
  */
 public abstract class Objective {
-	/** the name of the objective */
-	protected final String name;
 
-	/**
-	 * Constructor
-	 *
-	 * @param name  the name to assign the objective
-	 */
-	public Objective( final String name ) {
-		this.name = name;
-	}
+    /**
+     * the name of the objective
+     */
+    protected final String name;
 
+    /**
+     * Constructor
+     *
+     * @param name the name to assign the objective
+     */
+    public Objective(final String name) {
+        this.name = name;
+    }
 
-	/**
-	 * Determines how satisfied the user is with the specified value for this objective.
-	 *
-	 * @param value  The value associated with this objective for a particular trial
-	 * @return       the user satisfaction for the specified value
-	 */
-	public abstract double satisfaction( double value );
+    /**
+     * Determines how satisfied the user is with the specified value for this
+     * objective.
+     *
+     * @param value The value associated with this objective for a particular
+     * trial
+     * @return the user satisfaction for the specified value
+     */
+    public abstract double satisfaction(double value);
 
+    /**
+     * Get the name of this objective.
+     *
+     * @return The name of this objective.
+     */
+    public String getName() {
+        return name;
+    }
 
-	/**
-	 * Get the name of this objective.
-	 *
-	 * @return   The name of this objective.
-	 */
-	public String getName() {
-		return name;
-	}
-
-
-	/**
-	 * A description of this objective.
-	 *
-	 * @return   The string representation of an objective.
-	 */
-        @Override
-	public String toString() {
-		return getName();
-	}
+    /**
+     * A description of this objective.
+     *
+     * @return The string representation of an objective.
+     */
+    @Override
+    public String toString() {
+        return getName();
+    }
 }
-

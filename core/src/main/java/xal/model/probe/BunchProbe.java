@@ -7,41 +7,33 @@
  *                and beam current I
  *      11/2013 - CKA removed the "betatron phase" attribute.
  */
-
 package xal.model.probe;
-
 
 import xal.tools.annotation.AProperty.Units;
 import xal.model.probe.traj.BunchProbeState;
 
-
-
-
 /**
- *  <p>
- *  Abstract base class for all probes having beam properties.  That is derived classes should
- *  represent probes with collective beam dynamics.
- *  </p>
- *  <h3>Note:</h3>
- *  <p>
- *  The bunch charge <i>Q</i> is computed from the beam current <i>I</i> and 
- *  bunch frequency <i>f</i> as 
- *  <br>
- *  <br>
- *  &nbsp; &nbsp;  <i>Q</i> = <i>I/f</i>
+ * <p>
+ * Abstract base class for all probes having beam properties. That is derived
+ * classes should represent probes with collective beam dynamics.
  * </p>
- * 
- * @author  Christopher K. Allen
- * @since   Nov 2, 2002
+ * <h3>Note:</h3>
+ * <p>
+ * The bunch charge <i>Q</i> is computed from the beam current <i>I</i> and
+ * bunch frequency <i>f</i> as
+ * <br>
+ * <br>
+ * &nbsp; &nbsp;  <i>Q</i> = <i>I/f</i>
+ * </p>
+ *
+ * @author Christopher K. Allen
+ * @since Nov 2, 2002
  */
 public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> {
-    
-    
+
     /*
      *  Abstract Methods
      */
-    
-    
 //    /** 
 //     *  Abstract - Returns the correlation matrix (sigma matrix) in homogeneous
 //     *  phase space coordinates.
@@ -54,55 +46,50 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
 //     */
 //    public abstract CovarianceMatrix getCorrelation();
 //    
-    
-    
     /*
      *  Initialization
      */
-    
-    
     /**
-     *  Default constructor.
-     * 
-     *  Since BunchProbe is abstract constructor should only be calls by a derived class.
-     *  Creates a new (empty) instance of BunchProbe.
+     * Default constructor.
+     *
+     * Since BunchProbe is abstract constructor should only be calls by a
+     * derived class. Creates a new (empty) instance of BunchProbe.
      */
-    protected BunchProbe()   {
+    protected BunchProbe() {
         super();
 //        this.vecPhsBeta = R3.zero();
     }
-  
+
     /**
-     *  Copy constructor - clones the argument
-     *  Since BunchProbe is abstract constructor should only be calls by a derived class.
+     * Copy constructor - clones the argument Since BunchProbe is abstract
+     * constructor should only be calls by a derived class.
      *
-     *  @param  probe   BunchProbe object to be cloned
+     * @param probe BunchProbe object to be cloned
      */
-    public BunchProbe(final BunchProbe<S> probe)   {
-        super(probe);       
+    public BunchProbe(final BunchProbe<S> probe) {
+        super(probe);
         this.setBunchFrequency(probe.getBunchFrequency());
         this.setBeamCurrent(probe.getBeamCurrent());
 //        this.setBetatronPhase(new R3(probe.getBetatronPhase()));
     }
-    
+
     /**
      * Set the bunch arrival time frequency.
-     * 
-     * @param f     new bunch frequency in <b>Hz</b>
+     *
+     * @param f new bunch frequency in <b>Hz</b>
      */
     public void setBunchFrequency(double f) {
         this.stateCurrent.setBunchFrequency(f);
     }
- 
+
     /**
-     *  Set the total beam current.
-     * 
-     * @param   I   new beam current in <b>Amperes</b>
+     * Set the total beam current.
+     *
+     * @param I new beam current in <b>Amperes</b>
      */
-    public void setBeamCurrent(double I)    { 
+    public void setBeamCurrent(double I) {
         this.stateCurrent.setBeamCurrent(I);
     }
-    
 
 //    /**
 //     *  Set the total beam charge 
@@ -110,39 +97,34 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
 //     *  @param  Q   beam charge in <b>Coulombs</b>
 //     */
 //    public void setBeamCharge(double Q)     { dblBmQ = Q; };
-    
-
-    
-    
     /*
      *  Attribute Query
      */
-    
     /**
-     * Returns the bunch frequency, that is the frequency of 
-     * the bunches need to create the beam current.
-     * 
-     * The bunch frequency f is computed from the beam current 
-     * I and bunch charge Q as 
-     *  
-     *      f = I/Q
-     *      
-     * @return  bunch frequency in Hertz
+     * Returns the bunch frequency, that is the frequency of the bunches need to
+     * create the beam current.
+     *
+     * The bunch frequency f is computed from the beam current I and bunch
+     * charge Q as
+     *
+     * f = I/Q
+     *
+     * @return bunch frequency in Hertz
      */
-	@Units( "Hz" )
-    public double getBunchFrequency()  {
+    @Units("Hz")
+    public double getBunchFrequency() {
         return this.stateCurrent.getBunchFrequency();
     }
-    
-    /** 
-     * Returns the total beam current 
-     * 
-     * @return  beam current in <b>amps</b>
+
+    /**
+     * Returns the total beam current
+     *
+     * @return beam current in <b>amps</b>
      */
-	@Units( "amps" )
-    public double getBeamCurrent() { 
+    @Units("amps")
+    public double getBeamCurrent() {
         return this.stateCurrent.getBeamCurrent();
-     }
+    }
 
 //    /**
 //     * Returns the betatron phase with space charge for all three phase planes.
@@ -152,99 +134,92 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
 //    public R3 getBetatronPhase() {
 //        return this.vecPhsBeta;
 //    }
-
-    
     /*
      * Computed Properties
      */
-    
-    /** 
+    /**
      * Computes and returns the charge in each beam bunch
-     * 
-     * @return  beam charge in <b>coulombs</b>
+     *
+     * @return beam charge in <b>coulombs</b>
      */
     public double bunchCharge() {
-    	return this.stateCurrent.bunchCharge();  	
+        return this.stateCurrent.bunchCharge();
     }
 
-    /** 
+    /**
      * <p>
-     *  Returns the generalized, three-dimensional beam perveance <i>K</i>.  
-     *  This value is defined to be
-     *  </p>
-     *  
-     *      K = (Q/4*pi*e0)*(1/gamma^3*beta^2)*(|q|/ER) 
-     *  
-     *  <p>
-     *  where <i>Q</i> is the bunch charge, <i>e0</i> is the permittivity
-     *  of free space, <i>gamma</i> is the relativistic factor, <i>beta</i> is 
-     *  the normalized design velocity, <i>q</i> is the charge of the beam
-     *  particles and <i>ER</i> is the rest energy of the beam particles.
-     *  </p>
-     *  
-     *  <p>
-     *  NOTES:
-     *  - The value (1/4*pi*e0) is equal to 1e-7*c^2 where <i>c</i> is the
-     *  speed of light. 
-     *  
-     *  @return generalized beam perveance <b>Units: radians^2/meter</b>
-     *  
-     *  @author Christopher K. Allen
+     * Returns the generalized, three-dimensional beam perveance <i>K</i>. This
+     * value is defined to be
+     * </p>
+     *
+     * K = (Q/4*pi*e0)*(1/gamma^3*beta^2)*(|q|/ER)
+     *
+     * <p>
+     * where <i>Q</i> is the bunch charge, <i>e0</i> is the permittivity of free
+     * space, <i>gamma</i> is the relativistic factor, <i>beta</i> is the
+     * normalized design velocity, <i>q</i> is the charge of the beam particles
+     * and <i>ER</i> is the rest energy of the beam particles.
+     * </p>
+     *
+     * <p>
+     * NOTES: - The value (1/4*pi*e0) is equal to 1e-7*c^2 where <i>c</i> is the
+     * speed of light.
+     *
+     * @return generalized beam perveance <b>Units: radians^2/meter</b>
+     *
+     * @author Christopher K. Allen
      */
     public double beamPerveance() {
         return this.stateCurrent.beamPerveance();
     }
-    
-    /** 
+
+    /**
      * <p>
-     *  Returns the generalized, two-dimensional beam perveance <i>K</i>.  
-     *  This value is defined to be
-     *  </p>
-     *  
-     *      K = (I/pi*e0)*(1/gamma^3*beta^3*c)*(|q|/ER) 
-     *  
-     *  <p>
-     *  where <i>I</i> is the current, <i>e0</i> is the permittivity
-     *  of free space, <i>gamma</i> is the relativitic factor, <i>beta</i> is 
-     *  the normalized design velocity, <i>q</i> is the charge of the beam
-     *  particles and <i>ER</i> is the rest energy of the beam partiles.
-     *  </p>
-     *  
-     *  <p>
-     *  
-     *  @return generalized DC beam perveance <b>Units: radians^2/meter</b>
-     *  
-     *  @author Christopher K. Allen
+     * Returns the generalized, two-dimensional beam perveance <i>K</i>. This
+     * value is defined to be
+     * </p>
+     *
+     * K = (I/pi*e0)*(1/gamma^3*beta^3*c)*(|q|/ER)
+     *
+     * <p>
+     * where <i>I</i> is the current, <i>e0</i> is the permittivity of free
+     * space, <i>gamma</i> is the relativitic factor, <i>beta</i> is the
+     * normalized design velocity, <i>q</i> is the charge of the beam particles
+     * and <i>ER</i> is the rest energy of the beam partiles.
+     * </p>
+     *
+     * <p>
+     *
+     * @return generalized DC beam perveance <b>Units: radians^2/meter</b>
+     *
+     * @author Christopher K. Allen
      */
     public double beamDCPerveance() {
         return this.stateCurrent.beamDCPerveance();
     }
 
-    
     /*
      * Probe Overrides
      */
-
     /**
      * Just restating <code>Probe.{@link #createProbeState()}</code>
      *
      * @see xal.model.probe.Probe#createProbeState()
      *
      * @author Christopher K. Allen
-     * @since  Nov 5, 2013
+     * @since Nov 5, 2013
      */
     @Override
     public abstract S createProbeState();
-    
+
     /**
      * Just restating <code>Probe.{@link #createEmptyProbeState()}</code>.
-     * 
+     *
      * @author Jonathan M. Freed
      * @since Jul 1, 2014
      */
     @Override
     public abstract S createEmptyProbeState();
-    
 
 //    /**
 //     * Applies the properties of the state that is passed in to the current
@@ -262,19 +237,11 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
 ////        this.setBunchFrequency( state.getBunchFrequency() );
 ////        this.setBeamCurrent( state.getBeamCurrent() );
 //    }
-
-    
-    
 }
-
-
-
-
 
 //
 // Storage
 //
-
 ///** 
 //*  Returns the beam perveance <b>Units: radians^2/meter</b>
 //*  
@@ -294,8 +261,6 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
 // 
 // return dblPermT*dblRelaT*dblEnerT;  
 //}
-
-
 ///**
 //*  Return the covariance matrix of the distribution.  Note that this can be computed
 //*  from the correlation matrix in homogeneous coordinates since the mean values are 
@@ -316,8 +281,6 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
 // return getCorrelation().getMean();
 //}
 //
-
-
 ///** return the time elapsed from the start of the probe tracking (sec) */
 //public double getElapsedTime() { return elapsedTime;}
 //
@@ -325,9 +288,6 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
 //* @param time - the elapsed time (sec)
 //*/
 //public void setElapsedTime(double time) {elapsedTime = time; }
-
-
-
 ///** advance the time the probe has spent traveling down the beam line
 //@ param the step size to advance (m)
 //*/

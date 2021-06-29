@@ -27,10 +27,22 @@ public abstract class Channel {
     /**
      * Local Attributes
      */
-    protected String strId;                // channel name
-    protected double dblTmIO;              // pend IO timeout
-    protected double dblTmEvt;             // pend event timeout
-    private ValueTransform valueTransform;            // transform between raw and physical values
+    /**
+     * channel name
+     */
+    protected String strId;
+    /**
+     * pend IO timeout
+     */
+    protected double dblTmIO;
+    /**
+     * pend event timeout
+     */
+    protected double dblTmEvt;
+    /**
+     * transform between raw and physical values
+     */
+    private ValueTransform valueTransform;
 
     /**
      * Notify listeners when connection is made or dropped

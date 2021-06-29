@@ -7,9 +7,7 @@
  *      02/10/02 CKA - refactor to revised model architecture
  *      01/02/05 SAKO - when angleKick !=0, use it instead of dL*W
  */
-
 package xal.model.elem;
-
 
 import java.io.PrintWriter;
 
@@ -23,289 +21,283 @@ import xal.tools.beam.IConstants;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 
-
-
 /**
- *  Represents the action of an ideal magnetic dipole.  These structures are typically
- *  used for beam steering.
+ * Represents the action of an ideal magnetic dipole. These structures are
+ * typically used for beam steering.
  *
- * @author  Christopher Allen
+ * @author Christopher Allen
  */
 public class IdealMagSteeringDipole extends ThinElectromagnet {
 
-    
-    
     /*
      *  Global Attributes
      */
-    
-    /** Parameters for XAL MODEL LATTICE dtd */
-    
-    /** the string type identifier for all IdealMagSteeringDipole's */
-    public static final String      TYPE = "IdealMagSteeringDipole";
-    
-    
-    /** Tag for the parameter within the XML configuration file */
-    public static final String      PARAM_LEN_EFF = "EffLength";
-    
-    /** Tag for the parameter within the XML configuration file */
-    public static final String      PARAM_ORIENT = "Orientation";
-    
-    /** Tag for the parameter within the XML configuration file */
-    public static final String      PARAM_FIELD  = "MagField";
-    
-    
-    
-    
-    
+    /**
+     * Parameters for XAL MODEL LATTICE dtd
+     */
+    /**
+     * the string type identifier for all IdealMagSteeringDipole's
+     */
+    public static final String TYPE = "IdealMagSteeringDipole";
+
+    /**
+     * Tag for the parameter within the XML configuration file
+     */
+    public static final String PARAM_LEN_EFF = "EffLength";
+
+    /**
+     * Tag for the parameter within the XML configuration file
+     */
+    public static final String PARAM_ORIENT = "Orientation";
+
+    /**
+     * Tag for the parameter within the XML configuration file
+     */
+    public static final String PARAM_FIELD = "MagField";
+
     /*
      *  Local Attributes
      */
+    /**
+     * effective length of the dipole magnet
+     */
+    private double dblLenEff = 0.0;
 
-    /** effective length of the dipole magnet */
-    private double              dblLenEff = 0.0;
-    
-    /** the instantaneous position displacement going through the magnet */
-    private double				dblPositionKick = 0.0;
+    /**
+     * the instantaneous position displacement going through the magnet
+     */
+    private double dblPositionKick = 0.0;
 
-    /** the instantaneous momentum displacement going through the magnet */
-    private double				dblAngleKick = 0.0;
-    
-    
-    
+    /**
+     * the instantaneous momentum displacement going through the magnet
+     */
+    private double dblAngleKick = 0.0;
+
     /*
      * Initialization
      */
-    
     /**
-     * Default constructor - creates a new uninitialized instance 
-     * of IdealMagSteeringDipole.  Typically used by automatic lattice
-     * generation.
+     * Default constructor - creates a new uninitialized instance of
+     * IdealMagSteeringDipole. Typically used by automatic lattice generation.
      */
     public IdealMagSteeringDipole() {
         super(TYPE);
     }
-    
+
     /**
-     * Create a new instance of IdealMagSteeringDipole and specify its
-     * instance identifier.
-     * 
-     * @param   strId   string instance identifier of element
+     * Create a new instance of IdealMagSteeringDipole and specify its instance
+     * identifier.
+     *
+     * @param strId string instance identifier of element
      */
     public IdealMagSteeringDipole(String strId) {
         super(TYPE, strId);
     }
-    
-    /** 
-     *  Creates a new instance of <code>IdealMagSteeringDipole</code>.  
-     *  The action of the kicker is completely unspecified.  
+
+    /**
+     * Creates a new instance of <code>IdealMagSteeringDipole</code>. The action
+     * of the kicker is completely unspecified.
      *
-     *  @param  strId       string identifier of element
-     *  @param  dblFld      field strength (in <b>Tesla</b>)
-     *  @param  enmOrient   dipole orientation (ORIENT_HOR or ORIENT_VER)
-     *  @param  dblLenEff   effective length of dipole magnet
+     * @param strId string identifier of element
+     * @param dblFld field strength (in <b>Tesla</b>)
+     * @param enmOrient dipole orientation (ORIENT_HOR or ORIENT_VER)
+     * @param dblLenEff effective length of dipole magnet
      */
     public IdealMagSteeringDipole(String strId, double dblLenEff, int enmOrient, double dblFld) {
         super(TYPE, strId);
-        
+
         this.setOrientation(enmOrient);
         this.setEffLength(dblLenEff);
         this.setMagField(dblFld);
     }
-    
+
     /**
-     *  Set the effective length of the dipole magnet.  This value, along with the
-     *  field strength, determines the action of the dipole.
+     * Set the effective length of the dipole magnet. This value, along with the
+     * field strength, determines the action of the dipole.
      *
-     *  @param  dblLenEff       effective length (in <b>meters</b>)
+     * @param dblLenEff effective length (in <b>meters</b>)
      */
-    public void setEffLength(double dblLenEff)  {
+    public void setEffLength(double dblLenEff) {
         this.dblLenEff = dblLenEff;
     }
-    
-    
+
     /*
      *  Property Query
      */
-    
     /**
-     *  Return the effective length of this dipole magnet
+     * Return the effective length of this dipole magnet
      *
-     *  @return     effective length (<b>in meters</b>)
+     * @return effective length (<b>in meters</b>)
      */
-    public double   getEffLength()  { return dblLenEff; }
-    
-    
-    
+    public double getEffLength() {
+        return dblLenEff;
+    }
+
     /**
-     *  Set the position kick of the dipole magnet.  This value, along with the
-     *  field strength, determines the action of the dipole.
+     * Set the position kick of the dipole magnet. This value, along with the
+     * field strength, determines the action of the dipole.
      *
-     *  @param  dblPosKick       change in position going through magnet (in <b>meters</b>)
+     * @param dblPosKick change in position going through magnet (in
+     * <b>meters</b>)
      */
-    public void setPositionKick(double dblPosKick)  {
+    public void setPositionKick(double dblPosKick) {
         dblPositionKick = dblPosKick;
     }
-    
+
     /**
-     *  Set the kick angle of the dipole magnet.  If this value, or position kick
-     *  is non-zero. This determines the dipole bend angle.
+     * Set the kick angle of the dipole magnet. If this value, or position kick
+     * is non-zero. This determines the dipole bend angle.
      *
-     *  @param  dblAngKick       effective length (in <b>meters</b>)
+     * @param dblAngKick effective length (in <b>meters</b>)
      */
-    public void setAngleKick(double dblAngKick)  {
+    public void setAngleKick(double dblAngKick) {
         dblAngleKick = dblAngKick;
     }
-    
-    
+
     /*
      *  Property Query
      */
-    
     /**
-     *  Return the position kick strength of this dipole magnet
+     * Return the position kick strength of this dipole magnet
      *
-     *  @return     kick displacement (<b>in meters</b>)
+     * @return kick displacement (<b>in meters</b>)
      */
-    public double   getPositionKick()  { return dblPositionKick; }
-    
-    
+    public double getPositionKick() {
+        return dblPositionKick;
+    }
+
     /**
-     *  Return the angle kick [rad]
+     * Return the angle kick [rad]
      *
-     *  @return     angle kick (<b>in rad</b>)
+     * @return angle kick (<b>in rad</b>)
      */
-    public double   getAngleKick()  { return dblAngleKick; }
-    
+    public double getAngleKick() {
+        return dblAngleKick;
+    }
+
     /*
      *  IElement Interface
      */
-    
     /**
      * Returns the time taken for the probe to propagate through element.
-     * 
-     *  @param  probe   propagating probe
-     *  
-     *  @return         the value zero 
+     *
+     * @param probe propagating probe
+     *
+     * @return the value zero
      */
     @Override
-    public double elapsedTime(IProbe probe)  {
+    public double elapsedTime(IProbe probe) {
         return 0.0;
     }
-    
+
     /**
-     *  Return the energy gain for this Element.
+     * Return the energy gain for this Element.
      *
-     *  @param  probe   dummy argument
+     * @param probe dummy argument
      *
-     *  @return         value of zero
+     * @return value of zero
      */
     @Override
-    public double   energyGain(IProbe probe)     { 
-        return 0.0; 
+    public double energyGain(IProbe probe) {
+        return 0.0;
     }
-    
+
     /**
-     *  Computes the transfer map for an ideal magnetic dipole.
+     * Computes the transfer map for an ideal magnetic dipole.
      *
-     *  @param  probe   probe interface from which we get rest energy and kinetic energy
+     * @param probe probe interface from which we get rest energy and kinetic
+     * energy
      *
-     *  @return         7&times;7 transfer matrix in homogeneous coordinates
+     * @return 7&times;7 transfer matrix in homogeneous coordinates
      *
-     *  @exception  ModelException    bad orientation code
+     * @exception ModelException bad orientation code
      */
     @Override
-    protected PhaseMap transferMap(IProbe probe)  throws ModelException {
+    protected PhaseMap transferMap(IProbe probe) throws ModelException {
 
         // Get constants
 //        double e  = UnitCharge;
-        double c  = IConstants.LIGHT_SPEED;
-        
+        double c = IConstants.LIGHT_SPEED;
+
         // Get element parameters
-        double B  = this.getMagField();
+        double B = this.getMagField();
         double dL = this.getEffLength();
-        
+
         // Get probe parameters
-        double q  = probe.getSpeciesCharge();
+        double q = probe.getSpeciesCharge();
         double Er = probe.getSpeciesRestEnergy();
 
-        double beta  = probe.getBeta();
+        double beta = probe.getBeta();
         double gamma = probe.getGamma();
 //        double gamma_2 = gamma*gamma;
-        
-        
+
         // Compute the cyclotron frequency and dipole strength
 //        double w = (q/e)*(c/Er)*(B/(beta*gamma));
-        double w = (q)*(c/Er)*(B/(beta*gamma));
-        double dp = w*dL; // dp polarity = q*B polarity
+        double w = (q) * (c / Er) * (B / (beta * gamma));
+        double dp = w * dL; // dp polarity = q*B polarity
 //      B polarity for negative charged particle -> x: left +, y: upper +
 // angle polarity was opposite up to 27 Nov 07
         //changed so that angle + is x+, angle - is y- for negatives
         // on 28 Nov 07
         if (dblAngleKick != 0.) {
-        	System.out.println("***use anglekick ("+dblAngleKick+") instead of dp "+dp);
-        	dp  = dblAngleKick; 
+            System.out.println("***use anglekick (" + dblAngleKick + ") instead of dp " + dp);
+            dp = dblAngleKick;
         }                           // then B polarity is defined in J-PARC also dp>0 for B>0 in x and y
-        
+
         // Build transfer matrix
-        PhaseMatrix  matPhi  = PhaseMatrix.identity();         // homogeneous coordinates
-        
-        switch (this.getOrientation())  {
-        
-        case ORIENT_HOR:
-            matPhi.setElem(1,6, -dp);
-            break;
-            
-        case ORIENT_VER:
-        	  matPhi.setElem(3,6, dp);
-            break;
-                
-        default:
-            throw new PropagationException("IdealMagSteeringDipole::tranferMatrix() - unknown magnet orientation");
+        PhaseMatrix matPhi = PhaseMatrix.identity();         // homogeneous coordinates
+
+        switch (this.getOrientation()) {
+
+            case ORIENT_HOR:
+                matPhi.setElem(1, 6, -dp);
+                break;
+
+            case ORIENT_VER:
+                matPhi.setElem(3, 6, dp);
+                break;
+
+            default:
+                throw new PropagationException("IdealMagSteeringDipole::tranferMatrix() - unknown magnet orientation");
         }
-        
+
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors for ThinElement
-        matPhi = applyErrors(matPhi,0.0);
-        
+        matPhi = applyErrors(matPhi, 0.0);
+
         return new PhaseMap(matPhi);
     }
-    
-    
-    
+
     /*
      *  Testing and Debugging
      */
-    
-    
     /**
-     *  Dump current state and content to output stream.
+     * Dump current state and content to output stream.
      *
-     *  @param  os      output stream object
+     * @param os output stream object
      */
     @Override
-    public void print(PrintWriter os)    {
+    public void print(PrintWriter os) {
         super.print(os);
-        
-        os.println("  effective length   : " + this.getEffLength() );
-        os.println("  magnetic field     : " + this.getMagField() );
-        os.println("  magnet orientation : " + this.getOrientation() );
+
+        os.println("  effective length   : " + this.getEffLength());
+        os.println("  magnetic field     : " + this.getMagField());
+        os.println("  magnet orientation : " + this.getOrientation());
     }
-    
-    
-	/**
-	 * Conversion method to be provided by the user
-	 * 
-	 * @param element the SMF node to convert
-	 */
-	@Override
-	public void initializeFrom(LatticeElement element) {
-		super.initializeFrom(element);
-		Magnet magnet = (Magnet) element.getHardwareNode();
-                if(((DipoleCorrBucket)magnet.getMagBucket()).getSlices()!=1){
-                    setEffLength(element.getLength());
-                } else {
-                    setEffLength(magnet.getEffLength());		
-                }
-	}
+
+    /**
+     * Conversion method to be provided by the user
+     *
+     * @param element the SMF node to convert
+     */
+    @Override
+    public void initializeFrom(LatticeElement element) {
+        super.initializeFrom(element);
+        Magnet magnet = (Magnet) element.getHardwareNode();
+        if (((DipoleCorrBucket) magnet.getMagBucket()).getSlices() != 1) {
+            setEffLength(element.getLength());
+        } else {
+            setEffLength(magnet.getEffLength());
+        }
+    }
 }

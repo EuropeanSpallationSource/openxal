@@ -60,12 +60,11 @@ class PvAccessChannel extends Channel {
     // Default timeout parameters
     private static final double DEFAULT_IO_TIMEOUT = 5.0;
     private static final double DEFAULT_EVENT_TIMEOUT = 0.1;
-    
+
     // Property names
     private static final String DEF_TIME_IO = "c_dblDefTimeIO";
     private static final String DEF_TIME_EVENT = "c_dblDefTimeEvent";
 
-    
     // Names of the standard fields
     static final String VALUE_FIELD_NAME = "value";
     static final String ALARM_FIELD_NAME = "alarm";
@@ -109,12 +108,12 @@ class PvAccessChannel extends Channel {
 
         String requestString = defaultField.equals(VALUE_FIELD_NAME) ? "" : defaultField;
         pvRequest = CreateRequest.create().createRequest("field(" + requestString + ")");
-       
+
         // Load default timeouts from preferences if available, otherwise use hardcoded values.
         java.util.prefs.Preferences defaults = Preferences.nodeForPackage(Channel.class);
-        dblTmIO = defaults.getDouble( DEF_TIME_IO, DEFAULT_IO_TIMEOUT);
-        dblTmEvt = defaults.getDouble( DEF_TIME_EVENT, DEFAULT_EVENT_TIMEOUT);   
-        
+        dblTmIO = defaults.getDouble(DEF_TIME_IO, DEFAULT_IO_TIMEOUT);
+        dblTmEvt = defaults.getDouble(DEF_TIME_EVENT, DEFAULT_EVENT_TIMEOUT);
+
         connectionFlag = false;
     }
 
@@ -155,7 +154,7 @@ class PvAccessChannel extends Channel {
     public boolean isConnected() {
         return channel != null && channel.getConnectionState() == ConnectionState.CONNECTED;
     }
-    
+
     /**
      * {@inheritDoc}
      */

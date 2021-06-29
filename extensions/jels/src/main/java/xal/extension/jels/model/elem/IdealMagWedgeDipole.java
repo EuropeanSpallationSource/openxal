@@ -112,53 +112,40 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * @param vecAlign (dx,dy,dz)
      */
     /**
-    public void setAlignment(R3 vecAlign) {
-        this.getMagBody().setAlign(vecAlign);
-        this.getFaceEntr().setAlign(vecAlign);
-        this.getFaceExit().setAlign(vecAlign);
-    }
-    * /
-
-    /**
+     * public void setAlignment(R3 vecAlign) {
+     * this.getMagBody().setAlign(vecAlign);
+     * this.getFaceEntr().setAlign(vecAlign);
+     * this.getFaceExit().setAlign(vecAlign); } /
+     *
+     * /**
      * set align x
      *
      * @param dx
      */
     /**
-    public void setAlignX(double dx) {
-        this.getFaceEntr().setAlignX(dx);
-        this.getMagBody().setAlignX(dx);
-        this.getFaceExit().setAlignX(dx);
-    }
-    * /
-
-    /**
+     * public void setAlignX(double dx) { this.getFaceEntr().setAlignX(dx);
+     * this.getMagBody().setAlignX(dx); this.getFaceExit().setAlignX(dx); } /
+     *
+     * /**
      * set align y
      *
      * @param dy
      */
     /**
-    public void setAlignY(double dy) {
-        this.getFaceEntr().setAlignY(dy);
-        this.getMagBody().setAlignY(dy);
-        this.getFaceExit().setAlignY(dy);
-    }
-    * /
-
-    /**
+     * public void setAlignY(double dy) { this.getFaceEntr().setAlignY(dy);
+     * this.getMagBody().setAlignY(dy); this.getFaceExit().setAlignY(dy); } /
+     *
+     * /**
      * set align z
      *
      * @param dz
      */
     /**
-    public void setAlignZ(double dz) {
-        this.getFaceEntr().setAlignY(dz);
-        this.getMagBody().setAlignY(dz);
-        this.getFaceExit().setAlignY(dz);
-    }
-    * /
-
-    /**
+     * public void setAlignZ(double dz) { this.getFaceEntr().setAlignY(dz);
+     * this.getMagBody().setAlignY(dz); this.getFaceExit().setAlignY(dz); } /
+     *
+     * /
+     **
      * <p>
      * Set the position of the magnet along the design path within the
      * containing lattice.
@@ -190,7 +177,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
         //this.getMagBody().setPosition(dblPos);
         //this.getFaceEntr().setPosition(dblPos - dblLen / 2.0);
         //this.getFaceExit().setPosition(dblPos + dblLen / 2.0);
-        this.getMagBody().setPosition(dblLen/2.0);
+        this.getMagBody().setPosition(dblLen / 2.0);
         this.getFaceEntr().setPosition(0.0);
         this.getFaceExit().setPosition(dblLen);
     }
@@ -561,7 +548,6 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
     public void initializeFrom(LatticeElement element) {
         super.initializeFrom(element);
 
-
         xal.smf.impl.Bend magnet = (xal.smf.impl.Bend) element.getHardwareNode();
 
         setPosition(element.getCenterPosition(), element.getLength());
@@ -574,7 +560,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
 
         // Now compute the dependent parameters
         double R_bend0 = len_path0 / ang_bend0;
-        double fld_ind0 = - k_quad0 * R_bend0 * R_bend0;
+        double fld_ind0 = -k_quad0 * R_bend0 * R_bend0;
 
         double ang_bend = ang_bend0 * (len_sect / len_path0);
         double len_path = R_bend0 * ang_bend;
@@ -583,7 +569,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
         setPhysicalLength(len_sect);
         setDesignPathLength(len_path);
         setFieldIndex(fld_ind0);
-        setDesignBendAngle(ang_bend);                
+        setDesignBendAngle(ang_bend);
 
         // first piece
         if (element.isFirstSlice()) {

@@ -34,7 +34,7 @@ import xal.tools.beam.PhaseMatrix;
 public class TransferMapLoader {
 
     private static Map<URI, TransferMapLoader> loaders = new HashMap<>();
-    
+
     private static final Logger LOGGER = Logger.getLogger(TransferMapLoader.class.getName());
 
     private URI tmFile;

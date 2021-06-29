@@ -41,7 +41,7 @@ public class DipoleCorrBucket extends xal.smf.attr.DipoleCorrBucket {
 
     public DipoleCorrBucket() {
         super();
-        
+
         attOrientation = new Attribute("");
 
         super.registerAttribute(ARR_NAMES[0], attOrientation, "Orientation of the magnet (H/V).");
@@ -51,7 +51,7 @@ public class DipoleCorrBucket extends xal.smf.attr.DipoleCorrBucket {
      * Orientation of the magnet (H/V)
      */
     private Attribute attOrientation;
-    
+
     public int getOrientation() {
         String strFieldType = attOrientation.getString();
         if ("horizontal".equalsIgnoreCase(strFieldType) || "H".equalsIgnoreCase(strFieldType)) {

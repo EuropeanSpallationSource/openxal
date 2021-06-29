@@ -42,11 +42,20 @@ import xal.tools.beam.Twiss;
  */
 public class IniFileParser {
 
-    private double kineticEnergy;       // in eV
+    /**
+     * in eV
+     */
+    private double kineticEnergy;
     private PhaseVector initialCentroid = null;
     private Twiss[] initialTwiss = null;
-    private double beamCurrent = 0;         // in A
-    private double bunchFrequency = 0;  // in MHz
+    /**
+     * in A
+     */
+    private double beamCurrent = 0;
+    /**
+     * in MHz
+     */
+    private double bunchFrequency = 0;
 
     public double getBunchFrequency() {
         return bunchFrequency;

@@ -21,8 +21,14 @@ import gov.aps.jca.dbr.*;
 abstract class JcaMonitor extends Monitor implements gov.aps.jca.event.MonitorListener {
 
     protected int type;
-    protected gov.aps.jca.Channel jcaChannel;    // PV object associated with channel
-    protected gov.aps.jca.Monitor jcaMonitor;    // internal JCA monitor
+    /**
+     * PV object associated with channel
+     */
+    protected gov.aps.jca.Channel jcaChannel;
+    /**
+     * internal JCA monitor
+     */
+    protected gov.aps.jca.Monitor jcaMonitor;
 
     /**
      * Creates new Monitor
@@ -111,7 +117,10 @@ abstract class JcaMonitor extends Monitor implements gov.aps.jca.event.MonitorLi
  */
 class JcaMonitorValTime extends JcaMonitor {
 
-    private IEventSinkValTime ifcSink;      // data sink for channel monitoring
+    /**
+     * data sink for channel monitoring
+     */
+    private IEventSinkValTime ifcSink;
 
     // create a mew monitor
     protected JcaMonitorValTime(final Channel chan, final int type, final IEventSinkValTime ifcSink, final int intMaskFire) throws ConnectionException, MonitorException {
@@ -149,7 +158,10 @@ class JcaMonitorValTime extends JcaMonitor {
  */
 class JcaMonitorValStatus extends JcaMonitor {
 
-    private IEventSinkValStatus ifcSink;      // data sink for channel monitoring
+    /**
+     * data sink for channel monitoring
+     */
+    private IEventSinkValStatus ifcSink;
 
     // create a mew monitor
     protected JcaMonitorValStatus(final Channel chan, final int type, final IEventSinkValStatus ifcSink, final int intMaskFire) throws ConnectionException, MonitorException {
@@ -187,7 +199,10 @@ class JcaMonitorValStatus extends JcaMonitor {
  */
 class JcaMonitorValue extends JcaMonitor {
 
-    private final IEventSinkValue ifcSink;      // data sink for channel monitoring
+    /**
+     * data sink for channel monitoring
+     */
+    private final IEventSinkValue ifcSink;
 
     // create a mew monitor
     protected JcaMonitorValue(final Channel chan, final int type, final IEventSinkValue ifcSink, final int intMaskFire)

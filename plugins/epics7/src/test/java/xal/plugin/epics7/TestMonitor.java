@@ -37,10 +37,9 @@ import static xal.plugin.epics7.Epics7Channel.VALUE_ALARM_FIELD;
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
-public class TestMonitor implements Monitor{
+public class TestMonitor implements Monitor {
 
     boolean poll = true;
-
 
     @Override
     public Status start() {

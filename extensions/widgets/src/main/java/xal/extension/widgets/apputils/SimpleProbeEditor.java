@@ -6,7 +6,6 @@
  * @author Tom Pelaia
  * @author Patrick Scruggs
  */
-
 package xal.extension.widgets.apputils;
 
 import java.awt.Frame;
@@ -14,28 +13,27 @@ import java.awt.Frame;
 import xal.extension.widgets.beaneditor.SimpleBeanEditor;
 import xal.model.probe.Probe;
 
-
-
-
-/** SimpleProbeEditor */
+/**
+ * SimpleProbeEditor
+ */
 public class SimpleProbeEditor extends SimpleBeanEditor<Probe<?>> {
-	private static final long serialVersionUID = 1L;
 
-	public SimpleProbeEditor(Frame owner, Probe<?> bean) {
-		super(owner, "Probe Editor", "Probe", bean);
-	}
+    private static final long serialVersionUID = 1L;
 
-	public SimpleProbeEditor(Frame owner, Probe<?> bean, boolean visible) {
-		super(owner, "Probe Editor", "Probe", bean, true, visible);
-	}
+    public SimpleProbeEditor(Frame owner, Probe<?> bean) {
+        super(owner, "Probe Editor", "Probe", bean);
+    }
 
-	/** 
-	 * Get the probe to edit
+    public SimpleProbeEditor(Frame owner, Probe<?> bean, boolean visible) {
+        super(owner, "Probe Editor", "Probe", bean, true, visible);
+    }
+
+    /**
+     * Get the probe to edit
+     *
      * @return probe associated with this editor
      */
     public Probe<?> getProbe() {
         return getBean();
     }
 }
-
-

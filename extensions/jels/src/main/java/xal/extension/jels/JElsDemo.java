@@ -142,7 +142,7 @@ public class JElsDemo {
             i = i + 1;
         }
     }
-    
+
     public static void loadInitialParameters(EnvelopeProbe probe, String file) {
         XmlDataAdaptor document = XmlDataAdaptor.adaptorForUrl(JElsDemo.class.getResource(file).toString(), false);
         EnvelopeProbeState state = new EnvelopeProbeState();

@@ -29,7 +29,6 @@ import xal.extension.jels.model.elem.FieldMapPoint;
  */
 public class RfFieldMap1D extends FieldMap {
 
-
     public RfFieldMap1D(String path, String filename, int numberOfPoints) {
         FieldComponent<double[]> fieldComponent = loadFile1D(path, filename + ".edz");
 
@@ -58,7 +57,6 @@ public class RfFieldMap1D extends FieldMap {
 
         setCoupled(false);
     }
-
 
     @Override
     public void saveFieldMap(String path, String filename) throws IOException, URISyntaxException {

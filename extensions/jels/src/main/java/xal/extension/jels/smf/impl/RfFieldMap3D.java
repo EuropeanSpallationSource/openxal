@@ -78,7 +78,7 @@ public class RfFieldMap3D extends FieldMap {
                 }
             }
         }
-        
+
         electricField.put("x", electricFieldX);
         electricField.put("y", electricFieldY);
         electricField.put("z", electricFieldZ);
@@ -242,7 +242,6 @@ public class RfFieldMap3D extends FieldMap {
         dFzdy /= spacingY * normZ;
         dFzdz /= spacingZ * normZ;
 
-        
         if (electricField) {
             fieldMapPoint.setEx(Fx0);
             fieldMapPoint.setEy(Fy0);

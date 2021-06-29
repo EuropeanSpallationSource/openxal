@@ -113,77 +113,77 @@ public class Bend extends xal.smf.impl.Bend {
      * VERTICAL
      */
     public void setOrientation(int orientation) {
-        ((DipoleBucket)getMagBucket()).setOrientation(orientation);
+        ((DipoleBucket) getMagBucket()).setOrientation(orientation);
     }
 
     /**
      * @return total gap of magnet (m)
      */
     public double getGap() {
-        return ((DipoleBucket)getMagBucket()).getGap();
+        return ((DipoleBucket) getMagBucket()).getGap();
     }
 
     /**
      * @param value total gap of magnet (m)
      */
     public void setGap(double value) {
-        ((DipoleBucket)getMagBucket()).setGap(value);
+        ((DipoleBucket) getMagBucket()).setGap(value);
     }
 
     /**
      * @return Upstream edge face Fringe-field factor (default = 0.45)
      */
     public double getEntrK1() {
-        return ((DipoleBucket)getMagBucket()).getEntrFringeFieldFactorK1();
+        return ((DipoleBucket) getMagBucket()).getEntrFringeFieldFactorK1();
     }
 
     /**
      * @param value Upstream edge face Fringe-field factor (default = 0.45)
      */
     public void setEntrK1(double value) {
-        ((DipoleBucket)getMagBucket()).setEntrFringeFieldFactorK1(value);
+        ((DipoleBucket) getMagBucket()).setEntrFringeFieldFactorK1(value);
     }
 
     /**
      * @return Upstream edge face Fringe-field factor (default = 2.80)
      */
     public double getEntrK2() {
-        return ((DipoleBucket)getMagBucket()).getEntrFringeFieldFactorK2();
+        return ((DipoleBucket) getMagBucket()).getEntrFringeFieldFactorK2();
     }
 
     /**
      * @param value Upstream edge face Fringe-field factor (default = 2.80)
      */
     public void setEntrK2(double value) {
-        ((DipoleBucket)getMagBucket()).setEntrFringeFieldFactorK2(value);
+        ((DipoleBucket) getMagBucket()).setEntrFringeFieldFactorK2(value);
     }
 
     /**
      * @return Downstream edge face Fringe-field factor (default = 0.45)
      */
     public double getExitK1() {
-        return ((DipoleBucket)getMagBucket()).getExitFringeFieldFactorK1();
+        return ((DipoleBucket) getMagBucket()).getExitFringeFieldFactorK1();
     }
 
     /**
      * @param value Downstream edge face Fringe-field factor (default = 0.45)
      */
     public void setExitK1(double value) {
-        ((DipoleBucket)getMagBucket()).setExitFringeFieldFactorK1(value);
+        ((DipoleBucket) getMagBucket()).setExitFringeFieldFactorK1(value);
     }
 
     /**
      * @return Downstream edge face Fringe-field factor (default = 2.80)
      */
     public double getExitK2() {
-        return ((DipoleBucket)getMagBucket()).getExitFringeFieldFactorK2();
+        return ((DipoleBucket) getMagBucket()).getExitFringeFieldFactorK2();
     }
 
     /**
      * @param value Downstream edge face Fringe-field factor (default = 2.80)
      */
     public void setExitK2(double value) {
-        ((DipoleBucket)getMagBucket()).setExitFringeFieldFactorK2(value);
+        ((DipoleBucket) getMagBucket()).setExitFringeFieldFactorK2(value);
     }
 
     /**
@@ -194,7 +194,7 @@ public class Bend extends xal.smf.impl.Bend {
      */
     @Override
     public int getOrientation() {
-        return ((DipoleBucket)getMagBucket()).getOrientation();
+        return ((DipoleBucket) getMagBucket()).getOrientation();
     }
 
     /**

@@ -17,74 +17,65 @@ import edu.stanford.slac.util.zplot.cartoon.model.widget.CartoonWidget;
 
 public class BeamlineCartoon extends XYPlot {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -4875357169059083657L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -4875357169059083657L;
 
-	public static final Color BEAMLINE_COLOR = new Color(0xFFCC00);
-	
-	private final HashSet<Class<? extends CartoonWidget>> filteredWidgets;
+    public static final Color BEAMLINE_COLOR = new Color(0xFFCC00);
 
-	public BeamlineCartoon() {
-		super(null, new NumberAxis(), new NumberAxis(), new CartoonRenderer());
-		this.filteredWidgets = new HashSet<Class<? extends CartoonWidget>>();
+    private final HashSet<Class<? extends CartoonWidget>> filteredWidgets;
 
-		getRangeAxis().setVisible(false);
-		getRangeAxis().setRange(-1, 1);
-		CartoonRenderer cartoonRenderer = (CartoonRenderer) getRenderer();
-		cartoonRenderer.setBaseLinesVisible(false);
-		
-		setRangeZeroBaselinePaint(BEAMLINE_COLOR);
-		
-	}
-	
-	
+    public BeamlineCartoon() {
+        super(null, new NumberAxis(), new NumberAxis(), new CartoonRenderer());
+        this.filteredWidgets = new HashSet<Class<? extends CartoonWidget>>();
 
-	@Override
-	public boolean isRangeZoomable() {
-		return false;
-	}
-	
-	
+        getRangeAxis().setVisible(false);
+        getRangeAxis().setRange(-1, 1);
+        CartoonRenderer cartoonRenderer = (CartoonRenderer) getRenderer();
+        cartoonRenderer.setBaseLinesVisible(false);
 
+        setRangeZeroBaselinePaint(BEAMLINE_COLOR);
 
+    }
 
-	@Override
-	public void zoomRangeAxes(double lowerPercent, double upperPercent,
-			PlotRenderingInfo info, Point2D source) {
-		//do nothing
-		return;
-	}
+    @Override
+    public boolean isRangeZoomable() {
+        return false;
+    }
 
+    @Override
+    public void zoomRangeAxes(double lowerPercent, double upperPercent,
+            PlotRenderingInfo info, Point2D source) {
+        //do nothing
+        return;
+    }
 
+    @Override
+    public void zoomRangeAxes(double factor, PlotRenderingInfo info,
+            Point2D source, boolean useAnchor) {
+        //do nothing
+        return;
+    }
 
-	@Override
-	public void zoomRangeAxes(double factor, PlotRenderingInfo info,
-			Point2D source, boolean useAnchor) {
-		//do nothing
-		return;
-	}
+    @Override
+    public boolean render(Graphics2D g2, Rectangle2D dataArea, int index,
+            PlotRenderingInfo info, CrosshairState crosshairState) {
+        XYItemRenderer renderer = getRenderer(index);
+        if (renderer instanceof CartoonRenderer) {
+            CartoonRenderer cartoonRenderer = (CartoonRenderer) renderer;
+            Range range = getDomainAxis().getRange();
+            double deltaPix = dataArea.getMaxX() - dataArea.getX();
+            double deltaValue = range.getUpperBound() - range.getLowerBound();
 
+            cartoonRenderer.setPixelPerM(deltaPix / deltaValue);
+        }
 
-	@Override
-	public boolean render(Graphics2D g2, Rectangle2D dataArea, int index,
-			PlotRenderingInfo info, CrosshairState crosshairState) {
-		XYItemRenderer renderer = getRenderer(index);
-		if (renderer instanceof CartoonRenderer) {
-			CartoonRenderer cartoonRenderer = (CartoonRenderer) renderer;
-			Range range = getDomainAxis().getRange();
-			double deltaPix = dataArea.getMaxX() - dataArea.getX();
-			double deltaValue = range.getUpperBound() - range.getLowerBound();
+        return super.render(g2, dataArea, index, info, crosshairState);
+    }
 
-			cartoonRenderer.setPixelPerM(deltaPix / deltaValue);
-		}
-
-		return super.render(g2, dataArea, index, info, crosshairState);
-	}
-
-	public HashSet<Class<? extends CartoonWidget>> getFilteredWidgets() {
-		return this.filteredWidgets;
-	}
+    public HashSet<Class<? extends CartoonWidget>> getFilteredWidgets() {
+        return this.filteredWidgets;
+    }
 
 }

@@ -32,17 +32,18 @@ import xal.smf.impl.qualify.ElementTypeManager;
  * @author Natalia Milas <natalia.milas@esss.se>
  */
 public class SpaceChargeCompensation extends AcceleratorNode {
+
     /*
      *  Constants
      */
     public static final String TYPE = "SCC";
 
-    public static final String N2FLOW_RB_HANDLE = "n2flowRB";    
+    public static final String N2FLOW_RB_HANDLE = "n2flowRB";
 
     private Channel n2flowRC = null;
     public static final String N2FLOW_SET_HANDLE = "n2flowS";
     private Channel n2flowSC = null;
-    
+
     public final AccessibleProperty n2flow = new AccessibleProperty("n2flow", N2FLOW_RB_HANDLE, N2FLOW_SET_HANDLE);
 
     static {

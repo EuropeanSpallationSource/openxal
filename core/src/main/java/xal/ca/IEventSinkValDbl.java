@@ -5,7 +5,6 @@ package xal.ca;
  *
  * Created on November 20, 2001, 1:42 PM
  */
-
 /**
  *
  * @author Christopher K. Allen

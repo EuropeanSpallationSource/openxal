@@ -8,12 +8,12 @@ package edu.stanford.slac.util.zplot;
  * @since
  */
 public interface ZPlotListener {
-	
-	/**
-	 * My Method (please, document me!)
-	 */
-	public void tooltipShown(ZPlotEvent event);
 
-	public void zoomCompleted(ZPlotEvent event);
+    /**
+     * My Method (please, document me!)
+     */
+    public void tooltipShown(ZPlotEvent event);
+
+    public void zoomCompleted(ZPlotEvent event);
 
 }

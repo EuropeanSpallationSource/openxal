@@ -48,7 +48,7 @@ public class PostEntry {
         if (elogServer == null) {
             elogServer = ElogServer.getElogURL();
         }
-        
+
         Jelog jelog = new Jelog(elogServer);
 
         if (jelog.getUserName() == null) {
@@ -70,7 +70,7 @@ public class PostEntry {
      */
     public static boolean login(String user, char[] password) throws IOException, Exception {
         Jelog jelog = new Jelog(elogServer);
-    
+
         return jelog.login(user, password, true);
     }
 }

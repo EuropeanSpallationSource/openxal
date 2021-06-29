@@ -32,10 +32,9 @@ import javafx.scene.control.ListView;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
 
-
 /**
  * Created the GUI window to create a combo sequence
- * 
+ *
  * @author Natalia Milas <natalia.milas@ess.eu>
  */
 public class CreateComboSequenceController {

@@ -4,193 +4,221 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Wraps a property for display as a record in a table */
+/**
+ * Wraps a property for display as a record in a table
+ */
 public class PropertyRecord {
-	/** wrapped property */
-	private final EditableProperty PROPERTY;
 
-	/** current value which may be pending */
-	private Object value;
+    /**
+     * wrapped property
+     */
+    private final EditableProperty PROPERTY;
 
-	/** indicates that this record has unsaved changes */
-	private boolean hasChanges;
+    /**
+     * current value which may be pending
+     */
+    private Object value;
 
+    /**
+     * indicates that this record has unsaved changes
+     */
+    private boolean hasChanges;
 
-	/** Constructor */
-	public PropertyRecord( final EditableProperty property ) {
-		PROPERTY = property;
+    /**
+     * Constructor
+     */
+    public PropertyRecord(final EditableProperty property) {
+        PROPERTY = property;
 
-		// initialize the value and status from the underlying property
-		revert();
-	}
+        // initialize the value and status from the underlying property
+        revert();
+    }
 
+    /**
+     * name of the property
+     */
+    public String getName() {
+        return PROPERTY.getName();
+    }
 
-	/** name of the property */
-	public String getName() {
-		return PROPERTY.getName();
-	}
+    /**
+     * Get the path to this property
+     */
+    public String getPath() {
+        return PROPERTY.getPath();
+    }
 
+    /**
+     * Get the label for display.
+     */
+    public String getDisplayLabel() {
+        return isEditable() ? getName() : getPath();
+    }
 
-	/** Get the path to this property */
-	public String getPath() {
-		return PROPERTY.getPath();
-	}
+    /**
+     * Get the property type
+     */
+    public Class<?> getPropertyType() {
+        return PROPERTY.getPropertyType();
+    }
 
+    /**
+     * Get the value for this property
+     */
+    public Object getValue() {
+        return value;
+    }
 
-	/**  Get the label for display. */
-	public String getDisplayLabel() {
-		return isEditable() ? getName() : getPath();
-	}
+    /**
+     * set the pending value
+     */
+    public void setValue(final Object value) {
+        if (isEditable()) {
+            this.value = value;
 
+            // get the property's current value
+            final Object propertyValue = PROPERTY.getValue();
 
-	/** Get the property type */
-	public Class<?> getPropertyType() {
-		return PROPERTY.getPropertyType();
-	}
+            // if the value is really different from the property's current value then mark it as having changes
+            // if the value is null then look for strict equality otherwise compare using equals
+            if ((value == null && value != propertyValue) || (value != null && !value.equals(propertyValue))) {
+                hasChanges = true;
+            } else {
+                hasChanges = false;
+            }
+        }
+    }
 
+    /**
+     * set the pending value
+     */
+    public void setValue(final boolean value) {
+        setValue(Boolean.valueOf(value));
+    }
 
-	/** Get the value for this property */
-	public Object getValue() {
-		return value;
-	}
+    /**
+     * Set the pending string value. Most values (except for boolean) are set as
+     * string since the table cell editor does so.
+     */
+    public void setValue(final String value) {
+        final Class<?> rawType = getPropertyType();
+        if (rawType == String.class) {
+            setValue((Object) value);
+        } else {
+            try {
+                final Class<?> type = rawType.isPrimitive() ? this.value.getClass() : rawType;	// convert to wrapper type (e.g. double.class to Double.class) if necessary
+                final Object objectValue = toObjectOfType(value, type);
+                setValue(objectValue);
+            } catch (Exception exception) {
+                System.err.println("Exception: " + exception);
+                System.err.println("Error parsing the value: " + value + " as " + rawType);
+            }
+        }
+    }
 
+    /**
+     * Convert the string to an Object of the specified type
+     */
+    private static Object toObjectOfType(final String stringValue, final Class<?> type) {
+        try {
+            // every wrapper class has a static method named "valueOf" that takes a String and returns a corresponding instance of the wrapper
+            final Method converter = type.getMethod("valueOf", String.class);
+            return converter.invoke(null, stringValue);
+        } catch (Exception exception) {
+            throw new RuntimeException("No match to parse string: " + stringValue + " as " + type);
+        }
+    }
 
-	/** set the pending value */
-	public void setValue( final Object value ) {
-		if ( isEditable() ) {
-			this.value = value;
+    /**
+     * synonym for isEditable so the table model will work
+     */
+    public boolean getEditable() {
+        return isEditable();
+    }
 
-			// get the property's current value
-			final Object propertyValue = PROPERTY.getValue();
+    /**
+     * only primitive properties are editable
+     */
+    public boolean isEditable() {
+        return PROPERTY.isPrimitive();
+    }
 
-			// if the value is really different from the property's current value then mark it as having changes
-			// if the value is null then look for strict equality otherwise compare using equals
-			if ( ( value == null && value != propertyValue ) || ( value != null && !value.equals( propertyValue ) )  ) {
-				hasChanges = true;
-			}
-			else {
-				hasChanges = false;
-			}
-		}
-	}
+    /**
+     * indicates whether this record has unpublished changes
+     */
+    public boolean hasChanges() {
+        return hasChanges;
+    }
 
+    /**
+     * revert to the property value if this record is editable and has
+     * unpublished changes
+     */
+    public void revertIfNeeded() {
+        if (isEditable() && hasChanges()) {
+            revert();
+        }
+    }
 
-	/** set the pending value */
-	public void setValue( final boolean value ) {
-		setValue( Boolean.valueOf( value ) );
-	}
+    /**
+     * revert back to the current value of the underlying property
+     */
+    public void revert() {
+        // the value is only meaningful for primitive properties (only thing we want to display)
+        value = PROPERTY.isPrimitive() ? PROPERTY.getValue() : null;
+        hasChanges = false;
+    }
 
+    /**
+     * publish the pending value to the underlying property if editable and
+     * marked with unpublished changes
+     */
+    public void publishIfNeeded() {
+        if (isEditable() && hasChanges()) {
+            publish();
+        }
+    }
 
-	/** Set the pending string value. Most values (except for boolean) are set as string since the table cell editor does so. */
-	public void setValue( final String value ) {
-		final Class<?> rawType = getPropertyType();
-		if ( rawType == String.class ) {
-			setValue( (Object)value );
-		}
-		else {
-			try {
-				final Class<?> type = rawType.isPrimitive() ? this.value.getClass() : rawType;	// convert to wrapper type (e.g. double.class to Double.class) if necessary
-				final Object objectValue = toObjectOfType( value, type );
-				setValue( objectValue );
-			}
-			catch( Exception exception ) {
-				System.err.println( "Exception: " + exception );
-				System.err.println( "Error parsing the value: " + value + " as " + rawType );
-			}
-		}
-	}
+    /**
+     * publish the pending value to the underlying property
+     */
+    public void publish() {
+        PROPERTY.setValue(value);
+        hasChanges = false;
+    }
 
+    /**
+     * Get the units
+     */
+    public String getUnits() {
+        return PROPERTY.getUnits();
+    }
 
-	/** Convert the string to an Object of the specified type */
-	private static Object toObjectOfType( final String stringValue, final Class<?> type ) {
-		try {
-			// every wrapper class has a static method named "valueOf" that takes a String and returns a corresponding instance of the wrapper
-			final Method converter = type.getMethod( "valueOf", String.class );
-			return converter.invoke( null, stringValue );
-		}
-		catch ( Exception exception ) {
-			throw new RuntimeException( "No match to parse string: " + stringValue + " as " + type );
-		}
-	}
+    /**
+     * Generate a flat list of records from the given property tree
+     */
+    public static List<PropertyRecord> toRecords(final EditablePropertyContainer propertyTree) {
+        final List<PropertyRecord> records = new ArrayList<>();
+        appendPropertiesToRecords(propertyTree, records);
+        return records;
+    }
 
+    /**
+     * append the properties in the given tree to the records nesting deeply
+     */
+    private static void appendPropertiesToRecords(final EditablePropertyContainer propertyTree, final List<PropertyRecord> records) {
+        records.add(new PropertyRecord(propertyTree));		// add the container itself
 
-	/** synonym for isEditable so the table model will work */
-	public boolean getEditable() {
-		return isEditable();
-	}
+        // add all the primitive properties
+        final List<EditablePrimitiveProperty> properties = propertyTree.getChildPrimitiveProperties();
+        for (final EditablePrimitiveProperty property : properties) {
+            records.add(new PropertyRecord(property));
+        }
 
-
-	/** only primitive properties are editable */
-	public boolean isEditable() {
-		return PROPERTY.isPrimitive();
-	}
-
-
-	/** indicates whether this record has unpublished changes */
-	public boolean hasChanges() {
-		return hasChanges;
-	}
-
-
-	/** revert to the property value if this record is editable and has unpublished changes */
-	public void revertIfNeeded() {
-		if ( isEditable() && hasChanges() ) {
-			revert();
-		}
-	}
-
-
-	/** revert back to the current value of the underlying property */
-	public void revert() {
-		// the value is only meaningful for primitive properties (only thing we want to display)
-		value = PROPERTY.isPrimitive() ? PROPERTY.getValue() : null;
-		hasChanges = false;
-	}
-
-
-	/** publish the pending value to the underlying property if editable and marked with unpublished changes */
-	public void publishIfNeeded() {
-		if ( isEditable() && hasChanges() ) {
-			publish();
-		}
-	}
-
-
-	/** publish the pending value to the underlying property */
-	public void publish() {
-		PROPERTY.setValue( value );
-		hasChanges = false;
-	}
-
-
-	/** Get the units */
-	public String getUnits() {
-		return PROPERTY.getUnits();
-	}
-
-
-	/** Generate a flat list of records from the given property tree */
-	public static List<PropertyRecord> toRecords( final EditablePropertyContainer propertyTree ) {
-		final List<PropertyRecord> records = new ArrayList<>();
-		appendPropertiesToRecords( propertyTree, records );
-		return records;
-	}
-
-
-	/** append the properties in the given tree to the records nesting deeply */
-	private static void appendPropertiesToRecords( final EditablePropertyContainer propertyTree, final List<PropertyRecord> records ) {
-		records.add( new PropertyRecord( propertyTree ) );		// add the container itself
-
-		// add all the primitive properties
-		final List<EditablePrimitiveProperty> properties = propertyTree.getChildPrimitiveProperties();
-		for ( final EditablePrimitiveProperty property : properties ) {
-			records.add( new PropertyRecord( property ) );
-		}
-
-		// navigate down through each container and append their sub trees
-		final List<EditablePropertyContainer> containers = propertyTree.getChildPropertyContainers();
-		for ( final EditablePropertyContainer container : containers ) {
-			appendPropertiesToRecords( container, records );	// add the containers descendents
-		}
-	}
+        // navigate down through each container and append their sub trees
+        final List<EditablePropertyContainer> containers = propertyTree.getChildPropertyContainers();
+        for (final EditablePropertyContainer container : containers) {
+            appendPropertiesToRecords(container, records);	// add the containers descendents
+        }
+    }
 }

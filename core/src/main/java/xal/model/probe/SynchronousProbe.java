@@ -68,7 +68,7 @@ public class SynchronousProbe extends BunchProbe<SynchronousState> {
 
     /**
      * Set the synchronous phase.
-     * 
+     *
      * @param dblPhase synchronous phase in <b>radians</b>
      */
     public void setSynchronousPhase(double dblPhase) {

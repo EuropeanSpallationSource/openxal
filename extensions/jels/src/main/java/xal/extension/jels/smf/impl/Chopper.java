@@ -56,7 +56,6 @@ public class Chopper extends AcceleratorNode {
     private Channel statusSC = null;
     public final AccessibleProperty status = new AccessibleProperty("status", STATUS_RB_HANDLE, STATUS_SET_HANDLE);
 
-
     static {
         registerType();
     }
@@ -116,12 +115,12 @@ public class Chopper extends AcceleratorNode {
         statusSC.putVal(intVal);
     }
 
-    public void setDelay(double dblVal) throws ConnectionException, PutException  {
+    public void setDelay(double dblVal) throws ConnectionException, PutException {
         delaySC = lazilyGetAndConnect(DELAY_SET_HANDLE, delaySC);
         delaySC.putVal(dblVal);
     }
 
-    public void  setPulseLength(double dblVal) throws ConnectionException, PutException  {
+    public void setPulseLength(double dblVal) throws ConnectionException, PutException {
         lengthSC = lazilyGetAndConnect(LENGTH_SET_HANDLE, lengthSC);
         lengthSC.putVal(dblVal);
     }

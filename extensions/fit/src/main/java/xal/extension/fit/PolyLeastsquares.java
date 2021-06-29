@@ -29,13 +29,28 @@ import xal.tools.math.GenericVector;
  */
 public class PolyLeastsquares {
 
-    private int m;		//number of data points
-    private int k;		//order of best fit equation
+    /**
+     * number of data points
+     */
+    private int m;
+    /**
+     * order of best fit equation
+     */
+    private int k;
 
-    private double[] dX, dY;      //points to fit
+    /**
+     * points to fit
+     */
+    private double[] dX, dY;
 
-    private GenericVector mC;		//equation coefficient vector
-    private double dR; 		//correlation coefficient factor
+    /**
+     * equation coefficient vector
+     */
+    private GenericVector mC;
+    /**
+     * correlation coefficient factor
+     */
+    private double dR;
 
     /**
      * constructor
@@ -97,7 +112,6 @@ public class PolyLeastsquares {
     /**
      * Find the correlation coefficient for the fit
      */
-
     public String Correlation() {
 
         //dR is the correlation coefficient

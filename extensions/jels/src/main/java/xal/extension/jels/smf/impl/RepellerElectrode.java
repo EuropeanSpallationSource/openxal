@@ -25,12 +25,14 @@ import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
 import xal.smf.AccessibleProperty;
 import xal.smf.impl.qualify.ElementTypeManager;
+
 /**
  * The implementation of the Repeller Electrode class.
  *
  * @author Natalia Milas <natalia.milas@esss.se>
  */
 public class RepellerElectrode extends AcceleratorNode {
+
     /*
      *  Constants
      */
@@ -56,6 +58,7 @@ public class RepellerElectrode extends AcceleratorNode {
 
     /**
      * Override to provide type signature
+     *
      * @return String type
      */
     @Override

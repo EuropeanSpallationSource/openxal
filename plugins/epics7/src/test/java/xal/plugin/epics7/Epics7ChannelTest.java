@@ -138,7 +138,7 @@ public class Epics7ChannelTest {
 
         // Waiting for the other thread to finish...
         try {
-            Thread.sleep(CONNECTION_TIME/2);
+            Thread.sleep(CONNECTION_TIME / 2);
         } catch (InterruptedException ex) {
             Logger.getLogger(Epics7ChannelTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -163,7 +163,7 @@ public class Epics7ChannelTest {
         instance3.requestConnection();
 
         try {
-            Thread.sleep(CONNECTION_TIME+CONNECTION_TIME/2);
+            Thread.sleep(CONNECTION_TIME + CONNECTION_TIME / 2);
         } catch (InterruptedException ex) {
             //
         }

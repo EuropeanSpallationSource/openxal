@@ -45,7 +45,6 @@ public class ESSIonSourceMFC extends AcceleratorNode {
     public final AccessibleProperty h2Flow = new AccessibleProperty("h2Flow", H_2_FLOW_R_HANDLE, H_2_FLOW_S_HANDLE);
     public final AccessibleProperty h2FlowRB = new AccessibleProperty("h2FlowRB", H_2_FLOW_RB_HANDLE, H_2_FLOW_S_HANDLE);
 
-
     // High-voltage power supply channel handles
     public static final String VOLTAGE_SET_HANDLE = "volS";
     public static final String VOLTAGE_READ_HANDLE = "volR";

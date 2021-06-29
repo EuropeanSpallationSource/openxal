@@ -8,27 +8,27 @@ import java.awt.geom.Rectangle2D;
 
 public class LossMonitorWidget extends CartoonWidget {
 
-	private static final int DIAMETER = REF_WIDTH / 2;
+    private static final int DIAMETER = REF_WIDTH / 2;
 
-	private static Shape createShape() {
-		Shape circle = new Ellipse2D.Double(-DIAMETER / 2, -REF_HEIGHT
-				- DIAMETER / 2, DIAMETER, DIAMETER);
-		Shape stick = new Rectangle2D.Double(-1, -REF_HEIGHT, 2, REF_HEIGHT);
+    private static Shape createShape() {
+        Shape circle = new Ellipse2D.Double(-DIAMETER / 2, -REF_HEIGHT
+                - DIAMETER / 2, DIAMETER, DIAMETER);
+        Shape stick = new Rectangle2D.Double(-1, -REF_HEIGHT, 2, REF_HEIGHT);
 
-		Area result = new Area(circle);
-		result.add(new Area(stick));
-		return result;
+        Area result = new Area(circle);
+        result.add(new Area(stick));
+        return result;
 
-	}
+    }
 
-	public static final Shape SHAPE = createShape();
+    public static final Shape SHAPE = createShape();
 
-	public LossMonitorWidget() {
-		super(Color.LIGHT_GRAY);
-	}
+    public LossMonitorWidget() {
+        super(Color.LIGHT_GRAY);
+    }
 
-	@Override
-	public Shape getShape(int length) {
-		return SHAPE;
-	}
+    @Override
+    public Shape getShape(int length) {
+        return SHAPE;
+    }
 }

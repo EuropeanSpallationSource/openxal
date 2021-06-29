@@ -2,120 +2,142 @@ package xal.extension.widgets.plot;
 
 /**
  * This class is a data class for data used in the FunctionGraphsJPanel class.
- * This class contains 2D grid with values at the grid points. These values
- * will be presented as colored rectangles in the plot. It uses 4-points
- * linear interpolation to calculate z-value between grid points. 
+ * This class contains 2D grid with values at the grid points. These values will
+ * be presented as colored rectangles in the plot. It uses 4-points linear
+ * interpolation to calculate z-value between grid points.
  *
  * @version 1.0
- * @author  A. Shishlo
+ * @author A. Shishlo
  */
+public class LinearData3D extends ColorSurfaceData {
 
-public class LinearData3D extends ColorSurfaceData{
-
-    /**  The data set constructor with size of the grid.*/   
-    public LinearData3D(int nX, int nY){
-	super(nX,nY);
+    /**
+     * The data set constructor with size of the grid.
+     */
+    public LinearData3D(int nX, int nY) {
+        super(nX, nY);
     }
 
-    /**  Returns the interpolated value of the 2D array for x and y. */
+    /**
+     * Returns the interpolated value of the 2D array for x and y.
+     */
     @Override
-    public double getValue(double x, double y){
+    public double getValue(double x, double y) {
 
-	int i,j;
-	double fracX,fracY;
-	double Wxm,Wxp, Wym, Wyp;
-	double Vm, Vp;
+        int i, j;
+        double fracX, fracY;
+        double Wxm, Wxp, Wym, Wyp;
+        double Vm, Vp;
 
-	if(x < xMin || y < yMin || x > xMax || y > yMax){
-	    return zMin;
-	}
+        if (x < xMin || y < yMin || x > xMax || y > yMax) {
+            return zMin;
+        }
 
-        i = (int) ((x-xMin)/xStep + 0.5);
-        j = (int) ((y-yMin)/yStep + 0.5);
-	        
-        fracX = (x - xMin - i*xStep)/xStep;
-        fracY = (y - yMin - j*yStep)/yStep;
+        i = (int) ((x - xMin) / xStep + 0.5);
+        j = (int) ((y - yMin) / yStep + 0.5);
 
-	if(fracX < 0.){
+        fracX = (x - xMin - i * xStep) / xStep;
+        fracY = (y - yMin - j * yStep) / yStep;
+
+        if (fracX < 0.) {
             i = i - 1;
-	}
+        }
 
-	if(fracY < 0.){
+        if (fracY < 0.) {
             j = j - 1;
-	}
+        }
 
-        if( i < 0) i = 0;
-        if( i > (nX-2)) i = nX-2;
-        if( j < 0) j = 0;
-        if( j > (nY-2)) j = nY-2;
+        if (i < 0) {
+            i = 0;
+        }
+        if (i > (nX - 2)) {
+            i = nX - 2;
+        }
+        if (j < 0) {
+            j = 0;
+        }
+        if (j > (nY - 2)) {
+            j = nY - 2;
+        }
 
-        fracX = (x - xMin - i*xStep)/xStep;
-        fracY = (y - yMin - j*yStep)/yStep;
+        fracX = (x - xMin - i * xStep) / xStep;
+        fracY = (y - yMin - j * yStep) / yStep;
 
-	Wxm = 1.0 - fracX;
-	Wxp = fracX;
+        Wxm = 1.0 - fracX;
+        Wxp = fracX;
 
+        Wym = 1.0 - fracY;
+        Wyp = fracY;
 
-	Wym = 1.0 - fracY;
-	Wyp = fracY;
+        Vm = Wxm * gridData[i][j] + Wxp * gridData[i + 1][j];
+        Vp = Wxm * gridData[i][j + 1] + Wxp * gridData[i + 1][j + 1];
 
-
-	Vm = Wxm*gridData[i][j]+Wxp*gridData[i+1][j];
-	Vp = Wxm*gridData[i][j+1]+Wxp*gridData[i+1][j+1];
-
-        return Wym*Vm + Wyp*Vp;
+        return Wym * Vm + Wyp * Vp;
     }
 
-    /**  Bins value into the 2D array for x and y with weight = value. */
+    /**
+     * Bins value into the 2D array for x and y with weight = value.
+     */
     @Override
-    public void addValue(double x, double y, double value){
-	int i,j;
-	double fracX,fracY;
-	double Wxm,Wxp, Wym, Wyp;
-	double Vm, Vp, tmp;
+    public void addValue(double x, double y, double value) {
+        int i, j;
+        double fracX, fracY;
+        double Wxm, Wxp, Wym, Wyp;
+        double Vm, Vp, tmp;
 
-        i = (int) ((x-xMin)/xStep + 0.5);
-        j = (int) ((y-yMin)/yStep + 0.5);
-	        
-        fracX = (x - xMin - i*xStep)/xStep;
-        fracY = (y - yMin - j*yStep)/yStep;
+        i = (int) ((x - xMin) / xStep + 0.5);
+        j = (int) ((y - yMin) / yStep + 0.5);
 
-	if(fracX < 0.){
+        fracX = (x - xMin - i * xStep) / xStep;
+        fracY = (y - yMin - j * yStep) / yStep;
+
+        if (fracX < 0.) {
             i = i - 1;
-	}
+        }
 
-	if(fracY < 0.){
+        if (fracY < 0.) {
             j = j - 1;
-	}
+        }
 
-        if( i < 0) i = 0;
-        if( i > (nX-2)) i = nX-2;
-        if( j < 0) j = 0;
-        if( j > (nY-2)) j = nY-2;
+        if (i < 0) {
+            i = 0;
+        }
+        if (i > (nX - 2)) {
+            i = nX - 2;
+        }
+        if (j < 0) {
+            j = 0;
+        }
+        if (j > (nY - 2)) {
+            j = nY - 2;
+        }
 
-        fracX = (x - xMin - i*xStep)/xStep;
-        fracY = (y - yMin - j*yStep)/yStep;
+        fracX = (x - xMin - i * xStep) / xStep;
+        fracY = (y - yMin - j * yStep) / yStep;
 
-	Wxm = 1.0 - fracX;
-	Wxp = fracX;
+        Wxm = 1.0 - fracX;
+        Wxp = fracX;
 
-	Wym = 1.0 - fracY;
-	Wyp = fracY;
+        Wym = 1.0 - fracY;
+        Wyp = fracY;
 
-	tmp = Wym * value;
-	gridData[i  ][j]  += Wxm * tmp;
-	gridData[i+1][j]  += Wxp * tmp;
-	tmp = Wyp * value;
-	gridData[i  ][j+1]  += Wxm * tmp;
-	gridData[i+1][j+1]  += Wxp * tmp;
+        tmp = Wym * value;
+        gridData[i][j] += Wxm * tmp;
+        gridData[i + 1][j] += Wxp * tmp;
+        tmp = Wyp * value;
+        gridData[i][j + 1] += Wxm * tmp;
+        gridData[i + 1][j + 1] += Wxp * tmp;
 
-	for(int ii = 0; ii < 2; ii++){
-	    for(int jj = 0; jj < 2; jj++){
-		if(zMin > gridData[i+ii][j+jj]) zMin = gridData[i+ii][j+jj];
-		if(zMax < gridData[i+ii][j+jj]) zMax = gridData[i+ii][j+jj];        
-	    }
-	}
-
+        for (int ii = 0; ii < 2; ii++) {
+            for (int jj = 0; jj < 2; jj++) {
+                if (zMin > gridData[i + ii][j + jj]) {
+                    zMin = gridData[i + ii][j + jj];
+                }
+                if (zMax < gridData[i + ii][j + jj]) {
+                    zMax = gridData[i + ii][j + jj];
+                }
+            }
+        }
 
     }
 

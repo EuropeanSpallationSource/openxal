@@ -3,9 +3,7 @@
  *
  * Created on February 20, 2003, 11:13 AM
  */
-
 package xal.model.elem;
-
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -23,128 +21,134 @@ import xal.sim.scenario.LatticeElement;
 import xal.smf.attr.AlignmentBucket;
 import xal.tools.math.r3.R3;
 
-
-
 /**
  * <p>
- * Convenience abstract base class for a composite modeling element.  The 
+ * Convenience abstract base class for a composite modeling element. The
  * composite is represented as a sequence of modeling elements, perhaps other
- * composites.  Specifically we have an ordered list of child modeling elements.
+ * composites. Specifically we have an ordered list of child modeling elements.
  * </p>
  * <p>
- * Propagation of probes (objects exposing the <code>IProbe</code> interface)
- * is done by passing it sequentially to each child.  Of course if a child is 
- * also a composite the same is done there.
+ * Propagation of probes (objects exposing the <code>IProbe</code> interface) is
+ * done by passing it sequentially to each child. Of course if a child is also a
+ * composite the same is done there.
  * </p>
- *   
- * @author  Christopher K. Allen
+ *
+ * @author Christopher K. Allen
  * @version 2.0 February, 2009
  */
 public abstract class ElementSeq implements IComposite {
 
-    
     /*
      *  Global Attributes
      */
-    
-    /** default number of element positions to reserve in list array */
-    public static final int         SIZE_DEF_RESERVE = 10;
-    
-    
-    
-    
+    /**
+     * default number of element positions to reserve in list array
+     */
+    public static final int SIZE_DEF_RESERVE = 10;
+
     /*
      *  Defining Attributes
      */
-    
-    /** the element type identifier */
-    private String      strType;
-    
-    /** element instance identifier of element */
-    private String      strId;
-    
-    /** Identifier string of the model hardware node */
-    private String      strSmfId;
-    
+    /**
+     * the element type identifier
+     */
+    private String strType;
 
-    /** user comments regarding this sequence */
-    private String      strComment;
+    /**
+     * element instance identifier of element
+     */
+    private String strId;
 
-    
-    /** indicates that the composite had been modified and on-demand parameters must be recomputed */
-    private boolean     bolDirty;
-    
-    /** the current length of this composite on demand */
-    private double      dblLen;
-    
-    /** the current position of this composite within its parent, on demand */
-    private double      dblPos;      
-    
+    /**
+     * Identifier string of the model hardware node
+     */
+    private String strSmfId;
+
+    /**
+     * user comments regarding this sequence
+     */
+    private String strComment;
+
+    /**
+     * indicates that the composite had been modified and on-demand parameters
+     * must be recomputed
+     */
+    private boolean bolDirty;
+
+    /**
+     * the current length of this composite on demand
+     */
+    private double dblLen;
+
+    /**
+     * the current position of this composite within its parent, on demand
+     */
+    private double dblPos;
+
     //
     //  Structure
     //
-    
-    /** the parent composite structure that owns this composite element */
-    private IComposite  cpsParent;
-    
-    /** 
-     * List of IComponent objects composing composite sequence
-     * order upstream to downstream 
+    /**
+     * the parent composite structure that owns this composite element
      */
-    private List<IComponent>        lstCompsForward;
-    
-    /** 
-     * List of IComponent objects composing composite sequence
-     * order downstream to upstream.
-     */
-    private List<IComponent>        lstCompsBackward;
-    
+    private IComposite cpsParent;
 
-    /** Alignment variable */
+    /**
+     * List of IComponent objects composing composite sequence order upstream to
+     * downstream
+     */
+    private List<IComponent> lstCompsForward;
+
+    /**
+     * List of IComponent objects composing composite sequence order downstream
+     * to upstream.
+     */
+    private List<IComponent> lstCompsBackward;
+
+    /**
+     * Alignment variable
+     */
     private double alignx = 0.0;
     private double aligny = 0.0;
     private double alignz = 0.0;
-    
+
     private double phix = 0.0;
     private double phiy = 0.0;
     private double phiz = 0.0;
-    
-    
+
     /*
      * Initialization
-     */    
-     
+     */
     /**
-     *  Creates a new instance of <code>ElementSeq</code> without of the
-     *  given soft type but without a sequence identifier.
-     *  
-     *  @param  strType     soft type of the sequence (defined by the child class)
+     * Creates a new instance of <code>ElementSeq</code> without of the given
+     * soft type but without a sequence identifier.
+     *
+     * @param strType soft type of the sequence (defined by the child class)
      */
     public ElementSeq(String strType) {
-        this(strType, null , SIZE_DEF_RESERVE);
+        this(strType, null, SIZE_DEF_RESERVE);
     }
- 
+
     /**
-     *  Creates a new instance of <code>ElementSeq</code> with the
-     *  given soft type and sequence identifier.
+     * Creates a new instance of <code>ElementSeq</code> with the given soft
+     * type and sequence identifier.
      *
-     *  @param  strType     soft type of the sequence (defined by the child class)
-     *  @param  strId       identifier of the sequence
+     * @param strType soft type of the sequence (defined by the child class)
+     * @param strId identifier of the sequence
      */
     public ElementSeq(String strType, String strId) {
         this(strType, strId, SIZE_DEF_RESERVE);
     }
- 
+
     /**
-     *  Creates a new instance of <code>ElementSeq</code> with the
-     *  given soft type and sequence identifier.
-     *  Also reserves space for a the sequence elements.
-     *  This saves a little CPU time if the relative size of the
-     *  sequence is known <i>a priori</i>.
+     * Creates a new instance of <code>ElementSeq</code> with the given soft
+     * type and sequence identifier. Also reserves space for a the sequence
+     * elements. This saves a little CPU time if the relative size of the
+     * sequence is known <i>a priori</i>.
      *
-     *  @param  strType     soft type of the sequence (defined by the child class)
-     *  @param  strId       identifier of the sequence
-     *  @param  szReserve   number of Element spaces to reserve
+     * @param strType soft type of the sequence (defined by the child class)
+     * @param strId identifier of the sequence
+     * @param szReserve number of Element spaces to reserve
      */
     public ElementSeq(String strType, String strId, int szReserve) {
         lstCompsForward = new ArrayList<>(szReserve);
@@ -157,133 +161,132 @@ public abstract class ElementSeq implements IComposite {
         dblPos = 0.0;
     }
 
-    
     /**
-     *  Set the string identifier for the element.
+     * Set the string identifier for the element.
      *
-     *  @param  strId       new string identifier for element
+     * @param strId new string identifier for element
      */
     public void setId(String strId) {
         this.strId = strId;
     }
 
     /**
-     * Sets the string identifier of the hardware node which this
-     * element models.  Node that this sequence probably models an
-     * accelerator sector, or logical unit.  Thus, this ID is likely
-     * of the type "HEBT", "RING", "DTL", etc.
-     * 
-     * @param strSmfId  identifier for the modeled hardware node (SMF object)
+     * Sets the string identifier of the hardware node which this element
+     * models. Node that this sequence probably models an accelerator sector, or
+     * logical unit. Thus, this ID is likely of the type "HEBT", "RING", "DTL",
+     * etc.
+     *
+     * @param strSmfId identifier for the modeled hardware node (SMF object)
      *
      * @author Christopher K. Allen
-     * @since  Sep 2, 2014
+     * @since Sep 2, 2014
      */
     public void setHardwareNodeId(String strSmfId) {
         this.strSmfId = strSmfId;
     }
 
     /**
-     *  Sets any user comment associated with this sequence.
+     * Sets any user comment associated with this sequence.
      *
-     *  @param  strComment  string containing user comments
+     * @param strComment string containing user comments
      */
-    public void setComments(String strComment)  {
+    public void setComments(String strComment) {
         this.strComment = strComment;
     }
 
-    
     /*
      *  Sequence Properties
      */
-
     /**
-     *  Get any user comments regarding this sequence.  Returns the null string if none.
+     * Get any user comments regarding this sequence. Returns the null string if
+     * none.
      *
-     *  @return         string containing user comments
+     * @return string containing user comments
      */
-    public String   getComments()   { return strComment; }
-    
-    /**
-     *  Get the number of <code>IElement</code> derived objects contained
-     *  in this sequence.
-     * 
-     * @return          number of <code>Element</code> object w/in sequence
-     */
-    public int  getLeafCount()   {
-        Iterator<IComponent> iter = this.childIterator();
-        
-        int cntElem = 0;
-        while (iter.hasNext())  {
-            IComponent    ifcComp = iter.next();
-            
-            if (ifcComp instanceof ElementSeq) {
-                cntElem += ((ElementSeq)ifcComp).getLeafCount();
+    public String getComments() {
+        return strComment;
+    }
 
-            } else if (ifcComp instanceof IElement)  {
+    /**
+     * Get the number of <code>IElement</code> derived objects contained in this
+     * sequence.
+     *
+     * @return number of <code>Element</code> object w/in sequence
+     */
+    public int getLeafCount() {
+        Iterator<IComponent> iter = this.childIterator();
+
+        int cntElem = 0;
+        while (iter.hasNext()) {
+            IComponent ifcComp = iter.next();
+
+            if (ifcComp instanceof ElementSeq) {
+                cntElem += ((ElementSeq) ifcComp).getLeafCount();
+
+            } else if (ifcComp instanceof IElement) {
                 cntElem++;
-                
-            } else  {
+
+            } else {
                 continue;
-                
+
             }
         }
-        
+
         return cntElem;
     }
 
     /**
-     * Return the list of <code>IElement</code> objects contained
-     * in this sequence.
-     * 
-     * @return  list of elements composing this sequence
+     * Return the list of <code>IElement</code> objects contained in this
+     * sequence.
+     *
+     * @return list of elements composing this sequence
      */
-    public  List<IComponent> getElementList()    {
-        return  this.lstCompsForward;
+    public List<IComponent> getElementList() {
+        return this.lstCompsForward;
     }
-    
+
     /**
-     * Returns a list of <em>all</em> elements contained in this
-     * sequence, more specifically, all leaf elements.
-     * 
-     * @return  list containing all <code>IComponent</code> class 
-     *          elements in this sequence
+     * Returns a list of <em>all</em> elements contained in this sequence, more
+     * specifically, all leaf elements.
+     *
+     * @return list containing all <code>IComponent</code> class elements in
+     * this sequence
      *
      * @author Christopher K. Allen
-     * @since  Sep 11, 2014
+     * @since Sep 11, 2014
      */
     public List<IComponent> getAllElements() {
-        List<IComponent>        lstCmps = new ArrayList<>();
-        Iterator<IComponent>    itrCmps =  this.globalIterator();
-        
+        List<IComponent> lstCmps = new ArrayList<>();
+        Iterator<IComponent> itrCmps = this.globalIterator();
+
         while (itrCmps.hasNext()) {
             IComponent cmp = itrCmps.next();
-            
+
             lstCmps.add(cmp);
         }
-        
+
         return lstCmps;
     }
-    
+
     /**
      * Set the alignment parameters all at once.
-     * 
-     * @param vecAlign  (dx,dy,dz)
-     * 
+     *
+     * @param vecAlign (dx,dy,dz)
+     *
      * @author Christopher K. Allen
      */
-    public void setAlign(R3 vecAlign)    {
+    public void setAlign(R3 vecAlign) {
         alignx = vecAlign.getx();
         aligny = vecAlign.gety();
         alignz = vecAlign.getz();
     }
-    
-    
+
     /**
      * Set the horizontal misalignment
-     * 
-     * @param x     misalignment (in m)
      *
-     * @since  Dec 17, 2014   by Christopher K. Allen
+     * @param x misalignment (in m)
+     *
+     * @since Dec 17, 2014 by Christopher K. Allen
      */
     public void setAlignX(double x) {
         alignx = x;
@@ -291,10 +294,10 @@ public abstract class ElementSeq implements IComposite {
 
     /**
      * Set the vertical misalignment
-     * 
-     * @param y     misalignment (in m)
      *
-     * @since  Dec 17, 2014   by Christopher K. Allen
+     * @param y misalignment (in m)
+     *
+     * @since Dec 17, 2014 by Christopher K. Allen
      */
     public void setAlignY(double y) {
         aligny = y;
@@ -302,21 +305,21 @@ public abstract class ElementSeq implements IComposite {
 
     /**
      * Set the longitudinal misalignment
-     * 
-     * @param z     misalignment (in m)
      *
-     * @since  Dec 17, 2014   by Christopher K. Allen
+     * @param z misalignment (in m)
+     *
+     * @since Dec 17, 2014 by Christopher K. Allen
      */
     public void setAlignZ(double z) {
         alignz = z;
     }
-    
+
     /**
      * Get the horizontal misalignment
-     * 
-     * @return  the misalignment (in meters)
      *
-     * @since  Dec 17, 2014   by Christopher K. Allen
+     * @return the misalignment (in meters)
+     *
+     * @since Dec 17, 2014 by Christopher K. Allen
      */
     public double getAlignX() {
         return alignx;
@@ -324,26 +327,26 @@ public abstract class ElementSeq implements IComposite {
 
     /**
      * Get the vertical misalignment
-     * 
-     * @return  the misalignment (in meters)
      *
-     * @since  Dec 17, 2014   by Christopher K. Allen
+     * @return the misalignment (in meters)
+     *
+     * @since Dec 17, 2014 by Christopher K. Allen
      */
     public double getAlignY() {
         return aligny;
     }
-    
+
     /**
      * Get the longitudinal misalignment
-     * 
-     * @return  the misalignment (in meters)
      *
-     * @since  Dec 17, 2014   by Christopher K. Allen
+     * @return the misalignment (in meters)
+     *
+     * @since Dec 17, 2014 by Christopher K. Allen
      */
     public double getAlignZ() {
         return alignz;
     }
-      
+
     public double getPhiX() {
         return phix;
     }
@@ -368,79 +371,73 @@ public abstract class ElementSeq implements IComposite {
         this.phiz = phiz;
     }
 
-    
     /*
      *  Operations
      */
-    
     /**
      * Return an <code>Iterator</code> object that iterates over the direct
      * descendants only of this composite element, in reverse order.
-     * 
-     * @return  interface to iterator object
-     * 
+     *
+     * @return interface to iterator object
+     *
      * @author Christopher K. Allen
      * @since Feb 27, 2009
-     * 
-     * @see     java.util.Iterator
-     */ 
+     *
+     * @see java.util.Iterator
+     */
     public Iterator<IComponent> localBackIterator() {
         return this.getReverseCompList().iterator();
     }
-     
+
     /**
-     * Return an <code>Iterator</code> object that iterates over <b>every</b> 
-     * <code>IComponent</code> object in this composite.  For 
-     * <code>IComponent</code> which are also composite the parent is 
-     * returned first, then all its children.  This would be in reverse
-     * order.
-     * 
+     * Return an <code>Iterator</code> object that iterates over <b>every</b>
+     * <code>IComponent</code> object in this composite. For
+     * <code>IComponent</code> which are also composite the parent is returned
+     * first, then all its children. This would be in reverse order.
+     *
      * @return  <code>Iterator</code> interface to iterator object
-     * 
-     * @see     java.util.Iterator
+     *
+     * @see java.util.Iterator
      */
-    public Iterator<IComponent> globalBackIterator()  {
+    public Iterator<IComponent> globalBackIterator() {
         Iterator<IComponent> flatListIter = new CompositeGlobalIterator(this);
         List<IComponent> reverseFlatList = new ArrayList<>();
-        
+
         while (flatListIter.hasNext()) {
             IComponent comp = flatListIter.next();
-            
+
             reverseFlatList.add(0, comp);
         }
-        
+
         return reverseFlatList.iterator();
     }
-    
+
     /**
-     *  Return an <code>Iterator</code> object that cycles through
-     *  all the direct children of the sequence.  Note that any child
-     *  may have children itself.
-     * 
-     * @return  iterator of <code>IElement</code> interfaces
+     * Return an <code>Iterator</code> object that cycles through all the direct
+     * children of the sequence. Note that any child may have children itself.
+     *
+     * @return iterator of <code>IElement</code> interfaces
      */
     public Iterator<IComponent> childIterator() {
         return this.getForwardCompList().iterator();
     }
-    
-    
+
     /**
-     *  Concatenate the indicated <code>ElementSeq</code> object
-     *  to the tail of this sequence.
-     * 
-     *  @param  seq     object to append to this one
+     * Concatenate the indicated <code>ElementSeq</code> object to the tail of
+     * this sequence.
+     *
+     * @param seq object to append to this one
      */
-    public void concatenateEquals(ElementSeq seq)   {
+    public void concatenateEquals(ElementSeq seq) {
         Iterator<IComponent> iter = seq.childIterator();
-        
+
         while (iter.hasNext()) {
-            IElement    ifcNext = (IElement)iter.next();
-            
+            IElement ifcNext = (IElement) iter.next();
+
             this.addChild(ifcNext);
         }
     }
-    
-    
+
 //  /**
 //  *  Return total time to propagate through all elements in this sequence 
 //  *  for the given probe up to the specified length.  If the specified
@@ -554,28 +551,24 @@ public abstract class ElementSeq implements IComposite {
 //     
 //     return mapPhi;
 // }
- 
- 
     /*
      *  IComponent Interface
      */
-    
     /**
      * Initialization method to be provided by the user
-     * 
+     *
      * @param latticeElement the SMF node to convert
      */
     @Override
-    public void initializeFrom(LatticeElement latticeElement)
-    {
-        String  elemId = latticeElement.getModelingElementId();
-        String  smfId  = latticeElement.getHardwareNode().getId();
-        
-        setId( elemId != null ? elemId : smfId);
+    public void initializeFrom(LatticeElement latticeElement) {
+        String elemId = latticeElement.getModelingElementId();
+        String smfId = latticeElement.getHardwareNode().getId();
+
+        setId(elemId != null ? elemId : smfId);
         setHardwareNodeId(smfId);
 
         AlignmentBucket alignmentBucket = latticeElement.getHardwareNode().getAlign();
-        
+
         if (alignmentBucket != null) {
             setAlignX(alignmentBucket.getX());
             setAlignY(alignmentBucket.getY());
@@ -586,51 +579,57 @@ public abstract class ElementSeq implements IComposite {
             setPhiZ(alignmentBucket.getRoll());
         }
     }
-    
-    /**  
-     *  Get the type identifier for the composite element.
-     *
-     *  @return     type identifier for ElementSeq
-     */
-    @Override
-    public String getType() { return strType; }
-    
-    /**  
-     *  Get the sequence identifier 
-     *
-     *  @return     sequence identifier
-     */
-    @Override
-    public String getId() { return strId; }
-    
+
     /**
-     * Returns the string identifier of the hardware node which this
-     * element models.  This value is likely a sector of an accelerator
-     * structure, such as "HEBT", "RING", "MEBT", etc.
-     * 
-     * @return      the identifier string of the hardware this element models
+     * Get the type identifier for the composite element.
+     *
+     * @return type identifier for ElementSeq
+     */
+    @Override
+    public String getType() {
+        return strType;
+    }
+
+    /**
+     * Get the sequence identifier
+     *
+     * @return sequence identifier
+     */
+    @Override
+    public String getId() {
+        return strId;
+    }
+
+    /**
+     * Returns the string identifier of the hardware node which this element
+     * models. This value is likely a sector of an accelerator structure, such
+     * as "HEBT", "RING", "MEBT", etc.
+     *
+     * @return the identifier string of the hardware this element models
      *
      * @author Christopher K. Allen
-     * @since  Sep 2, 2014
+     * @since Sep 2, 2014
      */
     @Override
-    public String   getHardwareNodeId() {
+    public String getHardwareNodeId() {
         return this.strSmfId;
     }
 
-    /**  
+    /**
      * <p>
-     * Return the length of the sequence.  The length of the sequence is determined but
-     * summing the lengths of all the contained <code>IComponent</code> objects.
+     * Return the length of the sequence. The length of the sequence is
+     * determined but summing the lengths of all the contained
+     * <code>IComponent</code> objects.
      * </p>
      *
-     *  @return     total length of the sequence (in <b>meters</b>)
+     * @return total length of the sequence (in <b>meters</b>)
      */
     @Override
     public double getLength() {
-        if (this.bolDirty)
+        if (this.bolDirty) {
             this.compDependParams();
-        
+        }
+
         return this.dblLen;
     }
 
@@ -638,13 +637,14 @@ public abstract class ElementSeq implements IComposite {
      *
      * @see xal.model.IComponent#getPosition()
      *
-     * @since  Dec 3, 2015,  Christopher K. Allen
+     * @since Dec 3, 2015, Christopher K. Allen
      */
     @Override
     public double getPosition() {
-        if (this.bolDirty)
+        if (this.bolDirty) {
             this.compDependParams();
-        
+        }
+
         return this.dblPos;
     }
 
@@ -652,37 +652,40 @@ public abstract class ElementSeq implements IComposite {
      *
      * @see xal.model.IComponent#getLatticePosition()
      *
-     * @since  Dec 3, 2015,  Christopher K. Allen
+     * @since Dec 3, 2015, Christopher K. Allen
      */
     @Override
     public double getLatticePosition() {
-        if (this.bolDirty)
+        if (this.bolDirty) {
             this.compDependParams();
-        
+        }
+
         // If this returns it should return 0.0
-        if (this.getParent() == null)
+        if (this.getParent() == null) {
             return this.getPosition();
-        
+        }
+
         // If parent is top level then our local position is the global position
-        double  dblParPos = this.getParent().getLatticePosition();
-        if (dblParPos == 0.0)
+        double dblParPos = this.getParent().getLatticePosition();
+        if (dblParPos == 0.0) {
             return this.getPosition();
-        
+        }
+
         // This is a nested sequence
-        double  dblLocPos = this.getPosition();
-        double  dblParLen = this.getParent().getLength();
-        double  dblGblPos = (dblParPos - dblParLen/2.0) + dblLocPos;
-         
+        double dblLocPos = this.getPosition();
+        double dblParLen = this.getParent().getLength();
+        double dblGblPos = (dblParPos - dblParLen / 2.0) + dblLocPos;
+
         return dblGblPos;
     }
-    
+
     /**
-     * @return  returns the composite structure owning this composite structure, 
-     *          or <code>null</code> if this structure is top level
+     * @return returns the composite structure owning this composite structure,
+     * or <code>null</code> if this structure is top level
      *
      * @see xal.model.IComponent#getParent()
      *
-     * @since  Jan 22, 2015   by Christopher K. Allen
+     * @since Jan 22, 2015 by Christopher K. Allen
      */
     @Override
     public IComposite getParent() {
@@ -690,13 +693,12 @@ public abstract class ElementSeq implements IComposite {
     }
 
     /**
-     * Sets the parent structure containing this composite structure. 
-     * The parent is assumed to be a composite structure built from component 
-     * elements.
+     * Sets the parent structure containing this composite structure. The parent
+     * is assumed to be a composite structure built from component elements.
      *
      * @see xal.model.IComponent#setParent(xal.model.IComposite)
      *
-     * @since  Jan 22, 2015   by Christopher K. Allen
+     * @since Jan 22, 2015 by Christopher K. Allen
      */
     @Override
     public void setParent(IComposite cpsParent) {
@@ -705,9 +707,10 @@ public abstract class ElementSeq implements IComposite {
         this.getParent().setDirty(this);
     }
 
-    
-    /** 
-     * <p>Override of {@link xal.model.IComponent#propagate(xal.model.IProbe, double)}</p>
+    /**
+     * <p>
+     * Override of
+     * {@link xal.model.IComponent#propagate(xal.model.IProbe, double)}</p>
      *
      * @author Christopher K. Allen
      * @since Feb 27, 2009
@@ -715,116 +718,121 @@ public abstract class ElementSeq implements IComposite {
      * @see xal.model.IComponent#propagate(xal.model.IProbe, double)
      */
     @Override
-    public void propagate(IProbe probe, double pos) throws ModelException { 
-    	propagate(probe);
+    public void propagate(IProbe probe, double pos) throws ModelException {
+        propagate(probe);
     }
 
     /**
-     *  Propagate probe through sequence
+     * Propagate probe through sequence
      *
-     *  @param  probe   the state of the probe will be advance using the elements dynamics
+     * @param probe the state of the probe will be advance using the elements
+     * dynamics
      *
-     *  @exception  ModelException    an error occurred while advancing the probe state
+     * @exception ModelException an error occurred while advancing the probe
+     * state
      */
     @Override
     public void propagate(IProbe probe) throws ModelException {
-    	
-        for(IComponent comp : getForwardCompList()) {
+
+        for (IComponent comp : getForwardCompList()) {
             comp.propagate(probe);
         }
-        
+
     }
-    
-    /** 
-     * <p>Override of {@link xal.model.IComponent#propagate(xal.model.IProbe, double)}</p>
+
+    /**
+     * <p>
+     * Override of
+     * {@link xal.model.IComponent#propagate(xal.model.IProbe, double)}</p>
      *
      * <p>
      * <strong>NOTES</strong>: CKA
      * <br>
-     * &middot; Support for backward propagation
-     * February, 2009.
+     * &middot; Support for backward propagation February, 2009.
      * <br>
-     * &middot; You must use the <em>proper algorithm</em> object
-     * for this method to work correctly!
+     * &middot; You must use the <em>proper algorithm</em> object for this
+     * method to work correctly!
      * </p>
-     * 
+     *
      * @author Christopher K. Allen
      * @since Feb 27, 2009
      *
      * @see xal.model.IComponent#propagate(xal.model.IProbe, double)
      */
     @Override
-    public void backPropagate(IProbe probe, double pos) throws ModelException { 
-    	backPropagate(probe);
+    public void backPropagate(IProbe probe, double pos) throws ModelException {
+        backPropagate(probe);
     }
 
     /**
      * <p>
-     *  Backward propagation of probe through sequence.
+     * Backward propagation of probe through sequence.
      * </p>
      * <p>
      * <strong>NOTES</strong>: CKA
      * <br>
-     * &middot; Support for backward propagation
-     * February, 2009.
+     * &middot; Support for backward propagation February, 2009.
      * <br>
-     * &middot; You must use the <em>proper algorithm</em> object
-     * for this method to work correctly!
+     * &middot; You must use the <em>proper algorithm</em> object for this
+     * method to work correctly!
      * </p>
-     * 
-     *  @param  probe   the state of the probe will be advance using the elements dynamics
      *
-     *  @exception  ModelException    an error occurred while advancing the probe state
+     * @param probe the state of the probe will be advance using the elements
+     * dynamics
+     *
+     * @exception ModelException an error occurred while advancing the probe
+     * state
      */
     @Override
     public void backPropagate(IProbe probe) throws ModelException {
-        for(IComponent comp : getReverseCompList()) {
+        for (IComponent comp : getReverseCompList()) {
             comp.backPropagate(probe);
         }
     }
 
-    
     /*
      * IComposite Interface
      */
-    
     /**
      * Return an <code>Iterator</code> object that iterates over the direct
      * descendants only of this composite element, in order.
-     * 
-     * @return  interface to iterator object
-     * 
-     * @see     java.util.Iterator
-     */ 
+     *
+     * @return interface to iterator object
+     *
+     * @see java.util.Iterator
+     */
     @Override
     public Iterator<IComponent> localIterator() {
         return this.getForwardCompList().iterator();
     }
-     
+
     /**
-     * Return an <code>Iterator</code> object that iterates over <b>every</b> 
-     * <code>IComponent</code> object in this composite.  For 
-     * <code>IComponent</code> which are also composite the parent is 
-     * returned first, then all its children.  This would be in reverse
-     * order.
-     * 
+     * Return an <code>Iterator</code> object that iterates over <b>every</b>
+     * <code>IComponent</code> object in this composite. For
+     * <code>IComponent</code> which are also composite the parent is returned
+     * first, then all its children. This would be in reverse order.
+     *
      * @return  <code>Iterator</code> interface to iterator object
-     * 
-     * @see     java.util.Iterator
+     *
+     * @see java.util.Iterator
      */
     @Override
-    public Iterator<IComponent> globalIterator()  {
+    public Iterator<IComponent> globalIterator() {
         return new CompositeGlobalIterator(this);
     }
-    
+
     /**
-     * Get the number of direct children in this sequence.  Note that this is 
-     * not the number of leaves in the sequence.
+     * Get the number of direct children in this sequence. Note that this is not
+     * the number of leaves in the sequence.
      *
-     *  @return         number of direct descendants
+     * @return number of direct descendants
      */
     @Override
-    public int  getChildCount() { return this.getForwardCompList().size(); };
+    public int getChildCount() {
+        return this.getForwardCompList().size();
+    }
+
+    ;
     
     /**
      *  Get the child IComponent interface at location 
@@ -838,82 +846,84 @@ public abstract class ElementSeq implements IComposite {
     public IComponent getChild(int indChild) {
         return this.getForwardCompList().get(indChild);
     }
-    
+
     /**
-     *  <p>
-     *  Add a component object at the tail of the sequence list and at the
-     *  head of the reverse sequence list.
-     *  </p>
+     * <p>
+     * Add a component object at the tail of the sequence list and at the head
+     * of the reverse sequence list.
+     * </p>
      * <p>
      * <strong>NOTES</strong>: CKA
      * <br>
-     * &middot; Added support for backward propagation
-     * February, 2009
+     * &middot; Added support for backward propagation February, 2009
      * </p>
      *
-     *  @param  iComp   new component object
+     * @param iComp new component object
      */
     @Override
-    public void addChild(IComponent iComp)   {
+    public void addChild(IComponent iComp) {
         this.getForwardCompList().add(iComp);
         this.getReverseCompList().add(0, iComp);
         iComp.setParent(this);
-        if (iComp instanceof IComposite)
-            ((IComposite)iComp).setDirty(this);
+        if (iComp instanceof IComposite) {
+            ((IComposite) iComp).setDirty(this);
+        }
 
         this.setDirty(this);
     }
-    
+
     /**
-     * Remove an element from the entire tree.  The element can be a single
-     * leaf node or a composite node.
+     * Remove an element from the entire tree. The element can be a single leaf
+     * node or a composite node.
      *
-     * @param  iCmp    IComponent object to be removed
-     * 
-     * @return  return true if element was found and removed, false otherwise
+     * @param iCmp IComponent object to be removed
+     *
+     * @return return true if element was found and removed, false otherwise
      */
     @Override
-    public boolean remove(IComponent iCmp)    {
-        
+    public boolean remove(IComponent iCmp) {
+
         // Inspect each child for specified element
-        for (IComponent iChild : this)   {                   
-            
-            if (iChild == iCmp)   {                // is this child the one?
+        for (IComponent iChild : this) {
+
+            if (iChild == iCmp) {                // is this child the one?
                 this.getForwardCompList().remove(iCmp);
                 this.getReverseCompList().remove(iCmp);
-                
+
                 iCmp.setParent(null);
-                
+
                 this.setDirty(this);
-                
-                if (iCmp instanceof IComposite) 
-                    ((IComposite)iCmp).setDirty(this);
-                    
-                return true;                        
+
+                if (iCmp instanceof IComposite) {
+                    ((IComposite) iCmp).setDirty(this);
+                }
+
+                return true;
             }
-            
-            if (iChild instanceof IComposite)  {        // if child is composite
-                if (  ((IComposite)iChild).remove(iCmp)  )  // true to remove it
+
+            if (iChild instanceof IComposite) {        // if child is composite
+                if (((IComposite) iChild).remove(iCmp)) // true to remove it
+                {
                     return true;                            // it was a child of my child 
-                                                            //    and was removed
+                }                                                            //    and was removed
             }
         }
-        
+
         return false;       // did not encounter specified element
     }
-    
+
     /**
      *
      * @see xal.model.IComposite#setDirty()
      *
-     * @since  Dec 3, 2015,  Christopher K. Allen
+     * @since Dec 3, 2015, Christopher K. Allen
      */
     @Override
     public void setDirty(IComponent cmpCaller) {
-        
+
         // Set the dirty flag
         this.bolDirty = true;
-        
+
 //        // Let my parent know I have been changed
 //        if (this.getParent() != null)
 //            this.getParent().setDirty(this);
@@ -927,129 +937,120 @@ public abstract class ElementSeq implements IComposite {
 //        }
     }
 
-    
     /*
      * Iterable<IComponent> Interface
      */
-    
     /**
      * Returns a shallow iterator for the direct descendants of this composite
-     * modeling element.  This is the same iterator returned by 
-     * <code>{@link #localIterator()}</code>.  This method is needed by 
-     * the <code>Iterable</code> interface to satisfy <code>foreach</code>
-     * language constructions.
-     * 
-     * @return  a shallow iterator traversing the direct descendants of this container
+     * modeling element. This is the same iterator returned by
+     * <code>{@link #localIterator()}</code>. This method is needed by the
+     * <code>Iterable</code> interface to satisfy <code>foreach</code> language
+     * constructions.
      *
-     * @since  Dec 2, 2015,   Christopher K. Allen
+     * @return a shallow iterator traversing the direct descendants of this
+     * container
+     *
+     * @since Dec 2, 2015, Christopher K. Allen
      */
     @Override
-    public Iterator<IComponent>    iterator() {
+    public Iterator<IComponent> iterator() {
         return this.localIterator();
     }
-    
-    
+
     /*
      * Object Overrides
      */
-    
     /**
-     * Writes out the modeling elements in this element sequence
-     * structure.
+     * Writes out the modeling elements in this element sequence structure.
      *
      * @see java.lang.Object#toString()
      *
-     * @since  Jan 5, 2015   by Christopher K. Allen
+     * @since Jan 5, 2015 by Christopher K. Allen
      */
     @Override
-    public String   toString() {
+    public String toString() {
 
-        StringBuilder         bufOutput = new StringBuilder();
-        Iterator<IComponent> iterCmps  = this.getForwardCompList().iterator();
-        
+        StringBuilder bufOutput = new StringBuilder();
+        Iterator<IComponent> iterCmps = this.getForwardCompList().iterator();
+
         bufOutput.append("Sequence ID: ").append(this.getId()).append('\n');
-        
-        while (iterCmps.hasNext())  {
+
+        while (iterCmps.hasNext()) {
             IComponent iCmp = iterCmps.next();
-            
-            bufOutput.append( iCmp.toString() );
+
+            bufOutput.append(iCmp.toString());
             bufOutput.append('\n');
         }
-        
+
         return bufOutput.toString();
     }
-    
-    
+
     /*
      *  Testing and Debugging
      */
-
     /**
      *
      * @see java.lang.Object#toString()
      *
-     * @since  Feb 3, 2015   by Christopher K. Allen
+     * @since Feb 3, 2015 by Christopher K. Allen
      */
     public String toStringLegacy() {
 
-        StringPrinter   sprnOut = new StringPrinter();
-        PrintWriter     pwtrOut = new PrintWriter(sprnOut);
+        StringPrinter sprnOut = new StringPrinter();
+        PrintWriter pwtrOut = new PrintWriter(sprnOut);
 
         this.print(pwtrOut);
 
         return sprnOut.toString();
     }
 
-
     /**
-     *  Dump contents to a text stream.
+     * Dump contents to a text stream.
      *
-     *  @param  os      output stream
+     * @param os output stream
      */
-    public void print(PrintWriter os)    {
+    public void print(PrintWriter os) {
         os.println(this.strId + " modeling HWID=" + this.strSmfId);
         os.println("  type code=" + this.strType + ", class type=" + this.getClass().getName());
         os.println();
-        
+
         Iterator<IComponent> iter = this.getForwardCompList().iterator();
-        
-        while (iter.hasNext())  {
-            IElement ifc = (IElement)iter.next();
-            
+
+        while (iter.hasNext()) {
+            IElement ifc = (IElement) iter.next();
+
             if (ifc instanceof Element) {
-                Element elem = (Element)ifc; 
+                Element elem = (Element) ifc;
                 elem.print(os);
                 os.println("");
             }
-            
-            if (ifc instanceof ElementSeq)   {
-                ElementSeq seq = (ElementSeq)ifc;
+
+            if (ifc instanceof ElementSeq) {
+                ElementSeq seq = (ElementSeq) ifc;
                 os.println("ElementSeq - " + seq.getId());
-                os.println("  commments : " + seq.getComments() );
+                os.println("  commments : " + seq.getComments());
                 os.println("  length    : " + seq.getLength());
                 os.println("  children  : " + seq.getChildCount());
                 os.println("  elements  : " + seq.getLeafCount());
                 os.println("");
-                
+
                 seq.print(os);
-                os.println("End ElementSeq - " + seq.getId() );
+                os.println("End ElementSeq - " + seq.getId());
                 os.println("");
             }
         }
     }
 
-    
     /*
      * Child Class Support
      */
-    
     /**
-     *  Return the internal list of components
+     * Return the internal list of components
      */
-    protected List<IComponent> getForwardCompList()  { 
-        return lstCompsForward; 
+    protected List<IComponent> getForwardCompList() {
+        return lstCompsForward;
     }
-    
+
     /**
      * <p>
      * Return the reverse component list (downstream to upstream)
@@ -1057,57 +1058,58 @@ public abstract class ElementSeq implements IComposite {
      * <p>
      * <strong>NOTES</strong>: CKA
      * <br>
-     * &middot; Added support for backward propagation
-     * February, 2009
+     * &middot; Added support for backward propagation February, 2009
      * </p>
+     *
      * @return  <code>List</code> of sequence components in reverse order
-     * 
+     *
      * @since Feb 27, 2009
      * @author Christopher K. Allen
-     * 
+     *
      */
-    protected List<IComponent> getReverseCompList() { 
+    protected List<IComponent> getReverseCompList() {
         return this.lstCompsBackward;
     }
-	
-	/**
-	 * <p>
-	 * Set the comp list to the new list of elements.
-	 * </p>
-	 * <p>
-	 * <strong>NOTES</strong>: CKA
-	 * <br>
-	 * &middot; Added support for backward propagation
-	 * February, 2009
-	 * </p>
-	 * 
-	 * @param elements the new list of elements
-	 */
-	protected void setCompList( final List<? extends IComponent> elements ) {
-		lstCompsForward = new ArrayList<>( elements );
-		
-		// Create reverse list
-		lstCompsBackward = new ArrayList<>();
-		for (IComponent comp : elements) 
-		    lstCompsBackward.add(0, comp);
-	}
 
-	/**
-	 * Recompute all the dependent parameters. Right now that is the sequence length
-	 * and the position of this sequence within the parent sequence.  The dirty flag
-	 * is cleared once it's all done.
-	 *
-	 * @since  Dec 3, 2015,   Christopher K. Allen
-	 */
-	protected void compDependParams() {
-	    
-	    // Check if there is anything to do?
-	    if (!this.bolDirty)
-	        return;
-	    
-	    // Compute the total length
+    /**
+     * <p>
+     * Set the comp list to the new list of elements.
+     * </p>
+     * <p>
+     * <strong>NOTES</strong>: CKA
+     * <br>
+     * &middot; Added support for backward propagation February, 2009
+     * </p>
+     *
+     * @param elements the new list of elements
+     */
+    protected void setCompList(final List<? extends IComponent> elements) {
+        lstCompsForward = new ArrayList<>(elements);
+
+        // Create reverse list
+        lstCompsBackward = new ArrayList<>();
+        for (IComponent comp : elements) {
+            lstCompsBackward.add(0, comp);
+        }
+    }
+
+    /**
+     * Recompute all the dependent parameters. Right now that is the sequence
+     * length and the position of this sequence within the parent sequence. The
+     * dirty flag is cleared once it's all done.
+     *
+     * @since Dec 3, 2015, Christopher K. Allen
+     */
+    protected void compDependParams() {
+
+        // Check if there is anything to do?
+        if (!this.bolDirty) {
+            return;
+        }
+
+        // Compute the total length
         double dblMyLen = 0.0;
-        for(IComponent comp : this) {
+        for (IComponent comp : this) {
             dblMyLen += comp.getLength();
         }
         this.dblLen = dblMyLen;
@@ -1116,69 +1118,60 @@ public abstract class ElementSeq implements IComposite {
         if (this.getParent() == null) {
             this.dblPos = 0.0;
             this.bolDirty = false;
-            
+
             return;
         }
-        
+
         // Compute position within parent composite
-        double  dblMyPos = 0.0;
-        
+        double dblMyPos = 0.0;
+
         for (IComponent cmp : this.getParent()) {
             if (cmp.equals(this)) {
                 this.bolDirty = false;
-                this.dblPos = dblMyPos + this.dblLen/2.0;
-                
+                this.dblPos = dblMyPos + this.dblLen / 2.0;
+
                 return;
             }
-            
+
             dblMyPos += cmp.getLength();
         }
-        
+
         // If we made it here, something went wrong.  Likely that we are
         //  have the wrong parent or our parent does not know us.
         //  I'm not clearing the dirty flag wo this message will swamp the console.
         System.err.println("#compDependParams: inconsistent parent-child relationship between " + this.getParent().getId() + " and " + this.getId());
-	}
+    }
 }
 
-
-
-    
 /*
  * Auxiliary Classes
  */
-
 /**
  * String buffer that mimics the Java writer functions.
- * 
+ *
  *
  * @author Christopher K. Allen
- * @since  Feb 3, 2015
+ * @since Feb 3, 2015
  */
 class StringPrinter extends StringWriter {
-    
+
     /**
-     * The print line function.  Prints the given string and terminates with a 
+     * The print line function. Prints the given string and terminates with a
      * new line character.
-     * 
-     * @param strLine   text line 
      *
-     * @since  Feb 3, 2015   by Christopher K. Allen
+     * @param strLine text line
+     *
+     * @since Feb 3, 2015 by Christopher K. Allen
      */
     public void println(String strLine) {
         this.append(strLine);
         this.append('\n');
     }
 }
-    
-    
-    
 
 /*
  * Legacy
  */
-
-
 ///**
 // *  Propagate probe through sequence
 // *
@@ -1217,9 +1210,6 @@ class StringPrinter extends StringWriter {
 //        if (bolStopped) return;
 //    }
 //}
-
-
-
 //    /**
 //     *  Creates (but does not load parameters) an XAL modeling element based on 
 //     *  the information in the DataAdaptor.
@@ -1284,4 +1274,4 @@ class StringPrinter extends StringWriter {
 //        
 //        return elem;
 //    }
-    
+

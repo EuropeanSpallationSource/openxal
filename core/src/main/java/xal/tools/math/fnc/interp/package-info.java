@@ -4,6 +4,6 @@
  *
  *
  * @author Christopher K. Allen
- * @since  Sep 25, 2015
+ * @since Sep 25, 2015
  */
 package xal.tools.math.fnc.interp;

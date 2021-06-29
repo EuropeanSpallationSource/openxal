@@ -53,7 +53,10 @@ public class OpenXalExporter {
     private static List<String> expSections = Arrays.asList("lebt", "rfq",
             "mebt", "dtl", "spk", "mbl", "hbl", "hebt", "a2t");
 
-    private List<LatticeCommand> latticeCommands; // a list of all lattice
+    /**
+     * a list of all lattice
+     */
+    private List<LatticeCommand> latticeCommands;
     // comands
     private OnLeafComparator leafComparator = new OnLeafComparator();
 

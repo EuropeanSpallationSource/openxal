@@ -39,8 +39,9 @@ import org.json.JSONException;
  * @author emanuelelaface
  */
 public class GitParser {
+
     private static final Logger LOGGER = Logger.getLogger(GitParser.class.getName());
-    
+
     private URI[] sourceFileNames;
     private String[] sequenceNames;
     private String basePath;

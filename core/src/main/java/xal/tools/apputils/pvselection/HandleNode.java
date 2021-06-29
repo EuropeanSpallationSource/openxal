@@ -5,55 +5,57 @@ import javax.swing.tree.*;
 import xal.ca.*;
 
 public class HandleNode extends DefaultMutableTreeNode {
-	private static final long serialVersionUID = 0L;
-	
+
+    private static final long serialVersionUID = 0L;
+
     private boolean itIsSignal = false;
 
     private Channel channel = null;
 
     private String signalName = null;
 
-    public HandleNode(){}
-
-    public HandleNode(Object value){
-	super(value);
+    public HandleNode() {
     }
 
-    public boolean isSignal(){
-	return itIsSignal;
+    public HandleNode(Object value) {
+        super(value);
     }
 
-    public void setAsSignal(boolean itIsSignal){
-	this.itIsSignal = itIsSignal;
+    public boolean isSignal() {
+        return itIsSignal;
     }
 
-    public void setChannel(Channel channelIn){
-	channel = channelIn;
+    public void setAsSignal(boolean itIsSignal) {
+        this.itIsSignal = itIsSignal;
     }
 
-    public Channel getChannel(){
-	return channel;
+    public void setChannel(Channel channelIn) {
+        channel = channelIn;
     }
 
-    public String getChannelName(){
-	if(channel != null){
-	    return channel.channelName();
-	}
-	return null;
+    public Channel getChannel() {
+        return channel;
     }
 
-    public String getChannelId(){
-	if(channel != null){
-	    return channel.getId();
-	}
-	return null;
+    public String getChannelName() {
+        if (channel != null) {
+            return channel.channelName();
+        }
+        return null;
     }
 
-    public void setSignalName(String signalName){
-	this.signalName = signalName;
+    public String getChannelId() {
+        if (channel != null) {
+            return channel.getId();
+        }
+        return null;
     }
-  
-    public String getSignalName(){
-	return signalName;
-    } 
+
+    public void setSignalName(String signalName) {
+        this.signalName = signalName;
+    }
+
+    public String getSignalName() {
+        return signalName;
+    }
 }

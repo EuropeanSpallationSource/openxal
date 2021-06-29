@@ -126,7 +126,7 @@ public class InverseRealPolynomial extends RealUnivariatePolynomial {
      * are coefficients.
      *
      * @param dblVal indeterminate value to evaluate the model function at
-     * @return 
+     * @return
      */
     @Override
     public double evaluateAt(double dblVal) {

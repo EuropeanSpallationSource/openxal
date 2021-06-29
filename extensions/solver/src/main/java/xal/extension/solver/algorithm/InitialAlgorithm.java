@@ -7,93 +7,91 @@
  * Oak Ridge National Laboratory
  * Oak Ridge, TN 37830
  */
-
 package xal.extension.solver.algorithm;
 
 import xal.extension.solver.*;
 
-
 /**
  * InitialAlgorithm
  *
- * @author  tap
+ * @author tap
  * @since Sep 20, 2004
  */
 public class InitialAlgorithm extends SearchAlgorithm {
-	 /** Constructor */
-	 public InitialAlgorithm( final Problem problem ) {
-		 super();
-		 
-		 setProblem( problem );
-	 }
-	 
-	 
-	 /**
-	  * Return the label for a search algorithm.
-	  * @return a label for the algorithm
-	  */
-         @Override
-	 public String getLabel() {
-		 return "Initial Algorithm";
-	 }
-	
-	
-	/**
-	 * Calculate the next few trial points.
-	 * @param schedule the schedule of runs
-	 */
-         @Override
-	public void performRun( final AlgorithmSchedule schedule ) {
-		evaluateTrialPoint( nextTrialPoint() );
-	}
-	
-	 
-	 /**
-	  * Return the next trial point.
-	  * @return a new trial point
-	  */
-	 public TrialPoint nextTrialPoint() {
-		 return problem.generateInitialTrialPoint();
-	 }
-	
-	
-	/**
-	 * Get the minimum number of evaluations per run.  Subclasses may want to override this method.
-	 * @return the minimum number of evaluation per run.
-	 */
-         @Override
-	public int getMinEvaluationsPerRun() {
-		return 0;
-	}
-	
-	
-	/**
-	 * Get the maximum number of evaluations per run.  Subclasses may want to override this method.
-	 * @return the maximum number of evaluation per run.
-	 */
-         @Override
-	public int getMaxEvaluationsPerRun() {
-		return 1;
-	}
-	
-	 
-	 /**
-	  * Returns the global rating which in an integer
-	  * between 0 and 10.
-	  */
-         @Override
-	 int globalRating() {
-		 return 0;
-	 }
-	 
-	 
-	 /**
-	  * Returns the local rating which is an integer 
-	  * between 0 and 10. 
-	  */
-         @Override
-	 int localRating() {
-		 return 0;
-	 }
-}
 
+    /**
+     * Constructor
+     */
+    public InitialAlgorithm(final Problem problem) {
+        super();
+
+        setProblem(problem);
+    }
+
+    /**
+     * Return the label for a search algorithm.
+     *
+     * @return a label for the algorithm
+     */
+    @Override
+    public String getLabel() {
+        return "Initial Algorithm";
+    }
+
+    /**
+     * Calculate the next few trial points.
+     *
+     * @param schedule the schedule of runs
+     */
+    @Override
+    public void performRun(final AlgorithmSchedule schedule) {
+        evaluateTrialPoint(nextTrialPoint());
+    }
+
+    /**
+     * Return the next trial point.
+     *
+     * @return a new trial point
+     */
+    public TrialPoint nextTrialPoint() {
+        return problem.generateInitialTrialPoint();
+    }
+
+    /**
+     * Get the minimum number of evaluations per run. Subclasses may want to
+     * override this method.
+     *
+     * @return the minimum number of evaluation per run.
+     */
+    @Override
+    public int getMinEvaluationsPerRun() {
+        return 0;
+    }
+
+    /**
+     * Get the maximum number of evaluations per run. Subclasses may want to
+     * override this method.
+     *
+     * @return the maximum number of evaluation per run.
+     */
+    @Override
+    public int getMaxEvaluationsPerRun() {
+        return 1;
+    }
+
+    /**
+     * Returns the global rating which in an integer between 0 and 10.
+     */
+    @Override
+    int globalRating() {
+        return 0;
+    }
+
+    /**
+     * Returns the local rating which is an integer between 0 and 10.
+     */
+    @Override
+    int localRating() {
+        return 0;
+    }
+}

@@ -14,7 +14,6 @@ import xal.smf.impl.qualify.MagnetType;
  */
 public class DipoleCorr extends xal.smf.impl.DipoleCorr {
 
-
     /**
      * Primary Constructor
      */

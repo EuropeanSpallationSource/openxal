@@ -5,17 +5,20 @@
 //  Created by Thomas Pelaia on 7/5/06.
 //  Copyright 2006 Oak Ridge National Lab. All rights reserved.
 //
-
 package xal.extension.bricks;
 
 import javax.swing.*;
 
-
-/** property value editor */
+/**
+ * property value editor
+ */
 public abstract class PropertyValueNumberEditor<T> extends PropertyValueTextEditor<T> {
-	/** Constructor */
-	public PropertyValueNumberEditor() {
-		((JTextField)editorComponent).setHorizontalAlignment( JTextField.RIGHT );
-		((JLabel)renderingComponent).setHorizontalAlignment( JLabel.RIGHT );
-	}
+
+    /**
+     * Constructor
+     */
+    public PropertyValueNumberEditor() {
+        ((JTextField) editorComponent).setHorizontalAlignment(JTextField.RIGHT);
+        ((JLabel) renderingComponent).setHorizontalAlignment(JLabel.RIGHT);
+    }
 }

@@ -596,7 +596,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
 
         // Applying phase offset
         synchronousPhase += dblPhaseFactor;
-        
+
         if (getE0() == 0) {
             energyGain = 0.0;
         } else {
@@ -616,12 +616,12 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
             energyGain = E0TL_scaled * Math.cos(synchronousPhase);
         }
     }
-    
+
     @Override
     public double getSynchronousPhase() {
         return synchronousPhase;
     }
-    
+
     @Override
     public double getEnergyGain() {
         return energyGain;

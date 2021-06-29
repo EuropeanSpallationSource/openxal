@@ -10,16 +10,19 @@ import java.util.logging.Level;
 import java.util.prefs.BackingStoreException;
 
 /**
- * This is a plugin for rbac authentication and authorization. It provides a method for retrieving its RbacLogin, thus
- * making it a runtime dependency. It also includes the RBAC Single Sign On (SSO) server to enable the users to use 
+ * This is a plugin for rbac authentication and authorization. It provides a
+ * method for retrieving its RbacLogin, thus making it a runtime dependency. It
+ * also includes the RBAC Single Sign On (SSO) server to enable the users to use
  * a single login for all OpenXal apps.
  *
- * Version 0.2 by Yngve Levinsen. Allows using dummy login based on system preferences.
+ * Version 0.2 by Yngve Levinsen. Allows using dummy login based on system
+ * preferences.
  *
  * @version 0.2 12 Jan 2017
  * @author Blaz Kranjc <blaz.kranjc@cosylab.com>
  */
 public class RBACPlugin {
+
     private static final Logger LOGGER = Logger.getLogger(RBACPlugin.class.getName());
 
     private static final String USE_RBAC_KEY = "useRbac";
@@ -30,11 +33,11 @@ public class RBACPlugin {
     }
 
     /**
-     * If the system has configured RBAC to be active, 
-     * then return true, otherwise return false.
+     * If the system has configured RBAC to be active, then return true,
+     * otherwise return false.
      *
-     * Returning false should imply that we will use dummy RBAC.
-     * If nothing has been configured in system, RBAC is used by default.
+     * Returning false should imply that we will use dummy RBAC. If nothing has
+     * been configured in system, RBAC is used by default.
      *
      * @return use proper RBAC or not
      */
@@ -42,8 +45,7 @@ public class RBACPlugin {
         java.util.prefs.Preferences defaults = getDefaults();
         return defaults.getBoolean(USE_RBAC_KEY, false);
     }
-    
-    
+
     public static void enableRBACLogin() {
         java.util.prefs.Preferences defaults = getDefaults();
         defaults.putBoolean(USE_RBAC_KEY, true);
@@ -53,8 +55,7 @@ public class RBACPlugin {
             LOGGER.log(Level.SEVERE, null, ex);
         }
     }
-    
-    
+
     public static void disableRBACLogin() {
         java.util.prefs.Preferences defaults = getDefaults();
         defaults.putBoolean(USE_RBAC_KEY, false);
@@ -65,26 +66,25 @@ public class RBACPlugin {
         }
     }
 
-
     /**
      * Gets us an instance of {@link EssRbacLogin} and starts the SSO server.
      * The login is still provided even if the SSO server cannot be started.
      *
      * A dummy RBAC is returned in case RBAC is disabled on the system.
-     * 
+     *
      * @return instance of {@link EssRbacLogin}
      */
     public static RBACLogin getRBACLoginInstance() {
         if (useRBACLogin()) {
-            LOGGER.log( Level.CONFIG, "Using proper RBAC login..." );
+            LOGGER.log(Level.CONFIG, "Using proper RBAC login...");
             try {
                 SingleSignOnServerManager.startSSO();
             } catch (XalException e) {
-                LOGGER.log( Level.WARNING, "SSO server couldn't be started: ", e);
+                LOGGER.log(Level.WARNING, "SSO server couldn't be started: ", e);
             }
             return new EssRbacLogin();
         } else {
-            LOGGER.log( Level.CONFIG, "Using dummy RBAC..." );
+            LOGGER.log(Level.CONFIG, "Using dummy RBAC...");
             return new DummyRbacLogin();
         }
     }

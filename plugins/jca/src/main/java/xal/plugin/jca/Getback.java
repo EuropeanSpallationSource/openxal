@@ -21,8 +21,14 @@ import gov.aps.jca.event.GetListener;
  */
 class Getback implements GetListener {
 
-    protected final JcaChannel channel;       // Channel to monitor
-    protected final IEventSinkValue listener; // listener for the callback
+    /**
+     * Channel to monitor
+     */
+    protected final JcaChannel channel;
+    /**
+     * listener for the callback
+     */
+    protected final IEventSinkValue listener;
 
     /**
      * Create new Getback

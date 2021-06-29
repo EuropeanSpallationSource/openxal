@@ -32,8 +32,10 @@ public class TestModelTTFs {
      */
     /**
      * The seq id.
+     *
+     * To choose a different sequence or combosequence, change the seqID string
      */
-    private static String seqID = "DTL";  // To choose a different sequence or combosequence, change the seqID string
+    private static String seqID = "DTL";
 
     /**
      * The ostr typeout.

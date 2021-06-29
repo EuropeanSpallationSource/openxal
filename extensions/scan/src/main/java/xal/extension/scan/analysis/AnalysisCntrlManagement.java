@@ -12,45 +12,45 @@ import xal.extension.widgets.plot.*;
  * This class is a analysis class for general data reading and management.
  *
  * @version 1.0
- * @author  A. Shishlo
+ * @author A. Shishlo
  */
+public final class AnalysisCntrlManagement extends AnalysisController {
 
-public final class AnalysisCntrlManagement extends AnalysisController{
-
-
-    /**  The constructor.*/   
+    /**
+     * The constructor.
+     */
     public AnalysisCntrlManagement(MainAnalysisController mainControllerIn,
-			       DataAdaptor analysisConf,
-			       JPanel parentAnalysisPanelIn,
-			       JPanel customControlPanelIn,
-			       JPanel customGraphPanelIn,
-			       JPanel globalButtonsPanelIn,
-			       ScanVariable scanVariableParameterIn,
-			       ScanVariable scanVariableIn,
-			       Vector<MeasuredValue> measuredValuesVIn,
-			       FunctionGraphsJPanel graphAnalysisIn,
-			       JTextField messageTextLocalIn,
-			       BasicGraphData graphDataLocalIn){
+            DataAdaptor analysisConf,
+            JPanel parentAnalysisPanelIn,
+            JPanel customControlPanelIn,
+            JPanel customGraphPanelIn,
+            JPanel globalButtonsPanelIn,
+            ScanVariable scanVariableParameterIn,
+            ScanVariable scanVariableIn,
+            Vector<MeasuredValue> measuredValuesVIn,
+            FunctionGraphsJPanel graphAnalysisIn,
+            JTextField messageTextLocalIn,
+            BasicGraphData graphDataLocalIn) {
 
-	//call the superclass constructor
-	super(mainControllerIn,
-	      analysisConf,
-	      parentAnalysisPanelIn,
-	      customControlPanelIn,
-	      customGraphPanelIn,
-	      globalButtonsPanelIn,
-	      scanVariableParameterIn,
-	      scanVariableIn,
-	      measuredValuesVIn,
-	      graphAnalysisIn,
-	      messageTextLocalIn,
-	      graphDataLocalIn);
+        //call the superclass constructor
+        super(mainControllerIn,
+                analysisConf,
+                parentAnalysisPanelIn,
+                customControlPanelIn,
+                customGraphPanelIn,
+                globalButtonsPanelIn,
+                scanVariableParameterIn,
+                scanVariableIn,
+                measuredValuesVIn,
+                graphAnalysisIn,
+                messageTextLocalIn,
+                graphDataLocalIn);
 
-	String nameIn = "MANAGEMENT";
-	DataAdaptor nameDA =   analysisConf.childAdaptor("ANALYSIS_NAME");
-	if(nameDA != null){
-	    nameIn = nameDA.stringValue("name");
-	}
+        String nameIn = "MANAGEMENT";
+        DataAdaptor nameDA = analysisConf.childAdaptor("ANALYSIS_NAME");
+        if (nameDA != null) {
+            nameIn = nameDA.stringValue("name");
+        }
         setName(nameIn);
 
     }
@@ -59,42 +59,45 @@ public final class AnalysisCntrlManagement extends AnalysisController{
      * Sets the configurations of the analysis.
      */
     @Override
-    public void dumpAnalysisConfig(DataAdaptor analysisConfig){
-	super.dumpAnalysisConfig(analysisConfig);
-    }
-
-    /**  Sets fonts for all GUI elements.
-     */  
-    @Override
-    public void setFontsForAll(Font fnt){
-	super.setFontsForAll(fnt);
-    }
-
-    /**  Does what necessary for close this analysis window. 
-     */  
-    @Override
-    public void ShutUp(){
-	super.ShutUp();
-	customControlPanel.removeAll();
-	customGraphPanel.removeAll();
-    }
-
-    /**  Does what necessary for open this analysis window. 
-     *   This method could be overridden, because it is empty here.
-     */  
-    @Override
-    public void ShowUp(){
-	super.ShowUp();
-	customControlPanel.add(dataReaderPanel,BorderLayout.NORTH);
-        customGraphPanel.add(graphAnalysis,BorderLayout.CENTER);
-        customGraphPanel.add(globalButtonsPanel,BorderLayout.SOUTH);
+    public void dumpAnalysisConfig(DataAdaptor analysisConfig) {
+        super.dumpAnalysisConfig(analysisConfig);
     }
 
     /**
-     * Updates data on the analysis graph panel.  
+     * Sets fonts for all GUI elements.
      */
     @Override
-    public void updateDataSetOnGraphPanel(){
-	super.updateDataSetOnGraphPanel();
+    public void setFontsForAll(Font fnt) {
+        super.setFontsForAll(fnt);
+    }
+
+    /**
+     * Does what necessary for close this analysis window.
+     */
+    @Override
+    public void ShutUp() {
+        super.ShutUp();
+        customControlPanel.removeAll();
+        customGraphPanel.removeAll();
+    }
+
+    /**
+     * Does what necessary for open this analysis window. This method could be
+     * overridden, because it is empty here.
+     */
+    @Override
+    public void ShowUp() {
+        super.ShowUp();
+        customControlPanel.add(dataReaderPanel, BorderLayout.NORTH);
+        customGraphPanel.add(graphAnalysis, BorderLayout.CENTER);
+        customGraphPanel.add(globalButtonsPanel, BorderLayout.SOUTH);
+    }
+
+    /**
+     * Updates data on the analysis graph panel.
+     */
+    @Override
+    public void updateDataSetOnGraphPanel() {
+        super.updateDataSetOnGraphPanel();
     }
 }

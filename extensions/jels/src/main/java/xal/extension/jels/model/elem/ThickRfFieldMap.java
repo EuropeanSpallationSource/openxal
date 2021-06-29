@@ -368,13 +368,12 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
         double dblLen = getLength();
         computePhaseDriftAndEnergyGain(probe, dblLen);
     }
-    
-    
+
     @Override
     public double getSynchronousPhase() {
         return synchronousPhase;
     }
-    
+
     @Override
     public double getEnergyGain() {
         return energyGain;

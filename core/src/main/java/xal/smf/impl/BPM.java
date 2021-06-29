@@ -5,27 +5,24 @@ import xal.smf.*;
 import xal.smf.attr.*;
 import xal.smf.impl.qualify.*;
 
-
 /**
- * The implementation of the BPM class. This class contains the methods
- * members, attributes, and signal sets pertinent to modeling Beam
- * Position monitors.
+ * The implementation of the BPM class. This class contains the methods members,
+ * attributes, and signal sets pertinent to modeling Beam Position monitors.
  *
- * @author  J. Galambos (jdg@ornl.gov)
+ * @author J. Galambos (jdg@ornl.gov)
  */
-
 public class BPM extends AcceleratorNode {
+
     /*
      *  Constants
      */
-
-    public static final String      TYPE   = "BPM";
+    public static final String TYPE = "BPM";
 
     /**
      * The container for the bpm information
      *
      */
-    protected BPMBucket       bpmBucket;
+    protected BPMBucket bpmBucket;
 
     // BPM channel handles
     // BPMs official xAvg channel handle
@@ -62,12 +59,12 @@ public class BPM extends AcceleratorNode {
     public static final String AMP_TBT_HANDLE = "ampTBT";
     public final AccessibleProperty ampTBT = new AccessibleProperty("ampTBT", AMP_TBT_HANDLE);
     private Channel ampTBTC = null;
-    
+
     // BPMs official phase turn-by-turn channel handle
     public static final String PHASE_TBT_HANDLE = "phaseTBT";
     public final AccessibleProperty phaseTBT = new AccessibleProperty("phaseTBT", PHASE_TBT_HANDLE);
     private Channel phaseTBTC = null;
-    
+
     // BPM official tAvgLen channel handle
     public static final String T_AVG_LEN_HANDLE = "tAvgLen";
     public final AccessibleProperty tAvgLen = new AccessibleProperty("tAvgLen", T_AVG_LEN_HANDLE);
@@ -82,85 +79,93 @@ public class BPM extends AcceleratorNode {
      * Register type for qualification
      */
     private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( BPM.class, TYPE );
+        ElementTypeManager.defaultManager().registerTypes(BPM.class, TYPE);
     }
 
-
-    /** Override to provide type signature */
+    /**
+     * Override to provide type signature
+     */
     @Override
-    public String getType()   { return TYPE; }
-
-
-    /** Constructor */
-    public BPM( final String strId, final ChannelFactory channelFactory )     {
-            super( strId, channelFactory );
-            setBPMBucket( new BPMBucket() );
+    public String getType() {
+        return TYPE;
     }
 
-
-    /** Constructor */
-    public BPM( final String strId )     {
-        this( strId, null );
+    /**
+     * Constructor
+     */
+    public BPM(final String strId, final ChannelFactory channelFactory) {
+        super(strId, channelFactory);
+        setBPMBucket(new BPMBucket());
     }
 
-    /** return the BPM Bucket */
-    public BPMBucket  getBPMBucket()   { return bpmBucket; }
+    /**
+     * Constructor
+     */
+    public BPM(final String strId) {
+        this(strId, null);
+    }
+
+    /**
+     * return the BPM Bucket
+     */
+    public BPMBucket getBPMBucket() {
+        return bpmBucket;
+    }
 
     /**
      * Set the attribute bucket containing the bpm info
      */
-    public void setBPMBucket(BPMBucket buc)
-        { bpmBucket = buc; super.addBucket(buc); }
+    public void setBPMBucket(BPMBucket buc) {
+        bpmBucket = buc;
+        super.addBucket(buc);
+    }
 
     /**
      *
      * Override AcceleratorNode implementation to check for a BPMBucket
      */
     @Override
-    public void addBucket(AttributeBucket buc)  {
+    public void addBucket(AttributeBucket buc) {
 
-        if (buc.getClass().equals(BPMBucket.class))
-              setBPMBucket((BPMBucket) buc);
+        if (buc.getClass().equals(BPMBucket.class)) {
+            setBPMBucket((BPMBucket) buc);
+        }
         super.addBucket(buc);
     }
 
     /*
      *  Process variable Gets
      */
-
     /**
      * returns average X position over macropulse (mm) accounting for alignment
      */
-    public double   getXAvg()  throws ConnectionException, GetException {
-	xAvgC = lazilyGetAndConnect(X_AVG_HANDLE, xAvgC);
+    public double getXAvg() throws ConnectionException, GetException {
+        xAvgC = lazilyGetAndConnect(X_AVG_HANDLE, xAvgC);
         return xAvgC.getValDbl();
     }
-
 
     /**
      * returns average Y position over macropulse (mm) accounting for alignment
      */
-    public double   getYAvg()  throws ConnectionException, GetException {
-	yAvgC = lazilyGetAndConnect(Y_AVG_HANDLE, yAvgC);
-	return yAvgC.getValDbl();
+    public double getYAvg() throws ConnectionException, GetException {
+        yAvgC = lazilyGetAndConnect(Y_AVG_HANDLE, yAvgC);
+        return yAvgC.getValDbl();
     }
-
 
     /**
      * returns average bpm Amplitude signal over macropulse (au)
      */
-    public double   getAmpAvg()  throws ConnectionException, GetException {
-	ampAvgC = lazilyGetAndConnect(AMP_AVG_HANDLE, ampAvgC);
-	return ampAvgC.getValDbl();
+    public double getAmpAvg() throws ConnectionException, GetException {
+        ampAvgC = lazilyGetAndConnect(AMP_AVG_HANDLE, ampAvgC);
+        return ampAvgC.getValDbl();
     }
-
 
     /**
      * returns average bpm phase signal over macropulse (au)
      */
-    public double   getPhaseAvg()  throws ConnectionException, GetException {
-	phaseAvgC = lazilyGetAndConnect(PHASE_AVG_HANDLE, phaseAvgC);
-	return phaseAvgC.getValDbl();
+    public double getPhaseAvg() throws ConnectionException, GetException {
+        phaseAvgC = lazilyGetAndConnect(PHASE_AVG_HANDLE, phaseAvgC);
+        return phaseAvgC.getValDbl();
     }
 
     /**
@@ -168,7 +173,7 @@ public class BPM extends AcceleratorNode {
      */
     public double[] getXTBT() throws ConnectionException, GetException {
         xTBTC = lazilyGetAndConnect(X_TBT_HANDLE, xTBTC);
-	return xTBTC.getArrDbl();
+        return xTBTC.getArrDbl();
     }
 
     /**
@@ -176,7 +181,7 @@ public class BPM extends AcceleratorNode {
      */
     public double[] getYTBT() throws ConnectionException, GetException {
         yTBTC = lazilyGetAndConnect(Y_TBT_HANDLE, yTBTC);
-	return yTBTC.getArrDbl();
+        return yTBTC.getArrDbl();
     }
 
     /**
@@ -184,7 +189,7 @@ public class BPM extends AcceleratorNode {
      */
     public double[] getAmpTBT() throws ConnectionException, GetException {
         ampTBTC = lazilyGetAndConnect(AMP_TBT_HANDLE, ampTBTC);
-	return ampTBTC.getArrDbl();
+        return ampTBTC.getArrDbl();
     }
 
     /**
@@ -192,14 +197,14 @@ public class BPM extends AcceleratorNode {
      */
     public double[] getPhaseTBT() throws ConnectionException, GetException {
         phaseTBTC = lazilyGetAndConnect(PHASE_TBT_HANDLE, phaseTBTC);
-	return phaseTBTC.getArrDbl();
+        return phaseTBTC.getArrDbl();
     }
 
     /**
      * returns length of the averaged period (micro-sec)
      */
     public double getTAvgLen() throws ConnectionException, GetException {
-	tAvgLenC = lazilyGetAndConnect(T_AVG_LEN_HANDLE, tAvgLenC);
-	return tAvgLenC.getValDbl();
+        tAvgLenC = lazilyGetAndConnect(T_AVG_LEN_HANDLE, tAvgLenC);
+        return tAvgLenC.getValDbl();
     }
 }

@@ -34,14 +34,32 @@ import xal.tools.apputils.Preferences;
 class JcaChannel extends Channel {
 
     //  Global Variables
-    protected static boolean CA_INIT;        // channel access initialized
-    protected static boolean CA_LOCK;        // channel access library lock    
-    protected static long CNT_REF;        // channel instance reference count
-    protected static boolean DEBUG;         // Forte debug mode (do not initialize jca)
+    /**
+     * channel access initialized
+     */
+    protected static boolean CA_INIT;
+    /**
+     * channel access library lock
+     */
+    protected static boolean CA_LOCK;
+    /**
+     * channel instance reference count
+     */
+    protected static long CNT_REF;
+    /**
+     * Forte debug mode (do not initialize jca)
+     */
+    protected static boolean DEBUG;
 
     //  Constants
-    public static final double c_dblDefTimeIO = 5.0;       // default pend IO timeout
-    public static final double c_dblDefTimeEvent = 0.1;    // default pend event timeout
+    /**
+     * default pend IO timeout
+     */
+    public static final double c_dblDefTimeIO = 5.0;
+    /**
+     * default pend event timeout
+     */
+    public static final double c_dblDefTimeEvent = 0.1;
 
     // Property names
     private static final String DEF_TIME_IO = "c_dblDefTimeIO";
