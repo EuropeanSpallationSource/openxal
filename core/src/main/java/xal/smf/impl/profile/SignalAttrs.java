@@ -48,19 +48,19 @@ public class SignalAttrs extends ScadaRecord {
     public enum ATTRS {
 
         /**  Signal amplitude */
-        AMP("amp", "hndAmpRb"), //$NON-NLS-1$
+        AMP("amp", "hndAmpRb"), 
 
         /**  Additive offset of the signal from zero baseline */
-        OFFSET("offset", "hndOffsetRb"), //$NON-NLS-1$
+        OFFSET("offset", "hndOffsetRb"), 
 
         /**  Area under the signal curve; the integral; the total mass */
-        AREA("area", "hndAreaRb"), //$NON-NLS-1$
+        AREA("area", "hndAreaRb"), 
 
         /**  The statistical average; the center of mass */
-        MEAN("mean", "hndMeanRb"), //$NON-NLS-1$
+        MEAN("mean", "hndMeanRb"), 
 
         /**  The standard deviation */
-        STDEV("stdev", "hndStdevRb"); //$NON-NLS-1$
+        STDEV("stdev", "hndStdevRb"); 
 
 
         /*
@@ -68,7 +68,7 @@ public class SignalAttrs extends ScadaRecord {
          */
 
         //            /** The attribute tag identifying the wire from which the signal was taken */
-        //            public static final String      STR_TAG_WIRE_ID = "angle"; //$NON-NLS-1$
+        //            public static final String      STR_TAG_WIRE_ID = "angle"; 
 
 
         /*
@@ -154,7 +154,7 @@ public class SignalAttrs extends ScadaRecord {
                 return dblFldVal;
 
             } catch (SecurityException | NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-                LOGGER.log(Level.SEVERE, "SERIOUS ERROR: WireScanner$SignalAttrs#getFieldValue()", e); //$NON-NLS-1$
+                LOGGER.log(Level.SEVERE, "SERIOUS ERROR: WireScanner$SignalAttrs#getFieldValue()", e); 
 
             }
 
@@ -181,7 +181,7 @@ public class SignalAttrs extends ScadaRecord {
 
 
             } catch (SecurityException | NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
-                LOGGER.log(Level.SEVERE, "SERIOUS ERROR: WireScanner$SignalAttrs#setFieldValue()", e); //$NON-NLS-1$
+                LOGGER.log(Level.SEVERE, "SERIOUS ERROR: WireScanner$SignalAttrs#setFieldValue()", e); 
 
             }
 

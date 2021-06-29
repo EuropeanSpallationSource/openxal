@@ -482,8 +482,8 @@ public class ScadaCheckConnect {
         Channel     chnReq = smfDev.findChannel(strHnd);
     
         if (chnReq == null) {
-            String strMsg = "No channel " + strHnd  //$NON-NLS-1$
-            + " on device " + smfDev.getId(); //$NON-NLS-1$
+            String strMsg = "No channel " + strHnd  
+            + " on device " + smfDev.getId(); 
             throw new BadStructException(strMsg);
     
         }

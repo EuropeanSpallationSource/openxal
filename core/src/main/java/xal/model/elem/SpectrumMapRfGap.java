@@ -111,7 +111,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
     /**
 	 *  the string type identifier for all SpectrumMapRfGap objects
 	 */
-	public static final String TYPE = "SpectrumMapRfGap"; //$NON-NLS-1$
+	public static final String TYPE = "SpectrumMapRfGap"; 
 
 	
 	//
@@ -121,17 +121,17 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 	/**
 	 *  Parameters for XAL MODEL LATTICE dtd
 	 */
-	public static final String PARAM_ETL = "ETL"; //$NON-NLS-1$
+	public static final String PARAM_ETL = "ETL"; 
 	
 	/**
 	 *  Description of the Field
 	 */
-	public static final String PARAM_PHASE = "Phase"; //$NON-NLS-1$
+	public static final String PARAM_PHASE = "Phase"; 
 	
 	/**
 	 *  Description of the Field
 	 */
-	public static final String PARAM_FREQ = "Frequency"; //$NON-NLS-1$
+	public static final String PARAM_FREQ = "Frequency"; 
 	
 	
 	//
@@ -1133,12 +1133,12 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         
         bufOut.append(super.toString());
         
-        bufOut.append("  Gap ETL product    : ").append(this.getETL()); //$NON-NLS-1$
+        bufOut.append("  Gap ETL product    : ").append(this.getETL()); 
         bufOut.append('\n');
-        bufOut.append("  Gap phase shift    : ").append(this.getPhase()); //$NON-NLS-1$
+        bufOut.append("  Gap phase shift    : ").append(this.getPhase()); 
         bufOut.append('\n');
         
-        bufOut.append("  RF frequency       : ").append(this.getFrequency()); //$NON-NLS-1$
+        bufOut.append("  RF frequency       : ").append(this.getFrequency()); 
         bufOut.append('\n');
 
         bufOut.append("  Axial field dblFieldE0     : ").append(this.getE0());
@@ -1159,9 +1159,9 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
     public void print(PrintWriter os) {
     	super.print(os);
     
-    	os.println("  Gap ETL product    : " + this.getETL()); //$NON-NLS-1$
-    	os.println("  Gap phase shift    : " + this.getPhase()); //$NON-NLS-1$
-    	os.println("  RF frequency       : " + this.getFrequency()); //$NON-NLS-1$
+    	os.println("  Gap ETL product    : " + this.getETL()); 
+    	os.println("  Gap phase shift    : " + this.getPhase()); 
+    	os.println("  RF frequency       : " + this.getFrequency()); 
     	os.println("  Axial field dblFieldE0     : " + this.getE0() );
     }
 

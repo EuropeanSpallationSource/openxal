@@ -407,11 +407,11 @@ public abstract class SignalSet implements DataListener {
     @Override
     public String toString() {
         StringBuilder    bufStr = new StringBuilder();
-        bufStr.append(this.getClass().getName()).append(" values\n"); //$NON-NLS-1$
+        bufStr.append(this.getClass().getName()).append(" values\n"); 
 
-        bufStr.append("hor signal = ").append(this.hor.toString()).append("\n"); //$NON-NLS-1$ //$NON-NLS-2$
-        bufStr.append("ver signal = ").append(this.ver.toString()).append("\n"); //$NON-NLS-1$ //$NON-NLS-2$
-        bufStr.append("dia signal = ").append(this.dia.toString()).append("\n"); //$NON-NLS-1$ //$NON-NLS-2$
+        bufStr.append("hor signal = ").append(this.hor.toString()).append("\n");  //$NON-NLS-2$
+        bufStr.append("ver signal = ").append(this.ver.toString()).append("\n");  //$NON-NLS-2$
+        bufStr.append("dia signal = ").append(this.dia.toString()).append("\n");  //$NON-NLS-2$
 
         return bufStr.toString();
     }

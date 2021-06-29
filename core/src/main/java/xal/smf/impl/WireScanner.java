@@ -176,11 +176,11 @@ public class WireScanner extends ProfileDevice {
         };
 
         /** Command-issuing handle */
-        public static final String HANDLE_CMD = "Command"; //$NON-NLS-1$
+        public static final String HANDLE_CMD = "Command"; 
         public final AccessibleProperty cmd = new AccessibleProperty("command", HANDLE_CMD);
 
         /** command result handle */
-        public static final String HANDLE_RESULT = "CommandResult"; //$NON-NLS-1$
+        public static final String HANDLE_RESULT = "CommandResult"; 
         public final AccessibleProperty cmdResult = new AccessibleProperty("cmdResult", HANDLE_RESULT);
 
 
@@ -488,7 +488,7 @@ public class WireScanner extends ProfileDevice {
          */
         public Number getArgument(int index) throws IllegalArgumentException {
             if (index >= this.getArgumentCount())
-                throw new IllegalArgumentException("Index is larger than argument count"); //$NON-NLS-1$
+                throw new IllegalArgumentException("Index is larger than argument count"); 
 
             return this.args[index];
         }
@@ -505,11 +505,11 @@ public class WireScanner extends ProfileDevice {
         public String toString() {
             StringBuilder        bufText = new StringBuilder();
 
-            bufText.append("CMD=").append(this.getCommand()); //$NON-NLS-1$
-            bufText.append("Args=("); //$NON-NLS-1$
+            bufText.append("CMD=").append(this.getCommand()); 
+            bufText.append("Args=("); 
             for (int i=0; i<this.getArgumentCount(); i++)
-                bufText.append(",").append(this.getArgument(i)); //$NON-NLS-1$
-            bufText.append(")"); //$NON-NLS-1$
+                bufText.append(",").append(this.getArgument(i)); 
+            bufText.append(")"); 
 
             return bufText.toString();
         }
@@ -521,20 +521,20 @@ public class WireScanner extends ProfileDevice {
      */
     
     /** device type */
-    public static final String TYPE = "WS"; //$NON-NLS-1$
+    public static final String TYPE = "WS"; 
     
     /** software type for the Wire Scanner class */
-    public static final String SOFTWARE_TYPE = "Version 2.0.0"; //$NON-NLS-1$
+    public static final String SOFTWARE_TYPE = "Version 2.0.0"; 
 	
     /** Hardware type for the WireScanner class */
-    public static final String HARDWARE_TYPE = "wirescanner"; //$NON-NLS-1$
+    public static final String HARDWARE_TYPE = "wirescanner"; 
 
     
     /** handle for the horizontal sigma Gauss channel */
-    public static final String HORIZONTAL_SIGMA_GAUSS_HANDLE = "SigHorGaussStd"; //$NON-NLS-1$
+    public static final String HORIZONTAL_SIGMA_GAUSS_HANDLE = "SigHorGaussStd"; 
     public final AccessibleProperty horSigGauss = new AccessibleProperty("horSigGauss", HORIZONTAL_SIGMA_GAUSS_HANDLE);
     /** handle for the vertical sigma Gauss channel */
-    public static final String VERTICAL_SIGMA_GAUSS_HANDLE = "SigVerGaussStd"; //$NON-NLS-1$
+    public static final String VERTICAL_SIGMA_GAUSS_HANDLE = "SigVerGaussStd"; 
     public final AccessibleProperty vertSigGauss = new AccessibleProperty("vertSigGauss", VERTICAL_SIGMA_GAUSS_HANDLE);
 
     
@@ -3021,7 +3021,7 @@ public class WireScanner extends ProfileDevice {
 //        Collection<ScadaFieldDescriptor>    setFds = new ScadaFieldList(clsScada);
 //        
 //        if (setFds.size() == 0)
-//            throw new BadStructException("Class is not a SCADA data structure"); //$NON-NLS-1$
+//            throw new BadStructException("Class is not a SCADA data structure"); 
 //        
 //        return this.testConnection(setFds, dblTmOut);
 //    }

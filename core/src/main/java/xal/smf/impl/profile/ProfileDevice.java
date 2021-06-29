@@ -273,13 +273,13 @@ public abstract class ProfileDevice extends AcceleratorNode {
     public enum ANGLE {
 
         /** the horizontal plane */
-        HOR(0, "Horizontal"), //$NON-NLS-1$
+        HOR(0, "Horizontal"), 
 
         /** the vertical plane */
-        VER(1, "Vertical"), //$NON-NLS-1$
+        VER(1, "Vertical"), 
 
         /** the diagonal plane */
-        DIA(2, "Diagonal"); //$NON-NLS-1$
+        DIA(2, "Diagonal"); 
 
 
         /*
@@ -972,7 +972,7 @@ public abstract class ProfileDevice extends AcceleratorNode {
         Collection<ScadaFieldDescriptor>    setFds = new ScadaFieldList(clsScada);
     
         if (setFds.size() == 0)
-            throw new BadStructException("Class is not a SCADA data structure"); //$NON-NLS-1$
+            throw new BadStructException("Class is not a SCADA data structure"); 
     
         return this.testConnection(setFds, dblTmOut);
     }

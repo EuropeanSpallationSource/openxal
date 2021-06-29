@@ -40,20 +40,20 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	/**
 	 *  the string type identifier for all IdealRfGap objects
 	 */
-	public static final String TYPE = "IdealRfGap"; //$NON-NLS-1$
+	public static final String TYPE = "IdealRfGap"; 
 
 	/**
 	 *  Parameters for XAL MODEL LATTICE dtd
 	 */
-	public static final String PARAM_ETL = "ETL"; //$NON-NLS-1$
+	public static final String PARAM_ETL = "ETL"; 
 	/**
 	 *  Description of the Field
 	 */
-	public static final String PARAM_PHASE = "Phase"; //$NON-NLS-1$
+	public static final String PARAM_PHASE = "Phase"; 
 	/**
 	 *  Description of the Field
 	 */
-	public static final String PARAM_FREQ = "Frequency"; //$NON-NLS-1$
+	public static final String PARAM_FREQ = "Frequency"; 
 	
 	/**
 	 * Don't know what this is? CKA
@@ -676,9 +676,9 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     public void print(PrintWriter os) {
 		super.print(os);
 
-		os.println("  Gap ETL product    : " + this.getETL()); //$NON-NLS-1$
-		os.println("  Gap phase shift    : " + this.getPhase()); //$NON-NLS-1$
-		os.println("  RF frequency       : " + this.getFrequency()); //$NON-NLS-1$
+		os.println("  Gap ETL product    : " + this.getETL()); 
+		os.println("  Gap phase shift    : " + this.getPhase()); 
+		os.println("  RF frequency       : " + this.getFrequency()); 
 		os.println("  Axial field E0     : " + this.getE0() );
 	}
 	

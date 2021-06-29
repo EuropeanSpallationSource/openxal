@@ -557,7 +557,7 @@ public class Signal extends ScadaRecord {
     @Override
     public String toString() {
         if (pos == null)
-            return ""; //$NON-NLS-1$
+            return ""; 
 
         // Create the buffer and add the noise figures
         StringBuilder        bufSig = new StringBuilder();
@@ -572,11 +572,11 @@ public class Signal extends ScadaRecord {
         for (double dblPos : this.pos) {
             double  dblVal = this.val[index++];
 
-            bufSig.append("("); //$NON-NLS-1$
+            bufSig.append("("); 
             bufSig.append(dblPos);
-            bufSig.append(","); //$NON-NLS-1$
+            bufSig.append(","); 
             bufSig.append(dblVal);
-            bufSig.append(") "); //$NON-NLS-1$
+            bufSig.append(") "); 
         }
 
         return bufSig.toString(); 

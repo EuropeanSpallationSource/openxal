@@ -297,15 +297,15 @@ public class ScadaFieldDescriptor extends XalPvDescriptor {
      */
     @Override
     public String   toString() {
-        String      strBuf = "(Field=" + this.strFldNm; //$NON-NLS-1$
-        strBuf += ", type=" + this.getPvType(); //$NON-NLS-1$
-        strBuf += ", ctrl=" + this.isControllable(); //$NON-NLS-1$
-        strBuf += ", RbChn=" + this.getRbHandle(); //$NON-NLS-1$
+        String      strBuf = "(Field=" + this.strFldNm; 
+        strBuf += ", type=" + this.getPvType(); 
+        strBuf += ", ctrl=" + this.isControllable(); 
+        strBuf += ", RbChn=" + this.getRbHandle(); 
         
         if (this.isControllable())
-            strBuf += ", SetChn=" + this.getSetHandle(); //$NON-NLS-1$
+            strBuf += ", SetChn=" + this.getSetHandle(); 
         
-        strBuf += ")"; //$NON-NLS-1$
+        strBuf += ")"; 
         
         return strBuf;
     }

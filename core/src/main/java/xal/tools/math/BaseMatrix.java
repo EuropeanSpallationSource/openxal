@@ -192,10 +192,10 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     public void setMatrix(String strValues) throws NumberFormatException {
                 
     	// Error check the number of token strings
-    	StringTokenizer     tokArgs = new StringTokenizer(strValues, " ,()[]{}"); //$NON-NLS-1$
+    	StringTokenizer     tokArgs = new StringTokenizer(strValues, " ,()[]{}"); 
                 
     	if (tokArgs.countTokens() != this.getRowCnt()*this.getColCnt())
-    		throw new IllegalArgumentException("BaseMatrix#setMatrix - wrong number of token strings: " + strValues); //$NON-NLS-1$
+    		throw new IllegalArgumentException("BaseMatrix#setMatrix - wrong number of token strings: " + strValues); 
                 
                 
     	// Extract initial phase coordinate values

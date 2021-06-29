@@ -108,7 +108,7 @@ public class Twiss implements Serializable {
                 return dblFldVal;
 
             } catch (SecurityException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-                System.err.println("SERIOUS ERROR: Twiss$PROP#getPropertyValue()"); //$NON-NLS-1$
+                System.err.println("SERIOUS ERROR: Twiss$PROP#getPropertyValue()"); 
                 LOGGER.log(Level.SEVERE, null, e);
 
             }

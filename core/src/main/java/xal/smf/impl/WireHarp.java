@@ -86,11 +86,11 @@ public class WireHarp extends ProfileDevice {
 
 
         /** Command-issuing handle */
-        public static final String HANDLE_CMD = "Command"; //$NON-NLS-1$
+        public static final String HANDLE_CMD = "Command"; 
         public final AccessibleProperty cmd = new AccessibleProperty("command", HANDLE_CMD);
 
         /** command result handle */
-        public static final String HANDLE_RESULT = "CommandResult"; //$NON-NLS-1$
+        public static final String HANDLE_RESULT = "CommandResult"; 
         public final AccessibleProperty cmdResult = new AccessibleProperty("commandResult", HANDLE_RESULT);
 
 
