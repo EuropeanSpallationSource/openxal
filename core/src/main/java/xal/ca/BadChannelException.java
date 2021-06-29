@@ -1,20 +1,21 @@
 package xal.ca;
+
 /*
  * BadChannelException.java
  *
  * Created on October 30, 2001, 10:36 AM
  */
 
-
 /**
  *
- * @author  Christopher K. Allen
+ * @author Christopher K. Allen
  * @version 1.0
  */
-
-
 public class BadChannelException extends ChannelException {
-    /** required for serializable objects */
+
+    /**
+     * required for serializable objects
+     */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -23,14 +24,13 @@ public class BadChannelException extends ChannelException {
     public BadChannelException() {
     }
 
-
     /**
-     * Constructs an <code>BadChannelException</code> with the specified detail message.
+     * Constructs an <code>BadChannelException</code> with the specified detail
+     * message.
+     *
      * @param msg the detail message.
      */
     public BadChannelException(String msg) {
         super(msg);
     }
 }
-
-

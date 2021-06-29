@@ -1,4 +1,5 @@
 package xal.ca;
+
 /*
  * ConnectionException.java
  *
@@ -7,12 +8,15 @@ package xal.ca;
 
 /**
  *
- * @author  CKAllen
+ * @author CKAllen
  */
 public class ConnectionException extends ChannelException {
-    /** required for serializable objects */
+
+    /**
+     * required for serializable objects
+     */
     private static final long serialVersionUID = 1L;
-    
+
     private Channel channel;
 
     /**
@@ -21,25 +25,24 @@ public class ConnectionException extends ChannelException {
     public ConnectionException() {
     }
 
-
     /**
-     * Constructs an <code>ConnectionException</code> with the specified detail message.
-	 * @param channel for which the exception was thrown
+     * Constructs an <code>ConnectionException</code> with the specified detail
+     * message.
+     *
+     * @param channel for which the exception was thrown
      * @param msg the detail message.
      */
     public ConnectionException(Channel channel, String msg) {
         super(msg);
         this.channel = channel;
     }
-    
-    
+
     /**
      * Get the channel for which the connection exception was thrown.
+     *
      * @return The channel for which the connection exception was thrown.
      */
     public Channel getChannel() {
         return channel;
     }
 }
-
-

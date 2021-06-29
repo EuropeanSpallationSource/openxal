@@ -29,12 +29,13 @@ public class ElementFactory {
     private ElementFactory() {
     }
 
-	/**
-	 * Add channels for a BPM to the channelSuite.
-	 * @param name BPM name.
-	 * @param channelSuite Target channelSuite.
-	 */
-	private static void addBPMChannels(String name, ChannelSuite channelSuite) {
+    /**
+     * Add channels for a BPM to the channelSuite.
+     *
+     * @param name BPM name.
+     * @param channelSuite Target channelSuite.
+     */
+    private static void addBPMChannels(String name, ChannelSuite channelSuite) {
         name = name.replace('_', ':');
         channelSuite.putChannel(BPM.X_AVG_HANDLE, name + ":XAvg", false);
         channelSuite.putChannel(BPM.Y_AVG_HANDLE, name + ":YAvg", false);

@@ -32,45 +32,46 @@ import xal.tools.beam.PhaseMatrix;
  *
  *
  * @author Christopher K. Allen
- * @since  Apr 3, 2014
+ * @since Apr 3, 2014
  */
 public class TestTransferMapTrajectory {
 
     /*
      * Global Constants
      */
-    
-    /** Flag used for indicating whether to type out to stout or file */
-    private static final boolean        BOL_TYPE_STOUT = false;
-    
+    /**
+     * Flag used for indicating whether to type out to stout or file
+     */
+    private static final boolean BOL_TYPE_STOUT = false;
+
 
     /*
      * Global Attributes
      */
-    
-    /** The results output file stream */
-    private static PrintStream        PSTR_OUTPUT;
+    /**
+     * The results output file stream
+     */
+    private static PrintStream PSTR_OUTPUT;
 
-    
-    private static Accelerator     ACCEL;
-    
-    private static Scenario         MODEL;
-    
-    private static TransferMapProbe     PROBE;
-    
-    private static Trajectory<TransferMapState>    TRAJ;
-    
-    
+    private static Accelerator ACCEL;
+
+    private static Scenario MODEL;
+
+    private static TransferMapProbe PROBE;
+
+    private static Trajectory<TransferMapState> TRAJ;
+
     @BeforeClass
     public static void SetupClass() throws ModelException {
-        
-        if (BOL_TYPE_STOUT) 
+
+        if (BOL_TYPE_STOUT) {
             PSTR_OUTPUT = System.out;
-        else
+        } else {
             PSTR_OUTPUT = ResourceTools.createOutputStream(TestTrajectory.class);
+        }
 
 //        ACCEL  = XMLDataManager.loadDefaultAccelerator();
-        ACCEL  = ResourceManager.getTestAccelerator();
+        ACCEL = ResourceManager.getTestAccelerator();
 
         ArrayList<AcceleratorSeq> lst = new ArrayList<AcceleratorSeq>();
         AcceleratorSeq hebt1 = ACCEL.getSequence("HEBT1");
@@ -93,7 +94,6 @@ public class TestTransferMapTrajectory {
         //                print "Probe update policy = ", ptracker.getProbeUpdatePolicy()
         //                ptracker.setProbeUpdatePolicy(Tracker.UPDATE_ENTRANCE)
         //                print "New probe update policy = ", ptracker.getProbeUpdatePolicy()
-
         MODEL.setProbe(PROBE);
         MODEL.resync();
         MODEL.run();
@@ -101,94 +101,90 @@ public class TestTransferMapTrajectory {
         TRAJ = MODEL.getTrajectory();
     }
 
-    
     @AfterClass
     public static void TeardownClass() {
-        
+
     }
-    
-    
-    
+
     @Test
     public void printElementsInLattice() {
         PSTR_OUTPUT.print("\n\nELEMENTS IN LATTICE\n");
         int cnt = 0;
-        Lattice latModel  = MODEL.getLattice();
-        Iterator<?>  iter = latModel.globalIterator();
+        Lattice latModel = MODEL.getLattice();
+        Iterator<?> iter = latModel.globalIterator();
         while (iter.hasNext()) {
             Object obj = iter.next();
-            IComponent elem = (IComponent)obj;
-            PSTR_OUTPUT.println(cnt + "   " + elem.getId() );
+            IComponent elem = (IComponent) obj;
+            PSTR_OUTPUT.println(cnt + "   " + elem.getId());
             cnt = cnt + 1;
         }
 
     }
-    
+
     @Test
     public void printElementsInTrajectory() {
         PSTR_OUTPUT.print("\n\nSTATES BY ELEMENT IN TRAJECTORY\n");
         int cnt = 0;
-        Iterator<TransferMapState>  iter = TRAJ.iterator();
+        Iterator<TransferMapState> iter = TRAJ.iterator();
         while (iter.hasNext()) {
             TransferMapState state = iter.next();
-            
-            String  strElemId = state.getElementId();
-            double  dblPos    = state.getPosition();
-            double  dblKin    = state.getKineticEnergy();
-                    
+
+            String strElemId = state.getElementId();
+            double dblPos = state.getPosition();
+            double dblKin = state.getKineticEnergy();
+
             PSTR_OUTPUT.println(cnt + "   " + strElemId + "   " + dblPos + "   " + dblKin);
             cnt = cnt + 1;
         }
 
     }
-    
 
     /**
-     * Test method for {@link xal.model.probe.traj.TransferMapTrajectory#getTransferMatrix(java.lang.String, java.lang.String)}.
+     * Test method for
+     * {@link xal.model.probe.traj.TransferMapTrajectory#getTransferMatrix(java.lang.String, java.lang.String)}.
      */
     @Test
     public void testGetTransferMatrix() {
 //        CalculationsOnMachines  prcTran = new CalculationsOnMachines(TRAJ);
-        
+
         PSTR_OUTPUT.print("\n\nSTATE-BY-STATE TRANSFER MATRICES IN TRAJECTORY\n");
-        int cnt    = 0;
+        int cnt = 0;
         TransferMapState state1 = TRAJ.initialState();
         Iterator<TransferMapState> iter = TRAJ.iterator();
-        while ( iter.hasNext() ) {
-            TransferMapState state2 = iter.next(); 
+        while (iter.hasNext()) {
+            TransferMapState state2 = iter.next();
             String strId1 = state1.getElementId();
             String strId2 = state2.getElementId();
 //            PhaseMatrix matXfer = TRAJ.getTransferMatrix(strId1, strId2);
 //            PhaseMatrix matXfer = TRAJ.getTransferMatrix(state1, state2);
             PhaseMatrix matXfer1 = state1.getTransferMap().getFirstOrder();
             PhaseMatrix matXfer2 = state2.getTransferMap().getFirstOrder();
-            PhaseMatrix matXfer  = matXfer2.times( matXfer1.inverse() );
-            
-            PSTR_OUTPUT.println(cnt + "     " + strId1 + " to " + strId2 + "     " + matXfer.toStringMatrix() );
-            
+            PhaseMatrix matXfer = matXfer2.times(matXfer1.inverse());
+
+            PSTR_OUTPUT.println(cnt + "     " + strId1 + " to " + strId2 + "     " + matXfer.toStringMatrix());
+
             cnt = cnt + 1;
             state1 = state2;
         }
     }
 
-    @Test 
+    @Test
     public void testGetFullTrajectoryTransferMatrix() {
         PSTR_OUTPUT.print("\n\nENTRANCE-TO-ELEMENT TRANSFER MATRICES IN TRAJECTORY\n");
-        int cnt    = 0;
-        Iterator<TransferMapState> iter =  TRAJ.iterator();
-        while ( iter.hasNext() ) {
-            TransferMapState state = iter.next(); 
+        int cnt = 0;
+        Iterator<TransferMapState> iter = TRAJ.iterator();
+        while (iter.hasNext()) {
+            TransferMapState state = iter.next();
             String strId1 = state.getElementId();
 //            PhaseMatrix matXfer = TRAJ.getTransferMatrix(strId1, strId2);
             PhaseMatrix matXfer = state.getTransferMap().getFirstOrder();
-            
-            PSTR_OUTPUT.println(cnt + "     " + strId1 + "     " + matXfer.toStringMatrix() );
-            
+
+            PSTR_OUTPUT.println(cnt + "     " + strId1 + "     " + matXfer.toStringMatrix());
+
             cnt = cnt + 1;
         }
     }
 
-    
 //    /**
 //     * Test method for {@link xal.model.probe.traj.TransferMapTrajectory#getTransferMatrix(java.lang.String, java.lang.String)}.
 //     */
@@ -211,9 +207,9 @@ public class TestTransferMapTrajectory {
 //            state1 = state2;
 //        }
 //    }
-
     /**
-     * Test method for {@link xal.model.probe.traj.Trajectory#stateForElement(java.lang.String)}.
+     * Test method for
+     * {@link xal.model.probe.traj.Trajectory#stateForElement(java.lang.String)}.
      */
     @Test
     public void testStateForElement() {
@@ -221,7 +217,8 @@ public class TestTransferMapTrajectory {
     }
 
     /**
-     * Test method for {@link xal.model.probe.traj.Trajectory#statesForElement(java.lang.String)}.
+     * Test method for
+     * {@link xal.model.probe.traj.Trajectory#statesForElement(java.lang.String)}.
      */
     @Test
     public void testStatesForElement() {
@@ -229,7 +226,8 @@ public class TestTransferMapTrajectory {
     }
 
     /**
-     * Test method for {@link xal.model.probe.traj.Trajectory#statesForElement_new(java.lang.String)}.
+     * Test method for
+     * {@link xal.model.probe.traj.Trajectory#statesForElement_new(java.lang.String)}.
      */
     @Test
     public void testStatesForElement_new() {

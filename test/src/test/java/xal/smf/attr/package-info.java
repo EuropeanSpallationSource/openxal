@@ -9,6 +9,6 @@
  *
  *
  * @author Christopher K. Allen
- * @since  Jun 2, 2015
+ * @since Jun 2, 2015
  */
 package xal.smf.attr;

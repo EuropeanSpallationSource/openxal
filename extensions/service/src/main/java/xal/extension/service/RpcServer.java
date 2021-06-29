@@ -7,7 +7,6 @@
  * Oak Ridge National Laboratory
  * Oak Ridge, TN 37830
  */
-
 package xal.extension.service;
 
 import xal.tools.coding.*;
@@ -18,477 +17,514 @@ import java.net.*;
 import java.util.*;
 import java.util.logging.*;
 
-
 /**
- * RpcServer implements a server which handles remote requests against registered handlers.
- * @author  tap
+ * RpcServer implements a server which handles remote requests against
+ * registered handlers.
+ *
+ * @author tap
  */
 //public class RpcServer extends WebServer {
 public class RpcServer {
+
     private static final Logger LOGGER = Logger.getLogger(RpcServer.class.getName());
 
-    /** delimiter for encoding remote messages */
+    /**
+     * delimiter for encoding remote messages
+     */
     private static final String REMOTE_MESSAGE_DELIMITER = "#";
-    
-    /** socket which listens for and dispatches remote requests */
+
+    /**
+     * socket which listens for and dispatches remote requests
+     */
     private final ServerSocket SERVER_SOCKET;
-    
-    /** set of active sockets serving remote requests */
+
+    /**
+     * set of active sockets serving remote requests
+     */
     private final Set<Socket> REMOTE_SOCKETS;
-    
-    /** remote request handlers keyed by service name */
-    private final Map<String,RemoteRequestHandler<?>> REMOTE_REQUEST_HANDLERS;
-    
-    /** coder for encoding and decoding messages for remote transport */
+
+    /**
+     * remote request handlers keyed by service name
+     */
+    private final Map<String, RemoteRequestHandler<?>> REMOTE_REQUEST_HANDLERS;
+
+    /**
+     * coder for encoding and decoding messages for remote transport
+     */
     private final Coder MESSAGE_CODER;
-    
-    
-    /** Constructor */
-    public RpcServer( final Coder messageCoder ) throws java.io.IOException {
+
+    /**
+     * Constructor
+     */
+    public RpcServer(final Coder messageCoder) throws java.io.IOException {
         MESSAGE_CODER = messageCoder;
-        
+
         REMOTE_REQUEST_HANDLERS = new Hashtable<>();
-        SERVER_SOCKET = new ServerSocket( 0 );
+        SERVER_SOCKET = new ServerSocket(0);
         REMOTE_SOCKETS = new HashSet<>();
 
 //		System.out.println( "Listening on: " + getHost() + ":" + getPort() );
     }
-    
-    
+
     /**
      * Get the port used by the web server.
-	 * @return The port used by the web server.
+     *
+     * @return The port used by the web server.
      */
     public int getPort() {
         return SERVER_SOCKET.getLocalPort();
     }
-    
-    
+
     /**
      * Get the host address used for the web server.
-	 * @return The host address used for the web server.
+     *
+     * @return The host address used for the web server.
      */
     public String getHost() {
         try {
             return InetAddress.getLocalHost().getHostName();
-        }
-        catch(UnknownHostException exception) {
-			final String message = "Error getting the host name of the RPC Server.";
-			Logger.getLogger( "global" ).log( Level.SEVERE, message, exception );
+        } catch (UnknownHostException exception) {
+            final String message = "Error getting the host name of the RPC Server.";
+            Logger.getLogger("global").log(Level.SEVERE, message, exception);
             LOGGER.log(Level.SEVERE, null, exception);
             return null;
         }
     }
-    
-    
-    /** start the server, listen for remote requests and dispatch them to the appropriate handlers */
+
+    /**
+     * start the server, listen for remote requests and dispatch them to the
+     * appropriate handlers
+     */
     public void start() {
-        new Thread( new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    while ( !SERVER_SOCKET.isClosed() ) {
+                    while (!SERVER_SOCKET.isClosed()) {
                         final Socket remoteSocket = SERVER_SOCKET.accept();
-                        remoteSocket.setKeepAlive( true );
-						synchronized( REMOTE_SOCKETS ) {
-							REMOTE_SOCKETS.add( remoteSocket );
-						}
-                        processRemoteEvents( remoteSocket );
+                        remoteSocket.setKeepAlive(true);
+                        synchronized (REMOTE_SOCKETS) {
+                            REMOTE_SOCKETS.add(remoteSocket);
+                        }
+                        processRemoteEvents(remoteSocket);
                     }
-                }
-                catch ( SocketException exception ) {
+                } catch (SocketException exception) {
                     // server being shutdown
-                }
-                catch ( IOException exception ) {
+                } catch (IOException exception) {
                     LOGGER.log(Level.SEVERE, null, exception);
                 }
             }
         }).start();
     }
-    
-    
-    /** shutdown the server */
+
+    /**
+     * shutdown the server
+     */
     public void shutdown() throws IOException {
-		// stop establishing new remote sockets
+        // stop establishing new remote sockets
         SERVER_SOCKET.close();
 
-		// close the existing remote sockets
-		final Set<Socket> sockets = new HashSet<>();
-		synchronized( REMOTE_SOCKETS ) {
-			sockets.addAll( REMOTE_SOCKETS );
-		}
-        for ( final Socket socket : sockets ) {
+        // close the existing remote sockets
+        final Set<Socket> sockets = new HashSet<>();
+        synchronized (REMOTE_SOCKETS) {
+            sockets.addAll(REMOTE_SOCKETS);
+        }
+        for (final Socket socket : sockets) {
             try {
                 socket.close();
-            }
-            catch( IOException exception ) {
+            } catch (IOException exception) {
                 LOGGER.log(Level.SEVERE, null, exception);
             }
         }
 
-		// clear the remote sockets
-		synchronized( REMOTE_SOCKETS ) {
-			REMOTE_SOCKETS.clear();
-		}
+        // clear the remote sockets
+        synchronized (REMOTE_SOCKETS) {
+            REMOTE_SOCKETS.clear();
+        }
     }
 
-
-	/** cleanup the remote socket which has been closed */
-	private void cleanupClosedRemoteSocket( final Socket remoteSocket ) {
-		synchronized( REMOTE_SOCKETS ) {
-			REMOTE_SOCKETS.remove( remoteSocket );
-		}
-	}
-    
-
-	/** add a handler to associate with the specified service and provider */
-    public <ProtocolType> void addHandler( final String serviceName, final Class<ProtocolType> protocol, final ProtocolType provider ) {
-        final RemoteRequestHandler<ProtocolType> handler = new RemoteRequestHandler<>( serviceName, protocol, provider );
-        REMOTE_REQUEST_HANDLERS.put( serviceName, handler );
+    /**
+     * cleanup the remote socket which has been closed
+     */
+    private void cleanupClosedRemoteSocket(final Socket remoteSocket) {
+        synchronized (REMOTE_SOCKETS) {
+            REMOTE_SOCKETS.remove(remoteSocket);
+        }
     }
 
-
-	/** remove the registered handler */
-	public void removeHandler( final String serviceName ) {
-		REMOTE_REQUEST_HANDLERS.remove( serviceName );
+    /**
+     * add a handler to associate with the specified service and provider
+     */
+    public <ProtocolType> void addHandler(final String serviceName, final Class<ProtocolType> protocol, final ProtocolType provider) {
+        final RemoteRequestHandler<ProtocolType> handler = new RemoteRequestHandler<>(serviceName, protocol, provider);
+        REMOTE_REQUEST_HANDLERS.put(serviceName, handler);
     }
 
+    /**
+     * remove the registered handler
+     */
+    public void removeHandler(final String serviceName) {
+        REMOTE_REQUEST_HANDLERS.remove(serviceName);
+    }
 
-    /** process remote socket events */
-    @SuppressWarnings( "unchecked" )    // need to cast generic request object to Map
-    private void processRemoteEvents( final Socket remoteSocket ) {
-        new Thread( new Runnable() {
+    /**
+     * process remote socket events
+     */
+    @SuppressWarnings("unchecked")    // need to cast generic request object to Map
+    private void processRemoteEvents(final Socket remoteSocket) {
+        new Thread(new Runnable() {
             @Override
             public void run() {
-				if ( !remoteSocket.isClosed() ) {
-					// process the initial handshake
-					try {
-						WebSocketIO.processRequestHandshake( remoteSocket );
-					}
-					catch ( IOException exception ) {
-						throw new RuntimeException( "Exception handling handshake", exception );
-					}
-				}
-
-				// process the messages as they arrive
-                while( !remoteSocket.isClosed() ) {
+                if (!remoteSocket.isClosed()) {
+                    // process the initial handshake
                     try {
-						String jsonRequest = null;
-						try {
-							jsonRequest = WebSocketIO.readMessage( remoteSocket );
-						}
-						catch( IOException | WebSocketIO.SocketPrematurelyClosedException exception ) {
-							throw new RemoteClientDroppedException( "Session has been closed during read..." );
-						}
-						
-                        final Object requestObject = MESSAGE_CODER.decode( jsonRequest );
-                        if ( requestObject instanceof Map ) {
-                            final Map<String,Object> request = (Map<String,Object>)requestObject;
-                            final String message = (String)request.get( "message" );
-                            final String[] messageParts = decodeRemoteMessage( message );
+                        WebSocketIO.processRequestHandshake(remoteSocket);
+                    } catch (IOException exception) {
+                        throw new RuntimeException("Exception handling handshake", exception);
+                    }
+                }
+
+                // process the messages as they arrive
+                while (!remoteSocket.isClosed()) {
+                    try {
+                        String jsonRequest = null;
+                        try {
+                            jsonRequest = WebSocketIO.readMessage(remoteSocket);
+                        } catch (IOException | WebSocketIO.SocketPrematurelyClosedException exception) {
+                            throw new RemoteClientDroppedException("Session has been closed during read...");
+                        }
+
+                        final Object requestObject = MESSAGE_CODER.decode(jsonRequest);
+                        if (requestObject instanceof Map) {
+                            final Map<String, Object> request = (Map<String, Object>) requestObject;
+                            final String message = (String) request.get("message");
+                            final String[] messageParts = decodeRemoteMessage(message);
                             final String serviceName = messageParts[0];
                             final String methodName = messageParts[1];
-                            final Number requestID = (Number)request.get( "id" );
-							final Object[] params = (Object[])request.get( "params" );
+                            final Number requestID = (Number) request.get("id");
+                            final Object[] params = (Object[]) request.get("params");
 
-                            final RemoteRequestHandler<?> handler = REMOTE_REQUEST_HANDLERS.get( serviceName );
-                            final EvaluationResult result = handler.evaluateRequest( methodName, params );
-                            
+                            final RemoteRequestHandler<?> handler = REMOTE_REQUEST_HANDLERS.get(serviceName);
+                            final EvaluationResult result = handler.evaluateRequest(methodName, params);
+
                             // methods marked with the OneWay annotation return immediately and do not provide any response
                             final boolean provideResponse = !result.isOneWay();
-                            
-                            if ( provideResponse ) {
-                                final Map<String,Object> response = new HashMap<>();
-                                response.put( "result", result.getValue() );
-                                response.put( "id", requestID );                                
-                                response.put( "error", result.getRuntimeExceptionWrapper() );
-                                
-                                final String jsonResponse = MESSAGE_CODER.encode( response );
-								WebSocketIO.sendMessage( remoteSocket, jsonResponse );
+
+                            if (provideResponse) {
+                                final Map<String, Object> response = new HashMap<>();
+                                response.put("result", result.getValue());
+                                response.put("id", requestID);
+                                response.put("error", result.getRuntimeExceptionWrapper());
+
+                                final String jsonResponse = MESSAGE_CODER.encode(response);
+                                WebSocketIO.sendMessage(remoteSocket, jsonResponse);
                             }
                         }
-                    }
-                    catch ( IOException | RemoteClientDroppedException exception ) {
-						if ( !remoteSocket.isClosed() ) {
-							try {
-								remoteSocket.close();
-							}
-							catch( IOException closeException ) {
-                                                            LOGGER.log(Level.SEVERE, null, closeException);
-							}
-						}
+                    } catch (IOException | RemoteClientDroppedException exception) {
+                        if (!remoteSocket.isClosed()) {
+                            try {
+                                remoteSocket.close();
+                            } catch (IOException closeException) {
+                                LOGGER.log(Level.SEVERE, null, closeException);
+                            }
+                        }
 
-						cleanupClosedRemoteSocket( remoteSocket );
-						return;
+                        cleanupClosedRemoteSocket(remoteSocket);
+                        return;
                     }
                 }
             }
         }).start();
     }
-    
-    
-    /** encode the service name and method name into the remote message */
-    static String encodeRemoteMessage( final String serviceName, final String methodName ) {
+
+    /**
+     * encode the service name and method name into the remote message
+     */
+    static String encodeRemoteMessage(final String serviceName, final String methodName) {
         return serviceName + REMOTE_MESSAGE_DELIMITER + methodName;
     }
-    
-    
-    /** decode the service name and method name from the remote message */
-    static String[] decodeRemoteMessage( final String message ) {
-        return message.split( REMOTE_MESSAGE_DELIMITER, 2 );
+
+    /**
+     * decode the service name and method name from the remote message
+     */
+    static String[] decodeRemoteMessage(final String message) {
+        return message.split(REMOTE_MESSAGE_DELIMITER, 2);
     }
 }
 
-
-
-/** Handles remote requests */
+/**
+ * Handles remote requests
+ */
 class RemoteRequestHandler<ProtocolType> {
-    /** primitive type wrappers keyed by type */
-    private static final Map<Class<?>,Class<?>> PRIMITIVE_TYPE_WRAPPERS;
 
-    /** identifier of the service */
+    /**
+     * primitive type wrappers keyed by type
+     */
+    private static final Map<Class<?>, Class<?>> PRIMITIVE_TYPE_WRAPPERS;
+
+    /**
+     * identifier of the service
+     */
     private final String SERVICE_NAME;
-    
-    /** protocol of available methods */
+
+    /**
+     * protocol of available methods
+     */
     private final Class<ProtocolType> PROTOCOL;
-    
-    /** object to message */
+
+    /**
+     * object to message
+     */
     private final ProtocolType PROVIDER;
-    
-    /** cache of methods keyed by their signature */
-    private final Map<String,Method> METHOD_CACHE;
-        
-    
+
+    /**
+     * cache of methods keyed by their signature
+     */
+    private final Map<String, Method> METHOD_CACHE;
+
     // static initializer
     static {
         PRIMITIVE_TYPE_WRAPPERS = populatePrimitiveTypeWrappers();
     }
-    
+
     private static final Logger LOGGER = Logger.getLogger(RemoteRequestHandler.class.getName());
-    
-    
-    /** Constructor */
-    public RemoteRequestHandler( final String serviceName, final Class<ProtocolType> protocol, final ProtocolType provider ) {
+
+    /**
+     * Constructor
+     */
+    public RemoteRequestHandler(final String serviceName, final Class<ProtocolType> protocol, final ProtocolType provider) {
         SERVICE_NAME = serviceName;
         PROTOCOL = protocol;
         PROVIDER = provider;
         METHOD_CACHE = new Hashtable<>();
     }
-    
-    
-    /** populate the table of primitive type wrappers */
-    private static Map<Class<?>,Class<?>> populatePrimitiveTypeWrappers() {
-        final Map<Class<?>,Class<?>> table = new Hashtable<>();
-        
-        table.put( Integer.TYPE, Integer.class );
-        table.put( Long.TYPE, Long.class );
-        table.put( Short.TYPE, Short.class );
-        table.put( Byte.TYPE, Byte.class );
-        table.put( Character.TYPE, Character.class );
-        table.put( Float.TYPE, Float.class );
-        table.put( Double.TYPE, Double.class );
-        table.put( Boolean.TYPE, Boolean.class );
-        
+
+    /**
+     * populate the table of primitive type wrappers
+     */
+    private static Map<Class<?>, Class<?>> populatePrimitiveTypeWrappers() {
+        final Map<Class<?>, Class<?>> table = new Hashtable<>();
+
+        table.put(Integer.TYPE, Integer.class);
+        table.put(Long.TYPE, Long.class);
+        table.put(Short.TYPE, Short.class);
+        table.put(Byte.TYPE, Byte.class);
+        table.put(Character.TYPE, Character.class);
+        table.put(Float.TYPE, Float.class);
+        table.put(Double.TYPE, Double.class);
+        table.put(Boolean.TYPE, Boolean.class);
+
         return table;
     }
-    
-    
-    /** Evaluate the request */
-    public EvaluationResult evaluateRequest( final String methodName, final Object[] methodParams ) {
-        final Class<?>[] methodParamTypes = new Class<?>[ methodParams.length ];
-        for ( int index = 0 ; index < methodParams.length ; index++ ) {
+
+    /**
+     * Evaluate the request
+     */
+    public EvaluationResult evaluateRequest(final String methodName, final Object[] methodParams) {
+        final Class<?>[] methodParamTypes = new Class<?>[methodParams.length];
+        for (int index = 0; index < methodParams.length; index++) {
             final Object param = methodParams[index];
             methodParamTypes[index] = param != null ? param.getClass() : null;
         }
-                
-        final Method method = getMethod( methodName, methodParamTypes );        
-        final boolean isOneWay = method.isAnnotationPresent( OneWay.class );
-        
+
+        final Method method = getMethod(methodName, methodParamTypes);
+        final boolean isOneWay = method.isAnnotationPresent(OneWay.class);
+
         try {
-            final Object value = method.invoke( PROVIDER, methodParams );
-            return new EvaluationResult( value, isOneWay );
-        }
-        catch ( IllegalAccessException | IllegalArgumentException | InvocationTargetException exception ) {
+            final Object value = method.invoke(PROVIDER, methodParams);
+            return new EvaluationResult(value, isOneWay);
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
             LOGGER.log(Level.SEVERE, null, exception);
-            return new EvaluationResult( null, isOneWay, exception.getCause() );
+            return new EvaluationResult(null, isOneWay, exception.getCause());
         }
     }
-    
-    
-    /** Get the method either from the cache or find and cache it if necessary */
-    private Method getMethod( final String methodName, final Class<?>[] parameterTypes ) {
-        final String methodSignature = getMethodSignature( methodName, parameterTypes );
-        
-        Method method = METHOD_CACHE.get( methodSignature );
-        if ( method == null ) {
-            method = findMethod( methodName, parameterTypes );
-            METHOD_CACHE.put( methodSignature, method );
+
+    /**
+     * Get the method either from the cache or find and cache it if necessary
+     */
+    private Method getMethod(final String methodName, final Class<?>[] parameterTypes) {
+        final String methodSignature = getMethodSignature(methodName, parameterTypes);
+
+        Method method = METHOD_CACHE.get(methodSignature);
+        if (method == null) {
+            method = findMethod(methodName, parameterTypes);
+            METHOD_CACHE.put(methodSignature, method);
         }
         return method;
     }
-    
-    
-    /** Get the method signature for the specified method name and parameter types */
-    private static String getMethodSignature( final String methodName, final Class<?>[] parameterTypes ) {
+
+    /**
+     * Get the method signature for the specified method name and parameter
+     * types
+     */
+    private static String getMethodSignature(final String methodName, final Class<?>[] parameterTypes) {
         final StringBuilder buffer = new StringBuilder();
-        buffer.append( methodName );
-        for ( final Class<?> parameterType : parameterTypes ) {
+        buffer.append(methodName);
+        for (final Class<?> parameterType : parameterTypes) {
             final String parameterTypeID = parameterType != null ? parameterType.getName() : "";
-            buffer.append( ":" );
-            buffer.append( parameterTypeID );
+            buffer.append(":");
+            buffer.append(parameterTypeID);
         }
         return buffer.toString();
     }
-    
-    
-    /** Find the best method in the protocol that matches the method name and parameters */
-    private Method findMethod( final String methodName, final Class<?>[] parameterTypes ) {
+
+    /**
+     * Find the best method in the protocol that matches the method name and
+     * parameters
+     */
+    private Method findMethod(final String methodName, final Class<?>[] parameterTypes) {
         try {
-            return PROTOCOL.getMethod( methodName, parameterTypes );
-        }
-        catch ( NoSuchMethodException exception ) {
+            return PROTOCOL.getMethod(methodName, parameterTypes);
+        } catch (NoSuchMethodException exception) {
             try {
                 final Method[] methods = PROTOCOL.getMethods();
                 final List<Method> methodCandidates = new ArrayList<>();
                 int bestScore = 0;
                 Method bestMethod = null;
-                for ( final Method method : methods ) {
-                    final int score = matchScore( method, methodName, parameterTypes );
-                    if ( score > bestScore ) {
+                for (final Method method : methods) {
+                    final int score = matchScore(method, methodName, parameterTypes);
+                    if (score > bestScore) {
                         bestScore = score;
                         bestMethod = method;
                     }
                 }
-                
-                if ( bestMethod != null ) {
+
+                if (bestMethod != null) {
                     return bestMethod;
+                } else {
+                    throw new RuntimeException("No matching method found for <" + methodName + "" + parameterTypes + ">", exception);
                 }
-                else {
-                    throw new RuntimeException( "No matching method found for <" + methodName + "" + parameterTypes + ">", exception );
-                }                                
-            }
-            catch ( RuntimeException searchException ) {
-                throw new RuntimeException( "Exception evaluating the remote request with the request handler.", searchException );
+            } catch (RuntimeException searchException) {
+                throw new RuntimeException("Exception evaluating the remote request with the request handler.", searchException);
             }
         }
     }
-    
-    
-    /** Score the match between the method and the specified method name and parameter types. Higher scores are better and zero means no match. */
-    private static int matchScore( final Method method, final String methodName, final Class<?>[] parameterTypes ) {
+
+    /**
+     * Score the match between the method and the specified method name and
+     * parameter types. Higher scores are better and zero means no match.
+     */
+    private static int matchScore(final Method method, final String methodName, final Class<?>[] parameterTypes) {
         int score = 0;
-        
+
         final Class<?>[] methodParamTypes = method.getParameterTypes();
-        
-        if ( method.getName().equals( methodName ) && methodParamTypes.length == parameterTypes.length ) {
+
+        if (method.getName().equals(methodName) && methodParamTypes.length == parameterTypes.length) {
             score += 1;     // credit for matching the name and parameters length
-        }
-        else {
+        } else {
             return 0;   // no match
         }
-        
+
         // test each parameter type for consistency
-        for ( int index = 0 ; index < methodParamTypes.length ; index++ ) {
+        for (int index = 0; index < methodParamTypes.length; index++) {
             final Class<?> methodParamType = methodParamTypes[index];
             final Class<?> parameterType = parameterTypes[index];
-            
-            if ( methodParamType.isPrimitive() ) {
-                if ( parameterType == null ) {
+
+            if (methodParamType.isPrimitive()) {
+                if (parameterType == null) {
                     return 0;   // no match since a primitive cannot be null
-                }
-                else if ( PRIMITIVE_TYPE_WRAPPERS.get( methodParamType ).equals( parameterType ) ) {
+                } else if (PRIMITIVE_TYPE_WRAPPERS.get(methodParamType).equals(parameterType)) {
                     score += 1;     // primitive type's corresponding wrapper matches parameter type
-                }
-                else {
+                } else {
                     return 0;       // no match since the primitive must be mapped to its corresponding wrapper class
                 }
-            }
-            else if ( methodParamType.equals( parameterType ) ) {
+            } else if (methodParamType.equals(parameterType)) {
                 score += 2;     // bonus for exact match
-            }
-            else if ( parameterType.isAssignableFrom( methodParamType ) ) {
+            } else if (parameterType.isAssignableFrom(methodParamType)) {
                 score += 1;     // types are consistent
-            }
-            else if ( parameterType == null ) {
+            } else if (parameterType == null) {
                 // null matches an object type so compatible, but no credit
-            }
-            else {
+            } else {
                 return 0;   // no match for this parameter
             }
         }
-        
+
         return score;
     }
 }
 
-
-
-/** result of evaluating the requested method */
+/**
+ * result of evaluating the requested method
+ */
 class EvaluationResult {
-    /** result of the method evaluation */
+
+    /**
+     * result of the method evaluation
+     */
     private final Object value;
-    
-    /** indicates whether the method is one way (no response to remote caller) */
+
+    /**
+     * indicates whether the method is one way (no response to remote caller)
+     */
     private final boolean isOneWay;
-    
-    /** exception */
+
+    /**
+     * exception
+     */
     private final Throwable exception;
-    
-    
-    /** Constructor */
-    public EvaluationResult( final Object value, final boolean isOneWay ) {
-        this( value, isOneWay, null );
+
+    /**
+     * Constructor
+     */
+    public EvaluationResult(final Object value, final boolean isOneWay) {
+        this(value, isOneWay, null);
     }
-    
-    
-    /** Constructor */
-    public EvaluationResult( final Object value, final boolean isOneWay, final Throwable exception ) {
+
+    /**
+     * Constructor
+     */
+    public EvaluationResult(final Object value, final boolean isOneWay, final Throwable exception) {
         this.value = value;
         this.isOneWay = isOneWay;
         this.exception = exception;
     }
-    
-    
-    /** determine whether the call is one way */
+
+    /**
+     * determine whether the call is one way
+     */
     public boolean isOneWay() {
         return isOneWay;
     }
-    
-    /** get the value */
+
+    /**
+     * get the value
+     */
     public Object getValue() {
         return value;
     }
-    
-    /** get the exception */
+
+    /**
+     * get the exception
+     */
     public Throwable getException() {
         return exception;
     }
-    
-    /** wrap the raw exception as runtime exception */
+
+    /**
+     * wrap the raw exception as runtime exception
+     */
     public RuntimeException getRuntimeExceptionWrapper() {
-        if ( exception != null ) {
-            final RuntimeException wrapper = new RuntimeException( exception );
-            wrapper.setStackTrace(exception.getStackTrace() );
+        if (exception != null) {
+            final RuntimeException wrapper = new RuntimeException(exception);
+            wrapper.setStackTrace(exception.getStackTrace());
             return wrapper;
-        }
-        else {
+        } else {
             return null;
         }
     }
 }
 
-
-/** indicates that a remote client connection has been dropped */
+/**
+ * indicates that a remote client connection has been dropped
+ */
 class RemoteClientDroppedException extends RuntimeException {
-    /** serialization ID */
+
+    /**
+     * serialization ID
+     */
     private static final long serialVersionUID = 1L;
 
-	public RemoteClientDroppedException( final String message ) {
-		super( message );
-	}
+    public RemoteClientDroppedException(final String message) {
+        super(message);
+    }
 }
-
-
-
-
-

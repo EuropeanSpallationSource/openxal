@@ -4,238 +4,224 @@ import java.util.*;
 import java.awt.event.*;
 
 /**
- *  This controller calls actionPerformed method of all registered listeners
- *  upon external requests though the call to the "update" method, but with the
- *  interval not less that value defined for the instance of this class
+ * This controller calls actionPerformed method of all registered listeners upon
+ * external requests though the call to the "update" method, but with the
+ * interval not less that value defined for the instance of this class
  *
- *@author    shishlo
+ * @author shishlo
  */
-
 public class UpdatingEventController {
 
-	private final Object syncObj = new Object();
+    private final Object syncObj = new Object();
 
-	//Internal synch object for purpose this class instance only
-	private final Object syncObjInernal = new Object();
+    //Internal synch object for purpose this class instance only
+    private final Object syncObjInernal = new Object();
 
-	private volatile boolean updateInProgress = false;
+    private volatile boolean updateInProgress = false;
 
-	private volatile boolean threadInProgress = false;
+    private volatile boolean threadInProgress = false;
 
-	private Vector<ActionListener> listenersV = new Vector<>();
+    private Vector<ActionListener> listenersV = new Vector<>();
 
-	private ActionEvent updateEvent = null;
+    private ActionEvent updateEvent = null;
 
-	//stack counters
-	private volatile int stackSize = 0;
-	private volatile int currentIndex = 0;
+    //stack counters
+    private volatile int stackSize = 0;
+    private volatile int currentIndex = 0;
 
-	//stop - to start or stop updating
-	private volatile boolean stop = false;
+    //stop - to start or stop updating
+    private volatile boolean stop = false;
 
-	//sleep time in milliseconds
-	private int sleepTime = 1000;
+    //sleep time in milliseconds
+    private int sleepTime = 1000;
 
-	private Runnable updateRun = null;
+    private Runnable updateRun = null;
 
+    /**
+     * Constructor for the UpdatingPlotController object
+     */
+    public UpdatingEventController() {
+        updateEvent = new ActionEvent(this, 0, "update");
 
-	/**
-	 *  Constructor for the UpdatingPlotController object
-	 */
-	public UpdatingEventController() {
-		updateEvent = new ActionEvent(this, 0, "update");
+        updateRun
+                = new Runnable() {
+            @Override
+            public void run() {
+                boolean hasToStop = false;
+                while (!hasToStop) {
+                    threadInProgress = true;
 
-		updateRun =
-			new Runnable() {
-                                @Override
-				public void run() {
-					boolean hasToStop = false;
-					while (!hasToStop) {
-						threadInProgress = true;
+                    try {
+                        Thread.sleep(sleepTime);
+                    } catch (InterruptedException e) {
+                        updateInProgress = false;
+                        threadInProgress = false;
+                        return;
+                    }
 
-						try {
-							Thread.sleep(sleepTime);
-						} catch (InterruptedException e) {
-							updateInProgress = false;
-							threadInProgress = false;
-							return;
-						}
+                    synchronized (syncObj) {
+                        currentIndex = stackSize;
+                        for (int i = 0; i < listenersV.size(); i++) {
+                            listenersV.get(i).actionPerformed(updateEvent);
+                        }
+                    }
 
-						synchronized (syncObj) {
-							currentIndex = stackSize;
-							for (int i = 0; i < listenersV.size(); i++) {
-								listenersV.get(i).actionPerformed(updateEvent);
-							}
-						}
+                    synchronized (syncObjInernal) {
+                        if (currentIndex >= stackSize) {
+                            hasToStop = true;
+                            updateInProgress = false;
+                            threadInProgress = false;
+                            stackSize = 0;
+                        }
+                    }
+                }
+            }
+        };
+    }
 
-						synchronized (syncObjInernal) {
-							if (currentIndex >= stackSize) {
-								hasToStop = true;
-								updateInProgress = false;
-								threadInProgress = false;
-								stackSize = 0;
-							}
-						}
-					}
-				}
-			};
-	}
+    /**
+     * Sets the minimal update time.
+     *
+     * @param tm The new minimal sleep time value in sec
+     */
+    public void setUpdateTime(double tm) {
+        if (tm <= 0.) {
+            sleepTime = 60000;
+            return;
+        }
+        sleepTime = (int) (1000. * tm);
+    }
 
+    /**
+     * Returns the minimal update time.
+     *
+     * @return The minimal sleep time value in sec
+     */
+    public double getUpdateTime() {
+        return (sleepTime / 1000.);
+    }
 
+    /**
+     * Returns true if the updating has not been accomplished.
+     *
+     * @return true of false
+     */
+    public boolean inProgress() {
+        return updateInProgress;
+    }
 
-	/**
-	 *  Sets the minimal update time.
-	 *
-	 *@param  tm  The new minimal sleep time value in sec
-	 */
-	public void setUpdateTime(double tm) {
-		if (tm <= 0.) {
-			sleepTime = 60000;
-			return;
-		}
-		sleepTime = (int) (1000. * tm);
-	}
+    /**
+     * Returns the stop flag
+     *
+     * @return The stop value
+     */
+    public boolean isStop() {
+        return stop;
+    }
 
+    /**
+     * Sets the stop flag
+     *
+     * @param stop The new stop value
+     */
+    public void setStop(boolean stop) {
+        this.stop = stop;
+    }
 
-	/**
-	 *  Returns the minimal update time.
-	 *
-	 *@return    The minimal sleep time value in sec
-	 */
-	public double getUpdateTime() {
-		return (sleepTime / 1000.);
-	}
+    /**
+     * Reluctantly calls the actionPerformed method of registered listeners.
+     */
+    public void update() {
 
+        if (stop) {
+            return;
+        }
 
-	/**
-	 *  Returns true if the updating has not been accomplished.
-	 *
-	 *@return    true of false
-	 */
-	public boolean inProgress() {
-		return updateInProgress;
-	}
+        synchronized (syncObjInernal) {
+            stackSize++;
+            if (stackSize > 100000000) {
+                stackSize = 0;
+            }
+        }
 
+        if (updateInProgress) {
+            return;
+        }
 
-	/**
-	 *  Returns the stop flag
-	 *
-	 *@return    The stop value
-	 */
-	public boolean isStop() {
-		return stop;
-	}
+        updateInProgress = true;
+        if (!threadInProgress) {
+            Thread execThread = new Thread(updateRun);
+            execThread.start();
+        }
+    }
 
+    /**
+     * Adds the new ActionListener.
+     *
+     * @param al The new ActionListener.
+     */
+    public void addActionListener(ActionListener al) {
+        listenersV.add(al);
+    }
 
-	/**
-	 *  Sets the stop flag
-	 *
-	 *@param  stop  The new stop value
-	 */
-	public void setStop(boolean stop) {
-		this.stop = stop;
-	}
+    /**
+     * Removes the ActionListener.
+     *
+     * @param al The ActionListener to be removed.
+     */
+    public void removeActionListener(ActionListener al) {
+        listenersV.remove(al);
+    }
 
+    /**
+     * Returns all ActionListeners as a Vector
+     *
+     * @return The vector with references to ActionListeners
+     */
+    public Vector<ActionListener> getActionListeners() {
+        return new Vector<>(listenersV);
+    }
 
-	/**
-	 *  Reluctantly calls the actionPerformed method of registered listeners.
-	 */
-	public void update() {
+    /**
+     * Gets the syncObj attribute of the UpdatingEventController object
+     *
+     * @return The syncObj value
+     */
+    public Object getSyncObj() {
+        return syncObj;
+    }
 
-		if (stop) {
-			return;
-		}
+    //------------------------------------
+    //MAIN for debugging
+    //------------------------------------
+    /**
+     * Description of the Method
+     *
+     * @param args Description of the Parameter
+     */
+    public static void main(String args[]) {
 
-		synchronized (syncObjInernal) {
-			stackSize++;
-			if (stackSize > 100000000) {
-				stackSize = 0;
-			}
-		}
+        UpdatingEventController uc = new UpdatingEventController();
 
-		if (updateInProgress) {
-			return;
-		}
+        uc.addActionListener(
+                new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("Call performed!!! Freq. = 1 Hz! Update call Freq.= 10Hz!");
+            }
+        });
 
-		updateInProgress = true;
-		if (!threadInProgress) {
-			Thread execThread = new Thread(updateRun);
-			execThread.start();
-		}
-	}
+        uc.setUpdateTime(1.0);
 
+        for (int i = 0; i < 100; i++) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                return;
+            }
+            uc.update();
+        }
 
-	/**
-	 *  Adds the new ActionListener.
-	 *
-	 *@param  al  The new ActionListener.
-	 */
-	public void addActionListener(ActionListener al) {
-		listenersV.add(al);
-	}
-
-
-	/**
-	 *  Removes the ActionListener.
-	 *
-	 *@param  al  The ActionListener to be removed.
-	 */
-	public void removeActionListener(ActionListener al) {
-		listenersV.remove(al);
-	}
-
-
-	/**
-	 *  Returns all ActionListeners as a Vector
-	 *
-	 *@return    The vector with references to ActionListeners
-	 */
-	public Vector<ActionListener> getActionListeners() {
-		return new Vector<>(listenersV);
-	}
-
-	/**
-	 *  Gets the syncObj attribute of the UpdatingEventController object
-	 *
-	 *@return    The syncObj value
-	 */
-	public Object getSyncObj() {
-		return syncObj;
-	}
-
-
-	//------------------------------------
-	//MAIN for debugging
-	//------------------------------------
-	/**
-	 *  Description of the Method
-	 *
-	 *@param  args  Description of the Parameter
-	 */
-	public static void main(String args[]) {
-
-		UpdatingEventController uc = new UpdatingEventController();
-
-		uc.addActionListener(
-			new ActionListener() {
-                                @Override
-				public void actionPerformed(ActionEvent e) {
-					System.out.println("Call performed!!! Freq. = 1 Hz! Update call Freq.= 10Hz!");
-				}
-			});
-
-		uc.setUpdateTime(1.0);
-
-		for (int i = 0; i < 100; i++) {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				return;
-			}
-			uc.update();
-		}
-
-	}
+    }
 
 }
-

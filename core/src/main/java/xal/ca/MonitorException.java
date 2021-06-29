@@ -1,4 +1,5 @@
 package xal.ca;
+
 /*
  * MonitorException.java
  *
@@ -7,10 +8,13 @@ package xal.ca;
 
 /**
  *
- * @author  CKAllen
+ * @author CKAllen
  */
 public class MonitorException extends ChannelException {
-    /** required for serializable objects */
+
+    /**
+     * required for serializable objects
+     */
     private static final long serialVersionUID = 1L;
 
     /**
@@ -19,14 +23,13 @@ public class MonitorException extends ChannelException {
     public MonitorException() {
     }
 
-
     /**
-     * Constructs an <code>MonitorException</code> with the specified detail message.
+     * Constructs an <code>MonitorException</code> with the specified detail
+     * message.
+     *
      * @param msg the detail message.
      */
     public MonitorException(String msg) {
         super(msg);
     }
 }
-
-

@@ -13,21 +13,20 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 public class MySQLDatabaseAdaptor extends DatabaseAdaptor {
+
     private static final Logger LOGGER = Logger.getLogger(MySQLDatabaseAdaptor.class.getName());
 
-	/**
-	 * Public Constructor
-	 */
-	public MySQLDatabaseAdaptor() {
-	}
+    /**
+     * Public Constructor
+     */
+    public MySQLDatabaseAdaptor() {
+    }
 
-	
-	@Override
-	public Array getArray(String type, Connection connection, Object array)
-			throws DatabaseException {
-		// TODO Auto-generated method stub
+    @Override
+    public Array getArray(String type, Connection connection, Object array)
+            throws DatabaseException {
+        // TODO Auto-generated method stub
 //		try {
 //			final ArrayDescriptor descriptor = getArrayDescriptor(type, connection);
 //			return new ARRAY(descriptor, connection, array);
@@ -36,69 +35,73 @@ public class MySQLDatabaseAdaptor extends DatabaseAdaptor {
 //			LOGGER.log( Level.SEVERE, "Error instantiating an SQL array of type: " + type, exception );
 //			throw new DatabaseException("Exception generating an SQL array.", this, exception);
 //		}
-		
-		return null;
-	}
 
-	@Override
-	public Connection getConnection(String urlSpec, String user, String password)
-			throws DatabaseException {
-		try {
-			return DriverManager.getConnection(urlSpec, user, password);
-		}
-		catch(SQLException exception) {
-			LOGGER.log( Level.SEVERE, "Error connecting to the database at URL: \"" + urlSpec + "\" as user: " + user , exception );
-			throw new DatabaseException("Exception connecting to the database.", this, exception);
-		}
-	}
+        return null;
+    }
 
-	
-	/**
-	 * Fetch all schemas from the connected database. MySQL adaptor returns catalogs instead of schemas.
-	 * @return  list of all schemas in the database
-	 * @exception DatabaseException
-	 * @throws xal.tools.database.DatabaseException  if the schema fetch fails
-	 */
     @Override
-	public List<String> fetchAllSchemas( final Connection connection ) throws DatabaseException {
-		try {
-			final List<String> schemas = new ArrayList<>();
-			final DatabaseMetaData metaData = connection.getMetaData();
-			final ResultSet result = metaData.getCatalogs();
+    public Connection getConnection(String urlSpec, String user, String password)
+            throws DatabaseException {
+        try {
+            return DriverManager.getConnection(urlSpec, user, password);
+        } catch (SQLException exception) {
+            LOGGER.log(Level.SEVERE, "Error connecting to the database at URL: \"" + urlSpec + "\" as user: " + user, exception);
+            throw new DatabaseException("Exception connecting to the database.", this, exception);
+        }
+    }
 
-			while ( result.next() ) {
-				schemas.add( result.getString( "TABLE_CAT" ) );
-			}
-			result.close();
-			return schemas;
-		}
-		catch ( SQLException exception ) {
-			throw new DatabaseException( "Database exception while fetching schemas.", this, exception );
-		}
-	}
-
-
-	/** Get the result set for tables for the specified meta data and schema. MySQL adaptor uses the catalog in place of schema. */
+    /**
+     * Fetch all schemas from the connected database. MySQL adaptor returns
+     * catalogs instead of schemas.
+     *
+     * @return list of all schemas in the database
+     * @exception DatabaseException
+     * @throws xal.tools.database.DatabaseException if the schema fetch fails
+     */
     @Override
-	public ResultSet getTablesResultSet( final DatabaseMetaData metaData, final String schema ) throws SQLException {
-		return metaData.getTables( schema, null, null, null );
-	}
+    public List<String> fetchAllSchemas(final Connection connection) throws DatabaseException {
+        try {
+            final List<String> schemas = new ArrayList<>();
+            final DatabaseMetaData metaData = connection.getMetaData();
+            final ResultSet result = metaData.getCatalogs();
 
+            while (result.next()) {
+                schemas.add(result.getString("TABLE_CAT"));
+            }
+            result.close();
+            return schemas;
+        } catch (SQLException exception) {
+            throw new DatabaseException("Database exception while fetching schemas.", this, exception);
+        }
+    }
 
-	/** Get the result set of columns for the specified meta data, schema and table. MySQL adaptor uses the catalog in place of schema. */
+    /**
+     * Get the result set for tables for the specified meta data and schema.
+     * MySQL adaptor uses the catalog in place of schema.
+     */
     @Override
-	public ResultSet getColumnsResultSet( final DatabaseMetaData metaData, final String schema, final String table ) throws SQLException {
-		return metaData.getColumns( schema, null, table, null );
-	}
+    public ResultSet getTablesResultSet(final DatabaseMetaData metaData, final String schema) throws SQLException {
+        return metaData.getTables(schema, null, null, null);
+    }
 
-
-	/** Get the result set of primary keys for the specified meta data, schema and table. MySQL adaptor uses the catalog in place of schema. */
+    /**
+     * Get the result set of columns for the specified meta data, schema and
+     * table. MySQL adaptor uses the catalog in place of schema.
+     */
     @Override
-	public ResultSet getPrimaryKeysResultSet( final DatabaseMetaData metaData, final String schema, final String table ) throws SQLException {
-		return metaData.getPrimaryKeys( schema, null, table );
-	}
+    public ResultSet getColumnsResultSet(final DatabaseMetaData metaData, final String schema, final String table) throws SQLException {
+        return metaData.getColumns(schema, null, table, null);
+    }
 
-	
+    /**
+     * Get the result set of primary keys for the specified meta data, schema
+     * and table. MySQL adaptor uses the catalog in place of schema.
+     */
+    @Override
+    public ResultSet getPrimaryKeysResultSet(final DatabaseMetaData metaData, final String schema, final String table) throws SQLException {
+        return metaData.getPrimaryKeys(schema, null, table);
+    }
+
 //	/**
 //	 * Get the array descriptor for the specified array type
 //	 * @param type An SQL array type

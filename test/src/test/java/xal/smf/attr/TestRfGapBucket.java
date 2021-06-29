@@ -27,43 +27,45 @@ import xal.tools.math.fnc.poly.RealUnivariatePolynomial;
  *
  *
  * @author Christopher K. Allen
- * @since  Jun 1, 2015
+ * @since Jun 1, 2015
  */
 public class TestRfGapBucket {
-    
+
     /*
      * Global Variables
      */
-    
-    /** The accelerator object containing the bucket structure under test */
-    private static Accelerator        ACCL_TEST;
-    
-    /** Stream where output is directed */
-    private static PrintStream        OSTR_TYPEOUT;
-    
+    /**
+     * The accelerator object containing the bucket structure under test
+     */
+    private static Accelerator ACCL_TEST;
+
+    /**
+     * Stream where output is directed
+     */
+    private static PrintStream OSTR_TYPEOUT;
 
     /**
      * Sets up the global variables used in tests.
-     * 
+     *
      * @throws java.lang.Exception
      *
-     * @since  Jun 1, 2015   by Christopher K. Allen
+     * @since Jun 1, 2015 by Christopher K. Allen
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        File    fileOutput = ResourceManager.getOutputFile(TestRfGapBucket.class, TestRfGapBucket.class.getName() + ".txt");
+        File fileOutput = ResourceManager.getOutputFile(TestRfGapBucket.class, TestRfGapBucket.class.getName() + ".txt");
         OSTR_TYPEOUT = new PrintStream(fileOutput);
 //        OSTR_TYPEOUT = System.out;
-        
-       OSTR_TYPEOUT.println("Loading Test Accelerator");
-       ACCL_TEST = ResourceManager.getTestAccelerator();
-       OSTR_TYPEOUT.println("Test Accelerator Loaded");
+
+        OSTR_TYPEOUT.println("Loading Test Accelerator");
+        ACCL_TEST = ResourceManager.getTestAccelerator();
+        OSTR_TYPEOUT.println("Test Accelerator Loaded");
     }
 
     /**
      * @throws java.lang.Exception
      *
-     * @since  Jun 1, 2015   by Christopher K. Allen
+     * @since Jun 1, 2015 by Christopher K. Allen
      */
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
@@ -74,16 +76,15 @@ public class TestRfGapBucket {
      */
     @Test
     public final void testGetTCoefficients() {
-        AcceleratorSeq  seqMebt = ACCL_TEST.getSequence("MEBT");
-        
-        
-        List<RfGap>   lstGaps = seqMebt.getAllNodesOfType("RG");
+        AcceleratorSeq seqMebt = ACCL_TEST.getSequence("MEBT");
+
+        List<RfGap> lstGaps = seqMebt.getAllNodesOfType("RG");
         for (RfGap smfGap : lstGaps) {
             RealUnivariatePolynomial polyTFit = smfGap.getTTFFit();
             RealUnivariatePolynomial polySFit = smfGap.getSFit();
             RealUnivariatePolynomial polyTpFit = smfGap.getTTFPrimeFit();
             RealUnivariatePolynomial polySpFit = smfGap.getSPrimeFit();
-            
+
             OSTR_TYPEOUT.println("\nNODE: " + smfGap.getId());
             OSTR_TYPEOUT.println("T(x) = " + polyTFit.toString());
             OSTR_TYPEOUT.println("T'(x) = " + polyTpFit.toString());
@@ -97,16 +98,15 @@ public class TestRfGapBucket {
      */
     @Test
     public final void testGetTCoefficientsCCL() {
-        AcceleratorSeq  seqDtl = ACCL_TEST.getComboSequence("CCL");
-        
-        
-        List<RfGap>   lstGaps = seqDtl.getAllNodesOfType("RG");
+        AcceleratorSeq seqDtl = ACCL_TEST.getComboSequence("CCL");
+
+        List<RfGap> lstGaps = seqDtl.getAllNodesOfType("RG");
         for (RfGap smfGap : lstGaps) {
             RealUnivariatePolynomial polyTFit = smfGap.getTTFFit();
             RealUnivariatePolynomial polySFit = smfGap.getSFit();
             RealUnivariatePolynomial polyTpFit = smfGap.getTTFPrimeFit();
             RealUnivariatePolynomial polySpFit = smfGap.getSPrimeFit();
-            
+
             OSTR_TYPEOUT.println("\nNODE: " + smfGap.getId());
             OSTR_TYPEOUT.println("T(x) = " + polyTFit.toString());
             OSTR_TYPEOUT.println("T'(x) = " + polyTpFit.toString());
@@ -114,7 +114,7 @@ public class TestRfGapBucket {
             OSTR_TYPEOUT.println("S'(x) = " + polySpFit.toString());
         }
     }
-    
+
 //    /**
 //     * Test method for {@link xal.smf.attr.RfGapBucket#getTpCoefficients()}.
 //     */

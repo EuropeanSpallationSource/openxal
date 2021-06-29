@@ -7,20 +7,22 @@
  * Oak Ridge National Laboratory
  * Oak Ridge, TN 37830
  */
-
 package xal.extension.service;
 
-
 /**
- * RemoteMessageException wraps exceptions thrown during execution of a remote message.
- * @author  tap
+ * RemoteMessageException wraps exceptions thrown during execution of a remote
+ * message.
+ *
+ * @author tap
  */
 public class RemoteMessageException extends RuntimeException {
-    /** serialization ID */
-    private static final long serialVersionUID = 1L;
-    
-	public RemoteMessageException( final String message, final Throwable cause ) {
-		super( message, cause );
-	}
-}
 
+    /**
+     * serialization ID
+     */
+    private static final long serialVersionUID = 1L;
+
+    public RemoteMessageException(final String message, final Throwable cause) {
+        super(message, cause);
+    }
+}

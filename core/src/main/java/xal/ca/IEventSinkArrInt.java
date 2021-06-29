@@ -1,4 +1,5 @@
 package xal.ca;
+
 /*
  * IEventSinkArrInt.java
  *
@@ -7,13 +8,11 @@ package xal.ca;
 
 /**
  *
- * @author  Christopher K. Allen
+ * @author Christopher K. Allen
  * @version 1.0
  */
-
-
 public interface IEventSinkArrInt {
 
     public void eventArray(int[] arrNew, Channel chan);
-    
+
 }

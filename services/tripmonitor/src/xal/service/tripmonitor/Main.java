@@ -7,60 +7,64 @@
  * Oak Ridge National Laboratory
  * Oak Ridge, TN 37830
  */
-
 package xal.service.tripmonitor;
 
 import java.util.Date;
 
-
 /**
  * Main
- * @author  tap
+ *
+ * @author tap
  */
 public class Main {
-	/** The time at which the application was launched */
-	protected static final Date LAUNCH_TIME;
-	
-	/** The trip monitor model */
-	protected TripMonitorManager MODEL;
-	
-	
-	/**
-	 * Static initializer 
-	 */
-	static {
-		LAUNCH_TIME = new Date();
-	}
-	
-	
-	/** Main Constructor */
-	public Main() {
-		MODEL = new TripMonitorManager();
-		new TripMonitorService( MODEL );
-	}
-	
-	
-	/** run the service by starting the logger */
-	protected void run() {
-		MODEL.run();
-	}
-	
-	
-	/**
-	 * Main entry point to the service.  Run the service.
-	 * @param args The launch arguments to the service.
-	 */
-	public static void main( final String[] args ) {
-		new Main().run();
-	}
-	
-	
-	/**
-	 * Get the time when this application was launched.
-	 * @return the time when this application was launched
-	 */
-	public static Date getLaunchTime() {
-		return LAUNCH_TIME;
-	}
-}
 
+    /**
+     * The time at which the application was launched
+     */
+    protected static final Date LAUNCH_TIME;
+
+    /**
+     * The trip monitor model
+     */
+    protected TripMonitorManager MODEL;
+
+    /**
+     * Static initializer
+     */
+    static {
+        LAUNCH_TIME = new Date();
+    }
+
+    /**
+     * Main Constructor
+     */
+    public Main() {
+        MODEL = new TripMonitorManager();
+        new TripMonitorService(MODEL);
+    }
+
+    /**
+     * run the service by starting the logger
+     */
+    protected void run() {
+        MODEL.run();
+    }
+
+    /**
+     * Main entry point to the service. Run the service.
+     *
+     * @param args The launch arguments to the service.
+     */
+    public static void main(final String[] args) {
+        new Main().run();
+    }
+
+    /**
+     * Get the time when this application was launched.
+     *
+     * @return the time when this application was launched
+     */
+    public static Date getLaunchTime() {
+        return LAUNCH_TIME;
+    }
+}

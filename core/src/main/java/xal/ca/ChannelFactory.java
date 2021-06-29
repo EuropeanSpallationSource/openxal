@@ -95,7 +95,8 @@ public abstract class ChannelFactory {
     public Channel getChannel(final String signalName) {
         if ("".equals(signalName)) {
             return null;
-        }        Channel channel;
+        }
+        Channel channel;
         synchronized (channelMap) {
             if (!channelMap.containsKey(signalName)) {
                 channel = newChannel(signalName);
@@ -252,7 +253,7 @@ public abstract class ChannelFactory {
                 channel.disconnect();
                 channel.requestConnection();
             }
-        } else {            
+        } else {
             for (Entry<String, Channel> entry : channelMap.entrySet()) {
                 String channelName = entry.getKey();
                 Channel channel = entry.getValue();

@@ -1,4 +1,5 @@
 package xal.ca;
+
 /*
  * IEventSinkValInt.java
  *
@@ -7,18 +8,11 @@ package xal.ca;
 
 /**
  *
- * @author  Christopher K. Allen
+ * @author Christopher K. Allen
  * @version 1.0
  */
-
-
-
-
 public interface IEventSinkValInt {
 
     public void eventValue(int valNew, Channel chan);
-    
+
 }
-
-
-

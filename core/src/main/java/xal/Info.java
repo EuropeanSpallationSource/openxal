@@ -3,7 +3,6 @@
  *
  * Created on September 1, 2015, 10:38 AM
  */
-
 package xal;
 
 import xal.tools.ResourceManager;
@@ -15,12 +14,14 @@ import java.util.logging.Level;
 import java.net.*;
 import java.io.*;
 
-
 /**
  * Info about the current Open XAL.
  */
 public class Info {
-    /** Label for this version of Open XAL */
+
+    /**
+     * Label for this version of Open XAL
+     */
     private static final String LABEL;
     private static final Logger LOGGER = Logger.getLogger(Info.class.getName());
 
@@ -30,19 +31,19 @@ public class Info {
         String label = "Open XAL";
 
         // attempt to load info properties from the "info.json" file
-        System.out.println( "Getting info resource..." );
-        final URL infoLocation = ResourceManager.getResourceURL( Info.class, "info.json" );
-        if ( infoLocation != null ) {
+        System.out.println("Getting info resource...");
+        final URL infoLocation = ResourceManager.getResourceURL(Info.class, "info.json");
+        if (infoLocation != null) {
             try {
                 //System.out.println( "Attempting to load Info from URL: " + infoLocation );
                 final StringBuffer buffer = new StringBuffer();
                 final InputStream infoStream = infoLocation.openStream();
-                final BufferedReader infoReader = new BufferedReader( new InputStreamReader( infoStream ) );
-                while( true ) {
+                final BufferedReader infoReader = new BufferedReader(new InputStreamReader(infoStream));
+                while (true) {
                     final String nextLine = infoReader.readLine();
-                    if ( nextLine != null ) {
-                        buffer.append( nextLine );
-                        buffer.append( "\n" );
+                    if (nextLine != null) {
+                        buffer.append(nextLine);
+                        buffer.append("\n");
                     } else {
                         break;  // end of input
                     }
@@ -50,14 +51,12 @@ public class Info {
                 infoStream.close();
 
                 //System.out.println( "Buffer: " + buffer.toString() );
-
                 @SuppressWarnings("unchecked")
-                final Map<String,Object> infoMap = (Map<String,Object>)JSONCoder.defaultDecode( buffer.toString() );
+                final Map<String, Object> infoMap = (Map<String, Object>) JSONCoder.defaultDecode(buffer.toString());
 
                 //System.out.println( "Info map: " + infoMap );
-
-                label = (String)infoMap.get("label");
-            } catch( IOException exception ) {
+                label = (String) infoMap.get("label");
+            } catch (IOException exception) {
                 LOGGER.log(Level.SEVERE, "Exception attempting to load Open XAL info from: " + infoLocation, exception);
                 LOGGER.log(Level.INFO, "Will revert to default info label: {0}", label);
             }
@@ -67,8 +66,9 @@ public class Info {
         LABEL = label;
     }
 
-
-    /** Get the label for this version of Open XAL */
+    /**
+     * Get the label for this version of Open XAL
+     */
     public static String getLabel() {
         return LABEL;
     }

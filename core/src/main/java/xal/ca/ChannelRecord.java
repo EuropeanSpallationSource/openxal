@@ -86,6 +86,7 @@ public interface ChannelRecord {
      * @return The data as a scalar int.
      */
     public int intValue();
+
     /**
      * Get the value of the array element identified by the index and convert it
      * to a int.

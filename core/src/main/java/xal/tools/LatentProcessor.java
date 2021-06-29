@@ -5,46 +5,56 @@
 //  Created by Tom Pelaia on 5/21/08.
 //  Copyright 2008 Oak Ridge National Lab. All rights reserved.
 //
-
 package xal.tools;
 
-
-/** Process events with latency and replace any pending requests with the latest request */
+/**
+ * Process events with latency and replace any pending requests with the latest
+ * request
+ */
 public class LatentProcessor extends FreshProcessor {
-	/** millisecond portion of latency */
-	private final long latencyMilliseconds;
-	
-	/** nanosecond portion of latency */
-	private final int latencyNanoseconds;
-	
-	
-	/** 
-	 * Constructor 
-	 * @param latency Latency in seconds between successive processing of requests. The latency should be positive.
-	 */
-	public LatentProcessor( final double latency ) {
-		if ( latency < 0.0 )  throw new RuntimeException( "Latency must be greater than or equal to zero seconds. The supplied latency was: " + latency );
-		
-		final double latencyMilliseconds = 1000.0 * latency;		// convert from seconds to milliseconds
-		this.latencyMilliseconds = (long) ( latencyMilliseconds );		// millisecond portion of latency
-		
-		final double remainderNanos = 1.0e6 * ( latencyMilliseconds - latencyMilliseconds );	// get the nanosecond remainder
-		latencyNanoseconds = (int)( remainderNanos + 0.5 );		// nanosecond portion of latency rounded up
-	}
-	
-	
-	/**
-	 * Get the latency
-	 * @return latency in seconds
-	 */
-	public double getLatency() {
-		return 1.0e-3 * latencyMilliseconds + 1.0e-9 * latencyNanoseconds;
-	}
-	
-	
-	/** Perform post processing */
-        @Override
-	protected void postProcess() throws Exception {
-		Thread.sleep( latencyMilliseconds, latencyNanoseconds );
-	}
+
+    /**
+     * millisecond portion of latency
+     */
+    private final long latencyMilliseconds;
+
+    /**
+     * nanosecond portion of latency
+     */
+    private final int latencyNanoseconds;
+
+    /**
+     * Constructor
+     *
+     * @param latency Latency in seconds between successive processing of
+     * requests. The latency should be positive.
+     */
+    public LatentProcessor(final double latency) {
+        if (latency < 0.0) {
+            throw new RuntimeException("Latency must be greater than or equal to zero seconds. The supplied latency was: " + latency);
+        }
+
+        final double latencyMilliseconds = 1000.0 * latency;		// convert from seconds to milliseconds
+        this.latencyMilliseconds = (long) (latencyMilliseconds);		// millisecond portion of latency
+
+        final double remainderNanos = 1.0e6 * (latencyMilliseconds - latencyMilliseconds);	// get the nanosecond remainder
+        latencyNanoseconds = (int) (remainderNanos + 0.5);		// nanosecond portion of latency rounded up
+    }
+
+    /**
+     * Get the latency
+     *
+     * @return latency in seconds
+     */
+    public double getLatency() {
+        return 1.0e-3 * latencyMilliseconds + 1.0e-9 * latencyNanoseconds;
+    }
+
+    /**
+     * Perform post processing
+     */
+    @Override
+    protected void postProcess() throws Exception {
+        Thread.sleep(latencyMilliseconds, latencyNanoseconds);
+    }
 }

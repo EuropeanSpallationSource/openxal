@@ -26,7 +26,6 @@ import xal.sim.scenario.Scenario;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorSeq;
 
-
 /**
  * <p>
  * Check operation of the XAL online model.
@@ -45,7 +44,7 @@ import xal.smf.AcceleratorSeq;
  * </p>
  *
  * @author Christopher K. Allen
- * @since   Jul 30, 2012
+ * @since Jul 30, 2012
  * @version Dec 15, 2014
  */
 public class TestRunOnlineModel {
@@ -54,119 +53,128 @@ public class TestRunOnlineModel {
     /*
      * Global Constants
      */
-    
-    /** PV Logger ID of machine state when data was taken */
-    public static final long        LNG_PVLOGID = 19650065;
-    
-    
-    /** URL of the accelerator hardware description file */
-    public static String            STRL_URL_ACCEL   = ResourceManager.getTestAcceleratorURL().toString();
+    /**
+     * PV Logger ID of machine state when data was taken
+     */
+    public static final long LNG_PVLOGID = 19650065;
 
-    
-    /** Output file location */
-    private static String           STR_FILE_OUTPUT = TestRunOnlineModel.class.getName() + ".txt";
-    
-    
-    /** URL where we are dumping the output */
-    public static File              FILE_OUTPUT    = ResourceManager.getOutputFile(TestRunOnlineModel.class, STR_FILE_OUTPUT);
-    
-    
-    /** String identifier for accelerator sequence used in testing */
+    /**
+     * URL of the accelerator hardware description file
+     */
+    public static String STRL_URL_ACCEL = ResourceManager.getTestAcceleratorURL().toString();
+
+    /**
+     * Output file location
+     */
+    private static String STR_FILE_OUTPUT = TestRunOnlineModel.class.getName() + ".txt";
+
+    /**
+     * URL where we are dumping the output
+     */
+    public static File FILE_OUTPUT = ResourceManager.getOutputFile(TestRunOnlineModel.class, STR_FILE_OUTPUT);
+
+    /**
+     * String identifier for accelerator sequence used in testing
+     */
 //    public static String            STR_SEQ_ID       = "HEBT1";
 //    public static String            STR_SEQ_ID       = "MEBT-SCL";
-    public static String            STR_SEQ_ID       = "CCL";
-    
+    public static String STR_SEQ_ID = "CCL";
+
 //    /** String identifier where Courant-Snyder parameters are to be reconstructed */
 //    public static String            STR_TARG_ELEM_ID = "Begin_Of_HEBT1";
-    
-    
     /*
      * Global Attributes
      */
-    
-    /** Accelerator object used for testing */
-    private static Accelerator                      ACCEL_TEST;
-    
-    /** Accelerator sequence used for testing */
-    private static AcceleratorSeq                   SEQ_TEST;
-    
-    /** Accelerator sequence (online) model for testing */
-    private static Scenario                         MODEL_TEST;
-    
-    
-    /** Envelope probe for model testing */
-    private static EnvelopeProbe                    PROBE_ENV_TEST;
-    
-    /** Particle probe for model testing */
-    private static ParticleProbe                    PROBE_PARTL_TEST;
-    
-    /** Transfer map probe for model testing */
-    private static TransferMapProbe                 PROBE_XFER_TEST;
-    
-    
-    /** Persistent storage for test output */
-    private static PrintWriter                      WTR_OUTPUT;
-    
-    
+    /**
+     * Accelerator object used for testing
+     */
+    private static Accelerator ACCEL_TEST;
+
+    /**
+     * Accelerator sequence used for testing
+     */
+    private static AcceleratorSeq SEQ_TEST;
+
+    /**
+     * Accelerator sequence (online) model for testing
+     */
+    private static Scenario MODEL_TEST;
+
+    /**
+     * Envelope probe for model testing
+     */
+    private static EnvelopeProbe PROBE_ENV_TEST;
+
+    /**
+     * Particle probe for model testing
+     */
+    private static ParticleProbe PROBE_PARTL_TEST;
+
+    /**
+     * Transfer map probe for model testing
+     */
+    private static TransferMapProbe PROBE_XFER_TEST;
+
+    /**
+     * Persistent storage for test output
+     */
+    private static PrintWriter WTR_OUTPUT;
+
     /*
      * Global Methods
      */
-    
     /**
      *
      * @throws java.lang.Exception
      *
      * @author Christopher K. Allen
-     * @since  Jul 16, 2012
+     * @since Jul 16, 2012
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        
+
         try {
 //            ACCEL_TEST   = XMLDataManager.acceleratorWithUrlSpec(STRL_URL_ACCEL);
-            ACCEL_TEST   = ResourceManager.getTestAccelerator();
-            SEQ_TEST     = ACCEL_TEST.findSequence(STR_SEQ_ID);
-            MODEL_TEST   = Scenario.newScenarioFor(SEQ_TEST);
-            
+            ACCEL_TEST = ResourceManager.getTestAccelerator();
+            SEQ_TEST = ACCEL_TEST.findSequence(STR_SEQ_ID);
+            MODEL_TEST = Scenario.newScenarioFor(SEQ_TEST);
+
             // Create and initialize the envelope probe
             EnvTrackerAdapt algEnv = AlgorithmFactory.createEnvTrackerAdapt(SEQ_TEST);
             PROBE_ENV_TEST = ProbeFactory.getEnvelopeProbe(SEQ_TEST, algEnv);
-            
+
             // Create and initialize the particle probe
             ParticleTracker algPrt = AlgorithmFactory.createParticleTracker(SEQ_TEST);
             PROBE_PARTL_TEST = ProbeFactory.createParticleProbe(SEQ_TEST, algPrt);
-            
+
             // Create and initialize transfer map probe
-            TransferMapTracker  algXfer = AlgorithmFactory.createTransferMapTracker(SEQ_TEST);
-            PROBE_XFER_TEST = ProbeFactory.getTransferMapProbe(SEQ_TEST, algXfer );
-            
+            TransferMapTracker algXfer = AlgorithmFactory.createTransferMapTracker(SEQ_TEST);
+            PROBE_XFER_TEST = ProbeFactory.getTransferMapProbe(SEQ_TEST, algXfer);
+
             WTR_OUTPUT = new PrintWriter(FILE_OUTPUT);
 
         } catch (Exception e) {
             System.err.println("Unable to instantiate TransferMatrixObject");
-            
+
         }
     }
 
     /**
      * Closes the output file stream.
-     * 
+     *
      * @throws Exception
      *
      * @author Christopher K. Allen
-     * @since  Jan 7, 2014
+     * @since Jan 7, 2014
      */
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
         WTR_OUTPUT.close();
     }
-    
-    
-    
+
     /*
      * Tests
      */
-    
 //    /**
 //     * Test the <i>create default algorithm</i> method of the <code>{@link Tracker}</code>
 //     * base class (see <code>{@link Tracker#newFromEditContext(AcceleratorSeq)}</code>).
@@ -182,167 +190,164 @@ public class TestRunOnlineModel {
 //        if (algDef == null) 
 //            fail("Tracker#newFromEditContext() failure");
 //    }
-    
-	/**
-	 * Run the online model for an envelope probe.
-	 *
-	 * @throws ModelException          general synchronization or simulation error ?
-	 *                                 
-	 * @author Christopher K. Allen
-	 * @since  Jul 20, 2012
-	 */
-	@Test
-	public void testRunEnvelopeModel() throws ModelException {
-		
-        PROBE_ENV_TEST.reset();
-        MODEL_TEST.setProbe(PROBE_ENV_TEST);
-        MODEL_TEST.resync();
-        MODEL_TEST.run();
-        
-        Trajectory<EnvelopeProbeState>   trjData = MODEL_TEST.getTrajectory();
-        
-        this.saveSimData(trjData);
-	}
-	
     /**
      * Run the online model for an envelope probe.
      *
-     * @throws ModelException          general synchronization or simulation error ?
-     *                                 
+     * @throws ModelException general synchronization or simulation error ?
+     *
      * @author Christopher K. Allen
-     * @since  Jul 20, 2012
+     * @since Jul 20, 2012
      */
     @Test
-    public void testRunEnvelopeModelWithRfGapCalc() throws ModelException {
-        
+    public void testRunEnvelopeModel() throws ModelException {
+
         PROBE_ENV_TEST.reset();
-    	PROBE_ENV_TEST.getAlgorithm().setRfGapPhaseCalculation(true);
         MODEL_TEST.setProbe(PROBE_ENV_TEST);
         MODEL_TEST.resync();
         MODEL_TEST.run();
-        
-        Trajectory<EnvelopeProbeState>   trjData = MODEL_TEST.getTrajectory();
-        
+
+        Trajectory<EnvelopeProbeState> trjData = MODEL_TEST.getTrajectory();
+
+        this.saveSimData(trjData);
+    }
+
+    /**
+     * Run the online model for an envelope probe.
+     *
+     * @throws ModelException general synchronization or simulation error ?
+     *
+     * @author Christopher K. Allen
+     * @since Jul 20, 2012
+     */
+    @Test
+    public void testRunEnvelopeModelWithRfGapCalc() throws ModelException {
+
+        PROBE_ENV_TEST.reset();
+        PROBE_ENV_TEST.getAlgorithm().setRfGapPhaseCalculation(true);
+        MODEL_TEST.setProbe(PROBE_ENV_TEST);
+        MODEL_TEST.resync();
+        MODEL_TEST.run();
+
+        Trajectory<EnvelopeProbeState> trjData = MODEL_TEST.getTrajectory();
+
         this.saveSimData(trjData);
 //        this.printSimData(trjData);
     }
-    
+
     /**
      * Run the online model for a particle probe.
      *
-     * @throws ModelException          general synchronization or simulation error ?
-     *                                 
+     * @throws ModelException general synchronization or simulation error ?
+     *
      * @author Christopher K. Allen
-     * @since  Jul 20, 2012
+     * @since Jul 20, 2012
      */
     @Test
     public void testRunParticleModel() throws ModelException {
-        
+
         PROBE_PARTL_TEST.reset();
         MODEL_TEST.setProbe(PROBE_PARTL_TEST);
         MODEL_TEST.resync();
         MODEL_TEST.run();
-        
-        Trajectory<ParticleProbeState>   trjData = MODEL_TEST.getTrajectory();
-        
+
+        Trajectory<ParticleProbeState> trjData = MODEL_TEST.getTrajectory();
+
         this.saveSimData(trjData);
     }
-    
+
     /**
      * Run the online model for a particle probe.
      *
-     * @throws ModelException          general synchronization or simulation error ?
-     *                                 
+     * @throws ModelException general synchronization or simulation error ?
+     *
      * @author Christopher K. Allen
-     * @since  Jul 20, 2012
+     * @since Jul 20, 2012
      */
     @Test
     public void testRunParticleModelWithRfGapPhases() throws ModelException {
-        
+
         PROBE_PARTL_TEST.reset();
         PROBE_PARTL_TEST.getAlgorithm().setRfGapPhaseCalculation(true);
         MODEL_TEST.setProbe(PROBE_PARTL_TEST);
         MODEL_TEST.resync();
         MODEL_TEST.run();
-        
-        Trajectory<ParticleProbeState>   trjData = MODEL_TEST.getTrajectory();
-        
+
+        Trajectory<ParticleProbeState> trjData = MODEL_TEST.getTrajectory();
+
         this.saveSimData(trjData);
 //        this.printSimData(trjData);
     }
-    
+
     /**
      * Run the online model for a transfer map probe.
      *
-     * @throws ModelException          general synchronization or simulation error ?
-     *                                 
+     * @throws ModelException general synchronization or simulation error ?
+     *
      * @author Christopher K. Allen
-     * @since  Jul 20, 2012
+     * @since Jul 20, 2012
      */
     @Test
     public void testRunTransferMapModel() throws ModelException {
-        
+
         PROBE_XFER_TEST.reset();
         MODEL_TEST.setProbe(PROBE_XFER_TEST);
         MODEL_TEST.resync();
         MODEL_TEST.run();
-        
-        Trajectory<TransferMapState>    trjData = MODEL_TEST.getTrajectory();
-        
+
+        Trajectory<TransferMapState> trjData = MODEL_TEST.getTrajectory();
+
         this.saveSimData(trjData);
     }
-    
+
     /*
      * Support Methods
      */
-
     /**
      * Write the current simulation data to disk.
      *
      * @author Christopher K. Allen
-     * @since  Jan 7, 2014
+     * @since Jan 7, 2014
      */
     private <S extends ProbeState<S>> void saveSimData(Trajectory<S> trjData) {
 
         // Write out header line
-        String  strSimType = MODEL_TEST.getProbe().getClass().getName();
+        String strSimType = MODEL_TEST.getProbe().getClass().getName();
         WTR_OUTPUT.println("DATA FOR SIMULATION WITH " + strSimType);
-        WTR_OUTPUT.println("  RF Gap Phases " + MODEL_TEST.getProbe().getAlgorithm().getRfGapPhaseCalculation() );
-        
+        WTR_OUTPUT.println("  RF Gap Phases " + MODEL_TEST.getProbe().getAlgorithm().getRfGapPhaseCalculation());
+
         // Write out the simulation data
 //        Trajectory<?> trjData = MODEL_TEST.getTrajectory();
-        
         for (S state : trjData) {
             WTR_OUTPUT.println(state);
         }
-        
+
         // Buffer for the next write
         WTR_OUTPUT.println();
         WTR_OUTPUT.flush();
     }
-    
+
     /**
-     * Prints the simulation data to stdout 
+     * Prints the simulation data to stdout
      *
      * @author Christopher K. Allen
-     * @since  Jan 7, 2014
+     * @since Jan 7, 2014
      */
-    private <S extends ProbeState<S>>void printSimData(Trajectory<S> trjData) {
+    private <S extends ProbeState<S>> void printSimData(Trajectory<S> trjData) {
 
         // Print out the kinetic energy profile to stdout
         System.out.println("DATA FOR SIMULATION WITH " + MODEL_TEST.getProbe().getClass().getName());
-        System.out.println("  RF Gap Phases " + MODEL_TEST.getProbe().getAlgorithm().getRfGapPhaseCalculation() );
+        System.out.println("  RF Gap Phases " + MODEL_TEST.getProbe().getAlgorithm().getRfGapPhaseCalculation());
 //        Trajectory<?> trjData = MODEL_TEST.getTrajectory();
-        
+
         for (S state : trjData) {
-            
-            String strId  = state.getElementId();
+
+            String strId = state.getElementId();
             double dblPos = state.getPosition();
-            double dblW   = state.getKineticEnergy();
-            double dblPhs = state.getLongitudinalPhase(); 
-            
-            dblPhs = (180.0/Math.PI) * Math.IEEEremainder(dblPhs, 2.0*Math.PI);
-            
+            double dblW = state.getKineticEnergy();
+            double dblPhs = state.getLongitudinalPhase();
+
+            dblPhs = (180.0 / Math.PI) * Math.IEEEremainder(dblPhs, 2.0 * Math.PI);
+
             System.out.println(strId + ": s=" + dblPos + ", phi=" + dblPhs + ", W=" + dblW);
         }
 
