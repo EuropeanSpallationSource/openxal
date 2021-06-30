@@ -1,17 +1,21 @@
 package xal.schemas;
 
+import java.io.IOException;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import javax.xml.XMLConstants;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
+import org.w3c.dom.DOMException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 /**
  * Unit test case for <code>xdxf.xsd</code> XML schema using
@@ -44,7 +48,7 @@ public class TimingSourceTest extends AbstractXMLValidation {
         Document document = null;
         try {
             document = getDocumentBuilder().newDocument();
-        } catch (Exception e) {
+        } catch (ParserConfigurationException e) {
             fail(e.getMessage());
         }
         assertNotNull(document);
@@ -54,7 +58,7 @@ public class TimingSourceTest extends AbstractXMLValidation {
         //Blank document should be valid.
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Blank document should be valid!");
         }
 
@@ -98,19 +102,19 @@ public class TimingSourceTest extends AbstractXMLValidation {
             testDoc.appendChild(fakeElement);
             validator.validate(new DOMSource(testDoc));
             fail("Validation with incorrect root element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | DOMException | SAXException e) {
             assertTrue(e.getMessage().contains("Cannot find the declaration of element 'fake1'."));
         }
 
         //Correct root element.
         Element root = document.createElement("timing");
-        //sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/xdxf.xsd?format=raw");
-        root.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance", "xsi:noNamespaceSchemaLocation", "http:
+        root.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance", "xsi:noNamespaceSchemaLocation", "http://sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/xdxf.xsd?format=raw");
+
         document.appendChild(root);
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete root element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("The content of element 'timing' is not complete."));
         }
 
@@ -122,7 +126,7 @@ public class TimingSourceTest extends AbstractXMLValidation {
             testRoot.appendChild(fakeElement);
             validator.validate(new DOMSource(testDoc));
             fail("Validation with incorrect root child element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | DOMException | SAXException e) {
             assertTrue(e.getMessage().contains("Invalid content was found starting with element 'fake1'."));
         }
 
@@ -147,7 +151,7 @@ public class TimingSourceTest extends AbstractXMLValidation {
         root.appendChild(channelSuite);
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should now be valid!");
         }
 
@@ -155,7 +159,7 @@ public class TimingSourceTest extends AbstractXMLValidation {
         channelSuite.setAttribute("name", "testsuite");
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should still be valid!");
         }
 
@@ -186,7 +190,7 @@ public class TimingSourceTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete channel element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'handle' must appear on element"));
         }
 
@@ -194,7 +198,7 @@ public class TimingSourceTest extends AbstractXMLValidation {
         channel1.setAttribute("handle", "test1");
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should now be valid!");
         }
 
@@ -204,7 +208,7 @@ public class TimingSourceTest extends AbstractXMLValidation {
         channel1.setAttribute("valid", "false");
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should now be valid!");
         }
 
@@ -215,14 +219,14 @@ public class TimingSourceTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with invalid channel element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Duplicate key value"));
         }
 
         channel2.setAttribute("handle", "test2");
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should now be valid!");
         }
 
@@ -260,7 +264,7 @@ public class TimingSourceTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with missing referenced transform element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("not found for identity constraint of element 'channelsuite'."));
             assertTrue(e.getMessage().contains("with value 'doubleScaleTransform'")
                     || e.getMessage().contains("with value 'doubleLinearTransform'"));
@@ -274,7 +278,7 @@ public class TimingSourceTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with missing referenced transform element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("not found for identity constraint of element 'channelsuite'."));
             assertFalse(e.getMessage().contains("with value 'doubleScaleTransform'"));
             assertTrue(e.getMessage().contains("with value 'doubleLinearTransform'"));
@@ -286,7 +290,7 @@ public class TimingSourceTest extends AbstractXMLValidation {
         channelSuite.appendChild(transform2);
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should now be valid!");
         }
 
@@ -296,7 +300,7 @@ public class TimingSourceTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete transform element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'name' must appear on element")
                     || e.getMessage().contains("Attribute 'type' must appear on element"));
         }
@@ -306,7 +310,7 @@ public class TimingSourceTest extends AbstractXMLValidation {
         transform3.setAttribute("type", "doubleTranslation");
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should now be valid!");
         }
 
@@ -315,7 +319,7 @@ public class TimingSourceTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with invalid transform type should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Value 'fake1' is not facet-valid with respect to enumeration"));
         }
         transform3.setAttribute("type", "doubleTranslation");
@@ -327,7 +331,7 @@ public class TimingSourceTest extends AbstractXMLValidation {
         channelSuite.appendChild(transform4);
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should still be valid!");
         }
 
@@ -337,7 +341,7 @@ public class TimingSourceTest extends AbstractXMLValidation {
         channelSuite.appendChild(transform5);
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should still be valid!");
         }
 
@@ -347,7 +351,7 @@ public class TimingSourceTest extends AbstractXMLValidation {
         channelSuite.appendChild(transform6);
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should still be valid!");
         }
     }

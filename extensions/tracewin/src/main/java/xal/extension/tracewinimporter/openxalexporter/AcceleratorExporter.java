@@ -142,13 +142,10 @@ public class AcceleratorExporter {
         da.writeNode(acc);
         ImporterHelpers.xmlCleanup(xml);
         Element root = xml.getDocumentElement();
-        //www.w3.org/2001/XMLSchema-instance");
-        root.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xsi", "http:
-        //www.w3.org/2001/XMLSchema-instance",
-        root.setAttributeNS("http:
+        root.setAttributeNS("http://www.w3.org/2000/xmlns/", "xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+        root.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance",
                 "xsi:noNamespaceSchemaLocation",
-                //bitbucket.org/europeanspallationsource/openxal/raw/site.ess.master/core/resources/xal/schemas/xdxf.xsd");
-                "https:
+                "https://bitbucket.org/europeanspallationsource/openxal/raw/site.ess.master/core/resources/xal/schemas/xdxf.xsd");  
 
         da.writeTo(opticsFile);
 

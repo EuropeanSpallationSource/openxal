@@ -7,7 +7,7 @@ import java.io.*;
  *
  * created May 21, 2003
  *
- * Deault XSL stylesheet (more or less identical to the file '2LANL.xsl') to
+ * Default XSL stylesheet (more or less identical to the file '2LANL.xsl') to
  * transform our native lattice to a lattice compatible with the on-line model.
  *
  */
@@ -18,10 +18,8 @@ public class DefaultStyleSheet {
     static {
         XSLSHEET = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
         XSLSHEET += "<!--  -->";
-        //www.w3.org/1999/XSL/Transform\">";
-        XSLSHEET += "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http:
-        //www.w3.org/TR/xslt\"-->";
-        XSLSHEET += "            <!--xmlns=\"http:
+        XSLSHEET += "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">";
+        XSLSHEET += "            <!--xmlns=\"http://www.w3.org/TR/xslt\"-->";
         XSLSHEET += "";
         XSLSHEET += "<xsl:output method=\"xml\" doctype-system=\"Lattice.mod.xal.dtd\" indent=\"yes\"/>";
         XSLSHEET += "";

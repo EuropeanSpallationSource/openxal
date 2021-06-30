@@ -1,16 +1,20 @@
 package xal.schemas;
 
+import java.io.IOException;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import javax.xml.XMLConstants;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
+import org.w3c.dom.DOMException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 /**
  * Unit test case for <code>impl.xsd</code> XML schema using <code>*.impl</code>
@@ -43,7 +47,7 @@ public class DeviceMappingTest extends AbstractXMLValidation {
         Document document = null;
         try {
             document = getDocumentBuilder().newDocument();
-        } catch (Exception e) {
+        } catch (ParserConfigurationException e) {
             fail(e.getMessage());
         }
         assertNotNull(document);
@@ -53,7 +57,7 @@ public class DeviceMappingTest extends AbstractXMLValidation {
         //Blank document should be valid.
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Blank document should be valid!");
         }
 
@@ -97,19 +101,19 @@ public class DeviceMappingTest extends AbstractXMLValidation {
             testDoc.appendChild(fakeElement);
             validator.validate(new DOMSource(testDoc));
             fail("Validation with incorrect root element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | DOMException | SAXException e) {
             assertTrue(e.getMessage().contains("Cannot find the declaration of element 'fake1'."));
         }
 
         //Correct root element.
         Element root = document.createElement("deviceMapping");
-        //sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/impl.xsd?format=raw");
-        root.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance", "xsi:noNamespaceSchemaLocation", "http:
+
+        root.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance", "xsi:noNamespaceSchemaLocation", "http://sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/impl.xsd?format=raw");
         document.appendChild(root);
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete root element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("The content of element 'deviceMapping' is not complete."));
         }
 
@@ -121,7 +125,7 @@ public class DeviceMappingTest extends AbstractXMLValidation {
             testRoot.appendChild(fakeElement);
             validator.validate(new DOMSource(testDoc));
             fail("Validation with incorrect root child element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | DOMException | SAXException e) {
             assertTrue(e.getMessage().contains("Invalid content was found starting with element 'fake1'."));
         }
 
@@ -145,7 +149,7 @@ public class DeviceMappingTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete device element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'type' must appear on element"));
         }
 
@@ -154,7 +158,7 @@ public class DeviceMappingTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete device element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'class' must appear on element"));
         }
 
@@ -162,7 +166,7 @@ public class DeviceMappingTest extends AbstractXMLValidation {
         device11.setAttribute("class", "fake.package.DeviceA");
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should now be valid!");
         }
 
@@ -173,7 +177,7 @@ public class DeviceMappingTest extends AbstractXMLValidation {
         root.appendChild(device12);
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should still be valid!");
         }
 
@@ -184,7 +188,7 @@ public class DeviceMappingTest extends AbstractXMLValidation {
         root.appendChild(device21);
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should still be valid!");
         }
 
@@ -195,7 +199,7 @@ public class DeviceMappingTest extends AbstractXMLValidation {
         root.appendChild(device22);
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should still be valid!");
         }
 
@@ -206,7 +210,7 @@ public class DeviceMappingTest extends AbstractXMLValidation {
         root.appendChild(device23);
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should still be valid!");
         }
     }

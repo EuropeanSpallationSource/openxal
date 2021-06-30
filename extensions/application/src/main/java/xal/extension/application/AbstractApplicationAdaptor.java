@@ -223,8 +223,7 @@ public abstract class AbstractApplicationAdaptor implements ApplicationListener 
                 docURLs = new URL[docPaths.size()];
                 for (int index = 0; index < docPaths.size(); index++) {
                     try {
-                        //" + docPaths.get(index));
-                        docURLs[index] = new URL("file:
+                        docURLs[index] = new URL("file://" + docPaths.get(index));
                     } catch (MalformedURLException exception) {
                         LOGGER.log(Level.WARNING, "Error setting the documents to open passed by the user.", exception);
                     }

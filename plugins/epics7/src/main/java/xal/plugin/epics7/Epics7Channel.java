@@ -98,10 +98,8 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     public static final String STATUS_REQUEST = VALUE_FIELD + "," + ALARM_FIELD;
     public static final String TIME_REQUEST = STATUS_REQUEST + "," + TIMESTAMP_FIELD;
 
-    //";
-    private static final String CA_PREFIX = "ca:
-    //";
-    private static final String PVA_PREFIX = "pva:
+    private static final String CA_PREFIX = "ca://";
+    private static final String PVA_PREFIX = "pva://";
 
     private volatile Channel caChannel;
     private volatile Channel pvaChannel;

@@ -60,12 +60,10 @@ class WebSocketIO {
         writer.write("GET /stuff HTTP/1.1\r\n");
         writer.write("Upgrade: websocket\r\n");
         writer.write("Host: " + socket.getInetAddress().getHostName() + ":" + socket.getPort() + "\r\n");
-        //\r\n");
-        writer.write("Origin: file:
+        writer.write("Origin: file://\r\n");
         writer.write("Sec-WebSocket-Key: " + encodedRandomKey + "\r\n");
         writer.write("Sec-WebSocket-Version: 13\r\n");
-        //\r\n");
-        writer.write("Origin: file:
+        writer.write("Origin: file://\r\n");
         writer.write("\r\n");
         writer.flush();
     }

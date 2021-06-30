@@ -1,16 +1,20 @@
 package xal.schemas;
 
+import java.io.IOException;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import javax.xml.XMLConstants;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
+import org.w3c.dom.DOMException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 /**
  * Unit test case for <code>tablegroup.xsd</code> XML schema using
@@ -35,7 +39,7 @@ public class TableGroupTest extends AbstractXMLValidation {
         Document document = null;
         try {
             document = getDocumentBuilder().newDocument();
-        } catch (Exception e) {
+        } catch (ParserConfigurationException e) {
             fail(e.getMessage());
         }
         assertNotNull(document);
@@ -45,7 +49,7 @@ public class TableGroupTest extends AbstractXMLValidation {
         //Blank document should be valid.
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Blank document should be valid!");
         }
 
@@ -62,7 +66,7 @@ public class TableGroupTest extends AbstractXMLValidation {
         root.removeChild(tableA);
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should now be valid!");
         }
     }
@@ -90,19 +94,19 @@ public class TableGroupTest extends AbstractXMLValidation {
             testDoc.appendChild(fakeElement);
             validator.validate(new DOMSource(testDoc));
             fail("Validation with incorrect root element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | DOMException | SAXException e) {
             assertTrue(e.getMessage().contains("Cannot find the declaration of element 'fake1'."));
         }
 
         //Correct root element.
         Element root = document.createElement("tablegroup");
-        //sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/tablegroup.xsd?format=raw");
-        root.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance", "xsi:noNamespaceSchemaLocation", "http:
+        root.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance", "xsi:noNamespaceSchemaLocation", "http://sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/tablegroup.xsd?format=raw");
+        
         document.appendChild(root);
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete root element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("The content of element 'tablegroup' is not complete."));
         }
 
@@ -114,7 +118,7 @@ public class TableGroupTest extends AbstractXMLValidation {
             testRoot.appendChild(fakeElement);
             validator.validate(new DOMSource(testDoc));
             fail("Validation with incorrect root child element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | DOMException | SAXException e) {
             assertTrue(e.getMessage().contains("Invalid content was found starting with element 'fake1'."));
         }
 
@@ -128,7 +132,7 @@ public class TableGroupTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete table element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'name' must appear on element"));
         }
 
@@ -137,7 +141,7 @@ public class TableGroupTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete modelConfig_source element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("The content of element 'table' is not complete."));
         }
 
@@ -157,7 +161,7 @@ public class TableGroupTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete schema element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("The content of element 'schema' is not complete."));
         }
 
@@ -174,7 +178,7 @@ public class TableGroupTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete attribute element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'name' must appear on element"));
         }
 
@@ -183,7 +187,7 @@ public class TableGroupTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete attribute element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'type' must appear on element"));
         }
 
@@ -192,7 +196,7 @@ public class TableGroupTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete attribute element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'isPrimaryKey' must appear on element"));
         }
 
@@ -201,7 +205,7 @@ public class TableGroupTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete table element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("The content of element 'table' is not complete."));
         }
 
@@ -210,7 +214,7 @@ public class TableGroupTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete table element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("The content of element 'table' is not complete."));
         }
 
@@ -223,7 +227,7 @@ public class TableGroupTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with invalid attribute element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Duplicate unique value"));
         }
         schema.removeChild(invalidName);
@@ -236,7 +240,7 @@ public class TableGroupTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with invalid attribute element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("is not facet-valid with respect to enumeration"));
         }
         schema.removeChild(invalidType);
@@ -250,7 +254,7 @@ public class TableGroupTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete table element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("The content of element 'table' is not complete."));
         }
 
@@ -276,7 +280,7 @@ public class TableGroupTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete table element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("The content of element 'table' is not complete."));
         }
     }
@@ -288,7 +292,7 @@ public class TableGroupTest extends AbstractXMLValidation {
         table.appendChild(record1);
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should now be valid!");
         }
 
@@ -299,7 +303,7 @@ public class TableGroupTest extends AbstractXMLValidation {
         table.appendChild(record2);
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should now be valid!");
         }
 
@@ -310,7 +314,7 @@ public class TableGroupTest extends AbstractXMLValidation {
         table.appendChild(record3);
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should now be valid!");
         }
 
@@ -322,7 +326,7 @@ public class TableGroupTest extends AbstractXMLValidation {
         table.appendChild(record4);
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should now be valid!");
         }
     }
@@ -347,7 +351,7 @@ public class TableGroupTest extends AbstractXMLValidation {
 
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should now be valid!");
         }
 

@@ -1,17 +1,20 @@
 package xal.schemas;
 
-import static org.junit.Assert.assertFalse;
+import java.io.IOException;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import javax.xml.XMLConstants;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
+import org.w3c.dom.DOMException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 /**
  * Unit test case for <code>main.xsd</code> XML schema using
@@ -44,7 +47,7 @@ public class MainTest extends AbstractXMLValidation {
         Document document = null;
         try {
             document = getDocumentBuilder().newDocument();
-        } catch (Exception e) {
+        } catch (ParserConfigurationException e) {
             fail(e.getMessage());
         }
         assertNotNull(document);
@@ -54,7 +57,7 @@ public class MainTest extends AbstractXMLValidation {
         //Blank document should be valid.
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Blank document should be valid!");
         }
 
@@ -87,7 +90,7 @@ public class MainTest extends AbstractXMLValidation {
         root.removeChild(hardwareStatus);
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should now be valid!");
         }
     }
@@ -125,21 +128,15 @@ public class MainTest extends AbstractXMLValidation {
             testDoc.appendChild(fakeElement);
             validator.validate(new DOMSource(testDoc));
             fail("Validation with incorrect root element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | DOMException | SAXException e) {
             assertTrue(e.getMessage().contains("Cannot find the declaration of element 'fake1'."));
         }
 
         //Correct root element.
         Element root = document.createElement("sources");
-        //sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/main.xsd?format=raw");
-        root.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance", "xsi:noNamespaceSchemaLocation", "http:
+        root.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance", "xsi:noNamespaceSchemaLocation", "http://sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/main.xsd?format=raw");
+        
         document.appendChild(root);
-        /*try {
-			validator.validate(new DOMSource(document));
-			fail("Validation with incomplete root element should not be successful!");
-		} catch(Exception e) {
-			assertTrue(e.getMessage().contains("The content of element 'sources' is not complete."));
-		}*/
 
         //Fake root child
         try {
@@ -149,7 +146,7 @@ public class MainTest extends AbstractXMLValidation {
             testRoot.appendChild(fakeElement);
             validator.validate(new DOMSource(testDoc));
             fail("Validation with incorrect root child element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | DOMException | SAXException e) {
             assertTrue(e.getMessage().contains("Invalid content was found starting with element 'fake1'."));
         }
 
@@ -174,7 +171,7 @@ public class MainTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete modelConfig_source element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'name' must appear on element"));
         }
 
@@ -183,19 +180,12 @@ public class MainTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete modelConfig_source element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'url' must appear on element"));
         }
 
         //Add 'url' attribute.
         modelConfig.setAttribute("url", "test.xml");
-        /*try {
-			validator.validate(new DOMSource(document));
-			fail("Validation with incomplete sources element should not be successful!");
-		} catch(Exception e) {
-			assertTrue(e.getMessage().contains("The content of element 'sources' is not complete."));
-			assertFalse(e.getMessage().contains("modelConfig_source"));
-		}*/
 
         return modelConfig;
     }
@@ -218,7 +208,7 @@ public class MainTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete deviceMapping_source element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'name' must appear on element"));
         }
 
@@ -227,19 +217,12 @@ public class MainTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete deviceMapping_source element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'url' must appear on element"));
         }
 
         //Add 'url' attribute.
         deviceMapping.setAttribute("url", "test.xml");
-        /*try {
-			validator.validate(new DOMSource(document));
-			fail("Validation with incomplete sources element should not be successful!");
-		} catch(Exception e) {
-			assertTrue(e.getMessage().contains("The content of element 'sources' is not complete."));
-			assertFalse(e.getMessage().contains("deviceMapping_source"));
-		}*/
 
         return deviceMapping;
     }
@@ -262,7 +245,7 @@ public class MainTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete optics_source element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'name' must appear on element"));
         }
 
@@ -271,19 +254,12 @@ public class MainTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete optics_source element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'url' must appear on element"));
         }
 
         //Add 'url' attribute.
         optics.setAttribute("url", "test.xml");
-        /*try {
-			validator.validate(new DOMSource(document));
-			fail("Validation with incomplete sources element should not be successful!");
-		} catch(Exception e) {
-			assertTrue(e.getMessage().contains("The content of element 'sources' is not complete."));
-			assertFalse(e.getMessage().contains("optics_source"));
-		}*/
 
         return optics;
     }
@@ -306,7 +282,7 @@ public class MainTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete optics_extra element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'name' must appear on element"));
         }
 
@@ -315,20 +291,12 @@ public class MainTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete optics_extra element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'url' must appear on element"));
         }
 
         //Add 'url' attribute.
         opticsExtra.setAttribute("url", "test.xml");
-        /*try {
-			validator.validate(new DOMSource(document));
-			fail("Validation with incomplete sources element should not be successful!");
-		} catch(Exception e) {
-			assertTrue(e.getMessage().contains("The content of element 'sources' is not complete."));
-			//Additional optics_extra element should still be expected.
-			assertTrue(e.getMessage().contains("optics_extra"));
-		}*/
 
         return opticsExtra;
     }
@@ -351,7 +319,7 @@ public class MainTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete hardware_status element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'name' must appear on element"));
         }
 
@@ -360,19 +328,12 @@ public class MainTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete hardware_status element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'url' must appear on element"));
         }
 
         //Add 'url' attribute.
         hardwareStatus.setAttribute("url", "test.xml");
-        /*try {
-			validator.validate(new DOMSource(document));
-			fail("Validation with incomplete sources element should not be successful!");
-		} catch(Exception e) {
-			assertTrue(e.getMessage().contains("The content of element 'sources' is not complete."));
-			assertFalse(e.getMessage().contains("hardware_status"));
-		}*/
 
         return hardwareStatus;
     }
@@ -395,7 +356,7 @@ public class MainTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete timing_source element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'name' must appear on element"));
         }
 
@@ -404,19 +365,12 @@ public class MainTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete timing_source element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'url' must appear on element"));
         }
 
         //Add 'url' attribute.
         timing.setAttribute("url", "test.xml");
-        /*try {
-			validator.validate(new DOMSource(document));
-			fail("Validation with incomplete sources element should not be successful!");
-		} catch(Exception e) {
-			assertTrue(e.getMessage().contains("The content of element 'sources' is not complete."));
-			assertFalse(e.getMessage().contains("timing_source"));
-		}*/
 
         return timing;
     }
@@ -439,7 +393,7 @@ public class MainTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete tablegroup_source element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'name' must appear on element"));
         }
 
@@ -448,7 +402,7 @@ public class MainTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete tablegroup_source element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'url' must appear on element"));
         }
 
@@ -456,7 +410,7 @@ public class MainTest extends AbstractXMLValidation {
         tablegroup.setAttribute("url", "test.xml");
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should now be valid!");
         }
 
@@ -468,13 +422,13 @@ public class MainTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Two tablegroup_source elements should not be able to have the same name!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Duplicate unique value"));
         }
         tablegroup2.setAttribute("name", "tablegroup2");
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should now be valid!");
         }
         root.removeChild(tablegroup2);
