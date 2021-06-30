@@ -25,7 +25,8 @@ public class BorderNode extends BeanNode<Border> {
     /**
      * Primary Constructor
      */
-    @SuppressWarnings("unchecked")    // nothing we can do to type BorderNode any tighter without introducing a type on BorderNode
+    // nothing we can do to type BorderNode any tighter without introducing a type on BorderNode
+    @SuppressWarnings("unchecked")
     public BorderNode(final BorderProxy<Border> borderProxy, final Map<String, Object> beanSettings, final String tag) {
         super(borderProxy, beanSettings, tag);
     }

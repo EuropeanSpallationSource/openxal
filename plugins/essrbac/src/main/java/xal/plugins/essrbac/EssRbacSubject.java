@@ -89,7 +89,8 @@ public class EssRbacSubject implements RBACSubject {
     public void setAutoLogoutTimeout(final int timeoutInMinutes, final AutoLogoutCallback callback) {
         SecurityFacade.getDefaultInstance().setAutoLogoutTimeout(timeoutInMinutes);
         final EssRbacSubject subject = this;
-        SecurityFacade.getDefaultInstance().setDefaultSecurityCallback(new SecurityCallbackAdapter() {//User is already logged in so we don't need get credentials method.
+        //User is already logged in so we don't need get credentials method.
+        SecurityFacade.getDefaultInstance().setDefaultSecurityCallback(new SecurityCallbackAdapter() {
             @Override
             public boolean autoLogoutConfirm(Token token, int timeoutInSeconds) {
                 return callback.autoLogoutConfirm(subject, timeoutInSeconds);

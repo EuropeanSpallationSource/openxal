@@ -94,8 +94,10 @@ public class ElsTracker extends EnvelopeTracker {
     @Override
     public void doPropagation(IProbe probe, IElement elem) throws ModelException {
 
-        int cntSteps;   // number of steps through element
-        double dblStep;    // step size through element
+        // number of steps through element
+        int cntSteps;
+        // step size through element
+        double dblStep;
 
         //sako
         double elemPos = this.getElemPosition();

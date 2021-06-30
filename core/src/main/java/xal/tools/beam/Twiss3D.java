@@ -59,7 +59,8 @@ public class Twiss3D implements IArchive {
         /**
          * The longitudinal axis
          */
-        Z(2);        // z plane spatial
+        // z plane spatial
+        Z(2);
 
         /*
          * Local Attributes
@@ -183,7 +184,8 @@ public class Twiss3D implements IArchive {
     }
 
     /**
-     * Creates a new, cloned instance of <strong>this</strong> <code>Twiss3D</code>.
+     * Creates a new, cloned instance of <strong>this</strong>
+     * <code>Twiss3D</code>.
      *
      * @return a clone of <strong>this</strong> <code>Twiss3D</code>
      *

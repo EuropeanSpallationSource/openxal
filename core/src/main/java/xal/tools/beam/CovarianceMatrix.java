@@ -21,8 +21,8 @@ import xal.tools.math.r3.R3x3;
  *           | &lt;zx&gt;   &lt;zx'&gt;  &lt;zy&gt;   &lt;zy'&gt;  &lt;zz&gt;   &lt;zz'&gt;  &lt;z&gt;  |
  *           | &lt;z'x&gt;  &lt;z'x'&gt; &lt;z'y&gt;  &lt;z'y&gt;  &lt;z'z&gt;  &lt;z'z'&gt; &lt;z'&gt; |
  *           | &lt;x&gt;     &lt;x&gt;    &lt;y&gt;     &lt;y&gt;   &lt;z&gt;    &lt;z&gt;   &lt;1&gt;  |
- * </pre> where <em>x', y', z'</em> represent the momentum coordinate in the <em>x,
- * y,</em> and <em>z</em>
+ * </pre> where <em>x', y', z'</em> represent the momentum coordinate in the
+ * <em>x, y,</em> and <em>z</em>
  * directions, respectively.
  *
  * <p>
@@ -31,9 +31,9 @@ import xal.tools.math.r3.R3x3;
  * &lt;<em>y</em>&gt;, &lt;<em>z</em>&gt; is non-zero and the corresponding
  * second-order moments will be skewed. Likewise, if the beam has a coherent
  * drift in some direction, then the moments &lt;<em>x'</em>&gt;,
- * &lt;<em>y'</em>&gt;, &lt;<em>z'</em>&gt; will have at least one nonlinear value.
- * There are methods in this class for returning centralized moments when such
- * quantities are needed.
+ * &lt;<em>y'</em>&gt;, &lt;<em>z'</em>&gt; will have at least one nonlinear
+ * value. There are methods in this class for returning centralized moments when
+ * such quantities are needed.
  * </p>
  * <p>
  * Note that the covariance matrix is not necessarily centralized. Specifically,
@@ -41,9 +41,9 @@ import xal.tools.math.r3.R3x3;
  * &lt;<em>y</em>&gt;, &lt;<em>z</em>&gt; is non-zero and the corresponding
  * second-order moments will be skewed. Likewise, if the beam has a coherent
  * drift in some direction, then the moments &lt;<em>xp</em>&gt;,
- * &lt;<em>yp</em>&gt;, &lt;<em>zp</em>&gt; will have at least one nonlinear value.
- * There are methods in this class for returning centralized moments when such
- * quantities are needed.
+ * &lt;<em>yp</em>&gt;, &lt;<em>zp</em>&gt; will have at least one nonlinear
+ * value. There are methods in this class for returning centralized moments when
+ * such quantities are needed.
  * </p>
  *
  * @author Christopher K. Allen
@@ -347,9 +347,12 @@ public class CovarianceMatrix extends PhaseMatrix {
      * @author C.K. Allen
      */
     public void forceRmsEmittances(double[] arrEmitNew) {
-        double[] arrEmitCurr;    // current emittances
-        double fac;            // multiplication factor to change emittance value
-        double val;            // auxiliary variable used when updating covariance matrix
+        // current emittances
+        double[] arrEmitCurr;
+        // multiplication factor to change emittance value
+        double fac;
+        // auxiliary variable used when updating covariance matrix
+        double val;
 
         arrEmitCurr = this.computeRmsEmittances();
 
@@ -515,13 +518,15 @@ public class CovarianceMatrix extends PhaseMatrix {
 
     /**
      * Compute and return the 3x3 symmetric matrix of all centralized spatial
-     * covariance values. Recall that the covariance matrix <strong>sig</strong> is the
-     * matrix of central second moments and is related to the correlation matrix
-     * &lt;<strong>zz</strong>&gt; according to
+     * covariance values. Recall that the covariance matrix <strong>sig</strong>
+     * is the matrix of central second moments and is related to the correlation
+     * matrix &lt;<strong>zz</strong>&gt; according to
      *
-     * <strong>sig</strong> = &lt;<strong>zz</strong>&gt; - &lt;<strong>z</strong>&gt;&lt;<strong>z</strong>&gt;
+     * <strong>sig</strong> = &lt;<strong>zz</strong>&gt; -
+     * &lt;<strong>z</strong>&gt;&lt;<strong>z</strong>&gt;
      *
-     * where <strong>z</strong> = (x x' y y' z z' 1) is the phase space coordinate vector.
+     * where <strong>z</strong> = (x x' y y' z z' 1) is the phase space
+     * coordinate vector.
      *
      * Thus, the returned spatial covariance matrix has the form
      *
@@ -561,7 +566,8 @@ public class CovarianceMatrix extends PhaseMatrix {
     }
 
     /**
-     * Compute and return the standard deviation of the <em>x</em> phase variable
+     * Compute and return the standard deviation of the <em>x</em> phase
+     * variable
      *
      * @return sqrt( &lt;x^2&gt; - &lt;x&gt;^2 )
      */
@@ -573,7 +579,8 @@ public class CovarianceMatrix extends PhaseMatrix {
     }
 
     /**
-     * Compute and return the standard deviation of the <em>y</em> phase variable
+     * Compute and return the standard deviation of the <em>y</em> phase
+     * variable
      *
      * @return sqrt( &lt;y^2&gt; - &lt;y&gt;^2 )
      */
@@ -585,7 +592,8 @@ public class CovarianceMatrix extends PhaseMatrix {
     }
 
     /**
-     * Compute and return the standard deviation of the <em>z</em> phase variable
+     * Compute and return the standard deviation of the <em>z</em> phase
+     * variable
      *
      * @return sqrt( &lt;z^2&gt; - &lt;z&gt;^2 )
      */
@@ -610,7 +618,8 @@ public class CovarianceMatrix extends PhaseMatrix {
         PhaseMatrix matAve2 = vecMean.outerProd(vecMean);
         CovarianceMatrix matCov = new CovarianceMatrix(matCorrel.minus(matAve2));
 
-        matCov.setElem(IND_HOM, IND_HOM, 1.0);   // set the unity homogeneous diagonal
+        // set the unity homogeneous diagonal
+        matCov.setElem(IND_HOM, IND_HOM, 1.0);
         return matCov;
     }
 
@@ -671,13 +680,16 @@ public class CovarianceMatrix extends PhaseMatrix {
         //        return twissParameters(this.phaseCorrelation());
         CovarianceMatrix matSig = this.computeCentralCovariance();
 
-        double[] arrEmit; // array of rms emittance values
+        // array of rms emittance values
+        double[] arrEmit;
 
         arrEmit = computeRmsEmittances();
 
         // Compute the X plane twiss parameters
-        double ax, bx, ex; // x plane twiss parameters
-        Twiss twissX; // twiss parameter object
+        // x plane twiss parameters
+        double ax, bx, ex;
+        // twiss parameter object
+        Twiss twissX;
 
         ex = arrEmit[0];
         bx = matSig.getElem(0, 0) / ex;
@@ -685,16 +697,20 @@ public class CovarianceMatrix extends PhaseMatrix {
         twissX = new Twiss(ax, bx, ex);
 
         // Compute the Y plane twiss parameters
-        double ay, by, ey; // y plane twiss parameters
-        Twiss twissY; // twiss parameter object
+        // y plane twiss parameters
+        double ay, by, ey;
+        // twiss parameter object
+        Twiss twissY;
         ey = arrEmit[1];
         by = matSig.getElem(2, 2) / ey;
         ay = -matSig.getElem(2, 3) / ey;
         twissY = new Twiss(ay, by, ey);
 
         // Compute the Z plane twiss parameters
-        double az, bz, ez; // z plane twiss parameters
-        Twiss twissZ; // twiss parameter object
+        // z plane twiss parameters
+        double az, bz, ez;
+        // twiss parameter object
+        Twiss twissZ;
 
         ez = arrEmit[2];
         bz = matSig.getElem(4, 4) / ez;
@@ -745,7 +761,8 @@ public class CovarianceMatrix extends PhaseMatrix {
      */
     @SuppressWarnings("unused")
     private boolean checkSymmetryToUlps(CovarianceMatrix matCov, int cntUlps) {
-        int i, j;        //loop control variables
+        //loop control variables
+        int i, j;
 
         for (i = 0; i < 7; i++) {
             for (j = i + 1; j < 7; j++) {
@@ -780,7 +797,8 @@ public class CovarianceMatrix extends PhaseMatrix {
      * @see ElementaryFunction#significantDigitsEqs(double, double, int)
      */
     private boolean checkSymmetryToSigDigits(CovarianceMatrix matCov, int cntDigits) {
-        int i, j;        //loop control variables
+        //loop control variables
+        int i, j;
 
         for (i = 0; i < 7; i++) {
             for (j = i + 1; j < 7; j++) {

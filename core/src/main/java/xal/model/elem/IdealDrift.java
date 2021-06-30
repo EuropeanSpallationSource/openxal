@@ -152,7 +152,8 @@ public class IdealDrift extends ThickElement {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <strong>meters</strong>
+     * @param dblLen length of subsection to propagate through
+     * <strong>meters</strong>
      *
      * @return the elapsed time through section<strong>Units: seconds</strong>
      */
@@ -316,7 +317,8 @@ public class IdealDrift extends ThickElement {
         if (debug) {
             LOGGER.log(Level.INFO, "IdeaDrift, k, dL = " + k + " " + dL);
         }
-        boolean useApproxLens = IdealPermMagQuad.getUseApproxLens(); //def=false
+        //def=false
+        boolean useApproxLens = IdealPermMagQuad.getUseApproxLens();
         if (debug) {
             LOGGER.log(Level.INFO, "useApproxLens(IdealDrift) = " + useApproxLens);
         }
@@ -344,18 +346,22 @@ public class IdealDrift extends ThickElement {
         // Build the tranfer matrix from its component blocks
         PhaseMatrix matPhi = new PhaseMatrix();
 
-        matPhi.setSubMatrix(4, 5, 4, 5, arr0); // a drift space longitudinally
-        matPhi.setElem(6, 6, 1.0); // homogeneous coordinates
+        // a drift space longitudinally
+        matPhi.setSubMatrix(4, 5, 4, 5, arr0);
+        // homogeneous coordinates
+        matPhi.setElem(6, 6, 1.0);
 
         try {
             switch (orientation) {
 
-                case IElectromagnet.ORIENT_HOR: // focusing in x, defocusing in y
+                // focusing in x, defocusing in y
+                case IElectromagnet.ORIENT_HOR:
                     matPhi.setSubMatrix(0, 1, 0, 1, arrF);
                     matPhi.setSubMatrix(2, 3, 2, 3, arrD);
                     break;
 
-                case IElectromagnet.ORIENT_VER: // defocusing in x, focusing in y
+                // defocusing in x, focusing in y
+                case IElectromagnet.ORIENT_VER:
                     matPhi.setSubMatrix(0, 1, 0, 1, arrD);
                     matPhi.setSubMatrix(2, 3, 2, 3, arrF);
                     break;
@@ -611,7 +617,8 @@ public class IdealDrift extends ThickElement {
 
             int bPathFlag = (int) pmq.getFieldPathFlag();
 
-            if (bPathFlag == 1) {//if bpathflag =1, then use nominal k0 from nominal kine energy
+            //if bpathflag =1, then use nominal k0 from nominal kine energy
+            if (bPathFlag == 1) {
 
                 double w0 = pmq.getNominalKineEnergy();
 
@@ -630,7 +637,8 @@ public class IdealDrift extends ThickElement {
 
             // Compute focusing constant
             // focusing constant (radians/meter)
-            if (bPathFlag == 0) {//if bpathflag =1, then use nominal k0 from nominal kine energy
+            //if bpathflag =1, then use nominal k0 from nominal kine energy
+            if (bPathFlag == 0) {
                 KNorm = Math.sqrt((LIGHT_SPEED * G) / mbetagamma);
             } else {
                 KNorm = k0;

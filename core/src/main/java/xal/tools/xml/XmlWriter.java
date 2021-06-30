@@ -130,10 +130,14 @@ public class XmlWriter {
      */
     private abstract class NodeWriter {
 
-        Node rootNode;      // the node being written
-        int nestLevel;      // nesting level of this node in the document tree
-        String indent;      // leading indent based on nest level
-        List<Node> childNodes;    // list of children of the root node
+        // the node being written
+        Node rootNode;
+        // nesting level of this node in the document tree
+        int nestLevel;
+        // leading indent based on nest level
+        String indent;
+        // list of children of the root node
+        List<Node> childNodes;
 
         /**
          * create a new NodeWriter
@@ -181,7 +185,8 @@ public class XmlWriter {
             }
             writer.write(indent + "<" + name);
 
-            writeAttributes();  // write node attributes if any
+            // write node attributes if any
+            writeAttributes();
 
             // no child nodes => close the open tag after the attributes
             if (childNodes.size() == 0) {
@@ -299,7 +304,8 @@ public class XmlWriter {
          */
         @Override
         public void write() throws IOException {
-            writeHeader();  // prepend with an XML header
+            // prepend with an XML header
+            writeHeader();
             super.write();
         }
 

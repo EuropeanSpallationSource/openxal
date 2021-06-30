@@ -28,8 +28,9 @@ class DbrStatusAdaptor extends DbrValueAdaptor implements StatusAdaptor {
      *
      * @return channel status
      */
+    @Override
     public int status() {
-        return ((STS) _dbr).getStatus().getValue();
+        return ((STS) dbr).getStatus().getValue();
     }
 
     /**
@@ -37,7 +38,8 @@ class DbrStatusAdaptor extends DbrValueAdaptor implements StatusAdaptor {
      *
      * @return channel severity
      */
+    @Override
     public int severity() {
-        return ((STS) _dbr).getSeverity().getValue();
+        return ((STS) dbr).getSeverity().getValue();
     }
 }

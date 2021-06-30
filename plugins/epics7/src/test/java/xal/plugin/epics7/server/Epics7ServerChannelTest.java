@@ -239,7 +239,7 @@ public class Epics7ServerChannelTest {
         Monitor result = instance.addMonitorValTime((record, chan) -> methodCalled = true, 0);
         instance.putVal("test");
         assertEquals(true, methodCalled);
-        
+
         result.clear();
     }
 
@@ -256,7 +256,7 @@ public class Epics7ServerChannelTest {
         Monitor result = instance.addMonitorValStatus((record, chan) -> methodCalled = true, 0);
         instance.putVal("test");
         assertEquals(true, methodCalled);
-        
+
         result.clear();
     }
 
@@ -273,7 +273,7 @@ public class Epics7ServerChannelTest {
         Monitor result = instance.addMonitorValue((record, chan) -> methodCalled = true, 0);
         instance.putVal("test");
         assertEquals(true, methodCalled);
-        
+
         result.clear();
     }
 

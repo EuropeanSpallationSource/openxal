@@ -38,14 +38,14 @@ import xal.tools.math.fnc.poly.RealUnivariatePolynomial;
  * <br/>
  * &middot; The gap length <em>L</em> should not be used in any time or phase
  * calculations since it is absorbed by adjacent drift spaces. (So I believe.)
- * For example, drift time &Delta;<em>t</em> should probably not include the term
- * &Delta;<em>t</em> &prop; &omega;<em>L</em>/2.
+ * For example, drift time &Delta;<em>t</em> should probably not include the
+ * term &Delta;<em>t</em> &prop; &omega;<em>L</em>/2.
  * <br/>
  * <br/>
- * &middot; The <em>phase correction</em> parameter &Delta;&phi; I believe is the
- * change in probe phase due to propagation from the first gap in the cavity.
- * Thus, the first gap has a correction of &Delta;&phi; and the probe phase
- * there &phi;<sub>0</sub> is simply the cavity phase
+ * &middot; The <em>phase correction</em> parameter &Delta;&phi; I believe is
+ * the change in probe phase due to propagation from the first gap in the
+ * cavity. Thus, the first gap has a correction of &Delta;&phi; and the probe
+ * phase there &phi;<sub>0</sub> is simply the cavity phase
  * &phi;<sub><em>cav</em></sub>.
  * <br/>
  * <br/>
@@ -61,10 +61,10 @@ import xal.tools.math.fnc.poly.RealUnivariatePolynomial;
  * <br/>
  * <br/>
  * &middot; There are provisions for both an offset of gap electrical center
- * with geometric center and for the Fourier sine transit time factor <em>S</em>.
- * And both values are used. This creates a potential inconsistency since the
- * sine transit time factor can account for any shifts in the field center
- * (i.e., the Fourier sine and cosine transforms together can represent
+ * with geometric center and for the Fourier sine transit time factor
+ * <em>S</em>. And both values are used. This creates a potential inconsistency
+ * since the sine transit time factor can account for any shifts in the field
+ * center (i.e., the Fourier sine and cosine transforms together can represent
  * <strong>any</strong> continuous function.) I'm not sure if the provided
  * <em>S</em>(&beta;) is taken at the geometric center or the electrical center
  * (there it would probably be zero). If at the geometric center you are
@@ -88,9 +88,9 @@ import xal.tools.math.fnc.poly.RealUnivariatePolynomial;
  * two different methods of computing the phase and energy gains through the
  * gap. One method is the direct method based upon the Panofsky equation (and
  * where the phase change is 0 through the gap). This method is used when the
- * <kbd>useRfGapPhaseCalculation</kbd> flag in the probe's algorithm object is set
- * to <code>false</code>. If it is set to <code>true</code> then the indirect,
- * iterative (and presumably more accurate) method is used to solve a
+ * <kbd>useRfGapPhaseCalculation</kbd> flag in the probe's algorithm object is
+ * set to <code>false</code>. If it is set to <code>true</code> then the
+ * indirect, iterative (and presumably more accurate) method is used to solve a
  * transcendental equation for the phase and energy changes through the gap.
  * </p>
  *
@@ -190,9 +190,9 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
          */
         DESIGN,
         /**
-         * Dynamic Phase: Use <strong>probe</strong> phase with cavity spatial fields
-         * (i.e., mode structure) and gap offset for phase, design transit time
-         * factor <em>T</em>(&beta;) for energy calculation.
+         * Dynamic Phase: Use <strong>probe</strong> phase with cavity spatial
+         * fields (i.e., mode structure) and gap offset for phase, design
+         * transit time factor <em>T</em>(&beta;) for energy calculation.
          */
         DYNPHASE,
         /**
@@ -291,11 +291,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
     @Deprecated
     private static double STRUCTURE_PHASE = 0.;
 
-//    /**
-//     *  These are kluge jobs for RF cavities.  Very dangerous since
-//     *  they are class variables.
-//     */
-//    private static double UPSTREAM_EXIT_TIME = 0.;
     /**
      * TODO CKA - Remove
      *
@@ -418,7 +413,8 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      * Creates a new instance of IdealRfGapUpgraded
      *
      * @param strId instance identifier of element
-     * @param dblETL field/transit time/length factor for gap (in <strong>volts</strong> )
+     * @param dblETL field/transit time/length factor for gap (in
+     * <strong>volts</strong> )
      * @param dblPhase operating phase of gap (in <strong>radians</strong> )
      * @param dblFreq operating RF frequency of gap (in <strong>Hertz</strong> )
      */
@@ -447,17 +443,17 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      * <del>Returns the cell length (m)</del>
      *
      * <p>
-     * <strong>CKA</strong> This method never returned the <em>cavity cell</em> length. It
-     * always returned the length of the gap within the cell. Fortunately
-     * everywhere this method was used it was used in that context. Thus I have
-     * changed the name from <code>getCellLength</code> to
+     * <strong>CKA</strong> This method never returned the <em>cavity cell</em>
+     * length. It always returned the length of the gap within the cell.
+     * Fortunately everywhere this method was used it was used in that context.
+     * Thus I have changed the name from <code>getCellLength</code> to
      * <code>getGapLength</code>. I have also renamed the corresponding class
      * variable.
      * </p>
      * <p>
      * Of course the gap is being modeled as a thin element and has no length
-     * proper. The length <em>L</em> given here is simply the value that produces
-     * the appropriate acceleration potential <em>V</em><sub>0</sub> =
+     * proper. The length <em>L</em> given here is simply the value that
+     * produces the appropriate acceleration potential <em>V</em><sub>0</sub> =
      * <em>E</em><sub>0</sub>L when using a hard-edge model.
      * </p>
      * <p>
@@ -544,30 +540,18 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         return b_mid;
     }
 
-//    /**
-//     *  a method that is called once by transferMatrix to calculate the energy
-//     *  gain. This prevents energy gain calculation from being repeated many times.
-//     *  Importantly it provides a workaround from the eneryGain being calculated
-//     *  after the upstreamExitPhase is updated elsewhere
-//     *
-//     *@param  probe  The Parameter
-//     *@return        The Return Value
-//     */
-//    /*
-//     *  public double compEnergyGain(IProbe probe) {
-//     *  }
-//     */
     /**
      * <p>
      * Provided for legacy calculations. This method computes the phase of the
      * gap necessary to account for the cavity mode field distribution. For
      * example, if the phase of the probe at the gap is &phi;<sub>0</sub> and
-     * the mode amplitude factor for cell/gap <em>n</em> is <em>A<sub>n</sub></em>,
-     * then the energy gain &Delta;<em>W<sub>n</sub></em> is
+     * the mode amplitude factor for cell/gap <em>n</em> is
+     * <em>A<sub>n</sub></em>, then the energy gain
+     * &Delta;<em>W<sub>n</sub></em> is
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; &Delta;<em>W<sub>n</sub></em> = <em>qA<sub>n</sub>ETL</em> cos
-     * &phi;<sub>0</sub> .
+     * &nbsp; &nbsp; &Delta;<em>W<sub>n</sub></em> = <em>qA<sub>n</sub>ETL</em>
+     * cos &phi;<sub>0</sub> .
      * <br/>
      * <br/>
      * Combining the <em>A<sub>n</sub></em> and cos &phi;<sub>0</sub> we get
@@ -644,7 +628,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         double f = this.getFrequency();
 
         double kr = (Math.PI * f / c) * Q * A * ETL * Math.sin(-phi_mid) / (Er * bg_mid * bg_mid);
-//      double   kr = Math.PI*Q*ETL*f*Math.sin(-phi)/(q*c*Er*bgbar*bgbar);
 
         return kr;
     }
@@ -835,10 +818,10 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
 
     /**
      * <p>
-     * Returns the structure mode <strong>number</strong> <em>q</em> for the cavity in which
-     * this gap belongs. Here the structure mode number is defined in terms of
-     * the fractional phase advance between cells, with respect to &pi;. To make
-     * this explicit
+     * Returns the structure mode <strong>number</strong> <em>q</em> for the
+     * cavity in which this gap belongs. Here the structure mode number is
+     * defined in terms of the fractional phase advance between cells, with
+     * respect to &pi;. To make this explicit
      * <br/>
      * <br/>
      * &nbsp; &nbsp; <em>q</em> = 0 &nbsp; &nbsp; &rAarr; 0 mode
@@ -911,38 +894,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      */
     @Override
     public double elapsedTime(IProbe probe) {
-
-//        // Probe parameters
-//        double c  = IElement.LightSpeed;
-//        double Er = probe.getSpeciesRestEnergy();
-//        double Wi = probe.getKineticEnergy();
-//        double bi = probe.getBeta();
-//        //      double gi = probe.getGamma();
-//
-//        // Gap parameters
-//        double f  = this.getFrequency();
-//        double dl = this.getGapOffset();
-//
-//        // Gap effects
-//        EnergyVariables prmGapEff = this.compGapPhaseAndEnergyImpulses(probe);
-//
-//        double dW    = prmGapEff.W;
-//        double d_phi = prmGapEff.phi;
-//
-//        // Final energy parameters
-//        double Wf = Wi + dW;
-//        double gf = Wf / Er + 1.0;
-//        double bf = Math.sqrt(1.0 - 1.0 / (gf * gf));
-//
-//        // update the elapsed time to account for the phase correction term
-//        double dT = d_phi/(2.0*Math.PI*f);
-//
-//        //the gap offset correction
-//        dT = dT + dl*( 1.0/ (bi*c) - 1.0/ (bf*c));
-//
-//        //        //the time when probe will exit this gap
-//        // TODO Delete this!
-//        //        UPSTREAM_EXIT_TIME = probe.getTime() + dT + (getCellLength()/2.) / (bf*c);
         // Get the phase jump across the gap (if any)
         EnergyVariables varGain = this.compGapPhaseAndEnergyGain(probe);
 
@@ -956,10 +907,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         return dT;
     }
 
-    //    /** the interface method to provide the energy gain.
-    //    * since this calculation has gotten complicated it is done
-    //    * in the TransferMap method and the answer is returned here. */
-    //
     /**
      * Compute the energy gain of the RF gap for a probe including the effects
      * of calculating the phase advance.
@@ -972,7 +919,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
     public double energyGain(IProbe probe) {
         double dW = this.compGapPhaseAndEnergyGain(probe).W;
 
-//        LOGGER.log(Level.INFO, "IdealRfGapUpgraded#energyGain() - " + this.getId() + " index=" + this.indCell + ", dW = " + dW);
         return dW;
     }
 
@@ -1009,26 +955,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         }
     }
 
-//    /**
-//     * Here we need to inform the algorithm (i.e., the
-//     * <code>Tracker</code> object) of the gap exit time for use in the
-//     * phase advance calculation of the next RF gap element.
-//     *
-//     * @see xal.model.elem.Element#propagate(xal.model.IProbe)
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Nov 24, 2014
-//     */
-//    @Override
-//    public void propagate(IProbe probe) throws ModelException {
-//        super.propagate(probe);
-//
-//        IAlgorithm  alg = probe.getAlgorithm();
-//        if (alg instanceof Tracker) {
-//            Tracker tracker = (Tracker)alg;
-//            tracker.setRfGapExitTime();
-//        }
-//    }
     /**
      * Compute the transfer map for an ideal RF gap.
      *
@@ -1040,11 +966,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      */
     @Override
     protected PhaseMap transferMap(IProbe probe) throws ModelException {
-
-        //      LOGGER.log(Level.INFO, "This is " + this.getId());
-        //      LOGGER.log(Level.INFO, "dblFieldE0 is   " + this.getE0());
-        //      LOGGER.log(Level.INFO, "ETL is  " + this.getETL());
-        //      LOGGER.log(Level.INFO, "");
         // Get probe parameters at initial energy
         double Er = probe.getSpeciesRestEnergy();
         double Wi = probe.getKineticEnergy();
@@ -1054,11 +975,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         // Determine the current energy gain and focusing constants for the gap
         // the following section is to calculate the phase of the beam at each gap, rather than use hardwired phases.
         // update the energy gain first:
-//        if(probe.getAlgorithm().useRfGapPhaseCalculation()) {
-//            compEnergyGain(probe);
-//        } else {
-//            simpleEnergyGain(probe);
-//        }
         double dW = this.compGapPhaseAndEnergyGain(probe).W;
         double kz = this.compLongFocusing(probe);
         double kt = this.compTransFocusing(probe);
@@ -1068,10 +984,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         double gf = Wf / Er + 1.0;
         double bf = Math.sqrt(1.0 - 1.0 / (gf * gf));
 
-        // Compute average energy parameters
-        //      double Wb = (Wf + Wi) / 2.0;
-        //      double gb = Wb / Er + 1.0;
-        //        double bg = Math.sqrt(1.0 - 1.0/(gb*gb));
         // Compute component block matrices then full transfer matrix
         double arrTranX[][] = new double[][]{{1.0, 0.0}, {kt * COEFF_X / (bf * gf), bi * gi / (bf * gf)}};
         double arrTranY[][] = new double[][]{{1.0, 0.0}, {kt * COEFF_Y / (bf * gf), bi * gi / (bf * gf)}};
@@ -1088,12 +1000,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         matPhi.setSubMatrix(2, 3, 2, 3, arrTranY);
         matPhi.setSubMatrix(4, 5, 4, 5, arrLong);
 
-        // Do the phase update if this is desired:
-        // do it here to resuse the bi, bf, etc. factors
-        //  if(probe.getAlgorithm().useRfGapPhaseCalculation()) advancePhase(probe);
-        //        PrintWriter os = new PrintWriter(System.out);
-        //        matPhi.print(os);
-        //        os.close();
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors
         matPhi = applyErrors(matPhi, 0.0);
@@ -1181,24 +1087,25 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      * RF cavity cell containing this gap. Specifically, if this gap belongs to
      * the <em>n<sup>th</sup></em> cell of the cavity (index origin 0) and the
      * cavity operates in the <em>q</em>&pi;-mode where <em>q</em> is the cavity
-     * mode constant, then the field coefficient <em>A<sub>n</sub></em> is defined
+     * mode constant, then the field coefficient <em>A<sub>n</sub></em> is
+     * defined
      * <br/>
      * <br/>
      * &nbsp; &nbsp; <em>A<sub>n</sub></em> &#8796; cos(<em>nq</em>&pi;) ,
      * <br/>
      * <br/>
-     * so that the electric field <em>E<sub>n</sub></em>(<em>z</em>,<em>t</em>) at
-     * cell <em>n</em>
+     * so that the electric field <em>E<sub>n</sub></em>(<em>z</em>,<em>t</em>)
+     * at cell <em>n</em>
      * is given by
      * <br/>
      * <br/>
      * &nbsp; &nbsp; <em>E<sub>n</sub></em>(<em>z</em>,<em>t</em>) =
-     * <em>A<sub>n</sub></em> <em>E</em><sub>0</sub>(<em>z</em>) cos(&omega;<em>t</em> +
-     * &phi;<sub>0</sub>) ,
+     * <em>A<sub>n</sub></em> <em>E</em><sub>0</sub>(<em>z</em>)
+     * cos(&omega;<em>t</em> + &phi;<sub>0</sub>) ,
      * <br/>
      * <br/>
-     * where <em>E</em><sub>0</sub>(<em>z</em>) is the axial field profile of each
-     * cell.
+     * where <em>E</em><sub>0</sub>(<em>z</em>) is the axial field profile of
+     * each cell.
      * </p>
      *
      * @return the cavity field coefficient <em>A<sub>n</sub></em> for this gap
@@ -1209,95 +1116,18 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         final int n = this.getCavityCellIndex();
         final double q = this.getCavityModeConstant();
 
-//        double nkluge = Math.IEEEremainder(n, 9);
-//        final double    A = Math.cos(nkluge*q*Math.PI);
         final double A = Math.cos(n * q * Math.PI);
 
         return A;
     }
 
-//    /**
-//     * <p>
-//     * Computes and returns the total propagation time for the probe from inception
-//     * until the end of the entire accelerating gap cell.  That is, the returned value
-//     * would be the total time <strong>for the probe</strong>, not the time interval for its
-//     * propagation through the accelerating cell.
-//     * </p>
-//     * <p>
-//     * <h4>CKA NOTES:</h4>
-//     * &middot; The gap phase change &Delta;&phi; is included in the exit time
-//     * calculation via the call to <code>{@link #elapsedTime(IProbe)}</code>
-//     * where it is calculated internally.
-//     * </p>
-//     *
-//     * @param probe     probe containing parameters for gap computations
-//     *
-//     * @return          probe time at exit of full accelerating cell
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Nov 19, 2014
-//     */
-//    @Deprecated
-//    private double  compCellExitTime(final IProbe probe) {
-//        double  c  = IElement.LightSpeed;       // speed of light
-//        double  ti = probe.getTime();           // probe time at cell entrance
-//        double  bf = this.compFinalBeta(probe); // final probe velocity after gap
-//        double  dt = this.elapsedTime(probe);   // propagation time through gap
-//
-//        double  dL = this.getCellLength()/2.0;  // half length of total accelerating cell
-//
-//        double  tf = ti + dt + dL/(bf*c);
-//
-//        return tf;
-//    }
-//
-//    /**
-//     * Computes the phase shift due to probe drift time between gaps
-//     * in a coupled-cavity tank.  The returned result considers both the drift
-//     * time of the probe between gaps and the mode number of the cavity
-//     * fields.
-//     *
-//     * @param probe     drifting probe
-//     *
-//     * @return      the phase shift occurring between the previous gap and this gap
-//     *
-//     * @since  Nov 28, 2014 @author Christopher K. Allen
-//     *
-//     * @deprecated  This is bullshit
-//     */
-//    @Deprecated
-//    private double  compCoupledCavityPhaseShift(IProbe probe) {
-//
-//        // Compute the drifting time since the last gap
-//        ProbeState<?>   stateLastGap = probe.lookupLastStateFor( this.getType() );
-//
-//        double  t_prev  = stateLastGap.getTime();   // the exit time of the previous gap
-//        double  t_curr  = probe.getTime();          // the entrance time of this gap
-//        double  t_drift = t_curr - t_prev;          // drifting time between two gaps
-//
-//        // Compute the RF frequency of the operating mode
-//        double  f_0     = this.getFrequency();
-//        double  q_mode  = this.getCavityModeConstant();
-//        double  f_mode  = 2.0*q_mode*f_0;
-//
-//        // Compute the number of RF cycles taken between RF gaps
-//        //  and then the resulting phase shift
-//        int     nCycles = (int) Math.round(f_mode * t_drift);
-//        double  D_phi   =  nCycles*Math.PI;
-//
-//        return D_phi;
-//
-//        // TODO - Figure this out??
-//        //  applied after the above is computed and then added on the next call
-//        //        STRUCTURE_PHASE = STRUCTURE_PHASE - (2 - dblCavModeConst) * Math.PI;
-//        //        STRUCTURE_PHASE = Math.IEEEremainder(STRUCTURE_PHASE , (2. * Math.PI));
-//    }
     /**
      * <p>
      * Computes and returns the phase at the position of the gap's
-     * <strong>electrical entrance</strong>. The longitudinal phase of the given probe is
-     * assumed to be at the gap's geometric entrance as it arrives, a correction
-     * is necessary if the geometric and electrical centers are offset.
+     * <strong>electrical entrance</strong>. The longitudinal phase of the given
+     * probe is assumed to be at the gap's geometric entrance as it arrives, a
+     * correction is necessary if the geometric and electrical centers are
+     * offset.
      * </p>
      * <p>
      * <h4>NOTE</h4>
@@ -1351,103 +1181,9 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         }
     }
 
-//    /**
-//     * Computes and returns the longitudinal phase change &delta;&phi; energy
-//     * gain &Delta;<em>W</em> through
-//     * the gap due to acceleration.  Although this is a thin lens the longitudinal
-//     * phase must have a impulsive change &delta;&phi; sympletically conjugate
-//     * to the change &Delta;<em>W</em> in longitudinal energy.
-//     *
-//     * @param probe     probe propagating through gap, we use its phase and energy parameters
-//     *
-//     * @return          the change in phase &delta;&phi; of the
-//     *                  give probe through the gap
-//     *
-//     * @since  Nov 28, 2014  @author Christopher K. Allen
-//     */
-//    private double  compGapPhaseGain(final IProbe probe) {
-//
-//        EnergyVariables     cordGapEffects = this.compGapPhaseAndEnergyImpulses(probe);
-//
-//        return cordGapEffects.phi;
-//    }
-//
-//    /**
-//     * Computes and returns the final particle velocity through the gap.  That is,
-//     * we return the velocity of the particle after it has passed through the gap.
-//     *
-//     * @param probe     contains the parameters for gap action
-//     *
-//     * @return          the final probe particle velocity &beta;<sub><em>f</em></sub> with
-//     *                  respect to the speed of light <em>c</em>
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Nov 19, 2014
-//     */
-//    private double  compFinalBeta(final IProbe probe) {
-//
-//        // Initial energy parameters
-//        double Er = probe.getSpeciesRestEnergy();
-//        double Wi = probe.getKineticEnergy();
-//
-//        // The energy gain through the gap
-//        double dW = this.compGapEnergyGain(probe);
-//
-//        // Final energy parameters
-//        double Wf = Wi + dW;
-//        double gf = Wf / Er + 1.0;
-//        double bf = Math.sqrt(1.0 - 1.0 / (gf * gf));
-//
-//        return bf;
-//    }
-//    /**
-//     *  <p>
-//     *  Routine to calculate the energy gain through the gap.  If the
-//     *  <code>useRfGapPhaseCalculation</code> flag in the probe's algorithm
-//     *  is set to <code>true</code> the full iterative search for these
-//     *  parameters is used.  (This is done by deferring to
-//     *  <code>{@link #compGapPhaseAndEnergyImpulses(IProbe)}</code>.)  Otherwise
-//     *  a simple evaluation of the Panofsky equation is used.
-//     *  <p>
-//     *  <h4>CKA NOTES: 11/17/2014</h4>
-//     *  &middot; This method was at the heart of some major architectural issues.
-//     *  <br/>
-//     *  &middot; We have a state-dependent situation, the computed results being
-//     *  dependent upon the state of <strong>class</strong> variables.
-//     *  <br/>
-//     *  &middot; These class state variables should most likely be local properties
-//     *  of the probe objects.
-//     *  </p>
-//     *
-//     * @param probe     probe propagating through gap, we use its phase and energy parameters
-//     *
-//     * @return          the change in energy &Delta;<em>W</em> of the
-//     *                  give probe through the gap
-//     *
-//     */
-//    private double compGapEnergyGain(final IProbe probe) {
-//
-//        // If we are not using the cavity RF phase model we just return the
-//        //  results of the Panofsky equation
-//        //  Maybe we have the useRfGapPhaseCalculation flag in the probe??!!
-//        if (probe.getAlgorithm().useRfGapPhaseCalculation() == false) {
-//            double Q    = Math.abs( probe.getSpeciesCharge() );
-//
-//            double ETL  = this.getETL();
-//            double phi0 = this.getPhase();
-//
-//            double dW   = Q * ETL * Math.cos( phi0);
-//
-//            return dW;
-//        }
-//
-//        // Else we do the full energy gain calculation
-//        EnergyVariables crdGapEffects = this.compGapPhaseAndEnergyImpulses(probe);
-//
-//        return crdGapEffects.W;
-//    }
     /**
-     * Computes the phase &phi;<sub>mid</sub> and energy <em>W</em><sub>mid</sub>
+     * Computes the phase &phi;<sub>mid</sub> and energy
+     * <em>W</em><sub>mid</sub>
      * of the probe at the middle of the gap. The returned values are given by
      * <br/>
      * <br/>
@@ -1544,30 +1280,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
                 return this.compGapPhaseAndEnergyGainDesign(probe);
 
         }
-
-        // All this below is done in compGapPhaseAndEnergyGainDirect(IProbe)
-//        // Now we add in the change in phase due to any offset in the gap
-//        //  electrical center from the geometrical center
-//        //  We only do this if the S() transit time factor was not used to compute
-//        //  the phase and energy gains
-//        if (probe.getAlgorithm().useRfGapPhaseCalculation() == false) {
-//            double  Er  = probe.getSpeciesRestEnergy();
-//
-//            double  W_i = probe.getKineticEnergy();
-//            double  dW  = varGain.W;
-//            double  W_f = W_i + dW;
-//
-//            double  b_i = probe.getBeta();
-//            double  b_f = RelativisticParameterConverter.computeBetaFromEnergies(W_f, Er);
-//
-//            double  dphi = this.compGapOffsetPhaseChange(b_i, b_f);
-//
-//            // Add this to the current phase offset.
-//            //  CKA - really this should not be done if we are using the S transit time
-//            //  factor, since the whole point of that quantity is to account for
-//            //  asymmetries in the axial field.  We'll try it for now...
-//            varGain.phi += dphi;
-//        }
     }
 
     /**
@@ -1683,15 +1395,16 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      * <br/>
      * <br/>
      * &middot; We also assume (perhaps more accurately) that the mid-gap energy
-     * gain &Delta;<em>W</em><sub><em>mid</em></sub> is half the total energy gain
-     * &Delta;<em>W</em>, or &Delta;<em>W</em><sub><em>mid</em></sub> =
+     * gain &Delta;<em>W</em><sub><em>mid</em></sub> is half the total energy
+     * gain &Delta;<em>W</em>, or &Delta;<em>W</em><sub><em>mid</em></sub> =
      * &Delta;<em>W</em>/2.
      * <br/>
      * <br/>
      * &middot; I am avoiding the use of <code>fitTTFprime</code> and
      * <code>fitSTFPrime</code> because I do not know what values they
      * represent. That is, are they
-     * <em>dT</em>(&beta;)</em>/<em>d</em>&beta; or <em>dT</em>(&beta;)/<em>dk</em>?
+     * <em>dT</em>(&beta;)</em>/<em>d</em>&beta; or
+     * <em>dT</em>(&beta;)/<em>dk</em>?
      * </p>
      *
      * @param probe probe propagating through gap, we use its phase and energy
@@ -1717,7 +1430,8 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         //  TODO: We need to check that the probe is giving the correct phase here.
         //        The phase must be set with respect to the first gap
         //
-        double phi0 = this.compGapEntrancePhase(probe); // phase at gap "electrical" entrance
+        // phase at gap "electrical" entrance
+        double phi0 = this.compGapEntrancePhase(probe);
 
         // phase change from center correction factor for future time calculations
         // in PARMILA TTFPrime and SPrime are in [1/cm] units, we use [m]
@@ -1731,10 +1445,10 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         double L = this.getGapLength();
         double qAEL = Q * A * E0 * L;
 
-//        double ttf = this.fitTTF.evaluateAt(bi);        // cosine transit time factor
-//        double stf = this.fitSTF.evaluateAt(bi);        // sine transit time factor
-        double T = this.T(bi);        // cosine transit time factor
-        double S = this.S(bi);        // sine transit time factor
+        // cosine transit time factor
+        double T = this.T(bi);
+        // sine transit time factor
+        double S = this.S(bi);
 
         //
         // TODO CKA - I BELIEVE T and S in the XDXF files are in centimeters!!!!
@@ -1746,23 +1460,19 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         //
         // Starting phase is the phase at gap entrance and
         //  starting energy gain  uses initial phase and beta
-//          starting energy gain (mid-gap) uses initial phase and beta
         double phi = phi0;
-//        double dW  = qEL*(ttf*Math.cos(phi0) - stf*Math.sin(phi0))/2.0;
         double dW = qAEL * (T * Math.cos(phi0) - S * Math.sin(phi0));
 
         // CKA - If we are using the standard definition of S(k) it should be negative
-        //      double dE_gap = qEL*(ttf*Math.cos(phi0) + stf*Math.sin(phi0))/2.0;
         double W_mid = Wi + dW / 2.0;
         double g_mid = W_mid / Er + 1.0;
         double b_mid = Math.sqrt(1.0 - 1.0 / (g_mid * g_mid));
 
-        double r_mid = (1.0 / (b_mid * b_mid * g_mid * g_mid * g_mid)); // relativistic effects (energy)
+        // relativistic effects (energy)
+        double r_mid = (1.0 / (b_mid * b_mid * g_mid * g_mid * g_mid));
 
         // The derivative dT(k)/dk occures in Lapostolle's formula, we have T(b)
         //  Thus, we must use dT(k)/dk = db(k)/dk dT[b(k)]/db = -(b/k)T'(b)
-//        double d_T   = this.fitTTF.derivativeAt(b_mid);
-//        double d_S   = this.fitSTF.derivativeAt(b_mid);
         double d_T = this.Tp(b_mid);
         double d_S = this.Sp(b_mid);
         double d_phi = -(qAEL / Er) * r_mid * b_mid * (d_T * Math.sin(phi) - d_S * Math.cos(phi));
@@ -1774,8 +1484,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         if (!this.bolMethodCalled) {
             double ki = DBL_2PI / (bi * IElement.LIGHT_SPEED / this.getFrequency());
             double db = 0.01 * bi;
-//            double dT = (this.fitTTF.evaluateAt(bi + db) - ttf)/db;
-//            double dS = (this.fitSTF.evaluateAt(bi + db) - stf)/db;
             double dT = (this.T(bi + db) - T) / db;
             double dS = (this.S(bi + db) - S) / db;
             LOGGER.log(Level.INFO, "IdealRfGapUpgraded#compEnergyGainIndirect: " + this.getId());
@@ -1794,8 +1502,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
             // Use the newly computed transit time factors and mid gap phase
             //  We use the previous mid-gap beta as an approximation
             phi = phi0 + d_phi / 2.0;
-//            ttf = this.fitTTF.evaluateAt(b_mid);
-//            stf = this.fitSTF.evaluateAt(b_mid);
             T = this.T(b_mid);
             S = this.S(b_mid);
 
@@ -1806,11 +1512,10 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
             g_mid = W_mid / Er + 1.0;
             b_mid = Math.sqrt(1.0 - 1.0 / (g_mid * g_mid));
 
-            r_mid = (1 / (b_mid * b_mid * g_mid * g_mid * g_mid)); // relativistic effects (energy)
+            // relativistic effects (energy)
+            r_mid = (1 / (b_mid * b_mid * g_mid * g_mid * g_mid));
 
             // Update the value for phase change to the gap center
-//            d_T   = this.fitTTF.derivativeAt(b_mid);
-//            d_S   = this.fitSTF.derivativeAt(b_mid);
             d_T = this.Tp(b_mid);
             d_S = this.Sp(b_mid);
 
@@ -1838,7 +1543,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
 
             this.bolMethodCalled = true;
         }
-//        LOGGER.log(Level.INFO, "IdealRfGapUpgraded#compGapPhaseAndEnergyGainIndirect(IProbe): ID=" + this.getId() + ", dphi=" + d_phi + ", dW=" + dW + ", call count #" + CNT_CALLS++);
 
         return new EnergyVariables(d_phi, dW);
     }
@@ -1849,7 +1553,8 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      * is given by
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; &Delta;&phi; = &omega;<em>l</em>(1/&beta;<sub><em>i</sub>c</em>
+     * &nbsp; &nbsp; &Delta;&phi; =
+     * &omega;<em>l</em>(1/&beta;<sub><em>i</sub>c</em>
      * - 1/&beta;<sub><em>f</sub>c</em>)
      * <br/>
      * <br/>
@@ -1878,82 +1583,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         return dphi;
     }
 
-    //    /**
-    //     * <p>
-    //     * Computes and returns the total propagation time for the probe from inception
-    //     * until the end of the entire accelerating gap cell.  That is, the returned value
-    //     * would be the total time <strong>for the probe</strong>, not the time interval for its
-    //     * propagation through the accelerating cell.
-    //     * </p>
-    //     * <p>
-    //     * <h4>CKA NOTES:</h4>
-    //     * &middot; The gap phase change &Delta;&phi; is included in the exit time
-    //     * calculation via the call to <code>{@link #elapsedTime(IProbe)}</code>
-    //     * where it is calculated internally.
-    //     * </p>
-    //     *
-    //     * @param probe     probe containing parameters for gap computations
-    //     *
-    //     * @return          probe time at exit of full accelerating cell
-    //     *
-    //     * @author Christopher K. Allen
-    //     * @since  Nov 19, 2014
-    //     */
-    //    @Deprecated
-    //    private double  compCellExitTime(final IProbe probe) {
-    //        double  c  = IElement.LightSpeed;       // speed of light
-    //        double  ti = probe.getTime();           // probe time at cell entrance
-    //        double  bf = this.compFinalBeta(probe); // final probe velocity after gap
-    //        double  dt = this.elapsedTime(probe);   // propagation time through gap
-    //
-    //        double  dL = this.getCellLength()/2.0;  // half length of total accelerating cell
-    //
-    //        double  tf = ti + dt + dL/(bf*c);
-    //
-    //        return tf;
-    //    }
-    //
-    //    /**
-    //     * Computes the phase shift due to probe drift time between gaps
-    //     * in a coupled-cavity tank.  The returned result considers both the drift
-    //     * time of the probe between gaps and the mode number of the cavity
-    //     * fields.
-    //     *
-    //     * @param probe     drifting probe
-    //     *
-    //     * @return      the phase shift occurring between the previous gap and this gap
-    //     *
-    //     * @since  Nov 28, 2014 @author Christopher K. Allen
-    //     *
-    //     * @deprecated  This is bullshit
-    //     */
-    //    @Deprecated
-    //    private double  compCoupledCavityPhaseShift(IProbe probe) {
-    //
-    //        // Compute the drifting time since the last gap
-    //        ProbeState<?>   stateLastGap = probe.lookupLastStateFor( this.getType() );
-    //
-    //        double  t_prev  = stateLastGap.getTime();   // the exit time of the previous gap
-    //        double  t_curr  = probe.getTime();          // the entrance time of this gap
-    //        double  t_drift = t_curr - t_prev;          // drifting time between two gaps
-    //
-    //        // Compute the RF frequency of the operating mode
-    //        double  f_0     = this.getFrequency();
-    //        double  q_mode  = this.getCavityModeConstant();
-    //        double  f_mode  = 2.0*q_mode*f_0;
-    //
-    //        // Compute the number of RF cycles taken between RF gaps
-    //        //  and then the resulting phase shift
-    //        int     nCycles = (int) Math.round(f_mode * t_drift);
-    //        double  D_phi   =  nCycles*Math.PI;
-    //
-    //        return D_phi;
-    //
-    //        // TODO - Figure this out??
-    //        //  applied after the above is computed and then added on the next call
-    //        //        STRUCTURE_PHASE = STRUCTURE_PHASE - (2 - dblCavModeConst) * Math.PI;
-    //        //        STRUCTURE_PHASE = Math.IEEEremainder(STRUCTURE_PHASE , (2. * Math.PI));
-    //    }
     /**
      * <p>
      * Returns the advance in RF phase for a particle drifting at velocity
@@ -1983,7 +1612,8 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      */
     private double compDriftingPhaseAdvance(double beta, double len) {
 
-        double c = IElement.LIGHT_SPEED;       // speed of light
+        // speed of light
+        double c = IElement.LIGHT_SPEED;
         double f = this.getFrequency();
 
         //the correction for the gap offset needed
@@ -1996,15 +1626,15 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
 
 
     /*
-         * Functions
+     * Functions
      */
     /**
      * <p>
      * Compute and return the standard transit time factor <em>T</em>(&beta;)
      * which includes any gap "offsets", from the given particle velocity. The
      * value is computed from the symmetric transit time factor
-     * <em>T</em><sub>0</sub> which is evaluated with the coordinate origin at the
-     * point of field symmetry.
+     * <em>T</em><sub>0</sub> which is evaluated with the coordinate origin at
+     * the point of field symmetry.
      * </p>
      * <p>
      * The returned value <em>T</em>(&beta;) has the expression
@@ -2041,8 +1671,8 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
     /**
      * <p>
      * Compute and return the derivative of the standard transit time factor
-     * <em>T'</em>(&beta;) with respect to &beta; including any gap "offsets." The
-     * value is given by
+     * <em>T'</em>(&beta;) with respect to &beta; including any gap "offsets."
+     * The value is given by
      * <br/>
      * <br/>
      * &nbsp; &nbsp; <em>T</em>'(&beta;) =
@@ -2054,7 +1684,8 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      * <br/>
      * where <em>T</em>'<sub>0</sub> is the derivative of the symmetric cosine
      * transit time factor,
-     * <em>T</em><sub>0</sub>(&beta;) is the symmetric cosine transit time factor,
+     * <em>T</em><sub>0</sub>(&beta;) is the symmetric cosine transit time
+     * factor,
      * <em>k</em> &trie; 2&pi;/&beta;&lambda; is the wave number, and
      * &Delta;<em>z</em> is the offset of the point of field symmetry from the
      * origin.
@@ -2075,9 +1706,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         double cos = Math.cos(k * dz);
         double sin = Math.sin(k * dz);
 
-//            double T0p = this.fitTTF.derivativeAt(beta);
-//            double S   = this.S(beta);
-//            double Tp  = (-beta/k)*T0p*cos - S*dz;
         double T0p = this.fitTTFPrime.evaluateAt(beta);
         double T0 = this.fitTTF.evaluateAt(beta);
         double Tp = T0p * cos - T0 * dz * sin;
@@ -2098,13 +1726,14 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      * <br/>
      * <br/>
      * &nbsp; &nbsp; <em>T<sub>q</sub></em>(&beta;) =
-     * -<em>S</em><sub><em>q</em>,0</sub>(&beta;) sin(<em>k</em>&Delta;<em>z</em>) ,
+     * -<em>S</em><sub><em>q</em>,0</sub>(&beta;)
+     * sin(<em>k</em>&Delta;<em>z</em>) ,
      * <br/>
      * <br/>
-     * where <em>S</em><sub><em>q</em>,0</sub> is the conjugate sine transit time
-     * factor taken with origin at point of field symmetry, <em>k</em> &trie;
-     * 2&pi;/&beta;&lambda; is the wave number, and &Delta;<em>z</em> is the
-     * offset of the point of field symmetry from the origin.
+     * where <em>S</em><sub><em>q</em>,0</sub> is the conjugate sine transit
+     * time factor taken with origin at point of field symmetry, <em>k</em>
+     * &trie; 2&pi;/&beta;&lambda; is the wave number, and &Delta;<em>z</em> is
+     * the offset of the point of field symmetry from the origin.
      * </p>
      *
      * @param beta normalized probe velocity
@@ -2133,15 +1762,16 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      * <br/>
      * <br/>
      * &nbsp; &nbsp; <em>T<sub>q</sub></em>'(&beta;) =
-     * -<em>S'</em><sub><em>q</em>,0</sub>(&beta;) sin <em>k</em>&Delta;<em>z</em>
+     * -<em>S'</em><sub><em>q</em>,0</sub>(&beta;) sin
+     * <em>k</em>&Delta;<em>z</em>
      * - &Delta;<em>z</em> <em>S</em><sub><em>q</em>,0</sub>(&beta;) cos
      * <em>k</em>&Delta;<em>z</em>,
      * <br/>
      * <br/>
-     * where <em>S'</em><sub><em>q</em>,0</sub> is the derivative of the conjugate
-     * sine transit time factor for the symmetric field,
-     * <em>S</em><sub><em>q</em></sub>(&beta;) is the conjugate sine transit time
-     * factor,
+     * where <em>S'</em><sub><em>q</em>,0</sub> is the derivative of the
+     * conjugate sine transit time factor for the symmetric field,
+     * <em>S</em><sub><em>q</em></sub>(&beta;) is the conjugate sine transit
+     * time factor,
      * <em>k</em> &trie; 2&pi;/&beta;&lambda; is the wave number, and
      * &Delta;<em>z</em> is the offset of the point of field symmetry from the
      * origin.
@@ -2182,9 +1812,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         double cos = Math.cos(k * dz);
         double sin = Math.sin(k * dz);
 
-//            double T0p = this.fitTTF.derivativeAt(beta);
-//            double S   = this.S(beta);
-//            double Tp  = (-beta/k)*T0p*cos - S*dz;
         double Sq0p = this.fitSTFPrime.evaluateAt(beta);
         double Sq0 = this.fitSTF.evaluateAt(beta);
         double Tqp = -Sq0p * sin - Sq0 * dz * cos;
@@ -2197,8 +1824,8 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      * Compute and return the standard transit time factor <em>S</em>(&beta;)
      * which includes any gap "offsets", from the given particle velocity. The
      * value is computed from the symmetric transit time factor
-     * <em>S</em><sub>0</sub> which is evaluated with the coordinate origin at the
-     * point of field symmetry.
+     * <em>S</em><sub>0</sub> which is evaluated with the coordinate origin at
+     * the point of field symmetry.
      * </p>
      * <p>
      * The returned value <em>S</em>(&beta;) has the expression
@@ -2237,8 +1864,8 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
     /**
      * <p>
      * Compute and return the derivative of the standard transit time factor
-     * <em>S'</em>(&beta;) with respect to &beta; including any gap "offsets." The
-     * value is given by
+     * <em>S'</em>(&beta;) with respect to &beta; including any gap "offsets."
+     * The value is given by
      * <br/>
      * <br/>
      * &nbsp; &nbsp; <em>S</em>'(&beta;) = <em>T</em>'<sub>0</sub>(&beta;) sin
@@ -2258,8 +1885,8 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      * <h4>NOTE</h4>
      * &middot; I am unsure whether or not the approximation for
      * <em>dS</em>(&beta;)/<em>dk</em> or
-     * <em>dS</em>(&beta)/<em>d</em>&beta; is stored. If it is the later then the
-     * returned value should be
+     * <em>dS</em>(&beta)/<em>d</em>&beta; is stored. If it is the later then
+     * the returned value should be
      * <br/>
      * <br/>
      * &nbsp; &nbsp; <em>S</em>'(&beta;) =
@@ -2285,9 +1912,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         double sin = Math.sin(k * dz);
         double cos = Math.cos(k * dz);
 
-//            double T0p = this.fitTTF.derivativeAt(beta);
-//            double T   = this.T(beta);
-//            double Tp  = (-beta/k)*T0p*sin + T*dz;
         double T0p = this.fitTTFPrime.evaluateAt(beta);
         double T0 = this.fitTTF.evaluateAt(beta);
         double Tp = T0p * sin + T0 * dz * cos;
@@ -2307,13 +1931,14 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      * <br/>
      * <br/>
      * &nbsp; &nbsp; <em>S<sub>q</sub></em>(&beta;) =
-     * <em>S</em><sub><em>q</em>,0</sub>(&beta;) cos <em>k</em>&Delta;<em>z</em> ,
+     * <em>S</em><sub><em>q</em>,0</sub>(&beta;) cos <em>k</em>&Delta;<em>z</em>
+     * ,
      * <br/>
      * <br/>
-     * where <em>S</em><sub><em>q</em>,0</sub> is the conjugate sine transit time
-     * factor taken with origin at point of field symmetry, <em>k</em> &trie;
-     * 2&pi;/&beta;&lambda; is the wave number, and &Delta;<em>z</em> is the
-     * offset of the point of field symmetry from the origin. Note that the
+     * where <em>S</em><sub><em>q</em>,0</sub> is the conjugate sine transit
+     * time factor taken with origin at point of field symmetry, <em>k</em>
+     * &trie; 2&pi;/&beta;&lambda; is the wave number, and &Delta;<em>z</em> is
+     * the offset of the point of field symmetry from the origin. Note that the
      * transit time factor <em>T</em><sub><em>q</em>,0</sub>
      * is zero since it is taken about the point of field symmetric.
      * </p>
@@ -2345,13 +1970,14 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      * <br/>
      * <br/>
      * &nbsp; &nbsp; <em>S'<sub>q</sub></em>(&beta;) =
-     * <em>S'</em><sub><em>q</em>,0</sub>(&beta;) cos <em>k</em>&Delta;<em>z</em>
+     * <em>S'</em><sub><em>q</em>,0</sub>(&beta;) cos
+     * <em>k</em>&Delta;<em>z</em>
      * - &Delta;<em>z</em> <em>S</em><sub><em>q</em>,0</sub>(&beta;) sin
      * <em>k</em>&Delta;<em>z</em> ,
      * <br/>
      * <br/>
-     * where <em>S</em>'<sub><em>q</em>,0</sub> is the derivative of the conjugate
-     * sine transit time factor,
+     * where <em>S</em>'<sub><em>q</em>,0</sub> is the derivative of the
+     * conjugate sine transit time factor,
      * <em>k</em> &trie; 2&pi;/&beta;&lambda; is the wave number, and
      * &Delta;<em>z</em> is the offset of the point of field symmetry from the
      * origin.
@@ -2388,9 +2014,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         double sin = Math.sin(k * dz);
         double cos = Math.cos(k * dz);
 
-//            double T0p = this.fitTTF.derivativeAt(beta);
-//            double T   = this.T(beta);
-//            double Tp  = (-beta/k)*T0p*sin + T*dz;
         double Sq0p = this.fitSTFPrime.evaluateAt(beta);
         double Sq0 = this.fitSTF.evaluateAt(beta);
         double Sqp = Sq0p * cos - Sq0 * dz * sin;
@@ -2425,7 +2048,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
 
 
     /*
-         * STORAGE
+     * STORAGE
      */
     /**
      * <p>
@@ -2465,15 +2088,16 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      * <br/>
      * <br/>
      * &middot; We also assume (perhaps more accurately) that the mid-gap energy
-     * gain &Delta;<em>W</em><sub><em>mid</em></sub> is half the total energy gain
-     * &Delta;<em>W</em>, or &Delta;<em>W</em><sub><em>mid</em></sub> =
+     * gain &Delta;<em>W</em><sub><em>mid</em></sub> is half the total energy
+     * gain &Delta;<em>W</em>, or &Delta;<em>W</em><sub><em>mid</em></sub> =
      * &Delta;<em>W</em>/2.
      * <br/>
      * <br/>
      * &middot; I am avoiding the use of <code>fitTTFprime</code> and
      * <code>fitSTFPrime</code> because I do not know what values they
      * represent. That is, are they
-     * <em>dT</em>(&beta;)</em>/<em>d</em>&beta; or <em>dT</em>(&beta;)/<em>dk</em>?
+     * <em>dT</em>(&beta;)</em>/<em>d</em>&beta; or
+     * <em>dT</em>(&beta;)/<em>dk</em>?
      * </p>
      *
      * @param probe probe propagating through gap, we use its phase and energy
@@ -2499,7 +2123,8 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         //  TODO: We need to check that the probe is giving the correct phase here.
         //        The phase must be set with respect to the first gap
         //
-        double phi0 = this.compGapEntrancePhase(probe); // phase at gap "electrical" entrance
+        // phase at gap "electrical" entrance
+        double phi0 = this.compGapEntrancePhase(probe);
 
         // phase change from center correction factor for future time calculations
         // in PARMILA TTFPrime and SPrime are in [1/cm] units, we use [m]
@@ -2513,10 +2138,10 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         double L = this.getGapLength();
         double qAEL = Q * A * E0 * L;
 
-//            double ttf = this.fitTTF.evaluateAt(bi);        // cosine transit time factor
-//            double stf = this.fitSTF.evaluateAt(bi);        // sine transit time factor
-        double ttf = this.T(bi);        // cosine transit time factor
-        double stf = this.S(bi);        // sine transit time factor
+        // cosine transit time factor
+        double ttf = this.T(bi);
+        // sine transit time factor
+        double stf = this.S(bi);
         //
         // TODO CKA - I BELIEVE T and S in the XDXF files are in centimeters!!!!
         //            That is they are dT(b)/dk and dS(b)/dk NEED TO DEAL WITH THIS!!!
@@ -2528,23 +2153,19 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         //
         // Starting phase is the phase at gap entrance and
         //  starting energy gain  uses initial phase and beta
-//              starting energy gain (mid-gap) uses initial phase and beta
         double phi = phi0;
-//            double dW  = qEL*(ttf*Math.cos(phi0) - stf*Math.sin(phi0))/2.0;
         double dW = qAEL * (ttf * Math.cos(phi0) - stf * Math.sin(phi0));
 
         // CKA - If we are using the standard definition of S(k) it should be negative
-        //      double dE_gap = qEL*(ttf*Math.cos(phi0) + stf*Math.sin(phi0))/2.0;
         double W_mid = Wi + dW / 2.0;
         double g_mid = W_mid / Er + 1.0;
         double b_mid = Math.sqrt(1.0 - 1.0 / (g_mid * g_mid));
 
-        double r_mid = (1.0 / (b_mid * b_mid * g_mid * g_mid * g_mid)); // relativistic effects (energy)
+        // relativistic effects (energy)
+        double r_mid = (1.0 / (b_mid * b_mid * g_mid * g_mid * g_mid));
 
         // The derivative dT(k)/dk occures in Lapostolle's formula, we have T(b)
         //  Thus, we must use dT(k)/dk = db(k)/dk dT[b(k)]/db = -(b/k)T'(b)
-//            double d_T   = this.fitTTF.derivativeAt(b_mid);
-//            double d_S   = this.fitSTF.derivativeAt(b_mid);
         double d_T = this.Tp(b_mid);
         double d_S = this.Sp(b_mid);
         double d_phi = -(qAEL / Er) * r_mid * b_mid * (d_T * Math.sin(phi) - d_S * Math.cos(phi));
@@ -2556,8 +2177,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         if (!this.bolMethodCalled) {
             double ki = DBL_2PI / (bi * IElement.LIGHT_SPEED / this.getFrequency());
             double db = 0.01 * bi;
-//                double dT = (this.fitTTF.evaluateAt(bi + db) - ttf)/db;
-//                double dS = (this.fitSTF.evaluateAt(bi + db) - stf)/db;
             double dT = (this.T(bi + db) - ttf) / db;
             double dS = (this.S(bi + db) - stf) / db;
             LOGGER.log(Level.INFO, "IdealRfGapUpgraded#compEnergyGainIndirect: {0}", this.getId());
@@ -2576,8 +2195,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
             // Use the newly computed transit time factors and mid gap phase
             //  We use the previous mid-gap beta as an approximation
             phi = phi0 + d_phi / 2.0;
-//                ttf = this.fitTTF.evaluateAt(b_mid);
-//                stf = this.fitSTF.evaluateAt(b_mid);
             ttf = this.T(b_mid);
             stf = this.S(b_mid);
 
@@ -2588,11 +2205,10 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
             g_mid = W_mid / Er + 1.0;
             b_mid = Math.sqrt(1.0 - 1.0 / (g_mid * g_mid));
 
-            r_mid = (1 / (b_mid * b_mid * g_mid * g_mid * g_mid)); // relativistic effects (energy)
+            // relativistic effects (energy)
+            r_mid = (1 / (b_mid * b_mid * g_mid * g_mid * g_mid));
 
             // Update the value for phase change to the gap center
-//                d_T   = this.fitTTF.derivativeAt(b_mid);
-//                d_S   = this.fitSTF.derivativeAt(b_mid);
             d_T = this.Tp(b_mid);
             d_S = this.Sp(b_mid);
 

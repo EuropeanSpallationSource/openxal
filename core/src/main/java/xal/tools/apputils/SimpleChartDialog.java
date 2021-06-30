@@ -159,7 +159,8 @@ public class SimpleChartDialog extends JDialog implements MouseListener, SwingCo
         if (!chartAdaptor.isXAutoScale()) {
             applyXAxisMinValue();
             applyXAxisMaxValue();
-            applyXAxisMinValue();   // repeated in case new x-min is greater than old x-max
+            // repeated in case new x-min is greater than old x-max
+            applyXAxisMinValue();
             applyXAxisMinorTicks();
             applyXAxisMajorTicks();
         }
@@ -168,7 +169,8 @@ public class SimpleChartDialog extends JDialog implements MouseListener, SwingCo
         if (!chartAdaptor.isYAutoScale()) {
             applyYAxisMinValue();
             applyYAxisMaxValue();
-            applyYAxisMinValue();   // repeated in case new y-min is greater than old y-max
+            // repeated in case new y-min is greater than old y-max
+            applyYAxisMinValue();
             applyYAxisMinorTicks();
             applyYAxisMajorTicks();
         }

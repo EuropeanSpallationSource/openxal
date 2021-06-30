@@ -77,16 +77,21 @@ public class TransientDataAdaptor implements DataAdaptor {
     public String[] attributes() {
 
         // Allocate the string array
-        int nAttrs;     // number of attributes
-        String[] arrNames;   // returned array attribute names
+        // number of attributes
+        int nAttrs;
+        // returned array attribute names
+        String[] arrNames;
 
         nAttrs = mapAttrs.size();
         arrNames = new String[nAttrs];
 
         // Build the string array
-        int iName;      // index of current attribute name
-        Set<String> setNames;   // set of attribute names
-        Iterator<String> iter;       // name set iterator
+        // index of current attribute name
+        int iName;
+        // set of attribute names
+        Set<String> setNames;
+        // name set iterator
+        Iterator<String> iter;
 
         setNames = mapAttrs.keySet();
         iter = setNames.iterator();

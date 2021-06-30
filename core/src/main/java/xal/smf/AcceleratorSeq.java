@@ -142,7 +142,8 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
      */
     private void addChildSequence(final DataAdaptor sequenceAdaptor, final Accelerator accelerator, final AcceleratorNodeFactory nodeFactory) throws ClassNotFoundException {
         String sequenceType = sequenceAdaptor.stringValue("type");
-        if (sequenceType == null || sequenceType.isEmpty()) {   // it's just a plain sequence
+        // it's just a plain sequence
+        if (sequenceType == null || sequenceType.isEmpty()) {
             String sequenceId = sequenceAdaptor.stringValue("id");
             // check if we already have the sequence
             AcceleratorSeq sequence = (AcceleratorSeq) getNodeWithId(sequenceId);
@@ -150,10 +151,12 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
             if (sequence == null) {
                 sequence = new AcceleratorSeq(sequenceId);
                 sequence.setAccelerator(accelerator);
-                sequence.update(sequenceAdaptor);   // update the sequence
+                // update the sequence
+                sequence.update(sequenceAdaptor);
                 addNode(sequence);
             } else {
-                sequence.update(sequenceAdaptor);   // update the sequence
+                // update the sequence
+                sequence.update(sequenceAdaptor);
             }
         } else {
             addChildNode(sequenceAdaptor, accelerator, nodeFactory);
@@ -171,10 +174,12 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
             // create a new AcceleratorNode off of the adaptor
             node = nodeFactory.createNode(nodeAdaptor);
             node.setAccelerator(accelerator);
-            node.update(nodeAdaptor);   // update the node
+            // update the node
+            node.update(nodeAdaptor);
             addNode(node);
         } else {
-            node.update(nodeAdaptor);   // update the node
+            // update the node
+            node.update(nodeAdaptor);
         }
     }
 
@@ -355,7 +360,8 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
         arrNodes.add(insertIndex, node);
         nodeTable.put(node.getId(), node);
 
-        this.setAccelerator(node.getAccelerator()); // set to the same accelerator as added node
+        // set to the same accelerator as added node
+        this.setAccelerator(node.getAccelerator());
 
         this.bolIsSoft = true;
         return true;
@@ -435,8 +441,8 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
         // check if this node is itself a match
         if (getId().equals(label)) {
             return this;
-        } // else check if immediate children are matches
-        else if (nodeTable.containsKey(label)) {
+            // else check if immediate children are matches
+        } else if (nodeTable.containsKey(label)) {
             return nodeTable.get(label);
         }
 
@@ -460,13 +466,16 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
      * @param sourceNodes the list of nodes to filter
      * @return the list of nodes matching the qualifier criteria
      */
-    @SuppressWarnings("unchecked")    // we do check the class cast, but the compiler has no way of knowing
+    // we do check the class cast, but the compiler has no way of knowing
+    @SuppressWarnings("unchecked")
     public static <SourceType extends AcceleratorNode, NodeType extends SourceType> List<NodeType> filterNodesByClass(final Class<NodeType> resultClass, final List<SourceType> sourceNodes) {
-        final List<NodeType> matchedNodes = new ArrayList<>();    // returned list
+        // returned list
+        final List<NodeType> matchedNodes = new ArrayList<>();
 
         for (final SourceType node : sourceNodes) {
             if (resultClass.isInstance(node)) {
-                matchedNodes.add((NodeType) node);     // the cast is only for compile since generics are stripped at runtime
+                // the cast is only for compile since generics are stripped at runtime
+                matchedNodes.add((NodeType) node);
             }
         }
 
@@ -496,19 +505,23 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
      * @param qualifier the qualifier used to filter the nodes
      * @return the list of nodes matching the qualifier criteria
      */
-    @SuppressWarnings("unchecked")    // we do check the class cast, but the compiler has no way of knowing
+    // we do check the class cast, but the compiler has no way of knowing
+    @SuppressWarnings("unchecked")
     public static <SourceType extends AcceleratorNode, NodeType extends SourceType> List<NodeType> appendNodesOfClassWithQualifier(final Class<NodeType> resultClass, final List<NodeType> matchedNodes, final List<SourceType> sourceNodes, final TypeQualifier qualifier) {
         // for performance reasons, we handle NodeType for Accelerator nodes separately from AcceleratorNode subclasses
-        if (resultClass == null || AcceleratorNode.class.equals(resultClass)) {     // we don't need to check the node class since the source nodes are all accelerator nodes
+        // we don't need to check the node class since the source nodes are all accelerator nodes
+        if (resultClass == null || AcceleratorNode.class.equals(resultClass)) {
             for (final SourceType node : sourceNodes) {
                 if (qualifier.match(node)) {
-                    matchedNodes.add((NodeType) node);     // the cast is only for compile since generics are stripped at runtime
+                    // the cast is only for compile since generics are stripped at runtime
+                    matchedNodes.add((NodeType) node);
                 }
             }
         } else {
             for (final SourceType node : sourceNodes) {
                 if (resultClass.isInstance(node) && qualifier.match(node)) {
-                    matchedNodes.add((NodeType) node);     // the cast is only for compile since generics are stripped at runtime
+                    // the cast is only for compile since generics are stripped at runtime
+                    matchedNodes.add((NodeType) node);
                 }
             }
         }

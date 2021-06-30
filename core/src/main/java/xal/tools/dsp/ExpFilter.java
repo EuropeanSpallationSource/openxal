@@ -173,12 +173,12 @@ public class ExpFilter {
         int intFreqMax = this.getMaximumFrequency();
         AbstractComplexVector vecTrans = this.getTranformer().transform(arrFunc);
 
-        for (int index = 0; index < intFreqLow; index++) // remove low frequencies    
-        {
+        // remove low frequencies    
+        for (int index = 0; index < intFreqLow; index++) {
             this.clearFreqComponent(index, vecTrans);
         }
-        for (int index = intFreqHigh + 1; index < intFreqMax; index++) // remove high frequencies
-        {
+        // remove high frequencies
+        for (int index = intFreqHigh + 1; index < intFreqMax; index++) {
             this.clearFreqComponent(index, vecTrans);
         }
 
@@ -216,8 +216,8 @@ public class ExpFilter {
         // Transform function to frequency domain then remove components greater than cutoff
         AbstractComplexVector vecTrans = this.getTranformer().transform(arrFunc);
 
-        for (int index = intFreqLow; index < intFreqHigh; index++) // remove notch frequencies    
-        {
+        // remove notch frequencies    
+        for (int index = intFreqLow; index < intFreqHigh; index++) {
             this.clearFreqComponent(index, vecTrans);
         }
 

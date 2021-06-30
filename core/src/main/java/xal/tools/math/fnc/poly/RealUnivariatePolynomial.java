@@ -133,8 +133,10 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
             return 0.0;
         }
 
-        int N = this.arrCoef.length;      // number of coefficients
-        double dblAccum = 0.0;                 // accumulator
+        // number of coefficients
+        int N = this.arrCoef.length;
+        // accumulator
+        double dblAccum = 0.0;
 
         for (int n = N - 1; n >= 0; n--) {
             dblAccum += this.getCoef(n) * Math.pow(dblVal, n);
@@ -160,9 +162,12 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
             return 0.0;
         }
 
-        int N = this.arrCoef.length;      // number of coefficients
-        double dblPow = 1.0;                 // the the nomial
-        double dblSum = 0.0;                 // accumulator
+        // number of coefficients
+        int N = this.arrCoef.length;
+        // the the nomial
+        double dblPow = 1.0;
+        // accumulator
+        double dblSum = 0.0;
 
         for (int n = 1; n < N; n++) {
             double dblCoef = n * this.getCoef(n);
@@ -192,8 +197,10 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
         // Compute the derivative by starting at the polynomial coefficient with index equal to the
         //  order of the derivative.  The monomial coefficient is the combinatoric of the coefficient
         //  degree with the derivative order
-        double xK = 1.0;        // monomial of order k - n
-        double dblSum = 0.0;        // accumulator for polynomial summation
+        // monomial of order k - n
+        double xK = 1.0;
+        // accumulator for polynomial summation
+        double dblSum = 0.0;
         for (int k = 0; k <= this.getDegree(); k++) {
             if (k < nOrder) {
                 continue;
@@ -214,27 +221,6 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
         return dblSum;
     }
 
-//  /**
-//  * Evaluate derivative of the polynomial for the specified value of the indeterminate.
-//  * If the coefficient vector has not been specified this method returns zero.
-//  * 
-//  * @param   dblVal      indeterminate value to evaluate the polynomial
-//  *
-//  * @author Chris Allen
-//  */
-// public double evaluateDerivativeAt(double dblVal) {
-//     if (this.m_arrCoef == null)
-//         return 0.0;
-//
-//     int     N = this.m_arrCoef.length;      // number of coefficients
-//     double  dblAccum = 0.0;                 // accumulator
-//
-//     for (int n=N-1; n>=1; n--) {
-//               dblAccum += this.getCoef(n) * n* Math.pow(dblVal, n-1);
-//           }
-//
-//     return dblAccum;
-// }
     /*
      * Algebraic Operations
      */
@@ -248,8 +234,6 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
      * @return a new polynomial object representing the sum
      */
     public RealUnivariatePolynomial plus(RealUnivariatePolynomial polyAddend) {
-//        RealUnivariatePolynomial    polySum;
-
         int nLen = Math.max(polyAddend.getDegree(), this.getDegree()) + 1;
         double[] arrCoef = new double[nLen];
 
@@ -268,8 +252,6 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
      * @return a new polynomial object representing the product
      */
     public RealUnivariatePolynomial times(RealUnivariatePolynomial polyFac) {
-//        RealUnivariatePolynomial    polyProd;
-
         int nLen = polyFac.getDegree() * this.getDegree() + 1;
         double[] arrCoef = new double[nLen];
         double dblAccum;

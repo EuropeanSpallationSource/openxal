@@ -278,7 +278,8 @@ public class BatchConnectionTest {
         Double dblMsec = dblTmOut * 1000.0;
         int intTmOut = dblMsec.intValue();
         synchronized (this.objLock) {
-            this.thdCurr = Thread.currentThread();  // save the current execution thread
+            // save the current execution thread
+            this.thdCurr = Thread.currentThread();
 
             //  Launch the connection request
             for (Channel chnReq : this.setPending) {

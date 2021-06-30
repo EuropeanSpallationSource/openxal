@@ -274,41 +274,6 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
         return new EnvTrackerAdapt(this);
     }
 
-//    /**
-//     * Creates a new instance of <code>EnvTrackerAdapt</code> and initializes
-//     * it to the data in the global XAL EditContext object accessible through
-//     * the <code>AcceleratorSeq</code> argument.
-//     * 
-//     * @param   seqInitializer    sequence to initialize algorithm data
-//     */
-//    public EnvTrackerAdapt(AcceleratorSeq seqInitializer)   {
-//        this();
-//        
-//        // If locationID is null then take the sequence entrance identifier
-//        String strPrimKeyVal = seqInitializer.getEntranceID();
-//
-//        // Get the algorithm class name from the EditContext
-//        EditContext   ecXalGlobal = seqInitializer.getAccelerator().editContext();
-//        
-//        this.load(strPrimKeyVal, ecXalGlobal);
-//    }
-//	
-//	
-//	/**
-//	 * Primary Constructor
-//	 */
-//	public EnvTrackerAdapt( final String locationID, final AcceleratorSeq sequence ) {
-//        super( TYPE_ID, VERSION, CLS_PROBE_TYPE, locationID, sequence );
-//	}
-//	
-//	
-//	/**
-//	 * Constructor
-//	 */
-//	public EnvTrackerAdapt( final AcceleratorSeq sequence ) {
-//		this ( null, sequence );
-//	}
-//    
     /**
      * Initialize the algorithm object for propagation.
      *
@@ -318,17 +283,9 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
     @Override
     public void initialize() {
         super.initialize();
-//        if (dlbStepSizeInit > 0.)
         this.setStepSize(this.getInitStepSize());
     }
 
-//    /**
-//	 * Determine whether this algorithm supports the optional accuracy odrer and maximum iteration methods.
-//	 * @return true if the optional methods are supported and false if not.
-//	 */
-//	public boolean supportsConditionalTermination() {
-//		return true;
-//	}    
     /**
      * Set the initial step size for applying space charge corrections. Note
      * that the step size will be modified as the algorithm progresses according
@@ -376,7 +333,8 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * regardless of the residual error. If this value is cleared to zero, then
      * the step size is unbound.
      *
-     * @param dblMaxStepDriftPmq maximum allowable step size in <strong>meters</strong>
+     * @param dblMaxStepDriftPmq maximum allowable step size in
+     * <strong>meters</strong>
      */
     public void setMaxStepSizeDriftPmq(final double dblMaxStepDriftPmq) {
         this.dblMaxStepDriftPmq = dblMaxStepDriftPmq;
@@ -578,9 +536,6 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      */
     @Override
     public void doPropagation(IProbe ifcProbe, IElement elem) throws ModelException {
-        //sako
-//        setDebugMode(false);
-
         // Identify probe
         if (!(ifcProbe instanceof EnvelopeProbe)) {
             throw new IllegalArgumentException("Must be of type " + EnvelopeProbe.class.getName());
@@ -595,36 +550,37 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
         }
 
         // Initialize the 2nd order accurate, adaptive step size algorithm
-        int iCurCnt = 0;                        // current iteration counter
-        int iMaxCnt = this.getMaxIterations();  // maximum no of iterations
+        // current iteration counter
+        int iCurCnt = 0;
+        // maximum no of iterations
+        int iMaxCnt = this.getMaxIterations();
 
-        double s = 0.0;                    // location of probe within element
-        double h = this.getStepSize();     // the current step size
-        double L = elem.getLength();       // length of the element
+        // location of probe within element
+        double s = 0.0;
+        // the current step size
+        double h = this.getStepSize();
+        // length of the element
+        double L = elem.getLength();
         EnvelopeProbeState stateRef
                 = // initial state of the probe 
                 probe.createProbeState();
 
         //default temporary commented out 
-        double charge = probe.bunchCharge(); // this doesnt work for PMQ space-charge=0.. why?
-        double hp;             // new step size
-        PhaseMatrix matRes;         // the residual error matrix
+        // this doesnt work for PMQ space-charge=0.. why?
+        double charge = probe.bunchCharge();
+        // new step size
+        double hp;
+        // the residual error matrix
+        PhaseMatrix matRes;
 
-//        //sako
-//        if (probe.bunchCharge() != 0) {
-//            charge = 1;
-//        } else if ((elem instanceof IdealDrift) && (((IdealDrift)elem).getCloseElements() != null)) {
-//            charge = 1;
-//        } else if (elem instanceof IdealPermMagQuad) {
-//            charge = 1;
-//        } 
-//
         do {
             // jdg - if no charge take giant step
             if (charge == 0.) {
-                h = L - s; // no space charge - take giant steps
+                // no space charge - take giant steps
+                h = L - s;
             }
-            if (h + s > L) {     // check if we would step outside the element - if so shorten step 
+            // check if we would step outside the element - if so shorten step 
+            if (h + s > L) {
                 h = L - s;
             }
 
@@ -641,28 +597,19 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
                 hp = h;
             } else {
                 hp = this.compNewStepSize(h, matRes);
-
-//                if (elem instanceof IdealDrift) {
-//                    IdealDrift drift = (IdealDrift)elem;
-//                    if (drift.getKDrift()!= 0) {
-//
-//                        hp     = this.compNewStepSizeDriftPmq(h, matRes);
-//                    } else {
-//                        hp     = this.compNewStepSize(h, matRes);
-//                    }
-//                } else {
-//                    hp     = this.compNewStepSize(h, matRes);
-//                }
             }
 
-            if (hp < h) {                 // we stepped too far - roll back and try again
+            // we stepped too far - roll back and try again
+            if (hp < h) {
                 this.rollbackProbe(probe, stateRef);
 
-            } else {                        // our step size meets accuracy criterion - advance probe
+                // our step size meets accuracy criterion - advance probe
+            } else {
                 stateRef = probe.createProbeState();
                 s += h;
             }
-            h = hp;            // use the new step size
+            // use the new step size
+            h = hp;
 
             if (this.getDebugMode() == true) {
                 if (elem instanceof IdealDrift) {
@@ -675,9 +622,11 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
                 throw new ModelException("EnvTrackerAdapt#doPropagation() - maximum iteration count exceeded.");
             }
 
-        } while (s < L);        // do while we are still in the element
+            // do while we are still in the element
+        } while (s < L);
 
-        this.setStepSize(h);  // save the last step size as an initial guess for the next time
+        // save the last step size as an initial guess for the next time
+        this.setStepSize(h);
     }
 
 
@@ -708,7 +657,8 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
         GenericRecord recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, strPrimKeyVal);
 
         if (recTracker == null) {
-            recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");  // just use the default record
+            // just use the default record
+            recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");
         }
 
         final double errorTolerance = recTracker.doubleValueForKey(ATTRTAG_ERRTOL);
@@ -823,32 +773,27 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
         double dblLen = 0;
 
         // Get initial conditions of probe
-        //       double              gamma = probe.getGamma();
-        //       double              K    = probe.beamPerveance();
         PhaseMatrix res0 = probe.getResponseMatrix();
-//        R3                  phs0 = probe.getBetatronPhase();
-        //obsolete Twiss [] twissOld = probe.getTwiss();
-//        Twiss [] twissOld = probe.getCovariance().computeTwiss();
-        CovarianceMatrix chi0 = probe.getCovariance(); // chi0 = sigma matrix(raw)
+        CovarianceMatrix chi0 = probe.getCovariance();
 
         // Get properties of the element
         double L = dblLen;
-        PhaseMap mapE = ifcElem.transferMap(probe, L); //first calculate transfer matrix (mapE, PhiE=Phi)
+        //first calculate transfer matrix (mapE, PhiE=Phi)
+        PhaseMap mapE = ifcElem.transferMap(probe, L);
         PhaseMatrix PhiE = mapE.getFirstOrder();
 
-        PhaseMatrix Phi = PhiE;//transfermap
+        //transfermap
+        PhaseMatrix Phi = PhiE;
 
-        PhaseMatrix res1 = Phi.times(res0); // 
-        PhaseMatrix chi1 = chi0.conjugateTrans(Phi);  //chi1 = sigma matrix (new)
+        PhaseMatrix res1 = Phi.times(res0);
+        PhaseMatrix chi1 = chi0.conjugateTrans(Phi);
 
-        //    PhaseMatrix chi1raw = chi0.conjugateTrans( Phi );  //chi1 = sigma matrix (new)
-        //sako emittance growth effect for RFGap
-        //    CovarianceMatrix cor2 = null;
         if (ifcElem instanceof IdealRfGap) {
             IdealRfGap gap = (IdealRfGap) ifcElem;
 
             //new 7 Aug 06, Sako
-            double sigmaCor[] = this.correctSigmaPhaseSpread(probe, gap); //correction for sigma matrix
+            //correction for sigma matrix
+            double sigmaCor[] = this.correctSigmaPhaseSpread(probe, gap);
 
             double sigmaCorTrans = sigmaCor[0];
             double sigmaCorLong = sigmaCor[1];
@@ -869,17 +814,9 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 
         //default
         probe.setCovariance(new CovarianceMatrix(chi1));
-//        probe.advanceTwiss(Phi, ifcElem.energyGain(probe, dblLen) );//Phi=transferemap
-
-        // phase update:
-        //obsolete Twiss [] twissNew = probe.getTwiss();
-//        Twiss [] twissNew = probe.getCovariance().computeTwiss();
-//        R3  phs1 = phs0.plus( Phi.compPhaseAdvance(twissOld, twissNew) );//Phi=Transferemap
-//        probe.setBetatronPhase(phs1);
+        
         this.advanceProbe(probe, ifcElem, 0.0);
     }
-
-    ;
 
     /** 
      * Original code
@@ -929,30 +866,6 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 
         probe.setCovariance(new CovarianceMatrix(matChi));
 
-        //sako new (this must be used for correct RFGap implementation!!!)
-        /*
-        if (elem instanceof IdealRfGap) {
-
-	    CovarianceMatrix matCor = probe.getCorrelation();
-
-	    double sigmaCorTrans = ((IdealRfGap)elem).correctTransSigmaPhaseSpread(probe);
-	    double sigmaCorLong  = ((IdealRfGap)elem).correctLongSigmaPhaseSpread(probe);
-	    double s11new = matCor.getElem(1,1)+sigmaCorTrans*matCor.getElem(0,0);
-	    matCor.setElem(1,1,s11new);
-	    double s33new = matCor.getElem(3,3)+sigmaCorTrans*matCor.getElem(2,2);
-	    matCor.setElem(3,3,s33new);
-	    double s55new = matCor.getElem(5,5)+sigmaCorLong*matCor.getElem(4,4);
-	    matCor.setElem(5,5,s55new);
-
-        } else {
-        	// LOGGER.log(Level.INFO, "not instanceof IdealRfGap");
-	}
-         */
-//        Twiss [] twissNew = probe.getCovariance().computeTwiss();
-//        R3 vecPhs  = probe.getBetatronPhase().plus( matPhi.compPhaseAdvance(twissOld, twissNew) );  
-//        probe.setBetatronPhase( vecPhs );
-        // update the twiss info stored in the probe & state objects
-//        probe.advanceTwiss(matPhi, elem.energyGain(probe, 0.));
         this.advanceProbe(probe, elem, 0.0);
     }
 
@@ -960,9 +873,9 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * <p>
      * Advances the <code>probe</code> a distance <code>h</code> through element
      * <code>elem</code>. The probe state is determined using two steps of size
-     * <em>h</em>/2. This result is compared to an addition computation where the
-     * probe is advance by <em>h</em> using a single step. The residual matrix is
-     * returned as an error criterion.
+     * <em>h</em>/2. This result is compared to an addition computation where
+     * the probe is advance by <em>h</em> using a single step. The residual
+     * matrix is returned as an error criterion.
      * </p>
      * <p>
      * The stepping algorithm includes space charge and is second-order
@@ -985,11 +898,8 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
     private PhaseMatrix stepProbeState(double h, EnvelopeProbe probe, IElement elem)
             throws ModelException {
         // Get the initial state
-//        R3                  vecPhs0 = probe.getBetatronPhase();
         PhaseMatrix matRes0 = probe.getResponseMatrix();
         CovarianceMatrix matChi0 = probe.getCovariance();
-//        Twiss [] twissOld = probe.getCovariance().computeTwiss();
-        //obsolete Twiss [] twissOld = probe.getTwiss();
 
         // Compute the reference state matChi1
         PhaseMatrix matPhi1 = this.compTransferMatrix(h, probe, elem);
@@ -1003,13 +913,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 
         probe.setResponseMatrix(matRes2);
         probe.setCovariance(new CovarianceMatrix(matChi2));
-//        Twiss [] twissNew = probe.getCovariance().computeTwiss();
-        //obsolete Twiss [] twissNew = probe.getTwiss();
-//        R3 vecPhs2 = vecPhs0.plus( matPhi2.compPhaseAdvance(twissOld, twissNew) );       
-//        probe.setBetatronPhase(vecPhs2);
 
-        // update the twiss info stored in the probe & state objects
-//        probe.advanceTwiss(matPhi2, elem.energyGain(probe, h/2.0));
         super.advanceProbe(probe, elem, h / 2.0);
 
         matPhi2 = this.compTransferMatrix(h / 2.0, probe, elem);
@@ -1029,15 +933,8 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
         PhaseMatrix matRnsp1 = matPhi_op.times(matRnsp0);
         probe.setResponseMatrixNoSpaceCharge(matRnsp1);
 
-        // update the twiss info stored in the probe & state objects
-//        probe.advanceTwiss(matPhi2, elem.energyGain(probe, h/2.));
-//        Twiss [] twissNew2 = probe.getCovariance().computeTwiss();
-        //obsolete Twiss [] twissNew2 = probe.getTwiss();
-//        vecPhs2 = vecPhs2.plus( matPhi2.compPhaseAdvance(twissNew, twissNew2) );
-//        probe.setBetatronPhase(vecPhs2);
         super.advanceProbe(probe, elem, h / 2.0);
 
-//	probe.advanceElapsedTime(h);
         return matRes;
     }
 
@@ -1087,9 +984,6 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
                     LOGGER.log(Level.INFO, "now NORM_LINF");
                     LOGGER.log(Level.INFO, "trying to print matrix");
                     LOGGER.log(Level.INFO, mat.toStringMatrix());
-//	            	PrintWriter os = new PrintWriter(System.out);
-//                  	mat.print(os);
-//                  	os.flush();
                 }
                 return mat.normInf();
 
@@ -1097,9 +991,6 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
                 if (getDebugMode()) {
                     LOGGER.log(Level.INFO, "now NORM_L1");
                     LOGGER.log(Level.INFO, mat.toStringMatrix());
-//	            	PrintWriter os = new PrintWriter(System.out);
-//                  	mat.print(os);
-//                  	os.flush();
                 }
                 return mat.norm1();
 
@@ -1107,9 +998,6 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
                 if (getDebugMode()) {
                     LOGGER.log(Level.INFO, "now NORM_L2");
                     LOGGER.log(Level.INFO, mat.toStringMatrix());
-//            	PrintWriter os = new PrintWriter(System.out);
-//                  	mat.print(os);
-//                  	os.flush();
                 }
                 return mat.norm2();
 
@@ -1117,9 +1005,6 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
                 if (getDebugMode()) {
                     LOGGER.log(Level.INFO, "now normInf is obtained");
                     LOGGER.log(Level.INFO, mat.toStringMatrix());
-//	            	PrintWriter os = new PrintWriter(System.out);
-//                  	mat.print(os);
-//                  	os.flush();
                 }
                 return mat.normInf();
         }
@@ -1129,7 +1014,8 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * Computes the transfer matrix for the given <code>IElement</code> for a
      * distance <em>h</em> for the given <code>IProbe</code> object.
      *
-     * @param h distance for which transfer matrix is valid (in <strong>meters</strong>)
+     * @param h distance for which transfer matrix is valid (in
+     * <strong>meters</strong>)
      * @param probe     <code>IProbe</code> object for which transfer matrix is
      * computed
      * @param elem compute transfer matrix for this <code>IElement</code> object
@@ -1187,7 +1073,8 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
         }
 
         // Compute the new step size
-        double hnew;       // new step size
+        // new step size
+        double hnew;
 
         if (this.getAccuracyOrder() == ACCUR_ORDER1) {
             hnew = h * Math.sqrt(toler / error);
@@ -1235,7 +1122,8 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
             }
         }
         // Compute the new step size
-        double hnew;       // new step size
+        // new step size
+        double hnew;
 
         if (this.getAccuracyOrder() == ACCUR_ORDER1) {
             hnew = h * Math.sqrt(toler / error);
@@ -1270,7 +1158,8 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * @return an extrapolated value of the probe state
      */
     private CovarianceMatrix compInternExtrap(PhaseMatrix matRes, PhaseMatrix matState) {
-        PhaseMatrix matChi;     // the extrapolated matrix
+        // the extrapolated matrix
+        PhaseMatrix matChi;
 
         if (this.getAccuracyOrder() == ACCUR_ORDER1) {
             matChi = matState.plus(matRes);
@@ -1309,7 +1198,6 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
         }
 
         if (this.getAccuracyOrder() == ACCUR_ORDER1) {
-            //        PhaseMatrix matPhiSc = this.compScheffTransMatrixWhenAligned(h, probe);
             PhaseMatrix matPhiSc = super.compScheffMatrix(h, probe, elem);
 
             // We're going to try something different and ensure symplecticity
@@ -1330,7 +1218,8 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
         PhaseMatrix matPhi0 = this.compElemTransMatrix(h / 2.0, probe, elem);
 
         // Get the RMS envelopes at probe location
-        CovarianceMatrix covTau0 = probe.getCovariance();    // covariance matrix at entrance
+        // covariance matrix at entrance
+        CovarianceMatrix covTau0 = probe.getCovariance();
 
         // Advance probe a half step for position depend transfer maps
         double pos = probe.getPosition() + h / 2.0;
@@ -1352,197 +1241,4 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
         // Compute the full transfer matrix for the distance dblLen
         return matPhi1.times(matPhiSc.times(matPhi0));
     }
-
-//    /**
-//     * Computes the full transfer matrix for a section of length <code>s</code>.  
-//     * The returned transfer matrix is first-order accurate and includes 
-//     * both the effects of the <code>IElement</code> and the effects of space charge.
-//     * 
-//     * @param   h       distance for which transfer matrix will propagate probe
-//     * @param   probe   the <code>IProbe</code> object for which the transfer matrix is valid
-//     * @param   elem    the <code>IElement</code> object
-//     * 
-//     * @return  7x7 2nd-order accurate transfer matrix in homogeneous phase space coordinates
-//     * 
-//     * @throws  ModelException  unable to compute the transfer matrix for the element
-//     * 
-//     * @see #compElemTransMatrix
-//     * @see #compScheffTransMatrix
-//     */
-//    private PhaseMatrix compTransferMatrix(double h, EnvelopeProbe probe, IElement elem) 
-//        throws ModelException    
-//    {
-//
-//        // Get the transfer matrices for the two individual effects
-//        PhaseMatrix matPhiE = this.compElemTransMatrix(h, probe, elem);
-//        // jdg - bail if no space charge is needed:
-//        if (probe.bunchCharge() == 0.) return matPhiE;
-//
-//        //        PhaseMatrix matPhiSc = this.compScheffTransMatrixWhenAligned(h, probe);
-////        PhaseMatrix matPhiSc = this.compScheffTransMatrix(h, probe);
-//        PhaseMatrix matPhiSc = super.compScheffMatrix(h, probe, elem);
-//
-//
-//        // Build the composite transfer matrix up to second order
-//        PhaseMatrix     matPhi = matPhiSc.times( matPhiE );
-//        if (this.getAccuracyOrder() == ACCUR_ORDER1)
-//            return matPhi;
-//
-//        PhaseMatrix     matCom = matPhiE.times( matPhiSc );
-//
-//        matPhi.plusEquals( matCom );
-//        matPhi.timesEquals( 0.5 );
-//
-//        return matPhi;
-//    }
-//    /**
-//     * Computes the linear transfer matrix for space charge effects to
-//     * second order in h.  Note that this transfer matrix is valid only 
-//     * for the current shape of the beam charge as described by the
-//     * <code>CovarianceMatrix</code> in the <code>probe</code> argument.
-//     * As the beam propagates the shape changes (due, in part, to the space
-//     * charge transfer matrix) and new transfer matrices must be computed.
-//     * 
-//     * @param h         path length
-//     * @param probe     <code>EnvelopeProbe</code> specifying envelope shape
-//     * 
-//     * @return  linear transfer matrix represented space charge effect to 2nd order
-//     */    
-//    @SuppressWarnings("unused")
-//    private PhaseMatrix compScheffTransMatrix(double h, EnvelopeProbe probe)    {
-//
-//        // Build transfer matrix generator for space charge effects
-//        double              K       = probe.beamPerveance();
-//        CovarianceMatrix   matChi   = probe.getCovariance();
-//        
-//        BeamEllipsoid      rho      = new BeamEllipsoid(K, matChi);
-//        PhaseMatrix        matGenSc = rho.computeScheffGenerator(K);
-//
-////      EllipsoidalCharge   rho    = new EllipsoidalCharge(K, matChi);
-////      PhaseMatrix         matGenSc  = rho.compTransMatrixGen();
-//
-//
-//        // jdg - skip if no spacecharge:
-//        if (K == 0.) return PhaseMatrix.identity();
-//        
-//
-//        // Debug - display the ellipsoid rotation matrix
-//        //        if (this.getDebugMode() == true)    {
-//        //            PrintWriter out = new PrintWriter(System.out);
-//        //            
-//        //            LOGGER.log(Level.INFO, "Ellipsoid rotation matrix s=" + this.getElemPosition());
-//        //            rho.getRotation().print(out);
-//        //            out.flush();
-//        //        }
-//
-//
-//        // Build the transfer matrix up to second order in h
-//        // We are lucky - due to the structure of the generator matrix all powers >=2 are zero        
-//        PhaseMatrix         matPhiSc = PhaseMatrix.identity();
-//
-//        matPhiSc.plusEquals( matGenSc.times(h) );
-//        //        if (this.getAccuracyOrder() == ACCUR_ORDER1)    
-//        //            return matPhiSc;
-//        //            
-//        //        matPhiSc.plusEquals( matGenSc.times(matGenSc).times(0.5*h*h) );
-//        return matPhiSc;
-//    }
-//    /**
-//     * <p>
-//     * Computes the space charge transfer matrix for the given length and the given
-//     * beam when the beam ellipsoid is aligned to the laboratory coordinate system.
-//     * In that case the beam covariance matrix takes a particularly simple form where
-//     * the envelope properties can be read off directly.  The space charge calculations
-//     * can be expedited in this case due to the easy access of the beam ellipsoid
-//     * parameters and the idempotency of the Lie generator matrix for the transfer
-//     * matrix.
-//     * </p>
-//     * <p>
-//     * <h4>NOTES:</h4>
-//     * &middot; This method was converted from using the deprecated 
-//     * <code>EllipsoidalCharge</code> class to the newer <code>BeamEllipsoid</code>
-//     * class.  CKA: Aug, 2011.
-//     * <br>
-//     * &middot; Since then this method has not yet been tested and debugged!
-//     * <br>
-//     * The functionality has now been incorporated into <code>EnvelopeTrackerBase.CompScheffTransMatri()</code>
-//     * </p>
-//     *
-//     * @param h         distance along beamline (meters)
-//     * @param probe     beam probe being propagated
-//     * 
-//     * @return          The transfer matrix <strong>M</strong> for space charge effects
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Aug 25, 2011
-//     */
-//    @SuppressWarnings("unused")
-//    private PhaseMatrix compScheffTransMatrixWhenAligned(double h, EnvelopeProbe probe) {
-//
-//        // Get the probe parameters
-//        double              K       = probe.beamPerveance();
-//        double             dblGamma = probe.getGamma();
-//        CovarianceMatrix   matSigma   = probe.getCovariance();
-//        
-//        // Build the displacement vector
-//        double  xm = matSigma.getMeanX();
-//        double  ym = matSigma.getMeanY();
-//        double  zm = matSigma.getMeanZ();
-//        
-//        R3      vecDispl = new R3(xm, ym, zm);
-//        
-//        
-//        // Get the semi-axes
-// //       double  covXX = matChi.getCovXX();
-// //       double  covYY = matChi.getCovYY();
-// //       double  covZZ = matChi.getCovZZ();
-//        
-//        double a = matSigma.getSigmaX();
-//        double b = matSigma.getSigmaY();
-//        double c = matSigma.getSigmaZ();
-//        
-//        R3  vecSig = new R3(a, b, c);
-//        
-//        
-//        // Build charge aligned to beam coordinate system
-////        EllipsoidalCharge   rho    = new EllipsoidalCharge(K, a, b, c);
-////        rho.setDisplacement(vecDispl);
-//        
-//        BeamEllipsoid       rho = new BeamEllipsoid(dblGamma, vecDispl, vecSig.squared());
-//        
-//        // Build the transfer matrix up to second order in h
-//        // We are lucky - due to the structure of the generator matrix all powers >=2 are zero        
-//        PhaseMatrix         matGenSc = rho.computeScheffGenerator(K);
-//        PhaseMatrix         matPhiSc = PhaseMatrix.identity();
-//        
-//        matPhiSc.plusEquals( matGenSc.times(h) );
-//
-//        return matPhiSc;
-//        
-//    }
 }
-
-/*
- *  Storage
- */
-///**
-//* Override the <code>Tracker</code> implementation to support saving
-//* the probe trajectory information.
-//* 
-//* @param   probe       probe to advance
-//* @param   elem        beamline element to advance probe through
-//* @param   dblLen      distance to advance probe
-//* 
-//* @throws  ModelException  this should not occur
-//*/
-//protected void advanceProbe(IProbe probe, IElement elem, double dblLen)
-//  throws ModelException 
-//{
-//  m_cntUpdate++;
-//  LOGGER.log(Level.INFO, "advanceProbe() " + m_cntUpdate);
-//
-//  super.advanceProbe(probe, elem, dblLen);
-//}
-//
-//
-

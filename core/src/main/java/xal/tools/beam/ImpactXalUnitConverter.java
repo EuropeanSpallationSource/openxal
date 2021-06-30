@@ -185,8 +185,10 @@ public class ImpactXalUnitConverter {
     public PhaseVector impactToXalCoordinates(PhaseVector vecCoords) {
 
         // Convert the transverse coordinates
-        double x, xp;      // x phase plane coordinates
-        double y, yp;      // y phase plane coordinates
+        // x phase plane coordinates
+        double x, xp;
+        // y phase plane coordinates
+        double y, yp;
 
         x = vecCoords.getx() * c_omega;
         xp = vecCoords.getxp() / (gamma * b);
@@ -194,9 +196,11 @@ public class ImpactXalUnitConverter {
         yp = vecCoords.getyp() / (gamma * b);
 
         // Convert the longitudinal coordinates
-        double z, zp;      // z phase plane coordinates
+        // z phase plane coordinates
+        double z, zp;
 
-        z = -b * c_omega * vecCoords.getz(); // to dz, offset from syncr
+        // to dz, offset from syncr
+        z = -b * c_omega * vecCoords.getz();
         zp = -vecCoords.getzp() / (gamma * gamma * gamma * b * b);
 
         return new PhaseVector(x, xp, y, yp, z, zp);
@@ -236,8 +240,10 @@ public class ImpactXalUnitConverter {
     public PhaseVector xalToImpactCoordinates(PhaseVector vecCoords) {
 
         // Convert the transverse coordinates
-        double x, xp;      // x phase plane coordinates
-        double y, yp;      // y phase plane coordinates
+        // x phase plane coordinates
+        double x, xp;
+        // y phase plane coordinates
+        double y, yp;
 
         x = vecCoords.getx() / c_omega;
         xp = vecCoords.getxp() * (gamma * b);
@@ -245,7 +251,8 @@ public class ImpactXalUnitConverter {
         yp = vecCoords.getyp() * (gamma * b);
 
         // Convert the longitudinal coordinates
-        double z, zp;      // z phase plane coordinates
+        // z phase plane coordinates
+        double z, zp;
 
         z = -vecCoords.getz() / (b * c_omega);
         zp = -(gamma * gamma * gamma * b * b) * vecCoords.getzp();
@@ -288,9 +295,12 @@ public class ImpactXalUnitConverter {
      * @return Twiss parameters in XAL units
      */
     public Twiss impactToXalTransverse(Twiss impactTwiss) {
-        double isigma = impactTwiss.getAlpha(); //sigma
-        double ilambda = impactTwiss.getBeta();   //lambda 
-        double imu = impactTwiss.getEmittance(); //mu 
+        //sigma
+        double isigma = impactTwiss.getAlpha();
+        //lambda 
+        double ilambda = impactTwiss.getBeta();
+        //mu 
+        double imu = impactTwiss.getEmittance();
 
         double alpha = imu / Math.sqrt(1 - imu * imu);
         double beta = c_omega * b * gamma * isigma / ilambda / Math.sqrt(1 - imu * imu);
@@ -388,7 +398,8 @@ public class ImpactXalUnitConverter {
         double beta = twissXal.getBeta();
         double gammax = (1 + alpha * alpha) / beta;
 
-        double emittance = twissXal.getEmittance();  // Unnormalized pi m*rad
+        // Unnormalized pi m*rad
+        double emittance = twissXal.getEmittance();
 
         double isigma = Math.sqrt(emittance / gammax) / c_omega;
         double ilambda = b * gamma * Math.sqrt(emittance / beta);
@@ -439,7 +450,8 @@ public class ImpactXalUnitConverter {
 
         double gammaT3d = (1 + alphaT3d * alphaT3d) / (betaT3d * 1e-3);
 
-        double m = ER;//eV
+        //eV
+        double m = ER;
         double isigma = Math.sqrt((emitT3d * 1e+3 / 5) / gammaT3d) * Math.PI / 180.;
         double ilambda = 1 / m * Math.sqrt((emitT3d * 1e+3 / 5) / (betaT3d * 1e-3));
         double imu = alphaT3d / Math.sqrt(1 + alphaT3d * alphaT3d);

@@ -517,7 +517,8 @@ public class WireHarp extends ProfileDevice {
 
         /**
          * Check if the indicated wire is valid, that is, producing valid data.
-         * The given wire index must be in the range [0,<em>N</em>] where <em>N</em>
+         * The given wire index must be in the range [0,<em>N</em>] where
+         * <em>N</em>
          * is the number of wires in the harp.
          *
          * @param ang the transverse plane of the profile (i.e., wire set)
@@ -545,7 +546,8 @@ public class WireHarp extends ProfileDevice {
 
             // Create mask for given wire index
             int intMask = 1 << index;
-            boolean bolValid;   // result of validity check
+            // result of validity check
+            boolean bolValid;
 
             switch (ang) {
 
@@ -585,7 +587,8 @@ public class WireHarp extends ProfileDevice {
         public boolean[] validWires(ANGLE ang) {
 
             // Get the status record for the desired profile plane
-            long lngStatRec; // status record for the desired transverse plane
+            // status record for the desired transverse plane
+            long lngStatRec;
 
             switch (ang) {
                 case HOR:

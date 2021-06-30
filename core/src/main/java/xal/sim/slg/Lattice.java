@@ -145,13 +145,17 @@ public class Lattice implements Cloneable {
     static Lattice concatenate(Lattice left, Lattice right) throws LatticeError {
         Lattice part1 = (Lattice) left.clone();
         Lattice part2 = (Lattice) right.clone();
-        part2.setBase(part1.getLength());    //shift position base of second part
+        //shift position base of second part
+        part2.setBase(part1.getLength());
         Lattice part3 = new Lattice(part1.getName() + "+" + part2.getName(), 0d);
-        part3.clearMarkers(); //remove dummy makers
+        //remove dummy makers
+        part3.clearMarkers();
         int last = part3.len() - 1;
-        part3.elements.addAll(last, part1.elements);    //add all from 1st part
+        //add all from 1st part
+        part3.elements.addAll(last, part1.elements);
         last = part3.len() - 1;
-        part3.elements.addAll(last, part2.elements);  //add all from 2nd part
+        //add all from 2nd part
+        part3.elements.addAll(last, part2.elements);
         last = part3.len() - 1;
         //update position of END marker
         (part3.elements.get(last)).setPosition(part1.getLength() + part2.getLength());

@@ -246,7 +246,8 @@ public class RealNumericIndexer<T> implements Iterable<T> {
             iterations += 1;
             int index = (int) Math.round(estimateIndex(location, nmin, nmax, xmin, xmax));
             if (index <= nmin) {
-                index = nmin + 1; // this is needed to guarantee progress
+                // this is needed to guarantee progress
+                index = nmin + 1;
             } else if (index >= nmax) {
                 index = nmax - 1;
             }

@@ -10,7 +10,6 @@ import xal.ca.TimeAdaptor;
 import gov.aps.jca.dbr.*;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * Wrap a DBR TIME record for high level access
@@ -23,7 +22,8 @@ class DbrTimeAdaptor extends DbrStatusAdaptor implements TimeAdaptor {
     /**
      * Offset in seconds between the EPICS native epoch and the Java epoch
      */
-    static final BigDecimal EPOCH_SECONDS_OFFSET = new BigDecimal(7305 * 24 * 3600);     // offset from standard Java epoch
+    // offset from standard Java epoch
+    static final BigDecimal EPOCH_SECONDS_OFFSET = new BigDecimal(7305 * 24 * 3600);
 
     /**
      * Creates a new instance of TimeAdaptor
@@ -37,6 +37,7 @@ class DbrTimeAdaptor extends DbrStatusAdaptor implements TimeAdaptor {
      * accuracy, so we limit the timestamp to nine decimal places to the right
      * of the the decimal point.
      */
+    @Override
     public BigDecimal getTimestamp() {
         return convertToJavaTime(getRawTimestamp());
     }
@@ -47,7 +48,7 @@ class DbrTimeAdaptor extends DbrStatusAdaptor implements TimeAdaptor {
      * places to the right of the the decimal point.
      */
     public BigDecimal getRawTimestamp() {
-        return ((TIME) _dbr).getTimeStamp().asBigDecimal();
+        return ((TIME) dbr).getTimeStamp().asBigDecimal();
     }
 
     /**

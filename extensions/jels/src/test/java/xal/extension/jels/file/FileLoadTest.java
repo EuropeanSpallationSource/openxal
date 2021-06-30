@@ -75,7 +75,8 @@ public class FileLoadTest {
         envelopeProbe.setAlgorithm(envelopeTracker);
         envelopeProbe.setSpeciesCharge(-1);
         envelopeProbe.setSpeciesRestEnergy(9.3829431e8);
-        envelopeProbe.setKineticEnergy(2.5e6);//energy
+        //energy
+        envelopeProbe.setKineticEnergy(2.5e6);
         envelopeProbe.setPosition(0.0);
         envelopeProbe.setTime(0.0);
 
@@ -98,7 +99,8 @@ public class FileLoadTest {
             new Twiss(-0.3247, 0.3974, 0.2091e-6),
             new Twiss(-0.5283, 0.8684, 0.2851e-6)});
         envelopeProbe.setBeamCurrent(0.0);
-        envelopeProbe.setBunchFrequency(4.025e8);//frequency
+        //frequency
+        envelopeProbe.setBunchFrequency(4.025e8);
 
         return envelopeProbe;
     }

@@ -428,7 +428,8 @@ public class GapTest extends SingleElementTest {
     public static AcceleratorSeq gap(double frequency, double E0TL, double Phis, double R, double p, double betas, double Ts, double kTs, double k2Ts, double kS, double k2S, double dx, double dy, double dz, double fx, double fy) {
         AcceleratorSeq sequence = new AcceleratorSeq("GapTest");
 
-        double length = 1.0; // length is not given in TraceWin, but is used only as a factor in E0TL in OpenXal
+        // length is not given in TraceWin, but is used only as a factor in E0TL in OpenXal
+        double length = 1.0;
 
         // FIXME position == 0?
         ESSRfGap gap = ESSElementFactory.createESSRfGap("g", true, 1, new ApertureBucket(), length, 0);

@@ -10,7 +10,6 @@ package xal.plugin.jca;
 import java.util.*;
 
 import gov.aps.jca.Channel;
-import gov.aps.jca.Context;
 
 /**
  * Cache JCA native channels for reuse among several XAL channels. JCA won't
@@ -21,19 +20,19 @@ class JcaNativeChannelCache {
     /**
      * JCA System
      */
-    protected final JcaSystem JCA_SYSTEM;
+    protected final JcaSystem jcaSystem;
 
     /**
      * map of native channel's keyed by PV signal name
      */
-    protected final Map<String, Channel> CHANNEL_MAP;
+    protected final Map<String, Channel> channelMap;
 
     /**
      * Constructor
      */
     public JcaNativeChannelCache(final JcaSystem jcaSystem) {
-        JCA_SYSTEM = jcaSystem;
-        CHANNEL_MAP = new HashMap<String, Channel>();
+        this.jcaSystem = jcaSystem;
+        channelMap = new HashMap<>();
     }
 
     /**
@@ -47,12 +46,12 @@ class JcaNativeChannelCache {
     public Channel getChannel(final String signalName) throws gov.aps.jca.CAException {
         Channel channel;
 
-        synchronized (CHANNEL_MAP) {
-            channel = CHANNEL_MAP.get(signalName);
+        synchronized (channelMap) {
+            channel = channelMap.get(signalName);
 
             if (channel == null) {
-                channel = JCA_SYSTEM.getJcaContext().createChannel(signalName);
-                CHANNEL_MAP.put(signalName, channel);
+                channel = jcaSystem.getJcaContext().createChannel(signalName);
+                channelMap.put(signalName, channel);
             }
         }
 

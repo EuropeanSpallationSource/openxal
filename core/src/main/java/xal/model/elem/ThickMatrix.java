@@ -18,11 +18,12 @@ import xal.tools.beam.PhaseMatrix;
 /**
  * <p>
  * User element representing a general beamline element. Arbitrary beamline
- * elements are specified by providing the transfer matrix <strong>generator</strong>,
- * elapsed time, and energy gain a priori. Note that for this element the
- * transfer matrix, elapsed time, and energy gain are independent of any probe
- * objects. Note also that the generator for the transfer matrix is specified,
- * NOT the actual transfer matrix. Thus, this class should be used carefully.
+ * elements are specified by providing the transfer matrix
+ * <strong>generator</strong>, elapsed time, and energy gain a priori. Note that
+ * for this element the transfer matrix, elapsed time, and energy gain are
+ * independent of any probe objects. Note also that the generator for the
+ * transfer matrix is specified, NOT the actual transfer matrix. Thus, this
+ * class should be used carefully.
  * </p>
  * <p>
  * This element is derived from the ThickElement base so that space charge kicks
@@ -33,7 +34,8 @@ import xal.tools.beam.PhaseMatrix;
  * <strong>M</strong>(<em>s</em>) for a section of length <em>s</em> is given by
  * <br>
  * <br>
- * &nbsp; &nbsp; <strong>M</strong>(<em>s</em>) = <em>e</em><sup><em>s</em><strong>A</strong></sup>
+ * &nbsp; &nbsp; <strong>M</strong>(<em>s</em>) =
+ * <em>e</em><sup><em>s</em><strong>A</strong></sup>
  * <br>
  * <br>
  * where <em>e</em><sup><strong>A</strong></sup> is the matrix exponential.
@@ -44,7 +46,8 @@ import xal.tools.beam.PhaseMatrix;
  * Therefore
  * <br>
  * <br>
- * &nbsp; &nbsp;  <strong>M</strong>(<em>s</em>) = <strong>I</strong> + <em>s</em><strong>A</strong>
+ * &nbsp; &nbsp;  <strong>M</strong>(<em>s</em>) = <strong>I</strong> +
+ * <em>s</em><strong>A</strong>
  * + &frac12;<em>s</em><sup>2</sup><strong>A</strong><sup>2</sup>
  * ( + <em>O</em>(<em>s</em><sup>3</sup>) )
  * <br>
@@ -157,7 +160,8 @@ public class ThickMatrix extends ThickElement {
     }
 
     /**
-     * Set the transfer map generator <strong>A</strong> for the element. The transfer map
+     * Set the transfer map generator <strong>A</strong> for the element. The
+     * transfer map
      * <strong>M</strong>(s) over a distance <em>s</em> is then given by
      *
      * M(s) = Exp(s*A)
@@ -184,7 +188,8 @@ public class ThickMatrix extends ThickElement {
      * where dblDelT is the value given to <code>#setElapsedTime</code>.
      *
      * @param probe dummy argument
-     * @param dblLen length of subsection to propagate through <strong>meters</strong>
+     * @param dblLen length of subsection to propagate through
+     * <strong>meters</strong>
      *
      * @return the elapsed time through section<strong>Units: seconds</strong>
      */
@@ -204,7 +209,8 @@ public class ThickMatrix extends ThickElement {
      * @param dblLen dummy argument
      * @param probe dummy argument
      *
-     * @return energy gain for each subelement (<strong>in electron-volts</strong>)
+     * @return energy gain for each subelement (<strong>in
+     * electron-volts</strong>)
      */
     @Override
     public double energyGain(IProbe probe, double dblLen) {

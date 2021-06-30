@@ -84,7 +84,8 @@ public class UpdatingSwingWorker {
     public static void main(String[] args) {
 
         int ITERATIONS = 10;
-        int WAIT = 500; //ms
+        //ms
+        int WAIT = 500;
 
         JFrame f = new JFrame("Updating Display Using Swing Worker");
         JPanel p = new JPanel();
@@ -296,7 +297,8 @@ public class UpdatingSwingWorker {
 
             final SwingWorker worker = new SwingWorker() {
                 public synchronized Object construct() {
-                    setup(); // this is the slow part
+                    // this is the slow part
+                    setup();
                     return zPlotPanel;
                 }
 
@@ -304,7 +306,8 @@ public class UpdatingSwingWorker {
                     ZPlotPanel z = (ZPlotPanel) get();
                     z.repaint();
                     LOGGER.log(Level.INFO, "...just repainted " + z.getTitle());
-                } // end of finished()
+               // end of finished()
+                }
             };
             worker.start();
 
@@ -317,7 +320,8 @@ public class UpdatingSwingWorker {
                 }
             }
 
-            worker.get(); // wait the longer of the requested wait period or the time it takes to create & draw the display
+            // wait the longer of the requested wait period or the time it takes to create & draw the display
+            worker.get();
 
         }
 

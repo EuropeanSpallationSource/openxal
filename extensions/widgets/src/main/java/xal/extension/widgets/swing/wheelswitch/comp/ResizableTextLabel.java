@@ -4,7 +4,8 @@
  * The full license specifying the redistribution, modification, usage and other
  * rights and obligations is included with the distribution of this project in
  * the file license.html. If the license is not included you may find a copy at
- * http://www.cosylab.com/legal/abeans_license.htm or may write to Cosylab, d.o.o.
+ //www.cosylab.com/legal/abeans_license.htm or may write to Cosylab, d.o.o.
+ * http:
  *
  * THIS SOFTWARE IS PROVIDED AS-IS WITHOUT WARRANTY OF ANY KIND, NOT EVEN THE
  * IMPLIED WARRANTY OF MERCHANTABILITY. THE AUTHOR OF THIS SOFTWARE, ASSUMES

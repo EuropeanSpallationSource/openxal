@@ -85,7 +85,8 @@ public class ActionFactory {
         };
 
         action.putValue(Action.NAME, "new-document-from-template");
-        final int keyMask = MENU_KEY_SHORTCUT_MASK | java.awt.event.InputEvent.SHIFT_MASK;  // shortcut key plus shift key
+        // shortcut key plus shift key
+        final int keyMask = MENU_KEY_SHORTCUT_MASK | java.awt.event.InputEvent.SHIFT_MASK;
         action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_N, keyMask));
 
         return action;

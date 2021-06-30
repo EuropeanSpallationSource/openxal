@@ -72,11 +72,13 @@ abstract class JcaMonitor extends Monitor implements gov.aps.jca.event.MonitorLi
      * catch the jca.MonitorEvent, convert to appropriate data type, and forward
      * to the appropriate data sink interface (IEventSinkXxxXxx).
      */
+    @Override
     public abstract void monitorChanged(MonitorEvent event);
 
     /**
      * Stop the monitoring of PV
      */
+    @Override
     public void clear() {
         if (!bolMonitoring) {
             return;
@@ -96,6 +98,7 @@ abstract class JcaMonitor extends Monitor implements gov.aps.jca.event.MonitorLi
      *
      * @exception MonitorException unable to setup the channel access monitor
      */
+    @Override
     protected void begin() throws MonitorException {
 
         try {
@@ -131,6 +134,7 @@ class JcaMonitorValTime extends JcaMonitor {
     }
 
     // capture an event, wrap the dbr into a channel record and notify the sink
+    @Override
     public void monitorChanged(final MonitorEvent evt) {
         final DBR dbr = evt.getDBR();
         if (dbr != null) {
@@ -172,6 +176,7 @@ class JcaMonitorValStatus extends JcaMonitor {
     }
 
     // capture an event, wrap the dbr into a channel record and notify the sink
+    @Override
     public void monitorChanged(final MonitorEvent evt) {
         final DBR dbr = evt.getDBR();
         if (dbr != null) {
@@ -214,6 +219,7 @@ class JcaMonitorValue extends JcaMonitor {
     }
 
     // capture an event, wrap the dbr into a channel record and notify the sink
+    @Override
     public void monitorChanged(final MonitorEvent evt) {
         final DBR dbr = evt.getDBR();
         if (dbr != null) {

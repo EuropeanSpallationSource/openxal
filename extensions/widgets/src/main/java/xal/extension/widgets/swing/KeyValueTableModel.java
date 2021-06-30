@@ -89,7 +89,8 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
      * @param keyPaths specifies the array of key paths to get the data to
      * display (one key path for each column)
      */
-    @SuppressWarnings("unchecked")    // Java static fields don't support generics so we can't use them to strongly type KeyValueRecordListener.class
+    // Java static fields don't support generics so we can't use them to strongly type KeyValueRecordListener.class
+    @SuppressWarnings("unchecked")
     public KeyValueTableModel(final List<RecordType> records, final String... keyPaths) {
         MESSAGE_CENTER = new MessageCenter("KeyValueTableModel");
         EVENT_PROXY = MESSAGE_CENTER.registerSource(this, KeyValueRecordListener.class);

@@ -374,7 +374,8 @@ public class PVLoggerDataSource {
                 final double rawValue = magnetFields.get(pvName);
                 // take into account of proper transform
                 totalField = toFieldFromRaw(magnet, channel, rawValue);
-            } else {		// If there is no magnet field readback, use corresponding power supply field readback, instead.
+            } else {		
+                // If there is no magnet field readback, use corresponding power supply field readback, instead.
                 final Channel mainSupplyReadbackChannel = magnet.getMainSupply().getChannel(MagnetMainSupply.FIELD_RB_HANDLE);
                 final String mainSupplyReadbackPV = mainSupplyReadbackChannel.channelName();
                 if (magnetPowerSupplyValues.containsKey(mainSupplyReadbackPV)) {
@@ -394,7 +395,8 @@ public class PVLoggerDataSource {
                     }
                 }
             }
-        } else {		// use field set, we need to handle magnets with trim power supplies here. However, if no readback, we have to use field readback
+        } else {		
+            // use field set, we need to handle magnets with trim power supplies here. However, if no readback, we have to use field readback
             // for main power supply
             final Channel chan = magnet.getMainSupply().getChannel(MagnetMainSupply.FIELD_SET_HANDLE);
             final String fieldSetPV = chan.channelName();
@@ -422,7 +424,8 @@ public class PVLoggerDataSource {
                         }
                     }
                 }
-            } // use readback, if no field settings
+            // use readback, if no field settings
+            }
             else {
                 final Channel readbackChannel = magnet.getChannel(Electromagnet.FIELD_RB_HANDLE);
                 final String fieldReadbackPV = readbackChannel.channelName();

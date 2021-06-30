@@ -293,9 +293,12 @@ public class IdealRfCavity extends ElementSeq implements IRfCavity {
 
         RfCavity smfRfCav = (RfCavity) smfNode;
 
-        dblFreq = 1.0e6 * smfRfCav.getCavFreq();    // convert to Hertz
-        dblAmp = 1.0e6 * smfRfCav.getDfltCavAmp(); // convert to Volts
-        dblPhase = (Math.PI / 180.0) * smfRfCav.getDfltCavPhase(); // convert to radians
+        // convert to Hertz
+        dblFreq = 1.0e6 * smfRfCav.getCavFreq();
+        // convert to Volts
+        dblAmp = 1.0e6 * smfRfCav.getDfltCavAmp();
+        // convert to radians
+        dblPhase = (Math.PI / 180.0) * smfRfCav.getDfltCavPhase();
         dblModeConst = smfRfCav.getStructureMode();
     }
 
@@ -339,10 +342,11 @@ public class IdealRfCavity extends ElementSeq implements IRfCavity {
     /**
      * <p>
      * I am overriding this method even though a proper back propagation
-     * <strong>is impossible</strong>. We set the longitudinal phase of the probe to the
-     * phase of the cavity as it backs into the exit. The true phase should be
-     * the phase of the particle as it leaves the cavity when forward
-     * propagating, however, we have no way of knowing that phase a priori.
+     * <strong>is impossible</strong>. We set the longitudinal phase of the
+     * probe to the phase of the cavity as it backs into the exit. The true
+     * phase should be the phase of the particle as it leaves the cavity when
+     * forward propagating, however, we have no way of knowing that phase a
+     * priori.
      * </p>
      * <p>
      * It may be useful to use this setup during back propagations to explore
@@ -451,11 +455,12 @@ public class IdealRfCavity extends ElementSeq implements IRfCavity {
             // Compute next index
             //
             // We are at either end of a bank of cavity cells
-            if (mdlCavCell.isEndCell()) // We've hit the last cell in a cell bank
-            {
+            // We've hit the last cell in a cell bank
+            if (mdlCavCell.isEndCell()) {
                 if (bolInCellBank) {
 
-                    indCell += 2;       // the cell banks remain in phase
+                    // the cell banks remain in phase
+                    indCell += 2;
                     bolInCellBank = false;
 
                     // We've hit the first cell in a cell bank
@@ -464,8 +469,8 @@ public class IdealRfCavity extends ElementSeq implements IRfCavity {
                     indCell++;
                     bolInCellBank = true;
                 }
-            } // We are in the middle of a cell bank
-            else {
+                // We are in the middle of a cell bank
+            } else {
                 indCell++;
             }
         }

@@ -102,8 +102,10 @@ public class Epics7ChannelTest {
         LOGGER.log(Level.INFO, "connectAndWait");
 
         Epics7Channel instance = new Epics7Channel("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
-        Epics7Channel instance2 = new Epics7Channel("ca://TestCA", Epics7TestChannelSystem.newEpics7ChannelSystem());
-        Epics7Channel instance3 = new Epics7Channel("pva://TestPVA", Epics7TestChannelSystem.newEpics7ChannelSystem());
+        //TestCA", Epics7TestChannelSystem.newEpics7ChannelSystem());
+        Epics7Channel instance2 = new Epics7Channel("ca:
+        //TestPVA", Epics7TestChannelSystem.newEpics7ChannelSystem());
+        Epics7Channel instance3 = new Epics7Channel("pva:
 
         assertEquals(instance.connectAndWait(0), false);
         assertEquals(instance2.connectAndWait(0), false);
@@ -158,10 +160,12 @@ public class Epics7ChannelTest {
         Epics7Channel instance = new Epics7Channel("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
         instance.requestConnection();
 
-        Epics7Channel instance2 = new Epics7Channel("ca://TestCA", Epics7TestChannelSystem.newEpics7ChannelSystem());
+        //TestCA", Epics7TestChannelSystem.newEpics7ChannelSystem());
+        Epics7Channel instance2 = new Epics7Channel("ca:
         instance2.requestConnection();
 
-        Epics7Channel instance3 = new Epics7Channel("pva://TestPVA", Epics7TestChannelSystem.newEpics7ChannelSystem());
+        //TestPVA", Epics7TestChannelSystem.newEpics7ChannelSystem());
+        Epics7Channel instance3 = new Epics7Channel("pva:
         instance3.requestConnection();
 
         try {
@@ -192,8 +196,10 @@ public class Epics7ChannelTest {
     public void testDisconnect() {
         LOGGER.log(Level.INFO, "disconnect");
         Epics7Channel instance = new Epics7Channel("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
-        Epics7Channel instance2 = new Epics7Channel("ca://TestCA", Epics7TestChannelSystem.newEpics7ChannelSystem());
-        Epics7Channel instance3 = new Epics7Channel("pva://TestPVA", Epics7TestChannelSystem.newEpics7ChannelSystem());
+        //TestCA", Epics7TestChannelSystem.newEpics7ChannelSystem());
+        Epics7Channel instance2 = new Epics7Channel("ca:
+        //TestPVA", Epics7TestChannelSystem.newEpics7ChannelSystem());
+        Epics7Channel instance3 = new Epics7Channel("pva:
 
         // Testing disconnecting a disconnected channel
         instance.disconnect();

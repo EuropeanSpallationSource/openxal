@@ -44,8 +44,10 @@ public class StringJoiner {
      */
     public StringJoiner(final String separator) {
         this.separator = separator;
-        buffer = new StringBuffer();   // create an empty string buffer
-        joiner = new FirstJoiner();    // appropriate joiner for empty buffer
+        // create an empty string buffer
+        buffer = new StringBuffer();
+        // appropriate joiner for empty buffer
+        joiner = new FirstJoiner();
     }
 
     /**
@@ -231,7 +233,8 @@ public class StringJoiner {
         @Override
         public void append(final String string) {
             super.append(string);
-            joiner = new ConsecutiveJoiner();  // for future joins
+            // for future joins
+            joiner = new ConsecutiveJoiner();
         }
     }
 

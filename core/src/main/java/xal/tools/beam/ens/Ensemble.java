@@ -74,8 +74,7 @@ public class Ensemble implements Serializable {
 
             if (n1 < n2) {
                 return -1;
-            } //if (n1 == n2) return 0;
-            else {
+            } else {
                 return +1;
             }
         }
@@ -259,10 +258,14 @@ public class Ensemble implements Serializable {
      * beta*c.
      */
     public R3 totalCurrent() {
-        double q;          // particle charge
-        PhaseVector vecPhase;   // particle phase coordinates
-        double Ix, Iy, Iz; // current components
-        Iterator<Particle> iter;       // ensemble particle iterator
+        // particle charge
+        double q;
+        // particle phase coordinates
+        PhaseVector vecPhase;
+        // current components
+        double Ix, Iy, Iz;
+        // ensemble particle iterator
+        Iterator<Particle> iter;
 
         Ix = Iy = Iz = 0.0;
         iter = this.iterator();
@@ -285,8 +288,10 @@ public class Ensemble implements Serializable {
      * Get the total charge of the ensemble
      */
     public double totalCharge() {
-        double Q;          // total ensemble charge
-        Iterator<Particle> iter;       // ensemble particle iterator
+        // total ensemble charge
+        double Q;
+        // ensemble particle iterator
+        Iterator<Particle> iter;
 
         Q = 0.0;
         iter = this.iterator();
@@ -312,8 +317,10 @@ public class Ensemble implements Serializable {
      * @return the coulomb potential in MKS units
      */
     public double potentialSummation(R3 ptFld) {
-        double dblVol;         // coulomb potential
-        Iterator<Particle> iter;           // ensemble particle iterator
+        // coulomb potential
+        double dblVol;
+        // ensemble particle iterator
+        Iterator<Particle> iter;
 
         dblVol = 0.0;
         iter = this.iterator();
@@ -358,11 +365,16 @@ public class Ensemble implements Serializable {
     public double potentialQuadExpansion(R3 pt, double Q, PhaseMatrix matSigma) {
 
         // Get the field and source points then compute the distance
-        double xf, yf, zf;     // field points
-        double xc, yc, zc;     // ensemble centroid location
-        double dx, dy, dz;     // coordinate displacements of the field and centroid points
-        double R;              // distance from the field point to the centroid
-        double R2, R5;         // distance squared, distance to the fifth power
+        // field points
+        double xf, yf, zf;
+        // ensemble centroid location
+        double xc, yc, zc;
+        // coordinate displacements of the field and centroid points
+        double dx, dy, dz;
+        // distance from the field point to the centroid
+        double R;
+        // distance squared, distance to the fifth power
+        double R2, R5;
 
         xf = pt.get1();
         yf = pt.get2();
@@ -379,8 +391,10 @@ public class Ensemble implements Serializable {
         R5 = R2 * R2 * R;
 
         // Compute the central second moments
-        double xx, xy, yy, yz, zx, zz;    // second moments of the ensemble
-        double xxc, xyc, yyc, yzc, zxc, zzc;   // central second moments of the ensemble
+        // second moments of the ensemble
+        double xx, xy, yy, yz, zx, zz;
+        // central second moments of the ensemble
+        double xxc, xyc, yyc, yzc, zxc, zzc;
 
         xx = matSigma.getElem(0, 0);
         xxc = xx - xc * xc;
@@ -396,7 +410,8 @@ public class Ensemble implements Serializable {
         zzc = zz - zc * zc;
 
         // Compute the quadrupole expansion potential
-        double V;          // electric potential
+        // electric potential
+        double V;
 
         V = (3.0 * dx * dx - R2) * xxc + (3.0 * dy * dy - R2) * yyc + (3.0 * dz * dz - R2) * zzc;
         V += 3.0 * (dx * dy * xyc + dy * dz * yzc + dz * dx * zxc);
@@ -522,7 +537,8 @@ public class Ensemble implements Serializable {
      * @param osLog output stream to send logging information
      */
     public static void testPersistence(PrintWriter osLog) {
-        final String strFileTest = "TestCoords.ens";  // persistence file name
+        // persistence file name
+        final String strFileTest = "TestCoords.ens";
 
         // Create test ensemble 
         Ensemble ens1 = new Ensemble();

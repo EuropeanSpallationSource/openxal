@@ -28,7 +28,7 @@ public final class WidgetsRepository {
             .createStandardSeriesShapes();
 
     private static Shape createLargeCircle() {
-        final int SIZE = 16;//48;
+        final int SIZE = 16;
         //return new Ellipse2D.Double(-SIZE/2, -SIZE/2, SIZE, SIZE);
         return new Ellipse2D.Double(-SIZE, -SIZE, SIZE, SIZE);
     }
@@ -246,7 +246,7 @@ public final class WidgetsRepository {
     public static Widget getVacuumValveWidget(Object o) {
         Widget w = valvesMap.get(o);
         if (w == null) {
-            w = new VacuumValveWidget();//new Widget(Color.ORANGE, new ProfileMonitorWidget().getShape(), DEFAULT_STROKES[0]);
+            w = new VacuumValveWidget();
             valvesMap.put(o, w);
         }
         return w;
@@ -261,7 +261,7 @@ public final class WidgetsRepository {
     public static Widget getProfMonScreenWidget(Object o) {
         Widget w = profMonScreensMap.get(o);
         if (w == null) {
-            w = new ProfileMonitorWidget();//new Widget(Color.ORANGE, new ProfileMonitorWidget().getShape(), DEFAULT_STROKES[0]);
+            w = new ProfileMonitorWidget();
             profMonScreensMap.put(o, w);
         }
         return w;
@@ -310,7 +310,7 @@ public final class WidgetsRepository {
     public static Widget getWireWidget(Object o) {
         Widget w = wiresMap.get(o);
         if (w == null) {
-            w = new WireScannerWidget(); // new Widget(Color.YELLOW, LARGE_CIRCLE, DEFAULT_STROKES[0]);
+            w = new WireScannerWidget();
             wiresMap.put(o, w);
         }
         return w;

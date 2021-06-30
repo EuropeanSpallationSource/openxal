@@ -293,7 +293,8 @@ public abstract class Application {
                 return false;
             }
         } else {
-            return true; // no RBAC module
+            // no RBAC module
+            return true;
         }
     }
 
@@ -618,7 +619,8 @@ public abstract class Application {
      *
      * @return An immutable list of the open documents.
      */
-    @SuppressWarnings("unchecked")    // suppress unchecked casting to DocumentType since there is not way around it
+    // suppress unchecked casting to DocumentType since there is not way around it
+    @SuppressWarnings("unchecked")
     public <DocumentType extends XalAbstractDocument> List<DocumentType> getDocumentsCopy() {
         final List<XalAbstractDocument> documents = getDocuments();
         final List<DocumentType> documentsCopy = new ArrayList<>(documents.size());
@@ -842,11 +844,13 @@ public abstract class Application {
         try {
             XalAbstractDocument document = applicationAdaptor.generateDocument(url);
             if (copyDocument) {
-                document.setSource(null);    // mark the document as independent form the source URL (e.g. opened from template)
+                // mark the document as independent form the source URL (e.g. opened from template)
+                document.setSource(null);
             }
             produceDocument(document);
             if (trackRecent && !URLReference.isRootedIn(getTemplateFolderURL(), url)) {
-                registerRecentURL(url);    // never track files under the template folder regardless of the flag
+                // never track files under the template folder regardless of the flag
+                registerRecentURL(url);
             }
             updateNextDocumentOpenLocationOffsetFrom(document);
         } catch (Exception exception) {
@@ -1142,7 +1146,8 @@ public abstract class Application {
     public void changeRBACUser() {
         boolean isLogout = rbacLogout();
         if (!isLogout) {
-            return; // The user did not logout
+            // The user did not logout
+            return;
         }
         while (true) {
             if (authenticateWithRBAC()) {
@@ -1186,11 +1191,14 @@ public abstract class Application {
                 final java.awt.Container contentPane = window.getContentPane();
                 final int offset = window.isVisible() ? (int) (1.5 * (contentPane.getLocationOnScreen().y - window.getLocationOnScreen().y)) : 50;
 
-                window.setVisible(false);   // must do this so we can force the window to move ???
+                // must do this so we can force the window to move ???
+                window.setVisible(false);
                 window.setLocation(windowOrigin);
-                window.setVisible(true);    // restore the window to visible
+                // restore the window to visible
+                window.setVisible(true);
                 document.showDocument();
-                windowOrigin.translate(offset, offset);    // prepare for next window
+                // prepare for next window
+                windowOrigin.translate(offset, offset);
             } catch (Exception exception) {
             }
         }
@@ -1212,7 +1220,8 @@ public abstract class Application {
      * the open documents.
      */
     protected void hideAllWindows() {
-        Console.hide();     // hide the console
+        // hide the console
+        Console.hide();
 
         for (final XalAbstractDocument document : openDocuments) {
             document.hideDocument();
@@ -1697,10 +1706,12 @@ public abstract class Application {
                     newDocument();
                     break;
                 case TEMPLATE_MODE:
-                    openFiles(selections, true, false);   // open templates
+                    // open templates
+                    openFiles(selections, true, false);
                     break;
                 case DOCUMENT_MODE:
-                    openFiles(selections);    // open documents
+                    // open documents
+                    openFiles(selections);
                     break;
                 default:
                     break;

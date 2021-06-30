@@ -70,7 +70,8 @@ public class AndQualifier extends CompoundQualifier {
             }
         }
 
-        return true;    // all qualifiers must have been satisfied
+        // all qualifiers must have been satisfied
+        return true;
     }
 
     /**

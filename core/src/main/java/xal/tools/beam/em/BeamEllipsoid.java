@@ -38,20 +38,23 @@ import xal.tools.math.r3.R3x3JacobiDecomposition;
  * The reference ellipsoid in three-space is represented by the equation
  * <br>
  * <br>
- * &nbsp; &nbsp;     <strong>r</strong>'<strong>&sigma;</strong><sup>-1</sup><strong>r</strong> = 1
+ * &nbsp; &nbsp;
+ * <strong>r</strong>'<strong>&sigma;</strong><sup>-1</sup><strong>r</strong>
+ * = 1
  * <br>
  * <br>
  * where <strong>&sigma;</strong> is the 3&times;3 matrix of spatial moments,
- * <strong>r</strong> &equiv; (<em>x y z</em>) is the position vector in R3, and the prime
- * indicates transposition.
+ * <strong>r</strong> &equiv; (<em>x y z</em>) is the position vector in R3, and
+ * the prime indicates transposition.
  * </p>
  * <p>
- * The matrix <strong>&sigma;</strong> is taken from the 7&times;7 covariance matrix
+ * The matrix <strong>&sigma;</strong> is taken from the 7&times;7 covariance
+ * matrix
  * <strong>&tau;</strong>
  * in homogeneous coordinates; it is the matrix formed from the six,
  * second-order spatial moments &lt;<em>xx</em>&gt;, &lt;<em>xy</em>&gt;,
- * &lt;<em>xz</em>&gt;, &lt;<em>yy</em>&gt;, &lt;<em>yz</em>&gt;, &lt;<em>zz</em>&gt;
- * and is arranged as follows:
+ * &lt;<em>xz</em>&gt;, &lt;<em>yy</em>&gt;, &lt;<em>yz</em>&gt;,
+ * &lt;<em>zz</em>&gt; and is arranged as follows:
  * <br>
  * <br>
  * <table>
@@ -70,17 +73,18 @@ import xal.tools.math.r3.R3x3JacobiDecomposition;
  * </table>
  * <br>
  * <br>
- * Note that <strong>&sigma;</strong> must be symmetric and positive definite. Thus, it is
- * diagonalizable with the decomposition
+ * Note that <strong>&sigma;</strong> must be symmetric and positive definite.
+ * Thus, it is diagonalizable with the decomposition
  * <br>
  * <br>
  * &nbsp; &nbsp; <strong>&sigma;</strong> = <strong>R&Lambda;R</strong>'
  * <br>
  * <br>
- * where the prime indicates transposition, <strong>R</strong> &isin; <em>SO</em>(3) is the
- * orthogonal rotation matrix and <strong>&Lambda;</strong> is the diagonal matrix of real
- * eigenvalues. Note from the above that these eigenvalues are the squares of
- * the ellipsoid semi-axes.
+ * where the prime indicates transposition, <strong>R</strong> &isin;
+ * <em>SO</em>(3) is the orthogonal rotation matrix and
+ * <strong>&Lambda;</strong> is the diagonal matrix of real eigenvalues. Note
+ * from the above that these eigenvalues are the squares of the ellipsoid
+ * semi-axes.
  * </p>
  *
  * @author Christopher K. Allen
@@ -107,15 +111,16 @@ public class BeamEllipsoid {
      * <em>K*ds</em>, i.e.,
      * <br>
      * <br>
-     * &nbsp; &nbsp;  <em>k</em><sup>2</sup> = <em>k<sub>n</sub></em><sup>2</sup><em>K
-     * ds</em>
+     * &nbsp; &nbsp;  <em>k</em><sup>2</sup> =
+     * <em>k<sub>n</sub></em><sup>2</sup><em>K ds</em>
      * <br>
      * <br>
      * where <em>k</em><sup>2</sup> is the true defocusing constant,
      * <em>k<sub>n</sub></em><sup>2</sup>
-     * is the normalized defocusing constant(returned by this method), <em>K</em>
-     * is the generalized beam perveance, and <em>ds</em> is the incremental path
-     * length over which the kick is being applied.
+     * is the normalized defocusing constant(returned by this method),
+     * <em>K</em>
+     * is the generalized beam perveance, and <em>ds</em> is the incremental
+     * path length over which the kick is being applied.
      * </p>
      * <p>
      * The defocusing constants
@@ -154,15 +159,16 @@ public class BeamEllipsoid {
      * <em>v</em><sup>2</sup>/<em>c</em><sup>2</sup>)<sup>1/2</sup>
      * for ellipsoid
      * @param arrMoments three-array (&lt;<em>x</em><sup>2</sup>&gt;,
-     * &lt;<em>y</em><sup>2</sup>&gt; &lt;<em>z</em><sup>2</sup>&gt;) of ellipsoid
-     * spatial second moments
+     * &lt;<em>y</em><sup>2</sup>&gt; &lt;<em>z</em><sup>2</sup>&gt;) of
+     * ellipsoid spatial second moments
      *
      * @return three-array (<em>k<sub>nx</sub></em><sup>2</sup>,
      * <em>k<sub>ny</sub></em><sup>2</sup>,
      * <em>k<sub>nz</sub></em><sup>2</sup>) of defocusing constants
      *
      * @see
-     * <a href="http://lib-www.lanl.gov/cgi-bin/getfile?00796950.pdf">Theory and
+     //lib-www.lanl.gov/cgi-bin/getfile?00796950.pdf">Theory and
+     * <a href="http:
      * Technique of Beam Envelope Simulation</a>
      *
      * @author Christopher K. Allen
@@ -324,8 +330,8 @@ public class BeamEllipsoid {
      * &lt;x&gt;*&lt;z&gt; |</td>
      * </tr>
      * <tr>
-     * <td><strong>&sigma;</strong></td> <td>&equiv;</td> <td>| &lt;y*x&gt; &lt;y*y&gt;
-     * &lt;y*z&gt; |</td> <td>-</td>  <td>| &lt;y&gt;*&lt;x&gt;
+     * <td><strong>&sigma;</strong></td> <td>&equiv;</td> <td>| &lt;y*x&gt;
+     * &lt;y*y&gt; &lt;y*z&gt; |</td> <td>-</td>  <td>| &lt;y&gt;*&lt;x&gt;
      * &lt;y&gt;*&lt;y&gt; &lt;y&gt;*&lt;z&gt; |</td>
      * </tr>
      * <tr>
@@ -393,8 +399,8 @@ public class BeamEllipsoid {
      * The argument <code>vec2ndMmts</code> should be the central spatial
      * moments &lt;<em>x</em><sup>2</sup>&gt; - &lt;<em>x</em>&gt;<sup>2</sup>,
      * &lt;<em>y</em><sup>2</sup>&gt; - &lt;<em>y</em>&gt;<sup>2</sup>,
-     * &lt;<em>z</em><sup>2</sup>&gt; - &lt;<em>z</em>&gt;<sup>2</sup>, taken from
-     * the central (spatial) covariance matrix
+     * &lt;<em>z</em><sup>2</sup>&gt; - &lt;<em>z</em>&gt;<sup>2</sup>, taken
+     * from the central (spatial) covariance matrix
      * <br>
      * <br>
      * <table>
@@ -404,8 +410,8 @@ public class BeamEllipsoid {
      * &lt;x&gt;*&lt;z&gt; |</td>
      * </tr>
      * <tr>
-     * <td><strong>&sigma;</strong></td> <td>&equiv;</td> <td>| &lt;y*x&gt; &lt;y*y&gt;
-     * &lt;y*z&gt; |</td> <td>-</td>  <td>| &lt;y&gt;*&lt;x&gt;
+     * <td><strong>&sigma;</strong></td> <td>&equiv;</td> <td>| &lt;y*x&gt;
+     * &lt;y*y&gt; &lt;y*z&gt; |</td> <td>-</td>  <td>| &lt;y&gt;*&lt;x&gt;
      * &lt;y&gt;*&lt;y&gt; &lt;y&gt;*&lt;z&gt; |</td>
      * </tr>
      * <tr>
@@ -716,17 +722,18 @@ public class BeamEllipsoid {
 
     /**
      * <p>
-     * Get orthogonal rotation matrix <strong>R</strong> in <em>SO</em>(7) that rotates the
-     * ellipsoid spatial semi-axes onto the spatial coordinate axes.
+     * Get orthogonal rotation matrix <strong>R</strong> in <em>SO</em>(7) that
+     * rotates the ellipsoid spatial semi-axes onto the spatial coordinate axes.
      * </p>
      * <p>
-     * The rotation <strong>R</strong> is actually the Cartesian product of a single
-     * rotation
-     * <strong>r</strong> from <em>SO</em>(3) that rotates the ellipsoid's spatial
-     * coordinates onto the coordinate axes. That is,
+     * The rotation <strong>R</strong> is actually the Cartesian product of a
+     * single rotation
+     * <strong>r</strong> from <em>SO</em>(3) that rotates the ellipsoid's
+     * spatial coordinates onto the coordinate axes. That is,
      * <br>
      * <br>
-     * <strong>R</strong> = <strong>r</strong> &times; <strong>r</strong> contained in SO(7) contained in
+     * <strong>R</strong> = <strong>r</strong> &times; <strong>r</strong>
+     * contained in SO(7) contained in
      * <strong>R</strong><sup>7&times;7</sup>
      * <br>
      * <br>
@@ -751,12 +758,14 @@ public class BeamEllipsoid {
      * <strong>M</strong>, then it is composed of the following factors
      * <br>
      * <br>
-     * &nbsp; &nbsp;  <strong>M</strong> = <strong>R<sub>0</sub>*T<sub>0</sub>*L<sub>0</sub></strong>
+     * &nbsp; &nbsp;  <strong>M</strong> =
+     * <strong>R<sub>0</sub>*T<sub>0</sub>*L<sub>0</sub></strong>
      * <br>
      * <br>
-     * where <strong>L<sub>0</sub></strong> is the Lorentz transform into the beam frame,
-     * <strong>T<sub>0</sub></strong> is the Galilean transform to the ellipsoid centroid
-     * coordinates, and <strong>R<sub>0</sub></strong>
+     * where <strong>L<sub>0</sub></strong> is the Lorentz transform into the
+     * beam frame,
+     * <strong>T<sub>0</sub></strong> is the Galilean transform to the ellipsoid
+     * centroid coordinates, and <strong>R<sub>0</sub></strong>
      * is the rotation that aligns the ellipsoid semi-axes to the coorinates
      * axes putting it into standard position.
      *
@@ -790,11 +799,12 @@ public class BeamEllipsoid {
      * <strong>M</strong>, then it is composed of the following factors
      * <br/>
      * <br/>
-     * &nbsp; &nbsp;  <strong>M</strong> = <strong>R<sub>0</sub>*T<sub>0</sub></strong>
+     * &nbsp; &nbsp;  <strong>M</strong> =
+     * <strong>R<sub>0</sub>*T<sub>0</sub></strong>
      * <br/>
      * <br/>
-     * where <strong>T<sub>0</sub></strong> is the Galilean transform to the ellipsoid
-     * centroid coordinates, and <strong>R<sub>0</sub></strong>
+     * where <strong>T<sub>0</sub></strong> is the Galilean transform to the
+     * ellipsoid centroid coordinates, and <strong>R<sub>0</sub></strong>
      * is the rotation that aligns the ellipsoid semi-axes to the coordinates
      * axes putting it into standard position.
      *
@@ -823,11 +833,13 @@ public class BeamEllipsoid {
      * three-dimensional perveance <code>dblPerveance</code>.
      * </p>
      * <p>
-     * Denoting the returned generator matrix as <strong>G</strong> then the actual
-     * transfer matrix <strong>M</strong>(s) for the space charge effect is given as
+     * Denoting the returned generator matrix as <strong>G</strong> then the
+     * actual transfer matrix <strong>M</strong>(s) for the space charge effect
+     * is given as
      * <br>
      * <br>
-     * &nbsp; &nbsp; <strong>M</strong>(<em>s</em>) = <em>e</em><sup><em>s</em><strong>G</strong></sup>
+     * &nbsp; &nbsp; <strong>M</strong>(<em>s</em>) =
+     * <em>e</em><sup><em>s</em><strong>G</strong></sup>
      * <br>
      * <br>
      * where <em>s</em> is the incremental path length for the dynamics.
@@ -842,8 +854,8 @@ public class BeamEllipsoid {
      * </p>
      * <p>
      * The resulting generator matrix is the product of the generator matrix
-     * <strong>G</strong><sub>0</sub> in the ellipsoid coordinate (which has a very simple
-     * form), and a series of matrix transforms. We have
+     * <strong>G</strong><sub>0</sub> in the ellipsoid coordinate (which has a
+     * very simple form), and a series of matrix transforms. We have
      * <br>
      * <br>
      * &nbsp; &nbsp;  <strong>G</strong> =
@@ -852,7 +864,8 @@ public class BeamEllipsoid {
      * (<strong>R</strong><sub>0</sub><strong>T</strong><sub>0</sub><strong>L</strong><sub>0</sub>)
      * <br>
      * <br>
-     * where <strong>L</strong><sub>0</sub> is the Lorentz transform into the beam frame,
+     * where <strong>L</strong><sub>0</sub> is the Lorentz transform into the
+     * beam frame,
      * <strong>T0</strong> is the Galilean transform to the ellipsoid centroid
      * coordinates, and <strong>R</strong><sub>0</sub>
      * is the rotation that aligns the ellipsoid semi-axes to the coorinates
@@ -864,23 +877,26 @@ public class BeamEllipsoid {
      * perveance. This value <em>K</em> is defined as
      * <br>
      * <br>
-     * &nbsp; &nbsp; <em>K</em> = (<em>Q</em>/(2<em>&pi;&epsilon;</em><sub>0</sub>))
+     * &nbsp; &nbsp; <em>K</em> =
+     * (<em>Q</em>/(2<em>&pi;&epsilon;</em><sub>0</sub>))
      * *(1/(&gamma;<sup>3</sup>&beta;<sup>2</sup>))
      * *(<em>q</em>/(<em>mc</em><sup>2</sup>))
      * <br>
      * <br>
-     * where <em>Q</em> is the total beam charge, <em>&epsilon;</em><sub>0</sub> is
-     * the permittivity of free space, <em>&gamma;</em> is the relativistic
-     * factor, <em>&beta;</em> is the normalized velocity (to the speed of light),
+     * where <em>Q</em> is the total beam charge, <em>&epsilon;</em><sub>0</sub>
+     * is the permittivity of free space, <em>&gamma;</em> is the relativistic
+     * factor, <em>&beta;</em> is the normalized velocity (to the speed of
+     * light),
      * <em>q</em> is the unit charge,
-     * <em>m</em> is the beam particle mass, and <em>c</em> is the speed of light.
+     * <em>m</em> is the beam particle mass, and <em>c</em> is the speed of
+     * light.
      * </p>
      *
      * @param dblPerveance    <em>K</em>, the generalized three-dimensional beam
      * perveance
      *
-     * @return                  <strong>G</strong>, the transfer matrix generator representing linear space
-     * charge effects
+     * @return                  <strong>G</strong>, the transfer matrix generator representing
+     * linear space charge effects
      *
      * @author Christopher K. Allen
      *
@@ -913,7 +929,8 @@ public class BeamEllipsoid {
      * Note that the returned matrix <strong>M</strong> has the form
      * <br>
      * <br>
-     * &nbsp; &nbsp; <strong>M</strong>(<em>s</em>) = <em>exp</em>(<em>s</em><strong>G</strong>)
+     * &nbsp; &nbsp; <strong>M</strong>(<em>s</em>) =
+     * <em>exp</em>(<em>s</em><strong>G</strong>)
      * <br>
      * <br>
      * where <em>s</em> is the incremental path length for the dynamics, and
@@ -921,22 +938,25 @@ public class BeamEllipsoid {
      * is the generator matrix generator for the transform. This generator
      * matrix is returned by the method
      * <code>{@link BeamEllipsoid#computeScheffGenerator}</code>, thus, we could
-     * compute the transfer matrix <strong>M</strong> simply by exponentiating the
-     * returned value. However, because the generator matrix in the ellipsoid
-     * coordinates, <strong>G<sub>0</sub></strong>, is idempotent (i.e.,
-     * <strong>G<sub>0</sub>G<sub>0</sub></strong> = 0) it is computationally faster to
-     * assemble the transfer matrix as the product
+     * compute the transfer matrix <strong>M</strong> simply by exponentiating
+     * the returned value. However, because the generator matrix in the
+     * ellipsoid coordinates, <strong>G<sub>0</sub></strong>, is idempotent
+     * (i.e.,
+     * <strong>G<sub>0</sub>G<sub>0</sub></strong> = 0) it is computationally
+     * faster to assemble the transfer matrix as the product
      * <br>
      * <br>
-     * &nbsp; &nbsp; <strong>M</strong>(<em>s</em>) = <em>e</em><sup><em>s</em><strong>G</strong></sup>
+     * &nbsp; &nbsp; <strong>M</strong>(<em>s</em>) =
+     * <em>e</em><sup><em>s</em><strong>G</strong></sup>
      * = (<strong>R<sub>0</sub>T<sub>0</sub>L<sub>0</sub></strong>)<sup>-1</sup>
      * (<strong>I</strong> + <em>ds</em><strong>G<sub>0</sub></strong>)
      * (<strong>R<sub>0</sub>T<sub>0</sub>L<sub>0</sub></strong>)
      * <br>
      * <br>
-     * where <strong>L<sub>0</sub></strong> is the Lorentz transform into the beam frame,
-     * <strong>T<sub>0</sub></strong> is the Galilean transform to the ellipsoid centroid
-     * coordinates, and <strong>R<sub>0</sub></strong>
+     * where <strong>L<sub>0</sub></strong> is the Lorentz transform into the
+     * beam frame,
+     * <strong>T<sub>0</sub></strong> is the Galilean transform to the ellipsoid
+     * centroid coordinates, and <strong>R<sub>0</sub></strong>
      * is the rotation that aligns the ellipsoid semi-axes to the coordinates
      * axes putting it into standard position.
      * </p>
@@ -946,20 +966,23 @@ public class BeamEllipsoid {
      * perveance. This value <em>K</em> is defined as
      * <br>
      * <br>
-     * &nbsp; &nbsp; <em>K</em> = (<em>Q</em>/(2<em>&pi;&epsilon;</em><sub>0</sub>))
+     * &nbsp; &nbsp; <em>K</em> =
+     * (<em>Q</em>/(2<em>&pi;&epsilon;</em><sub>0</sub>))
      * *(1/(&gamma;<sup>3</sup>&beta;<sup>2</sup>))
      * *(<em>q</em>/(<em>mc</em><sup>2</sup>))
      * <br>
      * <br>
-     * where <em>Q</em> is the total beam charge, <em>&epsilon;</em><sub>0</sub> is
-     * the permittivity of free space, <em>&gamma;</em> is the relativistic
-     * factor, <em>&beta;</em> is the normalized velocity (to the speed of light),
+     * where <em>Q</em> is the total beam charge, <em>&epsilon;</em><sub>0</sub>
+     * is the permittivity of free space, <em>&gamma;</em> is the relativistic
+     * factor, <em>&beta;</em> is the normalized velocity (to the speed of
+     * light),
      * <em>q</em> is the unit charge,
-     * <em>m</em> is the beam particle mass, and <em>c</em> is the speed of light.
+     * <em>m</em> is the beam particle mass, and <em>c</em> is the speed of
+     * light.
      * </p>
      *
-     * @param dblLen          <em>ds</em>, the incremental path length for the space charge
-     * effects
+     * @param dblLen          <em>ds</em>, the incremental path length for the space
+     * charge effects
      * @param dblPerveance    <em>K</em> the generalized three-dimensional beam
      * perveance
      *

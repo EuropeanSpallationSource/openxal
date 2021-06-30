@@ -101,7 +101,8 @@ public class LatticeSynchronizer implements Visitor {
     public LatticeSynchronizer(Lattice lattice, String paramSrc) {
         // use CA ?
         this.paramSrc = paramSrc;
-        fmt = Lattice.fmt; // number format is defined in Lattice
+        // number format is defined in Lattice
+        fmt = Lattice.fmt;
 
         //the xml-document-adaptor: creates the <!DOCTYPE ...> declaration
         docAdptr = XmlDataAdaptor.newEmptyDocumentAdaptor(DOC_TYPE, DTD);
@@ -620,8 +621,8 @@ public class LatticeSynchronizer implements Visitor {
         // for design values
         if (paramSrc == ModelProxy.PARAMSRC_DESIGN) {
             return rfgap.getGapDfltPhase() * Math.PI / 180.;
-        } // for live values
-        else if (paramSrc == ModelProxy.PARAMSRC_LIVE) {
+            // for live values
+        } else if (paramSrc == ModelProxy.PARAMSRC_LIVE) {
             try {
                 return rfgap.getGapPhaseAvg() * Math.PI / 180.;
                 //				return -99.d;
@@ -632,7 +633,8 @@ public class LatticeSynchronizer implements Visitor {
                 } else {
                     LOGGER.log(Level.INFO, "RfGap.getGapPhaseAvg(): channel access failed: " + rfgap.getId());
                 }
-                return Math.PI * 0.5; // 90 degrees
+                // 90 degrees
+                return Math.PI * 0.5;
             }
         } else if (paramSrc == ModelProxy.PARAMSRC_RF_DESIGN) {
             return rfgap.getGapDfltPhase() * Math.PI / 180.;
@@ -648,8 +650,8 @@ public class LatticeSynchronizer implements Visitor {
         // for design values
         if (paramSrc == ModelProxy.PARAMSRC_DESIGN) {
             return rfgap.getGapDfltE0TL() * 1.e6;
-        } // for live values
-        else if (paramSrc == ModelProxy.PARAMSRC_LIVE) {
+            // for live values
+        } else if (paramSrc == ModelProxy.PARAMSRC_LIVE) {
             try {
                 return rfgap.getGapE0TL() * 1.e6;
                 //				return -99.d;
@@ -676,8 +678,8 @@ public class LatticeSynchronizer implements Visitor {
         // for design values
         if (paramSrc == ModelProxy.PARAMSRC_DESIGN) {
             return magnet.getDesignField();
-        } // for live values
-        else if (paramSrc == ModelProxy.PARAMSRC_LIVE
+            // for live values
+        } else if (paramSrc == ModelProxy.PARAMSRC_LIVE
                 || paramSrc == ModelProxy.PARAMSRC_RF_DESIGN) {
             try {
                 if (magnet instanceof Electromagnet) {
@@ -707,8 +709,8 @@ public class LatticeSynchronizer implements Visitor {
         // for design values
         if (paramSrc == ModelProxy.PARAMSRC_DESIGN) {
             return magnet.getDesignField();
-        } // for live values
-        else if (paramSrc == ModelProxy.PARAMSRC_LIVE
+            // for live values
+        } else if (paramSrc == ModelProxy.PARAMSRC_LIVE
                 || paramSrc == ModelProxy.PARAMSRC_RF_DESIGN) {
             try {
                 if (magnet instanceof Electrostatic) {

@@ -21,8 +21,8 @@ package xal.tools.dsp;
  * <br>&nbsp;&nbsp;  <em>H</em>(<em>z</em>) = 1/(1 - <em>z</em><sup>-1</sup>)<br>
  * <br>
  * where <em>z</em> is the Z-transform variable. Note that the integrator is
- * unstable for zero frequency corresponding to <em>z</em> = 1, which is expected
- * for integration.
+ * unstable for zero frequency corresponding to <em>z</em> = 1, which is
+ * expected for integration.
  * </p>
  * <p>
  * The integrator is initialized so that the constant of integration

@@ -406,16 +406,20 @@ public class RingBPM extends BPM {
             case 2:
                 start = getStage1Len() + 2;
                 end = start + getStage2Len() - 1;
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
             case 3:
                 start = getStage1Len() + getStage2Len() + 5;
                 end = start + getStage3Len() - 1;
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
             case 4:
                 start = getStage1Len() + getStage2Len() + getStage3Len() + 8;
                 end = start + getStage4Len() - 1;
-                break;  // tap added this break statement as it seems to be the intent
-            default:    // implicitly includes stage 1
+                // tap added this break statement as it seems to be the intent
+                break;
+            // implicitly includes stage 1
+            default:
                 end = getStage1Len() - 1;
         }
 
@@ -458,15 +462,18 @@ public class RingBPM extends BPM {
             case 2:
                 start = getStage1Len() + 2;
                 end = start + getStage2Len() - 1;
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
             case 3:
                 start = getStage1Len() + getStage2Len() + 5;
                 end = start + getStage3Len() - 1;
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
             case 4:
                 start = getStage1Len() + getStage2Len() + getStage3Len() + 8;
                 end = start + getStage4Len() - 1;
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
             default:
                 end = getStage1Len() - 1;
         }

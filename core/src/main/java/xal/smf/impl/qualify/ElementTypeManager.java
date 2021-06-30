@@ -81,7 +81,8 @@ public class ElementTypeManager {
         final Collection<Class<?>> classSet = getClassSet(lowerType);
 
         if (classSet == null) {
-            return false;   // no match since no classes registered
+            // no match since no classes registered
+            return false;
         }
 
         if (classSet.contains(theClass)) {
@@ -90,7 +91,8 @@ public class ElementTypeManager {
 
         for (Class<?> regClass : classSet) {
             if (regClass.isAssignableFrom(theClass)) {
-                return true;    // theClass is a subclass of regClass
+                // theClass is a subclass of regClass
+                return true;
             }
         }
 

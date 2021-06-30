@@ -589,7 +589,8 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
 
         for (PHASEPLANE plane : PHASEPLANE.values()) {
             int cntDim = plane.getCovariantBasisSize();
-            GenericMatrix matId = new GenericMatrix(cntDim, cntDim); // TODO
+            // TODO
+            GenericMatrix matId = new GenericMatrix(cntDim, cntDim);
             matId.assignIdentity();
 
             // Compute the moment function resolvent

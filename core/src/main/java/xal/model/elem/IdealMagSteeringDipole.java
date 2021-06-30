@@ -220,7 +220,6 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
     protected PhaseMap transferMap(IProbe probe) throws ModelException {
 
         // Get constants
-//        double e  = UnitCharge;
         double c = IConstants.LIGHT_SPEED;
 
         // Get element parameters
@@ -233,23 +232,24 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
 
         double beta = probe.getBeta();
         double gamma = probe.getGamma();
-//        double gamma_2 = gamma*gamma;
 
         // Compute the cyclotron frequency and dipole strength
-//        double w = (q/e)*(c/Er)*(B/(beta*gamma));
         double w = (q) * (c / Er) * (B / (beta * gamma));
-        double dp = w * dL; // dp polarity = q*B polarity
-//      B polarity for negative charged particle -> x: left +, y: upper +
-// angle polarity was opposite up to 27 Nov 07
+        double dp = w * dL;
+
+        //      B polarity for negative charged particle -> x: left +, y: upper +
+        // angle polarity was opposite up to 27 Nov 07
         //changed so that angle + is x+, angle - is y- for negatives
         // on 28 Nov 07
         if (dblAngleKick != 0.) {
             LOGGER.log(Level.INFO, "***use anglekick (" + dblAngleKick + ") instead of dp " + dp);
             dp = dblAngleKick;
-        }                           // then B polarity is defined in J-PARC also dp>0 for B>0 in x and y
+            // then B polarity is defined in J-PARC also dp>0 for B>0 in x and y
+        }
 
         // Build transfer matrix
-        PhaseMatrix matPhi = PhaseMatrix.identity();         // homogeneous coordinates
+        // homogeneous coordinates
+        PhaseMatrix matPhi = PhaseMatrix.identity();
 
         switch (this.getOrientation()) {
 

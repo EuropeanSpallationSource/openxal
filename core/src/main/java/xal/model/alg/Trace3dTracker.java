@@ -225,7 +225,8 @@ public class Trace3dTracker extends Tracker {
         GenericRecord recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, strPrimKeyVal);
 
         if (recTracker == null) {
-            recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");  // just use the default record
+            // just use the default record
+            recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");
         }
 
         final double dblStepSize = recTracker.doubleValueForKey(EnvelopeTrackerBase.ATTR_STEPSIZE);
@@ -396,7 +397,8 @@ public class Trace3dTracker extends Tracker {
         matSC.setElem(5, 4, kZ);
         matSC.setElem(5, 6, -kZ * zm);
 
-        matSC = matSC.conjugateTrans(matRot);   // now rotate to beam cartesian coordinates
+        // now rotate to beam cartesian coordinates
+        matSC = matSC.conjugateTrans(matRot);
 
         return matSC;
     }

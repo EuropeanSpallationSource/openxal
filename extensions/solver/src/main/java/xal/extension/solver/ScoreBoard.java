@@ -404,7 +404,8 @@ public final class ScoreBoard implements AlgorithmScheduleListener, SolutionJudg
 
             String thisLabel = trial.getAlgorithm().getLabel();
             if ("Initial Algorithm".equals(thisLabel)) {
-                System.out.printf("%15s %5s, %6s\n", "### Total Evals || ", "Evaluations || ", "Efficiency ###"); // displaying the format of what is later printed
+                // displaying the format of what is later printed
+                System.out.printf("%15s %5s, %6s\n", "### Total Evals || ", "Evaluations || ", "Efficiency ###");
             }
 
             double[] emptyArray = new double[]{0, 0, 0};
@@ -417,7 +418,8 @@ public final class ScoreBoard implements AlgorithmScheduleListener, SolutionJudg
                 dataArray[2] = trial.getSatisfaction();
                 currentData.put(thisLabel, dataArray);
 
-            } // update data to existing algorithm in map
+           // update data to existing algorithm in map
+            }
             else {
                 dataArray = currentData.get(thisLabel);
                 dataArray[0]++;
@@ -436,7 +438,8 @@ public final class ScoreBoard implements AlgorithmScheduleListener, SolutionJudg
                 String[] labels = currentData.keySet().toArray(new String[0]);
                 System.out.printf("%6d ", getEvaluations());
 
-                int algorithmIndx = 0; // keeps track of how many algorithms have been printed on one line, limit to only 4
+                // keeps track of how many algorithms have been printed on one line, limit to only 4
+                int algorithmIndx = 0;
                 for (String label : labels) {
 
                     dataArray = currentData.get(label);

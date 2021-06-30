@@ -358,10 +358,12 @@ public class TwissBucket extends AttributeBucket {
         switch (iPlane) {
             case iXPlane:
                 setX(dblVal);
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
             case iYPlane:
                 setY(dblVal);
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
         }
     }
 
@@ -369,13 +371,16 @@ public class TwissBucket extends AttributeBucket {
         switch (iPlane) {
             case iXPlane:
                 setAlphaX(dblVal);
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
             case iYPlane:
                 setAlphaY(dblVal);
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
             case iZPlane:
                 setAlphaZ(dblVal);
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
         }
     }
 
@@ -383,13 +388,16 @@ public class TwissBucket extends AttributeBucket {
         switch (iPlane) {
             case iXPlane:
                 setBetaX(dblVal);
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
             case iYPlane:
                 setBetaY(dblVal);
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
             case iZPlane:
                 setBetaZ(dblVal);
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
         }
     }
 
@@ -397,13 +405,16 @@ public class TwissBucket extends AttributeBucket {
         switch (iPlane) {
             case iXPlane:
                 setEmitX(dblVal);
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
             case iYPlane:
                 setEmitY(dblVal);
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
             case iZPlane:
                 setEmitZ(dblVal);
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
         }
     }
 
@@ -411,10 +422,12 @@ public class TwissBucket extends AttributeBucket {
         switch (iPlane) {
             case iXPlane:
                 setEtaX(dblVal);
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
             case iYPlane:
                 setEtaY(dblVal);
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
         }
     }
 
@@ -422,10 +435,12 @@ public class TwissBucket extends AttributeBucket {
         switch (iPlane) {
             case iXPlane:
                 setEtaPx(dblVal);
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
             case iYPlane:
                 setEtaPy(dblVal);
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
         }
     }
 
@@ -433,10 +448,12 @@ public class TwissBucket extends AttributeBucket {
         switch (iPlane) {
             case iXPlane:
                 setMuX(dblVal);
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
             case iYPlane:
                 setMuY(dblVal);
-                break;  // tap added this break statement as it seems to be the intent
+                // tap added this break statement as it seems to be the intent
+                break;
         }
     }
 

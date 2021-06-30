@@ -258,7 +258,8 @@ public class IdealPermMagQuad extends ThickElectromagnet {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <strong>meters</strong>
+     * @param dblLen length of subsection to propagate through
+     * <strong>meters</strong>
      *
      * @return the elapsed time through section<strong>Units: seconds</strong>
      */
@@ -304,18 +305,22 @@ public class IdealPermMagQuad extends ThickElectromagnet {
         // Build the tranfer matrix from its component blocks
         PhaseMatrix matPhi = new PhaseMatrix();
 
-        matPhi.setSubMatrix(4, 5, 4, 5, arr0); // a drift space longitudinally
-        matPhi.setElem(6, 6, 1.0); // homogeneous coordinates
+        // a drift space longitudinally
+        matPhi.setSubMatrix(4, 5, 4, 5, arr0);
+        // homogeneous coordinates
+        matPhi.setElem(6, 6, 1.0);
 
         try {
             switch (orientation) {
 
-                case ORIENT_HOR: // focusing in x, defocusing in y
+                // focusing in x, defocusing in y
+                case ORIENT_HOR:
                     matPhi.setSubMatrix(0, 1, 0, 1, arrF);
                     matPhi.setSubMatrix(2, 3, 2, 3, arrD);
                     break;
 
-                case ORIENT_VER: // defocusing in x, focusing in y
+                // defocusing in x, focusing in y
+                case ORIENT_VER:
                     matPhi.setSubMatrix(0, 1, 0, 1, arrD);
                     matPhi.setSubMatrix(2, 3, 2, 3, arrF);
                     break;
@@ -363,8 +368,6 @@ public class IdealPermMagQuad extends ThickElectromagnet {
                     dySum += dy;
                     dzSum += dz;
 
-                    //                PhaseMap map = elem.transferMap(probe,dblLen);
-                    //                mapFringe = mapFringe.compose(map);
                     if (debug) {
                         LOGGER.log(Level.INFO, "id, K = " + permQuad.getId() + " " + K);
                     }
@@ -372,14 +375,8 @@ public class IdealPermMagQuad extends ThickElectromagnet {
                     double q = probe.getSpeciesCharge();
                     double fld = permQuad.getMagField();
 
-                    /*
-                    if (q*fld>=0) { //? correct??
-                        KSum += K;
-                    } else {
-                        KSum -= K;
-                    }
-                     */
-                    if (q * fld >= 0) { // fixed on 15 oct 06
+                    // fixed on 15 oct 06
+                    if (q * fld >= 0) {
                         KSum += (K * K);
                     } else {
                         KSum -= (K * K);
@@ -430,33 +427,18 @@ public class IdealPermMagQuad extends ThickElectromagnet {
         double Er = probe.getSpeciesRestEnergy();
         double p = Math.sqrt(w * (w + 2 * Er));
 
-        /*
-    if (bPathFlag != 0.) {//if bpathflag =1, then use nominal k0 from nominal kine energy
-        double w0 = getNominalKineEnergy();
-        if (w0==0.) {
-            w0 = w;
-            LOGGER.log(Level.INFO, "*setNominalKineEnergy, id, w0 = "+this.getId()+" "+w0);
-            setNominalKineEnergy(w0);
-        }
-        double p0 = Math.sqrt(w0*(w0+2*Er));
-
-        LOGGER.log(Level.INFO, "id, setBRhoscaling p/p0 = "+this.getId()+" "+p/p0);
-        LOGGER.log(Level.INFO, "w, w0 = "+w+" "+w0);
-        setBRhoScaling(p/p0);//save brho scaling. when nominalKineEnergy = 0, set 1.
-    }*/
         double r1 = radIn;
         double r2 = radOut;
-//def      if ((radIn<=0)&&(radOut<=0)) {
-//def          return 0;
-//def      }
 
-        double s = probe.getPosition() + dblLen / 2.;//correctly calculating at the center of slice
+        //correctly calculating at the center of slice
+        double s = probe.getPosition() + dblLen / 2.;
 
         //this I dont understand at all.
         double s1 = sCenter - sLength / 2;
         double s2 = sCenter + sLength / 2;
 
-        double f = fringe(s, s - s2, s - s1, r1, r2);//s1<s<s2, s-s2<0,s-s1>0
+        //s1<s<s2, s-s2<0,s-s1>0
+        double f = fringe(s, s - s2, s - s1, r1, r2);
 
         if (debug) {
             LOGGER.log(Level.INFO, "IdealPermMagQuad (" + this.getId() + ")::transferMap, s, s1, s2 = " + s + " " + s1 + " " + s2);
@@ -494,7 +476,8 @@ public class IdealPermMagQuad extends ThickElectromagnet {
         // focusing constant (radians/meter)
         double k = Math.sqrt((LIGHT_SPEED * G) / p);
 
-        if (K1 != 0.) {//sako!!
+        //sako!!
+        if (K1 != 0.) {
             LOGGER.log(Level.INFO, "K1, k = " + K1 + " " + k);
             k = Math.sqrt(Math.abs(K1) * f);
         }
@@ -562,7 +545,8 @@ public class IdealPermMagQuad extends ThickElectromagnet {
      *
      * @exception ModelException unknown quadrupole orientation
      */
-    static final boolean USE_APPROX_LENS = true; //def=false
+    //def=false
+    static final boolean USE_APPROX_LENS = true;
 
     public static boolean getUseApproxLens() {
         return USE_APPROX_LENS;
@@ -578,19 +562,17 @@ public class IdealPermMagQuad extends ThickElectromagnet {
         double Er = probe.getSpeciesRestEnergy();
         double p = Math.sqrt(w * (w + 2 * Er));
 
-        //LOGGER.log(Level.INFO, "calcK, bPathFlag = "+bPathFlag);
-        if (bPathFlag != 0.) {//if bpathflag =1, then use nominal k0 from nominal kine energy
+        //if bpathflag =1, then use nominal k0 from nominal kine energy
+        if (bPathFlag != 0.) {
             double w0 = getNominalKineEnergy();
             if (w0 == 0.) {
                 w0 = w;
-                //LOGGER.log(Level.INFO, "*setNominalKineEnergy, id, w0 = "+this.getId()+" "+w0);
                 setNominalKineEnergy(w0);
             }
             double p0 = Math.sqrt(w0 * (w0 + 2 * Er));
 
-            //LOGGER.log(Level.INFO, "id, setBRhoscaling p/p0 = "+this.getId()+" "+p/p0);
-            //LOGGER.log(Level.INFO, "w, w0 = "+w+" "+w0);
-            setBRhoScaling(p / p0);//save brho scaling. when nominalKineEnergy = 0, set 1.
+            //save brho scaling. when nominalKineEnergy = 0, set 1.
+            setBRhoScaling(p / p0);
         }
 
         K = calcK(probe, dL);
@@ -618,29 +600,17 @@ public class IdealPermMagQuad extends ThickElectromagnet {
 
         // Compute the transfer matrix components
         double[][] arrF;
-        //double[][] arrFPrec = QuadrupoleLens.transferFocPlane(K, dL);
 
         if (USE_APPROX_LENS) {
-            //arrF = QuadrupoleLens.transferFocPlaneApprox(K, dL);
             arrF = QuadrupoleLens.transferFocPlaneApproxSandWitch(K * assymmetryF, dL);
-            //          arrF = QuadrupoleLens.transferFocPlaneExact(K, dL);
-            //  LOGGER.log(Level.INFO, "arrFPrec = "+arrFPrec[0][0]+","+arrFPrec[0][1]+","+arrFPrec[1][0]+arrFPrec[1][1]);
-            //  LOGGER.log(Level.INFO, "arrF     = "+arrF[0][0]+","+arrF[0][1]+","+arrF[1][0]+","+arrF[1][1]);
 
         } else {
             arrF = QuadrupoleLens.transferFocPlane(K * assymmetryF, dL);
         }
         double[][] arrD;
-        // double[][] arrDPrec = QuadrupoleLens.transferDefPlane(K, dL);
-        //sako
 
         if (USE_APPROX_LENS) {
-            //arrD= QuadrupoleLens.transferDefPlaneApprox(K, dL);
             arrD = QuadrupoleLens.transferDefPlaneApproxSandWitch(K * assymmetryD, dL);
-            //        arrD= QuadrupoleLens.transferDefPlaneExact(K, dL);
-            //     LOGGER.log(Level.INFO, "arrDPrec = "+arrDPrec[0][0]+","+arrDPrec[0][1]+","+arrDPrec[1][0]+arrDPrec[1][1]);
-            //  LOGGER.log(Level.INFO, "arrD     = "+arrD[0][0]+","+arrD[0][1]+","+arrD[1][0]+","+arrD[1][1]);
-
         } else {
             arrD = QuadrupoleLens.transferDefPlane(K * assymmetryD, dL);
         }
@@ -650,8 +620,10 @@ public class IdealPermMagQuad extends ThickElectromagnet {
         // Build the tranfer matrix from its component blocks
         PhaseMatrix matPhi = new PhaseMatrix();
 
-        matPhi.setSubMatrix(4, 5, 4, 5, arr0); // a drift space longitudinally
-        matPhi.setElem(6, 6, 1.0); // homogeneous coordinates
+        // a drift space longitudinally
+        matPhi.setSubMatrix(4, 5, 4, 5, arr0);
+        // homogeneous coordinates
+        matPhi.setElem(6, 6, 1.0);
 
         if (q * getMagField() >= 0) {
             matPhi.setSubMatrix(0, 1, 0, 1, arrF);
@@ -672,7 +644,8 @@ public class IdealPermMagQuad extends ThickElectromagnet {
      * new variable represents for PQEXT parameter in Trace3d which shows the
      * extent of fringe field this must be consistent with IdealDrift
      */
-    static final double pqExt = 2.5;//trace3d default=2.5
+    //trace3d default=2.5
+    static final double pqExt = 2.5;
 
     /**
      * based on trace3d pmqf subroutine
@@ -723,8 +696,6 @@ public class IdealPermMagQuad extends ThickElectromagnet {
             v2 = 1 / Math.sqrt(1 + (z1 / r2) * (z1 / r2));
         }
 
-        //       double vtemp = (v1*v1*v2*v2*(v1*v1+v2*v2+v1*v2+4+8/(v1*v2)))/(v1+v2);
-        //       double f1 = 0.5*(1-0.125*z1*(1/r1+1/r2)*vtemp);
         double v1s = v1 * v1;
         double v2s = v2 * v2;
         double v12m = v1 * v2;
@@ -734,17 +705,13 @@ public class IdealPermMagQuad extends ThickElectromagnet {
 
         double w1 = 0;
         if (r1 != 0) {
-            //          w1 = 1/Math.sqrt(1+z2*z2/r1/r1);
             w1 = 1 / Math.sqrt(1 + (z2 / r1) * (z2 / r1));
         }
         double w2 = 0;
         if (r2 != 0) {
-            //          w2 = 1/Math.sqrt(1+z2*z2/r2/r2);
             w2 = 1 / Math.sqrt(1 + (z2 / r2) * (z2 / r2));
         }
 
-        //      double wtemp = (w1*w1*w2*w2*(w1*w1+w2*w2+w1*w2+4+8/(w1*w2)))/(w1+w2);
-        //      double f2 = 0.5*(1-0.125*z2*(1/r1+1/r2)*wtemp);
         double w1s = w1 * w1;
         double w2s = w2 * w2;
         double w12m = w1 * w2;

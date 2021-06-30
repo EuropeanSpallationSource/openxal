@@ -48,7 +48,8 @@ public class ErrorPropagator extends java.lang.Object {
         DifferentiableOperation varianceOperationSum = DifferentiableOperation.getConstant(0.0);
         for (final DifferentiableVariable variable : sourceVariables) {
             final DifferentiableVariable varianceVariable = DifferentiableOperation.getVariable(variable.getName() + "_Variance", 0.0);
-            varianceVariables.put(variable, varianceVariable);   // associate the variance variable with the variable
+            // associate the variance variable with the variable
+            varianceVariables.put(variable, varianceVariable);
             final DifferentiableOperation sensitivity = baseOperation.getDerivative(variable);
             varianceOperationSum = varianceOperationSum.plus(sensitivity.pow(2).times(varianceVariable));
         }

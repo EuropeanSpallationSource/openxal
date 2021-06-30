@@ -178,7 +178,8 @@ public abstract class DifferentiableOperation {
     /**
      * add the addend to this operation returning the new operation
      */
-    @SuppressWarnings("cast")     // cast is required to call the specific method with a negation argument
+    // cast is required to call the specific method with a negation argument
+    @SuppressWarnings("cast")
     public DifferentiableOperation plus(final DifferentiableOperation addend) {
         return addend instanceof DifferentiableZero ? this : addend instanceof DifferentiableNegation ? plus((DifferentiableNegation) addend) : DifferentiableAddition.add(this, addend);
     }
@@ -207,7 +208,8 @@ public abstract class DifferentiableOperation {
     /**
      * subtract the subtrahend from this operation returning the new operation
      */
-    @SuppressWarnings("cast")     // cast is required to call the specific method with a negation argument
+    // cast is required to call the specific method with a negation argument
+    @SuppressWarnings("cast")
     public DifferentiableOperation minus(final DifferentiableOperation subtrahend) {
         return subtrahend instanceof DifferentiableZero ? this : subtrahend instanceof DifferentiableNegation ? minus((DifferentiableNegation) subtrahend) : DifferentiableSubtraction.subtract(this, subtrahend);
     }
@@ -261,7 +263,8 @@ public abstract class DifferentiableOperation {
     /**
      * multiply the multiplicand to this operation returning the new operation
      */
-    @SuppressWarnings("cast")     // cast is required to call the specific times method for zero
+    // cast is required to call the specific times method for zero
+    @SuppressWarnings("cast")
     public DifferentiableOperation times(final DifferentiableOperation multiplicand) {
         return multiplicand instanceof DifferentiableZero ? times((DifferentiableZero) multiplicand) : multiplicand instanceof DifferentiableOne ? this : DifferentiableMultiplication.multiply(this, multiplicand);
     }
@@ -290,7 +293,8 @@ public abstract class DifferentiableOperation {
     /**
      * Divide the operation from this
      */
-    @SuppressWarnings("cast")     // cast is required to call the specific method with a quotient argument
+    // cast is required to call the specific method with a quotient argument
+    @SuppressWarnings("cast")
     public DifferentiableOperation over(final DifferentiableOperation divisor) {
         return divisor instanceof DifferentiableOne ? this : divisor instanceof DifferentiableDivision ? over((DifferentiableDivision) divisor) : DifferentiableDivision.divide(this, divisor);
     }
@@ -786,7 +790,8 @@ class DifferentiableAddition extends DifferentiableOperation {
      * Constructor
      */
     public DifferentiableAddition(final DifferentiableOperation summand, final DifferentiableOperation addend) {
-        if (summand instanceof DifferentiableConstant) {  // always put constants at the end
+        // always put constants at the end
+        if (summand instanceof DifferentiableConstant) {
             this.addend = summand;
             this.summand = addend;
         } else {
@@ -829,8 +834,10 @@ class DifferentiableAddition extends DifferentiableOperation {
         }
 
         // collect all constants if any and place them at the end so constants can be coalesced into a single constant
-        double constantSum = 0.0;                       // coalesce constants to this variable
-        DifferentiableOperation operationSum = null;    // gather non-constant operations to this variable
+        // coalesce constants to this variable
+        double constantSum = 0.0;
+        // gather non-constant operations to this variable
+        DifferentiableOperation operationSum = null;
 
         // test whether the summand is an addition operation so any constants can be collected and coalesced
         if (summand instanceof DifferentiableAddition) {
@@ -1001,7 +1008,8 @@ class DifferentiableMultiplication extends DifferentiableOperation {
      * Constructor
      */
     public DifferentiableMultiplication(final DifferentiableOperation multiplicand, final DifferentiableOperation multiplier) {
-        if (multiplier instanceof DifferentiableConstant) {   // always put constants at the front
+        // always put constants at the front
+        if (multiplier instanceof DifferentiableConstant) {
             this.multiplicand = multiplier;
             this.multiplier = multiplicand;
         } else {
@@ -1037,8 +1045,10 @@ class DifferentiableMultiplication extends DifferentiableOperation {
     public static DifferentiableOperation multiply(final DifferentiableOperation multiplicand, final DifferentiableOperation multiplier) {
         // collect all constants if any and place them at the front so constants can be coalesced into a single constant
 
-        double constantProduct = 1.0;                       // coalesce constants to this variable
-        DifferentiableOperation operationProduct = null;    // gather non-constant operations to this variable
+        // coalesce constants to this variable
+        double constantProduct = 1.0;
+        // gather non-constant operations to this variable
+        DifferentiableOperation operationProduct = null;
 
         // test whether the multiplicand is a multiplication operation so any constants can be collected and coalesced
         if (multiplicand instanceof DifferentiableMultiplication) {

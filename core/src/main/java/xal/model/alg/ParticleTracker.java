@@ -112,7 +112,8 @@ public class ParticleTracker extends Tracker {
         GenericRecord recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, strPrimKeyVal);
 
         if (recTracker == null) {
-            recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");  // just use the default record
+            // just use the default record
+            recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");
         }
 
     }

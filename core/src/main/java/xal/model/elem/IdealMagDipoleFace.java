@@ -113,10 +113,11 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      *
      * I2 := Integral{ B(z)[B0 - B(z)]/(g B0^2) }dz
      *
-     * where <em>g</em> is the gap height, <em>B0</em> is the hard edge value for
-     * the magnetic field, and <em>B(z)</em> is the true magnetic field along the
-     * design trajectory with path length parameter <em>z</em>. The integral taken
-     * from a location <em>z0</em> within the magnet where <em>B(z0)=B0</em>
+     * where <em>g</em> is the gap height, <em>B0</em> is the hard edge value
+     * for the magnetic field, and <em>B(z)</em> is the true magnetic field
+     * along the design trajectory with path length parameter <em>z</em>. The
+     * integral taken from a location <em>z0</em> within the magnet where
+     * <em>B(z0)=B0</em>
      * out to <em>z</em> = infinity.
      *
      * Some examples values are the following: I2 = 0.1666 linear drop off I2 =
@@ -184,7 +185,8 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * described by D.C. Carey. The integral determines the amount of defocusing
      * caused by the fringe field.
      *
-     * @return second-order integral of fringe field (<strong>dimensionless</strong>)
+     * @return second-order integral of fringe field
+     * (<strong>dimensionless</strong>)
      *
      * @see IdealMagDipoleFace#setFringeIntegral(double)
      */
@@ -230,7 +232,8 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
     protected PhaseMap transferMap(IProbe probe) throws ModelException {
 
         // Get  parameters
-        double B = this.getMagField(); // opposite
+        // opposite
+        double B = this.getMagField();
         double g = this.getGapHeight();
         double I2 = this.getFringeIntegral();
         double h = BendingMagnet.compCurvature(probe, B);
@@ -245,7 +248,8 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
             if (path != 0) {
                 hrho = alpha / path;
             }
-            h = hrho; //if fieldPathFlag=1, use hrho (calculated from rho) instead of h(calculated from p and B)
+            //if fieldPathFlag=1, use hrho (calculated from rho) instead of h(calculated from p and B)
+            h = hrho;
         }
 
         // The fringe field angle from the extended field:

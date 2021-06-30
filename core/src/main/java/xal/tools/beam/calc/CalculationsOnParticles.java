@@ -109,8 +109,9 @@ public class CalculationsOnParticles extends CalculationEngine implements ISimLo
     }
 
     /**
-     * Returns the full response matrix <strong>&Phi;</strong> providing the sensitivity
-     * of the final particle position <strong>z</strong> to the initial conditions
+     * Returns the full response matrix <strong>&Phi;</strong> providing the
+     * sensitivity of the final particle position <strong>z</strong> to the
+     * initial conditions
      * <strong>z</strong><sub>0</sub>.
      *
      * @return the response matrix <strong>&Phi;</strong> =
@@ -166,7 +167,8 @@ public class CalculationsOnParticles extends CalculationEngine implements ISimLo
      * <code>{@link #calculateFixedPoint(PhaseMatrix)}</code> given the full
      * response matrix <strong>&Phi;</strong> at the simulation exit (see
      * {@link #getFullResponseMatrix()}). It is invariant under the action of
-     * <strong>&Phi;</strong>, that is, <strong>&Phi;z</strong> = <strong>z</strong>.
+     * <strong>&Phi;</strong>, that is, <strong>&Phi;z</strong> =
+     * <strong>z</strong>.
      * </p>
      * <h3>NOTES:</h3>
      * <p>
@@ -249,35 +251,40 @@ public class CalculationsOnParticles extends CalculationEngine implements ISimLo
      *
      * <p>
      * Consider first the point in phase space that is invariant under repeated
-     * application of the response matrix <strong>&Phi;</strong> for the entire beamline
-     * or ring. This is under the condition that we decompose <strong>&Phi;</strong> into
-     * its homogeneous and non-homogeneous components. A particle entering the
-     * linac at that location exits at the same location.
+     * application of the response matrix <strong>&Phi;</strong> for the entire
+     * beamline or ring. This is under the condition that we decompose
+     * <strong>&Phi;</strong> into its homogeneous and non-homogeneous
+     * components. A particle entering the linac at that location exits at the
+     * same location.
      * </p>
      * <p>
      * To compute this linac fixed point, recall that the <em>homogeneous</em>
-     * response matrix <strong>&Phi;</strong> for the beamline (or full-turn matrix for a
-     * ring) has final row that represents the translation <strong>&Delta;</strong> of the
-     * particle under the action of <strong>&Phi;</strong>. The 6&times;6 sub-matrix of
-     * <strong>&Phi;</strong> represents the (linear) action of the bending magnetics and
-     * quadrupoles and corresponds to the matrix <strong>T</strong> &in;
-     * <strong>R</strong><sup>6&times;6</sup> (here <strong>T</strong> is linear). Thus, we can
-     * write the linear operator <strong>&Phi;</strong>
+     * response matrix <strong>&Phi;</strong> for the beamline (or full-turn
+     * matrix for a ring) has final row that represents the translation
+     * <strong>&Delta;</strong> of the particle under the action of
+     * <strong>&Phi;</strong>. The 6&times;6 sub-matrix of
+     * <strong>&Phi;</strong> represents the (linear) action of the bending
+     * magnetics and quadrupoles and corresponds to the matrix
+     * <strong>T</strong> &in;
+     * <strong>R</strong><sup>6&times;6</sup> (here <strong>T</strong> is
+     * linear). Thus, we can write the linear operator <strong>&Phi;</strong>
      * as the augmented system
      * <br>
      * <br>
      * <pre>
      * &nbsp; &nbsp; <strong>&Phi;</strong> = |<strong>T</strong> <strong>&Delta;</strong> |,   <strong>z</strong> &equiv; |<strong>p</strong>| ,
      *         |<strong>0</strong> 1 |        |1|
-     * </pre> where <strong>p</strong> is the projection of <strong>z</strong> into the embedded
-     * phase space
-     * <strong>R</strong><sup>6</sup> (without homogeneous coordinate). coordinates).
+     * </pre> where <strong>p</strong> is the projection of <strong>z</strong>
+     * into the embedded phase space
+     * <strong>R</strong><sup>6</sup> (without homogeneous coordinate).
+     * coordinates).
      * </p>
      * <p>
      * Putting this together we get
      * <br>
      * <br>
-     * &nbsp; &nbsp; <strong>&Phi;z</strong> = <strong>Tp</strong> + <strong>&Delta;</strong> = <strong>p</strong> ,
+     * &nbsp; &nbsp; <strong>&Phi;z</strong> = <strong>Tp</strong> +
+     * <strong>&Delta;</strong> = <strong>p</strong> ,
      * <br>
      * <br>
      * to which the solution is
@@ -288,34 +295,38 @@ public class CalculationsOnParticles extends CalculationEngine implements ISimLo
      * <br>
      * <br>
      * assuming it exists. The question of solution existence falls upon the
-     * resolvent <strong>R</strong> &equiv; (<strong>T</strong> - <strong>I</strong>)<sup>-1</sup> of
-     * <strong>T</strong>. By inspection we can see that <strong>p</strong> is defined so long as
-     * the eigenvalues of <strong>T</strong> are located away from 1. In this case the
-     * returned value is the augmented vector (<strong>p</strong> 1)<sup><em>T</em></sup>
+     * resolvent <strong>R</strong> &equiv; (<strong>T</strong> -
+     * <strong>I</strong>)<sup>-1</sup> of
+     * <strong>T</strong>. By inspection we can see that <strong>p</strong> is
+     * defined so long as the eigenvalues of <strong>T</strong> are located away
+     * from 1. In this case the returned value is the augmented vector
+     * (<strong>p</strong> 1)<sup><em>T</em></sup>
      * &in; <strong>R</strong><sup>6</sup> &times; {1}.
      * </p>
      * <p>
      * When the set of eigenvectors does contain 1, we attempt to find the
-     * solution for the transverse phase space. That is, we take vector <strong>p</strong>
+     * solution for the transverse phase space. That is, we take vector
+     * <strong>p</strong>
      * &in; <strong>R</strong><sup>4</sup>
      * and <strong>T</strong> &in; <strong>R</strong><sup>4&times;4</sup> where
-     * <strong>T</strong> = proj<sub>4&times;4</sub> <strong>&Phi;</strong>. The solution value is
-     * then
+     * <strong>T</strong> = proj<sub>4&times;4</sub> <strong>&Phi;</strong>. The
+     * solution value is then
      * <strong>z</strong> = (<strong>p</strong> 0 0 1)<sup><em>T</em></sup>.
      * </p>
      * <p>
-     * Once we have the fixed point <strong>z</strong><sub>0</sub> for the linac we
-     * compute the trajectory of the fixed point at the location of the given
+     * Once we have the fixed point <strong>z</strong><sub>0</sub> for the linac
+     * we compute the trajectory of the fixed point at the location of the given
      * probe state. To do so, we multiply
      * <strong>z</strong><sub>0</sub> by the response matrix
-     * <strong>&Phi;</strong><sub><em>n</em></sub> for the given probe state. That is, we
-     * propagate the fixed point of the linac from the linac entrance to the
-     * location of the given phase state.
+     * <strong>&Phi;</strong><sub><em>n</em></sub> for the given probe state.
+     * That is, we propagate the fixed point of the linac from the linac
+     * entrance to the location of the given phase state.
      * </p>
      *
      * @return The quantity
-     * <strong>&Phi;</strong><sub><em>n</em></sub>&sdot;<strong>z</strong><sub>0</sub>, the linac
-     * fixed point <strong>z</strong><sub>0</sub> propagated to the state location
+     * <strong>&Phi;</strong><sub><em>n</em></sub>&sdot;<strong>z</strong><sub>0</sub>,
+     * the linac fixed point <strong>z</strong><sub>0</sub> propagated to the
+     * state location
      * <em>s<sub>n</sub></em>
      *
      * @see

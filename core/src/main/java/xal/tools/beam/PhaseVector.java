@@ -259,14 +259,15 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
     }
 
     /**
-     * Embeds the given vector <strong>z</strong> &in; <strong>R</strong><sup>6</sup> into
-     * homogeneous phase space. The given vector is treated like a vector of
-     * phase space coordinates corresponding to the first 6 elements of a
-     * <code>PhaseVector</code> object. The last element of the returned phase
-     * vector has value 1, as do all phase vectors.
+     * Embeds the given vector <strong>z</strong> &in;
+     * <strong>R</strong><sup>6</sup> into homogeneous phase space. The given
+     * vector is treated like a vector of phase space coordinates corresponding
+     * to the first 6 elements of a <code>PhaseVector</code> object. The last
+     * element of the returned phase vector has value 1, as do all phase
+     * vectors.
      *
-     * @param vecCoords vector <strong>z</strong> containing the first 6 element values of
-     * the returned phase vector
+     * @param vecCoords vector <strong>z</strong> containing the first 6 element
+     * values of the returned phase vector
      *
      * @return the augmented vector (<strong>z</strong>,1)
      *
@@ -288,16 +289,17 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
     }
 
     /**
-     * Embeds the given vector <strong>z</strong> &in; <strong>R</strong><sup>4</sup> into
-     * homogeneous phase space. The given vector is treated like a vector of
-     * transverse phase space coordinates corresponding to the first 4 elements
-     * of a <code>PhaseVector</code> object. The vector elements corresponding
-     * to the longitudinal phase space coordinates <em>z</em> and <em>z'</em> are
-     * both set to zero. The last element of the returned phase vector has value
-     * 1, as do all phase vectors.
+     * Embeds the given vector <strong>z</strong> &in;
+     * <strong>R</strong><sup>4</sup> into homogeneous phase space. The given
+     * vector is treated like a vector of transverse phase space coordinates
+     * corresponding to the first 4 elements of a <code>PhaseVector</code>
+     * object. The vector elements corresponding to the longitudinal phase space
+     * coordinates <em>z</em> and <em>z'</em> are both set to zero. The last
+     * element of the returned phase vector has value 1, as do all phase
+     * vectors.
      *
-     * @param vecCoords vector <strong>z</strong> containing the first 6 element values of
-     * the returned phase vector
+     * @param vecCoords vector <strong>z</strong> containing the first 6 element
+     * values of the returned phase vector
      *
      * @return the augmented vector (<strong>z</strong>,1)
      *
@@ -347,7 +349,8 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
     /**
      * Copy Constructor
      *
-     * Creates new <code>PhaseVector</code> object which is a <strong>deep copy</strong>
+     * Creates new <code>PhaseVector</code> object which is a <strong>deep
+     * copy</strong>
      * of the given argument.
      *
      * @param vecInit initial value
@@ -817,8 +820,10 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
      */
     @Override
     public double norm1() {
-        int i;          // loop control
-        double dblSum;     // running sum
+        // loop control
+        int i;
+        // running sum
+        double dblSum;
 
         dblSum = 0.0;
         for (i = 0; i < 6; i++) {
@@ -842,8 +847,10 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
      */
     @Override
     public double norm2() {
-        int i;          // loop control
-        double dblSum;     // running sum
+        // loop control
+        int i;
+        // running sum
+        double dblSum;
 
         dblSum = 0.0;
         for (i = 0; i < 6; i++) {
@@ -867,8 +874,10 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
      */
     @Override
     public double normInf() {
-        int i;          // loop control
-        double dblMax;     // running maximum
+        // loop control
+        int i;
+        // running maximum
+        double dblMax;
 
         dblMax = 0.0;
         for (i = 0; i < 6; i++) {

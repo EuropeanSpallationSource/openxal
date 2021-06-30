@@ -34,10 +34,11 @@ import java.util.logging.Logger;
  * Tracking algorithm objects are classes that implement the
  * <code>IAlgorithm</code> interface. This class provides default
  * implementations for all methods of the <code>IAlgorithm</code> interface.
- * Derived classes must implement the <strong>doPropagation()</strong> abstract method in
- * order to provide the actual dynamics of the algorithm. Note that derived
- * classes may wish to override the <code>propagate(IProbe, IElement)</code>
- * method directly for complete control of the propagation mechanism.
+ * Derived classes must implement the <strong>doPropagation()</strong> abstract
+ * method in order to provide the actual dynamics of the algorithm. Note that
+ * derived classes may wish to override the
+ * <code>propagate(IProbe, IElement)</code> method directly for complete control
+ * of the propagation mechanism.
  * </p>
  * <p>
  * This class provides the methods the methods <code>advanceProbe</code> and
@@ -312,14 +313,16 @@ public abstract class Tracker implements IAlgorithm, IArchive {
         GenericRecord recAlgorithm = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, strPrimKeyVal);
 
         if (recAlgorithm == null) {
-            recAlgorithm = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");  // just use the default record
+            // just use the default record
+            recAlgorithm = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");
         }
 
         // Get the algorithm class name from the algorithm record
         final String strClsAlg = recAlgorithm.stringValueForKey(Tracker.ATTRTAG_TYPE);
 
         // Create the algorithm instance and load it with data
-        IAlgorithm algorithm;      // the new algorithm to create and initialize
+        // the new algorithm to create and initialize
+        IAlgorithm algorithm;
         try {
             Class<?> clsTracker = Class.forName(strClsAlg);
             algorithm = (IAlgorithm) clsTracker.newInstance();
@@ -438,8 +441,6 @@ public abstract class Tracker implements IAlgorithm, IArchive {
 
         this.registerProbeType(clsProbeType);
     }
-
-    ;
     
     /**
      * Copy constructor for Tracker
@@ -459,13 +460,6 @@ public abstract class Tracker implements IAlgorithm, IArchive {
         this.dblPosElem = sourceTracker.dblPosElem;
     }
 
-    /**
-     * Creates a deep copy of Tracker
-     */
-//    @Override
-//    public Tracker copy() {
-//        return new Tracker( this );
-//    }
     /**
      * Set the frequency of probe trajectory updates.
      *
@@ -520,15 +514,6 @@ public abstract class Tracker implements IAlgorithm, IArchive {
         return this.bolInclStopElem;
     }
 
-//    /**
-//     * TODO CKA - Remove, never used.
-//     * 
-//     * @author Christopher K. Allen
-//     * @since  Oct 20, 2014
-//     */
-//    public Class<? extends IProbe> getProbeType() {
-//        return probeType;
-//    }
     /*
      *  Abstract Methods
      */
@@ -739,18 +724,14 @@ public abstract class Tracker implements IAlgorithm, IArchive {
     @Override
     public void propagate(IProbe probe, IElement elem) throws ModelException {
 
-//        if (!this.validProbe(probe))        // wrong probe type for algorithm
-//            throw new ModelException("Tracker::propagate() - cannot propagate, invalid probe type.");
-        if (!this.validElement(elem)) // check if we can propagate with this algorithm
-        {
+        // check if we can propagate with this algorithm
+        if (!this.validElement(elem)) {
             return;
         }
 
         probe.setCurrentElement(elem.getId());
         probe.setCurrentElementTypeId(elem.getType());
         probe.setCurrentHardwareId(elem.getHardwareNodeId());
-//     sako *** IMPORTANT CHANGES
-//        this is now moved to Element.propagate this.setElemPosition(0.0);
 
         if ((this.getProbeUpdatePolicy() & Tracker.UPDATE_ENTRANCE) == Tracker.UPDATE_ENTRANCE) {
             probe.update();
@@ -788,7 +769,8 @@ public abstract class Tracker implements IAlgorithm, IArchive {
         GenericRecord recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, strPrimKeyVal);
 
         if (recTracker == null) {
-            recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");  // just use the default record
+            // just use the default record
+            recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");
         }
 
         final boolean bolDebug = recTracker.booleanValueForKey(Tracker.ATTRTAG_DEBUG);
@@ -954,15 +936,22 @@ public abstract class Tracker implements IAlgorithm, IArchive {
             throws ModelException {
 
         // Initial conditions of the probe
-        double h0 = this.getElemPosition();    // position within element
-        double s0 = probe.getPosition();       // position within sequence
-        double t0 = probe.getTime();           // time in sequence
-        double W0 = probe.getKineticEnergy();  // total kinetic energy
+        // position within element
+        double h0 = this.getElemPosition();
+        // position within sequence
+        double s0 = probe.getPosition();
+        // time in sequence
+        double t0 = probe.getTime();
+        // total kinetic energy
+        double W0 = probe.getKineticEnergy();
 
         // Properties of the element
-        double dh = dblLen;                           // change in position
-        double dt = elem.elapsedTime(probe, dblLen);   // change in time
-        double dW = elem.energyGain(probe, dblLen);    // change in energy
+        // change in position
+        double dh = dblLen;
+        // change in time
+        double dt = elem.elapsedTime(probe, dblLen);
+        // change in energy
+        double dW = elem.energyGain(probe, dblLen);
 
         // Retreat the probe position and energy
         double h1 = h0 - dh;
@@ -994,7 +983,8 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * </p>
      *
      * @param elem element interface to validate propagation
-     * @return      <strong>true</strong> if we propagate, <strong>false</strong> if not
+     * @return      <strong>true</strong> if we propagate, <strong>false</strong> if
+     * not
      */
     protected boolean validElement(IElement elem) {
 
@@ -1004,14 +994,17 @@ public abstract class Tracker implements IAlgorithm, IArchive {
         }
 
         // Check if there is a starting element defined and 
-        if (!this.bolIsStarted) {                     // we haven't started propagating yet         
+        // we haven't started propagating yet         
+        if (!this.bolIsStarted) {
 
             if (this.getStartElementId().equals(elem.getId())
-                    || this.getStartElementId().equals("BEGIN_" + elem.getParent().getId())) {  // IL: backward compatibility with BEGIN_section markers  
+                    // IL: backward compatibility with BEGIN_section markers  
+                    || this.getStartElementId().equals("BEGIN_" + elem.getParent().getId())) {
                 // reached the starting element
                 this.bolIsStarted = true;
 
-            } else {                // we haven't started and we haven't reached the start element
+                // we haven't started and we haven't reached the start element
+            } else {
                 return false;
 
             }
@@ -1068,54 +1061,3 @@ public abstract class Tracker implements IAlgorithm, IArchive {
     }
 
 }
-
-/*
- *  Storage
- */
-///**
-//*  All derived algorithms must implement this method for advancing the state
-//*  of supported probes.
-//*  This method advances the state of the probe through the provided element.
-//*
-//*  @param  probe       probe whose state is to be advanced
-//*  @param  elem        element that acts on probe
-//*  @param  dblLen      length of element subsection to advance
-//*
-//*  @exception  ModelException    unable to advance probe state
-//*/
-//protected abstract void advanceState(IProbe probe, IElement elem, double dblLen) 
-//throws ModelException;
-///**
-//* Returns the number of sections to break the specified element into for
-//* propagation.
-//* 
-//* @param elem element currenly acting on probe
-//* 
-//* @return integer indicating number of element subsections
-//*/
-//protected abstract int elementSubsections(IElement elem);
-///**
-//* Propagates the probe through the element.
-//*
-//*  @param  probe   probe to propagate
-//*  @param  elem    element acting on probe
-//*
-//*  @exception  ModelException  invalid probe type or error in advancing probe
-//*/
-//public void propagate(IProbe probe, IElement elem) throws ModelException {
-//        
-//  if (!this.validProbe(probe))
-//      throw new ModelException("Tracker::propagate() - cannot propagate, invalid probe type.");
-//        
-//  double currentPosition = 0;
-//  double nextInterval;
-//  do {
-//    nextInterval = nextIntervalFrom(elem, currentPosition);
-//    LOGGER.log(Level.INFO, "propagate elem: " + elem.getId() + " currPos: " + currentPosition + " nextInterval: " + nextInterval);
-//    this.advanceState(probe, elem, nextInterval);
-//    this.advanceProbe(probe, elem, nextInterval);
-//    probe.update();
-//    currentPosition += nextInterval;
-//  } while (currentPosition < elem.getLength());
-//};
-

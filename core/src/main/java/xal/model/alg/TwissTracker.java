@@ -301,7 +301,8 @@ public class TwissTracker extends Tracker {
         GenericRecord recTracker = tblAlgorithm.record(TwissTracker.TBL_PRIM_KEY_NAME, strPrimKeyVal);
 
         if (recTracker == null) {
-            recTracker = tblAlgorithm.record(TwissTracker.TBL_PRIM_KEY_NAME, "default");  // just use the default record
+            // just use the default record
+            recTracker = tblAlgorithm.record(TwissTracker.TBL_PRIM_KEY_NAME, "default");
         }
 
         final boolean bolEmitGrwth = recTracker.booleanValueForKey(TwissTracker.ATTR_EMITGROWTH);
@@ -341,7 +342,8 @@ public class TwissTracker extends Tracker {
             if (daTwiss.hasAttribute(ATTR_SCHEFF)) {
                 this.setUseSpacecharge(daTwiss.booleanValue(ATTR_SCHEFF));
 
-            } else if (daTwiss.hasAttribute(ATTR_USESPACECHARGE)) { // Backward compatibility
+                // Backward compatibility
+            } else if (daTwiss.hasAttribute(ATTR_USESPACECHARGE)) {
 
                 this.setUseSpacecharge(daTwiss.booleanValue(ATTR_USESPACECHARGE));
             }
@@ -361,15 +363,6 @@ public class TwissTracker extends Tracker {
      */
     @Override
     public void save(DataAdaptor daSink) {
-
-//        DataAdaptor daptAlg = daptArchive.createChild(NODETAG_ALG);
-//        daptAlg.setValue(ATTRTAG_TYPE, this.getType());
-//        daptAlg.setValue(ATTRTAG_VER, this.getVersion());
-//        
-//        DataAdaptor daptTrack = daptAlg.createChild(NODETAG_TRACKER);
-//        daptTrack.setValue(ATTRTAG_DEBUG, this.getDebugMode());
-//        daptTrack.setValue(ATTRTAG_UPDATE, this.getProbeUpdatePolicy());
-//        daptTrack.setValue(ATTRTAG_RFGAP_PHASE, this.useRfGapPhaseCalculation());
         super.save(daSink);
 
         DataAdaptor daptAlg = daSink.childAdaptor(NODETAG_ALG);
@@ -414,7 +407,8 @@ public class TwissTracker extends Tracker {
         PhaseMap mapElem = ifcElem.transferMap(ifcProbe, dblLen);
         PhaseMatrix matPhi = mapElem.getFirstOrder();
 
-        if (this.getSpaceChargeFlag()) {            // Get the space charge kick
+        // Get the space charge kick
+        if (this.getSpaceChargeFlag()) {
             double K = probe.beamPerveance();
             CovarianceMatrix matTau = CovarianceMatrix.buildCovariance(probe.getTwiss());
             BeamEllipsoid ellipsoid = new BeamEllipsoid(gamma, matTau);
@@ -531,15 +525,21 @@ public class TwissTracker extends Tracker {
     private Twiss3D exceptionIdealRfGap(TwissProbe probe, IdealRfGap elem) {
 
         // Loop variables
-        double a0, b0, e0;     // old Twiss parameters
-        double a1, b1, e1;     // new Twiss parameters
+        // old Twiss parameters
+        double a0, b0, e0;
+        // new Twiss parameters
+        double a1, b1, e1;
 
-        double k;              // "phase spread"
-        double ratio;          // ratio between old and new emittances
+        // "phase spread"
+        double k;
+        // ratio between old and new emittances
+        double ratio;
 
         // Begin loop
-        Twiss3D twissEnv0 = probe.getTwiss();   // old Twiss parameters
-        Twiss3D twissEnv1 = new Twiss3D();      // returned new Twiss parameters
+        // old Twiss parameters
+        Twiss3D twissEnv0 = probe.getTwiss();
+        // returned new Twiss parameters
+        Twiss3D twissEnv1 = new Twiss3D();
 
         for (IND_3D index : IND_3D.values()) {
 
@@ -547,14 +547,13 @@ public class TwissTracker extends Tracker {
             b0 = twissEnv0.getTwiss(index).getBeta();
             e0 = twissEnv0.getTwiss(index).getEmittance();
 
-            if (index != IND_3D.Z) // transverse plane
-            {
+            // transverse plane
+            if (index != IND_3D.Z) {
                 k = this.correctTransSigmaPhaseSpread(probe, elem);
             } else // longitudinal plane
             {
                 k = this.correctLongSigmaPhaseSpread(probe, elem);
             }
-//                k = elem.compLongFocusing(probe);
 
             ratio = Math.sqrt(1.0 + k * b0 * b0);
 
@@ -568,46 +567,6 @@ public class TwissTracker extends Tracker {
         return twissEnv1;
     }
 
-//    /**
-//     * Compute and return the betatron phase advance for the centroid produced
-//     * by this matrix when used as a transfer matrix.
-//     * 
-//     * @param   twissEnv0   twiss parameters before action by <code>matPhi</code>
-//     * @param   twissEnv1   twiss parameters after action by <code>matPhi</code>
-//     * @param   matPhi      transfer matrix
-//     * 
-//     * @return  vector (sigx,sigy,sigz) of phase advances in <strong>radians</strong>
-//     */
-//    private R3   compPhaseAdvance(Twiss3D twissEnv0, Twiss3D twissEnv1, PhaseMatrix matPhi)  {
-//        
-//        int     iElem;      // matrix element index
-//        double  dblR12;     // sub-matrix element R12
-//        double  dblPhsAd;   // phase advance
-//        double  dblBeta0;   // Twiss beta before action of matPhi
-//        double  dblBeta1;   // Twiss beta after action of matPhi
-//        R3      vecPhsAd = new R3();    // returned set of phase advances
-//        
-//        // Loop through each plane
-//        for (IND_3D index : IND_3D.values()) {
-//            iElem = 2*index.val();
-//            dblR12 = matPhi.getElem(iElem, iElem+1);
-//            
-//            dblBeta0 = twissEnv0.getTwiss(index).getBeta();
-//            dblBeta1 = twissEnv1.getTwiss(index).getBeta();
-//            
-//            final double dblAlphInt = twsInt[mode].getAlpha();
-//            
-//            final double dblM11 = matPhi.getElem( 2*mode, 2*mode );
-//            final double dblM12 = matPhi.getElem( 2*mode, 2*mode + 1 );
-//
-//            dblPhsAd = Math.asin(dblR12/Math.sqrt(dblBeta0 * dblBeta1) );
-//            
-//            vecPhsAd.set(index.val(), dblPhsAd);
-//            
-//        }
-//        
-//        return vecPhsAd;
-//    }
     /**
      * Compute and return the betatron phase advance for the given Twiss
      * parameters and transfer matrix. There are no assumptions on the Twiss
@@ -644,7 +603,8 @@ public class TwissTracker extends Tracker {
 
             // Compute the phase advance for this plane
             double dblSinPhs = dblM12 / Math.sqrt(dblBetaFnl * dblBetaInt);
-            dblSinPhs = Math.max(Math.min(dblSinPhs, 1.0), -1.0);     // make sure it is in the range [-1, 1]
+            // make sure it is in the range [-1, 1]
+            dblSinPhs = Math.max(Math.min(dblSinPhs, 1.0), -1.0);
 
             final double dblPhsAdv = Math.asin(dblSinPhs);
 
@@ -689,8 +649,10 @@ public class TwissTracker extends Tracker {
     private Twiss3D computeTwiss(TwissProbe probe, PhaseMatrix matPhi, double dW) {
 
         // Compute relativistic parameters ratios
-        double ratTran;     // emittance decrease ratio for transverse plane 
-        double ratLong;     // emittance decrease ratio for longitudinal plane 
+        // emittance decrease ratio for transverse plane 
+        double ratTran;
+        // emittance decrease ratio for longitudinal plane 
+        double ratLong;
 
         if (dW == 0.0) {
             ratTran = 1.0;
@@ -712,22 +674,33 @@ public class TwissTracker extends Tracker {
         }
 
         // Twiss parameters
-        Twiss3D twissEnv0 = probe.getTwiss();   // old values of Twiss parameters
-        Twiss3D twissEnv1 = new Twiss3D();        // propagated values of twiss parameters
+        // old values of Twiss parameters
+        Twiss3D twissEnv0 = probe.getTwiss();
+        // propagated values of twiss parameters
+        Twiss3D twissEnv1 = new Twiss3D();
 
-        double alpha0, beta0, gamma0;  // old twiss parameters
-        double emit0;                  // old (unnormalized) emittance
-        double alpha1, beta1;          // new twiss parameters
-        double emit1;                  // new (unnormalized) emittance
+        // old twiss parameters
+        double alpha0, beta0, gamma0;
+        // old (unnormalized) emittance
+        double emit0;
+        // new twiss parameters
+        double alpha1, beta1;
+        // new (unnormalized) emittance
+        double emit1;
 
         // Transfer matrix diagonal sub-block
-        double Rjj;     // .
-        double Rjjp;    //  | Rjj  Rjjp  |
-        double Rjpj;    //  | Rjpj Rjpjp |
-        double Rjpjp;   //                .
+        // .
+        double Rjj;
+        //  | Rjj  Rjjp  |
+        double Rjjp;
+        //  | Rjpj Rjpjp |
+        double Rjpj;
+        //                .
+        double Rjpjp;
 
         int j = 0;
-        for (IND_3D index : IND_3D.values()) { // for each phase plane
+        // for each phase plane
+        for (IND_3D index : IND_3D.values()) {
             j = 2 * index.val();
 
             // assume constant normalized emittance
@@ -744,8 +717,8 @@ public class TwissTracker extends Tracker {
             beta1 = Rjj * Rjj * beta0 - 2. * Rjj * Rjjp * alpha0 + Rjjp * Rjjp * gamma0;
             alpha1 = -Rjj * Rjpj * beta0 + (Rjj * Rjpjp + Rjjp * Rjpj) * alpha0 - Rjjp * Rjpjp * gamma0;
 
-            if (index == IND_3D.Z) // longitudinal plane
-            {
+            // longitudinal plane
+            if (index == IND_3D.Z) {
                 emit1 = emit0 * ratLong;
             } else // transver plane
             {
@@ -777,14 +750,16 @@ public class TwissTracker extends Tracker {
         double f2 = 1 - tdp * tdp / 14;
         if (tdp > 0.1) {
             double sintdp = Math.sin(tdp);
-            f2 = 3 * (sintdp / tdp - Math.cos(tdp)) / tdp / tdp; //APPENDIX F (Trace3D manual)
+            //APPENDIX F (Trace3D manual)
+            f2 = 3 * (sintdp / tdp - Math.cos(tdp)) / tdp / tdp;
             f2 = 15 * (f2 - sintdp / tdp) / tdp / tdp;
         }
         double sinphi = Math.sin(phi);
         double cosphi = Math.cos(phi);
         double G1 = 0.5 * (1 + (sinphi * sinphi - cosphi * cosphi) * f2);
         double Q = probe.getSpeciesCharge();
-        double h = 1;//harmic number
+        //harmic number
+        double h = 1;
         double m = probe.getSpeciesRestEnergy();
         double w = probe.getKineticEnergy();
         double dw = elem.energyGain(probe);
@@ -798,7 +773,8 @@ public class TwissTracker extends Tracker {
         double freq = elem.getFrequency();
         double lambda = clight / freq;
 
-        double cay = Math.abs(Q) * h * Math.PI * elem.getETL() / (m * betagammaa * betagammaa * betagammaf * lambda); //Kx'
+        //Kx'
+        double cay = Math.abs(Q) * h * Math.PI * elem.getETL() / (m * betagammaa * betagammaa * betagammaf * lambda);
 
         dfac = cay * cay * (G1 - sinphi * sinphi * f1 * f1);
 
@@ -830,14 +806,14 @@ public class TwissTracker extends Tracker {
         double cosphi = Math.cos(phi);
 
         double Q = probe.getSpeciesCharge();
-        double h = 1;//harmic number
+        //harmic number
+        double h = 1;
         double m = probe.getSpeciesRestEnergy();
         double w = probe.getKineticEnergy();
         double dw = elem.energyGain(probe);
         double wa = w + dw / 2;
         double gammaa = (wa + m) / m;
         double betagammaa = Math.sqrt(wa / m * (2 + wa / m));
-//        double betagamma0 = Math.sqrt(w/m*(2+w/m));
         double clight = IProbe.LIGHT_SPEED;
         double freq = elem.getFrequency();
         double lambda = clight / freq;
@@ -871,7 +847,8 @@ public class TwissTracker extends Tracker {
         if (dphi > 0.1) {
             cor = 15 / dphi / dphi * (3 / dphi / dphi * (Math.sin(dphi) / dphi - Math.cos(dphi)) - Math.sin(dphi) / dphi);
 
-        } else {    // Avoid the sinc function pole 
+            // Avoid the sinc function pole 
+        } else {
             cor = 1 - dphi * dphi / 14;
 
         }
@@ -884,8 +861,8 @@ public class TwissTracker extends Tracker {
      *
      * CKA Notes: - This method needs to be optimized now that I understand what
      * it is doing. In XAL, longitudinal coordinate <em>z</em> is the "phase
-     * spread", but in meters. To convert to phase spread <em>dphi</em> in radians
-     * we have
+     * spread", but in meters. To convert to phase spread <em>dphi</em> in
+     * radians we have
      *
      * dphi = (z/(beta*lambda))*2*pi
      *
@@ -895,13 +872,15 @@ public class TwissTracker extends Tracker {
      *
      * where f is the RF frequency of the gap and c is the speed of light.
      *
-     * - For the optional computation <strong>phaseSpreadT3d</strong> (which apparently is
-     * not used) I am not sure what is happening, or why <y'y'> is significant?
+     * - For the optional computation <strong>phaseSpreadT3d</strong> (which
+     * apparently is not used) I am not sure what is happening, or why <y'y'> is
+     * significant?
      *
      *
      * @param probe
      *
-     * @return phase spread (half width) for this probe (<strong>radian</strong>)
+     * @return phase spread (half width) for this probe
+     * (<strong>radian</strong>)
      *
      * @author Hiroyuki Sako
      */
@@ -918,11 +897,8 @@ public class TwissTracker extends Tracker {
         double emitz = twissLongT3d.getEmittance();
         double betaz = twissLongT3d.getBeta();
 
-        return Math.sqrt(emitz * betaz) * 2 * Math.PI / 360.0; //radian
+        //radian
+        return Math.sqrt(emitz * betaz) * 2 * Math.PI / 360.0;
     }
 
 }
-
-/*
- *  Storage
- */

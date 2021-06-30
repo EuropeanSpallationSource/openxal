@@ -17,7 +17,7 @@ class TimeStampUtil {
 
     // The epics timestamp has an epoch of 1990 rather than Java's epoch of 1970
     // There are 7305 days between 1/1/1970 and 1/1/1990 (accounts for leap year)
-    public static final double epochSecondsOffset = 7305 * 24 * 3600;
+    public static final double EPOCS_SECONDS_OFFSET = 7305 * 24 * 3600;
 
     /**
      * return the timestamp as a Java Date Some precision is lost since the Date
@@ -31,11 +31,11 @@ class TimeStampUtil {
     }
 
     public static double javaSeconds(final TimeStamp timestamp) {
-        return timestamp.asDouble() + epochSecondsOffset;
+        return timestamp.asDouble() + EPOCS_SECONDS_OFFSET;
     }
 
     public static double epicsSeconds(final double javaSeconds) {
-        return javaSeconds - epochSecondsOffset;
+        return javaSeconds - EPOCS_SECONDS_OFFSET;
     }
 
     /**

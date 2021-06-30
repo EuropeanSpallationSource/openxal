@@ -44,37 +44,30 @@ public class LatticeFactory {
         STANDARD_THIN_KINDS = new ArrayList<>();
 
         STANDARD_THICK_KINDS.add("DH");
-//		STANDARD_THICK_KINDS.add("QH");
-//		STANDARD_THICK_KINDS.add("QTH");
-//		STANDARD_THICK_KINDS.add("QV");
-//		STANDARD_THICK_KINDS.add("QTV");
-//		STANDARD_THICK_KINDS.add("QSC");
         STANDARD_THICK_KINDS.add("PQ");
         STANDARD_THICK_KINDS.add("SH");
         STANDARD_THICK_KINDS.add("SV");
-        STANDARD_THICK_KINDS.add("RG");     //slim
-        STANDARD_THICK_KINDS.add("BCM");   //slim 
+        //slim
+        STANDARD_THICK_KINDS.add("RG");
+        //slim 
+        STANDARD_THICK_KINDS.add("BCM");
         STANDARD_THICK_KINDS.add("SOL");
         STANDARD_THICK_KINDS.add("QUAD");
         STANDARD_THICK_KINDS.add(xal.smf.impl.EQuad.TYPE);
         STANDARD_THICK_KINDS.add(xal.smf.impl.EDipole.TYPE);
 
-//		STANDARD_THIN_KINDS.add("SH");
-//		STANDARD_THIN_KINDS.add("SV");
         STANDARD_THIN_KINDS.add("DCH");
         STANDARD_THIN_KINDS.add("DCV");
         STANDARD_THIN_KINDS.add("EKick");
-        STANDARD_THIN_KINDS.add("RG");      //slim
-        STANDARD_THIN_KINDS.add("BCM");    //slim
+        //slim
+        STANDARD_THIN_KINDS.add("RG");
+        //slim
+        STANDARD_THIN_KINDS.add("BCM");
         STANDARD_THIN_KINDS.add("BPM");
         STANDARD_THIN_KINDS.add("BLM");
         STANDARD_THIN_KINDS.add("BSM");
         STANDARD_THIN_KINDS.add("WS");
         STANDARD_THIN_KINDS.add("Foil");
-//		STANDARD_THIN_KINDS.add("VIW");
-//		STANDARD_THIN_KINDS.add("Harp");
-//		STANDARD_THIN_KINDS.add("Tgt");
-//		STANDARD_THIN_KINDS.add("Marker");
         STANDARD_THIN_KINDS.add("marker");
     }
 
@@ -146,17 +139,16 @@ public class LatticeFactory {
         lattice = new Lattice(sequence.getId());
         lattice.setDebug(debug);
         lattice.setVerbose(verbose);
-//		double seq_pos = sequence.getPosition();
         // calculate the total length of the (combo)sequence.
-        double seq_len = calcTotalSeqLength(sequence);
+        double seqLen = calcTotalSeqLength(sequence);
 
         //process all thick (len>0) elements first
         processThickElements(sequence);
 
         //fill lattice up to end with drift space
-        if (seq_len > lattice.getLength()) {
-            double lend = seq_len - lattice.getLength();
-            lattice.append(new Drift(seq_len - lend * 0.5, lend));
+        if (seqLen > lattice.getLength()) {
+            double lend = seqLen - lattice.getLength();
+            lattice.append(new Drift(seqLen - lend * 0.5, lend));
         }
 
         //process all thin and slim elements
@@ -316,7 +308,6 @@ public class LatticeFactory {
      */
     private void nodeToElement(final AcceleratorNode node, final List<Element> result) throws LatticeError {
         String name = node.getId();
-//		String type = node.getType();
         double position = accelSeq.getPosition(node);
         double length = node.getLength();
         double effLength = 0.0;
@@ -343,9 +334,9 @@ public class LatticeFactory {
         }
 
         //thick elements
-        if (node.isKindOf("dh")) { //dipoles
+        //dipoles
+        if (node.isKindOf("dh")) {
             //we use only effective lengths for magnets
-            //			length= ((Magnet) node).getEffLength();
             Element dipole = new Dipole(position, effLength, name);
             dipole.setAcceleratorNode(node);
             if (halfmag) {
@@ -361,7 +352,8 @@ public class LatticeFactory {
                 result.add(dipole);
             }
 
-        } else if (node.isKindOf(xal.smf.impl.EDipole.TYPE)) {  // EDipole
+            // EDipole
+        } else if (node.isKindOf(xal.smf.impl.EDipole.TYPE)) {
 
             Element dipole = new EDipole(position, effLength, name);
             dipole.setAcceleratorNode(node);
@@ -379,14 +371,16 @@ public class LatticeFactory {
                 result.add(dipole);
             }
 
-        } else if (node.isKindOf("QSC")) {       // Skew quadrupoles
+            // Skew quadrupoles
+        } else if (node.isKindOf("QSC")) {
 
             // Create the SLG representation of the skewed quadrupole
             Element slgElem = new SkewQuad(position, effLength, name);
             slgElem.setAcceleratorNode(node);
 
             // Now check our configuration
-            if (halfmag) {   // configuration expressed as a conditional
+            // configuration expressed as a conditional
+            if (halfmag) {
                 // Let's repeat the same code for every different element type
                 PermMarker slgMarkCtr = new PermMarker(position, 0.0d, "ELEMENT_CENTER:" + name);
                 slgMarkCtr.setAcceleratorNode(node);
@@ -397,14 +391,15 @@ public class LatticeFactory {
                 result.add(lstElems.get(2));
                 result.add(lstElems.get(4));
 
-            } else {       // express other option of the the configuration
+                // express other option of the the configuration
+            } else {
                 result.add(slgElem);
 
             }
 
-        } else if (node.isKindOf("q") || node.isKindOf("qt")) { //quadrupoles
+            //quadrupoles
+        } else if (node.isKindOf("q") || node.isKindOf("qt")) {
             //we use only effective lengths for magnets
-            //			length= ((Magnet) node).getEffLength();
             Element quadrupole = new Quadrupole(position, effLength, name);
             quadrupole.setAcceleratorNode(node);
             if (halfmag) {
@@ -423,8 +418,6 @@ public class LatticeFactory {
         } else if (node.isKindOf(xal.smf.impl.EQuad.TYPE)) {
             //electrostatic quadrupoles
             //we use only effective lengths for magnets
-            //			length= ((Magnet) node).getEffLength();
-
             Element quadrupole = new EQuad(position, effLength, name);
             quadrupole.setAcceleratorNode(node);
             if (halfmag) {
@@ -440,9 +433,9 @@ public class LatticeFactory {
                 result.add(quadrupole);
             }
 
-        } else if (node.isKindOf("pq")) { // permanent magnet quadrupoles
+            // permanent magnet quadrupoles
+        } else if (node.isKindOf("pq")) {
             //we use only effective lengths for magnets
-            //			length= ((Magnet) node).getEffLength();
             Element quadrupole = new Quadrupole(position, effLength, name);
             quadrupole.setAcceleratorNode(node);
             if (halfmag) {
@@ -476,7 +469,6 @@ public class LatticeFactory {
             // rf gap	
         } else if (node.isKindOf("SOL")) {
             //we use only effective lengths for magnets
-            //			length= ((Magnet) node).getEffLength();
             Element solenoid = new Solenoid(position, effLength, name);
             solenoid.setAcceleratorNode(node);
             if (halfmag) {

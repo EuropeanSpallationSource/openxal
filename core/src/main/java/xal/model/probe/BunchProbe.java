@@ -148,24 +148,25 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
 
     /**
      * <p>
-     * Returns the generalized, three-dimensional beam perveance <em>K</em>. This
-     * value is defined to be
+     * Returns the generalized, three-dimensional beam perveance <em>K</em>.
+     * This value is defined to be
      * </p>
      *
      * K = (Q/4*pi*e0)*(1/gamma^3*beta^2)*(|q|/ER)
      *
      * <p>
-     * where <em>Q</em> is the bunch charge, <em>e0</em> is the permittivity of free
-     * space, <em>gamma</em> is the relativistic factor, <em>beta</em> is the
-     * normalized design velocity, <em>q</em> is the charge of the beam particles
-     * and <em>ER</em> is the rest energy of the beam particles.
+     * where <em>Q</em> is the bunch charge, <em>e0</em> is the permittivity of
+     * free space, <em>gamma</em> is the relativistic factor, <em>beta</em> is
+     * the normalized design velocity, <em>q</em> is the charge of the beam
+     * particles and <em>ER</em> is the rest energy of the beam particles.
      * </p>
      *
      * <p>
-     * NOTES: - The value (1/4*pi*e0) is equal to 1e-7*c^2 where <em>c</em> is the
-     * speed of light.
+     * NOTES: - The value (1/4*pi*e0) is equal to 1e-7*c^2 where <em>c</em> is
+     * the speed of light.
      *
-     * @return generalized beam perveance <strong>Units: radians^2/meter</strong>
+     * @return generalized beam perveance <strong>Units:
+     * radians^2/meter</strong>
      *
      * @author Christopher K. Allen
      */
@@ -184,13 +185,14 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
      * <p>
      * where <em>I</em> is the current, <em>e0</em> is the permittivity of free
      * space, <em>gamma</em> is the relativitic factor, <em>beta</em> is the
-     * normalized design velocity, <em>q</em> is the charge of the beam particles
-     * and <em>ER</em> is the rest energy of the beam partiles.
+     * normalized design velocity, <em>q</em> is the charge of the beam
+     * particles and <em>ER</em> is the rest energy of the beam partiles.
      * </p>
      *
      * <p>
      *
-     * @return generalized DC beam perveance <strong>Units: radians^2/meter</strong>
+     * @return generalized DC beam perveance <strong>Units:
+     * radians^2/meter</strong>
      *
      * @author Christopher K. Allen
      */

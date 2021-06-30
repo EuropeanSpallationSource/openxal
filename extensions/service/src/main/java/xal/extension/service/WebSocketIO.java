@@ -60,10 +60,12 @@ class WebSocketIO {
         writer.write("GET /stuff HTTP/1.1\r\n");
         writer.write("Upgrade: websocket\r\n");
         writer.write("Host: " + socket.getInetAddress().getHostName() + ":" + socket.getPort() + "\r\n");
-        writer.write("Origin: file://\r\n");
+        //\r\n");
+        writer.write("Origin: file:
         writer.write("Sec-WebSocket-Key: " + encodedRandomKey + "\r\n");
         writer.write("Sec-WebSocket-Version: 13\r\n");
-        writer.write("Origin: file://\r\n");
+        //\r\n");
+        writer.write("Origin: file:
         writer.write("\r\n");
         writer.flush();
     }
@@ -121,7 +123,8 @@ class WebSocketIO {
         do {
             final int readCount = reader.read(streamBuffer, 0, BUFFER_SIZE);
 
-            if (readCount == -1) {     // the session has been closed
+            // the session has been closed
+            if (readCount == -1) {
                 throw new RuntimeException("The remote socket has closed while reading the remote response...");
             } else if (readCount > 0) {
                 inputBuffer.append(streamBuffer, 0, readCount);
@@ -145,7 +148,8 @@ class WebSocketIO {
         do {
             final int readCount = reader.read(streamBuffer, 0, BUFFER_SIZE);
 
-            if (readCount == -1) {     // the session has been closed
+            // the session has been closed
+            if (readCount == -1) {
                 throw new SocketPrematurelyClosedException("The remote socket has closed while reading the remote response...");
             } else if (readCount > 0) {
                 inputBuffer.append(streamBuffer, 0, readCount);
@@ -408,7 +412,8 @@ class StreamByteReader {
         do {
             final int readCount = reader.read(streamBuffer, 0, bufferSize);
 
-            if (readCount == -1) {     // the session has been closed
+            // the session has been closed
+            if (readCount == -1) {
                 throw new StreamPrematurelyClosedException("The stream has closed while reading the remote response...");
             } else if (readCount > 0) {
                 rawByteBuffer.write(streamBuffer, 0, readCount);

@@ -29,10 +29,10 @@ import java.util.logging.Logger;
  * <p>
  * Provides a base class implementation of the IProbe interface that is useful
  * for most standard probe types. This class provides most of the functionality
- * necessary for the implementation of the IProbe interface, <strong>except</strong> a
- * definition and implementation of a probe "state". Thus, it is up to base
- * classes to provide and implement the particular aspect of a beam the probe
- * represents.
+ * necessary for the implementation of the IProbe interface,
+ * <strong>except</strong> a definition and implementation of a probe "state".
+ * Thus, it is up to base classes to provide and implement the particular aspect
+ * of a beam the probe represents.
  * </p>
  *
  *
@@ -85,14 +85,6 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      */
     private static final String NODETAG_ALG = "algorithm";
 
-    /**
-     * attribute tag for time stamp data
-     */
-//    private static final String TIMESTAMP_LABEL = "timestamp";
-    /**
-     * attribute tag for user comment data
-     */
-//    private static final String DESCRIPTION_LABEL = "description";
     /*
      * Global Methods
      */
@@ -145,7 +137,6 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
         Class<?> pClass = probeInit.getClass();
 
         try {
-//            pNew = (Probe<?>) pClass.newInstance();
             Constructor<?> ctorCopy = pClass.getConstructor(pClass);
             Probe<?> pNew = (Probe<?>) ctorCopy.newInstance(probeInit);
 
@@ -156,9 +147,6 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
             return null;
 
         }
-//      pNew.initializeFrom( probeInit );
-
-//      pNew.initializeFrom( probeInit );
     }
 
     /*
@@ -213,13 +201,6 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      */
     protected Trajectory<S> trajHist;
 
-//    /**
-//     * The the currently tracked probe exited the last RF gap - needed when CalcRfGapPhase is <code>true</code> 
-//     */
-//    private double      dblRfGapExitTime = 0.0;
-//    
-//    /** The phase shift at the last RF gap due to the coupled cavity structure */
-//    private double      dblCavPhsShft = 0.0;
     /*
      *  Abstract Methods
      */
@@ -266,29 +247,6 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      */
     public abstract Probe<S> copy();
 
-    /**
-     * <p>
-     * Load the "state" information of a particle from a data archive
-     * represented by a <code>DataAdaptor</code> interface. Each derived class
-     * should know how to load its particular state information.
-     * </p>
-     * <p>
-     * The state information for a particular probe should be stored as children
-     * of the "state" data adaptor, analogous to the XML representation.
-     * </p>
-     *
-     * @param daptState the "state" parent adaptor containing probe data
-     */
-//    public abstract void loadState(DataAdaptor daptState) throws DataFormatException;
-    /**
-     * <p>
-     * Save the "state" information to a data archive represented by a data
-     * adaptor interface. Particular state information should be save as
-     * children of the parent (state) data adaptor passed to this method.
-     *
-     * @param daptState the "state" parent adaptor to receive probe data
-     */
-//    public abstract void saveState(DataAdaptor daptState);
     /*
      *  Initialization
      */
@@ -439,14 +397,6 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      */
     public void applyState(S state) {
         this.stateCurrent = state.copy();
-
-//        setSpeciesRestEnergy(state.getSpeciesRestEnergy());
-//        setSpeciesCharge(state.getSpeciesCharge());
-//
-//        setCurrentElement(state.getElementId());
-//        setPosition(state.getPosition());
-//        setTime(state.getTime());
-//        setKineticEnergy(state.getKineticEnergy());
     }
 
     /**
@@ -470,7 +420,6 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
             this.stateCurrent = stateInit.copy();
         }
         this.trajHist = this.createTrajectory();
-        //        this.getAlgorithm().initialize(); // CKA - I think these should be uncommented
     }
 
     /*
@@ -557,8 +506,8 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      * &nbsp; &nbsp; &phi; &#8796; &phi;<sub>0</sub> - &Delta;&phi;
      * <br/>
      * <br/>
-     * where &Delta;&phi; = 2&pi;<em>f</em>&Delta;<i/>t</em> is the phase delay due
-     * to elapsed time &Delta;<em>t</em>, <em>f</em> is the cavity resonant
+     * where &Delta;&phi; = 2&pi;<em>f</em>&Delta;<i/>t</em> is the phase delay
+     * due to elapsed time &Delta;<em>t</em>, <em>f</em> is the cavity resonant
      * frequency, and &phi;<sub>0</sub> is the operating phase of the cavity
      * (w.r.t. the synchronous particle).
      * </p>
@@ -701,33 +650,6 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
         return this.stateCurrent.getGamma();
     }
 
-//    /**
-//     * Returns the time at which the probe being tracked exited the last RF gap.
-//     * 
-//     * @return      probe time at which the last RF gap was exited (in seconds)
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Nov 24, 2014
-//     */
-//    @Override
-//    public double   getRfGapExitTime() {
-//        return this.dblRfGapExitTime;
-//    }
-//    
-//    /**
-//     * Returns the RF phase shift at the last gap through which the probe propagated.
-//     * This value accounts for the RF cavity structure, specifically the phase shifts
-//     * due to coupling between coupled cavity structures.
-//     *  
-//     * @return  phase shift experienced by probe when traversing coupled cavities
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Nov 25, 2014
-//     */
-//    @Override
-//    public double   getCoupledCavityPhase() {
-//        return this.dblCavPhsShft;
-//    }
     /**
      *
      * @see xal.model.IProbe#lookupLastStateFor(java.lang.String)
@@ -811,8 +733,8 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      * &nbsp; &nbsp; &phi; &#8796; &phi;<sub>0</sub> - &Delta;&phi;
      * <br/>
      * <br/>
-     * where &Delta;&phi; = 2&pi;<em>f</em>&Delta;<i/>t</em> is the phase delay due
-     * to elapsed time &Delta;<em>t</em>, <em>f</em> is the cavity resonant
+     * where &Delta;&phi; = 2&pi;<em>f</em>&Delta;<i/>t</em> is the phase delay
+     * due to elapsed time &Delta;<em>t</em>, <em>f</em> is the cavity resonant
      * frequency, and &phi;<sub>0</sub> is the operating phase of the cavity
      * (w.r.t. the synchronous particle).
      * </p>
@@ -862,52 +784,6 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
         this.stateCurrent.setSpeciesRestEnergy(Er);
     }
 
-//    /**
-//     * Sets the time at which the currently tracked probe exited the
-//     * last RF gap structure it propagated through.
-//     * 
-//     * @param dblRfGapExitTime      gap exit time (in seconds)
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Nov 24, 2014
-//     */
-//    @Override
-//    public void setRfGapExitTime(double dblRfGapExitTime) {
-//        this.dblRfGapExitTime = dblRfGapExitTime;
-//    }
-//
-//    /**
-//     * Returns the RF phase at the last gap through which the probe propagated.
-//     * This value accounts for the RF cavity structure, specifically the phase shifts
-//     * due to coupling between coupled cavity structures.
-//     *  
-//     * @return  phase shift experienced by probe when traversing coupled cavities
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Nov 25, 2014
-//     */
-//    @Override
-//    public void setCoupledCavityPhaseShift(double dblCavPhsShft) {
-//        this.dblCavPhsShft = dblCavPhsShft;
-//    }
-//    /**
-//     * Set the element from which to start propagation.
-//     * 
-//     * @param id <code>String</code> id of element to start propagation from
-//     */
-//    public void setStartElementId(String id) {
-//        getAlgorithm().setStartElementId(id);
-//    }
-//
-//    /**
-//     * Set the element at which to stop propagation.
-//     * 
-//     * @param id <code>String</code> id of the element at which to stop propagation
-//     */
-//    public void setStopElementId(String id) {
-//        getAlgorithm().setStopElement(id);
-//    }
-//
     /**
      * <p>
      * Initializes the probe, resetting state as necessary.
@@ -942,7 +818,6 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
         this.stateInit = this.cloneCurrentProbeState();
 
         this.trajHist = this.createTrajectory();
-//        this.getAlgorithm().initialize();  // CKA - I think these should be uncommented
     }
 
     /**
@@ -957,8 +832,6 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
 
         this.getTrajectory().update(this);
     }
-
-    ;
     
     /**
      * Subclasses should override this method to perform any required post processing upon completion 
@@ -994,22 +867,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     }
 
     // Object Overrides ========================================================
-//	/**
-//	 * "Borrowed" implementation from AffineTransform, since it is based on
-//	 * double attribute values.  Must implement hashCode to be consistent with
-//	 * equals as specified by contract of hashCode in <code>Object</code>.
-//	 * 
-//	 * @return a hashCode for this object
-//	 */
-//	public int hashCode() {
-//	   long bits = Double.doubleToLongBits(getElem(0));
-//	   bits = bits * 31 + Double.doubleToLongBits(getElem(1));
-//	   bits = bits * 31 + Double.doubleToLongBits(getElem(2));
-//	   bits = bits * 31 + Double.doubleToLongBits(getElem(3));
-//	   bits = bits * 31 + Double.doubleToLongBits(getElem(4));
-//	   bits = bits * 31 + Double.doubleToLongBits(getElem(5));
-//	   return (((int) bits) ^ ((int) (bits >> 32)));
-//	}           
+         
     /*
      *  IArchive Interface
      */
@@ -1047,13 +905,8 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
             String strTStamp = daptProbe.stringValue(TIME_LABEL);
             this.setTimestamp(frmDate.parse(strTStamp));
         } catch (ParseException e) {
-        };
-
-//        try {
-//            String  strTStamp = daptProbe.stringValue("date");
-//            if (strTStamp != null) this.setTimestamp( frmDate.parse( strTStamp ) );
-//        } catch (ParseException e)  {
-//        }
+            LOGGER.log(Level.SEVERE, null, e);
+        }
         // Load any comments
         DataAdaptor daptComm = daptProbe.childAdaptor(Probe.COMMENT_LABEL);
         if (daptComm != null) {
@@ -1089,40 +942,6 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
         this.applyState(state);
     }
 
-//
-//  CKA - we do not know if the Probe base class has Twiss parameters!
-//
-//    /**
-//     *  Save the contents of a probe to a data archive represented by a 
-//     *  <code>DataAdaptor</code> interface.
-//     *
-//     *  @param  daSink   data archive to receive probe information
-//     *  @param  useTwiss    If want to dump Twiss parameters instead of correlation matrix, set it to 'true'
-//     */
-//    public void save(DataAdaptor daSink, boolean useTwiss)  { // CKA - we do not know if probe has twis parameters
-//        
-//    	DataAdaptor daProbe = daSink.createChild(Probe.PROBE_LABEL);
-//    	
-//        // Save the probe type information and time stamp
-//        DateFormat  frmDate = DateFormat.getDateTimeInstance();
-//
-//        if (this.getTimestamp() == null)
-//            this.setTimestamp(new Date());
-//        
-//        daProbe.setValue(Probe.TYPE_LABEL, this.getClass().getName());
-//        daProbe.setValue(Probe.TIME_LABEL, frmDate.format( this.getTimestamp() ) );
-//        
-//        // Save the comment
-//        DataAdaptor daptComm = daProbe.createChild(Probe.COMMENT_LABEL);
-//        daptComm.setValue(Probe.TEXT_LABEL, this.getComment() );
-//        
-//        // Save the algorithm type
-//        this.getAlgorithm().save(daProbe);
-//                
-//        // Save the probe state information
-//        ProbeState state = createProbeState();
-//        state.save(daProbe, useTwiss);  // CKA - we do not know if probe has Twiss parameters
-//    };
     /**
      * Save the contents of a probe to a data archive represented by a
      * <code>DataAdaptor</code> interface.

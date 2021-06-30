@@ -127,9 +127,9 @@ public abstract class ProfileDevice extends AcceleratorNode {
          * <br/>
          * <br/>
          * where &alpha; is the correction factor, <em>N</em><sub>steps</sub> is
-         * the number of scan steps, and &Delta;<em>L</em> is the step length. For
-         * example, if the scan actuator arm is physically at a 45 &deg; angle
-         * to the given measurement plane then &alpha; = 1/&radic;2.
+         * the number of scan steps, and &Delta;<em>L</em> is the step length.
+         * For example, if the scan actuator arm is physically at a 45 &deg;
+         * angle to the given measurement plane then &alpha; = 1/&radic;2.
          *
          * @param angle the projection angle of the data set
          *
@@ -334,7 +334,8 @@ public abstract class ProfileDevice extends AcceleratorNode {
                 case DIA:
                     return setAttrs.dia;
                 default:
-                    return null;        // (this cannot happen)
+                    // (this cannot happen)
+                    return null;
             }
         }
 
@@ -364,15 +365,18 @@ public abstract class ProfileDevice extends AcceleratorNode {
 
             switch (this) {
 
-                case HOR:   // I am the horizontal profile   
+                // I am the horizontal profile   
+                case HOR:
                     annSig = annSigSet.sigHor();
                     break;
 
-                case VER:   // I am the vertical profile
+                // I am the vertical profile
+                case VER:
                     annSig = annSigSet.sigVer();
                     break;
 
-                case DIA:   // I am the diagonal profile   
+                // I am the diagonal profile   
+                case DIA:
                     annSig = annSigSet.sigDia();
                     break;
 
@@ -415,15 +419,18 @@ public abstract class ProfileDevice extends AcceleratorNode {
 
             switch (this) {
 
-                case HOR:   // I am the horizontal profile
+                // I am the horizontal profile
+                case HOR:
                     annSig = annSigSet.sigHor();
                     break;
 
-                case VER:   // I am the vertical profile
+                // I am the vertical profile
+                case VER:
                     annSig = annSigSet.sigVer();
                     break;
 
-                case DIA:   // I am the diagonal profile
+                // I am the diagonal profile
+                case DIA:
                     annSig = annSigSet.sigDia();
                     break;
 

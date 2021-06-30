@@ -103,9 +103,11 @@ public abstract class SearchAlgorithm implements AlgorithmScheduleListener, Solu
         evaluationsLeft = getNearestIntegerInRange(proposedEvaluations, getMinEvaluationsPerRun(), getMaxEvaluationsPerRun());
         int initialCount = evaluationsLeft;
 
-        performRun(schedule); // starts the algorithm
+        // starts the algorithm
+        performRun(schedule);
 
-        int evaluations = initialCount - evaluationsLeft; // this is the amount of evaluations that were executed
+        // this is the amount of evaluations that were executed
+        int evaluations = initialCount - evaluationsLeft;
 
         updateEfficiency(initialSatisfaction, scoreboard.getBestSolution().getSatisfaction(), evaluations);
     }

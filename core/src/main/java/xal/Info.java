@@ -45,7 +45,8 @@ public class Info {
                         buffer.append(nextLine);
                         buffer.append("\n");
                     } else {
-                        break;  // end of input
+                        // end of input
+                        break;
                     }
                 }
                 infoStream.close();

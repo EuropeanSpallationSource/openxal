@@ -97,7 +97,8 @@ public class FrameApplication extends Application implements XalDocumentListener
             throw new RuntimeException(exception);
         }
 
-        registerApplicationStatusService();   // comment out application service registration until it is developed -tap
+        // comment out application service registration until it is developed -tap
+        registerApplicationStatusService();
 
         applicationAdaptor.applicationFinishedLaunching();
     }
@@ -166,7 +167,8 @@ public class FrameApplication extends Application implements XalDocumentListener
             if (document.closeDocument()) {
                 openDocument(source);
             }
-        } finally {   //do this regardless of thrown exceptions
+            //do this regardless of thrown exceptions
+        } finally {
             releaseApp();
         }
     }

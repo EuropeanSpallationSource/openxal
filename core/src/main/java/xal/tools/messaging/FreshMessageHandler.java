@@ -66,7 +66,8 @@ class FreshMessageHandler<T> extends MessageHandler<T> implements Serializable {
      */
     @Override
     public Object invoke(final Object proxy, final Method method, final Object[] args) {
-        method.setAccessible(true);     // allow access to private, protected, default access methods
+        // allow access to private, protected, default access methods
+        method.setAccessible(true);
         final Invoker invoker = new Invoker(method, args);
         eventProcessor.post(invoker);
 

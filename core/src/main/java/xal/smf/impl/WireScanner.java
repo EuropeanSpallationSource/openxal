@@ -1123,11 +1123,12 @@ public class WireScanner extends ProfileDevice {
         /**
          * Returns the stroke length of the actuator arm for a scan. This is the
          * total physical distances traveled by the actuator arm during a scan
-         * and is <strong>not</strong> necessarily the abscissa of the measured data. This
-         * value, <em>L</em>, is typically given by the formula
+         * and is <strong>not</strong> necessarily the abscissa of the measured
+         * data. This value, <em>L</em>, is typically given by the formula
          * <br/>
          * <br/>
-         * &nbsp; &nbsp; <em>L</em> = <em>N</em><sub>steps</sub> &Delta;<em>L</em>
+         * &nbsp; &nbsp; <em>L</em> = <em>N</em><sub>steps</sub>
+         * &Delta;<em>L</em>
          * <br/>
          * <br/>
          * where <em>N</em><sub>steps</sub> is the number of scan steps and
@@ -2141,15 +2142,18 @@ public class WireScanner extends ProfileDevice {
 //
 //            switch (ang) {
 //
-//            case HOR:   // I am the horizontal profile   
+// I am the horizontal profile   
+//            case HOR:
 //                annSig = annSigSet.sigHor();
 //                break;
 //
-//            case VER:   // I am the vertical profile
+// I am the vertical profile
+//            case VER:
 //                annSig = annSigSet.sigVer();
 //                break;
 //
-//            case DIA:   // I am the diagonal profile   
+// I am the diagonal profile   
+//            case DIA:
 //                annSig = annSigSet.sigDia();
 //                break;
 //
@@ -2200,16 +2204,19 @@ public class WireScanner extends ProfileDevice {
 //
 //            switch (ang) {
 //
-//            case HOR:   // I am the horizontal profile
+// I am the horizontal profile
+//            case HOR:
 //                annSig = annSigSet.sigHor();
 //                break;
 //
-//            case VER:   // I am the vertical profile
+// I am the vertical profile
+//            case VER:
 //                annSig = annSigSet.sigVer();
 //                break;
 //
 //
-//            case DIA:   // I am the diagonal profile
+// I am the diagonal profile
+//            case DIA:
 //                annSig = annSigSet.sigDia();
 //                break;
 //
@@ -2894,7 +2901,8 @@ public class WireScanner extends ProfileDevice {
         arrCodes[0] = cmdPck.getCommand().getCode();
 
         // Set the command argument values in the command code array
-        int i = 1;  // index of argument
+        // index of argument
+        int i = 1;
         for (int index = 0; index < cntArgs; index++) {
             Number numArg = cmdPck.getArgument(index);
 
@@ -3093,8 +3101,10 @@ public class WireScanner extends ProfileDevice {
         PrcgConfig cfgPrcg = PrcgConfig.acquire(this);
 
         // Set the new processing parameters according to the section of beam we are selecting
-        double dblDlyPls = 0.0;      // number of pulses to delay
-        double dblDlyTm = 0.0;       // corresponding delay time (in seconds)
+        // number of pulses to delay
+        double dblDlyPls = 0.0;
+        // corresponding delay time (in seconds)
+        double dblDlyTm = 0.0;
 
         switch (enmBmSct) {
 

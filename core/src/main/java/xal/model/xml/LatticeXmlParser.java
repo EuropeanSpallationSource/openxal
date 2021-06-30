@@ -132,10 +132,14 @@ public class LatticeXmlParser {
         DataAdaptor daptLat = adaptor.childAdaptor(ELEM_LATT);
 
         // Extract lattice attributes and set them
-        String strId = daptLat.stringValue(ATTR_ID);     // lattice id
-        String strVer = daptLat.stringValue(ATTR_VER);     // lattice version
-        String strAuth = daptLat.stringValue(ATTR_AUTH);    // lattice author
-        String strDate = daptLat.stringValue(ATTR_DATE);    // lattice date
+        // lattice id
+        String strId = daptLat.stringValue(ATTR_ID);
+        // lattice version
+        String strVer = daptLat.stringValue(ATTR_VER);
+        // lattice author
+        String strAuth = daptLat.stringValue(ATTR_AUTH);
+        // lattice date
+        String strDate = daptLat.stringValue(ATTR_DATE);
 
         Lattice latUrl = new Lattice();
 
@@ -182,7 +186,8 @@ public class LatticeXmlParser {
     protected ElementSeq buildSequence(DataAdaptor daptSeq)
             throws DataFormatException, NumberFormatException, ClassNotFoundException, InstantiationException, NoSuchMethodException {
         // Create a new ElementSeq instance
-        String strId = daptSeq.stringValue(ATTR_ID);    // sequence id
+        // sequence id
+        String strId = daptSeq.stringValue(ATTR_ID);
         ElementSeq seqNew = new Sector(strId);
 
         this.loadComposite(seqNew, daptSeq);
@@ -200,10 +205,14 @@ public class LatticeXmlParser {
      * @exception MissingDataException an attribute was missing from the comment
      */
     protected String buildComment(DataAdaptor daptComm) {
-        String strAuth;        // author of comment
-        String strDate;        // date of comment
-        String strText;        // user comments for sequence
-        String strComm;        // comment string
+        // author of comment
+        String strAuth;
+        // date of comment
+        String strDate;
+        // user comments for sequence
+        String strText;
+        // comment string
+        String strComm;
 
         strAuth = daptComm.stringValue(ATTR_AUTH);
         strDate = daptComm.stringValue(ATTR_DATE);
@@ -539,10 +548,11 @@ public static void main(String arrArgs[])   {
  *
  * @return IElement interface of a new ElementSeq object
  *
- * @exception DtdException            <strong>fam</strong> attribute not present in DataAdaptor
+ * @exception DtdException            <strong>fam</strong> attribute not present in
+ * DataAdaptor
  * @exception NumberFormatException bad number format in numeric attribute
- * @exception ClassNotFoundException  <strong>type</strong> value not recognized by
- * ElementFactory
+ * @exception ClassNotFoundException  <strong>type</strong> value not recognized
+ * by ElementFactory
  */
 /*
     private IElement buildSequence(DataAdaptor daptSeq) 
@@ -569,7 +579,8 @@ public static void main(String arrArgs[])   {
             DataAdaptor     daptChild = (DataAdaptor)iterChild.next();
             
             if (daptChild.name().equals("comment"))  {
-                String      strCom;         // user comments for sequence
+                // user comments for sequence
+                String      strCom;
                 break;
                 
             } else if (daptChild.name().equals("Sequence")) {
@@ -589,33 +600,41 @@ public static void main(String arrArgs[])   {
  */
 /**
  * Builds an XAL modeling element based on the information in the DataAdaptor.
- * The DataAdaptor should contain an XML node contain the <strong>Element</bd> tag of
- * the XAL Model DTD.
+ * The DataAdaptor should contain an XML node contain the <strong>Element</bd>
+ * tag of the XAL Model DTD.
  * <p>
  * The element may be either a <code>ThickElement</code> or a <code>ThinElement
- * </code> derived element depending upon the value of the <strong>fam</strong> attribute
- * in the DataAdaptor.
+ * </code> derived element depending upon the value of the <strong>fam</strong>
+ * attribute in the DataAdaptor.
  *
  * @param daptElem DataAdaptor contiaining attributes of an Element tag
  *
  * @return IElement interface of a new XAL modeling element
  *
- * @exception DtdException            <strong>fam</strong> attribute not present in DataAdaptor
+ * @exception DtdException            <strong>fam</strong> attribute not present in
+ * DataAdaptor
  * @exception NumberFormatException bad number format in numeric attribute
- * @exception ClassNotFoundException  <strong>type</strong> value not recognized by
- * ElementFactory
+ * @exception ClassNotFoundException  <strong>type</strong> value not recognized
+ * by ElementFactory
  */
 /*
     private IElement    buildElement(DataAdaptor daptElem)  
         throws DtdException, NoSuchMethodException, NumberFormatException, ClassNotFoundException
     {
-        IElement    ifcElem;        // returned IElement object
-        String      strFam;         // element family
-        String      strType;        // element type
-        String      strId;          // element identifier
-        String      strPos;         // element lattice position
-        String      strSecs;        // number of thick element subsections
-        String      strLen;         // element length (ThickElement)
+        // returned IElement object
+        IElement    ifcElem;
+        // element family
+        String      strFam;
+        // element type
+        String      strType;
+        // element identifier
+        String      strId;
+        // element lattice position
+        String      strPos;
+        // number of thick element subsections
+        String      strSecs;
+        // element length (ThickElement)
+        String      strLen;
         
         
         // Get all the element attributes

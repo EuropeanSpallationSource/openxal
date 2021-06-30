@@ -223,7 +223,8 @@ class JSONEncoder {
     /**
      * get the encoder for the specified value
      */
-    @SuppressWarnings("unchecked")    // no way to guarantee at compile time conversion types
+    // no way to guarantee at compile time conversion types
+    @SuppressWarnings("unchecked")
     protected AbstractEncoder<?> getEncoder(final Object value) {
         final Class<?> valueClass = value != null ? value.getClass() : null;
 
@@ -231,17 +232,20 @@ class JSONEncoder {
             return NullEncoder.getInstance();
         } else if (valueClass.equals(Boolean.class)) {
             return BooleanEncoder.getInstance();
-        } // handle each immediate concrete subclass of Number
-        else if (valueClass.equals(JSONNumber.class)) {
+            // handle each immediate concrete subclass of Number
+        } else if (valueClass.equals(JSONNumber.class)) {
             return NumberEncoder.getInstance();
         } else if (valueClass.equals(String.class)) {
             return StringEncoder.getInstance();
-        } else {      // these are the ones that support references
-            if (valueClass.equals(HashMap.class)) {  // no way to check at compile time that the key type is string
+            // these are the ones that support references
+        } else {
+            // no way to check at compile time that the key type is string
+            if (valueClass.equals(HashMap.class)) {
                 return DictionaryEncoder.getInstance();
             } else if (valueClass.isArray()) {
                 return ArrayEncoder.getInstance(value);
-            } else if (conversionAdaptorStore.isExtendedClass(valueClass)) {  // if the type is not among the standard ones then look to extensions
+                // if the type is not among the standard ones then look to extensions
+            } else if (conversionAdaptorStore.isExtendedClass(valueClass)) {
                 return ExtensionEncoder.getInstance();
             } else if (value instanceof Serializable) {
                 return SerializationEncoder.getInstance();
@@ -332,7 +336,8 @@ abstract class SoftValueEncoder<DataType> extends AbstractEncoder<DataType> {
                     encodeReference(encoder, jsonBuilder, value, identityReference.getID());
                 } else {
                     // first mark the reference as encoded in case there is a nested reference to itself
-                    identityReference.setEncoded(true);       // further encoding of the value will be encoded as references
+                    // further encoding of the value will be encoded as references
+                    identityReference.setEncoded(true);
 
                     // create dictionary with the value so we can generate an object that can be referenced
                     encodeReferenceSource(encoder, jsonBuilder, value, identityReference.getID());
@@ -348,7 +353,8 @@ abstract class SoftValueEncoder<DataType> extends AbstractEncoder<DataType> {
     /**
      * encode the string
      */
-    @SuppressWarnings("unchecked")    // need to cast the value to Map<String,Object>
+    // need to cast the value to Map<String,Object>
+    @SuppressWarnings("unchecked")
     private void encodeReferenceSource(final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value, final long referenceID) {
         jsonBuilder.append("{");
 
@@ -367,7 +373,8 @@ abstract class SoftValueEncoder<DataType> extends AbstractEncoder<DataType> {
     /**
      * encode the string
      */
-    @SuppressWarnings("unchecked")    // need to cast the value to Map<String,Object>
+    // need to cast the value to Map<String,Object>
+    @SuppressWarnings("unchecked")
     private void encodeReference(final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value, final long referenceID) {
         jsonBuilder.append("{");
 
@@ -449,7 +456,8 @@ class StringEncoder extends SoftValueEncoder<String> {
      * determine whether the string allows referencing
      */
     public boolean allowsReference(final String value) {
-        return value.length() > 20;     // don't bother using references unless the string is long enough to warrant the overhead
+        // don't bother using references unless the string is long enough to warrant the overhead
+        return value.length() > 20;
     }
 
     /**
@@ -570,7 +578,8 @@ class DictionaryEncoder extends SoftValueEncoder<Map<String, Object>> {
      * resolved and encoded in order (definition first then any references to
      * it)
      */
-    @SuppressWarnings("unchecked")    // need to cast the value to Map<String,Object>
+    // need to cast the value to Map<String,Object>
+    @SuppressWarnings("unchecked")
     public void preprocess(final JSONEncoder encoder, final Object value) {
         final ReferenceStore referenceStore = encoder.getReferenceStore();
         referenceStore.store(value);
@@ -588,7 +597,8 @@ class DictionaryEncoder extends SoftValueEncoder<Map<String, Object>> {
     /**
      * encode the string
      */
-    @SuppressWarnings("unchecked")    // need to cast the value to Map<String,Object>
+    // need to cast the value to Map<String,Object>
+    @SuppressWarnings("unchecked")
     @Override
     public void encodeRaw(final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value) {
         final Map<String, Object> dictionary = (Map<String, Object>) value;
@@ -670,12 +680,6 @@ class ExtensionEncoder extends SoftValueEncoder<Object> {
     public void preprocess(final JSONEncoder encoder, final Object value) {
         final ReferenceStore referenceStore = encoder.getReferenceStore();
         referenceStore.store(value);
-
-        // NOTE: don't want to reference the dictionary itself, but just the dictionary's keys and values
-        // create dictionary with the value so we can generate an object that can be referenced
-//      final ConversionAdaptorStore conversionAdaptorStore = encoder.getConversionAdaptorStore();
-//      final HashMap<String,Object> valueRep = getValueRep( value, conversionAdaptorStore );
-//      DictionaryEncoder.getInstance().preprocess( encoder, valueRep );        // preprocess the value rep
     }
 
     /**
@@ -686,7 +690,8 @@ class ExtensionEncoder extends SoftValueEncoder<Object> {
         // create dictionary with the value so we can generate an object that can be referenced
         final ConversionAdaptorStore conversionAdaptorStore = encoder.getConversionAdaptorStore();
         final HashMap<String, Object> valueRep = getValueRep(value, conversionAdaptorStore);
-        DictionaryEncoder.getInstance().encodeRaw(encoder, jsonBuilder, valueRep);        // encode this dictionary directly
+        // encode this dictionary directly
+        DictionaryEncoder.getInstance().encodeRaw(encoder, jsonBuilder, valueRep);
     }
 
     /**
@@ -768,11 +773,6 @@ class SerializationEncoder extends SoftValueEncoder<Serializable> {
     public void preprocess(final JSONEncoder encoder, final Object value) {
         final ReferenceStore referenceStore = encoder.getReferenceStore();
         referenceStore.store(value);
-
-        // NOTE: don't want to reference the dictionary itself, but just the dictionary's keys and values
-        // create dictionary with the value so we can generate an object that can be referenced
-        //      final HashMap<String,Object> valueRep = getValueRep( value );
-        //      DictionaryEncoder.getInstance().preprocess( encoder, valueRep );        // preprocess the value rep
     }
 
     /**
@@ -782,7 +782,8 @@ class SerializationEncoder extends SoftValueEncoder<Serializable> {
     public void encodeRaw(final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value) {
         // create dictionary with the value so we can generate an object that can be referenced
         final HashMap<String, Object> valueRep = getValueRep(value);
-        DictionaryEncoder.getInstance().encodeRaw(encoder, jsonBuilder, valueRep);        // encode this dictionary directly
+        // encode this dictionary directly
+        DictionaryEncoder.getInstance().encodeRaw(encoder, jsonBuilder, valueRep);
     }
 }
 
@@ -856,7 +857,8 @@ class TypedArrayEncoder extends ArrayEncoder {
         final ConversionAdaptorStore conversionAdaptorStore = encoder.getConversionAdaptorStore();
 
         final int arrayLength = Array.getLength(array);
-        final Object[] objectArray = new Object[arrayLength];    // encode as a generic object array
+        // encode as a generic object array
+        final Object[] objectArray = new Object[arrayLength];
         for (int index = 0; index < arrayLength; index++) {
             objectArray[index] = Array.get(array, index);
         }
@@ -1207,15 +1209,18 @@ class JSONDecoder {
                 case '{':
                     return DictionaryDecoder.getInstance();
                 default:
-                    if (Character.isWhitespace(nextChar)) {     // ignore whitespace
-                        ++scanPosition;    // increment the scan position
+                    // ignore whitespace
+                    if (Character.isWhitespace(nextChar)) {
+                        // increment the scan position
+                        ++scanPosition;
                         return nextDecoder();
                     } else {
                         return null;
                     }
             }
         } else {
-            return null;    // nothing left to parse
+            // nothing left to parse
+            return null;
         }
     }
 }
@@ -1412,19 +1417,27 @@ class StringDecoder extends AbstractDecoder<String> {
 
             final char nextChar = archive.charAt(position);
 
-            if (nextChar == '\\') {   // escape character => replace with next character literally
+            // escape character => replace with next character literally
+            if (nextChar == '\\') {
                 String prefix = "";
                 if (position > startPosition) {
-                    prefix = archive.substring(startPosition, position);  // grab what we've already parsed preceding the escape character
+                    // grab what we've already parsed preceding the escape character
+                    prefix = archive.substring(startPosition, position);
                 }
-                position += 1;  // skip the escape character
-                final char literalChar = archive.charAt(position);    // this is the character immediatel following the escape character to process literally
-                return prefix + literalChar + decode(source, position + 1);       // combine the prefix, literal character and continue processing the characters following it normally
-            } else if (nextChar == '"') {       // terminating quotation mark
+                // skip the escape character
+                position += 1;
+                // this is the character immediatel following the escape character to process literally
+                final char literalChar = archive.charAt(position);
+                // combine the prefix, literal character and continue processing the characters following it normally
+                return prefix + literalChar + decode(source, position + 1);
+                // terminating quotation mark
+            } else if (nextChar == '"') {
                 source.setScanPosition(position + 1);
                 break;
-            } else {      // normal character
-                position += 1;      // increment the scan position
+                // normal character
+            } else {
+                // increment the scan position
+                position += 1;
             }
         }
 
@@ -1485,8 +1498,10 @@ class ArrayDecoder extends AbstractDecoder<Object[]> {
         final String archive = source.getArchive();
         final int archiveLength = archive.length();
 
-        int position = startScanPosition + 1;   // start at first character after leading bracket
-        boolean expectingNextItem = true;       // indicates that the next thing we expect is an item (or white space)
+        // start at first character after leading bracket
+        int position = startScanPosition + 1;
+        // indicates that the next thing we expect is an item (or white space)
+        boolean expectingNextItem = true;
         while (true) {
             if (position >= archiveLength) {
                 throw new RuntimeException("JSON Array decode exception at position: " + startScanPosition + ". The input terminated prematurely.");
@@ -1494,26 +1509,37 @@ class ArrayDecoder extends AbstractDecoder<Object[]> {
 
             final char nextChar = archive.charAt(position);
 
-            if (Character.isWhitespace(nextChar)) {     // ignore whitespace and keep going
+            // ignore whitespace and keep going
+            if (Character.isWhitespace(nextChar)) {
                 ++position;
-            } else if (expectingNextItem) {     // process the next array item
-                if (items.size() == 0 && nextChar == ']') {   // we've got an empty array
+                // process the next array item
+            } else if (expectingNextItem) {
+                // we've got an empty array
+                if (items.size() == 0 && nextChar == ']') {
                     source.setScanPosition(position + 1);
-                    return;     // we're done with this array
+                    // we're done with this array
+                    return;
                 } else {
-                    expectingNextItem = false;      // need a comma before we can begin parsing the next item
+                    // need a comma before we can begin parsing the next item
+                    expectingNextItem = false;
                     source.setScanPosition(position);
                     final Object item = source.parseNext();
                     items.add(item);
-                    position = source.getScanPosition();    // get the current scan position after having scanned the item
+                    // get the current scan position after having scanned the item
+                    position = source.getScanPosition();
                 }
-            } else {      // not expecting a new item so we expect either a comma or closing bracket
+                // not expecting a new item so we expect either a comma or closing bracket
+            } else {
                 switch (nextChar) {
-                    case ']':       // closing bracket of array
+                    // closing bracket of array
+                    case ']':
                         source.setScanPosition(position + 1);
-                        return;     // we're done with this array
-                    case ',':       // comma preceding next item
-                        expectingNextItem = true;       // comma indicates we are awaiting the next item
+                        // we're done with this array
+                        return;
+                    // comma preceding next item
+                    case ',':
+                        // comma indicates we are awaiting the next item
+                        expectingNextItem = true;
                         ++position;
                         break;
                     default:
@@ -1551,7 +1577,8 @@ class DictionaryDecoder extends AbstractDecoder<Object> {
     /**
      * decode the source to extract the next object
      */
-    @SuppressWarnings("unchecked")    // no way to validate representation value and type at compile time
+    // no way to validate representation value and type at compile time
+    @SuppressWarnings("unchecked")
     @Override
     protected Object decode(final JSONDecoder source) {
         final Map<String, Object> dictionary = new HashMap<>();
@@ -1573,7 +1600,8 @@ class DictionaryDecoder extends AbstractDecoder<Object> {
             try {
                 final Class<?> primitiveClass = TypedArrayEncoder.getPrimitiveType(componentType);
                 final Class<?> componentClass = primitiveClass != null ? primitiveClass : Class.forName(componentType);
-                final String componentObjectType = TypedArrayEncoder.getObjectTypeForClass(componentClass);   // this allows us to handle primitive wrappers
+                // this allows us to handle primitive wrappers
+                final String componentObjectType = TypedArrayEncoder.getObjectTypeForClass(componentClass);
                 final Class<?> componentObjectClass = Class.forName(componentObjectType);
                 final Object array = Array.newInstance(componentClass, objectArray.length);
                 for (int index = 0; index < objectArray.length; index++) {
@@ -1623,8 +1651,10 @@ class DictionaryDecoder extends AbstractDecoder<Object> {
         final String archive = source.getArchive();
         final int archiveLength = archive.length();
 
-        int position = startScanPosition + 1;   // start at first character after leading bracket
-        boolean expectingNextPair = true;       // indicates whether the scanner expects a key value pair next (or white space)
+        // start at first character after leading bracket
+        int position = startScanPosition + 1;
+        // indicates whether the scanner expects a key value pair next (or white space)
+        boolean expectingNextPair = true;
         while (true) {
             if (position >= archiveLength) {
                 throw new RuntimeException("JSON Dictionary decode exception at position: " + startScanPosition + ". The input terminated prematurely.");
@@ -1632,12 +1662,16 @@ class DictionaryDecoder extends AbstractDecoder<Object> {
 
             final char nextChar = archive.charAt(position);
 
-            if (Character.isWhitespace(nextChar)) {     // ignore whitespace and keep going
+            // ignore whitespace and keep going
+            if (Character.isWhitespace(nextChar)) {
                 ++position;
-            } else if (expectingNextPair) {     // process the next key/value pair
-                if (dictionary.size() == 0 && nextChar == '}') {  // we've got an empty dictionary
+                // process the next key/value pair
+            } else if (expectingNextPair) {
+                // we've got an empty dictionary
+                if (dictionary.size() == 0 && nextChar == '}') {
                     source.setScanPosition(position + 1);
-                    return;     // we're done with this dictionary
+                    // we're done with this dictionary
+                    return;
                 } else {
                     expectingNextPair = false;
 
@@ -1649,7 +1683,8 @@ class DictionaryDecoder extends AbstractDecoder<Object> {
                     }
 
                     final String key = (String) keyObject;
-                    position = source.getScanPosition();    // get the current scan position after having scanned the key
+                    // get the current scan position after having scanned the key
+                    position = source.getScanPosition();
 
                     // search for the comma while skipping white space
                     while (true) {
@@ -1659,9 +1694,11 @@ class DictionaryDecoder extends AbstractDecoder<Object> {
 
                         final char nextSeparatorChar = archive.charAt(position);
 
-                        if (Character.isWhitespace(nextSeparatorChar)) {        // ignore whitespace and keep going
+                        // ignore whitespace and keep going
+                        if (Character.isWhitespace(nextSeparatorChar)) {
                             ++position;
-                        } else if (nextSeparatorChar == ':') {  // now we got the colon
+                            // now we got the colon
+                        } else if (nextSeparatorChar == ':') {
                             ++position;
                             break;
                         } else {
@@ -1673,15 +1710,21 @@ class DictionaryDecoder extends AbstractDecoder<Object> {
                     source.setScanPosition(position);
                     final Object value = source.parseNext();
                     dictionary.put(key, value);
-                    position = source.getScanPosition();    // get the current scan position after having scanned the value
+                    // get the current scan position after having scanned the value
+                    position = source.getScanPosition();
                 }
-            } else {      // not whitespace and not expecting a key/value pair
+                // not whitespace and not expecting a key/value pair
+            } else {
                 switch (nextChar) {
-                    case '}':       // closing brace of dictionary
+                    // closing brace of dictionary
+                    case '}':
                         source.setScanPosition(position + 1);
-                        return;     // we're done with this dictionary
-                    case ',':       // comma preceding next item
-                        expectingNextPair = true;       // comma indicates we are awaiting the next key/value pair
+                        // we're done with this dictionary
+                        return;
+                    // comma preceding next item
+                    case ',':
+                        // comma indicates we are awaiting the next key/value pair
+                        expectingNextPair = true;
                         ++position;
                         break;
                     default:
@@ -1787,7 +1830,8 @@ class ReferenceStore {
     /**
      * store the item
      */
-    @SuppressWarnings("unchecked")    // no way to test type at compile time
+    // no way to test type at compile time
+    @SuppressWarnings("unchecked")
     public <ItemType> IdentityReference<ItemType> store(final ItemType item) {
         if (!equalityReferences.containsKey(item)) {
             equalityReferences.put(item, new EqualityReference<>());
@@ -1799,7 +1843,8 @@ class ReferenceStore {
     /**
      * get the item's identify reference
      */
-    @SuppressWarnings("unchecked")    // no way to test type at compile time
+    // no way to test type at compile time
+    @SuppressWarnings("unchecked")
     public <ItemType> IdentityReference<ItemType> getIdentityReference(final ItemType item) {
         if (equalityReferences.containsKey(item)) {
             final EqualityReference<ItemType> equalityReference = (EqualityReference<ItemType>) equalityReferences.get(item);
@@ -2287,7 +2332,8 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
             /**
              * convert the JSON representation construct into the custom type
              */
-            @SuppressWarnings("unchecked")    // list can represent any type
+            // list can represent any type
+            @SuppressWarnings("unchecked")
             @Override
             public ArrayList<?> toNative(final Object[] array) {
                 final ArrayList<Object> list = new ArrayList<>(array.length);
@@ -2311,7 +2357,8 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
             /**
              * convert the JSON representation construct into the custom type
              */
-            @SuppressWarnings("unchecked")    // list can represent any type
+            // list can represent any type
+            @SuppressWarnings("unchecked")
             @Override
             public Vector<?> toNative(final Object[] array) {
                 final Vector<Object> list = new Vector<>(array.length);

@@ -14,13 +14,13 @@ class JcaServerChannelSystem extends ChannelSystem {
     /**
      * Java Channel Access Context
      */
-    private ServerContext JCA_CONTEXT;
+    private ServerContext jcaContext;
 
     /**
      * Constructor
      */
-    public JcaServerChannelSystem(ServerContext JCA_CONTEXT) {
-        this.JCA_CONTEXT = JCA_CONTEXT;
+    public JcaServerChannelSystem(ServerContext jcaContext) {
+        this.jcaContext = jcaContext;
     }
 
     @Override
@@ -43,6 +43,6 @@ class JcaServerChannelSystem extends ChannelSystem {
 
     @Override
     public void printInfo() {
-        JCA_CONTEXT.printInfo();
+        jcaContext.printInfo();
     }
 }

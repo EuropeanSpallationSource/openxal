@@ -62,9 +62,12 @@ public class ThinLens extends ThinElement {
      * focal lengths imply focusing while negative values imply defocusing.
      *
      * @param strId string identifier of element
-     * @param dblFx focal length in the x phase plane (<strong>in meters</strong>)
-     * @param dblFy focal length in the y phase plane (<strong>in meters</strong>)
-     * @param dblFz focal length in the z phase plane (<strong>in meters</strong>)
+     * @param dblFx focal length in the x phase plane (<strong>in
+     * meters</strong>)
+     * @param dblFy focal length in the y phase plane (<strong>in
+     * meters</strong>)
+     * @param dblFz focal length in the z phase plane (<strong>in
+     * meters</strong>)
      */
     public ThinLens(String strId, double dblFx, double dblFy, double dblFz) {
         super(TYPE, strId);
@@ -86,7 +89,8 @@ public class ThinLens extends ThinElement {
     /**
      * Set the focal length in the x direction.
      *
-     * @param dblFx focal length in the x phase plane (<strong>in meters</strong>)
+     * @param dblFx focal length in the x phase plane (<strong>in
+     * meters</strong>)
      */
     public void setFocalLengthX(double dblFx) {
         dblFocX = dblFx;
@@ -95,7 +99,8 @@ public class ThinLens extends ThinElement {
     /**
      * Set the focal length in the y direction.
      *
-     * @param dblFy focal length in the y phase plane (<strong>in meters</strong>)
+     * @param dblFy focal length in the y phase plane (<strong>in
+     * meters</strong>)
      */
     public void setFocalLengthY(double dblFy) {
         dblFocY = dblFy;
@@ -104,7 +109,8 @@ public class ThinLens extends ThinElement {
     /**
      * Set the focal length in the z direction.
      *
-     * @param dblFz focal length in the z phase plane (<strong>in meters</strong>)
+     * @param dblFz focal length in the z phase plane (<strong>in
+     * meters</strong>)
      */
     public void setFocalLengthZ(double dblFz) {
         dblFocZ = dblFz;
@@ -185,7 +191,8 @@ public class ThinLens extends ThinElement {
      */
     @Override
     protected PhaseMap transferMap(IProbe probe) throws ModelException {
-        PhaseMatrix matPhi = PhaseMatrix.identity();       // linear portion of phase map
+        // linear portion of phase map
+        PhaseMatrix matPhi = PhaseMatrix.identity();
 
         // The x phase plane
         if (dblFocX != 0.0) {

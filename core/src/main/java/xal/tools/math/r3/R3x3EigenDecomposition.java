@@ -12,8 +12,8 @@ import org.ejml.interfaces.decomposition.EigenDecomposition;
 
 /**
  * <p>
- * Essentially this class is just a wrapper over the <em>Jama</em> matrix package
- * class <code>EigenvalueDecomposition</code>. Thus, XAL can present a
+ * Essentially this class is just a wrapper over the <em>Jama</em> matrix
+ * package class <code>EigenvalueDecomposition</code>. Thus, XAL can present a
  * consistent interface in the event that Jama gets removed/replaced in the
  * future.
  * </p>
@@ -25,15 +25,17 @@ import org.ejml.interfaces.decomposition.EigenDecomposition;
  * <br>
  * <br>
  * where <strong>V</strong> is an invertible matrix in the special linear group
- * <em>SL</em>(3) &sub; <strong>R</strong><sup>3&times;3</sup> and <strong>D</strong> is the the real
- * matrix with 2&times;2 blocks consisting of the real and imaginary parts of
- * the eigenvalues on the diagonal. (Each eigenvalue of matrix <strong>A</strong> is the
- * diagonal of the Jacobi block.)
+ * <em>SL</em>(3) &sub; <strong>R</strong><sup>3&times;3</sup> and
+ * <strong>D</strong> is the the real matrix with 2&times;2 blocks consisting of
+ * the real and imaginary parts of the eigenvalues on the diagonal. (Each
+ * eigenvalue of matrix <strong>A</strong> is the diagonal of the Jacobi block.)
  * </p>
  * <p>
- * The columns of <strong>V</strong> are the eigenvectors of <strong>A</strong> in the sense that
- * <strong>AV</strong> = <strong>VD</strong>. Note that the matrix <strong>V</strong> may be badly
- * conditioned, or even singular, so that the above equation may not be valid.
+ * The columns of <strong>V</strong> are the eigenvectors of <strong>A</strong>
+ * in the sense that
+ * <strong>AV</strong> = <strong>VD</strong>. Note that the matrix
+ * <strong>V</strong> may be badly conditioned, or even singular, so that the
+ * above equation may not be valid.
  *
  * @author Christopher K. Allen
  */
@@ -94,11 +96,11 @@ public class R3x3EigenDecomposition {
     }
 
     /**
-     * Get the matrix <strong>V</strong> of eigenvectors (columns) for the decomposition.
-     * Note that this matrix is the diagonalizing (in the Jacaobi sense) matrix
-     * for the target matrix <strong>A</strong>. If the target matrix <strong>A</strong> is
-     * symmetric then the returned matrix V will be in the special orthogonal
-     * group <em>SO</em>(3).
+     * Get the matrix <strong>V</strong> of eigenvectors (columns) for the
+     * decomposition. Note that this matrix is the diagonalizing (in the Jacaobi
+     * sense) matrix for the target matrix <strong>A</strong>. If the target
+     * matrix <strong>A</strong> is symmetric then the returned matrix V will be
+     * in the special orthogonal group <em>SO</em>(3).
      *
      * Note that, in general, this matrix may be ill conditioned.
      *
@@ -115,10 +117,12 @@ public class R3x3EigenDecomposition {
     }
 
     /**
-     * Return the matrix <strong>D</strong> of eigenvalues in the decomposition. Note that
-     * if target matrix <strong>A</strong> is symmetric then this matrix will be diagonal.
+     * Return the matrix <strong>D</strong> of eigenvalues in the decomposition.
+     * Note that if target matrix <strong>A</strong> is symmetric then this
+     * matrix will be diagonal.
      *
-     * @return block diagonal matrix <strong>D</strong> of eigenvalues of <strong>A</strong>
+     * @return block diagonal matrix <strong>D</strong> of eigenvalues of
+     * <strong>A</strong>
      */
     public R3x3 getEigenvalueMatrix() {
         double[][] arr = new double[3][3];

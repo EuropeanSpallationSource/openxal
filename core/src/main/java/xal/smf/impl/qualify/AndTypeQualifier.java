@@ -112,6 +112,7 @@ public class AndTypeQualifier implements TypeQualifier {
             }
         }
 
-        return true;    // all qualifiers must have matched
+        // all qualifiers must have matched
+        return true;
     }
 }

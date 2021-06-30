@@ -155,7 +155,8 @@ public class DifferentialVariable {
             if (addend.offset < offset) {
                 offset = addend.offset;
             }
-            final int topAddendIndex = addend.offset + addend.derivatives.length - 1;   // index of the addend's last independent variable
+            // index of the addend's last independent variable
+            final int topAddendIndex = addend.offset + addend.derivatives.length - 1;
             if (topAddendIndex > maxIndex) {
                 maxIndex = topAddendIndex;
             }
@@ -229,7 +230,8 @@ public class DifferentialVariable {
             if (multiplicand.offset < offset) {
                 offset = multiplicand.offset;
             }
-            final int topMultiplicandIndex = multiplicand.offset + multiplicand.derivatives.length - 1;   // index of the multiplicand's last independent variable
+            // index of the multiplicand's last independent variable
+            final int topMultiplicandIndex = multiplicand.offset + multiplicand.derivatives.length - 1;
             if (topMultiplicandIndex > maxIndex) {
                 maxIndex = topMultiplicandIndex;
             }
@@ -301,7 +303,8 @@ public class DifferentialVariable {
      */
     public DifferentialVariable reciprocal() {
         final double value = 1.0 / this.value;
-        final double inverseFactor = -value * value;   // f = 1/u -> df = - du / u^2
+        // f = 1/u -> df = - du / u^2
+        final double inverseFactor = -value * value;
         final double[] derivatives = new double[this.derivatives.length];
         for (int index = 0; index < derivatives.length; index++) {
             derivatives[index] = inverseFactor * this.derivatives[index];

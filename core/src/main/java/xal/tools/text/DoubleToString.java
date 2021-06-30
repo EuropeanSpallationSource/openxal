@@ -19,9 +19,8 @@ import java.util.logging.Logger;
 public class DoubleToString {
 
     private static final Logger LOGGER = Logger.getLogger(DoubleToString.class.getName());
-    
-    //Hardcode some byte arrays to make them quickly available
 
+    //Hardcode some byte arrays to make them quickly available
     /**
      * Character array representing number infinity
      */
@@ -166,11 +165,11 @@ public class DoubleToString {
             if (negativeSuffix != '\uFFFF') {
                 s.append(negativeSuffix);
             }
-        } else if (d == Double.POSITIVE_INFINITY) //d == Infinity
-        {
+            //d == Infinity
+        } else if (d == Double.POSITIVE_INFINITY) {
             s.append(INFINITY);
-        } else if (d != d) //d == NaN
-        {
+            //d == NaN
+        } else if (d != d) {
             s.append(NaN);
         } else if (d == 0.0) {
             if ((Double.doubleToLongBits(d) & DOUBLE_SIGN_MASK) != 0) {
@@ -361,8 +360,8 @@ public class DoubleToString {
             //Possibly too small, depends on whether the top digit is 5 or greater
             //So we have to scale to get the leading digit
             int i;
-            if (d_magnitude < -305) //Probably not necessary. Who is going to print 305 places?
-            {
+            //Probably not necessary. Who is going to print 305 places?
+            if (d_magnitude < -305) {
                 i = (int) ((d * 1E19) / dTenthPowers[d_magnitude + 324 + 18]);
             } else {
                 i = (int) (d / dTenthPowers[d_magnitude + 323]);

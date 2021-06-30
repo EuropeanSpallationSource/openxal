@@ -66,7 +66,8 @@ public class IdealMagSolenoid extends ThickElectromagnet {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <strong>meters</strong>
+     * @param dblLen length of subsection to propagate through
+     * <strong>meters</strong>
      *
      * @return the elapsed time through section<strong>Units: seconds</strong>
      */
@@ -163,8 +164,10 @@ public class IdealMagSolenoid extends ThickElectromagnet {
             matPhi = Mbody;
         }
 
-        matPhi.setSubMatrix(4, 5, 4, 5, arr0); // a drift space longitudinally       
-        matPhi.setElem(6, 6, 1.0); // homogeneous coordinates      
+        // a drift space longitudinally       
+        matPhi.setSubMatrix(4, 5, 4, 5, arr0);
+        // homogeneous coordinates      
+        matPhi.setElem(6, 6, 1.0);
 
         // apply alignment and rotation errors taking care of the thin matrix entrance and exit slices
         // 2018-07-02 Natalia Milas

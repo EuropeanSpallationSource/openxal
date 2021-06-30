@@ -150,10 +150,10 @@ public class CubicSpline {
 
         if (xx >= xMax) {
             return aVal[nPoints];
-        } //k = nPoints;
+        }
         else if (xx <= xMin) {
             return aVal[0];
-        } //k = 1;
+        }
         else {
             klo = 1;
             khi = nPoints + 1;

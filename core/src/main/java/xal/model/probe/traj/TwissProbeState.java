@@ -57,11 +57,6 @@ public class TwissProbeState extends BunchProbeState<TwissProbeState> {
      */
     private static final String LABEL_PHASE = "phase";
 
-//    /** element label for twiss parameters */
-//    private static final String   LABEL_TWISS = "twiss";
-//    
-//    /** general value attribute tag */
-//    private static final String   ATTR_VALUE = "value";
     //
     // Persistence Version
     //
@@ -152,19 +147,6 @@ public class TwissProbeState extends BunchProbeState<TwissProbeState> {
     /*
      * Property Accessors
      */
-//    /** 
-//     * We want to deprecate this method from the base class <code>BunchProbeState</code>
-//     * since we do not use beam current right now.
-//     * 
-//     * @param   dblCurrent  new beam current (not used)
-//     * 
-//     * @deprecated
-//     */
-//    @Override
-//    public void setBeamCurrent(double dblCurrent)   {
-//        super.setBeamCurrent(dblCurrent);
-//    }
-//
     /**
      * Set the centroid location of the beam bunch in homogeneous coordinates.
      *
@@ -217,28 +199,6 @@ public class TwissProbeState extends BunchProbeState<TwissProbeState> {
         this.envTwiss = arrTwiss;
     }
 
-//    /**
-//     * Get the distribution profile descriptor.
-//     * 
-//     * @return  profile desriptor object for this distribution
-//     */
-//    public ProfileIndex    getProfile()    {
-//        return this.getBunchParameters().getProfile();
-//    }
-//    
-//    /**
-//     * We want to deprecate references to the beam current from the base class
-//     * <code>BunchProbe</code> since we are not considering it right now.
-//     * 
-//     * @return  beam current (not used in dynamics)
-//     * 
-//     * @deprecated  we do not use current in the dynamics
-//     */
-//    @Override
-//    public double   getBeamCurrent()    {
-//        return 0.0; // super.getBeamCurrent();
-//    }
-//    
     /**
      * Get the centroid location of the beam bunch in homogeneous coordinates.
      *
@@ -359,59 +319,6 @@ public class TwissProbeState extends BunchProbeState<TwissProbeState> {
         return this.vecPhsBeta;
     }
 
-//    
-//    /**
-//     * <p>
-//     * Convenience function for returning the chromatic dispersion as defined by
-//     * D.C. Carey in "The Optics of Charged Particle Beams".  This value is taken
-//     * from the response matrix in the off-energy column (z').
-//     * </p>
-//     * <p>
-//     * <h4>NOTE:</h4>
-//     * For X and Y coordinates We convert to the conventional definition of 
-//     * dispersion dx/(dp/p) by dividing the (x|z') element of the first-order response 
-//     * matrix by relativistic gamma squared.
-//     * <br>
-//     * <br>
-//     * See D.C. Carey, "The Optics of Charged Particle Beams".
-//     * </p> 
-//     * 
-//     * @param   index   phase coordinate index of desired "dispersion"
-//     * 
-//     * @return  chromatic dispersion in <strong>meters/radian</strong> or <strong>radians/radian</strong>
-//     * 
-//     */
-//    public double getChromDispersion(PhaseIndex index)  {
-//        
-//        if (index==PhaseIndex.X || index==PhaseIndex.Y) {
-//            double  W  = this.getKineticEnergy();
-//            double  Er = this.getSpeciesRestEnergy(); 
-//            double  gamma = RelativisticParameterConverter.computeGammaFromEnergies(W, Er);
-//            double  d     = this.getResponseMatrix().getElem(index.val(), PhaseMatrix.IND_ZP);
-//            
-//            return d/(gamma*gamma);
-//            
-//        } else {
-//            double d = this.getResponseMatrix().getElem(index.val(), PhaseMatrix.IND_ZP);
-//            
-//            return d;
-//        }
-//    } 
-//    
-//    
-//    /**
-//     * Set the "Chromatic dispersion" element of the response matrix.  That is
-//     * we set the (index,z') element of the response matrix to the given value.
-//     * <br>
-//     * <br>
-//     *  See D.C. Carey, "The Optics of Charged Particle Beams".
-//     *  
-//     * @param   index   phase coordinate index of desired "dispersion"
-//     * @param   d       dispersion in <strong>meters/radian</strong> or <strong>radians/radian</strong>
-//     */
-//    public void setChromDispersion(PhaseIndex index, double d)  {
-//        this.getResponseMatrix().setElem(index.val(), PhaseMatrix.IND_ZP, d);
-//    }
     /*
      * ProbeState Overrides
      */
@@ -452,8 +359,6 @@ public class TwissProbeState extends BunchProbeState<TwissProbeState> {
         this.getBetatronPhase().save(daPhase);
 
         this.getTwiss3D().save(daProbe);
-//        DataAdaptor daTwiss = daProbe.createChild(TwissProbeState.LABEL_TWISS);
-//        this.getTwiss3D().save(daTwiss);
     }
 
     /**
@@ -503,11 +408,6 @@ public class TwissProbeState extends BunchProbeState<TwissProbeState> {
                 this.setBetatronPhase(vecPhase);
             }
 
-//            DataAdaptor daTwiss = daProbe.childAdaptor(TwissProbeState.LABEL_TWISS);
-//            if (daTwiss != null)   {
-//                Twiss3D envTwiss = new Twiss3D(daTwiss);
-//                this.setTwiss(envTwiss);
-//            }
             Twiss3D envTwiss = new Twiss3D(daProbe);
             this.setTwiss(envTwiss);
 
@@ -517,37 +417,4 @@ public class TwissProbeState extends BunchProbeState<TwissProbeState> {
 
         }
     }
-
-//    /**
-//     * Set all the analytic bunch description parameters at once.
-//     * 
-//     * @param   desBunch    encapsulation of all the bunch parameters
-//     */
-//    private void setBunchParameters(BunchDescriptor desBunch) {
-//        this.desBunch = desBunch;
-//    }
-//
-//    
-//    /**
-//     * Return the <code>BunchDescriptor</code> object encapsulating all the analytic
-//     * parameters describing the bunch.
-//     * 
-//     * @return  analytic parameters describing beam bunch
-//     */
-//    private BunchDescriptor  getBunchParameters()    {
-//        return this.desBunch;
-//    }
-//
-    /*
-     * Debugging
-     */
-//    /**
-//     * Write out state information to a string.
-//     * 
-//     * @return     text version of internal state data
-//     */
-//    public String toString() {
-//        return super.toString() + " correlation: " + getCorrelationMatrix().toString();
-//    }   
-//    
 }

@@ -5,12 +5,12 @@
  */
 package xal.plugin.jca;
 
-import xal.ca.ChannelRecord;
 import xal.ca.ValueAdaptor;
 import xal.tools.ArrayValue;
 
 import gov.aps.jca.dbr.*;
-import gov.aps.jca.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Wrap a jca.dbr.DBR record for high level access
@@ -19,13 +19,15 @@ import gov.aps.jca.*;
  */
 class DbrValueAdaptor implements ValueAdaptor {
 
-    protected DBR _dbr;
+    private static final Logger LOGGER = Logger.getLogger(DbrValueAdaptor.class.getName());
+
+    protected DBR dbr;
 
     /**
      * Creates a new instance of ValueAdaptor
      */
     public DbrValueAdaptor(final DBR dbr) {
-        _dbr = dbr;
+        this.dbr = dbr;
     }
 
     /**
@@ -64,11 +66,13 @@ class DbrValueAdaptor implements ValueAdaptor {
      * method but the interface does not since the method returns different
      * array types. So, we use the Selector to call the method.
      */
+    @Override
     public ArrayValue getStore() {
         try {
-            Object array = _dbr.getValue();
+            Object array = dbr.getValue();
             return ArrayValue.arrayValueFromArray(array);
-        } catch (Exception excpt) {
+        } catch (IllegalArgumentException excpt) {
+            LOGGER.log(Level.SEVERE, null, excpt);
         }
 
         return null;

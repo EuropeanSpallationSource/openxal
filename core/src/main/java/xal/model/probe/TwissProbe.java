@@ -26,12 +26,13 @@ import xal.model.probe.traj.TwissProbeState;
  * matrix for the beam and is represented as
  * <br>
  * <br>
- * &nbsp; &nbsp; <strong>&chi;</strong> = &lt; <strong>zz</strong><sup>T</sup>&gt;
+ * &nbsp; &nbsp; <strong>&chi;</strong> = &lt;
+ * <strong>zz</strong><sup>T</sup>&gt;
  * <br>
  * <br>
- * where <strong>z </strong>=(x,x',y,y',z,z',1) is the vector of homogeneous phase space
- * coordinates, and &lt;.&gt; is the moment operator with respect to the beam
- * distribution.
+ * where <strong>z </strong>=(x,x',y,y',z,z',1) is the vector of homogeneous
+ * phase space coordinates, and &lt;.&gt; is the moment operator with respect to
+ * the beam distribution.
  * </p>
  *
  * @author Christopher K. Allen
@@ -280,29 +281,6 @@ public class TwissProbe extends BunchProbe<TwissProbeState> {
         return new Trajectory<>(TwissProbeState.class);
     }
 
-//	/**
-//	 * Apply the contents of ProbeState to update my current state. The argument
-//	 * supplying the new state should be of concrete type
-//	 * <code>TwissProbeState</code>.
-//	 * 
-//	 * @param state
-//	 *            <code>ProbeState</code> object containing new probe state
-//	 *            data
-//	 * 
-//	 * @exception IllegalArgumentException
-//	 *                wrong <code>ProbeState</code> subtype for this probe
-//	 */
-//    @Override
-//	public void applyState(TwissProbeState state) {
-//		if (!(state instanceof TwissProbeState))
-//			throw new IllegalArgumentException("invalid probe state");
-//		TwissProbeState stateTwiss = (TwissProbeState) state;
-//
-//		super.applyState(stateTwiss);
-//        this.setCentroid(stateTwiss.getCentroid());
-//		this.setResponseMatrix(stateTwiss.getResponseMatrix());
-//        this.setTwiss(stateTwiss.getTwiss3D());
-//	}
     /**
      * Resets the probe to the saved initial state, if there is one and clears
      * the Trajectory.
@@ -315,15 +293,6 @@ public class TwissProbe extends BunchProbe<TwissProbeState> {
     @Override
     public void reset() {
         super.reset();
-//        if (getAlgorithm() instanceof EnvTrackerAdapt)
-//            try {
-//                getAlgorithm().initialize();
-//                
-//            } catch (ModelException e) {
-//                System.err.println("TwissProbe#reset() - Unable to initialize algorithm");
-//                LOGGER.log(Level.SEVERE, null, exception);
-//                
-//            }
     }
 
     /*
@@ -348,82 +317,3 @@ public class TwissProbe extends BunchProbe<TwissProbeState> {
         return state;
     }
 }
-
-/*
- * Storage
- */
-///**
-//* Return the <code>BunchDescriptor</code> object encapsulating all the analytic
-//* parameters describing the bunch.
-//* 
-//* @return  analytic parameters describing beam bunch
-//*/
-//private BunchDescriptor  getBunchParameters()    {
-//  return this.desBunch;
-//}
-//
-///**
-//* Set all the analytic bunch description parameters at once.
-//* 
-//* @param   desBunch    encapsulation of all the bunch parameters
-//*/
-//private void setBunchParameters(BunchDescriptor desBunch) {
-//  this.desBunch = desBunch;
-//}
-//
-///**
-//* Set the twiss parameters for each phase plane.
-//* 
-//* CKA NOTES:
-//* - The current method signature is misleading.  If there is
-//* an beam axis offset before this method is called, then that
-//* offset is preserved, but the previous correlation matrix is
-//* wiped out.  Thus, even though the method signature suggests
-//* there will be no offset, there can be.
-//* 
-//* @param twiss
-//*            array of Twiss objects for H, V , long. directions
-//*/
-//public void initFromTwiss(Twiss[] twiss) {
-// this.arrTwiss = twiss;
-// PhaseVector pv = getCorrelation().getMean();
-// CovarianceMatrix cMat = CovarianceMatrix.buildCorrelation(twiss[0],
-//         twiss[1], twiss[2], pv);
-// this.setCorrelation(cMat);
-//}
-///** 
-//* We want to deprecate this method from the base class <code>BunchProbe</code>
-//* since we do not use beam current right now.
-//* 
-//* @param   dblCurrent  new beam current (not used)
-//* 
-//* @deprecated
-//*/
-//@Override
-//public void setBeamCurrent(double dblCurrent)   {
-// super.setBeamCurrent(dblCurrent);
-//}
-//
-///**
-//* We want to deprecate references to the beam current from the base class
-//* <code>BunchProbe</code> since we are not considering it right now.
-//* 
-//* @return  beam current (not used in dynamics)
-//* 
-//* @deprecated  we do not use current in the dynamics
-//*/
-//@Override
-//public double   getBeamCurrent()    {
-//return 0.0; // super.getBeamCurrent();
-//}
-//
-///**
-//* Get the distribution profile descriptor.
-//* 
-//* @return  profile descriptor object for this distribution
-//*/
-//public ProfileIndex    getProfile()    {
-//return this.getBunchParameters().getProfile();
-//}
-//
-

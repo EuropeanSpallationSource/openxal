@@ -139,8 +139,10 @@ public class InverseRealPolynomial extends RealUnivariatePolynomial {
             return 1.0;
         }
 
-        int length = this.m_arrCoef.length;      // number of coefficients
-        double dblAccum = 0.0;                 // accumulator
+        // number of coefficients
+        int length = this.m_arrCoef.length;
+        // accumulator
+        double dblAccum = 0.0;
 
         for (int n = length - 1; n >= 1; n--) {
             double f = 1.;

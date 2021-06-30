@@ -309,7 +309,8 @@ public class MPSService implements MPSPortal {
      */
     protected static Date asDate(String dateStr) {
         try {
-            synchronized (DATE_FORMATTER) {     // date format access must be synchronized
+            // date format access must be synchronized
+            synchronized (DATE_FORMATTER) {
                 return DATE_FORMATTER.parse(dateStr);
             }
         } catch (java.text.ParseException exception) {

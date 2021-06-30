@@ -585,9 +585,12 @@ public class IdealEDipole extends ThickElectrostatic {
 
         //C.Benatti--not sure about these matrix elements
         //set to zero--error in angle here?? introduces offset in x,x'
-        matBody.setElem(0, 6, 0);//M06
-        matBody.setElem(1, 6, 0);//M16
-        matBody.setElem(4, 6, 0);//M46
+        //M06
+        matBody.setElem(0, 6, 0);
+        //M16
+        matBody.setElem(1, 6, 0);
+        //M46
+        matBody.setElem(4, 6, 0);
 
         matEntrance.setElem(1, 0, h * Math.tan(entAng));
         matEntrance.setElem(3, 2, -h * Math.tan(entAng - entranceAnglePhi));

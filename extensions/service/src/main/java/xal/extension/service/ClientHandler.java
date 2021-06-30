@@ -152,7 +152,8 @@ class ClientHandler<ProxyType> implements InvocationHandler {
      *
      * @return The proxy that will forward requests to the remote service.
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})   // we have not choice but to cast since newProxyInstance does not support generics
+    // we have not choice but to cast since newProxyInstance does not support generics
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private ProxyType createProxy() {
         ClassLoader loader = this.getClass().getClassLoader();
         Class[] protocols = new Class[]{serviceProtocol, ServiceState.class};
@@ -225,7 +226,8 @@ class ClientHandler<ProxyType> implements InvocationHandler {
      * @throws xal.extension.service.RemoteMessageException if an exception
      * occurs while invoking this remote message.
      */
-    @SuppressWarnings("unchecked")    // must cast generic response object to Map
+    // must cast generic response object to Map
+    @SuppressWarnings("unchecked")
     @Override
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws RemoteMessageException, RemoteServiceDroppedException {
         try {
@@ -476,7 +478,8 @@ class SerialRemoteMessageProcessor {
     /**
      * process the remote response
      */
-    @SuppressWarnings("unchecked")    // no way to know response Object type at compile time
+    // no way to know response Object type at compile time
+    @SuppressWarnings("unchecked")
     private void processRemoteResponse(final PendingResult pendingResult) throws java.net.SocketException, java.io.IOException {
         try {
             final String jsonResponse = WebSocketIO.readMessage(remoteSocket);

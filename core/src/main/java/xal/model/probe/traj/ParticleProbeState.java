@@ -138,10 +138,12 @@ public class ParticleProbeState extends ProbeState<ParticleProbeState> /*impleme
     /**
      * Set the phase space coordinates of the probe. This is the location
      * <strong>z</strong>
-     * in homogeneous phase space coordinates <strong>R</strong><sup>6</sup> &times; {1}.
+     * in homogeneous phase space coordinates <strong>R</strong><sup>6</sup>
+     * &times; {1}.
      *
      * @param vecPhase new homogeneous phase space coordinate vector
-     * <strong>z</strong> = (<em>x, x', y, y', z, z', </em>1)<sup><em>T</em></sup>
+     * <strong>z</strong> = (<em>x, x', y, y', z, z',
+     * </em>1)<sup><em>T</em></sup>
      */
     public void setPhaseCoordinates(PhaseVector vecPhase) {
         this.m_vecCoords = new PhaseVector(vecPhase);
@@ -149,25 +151,27 @@ public class ParticleProbeState extends ProbeState<ParticleProbeState> /*impleme
 
     /**
      * <p>
-     * Set the response matrix <strong>&Phi;</strong> for the particle at the given state
-     * location <strong>z</strong>. The response matrix represents the sensitivity of the
-     * current phase coordinate position <strong>z</strong> to the initial phase
-     * coordinate location <strong>z</strong><sub>0</sub> at the start of the simulation.
-     * That is,
+     * Set the response matrix <strong>&Phi;</strong> for the particle at the
+     * given state location <strong>z</strong>. The response matrix represents
+     * the sensitivity of the current phase coordinate position
+     * <strong>z</strong> to the initial phase coordinate location
+     * <strong>z</strong><sub>0</sub> at the start of the simulation. That is,
      * <br>
      * <br>
      * &nbsp; &nbsp; <strong>&Phi;</strong> &equiv;
      * &part;<strong>z</strong>/&part;<strong>z</strong><sub>0</sub>
      * <br>
      * <br>
-     * so that small changes &Delta;<strong>z</strong><sub>0</sub> in the initial phase
-     * position yield a corresponding change &Delta;<strong>z</strong> =
+     * so that small changes &Delta;<strong>z</strong><sub>0</sub> in the
+     * initial phase position yield a corresponding change
+     * &Delta;<strong>z</strong> =
      * <strong>&Phi;</strong>&Delta;<strong>z</strong><sub>0</sub>
      * in the current particle location.
      * </p>
      *
      * @param matResp the response matrix <strong>&Phi;</strong> &equiv;
-     * &part;<strong>z</strong>/&part;<strong>z</strong><sub>0</sub>the matResp to set
+     * &part;<strong>z</strong>/&part;<strong>z</strong><sub>0</sub>the matResp
+     * to set
      */
     public void setResponseMatrix(PhaseMatrix matResp) {
         this.matResp = matResp;
@@ -179,11 +183,13 @@ public class ParticleProbeState extends ProbeState<ParticleProbeState> /*impleme
      * are meters and radians.
      * </p>
      * This is the location <strong>z</strong>
-     * in homogeneous phase space coordinates <strong>R</strong><sup>6</sup> &times; {1}.
+     * in homogeneous phase space coordinates <strong>R</strong><sup>6</sup>
+     * &times; {1}.
      *
      *
-     * @return vector <strong>z</strong> = (<em>x,x',y,y',z,z',</em>1)<sup><em>T</em></sup> of
-     * phase space coordinates
+     * @return vector <strong>z</strong> =
+     * (<em>x,x',y,y',z,z',</em>1)<sup><em>T</em></sup> of phase space
+     * coordinates
      */
     public PhaseVector getPhaseCoordinates() {
         return this.m_vecCoords;
@@ -191,19 +197,20 @@ public class ParticleProbeState extends ProbeState<ParticleProbeState> /*impleme
 
     /**
      * <p>
-     * Returns the response matrix <strong>&Phi;</strong> for the particle at the given
-     * state location <strong>z</strong>. The response matrix represents the sensitivity
-     * of the current phase coordinate position <strong>z</strong> to the initial phase
-     * coordinate location <strong>z</strong><sub>0</sub> at the start of the simulation.
-     * That is,
+     * Returns the response matrix <strong>&Phi;</strong> for the particle at
+     * the given state location <strong>z</strong>. The response matrix
+     * represents the sensitivity of the current phase coordinate position
+     * <strong>z</strong> to the initial phase coordinate location
+     * <strong>z</strong><sub>0</sub> at the start of the simulation. That is,
      * <br>
      * <br>
      * &nbsp; &nbsp; <strong>&Phi;</strong> &equiv;
      * &part;<strong>z</strong>/&part;<strong>z</strong><sub>0</sub>
      * <br>
      * <br>
-     * so that small changes &Delta;<strong>z</strong><sub>0</sub> in the initial phase
-     * position yield a corresponding change &Delta;<strong>z</strong> =
+     * so that small changes &Delta;<strong>z</strong><sub>0</sub> in the
+     * initial phase position yield a corresponding change
+     * &Delta;<strong>z</strong> =
      * <strong>&Phi;</strong>&Delta;<strong>z</strong><sub>0</sub>
      * in the current particle location.
      * </p>

@@ -183,7 +183,8 @@ public class BinAgent<RecordType> implements BinUpdate<RecordType>, StateNotice<
 
         // check if we are in violation of the new time span
         if (range > newTimespan) {
-            reset();    // throw everything away
+            // throw everything away
+            reset();
         }
     }
 

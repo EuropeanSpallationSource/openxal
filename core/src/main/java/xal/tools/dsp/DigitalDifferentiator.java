@@ -9,7 +9,8 @@ package xal.tools.dsp;
 /**
  * <p>
  * Convenience class implementing a simple 1<sup>st</sup> order digital
- * differentiator. The response <em>y<sub>n</sub></em> of this filter to an input
+ * differentiator. The response <em>y<sub>n</sub></em> of this filter to an
+ * input
  * <em>x<sub>n</sub></em>
  * is given by
  * <br>

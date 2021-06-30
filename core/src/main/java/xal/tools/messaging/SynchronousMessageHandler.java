@@ -45,7 +45,8 @@ class SynchronousMessageHandler<T> extends MessageHandler<T> implements java.io.
     @Override
     public Object invoke(final Object proxy, final Method method, final Object[] args) throws IllegalArgumentException {
         try {
-            method.setAccessible(true);     // allow access to private, protected, default access methods
+            // allow access to private, protected, default access methods
+            method.setAccessible(true);
             for (final Object target : targets()) {
                 method.invoke(target, args);
             }

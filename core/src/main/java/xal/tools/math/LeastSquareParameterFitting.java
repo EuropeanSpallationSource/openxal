@@ -199,7 +199,8 @@ public class LeastSquareParameterFitting implements Runnable {
         // ( y - f(x, param) )^2
         final DifferentiableOperation basicError = DEPENDENT_VARIABLE.minus(model).pow(2);
 
-        DifferentiableOperation penaltyOperation = DifferentiableOperation.getConstant(0.0);   // initialize penalty to zero
+        // initialize penalty to zero
+        DifferentiableOperation penaltyOperation = DifferentiableOperation.getConstant(0.0);
         for (final DataSample sample : dataSample) {
             final Map<DifferentiableVariable, DifferentiableOperation> substitution = new HashMap<>(dataSample.size());
             substitution.put(INDEPENDENT_VARIABLE, DifferentiableOperation.getConstant(sample.x));

@@ -254,11 +254,13 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
      * <strong>&Delta;</strong> has coordinates
      * <br>
      * <br>
-     * &nbsp; &nbsp;  <strong>&Delta;</strong> = (<em>&Delta;x, &Delta;x', &Delta;dy,
-     * &Delta;dy', &Delta;dz, &Delta;dz'</em>, 1)<sup><em>T</em></sup>
+     * &nbsp; &nbsp;  <strong>&Delta;</strong> = (<em>&Delta;x, &Delta;x',
+     * &Delta;dy, &Delta;dy', &Delta;dz, &Delta;dz'</em>,
+     * 1)<sup><em>T</em></sup>
      * <br>
      * <br>
-     * then the returned matrix <strong>T</strong>(<strong>&Delta;</strong>) has the form
+     * then the returned matrix <strong>T</strong>(<strong>&Delta;</strong>) has
+     * the form
      * <pre>
      *
      *          |1 0 0 0 0 0 <em>&Delta;x</em> |
@@ -277,8 +279,8 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
      *          |<em>z</em> |
      *          |<em>z'</em>|
      *          |1 |
-     * </pre> Then operation on <strong>v</strong> by <strong>T</strong>(<strong>&Delta;</strong>) has the
-     * result
+     * </pre> Then operation on <strong>v</strong> by
+     * <strong>T</strong>(<strong>&Delta;</strong>) has the result
      * <pre>
      *           |<em>x + &Delta;x</em> |
      *           |<em>x'+ &Delta;x'</em>|
@@ -287,12 +289,14 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
      *           |<em>z + &Delta;z</em> |
      *           |<em>z'+ &Delta;z'</em>|
      *           |  1    |
-     * </pre> which we see is equivalent to the simple vector addition <strong>v</strong>
+     * </pre> which we see is equivalent to the simple vector addition
+     * <strong>v</strong>
      * + <strong>&Delta;</strong>.
      *
      * @param vecTrans translation vector <strong>&Delta;</strong>
      *
-     * @return translation operator <strong>T</strong>(<strong>&Delta;</strong>) as a phase matrix
+     * @return translation operator <strong>T</strong>(<strong>&Delta;</strong>)
+     * as a phase matrix
      */
     public static PhaseMatrix translation(PhaseVector vecTrans) {
         PhaseMatrix matTrans = PhaseMatrix.identity();
@@ -313,15 +317,16 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
      * homogeneous phase space that only affects the spatial coordinates.
      * Multiplication by the returned <code>PhaseMatrix</code> object is
      * equivalent to translation by the given <code>R3</code> argument projected
-     * into phase space. Specifically, if the argument <strong>&Delta;</strong> has
-     * coordinates
+     * into phase space. Specifically, if the argument <strong>&Delta;</strong>
+     * has coordinates
      * <br>
      * <br>
      * &nbsp; &nbsp;  <strong>&Delta;</strong> = (<em>&Delta;x, &Delta;dy,
      * &Delta;dz</em>)<sup><em>T</em></sup>
      * <br>
      * <br>
-     * then the returned matrix <strong>T</strong>(<strong>dv</strong>) has the form
+     * then the returned matrix <strong>T</strong>(<strong>dv</strong>) has the
+     * form
      * <pre>
      *
      *          |1 0 0 0 0 0 <em>&Delta;x</em>|
@@ -367,12 +372,14 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
     /**
      * <p>
      * Compute the rotation matrix in phase space that is essentially the
-     * Cartesian product of the given rotation matrix in <em>SO</em>(3). That is,
-     * if the given argument is the rotation <strong>O</strong>, the returned matrix,
-     * denoted <strong>M</strong>, is the <strong>M</strong> =
-     * <strong>O</strong>&times;<strong>O</strong>&times;<strong>I</strong> embedding into homogeneous phase
-     * space <strong>R</strong><sup>6&times;6</sup>&times;{1}. Thus,
-     * <strong>M</strong> &in; <em>SO</em>(6) &sub; <strong>R</strong><sup>6&times;6</sup>&times;{1}.
+     * Cartesian product of the given rotation matrix in <em>SO</em>(3). That
+     * is, if the given argument is the rotation <strong>O</strong>, the
+     * returned matrix, denoted <strong>M</strong>, is the <strong>M</strong> =
+     * <strong>O</strong>&times;<strong>O</strong>&times;<strong>I</strong>
+     * embedding into homogeneous phase space
+     * <strong>R</strong><sup>6&times;6</sup>&times;{1}. Thus,
+     * <strong>M</strong> &in; <em>SO</em>(6) &sub;
+     * <strong>R</strong><sup>6&times;6</sup>&times;{1}.
      * </p>
      * <p>
      * Viewing phase-space as a 6D manifold built as the tangent bundle over
@@ -397,8 +404,10 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
         // Populate the phase rotation matrix
         PhaseMatrix matSO7 = PhaseMatrix.identity();
 
-        int m, n;       // indices into the SO(7) matrix
-        double val;        // matSO3 matrix element
+        // indices into the SO(7) matrix
+        int m, n;
+        // matSO3 matrix element
+        double val;
 
         for (POS pos : POS.values()) {
             m = 2 * pos.row();
@@ -406,8 +415,10 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
 
             val = matSO3.getElem(pos);
 
-            matSO7.setElem(m, n, val);   // configuration space
-            matSO7.setElem(m + 1, n + 1, val);   // momentum space
+            // configuration space
+            matSO7.setElem(m, n, val);
+            // momentum space
+            matSO7.setElem(m + 1, n + 1, val);
         }
         return matSO7;
     }
@@ -492,7 +503,8 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
     }
 
     /**
-     * Copy Constructor - create a <strong>deep copy</strong> of the target phase matrix.
+     * Copy Constructor - create a <strong>deep copy</strong> of the target
+     * phase matrix.
      *
      * @param matInit initial value
      */
@@ -658,12 +670,14 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
     }
 
     /**
-     * Projects the <em>i<sup>th</sup></em> row onto <strong>R</strong><sup>6</sup>.
-     * Specifically, the projective element (the 7<em><sup>th</sup></em> element
-     * in this case) is dropped and that part of the <em>i<sup>th</sup></em> row
-     * in the 6 dimensional phase space is returned.
+     * Projects the <em>i<sup>th</sup></em> row onto
+     * <strong>R</strong><sup>6</sup>. Specifically, the projective element (the
+     * 7<em><sup>th</sup></em> element in this case) is dropped and that part of
+     * the <em>i<sup>th</sup></em> row in the 6 dimensional phase space is
+     * returned.
      *
-     * @param i index of the matrix row to be returned, <em>i</em> &in; {0,...,5}
+     * @param i index of the matrix row to be returned, <em>i</em> &in;
+     * {0,...,5}
      *
      * @return matrix row at the above index, less the final projective element
      *
@@ -677,12 +691,14 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
     }
 
     /**
-     * Projects the <em>i<sup>th</sup></em> row onto <strong>R</strong><sup>6</sup>.
-     * Specifically, the projective element (the 7<em><sup>th</sup></em> element
-     * in this case) is dropped and that part of the <em>i<sup>th</sup></em> row
-     * in the 6 dimensional phase space is returned.
+     * Projects the <em>i<sup>th</sup></em> row onto
+     * <strong>R</strong><sup>6</sup>. Specifically, the projective element (the
+     * 7<em><sup>th</sup></em> element in this case) is dropped and that part of
+     * the <em>i<sup>th</sup></em> row in the 6 dimensional phase space is
+     * returned.
      *
-     * @param i index of the matrix row to be returned, <em>i</em> &in; {0,...,5}
+     * @param i index of the matrix row to be returned, <em>i</em> &in;
+     * {0,...,5}
      *
      * @return matrix row at the above index, less the final projective element
      *
@@ -703,9 +719,10 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
     }
 
     /**
-     * Projects the <em>j<sup>th</sup></em> column onto <strong>R</strong><sup>6</sup>.
-     * Specifically, the projective element (the 7<em><sup>th</sup></em> element
-     * in this case) is dropped and that part of the <em>j<sup>th</sup></em>
+     * Projects the <em>j<sup>th</sup></em> column onto
+     * <strong>R</strong><sup>6</sup>. Specifically, the projective element (the
+     * 7<em><sup>th</sup></em> element in this case) is dropped and that part of
+     * the <em>j<sup>th</sup></em>
      * column in the 6 dimensional phase space is returned.
      *
      * @param j index of the matrix column to be returned, <em>j</em> &in;
@@ -724,9 +741,10 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
     }
 
     /**
-     * Projects the <em>j<sup>th</sup></em> column onto <strong>R</strong><sup>6</sup>.
-     * Specifically, the projective element (the 7<em><sup>th</sup></em> element
-     * in this case) is dropped and that part of the <em>j<sup>th</sup></em>
+     * Projects the <em>j<sup>th</sup></em> column onto
+     * <strong>R</strong><sup>6</sup>. Specifically, the projective element (the
+     * 7<em><sup>th</sup></em> element in this case) is dropped and that part of
+     * the <em>j<sup>th</sup></em>
      * column in the 6 dimensional phase space is returned.
      *
      * @param j index of the matrix column to be returned, <em>j</em> &in;

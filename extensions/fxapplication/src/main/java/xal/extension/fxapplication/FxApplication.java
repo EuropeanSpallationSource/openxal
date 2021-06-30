@@ -425,7 +425,8 @@ public abstract class FxApplication extends Application {
         //Populate the Sequence Menu with the sequences of the machine
         List<AcceleratorSeq> seqItem = accelerator.getSequences();
 
-        for (AcceleratorSeq item : seqItem) { //AddSequences
+        //AddSequences
+        for (AcceleratorSeq item : seqItem) {
             RadioMenuItem addedItem = new RadioMenuItem(item.toString());
             sequenceMenu.getItems().add(addedItem);
             addedItem.setToggleGroup(groupSequence);
@@ -435,7 +436,8 @@ public abstract class FxApplication extends Application {
         sequenceMenu.getItems().add(new SeparatorMenuItem());
 
         List<AcceleratorSeqCombo> seqCombo = accelerator.getComboSequences();
-        for (AcceleratorSeqCombo item : seqCombo) { //AddCombos
+        //AddCombos
+        for (AcceleratorSeqCombo item : seqCombo) {
             RadioMenuItem addedItem = new RadioMenuItem(item.toString());
             sequenceMenu.getItems().add(addedItem);
             addedItem.setToggleGroup(groupSequence);

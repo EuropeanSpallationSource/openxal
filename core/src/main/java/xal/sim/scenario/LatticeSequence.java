@@ -316,7 +316,8 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
      * Returns an iterator that will visit all the direct subsequences of this
      * sequence.
      *
-     * @return iterator for all the <strong>direct</strong> subsequences of this sequence
+     * @return iterator for all the <strong>direct</strong> subsequences of this
+     * sequence
      *
      * @since Jan 29, 2015 by Christopher K. Allen
      */
@@ -569,8 +570,10 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
         AcceleratorSeq smfSeqRoot = this.getHardwareNode();
 
         // Loop variables
-        int indSeqPosition = 0;                        // used to record original position 
-        double dblLenSeq = smfSeqRoot.getLength(); // workaround for sequences that don't have length set
+        // used to record original position 
+        int indSeqPosition = 0;
+        // workaround for sequences that don't have length set
+        double dblLenSeq = smfSeqRoot.getLength();
         //  This is also the location of the sequence end marker
 
         // Now we generate lattice association objects for every hardware node 
@@ -658,7 +661,8 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
                 AcceleratorNode smfCntrMrkr = new Marker(strNodeId + "-Center");
 
                 LatticeElement latCtrElem = new LatticeElement(smfCntrMrkr, dblPosCtr, clsMrkrTyp, 0);
-                latCtrElem.setModelingElementId("CENTER:" + smfNodeCurr.getId());    // CKA Sep 5, 2014: dashes seem to break lookups
+                // CKA Sep 5, 2014: dashes seem to break lookups
+                latCtrElem.setModelingElementId("CENTER:" + smfNodeCurr.getId());
                 this.addLatticeElement(latCtrElem);
             }
 
@@ -776,8 +780,8 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
         List<LatticeElement> lstElemsToRemove = new LinkedList<>();
 
         // Now check if any of my children are actually grand children
-        for (LatticeSequence lsqChild : this.getSubSequences()) // Looking through all my child sequences, see if the current child is
-        //  contained in one.  If so we add it to the sequence and place it in the
+        // Looking through all my child sequences, see if the current child is
+        for (LatticeSequence lsqChild : this.getSubSequences()) //  contained in one.  If so we add it to the sequence and place it in the
         //  list of my child elements to be removed from my direct ownership 
         {
             for (LatticeElement lemChild : this) {
@@ -866,8 +870,9 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
                 //  the list of split elements.
                 if (lemCurr.isThin()) {
                     lstSplitElems.add(lemCurr);
-                } // If none and the current element is thick then set it up for processing 
-                //  next round. 
+                    // If none and the current element is thick then set it up for processing
+                    // next round. 
+                }
                 else {
                     lemLastThick = lemCurr;
                 }
@@ -906,8 +911,8 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
                 //  elements.
                 if (lemCurr.isThin()) {
                     this.addSplitElementTo(lstSplitElems, lemCurr);
-                } // Or if it is a thick element we set the last thick element to it.
-                else {
+                    // Or if it is a thick element we set the last thick element to it.
+                } else {
                     lemLastThick = lemCurr;
                 }
 
@@ -923,8 +928,8 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
                 //  split elements,
                 if (lemCurr.isThin()) {
                     this.addSplitElementTo(lstSplitElems, lemCurr);
-                } // Or if it is thick it becomes the new last lattice element.
-                else {
+                    // Or if it is thick it becomes the new last lattice element.
+                } else {
                     lemLastThick = lemCurr;
                 }
 

@@ -26,9 +26,12 @@ public class BendSerializationTest {
         // input from TraceWin
         double entry_angle_deg = -5.5;
         double exit_angle_deg = -5.5;
-        double alpha_deg = -11; // angle in degrees
-        double rho = 9375.67 * 1e-3; // absolute curvature radius (in m)
-        double N = 0.; // field Index
+        // angle in degrees
+        double alpha_deg = -11;
+        // absolute curvature radius (in m)
+        double rho = 9375.67 * 1e-3;
+        // field Index
+        double N = 0.;
 
         double G = 50;
         double entrK1 = 1.23;

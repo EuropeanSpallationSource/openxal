@@ -11,6 +11,8 @@ import gov.aps.jca.JCALibrary;
 import gov.aps.jca.Context;
 import gov.aps.jca.CAException;
 import gov.aps.jca.TimeoutException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import java.util.prefs.Preferences;
 
@@ -24,15 +26,17 @@ import java.util.prefs.Preferences;
  */
 class JcaSystem extends ChannelSystem {
 
+    private static final Logger LOGGER = Logger.getLogger(JcaSystem.class.getName());
+
     /**
      * Java Channel Access Context
      */
-    private Context JCA_CONTEXT;
+    private Context jcaContext;
 
     /**
      * Native Java Channel Access Library
      */
-    private JCALibrary JCA_LIBRARY;
+    private JCALibrary jcaLibrary;
 
     /**
      * Constructor
@@ -50,10 +54,10 @@ class JcaSystem extends ChannelSystem {
      */
     public JcaSystem(final String contextName) {
         try {
-            JCA_LIBRARY = JCALibrary.getInstance();
+            jcaLibrary = JCALibrary.getInstance();
 
             final String contextType = (contextName != null) ? contextName : defaultJCAContextType();
-            JCA_CONTEXT = JCA_LIBRARY.createContext(contextType);
+            jcaContext = jcaLibrary.createContext(contextType);
         } catch (CAException exception) {
             LOGGER.log(Level.SEVERE, null, exception);
         }
@@ -102,8 +106,9 @@ class JcaSystem extends ChannelSystem {
     /**
      * Print information about the context
      */
+    @Override
     public void printInfo() {
-        JCA_CONTEXT.printInfo();
+        jcaContext.printInfo();
     }
 
     /**
@@ -126,7 +131,7 @@ class JcaSystem extends ChannelSystem {
         try {
             // since Context.initialize() only can be called once and we have no way of knowing if
             // it has already been called, run testIO() as a way to safely induce initialization
-            JCA_CONTEXT.testIO();
+            jcaContext.testIO();
             return true;
         } catch (CAException exception) {
             LOGGER.log(Level.SEVERE, null, exception);
@@ -140,7 +145,7 @@ class JcaSystem extends ChannelSystem {
      * @return the JCA context.
      */
     Context getJcaContext() {
-        return JCA_CONTEXT;
+        return jcaContext;
     }
 
     /**
@@ -148,6 +153,7 @@ class JcaSystem extends ChannelSystem {
      *
      * @param debugFlag true for debug mode and false otherwise.
      */
+    @Override
     synchronized public void setDebugMode(final boolean debugFlag) {
         JcaChannel.setDebugMode(debugFlag);
     }
@@ -155,9 +161,10 @@ class JcaSystem extends ChannelSystem {
     /**
      * Flush the IO buffers
      */
+    @Override
     public void flushIO() {
         try {
-            JCA_CONTEXT.flushIO();
+            jcaContext.flushIO();
         } catch (CAException exception) {
             throw new RuntimeException("Exception flushing IO requests.", exception);
         }
@@ -170,12 +177,12 @@ class JcaSystem extends ChannelSystem {
      * process the requests.
      * @return true if successful and false if unsuccessful.
      */
+    @Override
     public boolean pendIO(final double timeout) {
         try {
-            JCA_CONTEXT.pendIO(timeout);
-        } catch (CAException exception) {
-            return false;
-        } catch (TimeoutException exception) {
+            jcaContext.pendIO(timeout);
+        } catch (CAException | TimeoutException exception) {
+            LOGGER.log(Level.SEVERE, null, exception);
             return false;
         }
 
@@ -188,9 +195,10 @@ class JcaSystem extends ChannelSystem {
      * @param timeout The length of time in seconds we are willing to wait to
      * process the requests.
      */
+    @Override
     public void pendEvent(final double timeout) {
         try {
-            JCA_CONTEXT.pendEvent(timeout);
+            jcaContext.pendEvent(timeout);
         } catch (CAException exception) {
             LOGGER.log(Level.SEVERE, null, exception);
         }

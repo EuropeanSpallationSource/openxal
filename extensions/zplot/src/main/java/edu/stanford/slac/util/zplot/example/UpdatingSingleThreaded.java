@@ -75,7 +75,8 @@ public class UpdatingSingleThreaded {
     public static void main(String[] args) {
 
         int ITERATIONS = 10;
-        int WAIT = 500; //ms
+        //ms
+        int WAIT = 500;
 
         JFrame f = new JFrame("Single Threaded Updating Display");
         JPanel p = new JPanel();

@@ -149,16 +149,20 @@ public class Grid implements Serializable {
         public R3 localCoords(R3 pt) {
 
             // Compute the displacement within the grid
-            R3 ptOrg;      // grid origin coordinate
-            R3 vecRes;     // grid resolution
-            R3 vecDis;     // displacement of pt from grid origin
+            // grid origin coordinate
+            R3 ptOrg;
+            // grid resolution
+            R3 vecRes;
+            // displacement of pt from grid origin
+            R3 vecDis;
 
             ptOrg = grid.getGridOrigin();
             vecRes = grid.getGridResolution();
             vecDis = pt.minus(ptOrg);
 
             // Compute the local coordinates
-            double u1, u2, u3; // local coordinates
+            // local coordinates
+            double u1, u2, u3;
 
             u1 = vecDis.get1() % vecRes.get1();
             u2 = vecDis.get2() % vecRes.get2();
@@ -175,7 +179,8 @@ public class Grid implements Serializable {
          * @return function value on grid
          */
         public double interpolateValue(R3 pt) {
-            double val;          // the interpolated value
+            // the interpolated value
+            double val;
 
             computeLocalCoords(pt);
 
@@ -193,8 +198,10 @@ public class Grid implements Serializable {
          * @return the gradient (computed with local coordinates)
          */
         public R3 interpolateGradient(R3 pt) {
-            double g1, g2, g3;     // the gradient components
-            R3 vecGrad;        // the gradient vector
+            // the gradient components
+            double g1, g2, g3;
+            // the gradient vector
+            R3 vecGrad;
 
             computeLocalCoords(pt);
 
@@ -221,9 +228,12 @@ public class Grid implements Serializable {
         protected void computeLocalCoords(R3 pt) {
 
             // Compute the displacement within the grid
-            R3 ptOrg;      // grid origin coordinate
-            R3 vecRes;     // grid resolution
-            R3 vecDis;     // displacement of pt from grid origin
+            // grid origin coordinate
+            R3 ptOrg;
+            // grid resolution
+            R3 vecRes;
+            // displacement of pt from grid origin
+            R3 vecDis;
 
             ptOrg = grid.getGridOrigin();
             vecRes = grid.getGridResolution();
@@ -440,8 +450,10 @@ public class Grid implements Serializable {
      * @return index of grid cell owning pt
      */
     public Z3 compCellIndex(R3 pt) {
-        int i, j, k;      // indices of the base vertex
-        R3 vecDis;     // displacement of pt from grid origin
+        // indices of the base vertex
+        int i, j, k;
+        // displacement of pt from grid origin
+        R3 vecDis;
 
         vecDis = pt.minus(this.getGridOrigin());
 
@@ -462,7 +474,8 @@ public class Grid implements Serializable {
      * @return (x,y,z) coordinate of grid point at (i,j,k)
      */
     public R3 compPtCoords(int i, int j, int k) {
-        double dx, dy, dz;   // displacements from grid origin
+        // displacements from grid origin
+        double dx, dy, dz;
 
         dx = (i * this.getGridResolution().getx());
         dy = (j * this.getGridResolution().gety());
@@ -493,8 +506,10 @@ public class Grid implements Serializable {
      * @return grid cell object contain pt
      */
     public GridCell compCellContaining(R3 pt) {
-        int i, j, k;      // indices of the base vertex
-        R3 vecDis;     // displacement of pt from grid origin
+        // indices of the base vertex
+        int i, j, k;
+        // displacement of pt from grid origin
+        R3 vecDis;
 
         vecDis = pt.minus(this.getGridOrigin());
 
@@ -639,7 +654,8 @@ public class Grid implements Serializable {
         arrCells = this.allocateCells(n1 - 1, n2 - 1, n3 - 1);
 
         // Configure grid cells
-        int i, j, k;        // loop control variables for each dimension
+        // loop control variables for each dimension
+        int i, j, k;
 
         for (i = 0; i < n1 - 1; i++) {
             for (j = 0; j < n2 - 1; j++) {

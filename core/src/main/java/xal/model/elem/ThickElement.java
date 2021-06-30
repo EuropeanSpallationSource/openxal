@@ -174,8 +174,8 @@ public abstract class ThickElement extends Element {
      * @param matPhi transfer matrix <strong>&Phi;</strong> to be processed
      * @param probe instance of the probe
      * @param length total think element length
-     * @return transfer matrix <strong>&Phi;</strong> after applying displacement and
-     * rotation
+     * @return transfer matrix <strong>&Phi;</strong> after applying
+     * displacement and rotation
      *
      * @author Natalia Milas - January 2019
      *
@@ -225,7 +225,8 @@ public abstract class ThickElement extends Element {
                 matPhi = T.times(matPhi);
             }
 
-        } else if (this instanceof IdealMagSolenoid) { // this is to account for the focusing slice at the end of the Hard edge solenoid model
+            // this is to account for the focusing slice at the end of the Hard edge solenoid model
+        } else if (this instanceof IdealMagSolenoid) {
             if (pz != 0.) {
                 PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));
                 matPhi = R.transpose().times(matPhi.times(R));

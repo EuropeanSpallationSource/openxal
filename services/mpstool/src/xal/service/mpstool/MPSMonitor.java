@@ -193,7 +193,8 @@ public class MPSMonitor {
     public void dispose() {
         stopCorrelator();
         statsUpdateTimer.cancel();
-        checkDayUpdateDailyStats();    // flush any remaining stats
+        // flush any remaining stats
+        checkDayUpdateDailyStats();
     }
 
     /**
@@ -935,7 +936,8 @@ public class MPSMonitor {
      * @return a new timer for scheduling daily statistics updates.
      */
     public Timer startStatsUpdateTimer() {
-        final long period = 3600 * 1000;    // milliseconds in an hour
+        // milliseconds in an hour
+        final long period = 3600 * 1000;
         Calendar now = Calendar.getInstance();
         Calendar startTime = Calendar.getInstance();
         startTime.clear();

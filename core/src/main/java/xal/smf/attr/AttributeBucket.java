@@ -96,8 +96,10 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
     }
 
     public String[] getAttrNames() {
-        int nNames;             // number of attribute names
-        java.util.Set<String> setKeys;            // keys of the map (i.e., attribute names)
+        // number of attribute names
+        int nNames;
+        // keys of the map (i.e., attribute names)
+        java.util.Set<String> setKeys;
 
         setKeys = mapAttrs.keySet();
         nNames = setKeys.size();

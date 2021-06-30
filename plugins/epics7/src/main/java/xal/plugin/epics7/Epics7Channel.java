@@ -65,8 +65,10 @@ import xal.tools.apputils.Preferences;
 
 /**
  * This {@link xal.ca.Channel} implementation can connect to ChannelAccess or PV
- * Access. If the PV signal starts with 'ca://', it will only connect to CA; if
- * it starts with 'pva://', it will only connect to PVA; otherwise it tries to
+ //', it will only connect to CA; if
+ * Access. If the PV signal starts with 'ca:
+ //', it will only connect to PVA; otherwise it tries to
+ * it starts with 'pva:
  * connect to both and uses the protocol that replies first.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
@@ -96,8 +98,10 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     public static final String STATUS_REQUEST = VALUE_FIELD + "," + ALARM_FIELD;
     public static final String TIME_REQUEST = STATUS_REQUEST + "," + TIMESTAMP_FIELD;
 
-    private static final String CA_PREFIX = "ca://";
-    private static final String PVA_PREFIX = "pva://";
+    //";
+    private static final String CA_PREFIX = "ca:
+    //";
+    private static final String PVA_PREFIX = "pva:
 
     private volatile Channel caChannel;
     private volatile Channel pvaChannel;

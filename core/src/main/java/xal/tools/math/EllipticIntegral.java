@@ -190,13 +190,19 @@ public class EllipticIntegral {
      * @author Christopher K. Allen
      */
     public static double formFactorD(double s) {
-        final double epsilon = 1.0e-6;       // radius for Taylor expansion around s=1
-        final double s1 = 1.0 - epsilon;     // left endpoint for Taylor epansion evaluation
-        final double s2 = 1.0 + epsilon;     // right endpoint for Taylor epansion evaluation
+        // radius for Taylor expansion around s=1
+        final double epsilon = 1.0e-6;
+        // left endpoint for Taylor epansion evaluation
+        final double s1 = 1.0 - epsilon;
+        // right endpoint for Taylor epansion evaluation
+        final double s2 = 1.0 + epsilon;
 
-        final double valAtOne = 1.0 / 3.0;     // value of function at s=1
-        final double D1AtOne = -4.0 / 15.0;    // first derivative of function at s=1
-        final double D2AtOne = 12.0 / 35.0;    // second derivative of function at s=1
+        // value of function at s=1
+        final double valAtOne = 1.0 / 3.0;
+        // first derivative of function at s=1
+        final double D1AtOne = -4.0 / 15.0;
+        // second derivative of function at s=1
+        final double D2AtOne = 12.0 / 35.0;
 
         if (s < s1) {
             double den = 1.0 - s * s;

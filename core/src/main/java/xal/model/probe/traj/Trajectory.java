@@ -709,9 +709,9 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
      * state objects of this trajectory between the start node
      * <code>strSmfNodeId1</code> and the stop node <code>strSmfNodeId2</code>.
      * The returned trajectory contains references to the same states contained
-     * in this trajectory, <em>they are not duplicates</em>. So any modifications
-     * made on the returned object will be reflected here. Also, it is important
-     * to note that the returned sub-trajectory
+     * in this trajectory, <em>they are not duplicates</em>. So any
+     * modifications made on the returned object will be reflected here. Also,
+     * it is important to note that the returned sub-trajectory
      * <em>excludes</em> all states belonging to the stop hardware node
      * <code>strSmfNodeId2</code>. That is, the returned value contains states
      * from, and including, node 1 up to, but not including, state 2. If you
@@ -773,9 +773,9 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
      * state objects of this trajectory between the start node
      * <code>strSmfNodeId1</code> and the stop node <code>strSmfNodeId2</code>.
      * The returned trajectory contains references to the same states contained
-     * in this trajectory, <em>they are not duplicates</em>. So any modifications
-     * made on the returned object will be reflected here. Also, it is important
-     * to note that the returned sub-trajectory
+     * in this trajectory, <em>they are not duplicates</em>. So any
+     * modifications made on the returned object will be reflected here. Also,
+     * it is important to note that the returned sub-trajectory
      * <em>includes</em> all states belonging to the stop hardware node
      * <code>strSmfNodeId2</code>. That is, the returned value contains states
      * from, and including, node 1 up to and including state 2. If you wish to
@@ -1023,8 +1023,8 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
      * <p>
      * <h4>NOTES - CKA</h4>
      * &middot; I have changed this method so the given argument is assumed to
-     * be the <strong>hardware</strong> node identifier, not the modeling element ID. I
-     * believe that is the original intent.
+     * be the <strong>hardware</strong> node identifier, not the modeling
+     * element ID. I believe that is the original intent.
      * </p>
      *
      * @param element name of element to search for

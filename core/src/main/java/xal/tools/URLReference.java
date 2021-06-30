@@ -145,7 +145,8 @@ public class URLReference {
      */
     private static boolean isValid(final String fullUrlSpec) {
         try {
-            new URL(fullUrlSpec).openStream().close();     // test if the file really exists
+            // test if the file really exists
+            new URL(fullUrlSpec).openStream().close();
             return true;
         } catch (IOException exception) {
             return false;

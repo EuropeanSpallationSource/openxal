@@ -166,7 +166,8 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
 
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors   
-        double slicepos = centerPosition - position; // distance from the probe position and element center
+        // distance from the probe position and element center
+        double slicepos = centerPosition - position;
         PhaseMatrix transferMatrix = applyErrors((PhaseMatrix) integrator, slicepos);
 
         return new PhaseMap(transferMatrix);

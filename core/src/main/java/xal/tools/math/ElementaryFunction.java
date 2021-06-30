@@ -74,16 +74,18 @@ public final class ElementaryFunction {
     /**
      * <p>
      * Test if two <code>double</code> precision numbers are approximately
-     * equal. This condition is defined with respect to the <strong>U</strong>nits in
+     * equal. This condition is defined with respect to the
+     * <strong>U</strong>nits in
      * <strong>L</strong>ast
      * <strong>P</strong>lace (ULPs) bracketing procedure.
      * </p>
      * <p>
      * The ULP values <em>ulp<sub>x</sub></em> and <em>ulp<sub>y</sub></em> are
-     * computed for each argument <em>x</em> and <em>y</em>. These values are the
-     * distances between the arguments and the nearest double precision number
-     * that can be represented by the IEEE 754 standard. The bracketing
-     * distances &delta;<em>x</em> and &delta;<em>y</em> for <em>x</em> and <em>y</em>
+     * computed for each argument <em>x</em> and <em>y</em>. These values are
+     * the distances between the arguments and the nearest double precision
+     * number that can be represented by the IEEE 754 standard. The bracketing
+     * distances &delta;<em>x</em> and &delta;<em>y</em> for <em>x</em> and
+     * <em>y</em>
      * are computed as
      * <pre>
      *      &delta;<em>x</em> &trie; <em>N</em> &times; <em>ulp<sub>x</sub></em> ,
@@ -102,7 +104,8 @@ public final class ElementaryFunction {
      * @param y double precision number
      * @param cntUlps number <em>N</em> of ULPs used to bracket the numbers
      *
-     * @return  <code>true</code> of <em>y</em> ~ <em>x</em> within <em>N</em> ULPs,
+     * @return  <code>true</code> of <em>y</em> ~ <em>x</em> within <em>N</em>
+     * ULPs,
      * </code>false</code> otherwise
      */
     public static boolean approxEq(double x, double y, int cntUlps) {
@@ -138,7 +141,8 @@ public final class ElementaryFunction {
      * @param y double precision number
      * @param cntDgts number <em>N</em> of significant digits to compare
      *
-     * @return          <code>true</code> if the first <em>N</em> digits of <em>x</em> and
+     * @return          <code>true</code> if the first <em>N</em> digits of <em>x</em>
+     * and
      * <em>y</em> agree, <code>false</code> otherwise
      *
      * @since Dec 31, 2015, Christopher K. Allen
@@ -275,8 +279,8 @@ public final class ElementaryFunction {
      * <p>
      * Returns the value of the first argument raised to the power of the second
      * argument
-     * <em>intBase</em><sup><em>intExpon</em></sup> where the base is an integer.
-     * Special cases:
+     * <em>intBase</em><sup><em>intExpon</em></sup> where the base is an
+     * integer. Special cases:
      * <br>
      * <br>&middot; If the second argument is positive or negative zero, then
      * the result is 1.
@@ -328,8 +332,8 @@ public final class ElementaryFunction {
      * &nbsp; sinc(<em>x</em>) &equiv; sin(<em>x</em>)/<em>x</em>.
      * </p>
      * <p>
-     * For small values of <em>x</em> we Taylor expand the sinc function to sixth
-     * order,
+     * For small values of <em>x</em> we Taylor expand the sinc function to
+     * sixth order,
      * <br>
      * <br>
      * &nbsp; sinc(x) &asymp; 1 - <em>x</em><sup>2</sup>/6 +
@@ -347,7 +351,8 @@ public final class ElementaryFunction {
      */
     public static double sinc(double x) {
 
-        if (Math.abs(x) < 0.1) {    // avoid singularity at zero
+        // avoid singularity at zero
+        if (Math.abs(x) < 0.1) {
             double x2 = x * x;
             double x4 = x2 * x2;
 

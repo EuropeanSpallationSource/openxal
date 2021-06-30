@@ -147,8 +147,10 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
     @Override
     public void doPropagation(IProbe probe, IElement elem) throws ModelException {
 
-        int cntSteps;   // number of steps through element
-        double dblStep;    // step size through element
+        // number of steps through element
+        int cntSteps;
+        // step size through element
+        double dblStep;
 
         //sako
         double elemPos = this.getElemPosition();
@@ -168,14 +170,6 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
 
         dblStep = propLen / cntSteps;
 
-        /*
-        if(this.getSpaceChargeFlag())
-            cntSteps = (int) Math.max(Math.ceil(elem.getLength() / getStepSize()), 1);
-        else 
-            cntSteps = 1;
-        
-        dblStep = elem.getLength() / cntSteps;
-         */
         for (int i = 0; i < cntSteps; i++) {
             this.advanceState(probe, elem, dblStep);
             this.advanceProbe(probe, elem, dblStep);
@@ -203,8 +197,6 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         EnvelopeProbe probe = (EnvelopeProbe) ifcProbe;
 
         // Get initial conditions of probe
-//        R3                 vecPhs0  = probe.getBetatronPhase();
-//        Twiss[]            twiss0   = probe.getCovariance().computeTwiss();
         PhaseMatrix matRnsp0 = probe.getResponseMatrixNoSpaceCharge();
         PhaseMatrix matResp0 = probe.getResponseMatrix();
         CovarianceMatrix matTau0 = probe.getCovariance();
@@ -227,13 +219,7 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         probe.setResponseMatrix(matResp1);
         probe.setCurrentResponseMatrix(matPhi_sc);
         probe.setCovariance(new CovarianceMatrix(matTau1));
-//        probe.advanceTwiss(matPhi_sc, iElem.energyGain(probe, dblLen) );
 
-        // phase update:
-        //obsolete Twiss []    twiss1  = probe.getTwiss();
-//        Twiss []    twiss1  = probe.getCovariance().computeTwiss();
-//        R3          vecPhs1 = vecPhs0.plus( matPhi_sc.compPhaseAdvance(twiss0, twiss1) );
-//        probe.setBetatronPhase(vecPhs1);
         /**
          * sako treatment of ChargeExchangeFoil
          *
@@ -277,7 +263,8 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
             throws ModelException {
 
         // Returned value
-        PhaseMatrix matPhi;     // transfer matrix including all effects
+        // transfer matrix including all effects
+        PhaseMatrix matPhi;
 
         // Check for easy case of no space charge
         if (this.getUseSpacecharge() == false || dblLen == 0.0) {
@@ -295,7 +282,8 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
             PhaseMatrix matPhi0 = mapElem0.getFirstOrder();
 
             // Get the RMS envelopes at probe location
-            CovarianceMatrix covTau0 = probe.getCovariance();    // covariance matrix at entrance
+            // covariance matrix at entrance
+            CovarianceMatrix covTau0 = probe.getCovariance();
 
             // Advance probe a half step for position depend transfer maps
             PhaseMatrix matTau1 = covTau0.conjugateTrans(matPhi0);
@@ -320,10 +308,9 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         }
 
         // Check for exceptional circumstance and modify transfer matrix accordingly
-        if (this.getEmittanceGrowth() && ifcElem instanceof IdealRfGap) {  // use this part for IdealRfGaps
+        // use this part for IdealRfGaps
+        if (this.getEmittanceGrowth() && ifcElem instanceof IdealRfGap) {
             IdealRfGap elemRfGap = (IdealRfGap) ifcElem;
-//        if (this.getEmittanceGrowth() && ifcElem instanceof IdealRfGapUpgraded) {
-//            IdealRfGap elemRfGap = (IdealRfGap)ifcElem;
             double dphi = this.effPhaseSpread(probe, elemRfGap);
 
             matPhi = this.modTransferMatrixForEmitGrowth(dphi, matPhi);
@@ -351,9 +338,10 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
      * {@link EnvelopeTrackerBase#modTransferMatrixForEmitGrowth(double, PhaseMatrix)}).
      * Currently this action is done in
      * {@link #compTransferMatrix(double, EnvelopeProbe, IElement)}. Once the
-     * covariance matrix <strong>&tau;</strong> is propagated by the modified transfer
-     * matrix <strong>&Phi;</strong>, the moment &lt;<em>x'</em><sup>2</sup>&gt; is
-     * augmented by the result of this function.
+     * covariance matrix <strong>&tau;</strong> is propagated by the modified
+     * transfer matrix <strong>&Phi;</strong>, the moment
+     * &lt;<em>x'</em><sup>2</sup>&gt; is augmented by the result of this
+     * function.
      * </p>
      * <p>
      * Specifically, the action of this method is described as follows: The
@@ -379,8 +367,8 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
      * <br>
      * <br>
      * where
-     * <em>G<sub>t</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>) is the
-     * transverse 3-dimensional emittance growth function, and
+     * <em>G<sub>t</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>)
+     * is the transverse 3-dimensional emittance growth function, and
      * <em>x<sub>i</sub></em> represents the before-gap position for
      * <em>either</em>
      * transverse phase plane. The action of this method is described by the
@@ -406,7 +394,8 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
      * <em>&beta;<sub>i</sub>&gamma;<sub>i</sub></em>/<em>&beta;<sub>f</sub>&gamma;<sub>f</sub></em>
      * <br>
      * <br>
-     * and &Delta;<em>&epsilon;<sub>t,f</sub></em> is the emittance increase term
+     * and &Delta;<em>&epsilon;<sub>t,f</sub></em> is the emittance increase
+     * term
      * <br>
      * <br>
      * &nbsp; &Delta;<em>&epsilon;<sub>t,f</sub></em><sup>2</sup> &equiv;
@@ -420,7 +409,8 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
      * <em>&epsilon;<sub>z,f</sub></em>, respectively, with
      * <em>G<sub>t</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>)
      * replaced by
-     * <em>G<sub>z</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>) and
+     * <em>G<sub>z</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>)
+     * and
      * <em>x</em><sub>(<em>f,i</em>)</sub> replaced by
      * <em>z</em><sub>(<em>f,i</em>)</sub>.
      * </p>
@@ -440,7 +430,8 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
      * formula
      * <br>
      * <br>
-     * &nbsp; &lt;<em>x'</em><sup>2</sup>&gt; = &lt;<em>x'</em><sup>2</sup>&gt; +
+     * &nbsp; &lt;<em>x'</em><sup>2</sup>&gt; = &lt;<em>x'</em><sup>2</sup>&gt;
+     * +
      * <em>c<sub>eg</sub></em>&lt;<em>x</em><sup>2</sup>&gt;
      * <br>
      * <br>
@@ -497,27 +488,20 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
 
         // Compute the divergence angle increment coefficients 
         //  (emittance growth coefficients)
-        double dxp_2;      // transverse divergence angle augmentation factor
-        double dzp_2;      // longitudinal divergence angle augmentation factor
-
-        //        if (this.getEmitGrowthModel() == EmitGrowthModel.TRACE3D) {
-        //            
-        //            dxp_2 = this.emitGrowthCoefTrans(probe, elemRfGap);
-        //            dzp_2 = this.emitGrowthCoefLong(probe, elemRfGap);
-        //
-        //        } else {
+        // transverse divergence angle augmentation factor
+        double dxp_2;
+        // longitudinal divergence angle augmentation factor
+        double dzp_2;
+    
         double Gt = this.compEmitGrowthFunction(PhasePlane.TRANSVERSE, phi_s, dphi);
         double kt = elemRfGap.compTransFocusing(probe);
         dxp_2 = kt * kt * Gt;
 
         double Gz = this.compEmitGrowthFunction(PhasePlane.LONGITUDINAL, phi_s, dphi);
         double kz = elemRfGap.compLongFocusing(probe);
-        //    double  gf    = elemRfGap.gammaFinal(probe);
-        //    double  gf_2  = gf*gf;
-        //            dzp_2 = kz*kz*Gz/(gf_2*gf_2);
+
         dzp_2 = kz * kz * Gz;
 
-        //        }
         // Compute new correlation matrix
         //      Transverse planes
         double x_2 = matTau.getElem(0, 0);

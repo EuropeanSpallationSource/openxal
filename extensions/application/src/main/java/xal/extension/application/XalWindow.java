@@ -190,7 +190,8 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
      */
     @Override
     public void showWindow() {
-        setState(Frame.NORMAL);    // de-iconify this window
+        // de-iconify this window
+        setState(Frame.NORMAL);
         setVisible(true);
         toFront();
     }
@@ -200,7 +201,8 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
      */
     @Override
     public void hideWindow() {
-        setState(Frame.ICONIFIED);     // iconify the window
+        // iconify the window
+        setState(Frame.ICONIFIED);
     }
 
     /**

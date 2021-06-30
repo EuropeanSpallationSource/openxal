@@ -29,9 +29,9 @@ import xal.tools.xml.XmlDataAdaptor;
  * </p>
  * <p>
  * The convention is to name the mapping definition file
- * <kbd>ModelConfig.modconfig</kbd> and place it in the same directory as the Open
- * XAL master configuration file <kbd>main.xal</kbd>. A entry reference to the
- * mapping definition is made within the main configuration file.
+ * <kbd>ModelConfig.modconfig</kbd> and place it in the same directory as the
+ * Open XAL master configuration file <kbd>main.xal</kbd>. A entry reference to
+ * the mapping definition is made within the main configuration file.
  * </p>
  * <p>
  * <h4>CKA NOTES - Dec 3, 2014</h4>

@@ -227,7 +227,8 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
             dummySeq.setPosition(length);
 
             if (prev != null) {
-                predescrs = seq.getPredecessors(); // check if this insertion is allowed
+                // check if this insertion is allowed
+                predescrs = seq.getPredecessors();
                 for (int i = 0; i < predescrs.length; i++) {
                     if (predescrs[i].equals(prev.getId())) {
                         match = true;
@@ -236,7 +237,8 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
             }
             this.addNode(dummySeq);
             isFirst = 1;
-            length += seq.getLength();  // increment length along new seq.
+            // increment length along new seq.
+            length += seq.getLength();
             prev = seq;
         }
 
@@ -514,7 +516,8 @@ public class AcceleratorSeqCombo extends AcceleratorSeq {
         LinkedList<AcceleratorNode> lstNodes = new LinkedList<>();
         LinkedList<AcceleratorNode> extraNodes = new LinkedList<>();
 
-        recurNodeSearch(lstNodes, this); // get all nodes in this seq.
+        // get all nodes in this seq.
+        recurNodeSearch(lstNodes, this);
 
         // Locate and prune soft nodes + primary sequences
         for (AcceleratorNode node : lstNodes) {

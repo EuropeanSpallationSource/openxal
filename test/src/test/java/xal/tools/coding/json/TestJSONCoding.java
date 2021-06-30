@@ -109,20 +109,31 @@ public class TestJSONCoding {
 
     @Test
     public void testArrayEncodingDecoding() {
-        checkArrayEncodingDecoding(new Object[]{"Hello", "World"});    // Object array with standard types
-        checkArrayEncodingDecoding(new Object[]{});		// Empty object array
-        checkArrayEncodingDecoding(new Object[]{"Hello, World", 2.0});    // Object array with standard types
-        checkArrayEncodingDecoding(new Object[]{"Hello, World", 2.0, 5000L});    // Object array with standard types
-        checkArrayEncodingDecoding(new Object[]{"Hello, World", 25, new Date()});    // Object array with extended types
-        checkArrayEncodingDecoding(new String[]{"Hello", "World", "This is just a test!"});    // standard type array
-        checkArrayEncodingDecoding(new double[]{4.78, Math.PI, -17.6, 5.4E23, 8.719E-32});     // standard primitive array
-        checkArrayEncodingDecoding(new int[]{2, 3, 5, 7, 11});         // extended type primitive array
-        checkArrayEncodingDecoding(new Byte[]{105, 74, 43, 45});        // extended type primitive array using wrapper
-        checkArrayEncodingDecoding(new Date[]{new Date(), new Date(new Date().getTime() - 1000), new Date(new Date().getTime() + 1000)});      // extended type array
+        // Object array with standard types
+        checkArrayEncodingDecoding(new Object[]{"Hello", "World"});
+        // Empty object array
+        checkArrayEncodingDecoding(new Object[]{});
+        // Object array with standard types
+        checkArrayEncodingDecoding(new Object[]{"Hello, World", 2.0});
+        // Object array with standard types
+        checkArrayEncodingDecoding(new Object[]{"Hello, World", 2.0, 5000L});
+        // Object array with extended types
+        checkArrayEncodingDecoding(new Object[]{"Hello, World", 25, new Date()});
+        // standard type array
+        checkArrayEncodingDecoding(new String[]{"Hello", "World", "This is just a test!"});
+        // standard primitive array
+        checkArrayEncodingDecoding(new double[]{4.78, Math.PI, -17.6, 5.4E23, 8.719E-32});
+        // extended type primitive array
+        checkArrayEncodingDecoding(new int[]{2, 3, 5, 7, 11});
+        // extended type primitive array using wrapper
+        checkArrayEncodingDecoding(new Byte[]{105, 74, 43, 45});
+        // extended type array
+        checkArrayEncodingDecoding(new Date[]{new Date(), new Date(new Date().getTime() - 1000), new Date(new Date().getTime() + 1000)});
     }
 
     @Test
-    @SuppressWarnings("unchecked")    // need to cast decoded object
+    // need to cast decoded object
+    @SuppressWarnings("unchecked")
     public void testMultidimensionalArrayEncodingDecoding() {
         final int[][] controlArray = {{2, 3, 5}, {7, 11, 13, 17, 19}};
         final String coding = JSONCoder.defaultEncode(controlArray);
@@ -198,30 +209,10 @@ public class TestJSONCoding {
 
     @Test
     public void testSerializationEncodingDecoding() {
-        checkEncodingDecoding(new java.math.BigInteger("123456789012345678901234567890"));  // BigInteger is Serializable and not a directly supported type
+        // BigInteger is Serializable and not a directly supported type
+        checkEncodingDecoding(new java.math.BigInteger("123456789012345678901234567890"));
     }
 
-//    @Test
-//    public void testRuntimeExceptionEncodingDecoding() {
-//        try {
-//            final Object nullObject = null;
-//            nullObject.toString();  // should always throw an exception
-//        }
-//        catch ( Exception exception ) {
-//            final RuntimeException controlValue = new RuntimeException( exception );
-//            final String coding = JSONCoder.defaultEncode( controlValue );
-//            final RuntimeException testValue = (RuntimeException)JSONCoder.defaultDecode( coding );
-//            assertEquality( testValue.getMessage(), controlValue.getMessage() );
-//            
-//            final StackTraceElement[] controlStackTrace = controlValue.getStackTrace();
-//            final StackTraceElement[] testStackTrace = testValue.getStackTrace();
-//            Assert.assertTrue( testStackTrace.length == controlStackTrace.length );
-//            
-//            for ( int index = 0 ; index < controlStackTrace.length ; index++ ) {
-//                assertEquality( testStackTrace[index].toString(), controlStackTrace[index].toString() );
-//            }            
-//        }
-//    }
     @Test
     public void testCompoundEncodingDecoding() {
         final List<Object> simpleList = new ArrayList<Object>();
@@ -231,7 +222,7 @@ public class TestJSONCoding {
         simpleList.add(false);
         simpleList.add(null);
         simpleList.add("String with \"embedded\" string.");
-        simpleList.add(new Double(-32.7));
+        simpleList.add(-32.7);
 
         final Map<String, Object> simpleMap = new HashMap<String, Object>();
         simpleMap.put("info", null);
@@ -259,14 +250,16 @@ public class TestJSONCoding {
     @Test
     @SuppressWarnings("unchecked")
     public void testReferenceEncodingDecoding() {
-        final List<Object> sharedList = new ArrayList<Object>();    // list to be shared using references
+        // list to be shared using references
+        final List<Object> sharedList = new ArrayList<Object>();
         sharedList.add("Knoxville");
         sharedList.add("Oak Ridge");
         sharedList.add("Chattanooga");
         sharedList.add("Nashville");
         sharedList.add("Memphis");
 
-        final List<Object> otherList = new ArrayList<Object>(sharedList);     // list is equal to shared list but different instance
+        // list is equal to shared list but different instance
+        final List<Object> otherList = new ArrayList<Object>(sharedList);
 
         final Map<String, Object> testMap = new HashMap<String, Object>();
         testMap.put("share_0", sharedList);
@@ -276,13 +269,16 @@ public class TestJSONCoding {
         final String json = JSONCoder.defaultEncode(testMap);
 
         final Map<String, Object> control = (Map<String, Object>) JSONCoder.defaultDecode(json);
-        assertEquality(testMap, control);     // verify that we have regenerated the original map
+        // verify that we have regenerated the original map
+        assertEquality(testMap, control);
 
         final Object shared_0 = control.get("share_0");
         final Object other = control.get("other");
         final Object shared_1 = control.get("share_1");
-        Assert.assertTrue(shared_0 == shared_1);      // verify that references are preserved (objects that share the same instance prior to encoding do so when regenerated)
-        Assert.assertTrue(shared_0 != other);         // verify that different instances that are equal prior to encoding do not share the same instance after regeneration
+        // verify that references are preserved (objects that share the same instance prior to encoding do so when regenerated)
+        Assert.assertTrue(shared_0 == shared_1);
+        // verify that different instances that are equal prior to encoding do not share the same instance after regeneration
+        Assert.assertTrue(shared_0 != other);
     }
 
     /**

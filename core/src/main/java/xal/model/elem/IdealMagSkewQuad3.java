@@ -33,10 +33,10 @@ import xal.model.elem.sync.IElectromagnet;
  * </p>
  * <p>
  * Note that the action of a rotated element on phase space is also a rotation
- * of the beam coordinates, but in the <strong>opposing</strong> direction. Thus, if this
- * element is to be represented simply as a rotated <code>IdealMagQuad</code>
- * element, then the coordinate rotation angles should negative that of the
- * elements rotation angles.
+ * of the beam coordinates, but in the <strong>opposing</strong> direction.
+ * Thus, if this element is to be represented simply as a rotated
+ * <code>IdealMagQuad</code> element, then the coordinate rotation angles should
+ * negative that of the elements rotation angles.
  * </p>
  * <p>
  * With respect to the <code>IdealMagQuad</code> class, this class has one less
@@ -128,8 +128,8 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
      * Note that global attributes <code>MAT_SO6_2QUAD</code> and
      * <code>MAT_SO6_2BEAM</code> would more naturally be constants. However,
      * because of the tools for working with matrices in
-     * <em>SO</em>(6) &subst; <em>SO</em>(7) it is easy to compute these objects on
-     * start up from the constant <code>DBL_SKEW_ANGLE</code>.
+     * <em>SO</em>(6) &subst; <em>SO</em>(7) it is easy to compute these objects
+     * on start up from the constant <code>DBL_SKEW_ANGLE</code>.
      * </p>
      */
     static {
@@ -238,8 +238,8 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
      * <p>
      * Return the enumeration code specifying the focusing orientation of the
      * quadrupole. Note that the orientation of an
-     * <code>IdealMagSkewQuad3</code> object <strong>cannot</strong> change. Thus, this
-     * method will always return the value
+     * <code>IdealMagSkewQuad3</code> object <strong>cannot</strong> change.
+     * Thus, this method will always return the value
      * <code>IElectromagnet.ORIENT_NONE</code>
      * </p>
      * <p>
@@ -285,7 +285,8 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <strong>meters</strong>
+     * @param dblLen length of subsection to propagate through
+     * <strong>meters</strong>
      *
      * @return the elapsed time through section<strong>Units: seconds</strong>
      *
@@ -351,8 +352,10 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
         // Build the transfer matrix from its component blocks
         PhaseMatrix matQuad = new PhaseMatrix();
 
-        matQuad.setSubMatrix(4, 5, 4, 5, arr0); // a drift space longitudinally
-        matQuad.setElem(6, 6, 1.0); // homogeneous coordinates
+        // a drift space longitudinally
+        matQuad.setSubMatrix(4, 5, 4, 5, arr0);
+        // homogeneous coordinates
+        matQuad.setElem(6, 6, 1.0);
 
         if (k >= 0.0) {
             matQuad.setSubMatrix(0, 1, 0, 1, arrF);

@@ -254,7 +254,8 @@ public class ThickDipole extends ThickElectromagnet {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <strong>meters</strong>
+     * @param dblLen length of subsection to propagate through
+     * <strong>meters</strong>
      *
      * @return the elapsed time through section<strong>Units: seconds</strong>
      */
@@ -303,7 +304,8 @@ public class ThickDipole extends ThickElectromagnet {
      */
     public double getFieldIndex(IProbe probe) {
         // Get  parameters
-        double B = this.getMagField(); // opposite
+        // opposite
+        double B = this.getMagField();
 
         //hs
         double path = this.getPathLength();
@@ -311,7 +313,6 @@ public class ThickDipole extends ThickElectromagnet {
 
         double bPathFlag = this.getFieldPathFlag();
 
-//        double w = probe.getKineticEnergy();
         double rho = -1;
         if (alpha != 0) {
             rho = Math.abs(path / alpha);
@@ -319,7 +320,8 @@ public class ThickDipole extends ThickElectromagnet {
 
         double hrho = 0;
         if (rho != 0) {
-            if (alpha < 0) {//sign of alpha = sign of h
+            //sign of alpha = sign of h
+            if (alpha < 0) {
                 hrho = -1. / rho;
             } else {
                 hrho = 1. / rho;
@@ -336,14 +338,16 @@ public class ThickDipole extends ThickElectromagnet {
         //this was for old RDB double h = 0.2998e9 * B / (Etotal * beta *Math.abs(charge)); 
         //hs 
         LOGGER.log(Level.INFO, "h, hrho = " + h + " " + hrho);
-//        double s = probe.getPosition();
 
+        
         if (bPathFlag == 1.) {
-            h = hrho; //if fieldPathFlag=1, use hrho (calculated from rho) instead of h(calculated from p and B)
+            //if fieldPathFlag=1, use hrho (calculated from rho) instead of h(calculated from p and B)
+            h = hrho;
         }
         double n = 0.;
         if (h != 0.) {
-            n = -getKQuad() / (h * h); // transform to transport notation - simpler for coding
+            // transform to transport notation - simpler for coding
+            n = -getKQuad() / (h * h);
         }
 
         return n;
@@ -364,14 +368,12 @@ public class ThickDipole extends ThickElectromagnet {
     @Override
     public PhaseMap transferMap(IProbe probe, double dL)
             throws ModelException {
-        //hs
-//        String envTrackerId = "EnvelopeTracker";
-//        String algType = probe.getAlgorithm().getType();
 
         double nQ = 0.;
 
         // Get  parameters
-        double B = this.getMagField(); // opposite
+        // opposite
+        double B = this.getMagField();
 
         //hs
         double path = this.getPathLength();
@@ -379,55 +381,30 @@ public class ThickDipole extends ThickElectromagnet {
 
         double bPathFlag = this.getFieldPathFlag();
 
-//        double w = probe.getKineticEnergy();
-
-        /*
-	double rho = -1;
-	if (alpha!=0) {
-	    rho = Math.abs(path/alpha);
-	}
-
-	LOGGER.log(Level.INFO, "id alpha, path, rho = "+getId()+" "+alpha+" "+path+" "+rho);
-
-	double hrho = 0;
-	if (rho!=0) {
-	    if (alpha<0) {//sign of alpha = sign of h
-	    	hrho = -1./rho;
-	    } else {
-	    	hrho = 1./rho;
-	    }
-	}
-         */
         double hrho = 0;
         if (path != 0) {
-            //		hrho = -alpha/path;
             hrho = alpha / path;
         }
 
-        //	if (algType.equals(envTrackerId)) {
-        //	}
-        //	double charge = probe.getSpeciesCharge()/IConstants.UnitCharge;
         double charge = probe.getSpeciesCharge();
         double Etotal = probe.getSpeciesRestEnergy() * probe.getGamma();
 
         double beta = probe.getBeta();
 
-//        double Beff = alpha/path*Etotal*beta/(0.2998e9*charge);
-        //LOGGER.log(Level.INFO, "id, B, Beff = "+getId()+" "+B+" "+Beff);
         // Compute the bending constant h  == 1/ bend radius (1/meter)
         //was default	
         double h = 0.2998e9 * B / (Etotal * beta * charge);
-        //	double h = -0.2998e9 * B / (Etotal * beta *charge);
         LOGGER.log(Level.INFO, "h, hrho = " + h + " " + hrho);
 
         //this was for old RDB double h = 0.2998e9 * B / (Etotal * beta *Math.abs(charge)); 
-//        double s = probe.getPosition();
         if (bPathFlag == 1.) {
-            h = hrho; //if fieldPathFlag=1, use hrho (calculated from rho) instead of h(calculated from p and B)
+            //if fieldPathFlag=1, use hrho (calculated from rho) instead of h(calculated from p and B)
+            h = hrho;
         }
 
         if (h != 0.) {
-            nQ = -getKQuad() / (h * h); // transform to transport notation - simpler for coding
+            // transform to transport notation - simpler for coding
+            nQ = -getKQuad() / (h * h);
         }
 
         double kx = Math.sqrt(1 - nQ) * h;
@@ -437,8 +414,6 @@ public class ThickDipole extends ThickElectromagnet {
         }
         double ky = Math.sqrt(Math.abs(nQ)) * h;
 
-        //System.out.print("name= " + probe.getCurrentElement() + " h = " + new Double(h));
-        //LOGGER.log(Level.INFO, " nQ = " + new Double(nQ));
         // The fringe field angle from the extended field:
         double entranceAnglePhi = gapHeight * h * (1. + Math.pow(Math.sin(entranceAngle), 2.)) / Math.cos(entranceAngle) * fringeIntegral;
 
@@ -452,15 +427,9 @@ public class ThickDipole extends ThickElectromagnet {
         // Build the diople body tranfer matrix
         PhaseMatrix matBody = PhaseMatrix.identity();
 
-        matBody.setSubMatrix(0, 1, 0, 1, arrB); // the H bend
-        /* def
-	matBody.setElem(0, 5, (1. - Math.cos(kx*dL)) * h/Math.pow(kx,2.) ); 
-	matBody.setElem(1, 5, Math.sin(kx*dL) * h/kx ); 
-	matBody.setElem(4, 0, -Math.sin(kx*dL) * h/kx ); 
-	matBody.setElem(4, 1, -(1. - Math.cos(kx*dL)) * h/Math.pow(kx,2.) ); 
-	matBody.setElem(4, 5, -(kx*dL - Math.sin(kx*dL)) * Math.pow((h/kx), 2.)/kx ); 
-         */
-        //ohkawa
+        // the H bend
+        matBody.setSubMatrix(0, 1, 0, 1, arrB);
+
         if (nQ < 1) {
             matBody.setElem(0, 5, (1. - Math.cos(kx * dL)) * h / (kx * kx));
             matBody.setElem(1, 5, Math.sin(kx * dL) * h / kx);
@@ -479,19 +448,22 @@ public class ThickDipole extends ThickElectromagnet {
             matBody.setElem(4, 5, (kx * dL * beta * beta - ElementaryFunction.sinh(kx * dL)) * Math.pow((h / kx), 2.) / kx + dL * (1. + h * h / (kx * kx)) * (1. - beta * beta));
         }
 
-        if (nQ >= 0) { // focusing in vertical
+        // focusing in vertical
+        if (nQ >= 0) {
             matBody.setElem(2, 2, Math.cos(ky * dL));
-            matBody.setElem(2, 3, dL * ElementaryFunction.sinc(ky * dL)); // = l* sin(kl)/kl
+            // = l* sin(kl)/kl
+            matBody.setElem(2, 3, dL * ElementaryFunction.sinc(ky * dL));
             matBody.setElem(3, 2, -ky * Math.sin(ky * dL));
             matBody.setElem(3, 3, Math.cos(ky * dL));
-        } else { // defocusing in vertical
+            // defocusing in vertical
+        } else {
             matBody.setElem(2, 2, ElementaryFunction.cosh(ky * dL));
-            matBody.setElem(2, 3, dL * ElementaryFunction.sinch(ky * dL)); // = l* sin(kl)/kl
+            // = l* sin(kl)/kl
+            matBody.setElem(2, 3, dL * ElementaryFunction.sinch(ky * dL));
             matBody.setElem(3, 2, ky * ElementaryFunction.sinh(ky * dL));
             matBody.setElem(3, 3, ElementaryFunction.cosh(ky * dL));
         }
 
-        //double hStar = h *charge/Math.abs(charge);
         double hStar = h;
         // The entrance pole face matrix 
         PhaseMatrix matEntrance = PhaseMatrix.identity();
@@ -506,11 +478,8 @@ public class ThickDipole extends ThickElectromagnet {
         // Multiply the 3 matrices together, starting at entrance side
         PhaseMatrix matProd1 = matBody.times(matEntrance);
         PhaseMatrix matProd2 = matExit.times(matProd1);
-        //LOGGER.log(Level.INFO, getId() + "  len = " + new Double(dL) + "  k = " + new Double(k) + "  field = " + new Double(getMagField()) );        
 
         return new PhaseMap(matProd2);
-        //return new PhaseMap(matBody);
-
     }
 
     /*

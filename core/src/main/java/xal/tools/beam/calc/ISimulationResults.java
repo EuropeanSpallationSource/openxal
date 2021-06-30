@@ -26,8 +26,8 @@ import xal.tools.math.r3.R3;
  * influence transfer map calculations in the
  * <code>xal.model.probe.TransferMapProbe</code>. However, a there are particle
  * processors and envelope processors for them. The results of the calculations
- * must be taken in the context of the data upon which they calculate.  <strong>See
- * the associated Javadoc.</strong>
+ * must be taken in the context of the data upon which they calculate.
+ * <strong>See the associated Javadoc.</strong>
  * </p>
  *
  * @author Christopher K. Allen
@@ -84,10 +84,13 @@ public interface ISimulationResults {
          * returned value for some given simulation types are provided below.
          * </p>
          * <p>
-         * In general the idea is that the returned coordinate <strong>z</strong> in phase
-         * space <strong>P</strong><sup>6</sup> &cong;
-         * <strong>R</strong><sup>6</sup> &times; {1} is invariant under some map
-         * <strong>&phi;</strong> : <strong>P</strong><sup>6</sup> &rarr; <strong>P</strong><sup>6</sup>
+         * In general the idea is that the returned coordinate
+         * <strong>z</strong> in phase space <strong>P</strong><sup>6</sup>
+         * &cong;
+         * <strong>R</strong><sup>6</sup> &times; {1} is invariant under some
+         * map
+         * <strong>&phi;</strong> : <strong>P</strong><sup>6</sup> &rarr;
+         * <strong>P</strong><sup>6</sup>
          * representing the dynamics of the system.
          * </p>
          * <h3>IMPORTANT NOTE</h3>
@@ -132,7 +135,8 @@ public interface ISimulationResults {
 
         /**
          * Compute and return the aberration at the given state location due to
-         * energy spread. The returned value <strong>&Delta;</strong> is the vector
+         * energy spread. The returned value <strong>&Delta;</strong> is the
+         * vector
          * <br>
          * <br>
          * &nbsp; &nbsp; <strong>&Delta;</strong> &equiv; (&Delta;<em>x</em>,
@@ -140,12 +144,14 @@ public interface ISimulationResults {
          * <br>
          * <br>
          * where, when multiplied by momentum spread &delta; &equiv;
-         * &Delta;<em>p</em>/<em>p</em> yields the change in fixed orbit position.
-         * That is <strong>z</strong> = <strong>z</strong><sub>0</sub> + &delta;<strong>&Delta;</strong>.
+         * &Delta;<em>p</em>/<em>p</em> yields the change in fixed orbit
+         * position. That is <strong>z</strong> = <strong>z</strong><sub>0</sub>
+         * + &delta;<strong>&Delta;</strong>.
          *
          * @param state simulation state where parameters are computed
          *
-         * @return the vector <strong>&Delta;</strong> of dispersion coefficients
+         * @return the vector <strong>&Delta;</strong> of dispersion
+         * coefficients
          *
          * @author Christopher K. Allen
          * @since Nov 8, 2013
@@ -195,49 +201,55 @@ public interface ISimulationResults {
          *
          * @param state simulation state where parameters are computed
          *
-         * @return vector (&psi;<sub><em>x</em></sub>, &psi;<sub><em>y</em></sub>,
-         * &psi;<sub><em>x</em></sub>) of phases in radians
+         * @return vector (&psi;<sub><em>x</em></sub>,
+         * &psi;<sub><em>y</em></sub>, &psi;<sub><em>x</em></sub>) of phases in
+         * radians
          */
         public R3 computeBetatronPhase(S state);
 
         /**
          * <p>
          * Calculates the fixed point (closed orbit) in transverse phase space
-         * at the given state <em>S<sub>n</sub></em> location <em>s<sub>n</sub></em>
+         * at the given state <em>S<sub>n</sub></em> location
+         * <em>s<sub>n</sub></em>
          * in the presence of dispersion.
          * </p>
          * <p>
          * Let the full-turn map a the state location be denoted
-         * <strong>&Phi;</strong><sub><em>n</em></sub> (or the transfer matrix from entrance
-         * to location <em>s<sub>n</sub></em> for a linac). The transverse plane
-         * dispersion vector <strong>&Delta;</strong> is defined
+         * <strong>&Phi;</strong><sub><em>n</em></sub> (or the transfer matrix
+         * from entrance to location <em>s<sub>n</sub></em> for a linac). The
+         * transverse plane dispersion vector <strong>&Delta;</strong> is
+         * defined
          * <br>
          * <br>
          * &nbsp; &nbsp; <strong>&Delta;</strong><sub><em>t</em></sub> &equiv;
-         * -(1/&gamma;<sup>2</sup>)[d<em>x</em>/d<em>z'</em>, d<em>x'</em>/d<em>z'</em>,
-         * d<em>y</em>/d<em>z'</em>, d<em>y'</em>/d<em>z'</em>]<sup><em>T</em></sup> .
+         * -(1/&gamma;<sup>2</sup>)[d<em>x</em>/d<em>z'</em>,
+         * d<em>x'</em>/d<em>z'</em>, d<em>y</em>/d<em>z'</em>,
+         * d<em>y'</em>/d<em>z'</em>]<sup><em>T</em></sup> .
          * <br>
          * <br>
          * It can be identified as the first 4 entries of the
          * 6<sup><em>th</em></sup>
-         * column in the transfer matrix <strong>&Phi;</strong></strong><sub><em>n</em></sub>.
-         * The above vector quantifies the change in the transverse particle
-         * phase coordinate position versus the change in particle momentum. The
+         * column in the transfer matrix
+         * <strong>&Phi;</strong></strong><sub><em>n</em></sub>. The above
+         * vector quantifies the change in the transverse particle phase
+         * coordinate position versus the change in particle momentum. The
          * factor -(1/&gamma;<sup>2</sup>) is needed to convert from
          * longitudinal divergence angle <em>z'</em> used by XAL to momentum
          * &delta;<em>p</em> &equiv; &Delta;<em>p</em>/<em>p</em> used in the
          * dispersion definition. Specifically,
          * <br>
          * <br>
-         * &nbsp; &nbsp; &delta;<em>p</em> &equiv; &Delta;<em>p</em>/<em>p</em> =
-         * &gamma;<sup>2</sup><em>z</em>'
+         * &nbsp; &nbsp; &delta;<em>p</em> &equiv; &Delta;<em>p</em>/<em>p</em>
+         * = &gamma;<sup>2</sup><em>z</em>'
          * <br>
          * <br>
          * As such, the above vector can be better described
          * <br>
          * <br>
          * &nbsp; &nbsp; <strong>&Delta;</strong><sub><em>t</em></sub> &equiv;
-         * [&Delta;<em>x</em>/&delta;<em>p</em>, &Delta;<em>x'</em>/&delta;<em>p</em>,
+         * [&Delta;<em>x</em>/&delta;<em>p</em>,
+         * &Delta;<em>x'</em>/&delta;<em>p</em>,
          * &Delta;<em>y</em>/&delta;<em>p</em>,
          * &Delta;<em>y'</em>/&delta;<em>p</em>]<sup><em>T</em></sup>
          * <br>
@@ -248,7 +260,8 @@ public interface ISimulationResults {
          * <p>
          * Since we are only concerned with transverse phase space coordinates,
          * we restrict ourselves to the 4&times;4 upper diagonal block of
-         * <strong>&Phi;</strong></strong><sub><em>n</em></sub>, which we denote take
+         * <strong>&Phi;</strong></strong><sub><em>n</em></sub>, which we denote
+         * take
          * <strong>T</strong></strong><sub><em>n</em></sub>. That is,
          * <strong>T</strong></strong><sub><em>n</em></sub> = &pi; &sdot;
          * <strong>&Phi;</strong></strong><sub><em>n</em></sub>
@@ -256,8 +269,9 @@ public interface ISimulationResults {
          * <strong>R</strong><sup>4&times;4</sup> is the projection operator.
          * </p>
          * <p>
-         * This method finds that point <strong>z</strong><sub><em>t</em></sub> &equiv;
-         * (<em>x<sub>t</sub></em>, <em>x'<sub>t</sub></em>, <em>y<sub>t</sub></em>,
+         * This method finds that point <strong>z</strong><sub><em>t</em></sub>
+         * &equiv; (<em>x<sub>t</sub></em>, <em>x'<sub>t</sub></em>,
+         * <em>y<sub>t</sub></em>,
          * <em>y'<sub>t</sub></em>) in transvse phase space that is invariant
          * under the action of the ring for a given momentum spread
          * &delta;<em>p</em>. That is, the particle ends up in the same location
@@ -265,7 +279,8 @@ public interface ISimulationResults {
          * &gt; 0 we require this require that
          * <br>
          * <br>
-         * &nbsp; &nbsp; <strong>T</strong><sub><em>n</em><strong></sub>z</strong><sub><em>t</em></sub>
+         * &nbsp; &nbsp;
+         * <strong>T</strong><sub><em>n</em><strong></sub>z</strong><sub><em>t</em></sub>
          * + &delta;<em>p</em><strong>&Delta;</strong><sub><em>t</em></sub> =
          * <strong>z</strong><sub><em>t</em></sub> ,
          * <br>
@@ -275,28 +290,31 @@ public interface ISimulationResults {
          * <br>
          * &nbsp; <strong>z</strong><sub><em>t</em></sub> =
          * &delta;<em>p</em>(<strong>T</strong></strong><sub><em>n</em></sub> -
-         * <strong>I</strong>)<sup>-1</sup><strong>&Delta;</strong><sub><em>t</em></sub> ,
+         * <strong>I</strong>)<sup>-1</sup><strong>&Delta;</strong><sub><em>t</em></sub>
+         * ,
          * <br>
          * <br>
-         * where <strong>I</strong> is the identity matrix. Dividing both sides by
-         * &delta;<em>p</em> yields the final result
+         * where <strong>I</strong> is the identity matrix. Dividing both sides
+         * by &delta;<em>p</em> yields the final result
          * <br>
          * <br>
          * &nbsp; <strong>z</strong><sub>0</sub> &equiv;
          * <strong>z</strong><sub><em>t</em></sub>/&delta;<em>p</em> =
          * (<strong>T</strong></strong><sub><em>n</em></sub> -
-         * <strong>I</strong>)<sup>-1</sup><strong>&Delta;</strong><sub><em>t</em></sub> ,
+         * <strong>I</strong>)<sup>-1</sup><strong>&Delta;</strong><sub><em>t</em></sub>
+         * ,
          * <br>
          * <br>
          * which is the returned value of this method. It is normalized by
-         * &delta;<em>p</em> so that we can compute the closed orbit for any given
-         * momentum spread.
+         * &delta;<em>p</em> so that we can compute the closed orbit for any
+         * given momentum spread.
          * </p>
          *
          * @param state we are calculating the dispersion at this state location
          *
-         * @return The closed orbit fixed point <strong>z</strong><sub>0</sub> for finite
-         * dispersion, normalized by momentum spread. Returned as an array
+         * @return The closed orbit fixed point <strong>z</strong><sub>0</sub>
+         * for finite dispersion, normalized by momentum spread. Returned as an
+         * array
          * [<em>x</em><sub>0</sub>,<em>x'</em><sub>0</sub>,<em>y</em><sub>0</sub>,<em>y'</em><sub>0</sub>]/&delta;<em>p</em>
          *
          * @author Christopher K. Allen

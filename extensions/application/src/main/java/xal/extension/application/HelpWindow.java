@@ -191,8 +191,10 @@ class HelpWindow extends JFrame implements SwingConstants {
             setLocationRelativeTo(sender);
         }
 
-        setState(Frame.NORMAL);    // don't iconify this window
-        setVisible(true);   // make the window visible
+        // don't iconify this window
+        setState(Frame.NORMAL);
+        // make the window visible
+        setVisible(true);
     }
 
     /**

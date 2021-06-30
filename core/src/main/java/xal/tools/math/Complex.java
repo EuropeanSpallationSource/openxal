@@ -99,7 +99,8 @@ public class Complex {
      * <em>s</em>. The value is given by
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; log(<em>s</em>) = ln(|<em>s</em>|) + <em>i</em> arg(<em>s</em>)
+     * &nbsp; &nbsp; log(<em>s</em>) = ln(|<em>s</em>|) + <em>i</em>
+     * arg(<em>s</em>)
      * <br/>
      * <br/>
      * where ln is the real-valued natural logarithm function and arg is the
@@ -123,8 +124,8 @@ public class Complex {
 
     /**
      * <p>
-     * Compute and return the exponential of the given complex number <em>s</em>.
-     * The value is given by the formula
+     * Compute and return the exponential of the given complex number
+     * <em>s</em>. The value is given by the formula
      * <br/>
      * <br/>
      * &nbsp; &nbsp; exp(<em>s</em>) = exp(&sigma;)[cos(&omega;) + <em>i</em>

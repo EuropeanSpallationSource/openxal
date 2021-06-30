@@ -176,7 +176,8 @@ public class IdealEQuad extends ThickElectrostatic {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <strong>meters</strong>
+     * @param dblLen length of subsection to propagate through
+     * <strong>meters</strong>
      *
      * @return the elapsed time through section<strong>Units: seconds</strong>
      */
@@ -243,8 +244,10 @@ public class IdealEQuad extends ThickElectrostatic {
             matPhi.setSubMatrix(0, 1, 0, 1, arrD);
             matPhi.setSubMatrix(2, 3, 2, 3, arrF);
         }
-        matPhi.setSubMatrix(4, 5, 4, 5, arrZ); // a drift space longitudinally
-        matPhi.setElem(6, 6, 1.0); // homogeneous coordinates
+        // a drift space longitudinally
+        matPhi.setSubMatrix(4, 5, 4, 5, arrZ);
+        // homogeneous coordinates
+        matPhi.setElem(6, 6, 1.0);
 
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors

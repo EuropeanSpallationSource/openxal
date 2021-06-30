@@ -621,7 +621,8 @@ class KeyedMapAccessor implements KeyedAccessing {
      *
      * @param target object from which to get the value
      */
-    @SuppressWarnings("unchecked")    // no way to predetermine the target class, so we must suppress this warning
+    // no way to predetermine the target class, so we must suppress this warning
+    @SuppressWarnings("unchecked")
     @Override
     public Object valueForTarget(final Object target) throws InvalidKeyException {
         try {
@@ -665,7 +666,8 @@ class KeyedMapSetter implements KeyedSetting {
      * @param target object from which to get the value
      * @param value the value to set
      */
-    @SuppressWarnings("unchecked")    // no way to predetermine the target class, so we must suppress this warning
+    // no way to predetermine the target class, so we must suppress this warning
+    @SuppressWarnings("unchecked")
     @Override
     public void setValueForTarget(final Object target, final Object value) throws InvalidKeyException {
         try {

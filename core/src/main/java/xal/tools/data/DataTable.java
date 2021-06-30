@@ -713,7 +713,8 @@ public class DataTable {
         /**
          * Constructor
          */
-        @SuppressWarnings("unchecked")    // exception classes don't support generics so we have no choice but to cast
+        // exception classes don't support generics so we have no choice but to cast
+        @SuppressWarnings("unchecked")
         public <ValueType> NonUniqueRecordException(final Map<String, ValueType> theBindings) {
             bindings = (Map<String, Object>) theBindings;
         }

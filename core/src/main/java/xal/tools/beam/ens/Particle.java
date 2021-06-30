@@ -191,9 +191,12 @@ public class Particle implements Serializable {
     public double electricPotential(R3 ptFld, double R) {
 
         // Compute distance between field and source point
-        R3 ptSrc;      // source location of this charge
-        R3 vecDis;     // displacement vector between source and field points
-        double dblDis;     // distance between field and source point
+        // source location of this charge
+        R3 ptSrc;
+        // displacement vector between source and field points
+        R3 vecDis;
+        // distance between field and source point
+        double dblDis;
 
         ptSrc = getPosition();
         vecDis = ptFld.minus(ptSrc);
@@ -205,8 +208,10 @@ public class Particle implements Serializable {
         }
 
         // Field point is within R, must use potential of a sphere
-        double r;          // normalized distance, must be <1
-        double V;          // electric potential
+        // normalized distance, must be <1
+        double r;
+        // electric potential
+        double V;
 
         r = dblDis / R;
         V = 0.5 * FAC_ELEC * getCharge() / R;
@@ -253,20 +258,25 @@ public class Particle implements Serializable {
     public R3 electricField(R3 ptFld, double R) {
 
         // Compute distance between field and source point
-        R3 ptSrc;      // source location of this charge
-        R3 vecDis;     // displacement vector between source and field points
-        double dblDis;     // distance between field and source point
+        // source location of this charge
+        R3 ptSrc;
+        // displacement vector between source and field points
+        R3 vecDis;
+        // distance between field and source point
+        double dblDis;
 
         ptSrc = getPosition();
         vecDis = ptFld.minus(ptSrc);
         dblDis = vecDis.norm2();
 
         // Compute the electric field
-        double dblCoef;            // scalar coefficient of displacement vector
+        // scalar coefficient of displacement vector
+        double dblCoef;
 
         dblCoef = FAC_ELEC * getCharge();
 
-        if (dblDis > R) {       // Return coulomb electric field if field point is more distant than R
+        // Return coulomb electric field if field point is more distant than R
+        if (dblDis > R) {
             dblCoef *= 1.0 / (dblDis * dblDis * dblDis);
             return vecDis.times(dblCoef);
         }
@@ -326,10 +336,14 @@ public class Particle implements Serializable {
     public R3 magneticField(R3 ptFld, double R) {
 
         // Compute distance between field and source point
-        R3 ptSrc;      // source location of this charge
-        R3 vecVel;     // velocity vector of particle
-        R3 vecDis;     // displacement vector between source and field points
-        double dblDis;     // distance between field and source point
+        // source location of this charge
+        R3 ptSrc;
+        // velocity vector of particle
+        R3 vecVel;
+        // displacement vector between source and field points
+        R3 vecDis;
+        // distance between field and source point
+        double dblDis;
 
         ptSrc = getPosition();
         vecVel = getMomentum();
@@ -337,13 +351,16 @@ public class Particle implements Serializable {
         dblDis = vecDis.norm2();
 
         // Compute the magnetic field
-        double dblCoef;            // scalar coefficient of field vector
-        R3 H;                  // magnetic field vector
+        // scalar coefficient of field vector
+        double dblCoef;
+        // magnetic field vector
+        R3 H;
 
         dblCoef = getCharge() / (4.0 * Math.PI);
         H = vecVel.times(vecDis);
 
-        if (dblDis > R) {       // Return Biot/Savart magnetic field if field point > R
+        // Return Biot/Savart magnetic field if field point > R
+        if (dblDis > R) {
             dblCoef *= 1.0 / (dblDis * dblDis * dblDis);
             return H.times(dblCoef);
         }

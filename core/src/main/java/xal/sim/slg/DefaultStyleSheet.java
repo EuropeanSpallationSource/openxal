@@ -18,8 +18,10 @@ public class DefaultStyleSheet {
     static {
         XSLSHEET = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
         XSLSHEET += "<!--  -->";
-        XSLSHEET += "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">";
-        XSLSHEET += "            <!--xmlns=\"http://www.w3.org/TR/xslt\"-->";
+        //www.w3.org/1999/XSL/Transform\">";
+        XSLSHEET += "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http:
+        //www.w3.org/TR/xslt\"-->";
+        XSLSHEET += "            <!--xmlns=\"http:
         XSLSHEET += "";
         XSLSHEET += "<xsl:output method=\"xml\" doctype-system=\"Lattice.mod.xal.dtd\" indent=\"yes\"/>";
         XSLSHEET += "";

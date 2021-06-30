@@ -51,7 +51,8 @@ public class OnLeafComparator implements Comparator<Subsystem> {
         Integer s1pos = systemPos.get(s1.getId());
         Integer s2pos = systemPos.get(s2.getId());
         if (s1pos == null) {
-            s1pos = -1; // this code catches the first leaf also
+            // this code catches the first leaf also
+            s1pos = -1;
         }
         if (s2pos == null) {
             s2pos = -1;

@@ -100,19 +100,6 @@ public class R3 extends BaseVector<R3> implements Serializable {
      */
     public static final int INT_SIZE = 3;
 
-//    /*
-//     *  Attributes
-//     */
-//    
-//    /** first coordinate */
-//    public double x1 = 0.0;
-//    
-//    /** second coordinate */
-//    public double x2 = 0.0;
-//    
-//    /** third coordinate */
-//    public double x3 = 0.0;
-//    
     /*
      *  Global Methods
      */
@@ -218,23 +205,6 @@ public class R3 extends BaseVector<R3> implements Serializable {
      */
     public R3(String strTokens) throws NumberFormatException, IllegalArgumentException {
         super(INT_SIZE, strTokens);
-
-//        // Error check the number of token strings
-//        StringTokenizer     tokArgs = new StringTokenizer(strTokens, " ,()");
-//        
-//        if (tokArgs.countTokens() < 3)
-//            throw new IllegalArgumentException("R3(strTokens) - wrong number of token strings: " + strTokens);
-//        
-//        
-//        // Extract initial values
-//        int                 i;      // loop control
-//        
-//        for (i=0; i<3; i++)  {
-//            String  strVal = tokArgs.nextToken();
-//            double  dblVal = Double.valueOf(strVal).doubleValue();
-//            
-//            this.set(i, dblVal);
-//        }
     }
 
     /**
@@ -271,24 +241,6 @@ public class R3 extends BaseVector<R3> implements Serializable {
      */
     public void set(int i, double val) throws ArrayIndexOutOfBoundsException {
         super.setElem(i, val);
-
-//        switch (i)  {
-//            
-//            case 0:
-//               this.x1 = val; 
-//               break;
-//               
-//           case 1:
-//                this.x2 = val;
-//                break;
-//                
-//           case 2:
-//                this.x3 = val;
-//                break;
-//                
-//            default:
-//                throw new ArrayIndexOutOfBoundsException("index value not in [0,2]");       
-//        }
     }
 
     /**
@@ -368,28 +320,9 @@ public class R3 extends BaseVector<R3> implements Serializable {
      * <em>x</em><sub>3</sub>}.
      */
     public double[] toArray() {
-//		return new double[] { x1, x2, x3 };
         return super.getArrayCopy();
     }
 
-//	/**
-//	 * Get the coordinate value for the specified mode.
-//	 * @param mode the mode for which to get the coordinate value
-//	 * @return the coordinate value for the specified mode.
-//	 * @throws java.lang.IllegalArgumentException if the mode is not one of 1, 2 or 3.
-//	 */
-//	public double getValue( final int mode ) {
-//		switch ( mode ) {
-//			case 1:
-//				return x1;
-//			case 2:
-//				return x2;
-//			case 3:
-//				return x3;
-//			default:
-//				throw new IllegalArgumentException( "The mode must be one of only 1, 2 or 3. You specified a mode of: " + mode );
-//		}
-//	}
     /**
      * Return first coordinate value.
      *
@@ -552,46 +485,6 @@ public class R3 extends BaseVector<R3> implements Serializable {
     /*
      *  Algebraic Methods
      */
-    // 
-    // Now handled in base class
-    //
-//    /**
-//     *  Scalar multiplication.
-//     *
-//     *  @param  s       scalar to multiply this vector
-//     *
-//     *  @return         new R3 object scaled by s
-//     */
-//    public R3   times(double s) {
-//        double  x1 = get1(); double x2 = get2(); double x3 = get3();
-//
-//        return new R3(s*x1, s*x2, s*x3);
-//    }
-//    
-//    /**
-//     *  Vector addition.
-//     *
-//     *  @param  r   vector displacement
-//     *
-//     *  @return     new R3 object equal to this displaced by r
-//     */
-//    public R3 plus(R3 r) {
-//        double  x1 = get1(); double x2 = get2(); double x3 = get3();
-//
-//        return new R3(x1 + r.get1(), x2 + r.get2(), x3 + r.get3());
-//    }
-//
-//    /**
-//     *  Vector subtraction.
-//     *
-//     *  @param  r   vector displacement
-//     *
-//     *  @return     new R3 object equal to this displaced by r
-//     */
-//    public R3 minus(R3 r) {
-//        return new R3(x1 - r.x1, x2 - r.x2, x3 - r.x3);
-//    }
-//    
     /**
      * Vector multiplication using three-dimensional cross product.
      *
@@ -610,16 +503,6 @@ public class R3 extends BaseVector<R3> implements Serializable {
     /*
      *  Geometric Methods
      */
-//    /**
-//     *  Compute the <em>l</em><sub>2</sub> norm of the vector in R3.
-//     *
-//     *  @return         <em>l</em><sub>2</sub> norm &equiv; (<em>x</em><sub>1</sub><sup>2</sup> 
-//     *                                            + <em>x</em><sub>2</sub><sup>2</sup>  
-//     *                                            + <em>x</em><sub>3</sub><sup>2</sup>)<sup>1/2</sup>
-//     */
-//    public double norm2() {
-//        return Math.sqrt(x1*x1 + x2*x2 + x3*x3);
-//    }
     /**
      * Returns the vector of squared elements.
      *
@@ -662,25 +545,4 @@ public class R3 extends BaseVector<R3> implements Serializable {
     protected R3 newInstance(double[] arrVecInt) {
         return new R3(arrVecInt);
     }
-
-    /*
-     *  Testing and Debugging
-     */
-//    /**
-//     *  Print out contents on an output stream.
-//     *
-//     *  @param  os      output stream receive content dump
-//     */
-//    public void print(java.io.PrintWriter os)   {
-//        os.print(this.toString());
-//    }
-//    
-//    /**
-//     *  Print out centents on an output stream, terminate with new line character.
-//     *
-//     *  @param  os      output stream receive content dump
-//     */
-//    public void println(java.io.PrintWriter os)   {
-//        os.println(this.toString());
-//    }
 }

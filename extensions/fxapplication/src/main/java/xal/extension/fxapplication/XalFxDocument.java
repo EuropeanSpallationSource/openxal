@@ -82,7 +82,8 @@ public abstract class XalFxDocument {
     protected boolean testMode = false;
 
     public XalFxDocument() {
-        this.HELP_WIKI_BASE = "https://confluence.esss.lu.se/pages/viewpage.action?pageId=";
+        t//confluence.esss.lu.se/pages/viewpage.action?pageId=";
+        this.HELP_WIKI_BASE = "https:
         this.accelerator = new AcceleratorProperty();
         this.sequence = new SimpleStringProperty();
     }

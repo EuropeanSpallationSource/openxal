@@ -26,13 +26,13 @@ import JSci.maths.Complex;
  * + &hellip; + <em>a<sub>N</sub></em><em>x<sub>n-N</em></sub>
  * <br>
  * <br>
- * where <em>n</em> is the current ("time") index, the {<em>x<sub>n</sub></em>} are
- * the inputs to the filter at time <em>n</em>, the {<em>a<sub>k</sub></em>} are the
- * input coefficients for delay <em>k</em>, the {<em>y<sub>n</sub></em>} are the
- * filter outputs at time <em>n</em>, and the {<em>b<sub>k</sub></em>} are the
- * output coefficients for delay <em>k</em>. The equation can be rearranged to
- * explicitly demonstrate the current output <em>y<sub>n</sub></em> in terms of
- * the past <em>N</em> inputs and outputs
+ * where <em>n</em> is the current ("time") index, the {<em>x<sub>n</sub></em>}
+ * are the inputs to the filter at time <em>n</em>, the {<em>a<sub>k</sub></em>}
+ * are the input coefficients for delay <em>k</em>, the {<em>y<sub>n</sub></em>}
+ * are the filter outputs at time <em>n</em>, and the {<em>b<sub>k</sub></em>}
+ * are the output coefficients for delay <em>k</em>. The equation can be
+ * rearranged to explicitly demonstrate the current output
+ * <em>y<sub>n</sub></em> in terms of the past <em>N</em> inputs and outputs
  * <br>
  * <br>&nbsp;&nbsp;  <em>y<sub>n</sub></em>
  * = (
@@ -54,9 +54,9 @@ import JSci.maths.Complex;
  * <p>
  * Taking the <em>Z</em> transform of the above equations yields the transfer
  * function
- * <em>H</em>(<em>z</em>) where <em>z</em> is the transform variable (whose domain is
- * the unit circle in the complex plane). The transfer function has the general
- * form
+ * <em>H</em>(<em>z</em>) where <em>z</em> is the transform variable (whose
+ * domain is the unit circle in the complex plane). The transfer function has
+ * the general form
  * <br>&nbsp;&nbsp;
  * <table>
  * <tr>
@@ -81,8 +81,9 @@ import JSci.maths.Complex;
  * </tr>
  * </table>
  * Clearly then the filter is linear. Note that for the Discrete Fourier
- * Transform (DFT) and the frequencies <em>&nu;</em> = 1,&hellip;,<em>&Nu;</em>-1
- * the transform variable is equal to <em>z<sub>&nu;</sub> =
+ * Transform (DFT) and the frequencies <em>&nu;</em> =
+ * 1,&hellip;,<em>&Nu;</em>-1 the transform variable is equal to
+ * <em>z<sub>&nu;</sub> =
  * <em>e</em><sup><em>i</em>2<em>&pi;&nu;</em>/<em>&Nu;</sup>.
  * </p>
  *
@@ -175,8 +176,8 @@ public class LtiDigitalFilter extends AbstractDigitalFilter {
     /**
      * Sets all the input signal coefficients. The elements of the argument
      * array should be indexed by delay; that is, the 0<sup><em>th</em></sup>
-     * element corresponds to no delay, the 1<sup><em>st</em></sup> element to the
-     * unit delay, etc.
+     * element corresponds to no delay, the 1<sup><em>st</em></sup> element to
+     * the unit delay, etc.
      *
      * @param arrCoeffs array of input coefficients
      *
@@ -207,8 +208,8 @@ public class LtiDigitalFilter extends AbstractDigitalFilter {
     /**
      * Sets all the output signal coefficients. The elements of the argument
      * array should be indexed by delay; that is, the 0<sup><em>th</em></sup>
-     * element corresponds to no delay, the 1<sup><em>st</em></sup> element to the
-     * unit delay, etc.
+     * element corresponds to no delay, the 1<sup><em>st</em></sup> element to
+     * the unit delay, etc.
      *
      * @param arrCoeffs array of output coefficients
      *
@@ -269,9 +270,12 @@ public class LtiDigitalFilter extends AbstractDigitalFilter {
      * @return value of this filter's transfer function at z
      */
     public Complex transferFunction(Complex z) {
-        Complex cpxZpwr = Complex.ONE;     // power of z
-        Complex cpxDenom = Complex.ZERO;   // transfer function denominator
-        Complex cpxNumer = Complex.ZERO;   // transfer function numerator
+        // power of z
+        Complex cpxZpwr = Complex.ONE;
+        // transfer function denominator
+        Complex cpxDenom = Complex.ZERO;
+        // transfer function numerator
+        Complex cpxNumer = Complex.ZERO;
 
         for (int iDelay = 0; iDelay < this.getCoefficientCount(); iDelay++) {
             double a = this.arrCoefInp[iDelay];

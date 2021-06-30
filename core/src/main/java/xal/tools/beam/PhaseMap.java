@@ -15,53 +15,69 @@ import xal.tools.data.IArchive;
  * Note that it does not necessarily need to be symplectic.
  * </p>
  * <p>
- * Currently the action of the map, denoted <strong>&phi;</strong>, simply consists of a
- * linear portion plus an offset. Second order effects are to be designed and
- * implemented in the future.
+ * Currently the action of the map, denoted <strong>&phi;</strong>, simply
+ * consists of a linear portion plus an offset. Second order effects are to be
+ * designed and implemented in the future.
  * </p>
  * <p>
  * The action of the linear map
- * <strong>&phi;</strong><sub>0</sub> : <strong>R</strong><sup>6</sup> &times; {1} &rarr;
- * <strong>R</strong><sup>6</sup> &times; {1} on a phase vector <strong>z</strong> &in;
+ * <strong>&phi;</strong><sub>0</sub> : <strong>R</strong><sup>6</sup> &times;
+ * {1} &rarr;
+ * <strong>R</strong><sup>6</sup> &times; {1} on a phase vector
+ * <strong>z</strong> &in;
  * <strong>R</strong><sup>6</sup> &times; {1} is given by
  * <br>
  * <br>
- * &nbsp; &nbsp; <strong>&phi;</strong><sub>0</sub>(<strong>z</strong>) = <strong>&Phi;</strong><sub>0</sub>
- * &sdot; (<strong>z</strong> - <strong>z</strong><sub>0</sub>) + <strong>&Delta;</strong><sub>0</sub> ,
+ * &nbsp; &nbsp; <strong>&phi;</strong><sub>0</sub>(<strong>z</strong>) =
+ * <strong>&Phi;</strong><sub>0</sub>
+ * &sdot; (<strong>z</strong> - <strong>z</strong><sub>0</sub>) +
+ * <strong>&Delta;</strong><sub>0</sub> ,
  * <br>
  * <br>
- * where <strong>&Phi;</strong><sub>0</sub> &in; <strong>R</strong><sup>7&times;7</sup> is the
- * linear part of the map (a matrix representation), <strong>z</strong><sub>0</sub> is the
- * evaluation point or center, and
- * <strong>&Delta;</strong><sub>0</sub> is the value or offset of the mapping. Note that
+ * where <strong>&Phi;</strong><sub>0</sub> &in;
+ * <strong>R</strong><sup>7&times;7</sup> is the linear part of the map (a
+ * matrix representation), <strong>z</strong><sub>0</sub> is the evaluation
+ * point or center, and
+ * <strong>&Delta;</strong><sub>0</sub> is the value or offset of the mapping.
+ * Note that
  * <strong>&phi;</strong><sub>0</sub> : <strong>z</strong><sub>0</sub> &rarr;
- * <strong>&phi;</strong><sub>0</sub>, that is, <strong>z</strong><sub>0</sub> is the location of
- * the linear expansion of the map <strong>&phi;</strong><sub>0</sub> and
+ * <strong>&phi;</strong><sub>0</sub>, that is, <strong>z</strong><sub>0</sub>
+ * is the location of the linear expansion of the map
+ * <strong>&phi;</strong><sub>0</sub> and
  * <strong>&Delta;</strong><sub>0</sub> is the value there.
  * </p>
  * <p>
  * The above representation is in direct correlation with the Taylor expansion
  * of a continuous map <strong>F</strong><sub>0</sub> &in;
  * <em>C</em>(<strong>R</strong><sup>6</sup>&times;{1} &rarr;
- * <strong>R</strong><sup>6</sup>&times;{1}). Say we wish to expand <strong>F</strong><sub>0</sub>
- * about the point <strong>z</strong><sub>0</sub> &in; <strong>R</strong><sup>6</sup>. The Taylor
- * expansion of <strong>F</strong><sub>0</sub> at the point <strong>z</strong> &in;
+ * <strong>R</strong><sup>6</sup>&times;{1}). Say we wish to expand
+ * <strong>F</strong><sub>0</sub>
+ * about the point <strong>z</strong><sub>0</sub> &in;
+ * <strong>R</strong><sup>6</sup>. The Taylor expansion of
+ * <strong>F</strong><sub>0</sub> at the point <strong>z</strong> &in;
  * <strong>R</strong><sup>6</sup> is given by
  * <br>
  * <br>
- * &nbsp; &nbsp; <strong>F</strong><sub>0</sub>(<strong>z</strong>) = <strong>F</strong>(<strong>z</strong><sub>0</sub>)
- * + <strong>F</strong><sub>0</sub>'(<strong>z</strong><sub>0</sub>) &sdot; (<strong>z</strong> -
+ * &nbsp; &nbsp; <strong>F</strong><sub>0</sub>(<strong>z</strong>) =
+ * <strong>F</strong>(<strong>z</strong><sub>0</sub>) +
+ * <strong>F</strong><sub>0</sub>'(<strong>z</strong><sub>0</sub>) &sdot;
+ * (<strong>z</strong> -
  * <strong>z</strong><sub>0</sub>) + <em>O</em>(||<strong>z</strong> -
  * <strong>z</strong><sub>0</sub>||<sup>2</sup>) ,
  * <br>
  * <br>
- * where <strong>F</strong><sub>0</sub>'(<strong>z</strong><sub>0</sub>) is the matrix of first
- * partial derivatives of <strong>F</strong> evaluated at the point <strong>z</strong><sub>0</sub>
- * &in; <strong>R</strong><sup>6</sup>&times;{1}. By identifying <strong>z</strong><sub>0</sub>,
- * <strong>&Delta;</strong><sub>0</sub>, and <strong>&Phi;</strong><sub>0</sub> with
- * <strong>z</strong><sub>0</sub>, <strong>F</strong><sub>0</sub>(<strong>z</strong><sub>0</sub>), and
- * <strong>F</strong><sub>0</sub>'(<strong>z</strong><sub>0</sub>), respectively, we arrive at our
- * Taylor map representation for this class as seen by definition of
+ * where <strong>F</strong><sub>0</sub>'(<strong>z</strong><sub>0</sub>) is the
+ * matrix of first partial derivatives of <strong>F</strong> evaluated at the
+ * point <strong>z</strong><sub>0</sub>
+ * &in; <strong>R</strong><sup>6</sup>&times;{1}. By identifying
+ * <strong>z</strong><sub>0</sub>,
+ * <strong>&Delta;</strong><sub>0</sub>, and <strong>&Phi;</strong><sub>0</sub>
+ * with
+ * <strong>z</strong><sub>0</sub>,
+ * <strong>F</strong><sub>0</sub>(<strong>z</strong><sub>0</sub>), and
+ * <strong>F</strong><sub>0</sub>'(<strong>z</strong><sub>0</sub>),
+ * respectively, we arrive at our Taylor map representation for this class as
+ * seen by definition of
  * <strong>&phi;</strong><sub>0</sub>.
  * </p>
  * <p>
@@ -161,7 +177,8 @@ public class PhaseMap implements IArchive {
      */
     /**
      * Creates a new instance of <code>PhaseMap</code>. Creates the identity map
-     * centered at <strong>0</strong> &in; <strong>R</strong><sup>6</sup>&times;{1}.
+     * centered at <strong>0</strong> &in;
+     * <strong>R</strong><sup>6</sup>&times;{1}.
      *
      */
     public PhaseMap() {
@@ -197,9 +214,9 @@ public class PhaseMap implements IArchive {
 
     /**
      * Initializing constructor for <code>PhaseMap</code> class. Sets the map
-     * center <strong>z</strong><sub>0</sub>, the map offset <strong>&Delta;</strong><sub>0</sub>,
-     * and the map linear part <strong>&Phi;</strong><sub>0</sub> to the given quantities,
-     * respectively.
+     * center <strong>z</strong><sub>0</sub>, the map offset
+     * <strong>&Delta;</strong><sub>0</sub>, and the map linear part
+     * <strong>&Phi;</strong><sub>0</sub> to the given quantities, respectively.
      *
      * @param vecCntr point in map domain unaffected by map action
      * @param vecDspl the image of the map center
@@ -253,12 +270,12 @@ public class PhaseMap implements IArchive {
     }
 
     /**
-     * Set the map's domain center, or <strong>z</strong><sub>0</sub> in the notation of
-     * the class documentation. The given vector is copied rather than
-     * referenced and, thus, unchanged.
+     * Set the map's domain center, or <strong>z</strong><sub>0</sub> in the
+     * notation of the class documentation. The given vector is copied rather
+     * than referenced and, thus, unchanged.
      *
-     * @param vecDomCntr the point <strong>z</strong><sub>0</sub> in phase space about
-     * which the map is expanded
+     * @param vecDomCntr the point <strong>z</strong><sub>0</sub> in phase space
+     * about which the map is expanded
      *
      * @author Christopher K. Allen
      * @since Nov 4, 2013
@@ -269,12 +286,12 @@ public class PhaseMap implements IArchive {
 
     /**
      * Set the map's offset in the range, this is the quantity
-     * <strong>&Delta;</strong><sub>0</sub> in the class documentation. The given vector
-     * is copied rather than referenced and, thus, unchanged.
+     * <strong>&Delta;</strong><sub>0</sub> in the class documentation. The
+     * given vector is copied rather than referenced and, thus, unchanged.
      *
      * @param vecRngDspl the displacement
-     * <strong>&Delta;</strong><sub>0</sub> &in; <em>Rng</em>{<strong>&phi;</strong><sub>0</sub>} of
-     * the map
+     * <strong>&Delta;</strong><sub>0</sub> &in;
+     * <em>Rng</em>{<strong>&phi;</strong><sub>0</sub>} of the map
      */
     public void setRangeDisplace(final PhaseVector vecRngDspl) {
         this.vecRngDspl = new PhaseVector(vecRngDspl);
@@ -282,10 +299,12 @@ public class PhaseMap implements IArchive {
 
     /**
      * Set the linear part of the map, this is the matrix
-     * <strong>&Phi;</strong><sub>0</sub> in the notation of the class documentation. The
-     * given matrix is copied rather than referenced and, thus, left unchanged.
+     * <strong>&Phi;</strong><sub>0</sub> in the notation of the class
+     * documentation. The given matrix is copied rather than referenced and,
+     * thus, left unchanged.
      *
-     * @param matPhi linear portion <strong>&Phi;</strong><sub>0</sub> of phase map
+     * @param matPhi linear portion <strong>&Phi;</strong><sub>0</sub> of phase
+     * map
      * <strong>&phi;</strong><sub>0</sub>
      */
     public void setLinearPart(final PhaseMatrix matPhi) {
@@ -367,7 +386,8 @@ public class PhaseMap implements IArchive {
      * <strong>&Delta;</strong><sub>0</sub> in the class documentation.
      *
      * @return the point <strong>&Delta;</strong><sub>0</sub> &in;
-     * <em>Rng</em>{<strong>&phi;</strong><sub>0</sub>} that is the image of the center
+     * <em>Rng</em>{<strong>&phi;</strong><sub>0</sub>} that is the image of the
+     * center
      * <strong>z</strong><sub>0</sub>.
      */
     public PhaseVector getRangeDisplace() {
@@ -381,7 +401,8 @@ public class PhaseMap implements IArchive {
      * @return linear part of map <strong>&phi;</strong><sub>0</sub> given by
      * <strong>&Phi;</strong><sub>0</sub> &equiv;
      * &part;<strong>&phi;</strong><sub>0</sub>/&part;<strong>z</strong>
-     * evaluated at <strong>z</strong><sub>0</sub> in <em>Dom</em>{<strong>&phi;<b/><sub>0</sub>}
+     * evaluated at <strong>z</strong><sub>0</sub> in
+     * <em>Dom</em>{<strong>&phi;<b/><sub>0</sub>}
      */
     public PhaseMatrix getFirstOrder() {
         return this.matLinear;
@@ -392,36 +413,41 @@ public class PhaseMap implements IArchive {
      */
     /**
      * <p>
-     * Compute and return the inverse map <strong>&phi;</strong><sup>-1</sup> of this map
+     * Compute and return the inverse map <strong>&phi;</strong><sup>-1</sup> of
+     * this map
      * <strong>&phi;</strong>. By inverse map we mean that the composition
      * <strong>&phi;</strong><sup>-1</sup> &sdot; <strong>&phi;</strong>
-     * is the identity map <strong>id</strong> : <strong>z</strong> &rarr; <strong>z</strong> on
+     * is the identity map <strong>id</strong> : <strong>z</strong> &rarr;
+     * <strong>z</strong> on
      * <strong>R</strong><sup>6</sup>&times;{1}.
      * </p>
      * <p>
-     * Consider linear maps <strong>&phi;</strong> defined according to the class
-     * documentation
+     * Consider linear maps <strong>&phi;</strong> defined according to the
+     * class documentation
      * <br>
      * <br>
-     * &nbsp; &nbsp; <strong>&phi;</strong>(<strong>z</strong>) = <strong>&Phi;</strong> &sdot; (<strong>z</strong> -
+     * &nbsp; &nbsp; <strong>&phi;</strong>(<strong>z</strong>) =
+     * <strong>&Phi;</strong> &sdot; (<strong>z</strong> -
      * <strong>z</strong><sub>0</sub>) + <strong>&Delta;</strong><sub>0</sub> ,
      * <br>
      * <br>
-     * where <strong>&Phi;</strong> &in; <strong>R</strong><sup>7&times;7</sup> is the linear part
-     * of the map (a matrix representation), <strong>z</strong><sub>0</sub> is the
-     * evaluation point or center, and
-     * <strong>&Delta;</strong><sub>0</sub> is the value or offset of the mapping. Then
-     * the inverse map <strong>&phi;</strong><sup>-1</sup> :
-     * <strong>R</strong><sup>6</sup>&times;{1} &rarr; <strong>R</strong><sup>6</sup>&times;{1} is
-     * given by
+     * where <strong>&Phi;</strong> &in; <strong>R</strong><sup>7&times;7</sup>
+     * is the linear part of the map (a matrix representation),
+     * <strong>z</strong><sub>0</sub> is the evaluation point or center, and
+     * <strong>&Delta;</strong><sub>0</sub> is the value or offset of the
+     * mapping. Then the inverse map <strong>&phi;</strong><sup>-1</sup> :
+     * <strong>R</strong><sup>6</sup>&times;{1} &rarr;
+     * <strong>R</strong><sup>6</sup>&times;{1} is given by
      * <br>
      * <br>
      * &nbsp; &nbsp; <strong>&phi;</strong><sup>-1</sup>(<strong>y</strong>) =
      * <strong>&Phi;</strong><sub>0</sub><sup>-1</sup>
-     * &sdot; (<strong>y</strong> - <strong>&Delta;</strong><sub>0</sub>) + <strong>z</strong><sub>0</sub> ,
+     * &sdot; (<strong>y</strong> - <strong>&Delta;</strong><sub>0</sub>) +
+     * <strong>z</strong><sub>0</sub> ,
      * <br>
      * <br>
-     * which can be derived by solving the equation <strong>&phi;</strong>(<strong>z</strong>) =
+     * which can be derived by solving the equation
+     * <strong>&phi;</strong>(<strong>z</strong>) =
      * <strong>y</strong> for
      * <strong>y</strong>.
      * </p>
@@ -447,59 +473,72 @@ public class PhaseMap implements IArchive {
      * Let
      * <strong>&phi;</strong><sub>1</sub> denote the given map and
      * <strong>&phi;</strong><sub>2</sub> denote <code>this</code> map; that is,
-     * <strong>&phi;</strong><sub>2</sub> &equiv; <strong>&phi;</strong><sub><em>this</em></sub>.
-     * Referring to the class documentation <code>{@link PhaseMap}</code>, the
-     * composition
+     * <strong>&phi;</strong><sub>2</sub> &equiv;
+     * <strong>&phi;</strong><sub><em>this</em></sub>. Referring to the class
+     * documentation <code>{@link PhaseMap}</code>, the composition
      * <strong>&phi;</strong> &equiv; <strong>&phi;</strong><sub>2</sub> &sdot;
-     * <strong>&phi;</strong><sub>1</sub> is determined by its action on an element
+     * <strong>&phi;</strong><sub>1</sub> is determined by its action on an
+     * element
      * <strong>z</strong> &in; <strong>R</strong><sup>6</sup>&times;{1}
      * <br>
      * <br>
-     * &nbsp; &nbsp; <strong>&phi;</strong>(<strong>z</strong>) = <strong>&phi;</strong><sub>2</sub> &sdot;
+     * &nbsp; &nbsp; <strong>&phi;</strong>(<strong>z</strong>) =
+     * <strong>&phi;</strong><sub>2</sub> &sdot;
      * <strong>&phi;</strong><sub>1</sub>(<strong>z</strong>) ,
      * <br>
      * <br>
-     * &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; = <strong>&phi;</strong><sub>2</sub>
-     * [ <strong>&Phi;</strong><sub>1</sub>&sdot;(<strong>z</strong> - <strong>z</strong><sub>1</sub>) +
+     * &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; =
+     * <strong>&phi;</strong><sub>2</sub>
+     * [ <strong>&Phi;</strong><sub>1</sub>&sdot;(<strong>z</strong> -
+     * <strong>z</strong><sub>1</sub>) +
      * <strong>&Delta;</strong><sub>1</sub> - <strong>z</strong><sub>2</sub>] ,
      *
      * <br>
      * <br>
      * &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; =
      * <strong>&Phi;</strong><sub>2</sub>&sdot;<strong>&Phi;</strong><sub>1</sub>
-     * (<strong>z</strong> - <strong>z</strong><sub>1</sub>) + <strong>&Phi;</strong><sub>2</sub> &sdot;
+     * (<strong>z</strong> - <strong>z</strong><sub>1</sub>) +
+     * <strong>&Phi;</strong><sub>2</sub> &sdot;
      * (<strong>&Delta;</strong><sub>1</sub> - <strong>z</strong><sub>2</sub>) +
      * <strong>&Delta;</strong><sub>2</sub>
      * <br>
      * <br>
-     * where <strong>&Phi;</strong><sub>1</sub> and <strong>&Phi;</strong><sub>2</sub> are the
-     * linear parts (matrices) of maps <strong>&phi;</strong><sub>1</sub> and
+     * where <strong>&Phi;</strong><sub>1</sub> and
+     * <strong>&Phi;</strong><sub>2</sub> are the linear parts (matrices) of
+     * maps <strong>&phi;</strong><sub>1</sub> and
      * <strong>&phi;</strong><sub>2</sub>, respectively,
-     * <strong>&Delta;</strong><sub>1</sub> and <strong>&Delta;</strong><sub>2</sub> are the (range)
-     * offsets of maps <strong>&phi;</strong><sub>1</sub> and <strong>&phi;</strong><sub>2</sub>,
-     * respectively, and
-     * <strong>z</strong><sub>1</sub> and <strong>z</strong><sub>2</sub> are the (domain) centers of
-     * maps
-     * <strong>&phi;</strong><sub>1</sub> and <strong>&phi;</strong><sub>2</sub>, respectively.
+     * <strong>&Delta;</strong><sub>1</sub> and
+     * <strong>&Delta;</strong><sub>2</sub> are the (range) offsets of maps
+     * <strong>&phi;</strong><sub>1</sub> and
+     * <strong>&phi;</strong><sub>2</sub>, respectively, and
+     * <strong>z</strong><sub>1</sub> and <strong>z</strong><sub>2</sub> are the
+     * (domain) centers of maps
+     * <strong>&phi;</strong><sub>1</sub> and
+     * <strong>&phi;</strong><sub>2</sub>, respectively.
      * </p>
      * <p>
      * Thus, the center <strong>z</strong><sub>3</sub>, displacement
-     * <strong>&Delta;</strong><sub>3</sub>, and linear part <strong>&Phi;</strong><sub>3</sub> of
-     * the new composite map
-     * <strong>&phi;</strong><sub>3</sub> &equiv; <strong>&phi;</strong><sub>2</sub> &sdot;
+     * <strong>&Delta;</strong><sub>3</sub>, and linear part
+     * <strong>&Phi;</strong><sub>3</sub> of the new composite map
+     * <strong>&phi;</strong><sub>3</sub> &equiv;
+     * <strong>&phi;</strong><sub>2</sub> &sdot;
      * <strong>&phi;</strong><sub>1</sub>
      * are respectively given by
      * <br>
      * <br>
-     * &nbsp; &nbsp; <strong>z</strong><sub>3</sub> = <strong>z</strong><sub>1</sub> ,
+     * &nbsp; &nbsp; <strong>z</strong><sub>3</sub> =
+     * <strong>z</strong><sub>1</sub> ,
      * <br>
      * <br>
-     * &nbsp; &nbsp; <strong>&Delta;</strong><sub>3</sub> = <strong>&Phi;</strong><sub>2</sub>
-     * &sdot; (<strong>&Delta;</strong><sub>1</sub> - <strong>z</strong><sub>2</sub>) +
+     * &nbsp; &nbsp; <strong>&Delta;</strong><sub>3</sub> =
+     * <strong>&Phi;</strong><sub>2</sub>
+     * &sdot; (<strong>&Delta;</strong><sub>1</sub> -
+     * <strong>z</strong><sub>2</sub>) +
      * <strong>&Delta;</strong><sub>2</sub> ,
      * <br>
      * <br>
-     * &nbsp; &nbsp; <strong>&Phi;</strong><sub>3</sub> = <strong>&Phi;</strong><sub>2</sub> &sdot;
+     * &nbsp; &nbsp; <strong>&Phi;</strong><sub>3</sub> =
+     * <strong>&Phi;</strong><sub>2</sub> &sdot;
      * <strong>&Phi;</strong><sub>1</sub> ,
      * <br>
      * <br>
@@ -509,7 +548,8 @@ public class PhaseMap implements IArchive {
      * @param mapRight right argument <strong>&phi;</strong><sub>1</sub> to map
      * composition
      *
-     * @return composition <strong>&phi;</strong> &equiv; <strong>&phi;</strong><sub>2</sub> &sdot;
+     * @return composition <strong>&phi;</strong> &equiv;
+     * <strong>&phi;</strong><sub>2</sub> &sdot;
      * <strong>&phi;</strong><sub>1</sub>
      */
     public PhaseMap compose(PhaseMap mapRight) {
@@ -535,10 +575,12 @@ public class PhaseMap implements IArchive {
 
     /**
      * In-place map composition, binary composition of two <code>PhaseMap</code>
-     * objects where this map This map <strong>&phi;</strong><sub>2</sub> is replaced by
+     * objects where this map This map <strong>&phi;</strong><sub>2</sub> is
+     * replaced by
      * <br>
      * <br>
-     * &nbsp; &nbsp; <strong>&phi;</strong><sub>2</sub> &larr; <strong>&phi;</strong><sub>2</sub>
+     * &nbsp; &nbsp; <strong>&phi;</strong><sub>2</sub> &larr;
+     * <strong>&phi;</strong><sub>2</sub>
      * &sdot; <strong>&phi;</strong><sub>1</sub>
      * <br>
      * <br>
@@ -560,22 +602,26 @@ public class PhaseMap implements IArchive {
 
     /**
      * Apply this map to the given phase vector. Denoting the given phase vector
-     * as <strong>z</strong>, currently for the linear map <strong>&phi;</strong>
+     * as <strong>z</strong>, currently for the linear map
+     * <strong>&phi;</strong>
      * the result is
      * <br>
      * <br>
-     * &nbsp; &nbsp; <strong>&phi;</strong>(<strong>z</strong>) = <strong>&Phi;</strong> &sdot; (<strong>z</strong> -
+     * &nbsp; &nbsp; <strong>&phi;</strong>(<strong>z</strong>) =
+     * <strong>&Phi;</strong> &sdot; (<strong>z</strong> -
      * <strong>z</strong><sub>0</sub>) + <strong>&Delta;</strong> ,
      * <br>
      * <br>
-     * where <strong>z</strong><sub>0</sub> is the center of <strong>&phi;</strong>, <strong>&Delta;</strong>
-     * is the range offset of <strong>&phi;</strong>, and <strong>&Phi;</strong> is the linear part
-     * of
+     * where <strong>z</strong><sub>0</sub> is the center of
+     * <strong>&phi;</strong>, <strong>&Delta;</strong>
+     * is the range offset of <strong>&phi;</strong>, and <strong>&Phi;</strong>
+     * is the linear part of
      * <strong>&phi;</strong>.
      *
      * @param vecIn phase vector <strong>z</strong>
      *
-     * @return the action of <strong>&phi;</strong> on input phase vector <strong>z</strong>
+     * @return the action of <strong>&phi;</strong> on input phase vector
+     * <strong>z</strong>
      */
     public PhaseVector apply(PhaseVector vecIn) {
         PhaseVector vecCntrd = vecIn.minus(this.getDomainCenter());
@@ -617,16 +663,19 @@ public class PhaseMap implements IArchive {
      * Support Methods
      */
     /**
-     * Computes the new range displacement vector <strong>&Delta;</strong><sub>3</sub> for
-     * the composition <strong>&phi;</strong><sub>3</sub> = <strong>&phi;</strong><sub>2</sub>
+     * Computes the new range displacement vector
+     * <strong>&Delta;</strong><sub>3</sub> for the composition
+     * <strong>&phi;</strong><sub>3</sub> = <strong>&phi;</strong><sub>2</sub>
      * &sdot;
      * <strong>&phi;</strong><sub>1</sub>.
      *
-     * @param mapLeft the left map <strong>&phi;</strong><sub>2</sub> in the composition
-     * @param mapRight the right map <strong>&phi;</strong><sub>1</sub> in the composition
+     * @param mapLeft the left map <strong>&phi;</strong><sub>2</sub> in the
+     * composition
+     * @param mapRight the right map <strong>&phi;</strong><sub>1</sub> in the
+     * composition
      *
-     * @return the displacement vector <strong>&Delta</strong><sub>3</sub> as described in
-     * the class documentation.
+     * @return the displacement vector <strong>&Delta</strong><sub>3</sub> as
+     * described in the class documentation.
      *
      * @author Christopher K. Allen
      * @since Nov 5, 2013

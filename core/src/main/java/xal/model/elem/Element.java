@@ -333,7 +333,8 @@ public abstract class Element implements IElement {
      *
      * @param matPhi transfer matrix <strong>&Phi;</strong> to be processed
      *
-     * @return transfer matrix <strong>&Phi;</strong> after applying displacement
+     * @return transfer matrix <strong>&Phi;</strong> after applying
+     * displacement
      *
      * @author Hiroyuki Sako
      * @author Christopher K. Allen
@@ -392,10 +393,13 @@ public abstract class Element implements IElement {
      */
     public double compProbeLocation(IProbe probe) {
 
-        double lenElem = this.getLength();          // element length
-        double sCenter = this.getLatticePosition(); // center position w/in lattice
+        // element length
+        double lenElem = this.getLength();
+        // center position w/in lattice
+        double sCenter = this.getLatticePosition();
 
-        double sProbe = probe.getPosition();   // probe position within lattice
+        // probe position within lattice
+        double sProbe = probe.getPosition();
 
         double sElem = sProbe - (sCenter - lenElem / 2.0);
 
@@ -426,8 +430,10 @@ public abstract class Element implements IElement {
      */
     public double compDriftingTime(IProbe probe, double dblLen) {
 
-        double dblTime = 0.0;                // the time interval
-        double dblBeta = probe.getBeta();    // normalized probe velocity
+        // the time interval
+        double dblTime = 0.0;
+        // normalized probe velocity
+        double dblBeta = probe.getBeta();
 
         dblTime = dblLen / (IConstants.LIGHT_SPEED * dblBeta);
 
@@ -624,7 +630,8 @@ public abstract class Element implements IElement {
     @Override
     public void propagate(IProbe probe, double pos) throws ModelException {
 
-        IAlgorithm alg;    // algorithm for the probe
+        // algorithm for the probe
+        IAlgorithm alg;
 
         alg = probe.getAlgorithm();
         if (alg instanceof Tracker) {
@@ -654,7 +661,8 @@ public abstract class Element implements IElement {
     @Override
     public void propagate(IProbe probe) throws ModelException {
 
-        IAlgorithm alg;    // algorithm for the probe
+        // algorithm for the probe
+        IAlgorithm alg;
 
         alg = probe.getAlgorithm();
         if (alg instanceof Tracker) {
@@ -698,7 +706,8 @@ public abstract class Element implements IElement {
     @Override
     public void backPropagate(IProbe probe, double pos) throws ModelException {
 
-        IAlgorithm alg;    // algorithm for the probe
+        // algorithm for the probe
+        IAlgorithm alg;
 
         alg = probe.getAlgorithm();
         if (alg instanceof Tracker) {
@@ -734,7 +743,8 @@ public abstract class Element implements IElement {
     @Override
     public void backPropagate(IProbe probe) throws ModelException {
 
-        IAlgorithm alg;    // algorithm for the probe
+        // algorithm for the probe
+        IAlgorithm alg;
 
         alg = probe.getAlgorithm();
         if (alg instanceof Tracker) {
@@ -765,8 +775,8 @@ public abstract class Element implements IElement {
     public abstract double elapsedTime(IProbe probe, double dblLen);
 
     /**
-     * Returns energy gain for <strong>subsection</strong> of this element of length
-     * <code>dblLen</code> for the specified given probe.
+     * Returns energy gain for <strong>subsection</strong> of this element of
+     * length <code>dblLen</code> for the specified given probe.
      *
      * @param probe determine energy gain for this probe
      *
@@ -790,9 +800,9 @@ public abstract class Element implements IElement {
     public abstract double longitudinalPhaseAdvance(IProbe probe, double dblLen);
 
     /**
-     * Compute the transfer matrix for <strong>subsection</strong> of this element of
-     * length <code>dblLen</code> for the specified given probe. That is, this
-     * method should return the incremental transfer matrix.
+     * Compute the transfer matrix for <strong>subsection</strong> of this
+     * element of length <code>dblLen</code> for the specified given probe. That
+     * is, this method should return the incremental transfer matrix.
      *
      * @param dblLen length of sub-element
      * @param probe probe containing parameters for the sub-sectional transfer

@@ -58,7 +58,8 @@ public class ThinMatrix extends ThinElement {
      *
      * @param strId string identifier of this object
      * @param matPhi 7x7 transfer matrix of element in homogeneous coordinates
-     * @param dblDelW energy gain of element (<strong>in electron-volts</strong>)
+     * @param dblDelW energy gain of element (<strong>in
+     * electron-volts</strong>)
      */
     public ThinMatrix(String strId, PhaseMatrix matPhi, double dblDelW) {
         super(TYPE, strId);
@@ -98,7 +99,8 @@ public class ThinMatrix extends ThinElement {
     }
 
     /**
-     * Set the elapsed time for <strong>all</strong> probes to propagate this element.
+     * Set the elapsed time for <strong>all</strong> probes to propagate this
+     * element.
      *
      * @param dblDelT elapsed time through element in <strong>seconds</strong>
      */

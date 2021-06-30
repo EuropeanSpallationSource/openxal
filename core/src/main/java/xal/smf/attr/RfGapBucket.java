@@ -166,12 +166,13 @@ public class RfGapBucket extends AttributeBucket {
     /**
      * Sets the coefficients of the polynomial expansion for transit time factor
      * <em>T</em>(&beta;). (The Fourier cosine transform of
-     * <em>E<sub>z</sub></em>(<em>z</em>).) The coefficients should be in increasing
-     * order of monomial degree. Specifically,
+     * <em>E<sub>z</sub></em>(<em>z</em>).) The coefficients should be in
+     * increasing order of monomial degree. Specifically,
      * <br/>
      * <br/>
      * &nbsp; &nbsp; <em>T</em>(&beta;) &approx; <em>a</em><sub>0</sub> +
-     * <em>a</em><sub>1</sub>&beta; + <em>a</em><sub>2</sub>&beta;<sup>2</sup> + ...
+     * <em>a</em><sub>1</sub>&beta; + <em>a</em><sub>2</sub>&beta;<sup>2</sup> +
+     * ...
      *
      *
      * @param arrCoeffs {<em>a</em><sub>0</sub>, <em>a</em><sub>1</sub>,
@@ -186,12 +187,13 @@ public class RfGapBucket extends AttributeBucket {
     /**
      * Sets the array of coefficients forming the polynomial expansion for the
      * transit time factor derivative <em>T</em>'(&beta;) with respect to wave
-     * number <em>k</em>. (Note that the argument is &beta;.) The coefficients are
-     * arranged in increasing order so that
+     * number <em>k</em>. (Note that the argument is &beta;.) The coefficients
+     * are arranged in increasing order so that
      * <br/>
      * <br/>
      * &nbsp; &nbsp; <em>T</em>'(&beta;) &approx; <em>b</em><sub>0</sub> +
-     * <em>b</em><sub>1</sub>&beta; + <em>b</em><sub>2</sub>&beta;<sup>2</sup> + ...
+     * <em>b</em><sub>1</sub>&beta; + <em>b</em><sub>2</sub>&beta;<sup>2</sup> +
+     * ...
      *
      * @param arrCoeffs
      * {<em>b</em><sub>0</sub>,<em>b</em><sub>1</sub>,<em>b</em><sub>2</sub>,...}
@@ -205,12 +207,13 @@ public class RfGapBucket extends AttributeBucket {
     /**
      * Sets the coefficients of the polynomial expansion for transit time factor
      * <em>S</em>(&beta;). (The Fourier sine transform of
-     * <em>E<sub>z</sub></em>(<em>z</em>).) The coefficients should be in increasing
-     * order of monomial degree. Specifically,
+     * <em>E<sub>z</sub></em>(<em>z</em>).) The coefficients should be in
+     * increasing order of monomial degree. Specifically,
      * <br/>
      * <br/>
      * &nbsp; &nbsp; <em>S</em>(&beta;) &approx; <em>a</em><sub>0</sub> +
-     * <em>a</em><sub>1</sub>&beta; + <em>a</em><sub>2</sub>&beta;<sup>2</sup> + ...
+     * <em>a</em><sub>1</sub>&beta; + <em>a</em><sub>2</sub>&beta;<sup>2</sup> +
+     * ...
      *
      *
      * @param arrCoeffs {<em>a</em><sub>0</sub>, <em>a</em><sub>1</sub>,
@@ -225,12 +228,13 @@ public class RfGapBucket extends AttributeBucket {
     /**
      * Sets the array of coefficients forming the polynomial expansion for the
      * transit time factor derivative <em>S</em>'(&beta;) with respect to wave
-     * number <em>k</em>. (Note that the argument is &beta;.) The coefficients are
-     * arranged in increasing order so that
+     * number <em>k</em>. (Note that the argument is &beta;.) The coefficients
+     * are arranged in increasing order so that
      * <br/>
      * <br/>
      * &nbsp; &nbsp; <em>S</em>'(&beta;) &approx; <em>b</em><sub>0</sub> +
-     * <em>b</em><sub>1</sub>&beta; + <em>b</em><sub>2</sub>&beta;<sup>2</sup> + ...
+     * <em>b</em><sub>1</sub>&beta; + <em>b</em><sub>2</sub>&beta;<sup>2</sup> +
+     * ...
      *
      * @param arrCoeffs
      * {<em>b</em><sub>0</sub>,<em>b</em><sub>1</sub>,<em>b</em><sub>2</sub>,...}
@@ -285,7 +289,8 @@ public class RfGapBucket extends AttributeBucket {
      * <br/>
      * <br/>
      * &nbsp; &nbsp; <em>T</em>(&beta;) &approx; <em>a</em><sub>0</sub> +
-     * <em>a</em><sub>1</sub>&beta; + <em>a</em><sub>2</sub>&beta;<sup>2</sup> + ...
+     * <em>a</em><sub>1</sub>&beta; + <em>a</em><sub>2</sub>&beta;<sup>2</sup> +
+     * ...
      *
      * @return
      * {<em>a</em><sub>0</sub>,<em>a</em><sub>1</sub>,<em>a</em><sub>2</sub>,...}
@@ -298,13 +303,14 @@ public class RfGapBucket extends AttributeBucket {
 
     /**
      * Returns the array of coefficients forming the polynomial expansion for
-     * the transit time factor derivative <em>T</em>'(&beta;) with respect to wave
-     * number <em>k</em>. (Note that the argument is &beta;.) The coefficients are
-     * arranged in increasing order so that
+     * the transit time factor derivative <em>T</em>'(&beta;) with respect to
+     * wave number <em>k</em>. (Note that the argument is &beta;.) The
+     * coefficients are arranged in increasing order so that
      * <br/>
      * <br/>
      * &nbsp; &nbsp; <em>T</em>'(&beta;) &approx; <em>b</em><sub>0</sub> +
-     * <em>b</em><sub>1</sub>&beta; + <em>b</em><sub>2</sub>&beta;<sup>2</sup> + ...
+     * <em>b</em><sub>1</sub>&beta; + <em>b</em><sub>2</sub>&beta;<sup>2</sup> +
+     * ...
      *
      * @return
      * {<em>b</em><sub>0</sub>,<em>b</em><sub>1</sub>,<em>b</em><sub>2</sub>,...}
@@ -323,7 +329,8 @@ public class RfGapBucket extends AttributeBucket {
      * <br/>
      * <br/>
      * &nbsp; &nbsp; <em>S</em>(&beta;) &approx; <em>a</em><sub>0</sub> +
-     * <em>a</em><sub>1</sub>&beta; + <em>a</em><sub>2</sub>&beta;<sup>2</sup> + ...
+     * <em>a</em><sub>1</sub>&beta; + <em>a</em><sub>2</sub>&beta;<sup>2</sup> +
+     * ...
      *
      * @return
      * {<em>a</em><sub>0</sub>,<em>a</em><sub>1</sub>,<em>a</em><sub>2</sub>,...}
@@ -336,13 +343,14 @@ public class RfGapBucket extends AttributeBucket {
 
     /**
      * Returns the array of coefficients forming the polynomial expansion for
-     * the transit time factor derivative <em>S</em>'(&beta;) with respect to wave
-     * number <em>k</em>. (Note that the argument is &beta;.) The coefficients are
-     * arranged in increasing order so that
+     * the transit time factor derivative <em>S</em>'(&beta;) with respect to
+     * wave number <em>k</em>. (Note that the argument is &beta;.) The
+     * coefficients are arranged in increasing order so that
      * <br/>
      * <br/>
      * &nbsp; &nbsp; <em>S</em>'(&beta;) &approx; <em>b</em><sub>0</sub> +
-     * <em>b</em><sub>1</sub>&beta; + <em>b</em><sub>2</sub>&beta;<sup>2</sup> + ...
+     * <em>b</em><sub>1</sub>&beta; + <em>b</em><sub>2</sub>&beta;<sup>2</sup> +
+     * ...
      *
      * @return
      * {<em>b</em><sub>0</sub>,<em>b</em><sub>1</sub>,<em>b</em><sub>2</sub>,...}

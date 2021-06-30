@@ -28,8 +28,8 @@ public class DigitalFunctionUtility {
      * General
      */
     /**
-     * Computes and returns the <em>l</em><sub>2</sub> distance between the given
-     * vector functions normalized by the norm
+     * Computes and returns the <em>l</em><sub>2</sub> distance between the
+     * given vector functions normalized by the norm
      * ||<var>arrTarg</var>||<sub>2</sub>.
      *
      * @param arrFunc vector function
@@ -356,8 +356,8 @@ public class DigitalFunctionUtility {
 
     /**
      * Compute and return the total variation of the given function. The total
-     * variation <em>TV</em>(<em>f</em>) of a function <em>f</em>(&middot;) is defined
-     * as
+     * variation <em>TV</em>(<em>f</em>) of a function <em>f</em>(&middot;) is
+     * defined as
      * <br>
      * <br>&nbsp;&nbsp;  <em>TV</em>[<em>f</em>](<em>t</em>) &equiv;
      * &int;<sup><em>t</em></sup>|<em>df</em>(<em>&tau;</em>)/<em>dt</em>|<em>d&tau;</em>

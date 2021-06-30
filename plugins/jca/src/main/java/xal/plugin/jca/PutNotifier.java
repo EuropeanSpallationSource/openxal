@@ -5,6 +5,7 @@
  */
 package xal.plugin.jca;
 
+import gov.aps.jca.event.PutEvent;
 import xal.ca.PutListener;
 import xal.ca.Channel;
 
@@ -28,7 +29,8 @@ class PutNotifier implements gov.aps.jca.event.PutListener {
     /**
      * jca.event.PutListener Interface Implementation
      */
-    public void putCompleted(final gov.aps.jca.event.PutEvent putEvent) {
+    @Override
+    public void putCompleted(final PutEvent putEvent) {
         if (listener != null) {
             listener.putCompleted(channel);
         }

@@ -65,6 +65,7 @@ class Getback implements GetListener {
      *
      * @param event The jca get event.
      */
+    @Override
     public void getCompleted(final GetEvent event) {
         DbrValueAdaptor adaptor = new DbrValueAdaptor(event.getDBR());
         listener.eventValue(new ChannelRecordImpl(adaptor), channel);

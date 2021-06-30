@@ -229,8 +229,8 @@ public class ProbeFactory {
 
     /**
      * Create and initialize a new <code>TwissProbe</code> object with the
-     * default parameters in the <kbd>model.params</kbd> file. The parameters are
-     * taken for the entrance location of the provided accelerator hardware
+     * default parameters in the <kbd>model.params</kbd> file. The parameters
+     * are taken for the entrance location of the provided accelerator hardware
      * sequence. The given algorithm object is also verified and attached to the
      * probe.
      *
@@ -248,8 +248,8 @@ public class ProbeFactory {
 
     /**
      * Create and initialize a new <code>TwissProbe</code> object with the
-     * default parameters in the <kbd>model.params</kbd> file. The parameters are
-     * taken for the location of the provided location ID along the given
+     * default parameters in the <kbd>model.params</kbd> file. The parameters
+     * are taken for the location of the provided location ID along the given
      * accelerator hardware sequence. The given algorithm object is also
      * verified and attached to the probe.
      *

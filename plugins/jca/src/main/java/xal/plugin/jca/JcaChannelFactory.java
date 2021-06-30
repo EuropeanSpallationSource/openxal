@@ -19,12 +19,12 @@ public class JcaChannelFactory extends ChannelFactory {
     /**
      * JCA channel system
      */
-    private final JcaSystem JCA_SYSTEM;
+    private final JcaSystem jcaSystem;
 
     /**
      * cache of native JCA channels
      */
-    private final JcaNativeChannelCache NATIVE_CHANNEL_CACHE;
+    private final JcaNativeChannelCache nativeChannelCache;
 
     /**
      * Constructor
@@ -42,8 +42,8 @@ public class JcaChannelFactory extends ChannelFactory {
         } else {
             Logger.getLogger(JcaChannelFactory.class.getName()).info("Using JCALibrary.properties for EPICS configuration.");
         }
-        JCA_SYSTEM = new JcaSystem();
-        NATIVE_CHANNEL_CACHE = new JcaNativeChannelCache(JCA_SYSTEM);
+        jcaSystem = new JcaSystem();
+        nativeChannelCache = new JcaNativeChannelCache(jcaSystem);
     }
 
     /**
@@ -51,8 +51,9 @@ public class JcaChannelFactory extends ChannelFactory {
      *
      * @return true if the initialization was successful and false if not
      */
+    @Override
     public boolean init() {
-        return JCA_SYSTEM.init();
+        return jcaSystem.init();
     }
 
     /**
@@ -60,8 +61,9 @@ public class JcaChannelFactory extends ChannelFactory {
      *
      * @param signalName The name of the PV signal
      */
+    @Override
     protected Channel newChannel(final String signalName) {
-        return new JcaChannel(signalName, JCA_SYSTEM.getJcaContext(), NATIVE_CHANNEL_CACHE);
+        return new JcaChannel(signalName, jcaSystem.getJcaContext(), nativeChannelCache);
     }
 
     /**
@@ -69,14 +71,21 @@ public class JcaChannelFactory extends ChannelFactory {
      *
      * @return the JCA channel system
      */
+    @Override
     protected ChannelSystem channelSystem() {
-        return JCA_SYSTEM;
+        return jcaSystem;
     }
 
     /**
      * print information about this channel factory
      */
+    @Override
     public void printInfo() {
-        JCA_SYSTEM.printInfo();
+        jcaSystem.printInfo();
+    }
+
+    @Override
+    protected void dispose() {
+        //
     }
 }

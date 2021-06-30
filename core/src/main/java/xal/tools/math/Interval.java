@@ -217,8 +217,8 @@ public class Interval implements Serializable {
      * Set Theory
      */
     /**
-     * Is point a member of this interval <em>I</em> &sub; <em>R</em>. The test is
-     * done assuming <em>I</em> is closed, so the endpoints are included.
+     * Is point a member of this interval <em>I</em> &sub; <em>R</em>. The test
+     * is done assuming <em>I</em> is closed, so the endpoints are included.
      *
      * @param x point to be tested as a member of this interval
      *
@@ -263,7 +263,8 @@ public class Interval implements Serializable {
      *
      * @param I interval to inspect.
      *
-     * @return          <strong>true</strong> if <em>this</em> &cap; <em>I</em> &ne; {}, <strong>false</strong>
+     * @return          <strong>true</strong> if <em>this</em> &cap; <em>I</em> &ne; {},
+     * <strong>false</strong>
      * otherwise
      *
      * @since Jun 2, 2009
@@ -468,7 +469,8 @@ public class Interval implements Serializable {
         try {
             return new Interval(min, max);
 
-        } catch (IllegalArgumentException e) { // This cannot occur - already checked for it.
+            // This cannot occur - already checked for it.
+        } catch (IllegalArgumentException e) {
             return null;
 
         }

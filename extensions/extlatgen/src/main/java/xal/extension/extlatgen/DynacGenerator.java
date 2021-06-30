@@ -16,15 +16,18 @@ import java.util.logging.Logger;
 import xal.smf.*;
 import xal.smf.impl.*;
 import xal.ca.*;
-import xal.sim.slg.*;   // for lattice generation
+// for lattice generation
+import xal.sim.slg.*;
 import xal.model.ModelException;
-import xal.model.probe.*;  // Probe for t3d header
+// Probe for t3d header
+import xal.model.probe.*;
 import xal.model.probe.traj.*;
 import xal.sim.scenario.Scenario;
 import xal.sim.sync.SynchronizationException;
 import xal.tools.beam.TraceXalUnitConverter;
 import xal.tools.beam.CovarianceMatrix;
-import xal.tools.beam.Twiss; //had to import to fix deprecation issue with getTwiss
+//had to import to fix deprecation issue with getTwiss
+import xal.tools.beam.Twiss;
 
 /**
  * DynacGenerator generates Dynac input file from XAL lattice view. Usage:
@@ -36,7 +39,7 @@ import xal.tools.beam.Twiss; //had to import to fix deprecation issue with getTw
  * @version 0.2 07 Apr 2003
  */
 public class DynacGenerator {
-    
+
     private static final Logger LOGGER = Logger.getLogger(DynacGenerator.class.getName());
 
     /**
@@ -48,12 +51,12 @@ public class DynacGenerator {
      * Probe for initial condition
      */
     protected EnvelopeProbe myProbe;
-    
+
     protected String myLatticeName = null;
 
     // TODO: CKA - NEVER USED
     private boolean mebtInd = false;
-    
+
     private AcceleratorSeq myAccSeq;
     private Scenario myScenario;
     private String mySrcSelector = Scenario.SYNC_MODE_DESIGN;
@@ -73,7 +76,7 @@ public class DynacGenerator {
             LOGGER.log(Level.INFO, "Cannot create Scenario for {0}", myAccSeq.getId());
         }
     }
-    
+
     ;
     
     public DynacGenerator(String latticeName, Lattice lattice, AcceleratorSeq accSeq, EnvelopeProbe envProbe) {
@@ -97,13 +100,13 @@ public class DynacGenerator {
      * (Scenario.SYNC_MODE_DESIGN) or live (Scenario.SYNC_MODE_LIVE) data
      */
     public void createDynacInput(String srcSelector) throws IOException {
-        
+
         mySrcSelector = srcSelector;
-        
+
         if (myLatticeName == null) {
             myLatticeName = myLattice.getName();
         }
-        
+
         FileWriter dynacInput = new FileWriter(myLatticeName + ".in");
         Date today = new Date();
         //       int elementCount = myLattice.len();
@@ -114,7 +117,7 @@ public class DynacGenerator {
                 myProbe.getKineticEnergy());
         // for Dynac header
         CovarianceMatrix covarianceMatrix = myProbe.getCovariance();
-        
+
         Twiss[] twiss = covarianceMatrix.computeTwiss();
         String dynac_header
                 = "SNS " + myLatticeName + " " + today.toString() + "\n"
@@ -155,16 +158,17 @@ public class DynacGenerator {
                 + "BEAM AT INPUT " + myLatticeName + "\n"
                 + "0 5\n"
                 + "1. 50. 1. 50. 1. 1.  90. 0.1\n";
-        
+
         LatticeIterator ilat = myLattice.latticeIterator();
-        int counter = 1;        // TODO: CKA - NEVER USED
+        // TODO: CKA - NEVER USED
+        int counter = 1;
         String str = dynac_header;
         //       int devTypeInd = 1;
         String devStr = "";
-        
+
         String prevElementType = "";
         double quadLength = 0.;
-        
+
         char buffer_header[] = new char[str.length()];
         str.getChars(0, str.length(), buffer_header, 0);
         dynacInput.write(buffer_header);
@@ -174,7 +178,7 @@ public class DynacGenerator {
 
         // DTL indicator
         boolean DTLInd = false;
-        
+
         while (ilat.hasNext()) {
             Element element = ilat.next();
             // for diagnostic devices
@@ -186,8 +190,8 @@ public class DynacGenerator {
                     || element.getType().equals("foil")) {
                 devStr = "DRIFT\n"
                         + "  " + element.getLength() * 100. + "\n";
-            } // drift space
-            else if (element.getType().equals("drift")) {
+                // drift space
+            } else if (element.getType().equals("drift")) {
                 // for regular drift space except for DTL's (do nothing for DTL drifts)
                 if (!DTLInd) {
                     // if the drift is too long (>10cm), break it to more pieces
@@ -213,8 +217,8 @@ public class DynacGenerator {
                     devStr = "";
                 }
                 //           prevElementType = "";
-            } // for quads
-            else if (element.getType().equals("quadrupole")) {
+                // for quads
+            } else if (element.getType().equals("quadrupole")) {
                 // if previous element is a rfgap, go backward half of the magnet length for correct rf gap calculation
                 if (element.getAcceleratorNode().getId().substring(0, 4).equals("MEBT")) {
                     mebtInd = true;
@@ -257,7 +261,7 @@ public class DynacGenerator {
                         }
                     }
                 }
-                
+
                 prevElementType = "quadrupole";
                 quadLength = element.getLength() * 100.;
                 if (element.getAcceleratorNode().getId().substring(0, 4).equals("MEBT")) {
@@ -266,8 +270,8 @@ public class DynacGenerator {
                 if (element.getAcceleratorNode().getId().substring(0, 3).equals("DTL")) {
                     DTLInd = true;
                 }
-            } // for horizontal dipole correctors
-            else if (element.getType().equals("hsteerer")) {
+                // for horizontal dipole correctors
+            } else if (element.getType().equals("hsteerer")) {
                 if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
                     devStr = "STEER\n"
                             + "  " + ((xal.smf.impl.HDipoleCorr) element.getAcceleratorNode()).getDfltField()
@@ -285,10 +289,10 @@ public class DynacGenerator {
                     } catch (GetException e) {
                     }
                 }
-                
+
                 prevElementType = "hsteerer";
-            } // for vertical dipole correctors
-            else if (element.getType().equals("vsteerer")) {
+                // for vertical dipole correctors
+            } else if (element.getType().equals("vsteerer")) {
                 if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
                     devStr = "STEER\n"
                             + "  " + ((xal.smf.impl.VDipoleCorr) element.getAcceleratorNode()).getDfltField()
@@ -306,10 +310,10 @@ public class DynacGenerator {
                     } catch (GetException e) {
                     }
                 }
-                
+
                 prevElementType = "vsteerer";
-            } // for rf gaps
-            else if (element.getType().equals("rfgap")) {
+                // for rf gaps
+            } else if (element.getType().equals("rfgap")) {
                 // get TTF etc.
                 ProbeState<?> state = myScenario.getTrajectory().statesForElement(element.getAcceleratorNode().getId()).get(0);
                 double gamma = 1. + state.getKineticEnergy() / state.getSpeciesRestEnergy();
@@ -330,12 +334,12 @@ public class DynacGenerator {
                         int indOfGapCount = element.getAcceleratorNode().getId().indexOf("Rg");
                         String gapCount = element.getAcceleratorNode().getId().substring(indOfGapCount + 2);
                         devStr = "";
-                        
+
                         if (prevElementType.equals("quadrupole") && DTLInd) {
                             devStr = "DRIFT\n"
                                     + "  " + -1. * quadLength + "\n";
                         }
-                        
+
                         devStr = devStr + "CAVSC\n"
                                 + Integer.parseInt(gapCount) + "  0.  0.  "
                                 + ((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapLength() * 100. + " "
@@ -376,7 +380,7 @@ public class DynacGenerator {
                         LOGGER.log(Level.SEVERE, null, e);
                     }
                 }
-                
+
                 prevElementType = "rfgap";
                 if (element.getAcceleratorNode().getId().substring(0, 4).equals("MEBT")) {
                     mebtInd = true;
@@ -385,28 +389,28 @@ public class DynacGenerator {
                     DTLInd = true;
                 }
             }
-            
+
             if (!element.getName().substring(0, 4).equals("DRFT")) {
                 str = ";" + element.getName() + "\n"
                         + devStr;
             } else {
                 str = devStr;
             }
-            
+
             char buffer[] = new char[str.length()];
             str.getChars(0, str.length(), buffer, 0);
             dynacInput.write(buffer);
-            
+
             counter++;
         }
         str = "STOP";
-        
+
         char buffer_end[] = new char[str.length()];
         str.getChars(0, str.length(), buffer_end, 0);
         dynacInput.write(buffer_end);
-        
+
         dynacInput.close();
-        
+
     }
 
     /**
@@ -424,5 +428,5 @@ public class DynacGenerator {
             LOGGER.log(Level.SEVERE, null, e);
         }
     }
-    
+
 }

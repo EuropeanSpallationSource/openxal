@@ -48,7 +48,8 @@ public interface IAlgorithm extends java.rmi.Remote, IContextAware, IArchive {
      *
      * @param probe probe to be tested
      *
-     * @return  <strong>true</strong> if algorithm can propagation probe, <strong>false</strong>
+     * @return  <strong>true</strong> if algorithm can propagation probe,
+     * <strong>false</strong>
      * otherwise
      *
      */

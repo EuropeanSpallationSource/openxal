@@ -977,7 +977,8 @@ public class XMLDataManager {
          */
         public AcceleratorManager(final ChannelFactory channelFactory) {
             this.channelFactory = channelFactory;
-            dtdUrlSpec = null;     // by default, no DTD file is used
+            // by default, no DTD file is used
+            dtdUrlSpec = null;
             extraUrlSpecs = new ArrayList<>();
             xdxfSchema = "/xal/schemas/xdxf.xsd";
         }

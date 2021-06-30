@@ -222,52 +222,6 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
         this.getMagBody().setFieldPathFlag(dblFlag);
         this.getFaceExit().setFieldPathFlag(dblFlag);
     }
-
-    /**
-     * Added Alignment routines to ElementSeq that doesn't need to be replicated
-     * here Jan 2019 - Natalia Milas
-     */
-    /**
-     * Set the alignment parameters for the magnet.
-     *
-     * I don't know what they are or how they are used.
-     *
-     * @param vecAlign (dx,dy,dz)
-     */
-    /**
-     * public void setAlignment(R3 vecAlign) {
-     * this.getMagBody().setAlign(vecAlign);
-     * this.getFaceEntr().setAlign(vecAlign);
-     * this.getFaceExit().setAlign(vecAlign); }
-     */
-    /**
-     * set align x
-     *
-     * @param dx
-     */
-    /**
-     * public void setAlignX(double dx) { this.getFaceEntr().setAlignX(dx);
-     * this.getMagBody().setAlignX(dx); this.getFaceExit().setAlignX(dx); }
-     */
-    /**
-     * set align y
-     *
-     * @param dy
-     */
-    /**
-     * public void setAlignY(double dy) { this.getFaceEntr().setAlignY(dy);
-     * this.getMagBody().setAlignY(dy); this.getFaceExit().setAlignY(dy); }
-     */
-    /**
-     * set align z
-     *
-     * @param dz
-     */
-    /*public void setAlignZ(double dz) {
-    	this.getFaceEntr().setAlignY(dz);
-    	this.getMagBody().setAlignY(dz);
-    	this.getFaceExit().setAlignY(dz);
-    }
     
     /*
      * Attribute Query
@@ -442,15 +396,6 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
         Bend magnet = (Bend) element.getHardwareNode();
         setPosition(element.getCenterPosition(), element.getLength());
 
-        // xal.model.elem.ThickDipole xalDipole =
-        // new xal.model.elem.ThickDipole();
-        // xalDipole.setId(element.getNode().getId());
-        // xalDipole.setLength(element.getLength());
-        // xalDipole.setMagField(magnet.getDesignField());
-        // xalDipole.setKQuad(magnet.getQuadComponent());
-        // double angle = magnet.getDfltBendAngle()*Math.PI/180. * element.getLength() / magnet.getDfltPathLength();
-        // xalDipole.setReferenceBendAngle(angle);
-        // Replace ThickDipole object with an IdealMagWedgeDipole2
         // First retrieve all the physical parameters for a bending dipole				
         double lenSect = element.getLength();
         double lenPath0 = magnet.getDfltPathLength();
@@ -466,13 +411,5 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
 
         // Set the parameters for the new model element				
         setPhysicalLength(lenSect);
-        /*	setDesignPathLength(len_path);		
-		setFieldIndex(fld_ind0);
-		setDesignBendAngle(ang_bend);*/
-
- /*if (element.getPartNr() == 0) // first piece
-			setEntrPoleAngle(magnet.getEntrRotAngle() * Math.PI / 180.);
-		if (element.getParts()-1 == element.getPartNr()) // last piece					
-			setExitPoleAngle(magnet.getExitRotAngle() * Math.PI / 180.);*/
     }
 }

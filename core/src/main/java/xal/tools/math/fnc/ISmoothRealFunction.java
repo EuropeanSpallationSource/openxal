@@ -25,8 +25,8 @@ public interface ISmoothRealFunction extends IRealFunction {
      * <p>
      * A smooth, real-valued function has at least one derivative. Thus, the
      * derivative
-     * <em>f</em>'(<em>x</em>) should always exist for any class implementing this
-     * interface.
+     * <em>f</em>'(<em>x</em>) should always exist for any class implementing
+     * this interface.
      * </p>
      *
      * @param dblLoc the location <em>x</em> at which to evaluate the derivative
@@ -47,15 +47,15 @@ public interface ISmoothRealFunction extends IRealFunction {
      * </p>
      * <p>
      * It is possible that the derivatives of a function are all zero for
-     * <em>n</em> greater than a certain value. Consider a polynomial for example,
-     * when <em>n</em> is greater than the degree of that polynomial.
+     * <em>n</em> greater than a certain value. Consider a polynomial for
+     * example, when <em>n</em> is greater than the degree of that polynomial.
      * </p>
      *
      * @param nOrder the order <em>n</em> of the derivative
      * @param dblLoc the location <em>x</em> at which to evaluate the derivative
      *
-     * @return the derivative <em>f</em><sup>(<em>n</em>)</sup>(<em>x</em>) of the
-     * function
+     * @return the derivative <em>f</em><sup>(<em>n</em>)</sup>(<em>x</em>) of
+     * the function
      *
      * @throws IllegalArgumentException the derivative order must be positive.
      *

@@ -15,10 +15,10 @@ import xal.tools.math.SquareMatrix;
 
 /**
  * <p>
- * Represents an element of <strong>R</strong><sup>3&times;3</sup>, the set of real,
- * 3&times;3 matrices. The class also contains the usual set of matrix
- * operations and linear transforms on <strong>R</strong><sup>3</sup> induced by the
- * matrix.
+ * Represents an element of <strong>R</strong><sup>3&times;3</sup>, the set of
+ * real, 3&times;3 matrices. The class also contains the usual set of matrix
+ * operations and linear transforms on <strong>R</strong><sup>3</sup> induced by
+ * the matrix.
  * </p>
  *
  * @author Christopher Allen

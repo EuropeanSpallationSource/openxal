@@ -238,7 +238,8 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      *
      * @param probe probe object to be deflected
      *
-     * @return dipole path curvature for given probe (in <strong>1/meters</strong>)
+     * @return dipole path curvature for given probe (in
+     * <strong>1/meters</strong>)
      */
     public double compCurvature(IProbe probe) {
         return this.getMagBody().compCurvature(probe);
@@ -334,12 +335,12 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
         setFieldIndex(fldInd0);
         /*setDesignBendAngle(ang_bend);*/
 
-        if (element.isFirstSlice()) // first piece
-        {
+        // first piece
+        if (element.isFirstSlice()) {
             setEntrPoleAngle(magnet.getEntrRotAngle() * Math.PI / 180.);
         }
-        if (element.isLastSlice()) // last piece					
-        {
+        // last piece					
+        if (element.isLastSlice()) {
             setExitPoleAngle(magnet.getExitRotAngle() * Math.PI / 180.);
         }
     }

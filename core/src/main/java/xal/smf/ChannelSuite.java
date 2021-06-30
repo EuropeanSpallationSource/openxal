@@ -251,9 +251,12 @@ public class ChannelSuite implements DataListener {
         // first see if we have ever cached the channel
         Channel channel = channelHandleMap.get(handle);
 
-        if (channel == null) {                    // if the channel was never cached ...
-            final String signal = getSignal(handle);      // lookup the signal
-            if (signal != null && !signal.equals("")) {                 // get the channel from the channel factory
+        // if the channel was never cached ...
+        if (channel == null) {
+            // lookup the signal
+            final String signal = getSignal(handle);
+            // get the channel from the channel factory
+            if (signal != null && !signal.equals("")) {
                 final ValueTransform transform = getTransform(handle);
                 if (transform != null) {
                     channel = channelFactory.getChannel(signal, transform);

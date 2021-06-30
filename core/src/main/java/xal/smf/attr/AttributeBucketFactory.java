@@ -50,15 +50,18 @@ public final class AttributeBucketFactory {
      * Get set of all AccelerNode type strings
      */
     public static String[] getBucketTypes() {
-        int nTypes;     // number of node types
-        String[] arrTypes;   // returned array of node type strings
+        // number of node types
+        int nTypes;
+        // returned array of node type strings
+        String[] arrTypes;
 
         // Allocate the string array
         nTypes = mapCtors.size();
         arrTypes = new String[nTypes];
 
         // Build the string array
-        int iType;      // index of current type
+        // index of current type
+        int iType;
         final Set<String> nodeTypes = mapCtors.keySet();
         iType = 0;
         for (final String nodeType : nodeTypes) {
@@ -79,9 +82,12 @@ public final class AttributeBucketFactory {
         }
 
         // Find the constructur object for the AttributeBucket and instantiate new node
-        Constructor<?> ctor;       // contructor object for node type
-        Object[] arrArgs;    // constructor arguments
-        AttributeBucket buck;       // the returned object
+        // contructor object for node type
+        Constructor<?> ctor;
+        // constructor arguments
+        Object[] arrArgs;
+        // the returned object
+        AttributeBucket buck;
 
         ctor = mapCtors.get(strType);
         arrArgs = null;

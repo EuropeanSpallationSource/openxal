@@ -29,7 +29,8 @@ public class ElogServer {
 
     public static String getElogURL() {
         java.util.prefs.Preferences defaults = Preferences.nodeForPackage(ElogServer.class);
-        return defaults.get(ELOG_SERVER, "https://logbook.esss.lu.se/");
+        //logbook.esss.lu.se/");
+        return defaults.get(ELOG_SERVER, "https:
     }
 
     public static void setElogURL(String elogServer) {

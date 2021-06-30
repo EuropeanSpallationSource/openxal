@@ -70,7 +70,8 @@ public class OrQualifier extends CompoundQualifier {
             }
         }
 
-        return false;    // no qualifier must have matched
+        // no qualifier must have matched
+        return false;
     }
 
     /**

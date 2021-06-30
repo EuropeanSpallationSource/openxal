@@ -96,7 +96,8 @@ public class TableGroupTest extends AbstractXMLValidation {
 
         //Correct root element.
         Element root = document.createElement("tablegroup");
-        root.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance", "xsi:noNamespaceSchemaLocation", "http://sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/tablegroup.xsd?format=raw");
+        //sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/tablegroup.xsd?format=raw");
+        root.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance", "xsi:noNamespaceSchemaLocation", "http:
         document.appendChild(root);
         try {
             validator.validate(new DOMSource(document));

@@ -211,7 +211,8 @@ public class Commander {
 
         final String menubarStr = controlMap.get("menubar");
         if (menubarStr == null || menubarStr.isEmpty()) {
-            return null; // check if a menubar definition was found
+            // check if a menubar definition was found
+            return null;
         }
         final String[] menuKeys = Util.getTokens(menubarStr);
 
@@ -220,7 +221,8 @@ public class Commander {
         // Add RBAC menu to the menubar if RBAC is used
         RBACSubject subject = Application.getApp().getRbacSubject();
         if (subject != null) {
-            menuBar.add(Box.createHorizontalGlue()); // Flush right
+            // Flush right
+            menuBar.add(Box.createHorizontalGlue());
             menuBar.add(new RBACMenu());
         }
 
@@ -306,9 +308,11 @@ public class Commander {
             }
 
             // add the menu item identified be the menu item key
-            if (menuItemKey.equals("-")) {    // dashes identify separators
+            // dashes identify separators
+            if (menuItemKey.equals("-")) {
                 menu.addSeparator();
-            } else if (menuItemKey.startsWith("^")) {   // carets identify submenus
+                // carets identify submenus
+            } else if (menuItemKey.startsWith("^")) {
                 JMenuItem menuItem = makeMenu(menuItemKey.substring(1));
                 menu.add(menuItem);
             } else if (menuItemKey.startsWith("*")) {	// an asterisk identifies a radio button group of menu items

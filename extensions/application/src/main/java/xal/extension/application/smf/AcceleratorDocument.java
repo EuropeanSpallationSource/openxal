@@ -160,7 +160,8 @@ public abstract class AcceleratorDocument extends XalDocument {
         selectedSequenceList = new ArrayList<>();
         accelerator = newAccelerator;
         setAcceleratorFilePath(newPath);
-        acceleratorChanged();       // hook for possible further processing
+        // hook for possible further processing
+        acceleratorChanged();
     }
 
     /**

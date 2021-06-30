@@ -4,7 +4,8 @@
  * The full license specifying the redistribution, modification, usage and other
  * rights and obligations is included with the distribution of this project in
  * the file "LICENSE-CAJ". If the license is not included visit Cosylab web site,
- * <http://www.cosylab.com>.
+ //www.cosylab.com>.
+ * <http:
  *
  * THIS SOFTWARE IS PROVIDED AS-IS WITHOUT WARRANTY OF ANY KIND, NOT EVEN THE
  * IMPLIED WARRANTY OF MERCHANTABILITY. THE AUTHOR OF THIS SOFTWARE, ASSUMES
@@ -85,6 +86,7 @@ public class ServerMemoryProcessVariable extends MemoryProcessVariable {
      * Calls parent {@link MemoryProcessVariable.write} if settable is true.
      * Else returns {@link CAStatus.NOWTACCESS}.
      */
+    @Override
     public synchronized CAStatus write(DBR value, ProcessVariableWriteCallback asyncWriteCallback) throws CAException {
 
         if (settable) {

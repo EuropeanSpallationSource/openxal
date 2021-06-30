@@ -476,7 +476,8 @@ public class DTLCellTest extends SingleElementTest {
         Lq1 *= 1e-3;
         Lq2 *= 1e-3;
         g *= 1e-3;
-        double length = g; // length is not given in TraceWin, but is used only as a factor in E0TL in OpenXal
+        // length is not given in TraceWin, but is used only as a factor in E0TL in OpenXal
+        double length = g;
 
         Quadrupole quad1 = ElementFactory.createQuadrupole("quad1", Lq1, B1, new ApertureBucket(), null, Lq1 / 2.);
         Quadrupole quad2 = ElementFactory.createQuadrupole("quad2", Lq2, B2, new ApertureBucket(), null, L - Lq2 / 2.);

@@ -132,7 +132,8 @@ public class OpenXalExporter {
     private double getFrequency(Subsystem subsystem) {
         LatticeCommand lastBefore = null;
         for (LatticeCommand lc : latticeCommands) {
-            if (leafComparator.compare(lc, subsystem) < 0) { // lc < subsystem
+            // lc < subsystem
+            if (leafComparator.compare(lc, subsystem) < 0) {
                 if (!lc.getValue().contains("FREQ")) {
                     continue;
                 }
@@ -143,7 +144,8 @@ public class OpenXalExporter {
         }
 
         if (lastBefore == null) {
-            return INITIAL_FREQUENCY; // initial frequency
+            // initial frequency
+            return INITIAL_FREQUENCY;
         }
         // parse the lattice command
         String command = lastBefore.getValue();
@@ -272,8 +274,8 @@ public class OpenXalExporter {
             } else if (subsystem instanceof LatticeCommand) {
                 LatticeCommand latticeCommand = (LatticeCommand) subsystem;
                 if (latticeCommand.getValue().toUpperCase().startsWith("LATTICE ")) {
-                    if (latticeElements == 0) { // this if is here because of
-                        // TraceWin behaviour
+                    // this if is here because of TraceWin behaviour
+                    if (latticeElements == 0) {
                         latticeCount = 0;
                         seq.addNode(exportMarker("LATTICE-POINT-" + (latticePoint++), currentPosition));
                     }
@@ -303,7 +305,8 @@ public class OpenXalExporter {
                 if (!(subsystem instanceof Drift)) {
                     latticeCount++;
                 }
-            } else { // Subsystem
+            // Subsystem
+            } else {
                 node = export(subsystem, systems, currentPosition, comparator);
             }
 

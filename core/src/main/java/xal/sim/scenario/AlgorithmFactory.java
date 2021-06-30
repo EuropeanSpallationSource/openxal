@@ -27,8 +27,8 @@ import xal.tools.data.EditContext;
  * XAL online model. Algorithm classes are typically derived from the
  * <code>Tracker</code> base class and must expose the <code>IAlgorithm</code>
  * interface. We take the initialization parameters from the XAL
- * "<kbd>model.params</kbd>" file, using the <em>edit context</em> mechanism in XAL.
- * (An <code>EditContext</code> object is associated with each
+ * "<kbd>model.params</kbd>" file, using the <em>edit context</em> mechanism in
+ * XAL. (An <code>EditContext</code> object is associated with each
  * <code>Accelerator</code> object.) The file contains data tables which are
  * structured for the different types of algorithms. Each algorithm may have
  * many different tables, typically different parameters for different locations

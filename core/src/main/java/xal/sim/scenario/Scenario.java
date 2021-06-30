@@ -242,8 +242,8 @@ public class Scenario {
 
     /**
      * Sets the model to stop propagation the AcceleratorNode with the specified
-     * id. By default the model will stop propagation <strong>AFTER</strong> this node.
-     * This behavior can be changed in the Tracker ( see
+     * id. By default the model will stop propagation <strong>AFTER</strong>
+     * this node. This behavior can be changed in the Tracker ( see
      * setStopNodeInclusive(boolean) method.
      *
      * @param nodeId ID of the AcceleratorNode to stop after
@@ -284,10 +284,10 @@ public class Scenario {
     }
 
     /**
-     * Sets the model to stop propagation (by default) <strong>after</strong> the
-     * specified IComponent. If you don't have a reference to a component but do
-     * have an AcceleratorNode, use setStopNode(String). This "stop after"
-     * behavior can be changed in the Tracker ( see
+     * Sets the model to stop propagation (by default) <strong>after</strong>
+     * the specified IComponent. If you don't have a reference to a component
+     * but do have an AcceleratorNode, use setStopNode(String). This "stop
+     * after" behavior can be changed in the Tracker ( see
      * setStopNodeInclusive(boolean) method.
      *
      * @param stop Component to stop propagation after

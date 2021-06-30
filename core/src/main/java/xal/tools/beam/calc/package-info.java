@@ -58,20 +58,21 @@
  * function are listed below
  * <br>
  * <br>
- * <strong><code>CalculationsOnParticles</code></strong>: Provides processing functions
- * appropriate for single particle simulation data. Also has methods available
- * for processing data that was taken for a periodic system between two period
- * locations. The simulation data is of type
+ * <strong><code>CalculationsOnParticles</code></strong>: Provides processing
+ * functions appropriate for single particle simulation data. Also has methods
+ * available for processing data that was taken for a periodic system between
+ * two period locations. The simulation data is of type
  * <code>Trajectory&lt;ParticleProbeState&gt;</code>.
  * <br>
  * <br>
- * <strong><code>CalculationsOnMachines</code></strong>: This class is concerned with the
- * calculation of machine properties without regard to any beam propagation. The
- * simulation data is of type <code>Trajectory&lt;TransferMapState&gt;</code>.
+ * <strong><code>CalculationsOnMachines</code></strong>: This class is concerned
+ * with the calculation of machine properties without regard to any beam
+ * propagation. The simulation data is of type
+ * <code>Trajectory&lt;TransferMapState&gt;</code>.
  * <br>
  * <br>
- * <strong><code>CalculationsOnRings</code></strong>: Computes ring properties and
- * parameters. This class is a super class of
+ * <strong><code>CalculationsOnRings</code></strong>: Computes ring properties
+ * and parameters. This class is a super class of
  * <code>CalculationsOnMachines</code>, since a ring is a machine. Consequently
  * the simulation data is also of type
  * <code>Trajectory&lt;TransferMapState&gt;</code>. However, it is necessary
@@ -79,9 +80,9 @@
  * for the calculations to have context.
  * <br>
  * <br>
- * <strong><code>CalculationsOnBeams</code></strong>: Computes parameters for a beam
- * itself. These include collective properties of a beam bunch. The simulation
- * data for this class is of type
+ * <strong><code>CalculationsOnBeams</code></strong>: Computes parameters for a
+ * beam itself. These include collective properties of a beam bunch. The
+ * simulation data for this class is of type
  * <code>Trajectory&lt;EnvelopeProbeState&gt</code>.
  * <br>
  * <br>
@@ -97,8 +98,8 @@
  * type of simulation data provided. After creating the class the developer
  * specifies which computational engine is to be used with which data. The class
  * <code>SimpleSimResultsAdaptor</code> defines these computation engines <em>a
- * priori</em>. The <code>CalculationsOnRings</code> class is used for simulation
- * data of type <code>Trajectory&lt;TransferMapState&gt;</code>,
+ * priori</em>. The <code>CalculationsOnRings</code> class is used for
+ * simulation data of type <code>Trajectory&lt;TransferMapState&gt;</code>,
  * <code>CalculationsOnParticles</code> is used for type
  * <code>Trajectory&lt;ParticleProbeState&gt</code>, and
  * <code>CalculationsOnBeams</code> is used for type

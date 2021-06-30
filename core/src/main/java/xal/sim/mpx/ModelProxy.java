@@ -180,10 +180,12 @@ public class ModelProxy {
                     break;
                 case ModelProxyListener.RESULTS_CHANGED:
                     mpxLs[i].modelResultsChanged(this);
-                    break;  // tap added this break statement as it seems to be the intent
+                    // tap added this break statement as it seems to be the intent
+                    break;
                 case ModelProxyListener.MISSING_INPUT:
                     mpxLs[i].missingInputToRunModel(this);
-                    break;  // tap added this break statement as it seems to be the intent
+                    // tap added this break statement as it seems to be the intent
+                    break;
                 default:
                     break;
             }
@@ -275,7 +277,8 @@ public class ModelProxy {
      * @param probeFile the file for the probe definition in XML.
      */
     public void setNewProbe(File probeFile) throws LatticeError {
-        XmlDataAdaptor probeXmlAdptr;     // TODO: CKA - NEVER USED
+        // TODO: CKA - NEVER USED
+        XmlDataAdaptor probeXmlAdptr;
         if (probeFile.equals(probeMasterFile)) {
             return;
         } else {

@@ -96,7 +96,8 @@ public class KeyValueQualifier implements Qualifier {
      * @throws java.lang.ClassCastException if the object does not implement the
      * Comparable interface
      */
-    @SuppressWarnings("unchecked") //valueForKey cannot be resolved to a specific type since it returns Object
+    //valueForKey cannot be resolved to a specific type since it returns Object
+    @SuppressWarnings("unchecked")
     @Override
     public boolean matches(final Object object) {
         final Comparable<Object> value = (Comparable<Object>) ((KeyedRecord) object).valueForKey(key);

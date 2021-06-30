@@ -301,9 +301,12 @@ public final class Attribute extends Object implements java.io.Serializable {
      */
     // Parsing Arrays
     private double[] parseArrDbl(String strArr) throws NumberFormatException {
-        int iElem;              // index of current element
-        double[] arr;                // returned value
-        StringTokenizer tok;                // break string into array
+        // index of current element
+        int iElem;
+        // returned value
+        double[] arr;
+        // break string into array
+        StringTokenizer tok;
 
         tok = new StringTokenizer(strArr, ",");
         arr = new double[tok.countTokens()];
@@ -318,9 +321,12 @@ public final class Attribute extends Object implements java.io.Serializable {
     }
 
     private float[] parseArrFlt(String strArr) throws NumberFormatException {
-        int iElem;              // index of current element
-        float[] arr;                // returned value
-        StringTokenizer tok;                // break string into array
+        // index of current element
+        int iElem;
+        // returned value
+        float[] arr;
+        // break string into array
+        StringTokenizer tok;
 
         tok = new StringTokenizer(strArr, ",");
         arr = new float[tok.countTokens()];
@@ -335,9 +341,12 @@ public final class Attribute extends Object implements java.io.Serializable {
     }
 
     private long[] parseArrLng(String strArr) throws NumberFormatException {
-        int iElem;              // index of current element
-        long[] arr;                // returned value
-        StringTokenizer tok;                // break string into array
+        // index of current element
+        int iElem;
+        // returned value
+        long[] arr;
+        // break string into array
+        StringTokenizer tok;
 
         tok = new StringTokenizer(strArr, ",");
         arr = new long[tok.countTokens()];
@@ -352,9 +361,12 @@ public final class Attribute extends Object implements java.io.Serializable {
     }
 
     private int[] parseArrInt(String strArr) throws NumberFormatException {
-        int iElem;              // index of current element
-        int[] arr;                // returned value
-        StringTokenizer tok;                // break string into array
+        // index of current element
+        int iElem;
+        // returned value
+        int[] arr;
+        // break string into array
+        StringTokenizer tok;
 
         tok = new StringTokenizer(strArr, ",");
         arr = new int[tok.countTokens()];
@@ -369,9 +381,12 @@ public final class Attribute extends Object implements java.io.Serializable {
     }
 
     private String[] parseArrStr(String strArr) throws NumberFormatException {
-        int iElem;              // index of current element
-        String[] arr;                // returned value
-        StringTokenizer tok;                // break string into array
+        // index of current element
+        int iElem;
+        // returned value
+        String[] arr;
+        // break string into array
+        StringTokenizer tok;
 
         tok = new StringTokenizer(strArr, ",");
         arr = new String[tok.countTokens()];
@@ -392,7 +407,8 @@ public final class Attribute extends Object implements java.io.Serializable {
     // Parsing Type Identification
     private boolean isDouble(String s) {
         if (!hasNumeric(s)) {
-            return false;       // must contain numeric characters
+            // must contain numeric characters
+            return false;
         }
         if (s.indexOf('F') > 0
                 || // must not have 'f' or 'F' suffix
@@ -406,8 +422,8 @@ public final class Attribute extends Object implements java.io.Serializable {
                 && s.indexOf('E') < 0) {
             return false;
         }
-
-        try {                                       // must be parsable
+        // must be parsable
+        try {
             Double.valueOf(s);
         } catch (NumberFormatException e) {
             return false;
@@ -418,7 +434,8 @@ public final class Attribute extends Object implements java.io.Serializable {
 
     private boolean isFloat(String s) {
         if (!hasNumeric(s)) {
-            return false;       // must contain numeric characters
+            // must contain numeric characters
+            return false;
         }
         if (s.indexOf('F') < 0
                 && // must contain 'f' or 'F' suffix
@@ -432,8 +449,8 @@ public final class Attribute extends Object implements java.io.Serializable {
                 && s.indexOf('E') < 0) {
             return false;
         }
-
-        try {                                       // must be parsable
+        // must be parsable
+        try {
             Float.valueOf(s);
         } catch (NumberFormatException e) {
             return false;
@@ -444,7 +461,8 @@ public final class Attribute extends Object implements java.io.Serializable {
 
     private boolean isLong(String s) {
         if (!hasNumeric(s)) {
-            return false;       // must contain numeric characters
+            // must contain numeric characters
+            return false;
         }
         if (s.indexOf('L') < 0
                 && // must contain 'L' or 'l' suffix
@@ -458,8 +476,8 @@ public final class Attribute extends Object implements java.io.Serializable {
                 || s.indexOf('E') >= 0) {
             return false;
         }
-
-        try {                                       // must be parsable
+        // must be parsable
+        try {
             Long.valueOf(s);
         } catch (NumberFormatException e) {
             return false;
@@ -470,7 +488,8 @@ public final class Attribute extends Object implements java.io.Serializable {
 
     private boolean isInteger(String s) {
         if (!hasNumeric(s)) {
-            return false;       // must contain numeric characters
+            // must contain numeric characters
+            return false;
         }
         if (s.indexOf('L') > 0
                 || // must not contain 'L' or 'l' suffix
@@ -484,8 +503,8 @@ public final class Attribute extends Object implements java.io.Serializable {
                 || s.indexOf('E') >= 0) {
             return false;
         }
-
-        try {                                       // must be parsable
+        // must be parsable
+        try {
             Integer.valueOf(s);
         } catch (NumberFormatException e) {
             return false;

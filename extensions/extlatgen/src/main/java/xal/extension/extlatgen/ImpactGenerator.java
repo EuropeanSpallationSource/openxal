@@ -241,28 +241,28 @@ public class ImpactGenerator {
                 if (elementType.equals("drift")) {
                     impactWriter.write(NUMBER_FORMAT.format(elementLength) + "\t4\t20\t" + DRIFT + "\t " + APER + "\t/\n");
 //					driftCounter++;
-                } // for quads
-                else if (elementType.equals("quadrupole") || elementType.equals("skewquadrupole")) {
+                    // for quads
+                } else if (elementType.equals("quadrupole") || elementType.equals("skewquadrupole")) {
                     final double field = getField(node, deviceDataSource);
                     impactWriter.write(NUMBER_FORMAT.format(elementLength) + "\t4\t20\t" + QUAD
                             + NUMBER_FORMAT.format(field / elementLength) + "\t" + node.getAper().getAperX()
                             + "\t" + node.getAlign().getX() + "\t" + node.getAlign().getY()
                             + "\t" + node.getAlign().getPitch() + "\t" + node.getAlign().getYaw() + "\t" + node.getAlign().getRoll() + "\t/\n");
-                } // for solenoid
-                else if (elementType.equals("solenoid")) {
+                    // for solenoid
+                } else if (elementType.equals("solenoid")) {
                     final double field = getField(node, deviceDataSource);
                     impactWriter.write(NUMBER_FORMAT.format(elementLength) + "\t4\t20" + SOLENOID
                             + NUMBER_FORMAT.format(field) + "\t0\t" + node.getAper().getAperX()
                             + "\t" + node.getAlign().getX() + "\t" + node.getAlign().getY()
                             + "\t" + node.getAlign().getPitch() + "\t" + node.getAlign().getYaw() + "\t" + node.getAlign().getRoll() + "\t/\n");
-                } // for bending dipole
-                else if (elementType.equals("dipole")) {
+                    // for bending dipole
+                } else if (elementType.equals("dipole")) {
                     impactWriter.write(NUMBER_FORMAT.format(elementLength) + "\t10\t20" + DIPOLE
                             + "\t" + ((Bend) node).getDfltBendAngle() + "\t0.0\t150\t" + node.getAper().getAperX()
                             + "\t" + node.getAlign().getX() + "\t" + node.getAlign().getY()
                             + "\t" + node.getAlign().getPitch() + "\t" + node.getAlign().getYaw() + "\t" + node.getAlign().getRoll() + "\t/\n");
-                } // for RF cavity
-                else if (elementType.equals("rfgap")) {
+                    // for RF cavity
+                } else if (elementType.equals("rfgap")) {
                     double len = node.getParent().getLength();
                     double freq = ((RfCavity) node.getParent()).getCavFreq() * 1.e6;
                     double phase = ((RfCavity) node.getParent()).getDfltCavPhase();

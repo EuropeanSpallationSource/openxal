@@ -50,11 +50,13 @@ class AsynchronousMessageHandler<T> extends MessageHandler<T> implements Seriali
      */
     @Override
     public Object invoke(final Object proxy, final Method method, final Object[] args) {
-        method.setAccessible(true);     // allow access to private, protected, default access methods
+        // allow access to private, protected, default access methods
+        method.setAccessible(true);
         Invoker invoker = new Invoker(method, args);
         Thread thread = new Thread(invoker);
 
-        thread.start();     // execute the invocation asynchronously
+        // execute the invocation asynchronously
+        thread.start();
 
         return null;
     }

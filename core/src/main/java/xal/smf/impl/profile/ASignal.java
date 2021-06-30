@@ -54,16 +54,16 @@ public @interface ASignal {
      * (hndSigSz)</kbd>}
      * <br>
      * <br>
-     * where <kbd>hndPosRb</kbd> is the XAL channel handle of the sample position
-     * array read back,
+     * where <kbd>hndPosRb</kbd> is the XAL channel handle of the sample
+     * position array read back,
      * <kbd>hndValRb</kbd> is the XAL channel handle of the signal value array
      * read back,
      * <kbd>hndNseAvg</kbd> is the (optional) XAL channel handle of the noise
      * average read back,
      * <kbd>hndNseStd</kbd> is the (optional) XAL channel handle of the noise
      * variance read back, and
-     * <kbd>hndCnt</kbd> is the (optional) XAL channel handle of the signal array
-     * size read back.
+     * <kbd>hndCnt</kbd> is the (optional) XAL channel handle of the signal
+     * array size read back.
      * </p>
      *
      * @author Christopher K. Allen

@@ -231,7 +231,8 @@ public class JcaServerChannel extends Channel implements IServerChannel {
     @Override
     public ChannelTimeRecord getRawTimeRecord() {
         return new ChannelTimeRecordImpl(new TimeAdaptor() {
-            final BigDecimal EPOCH_SECONDS_OFFSET = new BigDecimal(7305 * 24 * 3600);     // offset from standard Java epoch
+            // offset from standard Java epoch
+            final BigDecimal EPOCH_SECONDS_OFFSET = new BigDecimal(7305 * 24 * 3600);
 
             private ArrayValue value = ArrayValue.arrayValueFromArray(pv.getValue());
             private BigDecimal timestamp = pv.getTimestamp().asBigDecimal().add(EPOCH_SECONDS_OFFSET).setScale(9, BigDecimal.ROUND_HALF_UP);
@@ -382,11 +383,22 @@ public class JcaServerChannel extends Channel implements IServerChannel {
         }
     }
 
+    @Override
     public void putRawValCallback(String[] newVal, PutListener listener) throws ConnectionException, PutException {
         pv.setValue(newVal);
         if (listener != null) {
             listener.putCompleted(this);
         }
+    }
+
+    @Override
+    public void putRawValCallback(long newVal, PutListener listener) throws ConnectionException, PutException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void putRawValCallback(long[] newVal, PutListener listener) throws ConnectionException, PutException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     private class JcaServerMonitor extends Monitor implements ProcessVariableEventCallback {
@@ -425,38 +437,47 @@ public class JcaServerChannel extends Channel implements IServerChannel {
         }
     }
 
+    @Override
     public void setLowerAlarmLimit(Number lowerAlarmLimit) {
         pv.setLowerAlarmLimit(lowerAlarmLimit);
     }
 
+    @Override
     public void setLowerCtrlLimit(Number lowerCtrlLimit) {
         pv.setLowerCtrlLimit(lowerCtrlLimit);
     }
 
+    @Override
     public void setLowerDispLimit(Number lowerDispLimit) {
         pv.setLowerDispLimit(lowerDispLimit);
     }
 
+    @Override
     public void setLowerWarningLimit(Number lowerWarningLimit) {
         pv.setLowerWarningLimit(lowerWarningLimit);
     }
 
+    @Override
     public void setUpperAlarmLimit(Number upperAlarmLimit) {
         pv.setUpperAlarmLimit(upperAlarmLimit);
     }
 
+    @Override
     public void setUpperCtrlLimit(Number upperCtrlLimit) {
         pv.setUpperCtrlLimit(upperCtrlLimit);
     }
 
+    @Override
     public void setUpperDispLimit(Number upperDispLimit) {
         pv.setUpperDispLimit(upperDispLimit);
     }
 
+    @Override
     public void setUpperWarningLimit(Number upperWarningLimit) {
         pv.setUpperWarningLimit(upperWarningLimit);
     }
 
+    @Override
     public void setSettable(boolean settable) {
         if (pv != null) {
             pv.setSettable(settable);

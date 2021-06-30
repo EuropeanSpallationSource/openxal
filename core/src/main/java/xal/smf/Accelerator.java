@@ -290,7 +290,8 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
             comboSequence.setParent(this);
             addComboSequence(comboSequence);
         } else {
-            comboSequence.update(comboAdaptor);   // update the sequence
+            // update the sequence
+            comboSequence.update(comboAdaptor);
         }
     }
 

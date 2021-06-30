@@ -163,7 +163,8 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      * Creates a new instance of IdealRfGap
      *
      * @param strId instance identifier of element
-     * @param dblETL field/transit time/length factor for gap (in <strong>volts</strong> )
+     * @param dblETL field/transit time/length factor for gap (in
+     * <strong>volts</strong> )
      * @param dblPhase operating phase of gap (in <strong>radians</strong> )
      * @param dblFreq operating RF frequency of gap (in <strong>Hertz</strong> )
      */
@@ -202,7 +203,8 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      * Return the RF phase delay of the gap with respect to the synchronous
      * particle.
      *
-     * @return phase delay w.r.t. synchronous particle (in <strong>radians</strong> ).
+     * @return phase delay w.r.t. synchronous particle (in
+     * <strong>radians</strong> ).
      */
     @Override
     public double getPhase() {
@@ -427,8 +429,8 @@ public class IdealRfGap extends ThinElement implements IRfGap {
             phi0 = phi0 + structurePhase;
             //phi0 = Math.IEEEremainder(phi0, (2. * Math.PI * (1.0 - structureMode / 2.0)));
             setPhase(phi0);
-        } // for first gap use input for phase at the gap center
-        else {
+            // for first gap use input for phase at the gap center
+        } else {
             structurePhase = 0.;
             firstGapPhaseCorr = 2. * Math.PI * arrival_time * getFrequency() - getPhase();
             phi0 = getPhase();
@@ -717,8 +719,8 @@ public class IdealRfGap extends ThinElement implements IRfGap {
             structurePhase = structurePhase + Math.PI * nLabmda;
             synchronousPhase = synchronousPhase + structurePhase;
             setPhase(synchronousPhase);
-        } // for first gap use input for phase at the gap center
-        else {
+            // for first gap use input for phase at the gap center
+        } else {
             structurePhase = 0.;
             firstGapPhaseCorr = 2. * Math.PI * arrivalTime * getFrequency() - getPhase();
             synchronousPhase = getPhase();

@@ -13,10 +13,10 @@ import xal.tools.math.r3.R3x3.POS;
 
 /**
  * <p>
- * Represents an element of <strong>R</strong><sup>6&times;6</sup>, the set of real,
- * 6&times;6 matrices. The class also contains the usual set of matrix
- * operations and linear transforms on <strong>R</strong><sup>6</sup> that are represented
- * by these matrices.
+ * Represents an element of <strong>R</strong><sup>6&times;6</sup>, the set of
+ * real, 6&times;6 matrices. The class also contains the usual set of matrix
+ * operations and linear transforms on <strong>R</strong><sup>6</sup> that are
+ * represented by these matrices.
  * </p>
  *
  * @author Christopher K. Allen
@@ -137,12 +137,14 @@ public class R6x6 extends SquareMatrix<R6x6> {
     /**
      * <p>
      * Compute the rotation matrix in phase space that is essentially the
-     * Cartesian product of the given rotation matrix in <em>SO</em>(3). That is,
-     * if the given argument is the rotation <strong>O</strong>, the returned matrix,
-     * denoted <strong>M</strong>, is the <strong>M</strong> =
-     * <strong>O</strong>&times;<strong>O</strong>&times;<strong>I</strong> embedding into homogeneous phase
-     * space <strong>R</strong><sup>6&times;6</sup>&times;{1}. Thus,
-     * <strong>M</strong> &in; <em>SO</em>(6) &sub; <strong>R</strong><sup>6&times;6</sup>&times;{1}.
+     * Cartesian product of the given rotation matrix in <em>SO</em>(3). That
+     * is, if the given argument is the rotation <strong>O</strong>, the
+     * returned matrix, denoted <strong>M</strong>, is the <strong>M</strong> =
+     * <strong>O</strong>&times;<strong>O</strong>&times;<strong>I</strong>
+     * embedding into homogeneous phase space
+     * <strong>R</strong><sup>6&times;6</sup>&times;{1}. Thus,
+     * <strong>M</strong> &in; <em>SO</em>(6) &sub;
+     * <strong>R</strong><sup>6&times;6</sup>&times;{1}.
      * </p>
      * <p>
      * Viewing phase-space as a 6D manifold built as the tangent bundle over
@@ -167,8 +169,10 @@ public class R6x6 extends SquareMatrix<R6x6> {
         // Populate the phase rotation matrix
         R6x6 matSO6 = R6x6.newIdentity();
 
-        int m, n;       // indices into the SO(7) matrix
-        double val;        // matSO3 matrix element
+        // indices into the SO(7) matrix
+        int m, n;
+        // matSO3 matrix element
+        double val;
 
         for (POS pos : POS.values()) {
             m = 2 * pos.row();
@@ -176,8 +180,10 @@ public class R6x6 extends SquareMatrix<R6x6> {
 
             val = matSO3.getElem(pos);
 
-            matSO6.setElem(m, n, val);   // configuration space
-            matSO6.setElem(m + 1, n + 1, val);   // momentum space
+            // configuration space
+            matSO6.setElem(m, n, val);
+            // momentum space
+            matSO6.setElem(m + 1, n + 1, val);
         }
         return matSO6;
     }

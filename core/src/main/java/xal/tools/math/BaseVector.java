@@ -22,9 +22,9 @@ import xal.tools.data.IArchive;
  * supported in the XAL tools packages.
  * </p>
  * </p>
- * The current implementation uses an <em>n</em>&times;1 EJML matrix to represent
- * the underlying vector. That is, the internal representation is a column
- * vector.
+ * The current implementation uses an <em>n</em>&times;1 EJML matrix to
+ * represent the underlying vector. That is, the internal representation is a
+ * column vector.
  * </p>
  *
  * @author Christopher K. Allen
@@ -288,7 +288,8 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
         final int size = (this.getSize() * this.getSize() * 16) + (this.getSize() * 2) + 4;
         StringBuffer strBuf = new StringBuffer(size);
 
-        synchronized (strBuf) { // get lock once instead of once per append
+        // get lock once instead of once per append
+        synchronized (strBuf) {
             strBuf.append("{ ");
             for (int i = 0; i < this.getSize(); i++) {
                 strBuf.append(this.getElem(i));
@@ -383,18 +384,22 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * <p>
      * Projects this vector onto the smaller subspace represented by the given
      * vector. For example, say this vector <strong>v</strong> is an element of
-     * <strong>R</strong><sup><em>n</em></sup> and the given vector <strong>u</strong> is an element
-     * of <strong>R</strong><sup><em>m</em></sup> where
+     * <strong>R</strong><sup><em>n</em></sup> and the given vector
+     * <strong>u</strong> is an element of
+     * <strong>R</strong><sup><em>m</em></sup> where
      * <em>m</em> &le; <em>n</em>. Then <strong>v</strong> decomposes as
-     * <strong>v</strong> = (<strong>v</strong><sub>1</sub> <strong>v</strong><sub>2</sub>) &in;
-     * <strong>R</strong><sup><em>m</em></sup> &times; <strong>R</strong><sup><em>n-m</em></sup>. That
-     * component <strong>v</strong><sub>1</sub> that lives in the subspace
-     * <strong>R</strong><sup><em>m</em></sup> is projected onto the given vector.
+     * <strong>v</strong> = (<strong>v</strong><sub>1</sub>
+     * <strong>v</strong><sub>2</sub>) &in;
+     * <strong>R</strong><sup><em>m</em></sup> &times;
+     * <strong>R</strong><sup><em>n-m</em></sup>. That component
+     * <strong>v</strong><sub>1</sub> that lives in the subspace
+     * <strong>R</strong><sup><em>m</em></sup> is projected onto the given
+     * vector.
      * </p>
      * <p>
-     * To make it simple, the first <em>m</em> components of this vector are used
-     * to set all the values of the given vector, in respective order. If the
-     * give vector is larger than this vector an exception is thrown.
+     * To make it simple, the first <em>m</em> components of this vector are
+     * used to set all the values of the given vector, in respective order. If
+     * the give vector is larger than this vector an exception is thrown.
      * </p>
      *
      * @param vecSub The vector to receive the projection of this vector
@@ -422,20 +427,24 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * <p>
      * Embeds this vector into the larger super-space represented by the given
      * vector. For example, say this vector <strong>v</strong> is an element of
-     * <strong>R</strong><sup><em>m</em></sup> and the given vector <strong>u</strong> is an element
-     * of <strong>R</strong><sup><em>n</em></sup> where
+     * <strong>R</strong><sup><em>m</em></sup> and the given vector
+     * <strong>u</strong> is an element of
+     * <strong>R</strong><sup><em>n</em></sup> where
      * <em>m</em> &le; <em>n</em>. Then <strong>u</strong> decomposes as
-     * <strong>u</strong> = (<strong>u</strong><sub>1</sub> <strong>u</strong><sub>2</sub>) &in;
-     * <strong>R</strong><sup><em>m</em></sup> &times; <strong>R</strong><sup><em>n-m</em></sup>. This
-     * vector <strong>v</strong> is embedded as that component <strong>u</strong><sub>1</sub>
+     * <strong>u</strong> = (<strong>u</strong><sub>1</sub>
+     * <strong>u</strong><sub>2</sub>) &in;
+     * <strong>R</strong><sup><em>m</em></sup> &times;
+     * <strong>R</strong><sup><em>n-m</em></sup>. This vector <strong>v</strong>
+     * is embedded as that component <strong>u</strong><sub>1</sub>
      * that lives in the sub-space
-     * <strong>R</strong><sup><em>m</em></sup> &sub;<strong>R</strong><sup><em>m</em></sup> &times;
+     * <strong>R</strong><sup><em>m</em></sup>
+     * &sub;<strong>R</strong><sup><em>m</em></sup> &times;
      * <strong>R</strong><sup><em>n-m</em></sup>.
      * </p>
      * <p>
-     * To make it simple, the first <em>m</em> components of the given vector are
-     * set to the components of this vector, in respective order. If the give
-     * vector is smaller than this vector an exception is thrown.
+     * To make it simple, the first <em>m</em> components of the given vector
+     * are set to the components of this vector, in respective order. If the
+     * give vector is smaller than this vector an exception is thrown.
      * </p>
      *
      * @param vecSup The vector to receive the embedding of this vector
@@ -672,8 +681,10 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * |<em>z<sub>i</sub></em>|
      */
     public double norm1() {
-        int i;          // loop control
-        double dblSum;     // running sum
+        // loop control
+        int i;
+        // running sum
+        double dblSum;
 
         dblSum = 0.0;
         for (i = 0; i < getSize(); i++) {
@@ -690,8 +701,10 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * <em>z<sub>i</sub></em><sup>2</sup> ]<sup>1/2</sup>
      */
     public double norm2() {
-        int i;          // loop control
-        double dblSum;     // running sum
+        // loop control
+        int i;
+        // running sum
+        double dblSum;
 
         dblSum = 0.0;
         for (i = 0; i < this.getSize(); i++) {
@@ -708,8 +721,10 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * |<em>z<sub>i</sub></em>|
      */
     public double normInf() {
-        int i;          // loop control
-        double dblMax;     // running maximum
+        // loop control
+        int i;
+        // running maximum
+        double dblMax;
 
         dblMax = 0.0;
         for (i = 0; i < this.getSize(); i++) {

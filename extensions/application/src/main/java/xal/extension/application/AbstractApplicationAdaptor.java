@@ -164,9 +164,11 @@ public abstract class AbstractApplicationAdaptor implements ApplicationListener 
      * Get the node for this application's preferences
      */
     public final Preferences getUserPreferencesNode() {
-        if (this.getClass().getName().startsWith("xal.app.")) {   // standard Java based Open XAL application
+        // standard Java based Open XAL application
+        if (this.getClass().getName().startsWith("xal.app.")) {
             return xal.tools.apputils.Preferences.userNodeForPackage(this.getClass());
-        } else {        // class is not from XAL so probably a script (e.g. jruby)
+            // class is not from XAL so probably a script (e.g. jruby)
+        } else {
             final String scriptID = applicationName().toLowerCase().replaceAll(" ", "_").replaceAll("\\/", "-");
             return xal.tools.apputils.Preferences.userNodeForPackage(AbstractApplicationAdaptor.class).node("/xal/script/" + scriptID);
         }
@@ -221,7 +223,8 @@ public abstract class AbstractApplicationAdaptor implements ApplicationListener 
                 docURLs = new URL[docPaths.size()];
                 for (int index = 0; index < docPaths.size(); index++) {
                     try {
-                        docURLs[index] = new URL("file://" + docPaths.get(index));
+                        //" + docPaths.get(index));
+                        docURLs[index] = new URL("file:
                     } catch (MalformedURLException exception) {
                         LOGGER.log(Level.WARNING, "Error setting the documents to open passed by the user.", exception);
                     }

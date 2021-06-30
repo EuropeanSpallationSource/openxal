@@ -55,7 +55,8 @@ public class KeyValueSorting {
             /**
              * compares the two items for order
              */
-            @SuppressWarnings("unchecked")    // no way to predetermine the value types
+            // no way to predetermine the value types
+            @SuppressWarnings("unchecked")
             @Override
             public int compare(final RecordType record1, final RecordType record2) {
                 final Comparable<Object> value1 = (Comparable<Object>) adaptor.valueForKeyPath(record1, keyPath);
@@ -87,7 +88,8 @@ public class KeyValueSorting {
             /**
              * compares the two items for order
              */
-            @SuppressWarnings("unchecked")    // no way to predetermine the item types
+            // no way to predetermine the item types
+            @SuppressWarnings("unchecked")
             @Override
             public int compare(final RecordType record1, final RecordType record2) {
                 for (final Comparator<RecordType> comparator : comparators) {

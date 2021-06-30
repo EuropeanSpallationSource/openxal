@@ -1073,7 +1073,8 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      */
     @Override
     public boolean isMagnet() {
-        return false;   // by default, a node is not an magnet
+        // by default, a node is not an magnet
+        return false;
     }
 
     //------------------ Object Overrides ------------------------------\\

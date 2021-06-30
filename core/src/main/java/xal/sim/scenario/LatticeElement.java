@@ -34,8 +34,8 @@ import xal.smf.impl.Magnet;
  * <br>
  * &middot; The idea is that probes states produced by simulation will carry
  * this attribute
- * <strong>if</strong> it has been set. If not, then the probe state will have the same
- * attribute ID as the hardware node.
+ * <strong>if</strong> it has been set. If not, then the probe state will have
+ * the same attribute ID as the hardware node.
  * <br>
  * <br>
  * &middot; Note that probe states now carry two identifier attributes, one for

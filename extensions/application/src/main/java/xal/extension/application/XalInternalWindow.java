@@ -176,7 +176,8 @@ public abstract class XalInternalWindow extends JInternalFrame implements XalDoc
     @Override
     public void showWindow() {
         try {
-            setIcon(false);    // de-iconify this window
+            // de-iconify this window
+            setIcon(false);
             setVisible(true);
             toFront();
             setSelected(true);
@@ -191,7 +192,8 @@ public abstract class XalInternalWindow extends JInternalFrame implements XalDoc
     @Override
     public void hideWindow() {
         try {
-            setIcon(true);     // iconify the window			
+            // iconify the window			
+            setIcon(true);
         } catch (PropertyVetoException exception) {
             Application.displayError("Document Exception", "Exception attempting to iconify document.", exception);
         }

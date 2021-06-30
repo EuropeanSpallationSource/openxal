@@ -5,8 +5,6 @@
  */
 package xal.plugin.jca;
 
-import xal.tools.messaging.MessageCenter;
-import xal.tools.ArrayValue;
 import xal.ca.*;
 
 import gov.aps.jca.CAException;
@@ -32,6 +30,8 @@ import xal.tools.apputils.Preferences;
  * @version 1.1
  */
 class JcaChannel extends Channel {
+
+    private static final Logger LOGGER = Logger.getLogger(JcaChannel.class.getName());
 
     //  Global Variables
     /**
@@ -135,9 +135,10 @@ class JcaChannel extends Channel {
     JcaChannel(final String signalName, final Context jcaContext, final JcaNativeChannelCache jcaNativeChannelCache) {
         super(signalName);
 
-        hasInitializedCa = false;   // since we only load and initialize Channel Access on demand
-        jcaNativeChannelCache = jcaNativeChannelCache;
-        jcaContext = jcaContext;
+        // since we only load and initialize Channel Access on demand
+        hasInitializedCa = false;
+        this.jcaNativeChannelCache = jcaNativeChannelCache;
+        this.jcaContext = jcaContext;
         jcaChannel = null;
         connectionLock = new Object();
 
@@ -174,10 +175,12 @@ class JcaChannel extends Channel {
      * @param bDebug debug flag (on or off)
      */
     public static synchronized void setDebugMode(boolean bDebug) {
-        if (DEBUG == true && bDebug == false) // turning off debug mode
-        {
-            if (CNT_REF > 0) {             // must check if any channels were instantiated
-                CA_INIT = true;             // initialize CA if so
+        // turning off debug mode
+        if (DEBUG == true && bDebug == false) {
+            // must check if any channels were instantiated
+            if (CNT_REF > 0) {
+                // initialize CA if so
+                CA_INIT = true;
             }
         }
 
@@ -185,7 +188,7 @@ class JcaChannel extends Channel {
     }
 
     /**
-     * Check if EPICS Channel Access libaray has been initialized and if not, do
+     * Check if EPICS Channel Access library has been initialized and if not, do
      * so.
      */
     private static synchronized void caAddRef() {
@@ -206,17 +209,21 @@ class JcaChannel extends Channel {
     private static synchronized void caRelease() {
         // Error check 
         if (CNT_REF == 0) {
-            return;      // inadvertant (unbalanced) call
+            // inadvertant (unbalanced) call
+            return;
         }
         // Check if channel access library is still needed and if not, release it
         CNT_REF--;
         if (CNT_REF > 0) {
-            return;        // still active channels
+            // still active channels
+            return;
         }
         if (CA_LOCK) {
-            return;        // CA library is locked into memory
+            // CA library is locked into memory
+            return;
         }
-        if (CA_INIT == true) {          // CA library is in memory and there are no more active channels
+        // CA library is in memory and there are no more active channels
+        if (CA_INIT == true) {
             CA_INIT = false;
             //Ca.exit();
         }
@@ -225,6 +232,7 @@ class JcaChannel extends Channel {
     /**
      * Check if Channel Access library can be released
      */
+    @Override
     protected void finalize() throws Throwable {
         if (hasInitializedCa) {
             caRelease();
@@ -237,51 +245,48 @@ class JcaChannel extends Channel {
      *
      * @param dblTm I/O timeout
      */
+    @Override
     public void setIoTimeout(double dblTm) {
         dblTmIO = dblTm;
     }
 
-    ;
-
-    
     /**
-     *  Set the channel access Pend Event timeout
-     *  @param  dblTm       event timeout
+     * Set the channel access Pend Event timeout
+     *
+     * @param dblTm event timeout
      */
+    @Override
     public void setEventTimeout(double dblTm) {
         dblTmEvt = dblTm;
     }
 
-    ;
-    
-	
     /**
-     *  Get the channel access Pend IO timeout
-     *  @return       I/O timeout
+     * Get the channel access Pend IO timeout
+     *
+     * @return I/O timeout
      */
+    @Override
     public double getIoTimeout() {
         return dblTmIO;
     }
 
-    ;
-	
-	
     /**
-     *  Get the channel access Pend Event timeout
-     *  @return       event timeout
+     * Get the channel access Pend Event timeout
+     *
+     * @return event timeout
      */
+    @Override
     public double getEventTimeout() {
         return dblTmEvt;
     }
 
-    ;
-    
-    
-    
-    /** Initialize channel access and increment instance count */
+    /**
+     * Initialize channel access and increment instance count
+     */
     protected void initChannelAccess() {
         if (!hasInitializedCa) {
-            caAddRef();    // Increment Channel instance counter
+            // Increment Channel instance counter
+            caAddRef();
             hasInitializedCa = true;
         }
     }
@@ -294,6 +299,7 @@ class JcaChannel extends Channel {
      */
     private ConnectionListener newConnectionListener() {
         return new ConnectionListener() {
+            @Override
             public void connectionChanged(final ConnectionEvent event) {
                 // make sure we don't post a connection event until the channel has been assigned
                 synchronized (connectionLock) {
@@ -328,6 +334,7 @@ class JcaChannel extends Channel {
      * @return true if the connection was made within the timeout and false if
      * not
      */
+    @Override
     public boolean connectAndWait(final double timeout) {
         if (strId == null) {
             return false;		// check whether this channel's name has been specified
@@ -348,6 +355,7 @@ class JcaChannel extends Channel {
      * connection event will be sent to registered connection listeners when the
      * connection has been established.
      */
+    @Override
     public void requestConnection() {
         if (strId == null || isConnected()) {
             return;	// determine if there is any point in attempting a connection
@@ -390,7 +398,8 @@ class JcaChannel extends Channel {
      */
     synchronized private void waitForConnection(final double timeout) {
         if (connectionFlag) {
-            return;  // no need to wait
+            // no need to wait
+            return;
         }
         try {
             synchronized (connectionLock) {
@@ -415,6 +424,7 @@ class JcaChannel extends Channel {
      * Terminate the network channel connection and clear all events associated
      * with process variable
      */
+    @Override
     public void disconnect() {
         try {
             if (!isConnected()) {
@@ -467,6 +477,7 @@ class JcaChannel extends Channel {
     /**
      * get the Java class associated with the native type of this channel
      */
+    @Override
     public Class<?> elementType() throws ConnectionException {
         checkIfEverConnected("elementType()");
 
@@ -501,6 +512,7 @@ class JcaChannel extends Channel {
      *
      * @return number of values in process variable
      */
+    @Override
     public int elementCount() throws ConnectionException {
         checkIfEverConnected("elementCount()");
 
@@ -515,6 +527,7 @@ class JcaChannel extends Channel {
      *
      * @exception ConnectionException channel not connected
      */
+    @Override
     public boolean readAccess() throws ConnectionException {
         checkIfEverConnected("readAccess()");
 
@@ -529,6 +542,7 @@ class JcaChannel extends Channel {
      *
      * @exception ConnectionException channel not connected
      */
+    @Override
     public boolean writeAccess() throws ConnectionException {
         checkIfEverConnected("writeAccess()");
 
@@ -705,6 +719,7 @@ class JcaChannel extends Channel {
     /**
      * Convenience method which returns the units for this channel.
      */
+    @Override
     public String getUnits() throws ConnectionException, GetException {
         return getCtrlInfo().getUnits();
     }
@@ -714,6 +729,7 @@ class JcaChannel extends Channel {
      *
      * @return two element array of PVs with the lower and upper limit PVs
      */
+    @Override
     public String[] getOperationLimitPVs() {
         return constructLimitPVs("LOPR", "HOPR");
     }
@@ -723,6 +739,7 @@ class JcaChannel extends Channel {
      *
      * @return two element array of PVs with the lower and upper limit PVs
      */
+    @Override
     public String[] getWarningLimitPVs() {
         return constructLimitPVs("LOW", "HIGH");
     }
@@ -732,6 +749,7 @@ class JcaChannel extends Channel {
      *
      * @return two element array of PVs with the lower and upper limit PVs
      */
+    @Override
     public String[] getAlarmLimitPVs() {
         return constructLimitPVs("LOLO", "HIHI");
     }
@@ -741,6 +759,7 @@ class JcaChannel extends Channel {
      *
      * @return two element array of PVs with the lower and upper limit PVs
      */
+    @Override
     public String[] getDriveLimitPVs() {
         return constructLimitPVs("DRVL", "DRVH");
     }
@@ -760,6 +779,7 @@ class JcaChannel extends Channel {
     /**
      * Convenience method which returns the upper display limit.
      */
+    @Override
     public Number rawUpperDisplayLimit() throws ConnectionException, GetException {
         return getCtrlInfo().getUpperDispLimit();
     }
@@ -767,6 +787,7 @@ class JcaChannel extends Channel {
     /**
      * Convenience method which returns the lower display limit.
      */
+    @Override
     public Number rawLowerDisplayLimit() throws ConnectionException, GetException {
         return getCtrlInfo().getLowerDispLimit();
     }
@@ -774,6 +795,7 @@ class JcaChannel extends Channel {
     /**
      * Convenience method which returns the upper alarm limit.
      */
+    @Override
     public Number rawUpperAlarmLimit() throws ConnectionException, GetException {
         return getCtrlInfo().getUpperAlarmLimit();
     }
@@ -781,6 +803,7 @@ class JcaChannel extends Channel {
     /**
      * Convenience method which returns the lower alarm limit.
      */
+    @Override
     public Number rawLowerAlarmLimit() throws ConnectionException, GetException {
         return getCtrlInfo().getLowerAlarmLimit();
     }
@@ -788,6 +811,7 @@ class JcaChannel extends Channel {
     /**
      * Convenience method which returns the upper warning limit.
      */
+    @Override
     public Number rawUpperWarningLimit() throws ConnectionException, GetException {
         return getCtrlInfo().getUpperWarningLimit();
     }
@@ -795,6 +819,7 @@ class JcaChannel extends Channel {
     /**
      * Convenience method which returns the lower warning limit.
      */
+    @Override
     public Number rawLowerWarningLimit() throws ConnectionException, GetException {
         return getCtrlInfo().getLowerWarningLimit();
     }
@@ -802,6 +827,7 @@ class JcaChannel extends Channel {
     /**
      * Convenience method which returns the upper control limit.
      */
+    @Override
     public Number rawUpperControlLimit() throws ConnectionException, GetException {
         return getCtrlInfo().getUpperCtrlLimit();
     }
@@ -809,6 +835,7 @@ class JcaChannel extends Channel {
     /**
      * Convenience method which returns the lower control limit.
      */
+    @Override
     public Number rawLowerControlLimit() throws ConnectionException, GetException {
         return getCtrlInfo().getLowerCtrlLimit();
     }
@@ -873,6 +900,7 @@ class JcaChannel extends Channel {
      *
      * @return the channel record
      */
+    @Override
     protected ChannelRecord getRawStringValueRecord() throws ConnectionException, GetException {
         return getRawValueRecord(STRING);
     }
@@ -902,6 +930,7 @@ class JcaChannel extends Channel {
      * the native type of this channel. This is a convenient way to get the
      * value of the PV.
      */
+    @Override
     public ChannelRecord getRawValueRecord() throws ConnectionException, GetException {
         connectAndWait();
         return getRawValueRecord(nativeType());
@@ -913,6 +942,7 @@ class JcaChannel extends Channel {
      *
      * @return the channel record
      */
+    @Override
     protected ChannelStatusRecord getRawStringStatusRecord() throws ConnectionException, GetException {
         return getRawStatusRecord(DBRType.STS_STRING.getValue());
     }
@@ -938,6 +968,7 @@ class JcaChannel extends Channel {
      * Get a <code>ChannelStatusRecord</code> representing the fetched record
      * for the native type of this channel.
      */
+    @Override
     public ChannelStatusRecord getRawStatusRecord() throws ConnectionException, GetException {
         connectAndWait();
         return getRawStatusRecord(getStatusType());
@@ -949,6 +980,7 @@ class JcaChannel extends Channel {
      *
      * @return the channel record
      */
+    @Override
     protected ChannelTimeRecord getRawStringTimeRecord() throws ConnectionException, GetException {
         return getRawTimeRecord(DBRType.TIME_STRING.getValue());
     }
@@ -974,6 +1006,7 @@ class JcaChannel extends Channel {
      * Return a <code>ChannelTimeRecord</code> representing the fetched record
      * for the native type of this channel.
      */
+    @Override
     public ChannelTimeRecord getRawTimeRecord() throws ConnectionException, GetException {
         connectAndWait();
         return getRawTimeRecord(getTimeType());
@@ -1023,6 +1056,7 @@ class JcaChannel extends Channel {
      * @throws xal.ca.ConnectionException channel is not connected
      * @exception xal.ca.GetException general channel access failure
      */
+    @Override
     public void getRawValueCallback(final IEventSinkValue listener) throws ConnectionException, GetException {
         getRawValueCallback(listener, true);
     }
@@ -1036,6 +1070,7 @@ class JcaChannel extends Channel {
      * @throws xal.ca.ConnectionException channel is not connected
      * @exception xal.ca.GetException general channel access failure
      */
+    @Override
     public void getRawValueCallback(final IEventSinkValue listener, final boolean attemptConnection) throws ConnectionException, GetException {
         checkConnection("getValueCallback()", attemptConnection);
 
@@ -1048,6 +1083,7 @@ class JcaChannel extends Channel {
     /**
      * Submit a non-blocking Get request with callback
      */
+    @Override
     public void getRawValueTimeCallback(final IEventSinkValTime listener, final boolean attemptConnection) throws ConnectionException, GetException {
         checkConnection("getRawValueTimeCallback()", attemptConnection);
 
@@ -1055,6 +1091,7 @@ class JcaChannel extends Channel {
             final DBRType timeDBRType = getTimeDBRType();
 
             jcaChannel.get(timeDBRType, elementCount(), new gov.aps.jca.event.GetListener() {
+                @Override
                 public void getCompleted(final gov.aps.jca.event.GetEvent event) {
                     final DbrTimeAdaptor adaptor = new DbrTimeAdaptor(event.getDBR());
                     listener.eventValue(new ChannelTimeRecordImpl(adaptor), JcaChannel.this);
@@ -1074,6 +1111,7 @@ class JcaChannel extends Channel {
      * @throws xal.ca.ConnectionException channel is not connected
      * @throws xal.ca.PutException general put failure
      */
+    @Override
     public void putRawValCallback(final String newVal, final xal.ca.PutListener listener) throws ConnectionException, PutException {
         this.checkConnection("putValCallback()");
 
@@ -1097,6 +1135,7 @@ class JcaChannel extends Channel {
      * @throws xal.ca.ConnectionException channel is not connected
      * @throws xal.ca.PutException general put failure
      */
+    @Override
     public void putRawValCallback(final byte newVal, final xal.ca.PutListener listener) throws ConnectionException, PutException {
         this.checkConnection("putValCallback()");
 
@@ -1120,6 +1159,7 @@ class JcaChannel extends Channel {
      * @throws xal.ca.ConnectionException channel is not connected
      * @throws xal.ca.PutException general put failure
      */
+    @Override
     public void putRawValCallback(final short newVal, final xal.ca.PutListener listener) throws ConnectionException, PutException {
         this.checkConnection("putValCallback()");
 
@@ -1143,6 +1183,7 @@ class JcaChannel extends Channel {
      * @throws xal.ca.ConnectionException channel is not connected
      * @throws xal.ca.PutException general put failure
      */
+    @Override
     public void putRawValCallback(final int newVal, final xal.ca.PutListener listener) throws ConnectionException, PutException {
         this.checkConnection("putValCallback()");
 
@@ -1166,6 +1207,7 @@ class JcaChannel extends Channel {
      * @throws xal.ca.ConnectionException channel is not connected
      * @throws xal.ca.PutException general put failure
      */
+    @Override
     public void putRawValCallback(final float newVal, final xal.ca.PutListener listener) throws ConnectionException, PutException {
         this.checkConnection("putValCallback()");
 
@@ -1189,6 +1231,7 @@ class JcaChannel extends Channel {
      * @throws xal.ca.ConnectionException channel is not connected
      * @throws xal.ca.PutException general put failure
      */
+    @Override
     public void putRawValCallback(double newVal, xal.ca.PutListener listener) throws ConnectionException, PutException {
         this.checkConnection("putValCallback()");
 
@@ -1212,6 +1255,7 @@ class JcaChannel extends Channel {
      * @throws xal.ca.ConnectionException channel is not connected
      * @throws xal.ca.PutException general put failure
      */
+    @Override
     public void putRawValCallback(byte[] newVal, xal.ca.PutListener listener) throws ConnectionException, PutException {
         this.checkConnection("putValCallback()");
 
@@ -1235,6 +1279,7 @@ class JcaChannel extends Channel {
      * @throws xal.ca.ConnectionException channel is not connected
      * @throws xal.ca.PutException general put failure
      */
+    @Override
     public void putRawValCallback(short[] newVal, xal.ca.PutListener listener) throws ConnectionException, PutException {
         this.checkConnection("putValCallback()");
 
@@ -1258,6 +1303,7 @@ class JcaChannel extends Channel {
      * @throws xal.ca.ConnectionException channel is not connected
      * @throws xal.ca.PutException general put failure
      */
+    @Override
     public void putRawValCallback(int[] newVal, xal.ca.PutListener listener) throws ConnectionException, PutException {
         this.checkConnection("putValCallback()");
 
@@ -1281,6 +1327,7 @@ class JcaChannel extends Channel {
      * @throws xal.ca.ConnectionException channel is not connected
      * @throws xal.ca.PutException general put failure
      */
+    @Override
     public void putRawValCallback(float[] newVal, xal.ca.PutListener listener) throws ConnectionException, PutException {
         this.checkConnection("putValCallback()");
 
@@ -1304,6 +1351,7 @@ class JcaChannel extends Channel {
      * @throws xal.ca.ConnectionException channel is not connected
      * @throws xal.ca.PutException general put failure
      */
+    @Override
     public void putRawValCallback(double[] newVal, xal.ca.PutListener listener) throws ConnectionException, PutException {
         this.checkConnection("putValCallback()");
 
@@ -1327,6 +1375,7 @@ class JcaChannel extends Channel {
      * combination of {Monitor.VALUE, Monitor.LOG, Monitor.ALARM}
      * @return MonitorSrc object associated with this event
      */
+    @Override
     public xal.ca.Monitor addMonitorValTime(IEventSinkValTime ifcSink, int intMaskFire) throws ConnectionException, MonitorException {
         this.checkConnection("addMonitorValTime()");
         return JcaMonitor.newValueTimeMonitor(this, ifcSink, intMaskFire);
@@ -1340,6 +1389,7 @@ class JcaChannel extends Channel {
      * combination of {Monitor.VALUE, Monitor.LOG, Monitor.ALARM}
      * @return MonitorSrc object associated with this event
      */
+    @Override
     public xal.ca.Monitor addMonitorValStatus(IEventSinkValStatus ifcSink, int intMaskFire) throws ConnectionException, MonitorException {
         this.checkConnection("addMonitorValStatus()");
         return JcaMonitor.newValueStatusMonitor(this, ifcSink, intMaskFire);
@@ -1353,6 +1403,7 @@ class JcaChannel extends Channel {
      * combination of {Monitor.VALUE, Monitor.LOG, Monitor.ALARM}
      * @return MonitorSrc object associated with this event
      */
+    @Override
     public xal.ca.Monitor addMonitorValue(IEventSinkValue ifcSink, int intMaskFire) throws ConnectionException, MonitorException {
         this.checkConnection("addMonitorValue()");
         return JcaMonitor.newValueMonitor(this, ifcSink, intMaskFire);
@@ -1378,11 +1429,7 @@ class JcaChannel extends Channel {
     private void flushGetIO() throws GetException {
         try {
             jcaContext.pendIO(dblTmIO);
-        } catch (CAException exception) {
-            LOGGER.log(Level.SEVERE, null, exception);
-            LOGGER.log(Level.SEVERE, "Error flushing the channel access GET I/O buffer.", exception);
-            throw new GetException("JcaChannel.flushGetIO() - channel access time out occurred");
-        } catch (TimeoutException exception) {
+        } catch (CAException | TimeoutException exception) {
             LOGGER.log(Level.SEVERE, null, exception);
             LOGGER.log(Level.SEVERE, "Error flushing the channel access GET I/O buffer.", exception);
             throw new GetException("JcaChannel.flushGetIO() - channel access time out occurred");
@@ -1397,14 +1444,25 @@ class JcaChannel extends Channel {
     private void flushPutIO() throws PutException {
         try {
             jcaContext.pendIO(dblTmIO);
-        } catch (CAException exception) {
-            LOGGER.log(Level.SEVERE, null, exception);
-            LOGGER.log(Level.SEVERE, "Error flushing the channel access PUT I/O buffer.", exception);
-            throw new PutException("JcaChannel.flushPutIO() - channel access time out occurred");
-        } catch (TimeoutException exception) {
+        } catch (CAException | TimeoutException exception) {
             LOGGER.log(Level.SEVERE, null, exception);
             LOGGER.log(Level.SEVERE, "Error flushing the channel access PUT I/O buffer.", exception);
             throw new PutException("JcaChannel.flushPutIO() - channel access time out occurred");
         }
+    }
+
+    @Override
+    public void putRawValCallback(long newVal, PutListener listener) throws ConnectionException, PutException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void putRawValCallback(String[] newVal, PutListener listener) throws ConnectionException, PutException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void putRawValCallback(long[] newVal, PutListener listener) throws ConnectionException, PutException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

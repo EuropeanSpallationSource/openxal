@@ -96,7 +96,8 @@ public class RelativisticParameterConverter {
      * </p>
      *
      * @param beta normalized probe velocity
-     * @param freq time-harmonic frequency <em>f</em> of surrounding RF field (Hz)
+     * @param freq time-harmonic frequency <em>f</em> of surrounding RF field
+     * (Hz)
      *
      * @return particle wave number with respect to the RF
      *
@@ -115,7 +116,8 @@ public class RelativisticParameterConverter {
      *
      * @param k wave number of the particle with respect to RF frequency
      * (radians/meter)
-     * @param freq time-harmonic frequency <em>f</em> of surrounding RF field (Hz)
+     * @param freq time-harmonic frequency <em>f</em> of surrounding RF field
+     * (Hz)
      *
      * @return the normalized velocity &beta; of the particle for the given wave
      * number <em>k</em>
@@ -146,8 +148,8 @@ public class RelativisticParameterConverter {
     /**
      * Computes and returns the momentum of a particle with the given rest and
      * kinetic energies. This method returns the rest the the standard beam
-     * physics units of electron-volts/<em>c</em> where <em>c</em> is the speed of
-     * light. The returned value is given by the formula
+     * physics units of electron-volts/<em>c</em> where <em>c</em> is the speed
+     * of light. The returned value is given by the formula
      * <br/>
      * <br/>
      * &nbsp; &nbsp; <em>p</em> = &beta;&gamma;<em>mc</em>
@@ -155,13 +157,14 @@ public class RelativisticParameterConverter {
      * <br/>
      * where &beta; is the normalized particle velocity, &gamma; is the
      * relativistic factor,
-     * <em>m</em> is the mass of the particle, and <em>c</em> is the speed of light.
+     * <em>m</em> is the mass of the particle, and <em>c</em> is the speed of
+     * light.
      *
      * @param W kinetic energy of the particle (eV)
      * @param Er rest energy of particle (eV)
      *
-     * @return particle momentum in <em>eV</em>/<em>c</em> where <em>c</em> is the
-     * speed of light
+     * @return particle momentum in <em>eV</em>/<em>c</em> where <em>c</em> is
+     * the speed of light
      *
      * @since Oct 1, 2015, Christopher K. Allen
      */

@@ -184,7 +184,8 @@ public class IdealMagFringeQuadFace extends ThinElectromagnet {
      * described by H. Matsuda. The integral determines the amount of defocusing
      * caused by the fringe field.
      *
-     * @return second-order integral of fringe field (<strong>dimensionless</strong>)
+     * @return second-order integral of fringe field
+     * (<strong>dimensionless</strong>)
      *
      * @see IdealMagFringeQuadFace#setFringeIntegral(double)
      */
@@ -259,7 +260,8 @@ public class IdealMagFringeQuadFace extends ThinElectromagnet {
         double p = Math.sqrt(w * (w + 2 * Er));
 
         double bPathFlag = getFieldPathFlag();
-        if (bPathFlag == 1) {//if bpathflag =1, then use nominal k0 from nominal kine energy
+        //if bpathflag =1, then use nominal k0 from nominal kine energy
+        if (bPathFlag == 1) {
             double w0 = getNominalKineEnergy();
             if (w0 == 0.) {
                 w0 = probe.getKineticEnergy();
@@ -267,7 +269,8 @@ public class IdealMagFringeQuadFace extends ThinElectromagnet {
             }
             double p0 = Math.sqrt(w0 * (w0 + 2 * Er));
 
-            setBRhoScaling(p / p0);//save brho scaling. when nominalKineEnergy = 0, set 1.
+            //save brho scaling. when nominalKineEnergy = 0, set 1.
+            setBRhoScaling(p / p0);
         }
 
         // Get  parameters
@@ -282,7 +285,8 @@ public class IdealMagFringeQuadFace extends ThinElectromagnet {
 
         if (bPathFlag == 0) {
             k = (q * LIGHT_SPEED * getMagField()) / p;
-        } else if (bPathFlag == 1) {//brhoscaling
+            //brhoscaling
+        } else if (bPathFlag == 1) {
             k = (q * LIGHT_SPEED * getMagField() * getBRhoScaling()) / p;
         } else {
             k = getK1();
@@ -293,22 +297,18 @@ public class IdealMagFringeQuadFace extends ThinElectromagnet {
         if (entrFlag) {
             matPhi.setElem(0, 0, 1 - k * I1);
             matPhi.setElem(0, 1, -2 * k * I2);
-            //matPhi.setElem(1,0, -k*k*I3);
             matPhi.setElem(1, 1, 1 + k * I1);
 
             matPhi.setElem(2, 2, 1 + k * I1);
             matPhi.setElem(2, 3, 2 * k * I2);
-            //matPhi.setElem(3,2, -k*k*I3);
             matPhi.setElem(3, 3, 1 - k * I1);
         } else {
             matPhi.setElem(0, 0, 1 + k * I1);
             matPhi.setElem(0, 1, -2 * k * I2);
-            //matPhi.setElem(1,0, -k*k*I3);
             matPhi.setElem(1, 1, 1 - k * I1);
 
             matPhi.setElem(2, 2, 1 - k * I1);
             matPhi.setElem(2, 3, 2 * k * I2);
-            //matPhi.setElem(3,2, -k*k*I3);
             matPhi.setElem(3, 3, 1 + k * I1);
         }
 

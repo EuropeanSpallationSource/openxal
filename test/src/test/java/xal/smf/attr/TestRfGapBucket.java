@@ -55,7 +55,6 @@ public class TestRfGapBucket {
     public static void setUpBeforeClass() throws Exception {
         File fileOutput = ResourceManager.getOutputFile(TestRfGapBucket.class, TestRfGapBucket.class.getName() + ".txt");
         OSTR_TYPEOUT = new PrintStream(fileOutput);
-//        OSTR_TYPEOUT = System.out;
 
         OSTR_TYPEOUT.println("Loading Test Accelerator");
         ACCL_TEST = ResourceManager.getTestAccelerator();
@@ -114,45 +113,4 @@ public class TestRfGapBucket {
             OSTR_TYPEOUT.println("S'(x) = " + polySpFit.toString());
         }
     }
-
-//    /**
-//     * Test method for {@link xal.smf.attr.RfGapBucket#getTpCoefficients()}.
-//     */
-//    @Test
-//    public final void testGetTpCoefficients() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link xal.smf.attr.RfGapBucket#getSCoefficients()}.
-//     */
-//    @Test
-//    public final void testGetSCoefficients() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link xal.smf.attr.RfGapBucket#getSpCoefficients()}.
-//     */
-//    @Test
-//    public final void testGetSpCoefficients() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link xal.smf.attr.RfGapBucket#setTCoefficients(double[])}.
-//     */
-//    @Test
-//    public final void testSetTCoefficients() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
-//    /**
-//     * Test method for {@link xal.smf.attr.RfCavityBucket#setTpCoefficients(double[])}.
-//     */
-//    @Test
-//    public final void testSetTpCoefficients() {
-//        fail("Not yet implemented"); // TODO
-//    }
-//
 }

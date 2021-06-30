@@ -16,12 +16,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import xal.ca.*;
-import xal.sim.slg.*;   // for lattice generation
-import xal.model.probe.*;  // Probe for t3d header
+// for lattice generation
+import xal.sim.slg.*;
+// Probe for t3d header
+import xal.model.probe.*;
 import xal.sim.scenario.Scenario;
 import xal.tools.beam.TraceXalUnitConverter;
 import xal.tools.beam.CovarianceMatrix;
-import xal.tools.beam.Twiss; //had to import to fix deprecation issue with getTwiss
+//had to import to fix deprecation issue with getTwiss
+import xal.tools.beam.Twiss;
 
 /**
  * T3dGenerator generates Trace 3D input file from XAL lattice view. Usage:
@@ -156,8 +159,8 @@ public class T3dGenerator {
                 devTypeInd = 1;
                 devStr = devTypeInd + ", A(1, " + counter + ")="
                         + nf.format(element.getLength() * 1000.) + ",\n";
-            } // for quads
-            else if (element.getType().equals("quadrupole")) {
+                // for quads
+            } else if (element.getType().equals("quadrupole")) {
                 devTypeInd = 3;
                 // for PM quads, i.e. always use design field
                 if (element.getAcceleratorNode().getType().equals("PMQH")
@@ -184,8 +187,8 @@ public class T3dGenerator {
                         }
                     }
                 }
-            } // for bending dipole
-            else if (element.getType().equals("dipole")) {
+                // for bending dipole
+            } else if (element.getType().equals("dipole")) {
                 devTypeInd = 8;
                 if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
                     devStr = devTypeInd + ", A(1, " + counter + ")="
@@ -195,8 +198,8 @@ public class T3dGenerator {
                             + "0,\n";
                 }
 
-            } // for solenoid
-            else if (element.getType().equals("solenoid")) {
+                // for solenoid
+            } else if (element.getType().equals("solenoid")) {
                 devTypeInd = 5;
                 if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
                     devStr = devTypeInd + ", A(1, " + counter + ")="
@@ -215,8 +218,8 @@ public class T3dGenerator {
                                 + "0., " + nf.format(element.getLength() * 1000.) + ",\n";
                     }
                 }
-            } // for horizontal dipole correctors
-            else if (element.getType().equals("hsteerer")) {
+                // for horizontal dipole correctors
+            } else if (element.getType().equals("hsteerer")) {
                 devTypeInd = 19;
                 if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
                     devStr = devTypeInd + ", A(1, " + counter + ")="
@@ -235,8 +238,8 @@ public class T3dGenerator {
                     } catch (GetException e) {
                     }
                 }
-            } // for vertical dipole correctors
-            else if (element.getType().equals("vsteerer")) {
+                // for vertical dipole correctors
+            } else if (element.getType().equals("vsteerer")) {
                 devTypeInd = 19;
                 if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
                     devStr = devTypeInd + ", A(1, " + counter + ")="
@@ -255,8 +258,8 @@ public class T3dGenerator {
                     } catch (GetException e) {
                     }
                 }
-            } // for rf gaps
-            else if (element.getType().equals("rfgap")) {
+                // for rf gaps
+            } else if (element.getType().equals("rfgap")) {
                 devTypeInd = 10;
                 if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)
                         || srcSelector.equals(Scenario.SYNC_MODE_RF_DESIGN)) {

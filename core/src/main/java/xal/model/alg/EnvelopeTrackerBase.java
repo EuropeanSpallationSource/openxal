@@ -167,10 +167,6 @@ public abstract class EnvelopeTrackerBase extends Tracker {
     public static final String TBL_LBL_ENVBASETRACKER = "EnvelopeBaseTracker";
 
     /**
-     * Table record primary key name
-     */
-//    public static final String TBL_PRIM_KEY_NAME = "name";
-    /**
      * data node label for EnvelopeTracker settings
      */
     public static final String LABEL_OPTIONS = "options";
@@ -276,7 +272,6 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         this.enmEmitGrowthModel = sourceTracker.enmEmitGrowthModel;
     }
 
-    //public EnvelopeTrackerBase copy();
     /**
      * Set maximum step size allowed between space charge kicks
      *
@@ -504,7 +499,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         GenericRecord recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, strPrimKeyVal);
 
         if (recTracker == null) {
-            recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");  // just use the default record
+            // just use the default record
+            recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");
         }
 
         final boolean bolEmitGrw = recTracker.booleanValueForKey(ATTR_EMITGROWTH);
@@ -534,7 +530,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         if (daEnv != null) {
             if (daEnv.hasAttribute(ATTR_SCHEFF)) {
                 this.setUseSpacecharge(daEnv.booleanValue(ATTR_SCHEFF));
-            } else if (daEnv.hasAttribute(ATTR_USESPACECHARGE)) { // Backward compatibility
+                // Backward compatibility
+            } else if (daEnv.hasAttribute(ATTR_USESPACECHARGE)) {
                 this.setUseSpacecharge(daEnv.booleanValue(ATTR_USESPACECHARGE));
             }
 
@@ -559,15 +556,6 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      */
     @Override
     public void save(DataAdaptor daptArchive) {
-
-        //        DataAdaptor daptAlg = daptArchive.createChild(NODETAG_ALG);
-        //        daptAlg.setValue(ATTRTAG_TYPE, this.getType());
-        //        daptAlg.setValue(ATTRTAG_VER, this.getVersion());
-        //        
-        //        DataAdaptor daptTrack = daptAlg.createChild(NODETAG_TRACKER);
-        //        daptTrack.setValue(ATTRTAG_DEBUG, this.getDebugMode());
-        //        daptTrack.setValue(ATTRTAG_UPDATE, this.getProbeUpdatePolicy());
-        //        daptTrack.setValue(ATTRTAG_RFGAP_PHASE, this.useRfGapPhaseCalculation());
         super.save(daptArchive);
 
         DataAdaptor daptAlg = daptArchive.childAdaptor(NODETAG_ALG);
@@ -577,7 +565,6 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         daptOpt.setValue(ATTR_STEPSIZE, this.getStepSize());
         daptOpt.setValue(ATTR_EMITGROWTH, this.getEmittanceGrowth());
         daptOpt.setValue(ATTR_USESPACECHARGE, this.getUseSpacecharge());
-
     }
 
     /**
@@ -622,9 +609,9 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * <br>
      * <br>
      * This approximation is given in the Trace3D manualThis formula is accurate
-     * only for <em>d&phi;</em> &lt;&lt;. Even then, the results are questionable.
-     * For a more in depth treatment of longitudinal emittance growth see the
-     * reference below.
+     * only for <em>d&phi;</em> &lt;&lt;. Even then, the results are
+     * questionable. For a more in depth treatment of longitudinal emittance
+     * growth see the reference below.
      * <br>
      * &middot; The two-term expansion for
      * <em>F<sub>z</sub></em>(&Delta;<em>&phi;</em>) (see
@@ -646,8 +633,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * </p>
      *
      * @param dphi effective phase spread &Delta;<em>&phi;</em>
-     * @param matPhi transfer matrix <strong>&Phi;</strong> for conserved normalized
-     * emittance
+     * @param matPhi transfer matrix <strong>&Phi;</strong> for conserved
+     * normalized emittance
      *
      * @return Transfer matrix &Phi; after modifying focusing term
      *
@@ -669,32 +656,17 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         }
 
         // Compute auxiliary parameters
-        double Ft;     // transverse plane Fourier transform
-        double Fz;     // longitudinal plane Fourier transform
+        // transverse plane Fourier transform
+        double Ft;
+        // longitudinal plane Fourier transform
+        double Fz;
 
         Ft = this.compTransFourierTransform(dphi);
         Fz = this.compLongFourierTransform(dphi);
 
-//        if (this.getEmitGrowthModel() == EmitGrowthModel.TRACE3D)   {
-//
-//            Ft      = this.momentSine(dphi);
-//            Fz = 1.0 - dphi*dphi/12.0;  
-//            
-//        } else if (this.getEmitGrowthModel() == EmitGrowthModel.UNIFORM3D) {
-//            
-//            Ft = this.compTransFourierTransform(dphi);
-//            Fz = this.compLongFourierTransform(dphi);
-//            
-//        } else {
-//
-//            String  strMsg = "";
-//            strMsg += "EnvelopeTrackerBase#modTransferMatrixForEmitGrowth():";
-//            strMsg += " Serious Error in conditional statement";
-//            System.err.println(strMsg);
-//            throw new ModelException(strMsg);
-//        }
         // Modify the transfer matrix
-        double fl;     // thin-lens focal-length element of tranfer matrix
+        // thin-lens focal-length element of tranfer matrix
+        double fl;
 
         fl = matPhi.getElem(IND.Xp, IND.X);
         matPhi.setElem(IND.Xp, IND.X, fl * Ft);
@@ -704,8 +676,6 @@ public abstract class EnvelopeTrackerBase extends Tracker {
 
         fl = matPhi.getElem(IND.Zp, IND.Z);
         matPhi.setElem(IND.Zp, IND.Z, fl * Fz);
-        //            matPhi.setElem(PhaseIndexHom.Zp, PhaseIndexHom.Z, fl*(1.0 - dphi_2/12.0));
-        //            matPhi.setElem(PhaseIndexHom.Zp, PhaseIndexHom.Z, k*(1.0 + dp_2/12.0));
 
         return matPhi;
     }
@@ -762,7 +732,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         double covYZ = tau0.computeCentralCovYZ();
 
         // Compute space charge matrix
-        PhaseMatrix matPhiSc;       // space charge transfer matrix for dblLen
+        // space charge transfer matrix for dblLen
+        PhaseMatrix matPhiSc;
 
         // Build the space charge transfer matrix in beam coordinates
         matPhiSc = PhaseMatrix.identity();
@@ -772,7 +743,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
             double corr = (covXY * covXY) / (covXX * covYY);
             double K = probe.beamDCPerveance();
 
-            if (corr < EnvelopeTrackerBase.TOLER_CORRELATION) { // beam is upright                                
+            // beam is upright                                
+            if (corr < EnvelopeTrackerBase.TOLER_CORRELATION) {
 
                 // Compute defocusing constants in the laboratory frame
                 double kx = dblLen * K / (4 * Math.sqrt(covXX) * (Math.sqrt(covXX) + Math.sqrt(covYY)));
@@ -804,7 +776,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
                     + (covYZ * covYZ) / (covYY * covZZ);
             double K = probe.beamPerveance();
 
-            if (corr < EnvelopeTrackerBase.TOLER_CORRELATION) { // beam is upright
+            // beam is upright
+            if (corr < EnvelopeTrackerBase.TOLER_CORRELATION) {
                 double g_2 = gamma * gamma;
 
                 // Compute elliptic integrals
@@ -828,7 +801,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
 
                 matPhiSc = Ti.times(matPhiSc.times(T));
 
-            } else {    // Beam is tilted in configuration space
+                // Beam is tilted in configuration space
+            } else {
 
                 // Compute the space charge matrix in the beam frame and transform back 
                 BeamEllipsoid ellipsoid = new BeamEllipsoid(gamma, tau0);
@@ -838,82 +812,6 @@ public abstract class EnvelopeTrackerBase extends Tracker {
 
         // Return the space charge matrix
         return matPhiSc;
-
-        /*
-         * Previous Implementation moving &tau;<sub>0<sup> a have step forward.
-         */
-//                    // Get probe parameters
-//                    double              gamma  = probe.getGamma();
-//                    double              K      = probe.beamPerveance();
-//                    CovarianceMatrix   tau0   = probe.getCorrelation();
-//                    
-//                    
-//                    // Get element transfer matrix for a half step
-//                    PhaseMap    mapPhi = elem.transferMap(probe, dblLen/2.0);
-//                    PhaseMatrix matPhi = mapPhi.getFirstOrder();
-//                    
-//                    
-//                    // Move the covariance matrix forward a half step
-//                    PhaseMatrix         matTau1   = tau0.conjugateTrans(matPhi);
-//                    CovarianceMatrix   tau1      = new CovarianceMatrix(matTau1);
-//            
-//                    
-//                    // Compute the space charge matrix at center of step dblLen
-//                    //      Compute the correlations in configuration space
-//                    double sigXX = tau1.computeCovXX();
-//                    double sigYY = tau1.computeCovYY();
-//                    double sigZZ = tau1.computeCovZZ();
-//                    
-//                    double sigXY = tau1.computeCovXY();
-//                    double sigXZ = tau1.computeCovXZ();
-//                    double sigYZ = tau1.computeCovYZ();
-//                    
-//                    double corr = (sigXY*sigXY)/(sigXX*sigYY) 
-//                                + (sigXZ*sigXZ)/(sigXX*sigZZ) 
-//                                + (sigYZ*sigYZ)/(sigYY*sigZZ);
-//            
-//                    
-//                    // Compute space charge matrix
-//                    PhaseMatrix     matPhiSc;       // space charge transfer matrix for dblLen
-//                    
-//            //        if (false) { // beam is upright
-//                    if (corr < EnvelopeTrackerBase.TOLER_CORRELATION) { // beam is upright
-//                        double g_2 = gamma*gamma;
-//            
-//                        // Compute elliptic integrals
-//                        double RDx = EllipticIntegral.RD(sigYY, g_2*sigZZ, sigXX)/EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
-//                        double RDy = EllipticIntegral.RD(g_2*sigZZ, sigXX, sigYY)/EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
-//                        double RDz = EllipticIntegral.RD(sigXX, sigYY, g_2*sigZZ)/EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
-//                      
-//                        // Compute defocusing constants in the laboratory frame
-//                        double kx = gamma*dblLen*K*RDx;
-//                        double ky = gamma*dblLen*K*RDy;
-//                        double kz = gamma*dblLen*K*RDz;
-//                        
-//                        // Build the space charge transfer matrix in beam coordinates
-//                        matPhiSc = PhaseMatrix.identity();
-//                        
-//                        matPhiSc.setElem(PhaseIndexHom.Xp, PhaseIndexHom.X, kx);
-//                        matPhiSc.setElem(PhaseIndexHom.Yp, PhaseIndexHom.Y, ky);
-//                        matPhiSc.setElem(PhaseIndexHom.Zp, PhaseIndexHom.Z, kz);
-//                        
-//                        // Transform to laboratory coordinates
-//                        PhaseVector z  = tau1.getMean();
-//                        PhaseMatrix T  = PhaseMatrix.translation(z.negate());
-//                        PhaseMatrix Ti = PhaseMatrix.translation(z);
-//                        
-//                        matPhiSc = Ti.times( matPhiSc.times(T) );
-//                        
-//                    } else {    // Beam is tilted in configuration space
-//                        
-//                        // Compute the space charge matrix in the beam frame and transform back 
-//                        BeamEllipsoid   ellipsoid = new BeamEllipsoid(gamma, tau1);
-//                        matPhiSc                  = ellipsoid.computeScheffMatrix(dblLen, K);
-//                    }
-//                    
-//            
-//                    // Return the space charge matrix
-//                    return matPhiSc;
     }
 
     /**
@@ -929,8 +827,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * (see {@link #setEmitGrowthModel(EmitGrowthModel)}). We currently assume
      * the beam bunch to be axially symmetric. We denote the growth function in
      * the transverse plane as
-     * <em>G<sub>t</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>) and
-     * the growth function in the longitudinal plane as
+     * <em>G<sub>t</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>)
+     * and the growth function in the longitudinal plane as
      * <em>G<sub>z</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>).
      * </p>
      * <p>
@@ -941,18 +839,20 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * </p>
      * <p>
      * The emittance growth function
-     * <em>G<sub>t</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>) for
-     * the transverse plane is defined as
+     * <em>G<sub>t</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>)
+     * for the transverse plane is defined as
      * <br>
      * <br>
-     * &nbsp; <em>G<sub>t</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>)
+     * &nbsp;
+     * <em>G<sub>t</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>)
      * &equiv; <em>S<sub>t</sub></em>(&Delta;<em>&phi;</em>) - sin<sup>2</sup>
      * <em>&phi;<sub>s</sub></em>
      * <em>T<sub>t</sub></em>(&Delta;<em>&phi;</em>)
      * <br>
      * <br>
      * where <em>&phi;<sub>s</sub></em> is the synchronous particle phase,
-     * &Delta;<em>&phi;</em> is the <em>effective</em> phase spread, and functions
+     * &Delta;<em>&phi;</em> is the <em>effective</em> phase spread, and
+     * functions
      * <em>S<sub>t</sub></em>(&Delta;<em>&phi;</em>) and
      * <em>T<sub>t</sub></em>(&Delta;<em>&phi;</em>) are given by
      * <br>
@@ -971,8 +871,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * <br>
      * respectively. There are analogous formulas for the longitudinal emittance
      * growth function
-     * <em>G<sub>z</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>) where
-     * the transverse Fourier transform
+     * <em>G<sub>z</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>)
+     * where the transverse Fourier transform
      * <em>F<sub>t</sub></em>
      * is replaced by the longitudinal Fourier transform
      * <em>F<sub>z</sub></em>. (See the methods
@@ -998,7 +898,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * <em>&beta;<sub>i</sub>&gamma;<sub>i</sub></em>/<em>&beta;<sub>f</sub>&gamma;<sub>f</sub></em>
      * <br>
      * <br>
-     * and &Delta;<em>&epsilon;<sub>t,f</sub></em> is the emittance increase term
+     * and &Delta;<em>&epsilon;<sub>t,f</sub></em> is the emittance increase
+     * term
      * <br>
      * <br>
      * &nbsp; &Delta;<em>&epsilon;<sub>t,f</sub></em><sup>2</sup> &equiv;
@@ -1015,15 +916,17 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * &lt;<em>x<sub>i</sub></em><sup>2</sup>&gt;.
      * <br>
      * <br>
-     * and where <em>x'<sub>f</sub></em> and <em>x<sub>i</sub></em> represent the
-     * after-gap divergence angle and before-gap position for <em>either</em>
+     * and where <em>x'<sub>f</sub></em> and <em>x<sub>i</sub></em> represent
+     * the after-gap divergence angle and before-gap position for
+     * <em>either</em>
      * transverse phase plane, respectively. Once again there are analogous
      * formulas for the before and after gap longitudinal plane emittances
      * <em>&epsilon;<sub>z,i</sub></em> and
      * <em>&epsilon;<sub>z,f</sub></em>, respectively, with
      * <em>G<sub>t</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>)
      * replaced by
-     * <em>G<sub>z</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>) and
+     * <em>G<sub>z</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>)
+     * and
      * <em>x</em><sub>(<em>f,i</em>)</sub> replaced by
      * <em>z</em><sub>(<em>f,i</em>)</sub>.
      * </p>
@@ -1061,7 +964,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * equivalent uniform beam in <em>radians</em>
      *
      * @return The value of the emittance growth function
-     * <em>G<sub>t</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>) or
+     * <em>G<sub>t</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>)
+     * or
      * <em>G<sub>z</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>)
      *
      * @throws ModelException unknown/unsupported emittance growth model, or
@@ -1078,8 +982,10 @@ public abstract class EnvelopeTrackerBase extends Tracker {
             throws ModelException {
 
         // Compute the Fourier transforms
-        double F;          // 3D Fourier transform
-        double FdblAng;    // double angle Fourier transform
+        // 3D Fourier transform
+        double F;
+        // double angle Fourier transform
+        double FdblAng;
         if (plane == PhasePlane.TRANSVERSE) {
 
             F = this.compTransFourierTransform(dphi);
@@ -1118,8 +1024,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * Java method for evaluating the Fourier-Bessel transform needed to compute
      * transverse emittance growth due to finite longitudinal phase spread. The
      * technique for computing emittance growth due to phase spread is described
-     * in C.K. Allen, <em>et. al.</em>, "Emittance Growth Due to Phase Spread for
-     * Proton Beams in Radio Frequency Accelerating Gaps." This work is a
+     * in C.K. Allen, <em>et. al.</em>, "Emittance Growth Due to Phase Spread
+     * for Proton Beams in Radio Frequency Accelerating Gaps." This work is a
      * generalization of that covered in the Trace3D users' manual, Appendix G,
      * which is in turn based upon the work of M. Weiss (see references below).
      * </p>
@@ -1130,14 +1036,15 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * <br>
      * <br>
      * &nbsp; <em>F<sub>t</sub></em>(&Delta;<em>&phi;</em>) &equiv;
-     * (2/<em>f</em><sub>1</sub>) &int;<em>J</em><sub>0</sub>(&Delta;<em>&phi;s</em>)
+     * (2/<em>f</em><sub>1</sub>)
+     * &int;<em>J</em><sub>0</sub>(&Delta;<em>&phi;s</em>)
      * <em>f</em>(<em>s</em><sup>2</sup>)<em>s</em><sup></sup> <em>ds</em>,
      * <br>
      * <br>
      * where <em>f</em> is the density distribution,
      * <em>J<sub>n</sub></em>(<em>s</em>) is the <em>n</em><sup>th</sup>-order
-     * cylindrical Bessel function of the first kind, &Delta;<em>&phi;</em> is the
-     * effective phase spread of the equivalent uniform beam,
+     * cylindrical Bessel function of the first kind, &Delta;<em>&phi;</em> is
+     * the effective phase spread of the equivalent uniform beam,
      * <em>s</em> is the transform variable. and <em>f<sub>k</sub></em> is the
      * number
      * <br>
@@ -1165,8 +1072,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * <em>j<sub>n</sub></em>(<em>s</em>) is the <em>n</em><sup>th</sup>-order
      * spherical Bessel function of the first kind, &Delta;<em>&phi;</em> is the
      * effective phase spread of the equivalent uniform beam, and
-     * <em>s</em> is the transform variable. Again, both integrals are taken from
-     * 0 to &infin;.
+     * <em>s</em> is the transform variable. Again, both integrals are taken
+     * from 0 to &infin;.
      * </p>
      * <p>
      * <strong>NOTES</strong>: (CKA)
@@ -1187,8 +1094,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * &Delta;<em>&phi;</em> is the <em>effective</em> phase spread of the
      * distribution.
      * <br>
-     * &middot; The value of &lt;sin<sup>2</sup> <em>&phi;</em>)(<em>z</em>)&gt; can
-     * also be computed from this method. The formula is
+     * &middot; The value of &lt;sin<sup>2</sup> <em>&phi;</em>)(<em>z</em>)&gt;
+     * can also be computed from this method. The formula is
      * <br>
      * <br>
      * &nbsp; &lt;sin<sup>2</sup> <em>&phi;</em>(<em>z</em>)&gt; =
@@ -1225,8 +1132,9 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * @param dphi effective phase spread &Delta;<em>&phi;</em> (half-width) of
      * equivalent uniform beam in <strong>radians</strong>
      *
-     * @return The value of transform <em>F<sub>t</sub></em>(&Delta;<em>&phi;</em>)
-     * for the uniform distribution.
+     * @return The value of transform
+     * <em>F<sub>t</sub></em>(&Delta;<em>&phi;</em>) for the uniform
+     * distribution.
      *
      * @throws ModelException unsupported/unknown emittance growth model
      *
@@ -1239,8 +1147,10 @@ public abstract class EnvelopeTrackerBase extends Tracker {
     protected double compTransFourierTransform(double dphi)
             throws ModelException {
 
-        EmitGrowthModel model;  // the emittance growth model we are using
-        double Ft;     // transform value for emittance growth model
+        // the emittance growth model we are using
+        EmitGrowthModel model;
+        // transform value for emittance growth model
+        double Ft;
 
         model = this.getEmitGrowthModel();
         if (model == EmitGrowthModel.TRACE3D) {
@@ -1282,11 +1192,11 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * Java method for evaluating the Fourier-Bessel transform needed to compute
      * longitudinal emittance growth due to finite longitudinal phase spread in
      * RF accelerating gaps. For information on this effect see due to phase
-     * spread is described in C.K. Allen, <em>et. al.</em>, "Emittance Growth Due
-     * to Phase Spread for Proton Beams in Radio Frequency Accelerating Gaps."
-     * This work is a generalization of that covered in the Trace3D users'
-     * manual, Appendix G for the longitudinal direction. M. Weiss treated the
-     * transverse direction (see references below).
+     * spread is described in C.K. Allen, <em>et. al.</em>, "Emittance Growth
+     * Due to Phase Spread for Proton Beams in Radio Frequency Accelerating
+     * Gaps." This work is a generalization of that covered in the Trace3D
+     * users' manual, Appendix G for the longitudinal direction. M. Weiss
+     * treated the transverse direction (see references below).
      * </p>
      * <p>
      * When considering only one (uncorrelated) phase plane beams the transform
@@ -1303,8 +1213,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * <br>
      * where <em>f</em> is the density distribution,
      * <em>J<sub>n</sub></em>(<em>s</em>) is the <em>n</em><sup>th</sup>-order
-     * cylindrical Bessel function of the first kind, &Delta;<em>&phi;</em> is the
-     * effective phase spread of the equivalent uniform beam,
+     * cylindrical Bessel function of the first kind, &Delta;<em>&phi;</em> is
+     * the effective phase spread of the equivalent uniform beam,
      * <em>s</em> is the transform variable. and <em>f<sub>k</sub></em> is the
      * number
      * <br>
@@ -1328,7 +1238,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * <em>f</em>(<em>s</em><sup>2</sup>)<em>s</em><sup>4</sup> <em>ds</em>,
      * <br>
      * &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; =
-     * <em>F<sub>t</sub></em>(&Delta;<em>&phi;</em>) - (2/<em>f</em><sub>3/2</sub>)
+     * <em>F<sub>t</sub></em>(&Delta;<em>&phi;</em>) -
+     * (2/<em>f</em><sub>3/2</sub>)
      * &int;<em>j</em><sub>2</sub>(&Delta;<em>&phi;s</em>)]
      * <em>f</em>(<em>s</em><sup>2</sup>)<em>s</em><sup>4</sup> <em>ds</em>,
      * <br>
@@ -1386,8 +1297,9 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * @param dphi effective phase spread &Delta;<em>&phi;</em> (half-width) of
      * equivalent uniform beam in <strong>radians</strong>
      *
-     * @return The value of transform <em>F<sub>z</sub></em>(&Delta;<em>&phi;</em>)
-     * for the uniform distribution.
+     * @return The value of transform
+     * <em>F<sub>z</sub></em>(&Delta;<em>&phi;</em>) for the uniform
+     * distribution.
      *
      * @throws ModelException unsupported/unknown emittance growth model
      *
@@ -1402,8 +1314,10 @@ public abstract class EnvelopeTrackerBase extends Tracker {
     protected double compLongFourierTransform(double dphi)
             throws ModelException {
 
-        EmitGrowthModel model;  // the emittance growth model we are using
-        double Fz;     // transform value for emittance growth model
+        // the emittance growth model we are using
+        EmitGrowthModel model;
+        // transform value for emittance growth model
+        double Fz;
 
         model = this.getEmitGrowthModel();
         if (model == EmitGrowthModel.TRACE3D) {
@@ -1502,8 +1416,9 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * equivalent uniform beam in <strong>radians</strong>
      *
      *
-     * @return The value of transform <em>F<sub>t</sub></em>(&Delta;<em>&phi;</em>)
-     * given by Trace3D which is the value of &lt;sin(<em>&phi;</em>)&gt; =
+     * @return The value of transform
+     * <em>F<sub>t</sub></em>(&Delta;<em>&phi;</em>) given by Trace3D which is
+     * the value of &lt;sin(<em>&phi;</em>)&gt; =
      * <em>f</em>(<var>dp</var>).
      *
      * @author Christopher K. Allen
@@ -1574,8 +1489,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * @param dphi effective phase spread &Delta;<em>&phi;</em> (half-width) of
      * equivalent uniform beam in <strong>radians</strong>
      *
-     * @return The value of transform <em>F<sub>z</sub></em>(&Delta;<em>&phi;</em>)
-     * given by Trace3D.
+     * @return The value of transform
+     * <em>F<sub>z</sub></em>(&Delta;<em>&phi;</em>) given by Trace3D.
      *
      *
      * @author Christopher K. Allen
@@ -1601,8 +1516,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * This method return the longitudinal Fourier-Bessel transform needed to
      * compute emittance growth from finite phase spread in an RF accelerating
      * gap. Here we consider the case when the beam is uniformly distributed
-     * over three spatial dimensions. For this distribution <em>f</em>(<em>s</em>),
-     * we find that
+     * over three spatial dimensions. For this distribution
+     * <em>f</em>(<em>s</em>), we find that
      * <br>
      * <br>
      * &nbsp; <em>F<sub>z</sub></em>(&Delta;<em>&phi;</em>) = 15
@@ -1628,8 +1543,9 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * @param dphi effective phase spread &Delta;<em>&phi;</em> (half-width) of
      * equivalent uniform beam in <strong>radians</strong>
      *
-     * @return The value of transform <em>F<sub>z</sub></em>(&Delta;<em>&phi;</em>)
-     * for the 3D uniform distribution.
+     * @return The value of transform
+     * <em>F<sub>z</sub></em>(&Delta;<em>&phi;</em>) for the 3D uniform
+     * distribution.
      *
      *
      * @author Christopher K. Allen
@@ -1666,8 +1582,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * This method return the transverse Fourier-Bessel transform needed to
      * compute emittance growth from finite phase spread in an RF accelerating
      * gap. Here we consider the case when the beam is uniformly distributed
-     * over three spatial dimensions. For this distribution <em>f</em>(<em>s</em>),
-     * we find that
+     * over three spatial dimensions. For this distribution
+     * <em>f</em>(<em>s</em>), we find that
      * <br>
      * <br>
      * &nbsp; <em>F<sub>t</sub></em>(&Delta;<em>&phi;</em>) = 15
@@ -1693,8 +1609,9 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * @param dphi effective phase spread &Delta;<em>&phi;</em> (half-width) of
      * equivalent uniform beam in <strong>radians</strong>
      *
-     * @return The value of transform <em>F<sub>t</sub></em>(&Delta;<em>&phi;</em>)
-     * for the uniform distribution.
+     * @return The value of transform
+     * <em>F<sub>t</sub></em>(&Delta;<em>&phi;</em>) for the uniform
+     * distribution.
      *
      *
      * @author Christopher K. Allen
@@ -1731,8 +1648,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * This method return the transverse Fourier-Bessel transform needed to
      * compute emittance growth from finite phase spread in an RF accelerating
      * gap. Here we consider the case when the beam has a Gaussian distribution
-     * over three spatial dimensions. For this distribution <em>f</em>(<em>s</em>),
-     * we find that
+     * over three spatial dimensions. For this distribution
+     * <em>f</em>(<em>s</em>), we find that
      * <br>
      * <br>
      * &nbsp; <em>F<sub>t</sub></em>(&Delta;<em>&phi;</em>) =
@@ -1749,8 +1666,9 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * @param dphi effective phase spread &Delta;<em>&phi;</em> (half-width) of
      * equivalent uniform beam in <strong>radians</strong>
      *
-     * @return The value of transform <em>F<sub>t</sub></em>(&Delta;<em>&phi;</em>)
-     * for the Gaussian distribution.
+     * @return The value of transform
+     * <em>F<sub>t</sub></em>(&Delta;<em>&phi;</em>) for the Gaussian
+     * distribution.
      *
      *
      * @author Christopher K. Allen
@@ -1793,8 +1711,9 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * @param dphi effective phase spread &Delta;<em>&phi;</em> (half-width) of
      * equivalent uniform beam in <strong>radians</strong>
      *
-     * @return The value of transform <em>F<sub>z</sub></em>(&Delta;<em>&phi;</em>)
-     * for the 3D Gaussian distribution.
+     * @return The value of transform
+     * <em>F<sub>z</sub></em>(&Delta;<em>&phi;</em>) for the 3D Gaussian
+     * distribution.
      *
      *
      * @author Christopher K. Allen
@@ -1824,8 +1743,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * This method return the transverse Fourier-Bessel transform needed to
      * compute emittance growth from finite phase spread in an RF accelerating
      * gap. Here we consider the case when the beam is uniformly distributed in
-     * one transverse phase plane. For this distribution <em>f</em>(<em>s</em>), we
-     * find that
+     * one transverse phase plane. For this distribution <em>f</em>(<em>s</em>),
+     * we find that
      * <br>
      * <br>
      * &nbsp; <em>F<sub>t</sub></em>(&Delta;<em>&phi;</em>) = 2
@@ -1850,8 +1769,9 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * @param dphi effective phase spread &Delta;<em>&phi;</em> (half-width) of
      * equivalent uniform beam in <strong>radians</strong>
      *
-     * @return The value of transform <em>F<sub>t</sub></em>(&Delta;<em>&phi;</em>)
-     * for the single phase plane uniform distribution.
+     * @return The value of transform
+     * <em>F<sub>t</sub></em>(&Delta;<em>&phi;</em>) for the single phase plane
+     * uniform distribution.
      *
      *
      * @author Christopher K. Allen
@@ -1887,8 +1807,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * This method return the longitudinal Fourier-Bessel transform needed to
      * compute emittance growth from finite phase spread in an RF accelerating
      * gap. Here we consider the case when the beam is uniformly distributed in
-     * one transverse phase plane. For this distribution <em>f</em>(<em>s</em>), we
-     * find that
+     * one transverse phase plane. For this distribution <em>f</em>(<em>s</em>),
+     * we find that
      * <br>
      * <br>
      * &nbsp; <em>F<sub>z</sub></em>(&Delta;<em>&phi;</em>) = 8
@@ -1914,8 +1834,9 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * @param dphi effective phase spread &Delta;<em>&phi;</em> (half-width) of
      * equivalent uniform beam in <strong>radians</strong>
      *
-     * @return The value of transform <em>F<sub>t</sub></em>(&Delta;<em>&phi;</em>)
-     * for the single phase plane uniform distribution.
+     * @return The value of transform
+     * <em>F<sub>t</sub></em>(&Delta;<em>&phi;</em>) for the single phase plane
+     * uniform distribution.
      *
      *
      * @author Christopher K. Allen
@@ -1971,8 +1892,9 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * @param dphi effective phase spread &Delta;<em>&phi;</em> (half-width) of
      * equivalent uniform beam in <strong>radians</strong>
      *
-     * @return The value of transform <em>F<sub>t</sub></em>(&Delta;<em>&phi;</em>)
-     * for the Gaussian distribution.
+     * @return The value of transform
+     * <em>F<sub>t</sub></em>(&Delta;<em>&phi;</em>) for the Gaussian
+     * distribution.
      *
      *
      * @author Christopher K. Allen
@@ -2015,8 +1937,9 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * @param dphi effective phase spread &Delta;<em>&phi;</em> (half-width) of
      * equivalent uniform beam in <strong>radians</strong>
      *
-     * @return The value of transform <em>F<sub>z</sub></em>(&Delta;<em>&phi;</em>)
-     * for the Gaussian distribution in single phase plane.
+     * @return The value of transform
+     * <em>F<sub>z</sub></em>(&Delta;<em>&phi;</em>) for the Gaussian
+     * distribution in single phase plane.
      *
      *
      * @author Christopher K. Allen
@@ -2042,9 +1965,9 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * <p>
      * Compute the longitudinal phase spread of the bunch with respect to the RF
      * in an RF gap element (based on Trace3D RfGap.f) The phase spread is
-     * computed assuming a <strong>uniform</strong> distribution. The returned value is
-     * then the <em>effective</em> phase spread for the equivalent uniform beam.
-     * (see below).
+     * computed assuming a <strong>uniform</strong> distribution. The returned
+     * value is then the <em>effective</em> phase spread for the equivalent
+     * uniform beam. (see below).
      * </p>
      * <p>
      * In XAL, longitudinal coordinate <em>z</em> is the "phase spread", but in
@@ -2126,9 +2049,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         // Compute the RF wavelength
         double lambda = elem.wavelengthRF();
 
-        // Compute the mid-gap velocity 
-//            double beta = elem.compMidGapBeta(probe);     // CKA for IdealRfGapUpgraded
-        double beta = elem.betaMidGap(probe);           // CKA for IdealRfGap
+        // Compute the mid-gap velocity
+        double beta = elem.betaMidGap(probe);
 
         // Compute the mid-gap wave number
         double k = (2.0 * Math.PI) / (beta * lambda);
@@ -2138,20 +2060,6 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         double dphi = k * Math.sqrt(z_2);
 
         return dphi;
-        //        
-        //        
-        //        double Er = probe.getSpeciesRestEnergy();
-        //        double Wi = probe.getKineticEnergy();
-        //        
-        //        Twiss[] twiss = probe.getTwiss().getTwiss();
-        //        
-        //        TraceXalUnitConverter t3dxal = TraceXalUnitConverter.newConverter(elem.getFrequency(),Er,Wi);
-        //        Twiss twissLongT3d = t3dxal.xalToTraceLongitudinal(twiss[2]);
-        //        
-        //        double emitz = twissLongT3d.getEmittance();
-        //        double betaz = twissLongT3d.getBeta();
-        //        
-        //        return Math.sqrt(emitz*betaz)*2*Math.PI/360.0; //radian
     }
 
     /**
@@ -2163,8 +2071,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * <p>
      * - This method needs to be optimized now that I understand what it is
      * doing. In XAL, longitudinal coordinate <em>z</em> is the "phase spread",
-     * but in meters. To convert to phase spread <em>&delta;&phi;</em> in radians
-     * we have
+     * but in meters. To convert to phase spread <em>&delta;&phi;</em> in
+     * radians we have
      * <br>
      * <br>
      * &nbsp; &nbsp; &delta;&phi; = 2&pi;<em>z</em>/(&beta;&lambda;) ,
@@ -2183,16 +2091,17 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * light.
      * <br>
      * <br>
-     * - For the optional computation <strong>phaseSpreadT3d</strong> (which apparently is
-     * not used) I am not sure what is happening, or why &lt;y'y'&gt; is
-     * significant?
+     * - For the optional computation <strong>phaseSpreadT3d</strong> (which
+     * apparently is not used) I am not sure what is happening, or why
+     * &lt;y'y'&gt; is significant?
      * </p>
      *
      * @param probe we are computing the phase spread for this probe at the
      * current <code>IdealRfGap</code> condition
      * @param gap the RF gap modeling element creating the bunch phase spread
      *
-     * @return phase spread (half width) for this probe (<strong>radian</strong>)
+     * @return phase spread (half width) for this probe
+     * (<strong>radian</strong>)
      *
      * @author Hiroyuki Sako
      * @author Christopher K. Allen
@@ -2217,7 +2126,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         double emitz = t3dtwissz.getEmittance();
         double betaz = t3dtwissz.getBeta();
 
-        dblPhaseSpreadCalc = Math.sqrt(emitz * betaz) * 2 * Math.PI / 360; //radian
+        //radian
+        dblPhaseSpreadCalc = Math.sqrt(emitz * betaz) * 2 * Math.PI / 360;
         //betaaverage is  not there!!! is it ok?
 
         //sako for test. Try to use average energy to calculate dphiav
@@ -2236,7 +2146,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
             double sigma55 = matCorXAL.getElem(4, 4);
             double dphit3d = 2. * Math.PI * Math.sqrt(sigma55) / (bbar * wavel);
 
-            dblPhaseSpreadCalc = dphit3d;//temp
+            //temp
+            dblPhaseSpreadCalc = dphit3d;
         }
 
         return dblPhaseSpreadCalc;
@@ -2271,14 +2182,6 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         double dfacT = 0d;
         double dfacL = 0d;
 
-//        dfac[0] = 0d;
-//        dfac[1] = 0d;
-//        
-//        //transverse
-//        if (!(probe instanceof EnvelopeProbe)) {
-//            return dfac;
-//        }
-//        
         double phi = gap.getPhase();
         double dphi = this.phaseSpread(probe, gap);
 
@@ -2287,14 +2190,16 @@ public abstract class EnvelopeTrackerBase extends Tracker {
 
         double f2t = 1 - tdp * tdp / 14;
         if (tdp > 0.1) {
-            f2t = 3 * (sintdp / tdp - Math.cos(tdp)) / tdp / tdp; //APPENDIX F (Trace3D manual)
+            //APPENDIX F (Trace3D manual)
+            f2t = 3 * (sintdp / tdp - Math.cos(tdp)) / tdp / tdp;
             f2t = 15 * (f2t - sintdp / tdp) / tdp / tdp;
         }
         double sinphi = Math.sin(phi);
         double cosphi = Math.cos(phi);
         double G1 = 0.5 * (1 + (sinphi * sinphi - cosphi * cosphi) * f2t);
         double Q = probe.getSpeciesCharge();
-        double h = 1;//harmic number
+        //harmic number
+        double h = 1;
         double m = probe.getSpeciesRestEnergy();
         double w = probe.getKineticEnergy();
         double dw = gap.energyGain(probe);
@@ -2308,7 +2213,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         double freq = gap.getFrequency();
         double lambda = clight / freq;
 
-        double cay = h * Math.abs(Q) * Math.PI * gap.getETL() / (m * betagammaa * betagammaa * betagammaf * lambda); //Kx'
+        //Kx'
+        double cay = h * Math.abs(Q) * Math.PI * gap.getETL() / (m * betagammaa * betagammaa * betagammaf * lambda);
         double f1 = 1 - dphi * dphi / 14;
         if (dphi > 0.1) {
             f1 = 15 / dphi / dphi * (3 / dphi / dphi * (Math.sin(dphi) / dphi - Math.cos(dphi)) - Math.sin(dphi) / dphi);
@@ -2323,7 +2229,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         }
 
         //def   double cayz = 2*cay*gammaa*gammaa;
-        double cayz = 2 * cay; //this is best
+        //this is best
+        double cayz = 2 * cay;
         double cayp = cayz * cayz * dphi * dphi;
         dfacL = cayp * (0.125 * cosphi * cosphi + (1. / 576.) * dphi * dphi * sinphi * sinphi);
 
@@ -2343,9 +2250,9 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * </p>
      * <h3>CKA Notes:</h3>
      * <p>
-     * - I think this should go in the <strong>Algorithm</strong> class. It expects an
-     * <code>EnvelopeProbe</code> - element objects should really not be
-     * concerned with the type of probe.
+     * - I think this should go in the <strong>Algorithm</strong> class. It
+     * expects an <code>EnvelopeProbe</code> - element objects should really not
+     * be concerned with the type of probe.
      * </p>
      *
      * @param probe envelope probe object (something with emittance and moments)
@@ -2356,9 +2263,6 @@ public abstract class EnvelopeTrackerBase extends Tracker {
     public double correctTransSigmaPhaseSpread(EnvelopeProbe probe, IdealRfGap gap) {
 
         double dfac = 1;
-//        if (!(probe instanceof EnvelopeProbe)) {
-//            return dfac;
-//        }
 
         double phi = gap.getPhase();
         double dphi = this.phaseSpread(probe, gap);
@@ -2367,14 +2271,16 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         double f2 = 1 - tdp * tdp / 14;
         if (tdp > 0.1) {
             double sintdp = Math.sin(tdp);
-            f2 = 3 * (sintdp / tdp - Math.cos(tdp)) / tdp / tdp; //APPENDIX F (Trace3D manual)
+            //APPENDIX F (Trace3D manual)
+            f2 = 3 * (sintdp / tdp - Math.cos(tdp)) / tdp / tdp;
             f2 = 15 * (f2 - sintdp / tdp) / tdp / tdp;
         }
         double sinphi = Math.sin(phi);
         double cosphi = Math.cos(phi);
         double G1 = 0.5 * (1 + (sinphi * sinphi - cosphi * cosphi) * f2);
         double Q = probe.getSpeciesCharge();
-        double h = 1;//harmic number
+        //harmic number
+        double h = 1;
         double m = probe.getSpeciesRestEnergy();
         double w = probe.getKineticEnergy();
         double dw = gap.energyGain(probe);
@@ -2387,10 +2293,9 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         double clight = IProbe.LIGHT_SPEED;
         double freq = gap.getFrequency();
         double lambda = clight / freq;
-        //      double cay = h*Math.PI*getETL()*Math.abs(Q)/(m*betagammaa*betagammaa*betagammaa*lambda); //Kx'
-        //sako 21 jul 06
 
-        double cay = Math.abs(Q) * h * Math.PI * gap.getETL() / (m * betagammaa * betagammaa * betagammaf * lambda); //Kx'
+        //Kx'
+        double cay = Math.abs(Q) * h * Math.PI * gap.getETL() / (m * betagammaa * betagammaa * betagammaf * lambda);
 
         dfac = cay * cay * (G1 - sinphi * sinphi * f1 * f1);
 
@@ -2407,9 +2312,9 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * </p>
      * <h3>CKA Notes:</h3>
      * <p>
-     * - I think this should go in the <strong>Algorithm</strong> class. It expects an
-     * <code>EnvelopeProbe</code> - element objects should really not be
-     * concerned with the type of probe.
+     * - I think this should go in the <strong>Algorithm</strong> class. It
+     * expects an <code>EnvelopeProbe</code> - element objects should really not
+     * be concerned with the type of probe.
      * </p>
      *
      * @param probe envelope-type probe (something with emittance and moments)
@@ -2420,9 +2325,6 @@ public abstract class EnvelopeTrackerBase extends Tracker {
     public double correctLongSigmaPhaseSpread(EnvelopeProbe probe, IdealRfGap gap) {
 
         double dfac = 1;
-//        if (!(probe instanceof EnvelopeProbe)) {
-//            return dfac;
-//        }
 
         double phi = gap.getPhase();
         double dphi = this.phaseSpread(probe, gap);
@@ -2438,14 +2340,14 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         double cosphi = Math.cos(phi);
 
         double Q = probe.getSpeciesCharge();
-        double h = 1;//harmic number
+        //harmic number
+        double h = 1;
         double m = probe.getSpeciesRestEnergy();
         double w = probe.getKineticEnergy();
         double dw = gap.energyGain(probe);
         double wa = w + dw / 2;
         double gammaa = (wa + m) / m;
         double betagammaa = Math.sqrt(wa / m * (2 + wa / m));
-//        double betagamma0 = Math.sqrt(w/m*(2+w/m));
         double clight = IProbe.LIGHT_SPEED;
         double freq = gap.getFrequency();
         double lambda = clight / freq;
@@ -2453,283 +2355,13 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         double wf = w + dw;
         double betagammaf = Math.sqrt(wf / m * (2 + wf / m));
 
-        //was def       
-        //  double cayd = h*Math.PI*getETL()*Math.abs(Q)/(m*betagammaa*betagammaa*betagamma0*lambda);
         //21 jul 06
         double cay = h * Math.PI * gap.getETL() * Math.abs(Q) / (m * betagammaa * betagammaa * betagammaf * lambda);
 
-        //  cay = cayd;
         double cayz = 2 * cay * gammaa * gammaa;
         double cayp = cayz * cayz * dphi * dphi;
         dfac = cayp * (0.125 * cosphi * cosphi + (1. / 576.) * dphi * dphi * sinphi * sinphi);
 
         return dfac;
     }
-
-//    /**
-//     * <p>
-//     * Calculation of the emittance growth factor of an RF gap
-//     * in the transverse plane.  The emittance growth is caused 
-//     * by a finite longitudinal phase spread of the beam.
-//     * </p>
-//     * <p>
-//     * The calculation is based upon the results of M. Weiss for
-//     * the transverse case.  This is also the same value used
-//     * in Trace3d (RfGap.f).  
-//     * </p>
-//     * <p>
-//     * Consider the <em>x</em> phase plane.  The emittance growth 
-//     * effect is achieved
-//     * by first multiplying the element &lt;x'|x&gt; of the RF gap transfer
-//     * matrix <strong>&Phi;</strong> by the factor <em>F<sub>t</sub></em>(&Delta;&phi;)
-//     * returned by method <code>momentSine(double)</code>.  Once the 
-//     * covariance matrix <strong>&tau;</strong> is propagated by the modified transfer 
-//     * matrix <strong>&Phi;</strong>, the moment &lt;<em>x</em><sup>2</sup>&gt; is 
-//     * augmented by the result of this function.
-//     * </p>
-//     * <p>
-//     * <strong>References</strong>
-//     * <br>
-//     * [1] M. Weiss,
-//     *      "Bunching of Intense Proton Beams with Six-Dimensional
-//     *       Matching to the Linac Acceptance", CERN/MPS/LI report 73-2,
-//     *       Geneva, Switzerland (1978).
-//     * </p>
-//     * 
-//     * @param   probe   probe containing covariance moment data
-//     * @param   elem    RF Gap producing emittance growth 
-//     * 
-//     * @return  transverse emittance growth factor 
-//     * 
-//     * @see xal.model.elem.IdealRfGap
-//     * 
-//     * @deprecated  The functionality of this method has been replaced by
-//     *              {@link #compEmitGrowthFunction(PhasePlane, double, double)}
-//     */
-//    protected double emitGrowthCoefTrans(EnvelopeProbe probe, IdealRfGap elem) {
-//    //        double  bf  = elem.betaFinal(probe);
-//    //        double  gf  = elem.gammaFinal(probe);
-//    //        double  k   = elem.compTransFocusing(probe)/(bf*gf);
-//            double  k   = elem.compTransFocusing(probe);
-//            double  k_2 = k*k;
-//            
-//            double  ps  = elem.getPhase();
-//            double  dp  = this.effPhaseSpread(probe, elem);
-//            double  f   = this.momentSine(dp);
-//            double  g   = this.momentSineSquared(ps, dp);
-//            double  fsin = f*Math.sin(ps);
-//            
-//            double  T = g - fsin*fsin;
-//            
-//            return k_2*T;
-//        }
-//
-//    /**
-//         * <p>
-//         * Calculation of the emittance growth factor of an RF gap
-//         * in the longitudinal plane.  The emittance growth is caused 
-//         * by a finite longitudinal phase spread of the beam.
-//         * </p>
-//         * <p>
-//         * The calculation is the same as that performed in Trace3D
-//         * for the longitudinal case.
-//         * </p>
-//         * <p>
-//         * The emittance growth effect is achieved
-//         * by first multiplying the element &lt;z'|z&gt; of the RF gap transfer
-//         * matrix <strong>&Phi;</strong> by the factor <em>F<sub>t</sub></em>(&Delta;&phi;)
-//         * returned by method <code>momentSine(double)</code>.  Once the 
-//         * covariance matrix <strong>&tau;</strong> is propagated by the modified transfer 
-//         * matrix <strong>&Phi;</strong>, the moment &lt;<em>z</em><sup>2</sup>&gt; is 
-//         * augmented by the result of this function.
-//         * </p>
-//         * <p>
-//         * <strong>NOTES</strong>: (CKA)
-//         * <br>
-//         * &middot; <strong>Important</strong>: This method returns a second-order
-//         * Taylor expansion about the point &Delta;&phi; = 0.  Because this type
-//         * of approximation is parabolic in the phase spread &Delta;&phi; it has no 
-//         * limit as &Delta;&phi; &rarr; &infin;.
-//         * <br>
-//         * &middot; The method for calculating this result is not explained in the
-//         * Trace3D manual, only presented.
-//         * &middot; There is a descrepancy between the manual
-//         * and the Trace3D code. This method returns the result given in the
-//         * Trace3D code.
-//         * <p>
-//         * See K.R. Crandall and D.P. Rusthoi, 
-//         *          <ul>
-//         *          "Trace 3-D Documentation", 
-//         *          LANL Report LA-UR-97-887 (1997), Appendix F.
-//         *          </ul>
-//         * </p>
-//         * 
-//         * @param   probe   probe containing moment data
-//         * @param   elem    RF Gap producing emittance growth (type IdealRfGap)
-//         * 
-//         * @return  longitudinal growth factor
-//         * 
-//         * @see xal.model.elem.IdealRfGap
-//         * 
-//         * @deprecated  The functionality of this method has been replaced by
-//         *              {@link #compEmitGrowthFunction(PhasePlane, double, double)}
-//         */
-//        protected double emitGrowthCoefLong(EnvelopeProbe probe, IdealRfGap elem) {
-//        
-////                double  gf   = elem.gammaFinal(probe);
-//        //        double  bf   = elem.betaFinal(probe);
-//        //        double  bgf  = bf*gf;
-////                double  gf_2 = gf*gf;
-//                double  ga   = elem.gammaMidGap(probe);
-//                
-//                double  k    = -2.0*elem.compTransFocusing(probe)*ga*ga;
-//        //        k = k/(bgf);
-//                
-//                double  ps  = elem.getPhase();
-//                double  dp  = this.effPhaseSpread(probe, elem);
-//                double  sin = dp*Math.sin(ps);
-//                double  cos = Math.cos(ps);
-//                
-//    //            double  T    = cos*cos/8.0 + sin/576.0;
-//                double  T    = cos*cos/8.0 + sin*sin/576.0;
-//                double  kdp  = k*dp;
-//                
-//    //            return kdp*kdp*T /(gf_2*gf_2);
-//                return kdp*kdp*T;
-//            }
-//
-//    /**
-//     * <p>
-//     * Function for computing the kluge of &lt;sin(&phi;)&gt;.  In this calculation
-//     * we assume that the transverse and longitudinal phase planes are 
-//     * uncorrelated and that the beam distribution is a uniform ellipsoid
-//     * (that's why the sinc() function pops up).  Pretty restrictive - Sacherer's 
-//     * theorem does not apply here.
-//     * </p>
-//     * <p>
-//     * This quantity is used when computing the transverse emittance increase
-//     * in an RF gap due to a finite phase spread in the beam.
-//     * <p>
-//     * <strong>NOTES</strong>: (CKA)
-//     * <br>
-//     * &middot; This method is used to approximate &lt;x<sup>2</sup>sin(&phi;)&gt;, 
-//     * which is at least third order in the phase coordinates.
-//     * <br>
-//     * 
-//     * &middot; The assumption that <em>x</em> and <em>z</em> are not correlated 
-//     * yields the result
-//     * <br>
-//     * <br>
-//     *  &nbsp; &lt;x<sup>2</sup>sin(&phi;)&gt; = &lt;x<sup>2</sup>&gt; <em>f</em>(<em>d&phi;</em>)
-//     * <br>
-//     * <br>
-//     * where <em>f</em>(<em>d&phi;</em>) &equiv; &lt;sin(<em>d&phi;</em>)is this method, 
-//     * and <em>d&phi;</em> is the "<em>phase spread</em>" of
-//     * the distribution.  The phase spread is defined
-//     * <br>
-//     * <br>
-//     * &nbsp;   <em>d&phi;</em> = &lt;(<em>&phi; - &phi;<sub>s</sub></em>)<sup>2</sup>&gt;<sup>1/2</sup>
-//     * <br>
-//     * <br>
-//     * where <em>&phi;<sub>s</sub></em> is the synchronous particle phase.
-//     * </p>
-//     * <p>
-//     * See K.R. Crandall and D.P. Rusthoi, 
-//     *          <ul>
-//     *          "Trace 3-D Documentation", 
-//     *          LANL Report LA-UR-97-887 (1997), Appendix F.
-//     *          </ul>
-//     * </p>
-//     * 
-//     *
-//     * @param   dp      phase spread half-width in <strong>radians</strong>
-//     * 
-//     * @return  the value of &lt;sin(<em>&phi;</em>)&gt; = <em>f</em>(<var>dp</var>) 
-//     *
-//     * 
-//     * @author Christopher K. Allen
-//     * 
-//     * @see xal.model.elem.IdealRfGap
-//     * @see EnvelopeTrackerBase#compTransFourierTransform(double)
-//     * 
-//     * @deprecated  This method is replaced by the method 
-//     *              <code>transFourierBesselTransformUniform(double)</code>
-//     *              which computes
-//     *              exactly the same result but is a theoretic generalization.
-//     */
-//    protected double momentSine(double dp) {
-//        double dp_2 = dp*dp;
-//    
-//        if (dp < 0.1) { // Avoid singularity at zero - Taylor expansion
-//            return 1.0 - dp_2/14.0 + dp_2*dp_2/504.0;
-//    
-//        } else {        // Full expression
-//            double T    = 3.0/dp_2;
-//            
-//            double sinc = ElementaryFunction.sinc(dp);
-//            double cos  = Math.cos(dp);
-//            
-//            return (5.0*T)*(sinc*(T-1.0) - cos*T);
-//            
-//        }
-//    }
-//    /**
-//     * <p>
-//     * Function for computing the kluge of &lt;sin<sup>2</sup>(&phi;)&gt;.  
-//     * In this calculation
-//     * we assume that the transverse and longitudinal phase planes are 
-//     * uncorrelated and that the beam distribution is a uniform ellipsoid
-//     * (that's why the sinc() function pops up).  Pretty restrictive - Sacherer's 
-//     * theorem does not apply here.
-//     * </p>
-//     * <p>
-//     * This quantity is used when computing the transverse emittance increase
-//     * in an RF gap due to a finite phase spread in the beam.
-//     * <p>
-//     * <p>
-//     * <strong>NOTES</strong>: (CKA)
-//     * <br>
-//     * &middot; This method is used to approximate
-//     * &lt;<em>x</em><sup>2</sup>sin<sup>2</sup>(<em>&phi;</em>)&gt;, which
-//     * is at least fourth order in the phase coordinates
-//     * <br>
-//     * &middot; The assumption that <em>x</em> and <em>z</em> are not correlated 
-//     * yields the result
-//     * <br>
-//     * <br>
-//     * &nbsp;  &lt;<em>x</em><sup>2</sup>sin<sup>2</sup>(<em>&phi;</em>)> = &lt;<em>x</em><sup>2</sup>&gt;<em>g</em>(<em>d&phi;</em>)
-//     * <br>
-//     * <br>
-//     * where <em>g</em>(<em>d&phi;</em>) &equiv; &lt;sin<sup>2</sup>(<em>&phi;</em>)&gt; 
-//     * is this method, and <em>d&phi;</em> is the 
-//     * "<em>phase spread</em>" of
-//     * the distribution.  The phase spread is given by
-//     * <br>
-//     * <br>
-//     * &nbsp; <em>d&phi;</em> = &lt;(<em>&phi; - &phi;<sub>s</sub></em>)<sup>2</sup>&gt;<sup>1/2</sup>
-//     * <br>
-//     * <br>
-//     * where <em>&phi;<sub>s</sub></em> is the synchronous particle phase.
-//     * </p>
-//     *
-//     * @param   ps      synchronous particle phase 
-//     * @param   dp      phase spread half-width in <strong>radians</strong>
-//     * 
-//     * @return  the value of &lt;sin<sup>2</sup>(<em>&phi;</em>)&gt; = <em>g</em>(<em>d&phi;</em>)  
-//     * 
-//     * @author Christopher K. Allen
-//     * 
-//     * @see Appendix F of the Trace3D manual.
-//     * @see xal.model.elem.IdealRfGap
-//     * 
-//     * @deprecated  This method will no longer be necessary once 
-//     *              {@link #compTransFourierTransform(double)}
-//     *              is used.
-//     */
-//    protected double momentSineSquared(double ps, double dp) {
-//        double  f   = this.momentSine(2.0*dp);
-//        double  cos = Math.cos(2.0*ps);
-//        
-//        return 0.5*(1.0 - cos*f);
-//    }
 }

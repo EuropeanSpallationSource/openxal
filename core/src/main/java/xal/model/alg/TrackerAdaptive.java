@@ -125,7 +125,8 @@ public abstract class TrackerAdaptive extends Tracker {
         final DataTable adaptiveTrackerTable = editContext.getTable("adaptivetracker");
         GenericRecord record = adaptiveTrackerTable.record("name", locationID);
         if (record == null) {
-            record = adaptiveTrackerTable.record("name", "default");  // just use the default record
+            // just use the default record
+            record = adaptiveTrackerTable.record("name", "default");
         }
 
         final double errorTolerance = record.doubleValueForKey(ATTRTAG_ERRTOL);
@@ -199,7 +200,8 @@ public abstract class TrackerAdaptive extends Tracker {
      * regardless of the residual error. If this value is cleared to zero, then
      * the step size is unbound.
      *
-     * @param dblMaxStepDriftPmq maximum allowable step size in <strong>meters</strong>
+     * @param dblMaxStepDriftPmq maximum allowable step size in
+     * <strong>meters</strong>
      */
     public void setMaxStepSizeDriftPmq(final double dblMaxStepDriftPmq) {
         this.dblMaxStepDriftPmq = dblMaxStepDriftPmq;

@@ -18,16 +18,17 @@ import xal.tools.math.r2.R2x2;
  * Class <code>TransPhaseMatrix</code> represents operations on the transverse
  * phase coordinates. This set of phase space matrices is essentially isomorphic
  * to
- * <strong>R</strong><sup>4&times;4</sup>, however, in order to represent translations of
- * phase coordinates by matrix multiplication, this class is embedded in the
- * linear operations <strong>R</strong><sup>5&times;5</sup> "projective space" with
- * "homogeneous coordinates".
+ * <strong>R</strong><sup>4&times;4</sup>, however, in order to represent
+ * translations of phase coordinates by matrix multiplication, this class is
+ * embedded in the linear operations <strong>R</strong><sup>5&times;5</sup>
+ * "projective space" with "homogeneous coordinates".
  * <p>
  * </p>
  * The last coordinate of all homogeneous (transverse) phase vectors
  * <strong>v</strong> &in; <strong>R</strong><sup>5</sup>
- * is 1. Thus <strong>v</strong> = (<em>x,x',y,y'</em>,1). Likewise, the (5,5) element of
- * any projective matrix <strong>&Phi;</strong> &in; <strong>R</strong><sup>5&times;5</sup>
+ * is 1. Thus <strong>v</strong> = (<em>x,x',y,y'</em>,1). Likewise, the (5,5)
+ * element of any projective matrix <strong>&Phi;</strong> &in;
+ * <strong>R</strong><sup>5&times;5</sup>
  * representing an operator in homogeneous coordinates must be 1.
  * </p>
  *
@@ -237,20 +238,24 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
     /**
      * <p>
      * Compute the rotation matrix in phase space that is essentially the
-     * Cartesian product of the given rotation matrix in <em>SO</em>(2). That is,
-     * denote the given argument as <strong>O</strong>, then the returned matrix <strong>M</strong>
-     * is the embedding <strong>M</strong> = <strong>O</strong>&times;<strong>O</strong>&times;<strong>I</strong>
+     * Cartesian product of the given rotation matrix in <em>SO</em>(2). That
+     * is, denote the given argument as <strong>O</strong>, then the returned
+     * matrix <strong>M</strong>
+     * is the embedding <strong>M</strong> =
+     * <strong>O</strong>&times;<strong>O</strong>&times;<strong>I</strong>
      * into homogeneous transverse phase space which is isomorphic to
-     * <strong>R</strong><sup>4&times;4</sup>&times;{1}. Thus, M &in; <strong>SO</strong>(4) &sub;
+     * <strong>R</strong><sup>4&times;4</sup>&times;{1}. Thus, M &in;
+     * <strong>SO</strong>(4) &sub;
      * <strong>R</strong><sup>4&times;4</sup>&times;{1} &sub;
      * <strong>R</strong><sup>5&times;5</sup>.
      * </p>
      * <p>
      * Viewing transverse phase-space as a 4D manifold built as the tangent
-     * bundle over transverse coordinate space <strong>R</strong><sup>2</sup>, then the
-     * fibers of 2D configuration space at a point (<em>x,y</em>) are represented
-     * by the Cartesian planes (<em>x',y'</em>). The returned phase matrix rotates
-     * these fibers in the same manner as their base point (x,y,z).
+     * bundle over transverse coordinate space <strong>R</strong><sup>2</sup>,
+     * then the fibers of 2D configuration space at a point (<em>x,y</em>) are
+     * represented by the Cartesian planes (<em>x',y'</em>). The returned phase
+     * matrix rotates these fibers in the same manner as their base point
+     * (x,y,z).
      * </p>
      *
      * This is a convenience method to build the above rotation matrix in
@@ -264,8 +269,10 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
         // Populate the phase rotation matrix
         TrnsPhaseMatrix matSO4 = TrnsPhaseMatrix.newIdentity();
 
-        int m, n;       // indices into the SO(4) matrix
-        double val;        // matSO3 matrix element
+        // indices into the SO(4) matrix
+        int m, n;
+        // matSO3 matrix element
+        double val;
 
         for (R2x2.IND iRow : R2x2.IND.values()) {
 
@@ -277,8 +284,10 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
 
                 val = matSO2.getElem(iRow, iCol);
 
-                matSO4.setElem(m, n, val);      // configuration space
-                matSO4.setElem(m + 1, n + 1, val);  // momentum space
+                // configuration space
+                matSO4.setElem(m, n, val);
+                // momentum space
+                matSO4.setElem(m + 1, n + 1, val);
             }
         }
 

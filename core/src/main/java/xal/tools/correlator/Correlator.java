@@ -439,7 +439,8 @@ public abstract class Correlator<SourceType, RecordType, SourceAgentType extends
          */
         @SuppressWarnings("unchecked")	// must cast postProxy for Generics
         public CorrelationPoster() {
-            postCenter = new MessageCenter("Correlator Poster");      // external poster
+            // external poster
+            postCenter = new MessageCenter("Correlator Poster");
             postProxy = (CorrelationNotice<RecordType>) postCenter.registerSource(this, CorrelationNotice.class);
         }
 

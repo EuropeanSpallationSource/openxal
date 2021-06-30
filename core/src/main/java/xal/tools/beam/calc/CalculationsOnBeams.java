@@ -161,11 +161,12 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      * Returns the phase space location of the fixed orbit at the simulation
      * start (which is computed at instantiation) assuming the simulation is
      * that for at least one period of a periodic accelerating or transport
-     * section. The returned value <strong>z</strong> is the result of the calculation
-     * <code>{@link #calculateFixedPoint(PhaseMatrix)}</code> given the full
-     * turn matrix <strong>&Phi;</strong> at the simulation exit (see
+     * section. The returned value <strong>z</strong> is the result of the
+     * calculation <code>{@link #calculateFixedPoint(PhaseMatrix)}</code> given
+     * the full turn matrix <strong>&Phi;</strong> at the simulation exit (see
      * {@link #getFullResponseMatrix()}). It is invariant under the action of
-     * <strong>&Phi;</strong>, that is, <strong>&Phi;z</strong> = <strong>z</strong>.
+     * <strong>&Phi;</strong>, that is, <strong>&Phi;z</strong> =
+     * <strong>z</strong>.
      * </p>
      * <h3>NOTES:</h3>
      * <p>
@@ -239,14 +240,16 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
         }
 
         int indFrom, indTo;
-        indTo = arrIndTo[arrIndTo.length - 1]; // use last state before start element
+        // use last state before start element
+        indTo = arrIndTo[arrIndTo.length - 1];
 
         EnvelopeProbeState stateTo = trajectory.stateWithIndex(indTo);
         PhaseMatrix matTo = stateTo.getResponseMatrix();
 
         indFrom = arrIndFrom[0] - 1;
         if (indFrom < 0) {
-            return matTo; // response from beginning of machine
+            // response from beginning of machine
+            return matTo;
         }
         EnvelopeProbeState stateFrom = trajectory.stateWithIndex(indFrom);
         PhaseMatrix matFrom = stateFrom.getResponseMatrix();
@@ -296,35 +299,40 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      *
      * <p>
      * Consider first the point in phase space that is invariant under repeated
-     * application of the response matrix <strong>&Phi;</strong> for the entire beamline
-     * or ring. This is under the condition that we decompose <strong>&Phi;</strong> into
-     * its homogeneous and non-homogeneous components. A particle entering the
-     * linac at that location exits at the same location.
+     * application of the response matrix <strong>&Phi;</strong> for the entire
+     * beamline or ring. This is under the condition that we decompose
+     * <strong>&Phi;</strong> into its homogeneous and non-homogeneous
+     * components. A particle entering the linac at that location exits at the
+     * same location.
      * </p>
      * <p>
      * To compute this linac fixed point, recall that the <em>homogeneous</em>
-     * response matrix <strong>&Phi;</strong> for the beamline (or full-turn matrix for a
-     * ring) has final row that represents the translation <strong>&Delta;</strong> of the
-     * particle under the action of <strong>&Phi;</strong>. The 6&times;6 sub-matrix of
-     * <strong>&Phi;</strong> represents the (linear) action of the bending magnetics and
-     * quadrupoles and corresponds to the matrix <strong>T</strong> &in;
-     * <strong>R</strong><sup>6&times;6</sup> (here <strong>T</strong> is linear). Thus, we can
-     * write the linear operator <strong>&Phi;</strong>
+     * response matrix <strong>&Phi;</strong> for the beamline (or full-turn
+     * matrix for a ring) has final row that represents the translation
+     * <strong>&Delta;</strong> of the particle under the action of
+     * <strong>&Phi;</strong>. The 6&times;6 sub-matrix of
+     * <strong>&Phi;</strong> represents the (linear) action of the bending
+     * magnetics and quadrupoles and corresponds to the matrix
+     * <strong>T</strong> &in;
+     * <strong>R</strong><sup>6&times;6</sup> (here <strong>T</strong> is
+     * linear). Thus, we can write the linear operator <strong>&Phi;</strong>
      * as the augmented system
      * <br>
      * <br>
      * <pre>
      * &nbsp; &nbsp; <strong>&Phi;</strong> = |<strong>T</strong> <strong>&Delta;</strong> |,   <strong>z</strong> &equiv; |<strong>p</strong>| ,
      *         |<strong>0</strong> 1 |        |1|
-     * </pre> where <strong>p</strong> is the projection of <strong>z</strong> into the embedded
-     * phase space
-     * <strong>R</strong><sup>6</sup> (without homogeneous coordinate). coordinates).
+     * </pre> where <strong>p</strong> is the projection of <strong>z</strong>
+     * into the embedded phase space
+     * <strong>R</strong><sup>6</sup> (without homogeneous coordinate).
+     * coordinates).
      * </p>
      * <p>
      * Putting this together we get
      * <br>
      * <br>
-     * &nbsp; &nbsp; <strong>&Phi;z</strong> = <strong>Tp</strong> + <strong>&Delta;</strong> = <strong>p</strong> ,
+     * &nbsp; &nbsp; <strong>&Phi;z</strong> = <strong>Tp</strong> +
+     * <strong>&Delta;</strong> = <strong>p</strong> ,
      * <br>
      * <br>
      * to which the solution is
@@ -335,34 +343,38 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      * <br>
      * <br>
      * assuming it exists. The question of solution existence falls upon the
-     * resolvent <strong>R</strong> &equiv; (<strong>T</strong> - <strong>I</strong>)<sup>-1</sup> of
-     * <strong>T</strong>. By inspection we can see that <strong>p</strong> is defined so long as
-     * the eigenvalues of <strong>T</strong> are located away from 1. In this case the
-     * returned value is the augmented vector (<strong>p</strong> 1)<sup><em>T</em></sup>
+     * resolvent <strong>R</strong> &equiv; (<strong>T</strong> -
+     * <strong>I</strong>)<sup>-1</sup> of
+     * <strong>T</strong>. By inspection we can see that <strong>p</strong> is
+     * defined so long as the eigenvalues of <strong>T</strong> are located away
+     * from 1. In this case the returned value is the augmented vector
+     * (<strong>p</strong> 1)<sup><em>T</em></sup>
      * &in; <strong>R</strong><sup>6</sup> &times; {1}.
      * </p>
      * <p>
      * When the set of eigenvectors does contain 1, we attempt to find the
-     * solution for the transverse phase space. That is, we take vector <strong>p</strong>
+     * solution for the transverse phase space. That is, we take vector
+     * <strong>p</strong>
      * &in; <strong>R</strong><sup>4</sup>
      * and <strong>T</strong> &in; <strong>R</strong><sup>4&times;4</sup> where
-     * <strong>T</strong> = proj<sub>4&times;4</sub> <strong>&Phi;</strong>. The solution value is
-     * then
+     * <strong>T</strong> = proj<sub>4&times;4</sub> <strong>&Phi;</strong>. The
+     * solution value is then
      * <strong>z</strong> = (<strong>p</strong> 0 0 1)<sup><em>T</em></sup>.
      * </p>
      * <p>
-     * Once we have the fixed point <strong>z</strong><sub>0</sub> for the linac we
-     * compute the trajectory of the fixed point at the location of the given
+     * Once we have the fixed point <strong>z</strong><sub>0</sub> for the linac
+     * we compute the trajectory of the fixed point at the location of the given
      * probe state. To do so, we multiply
      * <strong>z</strong><sub>0</sub> by the response matrix
-     * <strong>&Phi;</strong><sub><em>n</em></sub> for the given probe state. That is, we
-     * propagate the fixed point of the linac from the linac entrance to the
-     * location of the given phase state.
+     * <strong>&Phi;</strong><sub><em>n</em></sub> for the given probe state.
+     * That is, we propagate the fixed point of the linac from the linac
+     * entrance to the location of the given phase state.
      * </p>
      *
      * @return The quantity
-     * <strong>&Phi;</strong><sub><em>n</em></sub>&sdot;<strong>z</strong><sub>0</sub>, the linac
-     * fixed point <strong>z</strong><sub>0</sub> propagated to the state location
+     * <strong>&Phi;</strong><sub><em>n</em></sub>&sdot;<strong>z</strong><sub>0</sub>,
+     * the linac fixed point <strong>z</strong><sub>0</sub> propagated to the
+     * state location
      * <em>s<sub>n</sub></em>
      *
      * @see
@@ -411,9 +423,11 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      * Returns the Courant-Snyder parameters of the beam envelope at the
      * location of the given probe state. These values are computed from the
      * primary state object of an <code>EnvelopeProbe</code> the <em>covariance
-     * matrix</em> <strong>&sigma;</strong>. Only the 2&times;2 diagonal blocks of
-     * <strong>&sigma;</strong> are used for Courant-Snyder parameter calculations (for
-     * each phase plane), thus, any phase plane coupling is lost.
+     * matrix</em> <strong>&sigma;</strong>. Only the 2&times;2 diagonal blocks
+     * of
+     * <strong>&sigma;</strong> are used for Courant-Snyder parameter
+     * calculations (for each phase plane), thus, any phase plane coupling is
+     * lost.
      *
      * @see
      * xal.tools.beam.calc.ISimEnvResults#computeTwissParameters(xal.model.probe.traj.ProbeState)
@@ -438,11 +452,12 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      * location. The calculation proceeds by computing the Courant-Snyder
      * parameters &alpha; and &beta; of the envelope at the entrance to the
      * linac and at the given state location using the covariance matrix
-     * <strong>&sigma;</strong>(<em>s</em>) of the simulation. The given state also contains
-     * the response matrix <strong>&Phi;</strong>(<em>s</em>) between the entrance to the
-     * linac and the current state location <em>s</em>. This matrix is used as the
-     * transfer matrix mapping particle phase coordinates between the linac
-     * entrance and the current state location.
+     * <strong>&sigma;</strong>(<em>s</em>) of the simulation. The given state
+     * also contains the response matrix <strong>&Phi;</strong>(<em>s</em>)
+     * between the entrance to the linac and the current state location
+     * <em>s</em>. This matrix is used as the transfer matrix mapping particle
+     * phase coordinates between the linac entrance and the current state
+     * location.
      * </p>
      * <p>
      * The definition of phase advance &psi; is given by
@@ -452,8 +467,8 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      * [1/&beta;(<em>t</em>)]<em>dt</em> ,
      * <br>
      * <br>
-     * where &beta;(<em>s</em>) is the Courant-Snyder, envelope function, and the
-     * integral is taken along the interval between the initial and final
+     * where &beta;(<em>s</em>) is the Courant-Snyder, envelope function, and
+     * the integral is taken along the interval between the initial and final
      * Courant-Snyder parameters.
      * </p>
      * <p>
@@ -465,10 +480,10 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      * ,
      * <br>
      * <br>
-     * where &phi;<sub>12</sub> is the element of <strong>&Phi;</strong> in the upper
-     * right corner of each 2&times;2 diagonal block, &beta;<sub>1</sub> is the
-     * initial beta function value (provided) and &beta;<sub>2</sub> is the
-     * final beta function value (provided).
+     * where &phi;<sub>12</sub> is the element of <strong>&Phi;</strong> in the
+     * upper right corner of each 2&times;2 diagonal block, &beta;<sub>1</sub>
+     * is the initial beta function value (provided) and &beta;<sub>2</sub> is
+     * the final beta function value (provided).
      * </p>
      *
      * @see

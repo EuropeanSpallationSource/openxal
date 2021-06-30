@@ -31,7 +31,6 @@ import junit.textui.TestRunner;
 public class ProbeStateTest extends TestCase {
 
     private static double INITIAL_POSITION = 0.1;
-//	private static double CHARGE = 42.0;
     private static double CURRENT = 0.42;
     private static double FREQUENCY = 420.0e6;
 
@@ -82,7 +81,6 @@ public class ProbeStateTest extends TestCase {
 
         // save the state to a trajectory	
         Trajectory<DiagnosticProbeState> trajectory = probe.getTrajectory();
-//		trajectory.saveState(state);
         trajectory.addState(state);
 
         assertTrue(trajectory.stateAtPosition(INITIAL_POSITION) == state);
@@ -111,7 +109,6 @@ public class ProbeStateTest extends TestCase {
 
         // save the state to a trajectory	
         Trajectory<ParticleProbeState> trajectory = probe.getTrajectory();
-//		trajectory.saveState(state);
         trajectory.addState(state);
 
         assertTrue(trajectory.stateAtPosition(INITIAL_POSITION) == state);
@@ -130,10 +127,10 @@ public class ProbeStateTest extends TestCase {
         // create a probe and set some state, capture state in snapshot
         EnvelopeProbe probe = new EnvelopeProbe();
         probe.setPosition(INITIAL_POSITION);
-//		probe.setBeamCharge(CHARGE);
         probe.setBunchFrequency(FREQUENCY);
         probe.setBeamCurrent(CURRENT);
-        probe.setCovariance((CovarianceMatrix) PhaseMatrix.zero());     // causes class cast exception
+        // causes class cast exception
+        probe.setCovariance((CovarianceMatrix) PhaseMatrix.zero());
         EnvelopeProbeState state = probe.cloneCurrentProbeState();
 
         //compare the snapshot to the probe
@@ -150,7 +147,6 @@ public class ProbeStateTest extends TestCase {
 
         // save the state to a trajectory	
         Trajectory<EnvelopeProbeState> trajectory = probe.getTrajectory();
-//		trajectory.saveState(state);
         trajectory.addState(state);
 
         assertTrue(trajectory.stateAtPosition(INITIAL_POSITION) == state);
@@ -172,7 +168,6 @@ public class ProbeStateTest extends TestCase {
         // create a probe and set some state, capture state in snapshot
         EnsembleProbe probe = new EnsembleProbe();
         probe.setPosition(INITIAL_POSITION);
-//		probe.setBeamCharge(CHARGE);
         probe.setBunchFrequency(FREQUENCY);
         probe.setBeamCurrent(CURRENT);
         probe.setEnsemble(new Ensemble());
@@ -189,13 +184,11 @@ public class ProbeStateTest extends TestCase {
                 == state.getBunchFrequency());
         assertTrue(probe.getBeamCurrent()
                 == state.getBeamCurrent());
-//		assertTrue(probe.getEnsemble().equals(((EnsembleProbeState)state).getEnsemble()));
         assertTrue(probe.getFieldCalculation()
                 == state.getFieldCalculation());
 
         // save the state to a trajectory	
         Trajectory<EnsembleProbeState> trajectory = probe.getTrajectory();
-//		trajectory.saveState(state);
         trajectory.addState(state);
 
         assertTrue(trajectory.stateAtPosition(INITIAL_POSITION) == state);

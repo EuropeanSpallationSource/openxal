@@ -271,7 +271,8 @@ public class R2x2 extends SquareMatrix<R2x2> implements Serializable {
      * &nbsp; &nbsp; <strong>y</strong> = <strong>Ax</strong>
      * <br>
      * <br>
-     * where <strong>A</strong> is this matrix and <strong>x</strong> is the given vector.
+     * where <strong>A</strong> is this matrix and <strong>x</strong> is the
+     * given vector.
      *
      * @param vec	the vector factor <strong>x</bx>
      *

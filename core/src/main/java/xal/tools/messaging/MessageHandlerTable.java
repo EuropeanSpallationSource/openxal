@@ -42,7 +42,8 @@ class MessageHandlerTable implements java.io.Serializable {
         final Class<ProtocolType> protocol = handler.getProtocol();
         final String protocolKey = protocolKey(protocol);
         final Object source = handler.getSource();
-        Map<Object, MessageHandler<?>> sourceTable;     // table of handlers keyed by source
+        // table of handlers keyed by source
+        Map<Object, MessageHandler<?>> sourceTable;
 
         if (protocolTable.containsKey(protocolKey)) {
             sourceTable = protocolTable.get(protocolKey);

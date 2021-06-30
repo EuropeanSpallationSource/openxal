@@ -105,7 +105,8 @@ public abstract class TestCommon {
             new Twiss(twiss[1][0], twiss[1][1], twiss[1][2] * 1e-6 / beta_gamma),
             new Twiss(twiss[2][0], twiss[2][1], twiss[2][2] * 1e-6 / beta_gamma / gamma / gamma)});
         envelopeProbe.setBeamCurrent(current);
-        envelopeProbe.setBunchFrequency(frequency);//frequency
+        //frequency
+        envelopeProbe.setBunchFrequency(frequency);
 
         /*CovarianceMatrix cov = ((EnvelopeProbe)envelopeProbe).getCovariance().computeCovariance();
 		cov.setElem(4, 4, cov.getElem(4,4)/Math.pow(envelopeProbe.getGamma(),2));

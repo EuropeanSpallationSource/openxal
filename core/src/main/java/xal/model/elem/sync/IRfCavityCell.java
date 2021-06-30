@@ -73,10 +73,10 @@ public interface IRfCavityCell {
 
     /**
      * <p>
-     * Sets the structure mode <strong>number</strong> <em>q</em> for the cavity in which
-     * this cell belongs. Here the structure mode number is defined in terms of
-     * the fractional phase advance between cells, with respect to &pi;. To make
-     * this explicit
+     * Sets the structure mode <strong>number</strong> <em>q</em> for the cavity
+     * in which this cell belongs. Here the structure mode number is defined in
+     * terms of the fractional phase advance between cells, with respect to
+     * &pi;. To make this explicit
      * <br/>
      * <br/>
      * &nbsp; &nbsp; <em>q</em> = 0 &nbsp; &nbsp; &rAarr; 0 mode
@@ -120,10 +120,11 @@ public interface IRfCavityCell {
 
     /**
      * <p>
-     * Returns the structure mode <strong>number</strong> <em>q</em> for the cavity in which
-     * this gap belongs. This is the fractional phase advance between cells,
-     * with respect to &pi;. It can also be interpreted as describing the
-     * spatial advance of the axial electric field from cell to cell.
+     * Returns the structure mode <strong>number</strong> <em>q</em> for the
+     * cavity in which this gap belongs. This is the fractional phase advance
+     * between cells, with respect to &pi;. It can also be interpreted as
+     * describing the spatial advance of the axial electric field from cell to
+     * cell.
      * </p>
      *
      * @return the cavity mode constant for the cell containing this gap

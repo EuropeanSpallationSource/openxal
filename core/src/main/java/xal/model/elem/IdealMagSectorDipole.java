@@ -220,25 +220,11 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      *
      * @param probe probe object to be deflected
      *
-     * @return dipole path curvature for given probe (in <strong>1/meters</strong>)
+     * @return dipole path curvature for given probe (in
+     * <strong>1/meters</strong>)
      */
     public double compCurvature(IProbe probe) {
-
         return BendingMagnet.compCurvature(probe, this.getMagField());
-//        // Get  parameters
-//        double B0 = this.getMagField();
-////        double n0 = this.getFieldIndex();
-//        
-//        double e = probe.getSpeciesCharge();
-//        double Er = probe.getSpeciesRestEnergy();
-//        double gamma = probe.getGamma();
-//        double beta  = probe.getBeta();
-//
-//
-//        // Compute the equilibrium curvature h=1/R
-//        double  h = (e*LightSpeed*B0)/(beta*gamma*Er);
-//
-//        return h;
     }
 
     /*
@@ -249,7 +235,8 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <strong>meters</strong>
+     * @param dblLen length of subsection to propagate through
+     * <strong>meters</strong>
      *
      * @return the elapsed time through section<strong>Units: seconds</strong>
      */
@@ -300,18 +287,11 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
         double c = IProbe.LIGHT_SPEED;
         double path = this.getPathLength();
         double alpha = this.getBendAngle();
-//	double rhof = 0;
-//	if (alpha!=0) {
-//			rhof = path/alpha;
-//	}
-//	double Bf = 0;
-//	if (rhof!=0) {
-//		Bf = gamma*beta*Er/(c*rhof);
-//	}
+
         // Compute the equilibrium radius R0 and curvature h=1/R0
         double R0 = 0;
         if (e * c * B0 != 0) {
-            R0 = beta * gamma * Er / (e * c * B0);//h polarity = e * B0 polarity
+            R0 = beta * gamma * Er / (e * c * B0);
         }
         double h = 0;
         if (R0 != 0) {
@@ -323,54 +303,67 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
         double bPathFlag = this.getFieldPathFlag();
 
         if (bPathFlag == 1.) {
-            //double path = this.getPathLength();
-            //double alpha = this.getBendAngle();
             double hrho = 0;
             if (path != 0) {
-                hrho = alpha / path; //hrho polarity = alpha polarity
+                hrho = alpha / path;
             }
             // h polarity = hrho polarity
             //therefore, e*B0polarity = alpha polarity   	
-            h = hrho; //if fieldPathFlag=1, use hrho (calculated from rho) instead of h(calculated from p and B)
+            //if fieldPathFlag=1, use hrho (calculated from rho) instead of h(calculated from p and B)
+            h = hrho;
         }
 
         // Compute the focusing constants in both the bending plane 
-        double kb;             // focusing strength in the bending plane
-        double kf;             // focusing strength in the free plane
+        // focusing strength in the bending plane
+        double kb;
+        // focusing strength in the free plane
+        double kf;
 
-        double[][] arrBend;        // sub-transfer matrix for bending plane
-        double[][] arrFree;        // sub-transfer matrix for free plane 
+        // sub-transfer matrix for bending plane
+        double[][] arrBend;
+        // sub-transfer matrix for free plane 
+        double[][] arrFree;
 
         // Compute the transfer submatrix in the bending plane
-        if (n0 <= 1.0) {      // focusing or zero (n==1) in the bending direction
+        // focusing or zero (n==1) in the bending direction
+        if (n0 <= 1.0) {
             kb = Math.sqrt(1.0 - n0) * h;
             arrBend = QuadrupoleLens.transferFocPlane(kb, dL);
 
-        } else {                // defocusing in the bending direction
+            // defocusing in the bending direction
+        } else {
             kb = Math.sqrt(n0 - 1.0) * h;
             arrBend = QuadrupoleLens.transferDefPlane(kb, dL);
 
         }
 
         // Compute the transfer submatrix in the free plane
-        if (n0 >= 0.0) {      // focusing or zero (n==0) in the free plane
+        // focusing or zero (n==0) in the free plane
+        if (n0 >= 0.0) {
             kf = Math.sqrt(n0) * h;
             arrFree = QuadrupoleLens.transferFocPlane(kf, dL);
 
-        } else {                // defocusing in the free plane
+            // defocusing in the free plane
+        } else {
             kf = Math.sqrt(-n0) * h;
             arrFree = QuadrupoleLens.transferDefPlane(kf, dL);
 
         }
 
         // Compute dispersive elements
-        double dx;                         // dispersion coefficient
-        double dxp;                        // deflection coefficient
-        double dz;                         // differential path length coefficient
+        // dispersion coefficient
+        double dx;
+        // deflection coefficient
+        double dxp;
+        // differential path length coefficient
+        double dz;
 
-        if (Math.abs(kb) > ElementaryFunction.EPS) {   // finite bending plane focusing 
-            double Cb = arrBend[0][0];     // cosine-like function value
-            double Sb = arrBend[0][1];     // sine-like function value
+        // finite bending plane focusing 
+        if (Math.abs(kb) > ElementaryFunction.EPS) {
+            // cosine-like function value
+            double Cb = arrBend[0][0];
+            // sine-like function value
+            double Sb = arrBend[0][1];
 
             dx = R0 * (1.0 - Cb) / (1.0 - n0);
             dxp = Sb * h;
@@ -378,15 +371,21 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
             //from ThickDipole and Trace3D, 31 Jan 07 Sako
             dz = (dL * beta * beta - Sb) / (1 - n0) - dL * (1 - 1 / (1 - n0)) / (gamma * gamma);
 
-        } else {                                        // near zero bending plane focusing  
-            double a = h * dL;      // arc angle of bend through dL
-            double a2 = a * a;       // arc angle squared   
-            double q = kb * dL;     // betatron phase advance through bend 
-            double q2 = q * q;       // phase advance squared
+            // near zero bending plane focusing  
+        } else {
+            // arc angle of bend through dL
+            double a = h * dL;
+            // arc angle squared   
+            double a2 = a * a;
+            // betatron phase advance through bend 
+            double q = kb * dL;
+            // phase advance squared
+            double q2 = q * q;
 
             //was wrong dx  = R0*0.5*a2*( 1.0 + (q2/12.0)*(-1.0 + q2/3.0)); (3.0 should be 30)
             dx = R0 * 0.5 * a2 * (1 - q2 / 12 + q2 * q2 / 360);
-            dxp = a * (1.0 + (q2 / 6.0) * (-1.0 + q2 / 20.0));//ok
+            //ok
+            dxp = a * (1.0 + (q2 / 6.0) * (-1.0 + q2 / 20.0));
             //dz  = dL*a2*(1.0/6.0 + q2*(-1.0/120 + q2/5040.0)); was default
             //dz  = dL*a2/q2*(beta*beta-1+q2/6.0 - q2*q2/120 + q2*q2*q2/5040)-dL/gamma/gamma*(1-a2/q2);
             //a2 therms cancel out (above formula diverce when q2=0)
@@ -395,7 +394,8 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
         }
 
         // Build the full transfer matrix 
-        PhaseMatrix matPhi = PhaseMatrix.identity(); // full transfer matrix
+        // full transfer matrix
+        PhaseMatrix matPhi = PhaseMatrix.identity();
 
         switch (this.getOrientation()) {
 
@@ -447,7 +447,8 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
         double nQ = 0.;
 
         // Get  parameters
-        double B = this.getMagField(); // opposite
+        // opposite
+        double B = this.getMagField();
 
         //hs
         double path = this.getPathLength();
@@ -459,7 +460,6 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
 
         double hrho = 0;
         if (path != 0) {
-//		hrho = -alpha/path;
             hrho = alpha / path;
         }
 
@@ -470,23 +470,23 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
 
         final double c = IProbe.LIGHT_SPEED;
         double Beff = alpha / path * Etotal * beta / (c * charge);
-        //LOGGER.log(Level.INFO, "id, B, Beff = "+getId()+" "+B+" "+Beff);
 
         // Compute the bending constant h  == 1/ bend radius (1/meter)
-//was default	
+        //was default	
         double h = c * B / (Etotal * beta * charge);
-//	double h = -0.2998e9 * B / (Etotal * beta *charge);
         LOGGER.log(Level.INFO, "h, hrho = {0} {1}", new Object[]{h, hrho});
 
         //this was for old RDB double h = 0.2998e9 * B / (Etotal * beta *Math.abs(charge)); 
         double s = probe.getPosition();
 
         if (bPathFlag == 1.) {
-            h = hrho; //if fieldPathFlag=1, use hrho (calculated from rho) instead of h(calculated from p and B)
+            //if fieldPathFlag=1, use hrho (calculated from rho) instead of h(calculated from p and B)
+            h = hrho;
         }
 
         if (h != 0.) {
-            //nQ = -getKQuad() / (h * h); // transform to transport notation - simpler for coding
+            // transform to transport notation - simpler for coding
+            //nQ = -getKQuad() / (h * h);
             nQ = getFieldIndex();
         }
 
@@ -507,24 +507,9 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
         // Build the diople body tranfer matrix
         PhaseMatrix matBody = PhaseMatrix.identity();
 
-        matBody.setSubMatrix(0, 1, 0, 1, arrB); // the H bend
-        /* def
-	matBody.setElem(0, 5, (1. - Math.cos(kx*dL)) * h/Math.pow(kx,2.) ); 
-	matBody.setElem(1, 5, Math.sin(kx*dL) * h/kx ); 
-	matBody.setElem(4, 0, -Math.sin(kx*dL) * h/kx ); 
-	matBody.setElem(4, 1, -(1. - Math.cos(kx*dL)) * h/Math.pow(kx,2.) ); 
-	matBody.setElem(4, 5, -(kx*dL - Math.sin(kx*dL)) * Math.pow((h/kx), 2.)/kx ); 
-         */
-        //kx*kx=h*h*(1-n0)
-        //(0,5) -> (1-cos(kx*dL))/(h(1-n0)) (1/h=R0)         dx  = R0*(1.0 - Cb)/(1.0 - n0)
-        //(1,5)  -> sin(kx*dL)/sqrt(1-n0)                    dxp = Sb*h (Sb=sin(kx*dL)/kx)
-        //(4,5)-> -(kx*dL*beta*beta - Math.sin(kx*dL)) * ((h/kx)*(h/kx))/kx +dL*(1. -h*h/(kx*kx))*(1. -beta*beta)
-        //         term1= -(dL*beta*beta-Sb)/(1-n0)
-        //          term2=dL*(1-1/(1-n0))/(gamma*gamma)
-        // (4,5) -> (kx*dL*beta*beta - ElementaryFunction.sinh(kx*dL)) * Math.pow((h/kx), 2.)/kx  +dL* (1. +h*h/(kx*kx)) * (1. -beta*beta)
-        //          term1= (dL*beta*beta-Sb)/(n0-1)
-        //           term2=dL* (1. +1/(n0-1)) /(gamma*gamma)
-        //ohkawa
+        // the H bend
+        matBody.setSubMatrix(0, 1, 0, 1, arrB);
+
         if (nQ < 1) {
             matBody.setElem(0, 5, (1. - Math.cos(kx * dL)) * h / (kx * kx));
             matBody.setElem(1, 5, Math.sin(kx * dL) * h / kx);
@@ -543,40 +528,30 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
             matBody.setElem(4, 5, (kx * dL * beta * beta - ElementaryFunction.sinh(kx * dL)) * Math.pow((h / kx), 2.) / kx + dL * (1. + h * h / (kx * kx)) * (1. - beta * beta));
         }
 
-        if (nQ >= 0) { // focusing in vertical
+        // focusing in vertical
+        if (nQ >= 0) {
             matBody.setElem(2, 2, Math.cos(ky * dL));
-            matBody.setElem(2, 3, dL * ElementaryFunction.sinc(ky * dL)); // = l* sin(kl)/kl
+            // = l* sin(kl)/kl
+            matBody.setElem(2, 3, dL * ElementaryFunction.sinc(ky * dL));
             matBody.setElem(3, 2, -ky * Math.sin(ky * dL));
             matBody.setElem(3, 3, Math.cos(ky * dL));
-        } else { // defocusing in vertical
+            // defocusing in vertical
+        } else {
             matBody.setElem(2, 2, ElementaryFunction.cosh(ky * dL));
-            matBody.setElem(2, 3, dL * ElementaryFunction.sinch(ky * dL)); // = l* sin(kl)/kl
+            // = l* sin(kl)/kl
+            matBody.setElem(2, 3, dL * ElementaryFunction.sinch(ky * dL));
             matBody.setElem(3, 2, ky * ElementaryFunction.sinh(ky * dL));
             matBody.setElem(3, 3, ElementaryFunction.cosh(ky * dL));
         }
 
-//	double hStar = h;
-        // The entrance pole face matrix 
-//	PhaseMatrix matEntrance = PhaseMatrix.identity();
-//	matEntrance.setElem(1,0 , hStar* Math.tan(entranceAngle));
-//	matEntrance.setElem(3,2, -hStar* Math.tan(entranceAngle - entranceAnglePhi));
-        // The exit pole face matrix 
-//	PhaseMatrix matExit = PhaseMatrix.identity();
-//	matExit.setElem(1,0, hStar * Math.tan(exitAngle));
-//	matExit.setElem(3,2, -hStar  * Math.tan(exitAngle - exitAnglePhi));
-        // Multiply the 3 matrices together, starting at entrance side
-//	PhaseMatrix matProd1 = matBody.times(matEntrance);
-//	PhaseMatrix matProd2 = matExit.times(matProd1);
-        //return new PhaseMap(matProd2);
         return new PhaseMap(matBody);
-
     }
 
 
     /*
      * Internal Support
      */
- /*
+    /*
      *  Testing and Debugging
      */
     /**

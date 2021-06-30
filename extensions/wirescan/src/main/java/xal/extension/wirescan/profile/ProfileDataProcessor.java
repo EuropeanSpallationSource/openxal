@@ -469,7 +469,8 @@ public class ProfileDataProcessor {
         int szVec = ProfileData.Angle.getCount();
         DoubleVector vecMeas = new DoubleVector(szVec);
 
-        for (int n = 0; n < N; n++) {   // for each signal value
+        // for each signal value
+        for (int n = 0; n < N; n++) {
 
             // pack measurement vector
             for (ProfileData.Angle view : ProfileData.Angle.values()) {
@@ -689,7 +690,8 @@ public class ProfileDataProcessor {
             double dblMax1 = arrPrj1[iCplInd];
 
             // compute cross-talk coefficient for each coupled signal
-            iCplInd -= cntSmpAve / 2;       // index of signal to start averaging
+            // index of signal to start averaging
+            iCplInd -= cntSmpAve / 2;
             if (iCplInd < 0) {
                 iCplInd = 0;
             }
@@ -779,7 +781,8 @@ public class ProfileDataProcessor {
             double dblGain = matGain.getElement(view1.getIndex(), view1.getIndex());
             for (ProfileData.Angle view2 : ProfileData.Angle.values()) {
 
-                if (view2.equals(view1)) { // this is a diagonal element - unity value
+                // this is a diagonal element - unity value
+                if (view2.equals(view1)) {
                     matCpl.setElement(view1.getIndex(), view2.getIndex(), 1.0);
 
                 } else {

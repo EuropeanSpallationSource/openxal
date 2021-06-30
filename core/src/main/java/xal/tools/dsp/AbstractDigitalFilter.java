@@ -26,15 +26,17 @@ import xal.tools.collections.LinearBuffer;
  * <em>a<sub>N</sub></em>(<em>n</em>)<em>x</em>(<em>n-N</em>)
  * <br>
  * <br>
- * where <em>n</em> is the current ("time") index, the {<em>x</em>(<em>n</em>)} are
- * the inputs to the filter at time <em>n</em>, the
- * {<em>a<sub>k</sub></em>(<em>n</em>)} are the input coefficients at time <em>n</em>
- * for delay <em>k</em>, the {<em>y</em>(<em>n</em>)} are the filter outputs at time
+ * where <em>n</em> is the current ("time") index, the {<em>x</em>(<em>n</em>)}
+ * are the inputs to the filter at time <em>n</em>, the
+ * {<em>a<sub>k</sub></em>(<em>n</em>)} are the input coefficients at time
+ * <em>n</em>
+ * for delay <em>k</em>, the {<em>y</em>(<em>n</em>)} are the filter outputs at
+ * time
  * <em>n</em>, and the {<em>b<sub>k</sub></em>(<em>n</em>)} are the output
  * coefficients at time <em>n</em>
- * for delay <em>k</em>. The equation can be rearranged to explicitly demonstrate
- * the current output <em>y</em>(<em>n</em>) in terms of the past <em>N</em> inputs
- * and output
+ * for delay <em>k</em>. The equation can be rearranged to explicitly
+ * demonstrate the current output <em>y</em>(<em>n</em>) in terms of the past
+ * <em>N</em> inputs and output
  * <br>
  * <br>&nbsp;&nbsp;  <em>y</em>(<em>n</em>) = (
  * <em>a</em><sub>0</sub>(<em>n</em>)<em>x</em>(<em>n</em>) +
@@ -90,8 +92,8 @@ public abstract class AbstractDigitalFilter {
      * Abstract Methods
      */
     /**
-     * Get the input signal coefficient <em>a<sub>k</sub></em>(<em>n</em>) for the
-     * given time and delay.
+     * Get the input signal coefficient <em>a<sub>k</sub></em>(<em>n</em>) for
+     * the given time and delay.
      *
      * @param iTime current time
      * @param iDelay delay index of the coefficient
@@ -102,8 +104,8 @@ public abstract class AbstractDigitalFilter {
     public abstract double getInputCoefficient(int iTime, int iDelay);
 
     /**
-     * Get the output signal coefficient <em>b<sub>k</sub></em>(<em>n</em>) for the
-     * given time and delay.
+     * Get the output signal coefficient <em>b<sub>k</sub></em>(<em>n</em>) for
+     * the given time and delay.
      *
      * @param iTime current time
      * @param iDelay delay index of the coefficient
@@ -211,9 +213,12 @@ public abstract class AbstractDigitalFilter {
      * @see AbstractDigitalFilter#getOrder()
      */
     public double response(double dblInput) {
-        int iTime;              // current time index
-        int iDelay;             // current coefficient delay index
-        double dblOutput;          // current output value
+        // current time index
+        int iTime;
+        // current coefficient delay index
+        int iDelay;
+        // current output value
+        double dblOutput;
 
         iTime = this.getTimeIndex();
 

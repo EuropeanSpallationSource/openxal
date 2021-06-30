@@ -437,10 +437,14 @@ public class Twiss implements Serializable {
      * @return phase space rotation (<strong>radians</strong>)
      */
     public double computeRotation() {
-        double fAlpha;             // alpha twiss parameter
-        double fDescr;             // descriminate of Twiss quadratic
-        double fZeta;              // gamma - beta
-        double fTheta;             // rotation angle
+        // alpha twiss parameter
+        double fAlpha;
+        // descriminate of Twiss quadratic
+        double fDescr;
+        // gamma - beta
+        double fZeta;
+        // rotation angle
+        double fTheta;
 
         fAlpha = this.getAlpha();
         fZeta = this.getGamma() - this.getBeta();
@@ -464,11 +468,16 @@ public class Twiss implements Serializable {
      * @return two-dimension array of semi-axes (a,b)
      */
     public double[] computeSemiAxes() {
-        double fEmitt;             // emittance Twiss parameter
-        double fLambda1;           // eigenvalue of Twiss matrix
-        double fLambda2;           // eigenvalue of Twiss matrix
-        double[] arrEigVals;         // eigenvalues of Twiss matrix
-        double[] arrSemiAxes;        // the semi-axes of ellipse
+        // emittance Twiss parameter
+        double fEmitt;
+        // eigenvalue of Twiss matrix
+        double fLambda1;
+        // eigenvalue of Twiss matrix
+        double fLambda2;
+        // eigenvalues of Twiss matrix
+        double[] arrEigVals;
+        // the semi-axes of ellipse
+        double[] arrSemiAxes;
 
         arrEigVals = this.computeEigenvalues();
         fEmitt = this.getEmittance();
@@ -496,11 +505,16 @@ public class Twiss implements Serializable {
      * @return eigenvalues of the above matrix
      */
     public double[] computeEigenvalues() {
-        double fAlpha;             // alpha Twiss parameter
-        double fTemp1;             // gamma + beta
-        double fTemp2;             // gamma - beta
-        double fDescr;             // descriminate of Twiss quadratic
-        double[] arrEigVals;         // eigenvalues of the Twiss matrix
+        // alpha Twiss parameter
+        double fAlpha;
+        // gamma + beta
+        double fTemp1;
+        // gamma - beta
+        double fTemp2;
+        // descriminate of Twiss quadratic
+        double fDescr;
+        // eigenvalues of the Twiss matrix
+        double[] arrEigVals;
 
         arrEigVals = new double[2];
 
@@ -528,11 +542,16 @@ public class Twiss implements Serializable {
      * @return two-element array of eigenvectors of the above matrix
      */
     public R2[] computeEigenvectors() {
-        double fAlpha;             // alpha twiss parameter
-        double fZeta;              // gamma - beta
-        double fDescr;             // descriminate of Twiss quadratic
-        R2 vecMaj;             // major semi-axis eigenvector
-        R2 vecMin;             // minor semi-axis eigenvector
+        // alpha twiss parameter
+        double fAlpha;
+        // gamma - beta
+        double fZeta;
+        // descriminate of Twiss quadratic
+        double fDescr;
+        // major semi-axis eigenvector
+        R2 vecMaj;
+        // minor semi-axis eigenvector
+        R2 vecMin;
 
         vecMaj = new R2();
         vecMin = new R2();

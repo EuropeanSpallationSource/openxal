@@ -170,7 +170,8 @@ public class RpcServer {
     /**
      * process remote socket events
      */
-    @SuppressWarnings("unchecked")    // need to cast generic request object to Map
+    // need to cast generic request object to Map
+    @SuppressWarnings("unchecked")
     private void processRemoteEvents(final Socket remoteSocket) {
         new Thread(new Runnable() {
             @Override
@@ -410,9 +411,11 @@ class RemoteRequestHandler<ProtocolType> {
         final Class<?>[] methodParamTypes = method.getParameterTypes();
 
         if (method.getName().equals(methodName) && methodParamTypes.length == parameterTypes.length) {
-            score += 1;     // credit for matching the name and parameters length
+            // credit for matching the name and parameters length
+            score += 1;
         } else {
-            return 0;   // no match
+            // no match
+            return 0;
         }
 
         // test each parameter type for consistency
@@ -422,20 +425,26 @@ class RemoteRequestHandler<ProtocolType> {
 
             if (methodParamType.isPrimitive()) {
                 if (parameterType == null) {
-                    return 0;   // no match since a primitive cannot be null
+                    // no match since a primitive cannot be null
+                    return 0;
                 } else if (PRIMITIVE_TYPE_WRAPPERS.get(methodParamType).equals(parameterType)) {
-                    score += 1;     // primitive type's corresponding wrapper matches parameter type
+                    // primitive type's corresponding wrapper matches parameter type
+                    score += 1;
                 } else {
-                    return 0;       // no match since the primitive must be mapped to its corresponding wrapper class
+                    // no match since the primitive must be mapped to its corresponding wrapper class
+                    return 0;
                 }
             } else if (methodParamType.equals(parameterType)) {
-                score += 2;     // bonus for exact match
+                // bonus for exact match
+                score += 2;
             } else if (parameterType.isAssignableFrom(methodParamType)) {
-                score += 1;     // types are consistent
+                // types are consistent
+                score += 1;
             } else if (parameterType == null) {
                 // null matches an object type so compatible, but no credit
             } else {
-                return 0;   // no match for this parameter
+                // no match for this parameter
+                return 0;
             }
         }
 

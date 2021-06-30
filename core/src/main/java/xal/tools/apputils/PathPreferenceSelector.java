@@ -246,7 +246,8 @@ public class PathPreferenceSelector extends JDialog implements ScrollPaneConstan
      */
     protected void commitChanges() {
         try {
-            chooser.setDefaultURLSpec(urlField.getText());     // make this file the new default
+            // make this file the new default
+            chooser.setDefaultURLSpec(urlField.getText());
             updateView();
             userSavedChanges = true;
         } catch (Exception exception) {

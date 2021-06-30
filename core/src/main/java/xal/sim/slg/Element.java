@@ -104,9 +104,11 @@ public abstract class Element implements VisitorListener, Cloneable {
     protected Element(String name, double position, double len) {
         this.secHware = SECTION.UNKNOWN;
 
-        fmt = Lattice.fmt;    // number format is defined in Lattice
+        // number format is defined in Lattice
+        fmt = Lattice.fmt;
         this.name = name;
-        this.position = position;   //always relative to base
+        //always relative to base
+        this.position = position;
         this.base = 0.0;
         this.len = len;
     }

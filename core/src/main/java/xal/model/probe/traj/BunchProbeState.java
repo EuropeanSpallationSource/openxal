@@ -131,8 +131,8 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
     /**
      * <p>
      * Returns the bunch frequency, that is, the rate at which beam bunches pass
-     * a stationary point (in laboratory coordinates). The frequency <em>f</em> of
-     * the bunches determines the beam current <em>I</em>.
+     * a stationary point (in laboratory coordinates). The frequency <em>f</em>
+     * of the bunches determines the beam current <em>I</em>.
      * </p>
      * <p>
      * The bunch frequency <em>f</em> is related to the beam current
@@ -151,8 +151,8 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
     }
 
     /**
-     * Returns the total beam current, which is the bunch charge <em>Q</em> times
-     * the bunch frequency <em>f</em>.
+     * Returns the total beam current, which is the bunch charge <em>Q</em>
+     * times the bunch frequency <em>f</em>.
      *
      * @return beam current in <strong>amps</strong>
      */
@@ -191,19 +191,20 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
 
     /**
      * <p>
-     * Returns the generalized, three-dimensional beam perveance <em>K</em>. This
-     * value is defined to be
+     * Returns the generalized, three-dimensional beam perveance <em>K</em>.
+     * This value is defined to be
      * </p>
      *
      * <em>K</em> =
      * (<em>Q</em>/4*&pi;*<em>&epsilon;</em><sub>0</sub>)(1/&gamma;<sup>3</sup>&beta;<sup>2</sup>)(|<em>q</em>|/<em>E<sub>R</sub></em>)
      *
      * <p>
-     * where <em>Q</em> is the bunch charge, <em>&epsilon;</em><sub>0</sub> is the
-     * permittivity of free space, <em>&gamma;</em> is the relativistic factor,
+     * where <em>Q</em> is the bunch charge, <em>&epsilon;</em><sub>0</sub> is
+     * the permittivity of free space, <em>&gamma;</em> is the relativistic
+     * factor,
      * <em>&beta;</em> is the normalized design velocity, <em>q</em> is the
-     * individual particle charge and <em>E<sub>R</sub></em> is the rest energy of
-     * the beam particles.
+     * individual particle charge and <em>E<sub>R</sub></em> is the rest energy
+     * of the beam particles.
      * </p>
      *
      * <h3>NOTES:</h3>
@@ -213,7 +214,8 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
      * where <em>c</em> is the speed of light.
      * </p>
      *
-     * @return generalized beam perveance <strong>Units: radians^2/meter</strong>
+     * @return generalized beam perveance <strong>Units:
+     * radians^2/meter</strong>
      *
      * @author Christopher K. Allen
      */
@@ -245,8 +247,8 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
      * where <em>I</em> is the current, <em>&epsilon;</em><sub>0</sub> is the
      * permittivity of free space, <em>&gamma;</em> is the relativistic factor,
      * <em>&beta;</em> is the normalized design velocity, <em>q</em> is the
-     * individual particle charge and <em>E<sub>R</sub></em> is the rest energy of
-     * the beam particles.
+     * individual particle charge and <em>E<sub>R</sub></em> is the rest energy
+     * of the beam particles.
      * </p>
      *
      * <h3>NOTES:</h3>
@@ -256,7 +258,8 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
      * where <em>c</em> is the speed of light.
      * </p>
      *
-     * @return generalized beam perveance <strong>Units: radians^2/meter</strong>
+     * @return generalized beam perveance <strong>Units:
+     * radians^2/meter</strong>
      *
      * @author Christopher K. Allen
      */

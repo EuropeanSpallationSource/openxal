@@ -390,7 +390,8 @@ public abstract class ElementSeq implements IComposite {
     }
 
     /**
-     * Return an <code>Iterator</code> object that iterates over <strong>every</strong>
+     * Return an <code>Iterator</code> object that iterates over
+     * <strong>every</strong>
      * <code>IComponent</code> object in this composite. For
      * <code>IComponent</code> which are also composite the parent is returned
      * first, then all its children. This would be in reverse order.
@@ -438,119 +439,6 @@ public abstract class ElementSeq implements IComposite {
         }
     }
 
-//  /**
-//  *  Return total time to propagate through all elements in this sequence 
-//  *  for the given probe up to the specified length.  If the specified
-//  *  length is >= to the sequence's length, returns the elapsed time for 
-//  *  the entire sequence.
-//  * 
-//  *  WARNING:
-//  *  The probe is NOT propagated, no acceleration applied so this value may
-//  *  not be the same if the probe was actually propagated.
-//  * 
-//  *  @param  probe   propagating probe
-//  *  @param  dblLen  length of subsection to propagate through <strong>meters</strong>
-//  *  
-//  *  @return         total elapsed time through section<strong>Units: seconds</strong> 
-//  */
-// public double elapsedTime(IProbe probe, double dblLen)  {
-//     double     dblTime;    // total energy gain of sequence
-//     Iterator    iter;       // element iterator
-//     double     remLength;  // remaining length of subsection to calculate energy gain for
-//     
-//     dblTime = 0.0;
-//     iter = this.getArray().iterator();
-//     remLength = dblLen;
-//     
-//     while ((iter.hasNext()) && (remLength > 0))  {
-//         IElement elem = (IElement)iter.next();
-//         double elemLength = elem.getLength();
-//         double calcLength = Math.min(elemLength, remLength);
-//         
-//         dblTime += elem.elapsedTime(probe, calcLength);
-//         
-//         remLength = remLength - calcLength;
-//     }
-//     
-//     return dblTime;
-// }
-// 
-// /**
-//  *  Returns total energy gain provided by all elements in this sequence 
-//  *  for the particular probe up to the specified length.  If the specified
-//  *  length is >= to the sequence's length, returns the energy gain for 
-//  *  the entire sequence.
-//  * 
-//  *  WARNING:
-//  *  The probe is NOT propagated, no acceleration applied so this value may
-//  *  not be the same if the probe was actually propagated.
-//  * 
-//  *
-//  *  @param  probe   determine energy gain for this probe
-//  *  @param  dblLen  length of sequence subsection to calculate energy gain
-//  *
-//  *  @return         total energy gain provided by sequence <strong>Units: eV</strong>
-//  */
-// public double energyGain(IProbe probe, double dblLen) {
-//     double     dblDelW;    // total energy gain of sequence
-//     Iterator    iter;       // element iterator
-//     double     remLength;  // remaining length of subsection to calculate energy gain for
-//     
-//     dblDelW = 0.0;
-//     iter = this.getArray().iterator();
-//     remLength = dblLen;
-//     
-//     while ((iter.hasNext()) && (remLength > 0))  {
-//         IElement elem = (IElement)iter.next();
-//         double elemLength = elem.getLength();
-//         double calcLength = Math.min(elemLength, remLength);
-//         
-//         dblDelW += elem.energyGain(probe, calcLength);
-//         
-//         remLength = remLength - calcLength;
-//     }
-//     
-//     return dblDelW;
-// }
-// 
-// /**  
-//  *  Compute the transfer map of the entire sequence for a given probe
-//  *  up to the specified length.  If the length parameter is greater than
-//  *  the sum of the lengths of the sequence's elements, return the transfer
-//  *  matrix for the entire sequence.  If the length parameter is smaller than
-//  *  the sums of the lengths of the sequence's elements, return the transfer
-//  *  matrix for the sequence from its beginning up to the specified length.
-//  *  The total transfer matrix is the product of all the transfer matrices
-//  *  in the sequence.  
-//  *
-//  *  @param  probe   typically transfer matrices depend upon probe parameters
-//  *  @param  dblLen  length of sequence subSection to calculate transfer map
-//  *
-//  *  @return         composite transfer map of sequence for probe
-//  *
-//  *  @exception  ModelException  the transfer map could not be computed
-//  */
-// public PhaseMap transferMap(IProbe probe, double dblLen) throws ModelException {
-//     PhaseMap        mapPhi;     // composite transfer map of sequence
-//     Iterator        iter;       // element iterator
-//     double          remLength;   // remaining length to get Map for
-//     
-//     mapPhi = PhaseMap.identity();
-//     iter = this.getArray().iterator();
-//     remLength = dblLen;
-//     
-//     while ((iter.hasNext()) && (remLength > 0)) {
-//         IElement elem = (IElement)iter.next();
-//         double elemLength = elem.getLength();
-//         double mapLength = Math.min(elemLength, remLength);
-//         
-//         mapPhi.composeEquals( elem.transferMap(probe, mapLength) );
-//         
-//         remLength = remLength - mapLength;
-//     }
-//     
-//     return mapPhi;
-// }
     /*
      *  IComponent Interface
      */
@@ -807,7 +695,8 @@ public abstract class ElementSeq implements IComposite {
     }
 
     /**
-     * Return an <code>Iterator</code> object that iterates over <strong>every</strong>
+     * Return an <code>Iterator</code> object that iterates over
+     * <strong>every</strong>
      * <code>IComponent</code> object in this composite. For
      * <code>IComponent</code> which are also composite the parent is returned
      * first, then all its children. This would be in reverse order.
@@ -886,7 +775,8 @@ public abstract class ElementSeq implements IComposite {
         // Inspect each child for specified element
         for (IComponent iChild : this) {
 
-            if (iChild == iCmp) {                // is this child the one?
+            // is this child the one?
+            if (iChild == iCmp) {
                 this.getForwardCompList().remove(iCmp);
                 this.getReverseCompList().remove(iCmp);
 
@@ -901,15 +791,19 @@ public abstract class ElementSeq implements IComposite {
                 return true;
             }
 
-            if (iChild instanceof IComposite) {        // if child is composite
-                if (((IComposite) iChild).remove(iCmp)) // true to remove it
-                {
-                    return true;                            // it was a child of my child 
-                }                                                            //    and was removed
+            // if child is composite
+            if (iChild instanceof IComposite) {
+                // true to remove it
+                if (((IComposite) iChild).remove(iCmp)) {
+                    // it was a child of my child 
+                    return true;
+                    //    and was removed
+                }
             }
         }
 
-        return false;       // did not encounter specified element
+        // did not encounter specified element
+        return false;
     }
 
     /**
@@ -920,21 +814,8 @@ public abstract class ElementSeq implements IComposite {
      */
     @Override
     public void setDirty(IComponent cmpCaller) {
-
         // Set the dirty flag
         this.bolDirty = true;
-
-//        // Let my parent know I have been changed
-//        if (this.getParent() != null)
-//            this.getParent().setDirty(this);
-//        
-//        // Let my children know I have been changed
-//        for (IComponent cmp : this) {
-//            if (cmp == cmpCaller)       // one of my children might have invoked this operation
-//                break;
-//            if (cmp instanceof IComposite)
-//                ((IComposite)cmp).setDirty(this);
-//        }
     }
 
     /*
@@ -1168,110 +1049,3 @@ class StringPrinter extends StringWriter {
         this.append('\n');
     }
 }
-
-/*
- * Legacy
- */
-///**
-// *  Propagate probe through sequence
-// *
-// *  @param  probe   the state of the probe will be advance using the elements dynamics
-// *
-// *  @exception  ModelException    an error occurred while advancing the probe state
-// */
-//public void propagate(IProbe probe) throws ModelException {   
-//    
-//    Iterator iterElem = this.getElems().iterator();
-//    
-//    boolean     bolStarted = false;
-//    boolean     bolStopped = false;
-//        
-//    if (this.getStartPropElement() == null)
-//        bolStarted = true;
-//        
-//    while (iterElem.hasNext()) {
-//        IElement elem = (IElement)iterElem.next();
-//
-//        // Starting gate
-//        if (!bolStarted)    
-//            if (elem == this.getStartPropElement()) {
-//                bolStarted = true;
-//            } else  { continue;  }
-//            
-//        // Through gate - check for last element
-//        if (!bolStopped)    
-//            if (elem == this.getStopPropElement())   {
-//                bolStopped = true;
-//            }
-//
-//        elem.propagate(probe);
-//            
-//        // Check if we have stopped
-//        if (bolStopped) return;
-//    }
-//}
-//    /**
-//     *  Creates (but does not load parameters) an XAL modeling element based on 
-//     *  the information in the DataAdaptor.
-//     *  The DataAdaptor should contain an XML node contain the <strong>Element</bd> tag
-//     *  of the XAL Model DTD.
-//     *  <p>
-//     *  The element may be either a <code>ThickElement</code> or a <code>ThinElement
-//     *  </code> derived element depending upon the value of the <strong>fam</strong> attribute
-//     *  in the DataAdaptor.
-//     * 
-//     *  @param  daptElem    DataAdaptor contiaining attributes of an Element tag
-//     *
-//     *  @return             newly created XAL modeling element (no specific parameters are set)
-//     *
-//     *  @exception  DataFormatException     <strong>fam</strong> attribute not present in DataAdaptor
-//     *  @exception  NumberFormatException   bad number format in numeric attribute
-//     *  @exception  ClassNotFoundException  <strong>type</strong> value not recognized by ElementFactory
-//     */
-//    protected Element createElement(DataAdaptor daptElem)  
-//        throws DataFormatException, NumberFormatException, ClassNotFoundException
-//    {
-//        String      strFam;         // element family
-//        String      strType;        // element type
-//        String      strId;          // element identifier
-//        String      strPos;         // element lattice position
-//        String      strSecs;        // number of thick element subsections
-//        String      strLen;         // element length (ThickElement)
-//        
-//        
-//        // Get all the element attributes
-//        strFam  = daptElem.stringValue("fam");
-//        strType = daptElem.stringValue("type");
-//        strId   = daptElem.stringValue("id");
-//        strPos  = daptElem.stringValue("pos");
-//        strSecs = daptElem.stringValue("nsecs");
-//        strLen  = daptElem.stringValue("len");
-//        
-//        
-//        // Create element according to its family
-//        Element         elem;       // new element to be created
-//        
-//        // Create a ThinElement type
-//        if (strFam.equals("THIN")) {
-//            Double  dblPos = Double.valueOf(strPos);
-//            
-//            elem = ElementFactory.createThinElement(strType, strId, dblPos);
-//
-//        // Create a ThickElement type
-//        } else if (strFam.equals("THICK"))  {
-//            Integer nSecs  = Integer.valueOf(strSecs);
-//            Double  dblLen = Double.valueOf(strLen);
-//            Double  dblPos = Double.valueOf(strPos);
-//
-//            elem = ElementFactory.createThickElement(strType, strId, nSecs, dblLen, dblPos);
-//            
-//        // There are no other element types, an error must have occurred
-//        } else  {
-//            throw new DataFormatException("ElementSeq#createElement - 'fam' attribute not found in Element " + strId);
-//            
-//        }
-//        
-//        
-//        return elem;
-//    }
-

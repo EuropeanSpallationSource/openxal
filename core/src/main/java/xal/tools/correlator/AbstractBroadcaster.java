@@ -35,8 +35,10 @@ abstract class AbstractBroadcaster<RecordType> implements BinListener<RecordType
      */
     @SuppressWarnings("unchecked")	// must cast proxy for Generics
     public AbstractBroadcaster(final MessageCenter localCenter) {
-        broadcastCenter = new MessageCenter("Correlator Broadcast");      // external broadcast center  
-        this.localCenter = localCenter;     // internal correlator messaging
+        // external broadcast center  
+        broadcastCenter = new MessageCenter("Correlator Broadcast");
+        // internal correlator messaging
+        this.localCenter = localCenter;
 
         fullCount = 0;
 

@@ -156,14 +156,16 @@ public class OpticsSwitcher {
         reset();
 
         dialog.setTitle("Set the Default Optics");
-        dialog.getContentPane().add(selectionEditor.getView());  // host the editor view as the dialog's main content
+        // host the editor view as the dialog's main content
+        dialog.getContentPane().add(selectionEditor.getView());
         dialog.pack();
         dialog.setLocationRelativeTo(view);
 
         setDisposalHandler(new Runnable() {
             @Override
             public void run() {
-                dialog.setVisible(false);     // close the dialog
+                // close the dialog
+                dialog.setVisible(false);
             }
         });
 

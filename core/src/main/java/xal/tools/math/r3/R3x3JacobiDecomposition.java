@@ -12,7 +12,8 @@ import xal.tools.math.r3.R3x3.POS;
 /**
  * <p>
  * Encapsulates the results of an eigenvalue decomposition operation on a
- * symmetric <strong>R</strong><sup>3&times;3</sup> matrix <strong>A</strong> object using
+ * symmetric <strong>R</strong><sup>3&times;3</sup> matrix <strong>A</strong>
+ * object using
  * <em>Jacobi iterations</em>.
  * </p>
  * <p>
@@ -22,8 +23,10 @@ import xal.tools.math.r3.R3x3.POS;
  * &nbsp; &nbsp; <strong>A</strong> = <strong>RDR</strong><sup>T</sup>
  * <br>
  * <br>
- * where <strong>A</strong> is the target matrix, <strong>R</strong> is an orthogonal matrix in
- * <em>SO</em>(3), and <strong>D</strong> is the diagonal matrix of real eigenvalues of
+ * where <strong>A</strong> is the target matrix, <strong>R</strong> is an
+ * orthogonal matrix in
+ * <em>SO</em>(3), and <strong>D</strong> is the diagonal matrix of real
+ * eigenvalues of
  * <strong>A</strong>.
  * </p>
  * The JAMA matrix package is <em>not</em> explicitly used in this class.
@@ -180,12 +183,15 @@ public class R3x3JacobiDecomposition {
      * Decomposes the given matrix <strong>&sigma;</strong> into the product
      * <br>
      * <br>
-     * &nbsp; &nbsp; <strong>&sigma;</strong> = <strong>RDR</strong><sup><em>T</em></sup> ,
+     * &nbsp; &nbsp; <strong>&sigma;</strong> =
+     * <strong>RDR</strong><sup><em>T</em></sup> ,
      * <br>
      * <br>
-     * where <strong>R</strong> &in; <em>O</em>(3) is the conjugating rotation matrix and
-     * <strong>D</strong> &in; <strong>R</strong><sub>+</sub><sup>3&times;3</sup> is the diagonal
-     * matrix of eigenvalues of <strong>&sigma;</strong>.
+     * where <strong>R</strong> &in; <em>O</em>(3) is the conjugating rotation
+     * matrix and
+     * <strong>D</strong> &in;
+     * <strong>R</strong><sub>+</sub><sup>3&times;3</sup> is the diagonal matrix
+     * of eigenvalues of <strong>&sigma;</strong>.
      * </p>
      * <p>
      * The actual computations are done by the objects of the class
@@ -204,15 +210,20 @@ public class R3x3JacobiDecomposition {
         JacobiIterate iter = new JacobiIterate(matTarget);
 
         // Initialize the loop
-        double angle = iter.getAngle();    // rotation angle
-        R3x3 R = iter.getRotation(); // rotation matrix
-        R3x3 Rt = R.transpose();      // transpose of rotation matrix          
-        R3x3 D = matTarget;          // diagonalization matrix
+        // rotation angle
+        double angle = iter.getAngle();
+        // rotation matrix
+        R3x3 R = iter.getRotation();
+        // transpose of rotation matrix          
+        R3x3 Rt = R.transpose();
+        // diagonalization matrix
+        R3x3 D = matTarget;
 
         this.cntIter = 0;
         this.matRot = R3x3.newIdentity();
 
-        while (Math.abs(angle) > ROTATION_TOLERANCE) {       // while the rotation angle is large
+        // while the rotation angle is large
+        while (Math.abs(angle) > ROTATION_TOLERANCE) {
             R = iter.getRotation();
             Rt = R.transpose();
 
@@ -340,9 +351,12 @@ class JacobiIterate {
      */
     private POS compPivot() {
 
-        double cplVal;         // current coupling value
-        double cplMax;         // maximum coupling value
-        POS posMax;         // position of maximum value
+        // current coupling value
+        double cplVal;
+        // maximum coupling value
+        double cplMax;
+        // position of maximum value
+        POS posMax;
 
         posMax = POS.XY;
         cplVal = compCoupling(posMax);
@@ -428,21 +442,30 @@ class JacobiIterate {
      * @return angle of rotation in the interval [-pi/4,pi/4]
      */
     private double compAngle2() {
-        double aij = posPivot.getValue(matTarget);     // pivot element
-        double aii = posPivot.getRowDiag(matTarget);   // row diagonal
-        double ajj = posPivot.getColDiag(matTarget);   // column diagonal
-        double b = (ajj - aii) / (2.0 * aij);            // quadratic equation linear coeff
-        double des = Math.sqrt(b * b + 1);                 // quadratic eq descriminant
+        // pivot element
+        double aij = posPivot.getValue(matTarget);
+        // row diagonal
+        double aii = posPivot.getRowDiag(matTarget);
+        // column diagonal
+        double ajj = posPivot.getColDiag(matTarget);
+        // quadratic equation linear coeff
+        double b = (ajj - aii) / (2.0 * aij);
+        // quadratic eq descriminant
+        double des = Math.sqrt(b * b + 1);
 
         // Get the smaller rotation solution
         //      Note that des>0 and des>|b|
-        double tan;            // tangent of the rotation angle
-        double ang;            // rotation angle
+        // tangent of the rotation angle
+        double tan;
+        // rotation angle
+        double ang;
 
         if (b > 0) {
-            tan = b - des;    // 'minus' quadratic solution
+            // 'minus' quadratic solution
+            tan = b - des;
         } else {
-            tan = b + des;    // 'plus' quadratic solution
+            // 'plus' quadratic solution
+            tan = b + des;
         }
         ang = Math.atan(tan);
 
@@ -481,9 +504,12 @@ class JacobiIterate {
      */
     @SuppressWarnings("unused")
     private boolean checkAngleFormula(double ang) {
-        double aij = posPivot.getValue(matTarget);     // pivot element
-        double aii = posPivot.getRowDiag(matTarget);   // row diagonal
-        double ajj = posPivot.getColDiag(matTarget);   // column diagonal
+        // pivot element
+        double aij = posPivot.getValue(matTarget);
+        // row diagonal
+        double aii = posPivot.getRowDiag(matTarget);
+        // column diagonal
+        double ajj = posPivot.getColDiag(matTarget);
 
         double sin = Math.sin(ang);
         double cos = Math.cos(ang);

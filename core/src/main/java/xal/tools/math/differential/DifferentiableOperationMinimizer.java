@@ -450,7 +450,8 @@ class Hessian {
         double curvature = 0.0;
         final int dimension = grad.length;
         for (int column = 0; column < dimension; column++) {
-            curvature += matrix[column][column] * grad[column] * grad[column];  // contribution from the diagonal
+            // contribution from the diagonal
+            curvature += matrix[column][column] * grad[column] * grad[column];
             // loop over the upper triangular region and use symmetry (contribution doubles)
             for (int row = 0; row < column; row++) {
                 curvature += 2 * matrix[row][column] * grad[row] * grad[column];

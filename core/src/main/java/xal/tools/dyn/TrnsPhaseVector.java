@@ -15,8 +15,9 @@ import xal.tools.math.IIndex;
  * <p>
  * Class <code>TransPhaseVector</code> represents transverse phase coordinates.
  * This set of phase coordinates is isomorphic to
- * <strong>R</strong><sup>4</sup>, however, in order to represent translations of phase
- * coordinates by matrix multiplication, this class is embedded in the space
+ * <strong>R</strong><sup>4</sup>, however, in order to represent translations
+ * of phase coordinates by matrix multiplication, this class is embedded in the
+ * space
  * <strong>R</strong><sup>4</sup>&times;{1} &sub; <strong>R</strong><sup>5</sup>
  * of "homogeneous coordinates". Matrix multiplication is performed by elements
  * of the class <code>{@link TrnsPhaseMatrix}</code>.
@@ -24,10 +25,11 @@ import xal.tools.math.IIndex;
  * </p>
  * The last coordinate of all homogeneous (transverse) phase vectors
  * <strong>v</strong> &in; <strong>R</strong><sup>5</sup>
- * is 1. Thus <strong>v</strong> = (<em>x,x',y,y'</em>,1). Likewise, the (5,5) element of
- * any matrix <strong>&Phi;</strong> &in; <strong>R</strong><sup>4&times;4</sup>&times;{1} &sub;
- * <strong>R</strong><sup>5&times;5</sup> representing an operator in homogeneous
- * coordinates must be 1.
+ * is 1. Thus <strong>v</strong> = (<em>x,x',y,y'</em>,1). Likewise, the (5,5)
+ * element of any matrix <strong>&Phi;</strong> &in;
+ * <strong>R</strong><sup>4&times;4</sup>&times;{1} &sub;
+ * <strong>R</strong><sup>5&times;5</sup> representing an operator in
+ * homogeneous coordinates must be 1.
  * </p>
  *
  *

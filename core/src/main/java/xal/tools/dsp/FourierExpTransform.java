@@ -27,21 +27,25 @@ import JSci.maths.vectors.ComplexVector;
  * <p>
  * The transform performed here is given by
  * <br>
- * <br>&nbsp;&nbsp; [<strong>f^</strong>] = [<strong>K</strong>]&middot;[<strong>f</strong>]<br>
+ * <br>&nbsp;&nbsp; [<strong>f^</strong>] =
+ * [<strong>K</strong>]&middot;[<strong>f</strong>]<br>
  * <br>
- * where [<strong>f^</strong>] is the complex vector of DFT data, [<strong>K</strong>] is the
- * complex symmetric matrix kernel, and [<strong>f</strong>] is the real vector (e.i.,
- * type <code>double[]</code>) of input function values. The elements
+ * where [<strong>f^</strong>] is the complex vector of DFT data,
+ * [<strong>K</strong>] is the complex symmetric matrix kernel, and
+ * [<strong>f</strong>] is the real vector (e.i., type <code>double[]</code>) of
+ * input function values. The elements
  * <em>K<sub>mn</sub></em> of the matrix kernel are given by
  * <br>
  * <br>&nbsp;&nbsp;    <em>K<sub>mn</sub></em> =
  * <em>z<sup>-mn</sup></em>/<em>N</em><sup>&frac12;</sup> <br>
  * <br>
- * where <em>N</em> is the size of the data vector [<strong>f</strong>], indices <em>m, n</em>
- * range over the values 0,&hellip;,<em>N</em>-1, and <em>z</em> is the generator of
- * the transform kernel given by
+ * where <em>N</em> is the size of the data vector [<strong>f</strong>], indices
+ * <em>m, n</em>
+ * range over the values 0,&hellip;,<em>N</em>-1, and <em>z</em> is the
+ * generator of the transform kernel given by
  * <br>
- * <br>&nbsp;&nbsp;  <em>z</em> &equiv; <em>e<sup>i</em>2<em>&pi;</em>/<em>N</em></sup>
+ * <br>&nbsp;&nbsp;  <em>z</em> &equiv;
+ * <em>e<sup>i</em>2<em>&pi;</em>/<em>N</em></sup>
  * <br>
  * <br>
  * The factor 1/<em>N</em><sup>&frac12;</sup> is a normalization constant;
@@ -51,24 +55,26 @@ import JSci.maths.vectors.ComplexVector;
  * <p>
  * The inverse transform (back to the "time" domain) is given by
  * <br>
- * <br>&nbsp;&nbsp; [<strong>f</strong>] = [<strong>K</strong><sup>-1</sup>]&middot;[<strong>f^</strong>]<br>
+ * <br>&nbsp;&nbsp; [<strong>f</strong>] =
+ * [<strong>K</strong><sup>-1</sup>]&middot;[<strong>f^</strong>]<br>
  * <br>
- * where the elements <em>K<sub>mn</sub></em><sup>-1</sup> of the kernel are given
- * by
+ * where the elements <em>K<sub>mn</sub></em><sup>-1</sup> of the kernel are
+ * given by
  * <br>
  * <br>&nbsp;&nbsp;    <em>K<sub>mn</sub></em><sup>-1</sup> =
  * <em>z<sup>mn</sup></em>/<em>N</em><sup>&frac12;</sup> <br>
  * <br>
- * Clearly [<strong>K</strong><sup>-1</sup>]&middot;[<strong>K</strong>] = [<strong>I</strong>] where
- * [<strong>I</strong>] is the
+ * Clearly [<strong>K</strong><sup>-1</sup>]&middot;[<strong>K</strong>] =
+ * [<strong>I</strong>] where [<strong>I</strong>] is the
  * <em>N</em>&times;<em>N</em> identity matrix.
  * <p>
- * From the value of <em>K<sub>mn</sub></em> and <em>z</em> it can be inferred that
- * the stride in [<strong>f^</strong>] is 1/<em>T</em>, where
+ * From the value of <em>K<sub>mn</sub></em> and <em>z</em> it can be inferred
+ * that the stride in [<strong>f^</strong>] is 1/<em>T</em>, where
  * <em>T</em> is the length of the time interval over which <em>f</em> is taken.
  * Because the DFT considers both positive and negative frequency components,
- * the largest frequency we can see is &frac12;<em>N</em>/<em>T</em>, corresponding
- * to the discrete frequency <em>N</em>/2. Referring to the definition of
+ * the largest frequency we can see is &frac12;<em>N</em>/<em>T</em>,
+ * corresponding to the discrete frequency <em>N</em>/2. Referring to the
+ * definition of
  * <em>z</em>, the positive (discrete) frequency components cover the indices
  * <em>n</em> = 0,&hellip;,<em>floor</em>(N/2) while the negative frequency
  * components are located at the indices <em>n</em> =
@@ -192,8 +198,8 @@ public class FourierExpTransform {
      * The returned values are ordered so that the lowest frequency components
      * come first. That is, the components are indexed according to their
      * discrete frequency. Note also that the zero-frequency component of a sine
-     * transform is identically zero, as is the <em>N<sup>th</sup></em> component.
-     * Thus, the first and last values will always be zero.
+     * transform is identically zero, as is the <em>N<sup>th</sup></em>
+     * component. Thus, the first and last values will always be zero.
      * </p>
      *
      * @param arrFunc vector array of function values (zero values on either
@@ -232,8 +238,8 @@ public class FourierExpTransform {
      * The returned values are ordered so that the lowest frequency components
      * come first. That is, the components are indexed according to their
      * discrete frequency. Note also that the zero-frequency component of a sine
-     * transform is identically zero, as is the <em>N<sup>th</sup></em> component.
-     * Thus, the first and last values will always be zero.
+     * transform is identically zero, as is the <em>N<sup>th</sup></em>
+     * component. Thus, the first and last values will always be zero.
      * </p>
      *
      * @param vecTrans vector array of inverse transform values (zero values on
@@ -333,14 +339,16 @@ public class FourierExpTransform {
      */
     private void initTransform(int szData) {
 
-        final int N = szData;             // vector/matrix dimensions 
+        // vector/matrix dimensions 
+        final int N = szData;
 
         // Compute the z transform generator
         Double h = 2.0 * Math.PI / N;
         Complex z = new Complex(Math.cos(h), Math.sin(h));
 
         // Create matrix kernel and compute element values
-        final double c = Math.sqrt(1.0 / N);   // normalization constant
+        // normalization constant
+        final double c = Math.sqrt(1.0 / N);
         ComplexSquareMatrix Kf = new ComplexSquareMatrix(N);
         ComplexSquareMatrix Ki = new ComplexSquareMatrix(N);
 
@@ -370,7 +378,8 @@ public class FourierExpTransform {
      */
     private void initTransform_old(int szData) {
 
-        final int N = szData;             // vector/matrix dimensions 
+        // vector/matrix dimensions 
+        final int N = szData;
 
         // Compute the z transform generator
         Double h = 2.0 * Math.PI / N;
@@ -378,11 +387,13 @@ public class FourierExpTransform {
         Complex zi = new Complex(Math.cos(h), Math.sin(h));
 
         // Create matrix kernel and compute element values
-        final double c = Math.sqrt(1.0 / N);   // normalization constant
+        // normalization constant
+        final double c = Math.sqrt(1.0 / N);
         ComplexSquareMatrix Kf = new ComplexSquareMatrix(N);
         ComplexSquareMatrix Ki = new ComplexSquareMatrix(N);
 
-        Complex kf, ki;     // matrix kernel element values
+        // matrix kernel element values
+        Complex kf, ki;
         Complex zfm = Complex.ONE;
         Complex zim = Complex.ONE;
         for (int m = 0; m < N; m++) {

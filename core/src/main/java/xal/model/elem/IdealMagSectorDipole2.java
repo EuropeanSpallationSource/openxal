@@ -187,7 +187,8 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
     }
 
     /**
-     * This is the design bending curvature <em>h</em> = 1/<em>R</em><sub>0</sub>
+     * This is the design bending curvature <em>h</em> =
+     * 1/<em>R</em><sub>0</sub>
      * where
      * <em>R</em><sub>0</sub> is the design bending radius.
      *
@@ -387,7 +388,8 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      *
      * @param probe probe object to be deflected
      *
-     * @return dipole path curvature for given probe (in <strong>1/meters</strong>)
+     * @return dipole path curvature for given probe (in
+     * <strong>1/meters</strong>)
      */
     public double compProbeCurvature(IProbe probe) {
 
@@ -425,9 +427,10 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * <br>
      * <br>
      * <p>
-     * where <em>K_quad</em> is the quadrupole focusing constant, <em>R</em> is the
-     * bending radius at current settings, <em>B</em> is the current magnet field
-     * strength , <em>h = 1/R</em> is the curvature at the current settings, and
+     * where <em>K_quad</em> is the quadrupole focusing constant, <em>R</em> is
+     * the bending radius at current settings, <em>B</em> is the current magnet
+     * field strength , <em>h = 1/R</em> is the curvature at the current
+     * settings, and
      * <em>n0</em> is the field index.
      * </p>
      *
@@ -453,7 +456,8 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * Computes and returns the path length variation factor. This is the factor
      * by with the synchronous particle path length expands or contracts about
      * the design path length when considering the effects of dipole field
-     * strength other than the design value. Denoting this quantity as <em>w</em>
+     * strength other than the design value. Denoting this quantity as
+     * <em>w</em>
      * then it can be expressed
      * <br>
      * <br>
@@ -491,11 +495,13 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
         }
 
         // Compute the bending curvature for the design and for the current field magnitude
-        double h0 = this.compDesignCurvature();// h0 polarity = alpha polarity
+        // h0 polarity = alpha polarity
+        double h0 = this.compDesignCurvature();
         double h = 0;
         if (getFieldPathFlag() == false) {
 
-            h = BendingMagnet.compCurvature(probe, B);// h polarity = e*B0 polarity
+            // h polarity = e*B0 polarity
+            h = BendingMagnet.compCurvature(probe, B);
 
         } else {
 
@@ -519,7 +525,8 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <strong>meters</strong>
+     * @param dblLen length of subsection to propagate through
+     * <strong>meters</strong>
      *
      * @return the elapsed time through section<strong>Units: seconds</strong>
      */
@@ -559,10 +566,10 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      *
      * NOTE
      * <p>
-     * The <strong>arc length</strong> <em>dL</em> of the probe will probably be larger than
-     * the physical step length <em>h</em>. This is because the path length of the
-     * design trajectory is generally larger than the physical length (otherwise
-     * no bending would occur).
+     * The <strong>arc length</strong> <em>dL</em> of the probe will probably be
+     * larger than the physical step length <em>h</em>. This is because the path
+     * length of the design trajectory is generally larger than the physical
+     * length (otherwise no bending would occur).
      * </p>
      *
      * @param dblLen physical step length (meters)
@@ -608,11 +615,13 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
         /*
          * Compute the bending constant h == 1 / bend radius (1/meter)
          */
-        final double h0 = this.compDesignCurvature();// h0 polarity = alpha polarity
+        // h0 polarity = alpha polarity
+        final double h0 = this.compDesignCurvature();
         double h = 0;
         if (getFieldPathFlag() == false) {
 
-            h = BendingMagnet.compCurvature(probe, B);// h polarity = e*B0 polarity
+            // h polarity = e*B0 polarity
+            h = BendingMagnet.compCurvature(probe, B);
 
         } else if (getFieldPathFlag() == true) {
 
@@ -800,7 +809,8 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * NOTE
      * <p>
      * This function is necessary since the space charge calculations step
-     * through the <strong>physical</strong> distance of the magnet, not the design path.
+     * through the <strong>physical</strong> distance of the magnet, not the
+     * design path.
      * </p>
      *
      * <p>
@@ -844,10 +854,11 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
     /**
      * <p>
      * Compute and return the partial deflection angle of the design trajectory
-     * at a distance <em>s</em> from the magnet entrance. Note that here <em>s</em>
-     * is <strong>not</strong> the position along the design trajectory. That value is
-     * found by multiplying the returned value by the bending radius of the
-     * magent.
+     * at a distance <em>s</em> from the magnet entrance. Note that here
+     * <em>s</em>
+     * is <strong>not</strong> the position along the design trajectory. That
+     * value is found by multiplying the returned value by the bending radius of
+     * the magent.
      * </p>
      * <p>
      * <h4>NOTES</h4>
@@ -858,8 +869,8 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * trigonometry applied to regions within the bending radius of the magnet.
      * <br/>
      * &middot; This function is necessary since the space charge calculations
-     * step through the <strong>physical</strong> distance of the magnet, not the design
-     * path.
+     * step through the <strong>physical</strong> distance of the magnet, not
+     * the design path.
      * <br/>
      * &middot; The result is computed using repeated application of the law of
      * cosines.
@@ -872,8 +883,8 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * @return the partial bending angle at that internal position
      *
      * @throws IllegalArgumentException s not in the interval
-     * [0,<em>L</em><sub>0</sub>] (no longer thrown - messages are sent to system
-     * error stream)
+     * [0,<em>L</em><sub>0</sub>] (no longer thrown - messages are sent to
+     * system error stream)
      *
      * @since Jul 8, 2015 by Christopher K. Allen
      */
@@ -897,8 +908,10 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
         // Compute trigonometric angles and partial angles
         double R0 = Math.abs(this.compDesignBendingRadius());
 
-        double thetaBy2 = Math.asin((L0 / 2) / R0);  // have the total bending angle
-        double partDefl = Math.asin((s - (L0 / 2)) / R0); // partial deflection for s>L0/2
+        // have the total bending angle
+        double thetaBy2 = Math.asin((L0 / 2) / R0);
+        // partial deflection for s>L0/2
+        double partDefl = Math.asin((s - (L0 / 2)) / R0);
         // complement of partial deflection for s<L0/2
 
         // Compute the deflection angle for a position s meters into the magnet

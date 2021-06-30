@@ -200,12 +200,18 @@ public class PoissonGrid extends Grid implements Serializable {
      * residual error
      */
     public double solveCartesian(int intIterMax, double dblErrMax) throws GridException {
-        int i, j, k;          // loop control variables for the three dimensions
-        int I, J, K;          // loop boundaries for the three dimensions
-        double dblValNew;      // new potential value
-        double dblValPrev;     // previous potential value
-        double[] arrWts;         // array of grid weights
-        Point gpt;            // current grid point
+        // loop control variables for the three dimensions
+        int i, j, k;
+        // loop boundaries for the three dimensions
+        int I, J, K;
+        // new potential value
+        double dblValNew;
+        // previous potential value
+        double dblValPrev;
+        // array of grid weights
+        double[] arrWts;
+        // current grid point
+        Point gpt;
 
         //  Initialize relaxation
         arrWts = this.relaxWeightsCartesian();
@@ -278,13 +284,20 @@ public class PoissonGrid extends Grid implements Serializable {
      * residual error
      */
     public double solveCylindrical(int intIterMax, double dblErrMax) throws GridException {
-        int i, j, k;          // loop control variables for the three dimensions
-        int I, J, K;          // loop boundaries for the three dimensions
-        double dblValNew;      // new potential value
-        double dblValPrev;     // previous potential value
-        double[] arrWts;         // array of grid weights
-        R3 pt;             // coordinates of a point on the grid
-        Point gpt;            // current grid point
+        // loop control variables for the three dimensions
+        int i, j, k;
+        // loop boundaries for the three dimensions
+        int I, J, K;
+        // new potential value
+        double dblValNew;
+        // previous potential value
+        double dblValPrev;
+        // array of grid weights
+        double[] arrWts;
+        // coordinates of a point on the grid
+        R3 pt;
+        // current grid point
+        Point gpt;
 
         //  Initialize relaxation
         dblSolnErr = 0.0;
@@ -322,9 +335,11 @@ public class PoissonGrid extends Grid implements Serializable {
                         gpt.aux = dblValNew;
 
                         dblSolnErr += (dblValNew - dblValPrev) * (dblValNew - dblValPrev);
-                    }   // for k
+                        // for k
+                    }
                 }
-            }           // for i
+                // for i
+            }
 
             // Process the theta=2Pi points
             for (i = 1; i < I; i++) {
@@ -350,12 +365,16 @@ public class PoissonGrid extends Grid implements Serializable {
 
                     dblSolnErr += (dblValNew - dblValPrev) * (dblValNew - dblValPrev);
 
-                }       // for k
-            }           // for i
+                    // for k
+                }
+                // for i
+            }
 
             // Process the zero radius points
-            R3 vecRes;         // vector of grid resolutions
-            double hr2, hz2;       // squares of the grid resolutions in r and z directions
+            // vector of grid resolutions
+            R3 vecRes;
+            // squares of the grid resolutions in r and z directions
+            double hr2, hz2;
 
             vecRes = super.getGridResolution();
             hr2 = vecRes.get1() * vecRes.get1();
@@ -565,9 +584,12 @@ public class PoissonGrid extends Grid implements Serializable {
     protected double[] relaxWeightsCartesian() {
 
         // Get the grid resolutions and their squares
-        R3 vecRes;         // vector of grid spacings
-        double s1, s2, s3;     // squares of the grid point distances in all directions
-        double sD;             // exterior squared average of grid resolutions
+        // vector of grid spacings
+        R3 vecRes;
+        // squares of the grid point distances in all directions
+        double s1, s2, s3;
+        // exterior squared average of grid resolutions
+        double sD;
 
         vecRes = super.getGridResolution();
 
@@ -578,7 +600,8 @@ public class PoissonGrid extends Grid implements Serializable {
         sD = s1 * s2 + s1 * s3 + s2 * s3;
 
         // Compute the weighting coefficients in cartesian coordinates
-        double[] arrW;   // gauss-seidel weights
+        // gauss-seidel weights
+        double[] arrW;
 
         arrW = new double[4];
         arrW[0] = s1 * s2 * s3 / (2.0 * sD);
@@ -602,10 +625,14 @@ public class PoissonGrid extends Grid implements Serializable {
     protected double[] relaxWeightsCylindrical(double r) {
 
         // Get the grid resolutions and their squares
-        R3 vecRes;         // vector of grid spacings
-        double r2;             // square of the radius
-        double s1, s2, s3;     // squares of the grid point distances in all directions
-        double sD;             // exterior squared average of grid resolutions
+        // vector of grid spacings
+        R3 vecRes;
+        // square of the radius
+        double r2;
+        // squares of the grid point distances in all directions
+        double s1, s2, s3;
+        // exterior squared average of grid resolutions
+        double sD;
 
         vecRes = super.getGridResolution();
 
@@ -618,7 +645,8 @@ public class PoissonGrid extends Grid implements Serializable {
         sD = s1 * s2 + s1 * s3 / r2 + s2 * s3;
 
         // Compute the weighting coefficients in cartesian coordinates
-        double[] arrW;   // gauss-seidel weights
+        // gauss-seidel weights
+        double[] arrW;
 
         arrW = new double[5];
         arrW[0] = s1 * s2 * s3 / (2.0 * sD);

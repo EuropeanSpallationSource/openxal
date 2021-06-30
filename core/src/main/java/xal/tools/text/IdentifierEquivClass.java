@@ -233,18 +233,19 @@ public class IdentifierEquivClass implements Comparable<IdentifierEquivClass> {
      * the given string ID. If the two strings are not equivalent, then a
      * <code>NoSuchElementException</code> is thrown. If the two strings are
      * equivalent (w.r.t. to the equivalence class rules), then an integer value
-     * is returned (described below). The empty identifier <strong>""</strong> is handled
-     * as a special case: no string of finite length is equivalent to the empty
-     * string, both strings must be empty to be equivalent. Otherwise we have
-     * the trivial case where all IDs would be equivalent to the empty ID since
-     * all IDs contain the empty string.
+     * is returned (described below). The empty identifier <strong>""</strong>
+     * is handled as a special case: no string of finite length is equivalent to
+     * the empty string, both strings must be empty to be equivalent. Otherwise
+     * we have the trivial case where all IDs would be equivalent to the empty
+     * ID since all IDs contain the empty string.
      * </p>
      * <p>
      * Now consider when the given string is found to be an element of this
      * equivalence class. Denote by
-     * <kbd>s</kbd> the given argument string and by <kbd>r</kbd> the representative
-     * string of this equivalence class (so that the equivalence class is
-     * represented as [<kbd>r</kbd>]). Then the follow results are returned:
+     * <kbd>s</kbd> the given argument string and by <kbd>r</kbd> the
+     * representative string of this equivalence class (so that the equivalence
+     * class is represented as [<kbd>r</kbd>]). Then the follow results are
+     * returned:
      * <br>
      * <br>
      * &nbsp; &nbsp; -1 &#8658; <kbd>s</kbd> &sub; <kbd>r</kbd> ,
@@ -255,8 +256,8 @@ public class IdentifierEquivClass implements Comparable<IdentifierEquivClass> {
      * <br>
      * <br>
      * where all strings are compared starting from the head, i.e.,
-     * <kbd>s</kbd>[0] == <kbd>r</kbd>[0] must hold in every case since neither is
-     * the empty string.
+     * <kbd>s</kbd>[0] == <kbd>r</kbd>[0] must hold in every case since neither
+     * is the empty string.
      * </p>
      *
      * @param strElemId string to be compared to the representative string of

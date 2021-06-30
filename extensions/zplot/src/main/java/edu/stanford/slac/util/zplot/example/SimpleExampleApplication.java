@@ -216,13 +216,13 @@ public class SimpleExampleApplication {
                         new SolenoidWidget());
             } else if (i % m-- == 0) {
                 devices[i] = new CartoonDevice("toroid" + i, z, length,
-                        new UndulatorWidget());//new ToroidWidget());
+                        new UndulatorWidget());
             } else if (i % m-- == 0) {
                 devices[i] = new CartoonDevice("undulator" + i, z, length,
                         new UndulatorWidget());
             } else if (i % m-- == 0) {
                 devices[i] = new CartoonDevice("wirescanner" + i, z,
-                        new UndulatorWidget());//new WireScannerWidget());
+                        new UndulatorWidget());
             } else if (i % m-- == 0) {
                 devices[i] = new CartoonDevice("xcollimator" + i, z,
                         new XCollimatorWidget());

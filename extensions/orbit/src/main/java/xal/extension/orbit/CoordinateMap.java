@@ -349,13 +349,15 @@ public class CoordinateMap {
             final PhaseMatrix fullTurnOriginMatrix = new CalculationsOnRings(trajectory).getFullTransferMap().getFirstOrder();
             //final PhaseMatrix fullTurnOriginMatrix = trajectory.getFullTurnMapAtOrigin().getFirstOrder();
             return toMatrix.times(fullTurnOriginMatrix).times(fromMatrix.inverse());
-        } else if (fromPath > sequence.getLength()) { // "from" node is across the origin near the front of the sequence, and the "to" node is near the end of the sequence
+        // "from" node is across the origin near the front of the sequence, and the "to" node is near the end of the sequence
+        } else if (fromPath > sequence.getLength()) {
             // Xo = F * Xp, Xf = Tf * Xo, Xt = Tt * Xp  ->  Xf = Tf * F * Xp  ->  Xp = (Tf * F)^-1 * Xf  ->  Xt = Tt * (Tf * F)^-1 * Xf  ->  Tft = Tt * (Tf * F)^-1
             final TransferMapState originState = trajectory.initialState();
             final PhaseMatrix fullTurnOriginMatrix = new CalculationsOnRings(trajectory).getFullTransferMap().getFirstOrder();
             //final PhaseMatrix fullTurnOriginMatrix = trajectory.getFullTurnMapAtOrigin().getFirstOrder();
             return toMatrix.times(fromMatrix.times(fullTurnOriginMatrix).inverse());
-        } else {  // "from" and "to" nodes are on the same side of the origin (i.e. shortest path between them along the ring does not cross the origin of the sequence)
+        // "from" and "to" nodes are on the same side of the origin (i.e. shortest path between them along the ring does not cross the origin of the sequence)
+        } else {
             // Xo = Tf^-1 * Xf  ->  Xt = Tt * Tf^-1 * Xf  ->  Tft = Tt * Tf^-1
             return getTransferMatrix(fromMatrix, toMatrix);
         }

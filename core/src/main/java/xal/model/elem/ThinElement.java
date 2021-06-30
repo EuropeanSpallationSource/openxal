@@ -116,7 +116,8 @@ public abstract class ThinElement extends Element {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <strong>meters</strong>
+     * @param dblLen length of subsection to propagate through
+     * <strong>meters</strong>
      *
      * @return the elapsed time through section<strong>Units: seconds</strong>
      */
@@ -157,10 +158,10 @@ public abstract class ThinElement extends Element {
     }
 
     /**
-     * Compute the transfer matrix for <strong>subsection</strong> of this element of
-     * length <code>dblLen</code> for the specified given probe. Because this is
-     * a thin element (with no length), the length parameter is ignored in
-     * computing the transfer matrix.
+     * Compute the transfer matrix for <strong>subsection</strong> of this
+     * element of length <code>dblLen</code> for the specified given probe.
+     * Because this is a thin element (with no length), the length parameter is
+     * ignored in computing the transfer matrix.
      *
      * @param dblLen length of subelement
      * @param probe probe containing parameters for the subsectional transfer
@@ -191,7 +192,8 @@ public abstract class ThinElement extends Element {
      * @param matPhi transfer matrix <strong>&Phi;</strong> to be processed
      * @param length element length (used only for FM composed of many thing
      * elements stacked)
-     * @return transfer matrix <strong>&Phi;</strong> after applying displacement
+     * @return transfer matrix <strong>&Phi;</strong> after applying
+     * displacement
      *
      * @author Natalia Milas
      *

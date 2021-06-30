@@ -46,7 +46,8 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
     /**
      * Primary Constructor
      */
-    @SuppressWarnings("unchecked")    // nothing we can do to type ViewProxy any tighter without typing ViewNode
+    // nothing we can do to type ViewProxy any tighter without typing ViewNode
+    @SuppressWarnings("unchecked")
     public ViewNode(final ViewProxy<Component> viewProxy, final Map<String, Object> beanSettings, final String tag) {
         super(viewProxy, beanSettings, tag);
 
@@ -174,7 +175,8 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
      *
      * @return the view as a container
      */
-    @SuppressWarnings("unchecked")    // can't type this anymore since the ViewNode isn't typed
+    // can't type this anymore since the ViewNode isn't typed
+    @SuppressWarnings("unchecked")
     public Container getContainer() {
         final ViewProxy<Component> viewProxy = getViewProxy();
         return viewProxy.isContainer() ? viewProxy.getContainer(getView()) : null;
@@ -706,7 +708,8 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
         public void dragEnter(final DropTargetDragEvent event) {
         }
 
-        @SuppressWarnings("unchecked")    // we have no choice but to cast the transfered data
+        // we have no choice but to cast the transfered data
+        @SuppressWarnings("unchecked")
         @Override
         public void drop(final DropTargetDropEvent event) {
             try {

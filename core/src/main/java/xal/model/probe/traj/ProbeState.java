@@ -340,8 +340,8 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      * &nbsp; &nbsp; &phi; &#8796; &phi;<sub>0</sub> - &Delta;&phi;
      * <br/>
      * <br/>
-     * where &Delta;&phi; = 2&pi;<em>f</em>&Delta;<i/>t</em> is the phase delay due
-     * to elapsed time &Delta;<em>t</em>, <em>f</em> is the cavity resonant
+     * where &Delta;&phi; = 2&pi;<em>f</em>&Delta;<i/>t</em> is the phase delay
+     * due to elapsed time &Delta;<em>t</em>, <em>f</em> is the cavity resonant
      * frequency, and &phi;<sub>0</sub> is the operating phase of the cavity
      * (w.r.t. the synchronous particle).
      * </p>
@@ -449,7 +449,8 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
     /**
      * Return the time elapsed from the start of the probe tracking
      *
-     * @return time elapsed since probe began tracking, in <strong>seconds</strong>
+     * @return time elapsed since probe began tracking, in
+     * <strong>seconds</strong>
      */
     @Override
     public double getTime() {
@@ -466,8 +467,8 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      * &nbsp; &nbsp; &phi; &#8796; &phi;<sub>0</sub> - &Delta;&phi;
      * <br/>
      * <br/>
-     * where &Delta;&phi; = 2&pi;<em>f</em>&Delta;<i/>t</em> is the phase delay due
-     * to elapsed time &Delta;<em>t</em>, <em>f</em> is the cavity resonant
+     * where &Delta;&phi; = 2&pi;<em>f</em>&Delta;<i/>t</em> is the phase delay
+     * due to elapsed time &Delta;<em>t</em>, <em>f</em> is the cavity resonant
      * frequency, and &phi;<sub>0</sub> is the operating phase of the cavity
      * (w.r.t. the synchronous particle).
      * </p>

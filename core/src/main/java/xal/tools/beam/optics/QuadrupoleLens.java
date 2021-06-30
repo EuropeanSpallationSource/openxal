@@ -22,7 +22,8 @@ public class QuadrupoleLens {
      * ideal quadrupole lens with string <code>k</code> and length
      * <code>l</code>.
      *
-     * @param k strength of the quadrupole lens (in <strong>radians/meter</strong>)
+     * @param k strength of the quadrupole lens (in
+     * <strong>radians/meter</strong>)
      * @param l length of the quadrupole lens (in <strong>meters</strong>)
      *
      * @return 2x2 transfer matrix for focusing phase plane
@@ -42,7 +43,8 @@ public class QuadrupoleLens {
      * ideal quadrupole lens with string <code>k</code> and length
      * <code>l</code>.
      *
-     * @param k strength of the quadrupole lens (in <strong>radians/meter</strong>)
+     * @param k strength of the quadrupole lens (in
+     * <strong>radians/meter</strong>)
      * @param l length of the quadrupole lens (in <strong>meters</strong>)
      *
      * @return 2x2 transfer matrix for defocusing phase plane
@@ -99,7 +101,8 @@ public class QuadrupoleLens {
      * approximation valid only for thin lens (adaptive tracking should work
      * well Sako, 20 Sep 2006
      *
-     * @param k strength of the quadrupole lens (in <strong>radians/meter</strong>)
+     * @param k strength of the quadrupole lens (in
+     * <strong>radians/meter</strong>)
      * @param l length of the quadrupole lens (in <strong>meters</strong>)
      *
      * @return 2x2 transfer matrix for defocusing phase plane
@@ -118,7 +121,8 @@ public class QuadrupoleLens {
      * approximation valid only for thin lens (adaptive tracking should work
      * well Sako, 20 Sep 2006
      *
-     * @param k strength of the quadrupole lens (in <strong>radians/meter</strong>)
+     * @param k strength of the quadrupole lens (in
+     * <strong>radians/meter</strong>)
      * @param l length of the quadrupole lens (in <strong>meters</strong>)
      *
      * @return 2x2 transfer matrix for defocusing phase plane
@@ -136,7 +140,8 @@ public class QuadrupoleLens {
      * approximation valid only for thin lens (adaptive tracking should work
      * well Sako, 20 Sep 2006
      *
-     * @param k strength of the quadrupole lens (in <strong>radians/meter</strong>)
+     * @param k strength of the quadrupole lens (in
+     * <strong>radians/meter</strong>)
      * @param l length of the quadrupole lens (in <strong>meters</strong>)
      *
      * @return 2x2 transfer matrix for defocusing phase plane
@@ -156,7 +161,8 @@ public class QuadrupoleLens {
      * approximation valid only for thin lens (adaptive tracking should work
      * well Sako, 20 Sep 2006
      *
-     * @param k strength of the quadrupole lens (in <strong>radians/meter</strong>)
+     * @param k strength of the quadrupole lens (in
+     * <strong>radians/meter</strong>)
      * @param l length of the quadrupole lens (in <strong>meters</strong>)
      *
      * @return 2x2 transfer matrix for defocusing phase plane

@@ -806,7 +806,7 @@ public class ComponentFactory {
     }
 
     public void setFieldmapPath(String fieldmapPath) {
-        this.fieldmapPath = fieldmapPath;// + "/";		
+        this.fieldmapPath = fieldmapPath;
     }
 
     public void setBasePath(String basePath) {

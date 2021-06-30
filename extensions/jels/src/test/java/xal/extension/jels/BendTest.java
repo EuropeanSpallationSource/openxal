@@ -31,7 +31,6 @@ public class BendTest extends TestCommon {
 	 * Test used for madx comparison.
 	 * 
 	 * */
-// 	@Test
     public void doHorizontalBendTestMadX() throws InstantiationException, ModelException {
         probe.reset();
         LOGGER.log(Level.INFO, "Horizontal madx");
@@ -39,9 +38,6 @@ public class BendTest extends TestCommon {
         AcceleratorSeq sequence = bend(-5.5, -11, -5.5, 9375.67, 0., 0, 0., 0, 0., 0, 0, 0);
 
         run(sequence);
-
-//        printResults();
-//		checkTWTransferMatrix(new double[][]{});
     }
 
     @Test
@@ -59,9 +55,6 @@ public class BendTest extends TestCommon {
 
         //printResults();
         if (initialEnergy == 3e6) {
-//            checkELSResults(1.799999E+00, new double[]{6.182466E-03, 5.210289E-03, 5.142904E-03},
-//                    new double[]{1.458045E+01, 1.039017E+01, 7.424592E+00}, errTolerance); // when halfMag=true
-
             checkTWTransferMatrix(new double[][]{
                 {+1.018958e+00, +1.799999e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00,},
                 {+2.126416e-02, +1.018958e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00,},
@@ -113,9 +106,6 @@ public class BendTest extends TestCommon {
 
         //printResults();
         if (initialEnergy == 3e6) {
-//            checkELSResults(1.799999E+00, new double[]{6.132800E-03, 5.266670E-03, 5.142904E-03},
-//                    new double[]{1.434713E+01, 1.061625E+01, 7.424592E+00}, errTolerance);
-
             checkTWTransferMatrix(new double[][]{
                 {+9.632544e-01, +1.788962e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, -1.722575e-01},
                 {-4.032563e-02, +9.632544e-01, +0.000000e+00, +0.000000e+00, +0.000000e+00, -1.890399e-01},
@@ -166,9 +156,6 @@ public class BendTest extends TestCommon {
 
         //printResults();
         if (initialEnergy == 3e6) {
-//            checkELSResults(1.799999E+00, new double[]{6.132800E-03, 5.266670E-03, 5.142904E-03},
-//                    new double[]{1.434713E+01, 1.061625E+01, 7.424592E+00}, errTolerance);
-
             checkTWTransferMatrix(new double[][]{
                 {+9.668973e-01, +1.791166e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, -1.723634e-01},
                 {-3.635045e-02, +9.668973e-01, +0.000000e+00, +0.000000e+00, +0.000000e+00, -1.892739e-01},
@@ -217,7 +204,6 @@ public class BendTest extends TestCommon {
 
         run(sequence);
 
-        //printResults();
         if (initialEnergy == 3e6) {
             checkTWTransferMatrix(new double[][]{
                 {+1.002313e+00, +1.790064e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00},
@@ -290,7 +276,8 @@ public class BendTest extends TestCommon {
         double gamma = probe.getGamma();
         double b = probe.getBeta();
 
-        double k = b * gamma * Er / (e * c); // = -0.22862458629665997
+        // = -0.22862458629665997
+        double k = b * gamma * Er / (e * c);
         int orientation = HV == 0 ? MagnetType.HORIZONTAL : MagnetType.VERTICAL;
 
         Bend bend = ESSElementFactory.createESSBend("b", alpha_deg, k, rho, entry_angle_deg, exit_angle_deg, entrK1, entrK2,

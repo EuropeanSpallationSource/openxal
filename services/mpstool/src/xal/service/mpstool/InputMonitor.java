@@ -75,7 +75,8 @@ public class InputMonitor extends ChannelWrapper {
         inputSignal = signal;
         this.mpsSignal = mpsSignal;
 
-        measured = false;    // no values have been measured yet
+        // no values have been measured yet
+        measured = false;
         lastValue = 0;
         valueLock = new Object();
 
@@ -148,8 +149,10 @@ public class InputMonitor extends ChannelWrapper {
      */
     public void requestValueUpdate() {
         synchronized (valueLock) {
-            lastValue = 0;    // clear the last value
-            measured = false;    // indicate that we are awaiting a new measurement
+            // clear the last value
+            lastValue = 0;
+            // indicate that we are awaiting a new measurement
+            measured = false;
             if (channel.isConnected()) {
                 try {
                     channel.getValIntCallback(valueHandler);

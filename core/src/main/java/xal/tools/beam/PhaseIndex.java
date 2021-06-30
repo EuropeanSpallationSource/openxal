@@ -28,7 +28,8 @@ public enum PhaseIndex implements IIndex {
     Y(2, 3), // y plane spatial
     Yp(3, 2), // y plane momentum
     Z(4, 5), // z plane spatial
-    Zp(5, 4);        // z plane momentum
+    // z plane momentum
+    Zp(5, 4);
 
     /*
      * Global Methods

@@ -19,8 +19,10 @@ import java.util.logging.Level;
 
 import xal.smf.*;
 import xal.smf.impl.Magnet;
-import xal.sim.slg.*; // for lattice generation
-import xal.model.probe.*; // Probe for Mad header
+// for lattice generation
+import xal.sim.slg.*;
+// Probe for Mad header
+import xal.model.probe.*;
 import xal.tools.beam.Twiss;
 import xal.tools.beam.TraceXalUnitConverter;
 import xal.tools.beam.RelativisticParameterConverter;
@@ -219,11 +221,15 @@ public class MadGenerator {
         madElements = new ArrayList<>();
         for (int i = 0; i < sequenceChain.size(); i++) {
             Lattice myLattice = createLattice(sequenceChain.get(i));
-            int elementCount = myLattice.len();      // TODO: CKA - NEVER USED
+            // TODO: CKA - NEVER USED
+            int elementCount = myLattice.len();
             LatticeIterator ilat = myLattice.latticeIterator();
-            int counter = 1;         // TODO: CKA - NEVER USED
-            int devTypeInd = 1;      // TODO: CKA - NEVER USED
-            String devStr = "";      // TODO: CKA - NEVER USED
+            // TODO: CKA - NEVER USED
+            int counter = 1;
+            // TODO: CKA - NEVER USED
+            int devTypeInd = 1;
+            // TODO: CKA - NEVER USED
+            String devStr = "";
             AcceleratorNode currentThickNode = null;	// there can at most be one thick node at any location
             double currentThickNodePath = 0.0;			// total current path taken through the thick node (only bends modify and use this variable)
 
@@ -246,14 +252,14 @@ public class MadGenerator {
                 if (elementType.equals("drift")) {
                     addElement(formattedName + driftCounter, "DRIFT, L=" + NUMBER_FORMAT.format(elementLength));
                     driftCounter++;
-                } // for marker
-                else if (elementType.equals("pmarker") || elementType.equals("foil")) {
+                    // for marker
+                } else if (elementType.equals("pmarker") || elementType.equals("foil")) {
                     addElement(formattedName, "MARKER");
-                } // for diagnostic devices (monitors)
-                else if (elementType.equals("beampositionmonitor") || elementType.equals("beamlossmonitor") || elementType.equals("beamcurrentmonitor") || elementType.equals("wirescanner")) {
+                    // for diagnostic devices (monitors)
+                } else if (elementType.equals("beampositionmonitor") || elementType.equals("beamlossmonitor") || elementType.equals("beamcurrentmonitor") || elementType.equals("wirescanner")) {
                     addElement(formattedName, "MONITOR");
-                } // for quads
-                else if (elementType.equals("quadrupole") || elementType.equals("skewquadrupole")) {
+                    // for quads
+                } else if (elementType.equals("quadrupole") || elementType.equals("skewquadrupole")) {
                     final double rollAngle = node.getAlign().getRoll() * Math.PI / 180.0;	// get the roll angle in radians
                     final double field = getField(node, deviceDataSource);
 
@@ -262,8 +268,8 @@ public class MadGenerator {
                         definition += ", TILT=" + rollAngle;
                     }
                     addElement(formattedName, definition);
-                } // for bending dipole
-                else if (elementType.equals("dipole")) {
+                    // for bending dipole
+                } else if (elementType.equals("dipole")) {
                     final xal.smf.impl.Bend bendNode = (xal.smf.impl.Bend) node;
                     final double bendMagneticLength = bendNode.getEffLength();
 
@@ -281,29 +287,29 @@ public class MadGenerator {
                     final double k1 = bendNode.getQuadComponent();
 
                     addElement(formattedName, "SBEND, L=" + NUMBER_FORMAT.format(elementLength) + ", ANGLE=" + NUMBER_FORMAT.format(bendAngle) + ", K1=" + NUMBER_FORMAT.format(k1) + ", " + "E1=" + NUMBER_FORMAT.format(entranceAngle) + ", " + "E2=" + NUMBER_FORMAT.format(exitAngle));
-                } // for solenoid
-                else if (elementType.equals("solenoid")) {
+                    // for solenoid
+                } else if (elementType.equals("solenoid")) {
                     final double field = getField(node, deviceDataSource);
                     addElement(formattedName, "SOLENOID, L=" + NUMBER_FORMAT.format(elementLength) + ", K=" + NUMBER_FORMAT.format(field * LIGHT_SPEED / momentum));
-                } // for horizontal dipole correctors
-                else if (elementType.equals("hsteerer")) {
+                    // for horizontal dipole correctors
+                } else if (elementType.equals("hsteerer")) {
                     final xal.smf.impl.HDipoleCorr corrector = (xal.smf.impl.HDipoleCorr) node;
                     final double field = getField(node, deviceDataSource);
                     final double kick = -field * LIGHT_SPEED * corrector.getEffLength() / momentum;
                     addElement(formattedName, "HKICKER, KICK=" + NUMBER_FORMAT.format(kick));
-                } // for vertical dipole correctors
-                else if (elementType.equals("vsteerer")) {
+                    // for vertical dipole correctors
+                } else if (elementType.equals("vsteerer")) {
                     final xal.smf.impl.VDipoleCorr corrector = (xal.smf.impl.VDipoleCorr) node;
                     final double field = getField(node, deviceDataSource);
                     final double kick = -field * LIGHT_SPEED * corrector.getEffLength() / momentum;
                     addElement(formattedName, "VKICKER, KICK=" + NUMBER_FORMAT.format(kick));
-                } // for sextupoles
-                else if (elementType.equals("sextupole")) {
+                    // for sextupoles
+                } else if (elementType.equals("sextupole")) {
                     final double field = getField(node, deviceDataSource);
                     final double k2 = Q * field * LIGHT_SPEED / momentum;
                     addElement(formattedName, "SEXTUPOLE, L=" + NUMBER_FORMAT.format(elementLength) + ", K2=" + NUMBER_FORMAT.format(k2));
-                } //				// RF Cavities are not handled properly, so comment out the RF Cavity code
-                //				// for rf gaps
+                    //				// RF Cavities are not handled properly, so comment out the RF Cavity code
+                } //				// for rf gaps
                 //				else if (elementType.equals("rfgap")) {
                 //				}
                 else {

@@ -15,8 +15,8 @@ import xal.model.IProbe;
  * <em>f</em> which is necessary in computing probe phase advance through the
  * drift.
  * </p>
- * I think we are going to include the structure mode number <em>q</em> in here as
- * well. This way the phase advance due to the higher order modes can be
+ * I think we are going to include the structure mode number <em>q</em> in here
+ * as well. This way the phase advance due to the higher order modes can be
  * accounted for here.
  * </p>
  *

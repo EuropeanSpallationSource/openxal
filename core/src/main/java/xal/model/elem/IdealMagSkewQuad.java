@@ -131,8 +131,10 @@ public class IdealMagSkewQuad extends IdealMagQuad {
         // Set up horizontal focusing normal quad
         matQuad.setSubMatrix(0, 1, 0, 1, arrF);
         matQuad.setSubMatrix(2, 3, 2, 3, arrD);
-        matQuad.setSubMatrix(4, 5, 4, 5, arr0); // a drift space longitudinally
-        matQuad.setElem(6, 6, 1.0); // homogeneous coordinates
+        // a drift space longitudinally
+        matQuad.setSubMatrix(4, 5, 4, 5, arr0);
+        // homogeneous coordinates
+        matQuad.setElem(6, 6, 1.0);
 
         // Set up rotation
         double angle = Math.PI * dblSkewAngle / 180.;

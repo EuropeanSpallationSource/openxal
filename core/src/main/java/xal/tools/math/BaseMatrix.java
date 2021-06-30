@@ -221,8 +221,9 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      */
     /**
      * Returns the number of rows in this matrix. Specifically, if this matrix,
-     * denoted <strong>M</strong>, is in <strong>R</strong><sup><em>m</em>&times;<em>n</em></sup>, then
-     * the returned value is <em>m</em>.
+     * denoted <strong>M</strong>, is in
+     * <strong>R</strong><sup><em>m</em>&times;<em>n</em></sup>, then the
+     * returned value is <em>m</em>.
      *
      * @return the first dimension in the shape of this matrix.
      *
@@ -236,7 +237,8 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     /**
      * Returns the number of columns in this matrix. Specifically, if this
      * matrix, denoted <strong>M</strong>, is in
-     * <strong>R</strong><sup><em>m</em>&times;<em>n</em></sup>, then the returned value is
+     * <strong>R</strong><sup><em>m</em>&times;<em>n</em></sup>, then the
+     * returned value is
      * <em>n</em>.
      *
      * @return the second dimension in the shape of this matrix.
@@ -552,8 +554,8 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      *
      * @param s multiplier
      *
-     * @return new matrix equal to the element-wise product of <em>s</em> and this
-     * matrix, or <code>null</code> if an error occurred
+     * @return new matrix equal to the element-wise product of <em>s</em> and
+     * this matrix, or <code>null</code> if an error occurred
      */
     public M times(double s) {
         M result = newInstance(this.getRowCnt(), this.getColCnt());
@@ -592,11 +594,13 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * <p>
      * Non-destructive matrix-vector multiplication. The returned value is the
      * usual product of the given vector pre-multiplied by this matrix.
-     * Specifically, denote by <strong>A</strong> this matrix and by <strong>x</strong> the argument
-     * vector, then the components {<em>y<sub>i</sub></em>} of the returned vector
+     * Specifically, denote by <strong>A</strong> this matrix and by
+     * <strong>x</strong> the argument vector, then the components
+     * {<em>y<sub>i</sub></em>} of the returned vector
      * <strong>y</strong> are given by
      * <br>
-     * &nbsp; &nbsp; <em>y</em><sub><em>i</em></sub> = &Sigma;<sub><em>j</em></sub>
+     * &nbsp; &nbsp; <em>y</em><sub><em>i</em></sub> =
+     * &Sigma;<sub><em>j</em></sub>
      * <em>A<sub>ij</sub>x<sub>j</sbu></em>
      * <br>
      *
@@ -622,12 +626,14 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * <br>
      * <br>
      * ||<strong>AB</strong>||<sub>max</sub> is not necessarily bound by
-     * ||<strong>A</strong>||<sub>max</sub> ||<strong>B</strong>||<sub>max</sub> .
+     * ||<strong>A</strong>||<sub>max</sub> ||<strong>B</strong>||<sub>max</sub>
+     * .
      * <br>
      * <br>
      * </p>
      *
-     * @return max<sub><em>i,j</em></sub> | <strong>A</strong><sub><em>i,j</em></sub> |
+     * @return max<sub><em>i,j</em></sub> |
+     * <strong>A</strong><sub><em>i,j</em></sub> |
      */
     public double max() {
         return CommonOps.elementMax(this.matImpl);
@@ -635,8 +641,10 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
 
     /**
      * <p>
-     * The matrix norm || &middot; ||<sub>1</sub> <strong>induced</strong> from the
-     * <em>l</em><sub>1</sub> vector norm on <strong>R</strong><sup><em>n</em></sup>. That is,
+     * The matrix norm || &middot; ||<sub>1</sub> <strong>induced</strong> from
+     * the
+     * <em>l</em><sub>1</sub> vector norm on
+     * <strong>R</strong><sup><em>n</em></sup>. That is,
      * <br/>
      * <br/>
      * &nbsp; &nbsp; ||<strong>A</strong>||<sub>1</sub> &equiv;
@@ -650,7 +658,8 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * <h3>NOTES:</h3>
      * <p>
      * &middot; For square matrices induced norms are sub-multiplicative, that
-     * is ||<strong>AB</strong>|| &le; ||<strong>A</strong>|| ||<strong>B</strong>||.
+     * is ||<strong>AB</strong>|| &le; ||<strong>A</strong>||
+     * ||<strong>B</strong>||.
      * <br/>
      * <br/>
      * &middot; The ||&middot;||<sub>1</sub> induced norm equates to the the
@@ -672,9 +681,11 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * <br/>
      * <br/>
      * &nbsp; &nbsp; ||<strong>A</strong>||<sub>2</sub> &equiv; [ max
-     * &lambda;(<strong>A</strong><sup><em>T</em></sup><strong>A</strong>) ]<sup>1/2</sup> ,
+     * &lambda;(<strong>A</strong><sup><em>T</em></sup><strong>A</strong>)
+     * ]<sup>1/2</sup> ,
      * <br/>
-     * &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; = max &rho;(<strong>A</strong>) ,
+     * &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; = max
+     * &rho;(<strong>A</strong>) ,
      * <br/>
      * <br/>
      * where &lambda;(&middot;) is the eigenvalue operator and &rho;(&middot;)
@@ -689,9 +700,10 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
 
     /**
      * <p>
-     * The matrix norm || &middot; ||<sub>&infin;</sub> <strong>induced</strong> from the
-     * <em>l</em><sub>&infin;</sub> vector norm on <strong>R</strong><sup><em>n</em></sup>.
-     * That is,
+     * The matrix norm || &middot; ||<sub>&infin;</sub> <strong>induced</strong>
+     * from the
+     * <em>l</em><sub>&infin;</sub> vector norm on
+     * <strong>R</strong><sup><em>n</em></sup>. That is,
      * <br/>
      * <br/>
      * &nbsp; &nbsp; ||<strong>A</strong>||<sub>&infin;</sub> &equiv;
@@ -706,7 +718,8 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * <h3>NOTES:</h3>
      * <p>
      * &middot; For square matrices induced norms are sub-multiplicative, that
-     * is ||<strong>AB</strong>|| &le; ||<strong>A</strong>|| ||<strong>B</strong>||.
+     * is ||<strong>AB</strong>|| &le; ||<strong>A</strong>||
+     * ||<strong>B</strong>||.
      * <br/>
      * <br/>
      * &middot; The ||&middot;||<sub>&infin;</sub> induced norm equates to the
@@ -722,15 +735,16 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
 
     /**
      * <p>
-     * Return the Frobenius norm ||<strong>A</strong>||<sub><em>F</em></sub> . The Frobenius
-     * norm has the property that it is both the element-wise Lebesgue 2-norm
-     * the Schatten 2-norm. Thus we have
+     * Return the Frobenius norm ||<strong>A</strong>||<sub><em>F</em></sub> .
+     * The Frobenius norm has the property that it is both the element-wise
+     * Lebesgue 2-norm the Schatten 2-norm. Thus we have
      * <br/>
      * <br/>
      * &nbsp; &nbsp; ||<strong>A</strong>||<sub><em>F</em></sub> = [
      * &Sigma;<sub><em>i</em></sub> &Sigma;<sub><em>j</em></sub>
      * <em>A</em><sub><em>i,j</em></sub><sup>2</sup> ]<sup>1/2</sup>
-     * = [ Tr(<strong>A</strong><sup><em>T</em></sup><strong>A</strong>) ]<sup>1/2</sup>
+     * = [ Tr(<strong>A</strong><sup><em>T</em></sup><strong>A</strong>)
+     * ]<sup>1/2</sup>
      * = [ &Sigma;<sub><em>i</em></sub> &sigma;<sub><em>i</em></sub><sup>2</sup>
      * ]<sup>1/2</sup>
      * <br/>
@@ -745,11 +759,13 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * <br/>
      * <br/>
      * &middot; The Frobenius norm is invariant under rotations by elements of
-     * <em>O</em>(2) &sub; <strong>R</strong><sup><em>n</em>&times;<em>n</em></sup> .
+     * <em>O</em>(2) &sub;
+     * <strong>R</strong><sup><em>n</em>&times;<em>n</em></sup> .
      * </p>
      *
      *
-     * @return ||<strong>A</strong>||<sub><em>F</em></sub> = [ &Sigma;<sub><em>i,j</em></sub>
+     * @return ||<strong>A</strong>||<sub><em>F</em></sub> = [
+     * &Sigma;<sub><em>i,j</em></sub>
      * <em>A<sub>ij</sub></em><sup>2</sup> ]<sup>1/2</sup>
      */
     public double normF() {
@@ -837,7 +853,8 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
         final int size = (this.getRowCnt() * this.getColCnt() * 16) + (this.getRowCnt() * 2) + 4;
         StringBuffer strBuf = new StringBuffer(size);
 
-        synchronized (strBuf) { // get lock once instead of once per append
+        // get lock once instead of once per append
+        synchronized (strBuf) {
             strBuf.append("{ ");
             for (int i = 0; i < this.getRowCnt(); i++) {
                 strBuf.append("{ ");

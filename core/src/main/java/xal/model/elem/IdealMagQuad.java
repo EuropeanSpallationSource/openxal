@@ -190,7 +190,8 @@ public class IdealMagQuad extends ThickElectromagnet {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <strong>meters</strong>
+     * @param dblLen length of subsection to propagate through
+     * <strong>meters</strong>
      *
      * @return the elapsed time through section<strong>Units: seconds</strong>
      */
@@ -231,7 +232,8 @@ public class IdealMagQuad extends ThickElectromagnet {
         double p = Math.sqrt(w * (w + 2 * Er));
 
         double bPathFlag = getFieldPathFlag();
-        if (bPathFlag == 1) {//if bpathflag =1, then use nominal k0 from nominal kine energy
+        //if bpathflag =1, then use nominal k0 from nominal kine energy
+        if (bPathFlag == 1) {
             double w0 = getNominalKineEnergy();
             if (w0 == 0.) {
                 w0 = probe.getKineticEnergy();
@@ -239,7 +241,8 @@ public class IdealMagQuad extends ThickElectromagnet {
             }
             double p0 = Math.sqrt(w0 * (w0 + 2 * Er));
 
-            setBRhoScaling(p / p0);//save brho scaling. when nominalKineEnergy = 0, set 1.
+            //save brho scaling. when nominalKineEnergy = 0, set 1.
+            setBRhoScaling(p / p0);
         }
 
         // focusing constant (radians/meter)
@@ -247,13 +250,15 @@ public class IdealMagQuad extends ThickElectromagnet {
 
         if (bPathFlag == 0) {
             k = (charge * LIGHT_SPEED * getMagField()) / p;
-        } else if (bPathFlag == 1) {//brhoscaling
+            //brhoscaling
+        } else if (bPathFlag == 1) {
             k = (charge * LIGHT_SPEED * getMagField() * getBRhoScaling()) / p;
         } else {
             k = K1;
         }
         /*
-       if (K1!=0.) {//sako!!
+       //sako!!
+       if (K1!=0.) {
     	   LOGGER.log(Level.INFO, "K1, k = "+K1+" "+k);
     	   k = K1;
        }
@@ -268,8 +273,10 @@ public class IdealMagQuad extends ThickElectromagnet {
         // Build the tranfer matrix from its component blocks
         PhaseMatrix matPhi = new PhaseMatrix();
 
-        matPhi.setSubMatrix(4, 5, 4, 5, arr0); // a drift space longitudinally
-        matPhi.setElem(6, 6, 1.0); // homogeneous coordinates
+        // a drift space longitudinally
+        matPhi.setSubMatrix(4, 5, 4, 5, arr0);
+        // homogeneous coordinates
+        matPhi.setElem(6, 6, 1.0);
 
         if (k >= 0.0) {
             matPhi.setSubMatrix(0, 1, 0, 1, arrF);

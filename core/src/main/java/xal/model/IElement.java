@@ -50,7 +50,8 @@ public interface IElement extends IComponent {
      * through a subsection of the element with length <code>dblLen</code>.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <strong>meters</strong>
+     * @param dblLen length of subsection to propagate through
+     * <strong>meters</strong>
      *
      * @return the elapsed time through section<strong>Units: seconds</strong>
      */
@@ -67,8 +68,8 @@ public interface IElement extends IComponent {
      * &nbsp; &nbsp; &phi; &#8796; &phi;<sub>0</sub> - &Delta;&phi;
      * <br/>
      * <br/>
-     * where &Delta;&phi; = 2&pi;<em>f</em>&Delta;<i/>L</em>/&beta;<em>c</em> is the
-     * phase delay due to elapsed time &Delta;<em>t</em> =
+     * where &Delta;&phi; = 2&pi;<em>f</em>&Delta;<i/>L</em>/&beta;<em>c</em> is
+     * the phase delay due to elapsed time &Delta;<em>t</em> =
      * &Delta;<em>L</em>/&beta;<em>c</em>, &Delta;<em>L</em> is the given axial
      * distance through this element, &beta;<em>c</em> is the probe axial
      * velocity,
@@ -93,14 +94,15 @@ public interface IElement extends IComponent {
      * @param probe determine energy gain for this probe
      * @param dblLen length of subsection to calculate energy gain
      *
-     * @return the energy gain provided by this element <strong>Units: eV</strong>
+     * @return the energy gain provided by this element <strong>Units:
+     * eV</strong>
      */
     public double energyGain(IProbe probe, double dblLen);
 
     /**
-     * Compute the transfer matrix for <strong>subsection</strong> of this element of
-     * length <code>dblLen</code> for the specified given probe. That is, this
-     * method should return the incremental transfer matrix.
+     * Compute the transfer matrix for <strong>subsection</strong> of this
+     * element of length <code>dblLen</code> for the specified given probe. That
+     * is, this method should return the incremental transfer matrix.
      *
      * @param dblLen length of sub-element
      * @param probe probe containing parameters for the sub-sectional transfer

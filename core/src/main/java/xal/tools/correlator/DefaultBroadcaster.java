@@ -35,7 +35,8 @@ class DefaultBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
      */
     @Override
     synchronized public void newCorrelation(final BinAgent<RecordType> sender, final Correlation<RecordType> correlation) {
-        if (correlation.numRecords() == fullCount) {    // broadcast the correlation
+        // broadcast the correlation
+        if (correlation.numRecords() == fullCount) {
             postCorrelation(correlation);
         }
     }

@@ -438,7 +438,8 @@ class FileResourceManager extends ResourceManager {
             // use URLs to avoid file system path separator dependencies
             try {
                 final URL resourcesURL = resourcesDirectory.toURI().toURL();
-                final URL resourceURL = new URL(resourcesURL, pathFromResources);		// e.g. file://${OPENXAL_HOME}/extensions/application/resources/smf/menudef.properties
+                //${OPENXAL_HOME}/extensions/application/resources/smf/menudef.properties
+                final URL resourceURL = new URL(resourcesURL, pathFromResources);		// e.g. file:
 
                 return new File(resourceURL.toURI());		// e.g. ${OPENXAL_HOME}/extensions/application/resources/smf/menudef.properties
             } catch (MalformedURLException exception) {

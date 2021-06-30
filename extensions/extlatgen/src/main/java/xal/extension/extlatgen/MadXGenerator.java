@@ -14,8 +14,10 @@ import xal.smf.*;
 import xal.smf.impl.Magnet;
 import xal.smf.impl.RfGap;
 import xal.smf.impl.RfCavity;
-import xal.sim.slg.*; // for lattice generation
-import xal.model.probe.*; // Probe for Mad header
+// for lattice generation
+import xal.sim.slg.*;
+// Probe for Mad header
+import xal.model.probe.*;
 // import xal.model.probe.traj.EnvelopeProbeState;
 import xal.tools.beam.Twiss;
 import xal.tools.beam.RelativisticParameterConverter;
@@ -256,12 +258,12 @@ public class MadXGenerator {
                         addElement(formattedName, "MARKER");
 //						elem_pos_map.put(formattedName, element.getPosition());
                     }
-                } // for diagnostic devices (monitors)
-                else if (elementType.equals("beampositionmonitor") || elementType.equals("beamlossmonitor") || elementType.equals("beamcurrentmonitor") || elementType.equals("wirescanner")) {
+                    // for diagnostic devices (monitors)
+                } else if (elementType.equals("beampositionmonitor") || elementType.equals("beamlossmonitor") || elementType.equals("beamcurrentmonitor") || elementType.equals("wirescanner")) {
                     addElement(formattedName, "MONITOR");
 //					elem_pos_map.put(formattedName, element.getPosition());
-                } // for quads
-                else if (elementType.equals("quadrupole") || elementType.equals("skewquadrupole")) {
+                    // for quads
+                } else if (elementType.equals("quadrupole") || elementType.equals("skewquadrupole")) {
                     final double rollAngle = node.getAlign().getRoll() * Math.PI / 180.0;	// get the roll angle in radians
                     final double field = getField(node, deviceDataSource);
 
@@ -271,8 +273,8 @@ public class MadXGenerator {
                     }
                     addElement(formattedName, definition);
 //					elem_pos_map.put(formattedName, element.getPosition());
-                } // for bending dipole
-                else if (elementType.equals("dipole")) {
+                    // for bending dipole
+                } else if (elementType.equals("dipole")) {
                     final xal.smf.impl.Bend bendNode = (xal.smf.impl.Bend) node;
                     final double bendMagneticLength = bendNode.getEffLength();
 
@@ -291,33 +293,33 @@ public class MadXGenerator {
 
                     addElement(formattedName, "SBEND, L=" + NUMBER_FORMAT.format(elementLength) + ", ANGLE=" + NUMBER_FORMAT.format(bendAngle) + ", K1=" + NUMBER_FORMAT.format(k1) + ", " + "E1=" + NUMBER_FORMAT.format(entranceAngle) + ", " + "E2=" + NUMBER_FORMAT.format(exitAngle));
 //					elem_pos_map.put(formattedName, element.getPosition());
-                } // for solenoid
-                else if (elementType.equals("solenoid")) {
+                    // for solenoid
+                } else if (elementType.equals("solenoid")) {
                     final double field = getField(node, deviceDataSource);
                     addElement(formattedName, "SOLENOID, L=" + NUMBER_FORMAT.format(elementLength) + ", KS=" + NUMBER_FORMAT.format(field * LIGHT_SPEED / momentum));
 //					elem_pos_map.put(formattedName, element.getPosition());
-                } // for horizontal dipole correctors
-                else if (elementType.equals("hsteerer")) {
+                    // for horizontal dipole correctors
+                } else if (elementType.equals("hsteerer")) {
                     final xal.smf.impl.HDipoleCorr corrector = (xal.smf.impl.HDipoleCorr) node;
                     final double field = getField(node, deviceDataSource);
                     final double kick = -field * LIGHT_SPEED * corrector.getEffLength() / momentum;
                     addElement(formattedName, "HKICKER, KICK=" + NUMBER_FORMAT.format(kick));
 //					elem_pos_map.put(formattedName, element.getPosition());
-                } // for vertical dipole correctors
-                else if (elementType.equals("vsteerer")) {
+                    // for vertical dipole correctors
+                } else if (elementType.equals("vsteerer")) {
                     final xal.smf.impl.VDipoleCorr corrector = (xal.smf.impl.VDipoleCorr) node;
                     final double field = getField(node, deviceDataSource);
                     final double kick = -field * LIGHT_SPEED * corrector.getEffLength() / momentum;
                     addElement(formattedName, "VKICKER, KICK=" + NUMBER_FORMAT.format(kick));
 //					elem_pos_map.put(formattedName, element.getPosition());
-                } // for sextupoles
-                else if (elementType.equals("sextupole")) {
+                    // for sextupoles
+                } else if (elementType.equals("sextupole")) {
                     final double field = getField(node, deviceDataSource);
                     final double k2 = Q * field * LIGHT_SPEED / momentum;
                     addElement(formattedName, "SEXTUPOLE, L=" + NUMBER_FORMAT.format(elementLength) + ", K2=" + NUMBER_FORMAT.format(k2));
 //					elem_pos_map.put(formattedName, element.getPosition());
-                } //				// RF Cavities are not handled properly, so comment out the RF Cavity code
-                //				// for rf gaps
+                    //				// RF Cavities are not handled properly, so comment out the RF Cavity code
+                } //				// for rf gaps
                 else if (elementType.equals("rfgap")) {
                     double field = 0.;
                     //                					if (deviceDataSource.getLabel().startsWith("DESIGN")) {

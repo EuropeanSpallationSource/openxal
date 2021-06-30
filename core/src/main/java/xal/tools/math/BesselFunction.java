@@ -48,16 +48,18 @@ package xal.tools.math;
  * Implementations for integer-order cylindrical Bessel functions of the first
  * and second kind (i.e., <em>J<sub>n</sub></em>(<em>x</em>) and
  * <em>Y<sub>n</sub></em>(<em>x</em>), <em>n</em> = 1,2,3,... )were taken from
- * <a href="http://www.koders.com">www.koders.com</a> and the copyright notice
+ //www.koders.com">www.koders.com</a> and the copyright notice
+ * <a href="http:
  * is included in the Java source file. The implementation is based upon that
  * presented in
- * <a href="http://www.nr.com"><em>Numerical Recipes</em></a>
+ //www.nr.com"><em>Numerical Recipes</em></a>
+ * <a href="http:
  * by W.H. Press, <em>et. al.</em>
  * </p>
  * <p>
- * Spherical Bessel functions <em>j<sub>n</sub></em>(<em>x</em>) can be represented
- * as cylindrical Bessel functions with half-integer order. Specifically, we
- * have
+ * Spherical Bessel functions <em>j<sub>n</sub></em>(<em>x</em>) can be
+ * represented as cylindrical Bessel functions with half-integer order.
+ * Specifically, we have
  * <br>
  * <br>
  * &nbsp; <em>j<sub>n</sub></em>(<em>x</em>) =
@@ -67,8 +69,8 @@ package xal.tools.math;
  * However, since half-order cylindrical Bessel functions are not included in
  * this class (they are more difficult to implement), an implementation based
  * upon the above formula is not feasible. Instead, spherical Bessel functions
- * <em>j<sub>n</sub></em>(<em>x</em>) for <em>n</em> = 0, 1, 2, 3, 4 are implemented
- * using their trigonometric representations.
+ * <em>j<sub>n</sub></em>(<em>x</em>) for <em>n</em> = 0, 1, 2, 3, 4 are
+ * implemented using their trigonometric representations.
  * </p>
  * <p>
  * <strong>NOTES</strong>: (CKA)
@@ -84,9 +86,9 @@ package xal.tools.math;
  * <br>
  * <br>
  * However, this formula is numerically unstable for Bessel functions of the
- * first kind <em>J<sub>n</sub></em>(<em>x</em>). Thus, it cannot be used to compute
- * the higher order <em>J<sub>n</sub></em>(<em>x</em>) using recursion over lower
- * orders.
+ * first kind <em>J<sub>n</sub></em>(<em>x</em>). Thus, it cannot be used to
+ * compute the higher order <em>J<sub>n</sub></em>(<em>x</em>) using recursion
+ * over lower orders.
  * <br>
  * &middot; We can apply the above recurrence relation to spherical Bessel
  * functions by expressing them in terms of cylindrical Bessel functions.
@@ -107,9 +109,11 @@ package xal.tools.math;
  * </p>
  * <p>
  * <h2>References</h2>
- * [1] <a href="http://www.koders.com">www.koders.com</a>
+ //www.koders.com">www.koders.com</a>
+ * [1] <a href="http:
  * <br>
- * [2]<a href="http://www.nr.com/"><em>Numerical Recipes, The Art of Scientific
+ //www.nr.com/"><em>Numerical Recipes, The Art of Scientific
+ * [2]<a href="http:
  * Computing, Third Edition,</em>
  * W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery (Cambridge
  * University Press, Cambridge, 2007).
@@ -234,7 +238,8 @@ public final class BesselFunction {
      * <p>
      * This implementation relies upon evaluation of the zero and first order
      * Bessel functions
-     * <em>J</em><sub>0</sub>(<em>x</em>) and <em>J</em><sub>1</sub>(<em>x</em>)..
+     * <em>J</em><sub>0</sub>(<em>x</em>) and
+     * <em>J</em><sub>1</sub>(<em>x</em>)..
      * </p>
      *
      * @param n integer order
@@ -399,14 +404,15 @@ public final class BesselFunction {
      * <p>
      * This implementation relies upon evaluation of the zero and first order
      * Bessel functions
-     * <em>Y</em><sub>0</sub>(<em>x</em>) and <em>Y</em><sub>1</sub>(<em>x</em>).
+     * <em>Y</em><sub>0</sub>(<em>x</em>) and
+     * <em>Y</em><sub>1</sub>(<em>x</em>).
      * </p>
      *
      * @param n integer order
      * @param x a double value
      *
-     * @return the Bessel function of the second kind, of order <em>n</em> of the
-     * argument,
+     * @return the Bessel function of the second kind, of order <em>n</em> of
+     * the argument,
      * <em>Y</em><sub><em>n</em></sub>(<em>x</em>).
      */
     public static double Yn(final int n, final double x) {
@@ -449,8 +455,8 @@ public final class BesselFunction {
      * </p>
      * <p>
      * To avoid numerical instability, for small values of
-     * <em>x</em> we Taylor expand sinc(<em>x</em>) to sixth order about <em>x</em> =
-     * 0.
+     * <em>x</em> we Taylor expand sinc(<em>x</em>) to sixth order about
+     * <em>x</em> = 0.
      * <br>
      * <br>
      * &nbsp; sinc(x) &asymp; 1 - <em>x</em><sup>2</sup>/6 +
@@ -475,7 +481,8 @@ public final class BesselFunction {
      */
     public static double sinc(final double x) {
 
-        if (Math.abs(x) < BesselFunction.SMALL_ARG) {    // avoid singularity at zero
+        // avoid singularity at zero
+        if (Math.abs(x) < BesselFunction.SMALL_ARG) {
             double x2 = x * x;
             double x4 = x2 * x2;
 
@@ -517,8 +524,8 @@ public final class BesselFunction {
      * functions.
      * <p>
      * To avoid numerical instability, for small values of
-     * <em>x</em> we Taylor expand <em>j</em><sub>1</sub>(<em>x</em>) to seventh order
-     * about <em>x</em> = 0.
+     * <em>x</em> we Taylor expand <em>j</em><sub>1</sub>(<em>x</em>) to seventh
+     * order about <em>x</em> = 0.
      * <br>
      * <br>
      * &nbsp;  <em>j</em><sub>1</sub>(<em>x</em>) &asymp;
@@ -532,8 +539,8 @@ public final class BesselFunction {
      * otherwise we return
      * <br>
      * <br>
-     * <em>j</em><sub>1</sub>(<em>x</em>) = sin(<em>x</em>)/<em>x</em><sup>2</sup> -
-     * cos(<em>x</em>)/<em>x</em>.
+     * <em>j</em><sub>1</sub>(<em>x</em>) =
+     * sin(<em>x</em>)/<em>x</em><sup>2</sup> - cos(<em>x</em>)/<em>x</em>.
      * </p>
      *
      * @param x any real number (double value)
@@ -543,7 +550,8 @@ public final class BesselFunction {
      */
     public static double j1(final double x) {
 
-        if (Math.abs(x) < BesselFunction.SMALL_ARG) {    // avoid singularity at zero
+        // avoid singularity at zero
+        if (Math.abs(x) < BesselFunction.SMALL_ARG) {
 
             // Numerically unstable at x=0, compute expansion
             double x2 = x * x;
@@ -571,8 +579,8 @@ public final class BesselFunction {
      * functions.
      * <p>
      * To avoid numerical instability, for small values of
-     * <em>x</em> we Taylor expand <em>j</em><sub>2</sub>(<em>x</em>) to eighth order
-     * about <em>x</em> = 0.
+     * <em>x</em> we Taylor expand <em>j</em><sub>2</sub>(<em>x</em>) to eighth
+     * order about <em>x</em> = 0.
      * <br>
      * <br>
      * &nbsp;  <em>j</em><sub>2</sub>(<em>x</em>) &asymp;
@@ -586,8 +594,8 @@ public final class BesselFunction {
      * otherwise we return
      * <br>
      * <br>
-     * <em>j</em><sub>2</sub>(<em>x</em>) = (3/<em>x</em> - 1)sin(<em>x</em>)/<em>x</em> -
-     * 3cos(<em>x</em>)/<em>x</em><sup>2</sup>.
+     * <em>j</em><sub>2</sub>(<em>x</em>) = (3/<em>x</em> -
+     * 1)sin(<em>x</em>)/<em>x</em> - 3cos(<em>x</em>)/<em>x</em><sup>2</sup>.
      * </p>
      *
      * @param x any real number (double value)
@@ -597,7 +605,8 @@ public final class BesselFunction {
      */
     public static double j2(final double x) {
 
-        if (Math.abs(x) < BesselFunction.SMALL_ARG) {    // avoid singularity at zero
+        // avoid singularity at zero
+        if (Math.abs(x) < BesselFunction.SMALL_ARG) {
 
             // Numerically unstable at x=0, compute expansion
             double x2 = x * x;
@@ -625,8 +634,8 @@ public final class BesselFunction {
      * functions.
      * <p>
      * To avoid numerical instability, for small values of
-     * <em>x</em> we Taylor expand <em>j</em><sub>3</sub>(<em>x</em>) to seventh order
-     * about <em>x</em> = 0.
+     * <em>x</em> we Taylor expand <em>j</em><sub>3</sub>(<em>x</em>) to seventh
+     * order about <em>x</em> = 0.
      * <br>
      * <br>
      * &nbsp;  <em>j</em><sub>3</sub>(<em>x</em>) &asymp;
@@ -651,7 +660,8 @@ public final class BesselFunction {
      */
     public static double j3(final double x) {
 
-        if (Math.abs(x) < BesselFunction.SMALL_ARG) {    // avoid singularity at zero
+        // avoid singularity at zero
+        if (Math.abs(x) < BesselFunction.SMALL_ARG) {
 
             // Numerically unstable at x=0, compute expansion
             double x2 = x * x;
@@ -680,8 +690,8 @@ public final class BesselFunction {
      * functions.
      * <p>
      * To avoid numerical instability, for small values of
-     * <em>x</em> we Taylor expand <em>j</em><sub>4</sub>(<em>x</em>) to eighth order
-     * about <em>x</em> = 0.
+     * <em>x</em> we Taylor expand <em>j</em><sub>4</sub>(<em>x</em>) to eighth
+     * order about <em>x</em> = 0.
      * <br>
      * <br>
      * &nbsp;  <em>j</em><sub>2</sub>(<em>x</em>) &asymp;
@@ -706,7 +716,8 @@ public final class BesselFunction {
      */
     public static double j4(final double x) {
 
-        if (Math.abs(x) < BesselFunction.SMALL_ARG) {    // avoid singularity at zero
+        // avoid singularity at zero
+        if (Math.abs(x) < BesselFunction.SMALL_ARG) {
 
             // Numerically unstable at x=0, compute expansion
             double x2 = x * x;

@@ -211,7 +211,7 @@ public abstract class ScadaRecord implements DataListener, Cloneable {
 
                 }
 
-                bufStr.append(strFldNm).append(" = ").append(strFldVal).append("\n");  //$NON-NLS-2$
+                bufStr.append(strFldNm).append(" = ").append(strFldVal).append("\n");
 
             } catch (SecurityException | NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
                 bufStr.append(strFldNm).append(" = ERROR\n");
@@ -307,7 +307,7 @@ public abstract class ScadaRecord implements DataListener, Cloneable {
                 }
 
             } catch (IllegalAccessException | SecurityException | NoSuchFieldException e) {
-                throw new BadStructException("Data field " + strFldName + " is ill-defined.", e);  //$NON-NLS-2$
+                throw new BadStructException("Data field " + strFldName + " is ill-defined.", e);
             }
         }
     }
@@ -355,7 +355,7 @@ public abstract class ScadaRecord implements DataListener, Cloneable {
                 }
 
             } catch (IllegalAccessException | SecurityException | NoSuchFieldException e) {
-                throw new BadStructException("Data field " + strFldName + " is ill-defined.", e);  //$NON-NLS-2$   
+                throw new BadStructException("Data field " + strFldName + " is ill-defined.", e);
             }
         }
     }

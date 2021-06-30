@@ -6,8 +6,8 @@
  */
 /**
  * Package contains tools for working in the space of real
- * number pairs (<em>x,y</em>) &in; <strong>R</strong><sup>2</sup>. This includes algebraic
- * structures and topological structures.
+ * number pairs (<em>x,y</em>) &in; <strong>R</strong><sup>2</sup>. This
+ * includes algebraic structures and topological structures.
  *
  *
  * @author Christopher K. Allen

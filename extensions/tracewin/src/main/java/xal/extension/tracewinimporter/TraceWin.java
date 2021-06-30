@@ -344,9 +344,9 @@ public class TraceWin {
                 List<String> sequenceNames = new ArrayList<>();
                 basePath = getInputDir().toURI().toString();
                 for (File inputFilei : inputFiles) {
+                    // Remove Dump
                     if (inputFilei.isDirectory() && inputFilei.getName().substring(0, 1).matches("\\d+(\\.\\d+)?")
-                            //                            && Integer.parseInt(inputFilei.getName().substring(0, 1)) > 2 // Load from MEBT
-                            && Integer.parseInt(inputFilei.getName().substring(2, 3)) == 0) { // Remove Dump
+                            && Integer.parseInt(inputFilei.getName().substring(2, 3)) == 0) {
                         File traceWinFile = Paths.get(inputFilei.toString(), "Beam_Physics", "lattice.dat").toFile();
                         if (traceWinFile.exists()) {
                             sourceFileNames.add(traceWinFile.toURI());

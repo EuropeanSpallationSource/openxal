@@ -92,8 +92,8 @@ public class Util {
                 } else {
                     map.put(baseKey, assignment);
                 }
-            } // if the key ends with "+" then append the new assignment onto the existing assignment
-            else if (key.endsWith("+")) {
+                // if the key ends with "+" then append the new assignment onto the existing assignment
+            } else if (key.endsWith("+")) {
                 final String baseKey = key.substring(0, key.length() - 1);
                 final String initialAssignment = map.get(baseKey);
                 if (initialAssignment != null) {
@@ -101,8 +101,8 @@ public class Util {
                 } else {
                     map.put(baseKey, assignment);
                 }
-            } // if no modifier is found, then simply overwrite the assignment if existing or add a new one
-            else {
+                // if no modifier is found, then simply overwrite the assignment if existing or add a new one
+            } else {
                 map.put(key, assignment);
             }
         }

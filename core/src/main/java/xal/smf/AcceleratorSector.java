@@ -111,7 +111,6 @@ public final class AcceleratorSector extends AcceleratorSeq {
             return false;
         }
 
-//        node.setOwner(this);
         return true;
     }
 
@@ -124,9 +123,10 @@ public final class AcceleratorSector extends AcceleratorSeq {
             }
         }
 
-//        if (bolTest == false) throw InvalidPredecessorException;
-        String strId;      // new name
-        AcceleratorSeq seqNew;     // concatenated sequence
+        // new name
+        String strId;
+        // concatenated sequence
+        AcceleratorSeq seqNew;
 
         strId = this.getId() + ":" + sec.getId();
         seqNew = new AcceleratorSeq(strId);

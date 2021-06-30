@@ -362,15 +362,16 @@ public class SignalAttrs extends ScadaRecord {
      * object using the given weighting factor. The quantities within this data
      * structure are averaged in place with that of the given signal attributes
      * structure. Letting &lambda; denote the provided averaging factor, which
-     * is in the interval [0,1], the new values of this structure, say <em>v'</em>
+     * is in the interval [0,1], the new values of this structure, say
+     * <em>v'</em>
      * are given by the formula
      * <br>
      * <br>
      * &nbsp; &nbsp; <em>v'</em> = &lambda;<em>u</em> + (1 - &lambda;)<em>v</em>
      * <br>
      * <br>
-     * where <em>v</em> is the previous value of <em>v'</em> and <em>u</em> is the new
-     * value of <em>v</em> in <code>sigAcq</code>.
+     * where <em>v</em> is the previous value of <em>v'</em> and <em>u</em> is
+     * the new value of <em>v</em> in <code>sigAcq</code>.
      * </p>
      * <h3>NOTES:</h3>
      * <p>
@@ -441,13 +442,14 @@ public class SignalAttrs extends ScadaRecord {
         String strLabel = this.dataLabel();
         DataAdaptor daptSgnl = daptSrc.childAdaptor(strLabel);
 
-        if (daptSgnl == null) { // this is XAL version
+        // this is XAL version
+        if (daptSgnl == null) {
             strLabel = "gov.sns." + strLabel;
             daptSgnl = daptSrc.childAdaptor(strLabel);
         }
 
-        if (daptSgnl == null) // we were given the data node itself
-        {
+        // we were given the data node itself
+        if (daptSgnl == null) {
             daptSgnl = daptSrc;
         }
 
