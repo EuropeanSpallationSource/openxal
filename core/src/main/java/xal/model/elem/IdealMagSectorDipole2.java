@@ -139,7 +139,6 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
     /**
      * flag to use design field from bending angle and path instead of bfield
      */
-//    private double bolFieldPathFlag = 0.0;
     private boolean bolFieldPathFlag = false;
 
     /*
@@ -597,7 +596,6 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
         //
         if (((getFieldPathFlag() == true) && (getDesignBendingAngle() == 0.))
                 || ((getFieldPathFlag() == false) && (B == 0.0))) {
-            //      throw new ModelException("IdealMagSectorDipole#transferMap() - cannot support zero fields.");
 
             //sako 27 sep 07 to avoid B=0 problem
             // Build transfer matrix for a drift space.  Assume the magnet has been replaced by a drift section
@@ -788,8 +786,6 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
         double s1 = this.compProbeLocation(probe);
         double s2 = s1 + dL;
 
-//        double  a1 = this.compCurrentAngle(s1);
-//        double  a2 = this.compCurrentAngle(s2);
         double a1 = this.compCurrentAngle2(s1);
         double a2 = this.compCurrentAngle2(s2);
 
@@ -833,7 +829,6 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
         double L0 = this.getLength();
 
         double num = R0 - ((L0 / 2.0) / R0) * s;
-        //double den = Math.sqrt( s*s + R0*R0 - s*L0 );
         double den = Math.sqrt(R0 * R0 + s * (s - L0));
         double ratio = num / den;
 
@@ -847,7 +842,6 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
         }
 
         double theta = Math.acos(ratio);
-//        double theta2 = compCurrentAngle2(s);
         return theta;
     }
 

@@ -1255,7 +1255,6 @@ public class ScanController1D {
 
                     if (scanVariable != null && scanVariable.getMonitoredPV().isGood()) {
                         if (scanOn != false && sleepTime > 0.) {
-                            //try{Thread.sleep((long)(1000.0*sleepTime));}catch(InterruptedException e){}
                             try {
                                 lockObj.wait((long) (1000.0 * sleepTime));
                             } catch (InterruptedException e) {
@@ -1343,7 +1342,6 @@ public class ScanController1D {
                     }
 
                     if (scanVariable != null && scanVariable.getMonitoredPV().isGood()) {
-                        //try{Thread.sleep((long)(1000.0*sleepTime));}catch(InterruptedException e){}
                         try {
                             lockObj.wait((long) (1000.0 * sleepTime));
                         } catch (InterruptedException e) {
@@ -1389,7 +1387,6 @@ public class ScanController1D {
             return false;
         }
         if (sleepTime > 0.) {
-            //try{Thread.sleep((long)(1000.0*sleepTime));}catch(InterruptedException e){}
             try {
                 lockObj.wait((long) (1000.0 * sleepTime));
             } catch (InterruptedException e) {
@@ -1425,7 +1422,6 @@ public class ScanController1D {
                     return false;
                 }
                 if (nAveraging > 1 && badCount > 0 && avrgTime > 0.) {
-                    //try{Thread.sleep((long)(1000.0*avrgTime));}catch(InterruptedException e){}
                     try {
                         lockObj.wait((long) (1000.0 * avrgTime));
                     } catch (InterruptedException e) {
@@ -1451,7 +1447,6 @@ public class ScanController1D {
                 return false;
             }
             if (nAveraging > 1 && j != nAveraging && avrgTime > 0.) {
-                //try{Thread.sleep((long)(1000.0*avrgTime));}catch(InterruptedException e){}
                 try {
                     lockObj.wait((long) (1000.0 * Math.max(sleepTime, avrgTime)));
                 } catch (InterruptedException e) {

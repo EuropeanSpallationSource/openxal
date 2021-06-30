@@ -44,8 +44,6 @@ public class TrajectoryXmlParser {
             throws ParsingException {
         XmlDataAdaptor document
                 = XmlDataAdaptor.adaptorForUrl(fileUri, false);
-//		DataAdaptor trajNode = document.childAdaptor(Trajectory.TRAJ_LABEL);
-//		return Trajectory.readFrom(trajNode);
         return Trajectory.loadFrom(document);
     }
 

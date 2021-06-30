@@ -47,11 +47,6 @@ public class TestTwissProbe {
      */
     private static final String STR_FILE_SAVELOAD = "./build/tests/xal/model/probe/TwissProbe_SaveLoadTest.xml";
 
-    //
-    // Numerical - Algorithm Parameters
-    //
-//    /** solution precision */
-//    private static final double     ERROR_TOLERANCE = 1.0e-5;
     /**
      * testing step length
      */
@@ -67,18 +62,6 @@ public class TestTwissProbe {
      */
     private static final boolean ALG_DEBUGMODE = false;
 
-//    //
-//    //  Relativistic Parameters
-//    //
-//    
-//    /** relativistic parameter for stationary beam */
-//    private static final double      GAMMA_STAT = 1.0;
-//    
-//    /** relativistic parameter for MEBT */
-//    private static final double      GAMMA_MEBT = 1.003193863;
-//    
-//    /** relativistic parameter for L3BT */
-//    private static final double      GAMMA_L3BT = 1.192678;
     //
     // Beam Parameters
     //
@@ -206,18 +189,6 @@ public class TestTwissProbe {
      */
     @Test
     public void testArchiveSave() {
-//        
-//        TwissProbe probe = TestTwissProbe.createTestProbe();
-//        
-//        try {
-//            ProbeXmlWriter.writeXml(probe, TestTwissProbe.STR_FILE_SAVE);
-//
-//        } catch (IOException e) {
-//            LOGGER.log(Level.SEVERE, null, exception);
-//            Assert.fail("TestTwissProbe#testArchiveSave() - unable to save probe to " + STR_FILE_SAVE);
-//            return;
-//            
-//        }
     }
 
     /**
@@ -226,17 +197,6 @@ public class TestTwissProbe {
      */
     @Test
     public void testArchiveLoad() {
-//        
-//        try {
-//            Probe probe = ProbeXmlParser.parse(TestTwissProbe.STR_FILE_LOAD);
-//            Assert.assertTrue(probe instanceof TwissProbe);
-//            
-//        } catch (ParsingException e) {
-//            LOGGER.log(Level.SEVERE, null, exception);
-//            Assert.fail("TestTwissProbe#testArchiveLoad() - unable to parse file " + STR_FILE_LOAD);
-//            return;
-//            
-//        }
     }
 
     /**
@@ -245,54 +205,6 @@ public class TestTwissProbe {
      */
     @Test
     public void testArchiveSaveRestore() {
-//        
-//        TwissProbe probeInit = TestTwissProbe.createTestProbe();
-//        TwissProbe probeRest;
-//
-//        // Save probe to file then recover it
-//        try {
-//            ProbeXmlWriter.writeXml(probeInit, TestTwissProbe.STR_FILE_SAVELOAD);
-//
-//            probeRest = (TwissProbe)ProbeXmlParser.parse(TestTwissProbe.STR_FILE_SAVELOAD);
-//            
-//        } catch (IOException e) {
-//            LOGGER.log(Level.SEVERE, null, exception);
-//            Assert.fail("TestTwissProbe#testArchiveSaveRestore() - unable to save probe to " + STR_FILE_SAVELOAD);
-//            return;
-//
-//        } catch (ParsingException e) {
-//            LOGGER.log(Level.SEVERE, null, exception);
-//            Assert.fail("TestTwissProbe#testArchiveSaveRestore() - unable to parse file " + STR_FILE_SAVELOAD);
-//            return;
-//            
-//        }
-//        
-//        // Check values of the algorithm
-//        IAlgorithm alg = probeRest.getAlgorithm();
-//        if (!(alg instanceof TwissTracker) )    {
-//            Assert.fail("TestTestProbe#testArchiveSaveRestore() - algorithm type failure " + alg.getType());
-//            return;
-//        }
-//        TwissTracker    algTwiss = (TwissTracker)alg;
-//        Assert.assertEquals(TestTwissProbe.ALG_STEPSIZE, algTwiss.getStepSize(), 0.0);
-//        Assert.assertEquals(TestTwissProbe.ALG_DEBUGMODE, algTwiss.getDebugMode());
-//        Assert.assertEquals(TestTwissProbe.ALG_EMITGROWTH, algTwiss.getEmittanceGrowthFlag());
-//        
-//        // Check the values of the probe
-//        Assert.assertEquals(TestTwissProbe.PROBE_S, probeRest.getPosition(), 0.0);
-//        Assert.assertEquals(TestTwissProbe.PROBE_W, probeRest.getKineticEnergy(), 0.0);
-//        Assert.assertEquals(TestTwissProbe.BUNCH_CURRENT, probeRest.getBeamCurrent(), 0.0);
-//        Assert.assertEquals(TestTwissProbe.BUNCH_FREQ, probeRest.getBunchFrequency(), 0.0);
-//        Assert.assertEquals(TestTwissProbe.STATE_ANGLE, probeRest.getBetatronPhase().getz(), 0.0);
-//        Assert.assertEquals(TestTwissProbe.TWISS_X.getAlpha(), probeRest.getTwiss(IND_3D.X).getAlpha(), 0.0);
-//        Assert.assertEquals(TestTwissProbe.TWISS_X.getBeta(), probeRest.getTwiss(IND_3D.X).getBeta(), 0.0);
-//        Assert.assertEquals(TestTwissProbe.TWISS_X.getEmittance(), probeRest.getTwiss(IND_3D.X).getEmittance(), 0.0);
-//        Assert.assertEquals(TestTwissProbe.TWISS_Y.getAlpha(), probeRest.getTwiss(IND_3D.Y).getAlpha(), 0.0);
-//        Assert.assertEquals(TestTwissProbe.TWISS_Y.getBeta(), probeRest.getTwiss(IND_3D.Y).getBeta(), 0.0);
-//        Assert.assertEquals(TestTwissProbe.TWISS_Y.getEmittance(), probeRest.getTwiss(IND_3D.Y).getEmittance(), 0.0);
-//        Assert.assertEquals(TestTwissProbe.TWISS_Z.getAlpha(), probeRest.getTwiss(IND_3D.Z).getAlpha(), 0.0);
-//        Assert.assertEquals(TestTwissProbe.TWISS_Z.getBeta(), probeRest.getTwiss(IND_3D.Z).getBeta(), 0.0);
-//        Assert.assertEquals(TestTwissProbe.TWISS_Z.getEmittance(), probeRest.getTwiss(IND_3D.Z).getEmittance(), 0.0);
     }
 
 }

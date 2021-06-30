@@ -389,7 +389,6 @@ public class IdealMagDipoleFace2 extends ThinElectromagnet {
             h = this.getK0();
         }
 
-        // double q = probe.getSpeciesCharge();
         // The fringe field angle from the extended field:
         double dblAngFace = this.getPoleFaceAngle();
         double sin = Math.sin(dblAngFace);
@@ -401,7 +400,6 @@ public class IdealMagDipoleFace2 extends ThinElectromagnet {
         }
 
         // Compute the transfer matrix components
-//        double      hStar = h * q / Math.abs(q);
         double hStar = h;
         PhaseMatrix matPhi = PhaseMatrix.identity();
 

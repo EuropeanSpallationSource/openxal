@@ -291,9 +291,6 @@ public class CovarianceMatrix extends PhaseMatrix {
      */
     public CovarianceMatrix(PhaseMatrix matInit) throws IllegalArgumentException {
         super(matInit);
-
-//        if (!this.checkSymmetry(this))
-//            throw new IllegalArgumentException("CovarianceMatrix(PhaseMatrix) - argument not symmetric.");
     }
 
     /**
@@ -311,8 +308,6 @@ public class CovarianceMatrix extends PhaseMatrix {
             throws IllegalArgumentException, NumberFormatException {
         super(strTokens);
 
-//        if (!this.checkSymmetry(this))
-//            throw new IllegalArgumentException("CovarianceMatrix(PhaseMatrix) - argument not symmetric.");
         if (!this.checkSymmetryToSigDigits(this, CNT_SYMMETRY_DIGITS)) {
             throw new IllegalArgumentException("CovarianceMatrix(String) - argument not symmetric.");
         }
@@ -640,7 +635,6 @@ public class CovarianceMatrix extends PhaseMatrix {
      * @author C.K. Allen
      */
     public double[] computeRmsEmittances() {
-        //        PhaseMatrix matSig = this.phaseCorrelation();
         CovarianceMatrix matSig = this.computeCentralCovariance();
 
         double ex_2
@@ -677,7 +671,6 @@ public class CovarianceMatrix extends PhaseMatrix {
      * parameters in z plane
      */
     public Twiss[] computeTwiss() {
-        //        return twissParameters(this.phaseCorrelation());
         CovarianceMatrix matSig = this.computeCentralCovariance();
 
         // array of rms emittance values
@@ -814,33 +807,6 @@ public class CovarianceMatrix extends PhaseMatrix {
         return true;
     }
 
-//    private double  enforceSymmetry() {
-//        
-//        for (int i=0; i<INT_SIZE; i++)
-//            for (int j=i+1; j<INT_SIZE; j++) {
-//                double  dblValUp = this.getElem(i, j);
-//                double  dblValDn = this.getElem(j, i);
-//                
-//                double  dblAvg = (dblValUp + dblValDn)/2.0;
-//                Double  dblErr = (dblValUp - dblValDn)/dblAvg;
-//                
-//                if (dblErr.isInfinite())
-//            }
-//        
-//    }
-//	/**
-//     * Handles object creation required by the base class. 
-//	 *
-//	 * @see xal.tools.beam.PhaseMatrix#newInstance()
-//	 *
-//	 * @author Ivo List
-//	 * @author Christopher K. Allen
-//	 * @since  Jun 17, 2014
-//	 */
-//	@Override
-//	protected PhaseMatrix newInstance() {
-//		return new PhaseMatrix();
-//	}
     /**
      * Handles object creation required by the base class.
      *

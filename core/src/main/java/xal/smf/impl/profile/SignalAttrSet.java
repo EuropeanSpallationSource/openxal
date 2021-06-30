@@ -30,115 +30,6 @@ import xal.smf.scada.ScadaFieldDescriptor;
  */
 public abstract class SignalAttrSet implements DataListener {
 
-
-    /*
-     * Global Methods
-     */
-    //        /**
-    //         * Creates a new <code>SignalAttrs</code> object according to the information
-    //         * annotated in the given class type.  The new object is created for the specified
-    //         * profile plane (type <code>{@link WireScanner2.ANGLE}</code>) and the information
-    //         * for that particular plane is taken from the set of annotations.  The annotations
-    //         * contain the channel handles needed to create a <code>SignalAttrs</code> object. 
-    //         * 
-    //         * @param enmAng        profile plane
-    //         * @param clsAttrSet    class type of the signal attribute set containing proper annotations
-    //         * 
-    //         * @return  new <code>SignalAttrs</code> object build from the information 
-    //         *          annotated in the given class
-    //         *
-    //         * @throws ScadaAnnotationException the <code>ADaqWire.SgnlAttrs</code> annotations are incomplete
-    //         *
-    //         * @author Christopher K. Allen
-    //         * @since  Oct 4, 2011
-    //         */
-    //        public static SignalAttrs createSignalAttrs(ANGLE enmAng, Class<? extends SignalAttrSet> clsAttrSet) 
-    //            throws ScadaAnnotationException
-    //        {
-    //         
-    //            if (  ! clsAttrSet.isAnnotationPresent(ADaqWire.SgnlAttrs.Hor.class) 
-    //                    || ! clsAttrSet.isAnnotationPresent(ADaqWire.SgnlAttrs.Ver.class) 
-    //                    || ! clsAttrSet.isAnnotationPresent(ADaqWire.SgnlAttrs.Dia.class)
-    //                 )
-    //                     throw new ScadaAnnotationException("The 'ADaqWire.SgnlAttrs' annotations are incomplete.");
-    //
-    //            switch (enmAng) {
-    //
-    //            case HOR: {
-    //                ADaqWire.SgnlAttrs.Hor annHor = clsAttrSet.getAnnotation(ADaqWire.SgnlAttrs.Hor.class);
-    //
-    //                String  hndAmp  = annHor.hndAmpRb();
-    //                String  hndBase = annHor.hndOffsetRb();
-    //                String  hndArea = annHor.hndAreaRb();
-    //                String  hndMean = annHor.hndMeanRb();
-    //                String  hndStd  = annHor.hndStdevRb();
-    //
-    //                return createSignalAttrs(enmAng, hndAmp, hndBase, hndArea, hndMean, hndStd);
-    //                }
-    //
-    //            case VER: {
-    //                ADaqWire.SgnlAttrs.Ver annVer = clsAttrSet.getAnnotation(ADaqWire.SgnlAttrs.Ver.class);
-    //
-    //                String  hndAmp  = annVer.hndAmpRb();
-    //                String  hndBase = annVer.hndOffsetRb();
-    //                String  hndArea = annVer.hndAreaRb();
-    //                String  hndMean = annVer.hndMeanRb();
-    //                String  hndStd  = annVer.hndStdevRb();
-    //
-    //                return createSignalAttrs(enmAng, hndAmp, hndBase, hndArea, hndMean, hndStd);
-    //                }
-    //
-    //            case DIA: {
-    //                ADaqWire.SgnlAttrs.Dia annDia = clsAttrSet.getAnnotation(ADaqWire.SgnlAttrs.Dia.class);
-    //
-    //                String  hndAmp  = annDia.hndAmpRb();
-    //                String  hndBase = annDia.hndOffsetRb();
-    //                String  hndArea = annDia.hndAreaRb();
-    //                String  hndMean = annDia.hndMeanRb();
-    //                String  hndStd  = annDia.hndStdevRb();
-    //
-    //                return createSignalAttrs(enmAng, hndAmp, hndBase, hndArea, hndMean, hndStd);
-    //                }
-    //            
-    //            default:
-    //                return null;
-    //            }
-    //            
-    //        }
-    //        
-    //        
-    //        /**
-    //         * Creates a new <code>SignalAttrs</code> object from the given channel handles and the
-    //         * given profile plane.  It is assumed that all PV types are <code>double</code> and that
-    //         * the PV is read only.
-    //         *
-    //         * @param enmAng    the profile plane of the signal attributes.
-    //         * @param hndAmp    channel handle of the signal <em>amplitude</em> attribute
-    //         * @param hndBase   channel handle of the signal <em>offset</em> or <em>baseline</em> attribute
-    //         * @param hndArea   channel handle of the signal <em>area</em> or <em>integral</em> attribute
-    //         * @param hndMean   channel handle of the signal <em>mean value</em> attribute
-    //         * @param hndStd    channel handle of the signal <em>standard deviation</code> attribute
-    //         * 
-    //         * @return  new <code>SignalAttrs</code> object built from the above information
-    //         *
-    //         * @author Christopher K. Allen
-    //         * @since  Oct 4, 2011
-    //         */
-    //        public static SignalAttrs   createSignalAttrs(ANGLE enmAng, String hndAmp, String hndBase, String hndArea, String hndMean, String hndStd) {
-    //
-    //            ScadaFieldDescriptor    sfdAmp  = new ScadaFieldDescriptor(SignalAttrs.ATTRS.AMP.getFieldName(), double.class, hndAmp);
-    //            ScadaFieldDescriptor    sfdBase = new ScadaFieldDescriptor(SignalAttrs.ATTRS.OFFSET.getFieldName(), double.class, hndBase); 
-    //            ScadaFieldDescriptor    sfdArea = new ScadaFieldDescriptor(SignalAttrs.ATTRS.AREA.getFieldName(), double.class, hndArea);
-    //            ScadaFieldDescriptor    sfdMean = new ScadaFieldDescriptor(SignalAttrs.ATTRS.MEAN.getFieldName(), double.class, hndMean);
-    //            ScadaFieldDescriptor    sfdStd  = new ScadaFieldDescriptor(SignalAttrs.ATTRS.STDEV.getFieldName(), double.class, hndStd);
-    //            
-    //            ScadaFieldDescriptor[]  arrSfd = { sfdAmp, sfdBase, sfdArea, sfdMean, sfdStd };
-    //            
-    //            SignalAttrs     saResult = new SignalAttrs(enmAng.getLabel(), arrSfd);
-    //            
-    //            return saResult;
-    //        }
-
     /*
      * Instance Attributes
      */
@@ -157,40 +48,6 @@ public abstract class SignalAttrSet implements DataListener {
      */
     public SignalAttrs dia;
 
-
-    /*
-     * Operations
-     */
-    //        /**
-    //         * Returns the signal properties data structure
-    //         * (i.e., <code>ProfileAttrs</code> object) corresponding
-    //         * to the given projection angle.
-    //         *
-    //         * @param ang   projection angle
-    //         * 
-    //         * @return      profile signal properties for the given projection angle
-    //         * 
-    //         * @since  Apr 23, 2010
-    //         * @author Christopher K. Allen
-    //         */
-    //        public SignalAttrs     getSignalAttrs(ANGLE ang) {
-    //
-    //            switch (ang) {
-    //
-    //            case HOR:
-    //                return hor;
-    //
-    //            case VER:
-    //                return ver;
-    //
-    //            case DIA:
-    //                return dia;
-    //            }
-    //
-    //            // This shouldn't happen
-    //            return null;
-    //        }
-    //
     /*
      * Operations
      */
@@ -379,9 +236,6 @@ public abstract class SignalAttrSet implements DataListener {
             attr.update(dapt);
         }
 
-//        hor.update(daptSgnl);
-//        ver.update(daptSgnl);
-//        dia.update(daptSgnl);
     }
 
     /**
@@ -405,11 +259,6 @@ public abstract class SignalAttrSet implements DataListener {
             attr.write(dapt);
         }
 
-//        DataAdaptor daptSig = adaptor.createChild( this.dataLabel() );
-//
-//        hor.write(daptSig);
-//        ver.write(daptSig);
-//        dia.write(daptSig);
     }
 
 

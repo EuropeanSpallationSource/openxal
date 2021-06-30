@@ -115,14 +115,12 @@ public class TestCalculationsOnRings {
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
 
-//        ResourceManager.clearAllFileLocations();
         try {
 
             File fileOutput = xal.test.ResourceManager.getOutputFile(TestCalculationsOnRings.class, STR_OUTPUT);
             OWTR_OUTPUT = new FileWriter(fileOutput);
 
             ACCEL_TEST = ResourceManager.getTestAccelerator();
-//            ACCEL_TEST = XMLDataManager.loadDefaultAccelerator();
 
             SEQ_TEST = ACCEL_TEST.findSequence(STR_SEQ_ID);
             MODEL_TEST = Scenario.newScenarioFor(SEQ_TEST);
@@ -136,9 +134,6 @@ public class TestCalculationsOnRings {
             MODEL_TEST.resync();
             MODEL_TEST.run();
 
-//            LOGGER.log(Level.INFO, "\nParticleProbe Trajectory");
-//            Trajectory<ParticleProbeState> trjPart = (Trajectory<ParticleProbeState>) MODEL_TEST.getTrajectory();
-//            LOGGER.log(Level.INFO, trjPart);
             // Create and initialize transfer map probe
             TransferMapTracker algXferMap = AlgorithmFactory.createTransferMapTracker(SEQ_TEST);
             PROBE_XFER_TEST = ProbeFactory.getTransferMapProbe(SEQ_TEST, algXferMap);
@@ -147,9 +142,6 @@ public class TestCalculationsOnRings {
             MODEL_TEST.resync();
             MODEL_TEST.run();
 
-//            LOGGER.log(Level.INFO, "\nTransferMap Trajectory");
-//            Trajectory<TransferMapState> trjTrnsMap = (Trajectory<TransferMapState>) MODEL_TEST.getTrajectory();
-//            LOGGER.log(Level.INFO, trjTrnsMap);
             // Create and initialize the envelope probe
             EnvTrackerAdapt algEnv = AlgorithmFactory.createEnvTrackerAdapt(SEQ_TEST);
             PROBE_ENV_TEST = ProbeFactory.getEnvelopeProbe(SEQ_TEST, algEnv);
@@ -158,9 +150,6 @@ public class TestCalculationsOnRings {
             MODEL_TEST.resync();
             MODEL_TEST.run();
 
-//            LOGGER.log(Level.INFO, "\nEnvelopeProbe Trajectory");
-//            Trajectory<EnvelopeProbeState> trjEnv = (Trajectory<EnvelopeProbeState>) MODEL_TEST.getTrajectory();
-//            LOGGER.log(Level.INFO, trjEnv);
         } catch (IOException | InstantiationException | ModelException e) {
             LOGGER.log(Level.SEVERE, null, e);
             System.err.println("Unable to initial the static test resources");
@@ -364,11 +353,6 @@ public class TestCalculationsOnRings {
         OWTR_OUTPUT.write(" full tunes: " + vecFullTunes.toString());
         OWTR_OUTPUT.write("\n");
 
-//        OWTR_OUTPUT.write("\nRing Computation: computeFullTunes via integration");
-//        OWTR_OUTPUT.write("\n");
-//        vecFullTunes = this.calXferRing.computeFullTunes_integration();
-//        OWTR_OUTPUT.write(" full tunes: " + vecFullTunes.toString());
-//        OWTR_OUTPUT.write("\n");
 //        
         OWTR_OUTPUT.write("\n");
     }

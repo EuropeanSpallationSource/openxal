@@ -79,9 +79,7 @@ public class TestLattice {
     /**
      * Accelerator sequence used for testing
      */
-//  public static final String     STR_ACCL_SEQ_ID = "HEBT2";
     public static final String STR_ACCL_SEQ_ID = "SCLMed";
-//  public static final String     STR_ACCL_SEQ_ID = "CCL1";
 
     public static final String STR_DH1_ID = "HEBT_Mag:DH11";
 
@@ -143,7 +141,6 @@ public class TestLattice {
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         try {
-//            ACCEL_TEST = XMLDataManager.loadDefaultAccelerator();
             accelTest = ResourceManager.getTestAccelerator();
             seqTest = accelTest.getSequence(STR_ACCL_SEQ_ID);
             modelTest = Scenario.newScenarioFor(seqTest);

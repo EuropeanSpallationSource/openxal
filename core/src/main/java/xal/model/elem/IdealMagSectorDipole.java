@@ -298,7 +298,6 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
             h = 1.0 / R0;
         }
 
-        // in ThickDipole double h = 0.2998e9 * B / (Etotal * beta *charge);
         //hs calculate hrho
         double bPathFlag = this.getFieldPathFlag();
 
@@ -367,7 +366,6 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
 
             dx = R0 * (1.0 - Cb) / (1.0 - n0);
             dxp = Sb * h;
-            //was default            dz  = (dL - Sb)/(1.0 - n0);
             //from ThickDipole and Trace3D, 31 Jan 07 Sako
             dz = (dL * beta * beta - Sb) / (1 - n0) - dL * (1 - 1 / (1 - n0)) / (gamma * gamma);
 
@@ -381,16 +379,11 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
             double q = kb * dL;
             // phase advance squared
             double q2 = q * q;
-
-            //was wrong dx  = R0*0.5*a2*( 1.0 + (q2/12.0)*(-1.0 + q2/3.0)); (3.0 should be 30)
             dx = R0 * 0.5 * a2 * (1 - q2 / 12 + q2 * q2 / 360);
             //ok
             dxp = a * (1.0 + (q2 / 6.0) * (-1.0 + q2 / 20.0));
-            //dz  = dL*a2*(1.0/6.0 + q2*(-1.0/120 + q2/5040.0)); was default
-            //dz  = dL*a2/q2*(beta*beta-1+q2/6.0 - q2*q2/120 + q2*q2*q2/5040)-dL/gamma/gamma*(1-a2/q2);
             //a2 therms cancel out (above formula diverce when q2=0)
             dz = dL * a2 * (1 / 6 - q2 / 120 + q2 * q2 / 5040) - dL / gamma / gamma;
-
         }
 
         // Build the full transfer matrix 
@@ -476,7 +469,6 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
         double h = c * B / (Etotal * beta * charge);
         LOGGER.log(Level.INFO, "h, hrho = {0} {1}", new Object[]{h, hrho});
 
-        //this was for old RDB double h = 0.2998e9 * B / (Etotal * beta *Math.abs(charge)); 
         double s = probe.getPosition();
 
         if (bPathFlag == 1.) {
@@ -486,7 +478,6 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
 
         if (h != 0.) {
             // transform to transport notation - simpler for coding
-            //nQ = -getKQuad() / (h * h);
             nQ = getFieldIndex();
         }
 
@@ -498,11 +489,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
         double ky = Math.sqrt(Math.abs(nQ)) * h;
 
         // Compute the transfer matrix components
-        double[][] arrB
-                = {{Math.cos(kx * dL), Math.sin(kx * dL) / kx}, {
-            -Math.sin(kx * dL) * kx, Math.cos(kx * dL)
-        }
-                };
+        double[][] arrB = {{Math.cos(kx * dL), Math.sin(kx * dL) / kx}, {-Math.sin(kx * dL) * kx, Math.cos(kx * dL)}};
 
         // Build the diople body tranfer matrix
         PhaseMatrix matBody = PhaseMatrix.identity();
@@ -547,13 +534,6 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
         return new PhaseMap(matBody);
     }
 
-
-    /*
-     * Internal Support
-     */
-    /*
-     *  Testing and Debugging
-     */
     /**
      * Dump current state and content to output stream.
      *

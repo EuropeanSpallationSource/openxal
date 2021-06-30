@@ -359,7 +359,6 @@ public class IdealRfGap extends ThinElement implements IRfGap {
         double Er = probe.getSpeciesRestEnergy();
         double Wi = probe.getKineticEnergy();
         double bi = probe.getBeta();
-//		double gi = probe.getGamma();
         double dW = this.energyGain(probe);
 
         // Final energy parameters
@@ -410,7 +409,6 @@ public class IdealRfGap extends ThinElement implements IRfGap {
         // Initial energy parameters
         double Er = probe.getSpeciesRestEnergy();
         double bi = probe.getBeta();
-//		double gi = probe.getGamma();		
         double Wi = probe.getKineticEnergy();
 
         double phi0 = 0.;
@@ -427,7 +425,6 @@ public class IdealRfGap extends ThinElement implements IRfGap {
             int nLabmda = (int) Math.round(2 * structureMode * driftTime * getFrequency());
             structurePhase = structurePhase + Math.PI * nLabmda;
             phi0 = phi0 + structurePhase;
-            //phi0 = Math.IEEEremainder(phi0, (2. * Math.PI * (1.0 - structureMode / 2.0)));
             setPhase(phi0);
             // for first gap use input for phase at the gap center
         } else {
@@ -450,7 +447,6 @@ public class IdealRfGap extends ThinElement implements IRfGap {
         double stf = SFit.evaluateAt(bi);
         double stf_prime = 0.01 * SPrimeFit.evaluateAt(bi);
         double freq = getFrequency();
-//		double phi_gap = phi0;
         double dE_gap = Q * EL * (ttf * Math.cos(phi0) + stf * Math.sin(phi0)) / 2.0;
         double b_gap0 = Math.sqrt(1. - Er * Er / ((Er + Wi + dE_gap) * (Er + Wi + dE_gap)));
         double k_gap0 = 2 * Math.PI * freq / (b_gap0 * IElement.LIGHT_SPEED);
@@ -465,13 +461,11 @@ public class IdealRfGap extends ThinElement implements IRfGap {
             dE_gap = Q * EL * ((ttf + ttf_prime * (k_gap - k_gap0)) * Math.cos(phi0 + dlt_phi) + (stf + stf_prime * (k_gap - k_gap0)) * Math.sin(phi0 + dlt_phi)) / 2.0;
             dlt_phi = (Q * EL / (Er * gamma_gap * gamma_gap * gamma_gap * b_gap * b_gap)) * k_gap * (ttf_prime * Math.sin(phi0 + dlt_phi) - stf_prime * Math.cos(phi0 + dlt_phi)) / 2.0;
         }
-        //LOGGER.log(Level.INFO, "Stop "+this.getId() + "dlt_phi ="+(180*dlt_phi/Math.PI)+" bi="+bi+" b_gap="+b_gap+" dE_gap="+dE_gap+" Wi="+Wi);
         //the energy gaine and phase are known
         //now we calculate the total energy gain and phase
         theEnergyGain = Q * EL * ((ttf + ttf_prime * (k_gap - k_gap0)) * Math.cos(phi0 + dlt_phi));
         deltaPhaseCorrection = (Q * EL / (Er * gamma_gap * gamma_gap * gamma_gap * b_gap * b_gap)) * k_gap * (ttf_prime * Math.sin(phi0 + dlt_phi));
 
-        //LOGGER.log(Level.INFO, this.getId() + " " + (Math.IEEEremainder(phi0 * 57.295779, 360.)) + "  " + Wi + "  " + theEnergyGain);
     }
 
     /**
@@ -486,19 +480,15 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     @Override
     protected PhaseMap transferMap(IProbe probe) throws ModelException {
 
-//    	LOGGER.log(Level.INFO, "This is " + this.getId());
-//    	LOGGER.log(Level.INFO, "E0 is   " + this.getE0());
-//    	LOGGER.log(Level.INFO, "ETL is  " + this.getETL());
-//    	LOGGER.log(Level.INFO, "");
         // Get probe parameters at initial energy
         double Er = probe.getSpeciesRestEnergy();
         double Wi = probe.getKineticEnergy();
         double bi = probe.getBeta();
         double gi = probe.getGamma();
 
-// Determine the current energy gain and focusing constants for the gap
+        // Determine the current energy gain and focusing constants for the gap
         // the following section is to calculate the phase of the beam at each gap, rather than use hardwired phases.
-// update the energy gain first:
+        // update the energy gain first:
         if (probe.getAlgorithm().getRfGapPhaseCalculation()) {
             compEnergyGain(probe);
         } else {
@@ -516,16 +506,12 @@ public class IdealRfGap extends ThinElement implements IRfGap {
         double bf = Math.sqrt(1.0 - 1.0 / (gf * gf));
 
         // Compute average energy parameters
-//		double Wb = (Wf + Wi) / 2.0;
-//		double gb = Wb / Er + 1.0;
-//        double bg = Math.sqrt(1.0 - 1.0/(gb*gb));
         // Compute component block matrices then full transfer matrix
         double arrTranX[][] = new double[][]{{1.0, 0.0}, {kt * coeffX / (bf * gf), bi * gi / (bf * gf)}};
         double arrTranY[][] = new double[][]{{1.0, 0.0}, {kt * coeffY / (bf * gf), bi * gi / (bf * gf)}};
 
         // CKA - Corrected 7/14/2010
         //  Additional factor gbar^2 in the longitudinal focusing term 
-//		double arrLong[][] = new double[][]{{1.0, 0.0}, {(kz / (bf * gf)) * gb * gb / (gf * gf), gi * gi * gi * bi / (gf * gf * gf * bf)}};
         double arrLong[][] = new double[][]{{1.0, 0.0}, {kz / (bf * gf * gf * gf), gi * gi * gi * bi / (gf * gf * gf * bf)}};
 
         PhaseMatrix matPhi = new PhaseMatrix();
@@ -537,10 +523,6 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 
         // Do the phase update if this is desired:
         // do it here to resuse the bi, bf, etc. factors
-//	if(probe.getAlgorithm().useRfGapPhaseCalculation()) advancePhase(probe);
-//        PrintWriter os = new PrintWriter(System.out);
-//        matPhi.print(os);
-//        os.close();
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors
         matPhi = applyErrors(matPhi, 0.0);
@@ -560,9 +542,6 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      * @return energy gain for this probe (<strong>in electron-volts</strong> )
      */
     public double simpleEnergyGain(IProbe probe) {
-//
-//        LOGGER.log(Level.INFO, "simpleEnergyGain()");
-//
         double ETL = this.getETL();
         double Q = Math.abs(probe.getSpeciesCharge());
         double phi = this.getPhase();
@@ -602,7 +581,6 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      */
     public double compTransFocusing(IProbe probe) {
 
-//        double  q = IElement.UnitCharge;
         double c = IElement.LIGHT_SPEED;
 
         double Q = Math.abs(probe.getSpeciesCharge());
@@ -618,7 +596,6 @@ public class IdealRfGap extends ThinElement implements IRfGap {
         double phi = this.getPhase();
         double f = this.getFrequency();
 
-//        double   kr = Math.PI*Q*ETL*f*Math.sin(-phi)/(q*c*Er*bgbar*bgbar);
         double kr = Math.PI * Q * ETL * f * Math.sin(-phi) / (c * Er * bgbar * bgbar);
 
         return kr;

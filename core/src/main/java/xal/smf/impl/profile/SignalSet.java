@@ -109,9 +109,6 @@ public abstract class SignalSet implements DataListener {
                     if (sfd != null) {
                         lstFds.add(sfd);
                     }
-
-//                } catch (BadStructException e) {
-//                    throw new ScadaAnnotationException("Missing field from annotation " + sig.getClass().getName(), e);
                 } catch (IllegalArgumentException e) {
                     throw new ScadaAnnotationException("Missing method " + fld + " in annotation " + sig.getClass().getName(), e);
 
@@ -200,26 +197,6 @@ public abstract class SignalSet implements DataListener {
         }
     }
 
-//    /**
-//     * Chooses the appropriate signal for this signal constant
-//     * from the given signal set.
-//     * 
-//     * @param setSignals    set of signals to choose from
-//     * 
-//     * @return              the signal corresponding to this signal constant
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Oct 14, 2014
-//     */
-//    public Signal   getSignal(Signal.WIRE enmWire) {
-//        switch (enmWire) {
-//        case HOR: return this.hor; 
-//        case VER: return this.ver;
-//        case DIA: return this.dia;
-//        default: return null;
-//        }
-//    }
-//    
     /**
      * Sets the signal for the given measurement angle to the given signal
      * object.
@@ -372,9 +349,6 @@ public abstract class SignalSet implements DataListener {
             sgnl.update(dapt);
         }
 
-//        hor.update(daptSgnls);
-//        ver.update(daptSgnls);
-//        dia.update(daptSgnls);
     }
 
     /**
@@ -444,9 +418,6 @@ public abstract class SignalSet implements DataListener {
         //  "blank" data structure and there is nothing to do.  
         if (!this.getClass().isAnnotationPresent(ASignal.ASet.class)) {
 
-//            this.hor = new Signal(ProfileDevice.ANGLE.HOR);
-//            this.ver = new Signal(ProfileDevice.ANGLE.VER);
-//            this.dia = new Signal(ProfileDevice.ANGLE.DIA);
             this.hor = new Signal();
             this.ver = new Signal();
             this.dia = new Signal();

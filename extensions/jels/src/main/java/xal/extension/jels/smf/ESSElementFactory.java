@@ -105,8 +105,6 @@ public final class ESSElementFactory {
         // calculations
         double len = Math.abs(rho * alpha * Math.PI / 180.0);
 
-//        Field not used in computations.
-//        double B0 = k / rho * Math.signum(alpha);
         Bend bend = new Bend(name, orientation);
         if (ps != null) {
             bend.setMainSupplyId(ps.getId());
@@ -120,7 +118,6 @@ public final class ESSElementFactory {
         dipoleBucket.setBendAngle(alpha);
         dipoleBucket.setPathLength(len);
         dipoleBucket.setDipoleExitRotAngle(-exitAngle);
-//        bend.setDfltField(B0);
         dipoleBucket.setDipoleQuadComponent(quadComp);
 
         bend.setGap(gap);

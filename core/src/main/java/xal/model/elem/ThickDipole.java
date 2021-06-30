@@ -335,11 +335,9 @@ public class ThickDipole extends ThickElectromagnet {
 
         double h = 0.2998e9 * B / (Etotal * beta * charge);
 
-        //this was for old RDB double h = 0.2998e9 * B / (Etotal * beta *Math.abs(charge)); 
         //hs 
         LOGGER.log(Level.INFO, "h, hrho = " + h + " " + hrho);
 
-        
         if (bPathFlag == 1.) {
             //if fieldPathFlag=1, use hrho (calculated from rho) instead of h(calculated from p and B)
             h = hrho;
@@ -396,7 +394,6 @@ public class ThickDipole extends ThickElectromagnet {
         double h = 0.2998e9 * B / (Etotal * beta * charge);
         LOGGER.log(Level.INFO, "h, hrho = " + h + " " + hrho);
 
-        //this was for old RDB double h = 0.2998e9 * B / (Etotal * beta *Math.abs(charge)); 
         if (bPathFlag == 1.) {
             //if fieldPathFlag=1, use hrho (calculated from rho) instead of h(calculated from p and B)
             h = hrho;

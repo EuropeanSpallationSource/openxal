@@ -431,7 +431,6 @@ public class QuadTest extends SingleElementTest {
                 description = "misalignment & rotation";
                 probe = setupOpenXALProbe(3e6, frequency, current);
                 elementMapping = JElsElementMapping.getInstance();
-                //sequence = quad(70., -16., 15., 0., 0., 0., 0., 0., 1., 2., 0., 4., 3., 5.);
                 sequence = quad(70., -16., 15., 0., 0., 0., 0., 0., 1., 2., 0., 4., 3., 5.);
 
                 // TW transfer matrix

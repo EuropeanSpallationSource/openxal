@@ -95,10 +95,7 @@ public class XALSynopticPanel extends JPanel {
             XALSynopticPanel pane = new XALSynopticPanel();
             Accelerator acc = XMLDataManager.loadDefaultAccelerator();
 
-            //pane.setAcceleratorSequence(acc.getSequence("DTL1"));
             pane.setAcceleratorSequence(acc.getSequence("MEBT"));
-            //pane.setStartPosition(2.6);
-            //pane.setEndPosition(4.3);
 
             JFrame frame = new JFrame();
             frame.setSize(300, 200);
@@ -147,10 +144,6 @@ public class XALSynopticPanel extends JPanel {
      * @param seq
      */
     public void setAcceleratorSequence(AcceleratorSeq seq, double start, double end) {
-        /*if (seq == null) {
-			return;
-		}*/
-
         acceleratorSequence = seq;
 
         if (start < end) {
@@ -199,10 +192,6 @@ public class XALSynopticPanel extends JPanel {
 
         for (final AcceleratorNode el : list) {
             double pos = acceleratorSequence.getPosition(el);
-            //LOGGER.log(Level.INFO, pos + " \t" + (pos + el.getLength()) + " \t"
-            //    + el.getId() + " \t"
-            //    + el.getClass().getName().substring(el.getClass().getName()
-            //        .lastIndexOf('.') + 1));
 
             if (pos >= startPosition && pos <= endPosition) {
                 if (el instanceof Bend || el instanceof Quadrupole || el instanceof PermQuadrupole || el instanceof RfGap || el instanceof RfCavity) {
@@ -331,7 +320,6 @@ public class XALSynopticPanel extends JPanel {
             if (el instanceof Dipole) {
                 g.setColor(Color.yellow);
                 g.fillRect(ex, margin.top, l, height);
-                //LOGGER.log(Level.INFO, pos + " \t" + (pos + el.getLength()) + " \t" + ex + " \t" + l);
 
                 for (int i = ex - x; i < ex - x + l; i++) {
                     addLabel(i, name);
@@ -432,7 +420,7 @@ public class XALSynopticPanel extends JPanel {
      * @param insets
      */
     public void setMargin(Insets insets) {
-        //LOGGER.log(Level.INFO, insets);
+
         margin = insets;
         repaint();
     }
@@ -470,11 +458,9 @@ public class XALSynopticPanel extends JPanel {
             } else {
                 return labels[i_upper];
             }
-            //LOGGER.log(Level.INFO, i + " " + labels[i]);
+
         } else {
             return super.getToolTipText(event);
         }
     }
 }
-
-/* __oOo__ */

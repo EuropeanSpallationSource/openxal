@@ -234,7 +234,6 @@ public class RfGap extends AcceleratorNode {
      * @param cavAmp The amplitude of the first gap (kV/m)
      */
     public void setGapAmp(double cavAmp) {
-        //       	ampAvg = cavAmp *  bucRfGap.getAmpFactor();
     }
 
     /**
@@ -244,7 +243,6 @@ public class RfGap extends AcceleratorNode {
      * @param cavPhase The phase of the first gap (deg)
      */
     public void setGapPhase(double cavPhase) {
-//       	phaseAvg = cavPhase + bucRfGap.getPhaseFactor();
     }
 
     // the RfGapDataSource interface methods:
@@ -426,7 +424,6 @@ public class RfGap extends AcceleratorNode {
             RfCavity rfCav = (RfCavity) this.getParent();
             if (isEndCell()) {
                 return rfCav.getSTFPrimeFitEnd();
-                //return rfCav.getSTFPrimeFit();
             } else {
                 return rfCav.getSTFPrimeFit();
             }

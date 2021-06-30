@@ -179,7 +179,8 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
     }
 
     /**
-     * This is the design bending curvature <em>h</em> = 1/<em>R</em><sub>0</sub>
+     * This is the design bending curvature <em>h</em> =
+     * 1/<em>R</em><sub>0</sub>
      * where
      * <em>R</em><sub>0</sub> is the design bending radius.
      *
@@ -360,7 +361,8 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      *
      * @param probe probe object to be deflected
      *
-     * @return dipole path curvature for given probe (in <strong>1/meters</strong>)
+     * @return dipole path curvature for given probe (in
+     * <strong>1/meters</strong>)
      */
     public double compProbeCurvature(IProbe probe) {
 
@@ -375,7 +377,8 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <strong>meters</strong>
+     * @param dblLen length of subsection to propagate through
+     * <strong>meters</strong>
      *
      * @return the elapsed time through section<bold>Units: seconds</bold>
      */
@@ -407,10 +410,10 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      *
      * NOTE
      * <p>
-     * The <strong>arc length</strong> <em>dL</em> of the probe will probably be larger than
-     * the physical step length <em>h</em>. This is because the path length of the
-     * design trajectory is generally larger than the physical length (otherwise
-     * no bending would occur).
+     * The <strong>arc length</strong> <em>dL</em> of the probe will probably be
+     * larger than the physical step length <em>h</em>. This is because the path
+     * length of the design trajectory is generally larger than the physical
+     * length (otherwise no bending would occur).
      * </p>
      *
      * @param dblLen physical step length (meters)
@@ -498,7 +501,8 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * NOTE
      * <p>
      * This function is necessary since the space charge calculations step
-     * through the <strong>physical</strong> distance of the magnet, not the design path.
+     * through the <strong>physical</strong> distance of the magnet, not the
+     * design path.
      * </p>
      *
      * <p>

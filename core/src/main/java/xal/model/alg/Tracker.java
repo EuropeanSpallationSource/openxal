@@ -441,11 +441,11 @@ public abstract class Tracker implements IAlgorithm, IArchive {
 
         this.registerProbeType(clsProbeType);
     }
-    
+
     /**
      * Copy constructor for Tracker
      *
-     * @param       sourceTracker   Tracker that is being copied
+     * @param sourceTracker Tracker that is being copied
      */
     protected Tracker(Tracker sourceTracker) {
         this(sourceTracker.strType, sourceTracker.version, sourceTracker.probeType);

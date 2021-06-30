@@ -201,7 +201,6 @@ public class SolverLSM implements FitSolver {
             xArr[i][0] = z;
             yArr[i] = 1.0 + z + z * z + z * z * z;
             yErrArr[i] = 1.0;
-            //if(i%2 == 0) y_arr[i] += 1.0;
         }
 
         double[] a = new double[4];

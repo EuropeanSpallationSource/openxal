@@ -77,8 +77,6 @@ public class ImporterHelpers {
 
     public static void setupInitialParameters(EnvelopeProbe probe, double bunchFrequency, double beamCurrent, double kineticEnergy, PhaseVector vecCent, Twiss[] initialTwiss) {
         probe.setSpeciesCharge(1);
-        // More accurate value
-//        probe.setSpeciesRestEnergy(9.382720813E8);   
         // TraceWin value
         probe.setSpeciesRestEnergy(9.38272029E8);
         probe.setSpeciesName("PROTON");

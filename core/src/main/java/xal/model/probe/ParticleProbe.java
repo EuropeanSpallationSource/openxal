@@ -213,28 +213,6 @@ public class ParticleProbe extends Probe<ParticleProbeState> {
         return new ParticleProbeState();
     }
 
-//    /**
-//     * Capture the current probe state to the <code>ProbeState</code> argument.  Note
-//     * that the argument must be of the concrete type <code>ParticleProbeState</code>.
-//     * 
-//     * @param   state   <code>ProbeState</code> to receive this probe's state information
-//     * 
-//     * @exception IllegalArgumentException  argument is not of type <code>ParticleProbeState</code>
-//     */   
-//    @Override
-//    public void applyState(ParticleProbeState state) {
-//        
-//        // Check if state is the right type
-//        if (!(state instanceof ParticleProbeState))
-//            throw new IllegalArgumentException("invalid probe state");
-//        
-//        ParticleProbeState  pps = (ParticleProbeState)state;
-//        
-//        // Set the properties of this probe according to the probe state
-//        super.applyState(pps);
-//        this.setPhaseCoordinates( pps.getPhaseCoordinates() );
-//        this.setResponseMatrix( pps.getResponseMatrix() );
-//    }
     @Override
     protected ParticleProbeState readStateFrom(DataAdaptor container) throws DataFormatException {
         ParticleProbeState state = new ParticleProbeState();

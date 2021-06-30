@@ -284,21 +284,4 @@ public abstract class ThickElement extends Element {
 
         return 0.0;
     }
-
-    //    /**
-    //     *  <p>
-    //     *  Compute the transfer map for a subsection of this element whose length
-    //     *  is dblLen.  If dblLen is greater than or equal to the element's length,
-    //     *  return the transfer map for the full element.  Note that this may not be
-    //     *  very useful for an element with differential acceleration.
-    //     *
-    //     *  @param  probe   probe supplying parameters for the transfer matrix calculation
-    //     *  @param  dblLen  length of element subsection to compute transfer map for
-    //     * 
-    //     *  @return         the full tranfer map of this element
-    //     *
-    //     *  @exception  ModelException    exception occurred in subTransferMap() method
-    //     */
-    //    @Override
-    //    public abstract PhaseMap transferMap(IProbe probe, double dblLen) throws ModelException;
 }

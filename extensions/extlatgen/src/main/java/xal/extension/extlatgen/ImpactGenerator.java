@@ -196,7 +196,6 @@ public class ImpactGenerator {
         double momentum = RelativisticParameterConverter.computeMomentumFromEnergies(myProbe.getKineticEnergy(), myProbe.getSpeciesRestEnergy()) / 1.e9;
         LOGGER.log(Level.INFO, "momentum = {0}", momentum);
 
-        // Q = myProbe.getSpeciesCharge()/1.602e-19;
         Q = myProbe.getSpeciesCharge();
 
         // single CPU, single core
@@ -220,7 +219,6 @@ public class ImpactGenerator {
         // 
         impactWriter.write("\n");
 
-//		int driftCounter = 0;
         for (int i = 0; i < sequenceChain.size(); i++) {
             Lattice myLattice = createLattice(sequenceChain.get(i));
             int elementCount = myLattice.len();
@@ -240,7 +238,6 @@ public class ImpactGenerator {
                 // for regular drift space, diagnostic devices
                 if (elementType.equals("drift")) {
                     impactWriter.write(NUMBER_FORMAT.format(elementLength) + "\t4\t20\t" + DRIFT + "\t " + APER + "\t/\n");
-//					driftCounter++;
                     // for quads
                 } else if (elementType.equals("quadrupole") || elementType.equals("skewquadrupole")) {
                     final double field = getField(node, deviceDataSource);

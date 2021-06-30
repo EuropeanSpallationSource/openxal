@@ -504,7 +504,6 @@ public class RfFieldMap3DTest extends SingleElementTest {
                             putMap("rfm", ThinRfFieldMap.class);
                         }
                     };
-//                elementMapping = JElsElementMapping.getInstance();
                     sequence = spokeFieldMap(0.988, frequency * 1e-6, 0.974792, -1.10293, 0., 0., 0., 1 * Math.PI / 180., 0.);
 
                     // TW transfer matrix

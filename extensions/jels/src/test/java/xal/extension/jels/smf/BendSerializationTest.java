@@ -58,7 +58,6 @@ public class BendSerializationTest {
 
             AcceleratorNodeFactory factory = new AcceleratorNodeFactory();
             factory.registerNodeClass("D", null, Bend.class);
-//			factory.registerNodeClass("DH", null, Bend.class);
             AcceleratorNode node = factory.createNode(da);
             node.update(da);
 

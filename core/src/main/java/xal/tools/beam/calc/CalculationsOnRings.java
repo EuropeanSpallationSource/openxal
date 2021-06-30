@@ -305,9 +305,7 @@ public class CalculationsOnRings extends CalculationsOnMachines {
         // We sum up the partial phase advance from each trajectory state
         for (TransferMapState state : super.getTrajectory()) {
 
-//            String strElemId = state.getElementId();
             // Compute the full-turn map at this state location
-            //TransferMapState    tmsCurr = (TransferMapState)state;
             PhaseMatrix matFull = this.calculateFullLatticeMatrixAt(state);
 
             // For this state location, compute the matched twiss parameters and
@@ -421,9 +419,7 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      * takes phase coordinates from position <em>s</em> = 0 to position <em>s</i
      * = 0 going all the way around the ring. </p> <p> Collecting all of the
      * above, if
-     * <
-     * i
-     * >s</em><sub>2</sub> &lt; <em>s</em><sub>1</sub>
+     * <em>s</em><sub>2</sub> &lt; <em>s</em><sub>1</sub>
      * then we have a propagation through point <em>s</em> = 0 and we must
      * include the full turn matrix according to
      * <br>
@@ -523,11 +519,8 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      * when computing the transfer map. Recall that
      * <strong>T</strong><sub>0</sub> takes phase coordinates from position
      * <em>s</em> = 0 to position <em>s</i = 0 going all the way around the
-     * ring. </p> <p> Collecting all of the above, if < i
-     * >
-     * s
-     * </e
-     * m><sub>2</sub> &lt; <em>s</em><sub>1</sub>
+     * ring. </p> <p> Collecting all of the above, if <em>s</em>
+     * <sub>2</sub> &lt; <em>s</em><sub>1</sub>
      * then we have a propagation through point <em>s</em> = 0 and we must
      * include the full turn map according to
      * <br>

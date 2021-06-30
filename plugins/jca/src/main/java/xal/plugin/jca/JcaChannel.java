@@ -225,7 +225,6 @@ class JcaChannel extends Channel {
         // CA library is in memory and there are no more active channels
         if (CA_INIT == true) {
             CA_INIT = false;
-            //Ca.exit();
         }
     }
 

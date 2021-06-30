@@ -172,24 +172,6 @@ public class WireHarp extends ProfileDevice {
             return new DevStatus(smfHarp);
         }
 
-        //        /*
-        //         * DataAdaptor Interface
-        //         */
-        //
-        //        /**
-        //         * Returns the name of this class as the data label
-        //         *
-        //         * @see xal.tools.data.DataListener#dataLabel()
-        //         *
-        //         * @author Christopher K. Allen
-        //         * @since  Mar 20, 2014
-        //         */
-        //        @Override
-        //        public String dataLabel() {
-        //            return this.getClass().getCanonicalName();
-        //        }
-        //        
-
         /*
          * Status Parameters
          */
@@ -756,47 +738,6 @@ public class WireHarp extends ProfileDevice {
         )
         public int gainCmn;
 
-        //        /** 
-        //         * The (discrete) amplifier gain for for the horizontal profile
-        //         * channel.
-        //         * <br>
-        //         * &nbsp; &nbsp; Range = {0, 1, 2}  
-        //         */
-        //        @AScada.Field(
-        //                type    = int.class,
-        //                ctrl    = true,
-        //                hndRb   = "CfgGainHorRb",
-        //                hndSet  = "CfgGainHorSet"
-        //                )
-        //        public int      gainHor;
-        //        
-        //        /** 
-        //         * The (discrete) amplifier gain for for the vertical profile
-        //         * channel.
-        //         * <br>
-        //         * &nbsp; &nbsp; Range = {0, 1, 2}  
-        //         */
-        //        @AScada.Field(
-        //                type    = int.class,
-        //                ctrl    = true,
-        //                hndRb   = "CfgGainVerRb",
-        //                hndSet  = "CfgGainVerSet"
-        //                )
-        //        public int      gainVer;
-        //        
-        //        /** 
-        //         * The (discrete) amplifier gain for for the diagonal profile
-        //         * channel.
-        //         * <br>
-        //         * &nbsp; &nbsp; Range = {0, 1, 2}  
-        //         */
-        //        @AScada.Field(
-        //                type    = int.class,
-        //                ctrl    = true,
-        //                hndRb   = "CfgGainDiaRb",
-        //                hndSet  = "CfgGainDiaSet"
-        //                )
-        //        public int      gainDia;
         /**
          * The triggering delay, I think it is in micro-seconds. This is the
          * delay between the trigger event and the actual data acquisition.
@@ -1142,9 +1083,7 @@ public class WireHarp extends ProfileDevice {
         public DataRaw(WireHarp smfHarp) throws ConnectionException, GetException, ScadaAnnotationException, BadStructException {
             super(smfHarp);
 
-//            DaqConfig   cfgDaq = DaqConfig.acquire(smfHarp);
             WireHarp.klugeTheSampleCount(this);
-//            WireHarp.cleanTheDataSet(this, cfgDaq);
         }
     }
 
@@ -1265,9 +1204,7 @@ public class WireHarp extends ProfileDevice {
                 ConnectionException, GetException, BadStructException {
             super(smfHarp);
 
-//            DaqConfig cfgDaq = DaqConfig.acquire(smfHarp);
             WireHarp.klugeTheSampleCount(this);
-//            WireHarp.cleanTheDataSet(this, cfgDaq);
         }
     }
 
@@ -1441,10 +1378,6 @@ public class WireHarp extends ProfileDevice {
         // Issue command
         Channel channel = getAndConnectChannel(CMD.HANDLE_CMD);
         channel.putVal(cmd.getCode());
-
-        //        // Reset the on-board command buffer to avoid the IOC echo (a kluge)
-        //        Thread.sleep(INT_CMD_LATCY);
-        //        channel.putVal( CMD.NOOP.getCode() );
     }
 
     /**

@@ -65,7 +65,6 @@ public class IdealRfCavityDrift extends IdealDrift {
      */
     public IdealRfCavityDrift(String strId, double dblLen, double dblFreq, double dblModeConst) {
         super(STR_TYPEID, strId, dblLen);
-//        super(strId, dblLen);
 
         this.dblFreq = dblFreq;
         this.dblModeConst = dblModeConst;

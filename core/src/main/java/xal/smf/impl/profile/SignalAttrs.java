@@ -67,12 +67,6 @@ public class SignalAttrs extends ScadaRecord {
          */
         STDEV("stdev", "hndStdevRb");
 
-
-        /*
-         * Global Constants
-         */
-        //            /** The attribute tag identifying the wire from which the signal was taken */
-        //            public static final String      STR_TAG_WIRE_ID = "angle"; 
         /*
          * Global Operations
          */
@@ -115,9 +109,6 @@ public class SignalAttrs extends ScadaRecord {
                 LOGGER.log(Level.SEVERE, "Unable to extract property value " + this.mthAnn.getName() + " from " + annSig.getClass(), e);
             }
 
-            //                if ( strFldHnd.equals("") )
-            //                    throw new NoSuchFieldException("Unspecified channel handle for signal attribute " + strFldNm);
-            //
             return null;
         }
 

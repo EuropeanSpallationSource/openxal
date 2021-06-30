@@ -61,7 +61,6 @@ public class TestR2x2 {
     public void testZero() {
         R2x2 matTest = R2x2.newZero();
 
-//		fail("Not able to create a zero matrix");
     }
 
     /**
@@ -75,7 +74,6 @@ public class TestR2x2 {
 
         Assert.assertTrue(szMatrix == 2);
 
-//		LOGGER.log(Level.INFO, "\nTest matrix dynamic size = " + szMatrix);
     }
 
     @Test
@@ -87,8 +85,6 @@ public class TestR2x2 {
 
         Assert.assertTrue(matSum.isEquivalentTo(MAT_2));
 
-//	    LOGGER.log(Level.INFO, "\nThe matrix addition test");
-//	    LOGGER.log(Level.INFO,  matSum.toString() );
     }
 
     @Test
@@ -100,8 +96,6 @@ public class TestR2x2 {
 
         Assert.assertTrue(mat1.isEquivalentTo(MAT_2));
 
-//        LOGGER.log(Level.INFO, "\nThe matrix in place addition test");
-//        LOGGER.log(Level.INFO,  mat1.toString() );
     }
 
     @Test
@@ -113,8 +107,6 @@ public class TestR2x2 {
 
         Assert.assertTrue(matProd.isEquivalentTo(MAT_I));
 
-//        LOGGER.log(Level.INFO, "\nThe matrix multiplication test");
-//        LOGGER.log(Level.INFO,  matProd.toString() );
     }
 
     @Test
@@ -126,8 +118,6 @@ public class TestR2x2 {
 
         Assert.assertTrue(mat1.isEquivalentTo(MAT_I));
 
-//        LOGGER.log(Level.INFO, "\nThe matrix in place multiplication test");
-//        LOGGER.log(Level.INFO,  mat1.toString() );
     }
 
     @Test
@@ -136,10 +126,6 @@ public class TestR2x2 {
         double dblDetId = MAT_I.det();
         double dblDetTst2 = MAT_2.det();
 
-//        LOGGER.log(Level.INFO, "\nDeterminant Function");
-//        LOGGER.log(Level.INFO, "|I|  = " + dblDetId);
-//        LOGGER.log(Level.INFO, "|2I| = " + dblDetTst2);
-//        LOGGER.log(Level.INFO, "|J|  = " + dblDetSp2);
     }
 
     @Test
@@ -148,11 +134,6 @@ public class TestR2x2 {
         R2x2 matInv = MAT_J.inverse();
         R2x2 matCjt = MAT_J.conjugateTrans(MAT_R);
 
-//        LOGGER.log(Level.INFO, "\nMatrix Operations");
-//        LOGGER.log(Level.INFO, "Sp(2) matrix J = " + MAT_J);
-//        LOGGER.log(Level.INFO, "transpose of J = " + matTrn);
-//        LOGGER.log(Level.INFO, "inverse of J   = " + matInv);
-//        LOGGER.log(Level.INFO, "CT of J w/ Rot = " + matCjt);
     }
 
     @Test
@@ -162,11 +143,6 @@ public class TestR2x2 {
         double dblLinf = MAT_J.normInf();
         double dblFrob = MAT_J.normF();
 
-//        LOGGER.log(Level.INFO, "\nNorms of the Symplectic Matrix");
-//        LOGGER.log(Level.INFO, "||J||_1   = " + dblL1);
-//        LOGGER.log(Level.INFO, "||J||_2   = " + dblL2);
-//        LOGGER.log(Level.INFO, "||J||_inf = " + dblLinf);
-//        LOGGER.log(Level.INFO, "||J||_F   = " + dblFrob);
     }
 
     @Test

@@ -275,7 +275,6 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
 
             // Store the current probe state (for rollback)
             EnvelopeProbeState state0 = probe.cloneCurrentProbeState();
-            //ProbeState  state0 = probe.createProbeState();
 
             // Get half-step transfer matrix at current probe location
             PhaseMap mapElem0 = ifcElem.transferMap(probe, dblLen / 2.0);
@@ -492,7 +491,7 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         double dxp_2;
         // longitudinal divergence angle augmentation factor
         double dzp_2;
-    
+
         double Gt = this.compEmitGrowthFunction(PhasePlane.TRANSVERSE, phi_s, dphi);
         double kt = elemRfGap.compTransFocusing(probe);
         dxp_2 = kt * kt * Gt;
@@ -544,5 +543,4 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
             }
         }
     }
-
 }

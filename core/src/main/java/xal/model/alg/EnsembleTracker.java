@@ -126,21 +126,6 @@ public class EnsembleTracker extends Tracker {
         return (int) Math.ceil(elem.getLength() / getMaxStepSize());
     }
 
-//    /**
-//     * Returns the length in meters of the next element subsection to advance
-//     * the probe through.
-//     * 
-//     * This currently returns the full length of the element, should be changed
-//     * when the algorithm is fleshed out.
-//     * 
-//     * @param elem Element currently acting on probe
-//     * @param pos Position of Probe within elem starting from 0
-//     * 
-//     * @return double indicating size of next element subsection to advance probe through
-//     */ 
-//    protected double nextIntervalFrom(IElement elem, double pos) {
-//    	return elem.getLength();
-//    }
     protected void advanceState(IProbe probe, IElement elem, double dblLen)
             throws ModelException {
     }

@@ -226,8 +226,6 @@ public class IdealMagQuad extends ThickElectromagnet {
     public PhaseMap transferMap(final IProbe probe, final double length) {
         double charge = probe.getSpeciesCharge();
         double Er = probe.getSpeciesRestEnergy();
-//        double beta = probe.getBeta();
-//        double gamma = probe.getGamma();
         double w = probe.getKineticEnergy();
         double p = Math.sqrt(w * (w + 2 * Er));
 

@@ -56,7 +56,6 @@ public class MatcherDialog extends SimpleBeanEditor<Matcher> {
             final Thread matcher = new Thread(getBean());
 
             matcher.start();
-            //progressBar.setIndeterminate(true);
 
             progressBar.setMaximum(100);
             progressBar.setValue(0);

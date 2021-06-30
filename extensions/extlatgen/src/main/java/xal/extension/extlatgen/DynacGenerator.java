@@ -109,7 +109,6 @@ public class DynacGenerator {
 
         FileWriter dynacInput = new FileWriter(myLatticeName + ".in");
         Date today = new Date();
-        //       int elementCount = myLattice.len();
 
         TraceXalUnitConverter uc = TraceXalUnitConverter.newConverter(
                 402500000.,
@@ -163,7 +162,6 @@ public class DynacGenerator {
         // TODO: CKA - NEVER USED
         int counter = 1;
         String str = dynac_header;
-        //       int devTypeInd = 1;
         String devStr = "";
 
         String prevElementType = "";
@@ -216,7 +214,6 @@ public class DynacGenerator {
                     // do nothing for DTL drift space
                     devStr = "";
                 }
-                //           prevElementType = "";
                 // for quads
             } else if (element.getType().equals("quadrupole")) {
                 // if previous element is a rfgap, go backward half of the magnet length for correct rf gap calculation

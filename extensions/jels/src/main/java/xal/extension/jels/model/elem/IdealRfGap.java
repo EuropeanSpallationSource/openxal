@@ -138,7 +138,8 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
      * Creates a new instance of IdealRfGap
      *
      * @param strId instance identifier of element
-     * @param dblETL field/transit time/length factor for gap (in <strong>volts</strong>)
+     * @param dblETL field/transit time/length factor for gap (in
+     * <strong>volts</strong>)
      * @param dblPhase operating phase of gap (in <strong>radians</strong>)
      * @param dblFreq operating RF frequency of gap (in <strong>Hertz</strong>)
      */
@@ -397,7 +398,6 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
         }
 
         matPhi.setElem(6, 6, 1);
-        //matPhi = applyErrors(matPhi,cellLength);
 
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors
@@ -524,10 +524,10 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
 
     /**
      * <p>
-     * Returns the structure mode <strong>number</strong> <em>q</em> for the cavity in which
-     * this gap belongs. Here the structure mode number is defined in terms of
-     * the fractional phase advance between cells, with respect to &pi;. To make
-     * this explicit
+     * Returns the structure mode <strong>number</strong> <em>q</em> for the
+     * cavity in which this gap belongs. Here the structure mode number is
+     * defined in terms of the fractional phase advance between cells, with
+     * respect to &pi;. To make this explicit
      * <br/>
      * <br/>
      * &nbsp; &nbsp; <em>q</em> = 0 &nbsp; &nbsp; &rAarr; 0 mode

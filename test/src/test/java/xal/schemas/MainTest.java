@@ -135,7 +135,7 @@ public class MainTest extends AbstractXMLValidation {
         //Correct root element.
         Element root = document.createElement("sources");
         root.setAttributeNS("http://www.w3.org/2001/XMLSchema-instance", "xsi:noNamespaceSchemaLocation", "http://sourceforge.net/p/xaldev/openxal/ci/master/tree/core/resources/xal/schemas/main.xsd?format=raw");
-        
+
         document.appendChild(root);
 
         //Fake root child

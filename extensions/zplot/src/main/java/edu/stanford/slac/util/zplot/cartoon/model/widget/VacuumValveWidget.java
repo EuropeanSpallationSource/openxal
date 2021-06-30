@@ -38,9 +38,7 @@ public class VacuumValveWidget extends CartoonWidget {
 
         Area result = new Area(rect);
         result.add(new Area(stick));
-        //	result.subtract(new Area(topTriangle));
         result.subtract(new Area(middleTriangle));
-        //	result.subtract(new Area(bottomTriangle));
         result.add(new Area(base));
         return result;
 

@@ -337,8 +337,6 @@ public class CalculationsOnParticles extends CalculationEngine implements ISimLo
      */
     @Override
     public PhaseVector computeFixedOrbit(ParticleProbeState state) {
-//        PhaseMatrix matRespLoc = state.getResponseMatrix();
-//        PhaseVector vecFxdLoc  = matRespLoc.times( this.vecFxdPt );
 
         PhaseVector vecFxdOrb = this.computeCoordinatePosition(state);
 

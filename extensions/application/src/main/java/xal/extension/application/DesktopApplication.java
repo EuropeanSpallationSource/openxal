@@ -108,7 +108,6 @@ public class DesktopApplication extends Application implements XalInternalDocume
         }
 
         // comment out application service registration until it is developed -tap
-        //registerApplicationStatusService();
         applicationAdaptor.applicationFinishedLaunching();
     }
 

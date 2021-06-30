@@ -78,7 +78,6 @@ public class TraceWinImporter implements TraceWinTags {
      */
     private void initClassVariables() {
         section = new Section(1);
-        // latticeNumber = 1;
         lastFrequency = 0;
         lastSubsystem = 0;
         currentLattice = null;
@@ -293,7 +292,6 @@ public class TraceWinImporter implements TraceWinTags {
                 LOG.log(Level.FINEST, "ESS Meta Tag: {0}", originalLine);
                 readESSMetaTag(originalLine, section, parentSubsystem);
                 // } else if (isLatticeBoundaryCommand(originalLine)) {
-                // readLatticeBoundary(originalLine);
             } else if (!originalLine.startsWith(COMMENT_MARKER)) {
                 writeFeedback("Unknown TraceWin entry: " + originalLine);
             }
@@ -477,7 +475,6 @@ public class TraceWinImporter implements TraceWinTags {
         String line = originalLine.toUpperCase().trim();
 
         while (line.startsWith(COMMENT_MARKER)) {
-            // truncate the comments;
             while (line.startsWith(COMMENT_MARKER)) {
                 line = line.substring(1).trim();
             }
@@ -907,7 +904,6 @@ public class TraceWinImporter implements TraceWinTags {
             StringBuilder feedbackBuilder = new StringBuilder(feedback);
             feedbackBuilder.append(" (line:").append(fileLineNumber).append(")");
             responseWriter.println(feedbackBuilder.toString());
-            //LOG.log(Level.INFO,feedbackBuilder.toString());
         }
     }
 

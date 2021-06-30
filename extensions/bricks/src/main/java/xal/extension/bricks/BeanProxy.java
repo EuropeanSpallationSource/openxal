@@ -172,7 +172,6 @@ public abstract class BeanProxy<ViewType> implements DataListener {
         buffer.append("final ");
         buffer.append(node.getShortClassName());
         buffer.append(" ");
-        //buffer.append( getShortName() );
         buffer.append(generateJavaReferenceSymbol(node));
         buffer.append(" = (");
         buffer.append(node.getShortClassName());

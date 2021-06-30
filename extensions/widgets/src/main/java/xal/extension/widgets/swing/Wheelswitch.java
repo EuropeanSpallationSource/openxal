@@ -229,8 +229,6 @@ public class Wheelswitch extends JPanel {
             }
         }
 
-//		private AudioClip clip1;
-//		private AudioClip clip2;
         private final int MAX_NUMBER_OF_TILTS = 3;
         private final long TILT_RATE = 200;
         private int numberOfTilts = MAX_NUMBER_OF_TILTS;
@@ -243,19 +241,9 @@ public class Wheelswitch extends JPanel {
             if ((formatter.getValue() < formatter.getMaximum())
                     && (formatter.getValue() > formatter.getMinimum())
                     || !tiltingEnabled) {
-                //	would be a nice demonstration feature
-                //					if (enhanced && clip1==null) {
-                //						clip1 = 	Applet.newAudioClip(ClassLoader.getSystemResource("Resources/tick.wav"));
-                //					}        
-                //					if (enhanced) clip1.play();
                 return;
             }
 
-            //			would be a nice demonstration feature
-            //			if (enhanced && clip2==null) {
-            //				clip2 = 	Applet.newAudioClip(ClassLoader.getSystemResource("Resources/error.wav"));
-            //			}
-            //			if (enhanced) clip2.play();
             if (numberOfTilts >= MAX_NUMBER_OF_TILTS) {
                 numberOfTilts = 0;
                 schedule(new TiltTask(), 0, TILT_RATE);
@@ -293,7 +281,6 @@ public class Wheelswitch extends JPanel {
                     setSelectedDigit(digits.size() - 1);
                 }
 
-                //requestFocusInWindow();
             }
         }
     }
@@ -1024,12 +1011,10 @@ public class Wheelswitch extends JPanel {
 	 * Repositions the components inside the wheelswitch.
      */
     private void setupLayout() {
-        //LOGGER.log(Level.INFO,  "Setup layout..." );
 
         removeAll();
 
         //  by mkadunc
-        //		add(Box.createHorizontalStrut(5));
         for (int i = 0; i < digits.size(); i++) {
             if (digits.get(i).getText().indexOf('E') != -1) {
                 add(Box.createHorizontalStrut(3));
@@ -1054,7 +1039,6 @@ public class Wheelswitch extends JPanel {
         preferredSize = null;
         minimumSize = null;
 
-        //requestFocusInWindow();
     }
 
     /*
@@ -1277,5 +1261,3 @@ public class Wheelswitch extends JPanel {
         }
     }
 }
-
-/* __oOo__ */

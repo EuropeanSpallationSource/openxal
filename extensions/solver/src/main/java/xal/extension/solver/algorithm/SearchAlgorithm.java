@@ -138,7 +138,6 @@ public abstract class SearchAlgorithm implements AlgorithmScheduleListener, Solu
             final double newEfficiency = (endSatisfaction - initialSatisfaction) / ((1.0 - initialSatisfaction) * evaluations);
             efficiency = 0.75 * Math.max(newEfficiency, 0.0) + 0.25 * efficiency;		// weight the new efficiency against the original efficiency
 
-            //System.out.printf("algorithm: %40s, isat: %7.3f, fsat: %7.3f, evaluations: %7d, efficiency: %7.3f\n", getLabel(), initialSatisfaction, endSatisfaction, evaluations, efficiency);
         }
     }
 
@@ -169,7 +168,6 @@ public abstract class SearchAlgorithm implements AlgorithmScheduleListener, Solu
      */
     public Trial evaluateTrialPoint(final TrialPoint trialPoint) {
         --evaluationsLeft;
-        //LOGGER.log(Level.INFO, "evaluating trial point for count: " + evaluationsLeft + " using " + _algorithm.getLabel());
         return schedule.evaluateTrialPoint(this, trialPoint);
     }
 

@@ -161,7 +161,6 @@ public class SmoothData3D extends ColorSurfaceData {
                 y = minY + j * stepY;
                 v = Math.exp(-(x * x + y * y));
                 data.setValue(i, j, v);
-                //data.addValue(x,y,v);
             }
         }
 

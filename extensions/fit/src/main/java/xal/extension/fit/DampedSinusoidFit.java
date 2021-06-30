@@ -16,9 +16,9 @@ import java.util.*;
  * DampedSinusoid provides an exact closed form solution for fitting a waveform
  * to a damped sinusoid of the form <strong><code><em>q</em> =
  * <em>A</em>e<em><sup>&gamma;t</sup></em>sin(<em>&mu;t</em> + <em>&phi;</em>) +
- * <em>C</em></code></strong> which is adapted for efficient fitting in the presence of
- * noise. The fits for frequency, offset and growth rate are good in the
- * presence of relatively small noise. However, the estimation of phase and
+ * <em>C</em></code></strong> which is adapted for efficient fitting in the
+ * presence of noise. The fits for frequency, offset and growth rate are good in
+ * the presence of relatively small noise. However, the estimation of phase and
  * amplitude are relatively poor in the presence of noise. Also, the estimation
  * breaks down when the frequency is near an integer or half integer.
  */
@@ -345,17 +345,9 @@ public final class DampedSinusoidFit {
         leastErrors[0] = wronskian != 0.0 ? (gh_sum * fg_sum - gg_sum * fh_sum) / wronskian : 0.0;
         leastErrors[1] = wronskian != 0.0 ? (fh_sum * fg_sum - ff_sum * gh_sum) / wronskian : 0.0;
 
-//		final double[] compErrors = calculateWaveformError( offset, cosmu, growthFactor, leastErrors[0], leastErrors[1] );
         for (int index = 2; index < numPoints; index++) {
             leastErrors[index] = f[index] * leastErrors[0] + g[index] * leastErrors[1] + h[index];
-//			LOGGER.log(Level.INFO,  "comp[" + index + "] = " + compErrors[index] + ", least[" + index + "] = " + leastErrors[index] );
         }
-
-        // comparison of RMS errors to validate whether we are calculating the least RMS error
-//		final double[] testErrors = calculateWaveformError( offset, cosmu, growthFactor, 0.0, 0.0 );	// test with arbitrary first two initial errors
-//		final double leastRMSError = calculateRMSError( leastErrors );
-//		final double testRMSError = calculateRMSError( testErrors );
-//		LOGGER.log(Level.INFO,  "Least RMS Error: " + leastRMSError + ", Test RMS Error: " + testRMSError );
         return leastErrors;
     }
 
@@ -368,15 +360,11 @@ public final class DampedSinusoidFit {
         final double[] waveformError = new double[numPoints];
         waveformError[0] = error0;
         waveformError[1] = error1;
-//		LOGGER.log(Level.INFO,  "error[0] = " + waveformError[0] );
-//		LOGGER.log(Level.INFO,  "error[1] = " + waveformError[1] );
 
         final int count = numPoints - 2;
         for (int index = 0; index < count; index++) {
             final double epsilon = 2.0 * growthFactor * cosmu * (waveform[index + 1] + waveformError[index + 1] - offset) - (waveform[index] + waveformError[index] - offset) * growthFactorSquared + offset - waveform[index + 2];
             waveformError[index + 2] = epsilon;
-//			LOGGER.log(Level.INFO,  "error[" + (index + 2) + "] = " + epsilon );
-//			LOGGER.log(Level.INFO,  "error[" + (index + 2) + "] = " + ( estimateWaveformWithInitialParameters(index+2) - WAVEFORM[index+2] ) );
         }
 
         return waveformError;
@@ -431,8 +419,6 @@ public final class DampedSinusoidFit {
                 sumSquareError += error * error;
             };
 
-//			LOGGER.log(Level.INFO,  "Algorithm: " + trial.getAlgorithm().getLabel() );
-//			LOGGER.log(Level.INFO,  "Scoring trial with offset: " + offset + ", cosmu: " + cosmu + ", growth: " + growthFactor + ", Square Score: " + sumSquareError );
             if (Double.isNaN(sumSquareError)) {
                 trial.vetoTrial(new TrialVeto(trial, null, "error is NaN"));
                 return Double.POSITIVE_INFINITY;
@@ -552,7 +538,6 @@ public final class DampedSinusoidFit {
         initialRange.addInitialDelta(cosineMuVariable, cosMuSigma);
         problem.addHint(initialRange);
         solver.solve(problem);
-//		LOGGER.log(Level.INFO,  solver.getScoreBoard() );
 
         final TrialPoint solution = solver.getScoreBoard().getBestSolution().getTrialPoint();
         this.offset = solution.getValue(offsetVariable);
@@ -564,7 +549,6 @@ public final class DampedSinusoidFit {
         waveformError = calculateLeastWaveformError(this.offset, cosineMu, growthFactor);
         final double signalSigma = calculateRMSError(waveformError);
         this.signalVariance = signalSigma * signalSigma;
-//		LOGGER.log(Level.INFO,  "Final RMS Error: " + calculateRMSError( _waveformError ) );
         final double[] zeroedWaveform = new double[numPoints];
         for (int index = 0; index < numPoints; index++) {
             zeroedWaveform[index] = waveform[index] - this.offset;
@@ -902,14 +886,9 @@ public final class DampedSinusoidFit {
             final DifferentialVariable weightedOffset = offsetEstimate.times(weight);
             offsetSum = offsetSum.plus(weightedOffset);
             totalWeight += weight;
-
-//			LOGGER.log(Level.INFO,  "offset: " + offsetEstimate.getValue() + ", variance: " + 1.0 / localWeight );
         }
 
         final DifferentialVariable offset = offsetSum.over(totalWeight);
-//        final double sigma = Math.sqrt( offset.varianceWithCommonVariance( 0.25 ) );
-//        LOGGER.log(Level.INFO,  "Offset Estimate: " + offset.getValue() + " +/- " + sigma );
-
         initialOffset = offset;
 
         initialZeroedWaveform = new DifferentialVariable[numPoints];

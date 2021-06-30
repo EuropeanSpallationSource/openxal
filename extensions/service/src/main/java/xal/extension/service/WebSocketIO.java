@@ -162,7 +162,6 @@ class WebSocketIO {
      * send the message
      */
     static void sendMessage(final Socket socket, final String message) throws java.net.SocketException, IOException {
-        //LOGGER.log(Level.INFO,  "Sending message of length: " + message.length() );
 
         final OutputStream output = socket.getOutputStream();
 
@@ -214,7 +213,6 @@ class WebSocketIO {
      * Read the message from the socket and return it
      */
     static String readMessage(final Socket socket) throws java.net.SocketException, IOException, WebSocketIO.SocketPrematurelyClosedException {
-        //LOGGER.log(Level.INFO,  "Reading message..." );
 
         final int BUFFER_SIZE = socket.getReceiveBufferSize();
         final InputStream readStream = socket.getInputStream();
@@ -229,7 +227,6 @@ class WebSocketIO {
             final boolean masked = (head2 & 0b10000000) == 0b10000000;
             final byte lengthCode = (byte) (head2 & 0b01111111);
 
-            //LOGGER.log(Level.INFO,  "fin: " + fin + ", opcode: " + opcode + ", masked: " + masked + ", length code: " + lengthCode );
             int dataLength = 0;
             switch (lengthCode) {
                 case 126:

@@ -170,30 +170,6 @@ public interface IProbe {
      */
     public double getGamma();
 
-//    /**
-//     * Returns the time at which the probe being tracked exited the last RF gap.
-//     * 
-//     * @return      probe time at which the last RF gap was exited (in seconds)
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Nov 24, 2014
-//     */
-//    public double   getRfGapExitTime();
-//    
-//    /**
-//     * Returns the machine RF phase at the last gap through which the probe propagated.
-//     * This value accounts for the RF cavity structure, specifically the phase shifts
-//     * due to coupling between coupled cavity structures.
-//     *  
-//     * @return  phase shift experienced by probe when traversing coupled cavities
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Nov 25, 2014
-//     * 
-//     * @deprecated  This method was part of an old design
-//     */
-//    @Deprecated
-//    public double   getCoupledCavityPhase();
     /**
      * Looks up the last probe state created by a modeling element of the given
      * identifier. The history of the probe (i.e., a <code>Trajectory</code>
@@ -307,48 +283,6 @@ public interface IProbe {
      */
     public void setSpeciesRestEnergy(double m);
 
-//    /**
-//     * Sets the time at which the currently tracked probe exited the
-//     * last RF gap structure it propagated through.
-//     * 
-//     * @param dblRfGapExitTime      gap exit time (in seconds)
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Nov 24, 2014
-//     */
-//    public void setRfGapExitTime(double dblRfGapExitTime);
-//
-//    /**
-//     * Returns the RF phase at the last gap through which the probe propagated.
-//     * This value accounts for the RF cavity structure, specifically the phase shifts
-//     * due to coupling between coupled cavity structures.
-//     *  
-//     * @return  phase shift experienced by probe when traversing coupled cavities
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Nov 25, 2014
-//     * 
-//     * @deprecated This was part of an old design
-//     */
-//    @Deprecated
-//    public void setCoupledCavityPhaseShift(double dblCavPhsShft);
-    /*
-     * Propagation
-     */
-//    /**
-//     * Set the element to start propagation from.
-//     * 
-//     * @param id <code>String</code> id of the element from which to start propagation
-//     */
-//    public void setStartElementId(String id);
-//    
-//    /**
-//     * Set the element to stop propagation at.
-//     * 
-//     * @param id <code>String</code> id of the element at which to stop propagation
-//     */
-//    public void setStopElementId(String id);
-//    
     /**
      * Initialize the probe for propagation. Reset any necessary state variables
      * Optionally set up a trajectory variable

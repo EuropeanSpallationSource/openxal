@@ -36,7 +36,6 @@ class CartoonRenderer extends XYLineAndShapeRenderer {
      * My Field (please, document me!)
      */
     private static final long serialVersionUID = -5114426691791064320L;
-    // private ZPlot zPlot;
     private DevicesDataset devicesDataset;
     private double pixelPerM;
 

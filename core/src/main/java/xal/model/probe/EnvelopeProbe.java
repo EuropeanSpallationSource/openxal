@@ -154,7 +154,7 @@ public class EnvelopeProbe extends BunchProbe<EnvelopeProbeState> {
         applyState(probe.cloneCurrentProbeState());
         createTrajectory();
     }
-  
+
     /**
      * Set the correlation matrix for this probe (7x7 matrix in homogeneous
      * coordinates).
@@ -288,12 +288,6 @@ public class EnvelopeProbe extends BunchProbe<EnvelopeProbeState> {
      */
     @Deprecated
     public PhaseMatrix stateResponse(String elemFrom, String elemTo) {
-
-        //return ((EnvelopeTrajectory) this.getTrajectory()).stateResponse(
-        //        elemFrom, elemTo);
-        // Moved implementation to here from the EnvelopeTrajectory class when we changed 
-        // to generic Trajectory.  The function used to just be a wrapper as shown above.
-        // - JMF
         Trajectory<EnvelopeProbeState> trajectory = this.getTrajectory();
 
         // find starting index

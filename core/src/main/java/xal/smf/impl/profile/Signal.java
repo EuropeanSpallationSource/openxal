@@ -57,81 +57,8 @@ public class Signal extends ScadaRecord {
     private static final Logger LOGGER = Logger.getLogger(Signal.class.getName());
 
     /*
-     * Internal Classes
-     */
-//    /**
-//     * Enumerates all the signals contained within this signal set
-//     * and provides labels for their data storage.
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Oct 14, 2014
-//     */
-//    public enum WIRE {
-//
-//        /** Horizontal signal identifier constant */
-//        HOR("Horizontal"),
-//        
-//        /** Vertical signal identifier constant */
-//        VER("Vertical"),
-//
-//        /** Horizontal signal identifier constant */
-//        DIA("Diagonal");
-//        
-//        /*
-//         * Operations
-//         */
-//        
-//        /**
-//         * Returns the data label used for the signal associated with this 
-//         * constant.
-//         * 
-//         * @return      data label for signal
-//         *
-//         * @author Christopher K. Allen
-//         * @since  Oct 14, 2014
-//         */
-//        public String   getLabel() {
-//            return this.strLabel;
-//        }
-//        
-////        /**
-////         * Chooses the appropriate signal for this signal constant
-////         * from the given signal set.
-////         * 
-////         * @param setSignals    set of signals to choose from
-////         * 
-////         * @return              the signal corresponding to this signal constant
-////         *
-////         * @author Christopher K. Allen
-////         * @since  Oct 14, 2014
-////         */
-////        public Signal   getSignal(SignalSet setSignals) {
-////            switch (this) {
-////            case HOR: return setSignals.hor; 
-////            case VER: return setSignals.ver;
-////            case DIA: return setSignals.dia;
-////            }
-////            
-////            return null;
-////        }
-////        
-//        /*
-//         * Local Attributes
-//         */
-//        
-//        /** Data label associated with signal */
-//        private final String    strLabel;
-//        
-//        /** Constructor */
-//        private WIRE(String strLabel) {
-//            this.strLabel = strLabel;
-//        }
-//    }
-    /*
      * Global Constants
      */
-//    /** The data storage node attribute tag  for the string identifier of this signal */
-//    private static final String STR_ATTR_ID = "id";
     /**
      * <p>
      * Field names of the <code>{@link Signal}</code> class. These are needed
@@ -208,8 +135,6 @@ public class Signal extends ScadaRecord {
                 Class<?> clsFldTyp = (Class<?>) this.fldAnnTyp.invoke(annSig);
                 String strFldHnd = (String) this.fldAnnVal.invoke(annSig);
 
-//                if ( strFldHnd.equals("") ) 
-//                    throw new BadStructException("Unspecified channel handle for Signal field " + strFldNm);
                 if (strFldHnd.equals("")) {
                     return null;
                 }
@@ -349,15 +274,6 @@ public class Signal extends ScadaRecord {
         return sigInit;
     }
 
-    /*
-     * Local Attributes
-     */
-//    //
-//    // Identification
-//    //
-//    
-//    /** Optional identifier string (used in data storage) */
-//    public String   strId = null;
     //
     // Data Fields
     //
@@ -403,19 +319,6 @@ public class Signal extends ScadaRecord {
         super();
     }
 
-//    /**
-//     * Creates a new, uninitialized instance of <code>Signal</code> which is not connected
-//     * to any XAL channels.
-//     * 
-//     * @throws  BadStructException no SCADA fields (@AScada.Field) were found in data structure
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Feb 7, 2013
-//     */
-//    public Signal(ProfileDevice.ANGLE ang) throws BadStructException {
-//        this();
-//        this.strId = ang.name();
-//    }
     /**
      * Creates a new instance of Signal and initializes the SCADA operations
      * with the given field descriptors.
@@ -430,7 +333,7 @@ public class Signal extends ScadaRecord {
      */
     protected Signal(List<ScadaFieldDescriptor> lstFldDscr) throws BadStructException {
         super(lstFldDscr);
-//        this.strId = ang.name();
+
     }
 
     /*
@@ -534,10 +437,6 @@ public class Signal extends ScadaRecord {
             return;
         }
 
-//        // If we are have a revised data format version we can use the default 
-//        //  loading mechanism
-//        if (daptSgnl.hasAttribute(STR_ATTR_ID))
-//            this.strId = daptSrc.stringValue(STR_ATTR_ID);
         super.update(daptSgnl);
     }
 
@@ -550,7 +449,6 @@ public class Signal extends ScadaRecord {
      */
     @Override
     public void write(DataAdaptor daptSink) throws BadStructException {
-//        daptSink.setValue(STR_ATTR_ID, this.strId);
         super.write(daptSink);
     }
 

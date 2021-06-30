@@ -872,8 +872,7 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
                     lstSplitElems.add(lemCurr);
                     // If none and the current element is thick then set it up for processing
                     // next round. 
-                }
-                else {
+                } else {
                     lemLastThick = lemCurr;
                 }
 

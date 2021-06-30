@@ -832,13 +832,14 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
 
         this.getTrajectory().update(this);
     }
-    
+
     /**
-     * Subclasses should override this method to perform any required post processing upon completion 
-     * of algorithm processing.  This method implementation does nothing.
-     * 
-     * @deprecated     This method is called in several places I don't think it ever is implemented
-     *                 to do anything.
+     * Subclasses should override this method to perform any required post
+     * processing upon completion of algorithm processing. This method
+     * implementation does nothing.
+     *
+     * @deprecated This method is called in several places I don't think it ever
+     * is implemented to do anything.
      */
     @Deprecated
     @Override
@@ -867,7 +868,6 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     }
 
     // Object Overrides ========================================================
-         
     /*
      *  IArchive Interface
      */

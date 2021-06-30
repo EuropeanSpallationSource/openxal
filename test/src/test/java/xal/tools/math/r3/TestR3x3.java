@@ -71,7 +71,6 @@ public class TestR3x3 {
     public void testZero() {
         R3x3 matTest = R3x3.newZero();
 
-//		fail("Not able to create a zero matrix");
     }
 
     /**
@@ -85,7 +84,6 @@ public class TestR3x3 {
 
         Assert.assertTrue(szMatrix == 3);
 
-//		LOGGER.log(Level.INFO, "\nTest matrix dynamic size = " + szMatrix);
     }
 
     @Test
@@ -97,8 +95,6 @@ public class TestR3x3 {
 
         Assert.assertTrue(matSum.isEquivalentTo(MAT_2));
 
-//	    LOGGER.log(Level.INFO, "\nThe matrix addition test");
-//	    LOGGER.log(Level.INFO,  matSum.toString() );
     }
 
     @Test
@@ -110,8 +106,6 @@ public class TestR3x3 {
 
         Assert.assertTrue(mat1.isEquivalentTo(MAT_2));
 
-//        LOGGER.log(Level.INFO, "\nThe matrix in place addition test");
-//        LOGGER.log(Level.INFO,  mat1.toString() );
     }
 
     @Test
@@ -123,8 +117,6 @@ public class TestR3x3 {
 
         Assert.assertTrue(matProd.isEquivalentTo(MAT_I));
 
-//        LOGGER.log(Level.INFO, "\nThe matrix multiplication test");
-//        LOGGER.log(Level.INFO,  matProd.toString() );
     }
 
     @Test
@@ -136,8 +128,6 @@ public class TestR3x3 {
 
         Assert.assertTrue(mat1.isEquivalentTo(MAT_I));
 
-//        LOGGER.log(Level.INFO, "\nThe matrix in place multiplication test");
-//        LOGGER.log(Level.INFO,  mat1.toString() );
     }
 
     @Test
@@ -146,10 +136,6 @@ public class TestR3x3 {
         double dblDetId = MAT_I.det();
         double dblDetTst2 = MAT_2.det();
 
-//        LOGGER.log(Level.INFO, "\nDeterminant Function");
-//        LOGGER.log(Level.INFO, "|I|  = " + dblDetId);
-//        LOGGER.log(Level.INFO, "|2I| = " + dblDetTst2);
-//        LOGGER.log(Level.INFO, "|Rx| = " + dblDetRx);
     }
 
     @Test
@@ -158,11 +144,6 @@ public class TestR3x3 {
         R3x3 matInv = MAT_X.inverse();
         R3x3 matCjt = MAT_X.conjugateTrans(MAT_Z);
 
-//        LOGGER.log(Level.INFO, "\nMatrix Operations");
-//        LOGGER.log(Level.INFO, "Rx       = " + MAT_X);
-//        LOGGER.log(Level.INFO, "Rx^T     = " + matTrn);
-//        LOGGER.log(Level.INFO, "Inv[Rx]  = " + matInv);
-//        LOGGER.log(Level.INFO, "RzRxRz^T = " + matCjt);
     }
 
     @Test
@@ -172,11 +153,6 @@ public class TestR3x3 {
         double dblLinf = MAT_X.normInf();
         double dblFrob = MAT_X.normF();
 
-//        LOGGER.log(Level.INFO, "\nNorms of the Rx rotation matrix");
-//        LOGGER.log(Level.INFO, "||Rx||_1   = " + dblL1);
-//        LOGGER.log(Level.INFO, "||Rx||_2   = " + dblL2);
-//        LOGGER.log(Level.INFO, "||Rx||_inf = " + dblLinf);
-//        LOGGER.log(Level.INFO, "||Rx||_F   = " + dblFrob);
     }
 
     @Test
@@ -189,10 +165,6 @@ public class TestR3x3 {
             R3x3 matO = jacR.getRotationMatrix();
             R3x3 matD = jacR.getDiagonalMatrix();
 
-//            LOGGER.log(Level.INFO, "\nThe Jacobi Decomposition Test");
-//            LOGGER.log(Level.INFO, "R = " + matR);
-//            LOGGER.log(Level.INFO, "O = " + matO);
-//            LOGGER.log(Level.INFO, "D = " + matD);
         } catch (IllegalArgumentException e) {
 
             fail("matrix not symmetric " + matR);
@@ -211,10 +183,6 @@ public class TestR3x3 {
             R3x3 matE = decL.getEigenvalueMatrix();
             R3x3 matV = decL.getEigenvectorMatrix();
 
-//            LOGGER.log(Level.INFO, "\nThe Eigen Decomposition Test");
-//            LOGGER.log(Level.INFO, "R = " + matT);
-//            LOGGER.log(Level.INFO, "O = " + matE);
-//            LOGGER.log(Level.INFO, "D = " + matV);
         } catch (IllegalArgumentException e) {
 
             fail("matrix not symmetric " + matT);

@@ -44,7 +44,6 @@ public class TestScenario {
      * Accelerator sequence used for testing
      */
     public static final String STR_ACCL_SEQ_ID = "MEBT";
-//    public static final String     STR_ACCL_SEQ_ID = "HEBT2";
 
     /**
      *
@@ -56,7 +55,6 @@ public class TestScenario {
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
 
-//        Scenario.setDebugging(true);
     }
 
     /**

@@ -229,7 +229,6 @@ public class DoubleToString {
             //And round up if necessary. Add one to the numFractDigits digit if the
             //numFractDigits+1 digit is 5 or greater. It is useful to know that
             //given a long, l, the nth digit is obtained using the formula
-            //  nthDigit = (l/(tenthPower(l)/l_tenthPowers[n-1]))%10;
             long lTenthPower = tenthPower(l);
             //The numFractDigits+1 digit of the double is the 
             //numFractDigits+1+magnitude digit of the long.
@@ -488,7 +487,6 @@ public class DoubleToString {
             - 0.000456D, -0.000543D, -0.0000456D, -0.0000543D,};
 
         int repeat = 1000;
-        //	  int repeat = 1;
 
         mainAdj(repeat * 5, "doubles", ds, "");
         mainAdj(repeat * 5, "doubles", ds, "");
@@ -691,7 +689,6 @@ public class DoubleToString {
             s.append('-');
             i = -i;
         }
-//      int mag;
         int c;
         if (i < 10) {
             //one digit

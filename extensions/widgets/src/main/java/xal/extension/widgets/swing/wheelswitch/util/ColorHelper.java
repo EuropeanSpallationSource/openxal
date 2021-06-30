@@ -202,7 +202,6 @@ public final class ColorHelper {
      * @see javax.swing.plaf.metal.MetalLookAndFeel#getFocusColor()
      */
     public static Color getFocus() {
-        //return UIManager.getColor("controlShadow");		
         return MetalLookAndFeel.getFocusColor();
     }
 

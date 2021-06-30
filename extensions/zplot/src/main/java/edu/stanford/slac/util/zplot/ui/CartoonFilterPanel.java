@@ -98,7 +98,7 @@ public class CartoonFilterPanel extends AbstractPanel {
 
         TitledBorder border = BorderFactory.createTitledBorder(BorderFactory
                 .createEtchedBorder(), "Cartoon Devices:");
-        //border.setTitleJustification(TitledBorder.CENTER);
+
         setBorder(border);
 
     }

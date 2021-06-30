@@ -49,7 +49,6 @@ public class WireData {
             double[] zFitData,
             double[] posRaw,
             double[] posFit) {
-//             xFit1 = new double[xFit.length];
         xFit1 = xFit;
         yFit1 = yFit;
         zFit1 = zFit;

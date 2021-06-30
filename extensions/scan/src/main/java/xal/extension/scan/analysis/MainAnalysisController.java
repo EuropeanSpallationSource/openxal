@@ -111,7 +111,6 @@ public class MainAnalysisController {
     private JLabel chooserLabel = new JLabel("-------    ANALYSIS CONTROL    ---------");
 
     //local temporary draph data
-    //private BasicGraphData graphDataLocal = new CubicSplineGraphData();
     private BasicGraphData graphDataLocal = new BasicGraphData();
 
     /**

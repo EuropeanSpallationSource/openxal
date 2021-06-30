@@ -174,9 +174,6 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * @see IdealMagWedgeDipole#setPhysicalLength(double)
      */
     public void setPosition(double dblPos, double dblLen) {
-        //this.getMagBody().setPosition(dblPos);
-        //this.getFaceEntr().setPosition(dblPos - dblLen / 2.0);
-        //this.getFaceExit().setPosition(dblPos + dblLen / 2.0);
         this.getMagBody().setPosition(dblLen / 2.0);
         this.getFaceEntr().setPosition(0.0);
         this.getFaceExit().setPosition(dblLen);
@@ -586,7 +583,6 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
         if (magnet instanceof Bend) {
             Bend magnet2 = (Bend) magnet;
             setGapSize(magnet2.getGap());
-            //setOrientation(magnet2.getOrientation());
             // first piece
             if (element.isFirstSlice()) {
                 setEntrFringeIntegral(magnet2.getEntrK1());

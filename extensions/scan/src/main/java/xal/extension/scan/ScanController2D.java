@@ -578,7 +578,6 @@ public class ScanController2D {
         panelGroup0_1.add(panel4_0, BorderLayout.SOUTH);
         panelGroup0_1.add(panelGroup0_0, BorderLayout.CENTER);
 
-        //panelGroup0_1.setBackground(panelGroup0_1.getBackground().darker());
         panelGroup0_1.setBackground(Color.blue);
 
         JPanel panel1 = valuePhaseScanAndRBPanel;
@@ -618,7 +617,6 @@ public class ScanController2D {
         panelGroup1_1.add(panel4, BorderLayout.SOUTH);
         panelGroup1_1.add(panelGroup1_0, BorderLayout.CENTER);
 
-        //panelGroup1_1.setBackground(panelGroup1_1.getBackground().darker());
         panelGroup1_1.setBackground(Color.blue);
 
         JPanel panel5 = new JPanel();
@@ -1726,7 +1724,6 @@ public class ScanController2D {
             return false;
         }
         if (sleepTime > 0.) {
-            //try{Thread.sleep((long)(1000.0*sleepTime));}catch(InterruptedException e){}
             try {
                 lockObj.wait((long) (1000.0 * sleepTime));
             } catch (InterruptedException e) {
@@ -1856,7 +1853,6 @@ public class ScanController2D {
      */
     private void startNewSetOfData() {
 
-        //LOGGER.log(Level.INFO, "debug ============ new set of data param="+paramValue);
         for (int i = 0, n = measuredValuesV.size(); i < n; i++) {
             measuredValuesV.get(i).createNewDataContainer();
         }
@@ -1875,7 +1871,6 @@ public class ScanController2D {
      */
     private void accountNewDataPoint() {
 
-        //LOGGER.log(Level.INFO, "debug data point param="+paramValue+" scan val="+scanValue);
         for (int i = 0, n = measuredValuesV.size(); i < n; i++) {
             measuredValuesV.get(i).consumeData(valuePhaseWrappingFunction(scanValue));
         }

@@ -963,13 +963,11 @@ public abstract class CalculationEngine {
         double emit1;
 
         // Transfer matrix diagonal sub-block
-        // .
         double Rjj;
         //  | Rjj  Rjjp  |
         double Rjjp;
         //  | Rjpj Rjpjp |
         double Rjpj;
-        //                .
         double Rjpjp;
 
         int j = 0;

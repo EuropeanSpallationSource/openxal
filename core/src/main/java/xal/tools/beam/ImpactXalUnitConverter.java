@@ -59,7 +59,6 @@ public class ImpactXalUnitConverter {
     /**
      * wavelength of RF in free space
      */
-    //private double    lambda;
     /**
      * c/omega
      */
@@ -100,7 +99,6 @@ public class ImpactXalUnitConverter {
      *
      */
     private void computeAuxiliaryParameters() {
-        //lambda = LightSpeed / f;
         c_omega = LightSpeed / (2. * Math.PI * f);
         gamma = 1.0 + (W / ER);
         b = Math.sqrt(1.0 - (1.0 / (gamma * gamma)));
@@ -660,7 +658,6 @@ public class ImpactXalUnitConverter {
      *
      */
     public Twiss[] twissParametersFromXal(CovarianceMatrix mat) {
-        // Twiss[]     arrTwissXal = mat.twissParameters();
 
         Twiss[] arrTwissXal = mat.computeTwiss();
 

@@ -844,7 +844,6 @@ public class SimpleButton extends GradientLabel {
          */
         @Override
         public void keyPressed(KeyEvent e) {
-            //Debug.out("keypressed");
             if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                 if (!pressed) {
                     setPressed(true);
@@ -1066,8 +1065,6 @@ public class SimpleButton extends GradientLabel {
                     }
                 });
             }
-        } else {
-            //LOGGER.log(Level.INFO,  "Pressed: " + pressed + ", enabled: " + isEnabled() );
         }
     }
 

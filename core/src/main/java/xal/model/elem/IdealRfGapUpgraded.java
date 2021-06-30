@@ -777,9 +777,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      */
     @Override
     public boolean isFirstGap() {
-        //      boolean    bolInitialGap = this.getCavityCellIndex() == 0;
-        //
-        //      return bolInitialGap;
         return bolStartCell;
     }
 
@@ -990,7 +987,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
 
         // CKA - Corrected 7/14/2010
         //  Additional factor gbar^2 in the longitudinal focusing term
-        //      double arrLong[][] = new double[][]{{1.0, 0.0}, {(kz / (bf * gf)) * gb * gb / (gf * gf), gi * gi * gi * bi / (gf * gf * gf * bf)}};
         double arrLong[][] = new double[][]{{1.0, 0.0}, {kz / (bf * gf * gf * gf), gi * gi * gi * bi / (gf * gf * gf * bf)}};
 
         PhaseMatrix matPhi = new PhaseMatrix();
@@ -1437,8 +1433,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         // in PARMILA TTFPrime and SPrime are in [1/cm] units, we use [m]
         //  CKA - I will try to eliminate these quantities because I cannot
         //        determine that they are correct
-        //        double ttf_prime = 0.01*this.fitTTFPrime.evaluateAt(bi);
-        //        double stf_prime = 0.01*this.fitSTFPrime.evaluateAt(bi);
         // Gap parameters
         double E0 = this.getE0();
         double A = this.compCavModeFieldCoeff();
@@ -2130,8 +2124,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         // in PARMILA TTFPrime and SPrime are in [1/cm] units, we use [m]
         //  CKA - I will try to eliminate these quantities because I cannot
         //        determine that they are correct
-        //        double ttf_prime = 0.01*this.fitTTFPrime.evaluateAt(bi);
-        //        double stf_prime = 0.01*this.fitSTFPrime.evaluateAt(bi);
         // Gap parameters
         double E0 = this.getE0();
         double A = this.compCavModeFieldCoeff();

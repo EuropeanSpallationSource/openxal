@@ -115,40 +115,6 @@ public class ProbeFactory {
      */
     protected static final String PHASECOORD_VALUE_PARAM = "coordinates";
 
-//	/**
-//	 * Generate a ParticlePerturb probe initialized with the default entrance parameters for the
-//	 * specified sequence.  The location used defaults to the sequence's entrance ID.
-//	 *
-//	 * @param sequence   the sequence for which to initialize the probe
-//	 * @param algorithm  the online model algorithm to use
-//	 * @return           the initialized particle perturb probe
-//	 */
-//    @SuppressWarnings("deprecation")
-//	public static ParticlePerturb getParticlePerturb( final AcceleratorSeq sequence, final IAlgorithm algorithm ) {
-//		return getParticlePerturb( sequence.getEntranceID(), sequence, algorithm );
-//	}
-//	
-//	
-//	/**
-//	 * Generate a ParticlePerturb probe initialized with the entrance parameters for the specified location.
-//	 *
-//	 * @param locationID the location ID of the entrance parameters to use
-//	 * @param sequence   the sequence for which to initialize the probe
-//	 * @param algorithm  the online model algorithm to use
-//	 * @return           the initialized particle perturb probe
-//	 */
-//	@SuppressWarnings("deprecation")
-//	public static ParticlePerturb getParticlePerturb( final String locationID, final AcceleratorSeq sequence, final IAlgorithm algorithm ) {
-//		final ParticlePerturb probe = new ParticlePerturb();
-//		
-//		if ( !probe.setAlgorithm( algorithm ) ) {
-//			return null;
-//		}
-//		
-//		boolean success = initializeLocation( probe, locationID, sequence, algorithm );
-//		
-//		return success ? probe : null;
-//	}
     /**
      * Generate a Particle probe initialized with the default entrance
      * parameters for the specified sequence. The location used defaults to the
@@ -404,7 +370,6 @@ public class ProbeFactory {
      */
     private static boolean initializeLocation(final Probe<?> probe, final String locationID, final AcceleratorSeq sequence) {
         final EditContext editContext = sequence.getAccelerator().editContext();
-//		LOGGER.log(Level.INFO, "editContext = "+editContext);
         final DataTable speciesTable = editContext.getTable(SPECIES_TABLE);
         final DataTable locationTable = editContext.getTable(LOCATION_TABLE);
 
@@ -466,7 +431,6 @@ public class ProbeFactory {
             return;
         }
 
-        //
         // Get the phase coordinate string from the record and create a new
         //  phase vector object to be the initial phase coordinates of the probe
         String strPhsCoord = recCoords.stringValueForKey(PHASECOORD_VALUE_PARAM);
@@ -493,7 +457,6 @@ public class ProbeFactory {
 
         probe.setBunchFrequency(bunchFreq);
         probe.setBeamCurrent(beamCurrent);
-//        probe.setBetatronPhase( new R3( phase ) );
 
         return true;
     }
@@ -544,20 +507,6 @@ public class ProbeFactory {
      */
     private static boolean initializeTwiss(final EnvelopeProbe probe, final String locationID, final AcceleratorSeq sequence) {
         final EditContext editContext = sequence.getAccelerator().editContext();
-//		final DataTable twissTable = editContext.getTable( "twiss" );
-//		
-//		final Map<String, String> bindings = new HashMap<String, String>();
-//		bindings.put( "name", locationID );
-//		
-//		bindings.put( "coordinate", "x" );
-//		final GenericRecord twissX = twissTable.record( bindings );
-//		bindings.put( "coordinate", "y" );
-//		final GenericRecord twissY = twissTable.record( bindings );
-//		bindings.put( "coordinate", "z" );
-//		final GenericRecord twissZ = twissTable.record( bindings );
-//		
-//		final Twiss[] twissVector = new Twiss[] { getTwiss( twissX ), getTwiss( twissY ), getTwiss( twissZ ) };
-
         final Twiss[] twissVector = getTwissArray(locationID, editContext);
         final PhaseVector vecCent = getCentroidLocation(locationID, editContext);
 

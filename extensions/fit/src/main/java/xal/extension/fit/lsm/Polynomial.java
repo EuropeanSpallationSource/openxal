@@ -407,16 +407,6 @@ public class Polynomial {
     }
 
     /**
-     * Return the characteristic equation as a String
-     *
-     * @param format_pattern The fortran format pattern, e.g. G12.5
-     * @return The characteristic equation as a String
-     */
-//	public String equation(String format_pattern) {
-//		FortranNumberFormat frmt_loc = new FortranNumberFormat(format_pattern);
-//		return equation(frmt_loc);
-//	}
-    /**
      * MAIN for debugging
      *
      * @param args The array of strings as parameters

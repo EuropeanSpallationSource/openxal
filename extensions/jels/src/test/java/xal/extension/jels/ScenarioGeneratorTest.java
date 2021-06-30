@@ -30,20 +30,13 @@ public class ScenarioGeneratorTest {
 
         for (AcceleratorSeq sequence : accelerator.getSequences()) {
             // Generates lattice from SMF accelerator
-            //Scenario scenario = Scenario.newScenarioFor(sequence);			
-            //Scenario scenario = Scenario.newAndImprovedScenarioFor(sequence);
-            //ScenarioGenerator2 sg = new ScenarioGenerator2(sequence, NewAndImprovedScenarioElementMapping.getInstance());
-            //sg.setDebug(true);
-            //sg.setVerbose(true);
             Scenario escenario = Scenario.newScenarioFor(sequence);
-            //Scenario scenario = Scenario.newAndImprovedScenarioFor(sequence);
 
             // Ensure files
             new File("temp/old").mkdirs();
             new File("temp/new").mkdirs();
 
             // Outputting lattice elements
-            //saveLattice(scenario.getLattice(), "temp/old/lattice-"+sequence.getId()+".xml");
             saveLattice(escenario.getLattice(), "temp/new/lattice-" + sequence.getId() + ".xml");
         }
     }
@@ -69,10 +62,8 @@ public class ScenarioGeneratorTest {
             throw new Error("Accelerator is empty. Could not load the default accelerator.");
         }
 
-        //AcceleratorSeq sequence = accelerator.findSequence( "HEBT2" );				
         return accelerator;
 
         /* We can instead build lattice for the whole accelerator */
-        //return accelerator;
     }
 }

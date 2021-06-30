@@ -53,7 +53,6 @@ public class BendTest extends TestCommon {
 
         run(sequence);
 
-        //printResults();
         if (initialEnergy == 3e6) {
             checkTWTransferMatrix(new double[][]{
                 {+1.018958e+00, +1.799999e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00,},
@@ -104,7 +103,6 @@ public class BendTest extends TestCommon {
 
         run(sequence);
 
-        //printResults();
         if (initialEnergy == 3e6) {
             checkTWTransferMatrix(new double[][]{
                 {+9.632544e-01, +1.788962e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, -1.722575e-01},
@@ -154,7 +152,6 @@ public class BendTest extends TestCommon {
 
         run(sequence);
 
-        //printResults();
         if (initialEnergy == 3e6) {
             checkTWTransferMatrix(new double[][]{
                 {+9.668973e-01, +1.791166e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, -1.723634e-01},

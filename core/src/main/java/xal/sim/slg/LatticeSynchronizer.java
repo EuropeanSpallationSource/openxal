@@ -66,7 +66,6 @@ public class LatticeSynchronizer implements Visitor {
      */
     private DataAdaptor comAdptr;
     private String paramSrc;
-//	/**look-up for LANL types*/private static ModelTypeLookUp modelType;
     /**
      * number formater
      */
@@ -85,7 +84,6 @@ public class LatticeSynchronizer implements Visitor {
         PAR_TAG = "Parameter";
         COM_TAG = "comment";
         DTD = "Lattice.mod.xal.dtd";
-//		modelType= new ModelTypeLookUp();
     }
 
     /**
@@ -134,7 +132,6 @@ public class LatticeSynchronizer implements Visitor {
     private void writeElementTag(Element e) {
         elmAdptr = seqAdptr.createChild(ELM_TAG);
         elmAdptr.setValue("fam", e.getFam());
-        //        elmAdptr.setValue("type",modelType.ValueForKey(e.getType()));
         elmAdptr.setValue("type", e.getType());
         elmAdptr.setValue("id", e.getName());
         elmAdptr.setValue("length", fmt.format(e.getLength()));
@@ -353,13 +350,10 @@ public class LatticeSynchronizer implements Visitor {
         parAdptr = elmAdptr.createChild("Parameter");
         parAdptr.setValue("name", "Orientation");
         parAdptr.setValue("type", "int");
-//		IdealEDipole elmg= new IdealEDipole();
         int orientation = edipole.getOrientation();
 //		if (edipole.isHorizontal()) {
-//			orientation= IElectromagnet.ORIENT_HOR;
 //		}
 //		if (edipole.isVertical()) {
-//			orientation= IElectromagnet.ORIENT_VER;
 //		}
         parAdptr.setValue("value", Integer.toString(orientation));
 
@@ -625,9 +619,7 @@ public class LatticeSynchronizer implements Visitor {
         } else if (paramSrc == ModelProxy.PARAMSRC_LIVE) {
             try {
                 return rfgap.getGapPhaseAvg() * Math.PI / 180.;
-                //				return -99.d;
             } catch (ConnectionException | GetException e) {
-                //				throw new Error(e.getMessage());
                 if (e.getMessage() != null) {
                     LOGGER.log(Level.INFO, e.getMessage());
                 } else {
@@ -654,9 +646,7 @@ public class LatticeSynchronizer implements Visitor {
         } else if (paramSrc == ModelProxy.PARAMSRC_LIVE) {
             try {
                 return rfgap.getGapE0TL() * 1.e6;
-                //				return -99.d;
             } catch (ConnectionException | GetException e) {
-                //				throw new Error(e.getMessage());
                 if (e.getMessage() != null) {
                     LOGGER.log(Level.INFO, e.getMessage());
                 } else {
@@ -684,12 +674,10 @@ public class LatticeSynchronizer implements Visitor {
             try {
                 if (magnet instanceof Electromagnet) {
                     return ((Electromagnet) magnet).getField();
-                    //				return -99.d;
                 } else {
                     return magnet.getDesignField();
                 }
             } catch (ConnectionException | GetException e) {
-                //				throw new Error(e.getMessage());
                 if (e.getMessage() != null) {
                     LOGGER.log(Level.INFO, e.getMessage());
                 } else {
@@ -715,12 +703,10 @@ public class LatticeSynchronizer implements Visitor {
             try {
                 if (magnet instanceof Electrostatic) {
                     return magnet.getField();
-                    //				return -99.d;
                 } else {
                     return magnet.getDesignField();
                 }
             } catch (ConnectionException | GetException e) {
-                //				throw new Error(e.getMessage());
                 if (e.getMessage() != null) {
                     LOGGER.log(Level.INFO, null, e);
                 } else {

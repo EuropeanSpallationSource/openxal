@@ -105,8 +105,6 @@ public class BunchLengthSimulator {
         // Create the finite space charge probe
         try {
             EnvTrackerAdapt algEnvTrk = AlgorithmFactory.createEnvTrackerAdapt(smfSeq);
-//            algEnvTrk.setMaxIterations(1000);
-//            algEnvTrk.setDebugMode(true);
 
             // Create and initialize the envelope probe
             this.mdlProbe = ProbeFactory.getEnvelopeProbe(this.smfSeq, algEnvTrk);

@@ -56,12 +56,8 @@ public class TestJamaMatrix {
         arrMat[3] = new double[]{7, 8};
 
         GenericMatrix matTest = new GenericMatrix(arrMat);
-//        LOGGER.log(Level.INFO, "matTest = "); 
-//        matTest.print(matTest.getRowDimension(), matTest.getColumnDimension());
 
         double[][] arrTest = matTest.getArrayCopy();
-        //double[]   vecCol  = matTest.getColumnPackedCopy();
-        //double[]   vecRow  = matTest.getRowPackedCopy();
         int szRow = matTest.getRowCnt();
         int szCol = matTest.getColCnt();
 
@@ -73,8 +69,6 @@ public class TestJamaMatrix {
         }
 
         GenericMatrix matCtrl = new GenericMatrix(arrTest);
-//        LOGGER.log(Level.INFO, "matCtrl = "); 
-//        matCtrl.print(matCtrl.getRowDimension(), matCtrl.getColumnDimension());
 
         GenericMatrix matRes = matCtrl.minus(matTest);
         double dblErr = matRes.normInf();

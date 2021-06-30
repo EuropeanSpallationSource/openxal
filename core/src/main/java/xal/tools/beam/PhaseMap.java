@@ -559,10 +559,6 @@ public class PhaseMap implements IArchive {
 
         // Compute the new displacement vector
         PhaseVector vecDspl = this.compComposedDisplacement(this, mapRight);
-//        
-//        PhaseVector vecTrm1 = mapRight.getRangeDisplace().minus( this.getDomainCenter() );
-//        PhaseVector vecTrm2 = this.getFirstOrder().times( vecTrm1 );
-//        PhaseVector vecDspl = vecTrm2.plus( this.getRangeDisplace() );
 
         // Compute the new first-order part
         PhaseMatrix matLin = this.getFirstOrder().times(mapRight.getFirstOrder());
@@ -631,34 +627,6 @@ public class PhaseMap implements IArchive {
         return vecDspld;
     }
 
-//	 /** 
-//	 * Calculate the fixed point solution vector representing the closed orbit at the location of this element.
-//	 * We find the fixed point for the six phase space coordinates.
-//	 * The equation to solve is <code>Ax + b = 0</code> where <code>A</code> is the 6x6 submatrix less the identity
-//	 * matrix and <code>b</code> is the 7th column excluding the 7th row element.  The reason for this is that the
-//	 * fixed point is defined by the point for which the transfer map maps to the same point.  This is
-//	 * <code>M * v = v</code>.  
-//	 * 
-//	 * @return the fixed point solution
-//	 */
-//	 public PhaseVector calculateFixedPoint() {
-//		 return getFirstOrder().calculateFixedPoint();
-//	 }	 
-//	 
-//	 
-//	 /** 
-//	 * Calculate the fixed point solution vector representing the dispersion at the location of this element.
-//	 * We find the fixed point for the four transverse phase space coordinates.
-//	 * The equation to solve is <code>Ax + b = 0</code> where <code>A</code> is the 4x4 submatrix less the identity
-//	 * matrix and <code>b</code> is the 6th column excluding the longitudinal row element.  The reason for this is that the
-//	 * fixed point is defined by the point for which the transfer map maps to the same point.  This is
-//	 * <code>M * v = v</code>.  
-//	 * 
-//	 * @return the dispersion vector
-//	 */
-//	 public double[] calculateDispersion(final double gamma) {
-//		 return getFirstOrder().calculateDispersion(gamma);
-//	 }
     /*
      * Support Methods
      */

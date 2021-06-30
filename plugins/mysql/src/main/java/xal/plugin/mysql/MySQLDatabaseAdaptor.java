@@ -27,15 +27,6 @@ public class MySQLDatabaseAdaptor extends DatabaseAdaptor {
     public Array getArray(String type, Connection connection, Object array)
             throws DatabaseException {
         // TODO Auto-generated method stub
-//		try {
-//			final ArrayDescriptor descriptor = getArrayDescriptor(type, connection);
-//			return new ARRAY(descriptor, connection, array);
-//		}
-//		catch(SQLException exception) {
-//			LOGGER.log( Level.SEVERE, "Error instantiating an SQL array of type: " + type, exception );
-//			throw new DatabaseException("Exception generating an SQL array.", this, exception);
-//		}
-
         return null;
     }
 
@@ -101,22 +92,4 @@ public class MySQLDatabaseAdaptor extends DatabaseAdaptor {
     public ResultSet getPrimaryKeysResultSet(final DatabaseMetaData metaData, final String schema, final String table) throws SQLException {
         return metaData.getPrimaryKeys(schema, null, table);
     }
-
-//	/**
-//	 * Get the array descriptor for the specified array type
-//	 * @param type An SQL array type
-//	 * @param connection A database connection
-//	 * @return the array descriptor for the array type
-//	 * @throws java.sql.SQLException if a database exception is thrown
-//	 */
-//	private ArrayDescriptor getArrayDescriptor(final String type, final Connection connection) throws SQLException {
-//		if ( arrayDescriptorMap.containsKey(type) ) {
-//			return (ArrayDescriptor)arrayDescriptorMap.get(type);
-//		}
-//		else {
-//			ArrayDescriptor descriptor = ArrayDescriptor.createDescriptor(type, connection);
-//			arrayDescriptorMap.put(type, descriptor);
-//			return descriptor;
-//		}		
-//	}
 }

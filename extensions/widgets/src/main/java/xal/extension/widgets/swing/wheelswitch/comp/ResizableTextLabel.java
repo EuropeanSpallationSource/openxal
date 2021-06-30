@@ -266,10 +266,8 @@ public class ResizableTextLabel extends JLabel {
         }
 
         if (length <= getWidth() * 0.9 || length == 0) {
-            //Debug.out("label length="+length+", columns="+columns+", size="+newSize);
             super.setFont(font);
         } else {
-            //Debug.out("shrinking resizable label");
             super.setFont(FontHelper.getFontWithSize(
                     (int) (newSize * getWidth() * 0.9 / length), font));
         }

@@ -220,7 +220,6 @@ public class PVSelector extends JPanel {
                         if (value instanceof HandleNode) {
                             if (((HandleNode) value).isSignal()) {
                                 // get full PV name instead of just handle
-                                //String PVName = ((HandleNode)value).toString();
                                 String PVName = ((HandleNode) value).getSignalName();
                                 myChannel = ((HandleNode) value).getChannel();
                                 jText.setText(null);

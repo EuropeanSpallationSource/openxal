@@ -70,7 +70,6 @@ public class TestTransferMapTrajectory {
             PSTR_OUTPUT = ResourceTools.createOutputStream(TestTrajectory.class);
         }
 
-//        ACCEL  = XMLDataManager.loadDefaultAccelerator();
         ACCEL = ResourceManager.getTestAccelerator();
 
         ArrayList<AcceleratorSeq> lst = new ArrayList<AcceleratorSeq>();
@@ -80,20 +79,13 @@ public class TestTransferMapTrajectory {
         lst.add(hebt1);
         lst.add(hebt2);
 
-        //                AcceleratorSeqCombo seq = new AcceleratorSeqCombo("LINAC", lst);
         AcceleratorSeq seq = ACCEL.getSequence("SCLMed");
 
-        //                MODEL = Scenario.newScenarioFor(hebt1)
         MODEL = Scenario.newScenarioFor(seq);
         MODEL.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
 
         TransferMapTracker ptracker = new TransferMapTracker();
         PROBE = ProbeFactory.getTransferMapProbe(seq, ptracker);
-        //                PROBE = ProbeFactory.getTransferMapProbe(hebt1, ptracker)
-
-        //                print "Probe update policy = ", ptracker.getProbeUpdatePolicy()
-        //                ptracker.setProbeUpdatePolicy(Tracker.UPDATE_ENTRANCE)
-        //                print "New probe update policy = ", ptracker.getProbeUpdatePolicy()
         MODEL.setProbe(PROBE);
         MODEL.resync();
         MODEL.run();
@@ -145,7 +137,6 @@ public class TestTransferMapTrajectory {
      */
     @Test
     public void testGetTransferMatrix() {
-//        CalculationsOnMachines  prcTran = new CalculationsOnMachines(TRAJ);
 
         PSTR_OUTPUT.print("\n\nSTATE-BY-STATE TRANSFER MATRICES IN TRAJECTORY\n");
         int cnt = 0;
@@ -155,8 +146,6 @@ public class TestTransferMapTrajectory {
             TransferMapState state2 = iter.next();
             String strId1 = state1.getElementId();
             String strId2 = state2.getElementId();
-//            PhaseMatrix matXfer = TRAJ.getTransferMatrix(strId1, strId2);
-//            PhaseMatrix matXfer = TRAJ.getTransferMatrix(state1, state2);
             PhaseMatrix matXfer1 = state1.getTransferMap().getFirstOrder();
             PhaseMatrix matXfer2 = state2.getTransferMap().getFirstOrder();
             PhaseMatrix matXfer = matXfer2.times(matXfer1.inverse());
@@ -176,7 +165,6 @@ public class TestTransferMapTrajectory {
         while (iter.hasNext()) {
             TransferMapState state = iter.next();
             String strId1 = state.getElementId();
-//            PhaseMatrix matXfer = TRAJ.getTransferMatrix(strId1, strId2);
             PhaseMatrix matXfer = state.getTransferMap().getFirstOrder();
 
             PSTR_OUTPUT.println(cnt + "     " + strId1 + "     " + matXfer.toStringMatrix());
@@ -185,35 +173,12 @@ public class TestTransferMapTrajectory {
         }
     }
 
-//    /**
-//     * Test method for {@link xal.model.probe.traj.TransferMapTrajectory#getTransferMatrix(java.lang.String, java.lang.String)}.
-//     */
-//    @Test
-//    public void testGetTransferMatrixEntrToEntr() {
-//        PSTR_OUTPUT.print("\n\nENTR-TO-ENTR STATE-BY-STATE TRANSFER MATRICES IN TRAJECTORY\n");
-//        int cnt    = 0;
-//        TransferMapState state1 = (TransferMapState) TRAJ.initialState();
-//        Iterator<TransferMapState> iter = (Iterator<TransferMapState>) TRAJ.stateIterator();
-//        while ( iter.hasNext() ) {
-//            TransferMapState state2 = iter.next(); 
-//            String strId1 = state1.getElementId();
-//            String strId2 = state2.getElementId();
-//            PhaseMatrix matXfer = TRAJ.getTransferMatrixEntrToEntr(strId1, strId2);
-////            PhaseMatrix matXfer = TRAJ.getTransferMatrix(state1, state2);
-//            
-//            PSTR_OUTPUT.println(cnt + "     " + strId1 + " to " + strId2 + "     " + matXfer.toStringMatrix() );
-//            
-//            cnt = cnt + 1;
-//            state1 = state2;
-//        }
-//    }
     /**
      * Test method for
      * {@link xal.model.probe.traj.Trajectory#stateForElement(java.lang.String)}.
      */
     @Test
     public void testStateForElement() {
-//        fail("Not yet implemented");
     }
 
     /**
@@ -222,7 +187,6 @@ public class TestTransferMapTrajectory {
      */
     @Test
     public void testStatesForElement() {
-//        fail("Not yet implemented");
     }
 
     /**
@@ -231,7 +195,6 @@ public class TestTransferMapTrajectory {
      */
     @Test
     public void testStatesForElement_new() {
-//        fail("Not yet implemented");
     }
 
 }

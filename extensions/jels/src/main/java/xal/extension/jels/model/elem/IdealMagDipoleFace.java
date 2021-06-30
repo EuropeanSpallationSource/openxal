@@ -152,10 +152,11 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      *
      * I2 := Integral{ B(z)[B0 - B(z)]/(g B0^2) }dz
      *
-     * where <em>g</em> is the gap height, <em>B0</em> is the hard edge value for
-     * the magnetic field, and <em>B(z)</em> is the true magnetic field along the
-     * design trajectory with path length parameter <em>z</em>. The integral taken
-     * from a location <em>z0</em> within the magnet where <em>B(z0)=B0</em>
+     * where <em>g</em> is the gap height, <em>B0</em> is the hard edge value
+     * for the magnetic field, and <em>B(z)</em> is the true magnetic field
+     * along the design trajectory with path length parameter <em>z</em>. The
+     * integral taken from a location <em>z0</em> within the magnet where
+     * <em>B(z0)=B0</em>
      * out to <em>z</em> = infinity.
      *
      * Some examples values are the following: I2 = 0.1666 linear drop off I2 =
@@ -216,7 +217,8 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * Property Query
      */
     /**
-     * This is the design bending curvature <em>h</em> = 1/<em>R</em><sub>0</sub>
+     * This is the design bending curvature <em>h</em> =
+     * 1/<em>R</em><sub>0</sub>
      * where
      * <em>R</em><sub>0</sub> is the design bending radius.
      *
@@ -254,7 +256,8 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * described by D.C. Carey. The integral determines the amount of defocusing
      * caused by the fringe field.
      *
-     * @return second-order integral of fringe field (<strong>dimensionless</strong>)
+     * @return second-order integral of fringe field
+     * (<strong>dimensionless</strong>)
      *
      * @see IdealMagDipoleFace#setFringeIntegral(double)
      */

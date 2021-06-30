@@ -131,7 +131,7 @@ public class UpdatingSingleThreaded {
             // -----------------------------------------------------------------
             for (int i = 0; i < NR_DEVICES; i++) {
                 double z = getRandomZ();
-                // double value = getRandomValue();
+
                 int status = getRandomStatus();
                 devices[i] = new Device("magnet" + i, z, 0.0, WidgetsRepository.getAlarmedXCORWidget(status));
 
@@ -143,7 +143,7 @@ public class UpdatingSingleThreaded {
             // -----------------------------------------------------------------
             for (int i = 0; i < NR_DEVICES; i++) {
                 double z = getRandomZ();
-                // double value = getRandomValue();
+
                 int status = getRandomStatus();
                 devices[i] = new Device("magnet" + i, z, 0.0, WidgetsRepository.getAlarmedYCORWidget(status));
 

@@ -101,8 +101,6 @@ public class ExpFilter {
             this.clearFreqComponent(index, vecTrans);
         }
 
-//        // Correct the phasing
-//        this.linearPhase(vecTrans);
         // Transform back to time domain and return
         double[] arrRecvrd = this.getTranformer().inverse(vecTrans);
 
@@ -288,8 +286,6 @@ public class ExpFilter {
             this.amplifyFreqComponent(index, cpxA, vecTrans);
         }
 
-        //        // Correct the phasing
-        //        this.linearPhase(vecTrans);
         // Transform back to time domain and return
         double[] arrRecvrd = this.getTranformer().inverse(vecTrans);
 

@@ -34,19 +34,7 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
     /*
      *  Abstract Methods
      */
-//    /** 
-//     *  Abstract - Returns the correlation matrix (sigma matrix) in homogeneous
-//     *  phase space coordinates.
-//     *
-//     *  @return         <zz^T> =| <x*x>  <x*xp>  <x*y>  <x*yp>  <x*z>  <x*zp>  <x>  |
-//     *                          | <xp*x> <xp*xp> <xp*y> <xp*yp> <xp*z> <xp*zp> <xp> |
-//     *                            ...
-//     *
-//     *  @see    xal.tools.beam.PhaseMatrix
-//     */
-//    public abstract CovarianceMatrix getCorrelation();
-//    
-    /*
+ /*
      *  Initialization
      */
     /**
@@ -57,7 +45,6 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
      */
     protected BunchProbe() {
         super();
-//        this.vecPhsBeta = R3.zero();
     }
 
     /**
@@ -70,7 +57,6 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
         super(probe);
         this.setBunchFrequency(probe.getBunchFrequency());
         this.setBeamCurrent(probe.getBeamCurrent());
-//        this.setBetatronPhase(new R3(probe.getBetatronPhase()));
     }
 
     /**
@@ -91,12 +77,6 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
         this.stateCurrent.setBeamCurrent(I);
     }
 
-//    /**
-//     *  Set the total beam charge 
-//     * 
-//     *  @param  Q   beam charge in <strong>Coulombs</strong>
-//     */
-//    public void setBeamCharge(double Q)     { dblBmQ = Q; };
     /*
      *  Attribute Query
      */
@@ -126,14 +106,6 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
         return this.stateCurrent.getBeamCurrent();
     }
 
-//    /**
-//     * Returns the betatron phase with space charge for all three phase planes.
-//     * 
-//     * @return vector (psix,psiy,psiz) of phases in <strong>radians </strong>
-//     */
-//    public R3 getBetatronPhase() {
-//        return this.vecPhsBeta;
-//    }
     /*
      * Computed Properties
      */
@@ -222,89 +194,4 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
      */
     @Override
     public abstract S createEmptyProbeState();
-
-//    /**
-//     * Applies the properties of the state that is passed in to the current
-//     * state of the probe.
-//     * 
-//     * @param state - the state to apply to the probe
-//     * 
-//     * @author Jonathan M. Freed
-//     * @since Jul 9, 2014
-//     */
-//    @Override
-//    public void applyState(final S state) {
-//        this.stateCurrent = state.copy();
-////        super.applyState(state);
-////        this.setBunchFrequency( state.getBunchFrequency() );
-////        this.setBeamCurrent( state.getBeamCurrent() );
-//    }
 }
-
-//
-// Storage
-//
-///** 
-//*  Returns the beam perveance <strong>Units: radians^2/meter</strong>
-//*  
-//*  TODO    This could be optimized (CKA)
-//*/
-//public double beamPerveance() {
-//// double gamma = this.getGamma();
-//// double bg2   = gamma*gamma - 1.0;
-// 
-// double  c = LightSpeed;
-// double  dblPermT = 1.e-7*c*c*this.bunchCharge();
-//// double  dblPermT = this.bunchCharge()/(2.0*Math.PI*Permittivity);
-// double  dblRelaT = 1.0/(super.getGamma()*super.getBetaGamma()*super.getBetaGamma());
-// double  dblEnerT = Math.abs(super.getSpeciesCharge())/super.getSpeciesRestEnergy();
-// 
-// 
-// 
-// return dblPermT*dblRelaT*dblEnerT;  
-//}
-///**
-//*  Return the covariance matrix of the distribution.  Note that this can be computed
-//*  from the correlation matrix in homogeneous coordinates since the mean values are 
-//*  included in that case.
-//*
-//*  @return     <(z-<z>)*(z-<z>)^T> = <z*z^T> - <z>*<z>^T
-//*/
-//public CovarianceMatrix  phaseCovariance() {
-// return getCorrelation().getCovariance();
-//}
-//
-///** 
-//*  Return the phase space coordinates of the centroid in homogeneous coordinates 
-//*
-//*  @return         <z> = (<x>, <xp>, <y>, <yp>, <z>, <zp>, 1)^T
-//*/
-//public PhaseVector phaseMean()  {
-// return getCorrelation().getMean();
-//}
-//
-///** return the time elapsed from the start of the probe tracking (sec) */
-//public double getElapsedTime() { return elapsedTime;}
-//
-///** set the time elapsed from the start of the probe tracking (sec) 
-//* @param time - the elapsed time (sec)
-//*/
-//public void setElapsedTime(double time) {elapsedTime = time; }
-///** advance the time the probe has spent traveling down the beam line
-//@ param the step size to advance (m)
-//*/
-//
-//public void advanceElapsedTime(double h) {
-//double deltaT;
-//
-//deltaT = h / (IConstants.LightSpeed * getBeta());
-//setElapsedTime(getElapsedTime() + deltaT);
-//}
-///** update the elapsed time by a specified time increment
-//* This is used in the RF gap (thin lens) kick correction.
-//@ param the time amount to correct the integrated elapsed time by
-//*/
-//
-//public void setTime(double dt) {
-//setElapsedTime(getElapsedTime() + dt);
-//}

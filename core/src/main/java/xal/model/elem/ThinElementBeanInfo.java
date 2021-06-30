@@ -1,6 +1,5 @@
 package xal.model.elem;
 
-//import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.beans.SimpleBeanInfo;
 

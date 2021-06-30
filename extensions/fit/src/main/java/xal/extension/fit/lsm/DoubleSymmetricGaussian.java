@@ -459,7 +459,6 @@ public class DoubleSymmetricGaussian {
             pedestal = Math.min(Math.abs(yMin), Math.abs(yMax));
             amp = (yMax - yMin);
         } else {
-            //LOGGER.log(Level.INFO, "Debug  i_xMin = " + i_xMin + " i_xMax=" + i_xMax);
             int iCent = (iXMin + iXMax) / 2;
             int iMin = -1;
             for (int i = iXMin; i < iCent; i++) {
@@ -485,7 +484,6 @@ public class DoubleSymmetricGaussian {
             center1 = ds.getArrX(iMax)[0];
             double sig1 = ds.getArrX(iMax)[0] - ds.getArrX(iXMax)[0];
 
-            //LOGGER.log(Level.INFO, "Debug  i_min = " + i_min + " i_max=" + i_max);
             sigma = (Math.abs(sig0) + Math.abs(sig1)) / 2.0;
 
             pedestal = Math.min(Math.abs(yMin), Math.abs(yMax));

@@ -145,7 +145,6 @@ public abstract class Digit extends SimpleButton {
 
         sel = newSelected;
 
-        //Debug.out(this+" selected="+newSelected);
         init();
         repaint();
     }

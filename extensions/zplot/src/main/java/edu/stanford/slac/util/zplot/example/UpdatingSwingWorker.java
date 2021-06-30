@@ -69,13 +69,13 @@ public class UpdatingSwingWorker {
     private synchronized static void setup() {
         setup_count = 1 + setup_count;
         try {
-            //LOGGER.log(Level.INFO, "Setup entered-" + setup_count);
+
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             LOGGER.log(Level.SEVERE, null, exception);
         }
-        //LOGGER.log(Level.INFO, "Setup exit-" + setup_count);
+
     }
 
     /**
@@ -138,7 +138,6 @@ public class UpdatingSwingWorker {
             // -----------------------------------------------------------------
             for (int i = 0; i < NR_DEVICES; i++) {
                 double z = getRandomZ();
-                // double value = getRandomValue();
                 int status = getRandomStatus();
                 devices[i] = new Device("magnet" + i, z, 0.0, WidgetsRepository.getAlarmedXCORWidget(status));
 
@@ -150,7 +149,6 @@ public class UpdatingSwingWorker {
             // -----------------------------------------------------------------
             for (int i = 0; i < NR_DEVICES; i++) {
                 double z = getRandomZ();
-                // double value = getRandomValue();
                 int status = getRandomStatus();
                 devices[i] = new Device("magnet" + i, z, 0.0, WidgetsRepository.getAlarmedYCORWidget(status));
 
@@ -246,7 +244,6 @@ public class UpdatingSwingWorker {
             int Y_PLOT_INDEX = 1;
 
             // create z plot
-            // ZPlot zPlot = new ZPlot(2);
             zPlot.labelDevices(bpms, beamlines);
             zPlot.setGap(80);
 
@@ -285,7 +282,6 @@ public class UpdatingSwingWorker {
             zPlot.setSubplotLabel(Y_PLOT_INDEX, "Y Plot");
 
             // create plot panel
-            //final ZPlotPanel zPlotPanel = new ZPlotPanel(p, zPlot);
             if (!f.isVisible()) {
                 f.pack();
                 f.setVisible(true);
@@ -306,7 +302,7 @@ public class UpdatingSwingWorker {
                     ZPlotPanel z = (ZPlotPanel) get();
                     z.repaint();
                     LOGGER.log(Level.INFO, "...just repainted " + z.getTitle());
-               // end of finished()
+                    // end of finished()
                 }
             };
             worker.start();

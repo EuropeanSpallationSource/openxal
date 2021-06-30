@@ -24,11 +24,6 @@ public class StringBufferTest extends TestCase {
         junit.textui.TestRunner.run(StringBufferTest.class);
     }
 
-//	public void testAppendDouble() {
-//		StringBuffer buf = new StringBuffer();
-//		double d = 42.0;
-//		buf.append(d);
-//	}
     /**
      * Test the <code>{@link DoubleToString#append(StringBuffer, double)}</code>
      * method.
@@ -41,9 +36,4 @@ public class StringBufferTest extends TestCase {
         StringBuffer buf = new StringBuffer();
         DoubleToString.append(buf, d);
     }
-
-//	public void testDoubleToString() {
-//		double d = 42.0;
-//		String s = Double.toString(d);
-//	}
 }

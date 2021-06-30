@@ -29,7 +29,7 @@ public final class WidgetsRepository {
 
     private static Shape createLargeCircle() {
         final int SIZE = 16;
-        //return new Ellipse2D.Double(-SIZE/2, -SIZE/2, SIZE, SIZE);
+
         return new Ellipse2D.Double(-SIZE, -SIZE, SIZE, SIZE);
     }
 

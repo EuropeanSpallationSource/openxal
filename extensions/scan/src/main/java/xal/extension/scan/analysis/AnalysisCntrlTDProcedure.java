@@ -368,8 +368,6 @@ public final class AnalysisCntrlTDProcedure extends AnalysisController {
         exportDataButton.setFont(fnt);
         makeAnalysisButton.setFont(fnt);
 
-        //verticalLeftGraphLabel_1.setFont(fnt);
-        //verticalLeftGraphLabel_2.setFont(fnt);
         leftTitle.setFont(fnt);
 
         moduleNameLabel.setFont(fnt);

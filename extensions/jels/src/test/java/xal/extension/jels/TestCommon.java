@@ -108,14 +108,6 @@ public abstract class TestCommon {
         //frequency
         envelopeProbe.setBunchFrequency(frequency);
 
-        /*CovarianceMatrix cov = ((EnvelopeProbe)envelopeProbe).getCovariance().computeCovariance();
-		cov.setElem(4, 4, cov.getElem(4,4)/Math.pow(envelopeProbe.getGamma(),2));
-		cov.setElem(5, 5, cov.getElem(5,5)*Math.pow(envelopeProbe.getGamma(),2));
-		for (int i=0; i<6; i++) {
-			LOGGER.log(Level.INFO, );
-			for (int j=0; j<6; j++)
-				System.out.printf("%E ",cov.getElem(i,j));
-		}*/
         envelopeProbe.initialize();
 
         return envelopeProbe;
@@ -140,14 +132,10 @@ public abstract class TestCommon {
 
     public void run(AcceleratorSeq sequence) throws ModelException {
         // Generates lattice from SMF accelerator
-        //Scenario scenario = Scenario.newScenarioFor(sequence);
-        //Scenario scenario = Scenario.newAndImprovedScenarioFor(sequence);
         try {
             scenario = Scenario.newScenarioFor(sequence, elementMapping);
 
             // Outputting lattice elements
-            //new File("temp/").mkdirs();
-            //saveLattice(scenario.getLattice(), "temp/lattice.xml");
             scenario.setProbe(probe);
             scenario.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
             scenario.resync();
@@ -156,9 +144,6 @@ public abstract class TestCommon {
         } catch (ModelException e) {
             LOGGER.log(Level.SEVERE, null, e);
         }
-
-//        // Prints transfer matrices
-//        printTransferMatrices(scenario);
     }
 
     public void printTransferMatrices(Scenario scenario) throws ModelException {
@@ -205,7 +190,6 @@ public abstract class TestCommon {
         }
         PhaseMatrix pm77 = new PhaseMatrix(T77);
         double n = pm.getFirstOrder().minus(pm77).norm2() / pm77.norm2();
-        //pm.getFirstOrder().minus(new PhaseMatrix(new Matrix(T77))).print();
 
         System.out.printf("TW transfer matrix diff: %E\n", n);
         if (n >= errTolerance) {
@@ -239,7 +223,6 @@ public abstract class TestCommon {
     }
 
     private double tr(double x, double y) {
-        //return Math.signum(x-y)*Math.pow(10, (int)Math.log10(Math.abs((x-y)/x)));
         return (x - y) / y;
     }
 
@@ -278,12 +261,6 @@ public abstract class TestCommon {
         PhaseVector meanTw = new PhaseVector(meanTw7);
 
         PrintWriter pw = new PrintWriter(System.out);
-        /*centCovOx.print(pw);
-		meanOx.print(pw);
-		meanOx.minus(meanTw).print(pw);
-		pw.flush();*/
-        //centCovOx.print(pw);
-        //	centCovTw.print(pw);
         pw.flush();
         double n = centCovOx.minus(centCovTw).norm2() / centCovTw.norm2();
         double n2 = meanOx.minus(meanTw).norm2();
@@ -329,7 +306,6 @@ public abstract class TestCommon {
             System.out.printf("TW mean = %s\n", meanTw.toString());
             System.out.printf("OX mean = %s\n", meanOx.toString());
         }
-        //pm.getFirstOrder().minus(new PhaseMatrix(new Matrix(T77))).print();
         System.out.printf("TW cov matrix diff: %E\n", n);
         System.out.printf("TW mean diff: %E\n", n2);
         Assert.assertTrue("TW cov matrix", n < errTolerance);

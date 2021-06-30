@@ -400,13 +400,6 @@ public class IdealRfCavity extends ElementSeq implements IRfCavity {
                 mdlCavCell.setCavityModeConstant(this.getCavityModeConstant());
             }
 
-            // The child component is the first RF gap
-//            if (cmp instanceof IRfGap) {
-//                IRfGap  mdlCavGap = (IRfGap)cmp;
-//                
-//                if (mdlCavGap.isFirstGap())
-//                    mdlCavGap.setPhase( this.getCavPhase() );
-//            }
             // The child component is a drift space within an RF cavity
             if (cmp instanceof IdealRfCavityDrift) {
                 IdealRfCavityDrift mdlCavDrift = (IdealRfCavityDrift) cmp;

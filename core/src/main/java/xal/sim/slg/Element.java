@@ -246,7 +246,6 @@ public abstract class Element implements VisitorListener, Cloneable {
     private double[] getSlicePositions(double cutPos) {
         //calculate length and position of sliced parts.
         double upLen = cutPos - getStartPosition();
-        //        LOGGER.log(Level.INFO, "getSlicePostions: "+cut_pos+","+getStartPosition());
         if (Math.abs(upLen) < Lattice.EPS) {
             upLen = 0.0;
         }
@@ -257,7 +256,6 @@ public abstract class Element implements VisitorListener, Cloneable {
         double upPos = getStartPosition() + upLen * 0.5;
         double dnPos = getEndPosition() - dnLen * 0.5;
         double[] retval = {upPos, upLen, dnPos, dnLen};
-        //        LOGGER.log(Level.INFO, "up_p,up_l,dn_p,dn_l: "+up_pos+","+up_len+","+dn_pos+","+dn_len);
         return retval;
     }
 
@@ -321,10 +319,6 @@ public abstract class Element implements VisitorListener, Cloneable {
 
             args[0] = positions[0];
             args[1] = positions[1];
-//            if (getPosition() > ((Double)args[0]).doubleValue()) 
-//                args[2]=getName()+"x";
-//            else
-//                args[2]=getName();
             args[2] = getName();
 
             upstream = (Element) constructor.newInstance(args);
@@ -332,12 +326,6 @@ public abstract class Element implements VisitorListener, Cloneable {
 
             args[0] = positions[2];
             args[1] = positions[3];
-//            if (getType() != "drift") {
-//                args[2]=getName()+"y";
-//            }
-//            else {
-//                args[2]=getName();
-//            }
             args[2] = getName();
 
             downstream = (Element) constructor.newInstance(args);
@@ -445,4 +433,4 @@ public abstract class Element implements VisitorListener, Cloneable {
     @Override
     public abstract void accept(Visitor v);
 
-}///////////////////////////////////////////// Element
+}

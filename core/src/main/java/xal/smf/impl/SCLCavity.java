@@ -104,24 +104,6 @@ public class SCLCavity extends RfCavity {
     @Deprecated()
     public double getFieldWithCavityOff(double current, double energy,
             double resErr, double plsWdth) {
-//		// minimum energy for this calculation is 60MeV
-//		if (energy > 60.) {
-//			if (plsWdth < 0.5) {
-//				// if pulse width is less than 0.5 us, use 0.5 instead
-//				plsWdth = 0.5;
-//			}
-//			DriftBeam df = new DriftBeam(this);
-//			df.getCavity().buildcavity();
-//			df.setbeam(current * 0.001, plsWdth * 0.000001, energy);
-//			df.setcavity(getQLoaded(), resErr, getDfltCavAmp()
-//					* getStructureTTF(), getCavFreq());
-//			df.findphase();
-//
-//			return df.getloading();
-//		} else {
-//			return 0.;
-//		}
-
         return 0.0;
     }
 
@@ -142,29 +124,6 @@ public class SCLCavity extends RfCavity {
     @Deprecated()
     public double getFieldWithCavityOff(double current, double energy,
             double resErr, double[] plsArry, double sampleRate) {
-//		double plsWdth = sampleRate * plsArry.length;
-//		if (energy > 60.) {
-//		    if (plsWdth < 0.5) {
-//		        // if pulse width is less than 0.5 us, use 0.5 instead
-//		        plsWdth = 0.5;
-//		    }
-//			DriftBeam df = new DriftBeam(this);
-//			df.getCavity().buildcavity();
-//			df.setshape(plsArry.length);
-////			double dt = plsWdth / plsArry.length;
-//			for (int i = 0; i < plsArry.length; i++) {
-//				double t = sampleRate * i;
-//				df.setpulse(i, t, plsArry[i]);
-//			}
-//
-//			df.setbeam(current * 0.001, plsWdth, energy);
-//			df.setcavity(getQLoaded(), resErr, getDfltCavAmp()
-//					* getStructureTTF(), getCavFreq());
-//
-//			return df.getloading();
-//		} else {
-//			return 0.;
-//		}
 
         return 0.0;
     }

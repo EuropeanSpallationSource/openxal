@@ -65,7 +65,6 @@ public class ComponentFactory {
         aperture.setApertureY(dy);
         aperture.setApertureType(apertureType);
         aperture.setPreviousSubsystem(previousSubsystem);
-        // CHECK aperture.setSubsystemType(defaultType());
         return aperture;
     }
 
@@ -115,7 +114,6 @@ public class ComponentFactory {
         bend.setExitCurvature(exitCurvature);
         bend.setPreviousSubsystem(previousSubsystem);
         bend.setExitName(exitEdgeName);
-        // CHECK bend.setSubsystemType(defaultType());
         return bend;
     }
 
@@ -159,7 +157,6 @@ public class ComponentFactory {
         rfCavity.setK2S(kkS);
         rfCavity.setType(cavityType);
         rfCavity.setPreviousSubsystem(previousSubsystem);
-        // CHECK rfCavity.setSubsystemType(defaultType());
         return rfCavity;
     }
 
@@ -182,7 +179,6 @@ public class ComponentFactory {
         drift.setApertureX(aperture);
         drift.setApertureY(apertureY);
         drift.setPreviousSubsystem(previousSubsystem);
-        // CHECK drift.setSubsystemType(defaultType());
         return drift;
     }
 
@@ -233,7 +229,6 @@ public class ComponentFactory {
         dtlCell.setkTsp(kT);
         dtlCell.setK2Tsp(kkT);
         dtlCell.setPreviousSubsystem(previousSubsystem);
-        // CHECK dtlCell.setSubsystemType(defaultType());
         return dtlCell;
     }
 
@@ -265,7 +260,6 @@ public class ComponentFactory {
         acceleration.setApertureY(aperture);
         acceleration.setApertureType(defaultAperture);
         acceleration.setPreviousSubsystem(previousSubsystem);
-        // CHECK acceleration.setSubsystemType(defaultType());
         return acceleration;
     }
 
@@ -304,7 +298,6 @@ public class ComponentFactory {
         quadrupole.setDecapoleVoltage(decapoleVoltage);
         quadrupole.setDodecapoleVoltage(dodecapoleVoltage);
         quadrupole.setPreviousSubsystem(previousSubsystem);
-        // CHECK quadrupole.setSubsystemType(defaultType());
         return quadrupole;
     }
 
@@ -347,7 +340,6 @@ public class ComponentFactory {
         fieldMap.setFileName(fieldmapPath + "/" + fileName);
         fieldMap.setBasePath(basePath);
         fieldMap.setPreviousSubsystem(previousSubsystem);
-        // CHECK fieldMap.setSubsystemType(defaultType());
         return fieldMap;
     }
 
@@ -385,7 +377,6 @@ public class ComponentFactory {
         multipoleMagnet.setSolenoidLength(solenoidLength);
         multipoleMagnet.setSolenoidSteps(solenoidStepNumber);
         multipoleMagnet.setPreviousSubsystem(previousSubsystem);
-        // CHECH multipoleMagnet.setSubsystemType(defaultType());
         return multipoleMagnet;
     }
 
@@ -426,7 +417,6 @@ public class ComponentFactory {
         quadrupole.setDecapoleGradient(decapoleGradient);
         quadrupole.setDodecapoleGradient(dodecapoleGradient);
         quadrupole.setPreviousSubsystem(previousSubsystem);
-        // CHECHKquadrupole.setSubsystemType(defaultType());
         return quadrupole;
     }
 
@@ -504,7 +494,6 @@ public class ComponentFactory {
         nCell.setkTop(kTOutputGaps);
         nCell.setK2Topp(kkTOutputGaps);
         nCell.setPreviousSubsystem(previousSubsystem);
-        // CHECK nCell.setSubsystemType(defaultType());
         return nCell;
     }
 
@@ -541,7 +530,6 @@ public class ComponentFactory {
         rfqCell.setTransCurv(curvature);
         rfqCell.setTransFocus(focusing);
         rfqCell.setPreviousSubsystem(previousSubsystem);
-        // CHECK rfqCell.setSubsystemType(defaultType());
         return rfqCell;
     }
 
@@ -578,7 +566,6 @@ public class ComponentFactory {
         rfCavity.setAbsolutePhase(isPhaseAbsolute);
         rfCavity.setType(cavityType);
         rfCavity.setPreviousSubsystem(previousSubsystem);
-        // CHECK rfCavity.setSubsystemType(defaultType());
         return rfCavity;
     }
 
@@ -604,7 +591,6 @@ public class ComponentFactory {
         solenoid.setApertureY(aperture);
         solenoid.setApertureType(defaultAperture);
         solenoid.setPreviousSubsystem(previousSubsystem);
-        // CHECK solenoid.setSubsystemType(defaultType());
         return solenoid;
     }
 
@@ -628,7 +614,6 @@ public class ComponentFactory {
         thinLens.setFocalLengthY(focalLengthY);
         thinLens.setApertureX(aperture);
         thinLens.setPreviousSubsystem(previousSubsystem);
-        // CHECK thinLens.setSubsystemType(defaultType());
         return thinLens;
     }
 
@@ -653,7 +638,6 @@ public class ComponentFactory {
         corrector.setCoef1(c1);
         corrector.setCoef2(c2);
         corrector.setPreviousSubsystem(previousSubsystem);
-        // CHECK corrector.setSubsystemType(defaultType());
         corrector.setApertureX(aperture);
         corrector.setApertureY(aperture);
         corrector.setApertureType(defaultAperture);
@@ -672,7 +656,6 @@ public class ComponentFactory {
         BPM bpm = new BPM();
         bpm.setName(name);
         bpm.setPreviousSubsystem(previousSubsystem);
-        // CHECK bpm.setSubsystemType(defaultType());
         return bpm;
     }
 
@@ -691,7 +674,6 @@ public class ComponentFactory {
         slot.setPreviousSubsystem(previousSubsystem);
         slot.setDescription(description);
         slot.setVirtual(false);
-        // CHECK Subsystem slotslot.setSubsystemType(defaultType());
         return slot;
     }
 
@@ -710,7 +692,6 @@ public class ComponentFactory {
         beamline.setPreviousSubsystem(previousSubsystem);
         beamline.setDescription(description);
         beamline.setVirtual(true);
-        // CHECK beamline.setSubsystemType(defaultType());
         return beamline;
     }
 
@@ -727,7 +708,6 @@ public class ComponentFactory {
         Marker marker = new Marker();
         marker.setName(name);
         marker.setPreviousSubsystem(previousSubsystem);
-        // CHECK marker.setSubsystemType(defaultType());
         return marker;
     }
 
@@ -762,7 +742,6 @@ public class ComponentFactory {
         bendEle.setApertureType(defaultAperture);
         bendEle.setVertical(horizVert);
         bendEle.setPreviousSubsystem(previousSubsystem);
-        // CHECK bendEle.setSubsystemType(defaultType());
         return bendEle;
     }
 
@@ -782,7 +761,6 @@ public class ComponentFactory {
         spaceChargeComp.setName(name);
         spaceChargeComp.setFactor(factor);
         spaceChargeComp.setPreviousSubsystem(previousSubsystem);
-        // CHECK spaceChargeComp.setSubsystemType(defaultType());
         return spaceChargeComp;
     }
 
@@ -792,7 +770,6 @@ public class ComponentFactory {
         latticeCommand.setName(name);
         latticeCommand.setValue(value);
         latticeCommand.setPreviousSubsystem(previousSubsystem);
-        // CHECK latticeCommand.setSubsystemType(defaultType());
         return latticeCommand;
     }
 

@@ -92,7 +92,6 @@ public class ResourceManager {
         final File outputDirectory = new File(testDirectory, "output");
         final File outputFile = new File(outputDirectory, relativePath);
         outputFile.getParentFile().mkdirs();
-        //LOGGER.log(Level.INFO,  "Output File: " + outputFile.getAbsolutePath() );
         return outputFile;
     }
 
@@ -128,15 +127,12 @@ public class ResourceManager {
 
         // first check system properties and if it exists then use it's value
         if (testDirectoryPropertyPath != null) {
-            //LOGGER.log(Level.INFO,  "Getting the test directory from the property." );
             return new File(testDirectoryPropertyPath);
         } else {		// check for an environment variable of the same name
             final String testDirectoryEnvironmentPath = System.getenv(TEST_DIRECTORY_PROPERTY);
             if (testDirectoryEnvironmentPath != null) {
-                //LOGGER.log(Level.INFO,  "Getting the test directory from the environment variable." );
                 return new File(testDirectoryEnvironmentPath);
             } else {	// check if the xal home path is specified and if so build the tests path relative to it
-                //LOGGER.log(Level.INFO,  "Getting the test directory from the home path." );
                 final String homePath = xal.tools.ResourceManager.getProjectHomePath();
                 if (homePath != null) {
                     final File buildDir = new File(homePath, "build");

@@ -129,8 +129,6 @@ public class SolverLM implements FitSolver {
             devIni = solution.getDevAvgIni();
             devNew = solution.getDevAvgNew();
 
-            //LOGGER.log(Level.INFO, "debug lambda=" + lambda + "  dev_ini=" + dev_ini + " dev_new=" + dev_new);
-            //LOGGER.log(Level.INFO, "debug lambda=" + lambda + "  chi2ini=" + chi2ini + " chi2new=" + chi2new);
             if (yAvg > 0.) {
                 d = Math.abs(devIni - devNew) / yAvg;
                 if (d <= epsToll) {
@@ -289,7 +287,6 @@ public class SolverLM implements FitSolver {
             xArr[i][0] = z;
             yArr[i] = 1.0 + z + z * z + z * z * z;
             yErrArr[i] = 1.0;
-            //if(i%2 == 0) y_Arr[i] += 1.0;
         }
 
         double[] fitArr = new double[4];
@@ -330,10 +327,6 @@ public class SolverLM implements FitSolver {
         }
         LOGGER.log(Level.INFO, "======STOP=======");
 
-        //a_fit_[0] = 1.;
-        //a_fit_[1] = 1.;
-        //a_fit_[2] = 1.;
-        //a_fit_[3] = 1.;
         LOGGER.log(Level.INFO, "  x        y          y_appr   ");
         for (int i = 0; i < xArr.length; i++) {
             LOGGER.log(Level.INFO, " {0}  {1}  {2}", new Object[]{xArr[i][0], yArr[i], mf.getValue(xArr[i][0], fitArr)});

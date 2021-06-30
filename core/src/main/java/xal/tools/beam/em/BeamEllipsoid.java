@@ -167,16 +167,12 @@ public class BeamEllipsoid {
      * <em>k<sub>nz</sub></em><sup>2</sup>) of defocusing constants
      *
      * @see
-     //lib-www.lanl.gov/cgi-bin/getfile?00796950.pdf">Theory and
-     * <a href="http:
+     * <a href="http://lib-www.lanl.gov/cgi-bin/getfile?00796950.pdf">Theory and
      * Technique of Beam Envelope Simulation</a>
      *
      * @author Christopher K. Allen
      */
     public static double[] compDefocusConstants(double dblGamma, double[] arrMoments) {
-
-//        // Get relativistic factor, and factor squared
-//        double  gamma   = this.getGamma();
         // Get the second-order spatial moments
         double a_2 = arrMoments[0];
         double b_2 = arrMoments[1];
@@ -217,9 +213,6 @@ public class BeamEllipsoid {
      * @see #compDefocusConstants
      */
     public static double[] compDefocusConstantsAlaTrace3D(double dblGamma, double[] arrMoments) {
-
-        // Get relativistic factor, and factor squared
-        //      double  gamma   = this.getGamma();
         // Get the second-order spatial moments
         double a_2 = arrMoments[0];
         double b_2 = arrMoments[1];
@@ -240,9 +233,6 @@ public class BeamEllipsoid {
         double approxRdZ = (3.0 / (a * b * c)) * xi;
 
         // Compute (de)focusing strengths from space charge
-        //        double KnX = (gamma_2*approxRdX)/CONST_UNIFORM_BEAM;
-        //        double KnY = (gamma_2*approxRdY)/CONST_UNIFORM_BEAM;
-        //        double KnZ = (gamma_2*approxRdZ)/CONST_UNIFORM_BEAM;
         double KnX = (dblGamma * approxRdX) / CONST_UNIFORM_BEAM;
         double KnY = (dblGamma * approxRdY) / CONST_UNIFORM_BEAM;
         double KnZ = (dblGamma * approxRdZ) / CONST_UNIFORM_BEAM;
@@ -446,7 +436,6 @@ public class BeamEllipsoid {
 
         // Save the arguments
         this.dblGamma = dblGamma;
-//        this.arrMoments   = (vec2ndMmts.minus( vec1stMmts.square() )).toArray();
         this.arrMoments = vec2ndMmts.toArray();
 
         this.matLorentz = this.computeLorentzMatrix(dblGamma);
@@ -1068,7 +1057,6 @@ public class BeamEllipsoid {
 
         matLorentz = PhaseMatrix.identity();
         matLorentz.setElem(IND.Z, IND.Z, dblGamma);
-        //        matLorentz.setElem(PhaseIndexHom.Zp, PhaseIndexHom.Zp, 1.0/dblGamma);
         matLorentz.setElem(IND.Zp, IND.Zp, dblGamma);
 
         return matLorentz;
@@ -1165,81 +1153,3 @@ public class BeamEllipsoid {
     }
 
 }
-
-/*
- * Storage
- */
-//
-///**
-// * Return the generalized beam perveance of the ellipsoidal charge.
-// */
-//public double   getBeamPerveance()  { return this.dblPerveance; };
-//
-///**
-// * Compute the rotation in SO(7), corresponding to the given SO(3) rotation, 
-// * which aligns the beam ellipsoid to the laboratory coordinate axes.  
-// * 
-// * NOTE:
-// * The rotation takes place in the beam's inertial frame.
-// * 
-// * The returned rotation is the cartesian product of the given rotation, one
-// * for the spatial coordinates and one for the momentum coordinates.
-// * 
-// * @param   matRot3 rotation matrix in three-space
-// * 
-// * @return          matRot3xmatRot3 matrix in six-space
-// * 
-// * @see xal.tools.beam.PhaseMatrix#rotationProduct(R3x3)
-// */
-//private PhaseMatrix computeRotation(R3x3 matRot3)    {
-//    return PhaseMatrix.rotationProduct(matRot3);
-//}
-//
-///**
-// * Computes and returns the ellipsoid semi-axes in the beam frame given the 
-// * diagonalized spatial covariance matrix.  
-// * 
-// * NOTE:
-// * Since the semi-axes are in the (stationary) beam frame, the
-// * semi-axes values are (in general) larger due to length
-// * contraction in the laboratory frame.
-// *  
-// * @param   matDiag     diagonalized spatial covariance matrix
-// * @return              three-array (a,b,c) of semi-axes values
-// */
-//private double[]    computeSemiAxes(R3x3 matDiag)   {
-//    int         i;
-//    double      eigenVal;
-//    double[]    arrSemiAxes;
-//    
-//    i = 0;
-//    arrSemiAxes = new double[3];
-//
-//    for (R3x3.Position pos : R3x3.Position.getDiagonal())   {
-//        eigenVal       = matDiag.getElem(pos);
-//        arrSemiAxes[i] = Math.sqrt(eigenVal);
-//        i++;
-//    }
-//    
-//    return arrSemiAxes;
-//}
-//
-//
-///**
-// *  Check matrix for symmetry.  Quadratic forms must be
-// *  symmetric and positive definite.
-// * 
-// *  @param  mat     <code>R3x3</code> object to check
-// * 
-// *  @exception  IllegalArgumentException    matrix is not symmetric and/or positive definite
-// * 
-// *  @author ckallen
-// */
-//private void    checkSymmetry(R3x3 mat)
-//    throws IllegalArgumentException    
-//{
-//    if ( !mat.isSymmetric() )
-//        throw new IllegalArgumentException("Matrix is not symmetric");
-//}
-//
-//

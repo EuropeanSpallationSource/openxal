@@ -568,11 +568,8 @@ public class MPSMonitor {
         synchronized (statsLock) {
             final List<SignalEvent> signalEvents = mpsEvent.getSignalEvents();
             final List<InputMonitor> inputMonitors = new ArrayList<>(signalEvents.size());
-            //final Iterator<SignalEvent> eventIter = signalEvents.iterator();
 
             for (SignalEvent signalEvent : signalEvents) {
-                //while ( eventIter.hasNext() ) {
-                //final SignalEvent signalEvent = (SignalEvent)eventIter.next();
                 final String signal = signalEvent.getSignal();
                 InputMonitor inputMonitor = getInputMonitor(signal);
                 if (inputMonitor != null) {
@@ -591,18 +588,6 @@ public class MPSMonitor {
         }
     }
 
-    /**
-     * Get the number of times the MPS signal has tripped within the present
-     * day.
-     *
-     * @param signal The MPS signal for which to get the trip count.
-     * @return The number of times the MPS signal has tripped.
-     */
-//	public final int getMPSTripCount( final String signal ) {
-//		synchronized ( statsLock ) {
-//			return mpsTripStats.containsKey( signal ) ? ( (Integer)mpsTripStats.get( signal ) ).intValue() : 0;
-//		}
-//	}
     /**
      * Increment the number of MPS trips for the specified signal event.
      *

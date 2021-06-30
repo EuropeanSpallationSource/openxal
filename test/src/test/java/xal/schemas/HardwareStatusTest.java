@@ -219,25 +219,5 @@ public class HardwareStatusTest extends AbstractXMLValidation {
         } catch (IOException | SAXException e) {
             fail("Document should still be valid!");
         }
-
-//		//Attribute 'id' must be unique.
-//		Element node3 = document.createElement("node");
-//		node3.setAttribute("id", "Seq2:Node1");
-//		node3.setAttribute("status", "false");
-//		node3.setAttribute("exclude", "false");
-//		sequence2.appendChild(node3);
-//		try {
-//			validator.validate(new DOMSource(document));
-//			fail("Validation with invalid node element should not be successful!");
-//		} catch(Exception e) {
-//			assertTrue(e.getMessage().contains("Duplicate key value"));
-//		}
-//		node3.setAttribute("id", "Seq2:Node2");
-//		try {
-//			validator.validate(new DOMSource(document));
-//		} catch(Exception e) {
-//			LOGGER.log(Level.INFO, e.getMessage());
-//			fail("Document should still be valid!");
-//		}
     }
 }

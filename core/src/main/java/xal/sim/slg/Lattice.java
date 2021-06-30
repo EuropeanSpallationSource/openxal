@@ -295,11 +295,6 @@ public class Lattice implements Cloneable {
                 markers[jx++] = ix;
             }
         }
-        //        if(false) {
-        //            for(int ix=0; ix<jx; ix++) {
-        //                cout.println("makers["+ix+"]="+markers[ix]+": p="+getItem(markers[ix]).getPosition());
-        //            }
-        //        }
         //search for markers that embrace the element
         int before = markers[0];
         int after = markers[jx - 1];
@@ -313,7 +308,6 @@ public class Lattice implements Cloneable {
         }
         //slice the element between the two markers
         int between = after - 1;
-        //        if(false) {cout.println("(before,between,after)=("+before+", "+between+", "+after+")");}
         Element to_split = elements.remove(between);
         final List<Element> to_insert = to_split.split(element);
         elements.addAll(between, to_insert);
@@ -423,12 +417,6 @@ public class Lattice implements Cloneable {
         }
     }
 
-    //	public static Lattice concatenate(Lattice first, Lattice second) {
-    //		Lattice result = new Lattice(first.getName()+"+"+second.getName());
-    //		result.appendTuple(first.elements);
-    //		result.appendTuple(second.elements);
-    //		return result;
-    //	}
     /**
      * Make a printed output of the lattice.
      */
@@ -528,4 +516,4 @@ public class Lattice implements Cloneable {
         return new LatticeSynchronizer(this).getDocument();
     }
 
-} ////////////////////// Lattice
+}

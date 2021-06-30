@@ -148,7 +148,6 @@ public class IdentifierEquivClass implements Comparable<IdentifierEquivClass> {
         //  Use a lexicographical string comparison since neither is a substring of the other
         int iResult = this.strClassId.compareTo(idcCmp.strClassId);
 
-//        LOGGER.log(Level.INFO, "lexicographic compareTo(" + this.strClassId + ", " + idcCmp.strClassId + ") = " + iResult);
         return iResult;
     }
 
@@ -184,7 +183,6 @@ public class IdentifierEquivClass implements Comparable<IdentifierEquivClass> {
 
         IdentifierEquivClass idcCmp = (IdentifierEquivClass) obj;
 
-//        LOGGER.log(Level.INFO, "equals(x) with this.strClassId=" + this.strClassId + " and x.strClassId=" + idcCmp.strClassId);
         return this.equivalentTo(idcCmp);
     }
 
@@ -277,7 +275,6 @@ public class IdentifierEquivClass implements Comparable<IdentifierEquivClass> {
         // Check if this is the zero class and argument is the empty ID
         if (this.strClassId.length() == 0 && strElemId.length() == 0) {
 
-//            LOGGER.log(Level.INFO, "len(" + this.strClassId + ") = 0");
             return 0;
         }
 
@@ -291,7 +288,6 @@ public class IdentifierEquivClass implements Comparable<IdentifierEquivClass> {
         if (strElemId.length() < this.strClassId.length()) {
             if (this.strClassId.startsWith(strElemId)) {
 
-//                LOGGER.log(Level.INFO, this.strClassId + " > " + strElemId);
                 return +1;
             }
         }
@@ -301,7 +297,6 @@ public class IdentifierEquivClass implements Comparable<IdentifierEquivClass> {
         if (this.strClassId.length() < strElemId.length()) {
             if (strElemId.startsWith(this.strClassId)) {
 
-//                LOGGER.log(Level.INFO, this.strClassId + " < " + strElemId);
                 return -1;
             }
         }

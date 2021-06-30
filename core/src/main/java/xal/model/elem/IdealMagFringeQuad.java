@@ -222,7 +222,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
         this.getMagBody().setFieldPathFlag(dblFlag);
         this.getFaceExit().setFieldPathFlag(dblFlag);
     }
-    
+
     /*
      * Attribute Query
      */

@@ -90,7 +90,6 @@ public class T3dGenerator {
         }
 
         FileWriter t3dInput = new FileWriter(myLatticeName + ".t3d");
-        //       FileWriter t3dInput = new FileWriter("combo.t3d");
         Date today = new Date();
         int elementCount = myLattice.len();
 

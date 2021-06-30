@@ -16,7 +16,6 @@ public class RingBPMTBTPVLog {
 
     ChannelSnapshot[] css;
 
-//	AcceleratorSeq myAccSeq;
     /**
      * @param id the PV logger ID
      */
@@ -56,8 +55,6 @@ public class RingBPMTBTPVLog {
         HashMap<String, double[][]> pvMap = new HashMap<>();
 
         ChannelSnapshot[] css = mss.getChannelSnapshots();
-//		HashMap<String, double[]> xMap = new HashMap<String, double[]>();
-//		HashMap<String, double[]> yMap = new HashMap<String, double[]>();
 
         for (int i = 0; i < css.length; i++) {
             double[] xdata, ydata;

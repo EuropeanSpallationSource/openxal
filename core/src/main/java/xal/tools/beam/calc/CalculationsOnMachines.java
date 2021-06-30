@@ -500,9 +500,6 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
     @Override
     public PhaseVector computeChromAberration(TransferMapState state) {
         double dblGamma = state.getGamma();
-//        PhaseMap        mapPhi   = state.getTransferMap();
-//        PhaseMap        mapPhi   = state.getStateTransferMap();
-//      PhaseMatrix     matPhi   = mapPhi.getFirstOrder();
         PhaseMatrix matPhi = this.calculateFullLatticeMatrixAt(state);
 
         R6 vecDel = super.calculateAberration(matPhi, dblGamma);
@@ -767,8 +764,6 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
         PhaseMatrix matFullTn = this.calculateFullLatticeMatrixAt(state);
         double dblGamma = state.getGamma();
 
-//        double[]    arrDisp   = super.calculateDispersion(matFullTn, dblGamma);
-//        R4          vecDispR4 = new R4(arrDisp);
         R4 vecDispR4 = super.calculateDispersion(matFullTn, dblGamma);
         PhaseVector vecDisp = PhaseVector.embed(vecDispR4);
 

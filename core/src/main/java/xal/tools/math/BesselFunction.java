@@ -48,12 +48,10 @@ package xal.tools.math;
  * Implementations for integer-order cylindrical Bessel functions of the first
  * and second kind (i.e., <em>J<sub>n</sub></em>(<em>x</em>) and
  * <em>Y<sub>n</sub></em>(<em>x</em>), <em>n</em> = 1,2,3,... )were taken from
- //www.koders.com">www.koders.com</a> and the copyright notice
- * <a href="http:
+ * <a href="http://www.koders.com">www.koders.com</a> and the copyright notice
  * is included in the Java source file. The implementation is based upon that
  * presented in
- //www.nr.com"><em>Numerical Recipes</em></a>
- * <a href="http:
+ * <a href="http://www.nr.com"><em>Numerical Recipes</em></a>
  * by W.H. Press, <em>et. al.</em>
  * </p>
  * <p>
@@ -109,11 +107,9 @@ package xal.tools.math;
  * </p>
  * <p>
  * <h2>References</h2>
- //www.koders.com">www.koders.com</a>
- * [1] <a href="http:
+ * [1] <a href="http://www.koders.com">www.koders.com</a>
  * <br>
- //www.nr.com/"><em>Numerical Recipes, The Art of Scientific
- * [2]<a href="http:
+ * [2]<a href="http://www.nr.com/"><em>Numerical Recipes, The Art of Scientific
  * Computing, Third Edition,</em>
  * W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery (Cambridge
  * University Press, Cambridge, 2007).

@@ -40,9 +40,7 @@ public class NonConsecutiveSeqSelector implements ActionListener {
 
     protected MyTableModel myModel;
 
-    // private Db2XalDocument myDoc;
     public NonConsecutiveSeqSelector() {
-        // myDoc = doc;
         myModel = new MyTableModel();
         table = new JTable(myModel);
         table.setPreferredScrollableViewportSize(new Dimension(300, 500));
@@ -78,11 +76,6 @@ public class NonConsecutiveSeqSelector implements ActionListener {
         sequenceDialog.getContentPane().add(scrollPane, BorderLayout.WEST);
         sequenceDialog.getContentPane().add(selectionDone, BorderLayout.EAST);
 
-        // sequenceDialog.addWindowListener(new WindowAdapter() {
-        // public void windowClosing(WindowEvent e) {
-        // System.exit(0);
-        // }
-        // });
         sequenceDialog.pack();
         sequenceDialog.setVisible(true);
 
@@ -101,7 +94,6 @@ public class NonConsecutiveSeqSelector implements ActionListener {
                 }
             }
 
-            // myDoc.setHasChanges(true);
         } else if (e.getActionCommand().equals("Cancel")) {
             sequenceDialog.setVisible(false);
         }

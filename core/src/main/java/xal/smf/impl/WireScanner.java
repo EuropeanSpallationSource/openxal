@@ -1200,12 +1200,6 @@ public class WireScanner extends ProfileDevice {
             // Get the initial position of the scanner arm
             double dblPosInit = this.posInit;
 
-            // scale it in horizontal and vertical planes if necessary
-//            switch (angle) {
-//            case HOR: dblPosInit *= DBL_INV_SQRT_2; break;
-//            case VER: dblPosInit *= DBL_INV_SQRT_2; break;
-//            default: break;
-//            }
             return dblPosInit;
         }
 
@@ -2068,27 +2062,6 @@ public class WireScanner extends ProfileDevice {
     )
     public static class DataLivePt extends SignalSet {
 
-//        /** The static list of field descriptors for this class */
-//        private static final    List<ScadaFieldDescriptor>  LST_FLD_DESCRS = new ScadaFieldList(DataLivePt.class);
-//        
-//        
-//        /**
-//         * Returns the set of field descriptors for all the (field, channel)
-//         * pairs used by this class.
-//         *
-//         * @return  set of field descriptors used by this class.
-//         *
-//         * @throws ScadaAnnotationException the <code>ADaqProfile</code> annotations are incomplete
-//         * 
-//         * @author Christopher K. Allen
-//         * @since  Mar 16, 2011
-//         */
-//        public static List<ScadaFieldDescriptor>  getFieldDescriptorList() 
-//            throws ScadaAnnotationException
-//        {
-//                return LST_FLD_DESCRS;
-//        }
-
         /*
          * Global Operations
          */
@@ -2116,119 +2089,6 @@ public class WireScanner extends ProfileDevice {
             return new DataLivePt(ws);
         }
 
-//        /**
-//         * Extracts the field descriptor for the position channel
-//         * from the annotations of the given <code>Data</code>-derived class type.
-//         * 
-//         * @param clsData   the <code>Data</code>-derived child class with DAQ annotations
-//         * 
-//         * @return      position channel field descriptor for this plane
-//         *  
-//         * @throws ScadaAnnotationException the <code>ADaqProfile</code> annotations are incomplete
-//         * @throws NoSuchFieldException     a required field of the <code>ASet</code> annotation was empty or not found
-//         * @throws IllegalAccessException   a required field of the <code>ASet</code> annotation is not accessible
-//         * @throws IllegalArgumentException the argument <var>clsData</var> is not annotated with <code>ASet</code> 
-//         *
-//         * @author Christopher K. Allen
-//         * @since  Sep 27, 2011
-//         */
-//        public static ScadaFieldDescriptor getSignalPosFd(ANGLE ang) throws ScadaAnnotationException  {
-//
-//            if (  !DataLivePt.class.isAnnotationPresent(ASet.class) )
-//                throw new ScadaAnnotationException("No signal information present this class " + DataLivePt.class);
-//
-//            ASet        annSigSet = DataLivePt.class.getAnnotation(ASet.class);
-//            ASignal     annSig;
-//
-//            switch (ang) {
-//
-// I am the horizontal profile   
-//            case HOR:
-//                annSig = annSigSet.sigHor();
-//                break;
-//
-// I am the vertical profile
-//            case VER:
-//                annSig = annSigSet.sigVer();
-//                break;
-//
-// I am the diagonal profile   
-//            case DIA:
-//                annSig = annSigSet.sigDia();
-//                break;
-//
-//                // I am the walrus
-//            default:
-//                return null;
-//            }
-//
-//            ScadaFieldDescriptor sfdPosArr = Signal.FIELD.POS.createDescriptor(annSig);
-//
-//            //            String      strHndPos = annSig.hndPosRb();
-//            //            Class<?>    typHndPos = annSig.typePos();
-//            //
-//            //            ScadaFieldDescriptor    sfdPosArr = new ScadaFieldDescriptor(
-//            //                    Signal.PROP.SGNL_POS.getFieldName(), 
-//            //                    typHndPos, 
-//            //                    strHndPos
-//            //            );
-//
-//            return sfdPosArr;
-//        }
-//
-//        /**
-//         * Extracts the field descriptor for the signal value channel
-//         * from the set of acquisition descriptors.
-//         * 
-//         * @param clsData   the <code>Data</code>-derived child class with DAQ annotations
-//         * 
-//         * @return      signal value channel field descriptor for this plane
-//         *  
-//         * @throws ScadaAnnotationException the <code>ADaqProfile</code> annotations are incomplete
-//         * @throws NoSuchFieldException     a required field of the <code>ASet</code> annotation was empty or not found
-//         * @throws IllegalAccessException   a required field of the <code>ASet</code> annotation is not accessible
-//         * @throws IllegalArgumentException the argument <var>clsData</var> is not annotated with <code>ASet</code> 
-//         *
-//         * @author Christopher K. Allen
-//         * @since  Feb 22, 2011
-//         */
-//        public static ScadaFieldDescriptor getSignalValFd(ProfileDevice.ANGLE ang) throws ScadaAnnotationException {
-//
-//            Class<? extends SignalSet>      clsData = DataLivePt.class;
-//            
-//            if (  ! clsData.isAnnotationPresent(ASignalAttrs.class) ) 
-//                throw new ScadaAnnotationException("No signal information present for class " + clsData);
-//
-//            ASet        annSigSet = clsData.getAnnotation(ASet.class);
-//            ASignal     annSig;
-//
-//            switch (ang) {
-//
-// I am the horizontal profile
-//            case HOR:
-//                annSig = annSigSet.sigHor();
-//                break;
-//
-// I am the vertical profile
-//            case VER:
-//                annSig = annSigSet.sigVer();
-//                break;
-//
-//
-// I am the diagonal profile
-//            case DIA:
-//                annSig = annSigSet.sigDia();
-//                break;
-//
-//            default:
-//                return null;
-//            }
-//
-//            ScadaFieldDescriptor    sfdValArr = Signal.FIELD.VAL.createDescriptor(annSig);
-//
-//            return sfdValArr;
-//        }
-//
         /*
          * Initialization
          */
@@ -2312,27 +2172,6 @@ public class WireScanner extends ProfileDevice {
     )
     public static class DataLiveArr extends SignalSet {
 
-//        /** The static list of field descriptors for this class */
-//        private static final    List<ScadaFieldDescriptor>  LST_FLD_DESCRS = new ScadaFieldList(DataLiveArr.class);
-//        
-//
-//        /**
-//         * Returns the set of field descriptors for all the (field, channel)
-//         * pairs used by this class.
-//         *
-//         * @return  set of field descriptors used by this class.
-//         *
-//         * @throws ScadaAnnotationException the <code>ADaqProfile</code> annotations are incomplete
-//         * 
-//         * @author Christopher K. Allen
-//         * @since  Mar 16, 2011
-//         */
-//        public static List<ScadaFieldDescriptor>  getFieldDescriptorList() 
-//            throws ScadaAnnotationException
-//        {
-//
-//            return LST_FLD_DESCRS;
-//        }
         /**
          * Convenience method for retrieving a new initialized data structure
          * populated from the given device state.
@@ -2434,27 +2273,6 @@ public class WireScanner extends ProfileDevice {
     )
     public static class DataRaw extends SignalSet {
 
-//        /** The static list of field descriptors for this class */
-//        private static final    List<ScadaFieldDescriptor>  LST_FLD_DESCRS = new ScadaFieldList(DataRaw.class);
-//        
-//        
-//        /**
-//         * Returns the set of field descriptors for all the (field, channel)
-//         * pairs used by this class.
-//         *
-//         * @return  set of field descriptors used by this class.
-//         *
-//         * @throws ScadaAnnotationException the <code>ADaqProfile</code> annotations are incomplete
-//         * 
-//         * @author Christopher K. Allen
-//         * @since  Mar 16, 2011
-//         */
-//        public static final List<ScadaFieldDescriptor>    getFieldDescriptorList()
-//            throws ScadaAnnotationException
-//        {
-//            
-//            return LST_FLD_DESCRS;
-//        }
         /**
          * Convenience method for retrieving a new initialized data structure
          * populated from the given device state.
@@ -2551,25 +2369,6 @@ public class WireScanner extends ProfileDevice {
     )
     public static class DataFit extends SignalSet {
 
-//        /** The static list of field descriptors for this class */
-//        private static final    List<ScadaFieldDescriptor>  LST_FLD_DESCRS = new ScadaFieldList(DataFit.class);
-//        
-//        /**
-//         * Returns the set of field descriptors for all the (field, channel)
-//         * pairs used by this class.
-//         *
-//         * @return  set of field descriptors used by this class.
-//         *
-//         * @throws ScadaAnnotationException the <code>ADaqProfile</code> annotations are incomplete
-//         * 
-//         * @author Christopher K. Allen
-//         * @since  Mar 16, 2011
-//         */
-//        public static final List<ScadaFieldDescriptor>    getFieldDescriptorList() 
-//            throws ScadaAnnotationException
-//        {
-//            return LST_FLD_DESCRS;
-//        }
         /**
          * Convenience method for retrieving a new initialized data structure
          * populated from the given device state.
@@ -2665,20 +2464,6 @@ public class WireScanner extends ProfileDevice {
     )
     public static class Trace extends SignalSet {
 
-//        /**
-//         * Returns the set of field descriptors for all the (field, channel)
-//         * pairs used by this class.
-//         *
-//         * @return  set of field descriptors used by this class.
-//         *
-//         * @author Christopher K. Allen
-//         * @since  Mar 16, 2011
-//         */
-//        public static final List<ScadaFieldDescriptor>    getFieldDescriptorList() {
-//
-//            return Data.getFieldDescriptorList(Trace.class);
-//            
-//        }
         /**
          * Convenience method for retrieving a new initialized data structure
          * populated from the given device state.
@@ -2867,10 +2652,6 @@ public class WireScanner extends ProfileDevice {
         // Issue command
         Channel channel = getAndConnectChannel(CMD.HANDLE_CMD);
         channel.putVal(cmd.getCode());
-
-//        // Reset the on-board command buffer to avoid the IOC echo (a kluge)
-//        Thread.sleep(INT_CMD_LATCY);
-//        channel.putVal( CMD.NOOP.getCode() );
     }
 
     /**
@@ -2913,10 +2694,6 @@ public class WireScanner extends ProfileDevice {
         // Issue command
         Channel channel = getAndConnectChannel(CMD.HANDLE_CMD);
         channel.putVal(arrCodes);
-
-//        // Reset the on-board command buffer to avoid the IOC echo (a kluge)
-//        Thread.sleep(INT_CMD_LATCY);
-//        channel.putVal( CMD.NOOP.getCode() );
     }
 
     /**
@@ -2930,7 +2707,6 @@ public class WireScanner extends ProfileDevice {
      * @throws GetException Unable to read result from readback channel
      */
     public int[] getCommandResult() throws ConnectionException, GetException {
-        //        final Channel channel = getAndConnectChannel( COMMAND_RESULT_HANDLE );
         final Channel channel = getAndConnectChannel(CMD.HANDLE_RESULT);
 
         return channel.getArrInt();
@@ -2961,35 +2737,6 @@ public class WireScanner extends ProfileDevice {
         return bolResult;
     }
 
-//    /**
-//     * Test the connections in all the channels of the given parameter set for this
-//     * accelerator device.  The test will wait up to the given length
-//     * of time before declaring failure.
-//     *
-//     * @param clsScada      type of a SCADA data structure
-//     * @param dblTmOut      time out before test fails (in seconds)
-//     * 
-//     * @return              <code>true</code> if all connections were successful,
-//     *                      <code>false</code> if not all connection were made within given time
-//     *                      
-//     * @throws BadStructException  the given class is not a SCADA data structre 
-//     * @throws BadChannelException  An unbound channel handle within a field descriptor 
-//     *
-//     * @author Christopher K. Allen
-//     * @throws BadChannelException 
-//     * @since  Feb 4, 2011
-//     */
-//    public synchronized boolean testConnection(Class<?> clsScada, double dblTmOut) 
-//        throws BadStructException, BadChannelException 
-//    {
-//        
-//        Collection<ScadaFieldDescriptor>    setFds = new ScadaFieldList(clsScada);
-//        
-//        if (setFds.size() == 0)
-//            throw new BadStructException("Class is not a SCADA data structure"); 
-//        
-//        return this.testConnection(setFds, dblTmOut);
-//    }
     /**
      * <p>
      * Setup a value monitor on the given process variable (i.e., using its

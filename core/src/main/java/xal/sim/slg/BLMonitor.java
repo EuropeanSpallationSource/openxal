@@ -21,11 +21,7 @@ public class BLMonitor extends ThinElement {
     public BLMonitor(double position, double len, String name) {
         super(name, position, len);
         // always treated as thin element
-//		if (len == 0.0) {
         handleAsThick = false;
-//		} else {
-//			handleAsThick = true;
-//		}
     }
 
     /**

@@ -116,29 +116,33 @@ public enum PHASEPLANE {
     /**
      * <p>
      * Returns the standard basis matrix for the given index. There are
-     * <strong>four</strong> of these matrices for each phase plane. They provide an
-     * independent vector representation of the 4&times;4 diagonal block
-     * occupied by this phase space within <strong>phase matrices</strong>. Restricting to
-     * one block diagonal we have
+     * <strong>four</strong> of these matrices for each phase plane. They
+     * provide an independent vector representation of the 4&times;4 diagonal
+     * block occupied by this phase space within <strong>phase
+     * matrices</strong>. Restricting to one block diagonal we have
      * </p>
      * <br>
      * <table>
-     * <tr><td><strong>e</strong><sub>0</sub></td><td>&equiv;</td><td>| 1 0 |</td></tr>
+     * <tr><td><strong>e</strong><sub>0</sub></td><td>&equiv;</td><td>| 1 0
+     * |</td></tr>
      * <tr><td/><td/><td>| 0 0 |</td></tr>
      * </table>
      * <br>
      * <table>
-     * <tr><td><strong>e</strong><sub>1</sub></td><td>&equiv;</td><td>| 0 1 |</td></tr>
+     * <tr><td><strong>e</strong><sub>1</sub></td><td>&equiv;</td><td>| 0 1
+     * |</td></tr>
      * <tr><td/><td/><td>| 0 0 |</td></tr>
      * </table>
      * </br>
      * <table>
-     * <tr><td><strong>e</strong><sub>2</sub></td><td>&equiv;</td><td>| 0 0 |</td></tr>
+     * <tr><td><strong>e</strong><sub>2</sub></td><td>&equiv;</td><td>| 0 0
+     * |</td></tr>
      * <tr><td/><td/><td>| 1 0 |</td></tr>
      * </table>
      * <br>
      * <table>
-     * <tr><td><strong>e</strong><sub>3</sub></td><td>&equiv;</td><td>| 0 0 |</td></tr>
+     * <tr><td><strong>e</strong><sub>3</sub></td><td>&equiv;</td><td>| 0 0
+     * |</td></tr>
      * <tr><td/><td/><td>| 0 1 |</td></tr>
      * </table>
      * <br>
@@ -173,25 +177,28 @@ public enum PHASEPLANE {
     /**
      * <p>
      * Returns the covariance basis matrix for the given index. There are
-     * <strong>three</strong> of these matrices for each phase plane. They provide a
-     * vector representation of the 4&times;4 block diagonal of the covariance
-     * matrix occupied by this phase plane. Because of the symmetry of the
-     * covariance matrix, there are only three independent basis vectors.
+     * <strong>three</strong> of these matrices for each phase plane. They
+     * provide a vector representation of the 4&times;4 block diagonal of the
+     * covariance matrix occupied by this phase plane. Because of the symmetry
+     * of the covariance matrix, there are only three independent basis vectors.
      * Restricting attention to one block diagonal we have
      * </p>
      * <br>
      * <table>
-     * <tr><td><strong>c</strong><sub>0</sub></td><td>&equiv;</td><td>| 1 0 |</td></tr>
+     * <tr><td><strong>c</strong><sub>0</sub></td><td>&equiv;</td><td>| 1 0
+     * |</td></tr>
      * <tr><td/><td/><td>| 0 0 |</td></tr>
      * </table>
      * <br>
      * <table>
-     * <tr><td><strong>c</strong><sub>1</sub></td><td>&equiv;</td><td>| 0 1 |</td></tr>
+     * <tr><td><strong>c</strong><sub>1</sub></td><td>&equiv;</td><td>| 0 1
+     * |</td></tr>
      * <tr><td/><td/><td>| 1 0 |</td></tr>
      * </table>
      * </br>
      * <table>
-     * <tr><td><strong>c</strong><sub>2</sub></td><td>&equiv;</td><td>| 0 0 |</td></tr>
+     * <tr><td><strong>c</strong><sub>2</sub></td><td>&equiv;</td><td>| 0 0
+     * |</td></tr>
      * <tr><td/><td/><td>| 0 1 |</td></tr>
      * </table>
      * <br>
@@ -241,7 +248,8 @@ public enum PHASEPLANE {
      * Extracts the (3) moments for the given phase plane from the covariance
      * matrix and return them as a 3 &times; 1 vector. For example, for the
      * horizontal plane we return (&lt;<em>x</em><sup>2</sup>&gt;,
-     * &lt;<em>xx'</em>&gt;, &lt;<em>x'</em><sup>2</sup>&gt;)<sup><em>T</em></sup>.
+     * &lt;<em>xx'</em>&gt;,
+     * &lt;<em>x'</em><sup>2</sup>&gt;)<sup><em>T</em></sup>.
      *
      * @param matCov the covariance matrix containing all the first and second
      * order moments

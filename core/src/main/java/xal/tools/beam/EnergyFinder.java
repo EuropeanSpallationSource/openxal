@@ -36,7 +36,6 @@ public class EnergyFinder {
     /**
      * Speed of light in a vacuum (meters/second)
      */
-    //private final double cLight = 299792458;  
     /**
      * error tolerance (relative)
      */
@@ -88,25 +87,19 @@ public class EnergyFinder {
         int nTrys = 0;
         // solve in space -180 < phi < 180
         error = findPhase(EGuess) - targetPhase;
-        //if (error > 360.) error -= 360.;
         if (error < -180.) {
             error += 360.;
         }
         if (error > 180.) {
             error -= 360.;
         }
-        //LOGGER.log(Level.INFO, "EGuess = " + EGuess + " error = " + error);
         errorOld = error;
-        //EOld = EGuess;
-        //step = EGuess * 1.e-4;
         //if(error > 180.)
-        //step = -EGuess * 0.005;
         //else
         step = EGuess * 0.005;
         ENew = EGuess + step;
         while (Math.abs((error / targetPhase)) > tol && (nTrys < nMax)) {
             error = findPhase(ENew) - targetPhase;
-            //if (error > 360.) error -= 360.;
             if (error < -180.) {
                 error += 360.;
             }
@@ -114,7 +107,6 @@ public class EnergyFinder {
                 error -= 360.;
             }
             slope = (error - errorOld) / step;
-            //LOGGER.log(Level.INFO, "E = " + ENew + " error = " + error);
             b = error - slope * ENew;
             temp = -b / slope;
             step = temp - ENew;

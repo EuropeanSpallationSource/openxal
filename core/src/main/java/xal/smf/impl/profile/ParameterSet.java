@@ -27,27 +27,6 @@ import xal.smf.scada.ScadaRecord;
  */
 public abstract class ParameterSet extends ScadaRecord {
 
-    /*
-     * DataListener Interface
-     */
-//    /**
-//     * Returns the data label used to store data for the given
-//     * version number.  The current label  will be returned for
-//     * all version greater than or equal to the current version number. 
-//     * 
-//     * @param lngVersion    storage version number
-//     * 
-//     * @return              data label used for the given storage format version
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Oct 13, 2014
-//     */
-//    public String dataLabelOld() {
-//        String  strLblVer = "gov.sns." + this.dataLabel();
-//        
-////            strLblVer = strLblVer.replace("ScannerConfig", "DeviceConfig");
-//        return strLblVer;
-//    }
     /**
      * Label used for parameter set identification.
      *
@@ -61,26 +40,6 @@ public abstract class ParameterSet extends ScadaRecord {
         return this.getClass().getCanonicalName();
     }
 
-//    /**
-//     *
-//     * @see xal.smf.scada.ScadaRecord#update(xal.tools.data.DataAdaptor)
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Oct 14, 2014
-//     */
-//    @Override
-//    public void update(DataAdaptor daptSrc) throws MissingResourceException,BadStructException {
-//
-//        String strLblVer = this.dataLabel();
-//        
-//        DataAdaptor daptDev = daptSrc.childAdaptor(strLblVer);
-//        if (daptDev == null) {
-//            strLblVer = this.dataLabelOld();
-//            daptDev = daptSrc.childAdaptor(strLblVer);
-//        }
-//        
-//        super.update(daptSrc);
-//    }
     /*
      * Initialization
      */

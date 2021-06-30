@@ -218,7 +218,6 @@ public class ModelProxy {
     public void resetProbe() {
         try {
             checkProbe();
-//			probe = Probe.newProbeInitializedFrom(probe);
 
             probe.reset();
 
@@ -253,7 +252,6 @@ public class ModelProxy {
         bLattice = false;
         MPXStopWatch.timeElapsed("...xal.model.Scenario: begin! ");
         try {
-//			scenario = Scenario.newAndImprovedScenarioFor(seq);
             if (seq instanceof xal.smf.Ring) {
                 scenario = Scenario.newScenarioFor((xal.smf.Ring) seq);
             } else {
@@ -320,7 +318,6 @@ public class ModelProxy {
             initProbeState = (EnvelopeProbeState) probe.createProbeState();
 
             // Corrected 8/2011 - CKA
-//			initTwiss = ((EnvelopeProbe) probe).getTwiss();
             initTwiss = initProbeState.twissParameters();
         }
 

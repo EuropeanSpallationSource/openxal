@@ -439,7 +439,6 @@ public class IdealEDipole extends ThickElectrostatic {
         // Magnet parameters
         double angle = getDesignBendAngle() * dL / this.getLength();
         LOGGER.log(Level.INFO, "Element {0} theta {1}", new Object[]{this.getId(), angle});
-        //angle = -angle;
 
         double kQuad = getKQuad();
         double entAng = entranceAngle;
@@ -561,9 +560,6 @@ public class IdealEDipole extends ThickElectrostatic {
         double zprimeProbe = (rhoProbe - rho) / (rhoProbe * gamma * gamma);
 
         // The following three lines need to be better understood
-//  M05 *= rhoProbe / rho;
-//  M15 *= rhoProbe / rho;
-//  M45 *= rhoProbe / rho;
         // Assemble the body and edge focusing matrices
         PhaseMatrix matBody = PhaseMatrix.identity();
         PhaseMatrix matEntrance = PhaseMatrix.identity();

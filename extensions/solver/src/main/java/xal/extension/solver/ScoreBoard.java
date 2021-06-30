@@ -418,9 +418,8 @@ public final class ScoreBoard implements AlgorithmScheduleListener, SolutionJudg
                 dataArray[2] = trial.getSatisfaction();
                 currentData.put(thisLabel, dataArray);
 
-           // update data to existing algorithm in map
-            }
-            else {
+                // update data to existing algorithm in map
+            } else {
                 dataArray = currentData.get(thisLabel);
                 dataArray[0]++;
                 double oldSatisfaction = dataArray[2];

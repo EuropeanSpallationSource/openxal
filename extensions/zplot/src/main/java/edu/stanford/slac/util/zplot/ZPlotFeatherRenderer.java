@@ -75,7 +75,6 @@ public class ZPlotFeatherRenderer extends XYBarRenderer {
         g2.setPaint(OUT_OF_RANGE_PAINT);
         g2.fill(s);
 
-//		LOGGER.log(Level.INFO, g2.getClipBounds().toString());
         // draw off scale values
         if (showOffScale) {
             //top left corner placement of the PV values

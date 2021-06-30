@@ -331,10 +331,8 @@ public class TransferMatrixGenerator {
      *
      * @see #generateWithSpaceCharge(String, double, CovarianceMatrix)
      */
-//	public void generateWithSpaceCharge(double dblBnchChg, CovarianceMatrix matInitState)
     public void generateWithSpaceCharge(double dblBnchFreq, double dblBeamCurr, CovarianceMatrix matInitState)
             throws ModelException {
-//	    this.generateWithSpaceCharge(null, dblBnchChg, matInitState);
         this.generateWithSpaceCharge(null, dblBnchFreq, dblBeamCurr, matInitState);
     }
 
@@ -352,8 +350,9 @@ public class TransferMatrixGenerator {
      * </p>
      * <h3>NOTE:</h3>
      * <p>
-     * &middot; Bunch charge <em>Q</em> is given by beam current <em>I</em> divided
-     * by bunch frequency <em>f</em>. Specifically, <em>Q</em> = <em>I</em>/<em>f</em>.
+     * &middot; Bunch charge <em>Q</em> is given by beam current <em>I</em>
+     * divided by bunch frequency <em>f</em>. Specifically, <em>Q</em> =
+     * <em>I</em>/<em>f</em>.
      * </p>
      *
      * @param strDevIdStart ID of device with which to start the simulation, or
@@ -367,14 +366,12 @@ public class TransferMatrixGenerator {
      * @author Christopher K. Allen
      * @since Jul 26, 2012
      */
-//	public void generateWithSpaceCharge(String strDevIdStart, double dblBnchChg, CovarianceMatrix matInitState)
     public void generateWithSpaceCharge(String strDevIdStart, double dblBnchFreq, double dblBeamCurr, CovarianceMatrix matInitState)
             throws ModelException {
 
         // Initialize the probe
         this.mdlEnvProbe.reset();
         this.mdlEnvProbe.setCovariance(matInitState);
-//	    this.mdlEnvProbe.setBeamCharge(dblBnchChg);
         this.mdlEnvProbe.setBunchFrequency(dblBnchFreq);
         this.mdlEnvProbe.setBeamCurrent(dblBeamCurr);
 

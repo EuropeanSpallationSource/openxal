@@ -133,7 +133,6 @@ public abstract class ResourceManager {
      */
     public static URL getResourceURL(final String subdomain, final Class<?> rootClass, final String resourcePath) {
         final URL resourceURL = DEFAULT_MANAGER.fetchResourceURL(subdomain, rootClass, resourcePath);
-        //LOGGER.log(Level.INFO,  "Resource URL: " + resourceURL + " for resource: " + resourcePath + " relative to package: " + rootClass.getPackage().getName() );
         return resourceURL;
     }
 
@@ -183,7 +182,6 @@ class JarredResourceManager extends ResourceManager {
      */
     @Override
     public URL fetchResourceURL(final String subdomain, final Class<?> rootClass, final String resourcePath) {
-        //LOGGER.log(Level.INFO,  "Using the Jarred Resource Manager to fetch for resource: " + resourcePath + " in subdomain: " + subdomain );
         final URL directResourceURL = fetchDirectResourceURL(rootClass, resourcePath);
         return directResourceURL != null ? directResourceURL : fetchContainerResourceURL(rootClass, resourcePath);
     }
@@ -218,7 +216,6 @@ class JarredResourceManager extends ResourceManager {
             pathBuilder.append("/").append(resourcePath);
 
             final String path = pathBuilder.toString();
-//			LOGGER.log(Level.INFO,  "Fetching component resource with path: " + path );
             return rootClass.getResource(path);
         } else {
             return null;
@@ -296,7 +293,6 @@ class FileResourceManager extends ResourceManager {
      */
     @Override
     public URL fetchResourceURL(final String subdomain, final Class<?> rootClass, final String resourcePath) {
-        //LOGGER.log(Level.INFO,  "Using the File Resource Manager to fetch for resource: " + resourcePath + " in subdomain: " + subdomain );
 
         // first look for the resource in core
         final URL coreResourceURL = fetchCoreResourceURL(subdomain, rootClass, resourcePath);
@@ -318,7 +314,6 @@ class FileResourceManager extends ResourceManager {
      * Look relative to the class (applies to core)
      */
     private URL fetchCoreResourceURL(final String subdomain, final Class<?> rootClass, final String resourcePath) {
-        //LOGGER.log(Level.INFO,  "Fetching core resource: " + resourcePath + " with subdomain: " + subdomain );
         try {
             // first try to find a site specific resource
             final File siteCoreResource = fetchCoreResourceFile(subdomain, rootClass, "site", resourcePath);

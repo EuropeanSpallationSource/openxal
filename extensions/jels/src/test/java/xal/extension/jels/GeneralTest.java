@@ -114,7 +114,6 @@ public class GeneralTest {
         double dataTW[][] = loadTWData(tracewinData);
         double dataOX[][] = run(probe, seq);
 
-        //saveResults(tracewinData.getFile() + ".out", dataOX, probe.getTrajectory());
         LOGGER.log(Level.INFO, String.format("%s\t", probe.getComment()));
         Column[] allCols = Column.values();
         StringBuilder message = new StringBuilder();
@@ -128,7 +127,6 @@ public class GeneralTest {
                 LOGGER.log(Level.INFO, String.format("%s: %E %E\n", allCols[j].name(), dataOX[allCols[j].openxal][dataOX[allCols[j].openxal].length - 1], dataTW[allCols[j].tracewin][dataTW[allCols[j].tracewin].length - 1]));
                 LOGGER.log(Level.INFO, String.format("%E\t", e));
             }
-            //LOGGER.log(Level.INFO, String.format("%E %E\n",dataOX[allCols[j].openxal][0], dataTW[allCols[j].tracewin][0]);
         }
 
         assertTrue(message.append("are not within the allowed error").toString(), ok);
@@ -309,7 +307,6 @@ public class GeneralTest {
     public static double compare(double[] xa, double[] xb, double[] ya, double yb[]) {
         double d = integrateL1sup(xa, xb, ya, yb);
         double a = integrateSup(xb, yb);
-        //LOGGER.log(Level.INFO, String.format("%E %E\n", d, a);
         if (a < 1e-6) {
             return d;
         }

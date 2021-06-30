@@ -729,7 +729,6 @@ public class TraceXalUnitConverter {
      *
      */
     public Twiss[] twissParametersFromXal(CovarianceMatrix mat) {
-        // Twiss[]     arrTwissXal = mat.twissParameters();
 
         Twiss[] arrTwissXal = mat.computeTwiss();
 

@@ -111,46 +111,6 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
         this.getFaceExit().setHardwareNodeId(strSmfId);
     }
 
-    /**
-     * Added Alignment routines to ElementSeq that doesn't need to be replicated
-     * here Jan 2019 - Natalia Milas
-     */
-    /**
-     * Set the alignment parameters for the magnet.
-     *
-     * I don't know what they are or how they are used.
-     *
-     * @param vecAlign (dx,dy,dz)
-     */
-    /**
-     * public void setAlignment(R3 vecAlign) {
-     * this.getMagBody().setAlign(vecAlign);
-     * this.getFaceEntr().setAlign(vecAlign);
-     * this.getFaceExit().setAlign(vecAlign); }
-     */
-    /**
-     * set align x
-     *
-     * @param dx
-     */
-    /**
-     * public void setAlignX(double dx) { this.getFaceEntr().setAlignX(dx);
-     * this.getMagBody().setAlignX(dx); this.getFaceExit().setAlignX(dx); }
-     */
-    /**
-     * set align y
-     *
-     * @param dy
-     */
-    /**
-     * public void setAlignY(double dy) { this.getFaceEntr().setAlignY(dy);
-     * this.getMagBody().setAlignY(dy); this.getFaceExit().setAlignY(dy); }
-     */
-    /**
-     * set align z
-     *
-     * @param dz
-     */
     @Override
     public void setAlignZ(double dz) {
         this.getFaceEntr().setAlignY(dz);
@@ -186,7 +146,6 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      * @see IdealMagWedgeDipole2#setPhysicalLength(double)
      */
     public void setPosition(double dblPos) {
-//        this.getMagBody().setPosition(dblPos);
         this.dblPos = dblPos;
     }
 
@@ -505,7 +464,6 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
      */
     @Override
     public double getPosition() {
-//        return this.getMagBody().getPosition();
         return this.dblPos;
     }
 
@@ -535,14 +493,6 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
         Bend magnet = (Bend) element.getHardwareNode();
         this.setPosition(element.getCenterPosition());
 
-        // xal.model.elem.ThickDipole xalDipole =
-        // new xal.model.elem.ThickDipole();
-        // xalDipole.setId(element.getNode().getId());
-        // xalDipole.setLength(element.getLength());
-        // xalDipole.setMagField(magnet.getDesignField());
-        // xalDipole.setKQuad(magnet.getQuadComponent());
-        // double angle = magnet.getDfltBendAngle()*Math.PI/180. * element.getLength() / magnet.getDfltPathLength();
-        // xalDipole.setReferenceBendAngle(angle);
         // Replace ThickDipole object with an IdealMagWedgeDipole2
         // First retrieve all the physical parameters for a bending dipole              
         double lenSect = element.getLength();

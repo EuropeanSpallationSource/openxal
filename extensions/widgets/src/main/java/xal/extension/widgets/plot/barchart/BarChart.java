@@ -79,8 +79,6 @@ public class BarChart {
                 }
 
                 if (nClmns > 0 && nMaxLines > 0) {
-                    //int iMin = GP.getScreenX(GP.getCurrentMinX());
-                    //int iMax = GP.getScreenX(GP.getCurrentMaxX());
                     int iMin = GP.getScreenX(GP.getInnerMinX());
                     int iMax = GP.getScreenX(GP.getInnerMaxX());
 
@@ -257,7 +255,6 @@ public class BarChart {
         }
         emptyStr = tmp_str;
 
-        //LOGGER.log(Level.INFO, "debug =========== val_min=" + val_min + " val_max=" + val_max);
         if (val_min * val_max > 0.) {
             if (val_min > 0.) {
                 val_min = 0.;
@@ -268,9 +265,7 @@ public class BarChart {
 
         int iMin = GP.getScreenX(GP.getCurrentMinX());
         int iMax = GP.getScreenX(GP.getCurrentMaxX());
-        //LOGGER.log(Level.INFO, "debug iMin=" + iMin + "  iMax=" + iMax);
         width = (int) ((iMax - iMin) / (1.9 * nMaxLines * nClmns));
-        //LOGGER.log(Level.INFO, "debug width=" + width);
         if (width < 1) {
             width = 1;
         }
@@ -320,7 +315,6 @@ public class BarChart {
             }
         }
 
-        //LOGGER.log(Level.INFO, "debug ===========start plotting=============== nClmns= " + nClmns);
         if (val_min < val_max) {
             formatter.makeAnalysis(val_min, val_max);
             GP.setNumberFormatY(formatter.getFormat());
@@ -499,7 +493,6 @@ public class BarChart {
             StringBuffer strb = new StringBuffer(" ");
             if (barColumns != null && barColumns.size() > 0) {
                 int ind = (int) Math.round(value - 1.0);
-                //LOGGER.log(Level.INFO, "debug ind=" + ind);
                 if (ind >= 0 && ind < barColumns.size()) {
                     strb.append(barColumns.get(ind).marker());
                 } else {
@@ -509,7 +502,6 @@ public class BarChart {
                 strb.append(emptyStr);
             }
 
-            //LOGGER.log(Level.INFO, "debug strb=" + strb);
             strb.append(" ");
 
             return strb;

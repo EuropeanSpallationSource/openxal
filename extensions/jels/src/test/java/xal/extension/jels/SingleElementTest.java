@@ -63,10 +63,6 @@ public abstract class SingleElementTest extends TestCommon {
 
         run(data.sequence);
 
-//        //printResults();
-//        if (data.elsSigma != null) {
-//            checkELSResults(data.elsPosition, data.elsSigma, data.elsBeta, data.ELSerrTolerance);
-//        }
         checkTWTransferMatrix(data.TWTransferMatrix, data.TMerrTolerance);
 
         if (data.TWMean == null) {

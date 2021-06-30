@@ -330,7 +330,6 @@ public class GraphDataOperations {
             } else {
                 xInter = (xMin + xMax) / 2.0;
             }
-            //LOGGER.log(Level.INFO, "debug nIter="+nIter+" xMin="+xMin+" xMax="+xMax+" sign0="+sign0+" sign1="+sign1);
             yInter = (gd1.getValueY(xInter) + gd2.getValueY(xInter)) / 2.0;
             nCount++;
         }

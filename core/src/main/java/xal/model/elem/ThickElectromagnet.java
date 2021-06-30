@@ -102,19 +102,6 @@ public abstract class ThickElectromagnet extends ThickElement implements IElectr
             orientation = IElectromagnet.ORIENT_HOR;
         } else if (magnetNode.isVertical()) {
             orientation = IElectromagnet.ORIENT_VER;
-        } else {
-            //  This is an exceptional condition!
-            //    Something went wrong if we made it here
-            //    Let's say so
-
-            // CKA - we are going to skip this since skew quadrupoles (soft type = "QSC")
-            //    have no orientation and always throw this warning
-//			    String    strSrc = magnetNode.getId() + "/" + magnetNode.getClass().getName();
-//			    String    strMsg = "Encountered an un-oriented electromagnet hardware object";
-//			    Logger    logGbl = LOGGER;
-//			    
-//			    logGbl.log(Level.WARNING, strMsg + " : " + strSrc);
-//	            LOGGER.log(Level.INFO, "WARNING!: " + strMsg + " : " + strSrc);		
         }
         setOrientation(orientation);
         setMagField(magnetNode.getDesignField());

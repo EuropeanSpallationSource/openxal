@@ -44,23 +44,8 @@ public class TransferMapProbe extends Probe<TransferMapState> {
         this.setTransferMap(PhaseMap.identity());
         this.setPartialTransferMap(PhaseMap.identity());
 
-//        this.setPhaseCoordinates(new PhaseVector());
     }
 
-//    /**
-//     * sako for turn by turn running, call instead of reset
-//     *
-//     *
-//     * @author H. Sako
-//     * @since  Apr 14, 2011
-//     */
-//    public void setupNextTurn() {
-//        this.setPosition(0);
-//        PhaseVector pv = this.getPhaseCoordinates();
-//        this.m_trajHist = this.createTrajectory();
-//        pv.setz(0);
-//        this.setPhaseCoordinates(pv);
-//    }
     /**
      * Initializing constructor. Create a new <code>TransferMapProbe</code> and
      * initialize its state to that of the given probe.
@@ -73,7 +58,6 @@ public class TransferMapProbe extends Probe<TransferMapState> {
         this.setTransferMap(new PhaseMap(probe.getTransferMap()));
         this.setPartialTransferMap(new PhaseMap(probe.getPartialTransferMap()));
 
-//        this.setPhaseCoordinates( new PhaseVector(probe.getPhaseCoordinates()) );
     }
 
     @Override
@@ -122,30 +106,6 @@ public class TransferMapProbe extends Probe<TransferMapState> {
         return this.stateCurrent.getPartialTransferMap();
     }
 
-//    /** 
-//     *  Returns homogeneous phase space coordinates of the particle.  The units
-//     *  are meters and radians.
-//     *  @return vector (x,x',y,y',z,z',1) of phase space coordinates
-//     *  
-//     *  @deprecated Transfer maps do not have phase coordinates
-//     */
-//	@Deprecated
-//    public PhaseVector getPhaseCoordinates()  { 
-//		return this.stateCurrent.getPhaseCoordinates();
-//    }
-//    
-//    
-//    /** 
-//     *  Set the phase coordinates of the probe.  
-//     *  @param  vecPhase new homogeneous phase space coordinate vector
-//     *  
-//     *  @deprecated Transfer maps do not have phase coordinates
-//     */
-//    @Deprecated
-//    public void setPhaseCoordinates( final PhaseVector vecPhase ) {
-//        this.stateCurrent.setPhaseCoordinates(vecPhase);
-//    }
-//    
     /*
       * Probe Overrides
      */
@@ -188,22 +148,6 @@ public class TransferMapProbe extends Probe<TransferMapState> {
         return new TransferMapState();
     }
 
-//    /**
-//     * Capture the current probe state to the <code>ProbeState</code> argument.  Note
-//     * that the argument must be of the concrete type <code>TransferMapState</code>.
-//     * @param   state   <code>ProbeState</code> to receive this probe's state information
-//     * @exception IllegalArgumentException  argument is not of type <code>TransferMapState</code>
-//     */
-//    @Override
-//    public void applyState( final TransferMapState state ) {
-//        if ( !(state instanceof TransferMapState) ) throw new IllegalArgumentException("invalid probe state");
-//        final TransferMapState stateTrans = (TransferMapState) state;
-//        
-//        super.applyState(state);
-////        stateTrans.setTrajectory( (TransferMapTrajectory)trajHist );
-//        this.setTransferMap( stateTrans.getTransferMap() );
-//        this.setPartialTransferMap( stateTrans.getStateTransferMap() );
-//    }
     /**
      * Initialize this probe from the one specified.
      *

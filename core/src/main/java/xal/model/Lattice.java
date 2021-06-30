@@ -195,30 +195,6 @@ public class Lattice extends ElementSeq {
         return lstRings;
     }
 
-    /*
-     * Operations
-     */
-//    /**
-//     * This does nothing at the moment.
-//     * <strike>Add a new line to the model</strike>.
-//     * 
-//     * @param mdlLine   ignored
-//     * 
-//     * @see xal.model.IComponent#propagate(xal.model.IProbe)
-//     */    
-//    public void addLine(LineModel mdlLine)  {
-//        
-//    }
-//    
-    /*
-     *  IComposite Interface
-     */
-//    /**  
-//     *  Get the type identifier for ElementSeq
-//     *
-//     *  @return     type identifier for ElementSeq
-//     */
-//    public String getType() { return TYPE==null? "":TYPE; }
     /**
      * <p>
      * Propagate a probe through the lattice. The probe is first initialized by
@@ -242,13 +218,7 @@ public class Lattice extends ElementSeq {
      */
     @Override
     public void propagate(IProbe probe) throws ModelException {
-
-//        probe.initialize();
-//        probe.update();
-//        LOGGER.log(Level.INFO, "Lattice.propaget called");
         super.propagate(probe);
-//		
-//		probe.performPostProcessing();
     }
 
     /**
@@ -276,13 +246,10 @@ public class Lattice extends ElementSeq {
      */
     @Override
     public void backPropagate(IProbe probe) throws ModelException {
-
         probe.initialize();
         probe.update();
         LOGGER.log(Level.INFO, "Lattice.backPropagate called");
         super.backPropagate(probe);
-
-//        probe.performPostProcessing();
     }
 
     /*
@@ -319,8 +286,4 @@ public class Lattice extends ElementSeq {
 
         super.print(os);
     }
-
-    /*
-     *  Internal Support
-     */
 }

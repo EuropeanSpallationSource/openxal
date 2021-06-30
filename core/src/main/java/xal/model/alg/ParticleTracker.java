@@ -82,17 +82,6 @@ public class ParticleTracker extends Tracker {
         return new ParticleTracker(this);
     }
 
-
-    /*
-     *  Data Queries
-     */
-//    /**
-//     * Returns the maximum element subsection length (in meters) that the probe 
-//     * may be advanced before saving particle state.
-//     */
-//    private double getMaxStepSize() {
-//        return this.dblMaxStep;
-//    }
     /*
      * IArchive Interface
      */
@@ -159,41 +148,12 @@ public class ParticleTracker extends Tracker {
         }
         ParticleProbe probe = (ParticleProbe) iProbe;
 
-//        probe.setCurrentElement(elem.getId());
         double dblLen = elem.getLength();
 
         this.advanceState(probe, elem, dblLen);
         this.advanceProbe(probe, elem, dblLen);
-
-//      // take snapshot at beginning of element
-//      probe.update();
-//        
-//      int nSteps = compStepCount(elem);
-//      double sectionSize = elem.getLength() / nSteps;
-//      for (int i=0 ; i<nSteps ; i++) {
-//        this.advanceState(probe, elem, sectionSize);
-//        this.advanceProbe(probe, elem, sectionSize);
-//        probe.update();
-//      }
     }
 
-    /*
-     * Support Methods
-     */
-//    /**
-//     * Returns the number of subsections to break the specified element into for
-//     * propagation. Always one for a particle tracker.
-//     * 
-//     * @param elem Element currently acting on probe
-//     * 
-//     * @return one
-//     */
-//    protected int compStepCount(IElement elem) {
-//        double dblSecs = Math.ceil(elem.getLength() / getMaxStepSize());
-//        int nSecs      = (int) Math.max(dblSecs, 1.0);
-//        
-//        return nSecs;
-//    }
     /**
      * Advances the probe state through the element.
      *

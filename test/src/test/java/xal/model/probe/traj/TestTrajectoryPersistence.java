@@ -76,14 +76,8 @@ public class TestTrajectoryPersistence {
     /**
      * Accelerator sequence used for testing
      */
-//    public static final String     STR_ACCL_SEQ_ID = "HEBT2";
     public static final String STR_ACCL_SEQ_ID = "SCLMed";
 
-//    /** Output file name */
-//    private static final String         STR_FILENAME_OUTPUT = "Trajectory.txt";
-//
-//    /** The results output file stream */
-//    private static PrintStream        PSTR_OUTPUT;
     /*
      * Global Methods
      */
@@ -97,11 +91,6 @@ public class TestTrajectoryPersistence {
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-
-//        File fileOutput = ResourceManager.getOutputFile(TestTrajectoryPersistence.class, STR_FILENAME_OUTPUT);
-//            
-//        PSTR_OUTPUT = new PrintStream(fileOutput);
-//        
         try {
             Accelerator accl = ResourceManager.getTestAccelerator();
             AcceleratorSeq seq = accl.getSequence(STR_ACCL_SEQ_ID);

@@ -311,8 +311,6 @@ public class ProfileDataProcessor {
      */
     public void processData() throws DataProcessingException {
         this.interpolateMissingData();
-//    	this.highPassFilter();
-//    	this.lowPassFilter();
         this.removeBaselineNoise(DBL_SIG_INDICATOR_THRESHOLD);
         this.decoupleSignals(INT_CPL_MAX_SAMPLE_COUNT, DBL_CPL_MIN_FRAC_SIGNAL_AMPL);
         this.thresholdFilter(DBL_THR_MAX_FRAC_SIGNAL_AMPL);
@@ -361,23 +359,25 @@ public class ProfileDataProcessor {
     /**
      * <p>
      * Remove the baseline noise signal from the data set. We assume that each
-     * profile signal <em>f<sup>^</sup></em>(<em>n</em>) is given by the following:
+     * profile signal <em>f<sup>^</sup></em>(<em>n</em>) is given by the
+     * following:
      * <br>
      * <br>&nbsp;&nbsp;  <em>f<sup>^</sup></em>(<em>n</em>) =
      * <em>f</em>(<em>n</em>) + <em>W</em>(<em>n</em>)<br>
      * <br>
      * where <em>f</em>(<em>n</em>) is the true signal at index <em>n</em> and
      * <em>W</em>(<em>n</em>) is a noise process with a (possibly) nonzero mean
-     * given by E[<em>W</em>(<em>n</em>)] = <em>w</em> (independent of <em>n</em>). The
-     * value of <em>w</em> represents the baseline noise signal.
+     * given by E[<em>W</em>(<em>n</em>)] = <em>w</em> (independent of
+     * <em>n</em>). The value of <em>w</em> represents the baseline noise
+     * signal.
      * </p>
      * <p>
      * To remove this content we compute the signal indicator function for each
      * signal and find the largest index such that all the indicator functions
      * are less than the given value. All data before this index is assumed to
      * be noise. We use that data to compute <em>w</em> for each signal assuming
-     * that the original signal is filtered such that E[(<em>W - w</em>)&sup2;] is
-     * small. The value <em>w</em> is subtracted from each respective signal.
+     * that the original signal is filtered such that E[(<em>W - w</em>)&sup2;]
+     * is small. The value <em>w</em> is subtracted from each respective signal.
      * </p>
      * <p>
      * Note, however, that only the mean component of the noise is removed. If
@@ -433,14 +433,19 @@ public class ProfileDataProcessor {
      * <p>
      * It is assumed that the profile signals may be represented by the equation
      * <br>
-     * <br>&nbsp;&nbsp;  <strong>f*</strong>(<em>n</em>) = <strong>GCf</strong>(<em>n</em>)<br>
+     * <br>&nbsp;&nbsp;  <strong>f*</strong>(<em>n</em>) =
+     * <strong>GCf</strong>(<em>n</em>)<br>
      * <br>
-     * where <strong>f</strong>*(<em>n</em>) is the vector-valued function of measured
-     * profile data (one element for each projection) at time <em>n</em>,
-     * <strong>G</strong> is the gain matrix, <strong>C</strong> is the cross-talk matrix, and
-     * <strong>f</strong>(<strong>n</strong>) is the vector-valued function of profile data. The
-     * gain matrix is chosen so that the integral of element in
-     * <strong>f</strong>(<strong>n</strong>) is unity. That is, &int;<strong>f</strong>(<strong>n</strong>)<em>dn</em>
+     * where <strong>f</strong>*(<em>n</em>) is the vector-valued function of
+     * measured profile data (one element for each projection) at time
+     * <em>n</em>,
+     * <strong>G</strong> is the gain matrix, <strong>C</strong> is the
+     * cross-talk matrix, and
+     * <strong>f</strong>(<strong>n</strong>) is the vector-valued function of
+     * profile data. The gain matrix is chosen so that the integral of element
+     * in
+     * <strong>f</strong>(<strong>n</strong>) is unity. That is,
+     * &int;<strong>f</strong>(<strong>n</strong>)<em>dn</em>
      * = (1,1,&hellip;,1).
      * </p>
      * <strong>NOTE:</strong>

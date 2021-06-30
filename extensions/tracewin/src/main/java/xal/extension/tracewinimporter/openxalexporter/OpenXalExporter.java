@@ -305,7 +305,7 @@ public class OpenXalExporter {
                 if (!(subsystem instanceof Drift)) {
                     latticeCount++;
                 }
-            // Subsystem
+                // Subsystem
             } else {
                 node = export(subsystem, systems, currentPosition, comparator);
             }

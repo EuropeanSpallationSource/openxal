@@ -122,8 +122,6 @@ public class SmartFormatGridLimits extends GridLimits {
             xSR[2] = scale * Math.ceil(vMax / scale);
         }
         sucessX = true;
-        //LOGGER.log(Level.INFO,  "debug smGL X min,max=" + vMin + " "
-        //    + vMax + " scale=" + scale + " min,max=" + xSR[1] + " " + xSR[2] );
     }
 
     /**
@@ -153,8 +151,6 @@ public class SmartFormatGridLimits extends GridLimits {
             ySR[2] = scale * Math.ceil(vMax / scale);
         }
         sucessY = true;
-        //LOGGER.log(Level.INFO,  "debug smGL Y min,max=" + vMin + " "
-        //     + vMax + " scale=" + scale + " min,max=" + ySR[1] + " " + ySR[2] );
     }
 
     /**
@@ -185,24 +181,19 @@ public class SmartFormatGridLimits extends GridLimits {
         //This is for zoom, so we want to increase number of significant digits
         nD = nD + 1 + nExtraDigits;
 
-        //LOGGER.log(Level.INFO,  "debug format scale=" + arr[0] +
-        //   " min,max=" + arr[1] + " " + arr[2] + " nV,nD=" + nV + " " + nD );
         if (nV >= 4) {
             int n = Math.min(4, Math.abs(nD));
             frmt = scientificFormats[n];
-            //LOGGER.log(Level.INFO,  "debug case 0 n=" + n + " format=" + frmt.toPattern() );
             return frmt;
         }
 
         if (nV > 0 && nV < 4) {
             if (nV >= nD) {
                 frmt = simpleFormats[0];
-                //LOGGER.log(Level.INFO,  "debug case 1 format=" + frmt.toPattern() );
                 return frmt;
             } else {
                 int n = Math.min(4, Math.abs(nV - nD));
                 frmt = simpleFormats[n];
-                //LOGGER.log(Level.INFO,  "debug case 2 n=" + n + " format=" + frmt.toPattern() );
                 return frmt;
             }
         }
@@ -211,12 +202,10 @@ public class SmartFormatGridLimits extends GridLimits {
             int n = Math.abs(nV) + Math.abs(nD) - 2;
             if (n <= 4) {
                 frmt = simpleFormats[n];
-                //LOGGER.log(Level.INFO,  "debug case 3 n=" + n + " format=" + frmt.toPattern() );
                 return frmt;
             }
         }
 
-        //LOGGER.log(Level.INFO,  "debug default case format=" + frmt.toPattern() );
         return frmt;
     }
 

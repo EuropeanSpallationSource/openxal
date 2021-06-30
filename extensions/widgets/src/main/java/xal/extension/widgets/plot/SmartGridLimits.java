@@ -55,7 +55,6 @@ public class SmartGridLimits extends SmartFormatGridLimits {
         }
         //the place to put xMin, xMax specs for GridLimits object
         int n = (int) (Math.round((xSR[2] - xSR[1]) / xSR[0]));
-        //LOGGER.log(Level.INFO,  "debug X smart n=" + n +" Xmin="+xSR[1]+" Xmax="+ xSR[2]+" step="+xSR[0]);
         setLimitsAndTicksX(xSR[1], xSR[0], n);
 
     }
@@ -72,7 +71,6 @@ public class SmartGridLimits extends SmartFormatGridLimits {
         }
         //the place to put yMin, yMax specs for GridLimits objec
         int n = (int) (Math.round((ySR[2] - ySR[1]) / ySR[0]));
-        //LOGGER.log(Level.INFO,  "debug Y smart n=" + n +" Ymin="+ySR[1]+" Ymax="+ ySR[2]+" step="+ySR[0]);
         setLimitsAndTicksY(ySR[1], ySR[0], n);
     }
 

@@ -11,29 +11,31 @@ package xal.extension.wirescan.profile;
  * Computes statistical properties of profile data.</p>
  *
  * <p>
- * Define the weighted, central summation <em>S<sub>n</sub></em>(<em>&mu;</em>) as
+ * Define the weighted, central summation <em>S<sub>n</sub></em>(<em>&mu;</em>)
+ * as
  * <br>
  * <br>&nbsp;&nbsp;<em>S<sub>n</sub></em>(<em>&mu;</em>) =
  * &Sigma;<sub><em>k</em></sub>(<em>k -
  * &mu;</em>)<sup><em>n</em></sup><em>f<sub>k</sub></em>
  * <br>
  * <br>
- * where {<em>f<sub>k</sub></em>} is the set of discrete samples for a projection
- * view (that is, the discrete function representing the projection). Then the
- * quantities provided by this class are typically some ratio of the
+ * where {<em>f<sub>k</sub></em>} is the set of discrete samples for a
+ * projection view (that is, the discrete function representing the projection).
+ * Then the quantities provided by this class are typically some ratio of the
  * <em>S<sub>n</sub></em>(<em>&mu;</em>) for a combination of parameters
  * (<em>n,&mu;</em>). For example, the <em>n</em><sup>th</sup> central moment
- * moment, denoted &lt;(<em>x - &mu;</em>)<em><sup>n</sup></em>&gt;, is defined as
+ * moment, denoted &lt;(<em>x - &mu;</em>)<em><sup>n</sup></em>&gt;, is defined
+ * as
  * <br>
  * <br>&nbsp;&nbsp; &lt;(<em>x - &mu;</em>)<em><sup>n</sup></em>&gt; =
  * <em>S<sub>n</sub></em>(<em>&mu;</em>)/<em>S</em><sub>0</sub>(0)
  * <br>
  * <br>
- * Note that the units of the moments will be in terms of <strong>samples</strong> (see
- * below). For example, the value returned by the method
- * <code>getCenter(ProfileData.Angle)</code> is the index location of the center
- * of mass. Note further that although the indices are integer valued, the
- * statistic values in units of <strong>samples</strong>
+ * Note that the units of the moments will be in terms of
+ * <strong>samples</strong> (see below). For example, the value returned by the
+ * method <code>getCenter(ProfileData.Angle)</code> is the index location of the
+ * center of mass. Note further that although the indices are integer valued,
+ * the statistic values in units of <strong>samples</strong>
  * need not be.
  * </p>
  *
@@ -43,14 +45,14 @@ package xal.extension.wirescan.profile;
  * considering these systems as approximations for continuous systems (sampled
  * data systems) then we must "unnormalized" the results by the sampling
  * interval <em>h</em>. For example, to convert <(<em>x -
- * &mu;</em>)<em><sup>n</sup></em>> to the continuous approximation the value must
- * be multiplied by <em>h<sup>n</sup></em>.
- * <br>- The above conversions are <strong>not</strong> provided by methods in this class.
- * There are, however, methods for computing the sampling length <em>h</em> for
- * the various axes and actuator positions. The rationale for not providing this
- * service at present is the profile data sets might not contain the axis
- * positions, as these are version-sensitive data. Thus, such methods have the
- * potential for returning erroneous results.
+ * &mu;</em>)<em><sup>n</sup></em>> to the continuous approximation the value
+ * must be multiplied by <em>h<sup>n</sup></em>.
+ * <br>- The above conversions are <strong>not</strong> provided by methods in
+ * this class. There are, however, methods for computing the sampling length
+ * <em>h</em> for the various axes and actuator positions. The rationale for not
+ * providing this service at present is the profile data sets might not contain
+ * the axis positions, as these are version-sensitive data. Thus, such methods
+ * have the potential for returning erroneous results.
  * <br>- Higher-order moments are highly sensitive to signal noise.
  * <br>- Strongly peaked distributions create numerically unstable computations.
  * In general, for accurate numerical results the distribution should have a
@@ -105,7 +107,8 @@ public class ProfileDataStatistics {
      * - The returned value is for a discrete function and must be treated as a
      * "normalized" quantity when considering sampled data from a continuous
      * system. To convert to the continuous approximation the returned value
-     * must be multiplied by <em>h</em> where <em>h</em> is the sampling interval.
+     * must be multiplied by <em>h</em> where <em>h</em> is the sampling
+     * interval.
      * </p>
      *
      * @param view projection data
@@ -171,13 +174,14 @@ public class ProfileDataStatistics {
      * <em>x</em><sub>0</sub>)/(<em>N</em> - 1)
      * <br>
      * <br>
-     * where <em>N</em> is the number of sample points and {<em>x<sub>k</sub></em>}
-     * are the actuator positions.
+     * where <em>N</em> is the number of sample points and
+     * {<em>x<sub>k</sub></em>} are the actuator positions.
      * </p>
      * <p>
      * NOTE:
      * <br> - The above result is the same as computing the steps size
-     * <em>h<sub>k</sub></em> = <em>x<sub>k</sub></em> - <em>x<sub>k-</em>1</sub>
+     * <em>h<sub>k</sub></em> = <em>x<sub>k</sub></em> -
+     * <em>x<sub>k-</em>1</sub>
      * between each sample then averaging the set.
      *
      * @return average step length between actuator positions
@@ -200,13 +204,14 @@ public class ProfileDataStatistics {
      * <em>x</em><sub>0</sub>)/(<em>N</em> - 1)
      * <br>
      * <br>
-     * where <em>N</em> is the number of sample points and {<em>x<sub>k</sub></em>}
-     * are the axis positions.
+     * where <em>N</em> is the number of sample points and
+     * {<em>x<sub>k</sub></em>} are the axis positions.
      * </p>
      * <p>
      * NOTE:
      * <br> - The above result is the same as computing the steps size
-     * <em>h<sub>k</sub></em> = <em>x<sub>k</sub></em> - <em>x<sub>k-</em>1</sub>
+     * <em>h<sub>k</sub></em> = <em>x<sub>k</sub></em> -
+     * <em>x<sub>k-</em>1</sub>
      * between each sample then averaging the set.
      *
      * @return average step length between axis sample positions
@@ -234,16 +239,16 @@ public class ProfileDataStatistics {
      * NOTE: <br>
      * - The returned value is for a discrete function and must be treated as a
      * "normalized" quantity when considering sampled data from a continuous
-     * system. To convert to the continuous approximation for <em>&sigma;</em> the
-     * returned value must be multiplied by <em>h</em> where <em>h</em> is the
-     * sampling interval.
+     * system. To convert to the continuous approximation for <em>&sigma;</em>
+     * the returned value must be multiplied by <em>h</em> where <em>h</em> is
+     * the sampling interval.
      * <br>
      * - Because of signal noise and numerical rounding it is possible to
      * compute a value for &lt;(<em>x - &mu;</em>)<sup>2</sup>&gt; which is less
      * than zero. Such an occurrence indicates either that sampling interval
-     * <em>h</em> is too large, or that the signal-to-noise ratio is too small to
-     * permit meaningful results.  <strong>A zero value is returned</strong> in this
-     * situation.
+     * <em>h</em> is too large, or that the signal-to-noise ratio is too small
+     * to permit meaningful results.  <strong>A zero value is returned</strong>
+     * in this situation.
      * </p>
      *
      * @param view project data to analyze
@@ -341,7 +346,8 @@ public class ProfileDataStatistics {
      *
      * @param intOrder order of the summation weight (i.e., <em>n</em>)
      * @param dblCntr center of the summation weight (i.e., <em>&mu;</em>)
-     * @param view projection view angle (i.e., the set {<em>f<sub>k</sub></em>})
+     * @param view projection view angle (i.e., the set
+     * {<em>f<sub>k</sub></em>})
      *
      * @return the value <em>S<sub>n</sub></em>(<em>&mu;</em>) as defined above
      */

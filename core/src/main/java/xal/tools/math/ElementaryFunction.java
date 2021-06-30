@@ -394,7 +394,6 @@ public final class ElementaryFunction {
         if (Math.abs(x) > ElementaryFunction.EPS) {
             return sinh(x) / x;
         } else {
-            // LOGGER.log(Level.INFO, "sinch, x = "+x);
         }
 
         double x2 = x * x;
@@ -418,7 +417,6 @@ public final class ElementaryFunction {
         if (Math.abs(x) > ElementaryFunction.EPS) {
             return Math.sinh(x) / x;
         } else {
-            //LOGGER.log(Level.INFO, "sinchm, x = "+x);
         }
 
         double x2 = x * x;

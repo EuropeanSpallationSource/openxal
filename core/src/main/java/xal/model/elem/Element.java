@@ -506,14 +506,6 @@ public abstract class Element implements IElement {
 
         dblNodeLen = latticeElement.getHardwareNode().getLength();
         dblNodePos = latticeElement.getHardwareNode().getPosition();
-
-//        // CKA: Added to include hardware ID attribute for the new element.
-//        //   This is bound to ScenarioGenerator#collectElements(). 
-//        //   If "ELEMENT_CENTER" is changed you must modify both!
-//        if ( this instanceof Marker && 
-//             this.getId().startsWith("ELEMENT_CENTER")
-//             )
-//            setHardwareNodeId(this.getId().replace("ELEMENT_SEQUENCE:", "") );
     }
 
     /**
@@ -636,7 +628,6 @@ public abstract class Element implements IElement {
         alg = probe.getAlgorithm();
         if (alg instanceof Tracker) {
             Tracker tracker = (Tracker) alg;
-//          LOGGER.log(Level.INFO, "tracker.setElemPosition to "+pos);
 
             // The algorithm "element position" is also set in Tracker#advanceProbe() ??!!
             tracker.setElemPosition(pos);
@@ -660,7 +651,6 @@ public abstract class Element implements IElement {
      */
     @Override
     public void propagate(IProbe probe) throws ModelException {
-
         // algorithm for the probe
         IAlgorithm alg;
 
@@ -855,10 +845,6 @@ public abstract class Element implements IElement {
      * @param os output stream object
      */
     public void print(PrintWriter os) {
-//        os.println("  Element - " + this.getId());
-//        os.println("  element type       : " + this.getType() );
-//        os.println("  element UID        : " + this.getUID() );
-//        os.println("  element length     : " + this.getLength() );
         os.println(this.toString());
     }
 }

@@ -207,21 +207,6 @@ public abstract class ProfileDevice extends AcceleratorNode {
          */
         public SignalSet getFitData();
 
-//        /**
-//         * Signal attributes (properties) computed from the profile device
-//         * data set.  This include signal offset, signal strength, standard
-//         * deviation, etc.  These values are computed directed from raw data
-//         * or via some processing on the raw data, not fitted data.  
-//         * How these values are computed must be should be
-//         * defined in in the exposed method or clear from the context.
-//         * 
-//         * @return  signal properties of the current profile device data set
-//         *
-//         * @author Christopher K. Allen
-//         * @since  Apr 22, 2014
-//         */
-//        public SignalAttrSet    getRawAttrs();
-        //    
         /**
          * Signal attributes (properties) computed from the profile device data
          * set. This include signal offset, signal strength, standard deviation,

@@ -157,7 +157,6 @@ public abstract class ElementMapping {
         } else {
             return getDefaultElementType();
         }
-        // throw new RuntimeException("No converter for class "+element.getNode().getClass()+", type "+element.getNode().getType());
     }
 
     /**

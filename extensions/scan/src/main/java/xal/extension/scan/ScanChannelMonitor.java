@@ -226,7 +226,6 @@ public class ScanChannelMonitor {
         @Override
         public void eventValue(final ChannelTimeRecord record, final Channel channel) {
             latestRecord = record;
-            //LOGGER.log(Level.INFO,  "Captured record: " + record );
 
             if (delegate != null) {
                 delegate.channelRecordUpdate(ScanChannelMonitor.this, record);		// forward the event to the delegate

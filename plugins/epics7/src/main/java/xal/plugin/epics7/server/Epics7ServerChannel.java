@@ -90,7 +90,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
 
         // Removing protocol in case it is defined.
         if (strId.startsWith("ca://") || strId.startsWith("pva://")) {
-            strId = strId.substring(strId.indexOf("://") + 3);            
+            strId = strId.substring(strId.indexOf("://") + 3);
         }
 
         this.epics7ServerChannelSystem = CHANNEL_SYSTEM;

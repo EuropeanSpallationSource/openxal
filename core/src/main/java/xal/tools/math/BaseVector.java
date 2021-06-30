@@ -94,10 +94,6 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
 
             this.setElem(i, dblVal);
         }
-
-        //  -- memory creation
-//        JVector vecNew = new JVector(arrVector);
-//        this.vecImpl   = vecNew;
     }
 
     /**
@@ -917,8 +913,6 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since Oct 4, 2013
      */
     protected BaseVector(double[] arrVals) {
-//        this(intSize);
-//        this.setVector(arrVals);;
         this(arrVals.length);
         this.setVector(arrVals);;
     }

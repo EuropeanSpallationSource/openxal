@@ -283,8 +283,6 @@ public class PVLogSnapshotChooser {
                 pvLogId = Long.parseLong(pvLogIdField.getText());
                 pvLogDialog.setVisible(false);
                 LOGGER.log(Level.INFO, "pvLogId = {0}", pvLogId);
-                // for testing purpose
-                // System.exit(0);
             }
         });
         result.add(done);
@@ -295,10 +293,4 @@ public class PVLogSnapshotChooser {
     public long getPVLogId() {
         return pvLogId;
     }
-
-// for testing purpose
-//    public static void main(String[] args) {
-//        PVLogSnapshotChooser psc = new PVLogSnapshotChooser();
-//        psc.choosePVLogId();
-//    }
 }

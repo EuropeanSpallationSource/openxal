@@ -146,7 +146,6 @@ public class XmlDataAdaptor implements FileDataAdaptor {
 
         for (int index = 0; index < numNodes; index++) {
             Node node = nodeList.item(index);
-            //String nodeName = node.getLocalName();
             String nodeName = node.getNodeName();
             if (nodeName != null && node.getNodeType() == Node.ELEMENT_NODE) {
                 childNodes.add(node);
@@ -173,7 +172,6 @@ public class XmlDataAdaptor implements FileDataAdaptor {
      */
     private static String nameForNode(Node node) {
         return node.getNodeName();
-        //return node.getLocalName();
     }
 
     /**
@@ -208,7 +206,6 @@ public class XmlDataAdaptor implements FileDataAdaptor {
      * attribute does not exist
      */
     protected final String rawValue(final String attribute) {
-        //return (String)asElement().getAttribute(attribute);
         Attr attributeNode = ((Attr) mainNode.getAttributes().getNamedItem(attribute));
         return (attributeNode != null) ? attributeNode.getValue() : null;
     }
@@ -336,7 +333,6 @@ public class XmlDataAdaptor implements FileDataAdaptor {
      * @param value The string value to associate with the attribute.
      */
     protected final void setRawValue(String attribute, String value) {
-        //asElement().setAttribute(attribute, value);
         Attr attributeNode = document.createAttribute(attribute);
         attributeNode.setValue(value);
         asElement().setAttributeNode(attributeNode);

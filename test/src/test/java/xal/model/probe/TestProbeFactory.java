@@ -135,7 +135,6 @@ public class TestProbeFactory {
      */
     @Test
     public void testGetParticleProbeAcceleratorSeqIAlgorithm() {
-//        fail("Not yet implemented");
     }
 
     /**
@@ -144,7 +143,6 @@ public class TestProbeFactory {
      */
     @Test
     public void testGetTransferMapProbeAcceleratorSeqIAlgorithm() {
-//        fail("Not yet implemented");
     }
 
     /**

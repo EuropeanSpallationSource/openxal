@@ -283,26 +283,10 @@ public class CoordinateMap {
      * get the envelope probe state in the trajectory for the specified node
      */
     private TransferMapState getProbeState(final Trajectory<TransferMapState> trajectory, final AcceleratorNode node) {
-//		final Iterator<TransferMapState> stateIter = trajectory.stateIterator();
-//		while( stateIter.hasNext() ) {
-//			TransferMapState state = stateIter.next();
-//			LOGGER.log(Level.INFO,  "state ID: " + state.getElementId() );
-//		}
-
         final String elementID = getElementIdForNode(node);
-//		LOGGER.log(Level.INFO,  "Getting state for element: " + elementID );
-//		LOGGER.log(Level.INFO,  "State for element: " + elementID + " = " + trajectory.stateForElement( elementID ) );
+
         final TransferMapState state = elementID != null ? trajectory.stateForElement(elementID) : null;
         return state;
-
-//		if ( elementID != null ) {
-//			final ProbeState[] states = trajectory.statesForElement_OLD( elementID );
-//			final TransferMapState state = (TransferMapState)states[0];
-//			return state;
-//		}
-//		else {
-//			return null;
-//		}
     }
 
     /**
@@ -347,16 +331,14 @@ public class CoordinateMap {
         if (fromPath < 0.0) {	// "from" node is across the origin near the end of the sequence, and the "to" node is near the front of the sequence
             // Xo = F * Xp, Xf = Tf * Xp, Xt = Tt * Xo  ->  Xp = Tf^-1 * Xf  ->  Xo = F * Tf^-1 * Xf  ->  Tft = Tt * F * Tf^-1
             final PhaseMatrix fullTurnOriginMatrix = new CalculationsOnRings(trajectory).getFullTransferMap().getFirstOrder();
-            //final PhaseMatrix fullTurnOriginMatrix = trajectory.getFullTurnMapAtOrigin().getFirstOrder();
             return toMatrix.times(fullTurnOriginMatrix).times(fromMatrix.inverse());
-        // "from" node is across the origin near the front of the sequence, and the "to" node is near the end of the sequence
+            // "from" node is across the origin near the front of the sequence, and the "to" node is near the end of the sequence
         } else if (fromPath > sequence.getLength()) {
             // Xo = F * Xp, Xf = Tf * Xo, Xt = Tt * Xp  ->  Xf = Tf * F * Xp  ->  Xp = (Tf * F)^-1 * Xf  ->  Xt = Tt * (Tf * F)^-1 * Xf  ->  Tft = Tt * (Tf * F)^-1
             final TransferMapState originState = trajectory.initialState();
             final PhaseMatrix fullTurnOriginMatrix = new CalculationsOnRings(trajectory).getFullTransferMap().getFirstOrder();
-            //final PhaseMatrix fullTurnOriginMatrix = trajectory.getFullTurnMapAtOrigin().getFirstOrder();
             return toMatrix.times(fromMatrix.times(fullTurnOriginMatrix).inverse());
-        // "from" and "to" nodes are on the same side of the origin (i.e. shortest path between them along the ring does not cross the origin of the sequence)
+            // "from" and "to" nodes are on the same side of the origin (i.e. shortest path between them along the ring does not cross the origin of the sequence)
         } else {
             // Xo = Tf^-1 * Xf  ->  Xt = Tt * Tf^-1 * Xf  ->  Tft = Tt * Tf^-1
             return getTransferMatrix(fromMatrix, toMatrix);

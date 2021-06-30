@@ -52,11 +52,6 @@ public class TestPolynomialFit {
      */
     private static final int CNT_SMPS = 10;
 
-//    db = (bmax - bmin)/(Ns - 1);
-//    dk = (kmax - kmin)/(Ns - 1);
-//    
-//    /** */
-//    k[b_] = (2 \[Pi] 402.5*10^6)/(b 3.0*10^8)
     /*
      * Global Variables
      */
@@ -101,17 +96,14 @@ public class TestPolynomialFit {
         return dblTtf;
     }
 
-    ;
-    
-    
     /**
-     * Creates the array of sample locations for particle velocity
-     * &beta; from the constants <code>CNT_SMPS</code>, <code>BETA_MIN</code>,
-     * and <code>BETA_MAX</code>.
-     * 
-     * @return  array of [&beta;<sub>0</sub>,..., &beta;<sub><em>N</em>-1</sub>]
+     * Creates the array of sample locations for particle velocity &beta; from
+     * the constants <code>CNT_SMPS</code>, <code>BETA_MIN</code>, and
+     * <code>BETA_MAX</code>.
      *
-     * @since  Jul 28, 2015   by Christopher K. Allen
+     * @return array of [&beta;<sub>0</sub>,..., &beta;<sub><em>N</em>-1</sub>]
+     *
+     * @since Jul 28, 2015 by Christopher K. Allen
      */
     private static double[] buildSmpLocArray() {
 
@@ -157,9 +149,7 @@ public class TestPolynomialFit {
      */
     @Test
     public final void testPolynomialFit() {
-
         double[] arrBetaSmps = new double[CNT_SMPS];
-
     }
 
     /**
@@ -170,7 +160,6 @@ public class TestPolynomialFit {
      */
     @Test
     public final void testFittingInitializationAlgorithm() {
-
         double[] arrBetaSmps = buildSmpLocArray();
 
         Rn T = this.buildDataVector(arrBetaSmps);
@@ -212,7 +201,6 @@ public class TestPolynomialFit {
      * @since Jul 28, 2015 by Christopher K. Allen
      */
     private Rmxn buildSystemMatrix(double[] arrBetaSmps) {
-
         if (arrBetaSmps.length != CNT_SMPS) {
             fail("wrong number of samples");
 
@@ -245,7 +233,6 @@ public class TestPolynomialFit {
      * @since Jul 28, 2015 by Christopher K. Allen
      */
     private Rn buildDataVector(double[] arrBetaSmps) {
-
         if (arrBetaSmps.length != CNT_SMPS) {
             fail("wrong number of samples");
 

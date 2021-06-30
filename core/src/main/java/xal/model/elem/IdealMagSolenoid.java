@@ -106,7 +106,6 @@ public class IdealMagSolenoid extends ThickElectromagnet {
         double gamma = probe.getGamma();
 
         // focusing constant (radians/meter)
-        //final double k = ( charge * LightSpeed * getMagField() ) / ( Er * beta * gamma )/2.;
         final double k = (charge * LIGHT_SPEED * getMagField()) / (2. * Er * beta * gamma);
 
         // Compute the transfer matrix components

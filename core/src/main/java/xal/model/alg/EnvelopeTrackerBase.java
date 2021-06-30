@@ -2228,7 +2228,6 @@ public abstract class EnvelopeTrackerBase extends Tracker {
             f2l = 15 * (f2l - sintdp / tdp) / tdp / tdp;
         }
 
-        //def   double cayz = 2*cay*gammaa*gammaa;
         //this is best
         double cayz = 2 * cay;
         double cayp = cayz * cayz * dphi * dphi;

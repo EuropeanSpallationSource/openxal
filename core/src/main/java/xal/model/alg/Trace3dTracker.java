@@ -348,10 +348,8 @@ public class Trace3dTracker extends Tracker {
         }
 
         // Build the beam charge density object and compute (de)focusing strengths from space charge
-//        EllipsoidalCharge   rho = new EllipsoidalCharge(K, matChi);
         BeamEllipsoid rho = new BeamEllipsoid(gamma, matChi);
 
-//        R3  vecFocus = rho.compDefocusConstantsAlaTrace3D();
         double[] arrFocus = BeamEllipsoid.compDefocusConstantsAlaTrace3D(gamma, rho.get2ndMoments());
         R3 vecFocus = new R3(arrFocus);
 
@@ -360,7 +358,6 @@ public class Trace3dTracker extends Tracker {
         double kZ = (K * dL) / vecFocus.getz();
 
         // Get the beam displacement from the origin and the rotation matrix
-//        R3          vecDis = rho.getDisplacement();
         PhaseMatrix matDis = rho.getTranslation();
         R3 vecDis = new R3(
                 matDis.getElem(PhaseMatrix.IND.X, PhaseMatrix.IND.HOM),
@@ -368,21 +365,9 @@ public class Trace3dTracker extends Tracker {
                 matDis.getElem(PhaseMatrix.IND.Z, PhaseMatrix.IND.HOM)
         );
 
-//        PhaseMatrix matRot = rho.compPhaseRotation();
         PhaseMatrix matRot = rho.getRotation();
 
-        // Convert to class BeamEllipsoid
-//        BeamEllipsoid   rho = new BeamEllipsoid(K, matChi);
-//
-//        double[]    arrDeFocus = rho.getDefocusingConstants();
-//        double kX = (K*dL)/arrDeFocus[0];
-//        double kY = (K*dL)/arrDeFocus[1];
-//        double kZ = (K*dL)/arrDeFocus[2];
-//
-//        // Get the beam displacement from the origin and the rotation matrix
-//        PhaseMatrix    matT   = rho.getTranslation();
-//        R3             vecDis = new R3(matT.getElem(0, 6), matT.getElem(2,6), matT.getElem(4,6));
-//        PhaseMatrix    matRot = rho.getRotation();
+        // Get the beam displacement from the origin and the rotation matrix
         double xm = vecDis.getx();
         double ym = vecDis.gety();
         double zm = vecDis.getz();
@@ -403,70 +388,3 @@ public class Trace3dTracker extends Tracker {
         return matSC;
     }
 }
-
-/*
- *  Storage
- */
-//    /** 
-//     * Calculates the transfer matrix for a space charge kick.
-//     * 
-//     * NOTE:
-//     *  <strong>This currently works only for upright beam ellipses
-//     *  in configuration space!</strong>
-//     * 
-//     *  @param  K       beam generalized perveance (3D bunched beam)
-//     *  @param  dL      propagation distance
-//     *  @param  matChi  envelope correlation matrix in homogeneous coordinates
-//     * 
-//     *  @return         matrix representing linear space charge effects
-//     * 
-//     *  @author Christopher K. Allen
-//     */
-//    private PhaseMatrix spaceChargeMatrix(double K, double dL, double gamma, CovarianceMatrix matChi)    {
-//        
-//        // Check for zero-space charge case
-//        if (K==0.0 || dL==0.0) 
-//            return PhaseMatrix.identity();
-//
-//        // Build the beam charge density object  
-////        EllipsoidalCharge   rho = new EllipsoidalCharge(matChi);
-//        
-//        double  a = Math.sqrt(matChi.getCovXX());
-//        double  b = Math.sqrt(matChi.getCovYY());
-//        double  c = Math.sqrt(matChi.getCovZZ());
-//        R3      vecOff = new R3(matChi.getMeanX(), matChi.getMeanY(), matChi.getMeanZ());
-//        EllipsoidalCharge   rho = new EllipsoidalCharge(a, b, gamma*c);
-//        rho.setDisplacement(vecOff);
-//                        
-//        
-//        // Compute (de)focusing strengths from space charge
-//        R3  vecFocus = rho.compDefocusConstants();
-////        R3  vecFocus = rho.compDefocusConstantsAlaTrace3D();
-//        
-//        double kX = (K*dL)/vecFocus.getx();
-//        double kY = (K*dL)/vecFocus.gety();
-//        double kZ = (K*dL)/vecFocus.getz();
-//
-//        // Get the beam displacement from the origin
-//        R3  vecDispl = rho.getDisplacement();
-//        
-//        double  xm = vecDispl.getx();
-//        double  ym = vecDispl.gety();
-//        double  zm = vecDispl.getz();
-//                 
-//
-//        // Assemble the space charge matrix
-//        PhaseMatrix matSC = PhaseMatrix.identity();
-//
-//        matSC.setElem(1,0,  kX);
-//        matSC.setElem(1,6, -kX*xm);
-//        matSC.setElem(3,2,  kY);
-//        matSC.setElem(3,6, -kY*ym);
-//        matSC.setElem(5,4,  kZ);
-//        matSC.setElem(5,6, -kZ*zm);
-//        
-//        return matSC;
-//    };
-//    
-//}
-

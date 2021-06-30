@@ -168,9 +168,6 @@ public class LatticeXmlWriter {
     private void writeCompositeObject(IComposite sequence, DataAdaptor container) {
         DataAdaptor sequenceNode = container.createChild(SEQUENCE_LABEL);
         sequenceNode.setValue(ID_LABEL, sequence.getId());
-        // comment element is optional, so only add if not null
-//        if (sequence.getComments() != null)
-//            writeCommentObject(sequence.getComments(), sequenceNode);
         writeCompositeContents(sequence, sequenceNode);
     }
 
@@ -222,10 +219,7 @@ public class LatticeXmlWriter {
         if (elem.getId() != null) {
             elementNode.setValue(ID_LABEL, elem.getId());
         }
-        // don't add length attribute for thin elements
-//		if (elem instanceof ThickElement) {
-//			elementNode.setValue(LENGTH_LABEL, elem.getLength());
-//		}
+
         try {
             BeanInfo bi
                     = Introspector.getBeanInfo(elem.getClass(), Element.class);

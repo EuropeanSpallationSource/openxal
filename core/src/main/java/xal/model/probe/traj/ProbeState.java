@@ -223,17 +223,6 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
         this.strSmfId = strSmfId;
     }
 
-//    //sako
-//    public void setUseTwiss(boolean bool) {
-//        bolSaveTwiss = bool;
-//    }
-//    
-//    //sako
-//    public boolean getUseTwiss() {
-//        return bolSaveTwiss;
-//    }
-//
-
     /*
      * Attribute Queries
      */
@@ -516,25 +505,6 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
     /*
      * IArchive Interface
      */
-// Sako,  Sorry I need to revive this
-//  CKA - No way to know if Twiss parameters exist in this base class!    
-//    
-//    /**
-//     * Save the state information to a data sink represented by 
-//     * a <code>DataAdaptor</code> interface
-//     * 
-//     * @param   container   data source to receive state information
-//     * @param  bolSaveTwiss    If want to dump Twiss parameters instead of correlation matrix, set it to 'true'
-//     */
-//    public void save(DataAdaptor container, boolean useTwiss) {
-//        
-//        DataAdaptor stateNode = container.createChild(STATE_LABEL);
-//        stateNode.setValue(TYPE_LABEL, getClass().getName());
-//        stateNode.setValue("id", this.getElementId());
-//        
-//        this.bolSaveTwiss = useTwiss;
-//        addPropertiesTo(stateNode);
-//    }
     /**
      * Save the state information to a data sink represented by a
      * <code>DataAdaptor</code> interface

@@ -141,16 +141,4 @@ public interface IAlgorithm extends java.rmi.Remote, IContextAware, IArchive {
     public void propagate(IProbe probe, IElement elem) throws ModelException;
 
     public IAlgorithm copy();
-
-
-    /*
-     * Interfaces
-     */
-//    /**
-//     * Return the <code>IArchive</code> interface for archiving
-//     * this algorithm object.
-//     * 
-//     * @author Christopher Allen    11/17/03
-//     */
-//     public IArchive getArchive();
 }

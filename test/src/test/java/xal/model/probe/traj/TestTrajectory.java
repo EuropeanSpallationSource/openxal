@@ -75,7 +75,6 @@ public class TestTrajectory {
      * Accelerator sequence used for testing
      */
     public static final String STR_ACCL_SEQ_ID = "HEBT2";
-//    public static final String     STR_ACCL_SEQ_ID = "SCLMed";
 
     /**
      * Bending Dipole ID
@@ -151,7 +150,6 @@ public class TestTrajectory {
         }
 
         try {
-//            ACCEL_TEST = XMLDataManager.loadDefaultAccelerator();
             accelTest = ResourceManager.getTestAccelerator();
             seqTest = accelTest.getSequence(STR_ACCL_SEQ_ID);
             modelTest = Scenario.newScenarioFor(seqTest);
@@ -399,8 +397,6 @@ public class TestTrajectory {
      */
     @Test
     public final void testEnvelopeProbe() {
-//        PROBE_ENV.setPhaseCoordinates(new PhaseVector(0.001, 0, 0, 0, 0, 0) );
-//        PROBE_ENV.initialize();
 
         Trajectory<EnvelopeProbeState> trjEnv = this.runModel(probeEnv);
 

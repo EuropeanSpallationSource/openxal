@@ -432,8 +432,6 @@ class SimplexSearcher {
             iniSimplexReady = true;
         }
 
-        //for debug purposes
-        //printSimplex();
         //Stage 1. Sort ==============
         Collections.sort(vertexesV, comparator);
 
@@ -445,8 +443,6 @@ class SimplexSearcher {
         vt_r.setCoords(coord_r);
 
         if (!findScore(vt_r)) {
-            //for debug purposes only
-            //printVertex(vt_r, "vt_r");
             return false;
         }
         double score_r = vt_r.getScore();
@@ -464,10 +460,8 @@ class SimplexSearcher {
 
             if (score_r < vertexesV.get(0).getScore() && score_e <= score_r) {
                 setLastVertex(coord_e, score_e);
-                //LOGGER.log(Level.INFO, "debug  ==Stage 3. Expand coord_e");
             } else {
                 setLastVertex(coord_r, score_r);
-                //LOGGER.log(Level.INFO, "debug  ==Stage 3. Expand coord_r");
             }
         } else {
 
@@ -485,7 +479,6 @@ class SimplexSearcher {
 
                 if (score_oc < score_r) {
                     setLastVertex(coord_oc, score_oc);
-                    //LOGGER.log(Level.INFO, "debug  ==Stage 4a. Contract");
                 } else {
                     goToShrink = true;
                 }
@@ -501,14 +494,12 @@ class SimplexSearcher {
 
                 if (score_ic < vertexesV.get(nD).getScore()) {
                     setLastVertex(coord_ic, score_ic);
-                    //LOGGER.log(Level.INFO, "debug  ==Stage 4b. Contract");
                 } else {
                     goToShrink = true;
                 }
             }
             if (goToShrink) {
                 shrinkSimplex();
-                //LOGGER.log(Level.INFO, "debug  ==Stage Shrink");
                 shrinkCount++;
                 if (getWantToStop() || !findScores0()) {
                     return false;
@@ -527,8 +518,6 @@ class SimplexSearcher {
             setWantToStop(true);
         }
 
-        //for debug purposes
-        //printSimplex();
         return (!getWantToStop());
     }
 

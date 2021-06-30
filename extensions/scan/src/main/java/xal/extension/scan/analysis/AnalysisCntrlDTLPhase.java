@@ -985,14 +985,6 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
             guessAmp[i] /= nMeasurements;
             guessAmp2[i] = Math.sqrt(Math.abs(guessAmp2[i] - nMeasurements * guessAmp[i] * guessAmp[i]));
             guessAmp2[i] *= Math.sqrt(1.0 / (nMeasurements * (nMeasurements - 1)));
-
-            //DEBUG print ----------------------------------------------------
-            //double enrgPar = ((Double) ((BasicGraphData) extAmpVsWidthDataV.get(i)).getGraphProperty(ENERGY_DLT)).doubleValue();
-            //LOGGER.log(Level.INFO, "debug i=" + i +
-            //		" delta[%]=" + ampFormat.format(enrgPar) +
-            //		" guessAmp=" + guessAmp[i] +
-            //		" err=" + guessAmp2[i]);
-            //DEBUG print ----------------------------------------------------
         }
 
         double minErr = guessAmp2[0];

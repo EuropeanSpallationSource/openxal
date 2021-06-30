@@ -20,8 +20,6 @@ public class OnLeafComparator implements Comparator<Subsystem> {
     }
 
     public void init(Collection<Subsystem> systems) {
-        /*List<Subsystem> leafs = new ArrayList<Subsystem>(); 
-		collectLeafs(leafs, subsystemDao.getById(systemID));*/
         LOGGER.log(Level.INFO, "Collecting all leafs");
 
         LOGGER.log(Level.INFO, "Sorting all leafs");
@@ -33,17 +31,12 @@ public class OnLeafComparator implements Comparator<Subsystem> {
             if (node.getPreviousSubsystem() == null) {
                 continue;
             }
-            //LOG.info("pos: "+i+"Leaf id:"+leaf.getId()+" parent:"+leaf.getParentSubsystem().getId()+" previous:"+leaf.getPreviousSubsystem().getId());						
             while (node != null && !systemPos.containsKey(node.getId())) {
                 systemPos.put(node.getId(), i);
                 node = node.getParentSubsystem();
             }
             i++;
         }
-
-        /*for (Entry<Integer,Integer> map : systemPos.entrySet()) {
-			LOG.info("System id: "+map.getKey()+" child pos:"+ map.getValue());
-		}*/
     }
 
     @Override
@@ -73,8 +66,6 @@ public class OnLeafComparator implements Comparator<Subsystem> {
         List<Subsystem> sortedList = new ArrayList<>();
         sortedList.addAll(subsystems);
 
-        //HashSet<Subsystem> addedTracker = new HashSet<>();
-        //int notFound = 0, addedSystems = 0;
         Collections.sort(sortedList, new Comparator<Subsystem>() {
 
             @Override
@@ -90,33 +81,6 @@ public class OnLeafComparator implements Comparator<Subsystem> {
                 }
             }
         });
-
-        // @formatter:off
-        // Go through all the subsystems.
-        // 1) Subsystem is already in the sorted systems ==> do nothing
-        // 2) Subsystem is not in the sorted systems ==>
-        //      - Get the last element of the sorted systems (or null)
-        //      - insert the current element at the end of the list
-        //      - insert previous systems before this new element, until the 
-        //        previous system of the inserted element equals the "last". 
-        //        If "last" == null, this means insert all systems until the 
-        //        first one.
-        // @formatter:on
-        /*for (Subsystem element : subsystems) {
-			if ((sortedList.indexOf(element) < 0) && !addedTracker.contains(element)) {
-				notFound++;
-				Subsystem insertElement = element;
-				int insertIndex = sortedList.size();
-				Subsystem last = insertIndex > 0 ? sortedList.getLast() : null;
-				do {
-					addedSystems++;
-					addedTracker.add(insertElement);
-					sortedList.add(insertIndex, insertElement);
-					insertElement = insertElement.getPreviousSubsystem();
-				} while (insertElement != null && insertElement != last && !addedTracker.contains(insertElement));
-			}
-		}*/
-        //LOG.finer("Not found: " + notFound + " ; All added: " + addedSystems);
         return sortedList;
     }
 }

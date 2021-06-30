@@ -63,7 +63,6 @@ public class RpcServer {
         SERVER_SOCKET = new ServerSocket(0);
         REMOTE_SOCKETS = new HashSet<>();
 
-//		LOGGER.log(Level.INFO,  "Listening on: " + getHost() + ":" + getPort() );
     }
 
     /**

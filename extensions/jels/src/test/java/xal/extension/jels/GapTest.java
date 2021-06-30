@@ -294,7 +294,6 @@ public class GapTest extends SingleElementTest {
 
                 TWMean = new double[]{0.00135294, -0.881345, 0, 0, 0, 0};
 
-//                TMerrTolerance = 1e-2;
                 CMerrTolerance = 3e-5;
             }
         }});
@@ -339,7 +338,6 @@ public class GapTest extends SingleElementTest {
                 probe = setupOpenXALProbe(2.5e6, frequency, current);
                 elementMapping = JElsElementMapping.getInstance();
                 // GAP 78019.7 -80 14.5 0 0 0 0 0 0 0
-                //sequence = gap(4.025e8, 78019.7, -80, 14.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
                 //swapping x and y angles
                 sequence = gap(4.025e8, 78019.7, -80, 14.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
@@ -374,7 +372,6 @@ public class GapTest extends SingleElementTest {
                 probe = setupOpenXALProbe(2.5e6, frequency, current);
                 elementMapping = JElsElementMapping.getInstance();
                 // GAP 78019.7 -80 14.5 0 0 0 0 0 0 0
-                //sequence = gap(4.025e8, 78019.7, -80, 14.5, 0, 0, 0, 0, 0, 0, 0, 1., 2., 0, 3., 4.);
                 //swapping x and y angles
                 sequence = gap(4.025e8, 78019.7, -80, 14.5, 0, 0, 0, 0, 0, 0, 0, 1., 2., 0, 4., 3.);
 

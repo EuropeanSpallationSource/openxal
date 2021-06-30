@@ -713,7 +713,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
      * IRfCavityCell Interface
      */
 
-    /*
+ /*
      * Attribute Query
      */
     /**
@@ -723,9 +723,6 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
      */
     @Override
     public boolean isFirstGap() {
-        //	    boolean    bolInitialGap = this.getCavityCellIndex() == 0;
-        //	    
-        //	    return bolInitialGap;
         return bolStartCell;
     }
 
@@ -1533,8 +1530,6 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         // in PARMILA TTFPrime and SPrime are in [1/cm] units, we use [m]
         //  CKA - I will try to eliminate these quantities because I cannot
         //        determine that they are correct
-        //        double ttf_prime = 0.01*this.fitTTFPrime.evaluateAt(bi);
-        //        double stf_prime = 0.01*this.fitSTFPrime.evaluateAt(bi);
         // Gap parameters
         double E0 = this.getE0();
         double A = this.compCavModeFieldCoeff();

@@ -28,7 +28,6 @@ public interface MPSPortal {
     /**
      * size of the MPS event buffer
      */
-//    public static final int MPS_EVENT_BUFFER_SIZE = MPSMonitor.MPS_EVENT_BUFFER_SIZE;
     public static final int MPS_EVENT_BUFFER_SIZE = 1000;
 
     /**

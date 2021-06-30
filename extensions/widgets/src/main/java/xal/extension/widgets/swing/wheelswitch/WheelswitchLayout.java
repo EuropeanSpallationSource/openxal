@@ -75,8 +75,6 @@ public class WheelswitchLayout implements LayoutManager {
         int preferredWidth = wswitch.getPreferredSize().width;
         int height = wswitch.getHeight();
         int width = wswitch.getWidth();
-//  mkadunc	
-//	int digitInset = Math.max(height/10,1);
         int digitInset = 0;
         int compWidth;
         int compHeight;

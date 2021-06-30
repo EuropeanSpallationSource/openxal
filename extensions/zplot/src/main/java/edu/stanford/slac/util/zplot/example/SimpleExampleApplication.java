@@ -116,7 +116,7 @@ public class SimpleExampleApplication {
         // -----------------------------------------------------------------
         for (int i = 0; i < NR_DEVICES; i++) {
             double z = getRandomZ();
-            // double value = getRandomValue();
+
             int status = getRandomStatus();
             devices[i] = new Device("magnet" + i, z, 0.0, WidgetsRepository
                     .getAlarmedXCORWidget(status));
@@ -129,7 +129,7 @@ public class SimpleExampleApplication {
         // -----------------------------------------------------------------
         for (int i = 0; i < NR_DEVICES; i++) {
             double z = getRandomZ();
-            // double value = getRandomValue();
+
             int status = getRandomStatus();
             devices[i] = new Device("magnet" + i, z, 0.0, WidgetsRepository
                     .getAlarmedYCORWidget(status));
@@ -285,7 +285,6 @@ public class SimpleExampleApplication {
                 // create z plot
                 ZPlot zPlot = new ZPlot(2);
 
-                // zPlot.labelDevices(bpms, beamlines);
                 zPlot.setGap(70);
 
                 XYPlot xPlot = zPlot.getSubplot(X_PLOT_INDEX);
@@ -339,7 +338,6 @@ public class SimpleExampleApplication {
                     renderer.setBaseShapesFilled(false);
                 }
 
-                //zPlot.setCartoonDevices(cartoonDevices);
                 // label subplots
                 zPlot.setSubplotLabel(X_PLOT_INDEX, "X Plot");
 

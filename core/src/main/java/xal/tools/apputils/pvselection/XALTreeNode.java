@@ -158,7 +158,6 @@ class DeviceNode extends HandleNode {
 
                 // get the channel name
                 hNode.setSignalName(dev.getChannel(handles.elementAt(k)).getId());
-                //h_node.setSignalName(dev.getId()+":"+(String)(handles.elementAt(k)));
 
                 add(hNode);
             }

@@ -151,7 +151,6 @@ public class VerticalLayout implements LayoutManager {
                 c.setBounds(x, y, minWidth, d.height);
 
                 //old variant - all components have minimal width
-                //c.setBounds(x, y, d.width, d.height);
                 previousHeight = d.height;
             }
         }
@@ -214,7 +213,6 @@ public class VerticalLayout implements LayoutManager {
         panel.add(panel2);
 
         mainFrame.pack();
-        //mainFrame.setSize(new Dimension(300,430));
         mainFrame.setVisible(true);
 
     }

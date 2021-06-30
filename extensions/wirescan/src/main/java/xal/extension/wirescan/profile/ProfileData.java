@@ -193,85 +193,6 @@ public class ProfileData {
         return new ProfileData(strDevId, dateTmStamp, szArrData);
     }
 
-//    /**
-//     * <p>
-//     * Create a new instance of <code>ProfileData</code> initializing it with
-//     * the data provided.  Noted that each ordered list of data must have size 
-//     * equal to the value of <code>szArrData</code>, which is used to allocate
-//     * storage space.
-//     * </p>
-//     * <p>
-//     * The data in variable argument arrays <var>arrPos</var> and <var>arrPrj</var> are
-//     * ordered according to the ordering of the values of the enumeration <code>Angle</code>.
-//     * Thus, for each argument the number of data objects supplied
-//     * (of type <code>List<Double></code>) should be equal to 
-//     * <code>ProfileData.Angle#getCount</code>.
-//     * </p>
-//     * 
-//     * @param   strDevId    profile measurement device identifier
-//     * @param   dateTmStamp measurement date of data
-//     * @param   szArrData   the size of each data array
-//     * 
-//     * @param	arrPos		ordered list of axis position vectors, one for each view
-//     * @param   argPrj      ordered list of projection data, one for each view (by View.getIndex())
-//     * 
-//     * @throws ArrayIndexOutOfBoundsException   list size not equal to storage size
-//     * @throws IllegalArgumentException         wrong number of projection data vectors
-//     * 
-//     * @see gov.sns.tools.data.profile.ProfileData.Angle
-//     */
-//    public static ProfileData   create(String strDevId, final Date dateTmStamp, int szArrData,
-//                                       final List<Double>[] arrPos,
-//                                       final List<Double>[] arrPrj
-//                                       ) 
-//        throws ArrayIndexOutOfBoundsException, IllegalArgumentException
-//    {
-//    	ProfileData.checkVarArgArray(arrPos);
-//        ProfileData.checkVarArgArray(arrPrj);
-//        
-//        ProfileData dataNew = new ProfileData(strDevId, dateTmStamp, szArrData);
-//        
-//        for (Angle view : Angle.values()) {
-//        	dataNew.setAxisPositions(view, arrPos[view.getIndex()]);
-//            dataNew.setProjection(view, arrPrj[view.getIndex()]);
-//        }
-//        
-//        return dataNew;
-//    }
-//    /**
-//     * Create a new instance of <code>ProfileData</code> initializing it with
-//     * the data provided.  Noted that each ordered list of data must have size 
-//     * equal to the value of <code>szArrData</code>, which is used to allocate
-//     * storage space.
-//     * 
-//     * @param   strDevId    profile measurement device identifier
-//     * @param   dateTmStamp measurement date of data
-//     * @param   szArrData   the size of each data array
-//     * 
-//     * @param   lstPos      ordered list of axis positions
-//     * @param   lstHor      ordered list of horizontal profile data
-//     * @param   lstVer      ordered list of vertical profile data
-//     * @param   lstDia      ordered list of diagonal profile data
-//     * 
-//     * @throws ArrayIndexOutOfBoundsException   list size not equal to storage size
-//     */
-//    public static ProfileData   create(String strDevId, final Date dateTmStamp, int szArrData,
-//                                       final List<Double> lstPos,
-//                                       final List<Double> lstHor,
-//                                       final List<Double> lstVer,
-//                                       final List<Double> lstDia
-//                                       ) 
-//        throws ArrayIndexOutOfBoundsException
-//    {
-//        ProfileData dataNew = new ProfileData(strDevId, dateTmStamp, szArrData);
-//        
-//        dataNew.setAxisPositions(lstPos);
-//        dataNew.setProjection(View.HOR, lstHor);
-//        dataNew.setProjection(View.VER, lstVer);
-//        dataNew.setProjection(View.DIA, lstDia);
-//        
-//        return dataNew;
-//    }
     /**
      * Make and return a deep copy of the given data set.
      *
@@ -380,36 +301,6 @@ public class ProfileData {
         this.allocStorage(szArrData);
     }
 
-//    /**
-//     * Create and initialize a new <code>ProfileData</code> object.
-//     *
-//     * @param   strDevId    profile measurement device identifier
-//     * @param   dateTmStamp measurement date of data
-//     * @param   szArrData   the size of each data array
-//     * 
-//     * @param   arrDataLoc  vector array of wire scanner positions
-//     * @param   arrDataHor  vector array of horizontal wire data
-//     * @param   arrDataVer  vector array of vertical wire data
-//     * @param   arrDataDia vector array of diagonal wire data
-//     * 
-//     * @deprecated
-//     */
-//    protected ProfileData(String strDevId,
-//                          Date dateTmStamp, 
-//                          int  szArrData, 
-//                          double[] arrDataLoc, 
-//                          double[] arrDataHor, double[] arrDataVer, double[] arrDataDia
-//                          )
-//    {
-//        this.strDevId    = strDevId;
-//        this.dateTmStamp = dateTmStamp;
-//        
-//        this.szArrData  = szArrData;
-//        this.arrDataPos = arrDataLoc;
-//        this.arrDataHor = arrDataHor;
-//        this.arrDataVer = arrDataVer;
-//        this.arrDataDia = arrDataDia;
-//    }
     /*
      * Package Methods - Initializing Data
      */

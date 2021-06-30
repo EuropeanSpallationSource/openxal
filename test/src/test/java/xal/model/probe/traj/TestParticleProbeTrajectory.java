@@ -98,7 +98,6 @@ public class TestParticleProbeTrajectory {
      * The sequence we are testing in both accelerator configurations
      */
     private static final String STR_ID_TESTSEQ = "SCLMed";
-//    private static final String         STR_ID_TESTSEQ = "CCL1";
 
     /*
      * Global Attributes
@@ -156,13 +155,6 @@ public class TestParticleProbeTrajectory {
      * @since Sep 8, 2014
      */
     private static Accelerator loadAccelerator(String... arrPathRel) {
-//        if (arrPathRel.length == 0)
-//            return XMLDataManager.loadDefaultAccelerator();
-//        String  strPathRel = arrPathRel[0];
-//        String  strPathXal = ResourceManager.getProjectHomePath();
-//        String  strFileAccel = strPathXal + strPathRel;
-//        
-//        Accelerator accel = XMLDataManager.acceleratorWithPath(strFileAccel);
         Accelerator accel = xal.test.ResourceManager.getTestAccelerator();
         return accel;
     }
@@ -220,37 +212,6 @@ public class TestParticleProbeTrajectory {
         }
     }
 
-//    /**
-//     * Creates a thread for the given frame to display itself then
-//     * spawns the thread
-//     * 
-//     * @param frm   graphics frame to be given its own thread and launched
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Sep 12, 2014
-//     */
-//    @SuppressWarnings("unused")
-//    private static void spawnGraphFrame(final GraphFrame frm) {
-//        
-//        /**
-//         * Create an interface that displays the given frame. 
-//         *
-//         * @see java.lang.Runnable#run()
-//         *
-//         * @author Christopher K. Allen
-//         * @since  Sep 12, 2014
-//         */
-//        Runnable lmbFrame = new Runnable() {
-//
-//            @Override
-//            public void run() {
-//                frm.display();
-//            }
-//        };
-//        
-//        Thread  thrFrame = new Thread(lmbFrame);
-//        thrFrame.start();
-//    }
     /**
      * @throws java.lang.Exception
      *

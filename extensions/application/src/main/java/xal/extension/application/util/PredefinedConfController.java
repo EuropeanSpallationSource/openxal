@@ -77,8 +77,6 @@ public class PredefinedConfController {
         JScrollPane scrollPaneForText = new JScrollPane(descriptionText);
         descriptionText.setForeground(Color.blue);
 
-        //descriptionText.setLineWrap(true);
-        //descriptionText.setWrapStyleWord(true);
         //prepare Data Adaptor and Nodes Tree
         if (predefConfURL != null) {	// TODO: cleanup this code to better handle the case of no predefined configurations
             XmlDataAdaptor readAdp = XmlDataAdaptor.adaptorForUrl(predefConfURL, false);

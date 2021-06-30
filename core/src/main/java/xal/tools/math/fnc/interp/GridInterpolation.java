@@ -62,9 +62,6 @@ public final class GridInterpolation implements IRealFunction {
      */
     private final double dblStep;
 
-//  /** The left-hand side of the domain */
-//  protected final double dblDomStart;
-//  
     /**
      * Creates a new instance of Interpolator initialized with the given value
      * array and grid description.
@@ -78,7 +75,6 @@ public final class GridInterpolation implements IRealFunction {
     public GridInterpolation(final double[] values, final double start, double step) {
         this.arrValues = values;
         this.dblStep = step;
-//      dblDomStart = start;
 
         double dblMin = start;
         double dblMax = (this.arrValues.length - 1) * this.dblStep;

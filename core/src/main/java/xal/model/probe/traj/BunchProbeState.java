@@ -47,8 +47,6 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
      */
     private static final String ATTR_BUNCHFREQ = "f";
 
-//    /** attribute tag for betatron phase advance */    
-//    private static final String ATTR_BETAPHASE = "phase";
     /*
      * Local Attributes
      */
@@ -104,7 +102,6 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
         super(probe);
         this.setBunchFrequency(probe.getBunchFrequency());
         this.setBeamCurrent(probe.getBeamCurrent());
-//        this.setBetatronPhase(probe.getBetatronPhase());
     }
 
     /*
@@ -160,17 +157,6 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
         return dblBmCurr;
     }
 
-//    /**
-//     * Returns the betatron phase of this bunch for all 3 phase places.
-//     * 
-//     * @return  vector (&psi;<sub><em>x</em></sub>, &psi;<sub><em>y</em></sub>, &psi;<sub><em>z</em></sub>) 
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Oct 23, 2013
-//     */
-//    public R3   getBunchBetatronPhase() {
-//        return this.vecPhsBeta;
-//    }
     /*
      * Computed Properties
      */
@@ -278,82 +264,6 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
         return dblPermT * dblRelaT * dblEnerT;
     }
 
-//
-//    /*
-//     * CovarianceMatrix Properties
-//     */
-//
-//    
-//    /**
-//     *  Returns the covariance matrix of this state in homogeneous
-//     *  phase space coordinates.
-//     * 
-//     * @return      <zz^T> - <z><z>^T
-//     */
-//    public  CovarianceMatrix phaseCovariance()   {
-//        return phaseCorrelation().getCovariance();
-//    }
-//    
-//    /**
-//     *  Returns the rms emittances for this state.
-//     * 
-//     * @return array (ex,ey,ez) of rms emittances
-//     */
-//    public double[] rmsEmittances() {
-//		return phaseCorrelation().rmsEmittances();
-//    }
-//    
-//    /**
-//     * Return the twiss parameters for this state calculated from the 
-//     * correlation matrix
-//     * 
-//     * @deprecated This method does not provide correct Twiss info with any dipole bend.  Should use getTwiss() from EnvelopeProbe class.
-//     */
-//    public Twiss[] twissParameters() {
-//    	return phaseCorrelation().twissParameters();
-//    }
-//	
-//	
-//    /**
-//	 * get the array of twiss objects for this state for all three planes
-//     * @deprecated This method does not provide correct Twiss info with any dipole bend presented.  Should use getTwiss() from EnvelopeProbe.
-//	 * @return array(twiss-H, twiss-V, twiss-L
-//	 */
-//    public Twiss[] getTwiss() {
-//		return twissParameters();
-//	}
-//	
-//    
-//    /** 
-//     *  Abstract - Return the phase space coordinates of the centroid in homogeneous coordinates 
-//     *
-//     *  @return         <z> = (<x>, <xp>, <y>, <yp>, <z>, <zp>, 1)^T
-//     */
-//    public PhaseVector phaseMean()  {
-//        return phaseCorrelation().getMean();
-//    }
-//	
-//	
-//    /** 
-//	 *  Returns homogeneous phase space coordinates of the particle.  The units
-//	 *  are meters and radians.
-//	 *
-//	 *  @return     vector (x,x',y,y',z,z',1) of phase space coordinates
-//	 */
-//    public PhaseVector getPhaseCoordinates() {
-//		return phaseMean();
-//	}
-//	
-//	
-//	/**
-//	 * Get the fixed orbit about which betatron oscillations occur.
-//	 * @return the fixed orbit vector (x,x',y,y',z,z',1)
-//	 */
-//	public PhaseVector getFixedOrbit() {
-//		return phaseMean();
-//	}
-//	
-
     /*
      * Debugging
      */
@@ -367,8 +277,6 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
         return super.toString()
                 + " curr: " + getBeamCurrent()
                 + " freq: " + getBunchFrequency();
-//                " freq: " + getBunchFrequency() +
-//                " phase: " + getBunchBetatronPhase();
     }
 
     /*
@@ -386,7 +294,6 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
         DataAdaptor datBunch = daSink.createChild(ELEM_BEAM);
         datBunch.setValue(ATTR_BUNCHFREQ, getBunchFrequency());
         datBunch.setValue(ATTR_BEAMCURRENT, getBeamCurrent());
-//        datBunch.setValue(ATTR_BETAPHASE,   getBunchBetatronPhase().toString());
     }
 
     /**
@@ -414,10 +321,6 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
         if (daBunch.hasAttribute(ATTR_BEAMCURRENT)) {
             setBeamCurrent(daBunch.doubleValue(ATTR_BEAMCURRENT));
         }
-//        if (daBunch.hasAttribute(ATTR_BETAPHASE)) {
-//            R3  vecPhase = new R3( daBunch.stringValue(ATTR_BETAPHASE) );
-//            this.setBetatronPhase( vecPhase );
-//        }
     }
 
 }

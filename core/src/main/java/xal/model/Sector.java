@@ -55,40 +55,4 @@ public class Sector extends ElementSeq {
     public Sector(String strId, int szReserve) {
         super(TYPE, strId, szReserve);
     }
-
-//    /**
-//     *  Return an <code>List</code> object that is a flattened
-//     *  version of the current of the current (possibly nested) sequence.  
-//     *  The sequential order of propagation is preserved but the nesting 
-//     *  of modeling elements elements is destroyed.
-//     * 
-//     *  NOTE: 
-//     *  - Any composite elements derived from ElementSeq are flattened.
-//     * 
-//     *  This method is nondestructive, the current sequence is 
-//     *  unaltered.
-//     * 
-//     * @return flattened list containing only sequence leaves
-//     */
-//    public List   flatten()   {
-//        ArrayList  arrFlat  = new ArrayList();
-//        
-//        Iterator    iter = this.childIterator();
-//        while (iter.hasNext()) {
-//            IElement ifcElem = (IElement)iter.next();
-//            
-//            if (ifcElem instanceof ElementSeq)  {
-//                ElementSeq seqChild = (ElementSeq)ifcElem;
-//
-//                seqFlat.concatenateEquals(seqChild.flatten());
-//
-//            } else {
-//                seqFlat.addChild(ifcElem);
-//                                
-//            }
-//        }
-//        
-//        return seqFlat;
-//    }
-//    
 }

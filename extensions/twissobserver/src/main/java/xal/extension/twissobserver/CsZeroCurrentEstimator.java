@@ -70,7 +70,8 @@ public class CsZeroCurrentEstimator extends CourantSnyderEstimator {
      * plane is also zero.
      * </p>
      * <p>
-     * The second-order moments are computed from and <em>observation matrix</em>
+     * The second-order moments are computed from and <em>observation
+     * matrix</em>
      * which, in the zero current case, is independent of the initial state of
      * the beam. The observation matrix relates the initial state (described by
      * the second moments) to the observed quantities, in this case the

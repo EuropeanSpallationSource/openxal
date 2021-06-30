@@ -14,7 +14,6 @@ public final class BeamConstants {
     /**
      * frequency
      */
-//  /**SNS*/public static final double FREQUENCY = 402500000.0;
     /**
      * jparc
      */

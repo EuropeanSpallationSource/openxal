@@ -307,14 +307,6 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
 
         Bend magnet = (Bend) element.getHardwareNode();
 
-        // xal.model.elem.ThickDipole xalDipole =
-        // new xal.model.elem.ThickDipole();
-        // xalDipole.setId(element.getNode().getId());
-        // xalDipole.setLength(element.getLength());
-        // xalDipole.setMagField(magnet.getDesignField());
-        // xalDipole.setKQuad(magnet.getQuadComponent());
-        // double angle = magnet.getDfltBendAngle()*Math.PI/180. * element.getLength() / magnet.getDfltPathLength();
-        // xalDipole.setReferenceBendAngle(angle);
         // Replace ThickDipole object with an IdealMagWedgeDipole2
         // First retrieve all the physical parameters for a bending dipole				
         double lenSect = element.getLength();
@@ -330,10 +322,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
         double lenPath = RBend0 * angBend;
 
         // Set the parameters for the new model element				
-        /*setPhysicalLength(len_sect);
-		setDesignPathLength(len_path);*/
         setFieldIndex(fldInd0);
-        /*setDesignBendAngle(ang_bend);*/
 
         // first piece
         if (element.isFirstSlice()) {
@@ -344,8 +333,4 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
             setExitPoleAngle(magnet.getExitRotAngle() * Math.PI / 180.);
         }
     }
-
-    /*
-     * Internal Support
-     */
 }

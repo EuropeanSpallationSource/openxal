@@ -65,10 +65,8 @@ import xal.tools.apputils.Preferences;
 
 /**
  * This {@link xal.ca.Channel} implementation can connect to ChannelAccess or PV
- //', it will only connect to CA; if
- * Access. If the PV signal starts with 'ca:
- //', it will only connect to PVA; otherwise it tries to
- * it starts with 'pva:
+ * Access. If the PV signal starts with 'ca://', it will only connect to CA; if
+ * it starts with 'pva://', it will only connect to PVA; otherwise it tries to
  * connect to both and uses the protocol that replies first.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>

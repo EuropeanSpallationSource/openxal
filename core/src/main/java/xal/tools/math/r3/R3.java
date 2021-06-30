@@ -304,7 +304,6 @@ public class R3 extends BaseVector<R3> implements Serializable {
      * @param s new value of all vector coordinates
      */
     public void setAll(double s) {
-//        this.x1 = this.x2 = this.x3 = s;
         for (IND i : IND.values()) {
             super.setElem(i, s);
         }

@@ -15,12 +15,9 @@ import java.util.*;
 import java.util.logging.*;
 import java.lang.reflect.*;
 import java.sql.*;
-import java.sql.Array;	// default to SQL Array instead of java.lang.reflect.Array
+// default to SQL Array instead of java.lang.reflect.Array
+import java.sql.Array;
 
-// the Oracle specific classes are reflected so this class can be compiled (but not used) without the Oracle driver
-//import oracle.sql.ARRAY;
-//import oracle.sql.ArrayDescriptor;
-//import oracle.sql.BLOB;
 /**
  * OracleDatabaseAdaptor is a concrete subclass of DatabaseAdaptor for
  * implementing methods specifically for the Oracle database. Oracle specific
@@ -75,15 +72,14 @@ public class OracleDatabaseAdaptor extends DatabaseAdaptor {
      * @return a new instance of a Blob appropriate for this adaptor.
      */
     public Blob newBlob(final Connection connection) {
-        //LOGGER.log(Level.INFO,  "Creating Oracle SQL Blob..." );
+
         try {
             // reflection for:
-            // return BLOB.createTemporary( connection, true, BLOB.DURATION_SESSION );
             final Class<?> blobClass = Class.forName("oracle.sql.BLOB");
             final Field durationSessionField = blobClass.getDeclaredField("DURATION_SESSION");
             final int durationSession = durationSessionField.getInt(null);	// get the value of the static field
-
-            @SuppressWarnings("rawtypes")		// arrays (used here as argument) not compatible with Generics
+            // arrays (used here as argument) not compatible with Generics
+            @SuppressWarnings("rawtypes")
             final Method createMethod = blobClass.getMethod("createTemporary", new Class[]{Connection.class, Boolean.TYPE, Integer.TYPE});
 
             return (Blob) createMethod.invoke(null, connection, true, durationSession);
@@ -108,15 +104,14 @@ public class OracleDatabaseAdaptor extends DatabaseAdaptor {
      * thrown
      */
     public Array getArray(final String type, final Connection connection, final Object array) throws DatabaseException {
-        //LOGGER.log(Level.INFO,  "Creating Oracle SQL Array..." );
         try {
             final Object descriptor = getArrayDescriptor(type, connection);
-            // reflection for:
-            // return new ARRAY( descriptor, connection, array );
+            // reflection for
             final Class<?> arrayDescriptorClass = Class.forName("oracle.sql.ArrayDescriptor");
             final Class<?> arrayClass = Class.forName("oracle.sql.ARRAY");
 
-            @SuppressWarnings("rawtypes")		// arrays (used here as argument) not compatible with Generics
+            // arrays (used here as argument) not compatible with Generics
+            @SuppressWarnings("rawtypes")
             final Constructor<?> arrayConstructor = arrayClass.getConstructor(new Class[]{arrayDescriptorClass, Connection.class, Object.class});
             return (Array) arrayConstructor.newInstance(descriptor, connection, array);
         } catch (Exception exception) {
@@ -143,8 +138,7 @@ public class OracleDatabaseAdaptor extends DatabaseAdaptor {
         if (ARRAY_DESCRIPTOR_TABLE.containsKey(type)) {
             return ARRAY_DESCRIPTOR_TABLE.get(type);
         } else {
-            // reflection for:
-            // final ArrayDescriptor descriptor = ArrayDescriptor.createDescriptor( type, connection );
+            // reflection for
             final Class<?> arrayDescriptorClass = Class.forName("oracle.sql.ArrayDescriptor");
             final Method createMethod = arrayDescriptorClass.getMethod("createDescriptor", new Class[]{String.class, Connection.class});
             final Object descriptor = createMethod.invoke(null, type, connection);

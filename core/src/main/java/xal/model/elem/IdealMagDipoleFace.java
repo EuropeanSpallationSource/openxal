@@ -259,7 +259,6 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
         double dblAngDefl = g * h * ((1. + sin * sin) / cos) * I2;
 
         // Compute the transfer matrix components
-//original        double      hStar = h * q / Math.abs(q);
         double hStar = h;
         PhaseMatrix matPhi = PhaseMatrix.identity();
 

@@ -190,7 +190,6 @@ class LiveMachineDesignRFDeviceDataSource extends MeasurementDataSource {
         } else {
             try {
                 return ((Electromagnet) magnet).getTotalFieldSetting();	// use the total field setting rather than the readback
-                //return ((Electromagnet)magnet).getField();	// use the field readback
             } catch (ConnectionException | GetException exception) {
                 LOGGER.log(Level.SEVERE, null, exception);
                 return 0.0;

@@ -367,8 +367,6 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
      * @exception IllegalArgumentException argument must be a length-six array
      */
     public PhaseVector(double arrVals[]) {
-//        super(INT_SIZE);
-//      this.setVector(arrVals);
         super(arrVals);
         this.setElem(IND.HOM, 1.0);
     }

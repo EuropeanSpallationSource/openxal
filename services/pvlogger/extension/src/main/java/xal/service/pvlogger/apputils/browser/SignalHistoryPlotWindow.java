@@ -80,7 +80,6 @@ public class SignalHistoryPlotWindow extends JFrame implements SwingConstants {
         chart.setSmartGL(false);
         chart.addMouseListener(new SimpleChartPopupMenu(chart));
 
-        //chart.setBackground(Color.black);
         chart.setNumberFormatX(new DateGraphFormat("MMM dd, yyyy HH:mm"));
 
         // add legend support

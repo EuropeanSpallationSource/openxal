@@ -4,10 +4,6 @@ public class EQuad extends Element {
 
     private static final String TYPE = "EQuad";
 
-//	protected EQuad(String name, double position, double len) {
-//		super(name, position, len);
-//		// TODO Auto-generated constructor stub
-//	}
     /**
      * Creates a new instance of Electrostatic Quadrupole
      */

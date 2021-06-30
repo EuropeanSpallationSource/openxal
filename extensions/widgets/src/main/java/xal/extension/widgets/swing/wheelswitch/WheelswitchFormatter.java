@@ -391,7 +391,6 @@ public class WheelswitchFormatter {
      * @see #getMinimum()
      */
     public void setValue(double newValue) {
-        //		LOGGER.log(Level.INFO, "SET VALUE: " + newValue);
         if (newValue == value) {
             return;
         } else if (newValue <= maximum && newValue >= minimum) {

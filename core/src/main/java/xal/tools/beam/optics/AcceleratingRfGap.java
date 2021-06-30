@@ -209,28 +209,9 @@ public class AcceleratingRfGap {
 
     }
 
-//    public class    PhaseVariable {
-//        
-//        /** the particle phase w.r.t. to the RF cycle (radians) */
-//        public double       phi;
-//        
-//       
-//        /** the kinetic energy of the particle (in electron-Volts) */ 
-//       public double        W;
-//    }
     /*
      * Local Attributes
      */
-    //
-    // Defining Parameters
-    //
-//    /** initial particle wave number coming into the gap fields */
-//    private final double        ki;
-//    /** length of the gap - used for an initial approximation of mid-gap synch phase 
-//     * 
-//     * @deprecated  CKA I don't think we'll need this, length is not well defined
-//     * */
-//    private final double        dblGapLen;
     /**
      * total potential drop <em>V</em><sub>0</sub> across accelerating gap
      */
@@ -254,14 +235,6 @@ public class AcceleratingRfGap {
      */
     private final double dblRfWvNm;
 
-//    /** normalized particle velocity approaching the gap */
-//    private final double        bi;
-//    
-//    /** relativistic factor of particle entering the gap */
-//    private final double        gi;
-//    
-//    /** initial kinetic energy of the particle approach gap fields */
-//    private final double        Wi;
     //
     //  Numeric Parameters
     //
@@ -374,20 +347,6 @@ public class AcceleratingRfGap {
         return this.dblErrTol;
     }
 
-//    /**
-//     * Returns the end-to-end length of the RF gap.  Note that this value is not
-//     * always well-defined depending upon the gap geometry and definition.  The 
-//     * primary use of this value is to compute initial values for mid-gap quantities.
-//     * Thus, the gap length is not actually a defining quantity but provides an
-//     * estimate of the distance a particle travels.
-//     * 
-//     * @return      end-to-end distance where gap is defined (meters)
-//     *
-//     * @since  Oct 9, 2015,   Christopher K. Allen
-//     */
-//    public double   getGapLength() {
-//        return this.dblGapLen;
-//    }
     /**
      * Returns the time-harmonic frequency of gap accelerating field.
      *
@@ -656,7 +615,6 @@ public class AcceleratingRfGap {
         //  and the initial wave number 
         double phi0 = vecInit.getPhase();
         double Wi = vecInit.getEnergy();
-//        double  ki   = this.computeWaveNumber(vecInit.getEnergy(), Er);
 
         // Initialize the search variables.
         //  Use the phase intercept and initial energy as starting values
@@ -668,9 +626,7 @@ public class AcceleratingRfGap {
 
         // Compute the starting values for phase jump and energy gain
         double dW = -V0 * this.dphiPreGapHamiltonian(phi, k).imaginary();
-//        double dW   = - V0 * this.dphiPreGapHamiltonian(phi, k).imaginary();
         double dphi = +Ki * this.dkPreGapHamiltonian(phi, k).imaginary();
-//        double dphi = + Ki * this.dkPreGapHamiltonian(phi, k).imaginary();
 
         // Initialize the search loop
         int cntIter = 0;
@@ -685,9 +641,7 @@ public class AcceleratingRfGap {
 
             // Compute the new phase jump and energy gain from the new phase 
             //  and energies
-//            double dphi_i = + Ki * this.dkPreGapHamiltonian(phi, k).imaginary();
             double dphi_i = +Ki * this.dkPreGapHamiltonian(phi, k).imaginary();
-//            double dW_i   = - V0 * this.dphiPreGapHamiltonian(phi, k).imaginary();
             double dW_i = -V0 * this.dphiPreGapHamiltonian(phi, k).imaginary();
 
             // Compute stopping criteria values 
@@ -970,47 +924,6 @@ public class AcceleratingRfGap {
     //
     // Beam Particle Properties
     //
-//    /**
-//     * Compute the normalized particle velocity &beta; for the given particle
-//     * wave number <em>k</em>.
-//     * 
-//     * @param k     wave number of the particle with respect to RF frequency (radians/meter)
-//     * 
-//     * @return      the normalized velocity &beta; of the particle for the given wave number <em>k</em>
-//     *
-//     * @since  Sep 28, 2015   by Christopher K. Allen
-//     */
-//    private double computeNormVelocity(double k) {
-//        double  lambda = DBL_LGHT_SPD/this.getRfFrequency();
-//        double  beta   = DBL_2PI/(k*lambda);
-//        
-//        return beta;
-//    }
-//    
-//    /**
-//     * <p>
-//     * Compute and return the particle wave number <em>k</em> for the given normalized 
-//     * particle velocity &beta;.  The formula is
-//     * <br/>
-//     * <br/>
-//     * &nbsp; &nbsp; <em>k</em> = 2&pi;/&beta;&lambda; ,
-//     * <br/>
-//     * <br/>
-//     * where &lambda; is the wavelength of the accelerating RF.
-//     * </p>
-//     * 
-//     * @param beta      normalized probe velocity
-//     * 
-//     * @return          particle wave number with respect to the RF (radians/meter)
-//     *
-//     * @since  Oct 12, 2015   by Christopher K. Allen
-//     */
-//    private double computeWaveNumber(double beta) {
-//        double lambda = DBL_LGHT_SPD/this.getRfFrequency();
-//        double k      = DBL_2PI/(beta*lambda);
-//
-//        return k;
-//    }
     /**
      * <p>
      * Compute and return the particle wave number <em>k</em> for the given
@@ -1094,17 +1007,6 @@ public class AcceleratingRfGap {
         return K;
     }
 
-//    /** 
-//     *  Computes the relativistic factor &gamma;from the given &beta; value.
-//     *  
-//     *  @param  beta    particle velocity normalized  w.r.t. the speed of light
-//     *  
-//     *  @return         relativistic factor &gamma;
-//     */
-//    private double computeGammaFromBeta(double beta) { 
-//        return 1.0/Math.sqrt(1.0 - beta*beta); 
-//    };
-//    
     /**
      * Compute and return the relativistic factor &gamma; from the given kinetic
      * energy and given rest energy <em>E<sub>r</sub></em> =
@@ -1132,33 +1034,4 @@ public class AcceleratingRfGap {
 
         return gamma;
     }
-
-//    /**
-//     * Computes and return the kinetic energy of a particle traveling at the given normalized
-//     * velocity which has the given rest mass.  The value <em>W</em> of this quantity is given 
-//     * by the following formula:
-//     * <br/>
-//     * <br/>
-//     * &nbsp; &nbsp; <em>W</em> = (&gamma; - 1)<em>mc</em><sup>2</sup> ,
-//     * <br/>
-//     * <br/>
-//     * where &gamma; = 1/&radic;(1 - &beta;<sup>2</sup>) is the relativistic factor and 
-//     * <em>mc</em><sup>2</sup> is the particle's rest mass (in electron-Volts). The 
-//     * relativistic factor &gamma; is defined by the normalized velocity &beta; which
-//     * is, in turn, determined by the wave number <em>k</em>.
-//     * 
-//     * @param k         particle wave number w.r.t. RF frequency (radians/meter)
-//     * @param Er        particle rest mass (in electron-Volts)
-//     * 
-//     * @return          kinetic energy of a particle of the given rest mass at the given velocity (eV)
-//     *
-//     * @since  Oct 9, 2015,   Christopher K. Allen
-//     */
-//    private double computeKineticEnergy(double k, double Er) {
-//        double  dblBeta   = this.computeNormVelocity(k);
-//        double  dblGamma  = this.computeGammaFromBeta(dblBeta);
-//        double  dblKinNrg = (dblGamma - 1.0)*Er;
-//        
-//        return dblKinNrg;
-//    }
 }

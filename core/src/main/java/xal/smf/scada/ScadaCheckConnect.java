@@ -292,29 +292,15 @@ public class ScadaCheckConnect {
                 this.lstChnPass.clear();
 
                 for (Channel chnReq : this.lstChnPend) {
-
                     chnReq.requestConnection();
                 }
             }
 
             try {
                 Thread.sleep(intTmOut);
-
-//                // We must stop all the connection monitor from remove the
-//                //  channels after the failed connection attempt
-//                synchronized (this.lstChnPend) {
-//                    for (ConnectionMonitor mon : this.lstLsnCon) {
-//                        Channel     chn = mon.getChannel(); 
-//                        chn.removeConnectionListener(mon);
-//                    }
-//
-//                }
                 return false;
-
             } catch (InterruptedException e) {
-
                 return true;
-
             }
         }
     }
@@ -332,25 +318,9 @@ public class ScadaCheckConnect {
      */
     private List<Channel> lstChnFail;
 
-//    /** The time out period after which connection test fails (in seconds) */
-//    private final double                    dblTmOut;
     /*
      * Initialization
      */
-//    /**
-//     * Create a new <code>ScadaCheckConnect</code> object connected
-//     * to the given accelerator device.
-//     * 
-//     * @param smfDev        accelerator device under test
-//     * @param dblTmOut    time to wait before test fails (in seconds)
-//     *
-//     * @author  Christopher K. Allen
-//     * @since   Mar 4, 2011
-//     */
-//    public ScadaCheckConnect(AcceleratorNode smfDev, double dblTmOut) {
-//        this.smfDev = smfDev;
-//        this.dblTmOut = dblTmOut;
-//    }
     /**
      * Create a new <code>ScadaCheckConnect</code> object connected to the given
      * accelerator device.
@@ -390,9 +360,6 @@ public class ScadaCheckConnect {
             return true;
         }
 
-//        // Check that data structure is tagged for channel access
-//        if (! clsScada.isAnnotationPresent(AScada.class) )
-//            throw new BadStructException("The data structure is not annotated as 'AScada'");
         // Here is where we store all the requests
         TestChannelList lstRequests = new TestChannelList();
 

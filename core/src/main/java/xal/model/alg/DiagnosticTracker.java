@@ -81,19 +81,6 @@ public class DiagnosticTracker extends Tracker {
         }
     }
 
-    /*
-     * Internal Support
-     */
-//    /**
-//     * Returns the length of the next element subsection to process, always
-//     * the length of the element for a diagnostic probe.
-//     * 
-//     * @param elem The element currently acting on the probe
-//     * @param pos Position of probe within specified element, should always be 0
-//     */
-//    protected double nextIntervalFrom(IElement elem, double pos) {
-//    	return elem.getLength();
-//    }
     /**
      * Returns the number of sections to break the specified element in to for
      * propagation. Always one for a diagnostic probe.

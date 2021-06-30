@@ -112,11 +112,9 @@ public class LineModel extends ElementSeq {
      */
     @Override
     public void propagate(IProbe probe) throws ModelException {
-//        LOGGER.log(Level.INFO, "LineModel.propagate called");
 
         String elem0 = probe.getCurrentElement();
         if (isValidElement(elem0)) {
-//            LOGGER.log(Level.INFO, "found valid elem0 = "+elem0);
             propagateWithElement(probe, elem0);
 
         } else {

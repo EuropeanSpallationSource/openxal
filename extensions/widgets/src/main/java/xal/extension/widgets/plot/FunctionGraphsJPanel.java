@@ -2130,9 +2130,6 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
     public void addHorLimitsListener(ActionListener al) {
         horLimListenersV.add(al);
         al.actionPerformed(horLimEvent);
-        //for ( int k = 0, n = horLimListenersV.size(); k < n; k++ ) {
-        //    ( (ActionListener) horLimListenersV.get( k ) ).actionPerformed( horLimEvent );
-        //}
     }
 
     /**
@@ -2144,9 +2141,6 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
     public void addVerLimitsListener(ActionListener al) {
         verLimListenersV.add(al);
         al.actionPerformed(verLimEvent);
-        //for ( int k = 0, n = verLimListenersV.size(); k < n; k++ ) {
-        //    ( (ActionListener) verLimListenersV.get( k ) ).actionPerformed( verLimEvent );
-        //}
     }
 
     /**
@@ -4102,13 +4096,11 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
                     if (autoScaleOn) {
                         GridLimits gl = fgp.getCurrentGL();
                         if (xyChooser == 0) {
-                            //gl.initializeX();
                             gl.setXminOn(false);
                             gl.setXmaxOn(false);
                             gl.setMajorTicksOnX(false);
                         }
                         if (xyChooser == 1) {
-                            //gl.initializeY();
                             gl.setYminOn(false);
                             gl.setYmaxOn(false);
                             gl.setMajorTicksOnY(false);

@@ -407,9 +407,6 @@ public abstract class ScadaRecord implements DataListener, Cloneable {
     protected ScadaRecord() throws BadStructException {
         this.lstFldDscr = new ScadaFieldList(this.getClass());
         this.mapNm2Fd = new ScadaFieldMap(this.getClass());
-
-//        if (this.lstFldDscr.size() == 0)
-//            throw new BadStructException("No SCADA fields (@AScada.Field) found in data structure."); 
     }
 
     /**
@@ -582,8 +579,6 @@ public abstract class ScadaRecord implements DataListener, Cloneable {
                 fldDataFld.set(this, bytVal);
 
             } else if (clsFldType == byte[].class) {
-//                byte[]      arrBytVal = chanPv.getArrByte();
-//                fldDataStr.set(this, arrBytVal);
                 byte[] arrBytVal = recPv.byteArray();
                 fldDataFld.set(this, arrBytVal);
 

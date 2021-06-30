@@ -814,19 +814,17 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 
         //default
         probe.setCovariance(new CovarianceMatrix(chi1));
-        
         this.advanceProbe(probe, ifcElem, 0.0);
     }
 
-    /** 
-     * Original code
-     * Propagate the probe through a thin element where no space charge effects
-     * will occur.
-     * 
-     * @param probe     probe to propagate
-     * @param elem      thin beamline element
-     * @throws ModelException   unable to compute transfer matrix for element
-     */    
+    /**
+     * Original code Propagate the probe through a thin element where no space
+     * charge effects will occur.
+     *
+     * @param probe probe to propagate
+     * @param elem thin beamline element
+     * @throws ModelException unable to compute transfer matrix for element
+     */
     @SuppressWarnings("unused")
     private void stepThinElementOrg(EnvelopeProbe probe, IElement elem) throws ModelException {
         PhaseMatrix matPhi = this.compElemTransMatrix(0.0, probe, elem);

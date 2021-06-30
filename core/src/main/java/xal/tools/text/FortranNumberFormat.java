@@ -228,7 +228,6 @@ public class FortranNumberFormat extends DecimalFormat {
         if (val != 0.) {
             int nP = (int) Math.floor(Math.log(Math.abs(val)) / Math.log(10.0));
             int nPa = Math.abs(nP);
-            //LOGGER.log(Level.INFO,  "debug  val=" + val + " nP=" + nP + " nPa=" + nPa );
 
             int srtLengthLocal = srtLength;
 

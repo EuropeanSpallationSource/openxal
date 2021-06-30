@@ -210,7 +210,6 @@ public class MadGenerator {
         double momentum = RelativisticParameterConverter.computeMomentumFromEnergies(myProbe.getKineticEnergy(), myProbe.getSpeciesRestEnergy()) / 1.e9;
         LOGGER.log(Level.INFO, "momentum = {0}", momentum);
 
-        // Q = myProbe.getSpeciesCharge()/1.602e-19;
         Q = myProbe.getSpeciesCharge();
 
         final String sourceLabel = deviceDataSource.getLabel();

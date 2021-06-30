@@ -77,8 +77,6 @@ public class TestSynchronizationManager {
     /**
      * String identifier for accelerator sequence used in testing
      */
-//    public static String            STR_SEQ_ID       = "HEBT1";
-//    public static String            STR_SEQ_ID       = "MEBT-SCL";
     public static String seqId = "CCL";
 
     /*
@@ -133,7 +131,6 @@ public class TestSynchronizationManager {
     public static void setUpBeforeClass() throws Exception {
 
         try {
-//            ACCEL_TEST   = XMLDataManager.acceleratorWithUrlSpec(STRL_URL_ACCEL);
             accelTest = ResourceManager.getTestAccelerator();
             seqTest = accelTest.findSequence(seqId);
             modelTest = Scenario.newScenarioFor(seqTest);
@@ -215,7 +212,6 @@ public class TestSynchronizationManager {
         Trajectory<EnvelopeProbeState> trjData = modelTest.getTrajectory();
 
         this.saveSimData(trjData);
-//        this.printSimData(trjData);
     }
 
     /**
@@ -241,14 +237,11 @@ public class TestSynchronizationManager {
             double dblFldOld = smfQuad1.getDesignField();
             double dblFldNew = dblFldOld * 1.1;
 
-//            LOGGER.log(Level.INFO, "Changing " + smfQuad1.getId() + " design field from " + dblFldOld + " to " + dblFldNew);
             Map<String, Double> mapPrpToValOld = modelTest.propertiesForNode(smfQuad1);
-//            LOGGER.log(Level.INFO, "Old property map for " + smfQuad1.getId() + ": " + mapPrpToValOld.toString());
 
             smfQuad1.setDfltField(dblFldNew);
             modelTest.resync();
             Map<String, Double> mapPrpToValNew = modelTest.propertiesForNode(smfQuad1);
-//            LOGGER.log(Level.INFO, "New property map for " + smfQuad1.getId() + ": " + mapPrpToValNew.toString());
 
             probeEnvTest.reset();
             modelTest.run();
@@ -294,7 +287,6 @@ public class TestSynchronizationManager {
         wtrOutput.println("  RF Gap Phases " + modelTest.getProbe().getAlgorithm().getRfGapPhaseCalculation());
 
         // Write out the simulation data
-//        Trajectory<?> trjData = MODEL_TEST.getTrajectory();
         for (S state : trjData) {
             wtrOutput.println(state);
         }
@@ -315,7 +307,6 @@ public class TestSynchronizationManager {
         // Print out the kinetic energy profile to stdout
         LOGGER.log(Level.INFO, "DATA FOR SIMULATION WITH {0}", modelTest.getProbe().getClass().getName());
         LOGGER.log(Level.INFO, "  RF Gap Phases {0}", modelTest.getProbe().getAlgorithm().getRfGapPhaseCalculation());
-//        Trajectory<?> trjData = MODEL_TEST.getTrajectory();
 
         for (S state : trjData) {
 

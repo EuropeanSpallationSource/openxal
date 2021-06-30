@@ -152,7 +152,6 @@ public class ZPlot extends CombinedDomainXYPlot {
         TextAnchor textAnchor = TextAnchor.TOP_LEFT;
         TextAnchor rotationAnchor = textAnchor;
 
-        // + domainAxis.getTickLabelInsets().getTop());
         for (int i = 0; i < beamlineLabelsToDraw.size(); i++) {
             TextUtilities.drawRotatedString(beamlineLabelsToDraw.get(i), g2,
                     beamlineLabelXCoords.get(i), y, textAnchor, 0, rotationAnchor);
@@ -200,7 +199,6 @@ public class ZPlot extends CombinedDomainXYPlot {
 
             // check overlapping
             if (rangeChecker.overlapsRange(upper, lower)) {
-                //LOGGER.log(Level.INFO, String.format("u: %f l: %f", upper, lower));
                 continue;
             }
             rangeChecker.addRange(upper, lower);
@@ -216,7 +214,6 @@ public class ZPlot extends CombinedDomainXYPlot {
         float y = (float) (dataArea.getMaxY() - getAxisOffset()
                 .calculateBottomOutset(dataArea.getHeight()))
                 + BEAMLINE_LABELS_SPACE;
-        // + domainAxis.getTickLabelInsets().getTop());
         for (int i = 0; i < deviceLabelsToDraw.size(); i++) {
             TextUtilities.drawRotatedString(deviceLabelsToDraw.get(i), g2,
                     deviceLabelXCoords.get(i), y, textAnchor, angle, rotationAnchor);

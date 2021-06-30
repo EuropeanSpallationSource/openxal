@@ -444,7 +444,6 @@ public abstract class AbstractBatchGetRequest<RecordType extends ChannelRecord> 
                         pendingConnectedChannels.clear();
                     }
 
-//					LOGGER.log(Level.INFO,  "Processing " + channels.size() + " channels." );
                     if (channels.size() > 0) {
                         try {
                             for (final Channel channel : channels) {

@@ -71,8 +71,7 @@ public class RFGap extends ThinElement {
 
     @Override
     public String toCoutString() {
-        //NumberFormat fmt=NumberFormat.getNumberInstance();
-        //((DecimalFormat)fmt).applyPattern("0.0000");
+
         String retval = "";
         double elPos = getPosition();
         double elLen = getEffLength();

@@ -85,15 +85,6 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      * @since Oct 22, 2013
      */
     public CalculationsOnBeams(Trajectory<EnvelopeProbeState> datSim) {
-//        EnvelopeProbeState  pstFinal = datSim.finalState();
-//        
-//        // Check for correct probe types
-//        if ( !( pstFinal instanceof EnvelopeProbeState) )
-//            throw new IllegalArgumentException(
-//                    "Trajectory states are not EnvelopeProbeStates? - " 
-//                    + pstFinal.getClass().getName()
-//                    );
-
         this.trjSimul = datSim;
         this.staInit = datSim.initialState();
         this.staFinal = datSim.finalState();
@@ -385,8 +376,6 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      */
     @Override
     public PhaseVector computeFixedOrbit(EnvelopeProbeState state) {
-//        PhaseMatrix matRespLoc = state.getResponseMatrix();
-//        PhaseVector vecFxdLoc  = matRespLoc.times( this.vecFxdPt );
         PhaseVector vecFxdOrb = this.computeCoordinatePosition(state);
 
         return vecFxdOrb;
@@ -542,50 +531,4 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
 
         return PhaseVector.embed(vecDisp);
     }
-
-    /*
-     * Support Methods
-     */
-//    /**
-//     * <p>
-//     * Calculates and returns the full lattice matrix for the machine/beam at the
-//     * given state location.  Let <em>S<sub>n</sub></em> be the given state object at
-//     * location <em>s<sub>n</sub></em>, and let <strong>T</strong><sub><em>n</em></sub> be the
-//     * response matrix between locations <em>s</em><sub>0</sub> and <em>s<sub>n</sub></em> ,
-//     * where <em>s</em><sub>0</sub> is the location of the linac entrance. and 
-//     * <strong>&Phi;</strong><sub>0</sub> is the end-to-end response matrix for this machine.
-//     * Then the full turn matrix 
-//     * <strong>&Phi;</strong><sub><em>n</em></sub> for the machine at location <em>s<sub>n</sub></em>
-//     * is given by
-//     * <br>
-//     * <br>
-//     * &nbsp; &nbsp; <strong>&Phi;</strong><sub><em>n</em></sub> = <strong>T</strong><sub><em>n</em></sub> &sdot; <strong>&Phi;</strong><sub>0</sub>
-//     *               &sdot; <strong>T</strong><sub><em>n</em></sub><sup>-1</sup> .
-//     * <br>
-//     * <br>
-//     * That is, we conjugate the full transfer map for this machine by the transfer map 
-//     * for the given state.
-//     * </p> 
-//     * <p>
-//     * The full turn matrix is considered the end-to-end transfer matrix (response matrix) 
-//     * of the linac if the entrance and exit were joined.  This may not be a well-defined
-//     * or physical quantity.
-//     * </p>  
-//     * 
-//     * @param state     state object <em>S<sub>n</sub></em> for location <em>s<sub>n</sub></em>
-//     *                  containing transfer matrix <strong>T</strong><sub><em>n</em></sub>
-//     *                  
-//     * @return          the end-to-end matrix <strong>&Phi;</strong><sub><em>n</em></sub> at the location
-//     *                  <em>s<sub>n</sub></em> of the given state
-//     *
-//     * @author Christopher K. Allen
-//     * @since  Oct 28, 2013
-//     */
-//    protected PhaseMatrix calculateFullLatticeMatrixAt(EnvelopeProbeState state) {
-//        PhaseMatrix matPhiState  = state.getResponseMatrix();
-//        PhaseMatrix matPhiFull   = this.matResp;
-//        PhaseMatrix matFullTnLoc = matPhiFull.conjugateInv(matPhiState);
-//    
-//        return matFullTnLoc;
-//    }
 }
