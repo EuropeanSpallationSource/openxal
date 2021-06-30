@@ -161,11 +161,11 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      * Returns the phase space location of the fixed orbit at the simulation
      * start (which is computed at instantiation) assuming the simulation is
      * that for at least one period of a periodic accelerating or transport
-     * section. The returned value <b>z</b> is the result of the calculation
+     * section. The returned value <strong>z</strong> is the result of the calculation
      * <code>{@link #calculateFixedPoint(PhaseMatrix)}</code> given the full
-     * turn matrix <b>&Phi;</b> at the simulation exit (see
+     * turn matrix <strong>&Phi;</strong> at the simulation exit (see
      * {@link #getFullResponseMatrix()}). It is invariant under the action of
-     * <b>&Phi;</b>, that is, <b>&Phi;z</b> = <b>z</b>.
+     * <strong>&Phi;</strong>, that is, <strong>&Phi;z</strong> = <strong>z</strong>.
      * </p>
      * <h3>NOTES:</h3>
      * <p>
@@ -296,74 +296,74 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      *
      * <p>
      * Consider first the point in phase space that is invariant under repeated
-     * application of the response matrix <b>&Phi;</b> for the entire beamline
-     * or ring. This is under the condition that we decompose <b>&Phi;</b> into
+     * application of the response matrix <strong>&Phi;</strong> for the entire beamline
+     * or ring. This is under the condition that we decompose <strong>&Phi;</strong> into
      * its homogeneous and non-homogeneous components. A particle entering the
      * linac at that location exits at the same location.
      * </p>
      * <p>
-     * To compute this linac fixed point, recall that the <i>homogeneous</i>
-     * response matrix <b>&Phi;</b> for the beamline (or full-turn matrix for a
-     * ring) has final row that represents the translation <b>&Delta;</b> of the
-     * particle under the action of <b>&Phi;</b>. The 6&times;6 sub-matrix of
-     * <b>&Phi;</b> represents the (linear) action of the bending magnetics and
-     * quadrupoles and corresponds to the matrix <b>T</b> &in;
-     * <b>R</b><sup>6&times;6</sup> (here <b>T</b> is linear). Thus, we can
-     * write the linear operator <b>&Phi;</b>
+     * To compute this linac fixed point, recall that the <em>homogeneous</em>
+     * response matrix <strong>&Phi;</strong> for the beamline (or full-turn matrix for a
+     * ring) has final row that represents the translation <strong>&Delta;</strong> of the
+     * particle under the action of <strong>&Phi;</strong>. The 6&times;6 sub-matrix of
+     * <strong>&Phi;</strong> represents the (linear) action of the bending magnetics and
+     * quadrupoles and corresponds to the matrix <strong>T</strong> &in;
+     * <strong>R</strong><sup>6&times;6</sup> (here <strong>T</strong> is linear). Thus, we can
+     * write the linear operator <strong>&Phi;</strong>
      * as the augmented system
      * <br>
      * <br>
      * <pre>
-     * &nbsp; &nbsp; <b>&Phi;</b> = |<b>T</b> <b>&Delta;</b> |,   <b>z</b> &equiv; |<b>p</b>| ,
-     *         |<b>0</b> 1 |        |1|
-     * </pre> where <b>p</b> is the projection of <b>z</b> into the embedded
+     * &nbsp; &nbsp; <strong>&Phi;</strong> = |<strong>T</strong> <strong>&Delta;</strong> |,   <strong>z</strong> &equiv; |<strong>p</strong>| ,
+     *         |<strong>0</strong> 1 |        |1|
+     * </pre> where <strong>p</strong> is the projection of <strong>z</strong> into the embedded
      * phase space
-     * <b>R</b><sup>6</sup> (without homogeneous coordinate). coordinates).
+     * <strong>R</strong><sup>6</sup> (without homogeneous coordinate). coordinates).
      * </p>
      * <p>
      * Putting this together we get
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&Phi;z</b> = <b>Tp</b> + <b>&Delta;</b> = <b>p</b> ,
+     * &nbsp; &nbsp; <strong>&Phi;z</strong> = <strong>Tp</strong> + <strong>&Delta;</strong> = <strong>p</strong> ,
      * <br>
      * <br>
      * to which the solution is
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>p</b> = -(<b>T</b> -
-     * <b>I</b>)<sup>-1</sup><b>&Delta;</b>
+     * &nbsp; &nbsp; <strong>p</strong> = -(<strong>T</strong> -
+     * <strong>I</strong>)<sup>-1</sup><strong>&Delta;</strong>
      * <br>
      * <br>
      * assuming it exists. The question of solution existence falls upon the
-     * resolvent <b>R</b> &equiv; (<b>T</b> - <b>I</b>)<sup>-1</sup> of
-     * <b>T</b>. By inspection we can see that <b>p</b> is defined so long as
-     * the eigenvalues of <b>T</b> are located away from 1. In this case the
-     * returned value is the augmented vector (<b>p</b> 1)<sup><i>T</i></sup>
-     * &in; <b>R</b><sup>6</sup> &times; {1}.
+     * resolvent <strong>R</strong> &equiv; (<strong>T</strong> - <strong>I</strong>)<sup>-1</sup> of
+     * <strong>T</strong>. By inspection we can see that <strong>p</strong> is defined so long as
+     * the eigenvalues of <strong>T</strong> are located away from 1. In this case the
+     * returned value is the augmented vector (<strong>p</strong> 1)<sup><em>T</em></sup>
+     * &in; <strong>R</strong><sup>6</sup> &times; {1}.
      * </p>
      * <p>
      * When the set of eigenvectors does contain 1, we attempt to find the
-     * solution for the transverse phase space. That is, we take vector <b>p</b>
-     * &in; <b>R</b><sup>4</sup>
-     * and <b>T</b> &in; <b>R</b><sup>4&times;4</sup> where
-     * <b>T</b> = proj<sub>4&times;4</sub> <b>&Phi;</b>. The solution value is
+     * solution for the transverse phase space. That is, we take vector <strong>p</strong>
+     * &in; <strong>R</strong><sup>4</sup>
+     * and <strong>T</strong> &in; <strong>R</strong><sup>4&times;4</sup> where
+     * <strong>T</strong> = proj<sub>4&times;4</sub> <strong>&Phi;</strong>. The solution value is
      * then
-     * <b>z</b> = (<b>p</b> 0 0 1)<sup><i>T</i></sup>.
+     * <strong>z</strong> = (<strong>p</strong> 0 0 1)<sup><em>T</em></sup>.
      * </p>
      * <p>
-     * Once we have the fixed point <b>z</b><sub>0</sub> for the linac we
+     * Once we have the fixed point <strong>z</strong><sub>0</sub> for the linac we
      * compute the trajectory of the fixed point at the location of the given
      * probe state. To do so, we multiply
-     * <b>z</b><sub>0</sub> by the response matrix
-     * <b>&Phi;</b><sub><i>n</i></sub> for the given probe state. That is, we
+     * <strong>z</strong><sub>0</sub> by the response matrix
+     * <strong>&Phi;</strong><sub><em>n</em></sub> for the given probe state. That is, we
      * propagate the fixed point of the linac from the linac entrance to the
      * location of the given phase state.
      * </p>
      *
      * @return The quantity
-     * <b>&Phi;</b><sub><i>n</i></sub>&sdot;<b>z</b><sub>0</sub>, the linac
-     * fixed point <b>z</b><sub>0</sub> propagated to the state location
-     * <i>s<sub>n</sub></i>
+     * <strong>&Phi;</strong><sub><em>n</em></sub>&sdot;<strong>z</strong><sub>0</sub>, the linac
+     * fixed point <strong>z</strong><sub>0</sub> propagated to the state location
+     * <em>s<sub>n</sub></em>
      *
      * @see
      * xal.tools.beam.calc.ISimEnvResults#computeFixedOrbit(xal.model.probe.traj.ProbeState)
@@ -384,7 +384,7 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      * Computes the chromatic aberration for one pass around the ring starting
      * at the given state location, or from the entrance to state position for a
      * linear machine. The returned vector is the displacement from the closed
-     * orbit caused by a unit momentum offset (&delta;<i>p</i> = 1). See the
+     * orbit caused by a unit momentum offset (&delta;<em>p</em> = 1). See the
      * documentation in
      * {@link ISimLocResults#computeChromAberration(ProbeState)} for a more
      * detailed exposition.
@@ -410,9 +410,9 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
     /**
      * Returns the Courant-Snyder parameters of the beam envelope at the
      * location of the given probe state. These values are computed from the
-     * primary state object of an <code>EnvelopeProbe</code> the <i>covariance
-     * matrix</i> <b>&sigma;</b>. Only the 2&times;2 diagonal blocks of
-     * <b>&sigma;</b> are used for Courant-Snyder parameter calculations (for
+     * primary state object of an <code>EnvelopeProbe</code> the <em>covariance
+     * matrix</em> <strong>&sigma;</strong>. Only the 2&times;2 diagonal blocks of
+     * <strong>&sigma;</strong> are used for Courant-Snyder parameter calculations (for
      * each phase plane), thus, any phase plane coupling is lost.
      *
      * @see
@@ -438,9 +438,9 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      * location. The calculation proceeds by computing the Courant-Snyder
      * parameters &alpha; and &beta; of the envelope at the entrance to the
      * linac and at the given state location using the covariance matrix
-     * <b>&sigma;</b>(<i>s</i>) of the simulation. The given state also contains
-     * the response matrix <b>&Phi;</b>(<i>s</i>) between the entrance to the
-     * linac and the current state location <i>s</i>. This matrix is used as the
+     * <strong>&sigma;</strong>(<em>s</em>) of the simulation. The given state also contains
+     * the response matrix <strong>&Phi;</strong>(<em>s</em>) between the entrance to the
+     * linac and the current state location <em>s</em>. This matrix is used as the
      * transfer matrix mapping particle phase coordinates between the linac
      * entrance and the current state location.
      * </p>
@@ -448,11 +448,11 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      * The definition of phase advance &psi; is given by
      * <br>
      * <br>
-     * &nbsp; &nbsp; &psi;(<i>s</i>) &equiv; &int;<sup><i>s</i></sup>
-     * [1/&beta;(<i>t</i>)]<i>dt</i> ,
+     * &nbsp; &nbsp; &psi;(<em>s</em>) &equiv; &int;<sup><em>s</em></sup>
+     * [1/&beta;(<em>t</em>)]<em>dt</em> ,
      * <br>
      * <br>
-     * where &beta;(<i>s</i>) is the Courant-Snyder, envelope function, and the
+     * where &beta;(<em>s</em>) is the Courant-Snyder, envelope function, and the
      * integral is taken along the interval between the initial and final
      * Courant-Snyder parameters.
      * </p>
@@ -465,7 +465,7 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      * ,
      * <br>
      * <br>
-     * where &phi;<sub>12</sub> is the element of <b>&Phi;</b> in the upper
+     * where &phi;<sub>12</sub> is the element of <strong>&Phi;</strong> in the upper
      * right corner of each 2&times;2 diagonal block, &beta;<sub>1</sub> is the
      * initial beta function value (provided) and &beta;<sub>2</sub> is the
      * final beta function value (provided).
@@ -500,7 +500,7 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      * Computes the chromatic aberration for one pass around the ring starting
      * at the given state location, or from the entrance to state position for a
      * linear machine. The returned vector is the displacement from the closed
-     * orbit caused by a unit momentum offset (&delta;<i>p</i> = 1). See the
+     * orbit caused by a unit momentum offset (&delta;<em>p</em> = 1). See the
      * documentation in
      * {@link ISimLocResults#computeChromAberration(ProbeState)} for a more
      * detailed exposition.
@@ -510,7 +510,7 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      * </p>
      *
      * @return vector of chromatic dispersion coefficients in
-     * <b>meters/radian</b>
+     * <strong>meters/radian</strong>
      *
      * @see
      * xal.tools.beam.calc.ISimEnvResults#computeChromDispersion(xal.model.probe.traj.ProbeState)
@@ -534,18 +534,18 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
 //    /**
 //     * <p>
 //     * Calculates and returns the full lattice matrix for the machine/beam at the
-//     * given state location.  Let <i>S<sub>n</sub></i> be the given state object at
-//     * location <i>s<sub>n</sub></i>, and let <b>T</b><sub><i>n</i></sub> be the
-//     * response matrix between locations <i>s</i><sub>0</sub> and <i>s<sub>n</sub></i> ,
-//     * where <i>s</i><sub>0</sub> is the location of the linac entrance. and 
-//     * <b>&Phi;</b><sub>0</sub> is the end-to-end response matrix for this machine.
+//     * given state location.  Let <em>S<sub>n</sub></em> be the given state object at
+//     * location <em>s<sub>n</sub></em>, and let <strong>T</strong><sub><em>n</em></sub> be the
+//     * response matrix between locations <em>s</em><sub>0</sub> and <em>s<sub>n</sub></em> ,
+//     * where <em>s</em><sub>0</sub> is the location of the linac entrance. and 
+//     * <strong>&Phi;</strong><sub>0</sub> is the end-to-end response matrix for this machine.
 //     * Then the full turn matrix 
-//     * <b>&Phi;</b><sub><i>n</i></sub> for the machine at location <i>s<sub>n</sub></i>
+//     * <strong>&Phi;</strong><sub><em>n</em></sub> for the machine at location <em>s<sub>n</sub></em>
 //     * is given by
 //     * <br>
 //     * <br>
-//     * &nbsp; &nbsp; <b>&Phi;</b><sub><i>n</i></sub> = <b>T</b><sub><i>n</i></sub> &sdot; <b>&Phi;</b><sub>0</sub>
-//     *               &sdot; <b>T</b><sub><i>n</i></sub><sup>-1</sup> .
+//     * &nbsp; &nbsp; <strong>&Phi;</strong><sub><em>n</em></sub> = <strong>T</strong><sub><em>n</em></sub> &sdot; <strong>&Phi;</strong><sub>0</sub>
+//     *               &sdot; <strong>T</strong><sub><em>n</em></sub><sup>-1</sup> .
 //     * <br>
 //     * <br>
 //     * That is, we conjugate the full transfer map for this machine by the transfer map 
@@ -557,11 +557,11 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
 //     * or physical quantity.
 //     * </p>  
 //     * 
-//     * @param state     state object <i>S<sub>n</sub></i> for location <i>s<sub>n</sub></i>
-//     *                  containing transfer matrix <b>T</b><sub><i>n</i></sub>
+//     * @param state     state object <em>S<sub>n</sub></em> for location <em>s<sub>n</sub></em>
+//     *                  containing transfer matrix <strong>T</strong><sub><em>n</em></sub>
 //     *                  
-//     * @return          the end-to-end matrix <b>&Phi;</b><sub><i>n</i></sub> at the location
-//     *                  <i>s<sub>n</sub></i> of the given state
+//     * @return          the end-to-end matrix <strong>&Phi;</strong><sub><em>n</em></sub> at the location
+//     *                  <em>s<sub>n</sub></em> of the given state
 //     *
 //     * @author Christopher K. Allen
 //     * @since  Oct 28, 2013

@@ -27,7 +27,7 @@ import xal.tools.math.r6.R6;
  * betatron phase advance", and "period matched Twiss parameter". These
  * parameters make not make sense here, as we make the very broad assumption
  * that the particle is in a periodic system and the simulation data is taken
- * about <i>n</i> periods, but they are available.
+ * about <em>n</em> periods, but they are available.
  * </p>
  *
  * @author Christopher K. Allen
@@ -109,12 +109,12 @@ public class CalculationsOnParticles extends CalculationEngine implements ISimLo
     }
 
     /**
-     * Returns the full response matrix <b>&Phi;</b> providing the sensitivity
-     * of the final particle position <b>z</b> to the initial conditions
-     * <b>z</b><sub>0</sub>.
+     * Returns the full response matrix <strong>&Phi;</strong> providing the sensitivity
+     * of the final particle position <strong>z</strong> to the initial conditions
+     * <strong>z</strong><sub>0</sub>.
      *
-     * @return the response matrix <b>&Phi;</b> =
-     * &part;<b>z</b>/&part;<b>z</b><sub>0</sub>
+     * @return the response matrix <strong>&Phi;</strong> =
+     * &part;<strong>z</strong>/&part;<strong>z</strong><sub>0</sub>
      *
      * @author Christopher K. Allen
      * @since Nov 7, 2013
@@ -162,11 +162,11 @@ public class CalculationsOnParticles extends CalculationEngine implements ISimLo
      * matrix.
      * </p>
      * <p>
-     * The returned value <b>z</b> is the result of the calculation
+     * The returned value <strong>z</strong> is the result of the calculation
      * <code>{@link #calculateFixedPoint(PhaseMatrix)}</code> given the full
-     * response matrix <b>&Phi;</b> at the simulation exit (see
+     * response matrix <strong>&Phi;</strong> at the simulation exit (see
      * {@link #getFullResponseMatrix()}). It is invariant under the action of
-     * <b>&Phi;</b>, that is, <b>&Phi;z</b> = <b>z</b>.
+     * <strong>&Phi;</strong>, that is, <strong>&Phi;z</strong> = <strong>z</strong>.
      * </p>
      * <h3>NOTES:</h3>
      * <p>
@@ -249,74 +249,74 @@ public class CalculationsOnParticles extends CalculationEngine implements ISimLo
      *
      * <p>
      * Consider first the point in phase space that is invariant under repeated
-     * application of the response matrix <b>&Phi;</b> for the entire beamline
-     * or ring. This is under the condition that we decompose <b>&Phi;</b> into
+     * application of the response matrix <strong>&Phi;</strong> for the entire beamline
+     * or ring. This is under the condition that we decompose <strong>&Phi;</strong> into
      * its homogeneous and non-homogeneous components. A particle entering the
      * linac at that location exits at the same location.
      * </p>
      * <p>
-     * To compute this linac fixed point, recall that the <i>homogeneous</i>
-     * response matrix <b>&Phi;</b> for the beamline (or full-turn matrix for a
-     * ring) has final row that represents the translation <b>&Delta;</b> of the
-     * particle under the action of <b>&Phi;</b>. The 6&times;6 sub-matrix of
-     * <b>&Phi;</b> represents the (linear) action of the bending magnetics and
-     * quadrupoles and corresponds to the matrix <b>T</b> &in;
-     * <b>R</b><sup>6&times;6</sup> (here <b>T</b> is linear). Thus, we can
-     * write the linear operator <b>&Phi;</b>
+     * To compute this linac fixed point, recall that the <em>homogeneous</em>
+     * response matrix <strong>&Phi;</strong> for the beamline (or full-turn matrix for a
+     * ring) has final row that represents the translation <strong>&Delta;</strong> of the
+     * particle under the action of <strong>&Phi;</strong>. The 6&times;6 sub-matrix of
+     * <strong>&Phi;</strong> represents the (linear) action of the bending magnetics and
+     * quadrupoles and corresponds to the matrix <strong>T</strong> &in;
+     * <strong>R</strong><sup>6&times;6</sup> (here <strong>T</strong> is linear). Thus, we can
+     * write the linear operator <strong>&Phi;</strong>
      * as the augmented system
      * <br>
      * <br>
      * <pre>
-     * &nbsp; &nbsp; <b>&Phi;</b> = |<b>T</b> <b>&Delta;</b> |,   <b>z</b> &equiv; |<b>p</b>| ,
-     *         |<b>0</b> 1 |        |1|
-     * </pre> where <b>p</b> is the projection of <b>z</b> into the embedded
+     * &nbsp; &nbsp; <strong>&Phi;</strong> = |<strong>T</strong> <strong>&Delta;</strong> |,   <strong>z</strong> &equiv; |<strong>p</strong>| ,
+     *         |<strong>0</strong> 1 |        |1|
+     * </pre> where <strong>p</strong> is the projection of <strong>z</strong> into the embedded
      * phase space
-     * <b>R</b><sup>6</sup> (without homogeneous coordinate). coordinates).
+     * <strong>R</strong><sup>6</sup> (without homogeneous coordinate). coordinates).
      * </p>
      * <p>
      * Putting this together we get
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&Phi;z</b> = <b>Tp</b> + <b>&Delta;</b> = <b>p</b> ,
+     * &nbsp; &nbsp; <strong>&Phi;z</strong> = <strong>Tp</strong> + <strong>&Delta;</strong> = <strong>p</strong> ,
      * <br>
      * <br>
      * to which the solution is
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>p</b> = -(<b>T</b> -
-     * <b>I</b>)<sup>-1</sup><b>&Delta;</b>
+     * &nbsp; &nbsp; <strong>p</strong> = -(<strong>T</strong> -
+     * <strong>I</strong>)<sup>-1</sup><strong>&Delta;</strong>
      * <br>
      * <br>
      * assuming it exists. The question of solution existence falls upon the
-     * resolvent <b>R</b> &equiv; (<b>T</b> - <b>I</b>)<sup>-1</sup> of
-     * <b>T</b>. By inspection we can see that <b>p</b> is defined so long as
-     * the eigenvalues of <b>T</b> are located away from 1. In this case the
-     * returned value is the augmented vector (<b>p</b> 1)<sup><i>T</i></sup>
-     * &in; <b>R</b><sup>6</sup> &times; {1}.
+     * resolvent <strong>R</strong> &equiv; (<strong>T</strong> - <strong>I</strong>)<sup>-1</sup> of
+     * <strong>T</strong>. By inspection we can see that <strong>p</strong> is defined so long as
+     * the eigenvalues of <strong>T</strong> are located away from 1. In this case the
+     * returned value is the augmented vector (<strong>p</strong> 1)<sup><em>T</em></sup>
+     * &in; <strong>R</strong><sup>6</sup> &times; {1}.
      * </p>
      * <p>
      * When the set of eigenvectors does contain 1, we attempt to find the
-     * solution for the transverse phase space. That is, we take vector <b>p</b>
-     * &in; <b>R</b><sup>4</sup>
-     * and <b>T</b> &in; <b>R</b><sup>4&times;4</sup> where
-     * <b>T</b> = proj<sub>4&times;4</sub> <b>&Phi;</b>. The solution value is
+     * solution for the transverse phase space. That is, we take vector <strong>p</strong>
+     * &in; <strong>R</strong><sup>4</sup>
+     * and <strong>T</strong> &in; <strong>R</strong><sup>4&times;4</sup> where
+     * <strong>T</strong> = proj<sub>4&times;4</sub> <strong>&Phi;</strong>. The solution value is
      * then
-     * <b>z</b> = (<b>p</b> 0 0 1)<sup><i>T</i></sup>.
+     * <strong>z</strong> = (<strong>p</strong> 0 0 1)<sup><em>T</em></sup>.
      * </p>
      * <p>
-     * Once we have the fixed point <b>z</b><sub>0</sub> for the linac we
+     * Once we have the fixed point <strong>z</strong><sub>0</sub> for the linac we
      * compute the trajectory of the fixed point at the location of the given
      * probe state. To do so, we multiply
-     * <b>z</b><sub>0</sub> by the response matrix
-     * <b>&Phi;</b><sub><i>n</i></sub> for the given probe state. That is, we
+     * <strong>z</strong><sub>0</sub> by the response matrix
+     * <strong>&Phi;</strong><sub><em>n</em></sub> for the given probe state. That is, we
      * propagate the fixed point of the linac from the linac entrance to the
      * location of the given phase state.
      * </p>
      *
      * @return The quantity
-     * <b>&Phi;</b><sub><i>n</i></sub>&sdot;<b>z</b><sub>0</sub>, the linac
-     * fixed point <b>z</b><sub>0</sub> propagated to the state location
-     * <i>s<sub>n</sub></i>
+     * <strong>&Phi;</strong><sub><em>n</em></sub>&sdot;<strong>z</strong><sub>0</sub>, the linac
+     * fixed point <strong>z</strong><sub>0</sub> propagated to the state location
+     * <em>s<sub>n</sub></em>
      *
      * @see
      * xal.tools.beam.calc.ISimEnvResults#computeFixedOrbit(xal.model.probe.traj.ProbeState)
@@ -339,7 +339,7 @@ public class CalculationsOnParticles extends CalculationEngine implements ISimLo
      * ring starting at the given state location, or for a beamline the entrance
      * of the line to this state position. The returned vector is the
      * displacement from the closed orbit caused by a unit momentum offset
-     * (&delta;<i>p</i> = 1). See the documentation in
+     * (&delta;<em>p</em> = 1). See the documentation in
      * {@link ISimLocResults#computeChromAberration(ProbeState)} for a more
      * detailed exposition.
      *

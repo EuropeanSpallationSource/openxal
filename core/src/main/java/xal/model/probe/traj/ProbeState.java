@@ -262,7 +262,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
     /**
      * Returns the probe velocity normalized to the speed of light.
      *
-     * @return normalized probe velocity v/c (<b>unitless</b>
+     * @return normalized probe velocity v/c (<strong>unitless</strong>
      */
     public double getBeta() {
         return dblBeta;
@@ -273,7 +273,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      * type, this could be the actual gamma of a single constituent particle,
      * the average gamma of an ensemble, the design gamma, etc.
      *
-     * @return probe kinetic energy (<b>electron-volts</b>)
+     * @return probe kinetic energy (<strong>electron-volts</strong>)
      */
     public double getGamma() {
 
@@ -291,7 +291,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
     /**
      * Set the charge of the particle species in the beam
      *
-     * @param q species particle charge (<b>Coulombs</b>)
+     * @param q species particle charge (<strong>Coulombs</strong>)
      */
     @Override
     public void setSpeciesCharge(double q) {
@@ -301,7 +301,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
     /**
      * Set the rest energy of a single particle in the beam
      *
-     * @param Er particle rest energy (<b>electron-volts</b>)
+     * @param Er particle rest energy (<strong>electron-volts</strong>)
      */
     @Override
     public void setSpeciesRestEnergy(double Er) {
@@ -311,7 +311,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
     /**
      * Set the current position of the probe along the beamline.
      *
-     * @param s new probe position (<b>meters</b>)
+     * @param s new probe position (<strong>meters</strong>)
      *
      * @see #getPosition
      */
@@ -323,7 +323,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
     /**
      * Set the current probe time elapsed from the start of the probe tracking.
      *
-     * @param dblTime elapsed time in <b>seconds</b>
+     * @param dblTime elapsed time in <strong>seconds</strong>
      */
     @Override
     public void setTime(double dblTime) {
@@ -340,8 +340,8 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      * &nbsp; &nbsp; &phi; &#8796; &phi;<sub>0</sub> - &Delta;&phi;
      * <br/>
      * <br/>
-     * where &Delta;&phi; = 2&pi;<i>f</i>&Delta;<i/>t</i> is the phase delay due
-     * to elapsed time &Delta;<i>t</i>, <i>f</i> is the cavity resonant
+     * where &Delta;&phi; = 2&pi;<em>f</em>&Delta;<i/>t</em> is the phase delay due
+     * to elapsed time &Delta;<em>t</em>, <em>f</em> is the cavity resonant
      * frequency, and &phi;<sub>0</sub> is the operating phase of the cavity
      * (w.r.t. the synchronous particle).
      * </p>
@@ -360,7 +360,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
     /**
      * Set the current kinetic energy of the probe.
      *
-     * @param W new probe kinetic energy (<b>electron-volts</b>)
+     * @param W new probe kinetic energy (<strong>electron-volts</strong>)
      *
      * @see #getKineticEnergy
      */
@@ -396,7 +396,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
     /**
      * Returns the charge of probe's particle species
      *
-     * @return particle species charge (<b>Coulombs</b>)
+     * @return particle species charge (<strong>Coulombs</strong>)
      */
     @Override
     public double getSpeciesCharge() {
@@ -406,7 +406,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
     /**
      * Returns the rest energy of particle species
      *
-     * @return particle species rest energy (<b>electron-volts</b>)
+     * @return particle species rest energy (<strong>electron-volts</strong>)
      */
     @Override
     public double getSpeciesRestEnergy() {
@@ -439,7 +439,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
     /**
      * Returns the current beam-line position of the probe
      *
-     * @return probe position (<b>meters</b>)
+     * @return probe position (<strong>meters</strong>)
      */
     @Override
     public double getPosition() {
@@ -449,7 +449,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
     /**
      * Return the time elapsed from the start of the probe tracking
      *
-     * @return time elapsed since probe began tracking, in <b>seconds</b>
+     * @return time elapsed since probe began tracking, in <strong>seconds</strong>
      */
     @Override
     public double getTime() {
@@ -466,8 +466,8 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      * &nbsp; &nbsp; &phi; &#8796; &phi;<sub>0</sub> - &Delta;&phi;
      * <br/>
      * <br/>
-     * where &Delta;&phi; = 2&pi;<i>f</i>&Delta;<i/>t</i> is the phase delay due
-     * to elapsed time &Delta;<i>t</i>, <i>f</i> is the cavity resonant
+     * where &Delta;&phi; = 2&pi;<em>f</em>&Delta;<i/>t</em> is the phase delay due
+     * to elapsed time &Delta;<em>t</em>, <em>f</em> is the cavity resonant
      * frequency, and &phi;<sub>0</sub> is the operating phase of the cavity
      * (w.r.t. the synchronous particle).
      * </p>
@@ -487,7 +487,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      * this could be the actual kinetic energy of a single constituent particle,
      * the average kinetic energy of an ensemble, the design energy, etc.
      *
-     * @return probe kinetic energy (<b>electron-volts</b>)
+     * @return probe kinetic energy (<strong>electron-volts</strong>)
      */
     @Override
     public double getKineticEnergy() {

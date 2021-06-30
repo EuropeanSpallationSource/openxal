@@ -149,7 +149,7 @@ public class IdealEDipole extends ThickElectrostatic {
      * Creates a new instance of IdealEDipole.
      *
      * @param strId identifier for this IdealEDipole object
-     * @param dblVoltage voltage applied to pole tip (in <b>kV</b>)
+     * @param dblVoltage voltage applied to pole tip (in <strong>kV</strong>)
      * @param len pathLength of the dipole (in m)
      * @param entAng entrance angle of the dipole (in rad)
      * @param exitAng exit angle of the dipole (in rad)
@@ -175,7 +175,7 @@ public class IdealEDipole extends ThickElectrostatic {
      * ThickDipole. This is the constructor called in automatic lattice
      * generation. Thus, all element properties are set following construction.
      *
-     * <b>BE CAREFUL</b>
+     * <strong>BE CAREFUL</strong>
      *
      */
     public IdealEDipole() {
@@ -186,7 +186,7 @@ public class IdealEDipole extends ThickElectrostatic {
      *
      * Sets the dipole entrance angle.
      *
-     * @param dblAng entrance angle in <b>radians</b>
+     * @param dblAng entrance angle in <strong>radians</strong>
      * @author Christopher K. Allen
      *
      */
@@ -209,7 +209,7 @@ public class IdealEDipole extends ThickElectrostatic {
      *
      * Sets the dipole exit angle.
      *
-     * @param dblAng exit angle in <b>radians</b>
+     * @param dblAng exit angle in <strong>radians</strong>
      * @author J. Galambos
      *
      */
@@ -323,7 +323,7 @@ public class IdealEDipole extends ThickElectrostatic {
      *
      * Sets the magnetic field strength.
      *
-     * @param voltage pole tip voltage (in <b>kV</b>).
+     * @param voltage pole tip voltage (in <strong>kV</strong>).
      *
      */
     @Override
@@ -335,7 +335,7 @@ public class IdealEDipole extends ThickElectrostatic {
      *
      * Returns the applied voltage.
      *
-     * @return voltage at the pole tips (in <b>kV</b>).
+     * @return voltage at the pole tips (in <strong>kV</strong>).
      *
      */
     @Override
@@ -354,9 +354,9 @@ public class IdealEDipole extends ThickElectrostatic {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen subsection propagation length <b>meters</b>
+     * @param dblLen subsection propagation length <strong>meters</strong>
      *
-     * @return elapsed propagation time<b>Units: seconds</b>
+     * @return elapsed propagation time<strong>Units: seconds</strong>
      *
      */
     @Override

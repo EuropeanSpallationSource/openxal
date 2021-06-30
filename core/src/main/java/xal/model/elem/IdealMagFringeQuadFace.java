@@ -135,16 +135,16 @@ public class IdealMagFringeQuadFace extends ThinElectromagnet {
     /**
      * Set the first-order moment integral of the dipole fringe field as
      * described by H. Matsuda. The integral determines the amount of defocusing
-     * caused by the fringe field. Denoting the integral <i>f1</i>
+     * caused by the fringe field. Denoting the integral <em>f1</em>
      * has the definition
      *
      * f1 := sign(a)sqrt(a) a = -24 [I1sad-I0sad^2/2] where I(n)sad :=
      * Integral{[z - z0] k(z)/k0}dz
      *
-     * where <i>k0</i> is normal k0*Len. The integral taken from -infinity to
-     * <i>z</i> = infinity.
+     * where <em>k0</em> is normal k0*Len. The integral taken from -infinity to
+     * <em>z</em> = infinity.
      *
-     * @param dblFringeInt field moment f1 (<b>dimensionless</b>)
+     * @param dblFringeInt field moment f1 (<strong>dimensionless</strong>)
      */
     public void setFringeIntegral1(double dblFringeInt) {
         this.dblFringeInt1 = dblFringeInt;
@@ -153,15 +153,15 @@ public class IdealMagFringeQuadFace extends ThinElectromagnet {
     /**
      * Set the first-order moment integral of the dipole fringe field as
      * described by H. Matsuda. The integral determines the amount of defocusing
-     * caused by the fringe field. Denoting the integral <i>f1</i>
+     * caused by the fringe field. Denoting the integral <em>f1</em>
      * has the definition
      *
      * f2 := [I2sad-I0sad^2/3] where I(n)sad := Integral{[z - z0] k(z)/k0}dz
      *
-     * where <i>k0</i> is normal k0*Len. The integral taken from -infinity to
-     * <i>z</i> = infinity.
+     * where <em>k0</em> is normal k0*Len. The integral taken from -infinity to
+     * <em>z</em> = infinity.
      *
-     * @param dblFringeInt field moment f1 (<b>dimensionless</b>)
+     * @param dblFringeInt field moment f1 (<strong>dimensionless</strong>)
      */
     public void setFringeIntegral2(double dblFringeInt) {
         this.dblFringeInt2 = dblFringeInt;
@@ -184,7 +184,7 @@ public class IdealMagFringeQuadFace extends ThinElectromagnet {
      * described by H. Matsuda. The integral determines the amount of defocusing
      * caused by the fringe field.
      *
-     * @return second-order integral of fringe field (<b>dimensionless</b>)
+     * @return second-order integral of fringe field (<strong>dimensionless</strong>)
      *
      * @see IdealMagFringeQuadFace#setFringeIntegral(double)
      */

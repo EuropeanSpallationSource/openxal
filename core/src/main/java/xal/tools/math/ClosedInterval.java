@@ -99,7 +99,7 @@ public class ClosedInterval extends Interval {
      *
      * @param I interval under test
      *
-     * @return      <code>true</code> if <b>I</b>&sub;<code>this</code>,
+     * @return      <code>true</code> if <strong>I</strong>&sub;<code>this</code>,
      * <code>false</code> otherwise.
      *
      * @author Christopher K. Allen

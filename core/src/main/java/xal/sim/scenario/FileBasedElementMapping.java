@@ -8,6 +8,8 @@ package xal.sim.scenario;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,8 +29,8 @@ import xal.tools.xml.XmlDataAdaptor;
  * </p>
  * <p>
  * The convention is to name the mapping definition file
- * <tt>ModelConfig.modconfig</tt> and place it in the same directory as the Open
- * XAL master configuration file <tt>main.xal</tt>. A entry reference to the
+ * <kbd>ModelConfig.modconfig</kbd> and place it in the same directory as the Open
+ * XAL master configuration file <kbd>main.xal</kbd>. A entry reference to the
  * mapping definition is made within the main configuration file.
  * </p>
  * <p>
@@ -70,7 +72,7 @@ public class FileBasedElementMapping extends ElementMapping {
      * Creates a new element mapping objects from the given definition file and
      * its provided schema. This file should contain a set of (hardware type id,
      * model class type) pairs arranged according to the given schema. It is
-     * usually named <tt>ModelConfig.modconfig</tt>
+     * usually named <kbd>ModelConfig.modconfig</kbd>
      * </p>
      * <p>
      * Current the default element type is set to
@@ -212,10 +214,10 @@ public class FileBasedElementMapping extends ElementMapping {
 
         DataAdaptor daAssoc = daCfg.createChild("associations");
 
-        for (String type : elementMapping.keySet()) {
+        for (Entry<String, Class<? extends IComponent>> entry : elementMapping.entrySet()) {
             DataAdaptor srcDas = daAssoc.createChild("map");
-            srcDas.setValue("smf", type);
-            srcDas.setValue("model", elementMapping.get(type).getCanonicalName());
+            srcDas.setValue("smf", entry.getKey());
+            srcDas.setValue("model", entry.getValue().getCanonicalName());
         }
 
         daDoc.writeToUrlSpec(urlModelConfig);

@@ -65,11 +65,11 @@ public class SessionModel {
     public void setLoggerSession(final LoggerSession loggerSession) {
         if (loggerSession != null) {
             loggerSession.removeLoggerChangeListener(loggerEventHandler);
+
+            this.loggerSession = loggerSession;
+
+            loggerSession.addLoggerChangeListener(loggerEventHandler);
         }
-
-        this.loggerSession = loggerSession;
-
-        loggerSession.addLoggerChangeListener(loggerEventHandler);
     }
 
     /**

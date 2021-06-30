@@ -74,7 +74,7 @@ public class TestPolynomialFit {
      *
      * @param dblBeta normalized particle velocity
      *
-     * @return wave number <i>k</i>
+     * @return wave number <em>k</em>
      *
      * @since Jul 28, 2015 by Christopher K. Allen
      */
@@ -90,7 +90,7 @@ public class TestPolynomialFit {
      *
      * @param dblBeta normalized particle velocity
      *
-     * @return      <i>T</i>(&beta;)
+     * @return      <em>T</em>(&beta;)
      *
      * @since Jul 28, 2015 by Christopher K. Allen
      */
@@ -109,7 +109,7 @@ public class TestPolynomialFit {
      * &beta; from the constants <code>CNT_SMPS</code>, <code>BETA_MIN</code>,
      * and <code>BETA_MAX</code>.
      * 
-     * @return  array of [&beta;<sub>0</sub>,..., &beta;<sub><i>N</i>-1</sub>]
+     * @return  array of [&beta;<sub>0</sub>,..., &beta;<sub><em>N</em>-1</sub>]
      *
      * @since  Jul 28, 2015   by Christopher K. Allen
      */
@@ -290,7 +290,7 @@ public class TestPolynomialFit {
     }
 
     /**
-     * Computes the residual error (<i>l</i><sub>2</sub> norm) between the
+     * Computes the residual error (<em>l</em><sub>2</sub> norm) between the
      * polynomial defined by the given vector of coefficients and the sample
      * transit time factor used in this test class. The error is computed by
      * evaluating these functions at the &beta; values contained int the given
@@ -299,7 +299,7 @@ public class TestPolynomialFit {
      * @param arrBetaSmps array of &beta; values used to compute the error
      * @param vecPolyCoeffs vector of coefficients defining the polynomial fit
      *
-     * @return ||<i>T</i> - <i>P</i>||<sub>2</sub>
+     * @return ||<em>T</em> - <em>P</em>||<sub>2</sub>
      *
      * @since Jul 28, 2015 by Christopher K. Allen
      */

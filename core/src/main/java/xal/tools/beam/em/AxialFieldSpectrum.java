@@ -25,31 +25,31 @@ import xal.tools.math.fnc.IRealFunction;
  * <h3>Partial Field Model</h3>
  * This class attempts to maintain backward compatibility between the RF
  * acceleration model produced by Los Alamos and CERN. There the
- * <i>T<sub>q</sub></i> and <i>S</i> transit time factors are zero. Although
- * usually labeled <i>S</i>, the "sine" transit time factor is actually its
- * quadrature conjugate <i>S<sub>q</sub></i>. That model also requires an
- * "offset" &Delta;<i>z</i> which is the distance between the coordinate origin
+ * <em>T<sub>q</sub></em> and <em>S</em> transit time factors are zero. Although
+ * usually labeled <em>S</em>, the "sine" transit time factor is actually its
+ * quadrature conjugate <em>S<sub>q</sub></em>. That model also requires an
+ * "offset" &Delta;<em>z</em> which is the distance between the coordinate origin
  * and the field center (the point of symmetry). The assumptions are that the
- * field is symmetric about the axial location &Delta;<i>z</i>, if not this
+ * field is symmetric about the axial location &Delta;<em>z</em>, if not this
  * information is lost.
  * </p>
  * <p>
- * In the partial field model the provided spectra, <i>T</i>,
- * <i>S<sub>q</sub></i>, and their derivatives, are assumed to be functions of
+ * In the partial field model the provided spectra, <em>T</em>,
+ * <em>S<sub>q</sub></em>, and their derivatives, are assumed to be functions of
  * normalized particle velocity &beta; &trie;
- * <i>v</i>/<i>c</i>, where <i>v</i> is particle velocity and <i>c</i> is the
- * speed of light. Thus, the functions <i>T</i>(&beta;),
- * <i>dT</i>(&beta;)/<i>dk</i>, <i>S<sub>q</sub></i>(&beta;), and
- * <i>dS<sub>q</sub></i>(&beta;)/<i>dk</i> are provided to the partial field
+ * <em>v</em>/<em>c</em>, where <em>v</em> is particle velocity and <em>c</em> is the
+ * speed of light. Thus, the functions <em>T</em>(&beta;),
+ * <em>dT</em>(&beta;)/<em>dk</em>, <em>S<sub>q</sub></em>(&beta;), and
+ * <em>dS<sub>q</sub></em>(&beta;)/<em>dk</em> are provided to the partial field
  * model constructor.
  * </p>
  * <p>
  * Note the important difference that in the full-field model the arguments of
- * the spectra quantities are the particle wave number <i>k</i>. That is, the
+ * the spectra quantities are the particle wave number <em>k</em>. That is, the
  * constructor for the full-field model takes spectral functions
- * <i>T</i>(<i>k</i>), <i>dT</i>(<i>k</i>)/<i>dk</i>,
- * <i>S<sub>q</sub></i>(<i>k</i>), and
- * <i>dS<sub>q</sub></i>(<i>k</i>)/<i>dk</i>, along with all the other spectral
+ * <em>T</em>(<em>k</em>), <em>dT</em>(<em>k</em>)/<em>dk</em>,
+ * <em>S<sub>q</sub></em>(<em>k</em>), and
+ * <em>dS<sub>q</sub></em>(<em>k</em>)/<em>dk</em>, along with all the other spectral
  * quantities.
  * </p>
  * <p>
@@ -60,68 +60,68 @@ import xal.tools.math.fnc.IRealFunction;
  * gain and phase jump. (In the above model the post gap quantities are assumed
  * to be equal to the pre-gap quantities.) When function objects are provided
  * for all four transit time factors this class assumes that the new model is
- * being used. When only <i>T</i> and <i>S</i> are provided the class assumes
+ * being used. When only <em>T</em> and <em>S</em> are provided the class assumes
  * that the old model is being used. Further assumptions are
  * <br/>
  * <br/>
- * &middot; The sine transit time factor <i>S</i> is actually the conjugate
- * <i>S<sub>q</sub></i>
+ * &middot; The sine transit time factor <em>S</em> is actually the conjugate
+ * <em>S<sub>q</sub></em>
  * (see below)
  * <br/>
- * &middot; The offset &Delta;<i>z</i> must also be provided
+ * &middot; The offset &Delta;<em>z</em> must also be provided
  * <br/>
  * <br/>
  * The class then makes the appropriate conversions from the quantities
- * (<i>T,T',S,S'</i>,&Delta;<i>z</i>) to
- * (<i>T,T',T<sub>q</sub>,T'<sub>q</sub>,S,S',S<sub>q</sub>,S'<sub>q</sub></i>).
+ * (<em>T,T',S,S'</em>,&Delta;<em>z</em>) to
+ * (<em>T,T',T<sub>q</sub>,T'<sub>q</sub>,S,S',S<sub>q</sub>,S'<sub>q</sub></em>).
  * Of course the later set is incomplete.
  * </p>
  * <p>
  * <h4>Axial Electric Fields</h4>
- * Let the longitudinal electric field along the beam axis <i>z</i> be denoted
- * <i>E<sub>z</sub></i>(<i>z</i>). Let the total voltage gain long the field be
- * denoted <i>V</i><sub>0</sub>, that is,
+ * Let the longitudinal electric field along the beam axis <em>z</em> be denoted
+ * <em>E<sub>z</sub></em>(<em>z</em>). Let the total voltage gain long the field be
+ * denoted <em>V</em><sub>0</sub>, that is,
  * <br/>
  * <br/>
- * &nbsp; &nbsp; <i>V</i><sub>0</sub> &trie; &int;<i>E<sub>z</sub></i>(<i>z</i>)
- * <i>dz</i> .
+ * &nbsp; &nbsp; <em>V</em><sub>0</sub> &trie; &int;<em>E<sub>z</sub></em>(<em>z</em>)
+ * <em>dz</em> .
  * <br/>
  * <br/>
- * Note then that the total available energy gain &Delta;<i>W</i><sub>0</sub>
- * for a particle falling through the field <i>E<sub>z</sub></i>(<i>z</i>) is
- * <i>qV</i><sub>0</sub>. The value <i>V</i><sub>0</sub>
+ * Note then that the total available energy gain &Delta;<em>W</em><sub>0</sub>
+ * for a particle falling through the field <em>E<sub>z</sub></em>(<em>z</em>) is
+ * <em>qV</em><sub>0</sub>. The value <em>V</em><sub>0</sub>
  * is used to create the normalized electric field
- * <i>e<sub>z</sub></i>(<i>z</i>) given by
+ * <em>e<sub>z</sub></em>(<em>z</em>) given by
  * <br/>
  * <br/>
- * &nbsp; &nbsp; <i>e</i><sub><i>z</i></sub>(<i>z</i>) &trie;
- * (1/<i>V</i><sub>0</sub>)<i>E<sub>z</sub></i>(<i>z</i>) .
+ * &nbsp; &nbsp; <em>e</em><sub><em>z</em></sub>(<em>z</em>) &trie;
+ * (1/<em>V</em><sub>0</sub>)<em>E<sub>z</sub></em>(<em>z</em>) .
  * <br/>
  * <br/>
  * All spectral quantities in this class are with respect to this normalized
  * field.
  * </p>
  * <p>
- * Next, let sgn(<i>z</i>) denote the signum function, that is,
+ * Next, let sgn(<em>z</em>) denote the signum function, that is,
  * <br/>
  * <pre>
- *     sgn(<i>z</i>) &trie; -1    <i>z</i>  &lt; 0
- *              +1    <i>z</i>  &gt; 0
- * </pre> Finally, define the <i>quadrature field</i>
- * <i>E<sub>q</sub></i>(<i>z</i>) as
+ *     sgn(<em>z</em>) &trie; -1    <em>z</em>  &lt; 0
+ *              +1    <em>z</em>  &gt; 0
+ * </pre> Finally, define the <em>quadrature field</em>
+ * <em>E<sub>q</sub></em>(<em>z</em>) as
  * <br/>
  * <br/>
- * &nbsp; &nbsp; <i>E<sub>q</sub></i>(<i>z</i>) &trie; sgn(<i>z</i>)
- * <i>E<sub>z</sub></i>(<i>z</i>) .
+ * &nbsp; &nbsp; <em>E<sub>q</sub></em>(<em>z</em>) &trie; sgn(<em>z</em>)
+ * <em>E<sub>z</sub></em>(<em>z</em>) .
  * <br/>
  * <br/>
  * Of course the quantities here will be with respect to the normalized
  * quadrature field
- * <i>e</sub>q</sub></i>(<i>z</i>) defined as
+ * <em>e</sub>q</sub></em>(<em>z</em>) defined as
  * <br/>
  * <pre>
- *     <i>e</i><sub><i>z</i></sub>(<i>z</i>) &trie; (1/<i>V</i><sub>0</sub>)<i>E<sub>q</sub></i>(<i>z</i>) ,
- *           = sgn(<i>z</i>)<i>e<sub>z</sub></i>(</i>z</i>) .
+ *     <em>e</em><sub><em>z</em></sub>(<em>z</em>) &trie; (1/<em>V</em><sub>0</sub>)<em>E<sub>q</sub></em>(<em>z</em>) ,
+ *           = sgn(<em>z</em>)<em>e<sub>z</sub></em>(</em>z</em>) .
  * </pre>
  * </p>
  * <p>
@@ -130,48 +130,48 @@ import xal.tools.math.fnc.IRealFunction;
  * described as follows:
  * <br/>
  * <br/>
- * &middot; <i>T</i>(<i>k</i>) - The Fourier cosine transform of axial field
- * <i>E<sub>z</sub></i>(<i>z</i>)
+ * &middot; <em>T</em>(<em>k</em>) - The Fourier cosine transform of axial field
+ * <em>E<sub>z</sub></em>(<em>z</em>)
  * <br/>
- * &nbsp; &nbsp; <i>T</i>(<i>k</i>) &trie;
- * (1/<i>V</i><sub>0</sub>)&int;<i>E<sub>z</sub></i>(<i>z</i>) cos <i>kz</i>
- * <i>dz</i>
- * <br/>
- * <br/>
- * &middot; <i>S</i>(<i>k</i>) - The Fourier sine transform of axial field
- * <i>E<sub>z</sub></i>(<i>z</i>)
- * <br/>
- * &nbsp; &nbsp; <i>S</i>(<i>k</i>) &trie;
- * (1/<i>V</i><sub>0</sub>)&int;<i>E<sub>z</sub></i>(<i>z</i>) sin <i>kz</i>
- * <i>dz</i>
+ * &nbsp; &nbsp; <em>T</em>(<em>k</em>) &trie;
+ * (1/<em>V</em><sub>0</sub>)&int;<em>E<sub>z</sub></em>(<em>z</em>) cos <em>kz</em>
+ * <em>dz</em>
  * <br/>
  * <br/>
- * &middot; <i>T<sub>q</sub></i>(<i>k</i>) - The Fourier cosine transform of the
- * axial field sgn(<i>z</i>)<i>E<sub>z</sub></i>(<i>z</i>)
+ * &middot; <em>S</em>(<em>k</em>) - The Fourier sine transform of axial field
+ * <em>E<sub>z</sub></em>(<em>z</em>)
  * <br/>
- * &nbsp; &nbsp; <i>T<sub>q</sub></i>(<i>k</i>) &trie;
- * (1/<i>V</i><sub>0</sub>)&int;sgn(<i>z</i>)<i>E<sub>z</sub></i>(<i>z</i>) cos
- * <i>kz</i> <i>dz</i>
- * <br/>
- * <br/>
- * &middot; <i>S<sub>q</sub></i>(<i>k</i>) - The Fourier sine transform of axial
- * field sgn(<i>z</i>)<i>E<sub>z</sub></i>(<i>z</i>)
- * <br/>
- * &nbsp; &nbsp; <i>S<sub>q</i></i>(<i>k</i>) &trie;
- * (1/<i>V</i><sub>0</sub>)&int; sgn(<i>z</i>)<i>E<sub>z</sub></i>(<i>z</i>) sin
- * <i>kz</i> <i>dz</i>
+ * &nbsp; &nbsp; <em>S</em>(<em>k</em>) &trie;
+ * (1/<em>V</em><sub>0</sub>)&int;<em>E<sub>z</sub></em>(<em>z</em>) sin <em>kz</em>
+ * <em>dz</em>
  * <br/>
  * <br/>
- * where <i>k</i> is the synchronous particle wave number. Sometimes the
+ * &middot; <em>T<sub>q</sub></em>(<em>k</em>) - The Fourier cosine transform of the
+ * axial field sgn(<em>z</em>)<em>E<sub>z</sub></em>(<em>z</em>)
+ * <br/>
+ * &nbsp; &nbsp; <em>T<sub>q</sub></em>(<em>k</em>) &trie;
+ * (1/<em>V</em><sub>0</sub>)&int;sgn(<em>z</em>)<em>E<sub>z</sub></em>(<em>z</em>) cos
+ * <em>kz</em> <em>dz</em>
+ * <br/>
+ * <br/>
+ * &middot; <em>S<sub>q</sub></em>(<em>k</em>) - The Fourier sine transform of axial
+ * field sgn(<em>z</em>)<em>E<sub>z</sub></em>(<em>z</em>)
+ * <br/>
+ * &nbsp; &nbsp; <em>S<sub>q</em></em>(<em>k</em>) &trie;
+ * (1/<em>V</em><sub>0</sub>)&int; sgn(<em>z</em>)<em>E<sub>z</sub></em>(<em>z</em>) sin
+ * <em>kz</em> <em>dz</em>
+ * <br/>
+ * <br/>
+ * where <em>k</em> is the synchronous particle wave number. Sometimes the
  * arguments to the transit time factors is the synchronous particle velocity
  * &beta;. This includes that for the derivative functions as well (see below).
  * One needs to check the method documentation for the argument type.
  * </p>
  * <p>
  * The derivatives of the transit time factors are also available. These are the
- * derivatives with respect to wave number <i>k</i> and will be denoted
- * <i>T'</i>(<i>k</i>), <i>S'</i>(<i>k</i>),
- * <i>T'<sub>q</sub></i>(<i>k</i>), and <i>S'<sub>q</sub></i>(<i>k</i>).
+ * derivatives with respect to wave number <em>k</em> and will be denoted
+ * <em>T'</em>(<em>k</em>), <em>S'</em>(<em>k</em>),
+ * <em>T'<sub>q</sub></em>(<em>k</em>), and <em>S'<sub>q</sub></em>(<em>k</em>).
  * </p>
  * <p>
  * <h4>Hilbert Transform</h4>
@@ -179,122 +179,122 @@ import xal.tools.math.fnc.IRealFunction;
  * &Hscr;. Specifically,
  * <br/>
  * <br/>
- * &nbsp; &nbsp; <i>T<sub>q</sub></i>(<i>k</i>) = -&Hscr;[<i>S</i>(<i>k</i>)] ,
+ * &nbsp; &nbsp; <em>T<sub>q</sub></em>(<em>k</em>) = -&Hscr;[<em>S</em>(<em>k</em>)] ,
  * <br/>
- * &nbsp; &nbsp; <i>S<sub>q</sub></i>(<i>k</i>) = +&Hscr;[<i>T</i>(<i>k</i>)] .
+ * &nbsp; &nbsp; <em>S<sub>q</sub></em>(<em>k</em>) = +&Hscr;[<em>T</em>(<em>k</em>)] .
  * <br/>
  * <br/>
  * This is a transitive relation which follows from the anti-selfadjointness of
  * the Hilbert transform, thus,
  * <br/>
  * <br/>
- * &nbsp; &nbsp; <i>T</i>(<i>k</i>) = -&Hscr;[<i>S<sub>q</sub></i>(<i>k</i>)] ,
+ * &nbsp; &nbsp; <em>T</em>(<em>k</em>) = -&Hscr;[<em>S<sub>q</sub></em>(<em>k</em>)] ,
  * <br/>
- * &nbsp; &nbsp; <i>S</i>(<i>k</i>) = +&Hscr;[<i>T<sub>q</sub></i>(<i>k</i>)] .
+ * &nbsp; &nbsp; <em>S</em>(<em>k</em>) = +&Hscr;[<em>T<sub>q</sub></em>(<em>k</em>)] .
  * <br/>
  * <br/>
  * The Hilbert transform also relates the field spectra, as shown below.
  * </p>
  * <p>
  * <h4>Field Spectra</h4>
- * Denote by &Escr;<sub><i>z</i></sub>(<i>k</i>) and
- * &Escr;<sub><i>q</i></sub>(<i>k</i>) the Fourier transforms of the axial field
- * <i>e<sub>z</i>(<i>z</i>) and its conjugate <i>e<sub>q</i></i>(<i>z</i>),
+ * Denote by &Escr;<sub><em>z</em></sub>(<em>k</em>) and
+ * &Escr;<sub><em>q</em></sub>(<em>k</em>) the Fourier transforms of the axial field
+ * <em>e<sub>z</em>(<em>z</em>) and its conjugate <em>e<sub>q</em></em>(<em>z</em>),
  * respectively. That is, the field spectra are
  * <br/>
  * <br/>
- * &nbsp; &nbsp; &Escr;<sub><i>z</i></sub>(k) &trie;
- * &Fscr;[<i>e<sub>z</sub></i>](<i>k</i>) ,
+ * &nbsp; &nbsp; &Escr;<sub><em>z</em></sub>(k) &trie;
+ * &Fscr;[<em>e<sub>z</sub></em>](<em>k</em>) ,
  * <br/>
- * &nbsp; &nbsp; &Escr;<sub><i>q</i></sub>(k) &trie;
- * &Fscr;[<i>e<sub>q</sub></i>](<i>k</i>) ,
+ * &nbsp; &nbsp; &Escr;<sub><em>q</em></sub>(k) &trie;
+ * &Fscr;[<em>e<sub>q</sub></em>](<em>k</em>) ,
  * <br/>
  * <br/>
  * where &Fscr;[&middot;] is the Fourier transform operator. The Fourier
  * transforms of the fields have the decomposition
  * <br/>
  * <br/>
- * &nbsp; &nbsp; &Escr;<sub><i>z</i></sub>(<i>k</i>) = T</i>(<i>k</i>) -
- * <i>i</i><i>S</i>(<i>k</i>) ,
+ * &nbsp; &nbsp; &Escr;<sub><em>z</em></sub>(<em>k</em>) = T</em>(<em>k</em>) -
+ * <em>i</em><em>S</em>(<em>k</em>) ,
  * <br/>
- * &nbsp; &nbsp; &Escr;<i><sub>q</sub></i>(<i>k</i>) =
- * T<sub>q</sub></i>(<i>k</i>) - <i>i</i><i>S<sub>q</sub></i>(<i>k</i>) ,
+ * &nbsp; &nbsp; &Escr;<em><sub>q</sub></em>(<em>k</em>) =
+ * T<sub>q</sub></em>(<em>k</em>) - <em>i</em><em>S<sub>q</sub></em>(<em>k</em>) ,
  * <br/>
  * <br/>
- * where <i>i</i> is the imaginary unit. The spectra are then related by the
+ * where <em>i</em> is the imaginary unit. The spectra are then related by the
  * Hilbert transforms
  * <br/>
  * <br/>
- * &nbsp; &nbsp; &Hscr;[&Escr;<sub><i>z</i></sub>(<i>k</i>)] =
- * i&Escr;<i><sub>q</sub></i>(<i>k</i>) ,
+ * &nbsp; &nbsp; &Hscr;[&Escr;<sub><em>z</em></sub>(<em>k</em>)] =
+ * i&Escr;<em><sub>q</sub></em>(<em>k</em>) ,
  * <br/>
- * &nbsp; &nbsp; &Hscr;[&Escr;<sub><i>q</i></sub>(<i>k</i>)] =
- * i&Escr;<i><sub>z</sub></i>(<i>k</i>) ,
+ * &nbsp; &nbsp; &Hscr;[&Escr;<sub><em>q</em></sub>(<em>k</em>)] =
+ * i&Escr;<em><sub>z</sub></em>(<em>k</em>) ,
  * <br/>
  * <br/>
- * Thus, we see &Escr;<sub><i>z</i></sub>(<i>k</i>) and
- * &Escr;<sub><i>q</i></sub>(<i>k</i>) are conjugates of each other.
+ * Thus, we see &Escr;<sub><em>z</em></sub>(<em>k</em>) and
+ * &Escr;<sub><em>q</em></sub>(<em>k</em>) are conjugates of each other.
  * </p>
  * <p>
  * <h4>Pre- and Post-Envelope Spectra</h4>
  * The pre- and post-envelope spectra can be formed from the field spectra.
- * First, denote by &Escr;<sup>-</sup>(<i>k</i>) and
- * &Escr;<sup>+</sup>(<i>k</i>) the pre- and post-envelope spectra,
+ * First, denote by &Escr;<sup>-</sup>(<em>k</em>) and
+ * &Escr;<sup>+</sup>(<em>k</em>) the pre- and post-envelope spectra,
  * respectively. They are defined
  * <br/>
  * <br/>
  * &nbsp; &nbsp; &Escr;<sup>-</sup>(k) &trie; (1/2)[
- * &Escr;<sub><i>z</i></sub>(<i>k</i>) +
- * i&Hscr;[&Escr;<sub><i>z</i></sub>(<i>k</i>] ] = (1/2)[
- * &Escr;<sub><i>z</i></sub>(<i>k</i>) - &Escr;<sub><i>q</i></sub>(<i>k</i>) ],
+ * &Escr;<sub><em>z</em></sub>(<em>k</em>) +
+ * i&Hscr;[&Escr;<sub><em>z</em></sub>(<em>k</em>] ] = (1/2)[
+ * &Escr;<sub><em>z</em></sub>(<em>k</em>) - &Escr;<sub><em>q</em></sub>(<em>k</em>) ],
  * <br/>
  * &nbsp; &nbsp; &Escr;<sup>+</sup>(k) &trie; (1/2)[
- * &Escr;<sub><i>z</i></sub>(<i>k</i>) +
- * i&Hscr;[&Escr;<sub><i>z</i></sub>(<i>k</i>] ] = (1/2)[
- * &Escr;<sub><i>z</i></sub>(<i>k</i>) + &Escr;<sub><i>q</i></sub>(<i>k</i>) ] ,
+ * &Escr;<sub><em>z</em></sub>(<em>k</em>) +
+ * i&Hscr;[&Escr;<sub><em>z</em></sub>(<em>k</em>] ] = (1/2)[
+ * &Escr;<sub><em>z</em></sub>(<em>k</em>) + &Escr;<sub><em>q</em></sub>(<em>k</em>) ] ,
  * <br/>
  * <br/>
  * Let &phi; be the synchronous particle phase at the gap center. Then the
  * quantities
- * <i>e<sup>-i&phi;</sup></i>&Escr;<sup>-</sup>(<i>k</i>) and
- * <i>e<sup>-i&phi;</sup></i>&Escr;<sup>+</sup>(<i>k</i>) contain the pre- and
- * post-gap energy gain &Delta;<i>W</i><sup>-</sup>, &Delta;<i>W</i><sup>+</sup>
+ * <em>e<sup>-i&phi;</sup></em>&Escr;<sup>-</sup>(<em>k</em>) and
+ * <em>e<sup>-i&phi;</sup></em>&Escr;<sup>+</sup>(<em>k</em>) contain the pre- and
+ * post-gap energy gain &Delta;<em>W</em><sup>-</sup>, &Delta;<em>W</em><sup>+</sup>
  * and phase jump &Delta;&phi;<sup>-</sup>, &Delta;&phi;<sup>+</sup>,
  * respectively. For example, the real part of
- * <i>e<sup>-i&phi;</sup></i>&Escr;<sup>-</sup>(<i>k</i>) tracks the pre-gap
+ * <em>e<sup>-i&phi;</sup></em>&Escr;<sup>-</sup>(<em>k</em>) tracks the pre-gap
  * energy gain while the imaginary part tracks the phase jump. We have
  * <br/>
  * <br/>
- * &nbsp; &nbsp; &Delta;<i>W</i><sup>-</sup>(&phi;,<i>k</i>) =
- * <i>qV</i><sub>0</sub> Re
- * &Escr;<sup>-</sup>(<i>k</i>)<i>e<sup>-i&phi;</sup></i> ,
+ * &nbsp; &nbsp; &Delta;<em>W</em><sup>-</sup>(&phi;,<em>k</em>) =
+ * <em>qV</em><sub>0</sub> Re
+ * &Escr;<sup>-</sup>(<em>k</em>)<em>e<sup>-i&phi;</sup></em> ,
  * <br/>
- * &nbsp; &nbsp; &Delta;&phi;<sup>-</sup>(&phi;,<i>k</i>) = <i>d</i>/<i>dk</i>
- * Im <i>K<sub>i</sub></i>&Escr;<sup>-</sup>(<i>k</i>)<i>e<sup>-i&phi;</sup></i>
+ * &nbsp; &nbsp; &Delta;&phi;<sup>-</sup>(&phi;,<em>k</em>) = <em>d</em>/<em>dk</em>
+ * Im <em>K<sub>i</sub></em>&Escr;<sup>-</sup>(<em>k</em>)<em>e<sup>-i&phi;</sup></em>
  * ,
  * <br/>
  * <br/>
- * where <i>q</i> is the unit charge and <i>K<sub>i</sub></i> is the quantity
+ * where <em>q</em> is the unit charge and <em>K<sub>i</sub></em> is the quantity
  * <br/>
  * <br/>
- * &nbsp; &nbsp; <i>K<sub>i</sub></i> &trie;
- * <i>k</i><sub>0</sub>(<i>qV</i><sub>0</sub>/<i>mc</i><sup>2</sup>)(1/&beta;<sub><i>i</i></sub><sup>3</sup>&gamma;<sub><i>i</i></sub><sup>3</sup>)
+ * &nbsp; &nbsp; <em>K<sub>i</sub></em> &trie;
+ * <em>k</em><sub>0</sub>(<em>qV</em><sub>0</sub>/<em>mc</em><sup>2</sup>)(1/&beta;<sub><em>i</em></sub><sup>3</sup>&gamma;<sub><em>i</em></sub><sup>3</sup>)
  * .
  * <br/>
  * <br/>
- * The subscript <i>i</i> indicates initial, pre-gap values. The post-gap
+ * The subscript <em>i</em> indicates initial, pre-gap values. The post-gap
  * quantities have analogous expressions
  * <br/>
  * <br/>
- * &nbsp; &nbsp; &Delta;<i>W</i><sup>+</sup>(<i>k</i>,&phi;) = (<i>q</i>/2) Re
- * <i>e<sup>-i&phi;</sup></i>&Escr;<sup>-</sup>(<i>k</i>) ,
+ * &nbsp; &nbsp; &Delta;<em>W</em><sup>+</sup>(<em>k</em>,&phi;) = (<em>q</em>/2) Re
+ * <em>e<sup>-i&phi;</sup></em>&Escr;<sup>-</sup>(<em>k</em>) ,
  * <br/>
- * &nbsp; &nbsp; &Delta;&phi;<sup>+</sup>(<i>k</i>,&phi;) =
- * (<i>K<sub>f</sub></i>/2) Im <i>d</i>/<i>dk</i>
- * <i>e<sup>-i&phi;</sup></i>&Escr;<sup>-</sup>(<i>k</i>) ,
+ * &nbsp; &nbsp; &Delta;&phi;<sup>+</sup>(<em>k</em>,&phi;) =
+ * (<em>K<sub>f</sub></em>/2) Im <em>d</em>/<em>dk</em>
+ * <em>e<sup>-i&phi;</sup></em>&Escr;<sup>-</sup>(<em>k</em>) ,
  * <br/>
  * <br/>
- * The subscript <i>f</i> indicates final, post-gap quantities. Methods to
+ * The subscript <em>f</em> indicates final, post-gap quantities. Methods to
  * compute these values are provided.
  * </p>
  * <p>
@@ -422,7 +422,7 @@ public class AxialFieldSpectrum {
      * <p>
      * In this case the given field spectra are assumed to be functions of
      * normalized particle velocity &beta;. Thus, the RF frequency is needed to
-     * convert from wave number <i>k</i> to normalized velocity &beta; in order
+     * convert from wave number <em>k</em> to normalized velocity &beta; in order
      * to evaluate the functions.
      * </p>
      *
@@ -430,10 +430,10 @@ public class AxialFieldSpectrum {
      * @param dblOffset offset between axial origin and central field position
      * (meters)
      * @param fncTz0 central cosine transform (transit time factor)
-     * @param fncDTz0 derivative of the central cosine transform w.r.t. <i>k</i>
+     * @param fncDTz0 derivative of the central cosine transform w.r.t. <em>k</em>
      * @param fncSq0 conjugate central sine transform (transit time factor)
      * @param fncDSq0 derivative of the conjugate central sine transform w.r.t.
-     * <i>k</i>
+     * <em>k</em>
      *
      * @since Sep 23, 2015 by Christopher K. Allen
      */
@@ -475,22 +475,22 @@ public class AxialFieldSpectrum {
      * build from these objects and used to compute acceleration parameters.
      * </p>
      * <p>
-     * Note that frequency <i>f</i> is not needed here since the given arguments
-     * are assumed to be functions of <i>k</i>. RF frequency is only needed to
-     * convert from wave number <i>k</i> to normalized velocity &beta; in the
+     * Note that frequency <em>f</em> is not needed here since the given arguments
+     * are assumed to be functions of <em>k</em>. RF frequency is only needed to
+     * convert from wave number <em>k</em> to normalized velocity &beta; in the
      * case of spectral functions that are functions of &beta; (e.g.,
-     * <i>T</i>(&beta;), <i>S</i>(&beta;), etc.).
+     * <em>T</em>(&beta;), <em>S</em>(&beta;), etc.).
      * </p>
      *
      * @param fncTz field cosine transform (transit time factor)
-     * @param fncDTz derivative of the cosine transform w.r.t. <i>k</i>
+     * @param fncDTz derivative of the cosine transform w.r.t. <em>k</em>
      * @param fncSq field conjugate sine transform (transit time factor)
-     * @param fncDSq derivative of the sine transform w.r.t. <i>k</i>
+     * @param fncDSq derivative of the sine transform w.r.t. <em>k</em>
      * @param fncTq field conjugate cosine transform (transit time factor)
      * @param fncDTq derivative of the conjugate cosine transform w.r.t.
-     * <i>k</i>
+     * <em>k</em>
      * @param fncSz field sine transform (transit time factor)
-     * @param fncDSz derivative of the field sine transform w.r.t. <i>k</i>
+     * @param fncDSz derivative of the field sine transform w.r.t. <em>k</em>
      *
      * @since Sep 28, 2015 by Christopher K. Allen
      */
@@ -566,7 +566,7 @@ public class AxialFieldSpectrum {
      * </p>
      *
      * @return offset between field center and axis origin in partial field
-     * model (<b>meters</b>), or <code>null</code> if the full field model is
+     * model (<strong>meters</strong>), or <code>null</code> if the full field model is
      * being used
      *
      * @since Sep 28, 2015 by Christopher K. Allen
@@ -586,30 +586,30 @@ public class AxialFieldSpectrum {
     /**
      * <p>
      * Computes and returns the complex spectra of this spatial field at the
-     * given wave number <i>k</i>. The value returned has the formula
+     * given wave number <em>k</em>. The value returned has the formula
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; &Escr;<sub><i>z</i></sub>(<i>k</i>) =
-     * <i>T</i><sub><i>z</i></sub>(</i>k</i>) - <i>i</i>
-     * <i>S</i><sub><i>z</i></sub>(<i>k</i>)
+     * &nbsp; &nbsp; &Escr;<sub><em>z</em></sub>(<em>k</em>) =
+     * <em>T</em><sub><em>z</em></sub>(</em>k</em>) - <em>i</em>
+     * <em>S</em><sub><em>z</em></sub>(<em>k</em>)
      * <br/>
      * <br/>
-     * where &Escr;<sub><i>z</i></sub> is the returned spectral value,
-     * <i>T</i><sub><i>z</i></sub> is the cosine transit-time factor, and
-     * <i>S</i><sub><i>z</i></sub> is the sine transit-time factor.
+     * where &Escr;<sub><em>z</em></sub> is the returned spectral value,
+     * <em>T</em><sub><em>z</em></sub> is the cosine transit-time factor, and
+     * <em>S</em><sub><em>z</em></sub> is the sine transit-time factor.
      * </p>
      * <p>
      * <h4>NOTES:</h4>
      * &middot; We assume that the electric field is normalized by its total
-     * potential drop <i>V</i><sub>0</sub> &trie;
-     * &int;<i>E<sub>z</sub></i>(<i>z</i>)<i>dz</i> so that the resulting total
+     * potential drop <em>V</em><sub>0</sub> &trie;
+     * &int;<em>E<sub>z</sub></em>(<em>z</em>)<em>dz</em> so that the resulting total
      * potential of the field is 1.
      * </p>
      *
      * @param k particle wave number (in radians/meter)
      *
-     * @return the Fourier spectrum &Escr;(<i>k</i>) of the field at the given
-     * wave number <i>k</i>
+     * @return the Fourier spectrum &Escr;(<em>k</em>) of the field at the given
+     * wave number <em>k</em>
      *
      * @since Sep 30, 2015, Christopher K. Allen
      */
@@ -625,31 +625,31 @@ public class AxialFieldSpectrum {
     /**
      * <p>
      * Computes and returns the derivative, with respect to the wave number
-     * <i>k</i>, of the field spectrum at the given wave number <i>k</i>. The
+     * <em>k</em>, of the field spectrum at the given wave number <em>k</em>. The
      * value returned has the formula
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; &Escr;<sub><i>z</i></sub>'(<i>k</i>) =
-     * <i>T</i>'<sub><i>z</i></sub>(</i>k</i>) - <i>i</i>
-     * <i>S</i><sub><i>z</i></sub>'(<i>k</i>)
+     * &nbsp; &nbsp; &Escr;<sub><em>z</em></sub>'(<em>k</em>) =
+     * <em>T</em>'<sub><em>z</em></sub>(</em>k</em>) - <em>i</em>
+     * <em>S</em><sub><em>z</em></sub>'(<em>k</em>)
      * <br/>
      * <br/>
-     * where &Escr;<sub><i>z</i></sub>' is the returned spectral derivative,
-     * <i>T</i><sub><i>z</i></sub>' is the cosine transit-time factor
-     * derivative, and <i>S</i><sub><i>z</i></sub>' is the sine transit-time
+     * where &Escr;<sub><em>z</em></sub>' is the returned spectral derivative,
+     * <em>T</em><sub><em>z</em></sub>' is the cosine transit-time factor
+     * derivative, and <em>S</em><sub><em>z</em></sub>' is the sine transit-time
      * factor derivative of the field.
      * </p>
      * <h4>NOTES:</h4>
      * &middot; We assume that the electric field is normalized by its total
-     * potential drop <i>V</i><sub>0</sub> &trie;
-     * &int;<i>E<sub>z</sub></i>(<i>z</i>)<i>dz</i> so that the resulting total
+     * potential drop <em>V</em><sub>0</sub> &trie;
+     * &int;<em>E<sub>z</sub></em>(<em>z</em>)<em>dz</em> so that the resulting total
      * potential of the field is 1.
      * </p>
      *
      * @param k particle wave number (in radians/meter)
      *
-     * @return Fourier spectrum derivative &Escr;'(<i>k</i>), w.r.t. <i>k</i>,
-     * of the field at the given wave number <i>k</i> (meters/radian)
+     * @return Fourier spectrum derivative &Escr;'(<em>k</em>), w.r.t. <em>k</em>,
+     * of the field at the given wave number <em>k</em> (meters/radian)
      *
      * @since Sep 30, 2015, Christopher K. Allen
      */
@@ -665,29 +665,29 @@ public class AxialFieldSpectrum {
     /**
      * <p>
      * Computes and returns the complex spectral of the conjugate spatial field
-     * at the given wave number <i>k</i>. The value returned has the formula
+     * at the given wave number <em>k</em>. The value returned has the formula
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; &Escr;<sub><i>q</i></sub>(<i>k</i>) =
-     * <i>T<sub>q</sub></i>(</i>k</i>) - <i>i</i> <i>S<sub>q</sub></i>(<i>k</i>)
+     * &nbsp; &nbsp; &Escr;<sub><em>q</em></sub>(<em>k</em>) =
+     * <em>T<sub>q</sub></em>(</em>k</em>) - <em>i</em> <em>S<sub>q</sub></em>(<em>k</em>)
      * <br/>
      * <br/>
-     * where &Escr;<i><sub>q</sub></i> is the returned spectral value,
-     * <i>T<sub>q</sub></i> is the cosine transit-time factor of the quadrature
-     * field, and <i>S<sub>q</sub></i> is the sine transit-time factor of the
+     * where &Escr;<em><sub>q</sub></em> is the returned spectral value,
+     * <em>T<sub>q</sub></em> is the cosine transit-time factor of the quadrature
+     * field, and <em>S<sub>q</sub></em> is the sine transit-time factor of the
      * quadrature field.
      * </p>
      * <h4>NOTES:</h4>
      * &middot; We assume that the electric field is normalized by its total
-     * potential drop <i>V</i><sub>0</sub> &trie;
-     * &int;<i>E<sub>z</sub></i>(<i>z</i>)<i>dz</i> so that the resulting total
+     * potential drop <em>V</em><sub>0</sub> &trie;
+     * &int;<em>E<sub>z</sub></em>(<em>z</em>)<em>dz</em> so that the resulting total
      * potential of the field is 1.
      * </p>
      *
      * @param k particle wave number (in radians/meter)
      *
-     * @return the Fourier spectrum &Escr;<sub><i>q</i></sub>(<i>k</i>) of the
-     * quadrature field at the given wave number <i>k</i> (unitless)
+     * @return the Fourier spectrum &Escr;<sub><em>q</em></sub>(<em>k</em>) of the
+     * quadrature field at the given wave number <em>k</em> (unitless)
      *
      * @since Sep 30, 2015, Christopher K. Allen
      */
@@ -703,31 +703,31 @@ public class AxialFieldSpectrum {
     /**
      * <p>
      * Computes and returns the derivative, with respect to the wave number
-     * <i>k</i>, of the quadrature field spectrum at the given wave number
-     * <i>k</i>. The value returned has the formula
+     * <em>k</em>, of the quadrature field spectrum at the given wave number
+     * <em>k</em>. The value returned has the formula
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; &Escr;<sub><i>q</i></sub>'(<i>k</i>) =
-     * <i>T<sub>q</sub></i>'(</i>k</i>) - <i>i</i>
-     * <i>S<sub>q</sub></i>'(<i>k</i>)
+     * &nbsp; &nbsp; &Escr;<sub><em>q</em></sub>'(<em>k</em>) =
+     * <em>T<sub>q</sub></em>'(</em>k</em>) - <em>i</em>
+     * <em>S<sub>q</sub></em>'(<em>k</em>)
      * <br/>
      * <br/>
-     * where &Escr;<i><sub>q</sub></i>' is the returned spectral derivative,
-     * <i>T<sub>q</sub></i>' is the cosine transit-time factor derivative of the
-     * quadrature field, and <i>S<sub>q</sub></i> is the sine transit-time
+     * where &Escr;<em><sub>q</sub></em>' is the returned spectral derivative,
+     * <em>T<sub>q</sub></em>' is the cosine transit-time factor derivative of the
+     * quadrature field, and <em>S<sub>q</sub></em> is the sine transit-time
      * factor derivative of the quadrature field.
      * </p>
      * <h4>NOTES:</h4>
      * &middot; We assume that the electric field is normalized by its total
-     * potential drop <i>V</i><sub>0</sub> &trie;
-     * &int;<i>E<sub>z</sub></i>(<i>z</i>)<i>dz</i> so that the resulting total
+     * potential drop <em>V</em><sub>0</sub> &trie;
+     * &int;<em>E<sub>z</sub></em>(<em>z</em>)<em>dz</em> so that the resulting total
      * potential of the field is 1.
      * </p>
      *
      * @param k particle wave number (in radians/meter)
      *
-     * @return Fourier spectrum derivative &Escr;<sub><i>q</i></sub>'(<i>k</i>)
-     * w.r.t. <i>k</i> of the quadrature field at the given wave number <i>k</i>
+     * @return Fourier spectrum derivative &Escr;<sub><em>q</em></sub>'(<em>k</em>)
+     * w.r.t. <em>k</em> of the quadrature field at the given wave number <em>k</em>
      * (meters/radian)
      *
      * @since Sep 30, 2015, Christopher K. Allen
@@ -748,34 +748,34 @@ public class AxialFieldSpectrum {
     /**
      * <p>
      * Compute and return the spectral pre-envelope
-     * &Escr;<sup>-</sup>(<i>k</i>). The spectral pre- and post-envelopes turn
+     * &Escr;<sup>-</sup>(<em>k</em>). The spectral pre- and post-envelopes turn
      * out to be equal to odd and even combinations, respectively, of the field
      * spectra. Specifically, the pre- and post-envelopes
-     * &Escr;<sup>-</sup>(<i>k</i>) and &Escr;<sup>+</sup>(<i>k</i>) are given
+     * &Escr;<sup>-</sup>(<em>k</em>) and &Escr;<sup>+</sup>(<em>k</em>) are given
      * by
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; &Escr;<sup>-</sup>(<i>k</i>) = (1/2)[
-     * &Escr;<sub>z</sub>(<i>k</i>) - &Escr;<sub>q</sub>(<i>k</i>) ] ,
+     * &nbsp; &nbsp; &Escr;<sup>-</sup>(<em>k</em>) = (1/2)[
+     * &Escr;<sub>z</sub>(<em>k</em>) - &Escr;<sub>q</sub>(<em>k</em>) ] ,
      * <br/>
-     * &nbsp; &nbsp; &Escr;<sup>+</sup>(<i>k</i>) = (1/2)[
-     * &Escr;<sub>z</sub>(<i>k</i>) + &Escr;<sub>q</sub>(<i>k</i>) ] ,
+     * &nbsp; &nbsp; &Escr;<sup>+</sup>(<em>k</em>) = (1/2)[
+     * &Escr;<sub>z</sub>(<em>k</em>) + &Escr;<sub>q</sub>(<em>k</em>) ] ,
      * <br/>
      * <br/>
-     * where &Escr;<sub>z</sub>(<i>k</i>) is the Fourier spectrum of the axial
-     * field and &Escr;<sub>q</sub>(<i>k</i>) is the spectrum of the quadrature
+     * where &Escr;<sub>z</sub>(<em>k</em>) is the Fourier spectrum of the axial
+     * field and &Escr;<sub>q</sub>(<em>k</em>) is the spectrum of the quadrature
      * field (the conjugate Fourier transform).
      * </p>
      * <h4>NOTES:</h4>
      * &middot; We assume that the electric field is normalized by its total
-     * potential drop <i>V</i><sub>0</sub> &trie;
-     * &int;<i>E<sub>z</sub></i>(<i>z</i>)<i>dz</i> so that the resulting total
+     * potential drop <em>V</em><sub>0</sub> &trie;
+     * &int;<em>E<sub>z</sub></em>(<em>z</em>)<em>dz</em> so that the resulting total
      * potential of the field is 1.
      * </p>
      *
      * @param k the particle wave number (radians/meter)
      *
-     * @return the pre-envelope &Escr;<sup>-</sup>(<i>k</i>) at the given wave
+     * @return the pre-envelope &Escr;<sup>-</sup>(<em>k</em>) at the given wave
      * number (unitless)
      *
      * @since Sep 30, 2015, Christopher K. Allen
@@ -791,22 +791,22 @@ public class AxialFieldSpectrum {
     /**
      * <p>
      * Compute and return the derivative of the spectral pre-envelope
-     * &Escr;<sup>-</sup>(<i>k</i>), that is
-     * <i>d</i>&Escr;<sup>-</sup>(<i>k</i>)/<i>dk</i>. For a description of the
+     * &Escr;<sup>-</sup>(<em>k</em>), that is
+     * <em>d</em>&Escr;<sup>-</sup>(<em>k</em>)/<em>dk</em>. For a description of the
      * pre-envelope see <code>{@link #preEnvSpectrum(double)}</code> or the
      * class documentation.
      * </p>
      * <h4>NOTES:</h4>
      * &middot; We assume that the electric field is normalized by its total
-     * potential drop <i>V</i><sub>0</sub> &trie;
-     * &int;<i>E<sub>z</sub></i>(<i>z</i>)<i>dz</i> so that the resulting total
+     * potential drop <em>V</em><sub>0</sub> &trie;
+     * &int;<em>E<sub>z</sub></em>(<em>z</em>)<em>dz</em> so that the resulting total
      * potential of the field is 1.
      * </p>
      *
      * @param k the particle wave number (radians/meter)
      *
      * @return derivative of the pre-envelope spectrum
-     * <i>d</i>&Escr;<sup>-</sup>(<i>k</i>)/<i>dk</i>
+     * <em>d</em>&Escr;<sup>-</sup>(<em>k</em>)/<em>dk</em>
      * at the given wave number (in meters/radian)
      *
      * @since Oct 1, 2015, Christopher K. Allen
@@ -824,34 +824,34 @@ public class AxialFieldSpectrum {
     /**
      * <p>
      * Compute and return the spectral post-envelope
-     * &Escr;<sup>+</sup>(<i>k</i>). The spectral pre- and post-envelopes turn
+     * &Escr;<sup>+</sup>(<em>k</em>). The spectral pre- and post-envelopes turn
      * out to be equal to odd and even combinations, respectively, of the field
      * spectra. Specifically, the pre- and post-envelopes
-     * &Escr;<sup>-</sup>(<i>k</i>) and &Escr;<sup>+</sup>(<i>k</i>) are given
+     * &Escr;<sup>-</sup>(<em>k</em>) and &Escr;<sup>+</sup>(<em>k</em>) are given
      * by
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; &Escr;<sup>-</sup>(<i>k</i>) = (1/2)[
-     * &Escr;<sub>z</sub>(<i>k</i>) - &Escr;<sub>q</sub>(<i>k</i>) ] ,
+     * &nbsp; &nbsp; &Escr;<sup>-</sup>(<em>k</em>) = (1/2)[
+     * &Escr;<sub>z</sub>(<em>k</em>) - &Escr;<sub>q</sub>(<em>k</em>) ] ,
      * <br/>
-     * &nbsp; &nbsp; &Escr;<sup>+</sup>(<i>k</i>) = (1/2)[
-     * &Escr;<sub>z</sub>(<i>k</i>) + &Escr;<sub>q</sub>(<i>k</i>) ] ,
+     * &nbsp; &nbsp; &Escr;<sup>+</sup>(<em>k</em>) = (1/2)[
+     * &Escr;<sub>z</sub>(<em>k</em>) + &Escr;<sub>q</sub>(<em>k</em>) ] ,
      * <br/>
      * <br/>
-     * where &Escr;<sub>z</sub>(<i>k</i>) is the Fourier spectrum of the axial
-     * field and &Escr;<sub>q</sub>(<i>k</i>) is the spectrum of the quadrature
+     * where &Escr;<sub>z</sub>(<em>k</em>) is the Fourier spectrum of the axial
+     * field and &Escr;<sub>q</sub>(<em>k</em>) is the spectrum of the quadrature
      * field (the conjugate Fourier transform).
      * </p>
      * <h4>NOTES:</h4>
      * &middot; We assume that the electric field is normalized by its total
-     * potential drop <i>V</i><sub>0</sub> &trie;
-     * &int;<i>E<sub>z</sub></i>(<i>z</i>)<i>dz</i> so that the resulting total
+     * potential drop <em>V</em><sub>0</sub> &trie;
+     * &int;<em>E<sub>z</sub></em>(<em>z</em>)<em>dz</em> so that the resulting total
      * potential of the field is 1.
      * </p>
      *
      * @param k the particle wave number (radians/meter)
      *
-     * @return the post-envelope &Escr;<sup>+</sup>(<i>k</i>) at the given wave
+     * @return the post-envelope &Escr;<sup>+</sup>(<em>k</em>) at the given wave
      * number (unitless)
      *
      * @since Sep 30, 2015, Christopher K. Allen
@@ -867,22 +867,22 @@ public class AxialFieldSpectrum {
     /**
      * <p>
      * Compute and return the derivative of the spectral post-envelope
-     * &Escr;<sup>+</sup>(<i>k</i>), that is
-     * <i>d</i>&Escr;<sup>+</sup>(<i>k</i>)/<i>dk</i>. For a description of the
+     * &Escr;<sup>+</sup>(<em>k</em>), that is
+     * <em>d</em>&Escr;<sup>+</sup>(<em>k</em>)/<em>dk</em>. For a description of the
      * post-envelope see <code>{@link #postEnvSpectrum(double)}</code> or the
      * class documentation.
      * </p>
      * <h4>NOTES:</h4>
      * &middot; We assume that the electric field is normalized by its total
-     * potential drop <i>V</i><sub>0</sub> &trie;
-     * &int;<i>E<sub>z</sub></i>(<i>z</i>)<i>dz</i> so that the resulting total
+     * potential drop <em>V</em><sub>0</sub> &trie;
+     * &int;<em>E<sub>z</sub></em>(<em>z</em>)<em>dz</em> so that the resulting total
      * potential of the field is 1.
      * </p>
      *
      * @param k the particle wave number (radians/meter)
      *
      * @return derivative of the post-envelope spectrum
-     * <i>d</i>&Escr;<sup>-</sup>(<i>k</i>)/<i>dk</i>
+     * <em>d</em>&Escr;<sup>-</sup>(<em>k</em>)/<em>dk</em>
      * at the given wave number (in meters/radian)
      *
      * @since Oct 1, 2015, Christopher K. Allen
@@ -901,13 +901,13 @@ public class AxialFieldSpectrum {
      * Spectral Components
      */
     /**
-     * Returns the cosine transit time factor <i>T</i><sub><i>z</i></sub>,
+     * Returns the cosine transit time factor <em>T</em><sub><em>z</em></sub>,
      * proportional to the Fourier cosine transform, for the given wave number.
      *
      * @param k particle wave number with respect to the RF frequency
      * (radians/meter)
      *
-     * @return the value of <i>T</i>(<i>k</i>) (unitless)
+     * @return the value of <em>T</em>(<em>k</em>) (unitless)
      *
      * @since Sep 28, 2015 by Christopher K. Allen
      */
@@ -925,12 +925,12 @@ public class AxialFieldSpectrum {
 
     /**
      * Returns the derivative of the cosine transit time factor
-     * <i>T</i><sub><i>z</i></sub> w.r.t. the wave number <i>k</i>.
+     * <em>T</em><sub><em>z</em></sub> w.r.t. the wave number <em>k</em>.
      *
      * @param k particle wave number with respect to the RF frequency
      * (radians/meter)
      *
-     * @return the value of <i>dT</i><sub><i>z</i></sub>(<i>k</i>)/<i>dk</i>
+     * @return the value of <em>dT</em><sub><em>z</em></sub>(<em>k</em>)/<em>dk</em>
      * (meters/rad)
      *
      * @since Sep 28, 2015 by Christopher K. Allen
@@ -948,14 +948,14 @@ public class AxialFieldSpectrum {
     }
 
     /**
-     * Returns the sine transit-time factor <i>S</i><sub><i>z</i></sub>,
+     * Returns the sine transit-time factor <em>S</em><sub><em>z</em></sub>,
      * proportional to the Fourier sine transform of the axial field, for the
      * given wave number.
      *
      * @param k particle wave number with respect to the RF frequency
      * (radians/meter)
      *
-     * @return the value of <i>S</i><sub><i>z</i></sub>(<i>k</i>) (unitless)
+     * @return the value of <em>S</em><sub><em>z</em></sub>(<em>k</em>) (unitless)
      *
      * @since Sep 28, 2015 by Christopher K. Allen
      */
@@ -973,14 +973,14 @@ public class AxialFieldSpectrum {
 
     /**
      * Returns the derivative of the sine transit-time factor
-     * <i>dS</i><sub><i>z</i></sub>/<i>dk</i>
-     * with respect to the particle wave number <i>k</i>
+     * <em>dS</em><sub><em>z</em></sub>/<em>dk</em>
+     * with respect to the particle wave number <em>k</em>
      * .
      *
      * @param k particle wave number with respect to the RF frequency
      * (radians/meter)
      *
-     * @return the value of <i>dS</i><sub><i>z</i></sub>(<i>k</i>)/<i>dk</i>
+     * @return the value of <em>dS</em><sub><em>z</em></sub>(<em>k</em>)/<em>dk</em>
      * (meters/radian)
      *
      * @since Sep 28, 2015 by Christopher K. Allen
@@ -998,14 +998,14 @@ public class AxialFieldSpectrum {
     }
 
     /**
-     * Returns the conjugate cosine transit-time factor <i>T<sub>q</sub></i>,
+     * Returns the conjugate cosine transit-time factor <em>T<sub>q</sub></em>,
      * proportional to the Fourier cosine transform of the field
-     * sgn(<i>z</i>)<i>E<sub>z</sub>(<i>z</i>).
+     * sgn(<em>z</em>)<em>E<sub>z</sub>(<em>z</em>).
      *
      * @param k the particle wave number w.r.t. the RF frequency (radians/meter)
      *
      * @return the conjugate cosine transit-time factor
-     * <i>T<sub>q</sub></i>(<i>k</i>) (unitless)
+     * <em>T<sub>q</sub></em>(<em>k</em>) (unitless)
      *
      * @since Sep 29, 2015 by Christopher K. Allen
      */
@@ -1022,12 +1022,12 @@ public class AxialFieldSpectrum {
     }
 
     /**
-     * Returns the derivative <i>dT</i>(<i>k</i>)/<i>dk</i> of the conjugate
-     * cosine transit-time factor w.r.t. the particle wave number <i>k</i>.
+     * Returns the derivative <em>dT</em>(<em>k</em>)/<em>dk</em> of the conjugate
+     * cosine transit-time factor w.r.t. the particle wave number <em>k</em>.
      *
      * @param k the particle wave number w.r.t. the RF frequency (radians/meter)
      *
-     * @return the value of <i>dT<sub>q</sub></i>(<i>k</i>)/<i>dk</i>
+     * @return the value of <em>dT<sub>q</sub></em>(<em>k</em>)/<em>dk</em>
      * (meters/rad)
      *
      * @since Sep 29, 2015, Christopher K. Allen
@@ -1045,14 +1045,14 @@ public class AxialFieldSpectrum {
     }
 
     /**
-     * Returns the conjugate sine transit-time factor <i>S<sub>q</sub></i>,
+     * Returns the conjugate sine transit-time factor <em>S<sub>q</sub></em>,
      * proportional to the Fourier sine transform of the field
-     * sgn(<i>z</i>)<i>E<sub>z</sub></i>(<i>z</i>).
+     * sgn(<em>z</em>)<em>E<sub>z</sub></em>(<em>z</em>).
      *
      * @param k the particle wave number w.r.t. the RF frequency (radians/meter)
      *
      * @return the conjugate cosine transit-time factor
-     * <i>S<sub>q</sub></i>(<i>k</i>) (unitless)
+     * <em>S<sub>q</sub></em>(<em>k</em>) (unitless)
      *
      * @since Sep 29, 2015 by Christopher K. Allen
      */
@@ -1069,12 +1069,12 @@ public class AxialFieldSpectrum {
     }
 
     /**
-     * Returns the derivative <i>dS</i>(<i>k</i>)/<i>dk</i> of the conjugate
-     * sine transit-time factor w.r.t. the particle wave number <i>k</i>.
+     * Returns the derivative <em>dS</em>(<em>k</em>)/<em>dk</em> of the conjugate
+     * sine transit-time factor w.r.t. the particle wave number <em>k</em>.
      *
      * @param k the particle wave number w.r.t. the RF frequency (radians/meter)
      *
-     * @return the value of <i>dS<sub>q</sub></i>(<i>k</i>)/<i>dk</i>
+     * @return the value of <em>dS<sub>q</sub></em>(<em>k</em>)/<em>dk</em>
      * (meters/rad)
      *
      * @since Sep 29, 2015, Christopher K. Allen
@@ -1097,27 +1097,27 @@ public class AxialFieldSpectrum {
      */
     /**
      * <p>
-     * Compute and return the standard transit time factor <i>T</i>(<i>k</i>)
+     * Compute and return the standard transit time factor <em>T</em>(<em>k</em>)
      * which includes any gap "offsets", from the given particle velocity. The
      * value is computed from the symmetric transit time factor
-     * <i>T</i><sub>0</sub> which is evaluated with the coordinate origin at the
+     * <em>T</em><sub>0</sub> which is evaluated with the coordinate origin at the
      * point of field symmetry.
      * </p>
      * <p>
-     * The returned value <i>T</i><sub><i>z</i></sub>(<i>k</i>) has the
+     * The returned value <em>T</em><sub><em>z</em></sub>(<em>k</em>) has the
      * expression
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>T</i></i><sub><i>z</i></sub>(<i>k</i>) =
-     * <i>T</i></i><sub><i>z</i>,</sub><sub>0</sub>(&beta;) cos
-     * <i>k</i>&Delta;<i>z</i> ,
+     * &nbsp; &nbsp; <em>T</em></em><sub><em>z</em></sub>(<em>k</em>) =
+     * <em>T</em></em><sub><em>z</em>,</sub><sub>0</sub>(&beta;) cos
+     * <em>k</em>&Delta;<em>z</em> ,
      * <br/>
      * <br/>
-     * where <i>T</i></i><sub><i>z</i></sub><sub>0</sub> is the cosine transit
+     * where <em>T</em></em><sub><em>z</em></sub><sub>0</sub> is the cosine transit
      * time factor taken with origin at point of field symmetry, &beta; is the
      * normalized particle velocity,
-     * <i>k</i> &trie; 2&pi;/&beta;&lambda; is the wave number, and
-     * &Delta;<i>z</i> is the offset of the point of field symmetry from the
+     * <em>k</em> &trie; 2&pi;/&beta;&lambda; is the wave number, and
+     * &Delta;<em>z</em> is the offset of the point of field symmetry from the
      * origin.
      * </p>
      *
@@ -1125,7 +1125,7 @@ public class AxialFieldSpectrum {
      * (radians/meter)
      *
      * @return the transit time factor (Fourier cosine transform) evaluated at
-     * <i>k</i> (unitless)
+     * <em>k</em> (unitless)
      *
      * @since Feb 13, 2015 by Christopher K. Allen
      */
@@ -1144,35 +1144,35 @@ public class AxialFieldSpectrum {
     /**
      * <p>
      * Compute and return the derivative of the standard transit time factor
-     * <i>T'</i></i><sub><i>z</i></sub>(<i>k</i>) with respect to <i>k</i>
+     * <em>T'</em></em><sub><em>z</em></sub>(<em>k</em>) with respect to <em>k</em>
      * including any gap "offsets." The value is given by
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>T</i></i><sub><i>z</i></sub>'(<i>k</i>) =
-     * (-&beta;/<i>k</i>)<i>T'</i><sub><i>z</i></sub><sub>0</sub>(&beta;) cos
-     * <i>k</i>&Delta;<i>z</i>
-     * - &Delta;<i>z</i> <i>T</i><sub>0</sub>(&beta;) sin
-     * <i>k</i>&Delta;<i>z</i>,
+     * &nbsp; &nbsp; <em>T</em></em><sub><em>z</em></sub>'(<em>k</em>) =
+     * (-&beta;/<em>k</em>)<em>T'</em><sub><em>z</em></sub><sub>0</sub>(&beta;) cos
+     * <em>k</em>&Delta;<em>z</em>
+     * - &Delta;<em>z</em> <em>T</em><sub>0</sub>(&beta;) sin
+     * <em>k</em>&Delta;<em>z</em>,
      * <br/>
      * <br/>
-     * whenever <i>T'</i><sub><i>z</i></sub><sub>0</sub>(&beta;) is taken w.r.t.
+     * whenever <em>T'</em><sub><em>z</em></sub><sub>0</sub>(&beta;) is taken w.r.t.
      * velocity &beta;, or
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>T</i></i><sub><i>z</i></sub>'(<i>k</i>) =
-     * <i>T'</i><sub><i>z</i></sub><sub>0</sub>(&beta;) cos
-     * <i>k</i>&Delta;<i>z</i>
-     * - &Delta;<i>z</i> <i>T</i><sub>0</sub>(&beta;) sin
-     * <i>k</i>&Delta;<i>z</i>,
+     * &nbsp; &nbsp; <em>T</em></em><sub><em>z</em></sub>'(<em>k</em>) =
+     * <em>T'</em><sub><em>z</em></sub><sub>0</sub>(&beta;) cos
+     * <em>k</em>&Delta;<em>z</em>
+     * - &Delta;<em>z</em> <em>T</em><sub>0</sub>(&beta;) sin
+     * <em>k</em>&Delta;<em>z</em>,
      * <br/>
      * <br/>
-     * whenever <i>T'</i><sub><i>z</i></sub><sub>0</sub>(&beta;) is taken w.r.t.
-     * wave number <i>k</i>. where <i>T</i>'</i><sub><i>z</i></sub><sub>0</sub>
+     * whenever <em>T'</em><sub><em>z</em></sub><sub>0</sub>(&beta;) is taken w.r.t.
+     * wave number <em>k</em>. where <em>T</em>'</em><sub><em>z</em></sub><sub>0</sub>
      * is the derivative of the symmetric cosine transit time factor,
-     * <i>T</i><sub>0</sub>(&beta;) is the symmetric cosine transit time factor,
+     * <em>T</em><sub>0</sub>(&beta;) is the symmetric cosine transit time factor,
      * &beta; is the normalized particle velocity,
-     * <i>k</i> &trie; 2&pi;/&beta;&lambda; is the wave number, and
-     * &Delta;<i>z</i> is the offset of the point of field symmetry from the
+     * <em>k</em> &trie; 2&pi;/&beta;&lambda; is the wave number, and
+     * &Delta;<em>z</em> is the offset of the point of field symmetry from the
      * origin.
      * </p>
      *
@@ -1180,13 +1180,13 @@ public class AxialFieldSpectrum {
      * (radians/meter)
      *
      * @return the derivative of cosine transit time factor w.r.t. wave number
-     * <i>k</i> (meters/radian)
+     * <em>k</em> (meters/radian)
      *
      * @since Feb 16, 2015 by Christopher K. Allen
      * @version July 29, 2015: Modified to assume <code>fitTTFPrime</code> =
-     * <i>dT</i><sub>0</sub>(&beta;)/<i>dk</i>
+     * <em>dT</em><sub>0</sub>(&beta;)/<em>dk</em>
      * @version Nov 9, 2015: Modified to assume <code>fitTTFPrime</code> =
-     * <b>-</b><i>dT</i><sub>0</sub>(&beta;)/<i>dk</i>
+     * <strong>-</strong><em>dT</em><sub>0</sub>(&beta;)/<em>dk</em>
      */
     private double dkTzfromDkTz0(double k) {
 //        double k   = this.waveNumber(beta);
@@ -1211,28 +1211,28 @@ public class AxialFieldSpectrum {
     /**
      * <p>
      * Compute and return the standard transit time factor
-     * <i>S</i></i><sub><i>z</i></sub>(<i>k</i>) which includes any gap
+     * <em>S</em></em><sub><em>z</em></sub>(<em>k</em>) which includes any gap
      * "offsets", from the given particle velocity. The value is computed from
      * the symmetric transit time factor
-     * <i>S</i></i><sub><i>z</i></sub><sub>0</sub> which is evaluated with the
+     * <em>S</em></em><sub><em>z</em></sub><sub>0</sub> which is evaluated with the
      * coordinate origin at the point of field symmetry.
      * </p>
      * <p>
-     * The returned value <i>S</i></i><sub><i>z</i></sub>(<i>k</i>) has the
+     * The returned value <em>S</em></em><sub><em>z</em></sub>(<em>k</em>) has the
      * expression
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>S</i></i><sub><i>z</i></sub>(<i>k</i>) =
-     * <i>T</i></i><sub><i>z</i></sub><sub>0</sub>(&beta;) sin
-     * <i>k</i>&Delta;<i>z</i> ,
+     * &nbsp; &nbsp; <em>S</em></em><sub><em>z</em></sub>(<em>k</em>) =
+     * <em>T</em></em><sub><em>z</em></sub><sub>0</sub>(&beta;) sin
+     * <em>k</em>&Delta;<em>z</em> ,
      * <br/>
      * <br/>
      * where &beta; is the normalized particle velocity,
-     * <i>T</i></i><sub><i>z</i></sub><sub>0</sub> is the cosine transit time
-     * factor taken with origin at point of field symmetry, <i>k</i> &trie;
-     * 2&pi;/&beta;&lambda; is the wave number, and &Delta;<i>z</i> is the
+     * <em>T</em></em><sub><em>z</em></sub><sub>0</sub> is the cosine transit time
+     * factor taken with origin at point of field symmetry, <em>k</em> &trie;
+     * 2&pi;/&beta;&lambda; is the wave number, and &Delta;<em>z</em> is the
      * offset of the point of field symmetry from the origin. Note that the
-     * transit time factor <i>S</i><sub>0</sub>
+     * transit time factor <em>S</em><sub>0</sub>
      * is zero since it is taken about the point of field symmetric.
      * </p>
      *
@@ -1240,7 +1240,7 @@ public class AxialFieldSpectrum {
      * (radians/meter)
      *
      * @return the transit time factor (Fourier sine transform) evaluated at
-     * <i>k</i>
+     * <em>k</em>
      *
      * @since Feb 16, 2015 by Christopher K. Allen
      */
@@ -1259,39 +1259,39 @@ public class AxialFieldSpectrum {
     /**
      * <p>
      * Compute and return the derivative of the standard transit time factor
-     * <i>S'</i></i><sub><i>z</i></sub>(<i>k</i>) with respect to <i>k</i>
+     * <em>S'</em></em><sub><em>z</em></sub>(<em>k</em>) with respect to <em>k</em>
      * including any gap "offsets." The value is given by
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>S</i>'</i><sub><i>z</i></sub>(<i>k</i>) =
-     * <i>T</i>'</i><sub><i>z</i></sub><sub>0</sub>(&beta;(<i>k</i>)) sin
-     * <i>k</i>&Delta;<i>z</i>
-     * + &Delta;<i>z</i>
-     * <i>T</i></i><sub><i>z</i></sub><sub>0</sub>(&beta;(<i>k</i>)) cos
-     * <i>k</i>&Delta;<i>z</i>,
+     * &nbsp; &nbsp; <em>S</em>'</em><sub><em>z</em></sub>(<em>k</em>) =
+     * <em>T</em>'</em><sub><em>z</em></sub><sub>0</sub>(&beta;(<em>k</em>)) sin
+     * <em>k</em>&Delta;<em>z</em>
+     * + &Delta;<em>z</em>
+     * <em>T</em></em><sub><em>z</em></sub><sub>0</sub>(&beta;(<em>k</em>)) cos
+     * <em>k</em>&Delta;<em>z</em>,
      * <br/>
      * <br/>
-     * where <i>T</i>'</i><sub><i>z</i></sub><sub>0</sub> is the derivative of
+     * where <em>T</em>'</em><sub><em>z</em></sub><sub>0</sub> is the derivative of
      * the symmetric cosine transit time factor,
-     * <i>T</i></i><sub><i>z</i>0</sub>(&beta;) is the cosine transit time
+     * <em>T</em></em><sub><em>z</em>0</sub>(&beta;) is the cosine transit time
      * factor,
-     * <i>k</i> &trie; 2&pi;/&beta;&lambda; is the wave number, and
-     * &Delta;<i>z</i> is the offset of the point of field symmetry from the
+     * <em>k</em> &trie; 2&pi;/&beta;&lambda; is the wave number, and
+     * &Delta;<em>z</em> is the offset of the point of field symmetry from the
      * origin.
      * </p>
      * <p>
      * <h4>NOTE</h4>
      * &middot; I am unsure whether or not the approximation for
-     * <i>dS</i>(&beta;)/<i>dk</i> or
-     * <i>dS</i>(&beta;)/<i>d</i>&beta; is stored. If it is the later then the
+     * <em>dS</em>(&beta;)/<em>dk</em> or
+     * <em>dS</em>(&beta;)/<em>d</em>&beta; is stored. If it is the later then the
      * returned value should be
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>S</i>'</i><sub><i>z</i></sub>(<i>k</i>) =
-     * (-&beta;/<i>k</i>)<i>T</i>'</i><sub><i>z</i></sub><sub>0</sub>(&beta;)
-     * sin <i>k</i>&Delta;<i>z</i>
-     * + &Delta;<i>z</i> <i>T</i></i><sub><i>z</i></sub><sub>0</sub>(&beta;) cos
-     * <i>k</i>&Delta;<i>z</i>,
+     * &nbsp; &nbsp; <em>S</em>'</em><sub><em>z</em></sub>(<em>k</em>) =
+     * (-&beta;/<em>k</em>)<em>T</em>'</em><sub><em>z</em></sub><sub>0</sub>(&beta;)
+     * sin <em>k</em>&Delta;<em>z</em>
+     * + &Delta;<em>z</em> <em>T</em></em><sub><em>z</em></sub><sub>0</sub>(&beta;) cos
+     * <em>k</em>&Delta;<em>z</em>,
      * <br/>
      * <br/>
      * </p>
@@ -1299,12 +1299,12 @@ public class AxialFieldSpectrum {
      * @param k particle wave number with respect to the RF frequency
      * (radians/meter)
      *
-     * @return the derivative of sine transit time factor <i>S</i>(<i>k</i>)
-     * w.r.t. wave number <i>k</i> (meters/radian)
+     * @return the derivative of sine transit time factor <em>S</em>(<em>k</em>)
+     * w.r.t. wave number <em>k</em> (meters/radian)
      *
      * @since Feb 16, 2015 by Christopher K. Allen
      * @version July 29, 2015 modified to assume <code>fitSTFPrime</code> =
-     * <i>dS</i><sub>0</sub>(&beta;)/<i>dk</i>
+     * <em>dS</em><sub>0</sub>(&beta;)/<em>dk</em>
      */
     private double dkSzfromDkTz0(double k) {
 //        double k   = this.waveNumber(beta);
@@ -1328,22 +1328,22 @@ public class AxialFieldSpectrum {
     /**
      * <p>
      * Compute and return the conjugate transit time factor
-     * <i>T<sub>q</sub></i>(<i>k</i>) which includes any gap "offsets", from the
+     * <em>T<sub>q</sub></em>(<em>k</em>) which includes any gap "offsets", from the
      * given particle velocity. The value is computed from the conjugate
-     * symmetric transit time factor <i>S</i><sub><i>q</i>,0</sub> which is
+     * symmetric transit time factor <em>S</em><sub><em>q</em>,0</sub> which is
      * evaluated with the coordinate origin at the point of field symmetry.
      * </p>
      * <p>
-     * The returned value <i>T<sub>q</sub></i>(<i>k</i>) has the expression
+     * The returned value <em>T<sub>q</sub></em>(<em>k</em>) has the expression
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>T<sub>q</sub></i>(<i>k</i>) =
-     * -<i>S</i><sub><i>q</i>,0</sub>(&beta;) sin(<i>k</i>&Delta;<i>z</i>) ,
+     * &nbsp; &nbsp; <em>T<sub>q</sub></em>(<em>k</em>) =
+     * -<em>S</em><sub><em>q</em>,0</sub>(&beta;) sin(<em>k</em>&Delta;<em>z</em>) ,
      * <br/>
      * <br/>
-     * where <i>S</i><sub><i>q</i>,0</sub> is the conjugate sine transit time
-     * factor taken with origin at point of field symmetry, <i>k</i> &trie;
-     * 2&pi;/&beta;&lambda; is the wave number, and &Delta;<i>z</i> is the
+     * where <em>S</em><sub><em>q</em>,0</sub> is the conjugate sine transit time
+     * factor taken with origin at point of field symmetry, <em>k</em> &trie;
+     * 2&pi;/&beta;&lambda; is the wave number, and &Delta;<em>z</em> is the
      * offset of the point of field symmetry from the origin.
      * </p>
      *
@@ -1351,7 +1351,7 @@ public class AxialFieldSpectrum {
      * (radians/meter)
      *
      * @return the transit time factor (conjugate Fourier cosine transform)
-     * evaluated at <i>k</i> (meters/radian)
+     * evaluated at <em>k</em> (meters/radian)
      *
      * @since Sept 23, 2015 by Christopher K. Allen
      */
@@ -1370,43 +1370,43 @@ public class AxialFieldSpectrum {
     /**
      * <p>
      * Compute and return the derivative of the conjugate transit time factor
-     * <i>T<sub>q</sub>'</i>(<i>k</i>) with respect to <i>k</i> or &beta;
+     * <em>T<sub>q</sub>'</em>(<em>k</em>) with respect to <em>k</em> or &beta;
      * including any gap "offsets." We are unsure because the provided data for
-     * <i>S</i><sub><i>q</i>,0</sub>(&beta;) never specified the derivative
+     * <em>S</em><sub><em>q</em>,0</sub>(&beta;) never specified the derivative
      * parameter. So were are guessing for now.
      * </p>
      * <p>
      * The value is given by
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>T<sub>q</sub></i>'(<i>k</i>) =
-     * -<i>S'</i><sub><i>q</i>,0</sub>(&beta;) sin <i>k</i>&Delta;<i>z</i>
-     * - &Delta;<i>z</i> <i>S</i><sub><i>q</i>,0</sub>(&beta;) cos
-     * <i>k</i>&Delta;<i>z</i>,
+     * &nbsp; &nbsp; <em>T<sub>q</sub></em>'(<em>k</em>) =
+     * -<em>S'</em><sub><em>q</em>,0</sub>(&beta;) sin <em>k</em>&Delta;<em>z</em>
+     * - &Delta;<em>z</em> <em>S</em><sub><em>q</em>,0</sub>(&beta;) cos
+     * <em>k</em>&Delta;<em>z</em>,
      * <br/>
      * <br/>
-     * where <i>S'</i><sub><i>q</i>,0</sub> is the derivative of the conjugate
+     * where <em>S'</em><sub><em>q</em>,0</sub> is the derivative of the conjugate
      * sine transit time factor for the symmetric field,
-     * <i>S</i><sub><i>q</i>,0</sub>(&beta;) is the conjugate sine transit time
+     * <em>S</em><sub><em>q</em>,0</sub>(&beta;) is the conjugate sine transit time
      * factor,
-     * <i>k</i> &trie; 2&pi;/&beta;&lambda; is the wave number, and
-     * &Delta;<i>z</i> is the offset of the point of field symmetry from the
+     * <em>k</em> &trie; 2&pi;/&beta;&lambda; is the wave number, and
+     * &Delta;<em>z</em> is the offset of the point of field symmetry from the
      * origin.
      * </p>
      * <p>
      * <h4>NOTE</h4>
      * &middot; I am unsure of whether the polynomial stored is for
-     * <i>dS<sub>q</sub></i>(&beta;)/<i>d</i>&beta; or for
-     * d<i>S<sub>q</sub></i>(&beta;)/<i>dk</i>. If it is the former we need
-     * <i>d</i>&beta;/<i>dk</i> = -&beta;/<i>k</i> and the value of
-     * <i>T'<sub>q</sub></i> becomes
+     * <em>dS<sub>q</sub></em>(&beta;)/<em>d</em>&beta; or for
+     * d<em>S<sub>q</sub></em>(&beta;)/<em>dk</em>. If it is the former we need
+     * <em>d</em>&beta;/<em>dk</em> = -&beta;/<em>k</em> and the value of
+     * <em>T'<sub>q</sub></em> becomes
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>T<sub>q</sub></i>'(&beta;) =
-     * -(-&beta;/<i>k</i>)<i>S'</i><sub><i>q</i>,0</sub>(&beta;) sin
-     * <i>k</i>&Delta;<i>z</i>
-     * - &Delta;<i>z</i> <i>S</i><sub><i>q</i>,0</sub>(&beta;) cos
-     * <i>k</i>&Delta;<i>z</i> ,
+     * &nbsp; &nbsp; <em>T<sub>q</sub></em>'(&beta;) =
+     * -(-&beta;/<em>k</em>)<em>S'</em><sub><em>q</em>,0</sub>(&beta;) sin
+     * <em>k</em>&Delta;<em>z</em>
+     * - &Delta;<em>z</em> <em>S</em><sub><em>q</em>,0</sub>(&beta;) cos
+     * <em>k</em>&Delta;<em>z</em> ,
      * <br/>
      * <br/>
      * </p>
@@ -1415,14 +1415,14 @@ public class AxialFieldSpectrum {
      * (radians/meter)
      *
      * @return the derivative of conjugate sine transit time factor w.r.t.
-     * velocity &beta; or wave number <i>k</i> (unitless or meters/radian)
+     * velocity &beta; or wave number <em>k</em> (unitless or meters/radian)
      *
      * @since Feb 16, 2015 by Christopher K. Allen
      * @version July 29, 2015: Modified to assume <code>fitTTFPrime</code> =
-     * <i>dT</i><sub>0</sub>(&beta;)/<i>dk</i>
+     * <em>dT</em><sub>0</sub>(&beta;)/<em>dk</em>
      * <br/>
      * Sept 23, 2015: Modified to assume <code>fitSTF</code> actually contains
-     * <i>S<sub>q</i></sub>(&beta;)
+     * <em>S<sub>q</em></sub>(&beta;)
      */
     private double dkTqFromDkSq0(double k) {
         double dz = -this.getFieldOffset();
@@ -1445,30 +1445,30 @@ public class AxialFieldSpectrum {
     /**
      * <p>
      * Compute and return the conjugate transit time factor
-     * <i>S<sub>q</sub></i>(<i>k</i>) which includes any gap "offsets", from the
+     * <em>S<sub>q</sub></em>(<em>k</em>) which includes any gap "offsets", from the
      * given particle velocity. The value is computed from the transit time
-     * factor <i>S</i><sub><i>q</i>,0</sub> for the symmetric field .
+     * factor <em>S</em><sub><em>q</em>,0</sub> for the symmetric field .
      * </p>
      * <p>
-     * The returned value <i>S<sub>q</sub></i>(<i>k</i>) has the expression
+     * The returned value <em>S<sub>q</sub></em>(<em>k</em>) has the expression
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>S<sub>q</sub></i>(<i>k</i>) =
-     * <i>S</i><sub><i>q</i>,0</sub>(&beta;) cos <i>k</i>&Delta;<i>z</i> ,
+     * &nbsp; &nbsp; <em>S<sub>q</sub></em>(<em>k</em>) =
+     * <em>S</em><sub><em>q</em>,0</sub>(&beta;) cos <em>k</em>&Delta;<em>z</em> ,
      * <br/>
      * <br/>
-     * where <i>S</i><sub><i>q</i>,0</sub> is the conjugate sine transit time
-     * factor taken with origin at point of field symmetry, <i>k</i> &trie;
-     * 2&pi;/&beta;&lambda; is the wave number, and &Delta;<i>z</i> is the
+     * where <em>S</em><sub><em>q</em>,0</sub> is the conjugate sine transit time
+     * factor taken with origin at point of field symmetry, <em>k</em> &trie;
+     * 2&pi;/&beta;&lambda; is the wave number, and &Delta;<em>z</em> is the
      * offset of the point of field symmetry from the origin. Note that the
-     * transit time factor <i>T</i><sub><i>q</i>,0</sub>
+     * transit time factor <em>T</em><sub><em>q</em>,0</sub>
      * is zero since it is taken about the point of field symmetric.
      * </p>
      *
      * @param k particle wave number w.r.t. the RF frequency (radians/meter)
      *
-     * @return conjugate transit time factor <i>S</i><sub><i>q</i></sub>
-     * evaluated at <i>k</i> (meters/radian)
+     * @return conjugate transit time factor <em>S</em><sub><em>q</em></sub>
+     * evaluated at <em>k</em> (meters/radian)
      *
      * @since Sep 23, 2015 by Christopher K. Allen
      */
@@ -1487,37 +1487,37 @@ public class AxialFieldSpectrum {
     /**
      * <p>
      * Compute and return the derivative of the conjugate transit time factor
-     * <i>S<sub>q</sub></i>(<i>k</i>) with respect to <i>k</i> (or &beta; ?)
+     * <em>S<sub>q</sub></em>(<em>k</em>) with respect to <em>k</em> (or &beta; ?)
      * including any gap "offsets." That is, compute the value
-     * <i>S'</i><sub><i>q</i></sub>(<i>k</i>). The value is given by
+     * <em>S'</em><sub><em>q</em></sub>(<em>k</em>). The value is given by
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>S'<sub>q</sub></i>(<i>k</i>) =
-     * <i>S'</i><sub><i>q</i>,0</sub>(&beta;) cos <i>k</i>&Delta;<i>z</i>
-     * - &Delta;<i>z</i> <i>S</i><sub><i>q</i>,0</sub>(&beta;) sin
-     * <i>k</i>&Delta;<i>z</i> ,
+     * &nbsp; &nbsp; <em>S'<sub>q</sub></em>(<em>k</em>) =
+     * <em>S'</em><sub><em>q</em>,0</sub>(&beta;) cos <em>k</em>&Delta;<em>z</em>
+     * - &Delta;<em>z</em> <em>S</em><sub><em>q</em>,0</sub>(&beta;) sin
+     * <em>k</em>&Delta;<em>z</em> ,
      * <br/>
      * <br/>
-     * where <i>S'</i><sub><i>q</i>,0</sub> is the derivative of the conjugate
+     * where <em>S'</em><sub><em>q</em>,0</sub> is the derivative of the conjugate
      * sine transit time factor,
-     * <i>k</i> &trie; 2&pi;/&beta;&lambda; is the wave number, and
-     * &Delta;<i>z</i> is the offset of the point of field symmetry from the
+     * <em>k</em> &trie; 2&pi;/&beta;&lambda; is the wave number, and
+     * &Delta;<em>z</em> is the offset of the point of field symmetry from the
      * origin.
      * </p>
      * <p>
      * <h4>NOTE</h4>
      * &middot; I am unsure of whether the polynomial stored is for
-     * <i>dS<sub>q</sub></i>(&beta;)/<i>d</i>&beta; or for
-     * d<i>S<sub>q</sub></i>(&beta;)/<i>dk</i>. If it is the former we need
-     * <i>d</i>&beta;/<i>dk</i> = -&beta;/<i>k</i> and the value of
-     * <i>S'<sub>q</sub></i> becomes
+     * <em>dS<sub>q</sub></em>(&beta;)/<em>d</em>&beta; or for
+     * d<em>S<sub>q</sub></em>(&beta;)/<em>dk</em>. If it is the former we need
+     * <em>d</em>&beta;/<em>dk</em> = -&beta;/<em>k</em> and the value of
+     * <em>S'<sub>q</sub></em> becomes
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>S'<sub>q</sub></i>(<i>k</i>) =
-     * (-&beta;/<i>k</i>)<i>S</i>'<sub><i>q</i>,0</sub>(&beta;) cos
-     * <i>k</i>&Delta;<i>z</i>
-     * - &Delta;<i>z</i> <i>S</i><sub><i>q</i>,0</sub>(&beta;) sin
-     * <i>k</i>&Delta;<i>z</i> ,
+     * &nbsp; &nbsp; <em>S'<sub>q</sub></em>(<em>k</em>) =
+     * (-&beta;/<em>k</em>)<em>S</em>'<sub><em>q</em>,0</sub>(&beta;) cos
+     * <em>k</em>&Delta;<em>z</em>
+     * - &Delta;<em>z</em> <em>S</em><sub><em>q</em>,0</sub>(&beta;) sin
+     * <em>k</em>&Delta;<em>z</em> ,
      * <br/>
      * <br/>
      * </p>
@@ -1528,7 +1528,7 @@ public class AxialFieldSpectrum {
      *
      * @since Feb 16, 2015 by Christopher K. Allen
      * @version July 29, 2015 modified to assume <code>fitSTFPrime</code> =
-     * <i>dS</i><sub>0</sub>(&beta;)/<i>dk</i>
+     * <em>dS</em><sub>0</sub>(&beta;)/<em>dk</em>
      */
     private double dkSqFromDkSq0(double k) {
         double dz = -this.getFieldOffset();
@@ -1550,13 +1550,13 @@ public class AxialFieldSpectrum {
 
     /**
      * Compute the normalized particle velocity &beta; for the given particle
-     * wave number <i>k</i>.
+     * wave number <em>k</em>.
      *
      * @param k wave number of the particle with respect to RF frequency
      * (radians/meter)
      *
      * @return the normalized velocity &beta; of the particle for the given wave
-     * number <i>k</i>
+     * number <em>k</em>
      *
      * @since Sep 28, 2015 by Christopher K. Allen
      */
@@ -1569,11 +1569,11 @@ public class AxialFieldSpectrum {
 
 //  /**
 //  * <p>
-//  * Compute and return the particle wave number <i>k</i> for the given normalized 
+//  * Compute and return the particle wave number <em>k</em> for the given normalized 
 //  * particle velocity &beta;.  The formula is
 //  * <br/>
 //  * <br/>
-//  * &nbsp; &nbsp; <i>k</i> = 2&pi;/&beta;&lambda; ,
+//  * &nbsp; &nbsp; <em>k</em> = 2&pi;/&beta;&lambda; ,
 //  * <br/>
 //  * <br/>
 //  * where &lambda; is the wavelength of the accelerating RF.

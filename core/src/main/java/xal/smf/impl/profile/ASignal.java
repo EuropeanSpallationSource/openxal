@@ -22,7 +22,7 @@ import java.lang.annotation.Target;
  * </p>
  *
  * <p>
- * <b>Ported from XAL on Jul 15, 2014.</b><br>
+ * <strong>Ported from XAL on Jul 15, 2014.</strong><br>
  * &middot; Jonathan M. Freed
  * </p>
  *
@@ -44,25 +44,25 @@ public @interface ASignal {
      * profile measurement device. The names of the read back channels for both
      * the position array and the value array are included for each measurement
      * "plane",
-     * <i>horizontal, vertical, </i> and <i>diagonal</i>.
+     * <em>horizontal, vertical, </em> and <em>diagonal</em>.
      * </p>
      * <p>
      * The contents of the array for each plane are the following parameters:
      * <br>
      * <br>
-     * &nbsp; &nbsp; {<tt>hndPosRb, hndValRb, (hndNseAvg), (hndNseStd),
-     * (hndSigSz)</tt>}
+     * &nbsp; &nbsp; {<kbd>hndPosRb, hndValRb, (hndNseAvg), (hndNseStd),
+     * (hndSigSz)</kbd>}
      * <br>
      * <br>
-     * where <tt>hndPosRb</tt> is the XAL channel handle of the sample position
+     * where <kbd>hndPosRb</kbd> is the XAL channel handle of the sample position
      * array read back,
-     * <tt>hndValRb</tt> is the XAL channel handle of the signal value array
+     * <kbd>hndValRb</kbd> is the XAL channel handle of the signal value array
      * read back,
-     * <tt>hndNseAvg</tt> is the (optional) XAL channel handle of the noise
+     * <kbd>hndNseAvg</kbd> is the (optional) XAL channel handle of the noise
      * average read back,
-     * <tt>hndNseStd</tt> is the (optional) XAL channel handle of the noise
+     * <kbd>hndNseStd</kbd> is the (optional) XAL channel handle of the noise
      * variance read back, and
-     * <tt>hndCnt</tt> is the (optional) XAL channel handle of the signal array
+     * <kbd>hndCnt</kbd> is the (optional) XAL channel handle of the signal array
      * size read back.
      * </p>
      *

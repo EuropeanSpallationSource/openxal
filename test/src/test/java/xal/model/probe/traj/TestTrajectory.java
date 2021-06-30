@@ -45,7 +45,7 @@ import xal.tools.beam.PhaseVector;
  * Use Java virtual machine command line switch
  * <br/>
  * <br/>
- * &nbsp; &nbsp; <tt>java -agentlib:hprof=cpu=times</tt>
+ * &nbsp; &nbsp; <kbd>java -agentlib:hprof=cpu=times</kbd>
  * <br/>
  * <br/>
  * to create <code>java.hprof.TMP</code> files for profiling.

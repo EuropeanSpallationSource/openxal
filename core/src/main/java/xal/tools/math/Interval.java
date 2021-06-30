@@ -80,7 +80,7 @@ public class Interval implements Serializable {
      * @param dblMin the left-hand endpoint
      * @param dblMax the right-hand endpoint
      *
-     * @return the interval [<b>dblMin</b>,<b>dblMax</b>]
+     * @return the interval [<strong>dblMin</strong>,<strong>dblMax</strong>]
      *
      * @author Christopher K. Allen
      * @since Apr 28, 2011
@@ -217,12 +217,12 @@ public class Interval implements Serializable {
      * Set Theory
      */
     /**
-     * Is point a member of this interval <i>I</i> &sub; <i>R</i>. The test is
-     * done assuming <i>I</i> is closed, so the endpoints are included.
+     * Is point a member of this interval <em>I</em> &sub; <em>R</em>. The test is
+     * done assuming <em>I</em> is closed, so the endpoints are included.
      *
      * @param x point to be tested as a member of this interval
      *
-     * @return true if x &isin; <i>I</i>, false otherwise
+     * @return true if x &isin; <em>I</em>, false otherwise
      */
     public boolean membership(double x) {
         return x <= getMax() && x >= getMin();
@@ -263,7 +263,7 @@ public class Interval implements Serializable {
      *
      * @param I interval to inspect.
      *
-     * @return          <b>true</b> if <i>this</i> &cap; <i>I</i> &ne; {}, <b>false</b>
+     * @return          <strong>true</strong> if <em>this</em> &cap; <em>I</em> &ne; {}, <strong>false</strong>
      * otherwise
      *
      * @since Jun 2, 2009
@@ -298,7 +298,7 @@ public class Interval implements Serializable {
      *
      * @param I interval to be tested
      *
-     * @return     <code>true</code> if <i>I</i> &sub; <code>this</code>,
+     * @return     <code>true</code> if <em>I</em> &sub; <code>this</code>,
      * <code>false</code> otherwise
      *
      * @author Christopher K. Allen
@@ -329,27 +329,27 @@ public class Interval implements Serializable {
 
     /**
      * <p>
-     * Compute the local "vertex coordinates" of the argument <i>x</i> with
-     * respect to this interval <i>I</i> &sub; <i>R</i>. These "local
+     * Compute the local "vertex coordinates" of the argument <em>x</em> with
+     * respect to this interval <em>I</em> &sub; <em>R</em>. These "local
      * coordinates" {&lambda;<sub>1</sub>,&lambda;<sub>2</sub>} of a point
-     * <i>x</i> &isin; <i>I</i>
+     * <em>x</em> &isin; <em>I</em>
      * can computed by solving the following linear equation for the
-     * {&lambda;<i><sub>i</sub></i>} :
+     * {&lambda;<em><sub>i</sub></em>} :
      * <br/>
      * &nbsp;<table>
      * <td>
      * <table>
      * <tr>
      * <td>&lceil;</td>
-     * <td><i>x</i><sub>1</sub></td>
-     * <td><i>x</i><sub>2</sub></td>
+     * <td><em>x</em><sub>1</sub></td>
+     * <td><em>x</em><sub>2</sub></td>
      * <td>&rceil;</td>
      * <td>&nbsp;</td>
      * </tr>
      * <tr>
      * <td>&lfloor;</td>
-     * <td><i>1</i></td>
-     * <td><i>1</i></td>
+     * <td><em>1</em></td>
+     * <td><em>1</em></td>
      * <td>&rfloor;</td>
      * </tr>
      * </table>
@@ -359,12 +359,12 @@ public class Interval implements Serializable {
      * <table>
      * <tr>
      * <td>&lceil;</td>
-     * <td><i>&lambda;</i><sub>1</sub></td>
+     * <td><em>&lambda;</em><sub>1</sub></td>
      * <td>&rceil;</td>
      * </tr>
      * <tr>
      * <td>|</td>
-     * <td><i>&lambda;</i><sub>2</sub></td>
+     * <td><em>&lambda;</em><sub>2</sub></td>
      * <td>|</td>
      * </tr>
      * </table>
@@ -380,7 +380,7 @@ public class Interval implements Serializable {
      * <table/>
      * <tr>
      * <td>&lceil;</td>
-     * <td><i>x</i></td>
+     * <td><em>x</em></td>
      * <td>&rceil;</td>
      * </tr>
      * <tr>
@@ -392,19 +392,19 @@ public class Interval implements Serializable {
      * </td>
      * </table>
      * </br>
-     * where <b>p</b> =
-     * <i>x</i> &isin; <i>R</i>.
+     * where <strong>p</strong> =
+     * <em>x</em> &isin; <em>R</em>.
      * </p>
      * <p>
      * <h4>NOTES:</h4>
      * &middot; After solving the above equation for the
      * {&lambda;<sub>1</sub>,&lambda;<sub>2</sub>} if there is a
      * &lambda;<sub>i</sub> such that &lambda;<sub>i</sub> &notin; [0,1], then
-     * <i>x</i>
-     * is not in <i>T</i>; that is, <b>p</b>&notin; <i>T</i>.
+     * <em>x</em>
+     * is not in <em>T</em>; that is, <strong>p</strong>&notin; <em>T</em>.
      * </p>
      *
-     * @param x point in <i>I</i>
+     * @param x point in <em>I</em>
      *
      * @return order 2-array vertex coordinates
      * {&lambda;<sub>1</sub>,&lambda;<sub>2</sub>}

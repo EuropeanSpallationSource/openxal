@@ -12,10 +12,10 @@ import xal.model.IProbe;
  * <p>
  * Represents a drift region between RF cavity accelerating gaps. Extends the
  * <code>IdealDrift</code> class to include a frequency parameter
- * <i>f</i> which is necessary in computing probe phase advance through the
+ * <em>f</em> which is necessary in computing probe phase advance through the
  * drift.
  * </p>
- * I think we are going to include the structure mode number <i>q</i> in here as
+ * I think we are going to include the structure mode number <em>q</em> in here as
  * well. This way the phase advance due to the higher order modes can be
  * accounted for here.
  * </p>
@@ -112,18 +112,18 @@ public class IdealRfCavityDrift extends IdealDrift {
     /**
      * <p>
      * Set the operating mode constant &lambda; for the RF cavity design. The
-     * constant is half of the mode number <i>q</i>. Specifically,
+     * constant is half of the mode number <em>q</em>. Specifically,
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; &lambda; = 0 &nbsp; (<i>q</i>=0) &rArr; 0 mode cavity
+     * &nbsp; &nbsp; &lambda; = 0 &nbsp; (<em>q</em>=0) &rArr; 0 mode cavity
      * structure (e.g. DTL)
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; &lambda; = 1/2 (<i>q</i>=1) &rArr; &pi;/2 mode structure
+     * &nbsp; &nbsp; &lambda; = 1/2 (<em>q</em>=1) &rArr; &pi;/2 mode structure
      * (bi-periodic structures, e.g., SideCC)
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; &lambda; = 1 &nbsp; (<i>q</i>=2) &rArr; &pi;-mode cavity
+     * &nbsp; &nbsp; &lambda; = 1 &nbsp; (<em>q</em>=2) &rArr; &pi;-mode cavity
      * (e.g. CCL, super-conducting)
      * </p>
      *
@@ -139,7 +139,7 @@ public class IdealRfCavityDrift extends IdealDrift {
     /**
      * Get the frequency of the RF cavity containing this drift space.
      *
-     * @return the fundamental mode frequency <i>f</i><sub>0</sub> of the
+     * @return the fundamental mode frequency <em>f</em><sub>0</sub> of the
      * enclosing RF cavity
      */
     public double getFrequency() {
@@ -149,18 +149,18 @@ public class IdealRfCavityDrift extends IdealDrift {
     /**
      * <p>
      * Get the operating mode constant &lambda; for the RF cavity design. The
-     * constant is half of the mode number <i>q</i>. Specifically,
+     * constant is half of the mode number <em>q</em>. Specifically,
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; &lambda; = 0 &nbsp; (<i>q</i>=0) &rArr; 0 mode cavity
+     * &nbsp; &nbsp; &lambda; = 0 &nbsp; (<em>q</em>=0) &rArr; 0 mode cavity
      * structure (e.g. DTL)
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; &lambda; = 1/2 (<i>q</i>=1) &rArr; &pi;/2 mode structure
+     * &nbsp; &nbsp; &lambda; = 1/2 (<em>q</em>=1) &rArr; &pi;/2 mode structure
      * (bi-periodic structures, e.g., SideCC)
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; &lambda; = 1 &nbsp; (<i>q</i>=2) &rArr; &pi;-mode cavity
+     * &nbsp; &nbsp; &lambda; = 1 &nbsp; (<em>q</em>=2) &rArr; &pi;-mode cavity
      * (e.g. CCL, super-conducting)
      * </p>
      *

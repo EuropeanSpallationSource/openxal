@@ -316,7 +316,7 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
      * Returns an iterator that will visit all the direct subsequences of this
      * sequence.
      *
-     * @return iterator for all the <b>direct</b> subsequences of this sequence
+     * @return iterator for all the <strong>direct</strong> subsequences of this sequence
      *
      * @since Jan 29, 2015 by Christopher K. Allen
      */

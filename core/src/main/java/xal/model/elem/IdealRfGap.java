@@ -163,9 +163,9 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      * Creates a new instance of IdealRfGap
      *
      * @param strId instance identifier of element
-     * @param dblETL field/transit time/length factor for gap (in <b>volts</b> )
-     * @param dblPhase operating phase of gap (in <b>radians</b> )
-     * @param dblFreq operating RF frequency of gap (in <b>Hertz</b> )
+     * @param dblETL field/transit time/length factor for gap (in <strong>volts</strong> )
+     * @param dblPhase operating phase of gap (in <strong>radians</strong> )
+     * @param dblFreq operating RF frequency of gap (in <strong>Hertz</strong> )
      */
     public IdealRfGap(String strId, double dblETL, double dblPhase, double dblFreq) {
         super(TYPE, strId);
@@ -177,8 +177,8 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 
     /**
      * JavaBean constructor - creates a new uninitialized instance of IdealRfGap
-     * <b>
-     * BE CAREFUL</b>
+     * <strong>
+     * BE CAREFUL</strong>
      */
     public IdealRfGap() {
         super(TYPE);
@@ -191,7 +191,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      * Return the ETL product of the gap, where E is the longitudinal electric
      * field, T is the transit time factor, and L is the gap length.
      *
-     * @return the ETL product of the gap (in <b>volts</b> ).
+     * @return the ETL product of the gap (in <strong>volts</strong> ).
      */
     @Override
     public double getETL() {
@@ -202,7 +202,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      * Return the RF phase delay of the gap with respect to the synchronous
      * particle.
      *
-     * @return phase delay w.r.t. synchronous particle (in <b>radians</b> ).
+     * @return phase delay w.r.t. synchronous particle (in <strong>radians</strong> ).
      */
     @Override
     public double getPhase() {
@@ -212,7 +212,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     /**
      * Get the operating frequency of the RF gap.
      *
-     * @return frequency of RF gap (in <b>Hertz</b> )
+     * @return frequency of RF gap (in <strong>Hertz</strong> )
      */
     @Override
     public double getFrequency() {
@@ -238,7 +238,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      * The maximum energy gain from the gap is given by qETL where q is the
      * charge (in coulombs) of the species particle.
      *
-     * @param dblETL ETL product of gap (in <b>volts</b> ).
+     * @param dblETL ETL product of gap (in <strong>volts</strong> ).
      */
     @Override
     public void setETL(double dblETL) {
@@ -251,7 +251,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      * where dbkPhi is the phase delay.
      *
      * @param dblPhase phase delay of the RF w.r.t. synchronous particle (in
-     * <b>radians</b> ).
+     * <strong>radians</strong> ).
      */
     @Override
     public void setPhase(double dblPhase) {
@@ -261,7 +261,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     /**
      * Set the operating frequency of the RF gap.
      *
-     * @param dblFreq frequency of RF gap (in <b>Hertz</b> )
+     * @param dblFreq frequency of RF gap (in <strong>Hertz</strong> )
      */
     @Override
     public void setFrequency(double dblFreq) {
@@ -303,7 +303,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     /**
      * Compute the wavelength of the RF.
      *
-     * @return RF wavelength in <b>meters</b>
+     * @return RF wavelength in <strong>meters</strong>
      */
     public double wavelengthRF() {
 
@@ -324,7 +324,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      *
      * @param probe probe containing energy information
      *
-     * @return average or "mid-gap" velocity in units of <b>c</b>
+     * @return average or "mid-gap" velocity in units of <strong>c</strong>
      *
      * @see IdealRfGap#energyGain(IProbe)
      */
@@ -386,7 +386,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      * of calculating the phase advance.
      *
      * @param probe uses the particle species charge
-     * @return energy gain for this probe (<b>in electron-volts</b> )
+     * @return energy gain for this probe (<strong>in electron-volts</strong> )
      */
     @Override
     public double energyGain(IProbe probe) {
@@ -555,7 +555,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      * default phase at the gap center.
      *
      * @param probe uses the particle species charge
-     * @return energy gain for this probe (<b>in electron-volts</b> )
+     * @return energy gain for this probe (<strong>in electron-volts</strong> )
      */
     public double simpleEnergyGain(IProbe probe) {
 //
@@ -596,7 +596,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      * total energy gain.
      *
      * @param probe beam energy and particle charge are taken from the probe
-     * @return (de)focusing constant (<b>in radians/meter</b> )
+     * @return (de)focusing constant (<strong>in radians/meter</strong> )
      */
     public double compTransFocusing(IProbe probe) {
 
@@ -638,7 +638,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      * total energy gain.
      *
      * @param probe beam energy and particle charge are taken from the probe
-     * @return (de)focusing constant (<b>in radians/meter</b> )
+     * @return (de)focusing constant (<strong>in radians/meter</strong> )
      */
     public double compLongFocusing(IProbe probe) {
 

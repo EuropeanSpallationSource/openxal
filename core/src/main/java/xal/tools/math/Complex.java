@@ -51,11 +51,11 @@ public class Complex {
      * Global Operations
      */
     /**
-     * Computes the complex square root of this complex number <i>s</i>.
+     * Computes the complex square root of this complex number <em>s</em>.
      *
      * @param s complex number on which to operate
      *
-     * @return value of &radic;<i>s</i>
+     * @return value of &radic;<em>s</em>
      *
      * @since Sep 30, 2015, Christopher K. Allen
      */
@@ -96,19 +96,19 @@ public class Complex {
     /**
      * <p>
      * Compute and return the natural logarithm of the given complex number
-     * <i>s</i>. The value is given by
+     * <em>s</em>. The value is given by
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; log(<i>s</i>) = ln(|<i>s</i>|) + <i>i</i> arg(<i>s</i>)
+     * &nbsp; &nbsp; log(<em>s</em>) = ln(|<em>s</em>|) + <em>i</em> arg(<em>s</em>)
      * <br/>
      * <br/>
      * where ln is the real-valued natural logarithm function and arg is the
-     * angle of <i>s</i> in the complex plane.
+     * angle of <em>s</em> in the complex plane.
      * </p>
      *
      * @param s complex number on which to operate
      *
-     * @return the value of ln(<i>s</i>) &in; &Copf;
+     * @return the value of ln(<em>s</em>) &in; &Copf;
      *
      * @since Sep 30, 2015, Christopher K. Allen
      */
@@ -123,15 +123,15 @@ public class Complex {
 
     /**
      * <p>
-     * Compute and return the exponential of the given complex number <i>s</i>.
+     * Compute and return the exponential of the given complex number <em>s</em>.
      * The value is given by the formula
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; exp(<i>s</i>) = exp(&sigma;)[cos(&omega;) + <i>i</i>
+     * &nbsp; &nbsp; exp(<em>s</em>) = exp(&sigma;)[cos(&omega;) + <em>i</em>
      * sin(&omega;)]
      * <br/>
      * <br/>
-     * where <i>s</i> = &sigma; + <i>i</i>&omega; and &sigma;, &omega; &in;
+     * where <em>s</em> = &sigma; + <em>i</em>&omega; and &sigma;, &omega; &in;
      * &Ropf;.
      * </p>
      *
@@ -149,19 +149,19 @@ public class Complex {
     }
 
     /**
-     * Computes and returns the complex number <i>z</i> on the unit circle
+     * Computes and returns the complex number <em>z</em> on the unit circle
      * corresponding to the mapping of the given real number by the Euler
      * formula. The returned values is given by
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>z</i> = cos &theta; + <i>i</i> sin &theta; ,
+     * &nbsp; &nbsp; <em>z</em> = cos &theta; + <em>i</em> sin &theta; ,
      * <br/>
      * <br/>
      * where &theta; is the real number given in the argument.
      *
      * @param ang the real number &theta; (in radians)
      *
-     * @return the value of <i>z</i> described above
+     * @return the value of <em>z</em> described above
      *
      * @since Oct 7, 2015, Christopher K. Allen
      */
@@ -174,14 +174,14 @@ public class Complex {
     /**
      * <p>
      * Compute and return the trigonometric sine function of the given complex
-     * number <i>s</i>. The formula for the returned value is
+     * number <em>s</em>. The formula for the returned value is
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; sin(s) = sin(&sigma;)cosh(&omega;) - <i>i</i>
+     * &nbsp; &nbsp; sin(s) = sin(&sigma;)cosh(&omega;) - <em>i</em>
      * cos(&sigma;)sinh(&omega;)
      * <br/>
      * <br/>
-     * where where <i>s</i> = &sigma; + <i>i</i>&omega; and &sigma;, &omega;
+     * where where <em>s</em> = &sigma; + <em>i</em>&omega; and &sigma;, &omega;
      * &in; &Ropf;.
      * </p>
      *
@@ -203,14 +203,14 @@ public class Complex {
     /**
      * <p>
      * Compute and return the hyperbolic sine function of the given complex
-     * number <i>s</i>. The formula for the returned value is
+     * number <em>s</em>. The formula for the returned value is
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; sinh(s) = sinh(&sigma;)cos(&omega;) + <i>i</i>
+     * &nbsp; &nbsp; sinh(s) = sinh(&sigma;)cos(&omega;) + <em>i</em>
      * cosh(&sigma;)sin(&omega;)
      * <br/>
      * <br/>
-     * where where <i>s</i> = &sigma; + <i>i</i>&omega; and &sigma;, &omega;
+     * where where <em>s</em> = &sigma; + <em>i</em>&omega; and &sigma;, &omega;
      * &in; &Ropf;.
      * </p>
      *
@@ -232,14 +232,14 @@ public class Complex {
     /**
      * <p>
      * Compute and return the trigonometric cosine function of the given complex
-     * number <i>s</i>. The formula for the returned value is
+     * number <em>s</em>. The formula for the returned value is
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; cos(s) = cos(&sigma;)cosh(&omega;) - <i>i</i>
+     * &nbsp; &nbsp; cos(s) = cos(&sigma;)cosh(&omega;) - <em>i</em>
      * sin(&sigma;)sinh(&omega;)
      * <br/>
      * <br/>
-     * where where <i>s</i> = &sigma; + <i>i</i>&omega; and &sigma;, &omega;
+     * where where <em>s</em> = &sigma; + <em>i</em>&omega; and &sigma;, &omega;
      * &in; &Ropf;.
      * </p>
      *
@@ -261,14 +261,14 @@ public class Complex {
     /**
      * <p>
      * Compute and return the hyperbolic cosine function of the given complex
-     * number <i>s</i>. The formula for the returned value is
+     * number <em>s</em>. The formula for the returned value is
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; cosh(s) = cosh(&sigma;)cos(&omega;) + <i>i</i>
+     * &nbsp; &nbsp; cosh(s) = cosh(&sigma;)cos(&omega;) + <em>i</em>
      * sinh(&sigma;)sin(&omega;)
      * <br/>
      * <br/>
-     * where where <i>s</i> = &sigma; + <i>i</i>&omega; and &sigma;, &omega;
+     * where where <em>s</em> = &sigma; + <em>i</em>&omega; and &sigma;, &omega;
      * &in; &Ropf;.
      * </p>
      *

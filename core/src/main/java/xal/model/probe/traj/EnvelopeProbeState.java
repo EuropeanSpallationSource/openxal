@@ -255,7 +255,7 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
 //     * Changes the behavior of the persistence methods (from the 
 //     * <code>DataAdaptor</code> methods).
 //     * By setting this flag to <code>true</code> the Twiss
-//     * parameter attributes will be saved <b>instead</b> to a <code>DataAdapter</code> 
+//     * parameter attributes will be saved <strong>instead</strong> to a <code>DataAdapter</code> 
 //     * interface rather that the full correlation matrix.  The default behavior for this class
 //     * is to save the correlation matrix.
 //     * </p>
@@ -416,8 +416,8 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
      * homogeneous phase space coordinates. This value is computed directly from
      * the correlation matrix.
      *
-     * @return &lt;<b>zz</b><sup><i>T</i></sup>&gt; -
-     * &lt;<b>z</b>&gt;&lt;<b>z</b>&gt;<sup><i>T</i></sup>
+     * @return &lt;<strong>zz</strong><sup><em>T</em></sup>&gt; -
+     * &lt;<strong>z</strong>&gt;&lt;<strong>z</strong>&gt;<sup><em>T</em></sup>
      *
      * @see xal.tools.beam.CovarianceMatrix#computeCentralCovariance()
      */
@@ -427,7 +427,7 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
 
     /**
      * Convenience Method: Returns the rms emittances for this state as
-     * determined by the <b>correlation matrix</b>. This value is computed
+     * determined by the <strong>correlation matrix</strong>. This value is computed
      * directly from the correlation matrix and is independent of the
      * <code>twissParams</code> local attribute.
      *
@@ -788,7 +788,7 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
 //     * Returns the betatron phase with space charge for all three phase
 //     * planes.
 //     * 
-//     * @return  vector (psix,psiy,psiz) of phases in <b>radians</b>
+//     * @return  vector (psix,psiy,psiz) of phases in <strong>radians</strong>
 //     */
 //    @Override
 //    public R3 getBetatronPhase() {
@@ -809,7 +809,7 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
 //     * the (x|z') element of the first-order response matrix by relativistic gamma 
 //     * squared. 
 //     * 
-//     * @return  x plane chromatic dispersion in <b>meters/radian</b>
+//     * @return  x plane chromatic dispersion in <strong>meters/radian</strong>
 //     * 
 //     * @see  Reference text D.C. Carey, "The Optics of Charged Particle Beams"
 //     */
@@ -832,7 +832,7 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
 //     * the (y|z') element of the first-order response matrix by relativistic gamma 
 //     * squared. 
 //     * 
-//     * @return  y plane chromatic dispersion in <b>meters/radian</b>
+//     * @return  y plane chromatic dispersion in <strong>meters/radian</strong>
 //     * 
 //     * @see D.C. Carey, "The Optics of Charged Particle Beams"
 //     */
@@ -857,7 +857,7 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
 //     * the (x'|z') element of the first-order response matrix by relativistic gamma 
 //     * squared. 
 //     * 
-//     * @return  x' plane chromatic dispersion in <b>meters/radian</b>
+//     * @return  x' plane chromatic dispersion in <strong>meters/radian</strong>
 //     * 
 //     * @see D.C. Carey, "The Optics of Charged Particle Beams"
 //     */
@@ -880,7 +880,7 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
 //     * the (y'|z') element of the first-order response matrix by relativistic gamma 
 //     * squared. 
 //     * 
-//     * @return  y' plane chromatic dispersion in <b>meters/radian</b>
+//     * @return  y' plane chromatic dispersion in <strong>meters/radian</strong>
 //     * 
 //     * @see D.C. Carey, "The Optics of Charged Particle Beams"
 //     */
@@ -904,7 +904,7 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
 //     * the (z|z') element of the first-order response matrix by relativistic gamma 
 //     * squared. 
 //     * 
-//     * @return  z plane chromatic dispersion in <b>meters/radian</b>
+//     * @return  z plane chromatic dispersion in <strong>meters/radian</strong>
 //     * 
 //     * @see D.C. Carey, "The Optics of Charged Particle Beams"
 //     */
@@ -927,7 +927,7 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
 //     * the (z'|z') element of the first-order response matrix by relativistic gamma 
 //     * squared. 
 //     * 
-//     * @return  z' plane chromatic dispersion in <b>meters/radian</b>
+//     * @return  z' plane chromatic dispersion in <strong>meters/radian</strong>
 //     * 
 //     * @see D.C. Carey, "The Optics of Charged Particle Beams"
 //     */
@@ -989,7 +989,7 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
 //    /**
 //     * dispersion x without space charge
 //     * 
-//     * @return  x plane chromatic dispersion in <b>meters/radian</b>
+//     * @return  x plane chromatic dispersion in <strong>meters/radian</strong>
 //     * 
 //     * @see D.C. Carey, "The Optics of Charged Particle Beams"
 //     */
@@ -1005,7 +1005,7 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
 //    /**
 //     *     * dispersion y without space charge
 //     * 
-//     * @return  y plane chromatic dispersion in <b>meters/radian</b>
+//     * @return  y plane chromatic dispersion in <strong>meters/radian</strong>
 //     * 
 //     * @see D.C. Carey, "The Optics of Charged Particle Beams"
 //     */
@@ -1021,7 +1021,7 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
 //    /**
 //     * dispersion x' without space charge
 //      * 
-//     * @return  x' plane chromatic dispersion in <b>meters/radian</b>
+//     * @return  x' plane chromatic dispersion in <strong>meters/radian</strong>
 //     * 
 //     * @see D.C. Carey, "The Optics of Charged Particle Beams"
 //     */
@@ -1037,7 +1037,7 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
 //    /**
 //     * dispersion y' without space charge
 //     * 
-//     * @return  y' plane chromatic dispersion in <b>meters/radian</b>
+//     * @return  y' plane chromatic dispersion in <strong>meters/radian</strong>
 //     * 
 //     * @see D.C. Carey, "The Optics of Charged Particle Beams"
 //     */
@@ -1053,7 +1053,7 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
 //     * dispersion x with space charge
 // 
 //     * 
-//     * @return  x plane chromatic dispersion in <b>meters/radian</b>
+//     * @return  x plane chromatic dispersion in <strong>meters/radian</strong>
 //     * 
 //     * @see Ohkawa, Ikegami, NUM A 576 (2007) 274
 //      */
@@ -1070,7 +1070,7 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
 //    /**
 //     *     * dispersion y with space charge
 //     * 
-//     * @return  y plane chromatic dispersion in <b>meters/radian</b>
+//     * @return  y plane chromatic dispersion in <strong>meters/radian</strong>
 //     * 
 //     * @see D.C. Carey, "The Optics of Charged Particle Beams"
 //     */
@@ -1087,7 +1087,7 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
 //    /**
 //     * dispersion x' with space charge
 //      * 
-//     * @return  x' plane chromatic dispersion in <b>meters/radian</b>
+//     * @return  x' plane chromatic dispersion in <strong>meters/radian</strong>
 //     * 
 //     * @see D.C. Carey, "The Optics of Charged Particle Beams"
 //     */
@@ -1104,7 +1104,7 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
 //    /**
 //     * dispersion y' with space charge
 //     * 
-//     * @return  y' plane chromatic dispersion in <b>meters/radian</b>
+//     * @return  y' plane chromatic dispersion in <strong>meters/radian</strong>
 //     * 
 //     * @see D.C. Carey, "The Optics of Charged Particle Beams"
 //     */

@@ -47,7 +47,7 @@ import xal.smf.AccessibleProperty;
  * <p>
  * Represents a wire scanner diagnostic device, in particular those devices
  * installed at the SNS facility. This class implements the new profile device
- * API at SNS. The previous device API interfaced with the <tt>SMF</tt> class
+ * API at SNS. The previous device API interfaced with the <kbd>SMF</kbd> class
  * <code>{@link ProfileMonitor}</code>.
  * </p>
  * <h3>NOTES:</h3>
@@ -59,7 +59,7 @@ import xal.smf.AccessibleProperty;
  * the command buffer after issuing a command.
  * <br>
  * &middot; The time between the issuing of a command and the clearing of the
- * command buffer is call the <i>command latency</i>.
+ * command buffer is call the <em>command latency</em>.
  * <br>
  * &middot; Currently the command buffer is not reset - the new controller
  * software appears to correct the EPICS quirk.
@@ -69,8 +69,8 @@ import xal.smf.AccessibleProperty;
  * </p>
  *
  * <p>
- * <b>Ported from XAL on Jul 21, 2014. (Over-wrote old WireScanner
- * implementation.)</b><br>
+ * <strong>Ported from XAL on Jul 21, 2014. (Over-wrote old WireScanner
+ * implementation.)</strong><br>
  * &middot; Jonathan M. Freed
  * </p>
  *
@@ -1123,17 +1123,17 @@ public class WireScanner extends ProfileDevice {
         /**
          * Returns the stroke length of the actuator arm for a scan. This is the
          * total physical distances traveled by the actuator arm during a scan
-         * and is <b>not</b> necessarily the abscissa of the measured data. This
-         * value, <i>L</i>, is typically given by the formula
+         * and is <strong>not</strong> necessarily the abscissa of the measured data. This
+         * value, <em>L</em>, is typically given by the formula
          * <br/>
          * <br/>
-         * &nbsp; &nbsp; <i>L</i> = <i>N</i><sub>steps</sub> &Delta;<i>L</i>
+         * &nbsp; &nbsp; <em>L</em> = <em>N</em><sub>steps</sub> &Delta;<em>L</em>
          * <br/>
          * <br/>
-         * where <i>N</i><sub>steps</sub> is the number of scan steps and
-         * &Delta;<i>L</i> is the step length.
+         * where <em>N</em><sub>steps</sub> is the number of scan steps and
+         * &Delta;<em>L</em> is the step length.
          *
-         * @return movement distance <i>L</i> of scan actuator
+         * @return movement distance <em>L</em> of scan actuator
          *
          * @author Christopher K. Allen
          * @since Oct 8, 2015
@@ -2292,7 +2292,7 @@ public class WireScanner extends ProfileDevice {
      * that this should work.
      * </p>
      * <p>
-     * However, it is <b>never used</b> as of yet.
+     * However, it is <strong>never used</strong> as of yet.
      * </p>
      *
      * @since Nov 13, 2009

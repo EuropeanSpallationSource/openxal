@@ -110,7 +110,8 @@ public class ThickDipole extends ThickElectromagnet {
         alignz = z;
     }
 
-    public double getALignX() {
+    @Override
+    public double getAlignX() {
         return alignx;
     }
 
@@ -159,7 +160,7 @@ public class ThickDipole extends ThickElectromagnet {
      * Creates a new instance of ThickDipole
      *
      * @param strId identifier for this ThickDipole object
-     * @param fld field gradient strength (in <b>Tesla</b>)
+     * @param fld field gradient strength (in <strong>Tesla</strong>)
      * @param len pathLength of the dipole (in m)
      * @param entAng entrance angle of the dipole (in rad)
      * @param exitAng exit angle of the dipole (in rad)
@@ -184,7 +185,7 @@ public class ThickDipole extends ThickElectromagnet {
      * ThickDipole * This is the constructor called in automatic lattice
      * generation. Thus, all element properties are set following construction.
      *
-     * <b>BE CAREFUL</b>
+     * <strong>BE CAREFUL</strong>
      */
     public ThickDipole() {
         super(TYPE);
@@ -193,7 +194,7 @@ public class ThickDipole extends ThickElectromagnet {
     /**
      * Sets the entrance angle of the beam into the dipole.
      *
-     * @param dblAng entrance angle in <b>radians</b>
+     * @param dblAng entrance angle in <strong>radians</strong>
      *
      * @author Christopher K. Allen
      */
@@ -213,7 +214,7 @@ public class ThickDipole extends ThickElectromagnet {
     /**
      * Sets the entrance angle of the beam into the dipole.
      *
-     * @param dblAng exit angle in <b>radians</b>
+     * @param dblAng exit angle in <strong>radians</strong>
      * @author J. Galambos
      */
     public void setExitAngle(double dblAng) {
@@ -253,9 +254,9 @@ public class ThickDipole extends ThickElectromagnet {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <b>meters</b>
+     * @param dblLen length of subsection to propagate through <strong>meters</strong>
      *
-     * @return the elapsed time through section<b>Units: seconds</b>
+     * @return the elapsed time through section<strong>Units: seconds</strong>
      */
     @Override
     public double elapsedTime(IProbe probe, double dblLen) {

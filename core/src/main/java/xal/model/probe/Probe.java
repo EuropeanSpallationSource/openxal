@@ -29,7 +29,7 @@ import java.util.logging.Logger;
  * <p>
  * Provides a base class implementation of the IProbe interface that is useful
  * for most standard probe types. This class provides most of the functionality
- * necessary for the implementation of the IProbe interface, <b>except</b> a
+ * necessary for the implementation of the IProbe interface, <strong>except</strong> a
  * definition and implementation of a probe "state". Thus, it is up to base
  * classes to provide and implement the particular aspect of a beam the probe
  * represents.
@@ -557,8 +557,8 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      * &nbsp; &nbsp; &phi; &#8796; &phi;<sub>0</sub> - &Delta;&phi;
      * <br/>
      * <br/>
-     * where &Delta;&phi; = 2&pi;<i>f</i>&Delta;<i/>t</i> is the phase delay due
-     * to elapsed time &Delta;<i>t</i>, <i>f</i> is the cavity resonant
+     * where &Delta;&phi; = 2&pi;<em>f</em>&Delta;<i/>t</em> is the phase delay due
+     * to elapsed time &Delta;<em>t</em>, <em>f</em> is the cavity resonant
      * frequency, and &phi;<sub>0</sub> is the operating phase of the cavity
      * (w.r.t. the synchronous particle).
      * </p>
@@ -586,7 +586,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     /**
      * Returns the charge of probe's particle species
      *
-     * @return particle species charge (<b>Coulombs</b>)
+     * @return particle species charge (<strong>Coulombs</strong>)
      */
     @Override
     public double getSpeciesCharge() {
@@ -596,7 +596,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     /**
      * Returns the rest energy of particle species
      *
-     * @return particle species rest energy (<b>electron-volts</b>)
+     * @return particle species rest energy (<strong>electron-volts</strong>)
      */
     @Units("eV")
     @Override
@@ -644,7 +644,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     /**
      * Returns the current beam-line position of the probe
      *
-     * @return probe position (<b>meters</b>)
+     * @return probe position (<strong>meters</strong>)
      */
     @Units("meters")
     @Override
@@ -655,7 +655,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     /**
      * Return the time elapsed since the probe began propagation.
      *
-     * @return elapsed time in <b>seconds</b>
+     * @return elapsed time in <strong>seconds</strong>
      */
     @Units("seconds")
     @Override
@@ -668,7 +668,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      * this could be the actual kinetic energy of a single constituent particle,
      * the average kinetic energy of an ensemble, the design energy, etc.
      *
-     * @return probe kinetic energy (<b>electron-volts</b>)
+     * @return probe kinetic energy (<strong>electron-volts</strong>)
      */
     @Units("eV")
     @Override
@@ -679,7 +679,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     /**
      * Returns the probe velocity normalized to the speed of light.
      *
-     * @return normalized probe velocity v/c (<b>unitless</b>
+     * @return normalized probe velocity v/c (<strong>unitless</strong>
      */
     @Override
     public double getBeta() {
@@ -691,10 +691,10 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      * The relativistic factor is given by the formulae
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; &gamma; = (<i>W</i>/<i>mc</i><sup>2</sup>) + 1 =
+     * &nbsp; &nbsp; &gamma; = (<em>W</em>/<em>mc</em><sup>2</sup>) + 1 =
      * [1/(1-&beta;<sup>2</sup>)]<sup>1/2</sup>
      *
-     * @return probe relativistic factor (<b>unitless</b>)
+     * @return probe relativistic factor (<strong>unitless</strong>)
      */
     @Override
     public double getGamma() {
@@ -779,7 +779,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     /**
      * Set the current position of the probe along the beamline.
      *
-     * @param s new probe position (<b>meters</b>)
+     * @param s new probe position (<strong>meters</strong>)
      *
      * @see #getPosition
      */
@@ -791,7 +791,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     /**
      * Set the current time since the probe began propagating
      *
-     * @param dblTime new probe current time in <b>seconds</b>
+     * @param dblTime new probe current time in <strong>seconds</strong>
      *
      * @author jdg
      */
@@ -811,8 +811,8 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      * &nbsp; &nbsp; &phi; &#8796; &phi;<sub>0</sub> - &Delta;&phi;
      * <br/>
      * <br/>
-     * where &Delta;&phi; = 2&pi;<i>f</i>&Delta;<i/>t</i> is the phase delay due
-     * to elapsed time &Delta;<i>t</i>, <i>f</i> is the cavity resonant
+     * where &Delta;&phi; = 2&pi;<em>f</em>&Delta;<i/>t</em> is the phase delay due
+     * to elapsed time &Delta;<em>t</em>, <em>f</em> is the cavity resonant
      * frequency, and &phi;<sub>0</sub> is the operating phase of the cavity
      * (w.r.t. the synchronous particle).
      * </p>
@@ -831,7 +831,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     /**
      * Set the current kinetic energy of the probe.
      *
-     * @param W new probe kinetic energy (<b>electron-volts</b>)
+     * @param W new probe kinetic energy (<strong>electron-volts</strong>)
      *
      * @see #getKineticEnergy
      */
@@ -855,7 +855,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     /**
      * Set the rest energy of a single particle in the beam
      *
-     * @param Er particle rest energy (<b>electron-volts</b>)
+     * @param Er particle rest energy (<strong>electron-volts</strong>)
      */
     @Override
     public void setSpeciesRestEnergy(double Er) {
@@ -927,7 +927,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      * &middot; The trajectory is cleared, that is, there is no longer any
      * history in the probe
      * <br>
-     * &middot; Thus, <tt>initialize()</tt> is really a poor choice, since all
+     * &middot; Thus, <kbd>initialize()</kbd> is really a poor choice, since all
      * that is done is
      * <br>
      * <br>

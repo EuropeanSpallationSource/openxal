@@ -66,7 +66,7 @@ public class IdealHorMagSteeringDipole extends IdealMagSteeringDipole {
      * action of the kicker is completely unspecified.
      *
      * @param strId string identifier of element
-     * @param dblFld field strength (in <b>Tesla</b>)
+     * @param dblFld field strength (in <strong>Tesla</strong>)
      * @param dblLenEff effective length of dipole magnet
      *
      * @author Christopher K. Allen

@@ -27,7 +27,7 @@ import xal.tools.data.EditContext;
  * XAL online model. Algorithm classes are typically derived from the
  * <code>Tracker</code> base class and must expose the <code>IAlgorithm</code>
  * interface. We take the initialization parameters from the XAL
- * "<tt>model.params</tt>" file, using the <i>edit context</i> mechanism in XAL.
+ * "<kbd>model.params</kbd>" file, using the <em>edit context</em> mechanism in XAL.
  * (An <code>EditContext</code> object is associated with each
  * <code>Accelerator</code> object.) The file contains data tables which are
  * structured for the different types of algorithms. Each algorithm may have
@@ -437,14 +437,14 @@ public final class AlgorithmFactory {
      * Creates a new <code>Tracker</code> derived algorithm instance and
      * initializes it with parameters specified in the edit context of the given
      * accelerator sequence object. These parameters are located in the
-     * "<tt>model.params</tt>" file which is part of the XAL configuration
+     * "<kbd>model.params</kbd>" file which is part of the XAL configuration
      * initialization. Within the file are data tables for initializing
      * algorithms, the labels of these tables are particular to the algorithm
      * type being instantiated (typically they are defined within the algorithm
      * source file). The actual table name from which the initialization
      * parameters are taken is given by the sequence id of the provided
      * accelerator sequence. If there are no tables with that name then the
-     * mechanism automatically defers to the table named "<tt>default</tt>".
+     * mechanism automatically defers to the table named "<kbd>default</kbd>".
      *
      * @param <T> Type of the algorithm to be instantiated, must be derived from
      * <code>Tracker</code>

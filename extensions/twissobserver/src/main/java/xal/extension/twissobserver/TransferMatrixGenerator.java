@@ -352,8 +352,8 @@ public class TransferMatrixGenerator {
      * </p>
      * <h3>NOTE:</h3>
      * <p>
-     * &middot; Bunch charge <i>Q</i> is given by beam current <i>I</i> divided
-     * by bunch frequency <i>f</i>. Specifically, <i>Q</i> = <i>I</i>/<i>f</i>.
+     * &middot; Bunch charge <em>Q</em> is given by beam current <em>I</em> divided
+     * by bunch frequency <em>f</em>. Specifically, <em>Q</em> = <em>I</em>/<em>f</em>.
      * </p>
      *
      * @param strDevIdStart ID of device with which to start the simulation, or

@@ -15,46 +15,46 @@ import JSci.maths.Complex;
  * contains most of the common behavior of a general digital filter.
  * </p>
  * <p>
- * The transfer characteristics for an <i>N</i><sup>th</sup> order digital
+ * The transfer characteristics for an <em>N</em><sup>th</sup> order digital
  * filter are given by the following:
  * <br>
- * <br>&nbsp;&nbsp;  <i>b</i><sub>0</sub>y<sub>n</sub></i>
- * + <i>b</i><sub>1</sub><i>y<sub>n</i>-1</sub>
- * + &hellip; + <i>b<sub>N</sub></i><i>y<sub>n-N</i></sub>
- * = <i>a</i><sub>0</sub>x<sub>n</sub></i>
- * + <i>a</i><sub>1</sub><i>x<sub>n</i>-1</sub>
- * + &hellip; + <i>a<sub>N</sub></i><i>x<sub>n-N</i></sub>
+ * <br>&nbsp;&nbsp;  <em>b</em><sub>0</sub>y<sub>n</sub></em>
+ * + <em>b</em><sub>1</sub><em>y<sub>n</em>-1</sub>
+ * + &hellip; + <em>b<sub>N</sub></em><em>y<sub>n-N</em></sub>
+ * = <em>a</em><sub>0</sub>x<sub>n</sub></em>
+ * + <em>a</em><sub>1</sub><em>x<sub>n</em>-1</sub>
+ * + &hellip; + <em>a<sub>N</sub></em><em>x<sub>n-N</em></sub>
  * <br>
  * <br>
- * where <i>n</i> is the current ("time") index, the {<i>x<sub>n</sub></i>} are
- * the inputs to the filter at time <i>n</i>, the {<i>a<sub>k</sub></i>} are the
- * input coefficients for delay <i>k</i>, the {<i>y<sub>n</sub></i>} are the
- * filter outputs at time <i>n</i>, and the {<i>b<sub>k</sub></i>} are the
- * output coefficients for delay <i>k</i>. The equation can be rearranged to
- * explicitly demonstrate the current output <i>y<sub>n</sub></i> in terms of
- * the past <i>N</i> inputs and outputs
+ * where <em>n</em> is the current ("time") index, the {<em>x<sub>n</sub></em>} are
+ * the inputs to the filter at time <em>n</em>, the {<em>a<sub>k</sub></em>} are the
+ * input coefficients for delay <em>k</em>, the {<em>y<sub>n</sub></em>} are the
+ * filter outputs at time <em>n</em>, and the {<em>b<sub>k</sub></em>} are the
+ * output coefficients for delay <em>k</em>. The equation can be rearranged to
+ * explicitly demonstrate the current output <em>y<sub>n</sub></em> in terms of
+ * the past <em>N</em> inputs and outputs
  * <br>
- * <br>&nbsp;&nbsp;  <i>y<sub>n</sub></i>
+ * <br>&nbsp;&nbsp;  <em>y<sub>n</sub></em>
  * = (
- * <i>a</i><sub>0</sub>x<sub>n</sub></i>
- * + <i>a</i><sub>1</sub><i>x<sub>n</i>-1</sub>
- * + &hellip; + <i>a<sub>N</sub></i><i>x<sub>n-N</i></sub>
- * - <i>b</i><sub>1</sub><i>y<sub>n</i>-1</sub>
- * - &hellip; - <i>b<sub>N</sub></i><i>y<sub>n-N</i></sub>
- * )/<i>b</i><sub>0</sub>
+ * <em>a</em><sub>0</sub>x<sub>n</sub></em>
+ * + <em>a</em><sub>1</sub><em>x<sub>n</em>-1</sub>
+ * + &hellip; + <em>a<sub>N</sub></em><em>x<sub>n-N</em></sub>
+ * - <em>b</em><sub>1</sub><em>y<sub>n</em>-1</sub>
+ * - &hellip; - <em>b<sub>N</sub></em><em>y<sub>n-N</em></sub>
+ * )/<em>b</em><sub>0</sub>
  * <br>
  * <br>
- * Note that the coefficient <i>b</i><sub>0</sub> is essentially just an
+ * Note that the coefficient <em>b</em><sub>0</sub> is essentially just an
  * attenuation/amplification factor. (In fact, a zeroth-order digital filter is
  * just that.) The current class initializes itself with the value
- * <i>b</i><sub>0</sub> = 1.0. This case is the only nonzero initial value for
+ * <em>b</em><sub>0</sub> = 1.0. This case is the only nonzero initial value for
  * the input and output coefficients and is done simply to avoid a pathological
  * filter.
  * </p>
  * <p>
- * Taking the <i>Z</i> transform of the above equations yields the transfer
+ * Taking the <em>Z</em> transform of the above equations yields the transfer
  * function
- * <i>H</i>(<i>z</i>) where <i>z</i> is the transform variable (whose domain is
+ * <em>H</em>(<em>z</em>) where <em>z</em> is the transform variable (whose domain is
  * the unit circle in the complex plane). The transfer function has the general
  * form
  * <br>&nbsp;&nbsp;
@@ -62,28 +62,28 @@ import JSci.maths.Complex;
  * <tr>
  * <td/>
  * <td>
- * <i>a</i><sub>0</sub>
- * + <i>a</i><sub>1</sub><i>z</i><sup>-1</sup>
- * + &hellip; + <i>a<sub>N</sub></i><i>z</i><sup>-N</sup>
+ * <em>a</em><sub>0</sub>
+ * + <em>a</em><sub>1</sub><em>z</em><sup>-1</sup>
+ * + &hellip; + <em>a<sub>N</sub></em><em>z</em><sup>-N</sup>
  * </td>
  * </tr>
  * <tr>
- * <td> <i>H</i>(<i>z</i>) = </td>
+ * <td> <em>H</em>(<em>z</em>) = </td>
  * <td>&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;</td>
  * </tr>
  * <tr>
  * <td/>
  * <td>
- * <i>b</i><sub>0</sub>
- * + <i>b</i><sub>1</sub><i>z</i><sup>-1</sup>
- * + &hellip; + <i>b<sub>N</sub></i><i>z</i><sup>-N</sup>
+ * <em>b</em><sub>0</sub>
+ * + <em>b</em><sub>1</sub><em>z</em><sup>-1</sup>
+ * + &hellip; + <em>b<sub>N</sub></em><em>z</em><sup>-N</sup>
  * </td>
  * </tr>
  * </table>
  * Clearly then the filter is linear. Note that for the Discrete Fourier
- * Transform (DFT) and the frequencies <i>&nu;</i> = 1,&hellip;,<i>&Nu;</i>-1
- * the transform variable is equal to <i>z<sub>&nu;</sub> =
- * <i>e</i><sup><i>i</i>2<i>&pi;&nu;</i>/<i>&Nu;</sup>.
+ * Transform (DFT) and the frequencies <em>&nu;</em> = 1,&hellip;,<em>&Nu;</em>-1
+ * the transform variable is equal to <em>z<sub>&nu;</sub> =
+ * <em>e</em><sup><em>i</em>2<em>&pi;&nu;</em>/<em>&Nu;</sup>.
  * </p>
  *
  * @author Christopher K. Allen
@@ -174,8 +174,8 @@ public class LtiDigitalFilter extends AbstractDigitalFilter {
 
     /**
      * Sets all the input signal coefficients. The elements of the argument
-     * array should be indexed by delay; that is, the 0<sup><i>th</i></sup>
-     * element corresponds to no delay, the 1<sup><i>st</i></sup> element to the
+     * array should be indexed by delay; that is, the 0<sup><em>th</em></sup>
+     * element corresponds to no delay, the 1<sup><em>st</em></sup> element to the
      * unit delay, etc.
      *
      * @param arrCoeffs array of input coefficients
@@ -206,8 +206,8 @@ public class LtiDigitalFilter extends AbstractDigitalFilter {
 
     /**
      * Sets all the output signal coefficients. The elements of the argument
-     * array should be indexed by delay; that is, the 0<sup><i>th</i></sup>
-     * element corresponds to no delay, the 1<sup><i>st</i></sup> element to the
+     * array should be indexed by delay; that is, the 0<sup><em>th</em></sup>
+     * element corresponds to no delay, the 1<sup><em>st</em></sup> element to the
      * unit delay, etc.
      *
      * @param arrCoeffs array of output coefficients

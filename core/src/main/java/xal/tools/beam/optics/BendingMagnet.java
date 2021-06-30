@@ -26,7 +26,7 @@ public class BendingMagnet {
      * @param probe probe object to be deflected
      * @param dblFld constant field strength of magnet
      *
-     * @return dipole path curvature for given probe (in <b>1/meters</b>)
+     * @return dipole path curvature for given probe (in <strong>1/meters</strong>)
      */
     public static double compCurvature(IProbe probe, double dblFld) {
 

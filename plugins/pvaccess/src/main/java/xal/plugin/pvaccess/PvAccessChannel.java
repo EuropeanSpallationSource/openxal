@@ -44,9 +44,9 @@ import xal.tools.apputils.Preferences;
  * library can be used to connect with pvAccess or ChannelAccess protocol.
  *
  * This implementation creates a connection to both protocols and only keeps the
- * first one that is connected. This means that <b>if a pva channel and ca
+ * first one that is connected. This means that <strong>if a pva channel and ca
  * channel with same name exist on the network the behavior of this class is
- * non-deterministic</b>.
+ * non-deterministic</strong>.
  *
  * To keep compatibility with jca plugin, where the PV.FLD is a valid notation,
  * the channel name is parsed and everything after the first dot is used as a

@@ -8,91 +8,91 @@
  * <p>
  * The twissobserver package contains tools for computing the Courant-Snyder
  * parameters
- * <b>&sigma;</b> at a hardware location along the beamline from the RMS beam
+ * <strong>&sigma;</strong> at a hardware location along the beamline from the RMS beam
  * sizes downstream of that that location. Rather than running a model of the
  * beamline and adjusting the initial conditions of the beam (i.e., the
  * Courant-Snyder parameters) until a chi-squared fit of the model results to
  * the data is achieved, the tools in this package create an automorphic map
- * <b>F</b> from the Courant-Snyder parameter domain to itself. This is direct
+ * <strong>F</strong> from the Courant-Snyder parameter domain to itself. This is direct
  * approach to the problem rather than the "weak" solution found by the fitting
  * technique where the Courant-Snyder parameters minimizing a functional. Here
- * the map is iterated to the fixed point of <b>F</b>, the fixed point
- * <b>&sigma;</b> = <b>F&sigma;</b> being the solution of Courant-Snyder
+ * the map is iterated to the fixed point of <strong>F</strong>, the fixed point
+ * <strong>&sigma;</strong> = <strong>F&sigma;</strong> being the solution of Courant-Snyder
  * parameters.
  * </p>
  * <p>
- * Let <b>T</b> : <i>CS</i> &rarr; <i>D</i> be the map that takes Courant-Snyder
- * parameters to the set of RMS beam sizes along the beamline. The map <b>T</b>
+ * Let <strong>T</strong> : <em>CS</em> &rarr; <em>D</em> be the map that takes Courant-Snyder
+ * parameters to the set of RMS beam sizes along the beamline. The map <strong>T</strong>
  * is computed numerically by as a cascade of transfer maps along the beamline
  * from the reconstruction location to each of the data locations. We assume
  * there are at least as many data points as there are Courant-Snyder parameters
- * so that |<i>CS</i>| &le; |<i>D</i>|. Then the least-squares solution
- * <b>&sigma;</b> to the reconstruction problem is
+ * so that |<em>CS</em>| &le; |<em>D</em>|. Then the least-squares solution
+ * <strong>&sigma;</strong> to the reconstruction problem is
  * <br>
  * <br>
- * &nbsp; &nbsp; <b>&sigma;</b> =
- * (<b>T</b><sup>*</sup><b>T</b>)<sup>-1</sup><b>T</b><sup>*</sup><b>d</b> ,
+ * &nbsp; &nbsp; <strong>&sigma;</strong> =
+ * (<strong>T</strong><sup>*</sup><strong>T</strong>)<sup>-1</sup><strong>T</strong><sup>*</sup><strong>d</strong> ,
  * <br>
  * <br>
- * where <b>T</b><sup>*</sup> is the adjoint of <b>T</b> and <b>d</b> is the
+ * where <strong>T</strong><sup>*</sup> is the adjoint of <strong>T</strong> and <strong>d</strong> is the
  * vector of RMS beam sizes (i.e., the data). When no space charge is present
- * <b>T</b> is a linear map and this equation may be solved directly.
+ * <strong>T</strong> is a linear map and this equation may be solved directly.
  * </p>
  * <p>
- * When no space charge is present, indicated by <i>I</i> &gt> 0 where <i>I</i>
+ * When no space charge is present, indicated by <em>I</em> &gt> 0 where <em>I</em>
  * is the generalized beam current, the map <t> now depends upon the initial
  * Courant-Snyder parameters, that is
- * <b>T</b> = <b>T</b>(<b>&sigma;</b>). For any given beam current <i>I</i> we
+ * <strong>T</strong> = <strong>T</strong>(<strong>&sigma;</strong>). For any given beam current <em>I</em> we
  * define the map
- * <b>F</b> : <i>CS</i> &rarr; <i>CS</i> as
+ * <strong>F</strong> : <em>CS</em> &rarr; <em>CS</em> as
  * <br>
  * <br>
- * &nbsp; &nbsp; <b>F</b>(<b>&sigma;</b>,<i>I</i>) &#8796;
- * [<b>T</b><sup>*</sup><b>(<b>&sigma;</b>,<i>I</i>)T</b>(<b>&sigma;</b>,<i>I</i>)]<sup>-1</sup><b>T</b><sup>*</sup>(<b>&sigma;</b>,<i>I</i>)<b>d</b>
+ * &nbsp; &nbsp; <strong>F</strong>(<strong>&sigma;</strong>,<em>I</em>) &#8796;
+ * [<strong>T</strong><sup>*</sup><strong>(<strong>&sigma;</strong>,<em>I</em>)T</strong>(<strong>&sigma;</strong>,<em>I</em>)]<sup>-1</sup><strong>T</strong><sup>*</sup>(<strong>&sigma;</strong>,<em>I</em>)<strong>d</strong>
  * <br>
  * <br>
- * The fixed point <b>&sigma;</b>(<i>I</i>) of <b>F</b> is the set of
- * Courant-Snyder parameters for the beam current <i>I</i>.
+ * The fixed point <strong>&sigma;</strong>(<em>I</em>) of <strong>F</strong> is the set of
+ * Courant-Snyder parameters for the beam current <em>I</em>.
  * </p>
  * <p>
  * One particularly simply way of solving this problem is to pick an initial set
- * of Courant-Snyder parameters <b>&sigma;</b><sub>0</sub>(<i>I</i>) and start
- * iterating the above equation. If <b>&sigma;</b><sub>0</sub>(<i>I</i>) is
+ * of Courant-Snyder parameters <strong>&sigma;</strong><sub>0</sub>(<em>I</em>) and start
+ * iterating the above equation. If <strong>&sigma;</strong><sub>0</sub>(<em>I</em>) is
  * within the region of contraction for the fixed point of
- * <b>F</b> then the iteration converges to the solution. We can improve the
- * convergence properties by forming an outside loop where <i>I</i> is increased
- * from 0 to its target values. That is, <b>F</b> is iterated to its fixed point
+ * <strong>F</strong> then the iteration converges to the solution. We can improve the
+ * convergence properties by forming an outside loop where <em>I</em> is increased
+ * from 0 to its target values. That is, <strong>F</strong> is iterated to its fixed point
  * for each increment of beam current, and that fixed point is used to
  * initialize the next iteration.
  * <p>
  * </p>
  * Another more sophisticated technique is a continuation method exploiting the
  * smoothness of
- * <b>F</b>(&middot;, &middot;). Starting with
- * <b>F</b>[<b>&sigma;</b>(<i>I</i>), <i>I</i>] = <b>&sigma;</b>(<i>I</i>) we
- * take the total derivative with respect to <i>I</i> yielding
+ * <strong>F</strong>(&middot;, &middot;). Starting with
+ * <strong>F</strong>[<strong>&sigma;</strong>(<em>I</em>), <em>I</em>] = <strong>&sigma;</strong>(<em>I</em>) we
+ * take the total derivative with respect to <em>I</em> yielding
  * <br>
  * <br>
- * &nbsp; &nbsp; &part;<sub>I</sub><b>&sigma;</b>(<i>I</i>) = [<b>Id</b> -
- * &part;<sub><b>&sigma;</b></sub><b>F</b>(<b>&sigma;</b>,<i>I</i>)]<sup>-1</sup>&part;<b>F</b>(<b>&sigma;</b>,<i>I</i>)
+ * &nbsp; &nbsp; &part;<sub>I</sub><strong>&sigma;</strong>(<em>I</em>) = [<strong>Id</strong> -
+ * &part;<sub><strong>&sigma;</strong></sub><strong>F</strong>(<strong>&sigma;</strong>,<em>I</em>)]<sup>-1</sup>&part;<strong>F</strong>(<strong>&sigma;</strong>,<em>I</em>)
  * ,
  * <br>
  * <br>
- * where <b>Id</b> is the identity map. Starting from <b>&sigma;</b><sub>0</sub>
- * the solution for <i>I</i> = 0, which can be computed exactly, we move along
+ * where <strong>Id</strong> is the identity map. Starting from <strong>&sigma;</strong><sub>0</sub>
+ * the solution for <em>I</em> = 0, which can be computed exactly, we move along
  * the curves
  * <br>
  * <br>
- * &nbsp; &nbsp; <b>&sigma;</b><sub><i>n</i>+1</sub> &#8796;
- * <b>&sigma;</b>(<i>I<sub>n</sub></i> + &Delta;<i>I</i>) =
- * &part;<sub><i>I</i></sub><b>&sigma;</b><i><sub>n</sub></i>&Delta;<i>I</i> +
- * <i>O</i>(&Delta;<i>I</i><sup>2</sup>) .
+ * &nbsp; &nbsp; <strong>&sigma;</strong><sub><em>n</em>+1</sub> &#8796;
+ * <strong>&sigma;</strong>(<em>I<sub>n</sub></em> + &Delta;<em>I</em>) =
+ * &part;<sub><em>I</em></sub><strong>&sigma;</strong><em><sub>n</sub></em>&Delta;<em>I</em> +
+ * <em>O</em>(&Delta;<em>I</em><sup>2</sup>) .
  * <br>
  * <br>
  * The derivatives are recomputed at each step and a brief fixed point iteration
  * is executed to move
- * <b>&sigma;</b><sub><i>n</i></sub> back onto the solution curve
- * <b>&sigma;</b>(&middot;) since the above linear extrapolation cannot account
+ * <strong>&sigma;</strong><sub><em>n</em></sub> back onto the solution curve
+ * <strong>&sigma;</strong>(&middot;) since the above linear extrapolation cannot account
  * for curvature.
  * </p>
  * <p>
@@ -102,19 +102,19 @@
  * The other classes in the package are support classes for those classes.
  * <br>
  * <br>
- * &nbsp; &nbsp; <code><b>CsZeroCurrentEstimator</b></code> - This class is used
+ * &nbsp; &nbsp; <code><strong>CsZeroCurrentEstimator</strong></code> - This class is used
  * for estimating the Courant-Snyder parameters whenever space charge effects
  * are negligible. As described above, in this case it is a direct calculation
  * and very fast. The class should always be used for such a case.
  * <br>
  * <br>
- * &nbsp; &nbsp; <code><b>CsFixedPointEstimator</b></code> - This class
+ * &nbsp; &nbsp; <code><strong>CsFixedPointEstimator</strong></code> - This class
  * estimates Courant-Snyder parameters using the fixed point iteration method,
  * with space charge. At current this class performs very well; its convergence
  * properties are good and it is fast.
  * <br>
  * <br>
- * &nbsp; &nbsp; <code><b>CsContinuationEstimator
+ * &nbsp; &nbsp; <code><strong>CsContinuationEstimator
  * <br>
  * <br>
  * If one has the RMS bunch lengths for the longitudinal direction then they can

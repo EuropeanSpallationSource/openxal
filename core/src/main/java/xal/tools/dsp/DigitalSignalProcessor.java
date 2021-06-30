@@ -138,11 +138,11 @@ public class DigitalSignalProcessor {
 
     /**
      * Compute and return the total variation of the given signal. The total
-     * variation <i>TV</i>(<i>f</i>) of a signal <i>f</i>(&middot;) is defined
+     * variation <em>TV</em>(<em>f</em>) of a signal <em>f</em>(&middot;) is defined
      * as
      * <br>
-     * <br>&nbsp;&nbsp;  <i>TV</i>[<i>f</i>](<i>t</i>) &equiv;
-     * &int;<sup><i>t</i></sup>|<i>df</i>(<i>&tau;</i>)/<i>dt</i>|<i>d&tau;</i>
+     * <br>&nbsp;&nbsp;  <em>TV</em>[<em>f</em>](<em>t</em>) &equiv;
+     * &int;<sup><em>t</em></sup>|<em>df</em>(<em>&tau;</em>)/<em>dt</em>|<em>d&tau;</em>
      *
      * @param arrSignal target signal
      *
@@ -202,20 +202,20 @@ public class DigitalSignalProcessor {
      * </p>
      * <p>
      * In the spirit of the Z transform we assume that the function is periodic
-     * so that <i>f</i>[<i>n</i> + <i>N</i>] = <i>f</i>[<i>n</i>]. In this
-     * manner the auto-correlation <i>R<sub>xx</sub></i>[<i>k</i>] function is
-     * also periodic, specifically, <i>R<sub>xx</sub></i>[<i>-k</i>] =
-     * <i>R<sub>xx</sub></i>[<i>N - k</i>].
+     * so that <em>f</em>[<em>n</em> + <em>N</em>] = <em>f</em>[<em>n</em>]. In this
+     * manner the auto-correlation <em>R<sub>xx</sub></em>[<em>k</em>] function is
+     * also periodic, specifically, <em>R<sub>xx</sub></em>[<em>-k</em>] =
+     * <em>R<sub>xx</sub></em>[<em>N - k</em>].
      * </p>
      * <p>
      * Assuming periodicity gives us the follow fact: it's value will never fall
      * to zero if the data contains a noise process with non-zero mean. Indeed,
      * by the property of the auto-correlation
-     * <i>R<sub>xx</sub></i>[<i>-k</i>] = <i>R<sub>xx</sub></i>[<i>k</i>] and,
+     * <em>R<sub>xx</sub></em>[<em>-k</em>] = <em>R<sub>xx</sub></em>[<em>k</em>] and,
      * therefore,
-     * <i>R<sub>xx</sub></i>[<i>k</i>] = <i>R<sub>xx</sub></i>[<i>N - k</i>] by
+     * <em>R<sub>xx</sub></em>[<em>k</em>] = <em>R<sub>xx</sub></em>[<em>N - k</em>] by
      * periodicity. If the underlying signal has support small enough the
-     * minimum value of the auto-correlation (at <i>k = N</i>/2) will depend
+     * minimum value of the auto-correlation (at <em>k = N</em>/2) will depend
      * only upon the noise process. If we assumed the original data
      * non-periodic, this condition would not occur.
      * </p>
@@ -239,8 +239,8 @@ public class DigitalSignalProcessor {
      * </p>
      * <p>
      * In the spirit of the Z transform we assume that each function is periodic
-     * so that <i>f</i>[<i>n</i> + <i>N</i>] = <i>f</i>[<i>n</i>]. In this
-     * manner the cross-correlation <i>R<sub>xy</sub></i>[<i>k</i>] function is
+     * so that <em>f</em>[<em>n</em> + <em>N</em>] = <em>f</em>[<em>n</em>]. In this
+     * manner the cross-correlation <em>R<sub>xy</sub></em>[<em>k</em>] function is
      * also periodic. More importantly, it's value will never fall to zero if
      * the data contains a noise process with non-zero mean. If the underlying
      * signal has support small enough the minimum value of the
@@ -288,10 +288,10 @@ public class DigitalSignalProcessor {
     /**
      * Compute and return the power spectrum of the given signal. The spectral
      * components are returned in the usual DFT arrangement. Namely, the first
-     * <i>N</i>/2 components are the positive frequency components with zero
+     * <em>N</em>/2 components are the positive frequency components with zero
      * frequency first in ascending order. The next
-     * <i>N</i>/2 components are the negative components with the highest
-     * negative frequency (-<i>N</i>/2) first then in descending order. This
+     * <em>N</em>/2 components are the negative components with the highest
+     * negative frequency (-<em>N</em>/2) first then in descending order. This
      * arrangement is due to the topology of the unit circle in the complex
      * plane.
      *

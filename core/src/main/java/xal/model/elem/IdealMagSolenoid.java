@@ -38,7 +38,7 @@ public class IdealMagSolenoid extends ThickElectromagnet {
      * Creates a new instance of IdealMagSolenoid
      *
      * @param strId identifier for this IdealMagSolenoid object
-     * @param dblFld field gradient strength (in <b>Tesla</b>)
+     * @param dblFld field gradient strength (in <strong>Tesla</strong>)
      * @param dblLen length of the solenoid
      */
     public IdealMagSolenoid(String strId, double dblFld, double dblLen) {
@@ -51,7 +51,7 @@ public class IdealMagSolenoid extends ThickElectromagnet {
      * JavaBean constructor - creates a new uninitialized instance of
      * IdealMagSolenoid
      *
-     * <b>BE CAREFUL</b>
+     * <strong>BE CAREFUL</strong>
      */
     public IdealMagSolenoid() {
         super(TYPE);
@@ -66,9 +66,9 @@ public class IdealMagSolenoid extends ThickElectromagnet {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <b>meters</b>
+     * @param dblLen length of subsection to propagate through <strong>meters</strong>
      *
-     * @return the elapsed time through section<b>Units: seconds</b>
+     * @return the elapsed time through section<strong>Units: seconds</strong>
      */
     @Override
     public double elapsedTime(IProbe probe, double dblLen) {

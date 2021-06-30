@@ -18,16 +18,16 @@ import xal.tools.math.r2.R2x2;
  * Class <code>TransPhaseMatrix</code> represents operations on the transverse
  * phase coordinates. This set of phase space matrices is essentially isomorphic
  * to
- * <b>R</b><sup>4&times;4</sup>, however, in order to represent translations of
+ * <strong>R</strong><sup>4&times;4</sup>, however, in order to represent translations of
  * phase coordinates by matrix multiplication, this class is embedded in the
- * linear operations <b>R</b><sup>5&times;5</sup> "projective space" with
+ * linear operations <strong>R</strong><sup>5&times;5</sup> "projective space" with
  * "homogeneous coordinates".
  * <p>
  * </p>
  * The last coordinate of all homogeneous (transverse) phase vectors
- * <b>v</b> &in; <b>R</b><sup>5</sup>
- * is 1. Thus <b>v</b> = (<i>x,x',y,y'</i>,1). Likewise, the (5,5) element of
- * any projective matrix <b>&Phi;</b> &in; <b>R</b><sup>5&times;5</sup>
+ * <strong>v</strong> &in; <strong>R</strong><sup>5</sup>
+ * is 1. Thus <strong>v</strong> = (<em>x,x',y,y'</em>,1). Likewise, the (5,5) element of
+ * any projective matrix <strong>&Phi;</strong> &in; <strong>R</strong><sup>5&times;5</sup>
  * representing an operator in homogeneous coordinates must be 1.
  * </p>
  *
@@ -187,31 +187,31 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
      * homogeneous transverse phase space. Multiplication by the returned
      * <code>TransPhaseMatrix</code> object is equivalent to translation by the
      * given <code>PhaseVector</code> argument. Specifically, if the argument
-     * <b>dv</b> has coordinates
+     * <strong>dv</strong> has coordinates
      * <br>
      * <pre>
      *
-     *      <b>dv</b> = (dx,dx',dy,dy',1)<sup><i>T</i></sup>
+     *      <strong>dv</strong> = (dx,dx',dy,dy',1)<sup><em>T</em></sup>
      *
-     * then the returned matrix <b>T</b>(<b>dv</b>) has the form
+     * then the returned matrix <strong>T</strong>(<strong>dv</strong>) has the form
      *
      *           |1 0 0 0 dx |
      *           |0 1 0 0 dx'|
-     *  <b>T</b>(<b>dv</b>)  = |0 0 1 0 dy |
+     *  <strong>T</strong>(<strong>dv</strong>)  = |0 0 1 0 dy |
      *           |0 0 0 1 dy'|
      *           |0 0 0 0  1 |
      *
-     * Consequently, given a phase vector <b>v</b> of the form
+     * Consequently, given a phase vector <strong>v</strong> of the form
      *
-     *      <b>v</b> = |x |
+     *      <strong>v</strong> = |x |
      *          |x'|
      *          |y |
      *          |y'|
      *          |1 |
      *
-     * Then operation on <b>v</b> by <b>T</b>(<b>dv</b>)  has the result
+     * Then operation on <strong>v</strong> by <strong>T</strong>(<strong>dv</strong>)  has the result
      *
-     *  <b>T</b>(<b>dv</b>) <b>v</b> = |x + dx |
+     *  <strong>T</strong>(<strong>dv</strong>) <strong>v</strong> = |x + dx |
      *            |x'+ dx'|
      *            |y + dy |
      *            |y'+ dy'|
@@ -237,27 +237,27 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
     /**
      * <p>
      * Compute the rotation matrix in phase space that is essentially the
-     * Cartesian product of the given rotation matrix in <i>SO</i>(2). That is,
-     * denote the given argument as <b>O</b>, then the returned matrix <b>M</b>
-     * is the embedding <b>M</b> = <b>O</b>&times;<b>O</b>&times;<b>I</b>
+     * Cartesian product of the given rotation matrix in <em>SO</em>(2). That is,
+     * denote the given argument as <strong>O</strong>, then the returned matrix <strong>M</strong>
+     * is the embedding <strong>M</strong> = <strong>O</strong>&times;<strong>O</strong>&times;<strong>I</strong>
      * into homogeneous transverse phase space which is isomorphic to
-     * <b>R</b><sup>4&times;4</sup>&times;{1}. Thus, M &in; <b>SO</b>(4) &sub;
-     * <b>R</b><sup>4&times;4</sup>&times;{1} &sub;
-     * <b>R</b><sup>5&times;5</sup>.
+     * <strong>R</strong><sup>4&times;4</sup>&times;{1}. Thus, M &in; <strong>SO</strong>(4) &sub;
+     * <strong>R</strong><sup>4&times;4</sup>&times;{1} &sub;
+     * <strong>R</strong><sup>5&times;5</sup>.
      * </p>
      * <p>
      * Viewing transverse phase-space as a 4D manifold built as the tangent
-     * bundle over transverse coordinate space <b>R</b><sup>2</sup>, then the
-     * fibers of 2D configuration space at a point (<i>x,y</i>) are represented
-     * by the Cartesian planes (<i>x',y'</i>). The returned phase matrix rotates
+     * bundle over transverse coordinate space <strong>R</strong><sup>2</sup>, then the
+     * fibers of 2D configuration space at a point (<em>x,y</em>) are represented
+     * by the Cartesian planes (<em>x',y'</em>). The returned phase matrix rotates
      * these fibers in the same manner as their base point (x,y,z).
      * </p>
      *
      * This is a convenience method to build the above rotation matrix in
-     * <i>SO</i>(4) &sub; <b>R</b><sup>5&times;5</sup>.
+     * <em>SO</em>(4) &sub; <strong>R</strong><sup>5&times;5</sup>.
      *
-     * @return rotation matrix in <i>SO</i>(4) &sub; <i>S0</i>(5) which is
-     * direct product of rotations in <i>S0</i>(2)
+     * @return rotation matrix in <em>SO</em>(4) &sub; <em>S0</em>(5) which is
+     * direct product of rotations in <em>S0</em>(2)
      */
     public static TrnsPhaseMatrix rotationProduct(R2x2 matSO2) {
 
@@ -292,7 +292,7 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
      * @param matPhi phase matrix to be copied
      *
      * @return the part of the phase matrix corresponding to the transverse
-     * phase coordinates <i>x, x', y, </i> and <i> y'</i>.
+     * phase coordinates <em>x, x', y, </em> and <em> y'</em>.
      *
      * @author Christopher K. Allen
      * @since Oct 15, 2013

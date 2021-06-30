@@ -249,16 +249,16 @@ public class RfGap extends AcceleratorNode {
 
     // the RfGapDataSource interface methods:
     /**
-     * Return a polynomial fit of the transit time factor <i>T</i>(&beta;) as a
+     * Return a polynomial fit of the transit time factor <em>T</em>(&beta;) as a
      * function of normalized velocity &beta;.
      *
      * <p>
      * <h4>CKA NOTES:</h4>
-     * &middot; It appears to me that the returned value of <i>T</i>'(&beta;) is
-     * in the units of <b>centimeters</b>.
+     * &middot; It appears to me that the returned value of <em>T</em>'(&beta;) is
+     * in the units of <strong>centimeters</strong>.
      * <br/>
-     * &middot; The units for the transit time factor <i>T</i>(&beta;) are in
-     * <b>meters</b>.
+     * &middot; The units for the transit time factor <em>T</em>(&beta;) are in
+     * <strong>meters</strong>.
      * <br/>
      * &middot; This is a confusing inconsistency and hopefully we can resolve
      * this in the future.
@@ -268,8 +268,8 @@ public class RfGap extends AcceleratorNode {
      * <code>{@link #getTTFPrimeFit()}</code>.
      * </p>
      *
-     * @return &nbsp; &nbsp; <i>T</i>(&beta;) &approx; <i>a</i><sub>0</sub>
-     * + <i>a</i><sub>1</sub>&beta; + <i>a</i><sub>2</sub>&beta;<sup>2</sup> +
+     * @return &nbsp; &nbsp; <em>T</em>(&beta;) &approx; <em>a</em><sub>0</sub>
+     * + <em>a</em><sub>1</sub>&beta; + <em>a</em><sub>2</sub>&beta;<sup>2</sup> +
      * ...
      *
      * @version June 1, 2015
@@ -299,17 +299,17 @@ public class RfGap extends AcceleratorNode {
     /**
      * <p>
      * Return a polynomial fit of the transit time factor derivative
-     * <i>T'</i>(&beta;) as a function of normalized velocity &beta;. Note that
-     * the derivative is with respect to the wave number <i>k</i>; that is,
-     * <i>T</i>'(&beta) = <i>dT</i>(&beta;)/<i>dk</i>.
+     * <em>T'</em>(&beta;) as a function of normalized velocity &beta;. Note that
+     * the derivative is with respect to the wave number <em>k</em>; that is,
+     * <em>T</em>'(&beta) = <em>dT</em>(&beta;)/<em>dk</em>.
      * </p>
      * <p>
      * <h4>CKA NOTES:</h4>
-     * &middot; It appears to me that the returned value of <i>T</i>'(&beta;) is
-     * in the units of <b>centimeters</b>.
+     * &middot; It appears to me that the returned value of <em>T</em>'(&beta;) is
+     * in the units of <strong>centimeters</strong>.
      * <br/>
-     * &middot; The units for the transit time factor <i>T</i>(&beta;) are in
-     * <b>meters</b>.
+     * &middot; The units for the transit time factor <em>T</em>(&beta;) are in
+     * <strong>meters</strong>.
      * <br/>
      * &middot; This is a confusing inconsistency and hopefully we can resolve
      * this in the future.
@@ -320,13 +320,13 @@ public class RfGap extends AcceleratorNode {
      * <br/>
      * &middot; Equally distressing is that the code within
      * <code>IdealRfGap</code>, the modeling element for an RF gap, treats this
-     * value as if it where the derivative with respect to wave number <i>k</i>.
+     * value as if it where the derivative with respect to wave number <em>k</em>.
      * That is, the returned value here is
-     * &part;<i>T</i>(&beta;)/&part;<i>k</i>.
+     * &part;<em>T</em>(&beta;)/&part;<em>k</em>.
      * </p>
      *
-     * @return &nbsp; &nbsp; <i>T</i>(&beta;) &approx; <i>a</i><sub>0</sub>
-     * + <i>a</i><sub>1</sub>&beta; + <i>a</i><sub>2</sub>&beta;<sup>2</sup> +
+     * @return &nbsp; &nbsp; <em>T</em>(&beta;) &approx; <em>a</em><sub>0</sub>
+     * + <em>a</em><sub>1</sub>&beta; + <em>a</em><sub>2</sub>&beta;<sup>2</sup> +
      * ...
      *
      * @version June 1, 2015
@@ -355,11 +355,11 @@ public class RfGap extends AcceleratorNode {
     }
 
     /**
-     * Return a polynomial fit of the sine transit time factor <i>S</i>(&beta;)
+     * Return a polynomial fit of the sine transit time factor <em>S</em>(&beta;)
      * as a function of normalized velocity &beta;.
      *
-     * @return &nbsp; &nbsp; <i>S</i>(&beta;) &approx; <i>b</i><sub>0</sub>
-     * + <i>b</i><sub>1</sub>&beta; + <i>b</i><sub>2</sub>&beta;<sup>2</sup> +
+     * @return &nbsp; &nbsp; <em>S</em>(&beta;) &approx; <em>b</em><sub>0</sub>
+     * + <em>b</em><sub>1</sub>&beta; + <em>b</em><sub>2</sub>&beta;<sup>2</sup> +
      * ...
      *
      * @version June 1, 2015
@@ -389,17 +389,17 @@ public class RfGap extends AcceleratorNode {
     /**
      * <p>
      * Return a polynomial fit of the sine transit time factor derivative
-     * <i>S'</i>(&beta;) as a function of normalized velocity &beta;. Note that
-     * the derivative is with respect to the wave number <i>k</i>; that is,
-     * <i>S</i>'(&beta) = <i>dS</i>(&beta;)/<i>dk</i>.
+     * <em>S'</em>(&beta;) as a function of normalized velocity &beta;. Note that
+     * the derivative is with respect to the wave number <em>k</em>; that is,
+     * <em>S</em>'(&beta) = <em>dS</em>(&beta;)/<em>dk</em>.
      * </p>
      * <p>
      * <h4>CKA NOTES:</h4>
-     * &middot; It appears to me that the returned value of <i>S</i>'(&beta;) is
-     * in the units of <b>centimeters</b>.
+     * &middot; It appears to me that the returned value of <em>S</em>'(&beta;) is
+     * in the units of <strong>centimeters</strong>.
      * <br/>
-     * &middot; The units for the transit time factor <i>S</i>(&beta;) are in
-     * <b>meters</b>.
+     * &middot; The units for the transit time factor <em>S</em>(&beta;) are in
+     * <strong>meters</strong>.
      * <br/>
      * &middot; This is a confusing inconsistency and hopefully we can resolve
      * this in the future.
@@ -409,8 +409,8 @@ public class RfGap extends AcceleratorNode {
      * <code>{@link #getSTFPrimeFit()}</code>.
      * </p>
      *
-     * @return &nbsp; &nbsp; <i>S</i>(&beta;) &approx; <i>b</i><sub>0</sub>
-     * + <i>b</i><sub>1</sub>&beta; + <i>b</i><sub>2</sub>&beta;<sup>2</sup> +
+     * @return &nbsp; &nbsp; <em>S</em>(&beta;) &approx; <em>b</em><sub>0</sub>
+     * + <em>b</em><sub>1</sub>&beta; + <em>b</em><sub>2</sub>&beta;<sup>2</sup> +
      * ...
      *
      * @version June 1, 2015
@@ -438,9 +438,9 @@ public class RfGap extends AcceleratorNode {
     }
 
     /**
-     * @return <b>0</b> if the gap is part of a 0 mode cavity structure (e.g.
+     * @return <strong>0</strong> if the gap is part of a 0 mode cavity structure (e.g.
      * DTL) <br/>
-     * <b>1</b> if the gap is part of a &pi; mode cavity (e.g. CCL,
+     * <strong>1</strong> if the gap is part of a &pi; mode cavity (e.g. CCL,
      * Superconducting)
      */
     public double getStructureMode() {
@@ -472,7 +472,7 @@ public class RfGap extends AcceleratorNode {
     }
 
     /**
-     * returns whether this is the <b>last</b> gap of a cavity string
+     * returns whether this is the <strong>last</strong> gap of a cavity string
      */
     public boolean isEndCell() {
         if (bucRfGap.getEndCell() == 1) {
@@ -487,11 +487,11 @@ public class RfGap extends AcceleratorNode {
      * The energy gain is given by the Panofsky equation
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; &Delta;<i>W</i> =
-     * <i>q</i> <i>E</i><sub>0</sub><i>L</i> <i>T</i>(&beta;)
+     * &nbsp; &nbsp; &Delta;<em>W</em> =
+     * <em>q</em> <em>E</em><sub>0</sub><em>L</em> <em>T</em>(&beta;)
      * cos(&phi;<sub>0</sub>).
      *
-     * @return design energy gain &Delta;<i>W</i> (eV)
+     * @return design energy gain &Delta;<em>W</em> (eV)
      *
      * Added 10/17/02 CKA
      */

@@ -189,8 +189,8 @@ public class TwissProbeState extends BunchProbeState<TwissProbeState> {
      * Set the betatron phase with space charge for each phase plane.
      *
      * @param vecPhase vector
-     * (&psi;<sub><i>x</i></sub>,&psi;<sub><i>y</i></sub>,&psi;<sub><i>z</i></sub>)
-     * of betatron phases in <b>radians </b>
+     * (&psi;<sub><em>x</em></sub>,&psi;<sub><em>y</em></sub>,&psi;<sub><em>z</em></sub>)
+     * of betatron phases in <strong>radians </strong>
      */
     public void setBetatronPhase(R3 vecPhase) {
         this.vecPhsBeta = vecPhase;
@@ -352,8 +352,8 @@ public class TwissProbeState extends BunchProbeState<TwissProbeState> {
      * Returns the betatron phase with space charge for all three phase planes.
      *
      * @return vector
-     * (&psi;<sub><i>x</i></sub>,&psi;<sub><i>y</i></sub>,&psi;<sub><i>z</i></sub>)
-     * of betatron phases in <b>radians </b>
+     * (&psi;<sub><em>x</em></sub>,&psi;<sub><em>y</em></sub>,&psi;<sub><em>z</em></sub>)
+     * of betatron phases in <strong>radians </strong>
      */
     public R3 getBetatronPhase() {
         return this.vecPhsBeta;
@@ -378,7 +378,7 @@ public class TwissProbeState extends BunchProbeState<TwissProbeState> {
 //     * 
 //     * @param   index   phase coordinate index of desired "dispersion"
 //     * 
-//     * @return  chromatic dispersion in <b>meters/radian</b> or <b>radians/radian</b>
+//     * @return  chromatic dispersion in <strong>meters/radian</strong> or <strong>radians/radian</strong>
 //     * 
 //     */
 //    public double getChromDispersion(PhaseIndex index)  {
@@ -407,7 +407,7 @@ public class TwissProbeState extends BunchProbeState<TwissProbeState> {
 //     *  See D.C. Carey, "The Optics of Charged Particle Beams".
 //     *  
 //     * @param   index   phase coordinate index of desired "dispersion"
-//     * @param   d       dispersion in <b>meters/radian</b> or <b>radians/radian</b>
+//     * @param   d       dispersion in <strong>meters/radian</strong> or <strong>radians/radian</strong>
 //     */
 //    public void setChromDispersion(PhaseIndex index, double d)  {
 //        this.getResponseMatrix().setElem(index.val(), PhaseMatrix.IND_ZP, d);

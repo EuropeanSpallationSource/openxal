@@ -111,7 +111,7 @@ public class XalPvDescriptor {
      * Copy constructor. Create a new a deep copy of the given PV Descriptor.
      *
      * <p>
-     * <b>NOTE:</b> Added to implement the functionality of PvDescriptor in
+     * <strong>NOTE:</strong> Added to implement the functionality of PvDescriptor in
      * XAL.<br>
      * &middot; Jonathan M. Freed <br>
      * &middot; Jul 15, 2014
@@ -189,7 +189,7 @@ public class XalPvDescriptor {
      * Returns a deep copy of this object, as deep as you can get anyway.
      *
      * <p>
-     * <b>NOTE:</b> Added to implement the functionality of PvDescriptor in
+     * <strong>NOTE:</strong> Added to implement the functionality of PvDescriptor in
      * XAL.<br>
      * &middot; Jonathan M. Freed <br>
      * &middot; Jul 15, 2014
@@ -209,7 +209,7 @@ public class XalPvDescriptor {
      * Write out the readback and set signal names for this PV descriptor.
      *
      * <p>
-     * <b>NOTE:</b> Added to implement the functionality of PvDescriptor in
+     * <strong>NOTE:</strong> Added to implement the functionality of PvDescriptor in
      * XAL.<br>
      * &middot; Jonathan M. Freed <br>
      * &middot; Jul 15, 2014

@@ -9,24 +9,24 @@ package xal.tools.dsp;
 /**
  * <p>
  * Convenience class implementing a simple 1<sup>st</sup> order digital
- * integrator. The response <i>y<sub>n</sub></i> of this filter to an input
- * <i>x<sub>n</sub></i>
+ * integrator. The response <em>y<sub>n</sub></em> of this filter to an input
+ * <em>x<sub>n</sub></em>
  * is given by
  * <br>
- * <br>&nbsp;&nbsp;  <i>y<sub>n</sub></i> = <i>y<sub>n</i>-1</sub> +
- * <i>x<sub>n</sub></i><br>
+ * <br>&nbsp;&nbsp;  <em>y<sub>n</sub></em> = <em>y<sub>n</em>-1</sub> +
+ * <em>x<sub>n</sub></em><br>
  * <br>
- * Thus, the transfer function <i>H</i>(<i>z</i>) is given by
+ * Thus, the transfer function <em>H</em>(<em>z</em>) is given by
  * <br>
- * <br>&nbsp;&nbsp;  <i>H</i>(<i>z</i>) = 1/(1 - <i>z</i><sup>-1</sup>)<br>
+ * <br>&nbsp;&nbsp;  <em>H</em>(<em>z</em>) = 1/(1 - <em>z</em><sup>-1</sup>)<br>
  * <br>
- * where <i>z</i> is the Z-transform variable. Note that the integrator is
- * unstable for zero frequency corresponding to <i>z</i> = 1, which is expected
+ * where <em>z</em> is the Z-transform variable. Note that the integrator is
+ * unstable for zero frequency corresponding to <em>z</em> = 1, which is expected
  * for integration.
  * </p>
  * <p>
  * The integrator is initialized so that the constant of integration
- * (<i>y</i><sub>-1</sub>) is zero. This value may be changed with a call to
+ * (<em>y</em><sub>-1</sub>) is zero. This value may be changed with a call to
  * {@link DigitalIntegrator#setConstantOfIntegration(double)}.
  * </p>
  *

@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * This class is used to test the connections between a SCADA structure and an
  * <code>AcceleratorNode</code> object. This is done without sending any data
- * (i.e., a <tt>caget</tt> or <tt>caput</tt> command. Moreover, all the
+ * (i.e., a <kbd>caget</kbd> or <kbd>caput</kbd> command. Moreover, all the
  * connections are tested in batch and the timeout period is specified by the
  * user (i.e., it is not the default channel access timeout).
  *

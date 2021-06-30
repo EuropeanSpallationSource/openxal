@@ -46,62 +46,62 @@ package xal.tools.math;
  * </p>
  * <p>
  * Implementations for integer-order cylindrical Bessel functions of the first
- * and second kind (i.e., <i>J<sub>n</sub></i>(<i>x</i>) and
- * <i>Y<sub>n</sub></i>(<i>x</i>), <i>n</i> = 1,2,3,... )were taken from
+ * and second kind (i.e., <em>J<sub>n</sub></em>(<em>x</em>) and
+ * <em>Y<sub>n</sub></em>(<em>x</em>), <em>n</em> = 1,2,3,... )were taken from
  * <a href="http://www.koders.com">www.koders.com</a> and the copyright notice
  * is included in the Java source file. The implementation is based upon that
  * presented in
- * <a href="http://www.nr.com"><i>Numerical Recipes</i></a>
- * by W.H. Press, <i>et. al.</i>
+ * <a href="http://www.nr.com"><em>Numerical Recipes</em></a>
+ * by W.H. Press, <em>et. al.</em>
  * </p>
  * <p>
- * Spherical Bessel functions <i>j<sub>n</sub></i>(<i>x</i>) can be represented
+ * Spherical Bessel functions <em>j<sub>n</sub></em>(<em>x</em>) can be represented
  * as cylindrical Bessel functions with half-integer order. Specifically, we
  * have
  * <br>
  * <br>
- * &nbsp; <i>j<sub>n</sub></i>(<i>x</i>) =
- * (&pi;/2<i>x</i>)<sup>1/2</sup><i>J<sub>n</i>+&frac12;</sub>(<i>x</i>).
+ * &nbsp; <em>j<sub>n</sub></em>(<em>x</em>) =
+ * (&pi;/2<em>x</em>)<sup>1/2</sup><em>J<sub>n</em>+&frac12;</sub>(<em>x</em>).
  * <br>
  * <br>
  * However, since half-order cylindrical Bessel functions are not included in
  * this class (they are more difficult to implement), an implementation based
  * upon the above formula is not feasible. Instead, spherical Bessel functions
- * <i>j<sub>n</sub></i>(<i>x</i>) for <i>n</i> = 0, 1, 2, 3, 4 are implemented
+ * <em>j<sub>n</sub></em>(<em>x</em>) for <em>n</em> = 0, 1, 2, 3, 4 are implemented
  * using their trigonometric representations.
  * </p>
  * <p>
  * <strong>NOTES</strong>: (CKA)
  * <br>
  * &middot; There exists a recurrence relationship between Bessel functions of
- * different orders. For example, if <i>B<sub>n</sub></i>(<i>x</i>) is any
- * cylindrical Bessel function of order <i>n</i>, we have the following:
+ * different orders. For example, if <em>B<sub>n</sub></em>(<em>x</em>) is any
+ * cylindrical Bessel function of order <em>n</em>, we have the following:
  * <br>
  * <br>
- * &nbsp;  <i>B<sub>n</i>+1</sub>(<i>x</i>) =
- * (2<i>n</i>/<i>x</i>)<i>B<sub>n</sub></i>(<i>x</i>) -
- * <i>B<sub>n</i>-1</sub>(<i>x</i>).
+ * &nbsp;  <em>B<sub>n</em>+1</sub>(<em>x</em>) =
+ * (2<em>n</em>/<em>x</em>)<em>B<sub>n</sub></em>(<em>x</em>) -
+ * <em>B<sub>n</em>-1</sub>(<em>x</em>).
  * <br>
  * <br>
  * However, this formula is numerically unstable for Bessel functions of the
- * first kind <i>J<sub>n</sub></i>(<i>x</i>). Thus, it cannot be used to compute
- * the higher order <i>J<sub>n</sub></i>(<i>x</i>) using recursion over lower
+ * first kind <em>J<sub>n</sub></em>(<em>x</em>). Thus, it cannot be used to compute
+ * the higher order <em>J<sub>n</sub></em>(<em>x</em>) using recursion over lower
  * orders.
  * <br>
  * &middot; We can apply the above recurrence relation to spherical Bessel
  * functions by expressing them in terms of cylindrical Bessel functions.
  * Letting
- * <i>b<sub>n</sub></i>(<i>x</i>) represent any spherical Bessel function we
+ * <em>b<sub>n</sub></em>(<em>x</em>) represent any spherical Bessel function we
  * have
  * <br>
  * <br>
- * &nbsp; <i>b<sub>n</i>+1</sub>(<i>x</i>) =
- * [(2<i>n</i>+1)/<i>x</i>]<i>b<sub>n</sub></i>(<i>x</i>) -
- * <i>b<sub>n</i>-1</sub>(<i>x</i>).
+ * &nbsp; <em>b<sub>n</em>+1</sub>(<em>x</em>) =
+ * [(2<em>n</em>+1)/<em>x</em>]<em>b<sub>n</sub></em>(<em>x</em>) -
+ * <em>b<sub>n</em>-1</sub>(<em>x</em>).
  * <br>
  * <br>
  * Again, this formula is numerically unstable for the Bessel functions of the
- * first kind <i>j<sub>n</sub></i>(<i>x</i>). However, it can be used to
+ * first kind <em>j<sub>n</sub></em>(<em>x</em>). However, it can be used to
  * determine the representation of each Bessel function in terms of
  * trigonometric functions.
  * </p>
@@ -109,8 +109,8 @@ package xal.tools.math;
  * <h2>References</h2>
  * [1] <a href="http://www.koders.com">www.koders.com</a>
  * <br>
- * [2]<a href="http://www.nr.com/"><i>Numerical Recipes, The Art of Scientific
- * Computing, Third Edition,</i>
+ * [2]<a href="http://www.nr.com/"><em>Numerical Recipes, The Art of Scientific
+ * Computing, Third Edition,</em>
  * W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery (Cambridge
  * University Press, Cambridge, 2007).
  * </a>
@@ -151,12 +151,12 @@ public final class BesselFunction {
 
     /**
      * Compute the zero<sup>th</sup> order Bessel function of the first kind,
-     * <i>J</i><sub>0</sub>(<i>x</i>).
+     * <em>J</em><sub>0</sub>(<em>x</em>).
      *
      * @param x a double value
      *
      * @return the Bessel function of order zero in the argument,
-     * <i>J</i><sub>0</sub>(<i>x</i>).
+     * <em>J</em><sub>0</sub>(<em>x</em>).
      */
     public static double J0(final double x) {
         double ax;
@@ -187,11 +187,11 @@ public final class BesselFunction {
 
     /**
      * Compute the first-order Bessel function of the first kind,
-     * <i>J</i><sub>1</sub>(<i>x</i>).
+     * <em>J</em><sub>1</sub>(<em>x</em>).
      *
      * @param x a double value
      * @return the Bessel function of order 1 of the argument,
-     * <i>J</i><sub>1</sub>(<i>x</i>).
+     * <em>J</em><sub>1</sub>(<em>x</em>).
      */
     public static double J1(final double x) {
 
@@ -229,19 +229,19 @@ public final class BesselFunction {
      * <h2>Arbitrary Order Bessel Function of First Kind</h2>
      * <p>
      * Computes <strong>integer</strong> order Bessel function of the first
-     * kind, <i>J</i><sub><i>n</i></sub>(<i>x</i>).
+     * kind, <em>J</em><sub><em>n</em></sub>(<em>x</em>).
      * </p>
      * <p>
      * This implementation relies upon evaluation of the zero and first order
      * Bessel functions
-     * <i>J</i><sub>0</sub>(<i>x</i>) and <i>J</i><sub>1</sub>(<i>x</i>)..
+     * <em>J</em><sub>0</sub>(<em>x</em>) and <em>J</em><sub>1</sub>(<em>x</em>)..
      * </p>
      *
      * @param n integer order
      * @param x a double value
      *
-     * @return the Bessel function of order <i>n</i> of the argument,
-     * <i>J</i><sub><i>n</i></sub>(<i>x</i>).
+     * @return the Bessel function of order <em>n</em> of the argument,
+     * <em>J</em><sub><em>n</em></sub>(<em>x</em>).
      *
      * @see BesselFunction#J0(double)
      * @see BesselFunction#J1(double)
@@ -308,17 +308,17 @@ public final class BesselFunction {
     /**
      * <p>
      * Compute the zero<sup>th</sup> order Bessel function of the second kind,
-     * <i>Y</i><sub>0</sub>(<i>x</i>).
+     * <em>Y</em><sub>0</sub>(<em>x</em>).
      * </p>
      * <p>
      * This implementation relies upon evaluation of the zero order Bessel
-     * function <i>Y</i><sub>0</sub>(<i>x</i>).
+     * function <em>Y</em><sub>0</sub>(<em>x</em>).
      * </p>
      *
      * @param x a double value
      *
      * @return the Bessel function of the second kind, of order 0 of the
-     * argument, <i>Y</i><sub>0</sub>(<i>x</i>).
+     * argument, <em>Y</em><sub>0</sub>(<em>x</em>).
      *
      * @see BesselFunction#J0(double)
      */
@@ -351,17 +351,17 @@ public final class BesselFunction {
     /**
      * <p>
      * Compute the first-order Bessel function of the second kind,
-     * <i>Y</i><sub>1</sub>(<i>x</i>).
+     * <em>Y</em><sub>1</sub>(<em>x</em>).
      * </p>
      * <p>
      * This implementation relies upon evaluation of the first order Bessel
-     * function <i>Y</i><sub>1</sub>(<i>x</i>).
+     * function <em>Y</em><sub>1</sub>(<em>x</em>).
      * </p>
      *
      * @param x a double value
      *
      * @return the Bessel function of the second kind, of order 1 of the
-     * argument, <i>Y</i><sub>1</sub>(<i>x</i>).
+     * argument, <em>Y</em><sub>1</sub>(<em>x</em>).
      *
      * @see BesselFunction#J1(double)
      */
@@ -394,20 +394,20 @@ public final class BesselFunction {
      * <h2>Arbitrary Order Bessel Function of Second Kind</h2>
      * <p>
      * Computes <strong>integer</strong> order Bessel function of the second
-     * kind, <i>Y</i><sub><i>n</i></sub>(<i>x</i>).
+     * kind, <em>Y</em><sub><em>n</em></sub>(<em>x</em>).
      * </p>
      * <p>
      * This implementation relies upon evaluation of the zero and first order
      * Bessel functions
-     * <i>Y</i><sub>0</sub>(<i>x</i>) and <i>Y</i><sub>1</sub>(<i>x</i>).
+     * <em>Y</em><sub>0</sub>(<em>x</em>) and <em>Y</em><sub>1</sub>(<em>x</em>).
      * </p>
      *
      * @param n integer order
      * @param x a double value
      *
-     * @return the Bessel function of the second kind, of order <i>n</i> of the
+     * @return the Bessel function of the second kind, of order <em>n</em> of the
      * argument,
-     * <i>Y</i><sub><i>n</i></sub>(<i>x</i>).
+     * <em>Y</em><sub><em>n</em></sub>(<em>x</em>).
      */
     public static double Yn(final int n, final double x) {
         double by, bym, byp, tox;
@@ -441,32 +441,32 @@ public final class BesselFunction {
      * follows:
      * <br>
      * <br>
-     * &nbsp; sinc(<i>x</i>) &equiv; sin(<i>x</i>)/<i>x</i>.
+     * &nbsp; sinc(<em>x</em>) &equiv; sin(<em>x</em>)/<em>x</em>.
      * <br>
      * <br>
      * The function is <strong>not</strong> singular at
-     * <i>x</i> = 0, which may easily be verified with L'hopital's rule.
+     * <em>x</em> = 0, which may easily be verified with L'hopital's rule.
      * </p>
      * <p>
      * To avoid numerical instability, for small values of
-     * <i>x</i> we Taylor expand sinc(<i>x</i>) to sixth order about <i>x</i> =
+     * <em>x</em> we Taylor expand sinc(<em>x</em>) to sixth order about <em>x</em> =
      * 0.
      * <br>
      * <br>
-     * &nbsp; sinc(x) &asymp; 1 - <i>x</i><sup>2</sup>/6 +
-     * <i>x</i><sup>4</sup>/120 -
-     * <i>x</i><sup>6</sup>/5040 +
-     * <i>O</i>(<i>x</i><sup>8</sup>).
+     * &nbsp; sinc(x) &asymp; 1 - <em>x</em><sup>2</sup>/6 +
+     * <em>x</em><sup>4</sup>/120 -
+     * <em>x</em><sup>6</sup>/5040 +
+     * <em>O</em>(<em>x</em><sup>8</sup>).
      * <br>
      * <br>
-     * otherwise we return sin(<i>x</i>)/<i>x</i>.
+     * otherwise we return sin(<em>x</em>)/<em>x</em>.
      * </p>
      *
      * <p>
      * <strong>NOTE</strong>: (CKA)
      * <br>
      * &middot; The sinc function is the zero<sup>th</sup> order spherical
-     * Bessel function <i>j</i><sub>0</sub>.
+     * Bessel function <em>j</em><sub>0</sub>.
      * </p>
      *
      * @param x any real number
@@ -492,13 +492,13 @@ public final class BesselFunction {
      * <p>
      * This function is simply an alias for the <code>sinc</code> function,
      * which is the first spherical Bessel function,
-     * <i>j</i><sub>0</sub>(<i>x</i>).
+     * <em>j</em><sub>0</sub>(<em>x</em>).
      * </p>
      *
      * @param x any real number (double value)
      *
      * @return spherical Bessel function of the first kind of order 0,
-     * <i>j</i><sub>0</sub>(<i>x</i>)
+     * <em>j</em><sub>0</sub>(<em>x</em>)
      *
      * @see ElementaryFunction#sinc(double)
      * @see BesselFunction#sinc(double)
@@ -513,33 +513,33 @@ public final class BesselFunction {
      *
      * <p>
      * Direct computation of the first-order spherical Bessel function of the
-     * first kind, <i>j</i><sub>1</sub>(<i>x</i>) in terms of trigonometric
+     * first kind, <em>j</em><sub>1</sub>(<em>x</em>) in terms of trigonometric
      * functions.
      * <p>
      * To avoid numerical instability, for small values of
-     * <i>x</i> we Taylor expand <i>j</i><sub>1</sub>(<i>x</i>) to seventh order
-     * about <i>x</i> = 0.
+     * <em>x</em> we Taylor expand <em>j</em><sub>1</sub>(<em>x</em>) to seventh order
+     * about <em>x</em> = 0.
      * <br>
      * <br>
-     * &nbsp;  <i>j</i><sub>1</sub>(<i>x</i>) &asymp;
-     * <i>x</i>/3 -
-     * <i>x</i><sup>3</sup>/30 +
-     * <i>x</i><sup>5</sup>/840 -
-     * <i>x</i><sup>7</sup>/45360 +
-     * <i>O</i>(<i>x</i><sup>9</sup>).
+     * &nbsp;  <em>j</em><sub>1</sub>(<em>x</em>) &asymp;
+     * <em>x</em>/3 -
+     * <em>x</em><sup>3</sup>/30 +
+     * <em>x</em><sup>5</sup>/840 -
+     * <em>x</em><sup>7</sup>/45360 +
+     * <em>O</em>(<em>x</em><sup>9</sup>).
      * <br>
      * <br>
      * otherwise we return
      * <br>
      * <br>
-     * <i>j</i><sub>1</sub>(<i>x</i>) = sin(<i>x</i>)/<i>x</i><sup>2</sup> -
-     * cos(<i>x</i>)/<i>x</i>.
+     * <em>j</em><sub>1</sub>(<em>x</em>) = sin(<em>x</em>)/<em>x</em><sup>2</sup> -
+     * cos(<em>x</em>)/<em>x</em>.
      * </p>
      *
      * @param x any real number (double value)
      *
      * @return first-order spherical Bessel function of the first kind,
-     * <i>j</i><sub>1</sub>(<i>x</i>)
+     * <em>j</em><sub>1</sub>(<em>x</em>)
      */
     public static double j1(final double x) {
 
@@ -567,33 +567,33 @@ public final class BesselFunction {
      *
      * <p>
      * Direct computation of the second-order spherical Bessel function of the
-     * first kind, <i>j</i><sub>2</sub>(<i>x</i>) in terms of trigonometric
+     * first kind, <em>j</em><sub>2</sub>(<em>x</em>) in terms of trigonometric
      * functions.
      * <p>
      * To avoid numerical instability, for small values of
-     * <i>x</i> we Taylor expand <i>j</i><sub>2</sub>(<i>x</i>) to eighth order
-     * about <i>x</i> = 0.
+     * <em>x</em> we Taylor expand <em>j</em><sub>2</sub>(<em>x</em>) to eighth order
+     * about <em>x</em> = 0.
      * <br>
      * <br>
-     * &nbsp;  <i>j</i><sub>2</sub>(<i>x</i>) &asymp;
-     * <i>x</i><sup>2</sup>/15 -
-     * <i>x</i><sup>4</sup>/210 +
-     * <i>x</i><sup>6</sup>/7560 -
-     * <i>x</i><sup>8</sup>/498960 +
-     * <i>O</i>(<i>x</i><sup>10</sup>).
+     * &nbsp;  <em>j</em><sub>2</sub>(<em>x</em>) &asymp;
+     * <em>x</em><sup>2</sup>/15 -
+     * <em>x</em><sup>4</sup>/210 +
+     * <em>x</em><sup>6</sup>/7560 -
+     * <em>x</em><sup>8</sup>/498960 +
+     * <em>O</em>(<em>x</em><sup>10</sup>).
      * <br>
      * <br>
      * otherwise we return
      * <br>
      * <br>
-     * <i>j</i><sub>2</sub>(<i>x</i>) = (3/<i>x</i> - 1)sin(<i>x</i>)/<i>x</i> -
-     * 3cos(<i>x</i>)/<i>x</i><sup>2</sup>.
+     * <em>j</em><sub>2</sub>(<em>x</em>) = (3/<em>x</em> - 1)sin(<em>x</em>)/<em>x</em> -
+     * 3cos(<em>x</em>)/<em>x</em><sup>2</sup>.
      * </p>
      *
      * @param x any real number (double value)
      *
      * @return second-order spherical Bessel function of the first kind,
-     * <i>j</i><sub>2</sub>(<i>x</i>)
+     * <em>j</em><sub>2</sub>(<em>x</em>)
      */
     public static double j2(final double x) {
 
@@ -621,33 +621,33 @@ public final class BesselFunction {
      *
      * <p>
      * Direct computation of the third-order spherical Bessel function of the
-     * first kind, <i>j</i><sub>3</sub>(<i>x</i>) in terms of trigonometric
+     * first kind, <em>j</em><sub>3</sub>(<em>x</em>) in terms of trigonometric
      * functions.
      * <p>
      * To avoid numerical instability, for small values of
-     * <i>x</i> we Taylor expand <i>j</i><sub>3</sub>(<i>x</i>) to seventh order
-     * about <i>x</i> = 0.
+     * <em>x</em> we Taylor expand <em>j</em><sub>3</sub>(<em>x</em>) to seventh order
+     * about <em>x</em> = 0.
      * <br>
      * <br>
-     * &nbsp;  <i>j</i><sub>3</sub>(<i>x</i>) &asymp;
-     * <i>x</i><sup>3</sup>/105 +
-     * <i>x</i><sup>5</sup>/1890 -
-     * <i>x</i><sup>7</sup>/83160 +
-     * <i>O</i>(<i>x</i><sup>9</sup>).
+     * &nbsp;  <em>j</em><sub>3</sub>(<em>x</em>) &asymp;
+     * <em>x</em><sup>3</sup>/105 +
+     * <em>x</em><sup>5</sup>/1890 -
+     * <em>x</em><sup>7</sup>/83160 +
+     * <em>O</em>(<em>x</em><sup>9</sup>).
      * <br>
      * <br>
      * otherwise we return
      * <br>
      * <br>
-     * <i>j</i><sub>3</sub>(<i>x</i>) = (15/<i>x</i><sup>3</sup> -
-     * 6/<i>x</i>)sin(<i>x</i>)/<i>x</i> - (1 -
-     * 15/<i>x</i><sup>2</sup>)cos(<i>x</i>)/<i>x</i>.
+     * <em>j</em><sub>3</sub>(<em>x</em>) = (15/<em>x</em><sup>3</sup> -
+     * 6/<em>x</em>)sin(<em>x</em>)/<em>x</em> - (1 -
+     * 15/<em>x</em><sup>2</sup>)cos(<em>x</em>)/<em>x</em>.
      * </p>
      *
      * @param x any real number (double value)
      *
      * @return third-order spherical Bessel function of the first kind,
-     * <i>j</i><sub>3</sub>(<i>x</i>)
+     * <em>j</em><sub>3</sub>(<em>x</em>)
      */
     public static double j3(final double x) {
 
@@ -676,33 +676,33 @@ public final class BesselFunction {
      *
      * <p>
      * Direct computation of the fourth-order spherical Bessel function of the
-     * first kind, <i>j</i><sub>4</sub>(<i>x</i>) in terms of trigonometric
+     * first kind, <em>j</em><sub>4</sub>(<em>x</em>) in terms of trigonometric
      * functions.
      * <p>
      * To avoid numerical instability, for small values of
-     * <i>x</i> we Taylor expand <i>j</i><sub>4</sub>(<i>x</i>) to eighth order
-     * about <i>x</i> = 0.
+     * <em>x</em> we Taylor expand <em>j</em><sub>4</sub>(<em>x</em>) to eighth order
+     * about <em>x</em> = 0.
      * <br>
      * <br>
-     * &nbsp;  <i>j</i><sub>2</sub>(<i>x</i>) &asymp;
-     * <i>x</i><sup>4</sup>/945 -
-     * <i>x</i><sup>6</sup>/20790 +
-     * <i>x</i><sup>8</sup>/1081080 +
-     * <i>O</i>(<i>x</i><sup>10</sup>).
+     * &nbsp;  <em>j</em><sub>2</sub>(<em>x</em>) &asymp;
+     * <em>x</em><sup>4</sup>/945 -
+     * <em>x</em><sup>6</sup>/20790 +
+     * <em>x</em><sup>8</sup>/1081080 +
+     * <em>O</em>(<em>x</em><sup>10</sup>).
      * <br>
      * <br>
      * otherwise we return
      * <br>
      * <br>
-     * <i>j</i><sub>4</sub>(<i>x</i>) = (1 - 45/<i>x</i><sup>2</sup> +
-     * 105/<i>x</i><sup>4</sup>)sin(<i>x</i>)/<i>x</i>
-     * + (10/<i>x</i> - 105/<i>x</i><sup>3</sup>)cos(<i>x</i>)/<i>x</i>.
+     * <em>j</em><sub>4</sub>(<em>x</em>) = (1 - 45/<em>x</em><sup>2</sup> +
+     * 105/<em>x</em><sup>4</sup>)sin(<em>x</em>)/<em>x</em>
+     * + (10/<em>x</em> - 105/<em>x</em><sup>3</sup>)cos(<em>x</em>)/<em>x</em>.
      * </p>
      *
      * @param x any real number (double value)
      *
      * @return fourth-order spherical Bessel function of the first kind,
-     * <i>j</i><sub>4</sub>(<i>x</i>)
+     * <em>j</em><sub>4</sub>(<em>x</em>)
      */
     public static double j4(final double x) {
 

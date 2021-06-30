@@ -162,7 +162,7 @@ public abstract class TrackerAdaptive extends Tracker {
      * Set the integration accuracy order for the underlying stepping algorithm.
      * For example, when using a second-order accurate algorithm the residual
      * error is of the order
-     * <i>h</i>^2 where <i>h</i> is the step size.
+     * <em>h</em>^2 where <em>h</em> is the step size.
      *
      * @param intOrder integration order
      */
@@ -174,7 +174,7 @@ public abstract class TrackerAdaptive extends Tracker {
      * regardless of the residual error. If this value is cleared to zero, then
      * the step size is unbound.
      *
-     * @param dblMaxStep maximum allowable step size in <b>meters</b>
+     * @param dblMaxStep maximum allowable step size in <strong>meters</strong>
      */
     public void setMaxStepSize(final double dblMaxStep) {
         this.dblMaxStep = dblMaxStep;
@@ -199,7 +199,7 @@ public abstract class TrackerAdaptive extends Tracker {
      * regardless of the residual error. If this value is cleared to zero, then
      * the step size is unbound.
      *
-     * @param dblMaxStepDriftPmq maximum allowable step size in <b>meters</b>
+     * @param dblMaxStepDriftPmq maximum allowable step size in <strong>meters</strong>
      */
     public void setMaxStepSizeDriftPmq(final double dblMaxStepDriftPmq) {
         this.dblMaxStepDriftPmq = dblMaxStepDriftPmq;
@@ -239,7 +239,7 @@ public abstract class TrackerAdaptive extends Tracker {
      *
      * This feature prevents excessive micro-management of the step size.
      *
-     * @param dblSlack size of the slack region in <b>meters</b>
+     * @param dblSlack size of the slack region in <strong>meters</strong>
      */
     public void setSlackTolerance(final double dblSlack) {
         this.dblSlack = dblSlack;
@@ -250,7 +250,7 @@ public abstract class TrackerAdaptive extends Tracker {
      * that the step size will be modified as the algorithm progresses according
      * to the adaptation rule.
      *
-     * @param dblStepSize initial step size in <b>meters</b>
+     * @param dblStepSize initial step size in <strong>meters</strong>
      */
     public void setStepSize(final double dblStepSize) {
         this.dblStepSize = dblStepSize;
@@ -285,7 +285,7 @@ public abstract class TrackerAdaptive extends Tracker {
     /**
      * Return the current step size.
      *
-     * @return the current step size in <b>meters</b>
+     * @return the current step size in <strong>meters</strong>
      */
     public double getStepSize() {
         return dblStepSize;
@@ -295,7 +295,7 @@ public abstract class TrackerAdaptive extends Tracker {
      * Return the maximum allowable step size. The step sizing algorithm is
      * bound by this value, or unbounded if zero.
      *
-     * @return maximum allowable step size in <b>meters</b>
+     * @return maximum allowable step size in <strong>meters</strong>
      */
     public double getMaxStepSize() {
         return this.dblMaxStep;
@@ -305,7 +305,7 @@ public abstract class TrackerAdaptive extends Tracker {
      * Return the maximum allowable step size. The step sizing algorithm is
      * bound by this value, or unbounded if zero.
      *
-     * @return maximum allowable step size in <b>meters</b>
+     * @return maximum allowable step size in <strong>meters</strong>
      */
     public double getMaxStepSizeDriftPmq() {
         return this.dblMaxStepDriftPmq;
@@ -337,7 +337,7 @@ public abstract class TrackerAdaptive extends Tracker {
      * Step size adjustment slack tolerance. If adjustments in the step size are
      * less than this percentage, we do nothing.
      *
-     * @return size of the slack region in <b>meters</b>
+     * @return size of the slack region in <strong>meters</strong>
      */
     public double getSlackTolerance() {
         return dblSlack;

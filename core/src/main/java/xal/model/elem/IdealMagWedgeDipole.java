@@ -96,7 +96,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * Note that off-axis particles will experience a different path length
      * which is accounted for in the dynamics.
      *
-     * @param dblLen design path length through bend in <b>meters</b>
+     * @param dblLen design path length through bend in <strong>meters</strong>
      */
     public void setLength(double dblLen) {
         this.getMagBody().setLength(dblLen);
@@ -122,7 +122,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
     /**
      * Set the gap size between the dipole magnet poles.
      *
-     * @param dblGap gap size in <b>meters</b>
+     * @param dblGap gap size in <strong>meters</strong>
      */
     public void setGapSize(double dblGap) {
         this.getEntrFace().setGapHeight(dblGap);
@@ -133,7 +133,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
     /**
      * Set the entrance pole face angle with respect to the design trajectory
      *
-     * @param dblAngPole pole face angle in <b>radians</b>
+     * @param dblAngPole pole face angle in <strong>radians</strong>
      */
     public void setEntrPoleAngle(double dblAngPole) {
         this.getEntrFace().setPoleFaceAngle(dblAngPole);
@@ -142,7 +142,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
     /**
      * Set the exit pole face angle with respect to the design trajectory
      *
-     * @param dblAngPole pole face angle in <b>radians</b>
+     * @param dblAngPole pole face angle in <strong>radians</strong>
      */
     public void setExitPoleAngle(double dblAngPole) {
         this.getExitFace().setPoleFaceAngle(dblAngPole);
@@ -152,7 +152,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * Set the entrance fringe integral (a la D.C. Carey) which accounts for the
      * first-order effects of the fringing field outside the dipole magnet.
      *
-     * @param dblFldInt fringe field integral (<b>unitless</b>)
+     * @param dblFldInt fringe field integral (<strong>unitless</strong>)
      *
      * @see IdealMagDipoleFace#setFringeIntegral
      */
@@ -164,7 +164,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * Set the exit fringe integral (a la D.C. Carey) which accounts for the
      * first-order effects of the fringing field outside the dipole magnet.
      *
-     * @param dblFldInt fringe field integral (<b>unitless</b>)
+     * @param dblFldInt fringe field integral (<strong>unitless</strong>)
      *
      * @see IdealMagDipoleFace#setFringeIntegral
      */
@@ -224,7 +224,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
     /**
      * Return the gap size between the dipole magnet poles.
      *
-     * @return gap size in <b>meters</b>
+     * @return gap size in <strong>meters</strong>
      */
     public double getGapHeight() {
         return this.getMagBody().getGapHeight();
@@ -238,7 +238,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      *
      * @param probe probe object to be deflected
      *
-     * @return dipole path curvature for given probe (in <b>1/meters</b>)
+     * @return dipole path curvature for given probe (in <strong>1/meters</strong>)
      */
     public double compCurvature(IProbe probe) {
         return this.getMagBody().compCurvature(probe);
@@ -262,7 +262,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
     /**
      * Get the magnetic field strength of the dipole electromagnet
      *
-     * @return magnetic field (in <b>Tesla</b>).
+     * @return magnetic field (in <strong>Tesla</strong>).
      */
     @Override
     public double getMagField() {
@@ -286,7 +286,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
     /**
      * Set the magnetic field strength of the dipole electromagnet.
      *
-     * @param dblField magnetic field (in <b>Tesla</b>).
+     * @param dblField magnetic field (in <strong>Tesla</strong>).
      */
     @Override
     public void setMagField(double dblField) {

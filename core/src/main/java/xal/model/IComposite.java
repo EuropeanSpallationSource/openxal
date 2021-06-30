@@ -62,7 +62,7 @@ public interface IComposite extends IComponent, Iterable<IComponent> {
     public Iterator<IComponent> localIterator();
 
     /**
-     * Returns iterator over <b>all</b> the components in this composite element
+     * Returns iterator over <strong>all</strong> the components in this composite element
      * in proper sequence. Parent objects should be returned first than all the
      * children. This would be the order in which the probe visits each
      * component.

@@ -47,7 +47,7 @@ public class IdealMagSkewQuad extends IdealMagQuad {
      * @param strId identifier for this IdealMagSkewQuad object
      * @param enmOrient enumeration specifying the skew quadrupole orientation
      * (13 focuses in quadrants 1 and 3 and 24 focuses in quadrants 2 and 4)
-     * @param dblFld field gradient strength (in <b>Tesla/meter</b>)
+     * @param dblFld field gradient strength (in <strong>Tesla/meter</strong>)
      * @param dblLen length of the skew quadrupole
      * @param dblAng angle of the skew quadrupole: dblAng &gt; 0 -&gt; focuses
      * in quadrants 1 and 3 dblAng &lt; 0 -&gt; focuses in quadrants 2 and 4
@@ -78,7 +78,7 @@ public class IdealMagSkewQuad extends IdealMagQuad {
     /**
      * Get the rotation angle of the electromagnet.
      *
-     * @return rotation angle (in <b>degrees</b>).
+     * @return rotation angle (in <strong>degrees</strong>).
      */
     public double getSkewAngle() {
         return dblSkewAngle;
@@ -87,7 +87,7 @@ public class IdealMagSkewQuad extends IdealMagQuad {
     /**
      * Set the rotation angle of the electromagnet.
      *
-     * @param dblAngle rotation angle (in <b>degrees</b>).
+     * @param dblAngle rotation angle (in <strong>degrees</strong>).
      */
     public void setSkewAngle(double dblAngle) {
         dblSkewAngle = dblAngle;

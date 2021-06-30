@@ -23,7 +23,7 @@ import java.util.ArrayList;
  * ability to compute the zero-current solution.
  * </p>
  * <p>
- * Subclasses compute the covariance matrix <b>&sigma;</b> from the given data
+ * Subclasses compute the covariance matrix <strong>&sigma;</strong> from the given data
  * at the given device location. This is the set of second-order moments of the
  * beam distribution. Since the measurement data cannot show coupling between
  * phase planes, the covariance matrix is block diagonal where the 2&times;2
@@ -33,7 +33,7 @@ import java.util.ArrayList;
  * also zero.
  * </p>
  * <p>
- * The second-order moments are computed from and <i>observation matrix</i>
+ * The second-order moments are computed from and <em>observation matrix</em>
  * which, in the zero current case, is independent of the initial state of the
  * beam. The observation matrix relates the initial state (described by the
  * second moments) to the observed quantities, in this case the measurement data
@@ -237,9 +237,9 @@ public abstract class CourantSnyderEstimator {
      * to date.
      * </p>
      *
-     * @return ||<b>&Omega;&sigma;</b><sup>*</sup> -
-     * <b>X</b>||<sub><i>F</i></sub>
-     * &nbsp where <b>&sigma;</b><sup>*</sup> is the solution
+     * @return ||<strong>&Omega;&sigma;</strong><sup>*</sup> -
+     * <strong>X</strong>||<sub><em>F</em></sub>
+     * &nbsp where <strong>&sigma;</strong><sup>*</sup> is the solution
      *
      * @author Christopher K. Allen
      * @since Nov 21, 2012
@@ -260,9 +260,9 @@ public abstract class CourantSnyderEstimator {
      * to date.
      * </p>
      *
-     * @return || <b>&sigma;</b><sub><i>i</i>+1</sub> -
-     * <b>&sigma;</b><sub><i>i</i></sub> ||<sub><i>F</i></sub>
-     * &nbsp where <b>&sigma;</b><sup>*</sup> is the solution
+     * @return || <strong>&sigma;</strong><sub><em>i</em>+1</sub> -
+     * <strong>&sigma;</strong><sub><em>i</em></sub> ||<sub><em>F</em></sub>
+     * &nbsp where <strong>&sigma;</strong><sup>*</sup> is the solution
      *
      * @author Christopher K. Allen
      * @since Nov 21, 2012
@@ -361,16 +361,16 @@ public abstract class CourantSnyderEstimator {
      * <code>eMatrix</code> object so that matrices for all three phase planes
      * may be returned. Currently coupling between phase planes is not consided.
      * Thus, the returned matrix is block-diagonal having three
-     * 3<i>n</i>&times;<i>9</i>
-     * matrices on the diagonal (where <i>n</i> is the number of data
+     * 3<em>n</em>&times;<em>9</em>
+     * matrices on the diagonal (where <em>n</em> is the number of data
      * locations), one for each phase plane, horizontal, vertical, diagonal,
      * respectively.
      * </p>
      * <h3>NOTES:</h3>
      * <p>
      * &middot; The transfer matrix generator object is accessed to retrieve
-     * whatever transfer matrices it contains when this method is called.  <b>BE
-     * CAREFUL</b> to generate the appropriate transfer matrices before this
+     * whatever transfer matrices it contains when this method is called.  <strong>BE
+     * CAREFUL</strong> to generate the appropriate transfer matrices before this
      * method is called.
      * </p>
      *
@@ -420,14 +420,14 @@ public abstract class CourantSnyderEstimator {
 
     /**
      * <p>
-     * Computes the <b>&sigma;</b> vector from the observer matrix and the given
+     * Computes the <strong>&sigma;</strong> vector from the observer matrix and the given
      * data for the given phase plane. This is the vector of second-order
      * moments of the beam distribution. The returned value is a 3&times;1
      * matrix of real numbers having the form
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&sigma;</b> = ( &lt;<i>x</i><sup>2</sup>&gt;,
-     * &lt;<i>xx'</i>&gt;, &lt;<i>x'</i><sup>2</sup>&gt; )<sup>T</sup>
+     * &nbsp; &nbsp; <strong>&sigma;</strong> = ( &lt;<em>x</em><sup>2</sup>&gt;,
+     * &lt;<em>xx'</em>&gt;, &lt;<em>x'</em><sup>2</sup>&gt; )<sup>T</sup>
      * <br>
      * <br>
      * where the moments are taken from the horizontal plane. The vertical plane
@@ -459,7 +459,7 @@ public abstract class CourantSnyderEstimator {
      * @param plane Phase plane for which to compute the observer matrix
      * @param strTargElemId reconstruction location
      *
-     * @return Resulting <b>&sigma;</b> vector of second moments at the given
+     * @return Resulting <strong>&sigma;</strong> vector of second moments at the given
      * device location
      */
     protected GenericMatrix computeReconSubFunction(PHASEPLANE plane, String strTargElemId, ArrayList<Measurement> arrData) {
@@ -499,8 +499,8 @@ public abstract class CourantSnyderEstimator {
      * <h3>NOTES:</h3>
      * <p>
      * &middot; The transfer matrix generator object is accessed to retrieve
-     * whatever transfer matrices it contains when this method is called.  <b>BE
-     * CAREFUL</b> to generate the appropriate transfer matrices before this
+     * whatever transfer matrices it contains when this method is called.  <strong>BE
+     * CAREFUL</strong> to generate the appropriate transfer matrices before this
      * method is called.
      * </p>
      *
@@ -561,7 +561,7 @@ public abstract class CourantSnyderEstimator {
      * (location of solution)
      * @param arrData array of problem data
      *
-     * @return ||<b>X</b> - <b>&Omega;</b><b>&sigma;</b>||<sub>2</sub>
+     * @return ||<strong>X</strong> - <strong>&Omega;</strong><strong>&sigma;</strong>||<sub>2</sub>
      *
      * @author Christopher K. Allen
      * @since Nov 15, 2012
@@ -601,13 +601,13 @@ public abstract class CourantSnyderEstimator {
      * we are monitoring a Cauchy sequence to check for convergence.
      *
      * @param matSig1 current solution iterate
-     * <b>&sigma;</b><sub><i>i</i>+1</sub>
+     * <strong>&sigma;</strong><sub><em>i</em>+1</sub>
      * @param matSig0 previous solution iterate
-     * <b>&sigma;</b><sub><i>i</i></sub>
+     * <strong>&sigma;</strong><sub><em>i</em></sub>
      *
      * @return the (Frobenius) distance between the current iterate and the
-     * previous one || <b>&sigma;</b><sub><i>i</i>+1</sub> -
-     * <b>&sigma;</b><sub><i>i</i></sub> ||<sub><i>F</i></sub>
+     * previous one || <strong>&sigma;</strong><sub><em>i</em>+1</sub> -
+     * <strong>&sigma;</strong><sub><em>i</em></sub> ||<sub><em>F</em></sub>
      *
      * @author Christopher K. Allen
      * @since Apr 5, 2013
@@ -627,9 +627,9 @@ public abstract class CourantSnyderEstimator {
      * @param plane phase plane we are reconstructing
      * @param arrMsmt array of location and beam size data
      *
-     * @return the vector (&lt;<i>x</i><sub>1</sub><sup>2</sup>&gt;,
-     * &lt;<i>x</i><sub>2</sub><sup>2</sup>&gt;, ...;
-     * &lt;<i>x<sub>N</sub></i><sup>2</sup>&gt;)
+     * @return the vector (&lt;<em>x</em><sub>1</sub><sup>2</sup>&gt;,
+     * &lt;<em>x</em><sub>2</sub><sup>2</sup>&gt;, ...;
+     * &lt;<em>x<sub>N</sub></em><sup>2</sup>&gt;)
      *
      * @author Christopher K. Allen
      * @author Eric Dai
@@ -656,7 +656,7 @@ public abstract class CourantSnyderEstimator {
      * vector of second-order (RMS) moments.
      *
      * @param vecMmts a 3&times;1 matrix vector
-     * (&lt;<i>x</i><sup>2</sup>&gt;,&lt;<i>xx'</i>&gt;,&lt;,&lt;<i>x'</i><sup>2</sup>&gt;)<sup>T</sup>
+     * (&lt;<em>x</em><sup>2</sup>&gt;,&lt;<em>xx'</em>&gt;,&lt;,&lt;<em>x'</em><sup>2</sup>&gt;)<sup>T</sup>
      * @return Courant-Snyder parameters (&alpha;,&beta;,&epsilon;)
      * corresponding to the given moments.
      *

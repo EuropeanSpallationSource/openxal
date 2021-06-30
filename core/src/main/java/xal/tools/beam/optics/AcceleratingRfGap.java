@@ -70,14 +70,14 @@ public class AcceleratingRfGap {
          */
         /**
          * Compute and return the value of the generalized Hamiltonian function
-         * <i>H</i> at the given longitudinal phase coordinates for the given
+         * <em>H</em> at the given longitudinal phase coordinates for the given
          * accelerating RF gap.
          *
          * @param gap Hamiltonian function for this gap
          * @param phi particle phase location &phi; (radians)
-         * @param k particle wave number <i>k</i> (radians/meter)
+         * @param k particle wave number <em>k</em> (radians/meter)
          *
-         * @return Hamiltonian function <i>H</i>(&phi;,<i>k</i>)
+         * @return Hamiltonian function <em>H</em>(&phi;,<em>k</em>)
          *
          * @see AcceleratingRfGap#preGapHamiltonain(double, double)
          * @see AcceleratingRfGap#postGapHamiltonain(double, double)
@@ -95,14 +95,14 @@ public class AcceleratingRfGap {
         /**
          * Compute and return the derivative of the generalized Hamiltonian
          * function
-         * <i>dH</i>/<i>d</i>&phi; with respect to particle phase location &phi;
+         * <em>dH</em>/<em>d</em>&phi; with respect to particle phase location &phi;
          * for the given accelerating RF gap.
          *
          * @param gap gap for which the parameters are computed
          * @param phi particle phase location &phi; (radians)
-         * @param k particle wave number <i>k</i> (radians/meter)
+         * @param k particle wave number <em>k</em> (radians/meter)
          *
-         * @return value of derivative <i>dH</i>(&phi;,<i>k</i>)/<i>d</i>&phi;
+         * @return value of derivative <em>dH</em>(&phi;,<em>k</em>)/<em>d</em>&phi;
          *
          * @see AcceleratingRfGap#dphiPreGapHamiltonian(double, double)
          * @see AcceleratingRfGap#dphiPostGapHamiltonian(double, double)
@@ -120,14 +120,14 @@ public class AcceleratingRfGap {
         /**
          * Compute and return the derivative of the generalized Hamiltonian
          * function
-         * <i>dH</i>/<i>dk</i> with respect to particle wave number <i>k</i>
+         * <em>dH</em>/<em>dk</em> with respect to particle wave number <em>k</em>
          * for the given accelerating RF gap.
          *
          * @param gap gap for which the parameters are computed
          * @param phi particle phase location &phi; (radians)
-         * @param k particle wave number <i>k</i> (radians/meter)
+         * @param k particle wave number <em>k</em> (radians/meter)
          *
-         * @return value of derivative <i>dH</i>(&phi;,<i>k</i>)/<i>dk</i>
+         * @return value of derivative <em>dH</em>(&phi;,<em>k</em>)/<em>dk</em>
          *
          * @see AcceleratingRfGap#dkPreGapHamiltonian(double, double)
          * @see AcceleratingRfGap#dkPostGapHamiltonian(double, double)
@@ -230,7 +230,7 @@ public class AcceleratingRfGap {
 //     * */
 //    private final double        dblGapLen;
     /**
-     * total potential drop <i>V</i><sub>0</sub> across accelerating gap
+     * total potential drop <em>V</em><sub>0</sub> across accelerating gap
      */
     private double dblFldMag;
 
@@ -300,7 +300,7 @@ public class AcceleratingRfGap {
 
     /**
      * Set the maximum number of allowable iterations during a search for the
-     * consistent gain parameters &Delta;&phi; and &Delta;<i>W</i>. The default
+     * consistent gain parameters &Delta;&phi; and &Delta;<em>W</em>. The default
      * value for this quantity is given by the constant
      * <code>{@link #CNT_MAX_ITER}</code>.
      *
@@ -315,7 +315,7 @@ public class AcceleratingRfGap {
 
     /**
      * Sets the acceptable error tolerance when iterating for consistent gain
-     * parameters &Delta;<i>W</i> and &Delta;&phi;. The default value for this
+     * parameters &Delta;<em>W</em> and &Delta;&phi;. The default value for this
      * quantity is given by the constant <code>{@link #DBL_ERR_TOL}</code>.
      *
      * @param dblErrTol new value for the error tolerance in gain computations
@@ -329,7 +329,7 @@ public class AcceleratingRfGap {
     /**
      * Resets the total potential gain across the accelerating gap.
      *
-     * @param V0 the integral &int;<i>E<sub>z</i></i>(<i>z<i>) <i>dz</i> (in
+     * @param V0 the integral &int;<em>E<sub>z</em></em>(<em>z<em>) <em>dz</em> (in
      * Volts)
      *
      * @since Oct 16, 2015, Christopher K. Allen
@@ -343,9 +343,9 @@ public class AcceleratingRfGap {
      */
     /**
      * Returns the maximum number of allowable iterations during the iterative
-     * search for RF gap gain parameters &Delta;&phi; and &Delta;<i>W</i>.
+     * search for RF gap gain parameters &Delta;&phi; and &Delta;<em>W</em>.
      *
-     * @return maximum iteration count in (&Delta;&phi;,&Delta;<i>W</i>) phase
+     * @return maximum iteration count in (&Delta;&phi;,&Delta;<em>W</em>) phase
      * jump, energy gain computations
      *
      * @since Oct 13, 2015, Christopher K. Allen
@@ -358,10 +358,10 @@ public class AcceleratingRfGap {
 
     /**
      * Returns the maximum allowable error, the distance between iterates of
-     * (&Delta;&phi;,&Delta;<i>W</i>), before the current iterate is considered
-     * a valid solution. Once the <i>L</i><sub>2</sub> distance between the
+     * (&Delta;&phi;,&Delta;<em>W</em>), before the current iterate is considered
+     * a valid solution. Once the <em>L</em><sub>2</sub> distance between the
      * current iterate of phase jump &Delta;&phi; and energy gain
-     * &Delta;<i>W</i> and the previous iterate is less than this value, then
+     * &Delta;<em>W</em> and the previous iterate is less than this value, then
      * the iteration stops with a valid solution.
      *
      * @return maximum distance between solution iterations for valid solution
@@ -398,17 +398,17 @@ public class AcceleratingRfGap {
     }
 
     /**
-     * Get the free space wave number <i>k</i><sub>0</sub> of the gap
+     * Get the free space wave number <em>k</em><sub>0</sub> of the gap
      * accelerating fields. This quantity has the formula
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>k</i><sub>0</sub> = 2&pi;/&lambda;
+     * &nbsp; &nbsp; <em>k</em><sub>0</sub> = 2&pi;/&lambda;
      * <br/>
      * <br/>
-     * where &lambda; = <i>c</i>/<i>f</i> is the wave length of the RF in free
+     * where &lambda; = <em>c</em>/<em>f</em> is the wave length of the RF in free
      * space.
      *
-     * @return free space wave number <i>k</i><sub>0</sub> of gap RF
+     * @return free space wave number <em>k</em><sub>0</sub> of gap RF
      *
      * @since Oct 1, 2015, Christopher K. Allen
      */
@@ -421,15 +421,15 @@ public class AcceleratingRfGap {
      * accelerating gap. This is the value given by
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>V</i><sub>0</sub> &trie;
-     * &int;<i>E<sub>z</sub></i>(0,<i>z</i>)<i>dz</i> ,
+     * &nbsp; &nbsp; <em>V</em><sub>0</sub> &trie;
+     * &int;<em>E<sub>z</sub></em>(0,<em>z</em>)<em>dz</em> ,
      * <br/>
      * <br/>
-     * where the integral is taken over the entire real line <i>z</i> &in;
+     * where the integral is taken over the entire real line <em>z</em> &in;
      * (-&infin;,+&infin;). This value represents the total available
      * accelerating RF energy and an upper limit for energy gain.
      *
-     * @return the total potential <i>V</i><sub>0</sub> across the accelerating
+     * @return the total potential <em>V</em><sub>0</sub> across the accelerating
      * gap (in Volts)
      *
      * @since Oct 2, 2015, Christopher K. Allen
@@ -455,11 +455,11 @@ public class AcceleratingRfGap {
     /**
      * <p>
      * Computes and returns the phase jump &Delta;&phi; and energy gain
-     * &Delta;<i>W</i>
-     * imparted to a particle with the the given particle charge <i>Q</i> and
-     * rest energy <i>E<sub>r</sub></i> for the given gap region. The particle
+     * &Delta;<em>W</em>
+     * imparted to a particle with the the given particle charge <em>Q</em> and
+     * rest energy <em>E<sub>r</sub></em> for the given gap region. The particle
      * enters this region with initial gap phase &phi;<sub>0</sub> and initial
-     * kinetic energy <i>W<sub>i</sub></i>. The returned values represent the
+     * kinetic energy <em>W<sub>i</sub></em>. The returned values represent the
      * effects of the first have of this gap upon the so described particle.
      * This method uses an iterative technique to compute the results in order
      * to maintain a self-consistent set of expressions. That is, the modeling
@@ -469,7 +469,7 @@ public class AcceleratingRfGap {
      * <p>
      * The provided phase &phi;<sub>0</sub> is assumed to be the phase of the
      * particle at the center of the gap, if it were coasting through the gap
-     * with kinetic energy <i>W<sub>i</sub></i> for the pre-gap computation, and
+     * with kinetic energy <em>W<sub>i</sub></em> for the pre-gap computation, and
      * after the pre-gap phase jump &Delta;&phi;<sup>-</sup> for the post-gap
      * computation. The phase value returned by this method, either
      * &Delta;&phi;<sup>-</sup> or &Delta;&phi;<sup>+</sup> for the pre-gap or
@@ -497,32 +497,32 @@ public class AcceleratingRfGap {
      * <br/>
      * </p>
      * <p>
-     * The returned energy gain, either &Delta;<i>W</i><sup>-</sup> for the
-     * pre-gap location or &Delta;<i>W</i><sup>+</sup> for the post-gap
+     * The returned energy gain, either &Delta;<em>W</em><sup>-</sup> for the
+     * pre-gap location or &Delta;<em>W</em><sup>+</sup> for the post-gap
      * location, is the energy gained by the particle in those respective
      * locations. The total energy gained by a particle through the gap is the
      * sum of these energies
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; &Delta;<i>W</i> = &Delta;<i>W</i><sup>-</sup> +
-     * &Delta;<i>W</i><sup>+</sup> .
+     * &nbsp; &nbsp; &Delta;<em>W</em> = &Delta;<em>W</em><sup>-</sup> +
+     * &Delta;<em>W</em><sup>+</sup> .
      * </p>
      *
      * @param locHam location of longitudinal gain calculations, with respect to
      * gap center
      * @param Q charge of the incoming particles in terms of fundamental charge
-     * <i>q</i> (unitless)
+     * <em>q</em> (unitless)
      * @param Er rest energy of the incoming particles (electron-Volts)
      * @param vecInit initial phase and energy pair
-     * (&phi;<sub>0</sub>,<i>W<sub>i</sub></i>) into specified gap region
+     * (&phi;<sub>0</sub>,<em>W<sub>i</sub></em>) into specified gap region
      * (radians, electron-Volts)
      *
      * @return the corrective phase jump and energy gain pair
-     * (&Delta;&phi;,&Delta;<i>W</i>) after impulse at specified location, pre-
+     * (&Delta;&phi;,&Delta;<em>W</em>) after impulse at specified location, pre-
      * or post-gap (radians, electron-Volts)
      *
      * @throws NoConvergenceException the iterative search for
-     * (&Delta;&phi;,&Delta;<i>W</i>) failed to converge
+     * (&Delta;&phi;,&Delta;<em>W</em>) failed to converge
      *
      * @since Oct 15, 2015, Christopher K. Allen
      */
@@ -593,10 +593,10 @@ public class AcceleratingRfGap {
     /**
      * <p>
      * Computes and returns the phase jump &Delta;&phi; and energy gain
-     * &Delta;<i>W</i>
+     * &Delta;<em>W</em>
      * imparted to a particle with the the given rest energy
-     * <i>E<sub>r</sub></i>, gap phase &phi;<sub>0</sub><sup>-</sup>, and
-     * initial kinetic energy <i>W<sub>i</sub></i>. The returned values
+     * <em>E<sub>r</sub></em>, gap phase &phi;<sub>0</sub><sup>-</sup>, and
+     * initial kinetic energy <em>W<sub>i</sub></em>. The returned values
      * represent the effects of the first have of this gap upon the so described
      * particle. This method uses an iterative technique to compute the results
      * in order to maintain a self-consistent set of expressions. That is, the
@@ -606,7 +606,7 @@ public class AcceleratingRfGap {
      * <p>
      * The provided phase &phi;<sub>0</sub><sup>-</sup> is assumed to be the
      * phase of the particle at the center of the gap if it were coasting
-     * through the gap with kinetic energy <i>W<sub>i</sub></i>. The actual
+     * through the gap with kinetic energy <em>W<sub>i</sub></em>. The actual
      * phase at the gap center &phi;<sub>0</sub> will be
      * <br/>
      * <br/>
@@ -617,26 +617,26 @@ public class AcceleratingRfGap {
      * where &Delta;&phi; is the phase jump returned by this method.
      * </p>
      * <p>
-     * The returned energy gain &Delta;<i>W</i> is that for the particle at the
+     * The returned energy gain &Delta;<em>W</em> is that for the particle at the
      * gap center. That is, the effects of the gap on the particle include an
-     * energy gain of &Delta;<i>W</i> up to the gap center. The total kinetic
-     * energy <i>W</i><sub>0</sub>
+     * energy gain of &Delta;<em>W</em> up to the gap center. The total kinetic
+     * energy <em>W</em><sub>0</sub>
      * at gap center is then
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>W</i><sub>0</sub> = <i>W<sub>i</i> + &Delta;<i>W</i>.
+     * &nbsp; &nbsp; <em>W</em><sub>0</sub> = <em>W<sub>i</em> + &Delta;<em>W</em>.
      * </p>
      *
      * @param Er rest energy of the incoming particles (electron-Volts)
      * @param vecInit gap phase and initial energy pair
-     * (&phi;<sub>0</sub><sup>-</sup>,<i>W<sub>i</sub></i>) (radians,
+     * (&phi;<sub>0</sub><sup>-</sup>,<em>W<sub>i</sub></em>) (radians,
      * electron-Volts)
      *
      * @return the corrective phase jump and energy gain pair
-     * (&Delta;&phi;,&Delta;<i>W</i>) at gap center (radians, electron-Volts)
+     * (&Delta;&phi;,&Delta;<em>W</em>) at gap center (radians, electron-Volts)
      *
      * @throws NoConvergenceException the iterative search for
-     * (&Delta;&phi;,&Delta;<i>W</i>) failed to converge
+     * (&Delta;&phi;,&Delta;<em>W</em>) failed to converge
      *
      * @since Oct 15, 2015, Christopher K. Allen
      */
@@ -719,18 +719,18 @@ public class AcceleratingRfGap {
     /**
      * Returns the energy gain of a particle up to the middle of the gap given
      * that its middle-gap phase is &phi; and its pre-gap wave number is
-     * <i>k</i>. This value is computed from a complex Hamiltonian
-     * <i>H</i><sup>-</sup>(&phi;,<i>k</i>) built from the product of the
-     * pre-gap spectral envelope &Escr;<sup>-</sup>(<i>k</i>) and the complex
-     * angle &exponentiale;<sup>-<i>i</i>&phi;</sup>. Specifically, the energy
-     * gain &Delta;<i>W</i> is is
+     * <em>k</em>. This value is computed from a complex Hamiltonian
+     * <em>H</em><sup>-</sup>(&phi;,<em>k</em>) built from the product of the
+     * pre-gap spectral envelope &Escr;<sup>-</sup>(<em>k</em>) and the complex
+     * angle &exponentiale;<sup>-<em>i</em>&phi;</sup>. Specifically, the energy
+     * gain &Delta;<em>W</em> is is
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; &Delta;<i>W</i> = -<i>V</i><sub>0</sub> Im
-     * <i>dH</i>/<i>d</i>&phi; ,
+     * &nbsp; &nbsp; &Delta;<em>W</em> = -<em>V</em><sub>0</sub> Im
+     * <em>dH</em>/<em>d</em>&phi; ,
      * <br/>
      * <br/>
-     * where <i>V</i><sub>0</sub> is the potential drop across the gap and Im
+     * where <em>V</em><sub>0</sub> is the potential drop across the gap and Im
      * indicates the imaginary part of a complex number. Note that the wave
      * number is the "best fit" constant describing the dynamic value that
      * changes as it traverses the gap.
@@ -738,7 +738,7 @@ public class AcceleratingRfGap {
      *
      * @param phi the synchronous particle phase &phi; at the gap center
      * (radians)
-     * @param k the wave number <i>k</i> of the particle within the gap
+     * @param k the wave number <em>k</em> of the particle within the gap
      * (radians/meter)
      *
      * @return the energy gain of the particle
@@ -756,24 +756,24 @@ public class AcceleratingRfGap {
 
     /**
      * Computes and returns the pre-gap "Hamiltonian" function
-     * <i>H</i><sup>-</sup>(&phi;, <i>k</i>). This complex function is the
-     * product of the pre-envelope spectrum &Escr;<sup>-</sup>(<i>k</i>) and
-     * mid-gap synchronous phase &exponentiale;<sup>-<i>i</i> &phi;</sup>. That
+     * <em>H</em><sup>-</sup>(&phi;, <em>k</em>). This complex function is the
+     * product of the pre-envelope spectrum &Escr;<sup>-</sup>(<em>k</em>) and
+     * mid-gap synchronous phase &exponentiale;<sup>-<em>i</em> &phi;</sup>. That
      * is,
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>H</i><sup>-</sup>(&phi;, <i>k</i>) =
-     * &Escr;<sup>-</sup>(<i>k</i>)&exponentiale;<sup>-<i>i</i> &phi;</sup>.
+     * &nbsp; &nbsp; <em>H</em><sup>-</sup>(&phi;, <em>k</em>) =
+     * &Escr;<sup>-</sup>(<em>k</em>)&exponentiale;<sup>-<em>i</em> &phi;</sup>.
      * <br/>
      * <br/>
      * The phase jump &Delta;&phi;<sup>-</sup> and energy gain
-     * &Delta;<i>W</i><sup>-</sup> are dependent upon this quantity.
+     * &Delta;<em>W</em><sup>-</sup> are dependent upon this quantity.
      *
      * @param phi the mid-gap synchronous phase angle &phi; (in radians)
      * @param k the synchronous particle wave number (in radians/meter)
      *
-     * @return value of the Hamiltonian <i>H</i><sup>-</sup> at &phi; and
-     * <i>k</i>
+     * @return value of the Hamiltonian <em>H</em><sup>-</sup> at &phi; and
+     * <em>k</em>
      *
      * @since Oct 7, 2015, Christopher K. Allen
      */
@@ -787,24 +787,24 @@ public class AcceleratingRfGap {
 
     /**
      * Computes and returns the post-gap "Hamiltonian" function
-     * <i>H</i><sup>+</sup>(&phi;, <i>k</i>). This complex function is the
-     * product of the post-envelope spectrum &Escr;<sup>+</sup>(<i>k</i>) and
-     * mid-gap synchronous phase &exponentiale;<sup>-<i>i</i> &phi;</sup>. That
+     * <em>H</em><sup>+</sup>(&phi;, <em>k</em>). This complex function is the
+     * product of the post-envelope spectrum &Escr;<sup>+</sup>(<em>k</em>) and
+     * mid-gap synchronous phase &exponentiale;<sup>-<em>i</em> &phi;</sup>. That
      * is,
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>H</i><sup>+</sup>(&phi;, <i>k</i>) =
-     * &Escr;<sup>+</sup>(<i>k</i>)&exponentiale;<sup>-<i>i</i> &phi;</sup>.
+     * &nbsp; &nbsp; <em>H</em><sup>+</sup>(&phi;, <em>k</em>) =
+     * &Escr;<sup>+</sup>(<em>k</em>)&exponentiale;<sup>-<em>i</em> &phi;</sup>.
      * <br/>
      * <br/>
      * The phase jump &Delta;&phi;<sup>+</sup> and energy gain
-     * &Delta;<i>W</i><sup>+</sup> are dependent upon this quantity.
+     * &Delta;<em>W</em><sup>+</sup> are dependent upon this quantity.
      *
      * @param phi the mid-gap synchronous phase angle &phi; (in radians)
      * @param k the synchronous particle wave number (in radians/meter)
      *
-     * @return value of the Hamiltonian <i>H</i><sup>+</sup> at &phi; and
-     * <i>k</i>
+     * @return value of the Hamiltonian <em>H</em><sup>+</sup> at &phi; and
+     * <em>k</em>
      *
      * @since Oct 7, 2015, Christopher K. Allen
      */
@@ -818,27 +818,27 @@ public class AcceleratingRfGap {
 
     /**
      * Computes and returns the derivative of the pre-gap "Hamiltonian" function
-     * <i>H</i><sup>-</sup>(&phi;, <i>k</i>) with respect to the wave number
-     * <i>k</i>, that is, the value   <i>dH</i><sup>-</sup>(&phi;,
-     * <i>k</i>)/<i>dk</i>. This complex-valued function of variables &phi; and
-     * <i>k</i> is given by
+     * <em>H</em><sup>-</sup>(&phi;, <em>k</em>) with respect to the wave number
+     * <em>k</em>, that is, the value   <em>dH</em><sup>-</sup>(&phi;,
+     * <em>k</em>)/<em>dk</em>. This complex-valued function of variables &phi; and
+     * <em>k</em> is given by
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>dH</i><sup>-</sup>(&phi;, <i>k</i>)/<i>dk</i> =
-     * [<i>d</i>&Escr;<sup>-</sup>(<i>k</i>)/<i>dk</i>]
-     * &exponentiale;<sup>-<i>i</i> &phi;</sup>.
+     * &nbsp; &nbsp; <em>dH</em><sup>-</sup>(&phi;, <em>k</em>)/<em>dk</em> =
+     * [<em>d</em>&Escr;<sup>-</sup>(<em>k</em>)/<em>dk</em>]
+     * &exponentiale;<sup>-<em>i</em> &phi;</sup>.
      * <br/>
      * <br/>
-     * where &Escr;<sup>-</sup>(<i>k</i>) is the pre-envelope spectrum and
-     * &exponentiale;<sup>-<i>i</i> &phi;</sup> is the mid-gap synchronous
+     * where &Escr;<sup>-</sup>(<em>k</em>) is the pre-envelope spectrum and
+     * &exponentiale;<sup>-<em>i</em> &phi;</sup> is the mid-gap synchronous
      * phase. The phase jump &Delta;&phi;<sup>-</sup> is directly proportional
      * to the imaginary part of this quantity.
      *
      * @param phi the mid-gap synchronous phase angle &phi; (in radians)
      * @param k the synchronous particle wave number (in radians/meter)
      *
-     * @return value of the Hamiltonian <i>H</i><sup>-</sup> at &phi; and
-     * <i>k</i>
+     * @return value of the Hamiltonian <em>H</em><sup>-</sup> at &phi; and
+     * <em>k</em>
      *
      * @since Oct 7, 2015, Christopher K. Allen
      */
@@ -853,27 +853,27 @@ public class AcceleratingRfGap {
     /**
      * Computes and returns the derivative of the post-gap "Hamiltonian"
      * function
-     * <i>H</i><sup>+</sup>(&phi;, <i>k</i>) with respect to the wave number
-     * <i>k</i>, that is, the value   <i>dH</i><sup>+</sup>(&phi;,
-     * <i>k</i>)/<i>dk</i>. This complex-valued function of variables &phi; and
-     * <i>k</i> is given by
+     * <em>H</em><sup>+</sup>(&phi;, <em>k</em>) with respect to the wave number
+     * <em>k</em>, that is, the value   <em>dH</em><sup>+</sup>(&phi;,
+     * <em>k</em>)/<em>dk</em>. This complex-valued function of variables &phi; and
+     * <em>k</em> is given by
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>dH</i><sup>+</sup>(&phi;, <i>k</i>)/<i>dk</i> =
-     * [<i>d</i>&Escr;<sup>+</sup>(<i>k</i>)/<i>dk</i>]
-     * &exponentiale;<sup>-<i>i</i> &phi;</sup>.
+     * &nbsp; &nbsp; <em>dH</em><sup>+</sup>(&phi;, <em>k</em>)/<em>dk</em> =
+     * [<em>d</em>&Escr;<sup>+</sup>(<em>k</em>)/<em>dk</em>]
+     * &exponentiale;<sup>-<em>i</em> &phi;</sup>.
      * <br/>
      * <br/>
-     * where &Escr;<sup>+</sup>(<i>k</i>) is the post-envelope spectrum and
-     * &exponentiale;<sup>-<i>i</i> &phi;</sup> is the mid-gap synchronous
+     * where &Escr;<sup>+</sup>(<em>k</em>) is the post-envelope spectrum and
+     * &exponentiale;<sup>-<em>i</em> &phi;</sup> is the mid-gap synchronous
      * phase. The phase jump &Delta;&phi;<sup>+</sup> is directly proportional
      * to the imaginary part of this quantity.
      *
      * @param phi the mid-gap synchronous phase angle &phi; (in radians)
      * @param k the synchronous particle wave number (in radians/meter)
      *
-     * @return value of the Hamiltonian <i>H</i><sup>+</sup> at &phi; and
-     * <i>k</i>
+     * @return value of the Hamiltonian <em>H</em><sup>+</sup> at &phi; and
+     * <em>k</em>
      *
      * @since Oct 7, 2015, Christopher K. Allen
      */
@@ -887,28 +887,28 @@ public class AcceleratingRfGap {
 
     /**
      * Computes and returns the derivative of the pre-gap "Hamiltonian" function
-     * <i>H</i><sup>-</sup>(&phi;, <i>k</i>) with respect to the mid-gap
-     * synchronous phase &phi;, that is, the value   <i>dH</i><sup>-</sup>(&phi;,
-     * <i>k</i>)/<i>d</i>&phi;. This complex-valued function of variables &phi;
-     * and <i>k</i> is given by
+     * <em>H</em><sup>-</sup>(&phi;, <em>k</em>) with respect to the mid-gap
+     * synchronous phase &phi;, that is, the value   <em>dH</em><sup>-</sup>(&phi;,
+     * <em>k</em>)/<em>d</em>&phi;. This complex-valued function of variables &phi;
+     * and <em>k</em> is given by
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>dH</i><sup>-</sup>(&phi;, <i>k</i>)/<i>d</i>&phi; =
-     * &Escr;<sup>-</sup>(<i>k</i>) <i>d</i>&exponentiale;<sup>-<i>i</i>
-     * &phi;</sup>/<i>d</i>&phi; = -<i>i</i>
-     * <i>H</i><sup>-</sup>(&phi;,<i>k</i>) ,
+     * &nbsp; &nbsp; <em>dH</em><sup>-</sup>(&phi;, <em>k</em>)/<em>d</em>&phi; =
+     * &Escr;<sup>-</sup>(<em>k</em>) <em>d</em>&exponentiale;<sup>-<em>i</em>
+     * &phi;</sup>/<em>d</em>&phi; = -<em>i</em>
+     * <em>H</em><sup>-</sup>(&phi;,<em>k</em>) ,
      * <br/>
      * <br/>
-     * where &Escr;<sup>-</sup>(<i>k</i>) is the pre-envelope spectrum and
-     * &exponentiale;<sup>-<i>i</i> &phi;</sup> is the mid-gap synchronous
-     * phase. The energy gain &Delta;<i>W</i><sup>-</sup> is proportional to the
+     * where &Escr;<sup>-</sup>(<em>k</em>) is the pre-envelope spectrum and
+     * &exponentiale;<sup>-<em>i</em> &phi;</sup> is the mid-gap synchronous
+     * phase. The energy gain &Delta;<em>W</em><sup>-</sup> is proportional to the
      * imaginary part of this quantity.
      *
      * @param phi the mid-gap synchronous phase angle &phi; (in radians)
      * @param k the synchronous particle wave number (in radians/meter)
      *
-     * @return value of the Hamiltonian <i>H</i><sup>-</sup> at &phi; and
-     * <i>k</i>
+     * @return value of the Hamiltonian <em>H</em><sup>-</sup> at &phi; and
+     * <em>k</em>
      *
      * @since Oct 7, 2015, Christopher K. Allen
      */
@@ -923,28 +923,28 @@ public class AcceleratingRfGap {
     /**
      * Computes and returns the derivative of the post-gap "Hamiltonian"
      * function
-     * <i>H</i><sup>+</sup>(&phi;, <i>k</i>) with respect to the mid-gap
-     * synchronous phase &phi;, that is, the value   <i>dH</i><sup>+</sup>(&phi;,
-     * <i>k</i>)/<i>d</i>&phi;. This complex-valued function of variables &phi;
-     * and <i>k</i> is given by
+     * <em>H</em><sup>+</sup>(&phi;, <em>k</em>) with respect to the mid-gap
+     * synchronous phase &phi;, that is, the value   <em>dH</em><sup>+</sup>(&phi;,
+     * <em>k</em>)/<em>d</em>&phi;. This complex-valued function of variables &phi;
+     * and <em>k</em> is given by
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>dH</i><sup>+</sup>(&phi;, <i>k</i>)/<i>d</i>&phi; =
-     * &Escr;<sup>+</sup>(<i>k</i>) <i>d</i>&exponentiale;<sup>-<i>i</i>
-     * &phi;</sup>/<i>d</i>&phi; = -<i>i</i>
-     * <i>H</i><sup>+</sup>(&phi;,<i>k</i>) ,
+     * &nbsp; &nbsp; <em>dH</em><sup>+</sup>(&phi;, <em>k</em>)/<em>d</em>&phi; =
+     * &Escr;<sup>+</sup>(<em>k</em>) <em>d</em>&exponentiale;<sup>-<em>i</em>
+     * &phi;</sup>/<em>d</em>&phi; = -<em>i</em>
+     * <em>H</em><sup>+</sup>(&phi;,<em>k</em>) ,
      * <br/>
      * <br/>
-     * where &Escr;<sup>+</sup>(<i>k</i>) is the post-envelope spectrum and
-     * &exponentiale;<sup>-<i>i</i> &phi;</sup> is the mid-gap synchronous
-     * phase. The energy gain &Delta;<i>W</i><sup>+</sup> is proportional to the
+     * where &Escr;<sup>+</sup>(<em>k</em>) is the post-envelope spectrum and
+     * &exponentiale;<sup>-<em>i</em> &phi;</sup> is the mid-gap synchronous
+     * phase. The energy gain &Delta;<em>W</em><sup>+</sup> is proportional to the
      * imaginary part of this quantity.
      *
      * @param phi the mid-gap synchronous phase angle &phi; (in radians)
      * @param k the synchronous particle wave number (in radians/meter)
      *
-     * @return value of the Hamiltonian <i>H</i><sup>+</sup> at &phi; and
-     * <i>k</i>
+     * @return value of the Hamiltonian <em>H</em><sup>+</sup> at &phi; and
+     * <em>k</em>
      *
      * @since Oct 7, 2015, Christopher K. Allen
      */
@@ -961,11 +961,11 @@ public class AcceleratingRfGap {
     //
 //    /**
 //     * Compute the normalized particle velocity &beta; for the given particle
-//     * wave number <i>k</i>.
+//     * wave number <em>k</em>.
 //     * 
 //     * @param k     wave number of the particle with respect to RF frequency (radians/meter)
 //     * 
-//     * @return      the normalized velocity &beta; of the particle for the given wave number <i>k</i>
+//     * @return      the normalized velocity &beta; of the particle for the given wave number <em>k</em>
 //     *
 //     * @since  Sep 28, 2015   by Christopher K. Allen
 //     */
@@ -978,11 +978,11 @@ public class AcceleratingRfGap {
 //    
 //    /**
 //     * <p>
-//     * Compute and return the particle wave number <i>k</i> for the given normalized 
+//     * Compute and return the particle wave number <em>k</em> for the given normalized 
 //     * particle velocity &beta;.  The formula is
 //     * <br/>
 //     * <br/>
-//     * &nbsp; &nbsp; <i>k</i> = 2&pi;/&beta;&lambda; ,
+//     * &nbsp; &nbsp; <em>k</em> = 2&pi;/&beta;&lambda; ,
 //     * <br/>
 //     * <br/>
 //     * where &lambda; is the wavelength of the accelerating RF.
@@ -1002,23 +1002,23 @@ public class AcceleratingRfGap {
 //    }
     /**
      * <p>
-     * Compute and return the particle wave number <i>k</i> for the given
-     * particle energy <i>W</i>
-     * and rest energy <i>E<sub>r</sub></i> = <i>mc</i><sup>2</sup>. The formula
+     * Compute and return the particle wave number <em>k</em> for the given
+     * particle energy <em>W</em>
+     * and rest energy <em>E<sub>r</sub></em> = <em>mc</em><sup>2</sup>. The formula
      * is
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>k</i> = <i>k</i><sub>0</sub>/&radic;(1 -
+     * &nbsp; &nbsp; <em>k</em> = <em>k</em><sub>0</sub>/&radic;(1 -
      * 1/&gamma;<sup>2</sup>) ,
      * <br/>
      * <br/>
-     * where <i>k</i><sub>0</i> = 2&pi;/&lambda; is the wave number of the RF in
-     * free space and &gamma; = 1 + <i>W</i>/<i>E<sub>r</sub></i> is the
+     * where <em>k</em><sub>0</em> = 2&pi;/&lambda; is the wave number of the RF in
+     * free space and &gamma; = 1 + <em>W</em>/<em>E<sub>r</sub></em> is the
      * relativistic factor.
      * </p>
      *
-     * @param W particle kinetic energy <i>W</i> (electron-Volts)
-     * @param Er particle rest mass <i>mc</i><sup>2</sup>/<i>q</i>
+     * @param W particle kinetic energy <em>W</em> (electron-Volts)
+     * @param Er particle rest mass <em>mc</em><sup>2</sup>/<em>q</em>
      * (electron-Volts)
      *
      * @return particle wave number with respect to the RF (radians/meter)
@@ -1037,34 +1037,34 @@ public class AcceleratingRfGap {
 
     /**
      * <p>
-     * Compute and return the normalized wave number <i>K</i>. This quantity
+     * Compute and return the normalized wave number <em>K</em>. This quantity
      * appears as a constant in the phase jump expressions. The value of
-     * <i>K</i>
+     * <em>K</em>
      * is defined by the formula
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>K</i> &trie; (1/&beta;<sup>3</sup>&gamma;<sup>3</sup>)
-     * (<i>qV</i><sub>0</sub>/<i>mc</i><sup>2</sup>)<i>k</i><sub>0</sub>
+     * &nbsp; &nbsp; <em>K</em> &trie; (1/&beta;<sup>3</sup>&gamma;<sup>3</sup>)
+     * (<em>qV</em><sub>0</sub>/<em>mc</em><sup>2</sup>)<em>k</em><sub>0</sub>
      * <br/>
      * <br/>
      * where &beta; is the normalized particle velocity, &gamma; is the
      * relativistic factor;
-     * <i>V</i><sub>0</sub> is the total (integrated) RF field potential across
+     * <em>V</em><sub>0</sub> is the total (integrated) RF field potential across
      * the gap,
-     * <i>mc</i><sup>2</sup>/<i>q</i> is the rest mass in electron-Volts, and
-     * <i>k</i><sub>0</sub> &trie; 2&pi;/&lambda; is the free-space wave number
+     * <em>mc</em><sup>2</sup>/<em>q</em> is the rest mass in electron-Volts, and
+     * <em>k</em><sub>0</sub> &trie; 2&pi;/&lambda; is the free-space wave number
      * of the accelerating RF field with wavelength &lambda;.
      * </p>
      * <p>
-     * The quantity <i>K</i> can be interpreted as the particle wave number in
+     * The quantity <em>K</em> can be interpreted as the particle wave number in
      * energy space rather that momentum space.
      * </p>
      *
-     * @param W particle kinetic energy <i>W</i> (electron-Volts)
-     * @param Er particle rest mass <i>mc</i><sup>2</sup>/<i>q</i>
+     * @param W particle kinetic energy <em>W</em> (electron-Volts)
+     * @param Er particle rest mass <em>mc</em><sup>2</sup>/<em>q</em>
      * (electron-Volts)
      *
-     * @return normalized wave number <i>K</i> (in radians/meter)
+     * @return normalized wave number <em>K</em> (in radians/meter)
      *
      * @since Oct 1, 2015, Christopher K. Allen
      */
@@ -1095,22 +1095,22 @@ public class AcceleratingRfGap {
 //    
     /**
      * Compute and return the relativistic factor &gamma; from the given kinetic
-     * energy and given rest energy <i>E<sub>r</sub></i> =
-     * <i>mc</i><sup>2</sup>. This value is given by the formula
+     * energy and given rest energy <em>E<sub>r</sub></em> =
+     * <em>mc</em><sup>2</sup>. This value is given by the formula
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; &gamma; = 1 + <i>W</i>/<i>mc</i><sup>2</sup> ,
+     * &nbsp; &nbsp; &gamma; = 1 + <em>W</em>/<em>mc</em><sup>2</sup> ,
      * <br/>
      * <br/>
      * where the energy quantities can be in any (consistent) units but
      * electron- volts are typically used.
      *
-     * @param W kinetic energy <i>W</i> of particle (electron-Volts)
-     * @param Er rest energy <i>E<sub>r</sub></i> = <i>mc</i><sup>2</sup> of
+     * @param W kinetic energy <em>W</em> of particle (electron-Volts)
+     * @param Er rest energy <em>E<sub>r</sub></em> = <em>mc</em><sup>2</sup> of
      * particle (electron-Volts)
      *
-     * @return the relativistic factor &gamma; for a particle of energy <i>W</i>
-     * and rest energy <i>E<sub>r</sub></i>
+     * @return the relativistic factor &gamma; for a particle of energy <em>W</em>
+     * and rest energy <em>E<sub>r</sub></em>
      *
      * @since Oct 12, 2015, Christopher K. Allen
      */
@@ -1122,17 +1122,17 @@ public class AcceleratingRfGap {
 
 //    /**
 //     * Computes and return the kinetic energy of a particle traveling at the given normalized
-//     * velocity which has the given rest mass.  The value <i>W</i> of this quantity is given 
+//     * velocity which has the given rest mass.  The value <em>W</em> of this quantity is given 
 //     * by the following formula:
 //     * <br/>
 //     * <br/>
-//     * &nbsp; &nbsp; <i>W</i> = (&gamma; - 1)<i>mc</i><sup>2</sup> ,
+//     * &nbsp; &nbsp; <em>W</em> = (&gamma; - 1)<em>mc</em><sup>2</sup> ,
 //     * <br/>
 //     * <br/>
 //     * where &gamma; = 1/&radic;(1 - &beta;<sup>2</sup>) is the relativistic factor and 
-//     * <i>mc</i><sup>2</sup> is the particle's rest mass (in electron-Volts). The 
+//     * <em>mc</em><sup>2</sup> is the particle's rest mass (in electron-Volts). The 
 //     * relativistic factor &gamma; is defined by the normalized velocity &beta; which
-//     * is, in turn, determined by the wave number <i>k</i>.
+//     * is, in turn, determined by the wave number <em>k</em>.
 //     * 
 //     * @param k         particle wave number w.r.t. RF frequency (radians/meter)
 //     * @param Er        particle rest mass (in electron-Volts)

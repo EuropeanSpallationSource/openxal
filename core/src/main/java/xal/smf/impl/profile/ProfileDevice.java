@@ -52,7 +52,7 @@ import xal.smf.scada.ScadaFieldList;
  * </p>
  *
  * <p>
- * <b>Ported from XAL on Jul 15, 2014.</b><br>
+ * <strong>Ported from XAL on Jul 15, 2014.</strong><br>
  * &middot; Jonathan M. Freed
  * </p>
  *
@@ -119,15 +119,15 @@ public abstract class ProfileDevice extends AcceleratorNode {
          * data. That is, return the length of the smallest interval containing
          * the projection data. Note that this value may be different than the
          * "scan length" as it may depend upon the measurement plane. The value,
-         * <i>L</i>, is typically given by the formula
+         * <em>L</em>, is typically given by the formula
          * <br/>
          * <br/>
-         * &nbsp; &nbsp; <i>L</i> = &alpha; <i>N</i><sub>steps</sub>
-         * &Delta;<i>L</i>
+         * &nbsp; &nbsp; <em>L</em> = &alpha; <em>N</em><sub>steps</sub>
+         * &Delta;<em>L</em>
          * <br/>
          * <br/>
-         * where &alpha; is the correction factor, <i>N</i><sub>steps</sub> is
-         * the number of scan steps, and &Delta;<i>L</i> is the step length. For
+         * where &alpha; is the correction factor, <em>N</em><sub>steps</sub> is
+         * the number of scan steps, and &Delta;<em>L</em> is the step length. For
          * example, if the scan actuator arm is physically at a 45 &deg; angle
          * to the given measurement plane then &alpha; = 1/&radic;2.
          *

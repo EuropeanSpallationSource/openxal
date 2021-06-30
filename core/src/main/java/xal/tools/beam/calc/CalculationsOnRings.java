@@ -20,9 +20,9 @@ import xal.tools.math.r3.R3;
  * <code>TransferMapTrajectory</code> as ring simulation data (from the online
  * model) and computes the ring parameters from the transfer maps stored around
  * the ring. Thus, the trajectory provided
- * <b>must</b> be the end-to-end simulation results of the ring. The entrance of
+ * <strong>must</strong> be the end-to-end simulation results of the ring. The entrance of
  * the first state in the trajectory and the exit of the last state in the
- * trajectory will be treated as the same point, <i>s</i> = 0.
+ * trajectory will be treated as the same point, <em>s</em> = 0.
  * </p>
  * Do not supply partial simulations! Use the trajectory for the full ring
  * unless it is your intent to create a sub-ring. That is, do not use the start
@@ -30,13 +30,13 @@ import xal.tools.math.r3.R3;
  * simulate a smaller ring that excludes all elements before the stop element
  * and all elements after the stop element. In such a case the entrance of the
  * start element and the exit of the stop element would close the ring and be
- * given the point <i>s</i> = 0.
+ * given the point <em>s</em> = 0.
  * </p>
  * <p>
  * The method names are those of interfaces <code>ICoordinateState</code> and
  * </code>IPhaseState</code> to reflect their intent. However, they should be
  * changed to something more descriptive once refactoring is finished.
- * Preferably a method prefixed with <tt>calculate</tt>
+ * Preferably a method prefixed with <kbd>calculate</kbd>
  * since the current naming scheme conflicts with Javabeans, specifically, the
  * <code>get</code> prefix indicates a property of this class where in actuality
  * it is a computation.
@@ -76,7 +76,7 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      * Parameters that are required for subsequent ring parameter calculations
      * are computed, such as "entrance" position phase advance, "entrance"
      * position fixed orbit, and "entrance" position matched envelope. By
-     * entrance position we imply the location <i>s</i> = 0, the location of
+     * entrance position we imply the location <em>s</em> = 0, the location of
      * ring closure. Once these quantities are computed we can propagate them to
      * other ring locations as needed.
      * </p>
@@ -135,11 +135,11 @@ public class CalculationsOnRings extends CalculationsOnMachines {
     /**
      * <p>
      * Returns the phase space location of the fixed orbit at the ring entrance
-     * (which is computed at instantiation). The returned value <b>z</b> is the
+     * (which is computed at instantiation). The returned value <strong>z</strong> is the
      * result of the calculation
      * <code>{@link #calculateFixedPoint(PhaseMatrix)}</code> given the full
-     * turn matrix <b>&Phi;</b> at the ring entrance. It is invariant under the
-     * action of <b>&Phi;</b>, that is, <b>&Phi;z</b> = <b>z</b>.
+     * turn matrix <strong>&Phi;</strong> at the ring entrance. It is invariant under the
+     * action of <strong>&Phi;</strong>, that is, <strong>&Phi;z</strong> = <strong>z</strong>.
      * </p>
      * <h3>NOTES:</h3>
      * <p>
@@ -160,7 +160,7 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      * <p>
      * Returns the matched Courant-Snyder parameters at the "entrance" of the
      * ring. These are the envelopes taken from the "closed envelope" solution
-     * at the beginning of the ring, <i>s</i> = 0.
+     * at the beginning of the ring, <em>s</em> = 0.
      * </p>
      * <p>
      * Note that emittance &epsilon; is the parameter used to describe the
@@ -184,9 +184,9 @@ public class CalculationsOnRings extends CalculationsOnMachines {
     }
 
     /**
-     * Returns the one-turn map <b>&Phi;</b><sub>0</sub> for the ring at the
+     * Returns the one-turn map <strong>&Phi;</strong><sub>0</sub> for the ring at the
      * location
-     * <i>s</i> = 0.
+     * <em>s</em> = 0.
      *
      * @return ring one-turn map at join location
      *
@@ -206,8 +206,8 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      * @param state1 state defining the start location in the ring
      * @param state2 state defining the stop location in the ring
      *
-     * @return phases advances (&sigma;<sub><i>x</i></sub>,
-     * &sigma;<sub><i>y</i></sub>, &sigma;<sub><i>z</i></sub>)
+     * @return phases advances (&sigma;<sub><em>x</em></sub>,
+     * &sigma;<sub><em>y</em></sub>, &sigma;<sub><em>z</em></sub>)
      *
      * @author Christopher K. Allen
      * @since Nov 7, 2014
@@ -229,10 +229,10 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      * invariant under the action of the one-turn matrix (this indicates a
      * periodic focusing structure where the beam envelope is modulated by that
      * structure) for the returned values to be accurate. One tune parameter is
-     * provided for each phase plane, i.e., (&nu;<sub><i>x</i></sub>,
-     * &nu;<sub><i>y</i></sub>, &nu;<sub><i>z</i></sub>). The betatron phase
-     * advances for the ring are then given by (2&pi;&nu;<sub><i>x</i></sub>,
-     * 2&pi;&nu;<sub><i>y</i></sub>, 2&pi;&nu;<sub><i>z</i></sub>).
+     * provided for each phase plane, i.e., (&nu;<sub><em>x</em></sub>,
+     * &nu;<sub><em>y</em></sub>, &nu;<sub><em>z</em></sub>). The betatron phase
+     * advances for the ring are then given by (2&pi;&nu;<sub><em>x</em></sub>,
+     * 2&pi;&nu;<sub><em>y</em></sub>, 2&pi;&nu;<sub><em>z</em></sub>).
      * Specifically, the above values are the sinusoidal phase that a particle
      * advances after each completion of a ring traversal, modulo 2&pi; (that
      * is, we only take the fractional part).
@@ -242,18 +242,18 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      * <br>
      * <br>
      * &nbsp; &nbsp; &nu; = (1/2&pi;) cos<sup>-1</sup>[&frac12; Tr
-     * <b>&Phi;</b><sub>&alpha;&alpha;</sub>] ,
+     * <strong>&Phi;</strong><sub>&alpha;&alpha;</sub>] ,
      * <br>
      * <br>
-     * where <b>&Phi;</b></b><sub>&alpha;&alpha;</sub> is the 2&times;2 block
+     * where <strong>&Phi;</strong></strong><sub>&alpha;&alpha;</sub> is the 2&times;2 block
      * diagonal of the the provided transfer matrix for the &alpha; phase plane,
-     * and Tr <b>&Phi;</b></b><sub>&alpha;&alpha;</sub> indicates the trace of
+     * and Tr <strong>&Phi;</strong></strong><sub>&alpha;&alpha;</sub> indicates the trace of
      * matrix
-     * <b>&Phi;</b></b><sub>&alpha;&alpha;</sub>.
+     * <strong>&Phi;</strong></strong><sub>&alpha;&alpha;</sub>.
      * </p>
      *
-     * @return vector of fractional tunes (&nu;<sub><i>x</i></sub>,
-     * &nu;<sub><i>y</i></sub>, &nu;<sub><i>z</i></sub>)
+     * @return vector of fractional tunes (&nu;<sub><em>x</em></sub>,
+     * &nu;<sub><em>y</em></sub>, &nu;<sub><em>z</em></sub>)
      *
      * @author Christopher K. Allen
      * @since Nov 4, 2014
@@ -281,8 +281,8 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      * so <em>this can be an expensive operation</em>.
      * </p>
      *
-     * @return the number <i>n.&nu;</i> for each phase plane where <i>n</i> is
-     * the integer portion and <i>&nu;</i> is the fractional phase advance.
+     * @return the number <em>n.&nu;</em> for each phase plane where <em>n</em> is
+     * the integer portion and <em>&nu;</em> is the fractional phase advance.
      *
      * @author Christopher K. Allen
      * @since Oct 24, 2013
@@ -333,32 +333,32 @@ public class CalculationsOnRings extends CalculationsOnMachines {
 
     /**
      * Computes the one-turn matrix of the ring at the given state location. Let
-     * <i>S<sub>n</sub></i> be the given state object at location
-     * <i>s<sub>n</sub></i>, and let <b>T</b><sub><i>n</i></sub> be the transfer
-     * matrix between locations <i>s</i><sub>0</sub> and <i>s<sub>n</sub></i> ,
-     * where <i>s</i><sub>0</sub> is the location of the full one-turn matrix
-     * <b>&Phi;</b><sub>0</sub> for this machine at position <i>s</i> = 0 (which
+     * <em>S<sub>n</sub></em> be the given state object at location
+     * <em>s<sub>n</sub></em>, and let <strong>T</strong><sub><em>n</em></sub> be the transfer
+     * matrix between locations <em>s</em><sub>0</sub> and <em>s<sub>n</sub></em> ,
+     * where <em>s</em><sub>0</sub> is the location of the full one-turn matrix
+     * <strong>&Phi;</strong><sub>0</sub> for this machine at position <em>s</em> = 0 (which
      * is the beginning and the end of the trajectory object used to construct
      * this class instance). Then the full turn matrix
-     * <b>&Phi;</b><sub><i>n</i></sub> for the machine at location
-     * <i>s<sub>n</sub></i>
+     * <strong>&Phi;</strong><sub><em>n</em></sub> for the machine at location
+     * <em>s<sub>n</sub></em>
      * is given by
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&Phi;</b><sub><i>n</i></sub> =
-     * <b>T</b><sub><i>n</i></sub> &sdot; <b>&Phi;</b><sub>0</sub>
-     * &sdot; <b>T</b><sub><i>n</i></sub><sup>-1</sup> .
+     * &nbsp; &nbsp; <strong>&Phi;</strong><sub><em>n</em></sub> =
+     * <strong>T</strong><sub><em>n</em></sub> &sdot; <strong>&Phi;</strong><sub>0</sub>
+     * &sdot; <strong>T</strong><sub><em>n</em></sub><sup>-1</sup> .
      * <br>
      * <br>
      * That is, we conjugate the full transfer map for this machine by the
      * transfer map for the given state.
      * </p>
      *
-     * @param state state <i>S<sub>n</sub></i> identifying the position
-     * <i>s<sub>n</sub></i>
+     * @param state state <em>S<sub>n</sub></em> identifying the position
+     * <em>s<sub>n</sub></em>
      *
-     * @return The one-turn matrix <b>&Phi;</b><sub><i>n</i></sub> of the ring
-     * at <i>s<sub>n</sub></i>
+     * @return The one-turn matrix <strong>&Phi;</strong><sub><em>n</em></sub> of the ring
+     * at <em>s<sub>n</sub></em>
      *
      * @author Christopher K. Allen
      * @since Nov 4, 2014
@@ -371,79 +371,79 @@ public class CalculationsOnRings extends CalculationsOnMachines {
 
     /**
      * <p>
-     * Returns the transfer matrix <b>&Phi;</b><sub>2,1</sub> taking phase
+     * Returns the transfer matrix <strong>&Phi;</strong><sub>2,1</sub> taking phase
      * coordinates from state position
-     * <i>S</i><sub>1</sub> to state position <i>S</i><sub>2</sub> within the
+     * <em>S</em><sub>1</sub> to state position <em>S</em><sub>2</sub> within the
      * ring. This is the first-order portion of the ring's transfer map
-     * <b>T</b><sub>2,1</sub>
-     * between states <i>S</i><sub>1</sub> and <i>S</i><sub>2</sub>
+     * <strong>T</strong><sub>2,1</sub>
+     * between states <em>S</em><sub>1</sub> and <em>S</em><sub>2</sub>
      * (see method
      * <code>{@link #computeTransferMap(TransferMapState, TransferMapState)}</code>).
      * </p>
      * <p>
-     * Because of the ring topology, position <i>s</i><sub>1</sub> of state
-     * <i>S</i><sub>1</sub> and position  <i>s</i><sub>2</sub> of state
-     * <i>S</i><sub>2</sub> are really equivalence classes of real numbers
-     * [<i>s</i><sub>1</sub>] &sub; <b>R</b> and [<i>s</i><sub>2</sub>] &sub;
-     * <b>R</b>, respectively. Each equivalence class can be represented
+     * Because of the ring topology, position <em>s</em><sub>1</sub> of state
+     * <em>S</em><sub>1</sub> and position  <em>s</em><sub>2</sub> of state
+     * <em>S</em><sub>2</sub> are really equivalence classes of real numbers
+     * [<em>s</em><sub>1</sub>] &sub; <strong>R</strong> and [<em>s</em><sub>2</sub>] &sub;
+     * <strong>R</strong>, respectively. Each equivalence class can be represented
      * <br>
      * <br>
-     * &nbsp; &nbsp; [<i>s<sub>i</sub></i> ] = { <i>s<sub>i</sub></i> +
-     * <i>nL</i> | <i>n</i> &in; <b>Z</b><sub>+</sub> }
+     * &nbsp; &nbsp; [<em>s<sub>i</sub></em> ] = { <em>s<sub>i</sub></em> +
+     * <em>nL</em> | <em>n</em> &in; <strong>Z</strong><sub>+</sub> }
      * <br>
      * <br>
-     * where <i>L</i> is the circumference of the ring. Because of the way the
-     * ring is represented as a data structure, we have <i>s</i> &in;
-     * [0,<i>L</i>]. However, we must enforce the condition that
-     * <i>s</i><sub>2</sub> is always "down stream" of <i>s</i><sub>1</sub>.
+     * where <em>L</em> is the circumference of the ring. Because of the way the
+     * ring is represented as a data structure, we have <em>s</em> &in;
+     * [0,<em>L</em>]. However, we must enforce the condition that
+     * <em>s</em><sub>2</sub> is always "down stream" of <em>s</em><sub>1</sub>.
      * Specifically, we do not reverse directions when computing the transfer
      * matrix. Here we describe the calculations in practical detail.
      * </p>
      * <p>
-     * If while traveling downstream from position <i>s</i><sub>1</sub> we need
-     * to determine whether or not we pass the position <i>s</i> = 0 before we
-     * encounter the position <i>s</i><sub>2</sub>. If so we to represent the
-     * position of state <i>S</i><sub>2</sub> as
-     * <i>s</i><sub>2</sub> + <i>L</i> &in; [<i>s</i><sub>2</sub>], since
-     * <i>s</i><sub>2</sub> &lt; <i>s</i></sub>1</sub> indicating
-     * <i>s</i><sub>2</sub>
-     * is upstream of <i>s</i><sub>1</sub> (according to our model). This
+     * If while traveling downstream from position <em>s</em><sub>1</sub> we need
+     * to determine whether or not we pass the position <em>s</em> = 0 before we
+     * encounter the position <em>s</em><sub>2</sub>. If so we to represent the
+     * position of state <em>S</em><sub>2</sub> as
+     * <em>s</em><sub>2</sub> + <em>L</em> &in; [<em>s</em><sub>2</sub>], since
+     * <em>s</em><sub>2</sub> &lt; <em>s</em></sub>1</sub> indicating
+     * <em>s</em><sub>2</sub>
+     * is upstream of <em>s</em><sub>1</sub> (according to our model). This
      * condition requires that we must include the ring full turn matrix
-     * <b>&Phi;</b><sub>0</sub>
-     * when computing the transfer matrix. Recall that <b>&Phi;</b><sub>0</sub>
-     * takes phase coordinates from position <i>s</i> = 0 to position <i>s</i =
+     * <strong>&Phi;</strong><sub>0</sub>
+     * when computing the transfer matrix. Recall that <strong>&Phi;</strong><sub>0</sub>
+     * takes phase coordinates from position <em>s</em> = 0 to position <em>s</i =
      * 0 going all the way around the ring. </p> <p> Collecting all of the
      * above, if
      * <
      * i
-     * >s</i><sub>2</sub> &lt; <i>s</i><sub>1</sub>
-     * then we have a propagation through point <i>s</i> = 0 and we must include
+     * >s</em><sub>2</sub> &lt; <em>s</em><sub>1</sub>
+     * then we have a propagation through point <em>s</em> = 0 and we must include
      * the full turn matrix according to
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&Phi;</b><sub>2,1</sub> =
-     * <b>&Phi;</b><sub>2</sub><b>&Phi;</b><sub>0</sub><b>&Phi;</b><sub>1</sub><sup>-1</sup>
+     * &nbsp; &nbsp; <strong>&Phi;</strong><sub>2,1</sub> =
+     * <strong>&Phi;</strong><sub>2</sub><strong>&Phi;</strong><sub>0</sub><strong>&Phi;</strong><sub>1</sub><sup>-1</sup>
      * .
      * <br>
      * <br>
-     * If <i>s</i><sub>2</sub> &gt; <i>s</i><sub>1</sub> then we can compute the
-     * transfer matrix <b>&Phi;</b><sub>2,1</sub> in the usual fashion
+     * If <em>s</em><sub>2</sub> &gt; <em>s</em><sub>1</sub> then we can compute the
+     * transfer matrix <strong>&Phi;</strong><sub>2,1</sub> in the usual fashion
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&Phi;</b><sub>2,1</sub> =
-     * <b>&Phi;</b><sub>2</sub><b>&Phi;</b><sub>1</sub><sup>-1</sup> .
+     * &nbsp; &nbsp; <strong>&Phi;</strong><sub>2,1</sub> =
+     * <strong>&Phi;</strong><sub>2</sub><strong>&Phi;</strong><sub>1</sub><sup>-1</sup> .
      * <br>
      * <br>
      * </p>
      *
-     * @param state1 phase state <i>S</i><sub>1</sub> defining ring position
-     * <i>s</i><sub>1</sub>
-     * @param state2 phase state <i>S</i><sub>2</sub> defining ring position
-     * <i>s</i><sub>2</sub>
+     * @param state1 phase state <em>S</em><sub>1</sub> defining ring position
+     * <em>s</em><sub>1</sub>
+     * @param state2 phase state <em>S</em><sub>2</sub> defining ring position
+     * <em>s</em><sub>2</sub>
      *
-     * @return the transfer matrix <b>&Phi;</b><sub>2,1</sub> taking phase
-     * coordinates <b>z</b> from position <i>s</i><sub>1</sub> on the ring to
-     * position <i>s</i><sub>2</sub>
+     * @return the transfer matrix <strong>&Phi;</strong><sub>2,1</sub> taking phase
+     * coordinates <strong>z</strong> from position <em>s</em><sub>1</sub> on the ring to
+     * position <em>s</em><sub>2</sub>
      *
      * @author Christopher K. Allen
      * @since Nov 3, 2014
@@ -474,75 +474,75 @@ public class CalculationsOnRings extends CalculationsOnMachines {
 
     /**
      * <p>
-     * Returns the transfer map <b>T</b><sub>2,1</sub> taking phase coordinates
+     * Returns the transfer map <strong>T</strong><sub>2,1</sub> taking phase coordinates
      * from state position
-     * <i>S</i><sub>1</sub> to state position <i>S</i><sub>2</sub> within the
+     * <em>S</em><sub>1</sub> to state position <em>S</em><sub>2</sub> within the
      * ring.
      * </p>
      * <p>
-     * Because of the ring topology, position <i>s</i><sub>1</sub> of state
-     * <i>S</i><sub>1</sub> and position  <i>s</i><sub>2</sub> of state
-     * <i>S</i><sub>2</sub> are really equivalence classes of real numbers
-     * [<i>s</i><sub>1</sub>] &sub; <b>R</b> and [<i>s</i><sub>2</sub>] &sub;
-     * <b>R</b>, respectively. Each equivalence class can be represented
+     * Because of the ring topology, position <em>s</em><sub>1</sub> of state
+     * <em>S</em><sub>1</sub> and position  <em>s</em><sub>2</sub> of state
+     * <em>S</em><sub>2</sub> are really equivalence classes of real numbers
+     * [<em>s</em><sub>1</sub>] &sub; <strong>R</strong> and [<em>s</em><sub>2</sub>] &sub;
+     * <strong>R</strong>, respectively. Each equivalence class can be represented
      * <br>
      * <br>
-     * &nbsp; &nbsp; [<i>s<sub>i</sub></i> ] = { <i>s<sub>i</sub></i> +
-     * <i>nL</i> | <i>n</i> &in; <b>Z</b><sub>+</sub> }
+     * &nbsp; &nbsp; [<em>s<sub>i</sub></em> ] = { <em>s<sub>i</sub></em> +
+     * <em>nL</em> | <em>n</em> &in; <strong>Z</strong><sub>+</sub> }
      * <br>
      * <br>
-     * where <i>L</i> is the circumference of the ring. Because of the way the
-     * ring is represented as a data structure, we have <i>s</i> &in;
-     * [0,<i>L</i>]. However, we must enforce the condition that
-     * <i>s</i><sub>2</sub> is always "down stream" of <i>s</i><sub>1</sub>.
+     * where <em>L</em> is the circumference of the ring. Because of the way the
+     * ring is represented as a data structure, we have <em>s</em> &in;
+     * [0,<em>L</em>]. However, we must enforce the condition that
+     * <em>s</em><sub>2</sub> is always "down stream" of <em>s</em><sub>1</sub>.
      * Specifically, we do not reverse directions when computing the transfer
      * map. Here we describe the calculations in practical detail.
      * </p>
      * <p>
-     * If while traveling downstream from position <i>s</i><sub>1</sub> we need
-     * to determine whether or not we pass the position <i>s</i> = 0 before we
-     * encounter the position <i>s</i><sub>2</sub>. If so we to represent the
-     * position of state <i>S</i><sub>2</sub> as
-     * <i>s</i><sub>2</sub> + <i>L</i> &in; [<i>s</i><sub>2</sub>], since
-     * <i>s</i><sub>2</sub> &lt; <i>s</i></sub>1</sub> indicating
-     * <i>s</i><sub>2</sub>
-     * is upstream of <i>s</i><sub>1</sub> (according to our model). This
+     * If while traveling downstream from position <em>s</em><sub>1</sub> we need
+     * to determine whether or not we pass the position <em>s</em> = 0 before we
+     * encounter the position <em>s</em><sub>2</sub>. If so we to represent the
+     * position of state <em>S</em><sub>2</sub> as
+     * <em>s</em><sub>2</sub> + <em>L</em> &in; [<em>s</em><sub>2</sub>], since
+     * <em>s</em><sub>2</sub> &lt; <em>s</em></sub>1</sub> indicating
+     * <em>s</em><sub>2</sub>
+     * is upstream of <em>s</em><sub>1</sub> (according to our model). This
      * condition requires that we must include the ring full turn map
-     * <b>T</b><sub>0</sub>
-     * when computing the transfer map. Recall that <b>T</b><sub>0</sub> takes
-     * phase coordinates from position <i>s</i> = 0 to position <i>s</i = 0
+     * <strong>T</strong><sub>0</sub>
+     * when computing the transfer map. Recall that <strong>T</strong><sub>0</sub> takes
+     * phase coordinates from position <em>s</em> = 0 to position <em>s</i = 0
      * going all the way around the ring. </p> <p> Collecting all of the above,
      * if
      * <
      * i
-     * >s</i><sub>2</sub> &lt; <i>s</i><sub>1</sub>
-     * then we have a propagation through point <i>s</i> = 0 and we must include
+     * >s</em><sub>2</sub> &lt; <em>s</em><sub>1</sub>
+     * then we have a propagation through point <em>s</em> = 0 and we must include
      * the full turn map according to
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>T</b><sub>2,1</sub> =
-     * <b>T</b><sub>2</sub><b>T</b><sub>0</sub><b>T</b><sub>1</sub><sup>-1</sup>
+     * &nbsp; &nbsp; <strong>T</strong><sub>2,1</sub> =
+     * <strong>T</strong><sub>2</sub><strong>T</strong><sub>0</sub><strong>T</strong><sub>1</sub><sup>-1</sup>
      * .
      * <br>
      * <br>
-     * If <i>s</i><sub>2</sub> &gt; <i>s</i><sub>1</sub> then we can compute the
-     * transfer map <b>T</b><sub>2,1</sub> in the usual fashion
+     * If <em>s</em><sub>2</sub> &gt; <em>s</em><sub>1</sub> then we can compute the
+     * transfer map <strong>T</strong><sub>2,1</sub> in the usual fashion
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>T</b><sub>2,1</sub> =
-     * <b>T</b><sub>2</sub><b>T</b><sub>1</sub><sup>-1</sup> .
+     * &nbsp; &nbsp; <strong>T</strong><sub>2,1</sub> =
+     * <strong>T</strong><sub>2</sub><strong>T</strong><sub>1</sub><sup>-1</sup> .
      * <br>
      * <br>
      * </p>
      *
-     * @param state1 phase state <i>S</i><sub>1</sub> defining ring position
-     * <i>s</i><sub>1</sub>
-     * @param state2 phase state <i>S</i><sub>2</sub> defining ring position
-     * <i>s</i><sub>2</sub>
+     * @param state1 phase state <em>S</em><sub>1</sub> defining ring position
+     * <em>s</em><sub>1</sub>
+     * @param state2 phase state <em>S</em><sub>2</sub> defining ring position
+     * <em>s</em><sub>2</sub>
      *
-     * @return the transfer map <b>T</b><sub>2,1</sub> taking phase coordinates
-     * <b>z</b> from position <i>s</i><sub>1</sub> on the ring to position
-     * <i>s</i><sub>2</sub>
+     * @return the transfer map <strong>T</strong><sub>2,1</sub> taking phase coordinates
+     * <strong>z</strong> from position <em>s</em><sub>1</sub> on the ring to position
+     * <em>s</em><sub>2</sub>
      *
      * @author Christopher K. Allen
      * @since Nov 3, 2014
@@ -573,43 +573,43 @@ public class CalculationsOnRings extends CalculationsOnMachines {
     /**
      * <p>
      * Computes and returns the turn-by-turn phase positions
-     * {<b>z</b><sub><i>n</i></sub> &in; <b>R</b><sup>6</sup> &times; {1} |
-     * <i>n</i>=0,...,<i>N</i>-1 } at the given location <i>s</i><sub>obs</sub>
-     * of state <i>S</i><sub>obs</sub> resulting from a particle injected at
-     * location <i>s</i><sub>inj</sub> &in; <i>S</i><sub>inj</sub> with initial
-     * phase coordinates <b>z</b><sub>inj</sub>.
+     * {<strong>z</strong><sub><em>n</em></sub> &in; <strong>R</strong><sup>6</sup> &times; {1} |
+     * <em>n</em>=0,...,<em>N</em>-1 } at the given location <em>s</em><sub>obs</sub>
+     * of state <em>S</em><sub>obs</sub> resulting from a particle injected at
+     * location <em>s</em><sub>inj</sub> &in; <em>S</em><sub>inj</sub> with initial
+     * phase coordinates <strong>z</strong><sub>inj</sub>.
      * </p>
      * <p>
-     * The coordinates <b>z</b><sub><i>n</i></sub>
-     * are taken with respect to the ring's fixed point orbit <b>p</b> at
+     * The coordinates <strong>z</strong><sub><em>n</em></sub>
+     * are taken with respect to the ring's fixed point orbit <strong>p</strong> at
      * location
-     * <i>s</i><sub>obj</sub>. That is, each <b>z</b><sub><i>n</i></sub> is a
-     * displacement from <b>p</b> in the global coordinate system.
+     * <em>s</em><sub>obj</sub>. That is, each <strong>z</strong><sub><em>n</em></sub> is a
+     * displacement from <strong>p</strong> in the global coordinate system.
      * </p>
      * <p>
      * Currently the computation is entirely matrix based. Only transfer
      * matrices are used and not transfer maps. Specifically, let
-     * <b>&Phi;</b><sub>2,1</sub> be the transfer matrix from
-     * <i>s</i><sub>1</sub> &#8796; <i>s</i><sub>inj</sub> to
-     * <i>s</i><sub>2</sub> &#8796; <i>s</i><sub>obs</sub> and let
-     * <b>&Phi;</b><sub>2,2</sub> be the one-turn map at position
-     * <i>s</i><sub>2</sub> in the ring. Then the returned array of phase
-     * vectors {<b>z</b><sub><i>n</i></sub> } is given by
+     * <strong>&Phi;</strong><sub>2,1</sub> be the transfer matrix from
+     * <em>s</em><sub>1</sub> &#8796; <em>s</em><sub>inj</sub> to
+     * <em>s</em><sub>2</sub> &#8796; <em>s</em><sub>obs</sub> and let
+     * <strong>&Phi;</strong><sub>2,2</sub> be the one-turn map at position
+     * <em>s</em><sub>2</sub> in the ring. Then the returned array of phase
+     * vectors {<strong>z</strong><sub><em>n</em></sub> } is given by
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>z</b><sub><i>n</i></sub> =
-     * [<b>&Phi;</b><sub>2,2</sub>]<sup><i>n</i></sup>
-     * <b>&Phi;</b><sub>2,1</sub> <b>z</b><sub>inj</sub> .
+     * &nbsp; &nbsp; <strong>z</strong><sub><em>n</em></sub> =
+     * [<strong>&Phi;</strong><sub>2,2</sub>]<sup><em>n</em></sup>
+     * <strong>&Phi;</strong><sub>2,1</sub> <strong>z</strong><sub>inj</sub> .
      * <br>
      * <br>
-     * Note that <b>z</b><sub>0</sub> is <b>&Phi;</b><sub>2,1</sub>
-     * <b>z</b><sub>inj</sub> , the phase coordinates of the particle after
+     * Note that <strong>z</strong><sub>0</sub> is <strong>&Phi;</strong><sub>2,1</sub>
+     * <strong>z</strong><sub>inj</sub> , the phase coordinates of the particle after
      * propagating from the injection location to the observation location.
      * </p>
      *
      * @param stateInj trajectory state at the injection location
      * @param stateObs trajectory state at the observation location
-     * @param cntTurns number of turns <i>N</i> to observe particle
+     * @param cntTurns number of turns <em>N</em> to observe particle
      * @param vecInj the initial phase coordinates in the ring global coordinate
      * system
      *
@@ -642,36 +642,36 @@ public class CalculationsOnRings extends CalculationsOnMachines {
     /**
      * <p>
      * Computes and returns the turn-by-turn phase positions
-     * {<b>z</b><sub><i>n</i></sub> &in; <b>R</b><sup>6</sup> &times; {1} |
-     * <i>n</i>=0,...,<i>N</i>-1 } at the given location <i>s</i><sub>obs</sub>
-     * of state <i>S</i><sub>obs</sub> resulting from a particle injected at
-     * location <i>s</i><sub>inj</sub> &in; <i>S</i><sub>inj</sub> with initial
-     * phase coordinates <b>z</b><sub>inj</sub>.
+     * {<strong>z</strong><sub><em>n</em></sub> &in; <strong>R</strong><sup>6</sup> &times; {1} |
+     * <em>n</em>=0,...,<em>N</em>-1 } at the given location <em>s</em><sub>obs</sub>
+     * of state <em>S</em><sub>obs</sub> resulting from a particle injected at
+     * location <em>s</em><sub>inj</sub> &in; <em>S</em><sub>inj</sub> with initial
+     * phase coordinates <strong>z</strong><sub>inj</sub>.
      * </p>
      * <p>
      * Currently the computation is entirely matrix based. Only transfer
      * matrices are used and not transfer maps. Specifically, let
-     * <b>&Phi;</b><sub>2,1</sub> be the transfer matrix from
-     * <i>s</i><sub>1</sub> &#8796; <i>s</i><sub>inj</sub> to
-     * <i>s</i><sub>2</sub> &#8796; <i>s</i><sub>obs</sub> and let
-     * <b>&Phi;</b><sub>2,2</sub> be the one-turn map at position
-     * <i>s</i><sub>2</sub> in the ring. Then the returned array of phase
-     * vectors {<b>z</b><sub><i>n</i></sub> } is given by
+     * <strong>&Phi;</strong><sub>2,1</sub> be the transfer matrix from
+     * <em>s</em><sub>1</sub> &#8796; <em>s</em><sub>inj</sub> to
+     * <em>s</em><sub>2</sub> &#8796; <em>s</em><sub>obs</sub> and let
+     * <strong>&Phi;</strong><sub>2,2</sub> be the one-turn map at position
+     * <em>s</em><sub>2</sub> in the ring. Then the returned array of phase
+     * vectors {<strong>z</strong><sub><em>n</em></sub> } is given by
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>z</b><sub><i>n</i></sub> =
-     * [<b>&Phi;</b><sub>2,2</sub>]<sup><i>n</i></sup>
-     * <b>&Phi;</b><sub>2,1</sub> <b>z</b><sub>inj</sub> .
+     * &nbsp; &nbsp; <strong>z</strong><sub><em>n</em></sub> =
+     * [<strong>&Phi;</strong><sub>2,2</sub>]<sup><em>n</em></sup>
+     * <strong>&Phi;</strong><sub>2,1</sub> <strong>z</strong><sub>inj</sub> .
      * <br>
      * <br>
-     * Note that <b>z</b><sub>0</sub> is <b>&Phi;</b><sub>2,1</sub>
-     * <b>z</b><sub>inj</sub> , the phase coordinates of the particle after
+     * Note that <strong>z</strong><sub>0</sub> is <strong>&Phi;</strong><sub>2,1</sub>
+     * <strong>z</strong><sub>inj</sub> , the phase coordinates of the particle after
      * propagating from the injection location to the observation location.
      * </p>
      *
      * @param stateInj trajectory state at the injection location
      * @param stateObs trajectory state at the observation location
-     * @param cntTurns number of turns <i>N</i> to observe particle
+     * @param cntTurns number of turns <em>N</em> to observe particle
      * @param vecInj the initial phase coordinates w.r.t. to the fixed orbit
      * location
      *
@@ -712,8 +712,8 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      * ring at that point.
      * </p>
      * <p>
-     * Internally, the array of phase advances {&sigma;<sub><i>x</i></sub>,
-     * &sigma;<sub><i>y</i></sub>, &sigma;<sub><i>x</i></sub>} are assumed to be
+     * Internally, the array of phase advances {&sigma;<sub><em>x</em></sub>,
+     * &sigma;<sub><em>y</em></sub>, &sigma;<sub><em>x</em></sub>} are assumed to be
      * the particle phase advances through the ring for the matched solution.
      * These are computed with the base class method
      * <code>{@link #calculatePhaseAdvPerCell(PhaseMatrix)}</code>.
@@ -729,17 +729,17 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      * of a single phase plane:
      * <br>
      * <br>
-     * &nbsp; &nbsp; &alpha; &equiv; -<i>ww'</i> = (&phi;<sub>11</sub> -
+     * &nbsp; &nbsp; &alpha; &equiv; -<em>ww'</em> = (&phi;<sub>11</sub> -
      * &phi;<sub>22</sub>)/(2 sin &sigma;) ,
      * <br>
      * <br>
-     * &nbsp; &nbsp; &beta; &equiv; <i>w</i><sup>2</sup> =
+     * &nbsp; &nbsp; &beta; &equiv; <em>w</em><sup>2</sup> =
      * &phi;<sub>12</sub>/sin &sigma;
      * <br>
      * <br>
-     * where &phi;<sub><i>ij</i></sub> are the elements of the 2&times;2
-     * diagonal blocks of the one-turn matrix <b>&Phi;</b> for the the
-     * particular phase plane. The particle amplitude function <i>w</i>
+     * where &phi;<sub><em>ij</em></sub> are the elements of the 2&times;2
+     * diagonal blocks of the one-turn matrix <strong>&Phi;</strong> for the the
+     * particular phase plane. The particle amplitude function <em>w</em>
      * is taken from Reiser, and &sigma; is the phase advance through the cell
      * for the particular phase plane.
      * </p>

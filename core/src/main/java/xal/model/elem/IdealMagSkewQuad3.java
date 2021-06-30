@@ -33,7 +33,7 @@ import xal.model.elem.sync.IElectromagnet;
  * </p>
  * <p>
  * Note that the action of a rotated element on phase space is also a rotation
- * of the beam coordinates, but in the <b>opposing</b> direction. Thus, if this
+ * of the beam coordinates, but in the <strong>opposing</strong> direction. Thus, if this
  * element is to be represented simply as a rotated <code>IdealMagQuad</code>
  * element, then the coordinate rotation angles should negative that of the
  * elements rotation angles.
@@ -128,7 +128,7 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
      * Note that global attributes <code>MAT_SO6_2QUAD</code> and
      * <code>MAT_SO6_2BEAM</code> would more naturally be constants. However,
      * because of the tools for working with matrices in
-     * <i>SO</i>(6) &subst; <i>SO</i>(7) it is easy to compute these objects on
+     * <em>SO</em>(6) &subst; <em>SO</em>(7) it is easy to compute these objects on
      * start up from the constant <code>DBL_SKEW_ANGLE</code>.
      * </p>
      */
@@ -172,7 +172,7 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
      * The length and field strength are set to the given values.
      *
      * @param strId string identifier for this element
-     * @param dblFld field gradient strength (in <b>Tesla/meter</b>)
+     * @param dblFld field gradient strength (in <strong>Tesla/meter</strong>)
      * @param dblLen length of the skew quadrupole body
      *
      * @author Christopher K. Allen
@@ -222,7 +222,7 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
      * {@link IdealMagSkewQuad3#DBL_SKEW_ANGLE}.
      * </p>
      *
-     * @return skew angle about the beam axis (in <b>radians</b>)
+     * @return skew angle about the beam axis (in <strong>radians</strong>)
      *
      * @see IdealMagSkewQuad3
      * @see IdealMagSkewQuad3#DBL_SKEW_ANGLE
@@ -238,7 +238,7 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
      * <p>
      * Return the enumeration code specifying the focusing orientation of the
      * quadrupole. Note that the orientation of an
-     * <code>IdealMagSkewQuad3</code> object <b>cannot</b> change. Thus, this
+     * <code>IdealMagSkewQuad3</code> object <strong>cannot</strong> change. Thus, this
      * method will always return the value
      * <code>IElectromagnet.ORIENT_NONE</code>
      * </p>
@@ -285,9 +285,9 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <b>meters</b>
+     * @param dblLen length of subsection to propagate through <strong>meters</strong>
      *
-     * @return the elapsed time through section<b>Units: seconds</b>
+     * @return the elapsed time through section<strong>Units: seconds</strong>
      *
      * @since Mar 13, 2008
      * @author Christopher K. Allen

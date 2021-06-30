@@ -71,11 +71,11 @@ public class ParticleProbe extends Probe<ParticleProbeState> {
 
     /**
      * Set the phase space coordinates of the probe. This is the location
-     * <b>z</b>
-     * in homogeneous phase space coordinates <b>R</b><sup>6</sup> &times; {1}.
+     * <strong>z</strong>
+     * in homogeneous phase space coordinates <strong>R</strong><sup>6</sup> &times; {1}.
      *
      * @param vecPhase new homogeneous phase space coordinate vector
-     * <b>z</b> = (<i>x, x', y, y', z, z', </i>1)<sup><i>T</i></sup>
+     * <strong>z</strong> = (<em>x, x', y, y', z, z', </em>1)<sup><em>T</em></sup>
      */
     public void setPhaseCoordinates(PhaseVector vecPhase) {
         this.stateCurrent.setPhaseCoordinates(vecPhase);
@@ -83,25 +83,25 @@ public class ParticleProbe extends Probe<ParticleProbeState> {
 
     /**
      * <p>
-     * Set the response matrix <b>&Phi;</b> for the particle at the given state
-     * location <b>z</b>. The response matrix represents the sensitivity of the
-     * current phase coordinate position <b>z</b> to the initial phase
-     * coordinate location <b>z</b><sub>0</sub> at the start of the simulation.
+     * Set the response matrix <strong>&Phi;</strong> for the particle at the given state
+     * location <strong>z</strong>. The response matrix represents the sensitivity of the
+     * current phase coordinate position <strong>z</strong> to the initial phase
+     * coordinate location <strong>z</strong><sub>0</sub> at the start of the simulation.
      * That is,
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&Phi;</b> &equiv;
-     * &part;<b>z</b>/&part;<b>z</b><sub>0</sub>
+     * &nbsp; &nbsp; <strong>&Phi;</strong> &equiv;
+     * &part;<strong>z</strong>/&part;<strong>z</strong><sub>0</sub>
      * <br>
      * <br>
-     * so that small changes &Delta;<b>z</b><sub>0</sub> in the initial phase
-     * position yield a corresponding change &Delta;<b>z</b> =
-     * <b>&Phi;</b>&Delta;<b>z</b><sub>0</sub>
+     * so that small changes &Delta;<strong>z</strong><sub>0</sub> in the initial phase
+     * position yield a corresponding change &Delta;<strong>z</strong> =
+     * <strong>&Phi;</strong>&Delta;<strong>z</strong><sub>0</sub>
      * in the current particle location.
      * </p>
      *
-     * @param matResp the response matrix <b>&Phi;</b> &equiv;
-     * &part;<b>z</b>/&part;<b>z</b><sub>0</sub>the matResp to set
+     * @param matResp the response matrix <strong>&Phi;</strong> &equiv;
+     * &part;<strong>z</strong>/&part;<strong>z</strong><sub>0</sub>the matResp to set
      */
     public void setResponseMatrix(PhaseMatrix matResp) {
         this.stateCurrent.setResponseMatrix(matResp);
@@ -122,25 +122,25 @@ public class ParticleProbe extends Probe<ParticleProbeState> {
 
     /**
      * <p>
-     * Returns the response matrix <b>&Phi;</b> for the particle at the given
-     * state location <b>z</b>. The response matrix represents the sensitivity
-     * of the current phase coordinate position <b>z</b> to the initial phase
-     * coordinate location <b>z</b><sub>0</sub> at the start of the simulation.
+     * Returns the response matrix <strong>&Phi;</strong> for the particle at the given
+     * state location <strong>z</strong>. The response matrix represents the sensitivity
+     * of the current phase coordinate position <strong>z</strong> to the initial phase
+     * coordinate location <strong>z</strong><sub>0</sub> at the start of the simulation.
      * That is,
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&Phi;</b> &equiv;
-     * &part;<b>z</b>/&part;<b>z</b><sub>0</sub>
+     * &nbsp; &nbsp; <strong>&Phi;</strong> &equiv;
+     * &part;<strong>z</strong>/&part;<strong>z</strong><sub>0</sub>
      * <br>
      * <br>
-     * so that small changes &Delta;<b>z</b><sub>0</sub> in the initial phase
-     * position yield a corresponding change &Delta;<b>z</b> =
-     * <b>&Phi;</b>&Delta;<b>z</b><sub>0</sub>
+     * so that small changes &Delta;<strong>z</strong><sub>0</sub> in the initial phase
+     * position yield a corresponding change &Delta;<strong>z</strong> =
+     * <strong>&Phi;</strong>&Delta;<strong>z</strong><sub>0</sub>
      * in the current particle location.
      * </p>
      *
-     * @return the response matrix <b>&Phi;</b> &equiv;
-     * &part;<b>z</b>/&part;<b>z</b><sub>0</sub>
+     * @return the response matrix <strong>&Phi;</strong> &equiv;
+     * &part;<strong>z</strong>/&part;<strong>z</strong><sub>0</sub>
      */
     public PhaseMatrix getResponseMatrix() {
         return this.stateCurrent.getResponseMatrix();

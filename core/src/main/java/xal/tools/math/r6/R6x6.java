@@ -13,9 +13,9 @@ import xal.tools.math.r3.R3x3.POS;
 
 /**
  * <p>
- * Represents an element of <b>R</b><sup>6&times;6</sup>, the set of real,
+ * Represents an element of <strong>R</strong><sup>6&times;6</sup>, the set of real,
  * 6&times;6 matrices. The class also contains the usual set of matrix
- * operations and linear transforms on <b>R</b><sup>6</sup> that are represented
+ * operations and linear transforms on <strong>R</strong><sup>6</sup> that are represented
  * by these matrices.
  * </p>
  *
@@ -137,30 +137,30 @@ public class R6x6 extends SquareMatrix<R6x6> {
     /**
      * <p>
      * Compute the rotation matrix in phase space that is essentially the
-     * Cartesian product of the given rotation matrix in <i>SO</i>(3). That is,
-     * if the given argument is the rotation <b>O</b>, the returned matrix,
-     * denoted <b>M</b>, is the <b>M</b> =
-     * <b>O</b>&times;<b>O</b>&times;<b>I</b> embedding into homogeneous phase
-     * space <b>R</b><sup>6&times;6</sup>&times;{1}. Thus,
-     * <b>M</b> &in; <i>SO</i>(6) &sub; <b>R</b><sup>6&times;6</sup>&times;{1}.
+     * Cartesian product of the given rotation matrix in <em>SO</em>(3). That is,
+     * if the given argument is the rotation <strong>O</strong>, the returned matrix,
+     * denoted <strong>M</strong>, is the <strong>M</strong> =
+     * <strong>O</strong>&times;<strong>O</strong>&times;<strong>I</strong> embedding into homogeneous phase
+     * space <strong>R</strong><sup>6&times;6</sup>&times;{1}. Thus,
+     * <strong>M</strong> &in; <em>SO</em>(6) &sub; <strong>R</strong><sup>6&times;6</sup>&times;{1}.
      * </p>
      * <p>
      * Viewing phase-space as a 6D manifold built as the tangent bundle over
-     * <b>R</b><sup>3</sup> configuration space, then the fibers of 3D
-     * configuration space at a point (<i>x,y,z</i>) are represented by the
-     * Cartesian planes (<i>x',y',z'</i>). The returned phase matrix rotates
-     * these fibers in the same manner as their base point (<i>x,y,z</i>).
+     * <strong>R</strong><sup>3</sup> configuration space, then the fibers of 3D
+     * configuration space at a point (<em>x,y,z</em>) are represented by the
+     * Cartesian planes (<em>x',y',z'</em>). The returned phase matrix rotates
+     * these fibers in the same manner as their base point (<em>x,y,z</em>).
      * </p>
      * <p>
      * This is a convenience method to build the above rotation matrix in
-     * <i>SO</i>(7).
+     * <em>SO</em>(7).
      * </p>
      *
      * @param matSO3 a rotation matrix in three dimensions, i.e., a member of
-     * <i>SO</i>(3) &sub; <b>R</b><sup>3&times;3</sup>
+     * <em>SO</em>(3) &sub; <strong>R</strong><sup>3&times;3</sup>
      *
-     * @return rotation matrix in <i>S0</i>(7) which is direct product of
-     * rotations in <i>S0</i>(3)
+     * @return rotation matrix in <em>S0</em>(7) which is direct product of
+     * rotations in <em>S0</em>(3)
      */
     public static R6x6 rotationProduct(R3x3 matSO3) {
 

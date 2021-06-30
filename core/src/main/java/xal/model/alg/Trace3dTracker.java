@@ -48,7 +48,7 @@ import xal.tools.math.r3.R3;
  * <p>
  * This is a basic algorithm for envelope propagation, almost exact to that used
  * in Trace3D. There is no emittance growth mechanism for RF gaps, however. It
- * was used for direct comparison of results from <tt>Trace3D</tt> and the XAL
+ * was used for direct comparison of results from <kbd>Trace3D</kbd> and the XAL
  * online model. All the functionality of this class is contained in
  * <code>EnvelopeTracker</code> so it is no longer supported. However, I am not
  * deprecated this class since it can be used as a light-weight substitute.
@@ -409,8 +409,8 @@ public class Trace3dTracker extends Tracker {
 //     * Calculates the transfer matrix for a space charge kick.
 //     * 
 //     * NOTE:
-//     *  <b>This currently works only for upright beam ellipses
-//     *  in configuration space!</b>
+//     *  <strong>This currently works only for upright beam ellipses
+//     *  in configuration space!</strong>
 //     * 
 //     *  @param  K       beam generalized perveance (3D bunched beam)
 //     *  @param  dL      propagation distance

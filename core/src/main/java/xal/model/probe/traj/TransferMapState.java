@@ -157,7 +157,7 @@ public class TransferMapState extends ProbeState<TransferMapState> {
 
     /**
      * Get the composite transfer map at this state location. The composite map
-     * <b>&phi;</b> maps the phase coordinates of particles at the beginning of
+     * <strong>&phi;</strong> maps the phase coordinates of particles at the beginning of
      * the <code>TransferMapTrajectory</code> parent (i.e., at the first state
      * of the trajectory object) to this state.
      *

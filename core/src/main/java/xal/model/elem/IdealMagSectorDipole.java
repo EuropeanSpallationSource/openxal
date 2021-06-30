@@ -110,7 +110,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * Creates a new instance of IdealMagSectorDipole
      *
      * @param strId identifier for this IdealMagSectorDipole object
-     * @param dblFld field gradient strength (in <b>Tesla</b>)
+     * @param dblFld field gradient strength (in <strong>Tesla</strong>)
      * @param dblLen pathLength of the dipole (in m)
      * @param enmOrient orientation
      * @param dblGap full pole gap of the dipole (in m)
@@ -148,7 +148,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
     /**
      * Set the gap size between the dipole magnet poles.
      *
-     * @param dblGap gap size in <b>meters</b>
+     * @param dblGap gap size in <strong>meters</strong>
      */
     public void setGapHeight(double dblGap) {
         this.dblGap = dblGap;
@@ -206,7 +206,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
     /**
      * Return the gap size between the dipole magnet poles.
      *
-     * @return gap size in <b>meters</b>
+     * @return gap size in <strong>meters</strong>
      */
     public double getGapHeight() {
         return this.dblGap;
@@ -220,7 +220,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      *
      * @param probe probe object to be deflected
      *
-     * @return dipole path curvature for given probe (in <b>1/meters</b>)
+     * @return dipole path curvature for given probe (in <strong>1/meters</strong>)
      */
     public double compCurvature(IProbe probe) {
 
@@ -249,9 +249,9 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <b>meters</b>
+     * @param dblLen length of subsection to propagate through <strong>meters</strong>
      *
-     * @return the elapsed time through section<b>Units: seconds</b>
+     * @return the elapsed time through section<strong>Units: seconds</strong>
      */
     @Override
     public double elapsedTime(IProbe probe, double dblLen) {

@@ -539,9 +539,9 @@ public static void main(String arrArgs[])   {
  *
  * @return IElement interface of a new ElementSeq object
  *
- * @exception DtdException            <b>fam</b> attribute not present in DataAdaptor
+ * @exception DtdException            <strong>fam</strong> attribute not present in DataAdaptor
  * @exception NumberFormatException bad number format in numeric attribute
- * @exception ClassNotFoundException  <b>type</b> value not recognized by
+ * @exception ClassNotFoundException  <strong>type</strong> value not recognized by
  * ElementFactory
  */
 /*
@@ -589,20 +589,20 @@ public static void main(String arrArgs[])   {
  */
 /**
  * Builds an XAL modeling element based on the information in the DataAdaptor.
- * The DataAdaptor should contain an XML node contain the <b>Element</bd> tag of
+ * The DataAdaptor should contain an XML node contain the <strong>Element</bd> tag of
  * the XAL Model DTD.
  * <p>
  * The element may be either a <code>ThickElement</code> or a <code>ThinElement
- * </code> derived element depending upon the value of the <b>fam</b> attribute
+ * </code> derived element depending upon the value of the <strong>fam</strong> attribute
  * in the DataAdaptor.
  *
  * @param daptElem DataAdaptor contiaining attributes of an Element tag
  *
  * @return IElement interface of a new XAL modeling element
  *
- * @exception DtdException            <b>fam</b> attribute not present in DataAdaptor
+ * @exception DtdException            <strong>fam</strong> attribute not present in DataAdaptor
  * @exception NumberFormatException bad number format in numeric attribute
- * @exception ClassNotFoundException  <b>type</b> value not recognized by
+ * @exception ClassNotFoundException  <strong>type</strong> value not recognized by
  * ElementFactory
  */
 /*

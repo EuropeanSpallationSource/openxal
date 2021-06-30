@@ -90,7 +90,7 @@ public class Rn extends BaseVector<Rn> {
      * </p>
      * <p>
      * The token string argument is assumed to be one-dimensional and delimited
-     * by any of the characters <tt>" ,()[]{}"</tt> Repeated, contiguous
+     * by any of the characters <kbd>" ,()[]{}"</kbd> Repeated, contiguous
      * delimiters are parsed together. This conditions allows a variety of
      * parseable string representations. For example,
      * <br/>

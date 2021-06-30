@@ -28,7 +28,7 @@ import java.util.logging.Level;
  * Quantitative properties of a signal.
  *
  * <p>
- * <b>Ported from XAL on Jul 15, 2014.</b><br>
+ * <strong>Ported from XAL on Jul 15, 2014.</strong><br>
  * &middot; Jonathan M. Freed
  * </p>
  *
@@ -85,7 +85,7 @@ public class SignalAttrs extends ScadaRecord {
          * <h3>NOTE:</h3>
          * <p>
          * &middot; If the annotation field corresponding to this enumeration is
-         * left blank or set to the empty string <tt>""</tt>, the method will
+         * left blank or set to the empty string <kbd>""</kbd>, the method will
          * throw a <code>NoSuchFieldException</code>. Since it is not necessary
          * for all handles to be specified this is not necessarily a failure
          * condition.
@@ -362,24 +362,24 @@ public class SignalAttrs extends ScadaRecord {
      * object using the given weighting factor. The quantities within this data
      * structure are averaged in place with that of the given signal attributes
      * structure. Letting &lambda; denote the provided averaging factor, which
-     * is in the interval [0,1], the new values of this structure, say <i>v'</i>
+     * is in the interval [0,1], the new values of this structure, say <em>v'</em>
      * are given by the formula
      * <br>
      * <br>
-     * &nbsp; &nbsp; <i>v'</i> = &lambda;<i>u</i> + (1 - &lambda;)<i>v</i>
+     * &nbsp; &nbsp; <em>v'</em> = &lambda;<em>u</em> + (1 - &lambda;)<em>v</em>
      * <br>
      * <br>
-     * where <i>v</i> is the previous value of <i>v'</i> and <i>u</i> is the new
-     * value of <i>v</i> in <code>sigAcq</code>.
+     * where <em>v</em> is the previous value of <em>v'</em> and <em>u</em> is the new
+     * value of <em>v</em> in <code>sigAcq</code>.
      * </p>
      * <h3>NOTES:</h3>
      * <p>
      * &middot; The standard deviation is weighted vectorially.
      * </p>
      *
-     * @param sigAcq signal <i>u</i> to average into this one <i>v</i>
+     * @param sigAcq signal <em>u</em> to average into this one <em>v</em>
      * @param dblWtFac weighting factor &lambda; &in; [0,1] for argument
-     * <i>u</i>
+     * <em>u</em>
      *
      * @throws IllegalArgumentException the provided signal is not the same size
      * as this signal

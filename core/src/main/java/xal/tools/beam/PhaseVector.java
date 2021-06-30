@@ -45,7 +45,7 @@ import xal.tools.math.r6.R6;
  * </p>
  * <p>
  * Homogeneous coordinates are parametrizations of the projective spaces
- * <i>P<sup>n</sup></i>. They are useful here to allow vector transpositions,
+ * <em>P<sup>n</sup></em>. They are useful here to allow vector transpositions,
  * normally produced by vector addition, to be represented as matrix
  * multiplications. These operations can be embodied by the class
  * <code>PhaseMatrix</code>. Thus, <code>PhaseVector</code>'s are not intended
@@ -259,16 +259,16 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
     }
 
     /**
-     * Embeds the given vector <b>z</b> &in; <b>R</b><sup>6</sup> into
+     * Embeds the given vector <strong>z</strong> &in; <strong>R</strong><sup>6</sup> into
      * homogeneous phase space. The given vector is treated like a vector of
      * phase space coordinates corresponding to the first 6 elements of a
      * <code>PhaseVector</code> object. The last element of the returned phase
      * vector has value 1, as do all phase vectors.
      *
-     * @param vecCoords vector <b>z</b> containing the first 6 element values of
+     * @param vecCoords vector <strong>z</strong> containing the first 6 element values of
      * the returned phase vector
      *
-     * @return the augmented vector (<b>z</b>,1)
+     * @return the augmented vector (<strong>z</strong>,1)
      *
      * @author Christopher K. Allen
      * @since Oct 16, 2013
@@ -288,18 +288,18 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
     }
 
     /**
-     * Embeds the given vector <b>z</b> &in; <b>R</b><sup>4</sup> into
+     * Embeds the given vector <strong>z</strong> &in; <strong>R</strong><sup>4</sup> into
      * homogeneous phase space. The given vector is treated like a vector of
      * transverse phase space coordinates corresponding to the first 4 elements
      * of a <code>PhaseVector</code> object. The vector elements corresponding
-     * to the longitudinal phase space coordinates <i>z</i> and <i>z'</i> are
+     * to the longitudinal phase space coordinates <em>z</em> and <em>z'</em> are
      * both set to zero. The last element of the returned phase vector has value
      * 1, as do all phase vectors.
      *
-     * @param vecCoords vector <b>z</b> containing the first 6 element values of
+     * @param vecCoords vector <strong>z</strong> containing the first 6 element values of
      * the returned phase vector
      *
-     * @return the augmented vector (<b>z</b>,1)
+     * @return the augmented vector (<strong>z</strong>,1)
      *
      * @author Christopher K. Allen
      * @since Oct 16, 2013
@@ -347,7 +347,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
     /**
      * Copy Constructor
      *
-     * Creates new <code>PhaseVector</code> object which is a <b>deep copy</b>
+     * Creates new <code>PhaseVector</code> object which is a <strong>deep copy</strong>
      * of the given argument.
      *
      * @param vecInit initial value
@@ -804,11 +804,11 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
     }
 
     /**
-     * Return the <i>l</i><sub>1</sub> norm of the vector. Must override to
+     * Return the <em>l</em><sub>1</sub> norm of the vector. Must override to
      * account for the projective coordinate.
      *
-     * @return ||z||<sub>1</sub> = &Sigma;<sub><i>i&ne;6</i></sub>
-     * |<i>z<sub>i</sub></i>|
+     * @return ||z||<sub>1</sub> = &Sigma;<sub><em>i&ne;6</em></sub>
+     * |<em>z<sub>i</sub></em>|
      *
      * @see xal.tools.math.BaseVector#norm1()
      *
@@ -829,11 +829,11 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
     }
 
     /**
-     * Return the <i>l</i><sub>2</sub> norm of the vector. Must override to
+     * Return the <em>l</em><sub>2</sub> norm of the vector. Must override to
      * account for the projective coordinate.
      *
-     * @return ||z||<sub>2</sub> = [ &Sigma;<sub><i>i</i>&ne;6</sub>
-     * <i>z<sub>i</sub></i><sup>2</sup> ]<sup>1/2</sup>
+     * @return ||z||<sub>2</sub> = [ &Sigma;<sub><em>i</em>&ne;6</sub>
+     * <em>z<sub>i</sub></em><sup>2</sup> ]<sup>1/2</sup>
      *
      * @see xal.tools.math.BaseVector#norm2()
      *
@@ -854,11 +854,11 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
     }
 
     /**
-     * Return the <i>l</i><sub>&infin; norm of the vector. Must override to
+     * Return the <em>l</em><sub>&infin; norm of the vector. Must override to
      * account for the projective coordinate.
      *
-     * @return ||<i>z</i>||<sub>&infin;</sub> = sup<sub><i>i</i>&ne;6</sub>
-     * |<i>z<sub>i</sub></i>|
+     * @return ||<em>z</em>||<sub>&infin;</sub> = sup<sub><em>i</em>&ne;6</sub>
+     * |<em>z<sub>i</sub></em>|
      *
      * @see xal.tools.math.BaseVector#normInf()
      *
@@ -884,7 +884,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
      * Object Method Overrides
      */
     /**
-     * Creates and returns a deep copy of <b>this</b> vector.
+     * Creates and returns a deep copy of <strong>this</strong> vector.
      *
      * @see xal.tools.math.BaseVector#clone()
      *

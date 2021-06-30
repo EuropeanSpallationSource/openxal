@@ -453,7 +453,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
     /**
      * Creates a new <code>Trajectory</code> given the
      * <code>Class&lt;S&gt;</code> object of the underlying
-     * <code>ProbeState</code> type, <code><b>S</b></code>.
+     * <code>ProbeState</code> type, <code><strong>S</strong></code>.
      *
      *
      * @param S the template type of <code>ProbeState</code> object that the new
@@ -495,7 +495,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
      * Gets the class type of the probe states forming the trajectory.
      *
      * @return a <code>Class&lt;S&gt;</code> object for the class
-     * <b><code>S</code></b>
+     * <strong><code>S</code></strong>
      *
      * @author Jonathan M. Freed
      */
@@ -709,10 +709,10 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
      * state objects of this trajectory between the start node
      * <code>strSmfNodeId1</code> and the stop node <code>strSmfNodeId2</code>.
      * The returned trajectory contains references to the same states contained
-     * in this trajectory, <i>they are not duplicates</i>. So any modifications
+     * in this trajectory, <em>they are not duplicates</em>. So any modifications
      * made on the returned object will be reflected here. Also, it is important
      * to note that the returned sub-trajectory
-     * <i>excludes</i> all states belonging to the stop hardware node
+     * <em>excludes</em> all states belonging to the stop hardware node
      * <code>strSmfNodeId2</code>. That is, the returned value contains states
      * from, and including, node 1 up to, but not including, state 2. If you
      * wish to include the states of both hardware nodes see
@@ -773,10 +773,10 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
      * state objects of this trajectory between the start node
      * <code>strSmfNodeId1</code> and the stop node <code>strSmfNodeId2</code>.
      * The returned trajectory contains references to the same states contained
-     * in this trajectory, <i>they are not duplicates</i>. So any modifications
+     * in this trajectory, <em>they are not duplicates</em>. So any modifications
      * made on the returned object will be reflected here. Also, it is important
      * to note that the returned sub-trajectory
-     * <i>includes</i> all states belonging to the stop hardware node
+     * <em>includes</em> all states belonging to the stop hardware node
      * <code>strSmfNodeId2</code>. That is, the returned value contains states
      * from, and including, node 1 up to and including state 2. If you wish to
      * exclude the states of both hardware nodes see
@@ -1023,7 +1023,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
      * <p>
      * <h4>NOTES - CKA</h4>
      * &middot; I have changed this method so the given argument is assumed to
-     * be the <b>hardware</b> node identifier, not the modeling element ID. I
+     * be the <strong>hardware</strong> node identifier, not the modeling element ID. I
      * believe that is the original intent.
      * </p>
      *
@@ -1104,7 +1104,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
         DataAdaptor trajNode = container.createChild(TRAJ_LABEL);
         trajNode.setValue(TYPE_TRAJ_TAG, getClass().getName());
         trajNode.setValue(TYPE_STATE_TAG, this.getStateClass().getName());
-        trajNode.setValue(TIMESTAMP_TAG, new Double(getTimestamp().getTime()));
+        trajNode.setValue(TIMESTAMP_TAG, (double) getTimestamp().getTime());
         if (getDescription().length() > 0) {
             trajNode.setValue(COMMENT_TAG, getDescription());
         }
@@ -1130,7 +1130,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
         DataAdaptor daptTraj = daptSrc;
 
         if (daptTraj.hasAttribute(TIMESTAMP_TAG)) {
-            long lngTime = new Double(daptTraj.doubleValue(TIMESTAMP_TAG)).longValue();
+            long lngTime = (long) daptTraj.doubleValue(TIMESTAMP_TAG);
             setTimestamp(lngTime);
         }
         if (daptTraj.hasAttribute(COMMENT_TAG)) {

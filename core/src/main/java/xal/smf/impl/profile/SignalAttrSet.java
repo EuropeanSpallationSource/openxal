@@ -21,7 +21,7 @@ import xal.smf.scada.ScadaFieldDescriptor;
  * acquired from a wire profile device.
  *
  * <p>
- * <b>Ported from XAL on Jul 15, 2014.</b><br>
+ * <strong>Ported from XAL on Jul 15, 2014.</strong><br>
  * &middot; Jonathan M. Freed
  * </p>
  *
@@ -201,7 +201,7 @@ public abstract class SignalAttrSet implements DataListener {
      * profile data taken from the hardware.
      * <br>
      * <br>
-     * This <b>will work</b>. If the child class has been annotated by
+     * This <strong>will work</strong>. If the child class has been annotated by
      * <code>ASignal.ASet</code> the <code>Signal</code> attributes will be
      * connected in the zero-argument constructor.
      *

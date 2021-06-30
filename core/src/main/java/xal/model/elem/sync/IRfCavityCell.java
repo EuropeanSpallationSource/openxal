@@ -36,15 +36,15 @@ public interface IRfCavityCell {
 
     /**
      * <p>
-     * Set the index <i>n</i> of this cell within the enclosing RF cavity. The
+     * Set the index <em>n</em> of this cell within the enclosing RF cavity. The
      * index origin begins at 0, specifically, the first cell in the cavity will
      * have a cell index of O. Since cell phase &phi; seen by the probe is
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; &phi; = <i>nq</i>&pi; + &phi;<sub>0</sub>
+     * &nbsp; &nbsp; &phi; = <em>nq</em>&pi; + &phi;<sub>0</sub>
      * <br/>
      * <br/>
-     * where <i>q</i> is the cavity structure constant and &phi;<sub>0</sub>
+     * where <em>q</em> is the cavity structure constant and &phi;<sub>0</sub>
      * is the klystron driving phase, the first cell always has the phase of the
      * klystron.
      * </p>
@@ -52,14 +52,14 @@ public interface IRfCavityCell {
      * When considered with an RF gap, it can be convenient to consider the
      * phase rather as a spatial component of the field and combine it with the
      * field amplitude. We simply get a signum function effect where the new
-     * field <i>E><sub>n</sub></i> at cell <i>n</i> is given by
+     * field <em>E><sub>n</sub></em> at cell <em>n</em> is given by
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>E<sub>n</sub></i> = <i>E</i><sub>0</sub>
-     * cos(<i>nq</i>&pi;)
+     * &nbsp; &nbsp; <em>E<sub>n</sub></em> = <em>E</em><sub>0</sub>
+     * cos(<em>nq</em>&pi;)
      * <br/>
      * <br/>
-     * where <i>E</i><sub>0</sub> is the usual gap field strength.
+     * where <em>E</em><sub>0</sub> is the usual gap field strength.
      * </p>
      * <p>
      * See the discussion below on cavity mode constants.
@@ -73,34 +73,34 @@ public interface IRfCavityCell {
 
     /**
      * <p>
-     * Sets the structure mode <b>number</b> <i>q</i> for the cavity in which
+     * Sets the structure mode <strong>number</strong> <em>q</em> for the cavity in which
      * this cell belongs. Here the structure mode number is defined in terms of
      * the fractional phase advance between cells, with respect to &pi;. To make
      * this explicit
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>q</i> = 0 &nbsp; &nbsp; &rAarr; 0 mode
+     * &nbsp; &nbsp; <em>q</em> = 0 &nbsp; &nbsp; &rAarr; 0 mode
      * <br/>
-     * &nbsp; &nbsp; <i>q</i> = 1/2 &rArr; &pi;/2 mode
+     * &nbsp; &nbsp; <em>q</em> = 1/2 &rArr; &pi;/2 mode
      * <br/>
-     * &nbsp; &nbsp; <i>q</i> = 1 &nbsp; &nbsp; &rAarr; &pi; mode
+     * &nbsp; &nbsp; <em>q</em> = 1 &nbsp; &nbsp; &rAarr; &pi; mode
      * <br/>
      * <br/>
-     * Thus, a cavity mode constant of <i>q</i> = 1/2 indicates a &pi;/2 phase
+     * Thus, a cavity mode constant of <em>q</em> = 1/2 indicates a &pi;/2 phase
      * advance between adjacent cells and a corresponding cell amplitude
-     * function <i>A<sub>n</sub></i> of
+     * function <em>A<sub>n</sub></em> of
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>A<sub>n</sub></i> = cos(<i>nq</i>&pi;)
+     * &nbsp; &nbsp; <em>A<sub>n</sub></em> = cos(<em>nq</em>&pi;)
      * <br/>
      * <br/>
-     * where <i>n</i> is the index of the cell within the coupled cavity.
+     * where <em>n</em> is the index of the cell within the coupled cavity.
      * </p>
      *
      * @param dblCavModeConst the cavity mode structure constant for the cavity
      * containing this cell
      *
-     * @see <i>RF Linear Accelerators</i>, Thomas P. Wangler (Wiley, 2008).
+     * @see <em>RF Linear Accelerators</em>, Thomas P. Wangler (Wiley, 2008).
      *
      * @since Jan 8, 2015 by Christopher K. Allen
      */
@@ -120,7 +120,7 @@ public interface IRfCavityCell {
 
     /**
      * <p>
-     * Returns the structure mode <b>number</b> <i>q</i> for the cavity in which
+     * Returns the structure mode <strong>number</strong> <em>q</em> for the cavity in which
      * this gap belongs. This is the fractional phase advance between cells,
      * with respect to &pi;. It can also be interpreted as describing the
      * spatial advance of the axial electric field from cell to cell.
@@ -128,7 +128,7 @@ public interface IRfCavityCell {
      *
      * @return the cavity mode constant for the cell containing this gap
      *
-     * @see <i>RF Linear Accelerators</i>, Thomas P. Wangler (Wiley, 2008).
+     * @see <em>RF Linear Accelerators</em>, Thomas P. Wangler (Wiley, 2008).
      *
      * @since Jan 8, 2015 by Christopher K. Allen
      *

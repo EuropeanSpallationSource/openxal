@@ -16,7 +16,7 @@ import xal.tools.math.IIndex;
  * <p>
  * Class encapsulating the synchronous phase coordinates. These are the
  * longitudinal coordinates of acceleration, the phase &phi; of the synchronous
- * particle w.r.t. to the cavity RF and the energy <i>W</i> of the synchronous
+ * particle w.r.t. to the cavity RF and the energy <em>W</em> of the synchronous
  * particle.
  * </p>
  * <p>
@@ -168,10 +168,10 @@ public class EnergyVector extends BaseVector<EnergyVector> {
 
     /**
      * Initializing constructor for <code>EnergyVector</code>. The initial phase
-     * &phi; and energy <i>W</i> are given as arguments in the constructor.
+     * &phi; and energy <em>W</em> are given as arguments in the constructor.
      *
      * @param phi initial phase &phi; (in radians)
-     * @param W initial energy <i>W</i> (in electron-Volts)
+     * @param W initial energy <em>W</em> (in electron-Volts)
      *
      * @since Oct 13, 2015, Christopher K. Allen
      */
@@ -200,7 +200,7 @@ public class EnergyVector extends BaseVector<EnergyVector> {
      * <code>{@link BaseVector#BaseVector(int,String)}</code>.
      *
      * @param strTokens formatted character string containing initial values,
-     * e.g., "{ &phi; <i>W</i>, 1 }"
+     * e.g., "{ &phi; <em>W</em>, 1 }"
      *
      * @throws IllegalArgumentException wrong number of token strings (make sure
      * "1" is last value"
@@ -219,7 +219,7 @@ public class EnergyVector extends BaseVector<EnergyVector> {
      * values for the created class are given by the double array of the
      * argument. The array must have length 3 and have the last value as 1.
      *
-     * @param arrVals double array { &phi; <i>W</i>, 1 }
+     * @param arrVals double array { &phi; <em>W</em>, 1 }
      *
      * @throws ArrayIndexOutOfBoundsException the argument must have the same
      * dimensions as this vector

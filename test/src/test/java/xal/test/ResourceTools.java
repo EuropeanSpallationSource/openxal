@@ -205,7 +205,7 @@ public abstract class ResourceTools {
     /**
      * Returns an output stream connected to a file in the testing output
      * directory. The file has the name given by the name of the given class
-     * (post-fixed with <tt>".txt"</tt>) and the path given by the package
+     * (post-fixed with <kbd>".txt"</kbd>) and the path given by the package
      * location of the given class.
      *
      * @param clsAbsPath class supplying name and location of connected file

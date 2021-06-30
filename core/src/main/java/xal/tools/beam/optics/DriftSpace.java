@@ -17,7 +17,7 @@ public class DriftSpace {
      * Compute the characteristic transfer matrix for a drift space of length
      * <code>l</code>.
      *
-     * @param l length of the drift space (in <b>meters</b>)
+     * @param l length of the drift space (in <strong>meters</strong>)
      *
      * @return 2x2 transfer matrix for a phase plane drift
      */

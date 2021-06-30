@@ -87,14 +87,14 @@ class AboutBox {
         message.append("<P class=title>").append(appName).append("</P>");
 
         String version = getValue("version", appInfo);
-        message.append("<P class=version> <b>Version:</b> ").append(version).append("</P>");
+        message.append("<P class=version> <strong>Version:</strong> ").append(version).append("</P>");
 
         String description = getValue("description", appInfo);
-        message.append("<dl><dt><b>Description:</b></dt><dd>").append(description).append("</dd></dl>");
+        message.append("<dl><dt><strong>Description:</strong></dt><dd>").append(description).append("</dd></dl>");
 
         String authorList = getValue("authors", appInfo);
         String[] authors = Util.getTokens(authorList, ",");
-        message.append("<p> <b>Authors:</b>");
+        message.append("<p> <strong>Authors:</strong>");
         for (int index = 0; index < authors.length; index++) {
             String author = authors[index];
             message.append("<li class=author>").append(author).append("</li>");

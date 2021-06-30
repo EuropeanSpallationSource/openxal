@@ -121,6 +121,7 @@ public class LoggerModel {
         try {
             return pvLogger.fetchTypes(serviceId);
         } catch (SQLException exception) {
+            LOGGER.log(Level.WARNING, null, exception);
             return new String[0];
         }
     }
@@ -203,6 +204,6 @@ public class LoggerModel {
      * 1970.
      */
     public static Date getLaunchTime() {
-        return LAUNCH_TIME;
+        return (Date) LAUNCH_TIME.clone();
     }
 }

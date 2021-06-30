@@ -361,32 +361,32 @@ public class ProfileDataProcessor {
     /**
      * <p>
      * Remove the baseline noise signal from the data set. We assume that each
-     * profile signal <i>f<sup>^</sup></i>(<i>n</i>) is given by the following:
+     * profile signal <em>f<sup>^</sup></em>(<em>n</em>) is given by the following:
      * <br>
-     * <br>&nbsp;&nbsp;  <i>f<sup>^</sup></i>(<i>n</i>) =
-     * <i>f</i>(<i>n</i>) + <i>W</i>(<i>n</i>)<br>
+     * <br>&nbsp;&nbsp;  <em>f<sup>^</sup></em>(<em>n</em>) =
+     * <em>f</em>(<em>n</em>) + <em>W</em>(<em>n</em>)<br>
      * <br>
-     * where <i>f</i>(<i>n</i>) is the true signal at index <i>n</i> and
-     * <i>W</i>(<i>n</i>) is a noise process with a (possibly) nonzero mean
-     * given by E[<i>W</i>(<i>n</i>)] = <i>w</i> (independent of <i>n</i>). The
-     * value of <i>w</i> represents the baseline noise signal.
+     * where <em>f</em>(<em>n</em>) is the true signal at index <em>n</em> and
+     * <em>W</em>(<em>n</em>) is a noise process with a (possibly) nonzero mean
+     * given by E[<em>W</em>(<em>n</em>)] = <em>w</em> (independent of <em>n</em>). The
+     * value of <em>w</em> represents the baseline noise signal.
      * </p>
      * <p>
      * To remove this content we compute the signal indicator function for each
      * signal and find the largest index such that all the indicator functions
      * are less than the given value. All data before this index is assumed to
-     * be noise. We use that data to compute <i>w</i> for each signal assuming
-     * that the original signal is filtered such that E[(<i>W - w</i>)&sup2;] is
-     * small. The value <i>w</i> is subtracted from each respective signal.
+     * be noise. We use that data to compute <em>w</em> for each signal assuming
+     * that the original signal is filtered such that E[(<em>W - w</em>)&sup2;] is
+     * small. The value <em>w</em> is subtracted from each respective signal.
      * </p>
      * <p>
      * Note, however, that only the mean component of the noise is removed. If
      * the noise process has a non-zero standard deviation
-     * &sigma;<sub><i>W</i></sub> = E[(<i>W</i>(<i>n</i>) -
-     * <i>w</i>)<sup>2</sup>]<sup>&frac12;</sup> then spurious noise is still
+     * &sigma;<sub><em>W</em></sub> = E[(<em>W</em>(<em>n</em>) -
+     * <em>w</em>)<sup>2</sup>]<sup>&frac12;</sup> then spurious noise is still
      * present. The spurious component can be attenuated by further filtering,
      * but at the cost of degrading the true signal
-     * <i>f</i>(<i>n</i>). We originally assumed that this value was small
+     * <em>f</em>(<em>n</em>). We originally assumed that this value was small
      * enough to get an accurate determination from the data before signal
      * presence.
      * </p>
@@ -433,14 +433,14 @@ public class ProfileDataProcessor {
      * <p>
      * It is assumed that the profile signals may be represented by the equation
      * <br>
-     * <br>&nbsp;&nbsp;  <b>f*</b>(<i>n</i>) = <b>GCf</b>(<i>n</i>)<br>
+     * <br>&nbsp;&nbsp;  <strong>f*</strong>(<em>n</em>) = <strong>GCf</strong>(<em>n</em>)<br>
      * <br>
-     * where <b>f</b>*(<i>n</i>) is the vector-valued function of measured
-     * profile data (one element for each projection) at time <i>n</i>,
-     * <b>G</b> is the gain matrix, <b>C</b> is the cross-talk matrix, and
-     * <b>f</b>(<b>n</b>) is the vector-valued function of profile data. The
+     * where <strong>f</strong>*(<em>n</em>) is the vector-valued function of measured
+     * profile data (one element for each projection) at time <em>n</em>,
+     * <strong>G</strong> is the gain matrix, <strong>C</strong> is the cross-talk matrix, and
+     * <strong>f</strong>(<strong>n</strong>) is the vector-valued function of profile data. The
      * gain matrix is chosen so that the integral of element in
-     * <b>f</b>(<b>n</b>) is unity. That is, &int;<b>f</b>(<b>n</b>)<i>dn</i>
+     * <strong>f</strong>(<strong>n</strong>) is unity. That is, &int;<strong>f</strong>(<strong>n</strong>)<em>dn</em>
      * = (1,1,&hellip;,1).
      * </p>
      * <strong>NOTE:</strong>

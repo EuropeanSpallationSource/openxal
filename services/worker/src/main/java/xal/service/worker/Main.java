@@ -67,7 +67,7 @@ public class Main {
      * @return the time when this application was launched
      */
     public static Date getLaunchTime() {
-        return LAUNCH_TIME;
+        return (Date) LAUNCH_TIME.clone();
     }
 
     /**

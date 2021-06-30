@@ -38,44 +38,44 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
      */
     /**
      * Convenience method for computing the transfer matrix between two state
-     * locations, say <i>S</i><sub>1</sub>
-     * and <i>S</i><sub>2</sub>. Let <i>s</i><sub>0</sub> be the axis location
-     * of the beamline entrance, <i>s</i><sub>1</sub> the location of state
-     * <i>S</i><sub>1</sub>, and
-     * <i>s</i><sub>2</sub> the location of state <i>S</i><sub>2</sub>. Each
-     * state object <i>S<sub>n</sub></i>
+     * locations, say <em>S</em><sub>1</sub>
+     * and <em>S</em><sub>2</sub>. Let <em>s</em><sub>0</sub> be the axis location
+     * of the beamline entrance, <em>s</em><sub>1</sub> the location of state
+     * <em>S</em><sub>1</sub>, and
+     * <em>s</em><sub>2</sub> the location of state <em>S</em><sub>2</sub>. Each
+     * state object <em>S<sub>n</sub></em>
      * contains the transfer matrix
-     * <b>&Phi;</b>(<i>s<sub>n</sub></i>,<i>s</i><sub>0</sub>) which takes
+     * <strong>&Phi;</strong>(<em>s<sub>n</sub></em>,<em>s</em><sub>0</sub>) which takes
      * phases coordinates at the beamline entrance to the position of state
-     * <i>S<sub>n</sub></i>. The transfer matrix
-     * <b>&Phi;</b>(<i>s</i><sub>2</sub>,<i>s</i><sub>1</sub>) taking phase
-     * coordinates <b>z</b><sub>1</sub>
-     * (and covariance matrix <b>&sigma;</b><sub>1</sub>) from position
-     * <i>s</i><sub>1</sub> to position <i>s</i><sub>2</sub> is then given by
+     * <em>S<sub>n</sub></em>. The transfer matrix
+     * <strong>&Phi;</strong>(<em>s</em><sub>2</sub>,<em>s</em><sub>1</sub>) taking phase
+     * coordinates <strong>z</strong><sub>1</sub>
+     * (and covariance matrix <strong>&sigma;</strong><sub>1</sub>) from position
+     * <em>s</em><sub>1</sub> to position <em>s</em><sub>2</sub> is then given by
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&Phi;</b>(<i>s</i><sub>2</sub>,<i>s</i><sub>1</sub>) =
-     * <b>&Phi;</b>(<i>s</i><sub>2</sub>,<i>s</i><sub>0</sub>)
-     * <b>&Phi;</b>(<i>s</i><sub>1</sub>,<i>s</i><sub>0</sub>)<sup>-1</sup> ,
+     * &nbsp; &nbsp; <strong>&Phi;</strong>(<em>s</em><sub>2</sub>,<em>s</em><sub>1</sub>) =
+     * <strong>&Phi;</strong>(<em>s</em><sub>2</sub>,<em>s</em><sub>0</sub>)
+     * <strong>&Phi;</strong>(<em>s</em><sub>1</sub>,<em>s</em><sub>0</sub>)<sup>-1</sup> ,
      * <br>
      * <br>
-     * where <b>&Phi;</b>(<i>s</i><sub>2</sub>,<i>s</i><sub>0</sub>) is the
-     * transfer matrix between the beamline entrance <i>s</i><sub>0</sub> and
-     * the position <i>s</i><sub>2</sub>
-     * of state <i>S</i><sub>2</sub>, and
-     * <b>&Phi;</b>(<i>s</i><sub>1</sub>,<i>s</i><sub>0</sub>) is the transfer
-     * matrix between the beamline entrance <i>s</i><sub>0</sub> and the
-     * position <i>s</i><sub>1</sub>
-     * of state <i>S</i><sub>1</sub>.
+     * where <strong>&Phi;</strong>(<em>s</em><sub>2</sub>,<em>s</em><sub>0</sub>) is the
+     * transfer matrix between the beamline entrance <em>s</em><sub>0</sub> and
+     * the position <em>s</em><sub>2</sub>
+     * of state <em>S</em><sub>2</sub>, and
+     * <strong>&Phi;</strong>(<em>s</em><sub>1</sub>,<em>s</em><sub>0</sub>) is the transfer
+     * matrix between the beamline entrance <em>s</em><sub>0</sub> and the
+     * position <em>s</em><sub>1</sub>
+     * of state <em>S</em><sub>1</sub>.
      *
-     * @param state1 trajectory state <i>S</i><sub>1</sub> of starting location
-     * <i>s</i><sub>1</sub>
-     * @param state2 trajectory state <i>S</i><sub>2</sub> of final location
-     * <i>s</i><sub>2</sub>
+     * @param state1 trajectory state <em>S</em><sub>1</sub> of starting location
+     * <em>s</em><sub>1</sub>
+     * @param state2 trajectory state <em>S</em><sub>2</sub> of final location
+     * <em>s</em><sub>2</sub>
      *
      * @return transfer matrix
-     * <b>&Phi;</b>(<i>s</i><sub>2</sub>,<i>s</i><sub>1</sub>) between locations
-     * <i>s</i><sub>1</sub> and <i>s</i><sub>2</sub>
+     * <strong>&Phi;</strong>(<em>s</em><sub>2</sub>,<em>s</em><sub>1</sub>) between locations
+     * <em>s</em><sub>1</sub> and <em>s</em><sub>2</sub>
      *
      * @author Christopher K. Allen
      * @since Jun 23, 2014
@@ -92,43 +92,43 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
 
     /**
      * Convenience method for computing the transfer map between two state
-     * locations, say <i>S</i><sub>1</sub>
-     * and <i>S</i><sub>2</sub>. Let <i>s</i><sub>0</sub> be the axis location
-     * of the beamline entrance, <i>s</i><sub>1</sub> the location of state
-     * <i>S</i><sub>1</sub>, and
-     * <i>s</i><sub>2</sub> the location of state <i>S</i><sub>2</sub>. Each
-     * state object <i>S<sub>n</sub></i>
+     * locations, say <em>S</em><sub>1</sub>
+     * and <em>S</em><sub>2</sub>. Let <em>s</em><sub>0</sub> be the axis location
+     * of the beamline entrance, <em>s</em><sub>1</sub> the location of state
+     * <em>S</em><sub>1</sub>, and
+     * <em>s</em><sub>2</sub> the location of state <em>S</em><sub>2</sub>. Each
+     * state object <em>S<sub>n</sub></em>
      * contains the transfer map
-     * <b>T</b>(<i>s<sub>n</sub></i>,<i>s</i><sub>0</sub>) which takes phases
+     * <strong>T</strong>(<em>s<sub>n</sub></em>,<em>s</em><sub>0</sub>) which takes phases
      * coordinates at the beamline entrance to the position of state
-     * <i>S<sub>n</sub></i>. The transfer map
-     * <b>T</b>(<i>s</i><sub>2</sub>,<i>s</i><sub>1</sub>) taking phase
-     * coordinates <b>z</b><sub>1</sub>
-     * (and covariance matrix <b>&sigma;</b><sub>1</sub>) from position
-     * <i>s</i><sub>1</sub> to position <i>s</i><sub>2</sub> is then given by
+     * <em>S<sub>n</sub></em>. The transfer map
+     * <strong>T</strong>(<em>s</em><sub>2</sub>,<em>s</em><sub>1</sub>) taking phase
+     * coordinates <strong>z</strong><sub>1</sub>
+     * (and covariance matrix <strong>&sigma;</strong><sub>1</sub>) from position
+     * <em>s</em><sub>1</sub> to position <em>s</em><sub>2</sub> is then given by
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>T</b>(<i>s</i><sub>2</sub>,<i>s</i><sub>1</sub>) =
-     * <b>T</b>(<i>s</i><sub>2</sub>,<i>s</i><sub>0</sub>) &#x2218;
-     * <b>T</b>(<i>s</i><sub>1</sub>,<i>s</i><sub>0</sub>)<sup>-1</sup> ,
+     * &nbsp; &nbsp; <strong>T</strong>(<em>s</em><sub>2</sub>,<em>s</em><sub>1</sub>) =
+     * <strong>T</strong>(<em>s</em><sub>2</sub>,<em>s</em><sub>0</sub>) &#x2218;
+     * <strong>T</strong>(<em>s</em><sub>1</sub>,<em>s</em><sub>0</sub>)<sup>-1</sup> ,
      * <br>
      * <br>
-     * where <b>T</b>(<i>s</i><sub>2</sub>,<i>s</i><sub>0</sub>) is the transfer
-     * map between the beamline entrance <i>s</i><sub>0</sub> and the position
-     * <i>s</i><sub>2</sub>
-     * of state <i>S</i><sub>2</sub>, and
-     * <b>T</b>(<i>s</i><sub>1</sub>,<i>s</i><sub>0</sub>) is the transfer map
-     * between the beamline entrance <i>s</i><sub>0</sub> and the position
-     * <i>s</i><sub>1</sub>
-     * of state <i>S</i><sub>1</sub>.
+     * where <strong>T</strong>(<em>s</em><sub>2</sub>,<em>s</em><sub>0</sub>) is the transfer
+     * map between the beamline entrance <em>s</em><sub>0</sub> and the position
+     * <em>s</em><sub>2</sub>
+     * of state <em>S</em><sub>2</sub>, and
+     * <strong>T</strong>(<em>s</em><sub>1</sub>,<em>s</em><sub>0</sub>) is the transfer map
+     * between the beamline entrance <em>s</em><sub>0</sub> and the position
+     * <em>s</em><sub>1</sub>
+     * of state <em>S</em><sub>1</sub>.
      *
-     * @param state1 trajectory state <i>S</i><sub>1</sub> of starting location
-     * <i>s</i><sub>1</sub>
-     * @param state2 trajectory state <i>S</i><sub>2</sub> of final location
-     * <i>s</i><sub>2</sub>
+     * @param state1 trajectory state <em>S</em><sub>1</sub> of starting location
+     * <em>s</em><sub>1</sub>
+     * @param state2 trajectory state <em>S</em><sub>2</sub> of final location
+     * <em>s</em><sub>2</sub>
      *
-     * @return transfer map <b>T</b>(<i>s</i><sub>2</sub>,<i>s</i><sub>1</sub>)
-     * between locations <i>s</i><sub>1</sub> and <i>s</i><sub>2</sub>
+     * @return transfer map <strong>T</strong>(<em>s</em><sub>2</sub>,<em>s</em><sub>1</sub>)
+     * between locations <em>s</em><sub>1</sub> and <em>s</em><sub>2</sub>
      *
      * @author Christopher K. Allen
      * @since Nov 4, 2014
@@ -311,44 +311,44 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
     /**
      * <p>
      * We return the projective portion of the full-turn transfer map
-     * &phi;<sub><i>n</i></sub> : <b>P</b><sup>6</sup> &rarr;
-     * <b>P</b><sup>6</sup>
-     * where <i>n</i> is the index of the given state <i>S<sub>n</sub></i>. This
-     * is the image &Delta;<b>z</b> of the value
-     * <b>0</b> &in; <b>P</b><sup>6</sup> &cong; <b>R</b><sup>6</sup> &times;
-     * {1}. That is the value &Delta;<b>z</b> =
-     * &phi;<sub><i>n</i></sub>(<b>0</b>).
+     * &phi;<sub><em>n</em></sub> : <strong>P</strong><sup>6</sup> &rarr;
+     * <strong>P</strong><sup>6</sup>
+     * where <em>n</em> is the index of the given state <em>S<sub>n</sub></em>. This
+     * is the image &Delta;<strong>z</strong> of the value
+     * <strong>0</strong> &in; <strong>P</strong><sup>6</sup> &cong; <strong>R</strong><sup>6</sup> &times;
+     * {1}. That is the value &Delta;<strong>z</strong> =
+     * &phi;<sub><em>n</em></sub>(<strong>0</strong>).
      * </p>
      * <p>
      * Recall that the transfer map &phi; is a <code>PhaseMap</code> object
      * containing a first-order component which is a linear operator on
-     * projective space <b>P</b><sup>6</sup>. As such, this
-     * <code>PhaseMatrix</code> object <b>&Phi;</b> is embedded in
-     * <b>R</b><sup>7&times;7</sup>. The 7<sup><i>th</i></sup> column
-     * &Delta;<b>z</b> of <b>&Phi;</b> is the column of translation operations
+     * projective space <strong>P</strong><sup>6</sup>. As such, this
+     * <code>PhaseMatrix</code> object <strong>&Phi;</strong> is embedded in
+     * <strong>R</strong><sup>7&times;7</sup>. The 7<sup><em>th</em></sup> column
+     * &Delta;<strong>z</strong> of <strong>&Phi;</strong> is the column of translation operations
      * on a phase vector
-     * <b>z</b> &in; <b>P</b><sup>6</sup> &sub; <b>R</b><sup>6</sup> &times; {1}
+     * <strong>z</strong> &in; <strong>P</strong><sup>6</sup> &sub; <strong>R</strong><sup>6</sup> &times; {1}
      * since
-     * <b>z</b> &in; <b>P</b><sup>6</sup> is represented
+     * <strong>z</strong> &in; <strong>P</strong><sup>6</sup> is represented
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>z</b> = (<i>x, x', y, y', z, z',
-     * </i>1)<sup><i>T</i></sup> .
+     * &nbsp; &nbsp; <strong>z</strong> = (<em>x, x', y, y', z, z',
+     * </em>1)<sup><em>T</em></sup> .
      * <br>
      * <br>
-     * Thus, the action of <b>&Phi;</b> can be (loosely) decomposed as
+     * Thus, the action of <strong>&Phi;</strong> can be (loosely) decomposed as
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&Phi; &sdot; z</b> = <b>Mz</b> + &Delta;<b>z</b> ,
+     * &nbsp; &nbsp; <strong>&Phi; &sdot; z</strong> = <strong>Mz</strong> + &Delta;<strong>z</strong> ,
      * <br>
      * <br>
-     * where <b>M</b> &in; <i>Sp</i>(6), the symplectic group. This method
-     * returns the component &Delta;<b>z</b> of the transfer map.
+     * where <strong>M</strong> &in; <em>Sp</em>(6), the symplectic group. This method
+     * returns the component &Delta;<strong>z</strong> of the transfer map.
      * </p>
      *
      * @param state state containing location of returned translation vector
      *
-     * @return the translation vector &Delta;<b>z</b> of the given transfer map
+     * @return the translation vector &Delta;<strong>z</strong> of the given transfer map
      *
      * @author Christopher K. Allen
      * @since Oct 22, 2013
@@ -372,69 +372,69 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
      * <p>
      * Calculate the fixed point solution vector representing the closed orbit
      * at the location of this element. We first attempt to find the fixed point
-     * for the full six phase space coordinates. Let <b>&Phi;</b> denote the
+     * for the full six phase space coordinates. Let <strong>&Phi;</strong> denote the
      * one-turn map for a ring. The fixed point
-     * <b>z</b> &in; <b>R</b><sup>6</sup>&times;{1} in homogeneous phase space
-     * coordinates is that which is invariant under <b>&Phi;</b>, that is,
+     * <strong>z</strong> &in; <strong>R</strong><sup>6</sup>&times;{1} in homogeneous phase space
+     * coordinates is that which is invariant under <strong>&Phi;</strong>, that is,
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&Phi;z</b> = <b>z</b> .
+     * &nbsp; &nbsp; <strong>&Phi;z</strong> = <strong>z</strong> .
      * <br>
      * <br>
-     * This method returns that vector <b>z</b>.
+     * This method returns that vector <strong>z</strong>.
      * </p>
      * <p>
-     * Recall that the <i>homogeneous</i> transfer matrix <b>&Phi;</b> for the
-     * ring has final row that represents the translation <b>&Delta;</b> of the
+     * Recall that the <em>homogeneous</em> transfer matrix <strong>&Phi;</strong> for the
+     * ring has final row that represents the translation <strong>&Delta;</strong> of the
      * particle for the circuit around the ring. The 6&times;6 sub-matrix of
-     * <b>&Phi;</b> represents the (linear) action of the bending magnetics and
-     * quadrupoles and corresponds to the matrix <b>T</b> &in;
-     * <b>R</b><sup>6&times;6</sup> (here <b>T</b> is linear). Thus, we can
-     * write the linear operator <b>&Phi;</b>
+     * <strong>&Phi;</strong> represents the (linear) action of the bending magnetics and
+     * quadrupoles and corresponds to the matrix <strong>T</strong> &in;
+     * <strong>R</strong><sup>6&times;6</sup> (here <strong>T</strong> is linear). Thus, we can
+     * write the linear operator <strong>&Phi;</strong>
      * as the augmented system
      * <br>
      * <br>
      * <pre>
-     * &nbsp; &nbsp; <b>&Phi;</b> = |<b>T</b> <b>&Delta;</b> |,   <b>z</b> &equiv; |<b>p</b>| ,
-     *         |<b>0</b> 1 |        |1|
-     * </pre> where <b>p</b> is the projection of <b>z</b> onto the ambient
+     * &nbsp; &nbsp; <strong>&Phi;</strong> = |<strong>T</strong> <strong>&Delta;</strong> |,   <strong>z</strong> &equiv; |<strong>p</strong>| ,
+     *         |<strong>0</strong> 1 |        |1|
+     * </pre> where <strong>p</strong> is the projection of <strong>z</strong> onto the ambient
      * phase space
-     * <b>R</b><sup>6</sup> (without homogeneous the homogeneous coordinate).
+     * <strong>R</strong><sup>6</sup> (without homogeneous the homogeneous coordinate).
      * </p>
      * <p>
      * Putting this together we get
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&Phi;z</b> = <b>Tp</b> + <b>&Delta;</b> = <b>p</b> ,
+     * &nbsp; &nbsp; <strong>&Phi;z</strong> = <strong>Tp</strong> + <strong>&Delta;</strong> = <strong>p</strong> ,
      * <br>
      * <br>
      * to which the solution is
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>p</b> = -(<b>T</b> -
-     * <b>I</b>)<sup>-1</sup><b>&Delta;</b>
+     * &nbsp; &nbsp; <strong>p</strong> = -(<strong>T</strong> -
+     * <strong>I</strong>)<sup>-1</sup><strong>&Delta;</strong>
      * <br>
      * <br>
      * assuming it exists. The question of solution existence falls upon the
-     * resolvent <b>R</b> &equiv; (<b>T</b> - <b>I</b>)<sup>-1</sup> of
-     * <b>T</b>. By inspection we can see that <b>p</b> is defined so long as
-     * the eigenvalues of <b>T</b> are located away from 1. In this case the
-     * returned value is the augmented vector (<b>p</b> 1)<sup><i>T</i></sup>
-     * &in; <b>R</b><sup>6</sup> &times; {1}.
+     * resolvent <strong>R</strong> &equiv; (<strong>T</strong> - <strong>I</strong>)<sup>-1</sup> of
+     * <strong>T</strong>. By inspection we can see that <strong>p</strong> is defined so long as
+     * the eigenvalues of <strong>T</strong> are located away from 1. In this case the
+     * returned value is the augmented vector (<strong>p</strong> 1)<sup><em>T</em></sup>
+     * &in; <strong>R</strong><sup>6</sup> &times; {1}.
      * </p>
      * <p>
      * When the set of eigenvectors does contain 1, we attempt to find the
-     * solution for the transverse phase space. That is, we take vector <b>p</b>
-     * &in; <b>R</b><sup>4</sup>
-     * and <b>T</b> &in; <b>R</b><sup>4&times;4</sup> where
-     * <b>T</b> = proj<sub>4&times;4</sub> <b>&Phi;</b>. The returned value is
+     * solution for the transverse phase space. That is, we take vector <strong>p</strong>
+     * &in; <strong>R</strong><sup>4</sup>
+     * and <strong>T</strong> &in; <strong>R</strong><sup>4&times;4</sup> where
+     * <strong>T</strong> = proj<sub>4&times;4</sub> <strong>&Phi;</strong>. The returned value is
      * then
-     * <b>z</b> = (<b>p</b> 0 0 1)<sup><i>T</i></sup>.
+     * <strong>z</strong> = (<strong>p</strong> 0 0 1)<sup><em>T</em></sup>.
      *
      * @param state state containing transfer map and location used in these
      * calculations
      *
-     * @return fixed point solution (<i>x,x',y,y',z,z'</i>,1) for the given
+     * @return fixed point solution (<em>x,x',y,y',z,z'</em>,1) for the given
      * phase matrix
      *
      * @author Christopher K. Allen
@@ -452,7 +452,7 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
      * Computes the chromatic aberration for one pass around the ring starting
      * at the given state location, or from the entrance to state position for a
      * linear machine. The returned vector is the displacement from the closed
-     * orbit caused by a unit momentum offset (&delta;<i>p</i> = 1). See the
+     * orbit caused by a unit momentum offset (&delta;<em>p</em> = 1). See the
      * documentation in
      * {@link ISimLocResults#computeChromAberration(ProbeState)} for a more
      * detailed exposition.
@@ -495,12 +495,12 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
      * matched envelopes for the ring at that point.
      * </p>
      * <p>
-     * Let <b>&Phi;</b> denote the transfer matrix from the machine beginning to
+     * Let <strong>&Phi;</strong> denote the transfer matrix from the machine beginning to
      * the given state location (it is contained in the given state). It is
      * assumed to be the transfer matrix through at least one cell in a periodic
      * lattice. Internally, the array of phase advances
-     * {&sigma;<sub><i>x</i></sub>, &sigma;<sub><i>y</i></sub>,
-     * &sigma;<sub><i>x</i></sub>} are assumed to be the particle phase advances
+     * {&sigma;<sub><em>x</em></sub>, &sigma;<sub><em>y</em></sub>,
+     * &sigma;<sub><em>x</em></sub>} are assumed to be the particle phase advances
      * through the cell for the matched solution. These are computed with the
      * method <code>{@link #calculatePhaseAdvPerCell(PhaseMatrix)}</code>.
      * </p>
@@ -515,18 +515,18 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
      * of a single phase plane:
      * <br>
      * <br>
-     * &nbsp; &nbsp; &alpha; &equiv; -<i>ww'</i> = (&phi;<sub>11</sub> -
+     * &nbsp; &nbsp; &alpha; &equiv; -<em>ww'</em> = (&phi;<sub>11</sub> -
      * &phi;<sub>22</sub>)/(2 sin &sigma;) ,
      * <br>
      * <br>
-     * &nbsp; &nbsp; &beta; &equiv; <i>w</i><sup>2</sup> =
+     * &nbsp; &nbsp; &beta; &equiv; <em>w</em><sup>2</sup> =
      * &phi;<sub>12</sub>/sin &sigma;
      * <br>
      * <br>
-     * where &phi;<sub><i>ij</i></sub> are the elements of the 2&times;2
+     * where &phi;<sub><em>ij</em></sub> are the elements of the 2&times;2
      * diagonal blocks of
-     * <b>&Phi;</b> corresponding the the particular phase plane, the function
-     * <i>w</i>
+     * <strong>&Phi;</strong> corresponding the the particular phase plane, the function
+     * <em>w</em>
      * is taken from Reiser, and &sigma; is the phase advance through the cell
      * for the particular phase plance.
      * </p>
@@ -564,23 +564,23 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
      * beam envelope at the trajectory beginning and the given state location.
      * </p>
      * <p>
-     * Let <b>&Phi;</b> represent the transfer matrix from the initial ring
+     * Let <strong>&Phi;</strong> represent the transfer matrix from the initial ring
      * location to the given state location. The computed quantity is the
      * general phase advance of the particle through the transfer matrix
-     * <b>&Phi;</b>, and no special requirements are placed upon <b>&Phi;</b>
+     * <strong>&Phi;</strong>, and no special requirements are placed upon <strong>&Phi;</strong>
      * (e.g., periodicity). One phase advance is provided for each phase plane,
-     * i.e., (&sigma;<sub><i>x</i></sub>, &sigma;<sub><i>z</i></sub>,
-     * &sigma;<sub><i>z</i></sub>).
+     * i.e., (&sigma;<sub><em>x</em></sub>, &sigma;<sub><em>z</em></sub>,
+     * &sigma;<sub><em>z</em></sub>).
      * </p>
      * <p>
      * The definition of phase advance &sigma; is given by
      * <br>
      * <br>
-     * &nbsp; &nbsp; &sigma;(<i>s</i>) &equiv; &int;<sup><i>s</i></sup>
-     * [1/&beta;(<i>t</i>)]<i>dt</i> ,
+     * &nbsp; &nbsp; &sigma;(<em>s</em>) &equiv; &int;<sup><em>s</em></sup>
+     * [1/&beta;(<em>t</em>)]<em>dt</em> ,
      * <br>
      * <br>
-     * where &beta;(<i>s</i>) is the Courant-Snyder, envelope function, and the
+     * where &beta;(<em>s</em>) is the Courant-Snyder, envelope function, and the
      * integral is taken along the interval between the initial and final
      * Courant-Snyder parameters.
      * </p>
@@ -593,7 +593,7 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
      * ,
      * <br>
      * <br>
-     * where &phi;<sub>12</sub> is the element of <b>&Phi;</b> in the upper
+     * where &phi;<sub>12</sub> is the element of <strong>&Phi;</strong> in the upper
      * right corner of each 2&times;2 diagonal block, &beta;<sub>1</sub> is the
      * initial beta function value (provided) and &beta;<sub>2</sub> is the
      * final beta function value (provided).
@@ -624,89 +624,89 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
      * the given state location in the presence of dispersion.
      * </p>
      * <p>
-     * Let the full-turn map a the state location be denoted <b>&Phi;</b>. The
-     * transverse plane dispersion vector <b>&Delta;</b> is defined
+     * Let the full-turn map a the state location be denoted <strong>&Phi;</strong>. The
+     * transverse plane dispersion vector <strong>&Delta;</strong> is defined
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&Delta;</b><sub><i>t</i></sub> &equiv;
-     * -(1/&gamma;<sup>2</sup>)[d<i>x</i>/d<i>z'</i>, d<i>x'</i>/d<i>z'</i>,
-     * d<i>y</i>/d<i>z'</i>, d<i>y'</i>/d<i>z'</i>]<sup><i>T</i></sup> .
+     * &nbsp; &nbsp; <strong>&Delta;</strong><sub><em>t</em></sub> &equiv;
+     * -(1/&gamma;<sup>2</sup>)[d<em>x</em>/d<em>z'</em>, d<em>x'</em>/d<em>z'</em>,
+     * d<em>y</em>/d<em>z'</em>, d<em>y'</em>/d<em>z'</em>]<sup><em>T</em></sup> .
      * <br>
      * <br>
-     * It can be identified as the first 4 entries of the 6<sup><i>th</i></sup>
-     * column in the transfer matrix <b>&Phi;</b>. The above vector quantifies
+     * It can be identified as the first 4 entries of the 6<sup><em>th</em></sup>
+     * column in the transfer matrix <strong>&Phi;</strong>. The above vector quantifies
      * the change in the transverse particle phase coordinate position versus
      * the change in particle momentum. The factor -(1/&gamma;<sup>2</sup>) is
-     * needed to convert from longitudinal divergence angle <i>z'</i> used by
-     * XAL to momentum &delta;<i>p</i> &equiv; &Delta;<i>p</i>/<i>p</i> used in
+     * needed to convert from longitudinal divergence angle <em>z'</em> used by
+     * XAL to momentum &delta;<em>p</em> &equiv; &Delta;<em>p</em>/<em>p</em> used in
      * the dispersion definition. Specifically,
      * <br>
      * <br>
-     * &nbsp; &nbsp; &delta;<i>p</i> &equiv; &Delta;<i>p</i>/<i>p</i> =
-     * &gamma;<sup>2</sup><i>z</i>'
+     * &nbsp; &nbsp; &delta;<em>p</em> &equiv; &Delta;<em>p</em>/<em>p</em> =
+     * &gamma;<sup>2</sup><em>z</em>'
      * <br>
      * <br>
      * As such, the above vector can be better described
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&Delta;</b><sub><i>t</i></sub> &equiv;
-     * [&Delta;<i>x</i>/&delta;<i>p</i>, &Delta;<i>x'</i>/&delta;<i>p</i>,
-     * &Delta;<i>y</i>/&delta;<i>p</i>,
-     * &Delta;<i>y'</i>/&delta;<i>p</i>]<sup><i>T</i></sup>
+     * &nbsp; &nbsp; <strong>&Delta;</strong><sub><em>t</em></sub> &equiv;
+     * [&Delta;<em>x</em>/&delta;<em>p</em>, &Delta;<em>x'</em>/&delta;<em>p</em>,
+     * &Delta;<em>y</em>/&delta;<em>p</em>,
+     * &Delta;<em>y'</em>/&delta;<em>p</em>]<sup><em>T</em></sup>
      * <br>
      * <br>
      * explicitly describing the change in transverse phase coordinate for
-     * fractional change in momentum &delta;<i>p</i>.
+     * fractional change in momentum &delta;<em>p</em>.
      * </p>
      * <p>
      * Since we are only concerned with transverse phase space coordinates, we
-     * restrict ourselves to the 4&times;4 upper diagonal block of <b>&Phi;</b>,
-     * which we denote take <b>T</b>. That is, <b>T</b> = &pi; &sdot;
-     * <b>&Phi;</b>
-     * where &pi; : <b>R</b><sup>6&times;6</sup> &rarr;
-     * <b>R</b><sup>4&times;4</sup> is the projection operator.
+     * restrict ourselves to the 4&times;4 upper diagonal block of <strong>&Phi;</strong>,
+     * which we denote take <strong>T</strong>. That is, <strong>T</strong> = &pi; &sdot;
+     * <strong>&Phi;</strong>
+     * where &pi; : <strong>R</strong><sup>6&times;6</sup> &rarr;
+     * <strong>R</strong><sup>4&times;4</sup> is the projection operator.
      * </p>
      * <p>
-     * This method finds that point <b>z</b><sub><i>t</i></sub> &equiv;
-     * (<i>x<sub>t</sub></i>, <i>x'<sub>t</sub></i>, <i>y<sub>t</sub></i>,
-     * <i>y'<sub>t</sub></i>) in transvse phase space that is invariant under
-     * the action of the ring for a given momentum spread &delta;<i>p</i>. That
+     * This method finds that point <strong>z</strong><sub><em>t</em></sub> &equiv;
+     * (<em>x<sub>t</sub></em>, <em>x'<sub>t</sub></em>, <em>y<sub>t</sub></em>,
+     * <em>y'<sub>t</sub></em>) in transvse phase space that is invariant under
+     * the action of the ring for a given momentum spread &delta;<em>p</em>. That
      * is, the particle ends up in the same location each revolution. With a
-     * finite momentum spread of &delta;<i>p</i> &gt; 0 we require this require
+     * finite momentum spread of &delta;<em>p</em> &gt; 0 we require this require
      * that
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>Tz</b><sub><i>t</i></sub> +
-     * &delta;<i>p</i><b>&Delta;</b><sub><i>t</i></sub> =
-     * <b>z</b><sub><i>t</i></sub> ,
+     * &nbsp; &nbsp; <strong>Tz</strong><sub><em>t</em></sub> +
+     * &delta;<em>p</em><strong>&Delta;</strong><sub><em>t</em></sub> =
+     * <strong>z</strong><sub><em>t</em></sub> ,
      * <br>
      * <br>
      * which can be written
      * <br>
      * <br>
-     * &nbsp; <b>z</b><sub><i>t</i></sub> = &delta;<i>p</i>(<b>T</b> -
-     * <b>I</b>)<sup>-1</sup><b>&Delta;</b><sub><i>t</i></sub> ,
+     * &nbsp; <strong>z</strong><sub><em>t</em></sub> = &delta;<em>p</em>(<strong>T</strong> -
+     * <strong>I</strong>)<sup>-1</sup><strong>&Delta;</strong><sub><em>t</em></sub> ,
      * <br>
      * <br>
-     * where <b>I</b> is the identity matrix. Dividing both sides by
-     * &delta;<i>p</i> yields the final result
+     * where <strong>I</strong> is the identity matrix. Dividing both sides by
+     * &delta;<em>p</em> yields the final result
      * <br>
      * <br>
-     * &nbsp; <b>z</b><sub>0</sub> &equiv;
-     * <b>z</b><sub><i>t</i></sub>/&delta;<i>p</i> = (<b>T</b> -
-     * <b>I</b>)<sup>-1</sup><b>&Delta;</b><sub><i>t</i></sub> ,
+     * &nbsp; <strong>z</strong><sub>0</sub> &equiv;
+     * <strong>z</strong><sub><em>t</em></sub>/&delta;<em>p</em> = (<strong>T</strong> -
+     * <strong>I</strong>)<sup>-1</sup><strong>&Delta;</strong><sub><em>t</em></sub> ,
      * <br>
      * <br>
      * which is the returned value of this method. It is normalized by
-     * &delta;<i>p</i> so that we can compute the closed orbit for any given
+     * &delta;<em>p</em> so that we can compute the closed orbit for any given
      * momentum spread.
      * </p>
      *
      * @param state we are calculating the dispersion at this state location
      *
-     * @return The closed orbit fixed point <b>z</b><sub>0</sub> for finite
+     * @return The closed orbit fixed point <strong>z</strong><sub>0</sub> for finite
      * dispersion, normalized by momentum spread. Returned as an array
-     * [<i>x</i><sub>0</sub>,<i>x'</i><sub>0</sub>,<i>y</i><sub>0</sub>,<i>y'</i><sub>0</sub>]/&delta;<i>p</i>
+     * [<em>x</em><sub>0</sub>,<em>x'</em><sub>0</sub>,<em>y</em><sub>0</sub>,<em>y'</em><sub>0</sub>]/&delta;<em>p</em>
      *
      * @see
      * xal.tools.beam.calc.ISimEnvResults#computeChromDispersion(xal.model.probe.traj.ProbeState)
@@ -734,33 +734,33 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
     /**
      * <p>
      * Calculates and returns the full lattice matrix for the machine at the
-     * given state location. Let <i>S<sub>n</sub></i> be the given state object
-     * at location <i>s<sub>n</sub></i>, and let <b>T</b><sub><i>n</i></sub> be
-     * the transfer matrix between locations <i>s</i><sub>0</sub> and
-     * <i>s<sub>n</sub></i> , where <i>s</i><sub>0</sub> is the location of the
+     * given state location. Let <em>S<sub>n</sub></em> be the given state object
+     * at location <em>s<sub>n</sub></em>, and let <strong>T</strong><sub><em>n</em></sub> be
+     * the transfer matrix between locations <em>s</em><sub>0</sub> and
+     * <em>s<sub>n</sub></em> , where <em>s</em><sub>0</sub> is the location of the
      * full transfer matrix
-     * <b>&Phi;</b><sub>0</sub> for this machine (end to end). Then the full
+     * <strong>&Phi;</strong><sub>0</sub> for this machine (end to end). Then the full
      * turn matrix
-     * <b>&Phi;</b><sub><i>n</i></sub> for the machine at location
-     * <i>s<sub>n</sub></i>
+     * <strong>&Phi;</strong><sub><em>n</em></sub> for the machine at location
+     * <em>s<sub>n</sub></em>
      * is given by
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&Phi;</b><sub><i>n</i></sub> =
-     * <b>T</b><sub><i>n</i></sub> &sdot; <b>&Phi;</b><sub>0</sub>
-     * &sdot; <b>T</b><sub><i>n</i></sub><sup>-1</sup> .
+     * &nbsp; &nbsp; <strong>&Phi;</strong><sub><em>n</em></sub> =
+     * <strong>T</strong><sub><em>n</em></sub> &sdot; <strong>&Phi;</strong><sub>0</sub>
+     * &sdot; <strong>T</strong><sub><em>n</em></sub><sup>-1</sup> .
      * <br>
      * <br>
      * That is, we conjugate the full transfer map for this machine by the
      * transfer map for the given state.
      * </p>
      *
-     * @param state state object <i>S<sub>n</sub></i> for location
-     * <i>s<sub>n</sub></i>
-     * containing transfer matrix <b>T</b><sub><i>n</i></sub>
+     * @param state state object <em>S<sub>n</sub></em> for location
+     * <em>s<sub>n</sub></em>
+     * containing transfer matrix <strong>T</strong><sub><em>n</em></sub>
      *
-     * @return the full-turn map <b>&Phi;</b><sub><i>n</i></sub> at the location
-     * <i>s<sub>n</sub></i> of the given state
+     * @return the full-turn map <strong>&Phi;</strong><sub><em>n</em></sub> at the location
+     * <em>s<sub>n</sub></em> of the given state
      *
      * @author Christopher K. Allen
      * @since Oct 28, 2013

@@ -80,7 +80,7 @@ public abstract class ThickElement extends Element {
      *
      * @param strType string type identifier for the element
      * @param strId string instance identifier for this element
-     * @param dblLen total length of the element (<b>in meters</b>)
+     * @param dblLen total length of the element (<strong>in meters</strong>)
      */
     public ThickElement(String strType, String strId, double dblLen) {
         super(strType, strId);
@@ -103,7 +103,7 @@ public abstract class ThickElement extends Element {
     /**
      * Set the length of the element.
      *
-     * @param dblLen lenght of element (in <b>meters</b>)
+     * @param dblLen lenght of element (in <strong>meters</strong>)
      *
      */
     public void setLength(double dblLen) {
@@ -117,7 +117,7 @@ public abstract class ThickElement extends Element {
     /**
      * Return the total length of this element
      *
-     * @return total element length (in <b>meters</b>)
+     * @return total element length (in <strong>meters</strong>)
      */
     @Override
     public double getLength() {
@@ -171,10 +171,10 @@ public abstract class ThickElement extends Element {
      * Method to add the effects of a spatial rotation and displacement to the
      * beamline element represented by the given transfer matrix.
      *
-     * @param matPhi transfer matrix <b>&Phi;</b> to be processed
+     * @param matPhi transfer matrix <strong>&Phi;</strong> to be processed
      * @param probe instance of the probe
      * @param length total think element length
-     * @return transfer matrix <b>&Phi;</b> after applying displacement and
+     * @return transfer matrix <strong>&Phi;</strong> after applying displacement and
      * rotation
      *
      * @author Natalia Milas - January 2019

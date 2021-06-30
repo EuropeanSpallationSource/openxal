@@ -34,7 +34,7 @@ import xal.smf.impl.Magnet;
  * <br>
  * &middot; The idea is that probes states produced by simulation will carry
  * this attribute
- * <b>if</b> it has been set. If not, then the probe state will have the same
+ * <strong>if</strong> it has been set. If not, then the probe state will have the same
  * attribute ID as the hardware node.
  * <br>
  * <br>
@@ -356,7 +356,7 @@ public class LatticeElement implements Comparable<LatticeElement> {
 
     /**
      * Indicates whether or not this lattice element is artificial or not. An
-     * element is <i>artificial</i> if there is no hardware representation for
+     * element is <em>artificial</em> if there is no hardware representation for
      * it in the XDXF file. It was probably created as a placeholder within the
      * lattice generation process.
      *

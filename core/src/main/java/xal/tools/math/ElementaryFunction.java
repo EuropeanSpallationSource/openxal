@@ -62,7 +62,7 @@ public final class ElementaryFunction {
      * @param x double precision number
      * @param y double precision number
      *
-     * @return true of <i>y</i> ~ <i>x</i>, false otherwise
+     * @return true of <em>y</em> ~ <em>x</em>, false otherwise
      *
      * @see #approxEq(double, double, int)
      * @see #ULPS_DEFLT_BRACKET
@@ -74,35 +74,35 @@ public final class ElementaryFunction {
     /**
      * <p>
      * Test if two <code>double</code> precision numbers are approximately
-     * equal. This condition is defined with respect to the <b>U</b>nits in
-     * <b>L</b>ast
-     * <b>P</b>lace (ULPs) bracketing procedure.
+     * equal. This condition is defined with respect to the <strong>U</strong>nits in
+     * <strong>L</strong>ast
+     * <strong>P</strong>lace (ULPs) bracketing procedure.
      * </p>
      * <p>
-     * The ULP values <i>ulp<sub>x</sub></i> and <i>ulp<sub>y</sub></i> are
-     * computed for each argument <i>x</i> and <i>y</i>. These values are the
+     * The ULP values <em>ulp<sub>x</sub></em> and <em>ulp<sub>y</sub></em> are
+     * computed for each argument <em>x</em> and <em>y</em>. These values are the
      * distances between the arguments and the nearest double precision number
      * that can be represented by the IEEE 754 standard. The bracketing
-     * distances &delta;<i>x</i> and &delta;<i>y</i> for <i>x</i> and <i>y</i>
+     * distances &delta;<em>x</em> and &delta;<em>y</em> for <em>x</em> and <em>y</em>
      * are computed as
      * <pre>
-     *      &delta;<i>x</i> &trie; <i>N</i> &times; <i>ulp<sub>x</sub></i> ,
-     *      &delta;<i>y</i> &trie; <i>N</i> &times; <i>ulp<sub>y</sub></i> ,
-     * </pre> where <i>N</i> is the number of ULPs specified in the arguments.
+     *      &delta;<em>x</em> &trie; <em>N</em> &times; <em>ulp<sub>x</sub></em> ,
+     *      &delta;<em>y</em> &trie; <em>N</em> &times; <em>ulp<sub>y</sub></em> ,
+     * </pre> where <em>N</em> is the number of ULPs specified in the arguments.
      * Two intervals are defined
      * <pre>
-     *      <i>I<sub>x</sub></i> &trie; [<i>x</i> &minus; &delta;<i>x</i>,<i>x</i> &plus; &delta;<i>x</i>],
-     *      <i>I<sub>y</sub></i> &trie; [<i>y</i> &minus; &delta;<i>y</i>,<i>y</i> &plus; &delta;<i>y</i>].
-     * </pre> If the intersection <i>I<sub>x</sub></i> &cap;
-     * <i>I<sub>y</sub></i> is finite then
-     * <i>x</i> and <i>y</i> are considered approximately equal.
+     *      <em>I<sub>x</sub></em> &trie; [<em>x</em> &minus; &delta;<em>x</em>,<em>x</em> &plus; &delta;<em>x</em>],
+     *      <em>I<sub>y</sub></em> &trie; [<em>y</em> &minus; &delta;<em>y</em>,<em>y</em> &plus; &delta;<em>y</em>].
+     * </pre> If the intersection <em>I<sub>x</sub></em> &cap;
+     * <em>I<sub>y</sub></em> is finite then
+     * <em>x</em> and <em>y</em> are considered approximately equal.
      * </p>
      *
      * @param x double precision number
      * @param y double precision number
-     * @param cntUlps number <i>N</i> of ULPs used to bracket the numbers
+     * @param cntUlps number <em>N</em> of ULPs used to bracket the numbers
      *
-     * @return  <code>true</code> of <i>y</i> ~ <i>x</i> within <i>N</i> ULPs,
+     * @return  <code>true</code> of <em>y</em> ~ <em>x</em> within <em>N</em> ULPs,
      * </code>false</code> otherwise
      */
     public static boolean approxEq(double x, double y, int cntUlps) {
@@ -136,10 +136,10 @@ public final class ElementaryFunction {
      *
      * @param x double precision number
      * @param y double precision number
-     * @param cntDgts number <i>N</i> of significant digits to compare
+     * @param cntDgts number <em>N</em> of significant digits to compare
      *
-     * @return          <code>true</code> if the first <i>N</i> digits of <i>x</i> and
-     * <i>y</i> agree, <code>false</code> otherwise
+     * @return          <code>true</code> if the first <em>N</em> digits of <em>x</em> and
+     * <em>y</em> agree, <code>false</code> otherwise
      *
      * @since Dec 31, 2015, Christopher K. Allen
      */
@@ -159,7 +159,7 @@ public final class ElementaryFunction {
     /**
      * <p>
      * Test if two <code>double</code> precision numbers are in the same ball of
-     * radius <i>r</i>.
+     * radius <em>r</em>.
      * </p>
      * <p>
      * <h4>NOTES CKA</h4>
@@ -171,7 +171,7 @@ public final class ElementaryFunction {
      * @param y double precision number
      * @param r radius defining the size of the neighborhood
      *
-     * @return true of |<i>y</i> - <i>x</i>| <= <i>r</i>, false otherwise
+     * @return true of |<em>y</em> - <em>x</em>| <= <em>r</em>, false otherwise
      */
     public static boolean neighbors(double x, double y, double r) {
         double difference = x - y;
@@ -198,15 +198,15 @@ public final class ElementaryFunction {
      */
     /**
      * Computes the factorial of the given integer. The factorial
-     * <i>n</i>! of the number <i>n</i> is defined
+     * <em>n</em>! of the number <em>n</em> is defined
      * <br>
      * <br>
-     * &nbsp; &nbsp;  <i>n</i>! &equiv; 1 &middot; 2 &middot; &hellip; &middot;
-     * (<i>n</i> - 1) &middot; <i>n</i>
+     * &nbsp; &nbsp;  <em>n</em>! &equiv; 1 &middot; 2 &middot; &hellip; &middot;
+     * (<em>n</em> - 1) &middot; <em>n</em>
      *
      * @param n integer to be "factorialized"
      *
-     * @return      <i>n</i>! = factorial of argument
+     * @return      <em>n</em>! = factorial of argument
      *
      * @author Christopher K. Allen
      * @since Dec 9, 2011
@@ -229,7 +229,7 @@ public final class ElementaryFunction {
      * <p>
      * Returns the value of the first argument raised to the power of the second
      * argument
-     * <i>dblBase</i><sup><i>dblExpon</i></sup>. Special cases:
+     * <em>dblBase</em><sup><em>dblExpon</em></sup>. Special cases:
      * <br>
      * <br>&middot; If the second argument is positive or negative zero, then
      * the result is 1.0.
@@ -275,7 +275,7 @@ public final class ElementaryFunction {
      * <p>
      * Returns the value of the first argument raised to the power of the second
      * argument
-     * <i>intBase</i><sup><i>intExpon</i></sup> where the base is an integer.
+     * <em>intBase</em><sup><em>intExpon</em></sup> where the base is an integer.
      * Special cases:
      * <br>
      * <br>&middot; If the second argument is positive or negative zero, then
@@ -325,20 +325,20 @@ public final class ElementaryFunction {
      * Implementation of the sinc function where
      * <br>
      * <br>
-     * &nbsp; sinc(<i>x</i>) &equiv; sin(<i>x</i>)/<i>x</i>.
+     * &nbsp; sinc(<em>x</em>) &equiv; sin(<em>x</em>)/<em>x</em>.
      * </p>
      * <p>
-     * For small values of <i>x</i> we Taylor expand the sinc function to sixth
+     * For small values of <em>x</em> we Taylor expand the sinc function to sixth
      * order,
      * <br>
      * <br>
-     * &nbsp; sinc(x) &asymp; 1 - <i>x</i><sup>2</sup>/6 +
-     * <i>x</i><sup>4</sup>/120 -
-     * <i>x</i><sup>6</sup>/5040 +
-     * <i>O</i>(<i>x</i><sup>8</sup>).
+     * &nbsp; sinc(x) &asymp; 1 - <em>x</em><sup>2</sup>/6 +
+     * <em>x</em><sup>4</sup>/120 -
+     * <em>x</em><sup>6</sup>/5040 +
+     * <em>O</em>(<em>x</em><sup>8</sup>).
      * <br>
      * <br>
-     * otherwise we return sin(<i>x</i>)/<i>x</i>.
+     * otherwise we return sin(<em>x</em>)/<em>x</em>.
      * </p>
      *
      * @param x any real number
@@ -362,27 +362,27 @@ public final class ElementaryFunction {
      * Implementation of the sinch function where
      * <br>
      * <br>
-     * &nbsp; sinch(<i>x</i>) &equiv; sinh(<i>x</i>)/<i>x</i>
+     * &nbsp; sinch(<em>x</em>) &equiv; sinh(<em>x</em>)/<em>x</em>
      * <br>
      * <br>
      * </p>
      * <p>
-     * For small values of <i>x</i> we Taylor expand the hyperbolic sine
+     * For small values of <em>x</em> we Taylor expand the hyperbolic sine
      * function to sixth order,
      * <br>
      * <br>
      *
-     * &nbsp; sinch(<i>x</i>) &asymp; 1 + <i>x</i><sup>2</sup>/6 +
-     * <i>x</i><sup>4</sup>/120 +
-     * <i>x</i><sup>6</sup>/5040 +
-     * <i>O</i>(<i>x</i><sup>8</sup>).
+     * &nbsp; sinch(<em>x</em>) &asymp; 1 + <em>x</em><sup>2</sup>/6 +
+     * <em>x</em><sup>4</sup>/120 +
+     * <em>x</em><sup>6</sup>/5040 +
+     * <em>O</em>(<em>x</em><sup>8</sup>).
      * <br>
      * <br>
-     * Otherwise we return sinh(<i>x</i>)/<i>x</i>.
+     * Otherwise we return sinh(<em>x</em>)/<em>x</em>.
      *
      * @param x any real number
      *
-     * @return sinh(<i>x</i>)/<i>x</i>.
+     * @return sinh(<em>x</em>)/<em>x</em>.
      */
     public static double sinch(double x) {
 
@@ -398,13 +398,13 @@ public final class ElementaryFunction {
     }
 
     /**
-     * Returns the sinch(<i>x</i><sup>2</sup>). I am not sure why this needs a
+     * Returns the sinch(<em>x</em><sup>2</sup>). I am not sure why this needs a
      * special implementation, but it's here. There is not special computation,
-     * the result is computed directly as sinch(<i>x</i><sup>2</sup>).
+     * the result is computed directly as sinch(<em>x</em><sup>2</sup>).
      *
      * @param x any real number
      *
-     * @return sinch(<i>x</i><sup>2</sup>)
+     * @return sinch(<em>x</em><sup>2</sup>)
      *
      * @see ElementaryFunction#sinch(double)
      */
@@ -430,8 +430,8 @@ public final class ElementaryFunction {
      *
      * @param x any real number
      *
-     * @return &frac12;(<i>e</i><sup>+<i>x</i></sup> -
-     * <i>e</i><sup>-<i>x</i></sup>)
+     * @return &frac12;(<em>e</em><sup>+<em>x</em></sup> -
+     * <em>e</em><sup>-<em>x</em></sup>)
      */
     public static final double sinh(double x) {
         return 0.5 * (Math.exp(x) - Math.exp(-x));
@@ -444,7 +444,7 @@ public final class ElementaryFunction {
      * 
      * @param   x   any real number
      * 
-     * @return &frac12;(<i>e</i><sup>+<i>x</i></sup> + <i>e</i><sup>-<i>x</i></sup>) 
+     * @return &frac12;(<em>e</em><sup>+<em>x</em></sup> + <em>e</em><sup>-<em>x</em></sup>) 
      */
     public static final double cosh(double x) {
         return 0.5 * (Math.exp(x) + Math.exp(-x));
@@ -457,7 +457,7 @@ public final class ElementaryFunction {
      *  
      * @author Christopher Allen
      * 
-     * @return sinh(<i>x</i>)/cosh(<i>x</i>)
+     * @return sinh(<em>x</em>)/cosh(<em>x</em>)
      */
     public static final double tanh(double x) {
         return sinh(x) / cosh(x);
@@ -474,7 +474,7 @@ public final class ElementaryFunction {
      *
      * @author Christopher K. Allen
      *
-     * @return log[<i>x</i> + (<i>x</i><sup>2</sup> + 1)<sup>1/2</sup>]
+     * @return log[<em>x</em> + (<em>x</em><sup>2</sup> + 1)<sup>1/2</sup>]
      */
     public static final double asinh(double x) {
         return Math.log(x + Math.sqrt(x * x + 1.0));
@@ -483,11 +483,11 @@ public final class ElementaryFunction {
     /**
      * Inverse hyperbolic cosine function. Note that due to the nature of the
      * hyperbolic cosine function the argument
-     * <b>must</b> be greater than 1.0.
+     * <strong>must</strong> be greater than 1.0.
      *
      * @param x a real number in the interval [1,+&infin;)
      *
-     * @return log[<i>x</i> + (<i>x</i><sup>2</sup> - 1)<sup>1/2</sup>]
+     * @return log[<em>x</em> + (<em>x</em><sup>2</sup> - 1)<sup>1/2</sup>]
      *
      * @author Christopher K. Allen
      *
@@ -510,7 +510,7 @@ public final class ElementaryFunction {
      *
      * @param x a real number in the open interval (-1,1)
      *
-     * @return &frac12;log[(<i>x</i> + 1)/(<i>x</i> - 1)]
+     * @return &frac12;log[(<em>x</em> + 1)/(<em>x</em> - 1)]
      *
      * @exception IllegalArgumentException argument value is outside the domain
      * of definition

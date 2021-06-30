@@ -58,7 +58,7 @@ public class ThinMatrix extends ThinElement {
      *
      * @param strId string identifier of this object
      * @param matPhi 7x7 transfer matrix of element in homogeneous coordinates
-     * @param dblDelW energy gain of element (<b>in electron-volts</b>)
+     * @param dblDelW energy gain of element (<strong>in electron-volts</strong>)
      */
     public ThinMatrix(String strId, PhaseMatrix matPhi, double dblDelW) {
         super(TYPE, strId);
@@ -91,16 +91,16 @@ public class ThinMatrix extends ThinElement {
     /**
      * JavaBean constructor - creates a new uninitialized instance of ThinMatrix
      *
-     * <b>BE CAREFUL</b>
+     * <strong>BE CAREFUL</strong>
      */
     public ThinMatrix() {
         super(TYPE);
     }
 
     /**
-     * Set the elapsed time for <b>all</b> probes to propagate this element.
+     * Set the elapsed time for <strong>all</strong> probes to propagate this element.
      *
-     * @param dblDelT elapsed time through element in <b>seconds</b>
+     * @param dblDelT elapsed time through element in <strong>seconds</strong>
      */
     public void setElapsedTime(double dblDelT) {
         this.dblDelT = dblDelT;
@@ -109,7 +109,7 @@ public class ThinMatrix extends ThinElement {
     /**
      * Set the energy gain imparted to all probes.
      *
-     * @param dblDelW energy gain (<b>in electron-volts</b>)
+     * @param dblDelW energy gain (<strong>in electron-volts</strong>)
      */
     public void setEnergyGain(double dblDelW) {
         this.dblDelW = dblDelW;
@@ -145,7 +145,7 @@ public class ThinMatrix extends ThinElement {
      *
      * @param probe dummy argument
      *
-     * @return energy gain (<b>in electron-volts</b>)
+     * @return energy gain (<strong>in electron-volts</strong>)
      */
     @Override
     public double energyGain(IProbe probe) {

@@ -22,7 +22,7 @@ import xal.tools.data.IArchive;
  * supported in the XAL tools packages.
  * </p>
  * </p>
- * The current implementation uses an <i>n</i>&times;1 EJML matrix to represent
+ * The current implementation uses an <em>n</em>&times;1 EJML matrix to represent
  * the underlying vector. That is, the internal representation is a column
  * vector.
  * </p>
@@ -382,17 +382,17 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
     /**
      * <p>
      * Projects this vector onto the smaller subspace represented by the given
-     * vector. For example, say this vector <b>v</b> is an element of
-     * <b>R</b><sup><i>n</i></sup> and the given vector <b>u</b> is an element
-     * of <b>R</b><sup><i>m</i></sup> where
-     * <i>m</i> &le; <i>n</i>. Then <b>v</b> decomposes as
-     * <b>v</b> = (<b>v</b><sub>1</sub> <b>v</b><sub>2</sub>) &in;
-     * <b>R</b><sup><i>m</i></sup> &times; <b>R</b><sup><i>n-m</i></sup>. That
-     * component <b>v</b><sub>1</sub> that lives in the subspace
-     * <b>R</b><sup><i>m</i></sup> is projected onto the given vector.
+     * vector. For example, say this vector <strong>v</strong> is an element of
+     * <strong>R</strong><sup><em>n</em></sup> and the given vector <strong>u</strong> is an element
+     * of <strong>R</strong><sup><em>m</em></sup> where
+     * <em>m</em> &le; <em>n</em>. Then <strong>v</strong> decomposes as
+     * <strong>v</strong> = (<strong>v</strong><sub>1</sub> <strong>v</strong><sub>2</sub>) &in;
+     * <strong>R</strong><sup><em>m</em></sup> &times; <strong>R</strong><sup><em>n-m</em></sup>. That
+     * component <strong>v</strong><sub>1</sub> that lives in the subspace
+     * <strong>R</strong><sup><em>m</em></sup> is projected onto the given vector.
      * </p>
      * <p>
-     * To make it simple, the first <i>m</i> components of this vector are used
+     * To make it simple, the first <em>m</em> components of this vector are used
      * to set all the values of the given vector, in respective order. If the
      * give vector is larger than this vector an exception is thrown.
      * </p>
@@ -421,19 +421,19 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
     /**
      * <p>
      * Embeds this vector into the larger super-space represented by the given
-     * vector. For example, say this vector <b>v</b> is an element of
-     * <b>R</b><sup><i>m</i></sup> and the given vector <b>u</b> is an element
-     * of <b>R</b><sup><i>n</i></sup> where
-     * <i>m</i> &le; <i>n</i>. Then <b>u</b> decomposes as
-     * <b>u</b> = (<b>u</b><sub>1</sub> <b>u</b><sub>2</sub>) &in;
-     * <b>R</b><sup><i>m</i></sup> &times; <b>R</b><sup><i>n-m</i></sup>. This
-     * vector <b>v</b> is embedded as that component <b>u</b><sub>1</sub>
+     * vector. For example, say this vector <strong>v</strong> is an element of
+     * <strong>R</strong><sup><em>m</em></sup> and the given vector <strong>u</strong> is an element
+     * of <strong>R</strong><sup><em>n</em></sup> where
+     * <em>m</em> &le; <em>n</em>. Then <strong>u</strong> decomposes as
+     * <strong>u</strong> = (<strong>u</strong><sub>1</sub> <strong>u</strong><sub>2</sub>) &in;
+     * <strong>R</strong><sup><em>m</em></sup> &times; <strong>R</strong><sup><em>n-m</em></sup>. This
+     * vector <strong>v</strong> is embedded as that component <strong>u</strong><sub>1</sub>
      * that lives in the sub-space
-     * <b>R</b><sup><i>m</i></sup> &sub;<b>R</b><sup><i>m</i></sup> &times;
-     * <b>R</b><sup><i>n-m</i></sup>.
+     * <strong>R</strong><sup><em>m</em></sup> &sub;<strong>R</strong><sup><em>m</em></sup> &times;
+     * <strong>R</strong><sup><em>n-m</em></sup>.
      * </p>
      * <p>
-     * To make it simple, the first <i>m</i> components of the given vector are
+     * To make it simple, the first <em>m</em> components of the given vector are
      * set to the components of this vector, in respective order. If the give
      * vector is smaller than this vector an exception is thrown.
      * </p>
@@ -666,10 +666,10 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *  Topological Operations
      */
     /**
-     * Return the <i>l</i><sub>1</sub> norm of the vector.
+     * Return the <em>l</em><sub>1</sub> norm of the vector.
      *
-     * @return ||z||<sub>1</sub> = &Sigma;<sub><i>i</i></sub>
-     * |<i>z<sub>i</sub></i>|
+     * @return ||z||<sub>1</sub> = &Sigma;<sub><em>i</em></sub>
+     * |<em>z<sub>i</sub></em>|
      */
     public double norm1() {
         int i;          // loop control
@@ -684,10 +684,10 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
     }
 
     /**
-     * Return the <i>l</i><sub>2</sub> norm of the vector.
+     * Return the <em>l</em><sub>2</sub> norm of the vector.
      *
-     * @return ||z||<sub>2</sub> = [ &Sigma;<sub><i>i</i></sub>
-     * <i>z<sub>i</sub></i><sup>2</sup> ]<sup>1/2</sup>
+     * @return ||z||<sub>2</sub> = [ &Sigma;<sub><em>i</em></sub>
+     * <em>z<sub>i</sub></em><sup>2</sup> ]<sup>1/2</sup>
      */
     public double norm2() {
         int i;          // loop control
@@ -702,10 +702,10 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
     }
 
     /**
-     * Return the <i>l</i><sub>&infin; norm of the vector.
+     * Return the <em>l</em><sub>&infin; norm of the vector.
      *
-     * @return ||<i>z</i>||<sub>&infin;</sub> = sup<sub><i>i</i></sub>
-     * |<i>z<sub>i</sub></i>|
+     * @return ||<em>z</em>||<sub>&infin;</sub> = sup<sub><em>i</em></sub>
+     * |<em>z<sub>i</sub></em>|
      */
     public double normInf() {
         int i;          // loop control
@@ -843,7 +843,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * </p>
      * <p>
      * The token string argument is assumed to be one-dimensional and delimited
-     * by any of the characters <tt>" ,()[]{}"</tt> Repeated, contiguous
+     * by any of the characters <kbd>" ,()[]{}"</kbd> Repeated, contiguous
      * delimiters are parsed together. This conditions allows a variety of
      * parseable string representations. For example,
      * <br/>

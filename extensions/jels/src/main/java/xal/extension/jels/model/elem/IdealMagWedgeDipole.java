@@ -213,7 +213,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
     /**
      * Set the gap size between the dipole magnet poles.
      *
-     * @param dblGap gap size in <b>meters</b>
+     * @param dblGap gap size in <strong>meters</strong>
      */
     public void setGapSize(double dblGap) {
         this.getFaceEntr().setGapHeight(dblGap);
@@ -224,7 +224,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
     /**
      * Set the entrance pole face angle with respect to the design trajectory
      *
-     * @param dblAngPole pole face angle in <b>radians</b>
+     * @param dblAngPole pole face angle in <strong>radians</strong>
      */
     public void setEntrPoleAngle(double dblAngPole) {
         this.getFaceEntr().setPoleFaceAngle(dblAngPole);
@@ -233,7 +233,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
     /**
      * Set the exit pole face angle with respect to the design trajectory
      *
-     * @param dblAngPole pole face angle in <b>radians</b>
+     * @param dblAngPole pole face angle in <strong>radians</strong>
      */
     public void setExitPoleAngle(double dblAngPole) {
         this.getFaceExit().setPoleFaceAngle(dblAngPole);
@@ -243,7 +243,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * Set the entrance fringe integral (a la D.C. Carey) which accounts for the
      * first-order effects of the fringing field outside the dipole magnet.
      *
-     * @param dblFldInt fringe field integral (<b>unitless</b>)
+     * @param dblFldInt fringe field integral (<strong>unitless</strong>)
      *
      * @see IdealMagDipoleFace#setFringeIntegral
      */
@@ -259,7 +259,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * Set the exit fringe integral (a la D.C. Carey) which accounts for the
      * first-order effects of the fringing field outside the dipole magnet.
      *
-     * @param dblFldInt fringe field integral (<b>unitless</b>)
+     * @param dblFldInt fringe field integral (<strong>unitless</strong>)
      *
      * @see IdealMagDipoleFace#setFringeIntegral
      */
@@ -275,7 +275,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * Set the physical length of the bending dipole. The design path length is
      * generally larger than this value because of the curvature.
      *
-     * @param dblLen physical length through bend in <b>meters</b>
+     * @param dblLen physical length through bend in <strong>meters</strong>
      */
     public void setPhysicalLength(double dblLen) {
         this.getMagBody().setLength(dblLen);
@@ -349,7 +349,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
     /**
      * Return the gap size between the dipole magnet poles.
      *
-     * @return gap size in <b>meters</b>
+     * @return gap size in <strong>meters</strong>
      */
     public double getGapHeight() {
         return this.getMagBody().getGapHeight();
@@ -358,7 +358,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
     /**
      * Get the entrance pole face angle with respect to the design trajectory
      *
-     * @return pole face angle in <b>radians</b>
+     * @return pole face angle in <strong>radians</strong>
      */
     public double getEntrPoleAngle() {
         return this.getFaceEntr().getPoleFaceAngle();
@@ -367,7 +367,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
     /**
      * Get the exit pole face angle with respect to the design trajectory
      *
-     * @return pole face angle in <b>radians</b>
+     * @return pole face angle in <strong>radians</strong>
      */
     public double getExitPoleAngle() {
         return this.getFaceExit().getPoleFaceAngle();
@@ -377,7 +377,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * Get the entrance fringe integral (a la D.C. Carey) which accounts for the
      * first-order effects of the fringing field outside the dipole magnet.
      *
-     * @return fringe field integral (<b>unitless</b>)
+     * @return fringe field integral (<strong>unitless</strong>)
      *
      * @see IdealMagDipoleFace#getFringeIntegral
      */
@@ -393,7 +393,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * Get the exit fringe integral (a la D.C. Carey) which accounts for the
      * first-order effects of the fringing field outside the dipole magnet.
      *
-     * @return fringe field integral (<b>unitless</b>)
+     * @return fringe field integral (<strong>unitless</strong>)
      *
      * @see IdealMagDipoleFace#getFringeIntegral
      */
@@ -411,16 +411,16 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * orbit. The field index is defined as
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>n</i> &equiv;
-     * -(<i>R</i><sub>0</sub>/<i>B</i><sub>0</sub>)(<i>dB/dR</i>)
+     * &nbsp; &nbsp; <em>n</em> &equiv;
+     * -(<em>R</em><sub>0</sub>/<em>B</em><sub>0</sub>)(<em>dB/dR</em>)
      * <br/>
      * <br/>
-     * where <i>R</i><sub>0</sub> is the radius of the design orbit,
-     * <i>B</i><sub>0</sub>
+     * where <em>R</em><sub>0</sub> is the radius of the design orbit,
+     * <em>B</em><sub>0</sub>
      * is the field at the design orbit (see
-     * {@link IdealMagSectorDipole#getFieldIndex()}), and <i>dB/dR</i> is the
+     * {@link IdealMagSectorDipole#getFieldIndex()}), and <em>dB/dR</em> is the
      * derivative of the field with respect to the path deflection - evaluated
-     * at the design radius <i>R</i><sub>0</sub>.
+     * at the design radius <em>R</em><sub>0</sub>.
      *
      * @return field index of the magnet at the design orbit (unitless)
      */
@@ -432,7 +432,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * Return the physical length of the bending dipole. The design path length
      * is generally larger than this value because of the curvature.
      *
-     * @return physical length through bend in <b>meters</b>
+     * @return physical length through bend in <strong>meters</strong>
      */
     public double getPhysicalLength() {
         return this.getMagBody().getLength();

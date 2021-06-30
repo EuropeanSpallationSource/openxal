@@ -77,9 +77,9 @@ public class IdealEQuad extends ThickElectrostatic {
      * @param strId identifier for this IdealEQuad object
      * @param enmOrient enumeration specifying the quadrupole orientation
      * (ORIENT_HOR or ORIENT_VER)
-     * @param dblVol Applied Voltage (<b>kV</b>)
-     * @param dblLen Length of the quadrupole (<b>m</b>)
-     * @param dblApt Aperture radius (<b>m</b>)
+     * @param dblVol Applied Voltage (<strong>kV</strong>)
+     * @param dblLen Length of the quadrupole (<strong>m</strong>)
+     * @param dblApt Aperture radius (<strong>m</strong>)
      */
     public IdealEQuad(
             String strId,
@@ -97,7 +97,7 @@ public class IdealEQuad extends ThickElectrostatic {
     /**
      * JavaBean constructor - creates a new uninitialized instance of IdealEQuad
      *
-     * <b>BE CAREFUL</b>
+     * <strong>BE CAREFUL</strong>
      */
     public IdealEQuad() {
         super(TYPE);
@@ -121,7 +121,7 @@ public class IdealEQuad extends ThickElectrostatic {
     /**
      * Get the voltage applied to the electrostatic quad pole tips.
      *
-     * @return Voltage (in <b>kV</b>).
+     * @return Voltage (in <strong>kV</strong>).
      */
     @Override
     public double getVoltage() {
@@ -143,7 +143,7 @@ public class IdealEQuad extends ThickElectrostatic {
     /**
      * Set the applied Voltage on the electrostatic quad.
      *
-     * @param dblVoltage Voltage (in <b>kV</b>).
+     * @param dblVoltage Voltage (in <strong>kV</strong>).
      */
     @Override
     public void setVoltage(double dblVoltage) {
@@ -153,7 +153,7 @@ public class IdealEQuad extends ThickElectrostatic {
     /**
      * Get the Aperture radius of the electrostatic quad.
      *
-     * @return Aperture Radius (in <b>m</b>).
+     * @return Aperture Radius (in <strong>m</strong>).
      */
     public double getAperture() {
         return dblAperture;
@@ -162,7 +162,7 @@ public class IdealEQuad extends ThickElectrostatic {
     /**
      * Set the Aperture radius of the electrostatic quad.
      *
-     * @param dblAperture Aperture Radius (in <b>m</b>).
+     * @param dblAperture Aperture Radius (in <strong>m</strong>).
      */
     public void setAperture(double dblAperture) {
         this.dblAperture = dblAperture;
@@ -176,9 +176,9 @@ public class IdealEQuad extends ThickElectrostatic {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <b>meters</b>
+     * @param dblLen length of subsection to propagate through <strong>meters</strong>
      *
-     * @return the elapsed time through section<b>Units: seconds</b>
+     * @return the elapsed time through section<strong>Units: seconds</strong>
      */
     @Override
     public double elapsedTime(IProbe probe, double dblLen) {

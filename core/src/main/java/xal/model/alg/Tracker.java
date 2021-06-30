@@ -34,7 +34,7 @@ import java.util.logging.Logger;
  * Tracking algorithm objects are classes that implement the
  * <code>IAlgorithm</code> interface. This class provides default
  * implementations for all methods of the <code>IAlgorithm</code> interface.
- * Derived classes must implement the <b>doPropagation()</b> abstract method in
+ * Derived classes must implement the <strong>doPropagation()</strong> abstract method in
  * order to provide the actual dynamics of the algorithm. Note that derived
  * classes may wish to override the <code>propagate(IProbe, IElement)</code>
  * method directly for complete control of the propagation mechanism.
@@ -239,10 +239,10 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * <h3>NOTE</h3>
      * <p>
      * &middot; The returned algorithm type is that specified by the
-     * <tt>"type"</tt> attribute of the <code>&lt;Algorithm&gt;</code> table
+     * <kbd>"type"</kbd> attribute of the <code>&lt;Algorithm&gt;</code> table
      * contained in the <code>model.params</code> file. The developer must
-     * ensure that the <tt>Probe</tt>
-     * and the <tt>Algorithm</tt> objects are of the correct type.
+     * ensure that the <kbd>Probe</kbd>
+     * and the <kbd>Algorithm</kbd> objects are of the correct type.
      * </p>
      *
      * @param sequence sequence from which to retrieve the algorithms'
@@ -279,10 +279,10 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * <h3>NOTE</h3>
      * <p>
      * &middot; The returned algorithm type is that specified by the
-     * <tt>"type"</tt> attribute of the <code>&lt;Algorithm&gt;</code> table
+     * <kbd>"type"</kbd> attribute of the <code>&lt;Algorithm&gt;</code> table
      * contained in the <code>model.params</code> file. The developer must
-     * ensure that the <tt>Probe</tt>
-     * and the <tt>Algorithm</tt> objects are of the correct type.
+     * ensure that the <kbd>Probe</kbd>
+     * and the <kbd>Algorithm</kbd> objects are of the correct type.
      * </p>
      *
      * @param strLocationId The location ID of the entrance parameters to use
@@ -924,7 +924,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * xal.model.IElement, double)</p>
      *
      * <p>
-     * This method is the <b>converse</b> of
+     * This method is the <strong>converse</strong> of
      * <code>advanceProbe(IProbe, IElement, double)</code>. Rather than forward
      * propagating the probe through an <code>IElement</code> object, the method
      * back-propagates the probe object. These effects include the <em>loss</em>
@@ -994,7 +994,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * </p>
      *
      * @param elem element interface to validate propagation
-     * @return      <b>true</b> if we propagate, <b>false</b> if not
+     * @return      <strong>true</strong> if we propagate, <strong>false</strong> if not
      */
     protected boolean validElement(IElement elem) {
 
@@ -1051,7 +1051,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * Return the current position within the element through which the probe is
      * being propagated
      *
-     * @return the current element position in <b>meters</b>
+     * @return the current element position in <strong>meters</strong>
      */
     protected double getElemPosition() {
         return dblPosElem;
@@ -1061,7 +1061,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
      * Set the current position within the element though which the probe is
      * being propagated.
      *
-     * @param dblPosElem current element position in <b>meters</b>
+     * @param dblPosElem current element position in <strong>meters</strong>
      */
     public void setElemPosition(double dblPosElem) {
         this.dblPosElem = dblPosElem;

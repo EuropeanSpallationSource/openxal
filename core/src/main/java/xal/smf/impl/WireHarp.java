@@ -45,7 +45,7 @@ import xal.smf.scada.ScadaRecord;
  * </p>
  *
  * <p>
- * <b>Ported from XAL on Jul 15, 2014.</b><br>
+ * <strong>Ported from XAL on Jul 15, 2014.</strong><br>
  * &middot; Jonathan M. Freed
  * </p>
  *
@@ -397,9 +397,9 @@ public class WireHarp extends ProfileDevice {
          * <br> <br>
          * &nbsp; &nbsp; bolStatus = 2<sup>n</sup> &amp; statWireHor
          * <br> <br>
-         * where <i>n</i>=0,1,... is the index of the wire.
+         * where <em>n</em>=0,1,... is the index of the wire.
          * <br><br>
-         * <b>Do Not</b> access this field directly!
+         * <strong>Do Not</strong> access this field directly!
          */
         @AScada.Field(
                 type = int.class,
@@ -414,9 +414,9 @@ public class WireHarp extends ProfileDevice {
          * <br> <br>
          * &nbsp; &nbsp; bolStatus = 2<sup>n</sup> &amp; statWireVer
          * <br> <br>
-         * where <i>n</i>=0,1,... is the index of the wire.
+         * where <em>n</em>=0,1,... is the index of the wire.
          * <br><br>
-         * <b>Do Not</b> access this field directly!
+         * <strong>Do Not</strong> access this field directly!
          */
         @AScada.Field(
                 type = long.class,
@@ -431,9 +431,9 @@ public class WireHarp extends ProfileDevice {
          * <br> <br>
          * &nbsp; &nbsp; bolStatus = 2<sup>n</sup> &amp; statWireDia
          * <br> <br>
-         * where <i>n</i>=0,1,... is the index of the wire.
+         * where <em>n</em>=0,1,... is the index of the wire.
          * <br><br>
-         * <b>Do Not</b> access this field directly!
+         * <strong>Do Not</strong> access this field directly!
          */
         @AScada.Field(
                 type = int.class,
@@ -517,7 +517,7 @@ public class WireHarp extends ProfileDevice {
 
         /**
          * Check if the indicated wire is valid, that is, producing valid data.
-         * The given wire index must be in the range [0,<i>N</i>] where <i>N</i>
+         * The given wire index must be in the range [0,<em>N</em>] where <em>N</em>
          * is the number of wires in the harp.
          *
          * @param ang the transverse plane of the profile (i.e., wire set)
@@ -1292,7 +1292,7 @@ public class WireHarp extends ProfileDevice {
      */
     public static final String HARDWARE_TYPE = "wireharp";
 
-    /** <b>Kluge</b> - Number of wires on current SNS harps
+    /** <strong>Kluge</strong> - Number of wires on current SNS harps
      */
     public static final int CNT_WIRES = 30;
 

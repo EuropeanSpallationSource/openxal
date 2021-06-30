@@ -58,7 +58,7 @@ public class CsZeroCurrentEstimator extends CourantSnyderEstimator {
      */
     /**
      * <p>
-     * Computes the covariance matrix <b>&sigma;</b> of Courant-Snyder
+     * Computes the covariance matrix <strong>&sigma;</strong> of Courant-Snyder
      * parameters from the given data at the given device location. This is a
      * least-squares reconstruction of the CS parameters using the given data.
      * This is the set of second-order moments of the beam distribution. Since
@@ -70,7 +70,7 @@ public class CsZeroCurrentEstimator extends CourantSnyderEstimator {
      * plane is also zero.
      * </p>
      * <p>
-     * The second-order moments are computed from and <i>observation matrix</i>
+     * The second-order moments are computed from and <em>observation matrix</em>
      * which, in the zero current case, is independent of the initial state of
      * the beam. The observation matrix relates the initial state (described by
      * the second moments) to the observed quantities, in this case the

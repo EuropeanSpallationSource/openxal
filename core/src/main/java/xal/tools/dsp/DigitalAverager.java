@@ -24,10 +24,10 @@ public class DigitalAverager extends AbstractDigitalFilter {
 
     /**
      * Returns the input coefficient for the given time index. The only non-zero
-     * input coefficient is <i>a</i><sub>0</sub> for no delay. Its value is
+     * input coefficient is <em>a</em><sub>0</sub> for no delay. Its value is
      * given by
      * <br>
-     * <br>&nbsp;&nbsp;  <i>a</i><sub>0</sub>(<i>n</i>) = 1/(<i>n</i> + 1) <br>
+     * <br>&nbsp;&nbsp;  <em>a</em><sub>0</sub>(<em>n</em>) = 1/(<em>n</em> + 1) <br>
      * <br>
      *
      * @param iTime current time index
@@ -48,11 +48,11 @@ public class DigitalAverager extends AbstractDigitalFilter {
 
     /**
      * Returns the output coefficient for the given time index. The values of
-     * the coefficients <i>b</i><sub>0</sub> and <i>b</i><sub>1</sub> are given
+     * the coefficients <em>b</em><sub>0</sub> and <em>b</em><sub>1</sub> are given
      * by
      * <br>
-     * <br>&nbsp;&nbsp;  <i>b</i><sub>0</sub>(<i>n</i>) = 1 <br>
-     * <br>&nbsp;&nbsp;  <i>b</i><sub>-1</sub>(<i>n</i>) = <i>n</i>/(<i>n</i> +
+     * <br>&nbsp;&nbsp;  <em>b</em><sub>0</sub>(<em>n</em>) = 1 <br>
+     * <br>&nbsp;&nbsp;  <em>b</em><sub>-1</sub>(<em>n</em>) = <em>n</em>/(<em>n</em> +
      * 1) <br>
      * <br>
      *

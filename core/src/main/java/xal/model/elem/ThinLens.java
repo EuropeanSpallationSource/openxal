@@ -62,9 +62,9 @@ public class ThinLens extends ThinElement {
      * focal lengths imply focusing while negative values imply defocusing.
      *
      * @param strId string identifier of element
-     * @param dblFx focal length in the x phase plane (<b>in meters</b>)
-     * @param dblFy focal length in the y phase plane (<b>in meters</b>)
-     * @param dblFz focal length in the z phase plane (<b>in meters</b>)
+     * @param dblFx focal length in the x phase plane (<strong>in meters</strong>)
+     * @param dblFy focal length in the y phase plane (<strong>in meters</strong>)
+     * @param dblFz focal length in the z phase plane (<strong>in meters</strong>)
      */
     public ThinLens(String strId, double dblFx, double dblFy, double dblFz) {
         super(TYPE, strId);
@@ -77,7 +77,7 @@ public class ThinLens extends ThinElement {
     /**
      * JavaBean Constructor - creates a new uninitialized instance of ThinLens
      *
-     * <b>BE CAREFUL</b>
+     * <strong>BE CAREFUL</strong>
      */
     public ThinLens() {
         super(TYPE);
@@ -86,7 +86,7 @@ public class ThinLens extends ThinElement {
     /**
      * Set the focal length in the x direction.
      *
-     * @param dblFx focal length in the x phase plane (<b>in meters</b>)
+     * @param dblFx focal length in the x phase plane (<strong>in meters</strong>)
      */
     public void setFocalLengthX(double dblFx) {
         dblFocX = dblFx;
@@ -95,7 +95,7 @@ public class ThinLens extends ThinElement {
     /**
      * Set the focal length in the y direction.
      *
-     * @param dblFy focal length in the y phase plane (<b>in meters</b>)
+     * @param dblFy focal length in the y phase plane (<strong>in meters</strong>)
      */
     public void setFocalLengthY(double dblFy) {
         dblFocY = dblFy;
@@ -104,7 +104,7 @@ public class ThinLens extends ThinElement {
     /**
      * Set the focal length in the z direction.
      *
-     * @param dblFz focal length in the z phase plane (<b>in meters</b>)
+     * @param dblFz focal length in the z phase plane (<strong>in meters</strong>)
      */
     public void setFocalLengthZ(double dblFz) {
         dblFocZ = dblFz;
@@ -118,7 +118,7 @@ public class ThinLens extends ThinElement {
      * values indicate focusing effect Positive values indicate defocusing
      * effect
      *
-     * @return lens focal length (in <b>meters</b>)
+     * @return lens focal length (in <strong>meters</strong>)
      */
     double getFocalLengthX() {
         return dblFocX;
@@ -129,7 +129,7 @@ public class ThinLens extends ThinElement {
      * values indicate focusing effect Positive values indicate defocusing
      * effect
      *
-     * @return lens focal length (in <b>meters</b>)
+     * @return lens focal length (in <strong>meters</strong>)
      */
     double getFocalLengthY() {
         return dblFocY;
@@ -140,7 +140,7 @@ public class ThinLens extends ThinElement {
      * values indicate focusing effect Positive values indicate defocusing
      * effect
      *
-     * @return lens focal length (in <b>meters</b>)
+     * @return lens focal length (in <strong>meters</strong>)
      */
     double getFocalLengthZ() {
         return dblFocZ;

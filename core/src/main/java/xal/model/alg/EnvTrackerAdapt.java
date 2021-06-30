@@ -337,7 +337,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * The current step size is reset to this value anytime the
      * <code>initialize()</code> method is called.
      *
-     * @param dblStepSize initial step size in <b>meters</b>
+     * @param dblStepSize initial step size in <strong>meters</strong>
      *
      * @see EnvTrackerAdapt#setInitStepSize(double)
      * @see EnvTrackerAdapt#initialize()
@@ -351,7 +351,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * that the step size will be modified as the algorithm progresses according
      * to the adaptation rule.
      *
-     * @param dblStepSize initial step size in <b>meters</b>
+     * @param dblStepSize initial step size in <strong>meters</strong>
      */
     @Override
     public void setStepSize(final double dblStepSize) {
@@ -364,7 +364,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * regardless of the residual error. If this value is cleared to zero, then
      * the step size is unbound.
      *
-     * @param dblMaxStep maximum allowable step size in <b>meters</b>
+     * @param dblMaxStep maximum allowable step size in <strong>meters</strong>
      */
     public void setMaxStepSize(final double dblMaxStep) {
         this.dblMaxStep = dblMaxStep;
@@ -376,7 +376,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * regardless of the residual error. If this value is cleared to zero, then
      * the step size is unbound.
      *
-     * @param dblMaxStepDriftPmq maximum allowable step size in <b>meters</b>
+     * @param dblMaxStepDriftPmq maximum allowable step size in <strong>meters</strong>
      */
     public void setMaxStepSizeDriftPmq(final double dblMaxStepDriftPmq) {
         this.dblMaxStepDriftPmq = dblMaxStepDriftPmq;
@@ -414,7 +414,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * Set the integration accuracy order for the underlying stepping algorithm.
      * For example, when using a second-order accurate algorithm the residual
      * error is of the order
-     * <i>h</i>^2 where <i>h</i> is the step size.
+     * <em>h</em>^2 where <em>h</em> is the step size.
      *
      * @param intOrder integration order
      */
@@ -434,7 +434,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      *
      * This feature prevents excessive micro-management of the step size.
      *
-     * @param dblSlack size of the slack region in <b>meters</b>
+     * @param dblSlack size of the slack region in <strong>meters</strong>
      */
     public void setSlackTolerance(final double dblSlack) {
         this.dblSlack = dblSlack;
@@ -463,7 +463,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * afterwards will likely change due to the adaptive nature of the
      * algorithm.
      *
-     * @return initial step size in <b>meters</b>
+     * @return initial step size in <strong>meters</strong>
      */
     //sako, 21 jul 07
     public double getInitStepSize() {
@@ -474,7 +474,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * Return the current step size, that is, the step size currently used in
      * the propagation.
      *
-     * @return the current step size in <b>meters</b>
+     * @return the current step size in <strong>meters</strong>
      */
     @Override
     public double getStepSize() {
@@ -499,7 +499,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * Return the maximum allowable step size. The step sizing algorithm is
      * bound by this value, or unbounded if zero.
      *
-     * @return maximum allowable step size in <b>meters</b>
+     * @return maximum allowable step size in <strong>meters</strong>
      */
     public double getMaxStepSize() {
         return this.dblMaxStep;
@@ -509,7 +509,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * Return the maximum allowable step size. The step sizing algorithm is
      * bound by this value, or unbounded if zero.
      *
-     * @return maximum allowable step size in <b>meters</b>
+     * @return maximum allowable step size in <strong>meters</strong>
      */
     public double getMaxStepSizeDriftPmq() {
         return this.dblMaxStepDriftPmq;
@@ -540,7 +540,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * Step size adjustment slack tolerance. If adjustments in the step size are
      * less than this percentage, we do nothing.
      *
-     * @return size of the slack region in <b>meters</b>
+     * @return size of the slack region in <strong>meters</strong>
      */
     public double getSlackTolerance() {
         return dblSlack;
@@ -960,8 +960,8 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
      * <p>
      * Advances the <code>probe</code> a distance <code>h</code> through element
      * <code>elem</code>. The probe state is determined using two steps of size
-     * <i>h</i>/2. This result is compared to an addition computation where the
-     * probe is advance by <i>h</i> using a single step. The residual matrix is
+     * <em>h</em>/2. This result is compared to an addition computation where the
+     * probe is advance by <em>h</em> using a single step. The residual matrix is
      * returned as an error criterion.
      * </p>
      * <p>
@@ -1127,9 +1127,9 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 
     /**
      * Computes the transfer matrix for the given <code>IElement</code> for a
-     * distance <i>h</i> for the given <code>IProbe</code> object.
+     * distance <em>h</em> for the given <code>IProbe</code> object.
      *
-     * @param h distance for which transfer matrix is valid (in <b>meters</b>)
+     * @param h distance for which transfer matrix is valid (in <strong>meters</strong>)
      * @param probe     <code>IProbe</code> object for which transfer matrix is
      * computed
      * @param elem compute transfer matrix for this <code>IElement</code> object
@@ -1471,7 +1471,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 //     * @param h         distance along beamline (meters)
 //     * @param probe     beam probe being propagated
 //     * 
-//     * @return          The transfer matrix <b>M</b> for space charge effects
+//     * @return          The transfer matrix <strong>M</strong> for space charge effects
 //     *
 //     * @author Christopher K. Allen
 //     * @since  Aug 25, 2011

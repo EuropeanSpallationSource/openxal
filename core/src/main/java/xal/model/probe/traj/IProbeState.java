@@ -25,21 +25,21 @@ public interface IProbeState extends IArchive {
     /**
      * Set the charge of the particle species in the beam
      *
-     * @param q species particle charge (<b>Coulombs</b>)
+     * @param q species particle charge (<strong>Coulombs</strong>)
      */
     public void setSpeciesCharge(double q);
 
     /**
      * Set the rest energy of a single particle in the beam
      *
-     * @param Er particle rest energy (<b>electron-volts</b>)
+     * @param Er particle rest energy (<strong>electron-volts</strong>)
      */
     public void setSpeciesRestEnergy(double Er);
 
     /**
      * Set the current position of the probe along the beamline.
      *
-     * @param s new probe position (<b>meters</b>)
+     * @param s new probe position (<strong>meters</strong>)
      *
      * @see #getPosition
      */
@@ -48,7 +48,7 @@ public interface IProbeState extends IArchive {
     /**
      * Set the current probe time elapsed from the start of the probe tracking.
      *
-     * @param dblTime elapsed time in <b>seconds</b>
+     * @param dblTime elapsed time in <strong>seconds</strong>
      */
     public void setTime(double dblTime);
 
@@ -62,8 +62,8 @@ public interface IProbeState extends IArchive {
      * &nbsp; &nbsp; &phi; &#8796; &phi;<sub>0</sub> - &Delta;&phi;
      * <br/>
      * <br/>
-     * where &Delta;&phi; = 2&pi;<i>f</i>&Delta;<i/>t</i> is the phase delay due
-     * to elapsed time &Delta;<i>t</i>, <i>f</i> is the cavity resonant
+     * where &Delta;&phi; = 2&pi;<em>f</em>&Delta;<i/>t</em> is the phase delay due
+     * to elapsed time &Delta;<em>t</em>, <em>f</em> is the cavity resonant
      * frequency, and &phi;<sub>0</sub> is the operating phase of the cavity
      * (w.r.t. the synchronous particle).
      * </p>
@@ -79,7 +79,7 @@ public interface IProbeState extends IArchive {
     /**
      * Set the current kinetic energy of the probe.
      *
-     * @param W new probe kinetic energy (<b>electron-volts</b>)
+     * @param W new probe kinetic energy (<strong>electron-volts</strong>)
      *
      * @see #getKineticEnergy
      */
@@ -109,14 +109,14 @@ public interface IProbeState extends IArchive {
     /**
      * Returns the charge of probe's particle species
      *
-     * @return particle species charge (<b>Coulombs</b>)
+     * @return particle species charge (<strong>Coulombs</strong>)
      */
     public double getSpeciesCharge();
 
     /**
      * Returns the rest energy of particle species
      *
-     * @return particle species rest energy (<b>electron-volts</b>)
+     * @return particle species rest energy (<strong>electron-volts</strong>)
      */
     public double getSpeciesRestEnergy();
 
@@ -141,14 +141,14 @@ public interface IProbeState extends IArchive {
     /**
      * Returns the current beam-line position of the probe
      *
-     * @return probe position (<b>meters</b>)
+     * @return probe position (<strong>meters</strong>)
      */
     public double getPosition();
 
     /**
      * Return the time elapsed from the start of the probe tracking
      *
-     * @return time elapsed since probe began tracking, in <b>seconds</b>
+     * @return time elapsed since probe began tracking, in <strong>seconds</strong>
      */
     public double getTime();
 
@@ -162,8 +162,8 @@ public interface IProbeState extends IArchive {
      * &nbsp; &nbsp; &phi; &#8796; &phi;<sub>0</sub> - &Delta;&phi;
      * <br/>
      * <br/>
-     * where &Delta;&phi; = 2&pi;<i>f</i>&Delta;<i/>t</i> is the phase delay due
-     * to elapsed time &Delta;<i>t</i>, <i>f</i> is the cavity resonant
+     * where &Delta;&phi; = 2&pi;<em>f</em>&Delta;<i/>t</em> is the phase delay due
+     * to elapsed time &Delta;<em>t</em>, <em>f</em> is the cavity resonant
      * frequency, and &phi;<sub>0</sub> is the operating phase of the cavity
      * (w.r.t. the synchronous particle).
      * </p>
@@ -180,7 +180,7 @@ public interface IProbeState extends IArchive {
      * this could be the actual kinetic energy of a single constituent particle,
      * the average kinetic energy of an ensemble, the design energy, etc.
      *
-     * @return probe kinetic energy (<b>electron-volts</b>)
+     * @return probe kinetic energy (<strong>electron-volts</strong>)
      */
     public double getKineticEnergy();
 }

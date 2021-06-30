@@ -52,7 +52,7 @@ public abstract class ThinElement extends Element {
      *
      * @param probe propagating probe
      *
-     * @return elapsed time through element <b>Units: seconds</b>
+     * @return elapsed time through element <strong>Units: seconds</strong>
      */
     protected abstract double elapsedTime(IProbe probe);
 
@@ -116,9 +116,9 @@ public abstract class ThinElement extends Element {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <b>meters</b>
+     * @param dblLen length of subsection to propagate through <strong>meters</strong>
      *
-     * @return the elapsed time through section<b>Units: seconds</b>
+     * @return the elapsed time through section<strong>Units: seconds</strong>
      */
     @Override
     public double elapsedTime(IProbe probe, double dblLen) {
@@ -157,7 +157,7 @@ public abstract class ThinElement extends Element {
     }
 
     /**
-     * Compute the transfer matrix for <b>subsection</b> of this element of
+     * Compute the transfer matrix for <strong>subsection</strong> of this element of
      * length <code>dblLen</code> for the specified given probe. Because this is
      * a thin element (with no length), the length parameter is ignored in
      * computing the transfer matrix.
@@ -188,10 +188,10 @@ public abstract class ThinElement extends Element {
      * sub-slice of the element. Besides reducing number of matrix
      * multiplications, there is also less numerical error.
      *
-     * @param matPhi transfer matrix <b>&Phi;</b> to be processed
+     * @param matPhi transfer matrix <strong>&Phi;</strong> to be processed
      * @param length element length (used only for FM composed of many thing
      * elements stacked)
-     * @return transfer matrix <b>&Phi;</b> after applying displacement
+     * @return transfer matrix <strong>&Phi;</strong> after applying displacement
      *
      * @author Natalia Milas
      *

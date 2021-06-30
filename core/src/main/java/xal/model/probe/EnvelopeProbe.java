@@ -26,22 +26,22 @@ import xal.tools.data.DataFormatException;
  * matrix for the beam and is represented as
  * <br>
  * <br>
- * &nbsp; <b>&tau;</b> &equiv; &lt;<b>z*z</b><i><sup>T</sup></i>&gt;
+ * &nbsp; <strong>&tau;</strong> &equiv; &lt;<strong>z*z</strong><em><sup>T</sup></em>&gt;
  * <br>
  * <br>
- * where <b>z</b>=(<i>x,x',y,y',z,z'</i>,1) is the vector of homogeneous phase
+ * where <strong>z</strong>=(<em>x,x',y,y',z,z'</em>,1) is the vector of homogeneous phase
  * space coordinates, and &lt; &middot; &gt; is the moment operator with respect
- * to the beam distribution. We reserve the symbol <b>&sigma;</b> for the
+ * to the beam distribution. We reserve the symbol <strong>&sigma;</strong> for the
  * <em>central</em>
  * covariance matrix, which is defined
  * <br>
  * <br>
- * &nbsp; <b>&sigma;</b> &equiv; <b>&tau;</b> -
- * &lt;<b>z</b>&gt;&lt;<b>z</b>&gt;<i><sup>T</sup></i>
+ * &nbsp; <strong>&sigma;</strong> &equiv; <strong>&tau;</strong> -
+ * &lt;<strong>z</strong>&gt;&lt;<strong>z</strong>&gt;<em><sup>T</sup></em>
  * <br>
  * <br>
- * Note that the centroid position = &lt;<b>z</b>&gt; is carried in the last row
- * and column of <b>&tau;</b>
+ * Note that the centroid position = &lt;<strong>z</strong>&gt; is carried in the last row
+ * and column of <strong>&tau;</strong>
  * </p>
  *
  *
@@ -198,7 +198,7 @@ public class EnvelopeProbe extends BunchProbe<EnvelopeProbeState> {
 //     * <p>
 //     * Changes the behavior of the save state methods.
 //     * By setting this flag to <code>true</code> the Twiss
-//     * parameter attributes will be saved <b>instead</b> of
+//     * parameter attributes will be saved <strong>instead</strong> of
 //     * the correlation matrix.  The default behavior for this class
 //     * is to save the correlation matrix.
 //     * </p>
@@ -562,7 +562,7 @@ public class EnvelopeProbe extends BunchProbe<EnvelopeProbeState> {
 //     * blocks of the correlation matrix, and as Twiss parameters.
 //     * 
 //     * CKA NOTE:
-//     * - <b>Be careful</b> when using this method!  It is here as a convenience.  It
+//     * - <strong>Be careful</strong> when using this method!  It is here as a convenience.  It
 //     * saves the <code>EnvelopeProbe</code> information in the save format as
 //     * the load()/save() methods do, but you cannot restore an <code>EnvelopeProbe</code>
 //     * object from these data.

@@ -30,7 +30,7 @@ import java.util.MissingResourceException;
  * consist of a set of fields on a one-to-one basis with a related set of PVs.
  *
  * <p>
- * <b>Ported from XAL on Jul 15, 2014.</b><br>
+ * <strong>Ported from XAL on Jul 15, 2014.</strong><br>
  * &middot; Jonathan M. Freed
  * </p>
  *

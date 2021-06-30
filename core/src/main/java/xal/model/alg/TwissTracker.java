@@ -178,7 +178,7 @@ public class TwissTracker extends Tracker {
      * Set the step size used for PMQ and any other exceptional propagation.
      * Normally we take one step through a beamline element
      *
-     * @param dblStepSize new step size in <b>meters</b>
+     * @param dblStepSize new step size in <strong>meters</strong>
      */
     public void setStepSize(double dblStepSize) {
         this.dblStepSize = dblStepSize;
@@ -217,7 +217,7 @@ public class TwissTracker extends Tracker {
      * advanced for exceptional cases. Typically, probe is propagated through
      * the entire element.
      *
-     * @return special case step size in <b>meters</b>
+     * @return special case step size in <strong>meters</strong>
      */
     public double getStepSize() {
         return dblStepSize;
@@ -576,7 +576,7 @@ public class TwissTracker extends Tracker {
 //     * @param   twissEnv1   twiss parameters after action by <code>matPhi</code>
 //     * @param   matPhi      transfer matrix
 //     * 
-//     * @return  vector (sigx,sigy,sigz) of phase advances in <b>radians</b>
+//     * @return  vector (sigx,sigy,sigz) of phase advances in <strong>radians</strong>
 //     */
 //    private R3   compPhaseAdvance(Twiss3D twissEnv0, Twiss3D twissEnv1, PhaseMatrix matPhi)  {
 //        
@@ -621,8 +621,8 @@ public class TwissTracker extends Tracker {
      * @param matPhi transfer matrix
      *
      * @return vector
-     * (&psi;<sub><i>x</i></sub>,&psi;<sub><i>y</i></sub>,&psi;<sub><i>z</i></sub>)
-     * of phase advances in <b>radians</b>
+     * (&psi;<sub><em>x</em></sub>,&psi;<sub><em>y</em></sub>,&psi;<sub><em>z</em></sub>)
+     * of phase advances in <strong>radians</strong>
      */
     private R3 compPhaseAdvance(Twiss3D twsInit, Twiss3D twsFinal, PhaseMatrix matPhi) {
 
@@ -883,8 +883,8 @@ public class TwissTracker extends Tracker {
      * RfGap.f)
      *
      * CKA Notes: - This method needs to be optimized now that I understand what
-     * it is doing. In XAL, longitudinal coordinate <i>z</i> is the "phase
-     * spread", but in meters. To convert to phase spread <i>dphi</i> in radians
+     * it is doing. In XAL, longitudinal coordinate <em>z</em> is the "phase
+     * spread", but in meters. To convert to phase spread <em>dphi</em> in radians
      * we have
      *
      * dphi = (z/(beta*lambda))*2*pi
@@ -895,13 +895,13 @@ public class TwissTracker extends Tracker {
      *
      * where f is the RF frequency of the gap and c is the speed of light.
      *
-     * - For the optional computation <b>phaseSpreadT3d</b> (which apparently is
+     * - For the optional computation <strong>phaseSpreadT3d</strong> (which apparently is
      * not used) I am not sure what is happening, or why <y'y'> is significant?
      *
      *
      * @param probe
      *
-     * @return phase spread (half width) for this probe (<b>radian</b>)
+     * @return phase spread (half width) for this probe (<strong>radian</strong>)
      *
      * @author Hiroyuki Sako
      */

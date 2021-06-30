@@ -47,7 +47,7 @@ public interface IRfCavity {
     /**
      * Sets the frequency of the RF in the cavity.
      *
-     * @param dblFreq RF frequency (in <b>Hz</b>)
+     * @param dblFreq RF frequency (in <strong>Hz</strong>)
      *
      * @since Jan 22, 2015 by Christopher K. Allen
      */

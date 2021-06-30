@@ -10,7 +10,7 @@ import xal.tools.math.BaseVector;
 import xal.tools.math.IIndex;
 
 /**
- * Implements the set of real 4-vectors in <b>R</b><sup>4</sup>
+ * Implements the set of real 4-vectors in <strong>R</strong><sup>4</sup>
  *
  * @author Christopher K. Allen
  * @since Oct 15, 2013
@@ -30,19 +30,19 @@ public class R4 extends BaseVector<R4> {
     public enum IND implements IIndex {
 
         /**
-         * the 1<i>st</i> axis index of <b>R</b><sup>6</sup>
+         * the 1<em>st</em> axis index of <strong>R</strong><sup>6</sup>
          */
         X1(0),
         /**
-         * the 2<i>nd</i> axis index of <b>R</b><sup>6</sup>
+         * the 2<em>nd</em> axis index of <strong>R</strong><sup>6</sup>
          */
         X2(1),
         /**
-         * the <i>rd</i> axis index of <b>R</b><sup>6</sup>
+         * the <em>rd</em> axis index of <strong>R</strong><sup>6</sup>
          */
         X3(2),
         /**
-         * the <i>rd</i> axis index of <b>R</b><sup>6</sup>
+         * the <em>rd</em> axis index of <strong>R</strong><sup>6</sup>
          */
         X4(3);
 
@@ -180,7 +180,7 @@ public class R4 extends BaseVector<R4> {
      * Object Method Overrides
      */
     /**
-     * Creates and returns a deep copy of <b>this</b> vector.
+     * Creates and returns a deep copy of <strong>this</strong> vector.
      *
      * @see xal.tools.math.BaseVector#clone()
      *

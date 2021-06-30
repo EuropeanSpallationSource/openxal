@@ -229,7 +229,7 @@ public class ProbeFactory {
 
     /**
      * Create and initialize a new <code>TwissProbe</code> object with the
-     * default parameters in the <tt>model.params</tt> file. The parameters are
+     * default parameters in the <kbd>model.params</kbd> file. The parameters are
      * taken for the entrance location of the provided accelerator hardware
      * sequence. The given algorithm object is also verified and attached to the
      * probe.
@@ -248,7 +248,7 @@ public class ProbeFactory {
 
     /**
      * Create and initialize a new <code>TwissProbe</code> object with the
-     * default parameters in the <tt>model.params</tt> file. The parameters are
+     * default parameters in the <kbd>model.params</kbd> file. The parameters are
      * taken for the location of the provided location ID along the given
      * accelerator hardware sequence. The given algorithm object is also
      * verified and attached to the probe.
@@ -501,7 +501,7 @@ public class ProbeFactory {
     /**
      * Initialize the twiss parameters of the probe with Twiss parameters taken
      * from the
-     * <tt>model.params</tt> file.
+     * <kbd>model.params</kbd> file.
      *
      * @param prbTwiss probe to initialize
      * @param strLocId location of the accelerator where Twiss parameters are
@@ -533,7 +533,7 @@ public class ProbeFactory {
     /**
      * Initialize the covariance matrix of the given probe using the Twiss
      * parameters in the
-     * <tt>model.params</tt> file.
+     * <kbd>model.params</kbd> file.
      *
      * @param probe the probe to initialize
      * @param locationID location within the acceleration where the probe is

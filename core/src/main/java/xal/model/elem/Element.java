@@ -319,10 +319,10 @@ public abstract class Element implements IElement {
      * Method to add the effects of a spatially displaced to the beamline
      * element represented by the given transfer matrix. The returned matrix is
      * the original transfer matrix conjugated by the displacement matrix
-     * representing the displacement vector <b>&Delta;r</b>
+     * representing the displacement vector <strong>&Delta;r</strong>
      * <br/>
      * <br/>
-     * &nbsp; <b>&Delta;r</b> &equiv; (<i>dx,dy,dz</i>).
+     * &nbsp; <strong>&Delta;r</strong> &equiv; (<em>dx,dy,dz</em>).
      * <br/>
      * </p>
      * <p>
@@ -331,9 +331,9 @@ public abstract class Element implements IElement {
      * &middot; added alignment error in sigma matrix
      * </p>
      *
-     * @param matPhi transfer matrix <b>&Phi;</b> to be processed
+     * @param matPhi transfer matrix <strong>&Phi;</strong> to be processed
      *
-     * @return transfer matrix <b>&Phi;</b> after applying displacement
+     * @return transfer matrix <strong>&Phi;</strong> after applying displacement
      *
      * @author Hiroyuki Sako
      * @author Christopher K. Allen
@@ -420,9 +420,9 @@ public abstract class Element implements IElement {
      * distance <code>dblLen</code>.
      *
      * @param probe interface to drifting probe
-     * @param dblLen length of drift in <b>meters</b>
+     * @param dblLen length of drift in <strong>meters</strong>
      *
-     * @return time interval during drift in <b>seconds</b>
+     * @return time interval during drift in <strong>seconds</strong>
      */
     public double compDriftingTime(IProbe probe, double dblLen) {
 
@@ -765,7 +765,7 @@ public abstract class Element implements IElement {
     public abstract double elapsedTime(IProbe probe, double dblLen);
 
     /**
-     * Returns energy gain for <b>subsection</b> of this element of length
+     * Returns energy gain for <strong>subsection</strong> of this element of length
      * <code>dblLen</code> for the specified given probe.
      *
      * @param probe determine energy gain for this probe
@@ -790,7 +790,7 @@ public abstract class Element implements IElement {
     public abstract double longitudinalPhaseAdvance(IProbe probe, double dblLen);
 
     /**
-     * Compute the transfer matrix for <b>subsection</b> of this element of
+     * Compute the transfer matrix for <strong>subsection</strong> of this element of
      * length <code>dblLen</code> for the specified given probe. That is, this
      * method should return the incremental transfer matrix.
      *

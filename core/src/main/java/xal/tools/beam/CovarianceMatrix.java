@@ -21,27 +21,27 @@ import xal.tools.math.r3.R3x3;
  *           | &lt;zx&gt;   &lt;zx'&gt;  &lt;zy&gt;   &lt;zy'&gt;  &lt;zz&gt;   &lt;zz'&gt;  &lt;z&gt;  |
  *           | &lt;z'x&gt;  &lt;z'x'&gt; &lt;z'y&gt;  &lt;z'y&gt;  &lt;z'z&gt;  &lt;z'z'&gt; &lt;z'&gt; |
  *           | &lt;x&gt;     &lt;x&gt;    &lt;y&gt;     &lt;y&gt;   &lt;z&gt;    &lt;z&gt;   &lt;1&gt;  |
- * </pre> where <i>x', y', z'</i> represent the momentum coordinate in the <i>x,
- * y,</i> and <i>z</i>
+ * </pre> where <em>x', y', z'</em> represent the momentum coordinate in the <em>x,
+ * y,</em> and <em>z</em>
  * directions, respectively.
  *
  * <p>
  * Note that the covariance matrix is not necessarily centralized. Specifically,
- * if the beam is off axis, then at least one of the moments &lt;<i>x</i>&gt;,
- * &lt;<i>y</i>&gt;, &lt;<i>z</i>&gt; is non-zero and the corresponding
+ * if the beam is off axis, then at least one of the moments &lt;<em>x</em>&gt;,
+ * &lt;<em>y</em>&gt;, &lt;<em>z</em>&gt; is non-zero and the corresponding
  * second-order moments will be skewed. Likewise, if the beam has a coherent
- * drift in some direction, then the moments &lt;<i>x'</i>&gt;,
- * &lt;<i>y'</i>&gt;, &lt;<i>z'</i>&gt; will have at least one nonlinear value.
+ * drift in some direction, then the moments &lt;<em>x'</em>&gt;,
+ * &lt;<em>y'</em>&gt;, &lt;<em>z'</em>&gt; will have at least one nonlinear value.
  * There are methods in this class for returning centralized moments when such
  * quantities are needed.
  * </p>
  * <p>
  * Note that the covariance matrix is not necessarily centralized. Specifically,
- * if the beam is off axis, then at least one of the moments &lt;<i>x</i>&gt;,
- * &lt;<i>y</i>&gt;, &lt;<i>z</i>&gt; is non-zero and the corresponding
+ * if the beam is off axis, then at least one of the moments &lt;<em>x</em>&gt;,
+ * &lt;<em>y</em>&gt;, &lt;<em>z</em>&gt; is non-zero and the corresponding
  * second-order moments will be skewed. Likewise, if the beam has a coherent
- * drift in some direction, then the moments &lt;<i>xp</i>&gt;,
- * &lt;<i>yp</i>&gt;, &lt;<i>zp</i>&gt; will have at least one nonlinear value.
+ * drift in some direction, then the moments &lt;<em>xp</em>&gt;,
+ * &lt;<em>yp</em>&gt;, &lt;<em>zp</em>&gt; will have at least one nonlinear value.
  * There are methods in this class for returning centralized moments when such
  * quantities are needed.
  * </p>
@@ -95,12 +95,12 @@ public class CovarianceMatrix extends PhaseMatrix {
      * <p>
      * Create a "center matrix" corresponding the given mean values (centroid
      * location). The returned matrix can be subtracted from a covariance matrix
-     * to produce a <i>central</i> covariance matrix.
+     * to produce a <em>central</em> covariance matrix.
      * </p>
      * <p>
      * <h3>NOTE:</h3>
      * The returned matrix is the outer product of the given argument.
-     * Specifically <b>&sigma;</b> = <b>v*v'</b>.
+     * Specifically <strong>&sigma;</strong> = <strong>v*v'</strong>.
      *
      * @param vecCen mean value vector of the phase space coordinates, i.e.,
      * &lt;z&gt;
@@ -152,13 +152,13 @@ public class CovarianceMatrix extends PhaseMatrix {
      * form
      * <br>
      * <br>
-     * <br> | R<sub><i>xx</i></sub> 0 0 0 |
-     * <br> | 0 R<sub><i>yy</i></sub> 0 0 |
-     * <br> | 0 0 R<sub><i>zz</i></sub> 0 |
+     * <br> | R<sub><em>xx</em></sub> 0 0 0 |
+     * <br> | 0 R<sub><em>yy</em></sub> 0 0 |
+     * <br> | 0 0 R<sub><em>zz</em></sub> 0 |
      * <br> | 0 0 0 1 |
      * <br>
      * <br>
-     * where R<sub><i>ii</i></sub> are 2x2 symmetric blocks corresponding to
+     * where R<sub><em>ii</em></sub> are 2x2 symmetric blocks corresponding to
      * each phase plane. Clearly the phase planes are uncoupled.
      * </p>
      *
@@ -342,7 +342,7 @@ public class CovarianceMatrix extends PhaseMatrix {
      *
      * @param arrEmitNew three element vector of rms emittances for X,Y,Z
      * planes, respectively
-     * <b>Units radian-meters</b>
+     * <strong>Units radian-meters</strong>
      *
      * @author C.K. Allen
      */
@@ -385,7 +385,7 @@ public class CovarianceMatrix extends PhaseMatrix {
      *  Property Query
      */
     /**
-     * Return the mean value of the <i>x</i> phase variable.
+     * Return the mean value of the <em>x</em> phase variable.
      *
      * @return the value of &lt;x&gt;
      */
@@ -394,7 +394,7 @@ public class CovarianceMatrix extends PhaseMatrix {
     }
 
     /**
-     * Return the mean value of the <i>y</i> phase variable.
+     * Return the mean value of the <em>y</em> phase variable.
      *
      * @return the value of &lt;y&gt;
      */
@@ -403,7 +403,7 @@ public class CovarianceMatrix extends PhaseMatrix {
     }
 
     /**
-     * Return the mean value of the <i>z</i> phase variable.
+     * Return the mean value of the <em>z</em> phase variable.
      *
      * @return the value of &lt;z&gt;
      */
@@ -430,7 +430,7 @@ public class CovarianceMatrix extends PhaseMatrix {
     }
 
     /**
-     * Compute and return the covariance value of the <i>xx</i> phase space
+     * Compute and return the covariance value of the <em>xx</em> phase space
      * coordinate monomial.
      *
      * @return the value &lt;x^2&gt;-&lt;x&gt;^2
@@ -443,7 +443,7 @@ public class CovarianceMatrix extends PhaseMatrix {
     }
 
     /**
-     * Compute and return the covariance value of the <i>xy</i> phase space
+     * Compute and return the covariance value of the <em>xy</em> phase space
      * coordinate monomial.
      *
      * @return the value &lt;xy&gt;-&lt;x&gt;&lt;y&gt;
@@ -458,7 +458,7 @@ public class CovarianceMatrix extends PhaseMatrix {
     }
 
     /**
-     * Compute and return the covariance value of the <i>yy</i> phase space
+     * Compute and return the covariance value of the <em>yy</em> phase space
      * coordinate monomial.
      *
      * @return the value &lt;y^2&gt;-&lt;y&gt;^2
@@ -471,7 +471,7 @@ public class CovarianceMatrix extends PhaseMatrix {
     }
 
     /**
-     * Compute and return the covariance value of the <i>yz</i> phase space
+     * Compute and return the covariance value of the <em>yz</em> phase space
      * coordinate monomial.
      *
      * @return the value &lt;yz&gt;-&lt;y&gt;&lt;z&gt;
@@ -486,7 +486,7 @@ public class CovarianceMatrix extends PhaseMatrix {
     }
 
     /**
-     * Compute and return the covariance value of the <i>zz</i> phase space
+     * Compute and return the covariance value of the <em>zz</em> phase space
      * coordinate monomial.
      *
      * @return the value &lt;z^2&gt;-&lt;z&gt;^2
@@ -499,7 +499,7 @@ public class CovarianceMatrix extends PhaseMatrix {
     }
 
     /**
-     * Compute and return the covariance value of the <i>xz</i> phase space
+     * Compute and return the covariance value of the <em>xz</em> phase space
      * coordinate monomial.
      *
      * @return the value &lt;xz&gt;-&lt;x&gt;&lt;z&gt;
@@ -515,13 +515,13 @@ public class CovarianceMatrix extends PhaseMatrix {
 
     /**
      * Compute and return the 3x3 symmetric matrix of all centralized spatial
-     * covariance values. Recall that the covariance matrix <b>sig</b> is the
+     * covariance values. Recall that the covariance matrix <strong>sig</strong> is the
      * matrix of central second moments and is related to the correlation matrix
-     * &lt;<b>zz</b>&gt; according to
+     * &lt;<strong>zz</strong>&gt; according to
      *
-     * <b>sig</b> = &lt;<b>zz</b>&gt; - &lt;<b>z</b>&gt;&lt;<b>z</b>&gt;
+     * <strong>sig</strong> = &lt;<strong>zz</strong>&gt; - &lt;<strong>z</strong>&gt;&lt;<strong>z</strong>&gt;
      *
-     * where <b>z</b> = (x x' y y' z z' 1) is the phase space coordinate vector.
+     * where <strong>z</strong> = (x x' y y' z z' 1) is the phase space coordinate vector.
      *
      * Thus, the returned spatial covariance matrix has the form
      *
@@ -561,7 +561,7 @@ public class CovarianceMatrix extends PhaseMatrix {
     }
 
     /**
-     * Compute and return the standard deviation of the <i>x</i> phase variable
+     * Compute and return the standard deviation of the <em>x</em> phase variable
      *
      * @return sqrt( &lt;x^2&gt; - &lt;x&gt;^2 )
      */
@@ -573,7 +573,7 @@ public class CovarianceMatrix extends PhaseMatrix {
     }
 
     /**
-     * Compute and return the standard deviation of the <i>y</i> phase variable
+     * Compute and return the standard deviation of the <em>y</em> phase variable
      *
      * @return sqrt( &lt;y^2&gt; - &lt;y&gt;^2 )
      */
@@ -585,7 +585,7 @@ public class CovarianceMatrix extends PhaseMatrix {
     }
 
     /**
-     * Compute and return the standard deviation of the <i>z</i> phase variable
+     * Compute and return the standard deviation of the <em>z</em> phase variable
      *
      * @return sqrt( &lt;z^2&gt; - &lt;z&gt;^2 )
      */
@@ -615,8 +615,8 @@ public class CovarianceMatrix extends PhaseMatrix {
     }
 
     /**
-     * Return the x,y,z plane rms emittance of the beam <b>Units:
-     * radian-meters</b>
+     * Return the x,y,z plane rms emittance of the beam <strong>Units:
+     * radian-meters</strong>
      *
      * NOTE: This method ignores any coupling between phase planes and any
      * offsets of the beam centroid from the beam axis.
@@ -762,18 +762,18 @@ public class CovarianceMatrix extends PhaseMatrix {
     }
 
     /**
-     * Checks the symmetric of the given covariance matrix to <i>N</i>
+     * Checks the symmetric of the given covariance matrix to <em>N</em>
      * significant digits of accuracy. Specifically, when comparing to opposing
-     * off-diagonal elements the first <i>N</i> digits behind the decimal must
+     * off-diagonal elements the first <em>N</em> digits behind the decimal must
      * be equal for equivalence; any differing digits beyond that are
      * irrelevant. (Clearly the exponents of the off-diagonals under comparison
      * must be equal.)
      *
      * @param matCov covariance matrix under test
-     * @param cntDigits number <i>N</i> of comparison digits
+     * @param cntDigits number <em>N</em> of comparison digits
      *
      * @return              <code>true</code> if the off-diagonal elements of the matrix
-     * compare to <i>N</i> digits, <code>false</code> otherwise
+     * compare to <em>N</em> digits, <code>false</code> otherwise
      *
      * @since Jan 4, 2016, Christopher K. Allen
      *

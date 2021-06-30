@@ -29,67 +29,67 @@ import java.util.logging.Logger;
  * <p>
  * The iterates are computed using a continuation method as described in the
  * paper "Implementation of a Beam Envelope State Observer." Specifically, let
- * <i>n</i> be the number of independent phase planes we are considering (here
+ * <em>n</em> be the number of independent phase planes we are considering (here
  * it is 3). Then assume a <em>smooth</em> solution curve
- * <b>s</b>(&middot;) : <b>R</b> &rarr; <b>R</b><sup>3<i>n</i></sup>
- * mapping bunch charge <i>q</i> to the solution <b>&sigma;</b> &in;
- * <b>R</b><sup>3<i>n</i></sup> of independent beam moments at that charge.
- * Moreover, we have <b>&sigma;</b>* = <b>s</b>(<i>q</i>*) where <i>q</i>* is
- * the bunch charge at the given profile data <b>X</b>.
+ * <strong>s</strong>(&middot;) : <strong>R</strong> &rarr; <strong>R</strong><sup>3<em>n</em></sup>
+ * mapping bunch charge <em>q</em> to the solution <strong>&sigma;</strong> &in;
+ * <strong>R</strong><sup>3<em>n</em></sup> of independent beam moments at that charge.
+ * Moreover, we have <strong>&sigma;</strong>* = <strong>s</strong>(<em>q</em>*) where <em>q</em>* is
+ * the bunch charge at the given profile data <strong>X</strong>.
  * </p>
  * <p>
  * In the analysis we have constructed a known function
- * <b>G</b> : <b>R</b><sup>3<i>n</i></sup> &times; <b>R</b> &rarr;
- * <b>R</b><sup>3<i>n</i></sup> such that
+ * <strong>G</strong> : <strong>R</strong><sup>3<em>n</em></sup> &times; <strong>R</strong> &rarr;
+ * <strong>R</strong><sup>3<em>n</em></sup> such that
  * <br>
  * <br>
- * &nbsp; &nbsp; <b>G</b>[<b>s</b>(<i>q</i>),<i>q</i>] = <b>0</b>,
+ * &nbsp; &nbsp; <strong>G</strong>[<strong>s</strong>(<em>q</em>),<em>q</em>] = <strong>0</strong>,
  * <br>
  * <br>
- * that is, <b>G</b> = 0 whenever <b>s</b> is the least-squares solution to the
+ * that is, <strong>G</strong> = 0 whenever <strong>s</strong> is the least-squares solution to the
  * problem of reconstructing the Courant-Snyder parameters for the given bunch
- * charge <i>q</i> (and given data <b>X</b>). The solution curve
- * <b>s</b>(&middot;) is constructed using continuity starting from a known
+ * charge <em>q</em> (and given data <strong>X</strong>). The solution curve
+ * <strong>s</strong>(&middot;) is constructed using continuity starting from a known
  * value
- * <b>s</b>(0) = <b>&sigma;</b><sub>0</sub>, the zero-current solution. Given
- * that the value of <b>s</b>
- * is known at <i>q</i>, the value of <b>s</b> at a small distance
- * &Delta;<i>q</i> from <i>q</i> is
+ * <strong>s</strong>(0) = <strong>&sigma;</strong><sub>0</sub>, the zero-current solution. Given
+ * that the value of <strong>s</strong>
+ * is known at <em>q</em>, the value of <strong>s</strong> at a small distance
+ * &Delta;<em>q</em> from <em>q</em> is
  * <br>
  * <br>
- * &nbsp; &nbsp; <b>s</b>(<i>q</i>+&Delta;<i>q</i>) = <b>s</b>(<i>q</i>) +
- * [d<b>s</b>(<i>q</i>)/d<i>q</i>]&Delta;<i>q</i>
- * + <i>O</i>(&Delta;<i>q</i>&sup2;) .
+ * &nbsp; &nbsp; <strong>s</strong>(<em>q</em>+&Delta;<em>q</em>) = <strong>s</strong>(<em>q</em>) +
+ * [d<strong>s</strong>(<em>q</em>)/d<em>q</em>]&Delta;<em>q</em>
+ * + <em>O</em>(&Delta;<em>q</em>&sup2;) .
  * <br>
  * <br>
- * Essentially this method recursively computes d<b>s</b>(<i>q</i>)/d<i>q</i>
- * and updates <b>s</b>(<i>q</i>) according to the above.
+ * Essentially this method recursively computes d<strong>s</strong>(<em>q</em>)/d<em>q</em>
+ * and updates <strong>s</strong>(<em>q</em>) according to the above.
  * </p>
  * <p>
- * The value d<b>s</b>(<i>q</i>)/d<i>q</i> is computed by consideration of the
+ * The value d<strong>s</strong>(<em>q</em>)/d<em>q</em> is computed by consideration of the
  * known function
- * <b>G</b>. We take the full derivative of the equation <b>G</b> = <b>0</b>
- * w.r.t. to <i>q</i>
+ * <strong>G</strong>. We take the full derivative of the equation <strong>G</strong> = <strong>0</strong>
+ * w.r.t. to <em>q</em>
  * which yields
  * <br>
  * <br>
- * &nbsp; &nbsp; d<b>s</b>(<i>q</i>)/d<i>q</i> =
- * [&part;<b>G</b>(<b>s</b>,<i>q</i>)/&part;<b>s</b>]<sup>-1</sup>
- * [&part;<b>G</b>(<b>s</b>,<i>q</i>)/&part;<i>q</i>] .
+ * &nbsp; &nbsp; d<strong>s</strong>(<em>q</em>)/d<em>q</em> =
+ * [&part;<strong>G</strong>(<strong>s</strong>,<em>q</em>)/&part;<strong>s</strong>]<sup>-1</sup>
+ * [&part;<strong>G</strong>(<strong>s</strong>,<em>q</em>)/&part;<em>q</em>] .
  * <br>
  * <br>
- * Once this value is computed the next value on the curve <b>s</b>(&middot) is
- * the vector <b>s</b>(<i>q</i>+&Delta;<i>q</i>) = <b>s</b>(<i>q</i>) +
- * [d<b>s</b>(<i>q</i>)/d<i>q</i>]&Delta;<i>q</i>. The partial derivatives are
- * computed numerically about the given values of <b>s</b> = <var>matSig0</var>
- * and <i>q</i> = <var>dblBnchChg</var> using step lengths provided by the
+ * Once this value is computed the next value on the curve <strong>s</strong>(&middot) is
+ * the vector <strong>s</strong>(<em>q</em>+&Delta;<em>q</em>) = <strong>s</strong>(<em>q</em>) +
+ * [d<strong>s</strong>(<em>q</em>)/d<em>q</em>]&Delta;<em>q</em>. The partial derivatives are
+ * computed numerically about the given values of <strong>s</strong> = <var>matSig0</var>
+ * and <em>q</em> = <var>dblBnchChg</var> using step lengths provided by the
  * methods <code>{@link #setChargeDerivativeStepPercent(double)}</code> and
  * <code>{@link #setMomentDerivativeStepPercent(double)}</code>.
  * </p>
  *
  * <h3>NOTES:</h3>
- * &middot; Bunch charge <i>Q</i> is given by beam current <i>I</i> divided by
- * machine frequency <i>f</i>. Specifically, <i>Q</i> = <i>I</i>/<i>f</i>.
+ * &middot; Bunch charge <em>Q</em> is given by beam current <em>I</em> divided by
+ * machine frequency <em>f</em>. Specifically, <em>Q</em> = <em>I</em>/<em>f</em>.
  * <br>
  * &middot; A <code>{@link TransferMatrixGenerator}</code> object must be
  * supplied for the construction of one of these objects. This is done because
@@ -97,8 +97,8 @@ import java.util.logging.Logger;
  * generator. It is safer to require pre-construction of the matrix generator
  * rather than offer all the options for such generation here.
  * <br>
- * &middot; Bunch charge <i>Q</i> is given by beam current <i>I</i> divided by
- * machine frequency <i>f</i>. Specifically, <i>Q</i> = <i>I</i>/<i>f</i>.
+ * &middot; Bunch charge <em>Q</em> is given by beam current <em>I</em> divided by
+ * machine frequency <em>f</em>. Specifically, <em>Q</em> = <em>I</em>/<em>f</em>.
  * <br>
  * &middot; The derivatives are computed by take the percentage of the current
  * value of the independent variable. This will not work well when that value is
@@ -248,15 +248,15 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
 
     /**
      * <p>
-     * Sets the number of steps <i>N<sub>q</sub></i> used to move from the zero
-     * current solution <b>&sigma;</b><sub>0</sub> to the finite current
-     * solution <b>&sigma;</b>* using the continuation method. Letting <i>q</i>*
+     * Sets the number of steps <em>N<sub>q</sub></em> used to move from the zero
+     * current solution <strong>&sigma;</strong><sub>0</sub> to the finite current
+     * solution <strong>&sigma;</strong>* using the continuation method. Letting <em>q</em>*
      * denote the beam charge at solution
-     * <b>&sigma;*</b>, then the continuation method computes the solutions
-     * <b>&sigma;</b><sub><i>n</i></sub>
-     * to the sub-problems with beam charge <i>n&Delta;q</i>
-     * for each <i>n</i> = 0, 1, ..., <i>N<sub>q</sub></i>
-     * where &Delta;<i>q</i> &equiv; <i>q*</i>/<i>N<sub>q</sub></i> .
+     * <strong>&sigma;*</strong>, then the continuation method computes the solutions
+     * <strong>&sigma;</strong><sub><em>n</em></sub>
+     * to the sub-problems with beam charge <em>n&Delta;q</em>
+     * for each <em>n</em> = 0, 1, ..., <em>N<sub>q</sub></em>
+     * where &Delta;<em>q</em> &equiv; <em>q*</em>/<em>N<sub>q</sub></em> .
      * </p>
      *
      * @param cntChgSteps number of steps used to approach the true beam charge
@@ -275,11 +275,11 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
      * derivatives with respect to the beam charge. The value of beam current is
      * increased this fractional amount of the current value when computing
      * numerical derivatives. Specifically, if perturbation factor is denoted
-     * &epsilon;, then the beam charge <i>q</i> is perturbed by an amount
-     * &epsilon;<i>q</i>, that is, the perturbed charged <i>q</i>' is given by
+     * &epsilon;, then the beam charge <em>q</em> is perturbed by an amount
+     * &epsilon;<em>q</em>, that is, the perturbed charged <em>q</em>' is given by
      * <br>
      * <br>
-     * &nbsp; &nbsp;  <i>q</i>' = <i>q</i> + &epsilon;<i>q</i>
+     * &nbsp; &nbsp;  <em>q</em>' = <em>q</em> + &epsilon;<em>q</em>
      * <br>
      * <br>
      * </p>
@@ -300,17 +300,17 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
      * derivatives with respect to the initial beam moments. The value of each
      * moment is increased this fractional amount of its current value when
      * computing numerical derivatives. Specifically, if this value is denoted
-     * &epsilon; and &sigma;<sub><i>i</i></sub> is the <i>i<sup>th</sup></i>
-     * element of moment vector <b>&sigma;</b>, then the perturbed moment vector
-     * <b>&sigma;</b>' is given by
+     * &epsilon; and &sigma;<sub><em>i</em></sub> is the <em>i<sup>th</sup></em>
+     * element of moment vector <strong>&sigma;</strong>, then the perturbed moment vector
+     * <strong>&sigma;</strong>' is given by
      * <br>
      * <br>
-     * &nbsp; &nbsp;  <b>&sigma;</b>' = <b>&sigma;</b> +
-     * &epsilon;&sigma;<sub><i>i</i></sub><b>e</b><sub><i>i</i></sub> ,
+     * &nbsp; &nbsp;  <strong>&sigma;</strong>' = <strong>&sigma;</strong> +
+     * &epsilon;&sigma;<sub><em>i</em></sub><strong>e</strong><sub><em>i</em></sub> ,
      * <br>
      * <br>
-     * where <b>e</b><sub><i>i</i></sub> is the standard basis vector for moment
-     * &sigma;<i>i</i>.
+     * where <strong>e</strong><sub><em>i</em></sub> is the standard basis vector for moment
+     * &sigma;<em>i</em>.
      * </p>
      *
      * @param dblDelMmtPct a value in (0,1) is the fraction of the current
@@ -338,61 +338,61 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
      * <p>
      * The iterates are computed using a continuation method as described in the
      * paper "Implementation of a Beam Envelope State Observer." Specifically,
-     * let <i>n</i> be the number of independent phase planes we are considering
+     * let <em>n</em> be the number of independent phase planes we are considering
      * (here it is 3). Then assume a <em>smooth</em> solution curve
-     * <b>s</b>(&middot;) : <b>R</b> &rarr; <b>R</b><sup>3<i>n</i></sup>
-     * mapping bunch charge <i>q</i> to the solution <b>&sigma;</b> &in;
-     * <b>R</b><sup>3<i>n</i></sup> of independent beam moments at that charge.
-     * Moreover, we have <b>&sigma;</b>* = <b>s</b>(<i>q</i>*) where <i>q</i>*
-     * is the bunch charge at the given profile data <b>X</b>.
+     * <strong>s</strong>(&middot;) : <strong>R</strong> &rarr; <strong>R</strong><sup>3<em>n</em></sup>
+     * mapping bunch charge <em>q</em> to the solution <strong>&sigma;</strong> &in;
+     * <strong>R</strong><sup>3<em>n</em></sup> of independent beam moments at that charge.
+     * Moreover, we have <strong>&sigma;</strong>* = <strong>s</strong>(<em>q</em>*) where <em>q</em>*
+     * is the bunch charge at the given profile data <strong>X</strong>.
      * </p>
      * <p>
      * In the analysis we have constructed a known function
-     * <b>G</b> : <b>R</b><sup>3<i>n</i></sup> &times; <b>R</b> &rarr;
-     * <b>R</b><sup>3<i>n</i></sup> such that
+     * <strong>G</strong> : <strong>R</strong><sup>3<em>n</em></sup> &times; <strong>R</strong> &rarr;
+     * <strong>R</strong><sup>3<em>n</em></sup> such that
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>G</b>[<b>s</b>(<i>q</i>),<i>q</i>] = <b>0</b>,
+     * &nbsp; &nbsp; <strong>G</strong>[<strong>s</strong>(<em>q</em>),<em>q</em>] = <strong>0</strong>,
      * <br>
      * <br>
-     * that is, <b>G</b> = 0 whenever <b>s</b> is the least-squares solution to
+     * that is, <strong>G</strong> = 0 whenever <strong>s</strong> is the least-squares solution to
      * the problem of reconstructing the Courant-Snyder parameters for the given
-     * bunch charge <i>q</i> (and given data <b>X</b>). The solution curve
-     * <b>s</b>(&middot;) is constructed using continuity starting from a known
+     * bunch charge <em>q</em> (and given data <strong>X</strong>). The solution curve
+     * <strong>s</strong>(&middot;) is constructed using continuity starting from a known
      * value
-     * <b>s</b>(0) = <b>&sigma;</b><sub>0</sub>, the zero-current solution.
-     * Given that the value of <b>s</b>
-     * is known at <i>q</i>, the value of <b>s</b> at a small distance
-     * &Delta;<i>q</i> from <i>q</i> is
+     * <strong>s</strong>(0) = <strong>&sigma;</strong><sub>0</sub>, the zero-current solution.
+     * Given that the value of <strong>s</strong>
+     * is known at <em>q</em>, the value of <strong>s</strong> at a small distance
+     * &Delta;<em>q</em> from <em>q</em> is
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>s</b>(<i>q</i>+&Delta;<i>q</i>) = <b>s</b>(<i>q</i>) +
-     * [d<b>s</b>(<i>q</i>)/d<i>q</i>]&Delta;<i>q</i>
-     * + <i>O</i>(&Delta;<i>q</i>&sup2;) .
+     * &nbsp; &nbsp; <strong>s</strong>(<em>q</em>+&Delta;<em>q</em>) = <strong>s</strong>(<em>q</em>) +
+     * [d<strong>s</strong>(<em>q</em>)/d<em>q</em>]&Delta;<em>q</em>
+     * + <em>O</em>(&Delta;<em>q</em>&sup2;) .
      * <br>
      * <br>
      * Essentially this method recursively computes
-     * d<b>s</b>(<i>q</i>)/d<i>q</i> and updates <b>s</b>(<i>q</i>) according to
+     * d<strong>s</strong>(<em>q</em>)/d<em>q</em> and updates <strong>s</strong>(<em>q</em>) according to
      * the above.
      * </p>
      * <p>
-     * The value d<b>s</b>(<i>q</i>)/d<i>q</i> is computed by consideration of
+     * The value d<strong>s</strong>(<em>q</em>)/d<em>q</em> is computed by consideration of
      * the known function
-     * <b>G</b>. We take the full derivative of the equation <b>G</b> = <b>0</b>
-     * w.r.t. to <i>q</i>
+     * <strong>G</strong>. We take the full derivative of the equation <strong>G</strong> = <strong>0</strong>
+     * w.r.t. to <em>q</em>
      * which yields
      * <br>
      * <br>
-     * &nbsp; &nbsp; d<b>s</b>(<i>q</i>)/d<i>q</i> =
-     * [&part;<b>G</b>(<b>s</b>,<i>q</i>)/&part;<b>s</b>]<sup>-1</sup>
-     * [&part;<b>G</b>(<b>s</b>,<i>q</i>)/&part;<i>q</i>] .
+     * &nbsp; &nbsp; d<strong>s</strong>(<em>q</em>)/d<em>q</em> =
+     * [&part;<strong>G</strong>(<strong>s</strong>,<em>q</em>)/&part;<strong>s</strong>]<sup>-1</sup>
+     * [&part;<strong>G</strong>(<strong>s</strong>,<em>q</em>)/&part;<em>q</em>] .
      * <br>
      * <br>
-     * Once this value is computed the next value on the curve <b>s</b>(&middot)
-     * is the vector <b>s</b>(<i>q</i>+&Delta;<i>q</i>) = <b>s</b>(<i>q</i>) +
-     * [d<b>s</b>(<i>q</i>)/d<i>q</i>]&Delta;<i>q</i>. The partial derivatives
-     * are computed numerically about the given values of <b>s</b> =
-     * <var>matSig0</var> and <i>q</i> = <var>dblBnchChg</var> using step
+     * Once this value is computed the next value on the curve <strong>s</strong>(&middot)
+     * is the vector <strong>s</strong>(<em>q</em>+&Delta;<em>q</em>) = <strong>s</strong>(<em>q</em>) +
+     * [d<strong>s</strong>(<em>q</em>)/d<em>q</em>]&Delta;<em>q</em>. The partial derivatives
+     * are computed numerically about the given values of <strong>s</strong> =
+     * <var>matSig0</var> and <em>q</em> = <var>dblBnchChg</var> using step
      * lengths provided by the methods
      * <code>{@link #setChargeDerivativeStepPercent(double)}</code> and
      * <code>{@link #setMomentDerivativeStepPercent(double)}</code>.
@@ -491,67 +491,67 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
     /**
      * <p>
      * Computes the next iterate
-     * <b>&sigma;</b><sub><i>i</i>+1</sub> = <b>s</b>(<i>q<sub>i</sub></i> +
-     * &Delta;<i>q<sub>i</sub></i>) from the given moment matrix
-     * <b>&sigma;</b><sub>0</sub> = <b>s</b>(<i>q<sub>i</sub></i>), given beam
-     * charge <i>q<sub>i</sub></i>, and given change in beam charge
-     * &Delta;<i>q<sub>i</sub></i>.
+     * <strong>&sigma;</strong><sub><em>i</em>+1</sub> = <strong>s</strong>(<em>q<sub>i</sub></em> +
+     * &Delta;<em>q<sub>i</sub></em>) from the given moment matrix
+     * <strong>&sigma;</strong><sub>0</sub> = <strong>s</strong>(<em>q<sub>i</sub></em>), given beam
+     * charge <em>q<sub>i</sub></em>, and given change in beam charge
+     * &Delta;<em>q<sub>i</sub></em>.
      * </p>
      * <p>
      * The iterate is computed using a continuation method as described in the
      * paper "Implementation of a Beam Envelope State Observer." Specifically,
-     * let <i>n</i> be the number of independent phase planes we are considering
+     * let <em>n</em> be the number of independent phase planes we are considering
      * (here it is 3). Then assume a <em>smooth</em> solution curve
-     * <b>s</b>(&middot;) : <b>R</b> &rarr; <b>R</b><sup>3<i>n</i></sup>
-     * mapping bunch charge <i>q</i> to the solution <b>&sigma;</b> &in;
-     * <b>R</b><sup>3<i>n</i></sup> of independent beam moments at that charge.
-     * Moreover, we have <b>&sigma;</b>* = <b>s</b>(<i>q</i>*) where <i>q</i>*
-     * is the bunch charge for the given profile data <b>X</b>.
+     * <strong>s</strong>(&middot;) : <strong>R</strong> &rarr; <strong>R</strong><sup>3<em>n</em></sup>
+     * mapping bunch charge <em>q</em> to the solution <strong>&sigma;</strong> &in;
+     * <strong>R</strong><sup>3<em>n</em></sup> of independent beam moments at that charge.
+     * Moreover, we have <strong>&sigma;</strong>* = <strong>s</strong>(<em>q</em>*) where <em>q</em>*
+     * is the bunch charge for the given profile data <strong>X</strong>.
      * </p>
      * <p>
      * In the analysis we have constructed a function
-     * <b>G</b> : <b>R</b><sup>3<i>n</i></sup> &times; <b>R</b> &rarr;
-     * <b>R</b><sup>3<i>n</i></sup> such that
+     * <strong>G</strong> : <strong>R</strong><sup>3<em>n</em></sup> &times; <strong>R</strong> &rarr;
+     * <strong>R</strong><sup>3<em>n</em></sup> such that
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>G</b>[<b>s</b>(<i>q</i>),<i>q</i>] = <b>0</b>,
+     * &nbsp; &nbsp; <strong>G</strong>[<strong>s</strong>(<em>q</em>),<em>q</em>] = <strong>0</strong>,
      * <br>
      * <br>
-     * that is, <b>G</b> = 0 whenever <b>s</b> is the least-squares solution to
+     * that is, <strong>G</strong> = 0 whenever <strong>s</strong> is the least-squares solution to
      * the problem of reconstructing the Courant-Snyder parameters for the given
-     * bunch charge <i>q</i> and given data <b>X</b>. The solution curve
-     * <b>s</b>(&middot;) is constructed using continuity starting from a known
+     * bunch charge <em>q</em> and given data <strong>X</strong>. The solution curve
+     * <strong>s</strong>(&middot;) is constructed using continuity starting from a known
      * value
-     * <b>s</b>(0) = <b>&sigma;</b><sub>0</sub>, the zero-current case. Given
-     * that the value of <b>s</b>
-     * is known at <i>q</i>, the value of <b>s</b> at a small distance
-     * &Delta;<i>q</i> from <i>q</i> is
+     * <strong>s</strong>(0) = <strong>&sigma;</strong><sub>0</sub>, the zero-current case. Given
+     * that the value of <strong>s</strong>
+     * is known at <em>q</em>, the value of <strong>s</strong> at a small distance
+     * &Delta;<em>q</em> from <em>q</em> is
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>s</b>(<i>q</i>+&Delta;<i>q</i>) = <b>s</b>(<i>q</i>) +
-     * [d<b>s</b>(<i>q</i>)/d<i>q</i>]&Delta;<i>q</i>
-     * + <i>O</i>(&Delta;<i>q</i>&sup2;) .
+     * &nbsp; &nbsp; <strong>s</strong>(<em>q</em>+&Delta;<em>q</em>) = <strong>s</strong>(<em>q</em>) +
+     * [d<strong>s</strong>(<em>q</em>)/d<em>q</em>]&Delta;<em>q</em>
+     * + <em>O</em>(&Delta;<em>q</em>&sup2;) .
      * <br>
      * <br>
-     * Essentially this method computes d<b>s</b>(<i>q</i>)/d<i>q</i>.
+     * Essentially this method computes d<strong>s</strong>(<em>q</em>)/d<em>q</em>.
      * </p>
      * <p>
-     * The value d<b>s</b>(<i>q</i>)/d<i>q</i> is computed by consideration of
+     * The value d<strong>s</strong>(<em>q</em>)/d<em>q</em> is computed by consideration of
      * the known function
-     * <b>G</b>. We take the full derivative of the equation <b>G</b> = 0 w.r.t.
-     * to <i>q</i>
+     * <strong>G</strong>. We take the full derivative of the equation <strong>G</strong> = 0 w.r.t.
+     * to <em>q</em>
      * which yields
      * <br>
      * <br>
-     * &nbsp; &nbsp; d<b>s</b>(<i>q</i>)/d<i>q</i> =
-     * [&part;<b>G</b>(<b>s</b>,<i>q</i>)/&part;<b>s</b>]<sup>-1</sup>
-     * [&part;<b>G</b>(<b>s</b>,<i>q</i>)/&part;<i>q</i>] .
+     * &nbsp; &nbsp; d<strong>s</strong>(<em>q</em>)/d<em>q</em> =
+     * [&part;<strong>G</strong>(<strong>s</strong>,<em>q</em>)/&part;<strong>s</strong>]<sup>-1</sup>
+     * [&part;<strong>G</strong>(<strong>s</strong>,<em>q</em>)/&part;<em>q</em>] .
      * <br>
      * <br>
      * Once this value is computed the return value is the vector
-     * <b>s</b>(<i>q</i>) + [d<b>s</b>(<i>q</i>)/d<i>q</i>]&Delta;<i>q</i>. The
+     * <strong>s</strong>(<em>q</em>) + [d<strong>s</strong>(<em>q</em>)/d<em>q</em>]&Delta;<em>q</em>. The
      * partial derivatives are computed numerically about the given values of
-     * <b>s</b> = <var>matSig0</var> and <i>q</i> = <var>dblBnchChg</var> using
+     * <strong>s</strong> = <var>matSig0</var> and <em>q</em> = <var>dblBnchChg</var> using
      * step lengths provided by the methods
      * <code>{@link #setChargeDerivativeStepPercent(double)}</code> and
      * <code>{@link #setMomentDerivativeStepPercent(double)}</code>.
@@ -565,7 +565,7 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
      * @param arrData the reconstruction problem data
      *
      * @return the next solution iterate &approx;
-     * <b>s</b>(<i>q</i>+&Delta;<i>q</i>)
+     * <strong>s</strong>(<em>q</em>+&Delta;<em>q</em>)
      *
      * @throws ModelException Error in computing the partial derivatives using
      * the online model
@@ -617,21 +617,21 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
     /**
      * <p>
      * Computes the partial derivative of the recursion function
-     * <b>F</b>(<b>&sigma;</b>,<i>q</i>) for the given phase plane and at the
-     * given value <b>&sigma;</b><sub>0</sub> of the covariance matrix and the
+     * <strong>F</strong>(<strong>&sigma;</strong>,<em>q</em>) for the given phase plane and at the
+     * given value <strong>&sigma;</strong><sub>0</sub> of the covariance matrix and the
      * given beam charge
-     * <i>q</i><sub>0</sub>.
+     * <em>q</em><sub>0</sub>.
      * </p>
      * <p>
-     * The partial &part;<b>F</b>(<b>&sigma;</b>,<i>q</i>)/&part;<i>q</i> is
-     * computed numerically by perturbing the beam charge <i>q</i> by a small
-     * percentage &epsilon; then recomputing <b>F</b>(<b>&sigma;</b>,<i>q</i>)
+     * The partial &part;<strong>F</strong>(<strong>&sigma;</strong>,<em>q</em>)/&part;<em>q</em> is
+     * computed numerically by perturbing the beam charge <em>q</em> by a small
+     * percentage &epsilon; then recomputing <strong>F</strong>(<strong>&sigma;</strong>,<em>q</em>)
      * and taking differences. Specifically,
      * <br>
      * <br>
-     * &nbsp; &nbsp; &part;<b>F</b>(<b>&sigma;</b>,<i>q</i>)/&part;<i>q</i>
-     * &approx; [ <b>F</b>(<b>&sigma;</b>,<i>q</i>+&epsilon;<i>q</i>) -
-     * <b>F</b>(<b>&sigma;</b>,<i>q</i>) ] / &epsilon;q
+     * &nbsp; &nbsp; &part;<strong>F</strong>(<strong>&sigma;</strong>,<em>q</em>)/&part;<em>q</em>
+     * &approx; [ <strong>F</strong>(<strong>&sigma;</strong>,<em>q</em>+&epsilon;<em>q</em>) -
+     * <strong>F</strong>(<strong>&sigma;</strong>,<em>q</em>) ] / &epsilon;q
      * <br>
      * <br>
      * where &epsilon; is the parameter provided by method
@@ -671,30 +671,30 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
     /**
      * <p>
      * Computes the partial derivative of the recursion function
-     * <b>F</b>(<b>&sigma;</b>,<i>q</i>) for the given phase plane and at the
-     * given value <b>&sigma;</b><sub>0</sub> of the covariance matrix and the
+     * <strong>F</strong>(<strong>&sigma;</strong>,<em>q</em>) for the given phase plane and at the
+     * given value <strong>&sigma;</strong><sub>0</sub> of the covariance matrix and the
      * given beam charge
-     * <i>q</i><sub>0</sub>. The partials are computed numerically by perturbing
-     * each moment (element of <b>&sigma;</b>) and recomputing
-     * <b>F</b>(<b>&sigma;</b>,<i>q</i>) and taking differences.
+     * <em>q</em><sub>0</sub>. The partials are computed numerically by perturbing
+     * each moment (element of <strong>&sigma;</strong>) and recomputing
+     * <strong>F</strong>(<strong>&sigma;</strong>,<em>q</em>) and taking differences.
      * </p>
      * <p>
-     * We compute column vector &part;<b>F</b>/&part;&sigma;<sub><i>i</i></sub>
-     * for each independent variable &sigma;<sub><i>i</i></sub> &equiv;
-     * [<b>&sigma;</b>]<sub><i>i</i></sub>. of vector <b>&sigma;</b>. The
+     * We compute column vector &part;<strong>F</strong>/&part;&sigma;<sub><em>i</em></sub>
+     * for each independent variable &sigma;<sub><em>i</em></sub> &equiv;
+     * [<strong>&sigma;</strong>]<sub><em>i</em></sub>. of vector <strong>&sigma;</strong>. The
      * partials are computed numerically by perturbing
-     * &sigma;<sub><i>i</i></sub> by &epsilon;<b>e</b><sub><i>i</i></sub> at
-     * <b>&sigma;</b><sub>0</sub>
-     * where <b>e</b><sub><i>i</i></sub> is the <i>i</i><sup>th</sup> covariance
+     * &sigma;<sub><em>i</em></sub> by &epsilon;<strong>e</strong><sub><em>i</em></sub> at
+     * <strong>&sigma;</strong><sub>0</sub>
+     * where <strong>e</strong><sub><em>i</em></sub> is the <em>i</em><sup>th</sup> covariance
      * basis matrix and &epsilon; is a percentage of the current value of
-     * &sigma;<sub><i>i</i></sub>. The returned value
-     * &part;<b>F</b>/&part;<b>&sigma;</b> is the augmentation
+     * &sigma;<sub><em>i</em></sub>. The returned value
+     * &part;<strong>F</strong>/&part;<strong>&sigma;</strong> is the augmentation
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>F</b>/&part;<b>&sigma;</b> = (
-     * &part;<b>F</b>/&part;&sigma;<sub>1</sub> |
-     * &part;<b>F</b>/&part;&sigma;<sub>2</sub> |
-     * &part;<b>F</b>/&part;&sigma;<sub>3</sub>
+     * &nbsp; &nbsp; <strong>F</strong>/&part;<strong>&sigma;</strong> = (
+     * &part;<strong>F</strong>/&part;&sigma;<sub>1</sub> |
+     * &part;<strong>F</strong>/&part;&sigma;<sub>2</sub> |
+     * &part;<strong>F</strong>/&part;&sigma;<sub>3</sub>
      * )
      * </p>
      * <h3>NOTES:</h3>
@@ -711,11 +711,11 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
      * @param strRecDevId ID of device where Courant-Snyder parameters are
      * reconstructed
      * @param dblBnchFreq beam bunch arrival frequency (in Hz)
-     * @param dblChg beam bunch current<i>I</i><sub>0</sub> (in Amperes)
+     * @param dblChg beam bunch current<em>I</em><sub>0</sub> (in Amperes)
      * @param arrMsmts the measured profile data
      *
-     * @return the partial derivative <b>F</b>/&part;<b>&sigma;</b> of the
-     * recursion operator <b>F</b>
+     * @return the partial derivative <strong>F</strong>/&part;<strong>&sigma;</strong> of the
+     * recursion operator <strong>F</strong>
      *
      * @throws ModelException Failed to generate transfer matrices due to a
      * simulation error

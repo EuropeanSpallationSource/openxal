@@ -28,7 +28,7 @@ public class DigitalFunctionUtility {
      * General
      */
     /**
-     * Computes and returns the <i>l</i><sub>2</sub> distance between the given
+     * Computes and returns the <em>l</em><sub>2</sub> distance between the given
      * vector functions normalized by the norm
      * ||<var>arrTarg</var>||<sub>2</sub>.
      *
@@ -99,7 +99,7 @@ public class DigitalFunctionUtility {
      * @param szArray array size of the returned function
      * @param intFreq frequency component of the returned function
      *
-     * @return sin(2<i>&pi;f</i> + <i>&phi;</i>)
+     * @return sin(2<em>&pi;f</em> + <em>&phi;</em>)
      */
     public static double[] generateSine(int szArray, int intFreq, double dblPhase) {
         double[] arrFunc = new double[szArray];
@@ -120,7 +120,7 @@ public class DigitalFunctionUtility {
      * @param szArray array size of the returned function
      * @param intFreq frequency component of the returned function
      *
-     * @return cos(2<i>&pi;f</i> + <i>&phi;</i>)
+     * @return cos(2<em>&pi;f</em> + <em>&phi;</em>)
      */
     public static double[] generateCosine(int szArray, int intFreq, double dblPhase) {
         double[] arrFunc = new double[szArray];
@@ -356,11 +356,11 @@ public class DigitalFunctionUtility {
 
     /**
      * Compute and return the total variation of the given function. The total
-     * variation <i>TV</i>(<i>f</i>) of a function <i>f</i>(&middot;) is defined
+     * variation <em>TV</em>(<em>f</em>) of a function <em>f</em>(&middot;) is defined
      * as
      * <br>
-     * <br>&nbsp;&nbsp;  <i>TV</i>[<i>f</i>](<i>t</i>) &equiv;
-     * &int;<sup><i>t</i></sup>|<i>df</i>(<i>&tau;</i>)/<i>dt</i>|<i>d&tau;</i>
+     * <br>&nbsp;&nbsp;  <em>TV</em>[<em>f</em>](<em>t</em>) &equiv;
+     * &int;<sup><em>t</em></sup>|<em>df</em>(<em>&tau;</em>)/<em>dt</em>|<em>d&tau;</em>
      *
      * @param arrFunc target function
      *

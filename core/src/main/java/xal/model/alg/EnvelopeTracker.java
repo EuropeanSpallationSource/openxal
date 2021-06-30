@@ -343,45 +343,45 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
      * usual propagation through the <code>elem</code> element.
      * </p>
      * <p>
-     * Let <i>x</i> be either transverse phase space variable. The emittance
+     * Let <em>x</em> be either transverse phase space variable. The emittance
      * growth effect is achieved by first multiplying the element &lt;x'|x&gt;
-     * of the RF gap transfer matrix <b>&Phi;</b> by the factor
-     * <i>F<sub>t</sub></i>(&Delta;<i>&phi;</i>) returned by method
+     * of the RF gap transfer matrix <strong>&Phi;</strong> by the factor
+     * <em>F<sub>t</sub></em>(&Delta;<em>&phi;</em>) returned by method
      * {@link EnvelopeTrackerBase#compTransFourierTransform(double)} (see
      * {@link EnvelopeTrackerBase#modTransferMatrixForEmitGrowth(double, PhaseMatrix)}).
      * Currently this action is done in
      * {@link #compTransferMatrix(double, EnvelopeProbe, IElement)}. Once the
-     * covariance matrix <b>&tau;</b> is propagated by the modified transfer
-     * matrix <b>&Phi;</b>, the moment &lt;<i>x'</i><sup>2</sup>&gt; is
+     * covariance matrix <strong>&tau;</strong> is propagated by the modified transfer
+     * matrix <strong>&Phi;</strong>, the moment &lt;<em>x'</em><sup>2</sup>&gt; is
      * augmented by the result of this function.
      * </p>
      * <p>
      * Specifically, the action of this method is described as follows: The
      * before gap and after gap transverse RMS divergence angles,
-     * <i>x'<sub>i</sub></i> and
-     * <i>x'<sub>f</sub></i>, respectively, are related by the following
+     * <em>x'<sub>i</sub></em> and
+     * <em>x'<sub>f</sub></em>, respectively, are related by the following
      * formula:
      * <br>
      * <br>
-     * &nbsp; &lt;<i>x'<sub>f</sub></i><sup>2</sup>&gt; =
-     * &Delta;&lt;<i>x'<sub>f</sub></i><sup>2</sup>&gt; +
-     * &lt;<i>x'<sub>i</sub></i><sup>2</sup>&gt;
+     * &nbsp; &lt;<em>x'<sub>f</sub></em><sup>2</sup>&gt; =
+     * &Delta;&lt;<em>x'<sub>f</sub></em><sup>2</sup>&gt; +
+     * &lt;<em>x'<sub>i</sub></em><sup>2</sup>&gt;
      * <br>
      * <br>
-     * where &Delta;&lt;<i>x'<sub>f</sub></i><sup>2</sup>&gt; is the emittance
+     * where &Delta;&lt;<em>x'<sub>f</sub></em><sup>2</sup>&gt; is the emittance
      * growth factor given by
      * <br>
      * <br>
-     * &nbsp; &Delta;&lt;<i>x'<sub>f</sub></i><sup>2</sup>&gt; &equiv;
-     * <i>k<sub>t</sub></i><sup>2</sup>
-     * <i>G<sub>t</sub></i>(<i>&phi;<sub>s</sub></i>,&Delta;<i>&phi;</i>)
-     * &lt;<i>x<sub>i</sub></i></i><sup>2</sup>&gt;.
+     * &nbsp; &Delta;&lt;<em>x'<sub>f</sub></em><sup>2</sup>&gt; &equiv;
+     * <em>k<sub>t</sub></em><sup>2</sup>
+     * <em>G<sub>t</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>)
+     * &lt;<em>x<sub>i</sub></em></em><sup>2</sup>&gt;.
      * <br>
      * <br>
      * where
-     * <i>G<sub>t</sub></i>(<i>&phi;<sub>s</sub></i>,&Delta;<i>&phi;</i>) is the
+     * <em>G<sub>t</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>) is the
      * transverse 3-dimensional emittance growth function, and
-     * <i>x<sub>i</sub></i> represents the before-gap position for
+     * <em>x<sub>i</sub></em> represents the before-gap position for
      * <em>either</em>
      * transverse phase plane. The action of this method is described by the
      * original equation.
@@ -389,62 +389,62 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
      * <p>
      * The resulting action on the before gap and after gap transverse RMS
      * emittances,
-     * <i>&epsilon;<sub>t,i</sub></i> and
-     * <i>&epsilon;<sub>t,f</sub></i>, respectively, is now described by the
+     * <em>&epsilon;<sub>t,i</sub></em> and
+     * <em>&epsilon;<sub>t,f</sub></em>, respectively, is now described by the
      * following formula:
      * <br>
      * <br>
-     * &nbsp; <i>&epsilon;<sub>t,f</sub></i><sup>2</sup> =
-     * <i>&eta;</i><sup>2</sup><i>&epsilon;<sub>t,i</sub></i><sup>2</sup> +
-     * &Delta;<i>&epsilon;<sub>t,f</sub></i><sup>2</sup>
+     * &nbsp; <em>&epsilon;<sub>t,f</sub></em><sup>2</sup> =
+     * <em>&eta;</em><sup>2</sup><em>&epsilon;<sub>t,i</sub></em><sup>2</sup> +
+     * &Delta;<em>&epsilon;<sub>t,f</sub></em><sup>2</sup>
      * <br>
      * <br>
-     * where <i>&eta;</i> is the momentum compaction due to acceleration
+     * where <em>&eta;</em> is the momentum compaction due to acceleration
      * <br>
      * <br>
-     * <i>&eta;</i> &equiv;
-     * <i>&beta;<sub>i</sub>&gamma;<sub>i</sub></i>/<i>&beta;<sub>f</sub>&gamma;<sub>f</sub></i>
+     * <em>&eta;</em> &equiv;
+     * <em>&beta;<sub>i</sub>&gamma;<sub>i</sub></em>/<em>&beta;<sub>f</sub>&gamma;<sub>f</sub></em>
      * <br>
      * <br>
-     * and &Delta;<i>&epsilon;<sub>t,f</sub></i> is the emittance increase term
+     * and &Delta;<em>&epsilon;<sub>t,f</sub></em> is the emittance increase term
      * <br>
      * <br>
-     * &nbsp; &Delta;<i>&epsilon;<sub>t,f</sub></i><sup>2</sup> &equiv;
-     * &Delta;&lt;<i>x'<sub>f</sub></i><sup>2</sup>&gt;
-     * &lt;<i>x<sub>f</sub></i></i><sup>2</sup>&gt;<sup>2</sup>.
+     * &nbsp; &Delta;<em>&epsilon;<sub>t,f</sub></em><sup>2</sup> &equiv;
+     * &Delta;&lt;<em>x'<sub>f</sub></em><sup>2</sup>&gt;
+     * &lt;<em>x<sub>f</sub></em></em><sup>2</sup>&gt;<sup>2</sup>.
      * <br>
      * <br>
      * There are analogous formulas for the before and after gap longitudinal
      * plane emittances
-     * <i>&epsilon;<sub>z,i</sub></i> and
-     * <i>&epsilon;<sub>z,f</sub></i>, respectively, with
-     * <i>G<sub>t</sub></i>(<i>&phi;<sub>s</sub></i>,&Delta;<i>&phi;</i>)
+     * <em>&epsilon;<sub>z,i</sub></em> and
+     * <em>&epsilon;<sub>z,f</sub></em>, respectively, with
+     * <em>G<sub>t</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>)
      * replaced by
-     * <i>G<sub>z</sub></i>(<i>&phi;<sub>s</sub></i>,&Delta;<i>&phi;</i>) and
-     * <i>x</i><sub>(<i>f,i</i>)</sub> replaced by
-     * <i>z</i><sub>(<i>f,i</i>)</sub>.
+     * <em>G<sub>z</sub></em>(<em>&phi;<sub>s</sub></em>,&Delta;<em>&phi;</em>) and
+     * <em>x</em><sub>(<em>f,i</em>)</sub> replaced by
+     * <em>z</em><sub>(<em>f,i</em>)</sub>.
      * </p>
      * <p>
      * <strong>NOTES</strong>: CKA
      * <br>
      * &middot; Since we are modeling the RF gap as a thin lens, only the
-     * momentum (divergence angle) is modified, &lt;<i>x</i><sup>2</sup>&gt;,
-     * &lt;<i>y</i><sup>2</sup>&gt;, and &lt;<i>z</i><sup>2</sup>&gt; remain
-     * unaffected. Thus, &lt;<i>x<sub>f</sub></i><sup>2</sup>&gt; =
-     * &lt;<i>x<sub>i</sub></i><sup>2</sup>&gt; and
-     * &lt;<i>z<sub>f</sub></i><sup>2</sup>&gt; =
-     * &lt;<i>z<sub>i</sub></i><sup>2</sup>&gt; and may be computed as such in
+     * momentum (divergence angle) is modified, &lt;<em>x</em><sup>2</sup>&gt;,
+     * &lt;<em>y</em><sup>2</sup>&gt;, and &lt;<em>z</em><sup>2</sup>&gt; remain
+     * unaffected. Thus, &lt;<em>x<sub>f</sub></em><sup>2</sup>&gt; =
+     * &lt;<em>x<sub>i</sub></em><sup>2</sup>&gt; and
+     * &lt;<em>z<sub>f</sub></em><sup>2</sup>&gt; =
+     * &lt;<em>z<sub>i</sub></em><sup>2</sup>&gt; and may be computed as such in
      * the above.
      * <br>
-     * &middot; The &lt;<i>x'</i><sup>2</sup>&gt; element is modified by the
+     * &middot; The &lt;<em>x'</em><sup>2</sup>&gt; element is modified by the
      * formula
      * <br>
      * <br>
-     * &nbsp; &lt;<i>x'</i><sup>2</sup>&gt; = &lt;<i>x'</i><sup>2</sup>&gt; +
-     * <i>c<sub>eg</sub></i>&lt;<i>x</i><sup>2</sup>&gt;
+     * &nbsp; &lt;<em>x'</em><sup>2</sup>&gt; = &lt;<em>x'</em><sup>2</sup>&gt; +
+     * <em>c<sub>eg</sub></em>&lt;<em>x</em><sup>2</sup>&gt;
      * <br>
      * <br>
-     * where <i>c<sub>eg</sub></i> is the emittance growth coefficient. There
+     * where <em>c<sub>eg</sub></em> is the emittance growth coefficient. There
      * are similar equations for the other phase planes. The emittance growth
      * coefficients are computed in the base class
      * <code>EnvelopeTrackerBase</code> by the methods

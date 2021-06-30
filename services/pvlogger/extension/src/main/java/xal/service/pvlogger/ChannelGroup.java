@@ -233,7 +233,7 @@ public class ChannelGroup {
      * @return the wall clock timestamp of the last channel event
      */
     public Date getLastChannelEventTime() {
-        return lastChannelEventTime;
+        return (Date) lastChannelEventTime.clone();
     }
 
     /**

@@ -19,11 +19,11 @@ import xal.model.probe.traj.BunchProbeState;
  * </p>
  * <h3>Note:</h3>
  * <p>
- * The bunch charge <i>Q</i> is computed from the beam current <i>I</i> and
- * bunch frequency <i>f</i> as
+ * The bunch charge <em>Q</em> is computed from the beam current <em>I</em> and
+ * bunch frequency <em>f</em> as
  * <br>
  * <br>
- * &nbsp; &nbsp;  <i>Q</i> = <i>I/f</i>
+ * &nbsp; &nbsp;  <em>Q</em> = <em>I/f</em>
  * </p>
  *
  * @author Christopher K. Allen
@@ -76,7 +76,7 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
     /**
      * Set the bunch arrival time frequency.
      *
-     * @param f new bunch frequency in <b>Hz</b>
+     * @param f new bunch frequency in <strong>Hz</strong>
      */
     public void setBunchFrequency(double f) {
         this.stateCurrent.setBunchFrequency(f);
@@ -85,7 +85,7 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
     /**
      * Set the total beam current.
      *
-     * @param I new beam current in <b>Amperes</b>
+     * @param I new beam current in <strong>Amperes</strong>
      */
     public void setBeamCurrent(double I) {
         this.stateCurrent.setBeamCurrent(I);
@@ -94,7 +94,7 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
 //    /**
 //     *  Set the total beam charge 
 //     * 
-//     *  @param  Q   beam charge in <b>Coulombs</b>
+//     *  @param  Q   beam charge in <strong>Coulombs</strong>
 //     */
 //    public void setBeamCharge(double Q)     { dblBmQ = Q; };
     /*
@@ -119,7 +119,7 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
     /**
      * Returns the total beam current
      *
-     * @return beam current in <b>amps</b>
+     * @return beam current in <strong>amps</strong>
      */
     @Units("amps")
     public double getBeamCurrent() {
@@ -129,7 +129,7 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
 //    /**
 //     * Returns the betatron phase with space charge for all three phase planes.
 //     * 
-//     * @return vector (psix,psiy,psiz) of phases in <b>radians </b>
+//     * @return vector (psix,psiy,psiz) of phases in <strong>radians </strong>
 //     */
 //    public R3 getBetatronPhase() {
 //        return this.vecPhsBeta;
@@ -140,7 +140,7 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
     /**
      * Computes and returns the charge in each beam bunch
      *
-     * @return beam charge in <b>coulombs</b>
+     * @return beam charge in <strong>coulombs</strong>
      */
     public double bunchCharge() {
         return this.stateCurrent.bunchCharge();
@@ -148,24 +148,24 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
 
     /**
      * <p>
-     * Returns the generalized, three-dimensional beam perveance <i>K</i>. This
+     * Returns the generalized, three-dimensional beam perveance <em>K</em>. This
      * value is defined to be
      * </p>
      *
      * K = (Q/4*pi*e0)*(1/gamma^3*beta^2)*(|q|/ER)
      *
      * <p>
-     * where <i>Q</i> is the bunch charge, <i>e0</i> is the permittivity of free
-     * space, <i>gamma</i> is the relativistic factor, <i>beta</i> is the
-     * normalized design velocity, <i>q</i> is the charge of the beam particles
-     * and <i>ER</i> is the rest energy of the beam particles.
+     * where <em>Q</em> is the bunch charge, <em>e0</em> is the permittivity of free
+     * space, <em>gamma</em> is the relativistic factor, <em>beta</em> is the
+     * normalized design velocity, <em>q</em> is the charge of the beam particles
+     * and <em>ER</em> is the rest energy of the beam particles.
      * </p>
      *
      * <p>
-     * NOTES: - The value (1/4*pi*e0) is equal to 1e-7*c^2 where <i>c</i> is the
+     * NOTES: - The value (1/4*pi*e0) is equal to 1e-7*c^2 where <em>c</em> is the
      * speed of light.
      *
-     * @return generalized beam perveance <b>Units: radians^2/meter</b>
+     * @return generalized beam perveance <strong>Units: radians^2/meter</strong>
      *
      * @author Christopher K. Allen
      */
@@ -175,22 +175,22 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
 
     /**
      * <p>
-     * Returns the generalized, two-dimensional beam perveance <i>K</i>. This
+     * Returns the generalized, two-dimensional beam perveance <em>K</em>. This
      * value is defined to be
      * </p>
      *
      * K = (I/pi*e0)*(1/gamma^3*beta^3*c)*(|q|/ER)
      *
      * <p>
-     * where <i>I</i> is the current, <i>e0</i> is the permittivity of free
-     * space, <i>gamma</i> is the relativitic factor, <i>beta</i> is the
-     * normalized design velocity, <i>q</i> is the charge of the beam particles
-     * and <i>ER</i> is the rest energy of the beam partiles.
+     * where <em>I</em> is the current, <em>e0</em> is the permittivity of free
+     * space, <em>gamma</em> is the relativitic factor, <em>beta</em> is the
+     * normalized design velocity, <em>q</em> is the charge of the beam particles
+     * and <em>ER</em> is the rest energy of the beam partiles.
      * </p>
      *
      * <p>
      *
-     * @return generalized DC beam perveance <b>Units: radians^2/meter</b>
+     * @return generalized DC beam perveance <strong>Units: radians^2/meter</strong>
      *
      * @author Christopher K. Allen
      */
@@ -243,7 +243,7 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
 // Storage
 //
 ///** 
-//*  Returns the beam perveance <b>Units: radians^2/meter</b>
+//*  Returns the beam perveance <strong>Units: radians^2/meter</strong>
 //*  
 //*  TODO    This could be optimized (CKA)
 //*/

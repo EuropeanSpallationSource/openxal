@@ -43,7 +43,7 @@ public interface IElectromagnet /*extends IElement*/ {
     /**
      * Get the magnetic field strength of the electromagnet
      *
-     * @return magnetic field (in <b>Tesla</b>).
+     * @return magnetic field (in <strong>Tesla</strong>).
      */
     public double getMagField();
 
@@ -59,7 +59,7 @@ public interface IElectromagnet /*extends IElement*/ {
     /**
      * Set the magnetic field strength of the electromagnet.
      *
-     * @param dblField magnetic field (in <b>Tesla</b>).
+     * @param dblField magnetic field (in <strong>Tesla</strong>).
      */
     public void setMagField(double dblField);
 

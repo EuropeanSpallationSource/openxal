@@ -113,7 +113,7 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
     /**
      * Set the bunch arrival time frequency.
      *
-     * @param f new bunch frequency in <b>Hz</b>
+     * @param f new bunch frequency in <strong>Hz</strong>
      */
     public void setBunchFrequency(double f) {
         this.dlbBunFreq = f;
@@ -122,7 +122,7 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
     /**
      * Set the total beam current
      *
-     * @param I new beam current in <b>Amperes</b>
+     * @param I new beam current in <strong>Amperes</strong>
      */
     public void setBeamCurrent(double I) {
         dblBmCurr = I;
@@ -131,15 +131,15 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
     /**
      * <p>
      * Returns the bunch frequency, that is, the rate at which beam bunches pass
-     * a stationary point (in laboratory coordinates). The frequency <i>f</i> of
-     * the bunches determines the beam current <i>I</i>.
+     * a stationary point (in laboratory coordinates). The frequency <em>f</em> of
+     * the bunches determines the beam current <em>I</em>.
      * </p>
      * <p>
-     * The bunch frequency <i>f</i> is related to the beam current
-     * <i>I</i> and bunch charge <i>Q</i> as
+     * The bunch frequency <em>f</em> is related to the beam current
+     * <em>I</em> and bunch charge <em>Q</em> as
      * <br>
      * <br>
-     * &nbsp; &nbsp; <i>f</i> = <i>I/Q</i>
+     * &nbsp; &nbsp; <em>f</em> = <em>I/Q</em>
      * <br>
      * <br>
      * </p>
@@ -151,10 +151,10 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
     }
 
     /**
-     * Returns the total beam current, which is the bunch charge <i>Q</i> times
-     * the bunch frequency <i>f</i>.
+     * Returns the total beam current, which is the bunch charge <em>Q</em> times
+     * the bunch frequency <em>f</em>.
      *
-     * @return beam current in <b>amps</b>
+     * @return beam current in <strong>amps</strong>
      */
     public double getBeamCurrent() {
         return dblBmCurr;
@@ -163,7 +163,7 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
 //    /**
 //     * Returns the betatron phase of this bunch for all 3 phase places.
 //     * 
-//     * @return  vector (&psi;<sub><i>x</i></sub>, &psi;<sub><i>y</i></sub>, &psi;<sub><i>z</i></sub>) 
+//     * @return  vector (&psi;<sub><em>x</em></sub>, &psi;<sub><em>y</em></sub>, &psi;<sub><em>z</em></sub>) 
 //     *
 //     * @author Christopher K. Allen
 //     * @since  Oct 23, 2013
@@ -177,7 +177,7 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
     /**
      * Computes and returns the charge in each beam bunch
      *
-     * @return beam charge in <b>coulombs</b>
+     * @return beam charge in <strong>coulombs</strong>
      */
     public double bunchCharge() {
         if (this.getBunchFrequency() > 0.0) {
@@ -191,29 +191,29 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
 
     /**
      * <p>
-     * Returns the generalized, three-dimensional beam perveance <i>K</i>. This
+     * Returns the generalized, three-dimensional beam perveance <em>K</em>. This
      * value is defined to be
      * </p>
      *
-     * <i>K</i> =
-     * (<i>Q</i>/4*&pi;*<i>&epsilon;</i><sub>0</sub>)(1/&gamma;<sup>3</sup>&beta;<sup>2</sup>)(|<i>q</i>|/<i>E<sub>R</sub></i>)
+     * <em>K</em> =
+     * (<em>Q</em>/4*&pi;*<em>&epsilon;</em><sub>0</sub>)(1/&gamma;<sup>3</sup>&beta;<sup>2</sup>)(|<em>q</em>|/<em>E<sub>R</sub></em>)
      *
      * <p>
-     * where <i>Q</i> is the bunch charge, <i>&epsilon;</i><sub>0</sub> is the
-     * permittivity of free space, <i>&gamma;</i> is the relativistic factor,
-     * <i>&beta;</i> is the normalized design velocity, <i>q</i> is the
-     * individual particle charge and <i>E<sub>R</sub></i> is the rest energy of
+     * where <em>Q</em> is the bunch charge, <em>&epsilon;</em><sub>0</sub> is the
+     * permittivity of free space, <em>&gamma;</em> is the relativistic factor,
+     * <em>&beta;</em> is the normalized design velocity, <em>q</em> is the
+     * individual particle charge and <em>E<sub>R</sub></em> is the rest energy of
      * the beam particles.
      * </p>
      *
      * <h3>NOTES:</h3>
      * <p>
      * - The value (1/4&pi;&epsilon;<sub>0</sub>) is equal to
-     * 10<sup>-7</sup><i>c</i><sup>2</sup>
-     * where <i>c</i> is the speed of light.
+     * 10<sup>-7</sup><em>c</em><sup>2</sup>
+     * where <em>c</em> is the speed of light.
      * </p>
      *
-     * @return generalized beam perveance <b>Units: radians^2/meter</b>
+     * @return generalized beam perveance <strong>Units: radians^2/meter</strong>
      *
      * @author Christopher K. Allen
      */
@@ -234,29 +234,29 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
 
     /**
      * <p>
-     * Returns the generalized, two-dimensional beam perveance <i>K</i>. This
+     * Returns the generalized, two-dimensional beam perveance <em>K</em>. This
      * value is defined to be
      * </p>
      *
-     * <i>K</i> =
-     * (<i>I</i>/&pi;*<i>&epsilon;</i><sub>0</sub>)(1/&gamma;<sup>3</sup>&beta;<sup>3</sup><i>c</i>)(|<i>q</i>|/<i>E<sub>R</sub></i>)
+     * <em>K</em> =
+     * (<em>I</em>/&pi;*<em>&epsilon;</em><sub>0</sub>)(1/&gamma;<sup>3</sup>&beta;<sup>3</sup><em>c</em>)(|<em>q</em>|/<em>E<sub>R</sub></em>)
      *
      * <p>
-     * where <i>I</i> is the current, <i>&epsilon;</i><sub>0</sub> is the
-     * permittivity of free space, <i>&gamma;</i> is the relativistic factor,
-     * <i>&beta;</i> is the normalized design velocity, <i>q</i> is the
-     * individual particle charge and <i>E<sub>R</sub></i> is the rest energy of
+     * where <em>I</em> is the current, <em>&epsilon;</em><sub>0</sub> is the
+     * permittivity of free space, <em>&gamma;</em> is the relativistic factor,
+     * <em>&beta;</em> is the normalized design velocity, <em>q</em> is the
+     * individual particle charge and <em>E<sub>R</sub></em> is the rest energy of
      * the beam particles.
      * </p>
      *
      * <h3>NOTES:</h3>
      * <p>
      * - The value (1/&pi;&epsilon;<sub>0</sub>) is equal to
-     * 40<sup>-7</sup><i>c</i><sup>2</sup>
-     * where <i>c</i> is the speed of light.
+     * 40<sup>-7</sup><em>c</em><sup>2</sup>
+     * where <em>c</em> is the speed of light.
      * </p>
      *
-     * @return generalized beam perveance <b>Units: radians^2/meter</b>
+     * @return generalized beam perveance <strong>Units: radians^2/meter</strong>
      *
      * @author Christopher K. Allen
      */

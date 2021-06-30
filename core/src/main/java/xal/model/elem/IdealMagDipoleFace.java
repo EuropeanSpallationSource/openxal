@@ -89,7 +89,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * trajectory. This can be either at the magnet entrance or exit, the effect
      * is the same.
      *
-     * @param dblAngPole pole face angle in <b>radians</b>
+     * @param dblAngPole pole face angle in <strong>radians</strong>
      *
      */
     public void setPoleFaceAngle(double dblAngPole) {
@@ -99,7 +99,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
     /**
      * Set the gap height between the magnet poles.
      *
-     * @param dblGap gap size in <b>meters</b>
+     * @param dblGap gap size in <strong>meters</strong>
      */
     public void setGapHeight(double dblGap) {
         this.dblGap = dblGap;
@@ -108,21 +108,21 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
     /**
      * Set the second-order moment integral of the dipole fringe field as
      * described by D.C. Carey. The integral determines the amount of defocusing
-     * caused by the fringe field. Denoting the integral <i>I2</i>
+     * caused by the fringe field. Denoting the integral <em>I2</em>
      * it has the definition
      *
      * I2 := Integral{ B(z)[B0 - B(z)]/(g B0^2) }dz
      *
-     * where <i>g</i> is the gap height, <i>B0</i> is the hard edge value for
-     * the magnetic field, and <i>B(z)</i> is the true magnetic field along the
-     * design trajectory with path length parameter <i>z</i>. The integral taken
-     * from a location <i>z0</i> within the magnet where <i>B(z0)=B0</i>
-     * out to <i>z</i> = infinity.
+     * where <em>g</em> is the gap height, <em>B0</em> is the hard edge value for
+     * the magnetic field, and <em>B(z)</em> is the true magnetic field along the
+     * design trajectory with path length parameter <em>z</em>. The integral taken
+     * from a location <em>z0</em> within the magnet where <em>B(z0)=B0</em>
+     * out to <em>z</em> = infinity.
      *
      * Some examples values are the following: I2 = 0.1666 linear drop off I2 =
      * 0.4 clamped Rogowski coil I2 = 0.7 unclamped Rogoski coil
      *
-     * @param dblFrngMmt field moment I2 (<b>dimensionless</b>)
+     * @param dblFrngMmt field moment I2 (<strong>dimensionless</strong>)
      */
     public void setFringeIntegral(double dblFrngMmt) {
     }
@@ -162,7 +162,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
     /**
      * Return distance between dipole magnet poles.
      *
-     * @return gap height in <b>meters</b>
+     * @return gap height in <strong>meters</strong>
      */
     public double getGapHeight() {
         return this.dblGap;
@@ -173,7 +173,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * trajectory. This can be either at the magnet entrance or exit, the effect
      * is the same.
      *
-     * @return pole face angle in <b>radians</b>
+     * @return pole face angle in <strong>radians</strong>
      */
     public double getPoleFaceAngle() {
         return this.dblAngFace;
@@ -184,7 +184,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * described by D.C. Carey. The integral determines the amount of defocusing
      * caused by the fringe field.
      *
-     * @return second-order integral of fringe field (<b>dimensionless</b>)
+     * @return second-order integral of fringe field (<strong>dimensionless</strong>)
      *
      * @see IdealMagDipoleFace#setFringeIntegral(double)
      */

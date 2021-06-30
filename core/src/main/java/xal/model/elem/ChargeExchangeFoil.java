@@ -46,7 +46,7 @@ public class ChargeExchangeFoil extends ThinElement {
     /**
      * JavaBean constructor - creates a new uninitialized instance of Marker
      *
-     * <b>BE CAREFUL</b>
+     * <strong>BE CAREFUL</strong>
      */
     public ChargeExchangeFoil() {
         super(TYPE);

@@ -111,14 +111,14 @@ public interface IProbe {
     /**
      * Returns the current beam-line position of the probe
      *
-     * @return probe position (<b>meters</b>)
+     * @return probe position (<strong>meters</strong>)
      */
     public double getPosition();
 
     /**
      * Return the time elapsed since the probe began propagation.
      *
-     * @return elapsed time in <b>seconds</b>
+     * @return elapsed time in <strong>seconds</strong>
      */
     public double getTime();
 
@@ -132,8 +132,8 @@ public interface IProbe {
      * &nbsp; &nbsp; &phi; &#8796; &phi;<sub>0</sub> - &Delta;&phi;
      * <br/>
      * <br/>
-     * where &Delta;&phi; = 2&pi;<i>f</i>&Delta;<i/>t</i> is the phase delay due
-     * to elapsed time &Delta;<i>t</i>, <i>f</i> is the cavity resonant
+     * where &Delta;&phi; = 2&pi;<em>f</em>&Delta;<i/>t</em> is the phase delay due
+     * to elapsed time &Delta;<em>t</em>, <em>f</em> is the cavity resonant
      * frequency, and &phi;<sub>0</sub> is the operating phase of the cavity
      * (w.r.t. the synchronous particle).
      * </p>
@@ -150,14 +150,14 @@ public interface IProbe {
      * this could be the actual kinetic energy of a single constituent particle,
      * the average kinetic energy of an ensemble, the design energy, etc.
      *
-     * @return probe kinetic energy (<b>electron-volts</b>)
+     * @return probe kinetic energy (<strong>electron-volts</strong>)
      */
     public double getKineticEnergy();
 
     /**
      * Returns the probe velocity normalized to the speed of light.
      *
-     * @return normalized probe velocity v/c (<b>unitless</b>
+     * @return normalized probe velocity v/c (<strong>unitless</strong>
      */
     public double getBeta();
 
@@ -166,7 +166,7 @@ public interface IProbe {
      * The relativistic factor is given by the formulae gamma = (Kinetic
      * Energy/Rest Energy) + 1 = sqrt[1/(1-v^2/c^2)]
      *
-     * @return probe relativistic factor (<b>unitless</b>)
+     * @return probe relativistic factor (<strong>unitless</strong>)
      */
     public double getGamma();
 
@@ -243,14 +243,14 @@ public interface IProbe {
     /**
      * Set the current position of the probe along the beamline.
      *
-     * @param dblPos new probe position (<b>meters</b>)
+     * @param dblPos new probe position (<strong>meters</strong>)
      */
     public void setPosition(double dblPos);
 
     /**
      * Set the current time since the probe began propagating
      *
-     * @param dblTime new probe current time in <b>seconds</b>
+     * @param dblTime new probe current time in <strong>seconds</strong>
      *
      * @author jdg
      */
@@ -266,8 +266,8 @@ public interface IProbe {
      * &nbsp; &nbsp; &phi; &#8796; &phi;<sub>0</sub> - &Delta;&phi;
      * <br/>
      * <br/>
-     * where &Delta;&phi; = 2&pi;<i>f</i>&Delta;<i/>t</i> is the phase delay due
-     * to elapsed time &Delta;<i>t</i>, <i>f</i> is the cavity resonant
+     * where &Delta;&phi; = 2&pi;<em>f</em>&Delta;<i/>t</em> is the phase delay due
+     * to elapsed time &Delta;<em>t</em>, <em>f</em> is the cavity resonant
      * frequency, and &phi;<sub>0</sub> is the operating phase of the cavity
      * (w.r.t. the synchronous particle).
      * </p>
@@ -283,7 +283,7 @@ public interface IProbe {
     /**
      * Set the current kinetic energy of the probe.
      *
-     * @param dblW new probe kinetic energy (<b>electron-volts</b>)
+     * @param dblW new probe kinetic energy (<strong>electron-volts</strong>)
      *
      * @see #getKineticEnergy
      */
@@ -292,7 +292,7 @@ public interface IProbe {
     /**
      * Set the species charge.
      *
-     * @param dblQ new species charge (<b>e.u.</b>)
+     * @param dblQ new species charge (<strong>e.u.</strong>)
      *
      * @see #getSpeciesCharge
      */
@@ -301,7 +301,7 @@ public interface IProbe {
     /**
      * Set the species rest energy.
      *
-     * @param m new species rest energy (<b>eV</b>)
+     * @param m new species rest energy (<strong>eV</strong>)
      *
      * @see #getSpeciesRestEnergy
      */

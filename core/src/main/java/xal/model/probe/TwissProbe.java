@@ -26,10 +26,10 @@ import xal.model.probe.traj.TwissProbeState;
  * matrix for the beam and is represented as
  * <br>
  * <br>
- * &nbsp; &nbsp; <b>&chi;</b> = &lt; <b>zz</b><sup>T</sup>&gt;
+ * &nbsp; &nbsp; <strong>&chi;</strong> = &lt; <strong>zz</strong><sup>T</sup>&gt;
  * <br>
  * <br>
- * where <b>z </b>=(x,x',y,y',z,z',1) is the vector of homogeneous phase space
+ * where <strong>z </strong>=(x,x',y,y',z,z',1) is the vector of homogeneous phase space
  * coordinates, and &lt;.&gt; is the moment operator with respect to the beam
  * distribution.
  * </p>
@@ -143,8 +143,8 @@ public class TwissProbe extends BunchProbe<TwissProbeState> {
      * Set the betatron phase for each phase plane.
      *
      * @param vecPhase vector
-     * (&psi;<sub><i>x</i></sub>,&psi;<sub><i>y</i></sub>,&psi;<sub><i>z</i></sub>)
-     * of betatron phases in <b>radians </b>
+     * (&psi;<sub><em>x</em></sub>,&psi;<sub><em>y</em></sub>,&psi;<sub><em>z</em></sub>)
+     * of betatron phases in <strong>radians </strong>
      */
     public void setBetatronPhase(R3 vecPhase) {
         this.stateCurrent.setBetatronPhase(vecPhase);
@@ -197,8 +197,8 @@ public class TwissProbe extends BunchProbe<TwissProbeState> {
      * Returns the betatron phase with space charge for all three phase planes.
      *
      * @return vector
-     * (&psi;<sub><i>x</i></sub>,&psi;<sub><i>y</i></sub>,&psi;<sub><i>z</i></sub>)
-     * of betatron phases in <b>radians </b>
+     * (&psi;<sub><em>x</em></sub>,&psi;<sub><em>y</em></sub>,&psi;<sub><em>z</em></sub>)
+     * of betatron phases in <strong>radians </strong>
      */
     public R3 getBetatronPhase() {
         return this.stateCurrent.getBetatronPhase();

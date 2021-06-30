@@ -20,7 +20,7 @@ import java.util.Set;
  * Class for checking the connectivity of many EPICS channels simultaneously.
  *
  * <p>
- * <b>Ported from XAL on Jul 15, 2014.</b><br>
+ * <strong>Ported from XAL on Jul 15, 2014.</strong><br>
  * &middot; Jonathan M. Freed
  * </p>
  *

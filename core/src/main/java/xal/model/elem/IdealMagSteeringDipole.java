@@ -103,7 +103,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
      * of the kicker is completely unspecified.
      *
      * @param strId string identifier of element
-     * @param dblFld field strength (in <b>Tesla</b>)
+     * @param dblFld field strength (in <strong>Tesla</strong>)
      * @param enmOrient dipole orientation (ORIENT_HOR or ORIENT_VER)
      * @param dblLenEff effective length of dipole magnet
      */
@@ -119,7 +119,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
      * Set the effective length of the dipole magnet. This value, along with the
      * field strength, determines the action of the dipole.
      *
-     * @param dblLenEff effective length (in <b>meters</b>)
+     * @param dblLenEff effective length (in <strong>meters</strong>)
      */
     public void setEffLength(double dblLenEff) {
         this.dblLenEff = dblLenEff;
@@ -131,7 +131,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
     /**
      * Return the effective length of this dipole magnet
      *
-     * @return effective length (<b>in meters</b>)
+     * @return effective length (<strong>in meters</strong>)
      */
     public double getEffLength() {
         return dblLenEff;
@@ -142,7 +142,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
      * field strength, determines the action of the dipole.
      *
      * @param dblPosKick change in position going through magnet (in
-     * <b>meters</b>)
+     * <strong>meters</strong>)
      */
     public void setPositionKick(double dblPosKick) {
         dblPositionKick = dblPosKick;
@@ -152,7 +152,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
      * Set the kick angle of the dipole magnet. If this value, or position kick
      * is non-zero. This determines the dipole bend angle.
      *
-     * @param dblAngKick effective length (in <b>meters</b>)
+     * @param dblAngKick effective length (in <strong>meters</strong>)
      */
     public void setAngleKick(double dblAngKick) {
         dblAngleKick = dblAngKick;
@@ -164,7 +164,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
     /**
      * Return the position kick strength of this dipole magnet
      *
-     * @return kick displacement (<b>in meters</b>)
+     * @return kick displacement (<strong>in meters</strong>)
      */
     public double getPositionKick() {
         return dblPositionKick;
@@ -173,7 +173,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
     /**
      * Return the angle kick [rad]
      *
-     * @return angle kick (<b>in rad</b>)
+     * @return angle kick (<strong>in rad</strong>)
      */
     public double getAngleKick() {
         return dblAngleKick;

@@ -70,8 +70,8 @@ public class Rmxn extends BaseMatrix<Rmxn> {
      * </p>
      * <p>
      * The dimensions of the given Java double array determine the size of the
-     * matrix. An <i>m</i>x<i>n</i> Java double array creates an
-     * <i>m</i>x<i>n</i>
+     * matrix. An <em>m</em>x<em>n</em> Java double array creates an
+     * <em>m</em>x<em>n</em>
      * <code>Rmxn</code> array. If the argument is not fully allocated or
      * inconsistent, an exception is thrown.
      * </p>
@@ -204,13 +204,13 @@ public class Rmxn extends BaseMatrix<Rmxn> {
      * <p>
      * Non-destructive matrix-vector multiplication. The returned value is the
      * usual product of the given vector pre-multiplied by this matrix.
-     * Specifically, denote by <b>A</b> this matrix and by <b>x</b> the argument
-     * vector, then the components {<i>y<sub>i</sub></i>} of the returned vector
-     * <b>y</b> are given by
+     * Specifically, denote by <strong>A</strong> this matrix and by <strong>x</strong> the argument
+     * vector, then the components {<em>y<sub>i</sub></em>} of the returned vector
+     * <strong>y</strong> are given by
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>y</i><sub><i>i</i></sub> = &Sigma;<sub><i>j</i></sub>
-     * <i>A<sub>ij</sub>x<sub>j</sbu></i>
+     * &nbsp; &nbsp; <em>y</em><sub><em>i</em></sub> = &Sigma;<sub><em>j</em></sub>
+     * <em>A<sub>ij</sub>x<sub>j</sbu></em>
      * <br/>
      * <br/>
      * </p>

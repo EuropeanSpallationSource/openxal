@@ -36,10 +36,10 @@ import xal.smf.AcceleratorSeq;
  * Use Java virtual machine command line switch
  * <br/>
  * <br/>
- * &nbsp; &nbsp; <tt>java -agentlib:hprof=cpu=times</tt>
+ * &nbsp; &nbsp; <kbd>java -agentlib:hprof=cpu=times</kbd>
  * <br/>
  * <br/>
- * &nbsp; &nbsp; <tt>java -agentlib:hprof=heap=dump,format=b</tt>
+ * &nbsp; &nbsp; <kbd>java -agentlib:hprof=heap=dump,format=b</kbd>
  * <br/>
  * <br/>
  * to create <code>java.hprof.TMP</code> files for profiling.
@@ -179,7 +179,7 @@ public class TestRunOnlineModel {
      * Tests
      */
 //    /**
-//     * Test the <i>create default algorithm</i> method of the <code>{@link Tracker}</code>
+//     * Test the <em>create default algorithm</em> method of the <code>{@link Tracker}</code>
 //     * base class (see <code>{@link Tracker#newFromEditContext(AcceleratorSeq)}</code>).
 //     * This method has been deprecated, however, and should not be used. 
 //     *

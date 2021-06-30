@@ -15,18 +15,18 @@ import xal.tools.math.IIndex;
  * <p>
  * Class <code>TransPhaseVector</code> represents transverse phase coordinates.
  * This set of phase coordinates is isomorphic to
- * <b>R</b><sup>4</sup>, however, in order to represent translations of phase
+ * <strong>R</strong><sup>4</sup>, however, in order to represent translations of phase
  * coordinates by matrix multiplication, this class is embedded in the space
- * <b>R</b><sup>4</sup>&times;{1} &sub; <b>R</b><sup>5</sup>
+ * <strong>R</strong><sup>4</sup>&times;{1} &sub; <strong>R</strong><sup>5</sup>
  * of "homogeneous coordinates". Matrix multiplication is performed by elements
  * of the class <code>{@link TrnsPhaseMatrix}</code>.
  * <p>
  * </p>
  * The last coordinate of all homogeneous (transverse) phase vectors
- * <b>v</b> &in; <b>R</b><sup>5</sup>
- * is 1. Thus <b>v</b> = (<i>x,x',y,y'</i>,1). Likewise, the (5,5) element of
- * any matrix <b>&Phi;</b> &in; <b>R</b><sup>4&times;4</sup>&times;{1} &sub;
- * <b>R</b><sup>5&times;5</sup> representing an operator in homogeneous
+ * <strong>v</strong> &in; <strong>R</strong><sup>5</sup>
+ * is 1. Thus <strong>v</strong> = (<em>x,x',y,y'</em>,1). Likewise, the (5,5) element of
+ * any matrix <strong>&Phi;</strong> &in; <strong>R</strong><sup>4&times;4</sup>&times;{1} &sub;
+ * <strong>R</strong><sup>5&times;5</sup> representing an operator in homogeneous
  * coordinates must be 1.
  * </p>
  *
@@ -215,7 +215,7 @@ public class TrnsPhaseVector extends BaseVector<TrnsPhaseVector> {
      * </p>
      * <p>
      * The token string argument is assumed to be one-dimensional and delimited
-     * by any of the characters <tt>" ,()[]{}"</tt> Repeated, contiguous
+     * by any of the characters <kbd>" ,()[]{}"</kbd> Repeated, contiguous
      * delimiters are parsed together. This conditions allows a variety of
      * parseable string representations. For example,
      * <br>
@@ -277,7 +277,7 @@ public class TrnsPhaseVector extends BaseVector<TrnsPhaseVector> {
      * Object Method Overrides
      */
     /**
-     * Creates and returns a deep copy of <b>this</b> vector.
+     * Creates and returns a deep copy of <strong>this</strong> vector.
      *
      * @see xal.tools.math.BaseVector#clone()
      *

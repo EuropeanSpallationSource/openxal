@@ -22,7 +22,7 @@
  * <p>
  * There are, however, methods with the same name in difference processing
  * classes and it is important to point out that the results of these
- * computations <b>depend upon context</b>. For example, the method
+ * computations <strong>depend upon context</strong>. For example, the method
  * </code>{@link CalculationsOnRings#computeFixedOrbit(xal.model.probe.traj.TransferMapState)}</code>
  * does not return the same quantity as
  * <code>{@link CalculationsOnParticles#computeFixedOrbit(xal.model.probe.traj.ParticleProbeState)}</code>.
@@ -58,19 +58,19 @@
  * function are listed below
  * <br>
  * <br>
- * <b><code>CalculationsOnParticles</code></b>: Provides processing functions
+ * <strong><code>CalculationsOnParticles</code></strong>: Provides processing functions
  * appropriate for single particle simulation data. Also has methods available
  * for processing data that was taken for a periodic system between two period
  * locations. The simulation data is of type
  * <code>Trajectory&lt;ParticleProbeState&gt;</code>.
  * <br>
  * <br>
- * <b><code>CalculationsOnMachines</code></b>: This class is concerned with the
+ * <strong><code>CalculationsOnMachines</code></strong>: This class is concerned with the
  * calculation of machine properties without regard to any beam propagation. The
  * simulation data is of type <code>Trajectory&lt;TransferMapState&gt;</code>.
  * <br>
  * <br>
- * <b><code>CalculationsOnRings</code></b>: Computes ring properties and
+ * <strong><code>CalculationsOnRings</code></strong>: Computes ring properties and
  * parameters. This class is a super class of
  * <code>CalculationsOnMachines</code>, since a ring is a machine. Consequently
  * the simulation data is also of type
@@ -79,7 +79,7 @@
  * for the calculations to have context.
  * <br>
  * <br>
- * <b><code>CalculationsOnBeams</code></b>: Computes parameters for a beam
+ * <strong><code>CalculationsOnBeams</code></strong>: Computes parameters for a beam
  * itself. These include collective properties of a beam bunch. The simulation
  * data for this class is of type
  * <code>Trajectory&lt;EnvelopeProbeState&gt</code>.
@@ -96,8 +96,8 @@
  * interfaces but where the underlying computation engine used depends upon the
  * type of simulation data provided. After creating the class the developer
  * specifies which computational engine is to be used with which data. The class
- * <code>SimpleSimResultsAdaptor</code> defines these computation engines <i>a
- * priori</i>. The <code>CalculationsOnRings</code> class is used for simulation
+ * <code>SimpleSimResultsAdaptor</code> defines these computation engines <em>a
+ * priori</em>. The <code>CalculationsOnRings</code> class is used for simulation
  * data of type <code>Trajectory&lt;TransferMapState&gt;</code>,
  * <code>CalculationsOnParticles</code> is used for type
  * <code>Trajectory&lt;ParticleProbeState&gt</code>, and

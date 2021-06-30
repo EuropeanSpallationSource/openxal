@@ -18,7 +18,7 @@ import xal.tools.beam.PhaseMatrix;
 /**
  * <p>
  * User element representing a general beamline element. Arbitrary beamline
- * elements are specified by providing the transfer matrix <b>generator</b>,
+ * elements are specified by providing the transfer matrix <strong>generator</strong>,
  * elapsed time, and energy gain a priori. Note that for this element the
  * transfer matrix, elapsed time, and energy gain are independent of any probe
  * objects. Note also that the generator for the transfer matrix is specified,
@@ -29,14 +29,14 @@ import xal.tools.beam.PhaseMatrix;
  * may be applied throughout the element.
  * </p>
  * <p>
- * Denoting the generator matrix as <b>A</b>, then the transfer matrix
- * <b>M</b>(<i>s</i>) for a section of length <i>s</i> is given by
+ * Denoting the generator matrix as <strong>A</strong>, then the transfer matrix
+ * <strong>M</strong>(<em>s</em>) for a section of length <em>s</em> is given by
  * <br>
  * <br>
- * &nbsp; &nbsp; <b>M</b>(<i>s</i>) = <i>e</i><sup><i>s</i><b>A</b></sup>
+ * &nbsp; &nbsp; <strong>M</strong>(<em>s</em>) = <em>e</em><sup><em>s</em><strong>A</strong></sup>
  * <br>
  * <br>
- * where <i>e</i><sup><b>A</b></sup> is the matrix exponential.
+ * where <em>e</em><sup><strong>A</strong></sup> is the matrix exponential.
  * </p>
  * <h3>NOTE:</h3>
  * <p>
@@ -44,9 +44,9 @@ import xal.tools.beam.PhaseMatrix;
  * Therefore
  * <br>
  * <br>
- * &nbsp; &nbsp;  <b>M</b>(<i>s</i>) = <b>I</b> + <i>s</i><b>A</b>
- * + &frac12;<i>s</i><sup>2</sup><b>A</b><sup>2</sup>
- * ( + <i>O</i>(<i>s</i><sup>3</sup>) )
+ * &nbsp; &nbsp;  <strong>M</strong>(<em>s</em>) = <strong>I</strong> + <em>s</em><strong>A</strong>
+ * + &frac12;<em>s</em><sup>2</sup><strong>A</strong><sup>2</sup>
+ * ( + <em>O</em>(<em>s</em><sup>3</sup>) )
  * <br>
  * <br>
  * </p>
@@ -89,10 +89,10 @@ public class ThickMatrix extends ThickElement {
      * Creates a new instance of ThickMatrix
      *
      * @param strId identifier of this ThickMatrix object
-     * @param dblLen length of the element (<b>in meters</b>)
+     * @param dblLen length of the element (<strong>in meters</strong>)
      * @param matPhiSub 7x7 transfer matrix for a subelement
-     * @param dblDelW energy gain imparted of this element (<b>in
-     * electron-volts</b>)
+     * @param dblDelW energy gain imparted of this element (<strong>in
+     * electron-volts</strong>)
      */
     public ThickMatrix(String strId, double dblLen, PhaseMatrix matPhiSub, double dblDelW) {
         super(TYPE, strId, dblLen);
@@ -106,7 +106,7 @@ public class ThickMatrix extends ThickElement {
      * initialized to zero.
      *
      * @param strId identifier of this ThickMatrix object
-     * @param dblLen length of the element (<b>in meters</b>)
+     * @param dblLen length of the element (<strong>in meters</strong>)
      * @param matPhiSub 7x7 transfer matrix for a subelement
      */
     public ThickMatrix(String strId, double dblLen, PhaseMatrix matPhiSub) {
@@ -119,7 +119,7 @@ public class ThickMatrix extends ThickElement {
      * the 7x7 identity.
      *
      * @param strId identifier of this ThickMatrix object
-     * @param dblLen length of the element (<b>in meters</b>)
+     * @param dblLen length of the element (<strong>in meters</strong>)
      */
     public ThickMatrix(String strId, double dblLen) {
         this(strId, dblLen, PhaseMatrix.identity(), 0.0);
@@ -129,7 +129,7 @@ public class ThickMatrix extends ThickElement {
      * JavaBean constructor - creates a new uninitialized instance of
      * ThickMatrix
      *
-     * <b>BE CAREFUL</b>
+     * <strong>BE CAREFUL</strong>
      */
     public ThickMatrix() {
         super(TYPE);
@@ -139,7 +139,7 @@ public class ThickMatrix extends ThickElement {
      * Set the total elapsed time for all probes to propagate the entire
      * element.
      *
-     * @param dblDelT elapsed time through element in <b>seconds</b>
+     * @param dblDelT elapsed time through element in <strong>seconds</strong>
      */
     public void setElapsedTime(double dblDelT) {
         this.dblDelT = dblDelT;
@@ -149,16 +149,16 @@ public class ThickMatrix extends ThickElement {
      * Set the total energy gain imparted to any probe propagating through
      * entire element.
      *
-     * @param dblDelW energy gain imparted to all probes (<b>in
-     * electron-volts</b>)
+     * @param dblDelW energy gain imparted to all probes (<strong>in
+     * electron-volts</strong>)
      */
     public void setEnergyGain(double dblDelW) {
         this.dblDelW = dblDelW;
     }
 
     /**
-     * Set the transfer map generator <b>A</b> for the element. The transfer map
-     * <b>M</b>(s) over a distance <i>s</i> is then given by
+     * Set the transfer map generator <strong>A</strong> for the element. The transfer map
+     * <strong>M</strong>(s) over a distance <em>s</em> is then given by
      *
      * M(s) = Exp(s*A)
      *
@@ -184,9 +184,9 @@ public class ThickMatrix extends ThickElement {
      * where dblDelT is the value given to <code>#setElapsedTime</code>.
      *
      * @param probe dummy argument
-     * @param dblLen length of subsection to propagate through <b>meters</b>
+     * @param dblLen length of subsection to propagate through <strong>meters</strong>
      *
-     * @return the elapsed time through section<b>Units: seconds</b>
+     * @return the elapsed time through section<strong>Units: seconds</strong>
      */
     @Override
     public double elapsedTime(IProbe probe, double dblLen) {
@@ -204,7 +204,7 @@ public class ThickMatrix extends ThickElement {
      * @param dblLen dummy argument
      * @param probe dummy argument
      *
-     * @return energy gain for each subelement (<b>in electron-volts</b>)
+     * @return energy gain for each subelement (<strong>in electron-volts</strong>)
      */
     @Override
     public double energyGain(IProbe probe, double dblLen) {
@@ -219,7 +219,7 @@ public class ThickMatrix extends ThickElement {
      * That is the matrix exponential function is approximated by its first
      * three terms.
      *
-     * @param dblLen propagation length in <b>meters</b>
+     * @param dblLen propagation length in <strong>meters</strong>
      * @param probe dummy argument
      *
      * @return computed transfer map

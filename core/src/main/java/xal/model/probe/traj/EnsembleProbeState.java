@@ -104,7 +104,7 @@ public class EnsembleProbeState extends BunchProbeState<EnsembleProbeState> {
     }
 
     /**
-     * Set the state to the <b>value</b> of the argument
+     * Set the state to the <strong>value</strong> of the argument
      *
      * NOTE: the copy operation can be expansive for large
      * <code>Ensemble</code>s

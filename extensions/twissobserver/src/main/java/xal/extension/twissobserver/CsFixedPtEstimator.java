@@ -27,7 +27,7 @@ import java.util.logging.Level;
  * Computes the Twiss parameters from wire scanner data.
  * </p>
  * <p>
- * Computes the covariance matrix <b>&sigma;</b> of second moments at the given
+ * Computes the covariance matrix <strong>&sigma;</strong> of second moments at the given
  * device location for the given beam current using the given RMS envelope data.
  * The algorithm is started by using the zero-current value covariance matrix as
  * the initialize guess (see
@@ -44,8 +44,8 @@ import java.util.logging.Level;
  * </p>
  * <h3>NOTES:</h3>
  * <p>
- * &middot; Bunch charge <i>Q</i> is given by beam current <i>I</i> divided by
- * machine frequency <i>f</i>. Specifically, <i>Q</i> = <i>I</i>/<i>f</i>.
+ * &middot; Bunch charge <em>Q</em> is given by beam current <em>I</em> divided by
+ * machine frequency <em>f</em>. Specifically, <em>Q</em> = <em>I</em>/<em>f</em>.
  * </p>
  *
  * @author Eric Dai
@@ -383,7 +383,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
      * <code>{@link #computeCovarianceFiniteCurrent(String, double, ArrayList)}</code>).
      *
      * @param cntMaxIter maximum number of allowed search iterations
-     * @param dblMaxError maximum <i>L</i><sub>2</sub> convergence error in the
+     * @param dblMaxError maximum <em>L</em><sub>2</sub> convergence error in the
      * solution
      * @param dblAlpha the default value of the fixed point iteration tuning
      * parameter
@@ -441,14 +441,14 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
      * the next solution iterate in Method 1. A value of 0 ignores the new value
      * completely while a value of 1 ignores completely the previous iterate.
      * This parameter is designed to slow down convergence for the sake of
-     * stability. Let <b>F</b>(<b>&sigma;</b><sub><i>i</i></sub>) be the
+     * stability. Let <strong>F</strong>(<strong>&sigma;</strong><sub><em>i</em></sub>) be the
      * iteration map then the next solution iterate
-     * <b>&sigma;</b><sub><i>i</i>+1</sub> is
+     * <strong>&sigma;</strong><sub><em>i</em>+1</sub> is
      * <br>
      * <br>
-     * &nbsp; &nbsp;  <b>&sigma;</b><sub><i>i</i>+1</sub> = (1 -
-     * &alpha;)<b>&sigma;</b><sub><i>i</i></sub>
-     * + &alpha;<b>F</b>(<b>&sigma;</b><sub><i>i</i></sub>) .
+     * &nbsp; &nbsp;  <strong>&sigma;</strong><sub><em>i</em>+1</sub> = (1 -
+     * &alpha;)<strong>&sigma;</strong><sub><em>i</em></sub>
+     * + &alpha;<strong>F</strong>(<strong>&sigma;</strong><sub><em>i</em></sub>) .
      * <br>
      * <br>
      * </p>
@@ -501,7 +501,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
      */
     /**
      * <p>
-     * Computes the covariance matrix <b>&sigma;</b> of second moments at the
+     * Computes the covariance matrix <strong>&sigma;</strong> of second moments at the
      * given device location for the given beam current using the given RMS
      * envelope data. The algorithm is started by using the zero-current value
      * covariance matrix as the initialize guess (see
@@ -511,9 +511,9 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
      * </p>
      * <h3>NOTE:</h3>
      * <p>
-     * &middot; Bunch charge <i>Q</i> is given by beam current <i>I</i> divided
-     * by machine frequency <i>f</i>. Specifically, <i>Q</i> =
-     * <i>I</i>/<i>f</i>.
+     * &middot; Bunch charge <em>Q</em> is given by beam current <em>I</em> divided
+     * by machine frequency <em>f</em>. Specifically, <em>Q</em> =
+     * <em>I</em>/<em>f</em>.
      * </p>
      *
      * @param strRecDevId ID of the device where the reconstruction is to be
@@ -547,7 +547,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
 
     /**
      * <p>
-     * Computes the covariance matrix <b>&sigma;</b> of second moments at the
+     * Computes the covariance matrix <strong>&sigma;</strong> of second moments at the
      * given device location for the given beam current for the given RMS
      * envelope data. The covariance matrix is computed iteratively using the
      * given covariance matrix <var>matSigInit</var> as the initial guess. Thus,
@@ -556,9 +556,9 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
      * </p>
      * <h3>NOTE:</h3>
      * <p>
-     * &middot; Bunch charge <i>Q</i> is given by beam current <i>I</i> divided
-     * by machine frequency <i>f</i>. Specifically, <i>Q</i> =
-     * <i>I</i>/<i>f</i>.
+     * &middot; Bunch charge <em>Q</em> is given by beam current <em>I</em> divided
+     * by machine frequency <em>f</em>. Specifically, <em>Q</em> =
+     * <em>I</em>/<em>f</em>.
      * </p>
      *
      * @param strRecDevId ID of the device where the reconstruction is to be

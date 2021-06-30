@@ -11,29 +11,29 @@ package xal.extension.wirescan.profile;
  * Computes statistical properties of profile data.</p>
  *
  * <p>
- * Define the weighted, central summation <i>S<sub>n</sub></i>(<i>&mu;</i>) as
+ * Define the weighted, central summation <em>S<sub>n</sub></em>(<em>&mu;</em>) as
  * <br>
- * <br>&nbsp;&nbsp;<i>S<sub>n</sub></i>(<i>&mu;</i>) =
- * &Sigma;<sub><i>k</i></sub>(<i>k -
- * &mu;</i>)<sup><i>n</i></sup><i>f<sub>k</sub></i>
+ * <br>&nbsp;&nbsp;<em>S<sub>n</sub></em>(<em>&mu;</em>) =
+ * &Sigma;<sub><em>k</em></sub>(<em>k -
+ * &mu;</em>)<sup><em>n</em></sup><em>f<sub>k</sub></em>
  * <br>
  * <br>
- * where {<i>f<sub>k</sub></i>} is the set of discrete samples for a projection
+ * where {<em>f<sub>k</sub></em>} is the set of discrete samples for a projection
  * view (that is, the discrete function representing the projection). Then the
  * quantities provided by this class are typically some ratio of the
- * <i>S<sub>n</sub></i>(<i>&mu;</i>) for a combination of parameters
- * (<i>n,&mu;</i>). For example, the <i>n</i><sup>th</sup> central moment
- * moment, denoted &lt;(<i>x - &mu;</i>)<i><sup>n</sup></i>&gt;, is defined as
+ * <em>S<sub>n</sub></em>(<em>&mu;</em>) for a combination of parameters
+ * (<em>n,&mu;</em>). For example, the <em>n</em><sup>th</sup> central moment
+ * moment, denoted &lt;(<em>x - &mu;</em>)<em><sup>n</sup></em>&gt;, is defined as
  * <br>
- * <br>&nbsp;&nbsp; &lt;(<i>x - &mu;</i>)<i><sup>n</sup></i>&gt; =
- * <i>S<sub>n</sub></i>(<i>&mu;</i>)/<i>S</i><sub>0</sub>(0)
+ * <br>&nbsp;&nbsp; &lt;(<em>x - &mu;</em>)<em><sup>n</sup></em>&gt; =
+ * <em>S<sub>n</sub></em>(<em>&mu;</em>)/<em>S</em><sub>0</sub>(0)
  * <br>
  * <br>
- * Note that the units of the moments will be in terms of <b>samples</b> (see
+ * Note that the units of the moments will be in terms of <strong>samples</strong> (see
  * below). For example, the value returned by the method
  * <code>getCenter(ProfileData.Angle)</code> is the index location of the center
  * of mass. Note further that although the indices are integer valued, the
- * statistic values in units of <b>samples</b>
+ * statistic values in units of <strong>samples</strong>
  * need not be.
  * </p>
  *
@@ -42,11 +42,11 @@ package xal.extension.wirescan.profile;
  * <br>- The quantities provided by this class are for discrete system. When
  * considering these systems as approximations for continuous systems (sampled
  * data systems) then we must "unnormalized" the results by the sampling
- * interval <i>h</i>. For example, to convert <(<i>x -
- * &mu;</i>)<i><sup>n</sup></i>> to the continuous approximation the value must
- * be multiplied by <i>h<sup>n</sup></i>.
- * <br>- The above conversions are <b>not</b> provided by methods in this class.
- * There are, however, methods for computing the sampling length <i>h</i> for
+ * interval <em>h</em>. For example, to convert <(<em>x -
+ * &mu;</em>)<em><sup>n</sup></em>> to the continuous approximation the value must
+ * be multiplied by <em>h<sup>n</sup></em>.
+ * <br>- The above conversions are <strong>not</strong> provided by methods in this class.
+ * There are, however, methods for computing the sampling length <em>h</em> for
  * the various axes and actuator positions. The rationale for not providing this
  * service at present is the profile data sets might not contain the axis
  * positions, as these are version-sensitive data. Thus, such methods have the
@@ -54,7 +54,7 @@ package xal.extension.wirescan.profile;
  * <br>- Higher-order moments are highly sensitive to signal noise.
  * <br>- Strongly peaked distributions create numerically unstable computations.
  * In general, for accurate numerical results the distribution should have a
- * standard deviation <i>&sigma;</i> &gt; 2. Standard deviations smaller than
+ * standard deviation <em>&sigma;</em> &gt; 2. Standard deviations smaller than
  * this value imply that the sampling interval is too large.
  * </p>
  *
@@ -105,11 +105,11 @@ public class ProfileDataStatistics {
      * - The returned value is for a discrete function and must be treated as a
      * "normalized" quantity when considering sampled data from a continuous
      * system. To convert to the continuous approximation the returned value
-     * must be multiplied by <i>h</i> where <i>h</i> is the sampling interval.
+     * must be multiplied by <em>h</em> where <em>h</em> is the sampling interval.
      * </p>
      *
      * @param view projection data
-     * @return the value <i>S<sub>0</sub></i>(<i>0</i>)
+     * @return the value <em>S<sub>0</sub></em>(<em>0</em>)
      */
     public double getMass(ProfileData.Angle view) {
         return this.arrMass[view.getIndex()];
@@ -126,17 +126,17 @@ public class ProfileDataStatistics {
      * <br>- The returned value is for a discrete function and must be treated
      * as a "normalized" quantity when considering sampled data from a
      * continuous system. To convert to the continuous approximation for
-     * <<i>x</i>> the returned value must be multiplied by <i>h</i> where
-     * <i>h</i> is the sampling interval.
+     * <<em>x</em>> the returned value must be multiplied by <em>h</em> where
+     * <em>h</em> is the sampling interval.
      * <br>- To convert to the center of the projection axis indicated by
-     * <var>view</var>, the returned value must be multiply by <i>h</i> then
-     * offset by <i>x</i><sub>0</sub>, the left-hand axis end-point.
+     * <var>view</var>, the returned value must be multiply by <em>h</em> then
+     * offset by <em>x</em><sub>0</sub>, the left-hand axis end-point.
      * </p>
      *
      * @param view projection data
      *
      * @return the value
-     * <i>S<sub>1</sub></i>(<i>0</i>)/<i>S<sub>0</sub></i>(<i>0</i>) in
+     * <em>S<sub>1</sub></em>(<em>0</em>)/<em>S<sub>0</sub></em>(<em>0</em>) in
      */
     public double getCenter(ProfileData.Angle view) {
         return this.arrCentr[view.getIndex()];
@@ -144,7 +144,7 @@ public class ProfileDataStatistics {
 
     /**
      * Return the initial actuator position, that is the actuator location
-     * <i>x</i><sub>0</sub> of the first sample.
+     * <em>x</em><sub>0</sub> of the first sample.
      *
      * @return initial position of the actuator
      */
@@ -154,7 +154,7 @@ public class ProfileDataStatistics {
 
     /**
      * Return the initial axis position for the given projection angle, that is
-     * the axis location <i>x</i><sub>0</sub> of the first sample.
+     * the axis location <em>x</em><sub>0</sub> of the first sample.
      *
      * @return initial axis position for the given viewing angle
      */
@@ -167,17 +167,17 @@ public class ProfileDataStatistics {
      * Compute and return the average step size between actuator positions for
      * the entire sample projection sample set. This value is given by
      * <br>
-     * <br>&nbsp;&nbsp; (<i>x<sub>N-</i>1</sub> -
-     * <i>x</i><sub>0</sub>)/(<i>N</i> - 1)
+     * <br>&nbsp;&nbsp; (<em>x<sub>N-</em>1</sub> -
+     * <em>x</em><sub>0</sub>)/(<em>N</em> - 1)
      * <br>
      * <br>
-     * where <i>N</i> is the number of sample points and {<i>x<sub>k</sub></i>}
+     * where <em>N</em> is the number of sample points and {<em>x<sub>k</sub></em>}
      * are the actuator positions.
      * </p>
      * <p>
      * NOTE:
      * <br> - The above result is the same as computing the steps size
-     * <i>h<sub>k</sub></i> = <i>x<sub>k</sub></i> - <i>x<sub>k-</i>1</sub>
+     * <em>h<sub>k</sub></em> = <em>x<sub>k</sub></em> - <em>x<sub>k-</em>1</sub>
      * between each sample then averaging the set.
      *
      * @return average step length between actuator positions
@@ -196,17 +196,17 @@ public class ProfileDataStatistics {
      * Compute and return the average step size between axis sample positions
      * for the given projection view. This value is given by
      * <br>
-     * <br>&nbsp;&nbsp; (<i>x<sub>N-</i>1</sub> -
-     * <i>x</i><sub>0</sub>)/(<i>N</i> - 1)
+     * <br>&nbsp;&nbsp; (<em>x<sub>N-</em>1</sub> -
+     * <em>x</em><sub>0</sub>)/(<em>N</em> - 1)
      * <br>
      * <br>
-     * where <i>N</i> is the number of sample points and {<i>x<sub>k</sub></i>}
+     * where <em>N</em> is the number of sample points and {<em>x<sub>k</sub></em>}
      * are the axis positions.
      * </p>
      * <p>
      * NOTE:
      * <br> - The above result is the same as computing the steps size
-     * <i>h<sub>k</sub></i> = <i>x<sub>k</sub></i> - <i>x<sub>k-</i>1</sub>
+     * <em>h<sub>k</sub></em> = <em>x<sub>k</sub></em> - <em>x<sub>k-</em>1</sub>
      * between each sample then averaging the set.
      *
      * @return average step length between axis sample positions
@@ -222,11 +222,11 @@ public class ProfileDataStatistics {
 
     /**
      * <p>
-     * Return the (normalized) standard deviation <i>&sigma;</i> of the given
+     * Return the (normalized) standard deviation <em>&sigma;</em> of the given
      * projection. The standard deviation is defined as
      * <br>
-     * <br>&nbsp;&nbsp; <i>&sigma;</i> = &lt;(<i>x -
-     * &mu;</i>)<sup>2</sup>&gt;<sup>&frac12;</sup>
+     * <br>&nbsp;&nbsp; <em>&sigma;</em> = &lt;(<em>x -
+     * &mu;</em>)<sup>2</sup>&gt;<sup>&frac12;</sup>
      * <br>
      * <br>
      * </p>
@@ -234,15 +234,15 @@ public class ProfileDataStatistics {
      * NOTE: <br>
      * - The returned value is for a discrete function and must be treated as a
      * "normalized" quantity when considering sampled data from a continuous
-     * system. To convert to the continuous approximation for <i>&sigma;</i> the
-     * returned value must be multiplied by <i>h</i> where <i>h</i> is the
+     * system. To convert to the continuous approximation for <em>&sigma;</em> the
+     * returned value must be multiplied by <em>h</em> where <em>h</em> is the
      * sampling interval.
      * <br>
      * - Because of signal noise and numerical rounding it is possible to
-     * compute a value for &lt;(<i>x - &mu;</i>)<sup>2</sup>&gt; which is less
+     * compute a value for &lt;(<em>x - &mu;</em>)<sup>2</sup>&gt; which is less
      * than zero. Such an occurrence indicates either that sampling interval
-     * <i>h</i> is too large, or that the signal-to-noise ratio is too small to
-     * permit meaningful results.  <b>A zero value is returned</b> in this
+     * <em>h</em> is too large, or that the signal-to-noise ratio is too small to
+     * permit meaningful results.  <strong>A zero value is returned</strong> in this
      * situation.
      * </p>
      *
@@ -269,10 +269,10 @@ public class ProfileDataStatistics {
     /**
      * <p>
      * Compute and return the indicated moment for the given projection data.
-     * The value of the returned moment <<i>x<sup>n</sup></i>> is defined as
+     * The value of the returned moment <<em>x<sup>n</sup></em>> is defined as
      * <br>
-     * <br>&nbsp;&nbsp; <<i>x<sup>n</sup></i>> =
-     * <i>S<sub>n</sub></i>(0)/<i>S<sub>0</sub></i>(0)
+     * <br>&nbsp;&nbsp; <<em>x<sup>n</sup></em>> =
+     * <em>S<sub>n</sub></em>(0)/<em>S<sub>0</sub></em>(0)
      * <br>
      * </p>
      * <p>
@@ -280,8 +280,8 @@ public class ProfileDataStatistics {
      * - The returned value is for a discrete function and must be treated as a
      * "normalized" quantity when considering sampled data from a continuous
      * system. To convert to the continuous approximation for
-     * <<i>x<sup>n</sup></i>> the returned value must be multiplied by
-     * <i>h<sup>n</sup></i> where <i>h</i> is the sampling interval.
+     * <<em>x<sup>n</sup></em>> the returned value must be multiplied by
+     * <em>h<sup>n</sup></em> where <em>h</em> is the sampling interval.
      * </p>
      *
      * @param intOrder moment order
@@ -299,20 +299,20 @@ public class ProfileDataStatistics {
     /**
      * <p>
      * Compute and return the indicated central moment for the given projection
-     * data. The value of the returned moment <(<i>x -
-     * &mu;</i>)<i><sup>n</sup></i>> is defined as
+     * data. The value of the returned moment <(<em>x -
+     * &mu;</em>)<em><sup>n</sup></em>> is defined as
      * <br>
-     * <br>&nbsp;&nbsp; <(<i>x - &mu;</i>)<i><sup>n</sup></i>> =
-     * <i>S<sub>n</sub></i>(<i>&mu;</i>)/<i>S<sub>0</sub></i>(0)
+     * <br>&nbsp;&nbsp; <(<em>x - &mu;</em>)<em><sup>n</sup></em>> =
+     * <em>S<sub>n</sub></em>(<em>&mu;</em>)/<em>S<sub>0</sub></em>(0)
      * <br>
      * </p>
      * <p>
      * NOTE: <br>
      * - The returned value is for a discrete function and must be treated as a
      * "normalized" quantity when considering sampled data from a continuous
-     * system. To convert to the continuous approximation for <(<i>x -
-     * &mu;</i>)<i><sup>n</sup></i>> the returned value must be multiplied by
-     * <i>h<sup>n</sup></i> where <i>h</i> is the sampling interval.
+     * system. To convert to the continuous approximation for <(<em>x -
+     * &mu;</em>)<em><sup>n</sup></em>> the returned value must be multiplied by
+     * <em>h<sup>n</sup></em> where <em>h</em> is the sampling interval.
      * </p>
      *
      * @param intOrder moment order
@@ -331,19 +331,19 @@ public class ProfileDataStatistics {
     /**
      * <p>
      * Compute and return the weighted central summation
-     * <i>S<sub>n</sub></i>(<i>&mu;</i>) which is defined
+     * <em>S<sub>n</sub></em>(<em>&mu;</em>) which is defined
      * <br>
-     * <br>&nbsp;&nbsp;<i>S<sub>n</sub></i>(<i>&mu;</i>) =
-     * &Sigma;<sub><i>k</i></sub>(<i>k -
-     * &mu;</i>)<sup><i>n</i></sup><i>f<sub>k</sub></i>
+     * <br>&nbsp;&nbsp;<em>S<sub>n</sub></em>(<em>&mu;</em>) =
+     * &Sigma;<sub><em>k</em></sub>(<em>k -
+     * &mu;</em>)<sup><em>n</em></sup><em>f<sub>k</sub></em>
      * <br>
      * </p>
      *
-     * @param intOrder order of the summation weight (i.e., <i>n</i>)
-     * @param dblCntr center of the summation weight (i.e., <i>&mu;</i>)
-     * @param view projection view angle (i.e., the set {<i>f<sub>k</sub></i>})
+     * @param intOrder order of the summation weight (i.e., <em>n</em>)
+     * @param dblCntr center of the summation weight (i.e., <em>&mu;</em>)
+     * @param view projection view angle (i.e., the set {<em>f<sub>k</sub></em>})
      *
-     * @return the value <i>S<sub>n</sub></i>(<i>&mu;</i>) as defined above
+     * @return the value <em>S<sub>n</sub></em>(<em>&mu;</em>) as defined above
      */
     public double computeWeightedSum(int intOrder, double dblCntr, ProfileData.Angle view) {
 
@@ -398,7 +398,7 @@ public class ProfileDataStatistics {
 
     /**
      * <p>
-     * Exponentiates the given base by the given <i>integer</i> exponent.</p>
+     * Exponentiates the given base by the given <em>integer</em> exponent.</p>
      *
      * <p>
      * NOTE: <br>
@@ -409,7 +409,7 @@ public class ProfileDataStatistics {
      * @param dblBase value to be exponentiated
      * @param intExp integer exponent
      *
-     * @return the value <i>dblBase<sup>intExp</sup></i>
+     * @return the value <em>dblBase<sup>intExp</sup></em>
      */
     private double exponentiate(double dblBase, int intExp) {
 

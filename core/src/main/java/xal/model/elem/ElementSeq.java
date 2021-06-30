@@ -144,7 +144,7 @@ public abstract class ElementSeq implements IComposite {
      * Creates a new instance of <code>ElementSeq</code> with the given soft
      * type and sequence identifier. Also reserves space for a the sequence
      * elements. This saves a little CPU time if the relative size of the
-     * sequence is known <i>a priori</i>.
+     * sequence is known <em>a priori</em>.
      *
      * @param strType soft type of the sequence (defined by the child class)
      * @param strId identifier of the sequence
@@ -390,7 +390,7 @@ public abstract class ElementSeq implements IComposite {
     }
 
     /**
-     * Return an <code>Iterator</code> object that iterates over <b>every</b>
+     * Return an <code>Iterator</code> object that iterates over <strong>every</strong>
      * <code>IComponent</code> object in this composite. For
      * <code>IComponent</code> which are also composite the parent is returned
      * first, then all its children. This would be in reverse order.
@@ -449,9 +449,9 @@ public abstract class ElementSeq implements IComposite {
 //  *  not be the same if the probe was actually propagated.
 //  * 
 //  *  @param  probe   propagating probe
-//  *  @param  dblLen  length of subsection to propagate through <b>meters</b>
+//  *  @param  dblLen  length of subsection to propagate through <strong>meters</strong>
 //  *  
-//  *  @return         total elapsed time through section<b>Units: seconds</b> 
+//  *  @return         total elapsed time through section<strong>Units: seconds</strong> 
 //  */
 // public double elapsedTime(IProbe probe, double dblLen)  {
 //     double     dblTime;    // total energy gain of sequence
@@ -489,7 +489,7 @@ public abstract class ElementSeq implements IComposite {
 //  *  @param  probe   determine energy gain for this probe
 //  *  @param  dblLen  length of sequence subsection to calculate energy gain
 //  *
-//  *  @return         total energy gain provided by sequence <b>Units: eV</b>
+//  *  @return         total energy gain provided by sequence <strong>Units: eV</strong>
 //  */
 // public double energyGain(IProbe probe, double dblLen) {
 //     double     dblDelW;    // total energy gain of sequence
@@ -622,7 +622,7 @@ public abstract class ElementSeq implements IComposite {
      * <code>IComponent</code> objects.
      * </p>
      *
-     * @return total length of the sequence (in <b>meters</b>)
+     * @return total length of the sequence (in <strong>meters</strong>)
      */
     @Override
     public double getLength() {
@@ -807,7 +807,7 @@ public abstract class ElementSeq implements IComposite {
     }
 
     /**
-     * Return an <code>Iterator</code> object that iterates over <b>every</b>
+     * Return an <code>Iterator</code> object that iterates over <strong>every</strong>
      * <code>IComponent</code> object in this composite. For
      * <code>IComponent</code> which are also composite the parent is returned
      * first, then all its children. This would be in reverse order.
@@ -1213,20 +1213,20 @@ class StringPrinter extends StringWriter {
 //    /**
 //     *  Creates (but does not load parameters) an XAL modeling element based on 
 //     *  the information in the DataAdaptor.
-//     *  The DataAdaptor should contain an XML node contain the <b>Element</bd> tag
+//     *  The DataAdaptor should contain an XML node contain the <strong>Element</bd> tag
 //     *  of the XAL Model DTD.
 //     *  <p>
 //     *  The element may be either a <code>ThickElement</code> or a <code>ThinElement
-//     *  </code> derived element depending upon the value of the <b>fam</b> attribute
+//     *  </code> derived element depending upon the value of the <strong>fam</strong> attribute
 //     *  in the DataAdaptor.
 //     * 
 //     *  @param  daptElem    DataAdaptor contiaining attributes of an Element tag
 //     *
 //     *  @return             newly created XAL modeling element (no specific parameters are set)
 //     *
-//     *  @exception  DataFormatException     <b>fam</b> attribute not present in DataAdaptor
+//     *  @exception  DataFormatException     <strong>fam</strong> attribute not present in DataAdaptor
 //     *  @exception  NumberFormatException   bad number format in numeric attribute
-//     *  @exception  ClassNotFoundException  <b>type</b> value not recognized by ElementFactory
+//     *  @exception  ClassNotFoundException  <strong>type</strong> value not recognized by ElementFactory
 //     */
 //    protected Element createElement(DataAdaptor daptElem)  
 //        throws DataFormatException, NumberFormatException, ClassNotFoundException

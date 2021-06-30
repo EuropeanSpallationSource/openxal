@@ -265,15 +265,15 @@ public class R2x2 extends SquareMatrix<R2x2> implements Serializable {
 
     /**
      * Non-destructive Matrix-Vector multiplication. Specifically, the vector
-     * <b>y</b> given by
+     * <strong>y</strong> given by
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>y</b> = <b>Ax</b>
+     * &nbsp; &nbsp; <strong>y</strong> = <strong>Ax</strong>
      * <br>
      * <br>
-     * where <b>A</b> is this matrix and <b>x</b> is the given vector.
+     * where <strong>A</strong> is this matrix and <strong>x</strong> is the given vector.
      *
-     * @param vec	the vector factor <b>x</bx>
+     * @param vec	the vector factor <strong>x</bx>
      *
      * @return the matrix-vector product of this matrix with the given vector
      */

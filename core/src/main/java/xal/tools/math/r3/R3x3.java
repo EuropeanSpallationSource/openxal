@@ -15,9 +15,9 @@ import xal.tools.math.SquareMatrix;
 
 /**
  * <p>
- * Represents an element of <b>R</b><sup>3&times;3</sup>, the set of real,
+ * Represents an element of <strong>R</strong><sup>3&times;3</sup>, the set of real,
  * 3&times;3 matrices. The class also contains the usual set of matrix
- * operations and linear transforms on <b>R</b><sup>3</sup> induced by the
+ * operations and linear transforms on <strong>R</strong><sup>3</sup> induced by the
  * matrix.
  * </p>
  *
@@ -40,15 +40,15 @@ public class R3x3 extends SquareMatrix<R3x3> implements Serializable {
     public enum IND implements IIndex {
 
         /**
-         * the <i>x</i> axis index of <b>R</b><sup>3</sup>
+         * the <em>x</em> axis index of <strong>R</strong><sup>3</sup>
          */
         X(0),
         /**
-         * the <i>y</i> axis index of <b>R</b><sup>3</sup>
+         * the <em>y</em> axis index of <strong>R</strong><sup>3</sup>
          */
         Y(1),
         /**
-         * the <i>z</i> axis index of <b>R</b><sup>3</sup>
+         * the <em>z</em> axis index of <strong>R</strong><sup>3</sup>
          */
         Z(2);
 

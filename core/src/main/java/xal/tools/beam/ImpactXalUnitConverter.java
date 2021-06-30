@@ -112,7 +112,7 @@ public class ImpactXalUnitConverter {
     /**
      * Change the RF frequency parameter used for longitudinal calculations.
      *
-     * @param f new RF frequency in <b>Hz</b>
+     * @param f new RF frequency in <strong>Hz</strong>
      */
     public void setRfFrequency(double f) {
         if (this.f == f) {
@@ -125,7 +125,7 @@ public class ImpactXalUnitConverter {
     /**
      * Change the current beam kinetic energy.
      *
-     * @param W new beam energy in <b>eV</b>
+     * @param W new beam energy in <strong>eV</strong>
      */
     public void setKineticEnergy(double W) {
         if (this.W == W) {
@@ -138,7 +138,7 @@ public class ImpactXalUnitConverter {
     /**
      * Change the current particle species rest energy.
      *
-     * @param ER new rest energy in <b>eV</b>
+     * @param ER new rest energy in <strong>eV</strong>
      */
     public void setRestEnergy(double ER) {
         if (this.ER == ER) {

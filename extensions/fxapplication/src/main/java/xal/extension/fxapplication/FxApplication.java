@@ -494,7 +494,7 @@ public abstract class FxApplication extends Application {
      * @return The launch time
      */
     public Date getLaunchTime() {
-        return LAUNCH_TIME;
+        return (Date) LAUNCH_TIME.clone();
     }
 
     private String latticeErrorDialog(String title, String message) {

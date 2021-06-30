@@ -29,7 +29,7 @@ public class LoggerService implements RemoteLogging {
     private static final Logger LOGGER = Logger.getLogger(LoggerService.class.getName());
 
     // constants
-    protected final String identity = "PV Logger";
+    protected static final String IDENTITY = "PV Logger";
 
     // model
     protected final LoggerModel model;
@@ -46,7 +46,7 @@ public class LoggerService implements RemoteLogging {
      * Begin broadcasting the service
      */
     public void broadcast() {
-        ServiceDirectory.defaultDirectory().registerService(RemoteLogging.class, identity, this);
+        ServiceDirectory.defaultDirectory().registerService(RemoteLogging.class, IDENTITY, this);
         LOGGER.log(Level.INFO, "broadcasting...");
     }
 
@@ -96,6 +96,7 @@ public class LoggerService implements RemoteLogging {
             final LoggerSession loggerSession = model.getPVLogger().getLoggerSession(groupID);
             return loggerSession != null ? (int) loggerSession.takeAndPublishSnapshot(comment).getId() : -1;
         } catch (Exception exception) {
+            LOGGER.log(Level.WARNING, null, exception);
             return -2;
         }
     }
@@ -187,6 +188,7 @@ public class LoggerService implements RemoteLogging {
         try {
             return InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException exception) {
+            LOGGER.log(Level.WARNING, null, exception);
             return "";
         }
     }

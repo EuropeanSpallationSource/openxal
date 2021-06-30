@@ -91,7 +91,7 @@ public class IdealDrift extends ThickElement {
     /**
      * JavaBean constructor - creates a new uninitialized instance of IdealDrift
      *
-     * <b>BE CAREFUL</b>
+     * <strong>BE CAREFUL</strong>
      */
     public IdealDrift() {
         super(TYPE);
@@ -152,9 +152,9 @@ public class IdealDrift extends ThickElement {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <b>meters</b>
+     * @param dblLen length of subsection to propagate through <strong>meters</strong>
      *
-     * @return the elapsed time through section<b>Units: seconds</b>
+     * @return the elapsed time through section<strong>Units: seconds</strong>
      */
     @Override
     public double elapsedTime(IProbe probe, double dblLen) {

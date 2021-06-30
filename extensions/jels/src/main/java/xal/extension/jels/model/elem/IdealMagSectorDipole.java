@@ -158,7 +158,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * Creates a new instance of IdealMagSectorDipole
      *
      * @param strId identifier for this IdealMagSectorDipole object
-     * @param dblFld field gradient strength (in <b>Tesla</b>)
+     * @param dblFld field gradient strength (in <strong>Tesla</strong>)
      * @param enmOrient
      * @param dblLen pathLength of the dipole (in m)
      * @param dblGap full pole gap of the dipole (in m)
@@ -179,9 +179,9 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
     }
 
     /**
-     * This is the design bending curvature <i>h</i> = 1/<i>R</i><sub>0</sub>
+     * This is the design bending curvature <em>h</em> = 1/<em>R</em><sub>0</sub>
      * where
-     * <i>R</i><sub>0</sub> is the design bending radius.
+     * <em>R</em><sub>0</sub> is the design bending radius.
      *
      * @return the design curvature of the bending magnet
      *
@@ -193,10 +193,10 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
     }
 
     /**
-     * Set the design curvature <i>h</i> of the bending magnet.
+     * Set the design curvature <em>h</em> of the bending magnet.
      *
-     * @param dbl design curvature <i>h</i> = 1/<i>R</i><sub>0</sub> where
-     * <i>R</i><sub>0</sub> is the design path radius.
+     * @param dbl design curvature <em>h</em> = 1/<em>R</em><sub>0</sub> where
+     * <em>R</em><sub>0</sub> is the design path radius.
      *
      * @author Christopher K. Allen
      * @since Apr 19, 2011
@@ -234,7 +234,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
     /**
      * Set the gap size between the dipole magnet poles.
      *
-     * @param dblGap gap size in <b>meters</b>
+     * @param dblGap gap size in <strong>meters</strong>
      */
     public void setGapHeight(double dblGap) {
         this.dblGapHeight = dblGap;
@@ -300,7 +300,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
     /**
      * Return the gap size between the dipole magnet poles.
      *
-     * @return gap size in <b>meters</b>
+     * @return gap size in <strong>meters</strong>
      */
     public double getGapHeight() {
         return this.dblGapHeight;
@@ -360,7 +360,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      *
      * @param probe probe object to be deflected
      *
-     * @return dipole path curvature for given probe (in <b>1/meters</b>)
+     * @return dipole path curvature for given probe (in <strong>1/meters</strong>)
      */
     public double compProbeCurvature(IProbe probe) {
 
@@ -375,7 +375,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <b>meters</b>
+     * @param dblLen length of subsection to propagate through <strong>meters</strong>
      *
      * @return the elapsed time through section<bold>Units: seconds</bold>
      */
@@ -407,8 +407,8 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      *
      * NOTE
      * <p>
-     * The <b>arc length</b> <i>dL</i> of the probe will probably be larger than
-     * the physical step length <i>h</i>. This is because the path length of the
+     * The <strong>arc length</strong> <em>dL</em> of the probe will probably be larger than
+     * the physical step length <em>h</em>. This is because the path length of the
      * design trajectory is generally larger than the physical length (otherwise
      * no bending would occur).
      * </p>
@@ -490,7 +490,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
     /**
      * <p>
      * Compute and return the partial deflection angle of the design trajectory
-     * at position <i>s</i> within the magnet. Note that <i>s</i> is not the
+     * at position <em>s</em> within the magnet. Note that <em>s</em> is not the
      * position along the design trajectory. That value is found by multiply the
      * returned value by the curvature radius.
      * </p>
@@ -498,7 +498,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * NOTE
      * <p>
      * This function is necessary since the space charge calculations step
-     * through the <b>physical</b> distance of the magnet, not the design path.
+     * through the <strong>physical</strong> distance of the magnet, not the design path.
      * </p>
      *
      * <p>

@@ -230,7 +230,7 @@ public class IdealPermMagQuad extends ThickElectromagnet {
      * @param strId identifier for this IdealMagQuad object
      * @param enmOrient enumeration specifying the quadrupole orientation
      * (ORIENT_HOR or ORIENT_VER)
-     * @param dblFld field gradient strength (in <b>Tesla/meter</b>)
+     * @param dblFld field gradient strength (in <strong>Tesla/meter</strong>)
      * @param dblLen length of the quadrupole
      */
     public IdealPermMagQuad(String strId, int enmOrient, double dblFld, double dblLen) {
@@ -244,7 +244,7 @@ public class IdealPermMagQuad extends ThickElectromagnet {
      * JavaBean constructor - creates a new uninitialized instance of
      * IdealMagQuad
      *
-     * <b>BE CAREFUL</b>
+     * <strong>BE CAREFUL</strong>
      */
     public IdealPermMagQuad() {
         super(TYPE);
@@ -258,9 +258,9 @@ public class IdealPermMagQuad extends ThickElectromagnet {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <b>meters</b>
+     * @param dblLen length of subsection to propagate through <strong>meters</strong>
      *
-     * @return the elapsed time through section<b>Units: seconds</b>
+     * @return the elapsed time through section<strong>Units: seconds</strong>
      */
     @Override
     public double elapsedTime(IProbe probe, double dblLen) {

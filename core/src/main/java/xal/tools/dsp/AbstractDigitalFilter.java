@@ -15,37 +15,37 @@ import xal.tools.collections.LinearBuffer;
  * behavior of a general digital filter.
  * </p>
  * <p>
- * The transfer characteristics for an <i>N</i><sup>th</sup> order digital
+ * The transfer characteristics for an <em>N</em><sup>th</sup> order digital
  * filter are given by the following:
  * <br>
- * <br>&nbsp;&nbsp;  <i>b</i><sub>0</sub>(<i>n</i>)<i>y</i>(<i>n</i>) +
- * <i>b</i><sub>1</sub>(<i>n</i>)<i>y</i>(<i>n</i>-1) + &hellip; +
- * <i>b<sub>N</sub></i>(<i>n</i>)<i>y</i>(<i>n-N</i>) =
- * <i>a</i><sub>0</sub>(<i>n</i>)<i>x</i>(<i>n</i>) +
- * <i>a</i><sub>1</sub>(<i>n</i>)<i>x</i>(<i>n</i>-1) + &hellip; +
- * <i>a<sub>N</sub></i>(<i>n</i>)<i>x</i>(<i>n-N</i>)
+ * <br>&nbsp;&nbsp;  <em>b</em><sub>0</sub>(<em>n</em>)<em>y</em>(<em>n</em>) +
+ * <em>b</em><sub>1</sub>(<em>n</em>)<em>y</em>(<em>n</em>-1) + &hellip; +
+ * <em>b<sub>N</sub></em>(<em>n</em>)<em>y</em>(<em>n-N</em>) =
+ * <em>a</em><sub>0</sub>(<em>n</em>)<em>x</em>(<em>n</em>) +
+ * <em>a</em><sub>1</sub>(<em>n</em>)<em>x</em>(<em>n</em>-1) + &hellip; +
+ * <em>a<sub>N</sub></em>(<em>n</em>)<em>x</em>(<em>n-N</em>)
  * <br>
  * <br>
- * where <i>n</i> is the current ("time") index, the {<i>x</i>(<i>n</i>)} are
- * the inputs to the filter at time <i>n</i>, the
- * {<i>a<sub>k</sub></i>(<i>n</i>)} are the input coefficients at time <i>n</i>
- * for delay <i>k</i>, the {<i>y</i>(<i>n</i>)} are the filter outputs at time
- * <i>n</i>, and the {<i>b<sub>k</sub></i>(<i>n</i>)} are the output
- * coefficients at time <i>n</i>
- * for delay <i>k</i>. The equation can be rearranged to explicitly demonstrate
- * the current output <i>y</i>(<i>n</i>) in terms of the past <i>N</i> inputs
+ * where <em>n</em> is the current ("time") index, the {<em>x</em>(<em>n</em>)} are
+ * the inputs to the filter at time <em>n</em>, the
+ * {<em>a<sub>k</sub></em>(<em>n</em>)} are the input coefficients at time <em>n</em>
+ * for delay <em>k</em>, the {<em>y</em>(<em>n</em>)} are the filter outputs at time
+ * <em>n</em>, and the {<em>b<sub>k</sub></em>(<em>n</em>)} are the output
+ * coefficients at time <em>n</em>
+ * for delay <em>k</em>. The equation can be rearranged to explicitly demonstrate
+ * the current output <em>y</em>(<em>n</em>) in terms of the past <em>N</em> inputs
  * and output
  * <br>
- * <br>&nbsp;&nbsp;  <i>y</i>(<i>n</i>) = (
- * <i>a</i><sub>0</sub>(<i>n</i>)<i>x</i>(<i>n</i>) +
- * <i>a</i><sub>1</sub>(<i>n</i>)<i>x</i>(<i>n</i>-1) + &hellip; +
- * <i>a<sub>N</sub></i>(<i>n</i>)<i>x</i>(<i>n-N</i>) -
- * <i>b</i><sub>1</sub>(<i>n</i>)<i>y</i>(<i>n</i>-1) - &hellip; -
- * <i>b</i><sub>N</sub>(<i>n</i>)<i>y</i>(<i>n</i>-<i>N</i>)
- * )/<i>b</i><sub>0</sub>(<i>n</i>)
+ * <br>&nbsp;&nbsp;  <em>y</em>(<em>n</em>) = (
+ * <em>a</em><sub>0</sub>(<em>n</em>)<em>x</em>(<em>n</em>) +
+ * <em>a</em><sub>1</sub>(<em>n</em>)<em>x</em>(<em>n</em>-1) + &hellip; +
+ * <em>a<sub>N</sub></em>(<em>n</em>)<em>x</em>(<em>n-N</em>) -
+ * <em>b</em><sub>1</sub>(<em>n</em>)<em>y</em>(<em>n</em>-1) - &hellip; -
+ * <em>b</em><sub>N</sub>(<em>n</em>)<em>y</em>(<em>n</em>-<em>N</em>)
+ * )/<em>b</em><sub>0</sub>(<em>n</em>)
  * <br>
  * <br>
- * Note that the coefficient <i>b</i><sub>0</sub> is essentially just an
+ * Note that the coefficient <em>b</em><sub>0</sub> is essentially just an
  * attenuation/amplification factor. (In fact, a zeroth-order digital filter is
  * just that.)
  * </p>
@@ -90,7 +90,7 @@ public abstract class AbstractDigitalFilter {
      * Abstract Methods
      */
     /**
-     * Get the input signal coefficient <i>a<sub>k</sub></i>(<i>n</i>) for the
+     * Get the input signal coefficient <em>a<sub>k</sub></em>(<em>n</em>) for the
      * given time and delay.
      *
      * @param iTime current time
@@ -102,7 +102,7 @@ public abstract class AbstractDigitalFilter {
     public abstract double getInputCoefficient(int iTime, int iDelay);
 
     /**
-     * Get the output signal coefficient <i>b<sub>k</sub></i>(<i>n</i>) for the
+     * Get the output signal coefficient <em>b<sub>k</sub></em>(<em>n</em>) for the
      * given time and delay.
      *
      * @param iTime current time

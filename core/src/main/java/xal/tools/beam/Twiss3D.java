@@ -133,7 +133,7 @@ public class Twiss3D implements IArchive {
 
     /**
      * Copy Constructor. Create a new <code>Twiss3D</code> object which is a
-     * <b>deep copy</b> of the given argument.
+     * <strong>deep copy</strong> of the given argument.
      *
      * @param t3d  <code>Twiss3D</code> containing initializing state information
      */
@@ -183,9 +183,9 @@ public class Twiss3D implements IArchive {
     }
 
     /**
-     * Creates a new, cloned instance of <b>this</b> <code>Twiss3D</code>.
+     * Creates a new, cloned instance of <strong>this</strong> <code>Twiss3D</code>.
      *
-     * @return a clone of <b>this</b> <code>Twiss3D</code>
+     * @return a clone of <strong>this</strong> <code>Twiss3D</code>
      *
      * @author Jonathan M. Freed
      * @since Jul 9, 2014

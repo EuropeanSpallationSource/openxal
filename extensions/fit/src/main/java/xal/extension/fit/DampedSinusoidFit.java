@@ -14,9 +14,9 @@ import java.util.*;
 
 /**
  * DampedSinusoid provides an exact closed form solution for fitting a waveform
- * to a damped sinusoid of the form <b><code><i>q</i> =
- * <i>A</i>e<i><sup>&gamma;t</sup></i>sin(<i>&mu;t</i> + <i>&phi;</i>) +
- * <i>C</i></code></b> which is adapted for efficient fitting in the presence of
+ * to a damped sinusoid of the form <strong><code><em>q</em> =
+ * <em>A</em>e<em><sup>&gamma;t</sup></em>sin(<em>&mu;t</em> + <em>&phi;</em>) +
+ * <em>C</em></code></strong> which is adapted for efficient fitting in the presence of
  * noise. The fits for frequency, offset and growth rate are good in the
  * presence of relatively small noise. However, the estimation of phase and
  * amplitude are relatively poor in the presence of noise. Also, the estimation

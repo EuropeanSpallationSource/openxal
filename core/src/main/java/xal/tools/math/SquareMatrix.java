@@ -22,7 +22,7 @@ import org.ejml.ops.MatrixFeatures;
  * packages.
  * </p>
  * <p>
- * Currently the internal matrix operations are supported by the <tt>EJML</tt>
+ * Currently the internal matrix operations are supported by the <kbd>EJML</kbd>
  * matrix package.
  * </p>
  *
@@ -79,24 +79,24 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      * vector. Say the linear system can be represented algebraically as
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>Ax</b> = <b>y</b> ,
+     * &nbsp; &nbsp; <strong>Ax</strong> = <strong>y</strong> ,
      * <br>
      * <br>
-     * where <b>A</b> is this matrix, <b>x</b> is the solution matrix to be
-     * determined, and <b>y</b> is the data vector provided as the argument. The
+     * where <strong>A</strong> is this matrix, <strong>x</strong> is the solution matrix to be
+     * determined, and <strong>y</strong> is the data vector provided as the argument. The
      * returned value is equivalent to
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>x</b> = <b>A</b><sup>-1</sup><b>y</b> ,
+     * &nbsp; &nbsp; <strong>x</strong> = <strong>A</strong><sup>-1</sup><strong>y</strong> ,
      * <br>
      * <br>
-     * that is, the value of vector <b>x</b>. The vector <b>y</b> is left
+     * that is, the value of vector <strong>x</strong>. The vector <strong>y</strong> is left
      * unchanged.
      * </p>
      * <p>
-     * Note that the inverse matrix <b>A</b><sup>-1</sup> is never computed. If
+     * Note that the inverse matrix <strong>A</strong><sup>-1</sup> is never computed. If
      * this system is to be solved repeated for the same matrix
-     * <b>A</b> it may be preferable to invert this matrix and solve the
+     * <strong>A</strong> it may be preferable to invert this matrix and solve the
      * multiple system with matrix multiplication.
      * </p>
      *
@@ -120,26 +120,26 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      * as
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>Ax</b> = <b>y</b> ,
+     * &nbsp; &nbsp; <strong>Ax</strong> = <strong>y</strong> ,
      * <br>
      * <br>
-     * where <b>A</b> is this matrix, <b>x</b> is the solution matrix to be
-     * determined, and <b>y</b> is the data vector provided as the argument. The
+     * where <strong>A</strong> is this matrix, <strong>x</strong> is the solution matrix to be
+     * determined, and <strong>y</strong> is the data vector provided as the argument. The
      * returned value is equivalent to
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>x</b> = <b>A</b><sup>-1</sup><b>y</b> ,
+     * &nbsp; &nbsp; <strong>x</strong> = <strong>A</strong><sup>-1</sup><strong>y</strong> ,
      * <br>
      * <br>
-     * that is, the value of vector <b>y</b>.
+     * that is, the value of vector <strong>y</strong>.
      * </p>
      * <p>
-     * The value of <b>x</b> is returned within the argument vector. Thus, the
+     * The value of <strong>x</strong> is returned within the argument vector. Thus, the
      * argument cannot be immutable.
      * <p>
-     * Note that the inverse matrix <b>A</b><sup>-1</sup> is never computed. If
+     * Note that the inverse matrix <strong>A</strong><sup>-1</sup> is never computed. If
      * this system is to be solved repeated for the same matrix
-     * <b>A</b> it may be preferable to invert this matrix and solve the
+     * <strong>A</strong> it may be preferable to invert this matrix and solve the
      * multiple system with matrix multiplication.
      * </p>
      *
@@ -184,18 +184,18 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      * This method is non-destructive, returning a new matrix.
      * </p>
      * <p>
-     * Denote by <b>&sigma;</b><sub>0</sub> this matrix object, and denote the
-     * argument matrix as <b>&Phi;</b>. Then the returned matrix,
-     * <b>&sigma;</b><sub>1</sub> is given by
+     * Denote by <strong>&sigma;</strong><sub>0</sub> this matrix object, and denote the
+     * argument matrix as <strong>&Phi;</strong>. Then the returned matrix,
+     * <strong>&sigma;</strong><sub>1</sub> is given by
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&sigma;</b><sub>1</sub> =
-     * <b>&Phi;</b><b>&sigma;</b><sub>0</sub><b>&Phi;</b><sup><i>T</i></sup>
+     * &nbsp; &nbsp; <strong>&sigma;</strong><sub>1</sub> =
+     * <strong>&Phi;</strong><strong>&sigma;</strong><sub>0</sub><strong>&Phi;</strong><sup><em>T</em></sup>
      * <br>
      * <br>
      * </p>
      *
-     * @param matPhi conjugating matrix <b>&Phi;</b> (typically a transfer
+     * @param matPhi conjugating matrix <strong>&Phi;</strong> (typically a transfer
      * matrix)
      *
      * @return matPhi*this*matPhi^T, or <code>null</code> if an error occurred
@@ -224,18 +224,18 @@ public abstract class SquareMatrix<M extends SquareMatrix<M>> extends BaseMatrix
      * This method is non-destructive, return a new matrix.
      * </p>
      * <p>
-     * Denote by <b>&sigma;</b><sub>0</sub> this matrix object, and denote the
-     * argument matrix as <b>&Phi;</b>. Then the returned matrix,
-     * <b>&sigma;</b><sub>1</sub> is given by
+     * Denote by <strong>&sigma;</strong><sub>0</sub> this matrix object, and denote the
+     * argument matrix as <strong>&Phi;</strong>. Then the returned matrix,
+     * <strong>&sigma;</strong><sub>1</sub> is given by
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&sigma;</b><sub>1</sub> =
-     * <b>&Phi;</b><b>&sigma;</b><sub>0</sub><b>&Phi;</b><sup><i>-1</i></sup>
+     * &nbsp; &nbsp; <strong>&sigma;</strong><sub>1</sub> =
+     * <strong>&Phi;</strong><strong>&sigma;</strong><sub>0</sub><strong>&Phi;</strong><sup><em>-1</em></sup>
      * <br>
      * <br>
      * </p>
      *
-     * @param matPhi conjugating matrix <b>&Phi;</b> (typically a transfer
+     * @param matPhi conjugating matrix <strong>&Phi;</strong> (typically a transfer
      * matrix)
      *
      * @return matPhi*this*matPhi<sup>-1</sup>

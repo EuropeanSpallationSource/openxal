@@ -20,12 +20,12 @@ import xal.tools.math.r2.R2;
  * These parameters represent an ellipse in phase space given by
  * <br>
  * <br>
- * &nbsp; &nbsp; &gamma;<i>x</i><sup>2</sup> + 2&alpha;<i>xx'</i> +
- * &beta;<i>x</i>'<sup>2</sup> = &epsilon;
+ * &nbsp; &nbsp; &gamma;<em>x</em><sup>2</sup> + 2&alpha;<em>xx'</em> +
+ * &beta;<em>x</em>'<sup>2</sup> = &epsilon;
  * <br>
  * <br>
  * where &alpha;, &beta;, &gamma;, and &epsilon; are the Courant-Snyder
- * parameters and (<i>x,x'</i>) are coordinates on the horizontal phase plane.
+ * parameters and (<em>x,x'</em>) are coordinates on the horizontal phase plane.
  * (There are analogous equations for the other phase planes.) Recall that the
  * Courant-Snyder parameters are not independent but related by the fact
  * <br>
@@ -156,17 +156,17 @@ public class Twiss implements Serializable {
      * Creates a new <code>Twiss</code> object initialized by the given set of
      * central, second-order moments of the beam in whatever phase plane. Note
      * that the RMS emittance &epsilon; is given by
-     * [&lt;<i>x</i><sup>2</sup>&gt;&lt;<i>x'</i><sup>2</sup>&gt; -
-     * &lt;<i>xx'</i>&gt;<sup>2</sup>]<sup>1/2</sup>For example, in the
+     * [&lt;<em>x</em><sup>2</sup>&gt;&lt;<em>x'</em><sup>2</sup>&gt; -
+     * &lt;<em>xx'</em>&gt;<sup>2</sup>]<sup>1/2</sup>For example, in the
      * horizontal phase plane the parameters are given as
      *
-     * @param dblMmtSigX the second moment &lt;<i>x</i><sup>2</sup>&gt;
-     * @param dblMmtCov the second moment &lt;<i>xx'</i>&gt;
-     * @param dblMmtSigXp the second moment &lt;<i>x'</i><sup>2</sup>&gt;
+     * @param dblMmtSigX the second moment &lt;<em>x</em><sup>2</sup>&gt;
+     * @param dblMmtCov the second moment &lt;<em>xx'</em>&gt;
+     * @param dblMmtSigXp the second moment &lt;<em>x'</em><sup>2</sup>&gt;
      *
      * @return the Courant-Snyder parameters
-     * (&alpha;=-&lt;<i>xx'</i>&gt;/&epsilon;,
-     * &beta;=&lt;<i>x</i><sup>2</sup>&gt;/&epsilon;, &epsilon;)
+     * (&alpha;=-&lt;<em>xx'</em>&gt;/&epsilon;,
+     * &beta;=&lt;<em>x</em><sup>2</sup>&gt;/&epsilon;, &epsilon;)
      *
      * @author Christopher K. Allen
      * @since Aug 29, 2012
@@ -186,10 +186,10 @@ public class Twiss implements Serializable {
      * Create a new set of <code>Twiss</code> parameters from the given
      * covariance matrix. The covariance matrix is simply the second-order
      * moments packaged up as a symmetric matrix. The form of this matrix
-     * <b>&sigma;</b> is
+     * <strong>&sigma;</strong> is
      * <br>
      * <pre>
-     * &nbsp; &nbsp; <b>&sigma;</b> &cong; | &lt;x<sup>2</sup>&gt; &lt;xx'&gt; |
+     * &nbsp; &nbsp; <strong>&sigma;</strong> &cong; | &lt;x<sup>2</sup>&gt; &lt;xx'&gt; |
      *         | &lt;xx'&gt; &lt;x'<sup>2</sup>&gt; |
      * </pre>
      *
@@ -227,8 +227,8 @@ public class Twiss implements Serializable {
      * object IS THE RMS EMITTANCE.
      * </p>
      *
-     * @param dblEnvRad envelope size <i>X</i> of the uniform beam
-     * @param dblEnvSlp slope divergence angle <i>X'</i> of the uniform beam
+     * @param dblEnvRad envelope size <em>X</em> of the uniform beam
+     * @param dblEnvSlp slope divergence angle <em>X'</em> of the uniform beam
      * @param dblEmit emittance of the beam - This value is not scaled!
      *
      * @return Courant-Snyder parameters corresponding to the given equivalent
@@ -288,7 +288,7 @@ public class Twiss implements Serializable {
     }
 
     /**
-     * Copy constructor: creates a <b>deep</b> copy of the argument.
+     * Copy constructor: creates a <strong>deep</strong> copy of the argument.
      *
      * @param twiss twiss object to be copied.
      */
@@ -434,7 +434,7 @@ public class Twiss implements Serializable {
     /**
      * Compute the phase space ellipse's rotation from upright.
      *
-     * @return phase space rotation (<b>radians</b>)
+     * @return phase space rotation (<strong>radians</strong>)
      */
     public double computeRotation() {
         double fAlpha;             // alpha twiss parameter

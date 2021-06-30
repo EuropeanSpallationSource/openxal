@@ -30,15 +30,15 @@ public class R3 extends BaseVector<R3> implements Serializable {
     public enum IND implements IIndex {
 
         /**
-         * the <i>x</i> axis index of <b>R</b><sup>3</sup>
+         * the <em>x</em> axis index of <strong>R</strong><sup>3</sup>
          */
         X(0),
         /**
-         * the <i>y</i> axis index of <b>R</b><sup>3</sup>
+         * the <em>y</em> axis index of <strong>R</strong><sup>3</sup>
          */
         Y(1),
         /**
-         * the <i>z</i> axis index of <b>R</b><sup>3</sup>
+         * the <em>z</em> axis index of <strong>R</strong><sup>3</sup>
          */
         Z(2);
 
@@ -364,8 +364,8 @@ public class R3 extends BaseVector<R3> implements Serializable {
     /**
      * Get all the vector values as a 3-array.
      *
-     * @return the array {<i>x</i><sub>1</sub>, <i>x</i><sub>2</sub>,
-     * <i>x</i><sub>3</sub>}.
+     * @return the array {<em>x</em><sub>1</sub>, <em>x</em><sub>2</sub>,
+     * <em>x</em><sub>3</sub>}.
      */
     public double[] toArray() {
 //		return new double[] { x1, x2, x3 };
@@ -448,7 +448,7 @@ public class R3 extends BaseVector<R3> implements Serializable {
      *  Object method overrides
      */
     /**
-     * Creates and returns a deep copy of <b>this</b> vector.
+     * Creates and returns a deep copy of <strong>this</strong> vector.
      *
      * @see xal.tools.math.BaseVector#clone()
      *
@@ -463,7 +463,7 @@ public class R3 extends BaseVector<R3> implements Serializable {
     /**
      * Convert the vector contents to a string.
      *
-     * @return vector value as a string (<i>x, y, z</i>)
+     * @return vector value as a string (<em>x, y, z</em>)
      */
     @Override
     public String toString() {
@@ -611,11 +611,11 @@ public class R3 extends BaseVector<R3> implements Serializable {
      *  Geometric Methods
      */
 //    /**
-//     *  Compute the <i>l</i><sub>2</sub> norm of the vector in R3.
+//     *  Compute the <em>l</em><sub>2</sub> norm of the vector in R3.
 //     *
-//     *  @return         <i>l</i><sub>2</sub> norm &equiv; (<i>x</i><sub>1</sub><sup>2</sup> 
-//     *                                            + <i>x</i><sub>2</sub><sup>2</sup>  
-//     *                                            + <i>x</i><sub>3</sub><sup>2</sup>)<sup>1/2</sup>
+//     *  @return         <em>l</em><sub>2</sub> norm &equiv; (<em>x</em><sub>1</sub><sup>2</sup> 
+//     *                                            + <em>x</em><sub>2</sub><sup>2</sup>  
+//     *                                            + <em>x</em><sub>3</sub><sup>2</sup>)<sup>1/2</sup>
 //     */
 //    public double norm2() {
 //        return Math.sqrt(x1*x1 + x2*x2 + x3*x3);
@@ -623,9 +623,9 @@ public class R3 extends BaseVector<R3> implements Serializable {
     /**
      * Returns the vector of squared elements.
      *
-     * @return the vector (<i>x</i><sub>1</sub><sup>2</sup>,
-     * <i>x</i><sub>2</sub><sup>2</sup>,
-     * <i>x</i><sub>3</sub><sup>2</sup>)
+     * @return the vector (<em>x</em><sub>1</sub><sup>2</sup>,
+     * <em>x</em><sub>2</sub><sup>2</sup>,
+     * <em>x</em><sub>3</sub><sup>2</sup>)
      *
      * @author Christopher K. Allen
      * @since Aug 25, 2011

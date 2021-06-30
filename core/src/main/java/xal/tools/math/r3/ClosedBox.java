@@ -11,7 +11,7 @@ import xal.tools.math.ClosedInterval;
 import xal.tools.math.MathException;
 
 /**
- * Represents a Cartesian box in <b>R</b><sup>3</sup>.
+ * Represents a Cartesian box in <strong>R</strong><sup>3</sup>.
  *
  * @author Christopher K. Allen
  * @since Jan 27, 2003
@@ -81,8 +81,8 @@ public class ClosedBox implements Serializable {
      * @param zmax z dimension maximum value
      *
      * @throws MathException one or more axis intervals are malformed (i.e.,
-     * &alpha;<sub><i>max</i></sub> &lt; &alpha;<sub><i>min</i></sub>, where
-     * &alpha; &isin; {<i>x,y,z</i>})
+     * &alpha;<sub><em>max</em></sub> &lt; &alpha;<sub><em>min</em></sub>, where
+     * &alpha; &isin; {<em>x,y,z</em>})
      *
      */
     public ClosedBox(double xmin, double xmax, double ymin, double ymax, double zmin, double zmax) throws MathException {

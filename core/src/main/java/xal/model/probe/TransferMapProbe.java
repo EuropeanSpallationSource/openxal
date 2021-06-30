@@ -17,7 +17,7 @@ import xal.model.probe.traj.TransferMapState;
 /**
  * <p>
  * Probe that tracks all the transfer maps between modeling elements. Note there
- * is no beam dynamics <i>per se</i>, the probe simply collects all the transfer
+ * is no beam dynamics <em>per se</em>, the probe simply collects all the transfer
  * maps as provided by the beamline elements for the design synchronous
  * particle.
  * </p>

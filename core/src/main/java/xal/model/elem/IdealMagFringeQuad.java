@@ -137,7 +137,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
      * Set the entrance fringe integral (a la H. Matsuda) which accounts for the
      * first-order effects of the fringing field outside the quadrupole magnet.
      *
-     * @param dblFldInt fringe field integral (<b>unitless</b>)
+     * @param dblFldInt fringe field integral (<strong>unitless</strong>)
      *
      * @see IdealMagFringeQuadFace#setFringeIntegral1
      */
@@ -149,7 +149,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
      * Set the entrance fringe integral (a la H. Matsuda) which accounts for the
      * first-order effects of the fringing field outside the quadrupole magnet.
      *
-     * @param dblFldInt fringe field integral (<b>unitless</b>)
+     * @param dblFldInt fringe field integral (<strong>unitless</strong>)
      *
      * @see IdealMagFringeQuadFace#setFringeIntegral2
      */
@@ -161,7 +161,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
      * Set the exit fringe integral (a la H. Matsuda) which accounts for the
      * first-order effects of the fringing field outside the dipole magnet.
      *
-     * @param dblFldInt fringe field integral (<b>unitless</b>)
+     * @param dblFldInt fringe field integral (<strong>unitless</strong>)
      *
      * @see IdealMagDipoleFace2#setFringeIntegral1
      */
@@ -173,7 +173,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
      * Set the exit fringe integral (a la H. Matsuda) which accounts for the
      * first-order effects of the fringing field outside the dipole magnet.
      *
-     * @param dblFldInt fringe field integral (<b>unitless</b>)
+     * @param dblFldInt fringe field integral (<strong>unitless</strong>)
      *
      * @see IdealMagDipoleFace2#setFringeIntegral2
      */
@@ -185,7 +185,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
      * Set the physical length of the bending dipole. The design path length is
      * generally larger than this value because of the curvature.
      *
-     * @param dblLen physical length through bend in <b>meters</b>
+     * @param dblLen physical length through bend in <strong>meters</strong>
      */
     public void setPhysicalLength(double dblLen) {
         this.getMagBody().setLength(dblLen);
@@ -276,7 +276,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
      * Get the entrance fringe integral (a la H. Matsuda) which accounts for the
      * first-order effects of the fringing field outside the quadrupole magnet.
      *
-     * @return fringe field integral (<b>unitless</b>)
+     * @return fringe field integral (<strong>unitless</strong>)
      *
      * @see IdealMagFringeQuadFace#setFrindIntegral1
      */
@@ -288,7 +288,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
      * Get the exit fringe integral (a la H. Matsuda) which accounts for the
      * first-order effects of the fringing field outside the quadrupole magnet.
      *
-     * @return fringe field integral (<b>unitless</b>)
+     * @return fringe field integral (<strong>unitless</strong>)
      *
      * @see IdealMagFringeQuadFace#setFrindIntegral1
      */
@@ -300,7 +300,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
      * Get the entrance fringe integral (a la H. Matsuda) which accounts for the
      * first-order effects of the fringing field outside the quadrupole magnet.
      *
-     * @return fringe field integral (<b>unitless</b>)
+     * @return fringe field integral (<strong>unitless</strong>)
      *
      * @see IdealMagFringeQuadFace#setFrindIntegral2
      */
@@ -312,7 +312,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
      * Get the exit fringe integral (a la D.C. Carey) which accounts for the
      * first-order effects of the fringing field outside the dipole magnet.
      *
-     * @return fringe field integral (<b>unitless</b>)
+     * @return fringe field integral (<strong>unitless</strong>)
      *
      * @see IdealMagFringeQuadFace#setFrindIntegral2
      */
@@ -341,7 +341,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
      * Return the physical length of the bending dipole. The design path length
      * is generally larger than this value because of the curvature.
      *
-     * @return physical length through bend in <b>meters</b>
+     * @return physical length through bend in <strong>meters</strong>
      */
     public double getPhysicalLength() {
         return this.getMagBody().getLength();
@@ -365,7 +365,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
     /**
      * Get the magnetic field strength of the dipole electromagnet
      *
-     * @return magnetic field (in <b>Tesla</b>).
+     * @return magnetic field (in <strong>Tesla</strong>).
      */
     @Override
     public double getMagField() {
@@ -389,7 +389,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
     /**
      * Set the magnetic field strength of the dipole electromagnet.
      *
-     * @param dblField magnetic field (in <b>Tesla</b>).
+     * @param dblField magnetic field (in <strong>Tesla</strong>).
      */
     @Override
     public void setMagField(double dblField) {

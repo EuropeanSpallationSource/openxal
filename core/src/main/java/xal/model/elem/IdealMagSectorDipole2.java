@@ -167,7 +167,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * Creates a new instance of IdealMagSectorDipole
      *
      * @param strId identifier for this IdealMagSectorDipole object
-     * @param dblFld field gradient strength (in <b>Tesla</b>)
+     * @param dblFld field gradient strength (in <strong>Tesla</strong>)
      * @param dblLen pathLength of the dipole (in m)
      * @param dblGap full pole gap of the dipole (in m)
      * @param dblFldInd The dimensionless integral term for the extended fringe
@@ -187,9 +187,9 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
     }
 
     /**
-     * This is the design bending curvature <i>h</i> = 1/<i>R</i><sub>0</sub>
+     * This is the design bending curvature <em>h</em> = 1/<em>R</em><sub>0</sub>
      * where
-     * <i>R</i><sub>0</sub> is the design bending radius.
+     * <em>R</em><sub>0</sub> is the design bending radius.
      *
      * @return the design curvature of the bending magnet
      *
@@ -201,10 +201,10 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
     }
 
     /**
-     * Set the design curvature <i>h</i> of the bending magnet.
+     * Set the design curvature <em>h</em> of the bending magnet.
      *
-     * @param dbl design curvature <i>h</i> = 1/<i>R</i><sub>0</sub> where
-     * <i>R</i><sub>0</sub> is the design path radius.
+     * @param dbl design curvature <em>h</em> = 1/<em>R</em><sub>0</sub> where
+     * <em>R</em><sub>0</sub> is the design path radius.
      *
      * @author Christopher K. Allen
      * @since Apr 19, 2011
@@ -240,7 +240,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
     /**
      * Set the gap size between the dipole magnet poles.
      *
-     * @param dblGap gap size in <b>meters</b>
+     * @param dblGap gap size in <strong>meters</strong>
      */
     public void setGapHeight(double dblGap) {
         this.dblGapHeight = dblGap;
@@ -309,7 +309,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
     /**
      * Return the gap size between the dipole magnet poles.
      *
-     * @return gap size in <b>meters</b>
+     * @return gap size in <strong>meters</strong>
      */
     public double getGapHeight() {
         return this.dblGapHeight;
@@ -387,7 +387,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      *
      * @param probe probe object to be deflected
      *
-     * @return dipole path curvature for given probe (in <b>1/meters</b>)
+     * @return dipole path curvature for given probe (in <strong>1/meters</strong>)
      */
     public double compProbeCurvature(IProbe probe) {
 
@@ -425,10 +425,10 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * <br>
      * <br>
      * <p>
-     * where <i>K_quad</i> is the quadrupole focusing constant, <i>R</i> is the
-     * bending radius at current settings, <i>B</i> is the current magnet field
-     * strength , <i>h = 1/R</i> is the curvature at the current settings, and
-     * <i>n0</i> is the field index.
+     * where <em>K_quad</em> is the quadrupole focusing constant, <em>R</em> is the
+     * bending radius at current settings, <em>B</em> is the current magnet field
+     * strength , <em>h = 1/R</em> is the curvature at the current settings, and
+     * <em>n0</em> is the field index.
      * </p>
      *
      * @param probe we use the probe velocity to determine curvature
@@ -453,21 +453,21 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * Computes and returns the path length variation factor. This is the factor
      * by with the synchronous particle path length expands or contracts about
      * the design path length when considering the effects of dipole field
-     * strength other than the design value. Denoting this quantity as <i>w</i>
+     * strength other than the design value. Denoting this quantity as <em>w</em>
      * then it can be expressed
      * <br>
      * <br>
-     * &nbsp; &nbsp; <i>w</i> = 1 - <i>h</i>/<i>h</i><sub>0</sub> ,
+     * &nbsp; &nbsp; <em>w</em> = 1 - <em>h</em>/<em>h</em><sub>0</sub> ,
      * <br>
      * <br>
-     * where <i>h</i><sub>0</sub> is the bending curvature of the design field
-     * and <i>h</i> is the bending curvature of the current field strength.
-     * Thus, for a distance &Delta;<i>s</i><sub>0</sub>
+     * where <em>h</em><sub>0</sub> is the bending curvature of the design field
+     * and <em>h</em> is the bending curvature of the current field strength.
+     * Thus, for a distance &Delta;<em>s</em><sub>0</sub>
      * along the design path, the synchronous particle actually travels a
      * distance
      * <br>
      * <br>
-     * &nbsp; &nbsp; &Delta;<i>s</i> = <i>w</i>&Delta;<i>s</i><sub>0</sub>
+     * &nbsp; &nbsp; &Delta;<em>s</em> = <em>w</em>&Delta;<em>s</em><sub>0</sub>
      * <br>
      * <br>
      * along the actual path.
@@ -476,7 +476,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * @param probe probe moving a some velocity determining the bending
      * curvature
      *
-     * @return the path length variation factor <i>w</i>
+     * @return the path length variation factor <em>w</em>
      *
      * @author Christopher K. Allen
      * @since Nov 27, 2013
@@ -519,9 +519,9 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * element.
      *
      * @param probe propagating probe
-     * @param dblLen length of subsection to propagate through <b>meters</b>
+     * @param dblLen length of subsection to propagate through <strong>meters</strong>
      *
-     * @return the elapsed time through section<b>Units: seconds</b>
+     * @return the elapsed time through section<strong>Units: seconds</strong>
      */
     @Override
     public double elapsedTime(IProbe probe, double dblLen) {
@@ -559,8 +559,8 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      *
      * NOTE
      * <p>
-     * The <b>arc length</b> <i>dL</i> of the probe will probably be larger than
-     * the physical step length <i>h</i>. This is because the path length of the
+     * The <strong>arc length</strong> <em>dL</em> of the probe will probably be larger than
+     * the physical step length <em>h</em>. This is because the path length of the
      * design trajectory is generally larger than the physical length (otherwise
      * no bending would occur).
      * </p>
@@ -766,7 +766,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      */
     /**
      * Compute the step in the design trajectory angle given the physical step
-     * size <i>dL</code> at the current <code>probe</code> position.
+     * size <em>dL</code> at the current <code>probe</code> position.
      *
      * @param probe probe object with magnet domain
      * @param dL physical distance to step within magnet
@@ -792,7 +792,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
     /**
      * <p>
      * Compute and return the partial deflection angle of the design trajectory
-     * at position <i>s</i> within the magnet. Note that <i>s</i> is not the
+     * at position <em>s</em> within the magnet. Note that <em>s</em> is not the
      * position along the design trajectory. That value is found by multiplying
      * the returned value by the curvature radius.
      * </p>
@@ -800,7 +800,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * NOTE
      * <p>
      * This function is necessary since the space charge calculations step
-     * through the <b>physical</b> distance of the magnet, not the design path.
+     * through the <strong>physical</strong> distance of the magnet, not the design path.
      * </p>
      *
      * <p>
@@ -844,8 +844,8 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
     /**
      * <p>
      * Compute and return the partial deflection angle of the design trajectory
-     * at a distance <i>s</i> from the magnet entrance. Note that here <i>s</i>
-     * is <b>not</b> the position along the design trajectory. That value is
+     * at a distance <em>s</em> from the magnet entrance. Note that here <em>s</em>
+     * is <strong>not</strong> the position along the design trajectory. That value is
      * found by multiplying the returned value by the bending radius of the
      * magent.
      * </p>
@@ -858,7 +858,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * trigonometry applied to regions within the bending radius of the magnet.
      * <br/>
      * &middot; This function is necessary since the space charge calculations
-     * step through the <b>physical</b> distance of the magnet, not the design
+     * step through the <strong>physical</strong> distance of the magnet, not the design
      * path.
      * <br/>
      * &middot; The result is computed using repeated application of the law of
@@ -866,13 +866,13 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * </p>
      *
      * @param s the distance within the magnetic from the entrance, Note
-     * <var>s</var> must be in the interval [0,<i>L</i><sub>0</sub>] where
-     * <i>L</i><sub>0</sub> is the length of the magnet
+     * <var>s</var> must be in the interval [0,<em>L</em><sub>0</sub>] where
+     * <em>L</em><sub>0</sub> is the length of the magnet
      *
      * @return the partial bending angle at that internal position
      *
      * @throws IllegalArgumentException s not in the interval
-     * [0,<i>L</i><sub>0</sub>] (no longer thrown - messages are sent to system
+     * [0,<em>L</em><sub>0</sub>] (no longer thrown - messages are sent to system
      * error stream)
      *
      * @since Jul 8, 2015 by Christopher K. Allen
@@ -910,12 +910,12 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
 
     /**
      * This method approximates the partial deflection angle of the design
-     * trajectory a position <i>s</i> within the magnet. This method may be
+     * trajectory a position <em>s</em> within the magnet. This method may be
      * somewhat faster than
      * <code>IdealMagSectorDipole#compCurrentAngle(double)</code> by avoiding
      * the computation of one arc-cosine. The returned value is the derivative
-     * of the above function at <i>s</i> = 0 times
-     * <i>s</i>.
+     * of the above function at <em>s</em> = 0 times
+     * <em>s</em>.
      *
      * @param s physical distance from magnet entrance location (meters)
      *

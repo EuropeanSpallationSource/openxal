@@ -12,19 +12,19 @@ import xal.tools.math.r3.R3x3.POS;
 /**
  * <p>
  * Encapsulates the results of an eigenvalue decomposition operation on a
- * symmetric <b>R</b><sup>3&times;3</sup> matrix <b>A</b> object using
+ * symmetric <strong>R</strong><sup>3&times;3</sup> matrix <strong>A</strong> object using
  * <em>Jacobi iterations</em>.
  * </p>
  * <p>
  * If the matrix is symmetric it can be factored as
  * <br>
  * <br>
- * &nbsp; &nbsp; <b>A</b> = <b>RDR</b><sup>T</sup>
+ * &nbsp; &nbsp; <strong>A</strong> = <strong>RDR</strong><sup>T</sup>
  * <br>
  * <br>
- * where <b>A</b> is the target matrix, <b>R</b> is an orthogonal matrix in
- * <i>SO</i>(3), and <b>D</b> is the diagonal matrix of real eigenvalues of
- * <b>A</b>.
+ * where <strong>A</strong> is the target matrix, <strong>R</strong> is an orthogonal matrix in
+ * <em>SO</em>(3), and <strong>D</strong> is the diagonal matrix of real eigenvalues of
+ * <strong>A</strong>.
  * </p>
  * The JAMA matrix package is <em>not</em> explicitly used in this class.
  * <p>
@@ -177,15 +177,15 @@ public class R3x3JacobiDecomposition {
      */
     /**
      * <p>
-     * Decomposes the given matrix <b>&sigma;</b> into the product
+     * Decomposes the given matrix <strong>&sigma;</strong> into the product
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&sigma;</b> = <b>RDR</b><sup><i>T</i></sup> ,
+     * &nbsp; &nbsp; <strong>&sigma;</strong> = <strong>RDR</strong><sup><em>T</em></sup> ,
      * <br>
      * <br>
-     * where <b>R</b> &in; <i>O</i>(3) is the conjugating rotation matrix and
-     * <b>D</b> &in; <b>R</b><sub>+</sub><sup>3&times;3</sup> is the diagonal
-     * matrix of eigenvalues of <b>&sigma;</b>.
+     * where <strong>R</strong> &in; <em>O</em>(3) is the conjugating rotation matrix and
+     * <strong>D</strong> &in; <strong>R</strong><sub>+</sub><sup>3&times;3</sup> is the diagonal
+     * matrix of eigenvalues of <strong>&sigma;</strong>.
      * </p>
      * <p>
      * The actual computations are done by the objects of the class
@@ -367,14 +367,14 @@ class JacobiIterate {
      * Essentially, the coupling coefficient is computed to be the square of the
      * matrix element divided by the row and column diagonal intercepts.
      *
-     * <b>
+     * <strong>
      * This method has been simplified! Currently it returns the magnitude of
      * the target matrix element indicated by the argument.
      *
      * This behavior is more general than that for a 3x3 matrix assuming that it
      * is a spatial covariance matrix. It is also numerically faster and
      * probably more appropriate.
-     * </b>
+     * </strong>
      *
      * @param pos off-diagonal position of the target matrix
      * @return value of the coupling coefficient for given <code>pos</code>
@@ -390,7 +390,7 @@ class JacobiIterate {
     /**
      * Compute the angle of rotation necessary to zero out the pivot element in
      * the Jacobi iteration. Note that there are two solutions to this angle. We
-     * return the one whose magnitude is less than <i>pi</i>/4. This value
+     * return the one whose magnitude is less than <em>pi</em>/4. This value
      * provides the most stable reduction.
      *
      * This method solves the simplified double angle formula for the rotation
@@ -419,7 +419,7 @@ class JacobiIterate {
     /**
      * Compute the angle of rotation necessary to zero out the pivot element in
      * the Jacobi iteration. Note that there are two solutions to this angle. We
-     * return the one whose magnitude is less than <i>pi</i>/4. This value
+     * return the one whose magnitude is less than <em>pi</em>/4. This value
      * provides the most stable reduction.
      *
      * This method uses the quadratic formula to determine the smaller of the

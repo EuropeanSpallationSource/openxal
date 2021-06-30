@@ -78,65 +78,65 @@ public abstract class CalculationEngine {
      * <p>
      * Calculate the fixed point solution vector representing the closed orbit
      * at the location of this element. We first attempt to find the fixed point
-     * for the full six phase space coordinates. Let <b>&Phi;</b> denote the
+     * for the full six phase space coordinates. Let <strong>&Phi;</strong> denote the
      * one-turn map for a ring. The fixed point
-     * <b>z</b> &in; <b>R</b><sup>6</sup>&times;{1} in homogeneous phase space
-     * coordinates is that which is invariant under <b>&Phi;</b>, that is,
+     * <strong>z</strong> &in; <strong>R</strong><sup>6</sup>&times;{1} in homogeneous phase space
+     * coordinates is that which is invariant under <strong>&Phi;</strong>, that is,
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&Phi;z</b> = <b>z</b> .
+     * &nbsp; &nbsp; <strong>&Phi;z</strong> = <strong>z</strong> .
      * <br>
      * <br>
-     * This method returns that vector <b>z</b>.
+     * This method returns that vector <strong>z</strong>.
      * </p>
      * <p>
-     * Recall that the <i>homogeneous</i> transfer matrix <b>&Phi;</b> for the
-     * ring has final row that represents the translation <b>&Delta;</b> of the
+     * Recall that the <em>homogeneous</em> transfer matrix <strong>&Phi;</strong> for the
+     * ring has final row that represents the translation <strong>&Delta;</strong> of the
      * particle for the circuit around the ring. The 6&times;6 sub-matrix of
-     * <b>&Phi;</b> represents the (linear) action of the bending magnetics and
-     * quadrupoles and corresponds to the matrix <b>T</b> &in;
-     * <b>R</b><sup>6&times;</sup> (here <b>T</b> is linear). Thus, we can write
-     * the linear operator <b>&Phi;</b>
+     * <strong>&Phi;</strong> represents the (linear) action of the bending magnetics and
+     * quadrupoles and corresponds to the matrix <strong>T</strong> &in;
+     * <strong>R</strong><sup>6&times;</sup> (here <strong>T</strong> is linear). Thus, we can write
+     * the linear operator <strong>&Phi;</strong>
      * as the augmented system
      * <br>
      * <br>
      * <pre>
-     * &nbsp; &nbsp; <b>&Phi;</b> = |<b>T</b> <b>&Delta;</b> |,   <b>z</b> &equiv; |<b>p</b>| ,
-     *         |<b>0</b> 1 |        |1|
-     * </pre> where <b>p</b> is the projection of <b>z</b> onto the ambient
+     * &nbsp; &nbsp; <strong>&Phi;</strong> = |<strong>T</strong> <strong>&Delta;</strong> |,   <strong>z</strong> &equiv; |<strong>p</strong>| ,
+     *         |<strong>0</strong> 1 |        |1|
+     * </pre> where <strong>p</strong> is the projection of <strong>z</strong> onto the ambient
      * phase space
-     * <b>R</b><sup>6</sup> (without homogeneous the homogeneous coordinate).
+     * <strong>R</strong><sup>6</sup> (without homogeneous the homogeneous coordinate).
      * coordinates).
      * </p>
      * <p>
      * Putting this together we get
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&Phi;z</b> = <b>Tp</b> + <b>&Delta;</b> = <b>p</b> ,
+     * &nbsp; &nbsp; <strong>&Phi;z</strong> = <strong>Tp</strong> + <strong>&Delta;</strong> = <strong>p</strong> ,
      * <br>
      * <br>
      * to which the solution is
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>p</b> = -(<b>T</b> -
-     * <b>I</b>)<sup>-1</sup><b>&Delta;</b>
+     * &nbsp; &nbsp; <strong>p</strong> = -(<strong>T</strong> -
+     * <strong>I</strong>)<sup>-1</sup><strong>&Delta;</strong>
      * <br>
      * <br>
      * assuming it exists. The question of solution existence falls upon the
-     * resolvent <b>R</b> &equiv; (<b>T</b> - <b>I</b>)<sup>-1</sup> of
-     * <b>T</b>. By inspection we can see that <b>p</b> is defined so long as
-     * the eigenvalues of <b>T</b> are located away from 1. In this case the
-     * returned value is the augmented vector (<b>p</b> 1)<sup><i>T</i></sup>
-     * &in; <b>R</b><sup>6</sup> &times; {1}.
+     * resolvent <strong>R</strong> &equiv; (<strong>T</strong> - <strong>I</strong>)<sup>-1</sup> of
+     * <strong>T</strong>. By inspection we can see that <strong>p</strong> is defined so long as
+     * the eigenvalues of <strong>T</strong> are located away from 1. In this case the
+     * returned value is the augmented vector (<strong>p</strong> 1)<sup><em>T</em></sup>
+     * &in; <strong>R</strong><sup>6</sup> &times; {1}.
      * </p>
      * <p>
      * When the eigenvectors do contain 1, we attempt to find the solution for
-     * the transverse phase space. That is, we take vector <b>p</b> &in;
-     * <b>R</b><sup>4</sup>
-     * and <b>T</b> &in; <b>R</b><sup>4&times;4</sup> where
-     * <b>T</b> = proj<sub>4&times;4</sub> <b>&Phi;</b>. The returned value is
+     * the transverse phase space. That is, we take vector <strong>p</strong> &in;
+     * <strong>R</strong><sup>4</sup>
+     * and <strong>T</strong> &in; <strong>R</strong><sup>4&times;4</sup> where
+     * <strong>T</strong> = proj<sub>4&times;4</sub> <strong>&Phi;</strong>. The returned value is
      * then
-     * <b>z</b> = (<b>p</b> 0 0 1)<sup><i>T</i></sup>.
+     * <strong>z</strong> = (<strong>p</strong> 0 0 1)<sup><em>T</em></sup>.
      *
      * @param matPhi the one-turn transfer matrix (full-turn matrix)
      *
@@ -192,16 +192,16 @@ public abstract class CalculationEngine {
      * <p>
      * Calculates the phase advance for the given transfer map assuming
      * periodicity, that is, the given matrix represents the transfer matrix
-     * <b>&Phi;</b>
+     * <strong>&Phi;</strong>
      * of at least one cell in a periodic structure. The Courant-Snyder
      * parameters of the machine (beam) must be invariant under the action of
      * the transfer matrix (this indicates a periodic focusing structure where
      * the beam envelope is modulated by that structure). One phase advance is
-     * provided for each phase plane, i.e., (&sigma;<sub><i>x</i></sub>,
-     * &sigma;<sub><i>z</i></sub>, &sigma;<sub><i>z</i></sub>). In the case the
+     * provided for each phase plane, i.e., (&sigma;<sub><em>x</em></sub>,
+     * &sigma;<sub><em>z</em></sub>, &sigma;<sub><em>z</em></sub>). In the case the
      * given map is the transfer map for one cell in a periodic lattice, in that
      * case the returned value is the phase advance per cell,
-     * &sigma;<sub><i>cell</i></sub> of the periodic system.
+     * &sigma;<sub><em>cell</em></sub> of the periodic system.
      * </p>
      * <p>
      * When the given map is the full turn map of a ring then the phase advances
@@ -214,20 +214,20 @@ public abstract class CalculationEngine {
      * <br>
      * <br>
      * &nbsp; &nbsp; &sigma; = cos<sup>-1</sup>[&frac12; Tr
-     * <b>&Phi;</b><sub>&alpha;&alpha;</sub>] ,
+     * <strong>&Phi;</strong><sub>&alpha;&alpha;</sub>] ,
      * <br>
      * <br>
-     * where <b>&Phi;</b></b><sub>&alpha;&alpha;</sub> is the 2&times;2 block
+     * where <strong>&Phi;</strong></strong><sub>&alpha;&alpha;</sub> is the 2&times;2 block
      * diagonal of the the provided transfer matrix for the &alpha; phase plane,
-     * and Tr <b>&Phi;</b></b><sub>&alpha;&alpha;</sub> indicates the trace of
+     * and Tr <strong>&Phi;</strong></strong><sub>&alpha;&alpha;</sub> indicates the trace of
      * matrix
-     * <b>&Phi;</b></b><sub>&alpha;&alpha;</sub>.
+     * <strong>&Phi;</strong></strong><sub>&alpha;&alpha;</sub>.
      * </p>
      *
      * @param matPhiCell transfer matrix for a cell in a periodic structure
      *
-     * @return vector of phase advances (&sigma;<sub><i>x</i></sub>,
-     * &sigma;<sub><i>y</i></sub>, &sigma;<sub><i>z</i></sub>)
+     * @return vector of phase advances (&sigma;<sub><em>x</em></sub>,
+     * &sigma;<sub><em>y</em></sub>, &sigma;<sub><em>z</em></sub>)
      *
      * @author Thomas Pelaia
      * @author Christopher K. Allen
@@ -269,11 +269,11 @@ public abstract class CalculationEngine {
      * must be invariant under the action of the transfer matrix (this indicates
      * a periodic focusing structure where the beam envelope is modulated by
      * that structure). One tune is provided for each phase plane, i.e.,
-     * (&nu;<sub><i>x</i></sub>, &nu;<sub><i>z</i></sub>,
-     * &nu;<sub><i>z</i></sub>). The given map must in the least be the transfer
+     * (&nu;<sub><em>x</em></sub>, &nu;<sub><em>z</em></sub>,
+     * &nu;<sub><em>z</em></sub>). The given map must in the least be the transfer
      * map for one cell in a periodic lattice. In that case the returned value
      * is the fractional phase advance per cell,
-     * &sigma;<sub><i>cell</i></sub>/2&pi; of the periodic system.
+     * &sigma;<sub><em>cell</em></sub>/2&pi; of the periodic system.
      * </p>
      * <p>
      * When the given map is the full turn map of a ring then the tunes are the
@@ -285,11 +285,11 @@ public abstract class CalculationEngine {
      * The basic computation is
      * <br>
      * <br>
-     * &nbsp; &nbsp; &nu; = (1/2&pi;) cos<sup>-1</sup>[&frac12; Tr <b>&Phi;</b>]
+     * &nbsp; &nbsp; &nu; = (1/2&pi;) cos<sup>-1</sup>[&frac12; Tr <strong>&Phi;</strong>]
      * ,
      * <br>
      * <br>
-     * where <b>&Phi;</b> is the 2&times;2 diagonal block of the transfer matrix
+     * where <strong>&Phi;</strong> is the 2&times;2 diagonal block of the transfer matrix
      * corresponding to the phase plane of interest.
      * </p>
      * <p>
@@ -300,8 +300,8 @@ public abstract class CalculationEngine {
      *
      * @param matPhiCell transfer matrix for a cell in a periodic structure
      *
-     * @return the array of betatron tunes (&nu;<sub><i>x</i></sub>,
-     * &nu;<sub><i>y</i></sub>, &nu;<sub><i>z</i></sub>)
+     * @return the array of betatron tunes (&nu;<sub><em>x</em></sub>,
+     * &nu;<sub><em>y</em></sub>, &nu;<sub><em>z</em></sub>)
      *
      * @author Thomas Pelaia
      * @author Christopher K. Allen
@@ -334,20 +334,20 @@ public abstract class CalculationEngine {
      * <p>
      * Calculates the phase advances given the initial and final Courant-Snyder
      * &alpha; and &beta; values provided. This is the general phase advance of
-     * the particle through the transfer matrix <b>&Phi;</b>, and no special
-     * requirements are placed upon <b>&Phi;</b>. One phase advance is provided
-     * for each phase plane, i.e., (&sigma;<sub><i>x</i></sub>,
-     * &sigma;<sub><i>z</i></sub>, &sigma;<sub><i>z</i></sub>).
+     * the particle through the transfer matrix <strong>&Phi;</strong>, and no special
+     * requirements are placed upon <strong>&Phi;</strong>. One phase advance is provided
+     * for each phase plane, i.e., (&sigma;<sub><em>x</em></sub>,
+     * &sigma;<sub><em>z</em></sub>, &sigma;<sub><em>z</em></sub>).
      * </p>
      * <p>
      * The definition of phase advance &sigma; is given by
      * <br>
      * <br>
-     * &nbsp; &nbsp; &sigma;(<i>s</i>) &equiv; &int;<sup><i>s</i></sup>
-     * [1/&beta;(<i>t</i>)]<i>dt</i> ,
+     * &nbsp; &nbsp; &sigma;(<em>s</em>) &equiv; &int;<sup><em>s</em></sup>
+     * [1/&beta;(<em>t</em>)]<em>dt</em> ,
      * <br>
      * <br>
-     * where &beta;(<i>s</i>) is the Courant-Snyder, envelope function, and the
+     * where &beta;(<em>s</em>) is the Courant-Snyder, envelope function, and the
      * integral is taken along the interval between the initial and final
      * Courant-Snyder parameters.
      * </p>
@@ -360,7 +360,7 @@ public abstract class CalculationEngine {
      * ,
      * <br>
      * <br>
-     * where &phi;<sub>12</sub> is the element of <b>&Phi;</b> in the upper
+     * where &phi;<sub>12</sub> is the element of <strong>&Phi;</strong> in the upper
      * right corner of each 2&times;2 diagonal block, &beta;<sub>1</sub> is the
      * initial beta function value (provided) and &beta;<sub>2</sub> is the
      * final beta function value (provided).
@@ -370,8 +370,8 @@ public abstract class CalculationEngine {
      * @param twsInit initial Twiss parameter before application of matrix
      * @param twsFinal final Twiss parameter after application of matrix
      *
-     * @return the array of betatron tunes (&sigma;<sub><i>x</i></sub>,
-     * &sigma;<sub><i>z</i></sub>, &sigma;<sub><i>z</i></sub>)
+     * @return the array of betatron tunes (&sigma;<sub><em>x</em></sub>,
+     * &sigma;<sub><em>z</em></sub>, &sigma;<sub><em>z</em></sub>)
      *
      * @author Christopher K. Allen
      * @author Thomas Pelaia
@@ -433,20 +433,20 @@ public abstract class CalculationEngine {
      * <p>
      * Calculates the phase advances given the initial and final Courant-Snyder
      * &alpha; and &beta; values provided. This is the general phase advance of
-     * the particle through the transfer matrix <b>&Phi;</b>, and no special
-     * requirements are placed upon <b>&Phi;</b>. One phase advance is provided
-     * for each phase plane, i.e., (&sigma;<sub><i>x</i></sub>,
-     * &sigma;<sub><i>z</i></sub>, &sigma;<sub><i>z</i></sub>).
+     * the particle through the transfer matrix <strong>&Phi;</strong>, and no special
+     * requirements are placed upon <strong>&Phi;</strong>. One phase advance is provided
+     * for each phase plane, i.e., (&sigma;<sub><em>x</em></sub>,
+     * &sigma;<sub><em>z</em></sub>, &sigma;<sub><em>z</em></sub>).
      * </p>
      * <p>
      * The definition of phase advance &sigma; is given by
      * <br>
      * <br>
-     * &nbsp; &nbsp; &sigma;(<i>s</i>) &equiv; &int;<sup><i>s</i></sup>
-     * [1/&beta;(<i>t</i>)]<i>dt</i> ,
+     * &nbsp; &nbsp; &sigma;(<em>s</em>) &equiv; &int;<sup><em>s</em></sup>
+     * [1/&beta;(<em>t</em>)]<em>dt</em> ,
      * <br>
      * <br>
-     * where &beta;(<i>s</i>) is the Courant-Snyder, envelope function, and the
+     * where &beta;(<em>s</em>) is the Courant-Snyder, envelope function, and the
      * integral is taken along the interval between the initial and final
      * Courant-Snyder parameters.
      * </p>
@@ -459,7 +459,7 @@ public abstract class CalculationEngine {
      * ,
      * <br>
      * <br>
-     * where &phi;<sub>12</sub> is the element of <b>&Phi;</b> in the upper
+     * where &phi;<sub>12</sub> is the element of <strong>&Phi;</strong> in the upper
      * right corner of each 2&times;2 diagonal block, &beta;<sub>1</sub> is the
      * initial beta function value (provided) and &beta;<sub>2</sub> is the
      * final beta function value (provided).
@@ -469,8 +469,8 @@ public abstract class CalculationEngine {
      * @param twsInit initial Twiss parameter before application of matrix
      * @param twsFinal final Twiss parameter after application of matrix
      *
-     * @return the array of betatron tunes (&sigma;<sub><i>x</i></sub>,
-     * &sigma;<sub><i>z</i></sub>, &sigma;<sub><i>z</i></sub>)
+     * @return the array of betatron tunes (&sigma;<sub><em>x</em></sub>,
+     * &sigma;<sub><em>z</em></sub>, &sigma;<sub><em>z</em></sub>)
      *
      * @author Christopher K. Allen
      * @author Thomas Pelaia
@@ -543,10 +543,10 @@ public abstract class CalculationEngine {
      * matched envelopes for the ring at that point.
      * </p>
      * <p>
-     * The given matrix <b>&Phi;</b> is assumed to be the transfer matrix
+     * The given matrix <strong>&Phi;</strong> is assumed to be the transfer matrix
      * through at least one cell in a periodic lattice. Internally, the array of
-     * phase advances {&sigma;<sub><i>x</i></sub>, &sigma;<sub><i>y</i></sub>,
-     * &sigma;<sub><i>x</i></sub>} are assumed to be the particle phase advances
+     * phase advances {&sigma;<sub><em>x</em></sub>, &sigma;<sub><em>y</em></sub>,
+     * &sigma;<sub><em>x</em></sub>} are assumed to be the particle phase advances
      * through the cell for the matched solution. These are computed with the
      * method <code>{@link #calculatePhaseAdvPerCell(PhaseMatrix)}</code>.
      * </p>
@@ -561,27 +561,27 @@ public abstract class CalculationEngine {
      * of a single phase plane:
      * <br>
      * <br>
-     * &nbsp; &nbsp; &alpha; &equiv; -<i>ww'</i> = (&phi;<sub>11</sub> -
+     * &nbsp; &nbsp; &alpha; &equiv; -<em>ww'</em> = (&phi;<sub>11</sub> -
      * &phi;<sub>22</sub>)/(2 sin &sigma;) ,
      * <br>
      * <br>
-     * &nbsp; &nbsp; &beta; &equiv; <i>w</i><sup>2</sup> =
+     * &nbsp; &nbsp; &beta; &equiv; <em>w</em><sup>2</sup> =
      * &phi;<sub>12</sub>/sin &sigma;
      * <br>
      * <br>
-     * where &phi;<sub><i>ij</i></sub> are the elements of the 2&times;2
+     * where &phi;<sub><em>ij</em></sub> are the elements of the 2&times;2
      * diagonal blocks of
-     * <b>&Phi;</b> corresponding the the particular phase plane, the function
-     * <i>w</i>
+     * <strong>&Phi;</strong> corresponding the the particular phase plane, the function
+     * <em>w</em>
      * is taken from Reiser, and &sigma; is the phase advance through the cell
      * for the particular phase plance.
      * </p>
      *
-     * @param matPhiCell transfer matrix <b>&Phi;</b> for a periodic cell (or
+     * @param matPhiCell transfer matrix <strong>&Phi;</strong> for a periodic cell (or
      * full turn)
      *
      * @return array of matched Courant-Snyder parameters
-     * (&alpha;<sub><i>cell</i></sub>, &beta;<sub><i>cell</i></sub>,
+     * (&alpha;<sub><em>cell</em></sub>, &beta;<sub><em>cell</em></sub>,
      * <code>NaN</code>) for each phase plane
      *
      *
@@ -621,69 +621,69 @@ public abstract class CalculationEngine {
      * Convenience function for returning the chromatic aberration coefficients.
      * </p>
      * <p>
-     * For example, in the horizontal phase plane (<i>x,x'</i>) these
-     * coefficients specify the change in position &Delta;<i>x</i>
-     * and the change in divergence angle &Delta;<i>x'</i>
+     * For example, in the horizontal phase plane (<em>x,x'</em>) these
+     * coefficients specify the change in position &Delta;<em>x</em>
+     * and the change in divergence angle &Delta;<em>x'</em>
      * due to chromatic dispersion &delta; within the beam, or
      * <br>
      * <br>
-     * &nbsp; &nbsp; &Delta;<i>x</i> = (<i>dx</i>/<i>d</i>&delta;) &sdot;
+     * &nbsp; &nbsp; &Delta;<em>x</em> = (<em>dx</em>/<em>d</em>&delta;) &sdot;
      * &delta; ,
      * <br>
      * <br>
-     * &nbsp; &nbsp; &Delta;<i>x'</i> = (<i>dx'</i>/<i>d</i>&delta;) &sdot;
+     * &nbsp; &nbsp; &Delta;<em>x'</em> = (<em>dx'</em>/<em>d</em>&delta;) &sdot;
      * &delta; .
      * <br>
      * <br>
-     * That is, (<i>dx</i>/<i>d</i>&delta;) and (<i>dx'</i>/<i>d</i>&delta;) are
+     * That is, (<em>dx</em>/<em>d</em>&delta;) and (<em>dx'</em>/<em>d</em>&delta;) are
      * the dispersion coefficients for the horizontal plane position and
      * horizontal plane divergence angle, respectively. The vector returned by
      * this method contains all the analogous coefficients for all the phase
      * planes.
      * </p>
      * <p>
-     * The chromatic dispersion coefficient vector <b>&Delta;</b> can be built
-     * from the 6<sup><i>th</i></sup>
-     * column of the state response matrix <b>&Phi;</b>. However we must pay
+     * The chromatic dispersion coefficient vector <strong>&Delta;</strong> can be built
+     * from the 6<sup><em>th</em></sup>
+     * column of the state response matrix <strong>&Phi;</strong>. However we must pay
      * close attention to the transverse plane quantities. Specifically,
-     * consider again the horizontal phase plane (<i>x,x'</i>). Denoting the
-     * elements of <b>&Phi;</b>
-     * in the 6<sup><i>th</i></sup> column (i.e., the <i>z'</i> column)
+     * consider again the horizontal phase plane (<em>x,x'</em>). Denoting the
+     * elements of <strong>&Phi;</strong>
+     * in the 6<sup><em>th</em></sup> column (i.e., the <em>z'</em> column)
      * corresponding to this positions as &phi;<sub>1,6</sub> and
      * &phi;<sub>2,6</sub>, we can write them as
      * <br>
      * <br>
-     * &nbsp; &nbsp; &phi;<sub>1,6</sub> = &part;<i>x</i>/&part;<i>z'</i> ,
+     * &nbsp; &nbsp; &phi;<sub>1,6</sub> = &part;<em>x</em>/&part;<em>z'</em> ,
      * <br>
      * <br>
-     * &nbsp; &nbsp; &phi;<sub>2,6</sub> = &part;<i>x'</i>/&part;<i>z'</i> .
+     * &nbsp; &nbsp; &phi;<sub>2,6</sub> = &part;<em>x'</em>/&part;<em>z'</em> .
      * <br>
      * <br>
      * Now consider the relationship
      * <br>
      * <br>
-     * &nbsp; &nbsp; &delta; &equiv; (<i>p</i> -
-     * <i>p</i><sub>0</sub>)/<i>p</i><sub>0</sub>
-     * = &gamma;<sup>2</sup><i>z</i>'= &gamma;<sup>2</sup><i>dz</i>/<i>ds</i>
+     * &nbsp; &nbsp; &delta; &equiv; (<em>p</em> -
+     * <em>p</em><sub>0</sub>)/<em>p</em><sub>0</sub>
+     * = &gamma;<sup>2</sup><em>z</em>'= &gamma;<sup>2</sup><em>dz</em>/<em>ds</em>
      * <br>
      * <br>
      * or
      * <br>
      * <br>
-     * &nbsp; &nbsp; &part;<i>z'</i>/&part;&delta; = 1/&gamma;<sup>2</sup> .
+     * &nbsp; &nbsp; &part;<em>z'</em>/&part;&delta; = 1/&gamma;<sup>2</sup> .
      * <br>
      * <br>
      * Thus, it is necessary to multiply the transfer plane elements of
-     * <i>Row</i><sub>6</sub>&Phi; by 1/&gamma;<sup>2</sup> to covert to the
+     * <em>Row</em><sub>6</sub>&Phi; by 1/&gamma;<sup>2</sup> to covert to the
      * conventional dispersion coefficients. Specifically, for the horizontal
      * plane
      * <br>
      * <br>
-     * &nbsp; &nbsp; &Delta;<sub><i>x</i></sub> = (<i>dx</i>/<i>d</i>&delta;) =
+     * &nbsp; &nbsp; &Delta;<sub><em>x</em></sub> = (<em>dx</em>/<em>d</em>&delta;) =
      * &phi;<sub>6,1</sub>/&gamma;<sup>2</sup> ,
      * <br>
      * <br>
-     * &nbsp; &nbsp; &Delta;<sub><i>x'</i></sub> = (<i>dx'</i>/<i>d</i>&delta;)
+     * &nbsp; &nbsp; &Delta;<sub><em>x'</em></sub> = (<em>dx'</em>/<em>d</em>&delta;)
      * = &phi;<sub>6,2</sub>/&gamma;<sup>2</sup> ,
      * <br>
      * <br>
@@ -699,7 +699,7 @@ public abstract class CalculationEngine {
      * location of aberration
      *
      * @return vector of chromatic dispersion coefficients in
-     * <b>meters/radian</b>
+     * <strong>meters/radian</strong>
      *
      * @author Christopher K. Allen
      * @since Nov 15, 2013
@@ -730,92 +730,92 @@ public abstract class CalculationEngine {
      * <p>
      * Calculates the differential coefficients describing change in the fixed
      * point of the closed orbit versus chromatic dispersion. The given transfer
-     * matrix <b>&Phi;</b>
+     * matrix <strong>&Phi;</strong>
      * is assumed to be the one-turn map of the ring with which the fixed point
      * is caculated. The fixed point is with regard to the transverse phase
      * plane coordinates.
      * </p>
      * <p>
-     * The transverse plane dispersion vector <b>&Delta;</b> is defined
+     * The transverse plane dispersion vector <strong>&Delta;</strong> is defined
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&Delta;</b><sub><i>t</i></sub> &equiv;
-     * -(1/&gamma;<sup>2</sup>)[d<i>x</i>/d<i>z'</i>, d<i>x'</i>/d<i>z'</i>,
-     * d<i>y</i>/d<i>z'</i>, d<i>y'</i>/d<i>z'</i>]<sup><i>T</i></sup> .
+     * &nbsp; &nbsp; <strong>&Delta;</strong><sub><em>t</em></sub> &equiv;
+     * -(1/&gamma;<sup>2</sup>)[d<em>x</em>/d<em>z'</em>, d<em>x'</em>/d<em>z'</em>,
+     * d<em>y</em>/d<em>z'</em>, d<em>y'</em>/d<em>z'</em>]<sup><em>T</em></sup> .
      * <br>
      * <br>
-     * It can be identified as the first 4 entries of the 6<sup><i>th</i></sup>
-     * column in the transfer matrix <b>&Phi;</b>. The above vector quantifies
+     * It can be identified as the first 4 entries of the 6<sup><em>th</em></sup>
+     * column in the transfer matrix <strong>&Phi;</strong>. The above vector quantifies
      * the change in the transverse particle phase coordinate position versus
      * the change in particle momentum. The factor -(1/&gamma;<sup>2</sup>) is
-     * needed to convert from longitudinal divergence angle <i>z'</i> used by
-     * XAL to momentum &delta;<i>p</i> &equiv; &Delta;<i>p</i>/<i>p</i> used in
+     * needed to convert from longitudinal divergence angle <em>z'</em> used by
+     * XAL to momentum &delta;<em>p</em> &equiv; &Delta;<em>p</em>/<em>p</em> used in
      * the dispersion definition. Specifically,
      * <br>
      * <br>
-     * &nbsp; &nbsp; &delta;<i>p</i> &equiv; &Delta;<i>p</i>/<i>p</i> =
-     * &gamma;<sup>2</sup><i>z</i>'
+     * &nbsp; &nbsp; &delta;<em>p</em> &equiv; &Delta;<em>p</em>/<em>p</em> =
+     * &gamma;<sup>2</sup><em>z</em>'
      * <br>
      * <br>
      * As such, the above vector can be better described
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>&Delta;</b><sub><i>t</i></sub> &equiv;
-     * [&Delta;<i>x</i>/&delta;<i>p</i>, &Delta;<i>x'</i>/&delta;<i>p</i>,
-     * &Delta;<i>y</i>/&delta;<i>p</i>,
-     * &Delta;<i>y'</i>/&delta;<i>p</i>]<sup><i>T</i></sup>
+     * &nbsp; &nbsp; <strong>&Delta;</strong><sub><em>t</em></sub> &equiv;
+     * [&Delta;<em>x</em>/&delta;<em>p</em>, &Delta;<em>x'</em>/&delta;<em>p</em>,
+     * &Delta;<em>y</em>/&delta;<em>p</em>,
+     * &Delta;<em>y'</em>/&delta;<em>p</em>]<sup><em>T</em></sup>
      * <br>
      * <br>
      * explicitly describing the change in transverse phase coordinate for
-     * fractional change in momentum &delta;<i>p</i>.
+     * fractional change in momentum &delta;<em>p</em>.
      * </p>
      * <p>
      * Since we are only concerned with transverse phase space coordinates, we
-     * restrict ourselves to the 4&times;4 upper diagonal block of <b>&Phi;</b>,
-     * which we denote take <b>T</b>. That is, <b>T</b> = &pi; &sdot;
-     * <b>&Phi;</b>
-     * where &pi; : <b>R</b><sup>6&times;6</sup> &rarr;
-     * <b>R</b><sup>4&times;4</sup> is the projection operator.
+     * restrict ourselves to the 4&times;4 upper diagonal block of <strong>&Phi;</strong>,
+     * which we denote take <strong>T</strong>. That is, <strong>T</strong> = &pi; &sdot;
+     * <strong>&Phi;</strong>
+     * where &pi; : <strong>R</strong><sup>6&times;6</sup> &rarr;
+     * <strong>R</strong><sup>4&times;4</sup> is the projection operator.
      * </p>
      * <p>
-     * This method finds that point <b>z</b><sub><i>t</i></sub> &equiv;
-     * (<i>x<sub>t</sub></i>, <i>x'<sub>t</sub></i>, <i>y<sub>t</sub></i>,
-     * <i>y'<sub>t</sub></i>) in transvse phase space that is invariant under
-     * the action of the ring for a given momentum spread &delta;<i>p</i>. That
+     * This method finds that point <strong>z</strong><sub><em>t</em></sub> &equiv;
+     * (<em>x<sub>t</sub></em>, <em>x'<sub>t</sub></em>, <em>y<sub>t</sub></em>,
+     * <em>y'<sub>t</sub></em>) in transvse phase space that is invariant under
+     * the action of the ring for a given momentum spread &delta;<em>p</em>. That
      * is, the particle ends up in the same location each revolution. With a
-     * finite momentum spread of &delta;<i>p</i> &gt; 0 we require this require
+     * finite momentum spread of &delta;<em>p</em> &gt; 0 we require this require
      * that
      * <br>
      * <br>
-     * &nbsp; &nbsp; <b>Tz</b><sub><i>t</i></sub> +
-     * &delta;<i>p</i><b>&Delta;</b><sub><i>t</i></sub> =
-     * <b>z</b><sub><i>t</i></sub> ,
+     * &nbsp; &nbsp; <strong>Tz</strong><sub><em>t</em></sub> +
+     * &delta;<em>p</em><strong>&Delta;</strong><sub><em>t</em></sub> =
+     * <strong>z</strong><sub><em>t</em></sub> ,
      * <br>
      * <br>
      * which can be written
      * <br>
      * <br>
-     * &nbsp; <b>z</b><sub><i>t</i></sub> = &delta;<i>p</i>(<b>I</b> -
-     * <b>T</b>)<sup>-1</sup><b>&Delta;</b><sub><i>t</i></sub> ,
+     * &nbsp; <strong>z</strong><sub><em>t</em></sub> = &delta;<em>p</em>(<strong>I</strong> -
+     * <strong>T</strong>)<sup>-1</sup><strong>&Delta;</strong><sub><em>t</em></sub> ,
      * <br>
      * <br>
-     * where <b>I</b> is the identity matrix. Dividing both sides by
-     * &delta;<i>p</i> yields the final result
+     * where <strong>I</strong> is the identity matrix. Dividing both sides by
+     * &delta;<em>p</em> yields the final result
      * <br>
      * <br>
-     * &nbsp; <b>z</b><sub>0</sub> &equiv;
-     * <b>z</b><sub><i>t</i></sub>/&delta;<i>p</i> = (<b>I</b> -
-     * <b>T</b>)<sup>-1</sup><b>&Delta;</b><sub><i>t</i></sub> ,
+     * &nbsp; <strong>z</strong><sub>0</sub> &equiv;
+     * <strong>z</strong><sub><em>t</em></sub>/&delta;<em>p</em> = (<strong>I</strong> -
+     * <strong>T</strong>)<sup>-1</sup><strong>&Delta;</strong><sub><em>t</em></sub> ,
      * <br>
      * <br>
      * which is the returned value of this method. It is normalized by
-     * &delta;<i>p</i> so that we can compute the closed orbit for any given
+     * &delta;<em>p</em> so that we can compute the closed orbit for any given
      * momentum spread.
      * </p>
      * <p>
-     * The eigenvalues of <b>T</b> determine conditioning of the the resolvent
-     * (<b>I</b> - <b>T</b>)<sup>-1</sup>. Whenever 1 &in; &lambda;(<b>T</b>) we
-     * have problems. Currently a value of <b>0</b> is returned whenever the
+     * The eigenvalues of <strong>T</strong> determine conditioning of the the resolvent
+     * (<strong>I</strong> - <strong>T</strong>)<sup>-1</sup>. Whenever 1 &in; &lambda;(<strong>T</strong>) we
+     * have problems. Currently a value of <strong>0</strong> is returned whenever the
      * resolvent does not exist.
      * </p>
      *
@@ -823,9 +823,9 @@ public abstract class CalculationEngine {
      * one-turn map
      * @param dblGamma	relativistic factor
      *
-     * @return The closed orbit fixed point <b>z</b><sub>0</sub> for finite
+     * @return The closed orbit fixed point <strong>z</strong><sub>0</sub> for finite
      * dispersion, normalized by momentum spread. Returned as an array
-     * [<i>x</i><sub>0</sub>,<i>x'</i><sub>0</sub>,<i>y</i><sub>0</sub>,<i>y'</i><sub>0</sub>]/&delta;<i>p</i>
+     * [<em>x</em><sub>0</sub>,<em>x'</em><sub>0</sub>,<em>y</em><sub>0</sub>,<em>y'</em><sub>0</sub>]/&delta;<em>p</em>
      *
      * @author Thomas Pelaia
      * @author Christopher K. Allen

@@ -138,9 +138,9 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
      * Creates a new instance of IdealRfGap
      *
      * @param strId instance identifier of element
-     * @param dblETL field/transit time/length factor for gap (in <b>volts</b>)
-     * @param dblPhase operating phase of gap (in <b>radians</b>)
-     * @param dblFreq operating RF frequency of gap (in <b>Hertz</b>)
+     * @param dblETL field/transit time/length factor for gap (in <strong>volts</strong>)
+     * @param dblPhase operating phase of gap (in <strong>radians</strong>)
+     * @param dblFreq operating RF frequency of gap (in <strong>Hertz</strong>)
      */
     public IdealRfGap(String strId, double dblETL, double dblPhase, double dblFreq) {
         super(TYPE, strId);
@@ -153,7 +153,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
     /**
      * JavaBean constructor - creates a new uninitialized instance of IdealRfGap
      *
-     * <b>BE CAREFUL</b>
+     * <strong>BE CAREFUL</strong>
      */
     public IdealRfGap() {
         super(TYPE);
@@ -286,7 +286,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
      * of calculating the phase advance.
      *
      *
-     * @return energy gain for this probe (<b>in electron-volts</b>)
+     * @return energy gain for this probe (<strong>in electron-volts</strong>)
      */
     @Override
     public double energyGain(IProbe probe) {
@@ -300,8 +300,8 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
     /**
      * <p>
      * Compute the transfer map for an ideal RF gap. </p <p>
-     * New transfer matrix with same definitions of <i>k<sub>r</sub></i> and
-     * <i>k<sub>z</sub></i>
+     * New transfer matrix with same definitions of <em>k<sub>r</sub></em> and
+     * <em>k<sub>z</sub></em>
      * from Trace3D manual, but correctly considering XAL and trace3d
      * longitudinal phase. transformation
      * </p>
@@ -524,33 +524,33 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
 
     /**
      * <p>
-     * Returns the structure mode <b>number</b> <i>q</i> for the cavity in which
+     * Returns the structure mode <strong>number</strong> <em>q</em> for the cavity in which
      * this gap belongs. Here the structure mode number is defined in terms of
      * the fractional phase advance between cells, with respect to &pi;. To make
      * this explicit
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>q</i> = 0 &nbsp; &nbsp; &rAarr; 0 mode
+     * &nbsp; &nbsp; <em>q</em> = 0 &nbsp; &nbsp; &rAarr; 0 mode
      * <br/>
-     * &nbsp; &nbsp; <i>q</i> = 1/2 &rArr; &pi;/2 mode
+     * &nbsp; &nbsp; <em>q</em> = 1/2 &rArr; &pi;/2 mode
      * <br/>
-     * &nbsp; &nbsp; <i>q</i> = 1 &nbsp; &nbsp; &rAarr; &pi; mode
+     * &nbsp; &nbsp; <em>q</em> = 1 &nbsp; &nbsp; &rAarr; &pi; mode
      * <br/>
      * <br/>
-     * Thus, a cavity mode constant of <i>q</i> = 1/2 indicates a &pi;/2 phase
+     * Thus, a cavity mode constant of <em>q</em> = 1/2 indicates a &pi;/2 phase
      * advance between adjacent cells and a corresponding cell amplitude
-     * function <i>A<sub>n</sub></i> of
+     * function <em>A<sub>n</sub></em> of
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>A<sub>n</sub></i> = cos(<i>nq</i>&pi;)
+     * &nbsp; &nbsp; <em>A<sub>n</sub></em> = cos(<em>nq</em>&pi;)
      * <br/>
      * <br/>
-     * where <i>n</i> is the index of the cell within the coupled cavity.
+     * where <em>n</em> is the index of the cell within the coupled cavity.
      * </p>
      *
      * @return the cavity mode constant for the cell containing this gap
      *
-     * @see <i>RF Linear Accelerators</i>, Thomas P. Wangler (Wiley, 2008).
+     * @see <em>RF Linear Accelerators</em>, Thomas P. Wangler (Wiley, 2008).
      *
      * @since Nov 20, 2014
      */
