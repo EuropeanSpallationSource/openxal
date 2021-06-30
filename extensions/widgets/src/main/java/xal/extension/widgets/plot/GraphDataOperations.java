@@ -1,10 +1,14 @@
 package xal.extension.widgets.plot;
 
 import java.util.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import xal.tools.ArrayMath;
 
 public class GraphDataOperations {
+
+    private static final Logger LOGGER = Logger.getLogger(GraphDataOperations.class.getName());
 
     private GraphDataOperations() {
     }
@@ -326,7 +330,7 @@ public class GraphDataOperations {
             } else {
                 xInter = (xMin + xMax) / 2.0;
             }
-            //System.out.println("debug nIter="+nIter+" xMin="+xMin+" xMax="+xMax+" sign0="+sign0+" sign1="+sign1);
+            //LOGGER.log(Level.INFO, "debug nIter="+nIter+" xMin="+xMin+" xMax="+xMax+" sign0="+sign0+" sign1="+sign1);
             yInter = (gd1.getValueY(xInter) + gd2.getValueY(xInter)) / 2.0;
             nCount++;
         }
@@ -716,10 +720,10 @@ public class GraphDataOperations {
         double[][] res = polynomialFit(gd, 0., 4.0, 4);
 
         for (int i = 0; i < res[0].length; i++) {
-            System.out.println("cof[" + i + "]=" + res[0][i]);
+            LOGGER.log(Level.INFO, "cof[{0}]={1}", new Object[]{i, res[0][i]});
         }
         for (int i = 0; i < res[0].length; i++) {
-            System.out.println("err[" + i + "]=" + res[1][i]);
+            LOGGER.log(Level.INFO, "err[{0}]={1}", new Object[]{i, res[1][i]});
         }
 
         int nPoints = gd.getNumbOfPoints();
@@ -728,7 +732,7 @@ public class GraphDataOperations {
             x = gd.getX(i);
             y = gd.getY(i);
             yApp = GraphDataOperations.polynom(x, res[0]);
-            System.out.println("ind =" + i + "  x=" + x + " y=" + y + " app=" + yApp);
+            LOGGER.log(Level.INFO, "ind ={0}  x={1} y={2} app={3}", new Object[]{i, x, y, yApp});
         }
 
         double xExtr = 10.;
@@ -741,8 +745,8 @@ public class GraphDataOperations {
         }
 
         double xMax = GraphDataOperations.getExtremumPosition(gd, -100., +100.);
-        System.out.println("Extremum pos. theoretical=" + xExtr);
-        System.out.println("max pos=" + xMax);
+        LOGGER.log(Level.INFO, "Extremum pos. theoretical={0}", xExtr);
+        LOGGER.log(Level.INFO, "max pos={0}", xMax);
 
     }
 

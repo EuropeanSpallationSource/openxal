@@ -203,7 +203,7 @@ public class ModelProxy {
         try {
             scenario.resync();
         } catch (SynchronizationException e) {
-            System.out.println(e);
+            LOGGER.log(Level.SEVERE, null, e);
             throw new LatticeError("SynchronizationException during resync");
         }
         MPXStopWatch.timeElapsed("...xal.model.Scenario.resync():end! ");

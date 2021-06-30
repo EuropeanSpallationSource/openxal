@@ -365,7 +365,7 @@ public class TraceXalUnitConverter {
 
         //       double fParmila = vnorm*vnorm*vnorm*gamma*gamma*gamma;
         //       double fT3d     = vnorm*gamma*(gamma*gamma-1);
-        //       System.out.println("beta, gamma, fParmila, fT3d = "+vnorm+" "+gamma+" "+fParmila+" "+fT3d);
+        //       LOGGER.log(Level.INFO, "beta, gamma, fParmila, fT3d = "+vnorm+" "+gamma+" "+fParmila+" "+fT3d);
         emittance = t3dTwiss.getEmittance() * 1000.0; // to deg-eV
         emittance = emittance / 5.0;                  // to rms emittance
         emittance = emittance * Cdeg;                 // to m-rad

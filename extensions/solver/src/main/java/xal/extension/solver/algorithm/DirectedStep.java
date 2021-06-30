@@ -72,12 +72,12 @@ public class DirectedStep extends SearchAlgorithm {
             return;
         }
         try {
-            //System.out.println( "initial solution:  " + bestSolution );sx
+            //LOGGER.log(Level.INFO,  "initial solution:  " + bestSolution );sx
             if (lastOriginTrial != bestSolution) {		// no point in repeating the same result
                 lastOriginTrial = bestSolution;
                 final Trial bestTrial = performAcceleratedSearch(bestSolution);
             }
-            //System.out.println( "best solution:  " + bestTrial + "\n\n" );
+            //LOGGER.log(Level.INFO,  "best solution:  " + bestTrial + "\n\n" );
         } catch (RunTerminationException exception) {
         }
     }
@@ -87,10 +87,10 @@ public class DirectedStep extends SearchAlgorithm {
      */
     protected Trial performAcceleratedSearch(final Trial originTrial) {
         final Trial secondTrial = performGradientAndLinearSearch(originTrial);
-        //System.out.println( "second trial:  " + secondTrial );
+        //LOGGER.log(Level.INFO,  "second trial:  " + secondTrial );
         if (secondTrial != originTrial) {
             final Trial thirdTrial = performGradientAndLinearSearch(secondTrial);
-            //System.out.println( "third trial:  " + thirdTrial );
+            //LOGGER.log(Level.INFO,  "third trial:  " + thirdTrial );
             if (thirdTrial != secondTrial) {
                 double[] vector = calculateVector(thirdTrial.getTrialPoint(), originTrial.getTrialPoint());
                 return searchAlongGradient(vector, thirdTrial);
@@ -140,7 +140,7 @@ public class DirectedStep extends SearchAlgorithm {
             valueMap.put(variable, originValue);
         }
 
-        //System.out.println( "Gradient:  " + ArrayTool.asString( gradient ) );
+        //LOGGER.log(Level.INFO,  "Gradient:  " + ArrayTool.asString( gradient ) );
         return gradient;
     }
 
@@ -180,7 +180,7 @@ public class DirectedStep extends SearchAlgorithm {
                 maxScale = Math.min(maxScale, (limit - originPoint.getValue(variable)) / gradient[index]);
             }
         }
-        //System.out.println( "max scale:  " + maxScale );
+        //LOGGER.log(Level.INFO,  "max scale:  " + maxScale );
 
         final QuadraticMaximumFinder finder = new QuadraticMaximumFinder();
         Trial bestTrial = originTrial;
@@ -191,7 +191,7 @@ public class DirectedStep extends SearchAlgorithm {
                 final TrialPoint trialPoint = trialPointAlongGradient(gradient, originPoint, scale, variables);
                 final Trial trial = evaluateTrialPoint(trialPoint);
                 final double satisfaction = getSatisfaction(trial);
-                //System.out.println( "scale:  " + scale + ", trialPoint:  " + trialPoint + ", satisfaction:  " + satisfaction );
+                //LOGGER.log(Level.INFO,  "scale:  " + scale + ", trialPoint:  " + trialPoint + ", satisfaction:  " + satisfaction );
                 finder.add(scale, satisfaction);
                 if (satisfaction > bestSatisfaction) {
                     maxScale = bestScale;
@@ -208,7 +208,7 @@ public class DirectedStep extends SearchAlgorithm {
                 final Trial trial = evaluateTrialPoint(trialPoint);
                 final double satisfaction = getSatisfaction(trial);
                 finder.add(scale, satisfaction);
-                //System.out.println( "scale:  " + scale + ", trialPoint:  " + trialPoint + ", satisfaction:  " + satisfaction );
+                //LOGGER.log(Level.INFO,  "scale:  " + scale + ", trialPoint:  " + trialPoint + ", satisfaction:  " + satisfaction );
                 if (satisfaction > bestSatisfaction) {
                     minScale = bestScale;
                     bestScale = scale;
@@ -220,13 +220,13 @@ public class DirectedStep extends SearchAlgorithm {
             }
             if (finder.hasMaximum()) {
                 final double scale = finder.getOptimalX();
-                //System.out.println( "Finder maximum:  " + scale + ", minScale:  " + minScale + ", maxScale:  " + maxScale );
+                //LOGGER.log(Level.INFO,  "Finder maximum:  " + scale + ", minScale:  " + minScale + ", maxScale:  " + maxScale );
                 if (scale < maxScale && scale > minScale) {
                     final TrialPoint trialPoint = trialPointAlongGradient(gradient, originPoint, scale, variables);
                     final Trial trial = evaluateTrialPoint(trialPoint);
                     final double satisfaction = getSatisfaction(trial);
                     if (satisfaction > bestSatisfaction) {
-                        //System.out.println( "Got a better point with the quadratic fit:  " + satisfaction );
+                        //LOGGER.log(Level.INFO,  "Got a better point with the quadratic fit:  " + satisfaction );
                         if (scale > bestScale) {
                             minScale = bestScale;
                         } else {
@@ -410,8 +410,8 @@ public class DirectedStep extends SearchAlgorithm {
                 curvature = (dy21 * dx01 - dy01 * dx21) / ((x2 * x2 - x1 * x1) * dx01 - (x0 * x0 - x1 * x1) * dx21);
                 slope = (y2 - y1 - curvature * (x2 * x2 - x1 * x1)) / dx21;
 
-                //				System.out.println( "Calculating curvature for samples:  " + samples );
-                //				System.out.println( "Curvature:  " + curvature + ", slope:  " + slope );
+                //				LOGGER.log(Level.INFO,  "Calculating curvature for samples:  " + samples );
+                //				LOGGER.log(Level.INFO,  "Curvature:  " + curvature + ", slope:  " + slope );
             }
 
             needsUpdate = false;

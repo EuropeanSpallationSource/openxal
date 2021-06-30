@@ -5,6 +5,8 @@ package xal.tools.text;
 
 import java.text.DecimalFormat;
 import java.text.FieldPosition;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This algorithm for appending doubles to StringBuffer is borrowed from "Java
@@ -15,6 +17,9 @@ import java.text.FieldPosition;
  * @author Craig McChesney
  */
 public class DoubleToString {
+
+    private static final Logger LOGGER = Logger.getLogger(DoubleToString.class.getName());
+    
     //Hardcode some byte arrays to make them quickly available
 
     /**
@@ -495,13 +500,13 @@ public class DoubleToString {
         StringBuffer s;
         int numDigits = 4;
 
-        System.out.println("The " + name);
-        System.out.println("    " + list);
-        System.out.println("are appended to a StringBuffer one by one " + repeat + " times.");
+        LOGGER.log(Level.INFO, "The {0}", name);
+        LOGGER.log(Level.INFO, "    {0}", list);
+        LOGGER.log(Level.INFO, "are appended to a StringBuffer one by one {0} times.", repeat);
         s = new StringBuffer();
         Runtime.getRuntime().gc();
 
-        System.out.println("Starting test");
+        LOGGER.log(Level.INFO, "Starting test");
         time1 = System.currentTimeMillis();
         for (int i = repeat; i > 0; i--) {
             for (int j = arr.length - 1; j >= 0; j--) {
@@ -509,11 +514,11 @@ public class DoubleToString {
             }
         }
         time1 = System.currentTimeMillis() - time1;
-        System.out.println("  The append        took " + time1 + " milliseconds");
+        LOGGER.log(Level.INFO, "  The append        took {0} milliseconds", time1);
         s = new StringBuffer();
         Runtime.getRuntime().gc();
 
-        System.out.println("Starting test");
+        LOGGER.log(Level.INFO, "Starting test");
         time1 = System.currentTimeMillis();
         for (int i = repeat; i > 0; i--) {
             for (int j = arr.length - 1; j >= 0; j--) {
@@ -521,11 +526,11 @@ public class DoubleToString {
             }
         }
         time1 = System.currentTimeMillis() - time1;
-        System.out.println("  The format append took " + time1 + " milliseconds");
+        LOGGER.log(Level.INFO, "  The format append took {0} milliseconds", time1);
         s = new StringBuffer();
         Runtime.getRuntime().gc();
 
-        System.out.println("Starting test");
+        LOGGER.log(Level.INFO, "Starting test");
         time2 = System.currentTimeMillis();
         for (int i = repeat; i > 0; i--) {
             for (int j = arr.length - 1; j >= 0; j--) {
@@ -533,11 +538,11 @@ public class DoubleToString {
             }
         }
         time2 = System.currentTimeMillis() - time2;
-        System.out.println("  The StringBuffer  took " + time2 + " milliseconds");
+        LOGGER.log(Level.INFO, "  The StringBuffer  took {0} milliseconds", time2);
         s = new StringBuffer();
         Runtime.getRuntime().gc();
 
-        System.out.println("Starting test");
+        LOGGER.log(Level.INFO, "Starting test");
         time2 = System.currentTimeMillis();
         DecimalFormat format = new DecimalFormat("#,##0.0000");
         FieldPosition f = new FieldPosition(0);
@@ -547,7 +552,7 @@ public class DoubleToString {
             }
         }
         time2 = System.currentTimeMillis() - time2;
-        System.out.println("  The DecimalFormat  took " + time2 + " milliseconds");
+        LOGGER.log(Level.INFO, "  The DecimalFormat  took {0} milliseconds", time2);
 
         Runtime.getRuntime().gc();
 
@@ -556,28 +561,27 @@ public class DoubleToString {
             append(s, arr[j]);
             s.append(", ");
         }
-        System.out.println("    " + s);
+        LOGGER.log(Level.INFO, "    {0}", s);
 
         s = new StringBuffer();
         for (int j = 0; j < arr.length; j++) {
             appendFormatted(s, arr[j], 4, '.', ',', 3, '-', '\uffff');
             s.append(", ");
         }
-        System.out.println("    " + s);
+        LOGGER.log(Level.INFO, "    {0}", s);
 
         s = new StringBuffer();
         for (int j = 0; j < arr.length; j++) {
             s.append(arr[j]).append(", ");
         }
-        System.out.println("    " + s);
+        LOGGER.log(Level.INFO, "    {0}", s);
 
         s = new StringBuffer();
         for (int j = 0; j < arr.length; j++) {
             format.format(arr[j], s, f).append(", ");
         }
-        System.out.println("    " + s);
+        LOGGER.log(Level.INFO, "{0}    ", s);
 
-        System.out.println();
     }
 
     /**

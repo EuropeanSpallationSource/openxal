@@ -390,7 +390,7 @@ public class WheelswitchFormatter {
      * @see #getMinimum()
      */
     public void setValue(double newValue) {
-        //		System.out.println("SET VALUE: " + newValue);
+        //		LOGGER.log(Level.INFO, "SET VALUE: " + newValue);
         if (newValue == value) {
             return;
         } else if (newValue <= maximum && newValue >= minimum) {

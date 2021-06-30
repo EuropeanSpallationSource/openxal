@@ -167,7 +167,7 @@ public abstract class SearchAlgorithm implements AlgorithmScheduleListener, Solu
      */
     public Trial evaluateTrialPoint(final TrialPoint trialPoint) {
         --evaluationsLeft;
-        //System.out.println("evaluating trial point for count: " + evaluationsLeft + " using " + _algorithm.getLabel());
+        //LOGGER.log(Level.INFO, "evaluating trial point for count: " + evaluationsLeft + " using " + _algorithm.getLabel());
         return schedule.evaluateTrialPoint(this, trialPoint);
     }
 

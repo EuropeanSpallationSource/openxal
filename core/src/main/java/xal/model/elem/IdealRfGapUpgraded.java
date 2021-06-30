@@ -6,6 +6,8 @@
 package xal.model.elem;
 
 import java.io.PrintWriter;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import xal.model.IElement;
 import xal.model.IProbe;
@@ -99,6 +101,8 @@ import xal.tools.math.fnc.poly.RealUnivariatePolynomial;
  * <br/>July 29, 2015
  */
 public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavityCell {
+
+    private static final Logger LOGGER = Logger.getLogger(IdealRfGapUpgraded.class.getName());
 
     /*
      *  Global Constants
@@ -968,7 +972,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
     public double energyGain(IProbe probe) {
         double dW = this.compGapPhaseAndEnergyGain(probe).W;
 
-//        System.out.println("IdealRfGapUpgraded#energyGain() - " + this.getId() + " index=" + this.indCell + ", dW = " + dW);
+//        LOGGER.log(Level.INFO, "IdealRfGapUpgraded#energyGain() - " + this.getId() + " index=" + this.indCell + ", dW = " + dW);
         return dW;
     }
 
@@ -1037,10 +1041,10 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
     @Override
     protected PhaseMap transferMap(IProbe probe) throws ModelException {
 
-        //      System.out.println("This is " + this.getId());
-        //      System.out.println("dblFieldE0 is   " + this.getE0());
-        //      System.out.println("ETL is  " + this.getETL());
-        //      System.out.println("");
+        //      LOGGER.log(Level.INFO, "This is " + this.getId());
+        //      LOGGER.log(Level.INFO, "dblFieldE0 is   " + this.getE0());
+        //      LOGGER.log(Level.INFO, "ETL is  " + this.getETL());
+        //      LOGGER.log(Level.INFO, "");
         // Get probe parameters at initial energy
         double Er = probe.getSpeciesRestEnergy();
         double Wi = probe.getKineticEnergy();
@@ -1774,12 +1778,12 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
 //            double dS = (this.fitSTF.evaluateAt(bi + db) - stf)/db;
             double dT = (this.T(bi + db) - T) / db;
             double dS = (this.S(bi + db) - S) / db;
-            System.out.println("IdealRfGapUpgraded#compEnergyGainIndirect: " + this.getId());
-            System.out.println("    phi=" + phi * (180 / Math.PI) + ", cos(phi)=" + Math.cos(phi) + ", Acos(phi)=" + A * Math.cos(phi));
-            System.out.println("    T(b)=" + T + ", T'=" + d_T + ", S(b)=" + S + ", S'=" + d_S);
-            System.out.println("    dT/dk=" + d_T * (bi / ki) + ", dS/dk=" + d_S * (bi / ki));
-            System.out.println("    Numeric: T'=" + dT + ", S'=" + dS);
-            System.out.println("    ki=" + ki);
+            LOGGER.log(Level.INFO, "IdealRfGapUpgraded#compEnergyGainIndirect: " + this.getId());
+            LOGGER.log(Level.INFO, "    phi=" + phi * (180 / Math.PI) + ", cos(phi)=" + Math.cos(phi) + ", Acos(phi)=" + A * Math.cos(phi));
+            LOGGER.log(Level.INFO, "    T(b)=" + T + ", T'=" + d_T + ", S(b)=" + S + ", S'=" + d_S);
+            LOGGER.log(Level.INFO, "    dT/dk=" + d_T * (bi / ki) + ", dS/dk=" + d_S * (bi / ki));
+            LOGGER.log(Level.INFO, "    Numeric: T'=" + dT + ", S'=" + dS);
+            LOGGER.log(Level.INFO, "    ki=" + ki);
         }
 
         // Initialize serach variables
@@ -1814,7 +1818,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
 
             // TODO Remove type outs
             if (!this.bolMethodCalled) {
-                System.out.println("    iter#" + cntIter + ": b_mid=" + b_mid + ", d_phi=" + d_phi + ", dW=" + dW);
+                LOGGER.log(Level.INFO, "    iter#{0}: b_mid={1}, d_phi={2}, dW={3}", new Object[]{cntIter, b_mid, d_phi, dW});
             }
 
             dblCnvErr = Math.abs(d_phi - 2.0 * (phi - phi0));
@@ -1829,13 +1833,12 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         if (!this.bolMethodCalled) {
             double bf = RelativisticParameterConverter.computeBetaFromEnergies(Wi + dW, Er);
             double kf = DBL_2PI / (bf * IElement.LIGHT_SPEED / this.getFrequency());
-            System.out.println("    kf=" + kf);
-            System.out.println("    Tcos(phi)-Ssin(phi)=" + (T * Math.cos(phi) - S * Math.sin(phi)) + ", dphi=" + d_phi + ", dW=" + dW + ", W=" + Wi + dW);
-            System.out.println();
+            LOGGER.log(Level.INFO, "    kf={0}", kf);
+            LOGGER.log(Level.INFO, "    Tcos(phi)-Ssin(phi)={0}, dphi={1}, dW={2}, W={3}{4}", new Object[]{T * Math.cos(phi) - S * Math.sin(phi), d_phi, dW, Wi, dW});
 
             this.bolMethodCalled = true;
         }
-//        System.out.println("IdealRfGapUpgraded#compGapPhaseAndEnergyGainIndirect(IProbe): ID=" + this.getId() + ", dphi=" + d_phi + ", dW=" + dW + ", call count #" + CNT_CALLS++);
+//        LOGGER.log(Level.INFO, "IdealRfGapUpgraded#compGapPhaseAndEnergyGainIndirect(IProbe): ID=" + this.getId() + ", dphi=" + d_phi + ", dW=" + dW + ", call count #" + CNT_CALLS++);
 
         return new EnergyVariables(d_phi, dW);
     }
@@ -2557,12 +2560,12 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
 //                double dS = (this.fitSTF.evaluateAt(bi + db) - stf)/db;
             double dT = (this.T(bi + db) - ttf) / db;
             double dS = (this.S(bi + db) - stf) / db;
-            System.out.println("IdealRfGapUpgraded#compEnergyGainIndirect: " + this.getId());
-            System.out.println("    phi=" + phi * (180 / Math.PI) + ", cos(phi)=" + Math.cos(phi) + ", Acos(phi)=" + A * Math.cos(phi));
-            System.out.println("    T(b)=" + ttf + ", T'=" + d_T + ", S(b)=" + stf + ", S'=" + d_S);
-            System.out.println("    dT/dk=" + d_T * (bi / ki) + ", dS/dk=" + d_S * (bi / ki));
-            System.out.println("    Numeric: T'=" + dT + ", S'=" + dS);
-            System.out.println("    ki=" + ki);
+            LOGGER.log(Level.INFO, "IdealRfGapUpgraded#compEnergyGainIndirect: {0}", this.getId());
+            LOGGER.log(Level.INFO, "    phi={0}, cos(phi)={1}, Acos(phi)={2}", new Object[]{phi * (180 / Math.PI), Math.cos(phi), A * Math.cos(phi)});
+            LOGGER.log(Level.INFO, "    T(b)={0}, T''={1}, S(b)={2}, S''={3}", new Object[]{ttf, d_T, stf, d_S});
+            LOGGER.log(Level.INFO, "    dT/dk={0}, dS/dk={1}", new Object[]{d_T * (bi / ki), d_S * (bi / ki)});
+            LOGGER.log(Level.INFO, "    Numeric: T''={0}, S''={1}", new Object[]{dT, dS});
+            LOGGER.log(Level.INFO, "    ki={0}", ki);
         }
 
         // Initialize serach variables
@@ -2597,7 +2600,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
 
             // TODO Remove type outs
             if (!this.bolMethodCalled) {
-                System.out.println("    iter#" + cntIter + ": b_mid=" + b_mid + ", d_phi=" + d_phi + ", dW=" + dW);
+                LOGGER.log(Level.INFO, "    iter#{0}: b_mid={1}, d_phi={2}, dW={3}", new Object[]{cntIter, b_mid, d_phi, dW});
             }
 
             dblCnvErr = Math.abs(d_phi - 2.0 * (phi - phi0));
@@ -2612,9 +2615,8 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         if (!this.bolMethodCalled) {
             double bf = RelativisticParameterConverter.computeBetaFromEnergies(Wi + dW, Er);
             double kf = DBL_2PI / (bf * IElement.LIGHT_SPEED / this.getFrequency());
-            System.out.println("    kf=" + kf);
-            System.out.println("    Tcos(phi)-Ssin(phi)=" + (ttf * Math.cos(phi) - stf * Math.sin(phi)) + ", dphi=" + d_phi + ", dW=" + dW + ", W=" + Wi + dW);
-            System.out.println();
+            LOGGER.log(Level.INFO, "    kf={0}", kf);
+            LOGGER.log(Level.INFO, "{0}    Tcos(phi)-Ssin(phi)=, dphi={1}, dW={2}, W={3}{4}", new Object[]{ttf * Math.cos(phi) - stf * Math.sin(phi), d_phi, dW, Wi, dW});
 
             this.bolMethodCalled = true;
         }

@@ -200,7 +200,7 @@ public class ZPlot extends CombinedDomainXYPlot {
 
             // check overlapping
             if (rangeChecker.overlapsRange(upper, lower)) {
-                //System.out.println(String.format("u: %f l: %f", upper, lower));
+                //LOGGER.log(Level.INFO, String.format("u: %f l: %f", upper, lower));
                 continue;
             }
             rangeChecker.addRange(upper, lower);

@@ -228,7 +228,7 @@ public class IdealDrift extends ThickElement {
 
             if (this.getCloseElements() != null) {
                 if (debug) {
-                    System.out.println("xxxxxxxxxxxxxx in IdealDrift, s, dblLen  = " + this.getPosition() + " " + dblLen);
+                    LOGGER.log(Level.INFO, "xxxxxxxxxxxxxx in IdealDrift, s, dblLen  = " + this.getPosition() + " " + dblLen);
                 }
 
                 Iterator<Element> it = this.getCloseElements().iterator();
@@ -245,7 +245,7 @@ public class IdealDrift extends ThickElement {
                         dzSum += permQuad.getAlignZ();
 
                         if (debug) {
-                            System.out.println("id, K = " + permQuad.getId() + " " + K);
+                            LOGGER.log(Level.INFO, "id, K = " + permQuad.getId() + " " + K);
                         }
 
                         double fld = permQuad.getMagField();
@@ -267,7 +267,7 @@ public class IdealDrift extends ThickElement {
                     }
                 }
                 if (debug) {
-                    System.out.println("xxxxxxxxxxxxxx end IdealDrift (" + this.getId() + "), KDrift, KDriftCount = " + KDrift + " " + KDriftCount);
+                    LOGGER.log(Level.INFO, "xxxxxxxxxxxxxx end IdealDrift (" + this.getId() + "), KDrift, KDriftCount = " + KDrift + " " + KDriftCount);
                 }
 
                 //need to check if this is correct calculations!! (probably not)
@@ -284,11 +284,11 @@ public class IdealDrift extends ThickElement {
         } else {
             KDrift = -Math.sqrt(-KDrift);
         }
-        //System.out.println("XAL(PMQ)total K2 = "+KDrift*KDrift);
+        //LOGGER.log(Level.INFO, "XAL(PMQ)total K2 = "+KDrift*KDrift);
 
         if (KDrift > KDriftTh) {
             if (debug) {
-                System.out.println("KDrift = " + KDrift);
+                LOGGER.log(Level.INFO, "KDrift = " + KDrift);
             }
             //return (IdealPermMagQuad.transferMap(probe,dblLen,KDrift,IdealPermMagQuad.ORIENT_HOR,dxSum,dySum,dzSum));
             return (this.transferMap(probe, dblLen, KDrift, IdealPermMagQuad.ORIENT_HOR, dxSum, dySum, dzSum));
@@ -314,11 +314,11 @@ public class IdealDrift extends ThickElement {
     private PhaseMap transferMap(IProbe probe, double dL, double k, int orientation, double alignx, double aligny, double alignz) {
 
         if (debug) {
-            System.out.println("IdeaDrift, k, dL = " + k + " " + dL);
+            LOGGER.log(Level.INFO, "IdeaDrift, k, dL = " + k + " " + dL);
         }
         boolean useApproxLens = IdealPermMagQuad.getUseApproxLens(); //def=false
         if (debug) {
-            System.out.println("useApproxLens(IdealDrift) = " + useApproxLens);
+            LOGGER.log(Level.INFO, "useApproxLens(IdealDrift) = " + useApproxLens);
         }
         // Compute the transfer matrix components
         double[][] arrF;
@@ -498,8 +498,8 @@ public class IdealDrift extends ThickElement {
 
         public double fringe(double s) {
 
-            //System.out.println("r1, r2, s1, s2, smin smax = "+r1 +" "+r2+ " "+s1+ " "+s2+" "+smin+" "+smax);
-            //System.out.println("s, fringe1, fringe2 = "+s+" "+fringe1+" "+fringe2);
+            //LOGGER.log(Level.INFO, "r1, r2, s1, s2, smin smax = "+r1 +" "+r2+ " "+s1+ " "+s2+" "+smin+" "+smax);
+            //LOGGER.log(Level.INFO, "s, fringe1, fringe2 = "+s+" "+fringe1+" "+fringe2);
             double z1 = s - s2;
             double z2 = s - s1;
             if (r2 < r1) {
@@ -546,15 +546,15 @@ public class IdealDrift extends ThickElement {
             double f = f1 - f2;
 
             if (f < 0) {
-                System.out.println("****** WARNING: f = " + f);
-                System.out.println("IdealPermMagQuad s, s1, s2 = " + s + " " + s1 + " " + s2);
-                System.out.println("f = " + f);
+                LOGGER.log(Level.INFO, "****** WARNING: f = " + f);
+                LOGGER.log(Level.INFO, "IdealPermMagQuad s, s1, s2 = " + s + " " + s1 + " " + s2);
+                LOGGER.log(Level.INFO, "f = " + f);
 
                 f = 0;
             } else if (f > 1) {
-                System.out.println("****** WARNING: f = " + f);
-                System.out.println("IdealPermMagQuad s, s1, s2 = " + s + " " + s1 + " " + s2);
-                System.out.println("f = " + f);
+                LOGGER.log(Level.INFO, "****** WARNING: f = " + f);
+                LOGGER.log(Level.INFO, "IdealPermMagQuad s, s1, s2 = " + s + " " + s1 + " " + s2);
+                LOGGER.log(Level.INFO, "f = " + f);
 
                 f = 1;
             }

@@ -136,9 +136,9 @@ public class TestCalculationsOnRings {
             MODEL_TEST.resync();
             MODEL_TEST.run();
 
-//            System.out.println("\nParticleProbe Trajectory");
+//            LOGGER.log(Level.INFO, "\nParticleProbe Trajectory");
 //            Trajectory<ParticleProbeState> trjPart = (Trajectory<ParticleProbeState>) MODEL_TEST.getTrajectory();
-//            System.out.println(trjPart);
+//            LOGGER.log(Level.INFO, trjPart);
             // Create and initialize transfer map probe
             TransferMapTracker algXferMap = AlgorithmFactory.createTransferMapTracker(SEQ_TEST);
             PROBE_XFER_TEST = ProbeFactory.getTransferMapProbe(SEQ_TEST, algXferMap);
@@ -147,9 +147,9 @@ public class TestCalculationsOnRings {
             MODEL_TEST.resync();
             MODEL_TEST.run();
 
-//            System.out.println("\nTransferMap Trajectory");
+//            LOGGER.log(Level.INFO, "\nTransferMap Trajectory");
 //            Trajectory<TransferMapState> trjTrnsMap = (Trajectory<TransferMapState>) MODEL_TEST.getTrajectory();
-//            System.out.println(trjTrnsMap);
+//            LOGGER.log(Level.INFO, trjTrnsMap);
             // Create and initialize the envelope probe
             EnvTrackerAdapt algEnv = AlgorithmFactory.createEnvTrackerAdapt(SEQ_TEST);
             PROBE_ENV_TEST = ProbeFactory.getEnvelopeProbe(SEQ_TEST, algEnv);
@@ -158,9 +158,9 @@ public class TestCalculationsOnRings {
             MODEL_TEST.resync();
             MODEL_TEST.run();
 
-//            System.out.println("\nEnvelopeProbe Trajectory");
+//            LOGGER.log(Level.INFO, "\nEnvelopeProbe Trajectory");
 //            Trajectory<EnvelopeProbeState> trjEnv = (Trajectory<EnvelopeProbeState>) MODEL_TEST.getTrajectory();
-//            System.out.println(trjEnv);
+//            LOGGER.log(Level.INFO, trjEnv);
         } catch (IOException | InstantiationException | ModelException e) {
             LOGGER.log(Level.SEVERE, null, e);
             System.err.println("Unable to initial the static test resources");

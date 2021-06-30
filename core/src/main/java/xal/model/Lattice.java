@@ -10,6 +10,8 @@ import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.w3c.dom.Document;
 
@@ -23,6 +25,8 @@ import xal.model.xml.LatticeXmlWriter;
  * @author Craig McChesney
  */
 public class Lattice extends ElementSeq {
+
+    private static final Logger LOGGER = Logger.getLogger(Lattice.class.getName());
 
     /*
      *  Global Attributes
@@ -241,7 +245,7 @@ public class Lattice extends ElementSeq {
 
 //        probe.initialize();
 //        probe.update();
-//        System.out.println("Lattice.propaget called");
+//        LOGGER.log(Level.INFO, "Lattice.propaget called");
         super.propagate(probe);
 //		
 //		probe.performPostProcessing();
@@ -275,7 +279,7 @@ public class Lattice extends ElementSeq {
 
         probe.initialize();
         probe.update();
-        System.out.println("Lattice.backPropagate called");
+        LOGGER.log(Level.INFO, "Lattice.backPropagate called");
         super.backPropagate(probe);
 
 //        probe.performPostProcessing();

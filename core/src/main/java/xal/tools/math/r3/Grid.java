@@ -7,6 +7,8 @@ package xal.tools.math.r3;
 
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -24,6 +26,9 @@ import java.io.Serializable;
  * @since Jan 24, 2003
  */
 public class Grid implements Serializable {
+
+    private static final Logger LOGGER = Logger.getLogger(Grid.class.getName());
+
 
     /*
      * Global Constants
@@ -561,7 +566,7 @@ public class Grid implements Serializable {
      * Testing engine
      */
     public static void main(String args[]) {
-        System.out.println("3.5%Math.PI=" + 3.5 % Math.PI);
+        LOGGER.log(Level.INFO, "3.5%Math.PI={0}", 3.5 % Math.PI);
     }
 
     /*

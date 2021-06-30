@@ -523,7 +523,7 @@ public class ModelConfigTest extends AbstractXMLValidation {
 			synchronize2.setAttribute("mode", "RF_DESIGN");
 			validator.validate(new DOMSource(document));
 		} catch(Exception e) {
-			System.out.println(e.getMessage());
+			LOGGER.log(Level.INFO, e.getMessage());
 			fail("Schema should support modes: INIT, LIVE, DESIGN, RF_DESIGN!");
 		}
 		

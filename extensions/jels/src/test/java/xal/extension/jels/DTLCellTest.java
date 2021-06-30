@@ -31,7 +31,7 @@ public class DTLCellTest extends SingleElementTest {
 
         List<Object[]> tests = new ArrayList<>();
 
-        //		System.out.println("DTL Cell test");
+        //		LOGGER.log(Level.INFO, "DTL Cell test");
         // DTL_CEL 68.534 22.5 22.5 0.00864202 0 46.964 148174 -35 10 0 0.0805777 0.772147 -0.386355 -0.142834
         // 0: basic test
         tests.add(new Object[]{new SingleElementTestData() {
@@ -65,7 +65,7 @@ public class DTLCellTest extends SingleElementTest {
             }
         }});
 
-//		System.out.println("DTL Cell test");
+//		LOGGER.log(Level.INFO, "DTL Cell test");
         // DTL_CEL 68.534 22.5 22.5 0.00864202 0 46.964 148174 -35 10 0 0.0805777 0.772147 -0.386355 -0.142834
         // 1: basic test, E=2.5GeV
         tests.add(new Object[]{new SingleElementTestData() {
@@ -98,7 +98,7 @@ public class DTLCellTest extends SingleElementTest {
             }
         }});
 
-//		System.out.println("DTL Cell test");
+//		LOGGER.log(Level.INFO, "DTL Cell test");
         // DTL_CEL 68.534 22.5 22.5 0.00864202 0 46.964 148174 -35 10 0 0.0805777 0.772147 -0.386355 -0.142834
         // 2: basic test, E=200keV
         tests.add(new Object[]{new SingleElementTestData() {
@@ -132,7 +132,7 @@ public class DTLCellTest extends SingleElementTest {
             }
         }});
 
-        // System.out.println("DTL Cell test only RF");
+        // LOGGER.log(Level.INFO, "DTL Cell test only RF");
         // DTL_CEL 68.534 22.5 22.5 0.00864202 0 0 148174 -35 10 0 0.0805777 0.772147 -0.386355 -0.142834
         // 3: only gap		
         tests.add(new Object[]{new SingleElementTestData() {
@@ -227,7 +227,7 @@ public class DTLCellTest extends SingleElementTest {
             }
         }});
 
-        // System.out.println("DTL Cell test Only RF no TTF");
+        // LOGGER.log(Level.INFO, "DTL Cell test Only RF no TTF");
         // DTL_CEL 68.534 22.5 22.5 0.00864202 0 0 148174 -35 10 0 0 0 0 0 0
         // 6: only gap no TTF
         tests.add(new Object[]{new SingleElementTestData() {
@@ -262,7 +262,7 @@ public class DTLCellTest extends SingleElementTest {
             }
         }});
 
-        // System.out.println("DTL Cell test Only RF no TTF");
+        // LOGGER.log(Level.INFO, "DTL Cell test Only RF no TTF");
         // DTL_CEL 68.534 22.5 22.5 0.00864202 0 0 148174 -35 10 0 0 0 0 0 0
         // 7: only gap no TTF
         tests.add(new Object[]{new SingleElementTestData() {
@@ -296,7 +296,7 @@ public class DTLCellTest extends SingleElementTest {
             }
         }});
 
-        // System.out.println("DTL Cell test Only RF no TTF");
+        // LOGGER.log(Level.INFO, "DTL Cell test Only RF no TTF");
         // DTL_CEL 68.534 22.5 22.5 0.00864202 0 0 148174 -35 10 0 0 0 0 0 0
         // 8: only gap no TTF
         tests.add(new Object[]{new SingleElementTestData() {
@@ -330,7 +330,7 @@ public class DTLCellTest extends SingleElementTest {
             }
         }});
 
-//		System.out.println("DTL Cell test with spacecharge I=30mA");
+//		LOGGER.log(Level.INFO, "DTL Cell test with spacecharge I=30mA");
         // DTL_CEL 68.534 22.5 22.5 0.00864202 0 46.964 148174 -35 10 0 0.0805777 0.772147 -0.386355 -0.142834
         // 9: space charge
         tests.add(new Object[]{new SingleElementTestData() {
@@ -365,7 +365,7 @@ public class DTLCellTest extends SingleElementTest {
             }
         }});
 
-//		System.out.println("DTL Cell test with spacecharge I=30mA E=200MeV");
+//		LOGGER.log(Level.INFO, "DTL Cell test with spacecharge I=30mA E=200MeV");
         // DTL_CEL 68.534 22.5 22.5 0.00864202 0 46.964 148174 -35 10 0 0.0805777 0.772147 -0.386355 -0.142834
         // 10: space charge, E=200MeV
         tests.add(new Object[]{new SingleElementTestData() {

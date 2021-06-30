@@ -16,6 +16,8 @@ import java.awt.Toolkit;
 import java.awt.Window;
 import java.net.URL;
 import java.beans.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * ActionFactory is a factory class with methods that can instantiate actions
@@ -30,6 +32,8 @@ import java.beans.*;
  * @author t6p
  */
 public class ActionFactory {
+
+    private static final Logger LOGGER = Logger.getLogger(ActionFactory.class.getName());
 
     static final int MENU_KEY_SHORTCUT_MASK = java.awt.Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
@@ -702,7 +706,7 @@ public class ActionFactory {
                     if (canPerformCutOnComponent(sourceComponent)) {
                         transferHandler.exportToClipboard(sourceComponent, Toolkit.getDefaultToolkit().getSystemClipboard(), TransferHandler.MOVE);
                     } else {
-                        System.out.println("Beeping...");
+                        LOGGER.log(Level.INFO, "Beeping...");
                         Toolkit.getDefaultToolkit().beep();
                     }
                 }

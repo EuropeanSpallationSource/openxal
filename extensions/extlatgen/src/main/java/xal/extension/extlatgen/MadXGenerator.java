@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.text.NumberFormat;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import xal.smf.*;
 import xal.smf.impl.Magnet;
@@ -20,6 +22,8 @@ import xal.tools.beam.RelativisticParameterConverter;
 import xal.tools.beam.CovarianceMatrix;
 
 public class MadXGenerator {
+
+    private static final Logger LOGGER = Logger.getLogger(MadXGenerator.class.getName());
 
     /**
      * speed of light constant in 10^9 m/s
@@ -178,20 +182,20 @@ public class MadXGenerator {
             myLatticeName = sequenceChain.get(0).getId() + "-" + sequenceChain.get(sequenceChain.size() - 1).getId();
         }
 
-        File mad_file = outputFile != null ? outputFile : new File(myLatticeName + ".mad");
-        System.out.println("Exporting MAD optics to file: " + mad_file.getAbsolutePath());
-        final FileWriter MADX_WRITER = new FileWriter(mad_file);
+        File madFile = outputFile != null ? outputFile : new File(myLatticeName + ".mad");
+        LOGGER.log(Level.INFO, "Exporting MAD optics to file: {0}", madFile.getAbsolutePath());
+        final FileWriter madxWritter = new FileWriter(madFile);
         final Date today = new Date();
 
 //		TraceXalUnitConverter uc = TraceXalUnitConverter.newConverter( 402500000., myProbe.getSpeciesRestEnergy(), myProbe.getKineticEnergy() );
         double momentum = RelativisticParameterConverter.computeMomentumFromEnergies(myProbe.getKineticEnergy(), myProbe.getSpeciesRestEnergy()) / 1.e9;
-        System.out.println("momentum = " + momentum);
+        LOGGER.log(Level.INFO, "momentum = {0}", momentum);
 
         // Q = myProbe.getSpeciesCharge()/1.602e-19;
         Q = myProbe.getSpeciesCharge();
 
         final String sourceLabel = deviceDataSource.getLabel();
-        MADX_WRITER.write("TITLE, \"" + sourceLabel + ": " + formatName(myLatticeName) + "  Date created: " + today.toString() + "\";\n\n");
+        madxWritter.write("TITLE, \"" + sourceLabel + ": " + formatName(myLatticeName) + "  Date created: " + today.toString() + "\";\n\n");
 
         // no need to put drift spaces in the file
 //		int driftCounter = 0;
@@ -223,7 +227,7 @@ public class MadXGenerator {
                     allNames.add(formattedName);
                 }
                 final String elementType = element.getType();
-//				System.out.println("element " + elementName + " has type = " + elementType + " thick = " + element.isThick());
+//				LOGGER.log(Level.INFO, "element " + elementName + " has type = " + elementType + " thick = " + element.isThick());
                 final double elementLength = element.getLength();
                 final AcceleratorNode node = element.getAcceleratorNode();
 
@@ -334,9 +338,9 @@ public class MadXGenerator {
 //					elem_pos_map.put(formatName(node.getParent().getId()), node.getParent().getPosition());
                 } else {
                     if (node != null) {
-                        System.out.println("Ignored element type: " + elementType + ", node: " + node.getId() + ", length: " + node.getLength());
+                        LOGGER.log(Level.INFO, "Ignored element type: {0}, node: {1}, length: {2}", new Object[]{elementType, node.getId(), node.getLength()});
                     } else {
-                        System.out.println("Ignored element type: " + elementType);
+                        LOGGER.log(Level.INFO, "Ignored element type: {0}", elementType);
                     }
                     continue;
                 }
@@ -346,13 +350,13 @@ public class MadXGenerator {
 
         // write the MAD element definitions
         for (final MadXElement element : MADX_ELEMENTS) {
-            MADX_WRITER.write(element.NAME + ": " + element.DEFINITION + ";\n");
+            madxWritter.write(element.NAME + ": " + element.DEFINITION + ";\n");
         }
 
         // construct the MAD lines
         final int MAX_LINE_LENGTH = 1250;
         int lineIndex = MAX_LINE_LENGTH;
-        final List<List<MadXElement>> lines = new ArrayList<List<MadXElement>>();
+        final List<List<MadXElement>> lines = new ArrayList<>();
         List<MadXElement> line = null;	// current line
         for (final MadXElement element : MADX_ELEMENTS) {
             if (lineIndex >= MAX_LINE_LENGTH) {
@@ -368,15 +372,15 @@ public class MadXGenerator {
         final int lineCount = lines.size();
         for (lineIndex = 0; lineIndex < lineCount; lineIndex++) {
             final List<MadXElement> theLine = lines.get(lineIndex);
-            MADX_WRITER.write(formatName(myLatticeName) + ": SEQUENCE, REFER=CENTER, L=" + lat_lengths.get(lineIndex) + ";\n");
+            madxWritter.write(formatName(myLatticeName) + ": SEQUENCE, REFER=CENTER, L=" + lat_lengths.get(lineIndex) + ";\n");
             final int numELements = theLine.size();
             for (int index = 0; index < numELements; index++) {
                 final MadXElement element = theLine.get(index);
-                MADX_WRITER.write("    " + element.NAME + ", AT=" + elem_pos_map.get(element.NAME) + ";\n");
+                madxWritter.write("    " + element.NAME + ", AT=" + elem_pos_map.get(element.NAME) + ";\n");
             }
 //			final MadXElement element = theLine.get( numELements - 1 );
 //			MADX_WRITER.write( "    " + element.NAME + ");\n" );
-            MADX_WRITER.write("ENDSEQUENCE;\n");
+            madxWritter.write("ENDSEQUENCE;\n");
         }
 //		MADX_WRITER.write( formatName( myLatticeName ) + ": LINE=(" );
 //		for ( lineIndex = 0 ; lineIndex < lineCount-1 ; lineIndex++ ) {
@@ -413,9 +417,9 @@ public class MadXGenerator {
         footerBuffer.append("   plot, haxis=s, vaxis1=x,y, range=#s/#e, style=100, colour=100, notitle=true;\n");
         footerBuffer.append("STOP;\n");
 
-        MADX_WRITER.write(footerBuffer.toString());
+        madxWritter.write(footerBuffer.toString());
 
-        MADX_WRITER.close();
+        madxWritter.close();
 
     }
 
@@ -450,7 +454,7 @@ public class MadXGenerator {
             lattice.clearMarkers();
             lattice.joinDrifts();
         } catch (LatticeError lerr) {
-            System.out.println(lerr.getMessage());
+            LOGGER.log(Level.INFO, lerr.getMessage());
         }
 
         return lattice;

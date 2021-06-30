@@ -1,7 +1,10 @@
 package xal.extension.widgets.beaneditor;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.annotation.AProperty.Units;
 
@@ -9,6 +12,8 @@ import xal.tools.annotation.AProperty.Units;
  * editable property representing a primitive that is directly editable
  */
 class EditablePrimitiveProperty extends EditableProperty {
+
+    private static final Logger LOGGER = Logger.getLogger(EditablePrimitiveProperty.class.getName());
 
     /**
      * property's units
@@ -54,11 +59,11 @@ class EditablePrimitiveProperty extends EditableProperty {
                         return (String) unitsAccessor.invoke(TARGET, getName());
                     }
                     return "";
-                } catch (Exception fallbackException) {
+                } catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException fallbackException) {
                     return "";
                 }
-            } catch (Exception exception) {
-                System.out.println(exception);
+            } catch (IllegalAccessException | IllegalArgumentException | SecurityException | InvocationTargetException exception) {
+                LOGGER.log(Level.INFO, null, exception);
                 return "";
             }
 

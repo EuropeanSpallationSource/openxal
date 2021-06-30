@@ -367,7 +367,7 @@ public class PVLoggerDataSource {
 
         // use field readback
         if (magnet.useFieldReadback()) {
-            // System.out.println("Quad " + magnet.getId() + " use fieldReadback");
+            // LOGGER.log(Level.INFO, "Quad " + magnet.getId() + " use fieldReadback");
             final Channel channel = magnet.getChannel(Electromagnet.FIELD_RB_HANDLE);
             final String pvName = channel.channelName();
             if (magnetFields.containsKey(pvName)) {
@@ -389,7 +389,7 @@ public class PVLoggerDataSource {
                         // take into account of proper transform
                         totalField = toFieldFromRaw(magnet, mainSupplySetpointChannel, rawValue);
                     } else {
-                        System.out.println("No logged field for " + magnet.getId() + " after trying: " + pvName + ", " + mainSupplyReadbackPV + ", " + mainSupplySetpointPV);
+                        LOGGER.log(Level.INFO, "No logged field for " + magnet.getId() + " after trying: " + pvName + ", " + mainSupplyReadbackPV + ", " + mainSupplySetpointPV);
                         throw new PvLoggerException("No logged field for magnet " + magnet.getId());
                     }
                 }
@@ -460,7 +460,7 @@ public class PVLoggerDataSource {
         try {
             scenario.resync();
         } catch (SynchronizationException e) {
-            System.out.println(e);
+            LOGGER.log(Level.INFO, null, e);
         }
     }
 

@@ -32,9 +32,9 @@ public class JElsDemo {
 
     public static void main(String[] args) throws InstantiationException, ModelException {
         if (args.length > 0 && ("-h".equals(args[0]) || "--help".equals(args[0]))) {
-            System.out.println("Usage: [-a] [combo sequence] [accelerator file main.xal] [probe file]");
-            System.out.println("	-a	use adaptive tracker");
-            System.out.println("	If no combo sequence is given, the first one is choosen");
+            LOGGER.log(Level.INFO, "Usage: [-a] [combo sequence] [accelerator file main.xal] [probe file]");
+            LOGGER.log(Level.INFO, "	-a	use adaptive tracker");
+            LOGGER.log(Level.INFO, "	If no combo sequence is given, the first one is choosen");
             return;
         }
 
@@ -77,7 +77,7 @@ public class JElsDemo {
             }
         } else {
             sequence = accelerator.getComboSequences().get(0);
-            System.out.println("Selecting combo sequence " + sequence.getId());
+            LOGGER.log(Level.INFO, "Selecting combo sequence " + sequence.getId());
         }
 
         // path to probe
@@ -191,7 +191,7 @@ public class JElsDemo {
 
     private static Accelerator loadAccelerator(String path) {
         /* Loading SMF model */
-        System.out.println("Loading accelerator from: " + path);
+        LOGGER.log(Level.INFO, "Loading accelerator from: " + path);
         Accelerator accelerator = XMLDataManager.acceleratorWithUrlSpec(new File(path).toURI().toString());
 
         if (accelerator == null) {

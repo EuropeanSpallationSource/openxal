@@ -19,12 +19,12 @@ import xal.tools.transforms.ValueTransform;
  */
 public abstract class Channel {
 
-    /**
+    /*
      * Static variables
      */
     protected static ChannelSystem channelSystem;
 
-    /**
+    /*
      * Local Attributes
      */
     /**

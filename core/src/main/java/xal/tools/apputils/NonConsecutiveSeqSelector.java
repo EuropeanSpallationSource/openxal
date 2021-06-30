@@ -11,6 +11,8 @@ import javax.swing.JButton;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.apputils.EdgeLayout;
 
@@ -25,6 +27,8 @@ import xal.tools.apputils.EdgeLayout;
  *
  */
 public class NonConsecutiveSeqSelector implements ActionListener {
+
+    private static final Logger LOGGER = Logger.getLogger(NonConsecutiveSeqSelector.class.getName());
 
     private boolean DEBUG = false;
 
@@ -199,9 +203,7 @@ public class NonConsecutiveSeqSelector implements ActionListener {
         @Override
         public void setValueAt(Object value, int row, int col) {
             if (DEBUG) {
-                System.out.println("Setting value at " + row + "," + col
-                        + " to " + value + " (an instance of "
-                        + value.getClass() + ")");
+                LOGGER.log(Level.INFO, "Setting value at {0},{1} to {2} (an instance of {3})", new Object[]{row, col, value, value.getClass()});
             }
 
             int rowIndexStart = table.getSelectedRow();
@@ -246,7 +248,7 @@ public class NonConsecutiveSeqSelector implements ActionListener {
             }
 
             if (DEBUG) {
-                System.out.println("New value of data:");
+                LOGGER.log(Level.INFO, "New value of data:");
                 printDebugData();
             }
         }
@@ -260,9 +262,8 @@ public class NonConsecutiveSeqSelector implements ActionListener {
                 for (int j = 0; j < numCols; j++) {
                     System.out.print("  " + data[i][j]);
                 }
-                System.out.println();
             }
-            System.out.println("--------------------------");
+            LOGGER.log(Level.INFO, "--------------------------");
         }
     }
 

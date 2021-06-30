@@ -1,5 +1,7 @@
 package xal.model.alg;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.model.IElement;
 import xal.model.IProbe;
 import xal.model.ModelException;
@@ -13,6 +15,8 @@ import xal.model.probe.DiagnosticProbe;
  *
  */
 public class DiagnosticTracker extends Tracker {
+
+    private static final Logger LOGGER = Logger.getLogger(DiagnosticTracker.class.getName());
 
     /**
      * string type identifier for this algorithm
@@ -112,7 +116,7 @@ public class DiagnosticTracker extends Tracker {
      */
     protected void advanceState(IProbe probe, IElement elem, double dblLen)
             throws ModelException {
-        System.out.println("probe visiting: " + elem.getId());
+        LOGGER.log(Level.INFO, "probe visiting: {0}", elem.getId());
         ((DiagnosticProbe) probe).incrementElementsVisited();
     }
 

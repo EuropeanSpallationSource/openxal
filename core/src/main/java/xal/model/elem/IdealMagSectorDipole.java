@@ -6,6 +6,8 @@
 package xal.model.elem;
 
 import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
@@ -40,6 +42,9 @@ import xal.model.elem.sync.IElectromagnet;
  */
 @Deprecated
 public class IdealMagSectorDipole extends ThickElectromagnet {
+
+    private static final Logger LOGGER = Logger.getLogger(IdealMagSectorDipole.class.getName());
+
 
     /*
      *  Global Attributes
@@ -465,13 +470,13 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
 
         final double c = IProbe.LIGHT_SPEED;
         double Beff = alpha / path * Etotal * beta / (c * charge);
-        //System.out.println("id, B, Beff = "+getId()+" "+B+" "+Beff);
+        //LOGGER.log(Level.INFO, "id, B, Beff = "+getId()+" "+B+" "+Beff);
 
         // Compute the bending constant h  == 1/ bend radius (1/meter)
 //was default	
         double h = c * B / (Etotal * beta * charge);
 //	double h = -0.2998e9 * B / (Etotal * beta *charge);
-        System.out.println("h, hrho = " + h + " " + hrho);
+        LOGGER.log(Level.INFO, "h, hrho = {0} {1}", new Object[]{h, hrho});
 
         //this was for old RDB double h = 0.2998e9 * B / (Etotal * beta *Math.abs(charge)); 
         double s = probe.getPosition();

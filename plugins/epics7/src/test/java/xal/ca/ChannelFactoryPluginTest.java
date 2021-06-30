@@ -17,6 +17,8 @@
  */
 package xal.ca;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import xal.plugin.epics7.Epics7ChannelFactory;
@@ -28,12 +30,14 @@ import xal.plugin.epics7.server.Epics7ServerChannelFactory;
  */
 public class ChannelFactoryPluginTest {
 
+    private static final Logger LOGGER = Logger.getLogger(ChannelFactoryPluginTest.class.getName());
+
     /**
      * Test of getChannelFactoryInstance method, of class ChannelFactoryPlugin.
      */
     @Test
     public void testGetChannelFactoryInstance() {
-        System.out.println("getChannelFactoryInstance");
+        LOGGER.log(Level.INFO, "getChannelFactoryInstance");
         Class expResult = Epics7ChannelFactory.class;
         ChannelFactory result = ChannelFactoryPlugin.getChannelFactoryInstance();
         assertEquals(expResult, result.getClass());
@@ -45,7 +49,7 @@ public class ChannelFactoryPluginTest {
      */
     @Test
     public void testGetServerChannelFactoryInstance() {
-        System.out.println("getServerChannelFactoryInstance");
+        LOGGER.log(Level.INFO, "getServerChannelFactoryInstance");
         Class expResult = Epics7ServerChannelFactory.class;
         ChannelFactory result = ChannelFactoryPlugin.getServerChannelFactoryInstance();
         assertEquals(expResult, result.getClass());

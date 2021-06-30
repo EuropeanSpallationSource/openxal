@@ -14,6 +14,8 @@ import xal.tools.database.*;
 import xal.tools.messaging.MessageCenter;
 
 import java.sql.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * BrowserModel is the main document model.
@@ -21,6 +23,8 @@ import java.sql.*;
  * @author tap
  */
 public class BrowserModel {
+
+    private static final Logger LOGGER = Logger.getLogger(BrowserModel.class.getName());
 
     protected final MessageCenter MESSAGE_CENTER;
     protected final BrowserModelListener EVENT_PROXY;
@@ -172,7 +176,7 @@ public class BrowserModel {
      */
     public void fetchMachineSnapshots(final java.util.Date startTime, final java.util.Date endTime) throws SQLException {
         snapshots = pvLogger.fetchMachineSnapshotsInRange(group.getLabel(), startTime, endTime);
-        System.out.println("Found " + snapshots.length + " snapshots...");
+        LOGGER.log(Level.INFO, "Found {0} snapshots...", snapshots.length);
         EVENT_PROXY.machineSnapshotsFetched(this, snapshots);
     }
 

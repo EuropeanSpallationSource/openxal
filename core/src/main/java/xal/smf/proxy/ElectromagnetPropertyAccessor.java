@@ -22,6 +22,7 @@ public class ElectromagnetPropertyAccessor extends AbstractPropertyAccessor {
     /**
      * get the map of design values keyed by property name
      */
+    @Override
     public Map<String, Double> getDesignValueMap(final AcceleratorNode node) {
         return getDesignValueMap(node, node.getProperties());
     }
@@ -29,6 +30,7 @@ public class ElectromagnetPropertyAccessor extends AbstractPropertyAccessor {
     /**
      * get the map of live values keyed by property name
      */
+    @Override
     public Map<String, Double> getLiveValueMap(final AcceleratorNode node, final Map<Channel, Double> channelValues) {
         return getLiveValueMap(node, channelValues, node.getProperties());
     }
@@ -36,6 +38,7 @@ public class ElectromagnetPropertyAccessor extends AbstractPropertyAccessor {
     /**
      * get the channels for live property access
      */
+    @Override
     public Collection<Channel> getLiveChannels(final AcceleratorNode node) {
         return getLiveChannels(node, node.getProperties());
     }
@@ -43,6 +46,7 @@ public class ElectromagnetPropertyAccessor extends AbstractPropertyAccessor {
     /**
      * get the map of live RF design values keyed by property name
      */
+    @Override
     public Map<String, Double> getLiveRFDesignValueMap(final AcceleratorNode node, final Map<Channel, Double> channelValues) {
         return getLiveValueMap(node, channelValues);
     }
@@ -50,6 +54,7 @@ public class ElectromagnetPropertyAccessor extends AbstractPropertyAccessor {
     /**
      * get the channels for live property access with design RF
      */
+    @Override
     public Collection<Channel> getLiveRFDesignChannels(final AcceleratorNode node) {
         return getLiveChannels(node);
     }

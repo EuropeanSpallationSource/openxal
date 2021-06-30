@@ -184,7 +184,7 @@ public class MPSMonitor {
         setupCorrelator();
         restartCorrelator();
 
-        System.out.println("MPS Monitor is running for " + mpsType);
+        LOGGER.log(Level.INFO, "MPS Monitor is running for " + mpsType);
     }
 
     /**

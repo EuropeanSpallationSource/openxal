@@ -305,7 +305,7 @@ public class DBConfiguration {
             urlSpec = getDefaultURLSpec();
             return urlSpec != null && !urlSpec.isEmpty() && new File(new URL(urlSpec).toURI()).exists();
         } catch (MalformedURLException | URISyntaxException exception) {
-            System.out.println("Database configuration: " + urlSpec);
+            LOGGER.log(Level.INFO, "Database configuration: " + urlSpec);
             return false;
         }
     }

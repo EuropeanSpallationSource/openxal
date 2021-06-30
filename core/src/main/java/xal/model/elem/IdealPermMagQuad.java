@@ -366,7 +366,7 @@ public class IdealPermMagQuad extends ThickElectromagnet {
                     //                PhaseMap map = elem.transferMap(probe,dblLen);
                     //                mapFringe = mapFringe.compose(map);
                     if (debug) {
-                        System.out.println("id, K = " + permQuad.getId() + " " + K);
+                        LOGGER.log(Level.INFO, "id, K = " + permQuad.getId() + " " + K);
                     }
 
                     double q = probe.getSpeciesCharge();
@@ -389,7 +389,7 @@ public class IdealPermMagQuad extends ThickElectromagnet {
                 }
             }
             if (debug) {
-                System.out.println("xxxxxxxxxxxxxx IdealPermQuad(" + this.getId() + ") (Kfringefromothers, KSum, KSumCount = " + KSum + " " + KSumCount);
+                LOGGER.log(Level.INFO, "xxxxxxxxxxxxxx IdealPermQuad(" + this.getId() + ") (Kfringefromothers, KSum, KSumCount = " + KSum + " " + KSumCount);
             }
 
         }
@@ -435,13 +435,13 @@ public class IdealPermMagQuad extends ThickElectromagnet {
         double w0 = getNominalKineEnergy();
         if (w0==0.) {
             w0 = w;
-            System.out.println("*setNominalKineEnergy, id, w0 = "+this.getId()+" "+w0);
+            LOGGER.log(Level.INFO, "*setNominalKineEnergy, id, w0 = "+this.getId()+" "+w0);
             setNominalKineEnergy(w0);
         }
         double p0 = Math.sqrt(w0*(w0+2*Er));
 
-        System.out.println("id, setBRhoscaling p/p0 = "+this.getId()+" "+p/p0);
-        System.out.println("w, w0 = "+w+" "+w0);
+        LOGGER.log(Level.INFO, "id, setBRhoscaling p/p0 = "+this.getId()+" "+p/p0);
+        LOGGER.log(Level.INFO, "w, w0 = "+w+" "+w0);
         setBRhoScaling(p/p0);//save brho scaling. when nominalKineEnergy = 0, set 1.
     }*/
         double r1 = radIn;
@@ -459,29 +459,29 @@ public class IdealPermMagQuad extends ThickElectromagnet {
         double f = fringe(s, s - s2, s - s1, r1, r2);//s1<s<s2, s-s2<0,s-s1>0
 
         if (debug) {
-            System.out.println("IdealPermMagQuad (" + this.getId() + ")::transferMap, s, s1, s2 = " + s + " " + s1 + " " + s2);
-            System.out.println("r1, r2");
-            System.out.println("f = " + f);
-            System.out.println("dblLen = " + dblLen);
-            System.out.println("probe.getPosition() = " + probe.getPosition());
+            LOGGER.log(Level.INFO, "IdealPermMagQuad (" + this.getId() + ")::transferMap, s, s1, s2 = " + s + " " + s1 + " " + s2);
+            LOGGER.log(Level.INFO, "r1, r2");
+            LOGGER.log(Level.INFO, "f = " + f);
+            LOGGER.log(Level.INFO, "dblLen = " + dblLen);
+            LOGGER.log(Level.INFO, "probe.getPosition() = " + probe.getPosition());
         }
 
         if (f < 0) {
-            System.out.println("****** WARNING: f = " + f);
-            System.out.println("IdealPermMagQuad (" + this.getId() + ")::transferMap, s, s1, s2 = " + s + " " + s1 + " " + s2);
-            System.out.println("r1, r2");
-            System.out.println("f = " + f);
-            System.out.println("dblLen = " + dblLen);
-            System.out.println("probe.getPosition() = " + probe.getPosition());
+            LOGGER.log(Level.INFO, "****** WARNING: f = " + f);
+            LOGGER.log(Level.INFO, "IdealPermMagQuad (" + this.getId() + ")::transferMap, s, s1, s2 = " + s + " " + s1 + " " + s2);
+            LOGGER.log(Level.INFO, "r1, r2");
+            LOGGER.log(Level.INFO, "f = " + f);
+            LOGGER.log(Level.INFO, "dblLen = " + dblLen);
+            LOGGER.log(Level.INFO, "probe.getPosition() = " + probe.getPosition());
 
             f = 0;
         } else if (f > 1) {
-            System.out.println("****** WARNING: f = " + f);
-            System.out.println("IdealPermMagQuad (" + this.getId() + ")::transferMap, s, s1, s2 = " + s + " " + s1 + " " + s2);
-            System.out.println("r1, r2");
-            System.out.println("f = " + f);
-            System.out.println("dblLen = " + dblLen);
-            System.out.println("probe.getPosition() = " + probe.getPosition());
+            LOGGER.log(Level.INFO, "****** WARNING: f = " + f);
+            LOGGER.log(Level.INFO, "IdealPermMagQuad (" + this.getId() + ")::transferMap, s, s1, s2 = " + s + " " + s1 + " " + s2);
+            LOGGER.log(Level.INFO, "r1, r2");
+            LOGGER.log(Level.INFO, "f = " + f);
+            LOGGER.log(Level.INFO, "dblLen = " + dblLen);
+            LOGGER.log(Level.INFO, "probe.getPosition() = " + probe.getPosition());
 
             f = 1;
         }
@@ -495,12 +495,12 @@ public class IdealPermMagQuad extends ThickElectromagnet {
         double k = Math.sqrt((LIGHT_SPEED * G) / p);
 
         if (K1 != 0.) {//sako!!
-            System.out.println("K1, k = " + K1 + " " + k);
+            LOGGER.log(Level.INFO, "K1, k = " + K1 + " " + k);
             k = Math.sqrt(Math.abs(K1) * f);
         }
 
         if (DEBUG_T3D) {
-            System.out.println("XAL element,z,grad = " + probe.getCurrentElement() + " " + s * 1000 + " " + G);
+            LOGGER.log(Level.INFO, "XAL element,z,grad = " + probe.getCurrentElement() + " " + s * 1000 + " " + G);
         }
 
         return k;
@@ -513,7 +513,7 @@ public class IdealPermMagQuad extends ThickElectromagnet {
         double KSum = 0;
         if (this.getCloseElements() != null) {
             if (debug) {
-                System.out.println("xxxxxxxxxxxxxx in IdealDrift, s, dblLen  = " + this.getPosition() + " " + dblLen);
+                LOGGER.log(Level.INFO, "xxxxxxxxxxxxxx in IdealDrift, s, dblLen  = " + this.getPosition() + " " + dblLen);
             }
 
             Iterator<Element> it = this.getCloseElements().iterator();
@@ -525,7 +525,7 @@ public class IdealPermMagQuad extends ThickElectromagnet {
                     IdealPermMagQuad permQuad = (IdealPermMagQuad) elem;
                     double K = permQuad.calcK(probe, dblLen);
                     if (debug) {
-                        System.out.println("id, K = " + permQuad.getId() + " " + K);
+                        LOGGER.log(Level.INFO, "id, K = " + permQuad.getId() + " " + K);
                     }
                     if (permQuad.getOrientation() == IElectromagnet.ORIENT_HOR) {
                         KSum += (K * K);
@@ -543,7 +543,7 @@ public class IdealPermMagQuad extends ThickElectromagnet {
             }
 
             if (debug) {
-                System.out.println("xxxxxxxxxxxxxx end IdealPermQuad(" + this.getId() + "), KSum, KSumCount = " + KSum + " " + KSumCount);
+                LOGGER.log(Level.INFO, "xxxxxxxxxxxxxx end IdealPermQuad(" + this.getId() + "), KSum, KSumCount = " + KSum + " " + KSumCount);
             }
 
         }
@@ -578,18 +578,18 @@ public class IdealPermMagQuad extends ThickElectromagnet {
         double Er = probe.getSpeciesRestEnergy();
         double p = Math.sqrt(w * (w + 2 * Er));
 
-        //System.out.println("calcK, bPathFlag = "+bPathFlag);
+        //LOGGER.log(Level.INFO, "calcK, bPathFlag = "+bPathFlag);
         if (bPathFlag != 0.) {//if bpathflag =1, then use nominal k0 from nominal kine energy
             double w0 = getNominalKineEnergy();
             if (w0 == 0.) {
                 w0 = w;
-                //System.out.println("*setNominalKineEnergy, id, w0 = "+this.getId()+" "+w0);
+                //LOGGER.log(Level.INFO, "*setNominalKineEnergy, id, w0 = "+this.getId()+" "+w0);
                 setNominalKineEnergy(w0);
             }
             double p0 = Math.sqrt(w0 * (w0 + 2 * Er));
 
-            //System.out.println("id, setBRhoscaling p/p0 = "+this.getId()+" "+p/p0);
-            //System.out.println("w, w0 = "+w+" "+w0);
+            //LOGGER.log(Level.INFO, "id, setBRhoscaling p/p0 = "+this.getId()+" "+p/p0);
+            //LOGGER.log(Level.INFO, "w, w0 = "+w+" "+w0);
             setBRhoScaling(p / p0);//save brho scaling. when nominalKineEnergy = 0, set 1.
         }
 
@@ -613,7 +613,7 @@ public class IdealPermMagQuad extends ThickElectromagnet {
         }
 
         if (debug) {
-            System.out.println("XAL(PMQ)total K, dL = " + K + " " + dL);
+            LOGGER.log(Level.INFO, "XAL(PMQ)total K, dL = " + K + " " + dL);
         }
 
         // Compute the transfer matrix components
@@ -624,8 +624,8 @@ public class IdealPermMagQuad extends ThickElectromagnet {
             //arrF = QuadrupoleLens.transferFocPlaneApprox(K, dL);
             arrF = QuadrupoleLens.transferFocPlaneApproxSandWitch(K * assymmetryF, dL);
             //          arrF = QuadrupoleLens.transferFocPlaneExact(K, dL);
-            //  System.out.println("arrFPrec = "+arrFPrec[0][0]+","+arrFPrec[0][1]+","+arrFPrec[1][0]+arrFPrec[1][1]);
-            //  System.out.println("arrF     = "+arrF[0][0]+","+arrF[0][1]+","+arrF[1][0]+","+arrF[1][1]);
+            //  LOGGER.log(Level.INFO, "arrFPrec = "+arrFPrec[0][0]+","+arrFPrec[0][1]+","+arrFPrec[1][0]+arrFPrec[1][1]);
+            //  LOGGER.log(Level.INFO, "arrF     = "+arrF[0][0]+","+arrF[0][1]+","+arrF[1][0]+","+arrF[1][1]);
 
         } else {
             arrF = QuadrupoleLens.transferFocPlane(K * assymmetryF, dL);
@@ -638,8 +638,8 @@ public class IdealPermMagQuad extends ThickElectromagnet {
             //arrD= QuadrupoleLens.transferDefPlaneApprox(K, dL);
             arrD = QuadrupoleLens.transferDefPlaneApproxSandWitch(K * assymmetryD, dL);
             //        arrD= QuadrupoleLens.transferDefPlaneExact(K, dL);
-            //     System.out.println("arrDPrec = "+arrDPrec[0][0]+","+arrDPrec[0][1]+","+arrDPrec[1][0]+arrDPrec[1][1]);
-            //  System.out.println("arrD     = "+arrD[0][0]+","+arrD[0][1]+","+arrD[1][0]+","+arrD[1][1]);
+            //     LOGGER.log(Level.INFO, "arrDPrec = "+arrDPrec[0][0]+","+arrDPrec[0][1]+","+arrDPrec[1][0]+arrDPrec[1][1]);
+            //  LOGGER.log(Level.INFO, "arrD     = "+arrD[0][0]+","+arrD[0][1]+","+arrD[1][0]+","+arrD[1][1]);
 
         } else {
             arrD = QuadrupoleLens.transferDefPlane(K * assymmetryD, dL);
@@ -753,7 +753,7 @@ public class IdealPermMagQuad extends ThickElectromagnet {
         double f2 = 0.5 * (1 - 0.125 * z2 * (1 / r1 + 1 / r2) * wtemp);
 
         if (DEBUG_T3D) {
-            System.out.println("XAL: s,z1,z2,r1,r2 ="
+            LOGGER.log(Level.INFO, "XAL: s,z1,z2,r1,r2 ="
                     + s * 1000 + " " + z1 * 1000 + " " + z2 * 1000 + " " + r1 * 1000 + " " + r2 * 1000);
         }
         fringeFactor = f1 - f2;

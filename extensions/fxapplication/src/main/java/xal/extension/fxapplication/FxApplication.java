@@ -722,10 +722,10 @@ public abstract class FxApplication extends Application {
             });
             stage.showAndWait();
         } catch (IOException ex) {
-            System.out.println("Exception on FXMLLoader.load()");
-            System.out.println("  * url: " + url);
-            System.out.println("  * " + ex);
-            System.out.println("    ----------------------------------------\n");
+            LOGGER.log(Level.INFO, "Exception on FXMLLoader.load()");
+            LOGGER.log(Level.INFO, "  * url: " + url);
+            LOGGER.log(Level.INFO, "  * " + ex);
+            LOGGER.log(Level.INFO, "    ----------------------------------------\n");
         }
     }
 
@@ -749,7 +749,7 @@ public abstract class FxApplication extends Application {
 
             try {
                 oxalVersion = properties.getProperty("version");
-                System.out.println("OXAL version = " + oxalVersion);
+                LOGGER.log(Level.INFO, "OXAL version = " + oxalVersion);
             } finally {
                 propertyStream.close();
             }

@@ -106,7 +106,7 @@ public abstract class ThinElectromagnet extends ThinElement implements IElectrom
 //			    Logger    logGbl = LOGGER;
 //			    
 //			    logGbl.log(Level.WARNING, strMsg + " : " + strSrc);
-//	            System.out.println("WARNING!: " + strMsg + " : " + strSrc);		
+//	            LOGGER.log(Level.INFO, "WARNING!: " + strMsg + " : " + strSrc);		
         }
         setOrientation(orientation);
         setMagField(magnetNode.getDesignField());

@@ -111,7 +111,7 @@ public abstract class TestCommon {
 		cov.setElem(4, 4, cov.getElem(4,4)/Math.pow(envelopeProbe.getGamma(),2));
 		cov.setElem(5, 5, cov.getElem(5,5)*Math.pow(envelopeProbe.getGamma(),2));
 		for (int i=0; i<6; i++) {
-			System.out.println();
+			LOGGER.log(Level.INFO, );
 			for (int j=0; j<6; j++)
 				System.out.printf("%E ",cov.getElem(i,j));
 		}*/
@@ -167,7 +167,7 @@ public abstract class TestCommon {
             IComponent comp = it.next();
             if (comp instanceof IElement) {
                 IElement el = (IElement) comp;
-                System.out.println(el.transferMap(probe, el.getLength()).getFirstOrder().toStringMatrix());
+                LOGGER.log(Level.INFO, el.transferMap(probe, el.getLength()).getFirstOrder().toStringMatrix());
                 pm = pm.compose(el.transferMap(probe, el.getLength()));
                 if (el instanceof xal.model.elem.IdealRfGap) {
                     xal.model.elem.IdealRfGap gap = (xal.model.elem.IdealRfGap) el;

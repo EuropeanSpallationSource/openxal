@@ -31,11 +31,11 @@ public class Info {
         String label = "Open XAL";
 
         // attempt to load info properties from the "info.json" file
-        System.out.println("Getting info resource...");
+        LOGGER.log(Level.INFO, "Getting info resource...");
         final URL infoLocation = ResourceManager.getResourceURL(Info.class, "info.json");
         if (infoLocation != null) {
             try {
-                //System.out.println( "Attempting to load Info from URL: " + infoLocation );
+                //LOGGER.log(Level.INFO,  "Attempting to load Info from URL: " + infoLocation );
                 final StringBuffer buffer = new StringBuffer();
                 final InputStream infoStream = infoLocation.openStream();
                 final BufferedReader infoReader = new BufferedReader(new InputStreamReader(infoStream));
@@ -50,11 +50,11 @@ public class Info {
                 }
                 infoStream.close();
 
-                //System.out.println( "Buffer: " + buffer.toString() );
+                //LOGGER.log(Level.INFO,  "Buffer: " + buffer.toString() );
                 @SuppressWarnings("unchecked")
                 final Map<String, Object> infoMap = (Map<String, Object>) JSONCoder.defaultDecode(buffer.toString());
 
-                //System.out.println( "Info map: " + infoMap );
+                //LOGGER.log(Level.INFO,  "Info map: " + infoMap );
                 label = (String) infoMap.get("label");
             } catch (IOException exception) {
                 LOGGER.log(Level.SEVERE, "Exception attempting to load Open XAL info from: " + infoLocation, exception);

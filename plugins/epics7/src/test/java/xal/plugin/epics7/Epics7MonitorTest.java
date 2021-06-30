@@ -32,6 +32,8 @@ import static xal.plugin.epics7.Epics7Channel.VALUE_REQUEST;
  */
 public class Epics7MonitorTest {
 
+    private static final Logger LOGGER = Logger.getLogger(Epics7MonitorTest.class.getName());
+
     private boolean methodCalled = false;
 
     private Epics7Monitor getEpics7Monitor() throws ConnectionException {
@@ -47,7 +49,7 @@ public class Epics7MonitorTest {
      */
     @Test
     public void testCreateNewMonitor() throws Exception {
-        System.out.println("createNewMonitor");
+        LOGGER.log(Level.INFO, "createNewMonitor");
         methodCalled = false;
 
         getEpics7Monitor();
@@ -60,7 +62,7 @@ public class Epics7MonitorTest {
      */
     @Test
     public void testClear() throws Exception {
-        System.out.println("clear");
+        LOGGER.log(Level.INFO, "clear");
         methodCalled = false;
 
         Epics7Monitor instance = getEpics7Monitor();
@@ -83,7 +85,7 @@ public class Epics7MonitorTest {
      */
     @Test
     public void testBegin() throws Exception {
-        System.out.println("begin");
+        LOGGER.log(Level.INFO, "begin");
         methodCalled = false;
 
         Epics7Monitor instance = getEpics7Monitor();
@@ -106,7 +108,7 @@ public class Epics7MonitorTest {
      */
     @Test
     public void testMonitorConnect() throws ConnectionException {
-        System.out.println("monitorConnect");
+        LOGGER.log(Level.INFO, "monitorConnect");
         methodCalled = false;
 
         Epics7Monitor instance = getEpics7Monitor();
@@ -130,7 +132,7 @@ public class Epics7MonitorTest {
      */
     @Test
     public void testMonitorEvent() throws ConnectionException {
-        System.out.println("monitorEvent");
+        LOGGER.log(Level.INFO, "monitorEvent");
         methodCalled = false;
 
         Epics7Monitor instance = getEpics7Monitor();
@@ -165,7 +167,7 @@ public class Epics7MonitorTest {
      */
     @Test
     public void testUnlisten() throws ConnectionException {
-        System.out.println("unlisten");
+        LOGGER.log(Level.INFO, "unlisten");
         methodCalled = false;
 
         Epics7Monitor instance = getEpics7Monitor();
@@ -188,12 +190,12 @@ public class Epics7MonitorTest {
      */
     @Test
     public void testGetRequesterName() throws ConnectionException {
-        System.out.println("getRequesterName");
+        LOGGER.log(Level.INFO, "getRequesterName");
         String expResult = "TestRequester";
 
         Epics7Monitor instance = getEpics7Monitor();
         String result = instance.getRequesterName();
-        System.out.println(result);
+        LOGGER.log(Level.INFO, result);
         assertEquals(expResult, result);
 
         instance.nativeChannel = null;
@@ -206,7 +208,7 @@ public class Epics7MonitorTest {
      */
     @Test
     public void testMessage() throws ConnectionException {
-        System.out.println("message");
+        LOGGER.log(Level.INFO, "message");
         String message = "message";
 
         HandlerImpl handler = new HandlerImpl();

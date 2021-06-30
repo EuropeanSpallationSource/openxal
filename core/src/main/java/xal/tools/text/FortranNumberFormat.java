@@ -7,6 +7,8 @@ package xal.tools.text;
 
 import java.util.regex.*;
 import java.text.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @deprecated due to compatibility problems with Java 8. The advertised
@@ -28,6 +30,8 @@ import java.text.*;
  */
 @Deprecated
 public class FortranNumberFormat extends DecimalFormat {
+
+    private static final Logger LOGGER = Logger.getLogger(FortranNumberFormat.class.getName());
 
     /**
      * serialization ID
@@ -224,7 +228,7 @@ public class FortranNumberFormat extends DecimalFormat {
         if (val != 0.) {
             int nP = (int) Math.floor(Math.log(Math.abs(val)) / Math.log(10.0));
             int nPa = Math.abs(nP);
-            //System.out.println( "debug  val=" + val + " nP=" + nP + " nPa=" + nPa );
+            //LOGGER.log(Level.INFO,  "debug  val=" + val + " nP=" + nP + " nPa=" + nPa );
 
             int srtLengthLocal = srtLength;
 
@@ -293,7 +297,7 @@ public class FortranNumberFormat extends DecimalFormat {
     public static void main(String[] args) {
 
         if (args.length < 2) {
-            System.out.println("Usage: "
+            LOGGER.log(Level.INFO, "Usage: "
                     + "java xal.tools.swing.FortranNumberFormat "
                     + "<format pattern> <double value #1> ... ");
             return;
@@ -306,9 +310,7 @@ public class FortranNumberFormat extends DecimalFormat {
 
         for (int i = 1; i < args.length; i++) {
             val = Double.parseDouble(args[i]);
-            System.out.println("formatting pattern=" + frt.toPattern()
-                    + " value = " + val
-                    + " frmt = " + frt.format(val));
+            LOGGER.log(Level.INFO, "formatting pattern={0} value = {1} frmt = {2}", new Object[]{frt.toPattern(), val, frt.format(val)});
         }
     }
 }

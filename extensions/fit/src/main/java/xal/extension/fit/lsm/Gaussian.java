@@ -5,6 +5,9 @@
  */
 package xal.extension.fit.lsm;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 /**
  * This class is for data fitting with Gaussian function. The Gaussian function
  * form used in this class is y = pedestal+amp*exp(-(x-center)^2/(sigma^2/2.)).
@@ -12,6 +15,8 @@ package xal.extension.fit.lsm;
  * @author shishlo
  */
 public class Gaussian {
+
+    private static final Logger LOGGER = Logger.getLogger(Gaussian.class.getName());
 
     private double sigma = 0.5;
     private double amp = 1.;
@@ -460,12 +465,12 @@ public class Gaussian {
         gs.fitParameter(Gaussian.CENTER, true);
         gs.fitParameter(Gaussian.PEDESTAL, true);
 
-        System.out.println("================START================");
-        System.out.println("data error level [%]= " + err_level * 100);
-        System.out.println("Main ini: s = " + s);
-        System.out.println("Main ini: a = " + a);
-        System.out.println("Main ini: c = " + c);
-        System.out.println("Main ini: p = " + p);
+        LOGGER.log(Level.INFO, "================START================");
+        LOGGER.log(Level.INFO, "data error level [%]= {0}", err_level * 100);
+        LOGGER.log(Level.INFO, "Main ini: s = {0}", s);
+        LOGGER.log(Level.INFO, "Main ini: a = {0}", a);
+        LOGGER.log(Level.INFO, "Main ini: c = {0}", c);
+        LOGGER.log(Level.INFO, "Main ini: p = {0}", p);
 
         int n_iter = 8;
 
@@ -474,17 +479,17 @@ public class Gaussian {
         res = gs.guessAndFit();
 
         for (int j = 0; j < n_iter; j++) {
-            System.out.println("Main: iteration =" + j + "  res = " + res);
-            System.out.println("Main: s = " + gs.getParameter(Gaussian.SIGMA) + " +- " + gs.getParameterError(Gaussian.SIGMA));
-            System.out.println("Main: a = " + gs.getParameter(Gaussian.AMP) + " +- " + gs.getParameterError(Gaussian.AMP));
-            System.out.println("Main: c = " + gs.getParameter(Gaussian.CENTER) + " +- " + gs.getParameterError(Gaussian.CENTER));
-            System.out.println("Main: p = " + gs.getParameter(Gaussian.PEDESTAL) + " +- " + gs.getParameterError(Gaussian.PEDESTAL));
+            LOGGER.log(Level.INFO, "Main: iteration = {0}  res = {1}", new Object[]{j, res});
+            LOGGER.log(Level.INFO, "Main: s = {0} +- {1}", new Object[]{gs.getParameter(Gaussian.SIGMA), gs.getParameterError(Gaussian.SIGMA)});
+            LOGGER.log(Level.INFO, "Main: a = {0} +- {1}", new Object[]{gs.getParameter(Gaussian.AMP), gs.getParameterError(Gaussian.AMP)});
+            LOGGER.log(Level.INFO, "Main: c = {0} +- {1}", new Object[]{gs.getParameter(Gaussian.CENTER), gs.getParameterError(Gaussian.CENTER)});
+            LOGGER.log(Level.INFO, "Main: p = {0} +- {1}", new Object[]{gs.getParameter(Gaussian.PEDESTAL), gs.getParameterError(Gaussian.PEDESTAL)});
             res = gs.fit();
         }
 
         for (int i = 0; i < n; i++) {
             x = xMin + step * i;
-            System.out.println("i=" + i + " x=" + x + " y_ini=" + yArr[i] + " model=" + gs.getValue(x));
+            LOGGER.log(Level.INFO, "i={0} x={1} y_ini={2} model={3}", new Object[]{i, x, yArr[i], gs.getValue(x)});
         }
 
         n_iter = 100;
@@ -495,7 +500,7 @@ public class Gaussian {
         java.util.Date stop = new java.util.Date();
         double time = (stop.getTime() - start.getTime()) / 1000.;
         time /= n_iter;
-        System.out.println("time for one step [sec] =" + time);
+        LOGGER.log(Level.INFO, "time for one step [sec] ={0}", time);
 
     }
 

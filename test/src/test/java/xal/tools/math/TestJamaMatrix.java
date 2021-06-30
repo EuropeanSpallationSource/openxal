@@ -56,7 +56,7 @@ public class TestJamaMatrix {
         arrMat[3] = new double[]{7, 8};
 
         GenericMatrix matTest = new GenericMatrix(arrMat);
-//        System.out.println("matTest = "); 
+//        LOGGER.log(Level.INFO, "matTest = "); 
 //        matTest.print(matTest.getRowDimension(), matTest.getColumnDimension());
 
         double[][] arrTest = matTest.getArrayCopy();
@@ -73,7 +73,7 @@ public class TestJamaMatrix {
         }
 
         GenericMatrix matCtrl = new GenericMatrix(arrTest);
-//        System.out.println("matCtrl = "); 
+//        LOGGER.log(Level.INFO, "matCtrl = "); 
 //        matCtrl.print(matCtrl.getRowDimension(), matCtrl.getColumnDimension());
 
         GenericMatrix matRes = matCtrl.minus(matTest);

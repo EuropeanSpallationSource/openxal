@@ -14,6 +14,8 @@ import xal.extension.solver.hint.*;
 import xal.extension.solver.solutionjudge.*;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * RandomSearchAlgorithm looks for points bounded by the specified variable
@@ -33,6 +35,8 @@ import java.util.*;
  * @author t6p
  */
 public class RandomShrinkSearch extends SearchAlgorithm {
+
+    private static final Logger LOGGER = Logger.getLogger(RandomShrinkSearch.class.getName());
 
     /**
      * The current best point.
@@ -381,7 +385,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
                 if (shouldChange) {
                     elementChanged = true;
                     double value = proposeValue(variable);
-                    values.put(variable, new Double(value));
+                    values.put(variable, value);
                 }
             }
 
@@ -464,16 +468,16 @@ public class RandomShrinkSearch extends SearchAlgorithm {
          * Print variables' search windows.
          */
         public void printVariableSearchWindows(final String message) {
-            System.out.println("********* Printing variable search windows *********");
-            System.out.println(message);
+            LOGGER.log(Level.INFO, "********* Printing variable search windows *********");
+            LOGGER.log(Level.INFO, message);
 
             for (final Variable variable : problem.getVariables()) {
                 VariableWindow window = getSearchWindow(variable);
-                System.out.println(variable.getName() + " lower limit: " + window.getLowerLimit());
-                System.out.println(variable.getName() + " upper limit: " + window.getUpperLimit());
+                LOGGER.log(Level.INFO, "{0} lower limit: {1}", new Object[]{variable.getName(), window.getLowerLimit()});
+                LOGGER.log(Level.INFO, "{0} upper limit: {1}", new Object[]{variable.getName(), window.getUpperLimit()});
             }
 
-            System.out.println("****************************************************");
+            LOGGER.log(Level.INFO, "****************************************************");
         }
 
         /**
@@ -600,6 +604,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
         /**
          * turns shouldShift on
          */
+        @Override
         public void shouldShift() {
             shouldShift = true;
         }

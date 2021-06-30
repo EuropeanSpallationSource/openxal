@@ -10,6 +10,8 @@ package xal.extension.extlatgen;
 
 import java.io.*;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.smf.*;
 import xal.smf.impl.*;
@@ -34,6 +36,8 @@ import xal.tools.beam.Twiss; //had to import to fix deprecation issue with getTw
  * @version 0.2 07 Apr 2003
  */
 public class DynacGenerator {
+    
+    private static final Logger LOGGER = Logger.getLogger(DynacGenerator.class.getName());
 
     /**
      * input lattice view
@@ -44,12 +48,12 @@ public class DynacGenerator {
      * Probe for initial condition
      */
     protected EnvelopeProbe myProbe;
-
+    
     protected String myLatticeName = null;
 
     // TODO: CKA - NEVER USED
     private boolean mebtInd = false;
-
+    
     private AcceleratorSeq myAccSeq;
     private Scenario myScenario;
     private String mySrcSelector = Scenario.SYNC_MODE_DESIGN;
@@ -66,10 +70,10 @@ public class DynacGenerator {
         try {
             myScenario = Scenario.newScenarioFor(myAccSeq);
         } catch (ModelException e) {
-            System.out.println("Cannot create Scenario for " + myAccSeq.getId());
+            LOGGER.log(Level.INFO, "Cannot create Scenario for {0}", myAccSeq.getId());
         }
     }
-
+    
     ;
     
     public DynacGenerator(String latticeName, Lattice lattice, AcceleratorSeq accSeq, EnvelopeProbe envProbe) {
@@ -93,13 +97,13 @@ public class DynacGenerator {
      * (Scenario.SYNC_MODE_DESIGN) or live (Scenario.SYNC_MODE_LIVE) data
      */
     public void createDynacInput(String srcSelector) throws IOException {
-
+        
         mySrcSelector = srcSelector;
-
+        
         if (myLatticeName == null) {
             myLatticeName = myLattice.getName();
         }
-
+        
         FileWriter dynacInput = new FileWriter(myLatticeName + ".in");
         Date today = new Date();
         //       int elementCount = myLattice.len();
@@ -110,7 +114,7 @@ public class DynacGenerator {
                 myProbe.getKineticEnergy());
         // for Dynac header
         CovarianceMatrix covarianceMatrix = myProbe.getCovariance();
-
+        
         Twiss[] twiss = covarianceMatrix.computeTwiss();
         String dynac_header
                 = "SNS " + myLatticeName + " " + today.toString() + "\n"
@@ -151,16 +155,16 @@ public class DynacGenerator {
                 + "BEAM AT INPUT " + myLatticeName + "\n"
                 + "0 5\n"
                 + "1. 50. 1. 50. 1. 1.  90. 0.1\n";
-
+        
         LatticeIterator ilat = myLattice.latticeIterator();
         int counter = 1;        // TODO: CKA - NEVER USED
         String str = dynac_header;
         //       int devTypeInd = 1;
         String devStr = "";
-
+        
         String prevElementType = "";
         double quadLength = 0.;
-
+        
         char buffer_header[] = new char[str.length()];
         str.getChars(0, str.length(), buffer_header, 0);
         dynacInput.write(buffer_header);
@@ -170,7 +174,7 @@ public class DynacGenerator {
 
         // DTL indicator
         boolean DTLInd = false;
-
+        
         while (ilat.hasNext()) {
             Element element = ilat.next();
             // for diagnostic devices
@@ -253,7 +257,7 @@ public class DynacGenerator {
                         }
                     }
                 }
-
+                
                 prevElementType = "quadrupole";
                 quadLength = element.getLength() * 100.;
                 if (element.getAcceleratorNode().getId().substring(0, 4).equals("MEBT")) {
@@ -281,7 +285,7 @@ public class DynacGenerator {
                     } catch (GetException e) {
                     }
                 }
-
+                
                 prevElementType = "hsteerer";
             } // for vertical dipole correctors
             else if (element.getType().equals("vsteerer")) {
@@ -302,7 +306,7 @@ public class DynacGenerator {
                     } catch (GetException e) {
                     }
                 }
-
+                
                 prevElementType = "vsteerer";
             } // for rf gaps
             else if (element.getType().equals("rfgap")) {
@@ -326,12 +330,12 @@ public class DynacGenerator {
                         int indOfGapCount = element.getAcceleratorNode().getId().indexOf("Rg");
                         String gapCount = element.getAcceleratorNode().getId().substring(indOfGapCount + 2);
                         devStr = "";
-
+                        
                         if (prevElementType.equals("quadrupole") && DTLInd) {
                             devStr = "DRIFT\n"
                                     + "  " + -1. * quadLength + "\n";
                         }
-
+                        
                         devStr = devStr + "CAVSC\n"
                                 + Integer.parseInt(gapCount) + "  0.  0.  "
                                 + ((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapLength() * 100. + " "
@@ -368,13 +372,11 @@ public class DynacGenerator {
                                     + "  0.  0.  402.5  1."
                                     + "\n";
                         }
-                    } catch (ConnectionException e) {
-                        //	       devStr = devTypeInd + ", A(1, " + counter + ")=" 
-                        //	              + "0., 0., 1, 1, 1, \n";	       
-                    } catch (GetException e) {
+                    } catch (ConnectionException | GetException e) {
+                        LOGGER.log(Level.SEVERE, null, e);
                     }
                 }
-
+                
                 prevElementType = "rfgap";
                 if (element.getAcceleratorNode().getId().substring(0, 4).equals("MEBT")) {
                     mebtInd = true;
@@ -383,28 +385,28 @@ public class DynacGenerator {
                     DTLInd = true;
                 }
             }
-
+            
             if (!element.getName().substring(0, 4).equals("DRFT")) {
                 str = ";" + element.getName() + "\n"
                         + devStr;
             } else {
                 str = devStr;
             }
-
+            
             char buffer[] = new char[str.length()];
             str.getChars(0, str.length(), buffer, 0);
             dynacInput.write(buffer);
-
+            
             counter++;
         }
         str = "STOP";
-
+        
         char buffer_end[] = new char[str.length()];
         str.getChars(0, str.length(), buffer_end, 0);
         dynacInput.write(buffer_end);
-
+        
         dynacInput.close();
-
+        
     }
 
     /**
@@ -417,10 +419,10 @@ public class DynacGenerator {
             myScenario.resync();
             myScenario.run();
         } catch (SynchronizationException e) {
-            System.out.println(e);
+            LOGGER.log(Level.SEVERE, null, e);
         } catch (ModelException e) {
-            System.out.println(e);
+            LOGGER.log(Level.SEVERE, null, e);
         }
     }
-
+    
 }

@@ -21,6 +21,8 @@ import java.awt.Dimension;
 import java.awt.Container;
 import java.awt.event.*;
 import java.awt.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.event.*;
 
 /**
@@ -30,6 +32,8 @@ import javax.swing.event.*;
  * @author Paul Chu
  */
 public class PVLogSnapshotChooser {
+
+    private static final Logger LOGGER = Logger.getLogger(PVLogSnapshotChooser.class.getName());
 
     JDialog pvLogDialog;
 
@@ -278,7 +282,7 @@ public class PVLogSnapshotChooser {
             public void actionPerformed(ActionEvent event) {
                 pvLogId = Long.parseLong(pvLogIdField.getText());
                 pvLogDialog.setVisible(false);
-                System.out.println("pvLogId = " + pvLogId);
+                LOGGER.log(Level.INFO, "pvLogId = {0}", pvLogId);
                 // for testing purpose
                 // System.exit(0);
             }

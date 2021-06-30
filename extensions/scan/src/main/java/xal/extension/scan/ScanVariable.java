@@ -2,10 +2,14 @@ package xal.extension.scan;
 
 import javax.swing.*;
 import java.awt.event.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.ca.*;
 
 public class ScanVariable {
+
+    private static final Logger LOGGER = Logger.getLogger(ScanVariable.class.getName());
 
     private MonitoredPV mpv = null;
     private MonitoredPV mpvRB = null;
@@ -122,7 +126,7 @@ public class ScanVariable {
         if (messageText != null) {
             messageText.setText(msg);
         } else {
-            System.out.println("ScanVariable class:" + msg);
+            LOGGER.log(Level.INFO, "ScanVariable class:{0}", msg);
         }
     }
 

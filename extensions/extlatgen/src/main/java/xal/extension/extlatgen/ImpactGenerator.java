@@ -7,6 +7,8 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.Probe;
@@ -21,6 +23,8 @@ import xal.smf.impl.*;
 import xal.tools.beam.RelativisticParameterConverter;
 
 public class ImpactGenerator {
+
+    private static final Logger LOGGER = Logger.getLogger(ImpactGenerator.class.getName());
 
     /**
      * speed of light constant in 10^9 m/s
@@ -184,37 +188,37 @@ public class ImpactGenerator {
             myLatticeName = sequenceChain.get(0).getId() + "-" + sequenceChain.get(sequenceChain.size() - 1).getId();
         }
 
-        File impact_file = outputFile != null ? outputFile : new File("test.in");
-        System.out.println("Exporting IMPACT optics to file: " + impact_file.getAbsolutePath());
-        final FileWriter IMPACT_WRITER = new FileWriter(impact_file);
+        File impactFile = outputFile != null ? outputFile : new File("test.in");
+        LOGGER.log(Level.INFO, "Exporting IMPACT optics to file: {0}", impactFile.getAbsolutePath());
+        final FileWriter impactWriter = new FileWriter(impactFile);
         final Date today = new Date();
 
         double momentum = RelativisticParameterConverter.computeMomentumFromEnergies(myProbe.getKineticEnergy(), myProbe.getSpeciesRestEnergy()) / 1.e9;
-        System.out.println("momentum = " + momentum);
+        LOGGER.log(Level.INFO, "momentum = {0}", momentum);
 
         // Q = myProbe.getSpeciesCharge()/1.602e-19;
         Q = myProbe.getSpeciesCharge();
 
         // single CPU, single core
-        IMPACT_WRITER.write("1 1\n");
+        impactWriter.write("1 1\n");
         // total of 10000 particles
-        IMPACT_WRITER.write("6 10000 2 0 2\n");
+        impactWriter.write("6 10000 2 0 2\n");
 
-        IMPACT_WRITER.write("64 64 64 1 0.14 0.14 0.1025446\n");
+        impactWriter.write("64 64 64 1 0.14 0.14 0.1025446\n");
         // 6D Waterbag, 2 charge states
-        IMPACT_WRITER.write("3 0 0 2\n");
+        impactWriter.write("3 0 0 2\n");
         // 5000 for each charge state
-        IMPACT_WRITER.write("5000 5000\n");
+        impactWriter.write("5000 5000\n");
         // beam current for each charge state
-        IMPACT_WRITER.write("0.0 0.0\n");
+        impactWriter.write("0.0 0.0\n");
         // q_i/m_i for each charge state
-        IMPACT_WRITER.write("1.48852718947e-10 1.533634074e-10\n");
+        impactWriter.write("1.48852718947e-10 1.533634074e-10\n");
         // sigmax, lambdax, mux, mismatchx, mismatchpx, offsetX, offsetPx
-        IMPACT_WRITER.write("\n");
-        IMPACT_WRITER.write("\n");
-        IMPACT_WRITER.write("\n");
+        impactWriter.write("\n");
+        impactWriter.write("\n");
+        impactWriter.write("\n");
         // 
-        IMPACT_WRITER.write("\n");
+        impactWriter.write("\n");
 
 //		int driftCounter = 0;
         for (int i = 0; i < sequenceChain.size(); i++) {
@@ -235,25 +239,25 @@ public class ImpactGenerator {
 
                 // for regular drift space, diagnostic devices
                 if (elementType.equals("drift")) {
-                    IMPACT_WRITER.write(NUMBER_FORMAT.format(elementLength) + "\t4\t20\t" + DRIFT + "\t " + APER + "\t/\n");
+                    impactWriter.write(NUMBER_FORMAT.format(elementLength) + "\t4\t20\t" + DRIFT + "\t " + APER + "\t/\n");
 //					driftCounter++;
                 } // for quads
                 else if (elementType.equals("quadrupole") || elementType.equals("skewquadrupole")) {
                     final double field = getField(node, deviceDataSource);
-                    IMPACT_WRITER.write(NUMBER_FORMAT.format(elementLength) + "\t4\t20\t" + QUAD
+                    impactWriter.write(NUMBER_FORMAT.format(elementLength) + "\t4\t20\t" + QUAD
                             + NUMBER_FORMAT.format(field / elementLength) + "\t" + node.getAper().getAperX()
                             + "\t" + node.getAlign().getX() + "\t" + node.getAlign().getY()
                             + "\t" + node.getAlign().getPitch() + "\t" + node.getAlign().getYaw() + "\t" + node.getAlign().getRoll() + "\t/\n");
                 } // for solenoid
                 else if (elementType.equals("solenoid")) {
                     final double field = getField(node, deviceDataSource);
-                    IMPACT_WRITER.write(NUMBER_FORMAT.format(elementLength) + "\t4\t20" + SOLENOID
+                    impactWriter.write(NUMBER_FORMAT.format(elementLength) + "\t4\t20" + SOLENOID
                             + NUMBER_FORMAT.format(field) + "\t0\t" + node.getAper().getAperX()
                             + "\t" + node.getAlign().getX() + "\t" + node.getAlign().getY()
                             + "\t" + node.getAlign().getPitch() + "\t" + node.getAlign().getYaw() + "\t" + node.getAlign().getRoll() + "\t/\n");
                 } // for bending dipole
                 else if (elementType.equals("dipole")) {
-                    IMPACT_WRITER.write(NUMBER_FORMAT.format(elementLength) + "\t10\t20" + DIPOLE
+                    impactWriter.write(NUMBER_FORMAT.format(elementLength) + "\t10\t20" + DIPOLE
                             + "\t" + ((Bend) node).getDfltBendAngle() + "\t0.0\t150\t" + node.getAper().getAperX()
                             + "\t" + node.getAlign().getX() + "\t" + node.getAlign().getY()
                             + "\t" + node.getAlign().getPitch() + "\t" + node.getAlign().getYaw() + "\t" + node.getAlign().getRoll() + "\t/\n");
@@ -262,7 +266,7 @@ public class ImpactGenerator {
                     double len = node.getParent().getLength();
                     double freq = ((RfCavity) node.getParent()).getCavFreq() * 1.e6;
                     double phase = ((RfCavity) node.getParent()).getDfltCavPhase();
-                    IMPACT_WRITER.write(NUMBER_FORMAT.format(len) + "\t10\t20" + SC
+                    impactWriter.write(NUMBER_FORMAT.format(len) + "\t10\t20" + SC
                             + "\t" + "1.0\t" + freq + "\t" + phase + "\t" + "1.0\t" + node.getAper().getAperX()
                             + "\t" + node.getAlign().getX() + "\t" + node.getAlign().getY()
                             + "\t" + node.getAlign().getPitch() + "\t" + node.getAlign().getYaw() + "\t" + node.getAlign().getRoll() + "\t/\n");
@@ -272,11 +276,11 @@ public class ImpactGenerator {
         }
 
         // output format
-        final StringBuffer footerBuffer = new StringBuffer();
+        final StringBuilder footerBuffer = new StringBuilder();
 
-        IMPACT_WRITER.write(footerBuffer.toString());
+        impactWriter.write(footerBuffer.toString());
 
-        IMPACT_WRITER.close();
+        impactWriter.close();
     }
 
     /**
@@ -297,7 +301,7 @@ public class ImpactGenerator {
             lattice.clearMarkers();
             lattice.joinDrifts();
         } catch (LatticeError lerr) {
-            System.out.println(lerr.getMessage());
+            LOGGER.log(Level.INFO, lerr.getMessage());
         }
 
         return lattice;

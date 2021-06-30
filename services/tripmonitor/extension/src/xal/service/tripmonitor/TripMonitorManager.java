@@ -42,7 +42,7 @@ public class TripMonitorManager {
 
         final URL url = ResourceManager.getResourceURL(getClass(), "config.xml");
         if (url == null) {
-            System.out.println("URL IS NULL");
+            LOGGER.log(Level.INFO, "URL IS NULL");
         }
         final DataAdaptor mainAdaptor = XmlDataAdaptor.adaptorForUrl(url, false);
         load(mainAdaptor.childAdaptor("Configuration"));
@@ -69,7 +69,7 @@ public class TripMonitorManager {
      */
     public static boolean printlnIfVerbose(final Object object) {
         if (IS_VERBOSE) {
-            System.out.println(object);
+            LOGGER.log(Level.INFO, object);
         }
 
         return IS_VERBOSE;
@@ -126,7 +126,7 @@ public class TripMonitorManager {
         TRIP_LOGGER = new TripLogger(loggerAdaptor, TRIP_MONITORS);
 
         if (TripMonitorManager.isVerbose()) {
-            System.out.println("Trip Monitors:  " + TRIP_MONITORS);
+            LOGGER.log(Level.INFO, "Trip Monitors:  " + TRIP_MONITORS);
         }
     }
 }

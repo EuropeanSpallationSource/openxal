@@ -11,6 +11,8 @@
  */
 package xal.model.alg;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.model.IElement;
 import xal.model.IProbe;
 import xal.model.ModelException;
@@ -62,6 +64,8 @@ import xal.tools.data.GenericRecord;
  * @author Christopher K. Allen
  */
 public class EnvTrackerAdapt extends EnvelopeTrackerBase {
+
+    private static final Logger LOGGER = Logger.getLogger(EnvTrackerAdapt.class.getName());
 
     // Archiving constants 
     /**
@@ -625,9 +629,9 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
             }
 
             if (getDebugMode()) {
-                System.out.println("charge = " + charge);
-                System.out.println("EnvTrackerAdapt, elem, probe.getBeamCharge() = " + elem.getId() + " " + probe.bunchCharge());
-                System.out.println("going to stepProbeState, h, s, L = " + h + " " + s + " " + L);
+                LOGGER.log(Level.INFO, "charge = {0}", charge);
+                LOGGER.log(Level.INFO, "EnvTrackerAdapt, elem, probe.getBeamCharge() = {0} {1}", new Object[]{elem.getId(), probe.bunchCharge()});
+                LOGGER.log(Level.INFO, "going to stepProbeState, h, s, L = {0} {1} {2}", new Object[]{h, s, L});
             }
 
             // Step the probe according to the algorithm, then compute new step size
@@ -662,9 +666,9 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 
             if (this.getDebugMode() == true) {
                 if (elem instanceof IdealDrift) {
-                    System.out.println("IdealDrift, hp = " + hp);
+                    LOGGER.log(Level.INFO, "IdealDrift, hp = " + hp);
                 }
-                System.out.println("propagate s=" + probe.getPosition() + " h=" + h + " hp=" + hp + " N=" + nDbgSteps++);
+                LOGGER.log(Level.INFO, "propagate s=" + probe.getPosition() + " h=" + h + " hp=" + hp + " N=" + nDbgSteps++);
             }
 
             if (iMaxCnt != 0 && ++iCurCnt >= iMaxCnt) {
@@ -911,8 +915,8 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
             double sigmaCorLong = sigmaCor[1];
 
             if (getDebugMode()) {
-                System.out.println("sigmaCorTrans, sigmaCorTransOld = " + sigmaCorTrans + " " + sigmaCorTransOld);
-                System.out.println("sigmaCorLong, sigmaCorLongOld = " + sigmaCorLong + " " + sigmaCorLongOld);
+                LOGGER.log(Level.INFO, "sigmaCorTrans, sigmaCorTransOld = {0} {1}", new Object[]{sigmaCorTrans, sigmaCorTransOld});
+                LOGGER.log(Level.INFO, "sigmaCorLong, sigmaCorLongOld = {0} {1}", new Object[]{sigmaCorLong, sigmaCorLongOld});
             }
             double s11new = matChi.getElem(1, 1) + sigmaCorTrans * matChi.getElem(0, 0);
             matChi.setElem(1, 1, s11new);
@@ -941,7 +945,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 	    matCor.setElem(5,5,s55new);
 
         } else {
-        	// System.out.println("not instanceof IdealRfGap");
+        	// LOGGER.log(Level.INFO, "not instanceof IdealRfGap");
 	}
          */
 //        Twiss [] twissNew = probe.getCovariance().computeTwiss();
@@ -1060,7 +1064,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
         }
 
         if (this.getDebugMode() == true) {
-            System.out.println("ROLLBACK at s=" + probe.getPosition());
+            LOGGER.log(Level.INFO, "ROLLBACK at s={0}", probe.getPosition());
         }
     }
 
@@ -1080,9 +1084,9 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 
             case EnvTrackerAdapt.NORM_LINF:
                 if (getDebugMode()) {
-                    System.out.println("now NORM_LINF");
-                    System.out.println("trying to print matrix");
-                    System.out.println(mat);
+                    LOGGER.log(Level.INFO, "now NORM_LINF");
+                    LOGGER.log(Level.INFO, "trying to print matrix");
+                    LOGGER.log(Level.INFO, mat.toStringMatrix());
 //	            	PrintWriter os = new PrintWriter(System.out);
 //                  	mat.print(os);
 //                  	os.flush();
@@ -1091,8 +1095,8 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 
             case EnvTrackerAdapt.NORM_L1:
                 if (getDebugMode()) {
-                    System.out.println("now NORM_L1");
-                    System.out.println(mat);
+                    LOGGER.log(Level.INFO, "now NORM_L1");
+                    LOGGER.log(Level.INFO, mat.toStringMatrix());
 //	            	PrintWriter os = new PrintWriter(System.out);
 //                  	mat.print(os);
 //                  	os.flush();
@@ -1101,8 +1105,8 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 
             case EnvTrackerAdapt.NORM_L2:
                 if (getDebugMode()) {
-                    System.out.println("now NORM_L2");
-                    System.out.println(mat);
+                    LOGGER.log(Level.INFO, "now NORM_L2");
+                    LOGGER.log(Level.INFO, mat.toStringMatrix());
 //            	PrintWriter os = new PrintWriter(System.out);
 //                  	mat.print(os);
 //                  	os.flush();
@@ -1111,8 +1115,8 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 
             default:
                 if (getDebugMode()) {
-                    System.out.println("now normInf is obtained");
-                    System.out.println(mat);
+                    LOGGER.log(Level.INFO, "now normInf is obtained");
+                    LOGGER.log(Level.INFO, mat.toStringMatrix());
 //	            	PrintWriter os = new PrintWriter(System.out);
 //                  	mat.print(os);
 //                  	os.flush();
@@ -1173,12 +1177,12 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 
         if (getDebugMode()) {
             if (Math.abs(h) < 1e-5) {
-                System.out.println("compNewStepSize, h = 0");
+                LOGGER.log(Level.INFO, "compNewStepSize, h = 0");
             }
 
-            System.out.println("error = " + error);
+            LOGGER.log(Level.INFO, "error = {0}", error);
             if (Math.abs(error) < 1e-5) {
-                System.out.println("compNewStepSize, error = 0");
+                LOGGER.log(Level.INFO, "compNewStepSize, error = 0");
             }
         }
 
@@ -1198,8 +1202,8 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
         }
 
         if (this.getDebugMode() == true) {
-            System.out.println("residual error=" + error);
-            System.out.println("hnew = " + hnew);
+            LOGGER.log(Level.INFO, "residual error={0}", error);
+            LOGGER.log(Level.INFO, "hnew = {0}", hnew);
         }
         return hnew;
     }
@@ -1224,10 +1228,10 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 
         if (this.getDebugMode() == true) {
             if (Math.abs(h) < 1e-5) {
-                System.out.println("compNewStepSizeDriftPmq, h = 0");
+                LOGGER.log(Level.INFO, "compNewStepSizeDriftPmq, h = 0");
             }
             if (Math.abs(error) < 1e-5) {
-                System.out.println("compNewStepSizeDriftPmq, error = 0");
+                LOGGER.log(Level.INFO, "compNewStepSizeDriftPmq, error = 0");
             }
         }
         // Compute the new step size
@@ -1246,7 +1250,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
         }
 
         if (this.getDebugMode()) {
-            System.out.println("residual error=" + error);
+            LOGGER.log(Level.INFO, "residual error={0}", error);
         }
 
         return hnew;
@@ -1426,7 +1430,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 //        //        if (this.getDebugMode() == true)    {
 //        //            PrintWriter out = new PrintWriter(System.out);
 //        //            
-//        //            System.out.println("Ellipsoid rotation matrix s=" + this.getElemPosition());
+//        //            LOGGER.log(Level.INFO, "Ellipsoid rotation matrix s=" + this.getElemPosition());
 //        //            rho.getRotation().print(out);
 //        //            out.flush();
 //        //        }
@@ -1535,7 +1539,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 //  throws ModelException 
 //{
 //  m_cntUpdate++;
-//  System.out.println("advanceProbe() " + m_cntUpdate);
+//  LOGGER.log(Level.INFO, "advanceProbe() " + m_cntUpdate);
 //
 //  super.advanceProbe(probe, elem, dblLen);
 //}

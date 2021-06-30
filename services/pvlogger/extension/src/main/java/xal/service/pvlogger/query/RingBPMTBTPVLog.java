@@ -106,7 +106,7 @@ public class RingBPMTBTPVLog {
             }
         }
 
-        System.out.println("Got " + pvMap.size() + " BPMs.");
+        LOGGER.log(Level.INFO, "Got " + pvMap.size() + " BPMs.");
 
         return pvMap;
     }

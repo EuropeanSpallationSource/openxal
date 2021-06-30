@@ -461,7 +461,7 @@ public class PVLogger {
     protected Connection getNewDatabaseConnection() {
         try {
             Connection con = connectionDictionary.hasRequiredInfo() ? PersistentStore.connectionInstance(connectionDictionary) : null;
-            System.out.println("Connection is " + con == null ? "null" : con.toString());
+            LOGGER.log(Level.INFO, "Connection is " + con == null ? "null" : con.toString());
             return con;
         } catch (SQLException exception) {
             LOGGER.log(Level.SEVERE, null, exception);

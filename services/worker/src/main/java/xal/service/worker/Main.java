@@ -12,6 +12,8 @@ package xal.service.worker;
 import xal.extension.service.ServiceDirectory;
 
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Main
@@ -19,6 +21,8 @@ import java.util.Date;
  * @author tap
  */
 public class Main {
+
+    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 
     /**
      * The time at which the application was launched
@@ -45,7 +49,7 @@ public class Main {
      */
     protected void run() {
         ServiceDirectory.defaultDirectory().registerService(Working.class, "Worker", new WorkService());
-        System.out.println("Listening for work requests...");
+        LOGGER.log(Level.INFO, "Listening for work requests...");
     }
 
     /**
@@ -70,7 +74,7 @@ public class Main {
      * Shutdown the application
      */
     public static void shutdown(final int code) {
-        System.out.println("Shutting down work service...");
+        LOGGER.log(Level.INFO, "Shutting down work service...");
         System.exit(code);
     }
 }

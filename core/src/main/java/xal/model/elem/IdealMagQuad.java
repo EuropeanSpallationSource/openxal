@@ -254,7 +254,7 @@ public class IdealMagQuad extends ThickElectromagnet {
         }
         /*
        if (K1!=0.) {//sako!!
-    	   System.out.println("K1, k = "+K1+" "+k);
+    	   LOGGER.log(Level.INFO, "K1, k = "+K1+" "+k);
     	   k = K1;
        }
          */

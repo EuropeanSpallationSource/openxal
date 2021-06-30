@@ -24,7 +24,7 @@ public class ScenarioGeneratorTest {
 
     @Test
     public void doScenarioGeneratorTest() throws InstantiationException, ModelException {
-        System.out.println("Running\n");
+        LOGGER.log(Level.INFO, "Running\n");
 
         Accelerator accelerator = loadAccelerator();
 

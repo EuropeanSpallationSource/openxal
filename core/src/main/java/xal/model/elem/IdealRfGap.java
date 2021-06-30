@@ -463,13 +463,13 @@ public class IdealRfGap extends ThinElement implements IRfGap {
             dE_gap = Q * EL * ((ttf + ttf_prime * (k_gap - k_gap0)) * Math.cos(phi0 + dlt_phi) + (stf + stf_prime * (k_gap - k_gap0)) * Math.sin(phi0 + dlt_phi)) / 2.0;
             dlt_phi = (Q * EL / (Er * gamma_gap * gamma_gap * gamma_gap * b_gap * b_gap)) * k_gap * (ttf_prime * Math.sin(phi0 + dlt_phi) - stf_prime * Math.cos(phi0 + dlt_phi)) / 2.0;
         }
-        //System.out.println("Stop "+this.getId() + "dlt_phi ="+(180*dlt_phi/Math.PI)+" bi="+bi+" b_gap="+b_gap+" dE_gap="+dE_gap+" Wi="+Wi);
+        //LOGGER.log(Level.INFO, "Stop "+this.getId() + "dlt_phi ="+(180*dlt_phi/Math.PI)+" bi="+bi+" b_gap="+b_gap+" dE_gap="+dE_gap+" Wi="+Wi);
         //the energy gaine and phase are known
         //now we calculate the total energy gain and phase
         theEnergyGain = Q * EL * ((ttf + ttf_prime * (k_gap - k_gap0)) * Math.cos(phi0 + dlt_phi));
         deltaPhaseCorrection = (Q * EL / (Er * gamma_gap * gamma_gap * gamma_gap * b_gap * b_gap)) * k_gap * (ttf_prime * Math.sin(phi0 + dlt_phi));
 
-        //System.out.println(this.getId() + " " + (Math.IEEEremainder(phi0 * 57.295779, 360.)) + "  " + Wi + "  " + theEnergyGain);
+        //LOGGER.log(Level.INFO, this.getId() + " " + (Math.IEEEremainder(phi0 * 57.295779, 360.)) + "  " + Wi + "  " + theEnergyGain);
     }
 
     /**
@@ -484,10 +484,10 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     @Override
     protected PhaseMap transferMap(IProbe probe) throws ModelException {
 
-//    	System.out.println("This is " + this.getId());
-//    	System.out.println("E0 is   " + this.getE0());
-//    	System.out.println("ETL is  " + this.getETL());
-//    	System.out.println("");
+//    	LOGGER.log(Level.INFO, "This is " + this.getId());
+//    	LOGGER.log(Level.INFO, "E0 is   " + this.getE0());
+//    	LOGGER.log(Level.INFO, "ETL is  " + this.getETL());
+//    	LOGGER.log(Level.INFO, "");
         // Get probe parameters at initial energy
         double Er = probe.getSpeciesRestEnergy();
         double Wi = probe.getKineticEnergy();
@@ -559,7 +559,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      */
     public double simpleEnergyGain(IProbe probe) {
 //
-//        System.out.println("simpleEnergyGain()");
+//        LOGGER.log(Level.INFO, "simpleEnergyGain()");
 //
         double ETL = this.getETL();
         double Q = Math.abs(probe.getSpeciesCharge());

@@ -14,6 +14,8 @@ import java.util.Date;
 import java.text.NumberFormat;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import xal.smf.*;
 import xal.smf.impl.Magnet;
@@ -35,6 +37,8 @@ import xal.tools.beam.CovarianceMatrix;
  * @version 0.1 31 Oct 2003
  */
 public class MadGenerator {
+
+    private static final Logger LOGGER = Logger.getLogger(MadGenerator.class.getName());
 
     /**
      * speed of light constant in 10^9 m/s
@@ -193,22 +197,22 @@ public class MadGenerator {
             myLatticeName = sequenceChain.get(0).getId() + "-" + sequenceChain.get(sequenceChain.size() - 1).getId();
         }
 
-        File mad_file = outputFile != null ? outputFile : new File(myLatticeName + ".mad");
-        System.out.println("Exporting MAD optics to file: " + mad_file.getAbsolutePath());
-        final FileWriter MAD_WRITER = new FileWriter(mad_file);
+        File madFile = outputFile != null ? outputFile : new File(myLatticeName + ".mad");
+        LOGGER.log(Level.INFO, "Exporting MAD optics to file: {0}", madFile.getAbsolutePath());
+        final FileWriter madWriter = new FileWriter(madFile);
         final Date today = new Date();
 
         // TODO: CKA - NEVER USED		
         TraceXalUnitConverter uc = TraceXalUnitConverter.newConverter(402500000., myProbe.getSpeciesRestEnergy(), myProbe.getKineticEnergy());
 
         double momentum = RelativisticParameterConverter.computeMomentumFromEnergies(myProbe.getKineticEnergy(), myProbe.getSpeciesRestEnergy()) / 1.e9;
-        System.out.println("momentum = " + momentum);
+        LOGGER.log(Level.INFO, "momentum = {0}", momentum);
 
         // Q = myProbe.getSpeciesCharge()/1.602e-19;
         Q = myProbe.getSpeciesCharge();
 
         final String sourceLabel = deviceDataSource.getLabel();
-        MAD_WRITER.write("TITLE, \"" + sourceLabel + ": " + myLatticeName + "  Date created: " + today.toString() + "\";\n\n");
+        madWriter.write("TITLE, \"" + sourceLabel + ": " + myLatticeName + "  Date created: " + today.toString() + "\";\n\n");
 
         int driftCounter = 0;
 
@@ -304,9 +308,9 @@ public class MadGenerator {
                 //				}
                 else {
                     if (node != null) {
-                        System.out.println("Ignored element type: " + elementType + ", node: " + node.getId() + ", length: " + node.getLength());
+                        LOGGER.log(Level.INFO, "Ignored element type: {0}, node: {1}, length: {2}", new Object[]{elementType, node.getId(), node.getLength()});
                     } else {
-                        System.out.println("Ignored element type: " + elementType);
+                        LOGGER.log(Level.INFO, "Ignored element type: {0}", elementType);
                     }
                     continue;
                 }
@@ -316,7 +320,7 @@ public class MadGenerator {
 
         // write the MAD element definitions
         for (final MadElement element : madElements) {
-            MAD_WRITER.write(element.NAME + ": " + element.DEFINITION + ";\n");
+            madWriter.write(element.NAME + ": " + element.DEFINITION + ";\n");
         }
 
         // construct the MAD lines
@@ -338,20 +342,20 @@ public class MadGenerator {
         final int lineCount = lines.size();
         for (lineIndex = 0; lineIndex < lineCount; lineIndex++) {
             final List<MadElement> theLine = lines.get(lineIndex);
-            MAD_WRITER.write("SEGMENT" + (lineIndex + 1) + ": LINE=(&\n");
+            madWriter.write("SEGMENT" + (lineIndex + 1) + ": LINE=(&\n");
             final int numELements = theLine.size();
             for (int index = 0; index < numELements - 1; index++) {
                 final MadElement element = theLine.get(index);
-                MAD_WRITER.write("    " + element.NAME + ", &\n");
+                madWriter.write("    " + element.NAME + ", &\n");
             }
             final MadElement element = theLine.get(numELements - 1);
-            MAD_WRITER.write("    " + element.NAME + ");\n");
+            madWriter.write("    " + element.NAME + ");\n");
         }
-        MAD_WRITER.write(formatName(myLatticeName) + ": LINE=(");
+        madWriter.write(formatName(myLatticeName) + ": LINE=(");
         for (lineIndex = 0; lineIndex < lineCount - 1; lineIndex++) {
-            MAD_WRITER.write("SEGMENT" + (lineIndex + 1) + ",");
+            madWriter.write("SEGMENT" + (lineIndex + 1) + ",");
         }
-        MAD_WRITER.write("SEGMENT" + lineCount + ");\n");
+        madWriter.write("SEGMENT" + lineCount + ");\n");
 
         final StringBuilder footerBuffer = new StringBuilder();
         footerBuffer.append("BEAM, MASS=").append(NUMBER_FORMAT.format(myProbe.getSpeciesRestEnergy() / 1.e9));
@@ -382,9 +386,9 @@ public class MadGenerator {
         footerBuffer.append("   plot, haxis=s, vaxis1=x,y, range=#s/#e, style=100, colour=100, notitle=true;\n");
         footerBuffer.append("STOP;\n");
 
-        MAD_WRITER.write(footerBuffer.toString());
+        madWriter.write(footerBuffer.toString());
 
-        MAD_WRITER.close();
+        madWriter.close();
 
     }
 
@@ -419,7 +423,7 @@ public class MadGenerator {
             lattice.clearMarkers();
             lattice.joinDrifts();
         } catch (LatticeError lerr) {
-            System.out.println(lerr.getMessage());
+            LOGGER.log(Level.INFO, lerr.getMessage());
         }
 
         return lattice;

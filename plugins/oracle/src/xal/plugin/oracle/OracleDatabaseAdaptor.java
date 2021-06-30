@@ -75,7 +75,7 @@ public class OracleDatabaseAdaptor extends DatabaseAdaptor {
      * @return a new instance of a Blob appropriate for this adaptor.
      */
     public Blob newBlob(final Connection connection) {
-        //System.out.println( "Creating Oracle SQL Blob..." );
+        //LOGGER.log(Level.INFO,  "Creating Oracle SQL Blob..." );
         try {
             // reflection for:
             // return BLOB.createTemporary( connection, true, BLOB.DURATION_SESSION );
@@ -108,7 +108,7 @@ public class OracleDatabaseAdaptor extends DatabaseAdaptor {
      * thrown
      */
     public Array getArray(final String type, final Connection connection, final Object array) throws DatabaseException {
-        //System.out.println( "Creating Oracle SQL Array..." );
+        //LOGGER.log(Level.INFO,  "Creating Oracle SQL Array..." );
         try {
             final Object descriptor = getArrayDescriptor(type, connection);
             // reflection for:

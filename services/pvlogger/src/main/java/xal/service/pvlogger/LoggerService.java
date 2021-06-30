@@ -15,6 +15,8 @@ import xal.extension.service.ServiceDirectory;
 import xal.ca.Channel;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * LoggerService is the implementation of LoggerPortal that responds to requests
@@ -23,8 +25,10 @@ import java.util.*;
  * @author tap
  */
 public class LoggerService implements RemoteLogging {
-    // constants
 
+    private static final Logger LOGGER = Logger.getLogger(LoggerService.class.getName());
+
+    // constants
     protected final String identity = "PV Logger";
 
     // model
@@ -43,7 +47,7 @@ public class LoggerService implements RemoteLogging {
      */
     public void broadcast() {
         ServiceDirectory.defaultDirectory().registerService(RemoteLogging.class, identity, this);
-        System.out.println("broadcasting...");
+        LOGGER.log(Level.INFO, "broadcasting...");
     }
 
     /**

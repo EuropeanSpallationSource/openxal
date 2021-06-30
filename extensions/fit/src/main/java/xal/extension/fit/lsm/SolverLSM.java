@@ -1,5 +1,7 @@
 package xal.extension.fit.lsm;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.tools.ArrayMath;
 
 /**
@@ -8,6 +10,8 @@ import xal.tools.ArrayMath;
  * @author shishlo
  */
 public class SolverLSM implements FitSolver {
+
+    private static final Logger LOGGER = Logger.getLogger(SolverLSM.class.getName());
 
     private double[] a = new double[0];
     private int[] indArr = new int[0];
@@ -222,31 +226,29 @@ public class SolverLSM implements FitSolver {
 
         SolverLSM solver = new SolverLSM();
 
-        System.out.println("======BEFORE=========");
+        LOGGER.log(Level.INFO, "======BEFORE=========");
 
         for (int i = 0; i < a.length; i++) {
-            System.out.println("i=" + i + " a=" + a[i] + " +- " + aErr[i]);
+            LOGGER.log(Level.INFO, "i={0} a={1} +- {2}", new Object[]{i, a[i], aErr[i]});
         }
-        System.out.println("======START Solver=======");
+        LOGGER.log(Level.INFO, "======START Solver=======");
 
         boolean res = solver.solve(ds, mf, a, aErr, mask);
 
-        System.out.println("sucess =" + res);
+        LOGGER.log(Level.INFO, "sucess ={0}", res);
 
         for (int i = 0; i < a.length; i++) {
-            System.out.println("i=" + i + " a=" + a[i] + " +- " + aErr[i]);
+            LOGGER.log(Level.INFO, "i={0} a={1} +- {2}", new Object[]{i, a[i], aErr[i]});
         }
-        System.out.println("======STOP=======");
+        LOGGER.log(Level.INFO, "======STOP=======");
 
         a[0] = 1.;
         a[1] = 1.;
         a[2] = 1.;
         a[3] = 1.;
-        System.out.println("  x        y          y_appr   ");
+        LOGGER.log(Level.INFO, "  x        y          y_appr   ");
         for (int i = 0; i < xArr.length; i++) {
-            System.out.println(" " + xArr[i][0] + "  "
-                    + yArr[i] + "  "
-                    + mf.getValue(xArr[i][0], a));
+            LOGGER.log(Level.INFO, " {0}  {1}  {2}", new Object[]{xArr[i][0], yArr[i], mf.getValue(xArr[i][0], a)});
         }
 
     }

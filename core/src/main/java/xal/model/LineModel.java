@@ -3,6 +3,8 @@
  */
 package xal.model;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import xal.model.elem.ElementSeq;
@@ -17,6 +19,8 @@ import xal.model.elem.ElementSeq;
  */
 @Deprecated
 public class LineModel extends ElementSeq {
+
+    private static final Logger LOGGER = Logger.getLogger(LineModel.class.getName());
 
 
     /*
@@ -108,11 +112,11 @@ public class LineModel extends ElementSeq {
      */
     @Override
     public void propagate(IProbe probe) throws ModelException {
-//        System.out.println("LineModel.propagate called");
+//        LOGGER.log(Level.INFO, "LineModel.propagate called");
 
         String elem0 = probe.getCurrentElement();
         if (isValidElement(elem0)) {
-//            System.out.println("found valid elem0 = "+elem0);
+//            LOGGER.log(Level.INFO, "found valid elem0 = "+elem0);
             propagateWithElement(probe, elem0);
 
         } else {
@@ -131,11 +135,11 @@ public class LineModel extends ElementSeq {
      */
     @Override
     public void backPropagate(IProbe probe) throws ModelException {
-        System.out.println("LineModel.backPropagate called");
+        LOGGER.log(Level.INFO, "LineModel.backPropagate called");
 
         String elem0 = probe.getCurrentElement();
         if (isValidElement(elem0)) {
-            System.out.println("found valid elem0 = " + elem0);
+            LOGGER.log(Level.INFO, "found valid elem0 = {0}", elem0);
             backPropagateWithElement(probe, elem0);
 
         } else {
@@ -166,7 +170,7 @@ public class LineModel extends ElementSeq {
                 comp.propagate(probe);
 
             } else if (elem0.equals(comp.getId())) {
-                System.out.println("found elem0, s = " + elem0 + " " + s);
+                LOGGER.log(Level.INFO, "found elem0, s = {0} {1}", new Object[]{elem0, s});
                 probe.setPosition(s);
                 probe.initialize();
                 comp.propagate(probe);
@@ -203,8 +207,8 @@ public class LineModel extends ElementSeq {
 
             } else {
                 // skip
-                System.out.println("skip elem " + comp.getId());
-                System.out.println("s0, s, len = " + s0 + " " + s + " " + len);
+                LOGGER.log(Level.INFO, "skip elem {0}", comp.getId());
+                LOGGER.log(Level.INFO, "s0, s, len = {0} {1} {2}", new Object[]{s0, s, len});
             }
 
             s += len;
@@ -232,7 +236,7 @@ public class LineModel extends ElementSeq {
                 comp.propagate(probe);
 
             } else if (elem0.equals(comp.getId())) {
-                System.out.println("found elem0, s = " + elem0 + " " + s);
+                LOGGER.log(Level.INFO, "found elem0, s = {0} {1}", new Object[]{elem0, s});
                 probe.setPosition(s);
                 probe.initialize();
                 comp.propagate(probe);
@@ -270,8 +274,8 @@ public class LineModel extends ElementSeq {
 
             } else {
                 // skip
-                System.out.println("skip elem " + comp.getId());
-                System.out.println("Probe pos = " + s0 + ", Seq pos = " + s + ", Elem len = " + len);
+                LOGGER.log(Level.INFO, "skip elem {0}", comp.getId());
+                LOGGER.log(Level.INFO, "Probe pos = {0}, Seq pos = {1}, Elem len = {2}", new Object[]{s0, s, len});
             }
 
             s -= len;

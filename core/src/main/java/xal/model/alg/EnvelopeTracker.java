@@ -11,6 +11,8 @@
  */
 package xal.model.alg;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.model.IElement;
 import xal.model.IProbe;
 import xal.model.ModelException;
@@ -74,10 +76,11 @@ import xal.tools.beam.PhaseMatrix;
  */
 public class EnvelopeTracker extends EnvelopeTrackerBase {
 
+    private static final Logger LOGGER = Logger.getLogger(EnvelopeTracker.class.getName());
+
     /*
      * Global Constants
      */
-    // Versioning and definition
     /**
      * string type identifier for algorithm
      */
@@ -552,7 +555,7 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         if (ifcElem instanceof ChargeExchangeFoil) {
             double q = probe.getSpeciesCharge();
             if (q < 0) {
-                System.out.println("charge exchanged at " + ifcElem.getId() + " from " + q + " to " + (-q));
+                LOGGER.log(Level.INFO, "charge exchanged at {0} from {1} to {2}", new Object[]{ifcElem.getId(), q, -q});
                 probe.setSpeciesCharge(-q);
             }
         }

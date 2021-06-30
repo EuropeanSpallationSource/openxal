@@ -69,15 +69,15 @@ public class TrajectoryTest extends TestCase {
 //		Iterator<ProbeState> it = trajectory.stateIterator();
 //		while (it.hasNext()) {
 //			ProbeState state = it.next();
-//			System.out.println(state);
+//			LOGGER.log(Level.INFO, state);
 //		}
 //		ProbeState[] statesByElem = trajectory.statesForElement("DR1");
 //		for (int i=0 ; i<statesByElem.length ; i++) {
-//			System.out.println(statesByElem[i]);
+//			LOGGER.log(Level.INFO, statesByElem[i]);
 //		}
 //		ProbeState[] statesByPos = trajectory.statesInPositionRange(0.16, 0.174);
 //		for (int i=0 ; i<statesByPos.length ; i++) {
-//			System.out.println(statesByPos[i]);
+//			LOGGER.log(Level.INFO, statesByPos[i]);
 //		}
     }
 

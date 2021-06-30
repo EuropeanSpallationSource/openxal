@@ -14,6 +14,8 @@ import xal.model.ModelException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -109,6 +111,8 @@ import java.util.Map;
  *
  */
 public class CsContinuationEstimator extends CourantSnyderEstimator {
+
+    private static final Logger LOGGER = Logger.getLogger(CsContinuationEstimator.class.getName());
 
     /*
      * Global Constants
@@ -447,12 +451,8 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
                 }
 
                 if (super.isDebuggingOn()) {
-                    System.out.println("  --Finished second stage search for continuation method---------------");
-                    System.out.println("    iterations=" + this.slnEmbed.getSolnIterations()
-                            + ", residual error=" + this.slnEmbed.getReconResidualError()
-                            + ", convergence error=" + this.slnEmbed.getReconConvergenceError()
-                            + "\n"
-                    );
+                    LOGGER.log(Level.INFO, "  --Finished second stage search for continuation method---------------");
+                    LOGGER.log(Level.INFO, "    iterations={0}, residual error={1}, convergence error={2}\n", new Object[]{this.slnEmbed.getSolnIterations(), this.slnEmbed.getReconResidualError(), this.slnEmbed.getReconConvergenceError()});
 
                 }
             }
@@ -466,13 +466,9 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
 
             //  Print out debug info
             if (super.isDebuggingOn()) {
-                System.out.println("----Continuation Method: Charge step# " + n
-                        + " charge=" + dblCurrI
-                        + ", residual error=" + super.getReconResidualError()
-                        + ", converge error=" + super.getReconConvergenceError()
-                );
-                System.out.print(matSig1.toStringMatrix(fmtMatrix, 12));
-                System.out.println("-------------------------------------------------\n");
+                LOGGER.log(Level.INFO, "----Continuation Method: Charge step# {0} charge={1}, residual error={2}, converge error={3}", new Object[]{n, dblCurrI, super.getReconResidualError(), super.getReconConvergenceError()});
+                LOGGER.log(Level.INFO, matSig1.toStringMatrix(fmtMatrix, 12));
+                LOGGER.log(Level.INFO, "-------------------------------------------------\n");
             }
 
             // Reset the initial covariance matrix and do another iteration
@@ -483,7 +479,7 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
         //  Report the error if in debug mode
         //  Then return the computed answer
         if (bolDebug) {
-            System.out.println("Used " + this.cntCurSteps + " charge steps with final residual error " + super.getReconResidualError() + ", and convergence error " + super.getReconConvergenceError());
+            LOGGER.log(Level.INFO, "Used {0} charge steps with final residual error {1}, and convergence error {2}", new Object[]{this.cntCurSteps, super.getReconResidualError(), super.getReconConvergenceError()});
         }
 
         return matSig0;

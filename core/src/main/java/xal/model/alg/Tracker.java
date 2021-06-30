@@ -1111,7 +1111,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
 //  double nextInterval;
 //  do {
 //    nextInterval = nextIntervalFrom(elem, currentPosition);
-//    System.out.println("propagate elem: " + elem.getId() + " currPos: " + currentPosition + " nextInterval: " + nextInterval);
+//    LOGGER.log(Level.INFO, "propagate elem: " + elem.getId() + " currPos: " + currentPosition + " nextInterval: " + nextInterval);
 //    this.advanceState(probe, elem, nextInterval);
 //    this.advanceProbe(probe, elem, nextInterval);
 //    probe.update();

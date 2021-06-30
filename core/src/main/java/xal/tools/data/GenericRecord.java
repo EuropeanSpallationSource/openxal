@@ -266,7 +266,7 @@ public class GenericRecord implements KeyedRecord, DataListener {
                     setValueForKey(value, key);
                 }
             } catch (ParseException exception) {
-                System.out.println("Error during record upate when parsing value for \"" + key + "\" attribute in table, \"" + dataTable.name() + "\"");
+                LOGGER.log(Level.INFO, "Error during record upate when parsing value for \"" + key + "\" attribute in table, \"" + dataTable.name() + "\"");
                 throw exception;
             }
         }

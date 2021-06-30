@@ -24,6 +24,7 @@ import java.net.URI;
 import java.util.List;
 
 import eu.ess.bled.Subsystem;
+import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -55,6 +56,8 @@ import xal.tools.beam.Twiss;
  * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
  */
 public class TraceWin {
+
+    private static final Logger LOGGER = Logger.getLogger(TraceWin.class.getName());
 
     private File inputFile;
     private File inputDir;
@@ -267,7 +270,7 @@ public class TraceWin {
 
         // Checking commandline arguments
         if (args.length < 3) {
-            System.out.println("Usage: TraceWin input outputDir outputName [initialParametersMode]");
+            LOGGER.log(Level.INFO, "Usage: TraceWin input outputDir outputName [initialParametersMode]");
             System.exit(0);
         }
         final String input = args[0];
@@ -378,7 +381,7 @@ public class TraceWin {
             } else {
                 throw new IOException();
             }
-        } catch (Exception e1) {
+        } catch (IOException | NumberFormatException e1) {
             logger.log("Error while trying to read input.");
             for (StackTraceElement st : e1.getStackTrace()) {
                 logger.log(st.toString());
@@ -424,8 +427,8 @@ public class TraceWin {
         try {
             accExp.export();
             logger.log("Finished exporting.");
-        } catch (Exception ex) {
-            Logger.getLogger(TraceWin.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException | URISyntaxException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
             logger.log("Error exporting.");
             for (StackTraceElement st : ex.getStackTrace()) {
                 logger.log(st.toString());

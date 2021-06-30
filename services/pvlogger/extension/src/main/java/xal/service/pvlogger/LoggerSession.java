@@ -118,7 +118,7 @@ public class LoggerSession {
     public void startLogging() {
         final double loggingPeriod = getLoggingPeriod();
         final String message = "Start logging \"" + group.getLabel() + "\" with period " + loggingPeriod + " seconds";
-        System.out.println(message);
+        LOGGER.log(Level.INFO, message);
         LOGGER.log(Level.INFO, message);
         resumeLogging();
     }

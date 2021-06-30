@@ -10,6 +10,8 @@
 package xal.model.elem;
 
 import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.model.IProbe;
 import xal.model.ModelException;
@@ -28,6 +30,8 @@ import xal.tools.beam.PhaseMatrix;
  * @author Christopher Allen
  */
 public class IdealMagSteeringDipole extends ThinElectromagnet {
+
+    private static final Logger LOGGER = Logger.getLogger(IdealMagSteeringDipole.class.getName());
 
     /*
      *  Global Attributes
@@ -240,7 +244,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
         //changed so that angle + is x+, angle - is y- for negatives
         // on 28 Nov 07
         if (dblAngleKick != 0.) {
-            System.out.println("***use anglekick (" + dblAngleKick + ") instead of dp " + dp);
+            LOGGER.log(Level.INFO, "***use anglekick (" + dblAngleKick + ") instead of dp " + dp);
             dp = dblAngleKick;
         }                           // then B polarity is defined in J-PARC also dp>0 for B>0 in x and y
 

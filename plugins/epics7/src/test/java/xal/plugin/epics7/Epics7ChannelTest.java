@@ -35,7 +35,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import xal.ca.ChannelRecord;
 import xal.ca.ChannelStatusRecord;
-import xal.ca.ChannelTimeRecord;
 import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.Monitor;
@@ -59,6 +58,8 @@ import static xal.plugin.epics7.TestChannelProvider.CONNECTION_TIME;
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 public class Epics7ChannelTest {
+
+    private static final Logger LOGGER = Logger.getLogger(Epics7ChannelTimeRecordTest.class.getName());
 
     boolean methodCalled = false;
 
@@ -86,7 +87,7 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testGetNativeChannel() {
-        System.out.println("getNativeChannel");
+        LOGGER.log(Level.INFO, "getNativeChannel");
         Epics7Channel instance = new Epics7Channel("Test", null);
         Channel expResult = null;
         Channel result = instance.getNativeChannel();
@@ -98,7 +99,7 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testConnectAndWait() {
-        System.out.println("connectAndWait");
+        LOGGER.log(Level.INFO, "connectAndWait");
 
         Epics7Channel instance = new Epics7Channel("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
         Epics7Channel instance2 = new Epics7Channel("ca://TestCA", Epics7TestChannelSystem.newEpics7ChannelSystem());
@@ -127,6 +128,7 @@ public class Epics7ChannelTest {
         Logger.getLogger(Epics7Channel.class.getName()).addHandler(handler);
 
         Thread thread = new Thread() {
+            @Override
             public void run() {
                 assertEquals(instance.connectAndWait(timeout), false);
             }
@@ -140,7 +142,7 @@ public class Epics7ChannelTest {
         try {
             Thread.sleep(CONNECTION_TIME / 2);
         } catch (InterruptedException ex) {
-            Logger.getLogger(Epics7ChannelTest.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
         assertEquals(handler.message, null);
         assertEquals(Level.INFO, handler.level);
@@ -151,7 +153,7 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testRequestConnection() {
-        System.out.println("requestConnection");
+        LOGGER.log(Level.INFO, "requestConnection");
 
         Epics7Channel instance = new Epics7Channel("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
         instance.requestConnection();
@@ -188,7 +190,7 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testDisconnect() {
-        System.out.println("disconnect");
+        LOGGER.log(Level.INFO, "disconnect");
         Epics7Channel instance = new Epics7Channel("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
         Epics7Channel instance2 = new Epics7Channel("ca://TestCA", Epics7TestChannelSystem.newEpics7ChannelSystem());
         Epics7Channel instance3 = new Epics7Channel("pva://TestPVA", Epics7TestChannelSystem.newEpics7ChannelSystem());
@@ -222,7 +224,7 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testGetRequesterName() {
-        System.out.println("getRequesterName");
+        LOGGER.log(Level.INFO, "getRequesterName");
         Epics7Channel instance = new Epics7Channel("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
         String expResult = "TestRequester";
 
@@ -237,7 +239,7 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testMessage() {
-        System.out.println("message");
+        LOGGER.log(Level.INFO, "message");
         String message = "Test message";
 
         Epics7Channel instance = new Epics7Channel("Test", null);
@@ -256,8 +258,9 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testElementType() throws Exception {
-        System.out.println("elementType");
+        LOGGER.log(Level.INFO, "elementType");
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public ChannelRecord getRawValueRecord() {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvBoolean, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
@@ -277,12 +280,13 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testElementType_GetException() throws Exception {
-        System.out.println("elementType_GetException");
+        LOGGER.log(Level.INFO, "elementType_GetException");
 
         HandlerImpl handler = new HandlerImpl();
         Logger.getLogger(Epics7Channel.class.getName()).addHandler(handler);
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public ChannelRecord getRawValueRecord() throws ConnectionException, GetException {
                 throw new GetException();
             }
@@ -299,11 +303,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testElementCount() throws Exception {
-        System.out.println("elementCount");
+        LOGGER.log(Level.INFO, "elementCount");
 
         int expResult = 3;
         double[] array = {1.0, 2.0, 3.0};
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public ChannelRecord getRawValueRecord() {
                 Structure structure = StandardFieldFactory.getStandardField().scalarArray(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
@@ -325,12 +330,13 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testElementCount_GetException() throws Exception {
-        System.out.println("elementCount_GetException");
+        LOGGER.log(Level.INFO, "elementCount_GetException");
 
         HandlerImpl handler = new HandlerImpl();
         Logger.getLogger(Epics7Channel.class.getName()).addHandler(handler);
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public ChannelRecord getRawValueRecord() throws ConnectionException, GetException {
                 throw new GetException();
             }
@@ -347,7 +353,7 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testReadAccess() throws Exception {
-        System.out.println("readAccess");
+        LOGGER.log(Level.INFO, "readAccess");
         Epics7Channel instance = new Epics7Channel("Test", null);
         assertEquals(instance.readAccess(), true);
     }
@@ -357,7 +363,7 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testWriteAccess() throws Exception {
-        System.out.println("writeAccess");
+        LOGGER.log(Level.INFO, "writeAccess");
         Epics7Channel instance = new Epics7Channel("Test", null);
         assertEquals(instance.writeAccess(), true);
     }
@@ -367,10 +373,11 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testGetUnits() throws Exception {
-        System.out.println("getUnits");
+        LOGGER.log(Level.INFO, "getUnits");
         String units = "Volt";
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
@@ -392,10 +399,11 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testRawUpperDisplayLimit() throws Exception {
-        System.out.println("rawUpperDisplayLimit");
+        LOGGER.log(Level.INFO, "rawUpperDisplayLimit");
 
         double limitHigh = 1.2;
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
@@ -419,10 +427,11 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testRawLowerDisplayLimit() throws Exception {
-        System.out.println("rawLowerDisplayLimit");
+        LOGGER.log(Level.INFO, "rawLowerDisplayLimit");
 
         double limitLow = 1.2;
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
@@ -446,10 +455,11 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testRawUpperAlarmLimit() throws Exception {
-        System.out.println("rawUpperAlarmLimit");
+        LOGGER.log(Level.INFO, "rawUpperAlarmLimit");
 
         double highAlarmLimit = 1.2;
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD + "," + VALUE_ALARM_FIELD);
@@ -473,10 +483,11 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testRawLowerAlarmLimit() throws Exception {
-        System.out.println("rawLowerAlarmLimit");
+        LOGGER.log(Level.INFO, "rawLowerAlarmLimit");
 
         double lowAlarmLimit = 1.2;
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD + "," + VALUE_ALARM_FIELD);
@@ -500,10 +511,11 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testRawUpperWarningLimit() throws Exception {
-        System.out.println("rawUpperWarningLimit");
+        LOGGER.log(Level.INFO, "rawUpperWarningLimit");
 
         double highWarningLimit = 1.2;
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD + "," + VALUE_ALARM_FIELD);
@@ -527,10 +539,11 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testRawLowerWarningLimit() throws Exception {
-        System.out.println("rawLowerWarningLimit");
+        LOGGER.log(Level.INFO, "rawLowerWarningLimit");
 
         double lowWarningLimit = 1.2;
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD + "," + VALUE_ALARM_FIELD);
@@ -554,10 +567,11 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testRawUpperControlLimit() throws Exception {
-        System.out.println("rawUpperControlLimit");
+        LOGGER.log(Level.INFO, "rawUpperControlLimit");
 
         double limitHigh = 1.2;
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
@@ -581,10 +595,11 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testRawLowerControlLimit() throws Exception {
-        System.out.println("rawLowerControlLimit");
+        LOGGER.log(Level.INFO, "rawLowerControlLimit");
 
         double limitLow = 1.2;
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
@@ -607,11 +622,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testGet_String_boolean() throws Exception {
-        System.out.println("get");
+        LOGGER.log(Level.INFO, "get");
         String request = "";
         boolean attemptConnection = false;
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException, GetException {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
@@ -622,7 +638,7 @@ public class Epics7ChannelTest {
                 try {
                     listener.event(pvStructure);
                 } catch (PutException ex) {
-                    Logger.getLogger(Epics7ChannelTest.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
         };
@@ -642,7 +658,7 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testGetCallback_3args() throws Exception {
-        System.out.println("getCallback");
+        LOGGER.log(Level.INFO, "getCallback");
         String request = "";
         EventListener listener = null;
         boolean attemptConnection = true;
@@ -657,8 +673,9 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testGetRawValueRecord() throws Exception {
-        System.out.println("getRawValueRecord");
+        LOGGER.log(Level.INFO, "getRawValueRecord");
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
@@ -680,10 +697,11 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testGetRawValueCallback_IEventSinkValue() throws Exception {
-        System.out.println("getRawValueCallback");
+        LOGGER.log(Level.INFO, "getRawValueCallback");
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException, GetException {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
@@ -693,7 +711,7 @@ public class Epics7ChannelTest {
                 try {
                     listener.event(pvStructure);
                 } catch (PutException ex) {
-                    Logger.getLogger(Epics7ChannelTest.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
         };
@@ -707,10 +725,11 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testGetRawValueCallback_IEventSinkValue_boolean() throws Exception {
-        System.out.println("getRawValueCallback");
+        LOGGER.log(Level.INFO, "getRawValueCallback");
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException, GetException {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
@@ -720,7 +739,7 @@ public class Epics7ChannelTest {
                 try {
                     listener.event(pvStructure);
                 } catch (PutException ex) {
-                    Logger.getLogger(Epics7ChannelTest.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
         };
@@ -735,18 +754,19 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testGetRawStringValueRecord() throws Exception {
-        System.out.println("getRawStringValueRecord");
+        LOGGER.log(Level.INFO, "getRawStringValueRecord");
 
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public ChannelRecord getRawValueRecord() throws ConnectionException, GetException {
                 methodCalled = true;
                 return null;
             }
         };
 
-        ChannelRecord result = instance.getRawStringValueRecord();
+        instance.getRawStringValueRecord();
         assertEquals(methodCalled, true);
     }
 
@@ -755,11 +775,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testGetRawStatusRecord() throws Exception {
-        System.out.println("getRawStatusRecord");
+        LOGGER.log(Level.INFO, "getRawStatusRecord");
 
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) throws ConnectionException, GetException {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
@@ -773,7 +794,7 @@ public class Epics7ChannelTest {
             }
         };
 
-        ChannelRecord result = instance.getRawStatusRecord();
+        instance.getRawStatusRecord();
         assertEquals(methodCalled, true);
     }
 
@@ -782,18 +803,19 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testGetRawStringStatusRecord() throws Exception {
-        System.out.println("getRawStringStatusRecord");
+        LOGGER.log(Level.INFO, "getRawStringStatusRecord");
 
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public ChannelStatusRecord getRawStatusRecord() throws ConnectionException, GetException {
                 methodCalled = true;
                 return null;
             }
         };
 
-        ChannelRecord result = instance.getRawStringStatusRecord();
+        instance.getRawStringStatusRecord();
         assertEquals(methodCalled, true);
     }
 
@@ -802,11 +824,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testGetRawTimeRecord() throws Exception {
-        System.out.println("getRawTimeRecord");
+        LOGGER.log(Level.INFO, "getRawTimeRecord");
 
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) throws ConnectionException, GetException {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
@@ -820,7 +843,7 @@ public class Epics7ChannelTest {
             }
         };
 
-        ChannelRecord result = instance.getRawTimeRecord();
+        instance.getRawTimeRecord();
         assertEquals(methodCalled, true);
     }
 
@@ -829,10 +852,11 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testGetRawStringTimeRecord() throws Exception {
-        System.out.println("getRawStringTimeRecord");
+        LOGGER.log(Level.INFO, "getRawStringTimeRecord");
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) throws ConnectionException, GetException {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
@@ -846,7 +870,7 @@ public class Epics7ChannelTest {
             }
         };
 
-        ChannelTimeRecord result = instance.getRawStringTimeRecord();
+        instance.getRawStringTimeRecord();
         assertEquals(methodCalled, true);
     }
 
@@ -855,11 +879,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testGetRawValueTimeCallback() throws Exception {
-        System.out.println("getRawValueTimeCallback");
+        LOGGER.log(Level.INFO, "getRawValueTimeCallback");
 
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException, GetException {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
@@ -874,7 +899,7 @@ public class Epics7ChannelTest {
                 try {
                     listener.event(pvStructure);
                 } catch (PutException ex) {
-                    Logger.getLogger(Epics7ChannelTest.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, null, ex);
                 }
             }
         };
@@ -888,12 +913,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testAddMonitorValTime() throws Exception {
-        System.out.println("addMonitorValTime");
+        LOGGER.log(Level.INFO, "addMonitorValTime");
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
 
-        Monitor result = instance.addMonitorValTime((record, chan) -> methodCalled = true, 0);
+        instance.addMonitorValTime((record, chan) -> methodCalled = true, 0);
         assertEquals(methodCalled, true);
     }
 
@@ -902,12 +927,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testAddMonitorValStatus() throws Exception {
-        System.out.println("addMonitorValStatus");
+        LOGGER.log(Level.INFO, "addMonitorValStatus");
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
 
-        Monitor result = instance.addMonitorValStatus((record, chan) -> methodCalled = true, 0);
+        instance.addMonitorValStatus((record, chan) -> methodCalled = true, 0);
         assertEquals(methodCalled, true);
     }
 
@@ -916,12 +941,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testAddMonitorValue() throws Exception {
-        System.out.println("addMonitorValue");
+        LOGGER.log(Level.INFO, "addMonitorValue");
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
 
-        Monitor result = instance.addMonitorValue((record, chan) -> methodCalled = true, 0);
+        instance.addMonitorValue((record, chan) -> methodCalled = true, 0);
         assertEquals(methodCalled, true);
     }
 
@@ -930,7 +955,7 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testPutRawValCallback_PutListener_EventListener() throws Exception {
-        System.out.println("putRawValCallback");
+        LOGGER.log(Level.INFO, "putRawValCallback");
         methodCalled = false;
         PutListener putListener = (chan) -> {
             methodCalled = true;
@@ -946,12 +971,13 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testPutRawValCallback_String_PutListener() throws Exception {
-        System.out.println("putRawValCallback");
+        LOGGER.log(Level.INFO, "putRawValCallback");
         methodCalled = false;
 
         String newVal = "";
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
                 methodCalled = true;
             }
@@ -966,11 +992,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testPutRawValCallback_byte_PutListener() throws Exception {
-        System.out.println("putRawValCallback");
+        LOGGER.log(Level.INFO, "putRawValCallback");
         byte newVal = 0;
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
                 methodCalled = true;
             }
@@ -985,11 +1012,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testPutRawValCallback_short_PutListener() throws Exception {
-        System.out.println("putRawValCallback");
+        LOGGER.log(Level.INFO, "putRawValCallback");
         short newVal = 0;
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
                 methodCalled = true;
             }
@@ -1004,11 +1032,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testPutRawValCallback_int_PutListener() throws Exception {
-        System.out.println("putRawValCallback");
+        LOGGER.log(Level.INFO, "putRawValCallback");
         int newVal = 0;
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
                 methodCalled = true;
             }
@@ -1023,11 +1052,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testPutRawValCallback_float_PutListener() throws Exception {
-        System.out.println("putRawValCallback");
+        LOGGER.log(Level.INFO, "putRawValCallback");
         float newVal = 0.0F;
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
                 methodCalled = true;
             }
@@ -1042,11 +1072,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testPutRawValCallback_double_PutListener() throws Exception {
-        System.out.println("putRawValCallback");
+        LOGGER.log(Level.INFO, "putRawValCallback");
         double newVal = 0.0;
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
                 methodCalled = true;
             }
@@ -1061,11 +1092,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testPutRawValCallback_StringArr_PutListener() throws Exception {
-        System.out.println("putRawValCallback");
+        LOGGER.log(Level.INFO, "putRawValCallback");
         String[] newVal = null;
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
                 methodCalled = true;
             }
@@ -1080,11 +1112,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testPutRawValCallback_byteArr_PutListener() throws Exception {
-        System.out.println("putRawValCallback");
+        LOGGER.log(Level.INFO, "putRawValCallback");
         byte[] newVal = null;
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
                 methodCalled = true;
             }
@@ -1099,11 +1132,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testPutRawValCallback_shortArr_PutListener() throws Exception {
-        System.out.println("putRawValCallback");
+        LOGGER.log(Level.INFO, "putRawValCallback");
         short[] newVal = null;
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
                 methodCalled = true;
             }
@@ -1118,11 +1152,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testPutRawValCallback_intArr_PutListener() throws Exception {
-        System.out.println("putRawValCallback");
+        LOGGER.log(Level.INFO, "putRawValCallback");
         int[] newVal = null;
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
                 methodCalled = true;
             }
@@ -1137,11 +1172,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testPutRawValCallback_floatArr_PutListener() throws Exception {
-        System.out.println("putRawValCallback");
+        LOGGER.log(Level.INFO, "putRawValCallback");
         float[] newVal = null;
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
                 methodCalled = true;
             }
@@ -1156,11 +1192,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testPutRawValCallback_doubleArr_PutListener() throws Exception {
-        System.out.println("putRawValCallback");
+        LOGGER.log(Level.INFO, "putRawValCallback");
         double[] newVal = null;
         methodCalled = false;
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
                 methodCalled = true;
             }
@@ -1175,12 +1212,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testGetOperationLimitPVs() {
-        System.out.println("getOperationLimitPVs");
+        LOGGER.log(Level.INFO, "getOperationLimitPVs");
         Epics7Channel instance = new Epics7Channel("Test", null);
 
         boolean exceptionGenerated = false;
         try {
-            String[] result = instance.getOperationLimitPVs();
+            instance.getOperationLimitPVs();
         } catch (Exception ex) {
             exceptionGenerated = true;
         }
@@ -1193,12 +1230,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testGetWarningLimitPVs() {
-        System.out.println("getWarningLimitPVs");
+        LOGGER.log(Level.INFO, "getWarningLimitPVs");
         Epics7Channel instance = new Epics7Channel("Test", null);
 
         boolean exceptionGenerated = false;
         try {
-            String[] result = instance.getWarningLimitPVs();
+            instance.getWarningLimitPVs();
         } catch (Exception ex) {
             exceptionGenerated = true;
         }
@@ -1211,12 +1248,12 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testGetAlarmLimitPVs() {
-        System.out.println("getAlarmLimitPVs");
+        LOGGER.log(Level.INFO, "getAlarmLimitPVs");
         Epics7Channel instance = new Epics7Channel("Test", null);
 
         boolean exceptionGenerated = false;
         try {
-            String[] result = instance.getAlarmLimitPVs();
+            instance.getAlarmLimitPVs();
         } catch (Exception ex) {
             exceptionGenerated = true;
         }
@@ -1229,7 +1266,7 @@ public class Epics7ChannelTest {
      */
     @Test
     public void testGetDriveLimitPVs() {
-        System.out.println("getDriveLimitPVs");
+        LOGGER.log(Level.INFO, "getDriveLimitPVs");
         Epics7Channel instance = new Epics7Channel("Test", null);
 
         boolean exceptionGenerated = false;
@@ -1246,9 +1283,10 @@ public class Epics7ChannelTest {
      */
     @Test
     public void getUnits_GetException() throws Exception {
-        System.out.println("rawUpperDisplayLimit");
+        LOGGER.log(Level.INFO, "rawUpperDisplayLimit");
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) {
                 return null;
             }
@@ -1268,9 +1306,10 @@ public class Epics7ChannelTest {
      */
     @Test
     public void rawUpperDisplayLimit_GetException() throws Exception {
-        System.out.println("rawUpperDisplayLimit");
+        LOGGER.log(Level.INFO, "rawUpperDisplayLimit");
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) {
                 return null;
             }
@@ -1289,9 +1328,10 @@ public class Epics7ChannelTest {
      */
     @Test
     public void rawLowerDisplayLimit_GetException() throws Exception {
-        System.out.println("rawUpperDisplayLimit");
+        LOGGER.log(Level.INFO, "rawUpperDisplayLimit");
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) {
                 return null;
             }
@@ -1310,9 +1350,10 @@ public class Epics7ChannelTest {
      */
     @Test
     public void rawUpperAlarmLimit_GetException() throws Exception {
-        System.out.println("rawUpperDisplayLimit");
+        LOGGER.log(Level.INFO, "rawUpperDisplayLimit");
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) {
                 return null;
             }
@@ -1331,9 +1372,10 @@ public class Epics7ChannelTest {
      */
     @Test
     public void rawLowerAlarmLimit_GetException() throws Exception {
-        System.out.println("rawUpperDisplayLimit");
+        LOGGER.log(Level.INFO, "rawUpperDisplayLimit");
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) {
                 return null;
             }
@@ -1352,9 +1394,10 @@ public class Epics7ChannelTest {
      */
     @Test
     public void rawUpperWarningLimit_GetException() throws Exception {
-        System.out.println("rawUpperDisplayLimit");
+        LOGGER.log(Level.INFO, "rawUpperDisplayLimit");
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) {
                 return null;
             }
@@ -1373,9 +1416,10 @@ public class Epics7ChannelTest {
      */
     @Test
     public void rawLowerWarningLimit_GetException() throws Exception {
-        System.out.println("rawUpperDisplayLimit");
+        LOGGER.log(Level.INFO, "rawUpperDisplayLimit");
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) {
                 return null;
             }
@@ -1394,9 +1438,10 @@ public class Epics7ChannelTest {
      */
     @Test
     public void rawUpperControlLimit_GetException() throws Exception {
-        System.out.println("rawUpperDisplayLimit");
+        LOGGER.log(Level.INFO, "rawUpperDisplayLimit");
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) {
                 return null;
             }
@@ -1415,9 +1460,10 @@ public class Epics7ChannelTest {
      */
     @Test
     public void rawLowerControlLimit_GetException() throws Exception {
-        System.out.println("rawUpperDisplayLimit");
+        LOGGER.log(Level.INFO, "rawUpperDisplayLimit");
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
+            @Override
             public PVStructure get(String request) {
                 return null;
             }

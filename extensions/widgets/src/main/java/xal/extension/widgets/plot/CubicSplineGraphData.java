@@ -1,6 +1,8 @@
 package xal.extension.widgets.plot;
 
 import java.util.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /*
  * This class is a container class for data used in the FunctionGraphsJPanel class.
@@ -10,6 +12,8 @@ import java.util.*;
  * @author  A. Shishlo
  */
 public class CubicSplineGraphData extends BasicGraphData {
+
+    private static final Logger LOGGER = Logger.getLogger(CubicSplineGraphData.class.getName());
 
     private Vector<Cubic> cY;
 
@@ -201,31 +205,31 @@ public class CubicSplineGraphData extends BasicGraphData {
         int nPoint = 20;
         double[] xV = new double[nPoint];
         double[] yV = new double[nPoint];
-        System.out.println("Added ====As an example sin(x) has been used=======");
-        System.out.println("Added ====x====  ====y=====");
+        LOGGER.log(Level.INFO, "Added ====As an example sin(x) has been used=======");
+        LOGGER.log(Level.INFO, "Added ====x====  ====y=====");
         for (int i = 0; i < nPoint; i++) {
             xV[i] = 0.3 * i;
             yV[i] = Math.sin(xV[i]);
             spl.addPoint(xV[i], yV[i]);
-            System.out.println(xV[i] + " " + yV[i]);
+            LOGGER.log(Level.INFO, "{0} {1}", new Object[]{xV[i], yV[i]});
         }
 
         double x;
         double y;
         double yp;
         int NgraphPoint = 50;
-        System.out.println("==CubicSplineGraphData results========");
-        System.out.println("====x====  ====y=====   ====derivative y====");
+        LOGGER.log(Level.INFO, "==CubicSplineGraphData results========");
+        LOGGER.log(Level.INFO, "====x====  ====y=====   ====derivative y====");
         double step = (spl.getMaxX() - spl.getMinX()) / NgraphPoint;
 
         for (int i = 0; i < NgraphPoint; i++) {
             x = spl.getMinX() + step * i + 0.5 * step;
             y = spl.getValueY(x);
             yp = spl.getValueDerivativeY(x);
-            System.out.println(x + "  " + y + "  " + yp);
+            LOGGER.log(Level.INFO, "{0}  {1}  {2}", new Object[]{x, y, yp});
         }
 
-        System.out.println("Stop.");
+        LOGGER.log(Level.INFO, "Stop.");
     }
 
 }

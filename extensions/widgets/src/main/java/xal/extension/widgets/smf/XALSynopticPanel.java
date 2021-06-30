@@ -198,7 +198,7 @@ public class XALSynopticPanel extends JPanel {
 
         for (final AcceleratorNode el : list) {
             double pos = acceleratorSequence.getPosition(el);
-            //System.out.println(pos + " \t" + (pos + el.getLength()) + " \t"
+            //LOGGER.log(Level.INFO, pos + " \t" + (pos + el.getLength()) + " \t"
             //    + el.getId() + " \t"
             //    + el.getClass().getName().substring(el.getClass().getName()
             //        .lastIndexOf('.') + 1));
@@ -330,7 +330,7 @@ public class XALSynopticPanel extends JPanel {
             if (el instanceof Dipole) {
                 g.setColor(Color.yellow);
                 g.fillRect(ex, margin.top, l, height);
-                //System.out.println(pos + " \t" + (pos + el.getLength()) + " \t" + ex + " \t" + l);
+                //LOGGER.log(Level.INFO, pos + " \t" + (pos + el.getLength()) + " \t" + ex + " \t" + l);
 
                 for (int i = ex - x; i < ex - x + l; i++) {
                     addLabel(i, name);
@@ -431,7 +431,7 @@ public class XALSynopticPanel extends JPanel {
      * @param insets
      */
     public void setMargin(Insets insets) {
-        //System.out.println(insets);
+        //LOGGER.log(Level.INFO, insets);
         margin = insets;
         repaint();
     }
@@ -469,7 +469,7 @@ public class XALSynopticPanel extends JPanel {
             } else {
                 return labels[i_upper];
             }
-            //System.out.println(i + " " + labels[i]);
+            //LOGGER.log(Level.INFO, i + " " + labels[i]);
         } else {
             return super.getToolTipText(event);
         }

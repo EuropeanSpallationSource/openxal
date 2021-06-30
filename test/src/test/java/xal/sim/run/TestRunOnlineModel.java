@@ -2,6 +2,8 @@ package xal.sim.run;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -49,6 +51,7 @@ import xal.smf.AcceleratorSeq;
  */
 public class TestRunOnlineModel {
 
+    private static final Logger LOGGER = Logger.getLogger(TestRunOnlineModel.class.getName());
 
     /*
      * Global Constants
@@ -335,8 +338,8 @@ public class TestRunOnlineModel {
     private <S extends ProbeState<S>> void printSimData(Trajectory<S> trjData) {
 
         // Print out the kinetic energy profile to stdout
-        System.out.println("DATA FOR SIMULATION WITH " + MODEL_TEST.getProbe().getClass().getName());
-        System.out.println("  RF Gap Phases " + MODEL_TEST.getProbe().getAlgorithm().getRfGapPhaseCalculation());
+        LOGGER.log(Level.INFO, "DATA FOR SIMULATION WITH {0}", MODEL_TEST.getProbe().getClass().getName());
+        LOGGER.log(Level.INFO, "  RF Gap Phases {0}", MODEL_TEST.getProbe().getAlgorithm().getRfGapPhaseCalculation());
 //        Trajectory<?> trjData = MODEL_TEST.getTrajectory();
 
         for (S state : trjData) {
@@ -348,10 +351,7 @@ public class TestRunOnlineModel {
 
             dblPhs = (180.0 / Math.PI) * Math.IEEEremainder(dblPhs, 2.0 * Math.PI);
 
-            System.out.println(strId + ": s=" + dblPos + ", phi=" + dblPhs + ", W=" + dblW);
+            LOGGER.log(Level.INFO, "{0}: s={1}, phi={2}, W={3}", new Object[]{strId, dblPos, dblPhs, dblW});
         }
-
-        System.out.println();
-        System.out.println();
     }
 }

@@ -190,7 +190,7 @@ public class ChannelMonitor {
      */
     public void requestConnection() {
         if (TripMonitorManager.isVerbose()) {
-            System.out.println("Request connection for channel:  " + CHANNEL.channelName());
+            LOGGER.log(Level.INFO, "Request connection for channel:  " + CHANNEL.channelName());
         }
 
         if (connectionListener == null) {

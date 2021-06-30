@@ -78,7 +78,7 @@ public class FieldMapNCellsTest {
 //                }
 //                //System.out.printf("%E %E\n",dataOX[allCols[j].openxal][0], dataTW[allCols[j].tracewin][0]);
 //            }
-//            System.out.println();
+//            LOGGER.log(Level.INFO, );
 //            assertTrue(message.append("are not within the allowed error").toString(), ok);
 //        }
 //    }

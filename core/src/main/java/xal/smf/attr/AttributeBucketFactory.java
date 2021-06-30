@@ -7,9 +7,12 @@ package xal.smf.attr;
  */
 import java.util.*;
 import java.lang.reflect.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class AttributeBucketFactory {
 
+    private static final Logger LOGGER = Logger.getLogger(AttributeBucketFactory.class.getName());
 
     /*
      *  Global Attributes
@@ -117,9 +120,9 @@ public final class AttributeBucketFactory {
                 mapCtors.put(strType, ctrType);
 
             } catch (NoSuchMethodException e) {
-                System.out.println("NoSuchMethodException: " + e.getMessage());
+                LOGGER.log(Level.INFO, "NoSuchMethodException: ", e);
             } catch (SecurityException e) {
-                System.out.println("SecurityException: " + e.getMessage());
+                LOGGER.log(Level.INFO, "SecurityException: ", e);
             }
 
         }

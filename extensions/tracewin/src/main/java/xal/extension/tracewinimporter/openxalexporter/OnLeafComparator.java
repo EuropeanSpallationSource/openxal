@@ -2,6 +2,8 @@ package xal.extension.tracewinimporter.openxalexporter;
 
 import eu.ess.bled.Subsystem;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Compares all brothers in the tree according to leaf ordering
@@ -9,6 +11,8 @@ import java.util.*;
  * @author Ivo List <ivo.list@cosylab.com>
  */
 public class OnLeafComparator implements Comparator<Subsystem> {
+
+    private static final Logger LOGGER = Logger.getLogger(OnLeafComparator.class.getName());
 
     private Map<Integer, Integer> systemPos = new HashMap<>();
 
@@ -18,12 +22,12 @@ public class OnLeafComparator implements Comparator<Subsystem> {
     public void init(Collection<Subsystem> systems) {
         /*List<Subsystem> leafs = new ArrayList<Subsystem>(); 
 		collectLeafs(leafs, subsystemDao.getById(systemID));*/
-        System.out.println("Collecting all leafs");
+        LOGGER.log(Level.INFO, "Collecting all leafs");
 
-        System.out.println("Sorting all leafs");
+        LOGGER.log(Level.INFO, "Sorting all leafs");
 
         // traverses all parents also
-        System.out.println("Collecting parents info");
+        LOGGER.log(Level.INFO, "Collecting parents info");
         int i = 0;
         for (Subsystem node : systems) {
             if (node.getPreviousSubsystem() == null) {

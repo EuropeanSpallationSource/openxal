@@ -1,5 +1,7 @@
 package xal.extension.jels;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -18,6 +20,8 @@ import xal.smf.impl.qualify.MagnetType;
 @RunWith(Parameterized.class)
 public class SteererTest extends TestCommon {
 
+    private static final Logger LOGGER = Logger.getLogger(SteererTest.class.getName());
+
     public SteererTest(Probe probe, ElementMapping elementMapping) {
         super(probe, elementMapping);
     }
@@ -27,7 +31,7 @@ public class SteererTest extends TestCommon {
     @Test
     public void doQuadTest() throws InstantiationException, ModelException {
         probe.reset();
-        System.out.println("QUAD 70 -16 15 0 0 0 0 0");
+        LOGGER.log(Level.INFO, "QUAD 70 -16 15 0 0 0 0 0");
         //QUAD 70 -16 15 0 0 0 0 0
         AcceleratorSeq sequence = quad_steerer(70., -16., 15., 10, -20);
 

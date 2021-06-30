@@ -71,7 +71,7 @@ public class SimpleBeanEditor<T> extends JDialog {
 
         // generate the bean property tree
         final EditablePropertyContainer probePropertyTree = EditableProperty.getInstanceWithRoot(beanName, bean);
-        //System.out.println( probePropertyTree );
+        //LOGGER.log(Level.INFO,  probePropertyTree );
 
         BEAN_PROPERTY_RECORDS = PropertyRecord.toRecords(probePropertyTree);
 

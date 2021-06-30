@@ -52,7 +52,7 @@ public class TripMonitorService implements TripMonitorPortal {
      */
     public void broadcast() {
         ServiceDirectory.defaultDirectory().registerService(TripMonitorPortal.class, IDENTITY, this);
-        System.out.println("broadcasting...");
+        LOGGER.log(Level.INFO, "broadcasting...");
     }
 
     /**

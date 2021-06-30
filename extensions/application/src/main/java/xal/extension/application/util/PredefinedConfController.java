@@ -9,6 +9,8 @@ import javax.swing.*;
 import java.net.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.tree.*;
 import javax.swing.event.*;
 
@@ -24,6 +26,8 @@ import xal.tools.xml.*;
  * @author shishlo
  */
 public class PredefinedConfController {
+
+    private static final Logger LOGGER = Logger.getLogger(PredefinedConfController.class.getName());
 
     private JTextField messageText = new JTextField(10);
 
@@ -93,7 +97,7 @@ public class PredefinedConfController {
                     new TreeSelectionListener() {
                 @Override
                 public void valueChanged(TreeSelectionEvent e) {
-                    System.out.println("Configuration item selected...");
+                    LOGGER.log(Level.INFO, "Configuration item selected...");
                     ConfigNode node = (ConfigNode) tree.getLastSelectedPathComponent();
                     if (node == null) {
                         return;
@@ -130,7 +134,7 @@ public class PredefinedConfController {
                                 ActionEvent actEvnt = new ActionEvent(url, 0, "selected");
                                 extSelectionListener.actionPerformed(actEvnt);
                             } else {
-                                System.out.println("url: " + url + ", external selection listener: " + extSelectionListener);
+                                LOGGER.log(Level.INFO, "url: {0}, external selection listener: {1}", new Object[]{url, extSelectionListener});
                                 messageText.setText(null);
                                 messageText.setText("Please, select a configuration from the tree.");
                                 Toolkit.getDefaultToolkit().beep();
@@ -162,7 +166,7 @@ public class PredefinedConfController {
                         ActionEvent actEvnt = new ActionEvent(url, 0, "selected");
                         extSelectionListener.actionPerformed(actEvnt);
                     } else {
-                        System.out.println("url: " + url + ", external selection listener: " + extSelectionListener);
+                        LOGGER.log(Level.INFO, "url: " + url + ", external selection listener: " + extSelectionListener);
                         messageText.setText(null);
                         messageText.setText("Please, select a configuration from the tree.");
                         Toolkit.getDefaultToolkit().beep();

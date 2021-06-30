@@ -95,7 +95,7 @@ public class EnergyFinder {
         if (error > 180.) {
             error -= 360.;
         }
-        //System.out.println("EGuess = " + EGuess + " error = " + error);
+        //LOGGER.log(Level.INFO, "EGuess = " + EGuess + " error = " + error);
         errorOld = error;
         //EOld = EGuess;
         //step = EGuess * 1.e-4;
@@ -114,7 +114,7 @@ public class EnergyFinder {
                 error -= 360.;
             }
             slope = (error - errorOld) / step;
-            //System.out.println("E = " + ENew + " error = " + error);
+            //LOGGER.log(Level.INFO, "E = " + ENew + " error = " + error);
             b = error - slope * ENew;
             temp = -b / slope;
             step = temp - ENew;

@@ -78,7 +78,7 @@ class ViewInspectorTableModel extends AbstractTableModel implements PropertyTabl
      */
     protected boolean isPropertyEditable(final PropertyDescriptor descriptor) {
         if (descriptor.getWriteMethod() != null) {
-            //System.out.println( descriptor.getPropertyType() );
+            //LOGGER.log(Level.INFO,  descriptor.getPropertyType() );
             return propertyValueEditorManager.hasEditor(descriptor.getPropertyType());
         } else {
             return false;

@@ -8,6 +8,8 @@ import java.io.*;
 import java.awt.event.*;
 import javax.swing.border.*;
 import java.net.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import java.util.prefs.*;
 
@@ -26,6 +28,8 @@ import xal.tools.text.ScientificNumberFormat;
  * @version 1.0
  */
 public final class AnalysisCntrlTDProcedure extends AnalysisController {
+
+    private static final Logger LOGGER = Logger.getLogger(AnalysisCntrlTDProcedure.class.getName());
 
     //readiness of the analysis results
     private boolean analysisDone = false;
@@ -657,7 +661,7 @@ public final class AnalysisCntrlTDProcedure extends AnalysisController {
 
                         } catch (IOException exp) {
                             Toolkit.getDefaultToolkit().beep();
-                            System.out.println(exp.toString());
+                            LOGGER.log(Level.WARNING, null, exp);
                         }
                     }
                     messageTextLocal.setText(null);

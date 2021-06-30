@@ -1,5 +1,7 @@
 package xal.extension.fit.lsm;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import xal.tools.text.ScientificNumberFormat;
 
 /**
@@ -8,6 +10,8 @@ import xal.tools.text.ScientificNumberFormat;
  * @author shishlo
  */
 public class Polynomial {
+
+    private static final Logger LOGGER = Logger.getLogger(Polynomial.class.getName());
 
     static double[] fact = new double[100];
 
@@ -445,18 +449,16 @@ public class Polynomial {
         gs.setData(x, y, yErr);
         boolean res = gs.fit();
 
-        System.out.println("result = " + res);
-        System.out.println("Exact val a0 = " + a0);
-        System.out.println("Exact val a3 = " + a3);
-        System.out.println("Exact val a5 = " + a5);
+        LOGGER.log(Level.INFO, "result = {0}", res);
+        LOGGER.log(Level.INFO, "Exact val a0 = {0}", a0);
+        LOGGER.log(Level.INFO, "Exact val a3 = {0}", a3);
+        LOGGER.log(Level.INFO, "Exact val a5 = {0}", a5);
 
         for (int i = 0; i <= nPoly; i++) {
-            System.out.println("i = " + i
-                    + "  a=" + gs.getParameter(i)
-                    + " err=" + gs.getParameterError(i));
+            LOGGER.log(Level.INFO, "i = {0}  a={1} err={2}", new Object[]{i, gs.getParameter(i), gs.getParameterError(i)});
         }
 
-        System.out.println("eq:" + gs.equation());
+        LOGGER.log(Level.INFO, "eq:{0}", gs.equation());
 
     }
 

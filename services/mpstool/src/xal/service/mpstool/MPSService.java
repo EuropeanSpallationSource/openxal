@@ -41,7 +41,7 @@ public class MPSService implements MPSPortal {
      */
     static {
         DATE_FORMATTER = new SimpleDateFormat(MPSPortal.DATE_FORMAT);
-        System.out.println("PID:  " + System.getProperty("pid", "unknown"));
+        LOGGER.log(Level.INFO, "PID:  " + System.getProperty("pid", "unknown"));
     }
 
     /**
@@ -59,7 +59,7 @@ public class MPSService implements MPSPortal {
      */
     public void broadcast() {
         ServiceDirectory.defaultDirectory().registerService(MPSPortal.class, IDENTITY, this);
-        System.out.println("broadcasting...");
+        LOGGER.log(Level.INFO, "broadcasting...");
     }
 
     /**

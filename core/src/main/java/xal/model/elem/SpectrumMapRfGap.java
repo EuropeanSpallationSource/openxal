@@ -905,7 +905,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
     public double energyGain(IProbe probe) {
         double dW = this.compGapPhaseAndEnergyGain(probe).getEnergy();
 
-//        System.out.println("SpectrumMapRfGap#energyGain() - " + this.getId() + " index=" + this.indCell + ", dW = " + dW);
+//        LOGGER.log(Level.INFO, "SpectrumMapRfGap#energyGain() - " + this.getId() + " index=" + this.indCell + ", dW = " + dW);
         return dW;
     }
 
@@ -974,10 +974,10 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
     @Override
     protected PhaseMap transferMap(IProbe probe) throws ModelException {
 
-        //      System.out.println("This is " + this.getId());
-        //      System.out.println("dblFieldE0 is   " + this.getE0());
-        //      System.out.println("ETL is  " + this.getETL());
-        //      System.out.println("");
+        //      LOGGER.log(Level.INFO, "This is " + this.getId());
+        //      LOGGER.log(Level.INFO, "dblFieldE0 is   " + this.getE0());
+        //      LOGGER.log(Level.INFO, "ETL is  " + this.getETL());
+        //      LOGGER.log(Level.INFO, "");
         // Get probe parameters at initial energy
         double Er = probe.getSpeciesRestEnergy();
         double Wi = probe.getKineticEnergy();
@@ -1089,7 +1089,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         double L = this.getGapLength();
         double V0 = A * E0 * L;   // This is for a unit charge 
 
-//        System.out.println(this.getId() + " mode field coefficient A = " + A);
+//        LOGGER.log(Level.INFO, this.getId() + " mode field coefficient A = " + A);
         this.gapAcclMdl = new AcceleratingRfGap(this.dblFreq, V0, this.spcGapFlds);
     }
 
@@ -1834,7 +1834,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 //            double  dphi_mid = A * vecPreGapGains.getPhase();
 //            double  dW_mid   = A * vecPreGapGains.getEnergy();
             // TODO Remove type out
-//            System.out.println("SpectrumMapRfGap#compGapPhaseAndEnergyGainIndirect(IProbe): ID=" + this.getId() + ",  call count #" + CNT_CALLS++);
+//            LOGGER.log(Level.INFO, "SpectrumMapRfGap#compGapPhaseAndEnergyGainIndirect(IProbe): ID=" + this.getId() + ",  call count #" + CNT_CALLS++);
 //            if (!this.bolMethodCalled) {
 //                double V0 = this.gapAcclMdl.getRfFieldPotential();
 //                double ki = DBL_2PI /(bi*IElement.LightSpeed/this.getFrequency());
@@ -1859,15 +1859,15 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 //
 //                phi0m = (180.0/Math.PI) * Math.IEEEremainder(phi0m, 2.0*Math.PI); // convert to degrees
 //
-//                System.out.println("SpectrumMapRfGap#compEnergyGainIndirect: " + this.getId());
-//                System.out.println("    Q*A*V0=" + Q * A * V0);
-//                System.out.println("    phi0m=" + phi0m + ", cos(phi0)=" + Math.cos(phi0m) + ", Acos(phi0)=" + A*Math.cos(phi0m));
-//                System.out.println("    T(ki)=" + T + ", T'(ki)=" + dT + ", S(ki)=" + S + ", S'(ki)=" + dS);
-//                System.out.println("    Tq(ki);=" + Tq + ", Tq'(ki)=" + dTq + ", Sq(ki)=" + Sq + ", Sq'(ki)=" + dSq);
-////                System.out.println("    dT/dk=" + d_T + ", dS/dk=" + d_S);
-//                System.out.println("    Numeric: T'(ki) =" + dT_num + ", S'(ki) =" + dS_num);
-//                System.out.println("    Numeric: Tq'(ki)=" + dTq_num + ", Sq'(ki)=" + dSq_num);
-//                System.out.println("    ki=" + ki);
+//                LOGGER.log(Level.INFO, "SpectrumMapRfGap#compEnergyGainIndirect: " + this.getId());
+//                LOGGER.log(Level.INFO, "    Q*A*V0=" + Q * A * V0);
+//                LOGGER.log(Level.INFO, "    phi0m=" + phi0m + ", cos(phi0)=" + Math.cos(phi0m) + ", Acos(phi0)=" + A*Math.cos(phi0m));
+//                LOGGER.log(Level.INFO, "    T(ki)=" + T + ", T'(ki)=" + dT + ", S(ki)=" + S + ", S'(ki)=" + dS);
+//                LOGGER.log(Level.INFO, "    Tq(ki);=" + Tq + ", Tq'(ki)=" + dTq + ", Sq(ki)=" + Sq + ", Sq'(ki)=" + dSq);
+////                LOGGER.log(Level.INFO, "    dT/dk=" + d_T + ", dS/dk=" + d_S);
+//                LOGGER.log(Level.INFO, "    Numeric: T'(ki) =" + dT_num + ", S'(ki) =" + dS_num);
+//                LOGGER.log(Level.INFO, "    Numeric: Tq'(ki)=" + dTq_num + ", Sq'(ki)=" + dSq_num);
+//                LOGGER.log(Level.INFO, "    ki=" + ki);
 //            }
             // TODO - Temporary until we get the calculated for the post gap region installed
 //            double  dphi = 2.0 * dphi_mid;
@@ -1883,15 +1883,15 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 
             // TODO Remove type out
 //            if (!this.bolMethodCalled) {
-//                System.out.println("    k_mid=" + k_mid);
-//                System.out.println("    Entrance values: " + vecInitVals + ", Pre-gap gains: " + vecPreGapGains);
-//                System.out.println("    Mid gap values: " + vecMidVals);
-//                System.out.println("    Exit values: " + vecEndVals + ", Post-gap gains: " + vecPostGapGains);
-//                System.out.println("    Total gains: " + vecGapGains);
-//                System.out.println("    dphi=" + (180.0/Math.PI)*dphi + ", dW=" + dW + ", W=" + Double.toString(Wi+dW));
+//                LOGGER.log(Level.INFO, "    k_mid=" + k_mid);
+//                LOGGER.log(Level.INFO, "    Entrance values: " + vecInitVals + ", Pre-gap gains: " + vecPreGapGains);
+//                LOGGER.log(Level.INFO, "    Mid gap values: " + vecMidVals);
+//                LOGGER.log(Level.INFO, "    Exit values: " + vecEndVals + ", Post-gap gains: " + vecPostGapGains);
+//                LOGGER.log(Level.INFO, "    Total gains: " + vecGapGains);
+//                LOGGER.log(Level.INFO, "    dphi=" + (180.0/Math.PI)*dphi + ", dW=" + dW + ", W=" + Double.toString(Wi+dW));
 //                
-//                System.out.println("    theEnergyGain=" + theEnergyGain + ", DELTA_PHASE_CORRECTION=" + DELTA_PHASE_CORRECTION);
-//                System.out.println();
+//                LOGGER.log(Level.INFO, "    theEnergyGain=" + theEnergyGain + ", DELTA_PHASE_CORRECTION=" + DELTA_PHASE_CORRECTION);
+//                LOGGER.log(Level.INFO, );
 //                
 //
 //                this.bolMethodCalled = true;

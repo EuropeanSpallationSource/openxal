@@ -198,7 +198,7 @@ public class EditablePropertyContainer extends EditableProperty {
                 return;
             } else if (propertyType.isArray()) {
                 // property is an array
-                //			System.out.println( "Property type is array for target: " + CHILD_TARGET + " with descriptor: " + descriptor.getName() );
+                //			LOGGER.log(Level.INFO,  "Property type is array for target: " + CHILD_TARGET + " with descriptor: " + descriptor.getName() );
                 return;
             } else {
                 Object target = generateChildTarget(CHILD_TARGET, descriptor);

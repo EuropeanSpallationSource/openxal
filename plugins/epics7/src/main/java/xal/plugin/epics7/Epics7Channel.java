@@ -58,6 +58,7 @@ import xal.ca.GetException;
 import xal.ca.IEventSinkValStatus;
 import xal.ca.IEventSinkValTime;
 import xal.ca.IEventSinkValue;
+import xal.ca.MonitorException;
 import xal.ca.PutException;
 import xal.ca.PutListener;
 import xal.tools.apputils.Preferences;
@@ -482,7 +483,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     // --------- Monitor ---------
     @Override
-    public xal.ca.Monitor addMonitorValTime(IEventSinkValTime listener, int intMaskFire) throws ConnectionException, xal.ca.MonitorException {
+    public xal.ca.Monitor addMonitorValTime(IEventSinkValTime listener, int intMaskFire) throws ConnectionException, MonitorException {
         checkConnection("addMonitorValTime");
 
         return Epics7Monitor.createNewMonitor(this, TIME_REQUEST, (pvStructure) -> {
@@ -492,7 +493,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public xal.ca.Monitor addMonitorValStatus(IEventSinkValStatus listener, int intMaskFire) throws ConnectionException, xal.ca.MonitorException {
+    public xal.ca.Monitor addMonitorValStatus(IEventSinkValStatus listener, int intMaskFire) throws ConnectionException, MonitorException {
         checkConnection("addMonitorValStatus");
 
         return Epics7Monitor.createNewMonitor(this, STATUS_REQUEST, (pvStructure) -> {
@@ -502,7 +503,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public xal.ca.Monitor addMonitorValue(IEventSinkValue listener, int intMaskFire) throws ConnectionException, xal.ca.MonitorException {
+    public xal.ca.Monitor addMonitorValue(IEventSinkValue listener, int intMaskFire) throws ConnectionException, MonitorException {
         checkConnection("addMonitorValue");
 
         return Epics7Monitor.createNewMonitor(this, VALUE_REQUEST, (pvStructure) -> {

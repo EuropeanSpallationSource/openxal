@@ -286,12 +286,12 @@ public class CoordinateMap {
 //		final Iterator<TransferMapState> stateIter = trajectory.stateIterator();
 //		while( stateIter.hasNext() ) {
 //			TransferMapState state = stateIter.next();
-//			System.out.println( "state ID: " + state.getElementId() );
+//			LOGGER.log(Level.INFO,  "state ID: " + state.getElementId() );
 //		}
 
         final String elementID = getElementIdForNode(node);
-//		System.out.println( "Getting state for element: " + elementID );
-//		System.out.println( "State for element: " + elementID + " = " + trajectory.stateForElement( elementID ) );
+//		LOGGER.log(Level.INFO,  "Getting state for element: " + elementID );
+//		LOGGER.log(Level.INFO,  "State for element: " + elementID + " = " + trajectory.stateForElement( elementID ) );
         final TransferMapState state = elementID != null ? trajectory.stateForElement(elementID) : null;
         return state;
 

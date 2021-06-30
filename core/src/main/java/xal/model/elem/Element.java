@@ -8,6 +8,8 @@ package xal.model.elem;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.model.IAlgorithm;
 import xal.model.IComposite;
@@ -32,6 +34,8 @@ import xal.tools.math.r3.R3;
  * @author Craig McChesney
  */
 public abstract class Element implements IElement {
+
+    private static final Logger LOGGER = Logger.getLogger(Element.class.getName());
 
     /*
      *  Global Attributes
@@ -625,7 +629,7 @@ public abstract class Element implements IElement {
         alg = probe.getAlgorithm();
         if (alg instanceof Tracker) {
             Tracker tracker = (Tracker) alg;
-//          System.out.println("tracker.setElemPosition to "+pos);
+//          LOGGER.log(Level.INFO, "tracker.setElemPosition to "+pos);
 
             // The algorithm "element position" is also set in Tracker#advanceProbe() ??!!
             tracker.setElemPosition(pos);
@@ -699,7 +703,7 @@ public abstract class Element implements IElement {
         alg = probe.getAlgorithm();
         if (alg instanceof Tracker) {
             Tracker tracker = (Tracker) alg;
-            System.out.println("tracker.setElemPosition to " + pos);
+            LOGGER.log(Level.INFO, "tracker.setElemPosition to " + pos);
 
             // The algorithm "element position" is also set in Tracker#advanceProbe() ??!!
             tracker.setElemPosition(pos);

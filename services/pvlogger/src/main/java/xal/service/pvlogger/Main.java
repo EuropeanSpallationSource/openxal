@@ -9,12 +9,17 @@
  */
 package xal.service.pvlogger;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Main
  *
  * @author tap
  */
 public class Main {
+
+    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 
     protected LoggerModel model;
 
@@ -34,7 +39,7 @@ public class Main {
         if (periodicLogging) {
             model.startLogging();
         } else {
-            System.out.println("Warning! Periodic logging has been disabled due to command line flag. Will log on demand only.");
+            LOGGER.log(Level.INFO, "Warning! Periodic logging has been disabled due to command line flag. Will log on demand only.");
         }
         new LoggerService(model);
     }

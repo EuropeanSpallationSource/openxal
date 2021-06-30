@@ -204,23 +204,23 @@ public class TestRmxn {
 
         Rmxn matProdOut = matRowDom.times(matColDom);
 
-//        System.out.println("Matrix outer product = " + matProdOut.toString());
+//        LOGGER.log(Level.INFO, "Matrix outer product = " + matProdOut.toString());
         if (matProdOut.getRowCnt() != CNT_ROWS_ROWDOM || matProdOut.getColCnt() != CNT_COLS_COLDOM) {
             fail("Matrix outer product has wrong dimensions");
         }
 
         double dblCondOut = matProdOut.conditionNumber();
-//        System.out.println("Output product matrix condition number = " + dblCondOut);
+//        LOGGER.log(Level.INFO, "Output product matrix condition number = " + dblCondOut);
 
         Rmxn matProdIn = matColDom.times(matRowDom);
 
-//        System.out.println("Matrix inner product = " + matProdIn.toString());
+//        LOGGER.log(Level.INFO, "Matrix inner product = " + matProdIn.toString());
         if (matProdIn.getRowCnt() != CNT_ROWS_COLDOM || matProdIn.getColCnt() != CNT_COLS_ROWDOM) {
             fail("Matrix inner product has wrong dimensions");
         }
 
         double dblCondIn = matProdIn.conditionNumber();
-//        System.out.println("Inner product matrix condition number = " + dblCondIn);
+//        LOGGER.log(Level.INFO, "Inner product matrix condition number = " + dblCondIn);
     }
 
     /**
@@ -234,7 +234,7 @@ public class TestRmxn {
 
         Rn vecOut = matColDom.times(vecDrv);
 
-//        System.out.println("Matrix-vector product = " + vecOut);
+//        LOGGER.log(Level.INFO, "Matrix-vector product = " + vecOut);
         if (vecOut.getSize() != matColDom.getRowCnt()) {
             fail("Matrix-vector product is the wrong shape");
         }
@@ -266,11 +266,11 @@ public class TestRmxn {
         Rmxn matSqr = new Rmxn(DBL_ARR_SQR.clone());
         Rmxn matInv = matSqr.inverse();
 
-//        System.out.println("Matrix Inverse = " + matInv);
+//        LOGGER.log(Level.INFO, "Matrix Inverse = " + matInv);
         Rmxn matLt = matInv.times(matSqr);
         double dblErrLt = matLt.minus(matId).norm2();
 
-//        System.out.println("Matrix Ainv*A = " + matLt);
+//        LOGGER.log(Level.INFO, "Matrix Ainv*A = " + matLt);
         if (dblErrLt > DBL_EPS) {
             fail("Method inverse() failed to recover identity upon left multiplication");
         }
@@ -293,7 +293,7 @@ public class TestRmxn {
         int cntSize = 100;
         Rmxn matId = Rmxn.newIdentity(cntSize);
 
-//        System.out.println("MatrixIdentity = " + matId);
+//        LOGGER.log(Level.INFO, "MatrixIdentity = " + matId);
         for (int i = 0; i < cntSize; i++) {
             for (int j = 0; j < cntSize; j++) {
                 double dblElem = matId.getElem(i, j);

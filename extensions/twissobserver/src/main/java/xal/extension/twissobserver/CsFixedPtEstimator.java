@@ -19,6 +19,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * <p>
@@ -52,6 +54,8 @@ import java.util.Map;
  *
  */
 public class CsFixedPtEstimator extends CourantSnyderEstimator {
+
+    private static final Logger LOGGER = Logger.getLogger(CsFixedPtEstimator.class.getName());
 
     /*
      * Interface Definitions
@@ -616,10 +620,10 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
 
             //  Type out debug info
             if (super.isDebuggingOn()) {
-                System.out.println("  Iteration Method:  At iteration# " + cntIter);
-                System.out.println("    alpha=" + this.dblCurrAlpha + ", residual error=" + this.dblResErr + ", convergence error=" + this.dblConvErr);
-                System.out.print(matSig1.toStringMatrix(this.fmtMatrix, 12));
-                System.out.println("  -------------------------------------------------\n");
+                LOGGER.log(Level.INFO, "  Iteration Method:  At iteration# {0}", cntIter);
+                LOGGER.log(Level.INFO, "    alpha={0}, residual error={1}, convergence error={2}", new Object[]{this.dblCurrAlpha, this.dblResErr, this.dblConvErr});
+                LOGGER.log(Level.INFO, matSig1.toStringMatrix(this.fmtMatrix, 12));
+                LOGGER.log(Level.INFO, "  -------------------------------------------------\n");
             }
 
             this.fireProgressUpdate(cntIter, this.dblCurrAlpha, dblErr);

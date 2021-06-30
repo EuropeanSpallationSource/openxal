@@ -20,6 +20,8 @@ package xal.plugin.epics7.server;
 import com.cosylab.epics.caj.cas.util.MemoryProcessVariable;
 import gov.aps.jca.cas.ProcessVariableEventCallback;
 import gov.aps.jca.dbr.DBRType;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.epics.pvdatabase.PVRecord;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -30,6 +32,8 @@ import static org.junit.Assert.*;
  */
 public class Epics7ServerChannelSystemTest {
 
+    private static final Logger LOGGER = Logger.getLogger(Epics7ServerChannelSystemTest.class.getName());
+
     private boolean methodCalled = false;
 
     /**
@@ -38,7 +42,7 @@ public class Epics7ServerChannelSystemTest {
      */
     @Test
     public void testNewEpics7ServerChannelSystem() {
-        System.out.println("newEpics7ServerChannelSystem");
+        LOGGER.log(Level.INFO, "newEpics7ServerChannelSystem");
         Epics7ServerChannelSystem result = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
         assertEquals(true, result.isInitialized());
     }
@@ -48,7 +52,7 @@ public class Epics7ServerChannelSystemTest {
      */
     @Test
     public void testAddRecord() {
-        System.out.println("addRecord");
+        LOGGER.log(Level.INFO, "addRecord");
         methodCalled = false;
         Epics7ServerChannelSystem instance = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
         instance.master = new TestPVDataBase() {
@@ -68,7 +72,7 @@ public class Epics7ServerChannelSystemTest {
      */
     @Test
     public void testAddMemPV() {
-        System.out.println("addMemPV");
+        LOGGER.log(Level.INFO, "addMemPV");
         methodCalled = false;
         MemoryProcessVariable memoryProcessVariable;
         memoryProcessVariable = new MemoryProcessVariable("TestName", null,
@@ -89,7 +93,7 @@ public class Epics7ServerChannelSystemTest {
      */
     @Test
     public void testRemoveMemPV() {
-        System.out.println("removeMemPV");
+        LOGGER.log(Level.INFO, "removeMemPV");
         methodCalled = false;
         MemoryProcessVariable memoryProcessVariable = new MemoryProcessVariable("TestName", null,
                 DBRType.DOUBLE, new double[]{0}) {
@@ -109,7 +113,7 @@ public class Epics7ServerChannelSystemTest {
      */
     @Test
     public void testRemoveRecord() {
-        System.out.println("removeRecord");
+        LOGGER.log(Level.INFO, "removeRecord");
         methodCalled = false;
         Epics7ServerChannelSystem instance = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
         instance.master = new TestPVDataBase() {
@@ -129,7 +133,7 @@ public class Epics7ServerChannelSystemTest {
      */
     @Test
     public void testInitialize() {
-        System.out.println("initialize");
+        LOGGER.log(Level.INFO, "initialize");
         Epics7ServerChannelSystem instance = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
         instance.initialize();
         assertEquals(true, instance.isInitialized());
@@ -140,7 +144,7 @@ public class Epics7ServerChannelSystemTest {
      */
     @Test
     public void testDispose() {
-        System.out.println("dispose");
+        LOGGER.log(Level.INFO, "dispose");
         Epics7ServerChannelSystem instance = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
         instance.dispose();
         assertEquals(false, instance.isInitialized());

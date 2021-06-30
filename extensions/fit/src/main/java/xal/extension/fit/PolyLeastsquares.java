@@ -125,7 +125,7 @@ public class PolyLeastsquares {
             for (int j = 1; j < k + 1; j++) {
                 dYfit[i] += mC.getElem(j) * Math.pow(dX[i], j);
             }
-            //System.out.println(""+ dYfit[i]);
+            //LOGGER.log(Level.INFO, ""+ dYfit[i]);
         }
 
         //  calculate square sums:
@@ -144,7 +144,7 @@ public class PolyLeastsquares {
         //calculate correlation coefficient:
         dR = Math.sqrt(1 - dVarUnexplained / dVarTotal);
 
-        //System.out.println(""+dMean+dVarUnexplained+dVarTotal+dR);
+        //LOGGER.log(Level.INFO, ""+dMean+dVarUnexplained+dVarTotal+dR);
         //to round it to 4 decimal places
         dR = Math.round(dR * 10000.0) / 10000.0;
 

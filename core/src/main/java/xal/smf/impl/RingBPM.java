@@ -1,5 +1,7 @@
 package xal.smf.impl;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.smf.impl.qualify.*;
 import xal.ca.*;
 import xal.smf.AccessibleProperty;
@@ -13,6 +15,8 @@ import xal.smf.AccessibleProperty;
  *
  */
 public class RingBPM extends BPM {
+
+    private static final Logger LOGGER = Logger.getLogger(RingBPM.class.getName());
 
     public static final String TYPE = "RBPM";
 
@@ -388,7 +392,7 @@ public class RingBPM extends BPM {
      */
     public double getXAvg(int stage) throws ConnectionException, GetException {
         if (stage > 4) {
-            System.out.println("Stage no. " + stage + " is larger than 4");
+            LOGGER.log(Level.INFO, "Stage no. {0} is larger than 4", stage);
             return 0;
         }
 
@@ -440,7 +444,7 @@ public class RingBPM extends BPM {
      */
     public double getYAvg(int stage) throws ConnectionException, GetException {
         if (stage > 4) {
-            System.out.println("Stage no. " + stage + " is larger than 4");
+            LOGGER.log(Level.INFO, "Stage no. {0} is larger than 4", stage);
             return 0;
         }
 

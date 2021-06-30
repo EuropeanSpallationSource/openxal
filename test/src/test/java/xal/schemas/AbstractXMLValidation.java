@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -33,6 +35,8 @@ import org.xml.sax.SAXException;
  * @author <a href='jakob.battelino@cosylab.com'>Jakob Battelino Prelog</a>
  */
 public abstract class AbstractXMLValidation {
+
+    private static final Logger LOGGER = Logger.getLogger(AbstractXMLValidation.class.getName());
 
     /**
      * Path to a directory where the XML files to be tested against XML schemas
@@ -173,8 +177,8 @@ public abstract class AbstractXMLValidation {
         try {
             validator.validate(domSource);
             return true;
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (IOException | SAXException e) {
+            LOGGER.log(Level.WARNING, null, e);
             return false;
         }
     }

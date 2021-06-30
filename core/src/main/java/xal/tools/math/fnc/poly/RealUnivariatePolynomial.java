@@ -4,6 +4,8 @@
  */
 package xal.tools.math.fnc.poly;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.tools.math.ElementaryFunction;
 import xal.tools.math.fnc.ISmoothRealFunction;
 
@@ -27,6 +29,8 @@ import xal.tools.math.fnc.ISmoothRealFunction;
  * @version Sep 25, 2015
  */
 public class RealUnivariatePolynomial implements ISmoothRealFunction {
+
+    private static final Logger LOGGER = Logger.getLogger(RealUnivariatePolynomial.class.getName());
 
     /*
      *  Local Attributes
@@ -314,13 +318,13 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
         RealUnivariatePolynomial poly1 = new RealUnivariatePolynomial(new double[]{1.0, 2.0, 3.0});
         RealUnivariatePolynomial poly2 = new RealUnivariatePolynomial(new double[]{1.1, 1.2, 1.3});
 
-        System.out.println("poly1 = " + poly1.toString());
-        System.out.println("poly2 = " + poly2.toString());
-        System.out.println("poly1 + poly2 = " + (poly1.plus(poly2)).toString());
-        System.out.println("poly1 * poly2 = " + (poly1.times(poly2)).toString());
-        System.out.println("poly1(1.0) = " + poly1.evaluateAt(1.0));
-        System.out.println("poly1(2.0) = " + poly1.evaluateAt(2.0));
-        System.out.println("poly2(1.0) = " + poly2.evaluateAt(1.0));
+        LOGGER.log(Level.INFO, "poly1 = {0}", poly1.toString());
+        LOGGER.log(Level.INFO, "poly2 = {0}", poly2.toString());
+        LOGGER.log(Level.INFO, "poly1 + poly2 = {0}", (poly1.plus(poly2)).toString());
+        LOGGER.log(Level.INFO, "poly1 * poly2 = {0}", (poly1.times(poly2)).toString());
+        LOGGER.log(Level.INFO, "poly1(1.0) = {0}", poly1.evaluateAt(1.0));
+        LOGGER.log(Level.INFO, "poly1(2.0) = {0}", poly1.evaluateAt(2.0));
+        LOGGER.log(Level.INFO, "poly2(1.0) = {0}", poly2.evaluateAt(1.0));
     }
 
 }

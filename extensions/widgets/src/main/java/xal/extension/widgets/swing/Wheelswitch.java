@@ -1023,7 +1023,7 @@ public class Wheelswitch extends JPanel {
 	 * Repositions the components inside the wheelswitch.
      */
     private void setupLayout() {
-        //System.out.println( "Setup layout..." );
+        //LOGGER.log(Level.INFO,  "Setup layout..." );
 
         removeAll();
 

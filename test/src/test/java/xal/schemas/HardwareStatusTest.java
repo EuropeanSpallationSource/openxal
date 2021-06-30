@@ -1,16 +1,22 @@
 package xal.schemas;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import javax.xml.XMLConstants;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.Validator;
+import org.w3c.dom.DOMException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
 /**
  * Unit test case for <code>xdxf.xsd</code> XML schema using
@@ -19,6 +25,8 @@ import org.w3c.dom.Element;
  * @author <a href='jakob.battelino@cosylab.com'>Jakob Battelino Prelog</a>
  */
 public class HardwareStatusTest extends AbstractXMLValidation {
+
+    private static final Logger LOGGER = Logger.getLogger(HardwareStatusTest.class.getName());
 
     /**
      * Progressive XML schema validation method.<br>
@@ -43,7 +51,7 @@ public class HardwareStatusTest extends AbstractXMLValidation {
         Document document = null;
         try {
             document = getDocumentBuilder().newDocument();
-        } catch (Exception e) {
+        } catch (ParserConfigurationException e) {
             fail(e.getMessage());
         }
         assertNotNull(document);
@@ -53,7 +61,7 @@ public class HardwareStatusTest extends AbstractXMLValidation {
         //Blank document should be valid.
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Blank document should be valid!");
         }
 
@@ -97,7 +105,7 @@ public class HardwareStatusTest extends AbstractXMLValidation {
             testDoc.appendChild(fakeElement);
             validator.validate(new DOMSource(testDoc));
             fail("Validation with incorrect root element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | DOMException | SAXException e) {
             assertTrue(e.getMessage().contains("Cannot find the declaration of element 'fake1'."));
         }
 
@@ -107,7 +115,7 @@ public class HardwareStatusTest extends AbstractXMLValidation {
         document.appendChild(root);
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should now be valid!");
         }
 
@@ -119,7 +127,7 @@ public class HardwareStatusTest extends AbstractXMLValidation {
             testRoot.appendChild(fakeElement);
             validator.validate(new DOMSource(testDoc));
             fail("Validation with incorrect root child element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | DOMException | SAXException e) {
             assertTrue(e.getMessage().contains("Invalid content was found starting with element 'fake1'."));
         }
 
@@ -143,7 +151,7 @@ public class HardwareStatusTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete sequence element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'id' must appear on element"));
         }
 
@@ -151,7 +159,7 @@ public class HardwareStatusTest extends AbstractXMLValidation {
         sequence1.setAttribute("id", "seq1");
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should now be valid!");
         }
 
@@ -161,7 +169,7 @@ public class HardwareStatusTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with incomplete node element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Attribute 'id' must appear on element"));
         }
 
@@ -169,7 +177,7 @@ public class HardwareStatusTest extends AbstractXMLValidation {
         node1.setAttribute("id", "Seq1:Node1");
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should now be valid!");
         }
 
@@ -178,7 +186,7 @@ public class HardwareStatusTest extends AbstractXMLValidation {
         node1.setAttribute("exclude", "false");
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should still be valid!");
         }
 
@@ -189,14 +197,14 @@ public class HardwareStatusTest extends AbstractXMLValidation {
         try {
             validator.validate(new DOMSource(document));
             fail("Validation with invalid sequence element should not be successful!");
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             assertTrue(e.getMessage().contains("Duplicate key value"));
         }
         sequence2.setAttribute("id", "seq2");
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        } catch (IOException | SAXException e) {
+            LOGGER.log(Level.SEVERE, null, e);
             fail("Document should still be valid!");
         }
 
@@ -208,7 +216,7 @@ public class HardwareStatusTest extends AbstractXMLValidation {
         sequence2.appendChild(node2);
         try {
             validator.validate(new DOMSource(document));
-        } catch (Exception e) {
+        } catch (IOException | SAXException e) {
             fail("Document should still be valid!");
         }
 
@@ -228,7 +236,7 @@ public class HardwareStatusTest extends AbstractXMLValidation {
 //		try {
 //			validator.validate(new DOMSource(document));
 //		} catch(Exception e) {
-//			System.out.println(e.getMessage());
+//			LOGGER.log(Level.INFO, e.getMessage());
 //			fail("Document should still be valid!");
 //		}
     }

@@ -13,6 +13,8 @@ import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +43,8 @@ import xal.tools.beam.Twiss;
  */
 @RunWith(Parameterized.class)
 public class GeneralTest {
+
+    private static final Logger LOGGER = Logger.getLogger(GeneralTest.class.getName());
 
     /**
      * Describes Openxal, Tracewin columns/functions of the results. Sets
@@ -111,7 +115,7 @@ public class GeneralTest {
         double dataOX[][] = run(probe, seq);
 
         //saveResults(tracewinData.getFile() + ".out", dataOX, probe.getTrajectory());
-        System.out.printf("%s\t", probe.getComment());
+        LOGGER.log(Level.INFO, String.format("%s\t", probe.getComment()));
         Column[] allCols = Column.values();
         StringBuilder message = new StringBuilder();
         boolean ok = true;
@@ -120,13 +124,13 @@ public class GeneralTest {
             if (e >= allCols[j].allowedError) {
                 message.append(allCols[j].name()).append(" ");
                 ok = false;
-                System.out.printf("%s: %E %c %E\n", allCols[j].name(), e, e < allCols[j].allowedError ? '<' : '>', allCols[j].allowedError);
-                System.out.printf("%s: %E %E\n", allCols[j].name(), dataOX[allCols[j].openxal][dataOX[allCols[j].openxal].length - 1], dataTW[allCols[j].tracewin][dataTW[allCols[j].tracewin].length - 1]);
-                System.out.printf("%E\t", e);
+                LOGGER.log(Level.INFO, String.format("%s: %E %c %E\n", allCols[j].name(), e, e < allCols[j].allowedError ? '<' : '>', allCols[j].allowedError));
+                LOGGER.log(Level.INFO, String.format("%s: %E %E\n", allCols[j].name(), dataOX[allCols[j].openxal][dataOX[allCols[j].openxal].length - 1], dataTW[allCols[j].tracewin][dataTW[allCols[j].tracewin].length - 1]));
+                LOGGER.log(Level.INFO, String.format("%E\t", e));
             }
-            //System.out.printf("%E %E\n",dataOX[allCols[j].openxal][0], dataTW[allCols[j].tracewin][0]);
+            //LOGGER.log(Level.INFO, String.format("%E %E\n",dataOX[allCols[j].openxal][0], dataTW[allCols[j].tracewin][0]);
         }
-        System.out.println();
+
         assertTrue(message.append("are not within the allowed error").toString(), ok);
 
         dataTW = null;
@@ -305,7 +309,7 @@ public class GeneralTest {
     public static double compare(double[] xa, double[] xb, double[] ya, double yb[]) {
         double d = integrateL1sup(xa, xb, ya, yb);
         double a = integrateSup(xb, yb);
-        //System.out.printf("%E %E\n", d, a);
+        //LOGGER.log(Level.INFO, String.format("%E %E\n", d, a);
         if (a < 1e-6) {
             return d;
         }

@@ -1,5 +1,7 @@
 package xal.smf.impl;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
 import xal.ca.ConnectionException;
@@ -12,6 +14,8 @@ import xal.smf.attr.MagnetBucket;
 import xal.smf.impl.qualify.ElementTypeManager;
 
 public class Electrostatic extends AcceleratorNode {
+
+    private static final Logger LOGGER = Logger.getLogger(Electrostatic.class.getName());
 
     /**
      * standard type for instances of this class
@@ -190,8 +194,7 @@ public class Electrostatic extends AcceleratorNode {
         try {
             return bucMagnet.getPolarity();
         } catch (Exception e) {
-            System.out.println(" Polarity not set on " + this.getId()
-                    + ", for stability sake, using + field");
+            LOGGER.log(Level.INFO, " Polarity not set on {0}, for stability sake, using + field", this.getId());
             return 1;
         }
     }

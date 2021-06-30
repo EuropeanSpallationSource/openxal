@@ -83,7 +83,7 @@ public class TestErrorPropagator {
      * @param controlValue value against which the comparison is made
      */
     private static void assertResult(final double testValue, final double controlValue) {
-//        System.out.println( "test: " + testValue + ", control: " + controlValue );
+//        LOGGER.log(Level.INFO,  "test: " + testValue + ", control: " + controlValue );
         Assert.assertTrue(testValue == controlValue || Math.abs(testValue - controlValue) < ERROR_TOLERANCE || (Double.isNaN(testValue) && Double.isNaN(controlValue)));
     }
 }

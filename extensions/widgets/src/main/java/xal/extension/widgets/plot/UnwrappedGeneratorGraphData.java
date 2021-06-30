@@ -1,5 +1,8 @@
 package xal.extension.widgets.plot;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /*
  * This class is a container class for data used in the FunctionGraphsJPanel class.
  * This class can produce synchronous unwrapped phase graphics data.
@@ -10,6 +13,8 @@ package xal.extension.widgets.plot;
  * @author  A. Shishlo
  */
 public class UnwrappedGeneratorGraphData extends BasicGraphData {
+
+    private static final Logger LOGGER = Logger.getLogger(UnwrappedGeneratorGraphData.class.getName());
 
     protected BasicGraphData extUnwrappedData = null;
 
@@ -133,15 +138,13 @@ public class UnwrappedGeneratorGraphData extends BasicGraphData {
         generator.addPoint(8., 450., 0.0);
 
         if (generator.getNumbOfPoints() != unwrupped.getNumbOfPoints()) {
-            System.out.println("Nunber of points are different!");
-            System.out.println("Stop.");
+            LOGGER.log(Level.INFO, "Nunber of points are different!");
+            LOGGER.log(Level.INFO, "Stop.");
             System.exit(0);
         }
 
         for (int i = 0; i < generator.getNumbOfPoints(); i++) {
-            System.out.println("i=" + i + " gen x,y = " + generator.getX(i) + " " + generator.getY(i)
-                    + " wrap x,y = " + unwrupped.getX(i) + " " + unwrupped.getY(i));
-
+            LOGGER.log(Level.INFO, "i={0} gen x,y = {1} {2} wrap x,y = {3} {4}", new Object[]{i, generator.getX(i), generator.getY(i), unwrupped.getX(i), unwrupped.getY(i)});
         }
 
     }

@@ -18,6 +18,8 @@
 package xal.plugin.epics7;
 
 import java.math.BigDecimal;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.epics.pvdata.factory.PVDataFactory;
 import org.epics.pvdata.factory.StandardFieldFactory;
 import org.epics.pvdata.pv.PVDataCreate;
@@ -41,6 +43,8 @@ import static xal.plugin.epics7.Epics7ChannelTimeRecord.TIMESTAMP_FIELD_NAME;
  */
 public class Epics7ChannelTimeRecordTest {
 
+    private static final Logger LOGGER = Logger.getLogger(Epics7ChannelTimeRecordTest.class.getName());
+
     private PVStructure pvStructure;
     String properties = ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
             + DISPLAY_FIELD + "," + CONTROL_FIELD;
@@ -62,7 +66,7 @@ public class Epics7ChannelTimeRecordTest {
      */
     @Test
     public void testGetTimestamp() {
-        System.out.println("getTimestamp");
+        LOGGER.log(Level.INFO, "getTimestamp");
         Epics7ChannelTimeRecord instance = newEpics7ChannelTimeRecord();
         Timestamp expResult = new Timestamp(new BigDecimal(2).multiply(new BigDecimal("1e-9")).add(new BigDecimal(1)));
         Timestamp result = instance.getTimestamp();
@@ -74,7 +78,7 @@ public class Epics7ChannelTimeRecordTest {
      */
     @Test
     public void testTimeStampInSeconds() {
-        System.out.println("timeStampInSeconds");
+        LOGGER.log(Level.INFO, "timeStampInSeconds");
         Epics7ChannelTimeRecord instance = newEpics7ChannelTimeRecord();
         double expResult = instance.getTimestamp().getSeconds();
         double result = instance.timeStampInSeconds();
@@ -86,7 +90,7 @@ public class Epics7ChannelTimeRecordTest {
      */
     @Test
     public void testToString() {
-        System.out.println("toString");
+        LOGGER.log(Level.INFO, "toString");
         Epics7ChannelTimeRecord instance = newEpics7ChannelTimeRecord();
         String expResult = ", time: " + instance.getTimestamp().toString();
         String result = instance.toString().substring(instance.toString().indexOf(", time"));

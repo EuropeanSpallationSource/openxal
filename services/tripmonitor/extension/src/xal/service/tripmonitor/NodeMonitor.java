@@ -97,7 +97,7 @@ public class NodeMonitor implements ChannelEventListener {
      */
     public void run() {
         if (TripMonitorManager.isVerbose()) {
-            System.out.println("Run monitor for node:  " + NODE.getId());
+            LOGGER.log(Level.INFO, "Run monitor for node:  " + NODE.getId());
         }
         for (final ChannelMonitor channelMonitor : CHANNEL_MONITORS) {
             channelMonitor.requestConnection();

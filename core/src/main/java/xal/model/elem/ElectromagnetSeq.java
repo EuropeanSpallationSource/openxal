@@ -48,7 +48,7 @@ public abstract class ElectromagnetSeq extends ElementSeq implements IElectromag
 //			    Logger    logGbl = LOGGER;
 //			    
 //			    logGbl.log(Level.WARNING, strMsg + " : " + strSrc);
-//	            System.out.println("WARNING!: " + strMsg + " : " + strSrc);		
+//	            LOGGER.log(Level.INFO, "WARNING!: " + strMsg + " : " + strSrc);		
         }
         setOrientation(orientation);
         setMagField(magnetNode.getDesignField());

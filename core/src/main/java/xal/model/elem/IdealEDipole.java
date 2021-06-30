@@ -16,6 +16,8 @@
 package xal.model.elem;
 
 import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.model.IProbe;
 import xal.model.ModelException;
@@ -44,6 +46,8 @@ import xal.tools.beam.optics.BendingMagnet;
  *
  */
 public class IdealEDipole extends ThickElectrostatic {
+
+    private static final Logger LOGGER = Logger.getLogger(IdealEDipole.class.getName());
 
     /**
      *
@@ -434,7 +438,7 @@ public class IdealEDipole extends ThickElectrostatic {
 
         // Magnet parameters
         double angle = getDesignBendAngle() * dL / this.getLength();
-        System.out.println("Element " + this.getId() + " theta " + angle);
+        LOGGER.log(Level.INFO, "Element {0} theta {1}", new Object[]{this.getId(), angle});
         //angle = -angle;
 
         double kQuad = getKQuad();

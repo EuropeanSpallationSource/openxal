@@ -223,9 +223,9 @@ public class IdealEQuad extends ThickElectrostatic {
         //final double A = Math.floor(Er * 1.07354422036e-9);
         // focusing constant (radians/meter)
         final double k = (charge * ((getVoltage() * 1e3) / T)) / (getAperture() * getAperture());
-        //System.out.println("V = " + getVoltage() * 1e3);
-        //System.out.println("T = " + T);
-        //System.out.println("ap = " + getAperture());
+        //LOGGER.log(Level.INFO, "V = " + getVoltage() * 1e3);
+        //LOGGER.log(Level.INFO, "T = " + T);
+        //LOGGER.log(Level.INFO, "ap = " + getAperture());
         final double kSqrt = Math.sqrt(Math.abs(k));
 
         // Compute the transfer matrix components

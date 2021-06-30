@@ -20,6 +20,8 @@ import xal.ca.*;
  */
 public class PrimaryPropertyAccessor {
 
+    private static final Logger LOGGER = Logger.getLogger(PrimaryPropertyAccessor.class.getName());
+
     /**
      * indicates the debugging status for diagnostic typeout
      */
@@ -196,14 +198,12 @@ public class PrimaryPropertyAccessor {
 
     // Testing and Debugging ===================================================
     private static void printValueMap(final AcceleratorNode aNode, final Map<String, Double> values) {
-        System.out.println("Properties for node: " + aNode);
+        LOGGER.log(Level.INFO, "Properties for node: " + aNode);
 
         for (final String property : values.keySet()) {
             Double val = values.get(property);
-            System.out.println("\t" + property + ": " + val);
+            LOGGER.log(Level.INFO, "\t" + property + ": " + val);
         }
-
-        System.out.println();
     }
 }
 

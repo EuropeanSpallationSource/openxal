@@ -224,7 +224,7 @@ public abstract class Application {
             try {
                 // Try to use the local token.
                 rbacSubject = rbacLogin.authenticate(null, null);
-                System.out.println("Already logged in.");
+                LOGGER.log(Level.INFO, "Already logged in.");
                 if (rbacSubject != null) {
                     return true;
                 }
@@ -234,12 +234,12 @@ public abstract class Application {
         }
 
         try {
-            System.out.println("Starting authentication.");
+            LOGGER.log(Level.INFO, "Starting authentication.");
 
             final Credentials credentials = AuthenticationPane.getCredentials();
             if (credentials == null) {
                 // User pressed cancel
-                System.out.println("Exiting...");
+                LOGGER.log(Level.INFO, "Exiting...");
                 quit();
                 return false;
             }
@@ -277,7 +277,7 @@ public abstract class Application {
                 String resource = "Xal" + appName.substring(0, 1).toUpperCase() + appName.substring(1);
                 System.out.printf("Starting authorization for resource %s, permission %s.\n", resource, permission);
                 if (rbacSubject.hasPermission(resource, permission)) {
-                    System.out.println("Authorization successful. Proceeding...");
+                    LOGGER.log(Level.INFO, "Authorization successful. Proceeding...");
                     return true;
                 } else {
                     System.err.printf("No authorisation for resource %s, permission %s.\n", resource, permission);
@@ -443,7 +443,7 @@ public abstract class Application {
             }
         } else {
             LOGGER.log(Level.CONFIG, "Application services disabled.");
-            System.out.println("Application services not registerd because of startup flag...");
+            LOGGER.log(Level.INFO, "Application services not registerd because of startup flag...");
         }
     }
 

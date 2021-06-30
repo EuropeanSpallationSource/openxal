@@ -4,6 +4,8 @@
  */
 package xal.tools.beam.optics;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.tools.math.ElementaryFunction;
 
 /**
@@ -12,6 +14,8 @@ import xal.tools.math.ElementaryFunction;
  * @author Christopher K. Allen
  */
 public class QuadrupoleLens {
+
+    private static final Logger LOGGER = Logger.getLogger(QuadrupoleLens.class.getName());
 
     /**
      * Compute the characteristic transfer matrix for the focusing plane of an
@@ -180,15 +184,14 @@ public class QuadrupoleLens {
         double[][] arrF = transferFocPlane(k, l);
         double[][] arrD = transferDefPlane(k, l);
 
-        System.out.println("F(0,0)=" + arrF[0][0]);
-        System.out.println("F(0,1)=" + arrF[0][1]);
-        System.out.println("F(1,0)=" + arrF[1][0]);
-        System.out.println("F(1,1)=" + arrF[1][1]);
-        System.out.println();
+        LOGGER.log(Level.INFO, "F(0,0)={0}", arrF[0][0]);
+        LOGGER.log(Level.INFO, "F(0,1)={0}", arrF[0][1]);
+        LOGGER.log(Level.INFO, "F(1,0)={0}", arrF[1][0]);
+        LOGGER.log(Level.INFO, "F(1,1)={0}", arrF[1][1]);
 
-        System.out.println("D(0,0)=" + arrD[0][0]);
-        System.out.println("D(0,1)=" + arrD[0][1]);
-        System.out.println("D(1,0)=" + arrD[1][0]);
-        System.out.println("D(1,1)=" + arrD[1][1]);
+        LOGGER.log(Level.INFO, "D(0,0)={0}", arrD[0][0]);
+        LOGGER.log(Level.INFO, "D(0,1)={0}", arrD[0][1]);
+        LOGGER.log(Level.INFO, "D(1,0)={0}", arrD[1][0]);
+        LOGGER.log(Level.INFO, "D(1,1)={0}", arrD[1][1]);
     }
 }

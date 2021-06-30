@@ -5,6 +5,8 @@
 package xal.sim.mpx;
 
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A stop watch utility to measure elapsed total time.
@@ -12,6 +14,8 @@ import java.util.Date;
  * @author klotz
  */
 public class MPXStopWatch extends Date {
+
+    private static final Logger LOGGER = Logger.getLogger(MPXStopWatch.class.getName());
 
     /**
      * ID for serializable version
@@ -59,7 +63,7 @@ public class MPXStopWatch extends Date {
 
     public static void timeElapsed(String message) {
         if (!beQuiet) {
-            System.out.println(message + timeElapsed());
+            LOGGER.log(Level.INFO, "{0}{1}", new Object[]{message, timeElapsed()});
         }
     }
 

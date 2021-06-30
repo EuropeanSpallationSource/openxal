@@ -1,5 +1,7 @@
 package xal.extension.jels;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -17,6 +19,8 @@ import xal.tools.beam.IConstants;
 @RunWith(Parameterized.class)
 public class BendTest extends TestCommon {
 
+    private static final Logger LOGGER = Logger.getLogger(BendTest.class.getName());
+
     private double errTolerance = 1e-6;
 
     public BendTest(Probe probe, ElementMapping elementMapping) {
@@ -30,7 +34,7 @@ public class BendTest extends TestCommon {
 // 	@Test
     public void doHorizontalBendTestMadX() throws InstantiationException, ModelException {
         probe.reset();
-        System.out.println("Horizontal madx");
+        LOGGER.log(Level.INFO, "Horizontal madx");
 
         AcceleratorSeq sequence = bend(-5.5, -11, -5.5, 9375.67, 0., 0, 0., 0, 0., 0, 0, 0);
 
@@ -43,7 +47,7 @@ public class BendTest extends TestCommon {
     @Test
     public void doVerticalBendTest() throws InstantiationException, ModelException {
         probe.reset();
-        System.out.println("Vertical");
+        LOGGER.log(Level.INFO, "Vertical");
         /*
 		EDGE -5.5 9375.67 50 0.45 2.8 50 1; this is a magnet length of 1.8 m 
 		BEND -11 9375.67 0 50 1
@@ -97,7 +101,7 @@ public class BendTest extends TestCommon {
     @Test
     public void doHorizontalBendTest() throws InstantiationException, ModelException {
         probe.reset();
-        System.out.println("Horizontal");
+        LOGGER.log(Level.INFO, "Horizontal");
         /*
 		EDGE -5.5 9375.67 50 0.45 2.8 50 0; this is a magnet length of 1.8 m 
 		BEND -11 9375.67 0 50 0
@@ -150,7 +154,7 @@ public class BendTest extends TestCommon {
     @Test
     public void doHorizontalBendTest2() throws InstantiationException, ModelException {
         probe.reset();
-        System.out.println("Horizontal N=0.2");
+        LOGGER.log(Level.INFO, "Horizontal N=0.2");
         /*
 		EDGE -5.5 9375.67 50 0.45 2.8 50 0; this is a magnet length of 1.8 m 
 		BEND -11 9375.67 0.2 50 0
@@ -203,7 +207,7 @@ public class BendTest extends TestCommon {
     @Test
     public void doVerticalBendTest2() throws InstantiationException, ModelException {
         probe.reset();
-        System.out.println("Vertical N=0.9");
+        LOGGER.log(Level.INFO, "Vertical N=0.9");
         /*
 		EDGE -5.5 9375.67 50 0.45 2.8 50 1; this is a magnet length of 1.8 m 
 		BEND -11 9375.67 0.9 50 1

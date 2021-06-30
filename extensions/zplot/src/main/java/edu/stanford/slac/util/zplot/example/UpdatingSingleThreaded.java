@@ -288,7 +288,7 @@ public class UpdatingSingleThreaded {
             f.setVisible(true);
 
             zPlotPanel.get(iteration).repaint();
-            System.out.println(Title.get(iteration));
+            LOGGER.log(Level.INFO, Title.get(iteration));
 
             if (WAIT > 0) {
                 try {
@@ -301,7 +301,7 @@ public class UpdatingSingleThreaded {
 
         }
 
-        System.out.println("Done");
+        LOGGER.log(Level.INFO, "Done");
 
     }
 

@@ -88,7 +88,7 @@ public class TripMonitorFilter {
                 TRIP_CHANNEL_FILTERS.add(new TripChannelFilter(monitorAdaptor, tripFilter));
             } else {
                 final String monitorName = monitorAdaptor.stringValue("PVFormat");
-                System.out.println("Error!  Trip filter requested for \"" + monitorName + "\" with name: \"" + tripFilterName + "\" does not exist.");
+                LOGGER.log(Level.INFO, "Error!  Trip filter requested for \"" + monitorName + "\" with name: \"" + tripFilterName + "\" does not exist.");
             }
         }
 

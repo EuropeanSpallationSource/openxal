@@ -1,5 +1,7 @@
 package xal.smf.impl;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.smf.*;
 import xal.smf.attr.*;
 import xal.smf.impl.qualify.*;
@@ -13,8 +15,10 @@ import xal.ca.*;
  *
  */
 public abstract class Magnet extends AcceleratorNode implements MagnetType {
-    // static initialization
 
+    private static final Logger LOGGER = Logger.getLogger(Magnet.class.getName());
+
+    // static initialization
     static {
         registerType();
     }
@@ -200,8 +204,7 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
         try {
             return bucMagnet.getPolarity();
         } catch (Exception e) {
-            System.out.println(" Polarity not set on " + this.getId()
-                    + ", for stability sake, using + field");
+            LOGGER.log(Level.INFO, " Polarity not set on {0}, for stability sake, using + field", this.getId());
             return 1;
         }
     }

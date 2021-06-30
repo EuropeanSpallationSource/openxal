@@ -8,12 +8,16 @@ package xal.extension.wirescan.apputils;
 import java.io.*;
 import java.util.*;
 import java.text.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  *
  * @author Paul Chu
  */
 public class WireDataFileParser {
+
+    private static final Logger LOGGER = Logger.getLogger(WireDataFileParser.class.getName());
 
     boolean readingRawArrays = false;
     boolean readingFitArrays = false;
@@ -184,7 +188,7 @@ public class WireDataFileParser {
                 } else if (firstName.equals("PVLoggerID")) {
                     String pvLoggerIdS = tokens[2];
                     pvLoggerId = Integer.parseInt(pvLoggerIdS);
-                    System.out.println("PV logger Id = " + pvLoggerId);
+                    LOGGER.log(Level.INFO, "PV logger Id = " + pvLoggerId);
                 } else if (readingRawArrays && !zeroData) {
                     posRawL.add(tokens[0]);
                     xRawL.add(tokens[1]);
@@ -203,9 +207,9 @@ public class WireDataFileParser {
             dumpData();
 
         } catch (FileNotFoundException e) {
-            System.out.println("Cannot find file: " + file.getPath());
+            LOGGER.log(Level.INFO, "Cannot find file: {0}", file.getPath());
         } catch (IOException e) {
-            System.out.println("File reading error: " + file.getPath());
+            LOGGER.log(Level.INFO, "File reading error: {0}", file.getPath());
         }
 
         // return an ArrayList with <WireData> in it
@@ -285,7 +289,7 @@ public class WireDataFileParser {
 
     public long getPVLoggerId() {
         if (pvLoggerId < 1) {
-            System.out.println("Invalid PV Logger ID!");
+            LOGGER.log(Level.INFO, "Invalid PV Logger ID!");
         }
         return pvLoggerId;
     }

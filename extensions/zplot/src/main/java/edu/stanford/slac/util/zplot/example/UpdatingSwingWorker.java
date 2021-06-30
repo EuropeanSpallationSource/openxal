@@ -69,13 +69,13 @@ public class UpdatingSwingWorker {
     private synchronized static void setup() {
         setup_count = 1 + setup_count;
         try {
-            //System.out.println("Setup entered-" + setup_count);
+            //LOGGER.log(Level.INFO, "Setup entered-" + setup_count);
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             // TODO Auto-generated catch block
             LOGGER.log(Level.SEVERE, null, exception);
         }
-        //System.out.println("Setup exit-" + setup_count);
+        //LOGGER.log(Level.INFO, "Setup exit-" + setup_count);
     }
 
     /**
@@ -303,7 +303,7 @@ public class UpdatingSwingWorker {
                 public synchronized void finished() {
                     ZPlotPanel z = (ZPlotPanel) get();
                     z.repaint();
-                    System.out.println("...just repainted " + z.getTitle());
+                    LOGGER.log(Level.INFO, "...just repainted " + z.getTitle());
                 } // end of finished()
             };
             worker.start();
@@ -321,7 +321,7 @@ public class UpdatingSwingWorker {
 
         }
 
-        System.out.println("Done.");
+        LOGGER.log(Level.INFO, "Done.");
 
     }
 

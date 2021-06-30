@@ -2,6 +2,8 @@ package xal.extension.scan;
 
 import java.util.*;
 import java.awt.event.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This controller calls actionPerformed method of all registered listeners upon
@@ -11,6 +13,8 @@ import java.awt.event.*;
  * @author shishlo
  */
 public class UpdatingEventController {
+
+    private static final Logger LOGGER = Logger.getLogger(UpdatingEventController.class.getName());
 
     private final Object syncObj = new Object();
 
@@ -207,7 +211,7 @@ public class UpdatingEventController {
                 new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("Call performed!!! Freq. = 1 Hz! Update call Freq.= 10Hz!");
+                LOGGER.log(Level.INFO, "Call performed!!! Freq. = 1 Hz! Update call Freq.= 10Hz!");
             }
         });
 

@@ -12,6 +12,8 @@ import java.io.*;
 import java.util.Date;
 import java.text.NumberFormat;
 import java.text.DecimalFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.ca.*;
 import xal.sim.slg.*;   // for lattice generation
@@ -31,6 +33,8 @@ import xal.tools.beam.Twiss; //had to import to fix deprecation issue with getTw
  * @version 0.2 07 Apr 2003
  */
 public class T3dGenerator {
+
+    private static final Logger LOGGER = Logger.getLogger(T3dGenerator.class.getName());
 
     /**
      * input lattice view
@@ -175,7 +179,7 @@ public class T3dGenerator {
                         } catch (ConnectionException e) {
                             devStr = devTypeInd + ", A(1, " + counter + ")="
                                     + "0., " + nf.format(element.getLength() * 1000.) + ",\n";
-                            System.out.println(e + "   Set the field to 0.");
+                            LOGGER.log(Level.WARNING, "Set the field to 0.", e);
                         } catch (GetException e) {
                         }
                     }
@@ -206,10 +210,7 @@ public class T3dGenerator {
                                 + nf.format(((xal.smf.impl.Solenoid) element.getAcceleratorNode()).getField() * 10000.) + ", "
                                 + nf.format(((xal.smf.impl.Solenoid) element.getAcceleratorNode()).getLength() * 1000.)
                                 + ",\n";
-                    } catch (ConnectionException e) {
-                        devStr = devTypeInd + ", A(1, " + counter + ")="
-                                + "0., " + nf.format(element.getLength() * 1000.) + ",\n";
-                    } catch (GetException e) {
+                    } catch (ConnectionException | GetException e) {
                         devStr = devTypeInd + ", A(1, " + counter + ")="
                                 + "0., " + nf.format(element.getLength() * 1000.) + ",\n";
                     }

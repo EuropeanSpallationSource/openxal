@@ -9,6 +9,7 @@ package xal.sim.sync;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
@@ -61,24 +62,24 @@ public class TestSynchronizationManager {
     /**
      * URL of the accelerator hardware description file
      */
-    public static String STRL_URL_ACCEL = ResourceManager.getTestAcceleratorURL().toString();
+    public static String urlAccel = ResourceManager.getTestAcceleratorURL().toString();
 
     /**
      * Output file location
      */
-    private static String STR_FILE_OUTPUT = TestSynchronizationManager.class.getName().replace('.', '/') + ".txt";
+    private static String strFileOutput = TestSynchronizationManager.class.getName().replace('.', '/') + ".txt";
 
     /**
      * URL where we are dumping the output
      */
-    public static File FILE_OUTPUT = ResourceManager.getOutputFile(STR_FILE_OUTPUT);
+    public static File fileOutput = ResourceManager.getOutputFile(strFileOutput);
 
     /**
      * String identifier for accelerator sequence used in testing
      */
 //    public static String            STR_SEQ_ID       = "HEBT1";
 //    public static String            STR_SEQ_ID       = "MEBT-SCL";
-    public static String STR_SEQ_ID = "CCL";
+    public static String seqId = "CCL";
 
     /*
      * Global Attributes
@@ -86,37 +87,37 @@ public class TestSynchronizationManager {
     /**
      * Accelerator object used for testing
      */
-    private static Accelerator ACCEL_TEST;
+    private static Accelerator accelTest;
 
     /**
      * Accelerator sequence used for testing
      */
-    private static AcceleratorSeq SEQ_TEST;
+    private static AcceleratorSeq seqTest;
 
     /**
      * Accelerator sequence (online) model for testing
      */
-    private static Scenario MODEL_TEST;
+    private static Scenario modelTest;
 
     /**
      * Envelope probe for model testing
      */
-    private static EnvelopeProbe PROBE_ENV_TEST;
+    private static EnvelopeProbe probeEnvTest;
 
     /**
      * Particle probe for model testing
      */
-    private static ParticleProbe PROBE_PARTL_TEST;
+    private static ParticleProbe probePartlTest;
 
     /**
      * Transfer map probe for model testing
      */
-    private static TransferMapProbe PROBE_XFER_TEST;
+    private static TransferMapProbe probeXferTest;
 
     /**
      * Persistent storage for test output
      */
-    private static PrintWriter WTR_OUTPUT;
+    private static PrintWriter wtrOutput;
 
     /*
      * Global Methods
@@ -133,25 +134,25 @@ public class TestSynchronizationManager {
 
         try {
 //            ACCEL_TEST   = XMLDataManager.acceleratorWithUrlSpec(STRL_URL_ACCEL);
-            ACCEL_TEST = ResourceManager.getTestAccelerator();
-            SEQ_TEST = ACCEL_TEST.findSequence(STR_SEQ_ID);
-            MODEL_TEST = Scenario.newScenarioFor(SEQ_TEST);
+            accelTest = ResourceManager.getTestAccelerator();
+            seqTest = accelTest.findSequence(seqId);
+            modelTest = Scenario.newScenarioFor(seqTest);
 
             // Create and initialize the envelope probe
-            EnvTrackerAdapt algEnv = AlgorithmFactory.createEnvTrackerAdapt(SEQ_TEST);
-            PROBE_ENV_TEST = ProbeFactory.getEnvelopeProbe(SEQ_TEST, algEnv);
+            EnvTrackerAdapt algEnv = AlgorithmFactory.createEnvTrackerAdapt(seqTest);
+            probeEnvTest = ProbeFactory.getEnvelopeProbe(seqTest, algEnv);
 
             // Create and initialize the particle probe
-            ParticleTracker algPrt = AlgorithmFactory.createParticleTracker(SEQ_TEST);
-            PROBE_PARTL_TEST = ProbeFactory.createParticleProbe(SEQ_TEST, algPrt);
+            ParticleTracker algPrt = AlgorithmFactory.createParticleTracker(seqTest);
+            probePartlTest = ProbeFactory.createParticleProbe(seqTest, algPrt);
 
             // Create and initialize transfer map probe
-            TransferMapTracker algXfer = AlgorithmFactory.createTransferMapTracker(SEQ_TEST);
-            PROBE_XFER_TEST = ProbeFactory.getTransferMapProbe(SEQ_TEST, algXfer);
+            TransferMapTracker algXfer = AlgorithmFactory.createTransferMapTracker(seqTest);
+            probeXferTest = ProbeFactory.getTransferMapProbe(seqTest, algXfer);
 
-            WTR_OUTPUT = new PrintWriter(FILE_OUTPUT);
+            wtrOutput = new PrintWriter(fileOutput);
 
-        } catch (Exception e) {
+        } catch (FileNotFoundException | InstantiationException | ModelException e) {
             System.err.println("Unable to instantiate TransferMatrixObject");
 
         }
@@ -167,7 +168,7 @@ public class TestSynchronizationManager {
      */
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
-        WTR_OUTPUT.close();
+        wtrOutput.close();
     }
 
     /*
@@ -184,12 +185,12 @@ public class TestSynchronizationManager {
     @Test
     public void testRunEnvelopeModel() throws ModelException {
 
-        PROBE_ENV_TEST.reset();
-        MODEL_TEST.setProbe(PROBE_ENV_TEST);
-        MODEL_TEST.resync();
-        MODEL_TEST.run();
+        probeEnvTest.reset();
+        modelTest.setProbe(probeEnvTest);
+        modelTest.resync();
+        modelTest.run();
 
-        Trajectory<EnvelopeProbeState> trjData = MODEL_TEST.getTrajectory();
+        Trajectory<EnvelopeProbeState> trjData = modelTest.getTrajectory();
 
         this.saveSimData(trjData);
     }
@@ -205,13 +206,13 @@ public class TestSynchronizationManager {
     @Test
     public void testRunEnvelopeModelWithRfGapCalc() throws ModelException {
 
-        PROBE_ENV_TEST.reset();
-        PROBE_ENV_TEST.getAlgorithm().setRfGapPhaseCalculation(true);
-        MODEL_TEST.setProbe(PROBE_ENV_TEST);
-        MODEL_TEST.resync();
-        MODEL_TEST.run();
+        probeEnvTest.reset();
+        probeEnvTest.getAlgorithm().setRfGapPhaseCalculation(true);
+        modelTest.setProbe(probeEnvTest);
+        modelTest.resync();
+        modelTest.run();
 
-        Trajectory<EnvelopeProbeState> trjData = MODEL_TEST.getTrajectory();
+        Trajectory<EnvelopeProbeState> trjData = modelTest.getTrajectory();
 
         this.saveSimData(trjData);
 //        this.printSimData(trjData);
@@ -224,35 +225,35 @@ public class TestSynchronizationManager {
     @Test
     public final void testResync() {
         try {
-            PROBE_ENV_TEST.reset();
+            probeEnvTest.reset();
 
-            MODEL_TEST.setProbe(PROBE_ENV_TEST);
-            MODEL_TEST.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
-            MODEL_TEST.resync();
+            modelTest.setProbe(probeEnvTest);
+            modelTest.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
+            modelTest.resync();
 
-            MODEL_TEST.run();
+            modelTest.run();
 
-            Trajectory<EnvelopeProbeState> trjData = MODEL_TEST.getTrajectory();
+            Trajectory<EnvelopeProbeState> trjData = modelTest.getTrajectory();
             this.saveSimData(trjData);
 
-            List<AcceleratorNode> lstSmfQuads = SEQ_TEST.getNodesOfType("q", true);
+            List<AcceleratorNode> lstSmfQuads = seqTest.getNodesOfType("q", true);
             Quadrupole smfQuad1 = (Quadrupole) lstSmfQuads.get(0);
             double dblFldOld = smfQuad1.getDesignField();
             double dblFldNew = dblFldOld * 1.1;
 
-//            System.out.println("Changing " + smfQuad1.getId() + " design field from " + dblFldOld + " to " + dblFldNew);
-            Map<String, Double> mapPrpToValOld = MODEL_TEST.propertiesForNode(smfQuad1);
-//            System.out.println("Old property map for " + smfQuad1.getId() + ": " + mapPrpToValOld.toString());
+//            LOGGER.log(Level.INFO, "Changing " + smfQuad1.getId() + " design field from " + dblFldOld + " to " + dblFldNew);
+            Map<String, Double> mapPrpToValOld = modelTest.propertiesForNode(smfQuad1);
+//            LOGGER.log(Level.INFO, "Old property map for " + smfQuad1.getId() + ": " + mapPrpToValOld.toString());
 
             smfQuad1.setDfltField(dblFldNew);
-            MODEL_TEST.resync();
-            Map<String, Double> mapPrpToValNew = MODEL_TEST.propertiesForNode(smfQuad1);
-//            System.out.println("New property map for " + smfQuad1.getId() + ": " + mapPrpToValNew.toString());
+            modelTest.resync();
+            Map<String, Double> mapPrpToValNew = modelTest.propertiesForNode(smfQuad1);
+//            LOGGER.log(Level.INFO, "New property map for " + smfQuad1.getId() + ": " + mapPrpToValNew.toString());
 
-            PROBE_ENV_TEST.reset();
-            MODEL_TEST.run();
+            probeEnvTest.reset();
+            modelTest.run();
 
-            trjData = MODEL_TEST.getTrajectory();
+            trjData = modelTest.getTrajectory();
             this.saveSimData(trjData);
 
         } catch (SynchronizationException e) {
@@ -288,19 +289,19 @@ public class TestSynchronizationManager {
     private <S extends ProbeState<S>> void saveSimData(Trajectory<S> trjData) {
 
         // Write out header line
-        String strSimType = MODEL_TEST.getProbe().getClass().getName();
-        WTR_OUTPUT.println("DATA FOR SIMULATION WITH " + strSimType);
-        WTR_OUTPUT.println("  RF Gap Phases " + MODEL_TEST.getProbe().getAlgorithm().getRfGapPhaseCalculation());
+        String strSimType = modelTest.getProbe().getClass().getName();
+        wtrOutput.println("DATA FOR SIMULATION WITH " + strSimType);
+        wtrOutput.println("  RF Gap Phases " + modelTest.getProbe().getAlgorithm().getRfGapPhaseCalculation());
 
         // Write out the simulation data
 //        Trajectory<?> trjData = MODEL_TEST.getTrajectory();
         for (S state : trjData) {
-            WTR_OUTPUT.println(state);
+            wtrOutput.println(state);
         }
 
         // Buffer for the next write
-        WTR_OUTPUT.println();
-        WTR_OUTPUT.flush();
+        wtrOutput.println();
+        wtrOutput.flush();
     }
 
     /**
@@ -312,8 +313,8 @@ public class TestSynchronizationManager {
     private <S extends ProbeState<S>> void printSimData(Trajectory<S> trjData) {
 
         // Print out the kinetic energy profile to stdout
-        System.out.println("DATA FOR SIMULATION WITH " + MODEL_TEST.getProbe().getClass().getName());
-        System.out.println("  RF Gap Phases " + MODEL_TEST.getProbe().getAlgorithm().getRfGapPhaseCalculation());
+        LOGGER.log(Level.INFO, "DATA FOR SIMULATION WITH {0}", modelTest.getProbe().getClass().getName());
+        LOGGER.log(Level.INFO, "  RF Gap Phases {0}", modelTest.getProbe().getAlgorithm().getRfGapPhaseCalculation());
 //        Trajectory<?> trjData = MODEL_TEST.getTrajectory();
 
         for (S state : trjData) {
@@ -321,10 +322,7 @@ public class TestSynchronizationManager {
             String strId = state.getElementId();
             double dblW = state.getKineticEnergy();
 
-            System.out.println(strId + ": W = " + dblW);
+            LOGGER.log(Level.INFO, "{0}: W = {1}", new Object[]{strId, dblW});
         }
-
-        System.out.println();
-        System.out.println();
     }
 }

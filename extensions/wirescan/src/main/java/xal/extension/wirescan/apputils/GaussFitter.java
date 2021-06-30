@@ -178,7 +178,7 @@ public class GaussFitter {
         double center = params_arr[1];
         double sigma = params_arr[2];
         double amp = params_arr[3];
-        //System.out.println("debug fit again Y fit base="+base+" center="+center+" sigma="+sigma+" amp="+amp);		
+        //LOGGER.log(Level.INFO, "debug fit again Y fit base="+base+" center="+center+" sigma="+sigma+" amp="+amp);		
         wsD.setBaseY(base);
         wsD.setCenterY(center);
         wsD.setSigmaY(sigma);
@@ -217,7 +217,7 @@ public class GaussFitter {
 
         final int indstart = indstart0;
         final int ind_stop = ind_stop0;
-        //System.out.println("debug fit xMin="+gD.getX(indstart)+" xMax="+gD.getX(ind_stop));
+        //LOGGER.log(Level.INFO, "debug fit xMin="+gD.getX(indstart)+" xMax="+gD.getX(ind_stop));
         final ArrayList<Variable> variables = new ArrayList<>();
         variables.add(new Variable("base", base, -Double.MAX_VALUE, Double.MAX_VALUE));
         variables.add(new Variable("center", center, -Double.MAX_VALUE, Double.MAX_VALUE));
@@ -252,11 +252,11 @@ public class GaussFitter {
                     y_th = base0 + amp0 * Math.exp(-(x - center0) * (x - center0) / (2 * sigma0 * sigma0));
                     diff += (y - y_th) * (y - y_th);
                 }
-                //System.out.println("debug iteration fit base="+base0+" center="+center0+" sigma="+sigma0+" amp="+amp0);
+                //LOGGER.log(Level.INFO, "debug iteration fit base="+base0+" center="+center0+" sigma="+sigma0+" amp="+amp0);
                 return diff;
             }
         };
-        //System.out.println("debug init fit base="+base+" center="+center+" sigma="+sigma+" amp="+amp);
+        //LOGGER.log(Level.INFO, "debug init fit base="+base+" center="+center+" sigma="+sigma+" amp="+amp);
 
         Stopper maxSolutionStopper = SolveStopperFactory.maxEvaluationsStopper(nIterations);
         Solver solver = new Solver(new SimplexSearchAlgorithm(), maxSolutionStopper);
@@ -297,7 +297,7 @@ public class GaussFitter {
         paramsArr[1] = center0;
         paramsArr[2] = sigma0;
         paramsArr[3] = amp0;
-        //System.out.println("debug end fit base="+base0+" center="+center0+" sigma="+sigma0+" amp="+amp0);
+        //LOGGER.log(Level.INFO, "debug end fit base="+base0+" center="+center0+" sigma="+sigma0+" amp="+amp0);
         double step = (gD.getX(ind_stop) - gD.getX(indstart)) / (nGraphPoints - 1);
         for (int ix = 0; ix < nGraphPoints; ix++) {
             double x = gD.getX(indstart) + step * ix;
@@ -360,7 +360,7 @@ public class GaussFitter {
                 yMin = y;
             }
         }
-        //System.out.println("debug xMax="+xMax+" yMax="+yMax+" yMin="+yMin);
+        //LOGGER.log(Level.INFO, "debug xMax="+xMax+" yMax="+yMax+" yMin="+yMin);
         double yLevel = yMin + (yMax - yMin) * 0.7;
         double xLower = gD.getX(0);
         double xUpper = gD.getX(gD.getNumbOfPoints() - 1);
@@ -384,7 +384,7 @@ public class GaussFitter {
                 }
             }
         }
-        //System.out.println("debug xLower="+xLower+" xUpper="+xUpper);
+        //LOGGER.log(Level.INFO, "debug xLower="+xLower+" xUpper="+xUpper);
         double base = 0.;
         double center = (xUpper + xLower) / 2.0;
         double sigma = (xUpper - xLower) / 2.0;
@@ -397,7 +397,7 @@ public class GaussFitter {
         res_arr[1] = center;
         res_arr[2] = sigma;
         res_arr[3] = amp;
-        //System.out.println("debug base="+base+" center="+center+" sigma="+sigma+" amp="+amp);
+        //LOGGER.log(Level.INFO, "debug base="+base+" center="+center+" sigma="+sigma+" amp="+amp);
         return res_arr;
     }
 

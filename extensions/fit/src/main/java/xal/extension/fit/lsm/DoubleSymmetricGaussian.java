@@ -6,6 +6,8 @@
 package xal.extension.fit.lsm;
 
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class is for data fitting with two Gaussian functions with the same
@@ -19,6 +21,8 @@ import java.util.Date;
  * @author shishlo
  */
 public class DoubleSymmetricGaussian {
+
+    private static final Logger LOGGER = Logger.getLogger(DoubleSymmetricGaussian.class.getName());
 
     private double sigma = 0.5;
     private double amp = 1.;
@@ -455,7 +459,7 @@ public class DoubleSymmetricGaussian {
             pedestal = Math.min(Math.abs(yMin), Math.abs(yMax));
             amp = (yMax - yMin);
         } else {
-            //System.out.println("Debug  i_xMin = " + i_xMin + " i_xMax=" + i_xMax);
+            //LOGGER.log(Level.INFO, "Debug  i_xMin = " + i_xMin + " i_xMax=" + i_xMax);
             int iCent = (iXMin + iXMax) / 2;
             int iMin = -1;
             for (int i = iXMin; i < iCent; i++) {
@@ -481,7 +485,7 @@ public class DoubleSymmetricGaussian {
             center1 = ds.getArrX(iMax)[0];
             double sig1 = ds.getArrX(iMax)[0] - ds.getArrX(iXMax)[0];
 
-            //System.out.println("Debug  i_min = " + i_min + " i_max=" + i_max);
+            //LOGGER.log(Level.INFO, "Debug  i_min = " + i_min + " i_max=" + i_max);
             sigma = (Math.abs(sig0) + Math.abs(sig1)) / 2.0;
 
             pedestal = Math.min(Math.abs(yMin), Math.abs(yMax));
@@ -506,19 +510,19 @@ public class DoubleSymmetricGaussian {
         }
 
         /**
-         * System.out.println("Debug s = " +
+         * LOGGER.log(Level.INFO, "Debug s = " +
          * getParameter(DoubleSymmetricGaussian.SIGMA) + " +- " +
          * getParameterError(DoubleSymmetricGaussian.SIGMA));
-         * System.out.println("Debug a = " +
+         * LOGGER.log(Level.INFO, "Debug a = " +
          * getParameter(DoubleSymmetricGaussian.AMP) + " +- " +
          * getParameterError(DoubleSymmetricGaussian.AMP));
-         * System.out.println("Debug c0 = " +
+         * LOGGER.log(Level.INFO, "Debug c0 = " +
          * getParameter(DoubleSymmetricGaussian.CENTER0) + " +- " +
          * getParameterError(DoubleSymmetricGaussian.CENTER0));
-         * System.out.println("Debug c1 = " +
+         * LOGGER.log(Level.INFO, "Debug c1 = " +
          * getParameter(DoubleSymmetricGaussian.CENTER1) + " +- " +
          * getParameterError(DoubleSymmetricGaussian.CENTER1));
-         * System.out.println("Debug p = " +
+         * LOGGER.log(Level.INFO, "Debug p = " +
          * getParameter(DoubleSymmetricGaussian.PEDESTAL) + " +- " +
          * getParameterError(DoubleSymmetricGaussian.PEDESTAL));
          */
@@ -593,13 +597,13 @@ public class DoubleSymmetricGaussian {
         gs.fitParameter(DoubleSymmetricGaussian.CENTER1, true);
         gs.fitParameter(DoubleSymmetricGaussian.PEDESTAL, true);
 
-        System.out.println("================START================");
-        System.out.println("data error level [%]= " + errLevel * 100);
-        System.out.println("Main ini: s  = " + s);
-        System.out.println("Main ini: a  = " + a);
-        System.out.println("Main ini: c0 = " + c0);
-        System.out.println("Main ini: c1 = " + c1);
-        System.out.println("Main ini: p  = " + p);
+        LOGGER.log(Level.INFO, "================START================");
+        LOGGER.log(Level.INFO, "data error level [%]= {0}", errLevel * 100);
+        LOGGER.log(Level.INFO, "Main ini: s  = {0}", s);
+        LOGGER.log(Level.INFO, "Main ini: a  = {0}", a);
+        LOGGER.log(Level.INFO, "Main ini: c0 = {0}", c0);
+        LOGGER.log(Level.INFO, "Main ini: c1 = {0}", c1);
+        LOGGER.log(Level.INFO, "Main ini: p  = {0}", p);
 
         int nIter = 8;
 
@@ -610,18 +614,18 @@ public class DoubleSymmetricGaussian {
         res = gs.guessAndFit();
 
         for (int j = 0; j < nIter; j++) {
-            System.out.println("Main: iteration =" + j + "  res = " + res);
-            System.out.println("Main: s = " + gs.getParameter(DoubleSymmetricGaussian.SIGMA) + " +- " + gs.getParameterError(DoubleSymmetricGaussian.SIGMA));
-            System.out.println("Main: a = " + gs.getParameter(DoubleSymmetricGaussian.AMP) + " +- " + gs.getParameterError(DoubleSymmetricGaussian.AMP));
-            System.out.println("Main: c0  = " + gs.getParameter(DoubleSymmetricGaussian.CENTER0) + " +- " + gs.getParameterError(DoubleSymmetricGaussian.CENTER0));
-            System.out.println("Main: c1  = " + gs.getParameter(DoubleSymmetricGaussian.CENTER1) + " +- " + gs.getParameterError(DoubleSymmetricGaussian.CENTER1));
-            System.out.println("Main: p  = " + gs.getParameter(DoubleSymmetricGaussian.PEDESTAL) + " +- " + gs.getParameterError(DoubleSymmetricGaussian.PEDESTAL));
+            LOGGER.log(Level.INFO, "Main: iteration ={0}  res = {1}", new Object[]{j, res});
+            LOGGER.log(Level.INFO, "Main: s = {0} +- {1}", new Object[]{gs.getParameter(DoubleSymmetricGaussian.SIGMA), gs.getParameterError(DoubleSymmetricGaussian.SIGMA)});
+            LOGGER.log(Level.INFO, "Main: a = {0} +- {1}", new Object[]{gs.getParameter(DoubleSymmetricGaussian.AMP), gs.getParameterError(DoubleSymmetricGaussian.AMP)});
+            LOGGER.log(Level.INFO, "Main: c0  = {0} +- {1}", new Object[]{gs.getParameter(DoubleSymmetricGaussian.CENTER0), gs.getParameterError(DoubleSymmetricGaussian.CENTER0)});
+            LOGGER.log(Level.INFO, "Main: c1  = {0} +- {1}", new Object[]{gs.getParameter(DoubleSymmetricGaussian.CENTER1), gs.getParameterError(DoubleSymmetricGaussian.CENTER1)});
+            LOGGER.log(Level.INFO, "Main: p  = {0} +- {1}", new Object[]{gs.getParameter(DoubleSymmetricGaussian.PEDESTAL), gs.getParameterError(DoubleSymmetricGaussian.PEDESTAL)});
             res = gs.fit();
         }
 
         for (int i = 0; i < n; i++) {
             x = xMin + step * i;
-            System.out.println("i=" + i + " x=" + x + " yIni=" + yArr[i] + " model=" + gs.getValue(x));
+            LOGGER.log(Level.INFO, "i={0} x={1} yIni={2} model={3}", new Object[]{i, x, yArr[i], gs.getValue(x)});
         }
 
         nIter = 100;
@@ -632,7 +636,7 @@ public class DoubleSymmetricGaussian {
         Date stop = new Date();
         double time = (stop.getTime() - start.getTime()) / 1000.;
         time /= nIter;
-        System.out.println("time for one step [sec] =" + time);
+        LOGGER.log(Level.INFO, "time for one step [sec] ={ 0}", time);
 
     }
 

@@ -44,6 +44,8 @@ import static xal.plugin.epics7.Epics7Channel.TIMESTAMP_FIELD;
  */
 public class ChannelGetRequesterImplTest {
 
+    private static final Logger LOGGER = Logger.getLogger(ChannelGetRequesterImplTest.class.getName());
+
     private class ChannelGetTestImpl implements ChannelGet {
 
         public boolean getCalled = false;
@@ -96,7 +98,7 @@ public class ChannelGetRequesterImplTest {
      */
     @Test
     public void testChannelGetConnect() {
-        System.out.println("channelGetConnect");
+        LOGGER.log(Level.INFO, "channelGetConnect");
         Status status = null;
         ChannelGetTestImpl channelGet = new ChannelGetTestImpl();
         Structure structure = null;
@@ -113,7 +115,7 @@ public class ChannelGetRequesterImplTest {
      */
     @Test
     public void testGetDone() {
-        System.out.println("getDone");
+        LOGGER.log(Level.INFO, "getDone");
 
         Status status = StatusFactory.getStatusCreate().getStatusOK();
         ChannelGetTestImpl channelGet = new ChannelGetTestImpl();
@@ -136,13 +138,13 @@ public class ChannelGetRequesterImplTest {
      */
     @Test
     public void testGetRequesterName() {
-        System.out.println("getRequesterName");
+        LOGGER.log(Level.INFO, "getRequesterName");
         EventListener listener = (event) -> {
         };
         ChannelGetRequesterImpl instance = new ChannelGetRequesterImpl(listener);
         boolean exceptionGenerated = false;
         try {
-            String result = instance.getRequesterName();
+            instance.getRequesterName();
         } catch (Exception ex) {
             exceptionGenerated = true;
         }
@@ -154,7 +156,7 @@ public class ChannelGetRequesterImplTest {
      */
     @Test
     public void testMessage() {
-        System.out.println("message");
+        LOGGER.log(Level.INFO, "message");
         String message = "Test";
         MessageType messageType = null;
         EventListener listener = (event) -> {

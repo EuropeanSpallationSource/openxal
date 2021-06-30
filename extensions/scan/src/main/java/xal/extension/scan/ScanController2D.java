@@ -6,6 +6,8 @@ import java.text.*;
 import java.awt.event.*;
 import javax.swing.event.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.border.*;
 
 import xal.extension.widgets.swing.*;
@@ -19,6 +21,8 @@ import xal.tools.apputils.*;
  * @version September 8, 2004
  */
 public class ScanController2D {
+
+    private static final Logger LOGGER = Logger.getLogger(ScanController2D.class.getName());
 
     private String title = "2D Scan Controller";
 
@@ -1852,7 +1856,7 @@ public class ScanController2D {
      */
     private void startNewSetOfData() {
 
-        //System.out.println("debug ============ new set of data param="+paramValue);
+        //LOGGER.log(Level.INFO, "debug ============ new set of data param="+paramValue);
         for (int i = 0, n = measuredValuesV.size(); i < n; i++) {
             measuredValuesV.get(i).createNewDataContainer();
         }
@@ -1871,7 +1875,7 @@ public class ScanController2D {
      */
     private void accountNewDataPoint() {
 
-        //System.out.println("debug data point param="+paramValue+" scan val="+scanValue);
+        //LOGGER.log(Level.INFO, "debug data point param="+paramValue+" scan val="+scanValue);
         for (int i = 0, n = measuredValuesV.size(); i < n; i++) {
             measuredValuesV.get(i).consumeData(valuePhaseWrappingFunction(scanValue));
         }
@@ -2188,7 +2192,7 @@ public class ScanController2D {
                 new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                System.out.println("debug param=" + iRange.getParamValue());
+                LOGGER.log(Level.INFO, "debug param={0}", iRange.getParamValue());
             }
         });
 

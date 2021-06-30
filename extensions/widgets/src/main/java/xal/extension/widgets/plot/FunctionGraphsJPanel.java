@@ -7,6 +7,8 @@ import javax.swing.*;
 import java.awt.image.*;
 import java.text.*;
 import java.awt.event.*;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * This is the base class of the plotting package. It is a sub-class of JPanel
@@ -16,6 +18,8 @@ import java.awt.event.*;
  * @version 1.0
  */
 public class FunctionGraphsJPanel extends JPanel implements MouseListener, MouseMotionListener {
+
+    private static final Logger LOGGER = Logger.getLogger(FunctionGraphsJPanel.class.getName());
 
     /**
      * serialization ID
@@ -2468,7 +2472,7 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
                     g.drawImage(offScreenImage_, 0, 0, this);
                 } while (((VolatileImage) offScreenImage_).contentsLost());
             } catch (Exception e) {
-                System.out.println("Exception during paintComponent e=" + e);
+                LOGGER.log(Level.INFO, "Exception during paintComponent e={0}", e);
             }
             return;
         }

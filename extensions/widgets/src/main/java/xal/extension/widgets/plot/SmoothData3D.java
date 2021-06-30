@@ -1,5 +1,8 @@
 package xal.extension.widgets.plot;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 /**
  * This class is a data class for data used in the FunctionGraphsJPanel class.
  * This class contains 2D grid with values at the grid points. These values will
@@ -10,6 +13,8 @@ package xal.extension.widgets.plot;
  * @author A. Shishlo
  */
 public class SmoothData3D extends ColorSurfaceData {
+
+    private static final Logger LOGGER = Logger.getLogger(SmoothData3D.class.getName());
 
     /**
      * The data set constructor with size of the grid.
@@ -160,37 +165,37 @@ public class SmoothData3D extends ColorSurfaceData {
             }
         }
 
-        double max_dev = 0;
-        int i_max = 0, j_max = 0;
+        double maxDev = 0;
+        int iMax = 0, jMax = 0;
 
         for (int i = 6; i < nx - 6; i++) {
             for (int j = 6; j < ny - 6; j++) {
                 x = i * stepX + minX + 0.5 * stepX;
                 y = j * stepY + minY + 0.5 * stepY;
                 v = Math.abs(Math.exp(-(x * x + y * y)) - data.getValue(x, y)) / Math.exp(-(x * x + y * y));
-                if (max_dev < v) {
-                    max_dev = v;
-                    i_max = i;
-                    j_max = j;
+                if (maxDev < v) {
+                    maxDev = v;
+                    iMax = i;
+                    jMax = j;
                 }
             }
         }
 
-        System.out.println("max dev [%] = " + max_dev * 100);
+        LOGGER.log(Level.INFO, "max dev [%] = {0}", maxDev * 100);
 
-        double v_calc = 0;
-        x = i_max * stepX + minX + 0.5 * stepX;
-        y = j_max * stepY + minY + 0.5 * stepY;
+        double vCalc = 0;
+        x = iMax * stepX + minX + 0.5 * stepX;
+        y = jMax * stepY + minY + 0.5 * stepY;
         v = Math.exp(-(x * x + y * y));
-        v_calc = data.getValue(x, y);
-        System.out.println("stepX = " + stepX);
-        System.out.println("stepY = " + stepY);
-        System.out.println("i_max = " + i_max);
-        System.out.println("j_max = " + j_max);
-        System.out.println("x = " + x);
-        System.out.println("y = " + y);
-        System.out.println("v = " + v);
-        System.out.println("v_calc = " + v_calc);
+        vCalc = data.getValue(x, y);
+        LOGGER.log(Level.INFO, "stepX = {0}", stepX);
+        LOGGER.log(Level.INFO, "stepY = {0}", stepY);
+        LOGGER.log(Level.INFO, "i_max = {0}", iMax);
+        LOGGER.log(Level.INFO, "j_max = {0}", jMax);
+        LOGGER.log(Level.INFO, "x = {0}", x);
+        LOGGER.log(Level.INFO, "y = {0}", y);
+        LOGGER.log(Level.INFO, "v = {0}", v);
+        LOGGER.log(Level.INFO, "v_calc = {0}", vCalc);
 
     }
 }

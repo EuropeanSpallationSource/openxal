@@ -1,5 +1,8 @@
 package xal.tools.math;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 /*
  *
  * $Id: EllipticIntegral.java,v 1.1 2006/08/17 05:08:10 cvs Exp $
@@ -15,6 +18,8 @@ package xal.tools.math;
  * @since Aug 17, 2006
  */
 public class EllipticIntegral {
+
+    private static final Logger LOGGER = Logger.getLogger(EllipticIntegral.class.getName());
 
     /**
      * Compute and return the Carlson Elliptic integral RD(x,y,z).
@@ -226,22 +231,22 @@ public class EllipticIntegral {
         double y = 4.35084e-7;
         double z = 3.12004e-6;
 
-        System.out.println(RD(y / x, z / x, 1));
-        System.out.println(RD(x / y, z / y, 1));
-        System.out.println(RD(x / z, y / z, 1));
+        LOGGER.log(Level.INFO, "{0}", RD(y / x, z / x, 1));
+        LOGGER.log(Level.INFO, "{0}", RD(y / x, z / y, 1));
+        LOGGER.log(Level.INFO, "{0}", RD(x / z, y / z, 1));
 
-        System.out.println("R_d(.5,.5,1.0) = " + RD(.5, .5, 1.0));
-        System.out.println("R_d(.5,1.0,1.0) = " + RD(.5, 1.0, 1.0));
-        System.out.println("R_d(.5,1.5,1.0) = " + RD(.5, 1.5, 1.0));
-        System.out.println("R_d(1.0,1.0,1.0) = " + RD(1.0, 1.0, 1.0));
-        System.out.println("R_d(1.0,1.5,1.0) = " + RD(1.0, 1.5, 1.0));
-        System.out.println("R_d(1.5,1.5,1.0) = " + RD(1.5, 1.5, 1.0));
-        System.out.println("R_d(2.0,2.0,2.0) = " + RD(2.0, 2.0, 2.0));
+        LOGGER.log(Level.INFO, "R_d(.5,.5,1.0) = {0}", RD(.5, .5, 1.0));
+        LOGGER.log(Level.INFO, "R_d(.5,1.0,1.0) = {0}", RD(.5, 1.0, 1.0));
+        LOGGER.log(Level.INFO, "R_d(.5,1.5,1.0) = {0}", RD(.5, 1.5, 1.0));
+        LOGGER.log(Level.INFO, "R_d(1.0,1.0,1.0) = {0}", RD(1.0, 1.0, 1.0));
+        LOGGER.log(Level.INFO, "R_d(1.0,1.5,1.0) = {0}", RD(1.0, 1.5, 1.0));
+        LOGGER.log(Level.INFO, "R_d(1.5,1.5,1.0) = {0}", RD(1.5, 1.5, 1.0));
+        LOGGER.log(Level.INFO, "R_d(2.0,2.0,2.0) = {0}", RD(2.0, 2.0, 2.0));
 
         for (int i = 0; i < 20; i++) {
             double s = 0.1 * i;
 
-            System.out.println("formFactor(" + s + ")=" + formFactorD(s));
+            LOGGER.log(Level.INFO, "formFactor({0})={1}", new Object[]{s, formFactorD(s)});
         }
     }
 }

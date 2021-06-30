@@ -23,6 +23,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.text.NumberFormat;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import org.w3c.dom.Document;
 import xal.ca.ConnectionException;
@@ -36,6 +38,8 @@ import xal.ca.GetException;
  * @author wdklotz
  */
 public class LatticeSynchronizer implements Visitor {
+
+    private static final Logger LOGGER = Logger.getLogger(LatticeSynchronizer.class.getName());
 
     /**
      * root adaptor for xml-document
@@ -624,9 +628,9 @@ public class LatticeSynchronizer implements Visitor {
             } catch (ConnectionException | GetException e) {
                 //				throw new Error(e.getMessage());
                 if (e.getMessage() != null) {
-                    System.out.println(e.getMessage());
+                    LOGGER.log(Level.INFO, e.getMessage());
                 } else {
-                    System.out.println("RfGap.getGapPhaseAvg(): channel access failed: " + rfgap.getId());
+                    LOGGER.log(Level.INFO, "RfGap.getGapPhaseAvg(): channel access failed: " + rfgap.getId());
                 }
                 return Math.PI * 0.5; // 90 degrees
             }
@@ -652,9 +656,9 @@ public class LatticeSynchronizer implements Visitor {
             } catch (ConnectionException | GetException e) {
                 //				throw new Error(e.getMessage());
                 if (e.getMessage() != null) {
-                    System.out.println(e.getMessage());
+                    LOGGER.log(Level.INFO, e.getMessage());
                 } else {
-                    System.out.println("RfGap.getGapE0TL(): channel access failed: " + rfgap.getId());
+                    LOGGER.log(Level.INFO, "RfGap.getGapE0TL(): channel access failed: " + rfgap.getId());
                 }
                 return rfgap.getGapDfltE0TL() * 1.e6;
             }
@@ -685,9 +689,9 @@ public class LatticeSynchronizer implements Visitor {
             } catch (ConnectionException | GetException e) {
                 //				throw new Error(e.getMessage());
                 if (e.getMessage() != null) {
-                    System.out.println(e.getMessage());
+                    LOGGER.log(Level.INFO, e.getMessage());
                 } else {
-                    System.out.println("Electromagnet.getField(): channel access failed: " + magnet.getId());
+                    LOGGER.log(Level.INFO, "Electromagnet.getField(): channel access failed: " + magnet.getId());
                 }
                 return 0.d;
             }
@@ -716,9 +720,9 @@ public class LatticeSynchronizer implements Visitor {
             } catch (ConnectionException | GetException e) {
                 //				throw new Error(e.getMessage());
                 if (e.getMessage() != null) {
-                    System.out.println(e.getMessage());
+                    LOGGER.log(Level.INFO, null, e);
                 } else {
-                    System.out.println("Electromagnet.getField(): channel access failed: " + magnet.getId());
+                    LOGGER.log(Level.INFO, "Electromagnet.getField(): channel access failed: " + magnet.getId(), e);
                 }
                 return 0.d;
             }

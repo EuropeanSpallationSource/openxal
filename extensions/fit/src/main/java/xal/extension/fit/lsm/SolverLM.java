@@ -1,5 +1,7 @@
 package xal.extension.fit.lsm;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.tools.ArrayMath;
 
 /**
@@ -8,6 +10,8 @@ import xal.tools.ArrayMath;
  * @author shishlo
  */
 public class SolverLM implements FitSolver {
+
+    private static final Logger LOGGER = Logger.getLogger(SolverLM.class.getName());
 
     private double[] a = new double[0];
     private Solution solution = new Solution();
@@ -38,6 +42,7 @@ public class SolverLM implements FitSolver {
      * @param mf The model function
      * @return The boolean value specifying success of fitting.
      */
+    @Override
     public boolean solve(DataStore ds, ModelFunction mf,
             double[] iniArr, double[] errIniArr,
             boolean[] useArr) {
@@ -124,8 +129,8 @@ public class SolverLM implements FitSolver {
             devIni = solution.getDevAvgIni();
             devNew = solution.getDevAvgNew();
 
-            //System.out.println("debug lambda=" + lambda + "  dev_ini=" + dev_ini + " dev_new=" + dev_new);
-            //System.out.println("debug lambda=" + lambda + "  chi2ini=" + chi2ini + " chi2new=" + chi2new);
+            //LOGGER.log(Level.INFO, "debug lambda=" + lambda + "  dev_ini=" + dev_ini + " dev_new=" + dev_new);
+            //LOGGER.log(Level.INFO, "debug lambda=" + lambda + "  chi2ini=" + chi2ini + " chi2new=" + chi2new);
             if (yAvg > 0.) {
                 d = Math.abs(devIni - devNew) / yAvg;
                 if (d <= epsToll) {
@@ -309,33 +314,31 @@ public class SolverLM implements FitSolver {
 
         SolverLM solver = new SolverLM();
 
-        System.out.println("======BEFORE=========");
+        LOGGER.log(Level.INFO, "======BEFORE=========");
 
         for (int i = 0; i < fitArr.length; i++) {
-            System.out.println("i=" + i + " a=" + fitArr[i] + " +- " + fitErrArr[i]);
+            LOGGER.log(Level.INFO, "i={0} a={1} +- {2}", new Object[]{i, fitArr[i], fitErrArr[i]});
         }
-        System.out.println("======START Solver=======");
+        LOGGER.log(Level.INFO, "======START Solver=======");
 
         boolean res = solver.solve(ds, mf, fitArr, fitErrArr, mask);
 
-        System.out.println("sucess =" + res);
+        LOGGER.log(Level.INFO, "sucess ={0}", res);
 
         for (int i = 0; i < fitArr.length; i++) {
-            System.out.println("i=" + i + " a=" + fitArr[i] + " +- " + fitErrArr[i]);
+            LOGGER.log(Level.INFO, "i={0} a={1} +- {2}", new Object[]{i, fitArr[i], fitErrArr[i]});
         }
-        System.out.println("======STOP=======");
+        LOGGER.log(Level.INFO, "======STOP=======");
 
         //a_fit_[0] = 1.;
         //a_fit_[1] = 1.;
         //a_fit_[2] = 1.;
         //a_fit_[3] = 1.;
-        System.out.println("  x        y          y_appr   ");
+        LOGGER.log(Level.INFO, "  x        y          y_appr   ");
         for (int i = 0; i < xArr.length; i++) {
-            System.out.println(" " + xArr[i][0] + "  "
-                    + yArr[i] + "  "
-                    + mf.getValue(xArr[i][0], fitArr));
+            LOGGER.log(Level.INFO, " {0}  {1}  {2}", new Object[]{xArr[i][0], yArr[i], mf.getValue(xArr[i][0], fitArr)});
         }
-        System.out.println("============");
+        LOGGER.log(Level.INFO, "============");
 
     }
 

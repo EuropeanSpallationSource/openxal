@@ -6,6 +6,8 @@ import java.text.*;
 import java.awt.event.*;
 import javax.swing.event.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.border.*;
 
 import xal.extension.widgets.swing.*;
@@ -18,6 +20,8 @@ import xal.tools.apputils.*;
  * @author shishlo created September 30, 2005
  */
 public class ScanController1D {
+
+    private static final Logger LOGGER = Logger.getLogger(ScanController1D.class.getName());
 
     private String title = "Scan Controller";
 
@@ -1755,10 +1759,7 @@ public class ScanController1D {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ScanController1D scc = (ScanController1D) e.getSource();
-                System.out.println("Start Listener is scanOn = "
-                        + scc.isScanON()
-                        + "    Is it continue="
-                        + scc.isContinueON());
+                LOGGER.log(Level.INFO, "Start Listener is scanOn = {0}    Is it continue={1}", new Object[]{scc.isScanON(), scc.isContinueON()});
             }
         });
 
@@ -1767,10 +1768,7 @@ public class ScanController1D {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ScanController1D scc = (ScanController1D) e.getSource();
-                System.out.println("Stop Listener is scanOn = "
-                        + scc.isScanON()
-                        + "    Is it continue="
-                        + scc.isContinueON());
+                LOGGER.log(Level.INFO, "Stop Listener is scanOn = {0}    Is it continue={1}", new Object[]{scc.isScanON(), scc.isContinueON()});
             }
         });
 
@@ -1779,10 +1777,7 @@ public class ScanController1D {
             @Override
             public void actionPerformed(ActionEvent e) {
                 ScanController1D scc = (ScanController1D) e.getSource();
-                System.out.println("Resume Listener is scanOn = "
-                        + scc.isScanON()
-                        + "    Is it continue="
-                        + scc.isContinueON());
+                LOGGER.log(Level.INFO, "Resume Listener is scanOn = {0}    Is it continue={1}", new Object[]{scc.isScanON(), scc.isContinueON()});
             }
         });
 

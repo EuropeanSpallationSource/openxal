@@ -14,6 +14,8 @@ import xal.extension.solver.solutionjudge.*;
 import xal.extension.solver.hint.*;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Simplex optimization search algorithm.
@@ -230,6 +232,8 @@ public class SimplexSearchAlgorithm extends SearchAlgorithm {
 //shinkage    sigma = 0.5
 //-----------------------------------------------------------------------------
 class SimplexSearcher {
+
+    private static final Logger LOGGER = Logger.getLogger(SimplexSearcher.class.getName());
 
     private double bestScore = Double.MAX_VALUE;
     private volatile boolean shouldStop = true;
@@ -460,10 +464,10 @@ class SimplexSearcher {
 
             if (score_r < vertexesV.get(0).getScore() && score_e <= score_r) {
                 setLastVertex(coord_e, score_e);
-                //System.out.println("debug  ==Stage 3. Expand coord_e");
+                //LOGGER.log(Level.INFO, "debug  ==Stage 3. Expand coord_e");
             } else {
                 setLastVertex(coord_r, score_r);
-                //System.out.println("debug  ==Stage 3. Expand coord_r");
+                //LOGGER.log(Level.INFO, "debug  ==Stage 3. Expand coord_r");
             }
         } else {
 
@@ -481,7 +485,7 @@ class SimplexSearcher {
 
                 if (score_oc < score_r) {
                     setLastVertex(coord_oc, score_oc);
-                    //System.out.println("debug  ==Stage 4a. Contract");
+                    //LOGGER.log(Level.INFO, "debug  ==Stage 4a. Contract");
                 } else {
                     goToShrink = true;
                 }
@@ -497,14 +501,14 @@ class SimplexSearcher {
 
                 if (score_ic < vertexesV.get(nD).getScore()) {
                     setLastVertex(coord_ic, score_ic);
-                    //System.out.println("debug  ==Stage 4b. Contract");
+                    //LOGGER.log(Level.INFO, "debug  ==Stage 4b. Contract");
                 } else {
                     goToShrink = true;
                 }
             }
             if (goToShrink) {
                 shrinkSimplex();
-                //System.out.println("debug  ==Stage Shrink");
+                //LOGGER.log(Level.INFO, "debug  ==Stage Shrink");
                 shrinkCount++;
                 if (getWantToStop() || !findScores0()) {
                     return false;
@@ -687,7 +691,7 @@ class SimplexSearcher {
      * Description of the Method
      */
     private void printSimplex() {
-        System.out.println("----simplex----");
+        LOGGER.log(Level.INFO, "----simplex----");
         for (int iv = 0; iv <= nD; iv++) {
             Vertex vr = vertexesV.get(iv);
             String str = "n=" + iv + " ";
@@ -695,9 +699,9 @@ class SimplexSearcher {
                 str = str + " i=" + i + " coor=" + vr.getCoords()[i] + "  ";
             }
             str = str + "  score=" + vr.getScore();
-            System.out.println(str);
+            LOGGER.log(Level.INFO, str);
         }
-        System.out.println("----simplex end----");
+        LOGGER.log(Level.INFO, "----simplex end----");
     }
 
     /**
@@ -707,14 +711,14 @@ class SimplexSearcher {
      * @param name Description of the Parameter
      */
     private void printVertex(Vertex vr, String name) {
-        System.out.println("----vertex---start---- name=" + name);
+        LOGGER.log(Level.INFO, "----vertex---start---- name={0}", name);
         String str = " ";
         for (int i = 0; i < nD; i++) {
             str = str + " i=" + i + " coor=" + vr.getCoords()[i] + "  ";
         }
         str = str + "  score=" + vr.getScore();
-        System.out.println(str);
-        System.out.println("----vertex---end------ name=" + name);
+        LOGGER.log(Level.INFO, str);
+        LOGGER.log(Level.INFO, "----vertex---end------ name={0}", name);
     }
 
     //----------------------------------------------

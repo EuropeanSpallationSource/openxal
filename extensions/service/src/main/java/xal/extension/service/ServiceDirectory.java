@@ -104,7 +104,7 @@ public final class ServiceDirectory {
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 @Override
                 public void run() {
-                    System.out.println("Shutting down services for this process...");
+                    LOGGER.log(Level.INFO, "Shutting down services for this process...");
                     ServiceDirectory.this.dispose();
                 }
             });
@@ -417,7 +417,7 @@ public final class ServiceDirectory {
                  */
                 @Override
                 public void serviceAdded(final ServiceEvent event) {
-                    System.out.println("Service added: " + event.getName());
+                    LOGGER.log(Level.INFO, "Service added: " + event.getName());
                     THREAD_POOL.execute(new Runnable() {
                         @Override
                         public void run() {
@@ -434,7 +434,7 @@ public final class ServiceDirectory {
                  */
                 @Override
                 public void serviceRemoved(final ServiceEvent event) {
-                    System.out.println("Service removed: " + event.getName());
+                    LOGGER.log(Level.INFO, "Service removed: " + event.getName());
                     final String type = event.getType();
                     listener.serviceRemoved(ServiceDirectory.this, ServiceRef.getBaseType(type), event.getName());
                 }

@@ -13,6 +13,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * The super class of all lattice elements.
@@ -20,6 +22,8 @@ import java.util.ArrayList;
  * @author wdklotz
  */
 public abstract class Element implements VisitorListener, Cloneable {
+
+    private static final Logger LOGGER = Logger.getLogger(Element.class.getName());
 
     /**
      * <p>
@@ -240,7 +244,7 @@ public abstract class Element implements VisitorListener, Cloneable {
     private double[] getSlicePositions(double cutPos) {
         //calculate length and position of sliced parts.
         double upLen = cutPos - getStartPosition();
-        //        System.out.println("getSlicePostions: "+cut_pos+","+getStartPosition());
+        //        LOGGER.log(Level.INFO, "getSlicePostions: "+cut_pos+","+getStartPosition());
         if (Math.abs(upLen) < Lattice.EPS) {
             upLen = 0.0;
         }
@@ -251,7 +255,7 @@ public abstract class Element implements VisitorListener, Cloneable {
         double upPos = getStartPosition() + upLen * 0.5;
         double dnPos = getEndPosition() - dnLen * 0.5;
         double[] retval = {upPos, upLen, dnPos, dnLen};
-        //        System.out.println("up_p,up_l,dn_p,dn_l: "+up_pos+","+up_len+","+dn_pos+","+dn_len);
+        //        LOGGER.log(Level.INFO, "up_p,up_l,dn_p,dn_l: "+up_pos+","+up_len+","+dn_pos+","+dn_len);
         return retval;
     }
 
@@ -370,7 +374,7 @@ public abstract class Element implements VisitorListener, Cloneable {
             }
 
         } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException exptn) {
-            System.out.println(exptn);
+            LOGGER.log(Level.SEVERE, null, exptn);
             System.exit(-1);
         }
 

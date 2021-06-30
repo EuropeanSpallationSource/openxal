@@ -1066,7 +1066,7 @@ public class SimpleButton extends GradientLabel {
                 });
             }
         } else {
-            //System.out.println( "Pressed: " + pressed + ", enabled: " + isEnabled() );
+            //LOGGER.log(Level.INFO,  "Pressed: " + pressed + ", enabled: " + isEnabled() );
         }
     }
 

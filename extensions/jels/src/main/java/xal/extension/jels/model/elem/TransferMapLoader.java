@@ -86,7 +86,8 @@ public class TransferMapLoader {
             if (in == -1) {
                 in = transferMaps.length - 1;
             }
-            PhaseMatrix m0 = null, mn = null;
+            PhaseMatrix m0 = null;
+            PhaseMatrix mn = null;
             m0 = interpolate(s0, i0 - 1, i0);
             mn = interpolate(s0 + l, in - 1, in);
             return TW2OX(mn.times(m0.inverse()), p, l);
@@ -271,7 +272,7 @@ public class TransferMapLoader {
         int i = 0;
         while (br.readLine() != null) {
             i++;
-        };
+        }
         br.close();
         return i;
     }
@@ -344,10 +345,10 @@ public class TransferMapLoader {
                 PhaseMatrix nextmatrix = extractMatrix(nextdata);
 
                 PhaseMatrix t = nextmatrix.times(data.inverse());
-                System.out.printf("%E ", pos);
+                LOGGER.log(Level.INFO, String.format("%E ", pos));
                 for (int j = 0; j < 6; j++) {
                     for (int k = 0; k < 6; k++) {
-                        System.out.printf("%E ", t.getElem(j, k));
+                        LOGGER.log(Level.INFO, String.format("%E ", t.getElem(j, k)));
                     }
                 }
                 System.out.println();

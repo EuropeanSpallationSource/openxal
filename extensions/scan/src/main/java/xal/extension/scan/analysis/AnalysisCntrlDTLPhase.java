@@ -8,6 +8,8 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.net.*;
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.data.DataAdaptor;
 import xal.extension.application.Application;
@@ -23,6 +25,8 @@ import xal.extension.widgets.swing.*;
  * @version 1.0
  */
 public final class AnalysisCntrlDTLPhase extends AnalysisController {
+
+    private static final Logger LOGGER = Logger.getLogger(AnalysisCntrlDTLPhase.class.getName());
 
     private JPanel dtlPSAnalysisPanel = new JPanel();
 
@@ -599,15 +603,7 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
                             markerPos -= 180.;
                         }
                         //DEBUG print ----------------------------------------------------
-                        System.out.println("debug new point  newAmpNorm=" + ampFormat.format(newAmpNorm)
-                                + " Edlt=" + ampFormat.format(energyDlt)
-                                + " w=" + ampFormat.format(widthD)
-                                + " amp/guessA=" + ampFormat.format(amp)
-                                + " phiL=" + ampFormat.format(phaseLD)
-                                + " phiR=" + ampFormat.format(phaseRD)
-                                + " phi=" + ampFormat.format(phaseGuess)
-                                + " k_s=" + ampFormat.format(k_shift)
-                                + " phaseShift=" + ampFormat.format(phaseShift));
+                        LOGGER.log(Level.INFO, "debug new point  newAmpNorm={0} Edlt={1} w={2} amp/guessA={3} phiL={4} phiR={5} phi={6} k_s={7} phaseShift={8}", new Object[]{ampFormat.format(newAmpNorm), ampFormat.format(energyDlt), ampFormat.format(widthD), ampFormat.format(amp), ampFormat.format(phaseLD), ampFormat.format(phaseRD), ampFormat.format(phaseGuess), ampFormat.format(k_shift), ampFormat.format(phaseShift)});
                         //DEBUG print ----------------------------------------------------
 
                         guessAmpP0Text.setValue(amp);
@@ -992,7 +988,7 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
 
             //DEBUG print ----------------------------------------------------
             //double enrgPar = ((Double) ((BasicGraphData) extAmpVsWidthDataV.get(i)).getGraphProperty(ENERGY_DLT)).doubleValue();
-            //System.out.println("debug i=" + i +
+            //LOGGER.log(Level.INFO, "debug i=" + i +
             //		" delta[%]=" + ampFormat.format(enrgPar) +
             //		" guessAmp=" + guessAmp[i] +
             //		" err=" + guessAmp2[i]);
@@ -1077,16 +1073,7 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
             kShift = gd.getValueY(amp / bestGuessAmp);
             phaseTmp = phiLeft + kShift * (phiRight - phiLeft);
             //DEBUG print ----------------------------------------------------
-            System.out.println("debug j=" + j
-                    + " amp=" + ampFormat.format(amp)
-                    + " delta[%]=" + ampFormat.format(energyDlt)
-                    + " guessAmp=" + ampFormat.format(bestGuessAmp)
-                    + " amp/guessAmp=" + ampFormat.format(amp / bestGuessAmp)
-                    + " phi_left=" + ampFormat.format(phiLeft)
-                    + " phi_right=" + ampFormat.format(phiRight)
-                    + " phi=" + ampFormat.format(phaseTmp)
-                    + " k_shift=" + ampFormat.format(kShift)
-                    + " phaseShift=" + ampFormat.format(phaseShift));
+            LOGGER.log(Level.INFO, "debug j={0} amp={1} delta[%]={2} guessAmp={3} amp/guessAmp={4} phi_left={5} phi_right={6} phi={7} k_shift={8} phaseShift={9}", new Object[]{j, ampFormat.format(amp), ampFormat.format(energyDlt), ampFormat.format(bestGuessAmp), ampFormat.format(amp / bestGuessAmp), ampFormat.format(phiLeft), ampFormat.format(phiRight), ampFormat.format(phaseTmp), ampFormat.format(kShift), ampFormat.format(phaseShift)});
             //DEBUG print ----------------------------------------------------
 
             guessPhase += phaseTmp;

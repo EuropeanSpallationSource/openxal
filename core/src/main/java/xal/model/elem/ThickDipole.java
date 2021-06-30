@@ -6,6 +6,8 @@
 package xal.model.elem;
 
 import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.model.IProbe;
 import xal.model.ModelException;
@@ -30,6 +32,8 @@ import xal.tools.math.ElementaryFunction;
  * @author jdg
  */
 public class ThickDipole extends ThickElectromagnet {
+
+    private static final Logger LOGGER = Logger.getLogger(ThickDipole.class.getName());
 
     /*
      *  Global Attributes
@@ -330,7 +334,7 @@ public class ThickDipole extends ThickElectromagnet {
 
         //this was for old RDB double h = 0.2998e9 * B / (Etotal * beta *Math.abs(charge)); 
         //hs 
-        System.out.println("h, hrho = " + h + " " + hrho);
+        LOGGER.log(Level.INFO, "h, hrho = " + h + " " + hrho);
 //        double s = probe.getPosition();
 
         if (bPathFlag == 1.) {
@@ -382,7 +386,7 @@ public class ThickDipole extends ThickElectromagnet {
 	    rho = Math.abs(path/alpha);
 	}
 
-	System.out.println("id alpha, path, rho = "+getId()+" "+alpha+" "+path+" "+rho);
+	LOGGER.log(Level.INFO, "id alpha, path, rho = "+getId()+" "+alpha+" "+path+" "+rho);
 
 	double hrho = 0;
 	if (rho!=0) {
@@ -408,12 +412,12 @@ public class ThickDipole extends ThickElectromagnet {
         double beta = probe.getBeta();
 
 //        double Beff = alpha/path*Etotal*beta/(0.2998e9*charge);
-        //System.out.println("id, B, Beff = "+getId()+" "+B+" "+Beff);
+        //LOGGER.log(Level.INFO, "id, B, Beff = "+getId()+" "+B+" "+Beff);
         // Compute the bending constant h  == 1/ bend radius (1/meter)
         //was default	
         double h = 0.2998e9 * B / (Etotal * beta * charge);
         //	double h = -0.2998e9 * B / (Etotal * beta *charge);
-        System.out.println("h, hrho = " + h + " " + hrho);
+        LOGGER.log(Level.INFO, "h, hrho = " + h + " " + hrho);
 
         //this was for old RDB double h = 0.2998e9 * B / (Etotal * beta *Math.abs(charge)); 
 //        double s = probe.getPosition();
@@ -433,7 +437,7 @@ public class ThickDipole extends ThickElectromagnet {
         double ky = Math.sqrt(Math.abs(nQ)) * h;
 
         //System.out.print("name= " + probe.getCurrentElement() + " h = " + new Double(h));
-        //System.out.println(" nQ = " + new Double(nQ));
+        //LOGGER.log(Level.INFO, " nQ = " + new Double(nQ));
         // The fringe field angle from the extended field:
         double entranceAnglePhi = gapHeight * h * (1. + Math.pow(Math.sin(entranceAngle), 2.)) / Math.cos(entranceAngle) * fringeIntegral;
 
@@ -501,7 +505,7 @@ public class ThickDipole extends ThickElectromagnet {
         // Multiply the 3 matrices together, starting at entrance side
         PhaseMatrix matProd1 = matBody.times(matEntrance);
         PhaseMatrix matProd2 = matExit.times(matProd1);
-        //System.out.println(getId() + "  len = " + new Double(dL) + "  k = " + new Double(k) + "  field = " + new Double(getMagField()) );        
+        //LOGGER.log(Level.INFO, getId() + "  len = " + new Double(dL) + "  k = " + new Double(k) + "  field = " + new Double(getMagField()) );        
 
         return new PhaseMap(matProd2);
         //return new PhaseMap(matBody);
