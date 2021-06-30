@@ -148,7 +148,8 @@ public class MacAdaptor {
             try {
                 final String methodName = method.getName();
                 final Object event = args[0];
-                final Method markMethod = event.getClass().getMethod("setHandled", new Class[]{Boolean.TYPE});		// method to indicate whether we handled the event
+                // method to indicate whether we handled the event
+                final Method markMethod = event.getClass().getMethod("setHandled", new Class[]{Boolean.TYPE});
 
                 // get the XAL application
                 final xal.extension.application.Application xalApp = xal.extension.application.Application.getApp();
@@ -157,7 +158,8 @@ public class MacAdaptor {
                     case "handleQuit":
                         // attempt to quit the application using the default XAL behavior
                         xalApp.quit();
-                        markMethod.invoke(event, false);		// if we get to this point then we haven't quit the application
+                        // if we get to this point then we haven't quit the application
+                        markMethod.invoke(event, false);
                         break;
                     case "handleAbout":
                         // display the about box
@@ -165,7 +167,8 @@ public class MacAdaptor {
                         markMethod.invoke(event, true);
                         break;
                     default:
-                        markMethod.invoke(event, false);		// no other events are handled
+                        // no other events are handled
+                        markMethod.invoke(event, false);
                         break;
                 }
             } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {

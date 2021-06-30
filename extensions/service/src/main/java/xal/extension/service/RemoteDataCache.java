@@ -65,7 +65,8 @@ public class RemoteDataCache<DataType> {
 
         isFetchPending = false;
         cachedData = null;
-        isConnected = true;	// assume connected until proven otherwise
+        // assume connected until proven otherwise
+        isConnected = true;
     }
 
     /**

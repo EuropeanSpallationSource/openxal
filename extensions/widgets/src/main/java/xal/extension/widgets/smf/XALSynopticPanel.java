@@ -131,7 +131,8 @@ public class XALSynopticPanel extends JPanel {
      * @param seq
      */
     public void setAcceleratorSequence(AcceleratorSeq seq) {
-        if (seq != acceleratorSequence) {		// need to check to avoid side effects of resetting the start end breaking synchronization with plot
+        // need to check to avoid side effects of resetting the start end breaking synchronization with plot
+        if (seq != acceleratorSequence) {
             setAcceleratorSequence(seq, 0.0, 0.0);
         }
     }

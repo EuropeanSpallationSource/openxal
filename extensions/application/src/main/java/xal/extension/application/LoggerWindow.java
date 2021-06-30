@@ -138,7 +138,8 @@ class LoggerWindow extends JFrame {
      */
     protected Component makeTable() {
         Box view = new Box(BoxLayout.Y_AXIS);
-        view.add(Box.createHorizontalStrut(10000));		// force the table to fill horizontally
+        // force the table to fill horizontally
+        view.add(Box.createHorizontalStrut(10000));
         final JTable table = new JTable(logTableModel);
         JScrollPane scrollPane = new JScrollPane(table);
         view.add(scrollPane);

@@ -94,7 +94,8 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
     public void setInputFilterDocument(final Document document) {
         if (inputFilterDocument != null) {
             inputFilterDocument.removeDocumentListener(INPUT_FILTER_HANDLER);
-            INPUT_FILTER_HANDLER.clear();	// clear pending requests if any
+            // clear pending requests if any
+            INPUT_FILTER_HANDLER.clear();
         }
 
         inputFilterDocument = document;

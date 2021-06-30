@@ -136,7 +136,8 @@ public abstract class SearchAlgorithm implements AlgorithmScheduleListener, Solu
         if (evaluations > 0 && initialSatisfaction < 1.0) {
             // rescale the satisfaction based on what can be achieved i.e. at most the satisfaction can be 1.0 and charge for evaluations
             final double newEfficiency = (endSatisfaction - initialSatisfaction) / ((1.0 - initialSatisfaction) * evaluations);
-            efficiency = 0.75 * Math.max(newEfficiency, 0.0) + 0.25 * efficiency;		// weight the new efficiency against the original efficiency
+            // weight the new efficiency against the original efficiency
+            efficiency = 0.75 * Math.max(newEfficiency, 0.0) + 0.25 * efficiency;
 
         }
     }

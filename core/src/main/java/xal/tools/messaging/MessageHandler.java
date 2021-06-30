@@ -80,7 +80,8 @@ abstract class MessageHandler<ProtocolType> implements InvocationHandler, Serial
     @SuppressWarnings({"unchecked", "rawtypes"})
     private void createProxy() {
         ClassLoader loader = this.getClass().getClassLoader();
-        Class[] protocols = new Class[]{protocol};		// need to suppress the rawtypes as Generics aren't supported for array creation
+        // need to suppress the rawtypes as Generics aren't supported for array creation
+        Class[] protocols = new Class[]{protocol};
 
         proxy = (ProtocolType) Proxy.newProxyInstance(loader, protocols, this);
     }

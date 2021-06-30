@@ -336,12 +336,14 @@ class JcaChannel extends Channel {
     @Override
     public boolean connectAndWait(final double timeout) {
         if (strId == null) {
-            return false;		// check whether this channel's name has been specified
+            // check whether this channel's name has been specified
+            return false;
         }
         requestConnection();
         flushIO();
         if (this.isConnected()) {
-            return true;		// check if we have a connection
+            // check if we have a connection
+            return true;
         }
         pendIO(timeout);
         return isConnected();
@@ -357,7 +359,8 @@ class JcaChannel extends Channel {
     @Override
     public void requestConnection() {
         if (strId == null || isConnected()) {
-            return;	// determine if there is any point in attempting a connection
+            // determine if there is any point in attempting a connection
+            return;
         }
         // initialize channel access if necessary and increment instance counter
         initChannelAccess();
@@ -1452,16 +1455,19 @@ class JcaChannel extends Channel {
 
     @Override
     public void putRawValCallback(long newVal, PutListener listener) throws ConnectionException, PutException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void putRawValCallback(String[] newVal, PutListener listener) throws ConnectionException, PutException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void putRawValCallback(long[] newVal, PutListener listener) throws ConnectionException, PutException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

@@ -119,7 +119,8 @@ public class RandomShrinkSearch extends SearchAlgorithm {
     @Override
     public void performRun(AlgorithmSchedule algorithmSchedule) {
         try {
-            isLastEvaluation = false;		// reset this flag for the new run
+            // reset this flag for the new run
+            isLastEvaluation = false;
             int runCount = getEvaluationsLeft();
             while (runCount > 0 && !algorithmSchedule.shouldStop()) {
                 if (runCount == 1) {
@@ -128,7 +129,8 @@ public class RandomShrinkSearch extends SearchAlgorithm {
                 evaluateTrialPoint(nextTrialPoint());
                 runCount = getEvaluationsLeft();
             }
-            isLastEvaluation = false;		// clear the flag to avoid side effects
+            // clear the flag to avoid side effects
+            isLastEvaluation = false;
         } catch (RunTerminationException exception) {
         }
     }

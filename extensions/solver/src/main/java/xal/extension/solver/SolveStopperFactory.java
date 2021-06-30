@@ -161,7 +161,8 @@ public class SolveStopperFactory {
             }
         }
 
-        return true;	// if we made it this far then all conditions are satisfied to stop		
+        // if we made it this far then all conditions are satisfied to stop		
+        return true;
     }
 
     /**

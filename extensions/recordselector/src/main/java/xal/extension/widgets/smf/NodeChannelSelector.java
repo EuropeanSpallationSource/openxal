@@ -56,7 +56,8 @@ public class NodeChannelSelector extends KeyValueRecordSelector<NodeChannelRef> 
         final List<NodeChannelRef> channelRefs = new ArrayList<>();
         for (final AcceleratorNode node : nodes) {
             final List<String> handles = new ArrayList<>(node.getHandles());
-            Collections.sort(handles);	// sort the handles alphabetically
+            // sort the handles alphabetically
+            Collections.sort(handles);
             for (final String handle : handles) {
                 final NodeChannelRef channelRef = new NodeChannelRef(node, handle);
                 channelRefs.add(channelRef);

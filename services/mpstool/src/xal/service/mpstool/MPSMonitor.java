@@ -656,7 +656,8 @@ public class MPSMonitor {
 
             // make sure the entry text is well below the 4000 character limit
             final ElogUtility logbookUtility = ElogUtility.defaultUtility();
-            final int textLimit = logbookUtility.getMaxBodySize() - 200;	// account of safety margin
+            // account of safety margin
+            final int textLimit = logbookUtility.getMaxBodySize() - 200;
             final String entryText = summary.length() < textLimit ? summary : summary.substring(0, textLimit) + "\n\nToo many more trips to fit complete summary here...";
 
             final String title = "MPS " + mpsType + " Daily Statistics";
@@ -750,7 +751,8 @@ public class MPSMonitor {
                 final List<TripStatistics> records = new ArrayList<TripStatistics>(firstHitStats.values());
                 Collections.sort(records, TripStatistics.firstHitComparator());
                 Collections.reverse(records);
-                return records.size() <= count ? records : records.subList(0, count);	// get the top "count" trip records
+                // get the top "count" trip records
+                return records.size() <= count ? records : records.subList(0, count);
             }
         }
     }
@@ -866,7 +868,8 @@ public class MPSMonitor {
                 final List<TripStatistics> records = new ArrayList<TripStatistics>(mpsTripStats.values());
                 Collections.sort(records, TripStatistics.mpsTripComparator());
                 Collections.reverse(records);
-                return records.size() <= count ? records : records.subList(0, count);	// get the top "count" trip records
+                // get the top "count" trip records
+                return records.size() <= count ? records : records.subList(0, count);
             }
         }
     }

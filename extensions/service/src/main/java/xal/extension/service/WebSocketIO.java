@@ -54,7 +54,8 @@ class WebSocketIO {
      */
     static void sendHandshakeRequest(final Socket socket, final long randomSecurityValue) throws java.net.SocketException, IOException {
         final String randomKey = String.valueOf(randomSecurityValue);
-        final String encodedRandomKey = toBase64(randomKey);	// base64 encoded random key
+        // base64 encoded random key
+        final String encodedRandomKey = toBase64(randomKey);
 
         final Writer writer = new OutputStreamWriter(socket.getOutputStream());
         writer.write("GET /stuff HTTP/1.1\r\n");
@@ -77,7 +78,8 @@ class WebSocketIO {
         while (true) {
             final String line = reader.readLine();
             if (line != null) {
-                final String[] pair = line.split(":");	// key/value pair
+                // key/value pair
+                final String[] pair = line.split(":");
                 if (pair.length == 2) {
                     headerMap.put(pair[0].trim(), pair[1].trim());
                 }
@@ -165,7 +167,8 @@ class WebSocketIO {
 
         final OutputStream output = socket.getOutputStream();
 
-        final byte opcode = 1;		// response is text
+        // response is text
+        final byte opcode = 1;
         final int byte1 = opcode | 0b10000000;
         output.write(byte1);
 
@@ -250,7 +253,8 @@ class WebSocketIO {
 					try {
                     final byte[] lenBytes = byteReader.nextBytes(8);
                     final ByteBuffer lenByteBuffer = ByteBuffer.wrap(lenBytes);
-                    dataLength = (int) lenByteBuffer.getLong();	// cast the long to int since arrays only allow 32 bit lengths
+                    // cast the long to int since arrays only allow 32 bit lengths
+                    dataLength = (int) lenByteBuffer.getLong();
                 } catch (RuntimeException exception) {
                     LOGGER.log(Level.SEVERE, "Exception getting long message", exception);
                     throw exception;

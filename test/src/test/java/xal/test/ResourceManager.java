@@ -128,11 +128,13 @@ public class ResourceManager {
         // first check system properties and if it exists then use it's value
         if (testDirectoryPropertyPath != null) {
             return new File(testDirectoryPropertyPath);
-        } else {		// check for an environment variable of the same name
+        // check for an environment variable of the same name
+        } else {
             final String testDirectoryEnvironmentPath = System.getenv(TEST_DIRECTORY_PROPERTY);
             if (testDirectoryEnvironmentPath != null) {
                 return new File(testDirectoryEnvironmentPath);
-            } else {	// check if the xal home path is specified and if so build the tests path relative to it
+            // check if the xal home path is specified and if so build the tests path relative to it
+            } else {
                 final String homePath = xal.tools.ResourceManager.getProjectHomePath();
                 if (homePath != null) {
                     final File buildDir = new File(homePath, "build");

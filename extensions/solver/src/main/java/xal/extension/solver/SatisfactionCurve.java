@@ -25,7 +25,8 @@ public class SatisfactionCurve {
      * @param tolerance the tolerance corresponding to 90% satisfaction
      */
     public static double exponentialSatisfaction(final double value, final double tolerance) {
-        return Math.exp(-0.1 * Math.abs(value) / tolerance);		// scale for tolerance yielding 90% satisfaction
+        // scale for tolerance yielding 90% satisfaction
+        return Math.exp(-0.1 * Math.abs(value) / tolerance);
     }
 
     /**
@@ -35,7 +36,8 @@ public class SatisfactionCurve {
      * @param tolerance the tolerance corresponding to 90% satisfaction
      */
     public static double inverseSatisfaction(final double value, final double tolerance) {
-        final double coef = 9.0 * tolerance;		// scale for tolerance yielding 90% satisfaction
+        // scale for tolerance yielding 90% satisfaction
+        final double coef = 9.0 * tolerance;
         return coef / (Math.abs(value) + coef);
     }
 
@@ -57,7 +59,8 @@ public class SatisfactionCurve {
      * @param tolerance the tolerance corresponding to 90% satisfaction
      */
     public static double inverseSquareSatisfaction(final double value, final double tolerance) {
-        final double coef = 9.0 * tolerance * tolerance;		// scale for tolerance yielding 90% satisfaction
+        // scale for tolerance yielding 90% satisfaction
+        final double coef = 9.0 * tolerance * tolerance;
         return value == 0.0 ? 1.0 : coef / (value * value + coef);
     }
 

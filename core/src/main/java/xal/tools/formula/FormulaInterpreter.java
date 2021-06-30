@@ -41,7 +41,8 @@ public final class FormulaInterpreter {
      * Creates a new instance of FormulaInterpreter
      */
     public FormulaInterpreter() {
-        scriptEngine = new ScriptEngineManager().getEngineByName("JavaScript");		// standard scrip engine shipped with Java
+        // standard scrip engine shipped with Java
+        scriptEngine = new ScriptEngineManager().getEngineByName("JavaScript");
         if (scriptEngine == null) {
             System.err.println("Error: JavaScript engine is missing!");
             throw new RuntimeException("JavaScript engine is missing and needed for the Formula Interpreter!");

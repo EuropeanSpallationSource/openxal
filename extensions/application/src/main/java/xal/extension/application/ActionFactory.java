@@ -811,7 +811,8 @@ public class ActionFactory {
         };
 
         try {
-            Application.getAdaptor().getClass().getDeclaredMethod("editPreferences", new Class[]{XalDocument.class});		// need to suppress raw types
+            // need to suppress raw types
+            Application.getAdaptor().getClass().getDeclaredMethod("editPreferences", new Class[]{XalDocument.class});
             action.setEnabled(true);
         } catch (NoSuchMethodException exception) {
             action.setEnabled(false);
@@ -837,7 +838,8 @@ public class ActionFactory {
         };
 
         try {
-            Application.getAdaptor().getClass().getDeclaredMethod("editPreferences", new Class[]{XalInternalDocument.class});	// need to suppress rawtypes
+            // need to suppress rawtypes
+            Application.getAdaptor().getClass().getDeclaredMethod("editPreferences", new Class[]{XalInternalDocument.class});
             action.setEnabled(true);
         } catch (NoSuchMethodException exception) {
             action.setEnabled(false);
@@ -1083,14 +1085,18 @@ class ComponentFocusTracker {
         final Window focusedWindow = keyboardManager.getFocusedWindow();
         final Component component = keyboardManager.getPermanentFocusOwner();
 
-        if (focusedWindow != this.focusedWindow) {	// if the window changes, accept the new focused swing component
+        // if the window changes, accept the new focused swing component
+        if (focusedWindow != this.focusedWindow) {
             if (component != null) {
-                lastFocusedComponent = component instanceof JComponent ? (JComponent) component : null;	// only accept swing components
+                // only accept swing components
+                lastFocusedComponent = component instanceof JComponent ? (JComponent) component : null;
             } else {
                 lastFocusedComponent = null;
             }
-        } else if (component == null || component instanceof AbstractButton) {	// don't consider buttons as having meaningful focus for editing
-        } else if (component instanceof JComponent) {	// only accept swing components
+        // don't consider buttons as having meaningful focus for editing
+        } else if (component == null || component instanceof AbstractButton) {
+        // only accept swing components
+        } else if (component instanceof JComponent) {
             lastFocusedComponent = (JComponent) component;
         } else {
             lastFocusedComponent = null;

@@ -65,15 +65,18 @@ public class KeyValueAdaptor {
      */
     public Object valueForKeyPath(final Object target, final String keyPath) {
         if (target == null) {
-            return null;		// if the target is null there is no point attempting to traverse the key path
+            // if the target is null there is no point attempting to traverse the key path
+            return null;
         }
         final String[] keyParts = keyPath.split("\\.", 2);
         switch (keyParts.length) {
             case 1:
                 return valueForKey(target, keyParts[0]);
             case 2:
-                final Object intermediate = valueForKey(target, keyParts[0]);	// get the next target
-                return valueForKeyPath(intermediate, keyParts[1]);	// advance the intermediate
+                // get the next target
+                final Object intermediate = valueForKey(target, keyParts[0]);
+                // advance the intermediate
+                return valueForKeyPath(intermediate, keyParts[1]);
             default:
                 return null;
         }
@@ -120,8 +123,10 @@ public class KeyValueAdaptor {
                 setValueForKey(target, keyParts[0], value);
                 break;
             case 2:
-                final Object intermediate = valueForKey(target, keyParts[0]);	// get the next target
-                setValueForKeyPath(intermediate, keyParts[1], value);	// advance the intermediate
+                // get the next target
+                final Object intermediate = valueForKey(target, keyParts[0]);
+                // advance the intermediate
+                setValueForKeyPath(intermediate, keyParts[1], value);
                 break;
             default:
                 break;
@@ -159,15 +164,18 @@ public class KeyValueAdaptor {
      */
     private KeyedAccessing accessorForKey(final Object target, final String key) {
         final Class<?> targetClass = target.getClass();
-        final String accessorID = getAccessorID(targetClass, key);	// generate a unique ID for the target class/key pair
+        // generate a unique ID for the target class/key pair
+        final String accessorID = getAccessorID(targetClass, key);
 
         synchronized (getterTable) {
-            if (!getterTable.containsKey(accessorID)) {	// check whether we have the selector cached and if not find the method and cache it
+            // check whether we have the selector cached and if not find the method and cache it
+            if (!getterTable.containsKey(accessorID)) {
                 // first try to find a method accessor corresponding to the key
                 final KeyedAccessing methodAccessor = KeyedMethodAccessor.getInstance(targetClass, key);
                 if (methodAccessor != null) {
                     getterTable.put(accessorID, methodAccessor);
-                } else {	// no method accessor was found for the key
+                // no method accessor was found for the key
+                } else {
                     // if the target implements the Map interface then use the Map's get method for access
                     final KeyedAccessing mapAccessor = KeyedMapAccessor.getInstance(targetClass, key);
                     if (mapAccessor != null) {
@@ -179,7 +187,8 @@ public class KeyValueAdaptor {
                 }
             }
 
-            return getterTable.get(accessorID);	// get the method from the cache
+            // get the method from the cache
+            return getterTable.get(accessorID);
         }
     }
 
@@ -192,15 +201,18 @@ public class KeyValueAdaptor {
      */
     private KeyedSetting setterForKey(final Object target, final String key, final Class<?> argumentClass) {
         final Class<?> targetClass = target.getClass();
-        final String setterID = getSetterID(targetClass, key, argumentClass);	// generate a unique ID for the target class/key/argument class group
+        // generate a unique ID for the target class/key/argument class group
+        final String setterID = getSetterID(targetClass, key, argumentClass);
 
         synchronized (setterTable) {
-            if (!setterTable.containsKey(setterID)) {	// check whether we have the selector cached and if not find the method and cache it
+            // check whether we have the selector cached and if not find the method and cache it
+            if (!setterTable.containsKey(setterID)) {
                 // first try to find a method setter corresponding to the key
                 final KeyedSetting methodSetter = KeyedMethodSetter.getInstance(targetClass, key, argumentClass);
                 if (methodSetter != null) {
                     setterTable.put(setterID, methodSetter);
-                } else {	// no method setter was found for the key
+                // no method setter was found for the key
+                } else {
                     // if the target implements the Map interface then use the Map's put method for setting values
                     final KeyedSetting mapSetter = KeyedMapSetter.getInstance(targetClass, key, argumentClass);
                     if (mapSetter != null) {
@@ -212,7 +224,8 @@ public class KeyValueAdaptor {
                 }
             }
 
-            return setterTable.get(setterID);	// get the method from the cache
+            // get the method from the cache
+            return setterTable.get(setterID);
         }
     }
 

@@ -944,7 +944,8 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
      */
     public double getPosition(final AcceleratorNode node) {
         if (node == this) {
-            return 0.0;	// case of a sequence itself.
+            // case of a sequence itself.
+            return 0.0;
         }
         final AcceleratorSeq parent = node.getParent();
 

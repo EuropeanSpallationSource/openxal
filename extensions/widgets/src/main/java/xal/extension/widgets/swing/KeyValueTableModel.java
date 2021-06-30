@@ -186,7 +186,8 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
      */
     public int getColumnForKeyPath(final String keyPath) {
         if (keyPath == null) {
-            return -1;	// nothing to match
+            // nothing to match
+            return -1;
         }
         for (int column = 0; column < this.keyPaths.length; column++) {
             if (keyPath.equals(this.keyPaths[column])) {

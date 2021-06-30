@@ -65,9 +65,11 @@ public class SimpleBeanEditor<T> extends JDialog {
      * and a bean to fetch properties from
      */
     public SimpleBeanEditor(final Frame owner, final String dialogTitle, final String beanName, final T bean, boolean bottomButtons, boolean visible) {
-        super(owner, dialogTitle, true);	//Set JDialog's owner, title, and modality
+        //Set JDialog's owner, title, and modality
+        super(owner, dialogTitle, true);
 
-        BEAN = bean;					// Set the bean to edit
+        // Set the bean to edit
+        BEAN = bean;
 
         // generate the bean property tree
         final EditablePropertyContainer probePropertyTree = EditableProperty.getInstanceWithRoot(beanName, bean);
@@ -75,15 +77,22 @@ public class SimpleBeanEditor<T> extends JDialog {
         BEAN_PROPERTY_RECORDS = PropertyRecord.toRecords(probePropertyTree);
 
         PROPERTY_TABLE_MODEL = new KeyValueFilteredTableModel<>(BEAN_PROPERTY_RECORDS, "displayLabel", "value", "units");
-        PROPERTY_TABLE_MODEL.setMatchingKeyPaths("path");					// match on the path
+        // match on the path
+        PROPERTY_TABLE_MODEL.setMatchingKeyPaths("path");
         PROPERTY_TABLE_MODEL.setColumnName("displayLabel", "Property");
-        PROPERTY_TABLE_MODEL.setColumnEditKeyPath("value", "editable");	// the value is editable if the record is editable
-        PROPERTY_TABLE_VALUE_COLUMN = PROPERTY_TABLE_MODEL.getColumnForKeyPath("value");	// store the column for the "value" key path
+        // the value is editable if the record is editable
+        PROPERTY_TABLE_MODEL.setColumnEditKeyPath("value", "editable");
+        // store the column for the "value" key path
+        PROPERTY_TABLE_VALUE_COLUMN = PROPERTY_TABLE_MODEL.getColumnForKeyPath("value");
 
-        setSize(600, 600);			// Set the window size
-        initializeComponents(bottomButtons);			// Set up each component in the editor
-        setLocationRelativeTo(owner);	// Center the editor in relation to the frame that constructed the editor
-        setVisible(visible);				// Make the window visible
+        // Set the window size
+        setSize(600, 600);
+        // Set up each component in the editor
+        initializeComponents(bottomButtons);
+        // Center the editor in relation to the frame that constructed the editor
+        setLocationRelativeTo(owner);
+        // Make the window visible
+        setVisible(visible);
     }
 
     /**

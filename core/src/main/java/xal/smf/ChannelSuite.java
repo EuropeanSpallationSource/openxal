@@ -357,7 +357,8 @@ class SignalSuite {
             if (channelAdaptor.hasAttribute("settable")) {
                 final boolean settable = channelAdaptor.booleanValue("settable");
                 signalEntry.setSettable(settable);
-            } else if (isHandleSettable(handle)) {		// if settable is not explicitly specified, determine if the handle is settable by default
+            // if settable is not explicitly specified, determine if the handle is settable by default
+            } else if (isHandleSettable(handle)) {
                 signalEntry.setSettable(true);
             }
 

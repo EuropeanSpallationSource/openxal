@@ -51,30 +51,40 @@ public class PatientBroadcaster<RecordType> extends AbstractBroadcaster<RecordTy
         final boolean isFullCount = (numRecords == fullCount);
         final double correlationTime = correlation.meanTimeInSeconds();
 
-        if (pendingCorrelation == null) {			// test if there are any pending correlations
-            if (isFullCount) {					// if correlation is a full count, post it immediately
+        // test if there are any pending correlations
+        if (pendingCorrelation == null) {
+            // if correlation is a full count, post it immediately
+            if (isFullCount) {
                 postCorrelation(correlation);
             } else if (lastTime == Double.NaN || !correlatesWithLast(correlationTime)) {
                 pendingCorrelation = correlation;
             }
             // this correlation intersects with the last correlation
         } else if (correlatesWithLast(correlationTime)) {
-            if (isFullCount) {					// if correlation is a full count, post it immediately
+            // if correlation is a full count, post it immediately
+            if (isFullCount) {
                 pendingCorrelation = null;
                 postCorrelation(correlation);
-            } else if (numRecords > pendingCorrelation.numRecords()) {	// see if correlation is better than pending
-                pendingCorrelation = correlation;	// replace pending correlation with this correlation
+            // see if correlation is better than pending
+            } else if (numRecords > pendingCorrelation.numRecords()) {
+                // replace pending correlation with this correlation
+                pendingCorrelation = correlation;
             }
-        } else {										// must be a mutually exclusive correlation to the pending correlation
-            postCorrelation(pendingCorrelation);	// post the pending correlation since it was the best for its time
-            if (isFullCount) {					// if correlation is a full count, post it immediately
+        // must be a mutually exclusive correlation to the pending correlation
+        } else {
+            // post the pending correlation since it was the best for its time
+            postCorrelation(pendingCorrelation);
+            // if correlation is a full count, post it immediately
+            if (isFullCount) {
                 pendingCorrelation = null;
                 postCorrelation(correlation);
-            } else {			// place correlation as pending and wait to see if any better correlations come along for its time
+            // place correlation as pending and wait to see if any better correlations come along for its time
+            } else {
                 pendingCorrelation = correlation;
             }
         }
-        lastTime = correlationTime;	// always store the time of the last correlation no matter what
+        // always store the time of the last correlation no matter what
+        lastTime = correlationTime;
     }
 
     /**

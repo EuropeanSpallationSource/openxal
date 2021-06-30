@@ -159,7 +159,8 @@ public class ChannelMonitor {
      * @param oldRecord the old record which preceeds the new record
      */
     protected void processMonitorEvent(final ChannelTimeRecord oldRecord, final ChannelTimeRecord record) {
-        boolean shouldPostTrip;	// indicates that a trip was found and should be posted
+        // indicates that a trip was found and should be posted
+        boolean shouldPostTrip;
         int value;
         synchronized (EVENT_LOCK) {
             value = record.intValue();
@@ -230,7 +231,8 @@ public class ChannelMonitor {
             CHANNEL.addConnectionListener(connectionListener);
         }
 
-        if (!CHANNEL.isConnected()) {		// initiate a connection
+        // initiate a connection
+        if (!CHANNEL.isConnected()) {
             CHANNEL.requestConnection();
         }
     }

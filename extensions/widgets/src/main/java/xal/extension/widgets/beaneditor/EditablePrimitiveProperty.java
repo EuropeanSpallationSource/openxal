@@ -38,11 +38,14 @@ class EditablePrimitiveProperty extends EditableProperty {
         final Units units = readMethod != null ? readMethod.getAnnotation(Units.class) : null;
         if (units != null) {
             return units.value();
-        } else {		// unit property methods allow for dynamic units (i.e. units not known at runtime)
+        // unit property methods allow for dynamic units (i.e. units not known at runtime)
+        } else {
             // form the accessor as get<PropertyName>Units() replacing <PropertyName> with the property's name whose first character is upper case
             final char[] nameChars = getName().toCharArray();
-            nameChars[0] = Character.toUpperCase(nameChars[0]);		// capitalize the first character of the name
-            final String propertyName = String.valueOf(nameChars);	// property name whose first character is upper case
+            // capitalize the first character of the name
+            nameChars[0] = Character.toUpperCase(nameChars[0]);
+            // property name whose first character is upper case
+            final String propertyName = String.valueOf(nameChars);
 
             // first look for a method of the form get<PropertyName>Units() taking no arguments and returning a String
             final String unitsAccessorName = "get" + propertyName + "Units";

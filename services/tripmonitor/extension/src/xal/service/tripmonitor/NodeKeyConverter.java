@@ -65,7 +65,8 @@ class NumericToAlphaNodeKeyConverter extends NodeKeyConverter {
      * get a node key from a segment of a PV
      */
     public String toNodeKey(final String segment) {
-        final int location = segment.length() - 1;	// location of the last character
+        // location of the last character
+        final int location = segment.length() - 1;
         final char index = segment.charAt(location);
         return segment.substring(0, location) + toAlpha(index);
     }
@@ -74,7 +75,8 @@ class NumericToAlphaNodeKeyConverter extends NodeKeyConverter {
      * get a PV segment from the node key
      */
     public String toSegment(final String nodeKey) {
-        final int location = nodeKey.length() - 1;	// location of the last character
+        // location of the last character
+        final int location = nodeKey.length() - 1;
         final char alpha = nodeKey.charAt(location);
         return nodeKey.substring(0, location) + toIndex(alpha);
     }

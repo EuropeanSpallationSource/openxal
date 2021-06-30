@@ -291,7 +291,8 @@ public class GenericRecord implements KeyedRecord, DataListener {
         Object value = null;
 
         try {
-            final Method valueOfMethod = type.getMethod("valueOf", new Class[]{java.lang.String.class});		// suppress raw type warning since Class array can't be generic
+            // suppress raw type warning since Class array can't be generic
+            final Method valueOfMethod = type.getMethod("valueOf", new Class[]{java.lang.String.class});
             // convert the value to the Object of the appropriate class
             value = valueOfMethod.invoke(null, new Object[]{stringValue});
         } catch (NoSuchMethodException exception) {

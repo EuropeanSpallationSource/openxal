@@ -141,7 +141,8 @@ public class ImageCaptureManager {
                 if (fileSelection.exists()) {
                     int confirm = displayConfirmDialog(component, "Overwrite Confirmation", "The selected file:  " + fileSelection + " already exists! \n Overwrite selection?");
                     if (confirm == NO_OPTION) {
-                        saveSnapshot(component);	// offer a new selection
+                        // offer a new selection
+                        saveSnapshot(component);
                         return;
                     }
                 }

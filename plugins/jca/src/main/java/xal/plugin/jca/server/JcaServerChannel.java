@@ -393,12 +393,14 @@ public class JcaServerChannel extends Channel implements IServerChannel {
 
     @Override
     public void putRawValCallback(long newVal, PutListener listener) throws ConnectionException, PutException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void putRawValCallback(long[] newVal, PutListener listener) throws ConnectionException, PutException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     private class JcaServerMonitor extends Monitor implements ProcessVariableEventCallback {

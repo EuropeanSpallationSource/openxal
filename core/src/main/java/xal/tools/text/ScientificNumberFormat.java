@@ -137,7 +137,8 @@ public class ScientificNumberFormat extends NumberFormat {
         this.significantDigits = significantDigits;
 
         final StringBuffer patternBuffer = new StringBuffer("0");
-        if (significantDigits > 1) {		// there are fractional digits to display
+        // there are fractional digits to display
+        if (significantDigits > 1) {
             // append a decimal point
             patternBuffer.append(".");
             // append a zero for each digit to the right of the decimal point
@@ -233,7 +234,8 @@ public class ScientificNumberFormat extends NumberFormat {
      */
     public void appendToIO(final Appendable output, final CharSequence separator, final double... values) throws IOException {
         if (values == null || values.length == 0) {
-            return;	//nothing to append
+            //nothing to append
+            return;
         }
         // append the first formatted value
         output.append(format(values[0]));

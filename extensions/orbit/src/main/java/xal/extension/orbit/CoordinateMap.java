@@ -315,9 +315,12 @@ public class CoordinateMap {
         final PhaseMatrix toMatrix = getProbeState(trajectory, toNode).getTransferMap().getFirstOrder();
 
         // shortest distance on the ring between "to" and "from" nodes where it is positive if the "from" node position is greater than the "to" node position and negative otherwise
-        final double distance = sequence.getShortestRelativePosition(fromNode, toNode);	// reference node is the "to" node
-        final double toLocation = sequence.getPosition(toNode);	// postion of the "to" node with respect to the sequence origin
-        final double fromPath = toLocation + distance;	// path to the "from" node relative to origin along the shortest path to the "to" node
+        // reference node is the "to" node
+        final double distance = sequence.getShortestRelativePosition(fromNode, toNode);
+        // postion of the "to" node with respect to the sequence origin
+        final double toLocation = sequence.getPosition(toNode);
+        // path to the "from" node relative to origin along the shortest path to the "to" node
+        final double fromPath = toLocation + distance;
 
         // Xo:  coordinate at the origin during the current turn
         // Xp:  coordinate at the origin during the previous turn
@@ -328,7 +331,8 @@ public class CoordinateMap {
         // Tt:  Transfer matrix from the origin to the "to" node
         // Tft: Transfer matrix (what we want) from the "from" node to the "to" node along the shortest path between them
         // Xf = Tf * Xo, Xt = Tt * Xo
-        if (fromPath < 0.0) {	// "from" node is across the origin near the end of the sequence, and the "to" node is near the front of the sequence
+        // "from" node is across the origin near the end of the sequence, and the "to" node is near the front of the sequence
+        if (fromPath < 0.0) {
             // Xo = F * Xp, Xf = Tf * Xp, Xt = Tt * Xo  ->  Xp = Tf^-1 * Xf  ->  Xo = F * Tf^-1 * Xf  ->  Tft = Tt * F * Tf^-1
             final PhaseMatrix fullTurnOriginMatrix = new CalculationsOnRings(trajectory).getFullTransferMap().getFirstOrder();
             return toMatrix.times(fullTurnOriginMatrix).times(fromMatrix.inverse());

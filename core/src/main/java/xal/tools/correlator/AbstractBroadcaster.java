@@ -53,8 +53,10 @@ abstract class AbstractBroadcaster<RecordType> implements BinListener<RecordType
      * Dispose of this delegate and all of its overhead
      */
     void dispose() {
-        broadcastCenter.removeSource(this, CorrelationNotice.class);		// stop posting correlation notices
-        localCenter.removeTarget(this, BinListener.class);				// stop listening for bin correlations
+        // stop posting correlation notices
+        broadcastCenter.removeSource(this, CorrelationNotice.class);
+        // stop listening for bin correlations
+        localCenter.removeTarget(this, BinListener.class);
     }
 
     /**

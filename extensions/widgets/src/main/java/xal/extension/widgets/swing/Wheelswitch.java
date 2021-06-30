@@ -989,7 +989,8 @@ public class Wheelswitch extends JPanel {
                 case 'E':
                 case 'e':
                 case '.':
-                    break;	// do nothing as these never change for a fixed layout
+                    // do nothing as these never change for a fixed layout
+                    break;
                 default:
                     if (digits.get(i) instanceof ValueDigit) {
                         ((ValueDigit) digits.get(i)).setValue(Integer.parseInt(stringValue.substring(i, i + 1)));
@@ -1252,7 +1253,8 @@ public class Wheelswitch extends JPanel {
 
     private void process(String oldStringValue, String newStringValue) {
         if (layoutMatches(oldStringValue, newStringValue)) {
-            initDigits();	// just update the digits (including sign)
+            // just update the digits (including sign)
+            initDigits();
         } else {
             setupValueDigits();
             setupLayout();

@@ -63,7 +63,8 @@ public abstract class AbstractPropertyAccessor implements PropertyAccessor {
                     // Just print to standard error for extra diagnostics.
                     System.err.println("Missing channel value for property: " + propertyName + ", node: " + node.getId() + ", channel: " + channel.channelName());
                     // we need all of a property's channel values to compute the property value, so abandon the current property if we are missing any
-                    continue propertyLoop;		// abandon this property and continue with the next property if any
+                    // abandon this property and continue with the next property if any
+                    continue propertyLoop;
                 }
             }
 

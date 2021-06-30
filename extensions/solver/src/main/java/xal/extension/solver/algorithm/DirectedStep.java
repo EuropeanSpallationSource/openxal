@@ -72,7 +72,8 @@ public class DirectedStep extends SearchAlgorithm {
             return;
         }
         try {
-            if (lastOriginTrial != bestSolution) {		// no point in repeating the same result
+            // no point in repeating the same result
+            if (lastOriginTrial != bestSolution) {
                 lastOriginTrial = bestSolution;
                 final Trial bestTrial = performAcceleratedSearch(bestSolution);
             }

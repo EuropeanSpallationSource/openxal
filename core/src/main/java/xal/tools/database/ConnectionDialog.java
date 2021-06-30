@@ -271,7 +271,8 @@ public class ConnectionDialog extends JDialog {
     protected ConnectionDictionary showDialog() {
         pack();
         setLocationRelativeTo(getOwner());
-        userField.requestFocusInWindow();	// put the user field in focus since it is the most likely to be edited first by the user
+        // put the user field in focus since it is the most likely to be edited first by the user
+        userField.requestFocusInWindow();
         setVisible(true);
         return dictionary;
     }

@@ -84,7 +84,8 @@ public class PrimaryPropertyAccessor {
         final Map<String, Double> valueMap = batchAccessor.valueMapFor(aNode);
 
         // cache the values
-        propertyValueCache.put(aNode, new HashMap<>(valueMap));		// need to copy it so we don't override the raw values
+        // need to copy it so we don't override the raw values
+        propertyValueCache.put(aNode, new HashMap<>(valueMap));
 
         // apply whatif settings
         addInputOverrides(aNode, valueMap);
@@ -107,7 +108,8 @@ public class PrimaryPropertyAccessor {
             throw new IllegalArgumentException("expected instance of AcceleratorNode");
         }
         final AcceleratorNode aNode = (AcceleratorNode) objNode;
-        final Map<String, Double> valueMap = new HashMap<>(propertyValueCache.get(aNode));		// need to copy it so we don't override the raw values
+        // need to copy it so we don't override the raw values
+        final Map<String, Double> valueMap = new HashMap<>(propertyValueCache.get(aNode));
         addInputOverrides(aNode, valueMap);
         return valueMap;
     }
@@ -340,7 +342,8 @@ abstract class BatchChannelPropertyAccessor extends BatchPropertyAccessor {
 
         // create and submit a batch channel Get request
         final BatchGetValueRequest request = new BatchGetValueRequest(channels);
-        request.submitAndWait(5.0);	// wait up to 5 seconds for a response
+        // wait up to 5 seconds for a response
+        request.submitAndWait(5.0);
 
         // print an overview of the request status
         if (!request.isComplete()) {

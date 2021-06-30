@@ -122,7 +122,8 @@ public abstract class DispatchQueue implements DispatchOperationListener {
      */
     @Override
     protected void finalize() throws Throwable {
-        releaseResources();		// call this method as dispose() only works for custom queues
+        // call this method as dispose() only works for custom queues
+        releaseResources();
         super.finalize();
     }
 
@@ -137,7 +138,8 @@ public abstract class DispatchQueue implements DispatchOperationListener {
      * Determines whether this queue is suspended (disposed implies suspended)
      */
     public boolean isSuspended() {
-        return queueState != DispatchQueueState.PROCESSING;	// disposed states are also suspended
+        // disposed states are also suspended
+        return queueState != DispatchQueueState.PROCESSING;
     }
 
     /**
@@ -382,7 +384,8 @@ public abstract class DispatchQueue implements DispatchOperationListener {
      * @param rawOperation the operation to run
      */
     public void dispatchAfterDelay(final long delay, final Runnable rawOperation) {
-        final Date dispatchTime = new Date(new Date().getTime() + delay);	// dispatch time which is current time plus delay
+        // dispatch time which is current time plus delay
+        final Date dispatchTime = new Date(new Date().getTime() + delay);
         dispatchAfter(dispatchTime, rawOperation);
     }
 
@@ -559,14 +562,16 @@ class ConcurrentDispatchQueue extends DispatchQueue {
      * process the pending operations
      */
     private void processPendingOperations() {
-        while (queueState == DispatchQueueState.PROCESSING && pendingOperationQueue.size() > 0) {		// process (in order) all pending operations which can be processed
+        // process (in order) all pending operations which can be processed
+        while (queueState == DispatchQueueState.PROCESSING && pendingOperationQueue.size() > 0) {
             final DispatchOperation<?> nextOperation = pendingOperationQueue.peek();
 
             if (nextOperation != null) {
                 if (canRunNextOperationNow(nextOperation)) {
                     processNextPendingOperation();
                 } else {
-                    return;		// Stop processing the pending queue because nothing can process, now. An event will force the next processing cycle.
+                    // Stop processing the pending queue because nothing can process, now. An event will force the next processing cycle.
+                    return;
                 }
             } else {
                 // there should never be a null operation so we note if we find one and remove it from the queue
@@ -576,7 +581,8 @@ class ConcurrentDispatchQueue extends DispatchQueue {
                     LOGGER.log(Level.SEVERE, null, exception);
                 }
                 try {
-                    pendingOperationQueue.remove();	// remove the null operation
+                    // remove the null operation
+                    pendingOperationQueue.remove();
                 } catch (NoSuchElementException exception) {
                 }
             }
@@ -587,9 +593,11 @@ class ConcurrentDispatchQueue extends DispatchQueue {
      * Determine whether the next operation can run now
      */
     private boolean canRunNextOperationNow(final DispatchOperation<?> nextOperation) {
-        if (isRunningBarrierOperation) {			// make sure there is no barrier operation currently running before executing any other operation
+        // make sure there is no barrier operation currently running before executing any other operation
+        if (isRunningBarrierOperation) {
             return false;
-        } else if (nextOperation.isBarrier() && runningOperationCounter.get() > 0) {		// if the next operation is a barrier operation, wait until all currently running operations are complete
+        // if the next operation is a barrier operation, wait until all currently running operations are complete
+        } else if (nextOperation.isBarrier() && runningOperationCounter.get() > 0) {
             return false;
         } else {
             return true;
@@ -602,8 +610,10 @@ class ConcurrentDispatchQueue extends DispatchQueue {
     @Override
     protected <ReturnType> void postProcessOperation(final DispatchOperation<ReturnType> operation) {
         super.postProcessOperation(operation);
-        isRunningBarrierOperation = false;		// this is correct whether the operation just completed is a barrier or another operation just completed
-        processOperationQueue();	// make sure the operation queue is processed in case other operations are awaiting completion of this operation
+        // this is correct whether the operation just completed is a barrier or another operation just completed
+        isRunningBarrierOperation = false;
+        // make sure the operation queue is processed in case other operations are awaiting completion of this operation
+        processOperationQueue();
     }
 
     /**
@@ -753,7 +763,8 @@ class SerialDispatchQueue extends DispatchQueue {
     @Override
     protected <ReturnType> void postProcessOperation(final DispatchOperation<ReturnType> operation) {
         super.postProcessOperation(operation);
-        processOperationQueue();		// attempt to process the next pending operation
+        // attempt to process the next pending operation
+        processOperationQueue();
     }
 
     /**
@@ -823,7 +834,8 @@ class MainDispatchQueue extends SerialDispatchQueue {
      */
     @Override
     protected ExecutorService createDispatchExecutor() {
-        return null;	// there is no executor since events are submitted to the swing dispatch thread
+        // there is no executor since events are submitted to the swing dispatch thread
+        return null;
     }
 
     /**

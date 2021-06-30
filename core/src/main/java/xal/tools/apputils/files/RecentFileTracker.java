@@ -59,7 +59,8 @@ public class RecentFileTracker {
 
     // static initializer
     static {
-        URL_SPEC_STORE_PATTERN = Pattern.compile("\"[^\"]*\"");	// specs are enclosed within quotes
+        // specs are enclosed within quotes
+        URL_SPEC_STORE_PATTERN = Pattern.compile("\"[^\"]*\"");
     }
 
     /**
@@ -133,15 +134,20 @@ public class RecentFileTracker {
      * @param urlSpec the URL Spec to cache.
      */
     public void cacheURL(final String urlSpec) {
-        final String[] recentURLSpecArray = getRecentURLSpecs();		// get the current list of specs
-        final List<String> recentSpecs = new ArrayList<>(recentUrlsBufferSize);		// hold the new list of specs
-        recentSpecs.add(urlSpec);		// add the new spec as the first item
+        // get the current list of specs
+        final String[] recentURLSpecArray = getRecentURLSpecs();
+        // hold the new list of specs
+        final List<String> recentSpecs = new ArrayList<>(recentUrlsBufferSize);
+        // add the new spec as the first item
+        recentSpecs.add(urlSpec);
 
         // add the original specs expect for any spec matching the new one to avoid repetitions and don't exceed the buffer size
         for (int index = 0; index < recentURLSpecArray.length && recentSpecs.size() < recentUrlsBufferSize; index++) {
             final String recentURLSpec = recentURLSpecArray[index];
-            if (!recentSpecs.contains(recentURLSpec)) {			// make sure we don't repeat the new spec
-                recentSpecs.add(recentURLSpec);		// add the spec
+            // make sure we don't repeat the new spec
+            if (!recentSpecs.contains(recentURLSpec)) {
+                // add the spec
+                recentSpecs.add(recentURLSpec);
             }
         }
 
@@ -163,7 +169,8 @@ public class RecentFileTracker {
      * encode the item for caching
      */
     private static String encodeItem(final String item) {
-        return "\"" + item + "\"";		// place quotes around the item
+        // place quotes around the item
+        return "\"" + item + "\"";
     }
 
     /**
@@ -175,7 +182,8 @@ public class RecentFileTracker {
         }
         final int encodedLength = encodedItem.length();
         if (encodedLength > 2 && encodedItem.startsWith("\"") && encodedItem.endsWith("\"")) {
-            return encodedItem.substring(1, encodedLength - 1);	// strip the starting and ending quotes
+            // strip the starting and ending quotes
+            return encodedItem.substring(1, encodedLength - 1);
         } else {
             return null;
         }
@@ -200,7 +208,8 @@ public class RecentFileTracker {
             }
             return urlSpecs.toArray(new String[urlSpecs.size()]);
         } else {
-            return getTokens(pathsStr, ",");		// old format uses comma delimited items
+            // old format uses comma delimited items
+            return getTokens(pathsStr, ",");
         }
     }
 

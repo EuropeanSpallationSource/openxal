@@ -100,7 +100,8 @@ public abstract class SourceAgent<RecordType> implements StateNotice<RecordType>
      */
     public void setBinTimespan(final double timespan) {
         final List<BinAgent<RecordType>> binAgents = new ArrayList<>();
-        synchronized (binAgents) {		// need to synchronize since nextBin() modifies _binAgents
+        // need to synchronize since nextBin() modifies _binAgents
+        synchronized (binAgents) {
             binAgents.addAll(binAgents);
         }
 

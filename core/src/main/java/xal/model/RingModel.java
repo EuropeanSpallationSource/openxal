@@ -172,7 +172,8 @@ public class RingModel extends ElementSeq {
     private void setupOrigin(final IProbe probe) {
         final String startElementID = probe.getAlgorithm().getStartElementId();
         if (startElementID == null) {
-            return;	// nothing to do
+            // nothing to do
+            return;
         }
         int startIndex = 0;
         final List<IComponent> elements = getForwardCompList();

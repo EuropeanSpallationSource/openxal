@@ -283,7 +283,8 @@ public class BatchConnectionRequest extends java.lang.Object {
                 isCanceled = false;
                 pendingChannels.clear();
                 pendingChannels.addAll(channels);
-                disconnectedChannels.addAll(channels);	// assume all channels disconnected until notified otherwise
+                // assume all channels disconnected until notified otherwise
+                disconnectedChannels.addAll(channels);
                 connectedChannels.clear();
             }
         });
@@ -323,12 +324,16 @@ public class BatchConnectionRequest extends java.lang.Object {
      * @return true upon completion and false if not complete
      */
     public boolean await(final double timeout) {
-        final long milliTimeout = (long) (1000 * timeout);		// timeout in milliseconds
-        final long maxTime = new Date().getTime() + milliTimeout;	// maximum time until expiration
+        // timeout in milliseconds
+        final long milliTimeout = (long) (1000 * timeout);
+        // maximum time until expiration
+        final long maxTime = new Date().getTime() + milliTimeout;
         while (!isCanceled && !isComplete() && new Date().getTime() < maxTime) {
             final long remainingTime = Math.max(0, maxTime - new Date().getTime());
-            if (remainingTime > 0) {		// remaining time must be strictly greater than zero to prevent waiting forever should it be identically zero
-                final long waitTime = remainingTime > WATCH_TIME ? WATCH_TIME : remainingTime;	// want to watch for cancel periodically when the remaining time is long
+            // remaining time must be strictly greater than zero to prevent waiting forever should it be identically zero
+            if (remainingTime > 0) {
+                // want to watch for cancel periodically when the remaining time is long
+                final long waitTime = remainingTime > WATCH_TIME ? WATCH_TIME : remainingTime;
                 try {
                     synchronized (completionLock) {
                         completionLock.wait(waitTime);

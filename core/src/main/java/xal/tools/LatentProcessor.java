@@ -34,11 +34,15 @@ public class LatentProcessor extends FreshProcessor {
             throw new RuntimeException("Latency must be greater than or equal to zero seconds. The supplied latency was: " + latency);
         }
 
-        final double latencyMilliseconds = 1000.0 * latency;		// convert from seconds to milliseconds
-        this.latencyMilliseconds = (long) (latencyMilliseconds);		// millisecond portion of latency
+        // convert from seconds to milliseconds
+        final double latencyMilliseconds = 1000.0 * latency;
+        // millisecond portion of latency
+        this.latencyMilliseconds = (long) (latencyMilliseconds);
 
-        final double remainderNanos = 1.0e6 * (latencyMilliseconds - latencyMilliseconds);	// get the nanosecond remainder
-        latencyNanoseconds = (int) (remainderNanos + 0.5);		// nanosecond portion of latency rounded up
+        // get the nanosecond remainder
+        final double remainderNanos = 1.0e6 * (latencyMilliseconds - latencyMilliseconds);
+        // nanosecond portion of latency rounded up
+        latencyNanoseconds = (int) (remainderNanos + 0.5);
     }
 
     /**

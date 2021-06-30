@@ -124,7 +124,8 @@ class SnapshotGroupTable {
      * produce a new channel group from the specified result set
      */
     private ChannelGroup newChannelGroup(final Connection connection, final ResultSet resultSet) throws SQLException {
-        final String groupID = resultSet.getString(primaryKey);		// should match type
+        // should match type
+        final String groupID = resultSet.getString(primaryKey);
         final String description = resultSet.getString(descriptionColumn);
         final double loggingPeriod = resultSet.getDouble(periodColumn);
         final double retention = resultSet.getDouble(retentionColumn);

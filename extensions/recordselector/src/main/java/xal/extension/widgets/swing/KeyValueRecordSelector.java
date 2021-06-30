@@ -258,7 +258,8 @@ public class KeyValueRecordSelector<RecordType> {
         return new MouseAdapter() {
             @Override
             public void mouseClicked(final MouseEvent event) {
-                if (event.getClickCount() == 2) {		// double click
+                // double click
+                if (event.getClickCount() == 2) {
                     performOkay();
                 }
             }

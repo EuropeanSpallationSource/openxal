@@ -150,7 +150,8 @@ public abstract class BeanProxy<ViewType> implements DataListener {
      * get the Jython reference snippet
      */
     public String getJythonReferenceSnippet(final BeanNode<?> node) {
-        final String symbol = node.getTag().toLowerCase().replaceAll(" ", "_");	// lower the case of the tag and replace spaces with underscores
+        // lower the case of the tag and replace spaces with underscores
+        final String symbol = node.getTag().toLowerCase().replaceAll(" ", "_");
 
         final StringBuilder buffer = new StringBuilder();
         buffer.append(symbol);
@@ -197,16 +198,21 @@ public abstract class BeanProxy<ViewType> implements DataListener {
         // lower the case of the first character of the symbol
         buffer.append(Character.toLowerCase(tag.charAt(0)));
 
-        boolean nextCharBeginsWord = false;		// indicates whether the next character begins a word
+        // indicates whether the next character begins a word
+        boolean nextCharBeginsWord = false;
         for (int index = 1; index < tagLength; index++) {
             final char theCharacter = tag.charAt(index);
-            if (Character.isWhitespace(theCharacter)) {		// whitespace separates words
-                nextCharBeginsWord = true;	// space indicates that next character begins a new word
+            // whitespace separates words
+            if (Character.isWhitespace(theCharacter)) {
+                // space indicates that next character begins a new word
+                nextCharBeginsWord = true;
             } else {
                 if (nextCharBeginsWord) {
-                    buffer.append(Character.toUpperCase(theCharacter));		// capitalize the first character of the word
+                    // capitalize the first character of the word
+                    buffer.append(Character.toUpperCase(theCharacter));
                 } else {
-                    buffer.append(theCharacter);	// simply append the character if it is part of word and not the first character
+                    // simply append the character if it is part of word and not the first character
+                    buffer.append(theCharacter);
                 }
                 nextCharBeginsWord = false;
             }

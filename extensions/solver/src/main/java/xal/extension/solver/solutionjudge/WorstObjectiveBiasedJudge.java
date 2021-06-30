@@ -96,7 +96,8 @@ public class WorstObjectiveBiasedJudge extends SolutionJudge {
                 final double satisfaction = trial.getSatisfaction(objective);
                 satisfactions.add(satisfaction);
             }
-            Collections.sort(satisfactions);		// sort satisfactions from worst to best
+            // sort satisfactions from worst to best
+            Collections.sort(satisfactions);
 
             // weight each satisfaction with most weight for the worst satisfaction and exponentially decreasing from there
             double weightedSum = 0.0;
@@ -105,7 +106,8 @@ public class WorstObjectiveBiasedJudge extends SolutionJudge {
             while (satisfactionIter.hasNext()) {
                 final double satisfaction = satisfactionIter.next();
                 weightedSum += weight * satisfaction;
-                weight *= biasWeight;	// weight the worst satisfactions most
+                // weight the worst satisfactions most
+                weight *= biasWeight;
             }
 
             // make sure we do this at least once and then cache it

@@ -78,7 +78,8 @@ public class PredefinedConfController {
         descriptionText.setForeground(Color.blue);
 
         //prepare Data Adaptor and Nodes Tree
-        if (predefConfURL != null) {	// TODO: cleanup this code to better handle the case of no predefined configurations
+        // TODO: cleanup this code to better handle the case of no predefined configurations
+        if (predefConfURL != null) {
             XmlDataAdaptor readAdp = XmlDataAdaptor.adaptorForUrl(predefConfURL, false);
 
             rootNode = new ConfigNode((XmlDataAdaptor) readAdp.childAdaptor("CONFIGURATIONS"));

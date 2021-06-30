@@ -228,7 +228,8 @@ public class ScanChannelMonitor {
             latestRecord = record;
 
             if (delegate != null) {
-                delegate.channelRecordUpdate(ScanChannelMonitor.this, record);		// forward the event to the delegate
+                // forward the event to the delegate
+                delegate.channelRecordUpdate(ScanChannelMonitor.this, record);
             }
         }
     }

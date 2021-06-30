@@ -3790,7 +3790,8 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
             // if the format is already a DecimalFormat just apply the pattern
             if (xValueFormat instanceof DecimalFormat) {
                 ((DecimalFormat) xValueFormat).applyPattern(pattern);
-            } else {	// create a new DecimalFormat wit the specified pattern
+            // create a new DecimalFormat wit the specified pattern
+            } else {
                 xValueFormat = new DecimalFormat(pattern);
             }
         }
@@ -3803,7 +3804,8 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
             // if the format is already a DecimalFormat just apply the pattern
             if (yValueFormat instanceof DecimalFormat) {
                 ((DecimalFormat) yValueFormat).applyPattern(pattern);
-            } else {	// create a new DecimalFormat wit the specified pattern
+            // create a new DecimalFormat wit the specified pattern
+            } else {
                 yValueFormat = new DecimalFormat(pattern);
             }
         }
@@ -3816,7 +3818,8 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
             // if the format is already a DecimalFormat just apply the pattern
             if (zValueFormat instanceof DecimalFormat) {
                 ((DecimalFormat) zValueFormat).applyPattern(pattern);
-            } else {	// create a new DecimalFormat wit the specified pattern
+            // create a new DecimalFormat wit the specified pattern
+            } else {
                 zValueFormat = new DecimalFormat(pattern);
             }
         }

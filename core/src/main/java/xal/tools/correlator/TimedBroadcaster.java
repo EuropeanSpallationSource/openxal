@@ -122,7 +122,8 @@ class TimedBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
     synchronized public void newCorrelation(final BinAgent<RecordType> sender, final Correlation<RecordType> correlation) {
         int numRecords = correlation.numRecords();
 
-        if (numRecords == fullCount) {    	// broadcast a full correlation immediately
+        // broadcast a full correlation immediately
+        if (numRecords == fullCount) {
             bestPartialCorrelation = null;
             isFresh = false;
             postCorrelation(correlation);

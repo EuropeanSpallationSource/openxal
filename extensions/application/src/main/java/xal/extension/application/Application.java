@@ -1013,7 +1013,8 @@ public abstract class Application {
                 if (fileSelection.exists()) {
                     int confirm = document.displayConfirmDialog("Overwrite Confirmation", "The selected file:  " + fileSelection + " already exists! \n Overwrite selection?");
                     if (confirm == NO_OPTION) {
-                        saveAsDocument(document);	// offer a new selection
+                        // offer a new selection
+                        saveAsDocument(document);
                         return;
                     }
                 }
@@ -1186,7 +1187,8 @@ public abstract class Application {
         final List<XalAbstractDocument> documents = getDocuments();
         for (final XalAbstractDocument document : documents) {
             final XalDocumentView window = document.getDocumentView();
-            try {	// iconified windows will throw exceptions
+            // iconified windows will throw exceptions
+            try {
                 window.setVisible(true);
                 final java.awt.Container contentPane = window.getContentPane();
                 final int offset = window.isVisible() ? (int) (1.5 * (contentPane.getLocationOnScreen().y - window.getLocationOnScreen().y)) : 50;

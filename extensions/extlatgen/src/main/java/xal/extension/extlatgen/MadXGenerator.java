@@ -210,8 +210,10 @@ public class MadXGenerator {
             int counter = 1;
             int devTypeInd = 1;
             String devStr = "";
-            AcceleratorNode currentThickNode = null;	// there can at most be one thick node at any location
-            double currentThickNodePath = 0.0;			// total current path taken through the thick node (only bends modify and use this variable)
+            // there can at most be one thick node at any location
+            AcceleratorNode currentThickNode = null;
+            // total current path taken through the thick node (only bends modify and use this variable)
+            double currentThickNodePath = 0.0;
 
             while (ilat.hasNext()) {
                 final Element element = ilat.next();
@@ -250,7 +252,8 @@ public class MadXGenerator {
                     addElement(formattedName, "MONITOR");
                     // for quads
                 } else if (elementType.equals("quadrupole") || elementType.equals("skewquadrupole")) {
-                    final double rollAngle = node.getAlign().getRoll() * Math.PI / 180.0;	// get the roll angle in radians
+                    // get the roll angle in radians
+                    final double rollAngle = node.getAlign().getRoll() * Math.PI / 180.0;
                     final double field = getField(node, deviceDataSource);
 
                     String definition = "QUADRUPOLE, L=" + NUMBER_FORMAT.format(elementLength) + ", K1=" + NUMBER_FORMAT.format(Q * field * LIGHT_SPEED / momentum);
@@ -268,10 +271,12 @@ public class MadXGenerator {
                     // if the element is the first for the bend magnet then we apply the entrance angle for this element
                     // an element is determined to be the first element of a bend if the current path through the bend is at the beginning (i.e. zero).
                     final double entranceAngle = currentThickNodePath == 0.0 ? bendDataSource.getBendEntranceAngle(bendNode, Q, momentum) : 0.0;
-                    currentThickNodePath += elementLength;		// advance the path through the bend magnet
+                    // advance the path through the bend magnet
+                    currentThickNodePath += elementLength;
                     // if the element is the last for the bend magnet then we apply the exit angle for this element
                     // an element is determined to be the last element of a bend if the path after having passed through the element equals the magnetic length of the whole bend
-                    final double lengthThreshold = 0.99999;	// ideally this should be 1.0, but we must allow for numerical precision errors
+                    // ideally this should be 1.0, but we must allow for numerical precision errors
+                    final double lengthThreshold = 0.99999;
                     final double exitAngle = currentThickNodePath > lengthThreshold * bendMagneticLength ? bendDataSource.getBendExitAngle(bendNode, Q, momentum) : 0.0;
 
                     final double k1 = bendNode.getQuadComponent();
@@ -326,7 +331,8 @@ public class MadXGenerator {
         final int MAX_LINE_LENGTH = 1250;
         int lineIndex = MAX_LINE_LENGTH;
         final List<List<MadXElement>> lines = new ArrayList<>();
-        List<MadXElement> line = null;	// current line
+        // current line
+        List<MadXElement> line = null;
         for (final MadXElement element : MADX_ELEMENTS) {
             if (lineIndex >= MAX_LINE_LENGTH) {
                 line = new ArrayList<>(MAX_LINE_LENGTH);

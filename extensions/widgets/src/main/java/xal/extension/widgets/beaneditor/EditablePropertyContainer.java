@@ -193,7 +193,8 @@ public class EditablePropertyContainer extends EditableProperty {
                 if (setter != null && setter.getAnnotation(Deprecated.class) == null && setter.getAnnotation(NoEdit.class) == null) {
                     childPrimitiveProperties.add(new EditablePrimitiveProperty(PATH, CHILD_TARGET, descriptor));
                 }
-                return;		// reached end of branch so we are done
+                // reached end of branch so we are done
+                return;
             } else if (propertyType == null) {
                 return;
             } else if (propertyType.isArray()) {
@@ -207,11 +208,13 @@ public class EditablePropertyContainer extends EditableProperty {
                 }
 
                 // property is a plain container
-                if (!ANCESTORS.contains(target)) {	// only propagate down the branch if the targets are unique (avoid cycles)
+                // only propagate down the branch if the targets are unique (avoid cycles)
+                if (!ANCESTORS.contains(target)) {
                     final Set<Object> ancestors = new HashSet<Object>(ANCESTORS);
                     ancestors.add(target);
                     final EditablePropertyContainer container = new EditablePropertyContainer(PATH, CHILD_TARGET, descriptor, target, ancestors);
-                    if (container.getChildCount() > 0) {	// only care about containers that lead to editable properties
+                    // only care about containers that lead to editable properties
+                    if (container.getChildCount() > 0) {
                         childPropertyContainers.add(container);
                     }
                 }

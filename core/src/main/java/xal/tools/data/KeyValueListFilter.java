@@ -165,7 +165,8 @@ class RecordIndex<RecordType> {
      * index values of the specified record corresponding to the specified keys
      */
     public static <RecordType> RecordIndex<RecordType> getInstance(final RecordType record, final KeyValueAdaptor adaptor, final String[] keyPaths) {
-        final StringJoiner buffer = new StringJoiner(" ");	// store words using a space to separate them from each other
+        // store words using a space to separate them from each other
+        final StringJoiner buffer = new StringJoiner(" ");
         for (final String keyPath : keyPaths) {
             final Object value = adaptor.valueForKeyPath(record, keyPath);
             final String stringValue = value != null ? value.toString().toLowerCase() : null;

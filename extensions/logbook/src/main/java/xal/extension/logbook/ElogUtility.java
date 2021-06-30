@@ -128,7 +128,8 @@ public class ElogUtility {
      * get the maximum allowed size of the main body text
      */
     public int getMaxBodySize() {
-        return DEFAULT_MAX_BODY_SIZE;		// in the future we should get this from the database itself
+        // in the future we should get this from the database itself
+        return DEFAULT_MAX_BODY_SIZE;
     }
 
     /**
@@ -188,7 +189,8 @@ public class ElogUtility {
             postEntry.setString(1, badgeNumber);
             postEntry.setString(2, logbook);
             postEntry.setString(3, title);
-            postEntry.setArray(4, categoryArray);			// array of categories
+            // array of categories
+            postEntry.setArray(4, categoryArray);
             postEntry.setString(5, content);
             postEntry.execute();
 

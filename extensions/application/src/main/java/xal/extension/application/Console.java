@@ -264,7 +264,8 @@ class Console {
                 standardOut.write(character);
                 document.insertString(document.getLength(), String.valueOf((char) character), outStyle);
                 if (document.getLength() > CHAR_LIMIT) {
-                    document.remove(0, CHAR_LIMIT / 10);		// shed the first 10 percent
+                    // shed the first 10 percent
+                    document.remove(0, CHAR_LIMIT / 10);
                 }
                 if (logsOutput) {
                     logWriter.write(character);
@@ -292,7 +293,8 @@ class Console {
                 standardErr.write(character);
                 document.insertString(document.getLength(), String.valueOf((char) character), errStyle);
                 if (document.getLength() > CHAR_LIMIT) {
-                    document.remove(0, CHAR_LIMIT / 10);		// shed the first 10 percent
+                    // shed the first 10 percent
+                    document.remove(0, CHAR_LIMIT / 10);
                 }
                 if (logsOutput) {
                     logWriter.write(character);

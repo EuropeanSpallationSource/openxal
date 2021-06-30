@@ -184,19 +184,23 @@ public class DispatchTimer {
      * fires
      */
     public void setStartTimeAndInterval(final Date startTime, final long milliInterval, final int nanoInterval) {
-        cancelNextScheduledEvent();		// Since the start time is changing, we need to immediately cancel the next pending event here plus later on the schedule queue (see code below).
+        // Since the start time is changing, we need to immediately cancel the next pending event here plus later on the schedule queue (see code below).
+        cancelNextScheduledEvent();
 
         scheduleQueue.dispatchAsync(new Runnable() {
             @Override
             public void run() {
-                cancelNextScheduledEvent();		// Cancel any currently scheduled event on the schedule queue in addition to immediately (see code above)
+                // Cancel any currently scheduled event on the schedule queue in addition to immediately (see code above)
+                cancelNextScheduledEvent();
 
                 DispatchTimer.this.milliInterval = milliInterval;
                 DispatchTimer.this.nanoInterval = nanoInterval;
 
-                final ScheduledEvent nextScheduledEvent = new ScheduledEvent(startTime);		// schedule an event that will execute immediately upon dispatch
+                // schedule an event that will execute immediately upon dispatch
+                final ScheduledEvent nextScheduledEvent = new ScheduledEvent(startTime);
                 DispatchTimer.this.nextScheduledEvent = nextScheduledEvent;
-                scheduleQueue.dispatchAfter(startTime, nextScheduledEvent);		// dispatch after the start time
+                // dispatch after the start time
+                scheduleQueue.dispatchAfter(startTime, nextScheduledEvent);
             }
         });
     }
@@ -243,7 +247,8 @@ public class DispatchTimer {
      * Determines whether this queue is suspended (disposed implies suspended)
      */
     public boolean isSuspended() {
-        return runState != DispatchTimerRunState.PROCESSING;	// disposed states are also suspended
+        // disposed states are also suspended
+        return runState != DispatchTimerRunState.PROCESSING;
     }
 
     /**
@@ -441,14 +446,18 @@ public class DispatchTimer {
                 if (!isCanceled) {
                     try {
                         while (!isCanceled) {
-                            final long milliTimeout = targetTime - new Date().getTime();	// milliseconds left to wait
+                            // milliseconds left to wait
+                            final long milliTimeout = targetTime - new Date().getTime();
                             final int nanoTimeout = nanoOffset;
 
                             if (milliTimeout > 0) {
-                                scheduleQueue.wait(milliTimeout, 0);		// wait the remaining millisecond timeout
+                                // wait the remaining millisecond timeout
+                                scheduleQueue.wait(milliTimeout, 0);
                             } else if (milliTimeout == 0 && nanoTimeout > 0) {
-                                scheduleQueue.wait(0, nanoTimeout);		// wait the remaining nano interval
-                                break;		// assume the nano timeout was successful as we have no way to verify otherwise
+                                // wait the remaining nano interval
+                                scheduleQueue.wait(0, nanoTimeout);
+                                // assume the nano timeout was successful as we have no way to verify otherwise
+                                break;
                             } else {
                                 break;
                             }

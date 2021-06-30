@@ -983,7 +983,8 @@ public class SimpleButton extends GradientLabel {
             if (pressedTime != 0) {
                 return new Date().getTime() - lastPressedTime;
             } else {
-                return 0;	// not pressed
+                // not pressed
+                return 0;
             }
         }
 
@@ -1053,8 +1054,10 @@ public class SimpleButton extends GradientLabel {
      * Chain periodic press events as long as the user keeps the button pressed
      */
     private void chainPressEvents(final ChainMouseListener sender) {
-        if (pressed && isEnabled()) {	// make sure the user is still pressing the button and the button is still enabled
-            if (sender.isLongPress()) {	// verify that the user has pressed continuously for a long time
+        // make sure the user is still pressing the button and the button is still enabled
+        if (pressed && isEnabled()) {
+            // verify that the user has pressed continuously for a long time
+            if (sender.isLongPress()) {
                 // fire the event
                 fireActionPerformed(new ActionEvent(SimpleButton.this, ActionEvent.ACTION_PERFORMED, MOUSE_CHAIN));
 

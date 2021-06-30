@@ -57,7 +57,8 @@ public class Util {
             return infoMap;
         } catch (java.io.FileNotFoundException exception) {
             // this may be fine as the resource may be optional
-            return null;	// return null to indicate that the resource was missing
+            // return null to indicate that the resource was missing
+            return null;
         } catch (IOException exception) {
             throw new RuntimeException("Exception loading bundle from resource: " + resourceURL, exception);
         }

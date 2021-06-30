@@ -80,7 +80,8 @@ public class DispatchGroup implements DispatchOperationListener {
      * wait indefinitely for all operations to complete
      */
     public void waitForCompletion() {
-        while (pendingOperationCount > 0) {		// while loop protects against accidental wake since wait is not guaranteed
+        // while loop protects against accidental wake since wait is not guaranteed
+        while (pendingOperationCount > 0) {
             try {
                 synchronized (emptyWaitLock) {
                     emptyWaitLock.wait();
@@ -103,10 +104,13 @@ public class DispatchGroup implements DispatchOperationListener {
      * @param timeout the maximum timeout in milliseconds to wait
      */
     public void waitForCompletionWithTimeout(final long timeout) {
-        final long maxTime = new Date().getTime() + timeout;	// maximum time until expiration
-        while (pendingOperationCount > 0 && new Date().getTime() < maxTime) {		// while loop protects against accidental wake since wait is not guaranteed
+        // maximum time until expiration
+        final long maxTime = new Date().getTime() + timeout;
+        // while loop protects against accidental wake since wait is not guaranteed
+        while (pendingOperationCount > 0 && new Date().getTime() < maxTime) {
             final long remainingTime = Math.max(0, maxTime - new Date().getTime());
-            if (remainingTime > 0) {		// remaining time must be strictly greater than zero otherwise the wait will wait forever until notified
+            // remaining time must be strictly greater than zero otherwise the wait will wait forever until notified
+            if (remainingTime > 0) {
                 try {
                     synchronized (emptyWaitLock) {
                         emptyWaitLock.wait(remainingTime);

@@ -226,8 +226,10 @@ public class ImpactGenerator {
             int counter = 1;
             int devTypeInd = 1;
             String devStr = "";
-            AcceleratorNode currentThickNode = null;	// there can at most be one thick node at any location
-            double currentThickNodePath = 0.0;			// total current path taken through the thick node (only bends modify and use this variable)
+            // there can at most be one thick node at any location
+            AcceleratorNode currentThickNode = null;
+            // total current path taken through the thick node (only bends modify and use this variable)
+            double currentThickNodePath = 0.0;
 
             while (ilat.hasNext()) {
                 final Element element = ilat.next();

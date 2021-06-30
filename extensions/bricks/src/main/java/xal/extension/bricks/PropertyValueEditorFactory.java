@@ -550,7 +550,8 @@ public class PropertyValueEditorFactory {
                     final IconResource icon = (IconResource) value;
                     final String group = icon.getGroup();
                     final String iconName = icon.getIconName();
-                    textField.setText(group != null && !group.isEmpty() ? group + ":" + iconName : iconName);	// group:iconName or just iconName if no group is specified
+                    // group:iconName or just iconName if no group is specified
+                    textField.setText(group != null && !group.isEmpty() ? group + ":" + iconName : iconName);
                 } else {
                     textField.setText("");
                 }

@@ -193,13 +193,16 @@ public class MonitorController {
                 @Override
                 public void connectionMade(Channel channel) {
                     synchronized (eventLock) {
-                        lastRecord = null;									// clear the last record
+                        // clear the last record
+                        lastRecord = null;
 
                         if (monitor == null) {
-                            makeMonitor();									// create a new monitor if one doesn't already exist
+                            // create a new monitor if one doesn't already exist
+                            makeMonitor();
                         }
 
-                        eventProxy.connectionChanged(channel, true);		// notify listeners about the new connection
+                        // notify listeners about the new connection
+                        eventProxy.connectionChanged(channel, true);
                     }
                 }
 
@@ -212,16 +215,20 @@ public class MonitorController {
                 @Override
                 public void connectionDropped(Channel channel) {
                     synchronized (eventLock) {
-                        lastRecord = null;									// clear the last record
-                        eventProxy.connectionChanged(channel, false);	// notify listeners about the dropped connection
+                        // clear the last record
+                        lastRecord = null;
+                        // notify listeners about the dropped connection
+                        eventProxy.connectionChanged(channel, false);
                     }
                 }
             };
 
-            channel.addConnectionListener(connectionListener);		// listen for connection events
+            // listen for connection events
+            channel.addConnectionListener(connectionListener);
         }
 
-        if (!channel.isConnected() && channel.isValid()) {		// request a new connection if the channel is not already connected
+        // request a new connection if the channel is not already connected
+        if (!channel.isConnected() && channel.isValid()) {
             channel.requestConnection();
         }
     }
@@ -244,9 +251,11 @@ public class MonitorController {
                 @Override
                 public void eventValue(final ChannelTimeRecord record, final Channel channel) {
                     synchronized (eventLock) {
-                        lastRecord = record;								// update the latest record
+                        // update the latest record
+                        lastRecord = record;
                         if (eventProxy != null) {
-                            eventProxy.valueChanged(channel, record);	//  notify listeners about the new data
+                            //  notify listeners about the new data
+                            eventProxy.valueChanged(channel, record);
                         }
                     }
                 }

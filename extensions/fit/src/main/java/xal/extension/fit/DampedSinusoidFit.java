@@ -810,8 +810,10 @@ public final class DampedSinusoidFit {
      * phase ))
      */
     private double toCosineLikePhase(final double sineLikePhase) {
-        final double rawCosinePhase = sineLikePhase - Math.PI / 2.0;	// shift by pi/2
-        return rawCosinePhase < -Math.PI ? rawCosinePhase + 2 * Math.PI : rawCosinePhase;		// force the phase to be between -pi and pi
+        // shift by pi/2
+        final double rawCosinePhase = sineLikePhase - Math.PI / 2.0;
+        // force the phase to be between -pi and pi
+        return rawCosinePhase < -Math.PI ? rawCosinePhase + 2 * Math.PI : rawCosinePhase;
     }
 
     /**
@@ -882,7 +884,8 @@ public final class DampedSinusoidFit {
             final DifferentialVariable offsetEstimate = numerator.over(denominator);
             offsetEstimates[index] = offsetEstimate;
 
-            final double weight = 1.0 / offsetEstimate.varianceWithSignalVariance(1.0);	// signal variance must be one since we really want the sum of square of first partials
+            // signal variance must be one since we really want the sum of square of first partials
+            final double weight = 1.0 / offsetEstimate.varianceWithSignalVariance(1.0);
             final DifferentialVariable weightedOffset = offsetEstimate.times(weight);
             offsetSum = offsetSum.plus(weightedOffset);
             totalWeight += weight;
@@ -914,7 +917,8 @@ public final class DampedSinusoidFit {
      * fit the growth rate to the waveform
      */
     private void fitInitialGrowthRate() {
-        getInitialOffset();	// make sure the zeroed waveform is calculated
+        // make sure the zeroed waveform is calculated
+        getInitialOffset();
 
         final int count = numPoints - 3;
         DifferentialVariable growthFactorSquareSum = DifferentialVariable.ZERO;
@@ -928,7 +932,8 @@ public final class DampedSinusoidFit {
             final DifferentialVariable numerator = q1.times(q3).minus(q2.pow(2));
             final DifferentialVariable denominator = q0.times(q2).minus(q1.pow(2));
             final DifferentialVariable growthFactorSquareEstimate = numerator.over(denominator);
-            if (growthFactorSquareEstimate.getValue() >= 0.0) {	// exclude points where the growth factor is negative
+            // exclude points where the growth factor is negative
+            if (growthFactorSquareEstimate.getValue() >= 0.0) {
                 final double weight = 1.0 / growthFactorSquareEstimate.varianceWithSignalVariance(1.0);
                 growthFactorSquareSum = growthFactorSquareSum.plus(growthFactorSquareEstimate.times(weight));
                 totalWeight += weight;
@@ -958,7 +963,8 @@ public final class DampedSinusoidFit {
             final DifferentialVariable q1 = initialZeroedWaveform[index + 1];
             final DifferentialVariable q2 = initialZeroedWaveform[index + 2];
 
-            if (q1.getValue() != 0.0) {	// exclude points where the denominator goes to zero
+            // exclude points where the denominator goes to zero
+            if (q1.getValue() != 0.0) {
                 final DifferentialVariable numerator = q0.times(growthFactor).plus(q2.times(reciprocolGrowthFactor));
                 final DifferentialVariable estimate = numerator.over(q1);
                 final DifferentialVariable cosMuEstimate = estimate.times(0.5);
@@ -986,7 +992,8 @@ public final class DampedSinusoidFit {
         final double q1 = (zeroedWaveform[1] + waveformErrors[1]) / growthFactor;
 
         final double sinMu = Math.sin(mu);
-        final boolean isZeroSineMu = Math.abs(sinMu) < 0.0001;	// avoid catastrophe by setting the sin amplitude to zero near the integer and half integer frequencies
+        // avoid catastrophe by setting the sin amplitude to zero near the integer and half integer frequencies
+        final boolean isZeroSineMu = Math.abs(sinMu) < 0.0001;
         final double cosAmp = isZeroSineMu ? 0.0 : (q1 - q0 * Math.cos(mu)) / Math.sin(mu);
         final double sinAmp = q0;
 
@@ -1014,7 +1021,8 @@ public final class DampedSinusoidFit {
         double totalCosWeight = 0.0;
         double totalSinWeight = 0.0;
         DifferentialVariable growth = DifferentialVariable.newConstant(1.0);
-        final boolean isZeroSineMu = Math.abs(sinMu.getValue()) < 0.0001;	// sine is too close to zero, so need to use approximation about it to avoid catastrophe
+        // sine is too close to zero, so need to use approximation about it to avoid catastrophe
+        final boolean isZeroSineMu = Math.abs(sinMu.getValue()) < 0.0001;
         for (int turn = 0; turn < count; turn++) {
             final DifferentialVariable q0 = initialZeroedWaveform[turn].times(growth);
             final DifferentialVariable q1 = initialZeroedWaveform[turn + 1].times(growth).times(reciprocolGrowthFactor);

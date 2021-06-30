@@ -300,7 +300,8 @@ public class PVLoggerDataSource {
         // include quadrupoles, dipole correctors and optionally bends
         final OrTypeQualifier magnetQualifier = OrTypeQualifier.qualifierForKinds(Quadrupole.TYPE, HDipoleCorr.TYPE, VDipoleCorr.TYPE);
         if (usesLoggedBendFields) {
-            magnetQualifier.or(Bend.TYPE);	// optionally include bends
+            // optionally include bends
+            magnetQualifier.or(Bend.TYPE);
         }
         // filter magnets for those that are strictly electromagnets with good status
         final TypeQualifier electromagnetQualifier = AndTypeQualifier.qualifierWithQualifiers(magnetQualifier, new KindQualifier(Electromagnet.TYPE)).andStatus(true);
@@ -381,7 +382,8 @@ public class PVLoggerDataSource {
                     final double rawValue = magnetPowerSupplyValues.get(mainSupplyReadbackPV);
                     // take into account of proper transform
                     totalField = toFieldFromRaw(magnet, mainSupplyReadbackChannel, rawValue);
-                } else {		// if no power supply readback, use power supply fieldSet
+                // if no power supply readback, use power supply fieldSet
+                } else {
                     final Channel mainSupplySetpointChannel = magnet.getMainSupply().getChannel(MagnetMainSupply.FIELD_SET_HANDLE);
                     final String mainSupplySetpointPV = mainSupplySetpointChannel.channelName();
                     if (magnetPowerSupplyValues.containsKey(mainSupplySetpointPV)) {
@@ -415,7 +417,8 @@ public class PVLoggerDataSource {
                         // todo: this logic needs to move to the TrimmedQuadrupole class
                         // handle shunt PS differently
                         if (trimFieldPV.contains("ShntC")) {
-                            final double shuntField = Math.abs(trimField);	// shunt is unipolar
+                            // shunt is unipolar
+                            final double shuntField = Math.abs(trimField);
                             // shunt always opposes the main field
                             totalField = totalField * trimField > 0 ? totalField - shuntField : totalField + shuntField;
                         } else {

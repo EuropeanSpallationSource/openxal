@@ -90,7 +90,8 @@ public class PolyLeastsquares {
         mA = new GenericMatrix(dCols);
         mY = new GenericVector(dY);
 
-        mAl = mA.transpose().times(mA);	//mAl= mA'mA
+        //mAl= mA'mA
+        mAl = mA.transpose().times(mA);
         mC = mAl.inverse().times(mA.transpose()).times(mY);
 
         return;

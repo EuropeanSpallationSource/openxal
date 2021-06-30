@@ -61,7 +61,8 @@ public abstract class ResourceManager {
         // first check system properties and if it exists then use it's value
         if (hasProperty) {
             return Boolean.getBoolean(RESOURCES_FILE_SEARCH_PROPERTY);
-        } else {		// check for an environment variable of the same name
+        // check for an environment variable of the same name
+        } else {
             final String environment = System.getenv(RESOURCES_FILE_SEARCH_PROPERTY);
             return Boolean.parseBoolean(environment);
         }
@@ -200,10 +201,13 @@ class JarredResourceManager extends ResourceManager {
         final PackagePartition packagePartition = PackagePartition.getValidInstance(rootClass);
 
         if (packagePartition != null) {
-            final String componentType = packagePartition.componentType;	// e.g. app, extension, plugin, service
-            final String component = packagePartition.componentName;		// e.g. application, widgets, pvlogger, scan1d, launcher
+            // e.g. app, extension, plugin, service
+            final String componentType = packagePartition.componentType;
+            // e.g. application, widgets, pvlogger, scan1d, launcher
+            final String component = packagePartition.componentName;
 
-            final StringBuilder pathBuilder = new StringBuilder("/" + packagePartition.packagePrefix + "/");		// e.g. "/xal/"
+            // e.g. "/xal/"
+            final StringBuilder pathBuilder = new StringBuilder("/" + packagePartition.packagePrefix + "/");
             pathBuilder.append(componentType);
             pathBuilder.append("/").append(component).append("/resources");
 
@@ -319,7 +323,8 @@ class FileResourceManager extends ResourceManager {
             final File siteCoreResource = fetchCoreResourceFile(subdomain, rootClass, "site", resourcePath);
             if (siteCoreResource.exists()) {
                 return siteCoreResource.toURI().toURL();
-            } else {		// next try to find the resource in the common component
+            // next try to find the resource in the common component
+            } else {
                 final File coreResource = fetchCoreResourceFile(subdomain, rootClass, null, resourcePath);
                 if (coreResource.exists()) {
                     return coreResource.toURI().toURL();
@@ -338,13 +343,17 @@ class FileResourceManager extends ResourceManager {
     private File fetchCoreResourceFile(final String subdomain, final Class<?> rootClass, final String prefix, final String resourcePath) {
         final File baseFile = prefix != null ? new File(rootFile, prefix) : rootFile;
         final File coreDirectory = new File(baseFile, "core");
-        final File subdomainDirectory = subdomain != null ? new File(coreDirectory, subdomain) : coreDirectory;	// search under the core's subdomain (e.g. "test) if any otherwise search directly under core
+        // search under the core's subdomain (e.g. "test) if any otherwise search directly under core
+        final File subdomainDirectory = subdomain != null ? new File(coreDirectory, subdomain) : coreDirectory;
         final File resourcesDirectory = new File(subdomainDirectory, "resources");
 
         String pathFromResources;
-        if (resourcePath.startsWith("/")) {		// resource path is absolute and hence relative to "resources" root
-            pathFromResources = resourcePath.substring(1);	// strip the leading "/"
-        } else {			// resource path is relative and hence relative to the root class's package
+        // resource path is absolute and hence relative to "resources" root
+        if (resourcePath.startsWith("/")) {
+            // strip the leading "/"
+            pathFromResources = resourcePath.substring(1);
+        // resource path is relative and hence relative to the root class's package
+        } else {
             // replace package dot delimiter with URL slash delimiter (should work on all platforms if we use URLs here instead of files)
             final String packagePath = rootClass.getPackage().getName().replaceAll("\\.", "/");
             pathFromResources = packagePath + "/" + resourcePath;
@@ -372,7 +381,8 @@ class FileResourceManager extends ResourceManager {
             final File siteContainerResource = fetchContainerResourceFile(rootClass, "site", includeExtension, resourcePath);
             if (siteContainerResource != null && siteContainerResource.exists()) {
                 return siteContainerResource.toURI().toURL();
-            } else {		// next try to find the resource in the common component
+            // next try to find the resource in the common component
+            } else {
                 final File componentResource = fetchContainerResourceFile(rootClass, null, includeExtension, resourcePath);
                 if (componentResource != null && componentResource.exists()) {
                     return componentResource.toURI().toURL();
@@ -392,51 +402,65 @@ class FileResourceManager extends ResourceManager {
         final PackagePartition packagePartition = PackagePartition.getValidInstance(rootClass);
 
         if (packagePartition != null) {
-            final String componentType = packagePartition.componentType;	// e.g. app, extension, plugin, service
-            final String component = packagePartition.componentName;		// e.g. application, widgets, pvlogger, scan1d, launcher
+            // e.g. app, extension, plugin, service
+            final String componentType = packagePartition.componentType;
+            // e.g. application, widgets, pvlogger, scan1d, launcher
+            final String component = packagePartition.componentName;
 
-            final File baseDirectory = prefix != null ? new File(rootFile, prefix) : rootFile;	// e.g. ${OPENXAL_HOME} or ${OPENXAL_HOME}/site
+            // e.g. ${OPENXAL_HOME} or ${OPENXAL_HOME}/site
+            final File baseDirectory = prefix != null ? new File(rootFile, prefix) : rootFile;
             if (!baseDirectory.exists()) {
                 return null;
             }
 
-            final File componentTypeRoot = new File(baseDirectory, componentType + "s");		// e.g. ${OPENXAL_HOME}/extensions
+            // e.g. ${OPENXAL_HOME}/extensions
+            final File componentTypeRoot = new File(baseDirectory, componentType + "s");
             if (!componentTypeRoot.exists()) {
                 return null;
             }
 
-            final File componentDirectory = new File(componentTypeRoot, component);			// e.g. ${OPENXAL_HOME}/extensions/application
+            // e.g. ${OPENXAL_HOME}/extensions/application
+            final File componentDirectory = new File(componentTypeRoot, component);
             if (!componentDirectory.exists()) {
                 return null;
             }
 
-            final File resourcesParent = includeExtension ? new File(componentDirectory, "extension") : componentDirectory;		// e.g. ${OPENXAL_HOME}/site/services/pvlogger/extension
+            // e.g. ${OPENXAL_HOME}/site/services/pvlogger/extension
+            final File resourcesParent = includeExtension ? new File(componentDirectory, "extension") : componentDirectory;
             if (!resourcesParent.exists()) {
                 return null;
             }
 
-            final File resourcesDirectory = new File(resourcesParent, "resources");		// e.g. ${OPENXAL_HOME}/extensions/application/resources
+            // e.g. ${OPENXAL_HOME}/extensions/application/resources
+            final File resourcesDirectory = new File(resourcesParent, "resources");
             if (!resourcesDirectory.exists()) {
                 return null;
             }
 
             String pathFromResources;
-            if (resourcePath.startsWith("/")) {		// resource path is absolute and hence relative to "resources" root
-                pathFromResources = resourcePath.substring(1);	// strip the leading "/"
-            } else {			// resource path is relative and hence relative to the root class's package suffix (i.e. relative to component)
+            // resource path is absolute and hence relative to "resources" root
+            if (resourcePath.startsWith("/")) {
+                // strip the leading "/"
+                pathFromResources = resourcePath.substring(1);
+            // resource path is relative and hence relative to the root class's package suffix (i.e. relative to component)
+            } else {
                 // replace package dot delimiter with URL slash delimiter (should work on all platforms if we use URLs here instead of files)
                 final String packageSuffix = packagePartition.packageSuffix;
-                final String relativePackagePath = packageSuffix != null ? packageSuffix.replaceAll("\\.", "/") : null;		// e.g. smf  (replacing dots with /)
-                pathFromResources = relativePackagePath != null ? relativePackagePath + "/" + resourcePath : resourcePath;		// e.g. smf/menudef.properties
+                // e.g. smf  (replacing dots with /)
+                final String relativePackagePath = packageSuffix != null ? packageSuffix.replaceAll("\\.", "/") : null;
+                // e.g. smf/menudef.properties
+                pathFromResources = relativePackagePath != null ? relativePackagePath + "/" + resourcePath : resourcePath;
             }
 
             // use URLs to avoid file system path separator dependencies
             try {
                 final URL resourcesURL = resourcesDirectory.toURI().toURL();
                 //${OPENXAL_HOME}/extensions/application/resources/smf/menudef.properties
-                final URL resourceURL = new URL(resourcesURL, pathFromResources);		// e.g. file:
+                // e.g. file:
+                final URL resourceURL = new URL(resourcesURL, pathFromResources);
 
-                return new File(resourceURL.toURI());		// e.g. ${OPENXAL_HOME}/extensions/application/resources/smf/menudef.properties
+                // e.g. ${OPENXAL_HOME}/extensions/application/resources/smf/menudef.properties
+                return new File(resourceURL.toURI());
             } catch (MalformedURLException exception) {
                 throw new RuntimeException("Malformed URL when fetching resource URL from file.", exception);
             } catch (URISyntaxException exception) {
@@ -504,16 +528,20 @@ class PackagePartition {
         final String[] parts = new String[groupCount];
 
         if (packageMatcher.matches()) {
-            packagePrefix = groupCount > 0 ? packageMatcher.group(1) : null;		// e.g. xal
+            // e.g. xal
+            packagePrefix = groupCount > 0 ? packageMatcher.group(1) : null;
 
-            componentType = groupCount > 1 ? packageMatcher.group(2) : null;		// e.g. extension
+            // e.g. extension
+            componentType = groupCount > 1 ? packageMatcher.group(2) : null;
 
-            componentName = groupCount > 2 ? packageMatcher.group(3) : null;		// e.g. application
+            // e.g. application
+            componentName = groupCount > 2 ? packageMatcher.group(3) : null;
 
             // last package substring stripping the leading "."
             if (groupCount > 3) {
                 final String rawSuffix = packageMatcher.group(4);
-                packageSuffix = rawSuffix != null ? rawSuffix.substring(1) : null;		// e.g. smf
+                // e.g. smf
+                packageSuffix = rawSuffix != null ? rawSuffix.substring(1) : null;
             } else {
                 packageSuffix = null;
             }
@@ -531,6 +559,7 @@ class PackagePartition {
      */
     public static PackagePartition getValidInstance(final Class<?> rootClass) {
         final PackagePartition partition = new PackagePartition(rootClass);
-        return partition.componentName != null ? partition : null;		// if it has the component name it has prefix, type and name and thus is valid
+        // if it has the component name it has prefix, type and name and thus is valid
+        return partition.componentName != null ? partition : null;
     }
 }

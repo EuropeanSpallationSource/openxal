@@ -120,7 +120,8 @@ public abstract class Correlator<SourceType, RecordType, SourceAgentType extends
         localCenter.registerTarget(broadcaster, StateNotice.class);
         broadcaster.addCorrelationNoticeListener(poster);
 
-        broadcaster.binTimespanChanged(this, binTimespan);		// make sure interested broadcasters get this info
+        // make sure interested broadcasters get this info
+        broadcaster.binTimespanChanged(this, binTimespan);
     }
 
     /**
@@ -338,8 +339,10 @@ public abstract class Correlator<SourceType, RecordType, SourceAgentType extends
         };
 
         timedBroadcaster.addCorrelationNoticeListener(correlationListener);
-        timedBroadcaster.setRepeats(false);		// in case timedBroadcaster was reused
-        timedBroadcaster.setPeriod(timeout);	// in case timedBroadcaster was reused
+        // in case timedBroadcaster was reused
+        timedBroadcaster.setRepeats(false);
+        // in case timedBroadcaster was reused
+        timedBroadcaster.setPeriod(timeout);
 
         if (broadcaster != timedBroadcaster) {
             setBroadcaster(timedBroadcaster);
@@ -359,8 +362,10 @@ public abstract class Correlator<SourceType, RecordType, SourceAgentType extends
         stopMonitoring();
 
         final TimedBroadcaster<RecordType> timedBroadcaster = (broadcaster instanceof TimedBroadcaster) ? (TimedBroadcaster<RecordType>) broadcaster : new TimedBroadcaster<>(localCenter, timeout);
-        timedBroadcaster.setPeriod(timeout);	// in case timedBroadcaster was reused
-        timedBroadcaster.setRepeats(true);		// in case timedBroadcaster was reused
+        // in case timedBroadcaster was reused
+        timedBroadcaster.setPeriod(timeout);
+        // in case timedBroadcaster was reused
+        timedBroadcaster.setRepeats(true);
 
         if (broadcaster != timedBroadcaster) {
             setBroadcaster(timedBroadcaster);
@@ -523,7 +528,8 @@ public abstract class Correlator<SourceType, RecordType, SourceAgentType extends
 
             try {
                 synchronized (WaitingListener.this) {
-                    WaitingListener.this.wait((long) (1000 * timeout));	// block until we get an event or the timeout has expired
+                    // block until we get an event or the timeout has expired
+                    WaitingListener.this.wait((long) (1000 * timeout));
                 }
             } catch (InterruptedException exception) {
                 LOGGER.log(Level.SEVERE, "Error while waiting for a correlation.", exception);

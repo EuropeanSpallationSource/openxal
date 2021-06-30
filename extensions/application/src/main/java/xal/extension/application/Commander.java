@@ -68,7 +68,8 @@ public class Commander {
         commands = new HashMap<>(appCommander.commands);
         buttonModelMap = new HashMap<>(appCommander.buttonModelMap);
 
-        loadCustomBundle(document);		// document additions
+        // document additions
+        loadCustomBundle(document);
     }
 
     /**
@@ -95,7 +96,8 @@ public class Commander {
         commands = new HashMap<>();
         buttonModelMap = new HashMap<>();
 
-        loadCustomDocumentBundle(document);		// document additions
+        // document additions
+        loadCustomDocumentBundle(document);
         registerCustomCommands(document);
     }
 
@@ -171,7 +173,8 @@ public class Commander {
     protected void loadCustomBundle(final XalAbstractDocument document) {
         final String menudefResource = document.getCustomMenuDefinitionResource();
         if (menudefResource == null) {
-            return;	// no custom document menu definition
+            // no custom document menu definition
+            return;
         }
         loadCustomBundle(Application.getApp(), menudefResource);
     }
@@ -187,7 +190,8 @@ public class Commander {
     protected void loadCustomDocumentBundle(final XalInternalDocument document) {
         final String menudefResource = document.getCustomInternalMenuDefinitionResource();
         if (menudefResource == null) {
-            return;	// no custom document menu definition
+            // no custom document menu definition
+            return;
         }
         loadCustomBundle(Application.getApp(), menudefResource);
     }
@@ -315,7 +319,8 @@ public class Commander {
             } else if (menuItemKey.startsWith("^")) {
                 JMenuItem menuItem = makeMenu(menuItemKey.substring(1));
                 menu.add(menuItem);
-            } else if (menuItemKey.startsWith("*")) {	// an asterisk identifies a radio button group of menu items
+            // an asterisk identifies a radio button group of menu items
+            } else if (menuItemKey.startsWith("*")) {
                 addMenuItemsFromGroup(menu, menuItemKey.substring(1));
             } else {
                 // create the menu item and assign its action and add the menu item to the menu
@@ -380,17 +385,20 @@ public class Commander {
     public JToolBar getToolbar() {
         final String[] buttonKeys = Util.getTokens(controlMap.get("toolbar"));
         if (buttonKeys.length == 0) {
-            return null;		// there is no toolbar defined
+            // there is no toolbar defined
+            return null;
         }
         final JToolBar toolBar = new JToolBar();
         for (int index = 0; index < buttonKeys.length; index++) {
             final String buttonKey = buttonKeys[index];
             if (!getState(buttonKey).isIncluded()) {
-                continue;		// skip items that are marked as not included
+                // skip items that are marked as not included
+                continue;
             }
             if (buttonKey.equals("-")) {
                 toolBar.addSeparator();
-            } else if (buttonKey.startsWith("*")) {	 // an asterisk identifies a toggle button group
+            // an asterisk identifies a toggle button group
+            } else if (buttonKey.startsWith("*")) {
                 addToolbarItemsFromGroup(toolBar, buttonKey.substring(1));
             } else {
                 final String label = getLabel(buttonKey);
@@ -461,7 +469,8 @@ public class Commander {
         for (int itemIndex = 0; itemIndex < itemKeys.length; itemIndex++) {
             final String itemKey = itemKeys[itemIndex];
             if (!getState(itemKey).isIncluded()) {
-                continue;		// skip items that are marked as not included
+                // skip items that are marked as not included
+                continue;
             }
             // create the button and assign its action and add the button to the toolbar
             final String label = getLabel(itemKey);
@@ -526,11 +535,13 @@ public class Commander {
 
         // check if the menu has been assigned items
         if (menuItemList == null) {
-            menu.setEnabled(menuHandler != null);		// if the menu has not no items and no handler then disable it
+            // if the menu has not no items and no handler then disable it
+            menu.setEnabled(menuHandler != null);
             return menu;
         }
 
-        final String defaultActionKey = getActionKey(menuKey);	// this is the default action for menu items that don't have an action
+        // this is the default action for menu items that don't have an action
+        final String defaultActionKey = getActionKey(menuKey);
 
         // Get the list of menu item identifiers as an array and create menu items and add them to the menu
         final String[] menuItemKeys = Util.getTokens(menuItemList);
@@ -638,12 +649,14 @@ public class Commander {
     public Icon getIcon(final String itemID) {
         final String imageSpec = getItemFieldProperty(itemID, "icon");
         if (imageSpec != null) {
-            final String[] components = imageSpec.split(":", 2);	// get the group and file name
+            // get the group and file name
+            final String[] components = imageSpec.split(":", 2);
             if (components.length > 1) {
                 final String group = components[0];
                 final String imageName = components[1];
                 return IconLib.getIcon(group, imageName);
-            } else {	// look for the image under the application's resources
+            // look for the image under the application's resources
+            } else {
                 final AbstractApplicationAdaptor appAdaptor = Application.getApp().getApplicationAdaptor();
                 final URL imageURL = appAdaptor.getResourceURL(imageSpec);
                 return imageURL != null ? new ImageIcon(imageURL) : null;
@@ -685,7 +698,8 @@ public class Commander {
         for (int itemIndex = 0; itemIndex < menuItemKeys.length; itemIndex++) {
             final String menuItemKey = menuItemKeys[itemIndex];
             if (!getState(menuItemKey).isIncluded()) {
-                continue;		// skip items that are marked as not included
+                // skip items that are marked as not included
+                continue;
             }
             // create the menu item and assign its action and add the menu item to the menu
             final String label = getLabel(menuItemKey);
@@ -1022,7 +1036,8 @@ class ItemState {
             return DEFAULT_STATE;
         }
 
-        boolean included = true;	// include items by default unless otherwise directed
+        // include items by default unless otherwise directed
+        boolean included = true;
 
         final String[] stateKeys = Util.getTokens(description);
         for (int index = 0; index < stateKeys.length; index++) {

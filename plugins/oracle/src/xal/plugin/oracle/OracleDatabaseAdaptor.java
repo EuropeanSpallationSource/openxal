@@ -77,7 +77,8 @@ public class OracleDatabaseAdaptor extends DatabaseAdaptor {
             // reflection for:
             final Class<?> blobClass = Class.forName("oracle.sql.BLOB");
             final Field durationSessionField = blobClass.getDeclaredField("DURATION_SESSION");
-            final int durationSession = durationSessionField.getInt(null);	// get the value of the static field
+            // get the value of the static field
+            final int durationSession = durationSessionField.getInt(null);
             // arrays (used here as argument) not compatible with Generics
             @SuppressWarnings("rawtypes")
             final Method createMethod = blobClass.getMethod("createTemporary", new Class[]{Connection.class, Boolean.TYPE, Integer.TYPE});

@@ -179,7 +179,8 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
      * not match this accelerator to which it is being put
      */
     public void putMagnetMainSupply(final MagnetMainSupply mainSupply) throws IllegalArgumentException {
-        if (mainSupply.getAccelerator() == this) {	// make sure this supply belongs here
+        // make sure this supply belongs here
+        if (mainSupply.getAccelerator() == this) {
             magnetMainSupplies.put(mainSupply.getId(), mainSupply);
         } else {
             throw new IllegalArgumentException("Attempted to put Magnet Main Supply: " + mainSupply.getId() + " whose accelerator does not match the accelerator to which it is being put.");
@@ -196,7 +197,8 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
      * not match this accelerator to which it is being put
      */
     public void putMagnetTrimSupply(final MagnetTrimSupply trimSupply) {
-        if (trimSupply.getAccelerator() == this) {	// make sure this supply belongs here
+        // make sure this supply belongs here
+        if (trimSupply.getAccelerator() == this) {
             magnetTrimSupplies.put(trimSupply.getId(), trimSupply);
         } else {
             throw new IllegalArgumentException("Attempted to put Magnet Trim Supply: " + trimSupply.getId() + " whose accelerator does not match the accelerator to which it is being put.");

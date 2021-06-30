@@ -135,7 +135,8 @@ public abstract class Channel {
      */
     protected Channel(String name, ValueTransform aTransform) {
         // Initialize attributes
-        valid = true;		// by default a channel is valid unless marked otherwise
+        // by default a channel is valid unless marked otherwise
+        valid = true;
         connectionFlag = false;
         strId = name;
         valueTransform = aTransform;
@@ -211,7 +212,8 @@ public abstract class Channel {
         }
         messageCenter.registerTarget(listener, this, ConnectionListener.class);
         if (isConnected()) {
-            listener.connectionMade(this);	// immediately post to new listener
+            // immediately post to new listener
+            listener.connectionMade(this);
         }
     }
 

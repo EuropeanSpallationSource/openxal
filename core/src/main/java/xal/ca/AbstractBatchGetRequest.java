@@ -230,11 +230,14 @@ public abstract class AbstractBatchGetRequest<RecordType extends ChannelRecord> 
      * @return true if complete or false if not
      */
     public boolean waitForCompletion(final double timeout) {
-        final long milliTimeout = (long) (1000 * timeout);		// timeout in milliseconds
-        final long maxTime = new Date().getTime() + milliTimeout;	// maximum time until expiration
+        // timeout in milliseconds
+        final long milliTimeout = (long) (1000 * timeout);
+        // maximum time until expiration
+        final long maxTime = new Date().getTime() + milliTimeout;
         while (!isComplete() && new Date().getTime() < maxTime) {
             final long remainingTime = Math.max(0, maxTime - new Date().getTime());
-            if (remainingTime > 0) {		// remaining time must be strictly greater than zero to prevent waiting forever should it be identically zero
+            // remaining time must be strictly greater than zero to prevent waiting forever should it be identically zero
+            if (remainingTime > 0) {
                 try {
                     synchronized (completionLock) {
                         completionLock.wait(remainingTime);
@@ -428,13 +431,15 @@ public abstract class AbstractBatchGetRequest<RecordType extends ChannelRecord> 
      * process any pending connected channels
      */
     private void processPendingConnectedChannels() {
-        if (!pendingChannelProcessingQueued) {		// flag allows pending connected channels to be accumulated so get requests can be submitted in batches
+        // flag allows pending connected channels to be accumulated so get requests can be submitted in batches
+        if (!pendingChannelProcessingQueued) {
             pendingChannelProcessingQueued = true;
 
             getRequestedProcessingQueue.dispatchAsync(new Runnable() {
                 @Override
                 public void run() {
-                    Thread.yield();		// yield to other threads so we can accumulate a batch of channels to process
+                    // yield to other threads so we can accumulate a batch of channels to process
+                    Thread.yield();
 
                     pendingChannelProcessingQueued = false;
 
@@ -450,7 +455,8 @@ public abstract class AbstractBatchGetRequest<RecordType extends ChannelRecord> 
                                 processRequest(channel);
                             }
                             Channel.flushIO();
-                            Thread.yield();		// yield to other threads so we can accumulate a batch of channels to process 
+                            // yield to other threads so we can accumulate a batch of channels to process 
+                            Thread.yield();
                         } catch (Exception exception) {
                             LOGGER.log(Level.SEVERE, null, exception);
                         }

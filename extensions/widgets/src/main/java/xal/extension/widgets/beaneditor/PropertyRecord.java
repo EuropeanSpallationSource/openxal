@@ -106,7 +106,8 @@ public class PropertyRecord {
             setValue((Object) value);
         } else {
             try {
-                final Class<?> type = rawType.isPrimitive() ? this.value.getClass() : rawType;	// convert to wrapper type (e.g. double.class to Double.class) if necessary
+                // convert to wrapper type (e.g. double.class to Double.class) if necessary
+                final Class<?> type = rawType.isPrimitive() ? this.value.getClass() : rawType;
                 final Object objectValue = toObjectOfType(value, type);
                 setValue(objectValue);
             } catch (Exception exception) {
@@ -207,7 +208,8 @@ public class PropertyRecord {
      * append the properties in the given tree to the records nesting deeply
      */
     private static void appendPropertiesToRecords(final EditablePropertyContainer propertyTree, final List<PropertyRecord> records) {
-        records.add(new PropertyRecord(propertyTree));		// add the container itself
+        // add the container itself
+        records.add(new PropertyRecord(propertyTree));
 
         // add all the primitive properties
         final List<EditablePrimitiveProperty> properties = propertyTree.getChildPrimitiveProperties();
@@ -218,7 +220,8 @@ public class PropertyRecord {
         // navigate down through each container and append their sub trees
         final List<EditablePropertyContainer> containers = propertyTree.getChildPropertyContainers();
         for (final EditablePropertyContainer container : containers) {
-            appendPropertiesToRecords(container, records);	// add the containers descendents
+            // add the containers descendents
+            appendPropertiesToRecords(container, records);
         }
     }
 }
