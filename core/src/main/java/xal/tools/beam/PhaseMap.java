@@ -160,18 +160,6 @@ public class PhaseMap implements IArchive {
      */
     private PhaseMatrix matLinear;
 
-    /**
-     * second order part of map
-     */
-    @SuppressWarnings("unused")
-    private double[][][] arrSecond;
-
-    /**
-     * third order part of map
-     */
-    @SuppressWarnings("unused")
-    private double[][][][] arrThird;
-
     /*
      *  Initialization
      */

@@ -34,7 +34,6 @@ public class MeasuredValue {
     private boolean drawLinesOn = true;
 
     private boolean generateUnwrap = false;
-    private boolean immediateContainerUpdate = false;
 
     private BasicGraphData extGraphData = null;
     private BasicGraphData extGraphDataRB = null;
@@ -221,8 +220,6 @@ public class MeasuredValue {
     }
 
     public void setImmediateGraphUpdate(boolean immediateContainerUpdate) {
-        this.immediateContainerUpdate = immediateContainerUpdate;
-
         for (int i = 0, n = graphDataV.size(); i < n; i++) {
             graphDataV.get(i).setImmediateContainerUpdate(immediateContainerUpdate);
         }

@@ -90,12 +90,6 @@ public final class DampedSinusoidFit {
     private DifferentialVariable initialGrowthFactor;
 
     /**
-     * array of initial growth factors demonstrating the variation in the growth
-     * factor calculations
-     */
-    private List<Double> initialGrowthFactorArray;
-
-    /**
      * indicates whether the growth rate has been calculated
      */
     private boolean initialGrowthRateCalculated;
@@ -195,7 +189,6 @@ public final class DampedSinusoidFit {
         initialGrowthRateCalculated = false;
         initialGrowthRate = null;
         initialGrowthFactor = null;
-        initialGrowthFactorArray = new ArrayList<>();
         growthFactor = Double.NaN;
         growthRate = Double.NaN;
 

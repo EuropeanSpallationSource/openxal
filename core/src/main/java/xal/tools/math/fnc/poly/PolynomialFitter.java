@@ -6,7 +6,6 @@
  */
 package xal.tools.math.fnc.poly;
 
-import xal.tools.math.Interval;
 import xal.tools.math.fnc.RealFunctionSamples;
 
 /**
@@ -22,14 +21,6 @@ import xal.tools.math.fnc.RealFunctionSamples;
  * @since Sep 24, 2015
  */
 public class PolynomialFitter {
-
-    /*
-     * Local Attributes
-     */
-    /**
-     * The domain of the fitting
-     */
-    private Interval ivlDomain;
 
     /*
      * Initialization

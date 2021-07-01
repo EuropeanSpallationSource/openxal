@@ -20,8 +20,6 @@ public class CurveData {
     private double[] pointsX = null;
     private double[] pointsY = null;
 
-    private int nX, nY;
-
     private double xMin, xMax;
     private double yMin, yMax;
 

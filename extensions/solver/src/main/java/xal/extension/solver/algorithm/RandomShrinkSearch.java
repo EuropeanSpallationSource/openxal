@@ -304,22 +304,16 @@ public class RandomShrinkSearch extends SearchAlgorithm {
         protected Map<Variable, Number> values;
 
         /**
-         * tells the ShrinkSearcher to only shift the window
-         */
-        private boolean shouldShift = false;
-
-        /**
          * turns shouldShift on
          */
         @Override
         public void shouldShift() {
         }
 
-        ;
-        
-
-		/** Constructor  */
-		public RandomSearcher() {
+        /**
+         * Constructor
+         */
+        public RandomSearcher() {
             numVariables = problem.getVariables().size();
             changeProbabilityBase = 1 / (double) numVariables;
             values = new HashMap<>(numVariables);

@@ -1429,10 +1429,6 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         return varGain;
     }
 
-    // TODO Remove this after debugging
-    private boolean bolMethodCalled = false;
-    private int cntCalls = 0;
-
     /**
      * <p>
      * Computes and returns the longitudinal phase change &delta;&phi; energy

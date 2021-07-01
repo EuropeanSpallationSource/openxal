@@ -4379,8 +4379,6 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
 
         private boolean showLegend = true;
 
-        private int legend_w, legend_h;
-
         private Font font = null;
 
         /**

@@ -22,9 +22,6 @@ public class AvgController {
     //controller panel
     private JPanel avgCntrPanel = new JPanel();
 
-    //number of possible panels that look different
-    private int nPanelLooks = 2;
-
     private DecimalFormat avgNumberFormat = new DecimalFormat("###");
     private DecimalFormat timeDelayFormat = new DecimalFormat("#0.0#");
 

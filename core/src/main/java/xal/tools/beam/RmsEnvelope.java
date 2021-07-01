@@ -11,16 +11,6 @@ package xal.tools.beam;
 public class RmsEnvelope {
 
     /**
-     * Beam current
-     */
-    private double dblBmI = 0.0;
-
-    /**
-     * Beam charge
-     */
-    private double dblBmQ = 0.0;
-
-    /**
      * envelope state - covariance matrix in homogeneous phase coordinates
      */
     private PhaseMatrix matSigma;
