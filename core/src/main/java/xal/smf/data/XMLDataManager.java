@@ -341,9 +341,8 @@ public class XMLDataManager {
 
         try {
             absoluteUrl = new URL(mainUrl, urlSpec);
-        } catch (MalformedURLException excpt) {
-            System.err.println(excpt);
-            excpt.printStackTrace();
+        } catch (MalformedURLException exception) {
+            LOGGER.log(Level.SEVERE, null, exception);
         }
 
         return absoluteUrl.toString();
@@ -760,9 +759,8 @@ public class XMLDataManager {
         public void setMainUrlSpec(final String urlSpec) {
             try {
                 mainUrl = new URL(urlSpec);
-            } catch (MalformedURLException excpt) {
-                System.err.println(excpt);
-                excpt.printStackTrace();
+            } catch (MalformedURLException exception) {
+                LOGGER.log(Level.SEVERE, null, exception);
             }
         }
 
@@ -1355,9 +1353,8 @@ public class XMLDataManager {
 
             try {
                 absoluteUrl = new URL(mainUrl, groupUrlSpec);
-            } catch (MalformedURLException excpt) {
-                System.err.println(excpt);
-                excpt.printStackTrace();
+            } catch (MalformedURLException exception) {
+                LOGGER.log(Level.SEVERE, null, exception);
             }
 
             return absoluteUrl.toString();

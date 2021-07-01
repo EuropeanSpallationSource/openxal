@@ -134,9 +134,8 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
         for (final DataAdaptor comboAdaptor : comboAdaptors) {
             try {
                 addComboSequence(comboAdaptor);
-            } catch (ClassNotFoundException excpt) {
-                System.err.println(excpt);
-                excpt.printStackTrace();
+            } catch (ClassNotFoundException exception) {
+                LOGGER.log(Level.SEVERE, null, exception);
             }
         }
     }

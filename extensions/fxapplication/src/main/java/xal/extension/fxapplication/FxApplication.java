@@ -807,8 +807,8 @@ public abstract class FxApplication extends Application {
             dialog.getDialogPane().setContent(grid);
 
             dialog.showAndWait();
-        } catch (IOException ex) {
-            ex.printStackTrace();
+        } catch (IOException exception) {
+            LOGGER.log(Level.SEVERE, null, exception);
         }
     }
 

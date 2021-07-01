@@ -11,14 +11,19 @@ package xal.smf.attr;
  * @version
  */
 import java.util.StringTokenizer;
+import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.tools.StringJoiner;
 
-public final class Attribute extends Object implements java.io.Serializable {
+public final class Attribute extends Object implements Serializable {
 
     /**
      * ID for serializable version
      */
     private static final long serialVersionUID = 1L;
+    
+    private static final Logger LOGGER = Logger.getLogger(Attribute.class.getName());
 
     /*
      *  Constants
@@ -578,9 +583,8 @@ public final class Attribute extends Object implements java.io.Serializable {
                     stringValue = objValue.toString();
                     break;
             }
-        } catch (Exception excpt) {
-            System.err.println(excpt);
-            excpt.printStackTrace();
+        } catch (Exception exception) {
+            LOGGER.log(Level.SEVERE, null, exception);
         }
 
         return stringValue;
