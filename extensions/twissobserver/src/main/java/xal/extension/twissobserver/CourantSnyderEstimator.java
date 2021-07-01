@@ -525,7 +525,7 @@ public abstract class CourantSnyderEstimator {
         // Get all the transfer matrices between the reconstruction location and the data locations
         int n = 0;
         for (Measurement datum : arrData) {
-            String strElemId = datum.strDevId;
+            String strElemId = datum.getStrDevId();
 
             PhaseMatrix matPhi = genTransMat.retrieveTransferMatrix(strReconDevId, strElemId);
             arrTransMatrices.add(n, matPhi);

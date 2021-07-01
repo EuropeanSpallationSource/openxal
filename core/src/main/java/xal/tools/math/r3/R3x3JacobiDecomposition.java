@@ -68,7 +68,7 @@ public class R3x3JacobiDecomposition {
     /**
      * Class debugging flag
      */
-    public static boolean bolDebug = false;
+    private static boolean bolDebug = false;
 
     /*
      * Global Methods

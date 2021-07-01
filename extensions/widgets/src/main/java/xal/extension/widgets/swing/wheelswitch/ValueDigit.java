@@ -17,8 +17,8 @@ public class ValueDigit extends Digit {
 
     private static final long serialVersionUID = 1L;
 
-    public static int INCREASE_VALUE = -1;
-    public static int DECREASE_VALUE = -2;
+    public static final int INCREASE_VALUE = -1;
+    public static final int DECREASE_VALUE = -2;
 
     private int value;
     private int oldValue;

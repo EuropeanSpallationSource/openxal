@@ -332,8 +332,8 @@ public class Wheelswitch extends JPanel {
         focusHandler = new FocusHandler();
         tiltHandler = new TiltHandler();
 
-        digits = new ArrayList<Digit>();
-        unitDigits = new ArrayList<Digit>();
+        digits = new ArrayList<>();
+        unitDigits = new ArrayList<>();
 
         upDownButton = new UpDownButton();
         upDownButton.setName("upDownButton");

@@ -214,12 +214,12 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         /**
          * particle phase
          */
-        public double phi;
+        private double phi;
 
         /**
          * particle energy
          */
-        public double W;
+        private double W;
 
         /**
          * Zero argument constructor
@@ -248,27 +248,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         }
 
     }
-
-
-    /*
-     * Global Attributes
-     */
-    /**
-     * TODO CKA - Remove
-     *
-     * Don't know what this is? CKA
-     */
-    @Deprecated
-    public static double COEFF_X = 1.0;
-
-    /**
-     * TODO CKA - Remove
-     *
-     * Don't know what this is? CKA
-     */
-    @Deprecated
-    public static double COEFF_Y = 1.0;
-
 
     /*
      * Class Dynamic Variables???
@@ -982,8 +961,8 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         double bf = Math.sqrt(1.0 - 1.0 / (gf * gf));
 
         // Compute component block matrices then full transfer matrix
-        double arrTranX[][] = new double[][]{{1.0, 0.0}, {kt * COEFF_X / (bf * gf), bi * gi / (bf * gf)}};
-        double arrTranY[][] = new double[][]{{1.0, 0.0}, {kt * COEFF_Y / (bf * gf), bi * gi / (bf * gf)}};
+        double arrTranX[][] = new double[][]{{1.0, 0.0}, {kt / (bf * gf), bi * gi / (bf * gf)}};
+        double arrTranY[][] = new double[][]{{1.0, 0.0}, {kt / (bf * gf), bi * gi / (bf * gf)}};
 
         // CKA - Corrected 7/14/2010
         //  Additional factor gbar^2 in the longitudinal focusing term

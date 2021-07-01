@@ -29,8 +29,8 @@ public class UpDownButton extends JComponent {
 
     private int value = 0;
 
-    public static int UP_PRESSED = -1;
-    public static int DOWN_PRESSED = -2;
+    public static final int UP_PRESSED = -1;
+    public static final int DOWN_PRESSED = -2;
 
     /**
      * Constructor for UpDownButton.

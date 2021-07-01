@@ -36,17 +36,29 @@ public abstract class SignalAttrSet implements DataListener {
     /**
      * Horizontal wire signal properties
      */
-    public SignalAttrs hor;
+    private SignalAttrs hor;
 
     /**
      * Horizontal wire signal properties
      */
-    public SignalAttrs ver;
+    private SignalAttrs ver;
 
     /**
      * Horizontal wire signal properties
      */
-    public SignalAttrs dia;
+    private SignalAttrs dia;
+
+    public SignalAttrs getHor() {
+        return hor;
+    }
+
+    public SignalAttrs getVer() {
+        return ver;
+    }
+
+    public SignalAttrs getDia() {
+        return dia;
+    }
 
     /*
      * Operations

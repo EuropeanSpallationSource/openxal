@@ -227,12 +227,12 @@ public class BunchLengthSimulator {
         Trajectory<EnvelopeProbeState> trjEnv = this.runSimulation(dblBnchFreq, dblBmCurr, matInitState);
 
         for (Measurement msmt : arrMsmts) {
-            EnvelopeProbeState steProbe = trjEnv.stateForElement(msmt.strDevId);
+            EnvelopeProbeState steProbe = trjEnv.stateForElement(msmt.getStrDevId());
 
             CovarianceMatrix matCov = steProbe.getCovarianceMatrix();
             double dblSigLng = matCov.getSigmaZ() * dblScale;
 
-            msmt.dblSigLng = dblSigLng;
+            msmt.setDblSigLng(dblSigLng);
         }
     }
 

@@ -267,27 +267,27 @@ public class SignalAttrs extends ScadaRecord {
     /**
      * Maximum value of the signal over baseline
      */
-    public double amp;
+    private double amp;
 
     /**
      * Value of the signal baseline, i.e., sensor output at zero input
      */
-    public double offset;
+    private double offset;
 
     /**
      * Area under the signal curve minus baseline
      */
-    public double area;
+    private double area;
 
     /**
      * Axis location of the center of mass
      */
-    public double mean;
+    private double mean;
 
     /**
      * The statistical standard deviation
      */
-    public double stdev;
+    private double stdev;
 
     private static final Logger LOGGER;
 

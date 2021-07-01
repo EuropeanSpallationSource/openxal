@@ -47,19 +47,19 @@ public class Gaussian {
     /**
      * The "sigma" parameter
      */
-    public static String SIGMA = "sigma";
+    public static final String SIGMA = "sigma";
     /**
      * The "amplitude" parameter
      */
-    public static String AMP = "amplitude";
+    public static final String AMP = "amplitude";
     /**
      * The "center" parameter
      */
-    public static String CENTER = "center";
+    public static final String CENTER = "center";
     /**
      * The "pedestal" parameter
      */
-    public static String PEDESTAL = "pedestal";
+    public static final String PEDESTAL = "pedestal";
 
     /**
      * Creates a new instance of Gaussian
@@ -73,8 +73,7 @@ public class Gaussian {
      */
     private void init() {
 
-        mf
-                = new ModelFunction1D() {
+        mf = new ModelFunction1D() {
 
             @Override
             public double getValue(double x, double[] a) {

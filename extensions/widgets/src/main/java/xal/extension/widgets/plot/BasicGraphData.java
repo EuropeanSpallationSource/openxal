@@ -1044,11 +1044,12 @@ public class BasicGraphData {
         /**
          * Description of the Field
          */
-        public double x, y;
+        private double x;
+        private double y;
         /**
          * Description of the Field
          */
-        public double yErr;
+        private double yErr;
 
         /**
          * Constructor for the XYpoint object
@@ -1174,6 +1175,7 @@ public class BasicGraphData {
          * @param obj2 Description of the Parameter
          * @return Description of the Return Value
          */
+        @Override
         public int compare(final XYpoint obj1, final XYpoint obj2) {
             if (obj1.getX() > obj2.getX()) {
                 return 1;

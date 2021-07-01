@@ -1246,10 +1246,9 @@ public class WireHarp extends ProfileDevice {
      * @since Jun 5, 2014
      */
     private static void klugeTheSampleCount(SignalSet setSigs) {
-
-        setSigs.hor.setCnt(CNT_WIRES);
-        setSigs.ver.setCnt(CNT_WIRES);
-        setSigs.dia.setCnt(CNT_WIRES);
+        setSigs.getHor().setCnt(CNT_WIRES);
+        setSigs.getVer().setCnt(CNT_WIRES);
+        setSigs.getDia().setCnt(CNT_WIRES);
     }
 
     /**

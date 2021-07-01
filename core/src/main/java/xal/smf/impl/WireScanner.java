@@ -175,7 +175,7 @@ public class WireScanner extends ProfileDevice {
         /**
          * A list of commands which may contain arguments
          */
-        public static CMD[] ARR_CMDARG = {
+        public static final CMD[] ARR_CMDARG = {
             MOVE,
             BRAKE,
             SETUPSCAN,

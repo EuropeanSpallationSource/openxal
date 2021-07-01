@@ -32,17 +32,17 @@ public class ClosedBox implements Serializable {
     /**
      * first dimension extent of domain
      */
-    public ClosedInterval I1;
+    private ClosedInterval I1;
 
     /**
      * second dimension extent of domain
      */
-    public ClosedInterval I2;
+    private ClosedInterval I2;
 
     /**
      * third dimension extent of domain
      */
-    public ClosedInterval I3;
+    private ClosedInterval I3;
 
     /**
      * Default constructor - creates an empty DomainR3 object to be initialized
@@ -102,8 +102,6 @@ public class ClosedBox implements Serializable {
     public ClosedInterval get1() {
         return I1;
     }
-
-    ;
     
     /**
      *  Get second dimension extent
@@ -111,8 +109,6 @@ public class ClosedBox implements Serializable {
     public ClosedInterval get2() {
         return I2;
     }
-
-    ;
     
     /**
      *  Get second dimension extent
@@ -120,8 +116,6 @@ public class ClosedBox implements Serializable {
     public ClosedInterval get3() {
         return I3;
     }
-
-    ;
     
     
     /**
@@ -130,8 +124,6 @@ public class ClosedBox implements Serializable {
     public ClosedInterval getXDimension() {
         return I1;
     }
-
-    ;
     
     /**
      *  Get the y dimension
@@ -139,8 +131,6 @@ public class ClosedBox implements Serializable {
     public ClosedInterval getYDimension() {
         return I2;
     }
-
-    ;
     
     /**
      *  Get the z dimension
@@ -148,8 +138,6 @@ public class ClosedBox implements Serializable {
     public ClosedInterval getZDimension() {
         return I3;
     }
-
-    ;
     
     /**
      *  Get the minimum vertex
@@ -204,9 +192,6 @@ public class ClosedBox implements Serializable {
         return false;
     }
 
-    ;
-
-    
     
     /**
      *  Compute the centroid of the domain

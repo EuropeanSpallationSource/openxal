@@ -85,7 +85,7 @@ public class MeasurementCurve extends BasicGraphData {
     private void loadMeasurements(ArrayList<Measurement> arrMsmt) {
 
         for (Measurement msmt : arrMsmt) {
-            AcceleratorNode smfDev = this.smfSeq.getNodeWithId(msmt.strDevId);
+            AcceleratorNode smfDev = this.smfSeq.getNodeWithId(msmt.getStrDevId());
             double dblPos = smfDev.getPosition();
             double dblSig = this.getMeasurement(msmt);
 
@@ -111,11 +111,11 @@ public class MeasurementCurve extends BasicGraphData {
         switch (this.plane) {
 
             case HOR:
-                return msmt.dblSigHor;
+                return msmt.getDblSigHor();
             case VER:
-                return msmt.dblSigVer;
+                return msmt.getDblSigVer();
             case LNG:
-                return msmt.dblSigLng;
+                return msmt.getDblSigLng();
             default:
                 return 0.0;
         }

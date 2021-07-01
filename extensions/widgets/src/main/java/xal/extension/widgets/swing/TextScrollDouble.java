@@ -14,8 +14,8 @@ public class TextScrollDouble extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
-    public DecimalField textField;
-    public JScrollBar scrollBar;
+    private DecimalField textField;
+    private JScrollBar scrollBar;
     private int orientation;
     private int scrollrange;
     private int fracdigits;

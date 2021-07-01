@@ -38,7 +38,7 @@ public class PVSelector extends JPanel {
     /**
      * the JTree to use for displaying the accelerator
      */
-    public JTree tree;
+    private JTree tree;
 
     /**
      * the JButton to set selected PV or just to escape

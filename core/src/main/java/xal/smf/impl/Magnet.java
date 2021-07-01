@@ -31,11 +31,6 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
     }
 
     /**
-     * The effective magnetic length (m)
-     */
-    public double leff;
-
-    /**
      * The container for the magnet information
      */
     protected MagnetBucket bucMagnet;

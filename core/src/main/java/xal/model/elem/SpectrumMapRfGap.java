@@ -229,12 +229,12 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         /**
          * particle phase
          */
-        public double phi;
+        private double phi;
 
         /**
          * particle energy
          */
-        public double W;
+        private double W;
 
         /**
          * Zero argument constructor

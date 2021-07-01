@@ -29,12 +29,12 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
     /**
      * The static field that defines HORIZONTAL line on a graph panel
      */
-    public static int HORIZONTAL = 0;
+    public static final int HORIZONTAL = 0;
 
     /**
      * The static field that defines Vertical line on a graph panel
      */
-    public static int VERTICAL = 1;
+    public static final int VERTICAL = 1;
 
     private Vector<BasicGraphData> graphDataV = new Vector<>();
     private Vector<Color> graphColorV = new Vector<>();

@@ -313,11 +313,11 @@ public abstract class ProfileDevice extends AcceleratorNode {
         public SignalAttrs getSignalAttrs(SignalAttrSet setAttrs) {
             switch (this) {
                 case HOR:
-                    return setAttrs.hor;
+                    return setAttrs.getHor();
                 case VER:
-                    return setAttrs.ver;
+                    return setAttrs.getVer();
                 case DIA:
-                    return setAttrs.dia;
+                    return setAttrs.getDia();
                 default:
                     // (this cannot happen)
                     return null;

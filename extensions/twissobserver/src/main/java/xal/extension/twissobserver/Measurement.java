@@ -22,22 +22,22 @@ public class Measurement implements Cloneable {
     /**
      * String containing device ID where the RMS beam sizes are located
      */
-    public String strDevId;
+    private String strDevId;
 
     /**
      * Horizontal RMS beam size at specified element location
      */
-    public Double dblSigHor;
+    private Double dblSigHor;
 
     /**
      * Vertical RMS beam size at given element location
      */
-    public Double dblSigVer;
+    private Double dblSigVer;
 
     /**
      * The RMS beam size in the longitudinal direction at the given location
      */
-    public Double dblSigLng;
+    private Double dblSigLng;
 
     /*
 	 * Initialization
@@ -70,6 +70,26 @@ public class Measurement implements Cloneable {
         this.strDevId = strDevId;
         this.dblSigHor = dblSigHor;
         this.dblSigVer = dblSigVer;
+        this.dblSigLng = dblSigLng;
+    }
+
+    public String getStrDevId() {
+        return strDevId;
+    }
+
+    public Double getDblSigHor() {
+        return dblSigHor;
+    }
+
+    public Double getDblSigVer() {
+        return dblSigVer;
+    }
+
+    public Double getDblSigLng() {
+        return dblSigLng;
+    }
+
+    public void setDblSigLng(Double dblSigLng) {
         this.dblSigLng = dblSigLng;
     }
 

@@ -56,16 +56,6 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      */
     public static final String PARAM_FREQ = "Frequency";
 
-    /**
-     * Don't know what this is? CKA
-     */
-    public static double coeffX = 1.0;
-
-    /**
-     * Don't know what this is? CKA
-     */
-    public static double coeffY = 1.0;
-
     /*
 	 *  Defining Attributes
      */
@@ -507,8 +497,8 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 
         // Compute average energy parameters
         // Compute component block matrices then full transfer matrix
-        double arrTranX[][] = new double[][]{{1.0, 0.0}, {kt * coeffX / (bf * gf), bi * gi / (bf * gf)}};
-        double arrTranY[][] = new double[][]{{1.0, 0.0}, {kt * coeffY / (bf * gf), bi * gi / (bf * gf)}};
+        double arrTranX[][] = new double[][]{{1.0, 0.0}, {kt / (bf * gf), bi * gi / (bf * gf)}};
+        double arrTranY[][] = new double[][]{{1.0, 0.0}, {kt / (bf * gf), bi * gi / (bf * gf)}};
 
         // CKA - Corrected 7/14/2010
         //  Additional factor gbar^2 in the longitudinal focusing term 

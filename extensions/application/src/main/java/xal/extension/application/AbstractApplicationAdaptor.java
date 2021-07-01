@@ -102,7 +102,7 @@ public abstract class AbstractApplicationAdaptor implements ApplicationListener 
     /**
      * The URLs to open existing document(s) in the command-line.
      */
-    public static URL[] docURLs;
+    protected static URL[] docURLs;
 
     /**
      * Subclasses should implement this method to return the array of file

@@ -126,17 +126,29 @@ public abstract class SignalSet implements DataListener {
     /**
      * The horizontal measurement signal
      */
-    public Signal hor;
+    protected Signal hor;
 
     /**
      * The vertical measurement signal
      */
-    public Signal ver;
+    protected Signal ver;
 
     /**
      * The diagonal measurement signal
      */
-    public Signal dia;
+    protected Signal dia;
+
+    public Signal getHor() {
+        return hor;
+    }
+
+    public Signal getVer() {
+        return ver;
+    }
+
+    public Signal getDia() {
+        return dia;
+    }
 
     /*
      * Operations
