@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.MissingResourceException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import xal.smf.impl.WireHarp;
 
 /**
  * <p>
@@ -280,27 +281,27 @@ public class Signal extends ScadaRecord {
     /**
      * Positions of the sample points in signal
      */
-    public double[] pos = {0.0};
+    private double[] pos = {0.0};
 
     /**
      * Signal value at the sample location
      */
-    public double[] val = {0.0};
+    private double[] val = {0.0};
 
     /**
      * Number of sample points in the signal
      */
-    public int cnt = 0;
+    private int cnt = 0;
 
     /**
      * mean value of the noise amplitude
      */
-    public double navg = 0.0;
+    private double navg = 0.0;
 
     /**
      * standard deviation (or variance) of the noise amplitude
      */
-    public double nvar = 0.0;
+    private double nvar = 0.0;
 
     /*
      * Initialization
@@ -334,6 +335,30 @@ public class Signal extends ScadaRecord {
     protected Signal(List<ScadaFieldDescriptor> lstFldDscr) throws BadStructException {
         super(lstFldDscr);
 
+    }
+
+    public int getCnt() {
+        return cnt;
+    }
+
+    public void setCnt(int cnt) {
+        this.cnt = cnt;
+    }
+
+    public double[] getPos() {
+        return pos;
+    }
+
+    public void setPos(double[] pos) {
+        this.pos = pos;
+    }
+
+    public double[] getVal() {
+        return val;
+    }
+
+    public void setVal(double[] val) {
+        this.val = val;
     }
 
     /*

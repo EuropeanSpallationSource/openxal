@@ -33,7 +33,7 @@ public class PVSelector extends JPanel {
     /**
      * textfield to hold selected PV name
      */
-    public JTextField jText = new JTextField(40);
+    private JTextField jText = new JTextField(40);
 
     /**
      * the JTree to use for displaying the accelerator
@@ -43,7 +43,7 @@ public class PVSelector extends JPanel {
     /**
      * the JButton to set selected PV or just to escape
      */
-    public JButton slectButton = new JButton("Set Selected PV or ESCAPE");
+    private JButton slectButton = new JButton("Set Selected PV or ESCAPE");
 
     /**
      * the string container for the selected PV name

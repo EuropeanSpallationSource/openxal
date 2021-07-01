@@ -80,7 +80,7 @@ public class ProfileMonitor extends AcceleratorNode {
     // real time readback signals     
     public static final String POS_HANDLE = "position";
     public final AccessibleProperty position = new AccessibleProperty("position", POS_HANDLE);
-    public Channel PosC = null;
+    private Channel PosC = null;
 
     public static final String RT_GRAPH_HANDLE = "RTGraph";
     public final AccessibleProperty rtGraph = new AccessibleProperty("RTGraph", RT_GRAPH_HANDLE);
@@ -102,23 +102,23 @@ public class ProfileMonitor extends AcceleratorNode {
 
     public static final String STAT_ARRAD_HANDLE = "statusArray";
     public final AccessibleProperty statusArray = new AccessibleProperty("statusArray", STAT_ARRAD_HANDLE);
-    public Channel StatArrayC = null;
+    private Channel StatArrayC = null;
 
     public static final String VDATA_ARRAD_HANDLE = "vDataArray";
     public final AccessibleProperty vDataArray = new AccessibleProperty("vDataArray", VDATA_ARRAD_HANDLE);
-    public Channel VDataArrayC = null;
+    private Channel VDataArrayC = null;
 
     public static final String DDATA_ARRAD_HANDLE = "dDataArray";
     public final AccessibleProperty dDataArray = new AccessibleProperty("dDataArray", DDATA_ARRAD_HANDLE);
-    public Channel DDataArrayC = null;
+    private Channel DDataArrayC = null;
 
     public static final String HDATA_ARRAD_HANDLE = "hDataArray";
     public final AccessibleProperty hDataArray = new AccessibleProperty("hDataArray", HDATA_ARRAD_HANDLE);
-    public Channel HDataArrayC = null;
+    private Channel HDataArrayC = null;
 
     public static final String POS_ARRAD_HANDLE = "positionArray";
     public final AccessibleProperty positionArray = new AccessibleProperty("positionArray", POS_ARRAD_HANDLE);
-    public Channel PosArrayC = null;
+    private Channel PosArrayC = null;
 
     // wire setting signals
     public static final String STEPS_HANDLE = "nSteps";
@@ -291,15 +291,15 @@ public class ProfileMonitor extends AcceleratorNode {
 
     public static final String V_FIT_HANDLE = "vFit";
     public final AccessibleProperty vFit = new AccessibleProperty("vFit", V_FIT_HANDLE);
-    public Channel VFitC = null;
+    private Channel VFitC = null;
 
     public static final String D_FIT_HANDLE = "dFit";
     public final AccessibleProperty dFit = new AccessibleProperty("dFit", D_FIT_HANDLE);
-    public Channel DFitC = null;
+    private Channel DFitC = null;
 
     public static final String H_FIT_HANDLE = "hFit";
     public final AccessibleProperty hFit = new AccessibleProperty("hFit", H_FIT_HANDLE);
-    public Channel HFitC = null;
+    private Channel HFitC = null;
 
     // wire position signals
     public static final String V_POS_HANDLE = "vPos";

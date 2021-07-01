@@ -333,12 +333,7 @@ public class WireHarp extends ProfileDevice {
          * April, 2014: Currently this value must be provided externally as it
          * is not available via the control system.
          */
-        //        @AScada.Field( 
-        //                type = int.class,
-        //                ctrl = false,
-        //                hndRb = ""
-        //                )
-        public int cntWires = CNT_WIRES;
+        private int cntWires = CNT_WIRES;
 
         /**
          * Array of wire positions on the beam axis for the horizontal
@@ -1252,9 +1247,9 @@ public class WireHarp extends ProfileDevice {
      */
     private static void klugeTheSampleCount(SignalSet setSigs) {
 
-        setSigs.hor.cnt = CNT_WIRES;
-        setSigs.ver.cnt = CNT_WIRES;
-        setSigs.dia.cnt = CNT_WIRES;
+        setSigs.hor.setCnt(CNT_WIRES);
+        setSigs.ver.setCnt(CNT_WIRES);
+        setSigs.dia.setCnt(CNT_WIRES);
     }
 
     /**
@@ -1289,14 +1284,14 @@ public class WireHarp extends ProfileDevice {
                     continue;
                 }
 
-                arrPos[indVld] = sigAng.pos[indSmp];
-                arrVal[indVld] = sigAng.val[indSmp];
+                arrPos[indVld] = sigAng.getPos()[indSmp];
+                arrVal[indVld] = sigAng.getVal()[indSmp];
                 indVld++;
             }
 
-            sigAng.cnt = cntValid;
-            sigAng.pos = arrPos;
-            sigAng.val = arrVal;
+            sigAng.setCnt(cntValid);
+            sigAng.setPos(arrPos);
+            sigAng.setVal(arrVal);
         }
     }
 

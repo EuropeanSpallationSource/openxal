@@ -26,12 +26,12 @@ public class R2 implements Serializable {
     /**
      * first coordinate
      */
-    public double x1 = 0.0;
+    private double x1 = 0.0;
 
     /**
      * second coordinate
      */
-    public double x2 = 0.0;
+    private double x2 = 0.0;
 
     /*
      *  Initialization

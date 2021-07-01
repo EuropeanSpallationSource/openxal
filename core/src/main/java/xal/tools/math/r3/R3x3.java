@@ -277,57 +277,46 @@ public class R3x3 extends SquareMatrix<R3x3> implements Serializable {
             return matTarget.getElem(col(), col());
         }
 
-        ;
-        
-        
         /*
          * Matrix Element Assignment 
          */
-        
-        /** 
+        /**
          * Set matrix element value for this position
-         * 
-         * @param   matTarget   target matrix
-         * @param   s           new value for matrix element
+         *
+         * @param matTarget target matrix
+         * @param s new value for matrix element
          */
         public void setValue(R3x3 matTarget, double s) {
             matTarget.setElem(row(), col(), s);
         }
 
-        ;
-
         /**
          * Set the diagonal element in the same row as this element position.
-         * 
-         * @param matTarget     target matrix
-         * @param s             new value for matrix element
+         *
+         * @param matTarget target matrix
+         * @param s new value for matrix element
          */
         public void setRowDiag(R3x3 matTarget, double s) {
             matTarget.setElem(row(), row(), s);
         }
 
-        ;
-
         /**
          * Set the diagonal element in the same column as this element position.
-         * 
-         * @param matTarget     target matrix
-         * @param s             new value for matrix element
+         *
+         * @param matTarget target matrix
+         * @param s new value for matrix element
          */
         public void setColDiag(R3x3 matTarget, double s) {
             matTarget.setElem(col(), col(), s);
         }
-    ;
-    };
+    }
 
-    
-
-    
     /*
      *  Global Constants
      */
-     
-     /** serialization version identifier */
+    /**
+     * serialization version identifier
+     */
     private static final long serialVersionUID = 1L;
 
     /**

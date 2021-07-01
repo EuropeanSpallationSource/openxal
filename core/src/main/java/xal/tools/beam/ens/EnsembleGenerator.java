@@ -29,11 +29,11 @@ public final class EnsembleGenerator {
      */
     public static final Ensemble generate(EnsembleDescriptor descr) throws EnsembleException {
 
-        Twiss twissX = new Twiss(descr.ax, descr.bx, descr.ex);
-        Twiss twissY = new Twiss(descr.ay, descr.by, descr.ey);
-        Twiss twissZ = new Twiss(descr.az, descr.bz, descr.ez);
+        Twiss twissX = new Twiss(descr.getAx(), descr.getBx(), descr.getEx());
+        Twiss twissY = new Twiss(descr.getAy(), descr.getBy(), descr.getEy());
+        Twiss twissZ = new Twiss(descr.getAz(), descr.getBz(), descr.getEz());
 
-        switch (descr.enmProfile) {
+        switch (descr.getEnmProfile()) {
 
             case EnsembleDescriptor.DIST_NONE:
                 throw new EnsembleException("EnsembleGenerator::generate() - statistical profile not specified");

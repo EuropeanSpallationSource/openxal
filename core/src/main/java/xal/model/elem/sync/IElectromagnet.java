@@ -19,17 +19,17 @@ public interface IElectromagnet {
      * no dipole orientation given - indicates error condition for oriented
      * elements
      */
-    public final int ORIENT_NONE = 0;
+    public static final int ORIENT_NONE = 0;
 
     /**
      * dipole is oriented to provide action in the horizontal plane
      */
-    public final int ORIENT_HOR = 1;
+    public static final int ORIENT_HOR = 1;
 
     /**
      * dipole is oriented to provide action in the vertical plane
      */
-    public final int ORIENT_VER = 2;
+    public static final int ORIENT_VER = 2;
 
     /**
      * Return the orientation enumeration code.

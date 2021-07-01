@@ -21,7 +21,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -898,7 +900,8 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
         }
 
         // Get time stamp
-        DateFormat frmDate = DateFormat.getDateTimeInstance();
+        DateFormat frmDate = new SimpleDateFormat("d.M.yyyy HH:mm:ss",
+                Locale.ENGLISH);
 
         if (daptProbe.hasAttribute(Probe.TIME_LABEL)) 
             try {
@@ -954,7 +957,9 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
         DataAdaptor daProbe = daSink.createChild(Probe.PROBE_LABEL);
 
         // Save the probe type information and time stamp
-        DateFormat frmDate = DateFormat.getDateTimeInstance();
+        DateFormat frmDate = new SimpleDateFormat("d.M.yyyy HH:mm:ss",
+                Locale.ENGLISH);
+
 
         if (this.getTimestamp() == null) {
             this.setTimestamp(new Date());

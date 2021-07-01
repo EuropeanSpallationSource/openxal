@@ -72,7 +72,7 @@ public class IdealPermMagQuad extends ThickElectromagnet {
         bRhoScaling = d;
     }
 
-    public double K = 0;
+    private double K = 0;
 
     /**
      * 0=sharp edge, 1=fringe

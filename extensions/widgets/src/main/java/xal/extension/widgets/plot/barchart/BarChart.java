@@ -108,24 +108,24 @@ public class BarChart {
         JLabel infoLabel = new JLabel("  Clicked Point Info: ", JLabel.CENTER);
 
         FunctionGraphsJPanel.ClickedPoint cpObj = GP.getClickedPointObject();
-        cpObj.xValueLabel = new JLabel("X-Marker=", JLabel.RIGHT);
-        cpObj.xValueFormat = MarkerFormat;
-        cpObj.xValueText = new JTextField(10);
-        cpObj.xValueText.setHorizontalAlignment(JTextField.CENTER);
-        cpObj.xValueText.setForeground(Color.blue);
+        cpObj.setxValueLabel(new JLabel("X-Marker=", JLabel.RIGHT));
+        cpObj.setxValueFormat(MarkerFormat);
+        cpObj.setxValueText(new JTextField(10));
+        cpObj.getxValueText().setHorizontalAlignment(JTextField.CENTER);
+        cpObj.getxValueText().setForeground(Color.blue);
 
-        cpObj.yValueLabel = new JLabel("    Value=", JLabel.RIGHT);
-        cpObj.yValueFormat = fortranFrmt;
-        cpObj.yValueText = new JTextField(12);
-        cpObj.yValueText.setHorizontalAlignment(JTextField.CENTER);
-        cpObj.yValueText.setForeground(Color.blue);
+        cpObj.setyValueLabel(new JLabel("    Value=", JLabel.RIGHT));
+        cpObj.setyValueFormat(fortranFrmt);
+        cpObj.setyValueText(new JTextField(12));
+        cpObj.getyValueText().setHorizontalAlignment(JTextField.CENTER);
+        cpObj.getyValueText().setForeground(Color.blue);
 
         JPanel infoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         infoPanel.add(infoLabel);
-        infoPanel.add(cpObj.xValueLabel);
-        infoPanel.add(cpObj.xValueText);
-        infoPanel.add(cpObj.yValueLabel);
-        infoPanel.add(cpObj.yValueText);
+        infoPanel.add(cpObj.getxValueLabel());
+        infoPanel.add(cpObj.getxValueText());
+        infoPanel.add(cpObj.getyValueLabel());
+        infoPanel.add(cpObj.getyValueText());
 
         barChartPanel.add(infoPanel, BorderLayout.SOUTH);
     }

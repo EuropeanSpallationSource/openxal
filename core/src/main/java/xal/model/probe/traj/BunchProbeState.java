@@ -208,7 +208,7 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
     public double beamPerveance() {
 
         // Get some shorthand
-        double c = LightSpeed;
+        double c = LIGHT_SPEED;
         double gamma = this.getGamma();
         double bg2 = gamma * gamma - 1.0;
 
@@ -252,7 +252,7 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
     public double beamDCPerveance() {
 
         // Get some shorthand
-        double c = LightSpeed;
+        double c = LIGHT_SPEED;
         double gamma = this.getGamma();
         double betagamma = Math.sqrt(gamma * gamma - 1);
 

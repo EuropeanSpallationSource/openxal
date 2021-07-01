@@ -306,7 +306,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
         /**
          * tells the ShrinkSearcher to only shift the window
          */
-        public boolean shouldShift = false;
+        private boolean shouldShift = false;
 
         /**
          * turns shouldShift on
@@ -432,7 +432,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
         /**
          * tells the ShrinkSearcher to only shift the window
          */
-        public boolean shouldShift = false;
+        private boolean shouldShift = false;
 
         /**
          * turns shouldShift on
@@ -601,7 +601,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
         /**
          * tells the ShrinkSearcher to only shift the window
          */
-        public boolean shouldShift = false;
+        private boolean shouldShift = false;
 
         /**
          * turns shouldShift on

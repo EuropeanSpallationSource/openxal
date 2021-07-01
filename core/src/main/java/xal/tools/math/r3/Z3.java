@@ -28,17 +28,17 @@ public class Z3 implements java.io.Serializable {
     /**
      * first coordinate
      */
-    public int i = 0;
+    private int i = 0;
 
     /**
      * second coordinate
      */
-    public int j = 0;
+    private int j = 0;
 
     /**
      * third coordinate
      */
-    public int k = 0;
+    private int k = 0;
 
     /*
      *  Z3 Initialization

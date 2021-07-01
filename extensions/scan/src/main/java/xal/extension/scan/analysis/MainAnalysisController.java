@@ -174,10 +174,10 @@ public class MainAnalysisController {
 
         //create data reader panel
         dataReaderPanel = new JPanel();
-        xValPanelMainText = graphAnalysis.getClickedPointObject().xValueText;
-        yValPanelMainText = graphAnalysis.getClickedPointObject().yValueText;
-        graphAnalysis.getClickedPointObject().xValueFormat = xyPanelMainFormat;
-        graphAnalysis.getClickedPointObject().yValueFormat = xyPanelMainFormat;
+        xValPanelMainText = graphAnalysis.getClickedPointObject().getxValueText();
+        yValPanelMainText = graphAnalysis.getClickedPointObject().getyValueText();
+        graphAnalysis.getClickedPointObject().setxValueFormat(xyPanelMainFormat);
+        graphAnalysis.getClickedPointObject().setyValueFormat(xyPanelMainFormat);
         Border etchedBorder = BorderFactory.createEtchedBorder();
         dataReaderBorder = BorderFactory.createTitledBorder(etchedBorder, "GRAPH DATA READER");
         dataReaderPanel.setBackground(dataReaderPanel.getBackground().darker());

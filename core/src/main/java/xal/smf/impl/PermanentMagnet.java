@@ -19,7 +19,7 @@ public abstract class PermanentMagnet extends Magnet {
 
     // accessible properties
     private String[] readbackHandle = new String[]{};
-    public AccessibleProperty field = new AccessibleProperty("field", readbackHandle, null, () -> getDesignField(), (cV) -> getDesignField());
+    public final AccessibleProperty field = new AccessibleProperty("field", readbackHandle, null, () -> getDesignField(), (cV) -> getDesignField());
 
     // static initializer
     static {

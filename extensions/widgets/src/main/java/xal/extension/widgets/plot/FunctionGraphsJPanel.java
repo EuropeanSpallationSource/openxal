@@ -3716,46 +3716,46 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
         /**
          * Description of the Field
          */
-        public JTextField xValueText = new JTextField(5);
+        private JTextField xValueText = new JTextField(5);
         /**
          * Description of the Field
          */
-        public JTextField yValueText = new JTextField(5);
+        private JTextField yValueText = new JTextField(5);
         /**
          * Description of the Field
          */
-        public JTextField zValueText = new JTextField(5);
+        private JTextField zValueText = new JTextField(5);
 
         /**
          * Description of the Field
          */
-        public NumberFormat xValueFormat = new DecimalFormat("0.00E0");
+        private NumberFormat xValueFormat = new DecimalFormat("0.00E0");
         /**
          * Description of the Field
          */
-        public NumberFormat yValueFormat = new DecimalFormat("0.00E0");
+        private NumberFormat yValueFormat = new DecimalFormat("0.00E0");
         /**
          * Description of the Field
          */
-        public NumberFormat zValueFormat = new DecimalFormat("0.00E0");
+        private NumberFormat zValueFormat = new DecimalFormat("0.00E0");
 
         /**
          * Description of the Field
          */
-        public JLabel xValueLabel = new JLabel(" X= ", SwingConstants.CENTER);
+        private JLabel xValueLabel = new JLabel(" X= ", SwingConstants.CENTER);
         /**
          * Description of the Field
          */
-        public JLabel yValueLabel = new JLabel(" Y= ", SwingConstants.CENTER);
+        private JLabel yValueLabel = new JLabel(" Y= ", SwingConstants.CENTER);
         /**
          * Description of the Field
          */
-        public JLabel zValueLabel = new JLabel(" Z= ", SwingConstants.CENTER);
+        private JLabel zValueLabel = new JLabel(" Z= ", SwingConstants.CENTER);
 
         /**
          * Description of the Field
          */
-        public Color pointColor = Color.blue;
+        private Color pointColor = Color.blue;
 
         private boolean isDisplayed = false;
 
@@ -3782,6 +3782,94 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
             zValueText.setText(null);
         }
 
+        public JTextField getxValueText() {
+            return xValueText;
+        }
+
+        public void setxValueText(JTextField xValueText) {
+            this.xValueText = xValueText;
+        }
+
+        public JTextField getyValueText() {
+            return yValueText;
+        }
+
+        public void setyValueText(JTextField yValueText) {
+            this.yValueText = yValueText;
+        }
+
+        public JTextField getzValueText() {
+            return zValueText;
+        }
+
+        public void setzValueText(JTextField zValueText) {
+            this.zValueText = zValueText;
+        }
+
+        public NumberFormat getxValueFormat() {
+            return xValueFormat;
+        }
+
+        public void setxValueFormat(NumberFormat xValueFormat) {
+            this.xValueFormat = xValueFormat;
+        }
+
+        public NumberFormat getyValueFormat() {
+            return yValueFormat;
+        }
+
+        public void setyValueFormat(NumberFormat yValueFormat) {
+            this.yValueFormat = yValueFormat;
+        }
+
+        public NumberFormat getzValueFormat() {
+            return zValueFormat;
+        }
+
+        public void setzValueFormat(NumberFormat zValueFormat) {
+            this.zValueFormat = zValueFormat;
+        }
+
+        public JLabel getxValueLabel() {
+            return xValueLabel;
+        }
+
+        public void setxValueLabel(JLabel xValueLabel) {
+            this.xValueLabel = xValueLabel;
+        }
+
+        public JLabel getyValueLabel() {
+            return yValueLabel;
+        }
+
+        public void setyValueLabel(JLabel yValueLabel) {
+            this.yValueLabel = yValueLabel;
+        }
+
+        public JLabel getzValueLabel() {
+            return zValueLabel;
+        }
+
+        public void setzValueLabel(JLabel zValueLabel) {
+            this.zValueLabel = zValueLabel;
+        }
+
+        public Color getPointColor() {
+            return pointColor;
+        }
+
+        public void setPointColor(Color pointColor) {
+            this.pointColor = pointColor;
+        }
+
+        public boolean isIsDisplayed() {
+            return isDisplayed;
+        }
+
+        public void setIsDisplayed(boolean isDisplayed) {
+            this.isDisplayed = isDisplayed;
+        }
+
         /**
          * Set the specified decimal format for the X value label
          */
@@ -3790,7 +3878,7 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
             // if the format is already a DecimalFormat just apply the pattern
             if (xValueFormat instanceof DecimalFormat) {
                 ((DecimalFormat) xValueFormat).applyPattern(pattern);
-            // create a new DecimalFormat wit the specified pattern
+                // create a new DecimalFormat wit the specified pattern
             } else {
                 xValueFormat = new DecimalFormat(pattern);
             }
@@ -3804,7 +3892,7 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
             // if the format is already a DecimalFormat just apply the pattern
             if (yValueFormat instanceof DecimalFormat) {
                 ((DecimalFormat) yValueFormat).applyPattern(pattern);
-            // create a new DecimalFormat wit the specified pattern
+                // create a new DecimalFormat wit the specified pattern
             } else {
                 yValueFormat = new DecimalFormat(pattern);
             }
@@ -3818,7 +3906,7 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
             // if the format is already a DecimalFormat just apply the pattern
             if (zValueFormat instanceof DecimalFormat) {
                 ((DecimalFormat) zValueFormat).applyPattern(pattern);
-            // create a new DecimalFormat wit the specified pattern
+                // create a new DecimalFormat wit the specified pattern
             } else {
                 zValueFormat = new DecimalFormat(pattern);
             }

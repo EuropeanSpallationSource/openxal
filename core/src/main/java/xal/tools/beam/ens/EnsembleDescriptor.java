@@ -65,56 +65,144 @@ public final class EnsembleDescriptor {
     /**
      * statistical distribution of particle phase coordinates in ensemble
      */
-    public int enmProfile = DIST_NONE;
+    private int enmProfile = DIST_NONE;
 
     /**
      * number of particles in ensemble
      */
-    public int nCnt = 0;
+    private int nCnt = 0;
 
     /**
      * Twiss alpha parameter in x plane
      */
-    public double ax = 0.0;
+    private double ax = 0.0;
 
     /**
      * Twiss beta parameter in x plane
      */
-    public double bx = 0.0;
+    private double bx = 0.0;
 
     /**
      * beam rms emittance in x plane
      */
-    public double ex = 0.0;
+    private double ex = 0.0;
 
     /**
      * Twiss alpha parameter in y plane
      */
-    public double ay = 0.0;
+    private double ay = 0.0;
 
     /**
      * Twiss beta parameter in y plane
      */
-    public double by = 0.0;
+    private double by = 0.0;
 
     /**
      * beam rms emittance in y plane
      */
-    public double ey = 0.0;
+    private double ey = 0.0;
 
     /**
      * Twiss alpha parameter in z plane
      */
-    public double az = 0.0;
+    private double az = 0.0;
 
     /**
      * Twiss beta parameter in z plane
      */
-    public double bz = 0.0;
+    private double bz = 0.0;
 
     /**
      * beam rms emittance in z plane
      */
-    public double ez = 0.0;
+    private double ez = 0.0;
+
+    public int getEnmProfile() {
+        return enmProfile;
+    }
+
+    public void setEnmProfile(int enmProfile) {
+        this.enmProfile = enmProfile;
+    }
+
+    public int getnCnt() {
+        return nCnt;
+    }
+
+    public void setnCnt(int nCnt) {
+        this.nCnt = nCnt;
+    }
+
+    public double getAx() {
+        return ax;
+    }
+
+    public void setAx(double ax) {
+        this.ax = ax;
+    }
+
+    public double getBx() {
+        return bx;
+    }
+
+    public void setBx(double bx) {
+        this.bx = bx;
+    }
+
+    public double getEx() {
+        return ex;
+    }
+
+    public void setEx(double ex) {
+        this.ex = ex;
+    }
+
+    public double getAy() {
+        return ay;
+    }
+
+    public void setAy(double ay) {
+        this.ay = ay;
+    }
+
+    public double getBy() {
+        return by;
+    }
+
+    public void setBy(double by) {
+        this.by = by;
+    }
+
+    public double getEy() {
+        return ey;
+    }
+
+    public void setEy(double ey) {
+        this.ey = ey;
+    }
+
+    public double getAz() {
+        return az;
+    }
+
+    public void setAz(double az) {
+        this.az = az;
+    }
+
+    public double getBz() {
+        return bz;
+    }
+
+    public void setBz(double bz) {
+        this.bz = bz;
+    }
+
+    public double getEz() {
+        return ez;
+    }
+
+    public void setEz(double ez) {
+        this.ez = ez;
+    }
 
 }

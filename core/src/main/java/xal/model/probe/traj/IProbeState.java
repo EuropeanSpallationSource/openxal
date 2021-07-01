@@ -20,7 +20,7 @@ public interface IProbeState extends IArchive {
     /**
      * Speed of light in vacuum (meters/second)
      */
-    public final double LightSpeed = 299792458;
+    public static final double LIGHT_SPEED = 299792458;
 
     /**
      * Set the charge of the particle species in the beam

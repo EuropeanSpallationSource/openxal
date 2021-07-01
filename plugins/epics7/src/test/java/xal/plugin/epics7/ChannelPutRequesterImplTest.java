@@ -136,14 +136,14 @@ public class ChannelPutRequesterImplTest {
 
     private static class ChannelPutImpl implements ChannelPut {
 
-        public boolean putCalled = false;
-        public boolean getCalled = false;
-        public boolean getChannelCalled = false;
-        public boolean cancelCalled = false;
-        public boolean lastRequestCalled = false;
-        public boolean lockCalled = false;
-        public boolean unlockCalled = false;
-        public boolean destroyCalled = false;
+        private boolean putCalled = false;
+        private boolean getCalled = false;
+        private boolean getChannelCalled = false;
+        private boolean cancelCalled = false;
+        private boolean lastRequestCalled = false;
+        private boolean lockCalled = false;
+        private boolean unlockCalled = false;
+        private boolean destroyCalled = false;
 
         @Override
         public void put(PVStructure pvPutStructure, BitSet bitSet) {

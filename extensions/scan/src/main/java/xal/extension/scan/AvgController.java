@@ -16,8 +16,8 @@ public class AvgController {
 
     private JRadioButton avgCntrButton = new JRadioButton("Average for N read out with T delay");
 
-    public JLabel avgNumberLabel = new JLabel(" N= ", JLabel.CENTER);
-    public JLabel timeDelayLabel = new JLabel(" T delay [sec]= ", JLabel.CENTER);
+    private JLabel avgNumberLabel = new JLabel(" N= ", JLabel.CENTER);
+    private JLabel timeDelayLabel = new JLabel(" T delay [sec]= ", JLabel.CENTER);
 
     //controller panel
     private JPanel avgCntrPanel = new JPanel();
@@ -25,8 +25,8 @@ public class AvgController {
     //number of possible panels that look different
     private int nPanelLooks = 2;
 
-    public DecimalFormat avgNumberFormat = new DecimalFormat("###");
-    public DecimalFormat timeDelayFormat = new DecimalFormat("#0.0#");
+    private DecimalFormat avgNumberFormat = new DecimalFormat("###");
+    private DecimalFormat timeDelayFormat = new DecimalFormat("#0.0#");
 
     private volatile int avgNumber = 1;
     private volatile double timeDelay = 0.2;

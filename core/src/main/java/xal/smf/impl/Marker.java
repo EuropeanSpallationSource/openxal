@@ -14,9 +14,9 @@ public class Marker extends AcceleratorNode {
      * for generic marker
      */
     public static final String TYPE = "marker";
-    public String type = TYPE;
+    private String type = TYPE;
 
-    public String softType = null;
+    private String softType = null;
 
     /**
      * for vacuum window
