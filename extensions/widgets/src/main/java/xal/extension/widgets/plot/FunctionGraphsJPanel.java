@@ -4594,7 +4594,7 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
                     if (ind >= 0 && ind < nDataInd) {
                         ind = dataIndA[ind];
                         if (ind < fgp.getNumberOfInstanceOfGraphData()) {
-                            return new Integer(ind);
+                            return Integer.valueOf(ind);
                         }
                     }
                 }

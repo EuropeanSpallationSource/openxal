@@ -254,10 +254,10 @@ public final class Attribute extends Object implements Serializable {
                 objValue = new Float(strVal);
                 break;
             case iLong:
-                objValue = new Long(strVal);
+                objValue = Long.valueOf(strVal);
                 break;
             case iInteger:
-                objValue = new Integer(strVal);
+                objValue = Integer.valueOf(strVal);
                 break;
             case iString:
                 objValue = strVal;

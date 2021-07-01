@@ -295,8 +295,8 @@ public class TextScrollDouble extends JPanel {
         drangeDelta = drangemax - drangemin;
 
         irangeDelta = scrollrange;
-        iRangeDelta = new Integer(irangeDelta);
-        iPrecision = new Integer(iprecision);
+        iRangeDelta = Integer.valueOf(irangeDelta);
+        iPrecision = Integer.valueOf(iprecision);
         tempD = new Double((dValue - drangemin)
                 * iPrecision.doubleValue() / drangeDelta
                 * (iRangeDelta.doubleValue())

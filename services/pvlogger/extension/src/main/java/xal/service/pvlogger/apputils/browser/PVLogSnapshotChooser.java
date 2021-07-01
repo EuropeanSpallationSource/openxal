@@ -235,7 +235,7 @@ public class PVLogSnapshotChooser {
             public void snapshotSelected(BrowserController controller, MachineSnapshot snapshot) {
                 if (snapshot != null) {
                     commentTextView.setText(snapshot.getComment());
-                    pvLogIdField.setText((new Long(snapshot.getId())).toString());
+                    pvLogIdField.setText((Long.valueOf(snapshot.getId())).toString());
                 } else {
                     commentTextView.setText("");
                 }
