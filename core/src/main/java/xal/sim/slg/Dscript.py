@@ -37,14 +37,14 @@ prb_file={
 def showParticleProbe(traj):
 	iterState= traj.stateIterator()
 	count=0
-	print "PARTICLE PROBE RESULTS"
+	print("PARTICLE PROBE RESULTS")
 	titles =  "  Position      Energy        x            x'          y           y'"
 	titles+=  "\n======================================================================="
-	print titles
+	print(titles)
 	while iterState.hasNext():
 		count += 1
 		if count%10==0:
-			print "\n",titles
+			print("\n",titles)
 
 		state= iterState.next()
 		s= state.getPosition()
@@ -78,19 +78,19 @@ def showParticleProbe(traj):
 		digits = float % yp
 		buffer += "  "+digits
 		buffer += "  "+state.getElementId()
-		print buffer
+		print(buffer)
 
 def showEnvelopeProbe(traj):
 	iterState= traj.stateIterator()
 	count=0
-	print "ENVELOPE PROBE RESULTS"
+	print("ENVELOPE PROBE RESULTS")
 	titles =  "  Position      eps-x         x            x'        eps-y          y           y'"
 	titles+=  "\n===================================================================================="
-	print titles
+	print(titles)
 	while iterState.hasNext():
 		count += 1
 		if count%10==0:
-			print "\n",titles
+			print("\n",titles)
 
 		state= iterState.next()
 		s= state.getPosition()
@@ -121,15 +121,15 @@ def showEnvelopeProbe(traj):
 		digits = float % yp
 		buffer += "  "+digits
 		buffer += "  "+state.getElementId()
-		print buffer
+		print(buffer)
 
 if __name__ == '__main__':
 
 	#load the lattice
 	try:
 		cin=lat_file[latin]
-		print "Using '",cin,"' as lattice input"
-		print "======================================================"
+		print("Using '",cin,"' as lattice input")
+		print("======================================================")
 		lattice = LatticeXmlParser.parse(cin,false)
 
 		#dump current state and content to output
@@ -143,23 +143,23 @@ if __name__ == '__main__':
 		buffer += "\nLeaves    :"+repr(lattice.getLeafCount())
 		buffer += "\nLength    :"+repr(lattice.getLength())
 		buffer += "\n================================================"
-		print buffer
+		print(buffer)
 
 		cout= PrintWriter(System.out, Boolean("true"))
 		#lattice.print(cout)
 
 	except ParsingException:
-		print ParsingException.getMessage()	
+		print(ParsingException.getMessage()	)
 		sys.exit(-1)
 	except Exception:
-		print Exception.getMessage()
+		print(Exception.getMessage())
 		sys.exit(-1)
 		
 	#laod the probe
 	try:
 		cin=prb_file[probin]
-		print "Using '",cin,"' as probe input"
-		print "======================================================"
+		print("Using '",cin,"' as probe input")
+		print("======================================================")
 		envProbe=ProbeXmlParser.parse(cin)
 
 		#dump some initial probe parameters
@@ -171,12 +171,12 @@ if __name__ == '__main__':
 		buffer += "\nSpecies Charge     :"+repr(envProbe.getSpeciesCharge())
 		buffer += "\nSpecies Rest Energy:"+repr(envProbe.getSpeciesRestEnergy())
 		buffer += "\n================================================"
-		print buffer
+		print(buffer)
 	except ParsingException:
-		print ParsingException.getMessage()
+		print(ParsingException.getMessage())
 		sys.exit(-1)
 	except Exception:
-		print Exception.getMessage()
+		print(Exception.getMessage())
 		sys.exit(-1)
 
 	#propagate the probe
@@ -185,10 +185,10 @@ if __name__ == '__main__':
 		envTraj= envProbe.getTrajectory()
 		envTraj.setDescription("validation trajectory")
 	except ModelException:
-		print ModelException.getMessage()
+		print(ModelException.getMessage())
 		sys.exit(-1)
 	except Exception:
-		print Exception.getMessage()
+		print(Exception.getMessage())
 		sys.exit(-1)
 
 	#show results

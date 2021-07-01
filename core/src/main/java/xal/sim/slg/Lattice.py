@@ -136,7 +136,7 @@ class Lattice:
 					jspos=jpos-jlen*0.5
 					jdrift=Drift(jpos,jlen)
 					lattice.append(jdrift)
-					if debug: print "join drifts:",(spos1,len1),"+",(spos2,len2),"=",(jspos,jlen)
+					if debug: print("join drifts:",(spos1,len1),"+",(spos2,len2),"=",(jspos,jlen))
 				else:
 					lattice.append(el)
 			else: 
@@ -168,8 +168,8 @@ class Lattice:
 		for count in range(len(self)):
 			el=self.elements[count]
 			abs_start_pos=el.getAbsPosition()-el.getLength()*0.5
-			print "s=",abs_start_pos,"m\t",el.getName(),"\t",el.getType(),el.getPosition(),el.getLength()
-		print "Totals: length of",self.getName(),"=",self.getLength(),"m with",len(self),"elements."
+			print("s=",abs_start_pos,"m\t",el.getName(),"\t",el.getType(),el.getPosition(),el.getLength())
+		print("Totals: length of",self.getName(),"=",self.getLength(),"m with",len(self),"elements.")
 
 	def isConsistent(self):
 		"""Consistency check"""
@@ -515,7 +515,7 @@ class WScanner(ThinElement):
 #.........................................................
 if __name__ == '__main__':
 	test="Thick Element Test"
-	print test
+	print(test)
 	lattice=Lattice(test,40.)
 	#..............................
 	try:
@@ -543,7 +543,7 @@ if __name__ == '__main__':
 		lattice.cout()
 		#..............................
 		test1="Thin Element Test"
-		print test1
+		print(test1)
 		lattice1=Lattice(test1,66)
 		rfgap=RFGap(10,20)
 		for part in rfgap.asTuple():
@@ -552,7 +552,7 @@ if __name__ == '__main__':
 			type=part.getType()
 			position=part.getPosition()
 			length=part.getLength()
-			print start_pos,name,type,position,length	
+			print(start_pos,name,type,position,length	)
 			lattice1.append(part)
 		lattice1.clearMarkers()
 		lattice1.cout()
@@ -565,11 +565,11 @@ if __name__ == '__main__':
 			type=part.getType()
 			position=part.getPosition()
 			length=part.getLength()
-			print start_pos,name,type,position,length	
+			print(start_pos,name,type,position,length	)
 			lattice2.append(part)
 		lattice2.clearMarkers()
 		lattice2.cout()
 		#..............................
 	except LatticeError,message:
-		print LatticeError,message
+		print(LatticeError,message)
 		sys.exit(-1)

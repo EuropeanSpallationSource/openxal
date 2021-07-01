@@ -28,26 +28,26 @@ xalDir = "/home/jdg/xaldev"
 prb_file={
 	"particle":xalDir + "/xal_xmls/probe.particle.MebtEntrance..xml",
 	"envelope":xalDir + "/xal_xmls/probe.envelope.MebtEntrance-adapt.xml"}
-print prb_file
+print(prb_file)
 
 def getAccelerator():
 	"""Get the XAL datagraph from the default path"""
 	defaultPath = XMLDataManager.defaultPath()
 	acc = XMLDataManager.loadDefaultAccelerator()
-	print "reading accelerator from",defaultPath
+	print("reading accelerator from",defaultPath)
 	return acc
 
 def showParticleProbe(traj):
 	iterState= traj.stateIterator()
 	count=0
-	print "PARTICLE PROBE RESULTS"
+	print("PARTICLE PROBE RESULTS")
 	titles =  "  Position      Energy        x            x'          y           y'"
 	titles+=  "\n======================================================================="
-	print titles
+	print(titles)
 	while iterState.hasNext():
 		count += 1
 		if count%10==0:
-			print "\n",titles
+			print("\n",titles)
 
 		state= iterState.next()
 		s= state.getPosition()
@@ -81,19 +81,19 @@ def showParticleProbe(traj):
 		digits = float % yp
 		buffer += "  "+digits
 		buffer += "  "+state.getElementId()
-		print buffer
+		print(buffer)
 
 def showEnvelopeProbe(traj):
 	iterState= traj.stateIterator()
 	count=0
-	print "ENVELOPE PROBE RESULTS"
+	print("ENVELOPE PROBE RESULTS")
 	titles =  "  Position      eps-x         x            x'        eps-y          y           y'"
 	titles+=  "\n===================================================================================="
-	print titles
+	print(titles)
 	while iterState.hasNext():
 		count += 1
 		if count%10==0:
-			print "\n",titles
+			print("\n",titles)
 
 		state= iterState.next()
 		s= state.getPosition()
@@ -124,7 +124,7 @@ def showEnvelopeProbe(traj):
 		digits = float % yp
 		buffer += "  "+digits
 		buffer += "  "+state.getElementId()
-		print buffer
+		print(buffer)
 
 if __name__ == '__main__':
 
@@ -162,21 +162,21 @@ if __name__ == '__main__':
 		buffer += "\nLeaves    :"+repr(lattice.getLeafCount())
 		buffer += "\nLength    :"+repr(lattice.getLength())
 		buffer += "\n================================================"
-		print buffer
+		print(buffer)
 
 		cout= PrintWriter(System.out, Boolean("true"))
 
 	except ParsingException:
-		print ParsingException.getMessage()	
+		print(ParsingException.getMessage()	)
 		sys.exit(-1)
 	except Exception:
-		print Exception.getMessage()
+		print(Exception.getMessage())
 		sys.exit(-1)
 		
 	try:
 		cin=prb_file[probin]
-		print "Using '",cin,"' as probe input"
-		print "======================================================"
+		print("Using '",cin,"' as probe input")
+		print("======================================================")
 		
 		######################################################
 		# Let the model parse the PROBE.
@@ -194,12 +194,12 @@ if __name__ == '__main__':
 		buffer += "\nSpecies Charge     :"+repr(initProbe.getSpeciesCharge())
 		buffer += "\nSpecies Rest Energy:"+repr(initProbe.getSpeciesRestEnergy())
 		buffer += "\n================================================"
-		print buffer
+		print(buffer)
 	except ParsingException:
-		print ParsingException.getMessage()
+		print(ParsingException.getMessage())
 		sys.exit(-1)
 	except Exception:
-		print Exception.getMessage()
+		print(Exception.getMessage())
 		sys.exit(-1)
 
 	try: 
@@ -211,11 +211,11 @@ if __name__ == '__main__':
 		else:
 			model.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN)
 	except LatticeError:
-		print LatticeError.getMessage();
+		print(LatticeError.getMessage())
 	except ParsingException:
-		print ParsingException.getMessage();
+		print(ParsingException.getMessage())
 	except Exception:
-		print Exception.getMessage();
+		print(Exception.getMessage())
 
 	try:
 		######################################################
@@ -234,10 +234,10 @@ if __name__ == '__main__':
 		traj= probe.getTrajectory()
 		traj.setDescription("validation trajectory")
 	except ModelException:
-		print ModelException.getMessage()
+		print(ModelException.getMessage())
 		sys.exit(-1)
 	except Exception:
-		print Exception.getMessage()
+		print(Exception.getMessage())
 		sys.exit(-1)
 
 	######################################################

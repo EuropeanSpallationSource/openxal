@@ -17,9 +17,9 @@ k=3
 lsf = PolyLeastsquares(xs, ys, k);
 
 for i in range(4):
-    print i,' ', ys[i], ' ' , lsf.getValue(xs[i])
+    print(i,' ', ys[i], ' ' , lsf.getValue(xs[i]))
     
-print lsf.Correlation()
+print(lsf.Correlation())
 
-print lsf.Equation()
+print(lsf.Equation())
 

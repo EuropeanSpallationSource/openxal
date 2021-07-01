@@ -24,7 +24,7 @@ def getAccelerator():
 	"""Get the XAL datagraph from the default path"""
 	defaultPath = XMLDataManager.defaultPath()
 	acc = XMLDataManager.loadDefaultAccelerator()
-	print "reading accelerator from",defaultPath
+	print("reading accelerator from",defaultPath)
 	return acc
 
 def addLeave(tree, node):
@@ -42,7 +42,7 @@ def walk(tree, sequences):
 		try:
 			nodes = seq.getNodes()
 		except AttributeError:
-			#print "AttributeError: getNodes()"
+			#print("AttributeError: getNodes()")
 			pass
 		else:
 			walk(leave, nodes)
@@ -75,7 +75,7 @@ def makeLatticeTree(title,acc):
 			#consistency check
 			lattice.forConsistency()
 		except LatticeError,message:
-			print LatticeError,message
+			print(LatticeError,message)
 			sys.exit(-1)
 
 		if printout: lattice.toConsole()
@@ -98,7 +98,7 @@ def makeLatticeTree(title,acc):
 	return treeRoot
 #...................................................................
 if __name__ == '__main__':
-	#print "processing: jython",sys.argv[0]
+	#print("processing: jython",sys.argv[0])
 	acc=getAccelerator()
 	tree1=makeXALTree('XAL Sequences & Nodes', acc)	
 	tree2=makeLatticeTree('Lattice Trees',acc) 

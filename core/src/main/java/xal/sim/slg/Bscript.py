@@ -22,7 +22,7 @@ def getAccelerator():
 	"""Get the XAL datagraph from the default path"""
 	defaultPath = XMLDataManager.defaultPath()
 	acc = XMLDataManager.loadDefaultAccelerator()
-	print "reading accelerator from",defaultPath
+	print("reading accelerator from",defaultPath)
 	return acc
 
 def addLeave(tree, node):
@@ -40,7 +40,7 @@ def walk(tree, sequences):
 		try:
 			nodes = seq.getNodes()
 		except AttributeError:
-			#print "AttributeError: getNodes()"
+			#print("AttributeError: getNodes()")
 			pass
 		else:
 			walk(leave, nodes)
@@ -59,7 +59,7 @@ def nodeToElement(node,result):
 	type=node.getType()
 	position=node.getPosition()
 	length=node.getLength()
-	#print "==n2E==",name,type,position,length
+	#print("==n2E==",name,type,position,length)
 
 	#thick elements
 	if node.isKindOf("dh"):
@@ -87,7 +87,7 @@ def nodeToElement(node,result):
 	elif node.isKindOf("ws"):
 		result.add(WScanner(position,length,name))
 	else:
-		print node.getId(),"is unknown node type."
+		print(node.getId(),"is unknown node type.")
 		sys.exit(-1)
 
 def nodesOfKind(sequence,kind,result):
@@ -97,7 +97,7 @@ def nodesOfKind(sequence,kind,result):
 	position_base=sequence.getPosition()
 	for k in kind:
 		nodes=sequence.getNodesOfType(k)
-		if debug: print sequence.getId(),":",k,nodes
+		if debug: print(sequence.getId(),":",k,nodes)
 		for n in nodes:
 			n.setPosition(n.getPosition()+position_base)
 			nodeToElement(n,result)
@@ -188,7 +188,7 @@ def makeLatticeTree(title,acc):
 			#consistency check
 			lattice.isConsistent()
 		except LatticeError,message:
-			print LatticeError,message
+			print(LatticeError,message)
 			sys.exit(-1)
 
 		if printout: lattice.cout()
@@ -208,7 +208,7 @@ def makeLatticeTree(title,acc):
 	return treeRoot
 #...................................................................
 if __name__ == '__main__':
-	#print "processing: jython",sys.argv[0]
+	#print("processing: jython",sys.argv[0])
 	acc=getAccelerator()
 	tree1=makeXALTree('Accelerator Sequences & Nodes', acc)	
 	tree2=makeLatticeTree('Accelerator Sequences & Lattices',acc) 
