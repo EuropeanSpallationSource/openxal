@@ -1039,7 +1039,7 @@ public class BasicGraphData {
      * @author shishlo
      * @version August 3, 2004
      */
-    protected class XYpoint {
+    protected static class XYpoint {
 
         /**
          * Description of the Field
@@ -1166,7 +1166,7 @@ public class BasicGraphData {
      * @author shishlo
      * @version August 3, 2004
      */
-    protected class CompareX implements Comparator<XYpoint> {
+    protected static class CompareX implements Comparator<XYpoint> {
 
         /**
          * Description of the Method
@@ -1192,7 +1192,7 @@ public class BasicGraphData {
      * @author shishlo
      * @version August 3, 2004
      */
-    protected class CompareY implements Comparator<XYpoint> {
+    protected static class CompareY implements Comparator<XYpoint> {
 
         /**
          * Description of the Method
@@ -1218,7 +1218,7 @@ public class BasicGraphData {
      * @author shishlo
      * @version August 3, 2004
      */
-    protected class CompareErr implements Comparator<XYpoint> {
+    protected static class CompareErr implements Comparator<XYpoint> {
 
         /**
          * Description of the Method

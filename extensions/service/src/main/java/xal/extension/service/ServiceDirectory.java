@@ -539,7 +539,7 @@ public final class ServiceDirectory {
     /**
      * service listener information for Bonjour
      */
-    protected class BonjourServiceListenerInfo {
+    protected static class BonjourServiceListenerInfo {
 
         /**
          * JmDNS type

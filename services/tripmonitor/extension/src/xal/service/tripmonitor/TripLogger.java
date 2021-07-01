@@ -130,7 +130,7 @@ public class TripLogger {
     /**
      * class to handle timer events
      */
-    protected class TimerHandler implements ActionListener {
+    protected static class TimerHandler implements ActionListener {
 
         /**
          * handle the event
