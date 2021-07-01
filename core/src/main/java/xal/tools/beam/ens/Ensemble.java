@@ -50,7 +50,7 @@ public class Ensemble implements Serializable {
      * particles by the l2 norm of particles' phase space coordinates. Thus,
      * particles closer to the origin are located first in the tree.
      */
-    class SortByNorm implements Comparator<Particle>, Serializable {
+    static class SortByNorm implements Comparator<Particle>, Serializable {
 
         /**
          * Serialization version

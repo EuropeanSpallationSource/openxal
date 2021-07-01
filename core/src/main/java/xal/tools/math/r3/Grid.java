@@ -44,7 +44,7 @@ public class Grid implements Serializable {
     /**
      * Represents a point in the grid
      */
-    class GridPt implements Serializable {
+    static class GridPt implements Serializable {
 
         /**
          * Serialization version number
@@ -61,7 +61,7 @@ public class Grid implements Serializable {
     /**
      * Represents a cell (voxel) in the grid
      */
-    class GridCell implements Serializable {
+    static class GridCell implements Serializable {
 
         /**
          * Serialization version number

@@ -340,7 +340,7 @@ public class SolverLM implements FitSolver {
      *
      * @author shishlo
      */
-    class Solution {
+    static class Solution {
 
         private double[] iniArr = new double[0];
         private double[] newArr = new double[0];

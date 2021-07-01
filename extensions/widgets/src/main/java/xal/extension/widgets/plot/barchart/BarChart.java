@@ -549,7 +549,7 @@ public class BarChart {
      *
      * @author shishlo created October 10, 2005
      */
-    class SmartFormater {
+    static class SmartFormater {
 
         private double valueMin = 0.;
         private double valueMax = 0.;

@@ -811,7 +811,7 @@ class SimplexSearcher {
      *
      * @author shishlo
      */
-    class Vertex {
+    static class Vertex {
 
         private double[] coords = null;
 
@@ -953,7 +953,7 @@ class SimplexSearcher {
      *
      * @author shishlo
      */
-    class CompareVertex implements Comparator<Vertex> {
+    static class CompareVertex implements Comparator<Vertex> {
 
         /**
          * Compare two vertexes

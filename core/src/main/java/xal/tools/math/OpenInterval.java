@@ -91,7 +91,7 @@ public class OpenInterval extends Interval {
             OpenInterval I = (OpenInterval) obj;
             return (this.getMin() == I.getMin()) && (this.getMax() == I.getMax());
         } else {
-            return false;
+            return super.equals(obj);
         }
     }
 

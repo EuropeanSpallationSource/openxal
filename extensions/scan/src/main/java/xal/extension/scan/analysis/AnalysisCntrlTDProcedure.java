@@ -1142,7 +1142,7 @@ public final class AnalysisCntrlTDProcedure extends AnalysisController {
      *
      * @author shishlo
      */
-    class DeltaTdata {
+    static class DeltaTdata {
 
         private CubicSplineGraphData slopeData = new CubicSplineGraphData();
         private CubicSplineGraphData a11Data = new CubicSplineGraphData();

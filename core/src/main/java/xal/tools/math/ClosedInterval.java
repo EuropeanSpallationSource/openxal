@@ -122,7 +122,7 @@ public class ClosedInterval extends Interval {
             ClosedInterval I = (ClosedInterval) obj;
             return (this.getMin() == I.getMin()) && (this.getMax() == I.getMax());
         } else {
-            return false;
+            return super.equals(obj);
         }
     }
 
