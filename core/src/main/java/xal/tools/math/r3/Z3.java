@@ -217,9 +217,22 @@ public class Z3 implements java.io.Serializable {
      * @param r right-hand argument to ==
      *
      * @return true if (this-r) equals the zero element
-     */
-    public boolean equals(Z3 r) {
+     */@Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Z3)) {
+            return false;
+        }
+        Z3 r = (Z3) obj;
         return (i == r.i && j == r.j && k == r.k);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 89 * hash + this.i;
+        hash = 89 * hash + this.j;
+        hash = 89 * hash + this.k;
+        return hash;
     }
 
     /**

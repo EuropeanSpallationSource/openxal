@@ -61,7 +61,7 @@ public abstract class ResourceManager {
         // first check system properties and if it exists then use it's value
         if (hasProperty) {
             return Boolean.getBoolean(RESOURCES_FILE_SEARCH_PROPERTY);
-        // check for an environment variable of the same name
+            // check for an environment variable of the same name
         } else {
             final String environment = System.getenv(RESOURCES_FILE_SEARCH_PROPERTY);
             return Boolean.parseBoolean(environment);
@@ -323,7 +323,7 @@ class FileResourceManager extends ResourceManager {
             final File siteCoreResource = fetchCoreResourceFile(subdomain, rootClass, "site", resourcePath);
             if (siteCoreResource.exists()) {
                 return siteCoreResource.toURI().toURL();
-            // next try to find the resource in the common component
+                // next try to find the resource in the common component
             } else {
                 final File coreResource = fetchCoreResourceFile(subdomain, rootClass, null, resourcePath);
                 if (coreResource.exists()) {
@@ -352,7 +352,7 @@ class FileResourceManager extends ResourceManager {
         if (resourcePath.startsWith("/")) {
             // strip the leading "/"
             pathFromResources = resourcePath.substring(1);
-        // resource path is relative and hence relative to the root class's package
+            // resource path is relative and hence relative to the root class's package
         } else {
             // replace package dot delimiter with URL slash delimiter (should work on all platforms if we use URLs here instead of files)
             final String packagePath = rootClass.getPackage().getName().replaceAll("\\.", "/");
@@ -381,7 +381,7 @@ class FileResourceManager extends ResourceManager {
             final File siteContainerResource = fetchContainerResourceFile(rootClass, "site", includeExtension, resourcePath);
             if (siteContainerResource != null && siteContainerResource.exists()) {
                 return siteContainerResource.toURI().toURL();
-            // next try to find the resource in the common component
+                // next try to find the resource in the common component
             } else {
                 final File componentResource = fetchContainerResourceFile(rootClass, null, includeExtension, resourcePath);
                 if (componentResource != null && componentResource.exists()) {
@@ -442,7 +442,7 @@ class FileResourceManager extends ResourceManager {
             if (resourcePath.startsWith("/")) {
                 // strip the leading "/"
                 pathFromResources = resourcePath.substring(1);
-            // resource path is relative and hence relative to the root class's package suffix (i.e. relative to component)
+                // resource path is relative and hence relative to the root class's package suffix (i.e. relative to component)
             } else {
                 // replace package dot delimiter with URL slash delimiter (should work on all platforms if we use URLs here instead of files)
                 final String packageSuffix = packagePartition.packageSuffix;

@@ -235,8 +235,22 @@ public class Interval implements Serializable {
      *
      * @return true if both objects are equal as intervals
      */
-    public boolean equals(Interval I) {
-        return (dblMin == I.dblMin) && (dblMax == I.dblMax);
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Interval) {
+            Interval I = (Interval) obj;
+            return (dblMin == I.dblMin) && (dblMax == I.dblMax);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 37 * hash + (int) (Double.doubleToLongBits(this.dblMin) ^ (Double.doubleToLongBits(this.dblMin) >>> 32));
+        hash = 37 * hash + (int) (Double.doubleToLongBits(this.dblMax) ^ (Double.doubleToLongBits(this.dblMax) >>> 32));
+        return hash;
     }
 
     /**

@@ -116,8 +116,19 @@ public class ClosedInterval extends Interval {
      *
      * @return true if both objects are equal as intervals
      */
-    public boolean equals(ClosedInterval I) {
-        return (this.getMin() == I.getMin()) && (this.getMax() == I.getMax());
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ClosedInterval) {
+            ClosedInterval I = (ClosedInterval) obj;
+            return (this.getMin() == I.getMin()) && (this.getMax() == I.getMax());
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 
 

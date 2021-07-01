@@ -501,7 +501,6 @@ public class DoubleToString {
         LOGGER.log(Level.INFO, "    {0}", list);
         LOGGER.log(Level.INFO, "are appended to a StringBuffer one by one {0} times.", repeat);
         s = new StringBuffer();
-        Runtime.getRuntime().gc();
 
         LOGGER.log(Level.INFO, "Starting test");
         time1 = System.currentTimeMillis();
@@ -513,7 +512,6 @@ public class DoubleToString {
         time1 = System.currentTimeMillis() - time1;
         LOGGER.log(Level.INFO, "  The append        took {0} milliseconds", time1);
         s = new StringBuffer();
-        Runtime.getRuntime().gc();
 
         LOGGER.log(Level.INFO, "Starting test");
         time1 = System.currentTimeMillis();
@@ -525,7 +523,6 @@ public class DoubleToString {
         time1 = System.currentTimeMillis() - time1;
         LOGGER.log(Level.INFO, "  The format append took {0} milliseconds", time1);
         s = new StringBuffer();
-        Runtime.getRuntime().gc();
 
         LOGGER.log(Level.INFO, "Starting test");
         time2 = System.currentTimeMillis();
@@ -537,7 +534,6 @@ public class DoubleToString {
         time2 = System.currentTimeMillis() - time2;
         LOGGER.log(Level.INFO, "  The StringBuffer  took {0} milliseconds", time2);
         s = new StringBuffer();
-        Runtime.getRuntime().gc();
 
         LOGGER.log(Level.INFO, "Starting test");
         time2 = System.currentTimeMillis();
@@ -550,8 +546,6 @@ public class DoubleToString {
         }
         time2 = System.currentTimeMillis() - time2;
         LOGGER.log(Level.INFO, "  The DecimalFormat  took {0} milliseconds", time2);
-
-        Runtime.getRuntime().gc();
 
         s = new StringBuffer();
         for (int j = 0; j < arr.length; j++) {

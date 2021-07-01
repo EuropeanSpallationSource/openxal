@@ -372,6 +372,27 @@ final class NumericRecord<T> implements Comparable<NumericRecord<T>> {
     }
 
     /**
+     * compare this record to another
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof NumericRecord) {
+            NumericRecord<T> record = (NumericRecord<T>) obj;
+            return location == record.location;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 73 * hash + Objects.hashCode(this.value);
+        hash = 73 * hash + (int) (Double.doubleToLongBits(this.location) ^ (Double.doubleToLongBits(this.location) >>> 32));
+        return hash;
+    }
+
+    /**
      * string representation
      */
     @Override

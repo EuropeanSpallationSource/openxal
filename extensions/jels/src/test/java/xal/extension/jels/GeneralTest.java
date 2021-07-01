@@ -133,7 +133,7 @@ public class GeneralTest {
 
         dataTW = null;
         dataOX = null;
-        System.gc();
+        
     }
 
     protected static void saveResults(String file, double[][] data) throws FileNotFoundException {
