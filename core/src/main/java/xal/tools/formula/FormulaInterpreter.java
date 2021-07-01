@@ -60,7 +60,7 @@ public final class FormulaInterpreter {
      * generate the standard script header
      */
     private static String generateStandardScriptHeader() {
-        final StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
         appendMappedMathFunctionToGlobal("min", buffer);
         appendMappedMathFunctionToGlobal("max", buffer);
         appendMappedMathFunctionToGlobal("abs", buffer);
@@ -79,7 +79,7 @@ public final class FormulaInterpreter {
     /**
      * append the mapped math function to the specified buffer
      */
-    private static void appendMappedMathFunctionToGlobal(final String name, final StringBuffer buffer) {
+    private static void appendMappedMathFunctionToGlobal(final String name, final StringBuilder buffer) {
         buffer.append(mapMathFunctionToGlobal(name));
     }
 

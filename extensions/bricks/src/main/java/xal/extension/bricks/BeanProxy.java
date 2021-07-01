@@ -193,7 +193,7 @@ public abstract class BeanProxy<ViewType> implements DataListener {
     private static String generateJavaReferenceSymbol(final BeanNode<?> node) {
         final String tag = node.getTag();
         final int tagLength = tag.length();
-        final StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         // lower the case of the first character of the symbol
         buffer.append(Character.toLowerCase(tag.charAt(0)));
@@ -234,7 +234,7 @@ public abstract class BeanProxy<ViewType> implements DataListener {
      * @return the java declaration snippet
      */
     public String getJavaDeclarationSnippet(final BeanNode<ViewType> node) {
-        final StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
         buffer.append(node.getShortClassName());
         buffer.append(" ");
         buffer.append(generateJavaReferenceSymbol(node));

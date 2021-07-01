@@ -282,7 +282,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
     public String toString() {
         // double is 15 significant digits plus the spaces and brackets
         final int size = (this.getSize() * this.getSize() * 16) + (this.getSize() * 2) + 4;
-        StringBuffer strBuf = new StringBuffer(size);
+        StringBuilder strBuf = new StringBuilder(size);
 
         // get lock once instead of once per append
         synchronized (strBuf) {

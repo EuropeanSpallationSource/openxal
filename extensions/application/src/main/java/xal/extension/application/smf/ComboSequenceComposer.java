@@ -111,7 +111,7 @@ class ComboSequenceComposer {
      * generate a suggested name based on the start and end sequence
      */
     private String suggestedComboName() {
-        final StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         if (startSequence != null) {
             buffer.append(startSequence.getId());

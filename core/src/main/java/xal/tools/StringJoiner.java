@@ -24,7 +24,7 @@ public class StringJoiner {
     /**
      * Buffer holding the joined string while it is being assembled
      */
-    private final StringBuffer buffer;
+    private final StringBuilder buffer;
 
     /**
      * Object performing the joins which gets changed depending on the rule for
@@ -45,7 +45,7 @@ public class StringJoiner {
     public StringJoiner(final String separator) {
         this.separator = separator;
         // create an empty string buffer
-        buffer = new StringBuffer();
+        buffer = new StringBuilder();
         // appropriate joiner for empty buffer
         joiner = new FirstJoiner();
     }

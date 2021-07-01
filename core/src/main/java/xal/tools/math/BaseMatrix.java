@@ -851,7 +851,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     public String toString() {
         // double is 15 significant digits plus the spaces and brackets
         final int size = (this.getRowCnt() * this.getColCnt() * 16) + (this.getRowCnt() * 2) + 4;
-        StringBuffer strBuf = new StringBuffer(size);
+        StringBuilder strBuf = new StringBuilder(size);
 
         // get lock once instead of once per append
         synchronized (strBuf) {

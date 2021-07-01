@@ -766,7 +766,7 @@ public class MPSMonitor {
         if (topRecords == null || topRecords.size() == 0) {
             return "No MPS events since " + TIMESTAMP_FORMAT.format(startTime.getTime());
         } else {
-            final StringBuffer statsBuffer = new StringBuffer("MPS Top 10 First Hits since " + TIMESTAMP_FORMAT.format(startTime.getTime()) + "\n\n");
+            final StringBuilder statsBuffer = new StringBuilder("MPS Top 10 First Hits since " + TIMESTAMP_FORMAT.format(startTime.getTime()) + "\n\n");
 
             statsBuffer.append("(First Hits, Total Trips, MPS PV) \n");
             for (final TripStatistics record : topRecords) {
@@ -811,7 +811,7 @@ public class MPSMonitor {
             return null;
         } else {
             final String title = label + " since " + TIMESTAMP_FORMAT.format(startTime.getTime());
-            final StringBuffer report = new StringBuffer("<html>");
+            final StringBuilder report = new StringBuilder("<html>");
             report.append("<head>");
             report.append("<title>" + title + "</title>");
             report.append("<style>");
@@ -883,7 +883,7 @@ public class MPSMonitor {
         if (tripRecords == null || tripRecords.size() == 0) {
             return "No MPS trips since " + TIMESTAMP_FORMAT.format(startTime.getTime());
         } else {
-            final StringBuffer statsBuffer = new StringBuffer("MPS trip summary since " + TIMESTAMP_FORMAT.format(startTime.getTime()));
+            final StringBuilder statsBuffer = new StringBuilder("MPS trip summary since " + TIMESTAMP_FORMAT.format(startTime.getTime()));
             statsBuffer.append("\n\n");
 
             statsBuffer.append("(MPS Trips, First Hits, MPS PV, Input Trips, Input PV) \n");

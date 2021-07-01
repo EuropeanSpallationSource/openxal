@@ -218,7 +218,7 @@ public class TripMonitorFilter {
      * string representation of this instance
      */
     public String toString() {
-        final StringBuffer buffer = new StringBuffer();
+        final StringBuilder buffer = new StringBuilder();
 
         buffer.append("name:  " + NAME + ", sequence:  " + SEQUENCE_ID + ", node type:  " + NODE_TYPE + ", node key pattern:  " + NODE_KEY_PATTERN);
         buffer.append(", channel filters:  " + TRIP_CHANNEL_FILTERS);

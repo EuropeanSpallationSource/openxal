@@ -35,7 +35,7 @@ public class Info {
         final URL infoLocation = ResourceManager.getResourceURL(Info.class, "info.json");
         if (infoLocation != null) {
             try {
-                final StringBuffer buffer = new StringBuffer();
+                final StringBuilder buffer = new StringBuilder();
                 final InputStream infoStream = infoLocation.openStream();
                 final BufferedReader infoReader = new BufferedReader(new InputStreamReader(infoStream));
                 while (true) {
