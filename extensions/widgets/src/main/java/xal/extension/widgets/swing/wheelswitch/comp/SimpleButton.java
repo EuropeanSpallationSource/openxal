@@ -1027,6 +1027,7 @@ public class SimpleButton extends GradientLabel {
         /**
          * Mark the pressed state as false when the user releases the mouse
          */
+        @Override
         public void mouseReleased(final MouseEvent event) {
             // mouse is no longer pressed, so reset the pressed time to 0
             this.lastPressedTime = 0;
@@ -1184,5 +1185,3 @@ public class SimpleButton extends GradientLabel {
         }
     }
 }
-
-/* __oOo__ */

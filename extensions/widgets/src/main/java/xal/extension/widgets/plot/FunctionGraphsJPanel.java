@@ -4024,7 +4024,7 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
      * @author shishlo
      * @version July 22, 2004
      */
-    private class gridLimitsPanel extends JPanel {
+    private static class gridLimitsPanel extends JPanel {
 
         /**
          * serialization ID

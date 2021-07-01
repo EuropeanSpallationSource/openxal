@@ -209,7 +209,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
      * @author Christopher K. Allen
      * @since Nov 28, 2014
      */
-    private class EnergyVariables {
+    private static class EnergyVariables {
 
         /**
          * particle phase

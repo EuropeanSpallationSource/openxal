@@ -176,7 +176,7 @@ public class InputMonitor extends ChannelWrapper {
     /**
      * Handle value request callbacks.
      */
-    private class ValueHandler implements IEventSinkValInt {
+    private static class ValueHandler implements IEventSinkValInt {
 
         /**
          * Value request callback.

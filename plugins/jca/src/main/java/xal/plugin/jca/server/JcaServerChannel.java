@@ -403,7 +403,7 @@ public class JcaServerChannel extends Channel implements IServerChannel {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    private class JcaServerMonitor extends Monitor implements ProcessVariableEventCallback {
+    private static class JcaServerMonitor extends Monitor implements ProcessVariableEventCallback {
 
         private int maskEvent;
         private IEventSinkValTime listener;

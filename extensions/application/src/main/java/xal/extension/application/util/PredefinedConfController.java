@@ -267,7 +267,7 @@ public class PredefinedConfController {
      *
      * @author shishlo
      */
-    private class ConfigNode extends DefaultMutableTreeNode {
+    private static class ConfigNode extends DefaultMutableTreeNode {
 
         private static final long serialVersionUID = 0L;
 
@@ -347,7 +347,7 @@ public class PredefinedConfController {
      *
      * @author shishlo
      */
-    private class ConfigNodeCellRenderer implements TreeCellRenderer {
+    private static class ConfigNodeCellRenderer implements TreeCellRenderer {
 
         /**
          * Constructor for the ConfigNodeCellRenderer object

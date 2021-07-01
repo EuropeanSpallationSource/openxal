@@ -112,7 +112,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
      * @author Christopher K. Allen
      * @since Oct 22, 2014
      */
-    private class ProgressUpdateThread extends Thread {
+    private static class ProgressUpdateThread extends Thread {
 
         /*
          * Local Attributes
@@ -181,7 +181,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
      * @since Apr 10, 2013
      *
      */
-    private class MomentVectorBuffer extends HashMap<PHASEPLANE, LinearBuffer<GenericMatrix>> {
+    private static class MomentVectorBuffer extends HashMap<PHASEPLANE, LinearBuffer<GenericMatrix>> {
 
         /*
          * Global Constants

@@ -46,7 +46,7 @@ public class ChannelGetRequesterImplTest {
 
     private static final Logger LOGGER = Logger.getLogger(ChannelGetRequesterImplTest.class.getName());
 
-    private class ChannelGetTestImpl implements ChannelGet {
+    private static class ChannelGetTestImpl implements ChannelGet {
 
         private boolean getCalled = false;
         private boolean getChannelCalled = false;

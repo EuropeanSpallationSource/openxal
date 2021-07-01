@@ -664,7 +664,7 @@ class PvAccessChannel extends Channel {
      * ChannelRequesterImplementation that sends the connection established
      * events to the PvAccessChannel class on connection.
      */
-    private class ChannelRequesterImpl implements ChannelRequester {
+    private static class ChannelRequesterImpl implements ChannelRequester {
 
         /**
          * Constructor
@@ -715,7 +715,7 @@ class PvAccessChannel extends Channel {
     /**
      * ChannelGetRequester implementation.
      */
-    private class ChannelGetRequesterImpl implements ChannelGetRequester {
+    private static class ChannelGetRequesterImpl implements ChannelGetRequester {
 
         EventSinkAdapter listener;
 
@@ -774,7 +774,7 @@ class PvAccessChannel extends Channel {
     /**
      * ChannelPutRequester implementation.
      */
-    private class ChannelPutRequesterImpl implements ChannelPutRequester {
+    private static class ChannelPutRequesterImpl implements ChannelPutRequester {
 
         private final PutListener listener;
         private final Object value;

@@ -159,7 +159,7 @@ public class CubicSplineGraphData extends BasicGraphData {
      * @version 1.0
      * @author  A. Shishlo
      */
-    private class Cubic {
+    private static class Cubic {
 
         double a, b, c, d;
         /* a + b*u + c*u^2 +d*u^3 */

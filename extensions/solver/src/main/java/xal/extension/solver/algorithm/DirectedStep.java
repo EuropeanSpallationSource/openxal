@@ -345,7 +345,7 @@ public class DirectedStep extends SearchAlgorithm {
     /**
      * Locate the maximum for a quadratic specified by: y = ax^2 + bx + c
      */
-    private class QuadraticMaximumFinder {
+    private static class QuadraticMaximumFinder {
 
         protected final List<Sample> samples;
         protected double curvature;

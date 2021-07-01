@@ -953,7 +953,7 @@ public class MPSMonitor {
      *
      * @author t6p
      */
-    private class MPSConnectionHandler implements ConnectionListener {
+    private static class MPSConnectionHandler implements ConnectionListener {
 
         /**
          * Record filter to use for connected channels with the correlator
@@ -1037,7 +1037,7 @@ public class MPSMonitor {
      *
      * @author t6p
      */
-    private class InputConnectionHandler implements ConnectionListener {
+    private static class InputConnectionHandler implements ConnectionListener {
 
         /**
          * Request a connection for the channel wrapper and monitor its

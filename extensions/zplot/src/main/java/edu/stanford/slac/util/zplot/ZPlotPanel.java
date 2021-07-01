@@ -44,7 +44,7 @@ import edu.stanford.slac.util.zplot.cartoon.BeamlineCartoon;
  */
 public class ZPlotPanel extends ChartPanel {
 
-    private class ZoomHistory {
+    private static class ZoomHistory {
 
         private final LinkedList<Range> beamlineHistory;
         private final LinkedList<Range[]> dataRangeHistory;

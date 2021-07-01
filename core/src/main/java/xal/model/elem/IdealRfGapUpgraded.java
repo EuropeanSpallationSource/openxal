@@ -209,7 +209,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      * @author Christopher K. Allen
      * @since Nov 28, 2014
      */
-    private class EnergyVariables {
+    private static class EnergyVariables {
 
         /**
          * particle phase

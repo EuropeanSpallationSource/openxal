@@ -119,7 +119,7 @@ public class IdealDrift extends ThickElement {
      */
     /**
      * I think this method looks for PMQ magnets next to this drift then stores
-     * them as a private class.
+     * them as a private static class.
      *
      * @author Christopher K. Allen
      * @since Apr 19, 2011
@@ -405,7 +405,7 @@ public class IdealDrift extends ThickElement {
         return Phidx;
     }
 
-    private class FringePMQ {
+    private static class FringePMQ {
 
         private double s1;
         private double s2;

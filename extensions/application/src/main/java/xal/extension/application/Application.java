@@ -1516,7 +1516,7 @@ public abstract class Application {
      *
      * @param title Title of the warning dialog box.
      * @param prefix Text that should appear in the dialog box before the
-     * exception messasge.
+     * exception message.
      * @param exception The exception about which the warning dialog is
      * displayed.
      */
@@ -1531,7 +1531,7 @@ public abstract class Application {
      *
      * @param title Title of the warning dialog box.
      * @param prefix Text that should appear in the dialog box before the
-     * exception messasge.
+     * exception message.
      * @param exception The exception about which the warning dialog is
      * displayed.
      */

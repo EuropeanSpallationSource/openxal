@@ -428,7 +428,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
      * rule to determine whether a column's cells are editable regardless of the
      * record
      */
-    private class SimpleColumnEditRule<RecordType> implements ColumnEditRule<RecordType> {
+    private static class SimpleColumnEditRule<RecordType> implements ColumnEditRule<RecordType> {
 
         /**
          * indicates whether the column's cells are editable

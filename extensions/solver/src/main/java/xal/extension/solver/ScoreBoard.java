@@ -362,19 +362,19 @@ public final class ScoreBoard implements AlgorithmScheduleListener, SolutionJudg
     private class EfficiencyLogger {
 
         /**
-         * average and record information every (_evaluationsStep) number of
-         * evaluaitons
+         * average and record information every (evaluationsStep) number of
+         * evaluations
          */
         protected int evaluationsStep;
         /**
          * Algorithm name, dataArray
          */
         protected Map<String, double[]> currentData = new HashMap<>();
-        //double[] dataArray is [0] = Evaluaitons, [1] initial satisfaction, [2] final satisfaction
+        //double[] dataArray is [0] = Evaluations, [1] initial satisfaction, [2] final satisfaction
 
         /**
-         * just keeps tracks of how total evaluations have occured since last
-         * print statment
+         * just keeps tracks of how total evaluations have occurred since last
+         * print statement
          */
         protected int pendingEvaluations;
 
