@@ -14,7 +14,7 @@ public class ImpactXalUnitConverter {
     /**
      * Speed of light in a vacuum (meters/second)
      */
-    private final double LightSpeed = IConstants.LIGHT_SPEED;
+    private static final double LIGHT_SPEED = IConstants.LIGHT_SPEED;
 
     /*
      * Global Methods
@@ -99,7 +99,7 @@ public class ImpactXalUnitConverter {
      *
      */
     private void computeAuxiliaryParameters() {
-        c_omega = LightSpeed / (2. * Math.PI * f);
+        c_omega = LIGHT_SPEED / (2. * Math.PI * f);
         gamma = 1.0 + (W / ER);
         b = Math.sqrt(1.0 - (1.0 / (gamma * gamma)));
     }

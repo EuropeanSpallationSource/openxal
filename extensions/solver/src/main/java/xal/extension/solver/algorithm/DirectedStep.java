@@ -21,7 +21,7 @@ public class DirectedStep extends SearchAlgorithm {
     /**
      * number of steps along acceleration search
      */
-    final int numScaleSteps = 10;
+    private static final int NUM_SCALE_STEPS = 10;
 
     /**
      * domain for search steps
@@ -180,7 +180,7 @@ public class DirectedStep extends SearchAlgorithm {
         final QuadraticMaximumFinder finder = new QuadraticMaximumFinder();
         Trial bestTrial = originTrial;
         double bestScale = 0.0;
-        for (int sindex = 0; sindex < numScaleSteps; sindex++) {
+        for (int sindex = 0; sindex < NUM_SCALE_STEPS; sindex++) {
             if (minScale != bestScale) {
                 final double scale = (minScale + 7 * bestScale) / 8;
                 final TrialPoint trialPoint = trialPointAlongGradient(gradient, originPoint, scale, variables);
@@ -270,7 +270,7 @@ public class DirectedStep extends SearchAlgorithm {
      */
     @Override
     public int getMinEvaluationsPerRun() {
-        int minEvals = problem != null ? 4 * problem.getVariables().size() + 3 * 2 * numScaleSteps : 0;
+        int minEvals = problem != null ? 4 * problem.getVariables().size() + 3 * 2 * NUM_SCALE_STEPS : 0;
         return minEvals;
     }
 

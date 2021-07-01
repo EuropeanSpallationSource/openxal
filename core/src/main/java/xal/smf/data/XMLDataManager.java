@@ -1212,7 +1212,7 @@ public class XMLDataManager {
 
         public static final String DEVICE_MAPPING = "deviceMapping";
 
-        private final String deviceMappingSchema = "/xal/schemas/impl.xsd";
+        private static final String DEVICE_MAPPING_SCHEMA = "/xal/schemas/impl.xsd";
 
         private static final String DEFAULT_URL = "deviceMapping.impl";
 
@@ -1243,7 +1243,7 @@ public class XMLDataManager {
 
             String urlSpec = absoluteUrlSpec(url);
 
-            final XmlDataAdaptor deviceMappingDocumentAdaptor = XmlDataAdaptor.adaptorForUrl(urlSpec, false, deviceMappingSchema);
+            final XmlDataAdaptor deviceMappingDocumentAdaptor = XmlDataAdaptor.adaptorForUrl(urlSpec, false, DEVICE_MAPPING_SCHEMA);
             final DataAdaptor deviceMappingAdaptor = deviceMappingDocumentAdaptor.childAdaptor(DeviceManager.DEVICE_MAPPING);
 
             final List<DataAdaptor> deviceAdaptors = deviceMappingAdaptor.childAdaptors(DEVICE_TAG);

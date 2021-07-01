@@ -39,12 +39,12 @@ public class EnergyFinder {
     /**
      * error tolerance (relative)
      */
-    private final double tol = 1.e-5;
+    private static final double TOL = 1.e-5;
 
     /**
      * max number of iterations
      */
-    private final int nMax = 30;
+    private static final int N_MAX = 30;
 
     /**
      * constructor
@@ -98,7 +98,7 @@ public class EnergyFinder {
         //else
         step = EGuess * 0.005;
         ENew = EGuess + step;
-        while (Math.abs((error / targetPhase)) > tol && (nTrys < nMax)) {
+        while (Math.abs((error / targetPhase)) > TOL && (nTrys < N_MAX)) {
             error = findPhase(ENew) - targetPhase;
             if (error < -180.) {
                 error += 360.;
@@ -114,7 +114,7 @@ public class EnergyFinder {
             ENew = temp;
             nTrys++;
         }
-        if (nTrys < nMax) {
+        if (nTrys < N_MAX) {
             return ENew;
         } else {
             return -1.;

@@ -229,8 +229,8 @@ public class Wheelswitch extends JPanel {
             }
         }
 
-        private final int MAX_NUMBER_OF_TILTS = 3;
-        private final long TILT_RATE = 200;
+        private static final int MAX_NUMBER_OF_TILTS = 3;
+        private static final long TILT_RATE = 200;
         private int numberOfTilts = MAX_NUMBER_OF_TILTS;
 
         /**

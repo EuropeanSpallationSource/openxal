@@ -14,7 +14,7 @@ public class TraceXalUnitConverter {
     /**
      * Speed of light in a vacuum (meters/second)
      */
-    private final double lightSpeed = IConstants.LIGHT_SPEED;
+    private static final double LIGHT_SPEED = IConstants.LIGHT_SPEED;
 
     /**
      * m to mm
@@ -101,7 +101,7 @@ public class TraceXalUnitConverter {
      *
      */
     private void computeAuxiliaryParameters() {
-        lambda = lightSpeed / f;
+        lambda = LIGHT_SPEED / f;
         gamma = 1.0 + (W / ER);
         vnorm = Math.sqrt(1.0 - (1.0 / (gamma * gamma)));
     }
