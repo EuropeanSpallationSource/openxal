@@ -260,7 +260,7 @@ class ZPlotController {
 
         if (devicesLabeled) {
             this.devicesPanel.deviceRangePanel.firstComboBox
-                    .addItem(new String());
+                    .addItem("");
             for (Device d : zPlot.getLabeledDevices()) {
                 this.devicesPanel.deviceRangePanel.firstComboBox.addItem(d
                         .getName());
@@ -268,7 +268,7 @@ class ZPlotController {
                         .getName());
             }
             this.devicesPanel.deviceRangePanel.lastComboBox
-                    .addItem(new String());
+                    .addItem("");
             this.devicesPanel.deviceRangePanel.lastComboBox
                     .setSelectedIndex(this.devicesPanel.deviceRangePanel.lastComboBox
                             .getItemCount() - 1);

@@ -532,7 +532,7 @@ public class ZPlotPanel extends ChartPanel {
 
     public void setTitle(String text) {
         if (text == null) {
-            text = new String();
+            text = "";
         }
         getChart().setTitle(text);
         getChart().getTitle().setFont(TITLE_FONT);

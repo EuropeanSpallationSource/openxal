@@ -489,7 +489,7 @@ public class WheelswitchFormatter {
      * @throws IllegalArgumentException DOCUMENT ME!
      */
     public static String transformFormat(String format) {
-        String retVal = new String();
+        String retVal = "";
 
         if (format == null) {
             throw new NullPointerException("format");
@@ -687,7 +687,7 @@ public class WheelswitchFormatter {
                     abs *= 10;
                 }
 
-                generatedFormatString = new String();
+                generatedFormatString = "";
 
                 if (minimum < 0) {
                     generatedFormatString += "+";

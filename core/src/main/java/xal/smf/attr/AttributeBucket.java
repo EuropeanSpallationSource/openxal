@@ -225,7 +225,7 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
      * Used by derived classes to define particular attributes
      */
     protected void registerAttribute(String strName, Attribute attr) {
-        registerAttribute(strName, attr, new String());
+        registerAttribute(strName, attr, "");
     }
 
     /**
