@@ -35,7 +35,7 @@ import xal.ca.ChannelSystem;
 public class Epics7ChannelFactory extends ChannelFactory {
 
     // EPICS7 channel system
-    private static Epics7ChannelSystem channelSystem;
+    private static volatile Epics7ChannelSystem channelSystem;
 
     // To keep track of the threads using the Epics7ChannelSystem
     public static final List<Thread> threadList = new ArrayList<>();

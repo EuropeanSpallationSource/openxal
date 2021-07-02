@@ -66,8 +66,8 @@ public abstract class Digit extends SimpleButton {
     }
 
     private static Timer animationTimer = null;
-    private static HashMap<Dimension, Map<String, BufferedImage>> images = null;
-    private static HashMap<Dimension, BufferedImage[]> backgroundImages = null;
+    private static volatile HashMap<Dimension, Map<String, BufferedImage>> images = null;
+    private static volatile HashMap<Dimension, BufferedImage[]> backgroundImages = null;
     private static Border enhancedPressedBorder = new LineBorder(ColorHelper
             .getCosyControlShadow());
     private static Border pressedBorder = new LineBorder(ColorHelper

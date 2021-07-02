@@ -33,7 +33,7 @@ import xal.plugin.epics7.server.Epics7ServerChannelSystem;
 public class Epics7ServerChannelFactory extends ChannelFactory {
 
     // EPICS7 channel system
-    private static Epics7ServerChannelSystem channelSystem;
+    private static volatile Epics7ServerChannelSystem channelSystem;
 
     // To keep track of the threads using the Epics7ChannelSystem
     public static final List<Thread> threadList = new ArrayList<>();
