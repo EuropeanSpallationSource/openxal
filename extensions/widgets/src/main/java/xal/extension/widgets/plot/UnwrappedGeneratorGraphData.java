@@ -16,6 +16,8 @@ public class UnwrappedGeneratorGraphData extends BasicGraphData {
 
     private static final Logger LOGGER = Logger.getLogger(UnwrappedGeneratorGraphData.class.getName());
 
+    private final Object extUnwrappedDataLock = new Object();
+
     protected BasicGraphData extUnwrappedData = null;
 
     /**
@@ -51,29 +53,26 @@ public class UnwrappedGeneratorGraphData extends BasicGraphData {
         super.addPoint(x, y, err);
         double yUnwrapped = y;
         if (extUnwrappedData != null) {
-            synchronized (extUnwrappedData) {
+            synchronized (extUnwrappedDataLock) {
                 int nP = extUnwrappedData.getNumbOfPoints();
                 if (nP != 0) {
-                    double xIn = extUnwrappedData.getX(nP - 1);
                     double yIn = extUnwrappedData.getY(nP - 1);
                     if (x >= extUnwrappedData.getMaxX()) {
                         yUnwrapped = unwrap(y, yIn);
+                    } else if (x <= extUnwrappedData.getMinX()) {
+                        yIn = extUnwrappedData.getY(0);
+                        yUnwrapped = unwrap(y, yIn);
                     } else {
-                        if (x <= extUnwrappedData.getMinX()) {
-                            yIn = extUnwrappedData.getY(0);
-                            yUnwrapped = unwrap(y, yIn);
-                        } else {
-                            int i = 0;
-                            while (i < nP && x > extUnwrappedData.getX(i)) {
-                                i++;
-                            }
-                            yUnwrapped = unwrap(y, extUnwrappedData.getY(i));
+                        int i = 0;
+                        while (i < nP && x > extUnwrappedData.getX(i)) {
+                            i++;
                         }
+                        yUnwrapped = unwrap(y, extUnwrappedData.getY(i));
                     }
                 }
             }
+            extUnwrappedData.addPoint(x, yUnwrapped, err);
         }
-        extUnwrappedData.addPoint(x, yUnwrapped, err);
     }
 
     /**
@@ -85,15 +84,15 @@ public class UnwrappedGeneratorGraphData extends BasicGraphData {
         }
         int n = 0;
         double diff = yIn - y;
-        double diff_min = Math.abs(diff);
-        double sign = diff / diff_min;
-        int n_curr = n + 1;
-        double diff_min_curr = Math.abs(y + sign * n_curr * 360. - yIn);
-        while (diff_min_curr < diff_min) {
-            n = n_curr;
-            diff_min = Math.abs(y + sign * n * 360. - yIn);
-            n_curr++;
-            diff_min_curr = Math.abs(y + sign * n_curr * 360. - yIn);
+        double diffMin = Math.abs(diff);
+        double sign = diff / diffMin;
+        int nCurr = n + 1;
+        double diff_min_curr = Math.abs(y + sign * nCurr * 360. - yIn);
+        while (diff_min_curr < diffMin) {
+            n = nCurr;
+            diffMin = Math.abs(y + sign * n * 360. - yIn);
+            nCurr++;
+            diff_min_curr = Math.abs(y + sign * nCurr * 360. - yIn);
         }
         return (y + sign * n * 360.);
     }

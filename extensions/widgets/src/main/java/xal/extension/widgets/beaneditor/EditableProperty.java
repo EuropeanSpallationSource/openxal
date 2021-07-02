@@ -26,22 +26,22 @@ public abstract class EditableProperty {
     /**
      * property name
      */
-    protected final String NAME;
+    protected final String name;
 
     /**
      * path to this property
      */
-    protected final String PATH;
+    protected final String path;
 
     /**
      * target object which is assigned the property
      */
-    protected final Object TARGET;
+    protected final Object target;
 
     /**
      * property descriptor
      */
-    protected final PropertyDescriptor PROPERTY_DESCRIPTOR;
+    protected final PropertyDescriptor propertyDescriptor;
 
     // static initializer
     static {
@@ -56,10 +56,10 @@ public abstract class EditableProperty {
      * Constructor
      */
     protected EditableProperty(final String pathPrefix, final String name, final Object target, final PropertyDescriptor descriptor) {
-        NAME = name;
-        PATH = pathPrefix != null && pathPrefix.length() > 0 ? pathPrefix + "." + name : name;
-        TARGET = target;
-        PROPERTY_DESCRIPTOR = descriptor;
+        this.name = name;
+        path = pathPrefix != null && pathPrefix.length() > 0 ? pathPrefix + "." + name : name;
+        this.target = target;
+        propertyDescriptor = descriptor;
     }
 
     /**
@@ -80,33 +80,33 @@ public abstract class EditableProperty {
      * name of the property
      */
     public String getName() {
-        return NAME;
+        return name;
     }
 
     /**
      * Get the path to this property
      */
     public String getPath() {
-        return PATH;
+        return path;
     }
 
     /**
      * Get the property type
      */
     public Class<?> getPropertyType() {
-        return PROPERTY_DESCRIPTOR != null ? PROPERTY_DESCRIPTOR.getPropertyType() : null;
+        return propertyDescriptor != null ? propertyDescriptor.getPropertyType() : null;
     }
 
     /**
      * Get the value for this property
      */
     public Object getValue() {
-        if (TARGET != null && PROPERTY_DESCRIPTOR != null) {
-            final Method getter = PROPERTY_DESCRIPTOR.getReadMethod();
+        if (target != null && propertyDescriptor != null) {
+            final Method getter = propertyDescriptor.getReadMethod();
             try {
-                return getter.invoke(TARGET);
+                return getter.invoke(target);
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
-                LOGGER.log(Level.SEVERE, null, exception);
+                LOGGER.log(Level.WARNING, null, exception);
                 return null;
             }
         } else {
@@ -180,6 +180,7 @@ public abstract class EditableProperty {
             try {
                 return Introspector.getBeanInfo(propertyType);
             } catch (IntrospectionException exception) {
+                LOGGER.log(Level.WARNING, null, exception);
                 return null;
             }
         } else {

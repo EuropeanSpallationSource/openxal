@@ -34,7 +34,7 @@ class EditablePrimitiveProperty extends EditableProperty {
      */
     private String fetchUnits() {
         // first check to see if there is a Units annotation (ideal when known at compile time) on the accessor method and use it otherwise fallback to fetching by unit property methods
-        final Method readMethod = PROPERTY_DESCRIPTOR.getReadMethod();
+        final Method readMethod = propertyDescriptor.getReadMethod();
         final Units units = readMethod != null ? readMethod.getAnnotation(Units.class) : null;
         if (units != null) {
             return units.value();
@@ -50,16 +50,16 @@ class EditablePrimitiveProperty extends EditableProperty {
             // first look for a method of the form get<PropertyName>Units() taking no arguments and returning a String
             final String unitsAccessorName = "get" + propertyName + "Units";
             try {
-                final Method unitsAccessor = TARGET.getClass().getMethod(unitsAccessorName);
+                final Method unitsAccessor = target.getClass().getMethod(unitsAccessorName);
                 if (unitsAccessor.getReturnType() == String.class) {
-                    return (String) unitsAccessor.invoke(TARGET);
+                    return (String) unitsAccessor.invoke(target);
                 }
             } catch (NoSuchMethodException exception) {
                 // fallback look for a method of the form getUnitsForProperty( String name ) returning a String
                 try {
-                    final Method unitsAccessor = TARGET.getClass().getMethod("getUnitsForProperty", String.class);
+                    final Method unitsAccessor = target.getClass().getMethod("getUnitsForProperty", String.class);
                     if (unitsAccessor.getReturnType() == String.class) {
-                        return (String) unitsAccessor.invoke(TARGET, getName());
+                        return (String) unitsAccessor.invoke(target, getName());
                     }
                     return "";
                 } catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException fallbackException) {
@@ -95,20 +95,20 @@ class EditablePrimitiveProperty extends EditableProperty {
      */
     @Override
     public void setValue(final Object value) {
-        if (TARGET != null && PROPERTY_DESCRIPTOR != null) {
-            final Method setter = PROPERTY_DESCRIPTOR.getWriteMethod();
+        if (target != null && propertyDescriptor != null) {
+            final Method setter = propertyDescriptor.getWriteMethod();
             try {
-                setter.invoke(TARGET, value);
+                setter.invoke(target, value);
             } catch (Exception exception) {
-                throw new RuntimeException("Cannot set value " + value + " on target: " + TARGET + " with descriptor: " + PROPERTY_DESCRIPTOR.getName(), exception);
+                throw new RuntimeException("Cannot set value " + value + " on target: " + target + " with descriptor: " + propertyDescriptor.getName(), exception);
             }
         } else {
-            if (TARGET == null && PROPERTY_DESCRIPTOR == null) {
+            if (target == null && propertyDescriptor == null) {
                 throw new RuntimeException("Cannot set value " + value + " on target because both the target and descriptor are null.");
-            } else if (TARGET == null) {
-                throw new RuntimeException("Cannot set value " + value + " on target with descriptor: " + PROPERTY_DESCRIPTOR.getName() + " because the target is null.");
-            } else if (PROPERTY_DESCRIPTOR == null) {
-                throw new RuntimeException("Cannot set value " + value + " on target: " + TARGET + " because the property descriptor is null.");
+            } else if (target == null) {
+                throw new RuntimeException("Cannot set value " + value + " on target with descriptor: " + propertyDescriptor.getName() + " because the target is null.");
+            } else if (propertyDescriptor == null) {
+                throw new RuntimeException("Cannot set value " + value + " on target: " + target + " because the property descriptor is null.");
             }
         }
     }

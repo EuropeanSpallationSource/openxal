@@ -204,9 +204,6 @@ public class MadGenerator {
         final FileWriter madWriter = new FileWriter(madFile);
         final Date today = new Date();
 
-        // TODO: CKA - NEVER USED		
-        TraceXalUnitConverter uc = TraceXalUnitConverter.newConverter(402500000., myProbe.getSpeciesRestEnergy(), myProbe.getKineticEnergy());
-
         double momentum = RelativisticParameterConverter.computeMomentumFromEnergies(myProbe.getKineticEnergy(), myProbe.getSpeciesRestEnergy()) / 1.e9;
         LOGGER.log(Level.INFO, "momentum = {0}", momentum);
 
@@ -220,15 +217,9 @@ public class MadGenerator {
         madElements = new ArrayList<>();
         for (int i = 0; i < sequenceChain.size(); i++) {
             Lattice myLattice = createLattice(sequenceChain.get(i));
-            // TODO: CKA - NEVER USED
-            int elementCount = myLattice.len();
+
             LatticeIterator ilat = myLattice.latticeIterator();
-            // TODO: CKA - NEVER USED
-            int counter = 1;
-            // TODO: CKA - NEVER USED
-            int devTypeInd = 1;
-            // TODO: CKA - NEVER USED
-            String devStr = "";
+
             // there can at most be one thick node at any location
             AcceleratorNode currentThickNode = null;
             // total current path taken through the thick node (only bends modify and use this variable)
@@ -242,7 +233,7 @@ public class MadGenerator {
                 final double elementLength = element.getLength();
                 final AcceleratorNode node = element.getAcceleratorNode();
 
-                if (element != null && element.isThick()) {
+                if (element.isThick()) {
                     if (node != currentThickNode) {
                         currentThickNode = node;
                         currentThickNodePath = 0.0;
@@ -322,9 +313,7 @@ public class MadGenerator {
                     } else {
                         LOGGER.log(Level.INFO, "Ignored element type: {0}", elementType);
                     }
-                    continue;
                 }
-                counter++;
             }
         }
 

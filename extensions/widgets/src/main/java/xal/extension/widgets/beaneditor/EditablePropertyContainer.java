@@ -1,11 +1,14 @@
 package xal.extension.widgets.beaneditor;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.annotation.AProperty.NoEdit;
 import xal.tools.beam.CovarianceMatrix;
@@ -17,15 +20,17 @@ import xal.tools.beam.Twiss;
  */
 public class EditablePropertyContainer extends EditableProperty {
 
+    private static final Logger LOGGER = Logger.getLogger(EditablePropertyContainer.class.getName());
+
     /**
      * target for child properties
      */
-    protected final Object CHILD_TARGET;
+    protected final Object childTarget;
 
     /**
      * set of ancestors to reference to prevent cycles
      */
-    private final Set<Object> ANCESTORS;
+    private final Set<Object> ancestors;
 
     /**
      * list of child primitive properties
@@ -43,8 +48,8 @@ public class EditablePropertyContainer extends EditableProperty {
     protected EditablePropertyContainer(final String pathPrefix, final String name, final Object target, final PropertyDescriptor descriptor, final Object childTarget, final Set<Object> ancestors) {
         super(pathPrefix, name, target, descriptor);
 
-        CHILD_TARGET = childTarget;
-        ANCESTORS = ancestors;
+        this.childTarget = childTarget;
+        this.ancestors = ancestors;
     }
 
     /**
@@ -76,7 +81,8 @@ public class EditablePropertyContainer extends EditableProperty {
         try {
             final Method readMethod = descriptor.getReadMethod();
             return readMethod.invoke(target);
-        } catch (Exception exception) {
+        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
+            LOGGER.log(Level.WARNING, null, exception);
             return null;
         }
     }
@@ -163,7 +169,7 @@ public class EditablePropertyContainer extends EditableProperty {
         childPrimitiveProperties = new ArrayList<>();
         childPropertyContainers = new ArrayList<>();
 
-        final PropertyDescriptor[] descriptors = getPropertyDescriptors(CHILD_TARGET);
+        final PropertyDescriptor[] descriptors = getPropertyDescriptors(childTarget);
         if (descriptors != null) {
             for (final PropertyDescriptor descriptor : descriptors) {
                 if (descriptor.getPropertyType() != Class.class) {
@@ -184,24 +190,18 @@ public class EditablePropertyContainer extends EditableProperty {
         if (getter != null && getter.getAnnotation(Deprecated.class) == null && getter.getAnnotation(NoEdit.class) == null) {
             final Class<?> propertyType = descriptor.getPropertyType();
 
-            boolean primitive = false;
-
             if (EDITABLE_PROPERTY_TYPES.contains(propertyType) || propertyType.isEnum()) {
                 // if the property is an editable primitive with both a getter and setter then return the primitive property instance otherwise null
                 final Method setter = descriptor.getWriteMethod();
                 // include only properties if the setter exists and is not deprecated (getter was already filtered in an enclosing block) and not marked hidden
                 if (setter != null && setter.getAnnotation(Deprecated.class) == null && setter.getAnnotation(NoEdit.class) == null) {
-                    childPrimitiveProperties.add(new EditablePrimitiveProperty(PATH, CHILD_TARGET, descriptor));
+                    childPrimitiveProperties.add(new EditablePrimitiveProperty(path, childTarget, descriptor));
                 }
                 // reached end of branch so we are done
-                return;
-            } else if (propertyType == null) {
-                return;
             } else if (propertyType.isArray()) {
                 // property is an array
-                return;
             } else {
-                Object target = generateChildTarget(CHILD_TARGET, descriptor);
+                Object target = generateChildTarget(childTarget, descriptor);
 
                 if (propertyType.equals(CovarianceMatrix.class)) {
                     target = new TwissCovarianceMatrixBridge((CovarianceMatrix) target);
@@ -209,17 +209,15 @@ public class EditablePropertyContainer extends EditableProperty {
 
                 // property is a plain container
                 // only propagate down the branch if the targets are unique (avoid cycles)
-                if (!ANCESTORS.contains(target)) {
-                    final Set<Object> ancestors = new HashSet<Object>(ANCESTORS);
+                if (!ancestors.contains(target)) {
+                    final Set<Object> ancestors = new HashSet<>(this.ancestors);
                     ancestors.add(target);
-                    final EditablePropertyContainer container = new EditablePropertyContainer(PATH, CHILD_TARGET, descriptor, target, ancestors);
+                    final EditablePropertyContainer container = new EditablePropertyContainer(path, childTarget, descriptor, target, ancestors);
                     // only care about containers that lead to editable properties
                     if (container.getChildCount() > 0) {
                         childPropertyContainers.add(container);
                     }
                 }
-
-                return;
             }
         }
     }

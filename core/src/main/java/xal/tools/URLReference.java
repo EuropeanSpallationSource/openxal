@@ -84,7 +84,7 @@ public class URLReference {
      */
     public static boolean isRootedIn(final File directory, final File file) {
         try {
-            return directory != null && file != null ? isRootedIn(directory.toURI().toURL(), file.toURI().toURL()) : false;
+            return directory != null && file != null && isRootedIn(directory.toURI().toURL(), file.toURI().toURL());
         } catch (MalformedURLException exception) {
             LOGGER.log(Level.SEVERE, null, exception);
             throw new RuntimeException("Exception testing whether the file is rooted in the directory.", exception);
@@ -95,21 +95,21 @@ public class URLReference {
      * Test whether the URL is rooted in the specified root URL
      */
     public static boolean isRootedIn(final URL rootURL, final URL url) {
-        return rootURL != null && url != null ? isRootedIn(rootURL, url.toString()) : false;
+        return rootURL != null && url != null && isRootedIn(rootURL, url.toString());
     }
 
     /**
      * Test whether the URL spec is rooted in the specified root URL
      */
     public static boolean isRootedIn(final URL rootURL, final String urlSpec) {
-        return rootURL != null && urlSpec != null ? isRootedIn(rootURL.toString(), urlSpec) : false;
+        return rootURL != null && urlSpec != null && isRootedIn(rootURL.toString(), urlSpec);
     }
 
     /**
      * Test whether the URL spec is rooted in the specified root URL
      */
     private static boolean isRootedIn(final String rootSpec, final String urlSpec) {
-        return rootSpec != null && urlSpec != null ? urlSpec.startsWith(rootSpec) : false;
+        return rootSpec != null && urlSpec != null && urlSpec.startsWith(rootSpec);
     }
 
     /**
@@ -123,10 +123,12 @@ public class URLReference {
      * Generate and return URL References for all url Specs which are valid
      */
     public static URLReference[] getValidReferences(final URL possibleRoot, final String[] urlSpecs) {
-        final List<URLReference> references = urlSpecs != null ? new ArrayList<>(urlSpecs.length) : new ArrayList<>();
-        for (final String urlSpec : urlSpecs) {
-            if (isValid(urlSpec)) {
-                references.add(URLReference.getInstance(possibleRoot, urlSpec));
+        final List<URLReference> references = new ArrayList<>();
+        if (urlSpecs != null) {
+            for (final String urlSpec : urlSpecs) {
+                if (isValid(urlSpec)) {
+                    references.add(URLReference.getInstance(possibleRoot, urlSpec));
+                }
             }
         }
 
@@ -149,6 +151,7 @@ public class URLReference {
             new URL(fullUrlSpec).openStream().close();
             return true;
         } catch (IOException exception) {
+            LOGGER.log(Level.WARNING, null ,exception);
             return false;
         }
     }

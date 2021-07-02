@@ -210,7 +210,7 @@ public class InMemoryDataAdaptor implements DataAdaptor {
      */
     @Override
     public List<DataAdaptor> childAdaptors() {
-        final List<DataAdaptor> subnodes = new ArrayList<DataAdaptor>();
+        final List<DataAdaptor> subnodes = new ArrayList<>();
         for (final Collection<DataAdaptor> adaptors : subnodeMap.values()) {
             subnodes.addAll(adaptors);
         }
@@ -268,7 +268,7 @@ public class InMemoryDataAdaptor implements DataAdaptor {
     public void removeChild(DataAdaptor adaptor) {
         String label = adaptor.name();
         List<DataAdaptor> subnodes = subnodeMap.get(label);
-        if (subnodes == null) {
+        if (subnodes != null) {
             subnodes.remove(adaptor);
         }
     }

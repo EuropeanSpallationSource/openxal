@@ -208,8 +208,7 @@ public class MadXGenerator {
             lat_lengths.add(myLattice.getLength());
             LatticeIterator ilat = myLattice.latticeIterator();
             int counter = 1;
-            int devTypeInd = 1;
-            String devStr = "";
+
             // there can at most be one thick node at any location
             AcceleratorNode currentThickNode = null;
             // total current path taken through the thick node (only bends modify and use this variable)

@@ -48,11 +48,9 @@ public class Util {
 
             for (Entry<Object, Object> entry : properties.entrySet()) {
                 final Object key = entry.getKey();
-                final String keyString = key != null ? key.toString() : null;
                 final Object value = entry.getValue();
-                final String valueString = entry != null ? value.toString() : null;
 
-                infoMap.put(keyString, valueString);
+                infoMap.put(key.toString(), value.toString());
             }
 
             return infoMap;

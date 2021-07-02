@@ -439,8 +439,6 @@ class RemoteRequestHandler<ProtocolType> {
             } else if (parameterType.isAssignableFrom(methodParamType)) {
                 // types are consistent
                 score += 1;
-            } else if (parameterType == null) {
-                // null matches an object type so compatible, but no credit
             } else {
                 // no match for this parameter
                 return 0;
