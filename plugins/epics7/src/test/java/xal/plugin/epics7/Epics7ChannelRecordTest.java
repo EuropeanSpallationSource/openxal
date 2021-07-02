@@ -64,14 +64,14 @@ public class Epics7ChannelRecordTest {
     private Epics7ChannelRecord newEpics7ChannelRecord(ScalarType scalarType) {
         Structure structure = StandardFieldFactory.getStandardField().scalar(scalarType, properties);
         pvStructure = pvDataCreate.createPVStructure(structure);
-        return new Epics7ChannelRecord(pvStructure, "Test_Channel");
+        return new Epics7ChannelRecord(pvStructure);
     }
 
     private Epics7ChannelRecord newEpics7ChannelRecordArray(ScalarType scalarType) {
         StandardField standardField = StandardFieldFactory.getStandardField();
         Structure structure = standardField.scalarArray(scalarType, properties);
         pvStructure = pvDataCreate.createPVStructure(structure);
-        return new Epics7ChannelRecord(pvStructure, "Test_Channel");
+        return new Epics7ChannelRecord(pvStructure);
     }
 
     /**
@@ -106,7 +106,7 @@ public class Epics7ChannelRecordTest {
     public void testGetCount() {
         LOGGER.log(Level.INFO, "getCount");
 
-        Epics7ChannelRecord instance = new Epics7ChannelRecord(null, "Test_Channel");
+        Epics7ChannelRecord instance = new Epics7ChannelRecord(null);
 
         int result = instance.getCount();
         assertEquals(0, result);
@@ -292,7 +292,7 @@ public class Epics7ChannelRecordTest {
         instance = newEpics7ChannelRecordArray(ScalarType.pvString);
         assertEquals(String[].class, instance.getType());
 
-        instance = new Epics7ChannelRecord(null, "Test_Channel");
+        instance = new Epics7ChannelRecord(null);
         assertEquals(null, instance.getType());
     }
 
@@ -665,7 +665,7 @@ public class Epics7ChannelRecordTest {
     @Test
     public void testToString() {
         LOGGER.log(Level.INFO, "toString");
-        Epics7ChannelRecord instance = new Epics7ChannelRecord(null, "Test_Channel");
+        Epics7ChannelRecord instance = new Epics7ChannelRecord(null);
         String expResult = "";
         String result = instance.toString();
         assertEquals(expResult, result);
@@ -683,7 +683,7 @@ public class Epics7ChannelRecordTest {
     @Test
     public void testApplyTransform() {
         LOGGER.log(Level.INFO, "applyTransform");
-        Epics7ChannelRecord instance = new Epics7ChannelRecord(null, "Test_Channel");
+        Epics7ChannelRecord instance = new Epics7ChannelRecord(null);
         ChannelRecord result = instance.applyTransform(null);
         assertEquals(instance, result);
     }
@@ -696,7 +696,7 @@ public class Epics7ChannelRecordTest {
         LOGGER.log(Level.INFO, "arrayValue");
 
         boolean exceptionThrown = false;
-        Epics7ChannelRecord instance = new Epics7ChannelRecord(null, "Test_Channel");
+        Epics7ChannelRecord instance = new Epics7ChannelRecord(null);
         try {
             instance.arrayValue();
         } catch (Exception ex) {

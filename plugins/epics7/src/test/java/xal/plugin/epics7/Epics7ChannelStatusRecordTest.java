@@ -55,7 +55,7 @@ public class Epics7ChannelStatusRecordTest {
         pvStructure.getStructureField(ALARM_FIELD_NAME).getIntField(STATUS_FIELD_NAME).put(1);
         pvStructure.getStructureField(ALARM_FIELD_NAME).getIntField(SEVERITY_FIELD_NAME).put(2);
 
-        Epics7ChannelStatusRecord epics7ChannelStatusRecord = new Epics7ChannelStatusRecord(pvStructure, "Test_Channel");
+        Epics7ChannelStatusRecord epics7ChannelStatusRecord = new Epics7ChannelStatusRecord(pvStructure);
         return epics7ChannelStatusRecord;
     }
 

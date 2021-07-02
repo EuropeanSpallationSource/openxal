@@ -266,7 +266,7 @@ public class Epics7ChannelTest {
 
                 PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
                 PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-                return new Epics7ChannelRecord(pvStructure, channelName());
+                return new Epics7ChannelRecord(pvStructure);
             }
         };
         Class expResult = boolean.class;
@@ -317,7 +317,7 @@ public class Epics7ChannelTest {
 
                 pvStructure.getSubField(PVDoubleArray.class, Epics7Channel.VALUE_REQUEST).put(0, expResult, array, 0);
 
-                return new Epics7ChannelRecord(pvStructure, channelName());
+                return new Epics7ChannelRecord(pvStructure);
             }
         };
         int result = instance.elementCount();
@@ -627,7 +627,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException, GetException {
+            public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
 
@@ -701,7 +701,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException, GetException {
+            public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
 
@@ -729,7 +729,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException, GetException {
+            public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
 
@@ -884,7 +884,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException, GetException {
+            public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
 

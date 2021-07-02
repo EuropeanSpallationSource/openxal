@@ -57,7 +57,7 @@ public class Epics7ChannelTimeRecordTest {
         pvStructure.getStructureField(TIMESTAMP_FIELD_NAME).getLongField(SECONDS_FIELD_NAME).put(1);
         pvStructure.getStructureField(TIMESTAMP_FIELD_NAME).getIntField(NANOSECONDS_FIELD_NAME).put(2);
 
-        Epics7ChannelTimeRecord epics7ChannelTimeRecord = new Epics7ChannelTimeRecord(pvStructure, "Test_Channel");
+        Epics7ChannelTimeRecord epics7ChannelTimeRecord = new Epics7ChannelTimeRecord(pvStructure);
         return epics7ChannelTimeRecord;
     }
 

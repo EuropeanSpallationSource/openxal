@@ -238,17 +238,17 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
 
     @Override
     public ChannelRecord getRawValueRecord() throws ConnectionException, GetException {
-        return new Epics7ChannelRecord(pvRecord.getPVStructure(), strId);
+        return new Epics7ChannelRecord(pvRecord.getPVStructure());
     }
 
     @Override
     public ChannelStatusRecord getRawStatusRecord() throws ConnectionException, GetException {
-        return new Epics7ChannelStatusRecord(pvRecord.getPVStructure(), strId);
+        return new Epics7ChannelStatusRecord(pvRecord.getPVStructure());
     }
 
     @Override
     public ChannelTimeRecord getRawTimeRecord() throws ConnectionException, GetException {
-        return new Epics7ChannelTimeRecord(pvRecord.getPVStructure(), strId);
+        return new Epics7ChannelTimeRecord(pvRecord.getPVStructure());
     }
 
     @Override
@@ -271,7 +271,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         checkConnection("addMonitorValTime");
 
         return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.TIME_REQUEST, (pvStructure) -> {
-            ChannelTimeRecord record = new Epics7ChannelTimeRecord(pvStructure, this.channelName());
+            ChannelTimeRecord record = new Epics7ChannelTimeRecord(pvStructure);
             listener.eventValue(record, this);
         }, intMaskFire);
     }
@@ -281,7 +281,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         checkConnection("addMonitorValStatus");
 
         return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.STATUS_REQUEST, (pvStructure) -> {
-            ChannelStatusRecord record = new Epics7ChannelStatusRecord(pvStructure, this.channelName());
+            ChannelStatusRecord record = new Epics7ChannelStatusRecord(pvStructure);
             listener.eventValue(record, this);
         }, intMaskFire);
     }
@@ -291,7 +291,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         checkConnection("addMonitorValue");
 
         return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.VALUE_REQUEST, (pvStructure) -> {
-            ChannelRecord record = new Epics7ChannelRecord(pvStructure, this.channelName());
+            ChannelRecord record = new Epics7ChannelRecord(pvStructure);
             listener.eventValue(record, this);
         }, intMaskFire);
     }

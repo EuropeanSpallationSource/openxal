@@ -48,7 +48,6 @@ import xal.tools.transforms.ValueTransform;
 public class Epics7ChannelRecord extends ChannelRecordImpl {
 
     protected PVStructure pvStructureStore;
-    protected String channelName;
     protected String fieldName;
 
     protected static final String VALUE_FIELD_NAME = "value";
@@ -57,15 +56,11 @@ public class Epics7ChannelRecord extends ChannelRecordImpl {
      * Constructor
      *
      * @param pvStructure
-     * @param channelName
      */
-    public Epics7ChannelRecord(PVStructure pvStructure, String channelName) {
-        super(() -> {
-            return null;
-        });
+    public Epics7ChannelRecord(PVStructure pvStructure) {
+        super(() -> null);
 
         pvStructureStore = pvStructure;
-        this.channelName = channelName;
         this.fieldName = VALUE_FIELD_NAME;
     }
 
