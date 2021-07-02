@@ -225,7 +225,7 @@ public class LoggerSession {
             stopLogging();
         }
 
-        final ChannelGroup oldGroup = group;
+        final ChannelGroup oldGroup = this.group;
         if (oldGroup != null && group != oldGroup) {
             oldGroup.dispose();
         } else if (group != null) {

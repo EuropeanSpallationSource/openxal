@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 /**
  * AbstractBatchGetRequest
  */
-public abstract class AbstractBatchGetRequest<RecordType extends ChannelRecord> implements BatchConnectionRequestListener {
+public abstract class AbstractBatchGetRequest<T extends ChannelRecord> implements BatchConnectionRequestListener {
 
     /**
      * message center for dispatching events
@@ -27,7 +27,7 @@ public abstract class AbstractBatchGetRequest<RecordType extends ChannelRecord> 
     /**
      * proxy which forwards events to registered listeners
      */
-    private final BatchGetRequestListener<RecordType> eventProxy;
+    private final BatchGetRequestListener<T> eventProxy;
 
     /**
      * set of channels for which to request batch operations
@@ -37,7 +37,7 @@ public abstract class AbstractBatchGetRequest<RecordType extends ChannelRecord> 
     /**
      * table of channel records keyed by channel
      */
-    private final Map<Channel, RecordType> records;
+    private final Map<Channel, T> records;
 
     /**
      * table of get request exceptions keyed by channel
@@ -81,7 +81,8 @@ public abstract class AbstractBatchGetRequest<RecordType extends ChannelRecord> 
      *
      * @param channels the channels for which get requests will be handled
      */
-    @SuppressWarnings("unchecked")	// No way to pass BatchGetRequestListener.class with the specified RecordType
+    // No way to pass BatchGetRequestListener.class with the specified RecordType
+    @SuppressWarnings("unchecked")
     public AbstractBatchGetRequest(final Collection<Channel> channels) {
         messageCenter = new MessageCenter("BatchGetRequest");
         eventProxy = messageCenter.registerSource(this, BatchGetRequestListener.class);
@@ -116,7 +117,7 @@ public abstract class AbstractBatchGetRequest<RecordType extends ChannelRecord> 
      *
      * @param listener a receiver which will receive events
      */
-    public void addBatchGetRequestListener(final BatchGetRequestListener<RecordType> listener) {
+    public void addBatchGetRequestListener(final BatchGetRequestListener<T> listener) {
         messageCenter.registerTarget(listener, this, BatchGetRequestListener.class);
     }
 
@@ -126,7 +127,7 @@ public abstract class AbstractBatchGetRequest<RecordType extends ChannelRecord> 
      *
      * @param listener receiver to remove from receiving events
      */
-    public void removeBatchGetRequestListener(final BatchGetRequestListener<RecordType> listener) {
+    public void removeBatchGetRequestListener(final BatchGetRequestListener<T> listener) {
         messageCenter.removeTarget(listener, this, BatchGetRequestListener.class);
     }
 
@@ -153,11 +154,11 @@ public abstract class AbstractBatchGetRequest<RecordType extends ChannelRecord> 
     /**
      * submit as a batch the get requests for each channel
      */
-    synchronized public void submit() {
-        final Set<Channel> channels = copyChannels();
+    public void submit() {
+        final Set<Channel> channelSet = copyChannels();
         synchronized (pendingChannels) {
             pendingChannels.clear();
-            pendingChannels.addAll(channels);
+            pendingChannels.addAll(channelSet);
         }
         synchronized (records) {
             records.clear();
@@ -172,19 +173,23 @@ public abstract class AbstractBatchGetRequest<RecordType extends ChannelRecord> 
 
         // determine which channels are connected and process them immediately
         final Set<Channel> unconnectedChannels = new HashSet<>();
-        for (final Channel channel : channels) {
+        for (final Channel channel : channelSet) {
             if (channel.isConnected()) {
-                pendingConnectedChannels.add(channel);
+                synchronized (pendingConnectedChannels) {
+                    pendingConnectedChannels.add(channel);
+                }
             } else {
                 unconnectedChannels.add(channel);
             }
         }
-        if (pendingConnectedChannels.size() > 0) {
-            processPendingConnectedChannels();
+        synchronized (pendingConnectedChannels) {
+            if (!pendingConnectedChannels.isEmpty()) {
+                processPendingConnectedChannels();
+            }
         }
 
         // create a fresh batch channel connection request for unconnected channels if any
-        if (unconnectedChannels.size() > 0) {
+        if (!unconnectedChannels.isEmpty()) {
             final BatchConnectionRequest newBatchConnectionRequest = new BatchConnectionRequest(unconnectedChannels);
             batchConnectionRequest = newBatchConnectionRequest;
             batchConnectionRequest.addBatchConnectionRequestListener(this);
@@ -272,8 +277,12 @@ public abstract class AbstractBatchGetRequest<RecordType extends ChannelRecord> 
                 throw new ConnectionException(channel, "Exception connecting to channel " + channel.channelName() + " during batch get request.");
             }
         } catch (Exception exception) {
+            LOGGER.log(Level.WARNING, null, exception);
             synchronized (exceptions) {
-                exceptions.put(channel, exception);
+                Exception previousException = exceptions.put(channel, exception);
+                if (previousException != null) {
+                    LOGGER.log(Level.SEVERE, "More than 1 exception for the same channel.", previousException);
+                }
                 synchronized (pendingChannels) {
                     pendingChannels.remove(channel);
                 }
@@ -335,7 +344,7 @@ public abstract class AbstractBatchGetRequest<RecordType extends ChannelRecord> 
      * @param channel the channel for which the record is fetched
      * @return the record for the specified channel or null if there is none
      */
-    public RecordType getRecord(final Channel channel) {
+    public T getRecord(final Channel channel) {
         synchronized (records) {
             return records.get(channel);
         }
@@ -392,7 +401,7 @@ public abstract class AbstractBatchGetRequest<RecordType extends ChannelRecord> 
      * @param channel the channel for which the event will be processed
      * @param record the fetched record
      */
-    protected void processRecordEvent(final Channel channel, final RecordType record) {
+    protected void processRecordEvent(final Channel channel, final T record) {
         synchronized (records) {
             records.put(channel, record);
             synchronized (pendingChannels) {
@@ -435,31 +444,26 @@ public abstract class AbstractBatchGetRequest<RecordType extends ChannelRecord> 
         if (!pendingChannelProcessingQueued) {
             pendingChannelProcessingQueued = true;
 
-            getRequestedProcessingQueue.dispatchAsync(new Runnable() {
-                @Override
-                public void run() {
-                    // yield to other threads so we can accumulate a batch of channels to process
-                    Thread.yield();
+            getRequestedProcessingQueue.dispatchAsync(() -> {
+                // yield to other threads so we can accumulate a batch of channels to process
+                Thread.yield();
 
-                    pendingChannelProcessingQueued = false;
+                pendingChannelProcessingQueued = false;
 
-                    final Set<Channel> channels = new HashSet<>();
-                    synchronized (pendingConnectedChannels) {
-                        channels.addAll(pendingConnectedChannels);
-                        pendingConnectedChannels.clear();
-                    }
+                final Set<Channel> channelSet = new HashSet<>();
+                synchronized (pendingConnectedChannels) {
+                    channelSet.addAll(pendingConnectedChannels);
+                    pendingConnectedChannels.clear();
+                }
 
-                    if (channels.size() > 0) {
-                        try {
-                            for (final Channel channel : channels) {
-                                processRequest(channel);
-                            }
-                            Channel.flushIO();
-                            // yield to other threads so we can accumulate a batch of channels to process 
-                            Thread.yield();
-                        } catch (Exception exception) {
-                            LOGGER.log(Level.SEVERE, null, exception);
-                        }
+                if (!channelSet.isEmpty()) {
+                    try {
+                        channelSet.forEach(channel -> processRequest(channel));
+                        Channel.flushIO();
+                        // yield to other threads so we can accumulate a batch of channels to process 
+                        Thread.yield();
+                    } catch (Exception exception) {
+                        LOGGER.log(Level.SEVERE, null, exception);
                     }
                 }
             });
@@ -479,7 +483,10 @@ public abstract class AbstractBatchGetRequest<RecordType extends ChannelRecord> 
     @Override
     public void connectionExceptionInBatch(final BatchConnectionRequest connectionRequest, final Channel channel, final Exception exception) {
         synchronized (exceptions) {
-            exceptions.put(channel, exception);
+            Exception previousException = exceptions.put(channel, exception);
+            if (previousException != null) {
+                LOGGER.log(Level.SEVERE, "More than 1 exception for the same channel.", previousException);
+            }
             synchronized (pendingChannels) {
                 pendingChannels.remove(channel);
             }
