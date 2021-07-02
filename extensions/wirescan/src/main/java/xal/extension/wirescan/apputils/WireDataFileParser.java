@@ -98,7 +98,7 @@ public class WireDataFileParser {
 
             while ((line = in.readLine()) != null) {
                 // get rid of "\n"
-                line.replaceAll("\n", "");
+                line = line.replaceAll("\n", "");
                 lineNumber++;
                 String[] tokens = line.split("\\s+");
                 int nValues = tokens.length;

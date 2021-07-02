@@ -7,6 +7,7 @@
 //
 package xal.extension.widgets.swing;
 
+import java.util.ArrayList;
 import xal.tools.FreshProcessor;
 import xal.tools.data.*;
 
@@ -32,12 +33,12 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
     /**
      * handles the input events and filters the table records accordingly
      */
-    private final InputFilterHandler INPUT_FILTER_HANDLER;
+    private final InputFilterHandler inputFilterHandler;
 
     /**
      * record filter
      */
-    private final KeyValueListFilter<T> RECORD_FILTER;
+    private final KeyValueListFilter<T> recordFilter;
 
     /**
      * input document used to specify filtering text
@@ -59,9 +60,9 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
     public KeyValueFilteredTableModel(final List<T> records, final String... keyPaths) {
         super(records, keyPaths);
 
-        RECORD_FILTER = new KeyValueListFilter<>(KEY_VALUE_ADAPTOR, allRecords, keyPaths);
+        recordFilter = new KeyValueListFilter<>(keyValueAdaptor, records, keyPaths);
 
-        INPUT_FILTER_HANDLER = new InputFilterHandler();
+        inputFilterHandler = new InputFilterHandler();
         setInputFilterDocument(null);
 
         filterRecords();
@@ -71,7 +72,7 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
      * Empty Constructor
      */
     public KeyValueFilteredTableModel() {
-        this(new java.util.ArrayList<T>(), "toString");
+        this(new ArrayList<T>(), "toString");
     }
 
     /**
@@ -82,7 +83,7 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
         super.setValueAt(value, row, column);
         final T record = getRecordAtRow(row);
         if (record != null) {
-            RECORD_FILTER.reIndexRecord(record);
+            recordFilter.reIndexRecord(record);
             filterRecords();
         }
     }
@@ -93,15 +94,15 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
      */
     public void setInputFilterDocument(final Document document) {
         if (inputFilterDocument != null) {
-            inputFilterDocument.removeDocumentListener(INPUT_FILTER_HANDLER);
+            inputFilterDocument.removeDocumentListener(inputFilterHandler);
             // clear pending requests if any
-            INPUT_FILTER_HANDLER.clear();
+            inputFilterHandler.clear();
         }
 
         inputFilterDocument = document;
 
         if (document != null) {
-            document.addDocumentListener(INPUT_FILTER_HANDLER);
+            document.addDocumentListener(inputFilterHandler);
         }
     }
 
@@ -117,7 +118,7 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
      * set the key paths to use for matching
      */
     public void setMatchingKeyPaths(final String... keyPaths) {
-        RECORD_FILTER.setMatchingKeyPaths(keyPaths);
+        recordFilter.setMatchingKeyPaths(keyPaths);
         filterRecords();
     }
 
@@ -139,8 +140,8 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
      */
     private void setAllRecords(final List<T> records) {
         allRecords = records;
-        if (RECORD_FILTER != null) {
-            RECORD_FILTER.setAllRecords(records);
+        if (recordFilter != null) {
+            recordFilter.setAllRecords(records);
             filterRecords();
         }
         fireTableDataChanged();
@@ -182,8 +183,8 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
      * apply the filter to all records
      */
     private void filterRecords(final String text) {
-        if (RECORD_FILTER != null) {
-            setFilteredRecords(RECORD_FILTER.filterRecords(text));
+        if (recordFilter != null) {
+            setFilteredRecords(recordFilter.filterRecords(text));
         } else {
             setFilteredRecords(allRecords);
         }

@@ -270,17 +270,17 @@ public class Grid implements Serializable {
     /**
      * physical dimensions of grid
      */
-    private R3 vecDim;
+    private R3 vecDim = new R3();
 
     /**
      * grid resolution (L/N)
      */
-    private R3 vecRes;
+    private R3 vecRes = new R3();
 
     /**
      * R3 coordinates of first grid point, i.e., the grid origin
      */
-    private R3 ptOrg;
+    private R3 ptOrg = new R3();
 
     /**
      * the grid domain in R3

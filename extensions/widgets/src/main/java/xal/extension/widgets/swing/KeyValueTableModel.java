@@ -38,33 +38,33 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
     /**
      * message center for posting events
      */
-    private final MessageCenter MESSAGE_CENTER;
+    private final MessageCenter messageCenter;
 
     /**
      * proxy for events to be forwarded to registered listeners
      */
-    private final KeyValueRecordListener<KeyValueTableModel<RecordType>, RecordType> EVENT_PROXY;
+    private final KeyValueRecordListener<KeyValueTableModel<RecordType>, RecordType> eventProxy;
 
     /**
      * key value adaptor to get the value from a record (row) for the specified
      * key path (column property)
      */
-    protected final KeyValueAdaptor KEY_VALUE_ADAPTOR;
+    protected final KeyValueAdaptor keyValueAdaptor;
 
     /**
      * column names keyed by key path
      */
-    private final Map<String, String> COLUMN_NAME_MAP;
+    private final Map<String, String> columnNameMap;
 
     /**
      * column class keyed by key path
      */
-    private final Map<String, Class<?>> COLUMN_CLASS_MAP;
+    private final Map<String, Class<?>> columnClassMap;
 
     /**
      * column edit indicator map keyed by key path
      */
-    private final Map<String, ColumnEditRule<RecordType>> COLUMN_EDITABLE_MAP;
+    private final Map<String, ColumnEditRule<RecordType>> columnEditableMap;
 
     /**
      * list of records to display (one record for each table row)
@@ -92,14 +92,14 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
     // Java static fields don't support generics so we can't use them to strongly type KeyValueRecordListener.class
     @SuppressWarnings("unchecked")
     public KeyValueTableModel(final List<RecordType> records, final String... keyPaths) {
-        MESSAGE_CENTER = new MessageCenter("KeyValueTableModel");
-        EVENT_PROXY = MESSAGE_CENTER.registerSource(this, KeyValueRecordListener.class);
+        messageCenter = new MessageCenter("KeyValueTableModel");
+        eventProxy = messageCenter.registerSource(this, KeyValueRecordListener.class);
 
-        KEY_VALUE_ADAPTOR = new KeyValueAdaptor();
+        keyValueAdaptor = new KeyValueAdaptor();
 
-        COLUMN_NAME_MAP = new HashMap<>();
-        COLUMN_CLASS_MAP = new HashMap<>();
-        COLUMN_EDITABLE_MAP = new HashMap<>();
+        columnNameMap = new HashMap<>();
+        columnClassMap = new HashMap<>();
+        columnEditableMap = new HashMap<>();
 
         setDataSource(records, keyPaths);
     }
@@ -118,7 +118,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
      * @param listener object to receive events
      */
     public void addKeyValueRecordListener(final KeyValueRecordListener<? extends KeyValueTableModel<RecordType>, RecordType> listener) {
-        MESSAGE_CENTER.registerTarget(listener, this, KeyValueRecordListener.class);
+        messageCenter.registerTarget(listener, this, KeyValueRecordListener.class);
     }
 
     /**
@@ -128,7 +128,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
      * @param listener object to be removed from receiving events
      */
     public void removeKeyValueRecordListener(final KeyValueRecordListener<KeyValueTableModel<RecordType>, RecordType> listener) {
-        MESSAGE_CENTER.removeTarget(listener, this, KeyValueRecordListener.class);
+        messageCenter.removeTarget(listener, this, KeyValueRecordListener.class);
     }
 
     /**
@@ -210,7 +210,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
         if (keyPaths != null) {
             for (final String keyPath : keyPaths) {
                 // generate a default column name if one has not already been set
-                if (!COLUMN_NAME_MAP.containsKey(keyPath)) {
+                if (!columnNameMap.containsKey(keyPath)) {
                     final String name = toColumnName(keyPath);
                     setColumnName(keyPath, name);
                 }
@@ -267,7 +267,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
      * @param name the new name to assign the column
      */
     public void setColumnName(final String keyPath, final String name) {
-        COLUMN_NAME_MAP.put(keyPath, name);
+        columnNameMap.put(keyPath, name);
         fireTableStructureChanged();
     }
 
@@ -276,7 +276,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
      */
     @Override
     public String getColumnName(final int column) {
-        return COLUMN_NAME_MAP.get(keyPaths[column]);
+        return columnNameMap.get(keyPaths[column]);
     }
 
     /**
@@ -297,7 +297,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
      */
     public void setColumnClassForKeyPaths(final Class<?> columnClass, final String... keyPaths) {
         for (final String keyPath : keyPaths) {
-            COLUMN_CLASS_MAP.put(keyPath, columnClass);
+            columnClassMap.put(keyPath, columnClass);
         }
         fireTableStructureChanged();
     }
@@ -307,7 +307,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
      */
     @Override
     public Class<?> getColumnClass(final int column) {
-        final Class<?> customClass = COLUMN_CLASS_MAP.get(keyPaths[column]);
+        final Class<?> customClass = columnClassMap.get(keyPaths[column]);
         return customClass != null ? customClass : super.getColumnClass(column);
     }
 
@@ -331,7 +331,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
      * Set whether the column associated with the specified key path is editable
      */
     public void setColumnEditable(final String keyPath, final boolean allowsEdit) {
-        COLUMN_EDITABLE_MAP.put(keyPath, new SimpleColumnEditRule<RecordType>(allowsEdit));
+        columnEditableMap.put(keyPath, new SimpleColumnEditRule<RecordType>(allowsEdit));
         fireTableDataChanged();
     }
 
@@ -364,7 +364,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
      * the edit column
      */
     public void setColumnEditKeyPath(final String columnKeyPath, final String editKeyPath, final boolean negation) {
-        COLUMN_EDITABLE_MAP.put(columnKeyPath, new KeyedColumnEditRule<>(editKeyPath, negation));
+        columnEditableMap.put(columnKeyPath, new KeyedColumnEditRule<>(editKeyPath, negation));
         fireTableDataChanged();
     }
 
@@ -374,7 +374,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
     @Override
     public boolean isCellEditable(final int row, final int column) {
         final String keyPath = keyPaths[column];
-        final ColumnEditRule<RecordType> editRule = COLUMN_EDITABLE_MAP.get(keyPath);
+        final ColumnEditRule<RecordType> editRule = columnEditableMap.get(keyPath);
         final List<RecordType> records = this.records;
         if (row < records.size()) {
             final RecordType record = records.get(row);
@@ -392,7 +392,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
         final List<RecordType> records = this.records;
         if (row < records.size()) {
             final RecordType record = records.get(row);
-            return KEY_VALUE_ADAPTOR.valueForKeyPath(record, keyPaths[column]);
+            return keyValueAdaptor.valueForKeyPath(record, keyPaths[column]);
         } else {
             return null;
         }
@@ -406,8 +406,8 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
         final List<RecordType> records = this.records;
         if (row < records.size()) {
             final RecordType record = records.get(row);
-            KEY_VALUE_ADAPTOR.setValueForKeyPath(record, keyPaths[column], value);
-            EVENT_PROXY.recordModified(this, record, keyPaths[column], value);
+            keyValueAdaptor.setValueForKeyPath(record, keyPaths[column], value);
+            eventProxy.recordModified(this, record, keyPaths[column], value);
         }
     }
 
@@ -484,7 +484,7 @@ public class KeyValueTableModel<RecordType> extends AbstractTableModel {
         @Override
         public boolean isCellEditable(final RecordType record) {
             try {
-                final Object value = KEY_VALUE_ADAPTOR.valueForKeyPath(record, EDIT_KEYPATH);
+                final Object value = keyValueAdaptor.valueForKeyPath(record, EDIT_KEYPATH);
                 return value != null && value instanceof Boolean ? NEGATION ^ ((Boolean) value).booleanValue() : false;
             } catch (Exception exception) {
                 return false;
