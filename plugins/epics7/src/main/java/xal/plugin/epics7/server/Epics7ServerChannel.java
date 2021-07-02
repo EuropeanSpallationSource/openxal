@@ -85,15 +85,21 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     private static final String PROPERTIES = ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
             + DISPLAY_FIELD + "," + CONTROL_FIELD;
 
-    public Epics7ServerChannel(String signalName, Epics7ServerChannelSystem CHANNEL_SYSTEM) {
-        super(signalName, CHANNEL_SYSTEM);
+    private static final Logger LOGGER = Logger.getLogger(Epics7ServerChannel.class.getName());
+
+    private static final String DISPLAY_FIELD_ERR = "Couldn't find \"display\" field.";
+    private static final String VALUE_ALARM_FIELD_ERR = "Couldn't find \"valueAlarm\" field.";
+    private static final String CONTROL_FIELD_ERR = "Couldn't find \"control\" field.";
+
+    public Epics7ServerChannel(String signalName, Epics7ServerChannelSystem channelSystem) {
+        super(signalName, channelSystem);
 
         // Removing protocol in case it is defined.
         if (strId.startsWith("ca://") || strId.startsWith("pva://")) {
             strId = strId.substring(strId.indexOf("://") + 3);
         }
 
-        this.epics7ServerChannelSystem = CHANNEL_SYSTEM;
+        this.epics7ServerChannelSystem = channelSystem;
 
         requestConnection();
     }
@@ -119,7 +125,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
                         Epics7Channel.VALUE_REQUEST, (pvS) -> {
                         }, 0);
             } catch (ConnectionException e) {
-                Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Not possible to set callback to update value");
+                LOGGER.log(Level.SEVERE, "Not possible to set callback to update value", e);
             }
 
             connectionFlag = true;
@@ -270,7 +276,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     public Monitor addMonitorValTime(IEventSinkValTime listener, int intMaskFire) throws ConnectionException, MonitorException {
         checkConnection("addMonitorValTime");
 
-        return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.TIME_REQUEST, (pvStructure) -> {
+        return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.TIME_REQUEST, pvStructure -> {
             ChannelTimeRecord record = new Epics7ChannelTimeRecord(pvStructure);
             listener.eventValue(record, this);
         }, intMaskFire);
@@ -280,7 +286,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     public Monitor addMonitorValStatus(IEventSinkValStatus listener, int intMaskFire) throws ConnectionException, MonitorException {
         checkConnection("addMonitorValStatus");
 
-        return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.STATUS_REQUEST, (pvStructure) -> {
+        return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.STATUS_REQUEST, pvStructure -> {
             ChannelStatusRecord record = new Epics7ChannelStatusRecord(pvStructure);
             listener.eventValue(record, this);
         }, intMaskFire);
@@ -290,7 +296,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     public Monitor addMonitorValue(IEventSinkValue listener, int intMaskFire) throws ConnectionException, MonitorException {
         checkConnection("addMonitorValue");
 
-        return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.VALUE_REQUEST, (pvStructure) -> {
+        return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.VALUE_REQUEST, pvStructure -> {
             ChannelRecord record = new Epics7ChannelRecord(pvStructure);
             listener.eventValue(record, this);
         }, intMaskFire);
@@ -310,7 +316,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         try {
             memoryProcessVariable.write(dbr, null);
         } catch (CAException ex) {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
 
         long currentTimeMillis = System.currentTimeMillis();
@@ -502,7 +508,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         if (displayStructure != null) {
             displayStructure.getStringField("units").put(units);
         } else {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find \"display\" field.");
+            LOGGER.severe(DISPLAY_FIELD_ERR);
         }
 
         memoryProcessVariable.setUnits(units);
@@ -514,7 +520,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         if (displayStructure != null) {
             displayStructure.getDoubleField("limitLow").put(lowerLimit.doubleValue());
         } else {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find \"display\" field.");
+            LOGGER.severe(DISPLAY_FIELD_ERR);
         }
 
         memoryProcessVariable.setLowerDispLimit(lowerLimit);
@@ -526,7 +532,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         if (displayStructure != null) {
             displayStructure.getDoubleField("limitHigh").put(upperLimit.doubleValue());
         } else {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find  \"display\" field.");
+            LOGGER.severe(DISPLAY_FIELD_ERR);
         }
 
         memoryProcessVariable.setUpperDispLimit(upperLimit);
@@ -538,7 +544,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         if (alarmValueStructure != null) {
             alarmValueStructure.getDoubleField("lowAlarmLimit").put(lowerLimit.doubleValue());
         } else {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find  \"valueAlarm\" field.");
+            LOGGER.severe(VALUE_ALARM_FIELD_ERR);
         }
 
         memoryProcessVariable.setLowerAlarmLimit(lowerLimit);
@@ -550,7 +556,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         if (alarmValueStructure != null) {
             alarmValueStructure.getDoubleField("highAlarmLimit").put(upperLimit.doubleValue());
         } else {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find  \"valueAlarm\" field.");
+            LOGGER.severe(VALUE_ALARM_FIELD_ERR);
         }
 
         memoryProcessVariable.setUpperAlarmLimit(upperLimit);
@@ -562,7 +568,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         if (alarmValueStructure != null) {
             alarmValueStructure.getDoubleField("lowWarningLimit").put(lowerLimit.doubleValue());
         } else {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find  \"valueAlarm\" field.");
+            LOGGER.severe(VALUE_ALARM_FIELD_ERR);
         }
 
         memoryProcessVariable.setLowerWarningLimit(lowerLimit);
@@ -574,7 +580,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         if (alarmValueStructure != null) {
             alarmValueStructure.getDoubleField("highWarningLimit").put(upperLimit.doubleValue());
         } else {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find  \"valueAlarm\" field.");
+            LOGGER.severe(VALUE_ALARM_FIELD_ERR);
         }
 
         memoryProcessVariable.setUpperWarningLimit(upperLimit);
@@ -586,7 +592,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         if (alarmValueStructure != null) {
             alarmValueStructure.getDoubleField("limitLow").put(lowerLimit.doubleValue());
         } else {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find  \"control\" field.");
+            LOGGER.severe(CONTROL_FIELD_ERR);
         }
 
         memoryProcessVariable.setLowerCtrlLimit(lowerLimit);
@@ -598,7 +604,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         if (alarmValueStructure != null) {
             alarmValueStructure.getDoubleField("limitHigh").put(upperLimit.doubleValue());
         } else {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find  \"control\" field.");
+            LOGGER.severe(CONTROL_FIELD_ERR);
         }
 
         memoryProcessVariable.setUpperCtrlLimit(upperLimit);
