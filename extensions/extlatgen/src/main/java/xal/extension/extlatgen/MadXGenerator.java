@@ -18,6 +18,8 @@ import xal.smf.impl.RfCavity;
 import xal.sim.slg.*;
 // Probe for Mad header
 import xal.model.probe.*;
+import xal.smf.impl.HDipoleCorr;
+import xal.smf.impl.VDipoleCorr;
 import xal.tools.beam.Twiss;
 import xal.tools.beam.RelativisticParameterConverter;
 import xal.tools.beam.CovarianceMatrix;
@@ -29,12 +31,12 @@ public class MadXGenerator {
     /**
      * speed of light constant in 10^9 m/s
      */
-    static final double LIGHT_SPEED = 0.2997925;
+    private static final double LIGHT_SPEED = 0.2997925;
 
     /**
      * default number format
      */
-    static final NumberFormat NUMBER_FORMAT;
+    private static final NumberFormat NUMBER_FORMAT;
 
     /**
      * Probe for initial condition
@@ -63,7 +65,7 @@ public class MadXGenerator {
     /**
      * list of MAD elements
      */
-    private List<MadXElement> MADX_ELEMENTS;
+    private List<MadXElement> madXElements;
 
     /**
      * beam initial condition
@@ -155,7 +157,7 @@ public class MadXGenerator {
      * add a new MAD element with the specified element name and definition
      */
     private void addElement(final String elementName, final String definition) {
-        MADX_ELEMENTS.add(new MadXElement(elementName, definition));
+        madXElements.add(new MadXElement(elementName, definition));
     }
 
     /**
@@ -197,15 +199,15 @@ public class MadXGenerator {
         madxWritter.write("TITLE, \"" + sourceLabel + ": " + formatName(myLatticeName) + "  Date created: " + today.toString() + "\";\n\n");
 
         // no need to put drift spaces in the file
-        MADX_ELEMENTS = new ArrayList<>();
+        madXElements = new ArrayList<>();
 
-        ArrayList<Double> lat_lengths = new ArrayList<>();
-        HashMap<String, Double> elem_pos_map = new HashMap<>();
+        ArrayList<Double> latLengths = new ArrayList<>();
+        HashMap<String, Double> elemPosMap = new HashMap<>();
         ArrayList<String> allNames = new ArrayList<>();
 
         for (int i = 0; i < sequenceChain.size(); i++) {
             Lattice myLattice = createLattice(sequenceChain.get(i));
-            lat_lengths.add(myLattice.getLength());
+            latLengths.add(myLattice.getLength());
             LatticeIterator ilat = myLattice.latticeIterator();
             int counter = 1;
 
@@ -229,12 +231,12 @@ public class MadXGenerator {
                 final AcceleratorNode node = element.getAcceleratorNode();
 
                 if (elementType.equals("rfgap")) {
-                    elem_pos_map.put(formatName(node.getParent().getId()), element.getPosition());
+                    elemPosMap.put(formatName(node.getParent().getId()), element.getPosition());
                 } else {
-                    elem_pos_map.put(formattedName, element.getPosition());
+                    elemPosMap.put(formattedName, element.getPosition());
                 }
 
-                if (element != null && element.isThick()) {
+                if (element.isThick()) {
                     if (node != currentThickNode) {
                         currentThickNode = node;
                         currentThickNodePath = 0.0;
@@ -287,13 +289,13 @@ public class MadXGenerator {
                     addElement(formattedName, "SOLENOID, L=" + NUMBER_FORMAT.format(elementLength) + ", KS=" + NUMBER_FORMAT.format(field * LIGHT_SPEED / momentum));
                     // for horizontal dipole correctors
                 } else if (elementType.equals("hsteerer")) {
-                    final xal.smf.impl.HDipoleCorr corrector = (xal.smf.impl.HDipoleCorr) node;
+                    final HDipoleCorr corrector = (HDipoleCorr) node;
                     final double field = getField(node, deviceDataSource);
                     final double kick = -field * LIGHT_SPEED * corrector.getEffLength() / momentum;
                     addElement(formattedName, "HKICKER, KICK=" + NUMBER_FORMAT.format(kick));
                     // for vertical dipole correctors
                 } else if (elementType.equals("vsteerer")) {
-                    final xal.smf.impl.VDipoleCorr corrector = (xal.smf.impl.VDipoleCorr) node;
+                    final VDipoleCorr corrector = (VDipoleCorr) node;
                     final double field = getField(node, deviceDataSource);
                     final double kick = -field * LIGHT_SPEED * corrector.getEffLength() / momentum;
                     addElement(formattedName, "VKICKER, KICK=" + NUMBER_FORMAT.format(kick));
@@ -322,8 +324,8 @@ public class MadXGenerator {
         }
 
         // write the MAD element definitions
-        for (final MadXElement element : MADX_ELEMENTS) {
-            madxWritter.write(element.NAME + ": " + element.DEFINITION + ";\n");
+        for (final MadXElement element : madXElements) {
+            madxWritter.write(element.name + ": " + element.definition + ";\n");
         }
 
         // construct the MAD lines
@@ -332,7 +334,7 @@ public class MadXGenerator {
         final List<List<MadXElement>> lines = new ArrayList<>();
         // current line
         List<MadXElement> line = null;
-        for (final MadXElement element : MADX_ELEMENTS) {
+        for (final MadXElement element : madXElements) {
             if (lineIndex >= MAX_LINE_LENGTH) {
                 line = new ArrayList<>(MAX_LINE_LENGTH);
                 lines.add(line);
@@ -346,11 +348,11 @@ public class MadXGenerator {
         final int lineCount = lines.size();
         for (lineIndex = 0; lineIndex < lineCount; lineIndex++) {
             final List<MadXElement> theLine = lines.get(lineIndex);
-            madxWritter.write(formatName(myLatticeName) + ": SEQUENCE, REFER=CENTER, L=" + lat_lengths.get(lineIndex) + ";\n");
+            madxWritter.write(formatName(myLatticeName) + ": SEQUENCE, REFER=CENTER, L=" + latLengths.get(lineIndex) + ";\n");
             final int numELements = theLine.size();
             for (int index = 0; index < numELements; index++) {
                 final MadXElement element = theLine.get(index);
-                madxWritter.write("    " + element.NAME + ", AT=" + elem_pos_map.get(element.NAME) + ";\n");
+                madxWritter.write("    " + element.name + ", AT=" + elemPosMap.get(element.name) + ";\n");
             }
             madxWritter.write("ENDSEQUENCE;\n");
         }
@@ -433,19 +435,19 @@ class MadXElement {
     /**
      * name of the MAD element
      */
-    public final String NAME;
+    public final String name;
 
     /**
      * definition of the MAD element
      */
-    public final String DEFINITION;
+    public final String definition;
 
     /**
      * Constructor
      */
     public MadXElement(final String name, final String definition) {
-        NAME = name;
-        DEFINITION = definition;
+        this.name = name;
+        this.definition = definition;
     }
 
 }

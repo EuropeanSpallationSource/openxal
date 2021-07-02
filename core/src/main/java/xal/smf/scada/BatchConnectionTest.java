@@ -15,6 +15,8 @@ import xal.smf.AcceleratorNode;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Class for checking the connectivity of many EPICS channels simultaneously.
@@ -29,6 +31,8 @@ import java.util.Set;
  */
 public class BatchConnectionTest {
 
+    private static final Logger LOGGER = Logger.getLogger(BatchConnectionTest.class.getName());
+
     /**
      * This class is used is a Channel Access connection monitor. When Channel
      * Access calls to report a channel connection, the monitor removes the
@@ -39,34 +43,6 @@ public class BatchConnectionTest {
      * @since Feb 4, 2011
      */
     public final class ConnectionMonitor implements ConnectionListener {
-
-        /*
-         * Local Attributes
-         */
- /*
-         * Initialization
-         */
-        /**
-         * Create a new <code>ConnectionMonitor</code> object for monitoring the
-         * given channel. The list of all channels being monitored is all passed
-         * so that the given channel can be removed upon confirmation.
-         *
-         * @author Christopher K. Allen
-         * @since Feb 4, 2011
-         */
-        public ConnectionMonitor() {
-        }
-
-        /**
-         * Just in case, we remove all the links.
-         *
-         * @since Mar 4, 2011
-         * @see java.lang.Object#finalize()
-         */
-        @Override
-        protected void finalize() throws Throwable {
-            super.finalize();
-        }
 
         /*
          * Connection Listener Interface
@@ -154,11 +130,11 @@ public class BatchConnectionTest {
     public BatchConnectionTest(AcceleratorNode smfDev) {
         this.smfDev = smfDev;
 
-        this.setPassed = new HashSet<>();
-        this.setPending = new HashSet<>();
-        this.objLock = new Object();
+        setPassed = new HashSet<>();
+        setPending = new HashSet<>();
+        objLock = new Object();
 
-        this.bolChecking = true;
+        bolChecking = true;
     }
 
     /**
@@ -176,7 +152,9 @@ public class BatchConnectionTest {
      * @since Mar 28, 2011
      */
     public void setChecking(boolean bolChecking) {
-        this.bolChecking = bolChecking;
+        synchronized (objLock) {
+            this.bolChecking = bolChecking;
+        }
     }
 
     /*
@@ -204,15 +182,15 @@ public class BatchConnectionTest {
      * @author Christopher K. Allen
      * @since Mar 16, 2011
      */
-    public synchronized boolean testConnection(Class<?> clsScada, double dblTmOut)
+    public boolean testConnection(Class<?> clsScada, double dblTmOut)
             throws BadStructException, BadChannelException {
         ScadaFieldList lstFldDescr = new ScadaFieldList(clsScada);
 
-        if (lstFldDescr.size() == 0) {
+        if (lstFldDescr.isEmpty()) {
             throw new BadStructException("Class contains no SCADA field annotations");
         }
 
-        return this.testConnection(lstFldDescr, dblTmOut);
+        return testConnection(lstFldDescr, dblTmOut);
     }
 
     /**
@@ -235,22 +213,22 @@ public class BatchConnectionTest {
      * @author Christopher K. Allen
      * @since Mar 11, 2011
      */
-    public synchronized boolean testConnection(Collection<ScadaFieldDescriptor> setFds, double dblTmOut)
+    public boolean testConnection(Collection<ScadaFieldDescriptor> setFds, double dblTmOut)
             throws BadChannelException, IllegalArgumentException {
         // Check for empty list
-        if (setFds.size() == 0) {
+        if (setFds.isEmpty()) {
             throw new IllegalArgumentException("Empty field descriptor list.");
         }
 
         // Make sure connection checking is turned on
-        if (!this.bolChecking) {
-            return true;
-        }
+        synchronized (objLock) {
+            if (!this.bolChecking) {
+                return true;
+            }
 
-        // Take out the trash
-        synchronized (this.objLock) {
-            this.setPending.clear();
-            this.setPassed.clear();
+            // Take out the trash
+            setPending.clear();
+            setPassed.clear();
         }
 
         // Store all the channels for connectivity test
@@ -260,30 +238,27 @@ public class BatchConnectionTest {
             String strHndSet = fd.getSetHandle();
             boolean bolPvCtrl = fd.isControllable();
 
-            this.addChannel(strHndRb);
+            addChannel(strHndRb);
             if (bolPvCtrl) {
-                this.addChannel(strHndSet);
+                addChannel(strHndSet);
             }
         }
 
         // Check if all channels are already connected
-        synchronized (this.objLock) {
-            if (this.setPending.size() == 0) {
-                return true;
-            }
+        if (setPending.isEmpty()) {
+            return true;
         }
 
         // We launch all the connection requests from a critical code
         //      but first we have to convert from seconds (double) to nanoseconds (int)
         Double dblMsec = dblTmOut * 1000.0;
         int intTmOut = dblMsec.intValue();
-        synchronized (this.objLock) {
+        synchronized (objLock) {
             // save the current execution thread
-            this.thdCurr = Thread.currentThread();
+            thdCurr = Thread.currentThread();
 
             //  Launch the connection request
-            for (Channel chnReq : this.setPending) {
-
+            for (Channel chnReq : setPending) {
                 chnReq.requestConnection();
             }
         }
@@ -291,12 +266,11 @@ public class BatchConnectionTest {
         // Once all the connection requests are launched, sleep until either ...
         try {
             Thread.sleep(intTmOut);
-
             //  we awake normally, meaning not all channels connected, or
             return false;
 
         } catch (InterruptedException e) {
-
+            LOGGER.log(Level.WARNING, null, e);
             //  a) we are interrupted (by a the last connecting channel) 
             return true;
 
@@ -317,8 +291,8 @@ public class BatchConnectionTest {
     public Set<Channel> getConnectedChannels() {
         Set<Channel> setConnected = new HashSet<>();
 
-        synchronized (this.objLock) {
-            setConnected.addAll(this.setPassed);
+        synchronized (objLock) {
+            setConnected.addAll(setPassed);
         }
 
         return setConnected;
@@ -352,22 +326,20 @@ public class BatchConnectionTest {
         if (chnReq == null) {
             String strMsg = "Channel " + strHnd + " unbound on device " + smfDev.getId();
             throw new BadChannelException(strMsg);
-
         }
 
         // Lock out access to the channel sets
         //   check if channel is already in list
         //   check if channel is already connected
-        synchronized (this.objLock) {
-
+        synchronized (objLock) {
             if (chnReq.isConnected()) {
-                this.setPassed.add(chnReq);
+                setPassed.add(chnReq);
                 return;
             }
 
             ConnectionMonitor monConn = new ConnectionMonitor();
             chnReq.addConnectionListener(monConn);
-            this.setPending.add(chnReq);
+            setPending.add(chnReq);
         }
     }
 
@@ -380,14 +352,13 @@ public class BatchConnectionTest {
      * @since Mar 11, 2011
      */
     private void connectionAcknowledged(Channel chn) {
-        synchronized (this.objLock) {
-            this.setPending.remove(chn);
-            this.setPassed.add(chn);
+        synchronized (objLock) {
+            setPending.remove(chn);
+            setPassed.add(chn);
 
-            if (this.setPending.size() == 0) {
-                this.thdCurr.interrupt();
+            if (setPending.isEmpty()) {
+                thdCurr.interrupt();
             }
         }
     }
-
 }
