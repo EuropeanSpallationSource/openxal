@@ -235,7 +235,7 @@ public class Selector {
      * Exception thrown when no method could be found matching a target to the
      * method name and argument types.
      */
-    public class MethodNotFoundException extends RuntimeException {
+    public static class MethodNotFoundException extends RuntimeException {
 
         /**
          * serialization ID
@@ -250,7 +250,7 @@ public class Selector {
     /**
      * Exception that wraps an exception thrown during invocation.
      */
-    public class InvocationException extends RuntimeException {
+    public static class InvocationException extends RuntimeException {
 
         /**
          * serialization ID
@@ -277,7 +277,7 @@ public class Selector {
      * Exception thrown when an attempt is made to invoke a method on a target
      * such that the method is inaccessible on that target.
      */
-    public class AccessException extends RuntimeException {
+    public static class AccessException extends RuntimeException {
 
         /**
          * serialization ID

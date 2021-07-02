@@ -247,7 +247,7 @@ public class KeyValueAdaptor {
      * Exception thrown to indicate that an accessor cannot be found for the
      * specified target/key pair.
      */
-    public class InvalidAccessorException extends RuntimeException {
+    public static class InvalidAccessorException extends RuntimeException {
 
         /**
          * serialization ID
@@ -292,7 +292,7 @@ public class KeyValueAdaptor {
      * Exception thrown to indicate that a setter cannot be found for the
      * specified target/key/value group.
      */
-    public class InvalidSetterException extends RuntimeException {
+    public static class InvalidSetterException extends RuntimeException {
 
         /**
          * serialization ID

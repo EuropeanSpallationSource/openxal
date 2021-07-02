@@ -386,7 +386,7 @@ public class MessageCenter implements Serializable {
     /**
      * Generic class for all MessageCenter related exceptions
      */
-    public class MessageCenterException extends java.lang.RuntimeException {
+    public static class MessageCenterException extends java.lang.RuntimeException {
 
         /**
          * required for serializable objects

@@ -29,7 +29,7 @@ public class RealFunctionSamples {
      * @author Christopher K. Allen
      * @since Sep 24, 2015
      */
-    public class FunctionSample {
+    public static class FunctionSample {
 
         /*
          * Local Attributes

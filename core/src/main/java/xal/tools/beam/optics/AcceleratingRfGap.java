@@ -154,7 +154,7 @@ public class AcceleratingRfGap {
      * @author Christopher K. Allen
      * @since Oct 15, 2015
      */
-    public class NoConvergenceException extends RuntimeException {
+    public static class NoConvergenceException extends RuntimeException {
 
         /*
          * Global Constants

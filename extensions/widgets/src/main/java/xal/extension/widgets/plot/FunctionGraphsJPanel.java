@@ -3711,7 +3711,7 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
      * @author shishlo
      * @version July 22, 2004
      */
-    public class ClickedPoint {
+    public static class ClickedPoint {
 
         /**
          * Description of the Field

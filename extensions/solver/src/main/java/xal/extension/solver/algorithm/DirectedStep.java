@@ -435,7 +435,7 @@ public class DirectedStep extends SearchAlgorithm {
         /**
          * Evaluation sample
          */
-        private class Sample {
+        private static class Sample {
 
             protected final double x;
             protected final double y;

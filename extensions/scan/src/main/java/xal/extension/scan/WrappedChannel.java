@@ -73,7 +73,7 @@ public class WrappedChannel extends MonitoredPV {
      *
      * @author shishlo created September 18, 2006
      */
-    public class PV_Event extends ActionEvent {
+    public static class PV_Event extends ActionEvent {
 
         /**
          * serialization ID recommended for Serializable classes
