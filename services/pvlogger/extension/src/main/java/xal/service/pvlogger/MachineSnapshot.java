@@ -203,7 +203,9 @@ public class MachineSnapshot {
 
         buffer.append("id: ").append(id).append("\n");
         buffer.append("type:  ").append(type).append("\n");
-        buffer.append("Timestamp:  ").append(TIME_FORMAT.format(timestamp)).append("\n");
+        synchronized (TIME_FORMAT) {
+            buffer.append("Timestamp:  ").append(TIME_FORMAT.format(timestamp)).append("\n");
+        }
         buffer.append("Comment:  ").append(comment).append("\n");
         for (int index = 0; index < channelSnapshots.length; index++) {
             ChannelSnapshot channelSnapshot = channelSnapshots[index];

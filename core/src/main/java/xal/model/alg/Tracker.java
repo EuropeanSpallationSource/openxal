@@ -435,7 +435,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
     protected Tracker(String strType, int intVersion, Class<? extends IProbe> clsProbeType) {
         this.strType = strType;
         this.version = intVersion;
-        this.lstProbes = new ArrayList<Class<? extends IProbe>>();
+        this.lstProbes = new ArrayList<>();
         this.probeType = clsProbeType;
         this.bolDebug = false;
 

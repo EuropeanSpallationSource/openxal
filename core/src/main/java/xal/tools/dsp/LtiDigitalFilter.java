@@ -4,6 +4,7 @@
 package xal.tools.dsp;
 
 import JSci.maths.Complex;
+import java.util.Arrays;
 
 /**
  * <p>
@@ -302,8 +303,8 @@ public class LtiDigitalFilter extends AbstractDigitalFilter {
     public String toString() {
         String strBuffer = super.toString();
 
-        strBuffer += "input coefficients :  " + this.arrCoefInp.toString() + "\n";
-        strBuffer += "output coefficients: " + this.arrCoefOut.toString() + "\n";
+        strBuffer += "input coefficients :  " + Arrays.toString(this.arrCoefInp) + "\n";
+        strBuffer += "output coefficients: " + Arrays.toString(this.arrCoefOut) + "\n";
 
         return strBuffer;
     }

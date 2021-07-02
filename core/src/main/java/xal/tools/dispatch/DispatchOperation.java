@@ -77,12 +77,13 @@ abstract class DispatchOperation<ReturnType> implements Callable<ReturnType> {
      * wait for this operation to complete
      */
     public final void waitForCompletion() {
-        while (!isComplete) {
-            try {
-                synchronized (this) {
+        synchronized (this) {
+            while (!isComplete) {
+                try {
                     this.wait();
+                } catch (InterruptedException exception) {
+                    LOGGER.log(Level.SEVERE, null, exception);
                 }
-            } catch (InterruptedException exception) {
             }
         }
     }

@@ -81,12 +81,13 @@ public class DispatchGroup implements DispatchOperationListener {
      */
     public void waitForCompletion() {
         // while loop protects against accidental wake since wait is not guaranteed
-        while (pendingOperationCount > 0) {
-            try {
-                synchronized (emptyWaitLock) {
+        synchronized (emptyWaitLock) {
+            while (pendingOperationCount > 0) {
+                try {
                     emptyWaitLock.wait();
+                } catch (InterruptedException exception) {
+                    LOGGER.log(Level.SEVERE, null, exception);
                 }
-            } catch (InterruptedException exception) {
             }
         }
     }
@@ -126,7 +127,7 @@ public class DispatchGroup implements DispatchOperationListener {
      * counting this group
      */
     public <ReturnType> void addOperationToThisGroupAndCurrentGroups(final DispatchOperation<ReturnType> operation) {
-        final Set<DispatchGroup> groups = new HashSet<DispatchGroup>(getCurrentGroups());
+        final Set<DispatchGroup> groups = new HashSet<>(getCurrentGroups());
         groups.add(this);
         addOperationToGroups(operation, groups);
     }

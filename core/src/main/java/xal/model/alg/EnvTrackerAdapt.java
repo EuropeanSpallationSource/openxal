@@ -561,9 +561,8 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
         double h = this.getStepSize();
         // length of the element
         double L = elem.getLength();
-        EnvelopeProbeState stateRef
-                = // initial state of the probe 
-                probe.createProbeState();
+        // initial state of the probe 
+        EnvelopeProbeState stateRef = probe.createProbeState();
 
         //default temporary commented out 
         // this doesnt work for PMQ space-charge=0.. why?
@@ -613,9 +612,9 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 
             if (this.getDebugMode() == true) {
                 if (elem instanceof IdealDrift) {
-                    LOGGER.log(Level.INFO, "IdealDrift, hp = " + hp);
+                    LOGGER.log(Level.INFO, "IdealDrift, hp = {0}", hp);
                 }
-                LOGGER.log(Level.INFO, "propagate s=" + probe.getPosition() + " h=" + h + " hp=" + hp + " N=" + nDbgSteps++);
+                LOGGER.log(Level.INFO, "propagate s={0} h={1} hp={2} N={3}", new Object[]{probe.getPosition(), h, hp, nDbgSteps++});
             }
 
             if (iMaxCnt != 0 && ++iCurCnt >= iMaxCnt) {
@@ -815,56 +814,6 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
         //default
         probe.setCovariance(new CovarianceMatrix(chi1));
         this.advanceProbe(probe, ifcElem, 0.0);
-    }
-
-    /**
-     * Original code Propagate the probe through a thin element where no space
-     * charge effects will occur.
-     *
-     * @param probe probe to propagate
-     * @param elem thin beamline element
-     * @throws ModelException unable to compute transfer matrix for element
-     */
-    @SuppressWarnings("unused")
-    private void stepThinElementOrg(EnvelopeProbe probe, IElement elem) throws ModelException {
-        PhaseMatrix matPhi = this.compElemTransMatrix(0.0, probe, elem);
-        PhaseMatrix matResp = matPhi.times(probe.getResponseMatrix());
-        PhaseMatrix matChi = probe.getCovariance().conjugateTrans(matPhi);
-        Twiss[] twissOld = probe.getCovariance().computeTwiss();
-
-        probe.setResponseMatrix(matResp);
-
-        //sako emittance growth effect for RFGap
-        //see RfGap.f of Trace3D        
-        //default
-        if (elem instanceof IdealRfGap) {
-            IdealRfGap gap = (IdealRfGap) elem;
-
-            double sigmaCorTransOld = this.correctTransSigmaPhaseSpread(probe, gap);
-            double sigmaCorLongOld = this.correctLongSigmaPhaseSpread(probe, gap);
-
-            //new 7 Aug 06, Sako
-            double sigmaCor[] = this.correctSigmaPhaseSpread(probe, gap);
-
-            double sigmaCorTrans = sigmaCor[0];
-            double sigmaCorLong = sigmaCor[1];
-
-            if (getDebugMode()) {
-                LOGGER.log(Level.INFO, "sigmaCorTrans, sigmaCorTransOld = {0} {1}", new Object[]{sigmaCorTrans, sigmaCorTransOld});
-                LOGGER.log(Level.INFO, "sigmaCorLong, sigmaCorLongOld = {0} {1}", new Object[]{sigmaCorLong, sigmaCorLongOld});
-            }
-            double s11new = matChi.getElem(1, 1) + sigmaCorTrans * matChi.getElem(0, 0);
-            matChi.setElem(1, 1, s11new);
-            double s33new = matChi.getElem(3, 3) + sigmaCorTrans * matChi.getElem(2, 2);
-            matChi.setElem(3, 3, s33new);
-            double s55new = matChi.getElem(5, 5) + sigmaCorLong * matChi.getElem(4, 4);
-            matChi.setElem(5, 5, s55new);
-
-        }
-
-        probe.setCovariance(new CovarianceMatrix(matChi));
-
-        this.advanceProbe(probe, elem, 0.0);
     }
 
     /**
@@ -1090,55 +1039,6 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
             LOGGER.log(Level.INFO, "residual error={0}", error);
             LOGGER.log(Level.INFO, "hnew = {0}", hnew);
         }
-        return hnew;
-    }
-
-    //sako, only for drift with pmq, this is necessary.... 
-    /**
-     * sako, only for drift with pmq, this is necessary....
-     *
-     * @param h
-     * @param matRes
-     * @return
-     *
-     * @author Christopher K. Allen
-     * @since Aug 25, 2011
-     */
-    private double compNewStepSizeDriftPmq(double h, PhaseMatrix matRes) {
-
-        double toler = this.getErrorTolerance();
-        double hmax = this.getMaxStepSizeDriftPmq();
-        double slack = this.getSlackTolerance();
-        double error = compMatrixNorm(matRes);
-
-        if (this.getDebugMode() == true) {
-            if (Math.abs(h) < 1e-5) {
-                LOGGER.log(Level.INFO, "compNewStepSizeDriftPmq, h = 0");
-            }
-            if (Math.abs(error) < 1e-5) {
-                LOGGER.log(Level.INFO, "compNewStepSizeDriftPmq, error = 0");
-            }
-        }
-        // Compute the new step size
-        // new step size
-        double hnew;
-
-        if (this.getAccuracyOrder() == ACCUR_ORDER1) {
-            hnew = h * Math.sqrt(toler / error);
-        } else {
-            hnew = h * Math.pow(toler / error, 1.0 / 3.0);
-        }
-
-        if (hmax != 0.0 && hnew > hmax) {
-            hnew = hmax;
-        } else if (Math.abs((hnew - h) / h) < slack) {
-            hnew = h;
-        }
-
-        if (this.getDebugMode()) {
-            LOGGER.log(Level.INFO, "residual error={0}", error);
-        }
-
         return hnew;
     }
 
