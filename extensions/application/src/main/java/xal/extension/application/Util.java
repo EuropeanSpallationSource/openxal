@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Utility class providing convenience methods for use in the application
@@ -45,7 +46,7 @@ public class Util {
             final Properties properties = new Properties();
             properties.load(inputStream);
 
-            for (final Map.Entry<Object, Object> entry : properties.entrySet()) {
+            for (Entry<Object, Object> entry : properties.entrySet()) {
                 final Object key = entry.getKey();
                 final String keyString = key != null ? key.toString() : null;
                 final Object value = entry.getValue();
@@ -81,8 +82,9 @@ public class Util {
         }
 
         // merge the properties from the source onto the map (overriding it if conflicting)
-        for (final String key : sourceBundle.keySet()) {
-            final String assignment = sourceBundle.get(key);
+        for (Entry<String, String> entry : sourceBundle.entrySet()) {
+            String key = entry.getKey();
+            String assignment = entry.getValue();
 
             // if the key begins with "+" then prepend the new assignment onto the existing assignment
             if (key.startsWith("+")) {

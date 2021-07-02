@@ -5,10 +5,7 @@
  */
 package xal.smf;
 
-import java.util.*;
-
 /**
- *
  * @author CKAllen
  */
 public final class AcceleratorSector extends AcceleratorSeq {
@@ -16,12 +13,6 @@ public final class AcceleratorSector extends AcceleratorSeq {
     /*
      *  Architecture Requirements
      */
-    /**
-     * List of legal predecessors (AcceleratorSectors) to this AcceleratorSector
-     */
-    //TODO: doesn't look like this ever gets initialized or populated
-    private LinkedList<AcceleratorSector> lstPred;
-
     /**
      * Charge of beam in this sequence (+-1)
      */
@@ -107,29 +98,14 @@ public final class AcceleratorSector extends AcceleratorSeq {
      */
     @Override
     public boolean addNode(AcceleratorNode node) {
-        if (!super.addNode(node)) {
-            return false;
-        }
-
-        return true;
+        return super.addNode(node);
     }
 
     public AcceleratorSeq concatenate(AcceleratorSector sec) {
-        boolean bolTest = false;
-
-        for (final AcceleratorSector secValid : lstPred) {
-            if (secValid.equals(sec)) {
-                bolTest = true;
-            }
-        }
-
         // new name
-        String strId;
+        String newStrId = this.getId() + ":" + sec.getId();
         // concatenated sequence
-        AcceleratorSeq seqNew;
-
-        strId = this.getId() + ":" + sec.getId();
-        seqNew = new AcceleratorSeq(strId);
+        AcceleratorSeq seqNew = new AcceleratorSeq(newStrId);
 
         return seqNew;
     }

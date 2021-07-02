@@ -168,8 +168,8 @@ public class AcceleratorExporter {
         }
 
         // Export each field map only once.
-        for (String fieldMapFile : fieldMaps.keySet()) {
-            fieldMaps.get(fieldMapFile).saveFieldMap(dir.toURI().toURL().toString(), fieldMapFile);
+        for (Entry<String, FieldMap> entry : fieldMaps.entrySet()) {
+            entry.getValue().saveFieldMap(dir.toURI().toURL().toString(), entry.getKey());
         }
     }
 

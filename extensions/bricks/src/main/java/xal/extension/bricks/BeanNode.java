@@ -10,6 +10,7 @@ package xal.extension.bricks;
 import java.beans.*;
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -228,13 +229,11 @@ public abstract class BeanNode<T> extends Brick implements DataListener {
     protected void applyBeanSettings() {
         final Map<String, PropertyDescriptor> descriptorTable = getProperyDescriptorTable();
 
-        final Iterator<String> nameIter = beanSettings.keySet().iterator();
-        while (nameIter.hasNext()) {
-            final String name = nameIter.next();
-            final PropertyDescriptor descriptor = descriptorTable.get(name);
-            final Object value = beanSettings.get(name);
+        Iterator<Entry<String, Object>> entryIter = beanSettings.entrySet().iterator();
+        while (entryIter.hasNext()) {
+            Entry<String, Object> entry = entryIter.next();
             try {
-                setPropertyValue(descriptor, value);
+                setPropertyValue(descriptorTable.get(entry.getKey()), entry.getValue());
             } catch (Exception exception) {
                 LOGGER.log(Level.SEVERE, null, exception);
             }

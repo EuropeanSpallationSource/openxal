@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -1285,7 +1286,8 @@ public class XMLDataManager {
 
             DataAdaptor dmAdaptor = adaptor.createChild(DEVICE_MAPPING);
 
-            for (String typeString : classTable.keySet()) {
+            for (Entry<String, Class<?>> entry : classTable.entrySet()) {
+                String typeString = entry.getKey();
                 String type = typeString.contains(".") ? typeString.substring(0, typeString.indexOf('.')) : typeString;
                 String softType = typeString.contains(".") ? typeString.substring(typeString.indexOf('.') + 1) : null;
 
@@ -1294,7 +1296,7 @@ public class XMLDataManager {
                 if (softType != null) {
                     typeAdaptor.setValue("softType", softType);
                 }
-                typeAdaptor.setValue("class", classTable.get(typeString).getCanonicalName());
+                typeAdaptor.setValue("class", entry.getValue().getCanonicalName());
             }
 
             adaptor.writeToUrlSpec(absoluteUrlSpec);

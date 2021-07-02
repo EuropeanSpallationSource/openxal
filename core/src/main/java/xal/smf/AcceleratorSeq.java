@@ -218,9 +218,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
     public void writeStatus(DataAdaptor adaptor) {
         DataAdaptor seqAdaptor = adaptor.createChild(dataLabel());
         seqAdaptor.setValue("id", strId);
-        arrNodes.forEach(node -> {
-            node.writeStatus(seqAdaptor);
-        });
+        arrNodes.forEach(node -> node.writeStatus(seqAdaptor));
 
         if (seqAdaptor.childAdaptors().isEmpty()) {
             adaptor.removeChild(seqAdaptor);

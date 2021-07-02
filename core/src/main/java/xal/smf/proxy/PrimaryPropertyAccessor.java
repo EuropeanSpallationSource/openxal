@@ -4,6 +4,7 @@
 package xal.smf.proxy;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -200,11 +201,10 @@ public class PrimaryPropertyAccessor {
 
     // Testing and Debugging ===================================================
     private static void printValueMap(final AcceleratorNode aNode, final Map<String, Double> values) {
-        LOGGER.log(Level.INFO, "Properties for node: " + aNode);
+        LOGGER.log(Level.INFO, "Properties for node: {0}", aNode);
 
-        for (final String property : values.keySet()) {
-            Double val = values.get(property);
-            LOGGER.log(Level.INFO, "\t" + property + ": " + val);
+        for (Entry<String, Double> entry : values.entrySet()) {
+            LOGGER.log(Level.INFO, "\t{0}: {1}", new Object[]{entry.getKey(), entry.getValue()});
         }
     }
 }
@@ -217,7 +217,7 @@ abstract class BatchPropertyAccessor {
     /**
      * map of property accessors keyed by node
      */
-    private static final Map<Class<?>, PropertyAccessor> NODE_ACCESSORS = new HashMap<Class<?>, PropertyAccessor>();
+    private static final Map<Class<?>, PropertyAccessor> NODE_ACCESSORS = new HashMap<>();
 
     // static initializer
     static {
@@ -238,9 +238,9 @@ abstract class BatchPropertyAccessor {
      * get the accessor for the specified node
      */
     protected static PropertyAccessor getAccessorFor(final AcceleratorNode node) {
-        for (final Class<?> nodeClass : NODE_ACCESSORS.keySet()) {
-            if (nodeClass.isInstance(node)) {
-                return NODE_ACCESSORS.get(nodeClass);
+        for (Entry<Class<?>, PropertyAccessor> entry : NODE_ACCESSORS.entrySet()) {
+            if (entry.getKey().isInstance(node)) {
+                return entry.getValue();
             }
         }
 

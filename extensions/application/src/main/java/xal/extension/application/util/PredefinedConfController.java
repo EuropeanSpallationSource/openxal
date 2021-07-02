@@ -32,7 +32,6 @@ public class PredefinedConfController {
     private JTextField messageText = new JTextField(10);
 
     private String resourcePath = null;
-    private String resourceName = null;
 
     private URL configFileURL = null;
 
@@ -67,7 +66,6 @@ public class PredefinedConfController {
         URL predefConfURL = Application.getAdaptor().getResourceURL(resourcePathIn + "/" + resourceNameIn);
 
         resourcePath = resourcePathIn;
-        resourceName = resourceNameIn;
 
         //set JTextArea parameters
         descriptionText.setEditable(false);
