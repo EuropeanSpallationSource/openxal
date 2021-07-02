@@ -57,7 +57,7 @@ test.maven.extensions:
     variables:
         SUBDIR: 'extensions'
         MAVEN_EXTRA_TEST: '-D\!test=xal.extension.jels.GeneralTest -DfailIfNoTests=false'
-test.maven.extensions.jel.GeneralTest:
+test.maven.extensions.jels.GeneralTest:
     <<: *maventest
     variables:
         SUBDIR: 'extensions'

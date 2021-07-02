@@ -2,6 +2,7 @@ package xal.extension.scan;
 
 import java.util.*;
 import java.awt.event.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,7 +31,7 @@ public class UpdatingEventController {
     private ActionEvent updateEvent = null;
 
     //stack counters
-    private volatile int stackSize = 0;
+    private AtomicInteger stackSize = new AtomicInteger(0);
     private volatile int currentIndex = 0;
 
     //stop - to start or stop updating
@@ -64,18 +65,18 @@ public class UpdatingEventController {
                     }
 
                     synchronized (syncObj) {
-                        currentIndex = stackSize;
+                        currentIndex = stackSize.get();
                         for (int i = 0; i < listenersV.size(); i++) {
                             listenersV.get(i).actionPerformed(updateEvent);
                         }
                     }
 
                     synchronized (syncObjInernal) {
-                        if (currentIndex >= stackSize) {
+                        if (currentIndex >= stackSize.get()) {
                             hasToStop = true;
                             updateInProgress = false;
                             threadInProgress = false;
-                            stackSize = 0;
+                            stackSize.set(0);
                         }
                     }
                 }
@@ -142,9 +143,9 @@ public class UpdatingEventController {
         }
 
         synchronized (syncObjInernal) {
-            stackSize++;
-            if (stackSize > 100000000) {
-                stackSize = 0;
+            stackSize.incrementAndGet();
+            if (stackSize.get() > 100000000) {
+                stackSize.set(0);
             }
         }
 
