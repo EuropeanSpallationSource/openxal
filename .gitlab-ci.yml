@@ -34,7 +34,7 @@ build.maven:
     stage: test
     script:
         - 'cd $SUBDIR'
-        - 'mvn $MAVEN_CLI_OPTS verify -Dmaven.javadoc.skip=true -fn | tee std.out'
+        - 'mvn $MAVEN_CLI_OPTS $MAVEN_EXTRA_TEST verify -Dmaven.javadoc.skip=true -fn | tee std.out'
         - '! grep "Build failures were ignored" std.out'
     artifacts:
         paths:
@@ -51,14 +51,22 @@ test.maven.core:
     <<: *maventest
     variables:
         SUBDIR: 'test'
+        MAVEN_EXTRA_TEST: ''
 test.maven.extensions:
     <<: *maventest
     variables:
         SUBDIR: 'extensions'
+        MAVEN_EXTRA_TEST: '-D\!test=xal.extension.jels.GeneralTest -DfailIfNoTests=false'
+test.maven.extensions.jel.GeneralTest:
+    <<: *maventest
+    variables:
+        SUBDIR: 'extensions'
+        MAVEN_EXTRA_TEST: '-Dtest=xal.extension.jels.GeneralTest -DfailIfNoTests=false'
 test.maven.plugins:
     <<: *maventest
     variables:
         SUBDIR: 'plugins'
+        MAVEN_EXTRA_TEST: ''
 
 sonarqube.maven:
     <<: *maven

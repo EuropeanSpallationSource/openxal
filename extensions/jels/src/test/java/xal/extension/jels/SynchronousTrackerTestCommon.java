@@ -36,7 +36,7 @@ import xal.smf.AcceleratorSeq;
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
-public class SynchronousTrackerTestCommon extends TestCommon {
+public abstract class SynchronousTrackerTestCommon extends TestCommon {
 
     protected SynchronousTrackerTestData data;
 
@@ -129,6 +129,6 @@ public class SynchronousTrackerTestCommon extends TestCommon {
 
     @Parameterized.Parameters
     public static Collection<Object[]> probes() {
-        return new ArrayList<Object[]>(0);
+        return new ArrayList<>(0);
     }
 }
