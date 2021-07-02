@@ -9,6 +9,7 @@ package xal.extension.application;
 
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,7 +23,7 @@ public class FrameApplication extends Application implements XalDocumentListener
     /**
      * counts items that want to keep the application alive
      */
-    private volatile int retainCount;
+    private AtomicInteger retainCount = new AtomicInteger(0);
 
     private static final Logger LOGGER = Logger.getLogger(FrameApplication.class.getName());
 
@@ -43,8 +44,6 @@ public class FrameApplication extends Application implements XalDocumentListener
      */
     protected FrameApplication(final ApplicationAdaptor adaptor, final URL[] urls) {
         super(adaptor, urls);
-
-        retainCount = 0;
     }
 
     /**
@@ -235,8 +234,8 @@ public class FrameApplication extends Application implements XalDocumentListener
      * application can be prevented from terminating by incrementing the retain
      * count.
      */
-    synchronized private void retainApp() {
-        ++retainCount;
+    private void retainApp() {
+        retainCount.incrementAndGet();
     }
 
     /**
@@ -245,8 +244,8 @@ public class FrameApplication extends Application implements XalDocumentListener
      *
      * @see retainApp
      */
-    synchronized private void releaseApp() {
-        --retainCount;
+    private void releaseApp() {
+        retainCount.decrementAndGet();
         terminateOnStatus();
     }
 
@@ -257,7 +256,7 @@ public class FrameApplication extends Application implements XalDocumentListener
      * terminate the application.
      */
     private void terminateOnStatus() {
-        if (openDocuments.size() == 0 && retainCount < 1) {
+        if (openDocuments.isEmpty() && retainCount.get() < 1) {
             quit();
         }
     }
