@@ -4,6 +4,7 @@
 package xal.sim.sync;
 
 import java.util.*;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -91,10 +92,9 @@ public class SynchronizationManager {
         final Collection<AcceleratorNode> nodes = synchronizedNodeComps.keySet();
         propertyAccessor.requestValuesForNodes(nodes, syncMode);
 
-        for (final AcceleratorNode node : nodes) {
-            final Map<String, Double> valueMap = propertyAccessor.valueMapFor(node);
-
-            for (final IComponent component : synchronizedNodeComps.get(node)) {
+        for (Entry<AcceleratorNode, List<IComponent>> entry : synchronizedNodeComps.entrySet()) {
+            final Map<String, Double> valueMap = propertyAccessor.valueMapFor(entry.getKey());
+            for (final IComponent component : entry.getValue()) {
                 resync(component, valueMap);
             }
         }
@@ -104,9 +104,9 @@ public class SynchronizationManager {
      * use the cached values modified by the model inputs and resync the model
      */
     public void resyncFromCache() throws SynchronizationException {
-        for (final AcceleratorNode node : synchronizedNodeComps.keySet()) {
-            final Map<String, Double> valueMap = propertyAccessor.getWhatifValueMapFromCache(node);
-            for (final IComponent component : synchronizedNodeComps.get(node)) {
+        for (Entry<AcceleratorNode, List<IComponent>> entry : synchronizedNodeComps.entrySet()) {
+            final Map<String, Double> valueMap = propertyAccessor.getWhatifValueMapFromCache(entry.getKey());
+            for (final IComponent component : entry.getValue()) {
                 resync(component, valueMap);
             }
         }
@@ -180,9 +180,9 @@ public class SynchronizationManager {
     }
 
     private static Synchronizer getSynchronizer(IComponent aComp) {
-        for (final Class<?> cl : nodeSynchronizerMap.keySet()) {
-            if (cl.isInstance(aComp)) {
-                return nodeSynchronizerMap.get(cl);
+        for (Entry<Class<?>, Synchronizer> entry : nodeSynchronizerMap.entrySet()) {
+            if (entry.getKey().isInstance(aComp)) {
+                return entry.getValue();
             }
         }
         return null;
@@ -222,17 +222,17 @@ public class SynchronizationManager {
     // Testing and Debugging ===================================================
     protected void debugPrint() {
         Logger.getLogger(getClass().getName()).log(Level.INFO, "Full Node - Element Map:");
-        for (final AcceleratorNode node : allNodeComps.keySet()) {
-            Logger.getLogger(getClass().getName()).log(Level.INFO, "\t{0}", node.getId());
-            for (final IComponent component : allNodeComps.get(node)) {
+        for (Entry<AcceleratorNode, List<IComponent>> entry : allNodeComps.entrySet()) {
+            Logger.getLogger(getClass().getName()).log(Level.INFO, "\t{0}", entry.getKey().getId());
+            for (final IComponent component : entry.getValue()) {
                 Logger.getLogger(getClass().getName()).log(Level.INFO, "\t\t{0}", component);
             }
         }
 
         Logger.getLogger(getClass().getName()).log(Level.INFO, "Synchronized Node - Element Map:");
-        for (final AcceleratorNode node : synchronizedNodeComps.keySet()) {
-            Logger.getLogger(getClass().getName()).log(Level.INFO, "\t{0}", node.getId());
-            for (final IComponent component : synchronizedNodeComps.get(node)) {
+        for (Entry<AcceleratorNode, List<IComponent>> entry : synchronizedNodeComps.entrySet()) {
+            Logger.getLogger(getClass().getName()).log(Level.INFO, "\t{0}", entry.getKey().getId());
+            for (final IComponent component : entry.getValue()) {
                 Logger.getLogger(getClass().getName()).log(Level.INFO, "\t\t{0}", component);
             }
         }
