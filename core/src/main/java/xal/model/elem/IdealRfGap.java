@@ -692,6 +692,11 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 	    SPrimeFit = rfgap.getSPrimeFit();
 	    SFit = rfgap.getSFit();
 	    structureMode = rfgap.getStructureMode();
+            
+            m_dblETL = rfgap.getGapDfltE0TL() * 1e6;
+            m_dblFreq = rfgap.getGapDfltFrequency() * 1e6;
+            m_dblPhase = (rfgap.getGapDfltPhase() + rfgap.getRfGap().getPhaseFactor()) * Math.PI / 180.;
+            E0 = rfgap.getGapDfltAmp() * 1e6 * rfgap.getRfGap().getAmpFactor();
 	}
 
     @Override
