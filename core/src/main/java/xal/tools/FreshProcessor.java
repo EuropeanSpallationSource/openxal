@@ -40,21 +40,21 @@ public class FreshProcessor {
         start();
     }
 
-    synchronized private void start(){
+    private synchronized void start(){
         thread = new RequestProcessor();
         thread.start();
     }
     /**
      * Clear pending requests
      */
-    synchronized public void clear() {
+    public synchronized void clear() {
         requestQueue.clear();
     }
 
     /**
      * Stop processing pending requests
      */
-    synchronized public void terminate() {
+    public synchronized void terminate() {
         keepRunning = false;
         post(new EmptyRequest());
         thread.interrupt();
@@ -66,7 +66,7 @@ public class FreshProcessor {
      *
      * @param request Runnable request to be processed
      */
-    synchronized public boolean post(final Runnable request) {
+    public synchronized boolean post(final Runnable request) {
         try {
             requestQueue.clear();
             requestQueue.put(request);

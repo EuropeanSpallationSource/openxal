@@ -21,12 +21,13 @@ import java.util.*;
  *
  * @author tap
  */
-public class BinAgent<RecordType> implements BinUpdate<RecordType>, StateNotice<RecordType> {
+public class BinAgent<R> implements BinUpdate<R>, StateNotice<R> {
 
     /**
      * time spread for current correlation
      */
-    private double earliestTimestamp, latestTimestamp;
+    private double earliestTimestamp;
+    private double latestTimestamp;
     /**
      * time statistics for current correlation
      */
@@ -38,16 +39,16 @@ public class BinAgent<RecordType> implements BinUpdate<RecordType>, StateNotice<
     /**
      * table of correlated records
      */
-    private Map<String, RecordType> recordTable;
+    private Map<String, R> recordTable;
     /**
      * proxy for posting bin events
      */
-    private BinListener<RecordType> binProxy;
+    private BinListener<R> binProxy;
     /**
      * internal message center for the correlator
      */
     private MessageCenter localCenter;
-    private CorrelationTester<RecordType> correlationTester;
+    private CorrelationTester<R> correlationTester;
     /**
      * true if this agent is prepared to receive events and false if not.
      */
@@ -56,7 +57,7 @@ public class BinAgent<RecordType> implements BinUpdate<RecordType>, StateNotice<
     /**
      * Creates new BinAgent
      */
-    public BinAgent(final MessageCenter localCenter, final CorrelationTester<RecordType> tester) {
+    public BinAgent(final MessageCenter localCenter, final CorrelationTester<R> tester) {
         enabled = false;
         correlationTester = tester;
         this.localCenter = localCenter;
@@ -69,12 +70,13 @@ public class BinAgent<RecordType> implements BinUpdate<RecordType>, StateNotice<
     /**
      * Register events for this bin agent
      */
-    @SuppressWarnings("unchecked")	// need cast to get the proxy using Generics
-    synchronized public void registerEvents() {
+    // need cast to get the proxy using Generics
+    @SuppressWarnings("unchecked")	
+    public synchronized void registerEvents() {
         /**
          * Register this bin agent as a poster of bin events
          */
-        binProxy = (BinListener<RecordType>) localCenter.registerSource(this, BinListener.class);
+        binProxy = (BinListener<R>) localCenter.registerSource(this, BinListener.class);
     }
 
     /**
@@ -90,7 +92,7 @@ public class BinAgent<RecordType> implements BinUpdate<RecordType>, StateNotice<
     /**
      * Forget all events
      */
-    synchronized public void reset() {
+    public synchronized void reset() {
         enabled = false;
         binProxy.willReset(this);
         recordTable.clear();
@@ -101,7 +103,7 @@ public class BinAgent<RecordType> implements BinUpdate<RecordType>, StateNotice<
      * Forget all events and set the timestamp to the supplied one. This is used
      * when a bin is recycled.
      */
-    synchronized public void resetWithRecord(final String name, final RecordType record, final double timestamp) {
+    public synchronized void resetWithRecord(final String name, final R record, final double timestamp) {
         reset();
         timeStatistics.addSample(timestamp);
         earliestTimestamp = timestamp;
@@ -113,17 +115,17 @@ public class BinAgent<RecordType> implements BinUpdate<RecordType>, StateNotice<
     /**
      * Set the maximum time span allowed among the records collected.
      */
-    public void setTimespan(double timespan) {
+    public synchronized void setTimespan(double timespan) {
         this.timespan = timespan;
     }
 
     /**
      * record the event record and handle any complete correlation sets found
      */
-    synchronized private void addRecord(final String name, final RecordType record, final double timestamp) {
+    private synchronized void addRecord(final String name, final R record, final double timestamp) {
         recordTable.put(name, record);
         timeStatistics.addSample(timestamp);
-        final Correlation<RecordType> correlation = new Correlation<>(recordTable, timeStatistics);
+        final Correlation<R> correlation = new Correlation<>(recordTable, timeStatistics);
         if (correlationTester.accept(correlation)) {
             binProxy.newCorrelation(this, correlation);
         }
@@ -142,7 +144,7 @@ public class BinAgent<RecordType> implements BinUpdate<RecordType>, StateNotice<
      * Implement BinUpdate interface
      */
     @Override
-    synchronized public void newEvent(final String name, final RecordType record, final double timestamp) {
+    public synchronized void newEvent(final String name, final R record, final double timestamp) {
         if (!enabled || recordTable.containsKey(name)) {
             return;
         }
@@ -162,14 +164,15 @@ public class BinAgent<RecordType> implements BinUpdate<RecordType>, StateNotice<
      * Implement StateNotice interface to listen for change of state
      */
     @Override
-    synchronized public void sourceAdded(final Correlator<?, RecordType, ?> sender, final String name, final int newCount) {
+    public synchronized void sourceAdded(final Correlator<?, R, ?> sender, final String name, final int newCount) {
+        // Do nothing
     }
 
     /**
      * Implement StateNotice interface to listen for change of state
      */
     @Override
-    synchronized public void sourceRemoved(final Correlator<?, RecordType, ?> sender, final String name, final int newCount) {
+    public synchronized void sourceRemoved(final Correlator<?, R, ?> sender, final String name, final int newCount) {
         removeRecord(name);
     }
 
@@ -177,7 +180,7 @@ public class BinAgent<RecordType> implements BinUpdate<RecordType>, StateNotice<
      * Implement StateNotice interface to listen for change of state
      */
     @Override
-    synchronized public void binTimespanChanged(final Correlator<?, RecordType, ?> sender, final double newTimespan) {
+    public synchronized void binTimespanChanged(final Correlator<?, R, ?> sender, final double newTimespan) {
         setTimespan(newTimespan);
         double range = Math.abs(latestTimestamp - earliestTimestamp);
 
@@ -192,20 +195,23 @@ public class BinAgent<RecordType> implements BinUpdate<RecordType>, StateNotice<
      * Implement StateNotice interface to listen for change of state
      */
     @Override
-    public void willStopMonitoring(final Correlator<?, RecordType, ?> sender) {
+    public void willStopMonitoring(final Correlator<?, R, ?> sender) {
+        // Do nothing
     }
 
     /**
      * Implement StateNotice interface to listen for change of state
      */
     @Override
-    public void willStartMonitoring(final Correlator<?, RecordType, ?> sender) {
+    public void willStartMonitoring(final Correlator<?, R, ?> sender) {
+        // Do nothing
     }
 
     /**
      * Implement StateNotice interface to listen for change of state
      */
     @Override
-    public void correlationFilterChanged(Correlator<?, RecordType, ?> sender, CorrelationFilter<RecordType> newFilter) {
+    public void correlationFilterChanged(Correlator<?, R, ?> sender, CorrelationFilter<R> newFilter) {
+        // Do nothing
     }
 }

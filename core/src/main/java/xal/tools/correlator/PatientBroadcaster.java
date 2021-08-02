@@ -46,7 +46,7 @@ public class PatientBroadcaster<RecordType> extends AbstractBroadcaster<RecordTy
      * @param correlation The new correlation.
      */
     @Override
-    synchronized public void newCorrelation(final BinAgent<RecordType> sender, final Correlation<RecordType> correlation) {
+    public synchronized void newCorrelation(final BinAgent<RecordType> sender, final Correlation<RecordType> correlation) {
         final int numRecords = correlation.numRecords();
         final boolean isFullCount = (numRecords == fullCount);
         final double correlationTime = correlation.meanTimeInSeconds();

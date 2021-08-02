@@ -131,7 +131,7 @@ public class PeriodicPoster<RecordType> implements ActionListener {
      * correlation.
      */
     @Override
-    synchronized public void actionPerformed(final ActionEvent event) {
+    public synchronized void actionPerformed(final ActionEvent event) {
         BROADCASTER.postBestPartialCorrelation();
     }
 }

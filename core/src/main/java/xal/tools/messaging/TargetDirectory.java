@@ -45,7 +45,7 @@ class TargetDirectory implements Serializable {
      * get the set of targets keyed by source and protocol
      */
     @SuppressWarnings("unchecked")
-    synchronized private <T> Set<T> targetSet(final Object source, final Class<T> protocol) {
+    private synchronized <T> Set<T> targetSet(final Object source, final Class<T> protocol) {
         Map<Object, Set<Object>> sourceTable;
         final String protocolKey = protocolKey(protocol);
 
@@ -72,7 +72,7 @@ class TargetDirectory implements Serializable {
     /**
      * Register a target to listen to protocol messages from source
      */
-    synchronized public <T> void registerTarget(final Object target, final Object source, final Class<T> protocol) {
+    public synchronized <T> void registerTarget(final Object target, final Object source, final Class<T> protocol) {
         Map<Object, Set<Object>> sourceTable;
         final String protocolKey = protocolKey(protocol);
 
@@ -96,21 +96,21 @@ class TargetDirectory implements Serializable {
     /**
      * remove the target as a listener of protocol messages from source
      */
-    synchronized public <T> void removeTarget(final Object target, final Object source, final Class<T> protocol) {
+    public synchronized <T> void removeTarget(final Object target, final Object source, final Class<T> protocol) {
         targetSet(source, protocol).remove(target);
     }
 
     /**
      * remove the target as a listener of protocol messages
      */
-    synchronized public <T> void removeTarget(final Object target, final Class<T> protocol) {
+    public synchronized <T> void removeTarget(final Object target, final Class<T> protocol) {
         targetSet(null, protocol).remove(target);
     }
 
     /**
      * Remove the target from all sources that message to the specified protocol
      */
-    synchronized public <T> void removeTargetFromAllSources(final Object target, final Class<T> protocol) {
+    public synchronized <T> void removeTargetFromAllSources(final Object target, final Class<T> protocol) {
         Map<Object, Set<Object>> sourceTable;
         final String protocolKey = protocolKey(protocol);
 

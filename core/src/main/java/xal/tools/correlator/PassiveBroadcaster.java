@@ -67,7 +67,7 @@ class PassiveBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
      * @param correlation The new correlation.
      */
     @Override
-    synchronized public void newCorrelation(final BinAgent<RecordType> sender, Correlation<RecordType> correlation) {
+    public synchronized void newCorrelation(final BinAgent<RecordType> sender, Correlation<RecordType> correlation) {
         if (!isFresh || (correlation.numRecords() >= bestPartialCorrelation.numRecords())) {
             bestPartialCorrelation = correlation;
             isFresh = true;

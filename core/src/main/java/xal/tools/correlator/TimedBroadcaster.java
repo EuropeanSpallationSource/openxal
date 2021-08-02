@@ -119,7 +119,7 @@ class TimedBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
      * @param correlation The new correlation.
      */
     @Override
-    synchronized public void newCorrelation(final BinAgent<RecordType> sender, final Correlation<RecordType> correlation) {
+    public synchronized void newCorrelation(final BinAgent<RecordType> sender, final Correlation<RecordType> correlation) {
         int numRecords = correlation.numRecords();
 
         // broadcast a full correlation immediately

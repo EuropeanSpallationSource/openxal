@@ -63,7 +63,7 @@ public class ChannelCorrelator extends Correlator<Channel, ChannelTimeRecord, Ch
      *
      * @return The number of actively monitored channels.
      */
-    synchronized public int numActiveChannels() {
+    public synchronized int numActiveChannels() {
         return numSources() - numInactiveChannels();
     }
 
@@ -73,7 +73,7 @@ public class ChannelCorrelator extends Correlator<Channel, ChannelTimeRecord, Ch
      *
      * @return The number of channels that are inactive.
      */
-    synchronized public int numInactiveChannels() {
+    public synchronized int numInactiveChannels() {
         int numFailed = 0;
         final Collection<ChannelAgent> allSources = getSourceAgents();
         for (final ChannelAgent channelAgent : allSources) {
@@ -89,7 +89,7 @@ public class ChannelCorrelator extends Correlator<Channel, ChannelTimeRecord, Ch
      *
      * @return The collection of names of channels that are not active.
      */
-    synchronized public Collection<String> inactiveChannelsByName() {
+    public synchronized Collection<String> inactiveChannelsByName() {
         final Collection<String> failedChannelNames = new HashSet<>();
         final Collection<ChannelAgent> allSources = getSourceAgents();
 
@@ -174,7 +174,7 @@ public class ChannelCorrelator extends Correlator<Channel, ChannelTimeRecord, Ch
      * @param channelId ID to associate with the channel.
      * @param recordFilter The filter to apply to the channel's records.
      */
-    synchronized public final void addChannel(final Channel channel, final String channelId, final RecordFilter<ChannelTimeRecord> recordFilter) {
+    public synchronized final void addChannel(final Channel channel, final String channelId, final RecordFilter<ChannelTimeRecord> recordFilter) {
         addSource(channel, channelId, recordFilter);
     }
 

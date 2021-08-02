@@ -140,7 +140,7 @@ class SnapshotPublisher {
     /**
      * publish machine snapshots to the persistent storage
      */
-    synchronized public void publishSnapshots(final ConnectionDictionary connectionDictionary) {
+    public synchronized void publishSnapshots(final ConnectionDictionary connectionDictionary) {
         try {
             final List<MachineSnapshot> machineSnapshots = getSnapshotBufferCopy();
             if (machineSnapshots.size() > 0) {

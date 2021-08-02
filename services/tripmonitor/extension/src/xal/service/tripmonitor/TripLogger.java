@@ -79,7 +79,7 @@ public class TripLogger {
     /**
      * publish trips to the persistent storage
      */
-    synchronized public void publishTrips() {
+    public synchronized void publishTrips() {
         try {
             final Connection connection = PersistentStore.connectionInstance();
 

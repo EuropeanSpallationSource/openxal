@@ -185,7 +185,7 @@ public class ChannelAgent extends SourceAgent<ChannelTimeRecord> {
          * agents (not just this one) are notified of the event.
          */
         @Override
-        synchronized public void eventValue(final ChannelTimeRecord record, final Channel channel) {
+        public synchronized void eventValue(final ChannelTimeRecord record, final Channel channel) {
             if (!activeFlag) {
                 return;
             }
@@ -208,7 +208,7 @@ public class ChannelAgent extends SourceAgent<ChannelTimeRecord> {
         }
 
         @Override
-        synchronized public void eventValue(final ChannelTimeRecord record, final Channel channel) {
+        public synchronized void eventValue(final ChannelTimeRecord record, final Channel channel) {
             /**
              * Handle only those events accepted by the filter
              */

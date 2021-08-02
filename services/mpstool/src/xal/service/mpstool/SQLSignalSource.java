@@ -92,7 +92,7 @@ public class SQLSignalSource implements SignalSource {
      * @throws DatabaseException if the fetch fails
      */
     @Override
-    synchronized public String[] fetchMPSSignals(final String type) throws DatabaseException {
+    public synchronized String[] fetchMPSSignals(final String type) throws DatabaseException {
         final Connection connection = newConnection();
         try {
             final String sql = "{? = call epics.epicsmps_pkg.mpssignals_tomonitor (?)}";
@@ -118,7 +118,7 @@ public class SQLSignalSource implements SignalSource {
      * @throws DatabaseException if the fetch fails
      */
     @Override
-    synchronized public Map<String, InputMonitor> fetchInputMonitors(final String type) throws DatabaseException {
+    public synchronized Map<String, InputMonitor> fetchInputMonitors(final String type) throws DatabaseException {
         final Connection connection = newConnection();
         try {
             final Map<String, InputMonitor> signalMap = new HashMap<>();
@@ -169,7 +169,7 @@ public class SQLSignalSource implements SignalSource {
      * @exception DatabaseException if the publish attempt fails
      */
     @Override
-    synchronized public void publishDailyStatistics(final java.util.Date day, final Collection<TripStatistics> statistics) throws DatabaseException {
+    public synchronized void publishDailyStatistics(final java.util.Date day, final Collection<TripStatistics> statistics) throws DatabaseException {
         final Connection connection = newConnection();
         try {
             final PreparedStatement STATS_INSERT = connection.prepareStatement("INSERT INTO epics.mps_dailystat ( sgnlid, cur_dte, mps_inp_sgnlid, mps_inp_trips, mps_trips, mpsfirst_hit ) VALUES (?, ?, ?, ?, ?, ?)");

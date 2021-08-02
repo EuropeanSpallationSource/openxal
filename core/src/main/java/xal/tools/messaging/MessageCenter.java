@@ -180,7 +180,7 @@ public class MessageCenter implements Serializable {
      * @param source The source from which we wish to receive messages
      * @param protocol The protocol identifying the message type to receive
      */
-    synchronized public <T> void registerTarget(final T target, final Object source, final Class<T> protocol) {
+    public synchronized <T> void registerTarget(final T target, final Object source, final Class<T> protocol) {
         if (target == null) {
             throw new NullTargetException(source, protocol);
         }
@@ -198,7 +198,7 @@ public class MessageCenter implements Serializable {
      * @param target The target to receive messages
      * @param protocol The protocol identifying the message type to receive
      */
-    synchronized public <T> void registerTarget(final T target, final Class<T> protocol) {
+    public synchronized <T> void registerTarget(final T target, final Class<T> protocol) {
         registerTarget(target, null, protocol);
     }
 
@@ -210,7 +210,7 @@ public class MessageCenter implements Serializable {
      * @param source The source from which we are receiving messages
      * @param protocol The protocol identifying the message type being received
      */
-    synchronized public <T> void removeTarget(final T target, final Object source, final Class<T> protocol) {
+    public synchronized <T> void removeTarget(final T target, final Object source, final Class<T> protocol) {
         targetDirectory.removeTarget(target, source, protocol);
     }
 
@@ -221,7 +221,7 @@ public class MessageCenter implements Serializable {
      * @param target The target receiving messages
      * @param protocol The protocol identifying the message type being received
      */
-    synchronized public <T> void removeTargetFromAllSources(final T target, final Class<T> protocol) {
+    public synchronized <T> void removeTargetFromAllSources(final T target, final Class<T> protocol) {
         targetDirectory.removeTargetFromAllSources(target, protocol);
     }
 
@@ -233,7 +233,7 @@ public class MessageCenter implements Serializable {
      * @param sources The sources from which we are receiving messages
      * @param protocol The protocol identifying the message type being received
      */
-    synchronized public <T> void removeTarget(final T target, final Collection<? extends Object> sources, final Class<T> protocol) {
+    public synchronized <T> void removeTarget(final T target, final Collection<? extends Object> sources, final Class<T> protocol) {
         for (final Object source : sources) {
             removeTarget(target, source, protocol);
         }
@@ -249,7 +249,7 @@ public class MessageCenter implements Serializable {
      * @param target The target receiving messages
      * @param protocol The protocol identifying the message type being received
      */
-    synchronized public <T> void removeTarget(final T target, final Class<T> protocol) {
+    public synchronized <T> void removeTarget(final T target, final Class<T> protocol) {
         targetDirectory.removeTarget(target, protocol);
     }
 
@@ -263,7 +263,7 @@ public class MessageCenter implements Serializable {
      * send
      * @return The proxy (implementing protocol) to call to broadcast messages
      */
-    synchronized public <T> T registerSource(final Object source, final Class<T> protocol) {
+    public synchronized <T> T registerSource(final Object source, final Class<T> protocol) {
         return registerSource(source, protocol, SYNCHRONOUS);
     }
 
@@ -281,7 +281,7 @@ public class MessageCenter implements Serializable {
      * type instead
      */
     @Deprecated
-    synchronized public <T> T registerSource(final Object source, final Class<T> protocol, final boolean isSynchronous) {
+    public synchronized <T> T registerSource(final Object source, final Class<T> protocol, final boolean isSynchronous) {
         final int synchronousType = isSynchronous ? SYNCHRONOUS : ASYNCHRONOUS;
         return registerSource(source, protocol, synchronousType);
     }
@@ -297,7 +297,7 @@ public class MessageCenter implements Serializable {
      * indicate how events are processed
      * @return The proxy (implementing protocol) to call to broadcast messages
      */
-    synchronized public <T> T registerSource(final Object source, final Class<T> protocol, final int synchronousType) {
+    public synchronized <T> T registerSource(final Object source, final Class<T> protocol, final int synchronousType) {
         if (source == null) {
             throw new NullSourceException();
         }
@@ -342,7 +342,7 @@ public class MessageCenter implements Serializable {
      * @param source The source of messages
      * @param protocol The interface/type of messages
      */
-    synchronized public <T> void removeSource(final Object source, final Class<T> protocol) {
+    public synchronized <T> void removeSource(final Object source, final Class<T> protocol) {
         final MessageHandler<T> handler = handlerTable.getHandler(source, protocol);
         handler.terminate();
         handlerTable.removeHandler(handler);

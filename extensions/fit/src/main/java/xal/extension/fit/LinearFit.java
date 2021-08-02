@@ -45,7 +45,7 @@ public class LinearFit {
     /**
      * Add a new x,y pair.
      */
-    synchronized public void addSample(final double x, final double y) {
+    public synchronized void addSample(final double x, final double y) {
         xStats.addSample(x);
         yStats.addSample(y);
         xxStats.addSample(x * x);
@@ -60,7 +60,7 @@ public class LinearFit {
      *
      * @return the fitted slope
      */
-    synchronized public double getSlope() {
+    public synchronized double getSlope() {
         performFitIfNeeded();
 
         return slope;
@@ -71,7 +71,7 @@ public class LinearFit {
      *
      * @return the fitted intercept
      */
-    synchronized public double getIntercept() {
+    public synchronized double getIntercept() {
         performFitIfNeeded();
 
         return intercept;
@@ -82,7 +82,7 @@ public class LinearFit {
      *
      * @return the correlation coefficient.
      */
-    synchronized public double getCorrelationCoefficient() {
+    public synchronized double getCorrelationCoefficient() {
         performFitIfNeeded();
 
         return correlationCoefficient;
@@ -94,7 +94,7 @@ public class LinearFit {
      * @param x the independent variable
      * @return the dependent variable
      */
-    synchronized public double estimateY(final double x) {
+    public synchronized double estimateY(final double x) {
         performFitIfNeeded();
 
         return slope * x + intercept;
@@ -108,7 +108,7 @@ public class LinearFit {
      * @return the mean square error of the y value with respect to the fitted
      * line
      */
-    synchronized public double getMeanSquareOrdinateError() {
+    public synchronized double getMeanSquareOrdinateError() {
         performFitIfNeeded();
 
         final double xyMean = xyStats.mean();
@@ -151,7 +151,7 @@ public class LinearFit {
      * @return a string representation of the linear equation
      */
     @Override
-    synchronized public String toString() {
+    public synchronized String toString() {
         performFitIfNeeded();
 
         StringBuilder buffer = new StringBuilder();

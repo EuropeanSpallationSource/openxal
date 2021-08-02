@@ -154,7 +154,7 @@ class JcaSystem extends ChannelSystem {
      * @param debugFlag true for debug mode and false otherwise.
      */
     @Override
-    synchronized public void setDebugMode(final boolean debugFlag) {
+    public synchronized void setDebugMode(final boolean debugFlag) {
         JcaChannel.setDebugMode(debugFlag);
     }
 

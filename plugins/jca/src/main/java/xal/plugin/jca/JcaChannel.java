@@ -398,7 +398,7 @@ class JcaChannel extends Channel {
      *
      * @param timeout seconds to wait for the connection before giving up
      */
-    synchronized private void waitForConnection(final double timeout) {
+    private synchronized void waitForConnection(final double timeout) {
         if (connectionFlag) {
             // no need to wait
             return;
