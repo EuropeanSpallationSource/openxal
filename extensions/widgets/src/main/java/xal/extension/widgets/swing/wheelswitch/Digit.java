@@ -303,20 +303,21 @@ public abstract class Digit extends SimpleButton {
                     images.put(size, new HashMap<>());
                 }
 
-                if (images.get(size).get(newText) == null) {
-                    image = new BufferedImage(width, height,
-                            BufferedImage.TYPE_4BYTE_ABGR);
+                synchronized (this) {
+                    if (images.get(size).get(newText) == null) {
+                        image = new BufferedImage(width, height,
+                                BufferedImage.TYPE_4BYTE_ABGR);
 
-                    Graphics2D gr = image.createGraphics();
-                    gr.addRenderingHints(PaintHelper.getAntialiasingHints());
-                    gr.setFont(getFont());
-                    super.paintComponent(gr);
-                    images.get(size).put(newText, image);
+                        Graphics2D gr = image.createGraphics();
+                        gr.addRenderingHints(PaintHelper.getAntialiasingHints());
+                        gr.setFont(getFont());
+                        super.paintComponent(gr);
+                        images.get(size).put(newText, image);
+                    }
+                    paintDigitTransition(images.get(getSize()).get(oldText),
+                            images.get(getSize()).get(newText),
+                            g2D, animationCompleted);
                 }
-
-                paintDigitTransition(images.get(getSize()).get(oldText),
-                        images.get(getSize()).get(newText),
-                        g2D, animationCompleted);
                 super.paintBorder(g2D);
             } else {
                 super.paintComponent(g2D);

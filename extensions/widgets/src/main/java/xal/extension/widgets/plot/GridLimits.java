@@ -280,14 +280,16 @@ public class GridLimits {
      * Initializes all internal parameters in the initial state
      */
     public void initialize() {
-        xMax = Double.MAX_VALUE;
-        xMin = -Double.MAX_VALUE;
-        yMax = Double.MAX_VALUE;
-        yMin = -Double.MAX_VALUE;
-        ixMin = false;
-        iyMin = false;
-        ixMax = false;
-        iyMax = false;
+        synchronized (this) {
+            xMax = Double.MAX_VALUE;
+            xMin = -Double.MAX_VALUE;
+            yMax = Double.MAX_VALUE;
+            yMin = -Double.MAX_VALUE;
+            ixMin = false;
+            iyMin = false;
+            ixMax = false;
+            iyMax = false;
+        }
         majorTicksOnX = false;
         majorTicksOnY = false;
         nMajorTicksX = 4;
@@ -300,10 +302,12 @@ public class GridLimits {
      * Initializes all internal parameters for x-axis in the initial state
      */
     public void initializeX() {
-        xMax = Double.MAX_VALUE;
-        xMin = -Double.MAX_VALUE;
-        ixMin = false;
-        ixMax = false;
+        synchronized (this) {
+            xMax = Double.MAX_VALUE;
+            xMin = -Double.MAX_VALUE;
+            ixMin = false;
+            ixMax = false;
+        }
         majorTicksOnX = false;
         nMajorTicksX = 4;
         nMinorTicksX = 4;
@@ -313,10 +317,12 @@ public class GridLimits {
      * Initializes all internal parameters for y-axis in the initial state
      */
     public void initializeY() {
-        yMax = Double.MAX_VALUE;
-        yMin = -Double.MAX_VALUE;
-        iyMin = false;
-        iyMax = false;
+        synchronized (this) {
+            yMax = Double.MAX_VALUE;
+            yMin = -Double.MAX_VALUE;
+            iyMin = false;
+            iyMax = false;
+        }
         majorTicksOnY = false;
         nMajorTicksY = 4;
         nMinorTicksY = 4;
@@ -328,7 +334,7 @@ public class GridLimits {
      *
      * @return The boolean value
      */
-    public boolean getGridLimitsSwitch() {
+    public synchronized boolean getGridLimitsSwitch() {
         return gridLimitsSwitchOnYes;
     }
 
@@ -338,7 +344,7 @@ public class GridLimits {
      *
      * @param gridLimitsSwitchOnYesIn The boolean value
      */
-    public void setGridLimitsSwitch(boolean gridLimitsSwitchOnYesIn) {
+    public synchronized void setGridLimitsSwitch(boolean gridLimitsSwitchOnYesIn) {
         gridLimitsSwitchOnYes = gridLimitsSwitchOnYesIn;
     }
 
@@ -486,7 +492,7 @@ public class GridLimits {
      * @param nStep The new number of steps
      * @param nMinorTicksIn The new number of minor ticks
      */
-    public void setLimitsAndTicksX(double vMin, double step, int nStep, int nMinorTicksIn) {
+    public synchronized void setLimitsAndTicksX(double vMin, double step, int nStep, int nMinorTicksIn) {
         if (step == 0.) {
             return;
         }
@@ -527,7 +533,7 @@ public class GridLimits {
      * @param nStep The new number of steps
      * @param nMinorTicksIn The new number of minor ticks
      */
-    public void setLimitsAndTicksY(double vMin, double step, int nStep, int nMinorTicksIn) {
+    public synchronized void setLimitsAndTicksY(double vMin, double step, int nStep, int nMinorTicksIn) {
         if (step == 0.) {
             return;
         }
