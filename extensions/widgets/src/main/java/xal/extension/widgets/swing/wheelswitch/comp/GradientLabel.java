@@ -226,7 +226,7 @@ public class GradientLabel extends ResizableTextLabel {
      * @param endX the x coordinate of the end of the gradient
      * @param endY the y coordinate of the end of the gradient
      */
-    public void setGradientPoints(double startX, double startY, double endX,
+    public synchronized void setGradientPoints(double startX, double startY, double endX,
             double endY) {
         this.startX = startX;
         this.startY = startY;
