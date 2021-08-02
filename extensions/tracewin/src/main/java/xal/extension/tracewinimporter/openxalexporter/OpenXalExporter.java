@@ -155,7 +155,7 @@ public class OpenXalExporter {
         // F-704-42: FREQ 704.42
         String[] parts = command.split(" ", 2);
         if (parts.length >= 2 && "FREQ".equals(parts[0])) {
-            return new Double(parts[1]) * 1e6;
+            return Double.parseDouble(parts[1]) * 1e6;
         }
 
         throw new RuntimeException("Cannot get correct frequency");
