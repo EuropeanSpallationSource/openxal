@@ -25,6 +25,8 @@ public class FreshProcessor {
      * indicates whether the processor should keep running
      */
     private volatile boolean keepRunning;
+    
+    private volatile Thread thread;
 
     private static final Logger LOGGER = Logger.getLogger(FreshProcessor.class.getName());
 
@@ -35,9 +37,13 @@ public class FreshProcessor {
         keepRunning = true;
 
         requestQueue = new ArrayBlockingQueue<>(1);
-        new Thread(new RequestProcessor()).start();
+        start();
     }
 
+    synchronized private void start(){
+        thread = new RequestProcessor();
+        thread.start();
+    }
     /**
      * Clear pending requests
      */
@@ -51,6 +57,8 @@ public class FreshProcessor {
     synchronized public void terminate() {
         keepRunning = false;
         post(new EmptyRequest());
+        thread.interrupt();
+        thread = null;
     }
 
     /**
