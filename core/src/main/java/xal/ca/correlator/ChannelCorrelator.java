@@ -54,7 +54,7 @@ public class ChannelCorrelator extends Correlator<Channel, ChannelTimeRecord, Ch
      * @param recordFilter The filter to apply to the source's records.
      */
     @Override
-    protected ChannelAgent newSourceAgent(final Channel channel, final String sourceName, final RecordFilter<ChannelTimeRecord> recordFilter) {
+    protected synchronized ChannelAgent newSourceAgent(final Channel channel, final String sourceName, final RecordFilter<ChannelTimeRecord> recordFilter) {
         return new ChannelAgent(localCenter, channel, sourceName, recordFilter, correlationTester);
     }
 

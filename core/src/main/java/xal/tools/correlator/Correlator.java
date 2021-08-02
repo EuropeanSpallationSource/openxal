@@ -411,7 +411,7 @@ public abstract class Correlator<S, R, A extends SourceAgent<R>> {
     /**
      * Dispose of the correlator and its overhead
      */
-    public void dispose() {
+    public synchronized void dispose() {
         stopMonitoring();
         removeAllSources();
         localCenter.removeSource(this, StateNotice.class);
