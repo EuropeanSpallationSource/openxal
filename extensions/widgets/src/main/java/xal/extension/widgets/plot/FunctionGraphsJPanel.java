@@ -226,7 +226,7 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
     /**
      * Performs initial settings
      */
-    private synchronized void initialSettings() {
+    private void initialSettings() {
 
         //this two lines do nothing but we need them to get fonts
         GraphicsEnvironment gEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
