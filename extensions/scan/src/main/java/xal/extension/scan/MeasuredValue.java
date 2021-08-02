@@ -12,8 +12,6 @@ public class MeasuredValue {
 
     private String alias = null;
 
-    private double sigma = 0.0;
-
     private double currValue = 0.0;
 
     private double sumValues = 0.0;
@@ -94,7 +92,6 @@ public class MeasuredValue {
     }
 
     public void restoreIniState() {
-        sigma = 0.0;
         sumValues = 0.0;
         sumValues2 = 0.0;
         nMeasurements = 0;
