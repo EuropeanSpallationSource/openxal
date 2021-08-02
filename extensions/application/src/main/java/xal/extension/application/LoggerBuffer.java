@@ -88,7 +88,7 @@ class LoggerBuffer extends Handler {
      * Initialize the root logger by creating a logger buffer handler and adding
      * it to the root logger.
      */
-    public static void setupRootLogger() {
+    public static synchronized void setupRootLogger() {
         if (rootHandler == null) {
             rootHandler = new LoggerBuffer();
             rootHandler.setLevel(Level.FINEST);
@@ -101,7 +101,7 @@ class LoggerBuffer extends Handler {
      *
      * @return The rootHandler value
      */
-    public static LoggerBuffer getRootHandler() {
+    public static synchronized LoggerBuffer getRootHandler() {
         return rootHandler;
     }
 
