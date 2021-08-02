@@ -17,7 +17,9 @@ import xal.ca.*;
  * @version July 29, 2005
  */
 public class MonitoredArrayPV {
-
+    
+    private final Object lockObj = new Object();
+    
     private Object syncObj = new Object();
 
     private double[] vals = new double[0];
@@ -38,7 +40,7 @@ public class MonitoredArrayPV {
                 = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                synchronized (syncObj) {
+                synchronized (lockObj) {
 
                     MonitoredPVEvent mpvEvt = (MonitoredPVEvent) e.getSource();
 
@@ -167,10 +169,8 @@ public class MonitoredArrayPV {
      * @param syncObj The new syncObject value
      */
     protected void setSyncObject(Object syncObj) {
-        synchronized (syncObj) {
-            synchronized (this.syncObj) {
-                this.syncObj = syncObj;
-            }
+        synchronized (lockObj) {
+            this.syncObj = syncObj;
         }
     }
 
@@ -190,7 +190,7 @@ public class MonitoredArrayPV {
      */
     public void setSwitchOn(boolean switchOn) {
         this.switchOn = switchOn;
-        synchronized (syncObj) {
+        synchronized (lockObj) {
             if (!switchOn) {
                 if (vals.length != 0) {
                     vals = new double[0];
