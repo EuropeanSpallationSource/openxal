@@ -1147,14 +1147,14 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
      */
     public double getCurrentMinX() {
         if (zoomGridLimitsV.isEmpty()) {
-            if (externalGridLimits == null || externalGridLimits.isSetXmin() == false) {
+            if (externalGridLimits == null || !externalGridLimits.isSetXmin()) {
                 return getInnerMinX();
             } else {
                 return externalGridLimits.getMinX();
             }
         } else {
             GridLimits gl = zoomGridLimitsV.lastElement();
-            if (gl.isSetXmin() == false) {
+            if (!gl.isSetXmin()) {
                 return getInnerMinX();
             }
             return gl.getMinX();
@@ -1168,14 +1168,14 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
      */
     public double getCurrentMaxX() {
         if (zoomGridLimitsV.isEmpty()) {
-            if (externalGridLimits == null || externalGridLimits.isSetXmax() == false) {
+            if (externalGridLimits == null || !externalGridLimits.isSetXmax()) {
                 return getInnerMaxX();
             } else {
                 return externalGridLimits.getMaxX();
             }
         } else {
             GridLimits gl = zoomGridLimitsV.lastElement();
-            if (gl.isSetXmax() == false) {
+            if (!gl.isSetXmax()) {
                 return getInnerMaxX();
             }
             return gl.getMaxX();
@@ -1189,14 +1189,14 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
      */
     public double getCurrentMinY() {
         if (zoomGridLimitsV.isEmpty()) {
-            if (externalGridLimits == null || externalGridLimits.isSetYmin() == false) {
+            if (externalGridLimits == null || !externalGridLimits.isSetYmin()) {
                 return getInnerMinY();
             } else {
                 return externalGridLimits.getMinY();
             }
         } else {
             GridLimits gl = zoomGridLimitsV.lastElement();
-            if (gl.isSetYmin() == false) {
+            if (!gl.isSetYmin()) {
                 return getInnerMinY();
             }
             return gl.getMinY();
@@ -1210,14 +1210,14 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
      */
     public double getCurrentMaxY() {
         if (zoomGridLimitsV.isEmpty()) {
-            if (externalGridLimits == null || externalGridLimits.isSetYmax() == false) {
+            if (externalGridLimits == null || !externalGridLimits.isSetYmax()) {
                 return getInnerMaxY();
             } else {
                 return externalGridLimits.getMaxY();
             }
         } else {
             GridLimits gl = zoomGridLimitsV.lastElement();
-            if (gl.isSetYmax() == false) {
+            if (!gl.isSetYmax()) {
                 return getInnerMaxY();
             }
             return gl.getMaxY();
@@ -3404,7 +3404,7 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
         }
         mouseUsedButton = e.getButton();
         if (mouseUsedButton == MouseEvent.BUTTON1) {
-            if (mouseDrugged == true) {
+            if (mouseDrugged) {
                 return;
             }
             if (e.getClickCount() == 2) {
@@ -3512,7 +3512,7 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
     public void mouseReleased(MouseEvent e) {
         mouseUsedButton = e.getButton();
         if (mouseUsedButton == MouseEvent.BUTTON1) {
-            if (mouseDrugged == false) {
+            if (!mouseDrugged) {
                 mouseDraggedTaskType = -1;
                 return;
             }
@@ -3571,7 +3571,7 @@ public class FunctionGraphsJPanel extends JPanel implements MouseListener, Mouse
     @Override
     public void mouseDragged(MouseEvent e) {
         if (mouseUsedButton == MouseEvent.BUTTON1) {
-            if (mouseDrugged == false) {
+            if (!mouseDrugged){
                 int eX = e.getX();
                 int eY = e.getY();
                 if (evntIniX < xLOffSet || evntIniX > (screenW - xROffSet)
