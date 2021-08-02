@@ -137,7 +137,7 @@ public class GenericRecord implements KeyedRecord, DataListener {
      * @param key The key for which to associated the new value.
      */
     public void setValueForKey(final boolean value, final String key) {
-        setValueForKey(new Boolean(value), key);
+        setValueForKey(Boolean.valueOf(value), key);
     }
 
     /**
