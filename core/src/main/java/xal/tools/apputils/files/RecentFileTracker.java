@@ -207,9 +207,11 @@ public class RecentFileTracker {
                 urlSpecs.add(decodeItem(encodedItem));
             }
             return urlSpecs.toArray(new String[urlSpecs.size()]);
-        } else {
+        } else if (pathsStr != null) {
             // old format uses comma delimited items
             return getTokens(pathsStr, ",");
+        } else {
+            return new String[0];
         }
     }
 

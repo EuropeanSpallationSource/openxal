@@ -56,7 +56,7 @@ public class PatientBroadcaster<RecordType> extends AbstractBroadcaster<RecordTy
             // if correlation is a full count, post it immediately
             if (isFullCount) {
                 postCorrelation(correlation);
-            } else if (lastTime == Double.NaN || !correlatesWithLast(correlationTime)) {
+            } else if (Double.isNaN(lastTime) || !correlatesWithLast(correlationTime)) {
                 pendingCorrelation = correlation;
             }
             // this correlation intersects with the last correlation
