@@ -60,7 +60,7 @@ public class IdealDrift extends ThickElement {
 
     private double KDrift;
 
-    FringePMQ fringes[];
+    FringePMQ[] fringes;
 
     /*
      * Initialization

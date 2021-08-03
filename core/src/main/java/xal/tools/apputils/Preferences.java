@@ -49,7 +49,7 @@ public class Preferences extends AbstractPreferences {
     }
 
     private boolean usrContains(String key) {
-        String keys[];
+        String[] keys;
         try {
             keys = userPrefs.keys();
             for (String userKey : keys) {
