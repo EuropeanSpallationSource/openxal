@@ -41,10 +41,10 @@ public class DefaultStyleSheet {
         XSLSHEET += "                     Element[@type='beamcurrentmonitor'] |";
         XSLSHEET += "                     Element[@type='beamlossmonitor'] |";
         XSLSHEET += "                     Element[@type='wirescanner']\">";
-        XSLSHEET += "	 <xsl:element name=\"Element\">";
-        XSLSHEET += "	     <xsl:attribute name=\"type\">Marker</xsl:attribute>";
-        XSLSHEET += "	     <xsl:attribute name=\"id\"><xsl:value-of select=\"@id\"/></xsl:attribute>";
-        XSLSHEET += "	 </xsl:element>";
+        XSLSHEET += "     <xsl:element name=\"Element\">";
+        XSLSHEET += "         <xsl:attribute name=\"type\">Marker</xsl:attribute>";
+        XSLSHEET += "         <xsl:attribute name=\"id\"><xsl:value-of select=\"@id\"/></xsl:attribute>";
+        XSLSHEET += "     </xsl:element>";
         XSLSHEET += "</xsl:template>";
         XSLSHEET += "";
         XSLSHEET += "<xsl:template match=\"Element[@type='drift']\">";

@@ -52,7 +52,7 @@ public class MagFieldMap3DTest extends SingleElementTest {
 
         List<Object[]> tests = new ArrayList<>();
 
-        // 0: basic test, E=75keV	
+        // 0: basic test, E=75keV    
         tests.add(new Object[]{new SingleElementTestData() {
             {
                 description = "Thin solenoid";
@@ -90,7 +90,7 @@ public class MagFieldMap3DTest extends SingleElementTest {
             }
         }});
 
-        // 0: basic test, E=75keV	
+        // 0: basic test, E=75keV    
         tests.add(new Object[]{new SingleElementTestData() {
             {
                 description = "Thick solenoid";

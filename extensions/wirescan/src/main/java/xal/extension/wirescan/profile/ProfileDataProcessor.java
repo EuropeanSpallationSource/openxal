@@ -72,7 +72,7 @@ import xal.tools.dsp.LtiDigitalFilter;
  * may include samples corrupted by noise.
  * <br>
  * <br>ProfileDataProcessor.{@link #thresholdFilter(double dblFracSigMax)}
- * <br><var>dblFracSigMax</var>	= fraction of maximum signal where threshold is
+ * <br><var>dblFracSigMax</var>    = fraction of maximum signal where threshold is
  * applied
  * <br>The argument is the fraction of the maximum signal strength where the
  * threshold is activated. Thus, this value is in the interval (-1,1) where a
@@ -216,7 +216,7 @@ public class ProfileDataProcessor {
      *
      * @param dataOrg profile data under process
      *
-     * @see	ProfileDataProcessor
+     * @see    ProfileDataProcessor
      */
     public ProfileDataProcessor(final ProfileData dataOrg) {
         this.dataRaw = dataOrg;
@@ -520,7 +520,7 @@ public class ProfileDataProcessor {
      * value 0 would indicate no action by the filter.
      * </p>
      *
-     * @param dblFracSigMax	fraction of maximum signal where threshold is
+     * @param dblFracSigMax    fraction of maximum signal where threshold is
      * applied
      */
     public void thresholdFilter(double dblFracSigMax) {

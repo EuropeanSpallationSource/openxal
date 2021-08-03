@@ -109,8 +109,8 @@ public class QuadrupoleLens {
      */
     public static double[][] transferFocPlaneApprox(double k, double l) {
         double[][] arrF = new double[][]{
-            //   			{1, l},
-            //    			{-k*k*l, 1}
+            //               {1, l},
+            //                {-k*k*l, 1}
             {1, l},
             {-k * k * l, -k * k * l * l + 1}
         };
@@ -148,8 +148,8 @@ public class QuadrupoleLens {
      */
     public static double[][] transferDefPlaneApprox(double k, double l) {
         double[][] arrD = new double[][]{
-            //    			{1, l},
-            //    			{k*k*l, 1}
+            //                {1, l},
+            //                {k*k*l, 1}
             {1, l},
             {k * k * l, k * k * l * l + 1}
         };

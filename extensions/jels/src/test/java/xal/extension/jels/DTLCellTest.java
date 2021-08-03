@@ -130,7 +130,7 @@ public class DTLCellTest extends SingleElementTest {
         }});
 
         // DTL_CEL 68.534 22.5 22.5 0.00864202 0 0 148174 -35 10 0 0.0805777 0.772147 -0.386355 -0.142834
-        // 3: only gap		
+        // 3: only gap        
         tests.add(new Object[]{new SingleElementTestData() {
             {
                 description = "only gap";
@@ -390,7 +390,7 @@ public class DTLCellTest extends SingleElementTest {
             }
         }});
 
-        // 11: misalignment test dx & dy, E=2.5MeV		
+        // 11: misalignment test dx & dy, E=2.5MeV        
         tests.add(new Object[]{new SingleElementTestData() {
             {
                 description = "misalignment dx,dy";

@@ -292,7 +292,7 @@ public abstract class DispatchQueue implements DispatchOperationListener {
      * get the current queue or null if the current thread does not belong to a
      * queue
      */
-    @SuppressWarnings("unchecked")	// need to cast thread to DispatchThread after checking
+    @SuppressWarnings("unchecked")    // need to cast thread to DispatchThread after checking
     public static DispatchQueue getCurrentQueue() {
         final Thread currentThread = Thread.currentThread();
         if (currentThread instanceof DispatchThread) {
@@ -619,7 +619,7 @@ class ConcurrentDispatchQueue extends DispatchQueue {
     /**
      * process the next pending operation
      */
-    @SuppressWarnings("unchecked")	// executor expects a known type but the operations are arbitrary
+    @SuppressWarnings("unchecked")    // executor expects a known type but the operations are arbitrary
     private void processNextPendingOperation() {
         try {
             final DispatchOperation<?> operation = pendingOperationQueue.remove();
@@ -629,7 +629,7 @@ class ConcurrentDispatchQueue extends DispatchQueue {
             incrementRunningOperationCount();
             dispatchExecutor.submit(operation);
         } catch (NoSuchElementException exception) {
-        }	// nothing left to process in the queue
+        }    // nothing left to process in the queue
     }
 
     /**
@@ -795,7 +795,7 @@ class SerialDispatchQueue extends DispatchQueue {
                     dispatchExecutor.submit(nextOperation);
                 }
             } catch (NoSuchElementException exception) {
-            }		// nothing left to process in the queue
+            }        // nothing left to process in the queue
         }
     }
 }
@@ -897,7 +897,7 @@ class MainDispatchQueue extends SerialDispatchQueue {
                     SwingUtilities.invokeLater(runnableOperation);
                 }
             } catch (NoSuchElementException exception) {
-            }	// nothing left to process in the queue
+            }    // nothing left to process in the queue
         }
     }
 }

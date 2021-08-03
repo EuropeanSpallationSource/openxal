@@ -105,7 +105,7 @@ import xal.tools.math.fnc.IRealFunction;
 public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCell {
 
     /*
-	 *  Global Constants
+     *  Global Constants
      */
     /**
      * the string type identifier for all SpectrumMapRfGap objects
@@ -250,10 +250,10 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
     }
 
     /*
-	 * Global Attributes
+     * Global Attributes
      */
  /*
-	 *  Local Attributes
+     *  Local Attributes
      */
     //
     // Operating Parameters
@@ -337,7 +337,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
     private int indCell = 0;
 
     /*
-	 * Initialization
+     * Initialization
      */
     /**
      * Creates a new instance of SpectrumMapRfGap
@@ -367,7 +367,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 
 
     /*
-	 * Attribute Query
+     * Attribute Query
      */
     /**
      * <del>Returns the cell length (m)</del>

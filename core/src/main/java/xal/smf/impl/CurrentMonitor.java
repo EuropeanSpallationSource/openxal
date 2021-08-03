@@ -24,7 +24,7 @@ public class CurrentMonitor extends AcceleratorNode {
 
 
     /*
-	 * Register type for qualification
+     * Register type for qualification
      */
     private static void registerType() {
         ElementTypeManager.defaultManager().registerTypes(CurrentMonitor.class, TYPE);

@@ -171,7 +171,7 @@ class ViewInspectorTableModel extends AbstractTableModel implements PropertyTabl
             case NAME_COLUMN:
                 return propertyDescriptors[row].getName();
             case VALUE_COLUMN:
-				try {
+                try {
                 final PropertyDescriptor propertyDescriptor = propertyDescriptors[row];
                 return beanNode.getPropertyValue(propertyDescriptor);
             } catch (Exception exception) {
@@ -190,7 +190,7 @@ class ViewInspectorTableModel extends AbstractTableModel implements PropertyTabl
     public void setValueAt(final Object value, final int row, final int column) {
         switch (column) {
             case VALUE_COLUMN:
-				try {
+                try {
                 final PropertyDescriptor propertyDescriptor = propertyDescriptors[row];
                 beanNode.setPropertyValue(propertyDescriptor, value);
                 break;

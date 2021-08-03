@@ -9,7 +9,7 @@
  * IdealVerMagSteeringDipole.java
  *
  * @author  Christopher K. Allen
- * @since	May 13, 2011
+ * @since    May 13, 2011
  */
 package xal.model.elem;
 

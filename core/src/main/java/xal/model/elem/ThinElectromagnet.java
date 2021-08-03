@@ -101,7 +101,7 @@ public abstract class ThinElectromagnet extends ThinElement implements IElectrom
 
             // CKA - we are going to skip this since skew quadrupoles (soft type = "QSC")
             //    have no orientation and always throw this warning
-//			    
+//                
         }
         setOrientation(orientation);
         setMagField(magnetNode.getDesignField());

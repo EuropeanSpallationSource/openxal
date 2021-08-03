@@ -1,5 +1,5 @@
 /*
- * @(#)MadGenerator.java	0.2 10/31/2003
+ * @(#)MadGenerator.java    0.2 10/31/2003
  *
  * Copyright (c) 2002-2003 Oak Ridge National Laboratory
  * Oak Ridge, Tenessee 37831, U.S.A.
@@ -303,10 +303,10 @@ public class MadGenerator {
                     final double field = getField(node, deviceDataSource);
                     final double k2 = Q * field * LIGHT_SPEED / momentum;
                     addElement(formattedName, "SEXTUPOLE, L=" + NUMBER_FORMAT.format(elementLength) + ", K2=" + NUMBER_FORMAT.format(k2));
-                    //				// RF Cavities are not handled properly, so comment out the RF Cavity code
-                } //				// for rf gaps
-                //				else if (elementType.equals("rfgap")) {
-                //				}
+                    //                // RF Cavities are not handled properly, so comment out the RF Cavity code
+                } //                // for rf gaps
+                //                else if (elementType.equals("rfgap")) {
+                //                }
                 else {
                     if (node != null) {
                         LOGGER.log(Level.INFO, "Ignored element type: {0}, node: {1}, length: {2}", new Object[]{elementType, node.getId(), node.getLength()});

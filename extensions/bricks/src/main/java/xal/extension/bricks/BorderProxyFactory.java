@@ -34,7 +34,7 @@ public class BorderProxyFactory {
     /**
      * register the proxy in the proxy table
      */
-    @SuppressWarnings("unchecked")	// must convert border proxy subtypes to the subtype of Border
+    @SuppressWarnings("unchecked")    // must convert border proxy subtypes to the subtype of Border
     protected static void register(final BorderProxy<? extends Border> proxy) {
         proxyTable.put(proxy.getType(), (BorderProxy<Border>) proxy);
     }

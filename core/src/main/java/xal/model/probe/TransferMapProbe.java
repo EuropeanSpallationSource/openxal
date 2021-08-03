@@ -92,7 +92,7 @@ public class TransferMapProbe extends Probe<TransferMapState> {
      *
      * @return transfer map in homogeneous phase space coordinates
      */
-    @NoEdit	// editors should not edit this parameter as it is for internal setting
+    @NoEdit    // editors should not edit this parameter as it is for internal setting
     public PhaseMap getTransferMap() {
         return this.stateCurrent.getTransferMap();
     }

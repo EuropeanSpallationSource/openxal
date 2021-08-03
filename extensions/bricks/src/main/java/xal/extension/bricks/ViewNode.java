@@ -73,7 +73,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
     /**
      * Constructor
      */
-    @SuppressWarnings("rawtypes")		// DefaultMutableTreeNode returns an untyped Enumeration
+    @SuppressWarnings("rawtypes")        // DefaultMutableTreeNode returns an untyped Enumeration
     public ViewNode(final ViewNode node) {
         this(node.getViewProxy(), node.beanSettings, node.getTag());
 
@@ -103,7 +103,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
     /**
      * generator
      */
-    @SuppressWarnings("unchecked")	// must cast view proxy to have Component type
+    @SuppressWarnings("unchecked")    // must cast view proxy to have Component type
     public static ViewNode getInstance(final DataAdaptor adaptor) {
         final DataAdaptor proxyAdaptor = adaptor.childAdaptor(ViewProxy.DATA_LABEL);
         final ViewProxy<Component> viewProxy = (ViewProxy<Component>) ViewProxy.getInstance(proxyAdaptor);
@@ -203,7 +203,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
      *
      * @param beanProxies the beans to add to this node
      */
-    @SuppressWarnings("unchecked")	// must cast bean proxy to view proxy
+    @SuppressWarnings("unchecked")    // must cast bean proxy to view proxy
     @Override
     public void add(final List<BeanProxy<?>> beanProxies) {
         final List<BeanNode<?>> nodes = new ArrayList<>(beanProxies.size());
@@ -264,7 +264,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
      *
      * @param beanProxies the views to add to this node
      */
-    @SuppressWarnings("unchecked")	// must cast bean proxy to view proxy
+    @SuppressWarnings("unchecked")    // must cast bean proxy to view proxy
     @Override
     public void insertSiblings(final List<BeanProxy<?>> beanProxies) {
         int treeIndex = treeNode.getParent().getIndex(treeNode);
@@ -667,7 +667,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
      *
      * @param adaptor The adaptor to which the receiver's data is written
      */
-    @SuppressWarnings("rawtypes")		// DefaultMutableTreeNode returns an untyped Enumeration
+    @SuppressWarnings("rawtypes")        // DefaultMutableTreeNode returns an untyped Enumeration
     @Override
     public void write(final DataAdaptor adaptor) {
         super.write(adaptor);

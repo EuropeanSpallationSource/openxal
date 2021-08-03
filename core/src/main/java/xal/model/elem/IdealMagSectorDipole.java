@@ -307,7 +307,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
                 hrho = alpha / path;
             }
             // h polarity = hrho polarity
-            //therefore, e*B0polarity = alpha polarity   	
+            //therefore, e*B0polarity = alpha polarity       
             //if fieldPathFlag=1, use hrho (calculated from rho) instead of h(calculated from p and B)
             h = hrho;
         }
@@ -465,7 +465,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
         double Beff = alpha / path * Etotal * beta / (c * charge);
 
         // Compute the bending constant h  == 1/ bend radius (1/meter)
-        //was default	
+        //was default    
         double h = c * B / (Etotal * beta * charge);
         LOGGER.log(Level.INFO, "h, hrho = {0} {1}", new Object[]{h, hrho});
 

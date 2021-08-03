@@ -47,7 +47,7 @@ public class R2x2 extends SquareMatrix<R2x2> implements Serializable {
         /**
          * Returns the numerical value of this index enumeration constant.
          *
-         * @return	numerical index value
+         * @return    numerical index value
          *
          * @see xal.tools.math.SquareMatrix.IIndex#val()
          *
@@ -60,7 +60,7 @@ public class R2x2 extends SquareMatrix<R2x2> implements Serializable {
         }
 
         /*
-		 * Local Attributes
+         * Local Attributes
          */
         /**
          * The numerical index value
@@ -237,8 +237,8 @@ public class R2x2 extends SquareMatrix<R2x2> implements Serializable {
     /**
      * Set the element the given indices to the new value.
      *
-     * @param iRow	matrix row location
-     * @param	iCol	matrix column index
+     * @param iRow    matrix row location
+     * @param    iCol    matrix column index
      *
      * @param dblAng matrix element at given row and column will be set to this
      * value
@@ -257,7 +257,7 @@ public class R2x2 extends SquareMatrix<R2x2> implements Serializable {
      * @param iRow row index
      * @param iCol column index
      *
-     * @return	the matrix element at the position specified by the indices.
+     * @return    the matrix element at the position specified by the indices.
      */
     public double getElem(IND iRow, IND iCol) {
         return super.getElem(iRow, iCol);
@@ -274,7 +274,7 @@ public class R2x2 extends SquareMatrix<R2x2> implements Serializable {
      * where <strong>A</strong> is this matrix and <strong>x</strong> is the
      * given vector.
      *
-     * @param vec	the vector factor <strong>x</bx>
+     * @param vec    the vector factor <strong>x</bx>
      *
      * @return the matrix-vector product of this matrix with the given vector
      */

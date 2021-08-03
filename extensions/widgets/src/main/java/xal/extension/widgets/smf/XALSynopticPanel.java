@@ -263,7 +263,7 @@ public class XALSynopticPanel extends JPanel {
     }
 
     /* (non-Javadoc)
-	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+     * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
      */
     @Override
     protected void paintComponent(Graphics g) {
@@ -439,7 +439,7 @@ public class XALSynopticPanel extends JPanel {
     }
 
     /* (non-Javadoc)
-	 * @see javax.swing.JComponent#getToolTipText(java.awt.event.MouseEvent)
+     * @see javax.swing.JComponent#getToolTipText(java.awt.event.MouseEvent)
      */
     @Override
     public String getToolTipText(MouseEvent event) {

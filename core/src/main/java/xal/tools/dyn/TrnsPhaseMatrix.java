@@ -38,7 +38,7 @@ import xal.tools.math.r2.R2x2;
 public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
 
     /*
-	 * Internal Classes
+     * Internal Classes
      */
     /**
      * Enumeration for the element position indices for homogeneous phase space
@@ -104,13 +104,13 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
         }
 
         /*
-		 * IIndex Interface
+         * IIndex Interface
          */
         /**
          * Returns the numerical index of this enumeration constant,
          * corresponding to the index into the phase matrix.
          *
-         * @return	numerical value of this index
+         * @return    numerical value of this index
          *
          * @author Christopher K. Allen
          * @since Sep 25, 2013
@@ -121,7 +121,7 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
         }
 
         /*
-		 * Initialization
+         * Initialization
          */
         /**
          * The numerical value of this enumeration index
@@ -132,7 +132,7 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
          * Creates a new <code>IND</code> enumeration constant initialized to
          * the given index value.
          *
-         * @param index	numerical index value for this constant
+         * @param index    numerical index value for this constant
          *
          * @author Christopher K. Allen
          * @since Sep 25, 2013
@@ -143,7 +143,7 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
     }
 
     /*
-	 * Global Constants
+     * Global Constants
      */
     /**
      * number of matrix dimensions

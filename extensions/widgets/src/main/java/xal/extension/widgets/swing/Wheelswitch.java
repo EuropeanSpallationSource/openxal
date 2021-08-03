@@ -63,11 +63,11 @@ public class Wheelswitch extends JPanel {
     private static final long serialVersionUID = 1L;
 
     /*
-	 * An implementation of FocusListener removes digit selection
-	 * when focus is lost.
-	 *
-	 * @author <a href="mailto:jernej.kamenik@cosylab.com">Jernej Kamenik</a>
-	 * @version $id$
+     * An implementation of FocusListener removes digit selection
+     * when focus is lost.
+     *
+     * @author <a href="mailto:jernej.kamenik@cosylab.com">Jernej Kamenik</a>
+     * @version $id$
      */
     protected class FocusHandler extends FocusAdapter {
 
@@ -99,11 +99,11 @@ public class Wheelswitch extends JPanel {
     }
 
     /*
-	 * An implementation of KeyListener used for handling
-	 * key commands for the wheelswitch.
-	 *
-	 * @author <a href="mailto:jernej.kamenik@cosylab.com">Jernej Kamenik</a>
-	 * @version $id$
+     * An implementation of KeyListener used for handling
+     * key commands for the wheelswitch.
+     *
+     * @author <a href="mailto:jernej.kamenik@cosylab.com">Jernej Kamenik</a>
+     * @version $id$
      */
     protected class KeyHandler extends KeyAdapter {
 
@@ -140,11 +140,11 @@ public class Wheelswitch extends JPanel {
     }
 
     /*
-	 * An implementation of KeyListener used for handling
-	 * key commands for the wheelswitch.
-	 *
-	 * @author <a href="mailto:jernej.kamenik@cosylab.com">Jernej Kamenik</a>
-	 * @version $id$
+     * An implementation of KeyListener used for handling
+     * key commands for the wheelswitch.
+     *
+     * @author <a href="mailto:jernej.kamenik@cosylab.com">Jernej Kamenik</a>
+     * @version $id$
      */
     protected class MouseHandler extends MouseAdapter {
 
@@ -164,11 +164,11 @@ public class Wheelswitch extends JPanel {
     }
 
     /*
-	 * An implementation of the MouseWheelListener used for handling
-	 * mouse wheel events inside the wheelswitch.
-	 *
-	 * @author <a href="mailto:jernej.kamenik@cosylab.com">Jernej Kamenik</a>
-	 * @version $id$
+     * An implementation of the MouseWheelListener used for handling
+     * mouse wheel events inside the wheelswitch.
+     *
+     * @author <a href="mailto:jernej.kamenik@cosylab.com">Jernej Kamenik</a>
+     * @version $id$
      */
     protected class MouseWheelHandler implements MouseWheelListener {
 
@@ -196,11 +196,11 @@ public class Wheelswitch extends JPanel {
     }
 
     /*
-	 * An extension of Timer used for periodic tilting of the Wheelswitch.
-	 *
-	 * @author <a href="mailto:jernej.kamenik@cosylab.com">Jernej Kamenik</a>
-	 * @version $id$
-	 *
+     * An extension of Timer used for periodic tilting of the Wheelswitch.
+     *
+     * @author <a href="mailto:jernej.kamenik@cosylab.com">Jernej Kamenik</a>
+     * @version $id$
+     *
      */
     protected class TiltHandler extends Timer {
 
@@ -254,11 +254,11 @@ public class Wheelswitch extends JPanel {
     }
 
     /*
-	 * An implementation of UpDownListener used for handling
-	 * events from the up-down button in the wheelswitch.
-	 *
-	 * @author <a href="mailto:jernej.kamenik@cosylab.com">Jernej Kamenik</a>
-	 * @version $id$
+     * An implementation of UpDownListener used for handling
+     * events from the up-down button in the wheelswitch.
+     *
+     * @author <a href="mailto:jernej.kamenik@cosylab.com">Jernej Kamenik</a>
+     * @version $id$
      */
     protected class UpDownActionHandler implements UpDownListener {
 
@@ -766,7 +766,7 @@ public class Wheelswitch extends JPanel {
     }
 
     /*
-	 * Sets the value at the i-th digit
+     * Sets the value at the i-th digit
      */
     protected void setDigitValue(int i, int newValue) {
         if (digits.get(i) instanceof StaticDigit) {
@@ -906,8 +906,8 @@ public class Wheelswitch extends JPanel {
     }
 
     /*
-	 * Sets a new Digit selection.
-	 * @param i new digit selection.
+     * Sets a new Digit selection.
+     * @param i new digit selection.
      */
     protected void setSelectedDigit(int i) {
         if (editable) {
@@ -963,8 +963,8 @@ public class Wheelswitch extends JPanel {
     }
 
     /*
-	 * Returns the currently selected digit.
-	 * @return int selection index
+     * Returns the currently selected digit.
+     * @return int selection index
      */
     protected int getSelectedDigit() {
         return selectedDigit;
@@ -972,7 +972,7 @@ public class Wheelswitch extends JPanel {
 
 
     /*
-	 * (Re)initializes existing value digits inside the wheelswitch.
+     * (Re)initializes existing value digits inside the wheelswitch.
      */
     protected void initDigits() {
         String stringValue = formatter.getString();
@@ -1009,7 +1009,7 @@ public class Wheelswitch extends JPanel {
     }
 
     /*
-	 * Repositions the components inside the wheelswitch.
+     * Repositions the components inside the wheelswitch.
      */
     private void setupLayout() {
 
@@ -1043,7 +1043,7 @@ public class Wheelswitch extends JPanel {
     }
 
     /*
-	 * Constructs unit digits from scratch.
+     * Constructs unit digits from scratch.
      */
     private void setupUnitDigits() {
         unitDigits.clear();
@@ -1065,7 +1065,7 @@ public class Wheelswitch extends JPanel {
     }
 
     /*
-	 * Contructs value digits from scratch.
+     * Contructs value digits from scratch.
      */
     private void setupValueDigits() {
         digits.clear();
@@ -1092,8 +1092,8 @@ public class Wheelswitch extends JPanel {
     }
 
     /*
-	 * Called by setDigitValue(int,int) when the user modifies the digits.
-	 * Sets a new string value.
+     * Called by setDigitValue(int,int) when the user modifies the digits.
+     * Sets a new string value.
      */
     private void setStringValue(String newStringValue) {
         double oldValue = formatter.getValue();
@@ -1128,8 +1128,8 @@ public class Wheelswitch extends JPanel {
     }
 
     /*
-	 * Called by setStringValue(String). Computes the decimal position represented
-	 * by the digit position
+     * Called by setStringValue(String). Computes the decimal position represented
+     * by the digit position
      */
     private int parseDecimalPosition(int digitPosition) {
         if (digitPosition == -1) {
@@ -1168,8 +1168,8 @@ public class Wheelswitch extends JPanel {
     }
 
     /*
-	 * Called by setStringValue(String) Computes the digit position given the decimal
-	 * position
+     * Called by setStringValue(String) Computes the digit position given the decimal
+     * position
      */
     private int parseDigitPosition(int decimalPosition) {
         if (decimalPosition == Integer.MAX_VALUE) {

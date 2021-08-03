@@ -490,7 +490,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
     }
 
     /*
-	 ************* Trajectory Operations ************************
+     ************* Trajectory Operations ************************
      */
     /**
      * Captures the specified probe's current state to a <code>ProbeState</code>

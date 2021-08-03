@@ -47,7 +47,7 @@ class ScenarioGenerator {
     public static final double EPS = 1.e-10d;
 
     /*
-	 * Local Attributes
+     * Local Attributes
      */
     // External Objects
     /**
@@ -66,7 +66,7 @@ class ScenarioGenerator {
     }
 
     /*
-	 * Operations
+     * Operations
      */
     /**
      * CKA

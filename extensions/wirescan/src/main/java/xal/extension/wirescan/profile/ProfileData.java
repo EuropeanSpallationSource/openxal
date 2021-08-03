@@ -471,7 +471,7 @@ public class ProfileData {
      * Note that the given list must have length equal to the storage specified
      * by <code>ProfileData#allocStorage</code>.
      *
-     * @param	view	viewing angle
+     * @param    view    viewing angle
      * @param lstVals ordered list of axis positions
      *
      * @throws ArrayIndexOutOfBoundsException list size not equal storage
@@ -668,7 +668,7 @@ public class ProfileData {
     /**
      * Returns the vector array of axis positions for each data value.
      *
-     * @param	view	projection viewing angle
+     * @param    view    projection viewing angle
      *
      * @return array of axis positions
      */
@@ -698,7 +698,7 @@ public class ProfileData {
     /**
      * Returns the projection data array for the given viewing angle.
      *
-     * @param	view	projection viewing angle
+     * @param    view    projection viewing angle
      *
      * @return projection data array
      */

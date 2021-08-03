@@ -79,7 +79,7 @@ public class EnvelopeProbe extends BunchProbe<EnvelopeProbeState> {
     }
 
     /*
-	 * Initialization
+     * Initialization
      */
     /**
      * Default Constructor. Creates a new, empty instance of EnvelopeProbe
@@ -200,7 +200,7 @@ public class EnvelopeProbe extends BunchProbe<EnvelopeProbeState> {
     }
 
     /*
-	 * Data Query
+     * Data Query
      */
     /**
      * Returns the correlation matrix for the beam in homogeneous phase space
@@ -318,7 +318,7 @@ public class EnvelopeProbe extends BunchProbe<EnvelopeProbeState> {
     }
 
     /*
-	 * Trajectory Support
+     * Trajectory Support
      */
     /**
      * Creates a snapshot of the current state and returns it as a

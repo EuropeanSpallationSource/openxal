@@ -257,13 +257,13 @@ public class IdealMagQuad extends ThickElectromagnet {
         /*
        //sako!!
        if (K1!=0.) {
-    	   LOGGER.log(Level.INFO, "K1, k = "+K1+" "+k);
-    	   k = K1;
+           LOGGER.log(Level.INFO, "K1, k = "+K1+" "+k);
+           k = K1;
        }
          */
         double kSqrt = Math.sqrt(Math.abs(k));
 
-        // Compute the transfer matrix components		
+        // Compute the transfer matrix components        
         final double[][] arrF = QuadrupoleLens.transferFocPlane(kSqrt, length);
         final double[][] arrD = QuadrupoleLens.transferDefPlane(kSqrt, length);
         final double[][] arr0 = DriftSpace.transferDriftPlane(length);

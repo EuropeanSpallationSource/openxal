@@ -88,7 +88,7 @@ public class RfFieldMapTest extends SingleElementTest {
             }
         }});
 
-        // 1: thick rf fieldmap	
+        // 1: thick rf fieldmap    
         // FIELD_MAP 100 988 -1.10293 28 0 0.974792 0 0 Spoke_W_coupler
         tests.add(new Object[]{new SingleElementTestData() {
             {
@@ -241,7 +241,7 @@ public class RfFieldMapTest extends SingleElementTest {
             }
         }});
 
-        // dx thick rf fieldmap	
+        // dx thick rf fieldmap    
         // FIELD_MAP 100 988 -1.10293 28 0 0.974792 0 0 Spoke_W_coupler
         tests.add(new Object[]{new SingleElementTestData() {
             {
@@ -323,7 +323,7 @@ public class RfFieldMapTest extends SingleElementTest {
             }
         }});
 
-        // dy thick rf fieldmap	
+        // dy thick rf fieldmap    
         // FIELD_MAP 100 988 -1.10293 28 0 0.974792 0 0 Spoke_W_coupler
         tests.add(new Object[]{new SingleElementTestData() {
             {
@@ -405,7 +405,7 @@ public class RfFieldMapTest extends SingleElementTest {
             }
         }});
 
-        // pitch thick rf fieldmap	
+        // pitch thick rf fieldmap    
         // FIELD_MAP 100 988 -1.10293 28 0 0.974792 0 0 Spoke_W_coupler
         tests.add(new Object[]{new SingleElementTestData() {
             {
@@ -486,7 +486,7 @@ public class RfFieldMapTest extends SingleElementTest {
             }
         }});
 
-        // yaw thick rf fieldmap	
+        // yaw thick rf fieldmap    
         // FIELD_MAP 100 988 -1.10293 28 0 0.974792 0 0 Spoke_W_coupler
         tests.add(new Object[]{new SingleElementTestData() {
             {
@@ -565,7 +565,7 @@ public class RfFieldMapTest extends SingleElementTest {
             }
         }});
 
-        // roll thick rf fieldmap	
+        // roll thick rf fieldmap    
         // FIELD_MAP 100 988 -1.10293 28 0 0.974792 0 0 Spoke_W_coupler
         tests.add(new Object[]{new SingleElementTestData() {
             {
@@ -600,7 +600,7 @@ public class RfFieldMapTest extends SingleElementTest {
             }
         }});
 
-        // all errors thin rf fieldmap	
+        // all errors thin rf fieldmap    
         // FIELD_MAP 100 988 -1.10293 28 0 0.974792 0 0 Spoke_W_coupler
         tests.add(new Object[]{new SingleElementTestData() {
             {
@@ -644,7 +644,7 @@ public class RfFieldMapTest extends SingleElementTest {
             }
         }});
 
-        // all errors thick rf fieldmap	
+        // all errors thick rf fieldmap    
         // FIELD_MAP 100 988 -1.10293 28 0 0.974792 0 0 Spoke_W_coupler
         tests.add(new Object[]{new SingleElementTestData() {
             {

@@ -140,7 +140,7 @@ public abstract class EditableProperty {
     /*
      * Get the property descriptors for the given bean info
      * @param target object for which to get the descriptors
-	 * @return the property descriptors for non-null beanInfo otherwise null
+     * @return the property descriptors for non-null beanInfo otherwise null
      */
     protected static PropertyDescriptor[] getPropertyDescriptors(final Object target) {
         if (target != null) {
@@ -155,7 +155,7 @@ public abstract class EditableProperty {
     /*
      * Get the property descriptors for the given bean info
      * @param beanInfo bean info
-	 * @return the property descriptors for non-null beanInfo otherwise null
+     * @return the property descriptors for non-null beanInfo otherwise null
      */
     private static PropertyDescriptor[] getPropertyDescriptorsForBeanInfo(final BeanInfo beanInfo) {
         return beanInfo != null ? beanInfo.getPropertyDescriptors() : null;

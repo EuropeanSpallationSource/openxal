@@ -938,7 +938,7 @@ public class BasicGraphData {
 
     /**
      * sets the shape of the point during drawing. The input parameter could be
-	 *  <code> null </code>. By default it will be a circle.
+     *  <code> null </code>. By default it will be a circle.
      *
      * @param markShape The new graphPointShape value
      */

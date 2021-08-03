@@ -16,7 +16,7 @@ import xal.smf.proxy.ElectromagnetPropertyAccessor;
 public class ElectromagnetSynchronizer implements Synchronizer {
 
     /*
-	 * @see xal.model.sync.Synchronizer#resync(xal.model.IElement, java.util.Map)
+     * @see xal.model.sync.Synchronizer#resync(xal.model.IElement, java.util.Map)
      */
     @Override
     public void resync(final IComponent aComp, final Map<String, Double> valueMap) throws SynchronizationException {
@@ -32,7 +32,7 @@ public class ElectromagnetSynchronizer implements Synchronizer {
     }
 
     /*
-	 * @see xal.model.sync.Synchronizer#checkSynchronization(xal.model.IElement, java.util.Map)
+     * @see xal.model.sync.Synchronizer#checkSynchronization(xal.model.IElement, java.util.Map)
      */
     @Override
     public void checkSynchronization(final IComponent aComp, Map<String, Double> valueMap) throws SynchronizationException {

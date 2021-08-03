@@ -657,10 +657,10 @@ public class WheelswitchFormatter {
     }
 
     /*
-	 * A format string generator used when no format string is set
-	 * to the wheelswitch. The format string is determined from value bounds
-	 * so that all possible values in range can be displayed with the same number
-	 * and position of digits.
+     * A format string generator used when no format string is set
+     * to the wheelswitch. The format string is determined from value bounds
+     * so that all possible values in range can be displayed with the same number
+     * and position of digits.
      */
     protected String generateFormat() {
         if (generatedFormatString == null) {

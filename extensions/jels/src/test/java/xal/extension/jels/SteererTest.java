@@ -74,9 +74,9 @@ public class SteererTest extends TestCommon {
                 {+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +5.106308e-08, +1.599526e-06},},
                     new double[]{4.4423, 126.998, 2.21983, 63.3862, 0, 0}, errTolerance);
             /*      dx  = 4.4423 mm
-					 dx' = 126.998 mrad
-					 dy  = 2.21983 mm
-					 dy' = 63.3862 mrad*/
+                     dx' = 126.998 mrad
+                     dy  = 2.21983 mm
+                     dy' = 63.3862 mrad*/
         }
     }
 

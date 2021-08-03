@@ -45,8 +45,8 @@ public abstract class Digit extends SimpleButton {
     private static final long serialVersionUID = 1L;
 
     /*
-	 * Used for the animation of the switching of the displayed symbols
-	 * on the digit.
+     * Used for the animation of the switching of the displayed symbols
+     * on the digit.
      */
     private class AnimationTask extends TimerTask {
 

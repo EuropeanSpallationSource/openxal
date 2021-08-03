@@ -131,7 +131,7 @@ class ComboSequenceComposer {
      * @param accelerator pass the Accelerator object here from main routine
      * @param owner the window that owns the sequence selector
      */
-    @SuppressWarnings("unchecked")		// need to cast from untyped JList
+    @SuppressWarnings("unchecked")        // need to cast from untyped JList
     public static AcceleratorSeqCombo composeComboSequence(final Accelerator accelerator, final JFrame owner) {
         final ComboSequenceComposer composer = new ComboSequenceComposer(accelerator);
 

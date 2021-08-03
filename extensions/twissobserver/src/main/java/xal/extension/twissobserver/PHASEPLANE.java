@@ -9,7 +9,7 @@
  * PHASEPLANE.java
  *
  * @author  Christopher K. Allen
- * @since	Jul 20, 2012
+ * @since    Jul 20, 2012
  */
 package xal.extension.twissobserver;
 

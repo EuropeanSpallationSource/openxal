@@ -42,13 +42,13 @@ public class CartoonFilterPanel extends AbstractPanel {
     public JLabel fQuadIconLabel;
     public JCheckBox lossMonitorCheckBox;
     ;
-	public JLabel lossMonitorIconLabel;
+    public JLabel lossMonitorIconLabel;
     public JCheckBox markerCheckBox;
     ;
-	public JLabel markerIconLabel;
+    public JLabel markerIconLabel;
     public JCheckBox profileMonitorCheckBox;
     ;
-	public JLabel profileMonitorIconLabel;
+    public JLabel profileMonitorIconLabel;
     public JCheckBox solenoidCheckBox;
     public JLabel solenoidIconLabel;
     public JCheckBox toroidCheckBox;
@@ -57,7 +57,7 @@ public class CartoonFilterPanel extends AbstractPanel {
     public JLabel undulatorIconLabel;
     public JCheckBox wireScannerCheckBox;
     ;
-	public JLabel wireScannerIconLabel;
+    public JLabel wireScannerIconLabel;
     public JCheckBox xCollimatorCheckBox;
     public JLabel xCollimatorIconLabel;
     public JCheckBox xCorCheckBox;

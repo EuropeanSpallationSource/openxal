@@ -54,7 +54,7 @@ public abstract class ElementMapping {
     protected boolean bolDivMags = true;
 
     /*
-	 * Base Class Requirements
+     * Base Class Requirements
      */
     /**
      * Default converter should produce a general model element like a Marker.
@@ -108,7 +108,7 @@ public abstract class ElementMapping {
     public abstract IComponent createRfCavityDrift(String name, double len, double freq, double mode) throws ModelException;
 
     /*
-	 * Operations
+     * Operations
      */
     /**
      * <p>

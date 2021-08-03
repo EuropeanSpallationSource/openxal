@@ -110,7 +110,7 @@ public class TransferMatrixGenerator {
     }
 
     /*
-	 * Local Attributes
+     * Local Attributes
      */
     /**
      * Accelerator sequence where transfer maps are being computed
@@ -149,7 +149,7 @@ public class TransferMatrixGenerator {
     private Trajectory<TransferMapState> mdlTrjMap;
 
     /*
-	 * Initialization
+     * Initialization
      */
     /**
      * Creates a new <code>TransferMatrixGenerator</code> object using the given

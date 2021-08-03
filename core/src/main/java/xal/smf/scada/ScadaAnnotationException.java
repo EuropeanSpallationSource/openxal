@@ -2,7 +2,7 @@
  * ScadaAnnotationException.java
  *
  * @author  Christopher K. Allen
- * @since	Sep 22, 2011
+ * @since    Sep 22, 2011
  */
 package xal.smf.scada;
 

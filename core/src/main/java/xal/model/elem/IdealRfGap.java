@@ -36,7 +36,7 @@ import xal.tools.math.fnc.poly.RealUnivariatePolynomial;
 public class IdealRfGap extends ThinElement implements IRfGap {
 
     /*
-	 *  Global Attributes
+     *  Global Attributes
      */
     /**
      * the string type identifier for all IdealRfGap objects
@@ -57,7 +57,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     public static final String PARAM_FREQ = "Frequency";
 
     /*
-	 *  Defining Attributes
+     *  Defining Attributes
      */
     /**
      * ETL product of gap
@@ -176,7 +176,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     }
 
     /*
-	 *  IRfGap Interface
+     *  IRfGap Interface
      */
     /**
      * Return the ETL product of the gap, where E is the longitudinal electric
@@ -334,7 +334,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     }
 
     /*
-	 *  IElement Interface
+     *  IElement Interface
      */
     /**
      * Returns the time taken for the probe to propagate through element.
@@ -522,7 +522,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 
 
     /*
-	 *  Support Methods
+     *  Support Methods
      */
     /**
      * Compute the energy gain of the RF gap for a probe assuming a fixed
@@ -548,8 +548,8 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      * @return The Return Value
      */
     /*
-	 *  public double compEnergyGain(IProbe probe) {
-	 *  }
+     *  public double compEnergyGain(IProbe probe) {
+     *  }
      */
     /**
      * Get the transverse focusing constant for a particular probe. The focusing
@@ -624,7 +624,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     }
 
     /*
-	 *  Testing and Debugging
+     *  Testing and Debugging
      */
     /**
      * Dump current state and content to output stream.

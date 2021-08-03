@@ -63,14 +63,14 @@ public class RingBPMTBTPVLog {
                 xdata = css[i].getValue();
                 double[][] data = new double[2][xdata.length];
 
-                /*				if (!xMap.containsKey(BPMId)) {
-					xMap.put(BPMId, xdata);
-				}
-				if (yMap.containsKey(BPMId)) {
-					data[0] = xdata;
-					data[1] = yMap.get(BPMId);
-					pvMap.put(BPMId, data);
-				}
+                /*                if (!xMap.containsKey(BPMId)) {
+                    xMap.put(BPMId, xdata);
+                }
+                if (yMap.containsKey(BPMId)) {
+                    data[0] = xdata;
+                    data[1] = yMap.get(BPMId);
+                    pvMap.put(BPMId, data);
+                }
                  */
                 if (!pvMap.containsKey(BPMId)) {
                     data[0] = xdata;
@@ -85,14 +85,14 @@ public class RingBPMTBTPVLog {
                 ydata = css[i].getValue();
                 double[][] data = new double[2][ydata.length];
 
-                /*				if (!yMap.containsKey(BPMId)) {
-					yMap.put(BPMId, ydata);
-				}
-				if (xMap.containsKey(BPMId)) {
-					data[0] = xMap.get(BPMId);
-					data[1] = ydata;
-					pvMap.put(BPMId, data);
-				}
+                /*                if (!yMap.containsKey(BPMId)) {
+                    yMap.put(BPMId, ydata);
+                }
+                if (xMap.containsKey(BPMId)) {
+                    data[0] = xMap.get(BPMId);
+                    data[1] = ydata;
+                    pvMap.put(BPMId, data);
+                }
                  */
                 if (!pvMap.containsKey(BPMId)) {
                     data[1] = ydata;

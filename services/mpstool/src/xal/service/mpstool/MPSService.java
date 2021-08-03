@@ -37,7 +37,7 @@ public class MPSService implements MPSPortal {
     protected static final DateFormat DATE_FORMATTER;
 
     /*
-	 *  static initializer
+     *  static initializer
      */
     static {
         DATE_FORMATTER = new SimpleDateFormat(MPSPortal.DATE_FORMAT);

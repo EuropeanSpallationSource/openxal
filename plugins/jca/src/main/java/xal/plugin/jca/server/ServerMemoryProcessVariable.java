@@ -50,10 +50,10 @@ public class ServerMemoryProcessVariable extends MemoryProcessVariable {
      * Creates and registers a PV (possibly readonly) on the channel server.
      *
      *
-     * @param name	name of the PV.
-     * @param eventCallback	event callback, where to report value changes if
+     * @param name    name of the PV.
+     * @param eventCallback    event callback, where to report value changes if
      * <code>interest</code> is <code>true</code>.
-     * @param initialValue	initial value, array is expected.
+     * @param initialValue    initial value, array is expected.
      *
      * @see MemoryProcessVariable
      */

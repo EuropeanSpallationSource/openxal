@@ -9,7 +9,7 @@
  * EnvelopeGraph.java
  *
  * @author  Christopher K. Allen
- * @since	Nov 26, 2012
+ * @since    Nov 26, 2012
  */
 package xal.extension.widgets.olmplot;
 

@@ -38,7 +38,7 @@ import xal.tools.beam.PhaseMatrix;
 public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
 
     /*
-	 *  Global Constants
+     *  Global Constants
      */
     /**
      * the string type identifier for all IdealRfGap objects
@@ -46,7 +46,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
     public static final String TYPE = "JELS.IdealRfGap";
 
     /*
-	 *  Defining Attributes
+     *  Defining Attributes
      */
     /**
      * flag indicating that this is the leading gap of a cavity

@@ -126,7 +126,7 @@ public class LatticeElement implements Comparable<LatticeElement> {
     private LatticeElement nextSlice;
 
     /*
-	 * Initialization
+     * Initialization
      */
     /**
      * Initializing constructor for <code>LatticeElement</code>. The hardware
@@ -501,7 +501,7 @@ public class LatticeElement implements Comparable<LatticeElement> {
     }
 
     /*
-	 * Comparable Interface
+     * Comparable Interface
      */
     /**
      * Compare by looking at hardware node positions. If the positions are equal

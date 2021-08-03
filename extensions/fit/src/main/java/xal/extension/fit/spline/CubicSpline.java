@@ -203,13 +203,13 @@ else
     klo = 1;
     khi = nPoints + 1;
     while (khi - klo > 1)
-	{
-	    k = (khi + klo) >> 1;
-	    if (xVals(k) > xx)
-		khi = k;
-	    else
-		klo = k;
-	}
+    {
+        k = (khi + klo) >> 1;
+        if (xVals(k) > xx)
+        khi = k;
+        else
+        klo = k;
+    }
     k = klo;
 }
 

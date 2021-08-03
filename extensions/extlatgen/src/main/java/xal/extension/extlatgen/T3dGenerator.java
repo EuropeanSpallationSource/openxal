@@ -1,5 +1,5 @@
 /*
- * @(#)T3dGenerator.java	0.2 04/07/2003
+ * @(#)T3dGenerator.java    0.2 04/07/2003
  *
  * Copyright (c) 2002-2003 Oak Ridge National Laboratory
  * Oak Ridge, Tenessee 37831, U.S.A.

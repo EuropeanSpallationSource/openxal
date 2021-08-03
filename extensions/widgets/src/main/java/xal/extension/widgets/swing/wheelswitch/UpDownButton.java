@@ -135,7 +135,7 @@ public class UpDownButton extends JComponent {
     }
 
     /* (non-Javadoc)
-	 * @see java.awt.Component#setEnabled(boolean)
+     * @see java.awt.Component#setEnabled(boolean)
      */
     @Override
     public void setEnabled(boolean arg0) {

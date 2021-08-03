@@ -249,7 +249,7 @@ public class FileBasedElementMapping extends ElementMapping {
     protected Class<? extends IComponent> clsRfCavDriftElem;
 
     /*
-	 * Initialization
+     * Initialization
      */
     /**
      * Constructor for the singleton <code>FileBasedElementMapping</code>.
@@ -277,7 +277,7 @@ public class FileBasedElementMapping extends ElementMapping {
     }
 
     /*
-	 * ElementMapping Requirements
+     * ElementMapping Requirements
      */
     /**
      * <p>

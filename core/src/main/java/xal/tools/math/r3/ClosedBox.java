@@ -73,10 +73,10 @@ public class ClosedBox implements Serializable {
      * definition in x dimension [ymin,ymax] interval of definition in y
      * dimension [zmin,zmax] interval of definition in z dimension
      *
-     * @param xmin	x dimension minimum value
-     * @param	xmax x dimension maximum value
+     * @param xmin    x dimension minimum value
+     * @param    xmax x dimension maximum value
      * @param ymin y dimension minimum value
-     * @param	ymax y dimension maximum value
+     * @param    ymax y dimension maximum value
      * @param zmin z dimension minimum value
      * @param zmax z dimension maximum value
      *

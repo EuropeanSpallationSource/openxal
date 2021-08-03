@@ -2,7 +2,7 @@
  * BunchLengthSimulator.java
  *
  * @author  Christopher K. Allen
- * @since	Sep 6, 2012
+ * @since    Sep 6, 2012
  */
 package xal.extension.twissobserver;
 

@@ -302,7 +302,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
     public static final double DBL_ALPHA = 0.5;
 
     /*
-	 * Local Attributes
+     * Local Attributes
      */
     //
     // Algorithm Tools
@@ -360,7 +360,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
     private List<IProgressListener> lstProgLsns;
 
     /*
-	 * Initialization
+     * Initialization
      */
     /**
      * Creates a new <code>TwissObserver</code> object which uses the given

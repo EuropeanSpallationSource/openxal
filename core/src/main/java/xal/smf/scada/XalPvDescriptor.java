@@ -1,7 +1,7 @@
 /**
  * XalPvDescriptor.java
  *
- *  Created	: Nov 6, 2009
+ *  Created    : Nov 6, 2009
  *  Author      : Christopher K. Allen
  */
 package xal.smf.scada;

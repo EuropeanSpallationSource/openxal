@@ -353,23 +353,23 @@ public class IdealMagDipoleFace2 extends ThinElectromagnet {
         /*
         double h  = BendingMagnet.compCurvature(probe, B);
         if (getFieldPathFlag() != 0.0) {
-        	h = this.compDesignCurvature();
+            h = this.compDesignCurvature();
         }
          */
 
  /*
         if (((getFieldPathFlag() != 0.)&&(getDesignBendingAngle() == 0.))
-        		|| ((getFieldPathFlag() == 0.)&&(B == 0.0))) {
-     		PhaseMatrix  matPhi  = new PhaseMatrix();
+                || ((getFieldPathFlag() == 0.)&&(B == 0.0))) {
+             PhaseMatrix  matPhi  = new PhaseMatrix();
                 
-    		double mat0[][] = new double [][] {{1.0, 0.0}, {0.0, 1.0}};
+            double mat0[][] = new double [][] {{1.0, 0.0}, {0.0, 1.0}};
 
-    		matPhi.setSubMatrix(0,1, 0,1, mat0);
-    		matPhi.setSubMatrix(2,3, 2,3, mat0);
-    		matPhi.setSubMatrix(4,5, 4,5, mat0);
-    		matPhi.setElem(6,6, 1.0);
+            matPhi.setSubMatrix(0,1, 0,1, mat0);
+            matPhi.setSubMatrix(2,3, 2,3, mat0);
+            matPhi.setSubMatrix(4,5, 4,5, mat0);
+            matPhi.setElem(6,6, 1.0);
 
-    		return new PhaseMap(matPhi);
+            return new PhaseMap(matPhi);
         }
          */
         // h0 polarity = alpha polarity

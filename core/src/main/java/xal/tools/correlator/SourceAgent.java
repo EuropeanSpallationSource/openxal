@@ -62,7 +62,7 @@ public abstract class SourceAgent<RecordType> implements StateNotice<RecordType>
         registerEvents();
     }
 
-    @SuppressWarnings("unchecked")	// need cast to get the proxy using Generics 
+    @SuppressWarnings("unchecked")    // need cast to get the proxy using Generics 
     private void registerEvents() {
         binUpdateProxy = (BinUpdate<RecordType>) messageCenter.registerSource(this, BinUpdate.class);
         messageCenter.registerTarget(this, StateNotice.class);

@@ -466,7 +466,7 @@ public class LatticeFactory {
                 result.add(sextupole);
             }
             //slim elements
-            // rf gap	
+            // rf gap    
         } else if (node.isKindOf("SOL")) {
             //we use only effective lengths for magnets
             Element solenoid = new Solenoid(position, effLength, name);

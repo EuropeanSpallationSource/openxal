@@ -381,7 +381,7 @@ public abstract class TrackerAdaptive extends Tracker {
     @Override
     public void initialize() {
         super.initialize();
-//    	if (initStepSize > 0.)
+//        if (initStepSize > 0.)
         setStepSize(initStepSize);
     }
 }

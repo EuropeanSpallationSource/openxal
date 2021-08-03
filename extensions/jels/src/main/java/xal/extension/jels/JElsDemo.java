@@ -33,8 +33,8 @@ public class JElsDemo {
     public static void main(String[] args) throws InstantiationException, ModelException {
         if (args.length > 0 && ("-h".equals(args[0]) || "--help".equals(args[0]))) {
             LOGGER.log(Level.INFO, "Usage: [-a] [combo sequence] [accelerator file main.xal] [probe file]");
-            LOGGER.log(Level.INFO, "	-a	use adaptive tracker");
-            LOGGER.log(Level.INFO, "	If no combo sequence is given, the first one is choosen");
+            LOGGER.log(Level.INFO, "    -a    use adaptive tracker");
+            LOGGER.log(Level.INFO, "    If no combo sequence is given, the first one is choosen");
             return;
         }
 

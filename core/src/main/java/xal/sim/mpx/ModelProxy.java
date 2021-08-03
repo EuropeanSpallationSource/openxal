@@ -282,16 +282,16 @@ public class ModelProxy {
         } else {
             probeMasterFile = probeFile;
             // parse the file
-/*			try {
-				probeXmlAdptr =
-					XmlDataAdaptor.adaptorForFile(probeMasterFile, false);
-			} catch (ParseException e) {
-				throw new LatticeError(e.getMessage());
-			} catch (ResourceNotFoundException e) {
-				throw new LatticeError(e.getMessage());
-			} catch (MalformedURLException e) {
-				throw new LatticeError(e.getMessage());
-			}
+/*            try {
+                probeXmlAdptr =
+                    XmlDataAdaptor.adaptorForFile(probeMasterFile, false);
+            } catch (ParseException e) {
+                throw new LatticeError(e.getMessage());
+            } catch (ResourceNotFoundException e) {
+                throw new LatticeError(e.getMessage());
+            } catch (MalformedURLException e) {
+                throw new LatticeError(e.getMessage());
+            }
              */
             // get new probe
             Probe<?> p;

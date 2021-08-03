@@ -446,14 +446,14 @@ public class Lattice implements Cloneable {
     }
 
     /*
-	 * Debugging output.
+     * Debugging output.
      */
     void setDebug(boolean debug) {
         this.debug = debug;
     }
 
     /*
-	 * Verbose output
+     * Verbose output
      */
     void setVerbose(boolean verbose) {
         this.verbose = verbose;

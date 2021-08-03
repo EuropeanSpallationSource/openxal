@@ -2,7 +2,7 @@
  * ScadaCheckConnect.java
  *
  * @author  Christopher K. Allen
- * @since	Mar 4, 2011
+ * @since    Mar 4, 2011
  */
 package xal.smf.scada;
 

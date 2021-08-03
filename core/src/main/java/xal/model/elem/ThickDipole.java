@@ -390,7 +390,7 @@ public class ThickDipole extends ThickElectromagnet {
         double beta = probe.getBeta();
 
         // Compute the bending constant h  == 1/ bend radius (1/meter)
-        //was default	
+        //was default    
         double h = 0.2998e9 * B / (Etotal * beta * charge);
         LOGGER.log(Level.INFO, "h, hrho = " + h + " " + hrho);
 

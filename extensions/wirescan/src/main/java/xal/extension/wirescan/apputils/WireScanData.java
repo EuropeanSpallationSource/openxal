@@ -13,7 +13,7 @@ public class WireScanData {
 
     //the raw waveform for X direction 
     private BasicGraphData wfX = new BasicGraphData();
-    //the raw waveform for Y direction 		
+    //the raw waveform for Y direction         
     private BasicGraphData wfY = new BasicGraphData();
 
     //Wire scanner Id
@@ -25,7 +25,7 @@ public class WireScanData {
     //name of WS file 
     private String wsFilename = "none";
 
-    //fitting parameters	
+    //fitting parameters    
     private double sigmaX = 0.;
     private double sigmaY = 0.;
 

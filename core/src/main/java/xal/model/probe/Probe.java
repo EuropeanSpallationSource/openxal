@@ -441,7 +441,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      *
      * @return time stamp
      */
-    @NoEdit	// editors should not access this property
+    @NoEdit    // editors should not access this property
     public Date getTimestamp() {
         return dateStamp;
     }
@@ -719,7 +719,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      *
      * @author jdg
      */
-    @NoEdit	// editors should not edit this property
+    @NoEdit    // editors should not edit this property
     @Override
     public void setTime(double dblTime) {
         this.stateCurrent.setTime(dblTime);

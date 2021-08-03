@@ -22,7 +22,7 @@ import java.util.*;
  * best solution found so far.
  *
  * @author ky6
- * @author	t6p
+ * @author    t6p
  */
 public final class ScoreBoard implements AlgorithmScheduleListener, SolutionJudgeListener {
 

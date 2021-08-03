@@ -233,8 +233,8 @@ class WebSocketIO {
             int dataLength = 0;
             switch (lengthCode) {
                 case 126:
-					// payload length defined by next 2 bytes
-					try {
+                    // payload length defined by next 2 bytes
+                    try {
                     final byte[] lenBytes = byteReader.nextBytes(2);
                     final ByteBuffer lenByteBuffer = ByteBuffer.wrap(lenBytes);
                     final short shortLen = lenByteBuffer.getShort();
@@ -248,9 +248,9 @@ class WebSocketIO {
                 break;
 
                 case 127:
-					// payload length defined by next 8 bytes
-					// TODO: Need to handle true 8 byte lengths. Java only accepts 4 byte lengths (i.e. int) for arrays, so the following code really only supports processing 4 byte lengths even though it reads the 8 byte length.
-					try {
+                    // payload length defined by next 8 bytes
+                    // TODO: Need to handle true 8 byte lengths. Java only accepts 4 byte lengths (i.e. int) for arrays, so the following code really only supports processing 4 byte lengths even though it reads the 8 byte length.
+                    try {
                     final byte[] lenBytes = byteReader.nextBytes(8);
                     final ByteBuffer lenByteBuffer = ByteBuffer.wrap(lenBytes);
                     // cast the long to int since arrays only allow 32 bit lengths

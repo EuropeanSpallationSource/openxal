@@ -256,7 +256,7 @@ public class WheelswitchDemo extends JPanel {
             panWs.setBorder(new LineBorder(Color.GRAY));
             panWs.add(wSwitch);
 
-            // 1st part of conf panel       	
+            // 1st part of conf panel           
             JPanel pan0 = new JPanel();
             pan0.setLayout(new GridBagLayout());
 

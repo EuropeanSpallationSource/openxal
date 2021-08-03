@@ -14,8 +14,8 @@ import xal.ca.Channel;
  */
 public class RfCavityPropertyAccessor extends AbstractPropertyAccessor {
 
-    // Constants ===============================================================	
-    // Property Names	
+    // Constants ===============================================================    
+    // Property Names    
     public static final String PROPERTY_PHASE = "phase";
     public static final String PROPERTY_AMPLITUDE = "amplitude";
 

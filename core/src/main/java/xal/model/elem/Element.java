@@ -345,7 +345,7 @@ public abstract class Element implements IElement {
      * @since Feb 20, 2009, version 2
      */
     /*protected PhaseMatrix applyAlignError(PhaseMatrix matPhi) {
-    	double dx = getAlignX();
+        double dx = getAlignX();
         double dy = getAlignY();
         double dz = getAlignZ();
          
@@ -368,7 +368,7 @@ public abstract class Element implements IElement {
         } 
 
         return matPhi;
-	}
+    }
     /*
      
     /**

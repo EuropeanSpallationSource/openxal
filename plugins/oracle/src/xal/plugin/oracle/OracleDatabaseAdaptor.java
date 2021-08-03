@@ -133,7 +133,7 @@ public class OracleDatabaseAdaptor extends DatabaseAdaptor {
      * @return the array descriptor for the array type
      * @throws java.sql.SQLException if a database exception is thrown
      */
-    @SuppressWarnings("rawtypes")		// arrays are not compatible with Generics
+    @SuppressWarnings("rawtypes")        // arrays are not compatible with Generics
     private Object getArrayDescriptor(final String type, final Connection connection) throws Exception {
         // reflection for:
         if (ARRAY_DESCRIPTOR_TABLE.containsKey(type)) {

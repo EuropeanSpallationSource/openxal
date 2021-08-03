@@ -153,7 +153,7 @@ public class SolveStopperFactory {
             return false;
         }
 
-        // check if any objective satisfaction is below the minimum satisfaction					
+        // check if any objective satisfaction is below the minimum satisfaction                    
         for (final Objective objective : solver.getProblem().getObjectives()) {
             final double satisfaction = bestSolution.getSatisfaction(objective);
             if (Double.isNaN(satisfaction) || satisfaction < satisfactionTarget) {
@@ -161,7 +161,7 @@ public class SolveStopperFactory {
             }
         }
 
-        // if we made it this far then all conditions are satisfied to stop		
+        // if we made it this far then all conditions are satisfied to stop        
         return true;
     }
 

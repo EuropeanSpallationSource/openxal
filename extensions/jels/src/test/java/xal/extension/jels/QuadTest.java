@@ -27,7 +27,7 @@ public class QuadTest extends SingleElementTest {
 
         List<Object[]> tests = new ArrayList<>();
 
-        // 0: basic test, E=3MeV, Q=-16		
+        // 0: basic test, E=3MeV, Q=-16        
         tests.add(new Object[]{new SingleElementTestData() {
             {
                 description = "basic, Q=-16";
@@ -158,7 +158,7 @@ public class QuadTest extends SingleElementTest {
             }
         }});
 
-        // 4: bigger beta variation test, E=3MeV, Q=-16		
+        // 4: bigger beta variation test, E=3MeV, Q=-16        
         tests.add(new Object[]{new SingleElementTestData() {
             {
                 description = "bigger twiss, Q=-16";
@@ -192,7 +192,7 @@ public class QuadTest extends SingleElementTest {
             }
         }});
 
-        // 5: space charge test, E=3MeV, Q=-16		
+        // 5: space charge test, E=3MeV, Q=-16        
         tests.add(new Object[]{new SingleElementTestData() {
             {
                 description = "space charge, Q=-16";
@@ -288,7 +288,7 @@ public class QuadTest extends SingleElementTest {
             }
         }});
 
-        // 8: misalignment test dx, E=3MeV, Q=-16		
+        // 8: misalignment test dx, E=3MeV, Q=-16        
         tests.add(new Object[]{new SingleElementTestData() {
             {
                 description = "mislignment dx";
@@ -326,7 +326,7 @@ public class QuadTest extends SingleElementTest {
             }
         }});
 
-        // 9: misalignment test dy, E=3MeV, Q=-16		
+        // 9: misalignment test dy, E=3MeV, Q=-16        
         tests.add(new Object[]{new SingleElementTestData() {
             {
                 description = "mislignment dy";
@@ -391,7 +391,7 @@ public class QuadTest extends SingleElementTest {
             }
         }});
 
-        // 11: rotation test x, E=3MeV, Q=-16		
+        // 11: rotation test x, E=3MeV, Q=-16        
         tests.add(new Object[]{new SingleElementTestData() {
             {
                 description = "rotation fx";
@@ -425,7 +425,7 @@ public class QuadTest extends SingleElementTest {
             }
         }});
 
-        // 12: misalignment & rotation test, E=3MeV, Q=-16		
+        // 12: misalignment & rotation test, E=3MeV, Q=-16        
         tests.add(new Object[]{new SingleElementTestData() {
             {
                 description = "misalignment & rotation";

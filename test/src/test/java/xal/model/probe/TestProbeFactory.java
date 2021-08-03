@@ -9,7 +9,7 @@
  * TestProbeFactory.java
  *
  * @author  Christopher K. Allen
- * @since	Nov 9, 2011
+ * @since    Nov 9, 2011
  */
 package xal.model.probe;
 

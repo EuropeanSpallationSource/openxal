@@ -40,7 +40,7 @@ public class DiagnosticProbeState extends ProbeState<DiagnosticProbeState> {
     private int elementsVisited = 0;
 
     /*
-	 * Initialization
+     * Initialization
      */
     /**
      * Creates a new <code>DiagnosticProbeState</code>.
@@ -81,7 +81,7 @@ public class DiagnosticProbeState extends ProbeState<DiagnosticProbeState> {
     }
 
     /*
-	 * Property Accessors
+     * Property Accessors
      */
     /**
      * Returns the number of elements traversed by probe at this state.
@@ -172,7 +172,7 @@ public class DiagnosticProbeState extends ProbeState<DiagnosticProbeState> {
     }
 
     /*
-	 * Object Overrides
+     * Object Overrides
      */
     /**
      * Returns a representation of the internal state as a string.

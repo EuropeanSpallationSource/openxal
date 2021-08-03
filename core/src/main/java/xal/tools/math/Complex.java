@@ -302,7 +302,7 @@ public class Complex {
     private final double dblImag;
 
     /*
-	 * Initialization
+     * Initialization
      */
     /**
      * Primary constructor
@@ -320,7 +320,7 @@ public class Complex {
     }
 
     /*
-	 * Object Overrides
+     * Object Overrides
      */
     /**
      * Get a string representation of this complex number
@@ -332,7 +332,7 @@ public class Complex {
     }
 
     /*
-	 * Complex Field
+     * Complex Field
      */
     /**
      * get the real part
@@ -377,7 +377,7 @@ public class Complex {
     }
 
     /*
-	 * Algebraic Operations
+     * Algebraic Operations
      */
     /**
      * calculate the reciprocal of this complex number

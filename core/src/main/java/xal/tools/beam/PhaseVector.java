@@ -590,7 +590,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
      *
      * @return (x,y,z)
      */
-    @NoEdit		// returns a new instance so should not edit
+    @NoEdit        // returns a new instance so should not edit
     public R3 getPosition() {
         return new R3(getx(), gety(), getz());
     }
@@ -600,7 +600,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
      *
      * @return (xp,yp,zp)
      */
-    @NoEdit		// returns a new instance so should not edit
+    @NoEdit        // returns a new instance so should not edit
     public R3 getMomentum() {
         return new R3(getxp(), getyp(), getzp());
     }

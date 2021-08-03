@@ -107,7 +107,7 @@ public class Electrostatic extends AcceleratorNode {
 
     ;
     
-	@Override
+    @Override
     public String getType() {
         return TYPE;
     }

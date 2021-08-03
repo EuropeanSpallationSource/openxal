@@ -351,10 +351,10 @@ public class LatticeSynchronizer implements Visitor {
         parAdptr.setValue("name", "Orientation");
         parAdptr.setValue("type", "int");
         int orientation = edipole.getOrientation();
-//		if (edipole.isHorizontal()) {
-//		}
-//		if (edipole.isVertical()) {
-//		}
+//        if (edipole.isHorizontal()) {
+//        }
+//        if (edipole.isVertical()) {
+//        }
         parAdptr.setValue("value", Integer.toString(orientation));
 
     }
@@ -519,17 +519,17 @@ public class LatticeSynchronizer implements Visitor {
         parAdptr.setValue("value", Double.toString(effLen));
         //parameter         
         parAdptr = elmAdptr.createChild("Parameter");
-        /*		parAdptr.setValue("name", "Orientation");
-		parAdptr.setValue("type", "int");
-		IElectromagnet elmg= new IdealMagQuad();
-		int orientation= IElectromagnet.ORIENT_NONE;
-		if (magnet.isHorizontal()) {
-			orientation= IElectromagnet.ORIENT_HOR;
-		}
-		if (magnet.isVertical()) {
-			orientation= IElectromagnet.ORIENT_VER;
-		}
-		parAdptr.setValue("value", Integer.toString(orientation));
+        /*        parAdptr.setValue("name", "Orientation");
+        parAdptr.setValue("type", "int");
+        IElectromagnet elmg= new IdealMagQuad();
+        int orientation= IElectromagnet.ORIENT_NONE;
+        if (magnet.isHorizontal()) {
+            orientation= IElectromagnet.ORIENT_HOR;
+        }
+        if (magnet.isVertical()) {
+            orientation= IElectromagnet.ORIENT_VER;
+        }
+        parAdptr.setValue("value", Integer.toString(orientation));
          */    }
 
     /**
@@ -543,9 +543,9 @@ public class LatticeSynchronizer implements Visitor {
     /**
      * Writes the element- and parameter-tags of a WScanner lattice element
      */
-    /*	public void visit(Harp e) {
-		writeElementTag(e);
-	}	
+    /*    public void visit(Harp e) {
+        writeElementTag(e);
+    }    
      */
     /**
      * Writes the element- and parameter-tags of a BPMonitor lattice element
@@ -566,16 +566,16 @@ public class LatticeSynchronizer implements Visitor {
     /**
      * Writes the element- and parameter-tags of a Foil lattice element
      */
-    /*	public void visit(Foil e) {
-		writeElementTag(e);
-	}
+    /*    public void visit(Foil e) {
+        writeElementTag(e);
+    }
      */
     /**
      * Writes the element- and parameter-tags of a Foil lattice element
      */
-    /*	public void visit(VacuumWindow e) {
-		writeElementTag(e);
-	}
+    /*    public void visit(VacuumWindow e) {
+        writeElementTag(e);
+    }
      */
     /**
      * Writes the element- and parameter-tags of a SkewQuad lattice element

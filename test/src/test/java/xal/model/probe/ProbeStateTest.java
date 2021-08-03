@@ -79,7 +79,7 @@ public class ProbeStateTest extends TestCase {
         assertTrue(probe.getElementsVisited()
                 == state.getElementsVisited());
 
-        // save the state to a trajectory	
+        // save the state to a trajectory    
         Trajectory<DiagnosticProbeState> trajectory = probe.getTrajectory();
         trajectory.addState(state);
 
@@ -107,7 +107,7 @@ public class ProbeStateTest extends TestCase {
                 == state.getPosition());
         assertTrue(probe.getPhaseCoordinates().isEquivalentTo(state.getPhaseCoordinates()));
 
-        // save the state to a trajectory	
+        // save the state to a trajectory    
         Trajectory<ParticleProbeState> trajectory = probe.getTrajectory();
         trajectory.addState(state);
 
@@ -145,7 +145,7 @@ public class ProbeStateTest extends TestCase {
                 == state.getBeamCurrent());
         assertTrue(probe.getCovariance().equals(state.getCovarianceMatrix()));
 
-        // save the state to a trajectory	
+        // save the state to a trajectory    
         Trajectory<EnvelopeProbeState> trajectory = probe.getTrajectory();
         trajectory.addState(state);
 
@@ -187,7 +187,7 @@ public class ProbeStateTest extends TestCase {
         assertTrue(probe.getFieldCalculation()
                 == state.getFieldCalculation());
 
-        // save the state to a trajectory	
+        // save the state to a trajectory    
         Trajectory<EnsembleProbeState> trajectory = probe.getTrajectory();
         trajectory.addState(state);
 

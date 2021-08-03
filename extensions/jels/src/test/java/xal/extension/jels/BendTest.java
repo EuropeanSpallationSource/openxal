@@ -28,9 +28,9 @@ public class BendTest extends TestCommon {
     }
 
     /*
-	 * Test used for madx comparison.
-	 * 
-	 * */
+     * Test used for madx comparison.
+     * 
+     * */
     public void doHorizontalBendTestMadX() throws InstantiationException, ModelException {
         probe.reset();
         LOGGER.log(Level.INFO, "Horizontal madx");
@@ -45,9 +45,9 @@ public class BendTest extends TestCommon {
         probe.reset();
         LOGGER.log(Level.INFO, "Vertical");
         /*
-		EDGE -5.5 9375.67 50 0.45 2.8 50 1; this is a magnet length of 1.8 m 
-		BEND -11 9375.67 0 50 1
-		EDGE -5.5 9375.67 50 0.45 2.8 50 1
+        EDGE -5.5 9375.67 50 0.45 2.8 50 1; this is a magnet length of 1.8 m 
+        BEND -11 9375.67 0 50 1
+        EDGE -5.5 9375.67 50 0.45 2.8 50 1
          */
         AcceleratorSeq sequence = bend(-5.5, -11, -5.5, 9375.67, 0., 50, 0.45, 2.80, 0.45, 2.80, 50, 1);
 
@@ -95,9 +95,9 @@ public class BendTest extends TestCommon {
         probe.reset();
         LOGGER.log(Level.INFO, "Horizontal");
         /*
-		EDGE -5.5 9375.67 50 0.45 2.8 50 0; this is a magnet length of 1.8 m 
-		BEND -11 9375.67 0 50 0
-		EDGE -5.5 9375.67 50 0.45 2.8 50 0
+        EDGE -5.5 9375.67 50 0.45 2.8 50 0; this is a magnet length of 1.8 m 
+        BEND -11 9375.67 0 50 0
+        EDGE -5.5 9375.67 50 0.45 2.8 50 0
          */
         AcceleratorSeq sequence = bend(-5.5, -11, -5.5, 9375.67, 0., 50, 0.45, 2.80, 0.45, 2.80, 50, 0);
 
@@ -144,9 +144,9 @@ public class BendTest extends TestCommon {
         probe.reset();
         LOGGER.log(Level.INFO, "Horizontal N=0.2");
         /*
-		EDGE -5.5 9375.67 50 0.45 2.8 50 0; this is a magnet length of 1.8 m 
-		BEND -11 9375.67 0.2 50 0
-		EDGE -5.5 9375.67 50 0.45 2.8 50 0
+        EDGE -5.5 9375.67 50 0.45 2.8 50 0; this is a magnet length of 1.8 m 
+        BEND -11 9375.67 0.2 50 0
+        EDGE -5.5 9375.67 50 0.45 2.8 50 0
          */
         AcceleratorSeq sequence = bend(-5.5, -11, -5.5, 9375.67, 0.2, 50, 0.45, 2.80, 0.45, 2.80, 50, 0);
 
@@ -193,9 +193,9 @@ public class BendTest extends TestCommon {
         probe.reset();
         LOGGER.log(Level.INFO, "Vertical N=0.9");
         /*
-		EDGE -5.5 9375.67 50 0.45 2.8 50 1; this is a magnet length of 1.8 m 
-		BEND -11 9375.67 0.9 50 1
-		EDGE -5.5 9375.67 50 0.45 2.8 50 1
+        EDGE -5.5 9375.67 50 0.45 2.8 50 1; this is a magnet length of 1.8 m 
+        BEND -11 9375.67 0.9 50 1
+        EDGE -5.5 9375.67 50 0.45 2.8 50 1
          */
         AcceleratorSeq sequence = bend(-5.5, -11, -5.5, 9375.67, 0.9, 50, 0.45, 2.80, 0.45, 2.80, 50, 1);
 
@@ -262,11 +262,11 @@ public class BendTest extends TestCommon {
         G *= 1e-3;
         R *= 1e-3;
 
-        // calculations		
+        // calculations        
         double len = Math.abs(rho * alpha_deg * Math.PI / 180.0);
         double quadComp = -N / (rho * rho);
 
-        // following are used to calculate field		
+        // following are used to calculate field        
         double c = IConstants.LIGHT_SPEED;
         double e = probe.getSpeciesCharge();
         double Er = probe.getSpeciesRestEnergy();

@@ -83,19 +83,19 @@ public abstract class TestCommon {
         envelopeProbe.setTime(0.0);
 
         /*
-		number of particles = 1000
-		beam current in A = 0
-		Duty Cycle in %= 4
-		normalized horizontal emittance in m*rad= 0.2098e-6
-		normalized vertical emittance in m*rad = 0.2091e-6
-		normalized longitudinal emittance in m*rad = 0.2851e-6
-		kinetic energy in MeV = 3
-		alfa x = -0.1763
-		beta x in m/rad = 0.2442
-		alfa y = -0.3247
-		beta y in m/rad = 0.3974
-		alfa z = -0.5283
-		beta z in m/rad = 0.8684
+        number of particles = 1000
+        beam current in A = 0
+        Duty Cycle in %= 4
+        normalized horizontal emittance in m*rad= 0.2098e-6
+        normalized vertical emittance in m*rad = 0.2091e-6
+        normalized longitudinal emittance in m*rad = 0.2851e-6
+        kinetic energy in MeV = 3
+        alfa x = -0.1763
+        beta x in m/rad = 0.2442
+        alfa y = -0.3247
+        beta y in m/rad = 0.3974
+        alfa z = -0.5283
+        beta z in m/rad = 0.8684
          */
         double beta = envelopeProbe.getBeta();
         double gamma = envelopeProbe.getGamma();

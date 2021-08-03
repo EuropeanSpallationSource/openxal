@@ -165,9 +165,9 @@ public class NonConsecutiveSeqSelector implements ActionListener {
         }
 
         /*
-		 * JTable uses this method to determine the default renderer/ editor for
-		 * each cell. If we didn't implement this method, then the last column
-		 * would contain text ("true"/"false"), rather than a check box.
+         * JTable uses this method to determine the default renderer/ editor for
+         * each cell. If we didn't implement this method, then the last column
+         * would contain text ("true"/"false"), rather than a check box.
          */
         @Override
         public Class<?> getColumnClass(int c) {
@@ -175,7 +175,7 @@ public class NonConsecutiveSeqSelector implements ActionListener {
         }
 
         /*
-		 * Don't need to implement this method unless your table's editable.
+         * Don't need to implement this method unless your table's editable.
          */
         @Override
         public boolean isCellEditable(int row, int col) {
@@ -189,8 +189,8 @@ public class NonConsecutiveSeqSelector implements ActionListener {
         }
 
         /*
-		 * Don't need to implement this method unless your table's data can
-		 * change.
+         * Don't need to implement this method unless your table's data can
+         * change.
          */
         @Override
         public void setValueAt(Object value, int row, int col) {

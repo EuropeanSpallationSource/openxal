@@ -396,7 +396,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
         Bend magnet = (Bend) element.getHardwareNode();
         setPosition(element.getCenterPosition(), element.getLength());
 
-        // First retrieve all the physical parameters for a bending dipole				
+        // First retrieve all the physical parameters for a bending dipole                
         double lenSect = element.getLength();
         double lenPath0 = magnet.getDfltPathLength();
         double angBend0 = magnet.getDfltBendAngle() * Math.PI / 180.0;
@@ -409,7 +409,7 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
         double angBend = angBend0 * (lenSect / lenPath0);
         double lenPath = RBend0 * angBend;
 
-        // Set the parameters for the new model element				
+        // Set the parameters for the new model element                
         setPhysicalLength(lenSect);
     }
 }

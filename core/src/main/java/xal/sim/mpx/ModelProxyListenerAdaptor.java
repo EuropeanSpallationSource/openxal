@@ -16,11 +16,11 @@ package xal.sim.mpx;
  * mproxy.addModelProxyListener(new ModelProxyListenerAdaptor() {
  *
  *  //override the default implementation
- *	public void modelResultsChanged(ModelProxy mp) {
- *	:
- *	custom code
- *	:
- *	}
+ *    public void modelResultsChanged(ModelProxy mp) {
+ *    :
+ *    custom code
+ *    :
+ *    }
  *  });
  * </code></pre>
  *
@@ -30,35 +30,35 @@ package xal.sim.mpx;
 public abstract class ModelProxyListenerAdaptor implements ModelProxyListener {
 
     /* (non-Javadoc)
-	 * @see xal.model.mpx.MPXProxyListener#accelMasterChanged(MPXProxy)
+     * @see xal.model.mpx.MPXProxyListener#accelMasterChanged(MPXProxy)
      */
     @Override
     public void accelMasterChanged(ModelProxy source) {
     }
 
     /* (non-Javadoc)
-	 * @see xal.model.mpx.ModelProxyListener#accelSequenceChanged(ModelProxy)
+     * @see xal.model.mpx.ModelProxyListener#accelSequenceChanged(ModelProxy)
      */
     @Override
     public void accelSequenceChanged(ModelProxy source) {
     }
 
     /* (non-Javadoc)
-	 * @see xal.model.mpx.ModelProxyListener#probeMasterChanged(ModelProxy)
+     * @see xal.model.mpx.ModelProxyListener#probeMasterChanged(ModelProxy)
      */
     @Override
     public void probeMasterChanged(ModelProxy source) {
     }
 
     /* (non-Javadoc)
-	 * @see xal.model.mpx.ModelProxyListener#modelResultsChanged(ModelProxy)
+     * @see xal.model.mpx.ModelProxyListener#modelResultsChanged(ModelProxy)
      */
     @Override
     public void modelResultsChanged(ModelProxy source) {
     }
 
     /* (non-Javadoc)
-	 * @see xal.model.mpx.ModelProxyListener#missingInputToRun(ModelProxy)
+     * @see xal.model.mpx.ModelProxyListener#missingInputToRun(ModelProxy)
      */
     @Override
     public void missingInputToRunModel(ModelProxy source) {

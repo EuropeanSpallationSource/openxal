@@ -38,10 +38,10 @@ public class ServerMemoryRecord extends ServerMemoryProcessVariable {
     /**
      * Creates and registers the main PV and all field PVs that are expected.
      *
-     * @param name	name of the PV.
-     * @param eventCallback	event callback, where to report value changes if
+     * @param name    name of the PV.
+     * @param eventCallback    event callback, where to report value changes if
      * <code>interest</code> is <code>true</code>.
-     * @param initialValue	initial value
+     * @param initialValue    initial value
      *
      * @see MemoryProcessVariable
      */

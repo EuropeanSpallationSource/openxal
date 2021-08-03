@@ -22,8 +22,8 @@ import xal.tools.math.GenericVector;
  * A*Y; where the equation is represented by AC=Y. and :
  *
  * (dX, dY)- coordinate arrays for data points m- int for number of data points
- * k-	int for order of poly equation mC-	Matrix for the constant coefficients of
- * equation dR-	correlation coefficient getValue(dx)- returns value of y
+ * k-    int for order of poly equation mC-    Matrix for the constant coefficients of
+ * equation dR-    correlation coefficient getValue(dx)- returns value of y
  * coordinate from equation Correlation()- returns the correlation coefficient
  * as a String Equation()- returns the characteristic equation as a String
  */

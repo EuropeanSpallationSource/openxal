@@ -78,7 +78,7 @@ public class RootBrick extends Brick implements ViewNodeContainer, DataListener 
      *
      * @param beanProxies the views to add to this node
      */
-    @SuppressWarnings("unchecked")	// must cast bean proxy to view proxy
+    @SuppressWarnings("unchecked")    // must cast bean proxy to view proxy
     @Override
     public void add(final List<BeanProxy<?>> beanProxies) {
         final List<BeanNode<?>> nodes = new ArrayList<>(beanProxies.size());

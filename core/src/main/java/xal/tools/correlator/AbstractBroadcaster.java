@@ -33,7 +33,7 @@ abstract class AbstractBroadcaster<RecordType> implements BinListener<RecordType
     /**
      * Creates a new instance of Broadcaster
      */
-    @SuppressWarnings("unchecked")	// must cast proxy for Generics
+    @SuppressWarnings("unchecked")    // must cast proxy for Generics
     public AbstractBroadcaster(final MessageCenter localCenter) {
         // external broadcast center  
         broadcastCenter = new MessageCenter("Correlator Broadcast");

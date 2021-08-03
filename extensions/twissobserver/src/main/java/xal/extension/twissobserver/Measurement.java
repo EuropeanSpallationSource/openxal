@@ -40,7 +40,7 @@ public class Measurement implements Cloneable {
     private Double dblSigLng;
 
     /*
-	 * Initialization
+     * Initialization
      */
     /**
      * Creates a new, empty instance of <code>Measurement</code>.
@@ -94,7 +94,7 @@ public class Measurement implements Cloneable {
     }
 
     /*
-	 * Object Overrides
+     * Object Overrides
      */
     /**
      * Returns a string representation of this measurement value.

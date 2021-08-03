@@ -96,7 +96,7 @@ public abstract class BeanProxy<ViewType> implements DataListener {
      *
      * @return the constructor arguments
      */
-    @SuppressWarnings("rawtypes")		// generics don't mix with arrays
+    @SuppressWarnings("rawtypes")        // generics don't mix with arrays
     public Class[] getConstructorParameterTypes() {
         return new Class[0];
     }

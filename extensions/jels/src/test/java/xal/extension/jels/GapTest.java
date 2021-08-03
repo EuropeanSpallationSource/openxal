@@ -28,7 +28,7 @@ public class GapTest extends SingleElementTest {
 
         List<Object[]> tests = new ArrayList<>();
 
-        // 0: basic test, E=2.5MeV		
+        // 0: basic test, E=2.5MeV        
         tests.add(new Object[]{new SingleElementTestData() {
             {
                 description = "basic test, f=-80";
@@ -232,7 +232,7 @@ public class GapTest extends SingleElementTest {
             }
         }});
 
-        // 6: spacecharge test, E=2.5MeV		
+        // 6: spacecharge test, E=2.5MeV        
         tests.add(new Object[]{new SingleElementTestData() {
             {
                 description = "spacechage test, f=-80";
@@ -264,7 +264,7 @@ public class GapTest extends SingleElementTest {
             }
         }});
 
-        // 7: misalignment dx, E=2.5MeV		
+        // 7: misalignment dx, E=2.5MeV        
         tests.add(new Object[]{new SingleElementTestData() {
             {
                 description = "misalignment dx";
@@ -438,7 +438,7 @@ public class GapTest extends SingleElementTest {
         // FIXME position == 0?
         ESSRfCavity cavity = ESSElementFactory.createESSRfCavity("c", 0, gap, Phis, E0TL * 1e-6 / length, frequency * 1e-6, 0);
 
-        // TTF		
+        // TTF        
         if (betas == 0.0) {
             cavity.getRfField().setTTFCoefs(new double[]{});
             cavity.getRfField().setTTFEndCoefs(new double[]{});

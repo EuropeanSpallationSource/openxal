@@ -826,11 +826,11 @@ public class SimpleButton extends GradientLabel {
     }
 
     /*
-	 *
-	 * @author jkamenik
-	 *
-	 *        Listens for key events, updates this SimpleButton and fires ActionEvents when
-	 * ENTER is pressed.
+     *
+     * @author jkamenik
+     *
+     *        Listens for key events, updates this SimpleButton and fires ActionEvents when
+     * ENTER is pressed.
      */
     private class SimpleKeyListener extends KeyAdapter {
 
@@ -856,10 +856,10 @@ public class SimpleButton extends GradientLabel {
     }
 
     /*
-	 *
-	 * @author jkamenik
-	 *
-	 *        Listens for MouseEvents and updates the visualization of this SimpleButton.
+     *
+     * @author jkamenik
+     *
+     *        Listens for MouseEvents and updates the visualization of this SimpleButton.
      */
     private class DisplayMouseListener extends MouseAdapter {
 
@@ -927,10 +927,10 @@ public class SimpleButton extends GradientLabel {
     }
 
     /*
-	 *
-	 * @author jkamenik
-	 *
-	 * Listens for mouse events and fires ActionEvents when mouse is clicked.
+     *
+     * @author jkamenik
+     *
+     * Listens for mouse events and fires ActionEvents when mouse is clicked.
      */
     private class DefaultMouseListener extends MouseAdapter {
 
@@ -955,10 +955,10 @@ public class SimpleButton extends GradientLabel {
     }
 
     /*
-	 *
-	 * @author jkamenik
-	 *
-	 * Listens for mouse events and fires a series of ActionEvents while mouse is pressed.
+     *
+     * @author jkamenik
+     *
+     * Listens for mouse events and fires a series of ActionEvents while mouse is pressed.
      */
     private class ChainMouseListener extends MouseAdapter {
 
@@ -1074,10 +1074,10 @@ public class SimpleButton extends GradientLabel {
 
 
     /*
-	 *
-	 * @author jkamenik
-	 *
-	 * Listens for mouse events and fires ActionEvents when mouse is pressed.
+     *
+     * @author jkamenik
+     *
+     * Listens for mouse events and fires ActionEvents when mouse is pressed.
      */
     private class FastMouseListener extends MouseAdapter {
 

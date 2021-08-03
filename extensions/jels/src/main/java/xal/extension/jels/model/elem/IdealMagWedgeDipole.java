@@ -549,7 +549,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
 
         setPosition(element.getCenterPosition(), element.getLength());
 
-        // First retrieve all the physical parameters for a bending dipole				
+        // First retrieve all the physical parameters for a bending dipole                
         double len_sect = element.getLength();
         double len_path0 = magnet.getDfltPathLength();
         double ang_bend0 = magnet.getDfltBendAngle() * Math.PI / 180.0;
@@ -562,7 +562,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
         double ang_bend = ang_bend0 * (len_sect / len_path0);
         double len_path = R_bend0 * ang_bend;
 
-        // Set the parameters for the new model element				
+        // Set the parameters for the new model element                
         setPhysicalLength(len_sect);
         setDesignPathLength(len_path);
         setFieldIndex(fld_ind0);
@@ -588,7 +588,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
                 setEntrFringeIntegral(magnet2.getEntrK1());
                 setEntrFringeIntegral2(magnet2.getEntrK2());
             }
-            // last piece	
+            // last piece    
             if (element.isLastSlice()) {
                 setExitFringeIntegral(magnet2.getExitK1());
                 setExitFringeIntegral2(magnet2.getExitK2());

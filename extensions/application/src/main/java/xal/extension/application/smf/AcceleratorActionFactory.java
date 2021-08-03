@@ -69,7 +69,7 @@ public class AcceleratorActionFactory {
                     }
                 }
 
-                // add the combo sequences				
+                // add the combo sequences                
                 menu.addSeparator();
 
                 // fetch the pre-defined combo sequences and make sure we don't overwrite the list

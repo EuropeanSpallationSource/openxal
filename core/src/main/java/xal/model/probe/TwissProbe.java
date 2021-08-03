@@ -41,7 +41,7 @@ import xal.model.probe.traj.TwissProbeState;
 public class TwissProbe extends BunchProbe<TwissProbeState> {
 
     /*
-	 * Initialization
+     * Initialization
      */
     /**
      * Default Constructor. Creates a new, empty instance of TwissProbe
@@ -173,7 +173,7 @@ public class TwissProbe extends BunchProbe<TwissProbeState> {
     }
 
     /*
-	 * Data Query
+     * Data Query
      */
     /**
      * Get the centroid location of the beam bunch in homogeneous coordinates.
@@ -240,7 +240,7 @@ public class TwissProbe extends BunchProbe<TwissProbeState> {
     }
 
     /*
-	 * Trajectory Support
+     * Trajectory Support
      */
     /**
      * Creates a snapshot of the current state and returns it as a
