@@ -792,7 +792,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 
             //new 7 Aug 06, Sako
             //correction for sigma matrix
-            double sigmaCor[] = this.correctSigmaPhaseSpread(probe, gap);
+            double[] sigmaCor = this.correctSigmaPhaseSpread(probe, gap);
 
             double sigmaCorTrans = sigmaCor[0];
             double sigmaCorLong = sigmaCor[1];

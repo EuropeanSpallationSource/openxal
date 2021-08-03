@@ -2177,7 +2177,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      */
     protected double[] correctSigmaPhaseSpread(EnvelopeProbe probe, IdealRfGap gap) {
 
-        double dfac[] = new double[2];
+        double[] dfac = new double[2];
 
         double dfacT = 0d;
         double dfacL = 0d;

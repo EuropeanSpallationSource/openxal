@@ -84,7 +84,7 @@ public class MadGenerator {
     /**
      * beam initial condition
      */
-    protected double beamci[] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
+    protected double[] beamci = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};
 
     /**
      * indicates whether to use design bend angles regardless of the specified

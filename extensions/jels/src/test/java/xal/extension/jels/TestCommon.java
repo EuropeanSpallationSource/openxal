@@ -182,7 +182,7 @@ public abstract class TestCommon {
 
         ROpenXal2TW(trajectory.initialState().getGamma(), trajectory.finalState().getGamma(), pm);
 
-        double T77[][] = new double[7][7];
+        double[][] T77 = new double[7][7];
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
                 T77[i][j] = T[i][j];
@@ -243,8 +243,8 @@ public abstract class TestCommon {
             meanTw6[i] *= 1e-3;
         }
 
-        double centCovTw77[][] = new double[7][7];
-        double meanTw7[] = new double[7];
+        double[][] centCovTw77 = new double[7][7];
+        double[] meanTw7 = new double[7];
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
                 centCovTw77[i][j] = centCovTw66[i][j];

@@ -601,7 +601,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
             // Build transfer matrix for a drift space.  Assume the magnet has been replaced by a drift section
             PhaseMatrix matPhi = new PhaseMatrix();
 
-            double mat0[][] = new double[][]{{1.0, dblLen}, {0.0, 1.0}};
+            double[][] mat0 = new double[][]{{1.0, dblLen}, {0.0, 1.0}};
             matPhi.setSubMatrix(0, 1, 0, 1, mat0);
             matPhi.setSubMatrix(2, 3, 2, 3, mat0);
             matPhi.setSubMatrix(4, 5, 4, 5, mat0);

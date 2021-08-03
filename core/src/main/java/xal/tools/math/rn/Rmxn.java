@@ -34,7 +34,7 @@ public class Rmxn extends BaseMatrix<Rmxn> {
      * @since Jul 23, 2015 by Christopher K. Allen
      */
     public static Rmxn newIdentity(int cntSize) {
-        double arrInternal[][] = new double[cntSize][cntSize];
+        double[][] arrInternal = new double[cntSize][cntSize];
 
         for (int i = 0; i < cntSize; i++) {
             arrInternal[i][i] = 1.0;

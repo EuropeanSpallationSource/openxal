@@ -228,7 +228,7 @@ public class IdealEQuad extends ThickElectrostatic {
         // Compute the transfer matrix components
         final double[][] arrF = QuadrupoleLens.transferFocPlane(kSqrt, length);
         final double[][] arrD = QuadrupoleLens.transferDefPlane(kSqrt, length);
-        double arrZ[][] = new double[][]{{1.0, dLz}, {0.0, 1.0}};
+        double[][] arrZ = new double[][]{{1.0, dLz}, {0.0, 1.0}};
 
         // Build the transfer matrix from its component blocks
         PhaseMatrix matPhi = new PhaseMatrix();

@@ -248,7 +248,7 @@ public class TwissProbeState extends BunchProbeState<TwissProbeState> {
      * @return array (ex,ey,ez) of rms emittances
      */
     public double[] rmsEmittances() {
-        double arrEmit[] = new double[3];
+        double[] arrEmit = new double[3];
 
         for (IND_3D i : IND_3D.values()) {
             arrEmit[i.val()] = this.getTwiss(i).getEmittance();

@@ -961,12 +961,12 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         double bf = Math.sqrt(1.0 - 1.0 / (gf * gf));
 
         // Compute component block matrices then full transfer matrix
-        double arrTranX[][] = new double[][]{{1.0, 0.0}, {kt / (bf * gf), bi * gi / (bf * gf)}};
-        double arrTranY[][] = new double[][]{{1.0, 0.0}, {kt / (bf * gf), bi * gi / (bf * gf)}};
+        double[][] arrTranX = new double[][]{{1.0, 0.0}, {kt / (bf * gf), bi * gi / (bf * gf)}};
+        double[][] arrTranY = new double[][]{{1.0, 0.0}, {kt / (bf * gf), bi * gi / (bf * gf)}};
 
         // CKA - Corrected 7/14/2010
         //  Additional factor gbar^2 in the longitudinal focusing term
-        double arrLong[][] = new double[][]{{1.0, 0.0}, {kz / (bf * gf * gf * gf), gi * gi * gi * bi / (gf * gf * gf * bf)}};
+        double[][] arrLong = new double[][]{{1.0, 0.0}, {kz / (bf * gf * gf * gf), gi * gi * gi * bi / (gf * gf * gf * bf)}};
 
         PhaseMatrix matPhi = new PhaseMatrix();
 

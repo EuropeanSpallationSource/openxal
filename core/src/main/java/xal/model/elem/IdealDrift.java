@@ -192,7 +192,7 @@ public class IdealDrift extends ThickElement {
             // Build transfer matrix
             PhaseMatrix matPhi = new PhaseMatrix();
 
-            double mat0[][] = new double[][]{{1.0, dblLen}, {0.0, 1.0}};
+            double[][] mat0 = new double[][]{{1.0, dblLen}, {0.0, 1.0}};
 
             matPhi.setSubMatrix(0, 1, 0, 1, mat0);
             matPhi.setSubMatrix(2, 3, 2, 3, mat0);
@@ -287,7 +287,7 @@ public class IdealDrift extends ThickElement {
             // Build transfer matrix
             PhaseMatrix matPhi = new PhaseMatrix();
 
-            double mat0[][] = new double[][]{{1.0, dblLen}, {0.0, 1.0}};
+            double[][] mat0 = new double[][]{{1.0, dblLen}, {0.0, 1.0}};
 
             matPhi.setSubMatrix(0, 1, 0, 1, mat0);
             matPhi.setSubMatrix(2, 3, 2, 3, mat0);

@@ -78,7 +78,7 @@ public class IdealMagSextupole extends ThickElement {
         PhaseMatrix matPhi = new PhaseMatrix();
 
         // one dimensional drift matrix
-        double mat0[][] = new double[][]{{1.0, length}, {0.0, 1.0}};
+        double[][] mat0 = new double[][]{{1.0, length}, {0.0, 1.0}};
 
         // set the block diagonals to the one dimensional drift matricies
         matPhi.setSubMatrix(0, 1, 0, 1, mat0);

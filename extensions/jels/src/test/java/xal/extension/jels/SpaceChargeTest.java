@@ -33,7 +33,7 @@ public class SpaceChargeTest {
         Accelerator acc = new Accelerator();
         acc.addNode(sequence);
         acc.setElementMapping(JElsElementMapping.getInstance());
-        double dataOX[][] = GeneralTest.run(probe, sequence);
+        double[][] dataOX = GeneralTest.run(probe, sequence);
         GeneralTest.saveResults(RESULTS_DIR + "/openxal.drift500.txt", dataOX);
     }
 
@@ -44,7 +44,7 @@ public class SpaceChargeTest {
             EnvelopeProbe probe = TestCommon.setupOpenXALProbe(3e6, frequency, 30e-3);
             ((EnvelopeTracker) probe.getAlgorithm()).setProbeUpdatePolicy(Tracker.UPDATE_ALWAYS);
             ((EnvelopeTracker) probe.getAlgorithm()).setStepSize(1. / i);
-            double dataOX[][] = GeneralTest.run(probe, XMLDataManager.acceleratorWithUrlSpec(JElsDemo.class.getResource("test/main.xal").toString()));
+            double[][] dataOX = GeneralTest.run(probe, XMLDataManager.acceleratorWithUrlSpec(JElsDemo.class.getResource("test/main.xal").toString()));
             GeneralTest.saveResults(RESULTS_DIR + "/openxal.s" + i + ".txt", dataOX);
         }
     }
@@ -65,7 +65,7 @@ public class SpaceChargeTest {
         acc.addNode(seq);
         acc.setLength(0.126);
         acc.setElementMapping(JElsElementMapping.getInstance());
-        double dataOX[][] = GeneralTest.run(probe, acc);
+        double[][] dataOX = GeneralTest.run(probe, acc);
         GeneralTest.saveResults(RESULTS_DIR + "/openxal.dgd6.txt", dataOX);
     }
 }

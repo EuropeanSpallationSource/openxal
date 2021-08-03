@@ -240,7 +240,7 @@ public class Twiss3D implements IArchive {
      * @return array (ex,ey,ez) of rms emittances
      */
     public double[] rmsEmittances() {
-        double arrEmit[] = new double[3];
+        double[] arrEmit = new double[3];
 
         for (int i = 0; i < 3; i++) {
             arrEmit[i] = this.getTwiss()[i].getEmittance();

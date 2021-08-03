@@ -111,8 +111,8 @@ public class GeneralTest {
      */
     @Test
     public void runTest() throws IOException, ModelException {
-        double dataTW[][] = loadTWData(tracewinData);
-        double dataOX[][] = run(probe, seq);
+        double[][] dataTW = loadTWData(tracewinData);
+        double[][] dataOX = run(probe, seq);
 
         LOGGER.log(Level.INFO, String.format("%s\t", probe.getComment()));
         Column[] allCols = Column.values();
@@ -393,7 +393,7 @@ public class GeneralTest {
     private double integrateL1linear(double[] xa, double[] xb, double[] ya, double yb[]) {
 
         // merge the positions together
-        double p[] = new double[xa.length + xb.length];
+        double[] p = new double[xa.length + xb.length];
         for (int i = 0, j = 0; i < xa.length || j < xb.length;) {
             if (j >= xb.length) {
                 p[i + j] = xa[i];
@@ -411,7 +411,7 @@ public class GeneralTest {
         }
 
         // interpolate
-        double f[] = new double[p.length];
+        double[] f = new double[p.length];
         for (int i = 0, k = 0; i < p.length; i++) {
             while (k < xa.length && p[i] >= xa[k]) {
                 k++;
@@ -429,7 +429,7 @@ public class GeneralTest {
             }
         }
 
-        double g[] = new double[p.length];
+        double[] g = new double[p.length];
         for (int i = 0, k = 0; i < p.length; i++) {
             while (k < xb.length && p[i] >= xb[k]) {
                 k++;
