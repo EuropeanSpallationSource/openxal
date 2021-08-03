@@ -13,6 +13,10 @@ package xal.tools.beam.optics;
  */
 public class DriftSpace {
 
+    private DriftSpace() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Compute the characteristic transfer matrix for a drift space of length
      * <code>l</code>.
