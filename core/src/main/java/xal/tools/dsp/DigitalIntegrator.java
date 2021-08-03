@@ -10,15 +10,14 @@ package xal.tools.dsp;
  * <p>
  * Convenience class implementing a simple 1<sup>st</sup> order digital
  * integrator. The response <em>y<sub>n</sub></em> of this filter to an input
- * <em>x<sub>n</sub></em>
- * is given by
+ * <em>x<sub>n</sub></em> is given by <br>
  * <br>
- * <br>&nbsp;&nbsp;  <em>y<sub>n</sub></em> = <em>y<sub>n</em>-1</sub> +
+ * &nbsp;&nbsp; <em>y<sub>n</sub></em> = <em>y<sub>n</em>-1</sub> +
  * <em>x<sub>n</sub></em><br>
  * <br>
- * Thus, the transfer function <em>H</em>(<em>z</em>) is given by
+ * Thus, the transfer function <em>H</em>(<em>z</em>) is given by <br>
  * <br>
- * <br>&nbsp;&nbsp;  <em>H</em>(<em>z</em>) = 1/(1 - <em>z</em><sup>-1</sup>)<br>
+ * &nbsp;&nbsp; <em>H</em>(<em>z</em>) = 1/(1 - <em>z</em><sup>-1</sup>)<br>
  * <br>
  * where <em>z</em> is the Z-transform variable. Note that the integrator is
  * unstable for zero frequency corresponding to <em>z</em> = 1, which is

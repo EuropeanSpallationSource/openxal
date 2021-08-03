@@ -73,10 +73,10 @@ public class ClosedBox implements Serializable {
      * definition in x dimension [ymin,ymax] interval of definition in y
      * dimension [zmin,zmax] interval of definition in z dimension
      *
-     * @param xmin    x dimension minimum value
-     * @param    xmax x dimension maximum value
+     * @param xmin x dimension minimum value
+     * @param xmax x dimension maximum value
      * @param ymin y dimension minimum value
-     * @param    ymax y dimension maximum value
+     * @param ymax y dimension maximum value
      * @param zmin z dimension minimum value
      * @param zmax z dimension maximum value
      *
@@ -102,45 +102,44 @@ public class ClosedBox implements Serializable {
     public ClosedInterval get1() {
         return I1;
     }
-    
+
     /**
-     *  Get second dimension extent
+     * Get second dimension extent
      */
     public ClosedInterval get2() {
         return I2;
     }
-    
+
     /**
-     *  Get second dimension extent
+     * Get second dimension extent
      */
     public ClosedInterval get3() {
         return I3;
     }
-    
-    
+
     /**
-     *  Get the x dimension
+     * Get the x dimension
      */
     public ClosedInterval getXDimension() {
         return I1;
     }
-    
+
     /**
-     *  Get the y dimension
+     * Get the y dimension
      */
     public ClosedInterval getYDimension() {
         return I2;
     }
-    
+
     /**
-     *  Get the z dimension
+     * Get the z dimension
      */
     public ClosedInterval getZDimension() {
         return I3;
     }
-    
+
     /**
-     *  Get the minimum vertex
+     * Get the minimum vertex
      */
     public R3 getVertexMin() {
         return new R3(I1.getMin(), I2.getMin(), I3.getMin());
@@ -192,9 +191,8 @@ public class ClosedBox implements Serializable {
         return false;
     }
 
-    
     /**
-     *  Compute the centroid of the domain
+     * Compute the centroid of the domain
      */
     public R3 centroid() {
         return new R3(I1.midpoint(), I2.midpoint(), I3.midpoint());

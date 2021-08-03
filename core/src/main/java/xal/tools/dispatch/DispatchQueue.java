@@ -596,7 +596,7 @@ class ConcurrentDispatchQueue extends DispatchQueue {
         // make sure there is no barrier operation currently running before executing any other operation
         if (isRunningBarrierOperation) {
             return false;
-        // if the next operation is a barrier operation, wait until all currently running operations are complete
+            // if the next operation is a barrier operation, wait until all currently running operations are complete
         } else if (nextOperation.isBarrier() && runningOperationCounter.get() > 0) {
             return false;
         } else {

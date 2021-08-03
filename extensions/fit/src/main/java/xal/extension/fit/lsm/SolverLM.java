@@ -249,7 +249,7 @@ public class SolverLM implements FitSolver {
      *
      * @param args The Array of strings as parameters
      */
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         ModelFunction1D mf
                 = new ModelFunction1D() {

@@ -71,7 +71,7 @@ public class BinAgent<R> implements BinUpdate<R>, StateNotice<R> {
      * Register events for this bin agent
      */
     // need cast to get the proxy using Generics
-    @SuppressWarnings("unchecked")    
+    @SuppressWarnings("unchecked")
     public synchronized void registerEvents() {
         /**
          * Register this bin agent as a poster of bin events

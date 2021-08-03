@@ -15,10 +15,10 @@ public interface BatchConnectionRequestListener {
     /**
      * Event indicating that the batch request is complete
      *
-     * @param request    request for which the connection completed
-     * @param connectedCount    number of channels connected
-     * @param disconnectedCount    number of channels disconnected
-     * @param exceptionCount    number of channels for which there were connection
+     * @param request request for which the connection completed
+     * @param connectedCount number of channels connected
+     * @param disconnectedCount number of channels disconnected
+     * @param exceptionCount number of channels for which there were connection
      * exceptions
      */
     public void batchConnectionRequestCompleted(BatchConnectionRequest request, int connectedCount, int disconnectedCount, int exceptionCount);

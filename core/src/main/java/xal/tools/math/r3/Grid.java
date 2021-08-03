@@ -580,7 +580,7 @@ public class Grid implements Serializable {
     /**
      * Testing engine
      */
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         LOGGER.log(Level.INFO, "3.5%Math.PI={0}", 3.5 % Math.PI);
     }
 

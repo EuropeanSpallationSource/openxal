@@ -862,7 +862,7 @@ public final class DampedSinusoidFit {
         final int count = numPoints - 5;
 
         DifferentialVariable offsetSum = DifferentialVariable.ZERO;
-        DifferentialVariable offsetEstimates[] = new DifferentialVariable[count];
+        DifferentialVariable[] offsetEstimates = new DifferentialVariable[count];
         double totalWeight = 0.0;
         for (int index = 0; index < count; index++) {
             final DifferentialVariable r0 = r[index];

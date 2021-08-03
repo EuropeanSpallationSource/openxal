@@ -425,7 +425,7 @@ public class Gaussian {
      *
      * @param args The array of strings as parameters
      */
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         double p = 0.0;
         double a = 1.5;

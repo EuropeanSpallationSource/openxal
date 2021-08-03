@@ -960,7 +960,6 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
         DateFormat frmDate = new SimpleDateFormat("d.M.yyyy HH:mm:ss",
                 Locale.ENGLISH);
 
-
         if (this.getTimestamp() == null) {
             this.setTimestamp(new Date());
         }

@@ -554,7 +554,7 @@ public class TraceWinImporter implements TraceWinTags {
      * @param name the name of the element
      * @param frequency the frequency at the element
      */
-    private void readElement(String line, String values[], Section section, String name) {
+    private void readElement(String line, String[] values, Section section, String name) {
         LOG.log(Level.FINEST, "Importing element {0} from line: {1}", new Object[]{name, line});
 
         // check if it is an element and add it to the section
@@ -777,8 +777,8 @@ public class TraceWinImporter implements TraceWinTags {
      * parameter values.
      * @param section {@link Section} where this element belongs to.
      */
-    private void readEdge(String edge1Line, String edge1Values[], String edge1Name, String bendLine,
-            String bendValues[], String bendName, String edge2Line, String edge2Values[], String edge2Name,
+    private void readEdge(String edge1Line, String[] edge1Values, String edge1Name, String bendLine,
+            String[] bendValues, String bendName, String edge2Line, String[] edge2Values, String edge2Name,
             Section section) {
         LOG.log(Level.FINEST, "Importing bend element {0} from line: {1}", new Object[]{bendName, bendLine});
 

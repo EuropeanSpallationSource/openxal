@@ -163,7 +163,7 @@ public class SolverLSM implements FitSolver {
      *
      * @param args The array of strings as parameters
      */
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         ModelFunction1D mf
                 = new ModelFunction1D() {

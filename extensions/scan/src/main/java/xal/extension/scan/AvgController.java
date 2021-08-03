@@ -228,7 +228,7 @@ public class AvgController {
     //------------------------------------
     //MAIN for debugging
     //------------------------------------
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         JFrame mainFrame = new JFrame("Averaging Controller Class");
 
         mainFrame.addWindowListener(

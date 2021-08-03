@@ -362,7 +362,7 @@ public class IdealMagDipoleFace2 extends ThinElectromagnet {
                 || ((getFieldPathFlag() == 0.)&&(B == 0.0))) {
              PhaseMatrix  matPhi  = new PhaseMatrix();
                 
-            double mat0[][] = new double [][] {{1.0, 0.0}, {0.0, 1.0}};
+            double[] mat0[] = new double [][] {{1.0, 0.0}, {0.0, 1.0}};
 
             matPhi.setSubMatrix(0,1, 0,1, mat0);
             matPhi.setSubMatrix(2,3, 2,3, mat0);

@@ -117,10 +117,10 @@
             the way the simulation results (i.e., "probe states") are stored in the trajectory.
         </p>
         <ul>
-                <li><code>Tracker.UPDATE_ENTRANCE</code> &middot; the probe state is saved to the trajectory then the probe is propagated through the element</li>
-                <li><code>Tracker.UPDATE_EXIT</code> &middot; the probe is propagated through the element then its state saved to the trajectory</li>
-                <li><code>Tracker.UPDATE_ALWAYS</code> &middot; the probe state is saved every time the probe is moved (e.g., after a space charge kick), but only when moved.</li>
-                <li><code>Tracker.UPDATE_ENTRANCEANDEXIT</code> &middot; the probe state is saved to the the trajectory, the probe is propagated through the element, then again saved</li>
+            <li><code>Tracker.UPDATE_ENTRANCE</code> &middot; the probe state is saved to the trajectory then the probe is propagated through the element</li>
+            <li><code>Tracker.UPDATE_EXIT</code> &middot; the probe is propagated through the element then its state saved to the trajectory</li>
+            <li><code>Tracker.UPDATE_ALWAYS</code> &middot; the probe state is saved every time the probe is moved (e.g., after a space charge kick), but only when moved.</li>
+            <li><code>Tracker.UPDATE_ENTRANCEANDEXIT</code> &middot; the probe state is saved to the the trajectory, the probe is propagated through the element, then again saved</li>
         </ul>
         <p>
             The default value is <code>Tracker.UPDATE_EXIT</code>.
@@ -143,65 +143,65 @@
         <p>
             If you require that the initial state of the start element be in the trajectory the following 
             are are a couple options:
-            <ul>
-                <li>You can set the <code>Tracker#setProbeUpdatePolicy()</code> to <code>Tracker.UPDATE_ENTRANCEANDEXIT</code>.  
-            Then both the entrance and exit states of every element between the start element and the stop element will
-            be in the trajectory.</li>
-                <li>You can set the <code>Probe#setCurrentElementId()</code> to the ID of the start element.  
-            Thus, when the propagation is initiated, the initial state of the probe is saved to the trajectory with the ID 
-            of the start element, and will be returned with a call to 
-            <code>Trajectory#statesForElement(String)</code>.</li>
-            </ul>
-        </p>
+        <ul>
+            <li>You can set the <code>Tracker#setProbeUpdatePolicy()</code> to <code>Tracker.UPDATE_ENTRANCEANDEXIT</code>.  
+                Then both the entrance and exit states of every element between the start element and the stop element will
+                be in the trajectory.</li>
+            <li>You can set the <code>Probe#setCurrentElementId()</code> to the ID of the start element.  
+                Thus, when the propagation is initiated, the initial state of the probe is saved to the trajectory with the ID 
+                of the start element, and will be returned with a call to 
+                <code>Trajectory#statesForElement(String)</code>.</li>
+        </ul>
+    </p>
 
-        <p>
-        <h2>Processing Simulation Results</h2>
-        There are a variety of tools for processing the simulation results of the online model.  
-        In particular there is a suite of tools in the <code>xal.tools.beam.calc</code> package that
-        performs direct calculations on the <code>Trajectory</code> objects produced in the simulation.
-        The calculations depend upon the type of the <code>ProbeState</code> objects contained in
-        the trajectory.  For example, the class <code>CalculationsOnMachines</code> expects  
-        <code>TransferMapState</code> objects since such states are completely determined by the
-        beamline, and not any beam.  The components of <code>xal.tools.beam.calc</code> are
-        well documented and we refer the reader to the Javadoc for this package.
-        </p>
-    <h2>New Acceleration Model</h2>
-    <h3>Compatibility</h3>
-    <p>Currently the acceleration model of the online model is being upgraded.  This action
-        includes modification of the lattice generator, addition of nested modeling elements analogous
-        to the nested hardware objects of the SMF hierarchy, addition of longitudinal phase variables,
-        addition of a RF cavity, and a complete refactoring of the RF gap element.  The old modeling 
-        element <code>IdealRfGap</code> was replaced with the new implementation
-        <code>SpectralMapRfGap</code>.  There are two
-        new and very important classes in the refactoring, AxialFieldSpectrum representing the
-        axial RF field spectrum and related quantities, and AcceleratingRfGap which handles all the
-        dynamics calculations of the RF gap.  It was necessary to alter these two classes in order
-        to emulate the previous acceleration dynamics.  These modifications are listed below and must
-        be converted back in order to utilize the full acceleration model.  
-    </p>
     <p>
-        As of November, 2015 the new RF acceleration model has been configured to emulate the
-        previous acceleration model. To utilize all the features of the new model the following
-        issues are identified:
-    </p>
-    <p>
-        <strong><code>AxialFieldSpectrum</code></strong>
-    <ul>
-        <li>Private method <code>dkTzfromDkTz0(double)</code> used for backward compatibility must be switched
-            to use <kbd>magic number</kbd> implementation.
-        <li>Private method <code>dkTzfromDkTz0(double)</code> used for backward compatibility must be switched
-            to use <kbd>magic number</kbd> implementation.
-        <li>Private method <code>dkTqFromDkSq0(double></code> used for backward compatibility must be switched
-            to use <kbd>magic number</kbd> implementation.
-        <li>Private method <code>dkSqFromDkSq0(double></code> used for backward compatibility must be switched
-            to use <kbd>magic number</kbd> implementation.
-    </ul>
-    <p/>
-    <p>
-        <strong><code>AcceleratingRfGap</code></strong>
-    <ul>
-        No changes necessary at this time.
-    </ul>
+    <h2>Processing Simulation Results</h2>
+    There are a variety of tools for processing the simulation results of the online model.  
+    In particular there is a suite of tools in the <code>xal.tools.beam.calc</code> package that
+    performs direct calculations on the <code>Trajectory</code> objects produced in the simulation.
+    The calculations depend upon the type of the <code>ProbeState</code> objects contained in
+    the trajectory.  For example, the class <code>CalculationsOnMachines</code> expects  
+    <code>TransferMapState</code> objects since such states are completely determined by the
+    beamline, and not any beam.  The components of <code>xal.tools.beam.calc</code> are
+    well documented and we refer the reader to the Javadoc for this package.
+</p>
+<h2>New Acceleration Model</h2>
+<h3>Compatibility</h3>
+<p>Currently the acceleration model of the online model is being upgraded.  This action
+    includes modification of the lattice generator, addition of nested modeling elements analogous
+    to the nested hardware objects of the SMF hierarchy, addition of longitudinal phase variables,
+    addition of a RF cavity, and a complete refactoring of the RF gap element.  The old modeling 
+    element <code>IdealRfGap</code> was replaced with the new implementation
+    <code>SpectralMapRfGap</code>.  There are two
+    new and very important classes in the refactoring, AxialFieldSpectrum representing the
+    axial RF field spectrum and related quantities, and AcceleratingRfGap which handles all the
+    dynamics calculations of the RF gap.  It was necessary to alter these two classes in order
+    to emulate the previous acceleration dynamics.  These modifications are listed below and must
+    be converted back in order to utilize the full acceleration model.  
+</p>
+<p>
+    As of November, 2015 the new RF acceleration model has been configured to emulate the
+    previous acceleration model. To utilize all the features of the new model the following
+    issues are identified:
+</p>
+<p>
+    <strong><code>AxialFieldSpectrum</code></strong>
+<ul>
+    <li>Private method <code>dkTzfromDkTz0(double)</code> used for backward compatibility must be switched
+        to use <kbd>magic number</kbd> implementation.
+    <li>Private method <code>dkTzfromDkTz0(double)</code> used for backward compatibility must be switched
+        to use <kbd>magic number</kbd> implementation.
+    <li>Private method <code>dkTqFromDkSq0(double></code> used for backward compatibility must be switched
+        to use <kbd>magic number</kbd> implementation.
+    <li>Private method <code>dkSqFromDkSq0(double></code> used for backward compatibility must be switched
+        to use <kbd>magic number</kbd> implementation.
+</ul>
+<p/>
+<p>
+    <strong><code>AcceleratingRfGap</code></strong>
+<ul>
+    No changes necessary at this time.
+</ul>
 </p>
 <p>
     <strong><code>SpectrumMapRfGap</code></strong>

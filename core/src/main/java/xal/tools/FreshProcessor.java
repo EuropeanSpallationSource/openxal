@@ -25,7 +25,7 @@ public class FreshProcessor {
      * indicates whether the processor should keep running
      */
     private volatile boolean keepRunning;
-    
+
     private volatile Thread thread;
 
     private static final Logger LOGGER = Logger.getLogger(FreshProcessor.class.getName());
@@ -40,10 +40,11 @@ public class FreshProcessor {
         start();
     }
 
-    private synchronized void start(){
+    private synchronized void start() {
         thread = new RequestProcessor();
         thread.start();
     }
+
     /**
      * Clear pending requests
      */

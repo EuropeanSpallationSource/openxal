@@ -411,7 +411,7 @@ public class Polynomial {
      *
      * @param args The array of strings as parameters
      */
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         int n = 4;
         double[] x = new double[n];

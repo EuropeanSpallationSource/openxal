@@ -200,7 +200,7 @@ public class CubicSplineGraphData extends BasicGraphData {
      * @version 1.0
      * @author  A. Shishlo
      */
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         CubicSplineGraphData spl = new CubicSplineGraphData();
         int nPoint = 20;
         double[] xV = new double[nPoint];

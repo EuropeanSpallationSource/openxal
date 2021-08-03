@@ -141,7 +141,7 @@ public class T3dGenerator {
         int devTypeInd = 1;
         String devStr = "";
 
-        char bufferHeader[] = new char[str.length()];
+        char[] bufferHeader = new char[str.length()];
         str.getChars(0, str.length(), bufferHeader, 0);
         t3dInput.write(bufferHeader);
 
@@ -296,7 +296,7 @@ public class T3dGenerator {
                         + devStr;
             }
 
-            char buffer[] = new char[str.length()];
+            char[] buffer = new char[str.length()];
             str.getChars(0, str.length(), buffer, 0);
             t3dInput.write(buffer);
 
@@ -311,7 +311,7 @@ public class T3dGenerator {
                     + " $END";
         }
 
-        char bufferEnd[] = new char[str.length()];
+        char[] bufferEnd = new char[str.length()];
         str.getChars(0, str.length(), bufferEnd, 0);
         t3dInput.write(bufferEnd);
 

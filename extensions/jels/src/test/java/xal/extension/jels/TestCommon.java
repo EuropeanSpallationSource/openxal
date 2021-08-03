@@ -38,7 +38,7 @@ public abstract class TestCommon {
 
     private static final Logger LOGGER = Logger.getLogger(TestCommon.class.getName());
 
-    protected static double SpeciesCharge = 1;
+    protected static double speciesCharge = 1;
     protected Probe probe;
     protected ElementMapping elementMapping;
     protected Scenario scenario;
@@ -53,7 +53,9 @@ public abstract class TestCommon {
 
     @Parameters
     public static Collection<Object[]> probes() {
-        double energy = 2.5e9, frequency = 4.025e8, current = 0;
+        double energy = 2.5e9;
+        double frequency = 4.025e8;
+        double current = 0;
         return Arrays.asList(new Object[][]{
             {setupOpenXALProbe(energy, frequency, current), JElsElementMapping.getInstance()},});
     }
@@ -65,7 +67,7 @@ public abstract class TestCommon {
                 {-0.5283, 0.8684, 0.2851}});
     }
 
-    public static EnvelopeProbe setupOpenXALProbe(double energy, double frequency, double current, double twiss[][]) {
+    public static EnvelopeProbe setupOpenXALProbe(double energy, double frequency, double current, double[][] twiss) {
         // Envelope probe and tracker
         EnvelopeTracker envelopeTracker = new EnvelopeTracker();
         envelopeTracker.setRfGapPhaseCalculation(true);
@@ -76,7 +78,7 @@ public abstract class TestCommon {
 
         EnvelopeProbe envelopeProbe = new EnvelopeProbe();
         envelopeProbe.setAlgorithm(envelopeTracker);
-        envelopeProbe.setSpeciesCharge(SpeciesCharge);
+        envelopeProbe.setSpeciesCharge(speciesCharge);
         envelopeProbe.setSpeciesRestEnergy(9.38272029e8);
         envelopeProbe.setKineticEnergy(energy);
         envelopeProbe.setPosition(0.0);
@@ -99,11 +101,11 @@ public abstract class TestCommon {
          */
         double beta = envelopeProbe.getBeta();
         double gamma = envelopeProbe.getGamma();
-        double beta_gamma = beta * gamma;
+        double betaGamma = beta * gamma;
 
-        envelopeProbe.initFromTwiss(new Twiss[]{new Twiss(twiss[0][0], twiss[0][1], twiss[0][2] * 1e-6 / beta_gamma),
-            new Twiss(twiss[1][0], twiss[1][1], twiss[1][2] * 1e-6 / beta_gamma),
-            new Twiss(twiss[2][0], twiss[2][1], twiss[2][2] * 1e-6 / beta_gamma / gamma / gamma)});
+        envelopeProbe.initFromTwiss(new Twiss[]{new Twiss(twiss[0][0], twiss[0][1], twiss[0][2] * 1e-6 / betaGamma),
+            new Twiss(twiss[1][0], twiss[1][1], twiss[1][2] * 1e-6 / betaGamma),
+            new Twiss(twiss[2][0], twiss[2][1], twiss[2][2] * 1e-6 / betaGamma / gamma / gamma)});
         envelopeProbe.setBeamCurrent(current);
         //frequency
         envelopeProbe.setBunchFrequency(frequency);
@@ -170,7 +172,7 @@ public abstract class TestCommon {
         pw.flush();
     }
 
-    public void checkTWTransferMatrix(double T[][], double errTolerance) throws ModelException {
+    public void checkTWTransferMatrix(double[][] T, double errTolerance) throws ModelException {
         Trajectory<EnvelopeProbeState> trajectory = probe.getTrajectory();
 
         Iterator<EnvelopeProbeState> it = trajectory.stateIterator();

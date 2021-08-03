@@ -136,7 +136,7 @@ public class SmoothData3D extends ColorSurfaceData {
     /**
      * The test method of this class.
      */
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         int nx = 200;
         int ny = 300;

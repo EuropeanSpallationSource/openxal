@@ -296,7 +296,7 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
     /**
      * Testing driver
      */
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         RealUnivariatePolynomial poly1 = new RealUnivariatePolynomial(new double[]{1.0, 2.0, 3.0});
         RealUnivariatePolynomial poly2 = new RealUnivariatePolynomial(new double[]{1.1, 1.2, 1.3});
 

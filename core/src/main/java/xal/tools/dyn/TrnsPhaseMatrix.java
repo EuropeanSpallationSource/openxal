@@ -110,7 +110,7 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
          * Returns the numerical index of this enumeration constant,
          * corresponding to the index into the phase matrix.
          *
-         * @return    numerical value of this index
+         * @return numerical value of this index
          *
          * @author Christopher K. Allen
          * @since Sep 25, 2013
@@ -132,7 +132,7 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
          * Creates a new <code>IND</code> enumeration constant initialized to
          * the given index value.
          *
-         * @param index    numerical index value for this constant
+         * @param index numerical index value for this constant
          *
          * @author Christopher K. Allen
          * @since Sep 25, 2013

@@ -2153,7 +2153,7 @@ public class ScanController2D {
      *
      * @param args Description of the Parameter
      */
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         JFrame mainFrame = new JFrame("Test of the IndependentValueRange class");
         mainFrame.addWindowListener(
                 new java.awt.event.WindowAdapter() {

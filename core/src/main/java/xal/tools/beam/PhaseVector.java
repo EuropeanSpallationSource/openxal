@@ -366,7 +366,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
      *
      * @exception IllegalArgumentException argument must be a length-six array
      */
-    public PhaseVector(double arrVals[]) {
+    public PhaseVector(double[] arrVals) {
         super(arrVals);
         this.setElem(IND.HOM, 1.0);
     }
@@ -954,7 +954,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
     /**
      * Test driver
      */
-    public static void main(String arrArgs[]) {
+    public static void main(String[] arrArgs) {
         PrintWriter os = new PrintWriter(System.out);
 
         PhaseVector z1 = new PhaseVector();

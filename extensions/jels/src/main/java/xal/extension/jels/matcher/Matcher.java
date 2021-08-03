@@ -288,7 +288,7 @@ public class Matcher implements Runnable, Stopper {
         }
     }
 
-    public static void main(String args[]) throws ModelException, InstantiationException {
+    public static void main(String[] args) throws ModelException, InstantiationException {
         Accelerator accelerator = loadAccelerator();
 
         IAlgorithm tracker = AlgorithmFactory.createEnvelopeTracker(accelerator);

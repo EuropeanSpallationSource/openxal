@@ -1246,7 +1246,7 @@ public class BasicGraphData {
      *
      * @param args Description of the Parameter
      */
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         BasicGraphData spl = new BasicGraphData();
         int nPoint = 20;
         double[] xV = new double[nPoint];

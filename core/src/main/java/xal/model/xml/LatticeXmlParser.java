@@ -344,7 +344,7 @@ public class LatticeXmlParser {
             // Use bean introspection to find and set the appropriate property
             try {
                 BeanInfo bi = Introspector.getBeanInfo(elem.getClass());
-                PropertyDescriptor pd[] = bi.getPropertyDescriptors();
+                PropertyDescriptor[] pd = bi.getPropertyDescriptors();
                 PropertyDescriptor property = null;
                 for (int i = 0; i < pd.length; i++) {
                     // match a property with the same name and type
@@ -390,8 +390,8 @@ public class LatticeXmlParser {
                         } else {
                             clsParam = Class.forName(strType);
 
-                            Class<?> arrCtorSig[] = {String.class};
-                            Object arrCtorArg[] = {strValue};
+                            Class<?>[] arrCtorSig = {String.class};
+                            Object[] arrCtorArg = {strValue};
                             Constructor<?> ctorParam = clsParam.getConstructor(arrCtorSig);
 
                             objParam = ctorParam.newInstance(arrCtorArg);

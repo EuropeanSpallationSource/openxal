@@ -103,7 +103,7 @@ public class MatcherDialog extends SimpleBeanEditor<Matcher> {
         setVisible(true);
     }
 
-    public static void main(String args[]) throws InstantiationException {
+    public static void main(String[] args) throws InstantiationException {
         Accelerator accelerator = Matcher.loadAccelerator();
 
         IAlgorithm tracker = AlgorithmFactory.createEnvelopeTracker(accelerator);

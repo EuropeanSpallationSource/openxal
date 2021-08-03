@@ -331,7 +331,7 @@ public class TransferMapLoader {
      *
      * @param args file name
      */
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         try {
             BufferedReader br = new BufferedReader(new FileReader(args[0]));
             br.readLine();

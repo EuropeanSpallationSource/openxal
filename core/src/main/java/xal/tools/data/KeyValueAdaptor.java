@@ -174,7 +174,7 @@ public class KeyValueAdaptor {
                 final KeyedAccessing methodAccessor = KeyedMethodAccessor.getInstance(targetClass, key);
                 if (methodAccessor != null) {
                     getterTable.put(accessorID, methodAccessor);
-                // no method accessor was found for the key
+                    // no method accessor was found for the key
                 } else {
                     // if the target implements the Map interface then use the Map's get method for access
                     final KeyedAccessing mapAccessor = KeyedMapAccessor.getInstance(targetClass, key);
@@ -211,7 +211,7 @@ public class KeyValueAdaptor {
                 final KeyedSetting methodSetter = KeyedMethodSetter.getInstance(targetClass, key, argumentClass);
                 if (methodSetter != null) {
                     setterTable.put(setterID, methodSetter);
-                // no method setter was found for the key
+                    // no method setter was found for the key
                 } else {
                     // if the target implements the Map interface then use the Map's put method for setting values
                     final KeyedSetting mapSetter = KeyedMapSetter.getInstance(targetClass, key, argumentClass);

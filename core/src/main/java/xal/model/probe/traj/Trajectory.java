@@ -391,7 +391,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
 
             String strTypeState = daptTraj.stringValue(TYPE_STATE_TAG);
             Class<?> clsState = Class.forName(strTypeState);
-            Object arrCtorArgs[] = {clsState};
+            Object[] arrCtorArgs = {clsState};
 
             Trajectory<S> trjNew = (Trajectory<S>) ctorTraj.newInstance(arrCtorArgs);
 

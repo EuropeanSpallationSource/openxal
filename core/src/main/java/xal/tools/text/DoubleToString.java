@@ -476,11 +476,11 @@ public class DoubleToString {
         return (l / (tenthPower(l) / lTenthPowers[n - 1])) % 10;
     }
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         main1(args);
     }
 
-    public static void main1(String args[]) {
+    public static void main1(String[] args) {
         long time1, time2;
         double[] ds = {100D, 234000.567D, 2340000.56789D, 23400000.56789D, 234000000.56789D,
             567.89023D, -1.234D, 0.2D, 0.03D, 0.00235D, 999, 900

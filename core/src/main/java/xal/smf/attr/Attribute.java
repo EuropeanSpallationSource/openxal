@@ -22,7 +22,7 @@ public final class Attribute extends Object implements Serializable {
      * ID for serializable version
      */
     private static final long serialVersionUID = 1L;
-    
+
     private static final Logger LOGGER = Logger.getLogger(Attribute.class.getName());
 
     /*

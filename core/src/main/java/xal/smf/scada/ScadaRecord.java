@@ -452,10 +452,10 @@ public abstract class ScadaRecord implements DataListener, Cloneable {
      * Creates a new <code>ScadaStruct</code> object which is initialized from
      * the data stored behind the given data source.
      *
-     * @param daptInitSrc    data source containing initialization information
+     * @param daptInitSrc data source containing initialization information
      *
      * @author Christopher K. Allen
-     * @since    Jan 29, 2013
+     * @since Jan 29, 2013
      */
     protected ScadaRecord(DataAdaptor daptInitSrc) {
         this();
@@ -466,7 +466,7 @@ public abstract class ScadaRecord implements DataListener, Cloneable {
      * Creates a new <code>ScadaStruct</code> object which is initialized from
      * the data provided by the given hardware object.
      *
-     * @param smfDev    device to be queried for initialization information
+     * @param smfDev device to be queried for initialization information
      *
      * @author Christopher K. Allen
      *
@@ -476,7 +476,7 @@ public abstract class ScadaRecord implements DataListener, Cloneable {
      * channel
      * @throws GetException unable to get PV value from channel access or
      *
-     * @since    Jan 29, 2013
+     * @since Jan 29, 2013
      */
     protected ScadaRecord(AcceleratorNode smfDev) throws ConnectionException, GetException, BadStructException {
         this();

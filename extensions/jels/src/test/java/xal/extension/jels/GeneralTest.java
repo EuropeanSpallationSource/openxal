@@ -175,7 +175,7 @@ public class GeneralTest {
 
         int i = 0;
         for (String line; (line = br.readLine()) != null; i++) {
-            String cols[] = line.split(" ", TWcols + 1);
+            String[] cols = line.split(" ", TWcols + 1);
             for (int j = 0; j < TWcols; j++) {
                 data[j][i] = Double.parseDouble(cols[j]);
             }
@@ -304,7 +304,7 @@ public class GeneralTest {
      * @param yb y values of second function
      * @return returns relative error
      */
-    public static double compare(double[] xa, double[] xb, double[] ya, double yb[]) {
+    public static double compare(double[] xa, double[] xb, double[] ya, double[] yb) {
         double d = integrateL1sup(xa, xb, ya, yb);
         double a = integrateSup(xb, yb);
         if (a < 1e-6) {
@@ -339,7 +339,7 @@ public class GeneralTest {
      * @param yb y values of second function
      * @return value of the integral
      */
-    private static double integrateL1sup(double[] xa, double[] xb, double[] ya, double yb[]) {
+    private static double integrateL1sup(double[] xa, double[] xb, double[] ya, double[] yb) {
         if (xa.length == 0) {
             return integrateSup(xb, yb);
         }
@@ -390,7 +390,7 @@ public class GeneralTest {
      * @return value of the integral
      */
     @SuppressWarnings("unused")
-    private double integrateL1linear(double[] xa, double[] xb, double[] ya, double yb[]) {
+    private double integrateL1linear(double[] xa, double[] xb, double[] ya, double[] yb) {
 
         // merge the positions together
         double[] p = new double[xa.length + xb.length];

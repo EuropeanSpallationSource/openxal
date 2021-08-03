@@ -65,12 +65,12 @@ public class PatientBroadcaster<RecordType> extends AbstractBroadcaster<RecordTy
             if (isFullCount) {
                 pendingCorrelation = null;
                 postCorrelation(correlation);
-            // see if correlation is better than pending
+                // see if correlation is better than pending
             } else if (numRecords > pendingCorrelation.numRecords()) {
                 // replace pending correlation with this correlation
                 pendingCorrelation = correlation;
             }
-        // must be a mutually exclusive correlation to the pending correlation
+            // must be a mutually exclusive correlation to the pending correlation
         } else {
             // post the pending correlation since it was the best for its time
             postCorrelation(pendingCorrelation);
@@ -78,7 +78,7 @@ public class PatientBroadcaster<RecordType> extends AbstractBroadcaster<RecordTy
             if (isFullCount) {
                 pendingCorrelation = null;
                 postCorrelation(correlation);
-            // place correlation as pending and wait to see if any better correlations come along for its time
+                // place correlation as pending and wait to see if any better correlations come along for its time
             } else {
                 pendingCorrelation = correlation;
             }

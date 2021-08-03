@@ -419,7 +419,9 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      * takes phase coordinates from position <em>s</em> = 0 to position <em>s</i
      * = 0 going all the way around the ring. </p> <p> Collecting all of the
      * above, if
-     * <em>s</em><sub>2</sub> &lt; <em>s</em><sub>1</sub>
+     * <
+     * e
+     * m>s</em><sub>2</sub> &lt; <em>s</em><sub>1</sub>
      * then we have a propagation through point <em>s</em> = 0 and we must
      * include the full turn matrix according to
      * <br>
@@ -520,7 +522,10 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      * <strong>T</strong><sub>0</sub> takes phase coordinates from position
      * <em>s</em> = 0 to position <em>s</i = 0 going all the way around the
      * ring. </p> <p> Collecting all of the above, if <em>s</em>
-     * <sub>2</sub> &lt; <em>s</em><sub>1</sub>
+     * <
+     * s
+     * ub>2<
+     * /sub> &lt; <em>s</em><sub>1</sub>
      * then we have a propagation through point <em>s</em> = 0 and we must
      * include the full turn map according to
      * <br>

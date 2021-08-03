@@ -217,7 +217,8 @@ public class Z3 implements java.io.Serializable {
      * @param r right-hand argument to ==
      *
      * @return true if (this-r) equals the zero element
-     */@Override
+     */
+    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Z3)) {
             return false;

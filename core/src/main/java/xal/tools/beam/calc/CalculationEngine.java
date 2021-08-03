@@ -845,9 +845,9 @@ public abstract class CalculationEngine {
      * exist.
      * </p>
      *
-     * @param matPhi    we are calculating the dispersion of a ring with this
+     * @param matPhi we are calculating the dispersion of a ring with this
      * one-turn map
-     * @param dblGamma    relativistic factor
+     * @param dblGamma relativistic factor
      *
      * @return The closed orbit fixed point <strong>z</strong><sub>0</sub> for
      * finite dispersion, normalized by momentum spread. Returned as an array

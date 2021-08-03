@@ -434,7 +434,7 @@ public abstract class Channel {
      *
      * @return the units
      * @throws xal.ca.ConnectionException accordingly
-     * @throws xal.ca.GetException    accordingly
+     * @throws xal.ca.GetException accordingly
      */
     public abstract String getUnits() throws ConnectionException, GetException;
 

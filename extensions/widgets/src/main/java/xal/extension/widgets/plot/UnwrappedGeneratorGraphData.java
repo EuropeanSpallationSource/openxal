@@ -111,7 +111,7 @@ public class UnwrappedGeneratorGraphData extends BasicGraphData {
     //----------------------------------------
     //MAIN test method for debugging
     //----------------------------------------
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         BasicGraphData unwrupped = new BasicGraphData();
         UnwrappedGeneratorGraphData generator = new UnwrappedGeneratorGraphData();
         generator.setExtUnwrappedContainer(unwrupped);

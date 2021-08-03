@@ -223,7 +223,7 @@ public class LatticeXmlWriter {
         try {
             BeanInfo bi
                     = Introspector.getBeanInfo(elem.getClass(), Element.class);
-            PropertyDescriptor pd[] = bi.getPropertyDescriptors();
+            PropertyDescriptor[] pd = bi.getPropertyDescriptors();
             for (int i = 0; i < pd.length; i++) {
                 PropertyDescriptor propDesc = pd[i];
                 Method getter = propDesc.getReadMethod();

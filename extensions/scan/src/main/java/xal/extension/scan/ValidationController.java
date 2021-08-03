@@ -214,7 +214,7 @@ public class ValidationController {
     //------------------------------------
     //MAIN for debugging
     //------------------------------------
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         JFrame mainFrame = new JFrame("Valuator Limits Manager Class");
         mainFrame.addWindowListener(
                 new java.awt.event.WindowAdapter() {

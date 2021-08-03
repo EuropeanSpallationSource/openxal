@@ -107,7 +107,7 @@ public abstract class SynchronousTrackerTestCommon extends TestCommon {
 
         SynchronousProbe probe = new SynchronousProbe();
         probe.setAlgorithm(synchronousTracker);
-        probe.setSpeciesCharge(SpeciesCharge);
+        probe.setSpeciesCharge(speciesCharge);
         probe.setSpeciesRestEnergy(9.38272029e8);
         probe.setKineticEnergy(energy);
         probe.setPosition(0.0);

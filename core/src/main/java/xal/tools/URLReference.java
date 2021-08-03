@@ -151,7 +151,7 @@ public class URLReference {
             new URL(fullUrlSpec).openStream().close();
             return true;
         } catch (IOException exception) {
-            LOGGER.log(Level.WARNING, null ,exception);
+            LOGGER.log(Level.WARNING, null, exception);
             return false;
         }
     }

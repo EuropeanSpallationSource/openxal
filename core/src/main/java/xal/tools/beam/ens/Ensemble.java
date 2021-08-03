@@ -523,7 +523,7 @@ public class Ensemble implements Serializable {
     /**
      * Test driver for testing Ensemble class.
      */
-    public static void main(String arg[]) {
+    public static void main(String[] arg) {
         PrintWriter osLog = new PrintWriter(System.out);
 
         // Test persistent storage mechanism

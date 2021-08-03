@@ -365,7 +365,7 @@ public class BarChart {
      *
      * @param args No arguments needed
      */
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         JFrame mainFrame = new JFrame("Test of the BarChart class");
         mainFrame.addWindowListener(
                 new java.awt.event.WindowAdapter() {

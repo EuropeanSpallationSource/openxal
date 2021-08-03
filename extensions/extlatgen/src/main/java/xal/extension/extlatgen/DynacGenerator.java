@@ -167,7 +167,7 @@ public class DynacGenerator {
         String prevElementType = "";
         double quadLength = 0.;
 
-        char buffer_header[] = new char[str.length()];
+        char[] buffer_header = new char[str.length()];
         str.getChars(0, str.length(), buffer_header, 0);
         dynacInput.write(buffer_header);
 
@@ -394,7 +394,7 @@ public class DynacGenerator {
                 str = devStr;
             }
 
-            char buffer[] = new char[str.length()];
+            char[] buffer = new char[str.length()];
             str.getChars(0, str.length(), buffer, 0);
             dynacInput.write(buffer);
 
@@ -402,7 +402,7 @@ public class DynacGenerator {
         }
         str = "STOP";
 
-        char buffer_end[] = new char[str.length()];
+        char[] buffer_end = new char[str.length()];
         str.getChars(0, str.length(), buffer_end, 0);
         dynacInput.write(buffer_end);
 

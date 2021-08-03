@@ -704,7 +704,7 @@ public class GraphDataOperations {
     //------------------------------------
     //MAIN for debugging
     //------------------------------------
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         BasicGraphData gd = new BasicGraphData();
 
