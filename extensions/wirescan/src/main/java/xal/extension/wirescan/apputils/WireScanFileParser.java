@@ -13,6 +13,10 @@ import java.io.*;
  */
 public class WireScanFileParser {
 
+    private WireScanFileParser() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Returns the Vector&lt;WireScanData&gt; for all WS in the WS data file
      */

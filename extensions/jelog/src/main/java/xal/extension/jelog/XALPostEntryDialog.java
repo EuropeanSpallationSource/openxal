@@ -36,6 +36,10 @@ public class XALPostEntryDialog {
 
     private static String elogURL = null;
 
+    private XALPostEntryDialog() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static void setElogServer(String elogURL) {
         XALPostEntryDialog.elogURL = elogURL;
     }

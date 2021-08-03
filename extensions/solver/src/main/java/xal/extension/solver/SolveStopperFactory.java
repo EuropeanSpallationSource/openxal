@@ -18,6 +18,10 @@ package xal.extension.solver;
  */
 public class SolveStopperFactory {
 
+    private SolveStopperFactory() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Stop the solver immediately.
      *

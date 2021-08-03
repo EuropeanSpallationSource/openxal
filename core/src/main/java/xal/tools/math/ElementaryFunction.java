@@ -48,6 +48,10 @@ public final class ElementaryFunction {
      */
     public static final double EPS = 1000.0 * Double.MIN_VALUE;
 
+    private ElementaryFunction() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /*
      * Elementary Math
      */

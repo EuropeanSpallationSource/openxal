@@ -22,6 +22,10 @@ public class ApplicationSupport {
      */
     private static final long serialVersionUID = 1L;
 
+    private ApplicationSupport() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Get the active window which is in focus for this application. It is
      * typically a good window relative to which you can place application

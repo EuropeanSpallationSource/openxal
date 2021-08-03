@@ -27,6 +27,10 @@ public class RelativisticParameterConverter {
      */
     private static final double DBL_LGHT_SPD = 299792458.0;
 
+    private RelativisticParameterConverter() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /*
      * Operations
      */

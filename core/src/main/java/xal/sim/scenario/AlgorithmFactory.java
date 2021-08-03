@@ -66,6 +66,10 @@ public final class AlgorithmFactory {
      */
     public static final String ATTRTAG_TYPE = "type";
 
+    private AlgorithmFactory() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /*
      * Factory Methods
      */

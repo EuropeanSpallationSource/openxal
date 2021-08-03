@@ -33,6 +33,10 @@ public class ImporterHelpers {
 
     private static final Logger LOGGER = Logger.getLogger(ImporterHelpers.class.getName());
 
+    private ImporterHelpers() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static AcceleratorSeqCombo addDefaultComboSeq(Accelerator acc) {
         List<AcceleratorSeq> seqs = acc.getSequences();
 

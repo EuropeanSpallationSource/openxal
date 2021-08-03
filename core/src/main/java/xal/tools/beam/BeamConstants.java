@@ -11,6 +11,9 @@ package xal.tools.beam;
  */
 public final class BeamConstants {
 
+    private BeamConstants() {
+        throw new IllegalStateException("Utility class");
+    }
     /**
      * frequency
      */

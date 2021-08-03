@@ -4,6 +4,10 @@ import xal.extension.jels.model.elem.JElsElementMapping;
 
 public class PluginElementMapping {
 
+    private PluginElementMapping() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * This method is used to replace default element mapping with JELS element
      * mapping.

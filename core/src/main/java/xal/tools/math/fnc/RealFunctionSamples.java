@@ -87,16 +87,4 @@ public class RealFunctionSamples {
             return dblVal;
         }
     }
-
-    /**
-     *
-     * Constructor for RealFunctionSamples.
-     *
-     *
-     * @since Sep 25, 2015 by Christopher K. Allen
-     */
-    public RealFunctionSamples() {
-        // TODO Auto-generated constructor stub
-    }
-
 }

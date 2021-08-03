@@ -31,6 +31,10 @@ public class BorderProxyFactory {
         register(getTitledBorderProxy("Titled Border"));
     }
 
+    private BorderProxyFactory() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * register the proxy in the proxy table
      */

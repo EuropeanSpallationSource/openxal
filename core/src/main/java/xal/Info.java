@@ -64,6 +64,10 @@ public class Info {
         LABEL = label;
     }
 
+    private Info() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Get the label for this version of Open XAL
      */

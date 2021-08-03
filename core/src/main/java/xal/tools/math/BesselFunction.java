@@ -149,6 +149,10 @@ public final class BesselFunction {
      */
     public static final double SMALL_ARG = 0.1;
 
+    private BesselFunction() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Compute the zero<sup>th</sup> order Bessel function of the first kind,
      * <em>J</em><sub>0</sub>(<em>x</em>).

@@ -15,6 +15,10 @@ import xal.tools.beam.Twiss;
  */
 public final class EnsembleGenerator {
 
+    private EnsembleGenerator() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Creates a new ensemble according to the given ensemble descriptor.
      *

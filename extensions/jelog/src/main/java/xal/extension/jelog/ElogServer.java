@@ -27,6 +27,10 @@ public class ElogServer {
 
     private static final String ELOG_SERVER = "elogURL";
 
+    private ElogServer() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static String getElogURL() {
         java.util.prefs.Preferences defaults = Preferences.nodeForPackage(ElogServer.class);
         return defaults.get(ELOG_SERVER, "https://logbook.esss.lu.se/");

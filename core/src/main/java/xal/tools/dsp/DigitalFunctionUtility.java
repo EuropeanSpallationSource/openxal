@@ -24,6 +24,10 @@ import JSci.maths.vectors.DoubleVector;
  */
 public class DigitalFunctionUtility {
 
+    private DigitalFunctionUtility() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /*
      * General
      */

@@ -21,6 +21,10 @@ public class PaintHelper {
 
     protected static RenderingHints qualityHints = null;
 
+    private PaintHelper() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      *
      */

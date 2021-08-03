@@ -12,6 +12,10 @@ package xal.tools.math;
  */
 public class TrigStuff {
 
+    private TrigStuff() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * this method shifts the first argument by a multiple of 2*PI to produce
      * the nearest point to another specified point

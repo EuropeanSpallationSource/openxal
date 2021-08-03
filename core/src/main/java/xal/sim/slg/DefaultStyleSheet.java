@@ -146,6 +146,10 @@ public class DefaultStyleSheet {
         XSLSHEET += "</xsl:stylesheet>";
     }
 
+    private DefaultStyleSheet() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static StringReader toReader() {
         return new StringReader(XSLSHEET);
     }

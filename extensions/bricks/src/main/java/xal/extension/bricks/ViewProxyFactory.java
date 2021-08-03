@@ -71,6 +71,10 @@ public class ViewProxyFactory {
         register(getComboBoxProxy());
     }
 
+    private ViewProxyFactory() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * register the proxy in the proxy table
      */

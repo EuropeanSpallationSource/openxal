@@ -30,6 +30,10 @@ class WebSocketIO {
      */
     private static final String HANDSHAKE_ENCODE_KEY = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
+    private WebSocketIO() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Send the handshake (from the client) generating a random security value
      * and process the response. Returns true upon success.

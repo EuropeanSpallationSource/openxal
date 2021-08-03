@@ -17,6 +17,10 @@ import xal.tools.beam.IConstants;
  */
 public class BendingMagnet {
 
+    private BendingMagnet() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Compute the path curvature of a magnetic dipole for the given probe. The
      * path curvature is 1/R where R is the bending radius of the dipole (radius

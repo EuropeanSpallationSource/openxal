@@ -46,6 +46,10 @@ public final class ColorHelper {
     private static final Color TIMEOUT = new Color(0, 5, 212);
     private static final Color TIMEOUT_OUTLINE = new Color(0, 4, 170);
 
+    private ColorHelper() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Returns the default control Color, which should be used to render the
      * background of controls used in applications

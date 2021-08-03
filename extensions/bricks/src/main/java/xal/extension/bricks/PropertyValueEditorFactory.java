@@ -29,6 +29,10 @@ public class PropertyValueEditorFactory {
 
     private static final Logger LOGGER = Logger.getLogger(PropertyValueEditorFactory.class.getName());
 
+    private PropertyValueEditorFactory() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Get an editor of strings
      */

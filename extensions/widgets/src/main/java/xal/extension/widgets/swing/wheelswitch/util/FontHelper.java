@@ -22,6 +22,10 @@ public final class FontHelper {
 
     private static List<Font> fonts = new ArrayList<Font>();
 
+    private FontHelper() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Returns the default Font name
      *

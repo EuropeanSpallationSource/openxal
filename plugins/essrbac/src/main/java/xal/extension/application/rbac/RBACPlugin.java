@@ -27,6 +27,10 @@ public class RBACPlugin {
 
     private static final String USE_RBAC_KEY = "useRbac";
 
+    private RBACPlugin() {
+        throw new IllegalStateException("Utility class");
+    }
+
     // Return default settings for RBAC plugin
     protected static java.util.prefs.Preferences getDefaults() {
         return xal.tools.apputils.Preferences.nodeForPackage(RBACPlugin.class);

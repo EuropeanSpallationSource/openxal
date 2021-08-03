@@ -16,6 +16,10 @@ package xal.tools.beam;
 @Deprecated
 public class ParameterConverter {
 
+    private ParameterConverter() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Computes the relativistic factor gamma from the current beta value
      *

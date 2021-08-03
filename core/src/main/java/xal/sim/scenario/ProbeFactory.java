@@ -115,6 +115,10 @@ public class ProbeFactory {
      */
     protected static final String PHASECOORD_VALUE_PARAM = "coordinates";
 
+    private ProbeFactory() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Generate a Particle probe initialized with the default entrance
      * parameters for the specified sequence. The location used defaults to the
