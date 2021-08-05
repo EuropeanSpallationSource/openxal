@@ -8,6 +8,7 @@ package xal.model.elem;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,8 +22,6 @@ import xal.sim.scenario.LatticeElement;
 import xal.smf.attr.AlignmentBucket;
 import xal.tools.beam.IConstants;
 import xal.tools.beam.PhaseMap;
-import xal.tools.beam.PhaseMatrix;
-import xal.tools.beam.PhaseVector;
 import xal.tools.math.r3.R3;
 
 /**
@@ -127,7 +126,7 @@ public abstract class Element implements IElement {
      *
      * @param strType type identifier of the element
      */
-    public Element(String strType) {
+    protected Element(String strType) {
         this(strType, "NULLID");
     }
 
@@ -137,7 +136,7 @@ public abstract class Element implements IElement {
      * @param strType type identifier of the element
      * @param strId string identifier of the element
      */
-    public Element(String strType, String strId) {
+    protected Element(String strType, String strId) {
         this.intUID = cntInstances++;
         this.strType = strType;
         this.strId = strId;
@@ -310,65 +309,6 @@ public abstract class Element implements IElement {
         closeElements.add(closeElem);
     }
 
-    /**
-     *
-     * Removed in Jan 2019 - Natalia Milas
-     *
-     * <h2>Add Displacement Error to Transfer Matrix</h2>
-     * <p>
-     * Method to add the effects of a spatially displaced to the beamline
-     * element represented by the given transfer matrix. The returned matrix is
-     * the original transfer matrix conjugated by the displacement matrix
-     * representing the displacement vector <strong>&Delta;r</strong>
-     * <br/>
-     * <br/>
-     * &nbsp; <strong>&Delta;r</strong> &equiv; (<em>dx,dy,dz</em>).
-     * <br/>
-     * </p>
-     * <p>
-     * <strong>NOTES</strong>: (H. SAKO)
-     * <br/>
-     * &middot; added alignment error in sigma matrix
-     * </p>
-     *
-     * @param matPhi transfer matrix <strong>&Phi;</strong> to be processed
-     *
-     * @return transfer matrix <strong>&Phi;</strong> after applying
-     * displacement
-     *
-     * @author Hiroyuki Sako
-     * @author Christopher K. Allen
-     *
-     * @see PhaseMatrix
-     * @see PhaseMatrix#translation(PhaseVector)
-     *
-     * @since Feb 20, 2009, version 2
-     */
-    /*protected PhaseMatrix applyAlignError(PhaseMatrix matPhi) {
-        double dx = getAlignX();
-        double dy = getAlignY();
-        double dz = getAlignZ();
-         
-        if ((dx != 0)||(dy != 0)||(dz !=0)) {
-             PhaseMatrix T  = PhaseMatrix.identity();
-             PhaseMatrix Ti = PhaseMatrix.identity();
-             
-             T.setElem(IND.X,IND.HOM, -dx);
-             T.setElem(IND.Y,IND.HOM, -dy);
-             T.setElem(IND.Z,IND.HOM, -dz);
-             
-             Ti.setElem(IND.X,IND.HOM, dx);
-             Ti.setElem(IND.Y,IND.HOM, dy);
-             Ti.setElem(IND.Z,IND.HOM, dz);
-             
-             PhaseMatrix matPhiDspl = Ti.times(matPhi).times(T);
-             
-             return matPhiDspl;
-             
-        } 
-
-        return matPhi;
-    }
     /*
      
     /**
@@ -401,9 +341,7 @@ public abstract class Element implements IElement {
         // probe position within lattice
         double sProbe = probe.getPosition();
 
-        double sElem = sProbe - (sCenter - lenElem / 2.0);
-
-        return sElem;
+        return sProbe - (sCenter - lenElem / 2.0);
     }
 
     //
@@ -415,7 +353,7 @@ public abstract class Element implements IElement {
      *
      * @return List of adjacent modeling elements
      */
-    public ArrayList<Element> getCloseElements() {
+    public List<Element> getCloseElements() {
         return closeElements;
     }
 
@@ -429,15 +367,10 @@ public abstract class Element implements IElement {
      * @return time interval during drift in <strong>seconds</strong>
      */
     public double compDriftingTime(IProbe probe, double dblLen) {
-
-        // the time interval
-        double dblTime = 0.0;
         // normalized probe velocity
         double dblBeta = probe.getBeta();
 
-        dblTime = dblLen / (IConstants.LIGHT_SPEED * dblBeta);
-
-        return dblTime;
+        return dblLen / (IConstants.LIGHT_SPEED * dblBeta);
     }
 
     /*
@@ -562,9 +495,7 @@ public abstract class Element implements IElement {
         double dblLocPos = this.getPosition();
         double dblParPos = this.getParent().getLatticePosition();
         double dblParLen = this.getParent().getLength();
-        double dblGblPos = (dblParPos - dblParLen / 2.0) + dblLocPos;
-
-        return dblGblPos;
+        return (dblParPos - dblParLen / 2.0) + dblLocPos;
     }
 
     /**
@@ -702,7 +633,7 @@ public abstract class Element implements IElement {
         alg = probe.getAlgorithm();
         if (alg instanceof Tracker) {
             Tracker tracker = (Tracker) alg;
-            LOGGER.log(Level.INFO, "tracker.setElemPosition to " + pos);
+            LOGGER.log(Level.INFO, "tracker.setElemPosition to {0}", pos);
 
             // The algorithm "element position" is also set in Tracker#advanceProbe() ??!!
             tracker.setElemPosition(pos);

@@ -276,11 +276,11 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
             throws ModelException {
 
         // Get  parameters
-        double B0 = this.getMagField();
+        double b0 = this.getMagField();
         double n0 = this.getFieldIndex();
 
         double e = probe.getSpeciesCharge();
-        double Er = probe.getSpeciesRestEnergy();
+        double eR = probe.getSpeciesRestEnergy();
         double gamma = probe.getGamma();
         double beta = probe.getBeta();
 
@@ -289,13 +289,13 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
         double alpha = this.getBendAngle();
 
         // Compute the equilibrium radius R0 and curvature h=1/R0
-        double R0 = 0;
-        if (e * c * B0 != 0) {
-            R0 = beta * gamma * Er / (e * c * B0);
+        double r0 = 0;
+        if (e * c * b0 != 0) {
+            r0 = beta * gamma * eR / (e * c * b0);
         }
         double h = 0;
-        if (R0 != 0) {
-            h = 1.0 / R0;
+        if (r0 != 0) {
+            h = 1.0 / r0;
         }
 
         //hs calculate hrho
@@ -360,14 +360,14 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
         // finite bending plane focusing 
         if (Math.abs(kb) > ElementaryFunction.EPS) {
             // cosine-like function value
-            double Cb = arrBend[0][0];
+            double cB = arrBend[0][0];
             // sine-like function value
-            double Sb = arrBend[0][1];
+            double sB = arrBend[0][1];
 
-            dx = R0 * (1.0 - Cb) / (1.0 - n0);
-            dxp = Sb * h;
+            dx = r0 * (1.0 - cB) / (1.0 - n0);
+            dxp = sB * h;
             //from ThickDipole and Trace3D, 31 Jan 07 Sako
-            dz = (dL * beta * beta - Sb) / (1 - n0) - dL * (1 - 1 / (1 - n0)) / (gamma * gamma);
+            dz = (dL * beta * beta - sB) / (1 - n0) - dL * (1 - 1 / (1 - n0)) / (gamma * gamma);
 
             // near zero bending plane focusing  
         } else {
@@ -379,11 +379,11 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
             double q = kb * dL;
             // phase advance squared
             double q2 = q * q;
-            dx = R0 * 0.5 * a2 * (1 - q2 / 12 + q2 * q2 / 360);
+            dx = r0 * 0.5 * a2 * (1. - q2 / 12 + q2 * q2 / 360.);
             //ok
             dxp = a * (1.0 + (q2 / 6.0) * (-1.0 + q2 / 20.0));
             //a2 therms cancel out (above formula diverce when q2=0)
-            dz = dL * a2 * (1 / 6 - q2 / 120 + q2 * q2 / 5040) - dL / gamma / gamma;
+            dz = dL * a2 * (1. / 6. - q2 / 120. + q2 * q2 / 5040.) - dL / gamma / gamma;
         }
 
         // Build the full transfer matrix 
@@ -441,7 +441,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
 
         // Get  parameters
         // opposite
-        double B = this.getMagField();
+        double b = this.getMagField();
 
         //hs
         double path = this.getPathLength();
@@ -449,27 +449,22 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
 
         double bPathFlag = this.getFieldPathFlag();
 
-        double w = probe.getKineticEnergy();
-
         double hrho = 0;
         if (path != 0) {
             hrho = alpha / path;
         }
 
         double charge = probe.getSpeciesCharge();
-        double Etotal = probe.getSpeciesRestEnergy() * probe.getGamma();
+        double eTotal = probe.getSpeciesRestEnergy() * probe.getGamma();
 
         double beta = probe.getBeta();
 
         final double c = IProbe.LIGHT_SPEED;
-        double Beff = alpha / path * Etotal * beta / (c * charge);
 
         // Compute the bending constant h  == 1/ bend radius (1/meter)
         //was default    
-        double h = c * B / (Etotal * beta * charge);
+        double h = c * b / (eTotal * beta * charge);
         LOGGER.log(Level.INFO, "h, hrho = {0} {1}", new Object[]{h, hrho});
-
-        double s = probe.getPosition();
 
         if (bPathFlag == 1.) {
             //if fieldPathFlag=1, use hrho (calculated from rho) instead of h(calculated from p and B)
@@ -546,5 +541,4 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
         os.println("  magnetic field     : " + this.getMagField());
         os.println("  magnet orientation : " + this.getOrientation());
     }
-
 }

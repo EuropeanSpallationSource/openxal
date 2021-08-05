@@ -1,7 +1,5 @@
 package xal.model.probe.traj;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import xal.tools.data.DataAdaptor;
 import xal.tools.data.DataFormatException;
 import xal.model.probe.Probe;
@@ -17,8 +15,6 @@ import xal.model.probe.Probe;
  *
  */
 public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState {
-
-    private static final Logger LOGGER = Logger.getLogger(ProbeState.class.getName());
 
     /*
      * Global Constants
@@ -157,7 +153,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
     /**
      * Default constructor - creates an empty <code>ProbeState</code> object.
      */
-    public ProbeState() {
+    protected ProbeState() {
     }
 
     /**
@@ -170,23 +166,22 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      * @author Christopher K. Allen
      * @since Jun 26, 2014
      */
-    public ProbeState(final S state) {
+    protected ProbeState(final S state) {
+        strElemId = state.getElementId();
+        strElemTypeId = state.getElementTypeId();
+        strSmfId = state.getHardwareNodeId();
 
-        this.strElemId = state.getElementId();
-        this.strElemTypeId = state.getElementTypeId();
-        this.strSmfId = state.getHardwareNodeId();
+        dblParQ = state.getSpeciesCharge();
+        dblParEr = state.getSpeciesRestEnergy();
 
-        this.dblParQ = state.getSpeciesCharge();
-        this.dblParEr = state.getSpeciesRestEnergy();
+        dblPos = state.getPosition();
+        dblTime = state.getTime();
 
-        this.dblPos = state.getPosition();
-        this.dblTime = state.getTime();
+        dblPhsLng = state.getLongitudinalPhase();
 
-        this.dblPhsLng = state.getLongitudinalPhase();
-
-        this.dblW = state.getKineticEnergy();
-        this.dblGamma = state.getGamma();
-        this.dblBeta = state.getBeta();
+        dblW = state.getKineticEnergy();
+        dblGamma = state.getGamma();
+        dblBeta = state.getBeta();
     }
 
     /**
@@ -195,20 +190,18 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      *
      * @param probe     <code>Probe</code> object containing initial values
      */
-    public ProbeState(final Probe<S> probe) {
-        this.setElementId(probe.getCurrentElement());
-        this.setElementTypeId(probe.getCurrentElementTypeId());
-        this.setHardwareNodeId(probe.getCurrentHardwareId());
+    protected ProbeState(final Probe<S> probe) {
+        strElemId = probe.getCurrentElement();
+        strElemTypeId = probe.getCurrentElementTypeId();
+        strSmfId = probe.getCurrentHardwareId();
 
-        this.setSpeciesCharge(probe.getSpeciesCharge());
-        this.setSpeciesRestEnergy(probe.getSpeciesRestEnergy());
+        dblParQ = probe.getSpeciesCharge();
+        dblParEr = probe.getSpeciesRestEnergy();
 
-        this.setPosition(probe.getPosition());
-        this.setTime(probe.getTime());
+        dblPos = probe.getPosition();
+        dblTime = probe.getTime();
 
-        this.setLongitudinalPhase(this.getLongitudinalPhase());
-
-        this.setKineticEnergy(probe.getKineticEnergy());
+        setKineticEnergy(probe.getKineticEnergy());
     }
 
     /**
@@ -290,11 +283,11 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
     /**
      * Set the rest energy of a single particle in the beam
      *
-     * @param Er particle rest energy (<strong>electron-volts</strong>)
+     * @param eR particle rest energy (<strong>electron-volts</strong>)
      */
     @Override
-    public void setSpeciesRestEnergy(double Er) {
-        this.dblParEr = Er;
+    public void setSpeciesRestEnergy(double eR) {
+        this.dblParEr = eR;
     }
 
     /**
@@ -349,13 +342,13 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
     /**
      * Set the current kinetic energy of the probe.
      *
-     * @param W new probe kinetic energy (<strong>electron-volts</strong>)
+     * @param w new probe kinetic energy (<strong>electron-volts</strong>)
      *
      * @see #getKineticEnergy
      */
     @Override
-    public void setKineticEnergy(double W) {
-        this.dblW = W;
+    public final void setKineticEnergy(double w) {
+        this.dblW = w;
 
         this.dblGamma = this.computeGammaFromW(dblW);
         this.dblBeta = this.computeBetaFromGamma(dblGamma);
@@ -535,7 +528,6 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
         try {
             readPropertiesFrom(container);
         } catch (DataFormatException e) {
-            LOGGER.log(Level.SEVERE, null, e);
             throw new DataFormatException("error loading from adaptor: "
                     + e.getMessage());
         }
@@ -555,13 +547,11 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      * Convenience function for computing the relativistic factor gamma from the
      * probe's kinetic energy (using the particle species rest energy dblParEr).
      *
-     * @param W kinetic energy of the probe
+     * @param w kinetic energy of the probe
      * @return relativistic factor gamma
      */
-    protected double computeGammaFromW(double W) {
-        double gamma = W / dblParEr + 1.0;
-
-        return gamma;
+    protected double computeGammaFromW(double w) {
+        return w / dblParEr + 1.0;
     }
 
     /**
@@ -572,9 +562,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
      * @return speed of probe (w.r.t. speed of light)
      */
     protected double computeBetaFromGamma(double gamma) {
-        double beta = Math.sqrt(1.0 - 1.0 / (gamma * gamma));
-
-        return beta;
+        return Math.sqrt(1.0 - 1.0 / (gamma * gamma));
     }
 
     /**

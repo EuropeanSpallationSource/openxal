@@ -72,7 +72,7 @@ public class IdealPermMagQuad extends ThickElectromagnet {
         bRhoScaling = d;
     }
 
-    private double K = 0;
+    private double k = 0;
 
     /**
      * 0=sharp edge, 1=fringe
@@ -111,7 +111,7 @@ public class IdealPermMagQuad extends ThickElectromagnet {
     /**
      * K1 (length not included)
      */
-    private double K1 = 0.0;
+    private double k1 = 0.0;
 
     int ori = -100;
 
@@ -144,7 +144,7 @@ public class IdealPermMagQuad extends ThickElectromagnet {
     }
 
     public double getK() {
-        return K;
+        return k;
     }
 
     public void setRadIn(double ri) {
@@ -168,9 +168,11 @@ public class IdealPermMagQuad extends ThickElectromagnet {
     }
 
     public void setFringeLenEntr(double fl) {
+        // Do Nothing
     }
 
     public void setFringeLenExit(double fl) {
+        // Do Nothing
     }
 
     public double getRadIn() {
@@ -214,11 +216,11 @@ public class IdealPermMagQuad extends ThickElectromagnet {
     }
 
     public double getK1() {
-        return K1;
+        return k1;
     }
 
     public void setK1(double k1) {
-        K1 = k1;
+        this.k1 = k1;
     }
 
     /*
@@ -293,7 +295,6 @@ public class IdealPermMagQuad extends ThickElectromagnet {
      * @param orientation
      * @return transfer map of ideal quadrupole for particular probe
      */
-    //public static PhaseMap transferMap(IProbe probe, double dL, double k, int orientation, double alignx, double aligny, double alignz) {
     public PhaseMap transferMap(IProbe probe, double dL, double k, int orientation) {
         // Compute the transfer matrix components
         double[][] arrF = QuadrupoleLens.transferFocPlane(k, dL);
@@ -341,15 +342,11 @@ public class IdealPermMagQuad extends ThickElectromagnet {
     }
 
     //sako, contribution from next PMQs
-    protected double KFringeFromOthers(IProbe probe, double dblLen) {
+    protected double kFringeFromOthers(IProbe probe, double dblLen) {
 
         //sako add permquad components
-        double KSum = 0;
-        double dxSum = 0;
-        double dySum = 0;
-        double dzSum = 0;
-
-        int KSumCount = 0;
+        double kSum = 0;
+        int kSumCount = 0;
 
         if (this.getCloseElements() != null) {
 
@@ -359,17 +356,10 @@ public class IdealPermMagQuad extends ThickElectromagnet {
                 Element elem = it.next();
                 if (elem instanceof IdealPermMagQuad) {
                     IdealPermMagQuad permQuad = (IdealPermMagQuad) elem;
-                    double K = permQuad.calcK(probe, dblLen);
-
-                    double dx = permQuad.getAlignX();
-                    double dy = permQuad.getAlignY();
-                    double dz = permQuad.getAlignZ();
-                    dxSum += dx;
-                    dySum += dy;
-                    dzSum += dz;
+                    double nextK = permQuad.calcK(probe, dblLen);
 
                     if (debug) {
-                        LOGGER.log(Level.INFO, "id, K = " + permQuad.getId() + " " + K);
+                        LOGGER.log(Level.INFO, "id, K = {0} {1}", new Object[]{permQuad.getId(), nextK});
                     }
 
                     double q = probe.getSpeciesCharge();
@@ -377,27 +367,27 @@ public class IdealPermMagQuad extends ThickElectromagnet {
 
                     // fixed on 15 oct 06
                     if (q * fld >= 0) {
-                        KSum += (K * K);
+                        kSum += (nextK * nextK);
                     } else {
-                        KSum -= (K * K);
+                        kSum -= (nextK * nextK);
                     }
 
-                    KSumCount++;
+                    kSumCount++;
                 }
             }
             if (debug) {
-                LOGGER.log(Level.INFO, "xxxxxxxxxxxxxx IdealPermQuad(" + this.getId() + ") (Kfringefromothers, KSum, KSumCount = " + KSum + " " + KSumCount);
+                LOGGER.log(Level.INFO, "xxxxxxxxxxxxxx IdealPermQuad({0}) (Kfringefromothers, KSum, KSumCount = {1} {2}", new Object[]{this.getId(), kSum, kSumCount});
             }
 
         }
 
-        if (KSum >= 0) {
-            KSum = Math.sqrt(KSum);
+        if (kSum >= 0) {
+            kSum = Math.sqrt(kSum);
         } else {
-            KSum = -Math.sqrt(-KSum);
+            kSum = -Math.sqrt(-kSum);
         }
 
-        return KSum;
+        return kSum;
     }
 
     /**
@@ -421,11 +411,9 @@ public class IdealPermMagQuad extends ThickElectromagnet {
      * return Phidx; }
      */
     public double calcK(IProbe probe, double dblLen) {
-
-        double bPathFlag = getFieldPathFlag();
         double w = probe.getKineticEnergy();
-        double Er = probe.getSpeciesRestEnergy();
-        double p = Math.sqrt(w * (w + 2 * Er));
+        double eR = probe.getSpeciesRestEnergy();
+        double p = Math.sqrt(w * (w + 2 * eR));
 
         double r1 = radIn;
         double r2 = radOut;
@@ -441,96 +429,96 @@ public class IdealPermMagQuad extends ThickElectromagnet {
         double f = fringe(s, s - s2, s - s1, r1, r2);
 
         if (debug) {
-            LOGGER.log(Level.INFO, "IdealPermMagQuad (" + this.getId() + ")::transferMap, s, s1, s2 = " + s + " " + s1 + " " + s2);
+            LOGGER.log(Level.INFO, "IdealPermMagQuad ({0})::transferMap, s, s1, s2 = {1} {2} {3}", new Object[]{this.getId(), s, s1, s2});
             LOGGER.log(Level.INFO, "r1, r2");
-            LOGGER.log(Level.INFO, "f = " + f);
-            LOGGER.log(Level.INFO, "dblLen = " + dblLen);
-            LOGGER.log(Level.INFO, "probe.getPosition() = " + probe.getPosition());
+            LOGGER.log(Level.INFO, "f = {0}", f);
+            LOGGER.log(Level.INFO, "dblLen = {0}", dblLen);
+            LOGGER.log(Level.INFO, "probe.getPosition() = {0}", probe.getPosition());
         }
 
         if (f < 0) {
-            LOGGER.log(Level.INFO, "****** WARNING: f = " + f);
-            LOGGER.log(Level.INFO, "IdealPermMagQuad (" + this.getId() + ")::transferMap, s, s1, s2 = " + s + " " + s1 + " " + s2);
+            LOGGER.log(Level.INFO, "****** WARNING: f = {0}", f);
+            LOGGER.log(Level.INFO, "IdealPermMagQuad ({0})::transferMap, s, s1, s2 = {1} {2} {3}", new Object[]{this.getId(), s, s1, s2});
             LOGGER.log(Level.INFO, "r1, r2");
-            LOGGER.log(Level.INFO, "f = " + f);
-            LOGGER.log(Level.INFO, "dblLen = " + dblLen);
-            LOGGER.log(Level.INFO, "probe.getPosition() = " + probe.getPosition());
+            LOGGER.log(Level.INFO, "f = {0}", f);
+            LOGGER.log(Level.INFO, "dblLen = {0}", dblLen);
+            LOGGER.log(Level.INFO, "probe.getPosition() = {0}", probe.getPosition());
 
             f = 0;
         } else if (f > 1) {
-            LOGGER.log(Level.INFO, "****** WARNING: f = " + f);
-            LOGGER.log(Level.INFO, "IdealPermMagQuad (" + this.getId() + ")::transferMap, s, s1, s2 = " + s + " " + s1 + " " + s2);
+            LOGGER.log(Level.INFO, "****** WARNING: f = {0}", f);
+            LOGGER.log(Level.INFO, "IdealPermMagQuad ({0})::transferMap, s, s1, s2 = {1} {2} {3}", new Object[]{this.getId(), s, s1, s2});
             LOGGER.log(Level.INFO, "r1, r2");
-            LOGGER.log(Level.INFO, "f = " + f);
-            LOGGER.log(Level.INFO, "dblLen = " + dblLen);
-            LOGGER.log(Level.INFO, "probe.getPosition() = " + probe.getPosition());
+            LOGGER.log(Level.INFO, "f = {0}", f);
+            LOGGER.log(Level.INFO, "dblLen = {0}", dblLen);
+            LOGGER.log(Level.INFO, "probe.getPosition() = {0}", probe.getPosition());
 
             f = 1;
         }
 
         // Get lens parameters
-        double G0 = Math.abs(this.getMagField());
-        double G = G0 * f;
+        double g0 = Math.abs(this.getMagField());
+        double g = g0 * f;
 
         // Compute focusing constant
         // focusing constant (radians/meter)
-        double k = Math.sqrt((LIGHT_SPEED * G) / p);
+        double nextK = Math.sqrt((LIGHT_SPEED * g) / p);
 
         //sako!!
-        if (K1 != 0.) {
-            LOGGER.log(Level.INFO, "K1, k = " + K1 + " " + k);
-            k = Math.sqrt(Math.abs(K1) * f);
+        if (k1 != 0.) {
+            LOGGER.log(Level.INFO, "K1, k = {0} {1}", new Object[]{k1, nextK});
+            nextK = Math.sqrt(Math.abs(k1) * f);
         }
 
         if (DEBUG_T3D) {
-            LOGGER.log(Level.INFO, "XAL element,z,grad = " + probe.getCurrentElement() + " " + s * 1000 + " " + G);
+            LOGGER.log(Level.INFO, "XAL element,z,grad = {0} {1} {2}", new Object[]{probe.getCurrentElement(), s * 1000, g});
         }
 
-        return k;
+        return nextK;
 
     }
 
-    public double KFringe(IProbe probe, double dblLen) {
+    public double kFringe(IProbe probe, double dblLen) {
 
         //sako add permquad components
-        double KSum = 0;
+        double kSum = 0;
         if (this.getCloseElements() != null) {
             if (debug) {
-                LOGGER.log(Level.INFO, "xxxxxxxxxxxxxx in IdealDrift, s, dblLen  = " + this.getPosition() + " " + dblLen);
+                LOGGER.log(Level.INFO, "xxxxxxxxxxxxxx in IdealDrift, s, dblLen  = {0} {1}", new Object[]{this.getPosition(), dblLen});
             }
 
             Iterator<Element> it = this.getCloseElements().iterator();
 
-            int KSumCount = 0;
+            int kSumCount = 0;
             while (it.hasNext()) {
                 Element elem = it.next();
                 if (elem instanceof IdealPermMagQuad) {
                     IdealPermMagQuad permQuad = (IdealPermMagQuad) elem;
-                    double K = permQuad.calcK(probe, dblLen);
+                    double nextK = permQuad.calcK(probe, dblLen);
                     if (debug) {
-                        LOGGER.log(Level.INFO, "id, K = " + permQuad.getId() + " " + K);
+                        LOGGER.log(Level.INFO, "id, K = {0} {1}", new Object[]{permQuad.getId(), nextK});
                     }
                     if (permQuad.getOrientation() == IElectromagnet.ORIENT_HOR) {
-                        KSum += (K * K);
+                        kSum += (nextK * nextK);
                     } else {
-                        KSum -= (K * K);
+                        kSum -= (nextK * nextK);
                     }
-                    KSumCount++;
+                    kSumCount++;
                 }
             }
 
-            if (KSum >= 0) {
-                KSum = Math.sqrt(KSum);
+            if (kSum >= 0) {
+                kSum = Math.sqrt(kSum);
             } else {
-                KSum = -Math.sqrt(-KSum);
+                kSum = -Math.sqrt(-kSum);
             }
 
             if (debug) {
-                LOGGER.log(Level.INFO, "xxxxxxxxxxxxxx end IdealPermQuad(" + this.getId() + "), KSum, KSumCount = " + KSum + " " + KSumCount);
+                LOGGER.log(Level.INFO, "xxxxxxxxxxxxxx end IdealPermQuad({0}), KSum, KSumCount = {1} {2}", new Object[]{this.getId(), kSum, kSumCount});
             }
 
         }
-        return KSum;
+        return kSum;
     }
 
     /**
@@ -559,8 +547,8 @@ public class IdealPermMagQuad extends ThickElectromagnet {
 
         double bPathFlag = getFieldPathFlag();
         double w = probe.getKineticEnergy();
-        double Er = probe.getSpeciesRestEnergy();
-        double p = Math.sqrt(w * (w + 2 * Er));
+        double eR = probe.getSpeciesRestEnergy();
+        double p = Math.sqrt(w * (w + 2 * eR));
 
         //if bpathflag =1, then use nominal k0 from nominal kine energy
         if (bPathFlag != 0.) {
@@ -569,13 +557,13 @@ public class IdealPermMagQuad extends ThickElectromagnet {
                 w0 = w;
                 setNominalKineEnergy(w0);
             }
-            double p0 = Math.sqrt(w0 * (w0 + 2 * Er));
+            double p0 = Math.sqrt(w0 * (w0 + 2 * eR));
 
             //save brho scaling. when nominalKineEnergy = 0, set 1.
             setBRhoScaling(p / p0);
         }
 
-        K = calcK(probe, dL);
+        k = calcK(probe, dL);
 
         double q = probe.getSpeciesCharge();
 
@@ -595,24 +583,24 @@ public class IdealPermMagQuad extends ThickElectromagnet {
         }
 
         if (debug) {
-            LOGGER.log(Level.INFO, "XAL(PMQ)total K, dL = " + K + " " + dL);
+            LOGGER.log(Level.INFO, "XAL(PMQ)total K, dL = {0} {1}", new Object[]{k, dL});
         }
 
         // Compute the transfer matrix components
         double[][] arrF;
 
         if (USE_APPROX_LENS) {
-            arrF = QuadrupoleLens.transferFocPlaneApproxSandWitch(K * assymmetryF, dL);
+            arrF = QuadrupoleLens.transferFocPlaneApproxSandWitch(k * assymmetryF, dL);
 
         } else {
-            arrF = QuadrupoleLens.transferFocPlane(K * assymmetryF, dL);
+            arrF = QuadrupoleLens.transferFocPlane(k * assymmetryF, dL);
         }
         double[][] arrD;
 
         if (USE_APPROX_LENS) {
-            arrD = QuadrupoleLens.transferDefPlaneApproxSandWitch(K * assymmetryD, dL);
+            arrD = QuadrupoleLens.transferDefPlaneApproxSandWitch(k * assymmetryD, dL);
         } else {
-            arrD = QuadrupoleLens.transferDefPlane(K * assymmetryD, dL);
+            arrD = QuadrupoleLens.transferDefPlane(k * assymmetryD, dL);
         }
 
         double[][] arr0 = DriftSpace.transferDriftPlane(dL);
@@ -645,7 +633,7 @@ public class IdealPermMagQuad extends ThickElectromagnet {
      * extent of fringe field this must be consistent with IdealDrift
      */
     //trace3d default=2.5
-    static final double pqExt = 2.5;
+    static final double PQ_EXT = 2.5;
 
     /**
      * based on trace3d pmqf subroutine
@@ -663,27 +651,23 @@ public class IdealPermMagQuad extends ThickElectromagnet {
 
         //newly added by sako, 26 Sep 06, z1<PQEXT*r1
         if (z1 > 0) {
-            if (z1 >= pqExt * r1) {
+            if (z1 >= PQ_EXT * r1) {
                 return 0;
             }
-        } else if (z2 < 0) {
-            if (-z2 >= pqExt * r1) {
-                return 0;
-            }
+        } else if (z2 < 0 && -z2 >= PQ_EXT * r1) {
+            return 0;
         }
 
         if (r2 < r1) {
-            System.err.println("IdealMagQuad, name = " + this.getId());
-            System.err.println("IdealMagQuad::fringe - outer radius r2 (" + r2 + ") is smaller than inner radius r1 (" + r1 + ")... Aborting");
+            LOGGER.log(Level.WARNING, "IdealMagQuad, name = {0}", this.getId());
+            LOGGER.log(Level.WARNING, "IdealMagQuad::fringe - outer radius r2 ({0}) is smaller than inner radius r1 ({1})... Aborting", new Object[]{r2, r1});
             System.exit(0);
             return 0;
         }
         double mins = this.getPosition() - this.getLength() / 2;
         double maxs = this.getPosition() + this.getLength() / 2;
 
-        if ((fringeLeft == 0) && (s < mins)) {
-            return 0;
-        } else if ((fringeRight == 0) && (maxs < s)) {
+        if (((fringeLeft == 0) && (s < mins)) || ((fringeRight == 0) && (maxs < s))) {
             return 0;
         }
 
@@ -720,8 +704,7 @@ public class IdealPermMagQuad extends ThickElectromagnet {
         double f2 = 0.5 * (1 - 0.125 * z2 * (1 / r1 + 1 / r2) * wtemp);
 
         if (DEBUG_T3D) {
-            LOGGER.log(Level.INFO, "XAL: s,z1,z2,r1,r2 ="
-                    + s * 1000 + " " + z1 * 1000 + " " + z2 * 1000 + " " + r1 * 1000 + " " + r2 * 1000);
+            LOGGER.log(Level.INFO, "XAL: s,z1,z2,r1,r2 ={0} {1} {2} {3} {4}", new Object[]{s * 1000, z1 * 1000, z2 * 1000, r1 * 1000, r2 * 1000});
         }
         fringeFactor = f1 - f2;
         return fringeFactor;

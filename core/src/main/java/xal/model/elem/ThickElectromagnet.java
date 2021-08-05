@@ -23,15 +23,15 @@ public abstract class ThickElectromagnet extends ThickElement implements IElectr
      */
     protected double dblField = 0.0;
 
-    public ThickElectromagnet(String strType, String strId, double dblLen) {
+    protected ThickElectromagnet(String strType, String strId, double dblLen) {
         super(strType, strId, dblLen);
     }
 
-    public ThickElectromagnet(String strType, String strId) {
+    protected ThickElectromagnet(String strType, String strId) {
         super(strType, strId);
     }
 
-    public ThickElectromagnet(String strType) {
+    protected ThickElectromagnet(String strType) {
         super(strType);
     }
 

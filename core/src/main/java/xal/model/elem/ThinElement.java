@@ -29,7 +29,7 @@ public abstract class ThinElement extends Element {
      *
      * @param strType type identifier string of element
      */
-    public ThinElement(String strType) {
+    protected ThinElement(String strType) {
         super(strType);
     }
 
@@ -40,7 +40,7 @@ public abstract class ThinElement extends Element {
      * @param strType type string of element
      * @param strId string identifier of the element
      */
-    public ThinElement(String strType, String strId) {
+    protected ThinElement(String strType, String strId) {
         super(strType, strId);
     }
 
@@ -210,31 +210,31 @@ public abstract class ThinElement extends Element {
 
         //check if the element is contained in a sequence which has its own misalignements
         if (this.getParent() instanceof ElementSeq) {
-            double Dx = (getNodePos() - this.getParent().getLength() / 2) * ((ElementSeq) this.getParent()).getPhiY();
-            double Dy = (getNodePos() - this.getParent().getLength() / 2) * ((ElementSeq) this.getParent()).getPhiX();
+            double dX = (getNodePos() - this.getParent().getLength() / 2) * ((ElementSeq) this.getParent()).getPhiY();
+            double dY = (getNodePos() - this.getParent().getLength() / 2) * ((ElementSeq) this.getParent()).getPhiX();
 
             px = px + ((ElementSeq) this.getParent()).getPhiX();
             py = py + ((ElementSeq) this.getParent()).getPhiY();
             pz = pz + ((ElementSeq) this.getParent()).getPhiZ();
 
-            dx = dx + Dx + ((ElementSeq) this.getParent()).getAlignX();
-            dy = dy + Dy + ((ElementSeq) this.getParent()).getAlignY();
+            dx = dx + dX + ((ElementSeq) this.getParent()).getAlignX();
+            dy = dy + dY + ((ElementSeq) this.getParent()).getAlignY();
             dz = dz + ((ElementSeq) this.getParent()).getAlignZ();
         }
 
         if (pz != 0.) {
-            PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));
-            matPhi = R.transpose().times(matPhi.times(R));
+            PhaseMatrix r = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));
+            matPhi = r.transpose().times(matPhi.times(r));
         }
 
         if (px != 0. || py != 0. || dz != 0. || dx != 0. || dy != 0.) {
-            PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py * length - dx, -py, px * length - dy, -px, -dz, 0.));
-            matPhi = matPhi.times(T);
+            PhaseMatrix t = PhaseMatrix.translation(new PhaseVector(py * length - dx, -py, px * length - dy, -px, -dz, 0.));
+            matPhi = matPhi.times(t);
         }
 
         if (px != 0. || py != 0. || dz != 0. || dx != 0. || dy != 0.) {
-            PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(-py * length + dx, py, -px * length + dy, px, dz, 0.));
-            matPhi = T.times(matPhi);
+            PhaseMatrix t = PhaseMatrix.translation(new PhaseVector(-py * length + dx, py, -px * length + dy, px, dz, 0.));
+            matPhi = t.times(matPhi);
         }
 
         return matPhi;

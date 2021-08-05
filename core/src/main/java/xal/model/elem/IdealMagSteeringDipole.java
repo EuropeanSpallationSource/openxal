@@ -223,18 +223,18 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
         double c = IConstants.LIGHT_SPEED;
 
         // Get element parameters
-        double B = this.getMagField();
+        double b = this.getMagField();
         double dL = this.getEffLength();
 
         // Get probe parameters
         double q = probe.getSpeciesCharge();
-        double Er = probe.getSpeciesRestEnergy();
+        double eR = probe.getSpeciesRestEnergy();
 
         double beta = probe.getBeta();
         double gamma = probe.getGamma();
 
         // Compute the cyclotron frequency and dipole strength
-        double w = (q) * (c / Er) * (B / (beta * gamma));
+        double w = (q) * (c / eR) * (b / (beta * gamma));
         double dp = w * dL;
 
         //      B polarity for negative charged particle -> x: left +, y: upper +
@@ -242,7 +242,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
         //changed so that angle + is x+, angle - is y- for negatives
         // on 28 Nov 07
         if (dblAngleKick != 0.) {
-            LOGGER.log(Level.INFO, "***use anglekick (" + dblAngleKick + ") instead of dp " + dp);
+            LOGGER.log(Level.INFO, "***use anglekick ({0}) instead of dp {1}", new Object[]{dblAngleKick, dp});
             dp = dblAngleKick;
             // then B polarity is defined in J-PARC also dp>0 for B>0 in x and y
         }
@@ -252,15 +252,12 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
         PhaseMatrix matPhi = PhaseMatrix.identity();
 
         switch (this.getOrientation()) {
-
             case ORIENT_HOR:
                 matPhi.setElem(1, 6, -dp);
                 break;
-
             case ORIENT_VER:
                 matPhi.setElem(3, 6, dp);
                 break;
-
             default:
                 throw new PropagationException("IdealMagSteeringDipole::tranferMatrix() - unknown magnet orientation");
         }

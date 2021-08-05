@@ -7,6 +7,8 @@
  */
 package xal.model.alg;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.model.IElement;
 import xal.model.IProbe;
 import xal.model.ModelException;
@@ -28,6 +30,8 @@ import xal.model.probe.EnvelopeProbe;
  * @author Christopher K. Allen
  */
 public class EnvelopeTrackerPmq extends EnvelopeTracker {
+
+    private static final Logger LOGGER = Logger.getLogger(EnvelopeTrackerPmq.class.getName());
 
     /*
      * Global Constants
@@ -103,7 +107,7 @@ public class EnvelopeTrackerPmq extends EnvelopeTracker {
         double propLen = elemLen - elemPos;
 
         if (propLen < 0) {
-            System.err.println("doPropagation, elemPos, elemLen = " + elemPos + " " + elemLen);
+            LOGGER.log(Level.WARNING, "doPropagation, elemPos, elemLen = {0} {1}", new Object[]{elemPos, elemLen});
             return;
         }
 
@@ -120,24 +124,7 @@ public class EnvelopeTrackerPmq extends EnvelopeTracker {
             nSteps = 1;
 
         }
-        // Determine the number of steps through the element
-        /*
-        if (elem instanceof IdealPermMagQuad)   {
-            nSteps = (int)Math.max(Math.ceil(elem.getLength() / getStepSize()), 1);
-            
-        } else if (elem instanceof IdealDrift) {
-            nSteps = (int)Math.max(Math.ceil(elem.getLength() / getStepSize()), 1);
-            
-        }else if(this.getSpaceChargeFlag()) {
-            nSteps = (int) Math.max(Math.ceil(elem.getLength() / getStepSize()), 1);
         
-        } else { 
-            nSteps = 1;
-            
-        }
-       
-        dblSize = elem.getLength() / nSteps;
-         */
         dblSize = propLen / nSteps;
         for (int i = 0; i < nSteps; i++) {
             this.advanceState(probe, elem, dblSize);

@@ -162,7 +162,7 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
         double propLen = elemLen - elemPos;
 
         if (propLen < 0) {
-            System.err.println("doPropagation, elemPos, elemLen = " + elemPos + " " + elemLen);
+            LOGGER.log(Level.WARNING, "doPropagation, elemPos, elemLen = {0} {1}", new Object[]{elemPos, elemLen});
             return;
         }
 
@@ -212,7 +212,6 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
      */
     protected void retractState(IProbe ifcProbe, IElement ifcElem, double dblLen)
             throws ModelException {
-
         // Identify probe
         EnvelopeProbe probe = (EnvelopeProbe) ifcProbe;
 
@@ -221,8 +220,8 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
         PhaseMatrix matTau0 = probe.getCovariance();
 
         // Remove the emittance growth
-        if (this.getEmittanceGrowth()) {
-            matTau0 = this.removeEmittanceGrowth(probe, ifcElem, matTau0);
+        if (getEmittanceGrowth()) {
+            removeEmittanceGrowth(probe, ifcElem, matTau0);
         }
 
         // Compute the transfer matrix
@@ -283,7 +282,6 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
      */
     private PhaseMatrix compTransferMatrix(double dblLen, EnvelopeProbe probe, IElement ifcElem)
             throws ModelException {
-
         // Returned value
         // transfer matrix including all effects
         PhaseMatrix matPhi;

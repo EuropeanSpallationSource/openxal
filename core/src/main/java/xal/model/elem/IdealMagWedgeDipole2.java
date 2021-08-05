@@ -501,11 +501,11 @@ public class IdealMagWedgeDipole2 extends ElectromagnetSeq {
         double kQuad0 = magnet.getQuadComponent();
 
         // Now compute the dependent parameters
-        double RBend0 = lenPath0 / angBend0;
-        double fldInd0 = -kQuad0 * RBend0 * RBend0;
+        double rBend0 = lenPath0 / angBend0;
+        double fldInd0 = -kQuad0 * rBend0 * rBend0;
 
         double angBend = angBend0 * (lenSect / lenPath0);
-        double lenPath = RBend0 * angBend;
+        double lenPath = rBend0 * angBend;
 
         // Set the parameters for the new model element             
         setPhysicalLength(lenSect);

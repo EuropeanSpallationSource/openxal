@@ -7,7 +7,6 @@
 package xal.model.elem;
 
 import xal.sim.scenario.LatticeElement;
-import xal.smf.impl.Bend;
 
 /**
  * Represents a quadrupole magnet with thin face elements which represent fringe
@@ -393,21 +392,10 @@ public class IdealMagFringeQuad extends ElectromagnetSeq {
     public void initializeFrom(LatticeElement element) {
         super.initializeFrom(element);
 
-        Bend magnet = (Bend) element.getHardwareNode();
         setPosition(element.getCenterPosition(), element.getLength());
 
         // First retrieve all the physical parameters for a bending dipole                
         double lenSect = element.getLength();
-        double lenPath0 = magnet.getDfltPathLength();
-        double angBend0 = magnet.getDfltBendAngle() * Math.PI / 180.0;
-        double kQuad0 = magnet.getQuadComponent();
-
-        // Now compute the dependent parameters
-        double RBend0 = lenPath0 / angBend0;
-        double fldInd0 = -kQuad0 * RBend0 * RBend0;
-
-        double angBend = angBend0 * (lenSect / lenPath0);
-        double lenPath = RBend0 * angBend;
 
         // Set the parameters for the new model element                
         setPhysicalLength(lenSect);

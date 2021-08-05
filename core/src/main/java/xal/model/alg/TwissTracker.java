@@ -257,7 +257,6 @@ public class TwissTracker extends Tracker {
      */
     @Override
     public void doPropagation(IProbe probe, IElement elem) throws ModelException {
-
         int nSteps;
         double dblSize;
 
@@ -305,13 +304,9 @@ public class TwissTracker extends Tracker {
             recTracker = tblAlgorithm.record(TwissTracker.TBL_PRIM_KEY_NAME, "default");
         }
 
-        final boolean bolEmitGrwth = recTracker.booleanValueForKey(TwissTracker.ATTR_EMITGROWTH);
-        final boolean bolUseSpChg = recTracker.booleanValueForKey(TwissTracker.ATTR_SCHEFF);
-        final double dblStepSize = recTracker.doubleValueForKey(TwissTracker.ATTR_STEPSIZE);
-
-        this.setStepSize(dblStepSize);
-        this.setEmittanceGrowth(bolEmitGrwth);
-        this.setUseSpacecharge(bolUseSpChg);
+        this.setStepSize(recTracker.doubleValueForKey(TwissTracker.ATTR_STEPSIZE));
+        this.setEmittanceGrowth(recTracker.booleanValueForKey(TwissTracker.ATTR_EMITGROWTH));
+        this.setUseSpacecharge(recTracker.booleanValueForKey(TwissTracker.ATTR_SCHEFF));
     }
 
     /**
@@ -347,9 +342,7 @@ public class TwissTracker extends Tracker {
 
                 this.setUseSpacecharge(daTwiss.booleanValue(ATTR_USESPACECHARGE));
             }
-
         }
-
     }
 
     /**
@@ -372,7 +365,6 @@ public class TwissTracker extends Tracker {
         daptOpt.setValue(ATTR_EMITGROWTH, this.getEmittanceGrowthFlag());
         daptOpt.setValue(ATTR_SCHEFF, this.getSpaceChargeFlag());
         daptOpt.setValue(ATTR_USESPACECHARGE, this.getSpaceChargeFlag());
-
     }
 
     /*
@@ -391,7 +383,6 @@ public class TwissTracker extends Tracker {
      */
     protected void advanceState(IProbe ifcProbe, IElement ifcElem, double dblLen)
             throws ModelException {
-
         // Identify probe
         TwissProbe probe = (TwissProbe) ifcProbe;
 
@@ -523,12 +514,15 @@ public class TwissTracker extends Tracker {
      * @author Christopher K. Allen
      */
     private Twiss3D exceptionIdealRfGap(TwissProbe probe, IdealRfGap elem) {
-
         // Loop variables
         // old Twiss parameters
-        double a0, b0, e0;
+        double a0;
+        double b0;
+        double e0;
         // new Twiss parameters
-        double a1, b1, e1;
+        double a1;
+        double b1;
+        double e1;
 
         // "phase spread"
         double k;
@@ -542,7 +536,6 @@ public class TwissTracker extends Tracker {
         Twiss3D twissEnv1 = new Twiss3D();
 
         for (IND_3D index : IND_3D.values()) {
-
             a0 = twissEnv0.getTwiss(index).getAlpha();
             b0 = twissEnv0.getTwiss(index).getBeta();
             e0 = twissEnv0.getTwiss(index).getEmittance();
@@ -584,7 +577,6 @@ public class TwissTracker extends Tracker {
      * of phase advances in <strong>radians</strong>
      */
     private R3 compPhaseAdvance(Twiss3D twsInit, Twiss3D twsFinal, PhaseMatrix matPhi) {
-
         final Twiss3D twsFnl = twsFinal;
         final Twiss3D twsInt = twsInit;
 
@@ -645,7 +637,6 @@ public class TwissTracker extends Tracker {
      * @return set of new twiss parameter values
      */
     private Twiss3D computeTwiss(TwissProbe probe, PhaseMatrix matPhi, double dW) {
-
         // Compute relativistic parameters ratios
         // emittance decrease ratio for transverse plane 
         double ratTran;
@@ -678,11 +669,14 @@ public class TwissTracker extends Tracker {
         Twiss3D twissEnv1 = new Twiss3D();
 
         // old twiss parameters
-        double alpha0, beta0, gamma0;
+        double alpha0;
+        double beta0;
+        double gamma0;
         // old (unnormalized) emittance
         double emit0;
         // new twiss parameters
-        double alpha1, beta1;
+        double alpha1;
+        double beta1;
         // new (unnormalized) emittance
         double emit1;
 
@@ -696,7 +690,7 @@ public class TwissTracker extends Tracker {
         //                .
         double rjpjp;
 
-        int j = 0;
+        int j;
         // for each phase plane
         for (IND_3D index : IND_3D.values()) {
             j = 2 * index.val();
@@ -738,8 +732,7 @@ public class TwissTracker extends Tracker {
      * @return
      */
     private double correctTransSigmaPhaseSpread(TwissProbe probe, IdealRfGap elem) {
-
-        double dfac = 1;
+        double dfac;
 
         double phi = elem.getPhase();
         double dphi = phaseSpread(probe, elem);
@@ -789,17 +782,9 @@ public class TwissTracker extends Tracker {
      * @return incremental increase in longitudinal RMS emittance for probe
      */
     private double correctLongSigmaPhaseSpread(TwissProbe probe, IdealRfGap elem) {
-
         double phi = elem.getPhase();
         double dphi = this.phaseSpread(probe, elem);
-        double tdp = 2 * dphi;
 
-        double f2 = 1 - tdp * tdp / 14;
-        if (tdp > 0.1) {
-            double sintdp = Math.sin(tdp);
-            f2 = 3 * (sintdp / tdp - Math.cos(tdp)) / tdp / tdp;
-            f2 = 15 * (f2 - sintdp / tdp) / tdp / tdp;
-        }
         double sinphi = Math.sin(phi);
         double cosphi = Math.cos(phi);
 
@@ -882,7 +867,6 @@ public class TwissTracker extends Tracker {
      * @author Hiroyuki Sako
      */
     private double phaseSpread(TwissProbe probe, IdealRfGap elem) {
-
         double eR = probe.getSpeciesRestEnergy();
         double wI = probe.getKineticEnergy();
 
@@ -897,5 +881,4 @@ public class TwissTracker extends Tracker {
         //radian
         return Math.sqrt(emitz * betaz) * 2 * Math.PI / 360.0;
     }
-
 }

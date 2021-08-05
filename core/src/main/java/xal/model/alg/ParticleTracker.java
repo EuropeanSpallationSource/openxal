@@ -8,11 +8,6 @@ package xal.model.alg;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.PhaseVector;
-import xal.tools.data.DataAdaptor;
-import xal.tools.data.DataFormatException;
-import xal.tools.data.DataTable;
-import xal.tools.data.EditContext;
-import xal.tools.data.GenericRecord;
 import xal.model.IElement;
 import xal.model.IProbe;
 import xal.model.ModelException;
@@ -27,15 +22,6 @@ import xal.model.probe.ParticleProbe;
  * @author Craig McChesney
  */
 public class ParticleTracker extends Tracker {
-
-    /*
-     *  Global Attributes
-     */
-    /**
-     * Label for edit context table containing algorithm parameters - i.e., in
-     * "model.params" file
-     */
-    private static final String STR_LBL_TABLE = "ParticleTracker";
 
     /**
      * string type identifier for this algorithm
@@ -80,53 +66,6 @@ public class ParticleTracker extends Tracker {
     @Override
     public ParticleTracker copy() {
         return new ParticleTracker(this);
-    }
-
-    /*
-     * IArchive Interface
-     */
-    /**
-     * Place holder for loading additional parameters from an edit context.
-     *
-     * @since Oct 26, 2012
-     * @see xal.model.alg.Tracker#load(java.lang.String,
-     * xal.tools.data.EditContext)
-     */
-    @Override
-    public void load(String strPrimKeyVal, EditContext ecTableData) throws DataFormatException {
-        super.load(strPrimKeyVal, ecTableData);
-
-        // Get the algorithm class name from the EditContext
-        DataTable tblAlgorithm = ecTableData.getTable(STR_LBL_TABLE);
-        GenericRecord recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, strPrimKeyVal);
-
-        if (recTracker == null) {
-            // just use the default record
-            recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");
-        }
-
-    }
-
-    /**
-     * Place holder for loading additional parameters from a data adaptor.
-     *
-     * @since Oct 26, 2012
-     * @see xal.model.alg.Tracker#load(xal.tools.data.DataAdaptor)
-     */
-    @Override
-    public void load(DataAdaptor daSource) throws DataFormatException {
-        super.load(daSource);
-    }
-
-    /**
-     * Place holder for loading additional parameters from a data adaptor.
-     *
-     * @since Oct 26, 2012
-     * @see xal.model.alg.Tracker#save(xal.tools.data.DataAdaptor)
-     */
-    @Override
-    public void save(DataAdaptor daptArchive) {
-        super.save(daptArchive);
     }
 
     /*
@@ -182,5 +121,4 @@ public class ParticleTracker extends Tracker {
 
         probe.setResponseMatrix(r1);
     }
-
 }

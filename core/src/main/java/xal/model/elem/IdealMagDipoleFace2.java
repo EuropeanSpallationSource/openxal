@@ -66,7 +66,7 @@ public class IdealMagDipoleFace2 extends ThinElectromagnet {
     /**
      * K0 (no length)
      */
-    private double K0 = 0;
+    private double k0 = 0;
 
     /**
      * The dipole gap height (m)
@@ -84,7 +84,7 @@ public class IdealMagDipoleFace2 extends ThinElectromagnet {
     private double dblFringeInt = 0.0;
 
     /**
-     * flag to use design field from bending angle and path instead of bfield
+     * flag to use design field from bending angle and path instead of B field
      */
     private boolean bolFieldPathFlag = false;
 
@@ -202,7 +202,7 @@ public class IdealMagDipoleFace2 extends ThinElectromagnet {
      * @since Apr 19, 2011
      */
     public void setK0(double dbl) {
-        K0 = dbl;
+        k0 = dbl;
     }
 
     /*
@@ -220,7 +220,7 @@ public class IdealMagDipoleFace2 extends ThinElectromagnet {
      * @since Apr 19, 2011
      */
     public double getK0() {
-        return K0;
+        return k0;
     }
 
     /**
@@ -297,12 +297,10 @@ public class IdealMagDipoleFace2 extends ThinElectromagnet {
      * @see IdealMagSectorDipole2#compDesignBendingRadius()
      */
     public double compDesignCurvature() {
-        double L0 = this.getDesignPathLength();
+        double l0 = this.getDesignPathLength();
         double theta0 = this.getDesignBendingAngle();
 
-        double h0 = theta0 / L0;
-
-        return h0;
+        return theta0 / l0;
     }
 
     /*
@@ -347,56 +345,30 @@ public class IdealMagDipoleFace2 extends ThinElectromagnet {
 
         // Get  parameters
         // opposite
-        double B = this.getMagField();
+        double b = this.getMagField();
         double g = this.getGapHeight();
-        double I2 = this.getFringeIntegral();
-        /*
-        double h  = BendingMagnet.compCurvature(probe, B);
-        if (getFieldPathFlag() != 0.0) {
-            h = this.compDesignCurvature();
-        }
-         */
+        double i2 = this.getFringeIntegral();
 
- /*
-        if (((getFieldPathFlag() != 0.)&&(getDesignBendingAngle() == 0.))
-                || ((getFieldPathFlag() == 0.)&&(B == 0.0))) {
-             PhaseMatrix  matPhi  = new PhaseMatrix();
-                
-            double[] mat0[] = new double [][] {{1.0, 0.0}, {0.0, 1.0}};
-
-            matPhi.setSubMatrix(0,1, 0,1, mat0);
-            matPhi.setSubMatrix(2,3, 2,3, mat0);
-            matPhi.setSubMatrix(4,5, 4,5, mat0);
-            matPhi.setElem(6,6, 1.0);
-
-            return new PhaseMap(matPhi);
-        }
-         */
         // h0 polarity = alpha polarity
         final double h0 = this.compDesignCurvature();
-        double h = 0;
-        if (getFieldPathFlag() == false) {
-
+        double h;
+        if (!getFieldPathFlag()) {
             // h polarity = e*B0 polarity
-            h = BendingMagnet.compCurvature(probe, B);
-
-        } else if (getFieldPathFlag() == true) {
-
+            h = BendingMagnet.compCurvature(probe, b);
+        } else if (getFieldPathFlag()) {
             h = h0;
-
         } else {
-
             h = this.getK0();
         }
 
         // The fringe field angle from the extended field:
-        double dblAngFace = this.getPoleFaceAngle();
-        double sin = Math.sin(dblAngFace);
-        double cos = Math.cos(dblAngFace);
-        double dblAngDefl = g * h * I2 * (1.0 + sin * sin) / cos;
+        double angFace = this.getPoleFaceAngle();
+        double sin = Math.sin(angFace);
+        double cos = Math.cos(angFace);
+        double dblAngDefl = g * h * i2 * (1.0 + sin * sin) / cos;
         //4 feb 08, if g=0, I2 definition is that of SAD definition. without g but times 6
         if (g == 0) {
-            dblAngDefl = h * I2 * (1.0 + sin * sin) / cos / 6;
+            dblAngDefl = h * i2 * (1.0 + sin * sin) / cos / 6;
         }
 
         // Compute the transfer matrix components
@@ -405,13 +377,13 @@ public class IdealMagDipoleFace2 extends ThinElectromagnet {
 
         switch (this.getOrientation()) {
             case IElectromagnet.ORIENT_HOR:
-                matPhi.setElem(1, 0, hStar * Math.tan(dblAngFace));
-                matPhi.setElem(3, 2, -hStar * Math.tan(dblAngFace - dblAngDefl));
+                matPhi.setElem(1, 0, hStar * Math.tan(angFace));
+                matPhi.setElem(3, 2, -hStar * Math.tan(angFace - dblAngDefl));
                 break;
 
             case IElectromagnet.ORIENT_VER:
-                matPhi.setElem(1, 0, -hStar * Math.tan(dblAngFace - dblAngDefl));
-                matPhi.setElem(3, 2, hStar * Math.tan(dblAngFace));
+                matPhi.setElem(1, 0, -hStar * Math.tan(angFace - dblAngDefl));
+                matPhi.setElem(3, 2, hStar * Math.tan(angFace));
                 break;
 
             default:
@@ -419,11 +391,9 @@ public class IdealMagDipoleFace2 extends ThinElectromagnet {
         }
 
         //Jan 2019 Apply the error form the ThinElement
-        PhaseMatrix Phidx = applyErrors(matPhi, 0.0);
-        matPhi = Phidx;
+        PhaseMatrix phidx = applyErrors(matPhi, 0.0);
+        matPhi = phidx;
 
         return new PhaseMap(matPhi);
-
     }
-
 }

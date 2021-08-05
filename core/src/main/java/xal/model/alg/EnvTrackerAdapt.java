@@ -609,7 +609,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
             // use the new step size
             h = hp;
 
-            if (this.getDebugMode() == true) {
+            if (getDebugMode()) {
                 if (elem instanceof IdealDrift) {
                     LOGGER.log(Level.INFO, "IdealDrift, hp = {0}", hp);
                 }
@@ -906,7 +906,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
             probe.getTrajectory().popLastState();
         }
 
-        if (this.getDebugMode() == true) {
+        if (getDebugMode()) {
             LOGGER.log(Level.INFO, "ROLLBACK at s={0}", probe.getPosition());
         }
     }
@@ -1033,7 +1033,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
             hnew = h;
         }
 
-        if (this.getDebugMode() == true) {
+        if (getDebugMode()) {
             LOGGER.log(Level.INFO, "residual error={0}", error);
             LOGGER.log(Level.INFO, "hnew = {0}", hnew);
         }

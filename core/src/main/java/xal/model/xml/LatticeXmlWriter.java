@@ -53,7 +53,6 @@ public class LatticeXmlWriter {
     private static final String DATE_LABEL = LatticeXmlParser.ATTR_DATE;
     private static final String TEXT_LABEL = LatticeXmlParser.ATTR_TEXT;
     private static final String TYPE_LABEL = LatticeXmlParser.ATTR_TYPE;
-    private static final String LENGTH_LABEL = LatticeXmlParser.ATTR_LEN;
     private static final String NAME_LABEL = LatticeXmlParser.ATTR_NAME;
     private static final String VALUE_LABEL = LatticeXmlParser.ATTR_VAL;
 

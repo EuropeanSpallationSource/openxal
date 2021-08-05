@@ -7,6 +7,7 @@ package xal.model;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 /**
  * Implementation of an iterator class for <code>IComposite</code> objects.
@@ -49,7 +50,7 @@ public class CompositeGlobalIterator implements Iterator<IComponent> {
     }
 
     @Override
-    public IComponent next() {
+    public IComponent next() throws NoSuchElementException {
         return iterator.next();
     }
 

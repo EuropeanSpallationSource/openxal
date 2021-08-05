@@ -83,7 +83,7 @@ public class IdealMagFringeQuadFace extends ThinElectromagnet {
     /**
      * K1 (T/m) length excluded
      */
-    private double K1 = 0.0;
+    private double k1 = 0.0;
 
     private double nominalKineEnergy = 0.0;
 
@@ -113,14 +113,14 @@ public class IdealMagFringeQuadFace extends ThinElectromagnet {
      * @return K1
      */
     public double getK1() {
-        return K1;
+        return k1;
     }
 
     /**
      * K1 (T/m)
      */
     public void setK1(double dbl) {
-        K1 = dbl;
+        k1 = dbl;
     }
 
     /**
@@ -255,9 +255,9 @@ public class IdealMagFringeQuadFace extends ThinElectromagnet {
     @Override
     protected PhaseMap transferMap(IProbe probe) throws ModelException {
 
-        double Er = probe.getSpeciesRestEnergy();
+        double eR = probe.getSpeciesRestEnergy();
         double w = probe.getKineticEnergy();
-        double p = Math.sqrt(w * (w + 2 * Er));
+        double p = Math.sqrt(w * (w + 2 * eR));
 
         double bPathFlag = getFieldPathFlag();
         //if bpathflag =1, then use nominal k0 from nominal kine energy
@@ -267,7 +267,7 @@ public class IdealMagFringeQuadFace extends ThinElectromagnet {
                 w0 = probe.getKineticEnergy();
                 setNominalKineEnergy(w0);
             }
-            double p0 = Math.sqrt(w0 * (w0 + 2 * Er));
+            double p0 = Math.sqrt(w0 * (w0 + 2 * eR));
 
             //save brho scaling. when nominalKineEnergy = 0, set 1.
             setBRhoScaling(p / p0);
@@ -276,8 +276,8 @@ public class IdealMagFringeQuadFace extends ThinElectromagnet {
         // Get  parameters
         double f1 = this.getFringeIntegral1();
         double f2 = this.getFringeIntegral2();
-        double I1 = Math.signum(f1) * f1 * f1;
-        double I2 = -0.5 * f2;
+        double i1 = Math.signum(f1) * f1 * f1;
+        double i2 = -0.5 * f2;
 
         double q = probe.getSpeciesCharge();
 
@@ -295,27 +295,27 @@ public class IdealMagFringeQuadFace extends ThinElectromagnet {
         PhaseMatrix matPhi = PhaseMatrix.identity();
 
         if (entrFlag) {
-            matPhi.setElem(0, 0, 1 - k * I1);
-            matPhi.setElem(0, 1, -2 * k * I2);
-            matPhi.setElem(1, 1, 1 + k * I1);
+            matPhi.setElem(0, 0, 1 - k * i1);
+            matPhi.setElem(0, 1, -2 * k * i2);
+            matPhi.setElem(1, 1, 1 + k * i1);
 
-            matPhi.setElem(2, 2, 1 + k * I1);
-            matPhi.setElem(2, 3, 2 * k * I2);
-            matPhi.setElem(3, 3, 1 - k * I1);
+            matPhi.setElem(2, 2, 1 + k * i1);
+            matPhi.setElem(2, 3, 2 * k * i2);
+            matPhi.setElem(3, 3, 1 - k * i1);
         } else {
-            matPhi.setElem(0, 0, 1 + k * I1);
-            matPhi.setElem(0, 1, -2 * k * I2);
-            matPhi.setElem(1, 1, 1 - k * I1);
+            matPhi.setElem(0, 0, 1 + k * i1);
+            matPhi.setElem(0, 1, -2 * k * i2);
+            matPhi.setElem(1, 1, 1 - k * i1);
 
-            matPhi.setElem(2, 2, 1 - k * I1);
-            matPhi.setElem(2, 3, 2 * k * I2);
-            matPhi.setElem(3, 3, 1 + k * I1);
+            matPhi.setElem(2, 2, 1 - k * i1);
+            matPhi.setElem(2, 3, 2 * k * i2);
+            matPhi.setElem(3, 3, 1 + k * i1);
         }
 
         //Jan 2019 - Natalia Milas
         //Apply the slice error form the ThinElement
-        PhaseMatrix Phidx = applyErrors(matPhi, 0.0);
-        matPhi = Phidx;
+        PhaseMatrix phidx = applyErrors(matPhi, 0.0);
+        matPhi = phidx;
 
         return new PhaseMap(matPhi);
 

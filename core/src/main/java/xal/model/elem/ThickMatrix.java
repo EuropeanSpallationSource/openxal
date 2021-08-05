@@ -237,17 +237,17 @@ public class ThickMatrix extends ThickElement {
     @Override
     public PhaseMap transferMap(IProbe probe, double dblLen) throws ModelException {
         double s = dblLen;
-        PhaseMatrix A = this.matGen;
-        PhaseMatrix M = PhaseMatrix.identity();
+        PhaseMatrix a = this.matGen;
+        PhaseMatrix m = PhaseMatrix.identity();
 
-        M.plusEquals(A.times(s));
-        M.plusEquals(A.times(A.times(0.5 * s * s)));
+        m.plusEquals(a.times(s));
+        m.plusEquals(a.times(a.times(0.5 * s * s)));
 
         // Jan 2019 - Natalia Milas
         // apply alignment and rotation errors
-        M = applyErrors(M, probe, dblLen);
+        m = applyErrors(m, probe, dblLen);
 
-        return new PhaseMap(M);
+        return new PhaseMap(m);
     }
 
 }

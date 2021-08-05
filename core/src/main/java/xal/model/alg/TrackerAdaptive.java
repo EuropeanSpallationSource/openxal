@@ -123,21 +123,21 @@ public abstract class TrackerAdaptive extends Tracker {
     public void initializeFromEditContext(final String locationID, final AcceleratorSeq sequence) {
         final EditContext editContext = sequence.getAccelerator().editContext();
         final DataTable adaptiveTrackerTable = editContext.getTable("adaptivetracker");
-        GenericRecord record = adaptiveTrackerTable.record("name", locationID);
-        if (record == null) {
+        GenericRecord channelRecord = adaptiveTrackerTable.record("name", locationID);
+        if (channelRecord == null) {
             // just use the default record
-            record = adaptiveTrackerTable.record("name", "default");
+            channelRecord = adaptiveTrackerTable.record("name", "default");
         }
 
-        final double errorTolerance = record.doubleValueForKey(ATTRTAG_ERRTOL);
-        final double initStep = record.doubleValueForKey(ATTRTAG_INITSTEP);
+        final double errorTolerance = channelRecord.doubleValueForKey(ATTRTAG_ERRTOL);
+        final double initStep = channelRecord.doubleValueForKey(ATTRTAG_INITSTEP);
         initStepSize = initStep;
-        final double maxStep = record.doubleValueForKey(ATTRTAG_MAXSTEP);
-        final double maxStepDriftPmq = record.doubleValueForKey(ATTRTAG_MAXSTEP_DRIFTPMQ);
-        final int norm = record.intValueForKey(ATTRTAG_NORM);
-        final int order = record.intValueForKey(ATTRTAG_ORDER);
-        final double slack = record.doubleValueForKey(ATTRTAG_SLACK);
-        final int maxIter = record.intValueForKey(ATTRTAG_MAXITER);
+        final double maxStep = channelRecord.doubleValueForKey(ATTRTAG_MAXSTEP);
+        final double maxStepDriftPmq = channelRecord.doubleValueForKey(ATTRTAG_MAXSTEP_DRIFTPMQ);
+        final int norm = channelRecord.intValueForKey(ATTRTAG_NORM);
+        final int order = channelRecord.intValueForKey(ATTRTAG_ORDER);
+        final double slack = channelRecord.doubleValueForKey(ATTRTAG_SLACK);
+        final int maxIter = channelRecord.intValueForKey(ATTRTAG_MAXITER);
 
         if (supportsConditionalTermination()) {
             setAccuracyOrder(order);
@@ -381,7 +381,6 @@ public abstract class TrackerAdaptive extends Tracker {
     @Override
     public void initialize() {
         super.initialize();
-//        if (initStepSize > 0.)
         setStepSize(initStepSize);
     }
 }

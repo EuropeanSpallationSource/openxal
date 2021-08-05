@@ -105,7 +105,7 @@ public class SynchronousTracker extends Tracker {
         double elemLen = elem.getLength();
         double propLen = elemLen - elemPos;
 
-        this.advanceState(probe, elem, propLen);
+        this.advanceState(probe, elem);
         this.advanceProbe(probe, elem, propLen);
     }
 
@@ -134,7 +134,7 @@ public class SynchronousTracker extends Tracker {
         }
     }
 
-    protected void advanceState(IProbe ifcProbe, IElement elem, double dblLen) {
+    protected void advanceState(IProbe ifcProbe, IElement elem) {
         SynchronousProbe probe = (SynchronousProbe) ifcProbe;
 
         if (elem instanceof IRfGap) {

@@ -59,7 +59,7 @@ public abstract class ThickElement extends Element {
      *
      * @param strType the string type-identifier of the element type
      */
-    public ThickElement(String strType) {
+    protected ThickElement(String strType) {
         super(strType);
     }
 
@@ -71,7 +71,7 @@ public abstract class ThickElement extends Element {
      * @param strType the string type-identifier of the element type
      * @param strId the string identifier of the element instance
      */
-    public ThickElement(String strType, String strId) {
+    protected ThickElement(String strType, String strId) {
         super(strType, strId);
     }
 
@@ -82,7 +82,7 @@ public abstract class ThickElement extends Element {
      * @param strId string instance identifier for this element
      * @param dblLen total length of the element (<strong>in meters</strong>)
      */
-    public ThickElement(String strType, String strId, double dblLen) {
+    protected ThickElement(String strType, String strId, double dblLen) {
         super(strType, strId);
         this.setLength(dblLen);
     }
@@ -103,7 +103,7 @@ public abstract class ThickElement extends Element {
     /**
      * Set the length of the element.
      *
-     * @param dblLen lenght of element (in <strong>meters</strong>)
+     * @param dblLen length of element (in <strong>meters</strong>)
      *
      */
     public void setLength(double dblLen) {
@@ -196,51 +196,49 @@ public abstract class ThickElement extends Element {
 
         //check if the element is contained in a sequence which has its own misalignements
         if (this.getParent() instanceof ElementSeq) {
-            double Dx = (getNodePos() - this.getParent().getLength() / 2.0) * ((ElementSeq) this.getParent()).getPhiY();
-            double Dy = (getNodePos() - this.getParent().getLength() / 2.0) * ((ElementSeq) this.getParent()).getPhiX();
+            double dX = (getNodePos() - this.getParent().getLength() / 2.0) * ((ElementSeq) this.getParent()).getPhiY();
+            double dY = (getNodePos() - this.getParent().getLength() / 2.0) * ((ElementSeq) this.getParent()).getPhiX();
 
             px = px + ((ElementSeq) this.getParent()).getPhiX();
             py = py + ((ElementSeq) this.getParent()).getPhiY();
             pz = pz + ((ElementSeq) this.getParent()).getPhiZ();
 
-            dx = dx + Dx + ((ElementSeq) this.getParent()).getAlignX();
-            dy = dy + Dy + ((ElementSeq) this.getParent()).getAlignY();
+            dx = dx + dX + ((ElementSeq) this.getParent()).getAlignX();
+            dy = dy + dY + ((ElementSeq) this.getParent()).getAlignY();
             dz = dz + ((ElementSeq) this.getParent()).getAlignZ();
         }
 
         if (length != 0.0) {
-
             if (pz != 0.) {
-                PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));
-                matPhi = R.transpose().times(matPhi.times(R));
+                PhaseMatrix r = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));
+                matPhi = r.transpose().times(matPhi.times(r));
             }
 
             if (px != 0. || py != 0. || dz != 0. || dx != 0. || dy != 0.) {
-                PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py * (getNodeLen() / 2.0 - pos) - dx, -py, px * (getNodeLen() / 2.0 - pos) - dy, -px, -dz, 0.));
-                matPhi = matPhi.times(T);
+                PhaseMatrix t = PhaseMatrix.translation(new PhaseVector(py * (getNodeLen() / 2.0 - pos) - dx, -py, px * (getNodeLen() / 2.0 - pos) - dy, -px, -dz, 0.));
+                matPhi = matPhi.times(t);
             }
 
             if (px != 0. || py != 0. || dz != 0. || dx != 0. || dy != 0.) {
-                PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(-py * (getNodeLen() / 2.0 - (pos + length)) + dx, py, -px * (getNodeLen() / 2.0 - (pos + length)) + dy, px, dz, 0.));
-                matPhi = T.times(matPhi);
+                PhaseMatrix t = PhaseMatrix.translation(new PhaseVector(-py * (getNodeLen() / 2.0 - (pos + length)) + dx, py, -px * (getNodeLen() / 2.0 - (pos + length)) + dy, px, dz, 0.));
+                matPhi = t.times(matPhi);
             }
 
             // this is to account for the focusing slice at the end of the Hard edge solenoid model
         } else if (this instanceof IdealMagSolenoid) {
             if (pz != 0.) {
-                PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));
-                matPhi = R.transpose().times(matPhi.times(R));
+                PhaseMatrix r = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));
+                matPhi = r.transpose().times(matPhi.times(r));
             }
             if (px != 0. || py != 0. || dz != 0. || dx != 0. || dy != 0.) {
-                PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(-py * getNodeLen() / 2.0 - dx, -py, -px * getNodeLen() / 2.0 - dy, -px, -dz, 0.));
-                matPhi = matPhi.times(T);
+                PhaseMatrix t = PhaseMatrix.translation(new PhaseVector(-py * getNodeLen() / 2.0 - dx, -py, -px * getNodeLen() / 2.0 - dy, -px, -dz, 0.));
+                matPhi = matPhi.times(t);
             }
 
             if (px != 0. || py != 0. || dz != 0. || dx != 0. || dy != 0.) {
-                PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py * getNodeLen() / 2.0 + dx, py, px * getNodeLen() / 2.0 + dy, px, dz, 0.));
-                matPhi = T.times(matPhi);
+                PhaseMatrix t = PhaseMatrix.translation(new PhaseVector(py * getNodeLen() / 2.0 + dx, py, px * getNodeLen() / 2.0 + dy, px, dz, 0.));
+                matPhi = t.times(matPhi);
             }
-
         }
 
         return matPhi;
@@ -264,7 +262,6 @@ public abstract class ThickElement extends Element {
      */
     @Override
     public double longitudinalPhaseAdvance(IProbe probe, double dblLen) {
-
         // We check if our parent is an RF cavity, then check all the way up the hierarchy
         IComposite cpsParent = this.getParent();
         while (cpsParent != null) {
@@ -273,9 +270,7 @@ public abstract class ThickElement extends Element {
                 double f = cavParent.getCavFrequency();
                 double dt = this.elapsedTime(probe, dblLen);
 
-                double d_phi = 2.0 * Math.PI * f * dt;
-
-                return d_phi;
+                return 2.0 * Math.PI * f * dt;
             }
 
             // Look all the way up the hierarchy until top level (i.e., parent is null)

@@ -773,13 +773,9 @@ public abstract class Tracker implements IAlgorithm, IArchive {
             recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");
         }
 
-        final boolean bolDebug = recTracker.booleanValueForKey(Tracker.ATTRTAG_DEBUG);
-        final int enmUpdate = recTracker.intValueForKey(Tracker.ATTRTAG_UPDATE);
-        final boolean bolCalcRf = recTracker.booleanValueForKey(Tracker.ATTRTAG_RFGAP_PHASE);
-
-        this.setDebugMode(bolDebug);
-        this.setProbeUpdatePolicy(enmUpdate);
-        this.setRfGapPhaseCalculation(bolCalcRf);
+        this.setDebugMode(recTracker.booleanValueForKey(Tracker.ATTRTAG_DEBUG));
+        this.setProbeUpdatePolicy(recTracker.intValueForKey(Tracker.ATTRTAG_UPDATE));
+        this.setRfGapPhaseCalculation(recTracker.booleanValueForKey(Tracker.ATTRTAG_RFGAP_PHASE));
     }
 
     /*
@@ -1011,16 +1007,13 @@ public abstract class Tracker implements IAlgorithm, IArchive {
         }
 
         // Check if this is the last element to propagate (still propagate, but set flag) 
-        if (this.getStopElementId() != null) {
-            if (this.getStopElementId().equals(elem.getId())) {
-                this.bolIsStopped = true;
+        if (this.getStopElementId() != null && this.getStopElementId().equals(elem.getId())) {
+            this.bolIsStopped = true;
 
-                if (this.isStopElementIncluded() == false) {
-                    return false;
-                }
+            if (!isStopElementIncluded()) {
+                return false;
             }
         }
-
         // No stopping criterion encountered
         return true;
     }

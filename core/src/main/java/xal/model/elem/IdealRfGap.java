@@ -88,27 +88,27 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      * These are kluge jobs for RF cavities. Very dangerous since they are class
      * variables.
      */
-    private static double firstGapPhaseCorr = 0.;
+    private double firstGapPhaseCorr = 0.;
     /**
      * These are kluge jobs for RF cavities. Very dangerous since they are class
      * variables.
      */
-    private static double structurePhase = 0.;
+    private double structurePhase = 0.;
     /**
      * These are kluge jobs for RF cavities. Very dangerous since they are class
      * variables.
      */
-    private static double upstreamExitTime = 0.;
+    private double upstreamExitTime = 0.;
 
     /**
      * the phase kick correction applied at the gap center [rad]
      */
-    private static double deltaPhaseCorrection = 0.;
+    private double deltaPhaseCorrection = 0.;
 
     /**
      * the on axis accelerating field (V)
      */
-    private double E0 = 0.;
+    private double e0 = 0.;
 
     /**
      * the accelerating cell length
@@ -129,22 +129,22 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     /**
      * fit of the TTF vs. beta
      */
-    private RealUnivariatePolynomial TTFFit;
+    private RealUnivariatePolynomial ttfFit;
 
     /**
      * fit of the TTF-prime vs. beta
      */
-    private RealUnivariatePolynomial TTFPrimeFit;
+    private RealUnivariatePolynomial ttfPrimeFit;
 
     /**
      * fit of the S factor vs. beta
      */
-    private RealUnivariatePolynomial SFit;
+    private RealUnivariatePolynomial sFit;
 
     /**
      * fit of the S-prime vs. beta
      */
-    private RealUnivariatePolynomial SPrimeFit;
+    private RealUnivariatePolynomial sPrimeFit;
 
     // Synchronous phase in the gap
     private double synchronousPhase;
@@ -263,11 +263,11 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     /**
      * Set the on accelerating field @ param E - the on axis field (V/m)
      *
-     * @param E The new e0 value
+     * @param e The new e0 value
      */
     @Override
-    public void setE0(double E) {
-        E0 = E;
+    public void setE0(double e) {
+        e0 = e;
     }
 
     /**
@@ -277,7 +277,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      */
     @Override
     public double getE0() {
-        return E0;
+        return e0;
     }
 
     /**
@@ -302,9 +302,7 @@ public class IdealRfGap extends ThinElement implements IRfGap {
         // Compute the RF wavelength
         double c = IElement.LIGHT_SPEED;
         double f = getFrequency();
-        double lambda = c / f;
-
-        return lambda;
+        return c / f;
     }
 
     /**
@@ -323,14 +321,12 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     public double betaMidGap(IProbe probe) {
 
         // Get probe parameters at initial energy
-        double Er = probe.getSpeciesRestEnergy();
-        double Wi = probe.getKineticEnergy();
+        double eR = probe.getSpeciesRestEnergy();
+        double wI = probe.getKineticEnergy();
         double dW = this.energyGain(probe);
-        double Wa = Wi + dW / 2.0;
+        double wA = wI + dW / 2.0;
 
-        double beta = RelativisticParameterConverter.computeBetaFromEnergies(Wa, Er);
-
-        return beta;
+        return RelativisticParameterConverter.computeBetaFromEnergies(wA, eR);
     }
 
     /*
@@ -346,14 +342,14 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     public double elapsedTime(IProbe probe) {
 
         // Initial energy parameters
-        double Er = probe.getSpeciesRestEnergy();
-        double Wi = probe.getKineticEnergy();
+        double eR = probe.getSpeciesRestEnergy();
+        double wI = probe.getKineticEnergy();
         double bi = probe.getBeta();
         double dW = this.energyGain(probe);
 
         // Final energy parameters
-        double Wf = Wi + dW;
-        double gf = Wf / Er + 1.0;
+        double wF = wI + dW;
+        double gf = wF / eR + 1.0;
         double bf = Math.sqrt(1.0 - 1.0 / (gf * gf));
 
         // update the elapsed time to account for the phase correction term
@@ -394,23 +390,23 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      * @param probe The Parameter
      */
     private void compEnergyGain(IProbe probe) {
-        double EL = getE0() * getCellLength();
+        double eL = getE0() * getCellLength();
 
         // Initial energy parameters
-        double Er = probe.getSpeciesRestEnergy();
+        double eR = probe.getSpeciesRestEnergy();
         double bi = probe.getBeta();
-        double Wi = probe.getKineticEnergy();
+        double wI = probe.getKineticEnergy();
 
-        double phi0 = 0.;
+        double phi0;
 
-        double arrival_time = probe.getTime();
+        double arrivalTime = probe.getTime();
 
         //the correction for the gap offset needed
-        arrival_time = arrival_time + gapOffset / (bi * IElement.LIGHT_SPEED);
+        arrivalTime = arrivalTime + gapOffset / (bi * IElement.LIGHT_SPEED);
 
         // get phase at the gap center:
         if (!isFirstGap()) {
-            phi0 = 2. * Math.PI * arrival_time * getFrequency() - firstGapPhaseCorr;
+            phi0 = 2. * Math.PI * arrivalTime * getFrequency() - firstGapPhaseCorr;
             double driftTime = probe.getTime() - ((getCellLength() / 2.) / (bi * IElement.LIGHT_SPEED) + upstreamExitTime);
             int nLabmda = (int) Math.round(2 * structureMode * driftTime * getFrequency());
             structurePhase = structurePhase + Math.PI * nLabmda;
@@ -419,12 +415,12 @@ public class IdealRfGap extends ThinElement implements IRfGap {
             // for first gap use input for phase at the gap center
         } else {
             structurePhase = 0.;
-            firstGapPhaseCorr = 2. * Math.PI * arrival_time * getFrequency() - getPhase();
+            firstGapPhaseCorr = 2. * Math.PI * arrivalTime * getFrequency() - getPhase();
             phi0 = getPhase();
         }
 
-        double Q = Math.abs(probe.getSpeciesCharge());
-        theEnergyGain = Q * EL * Math.cos(phi0) * TTFFit.evaluateAt(bi);
+        double q = Math.abs(probe.getSpeciesCharge());
+        theEnergyGain = q * eL * Math.cos(phi0) * ttfFit.evaluateAt(bi);
 
         structurePhase = structurePhase - (2 - structureMode) * Math.PI;
         structurePhase = Math.IEEEremainder(structurePhase, (2. * Math.PI));
@@ -432,29 +428,29 @@ public class IdealRfGap extends ThinElement implements IRfGap {
         //phase change from center correction factor for future time calculations
         //in PARMILA TTFPrime and SPrime are in [1/cm] units, we use [m]
         deltaPhaseCorrection = 0;
-        double ttf = TTFFit.evaluateAt(bi);
-        double ttf_prime = 0.01 * TTFPrimeFit.evaluateAt(bi);
-        double stf = SFit.evaluateAt(bi);
-        double stf_prime = 0.01 * SPrimeFit.evaluateAt(bi);
+        double ttf = ttfFit.evaluateAt(bi);
+        double ttfPrime = 0.01 * ttfPrimeFit.evaluateAt(bi);
+        double stf = sFit.evaluateAt(bi);
+        double stfPrime = 0.01 * sPrimeFit.evaluateAt(bi);
         double freq = getFrequency();
-        double dE_gap = Q * EL * (ttf * Math.cos(phi0) + stf * Math.sin(phi0)) / 2.0;
-        double b_gap0 = Math.sqrt(1. - Er * Er / ((Er + Wi + dE_gap) * (Er + Wi + dE_gap)));
-        double k_gap0 = 2 * Math.PI * freq / (b_gap0 * IElement.LIGHT_SPEED);
-        double gamma_gap = Math.sqrt(1. / (1. - b_gap0 * b_gap0));
-        double b_gap = b_gap0;
-        double k_gap = k_gap0;
-        double dlt_phi = (Q * EL / (Er * gamma_gap * gamma_gap * gamma_gap * b_gap * b_gap)) * k_gap * (ttf_prime * Math.sin(phi0) - stf_prime * Math.cos(phi0)) / 2.0;
+        double dEGap = q * eL * (ttf * Math.cos(phi0) + stf * Math.sin(phi0)) / 2.0;
+        double bGap0 = Math.sqrt(1. - eR * eR / ((eR + wI + dEGap) * (eR + wI + dEGap)));
+        double kGap0 = 2 * Math.PI * freq / (bGap0 * IElement.LIGHT_SPEED);
+        double gammaGap = Math.sqrt(1. / (1. - bGap0 * bGap0));
+        double bGap = bGap0;
+        double kGap = kGap0;
+        double dltPhi = (q * eL / (eR * gammaGap * gammaGap * gammaGap * bGap * bGap)) * kGap * (ttfPrime * Math.sin(phi0) - stfPrime * Math.cos(phi0)) / 2.0;
         for (int i = 0; i < 3; i++) {
-            b_gap = Math.sqrt(1. - Er * Er / ((Er + Wi + dE_gap) * (Er + Wi + dE_gap)));
-            k_gap = 2 * Math.PI * freq / (b_gap * IElement.LIGHT_SPEED);
-            gamma_gap = Math.sqrt(1. / (1. - b_gap * b_gap));
-            dE_gap = Q * EL * ((ttf + ttf_prime * (k_gap - k_gap0)) * Math.cos(phi0 + dlt_phi) + (stf + stf_prime * (k_gap - k_gap0)) * Math.sin(phi0 + dlt_phi)) / 2.0;
-            dlt_phi = (Q * EL / (Er * gamma_gap * gamma_gap * gamma_gap * b_gap * b_gap)) * k_gap * (ttf_prime * Math.sin(phi0 + dlt_phi) - stf_prime * Math.cos(phi0 + dlt_phi)) / 2.0;
+            bGap = Math.sqrt(1. - eR * eR / ((eR + wI + dEGap) * (eR + wI + dEGap)));
+            kGap = 2 * Math.PI * freq / (bGap * IElement.LIGHT_SPEED);
+            gammaGap = Math.sqrt(1. / (1. - bGap * bGap));
+            dEGap = q * eL * ((ttf + ttfPrime * (kGap - kGap0)) * Math.cos(phi0 + dltPhi) + (stf + stfPrime * (kGap - kGap0)) * Math.sin(phi0 + dltPhi)) / 2.0;
+            dltPhi = (q * eL / (eR * gammaGap * gammaGap * gammaGap * bGap * bGap)) * kGap * (ttfPrime * Math.sin(phi0 + dltPhi) - stfPrime * Math.cos(phi0 + dltPhi)) / 2.0;
         }
         //the energy gaine and phase are known
         //now we calculate the total energy gain and phase
-        theEnergyGain = Q * EL * ((ttf + ttf_prime * (k_gap - k_gap0)) * Math.cos(phi0 + dlt_phi));
-        deltaPhaseCorrection = (Q * EL / (Er * gamma_gap * gamma_gap * gamma_gap * b_gap * b_gap)) * k_gap * (ttf_prime * Math.sin(phi0 + dlt_phi));
+        theEnergyGain = q * eL * ((ttf + ttfPrime * (kGap - kGap0)) * Math.cos(phi0 + dltPhi));
+        deltaPhaseCorrection = (q * eL / (eR * gammaGap * gammaGap * gammaGap * bGap * bGap)) * kGap * (ttfPrime * Math.sin(phi0 + dltPhi));
 
     }
 
@@ -471,8 +467,8 @@ public class IdealRfGap extends ThinElement implements IRfGap {
     protected PhaseMap transferMap(IProbe probe) throws ModelException {
 
         // Get probe parameters at initial energy
-        double Er = probe.getSpeciesRestEnergy();
-        double Wi = probe.getKineticEnergy();
+        double eR = probe.getSpeciesRestEnergy();
+        double wI = probe.getKineticEnergy();
         double bi = probe.getBeta();
         double gi = probe.getGamma();
 
@@ -491,8 +487,8 @@ public class IdealRfGap extends ThinElement implements IRfGap {
         double kt = this.compTransFocusing(probe);
 
         // Compute final energy parameters
-        double Wf = Wi + dW;
-        double gf = Wf / Er + 1.0;
+        double wF = wI + dW;
+        double gf = wF / eR + 1.0;
         double bf = Math.sqrt(1.0 - 1.0 / (gf * gf));
 
         // Compute average energy parameters
@@ -532,25 +528,14 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      * @return energy gain for this probe (<strong>in electron-volts</strong> )
      */
     public double simpleEnergyGain(IProbe probe) {
-        double ETL = this.getETL();
-        double Q = Math.abs(probe.getSpeciesCharge());
+        double etl = this.getETL();
+        double q = Math.abs(probe.getSpeciesCharge());
         double phi = this.getPhase();
-        return theEnergyGain = Q * ETL * Math.cos(phi);
+        theEnergyGain = q * etl * Math.cos(phi);
+
+        return theEnergyGain;
     }
 
-    /**
-     * a method that is called once by transferMatrix to calculate the energy
-     * gain. This prevents energy gain calculation from being repeated many
-     * times. Importantly it provides a workaround from the eneryGain being
-     * calculated after the upstreamExitPhase is updated elsewhere
-     *
-     * @param probe The Parameter
-     * @return The Return Value
-     */
-    /*
-     *  public double compEnergyGain(IProbe probe) {
-     *  }
-     */
     /**
      * Get the transverse focusing constant for a particular probe. The focusing
      * constant is used in the construction of the transfer matrix for the RF
@@ -573,22 +558,20 @@ public class IdealRfGap extends ThinElement implements IRfGap {
 
         double c = IElement.LIGHT_SPEED;
 
-        double Q = Math.abs(probe.getSpeciesCharge());
-        double Er = probe.getSpeciesRestEnergy();
-        double Wi = probe.getKineticEnergy();
+        double q = Math.abs(probe.getSpeciesCharge());
+        double eR = probe.getSpeciesRestEnergy();
+        double wI = probe.getKineticEnergy();
 
-        double Wbar = Wi + this.energyGain(probe) / 2.0;
-        double gbar = Wbar / Er + 1.0;
+        double wBar = wI + this.energyGain(probe) / 2.0;
+        double gbar = wBar / eR + 1.0;
         double bbar = Math.sqrt(1.0 - 1.0 / (gbar * gbar));
         double bgbar = bbar * gbar;
 
-        double ETL = this.getETL();
+        double etl = this.getETL();
         double phi = this.getPhase();
         double f = this.getFrequency();
 
-        double kr = Math.PI * Q * ETL * f * Math.sin(-phi) / (c * Er * bgbar * bgbar);
-
-        return kr;
+        return Math.PI * q * etl * f * Math.sin(-phi) / (c * eR * bgbar * bgbar);
     }
 
     /**
@@ -611,16 +594,15 @@ public class IdealRfGap extends ThinElement implements IRfGap {
      */
     public double compLongFocusing(IProbe probe) {
 
-        double Er = probe.getSpeciesRestEnergy();
-        double Wi = probe.getKineticEnergy();
+        double eR = probe.getSpeciesRestEnergy();
+        double wI = probe.getKineticEnergy();
 
-        double Wbar = Wi + this.energyGain(probe) / 2.0;
-        double gbar = Wbar / Er + 1.0;
+        double wBar = wI + this.energyGain(probe) / 2.0;
+        double gbar = wBar / eR + 1.0;
 
         double kr = this.compTransFocusing(probe);
-        double kz = -2.0 * kr * gbar * gbar;
 
-        return kz;
+        return -2.0 * kr * gbar * gbar;
     }
 
     /*
@@ -655,10 +637,10 @@ public class IdealRfGap extends ThinElement implements IRfGap {
         initialGap = rfgap.isFirstGap();
         cellLength = rfgap.getGapLength();
         gapOffset = rfgap.getGapOffset();
-        TTFPrimeFit = rfgap.getTTFPrimeFit();
-        TTFFit = rfgap.getTTFFit();
-        SPrimeFit = rfgap.getSPrimeFit();
-        SFit = rfgap.getSFit();
+        ttfPrimeFit = rfgap.getTTFPrimeFit();
+        ttfFit = rfgap.getTTFFit();
+        sPrimeFit = rfgap.getSPrimeFit();
+        sFit = rfgap.getSFit();
         structureMode = rfgap.getStructureMode();
     }
 

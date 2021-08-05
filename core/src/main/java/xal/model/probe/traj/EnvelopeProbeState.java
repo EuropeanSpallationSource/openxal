@@ -1,7 +1,5 @@
 package xal.model.probe.traj;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.PhaseVector;
 import xal.tools.beam.PhaseMatrix;
@@ -18,8 +16,6 @@ import xal.model.probe.EnvelopeProbe;
  *
  */
 public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
-
-    private static final Logger LOGGER = Logger.getLogger(EnvelopeProbeState.class.getName());
 
     /*
      * Global Constants
@@ -443,14 +439,6 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
             throw new DataFormatException("EnvelopeProbeState#readPropertiesFrom(): no child element = " + LABEL_ENVELOPE);
         }
 
-        // Read the version number.  We don't do anything with it since there was no version
-        //  attribute before version 2.  But it's here if necessary in the future.
-        @SuppressWarnings("unused")
-        int intVersion = 0;
-        if (nodeEnv.hasAttribute(ATTR_VERSION)) {
-            intVersion = nodeEnv.intValue(ATTR_VERSION);
-        }
-
         // This is when the Twiss parameters were stored within the envelope node as an attribute
         //  It is possible that the centroid of the envelope was stored with it
         if (nodeEnv.hasAttribute(ALPHA_X_TAG)) {
@@ -500,34 +488,32 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
 
             DataAdaptor nodeCov = nodeEnv.childAdaptor(LABEL_COV);
             if (nodeCov != null) {
-                CovarianceMatrix matCov = CovarianceMatrix.loadFrom(nodeCov);
-                this.setCovariance(matCov);
+                CovarianceMatrix newMatCov = CovarianceMatrix.loadFrom(nodeCov);
+                this.setCovariance(newMatCov);
             }
 
             DataAdaptor nodeResp = nodeEnv.childAdaptor(LABEL_RESP);
             if (nodeResp != null) {
-                PhaseMatrix matResp = PhaseMatrix.loadFrom(nodeResp);
-                this.setResponseMatrix(matResp);
+                PhaseMatrix newMatResp = PhaseMatrix.loadFrom(nodeResp);
+                this.setResponseMatrix(newMatResp);
             }
 
             DataAdaptor nodeRespNoscheff = nodeEnv.childAdaptor(LABEL_RESP_NOSCHEFF);
             if (nodeRespNoscheff != null) {
-                PhaseMatrix matResp = PhaseMatrix.loadFrom(nodeRespNoscheff);
-                this.setResponseMatrixNoSpaceCharge(matResp);
+                PhaseMatrix newMatResp = PhaseMatrix.loadFrom(nodeRespNoscheff);
+                this.setResponseMatrixNoSpaceCharge(newMatResp);
             }
 
             DataAdaptor nodePert = nodeEnv.childAdaptor(LABEL_PERTURB);
             if (nodePert != null) {
-                PhaseMatrix matPert = PhaseMatrix.loadFrom(nodePert);
-                this.setPerturbationMatrix(matPert);
+                PhaseMatrix newMatPert = PhaseMatrix.loadFrom(nodePert);
+                this.setPerturbationMatrix(newMatPert);
             }
 
         } catch (DataFormatException e) {
-            LOGGER.log(Level.SEVERE, null, e);
             throw new DataFormatException("The source data was corrupted - " + e.getMessage());
 
         } catch (IllegalArgumentException e) {
-            LOGGER.log(Level.SEVERE, null, e);
             throw new DataFormatException("The provided covariance matrix was asymmetric - " + e.getMessage());
 
         }

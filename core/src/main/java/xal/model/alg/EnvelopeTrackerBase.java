@@ -8,6 +8,7 @@
  */
 package xal.model.alg;
 
+import java.util.logging.Logger;
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.TraceXalUnitConverter;
@@ -43,6 +44,8 @@ import xal.model.probe.EnvelopeProbe;
  * @since Feb 10, 2009
  */
 public abstract class EnvelopeTrackerBase extends Tracker {
+
+    private static final Logger LOGGER = Logger.getLogger(EnvelopeTrackerBase.class.getName());
 
     /**
      * Enumerations for supported phase planes
@@ -252,7 +255,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * @param intVersion version number of class implementation
      * @param clsProbeType the class type of valid probe
      */
-    public EnvelopeTrackerBase(String strType, int intVersion,
+    protected EnvelopeTrackerBase(String strType, int intVersion,
             Class<? extends IProbe> clsProbeType) {
         super(strType, intVersion, clsProbeType);
     }
@@ -262,7 +265,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      *
      * @param sourceTracker Tracker that is being copied
      */
-    public EnvelopeTrackerBase(EnvelopeTrackerBase sourceTracker) {
+    protected EnvelopeTrackerBase(EnvelopeTrackerBase sourceTracker) {
         super(sourceTracker);
 
         this.dblMaxStep = sourceTracker.dblMaxStep;
@@ -503,15 +506,10 @@ public abstract class EnvelopeTrackerBase extends Tracker {
             recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");
         }
 
-        final boolean bolEmitGrw = recTracker.booleanValueForKey(ATTR_EMITGROWTH);
-        final boolean bolUseSpChg = recTracker.booleanValueForKey(ATTR_SCHEFF);
-        final double dblStepSize = recTracker.doubleValueForKey(ATTR_STEPSIZE);
-        final boolean bolDCBeam = recTracker.booleanValueForKey(ATTR_USEDCBEAM);
-
-        this.setEmittanceGrowth(bolEmitGrw);
-        this.setStepSize(dblStepSize);
-        this.setUseSpacecharge(bolUseSpChg);
-        this.setUseDCBeam(bolDCBeam);
+        this.setEmittanceGrowth(recTracker.booleanValueForKey(ATTR_EMITGROWTH));
+        this.setStepSize(recTracker.doubleValueForKey(ATTR_STEPSIZE));
+        this.setUseSpacecharge(recTracker.booleanValueForKey(ATTR_SCHEFF));
+        this.setUseDCBeam(recTracker.booleanValueForKey(ATTR_USEDCBEAM));
     }
 
     /**
@@ -741,14 +739,14 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         if (getUseDCBeam()) {
 
             double corr = (covXY * covXY) / (covXX * covYY);
-            double K = probe.beamDCPerveance();
+            double k = probe.beamDCPerveance();
 
             // beam is upright                                
             if (corr < EnvelopeTrackerBase.TOLER_CORRELATION) {
 
                 // Compute defocusing constants in the laboratory frame
-                double kx = dblLen * K / (4 * Math.sqrt(covXX) * (Math.sqrt(covXX) + Math.sqrt(covYY)));
-                double ky = dblLen * K / (4 * Math.sqrt(covYY) * (Math.sqrt(covXX) + Math.sqrt(covYY)));
+                double kx = dblLen * k / (4 * Math.sqrt(covXX) * (Math.sqrt(covXX) + Math.sqrt(covYY)));
+                double ky = dblLen * k / (4 * Math.sqrt(covYY) * (Math.sqrt(covXX) + Math.sqrt(covYY)));
 
                 matPhiSc.setElem(IND.Xp, IND.X, kx);
                 matPhiSc.setElem(IND.Yp, IND.Y, ky);
@@ -765,7 +763,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
                 // Beam is tilted in configuration space
                 // Compute the space charge matrix in the beam frame and transform back 
                 BeamEllipsoid ellipsoid = new BeamEllipsoid(gamma, tau0);
-                matPhiSc = ellipsoid.computeDCScheffMatrix(dblLen, K);
+                matPhiSc = ellipsoid.computeDCScheffMatrix(dblLen, k);
 
             }
 
@@ -774,7 +772,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
             double corr = (covXY * covXY) / (covXX * covYY)
                     + (covXZ * covXZ) / (covXX * covZZ)
                     + (covYZ * covYZ) / (covYY * covZZ);
-            double K = probe.beamPerveance();
+            double k = probe.beamPerveance();
 
             // beam is upright
             if (corr < EnvelopeTrackerBase.TOLER_CORRELATION) {
@@ -786,9 +784,9 @@ public abstract class EnvelopeTrackerBase extends Tracker {
                 double rDz = EllipticIntegral.RD(covXX, covYY, g2 * covZZ) / EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
 
                 // Compute defocusing constants in the laboratory frame
-                double kx = gamma * dblLen * K * rDx;
-                double ky = gamma * dblLen * K * rDy;
-                double kz = gamma * dblLen * K * rDz;
+                double kx = gamma * dblLen * k * rDx;
+                double ky = gamma * dblLen * k * rDy;
+                double kz = gamma * dblLen * k * rDz;
 
                 matPhiSc.setElem(IND.Xp, IND.X, kx);
                 matPhiSc.setElem(IND.Yp, IND.Y, ky);
@@ -806,7 +804,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
 
                 // Compute the space charge matrix in the beam frame and transform back 
                 BeamEllipsoid ellipsoid = new BeamEllipsoid(gamma, tau0);
-                matPhiSc = ellipsoid.computeScheffMatrix(dblLen, K);
+                matPhiSc = ellipsoid.computeScheffMatrix(dblLen, k);
             }
         }
 
@@ -958,7 +956,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      *
      *
      * @param plane Compute the emittance growth function for this phase plane
-     * @param phi_s the synchronous particle phase <em>&phi;<sub>s</sub></em>
+     * @param phiS the synchronous particle phase <em>&phi;<sub>s</sub></em>
      * in <em>radians</em>
      * @param dphi effective phase spread &Delta;<em>&phi;</em> (half-width) of
      * equivalent uniform beam in <em>radians</em>
@@ -978,7 +976,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * @see EnvelopeTrackerBase#compLongFourierTransform(double)
      * @see EnvelopeTrackerBase#effPhaseSpread(EnvelopeProbe, IdealRfGap)
      */
-    protected double compEmitGrowthFunction(PhasePlane plane, double phi_s, double dphi)
+    protected double compEmitGrowthFunction(PhasePlane plane, double phiS, double dphi)
             throws ModelException {
 
         // Compute the Fourier transforms
@@ -987,26 +985,21 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         // double angle Fourier transform
         double fDblAng;
         if (plane == PhasePlane.TRANSVERSE) {
-
             f = this.compTransFourierTransform(dphi);
             fDblAng = this.compTransFourierTransform(2.0 * dphi);
-
         } else if (plane == PhasePlane.LONGITUDINAL) {
-
             f = this.compLongFourierTransform(dphi);
             fDblAng = this.compLongFourierTransform(2.0 * dphi);
-
         } else {
-
             String strMsg = "";
             strMsg += "EnvelopeTrackerBase#comp3dEmitGrowthFuncUnifDistr():";
             strMsg += " Serious Error in conditional statement";
-            System.err.println(strMsg);
+            LOGGER.warning(strMsg);
             throw new ModelException(strMsg);
         }
 
         // Compute the auxiliary functions
-        double sins = Math.sin(phi_s);
+        double sins = Math.sin(phiS);
         double sin2 = sins * sins;
         double f2 = f * f;
         double s = 0.5 * (1. - fDblAng);
@@ -1162,7 +1155,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
             String strMsg = "";
             strMsg += "EnvelopeTrackerBase#compTransFourierTransform():";
             strMsg += " Serious Error in conditional statement";
-            System.err.println(strMsg);
+            LOGGER.warning(strMsg);
             throw new ModelException(strMsg);
 
         }
@@ -1312,7 +1305,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
             String strMsg = "";
             strMsg += "EnvelopeTrackerBase#compLongFourierTransform():";
             strMsg += " Serious Error in conditional statement";
-            System.err.println(strMsg);
+            LOGGER.warning(strMsg);
             throw new ModelException(strMsg);
 
         }
@@ -2055,12 +2048,11 @@ public abstract class EnvelopeTrackerBase extends Tracker {
     protected double phaseSpread(EnvelopeProbe probe, IdealRfGap gap) {
 
         // The answer
-        double dblPhaseSpreadCalc = 0.0;
+        double dblPhaseSpreadCalc;
 
         //sako
         double eR = probe.getSpeciesRestEnergy();
         double wI = probe.getKineticEnergy();
-        double wBar = wI + gap.energyGain(probe) / 2.0;
 
         //def
         TraceXalUnitConverter t3dxal = TraceXalUnitConverter.newConverter(gap.getFrequency(), eR, wI);
@@ -2073,27 +2065,6 @@ public abstract class EnvelopeTrackerBase extends Tracker {
 
         //radian
         dblPhaseSpreadCalc = Math.sqrt(emitz * betaz) * 2 * Math.PI / 360;
-        //betaaverage is  not there!!! is it ok?
-
-        //sako for test. Try to use average energy to calculate dphiav
-        boolean phaseSpreadT3d = false;
-        if (phaseSpreadT3d) {
-
-            double gbar = wBar / eR + 1.0;
-            double bbar = Math.sqrt(1.0 - 1.0 / (gbar * gbar));
-            double clight = IProbe.LIGHT_SPEED;
-            double freq = gap.getFrequency();
-            double wavel = clight / freq;
-
-            //this need to be convert to t3d unit
-            CovarianceMatrix matCorXAL = probe.getCovariance();
-
-            double sigma55 = matCorXAL.getElem(4, 4);
-            double dphit3d = 2. * Math.PI * Math.sqrt(sigma55) / (bbar * wavel);
-
-            //temp
-            dblPhaseSpreadCalc = dphit3d;
-        }
 
         return dblPhaseSpreadCalc;
     }
@@ -2103,13 +2074,11 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      */
     protected double correctTransFocusingPhaseSpread(EnvelopeProbe probe, IdealRfGap gap) {
         double dphi = this.phaseSpread(probe, gap);
-        double cor = 1.;
-        cor = 1 - dphi * dphi / 14;
-        //      if (dphi != 0) {
+        double cor = 1 - dphi * dphi / 14;
+
         if (dphi > 0.1) {
             cor = 15 / dphi / dphi * (3 / dphi / dphi * (Math.sin(dphi) / dphi - Math.cos(dphi)) - Math.sin(dphi) / dphi);
         }
-        //      }
         return cor;
     }
 
@@ -2124,11 +2093,11 @@ public abstract class EnvelopeTrackerBase extends Tracker {
 
         double[] dfac = new double[2];
 
-        double dfacT = 0d;
-        double dfacL = 0d;
+        double dfacT;
+        double dfacL;
 
         double phi = gap.getPhase();
-        double dphi = this.phaseSpread(probe, gap);
+        double dphi = phaseSpread(probe, gap);
 
         double tdp = 2 * dphi;
         double sintdp = Math.sin(tdp);
@@ -2166,13 +2135,6 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         }
         dfacT = cay * cay * (g1 - sinphi * sinphi * f1 * f1);
 
-        //longitudinal
-        double f2l = 1 - tdp * tdp / 14;
-        if (tdp > 0.1) {
-            f2l = 3 * (sintdp / tdp - Math.cos(tdp)) / tdp / tdp;
-            f2l = 15 * (f2l - sintdp / tdp) / tdp / tdp;
-        }
-
         //this is best
         double cayz = 2 * cay;
         double cayp = cayz * cayz * dphi * dphi;
@@ -2205,9 +2167,6 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      * @return the change in emittance after going through this element
      */
     public double correctTransSigmaPhaseSpread(EnvelopeProbe probe, IdealRfGap gap) {
-
-        double dfac = 1;
-
         double phi = gap.getPhase();
         double dphi = this.phaseSpread(probe, gap);
         double f1 = correctTransFocusingPhaseSpread(probe, gap);

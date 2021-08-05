@@ -68,10 +68,11 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
      * Default constructor. Creates an empty <code>BunchProbeState</code>.
      *
      */
-    public BunchProbeState() {
+    protected BunchProbeState() {
         super();
-        this.dblBmCurr = 0.0;
-        this.dlbBunFreq = 0.0;
+
+        dblBmCurr = 0.0;
+        dlbBunFreq = 0.0;
     }
 
     /**
@@ -85,11 +86,11 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
      * @author Jonathan M. Freed
      * @since Jun 26, 2014
      */
-    public BunchProbeState(final S state) {
+    protected BunchProbeState(final S state) {
         super(state);
 
-        this.dblBmCurr = state.getBeamCurrent();
-        this.dlbBunFreq = state.getBunchFrequency();
+        dblBmCurr = state.getBeamCurrent();
+        dlbBunFreq = state.getBunchFrequency();
     }
 
     /**
@@ -98,10 +99,11 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
      *
      * @param probe probe object with which to initialize this state
      */
-    public BunchProbeState(final BunchProbe<S> probe) {
+    protected BunchProbeState(final BunchProbe<S> probe) {
         super(probe);
-        this.setBunchFrequency(probe.getBunchFrequency());
-        this.setBeamCurrent(probe.getBeamCurrent());
+
+        setBunchFrequency(probe.getBunchFrequency());
+        setBeamCurrent(probe.getBeamCurrent());
     }
 
     /*
@@ -119,10 +121,10 @@ public abstract class BunchProbeState<S extends BunchProbeState<S>> extends Prob
     /**
      * Set the total beam current
      *
-     * @param I new beam current in <strong>Amperes</strong>
+     * @param i new beam current in <strong>Amperes</strong>
      */
-    public void setBeamCurrent(double I) {
-        dblBmCurr = I;
+    public void setBeamCurrent(double i) {
+        dblBmCurr = i;
     }
 
     /**

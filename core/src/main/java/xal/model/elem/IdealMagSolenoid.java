@@ -101,66 +101,63 @@ public class IdealMagSolenoid extends ThickElectromagnet {
     @Override
     public PhaseMap transferMap(final IProbe probe, final double length) {
         double charge = probe.getSpeciesCharge();
-        double Er = probe.getSpeciesRestEnergy();
+        double eR = probe.getSpeciesRestEnergy();
         double beta = probe.getBeta();
         double gamma = probe.getGamma();
 
         // focusing constant (radians/meter)
-        final double k = (charge * LIGHT_SPEED * getMagField()) / (2. * Er * beta * gamma);
+        final double k = (charge * LIGHT_SPEED * getMagField()) / (2. * eR * beta * gamma);
 
         // Compute the transfer matrix components
-        double r11 = Math.cos(k * length) * Math.cos(k * length);
         double r12 = Math.sin(k * length) * Math.cos(k * length) / k;
         double r13 = Math.sin(k * length) * Math.cos(k * length);
         double r14 = Math.sin(k * length) * Math.sin(k * length) / k;
-        double r21 = -1 * k * Math.sin(k * length) * Math.cos(k * length);
-        double r41 = k * Math.sin(k * length) * Math.sin(k * length);
 
         final double[][] arr0 = DriftSpace.transferDriftPlane(length);
 
-        PhaseMatrix Mentrance = new PhaseMatrix();
-        PhaseMatrix Mbody = new PhaseMatrix();
-        PhaseMatrix Mexit = new PhaseMatrix();
+        PhaseMatrix mEntrance = new PhaseMatrix();
+        PhaseMatrix mBody = new PhaseMatrix();
+        PhaseMatrix mExit = new PhaseMatrix();
 
         //Build each matrix
-        Mentrance.setElem(0, 0, 1);
-        Mentrance.setElem(1, 1, 1);
-        Mentrance.setElem(2, 2, 1);
-        Mentrance.setElem(3, 3, 1);
-        Mentrance.setElem(1, 2, k);
-        Mentrance.setElem(3, 0, -k);
+        mEntrance.setElem(0, 0, 1);
+        mEntrance.setElem(1, 1, 1);
+        mEntrance.setElem(2, 2, 1);
+        mEntrance.setElem(3, 3, 1);
+        mEntrance.setElem(1, 2, k);
+        mEntrance.setElem(3, 0, -k);
 
-        Mexit.setElem(0, 0, 1);
-        Mexit.setElem(1, 1, 1);
-        Mexit.setElem(2, 2, 1);
-        Mexit.setElem(3, 3, 1);
-        Mexit.setElem(1, 2, -k);
-        Mexit.setElem(3, 0, k);
+        mExit.setElem(0, 0, 1);
+        mExit.setElem(1, 1, 1);
+        mExit.setElem(2, 2, 1);
+        mExit.setElem(3, 3, 1);
+        mExit.setElem(1, 2, -k);
+        mExit.setElem(3, 0, k);
 
-        Mbody.setElem(0, 0, 1);
-        Mbody.setElem(1, 1, Math.cos(2. * k * length));
-        Mbody.setElem(2, 2, 1);
-        Mbody.setElem(3, 3, Math.cos(2. * k * length));
-        Mbody.setElem(0, 1, r12);
-        Mbody.setElem(0, 2, 0.0);
-        Mbody.setElem(0, 3, r14);
-        Mbody.setElem(1, 0, 0.0);
-        Mbody.setElem(1, 2, 0.0);
-        Mbody.setElem(1, 3, 2. * r13);
-        Mbody.setElem(2, 0, 0.0);
-        Mbody.setElem(2, 1, -1. * r14);
-        Mbody.setElem(2, 3, r12);
-        Mbody.setElem(3, 0, 0.0);
-        Mbody.setElem(3, 1, -2. * r13);
-        Mbody.setElem(3, 2, 0.0);
+        mBody.setElem(0, 0, 1);
+        mBody.setElem(1, 1, Math.cos(2. * k * length));
+        mBody.setElem(2, 2, 1);
+        mBody.setElem(3, 3, Math.cos(2. * k * length));
+        mBody.setElem(0, 1, r12);
+        mBody.setElem(0, 2, 0.0);
+        mBody.setElem(0, 3, r14);
+        mBody.setElem(1, 0, 0.0);
+        mBody.setElem(1, 2, 0.0);
+        mBody.setElem(1, 3, 2. * r13);
+        mBody.setElem(2, 0, 0.0);
+        mBody.setElem(2, 1, -1. * r14);
+        mBody.setElem(2, 3, r12);
+        mBody.setElem(3, 0, 0.0);
+        mBody.setElem(3, 1, -2. * r13);
+        mBody.setElem(3, 2, 0.0);
 
         // Build the tranfer matrix from its component blocks
-        PhaseMatrix matPhi = new PhaseMatrix();
+        PhaseMatrix matPhi;
 
         if (isFirstSubslice(probe.getPosition())) {
-            matPhi = Mbody.times(Mentrance);
+            matPhi = mBody.times(mEntrance);
         } else {
-            matPhi = Mbody;
+            matPhi = mBody;
         }
 
         // a drift space longitudinally       
@@ -173,8 +170,8 @@ public class IdealMagSolenoid extends ThickElectromagnet {
         matPhi = applyErrors(matPhi, probe, length);
 
         if (isLastSubslice(probe.getPosition() + length)) {
-            Mexit = applyErrors(Mexit, probe, 0);
-            matPhi = Mexit.times(matPhi);
+            mExit = applyErrors(mExit, probe, 0);
+            matPhi = mExit.times(matPhi);
         }
 
         return new PhaseMap(matPhi);

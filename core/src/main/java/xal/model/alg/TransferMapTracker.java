@@ -7,11 +7,6 @@
 package xal.model.alg;
 
 import xal.tools.beam.PhaseMap;
-import xal.tools.data.DataAdaptor;
-import xal.tools.data.DataFormatException;
-import xal.tools.data.DataTable;
-import xal.tools.data.EditContext;
-import xal.tools.data.GenericRecord;
 import xal.model.IElement;
 import xal.model.IProbe;
 import xal.model.ModelException;
@@ -37,12 +32,6 @@ public class TransferMapTracker extends Tracker {
      * probe type recognized by this algorithm
      */
     public static final Class<TransferMapProbe> CLS_PROBE_TYPE = TransferMapProbe.class;
-
-    /**
-     * Label for edit context table containing algorithm parameters - i.e., in
-     * "model.params" file
-     */
-    private static final String STR_LBL_TABLE = "TransferMapTracker";
 
     /**
      * string type identifier for this algorithm
@@ -84,53 +73,6 @@ public class TransferMapTracker extends Tracker {
     }
 
     /*
-     * IArchive Interface
-     */
-    /**
-     * Place holder for loading additional parameters from an edit context.
-     *
-     * @since Oct 26, 2012
-     * @see xal.model.alg.Tracker#load(java.lang.String,
-     * xal.tools.data.EditContext)
-     */
-    @Override
-    public void load(String strPrimKeyVal, EditContext ecTableData) throws DataFormatException {
-        super.load(strPrimKeyVal, ecTableData);
-
-        // Get the algorithm class name from the EditContext
-        DataTable tblAlgorithm = ecTableData.getTable(STR_LBL_TABLE);
-        GenericRecord recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, strPrimKeyVal);
-
-        if (recTracker == null) {
-            // just use the default record
-            recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");
-        }
-
-    }
-
-    /**
-     * Place holder for loading additional parameters from a data adaptor.
-     *
-     * @since Oct 26, 2012
-     * @see xal.model.alg.Tracker#load(xal.tools.data.DataAdaptor)
-     */
-    @Override
-    public void load(DataAdaptor daSource) throws DataFormatException {
-        super.load(daSource);
-    }
-
-    /**
-     * Place holder for loading additional parameters from a data adaptor.
-     *
-     * @since Oct 26, 2012
-     * @see xal.model.alg.Tracker#save(xal.tools.data.DataAdaptor)
-     */
-    @Override
-    public void save(DataAdaptor daptArchive) {
-        super.save(daptArchive);
-    }
-
-    /*
      *  Tracker Abstract Protocol
      */
     /**
@@ -167,7 +109,6 @@ public class TransferMapTracker extends Tracker {
      * @exception ModelException bad element transfer matrix/corrupt probe state
      */
     protected void advanceState(final TransferMapProbe probe, final IElement ifcElem, final double dblLng) throws ModelException {
-
         // Properties of the element
         final PhaseMap mapPhi = ifcElem.transferMap(probe, dblLng);
 
@@ -179,5 +120,4 @@ public class TransferMapTracker extends Tracker {
         final PhaseMap mapComp = mapPhi.compose(mapProbe);
         probe.setTransferMap(mapComp);
     }
-
 }

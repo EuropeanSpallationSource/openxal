@@ -23,15 +23,15 @@ public abstract class ThickElectrostatic extends ThickElement implements IElectr
      */
     protected double dblField = 0.0;
 
-    public ThickElectrostatic(String strType, String strId, double dblLen) {
+    protected ThickElectrostatic(String strType, String strId, double dblLen) {
         super(strType, strId, dblLen);
     }
 
-    public ThickElectrostatic(String strType, String strId) {
+    protected ThickElectrostatic(String strType, String strId) {
         super(strType, strId);
     }
 
-    public ThickElectrostatic(String strType) {
+    protected ThickElectrostatic(String strType) {
         super(strType);
     }
 

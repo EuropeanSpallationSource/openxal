@@ -112,7 +112,6 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
             Class<?> probeClass = Class.forName(type);
             probe = (Probe<?>) probeClass.newInstance();
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-            LOGGER.log(Level.SEVERE, null, e);
             throw new DataFormatException(e.getMessage());
         }
         probe.load(daptProbe);
@@ -140,12 +139,9 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
 
         try {
             Constructor<?> ctorCopy = pClass.getConstructor(pClass);
-            Probe<?> pNew = (Probe<?>) ctorCopy.newInstance(probeInit);
-
-            return pNew;
-
+            return (Probe<?>) ctorCopy.newInstance(probeInit);
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException e) {
-            LOGGER.log(Level.SEVERE, "Unable to intialize from " + probeInit.toString(), e);
+            LOGGER.log(Level.SEVERE, e, () -> "Unable to intialize from " + probeInit.toString());
             return null;
 
         }
@@ -277,7 +273,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     protected Probe(final IAlgorithm ifcAlg) {
         this();
 
-        this.algTracker = ifcAlg;
+        algTracker = ifcAlg;
     }
 
     /**
@@ -287,9 +283,10 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      *
      * @param probe Probe object to be cloned
      */
-    public Probe(final Probe<S> probe) {
+    protected Probe(final Probe<S> probe) {
         this();
-        this.deepCopy(probe);
+
+        deepCopy(probe);
     }
 
     /**
@@ -661,9 +658,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     @Override
     public ProbeState<?> lookupLastStateFor(String strElemTypeId) {
         Trajectory<S> trjProbe = this.getTrajectory();
-        ProbeState<?> stateLast = trjProbe.peakLastByType(strElemTypeId);
-
-        return stateLast;
+        return trjProbe.peakLastByType(strElemTypeId);
     }
 
     /**
@@ -755,21 +750,19 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     /**
      * Set the current kinetic energy of the probe.
      *
-     * @param W new probe kinetic energy (<strong>electron-volts</strong>)
+     * @param w new probe kinetic energy (<strong>electron-volts</strong>)
      *
      * @see #getKineticEnergy
      */
     @Override
-    public void setKineticEnergy(double W) {
-        this.stateCurrent.setKineticEnergy(W);
+    public void setKineticEnergy(double w) {
+        this.stateCurrent.setKineticEnergy(w);
     }
 
-    ;
-    
-    /** 
-     *  Set the charge of the particle species in the beam 
-     *  
-     *  @param  q       species particle charge in units of positive electron charge
+    /**
+     * Set the charge of the particle species in the beam
+     *
+     * @param q species particle charge in units of positive electron charge
      */
     @Override
     public void setSpeciesCharge(double q) {
@@ -779,11 +772,11 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
     /**
      * Set the rest energy of a single particle in the beam
      *
-     * @param Er particle rest energy (<strong>electron-volts</strong>)
+     * @param eR particle rest energy (<strong>electron-volts</strong>)
      */
     @Override
-    public void setSpeciesRestEnergy(double Er) {
-        this.stateCurrent.setSpeciesRestEnergy(Er);
+    public void setSpeciesRestEnergy(double eR) {
+        this.stateCurrent.setSpeciesRestEnergy(eR);
     }
 
     /**

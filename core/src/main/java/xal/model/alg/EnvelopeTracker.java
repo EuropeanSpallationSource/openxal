@@ -193,7 +193,7 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
     protected void advanceState(IProbe ifcProbe, IElement iElem, double dblLen)
             throws ModelException {
 
-        // Identify probe
+        // Idenify probe
         EnvelopeProbe probe = (EnvelopeProbe) ifcProbe;
 
         // Get initial conditions of probe
@@ -211,7 +211,7 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         PhaseMatrix matTau1 = matTau0.conjugateTrans(matPhiSc);
 
         if (this.getEmittanceGrowth()) {
-            matTau1 = this.addEmittanceGrowth(probe, iElem, matTau1);
+            addEmittanceGrowth(probe, iElem, matTau1);
         }
 
         // Save the new state variables in the probe
@@ -261,7 +261,6 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
      */
     private PhaseMatrix compTransferMatrix(double dblLen, EnvelopeProbe probe, IElement ifcElem)
             throws ModelException {
-
         // Returned value
         // transfer matrix including all effects
         PhaseMatrix matPhi;

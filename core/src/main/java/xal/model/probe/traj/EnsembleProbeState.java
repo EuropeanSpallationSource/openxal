@@ -41,12 +41,12 @@ public class EnsembleProbeState extends BunchProbeState<EnsembleProbeState> {
     /**
      * field calculation method
      */
-    private int m_enmFldCalc;
+    private int enmFldCalc;
 
     /**
      * the particle ensemble
      */
-    private Ensemble m_ensPhase;
+    private Ensemble ensPhase;
 
     /*
      * Initialization
@@ -56,7 +56,7 @@ public class EnsembleProbeState extends BunchProbeState<EnsembleProbeState> {
      * object.
      */
     public EnsembleProbeState() {
-        m_ensPhase = new Ensemble();
+        ensPhase = new Ensemble();
     }
 
     /**
@@ -72,9 +72,9 @@ public class EnsembleProbeState extends BunchProbeState<EnsembleProbeState> {
     public EnsembleProbeState(final EnsembleProbeState ensembleProbeState) {
         super(ensembleProbeState);
 
-        this.m_enmFldCalc = ensembleProbeState.m_enmFldCalc;
+        this.enmFldCalc = ensembleProbeState.enmFldCalc;
 
-        this.m_ensPhase = ensembleProbeState.m_ensPhase.deepCopy();
+        this.ensPhase = ensembleProbeState.ensPhase.deepCopy();
     }
 
     /**
@@ -100,7 +100,7 @@ public class EnsembleProbeState extends BunchProbeState<EnsembleProbeState> {
      * @param fc field calculation method enumeration
      */
     public void setFieldCalculation(int fc) {
-        m_enmFldCalc = fc;
+        enmFldCalc = fc;
     }
 
     /**
@@ -112,21 +112,21 @@ public class EnsembleProbeState extends BunchProbeState<EnsembleProbeState> {
      * @param ens     <code>Ensemble</code> object to be copied
      */
     public void setEnsemble(Ensemble ens) {
-        m_ensPhase = new Ensemble(ens);
+        ensPhase = new Ensemble(ens);
     }
 
     /**
      * Return the field calculation method
      */
     public int getFieldCalculation() {
-        return m_enmFldCalc;
+        return enmFldCalc;
     }
 
     /**
      * Return the Ensemble state object
      */
     public Ensemble getEnsemble() {
-        return m_ensPhase;
+        return ensPhase;
     }
 
     /**
@@ -138,8 +138,7 @@ public class EnsembleProbeState extends BunchProbeState<EnsembleProbeState> {
      *
      */
     public R3 electricField(R3 ptFld) {
-        R3 vecE = new R3();
-        return vecE;
+        return new R3();
     }
 
     /*

@@ -478,11 +478,11 @@ public class IdealRfCavity extends ElementSeq implements IRfCavity {
             if (cmp instanceof IRfGap) {
                 IRfGap gap = (IRfGap) cmp;
 
-                double synchronousPhase_i = gap.getSynchronousPhase();
-                double energyGain_i = gap.getEnergyGain();
+                double synchronousPhaseI = gap.getSynchronousPhase();
+                double energyGainI = gap.getEnergyGain();
 
-                energyGain += energyGain_i;
-                synchronousPhase += Math.tan(synchronousPhase_i) * energyGain_i;
+                energyGain += energyGainI;
+                synchronousPhase += Math.tan(synchronousPhaseI) * energyGainI;
             }
         }
 

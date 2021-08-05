@@ -196,32 +196,6 @@ public class Lattice extends ElementSeq {
     }
 
     /**
-     * <p>
-     * Propagate a probe through the lattice. The probe is first initialized by
-     * calling the <code>initialize()</code> method of the probe then updated by
-     * calling the <code>update()</code> method in order to save the initial
-     * state of the probe into its trajectory.
-     * </p>
-     * <p>
-     * I have removed the pre- and post- process from this method and put it
-     * into the <code>{@link Scenario}</code> class, specifically the
-     * <code>{@link Scenario#run()}</code> method. Changing the state of a probe
-     * is not the agenda of a model element (or element sequence), only of an
-     * algorithm object.
-     * </p>
-     *
-     * @param probe the state of the probe will be advance using the elements
-     * dynamics
-     *
-     * @exception ModelException an error occurred while advancing the probe
-     * state
-     */
-    @Override
-    public void propagate(IProbe probe) throws ModelException {
-        super.propagate(probe);
-    }
-
-    /**
      * <h2>Backward propagation of a probe through the lattice.</h2>
      * <p>
      * The probe is first initialized by calling the <code>initialize()</code>

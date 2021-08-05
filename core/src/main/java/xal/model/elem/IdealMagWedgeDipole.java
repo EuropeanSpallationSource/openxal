@@ -309,17 +309,13 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
 
         // Replace ThickDipole object with an IdealMagWedgeDipole2
         // First retrieve all the physical parameters for a bending dipole                
-        double lenSect = element.getLength();
         double lenPath0 = magnet.getDfltPathLength();
         double angBend0 = magnet.getDfltBendAngle() * Math.PI / 180.0;
         double kQuad0 = magnet.getQuadComponent();
 
         // Now compute the dependent parameters
-        double RBend0 = lenPath0 / angBend0;
-        double fldInd0 = -kQuad0 * RBend0 * RBend0;
-
-        double angBend = angBend0 * (lenSect / lenPath0);
-        double lenPath = RBend0 * angBend;
+        double rBend0 = lenPath0 / angBend0;
+        double fldInd0 = -kQuad0 * rBend0 * rBend0;
 
         // Set the parameters for the new model element                
         setFieldIndex(fldInd0);

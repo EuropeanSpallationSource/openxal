@@ -212,17 +212,15 @@ public class IdealEQuad extends ThickElectrostatic {
     @Override
     public PhaseMap transferMap(final IProbe probe, final double length) {
         double charge = probe.getSpeciesCharge();
-        double Er = probe.getSpeciesRestEnergy();
-        double T = probe.getKineticEnergy();
+        double t = probe.getKineticEnergy();
         double beta = probe.getBeta();
         double gamma = probe.getGamma();
         double bg = beta * gamma;
-        double brho = (Er * bg) / LIGHT_SPEED;
         double dLz = length / (bg * bg);
 
         // mass number 1.073e-9~=10e-6/931.494
         // focusing constant (radians/meter)
-        final double k = (charge * ((getVoltage() * 1e3) / T)) / (getAperture() * getAperture());
+        final double k = (charge * ((getVoltage() * 1e3) / t)) / (getAperture() * getAperture());
         final double kSqrt = Math.sqrt(Math.abs(k));
 
         // Compute the transfer matrix components

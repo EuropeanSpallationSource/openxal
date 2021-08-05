@@ -10,15 +10,15 @@ import xal.smf.impl.Magnet;
  */
 public abstract class ElectromagnetSeq extends ElementSeq implements IElectromagnet {
 
-    public ElectromagnetSeq(String strType, String strId, int szReserve) {
+    protected ElectromagnetSeq(String strType, String strId, int szReserve) {
         super(strType, strId, szReserve);
     }
 
-    public ElectromagnetSeq(String strType, String strId) {
+    protected ElectromagnetSeq(String strType, String strId) {
         super(strType, strId);
     }
 
-    public ElectromagnetSeq(String strType) {
+    protected ElectromagnetSeq(String strType) {
         super(strType);
     }
 

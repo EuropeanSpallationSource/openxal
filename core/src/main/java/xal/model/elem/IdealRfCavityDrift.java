@@ -187,9 +187,7 @@ public class IdealRfCavityDrift extends IdealDrift {
         double dt = super.elapsedTime(probe, dblLen);
         double f = this.getFrequency();
         double w = 2.0 * Math.PI * f;
-        double dphi = w * dt;
-
-        return dphi;
+        return w * dt;
     }
 
     /*

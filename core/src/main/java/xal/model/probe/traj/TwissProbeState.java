@@ -8,8 +8,6 @@
  */
 package xal.model.probe.traj;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import xal.model.probe.TwissProbe;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.PhaseVector;
@@ -28,8 +26,6 @@ import xal.tools.math.r3.R3;
  *
  */
 public class TwissProbeState extends BunchProbeState<TwissProbeState> {
-
-    private static final Logger LOGGER = Logger.getLogger(TwissProbeState.class.getName());
 
     /*
      * Global Constants
@@ -303,9 +299,7 @@ public class TwissProbeState extends BunchProbeState<TwissProbeState> {
      * @return array(twiss-H, twiss-V, twiss-L)
      */
     public Twiss[] getTwiss() {
-        Twiss[] arrTwiss = this.envTwiss.getTwiss();
-
-        return arrTwiss;
+        return this.envTwiss.getTwiss();
     }
 
     /**
@@ -381,25 +375,17 @@ public class TwissProbeState extends BunchProbeState<TwissProbeState> {
             throw new DataFormatException("TwissProbeState#readPropertiesFrom(): no child element = " + LABEL_TWISSPROBE);
         }
 
-        // Read the version number.  We don't do anything with it since there was no version
-        //  attribute before version 2.  But it's here if necessary in the future.
-        @SuppressWarnings("unused")
-        int intVersion = 0;
-        if (daProbe.hasAttribute(ATTR_VERSION)) {
-            intVersion = daProbe.intValue(ATTR_VERSION);
-        }
-
         try {
             DataAdaptor daCent = daProbe.childAdaptor(LABEL_CENT);
             if (daCent != null) {
-                PhaseVector vecCent = new PhaseVector(daCent);
-                this.setCentroid(vecCent);
+                PhaseVector newVecCent = new PhaseVector(daCent);
+                this.setCentroid(newVecCent);
             }
 
             DataAdaptor daResp = daProbe.childAdaptor(LABEL_RESP);
             if (daResp != null) {
-                PhaseMatrix matResp = new PhaseMatrix(daResp);
-                this.setResponseMatrix(matResp);
+                PhaseMatrix newMatResp = new PhaseMatrix(daResp);
+                this.setResponseMatrix(newMatResp);
             }
 
             DataAdaptor daPhase = daProbe.childAdaptor(LABEL_PHASE);
@@ -408,11 +394,10 @@ public class TwissProbeState extends BunchProbeState<TwissProbeState> {
                 this.setBetatronPhase(vecPhase);
             }
 
-            Twiss3D envTwiss = new Twiss3D(daProbe);
-            this.setTwiss(envTwiss);
+            Twiss3D newEnvTwiss = new Twiss3D(daProbe);
+            this.setTwiss(newEnvTwiss);
 
         } catch (DataFormatException e) {
-            LOGGER.log(Level.SEVERE, null, e);
             throw new DataFormatException(e.getMessage());
 
         }

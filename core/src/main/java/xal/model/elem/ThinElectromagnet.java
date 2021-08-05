@@ -23,12 +23,12 @@ public abstract class ThinElectromagnet extends ThinElement implements IElectrom
      */
     protected double dblField = 0.0;
 
-    public ThinElectromagnet(String strType) {
+    protected ThinElectromagnet(String strType) {
         super(strType);
 
     }
 
-    public ThinElectromagnet(String strType, String strId) {
+    protected ThinElectromagnet(String strType, String strId) {
         super(strType, strId);
     }
 

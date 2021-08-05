@@ -229,9 +229,7 @@ public class Trace3dTracker extends Tracker {
             recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");
         }
 
-        final double dblStepSize = recTracker.doubleValueForKey(EnvelopeTrackerBase.ATTR_STEPSIZE);
-
-        this.setStepSize(dblStepSize);
+        this.setStepSize(recTracker.doubleValueForKey(EnvelopeTrackerBase.ATTR_STEPSIZE));
     }
 
     /**
@@ -247,11 +245,8 @@ public class Trace3dTracker extends Tracker {
         super.load(daptArchive);
 
         DataAdaptor daEnv = daptArchive.childAdaptor(LABEL_OPTIONS);
-        if (daEnv != null) {
-
-            if (daEnv.hasAttribute(ATTR_STEPSIZE)) {
-                this.setStepSize(daEnv.doubleValue(ATTR_STEPSIZE));
-            }
+        if (daEnv != null && daEnv.hasAttribute(ATTR_STEPSIZE)) {
+            this.setStepSize(daEnv.doubleValue(ATTR_STEPSIZE));
         }
     }
 
@@ -331,7 +326,7 @@ public class Trace3dTracker extends Tracker {
      * make the space charge calculations. Hopefully there are no side effects.
      * </p>
      *
-     * @param K beam generalized perveance (3D bunched beam)
+     * @param k beam generalized perveance (3D bunched beam)
      * @param dL propagation distance
      * @param gamma relativistic factor
      * @param matChi envelope correlation matrix in homogeneous coordinates
@@ -340,10 +335,10 @@ public class Trace3dTracker extends Tracker {
      *
      * @author Christopher K. Allen
      */
-    private PhaseMatrix spaceChargeMatrix(double K, double dL, double gamma, CovarianceMatrix matChi) {
+    private PhaseMatrix spaceChargeMatrix(double k, double dL, double gamma, CovarianceMatrix matChi) {
 
         // Check for zero-space charge case
-        if (K == 0.0 || dL == 0.0) {
+        if (k == 0.0 || dL == 0.0) {
             return PhaseMatrix.identity();
         }
 
@@ -353,9 +348,9 @@ public class Trace3dTracker extends Tracker {
         double[] arrFocus = BeamEllipsoid.compDefocusConstantsAlaTrace3D(gamma, rho.get2ndMoments());
         R3 vecFocus = new R3(arrFocus);
 
-        double kX = (K * dL) / vecFocus.getx();
-        double kY = (K * dL) / vecFocus.gety();
-        double kZ = (K * dL) / vecFocus.getz();
+        double kX = (k * dL) / vecFocus.getx();
+        double kY = (k * dL) / vecFocus.gety();
+        double kZ = (k * dL) / vecFocus.getz();
 
         // Get the beam displacement from the origin and the rotation matrix
         PhaseMatrix matDis = rho.getTranslation();

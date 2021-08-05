@@ -6,6 +6,8 @@
 package xal.model.elem;
 
 import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
@@ -53,6 +55,8 @@ import xal.model.elem.sync.IElectromagnet;
  *
  */
 public class IdealMagSectorDipole2 extends ThickElectromagnet {
+
+    private static final Logger LOGGER = Logger.getLogger(IdealMagSectorDipole2.class.getName());
 
     /*
      * Global Constants
@@ -108,7 +112,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
     /**
      * K0 (no length)
      */
-    private double K0 = 0;
+    private double k0 = 0;
 
     /**
      * The gap height (m)
@@ -197,7 +201,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * @since Apr 19, 2011
      */
     public double getK0() {
-        return K0;
+        return k0;
     }
 
     /**
@@ -210,7 +214,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * @since Apr 19, 2011
      */
     public void setK0(double dbl) {
-        K0 = dbl;
+        k0 = dbl;
     }
 
     /**
@@ -294,7 +298,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * @return field index of the magnet at the design orbit (unitless)
      */
     public double getFieldIndex() {
-        return this.dblQuadFldIndex;
+        return dblQuadFldIndex;
     }
 
     /**
@@ -303,7 +307,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * @return quadrupole field component of this magnet
      */
     public double getQuadComponent() {
-        return this.dblQuadComponent;
+        return dblQuadComponent;
     }
 
     /**
@@ -312,7 +316,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * @return gap size in <strong>meters</strong>
      */
     public double getGapHeight() {
-        return this.dblGapHeight;
+        return dblGapHeight;
     }
 
     /**
@@ -321,7 +325,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * @return design trajectory path length (in meters)
      */
     public double getDesignPathLength() {
-        return this.dblPathLen;
+        return dblPathLen;
     }
 
     /**
@@ -330,7 +334,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * @return design trajectory bending angle (in radians)
      */
     public double getDesignBendingAngle() {
-        return this.dblBendAng;
+        return dblBendAng;
     }
 
     /**
@@ -355,11 +359,10 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * @see IdealMagSectorDipole2#compDesignBendingRadius()
      */
     public double compDesignCurvature() {
-        double L0 = this.getDesignPathLength();
-        double theta0 = this.getDesignBendingAngle();
+        double l0 = getDesignPathLength();
+        double theta0 = getDesignBendingAngle();
 
-        double h0 = theta0 / L0;
-        return h0;
+        return theta0 / l0;
     }
 
     /**
@@ -371,12 +374,10 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * @see IdealMagSectorDipole2#compDesignCurvature()
      */
     public double compDesignBendingRadius() {
-        double L0 = this.getDesignPathLength();
-        double theta0 = this.getDesignBendingAngle();
+        double l0 = getDesignPathLength();
+        double theta0 = getDesignBendingAngle();
 
-        double R0 = L0 / theta0;
-
-        return R0;
+        return l0 / theta0;
     }
 
     /**
@@ -391,8 +392,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * <strong>1/meters</strong>)
      */
     public double compProbeCurvature(IProbe probe) {
-
-        return BendingMagnet.compCurvature(probe, this.getMagField());
+        return BendingMagnet.compCurvature(probe, getMagField());
     }
 
     /**
@@ -441,13 +441,13 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
         double n0 = this.getFieldIndex();
         double h = BendingMagnet.compCurvature(probe, this.getMagField());
 
-        double k_quad = -h * h * n0;
+        double kQuad = -h * h * n0;
 
         if (n0 == 0) {
-            k_quad = getQuadComponent();
+            kQuad = getQuadComponent();
         }
 
-        return k_quad;
+        return kQuad;
     }
 
     /**
@@ -485,11 +485,10 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * @since Nov 27, 2013
      */
     public double compPathLengthVariationFactor(IProbe probe) {
-
         // Get the field magnitude and check that it is not zero.  (If so there is no length variation.)
-        final double B = this.getMagField();
+        final double b = this.getMagField();
 
-        if (B == 0.0) {
+        if (b == 0.0) {
             return 1.0;
         }
 
@@ -497,23 +496,15 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
         // h0 polarity = alpha polarity
         double h0 = this.compDesignCurvature();
         double h = 0;
-        if (getFieldPathFlag() == false) {
-
+        if (!getFieldPathFlag()) {
             // h polarity = e*B0 polarity
-            h = BendingMagnet.compCurvature(probe, B);
-
+            h = BendingMagnet.compCurvature(probe, b);
         } else {
-
             h = h0;
-
         }
 
-        /*
-         * Compute and return path variation parameter
-         */
-        final double dblLenFactor = 1.0 - h / h0;
-
-        return dblLenFactor;
+        // Compute and return path variation parameter
+        return 1.0 - h / h0;
     }
 
     /*
@@ -537,9 +528,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
         double dblLenVar = dblLenFac * dblLen;
 
         // Compute the elapsed time drifting to the modified path length
-        double dblTime = super.compDriftingTime(probe, dblLenVar);
-
-        return dblTime;
+        return super.compDriftingTime(probe, dblLenVar);
     }
 
     /**
@@ -585,7 +574,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
         /*
          *  Get parameters
          */
-        final double B = this.getMagField();
+        final double b = this.getMagField();
         final double gamma = probe.getGamma();
 
         //
@@ -594,8 +583,8 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
         //  This situation assumes a straight section since a real-world beam would likely hit the 
         //  wall of an unenergized magnetic.
         //
-        if (((getFieldPathFlag() == true) && (getDesignBendingAngle() == 0.))
-                || ((getFieldPathFlag() == false) && (B == 0.0))) {
+        if (((getFieldPathFlag()) && (getDesignBendingAngle() == 0.))
+                || ((!getFieldPathFlag()) && (b == 0.0))) {
 
             //sako 27 sep 07 to avoid B=0 problem
             // Build transfer matrix for a drift space.  Assume the magnet has been replaced by a drift section
@@ -616,17 +605,12 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
         // h0 polarity = alpha polarity
         final double h0 = this.compDesignCurvature();
         double h = 0;
-        if (getFieldPathFlag() == false) {
-
+        if (!getFieldPathFlag()) {
             // h polarity = e*B0 polarity
-            h = BendingMagnet.compCurvature(probe, B);
-
-        } else if (getFieldPathFlag() == true) {
-
+            h = BendingMagnet.compCurvature(probe, b);
+        } else if (getFieldPathFlag()) {
             h = h0;
-
         } else {
-
             h = this.getK0();
         }
         // 28 Nov 07 H. Sako
@@ -639,19 +623,19 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
         //            alpha>0 with y+ kick (upper)
         // for both positive and negative particles
         // rho = alpha/path , same sign with alpha
-        final double R0 = 1.0 / h0;
-        final double R = 1.0 / h;
+        final double r0 = 1.0 / h0;
+        final double r = 1.0 / h;
 
         /*
          * Compute the arc length step size
          */
         final double dAng = this.compAngleStepSize(probe, dblLen);
-        final double dL = Math.abs(dAng * R0);
+        final double dL = Math.abs(dAng * r0);
 
         /*
          * Compute path variation parameter
          */
-        final double zprimeProbe = (R - R0) / (R * gamma * gamma);
+        final double zprimeProbe = (r - r0) / (r * gamma * gamma);
 
         /*
          *  Compute quadrupole focusing constants
@@ -667,48 +651,45 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
          * Compute the transfer matrix components.
          *
          */
-        double[][] arrZero = new double[][]{{0, 0}, {0, 0}};
-        double[][] arrWork = arrZero;
+        double[][] arrWork;
 
-        double M05;
-        double M15;
-        double M40;
-        double M41;
-        double M45;
-        double M06;
-        double M16;
-        double M46;
+        double m05;
+        double m15;
+        double m40;
+        double m41;
+        double m45;
+        double m06;
+        double m16;
+        double m46;
 
         if (kBend >= 0.0) {
             arrWork = QuadrupoleLens.transferFocPlane(kx, dL);
-            M05 = gamma * gamma * h0 * (1. - Math.cos(kx * dL)) / (kx * kx);
-            M15 = gamma * gamma * h0 * Math.sin(kx * dL) / kx;
-            M40 = -h0 * Math.sin(kx * dL) / kx;
-            M41 = -h0 * (1. - Math.cos(kx * dL)) / (kx * kx);
-            M45 = dL - gamma * gamma * h0 * h0
+            m05 = gamma * gamma * h0 * (1. - Math.cos(kx * dL)) / (kx * kx);
+            m15 = gamma * gamma * h0 * Math.sin(kx * dL) / kx;
+            m40 = -h0 * Math.sin(kx * dL) / kx;
+            m41 = -h0 * (1. - Math.cos(kx * dL)) / (kx * kx);
+            m45 = dL - gamma * gamma * h0 * h0
                     * (kx * dL - Math.sin(kx * dL)) / (kx * kx * kx);
         } else {
             arrWork = QuadrupoleLens.transferDefPlane(kx, dL);
-            M05 = gamma * gamma * h0
+            m05 = gamma * gamma * h0
                     * (ElementaryFunction.cosh(kx * dL) - 1.) / (kx * kx);
-            M15 = gamma * gamma * h0 * ElementaryFunction.sinh(kx * dL) / kx;
-            M40 = -h0 * ElementaryFunction.sinh(kx * dL) / kx;
-            M41 = -h0 * (ElementaryFunction.cosh(kx * dL) - 1.) / (kx * kx);
-            M45 = dL - gamma * gamma * h0 * h0
+            m15 = gamma * gamma * h0 * ElementaryFunction.sinh(kx * dL) / kx;
+            m40 = -h0 * ElementaryFunction.sinh(kx * dL) / kx;
+            m41 = -h0 * (ElementaryFunction.cosh(kx * dL) - 1.) / (kx * kx);
+            m45 = dL - gamma * gamma * h0 * h0
                     * (ElementaryFunction.sinh(kx * dL) - kx * dL)
                     / (kx * kx * kx);
         }
 
-        M05 *= R / R0;
-        M15 *= R / R0;
-        M45 *= R / R0;
-        M06 = M05 * zprimeProbe;
-        M16 = M15 * zprimeProbe;
-        M46 = M45 * zprimeProbe;
+        m05 *= r / r0;
+        m15 *= r / r0;
+        m45 *= r / r0;
+        m06 = m05 * zprimeProbe;
+        m16 = m15 * zprimeProbe;
+        m46 = m45 * zprimeProbe;
 
         final double[][] arrX = arrWork;
-
-        arrWork = arrZero;
 
         if (kQuad >= 0.0) {
             arrWork = QuadrupoleLens.transferDefPlane(ky, dL);
@@ -732,16 +713,16 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
                 matBody.setSubMatrix(0, 1, 0, 1, arrX);
                 matBody.setSubMatrix(2, 3, 2, 3, arrY);
 
-                matBody.setElem(0, 5, M05);
-                matBody.setElem(1, 5, M15);
+                matBody.setElem(0, 5, m05);
+                matBody.setElem(1, 5, m15);
 
-                matBody.setElem(4, 0, M40);
-                matBody.setElem(4, 1, M41);
-                matBody.setElem(4, 5, M45);
+                matBody.setElem(4, 0, m40);
+                matBody.setElem(4, 1, m41);
+                matBody.setElem(4, 5, m45);
 
-                matBody.setElem(0, 6, M06);
-                matBody.setElem(1, 6, M16);
-                matBody.setElem(4, 6, M46);
+                matBody.setElem(0, 6, m06);
+                matBody.setElem(1, 6, m16);
+                matBody.setElem(4, 6, m46);
 
                 break;
 
@@ -750,18 +731,20 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
                 matBody.setSubMatrix(0, 1, 0, 1, arrY);
                 matBody.setSubMatrix(2, 3, 2, 3, arrX);
 
-                matBody.setElem(2, 5, M05);
-                matBody.setElem(3, 5, M15);
+                matBody.setElem(2, 5, m05);
+                matBody.setElem(3, 5, m15);
 
-                matBody.setElem(4, 2, M40);
-                matBody.setElem(4, 3, M41);
-                matBody.setElem(4, 5, M45);
+                matBody.setElem(4, 2, m40);
+                matBody.setElem(4, 3, m41);
+                matBody.setElem(4, 5, m45);
 
-                matBody.setElem(2, 6, M06);
-                matBody.setElem(3, 6, M16);
-                matBody.setElem(4, 6, M46);
+                matBody.setElem(2, 6, m06);
+                matBody.setElem(3, 6, m16);
+                matBody.setElem(4, 6, m46);
 
                 break;
+            default:
+                LOGGER.log(Level.WARNING, "Wrong orientation value {0}", getOrientation());
         }
 
         return new PhaseMap(matBody);
@@ -789,60 +772,7 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
         double a1 = this.compCurrentAngle2(s1);
         double a2 = this.compCurrentAngle2(s2);
 
-        double dAng = a2 - a1;
-
-        return dAng;
-    }
-
-    /**
-     * <p>
-     * Compute and return the partial deflection angle of the design trajectory
-     * at position <em>s</em> within the magnet. Note that <em>s</em> is not the
-     * position along the design trajectory. That value is found by multiplying
-     * the returned value by the curvature radius.
-     * </p>
-     *
-     * NOTE
-     * <p>
-     * This function is necessary since the space charge calculations step
-     * through the <strong>physical</strong> distance of the magnet, not the
-     * design path.
-     * </p>
-     *
-     * <p>
-     * The result is computed using repeated application of the law of cosines.
-     * </p>
-     *
-     * @param s physical distance from magnet entrance location (meters)
-     *
-     * @return the partial deflection angle at distance s
-     *
-     * @author Christopher K. Allen
-     * @author sako 2007/11/27, exception handling
-     *
-     * @deprecated This method provides suspicious results and has been replaced
-     * by compCurrentAngle2()
-     */
-    @Deprecated
-    private double compCurrentAngle(double s) {
-        double R0 = this.compDesignBendingRadius();
-        double L0 = this.getLength();
-
-        double num = R0 - ((L0 / 2.0) / R0) * s;
-        double den = Math.sqrt(R0 * R0 + s * (s - L0));
-        double ratio = num / den;
-
-        if (ratio > 1) {
-
-            ratio = 1;
-
-        } else if (ratio < -1) {
-
-            ratio = -1;
-        }
-
-        double theta = Math.acos(ratio);
-        return theta;
+        return a2 - a1;
     }
 
     /**
@@ -883,64 +813,33 @@ public class IdealMagSectorDipole2 extends ThickElectromagnet {
      * @since Jul 8, 2015 by Christopher K. Allen
      */
     private double compCurrentAngle2(double s) throws IllegalArgumentException {
-        double L0 = this.getLength();
-        double theta = Math.abs(this.getDesignBendingAngle());
+        double l0 = this.getLength();
 
         // Check for illegal argument
         if (s < 0.0 - EPS) {
-            System.err.println("IdealMagSectorDipole#compCurrentAngle2(): probe position s=" + s + " is less than 0, i.e. before the dipole entrance");
+            LOGGER.log(Level.WARNING, "IdealMagSectorDipole#compCurrentAngle2(): probe position s={0} is less than 0, i.e. before the dipole entrance", s);
 
             return 0.0;
         }
 
-        if (s > L0 + EPS) {
-            System.err.println("IdealMagSectorDipole#compCurrentAngle2(): probe position s=" + s + " is greater than L0, i.e. outside dipole exit");
+        if (s > l0 + EPS) {
+            LOGGER.log(Level.WARNING, "IdealMagSectorDipole#compCurrentAngle2(): probe position s={0} is greater than L0, i.e. outside dipole exit", s);
 
-            return theta;
+            return Math.abs(this.getDesignBendingAngle());
         }
 
         // Compute trigonometric angles and partial angles
-        double R0 = Math.abs(this.compDesignBendingRadius());
+        double r0 = Math.abs(this.compDesignBendingRadius());
 
         // have the total bending angle
-        double thetaBy2 = Math.asin((L0 / 2) / R0);
+        double thetaBy2 = Math.asin((l0 / 2) / r0);
         // partial deflection for s>L0/2
-        double partDefl = Math.asin((s - (L0 / 2)) / R0);
+        double partDefl = Math.asin((s - (l0 / 2)) / r0);
         // complement of partial deflection for s<L0/2
 
         // Compute the deflection angle for a position s meters into the magnet
         //  and return it.
-        double dTheta = thetaBy2 + partDefl;
-
-        return dTheta;
-    }
-
-    /**
-     * This method approximates the partial deflection angle of the design
-     * trajectory a position <em>s</em> within the magnet. This method may be
-     * somewhat faster than
-     * <code>IdealMagSectorDipole#compCurrentAngle(double)</code> by avoiding
-     * the computation of one arc-cosine. The returned value is the derivative
-     * of the above function at <em>s</em> = 0 times
-     * <em>s</em>.
-     *
-     * @param s physical distance from magnet entrance location (meters)
-     *
-     * @return the partial deflection angle at distance s
-     *
-     * @author Christopher K. Allen
-     *
-     * @see IdealMagSectorDipole2#compCurrentAngle(double)
-     */
-    @SuppressWarnings("unused")
-    private double approxCurrentAngle(double s) {
-
-        double h0 = this.compDesignCurvature();
-        double L0 = this.getLength();
-
-        double area = h0 * L0 / 2;
-
-        return s * h0 * Math.sqrt(1 - area * area);
+        return thetaBy2 + partDefl;
     }
 
     /*

@@ -108,12 +108,12 @@ public class IdealMagSkewQuad extends IdealMagQuad {
     @Override
     public PhaseMap transferMap(final IProbe probe, final double length) {
         double charge = probe.getSpeciesCharge();
-        double Er = probe.getSpeciesRestEnergy();
+        double eR = probe.getSpeciesRestEnergy();
         double beta = probe.getBeta();
         double gamma = probe.getGamma();
 
         // focusing constant (radians/meter)
-        final double k = (charge * LIGHT_SPEED * getMagField()) / (Er * beta * gamma);
+        final double k = (charge * LIGHT_SPEED * getMagField()) / (eR * beta * gamma);
         final double kSqrt = Math.sqrt(Math.abs(k));
 
         // Compute the transfer matrix components
@@ -122,11 +122,11 @@ public class IdealMagSkewQuad extends IdealMagQuad {
         final double[][] arr0 = DriftSpace.transferDriftPlane(length);
 
         // Build the tranfer matrix from its component quad blocks and rotations
-        PhaseMatrix matPhi = new PhaseMatrix();
+        PhaseMatrix matPhi;
         PhaseMatrix matQuad = new PhaseMatrix();
         PhaseMatrix matRotP = new PhaseMatrix();
-        PhaseMatrix matRotM = new PhaseMatrix();
-        PhaseMatrix matTmp = new PhaseMatrix();
+        PhaseMatrix matRotM;
+        PhaseMatrix matTmp;
 
         // Set up horizontal focusing normal quad
         matQuad.setSubMatrix(0, 1, 0, 1, arrF);

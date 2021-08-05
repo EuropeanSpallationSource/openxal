@@ -58,13 +58,6 @@ public class LatticeXmlParser {
 
     public static final String ATTR_SEP = "|";
 
-    // ********* constructors    
-    /**
-     * Creates a new instance of LatticeXmlParser
-     */
-    public LatticeXmlParser() {
-    }
-
     // ********* static parsing methods
     /**
      * Parses the XML file specified by the supplied URI. Return a <code>
@@ -152,7 +145,6 @@ public class LatticeXmlParser {
             this.loadComposite(latUrl, daptLat);
 
         } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException e) {
-            LOGGER.log(Level.SEVERE, null, e);
             throw new ParsingException(e.getMessage());
         }
 
@@ -290,25 +282,21 @@ public class LatticeXmlParser {
             DataAdaptor daptChild = iterChild.next();
 
             // Comments - Load any comments associated with sequence
-            if (daptChild.name().equals(ELEM_COMM)) {
-                String strComm = buildComment(daptChild);
-
+            if (!daptChild.name().equals(ELEM_COMM)) {
                 // Sequence - Load a subsequence within the sequence
-            } else if (daptChild.name().equals(ELEM_SEQ)) {
-                ElementSeq seqChild = buildSequence(daptChild);
+                if (daptChild.name().equals(ELEM_SEQ)) {
+                    ElementSeq seqChild = buildSequence(daptChild);
+                    secNew.addChild(seqChild);
+                    // Element - Load an element into the sequence (a leaf node in tree)
+                } else if (daptChild.name().equals(ELEM_ELEM)) {
+                    IElement elemNew = buildElement(daptChild);
 
-                secNew.addChild(seqChild);
+                    secNew.addChild(elemNew);
 
-                // Element - Load an element into the sequence (a leaf node in tree)
-            } else if (daptChild.name().equals(ELEM_ELEM)) {
-                IElement elemNew = buildElement(daptChild);
-
-                secNew.addChild(elemNew);
-
-                // An error must have occurred
-            } else {
-                throw new DataFormatException("LatticeParser#buildSequence() - unrecognized XML element tag " + daptChild.name());
-
+                    // An error must have occurred
+                } else {
+                    throw new DataFormatException("LatticeParser#buildSequence() - unrecognized XML element tag " + daptChild.name());
+                }
             }
         }
     }
@@ -364,31 +352,20 @@ public class LatticeXmlParser {
 
                         // Identify the parameter class and pack the value into the 
                         // appropriate object
-                        Class<?> clsParam;
                         Object objParam;
 
                         if (strType.equals("boolean")) {
-                            clsParam = boolean.class;
                             objParam = Boolean.valueOf(strValue);
-
                         } else if (strType.equals("byte")) {
-                            clsParam = byte.class;
                             objParam = Byte.valueOf(strValue);
-
                         } else if (strType.equals("int")) {
-                            clsParam = int.class;
                             objParam = Integer.valueOf(strValue);
-
                         } else if (strType.equals("float")) {
-                            clsParam = float.class;
                             objParam = Float.valueOf(strValue);
-
                         } else if (strType.equals("double")) {
-                            clsParam = double.class;
                             objParam = Double.valueOf(strValue);
-
                         } else {
-                            clsParam = Class.forName(strType);
+                            Class<?> clsParam = Class.forName(strType);
 
                             Class<?>[] arrCtorSig = {String.class};
                             Object[] arrCtorArg = {strValue};
@@ -404,7 +381,6 @@ public class LatticeXmlParser {
                 throw new NumberFormatException("LatticeParser#loadParameters() - bad parameter number format"
                         + strName + " for element " + elem.getId()
                 );
-
             } catch (NoSuchMethodException e) {
                 throw new NoSuchMethodException("LatticeParser#loadParameters() - unknown parameter "
                         + strName + " for element " + elem.getId()
@@ -414,9 +390,7 @@ public class LatticeXmlParser {
                         + strName + " for element " + elem.getId()
                 );
             }
-
         }
-
     }
 
     /**

@@ -305,7 +305,7 @@ public class ThickDipole extends ThickElectromagnet {
     public double getFieldIndex(IProbe probe) {
         // Get  parameters
         // opposite
-        double B = this.getMagField();
+        double b = this.getMagField();
 
         //hs
         double path = this.getPathLength();
@@ -329,14 +329,14 @@ public class ThickDipole extends ThickElectromagnet {
         }
 
         double charge = probe.getSpeciesCharge();
-        double Etotal = probe.getSpeciesRestEnergy() * probe.getGamma();
+        double eTotal = probe.getSpeciesRestEnergy() * probe.getGamma();
 
         double beta = probe.getBeta();
 
-        double h = 0.2998e9 * B / (Etotal * beta * charge);
+        double h = 0.2998e9 * b / (eTotal * beta * charge);
 
         //hs 
-        LOGGER.log(Level.INFO, "h, hrho = " + h + " " + hrho);
+        LOGGER.log(Level.INFO, "h, hrho = {0} {1}", new Object[]{h, hrho});
 
         if (bPathFlag == 1.) {
             //if fieldPathFlag=1, use hrho (calculated from rho) instead of h(calculated from p and B)
@@ -371,7 +371,7 @@ public class ThickDipole extends ThickElectromagnet {
 
         // Get  parameters
         // opposite
-        double B = this.getMagField();
+        double b = this.getMagField();
 
         //hs
         double path = this.getPathLength();
@@ -385,14 +385,14 @@ public class ThickDipole extends ThickElectromagnet {
         }
 
         double charge = probe.getSpeciesCharge();
-        double Etotal = probe.getSpeciesRestEnergy() * probe.getGamma();
+        double eTotal = probe.getSpeciesRestEnergy() * probe.getGamma();
 
         double beta = probe.getBeta();
 
         // Compute the bending constant h  == 1/ bend radius (1/meter)
         //was default    
-        double h = 0.2998e9 * B / (Etotal * beta * charge);
-        LOGGER.log(Level.INFO, "h, hrho = " + h + " " + hrho);
+        double h = 0.2998e9 * b / (eTotal * beta * charge);
+        LOGGER.log(Level.INFO, "h, hrho = {0} {1}", new Object[]{h, hrho});
 
         if (bPathFlag == 1.) {
             //if fieldPathFlag=1, use hrho (calculated from rho) instead of h(calculated from p and B)

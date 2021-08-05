@@ -32,9 +32,9 @@ public interface IProbeState extends IArchive {
     /**
      * Set the rest energy of a single particle in the beam
      *
-     * @param Er particle rest energy (<strong>electron-volts</strong>)
+     * @param eR particle rest energy (<strong>electron-volts</strong>)
      */
-    public void setSpeciesRestEnergy(double Er);
+    public void setSpeciesRestEnergy(double eR);
 
     /**
      * Set the current position of the probe along the beamline.
@@ -79,11 +79,11 @@ public interface IProbeState extends IArchive {
     /**
      * Set the current kinetic energy of the probe.
      *
-     * @param W new probe kinetic energy (<strong>electron-volts</strong>)
+     * @param w new probe kinetic energy (<strong>electron-volts</strong>)
      *
      * @see #getKineticEnergy
      */
-    public void setKineticEnergy(double W);
+    public void setKineticEnergy(double w);
 
     /**
      * Set the lattice element id associated with this state.

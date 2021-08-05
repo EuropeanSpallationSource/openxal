@@ -43,7 +43,7 @@ public class IdealDrift extends ThickElement {
     /**
      * Debugging flag
      */
-    final boolean debug = false;
+    static final boolean DEBUG = false;
 
     /*
      *  Global Constants
@@ -56,9 +56,9 @@ public class IdealDrift extends ThickElement {
     /*
      * Local Attributes
      */
-    final boolean newMethod = false;
+    static final boolean NEW_METHOD = false;
 
-    private double KDrift;
+    private double kDrift;
 
     FringePMQ[] fringes;
 
@@ -111,7 +111,7 @@ public class IdealDrift extends ThickElement {
      * @since Apr 19, 2011
      */
     public double getKDrift() {
-        return KDrift;
+        return kDrift;
     }
 
     /*
@@ -204,28 +204,28 @@ public class IdealDrift extends ThickElement {
 
         //sako add permquad components
         final double KDriftTh = 0.0000;
-        KDrift = 0;
+        kDrift = 0;
         double dxSum = 0;
         double dySum = 0;
         double dzSum = 0;
 
         final double q = probe.getSpeciesCharge();
 
-        int KDriftCount = 0;
-        if (newMethod) {
+        int kDriftCount = 0;
+        if (NEW_METHOD) {
             if (fringes != null) {
                 for (int ipmq = 0; ipmq < fringes.length; ipmq++) {
                     FringePMQ fringe = fringes[ipmq];
-                    double K = fringe.getK(probe, dblLen);
+                    double k = fringe.getK(probe, dblLen);
 
-                    KDrift += K;
-                    KDriftCount++;
+                    kDrift += k;
+                    kDriftCount++;
                 }
             }
         } else {
 
             if (this.getCloseElements() != null) {
-                if (debug) {
+                if (DEBUG) {
                     LOGGER.log(Level.INFO, "xxxxxxxxxxxxxx in IdealDrift, s, dblLen  = " + this.getPosition() + " " + dblLen);
                 }
 
@@ -236,53 +236,53 @@ public class IdealDrift extends ThickElement {
                     Element elem = it.next();
                     if (elem instanceof IdealPermMagQuad) {
                         IdealPermMagQuad permQuad = (IdealPermMagQuad) elem;
-                        double K = permQuad.calcK(probe, dblLen);
+                        double k = permQuad.calcK(probe, dblLen);
 
                         dxSum += permQuad.getAlignX();
                         dySum += permQuad.getAlignY();
                         dzSum += permQuad.getAlignZ();
 
-                        if (debug) {
-                            LOGGER.log(Level.INFO, "id, K = " + permQuad.getId() + " " + K);
+                        if (DEBUG) {
+                            LOGGER.log(Level.INFO, "id, K = " + permQuad.getId() + " " + k);
                         }
 
                         double fld = permQuad.getMagField();
                         //fixed on 15 Oct 06
                         if (q * fld >= 0) {
-                            KDrift += (K * K);
+                            kDrift += (k * k);
                         } else {
-                            KDrift -= (K * K);
+                            kDrift -= (k * k);
                         }
 
-                        KDriftCount++;
+                        kDriftCount++;
                     }
                 }
-                if (debug) {
-                    LOGGER.log(Level.INFO, "xxxxxxxxxxxxxx end IdealDrift (" + this.getId() + "), KDrift, KDriftCount = " + KDrift + " " + KDriftCount);
+                if (DEBUG) {
+                    LOGGER.log(Level.INFO, "xxxxxxxxxxxxxx end IdealDrift (" + this.getId() + "), KDrift, KDriftCount = " + kDrift + " " + kDriftCount);
                 }
 
                 //need to check if this is correct calculations!! (probably not)
-                if (KDriftCount > 0) {
-                    dxSum /= KDriftCount;
-                    dySum /= KDriftCount;
-                    dzSum /= KDriftCount;
+                if (kDriftCount > 0) {
+                    dxSum /= kDriftCount;
+                    dySum /= kDriftCount;
+                    dzSum /= kDriftCount;
                 }
             }
         }
 
-        if (KDrift >= 0) {
-            KDrift = Math.sqrt(KDrift);
+        if (kDrift >= 0) {
+            kDrift = Math.sqrt(kDrift);
         } else {
-            KDrift = -Math.sqrt(-KDrift);
+            kDrift = -Math.sqrt(-kDrift);
         }
 
-        if (KDrift > KDriftTh) {
-            if (debug) {
-                LOGGER.log(Level.INFO, "KDrift = " + KDrift);
+        if (kDrift > KDriftTh) {
+            if (DEBUG) {
+                LOGGER.log(Level.INFO, "KDrift = {0}", kDrift);
             }
-            return (this.transferMap(probe, dblLen, KDrift, IdealPermMagQuad.ORIENT_HOR, dxSum, dySum, dzSum));
-        } else if (KDrift < -KDriftTh) {
-            return (this.transferMap(probe, dblLen, -KDrift, IdealPermMagQuad.ORIENT_VER, dxSum, dySum, dzSum));
+            return (this.transferMap(dblLen, kDrift, IdealPermMagQuad.ORIENT_HOR, dxSum, dySum, dzSum));
+        } else if (kDrift < -KDriftTh) {
+            return (this.transferMap(dblLen, -kDrift, IdealPermMagQuad.ORIENT_VER, dxSum, dySum, dzSum));
         } else {
             // Build transfer matrix
             PhaseMatrix matPhi = new PhaseMatrix();
@@ -299,15 +299,15 @@ public class IdealDrift extends ThickElement {
 
     }
 
-    private PhaseMap transferMap(IProbe probe, double dL, double k, int orientation, double alignx, double aligny, double alignz) {
+    private PhaseMap transferMap(double dL, double k, int orientation, double alignx, double aligny, double alignz) {
 
-        if (debug) {
-            LOGGER.log(Level.INFO, "IdeaDrift, k, dL = " + k + " " + dL);
+        if (DEBUG) {
+            LOGGER.log(Level.INFO, "IdeaDrift, k, dL = {0} {1}", new Object[]{k, dL});
         }
         //def=false
         boolean useApproxLens = IdealPermMagQuad.getUseApproxLens();
-        if (debug) {
-            LOGGER.log(Level.INFO, "useApproxLens(IdealDrift) = " + useApproxLens);
+        if (DEBUG) {
+            LOGGER.log(Level.INFO, "useApproxLens(IdealDrift) = {0}", useApproxLens);
         }
         // Compute the transfer matrix components
         double[][] arrF;
@@ -367,7 +367,7 @@ public class IdealDrift extends ThickElement {
         if ((delx == 0) && (dely == 0) && (delz == 0)) {
             return matPhi;
         }
-        PhaseMatrix T = new PhaseMatrix();
+        PhaseMatrix t = new PhaseMatrix();
 
         //T = Translation Matrix by Chris Allen
         // |1 0 0 0 0 0 dx|
@@ -394,15 +394,13 @@ public class IdealDrift extends ThickElement {
         //      |0  |
         //      |0  |
         for (int i = 0; i < 7; i++) {
-            T.setElem(i, i, 1);
+            t.setElem(i, i, 1);
         }
 
-        T.setElem(0, 6, -delx);
-        T.setElem(2, 6, -dely);
-        T.setElem(4, 6, -delz);
-        PhaseMatrix Phidx = T.inverse().times(matPhi).times(T);
-
-        return Phidx;
+        t.setElem(0, 6, -delx);
+        t.setElem(2, 6, -dely);
+        t.setElem(4, 6, -delz);
+        return t.inverse().times(matPhi).times(t);
     }
 
     private static class FringePMQ {
@@ -424,7 +422,7 @@ public class IdealDrift extends ThickElement {
             if (q * fld < 0) {
                 sign = -1;
             }
-            return sign * KNorm * fringe(s);
+            return sign * kNorm * fringe(s);
         }
 
         public FringePMQ(IdealPermMagQuad pmq) {
@@ -435,30 +433,26 @@ public class IdealDrift extends ThickElement {
          * new variable represents for PQEXT parameter in Trace3d which shows
          * the extent of fringe field. This is taken from pqExt of IdealPermQuad
          */
-        private static final double pqExt = IdealPermMagQuad.pqExt;
+        private static final double PQ_EXT = IdealPermMagQuad.PQ_EXT;
 
         public double fringe(double s) {
             double z1 = s - s2;
             double z2 = s - s1;
             if (r2 < r1) {
-                System.err.println("IdealMagQuad::fringe - outer radius r2 (" + r2 + ") is smaller than inner radius r1 (" + r1 + ")... Aborting");
+                LOGGER.log(Level.WARNING, "IdealMagQuad::fringe - outer radius r2 ({0}) is smaller than inner radius r1 ({1})... Aborting", new Object[]{r2, r1});
                 return 0;
             }
 
             //newly added by sako, 26 Sep 06, z1<PQEXT*r1
             if (z1 > 0) {
-                if (z1 >= pqExt * r1) {
+                if (z1 >= PQ_EXT * r1) {
                     return 0;
                 }
-            } else if (z2 < 0) {
-                if (-z2 >= pqExt * r1) {
-                    return 0;
-                }
+            } else if (z2 < 0 && -z2 >= PQ_EXT * r1) {
+                return 0;
             }
 
-            if ((!fringe1) && (s < smin)) {
-                return 0;
-            } else if ((!fringe2) && (smax < s)) {
+            if (((!fringe1) && (s < smin)) || ((!fringe2) && (smax < s))) {
                 return 0;
             }
 
@@ -484,15 +478,15 @@ public class IdealDrift extends ThickElement {
             double f = f1 - f2;
 
             if (f < 0) {
-                LOGGER.log(Level.INFO, "****** WARNING: f = " + f);
-                LOGGER.log(Level.INFO, "IdealPermMagQuad s, s1, s2 = " + s + " " + s1 + " " + s2);
-                LOGGER.log(Level.INFO, "f = " + f);
+                LOGGER.log(Level.INFO, "****** WARNING: f = {0}", f);
+                LOGGER.log(Level.INFO, "IdealPermMagQuad s, s1, s2 = {0} {1} {2}", new Object[]{s, s1, s2});
+                LOGGER.log(Level.INFO, "f = {0}", f);
 
                 f = 0;
             } else if (f > 1) {
-                LOGGER.log(Level.INFO, "****** WARNING: f = " + f);
-                LOGGER.log(Level.INFO, "IdealPermMagQuad s, s1, s2 = " + s + " " + s1 + " " + s2);
-                LOGGER.log(Level.INFO, "f = " + f);
+                LOGGER.log(Level.INFO, "****** WARNING: f = {0}", f);
+                LOGGER.log(Level.INFO, "IdealPermMagQuad s, s1, s2 = {0} {1} {2}", new Object[]{s, s1, s2});
+                LOGGER.log(Level.INFO, "f = {0}", f);
 
                 f = 1;
             }
@@ -513,15 +507,16 @@ public class IdealDrift extends ThickElement {
         }
 
         // Get lens parameters
-        private double KNorm;
-        private double G;
+        private double kNorm;
+        private double g;
         private double mass;
         private double k0;
-        private double smin, smax;
+        private double smin;
+        private double smax;
 
         int bPathFlag;
 
-        public void setPMQ(IdealPermMagQuad pmq) {
+        public final void setPMQ(IdealPermMagQuad pmq) {
             fld = pmq.getMagField();
 
             s1 = pmq.getSCenter() - pmq.getSLength() / 2;
@@ -545,12 +540,10 @@ public class IdealDrift extends ThickElement {
             smin = pmq.getPosition() - pmq.getLength() / 2;
             smax = pmq.getPosition() + pmq.getLength() / 2;
 
-            G = Math.abs(pmq.getMagField());
-
-            int bPathFlag = (int) pmq.getFieldPathFlag();
+            g = Math.abs(pmq.getMagField());
 
             //if bpathflag =1, then use nominal k0 from nominal kine energy
-            if (bPathFlag == 1) {
+            if ((int) pmq.getFieldPathFlag() == 1) {
 
                 double w0 = pmq.getNominalKineEnergy();
 
@@ -559,21 +552,20 @@ public class IdealDrift extends ThickElement {
                 if (p0 == 0) {
                     k0 = 0;
                 } else {
-                    k0 = Math.sqrt(LIGHT_SPEED * G / p0);
+                    k0 = Math.sqrt(LIGHT_SPEED * g / p0);
                 }
             }
 
         }
 
         public void calcKNorm() {
-
             // Compute focusing constant
             // focusing constant (radians/meter)
             //if bpathflag =1, then use nominal k0 from nominal kine energy
             if (bPathFlag == 0) {
-                KNorm = Math.sqrt((LIGHT_SPEED * G) / mbetagamma);
+                kNorm = Math.sqrt((LIGHT_SPEED * g) / mbetagamma);
             } else {
-                KNorm = k0;
+                kNorm = k0;
             }
 
         }

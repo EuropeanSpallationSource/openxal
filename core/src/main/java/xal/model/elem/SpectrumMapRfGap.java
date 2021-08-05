@@ -6,6 +6,8 @@
 package xal.model.elem;
 
 import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.model.IElement;
 import xal.model.IProbe;
@@ -104,6 +106,8 @@ import xal.tools.math.fnc.IRealFunction;
  */
 public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCell {
 
+    private static final Logger LOGGER = Logger.getLogger(SpectrumMapRfGap.class.getName());
+
     /*
      *  Global Constants
      */
@@ -137,16 +141,6 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
      * The number 2&pi;
      */
     public static final double DBL_2PI = 2.0 * Math.PI;
-
-    /**
-     * Error tolerance in the iterative search for phase change through RF gap
-     */
-    private static final double DBL_PHASECALC_CNVERR = 1.0e-12;
-
-    /**
-     * Maximum number of allowable iterations in the phase change search
-     */
-    private static final int INT_PHASECALC_MAXITER = 50;
 
     private double synchronousPhase;
     private double energyGain;
@@ -219,7 +213,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         /**
          * particle energy
          */
-        private double W;
+        private double w;
 
         /**
          * Zero argument constructor
@@ -232,9 +226,9 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         /**
          * Initializing Constructor
          */
-        public EnergyVariables(double phi, double W) {
+        public EnergyVariables(double phi, double w) {
             this.phi = phi;
-            this.W = W;
+            this.w = w;
         }
 
         /**
@@ -244,7 +238,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
          */
         @Override
         public String toString() {
-            return "(phi,W)=(" + phi + ", " + W + ')';
+            return "(phi,W)=(" + phi + ", " + w + ')';
         }
 
     }
@@ -418,9 +412,8 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
      * @since Nov 17, 2014
      */
     public double getGapOffset() {
-        return this.gapOffset;
+        return gapOffset;
     }
-
 
     /*
      * Operations
@@ -431,13 +424,10 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
      * @return RF wavelength in <strong>meters</strong>
      */
     public double wavelengthRF() {
-
         // Compute the RF wavelength
         double c = IElement.LIGHT_SPEED;
         double f = getFrequency();
-        double lambda = c / f;
-
-        return lambda;
+        return c / f;
     }
 
     /**
@@ -459,15 +449,12 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
      * @see SpectrumMapRfGap#energyGain(IProbe)
      */
     public double compMidGapBeta(IProbe probe) {
-
         EnergyVector varMidGap = this.compGapPhaseAndEnergyGain(probe);
 
-        double Er = probe.getSpeciesRestEnergy();
-        double W_mid = varMidGap.getEnergy();
+        double eR = probe.getSpeciesRestEnergy();
+        double wMid = varMidGap.getEnergy();
 
-        double b_mid = RelativisticParameterConverter.computeBetaFromEnergies(W_mid, Er);
-
-        return b_mid;
+        return RelativisticParameterConverter.computeBetaFromEnergies(wMid, eR);
     }
 
     /**
@@ -504,14 +491,12 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
      * @since Jan 15, 2015 by Christopher K. Allen
      */
     public double compEffectivePhaseAtGap(IProbe probe) {
-        final int n = this.getCavityCellIndex();
-        final double q = this.getCavityModeConstant();
+        final int n = getCavityCellIndex();
+        final double q = getCavityModeConstant();
 
-        final double phi_cav = n * q * Math.PI;
-        final double phi_prb = this.compGapEntrancePhase(probe);
-        final double phi_eff = phi_prb + phi_cav % DBL_2PI;
-
-        return phi_eff;
+        final double phiCav = n * q * Math.PI;
+        final double phiPrb = compGapEntrancePhase(probe);
+        return phiPrb + phiCav % DBL_2PI;
     }
 
     /**
@@ -535,33 +520,30 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
      * @return (de)focusing constant (<strong>in radians/meter</strong> )
      */
     public double compTransFocusing(IProbe probe) {
-
         // TODO - this is the full energy and phase gain
         EnergyVariables varMidGap = this.compMidGapPhaseAndEnergy(probe);
-        double W_mid = varMidGap.W;
-        double phi_mid = varMidGap.phi;
+        double wMid = varMidGap.w;
+        double phiMid = varMidGap.phi;
 
         double c = IElement.LIGHT_SPEED;
 
-        double Q = Math.abs(probe.getSpeciesCharge());
-        double Er = probe.getSpeciesRestEnergy();
+        double q = Math.abs(probe.getSpeciesCharge());
+        double eR = probe.getSpeciesRestEnergy();
 
-        double g_mid = W_mid / Er + 1.0;
-        double b_mid = RelativisticParameterConverter.computeBetaFromEnergies(W_mid, Er);
-        double bg_mid = b_mid * g_mid;
+        double gMid = wMid / eR + 1.0;
+        double bMid = RelativisticParameterConverter.computeBetaFromEnergies(wMid, eR);
+        double bgMid = bMid * gMid;
 
-        double E = this.getE0();
+        double e = this.getE0();
         double f = this.getFrequency();
-        double k_mid = RelativisticParameterConverter.computeWavenumberFromBeta(b_mid, f);
-        double T_mid = this.spcGapFlds.Tz(k_mid);
-        double L = this.getLength();
+        double kMid = RelativisticParameterConverter.computeWavenumberFromBeta(bMid, f);
+        double tMid = this.spcGapFlds.Tz(kMid);
+        double l = this.getLength();
 
-        double A = this.compCavModeFieldCoeff();
-        double ETL = E * T_mid * L;
+        double a = this.compCavModeFieldCoeff();
+        double etl = e * tMid * l;
 
-        double kr = (Math.PI * f / c) * Q * A * ETL * Math.sin(-phi_mid) / (Er * bg_mid * bg_mid);
-
-        return kr;
+        return (Math.PI * f / c) * q * a * etl * Math.sin(-phiMid) / (eR * bgMid * bgMid);
     }
 
     /**
@@ -588,14 +570,12 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 
         EnergyVariables varMidGap = this.compMidGapPhaseAndEnergy(probe);
 
-        double Wbar = varMidGap.W;
-        double Er = probe.getSpeciesRestEnergy();
-        double gbar = Wbar / Er + 1.0;
+        double wBar = varMidGap.w;
+        double eR = probe.getSpeciesRestEnergy();
+        double gBar = wBar / eR + 1.0;
 
         double kr = this.compTransFocusing(probe);
-        double kz = -2.0 * kr * gbar * gbar;
-
-        return kz;
+        return -2.0 * kr * gBar * gBar;
     }
 
     /*
@@ -676,11 +656,11 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
     /**
      * Set the on accelerating field E - the on axis field (V/m)
      *
-     * @param E The new E0 value
+     * @param e The new E0 value
      */
     @Override
-    public void setE0(double E) {
-        dblFieldE0 = E;
+    public void setE0(double e) {
+        dblFieldE0 = e;
         this.resetGapPotential();
     }
 
@@ -828,16 +808,14 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
     public double elapsedTime(IProbe probe) {
 
         // Get the phase jump across the gap (if any)
-        EnergyVector varGain = this.compGapPhaseAndEnergyGain(probe);
+        EnergyVector varGain = compGapPhaseAndEnergyGain(probe);
 
-        double d_phi = varGain.getPhase();
+        double dPhi = varGain.getPhase();
 
         // Compute the time necessary for a smooth propagation through that phase jump
         double f = this.getFrequency();
         double w = DBL_2PI * f;
-        double dT = d_phi / w;
-
-        return dT;
+        return dPhi / w;
     }
 
     /**
@@ -850,8 +828,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
      */
     @Override
     public double energyGain(IProbe probe) {
-        double dW = this.compGapPhaseAndEnergyGain(probe).getEnergy();
-        return dW;
+        return compGapPhaseAndEnergyGain(probe).getEnergy();
     }
 
     /**
@@ -874,16 +851,11 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
             double phi = probe.getLongitinalPhase();
             double dphi = this.compGapPhaseAndEnergyGain(probe).getPhase();
 
-            double phi_reset = -phi + phi0 + dphi;
-
-            return phi_reset;
+            return -phi + phi0 + dphi;
 
             // We're just a plain ole gap, advance the probe phase by the phase gain
         } else {
-
-            double dphi = this.compGapPhaseAndEnergyGain(probe).getPhase();
-
-            return dphi;
+            return compGapPhaseAndEnergyGain(probe).getPhase();
         }
     }
 
@@ -899,8 +871,8 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
     @Override
     protected PhaseMap transferMap(IProbe probe) throws ModelException {
         // Get probe parameters at initial energy
-        double Er = probe.getSpeciesRestEnergy();
-        double Wi = probe.getKineticEnergy();
+        double eR = probe.getSpeciesRestEnergy();
+        double wI = probe.getKineticEnergy();
         double bi = probe.getBeta();
         double gi = probe.getGamma();
 
@@ -912,8 +884,8 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         double kt = this.compTransFocusing(probe);
 
         // Compute final energy parameters
-        double Wf = Wi + dW;
-        double gf = Wf / Er + 1.0;
+        double wF = wI + dW;
+        double gf = wF / eR + 1.0;
         double bf = Math.sqrt(1.0 - 1.0 / (gf * gf));
 
         // Compute component block matrices then full transfer matrix
@@ -990,13 +962,13 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         // Create the accelerating gap model
         //  The accelerating gap potential is set for a unit charge.  It is later updated
         //  for whatever charge the probe carries when energy and phase calculations are made.
-        double E0 = this.getE0();
-        double A = this.compCavModeFieldCoeff();
-        double L = this.getGapLength();
+        double e0 = this.getE0();
+        double a = this.compCavModeFieldCoeff();
+        double l = this.getGapLength();
         // This is for a unit charge 
-        double V0 = A * E0 * L;
+        double v0 = a * e0 * l;
 
-        this.gapAcclMdl = new AcceleratingRfGap(this.dblFreq, V0, this.spcGapFlds);
+        this.gapAcclMdl = new AcceleratingRfGap(this.dblFreq, v0, this.spcGapFlds);
     }
 
     /*
@@ -1084,9 +1056,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         final int n = this.getCavityCellIndex();
         final double q = this.getCavityModeConstant();
 
-        final double A = Math.cos(n * q * Math.PI);
-
-        return A;
+        return Math.cos(n * q * Math.PI);
     }
 
     /**
@@ -1108,13 +1078,13 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         // Create the accelerating gap model
         //  The accelerating gap potential is set for a unit charge.  It is later updated
         //  for whatever charge the probe carries when energy and phase calculations are made.
-        double E0 = this.getE0();
-        double A = this.compCavModeFieldCoeff();
-        double L = this.getGapLength();
+        double e0 = this.getE0();
+        double a = this.compCavModeFieldCoeff();
+        double l = this.getGapLength();
         // This is for a unit charge 
-        double V0 = A * E0 * L;
+        double v0 = a * e0 * l;
 
-        this.gapAcclMdl = new AcceleratingRfGap(this.dblFreq, V0, this.spcGapFlds);
+        this.gapAcclMdl = new AcceleratingRfGap(this.dblFreq, v0, this.spcGapFlds);
     }
 
     /**
@@ -1205,7 +1175,6 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
      * @since Nov 19, 2014
      */
     private double compDriftingPhaseAdvance(double beta, double len) {
-
         // speed of light
         double c = IElement.LIGHT_SPEED;
         double f = this.getFrequency();
@@ -1213,9 +1182,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         //the correction for the gap offset needed
         double dt = len / (beta * c);
 
-        double dphi = DBL_2PI * f * dt;
-
-        return dphi;
+        return DBL_2PI * f * dt;
     }
 
     /**
@@ -1238,23 +1205,21 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
      * is the post-gap wave number. Note that the phase change &Delta;&phi; can
      * be negative if the offset <em>l</em> is toward the downstream direction.
      *
-     * @param beta_i the pre-gap velocity &beta;<sub><em>i</em></sub>
-     * @param beta_f the post-gap velocity &beta;<sub><em>f</em></sub>
+     * @param betaI the pre-gap velocity &beta;<sub><em>i</em></sub>
+     * @param betaF the post-gap velocity &beta;<sub><em>f</em></sub>
      *
      * @return
      *
      * @since Jan 13, 2015 by Christopher K. Allen
      */
-    private double compGapOffsetPhaseChange(double beta_i, double beta_f) {
+    private double compGapOffsetPhaseChange(double betaI, double betaF) {
 
         // TODO This isn't right.  Think about the offset and the total gap length
         double dl = this.getGapOffset();
-        double dphi_i = this.compDriftingPhaseAdvance(beta_i, dl);
-        double dphi_f = this.compDriftingPhaseAdvance(beta_f, dl);
+        double dphiI = this.compDriftingPhaseAdvance(betaI, dl);
+        double dphiF = this.compDriftingPhaseAdvance(betaF, dl);
 
-        double dphi = dphi_i - dphi_f;
-
-        return dphi;
+        return dphiI - dphiF;
     }
 
     /**
@@ -1282,22 +1247,19 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
      * @see #compGapPhaseAndEnergyImpulses(IProbe)
      */
     private EnergyVariables compMidGapPhaseAndEnergy(IProbe probe) {
-
         // Get the phase and energy at the entrance of the gap
-        double W_i = probe.getKineticEnergy();
-        double phi_i = this.compGapEntrancePhase(probe);
+        double wI = probe.getKineticEnergy();
+        double phiI = this.compGapEntrancePhase(probe);
 
         EnergyVector varDelVals = this.compGapPhaseAndEnergyGain(probe);
-        double d_W = varDelVals.getEnergy();
-        double d_phi = varDelVals.getPhase();
+        double dW = varDelVals.getEnergy();
+        double dPhi = varDelVals.getPhase();
 
         // Create the longitudinal phase variable object to return
-        double W = W_i + d_W / 2.0;
-        double phi = phi_i + d_phi / 2.0;
+        double w = wI + dW / 2.0;
+        double phi = phiI + dPhi / 2.0;
 
-        EnergyVariables varMidGap = new EnergyVariables(phi, W);
-
-        return varMidGap;
+        return new EnergyVariables(phi, w);
     }
 
     /**
@@ -1332,29 +1294,22 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 
         // If the algorithm doesn't want to use the dynamic phase and energy
         //  gain calculations then we default to the design mode and return
-        if (probe.getAlgorithm().getRfGapPhaseCalculation() == false) {
-            EnergyVector varGain = this.compGapPhaseAndEnergyGainDirect(probe);
-
-            return varGain;
+        if (!probe.getAlgorithm().getRfGapPhaseCalculation()) {
+            return compGapPhaseAndEnergyGainDirect(probe);
         }
 
         // Switch on the type of calculation mode we are using
         //
         //  Maybe we have the useRfGapPhaseCalculation flag in the probe??!!
         switch (this.enmPhsCalcMth) {
-
             case DESIGN:
                 return this.compGapPhaseAndEnergyGainDesign(probe);
-
             case DYNPHASE:
                 return this.compGapPhaseAndEnergyGainDirect(probe);
-
             case DYNENERGY:
                 return this.compGapPhaseAndEnergyGainIndirect(probe);
-
             default:
                 return this.compGapPhaseAndEnergyGainDesign(probe);
-
         }
     }
 
@@ -1372,16 +1327,14 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
     private EnergyVector compGapPhaseAndEnergyGainDesign(IProbe probe) {
 
         // Compute the energy gain without corrections
-        double Q = Math.abs(probe.getSpeciesCharge());
-        double ETL = this.getETL();
+        double q = Math.abs(probe.getSpeciesCharge());
+        double etl = this.getETL();
         double phi0 = this.getPhase();
 
-        double dW = Q * ETL * Math.cos(phi0);
+        double dW = q * etl * Math.cos(phi0);
         double dphi = 0.0;
 
-        EnergyVector varGain = new EnergyVector(dphi, dW);
-
-        return varGain;
+        return new EnergyVector(dphi, dW);
     }
 
     /**
@@ -1404,29 +1357,27 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
     private EnergyVector compGapPhaseAndEnergyGainDirect(IProbe probe) {
 
         // Compute the energy gain without corrections
-        double Q = Math.abs(probe.getSpeciesCharge());
-        double ETL = this.getETL();
-        double A = this.compCavModeFieldCoeff();
+        double q = Math.abs(probe.getSpeciesCharge());
+        double etl = this.getETL();
+        double a = this.compCavModeFieldCoeff();
         double phi0 = this.compGapEntrancePhase(probe);
 
-        double dW = Q * A * ETL * Math.cos(phi0);
+        double dW = q * a * etl * Math.cos(phi0);
 
         // Now we add in the change in phase due to any offset in the gap
         //  electrical center from the geometric center
         //  We only do this if the S() transit time factor was not used to compute
         //  the phase and energy gains
-        double Er = probe.getSpeciesRestEnergy();
-        double W_i = probe.getKineticEnergy();
-        double W_f = W_i + dW;
+        double eR = probe.getSpeciesRestEnergy();
+        double wI = probe.getKineticEnergy();
+        double wF = wI + dW;
 
-        double b_i = probe.getBeta();
-        double b_f = RelativisticParameterConverter.computeBetaFromEnergies(W_f, Er);
+        double bI = probe.getBeta();
+        double bF = RelativisticParameterConverter.computeBetaFromEnergies(wF, eR);
 
-        double dphi = this.compGapOffsetPhaseChange(b_i, b_f);
+        double dphi = this.compGapOffsetPhaseChange(bI, bF);
 
-        EnergyVector varGain = new EnergyVector(dphi, dW);
-
-        return varGain;
+        return new EnergyVector(dphi, dW);
     }
 
     /**
@@ -1491,10 +1442,10 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
     private EnergyVector compGapPhaseAndEnergyGainIndirect(IProbe probe) throws AcceleratingRfGap.NoConvergenceException {
 
         // Initial probe parameters
-        double Q = Math.abs(probe.getSpeciesCharge());
-        double Er = probe.getSpeciesRestEnergy();
+        double q = Math.abs(probe.getSpeciesCharge());
+        double eR = probe.getSpeciesRestEnergy();
         double bi = probe.getBeta();
-        double Wi = probe.getKineticEnergy();
+        double wI = probe.getKineticEnergy();
 
         //
         //  IMPORTANT!!!!
@@ -1512,10 +1463,10 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         //  CKA - I will try to eliminate these quantities because I cannot
         //        determine that they are correct
         // Gap parameters
-        double E0 = this.getE0();
-        double A = this.compCavModeFieldCoeff();
-        double L = this.getGapLength();
-        double qAEL = Q * A * E0 * L;
+        double e0 = this.getE0();
+        double a = this.compCavModeFieldCoeff();
+        double l = this.getGapLength();
+        double qAEL = q * a * e0 * l;
 
         //
         // TODO CKA - I BELIEVE T and S in the XDXF files are in centimeters!!!!
@@ -1525,54 +1476,32 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         //       from these values.
         // Initialize the search 
         //
-        EnergyVector vecInitVals = new EnergyVector(phi0m, Wi);
+        EnergyVector vecInitVals = new EnergyVector(phi0m, wI);
 
         try {
 
             // Compute the phase variable gain in the pre-gap region
-            EnergyVector vecPreGapGains = this.gapAcclMdl.computeGapGains(LOC.PREGAP, Q, Er, vecInitVals);
+            EnergyVector vecPreGapGains = this.gapAcclMdl.computeGapGains(LOC.PREGAP, q, eR, vecInitVals);
 
-            double dphim = A * vecPreGapGains.getPhase();
-            double dWm = A * vecPreGapGains.getEnergy();
+            double dphim = a * vecPreGapGains.getPhase();
+            double dWm = a * vecPreGapGains.getEnergy();
 
             // Form the longitudinal phase and energy at the gap center
             double phi0 = phi0m + dphim;
-            double W0 = Wi + dWm;
-
-            EnergyVector vecMidVals = new EnergyVector(phi0, W0);
-
-            // Compute the post-gap phase variable changes
-            EnergyVector vecPostGapGains = this.gapAcclMdl.computeGapGains(LOC.POSTGAP, Q, Er, vecMidVals);
-
-            double dphip = A * vecPostGapGains.getPhase();
-            double dWp = A * vecPostGapGains.getEnergy();
-
-            // Form the Longitudinal phase variables in the post gap region
-            double phi0p = phi0 + dphip;
-            double Wf = W0 + dWp;
-
-            EnergyVector vecEndVals = new EnergyVector(phi0p, Wf);
-
-            // Compute the total gains for the gap
-            double dphi = dphim + dphip;
-            double dW = dWm + dWp;
-
-            EnergyVector vecGapGains = new EnergyVector(dphi, dW);
+            double w0 = wI + dWm;
 
             double ki = DBL_2PI / (bi * IElement.LIGHT_SPEED / this.getFrequency());
-            double b_mid = RelativisticParameterConverter.computeBetaFromEnergies(W0, Er);
-            double k_mid = DBL_2PI / (b_mid * IElement.LIGHT_SPEED / this.getFrequency());
+            double bMid = RelativisticParameterConverter.computeBetaFromEnergies(w0, eR);
+            double kMid = DBL_2PI / (bMid * IElement.LIGHT_SPEED / this.getFrequency());
 
-            double theEnergyGain = qAEL * this.spcGapFlds.Tz(k_mid) * Math.cos(phi0 + dphim);
-            double deltaPhaseCorrection = Q * A * this.gapAcclMdl.computeNormWaveNumber(W0 + dWm, Er) * this.spcGapFlds.dkTz(ki) * Math.sin(phi0 + dphim);
+            double theEnergyGain = qAEL * this.spcGapFlds.Tz(kMid) * Math.cos(phi0 + dphim);
+            double deltaPhaseCorrection = q * a * this.gapAcclMdl.computeNormWaveNumber(w0 + dWm, eR) * this.spcGapFlds.dkTz(ki) * Math.sin(phi0 + dphim);
 
             // TODO - Remove this old XAL reproduction stuff if we are going to production 
-            EnergyVector vecCrapGains = new EnergyVector(deltaPhaseCorrection, theEnergyGain);
-
-            return vecCrapGains;
+            return new EnergyVector(deltaPhaseCorrection, theEnergyGain);
 
         } catch (AcceleratingRfGap.NoConvergenceException e) {
-            System.err.println("WARNING! SpectrumMapRfGap#compGapPhaseAndEnergyGain() did not converge for element " + this.getId());
+            LOGGER.log(Level.WARNING, "SpectrumMapRfGap#compGapPhaseAndEnergyGain() did not converge for element {0}", this.getId());
 
             throw e;
         }

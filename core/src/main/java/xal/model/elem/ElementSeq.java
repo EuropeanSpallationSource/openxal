@@ -10,6 +10,8 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.model.CompositeGlobalIterator;
 import xal.model.IComponent;
@@ -37,6 +39,8 @@ import xal.tools.math.r3.R3;
  * @version 2.0 February, 2009
  */
 public abstract class ElementSeq implements IComposite {
+
+    private static final Logger LOGGER = Logger.getLogger(ElementSeq.class.getName());
 
     /*
      *  Global Attributes
@@ -125,7 +129,7 @@ public abstract class ElementSeq implements IComposite {
      *
      * @param strType soft type of the sequence (defined by the child class)
      */
-    public ElementSeq(String strType) {
+    protected ElementSeq(String strType) {
         this(strType, null, SIZE_DEF_RESERVE);
     }
 
@@ -136,7 +140,7 @@ public abstract class ElementSeq implements IComposite {
      * @param strType soft type of the sequence (defined by the child class)
      * @param strId identifier of the sequence
      */
-    public ElementSeq(String strType, String strId) {
+    protected ElementSeq(String strType, String strId) {
         this(strType, strId, SIZE_DEF_RESERVE);
     }
 
@@ -150,7 +154,7 @@ public abstract class ElementSeq implements IComposite {
      * @param strId identifier of the sequence
      * @param szReserve number of Element spaces to reserve
      */
-    public ElementSeq(String strType, String strId, int szReserve) {
+    protected ElementSeq(String strType, String strId, int szReserve) {
         lstCompsForward = new ArrayList<>(szReserve);
         lstCompsBackward = new ArrayList<>(szReserve);
         this.strType = strType;
@@ -222,13 +226,8 @@ public abstract class ElementSeq implements IComposite {
 
             if (ifcComp instanceof ElementSeq) {
                 cntElem += ((ElementSeq) ifcComp).getLeafCount();
-
             } else if (ifcComp instanceof IElement) {
                 cntElem++;
-
-            } else {
-                continue;
-
             }
         }
 
@@ -562,9 +561,7 @@ public abstract class ElementSeq implements IComposite {
         // This is a nested sequence
         double dblLocPos = this.getPosition();
         double dblParLen = this.getParent().getLength();
-        double dblGblPos = (dblParPos - dblParLen / 2.0) + dblLocPos;
-
-        return dblGblPos;
+        return (dblParPos - dblParLen / 2.0) + dblLocPos;
     }
 
     /**
@@ -721,15 +718,12 @@ public abstract class ElementSeq implements IComposite {
         return this.getForwardCompList().size();
     }
 
-    ;
-    
     /**
-     *  Get the child IComponent interface at location 
-     *  specified by index.
+     * Get the child IComponent interface at location specified by index.
      *
-     *  @param  indChild    position index within the sequence list
+     * @param indChild position index within the sequence list
      *
-     *  @return             child at position indChild
+     * @return child at position indChild
      */
     @Override
     public IComponent getChild(int indChild) {
@@ -792,13 +786,10 @@ public abstract class ElementSeq implements IComposite {
             }
 
             // if child is composite
-            if (iChild instanceof IComposite) {
-                // true to remove it
-                if (((IComposite) iChild).remove(iCmp)) {
-                    // it was a child of my child 
-                    return true;
-                    //    and was removed
-                }
+            if ((iChild instanceof IComposite) && ((IComposite) iChild).remove(iCmp)) {
+                // it was a child of my child 
+                return true;
+                //    and was removed
             }
         }
 
@@ -1020,7 +1011,8 @@ public abstract class ElementSeq implements IComposite {
         // If we made it here, something went wrong.  Likely that we are
         //  have the wrong parent or our parent does not know us.
         //  I'm not clearing the dirty flag wo this message will swamp the console.
-        System.err.println("#compDependParams: inconsistent parent-child relationship between " + this.getParent().getId() + " and " + this.getId());
+        LOGGER.log(Level.WARNING, "#compDependParams: inconsistent parent-child relationship between {0} and {1}", new Object[]{this.getParent().getId(), this.getId()});
+
     }
 }
 

@@ -299,9 +299,10 @@ public class EnvelopeProbe extends BunchProbe<EnvelopeProbeState> {
             throw new IllegalArgumentException("unknown element id");
         }
 
-        int indFrom, indTo;
+        int indFrom;
+
         // use last state before start element
-        indTo = arrIndTo[arrIndTo.length - 1];
+        int indTo = arrIndTo[arrIndTo.length - 1];
 
         EnvelopeProbeState stateTo = trajectory.stateWithIndex(indTo);
         PhaseMatrix matTo = stateTo.getResponseMatrix();

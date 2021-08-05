@@ -159,9 +159,7 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
      * @author Christopher K. Allen
      */
     public static synchronized PhaseMatrix toBeamFrame(PhaseMatrix matQuad) {
-        PhaseMatrix matBeam = MAT_SO6_TOBEAM_COORDS.times(matQuad.times(MAT_SO6_TOQUAD_COORDS));
-
-        return matBeam;
+        return MAT_SO6_TOBEAM_COORDS.times(matQuad.times(MAT_SO6_TOQUAD_COORDS));
     }
 
     /*
@@ -275,6 +273,7 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
      */
     @Override
     public void setOrientation(int enmOrient) {
+        // Do Nothing
     }
 
     /*
@@ -336,12 +335,12 @@ public class IdealMagSkewQuad3 extends ThickElectromagnet {
     @Override
     public PhaseMap transferMap(final IProbe probe, final double length) {
         double charge = probe.getSpeciesCharge();
-        double Er = probe.getSpeciesRestEnergy();
+        double eR = probe.getSpeciesRestEnergy();
         double beta = probe.getBeta();
         double gamma = probe.getGamma();
 
         // focusing constant (radians/meter)
-        final double k = (charge * LIGHT_SPEED * getMagField()) / (Er * beta * gamma);
+        final double k = (charge * LIGHT_SPEED * getMagField()) / (eR * beta * gamma);
         final double kSqrt = Math.sqrt(Math.abs(k));
 
         // Compute the transfer matrix components

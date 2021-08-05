@@ -145,20 +145,8 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
             this.cmpKeyOrder = new Comparator<String>() {
                 @Override
                 public int compare(String strId1, String strId2) {
-
-                    /*if ( strId1.contentEquals(strId2) )
-                        return 0;
-                    
-                    else if (strId2.contains(strId1) ) 
-                        return 0;
-                    
-                    else if (strId1.contains(strId2))
-                        return 0;
-                    
-                    else*/
                     return strId1.compareTo(strId2);
                 }
-
             };
 
             this.mapNodeToStates = new TreeMap<>(cmpKeyOrder);
@@ -259,12 +247,10 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
             // The general case: We must get the list of states corresponding to the ID class
             RealNumericIndexer<S> setStates = this.mapNodeToStates.get(strDevId);
             if (setStates == null) {
-                return null;
+                return new ArrayList<>();
             }
 
-            List<S> lstStates = setStates.toList();
-
-            return lstStates;
+            return setStates.toList();
         }
 
         /**
@@ -400,7 +386,6 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
             return trjNew;
 
         } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException | DataFormatException e) {
-            LOGGER.log(Level.SEVERE, null, e);
             throw new DataFormatException(e.getMessage());
         }
     }
@@ -561,9 +546,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
      */
     public S peakLastByPosition() {
         int cntStates = this.rniStateHistory.size();
-        S state = this.rniStateHistory.get(cntStates - 1);
-
-        return state;
+        return this.rniStateHistory.get(cntStates - 1);
     }
 
     /**
@@ -579,9 +562,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
         List<S> lstStatesForType = this.mapElemTypeToStates.getStates(strElemTypeId);
         int cntStates = lstStatesForType.size();
 
-        S stateLast = lstStatesForType.get(cntStates - 1);
-
-        return stateLast;
+        return lstStatesForType.get(cntStates - 1);
     }
 
     /* 
@@ -709,7 +690,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
             }
 
             // We have not encountered the first state, skip to loop beginning
-            if (bolStart1 == false) {
+            if (!bolStart1) {
                 continue;
             }
 
@@ -774,7 +755,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
             }
 
             // We have not encountered the first state, skip to loop beginning
-            if (bolStart1 == false) {
+            if (!bolStart1) {
                 continue;
             }
 
@@ -796,7 +777,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
             //   and bolStop2 depends upon whether or not the above
             //   if conditional set it.  If not, than we have not hit
             //   the last element yet.
-            if (bolStop2 == false) {
+            if (!bolStop2) {
                 trjSub.addState(state);
             }
 
@@ -804,7 +785,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
             //     bolStart1 = true
             // We have started and stopped.  All the states of the
             //     subtrajectory have been collected and we are done.
-            if (bolStop2 == true) {
+            if (bolStop2) {
                 break;
             }
         }
@@ -917,7 +898,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
 
         List<S> lstStates = this.mapSmfIdToStates.getStates(strSmfNodeId);
         if (lstStates == null) {
-            return null;
+            return new ArrayList<>();
         }
         return lstStates;
     }
@@ -941,7 +922,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
         List<S> lstStates = this.mapElemTypeToStates.getStates(strTypeId);
 
         if (lstStates == null) {
-            return null;
+            return new ArrayList<>();
         }
 
         return lstStates;
@@ -1065,7 +1046,6 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
         try {
             readStatesFrom(daptTraj);
         } catch (DataFormatException e) {
-            LOGGER.log(Level.SEVERE, null, e);
             throw new DataFormatException("Exception loading from adaptor: " + e.getMessage());
 
         }
@@ -1125,7 +1105,6 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
                 addState(probeState);
 
             } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | DataFormatException e) {
-                LOGGER.log(Level.SEVERE, null, e);
                 throw new DataFormatException(e.getMessage());
             }
 
@@ -1167,11 +1146,6 @@ class IdEquivClass implements Comparator<IdEquivClass> {
      * Local Attributes
      */
     /**
-     * Size of the string regular expression
-     */
-    private final int cntChars;
-
-    /**
      * The root Id
      */
     private String strIdRoot;
@@ -1181,18 +1155,14 @@ class IdEquivClass implements Comparator<IdEquivClass> {
      */
     public IdEquivClass(String strIdRoot) {
         this.strIdRoot = strIdRoot;
-        this.cntChars = strIdRoot.length();
     }
 
     public IdEquivClass(int cntSzRoot, String strMemberId) {
-        this.cntChars = cntSzRoot;
         this.strIdRoot = strMemberId.substring(0, cntSzRoot);
     }
 
     public boolean isMember(String strId) {
-
-        boolean bolResult = strId.matches(this.strIdRoot);
-        return bolResult;
+        return strId.matches(this.strIdRoot);
     }
 
     /*
@@ -1207,8 +1177,6 @@ class IdEquivClass implements Comparator<IdEquivClass> {
      */
     @Override
     public int compare(IdEquivClass id1, IdEquivClass id2) {
-
         return 0;
     }
-
 }

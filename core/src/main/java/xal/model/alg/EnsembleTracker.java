@@ -128,5 +128,6 @@ public class EnsembleTracker extends Tracker {
 
     protected void advanceState(IProbe probe, IElement elem, double dblLen)
             throws ModelException {
+        // Do Nothing
     }
 }

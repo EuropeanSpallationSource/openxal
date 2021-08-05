@@ -53,10 +53,11 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
      *
      * @param probe BunchProbe object to be cloned
      */
-    public BunchProbe(final BunchProbe<S> probe) {
+    protected BunchProbe(final BunchProbe<S> probe) {
         super(probe);
-        this.setBunchFrequency(probe.getBunchFrequency());
-        this.setBeamCurrent(probe.getBeamCurrent());
+
+        setBunchFrequency(probe.getBunchFrequency());
+        setBeamCurrent(probe.getBeamCurrent());
     }
 
     /**
@@ -71,10 +72,10 @@ public abstract class BunchProbe<S extends BunchProbeState<S>> extends Probe<S> 
     /**
      * Set the total beam current.
      *
-     * @param I new beam current in <strong>Amperes</strong>
+     * @param i new beam current in <strong>Amperes</strong>
      */
-    public void setBeamCurrent(double I) {
-        this.stateCurrent.setBeamCurrent(I);
+    public void setBeamCurrent(double i) {
+        this.stateCurrent.setBeamCurrent(i);
     }
 
     /*

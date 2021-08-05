@@ -62,7 +62,7 @@ public class IdealMagQuad extends ThickElectromagnet {
     /**
      * K1 (T/m no len included)
      */
-    private double K1 = 0.0;
+    private double k1 = 0.0;
 
     /**
      * for fringe field calculation based on SAD H. Matsuda et al, NIM 103
@@ -141,11 +141,11 @@ public class IdealMagQuad extends ThickElectromagnet {
     }
 
     public double getK1() {
-        return K1;
+        return k1;
     }
 
     public void setK1(double k1) {
-        K1 = k1;
+        this.k1 = k1;
     }
 
     /*
@@ -225,9 +225,9 @@ public class IdealMagQuad extends ThickElectromagnet {
     @Override
     public PhaseMap transferMap(final IProbe probe, final double length) {
         double charge = probe.getSpeciesCharge();
-        double Er = probe.getSpeciesRestEnergy();
+        double eR = probe.getSpeciesRestEnergy();
         double w = probe.getKineticEnergy();
-        double p = Math.sqrt(w * (w + 2 * Er));
+        double p = Math.sqrt(w * (w + 2 * eR));
 
         double bPathFlag = getFieldPathFlag();
         //if bpathflag =1, then use nominal k0 from nominal kine energy
@@ -237,7 +237,7 @@ public class IdealMagQuad extends ThickElectromagnet {
                 w0 = probe.getKineticEnergy();
                 setNominalKineEnergy(w0);
             }
-            double p0 = Math.sqrt(w0 * (w0 + 2 * Er));
+            double p0 = Math.sqrt(w0 * (w0 + 2 * eR));
 
             //save brho scaling. when nominalKineEnergy = 0, set 1.
             setBRhoScaling(p / p0);
@@ -252,15 +252,9 @@ public class IdealMagQuad extends ThickElectromagnet {
         } else if (bPathFlag == 1) {
             k = (charge * LIGHT_SPEED * getMagField() * getBRhoScaling()) / p;
         } else {
-            k = K1;
+            k = k1;
         }
-        /*
-       //sako!!
-       if (K1!=0.) {
-           LOGGER.log(Level.INFO, "K1, k = "+K1+" "+k);
-           k = K1;
-       }
-         */
+        
         double kSqrt = Math.sqrt(Math.abs(k));
 
         // Compute the transfer matrix components        

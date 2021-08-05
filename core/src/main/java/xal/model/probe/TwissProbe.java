@@ -281,20 +281,6 @@ public class TwissProbe extends BunchProbe<TwissProbeState> {
         return new Trajectory<>(TwissProbeState.class);
     }
 
-    /**
-     * Resets the probe to the saved initial state, if there is one and clears
-     * the Trajectory.
-     *
-     * @see xal.model.probe.Probe#reset()
-     *
-     * @author Christopher K. Allen
-     * @since Nov 5, 2013
-     */
-    @Override
-    public void reset() {
-        super.reset();
-    }
-
     /*
      * Support Methods
      */

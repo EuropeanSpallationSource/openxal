@@ -31,9 +31,9 @@ public interface IRfGap /*extends gov.sns.xal.model.IElement*/ {
      * Set the on accelerating field. This method should be called by the RF
      * cavity containing this gap and should use the amplitude factor.
      *
-     * @param E - the on axis field (V/m)
+     * @param e - the on axis field (V/m)
      */
-    public void setE0(double E);
+    public void setE0(double e);
 
     /**
      * Set the phase delay of the RF in gap with respect to the synchronous

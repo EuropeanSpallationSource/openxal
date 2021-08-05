@@ -1,7 +1,5 @@
 package xal.model.probe.traj;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.PhaseVector;
 import xal.tools.data.DataAdaptor;
@@ -17,9 +15,6 @@ import xal.model.probe.ParticleProbe;
  *
  */
 public class ParticleProbeState extends ProbeState<ParticleProbeState> /*implements ICoordinateState */ {
-
-    private static final Logger LOGGER = Logger.getLogger(ParticleProbeState.class.getName());
-
 
     /*
      * Global Constants
@@ -82,7 +77,7 @@ public class ParticleProbeState extends ProbeState<ParticleProbeState> /*impleme
     /**
      * phase coordinates of the particle location
      */
-    private PhaseVector m_vecCoords;
+    private PhaseVector vecCoords;
 
     /**
      * response matrix for initial coordinate sensitivity
@@ -98,8 +93,8 @@ public class ParticleProbeState extends ProbeState<ParticleProbeState> /*impleme
      */
     public ParticleProbeState() {
         super();
-        this.m_vecCoords = PhaseVector.newZero();
-        this.matResp = PhaseMatrix.identity();
+        vecCoords = PhaseVector.newZero();
+        matResp = PhaseMatrix.identity();
     }
 
     /**
@@ -115,7 +110,7 @@ public class ParticleProbeState extends ProbeState<ParticleProbeState> /*impleme
     public ParticleProbeState(final ParticleProbeState particleProbeState) {
         super(particleProbeState);
 
-        this.m_vecCoords = particleProbeState.m_vecCoords.clone();
+        this.vecCoords = particleProbeState.vecCoords.clone();
         this.matResp = particleProbeState.matResp.clone();
     }
 
@@ -146,7 +141,7 @@ public class ParticleProbeState extends ProbeState<ParticleProbeState> /*impleme
      * </em>1)<sup><em>T</em></sup>
      */
     public void setPhaseCoordinates(PhaseVector vecPhase) {
-        this.m_vecCoords = new PhaseVector(vecPhase);
+        this.vecCoords = new PhaseVector(vecPhase);
     }
 
     /**
@@ -192,7 +187,7 @@ public class ParticleProbeState extends ProbeState<ParticleProbeState> /*impleme
      * coordinates
      */
     public PhaseVector getPhaseCoordinates() {
-        return this.m_vecCoords;
+        return this.vecCoords;
     }
 
     /**
@@ -232,7 +227,7 @@ public class ParticleProbeState extends ProbeState<ParticleProbeState> /*impleme
      */
     @Deprecated
     public PhaseVector getFixedOrbit() {
-        return this.m_vecCoords;
+        return this.vecCoords;
     }
 
     /*
@@ -304,14 +299,6 @@ public class ParticleProbeState extends ProbeState<ParticleProbeState> /*impleme
             throw new DataFormatException("ParticleProbeState#readPropertiesFrom(): no child element = " + LABEL_PARTICLE);
         }
 
-        // Read the version number.  We don't do anything with it since there was no version
-        //  attribute before version 2.  But it's here if necessary in the future.
-        @SuppressWarnings("unused")
-        int intVersion = 0;
-        if (nodePart.hasAttribute(ATTR_VERSION)) {
-            intVersion = nodePart.intValue(ATTR_VERSION);
-        }
-
         // Read data if the old format is found
         if (nodePart.hasAttribute(VALUE_LABEL)) {
             String strVecFmt = nodePart.stringValue(VALUE_LABEL);
@@ -327,18 +314,16 @@ public class ParticleProbeState extends ProbeState<ParticleProbeState> /*impleme
         try {
             DataAdaptor nodeCoords = nodePart.childAdaptor(LABEL_COORDS);
             if (nodeCoords != null) {
-                PhaseVector vecCoords = PhaseVector.loadFrom(nodeCoords);
-                this.setPhaseCoordinates(vecCoords);
+                this.setPhaseCoordinates(PhaseVector.loadFrom(nodeCoords));
             }
 
             DataAdaptor nodeResp = nodePart.childAdaptor(LABEL_RESP);
             if (nodeResp != null) {
-                PhaseMatrix matResp = PhaseMatrix.loadFrom(nodeResp);
-                this.setResponseMatrix(matResp);
+                PhaseMatrix newMatResp = PhaseMatrix.loadFrom(nodeResp);
+                this.setResponseMatrix(newMatResp);
             }
 
         } catch (DataFormatException e) {
-            LOGGER.log(Level.SEVERE, null, e);
             throw new DataFormatException("The source data was corrupted - " + e.getMessage());
 
         }
