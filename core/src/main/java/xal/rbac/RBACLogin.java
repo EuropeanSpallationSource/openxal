@@ -2,17 +2,13 @@ package xal.rbac;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * <code>RBACLogin</code> is the entry point for authentication of user.
  *
  * @author <a href="mailto:ivo.list@cosylab.com">Ivo List</a>
  */
-public abstract class RBACLogin {
-
-    private static final Logger LOGGER = Logger.getLogger(RBACLogin.class.getName());
+public interface RBACLogin {
 
     /**
      * Returns the list of all roles for the provided username.
@@ -84,9 +80,7 @@ public abstract class RBACLogin {
             final Method creatorMethod = pluginClass.getMethod("getRBACLoginInstance");
             return (RBACLogin) creatorMethod.invoke(null);
         } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException exception) {
-            LOGGER.log(Level.SEVERE, null, exception);
             throw new RuntimeException("Failed to load the RBACPlugin: " + exception.getMessage());
         }
     }
-
 }

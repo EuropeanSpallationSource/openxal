@@ -20,7 +20,7 @@ import xal.rbac.RBACSubject;
  * @version 0.1 27 Jul 2015
  * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
  */
-public class EssRbacLogin extends RBACLogin {
+public class EssRbacLogin implements RBACLogin {
 
     private static final Logger LOGGER = Logger.getLogger(EssRbacLogin.class.getName());
 
