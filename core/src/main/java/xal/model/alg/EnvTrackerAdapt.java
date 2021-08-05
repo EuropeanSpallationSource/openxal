@@ -975,9 +975,8 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
             throws ModelException {
         // Get transfer map of the element and take first order component
         PhaseMap mapE = elem.transferMap(probe, h);
-        PhaseMatrix matPhiE = mapE.getFirstOrder();
 
-        return matPhiE;
+        return mapE.getFirstOrder();
     }
 
     /*
@@ -1101,9 +1100,8 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
             // If we are only first-order accurate get the full transfer matrices for the two effects,
             //  multiply them, and return the combined matrix
             PhaseMatrix matPhiE = this.compElemTransMatrix(h, probe, elem);
-            PhaseMatrix matPhi = matPhiE.times(matPhiSc);
 
-            return matPhi;
+            return matPhiE.times(matPhiSc);
         }
 
         // Get the transfer matrices for the two individual effects and 

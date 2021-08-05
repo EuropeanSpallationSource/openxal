@@ -628,9 +628,7 @@ public class TwissTracker extends Tracker {
         }
 
         // Pack into vector format and return
-        R3 vecPhases = new R3(arrPhsAdv);
-
-        return vecPhases;
+        return new R3(arrPhsAdv);
     }
 
     /**
@@ -825,9 +823,8 @@ public class TwissTracker extends Tracker {
 
         double cayz = 2 * cay * gammaa * gammaa;
         double cayp = cayz * cayz * dphi * dphi;
-        double dfac = cayp * (0.125 * cosphi * cosphi + (1. / 576.) * dphi * dphi * sinphi * sinphi);
 
-        return dfac;
+        return cayp * (0.125 * cosphi * cosphi + (1. / 576.) * dphi * dphi * sinphi * sinphi);
     }
 
     /**
