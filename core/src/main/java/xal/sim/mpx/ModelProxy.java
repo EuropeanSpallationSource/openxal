@@ -7,7 +7,6 @@ package xal.sim.mpx;
  *
  */
 import xal.tools.beam.Twiss;
-import xal.tools.xml.XmlDataAdaptor;
 import xal.model.ModelException;
 import xal.model.elem.Element;
 import xal.model.probe.EnvelopeProbe;
@@ -32,6 +31,11 @@ import java.util.logging.Logger;
 import javax.swing.event.EventListenerList;
 
 import org.w3c.dom.Document;
+import xal.model.probe.DiagnosticProbe;
+import xal.model.probe.EnsembleProbe;
+import xal.model.probe.ParticleProbe;
+import xal.model.probe.TransferMapProbe;
+import xal.smf.Ring;
 
 /**
  * This class provides an API to the on-line model. It features convenience
@@ -253,11 +257,12 @@ public class ModelProxy {
         MPXStopWatch.timeElapsed("...xal.model.Scenario: begin! ");
         try {
             if (seq instanceof xal.smf.Ring) {
-                scenario = Scenario.newScenarioFor((xal.smf.Ring) seq);
+                scenario = Scenario.newScenarioFor((Ring) seq);
             } else {
                 scenario = Scenario.newScenarioFor(seq);
             }
         } catch (ModelException e) {
+            LOGGER.log(Level.SEVERE, null, e);
             throw new LatticeError("ModelException building scenario for: " + seq);
         }
         MPXStopWatch.timeElapsed(
@@ -275,24 +280,8 @@ public class ModelProxy {
      * @param probeFile the file for the probe definition in XML.
      */
     public void setNewProbe(File probeFile) throws LatticeError {
-        // TODO: CKA - NEVER USED
-        XmlDataAdaptor probeXmlAdptr;
-        if (probeFile.equals(probeMasterFile)) {
-            return;
-        } else {
+        if (!probeFile.equals(probeMasterFile)) {
             probeMasterFile = probeFile;
-            // parse the file
-/*            try {
-                probeXmlAdptr =
-                    XmlDataAdaptor.adaptorForFile(probeMasterFile, false);
-            } catch (ParseException e) {
-                throw new LatticeError(e.getMessage());
-            } catch (ResourceNotFoundException e) {
-                throw new LatticeError(e.getMessage());
-            } catch (MalformedURLException e) {
-                throw new LatticeError(e.getMessage());
-            }
-             */
             // get new probe
             Probe<?> p;
             try {
@@ -335,13 +324,13 @@ public class ModelProxy {
      */
     public boolean setChannelSource(String src) {
         paramSrc = src;
-        if (src == Scenario.SYNC_MODE_DESIGN) {
+        if (Scenario.SYNC_MODE_DESIGN.equals(src)) {
             scenario.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
             return true;
-        } else if (src == Scenario.SYNC_MODE_LIVE) {
+        } else if (Scenario.SYNC_MODE_LIVE.equals(src)) {
             scenario.setSynchronizationMode(Scenario.SYNC_MODE_LIVE);
             return true;
-        } else if (src == Scenario.SYNC_MODE_RF_DESIGN) {
+        } else if (Scenario.SYNC_MODE_RF_DESIGN.equals(src)) {
             scenario.setSynchronizationMode(Scenario.SYNC_MODE_RF_DESIGN);
             return true;
         }
@@ -401,15 +390,15 @@ public class ModelProxy {
             return -1;
         }
         // find the probe type
-        if (getProbe() instanceof xal.model.probe.EnvelopeProbe) {
+        if (getProbe() instanceof EnvelopeProbe) {
             return ModelProxy.ENVELOPE_PROBE;
-        } else if (getProbe() instanceof xal.model.probe.DiagnosticProbe) {
+        } else if (getProbe() instanceof DiagnosticProbe) {
             return ModelProxy.DIAGNOSTIC_PROBE;
-        } else if (getProbe() instanceof xal.model.probe.EnsembleProbe) {
+        } else if (getProbe() instanceof EnsembleProbe) {
             return ModelProxy.ENSEMBLE_PROBE;
-        } else if (getProbe() instanceof xal.model.probe.ParticleProbe) {
+        } else if (getProbe() instanceof ParticleProbe) {
             return ModelProxy.PARTICLE_PROBE;
-        } else if (getProbe() instanceof xal.model.probe.TransferMapProbe) {
+        } else if (getProbe() instanceof TransferMapProbe) {
             return ModelProxy.TRANSFERMAP_PROBE;
         }
         return -1;
@@ -452,11 +441,13 @@ public class ModelProxy {
         try {
             checkLattice();
         } catch (LatticeError e) {
+            LOGGER.log(Level.SEVERE, null, e);
             return null;
         }
         try {
             return getOnLineModelLattice().asDocument();
         } catch (IOException e1) {
+            LOGGER.log(Level.SEVERE, null, e1);
             return null;
         }
     }
@@ -588,5 +579,4 @@ public class ModelProxy {
     protected boolean isProbePropagated() {
         return bPropagated;
     }
-
-} ////////////////////ModelProxy/////////////////////////////
+}

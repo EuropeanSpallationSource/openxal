@@ -360,7 +360,7 @@ public class LatticeElement implements Comparable<LatticeElement> {
      * lattice generation process.
      *
      * @return  <code>true</code> if this element has no corresponding SMF
-     * hardware node, <code>false</code> if this element is artifical
+     * hardware node, <code>false</code> if this element is artificial
      *
      * @since Jan 30, 2015 by Christopher K. Allen
      */
@@ -384,12 +384,8 @@ public class LatticeElement implements Comparable<LatticeElement> {
      * @since Jan 28, 2015 by Christopher K. Allen
      */
     public boolean isContainedIn(LatticeElement lem) {
-        if (this.getStartPosition() >= lem.getStartPosition()
-                && this.getEndPosition() <= lem.getEndPosition()) {
-            return true;
-        } else {
-            return false;
-        }
+        return (this.getStartPosition() >= lem.getStartPosition()
+                && this.getEndPosition() <= lem.getEndPosition());
     }
 
     /*

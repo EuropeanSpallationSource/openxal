@@ -336,12 +336,12 @@ public class ProbeFactory {
      */
     public static List<String> getLocationIDs(final Accelerator accelerator) {
         final List<GenericRecord> locationRecords = getLocationRecords(accelerator);
-        final List<String> locationIDs = new ArrayList<String>(locationRecords.size());
+        final List<String> locationIDs = new ArrayList<>(locationRecords.size());
 
         final Iterator<GenericRecord> locationIter = locationRecords.iterator();
         while (locationIter.hasNext()) {
-            final GenericRecord record = locationIter.next();
-            locationIDs.add(record.stringValueForKey("name"));
+            final GenericRecord genericRecord = locationIter.next();
+            locationIDs.add(genericRecord.stringValueForKey("name"));
         }
 
         return locationIDs;
@@ -551,24 +551,22 @@ public class ProbeFactory {
         bindings.put("coordinate", "z");
         final GenericRecord twissZ = twissTable.record(bindings);
 
-        final Twiss[] arrTwiss = new Twiss[]{getTwiss(twissX), getTwiss(twissY), getTwiss(twissZ)};
-
-        return arrTwiss;
+        return new Twiss[]{getTwiss(twissX), getTwiss(twissY), getTwiss(twissZ)};
     }
 
     /**
      * Generate a Twiss instance from a record containing alpha, beta and
      * emittance.
      *
-     * @param record data object containing Courant-Snyder parameters
+     * @param genericRecord data object containing Courant-Snyder parameters
      *
      * @return an instance of Twiss for the alpha, beta and emittance from the
      * Twiss record.
      */
-    private static Twiss getTwiss(final GenericRecord record) {
-        final double alpha = record.doubleValueForKey("alpha");
-        final double beta = record.doubleValueForKey("beta");
-        final double emittance = record.doubleValueForKey("emittance");
+    private static Twiss getTwiss(final GenericRecord genericRecord) {
+        final double alpha = genericRecord.doubleValueForKey("alpha");
+        final double beta = genericRecord.doubleValueForKey("beta");
+        final double emittance = genericRecord.doubleValueForKey("emittance");
 
         return new Twiss(alpha, beta, emittance);
     }
@@ -587,7 +585,6 @@ public class ProbeFactory {
      * @since Sep 6, 2014
      */
     private static PhaseVector getCentroidLocation(final String strLocId, final EditContext editContext) {
-
         // Look for the centroid coordinates table
         final DataTable tblCentCoords = editContext.getTable(CENTRCOORD_TABLE);
         if (tblCentCoords == null) {
@@ -603,9 +600,8 @@ public class ProbeFactory {
         // Get the phase coordinate string from the record and create a new
         //  phase vector object to be the initial centroid coordinates of the probe
         String strPhsCoord = recCoords.stringValueForKey(PHASECOORD_VALUE_PARAM);
-        PhaseVector vecCoords = PhaseVector.parse(strPhsCoord);
 
-        return vecCoords;
+        return PhaseVector.parse(strPhsCoord);
     }
 
     private static void addDefaultRecord(DataTable dt) {
@@ -678,13 +674,13 @@ public class ProbeFactory {
     private static void addTwissToTable(String seq, Twiss[] twiss, DataTable tblTwiss) {
         for (int i = 0; i < 3; i++) {
             String axis = new String[]{"x", "y", "z"}[i];
-            GenericRecord record = new GenericRecord(tblTwiss);
-            record.setValueForKey(seq, "name");
-            record.setValueForKey(axis, "coordinate");
-            record.setValueForKey(twiss[i].getAlpha(), "alpha");
-            record.setValueForKey(twiss[i].getBeta(), "beta");
-            record.setValueForKey(twiss[i].getEmittance(), "emittance");
-            tblTwiss.add(record);
+            GenericRecord genericRecord = new GenericRecord(tblTwiss);
+            genericRecord.setValueForKey(seq, "name");
+            genericRecord.setValueForKey(axis, "coordinate");
+            genericRecord.setValueForKey(twiss[i].getAlpha(), "alpha");
+            genericRecord.setValueForKey(twiss[i].getBeta(), "beta");
+            genericRecord.setValueForKey(twiss[i].getEmittance(), "emittance");
+            tblTwiss.add(genericRecord);
         }
 
     }
@@ -705,10 +701,10 @@ public class ProbeFactory {
                 addTwissToTable(state.getElementId(), state.getCovarianceMatrix().computeTwiss(), tblTwiss);
             }
 
-            GenericRecord record = new GenericRecord(tblLocation);
-            record.setValueForKey(state.getElementId(), "name");
-            record.setValueForKey(state.getKineticEnergy(), "W");
-            tblLocation.add(record);
+            GenericRecord genericRecord = new GenericRecord(tblLocation);
+            genericRecord.setValueForKey(state.getElementId(), "name");
+            genericRecord.setValueForKey(state.getKineticEnergy(), "W");
+            tblLocation.add(genericRecord);
         }
     }
 

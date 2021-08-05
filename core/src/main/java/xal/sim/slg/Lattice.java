@@ -51,15 +51,15 @@ public class Lattice implements Cloneable {
     /**
      * number formater
      */
-    public static NumberFormat fmt;
+    public static final NumberFormat FMT;
     /**
      * dictionary [(key,value)=(node,element)]
      */
     private Node2ElementMapper node2ElementMap;
 
     static {
-        fmt = NumberFormat.getNumberInstance();
-        ((DecimalFormat) fmt).applyPattern("0.000000");
+        FMT = NumberFormat.getNumberInstance();
+        ((DecimalFormat) FMT).applyPattern("0.000000");
         EPS = 1.e-5d;
     }
 
@@ -240,31 +240,31 @@ public class Lattice implements Cloneable {
             cout.println(
                     "append: " + element.getName() + ", pos= " + element.getPosition() + ", len= " + element.getLength());
         }
-        Element lattice_end = elements.remove(len() - 1);
+        Element latticeEnd = elements.remove(len() - 1);
         Element last = getItem(len() - 1);
-        double start_pos = element.getStartPosition();
+        double startPos = element.getStartPosition();
         //is there space to fill up with drift space ?
-        double drift_len = start_pos - last.getPosition();
-        if (drift_len < -EPS) {
+        double driftLen = startPos - last.getPosition();
+        if (driftLen < -EPS) {
             //ooops! negative length: severe error ...
             String message
-                    = "negative length when appending: " + element.getName() + ": calculated length= " + drift_len;
+                    = "negative length when appending: " + element.getName() + ": calculated length= " + driftLen;
             message += "\nlast: " + last.getName() + ": pos= " + last.getPosition() + ", len= " + last.getLength();
             throw new LatticeError(message);
-        } else if (Math.abs(drift_len) < EPS) {
-            /*too short drift: ingnore*/;
+        } else if (Math.abs(driftLen) < EPS) {
+            /*too short drift: ingnore*/
         } else {
             //add an upstream drift space
-            double drift_pos = last.getPosition() + drift_len * 0.5;
-            elements.add(new Drift(drift_pos, drift_len));
-            elements.add(new Marker(start_pos));
+            double driftPos = last.getPosition() + driftLen * 0.5;
+            elements.add(new Drift(driftPos, driftLen));
+            elements.add(new Marker(startPos));
         }
         //add the element
         elements.add(element);
-        double end_pos = element.getEndPosition();
-        elements.add(new Marker(end_pos));
+        double endPos = element.getEndPosition();
+        elements.add(new Marker(endPos));
         //place lattice 'END' marker
-        elements.add(new PermMarker(end_pos, 0.0, lattice_end.getName()));
+        elements.add(new PermMarker(endPos, 0.0, latticeEnd.getName()));
         //all elements get same offset
         updateBases();
     }
@@ -296,11 +296,9 @@ public class Lattice implements Cloneable {
             }
         }
         //search for markers that embrace the element
-        int before = markers[0];
         int after = markers[jx - 1];
         for (int m = 0; m < jx; m++) {
             if (getItem(markers[m]).getPosition() <= element.getPosition()) {
-                before = markers[m];
                 continue;
             }
             after = markers[m];
@@ -308,19 +306,19 @@ public class Lattice implements Cloneable {
         }
         //slice the element between the two markers
         int between = after - 1;
-        Element to_split = elements.remove(between);
-        final List<Element> to_insert = to_split.split(element);
-        elements.addAll(between, to_insert);
-        if (debug & verbose) {
+        Element toSplit = elements.remove(between);
+        final List<Element> toInsert = toSplit.split(element);
+        elements.addAll(between, toInsert);
+        if (debug && verbose) {
             cout.println(
                     "insert: replacing "
-                    + to_split.getName()
+                    + toSplit.getName()
                     + ", p= "
-                    + to_split.getPosition()
+                    + toSplit.getPosition()
                     + ", l= "
-                    + to_split.getLength()
+                    + toSplit.getLength()
                     + " with");
-            ListIterator<Element> lit = to_insert.listIterator();
+            ListIterator<Element> lit = toInsert.listIterator();
             while (lit.hasNext()) {
                 Element el = lit.next();
                 cout.println("\t" + el.getName() + ", p= " + el.getPosition() + ", l= " + el.getLength());
@@ -434,11 +432,11 @@ public class Lattice implements Cloneable {
         for (int ix = 0; ix < len() - 1; ix++) {
             Element el = getItem(ix);
             Element next = getItem(ix + 1);
-            double el_pos = el.getPosition();
-            double el_len = el.getLength();
-            double next_pos = next.getPosition();
-            double next_len = next.getLength();
-            if (Math.abs(el_pos + (el_len + next_len) * 0.5 - next_pos) > EPS) {
+            double elPos = el.getPosition();
+            double elLen = el.getLength();
+            double nextPos = next.getPosition();
+            double nextLen = next.getLength();
+            if (Math.abs(elPos + (elLen + nextLen) * 0.5 - nextPos) > EPS) {
                 //ooops! this should never happen, continue debugging.
                 throw new LatticeError("consistency check failed at about " + el.getName() + " and " + next.getName());
             }

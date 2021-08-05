@@ -78,15 +78,15 @@ public class BSMonitor extends ThinElement {
         String name = getName();
         String type = getType();
         retval += "s="
-                + fmt.format(aStart)
+                + FMT.format(aStart)
                 + " m\t"
                 + name
                 + "\t"
                 + type
                 + " p="
-                + fmt.format(elPos)
+                + FMT.format(elPos)
                 + " leff="
-                + fmt.format(elLen);
+                + FMT.format(elLen);
         return retval;
     }
 

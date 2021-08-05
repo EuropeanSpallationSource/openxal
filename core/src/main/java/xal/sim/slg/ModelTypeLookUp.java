@@ -44,14 +44,10 @@ public class ModelTypeLookUp implements Map<String, String> {
         map.put("wirescanner", "Marker");
     }
 
-    /**
-     * Creates a new instance of ModelTypeMap
-     */
-    public ModelTypeLookUp() {
-    }
 
     @Override
     public void clear() {
+        // Do nothing
     }
 
     @Override
@@ -95,6 +91,7 @@ public class ModelTypeLookUp implements Map<String, String> {
      */
     @Override
     public void putAll(Map<? extends String, ? extends String> map) {
+        // Do nothing
     }
 
     @Override
@@ -112,7 +109,7 @@ public class ModelTypeLookUp implements Map<String, String> {
         return map.values();
     }
 
-    public String ValueForKey(String key) {
+    public String valueForKey(String key) {
         return get(key);
     }
 

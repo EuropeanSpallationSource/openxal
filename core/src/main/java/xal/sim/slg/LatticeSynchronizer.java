@@ -9,8 +9,6 @@ import xal.tools.data.DataAdaptor;
 import xal.tools.xml.XmlDataAdaptor;
 import xal.tools.xml.XmlWriter;
 import xal.tools.xml.XmlDataAdaptor.WriteException;
-import xal.model.elem.IdealMagSteeringDipole;
-import xal.model.elem.IdealMagQuad;
 import xal.model.elem.sync.IElectromagnet;
 import xal.sim.mpx.ModelProxy;
 import xal.smf.impl.Electromagnet;
@@ -69,19 +67,16 @@ public class LatticeSynchronizer implements Visitor {
     /**
      * number formater
      */
-    private static NumberFormat fmt;
+    private static final NumberFormat FMT = Lattice.FMT;
+
     private static final String DOC_TYPE;
-    private static final String SEQ_TAG;
     private static final String ELM_TAG;
-    private static final String PAR_TAG;
     private static final String COM_TAG;
     private static final String DTD;
 
     static {
         DOC_TYPE = "Lattice";
-        SEQ_TAG = "Sequence";
         ELM_TAG = "Element";
-        PAR_TAG = "Parameter";
         COM_TAG = "comment";
         DTD = "Lattice.mod.xal.dtd";
     }
@@ -99,8 +94,6 @@ public class LatticeSynchronizer implements Visitor {
     public LatticeSynchronizer(Lattice lattice, String paramSrc) {
         // use CA ?
         this.paramSrc = paramSrc;
-        // number format is defined in Lattice
-        fmt = Lattice.fmt;
 
         //the xml-document-adaptor: creates the <!DOCTYPE ...> declaration
         docAdptr = XmlDataAdaptor.newEmptyDocumentAdaptor(DOC_TYPE, DTD);
@@ -134,17 +127,17 @@ public class LatticeSynchronizer implements Visitor {
         elmAdptr.setValue("fam", e.getFam());
         elmAdptr.setValue("type", e.getType());
         elmAdptr.setValue("id", e.getName());
-        elmAdptr.setValue("length", fmt.format(e.getLength()));
+        elmAdptr.setValue("length", FMT.format(e.getLength()));
         //parameter
         parAdptr = elmAdptr.createChild("Parameter");
         parAdptr.setValue("name", "StartPosition");
         parAdptr.setValue("type", "double");
-        parAdptr.setValue("value", fmt.format(e.getStartPosition()));
+        parAdptr.setValue("value", FMT.format(e.getStartPosition()));
         //parameter
         parAdptr = elmAdptr.createChild("Parameter");
         parAdptr.setValue("name", "Position");
         parAdptr.setValue("type", "double");
-        parAdptr.setValue("value", fmt.format(e.getPosition()));
+        parAdptr.setValue("value", FMT.format(e.getPosition()));
     }
 
     /**
@@ -286,7 +279,7 @@ public class LatticeSynchronizer implements Visitor {
         parAdptr = elmAdptr.createChild("Parameter");
         parAdptr.setValue("name", "Orientation");
         parAdptr.setValue("type", "int");
-        IElectromagnet elmg = new IdealMagSteeringDipole();
+
         int orientation = IElectromagnet.ORIENT_NONE;
         if (magnet.isHorizontal()) {
             orientation = IElectromagnet.ORIENT_HOR;
@@ -319,7 +312,7 @@ public class LatticeSynchronizer implements Visitor {
         parAdptr = elmAdptr.createChild("Parameter");
         parAdptr.setValue("name", "Orientation");
         parAdptr.setValue("type", "int");
-        IElectromagnet elmg = new IdealMagSteeringDipole();
+
         int orientation = IElectromagnet.ORIENT_NONE;
         if (magnet.isHorizontal()) {
             orientation = IElectromagnet.ORIENT_HOR;
@@ -351,12 +344,8 @@ public class LatticeSynchronizer implements Visitor {
         parAdptr.setValue("name", "Orientation");
         parAdptr.setValue("type", "int");
         int orientation = edipole.getOrientation();
-//        if (edipole.isHorizontal()) {
-//        }
-//        if (edipole.isVertical()) {
-//        }
-        parAdptr.setValue("value", Integer.toString(orientation));
 
+        parAdptr.setValue("value", Integer.toString(orientation));
     }
 
     /**
@@ -381,7 +370,7 @@ public class LatticeSynchronizer implements Visitor {
         parAdptr = elmAdptr.createChild("Parameter");
         parAdptr.setValue("name", "Orientation");
         parAdptr.setValue("type", "int");
-        IElectromagnet elmg = new IdealMagSteeringDipole();
+
         int orientation = IElectromagnet.ORIENT_NONE;
         if (magnet.isHorizontal()) {
             orientation = IElectromagnet.ORIENT_HOR;
@@ -414,7 +403,7 @@ public class LatticeSynchronizer implements Visitor {
         parAdptr = elmAdptr.createChild("Parameter");
         parAdptr.setValue("name", "Orientation");
         parAdptr.setValue("type", "int");
-        IElectromagnet elmg = new IdealMagSteeringDipole();
+
         int orientation = IElectromagnet.ORIENT_NONE;
         if (magnet.isHorizontal()) {
             orientation = IElectromagnet.ORIENT_HOR;
@@ -455,7 +444,7 @@ public class LatticeSynchronizer implements Visitor {
         parAdptr = elmAdptr.createChild("Parameter");
         parAdptr.setValue("name", "Orientation");
         parAdptr.setValue("type", "int");
-        IElectromagnet elmg = new IdealMagQuad();
+
         int orientation = IElectromagnet.ORIENT_NONE;
         if (magnet.isHorizontal()) {
             orientation = IElectromagnet.ORIENT_HOR;
@@ -488,7 +477,7 @@ public class LatticeSynchronizer implements Visitor {
         parAdptr = elmAdptr.createChild("Parameter");
         parAdptr.setValue("name", "Orientation");
         parAdptr.setValue("type", "int");
-        IElectromagnet elmg = new IdealMagQuad();
+
         int orientation = IElectromagnet.ORIENT_NONE;
         if (magnet.isHorizontal()) {
             orientation = IElectromagnet.ORIENT_HOR;
@@ -519,18 +508,7 @@ public class LatticeSynchronizer implements Visitor {
         parAdptr.setValue("value", Double.toString(effLen));
         //parameter         
         parAdptr = elmAdptr.createChild("Parameter");
-        /*        parAdptr.setValue("name", "Orientation");
-        parAdptr.setValue("type", "int");
-        IElectromagnet elmg= new IdealMagQuad();
-        int orientation= IElectromagnet.ORIENT_NONE;
-        if (magnet.isHorizontal()) {
-            orientation= IElectromagnet.ORIENT_HOR;
-        }
-        if (magnet.isVertical()) {
-            orientation= IElectromagnet.ORIENT_VER;
-        }
-        parAdptr.setValue("value", Integer.toString(orientation));
-         */    }
+    }
 
     /**
      * Writes the element- and parameter-tags of a WScanner lattice element
@@ -540,13 +518,6 @@ public class LatticeSynchronizer implements Visitor {
         writeElementTag(e);
     }
 
-    /**
-     * Writes the element- and parameter-tags of a WScanner lattice element
-     */
-    /*    public void visit(Harp e) {
-        writeElementTag(e);
-    }    
-     */
     /**
      * Writes the element- and parameter-tags of a BPMonitor lattice element
      */
@@ -563,20 +534,6 @@ public class LatticeSynchronizer implements Visitor {
         writeElementTag(e);
     }
 
-    /**
-     * Writes the element- and parameter-tags of a Foil lattice element
-     */
-    /*    public void visit(Foil e) {
-        writeElementTag(e);
-    }
-     */
-    /**
-     * Writes the element- and parameter-tags of a Foil lattice element
-     */
-    /*    public void visit(VacuumWindow e) {
-        writeElementTag(e);
-    }
-     */
     /**
      * Writes the element- and parameter-tags of a SkewQuad lattice element
      */
@@ -613,22 +570,22 @@ public class LatticeSynchronizer implements Visitor {
      */
     private double getRfGapPhaseAvgWrapper(RfGap rfgap) {
         // for design values
-        if (paramSrc == ModelProxy.PARAMSRC_DESIGN) {
+        if (ModelProxy.PARAMSRC_DESIGN.equals(paramSrc)) {
             return rfgap.getGapDfltPhase() * Math.PI / 180.;
             // for live values
-        } else if (paramSrc == ModelProxy.PARAMSRC_LIVE) {
+        } else if (ModelProxy.PARAMSRC_LIVE.equals(paramSrc)) {
             try {
                 return rfgap.getGapPhaseAvg() * Math.PI / 180.;
             } catch (ConnectionException | GetException e) {
                 if (e.getMessage() != null) {
                     LOGGER.log(Level.INFO, e.getMessage());
                 } else {
-                    LOGGER.log(Level.INFO, "RfGap.getGapPhaseAvg(): channel access failed: " + rfgap.getId());
+                    LOGGER.log(Level.INFO, "RfGap.getGapPhaseAvg(): channel access failed: {0}", rfgap.getId());
                 }
                 // 90 degrees
                 return Math.PI * 0.5;
             }
-        } else if (paramSrc == ModelProxy.PARAMSRC_RF_DESIGN) {
+        } else if (ModelProxy.PARAMSRC_RF_DESIGN.equals(paramSrc)) {
             return rfgap.getGapDfltPhase() * Math.PI / 180.;
         } else {
             return rfgap.getGapDfltPhase() * Math.PI / 180.;
@@ -640,21 +597,21 @@ public class LatticeSynchronizer implements Visitor {
      */
     private double getRfGapE0TLWrapper(RfGap rfgap) {
         // for design values
-        if (paramSrc == ModelProxy.PARAMSRC_DESIGN) {
+        if (ModelProxy.PARAMSRC_DESIGN.equals(paramSrc)) {
             return rfgap.getGapDfltE0TL() * 1.e6;
             // for live values
-        } else if (paramSrc == ModelProxy.PARAMSRC_LIVE) {
+        } else if (ModelProxy.PARAMSRC_LIVE.equals(paramSrc)) {
             try {
                 return rfgap.getGapE0TL() * 1.e6;
             } catch (ConnectionException | GetException e) {
                 if (e.getMessage() != null) {
                     LOGGER.log(Level.INFO, e.getMessage());
                 } else {
-                    LOGGER.log(Level.INFO, "RfGap.getGapE0TL(): channel access failed: " + rfgap.getId());
+                    LOGGER.log(Level.INFO, "RfGap.getGapE0TL(): channel access failed: {0}", rfgap.getId());
                 }
                 return rfgap.getGapDfltE0TL() * 1.e6;
             }
-        } else if (paramSrc == ModelProxy.PARAMSRC_RF_DESIGN) {
+        } else if (ModelProxy.PARAMSRC_RF_DESIGN.equals(paramSrc)) {
             return rfgap.getGapDfltPhase() * Math.PI / 180.;
         } else {
             return rfgap.getGapDfltE0TL() * 1.e6;
@@ -666,11 +623,11 @@ public class LatticeSynchronizer implements Visitor {
      */
     private double getFieldWrapper(Magnet magnet) {
         // for design values
-        if (paramSrc == ModelProxy.PARAMSRC_DESIGN) {
+        if (ModelProxy.PARAMSRC_DESIGN.equals(paramSrc)) {
             return magnet.getDesignField();
             // for live values
-        } else if (paramSrc == ModelProxy.PARAMSRC_LIVE
-                || paramSrc == ModelProxy.PARAMSRC_RF_DESIGN) {
+        } else if (ModelProxy.PARAMSRC_LIVE.equals(paramSrc)
+                || ModelProxy.PARAMSRC_RF_DESIGN.equals(paramSrc)) {
             try {
                 if (magnet instanceof Electromagnet) {
                     return ((Electromagnet) magnet).getField();
@@ -695,11 +652,11 @@ public class LatticeSynchronizer implements Visitor {
      */
     private double getFieldWrapper(Electrostatic magnet) {
         // for design values
-        if (paramSrc == ModelProxy.PARAMSRC_DESIGN) {
+        if (ModelProxy.PARAMSRC_DESIGN.equals(paramSrc)) {
             return magnet.getDesignField();
             // for live values
-        } else if (paramSrc == ModelProxy.PARAMSRC_LIVE
-                || paramSrc == ModelProxy.PARAMSRC_RF_DESIGN) {
+        } else if (ModelProxy.PARAMSRC_LIVE.equals(paramSrc)
+                || ModelProxy.PARAMSRC_RF_DESIGN.equals(paramSrc)) {
             try {
                 if (magnet instanceof Electrostatic) {
                     return magnet.getField();
@@ -718,5 +675,4 @@ public class LatticeSynchronizer implements Visitor {
             return magnet.getDesignField();
         }
     }
-
-} /////////////////////////////////////////
+}

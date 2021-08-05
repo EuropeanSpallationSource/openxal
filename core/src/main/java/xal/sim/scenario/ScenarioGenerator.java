@@ -114,8 +114,6 @@ class ScenarioGenerator {
 
         // Create the model scenario object from the accelerator sequence, 
         //  model lattice, and synchronization manager 
-        Scenario mdlScenario = new Scenario(smfSeq, mdlLat, mgrSync);
-
-        return mdlScenario;
+        return new Scenario(smfSeq, mdlLat, mgrSync);
     }
 }

@@ -88,7 +88,7 @@ public abstract class Element implements VisitorListener, Cloneable {
     /**
      * number formater
      */
-    public static NumberFormat fmt;
+    public static final NumberFormat FMT = Lattice.FMT;
     /**
      * the xal AcceleratorNode object
      */
@@ -104,8 +104,6 @@ public abstract class Element implements VisitorListener, Cloneable {
     protected Element(String name, double position, double len) {
         this.secHware = SECTION.UNKNOWN;
 
-        // number format is defined in Lattice
-        fmt = Lattice.fmt;
         this.name = name;
         //always relative to base
         this.position = position;
@@ -255,8 +253,7 @@ public abstract class Element implements VisitorListener, Cloneable {
         }
         double upPos = getStartPosition() + upLen * 0.5;
         double dnPos = getEndPosition() - dnLen * 0.5;
-        double[] retval = {upPos, upLen, dnPos, dnLen};
-        return retval;
+        return new double[]{upPos, upLen, dnPos, dnLen};
     }
 
     /**
@@ -397,9 +394,9 @@ public abstract class Element implements VisitorListener, Cloneable {
         double elPos = getPosition();
         double elLen = getLength();
         double aStart = toAbsolutePosition(getStartPosition());
-        String name = getName();
+        String elName = getName();
         String type = getType();
-        retval += "s=" + fmt.format(aStart) + " m\t" + name + "\t" + type + " p=" + fmt.format(elPos) + " l=" + fmt.format(elLen);
+        retval += "s=" + FMT.format(aStart) + " m\t" + elName + "\t" + type + " p=" + FMT.format(elPos) + " l=" + FMT.format(elLen);
         return retval;
     }
 

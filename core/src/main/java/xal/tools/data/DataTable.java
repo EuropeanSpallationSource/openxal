@@ -102,8 +102,8 @@ public class DataTable {
      * @param listener the listener to receive events
      */
     public void addDataTableListener(final DataTableListener listener) {
-        MessageCenter messageCenter = MessageCenter.defaultCenter();
-        messageCenter.registerTarget(listener, this, DataTableListener.class);
+        MessageCenter defaultMessageCenter = MessageCenter.defaultCenter();
+        defaultMessageCenter.registerTarget(listener, this, DataTableListener.class);
     }
 
     /**
@@ -112,8 +112,8 @@ public class DataTable {
      * @param listener the listener to remove from receiving events
      */
     public void removeDataTableListener(final DataTableListener listener) {
-        MessageCenter messageCenter = MessageCenter.defaultCenter();
-        messageCenter.removeTarget(listener, this, DataTableListener.class);
+        MessageCenter defaultMessageCenter = MessageCenter.defaultCenter();
+        defaultMessageCenter.removeTarget(listener, this, DataTableListener.class);
     }
 
     /**
@@ -180,9 +180,9 @@ public class DataTable {
                     try {
                         final Constructor<GenericRecord> constructor = (Constructor<GenericRecord>) recordClass.getConstructor(new Class<?>[]{DataTable.class});
 
-                        GenericRecord record = constructor.newInstance(new Object[]{DataTable.this});
-                        record.update(recordAdaptor);
-                        add(record);
+                        GenericRecord genericRecord = constructor.newInstance(new Object[]{DataTable.this});
+                        genericRecord.update(recordAdaptor);
+                        add(genericRecord);
                     } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException | AddRecordException | GenericRecord.ParseException exception) {
                         LOGGER.log(Level.SEVERE, "Error reading record.", exception);
                     }
@@ -229,27 +229,27 @@ public class DataTable {
     /**
      * Determine if this table contains the specified record
      *
-     * @param record The record to test for membership in this table
+     * @param genericRecord The record to test for membership in this table
      * @return true if this table contains the record and false if not
      */
-    public boolean hasRecord(final GenericRecord record) {
-        return records().contains(record);
+    public boolean hasRecord(final GenericRecord genericRecord) {
+        return records().contains(genericRecord);
     }
 
     /**
      * Add the record to the table.
      */
-    public void add(final GenericRecord record) throws AddRecordException {
-        keyTable.add(record);
-        noticeProxy.recordAdded(this, record);
+    public void add(final GenericRecord genericRecord) throws AddRecordException {
+        keyTable.add(genericRecord);
+        noticeProxy.recordAdded(this, genericRecord);
     }
 
     /**
      * Remove the specified record from this table.
      */
-    public void remove(final GenericRecord record) {
-        keyTable.remove(record);
-        noticeProxy.recordRemoved(this, record);
+    public void remove(final GenericRecord genericRecord) {
+        keyTable.remove(genericRecord);
+        noticeProxy.recordRemoved(this, genericRecord);
     }
 
     /**
@@ -387,9 +387,9 @@ public class DataTable {
     /**
      * Reindex the record based on new primary key values (if any).
      */
-    synchronized final void reIndex(final GenericRecord record, final String key, final Object oldValue) {
-        if (schema.isPrimaryKey(key) && this.hasRecord(record)) {
-            keyTable.reIndex(record, key, oldValue);
+    synchronized final void reIndex(final GenericRecord genericRecord, final String key, final Object oldValue) {
+        if (schema.isPrimaryKey(key) && this.hasRecord(genericRecord)) {
+            keyTable.reIndex(genericRecord, key, oldValue);
         }
     }
 
@@ -441,7 +441,7 @@ public class DataTable {
          * Get a record matching all of the primary key bindings. Bindings
          * should include all primary keys to ensure a unique record.
          */
-        public <ValueType extends Object> GenericRecord record(final Map<String, ValueType> bindings) throws NonUniqueRecordException {
+        public <V extends Object> GenericRecord record(final Map<String, V> bindings) throws NonUniqueRecordException {
             final Collection<GenericRecord> records = records(bindings);
 
             if (records.size() > 1) {
@@ -467,16 +467,16 @@ public class DataTable {
          * Fetch all records matching the primary key bindings. You may use a
          * subset of primary keys since multiple records may be returned.
          */
-        public <ValueType extends Object> Collection<GenericRecord> records(final Map<String, ValueType> bindings) {
+        public <V extends Object> Collection<GenericRecord> records(final Map<String, V> bindings) {
             final Collection<GenericRecord> records = new HashSet<>();
-            final Set<Map.Entry<String, ValueType>> entries = bindings.entrySet();
+            final Set<Map.Entry<String, V>> entries = bindings.entrySet();
 
-            if (entries.size() == 0) {
+            if (entries.isEmpty()) {
                 return Collections.<GenericRecord>emptySet();
             }
 
-            final Iterator<Map.Entry<String, ValueType>> entryIter = entries.iterator();
-            Map.Entry<String, ValueType> entry = entryIter.next();
+            final Iterator<Map.Entry<String, V>> entryIter = entries.iterator();
+            Map.Entry<String, V> entry = entryIter.next();
             Collection<GenericRecord> entryRecords = records(entry);
             records.addAll(entryRecords);
             while (entryIter.hasNext() && !records.isEmpty()) {
@@ -491,7 +491,7 @@ public class DataTable {
         /**
          * Fetch the records matching the key/value pair specified in the entry.
          */
-        private <ValueType extends Object> Collection<GenericRecord> records(final Map.Entry<String, ValueType> entry) {
+        private <V extends Object> Collection<GenericRecord> records(final Map.Entry<String, V> entry) {
             final String key = entry.getKey();
             final Object value = entry.getValue();
             return records(key, value);
@@ -524,10 +524,10 @@ public class DataTable {
         /**
          * Get the primary key bindings associated with the specified record.
          */
-        private Map<String, Object> primaryBindings(final GenericRecord record) {
+        private Map<String, Object> primaryBindings(final GenericRecord genericRecord) {
             final Map<String, Object> bindings = new HashMap<>();
             for (final String key : schema.primaryKeys()) {
-                final Object value = record.valueForKey(key);
+                final Object value = genericRecord.valueForKey(key);
                 bindings.put(key, value);
             }
 
@@ -538,12 +538,13 @@ public class DataTable {
          * Determine whether there is an existing record with the same primary
          * bindings as the specified record.
          *
-         * @param record the record whose primary key bindings we wish to test
+         * @param genericRecord the record whose primary key bindings we wish to
+         * test
          * @return true if there is an existing record with the same primary key
          * bindings as the specified record and false otherwise
          */
-        private boolean hasConflictingRecord(final GenericRecord record) {
-            final Map<String, Object> bindings = primaryBindings(record);
+        private boolean hasConflictingRecord(final GenericRecord genericRecord) {
+            final Map<String, Object> bindings = primaryBindings(genericRecord);
             return record(bindings) != null;
         }
 
@@ -551,39 +552,39 @@ public class DataTable {
          * Re-index the hash table for a change in the specified record's value
          * for the specified key
          *
-         * @param record the record whose primary key value has changed
+         * @param genericRecord the record whose primary key value has changed
          * @param key the primary key associated with the modified value
          * @param oldValue old value associated with the specified primary key
          */
-        public final void reIndex(final GenericRecord record, final String key, final Object oldValue) {
-            valueTable(key).reIndex(record, oldValue);
+        public final void reIndex(final GenericRecord genericRecord, final String key, final Object oldValue) {
+            valueTable(key).reIndex(genericRecord, oldValue);
         }
 
         /**
          * Add the specified record to the hash table
          *
-         * @param record the record to add
+         * @param genericRecord the record to add
          */
-        public void add(final GenericRecord record) throws AddRecordException {
-            if (hasConflictingRecord(record)) {
-                throw new AddRecordException(record);
+        public void add(final GenericRecord genericRecord) throws AddRecordException {
+            if (hasConflictingRecord(genericRecord)) {
+                throw new AddRecordException(genericRecord);
             }
 
             for (final String key : schema.primaryKeys()) {
                 final ValueHash valueHash = valueTable(key);
-                valueHash.add(record);
+                valueHash.add(genericRecord);
             }
         }
 
         /**
          * Remove the specified record from the hash table
          *
-         * @param record the record to remove
+         * @param genericRecord the record to remove
          */
-        public void remove(final GenericRecord record) {
+        public void remove(final GenericRecord genericRecord) {
             for (final String key : schema.primaryKeys()) {
                 final ValueHash valueHash = valueTable(key);
-                valueHash.remove(record);
+                valueHash.remove(genericRecord);
             }
         }
     }
@@ -653,38 +654,38 @@ public class DataTable {
         /**
          * add a record keyed by its primary key
          */
-        public final void add(final GenericRecord record) {
-            final Object value = record.valueForKey(primaryKey);
+        public final void add(final GenericRecord genericRecord) {
+            final Object value = genericRecord.valueForKey(primaryKey);
             Set<GenericRecord> recordSet = recordSetTable.get(value);
 
             if (recordSet == null) {
                 recordSet = new LinkedHashSet<>();
                 recordSetTable.put(value, recordSet);
             }
-            recordSet.add(record);
+            recordSet.add(genericRecord);
         }
 
         /**
          * remove the specified record from the hash
          */
-        public final void remove(final GenericRecord record) {
-            Object value = record.valueForKey(primaryKey);
+        public final void remove(final GenericRecord genericRecord) {
+            Object value = genericRecord.valueForKey(primaryKey);
             Set<GenericRecord> recordSet = recordSetTable.get(value);
 
             if (recordSet == null) {
                 return;
             }
 
-            recordSet.remove(record);
+            recordSet.remove(genericRecord);
         }
 
         /**
          * re-index this hash for the specified record replacing the record's
          * old value with the new one
          */
-        public final void reIndex(final GenericRecord record, final Object oldValue) {
-            records(oldValue).remove(record);
-            add(record);
+        public final void reIndex(final GenericRecord genericRecord, final Object oldValue) {
+            records(oldValue).remove(genericRecord);
+            add(genericRecord);
         }
 
         /**
@@ -724,8 +725,7 @@ public class DataTable {
          */
         @Override
         public String getMessage() {
-            String message = "Attempt to get a unique record for the bindings: " + bindings;
-            return message;
+            return "Attempt to get a unique record for the bindings: " + bindings;
         }
     }
 
@@ -742,13 +742,13 @@ public class DataTable {
          */
         private static final long serialVersionUID = 1L;
 
-        private GenericRecord record;
+        private GenericRecord genericRecord;
 
         /**
          * Constructor
          */
         public AddRecordException(final GenericRecord aRecord) {
-            record = aRecord;
+            genericRecord = aRecord;
         }
 
         /**
@@ -756,8 +756,7 @@ public class DataTable {
          */
         @Override
         public String getMessage() {
-            String message = "Failed attempt to add the record: " + record;
-            return message;
+            return "Failed attempt to add the record: " + genericRecord;
         }
     }
 
@@ -877,6 +876,7 @@ public class DataTable {
          *
          * @param schemaAdaptor
          */
+        @Override
         public void update(final DataAdaptor schemaAdaptor) throws MissingPrimaryKeyException {
             final List<DataAdaptor> attributeAdaptors = schemaAdaptor.childAdaptors("attribute");
             for (final DataAdaptor attributeAdaptor : attributeAdaptors) {

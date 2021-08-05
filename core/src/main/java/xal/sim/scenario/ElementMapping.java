@@ -32,7 +32,7 @@ public abstract class ElementMapping {
      * The map of hardware type identifier string to modeling element class
      * types.
      */
-    protected Map<String, Class<? extends IComponent>> elementMapping = new HashMap<>();
+    protected Map<String, Class<? extends IComponent>> elementMap = new HashMap<>();
 
     /**
      * indicates whether or not subsection axis coordinate have origin at
@@ -146,7 +146,7 @@ public abstract class ElementMapping {
      * @throws InstantiationException
      */
     public Class<? extends IComponent> getModelElementType(AcceleratorNode node) {
-        for (Entry<String, Class<? extends IComponent>> tc : elementMapping.entrySet()) {
+        for (Entry<String, Class<? extends IComponent>> tc : elementMap.entrySet()) {
             if (node.getType().equalsIgnoreCase(tc.getKey())) {
                 return tc.getValue();
             }
@@ -198,10 +198,10 @@ public abstract class ElementMapping {
      * @param value the converter
      */
     protected void putMap(String key, Class<? extends IComponent> value) {
-        if (elementMapping.containsKey(key)) {
+        if (elementMap.containsKey(key)) {
             throw new RuntimeException("The key \"" + key + "\" is already in defined in the current ElementMapping. Please use another key or remove the other element.");
         } else {
-            elementMapping.put(key, value);
+            elementMap.put(key, value);
         }
     }
 
@@ -212,10 +212,10 @@ public abstract class ElementMapping {
      * @param key
      */
     protected void removeMap(String key) {
-        if (!elementMapping.containsKey(key)) {
+        if (!elementMap.containsKey(key)) {
             throw new RuntimeException("The key \"" + key + "\" is not defined in the current ElementMapping.");
         } else {
-            elementMapping.remove(key);
+            elementMap.remove(key);
         }
     }
 

@@ -105,10 +105,7 @@ public final class AlgorithmFactory {
      * @since Oct 26, 2012
      */
     public static SynchronousTracker createSynchronousTracker(AcceleratorSeq smfSeq) throws InstantiationException {
-
-        SynchronousTracker algSync = AlgorithmFactory.createTrackerFor(smfSeq, SynchronousTracker.class);
-
-        return algSync;
+        return AlgorithmFactory.createTrackerFor(smfSeq, SynchronousTracker.class);
     }
 
     /**
@@ -140,10 +137,7 @@ public final class AlgorithmFactory {
      * @since Oct 26, 2012
      */
     public static ParticleTracker createParticleTracker(AcceleratorSeq smfSeq) throws InstantiationException {
-
-        ParticleTracker algPrtl = AlgorithmFactory.createTrackerFor(smfSeq, ParticleTracker.class);
-
-        return algPrtl;
+        return AlgorithmFactory.createTrackerFor(smfSeq, ParticleTracker.class);
     }
 
     /*
@@ -178,10 +172,7 @@ public final class AlgorithmFactory {
      * @since Oct 26, 2012
      */
     public static TransferMapTracker createTransferMapTracker(AcceleratorSeq smfSeq) throws InstantiationException {
-
-        TransferMapTracker algXfer = AlgorithmFactory.createTrackerFor(smfSeq, TransferMapTracker.class);
-
-        return algXfer;
+        return AlgorithmFactory.createTrackerFor(smfSeq, TransferMapTracker.class);
     }
 
     /**
@@ -213,10 +204,7 @@ public final class AlgorithmFactory {
      * @since Oct 26, 2012
      */
     public static TwissTracker createTwissTracker(AcceleratorSeq smfSeq) throws InstantiationException {
-
-        TwissTracker algTwiss = AlgorithmFactory.createTrackerFor(smfSeq, TwissTracker.class);
-
-        return algTwiss;
+        return AlgorithmFactory.createTrackerFor(smfSeq, TwissTracker.class);
     }
 
     /**
@@ -248,10 +236,7 @@ public final class AlgorithmFactory {
      * @since Oct 29, 2012
      */
     public static TwissTrackerPmq createTwissTrackerPmq(AcceleratorSeq smfSeq) throws InstantiationException {
-
-        TwissTrackerPmq algTwsPmq = AlgorithmFactory.createTrackerFor(smfSeq, TwissTrackerPmq.class);
-
-        return algTwsPmq;
+        return AlgorithmFactory.createTrackerFor(smfSeq, TwissTrackerPmq.class);
     }
 
     /*
@@ -291,10 +276,7 @@ public final class AlgorithmFactory {
      * @since Oct 25, 2012
      */
     public static Trace3dTracker createTrace3dTracker(AcceleratorSeq smfSeq) throws InstantiationException {
-
-        Trace3dTracker algEnv = AlgorithmFactory.createTrackerFor(smfSeq, Trace3dTracker.class);
-
-        return algEnv;
+        return AlgorithmFactory.createTrackerFor(smfSeq, Trace3dTracker.class);
     }
 
     /**
@@ -326,10 +308,7 @@ public final class AlgorithmFactory {
      * @since Oct 24, 2012
      */
     public static EnvelopeTracker createEnvelopeTracker(AcceleratorSeq smfSeq) throws InstantiationException {
-
-        EnvelopeTracker algEnv = AlgorithmFactory.createTrackerFor(smfSeq, EnvelopeTracker.class);
-
-        return algEnv;
+        return AlgorithmFactory.createTrackerFor(smfSeq, EnvelopeTracker.class);
     }
 
     /**
@@ -361,10 +340,7 @@ public final class AlgorithmFactory {
      * @since Oct 24, 2012
      */
     public static EnvelopeBacktracker createEnvelopeBacktracker(AcceleratorSeq smfSeq) throws InstantiationException {
-
-        EnvelopeBacktracker algEnv = AlgorithmFactory.createTrackerFor(smfSeq, EnvelopeBacktracker.class);
-
-        return algEnv;
+        return AlgorithmFactory.createTrackerFor(smfSeq, EnvelopeBacktracker.class);
     }
 
     /**
@@ -396,10 +372,7 @@ public final class AlgorithmFactory {
      * @since Oct 24, 2012
      */
     public static EnvTrackerAdapt createEnvTrackerAdapt(AcceleratorSeq smfSeq) throws InstantiationException {
-
-        EnvTrackerAdapt algEnv = AlgorithmFactory.createTrackerFor(smfSeq, EnvTrackerAdapt.class);
-
-        return algEnv;
+        return AlgorithmFactory.createTrackerFor(smfSeq, EnvTrackerAdapt.class);
     }
 
     /**
@@ -431,10 +404,7 @@ public final class AlgorithmFactory {
      * @since Oct 24, 2012
      */
     public static EnvelopeTrackerPmqDipole createEnvelopeTrackerPmqDipole(AcceleratorSeq smfSeq) throws InstantiationException {
-
-        EnvelopeTrackerPmqDipole algEnv = AlgorithmFactory.createTrackerFor(smfSeq, EnvelopeTrackerPmqDipole.class);
-
-        return algEnv;
+        return AlgorithmFactory.createTrackerFor(smfSeq, EnvelopeTrackerPmqDipole.class);
     }
 
     /**
@@ -485,7 +455,5 @@ public final class AlgorithmFactory {
                     + ". Source Msg: " + e.getMessage()
             );
         }
-
     }
-
 }

@@ -29,10 +29,10 @@ public class SynchronizationManager {
     // key = accelerator node concrete class, value = access instance
 
     // Class Variables =========================================================
-    private static Map<Class<?>, Synchronizer> nodeSynchronizerMap = new HashMap<Class<?>, Synchronizer>();
+    private static Map<Class<?>, Synchronizer> nodeSynchronizerMap = new HashMap<>();
     // key = element class, value = synchronization factory class
 
-    private static List<String> syncModes = new ArrayList<String>();
+    private static List<String> syncModes = new ArrayList<>();
 
     // Static Initialization ===================================================
     static {
@@ -121,7 +121,9 @@ public class SynchronizationManager {
      */
     public static void resync(final IComponent aComp, final Map<String, Double> valueMap) throws SynchronizationException {
         Synchronizer synchronizer = getSynchronizer(aComp);
-        synchronizer.resync(aComp, valueMap);
+        if (synchronizer != null) {
+            synchronizer.resync(aComp, valueMap);
+        }
     }
 
     /**
@@ -240,13 +242,14 @@ public class SynchronizationManager {
 
     public boolean checkSynchronization(final AcceleratorNode aNode, final Map<String, Double> values) throws SynchronizationException {
         final List<IComponent> components = synchronizedComponentsMappedTo(aNode);
-        if (components == null) {
-            return true;
-        }
-        for (final IComponent component : components) {
-            getSynchronizer(component).checkSynchronization(component, values);
+        if (components != null) {
+            for (final IComponent component : components) {
+                Synchronizer synchronizer = getSynchronizer(component);
+                if (synchronizer != null) {
+                    synchronizer.checkSynchronization(component, values);
+                }
+            }
         }
         return true;
     }
-
 }

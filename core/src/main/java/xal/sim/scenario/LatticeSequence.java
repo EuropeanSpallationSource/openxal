@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import xal.model.IComponent;
 import xal.model.IComposite;
@@ -56,6 +57,7 @@ import xal.smf.attr.DipoleCorrBucket;
  */
 public class LatticeSequence extends LatticeElement implements Iterable<LatticeElement> {
 
+    private static final Logger LOGGER = Logger.getLogger(LatticeSequence.class.getName());
     /*
      * Global Constants
      */
@@ -258,9 +260,7 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
      * @since Dec 12, 2014 @author Christopher K. Allen
      */
     public Class<? extends IComposite> getSequenceModelType(AcceleratorSeq smfSeq) {
-        Class<? extends IComposite> clsSeqMdl = this.mapNodeToMdl.getModelSequenceType(smfSeq);
-
-        return clsSeqMdl;
+        return this.mapNodeToMdl.getModelSequenceType(smfSeq);
     }
 
     /**
@@ -390,9 +390,7 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
      */
     @Override
     public AcceleratorSeq getHardwareNode() {
-        AcceleratorSeq smfSeq = (AcceleratorSeq) super.getHardwareNode();
-
-        return smfSeq;
+        return (AcceleratorSeq) super.getHardwareNode();
     }
 
     /**
@@ -420,9 +418,7 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
     @Override
     public IComposite createModelingElement() throws ModelException {
         IComponent component = super.createModelingElement();
-        IComposite mdlSeq = (IComposite) component;
-
-        return mdlSeq;
+        return (IComposite) component;
     }
 
     /*
@@ -499,9 +495,7 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
         // Create the modeling element representing this lattice sequence.
         //  Recall that this lattice sequence must be a top-level sequence
         //  since users do not have access to the sub-lattice constructor
-        IComposite mdlSeq = this.createModelElements(mgrSync);
-
-        return mdlSeq;
+        return this.createModelElements(mgrSync);
     }
 
     /**
@@ -742,7 +736,8 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
 
         // Following code checks that the subsequence lattice elements are within the limits.
         // If they weren't the length of the lattice magically grows!
-        double dblBeginSeqChild = Double.POSITIVE_INFINITY, dblEndSeqChild = Double.NEGATIVE_INFINITY;
+        double dblBeginSeqChild = Double.POSITIVE_INFINITY;
+        double dblEndSeqChild = Double.NEGATIVE_INFINITY;
         for (LatticeElement el : this) {
             if (el.getStartPosition() < dblBeginSeqChild) {
                 dblBeginSeqChild = el.getStartPosition();
@@ -786,15 +781,12 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
         {
             for (LatticeElement lemChild : this) {
                 if (lemChild != lsqChild && lemChild.isContainedIn(lsqChild)) {
-
                     // Change coordinates to that of the new parent sequence
                     double dblOffset = -lsqChild.getStartPosition();
                     lemChild.axialTranslation(dblOffset);
 
                     lsqChild.addLatticeElement(lemChild);
                     lstElemsToRemove.add(lemChild);
-
-                    continue;
                 }
             }
         }
@@ -984,13 +976,11 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
                 //  to the list of split elements. Null out the last thick element.
                 lsqLast.splitSequenceElements();
                 lstSplitElems.add(lsqLast);
-                lemLastThick = null;
                 // 2) The current element lives outside the last thick element.
             } else {
                 // If so then add the last thick element to the list of split element and 
                 //  zero out the last thick element reference.
                 this.addSplitElementTo(lstSplitElems, lemLastThick);
-                lemLastThick = null;
             }
         }
 
@@ -1025,7 +1015,6 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
      * @throws ModelException not sure why this is thrown
      */
     private IComposite createModelElements(SynchronizationManager mgrSync) throws ModelException {
-
         //
         //  Need to set up the loop state variables and parameters
         //
@@ -1040,8 +1029,6 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
 
         // Loop through each lattice element in this lattice sequence
         for (LatticeElement latElemCurr : this) {
-
-            //
             // Add a drift space as necessary
             // Compute the length of the drift space between the current element and the last element
             double dblPosEntr = latElemCurr.isThin() ? latElemCurr.getCenterPosition() : latElemCurr.getStartPosition();
@@ -1201,5 +1188,4 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
             mdlSeqRoot.addChild(modDrift);
         }
     }
-
 }

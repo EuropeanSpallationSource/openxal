@@ -8,7 +8,6 @@ package xal.sim.scenario;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -44,7 +43,8 @@ import xal.tools.xml.XmlDataAdaptor;
  */
 public class FileBasedElementMapping extends ElementMapping {
 
-    /*
+    private static final Logger LOGGER = Logger.getLogger(FileBasedElementMapping.class.getName());
+    /**
      * Global Constants
      */
     /**
@@ -113,12 +113,9 @@ public class FileBasedElementMapping extends ElementMapping {
         List<DataAdaptor> lstSrcDas = daAssoc.childAdaptors("map");
         for (DataAdaptor daSrc : lstSrcDas) {
             try {
-
                 mapHwToModElem.putMap(daSrc.stringValue("smf"), daSrc.stringValue("model"));
-
             } catch (ClassNotFoundException e) {
-
-                System.err.println("ClassNotFound when loading " + urlModelConfig + ": " + e.getMessage());
+                LOGGER.log(Level.WARNING, "ClassNotFound when loading {0}: {1}", new Object[]{urlModelConfig, e.getMessage()});
             }
         }
 
@@ -132,8 +129,7 @@ public class FileBasedElementMapping extends ElementMapping {
             mapHwToModElem.setDefaultElement(daElements.childAdaptor("default").stringValue("type"));
 
         } catch (ClassNotFoundException e) {
-
-            System.err.println("ClassNotFound when loading " + urlModelConfig + ", using default element: " + e.getMessage());
+            LOGGER.log(Level.WARNING, "ClassNotFound when loading {0}, using default element: {1}", new Object[]{urlModelConfig, e.getMessage()});
 
             mapHwToModElem.clsDefaultElem = Marker.class;
         }
@@ -149,7 +145,7 @@ public class FileBasedElementMapping extends ElementMapping {
             mapHwToModElem.setDefaultSequence(strClsNm);
 
         } catch (ClassNotFoundException e) {
-            System.err.println("Problem when loading " + urlModelConfig + ", using default sequence element: " + e.getMessage());
+            LOGGER.log(Level.WARNING, "Problem when loading {0}, using default sequence element: {1}", new Object[]{urlModelConfig, e.getMessage()});
 
             mapHwToModElem.clsDefaultSeq = Sector.class;
         }
@@ -160,8 +156,7 @@ public class FileBasedElementMapping extends ElementMapping {
             mapHwToModElem.setDrift(daElements.childAdaptor("drift").stringValue("type"));
 
         } catch (ClassNotFoundException e) {
-
-            System.err.println("Problem when loading " + urlModelConfig + ", using default drift: " + e.getMessage());
+            LOGGER.log(Level.WARNING, "Problem when loading {0}, using default drift: {1}", new Object[]{urlModelConfig, e.getMessage()});
             mapHwToModElem.clsDriftElem = IdealDrift.class;
         }
 
@@ -176,7 +171,7 @@ public class FileBasedElementMapping extends ElementMapping {
             mapHwToModElem.setRfCavityDrift(strClsName);
 
         } catch (ClassNotFoundException e) {
-            System.err.println("Problem when loading " + urlModelConfig + ", using default RF cavity drift: " + e.getMessage());
+            LOGGER.log(Level.WARNING, "Problem when loading {0}, using default RF cavity drift: {1}", new Object[]{urlModelConfig, e.getMessage()});
             mapHwToModElem.clsRfCavDriftElem = IdealRfCavityDrift.class;
         }
 
@@ -214,7 +209,7 @@ public class FileBasedElementMapping extends ElementMapping {
 
         DataAdaptor daAssoc = daCfg.createChild("associations");
 
-        for (Entry<String, Class<? extends IComponent>> entry : elementMapping.entrySet()) {
+        for (Entry<String, Class<? extends IComponent>> entry : elementMap.entrySet()) {
             DataAdaptor srcDas = daAssoc.createChild("map");
             srcDas.setValue("smf", entry.getKey());
             srcDas.setValue("model", entry.getValue().getCanonicalName());
@@ -264,7 +259,7 @@ public class FileBasedElementMapping extends ElementMapping {
         bolDebug = elementMapping.bolDebug;
         bolSubsectionCtrOrigin = elementMapping.bolSubsectionCtrOrigin;
 
-        this.elementMapping = elementMapping.elementMapping;
+        this.elementMap = elementMapping.elementMap;
 
         try {
             setDefaultElement(elementMapping.getDefaultElementType().getCanonicalName());
@@ -351,10 +346,7 @@ public class FileBasedElementMapping extends ElementMapping {
     public IComponent createRfCavityDrift(String name, double len, double freq, double mode) throws ModelException {
         try {
             Constructor<? extends IComponent> ctorElem = this.clsRfCavDriftElem.getConstructor(String.class, double.class, double.class, double.class);
-            IComponent elemDrift = ctorElem.newInstance(name, len, freq, mode);
-
-            return elemDrift;
-
+            return ctorElem.newInstance(name, len, freq, mode);
         } catch (InstantiationException | IllegalAccessException
                 | IllegalArgumentException | InvocationTargetException
                 | NoSuchMethodException | SecurityException e) {

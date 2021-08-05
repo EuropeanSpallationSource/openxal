@@ -78,34 +78,10 @@ public class RFGap extends ThinElement {
         double aStart = toAbsolutePosition(getStartPosition());
         String name = getName();
         String type = getType();
-        retval += "s=" + fmt.format(aStart) + " m\t" + name + "\t" + type + " p=" + fmt.format(elPos) + " leff=" + fmt.format(elLen);
+        retval += "s=" + FMT.format(aStart) + " m\t" + name + "\t" + type + " p=" + FMT.format(elPos) + " leff=" + FMT.format(elLen);
         return retval;
     }
 
-    /**
-     * Implementation of interface xal.tools.data.DataListener: Instructs the
-     * implementer to write its data to the adaptor for external storage.
-     */
-    /*public void write(DataAdaptor adaptor) {
-        super.write(adaptor);
-        DataAdaptor parameterAdaptor;
-        RfGap rfgap=(RfGap)this.getAcceleratorNode();
-        //parameter 
-        parameterAdaptor=adaptor.createChild("Parameter");
-        parameterAdaptor.setValue("name","frequency");
-        parameterAdaptor.setValue("type","double");
-        parameterAdaptor.setValue("value",Double.toString(rfgap.getGapDfltFrequency()));
-        //parameter         
-        parameterAdaptor=adaptor.createChild("Parameter");
-        parameterAdaptor.setValue("name","phase");
-        parameterAdaptor.setValue("type","double");
-        parameterAdaptor.setValue("value",Double.toString(rfgap.getGapDfltPhase()));
-        //parameter         
-        parameterAdaptor=adaptor.createChild("Parameter");
-        parameterAdaptor.setValue("name","eTL");
-        parameterAdaptor.setValue("type","double");
-        parameterAdaptor.setValue("value",Double.toString(rfgap.getGapDfltE0TL()));
-    }*/
     /**
      * When called with a Visitor reference the implementer can either reject to
      * be visited (empty method body) or call the Visitor by passing its own

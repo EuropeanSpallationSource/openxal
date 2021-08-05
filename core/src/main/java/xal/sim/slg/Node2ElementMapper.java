@@ -49,29 +49,27 @@ public class Node2ElementMapper implements Visitor {
         return node2ElementMap;
     }
 
-    public String NodeId2ElementId(String nodeId) throws LatticeError {
+    public String nodeId2ElementId(String nodeId) throws LatticeError {
         try {
             AcceleratorNode node = id2NodeMap.get(nodeId);
             Element element = node2ElementMap.get(node);
-            String elementId = element.getName();
-            return elementId;
+            return element.getName();
         } catch (NullPointerException e) {
             throw new LatticeError(nodeId + ": not a lattice element!");
         }
     }
 
-    public Element NodeId2Element(String nodeId) {
+    public Element nodeId2Element(String nodeId) {
         AcceleratorNode node = id2NodeMap.get(nodeId);
         return node2ElementMap.get(node);
     }
 
-    public String Node2ElementId(AcceleratorNode node) {
+    public String node2ElementId(AcceleratorNode node) {
         Element element = node2ElementMap.get(node);
-        String elementId = element.getName();
-        return elementId;
+        return element.getName();
     }
 
-    public Element Node2Element(AcceleratorNode node) {
+    public Element node2Element(AcceleratorNode node) {
         return node2ElementMap.get(node);
     }
 
@@ -101,6 +99,7 @@ public class Node2ElementMapper implements Visitor {
      */
     @Override
     public void visit(SkewSext e) {
+        // Do nothing
     }
 
     /**
@@ -108,6 +107,7 @@ public class Node2ElementMapper implements Visitor {
      */
     @Override
     public void visit(Octupole e) {
+        // Do nothing
     }
 
     /**
@@ -160,6 +160,7 @@ public class Node2ElementMapper implements Visitor {
      */
     @Override
     public void visit(Drift e) {
+        // Do nothing
     }
 
     /**
@@ -167,6 +168,7 @@ public class Node2ElementMapper implements Visitor {
      */
     @Override
     public void visit(Quadrupole e) {
+        // Do nothing
     }
 
     /**
@@ -174,6 +176,7 @@ public class Node2ElementMapper implements Visitor {
      */
     @Override
     public void visit(EQuad e) {
+        // Do nothing
     }
 
     /**
@@ -181,6 +184,7 @@ public class Node2ElementMapper implements Visitor {
      */
     @Override
     public void visit(Solenoid e) {
+        // Do nothing
     }
 
     /**
@@ -224,6 +228,7 @@ public class Node2ElementMapper implements Visitor {
      */
     @Override
     public void visit(SkewQuad e) {
+        // Do nothing
     }
 
     /**
@@ -231,6 +236,7 @@ public class Node2ElementMapper implements Visitor {
      */
     @Override
     public void visit(Sextupole e) {
+        // Do nothing
     }
 
     /**
@@ -238,10 +244,12 @@ public class Node2ElementMapper implements Visitor {
      */
     @Override
     public void visit(Marker e) {
+        // Do nothing
     }
 
     @Override
     public void visit(EDipole e) {
+        // Do nothing
 
     }
 }

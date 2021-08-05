@@ -14,7 +14,6 @@ import xal.smf.impl.Magnet;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -172,10 +171,10 @@ public class LatticeFactory {
         // & deposit the accumulated map in the lattice object
         lattice.setNode2ElementMapper(mapper);
         if (debug) {
-            final Set<Map.Entry<AcceleratorNode, Element>> entry_set = mapper.entrySet();
-            for (final Map.Entry<AcceleratorNode, Element> map_entry : entry_set) {
-                final AcceleratorNode node = map_entry.getKey();
-                final Element element = map_entry.getValue();
+            final Set<Map.Entry<AcceleratorNode, Element>> entrySet = mapper.entrySet();
+            for (final Map.Entry<AcceleratorNode, Element> mapEntry : entrySet) {
+                final AcceleratorNode node = mapEntry.getKey();
+                final Element element = mapEntry.getValue();
                 cout.println(
                         node.getId()
                         + ": ==mapped to==>\t"
@@ -283,8 +282,6 @@ public class LatticeFactory {
             for (final AcceleratorSeq subsequence : subsequences) {
                 nodesOfKind(subsequence, kinds, result);
             }
-        } else {
-            return;
         }
     }
 
@@ -398,7 +395,7 @@ public class LatticeFactory {
             }
 
             //quadrupoles
-        } else if (node.isKindOf("q") || node.isKindOf("qt")) {
+        } else if (node.isKindOf("q") || node.isKindOf("qt") || node.isKindOf("pq")) {
             //we use only effective lengths for magnets
             Element quadrupole = new Quadrupole(position, effLength, name);
             quadrupole.setAcceleratorNode(node);
@@ -414,29 +411,10 @@ public class LatticeFactory {
             } else {
                 result.add(quadrupole);
             }
-
         } else if (node.isKindOf(xal.smf.impl.EQuad.TYPE)) {
             //electrostatic quadrupoles
             //we use only effective lengths for magnets
             Element quadrupole = new EQuad(position, effLength, name);
-            quadrupole.setAcceleratorNode(node);
-            if (halfmag) {
-                //split the magnet and put a permanent marker in its center
-                PermMarker center
-                        = new PermMarker(position, 0.d, "ELEMENT_CENTER:" + name);
-                center.setAcceleratorNode(node);
-                final List<Element> half = quadrupole.split(center);
-                result.add(half.get(0));
-                result.add(half.get(2));
-                result.add(half.get(4));
-            } else {
-                result.add(quadrupole);
-            }
-
-            // permanent magnet quadrupoles
-        } else if (node.isKindOf("pq")) {
-            //we use only effective lengths for magnets
-            Element quadrupole = new Quadrupole(position, effLength, name);
             quadrupole.setAcceleratorNode(node);
             if (halfmag) {
                 //split the magnet and put a permanent marker in its center
@@ -535,10 +513,6 @@ public class LatticeFactory {
             Element wscanner = new WScanner(position, length, name);
             wscanner.setAcceleratorNode(node);
             result.add(wscanner);
-        } else if (node.isKindOf("marker")) {
-            Element marker = new PermMarker(position, length, name);
-            marker.setAcceleratorNode(node);
-            result.add(marker);
         } else {
             // treat everything else as markers
             Element marker = new PermMarker(position, length, name);
@@ -576,16 +550,10 @@ public class LatticeFactory {
      * to be sorted.
      */
     private void sortElementsByPosition(ArrayList<Element> allElements) {
-        Collections.sort(allElements, new Comparator<Element>() {
-            /**
-             * Comparator for the sortElementsByPosition member function.
-             */
-            @Override
-            public int compare(Element obj1, Element obj2) {
-                double p1 = obj1.getPosition();
-                double p2 = obj2.getPosition();
-                return Double.compare(p1, p2);
-            }
+        Collections.sort(allElements, (obj1, obj2) -> {
+            double p1 = obj1.getPosition();
+            double p2 = obj2.getPosition();
+            return Double.compare(p1, p2);
         });
     }
 

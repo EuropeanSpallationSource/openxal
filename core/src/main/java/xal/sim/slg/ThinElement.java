@@ -119,7 +119,7 @@ public abstract class ThinElement extends Element {
         double aStart = toAbsolutePosition(getPosition());
         String name = getName();
         String type = getType();
-        retval += "s=" + fmt.format(aStart) + " m\t" + name + "\t" + type + " p=" + fmt.format(elPos);
+        retval += "s=" + FMT.format(aStart) + " m\t" + name + "\t" + type + " p=" + FMT.format(elPos);
         return retval;
     }
 
