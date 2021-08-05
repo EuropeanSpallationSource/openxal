@@ -18,7 +18,7 @@ public class BatchGetValueTimeRequest extends AbstractBatchGetRequest<ChannelTim
     /**
      * request handler
      */
-    protected final RequestHandler REQUEST_HANDLER;
+    protected final RequestHandler requestHandler;
 
     /**
      * Primary Constructor
@@ -28,7 +28,7 @@ public class BatchGetValueTimeRequest extends AbstractBatchGetRequest<ChannelTim
     public BatchGetValueTimeRequest(final Collection<Channel> channels) {
         super(channels);
 
-        REQUEST_HANDLER = new RequestHandler();
+        requestHandler = new RequestHandler();
     }
 
     /**
@@ -42,8 +42,8 @@ public class BatchGetValueTimeRequest extends AbstractBatchGetRequest<ChannelTim
      * request to get the data for the channel
      */
     @Override
-    protected void requestChannelData(final Channel channel) throws Exception {
-        channel.getValueTimeCallback(REQUEST_HANDLER, false);
+    protected void requestChannelData(final Channel channel) throws ConnectionException, GetException {
+        channel.getValueTimeCallback(requestHandler, false);
     }
 
     /**
@@ -52,8 +52,8 @@ public class BatchGetValueTimeRequest extends AbstractBatchGetRequest<ChannelTim
     protected class RequestHandler implements IEventSinkValTime {
 
         @Override
-        public void eventValue(final ChannelTimeRecord record, final Channel channel) {
-            processRecordEvent(channel, record);
+        public void eventValue(final ChannelTimeRecord channelRecord, final Channel channel) {
+            processRecordEvent(channel, channelRecord);
         }
     }
 }

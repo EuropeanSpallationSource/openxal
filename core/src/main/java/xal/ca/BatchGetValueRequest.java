@@ -18,7 +18,7 @@ public class BatchGetValueRequest extends AbstractBatchGetRequest<ChannelRecord>
     /**
      * request handler
      */
-    protected final RequestHandler REQUEST_HANDLER;
+    protected final RequestHandler requestHandler;
 
     /**
      * Primary Constructor
@@ -28,7 +28,7 @@ public class BatchGetValueRequest extends AbstractBatchGetRequest<ChannelRecord>
     public BatchGetValueRequest(final Collection<Channel> channels) {
         super(channels);
 
-        REQUEST_HANDLER = new RequestHandler();
+        requestHandler = new RequestHandler();
     }
 
     /**
@@ -42,8 +42,8 @@ public class BatchGetValueRequest extends AbstractBatchGetRequest<ChannelRecord>
      * request to get the data for the channel
      */
     @Override
-    protected void requestChannelData(final Channel channel) throws Exception {
-        channel.getValueCallback(REQUEST_HANDLER, false);
+    protected void requestChannelData(final Channel channel) throws ConnectionException, GetException {
+        channel.getValueCallback(requestHandler, false);
     }
 
     /**
@@ -52,8 +52,8 @@ public class BatchGetValueRequest extends AbstractBatchGetRequest<ChannelRecord>
     protected class RequestHandler implements IEventSinkValue {
 
         @Override
-        public void eventValue(final ChannelRecord record, final Channel channel) {
-            processRecordEvent(channel, record);
+        public void eventValue(final ChannelRecord channelRecord, final Channel channel) {
+            processRecordEvent(channel, channelRecord);
         }
     }
 }

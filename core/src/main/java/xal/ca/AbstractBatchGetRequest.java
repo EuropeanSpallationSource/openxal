@@ -83,7 +83,7 @@ public abstract class AbstractBatchGetRequest<T extends ChannelRecord> implement
      */
     // No way to pass BatchGetRequestListener.class with the specified RecordType
     @SuppressWarnings("unchecked")
-    public AbstractBatchGetRequest(final Collection<Channel> channels) {
+    protected AbstractBatchGetRequest(final Collection<Channel> channels) {
         messageCenter = new MessageCenter("BatchGetRequest");
         eventProxy = messageCenter.registerSource(this, BatchGetRequestListener.class);
 
@@ -248,7 +248,7 @@ public abstract class AbstractBatchGetRequest<T extends ChannelRecord> implement
                         completionLock.wait(remainingTime);
                     }
                 } catch (InterruptedException exception) {
-                    throw new RuntimeException("Exception waiting for the batch get requests to be completed.", exception);
+                    throw new BatchConnectionRuntimeException("Exception waiting for the batch get requests to be completed.", exception);
                 }
             }
         }
@@ -262,7 +262,7 @@ public abstract class AbstractBatchGetRequest<T extends ChannelRecord> implement
      * @param channel the channel for which to request data
      * @throws Exception when the request fails
      */
-    protected abstract void requestChannelData(final Channel channel) throws Exception;
+    protected abstract void requestChannelData(final Channel channel) throws ConnectionException, GetException;
 
     /**
      * Process the get request for a single channel
@@ -399,17 +399,17 @@ public abstract class AbstractBatchGetRequest<T extends ChannelRecord> implement
      * Process the receipt of a new record event
      *
      * @param channel the channel for which the event will be processed
-     * @param record the fetched record
+     * @param channelRecord the fetched record
      */
-    protected void processRecordEvent(final Channel channel, final T record) {
+    protected void processRecordEvent(final Channel channel, final T channelRecord) {
         synchronized (records) {
-            records.put(channel, record);
+            records.put(channel, channelRecord);
             synchronized (pendingChannels) {
                 pendingChannels.remove(channel);
             }
         }
 
-        eventProxy.recordReceivedInBatch(this, channel, record);
+        eventProxy.recordReceivedInBatch(this, channel, channelRecord);
         processCurrentStatus();
     }
 

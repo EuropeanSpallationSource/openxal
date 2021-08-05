@@ -152,12 +152,7 @@ public class BatchConnectionRequest extends java.lang.Object {
      * @return the number of channels for which connections are requested
      */
     public int getChannelCount() {
-        return resourceSyncQueue.dispatchSync(new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                return channels.size();
-            }
-        });
+        return resourceSyncQueue.dispatchSync(() -> channels.size());
     }
 
     /**
@@ -166,12 +161,7 @@ public class BatchConnectionRequest extends java.lang.Object {
      * @return set of connected channels
      */
     public Set<Channel> getConnectedChannels() {
-        return resourceSyncQueue.dispatchSync(new Callable<HashSet<Channel>>() {
-            @Override
-            public HashSet<Channel> call() {
-                return new HashSet<>(connectedChannels);
-            }
-        });
+        return resourceSyncQueue.dispatchSync(() -> new HashSet<>(connectedChannels));
     }
 
     /**
@@ -180,12 +170,7 @@ public class BatchConnectionRequest extends java.lang.Object {
      * @return the number of channels that were connected
      */
     public int getConnectedCount() {
-        return resourceSyncQueue.dispatchSync(new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                return connectedChannels.size();
-            }
-        });
+        return resourceSyncQueue.dispatchSync(() -> connectedChannels.size());
     }
 
     /**
@@ -194,12 +179,7 @@ public class BatchConnectionRequest extends java.lang.Object {
      * @return set of channels that were connected
      */
     public Set<Channel> getDisconnectedChannels() {
-        return resourceSyncQueue.dispatchSync(new Callable<HashSet<Channel>>() {
-            @Override
-            public HashSet<Channel> call() {
-                return new HashSet<>(disconnectedChannels);
-            }
-        });
+        return resourceSyncQueue.dispatchSync(() -> new HashSet<>(disconnectedChannels));
     }
 
     /**
@@ -208,12 +188,7 @@ public class BatchConnectionRequest extends java.lang.Object {
      * @return the number of disconnected channels
      */
     public int getDisconnectedCount() {
-        return resourceSyncQueue.dispatchSync(new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                return disconnectedChannels.size();
-            }
-        });
+        return resourceSyncQueue.dispatchSync(() -> disconnectedChannels.size());
     }
 
     /**
@@ -222,12 +197,7 @@ public class BatchConnectionRequest extends java.lang.Object {
      * @return set of channels that are pending connection
      */
     public Set<Channel> getPendingChannels() {
-        return resourceSyncQueue.dispatchSync(new Callable<HashSet<Channel>>() {
-            @Override
-            public HashSet<Channel> call() {
-                return new HashSet<>(pendingChannels);
-            }
-        });
+        return resourceSyncQueue.dispatchSync(() -> new HashSet<>(pendingChannels));
     }
 
     /**
@@ -237,12 +207,7 @@ public class BatchConnectionRequest extends java.lang.Object {
      * @return the exception for the specified channel or null if none
      */
     public Exception getException(final Channel channel) {
-        return resourceSyncQueue.dispatchSync(new Callable<Exception>() {
-            @Override
-            public Exception call() {
-                return exceptions.get(channel);
-            }
-        });
+        return resourceSyncQueue.dispatchSync(() -> exceptions.get(channel));
     }
 
     /**
@@ -251,12 +216,7 @@ public class BatchConnectionRequest extends java.lang.Object {
      * @return set of channels that failed to connect
      */
     public Set<Channel> getFailedChannels() {
-        return resourceSyncQueue.dispatchSync(new Callable<HashSet<Channel>>() {
-            @Override
-            public HashSet<Channel> call() {
-                return new HashSet<>(exceptions.keySet());
-            }
-        });
+        return resourceSyncQueue.dispatchSync(() -> new HashSet<>(exceptions.keySet()));
     }
 
     /**
@@ -265,28 +225,20 @@ public class BatchConnectionRequest extends java.lang.Object {
      * @return the number of channels that had exceptions connecting
      */
     public int getExceptionCount() {
-        return resourceSyncQueue.dispatchSync(new Callable<Integer>() {
-            @Override
-            public Integer call() {
-                return exceptions.size();
-            }
-        });
+        return resourceSyncQueue.dispatchSync(exceptions::size);
     }
 
     /**
      * submit this batch for processing
      */
     public void submit() {
-        resourceSyncQueue.dispatchBarrierSync(new Runnable() {
-            @Override
-            public void run() {
-                isCanceled = false;
-                pendingChannels.clear();
-                pendingChannels.addAll(channels);
-                // assume all channels disconnected until notified otherwise
-                disconnectedChannels.addAll(channels);
-                connectedChannels.clear();
-            }
+        resourceSyncQueue.dispatchBarrierSync(() -> {
+            isCanceled = false;
+            pendingChannels.clear();
+            pendingChannels.addAll(channels);
+            // assume all channels disconnected until notified otherwise
+            disconnectedChannels.addAll(channels);
+            connectedChannels.clear();
         });
 
         try {
@@ -295,7 +247,7 @@ public class BatchConnectionRequest extends java.lang.Object {
             }
             Channel.flushIO();
         } catch (Exception exception) {
-            throw new RuntimeException("Exception while submitting a batch Get request.", exception);
+            throw new BatchConnectionRuntimeException("Exception while submitting a batch Get request.", exception);
         }
     }
 
@@ -339,7 +291,7 @@ public class BatchConnectionRequest extends java.lang.Object {
                         completionLock.wait(waitTime);
                     }
                 } catch (InterruptedException exception) {
-                    throw new RuntimeException("Exception waiting for the batch get requests to be completed.", exception);
+                    throw new BatchConnectionRuntimeException("Exception waiting for the batch get requests to be completed.", exception);
                 }
             }
         }
@@ -361,12 +313,9 @@ public class BatchConnectionRequest extends java.lang.Object {
      */
     public void cancel() {
         isCanceled = true;
-        resourceSyncQueue.dispatchBarrierSync(new Runnable() {
-            @Override
-            public void run() {
-                for (final Channel channel : channels) {
-                    channel.removeConnectionListener(requestHandler);
-                }
+        resourceSyncQueue.dispatchBarrierSync(() -> {
+            for (final Channel channel : channels) {
+                channel.removeConnectionListener(requestHandler);
             }
         });
     }
@@ -379,12 +328,9 @@ public class BatchConnectionRequest extends java.lang.Object {
             channel.addConnectionListener(requestHandler);
             channel.requestConnection();
         } catch (final Exception exception) {
-            resourceSyncQueue.dispatchBarrierAsync(new Runnable() {
-                @Override
-                public void run() {
-                    exceptions.put(channel, exception);
-                    pendingChannels.remove(channel);
-                }
+            resourceSyncQueue.dispatchBarrierAsync(() -> {
+                exceptions.put(channel, exception);
+                pendingChannels.remove(channel);
             });
 
             if (!isCanceled) {
@@ -401,12 +347,7 @@ public class BatchConnectionRequest extends java.lang.Object {
      * @return true if complete and false otherwise
      */
     public boolean isComplete() {
-        return resourceSyncQueue.dispatchSync(new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return pendingChannels.isEmpty();
-            }
-        });
+        return resourceSyncQueue.dispatchSync(() -> pendingChannels.isEmpty());
     }
 
     /**
@@ -423,12 +364,7 @@ public class BatchConnectionRequest extends java.lang.Object {
             }
 
             if (!isCanceled) {
-                int[] counts = resourceSyncQueue.dispatchSync(new Callable<int[]>() {
-                    @Override
-                    public int[] call() {
-                        return new int[]{connectedChannels.size(), disconnectedChannels.size(), exceptions.size()};
-                    }
-                });
+                int[] counts = resourceSyncQueue.dispatchSync(() -> new int[]{connectedChannels.size(), disconnectedChannels.size(), exceptions.size()});
 
                 if (!isCanceled) {
                     eventProxy.batchConnectionRequestCompleted(this, counts[0], counts[1], counts[2]);
@@ -450,13 +386,10 @@ public class BatchConnectionRequest extends java.lang.Object {
          */
         @Override
         public void connectionMade(final Channel channel) {
-            resourceSyncQueue.dispatchBarrierAsync(new Runnable() {
-                @Override
-                public void run() {
-                    connectedChannels.add(channel);
-                    disconnectedChannels.remove(channel);
-                    pendingChannels.remove(channel);
-                }
+            resourceSyncQueue.dispatchBarrierAsync(() -> {
+                connectedChannels.add(channel);
+                disconnectedChannels.remove(channel);
+                pendingChannels.remove(channel);
             });
 
             if (!isCanceled) {
@@ -473,13 +406,10 @@ public class BatchConnectionRequest extends java.lang.Object {
          */
         @Override
         public void connectionDropped(final Channel channel) {
-            resourceSyncQueue.dispatchBarrierAsync(new Runnable() {
-                @Override
-                public void run() {
-                    disconnectedChannels.add(channel);
-                    connectedChannels.remove(channel);
-                    pendingChannels.remove(channel);
-                }
+            resourceSyncQueue.dispatchBarrierAsync(() -> {
+                disconnectedChannels.add(channel);
+                connectedChannels.remove(channel);
+                pendingChannels.remove(channel);
             });
 
             if (isCanceled) {
