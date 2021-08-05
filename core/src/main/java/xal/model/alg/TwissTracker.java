@@ -409,10 +409,10 @@ public class TwissTracker extends Tracker {
 
         // Get the space charge kick
         if (this.getSpaceChargeFlag()) {
-            double K = probe.beamPerveance();
+            double k = probe.beamPerveance();
             CovarianceMatrix matTau = CovarianceMatrix.buildCovariance(probe.getTwiss());
             BeamEllipsoid ellipsoid = new BeamEllipsoid(gamma, matTau);
-            PhaseMatrix matPhiSC = ellipsoid.computeScheffMatrix(dblLen / 2.0, K);
+            PhaseMatrix matPhiSC = ellipsoid.computeScheffMatrix(dblLen / 2.0, k);
 
             matPhi = matPhiSC.times(matPhi.times(matPhiSC));
         }
@@ -475,18 +475,18 @@ public class TwissTracker extends Tracker {
         double delz = elem.getAlignZ();
 
         if ((delx != 0) || (dely != 0) || (delz != 0)) {
-            PhaseMatrix T = PhaseMatrix.identity();
-            PhaseMatrix Ti = PhaseMatrix.identity();
+            PhaseMatrix t = PhaseMatrix.identity();
+            PhaseMatrix tI = PhaseMatrix.identity();
 
-            T.setElem(IND.X, IND.HOM, -delx);
-            T.setElem(IND.Y, IND.HOM, -dely);
-            T.setElem(IND.Z, IND.HOM, -delz);
+            t.setElem(IND.X, IND.HOM, -delx);
+            t.setElem(IND.Y, IND.HOM, -dely);
+            t.setElem(IND.Z, IND.HOM, -delz);
 
-            Ti.setElem(IND.X, IND.HOM, delx);
-            Ti.setElem(IND.Y, IND.HOM, dely);
-            Ti.setElem(IND.Z, IND.HOM, delz);
+            tI.setElem(IND.X, IND.HOM, delx);
+            tI.setElem(IND.Y, IND.HOM, dely);
+            tI.setElem(IND.Z, IND.HOM, delz);
 
-            matPhi = Ti.times(matPhi).times(T);
+            matPhi = tI.times(matPhi).times(t);
         }
 
         return matPhi;
@@ -659,13 +659,13 @@ public class TwissTracker extends Tracker {
             ratLong = 1.0;
 
         } else {
-            double ER = probe.getSpeciesRestEnergy();
-            double W0 = probe.getKineticEnergy();
-            double W1 = W0 + dW;
+            double eR = probe.getSpeciesRestEnergy();
+            double w0 = probe.getKineticEnergy();
+            double w1 = w0 + dW;
 
             double g0 = probe.getGamma();
             double b0 = probe.getBeta();
-            double g1 = RelativisticParameterConverter.computeGammaFromEnergies(W1, ER);
+            double g1 = RelativisticParameterConverter.computeGammaFromEnergies(w1, eR);
             double b1 = RelativisticParameterConverter.computeBetaFromGamma(g1);
 
             ratTran = (g0 * b0) / (b1 * g1);
@@ -690,13 +690,13 @@ public class TwissTracker extends Tracker {
 
         // Transfer matrix diagonal sub-block
         // .
-        double Rjj;
+        double rjj;
         //  | Rjj  Rjjp  |
-        double Rjjp;
+        double rjjp;
         //  | Rjpj Rjpjp |
-        double Rjpj;
+        double rjpj;
         //                .
-        double Rjpjp;
+        double rjpjp;
 
         int j = 0;
         // for each phase plane
@@ -709,13 +709,13 @@ public class TwissTracker extends Tracker {
             gamma0 = twissEnv0.getTwiss(index).getGamma();
             emit0 = twissEnv0.getTwiss(index).getEmittance();
 
-            Rjj = matPhi.getElem(j, j);
-            Rjjp = matPhi.getElem(j, j + 1);
-            Rjpj = matPhi.getElem(j + 1, j);
-            Rjpjp = matPhi.getElem(j + 1, j + 1);
+            rjj = matPhi.getElem(j, j);
+            rjjp = matPhi.getElem(j, j + 1);
+            rjpj = matPhi.getElem(j + 1, j);
+            rjpjp = matPhi.getElem(j + 1, j + 1);
 
-            beta1 = Rjj * Rjj * beta0 - 2. * Rjj * Rjjp * alpha0 + Rjjp * Rjjp * gamma0;
-            alpha1 = -Rjj * Rjpj * beta0 + (Rjj * Rjpjp + Rjjp * Rjpj) * alpha0 - Rjjp * Rjpjp * gamma0;
+            beta1 = rjj * rjj * beta0 - 2. * rjj * rjjp * alpha0 + rjjp * rjjp * gamma0;
+            alpha1 = -rjj * rjpj * beta0 + (rjj * rjpjp + rjjp * rjpj) * alpha0 - rjjp * rjpjp * gamma0;
 
             // longitudinal plane
             if (index == IND_3D.Z) {
@@ -756,8 +756,8 @@ public class TwissTracker extends Tracker {
         }
         double sinphi = Math.sin(phi);
         double cosphi = Math.cos(phi);
-        double G1 = 0.5 * (1 + (sinphi * sinphi - cosphi * cosphi) * f2);
-        double Q = probe.getSpeciesCharge();
+        double g1 = 0.5 * (1 + (sinphi * sinphi - cosphi * cosphi) * f2);
+        double q = probe.getSpeciesCharge();
         //harmic number
         double h = 1;
         double m = probe.getSpeciesRestEnergy();
@@ -774,9 +774,9 @@ public class TwissTracker extends Tracker {
         double lambda = clight / freq;
 
         //Kx'
-        double cay = Math.abs(Q) * h * Math.PI * elem.getETL() / (m * betagammaa * betagammaa * betagammaf * lambda);
+        double cay = Math.abs(q) * h * Math.PI * elem.getETL() / (m * betagammaa * betagammaa * betagammaf * lambda);
 
-        dfac = cay * cay * (G1 - sinphi * sinphi * f1 * f1);
+        dfac = cay * cay * (g1 - sinphi * sinphi * f1 * f1);
 
         return dfac;
     }
@@ -805,7 +805,7 @@ public class TwissTracker extends Tracker {
         double sinphi = Math.sin(phi);
         double cosphi = Math.cos(phi);
 
-        double Q = probe.getSpeciesCharge();
+        double q = probe.getSpeciesCharge();
         //harmic number
         double h = 1;
         double m = probe.getSpeciesRestEnergy();
@@ -821,7 +821,7 @@ public class TwissTracker extends Tracker {
         double wf = w + dw;
         double betagammaf = Math.sqrt(wf / m * (2 + wf / m));
 
-        double cay = h * Math.PI * elem.getETL() * Math.abs(Q) / (m * betagammaa * betagammaa * betagammaf * lambda);
+        double cay = h * Math.PI * elem.getETL() * Math.abs(q) / (m * betagammaa * betagammaa * betagammaf * lambda);
 
         double cayz = 2 * cay * gammaa * gammaa;
         double cayp = cayz * cayz * dphi * dphi;
@@ -886,12 +886,12 @@ public class TwissTracker extends Tracker {
      */
     private double phaseSpread(TwissProbe probe, IdealRfGap elem) {
 
-        double Er = probe.getSpeciesRestEnergy();
-        double Wi = probe.getKineticEnergy();
+        double eR = probe.getSpeciesRestEnergy();
+        double wI = probe.getKineticEnergy();
 
         Twiss[] twiss = probe.getTwiss().getTwiss();
 
-        TraceXalUnitConverter t3dxal = TraceXalUnitConverter.newConverter(elem.getFrequency(), Er, Wi);
+        TraceXalUnitConverter t3dxal = TraceXalUnitConverter.newConverter(elem.getFrequency(), eR, wI);
         Twiss twissLongT3d = t3dxal.xalToTraceLongitudinal(twiss[2]);
 
         double emitz = twissLongT3d.getEmittance();

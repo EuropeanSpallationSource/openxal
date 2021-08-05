@@ -657,25 +657,25 @@ public abstract class EnvelopeTrackerBase extends Tracker {
 
         // Compute auxiliary parameters
         // transverse plane Fourier transform
-        double Ft;
+        double fT;
         // longitudinal plane Fourier transform
-        double Fz;
+        double fZ;
 
-        Ft = this.compTransFourierTransform(dphi);
-        Fz = this.compLongFourierTransform(dphi);
+        fT = this.compTransFourierTransform(dphi);
+        fZ = this.compLongFourierTransform(dphi);
 
         // Modify the transfer matrix
         // thin-lens focal-length element of tranfer matrix
         double fl;
 
         fl = matPhi.getElem(IND.Xp, IND.X);
-        matPhi.setElem(IND.Xp, IND.X, fl * Ft);
+        matPhi.setElem(IND.Xp, IND.X, fl * fT);
 
         fl = matPhi.getElem(IND.Yp, IND.Y);
-        matPhi.setElem(IND.Yp, IND.Y, fl * Ft);
+        matPhi.setElem(IND.Yp, IND.Y, fl * fT);
 
         fl = matPhi.getElem(IND.Zp, IND.Z);
-        matPhi.setElem(IND.Zp, IND.Z, fl * Fz);
+        matPhi.setElem(IND.Zp, IND.Z, fl * fZ);
 
         return matPhi;
     }
@@ -755,10 +755,10 @@ public abstract class EnvelopeTrackerBase extends Tracker {
 
                 // Transform to laboratory coordinates
                 PhaseVector z = tau0.getMean();
-                PhaseMatrix T = PhaseMatrix.translation(z.negate());
-                PhaseMatrix Ti = PhaseMatrix.translation(z);
+                PhaseMatrix t = PhaseMatrix.translation(z.negate());
+                PhaseMatrix tI = PhaseMatrix.translation(z);
 
-                matPhiSc = Ti.times(matPhiSc.times(T));
+                matPhiSc = tI.times(matPhiSc.times(t));
 
             } else {
 
@@ -778,17 +778,17 @@ public abstract class EnvelopeTrackerBase extends Tracker {
 
             // beam is upright
             if (corr < EnvelopeTrackerBase.TOLER_CORRELATION) {
-                double g_2 = gamma * gamma;
+                double g2 = gamma * gamma;
 
                 // Compute elliptic integrals
-                double RDx = EllipticIntegral.RD(covYY, g_2 * covZZ, covXX) / EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
-                double RDy = EllipticIntegral.RD(g_2 * covZZ, covXX, covYY) / EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
-                double RDz = EllipticIntegral.RD(covXX, covYY, g_2 * covZZ) / EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
+                double rDx = EllipticIntegral.RD(covYY, g2 * covZZ, covXX) / EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
+                double rDy = EllipticIntegral.RD(g2 * covZZ, covXX, covYY) / EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
+                double rDz = EllipticIntegral.RD(covXX, covYY, g2 * covZZ) / EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
 
                 // Compute defocusing constants in the laboratory frame
-                double kx = gamma * dblLen * K * RDx;
-                double ky = gamma * dblLen * K * RDy;
-                double kz = gamma * dblLen * K * RDz;
+                double kx = gamma * dblLen * K * rDx;
+                double ky = gamma * dblLen * K * rDy;
+                double kz = gamma * dblLen * K * rDz;
 
                 matPhiSc.setElem(IND.Xp, IND.X, kx);
                 matPhiSc.setElem(IND.Yp, IND.Y, ky);
@@ -796,10 +796,10 @@ public abstract class EnvelopeTrackerBase extends Tracker {
 
                 // Transform to laboratory coordinates
                 PhaseVector z = tau0.getMean();
-                PhaseMatrix T = PhaseMatrix.translation(z.negate());
-                PhaseMatrix Ti = PhaseMatrix.translation(z);
+                PhaseMatrix t = PhaseMatrix.translation(z.negate());
+                PhaseMatrix tI = PhaseMatrix.translation(z);
 
-                matPhiSc = Ti.times(matPhiSc.times(T));
+                matPhiSc = tI.times(matPhiSc.times(t));
 
                 // Beam is tilted in configuration space
             } else {
@@ -983,18 +983,18 @@ public abstract class EnvelopeTrackerBase extends Tracker {
 
         // Compute the Fourier transforms
         // 3D Fourier transform
-        double F;
+        double f;
         // double angle Fourier transform
-        double FdblAng;
+        double fDblAng;
         if (plane == PhasePlane.TRANSVERSE) {
 
-            F = this.compTransFourierTransform(dphi);
-            FdblAng = this.compTransFourierTransform(2.0 * dphi);
+            f = this.compTransFourierTransform(dphi);
+            fDblAng = this.compTransFourierTransform(2.0 * dphi);
 
         } else if (plane == PhasePlane.LONGITUDINAL) {
 
-            F = this.compLongFourierTransform(dphi);
-            FdblAng = this.compLongFourierTransform(2.0 * dphi);
+            f = this.compLongFourierTransform(dphi);
+            fDblAng = this.compLongFourierTransform(2.0 * dphi);
 
         } else {
 
@@ -1006,16 +1006,16 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         }
 
         // Compute the auxiliary functions
-        double sin_s = Math.sin(phi_s);
-        double sin_2 = sin_s * sin_s;
-        double F_2 = F * F;
-        double S = 0.5 * (1. - FdblAng);
-        double T = F_2 - FdblAng;
+        double sins = Math.sin(phi_s);
+        double sin2 = sins * sins;
+        double f2 = f * f;
+        double s = 0.5 * (1. - fDblAng);
+        double t = f2 - fDblAng;
 
         // Compute the growth function and return it.
-        double G = S - sin_2 * T;
+        double g = s - sin2 * t;
 
-        return G;
+        return g;
     }
 
     /**
@@ -1150,29 +1150,19 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         // the emittance growth model we are using
         EmitGrowthModel model;
         // transform value for emittance growth model
-        double Ft;
+        double fT;
 
         model = this.getEmitGrowthModel();
         if (model == EmitGrowthModel.TRACE3D) {
-
-            Ft = this.fourierTransTrace3d(dphi);
-
+            fT = this.fourierTransTrace3d(dphi);
         } else if (model == EmitGrowthModel.UNIFORM1D) {
-
-            Ft = this.fourierTrans1dUniform(dphi);
-
+            fT = this.fourierTrans1dUniform(dphi);
         } else if (model == EmitGrowthModel.GAUSSIAN1D) {
-
-            Ft = this.fourierTrans1dGaussian(dphi);
-
+            fT = this.fourierTrans1dGaussian(dphi);
         } else if (model == EmitGrowthModel.UNIFORM3D) {
-
-            Ft = this.fourierTrans3dUniform(dphi);
-
+            fT = this.fourierTrans3dUniform(dphi);
         } else if (model == EmitGrowthModel.GAUSSIAN3D) {
-
-            Ft = this.fourierTrans3dGaussian(dphi);
-
+            fT = this.fourierTrans3dGaussian(dphi);
         } else {
 
             String strMsg = "";
@@ -1183,7 +1173,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
 
         }
 
-        return Ft;
+        return fT;
     }
 
     /**
@@ -1317,28 +1307,28 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         // the emittance growth model we are using
         EmitGrowthModel model;
         // transform value for emittance growth model
-        double Fz;
+        double fZ;
 
         model = this.getEmitGrowthModel();
         if (model == EmitGrowthModel.TRACE3D) {
 
-            Fz = this.fourierLongTrace3d(dphi);
+            fZ = this.fourierLongTrace3d(dphi);
 
         } else if (model == EmitGrowthModel.UNIFORM1D) {
 
-            Fz = this.fourierLong1dUniform(dphi);
+            fZ = this.fourierLong1dUniform(dphi);
 
         } else if (model == EmitGrowthModel.GAUSSIAN1D) {
 
-            Fz = this.fourierLong1dGaussian(dphi);
+            fZ = this.fourierLong1dGaussian(dphi);
 
         } else if (model == EmitGrowthModel.UNIFORM3D) {
 
-            Fz = this.fourierLong3dUniform(dphi);
+            fZ = this.fourierLong3dUniform(dphi);
 
         } else if (model == EmitGrowthModel.GAUSSIAN3D) {
 
-            Fz = this.fourierLong3dGaussian(dphi);
+            fZ = this.fourierLong3dGaussian(dphi);
 
         } else {
 
@@ -1350,7 +1340,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
 
         }
 
-        return Fz;
+        return fZ;
     }
 
     //
@@ -1431,21 +1421,21 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      */
     protected double fourierTransTrace3d(double dphi) {
 
-        double dp_2 = dphi * dphi;
+        double dp2 = dphi * dphi;
 
         if (dphi < 0.1) {
             // Avoid singularity at zero - Taylor expansion
-            return 1.0 - dp_2 / 14.0 + dp_2 * dp_2 / 504.0;
+            return 1.0 - dp2 / 14.0 + dp2 * dp2 / 504.0;
 
         }
 
         // Use full expression
-        double T = 3.0 / dp_2;
+        double t = 3.0 / dp2;
 
         double sinc = ElementaryFunction.sinc(dphi);
         double cos = Math.cos(dphi);
 
-        return (5.0 * T) * (sinc * (T - 1.0) - cos * T);
+        return (5.0 * t) * (sinc * (t - 1.0) - cos * t);
     }
 
     /**
@@ -1502,9 +1492,9 @@ public abstract class EnvelopeTrackerBase extends Tracker {
      */
     protected double fourierLongTrace3d(double dphi) {
 
-        double Fz = 1.0 - dphi * dphi / 12.0;
+        double fz = 1.0 - dphi * dphi / 12.0;
 
-        return Fz;
+        return fz;
     }
 
     //
@@ -1560,20 +1550,20 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         if (Math.abs(dphi) < EnvelopeTrackerBase.SMALL_ARG) {
 
             // Numerically unstable about dphi=0, compute expansion about dphi=0 
-            double x_2 = dphi * dphi;
-            double x_4 = x_2 * x_2;
-            double x_6 = x_2 * x_4;
+            double x2 = dphi * dphi;
+            double x4 = x2 * x2;
+            double x6 = x2 * x4;
 
-            return 1.0 - x_2 / 7.0 + x_4 / 168.0 - x_6 / 8316.0;
+            return 1.0 - x2 / 7.0 + x4 / 168.0 - x6 / 8316.0;
         }
 
         // Numerically stable, compute exact expresson
-        double dphi_2 = dphi * dphi;
+        double dphi2 = dphi * dphi;
         double j2 = BesselFunction.j2(dphi);
         double j3 = BesselFunction.j3(dphi);
-        double Fz = 15.0 * (j2 / dphi_2 - j3 / dphi);
+        double fZ = 15.0 * (j2 / dphi2 - j3 / dphi);
 
-        return Fz;
+        return fZ;
     }
 
     /**
@@ -1626,20 +1616,20 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         if (Math.abs(dphi) < EnvelopeTrackerBase.SMALL_ARG) {
 
             // Numerically unstable about dphi=0, compute expansion about dphi=0 
-            double x_2 = dphi * dphi;
-            double x_4 = x_2 * x_2;
-            double x_6 = x_2 * x_4;
+            double x2 = dphi * dphi;
+            double x4 = x2 * x2;
+            double x6 = x2 * x4;
 
-            return 1.0 - x_2 / 14.0 + x_4 / 504.0 - x_6 / 33264.0;
+            return 1.0 - x2 / 14.0 + x4 / 504.0 - x6 / 33264.0;
 
         }
 
         // Numerically stable, compute exact expression
-        double dphi_2 = dphi * dphi;
+        double dphi2 = dphi * dphi;
         double j2 = BesselFunction.j2(dphi);
-        double Ft = 15.0 * j2 / dphi_2;
+        double fT = 15.0 * j2 / dphi2;
 
-        return Ft;
+        return fT;
     }
 
     /**
@@ -1681,10 +1671,10 @@ public abstract class EnvelopeTrackerBase extends Tracker {
     protected double fourierTrans3dGaussian(double dphi) {
 
         // Numerically stable, compute exact expression
-        double dphi_2 = dphi * dphi;
-        double Ft = Math.exp(-dphi_2 / 10.0);
+        double dphi2 = dphi * dphi;
+        double fT = Math.exp(-dphi2 / 10.0);
 
-        return Ft;
+        return fT;
     }
 
     /**
@@ -1726,12 +1716,12 @@ public abstract class EnvelopeTrackerBase extends Tracker {
     protected double fourierLong3dGaussian(double dphi) {
 
         // Numerically stable, compute exact expression
-        double dphi_2 = dphi * dphi;
-        double deriv = 1.0 - dphi_2 / 5.0;
-        double Ft = Math.exp(-dphi_2 / 10.0);
-        double Fz = deriv * Ft;
+        double dphi2 = dphi * dphi;
+        double deriv = 1.0 - dphi2 / 5.0;
+        double fT = Math.exp(-dphi2 / 10.0);
+        double fZ = deriv * fT;
 
-        return Fz;
+        return fZ;
     }
 
     //
@@ -1786,11 +1776,11 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         if (Math.abs(dphi) < EnvelopeTrackerBase.SMALL_ARG) {
 
             // Numerically unstable about dphi=0, compute expansion about dphi=0 
-            double x_2 = dphi * dphi;
-            double x_4 = x_2 * x_2;
-            double x_6 = x_2 * x_4;
+            double x2 = dphi * dphi;
+            double x4 = x2 * x2;
+            double x6 = x2 * x4;
 
-            return 1.0 - x_2 / 8.0 + x_4 / 192.0 - x_6 / 9216.0;
+            return 1.0 - x2 / 8.0 + x4 / 192.0 - x6 / 9216.0;
 
         }
 
@@ -1851,21 +1841,21 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         if (Math.abs(dphi) < EnvelopeTrackerBase.SMALL_ARG) {
 
             // Numerically unstable about dphi=0, compute expansion about dphi=0 
-            double x_2 = dphi * dphi;
-            double x_4 = x_2 * x_2;
-            double x_6 = x_2 * x_4;
+            double x2 = dphi * dphi;
+            double x4 = x2 * x2;
+            double x6 = x2 * x4;
 
-            return 1.0 - x_2 / 4.0 + 5.0 * x_4 / 384.0 - 7.0 * x_6 / 23040.0;
+            return 1.0 - x2 / 4.0 + 5.0 * x4 / 384.0 - 7.0 * x6 / 23040.0;
 
         }
 
         // Numerically stable, compute exact expression
-        double dphi_2 = dphi * dphi;
-        double J2 = BesselFunction.Jn(2, dphi);
-        double J3 = BesselFunction.Jn(3, dphi);
-        double Fz = 8.0 * (J2 / dphi_2 - J3 / dphi);
+        double dphi2 = dphi * dphi;
+        double j2 = BesselFunction.Jn(2, dphi);
+        double j3 = BesselFunction.Jn(3, dphi);
+        double fZ = 8.0 * (j2 / dphi2 - j3 / dphi);
 
-        return Fz;
+        return fZ;
     }
 
     /**
@@ -1907,10 +1897,10 @@ public abstract class EnvelopeTrackerBase extends Tracker {
     protected double fourierTrans1dGaussian(double dphi) {
 
         // Numerically stable, compute exact expression
-        double dphi_2 = dphi * dphi;
-        double Ft = Math.exp(-dphi_2 / 8.0);
+        double dphi2 = dphi * dphi;
+        double fT = Math.exp(-dphi2 / 8.0);
 
-        return Ft;
+        return fT;
     }
 
     /**
@@ -1952,12 +1942,12 @@ public abstract class EnvelopeTrackerBase extends Tracker {
     protected double fourierLong1dGaussian(double dphi) {
 
         // Numerically stable, compute exact expression
-        double dphi_2 = dphi * dphi;
-        double deriv = 1.0 - dphi_2 / 4.0;
-        double Ft = Math.exp(-dphi_2 / 8.0);
-        double Fz = deriv * Ft;
+        double dphi2 = dphi * dphi;
+        double deriv = 1.0 - dphi2 / 4.0;
+        double fT = Math.exp(-dphi2 / 8.0);
+        double fZ = deriv * fT;
 
-        return Fz;
+        return fZ;
     }
 
     /**
@@ -2056,8 +2046,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         double k = (2.0 * Math.PI) / (beta * lambda);
 
         // Compute the longitudinal phase spread 
-        double z_2 = 5.0 * probe.getCovariance().getElem(IND.Z, IND.Z);
-        double dphi = k * Math.sqrt(z_2);
+        double z2 = 5.0 * probe.getCovariance().getElem(IND.Z, IND.Z);
+        double dphi = k * Math.sqrt(z2);
 
         return dphi;
     }
@@ -2113,12 +2103,12 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         double dblPhaseSpreadCalc = 0.0;
 
         //sako
-        double Er = probe.getSpeciesRestEnergy();
-        double Wi = probe.getKineticEnergy();
-        double Wbar = Wi + gap.energyGain(probe) / 2.0;
+        double eR = probe.getSpeciesRestEnergy();
+        double wI = probe.getKineticEnergy();
+        double wBar = wI + gap.energyGain(probe) / 2.0;
 
         //def
-        TraceXalUnitConverter t3dxal = TraceXalUnitConverter.newConverter(gap.getFrequency(), Er, Wi);
+        TraceXalUnitConverter t3dxal = TraceXalUnitConverter.newConverter(gap.getFrequency(), eR, wI);
 
         Twiss[] twiss = probe.getCovariance().computeTwiss();
         Twiss t3dtwissz = t3dxal.xalToTraceLongitudinal(twiss[2]);
@@ -2134,7 +2124,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         boolean phaseSpreadT3d = false;
         if (phaseSpreadT3d) {
 
-            double gbar = Wbar / Er + 1.0;
+            double gbar = wBar / eR + 1.0;
             double bbar = Math.sqrt(1.0 - 1.0 / (gbar * gbar));
             double clight = IProbe.LIGHT_SPEED;
             double freq = gap.getFrequency();
@@ -2196,8 +2186,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         }
         double sinphi = Math.sin(phi);
         double cosphi = Math.cos(phi);
-        double G1 = 0.5 * (1 + (sinphi * sinphi - cosphi * cosphi) * f2t);
-        double Q = probe.getSpeciesCharge();
+        double g1 = 0.5 * (1 + (sinphi * sinphi - cosphi * cosphi) * f2t);
+        double q = probe.getSpeciesCharge();
         //harmic number
         double h = 1;
         double m = probe.getSpeciesRestEnergy();
@@ -2214,12 +2204,12 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         double lambda = clight / freq;
 
         //Kx'
-        double cay = h * Math.abs(Q) * Math.PI * gap.getETL() / (m * betagammaa * betagammaa * betagammaf * lambda);
+        double cay = h * Math.abs(q) * Math.PI * gap.getETL() / (m * betagammaa * betagammaa * betagammaf * lambda);
         double f1 = 1 - dphi * dphi / 14;
         if (dphi > 0.1) {
             f1 = 15 / dphi / dphi * (3 / dphi / dphi * (Math.sin(dphi) / dphi - Math.cos(dphi)) - Math.sin(dphi) / dphi);
         }
-        dfacT = cay * cay * (G1 - sinphi * sinphi * f1 * f1);
+        dfacT = cay * cay * (g1 - sinphi * sinphi * f1 * f1);
 
         //longitudinal
         double f2l = 1 - tdp * tdp / 14;
@@ -2276,8 +2266,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         }
         double sinphi = Math.sin(phi);
         double cosphi = Math.cos(phi);
-        double G1 = 0.5 * (1 + (sinphi * sinphi - cosphi * cosphi) * f2);
-        double Q = probe.getSpeciesCharge();
+        double g1 = 0.5 * (1 + (sinphi * sinphi - cosphi * cosphi) * f2);
+        double q = probe.getSpeciesCharge();
         //harmic number
         double h = 1;
         double m = probe.getSpeciesRestEnergy();
@@ -2294,9 +2284,9 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         double lambda = clight / freq;
 
         //Kx'
-        double cay = Math.abs(Q) * h * Math.PI * gap.getETL() / (m * betagammaa * betagammaa * betagammaf * lambda);
+        double cay = Math.abs(q) * h * Math.PI * gap.getETL() / (m * betagammaa * betagammaa * betagammaf * lambda);
 
-        dfac = cay * cay * (G1 - sinphi * sinphi * f1 * f1);
+        dfac = cay * cay * (g1 - sinphi * sinphi * f1 * f1);
 
         return dfac;
     }
@@ -2338,7 +2328,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         double sinphi = Math.sin(phi);
         double cosphi = Math.cos(phi);
 
-        double Q = probe.getSpeciesCharge();
+        double q = probe.getSpeciesCharge();
         //harmic number
         double h = 1;
         double m = probe.getSpeciesRestEnergy();
@@ -2355,7 +2345,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         double betagammaf = Math.sqrt(wf / m * (2 + wf / m));
 
         //21 jul 06
-        double cay = h * Math.PI * gap.getETL() * Math.abs(Q) / (m * betagammaa * betagammaa * betagammaf * lambda);
+        double cay = h * Math.PI * gap.getETL() * Math.abs(q) / (m * betagammaa * betagammaa * betagammaf * lambda);
 
         double cayz = 2 * cay * gammaa * gammaa;
         double cayp = cayz * cayz * dphi * dphi;

@@ -292,8 +292,8 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
         if (ifcElem instanceof IdealRfGap) {
             IdealRfGap elemRfGap = (IdealRfGap) ifcElem;
             double dW = elemRfGap.energyGain(probe, dblLen);
-            double W = probe.getKineticEnergy();
-            probe.setKineticEnergy(W - dW);
+            double w = probe.getKineticEnergy();
+            probe.setKineticEnergy(w - dW);
             PhaseMatrix matPhiI = elemRfGap.transferMap(probe, dblLen).getFirstOrder();
 
             if (this.getEmittanceGrowth()) {
@@ -302,7 +302,7 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
                 matPhiI = super.modTransferMatrixForEmitGrowth(dphi, matPhiI);
             }
             matPhi = matPhiI.inverse();
-            probe.setKineticEnergy(W);
+            probe.setKineticEnergy(w);
 
             return matPhi;
         }
@@ -535,47 +535,47 @@ public class EnvelopeBacktracker extends EnvelopeTrackerBase {
         // Get the synchronous phase and compute the phase spread 
         IdealRfGap elemRfGap = (IdealRfGap) iElem;
 
-        double W = probe.getKineticEnergy();
+        double w = probe.getKineticEnergy();
         double dW = elemRfGap.energyGain(probe);
-        probe.setKineticEnergy(W - dW);
+        probe.setKineticEnergy(w - dW);
 
-        double phi_s = elemRfGap.getPhase();
+        double phiS = elemRfGap.getPhase();
         double dphi = this.effPhaseSpread(probe, elemRfGap);
 
         // Compute the divergence angle increment coefficients 
         //  (emittance growth coefficients)
         // transverse divergence angle augmentation factor
-        double dxp_2;
+        double dxp2;
         // longitudinal divergence angle augmentation factor
-        double dzp_2;
+        double dzp2;
 
-        double Gt = this.compEmitGrowthFunction(PhasePlane.TRANSVERSE, phi_s, dphi);
+        double gT = this.compEmitGrowthFunction(PhasePlane.TRANSVERSE, phiS, dphi);
         double kt = elemRfGap.compTransFocusing(probe);
-        dxp_2 = kt * kt * Gt;
+        dxp2 = kt * kt * gT;
 
-        double Gz = this.compEmitGrowthFunction(PhasePlane.LONGITUDINAL, phi_s, dphi);
+        double gZ = this.compEmitGrowthFunction(PhasePlane.LONGITUDINAL, phiS, dphi);
         double kz = elemRfGap.compLongFocusing(probe);
-        dzp_2 = kz * kz * Gz;
+        dzp2 = kz * kz * gZ;
 
-        probe.setKineticEnergy(W);
+        probe.setKineticEnergy(w);
 
         // Compute new correlation matrix
         //      Transverse planes
-        double x_2 = matTau.getElem(0, 0);
-        double xp_2 = matTau.getElem(1, 1);
-        double xp_2eg = xp_2 - dxp_2 * x_2;
-        matTau.setElem(1, 1, xp_2eg);
+        double x2 = matTau.getElem(0, 0);
+        double xp2 = matTau.getElem(1, 1);
+        double xp2eg = xp2 - dxp2 * x2;
+        matTau.setElem(1, 1, xp2eg);
 
-        double y_2 = matTau.getElem(2, 2);
-        double yp_2 = matTau.getElem(3, 3);
-        double yp_2eg = yp_2 - dxp_2 * y_2;
-        matTau.setElem(3, 3, yp_2eg);
+        double y2 = matTau.getElem(2, 2);
+        double yp2 = matTau.getElem(3, 3);
+        double yp2eg = yp2 - dxp2 * y2;
+        matTau.setElem(3, 3, yp2eg);
 
         //      Longitudinal plane
-        double z_2 = matTau.getElem(4, 4);
-        double zp_2 = matTau.getElem(5, 5);
-        double zp_2eg = zp_2 - dzp_2 * z_2;
-        matTau.setElem(5, 5, zp_2eg);
+        double z2 = matTau.getElem(4, 4);
+        double zp2 = matTau.getElem(5, 5);
+        double zp2eg = zp2 - dzp2 * z2;
+        matTau.setElem(5, 5, zp2eg);
 
         return matTau;
     }

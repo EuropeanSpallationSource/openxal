@@ -482,42 +482,42 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         // Get the synchronous phase and compute the phase spread 
         IdealRfGap elemRfGap = (IdealRfGap) iElem;
 
-        double phi_s = elemRfGap.getPhase();
+        double phiS = elemRfGap.getPhase();
         double dphi = this.effPhaseSpread(probe, elemRfGap);
 
         // Compute the divergence angle increment coefficients 
         //  (emittance growth coefficients)
         // transverse divergence angle augmentation factor
-        double dxp_2;
+        double dxp2;
         // longitudinal divergence angle augmentation factor
-        double dzp_2;
+        double dzp2;
 
-        double Gt = this.compEmitGrowthFunction(PhasePlane.TRANSVERSE, phi_s, dphi);
+        double qT = this.compEmitGrowthFunction(PhasePlane.TRANSVERSE, phiS, dphi);
         double kt = elemRfGap.compTransFocusing(probe);
-        dxp_2 = kt * kt * Gt;
+        dxp2 = kt * kt * qT;
 
-        double Gz = this.compEmitGrowthFunction(PhasePlane.LONGITUDINAL, phi_s, dphi);
+        double Gz = this.compEmitGrowthFunction(PhasePlane.LONGITUDINAL, phiS, dphi);
         double kz = elemRfGap.compLongFocusing(probe);
 
-        dzp_2 = kz * kz * Gz;
+        dzp2 = kz * kz * Gz;
 
         // Compute new correlation matrix
         //      Transverse planes
-        double x_2 = matTau.getElem(0, 0);
-        double xp_2 = matTau.getElem(1, 1);
-        double xp_2eg = dxp_2 * x_2 + xp_2;
-        matTau.setElem(1, 1, xp_2eg);
+        double x2 = matTau.getElem(0, 0);
+        double xp2 = matTau.getElem(1, 1);
+        double xp2eg = dxp2 * x2 + xp2;
+        matTau.setElem(1, 1, xp2eg);
 
-        double y_2 = matTau.getElem(2, 2);
-        double yp_2 = matTau.getElem(3, 3);
-        double yp_2eg = dxp_2 * y_2 + yp_2;
-        matTau.setElem(3, 3, yp_2eg);
+        double y2 = matTau.getElem(2, 2);
+        double yp2 = matTau.getElem(3, 3);
+        double yp2eg = dxp2 * y2 + yp2;
+        matTau.setElem(3, 3, yp2eg);
 
         //      Longitudinal plane
-        double z_2 = matTau.getElem(4, 4);
-        double zp_2 = matTau.getElem(5, 5);
-        double zp_2eg = dzp_2 * z_2 + zp_2;
-        matTau.setElem(5, 5, zp_2eg);
+        double z2 = matTau.getElem(4, 4);
+        double zp2 = matTau.getElem(5, 5);
+        double zp2eg = dzp2 * z2 + zp2;
+        matTau.setElem(5, 5, zp2eg);
 
         return matTau;
     }

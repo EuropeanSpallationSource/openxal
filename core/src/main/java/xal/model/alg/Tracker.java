@@ -872,7 +872,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
         double s0 = probe.getPosition();
         double t0 = probe.getTime();
         double phi0 = probe.getLongitinalPhase();
-        double W0 = probe.getKineticEnergy();
+        double w0 = probe.getKineticEnergy();
 
         // Properties of the element
         double dL = dblLen;
@@ -884,12 +884,12 @@ public abstract class Tracker implements IAlgorithm, IArchive {
         double s1 = s0 + dL;
         double t1 = t0 + dT;
         double phi1 = phi0 + dphi;
-        double W1 = W0 + dW;
+        double w1 = w0 + dW;
 
         probe.setPosition(s1);
         probe.setTime(t1);
         probe.setLongitudinalPhase(phi1);
-        probe.setKineticEnergy(W1);
+        probe.setKineticEnergy(w1);
 
         // The algorithm "element position" is also set in Element#propagate() ??!!
         this.setElemPosition(this.getElemPosition() + dL);
@@ -943,7 +943,7 @@ public abstract class Tracker implements IAlgorithm, IArchive {
         // time in sequence
         double t0 = probe.getTime();
         // total kinetic energy
-        double W0 = probe.getKineticEnergy();
+        double w0 = probe.getKineticEnergy();
 
         // Properties of the element
         // change in position
@@ -957,12 +957,12 @@ public abstract class Tracker implements IAlgorithm, IArchive {
         double h1 = h0 - dh;
         double s1 = s0 - dh;
         double t1 = t0 - dt;
-        double W1 = W0 - dW;
+        double w1 = w0 - dW;
 
         this.setElemPosition(h1);
         probe.setPosition(s1);
         probe.setTime(t1);
-        probe.setKineticEnergy(W1);
+        probe.setKineticEnergy(w1);
 
         // Update probe trajectory
         if (this.getProbeUpdatePolicy() == Tracker.UPDATE_ALWAYS) {

@@ -24,7 +24,6 @@ import xal.model.probe.traj.EnvelopeProbeState;
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
-import xal.tools.beam.Twiss;
 import xal.tools.data.DataAdaptor;
 import xal.tools.data.DataFormatException;
 import xal.tools.data.DataTable;
@@ -560,7 +559,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
         // the current step size
         double h = this.getStepSize();
         // length of the element
-        double L = elem.getLength();
+        double l = elem.getLength();
         // initial state of the probe 
         EnvelopeProbeState stateRef = probe.createProbeState();
 
@@ -576,17 +575,17 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
             // jdg - if no charge take giant step
             if (charge == 0.) {
                 // no space charge - take giant steps
-                h = L - s;
+                h = l - s;
             }
             // check if we would step outside the element - if so shorten step 
-            if (h + s > L) {
-                h = L - s;
+            if (h + s > l) {
+                h = l - s;
             }
 
             if (getDebugMode()) {
                 LOGGER.log(Level.INFO, "charge = {0}", charge);
                 LOGGER.log(Level.INFO, "EnvTrackerAdapt, elem, probe.getBeamCharge() = {0} {1}", new Object[]{elem.getId(), probe.bunchCharge()});
-                LOGGER.log(Level.INFO, "going to stepProbeState, h, s, L = {0} {1} {2}", new Object[]{h, s, L});
+                LOGGER.log(Level.INFO, "going to stepProbeState, h, s, L = {0} {1} {2}", new Object[]{h, s, l});
             }
 
             // Step the probe according to the algorithm, then compute new step size
@@ -622,7 +621,7 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
             }
 
             // do while we are still in the element
-        } while (s < L);
+        } while (s < l);
 
         // save the last step size as an initial guess for the next time
         this.setStepSize(h);
@@ -776,16 +775,16 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
         CovarianceMatrix chi0 = probe.getCovariance();
 
         // Get properties of the element
-        double L = dblLen;
+        double l = dblLen;
         //first calculate transfer matrix (mapE, PhiE=Phi)
-        PhaseMap mapE = ifcElem.transferMap(probe, L);
-        PhaseMatrix PhiE = mapE.getFirstOrder();
+        PhaseMap mapE = ifcElem.transferMap(probe, l);
+        PhaseMatrix phiE = mapE.getFirstOrder();
 
         //transfermap
-        PhaseMatrix Phi = PhiE;
+        PhaseMatrix phi = phiE;
 
-        PhaseMatrix res1 = Phi.times(res0);
-        PhaseMatrix chi1 = chi0.conjugateTrans(Phi);
+        PhaseMatrix res1 = phi.times(res0);
+        PhaseMatrix chi1 = chi0.conjugateTrans(phi);
 
         if (ifcElem instanceof IdealRfGap) {
             IdealRfGap gap = (IdealRfGap) ifcElem;

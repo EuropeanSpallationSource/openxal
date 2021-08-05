@@ -298,20 +298,20 @@ public class Trace3dTracker extends Tracker {
 
         // Get initial conditions of probe
         double gamma = probe.getGamma();
-        double K = probe.beamPerveance();
+        double k = probe.beamPerveance();
         CovarianceMatrix chi0 = probe.getCovariance();
 
         // Get properties of the element
-        double L = dblLen;
-        PhaseMap mapE = ifcElem.transferMap(ifcProbe, L);
-        PhaseMatrix PhiE = mapE.getFirstOrder();
+        double l = dblLen;
+        PhaseMap mapE = ifcElem.transferMap(ifcProbe, l);
+        PhaseMatrix phiE = mapE.getFirstOrder();
 
         // Get the space charge kick
-        PhaseMatrix PhiSC = this.spaceChargeMatrix(K, L, gamma, chi0);
+        PhaseMatrix phiSC = this.spaceChargeMatrix(k, l, gamma, chi0);
 
         // Advance the probe through the element
-        PhaseMatrix Phi = PhiE.times(PhiSC);
-        PhaseMatrix chi1 = chi0.conjugateTrans(Phi);
+        PhaseMatrix phi = phiE.times(phiSC);
+        PhaseMatrix chi1 = chi0.conjugateTrans(phi);
 
         // Save the new state variables in the probe
         probe.setCovariance(new CovarianceMatrix(chi1));

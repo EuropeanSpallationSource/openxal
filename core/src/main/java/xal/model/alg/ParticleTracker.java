@@ -177,10 +177,10 @@ public class ParticleTracker extends Tracker {
 
         // Advance response matrix
         PhaseMatrix matPhi = mapPhi.getFirstOrder();
-        PhaseMatrix R0 = probe.getResponseMatrix();
-        PhaseMatrix R1 = matPhi.times(R0);
+        PhaseMatrix r0 = probe.getResponseMatrix();
+        PhaseMatrix r1 = matPhi.times(r0);
 
-        probe.setResponseMatrix(R1);
+        probe.setResponseMatrix(r1);
     }
 
 }
