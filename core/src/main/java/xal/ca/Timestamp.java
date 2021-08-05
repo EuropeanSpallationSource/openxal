@@ -25,7 +25,7 @@ public class Timestamp implements Comparable<Timestamp> {
     /**
      * date formatter
      */
-    static final SimpleDateFormat TIME_FORMATTER;
+    static final SimpleDateFormat timeFormatter;
 
     /**
      * format an integer to have nine digits including leading zeros as
@@ -45,7 +45,7 @@ public class Timestamp implements Comparable<Timestamp> {
 
     // static initializer
     static {
-        TIME_FORMATTER = new SimpleDateFormat("MMM d, yyyy HH:mm:ss");
+        timeFormatter = new SimpleDateFormat("MMM d, yyyy HH:mm:ss");
         NANOSECOND_FORMATTER = new DecimalFormat("000000000");
     }
 
@@ -149,7 +149,7 @@ public class Timestamp implements Comparable<Timestamp> {
      */
     @Override
     public String toString() {
-        return toString(TIME_FORMATTER);
+        return toString(timeFormatter);
     }
 
     /**

@@ -245,23 +245,21 @@ public class MonitorController {
                  * Handle the monitor event by caching the latest channel
                  * record.
                  *
-                 * @param record the monitor's posted data for the channel
+                 * @param channelRecord the monitor's posted data for the channel
                  * @param channel the channel whose monitor has fired
                  */
                 @Override
-                public void eventValue(final ChannelTimeRecord record, final Channel channel) {
+                public void eventValue(final ChannelTimeRecord channelRecord, final Channel channel) {
                     synchronized (eventLock) {
                         // update the latest record
-                        lastRecord = record;
+                        lastRecord = channelRecord;
                         if (eventProxy != null) {
                             //  notify listeners about the new data
-                            eventProxy.valueChanged(channel, record);
+                            eventProxy.valueChanged(channel, channelRecord);
                         }
                     }
                 }
             }, monitorMask);
-        } catch (ConnectionException exception) {
-            LOGGER.log(Level.SEVERE, "Connection exception.", exception);
         } catch (MonitorException exception) {
             LOGGER.log(Level.SEVERE, "Monitor exception.", exception);
         }

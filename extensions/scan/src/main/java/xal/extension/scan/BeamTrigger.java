@@ -25,7 +25,7 @@ public class BeamTrigger {
 
     public BeamTrigger() {
 
-        tDelayText.setHorizontalAlignment(JTextField.CENTER);
+        tDelayText.setHorizontalAlignment(SwingConstants.CENTER);
         tDelayText.setNormalBackground(Color.white);
         tDelayText.setNumberFormat(tDelayFormat);
         tDelayText.setValue(0.2);
@@ -37,17 +37,7 @@ public class BeamTrigger {
             ch = tmCenter.findChannel(TimingCenter.TRIGGER_HANDLE);
             if (ch != null) {
                 useTriggerButton.setSelected(true);
-
-                useTriggerButton.addItemListener(new ItemListener() {
-                    @Override
-                    public void itemStateChanged(ItemEvent e) {
-                        if (e.getStateChange() == ItemEvent.SELECTED) {
-                            setOnOff(true);
-                        } else {
-                            setOnOff(false);
-                        }
-                    }
-                });
+                useTriggerButton.addItemListener(e -> setOnOff(e.getStateChange() == ItemEvent.SELECTED));
             } else {
                 useTriggerButton.setSelected(false);
                 useTriggerButton.setEnabled(false);
@@ -85,7 +75,7 @@ public class BeamTrigger {
         if (useTriggerButton.isSelected() && ch != null) {
             try {
                 ch.putVal(1.0);
-            } catch (ConnectionException | PutException e) {
+            } catch (PutException e) {
                 setOnOff(false);
                 return;
             }

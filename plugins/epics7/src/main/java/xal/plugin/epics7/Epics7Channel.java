@@ -242,10 +242,10 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     // --------- Get properties ---------
     @Override
-    public Class<?> elementType() throws ConnectionException {
+    public Class<?> elementType() {
         try {
-            ChannelRecord record = getRawValueRecord();
-            return record.getType();
+            ChannelRecord channelRecord = getRawValueRecord();
+            return channelRecord.getType();
         } catch (GetException ex) {
             Logger.getLogger(Epics7Channel.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -256,8 +256,8 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     @Override
     public int elementCount() throws ConnectionException {
         try {
-            ChannelRecord record = getRawValueRecord();
-            return record.getCount();
+            ChannelRecord channelRecord = getRawValueRecord();
+            return channelRecord.getCount();
         } catch (GetException ex) {
             Logger.getLogger(Epics7Channel.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -277,7 +277,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         return true;
     }
 
-    protected PVStructure getControl() throws ConnectionException, GetException {
+    protected PVStructure getControl() throws GetException {
         PVStructure pvStructure = get(CONTROL_FIELD);
         if (pvStructure != null) {
             return pvStructure.getStructureField(CONTROL_FIELD);
@@ -286,7 +286,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         }
     }
 
-    protected PVStructure getDisplay() throws ConnectionException, GetException {
+    protected PVStructure getDisplay() throws GetException {
         PVStructure pvStructure = get(DISPLAY_FIELD);
         if (pvStructure != null) {
             return pvStructure.getStructureField(DISPLAY_FIELD);
@@ -295,7 +295,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         }
     }
 
-    protected PVStructure getVAlueAlarm() throws ConnectionException, GetException {
+    protected PVStructure getVAlueAlarm() throws GetException {
         PVStructure pvStructure = get(VALUE_ALARM_FIELD);
         if (pvStructure != null) {
             return pvStructure.getStructureField(VALUE_ALARM_FIELD);
@@ -305,7 +305,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public String getUnits() throws ConnectionException, GetException {
+    public String getUnits() throws GetException {
         PVStructure displayStructure = getDisplay();
         if (displayStructure != null) {
             return displayStructure.getStringField("units").get();
@@ -315,7 +315,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public Number rawUpperDisplayLimit() throws ConnectionException, GetException {
+    public Number rawUpperDisplayLimit() throws GetException {
         PVStructure displayStructure = getDisplay();
         if (displayStructure != null) {
             return displayStructure.getDoubleField("limitHigh").get();
@@ -325,7 +325,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public Number rawLowerDisplayLimit() throws ConnectionException, GetException {
+    public Number rawLowerDisplayLimit() throws GetException {
         PVStructure displayStructure = getDisplay();
         if (displayStructure != null) {
             return displayStructure.getDoubleField("limitLow").get();
@@ -335,7 +335,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public Number rawUpperAlarmLimit() throws ConnectionException, GetException {
+    public Number rawUpperAlarmLimit() throws GetException {
         PVStructure alarmValueStructure = getVAlueAlarm();
         if (alarmValueStructure != null) {
             return alarmValueStructure.getDoubleField("highAlarmLimit").get();
@@ -345,7 +345,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public Number rawLowerAlarmLimit() throws ConnectionException, GetException {
+    public Number rawLowerAlarmLimit() throws GetException {
         PVStructure alarmValueStructure = getVAlueAlarm();
         if (alarmValueStructure != null) {
             return alarmValueStructure.getDoubleField("lowAlarmLimit").get();
@@ -355,7 +355,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public Number rawUpperWarningLimit() throws ConnectionException, GetException {
+    public Number rawUpperWarningLimit() throws GetException {
         PVStructure alarmValueStructure = getVAlueAlarm();
         if (alarmValueStructure != null) {
             return alarmValueStructure.getDoubleField("highWarningLimit").get();
@@ -365,7 +365,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public Number rawLowerWarningLimit() throws ConnectionException, GetException {
+    public Number rawLowerWarningLimit() throws GetException {
         PVStructure alarmValueStructure = getVAlueAlarm();
         if (alarmValueStructure != null) {
             return alarmValueStructure.getDoubleField("lowWarningLimit").get();
@@ -375,7 +375,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public Number rawUpperControlLimit() throws ConnectionException, GetException {
+    public Number rawUpperControlLimit() throws GetException {
         PVStructure controlStructure = getControl();
         if (controlStructure != null) {
             return controlStructure.getDoubleField("limitHigh").get();
@@ -385,7 +385,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public Number rawLowerControlLimit() throws ConnectionException, GetException {
+    public Number rawLowerControlLimit() throws GetException {
         PVStructure controlStructure = getControl();
         if (controlStructure != null) {
             return controlStructure.getDoubleField("limitLow").get();
@@ -395,7 +395,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     // --------- Get ---------
-    public PVStructure get(String request, boolean attemptConnection) throws ConnectionException, GetException {
+    public PVStructure get(String request, boolean attemptConnection) throws GetException {
         GetListener listener = new GetListener();
 
         getCallback(request, listener, attemptConnection);
@@ -413,12 +413,17 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         return listener.getPvStructure();
     }
 
-    public PVStructure get(String request) throws ConnectionException, GetException {
+    public PVStructure get(String request) throws GetException {
         return get(request, true);
     }
 
-    public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException {
-        checkConnection("ChannelGet", attemptConnection);
+    public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws GetException {
+        try {
+            checkConnection("ChannelGet", attemptConnection);
+        } catch (ConnectionException ex) {
+            Logger.getLogger(Epics7Channel.class.getName()).log(Level.SEVERE, null, ex);
+            throw new GetException("Connection Exception thrown.");
+        }
 
         ChannelGetRequesterImpl channelGetRequester = new ChannelGetRequesterImpl(listener);
 
@@ -429,101 +434,117 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         }
     }
 
-    public void getCallback(String request, EventListener listener) throws ConnectionException {
+    public void getCallback(String request, EventListener listener) throws GetException {
         getCallback(request, listener, true);
     }
 
     @Override
-    public ChannelRecord getRawValueRecord() throws ConnectionException, GetException {
+    public ChannelRecord getRawValueRecord() throws GetException {
         return new Epics7ChannelRecord(get(VALUE_REQUEST));
     }
 
     @Override
-    protected void getRawValueCallback(IEventSinkValue listener) throws ConnectionException, GetException {
+    protected void getRawValueCallback(IEventSinkValue listener) throws GetException {
         getCallback(VALUE_REQUEST,
                 pvStructure -> {
-                    ChannelRecord record = new Epics7ChannelRecord(pvStructure);
-                    listener.eventValue(record, this);
+                    ChannelRecord channelRecord = new Epics7ChannelRecord(pvStructure);
+                    listener.eventValue(channelRecord, this);
                 });
     }
 
     @Override
-    protected void getRawValueCallback(IEventSinkValue listener, boolean attemptConnection) throws ConnectionException, GetException {
+    protected void getRawValueCallback(IEventSinkValue listener, boolean attemptConnection) throws GetException {
         getCallback(VALUE_REQUEST,
                 pvStructure -> {
-                    ChannelRecord record = new Epics7ChannelRecord(pvStructure);
-                    listener.eventValue(record, this);
+                    ChannelRecord channelRecord = new Epics7ChannelRecord(pvStructure);
+                    listener.eventValue(channelRecord, this);
                 }, attemptConnection);
     }
 
     @Override
-    protected ChannelRecord getRawStringValueRecord() throws ConnectionException, GetException {
+    protected ChannelRecord getRawStringValueRecord() throws GetException {
         return getRawValueRecord();
     }
 
     @Override
-    public ChannelStatusRecord getRawStatusRecord() throws ConnectionException, GetException {
+    public ChannelStatusRecord getRawStatusRecord() throws GetException {
         return new Epics7ChannelStatusRecord(get(STATUS_REQUEST));
     }
 
     @Override
-    protected ChannelStatusRecord getRawStringStatusRecord() throws ConnectionException, GetException {
+    protected ChannelStatusRecord getRawStringStatusRecord() throws GetException {
         return getRawStatusRecord();
     }
 
     @Override
-    public ChannelTimeRecord getRawTimeRecord() throws ConnectionException, GetException {
+    public ChannelTimeRecord getRawTimeRecord() throws GetException {
         return new Epics7ChannelTimeRecord(get(TIME_REQUEST));
     }
 
     @Override
-    protected ChannelTimeRecord getRawStringTimeRecord() throws ConnectionException, GetException {
+    protected ChannelTimeRecord getRawStringTimeRecord() throws GetException {
         return getRawTimeRecord();
     }
 
     @Override
-    public void getRawValueTimeCallback(IEventSinkValTime listener, boolean attemptConnection) throws ConnectionException, GetException {
+    public void getRawValueTimeCallback(IEventSinkValTime listener, boolean attemptConnection) throws GetException {
         getCallback(TIME_REQUEST,
                 pvStructure -> {
-                    ChannelTimeRecord record = new Epics7ChannelTimeRecord(pvStructure);
-                    listener.eventValue(record, this);
+                    ChannelTimeRecord channelRecord = new Epics7ChannelTimeRecord(pvStructure);
+                    listener.eventValue(channelRecord, this);
                 });
     }
 
     // --------- Monitor ---------
     @Override
-    public xal.ca.Monitor addMonitorValTime(IEventSinkValTime listener, int intMaskFire) throws ConnectionException, MonitorException {
-        checkConnection("addMonitorValTime");
+    public xal.ca.Monitor addMonitorValTime(IEventSinkValTime listener, int intMaskFire) throws MonitorException {
+        try {
+            checkConnection("addMonitorValTime");
+        } catch (ConnectionException ex) {
+            throw new MonitorException("Connection Exception thrown");
+        }
 
         return Epics7Monitor.createNewMonitor(this, TIME_REQUEST, pvStructure -> {
-            ChannelTimeRecord record = new Epics7ChannelTimeRecord(pvStructure);
-            listener.eventValue(record, this);
+            ChannelTimeRecord channelRecord = new Epics7ChannelTimeRecord(pvStructure);
+            listener.eventValue(channelRecord, this);
         }, intMaskFire);
     }
 
     @Override
-    public xal.ca.Monitor addMonitorValStatus(IEventSinkValStatus listener, int intMaskFire) throws ConnectionException, MonitorException {
-        checkConnection("addMonitorValStatus");
+    public xal.ca.Monitor addMonitorValStatus(IEventSinkValStatus listener, int intMaskFire) throws MonitorException {
+        try {
+            checkConnection("addMonitorValStatus");
+        } catch (ConnectionException ex) {
+            throw new MonitorException("Connection Exception thrown");
+        }
 
         return Epics7Monitor.createNewMonitor(this, STATUS_REQUEST, pvStructure -> {
-            ChannelStatusRecord record = new Epics7ChannelStatusRecord(pvStructure);
-            listener.eventValue(record, this);
+            ChannelStatusRecord channelRecord = new Epics7ChannelStatusRecord(pvStructure);
+            listener.eventValue(channelRecord, this);
         }, intMaskFire);
     }
 
     @Override
-    public xal.ca.Monitor addMonitorValue(IEventSinkValue listener, int intMaskFire) throws ConnectionException, MonitorException {
-        checkConnection("addMonitorValue");
+    public xal.ca.Monitor addMonitorValue(IEventSinkValue listener, int intMaskFire) throws MonitorException {
+        try {
+            checkConnection("addMonitorValue");
+        } catch (ConnectionException ex) {
+            throw new MonitorException("Connection Exception thrown");
+        }
 
         return Epics7Monitor.createNewMonitor(this, VALUE_REQUEST, pvStructure -> {
-            ChannelRecord record = new Epics7ChannelRecord(pvStructure);
-            listener.eventValue(record, this);
+            ChannelRecord channelRecord = new Epics7ChannelRecord(pvStructure);
+            listener.eventValue(channelRecord, this);
         }, intMaskFire);
     }
 
     // --------- Put ---------
-    public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
-        checkConnection("putRawValCallback");
+    public void putRawValCallback(PutListener listener, EventListener putListener) throws PutException {
+        try {
+            checkConnection("putRawValCallback");
+        } catch (ConnectionException ex) {
+            throw new PutException("Connection Exception thrown");
+        }
         // If listener == null, wait for putDone event.
         if (listener == null) {
             listener = new PutListenerImpl();
@@ -547,7 +568,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public void putRawValCallback(String newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(String newVal, PutListener listener) throws PutException {
         putRawValCallback(listener, pvStructure -> {
             PVString pvString = pvStructure.getStringField(Epics7Channel.VALUE_REQUEST);
             if (pvString != null) {
@@ -559,7 +580,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public void putRawValCallback(byte newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(byte newVal, PutListener listener) throws PutException {
         putRawValCallback(listener, pvStructure -> {
             PVByte pvByte = pvStructure.getByteField(Epics7Channel.VALUE_REQUEST);
             if (pvByte != null) {
@@ -571,7 +592,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public void putRawValCallback(short newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(short newVal, PutListener listener) throws PutException {
         putRawValCallback(listener, pvStructure -> {
             PVShort pvShort = pvStructure.getShortField(Epics7Channel.VALUE_REQUEST);
             if (pvShort != null) {
@@ -583,7 +604,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public void putRawValCallback(int newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(int newVal, PutListener listener) throws PutException {
         putRawValCallback(listener, pvStructure -> {
             PVInt pvInt = pvStructure.getIntField(Epics7Channel.VALUE_REQUEST);
             if (pvInt != null) {
@@ -595,7 +616,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public void putRawValCallback(long newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(long newVal, PutListener listener) throws PutException {
         putRawValCallback(listener, pvStructure -> {
             PVLong pvLong = pvStructure.getLongField(Epics7Channel.VALUE_REQUEST);
             if (pvLong != null) {
@@ -607,7 +628,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public void putRawValCallback(float newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(float newVal, PutListener listener) throws PutException {
         putRawValCallback(listener, pvStructure -> {
             PVFloat pvFloat = pvStructure.getFloatField(Epics7Channel.VALUE_REQUEST);
             if (pvFloat != null) {
@@ -619,7 +640,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public void putRawValCallback(double newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(double newVal, PutListener listener) throws PutException {
         putRawValCallback(listener, pvStructure -> {
             PVDouble pvDouble = pvStructure.getDoubleField(Epics7Channel.VALUE_REQUEST);
             if (pvDouble != null) {
@@ -631,7 +652,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public void putRawValCallback(String[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(String[] newVal, PutListener listener) throws PutException {
         putRawValCallback(listener, pvStructure -> {
             PVStringArray pvStringArray = pvStructure.getSubField(PVStringArray.class, Epics7Channel.VALUE_REQUEST);
             if (pvStringArray != null) {
@@ -643,7 +664,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public void putRawValCallback(byte[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(byte[] newVal, PutListener listener) throws PutException {
         putRawValCallback(listener, pvStructure -> {
             PVByteArray pvByteArray = pvStructure.getSubField(PVByteArray.class,
                     Epics7Channel.VALUE_REQUEST);
@@ -656,7 +677,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public void putRawValCallback(short[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(short[] newVal, PutListener listener) throws PutException {
         putRawValCallback(listener, pvStructure -> {
             PVShortArray pvShortArray = pvStructure.getSubField(PVShortArray.class,
                     Epics7Channel.VALUE_REQUEST);
@@ -669,7 +690,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public void putRawValCallback(int[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(int[] newVal, PutListener listener) throws PutException {
         putRawValCallback(listener, pvStructure -> {
             PVIntArray pvIntArray = pvStructure.getSubField(PVIntArray.class,
                     Epics7Channel.VALUE_REQUEST);
@@ -682,7 +703,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public void putRawValCallback(long[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(long[] newVal, PutListener listener) throws PutException {
         putRawValCallback(listener, pvStructure -> {
             PVLongArray pvLongArray = pvStructure.getSubField(PVLongArray.class,
                     Epics7Channel.VALUE_REQUEST);
@@ -695,7 +716,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public void putRawValCallback(float[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(float[] newVal, PutListener listener) throws PutException {
         putRawValCallback(listener, pvStructure -> {
             PVFloatArray pvFloatArray = pvStructure.getSubField(PVFloatArray.class,
                     Epics7Channel.VALUE_REQUEST);
@@ -708,7 +729,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     }
 
     @Override
-    public void putRawValCallback(double[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(double[] newVal, PutListener listener) throws PutException {
         putRawValCallback(listener, pvStructure -> {
             PVDoubleArray pvDoubleArray = pvStructure.getSubField(PVDoubleArray.class,
                     Epics7Channel.VALUE_REQUEST);

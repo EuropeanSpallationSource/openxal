@@ -23,12 +23,6 @@ public class ChannelNameDocument extends PlainDocument {
     private static final long serialVersionUID = 0L;
 
     /**
-     * Creates a new instance of ChannelField
-     */
-    public ChannelNameDocument() {
-    }
-
-    /**
      * Override the inherited method to filter out characters that are not
      * alpha-numeric or a colon, dash, underscore or period.
      *

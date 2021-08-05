@@ -119,7 +119,7 @@ public class ChannelWrapper {
                     record = isValid(aRecord) ? aRecord : null;
                 }
             }, Monitor.VALUE);
-        } catch (ConnectionException | MonitorException exception) {
+        } catch (MonitorException exception) {
             LOGGER.log(Level.SEVERE, null, exception);
         }
     }

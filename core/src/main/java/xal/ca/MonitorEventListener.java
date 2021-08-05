@@ -18,9 +18,9 @@ public interface MonitorEventListener {
      * The PV's monitored value has changed.
      *
      * @param channel the channel whose value has changed
-     * @param record The channel time record of the new value
+     * @param channelRecord The channel time record of the new value
      */
-    public void valueChanged(Channel channel, ChannelTimeRecord record);
+    public void valueChanged(Channel channel, ChannelTimeRecord channelRecord);
 
     /**
      * The channel's connection state has changed. Either it has established a

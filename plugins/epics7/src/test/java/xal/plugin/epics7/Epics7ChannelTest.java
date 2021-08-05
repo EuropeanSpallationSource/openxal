@@ -286,7 +286,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public ChannelRecord getRawValueRecord() throws ConnectionException, GetException {
+            public ChannelRecord getRawValueRecord() throws GetException {
                 throw new GetException();
             }
         };
@@ -336,7 +336,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public ChannelRecord getRawValueRecord() throws ConnectionException, GetException {
+            public ChannelRecord getRawValueRecord() throws GetException {
                 throw new GetException();
             }
         };
@@ -627,7 +627,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException {
+            public void getCallback(String request, final EventListener listener, boolean attemptConnection) {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
 
@@ -701,7 +701,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException {
+            public void getCallback(String request, final EventListener listener, boolean attemptConnection) {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
 
@@ -729,7 +729,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException {
+            public void getCallback(String request, final EventListener listener, boolean attemptConnection) {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
 
@@ -759,7 +759,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public ChannelRecord getRawValueRecord() throws ConnectionException, GetException {
+            public ChannelRecord getRawValueRecord() throws GetException {
                 methodCalled = true;
                 return null;
             }
@@ -780,7 +780,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public PVStructure get(String request) throws ConnectionException, GetException {
+            public PVStructure get(String request) throws GetException {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
 
@@ -808,7 +808,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public ChannelStatusRecord getRawStatusRecord() throws ConnectionException, GetException {
+            public ChannelStatusRecord getRawStatusRecord() throws GetException {
                 methodCalled = true;
                 return null;
             }
@@ -829,7 +829,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public PVStructure get(String request) throws ConnectionException, GetException {
+            public PVStructure get(String request) throws GetException {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
 
@@ -856,7 +856,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public PVStructure get(String request) throws ConnectionException, GetException {
+            public PVStructure get(String request) throws GetException {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
 
@@ -884,7 +884,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws ConnectionException {
+            public void getCallback(String request, final EventListener listener, boolean attemptConnection) {
                 Structure structure = StandardFieldFactory.getStandardField().scalar(ScalarType.pvDouble, ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
                         + DISPLAY_FIELD + "," + CONTROL_FIELD);
 
@@ -977,7 +977,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
+            public void putRawValCallback(PutListener listener, EventListener putListener) throws PutException {
                 methodCalled = true;
             }
         };
@@ -997,7 +997,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
+            public void putRawValCallback(PutListener listener, EventListener putListener) throws PutException {
                 methodCalled = true;
             }
         };
@@ -1017,7 +1017,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
+            public void putRawValCallback(PutListener listener, EventListener putListener) throws PutException {
                 methodCalled = true;
             }
         };
@@ -1037,7 +1037,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
+            public void putRawValCallback(PutListener listener, EventListener putListener) throws PutException {
                 methodCalled = true;
             }
         };
@@ -1057,7 +1057,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
+            public void putRawValCallback(PutListener listener, EventListener putListener) throws PutException {
                 methodCalled = true;
             }
         };
@@ -1077,7 +1077,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
+            public void putRawValCallback(PutListener listener, EventListener putListener) throws PutException {
                 methodCalled = true;
             }
         };
@@ -1097,7 +1097,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
+            public void putRawValCallback(PutListener listener, EventListener putListener) throws PutException {
                 methodCalled = true;
             }
         };
@@ -1117,7 +1117,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
+            public void putRawValCallback(PutListener listener, EventListener putListener) throws PutException {
                 methodCalled = true;
             }
         };
@@ -1137,7 +1137,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
+            public void putRawValCallback(PutListener listener, EventListener putListener) throws PutException {
                 methodCalled = true;
             }
         };
@@ -1157,7 +1157,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
+            public void putRawValCallback(PutListener listener, EventListener putListener) throws PutException {
                 methodCalled = true;
             }
         };
@@ -1177,7 +1177,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
+            public void putRawValCallback(PutListener listener, EventListener putListener) throws PutException {
                 methodCalled = true;
             }
         };
@@ -1197,7 +1197,7 @@ public class Epics7ChannelTest {
 
         Epics7Channel instance = new Epics7Channel("Test", null) {
             @Override
-            public void putRawValCallback(PutListener listener, EventListener putListener) throws ConnectionException, PutException {
+            public void putRawValCallback(PutListener listener, EventListener putListener) throws PutException {
                 methodCalled = true;
             }
         };

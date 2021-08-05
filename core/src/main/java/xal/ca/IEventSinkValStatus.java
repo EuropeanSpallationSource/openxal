@@ -11,5 +11,5 @@ package xal.ca;
  */
 public interface IEventSinkValStatus {
 
-    public void eventValue(ChannelStatusRecord record, Channel chan);
+    public void eventValue(ChannelStatusRecord channelRecord, Channel chan);
 }

@@ -98,7 +98,7 @@ public class Epics7ServerMonitorTest {
 
         methodCalled = false;
 
-        instance.monitorConnect(null, MonitorFactory.create(instance.record, instance, CreateRequest.create().createRequest(VALUE_REQUEST)), null);
+        instance.monitorConnect(null, MonitorFactory.create(instance.pvRecord, instance, CreateRequest.create().createRequest(VALUE_REQUEST)), null);
 
         assertEquals(true, methodCalled);
 

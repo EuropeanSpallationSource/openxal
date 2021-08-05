@@ -21,7 +21,6 @@ import java.util.logging.Level;
  */
 public class ChannelAgent extends SourceAgent<ChannelTimeRecord> {
 
-    private String name;
     private Channel channel;
     private Monitor monitor;
     private volatile boolean enabled;
@@ -126,7 +125,7 @@ public class ChannelAgent extends SourceAgent<ChannelTimeRecord> {
     /**
      * Create a monitor to listen for new channel records.
      */
-    synchronized protected void makeMonitor() {
+    protected synchronized void makeMonitor() {
         try {
             if (enabled && channel.isConnected()) {
                 if (monitor == null) {
@@ -134,9 +133,6 @@ public class ChannelAgent extends SourceAgent<ChannelTimeRecord> {
                 }
                 activeFlag = true;
             }
-        } catch (ConnectionException exception) {
-            LOGGER.log(Level.WARNING, "Connection exception caught, turning off active flag", exception);
-            activeFlag = false;
         } catch (MonitorException exception) {
             LOGGER.log(Level.WARNING, "Monitoring exception caught, turning off active flag", exception);
             activeFlag = false;
@@ -185,13 +181,13 @@ public class ChannelAgent extends SourceAgent<ChannelTimeRecord> {
          * agents (not just this one) are notified of the event.
          */
         @Override
-        public synchronized void eventValue(final ChannelTimeRecord record, final Channel channel) {
+        public synchronized void eventValue(final ChannelTimeRecord channelRecord, final Channel channel) {
             if (!activeFlag) {
                 return;
             }
 
-            double timestamp = record.getTimestamp().getSeconds();
-            postEvent(record, timestamp);
+            double timestamp = channelRecord.getTimestamp().getSeconds();
+            postEvent(channelRecord, timestamp);
         }
     }
 
@@ -208,12 +204,12 @@ public class ChannelAgent extends SourceAgent<ChannelTimeRecord> {
         }
 
         @Override
-        public synchronized void eventValue(final ChannelTimeRecord record, final Channel channel) {
+        public synchronized void eventValue(final ChannelTimeRecord channelRecord, final Channel channel) {
             /**
              * Handle only those events accepted by the filter
              */
-            if (filter.accept(record)) {
-                super.eventValue(record, channel);
+            if (filter.accept(channelRecord)) {
+                super.eventValue(channelRecord, channel);
             }
         }
     }

@@ -24,6 +24,7 @@ import org.epics.pvdata.pv.Status;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import xal.ca.ConnectionException;
+import xal.ca.MonitorException;
 import static xal.plugin.epics7.Epics7Channel.VALUE_REQUEST;
 
 /**
@@ -36,7 +37,7 @@ public class Epics7MonitorTest {
 
     private boolean methodCalled = false;
 
-    private Epics7Monitor getEpics7Monitor() throws ConnectionException {
+    private Epics7Monitor getEpics7Monitor() throws MonitorException {
         Epics7Channel channel = new Epics7Channel("Test", Epics7TestChannelSystem.newEpics7ChannelSystem());
         channel.connectAndWait();
 
@@ -107,7 +108,7 @@ public class Epics7MonitorTest {
      * Test of monitorConnect method, of class Epics7Monitor.
      */
     @Test
-    public void testMonitorConnect() throws ConnectionException {
+    public void testMonitorConnect() throws MonitorException {
         LOGGER.log(Level.INFO, "monitorConnect");
         methodCalled = false;
 
@@ -131,7 +132,7 @@ public class Epics7MonitorTest {
      * Test of monitorEvent method, of class Epics7Monitor.
      */
     @Test
-    public void testMonitorEvent() throws ConnectionException {
+    public void testMonitorEvent() throws MonitorException   {
         LOGGER.log(Level.INFO, "monitorEvent");
         methodCalled = false;
 
@@ -166,7 +167,7 @@ public class Epics7MonitorTest {
      * Test of unlisten method, of class Epics7Monitor.
      */
     @Test
-    public void testUnlisten() throws ConnectionException {
+    public void testUnlisten() throws MonitorException   {
         LOGGER.log(Level.INFO, "unlisten");
         methodCalled = false;
 
@@ -189,7 +190,7 @@ public class Epics7MonitorTest {
      * Test of getRequesterName method, of class Epics7Monitor.
      */
     @Test
-    public void testGetRequesterName() throws ConnectionException {
+    public void testGetRequesterName() throws MonitorException  {
         LOGGER.log(Level.INFO, "getRequesterName");
         String expResult = "TestRequester";
 
@@ -207,7 +208,7 @@ public class Epics7MonitorTest {
      * Test of message method, of class Epics7Monitor.
      */
     @Test
-    public void testMessage() throws ConnectionException {
+    public void testMessage() throws MonitorException   {
         LOGGER.log(Level.INFO, "message");
         String message = "message";
 

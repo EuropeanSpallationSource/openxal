@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * ChannelFactory is a factory for generating channels.
@@ -27,10 +25,9 @@ public abstract class ChannelFactory {
     /**
      * default channel factory instance
      */
-    private static volatile ChannelFactory defaultFactory;
+    private static ChannelFactory defaultFactory;
 
     private static final List<ChannelFactory> FACTORY_LIST = new ArrayList<>();
-    private static final Logger LOGGER = Logger.getLogger(ChannelFactory.class.getName());
 
     private boolean test = false;
 
@@ -63,10 +60,10 @@ public abstract class ChannelFactory {
 
     public void destroy() {
         dispose();
-        if (this == defaultFactory) {
-            defaultFactory = null;
-        }
         synchronized (FACTORY_LIST) {
+            if (this == defaultFactory) {
+                ChannelFactory.defaultFactory = null;
+            }
             FACTORY_LIST.remove(this);
         }
     }
@@ -163,8 +160,10 @@ public abstract class ChannelFactory {
      * @return The default channel factory
      */
     public static ChannelFactory defaultFactory() {
-        if (defaultFactory == null) {
-            defaultFactory = newFactory();
+        synchronized (FACTORY_LIST) {
+            if (defaultFactory == null) {
+                defaultFactory = newFactory();
+            }
         }
         return defaultFactory;
     }
@@ -183,8 +182,10 @@ public abstract class ChannelFactory {
      * @return the channel system associated with the default channel factory
      */
     static ChannelSystem defaultSystem() {
-        if (defaultFactory == null) {
-            defaultFactory();
+        synchronized (FACTORY_LIST) {
+            if (defaultFactory == null) {
+                defaultFactory();
+            }
         }
         return defaultFactory.channelSystem();
     }
@@ -205,7 +206,6 @@ public abstract class ChannelFactory {
             }
             return channelFactory;
         } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException exception) {
-            LOGGER.log(Level.SEVERE, null, exception);
             throw new RuntimeException("Failed to load the ChannelFactoryPlugin: " + exception.getMessage());
         }
     }
@@ -226,7 +226,6 @@ public abstract class ChannelFactory {
             }
             return channelFactory;
         } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException exception) {
-            LOGGER.log(Level.SEVERE, null, exception);
             throw new RuntimeException("Failed to load the ChannelFactoryPlugin: " + exception.getMessage());
         }
     }

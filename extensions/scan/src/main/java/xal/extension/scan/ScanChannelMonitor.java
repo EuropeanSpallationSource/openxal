@@ -168,7 +168,7 @@ public class ScanChannelMonitor {
                 try {
                     monitor = channel.addMonitorValTime(eventHandler, Monitor.VALUE);
                     Channel.flushIO();
-                } catch (ConnectionException | MonitorException exception) {
+                } catch (MonitorException exception) {
                     LOGGER.log(Level.SEVERE, "Exception creating monitor for channel: " + channel.getId(), exception);
                 }
             }

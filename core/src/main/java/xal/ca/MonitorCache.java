@@ -49,7 +49,7 @@ public class MonitorCache {
     /**
      * latest monitor event
      */
-    volatile protected ChannelTimeRecord latestRecord;
+    protected ChannelTimeRecord latestRecord;
 
     /**
      * Constructor
@@ -148,9 +148,9 @@ public class MonitorCache {
          * Handle the monitor event.
          */
         @Override
-        public void eventValue(final ChannelTimeRecord record, final Channel channel) {
-            latestRecord = record;
-            eventProxy.eventValue(record, channel);
+        public void eventValue(final ChannelTimeRecord channelRecord, final Channel channel) {
+            latestRecord = channelRecord;
+            eventProxy.eventValue(channelRecord, channel);
         }
     }
 
@@ -170,7 +170,7 @@ public class MonitorCache {
             if (monitor == null) {
                 try {
                     monitor = channel.addMonitorValTime(monitorEventHandler, Monitor.VALUE);
-                } catch (ConnectionException | MonitorException exception) {
+                } catch (MonitorException exception) {
                     Logger.getLogger("global").log(Level.SEVERE, "Exception attempting to make a monitor.", exception);
                 }
             }

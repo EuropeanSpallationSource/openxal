@@ -24,7 +24,6 @@ import static org.junit.Assert.*;
 import xal.ca.ChannelRecord;
 import xal.ca.ChannelStatusRecord;
 import xal.ca.ChannelTimeRecord;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.Monitor;
 import xal.ca.Timestamp;
@@ -549,7 +548,7 @@ public class Epics7ServerChannelTest {
      * Test of setLowerDispLimit method, of class Epics7ServerChannel.
      */
     @Test
-    public void testSetLowerDispLimit() throws ConnectionException, GetException {
+    public void testSetLowerDispLimit() throws GetException {
         LOGGER.log(Level.INFO, "setLowerDispLimit");
         Number lowerLimit = 1.0;
         Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
@@ -561,7 +560,7 @@ public class Epics7ServerChannelTest {
      * Test of setUpperDispLimit method, of class Epics7ServerChannel.
      */
     @Test
-    public void testSetUpperDispLimit() throws ConnectionException, GetException {
+    public void testSetUpperDispLimit() throws GetException {
         LOGGER.log(Level.INFO, "setUpperDispLimit");
         Number upperLimit = 1.0;
         Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
@@ -573,7 +572,7 @@ public class Epics7ServerChannelTest {
      * Test of setLowerAlarmLimit method, of class Epics7ServerChannel.
      */
     @Test
-    public void testSetLowerAlarmLimit() throws ConnectionException, GetException {
+    public void testSetLowerAlarmLimit() throws GetException {
         LOGGER.log(Level.INFO, "setLowerAlarmLimit");
         Number lowerLimit = 1.0;
         Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
@@ -585,7 +584,7 @@ public class Epics7ServerChannelTest {
      * Test of setUpperAlarmLimit method, of class Epics7ServerChannel.
      */
     @Test
-    public void testSetUpperAlarmLimit() throws ConnectionException, GetException {
+    public void testSetUpperAlarmLimit() throws GetException {
         LOGGER.log(Level.INFO, "setUpperAlarmLimit");
         Number upperLimit = 1.0;
         Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
@@ -597,7 +596,7 @@ public class Epics7ServerChannelTest {
      * Test of setLowerWarningLimit method, of class Epics7ServerChannel.
      */
     @Test
-    public void testSetLowerWarningLimit() throws ConnectionException, GetException {
+    public void testSetLowerWarningLimit() throws GetException {
         LOGGER.log(Level.INFO, "setLowerWarningLimit");
         Number lowerLimit = 1.0;
         Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
@@ -609,7 +608,7 @@ public class Epics7ServerChannelTest {
      * Test of setUpperWarningLimit method, of class Epics7ServerChannel.
      */
     @Test
-    public void testSetUpperWarningLimit() throws ConnectionException, GetException {
+    public void testSetUpperWarningLimit() throws GetException {
         LOGGER.log(Level.INFO, "setUpperWarningLimit");
         Number upperLimit = 1.0;
         Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
@@ -621,7 +620,7 @@ public class Epics7ServerChannelTest {
      * Test of setLowerCtrlLimit method, of class Epics7ServerChannel.
      */
     @Test
-    public void testSetLowerCtrlLimit() throws ConnectionException, GetException {
+    public void testSetLowerCtrlLimit() throws GetException {
         LOGGER.log(Level.INFO, "setLowerCtrlLimit");
         Number lowerLimit = 1.0;
         Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());
@@ -633,7 +632,7 @@ public class Epics7ServerChannelTest {
      * Test of setUpperCtrlLimit method, of class Epics7ServerChannel.
      */
     @Test
-    public void testSetUpperCtrlLimit() throws ConnectionException, GetException {
+    public void testSetUpperCtrlLimit() throws GetException {
         LOGGER.log(Level.INFO, "setUpperCtrlLimit");
         Number upperLimit = 1.0;
         Epics7ServerChannel instance = new Epics7ServerChannel("Test", Epics7ServerChannelSystem.newEpics7ServerChannelSystem());

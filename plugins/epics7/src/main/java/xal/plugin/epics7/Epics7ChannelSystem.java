@@ -31,7 +31,7 @@ import xal.tools.apputils.Preferences;
 /**
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
-public class Epics7ChannelSystem extends ChannelSystem {
+public class Epics7ChannelSystem implements ChannelSystem {
 
     private ChannelProvider caChannelProvider;
     private ChannelProvider pvaChannelProvider;

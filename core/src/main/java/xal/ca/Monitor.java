@@ -29,11 +29,7 @@ public abstract class Monitor {
      */
     public static final int ALARM = 4;
 
-    /**
-     * monitoring flag
-     */
-    protected boolean bolMonitoring;
-    /**
+   /**
      * event mask for firing monitor
      */
     protected int intMaskEvent;
@@ -51,7 +47,6 @@ public abstract class Monitor {
      * @exception ConnectionException Channel is not connected
      */
     protected Monitor(Channel chan, int intMaskEvent) throws ConnectionException {
-        bolMonitoring = false;
         this.intMaskEvent = intMaskEvent;
         xalChan = chan;
     }
@@ -98,9 +93,9 @@ public abstract class Monitor {
      * @param adaptor The adaptor to the internal data record.
      */
     protected final void postValueRecord(IEventSinkValue listener, ValueAdaptor adaptor) {
-        ChannelRecord record = new ChannelRecordImpl(adaptor);
-        record.applyTransform(xalChan.getValueTransform());
-        listener.eventValue(record, xalChan);
+        ChannelRecord channelRecord = new ChannelRecordImpl(adaptor);
+        channelRecord.applyTransform(xalChan.getValueTransform());
+        listener.eventValue(channelRecord, xalChan);
     }
 
     /**
@@ -110,9 +105,9 @@ public abstract class Monitor {
      * @param adaptor The adaptor to the internal data record.
      */
     protected final void postStatusRecord(IEventSinkValStatus listener, StatusAdaptor adaptor) {
-        ChannelStatusRecord record = new ChannelStatusRecordImpl(adaptor);
-        record.applyTransform(xalChan.getValueTransform());
-        listener.eventValue(record, xalChan);
+        ChannelStatusRecord channelRecord = new ChannelStatusRecordImpl(adaptor);
+        channelRecord.applyTransform(xalChan.getValueTransform());
+        listener.eventValue(channelRecord, xalChan);
     }
 
     /**
@@ -122,8 +117,8 @@ public abstract class Monitor {
      * @param adaptor The adaptor to the internal data record.
      */
     protected final void postTimeRecord(IEventSinkValTime listener, TimeAdaptor adaptor) {
-        ChannelTimeRecord record = new ChannelTimeRecordImpl(adaptor);
-        record.applyTransform(xalChan.getValueTransform());
-        listener.eventValue(record, xalChan);
+        ChannelTimeRecord channelRecord = new ChannelTimeRecordImpl(adaptor);
+        channelRecord.applyTransform(xalChan.getValueTransform());
+        listener.eventValue(channelRecord, xalChan);
     }
 }

@@ -14,13 +14,7 @@ package xal.ca;
  *
  * @author tap
  */
-public abstract class ChannelSystem {
-
-    /**
-     * Creates a new instance of ChannelSystem
-     */
-    protected ChannelSystem() {
-    }
+public interface ChannelSystem {
 
     /**
      * Set the debug mode of the channel system.

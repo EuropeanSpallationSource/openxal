@@ -105,7 +105,7 @@ public class ScanVariable {
         if (ch != null) {
             try {
                 ch.putVal(val);
-            } catch (ConnectionException | PutException e) {
+            } catch (PutException e) {
                 stopScanWithMessage("Cannot put value to the channel: " + chanName);
             }
         }
