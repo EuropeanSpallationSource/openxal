@@ -875,8 +875,8 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 
         // Update the response matrix without space charge
         PhaseMatrix matRnsp0 = probe.getResponseMatrixNoSpaceCharge();
-        PhaseMatrix matPhi_op = elem.transferMap(probe, h).getFirstOrder();
-        PhaseMatrix matRnsp1 = matPhi_op.times(matRnsp0);
+        PhaseMatrix matPhiOp = elem.transferMap(probe, h).getFirstOrder();
+        PhaseMatrix matRnsp1 = matPhiOp.times(matRnsp0);
         probe.setResponseMatrixNoSpaceCharge(matRnsp1);
 
         super.advanceProbe(probe, elem, h / 2.0);

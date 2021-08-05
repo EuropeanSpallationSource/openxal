@@ -2267,14 +2267,7 @@ public abstract class EnvelopeTrackerBase extends Tracker {
     public double correctLongSigmaPhaseSpread(EnvelopeProbe probe, IdealRfGap gap) {
         double phi = gap.getPhase();
         double dphi = this.phaseSpread(probe, gap);
-        double tdp = 2 * dphi;
 
-        double f2 = 1 - tdp * tdp / 14;
-        if (tdp > 0.1) {
-            double sintdp = Math.sin(tdp);
-            f2 = 3 * (sintdp / tdp - Math.cos(tdp)) / tdp / tdp;
-            f2 = 15 * (f2 - sintdp / tdp) / tdp / tdp;
-        }
         double sinphi = Math.sin(phi);
         double cosphi = Math.cos(phi);
 

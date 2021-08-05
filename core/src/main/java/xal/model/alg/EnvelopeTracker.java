@@ -158,7 +158,7 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         double propLen = elemLen - elemPos;
 
         if (propLen < 0) {
-            System.err.println("doPropagation, elemPos, elemLen = " + elemPos + " " + elemLen);
+            LOGGER.log(Level.INFO, "doPropagation, elemPos, elemLen = {0} {1}", new Object[]{elemPos, elemLen});
             return;
         }
 
@@ -202,13 +202,13 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         CovarianceMatrix matTau0 = probe.getCovariance();
 
         // Compute the transfer matrix
-        PhaseMatrix matPhi_op = iElem.transferMap(probe, dblLen).getFirstOrder();
-        PhaseMatrix matPhi_sc = compTransferMatrix(dblLen, probe, iElem);
+        PhaseMatrix matPhiOp = iElem.transferMap(probe, dblLen).getFirstOrder();
+        PhaseMatrix matPhiSc = compTransferMatrix(dblLen, probe, iElem);
 
         // Advance the probe states 
-        PhaseMatrix matRnsp1 = matPhi_op.times(matRnsp0);
-        PhaseMatrix matResp1 = matPhi_sc.times(matResp0);
-        PhaseMatrix matTau1 = matTau0.conjugateTrans(matPhi_sc);
+        PhaseMatrix matRnsp1 = matPhiOp.times(matRnsp0);
+        PhaseMatrix matResp1 = matPhiSc.times(matResp0);
+        PhaseMatrix matTau1 = matTau0.conjugateTrans(matPhiSc);
 
         if (this.getEmittanceGrowth()) {
             matTau1 = this.addEmittanceGrowth(probe, iElem, matTau1);
@@ -217,7 +217,7 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         // Save the new state variables in the probe
         probe.setResponseMatrixNoSpaceCharge(matRnsp1);
         probe.setResponseMatrix(matResp1);
-        probe.setCurrentResponseMatrix(matPhi_sc);
+        probe.setCurrentResponseMatrix(matPhiSc);
         probe.setCovariance(new CovarianceMatrix(matTau1));
 
         /**
@@ -267,7 +267,7 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         PhaseMatrix matPhi;
 
         // Check for easy case of no space charge
-        if (this.getUseSpacecharge() == false || dblLen == 0.0) {
+        if (!this.getUseSpacecharge() || dblLen == 0.0) {
             matPhi = ifcElem.transferMap(probe, dblLen).getFirstOrder();
 
             // we must treat space charge
@@ -496,10 +496,10 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         double kt = elemRfGap.compTransFocusing(probe);
         dxp2 = kt * kt * qT;
 
-        double Gz = this.compEmitGrowthFunction(PhasePlane.LONGITUDINAL, phiS, dphi);
+        double gz = this.compEmitGrowthFunction(PhasePlane.LONGITUDINAL, phiS, dphi);
         double kz = elemRfGap.compLongFocusing(probe);
 
-        dzp2 = kz * kz * Gz;
+        dzp2 = kz * kz * gz;
 
         // Compute new correlation matrix
         //      Transverse planes

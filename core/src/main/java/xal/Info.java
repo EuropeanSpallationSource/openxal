@@ -55,7 +55,7 @@ public class Info {
 
                 label = (String) infoMap.get("label");
             } catch (IOException exception) {
-                LOGGER.log(Level.SEVERE, "Exception attempting to load Open XAL info from: " + infoLocation, exception);
+                LOGGER.log(Level.SEVERE, exception, () -> "Exception attempting to load Open XAL info from: " + infoLocation);
                 LOGGER.log(Level.INFO, "Will revert to default info label: {0}", label);
             }
         }
