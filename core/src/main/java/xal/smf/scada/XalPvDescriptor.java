@@ -200,9 +200,7 @@ public class XalPvDescriptor {
      */
     @Override
     protected Object clone() throws CloneNotSupportedException {
-        XalPvDescriptor pvdCopy = new XalPvDescriptor(this.clsType, this.strHandleRb, this.strHandleSet);
-
-        return pvdCopy;
+        return new XalPvDescriptor(this.clsType, this.strHandleRb, this.strHandleSet);
     }
 
     /**
@@ -222,10 +220,6 @@ public class XalPvDescriptor {
      */
     @Override
     public String toString() {
-        String strBuf = "PV Descriptor RB = " + this.strHandleRb + ", SET = " + this.strHandleSet + ", TYPE = " + this.clsType;
-
-        return strBuf;
-
+        return "PV Descriptor RB = " + this.strHandleRb + ", SET = " + this.strHandleSet + ", TYPE = " + this.clsType;
     }
-
 }

@@ -232,7 +232,8 @@ public abstract class SignalSet implements DataListener {
             case DIA:
                 this.dia = signal;
                 break;
-            default:  ;
+            default:
+                break;
         }
     }
 

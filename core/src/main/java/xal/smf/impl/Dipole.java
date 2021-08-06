@@ -33,7 +33,7 @@ public abstract class Dipole extends Electromagnet {
     /**
      * Primary Constructor
      */
-    public Dipole(final String strId, final ChannelFactory channelFactory) {
+    protected Dipole(final String strId, final ChannelFactory channelFactory) {
         super(strId, channelFactory);
         setMagBucket(new DipoleBucket());
     }
@@ -43,7 +43,7 @@ public abstract class Dipole extends Electromagnet {
      *
      * @param strID the dipole's unique ID
      */
-    public Dipole(final String strID) {
+    protected Dipole(final String strID) {
         this(strID, null);
 
     }

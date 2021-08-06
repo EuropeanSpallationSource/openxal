@@ -45,7 +45,7 @@ public class Quadrupole extends Electromagnet {
      * the type of quadrupole (horizontal or vertical) The default value is used
      * if Quadrupole is never updated.
      */
-    protected String type = "Q";
+    protected String nodeType = "Q";
 
     // static initializer
     static {
@@ -90,7 +90,7 @@ public class Quadrupole extends Electromagnet {
      */
     @Override
     public String getType() {
-        return type;
+        return nodeType;
     }
 
     /**
@@ -103,7 +103,7 @@ public class Quadrupole extends Electromagnet {
     @Override
     public void update(final DataAdaptor adaptor) {
         if (adaptor.hasAttribute("type")) {
-            type = adaptor.stringValue("type");
+            nodeType = adaptor.stringValue("type");
         }
         super.update(adaptor);
     }
@@ -127,10 +127,10 @@ public class Quadrupole extends Electromagnet {
      */
     @Override
     public int getOrientation() {
-        if (type.equalsIgnoreCase(SKEW_TYPE)) {
+        if (nodeType.equalsIgnoreCase(SKEW_TYPE)) {
             return NO_ORIENTATION;
         } else {
-            return type.equalsIgnoreCase(HORIZONTAL_TYPE) ? HORIZONTAL : VERTICAL;
+            return nodeType.equalsIgnoreCase(HORIZONTAL_TYPE) ? HORIZONTAL : VERTICAL;
         }
     }
 
@@ -145,6 +145,6 @@ public class Quadrupole extends Electromagnet {
      */
     @Override
     public boolean isKindOf(final String type) {
-        return type.equalsIgnoreCase(this.type) || super.isKindOf(type);
+        return type.equalsIgnoreCase(this.nodeType) || super.isKindOf(type);
     }
 }

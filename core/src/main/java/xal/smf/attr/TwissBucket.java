@@ -19,7 +19,7 @@ public class TwissBucket extends AttributeBucket {
      */
     public static final String TYPE = "twiss";
 
-    public static final String[] ARR_NAMES = {"x",
+    private static final String[] ARR_NAMES = {"x",
         "y",
         "ax",
         "bx",
@@ -39,9 +39,9 @@ public class TwissBucket extends AttributeBucket {
     };
 
     // Enumeration of the three phase plane indexes
-    public static final int iXPlane = 0;
-    public static final int iYPlane = 1;
-    public static final int iZPlane = 2;
+    public static final int X_PLANE = 0;
+    public static final int Y_PLANE = 1;
+    public static final int Z_PLANE = 2;
 
     /*
      *  Local Attributes
@@ -202,9 +202,9 @@ public class TwissBucket extends AttributeBucket {
 
     public double getCentroid(int iPlane) {
         switch (iPlane) {
-            case iXPlane:
+            case X_PLANE:
                 return getX();
-            case iYPlane:
+            case Y_PLANE:
                 return getY();
             default:
                 return Double.NaN;
@@ -213,11 +213,11 @@ public class TwissBucket extends AttributeBucket {
 
     public double getAlpha(int iPlane) {
         switch (iPlane) {
-            case iXPlane:
+            case X_PLANE:
                 return getAlphaX();
-            case iYPlane:
+            case Y_PLANE:
                 return getAlphaY();
-            case iZPlane:
+            case Z_PLANE:
                 return getAlphaZ();
             default:
                 return Double.NaN;
@@ -226,11 +226,11 @@ public class TwissBucket extends AttributeBucket {
 
     public double getBeta(int iPlane) {
         switch (iPlane) {
-            case iXPlane:
+            case X_PLANE:
                 return getBetaX();
-            case iYPlane:
+            case Y_PLANE:
                 return getBetaY();
-            case iZPlane:
+            case Z_PLANE:
                 return getBetaZ();
             default:
                 return Double.NaN;
@@ -239,11 +239,11 @@ public class TwissBucket extends AttributeBucket {
 
     public double getEmit(int iPlane) {
         switch (iPlane) {
-            case iXPlane:
+            case X_PLANE:
                 return getEmitX();
-            case iYPlane:
+            case Y_PLANE:
                 return getEmitY();
-            case iZPlane:
+            case Z_PLANE:
                 return getEmitZ();
             default:
                 return Double.NaN;
@@ -252,9 +252,9 @@ public class TwissBucket extends AttributeBucket {
 
     public double getEta(int iPlane) {
         switch (iPlane) {
-            case iXPlane:
+            case X_PLANE:
                 return getEtaX();
-            case iYPlane:
+            case Y_PLANE:
                 return getEtaY();
             default:
                 return Double.NaN;
@@ -263,9 +263,9 @@ public class TwissBucket extends AttributeBucket {
 
     public double getEtaP(int iPlane) {
         switch (iPlane) {
-            case iXPlane:
+            case X_PLANE:
                 return getEtaPx();
-            case iYPlane:
+            case Y_PLANE:
                 return getEtaPy();
             default:
                 return Double.NaN;
@@ -274,9 +274,9 @@ public class TwissBucket extends AttributeBucket {
 
     public double getMu(int iPlane) {
         switch (iPlane) {
-            case iXPlane:
+            case X_PLANE:
                 return getMuX();
-            case iYPlane:
+            case Y_PLANE:
                 return getMuY();
             default:
                 return Double.NaN;
@@ -356,103 +356,117 @@ public class TwissBucket extends AttributeBucket {
 
     public void setCentroid(int iPlane, double dblVal) {
         switch (iPlane) {
-            case iXPlane:
+            case X_PLANE:
                 setX(dblVal);
                 // tap added this break statement as it seems to be the intent
                 break;
-            case iYPlane:
+            case Y_PLANE:
                 setY(dblVal);
                 // tap added this break statement as it seems to be the intent
+                break;
+            default:
                 break;
         }
     }
 
     public void setAlpha(int iPlane, double dblVal) {
         switch (iPlane) {
-            case iXPlane:
+            case X_PLANE:
                 setAlphaX(dblVal);
                 // tap added this break statement as it seems to be the intent
                 break;
-            case iYPlane:
+            case Y_PLANE:
                 setAlphaY(dblVal);
                 // tap added this break statement as it seems to be the intent
                 break;
-            case iZPlane:
+            case Z_PLANE:
                 setAlphaZ(dblVal);
                 // tap added this break statement as it seems to be the intent
+                break;
+            default:
                 break;
         }
     }
 
     public void setBeta(int iPlane, double dblVal) {
         switch (iPlane) {
-            case iXPlane:
+            case X_PLANE:
                 setBetaX(dblVal);
                 // tap added this break statement as it seems to be the intent
                 break;
-            case iYPlane:
+            case Y_PLANE:
                 setBetaY(dblVal);
                 // tap added this break statement as it seems to be the intent
                 break;
-            case iZPlane:
+            case Z_PLANE:
                 setBetaZ(dblVal);
                 // tap added this break statement as it seems to be the intent
+                break;
+            default:
                 break;
         }
     }
 
     public void setEmit(int iPlane, double dblVal) {
         switch (iPlane) {
-            case iXPlane:
+            case X_PLANE:
                 setEmitX(dblVal);
                 // tap added this break statement as it seems to be the intent
                 break;
-            case iYPlane:
+            case Y_PLANE:
                 setEmitY(dblVal);
                 // tap added this break statement as it seems to be the intent
                 break;
-            case iZPlane:
+            case Z_PLANE:
                 setEmitZ(dblVal);
                 // tap added this break statement as it seems to be the intent
+                break;
+            default:
                 break;
         }
     }
 
     public void setEta(int iPlane, double dblVal) {
         switch (iPlane) {
-            case iXPlane:
+            case X_PLANE:
                 setEtaX(dblVal);
                 // tap added this break statement as it seems to be the intent
                 break;
-            case iYPlane:
+            case Y_PLANE:
                 setEtaY(dblVal);
                 // tap added this break statement as it seems to be the intent
+                break;
+            default:
                 break;
         }
     }
 
     public void getEtaP(int iPlane, double dblVal) {
         switch (iPlane) {
-            case iXPlane:
+            case X_PLANE:
                 setEtaPx(dblVal);
                 // tap added this break statement as it seems to be the intent
                 break;
-            case iYPlane:
+            case Y_PLANE:
                 setEtaPy(dblVal);
                 // tap added this break statement as it seems to be the intent
+                break;
+            default:
                 break;
         }
     }
 
     public void getMu(int iPlane, double dblVal) {
         switch (iPlane) {
-            case iXPlane:
+            case X_PLANE:
                 setMuX(dblVal);
                 // tap added this break statement as it seems to be the intent
                 break;
-            case iYPlane:
+            case Y_PLANE:
                 setMuY(dblVal);
                 // tap added this break statement as it seems to be the intent
+                break;
+            default:
                 break;
         }
     }

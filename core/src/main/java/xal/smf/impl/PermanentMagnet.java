@@ -19,7 +19,7 @@ public abstract class PermanentMagnet extends Magnet {
 
     // accessible properties
     private String[] readbackHandle = new String[]{};
-    public final AccessibleProperty field = new AccessibleProperty("field", readbackHandle, null, () -> getDesignField(), (cV) -> getDesignField());
+    public final AccessibleProperty field = new AccessibleProperty("field", readbackHandle, null, this::getDesignField, cV -> getDesignField());
 
     // static initializer
     static {
@@ -36,14 +36,14 @@ public abstract class PermanentMagnet extends Magnet {
     /**
      * Creates new PermanentMagnet
      */
-    public PermanentMagnet(final String strId, final ChannelFactory channelFactory) {
+    protected PermanentMagnet(final String strId, final ChannelFactory channelFactory) {
         super(strId, channelFactory);
     }
 
     /**
      * Creates new PermanentMagnet
      */
-    public PermanentMagnet(final String strId) {
+    protected PermanentMagnet(final String strId) {
         this(strId, null);
     }
 

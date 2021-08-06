@@ -82,6 +82,16 @@ public class AccessibleProperty {
         this.setHandle = handle;
     }
 
+    /**
+     *
+     * @param name
+     */
+    public AccessibleProperty(String handle) {
+        this.name = handle;
+        this.readbackHandles = new String[]{handle};
+        this.setHandle = handle;
+    }
+
     public String getName() {
         return name;
     }

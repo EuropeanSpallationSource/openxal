@@ -76,6 +76,11 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 
     private static final Logger LOGGER = Logger.getLogger(Accelerator.class.getName());
 
+    private static final String POWER_SUPPLIES_ATTR = "powersupplies";
+    private static final String DATE_ATTR = "date";
+    private static final String VER_ATTR = "ver";
+    private static final String SYSTEM_ATTR = "system";
+
     // DataAdaptor interface ----------------------
     /**
      * dataLabel() provides the name used to identify the accelerator in an
@@ -112,17 +117,17 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
     @Override
     public void update(final DataAdaptor adaptor) throws NumberFormatException {
         // only the primary optics should supply this data
-        if (adaptor.hasAttribute("system")) {
-            strSysId = adaptor.stringValue("system");
+        if (adaptor.hasAttribute(SYSTEM_ATTR)) {
+            strSysId = adaptor.stringValue(SYSTEM_ATTR);
         }
-        if (adaptor.hasAttribute("ver")) {
-            strVer = adaptor.stringValue("ver");
+        if (adaptor.hasAttribute(VER_ATTR)) {
+            strVer = adaptor.stringValue(VER_ATTR);
         }
-        if (adaptor.hasAttribute("date")) {
-            strDate = adaptor.stringValue("date");
+        if (adaptor.hasAttribute(DATE_ATTR)) {
+            strDate = adaptor.stringValue(DATE_ATTR);
         }
 
-        DataAdaptor powerSuppliesAdaptor = adaptor.childAdaptor("powersupplies");
+        DataAdaptor powerSuppliesAdaptor = adaptor.childAdaptor(POWER_SUPPLIES_ATTR);
         if (powerSuppliesAdaptor != null) {
             updatePowerSupplies(powerSuppliesAdaptor);
         }
@@ -221,7 +226,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
         super.write(adaptor);
 
         // Write power supplies into the same file if this flag is false. Otherwise, they will be saved on a separated file.
-        if (powerSuppliesFile == false) {
+        if (!powerSuppliesFile) {
             writeAllPowerSupplies(adaptor);
         }
     }
@@ -241,19 +246,19 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
 
     private void writeAllPowerSupplies(DataAdaptor adaptor) {
         // write out power supplies
-        DataAdaptor powerSuppliesAdaptor = adaptor.createChild("powersupplies");
+        DataAdaptor powerSuppliesAdaptor = adaptor.createChild(POWER_SUPPLIES_ATTR);
         getMagnetMainSupplies().forEach(mps -> mps.write(powerSuppliesAdaptor.createChild("ps")));
     }
 
     @Override
     protected void writeAttributes(DataAdaptor adaptor) {
-        adaptor.setValue("system", strSysId);
-        adaptor.setValue("ver", strVer);
+        adaptor.setValue(SYSTEM_ATTR, strSysId);
+        adaptor.setValue(VER_ATTR, strVer);
 
         Date today = new Date();
         SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy.MM.dd");
         String dateString = dateFormatter.format(today);
-        adaptor.setValue("date", dateString);
+        adaptor.setValue(DATE_ATTR, dateString);
     }
 
     /**
@@ -263,9 +268,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
     public void writeStatus(DataAdaptor adaptor) {
         DataAdaptor seqAdaptor = adaptor.createChild(dataLabel());
         writeAttributes(seqAdaptor);
-        arrNodes.forEach(node -> {
-            node.writeStatus(seqAdaptor);
-        });
+        arrNodes.forEach(node -> node.writeStatus(seqAdaptor));
 
         if (seqAdaptor.childAdaptors().isEmpty()) {
             adaptor.removeChild(seqAdaptor);
@@ -287,9 +290,11 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
         // and add the new sequence to the accelerator root sequence
         if (comboSequence == null) {
             comboSequence = instantiateComboSequence(comboType, comboID, comboAdaptor);
-            comboSequence.setAccelerator(this.getAccelerator());
-            comboSequence.setParent(this);
-            addComboSequence(comboSequence);
+            if (comboSequence != null) {
+                comboSequence.setAccelerator(this.getAccelerator());
+                comboSequence.setParent(this);
+                addComboSequence(comboSequence);
+            }
         } else {
             // update the sequence
             comboSequence.update(comboAdaptor);
@@ -311,8 +316,8 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
         }
         try {
             final Class<?> comboClass = Class.forName(comboType);
-            final Constructor<?> constructor = comboClass.getConstructor(new Class[]{String.class, Accelerator.class, DataAdaptor.class});
-            return (AcceleratorSeqCombo) constructor.newInstance(new Object[]{comboID, this, comboAdaptor});
+            final Constructor<?> constructor = comboClass.getConstructor(String.class, Accelerator.class, DataAdaptor.class);
+            return (AcceleratorSeqCombo) constructor.newInstance(comboID, this, comboAdaptor);
         } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException exception) {
             LOGGER.log(Level.SEVERE, null, exception);
             return null;
@@ -366,17 +371,19 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
     /**
      * Handle the event indicating that a node has been added.
      *
-     * @param p_node the node that has been added
+     * @param node the node that has been added
      */
-    protected void nodeAdded(final AcceleratorNode p_node) {
+    protected void nodeAdded(final AcceleratorNode node) {
+        // Do nothing
     }
 
     /**
      * Handle the event indicating that a node has been removed.
      *
-     * @param p_node the node that has been removed
+     * @param node the node that has been removed
      */
-    protected void nodeRemoved(final AcceleratorNode p_node) {
+    protected void nodeRemoved(final AcceleratorNode node) {
+        // Do nothing
     }
 
     public String getSystemId() {
@@ -527,14 +534,9 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
      * @return the list of predefined combo sequences ordered by ID.
      */
     public List<AcceleratorSeqCombo> getComboSequences() {
-        final List<AcceleratorSeqCombo> sequences = new ArrayList<>(comboSequences.values());
-        Collections.sort(sequences, new Comparator<AcceleratorSeqCombo>() {
-            @Override
-            public int compare(final AcceleratorSeqCombo combo1, final AcceleratorSeqCombo combo2) {
-                return combo1.getId().compareTo(combo2.getId());
-            }
-        });
-        return sequences;
+        final List<AcceleratorSeqCombo> comboSequenceList = new ArrayList<>(comboSequences.values());
+        Collections.sort(comboSequenceList, (combo1, combo2) -> combo1.getId().compareTo(combo2.getId()));
+        return comboSequenceList;
     }
 
     /**
@@ -554,10 +556,9 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
      * @return a list of all rings in the accelerator
      */
     public List<Ring> getRings() {
-        final List<AcceleratorSeqCombo> comboSequences = getComboSequences();
-        final List<Ring> rings = new ArrayList<>();
+        List<Ring> rings = new ArrayList<>();
 
-        for (final AcceleratorSeqCombo candidate : comboSequences) {
+        for (final AcceleratorSeqCombo candidate : getComboSequences()) {
             if (candidate instanceof Ring) {
                 rings.add((Ring) candidate);
             }
@@ -574,9 +575,7 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
      * @return the sequence for the ID or null if none matches
      */
     public AcceleratorSeq findSequence(String sequenceID) {
-        AcceleratorSeq sequence = null;
-
-        sequence = getSequence(sequenceID);
+        AcceleratorSeq sequence = getSequence(sequenceID);
         if (sequence != null) {
             return sequence;
         }

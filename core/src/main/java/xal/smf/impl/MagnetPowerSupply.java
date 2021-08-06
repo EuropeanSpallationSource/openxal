@@ -36,13 +36,13 @@ public abstract class MagnetPowerSupply implements DataListener {
     public static final String CURRENT_RB_HANDLE = "I";
 
     public final AccessibleProperty current = new AccessibleProperty("current", CURRENT_RB_HANDLE, CURRENT_SET_HANDLE);
-    public final AccessibleProperty cycleState = new AccessibleProperty("cycleState", CYCLE_STATE_HANDLE);
+    public final AccessibleProperty cycleState = new AccessibleProperty(CYCLE_STATE_HANDLE);
 
     /**
      * Creates a new instance of PowerSupply using the same channel factory as
      * the provided accelerator
      */
-    public MagnetPowerSupply(final Accelerator anAccelerator) {
+    protected MagnetPowerSupply(final Accelerator anAccelerator) {
         this.accelerator = anAccelerator;
         this.channelSuite = anAccelerator != null ? new ChannelSuite(anAccelerator.channelSuite().getChannelFactory()) : new ChannelSuite();
     }
@@ -162,7 +162,7 @@ public abstract class MagnetPowerSupply implements DataListener {
      * the handle is associated with this node.
      * @throws xal.ca.ConnectionException if the channel cannot be connected
      */
-    public Channel getAndConnectChannel(final String handle) throws NoSuchChannelException, ConnectionException {
+    public Channel getAndConnectChannel(final String handle) throws NoSuchChannelException {
         Channel channel = getChannel(handle);
         channel.connectAndWait();
 
@@ -176,7 +176,7 @@ public abstract class MagnetPowerSupply implements DataListener {
      *
      * @return One of CYCLE_INVALID, CYCLING or CYCLE_VALID
      */
-    public int getCycleState() throws ConnectionException, GetException {
+    public int getCycleState() throws GetException {
         Channel cycleStateChannel = getAndConnectChannel(CYCLE_STATE_HANDLE);
 
         return cycleStateChannel.getValInt();
@@ -190,7 +190,7 @@ public abstract class MagnetPowerSupply implements DataListener {
      * connected
      * @throws xal.ca.GetException if the readback channel get action fails
      */
-    public double getCurrent() throws ConnectionException, GetException {
+    public double getCurrent() throws GetException {
         Channel currentRBChannel = getAndConnectChannel(CURRENT_RB_HANDLE);
 
         return currentRBChannel.getValDbl();
@@ -203,7 +203,7 @@ public abstract class MagnetPowerSupply implements DataListener {
      * @throws xal.ca.ConnectionException if the put channel cannot be connected
      * @throws xal.ca.PutException if the put channel set action fails
      */
-    public void setCurrent(double current) throws ConnectionException, PutException {
+    public void setCurrent(double current) throws PutException {
         Channel currentSetChannel = getAndConnectChannel(CURRENT_SET_HANDLE);
         currentSetChannel.putVal(current);
     }
@@ -211,7 +211,7 @@ public abstract class MagnetPowerSupply implements DataListener {
     /**
      * get the current lower settable limit (A)
      */
-    public double upperCurrentLimit() throws ConnectionException, GetException {
+    public double upperCurrentLimit() throws GetException {
         Channel currentSetChannel = getAndConnectChannel(CURRENT_SET_HANDLE);
 
         return currentSetChannel.upperControlLimit().doubleValue();
@@ -220,7 +220,7 @@ public abstract class MagnetPowerSupply implements DataListener {
     /**
      * get the current lower settable limit (A)
      */
-    public double lowerCurrentLimit() throws ConnectionException, GetException {
+    public double lowerCurrentLimit() throws GetException {
         Channel currentSetChannel = getAndConnectChannel(CURRENT_SET_HANDLE);
 
         return currentSetChannel.lowerControlLimit().doubleValue();
@@ -243,10 +243,10 @@ public abstract class MagnetPowerSupply implements DataListener {
      * matches.
      * @return The collection of nodes that use this supply.
      */
-    public <NodeType extends AcceleratorNode> Collection<NodeType> getNodes(final Collection<NodeType> trialNodes) {
-        final Collection<NodeType> nodes = new HashSet<>();
+    public <T extends AcceleratorNode> Collection<T> getNodes(final Collection<T> trialNodes) {
+        final Collection<T> nodes = new HashSet<>();
 
-        for (final NodeType trialNode : trialNodes) {
+        for (final T trialNode : trialNodes) {
             if (suppliesNode(trialNode)) {
                 nodes.add(trialNode);
             }
@@ -295,7 +295,7 @@ public abstract class MagnetPowerSupply implements DataListener {
                 return prop.getReadbackHandles();
             }
         }
-        return null;
+        return new String[0];
     }
 
     /**

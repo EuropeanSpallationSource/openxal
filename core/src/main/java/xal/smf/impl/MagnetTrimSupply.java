@@ -44,7 +44,7 @@ public class MagnetTrimSupply extends MagnetPowerSupply {
      *
      * @return the field contribution
      */
-    public double getField() throws ConnectionException, GetException {
+    public double getField() throws GetException {
         Channel fieldRBChannel = getAndConnectChannel(FIELD_RB_HANDLE);
 
         return fieldRBChannel.getValDbl();
@@ -56,7 +56,7 @@ public class MagnetTrimSupply extends MagnetPowerSupply {
      * @param newField is the new field level in T/(m^(n-1)), where n = 1 for
      * dipole, 2 for quad, etc.
      */
-    public void setField(double newField) throws ConnectionException, PutException {
+    public void setField(double newField) throws PutException {
         Channel fieldSetChannel = getAndConnectChannel(FIELD_SET_HANDLE);
 
         fieldSetChannel.putVal(newField);
@@ -69,7 +69,7 @@ public class MagnetTrimSupply extends MagnetPowerSupply {
      * @return the field setting in T/(m^(n-1)), where n = 1 for dipole, 2 for
      * quad, etc.
      */
-    public double getFieldSetting() throws ConnectionException, GetException {
+    public double getFieldSetting() throws GetException {
         Channel fieldSetChannel = getAndConnectChannel(FIELD_SET_HANDLE);
 
         return fieldSetChannel.getValDbl();
@@ -83,7 +83,7 @@ public class MagnetTrimSupply extends MagnetPowerSupply {
      * connected
      * @throws xal.ca.GetException if the readback channel get action fails
      */
-    public double getTrimCurrent() throws ConnectionException, GetException {
+    public double getTrimCurrent() throws GetException {
         Channel currentRBChannel = getAndConnectChannel(TRIM_CURRENT_RB_HANDLE);
 
         return currentRBChannel.getValDbl();
@@ -96,7 +96,7 @@ public class MagnetTrimSupply extends MagnetPowerSupply {
      * @throws xal.ca.ConnectionException if the put channel cannot be connected
      * @throws xal.ca.PutException if the put channel set action fails
      */
-    public void setTrimCurrent(final double current) throws ConnectionException, PutException {
+    public void setTrimCurrent(final double current) throws PutException {
         Channel currentSetChannel = getAndConnectChannel(TRIM_CURRENT_SET_HANDLE);
         currentSetChannel.putVal(current);
     }
@@ -105,7 +105,7 @@ public class MagnetTrimSupply extends MagnetPowerSupply {
      * get the field upper settable limit in T/(m^(n-1)), where n = 1 for
      * dipole, 2 for quad, etc.
      */
-    public double upperFieldLimit() throws ConnectionException, GetException {
+    public double upperFieldLimit() throws GetException {
         Channel fieldSetChannel = getAndConnectChannel(FIELD_SET_HANDLE);
 
         return fieldSetChannel.upperControlLimit().doubleValue();
@@ -115,7 +115,7 @@ public class MagnetTrimSupply extends MagnetPowerSupply {
      * get the field lower settable limit in T/(m^(n-1)), where n = 1 for
      * dipole, 2 for quad, etc.
      */
-    public double lowerFieldLimit() throws ConnectionException, GetException {
+    public double lowerFieldLimit() throws GetException {
         Channel fieldSetChannel = getAndConnectChannel(FIELD_SET_HANDLE);
 
         return fieldSetChannel.lowerControlLimit().doubleValue();

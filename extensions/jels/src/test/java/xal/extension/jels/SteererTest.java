@@ -93,7 +93,7 @@ public class SteererTest extends TestCommon {
         ApertureBucket aper = new ApertureBucket();
         aper.setAperX(R * 1e-3);
         aper.setAperY(R * 1e-3);
-        aper.setShape(ApertureBucket.iRectangle);
+        aper.setShape(ApertureBucket.RECTANGLE);
         AcceleratorSeq sequence = new AcceleratorSeq("QuadTest");
         Quadrupole quad = ElementFactory.createQuadrupole("quad", L * 1e-3, G * Math.signum(probe.getSpeciesCharge()), aper,
                 null, L / 2. * 1e-3);

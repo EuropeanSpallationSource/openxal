@@ -58,6 +58,10 @@ import xal.tools.xml.XmlTableIO;
 public class XMLDataManager {
 
     private static final String MAIN_PATH_PREF_KEY = "mainPath";
+    private static final String SOFT_TYPE_KEY = "softType";
+    private static final String TYPE_KEY = "type";
+    private static final String VERSION_ATTR = "version";
+
     private static final Logger LOGGER = Logger.getLogger(XMLDataManager.class.getName());
 
     /**
@@ -270,8 +274,7 @@ public class XMLDataManager {
      */
     public static String defaultPath() {
         Preferences prefs = xal.tools.apputils.Preferences.nodeForPackage(XMLDataManager.class);
-        String path = prefs.get(MAIN_PATH_PREF_KEY, null);
-        return path;
+        return prefs.get(MAIN_PATH_PREF_KEY, null);
     }
 
     /**
@@ -346,7 +349,7 @@ public class XMLDataManager {
             LOGGER.log(Level.SEVERE, null, exception);
         }
 
-        return absoluteUrl.toString();
+        return absoluteUrl == null ? null : absoluteUrl.toString();
     }
 
     /**
@@ -708,7 +711,6 @@ public class XMLDataManager {
 
         private static final String TIMING_TAG = "timing_source";
         private static final String TIMING_URL_KEY = "url";
-        private static final String TIMING_NAME_KEY = "name";
 
         private static final String DEVICEMAPPING_TAG = "deviceMapping_source";
         private static final String DEVICEMAPPING_URL_KEY = "url";
@@ -791,8 +793,8 @@ public class XMLDataManager {
             final DataAdaptor mainAdaptor = XmlDataAdaptor.adaptorForUrl(mainUrlSpec, false, mainSchema);
             final DataAdaptor sourcesAdaptor = mainAdaptor.childAdaptor(SOURCE_TAG);
 
-            if (sourcesAdaptor.hasAttribute("version")) {
-                final String version = sourcesAdaptor.stringValue("version");
+            if (sourcesAdaptor.hasAttribute(VERSION_ATTR)) {
+                final String version = sourcesAdaptor.stringValue(VERSION_ATTR);
                 if (!version.trim().equals(CURRENT_VERSION)) {
                     throw new OpticsVersionException("The optics file, \"" + mainUrlSpec + "\" has an unsupported version: \"" + version + "\". The supported optics format version is \"" + CURRENT_VERSION + "\".");
                 }
@@ -871,7 +873,7 @@ public class XMLDataManager {
             XmlDataAdaptor docAdaptor = XmlDataAdaptor.newEmptyDocumentAdaptor();
 
             DataAdaptor sourceAdaptor = docAdaptor.createChild(SOURCE_TAG);
-            sourceAdaptor.setValue("version", CURRENT_VERSION);
+            sourceAdaptor.setValue(VERSION_ATTR, CURRENT_VERSION);
 
             writeOpticsRef(sourceAdaptor);
             writeHardwareStatusRef(sourceAdaptor);
@@ -1194,7 +1196,7 @@ public class XMLDataManager {
         }
 
         public void writeFieldMaps(final Accelerator accelerator) {
-            TypeQualifier qualifier = (node) -> node instanceof IFileBasedFieldMap;
+            TypeQualifier qualifier = node -> node instanceof IFileBasedFieldMap;
             // Field Maps - get a list of unique field maps.
             List<AcceleratorNode> fieldMapNodes = accelerator.getAllInclusiveNodesWithQualifier(qualifier);
             for (AcceleratorNode fieldMapNode : fieldMapNodes) {
@@ -1251,8 +1253,8 @@ public class XMLDataManager {
 
             for (final DataAdaptor deviceAdaptor : deviceAdaptors) {
                 try {
-                    final String deviceType = deviceAdaptor.stringValue("type");
-                    final String softType = deviceAdaptor.hasAttribute("softType") ? deviceAdaptor.stringValue("softType") : null;
+                    final String deviceType = deviceAdaptor.stringValue(TYPE_KEY);
+                    final String softType = deviceAdaptor.hasAttribute(SOFT_TYPE_KEY) ? deviceAdaptor.stringValue(SOFT_TYPE_KEY) : null;
                     final String deviceClassName = deviceAdaptor.stringValue("class");
                     @SuppressWarnings("unchecked")    // cast to AcceleratorNode class
                     final Class<AcceleratorNode> deviceClass = (Class<AcceleratorNode>) Class.forName(deviceClassName);
@@ -1292,9 +1294,9 @@ public class XMLDataManager {
                 String softType = typeString.contains(".") ? typeString.substring(typeString.indexOf('.') + 1) : null;
 
                 DataAdaptor typeAdaptor = dmAdaptor.createChild(DEVICE_TAG);
-                typeAdaptor.setValue("type", type);
+                typeAdaptor.setValue(TYPE_KEY, type);
                 if (softType != null) {
-                    typeAdaptor.setValue("softType", softType);
+                    typeAdaptor.setValue(SOFT_TYPE_KEY, softType);
                 }
                 typeAdaptor.setValue("class", entry.getValue().getCanonicalName());
             }
@@ -1359,7 +1361,7 @@ public class XMLDataManager {
                 LOGGER.log(Level.SEVERE, null, exception);
             }
 
-            return absoluteUrl.toString();
+            return absoluteUrl != null ? absoluteUrl.toString() : null;
         }
 
         /**
@@ -1413,11 +1415,11 @@ public class XMLDataManager {
                 urlSpec = absoluteUrlSpecForTableGroup(tableGroup);
                 XmlTableIO.readTableGroupFromUrl(editContext, tableGroup, urlSpec, isValidating);
             } catch (ResourceNotFoundException excpt) {
-                System.err.println("The group: \"" + tableGroup + "\" could not be loaded due to a missing resource: " + urlSpec);
+                LOGGER.log(Level.WARNING, "The group: \"{0}\" could not be loaded due to a missing resource: {1}", new Object[]{tableGroup, urlSpec});
             } catch (ParseException excpt) {
-                System.err.println("The group: \"" + tableGroup + "\" could not be loaded due to parse exception: " + excpt.getMessage());
+                LOGGER.log(Level.WARNING, "The group: \"{0}\" could not be loaded due to parse exception: {1}", new Object[]{tableGroup, excpt.getMessage()});
             } catch (MissingUrlForGroup excpt) {
-                System.err.println("The group: \"" + tableGroup + "\" could not be loaded due to exception: " + excpt.getMessage());
+                LOGGER.log(Level.WARNING, "The group: \"{0}\" could not be loaded due to exception: {1}", new Object[]{tableGroup, excpt.getMessage()});
             }
         }
 
@@ -1439,7 +1441,7 @@ public class XMLDataManager {
                 String urlSpec = absoluteUrlSpecForTableGroup(group);
                 XmlTableIO.writeTableGroupToUrl(editContext, group, urlSpec);
             } catch (MissingUrlForGroup excpt) {
-                System.err.println("Due to unspecified URL, will skip writing group: " + group);
+                LOGGER.log(Level.WARNING, "Due to unspecified URL, will skip writing group: {0}", group);
             }
         }
     }

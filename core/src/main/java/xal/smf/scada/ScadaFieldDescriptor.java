@@ -127,9 +127,7 @@ public class ScadaFieldDescriptor extends XalPvDescriptor {
         //  and place it into a field descriptor
         AScada.Field annTgt = fldTgt.getAnnotation(AScada.Field.class);
 
-        ScadaFieldDescriptor fd = makeFieldDescriptor(strFldName, annTgt);
-
-        return fd;
+        return makeFieldDescriptor(strFldName, annTgt);
     }
 
     /**
@@ -188,7 +186,7 @@ public class ScadaFieldDescriptor extends XalPvDescriptor {
 
         for (int i = 0; i < cntFlds; i++) {
 
-            if (arrCtl[i] != true) {
+            if (!arrCtl[i]) {
                 arrFldDscrs[i] = new ScadaFieldDescriptor(arrNms[i], arrTyps[i], arrRbs[i]);
             } else {
                 arrFldDscrs[i] = new ScadaFieldDescriptor(arrNms[i], arrTyps[i], arrRbs[i], arrCtls[i]);
@@ -307,9 +305,6 @@ public class ScadaFieldDescriptor extends XalPvDescriptor {
      */
     @Override
     protected Object clone() throws CloneNotSupportedException {
-        ScadaFieldDescriptor sfdCopy = new ScadaFieldDescriptor(this.strFldNm, this);
-
-        return sfdCopy;
+        return new ScadaFieldDescriptor(this.strFldNm, this);
     }
-
 }

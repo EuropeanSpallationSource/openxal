@@ -1,7 +1,6 @@
 package xal.smf.impl;
 
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.smf.AcceleratorNode;
 import xal.smf.attr.AttributeBucket;
@@ -103,7 +102,7 @@ public class RfGap extends AcceleratorNode {
      * return the RF amplitude in the gap (kV/m). Note, this method should
      * probably be modified
      */
-    public double getGapAmpAvg() throws ConnectionException, GetException {
+    public double getGapAmpAvg() throws GetException {
         final RfCavity rfCav = (RfCavity) this.getParent();
         return toGapAmpFromCavityAmp(rfCav.getCavAmpAvg());
     }
@@ -122,7 +121,7 @@ public class RfGap extends AcceleratorNode {
      *
      * @return the RF phase in the gap (deg).
      */
-    public double getGapPhaseAvg() throws ConnectionException, GetException {
+    public double getGapPhaseAvg() throws GetException {
         final RfCavity rfCav = (RfCavity) this.getParent();
         return toGapPhaseFromCavityPhase(rfCav.getCavPhaseAvg());
     }
@@ -132,7 +131,7 @@ public class RfGap extends AcceleratorNode {
      *
      * @return the E0TL product (kV)
      */
-    public double getGapE0TL() throws ConnectionException, GetException {
+    public double getGapE0TL() throws GetException {
         return toE0TLFromGapField(getGapAmpAvg());
     }
 
@@ -234,6 +233,7 @@ public class RfGap extends AcceleratorNode {
      * @param cavAmp The amplitude of the first gap (kV/m)
      */
     public void setGapAmp(double cavAmp) {
+        // Do nothing
     }
 
     /**
@@ -243,6 +243,7 @@ public class RfGap extends AcceleratorNode {
      * @param cavPhase The phase of the first gap (deg)
      */
     public void setGapPhase(double cavPhase) {
+        // Do nothing
     }
 
     // the RfGapDataSource interface methods:
@@ -289,9 +290,7 @@ public class RfGap extends AcceleratorNode {
 
         // A set of coefficients is defined for this fit.
         //  Create the fitting function and return it.
-        RealUnivariatePolynomial polyFit = new RealUnivariatePolynomial(arrCoeffs);
-
-        return polyFit;
+        return new RealUnivariatePolynomial(arrCoeffs);
     }
 
     /**
@@ -347,10 +346,7 @@ public class RfGap extends AcceleratorNode {
 
         // A set of coefficients is defined for this fit.
         //  Create the fitting function and return it.
-        RealUnivariatePolynomial polyFit = new RealUnivariatePolynomial(arrCoeffs);
-
-        return polyFit;
-
+        return new RealUnivariatePolynomial(arrCoeffs);
     }
 
     /**
@@ -380,9 +376,7 @@ public class RfGap extends AcceleratorNode {
 
         // A set of coefficients is defined for this fit.
         //  Create the fitting function and return it.
-        RealUnivariatePolynomial polyFit = new RealUnivariatePolynomial(arrCoeffs);
-
-        return polyFit;
+        return new RealUnivariatePolynomial(arrCoeffs);
     }
 
     /**
@@ -431,9 +425,7 @@ public class RfGap extends AcceleratorNode {
 
         // A set of coefficients is defined for this fit.
         //  Create the fitting function and return it.
-        RealUnivariatePolynomial polyFit = new RealUnivariatePolynomial(arrCoeffs);
-
-        return polyFit;
+        return new RealUnivariatePolynomial(arrCoeffs);
     }
 
     /**
@@ -474,11 +466,7 @@ public class RfGap extends AcceleratorNode {
      * returns whether this is the <strong>last</strong> gap of a cavity string
      */
     public boolean isEndCell() {
-        if (bucRfGap.getEndCell() == 1) {
-            return true;
-        } else {
-            return false;
-        }
+        return bucRfGap.getEndCell() == 1;
     }
 
     /**
@@ -495,10 +483,10 @@ public class RfGap extends AcceleratorNode {
      * Added 10/17/02 CKA
      */
     public double getDesignEnergyGain() {
-        double ETL = this.getGapDfltE0TL();
+        double etl = this.getGapDfltE0TL();
         double phi = this.getGapDfltPhase();
 
-        return ETL * Math.cos(phi);
+        return etl * Math.cos(phi);
     }
 
 }

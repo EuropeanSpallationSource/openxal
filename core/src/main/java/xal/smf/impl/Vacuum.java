@@ -50,14 +50,14 @@ public abstract class Vacuum extends AcceleratorNode {
     /**
      * Primary Constructor
      */
-    public Vacuum(final String strId, final ChannelFactory channelFactory) {
+    protected Vacuum(final String strId, final ChannelFactory channelFactory) {
         super(strId, channelFactory);
     }
 
     /**
      * Constructor
      */
-    public Vacuum(final String strId) {
+    protected Vacuum(final String strId) {
         this(strId, null);
     }
 
@@ -68,7 +68,7 @@ public abstract class Vacuum extends AcceleratorNode {
     /**
      * returns pressure (Torr)
      */
-    public double getPressure() throws ConnectionException, GetException {
+    public double getPressure() throws GetException {
         pressC = lazilyGetAndConnect(PRESS_HANDLE, pressC);
         return pressC.getValDbl();
     }

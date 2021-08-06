@@ -4,6 +4,8 @@
 package xal.smf.proxy;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.smf.AcceleratorNode;
 import xal.ca.Channel;
@@ -15,11 +17,15 @@ import xal.ca.Channel;
  */
 public abstract class AbstractPropertyAccessor implements PropertyAccessor {
 
+    private static final Logger LOGGER = Logger.getLogger(AbstractPropertyAccessor.class.getName());
+
+    private static final double SCALE_DFLT = 1.0;
+
     /**
      * Get the scale factor for the specified property
      */
     protected double getPropertyScale(final String propertyName) {
-        return 1.0;
+        return SCALE_DFLT;
     }
 
     /**
@@ -44,7 +50,6 @@ public abstract class AbstractPropertyAccessor implements PropertyAccessor {
         final Map<String, Double> valueMap = new HashMap<>();
 
         // loop over each property by name
-        propertyLoop:
         for (final String propertyName : propertyNames) {
             // get the array of channels that are required to computer the property's value
             final Channel[] propertyChannels = node.getLivePropertyChannels(propertyName);
@@ -61,10 +66,10 @@ public abstract class AbstractPropertyAccessor implements PropertyAccessor {
                 } else {
                     // Missing property values will likely cause a SynchronizationException later if and when the property is needed, so no need to throw any exceptions here.
                     // Just print to standard error for extra diagnostics.
-                    System.err.println("Missing channel value for property: " + propertyName + ", node: " + node.getId() + ", channel: " + channel.channelName());
+                    LOGGER.log(Level.WARNING, "Missing channel value for property: {0}, node: {1}, channel: {2}", new Object[]{propertyName, node.getId(), channel.channelName()});
                     // we need all of a property's channel values to compute the property value, so abandon the current property if we are missing any
                     // abandon this property and continue with the next property if any
-                    continue propertyLoop;
+                    break;
                 }
             }
 

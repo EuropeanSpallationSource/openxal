@@ -175,7 +175,7 @@ public class WireScanner extends ProfileDevice {
         /**
          * A list of commands which may contain arguments
          */
-        public static final CMD[] ARR_CMDARG = {
+        private static final CMD[] ARR_CMDARG = {
             MOVE,
             BRAKE,
             SETUPSCAN,
@@ -188,7 +188,7 @@ public class WireScanner extends ProfileDevice {
          * Command-issuing handle
          */
         public static final String HANDLE_CMD = "Command";
-        public final AccessibleProperty cmd = new AccessibleProperty("command", HANDLE_CMD);
+        public final AccessibleProperty command = new AccessibleProperty("command", HANDLE_CMD);
 
         /**
          * command result handle
@@ -1140,11 +1140,8 @@ public class WireScanner extends ProfileDevice {
          * @since Oct 8, 2015
          */
         public double getScanlLength() {
-
             // Get the total stroke length of the actuator arm
-            double dblLen = this.stepCount * this.stepLength;
-
-            return dblLen;
+            return this.stepCount * this.stepLength;
         }
 
         /*
@@ -1196,11 +1193,8 @@ public class WireScanner extends ProfileDevice {
          */
         @Override
         public double getInitialPosition(ANGLE angle) {
-
             // Get the initial position of the scanner arm
-            double dblPosInit = this.posInit;
-
-            return dblPosInit;
+            return this.posInit;
         }
 
         /**
@@ -1447,9 +1441,7 @@ public class WireScanner extends ProfileDevice {
          * @author Christopher K. Allen
          */
         public TRGEVT getTrigEvent() {
-            TRGEVT evt = TRGEVT.getEventFromValue(this.event);
-
-            return evt;
+            return TRGEVT.getEventFromValue(this.event);
         }
 
 
@@ -2489,37 +2481,6 @@ public class WireScanner extends ProfileDevice {
         }
 
         /*
-         * DataListener Interface
-         */
-        /**
-         * Load the data structure fields from the given data source.
-         *
-         * @since Jun 9, 2010
-         * @author Christopher K. Allen
-         *
-         * @see
-         * xal.smf.impl.WireScanner2.Data#update(xal.tools.data.DataAdaptor)
-         */
-        @Override
-        public void update(DataAdaptor adaptor) {
-            super.update(adaptor);
-        }
-
-        /**
-         * Save the data structure field values to the given data sink.
-         *
-         *
-         * @since Jun 9, 2010
-         * @author Christopher K. Allen
-         *
-         * @see xal.smf.impl.WireScanner2.Data#write(xal.tools.data.DataAdaptor)
-         */
-        @Override
-        public void write(DataAdaptor adaptor) {
-            super.write(adaptor);
-        }
-
-        /*
          * Initialization
          */
         /**
@@ -2706,7 +2667,7 @@ public class WireScanner extends ProfileDevice {
      * @throws ConnectionException Unable to connect to result readback channel
      * @throws GetException Unable to read result from readback channel
      */
-    public int[] getCommandResult() throws ConnectionException, GetException {
+    public int[] getCommandResult() throws GetException {
         final Channel channel = getAndConnectChannel(CMD.HANDLE_RESULT);
 
         return channel.getArrInt();
@@ -2732,9 +2693,7 @@ public class WireScanner extends ProfileDevice {
     @Override
     public synchronized boolean testConnection(Collection<ScadaFieldDescriptor> setFds, double dblTmOut)
             throws BadChannelException {
-        boolean bolResult = this.tstConnect.testConnection(setFds, dblTmOut);
-
-        return bolResult;
+        return this.tstConnect.testConnection(setFds, dblTmOut);
     }
 
     /**
@@ -2781,9 +2740,7 @@ public class WireScanner extends ProfileDevice {
         // Retrieve the channel and create the monitor
         final String strHnd = pvdFld.getPvDescriptor().getRbHandle();
         final Channel channel = getAndConnectChannel(strHnd);
-        final Monitor monitor = channel.addMonitorValue(snkEvents, intEvtType);
-
-        return monitor;
+        return channel.addMonitorValue(snkEvents, intEvtType);
     }
 
     /**
@@ -2849,14 +2806,13 @@ public class WireScanner extends ProfileDevice {
 
         // Set the new processing parameters according to the section of beam we are selecting
         // number of pulses to delay
-        double dblDlyPls = 0.0;
+        double dblDlyPls;
         // corresponding delay time (in seconds)
         double dblDlyTm = 0.0;
 
         switch (enmBmSct) {
 
             case HEAD:
-                dblDlyPls = 0.0;
                 dblDlyTm = 0.0;
                 break;
 
@@ -2885,6 +2841,8 @@ public class WireScanner extends ProfileDevice {
                 dblDlyTm = 0.0;
                 dblWndSz = 1.0E-6 * cntTtlPls;
                 break;
+            default:
+                break;
         }
 
         // Send the new processing parameters to the hardware
@@ -2893,5 +2851,4 @@ public class WireScanner extends ProfileDevice {
 
         this.configureHardware(cfgPrcg);
     }
-
 }

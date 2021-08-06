@@ -99,12 +99,9 @@ public class SignalAttrs extends ScadaRecord {
                 String strFldNm = this.strPropNm;
                 String strFldHnd = (String) this.mthAnn.invoke(annSig);
 
-                ScadaFieldDescriptor sfdFld = new ScadaFieldDescriptor(strFldNm, double.class, strFldHnd);
-
-                return sfdFld;
-
+                return new ScadaFieldDescriptor(strFldNm, double.class, strFldHnd);
             } catch (IllegalArgumentException | IllegalAccessException e) {
-                LOGGER.log(Level.SEVERE, "Unspecified channel handle for signal attribute " + this.strPropNm, e);
+                LOGGER.log(Level.SEVERE, e, () -> "Unspecified channel handle for signal attribute " + this.strPropNm);
             } catch (InvocationTargetException e) {
                 LOGGER.log(Level.SEVERE, "Unable to extract property value " + this.mthAnn.getName() + " from " + annSig.getClass(), e);
             }
@@ -142,13 +139,9 @@ public class SignalAttrs extends ScadaRecord {
             Class<? extends ScadaRecord> clsData = data.getClass();
             try {
                 Field fldDataFld = clsData.getField(getFieldName());
-                double dblFldVal = fldDataFld.getDouble(data);
-
-                return dblFldVal;
-
+                return fldDataFld.getDouble(data);
             } catch (SecurityException | NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
                 LOGGER.log(Level.SEVERE, "SERIOUS ERROR: WireScanner$SignalAttrs#getFieldValue()", e);
-
             }
 
             return 0.0;
@@ -171,11 +164,9 @@ public class SignalAttrs extends ScadaRecord {
             Class<? extends ScadaRecord> clsAttrs = attrs.getClass();
             try {
                 Field fldAttrFld = clsAttrs.getField(getFieldName());
-                fldAttrFld.setDouble(attrs, dblVal);;
-
+                fldAttrFld.setDouble(attrs, dblVal);
             } catch (SecurityException | NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
                 LOGGER.log(Level.SEVERE, "SERIOUS ERROR: WireScanner$SignalAttrs#setFieldValue()", e);
-
             }
 
             return 0.0;
@@ -210,7 +201,6 @@ public class SignalAttrs extends ScadaRecord {
          * @since Feb 4, 2013
          */
         private ATTRS(final String strPropNm, String strAnnFldNm) {
-
             // Create an error message in case this operation fails
             String strErrMsg = "Instantiation error while extracting meta data from annotation " + ASignalAttrs.class;
 
@@ -255,9 +245,7 @@ public class SignalAttrs extends ScadaRecord {
             lstDscr.add(sfdSigFld);
         }
 
-        SignalAttrs sigInit = new SignalAttrs(lstDscr);
-
-        return sigInit;
+        return new SignalAttrs(lstDscr);
     }
 
 
@@ -265,35 +253,11 @@ public class SignalAttrs extends ScadaRecord {
      * Data Fields
      */
     /**
-     * Maximum value of the signal over baseline
-     */
-    private double amp;
-
-    /**
-     * Value of the signal baseline, i.e., sensor output at zero input
-     */
-    private double offset;
-
-    /**
-     * Area under the signal curve minus baseline
-     */
-    private double area;
-
-    /**
-     * Axis location of the center of mass
-     */
-    private double mean;
-
-    /**
      * The statistical standard deviation
      */
     private double stdev;
 
-    private static final Logger LOGGER;
-
-    static {
-        LOGGER = Logger.getLogger(SignalAttrs.class.getName());
-    }
+    private static final Logger LOGGER = Logger.getLogger(SignalAttrs.class.getName());
 
     /*
      * Initialization
@@ -446,17 +410,4 @@ public class SignalAttrs extends ScadaRecord {
 
         super.update(daptSgnl);
     }
-
-    /**
-     *
-     * @see xal.smf.scada.ScadaRecord#write(xal.tools.data.DataAdaptor)
-     *
-     * @author Christopher K. Allen
-     * @since Oct 15, 2014
-     */
-    @Override
-    public void write(DataAdaptor daptSink) throws BadStructException {
-        super.write(daptSink);
-    }
-
 }

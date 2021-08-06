@@ -6,8 +6,6 @@
  */
 package xal.smf.scada;
 
-import xal.smf.scada.ScadaFieldDescriptor;
-import xal.smf.scada.BadStructException;
 import xal.ca.Channel;
 import xal.ca.ChannelRecord;
 import xal.ca.ConnectionException;
@@ -23,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.logging.Logger;
 
 /**
  * Base class for data records containing data or parameters sets managed by
@@ -39,6 +38,7 @@ import java.util.MissingResourceException;
  */
 public abstract class ScadaRecord implements DataListener, Cloneable {
 
+    private static final Logger LOGGER = Logger.getLogger(ScadaRecord.class.getName());
 
     /*
      * Internal Classes
@@ -577,62 +577,49 @@ public abstract class ScadaRecord implements DataListener, Cloneable {
             if (clsFldType == byte.class || clsFldType == Byte.class) {
                 Byte bytVal = recPv.byteValue();
                 fldDataFld.set(this, bytVal);
-
             } else if (clsFldType == byte[].class) {
                 byte[] arrBytVal = recPv.byteArray();
                 fldDataFld.set(this, arrBytVal);
-
             } else if (clsFldType == int.class || clsFldType == Integer.class) {
                 Integer intVal = recPv.intValue();
                 fldDataFld.setInt(this, intVal);
-
             } else if (clsFldType == int[].class) {
                 int[] arrIntVal = recPv.intArray();
                 fldDataFld.set(this, arrIntVal);
-
             } else if (clsFldType == short.class || clsFldType == Short.class) {
                 Short sht = recPv.shortValue();
                 fldDataFld.setInt(this, sht);
-
             } else if (clsFldType == short[].class) {
                 short[] arrLngVal = recPv.shortArray();
                 fldDataFld.set(this, arrLngVal);
-
             } else if (clsFldType == float.class || clsFldType == Float.class) {
                 Float fltVal = recPv.floatValue();
                 fldDataFld.setFloat(this, fltVal);
-
             } else if (clsFldType == float[].class) {
                 float[] arFltVal = recPv.floatArray();
                 fldDataFld.set(this, arFltVal);
-
             } else if (clsFldType == double.class || clsFldType == Double.class) {
                 Double dblVal = recPv.doubleValue();
                 fldDataFld.setDouble(this, dblVal);
-
             } else if (clsFldType == double[].class) {
                 double[] arrDblVal = chanPv.getArrDbl();
                 fldDataFld.set(this, arrDblVal);
-
             } else if (clsFldType == String.class) {
                 String strVal = chanPv.getValString();
                 fldDataFld.set(this, strVal);
-
             } else {
                 String strType = clsFldType.getName();
                 String strMsg = "ScadaStruct#setFieldFromPv(): "
                         + "Unsupported data type " + strType
                         + " for channel handle " + strHndPv;
-                System.err.println(strMsg);
+                LOGGER.severe(strMsg);
                 throw new BadStructException(strMsg);
             }
-
         } catch (SecurityException | NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
             String strMsg = "ScadaStruct#getHardwareValues:"
                     + " unable to initialize field " + strFldName
                     + ", incompatible types for " + strHndPv;
             throw new BadStructException(strMsg, e);
-
         }
     }
 
@@ -677,62 +664,46 @@ public abstract class ScadaRecord implements DataListener, Cloneable {
             if (clsFldType == byte.class) {
                 byte bytVal = fldDataFld.getByte(this);
                 chanPv.putVal(bytVal);
-
             } else if (clsFldType == byte[].class) {
                 byte[] arrBytVal = (byte[]) fldDataFld.get(this);
                 chanPv.putVal(arrBytVal);
-
             } else if (clsFldType == int.class) {
                 int intVal = fldDataFld.getInt(this);
                 chanPv.putVal(intVal);
-
             } else if (clsFldType == int[].class) {
                 int[] arrIntVal = (int[]) fldDataFld.get(this);
                 chanPv.putVal(arrIntVal);
-
             } else if (clsFldType == float.class) {
                 float fltVal = fldDataFld.getFloat(this);
                 chanPv.putVal(fltVal);
-
             } else if (clsFldType == float[].class) {
                 float[] arrFltVal = (float[]) fldDataFld.get(this);
                 chanPv.putVal(arrFltVal);
-
             } else if (clsFldType == double.class) {
                 double dblVal = fldDataFld.getDouble(this);
                 chanPv.putVal(dblVal);
-
             } else if (clsFldType == double[].class) {
                 double[] arrDblVal = (double[]) fldDataFld.get(this);
                 chanPv.putVal(arrDblVal);
-
             } else if (clsFldType == String.class) {
                 String strVal = (String) fldDataFld.get(this);
                 chanPv.putVal(strVal);
-
             } else {
                 String strType = clsFldType.getName();
                 String strMsg = "ScadaRecord#setPv: "
                         + "Unknown data type " + strType
                         + " for channel handle " + strHndPv;
-                System.err.println(strMsg);
+                LOGGER.severe(strMsg);
                 throw new BadStructException(strMsg);
-
             }
-
         } catch (SecurityException e) {
             throw new BadStructException("ScadaRecord#getPv(): Security Exception: inaccessible field " + strFldName);
-
         } catch (NoSuchFieldException e) {
             throw new BadStructException("ScadaRecord#getPv(): ERROR: No such field " + strFldName);
-
         } catch (IllegalArgumentException e) {
             throw new BadStructException("ScadaRecord#getPv(): Illegal type conversion for field " + strFldName);
-
         } catch (IllegalAccessException e) {
             throw new BadStructException("ScadaRecord#getPv(): Illegal access attempt for field " + strFldName);
-
         }
     }
-
 }

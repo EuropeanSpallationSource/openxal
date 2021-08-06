@@ -96,13 +96,10 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
     }
 
     public String[] getAttrNames() {
-        // number of attribute names
-        int nNames;
         // keys of the map (i.e., attribute names)
         java.util.Set<String> setKeys;
 
         setKeys = mapAttrs.keySet();
-        nNames = setKeys.size();
 
         return setKeys.toArray(new String[]{});
     }
@@ -122,7 +119,7 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
      *  Setting attribute values directly
      */
     public boolean setAttrValue(String strName, int newVal) {
-        if (!checkAttribute(strName, Attribute.iInteger)) {
+        if (!checkAttribute(strName, Attribute.INTEGER)) {
             return false;
         }
 
@@ -131,7 +128,7 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
     }
 
     public boolean setAttrValue(String strName, long newVal) {
-        if (!checkAttribute(strName, Attribute.iLong)) {
+        if (!checkAttribute(strName, Attribute.LONG)) {
             return false;
         }
 
@@ -140,7 +137,7 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
     }
 
     public boolean setAttrValue(String strName, float newVal) {
-        if (!checkAttribute(strName, Attribute.iFloat)) {
+        if (!checkAttribute(strName, Attribute.FLOAT)) {
             return false;
         }
 
@@ -149,7 +146,7 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
     }
 
     public boolean setAttrValue(String strName, double newVal) {
-        if (!checkAttribute(strName, Attribute.iDouble)) {
+        if (!checkAttribute(strName, Attribute.DOUBLE)) {
             return false;
         }
 
@@ -158,7 +155,7 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
     }
 
     public boolean setAttrValue(String strName, String newVal) {
-        if (!checkAttribute(strName, Attribute.iString)) {
+        if (!checkAttribute(strName, Attribute.STRING)) {
             return false;
         }
 
@@ -168,7 +165,7 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
 
     // Arrays...
     public boolean setAttrValue(String strName, int[] newVal) {
-        if (!checkAttribute(strName, Attribute.iArrInt)) {
+        if (!checkAttribute(strName, Attribute.ARR_INT)) {
             return false;
         }
 
@@ -177,7 +174,7 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
     }
 
     public boolean setAttrValue(String strName, long[] newVal) {
-        if (!checkAttribute(strName, Attribute.iArrLng)) {
+        if (!checkAttribute(strName, Attribute.ARR_LNG)) {
             return false;
         }
 
@@ -186,7 +183,7 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
     }
 
     public boolean setAttrValue(String strName, float[] newVal) {
-        if (!checkAttribute(strName, Attribute.iArrFlt)) {
+        if (!checkAttribute(strName, Attribute.ARR_FLT)) {
             return false;
         }
 
@@ -195,7 +192,7 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
     }
 
     public boolean setAttrValue(String strName, double[] newVal) {
-        if (!checkAttribute(strName, Attribute.iArrDbl)) {
+        if (!checkAttribute(strName, Attribute.ARR_DBL)) {
             return false;
         }
 
@@ -204,7 +201,7 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
     }
 
     public boolean setAttrValue(String strName, String[] newVal) {
-        if (!checkAttribute(strName, Attribute.iArrStr)) {
+        if (!checkAttribute(strName, Attribute.ARR_STR)) {
             return false;
         }
 
@@ -246,11 +243,8 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
         }
 
         Attribute attr = mapAttrs.get(strName);
-        if (attr.getType() != iType) {
-            return false;
-        }
 
-        return true;
+        return attr.getType() == iType;
     }
 
     public static class MissingAttributeException extends RuntimeException {
@@ -262,12 +256,6 @@ public abstract class AttributeBucket implements java.io.Serializable, DataListe
 
         public MissingAttributeException(String message) {
             super(message);
-        }
-
-        private static MissingAttributeException newException(AttributeBucket bucket, String attributeName) {
-            String message = "Error, missing attribute: " + attributeName
-                    + ", for bucket type: " + bucket.getType();
-            return new MissingAttributeException(message);
         }
     }
 }

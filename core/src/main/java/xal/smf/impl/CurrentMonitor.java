@@ -53,33 +53,33 @@ public class CurrentMonitor extends AcceleratorNode {
     }
 
     public static final String Q_INTEGRAL_HANDLE = "Particles";
-    public final AccessibleProperty particles = new AccessibleProperty("Particles", Q_INTEGRAL_HANDLE);
+    public final AccessibleProperty particles = new AccessibleProperty(Q_INTEGRAL_HANDLE);
     private Channel qIntegralC = null;
 
     public static final String T_AVG_LEN_HANDLE = "DisplayLength";
-    public final AccessibleProperty displayLength = new AccessibleProperty("DisplayLength", T_AVG_LEN_HANDLE);
+    public final AccessibleProperty displayLength = new AccessibleProperty(T_AVG_LEN_HANDLE);
     private Channel tAvgLenC = null;
 
     public static final String I_TBT_HANDLE = "currentTBT";
-    public final AccessibleProperty currentTBT = new AccessibleProperty("currentTBT", I_TBT_HANDLE);
+    public final AccessibleProperty currentTBT = new AccessibleProperty(I_TBT_HANDLE);
     private Channel iTBTC = null;
 
     public static final String T_DELAY_HANDLE = "tDelay";
-    public final AccessibleProperty tDelay = new AccessibleProperty("tDelay", T_DELAY_HANDLE);
+    public final AccessibleProperty tDelay = new AccessibleProperty(T_DELAY_HANDLE);
     private Channel tDelayC = null;
 
     public static final String I_AVG_HANDLE = "currentAvg";
-    public final AccessibleProperty currentAvg = new AccessibleProperty("currentAvg", I_AVG_HANDLE);
+    public final AccessibleProperty currentAvg = new AccessibleProperty(I_AVG_HANDLE);
     private Channel iAvgC = null;
 
     public static final String I_MAX_HANDLE = "currentMax";
-    public final AccessibleProperty currentMax = new AccessibleProperty("currentMax", I_MAX_HANDLE);
+    public final AccessibleProperty currentMax = new AccessibleProperty(I_MAX_HANDLE);
     private Channel iMaxC = null;
 
     /**
      * Integrated current over macropulse
      */
-    public double getQIntegral() throws ConnectionException, GetException {
+    public double getQIntegral() throws GetException {
         qIntegralC = this.lazilyGetAndConnect(Q_INTEGRAL_HANDLE, qIntegralC);
         return qIntegralC.getValDbl();
     }
@@ -87,7 +87,7 @@ public class CurrentMonitor extends AcceleratorNode {
     /**
      * Averaged pulse length
      */
-    public double getTAvgLen() throws ConnectionException, GetException {
+    public double getTAvgLen() throws GetException {
         tAvgLenC = this.lazilyGetAndConnect(T_AVG_LEN_HANDLE, tAvgLenC);
         return tAvgLenC.getValDbl();
     }
@@ -95,7 +95,7 @@ public class CurrentMonitor extends AcceleratorNode {
     /**
      * Turn by turn current
      */
-    public double[] getITBT() throws ConnectionException, GetException {
+    public double[] getITBT() throws GetException {
         iTBTC = this.lazilyGetAndConnect(I_TBT_HANDLE, iTBTC);
         return iTBTC.getArrDbl();
     }
@@ -108,8 +108,7 @@ public class CurrentMonitor extends AcceleratorNode {
      * @throws ConnectionException
      * @throws GetException
      */
-    public double[] getITBTWithBeamOnly() throws ConnectionException,
-            GetException {
+    public double[] getITBTWithBeamOnly() throws GetException {
         double[] fullArray = getITBT();
         double iMax = -100.;
         for (int i = 0; i < fullArray.length; i++) {
@@ -120,8 +119,8 @@ public class CurrentMonitor extends AcceleratorNode {
         double[] beamArray;
         // do calculation only if > 1.mA of peak current
         if (iMax > 1.) {
-            int start = 0;
-            int end = fullArray.length;
+            int start;
+            int end;
             int counter = 0;
             while (fullArray[counter] < iMax / 10.) {
                 counter++;
@@ -150,7 +149,7 @@ public class CurrentMonitor extends AcceleratorNode {
     /**
      * Time delay
      */
-    public double getTDelay() throws ConnectionException, GetException {
+    public double getTDelay() throws GetException {
         tDelayC = this.lazilyGetAndConnect(T_DELAY_HANDLE, tDelayC);
         return tDelayC.getValDbl();
     }
@@ -158,7 +157,7 @@ public class CurrentMonitor extends AcceleratorNode {
     /**
      * Average beam current
      */
-    public double getIAvg() throws ConnectionException, GetException {
+    public double getIAvg() throws GetException {
         iAvgC = this.lazilyGetAndConnect(I_AVG_HANDLE, iAvgC);
         return iAvgC.getValDbl();
     }
@@ -166,7 +165,7 @@ public class CurrentMonitor extends AcceleratorNode {
     /**
      * Maximum beam current
      */
-    public double getIMax() throws ConnectionException, GetException {
+    public double getIMax() throws GetException {
         iMaxC = this.lazilyGetAndConnect(I_MAX_HANDLE, iMaxC);
         return iMaxC.getValDbl();
     }

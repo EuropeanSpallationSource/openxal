@@ -94,7 +94,7 @@ public class ExtractionKicker extends Dipole {
      *
      * @return the power supply voltage readback
      */
-    public double getVoltage() throws ConnectionException, GetException {
+    public double getVoltage() throws GetException {
         final Channel channel = getAndConnectChannel(VOLTAGE_RB_HANDLE);
         return channel.getValDbl();
     }
@@ -104,7 +104,7 @@ public class ExtractionKicker extends Dipole {
      *
      * @return the power supply voltage setting
      */
-    public double getVoltageSetting() throws ConnectionException, GetException {
+    public double getVoltageSetting() throws GetException {
         final Channel channel = getAndConnectChannel(VOLTAGE_SET_HANDLE);
         return channel.getValDbl();
     }
@@ -114,7 +114,7 @@ public class ExtractionKicker extends Dipole {
      *
      * @param voltage is the new voltage to apply to the power supply.
      */
-    public void setVoltage(final double voltage) throws ConnectionException, PutException {
+    public void setVoltage(final double voltage) throws PutException {
         final Channel channel = getAndConnectChannel(VOLTAGE_SET_HANDLE);
         channel.putVal(voltage);
     }

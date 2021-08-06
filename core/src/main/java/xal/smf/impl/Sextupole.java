@@ -22,7 +22,7 @@ public class Sextupole extends Electromagnet {
     /**
      * identifies the type of sextupole (horizontal, vertical, skew)
      */
-    protected String type;
+    protected String nodeType;
 
     // static initializer
     static {
@@ -67,7 +67,7 @@ public class Sextupole extends Electromagnet {
      */
     @Override
     public String getType() {
-        return type;
+        return nodeType;
     }
 
     /**
@@ -80,7 +80,7 @@ public class Sextupole extends Electromagnet {
     @Override
     public void update(final DataAdaptor adaptor) {
         if (adaptor.hasAttribute("type")) {
-            type = adaptor.stringValue("type");
+            nodeType = adaptor.stringValue("type");
         }
         super.update(adaptor);
     }
@@ -103,7 +103,7 @@ public class Sextupole extends Electromagnet {
      */
     @Override
     public int getOrientation() {
-        return (type.equalsIgnoreCase(HORIZONTAL_TYPE) || type.equalsIgnoreCase(HORIZONTAL_SKEW_TYPE)) ? HORIZONTAL : VERTICAL;
+        return (nodeType.equalsIgnoreCase(HORIZONTAL_TYPE) || nodeType.equalsIgnoreCase(HORIZONTAL_SKEW_TYPE)) ? HORIZONTAL : VERTICAL;
     }
 
     /**
@@ -113,7 +113,7 @@ public class Sextupole extends Electromagnet {
      */
     @Override
     public boolean isSkew() {
-        return type.equalsIgnoreCase(HORIZONTAL_SKEW_TYPE) || type.equalsIgnoreCase(VERTICAL_SKEW_TYPE);
+        return nodeType.equalsIgnoreCase(HORIZONTAL_SKEW_TYPE) || nodeType.equalsIgnoreCase(VERTICAL_SKEW_TYPE);
     }
 
     /**
@@ -127,7 +127,7 @@ public class Sextupole extends Electromagnet {
      */
     @Override
     public boolean isKindOf(final String type) {
-        return type.equalsIgnoreCase(this.type) || super.isKindOf(type);
+        return type.equalsIgnoreCase(this.nodeType) || super.isKindOf(type);
     }
 
 }

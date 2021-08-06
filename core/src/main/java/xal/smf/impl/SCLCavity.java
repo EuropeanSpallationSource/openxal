@@ -159,7 +159,7 @@ public class SCLCavity extends RfCavity {
      */
     @Deprecated()
     public double getAvgTTF(double beta) {
-        double ttf = 0.;
+        double ttf;
         int cavNum = (Integer.parseInt(getId().substring(10, 12)));
         if (cavNum < 12) {
             ttf = -22.05 * Math.pow(beta, 2.) + 28.539 * beta - 8.5272;

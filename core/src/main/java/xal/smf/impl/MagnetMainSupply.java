@@ -25,9 +25,9 @@ public class MagnetMainSupply extends MagnetPowerSupply {
      */
     public static final String FIELD_BOOK_HANDLE = "B_Book";
 
-    public final AccessibleProperty fieldSet = new AccessibleProperty("fieldSet", FIELD_RB_HANDLE, FIELD_SET_HANDLE);
-    public final AccessibleProperty bBook = new AccessibleProperty("B_Book", FIELD_BOOK_HANDLE);
-    public final AccessibleProperty cycleEnable = new AccessibleProperty("cycleEnable", CYCLE_ENABLE_HANDLE);
+    public final AccessibleProperty fieldSet = new AccessibleProperty(FIELD_SET_HANDLE, FIELD_RB_HANDLE, FIELD_SET_HANDLE);
+    public final AccessibleProperty bBook = new AccessibleProperty(FIELD_BOOK_HANDLE, FIELD_BOOK_HANDLE);
+    public final AccessibleProperty cycleEnable = new AccessibleProperty(CYCLE_ENABLE_HANDLE, CYCLE_ENABLE_HANDLE);
 
     /**
      * Creates a new instance of MainSupply
@@ -52,7 +52,7 @@ public class MagnetMainSupply extends MagnetPowerSupply {
      *
      * @param enable True to enable cycling; false to disable cycling.
      */
-    protected void setCycleEnable(final boolean enable) throws ConnectionException, PutException {
+    protected void setCycleEnable(final boolean enable) throws PutException {
         Channel cycleEnableChannel = getAndConnectChannel(CYCLE_ENABLE_HANDLE);
 
         int flag = (enable) ? 1 : 0;
@@ -65,7 +65,7 @@ public class MagnetMainSupply extends MagnetPowerSupply {
      *
      * @return the field contribution
      */
-    public double getField() throws ConnectionException, GetException {
+    public double getField() throws GetException {
         Channel fieldRBChannel = getAndConnectChannel(FIELD_RB_HANDLE);
 
         return fieldRBChannel.getValDbl();
@@ -79,7 +79,7 @@ public class MagnetMainSupply extends MagnetPowerSupply {
      * @param newField is the new field level in T/(m^(n-1)), where n = 1 for
      * dipole, 2 for quad, etc.
      */
-    public void setField(double newField) throws ConnectionException, PutException {
+    public void setField(double newField) throws PutException {
         Channel fieldSetChannel = getAndConnectChannel(FIELD_SET_HANDLE);
 
         fieldSetChannel.putVal(newField);
@@ -92,7 +92,7 @@ public class MagnetMainSupply extends MagnetPowerSupply {
      * @return the field setting in T/(m^(n-1)), where n = 1 for dipole, 2 for
      * quad, etc.
      */
-    public double getFieldSetting() throws ConnectionException, GetException {
+    public double getFieldSetting() throws GetException {
         Channel fieldSetChannel = getAndConnectChannel(FIELD_SET_HANDLE);
 
         return fieldSetChannel.getValDbl();
@@ -103,7 +103,7 @@ public class MagnetMainSupply extends MagnetPowerSupply {
      * 2 for quad, etc. This is the preferred upper field limit for setting
      * magnets as it represents an operational limit.
      */
-    public double upperDisplayFieldLimit() throws ConnectionException, GetException {
+    public double upperDisplayFieldLimit() throws GetException {
         return getAndConnectChannel(FIELD_SET_HANDLE).upperDisplayLimit().doubleValue();
     }
 
@@ -112,7 +112,7 @@ public class MagnetMainSupply extends MagnetPowerSupply {
      * 2 for quad, etc. This is the preferred lower field limit for setting
      * magnets as it represents an operational limit.
      */
-    public double lowerDisplayFieldLimit() throws ConnectionException, GetException {
+    public double lowerDisplayFieldLimit() throws GetException {
         return getAndConnectChannel(FIELD_SET_HANDLE).lowerDisplayLimit().doubleValue();
     }
 
@@ -120,7 +120,7 @@ public class MagnetMainSupply extends MagnetPowerSupply {
      * get the field upper settable limit in T/(m^(n-1)), where n = 1 for
      * dipole, 2 for quad, etc.
      */
-    public double upperFieldLimit() throws ConnectionException, GetException {
+    public double upperFieldLimit() throws GetException {
         return getAndConnectChannel(FIELD_SET_HANDLE).upperControlLimit().doubleValue();
     }
 
@@ -128,7 +128,7 @@ public class MagnetMainSupply extends MagnetPowerSupply {
      * get the field lower settable limit in T/(m^(n-1)), where n = 1 for
      * dipole, 2 for quad, etc.
      */
-    public double lowerFieldLimit() throws ConnectionException, GetException {
+    public double lowerFieldLimit() throws GetException {
         return getAndConnectChannel(FIELD_SET_HANDLE).lowerControlLimit().doubleValue();
     }
 
@@ -136,7 +136,7 @@ public class MagnetMainSupply extends MagnetPowerSupply {
      * Get the field upper alarm limit in T/(m^(n-1)), where n = 1 for dipole, 2
      * for quad, etc.
      */
-    public double upperAlarmFieldLimit() throws ConnectionException, GetException {
+    public double upperAlarmFieldLimit() throws GetException {
         return getAndConnectChannel(FIELD_SET_HANDLE).upperAlarmLimit().doubleValue();
     }
 
@@ -144,7 +144,7 @@ public class MagnetMainSupply extends MagnetPowerSupply {
      * Get the field lower alarm limit in T/(m^(n-1)), where n = 1 for dipole, 2
      * for quad, etc.
      */
-    public double lowerAlarmFieldLimit() throws ConnectionException, GetException {
+    public double lowerAlarmFieldLimit() throws GetException {
         return getAndConnectChannel(FIELD_SET_HANDLE).lowerAlarmLimit().doubleValue();
     }
 
@@ -152,7 +152,7 @@ public class MagnetMainSupply extends MagnetPowerSupply {
      * Get the field upper warning limit in T/(m^(n-1)), where n = 1 for dipole,
      * 2 for quad, etc.
      */
-    public double upperWarningFieldLimit() throws ConnectionException, GetException {
+    public double upperWarningFieldLimit() throws GetException {
         return getAndConnectChannel(FIELD_SET_HANDLE).upperWarningLimit().doubleValue();
     }
 
@@ -160,7 +160,7 @@ public class MagnetMainSupply extends MagnetPowerSupply {
      * Get the field lower warning limit in T/(m^(n-1)), where n = 1 for dipole,
      * 2 for quad, etc.
      */
-    public double lowerWarningFieldLimit() throws ConnectionException, GetException {
+    public double lowerWarningFieldLimit() throws GetException {
         return getAndConnectChannel(FIELD_SET_HANDLE).lowerWarningLimit().doubleValue();
     }
 

@@ -139,20 +139,20 @@ public class RfGapBucket extends AttributeBucket {
         super.registerAttribute(ARR_NAMES[9], attSpCoeffs, "(Polynomial) coefficients for an expansion of the S(b) derivative (w.r.t. k) about the design value.");
     }
 
-    public void setLength(double Val) {
-        attLength.set(Val);
+    public void setLength(double val) {
+        attLength.set(val);
     }
 
-    public void setAmpFactor(double Val) {
-        attAmpFactor.set(Val);
+    public void setAmpFactor(double val) {
+        attAmpFactor.set(val);
     }
 
-    public void setPhaseFactor(double Val) {
-        attPhaseFactor.set(Val);
+    public void setPhaseFactor(double val) {
+        attPhaseFactor.set(val);
     }
 
-    public void setTTF(double Val) {
-        attTTF.set(Val);
+    public void setTTF(double val) {
+        attTTF.set(val);
     }
 
     public void setEndCell(int intVal) {

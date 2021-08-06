@@ -7,7 +7,6 @@ import java.util.List;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
@@ -39,12 +38,12 @@ public class RfCavity extends AcceleratorSeq {
     public static final String T_DELAY_HANDLE = "tDelay";
     public static final String BLANK_BEAM_HANDLE = "blankBeam";
 
-    public final AccessibleProperty amplitude = new AccessibleProperty("amplitude", CAV_AMP_AVG_HANDLE, CAV_AMP_SET_HANDLE, () -> getDfltCavAmp(), (channelValues) -> toCavAmpAvgFromCA(channelValues[0]));
-    public final AccessibleProperty phase = new AccessibleProperty("phase", CAV_PHASE_AVG_HANDLE, CAV_PHASE_SET_HANDLE, () -> getDfltAvgCavPhase(), (channelValues) -> toCavPhaseAvgFromCA(channelValues[0]));
-    public final AccessibleProperty deltaTRFStart = new AccessibleProperty("deltaTRFStart", DELTA_TRF_START_HANDLE);
-    public final AccessibleProperty deltaTRFEnd = new AccessibleProperty("deltaTRFEnd", DELTA_TRF_END_HANDLE);
-    public final AccessibleProperty tDelay = new AccessibleProperty("tDelay", T_DELAY_HANDLE);
-    public final AccessibleProperty blankBeam = new AccessibleProperty("blankBeam", BLANK_BEAM_HANDLE);
+    public final AccessibleProperty amplitude = new AccessibleProperty("amplitude", CAV_AMP_AVG_HANDLE, CAV_AMP_SET_HANDLE, this::getDfltCavAmp, channelValues -> toCavAmpAvgFromCA(channelValues[0]));
+    public final AccessibleProperty phase = new AccessibleProperty("phase", CAV_PHASE_AVG_HANDLE, CAV_PHASE_SET_HANDLE, this::getDfltAvgCavPhase, channelValues -> toCavPhaseAvgFromCA(channelValues[0]));
+    public final AccessibleProperty deltaTRFStart = new AccessibleProperty(DELTA_TRF_START_HANDLE);
+    public final AccessibleProperty deltaTRFEnd = new AccessibleProperty(DELTA_TRF_END_HANDLE);
+    public final AccessibleProperty tDelay = new AccessibleProperty(T_DELAY_HANDLE);
+    public final AccessibleProperty blankBeam = new AccessibleProperty(BLANK_BEAM_HANDLE);
 
     /**
      * accelerator node type
@@ -123,9 +122,6 @@ public class RfCavity extends AcceleratorSeq {
         return TYPE;
     }
 
-    ;
-
-
     /**
      * {@inheritDoc}
      */
@@ -168,12 +164,7 @@ public class RfCavity extends AcceleratorSeq {
         // gap in a cavity to come from an external source.
         while (gapIter.hasNext()) {
             RfGap gap = gapIter.next();
-
-            if (index == 0) {
-                gap.setFirstGap(true);
-            } else {
-                gap.setFirstGap(false);
-            }
+            gap.setFirstGap(index == 0);
             index += 1;
         }
     }
@@ -199,7 +190,6 @@ public class RfCavity extends AcceleratorSeq {
      */
     @Override
     public void addBucket(AttributeBucket buc) {
-
         if (buc.getClass().equals(RfCavityBucket.class)) {
             setRfField((RfCavityBucket) buc);
         }
@@ -217,10 +207,9 @@ public class RfCavity extends AcceleratorSeq {
      * to this cavity note the cavity amp [MV] = klystron amplitude * ampFactor
      * where ampFactor is a calibration factor determined experimentally
      */
-    public double getCavAmpAvg() throws ConnectionException, GetException {
+    public double getCavAmpAvg() throws GetException {
         cavAmpAvgC = this.lazilyGetAndConnect(CAV_AMP_AVG_HANDLE, cavAmpAvgC);
-        final double amplitudeAverage = toCavAmpAvgFromCA(cavAmpAvgC.getValDbl());
-        return amplitudeAverage;
+        return toCavAmpAvgFromCA(cavAmpAvgC.getValDbl());
     }
 
     /**
@@ -249,10 +238,9 @@ public class RfCavity extends AcceleratorSeq {
      * phase + phaseOffset where phaseOffset is a calibration factor determined
      * experimentally
      */
-    public double getCavPhaseAvg() throws ConnectionException, GetException {
+    public double getCavPhaseAvg() throws GetException {
         cavPhaseAvgC = this.lazilyGetAndConnect(CAV_PHASE_AVG_HANDLE, cavPhaseAvgC);
-        final double phaseAverage = toCavPhaseAvgFromCA(cavPhaseAvgC.getValDbl());
-        return phaseAverage;
+        return toCavPhaseAvgFromCA(cavPhaseAvgC.getValDbl());
     }
 
     /**
@@ -363,8 +351,6 @@ public class RfCavity extends AcceleratorSeq {
         final int startIndex = (gapCount - 1) / 2;
         final int endIndex = 1 + gapCount / 2;
 
-        final List<RfGap> gaps = new ArrayList<>(endIndex - startIndex);
-
         double phaseSum = 0.0;
         double totalLength = 0.0;
         for (int index = startIndex; index < endIndex; index++) {
@@ -382,7 +368,7 @@ public class RfCavity extends AcceleratorSeq {
      * ampFactor where ampFactor is a calibration factor determined
      * experimentally
      */
-    public void setCavAmp(double newAmp) throws ConnectionException, PutException {
+    public void setCavAmp(double newAmp) throws PutException {
         cavAmpSetC = this.lazilyGetAndConnect(amplitude.getSetHandle(), cavAmpSetC);
         cavAmpSetC.putVal(toCAFromCavAmpAvg(newAmp));
     }
@@ -392,7 +378,7 @@ public class RfCavity extends AcceleratorSeq {
      * klystron phase + phaseOffset where phaseOffset is a calibration factor
      * determined experimentally
      */
-    public void setCavPhase(double newPhase) throws ConnectionException, PutException {
+    public void setCavPhase(double newPhase) throws PutException {
         cavPhaseSetC = this.lazilyGetAndConnect(phase.getSetHandle(), cavPhaseSetC);
         cavPhaseSetC.putVal(toCAFromCavPhaseAvg(newPhase));
     }
@@ -400,7 +386,7 @@ public class RfCavity extends AcceleratorSeq {
     /**
      * return the present live set point for the amplitude
      */
-    public double getCavAmpSetPoint() throws ConnectionException, GetException {
+    public double getCavAmpSetPoint() throws GetException {
         cavAmpSetC = this.lazilyGetAndConnect(amplitude.getSetHandle(), cavAmpSetC);
         return cavAmpSetC.getValDbl() * bucRfCavity.getAmpFactor();
     }
@@ -408,7 +394,7 @@ public class RfCavity extends AcceleratorSeq {
     /**
      * return the present live set point for the phase
      */
-    public double getCavPhaseSetPoint() throws ConnectionException, GetException {
+    public double getCavPhaseSetPoint() throws GetException {
         cavPhaseSetC = this.lazilyGetAndConnect(phase.getSetHandle(), cavPhaseSetC);
         return cavPhaseSetC.getValDbl();
     }
@@ -418,9 +404,9 @@ public class RfCavity extends AcceleratorSeq {
      *
      * @return true if the beam is blanked and false if not
      */
-    public boolean getBlankBeam() throws ConnectionException, GetException {
+    public boolean getBlankBeam() throws GetException {
         final Channel blankBeamChannel = getAndConnectChannel(BLANK_BEAM_HANDLE);
-        return blankBeamChannel != null ? (blankBeamChannel.getValEnum() == 1 ? true : false) : false;
+        return blankBeamChannel != null ? (blankBeamChannel.getValEnum() == 1) : false;
     }
 
     /**
@@ -428,7 +414,7 @@ public class RfCavity extends AcceleratorSeq {
      *
      * @param mode true to blank the beam and false for continuous on
      */
-    public void setBlankBeam(final boolean mode) throws ConnectionException, PutException {
+    public void setBlankBeam(final boolean mode) throws PutException {
         final Channel blankBeamChannel = getAndConnectChannel(blankBeam.getSetHandle());
         if (blankBeamChannel != null) {
             blankBeamChannel.putVal(mode ? 1 : 0);
@@ -560,5 +546,4 @@ public class RfCavity extends AcceleratorSeq {
     public double getCavFreq() {
         return this.getRfField().getFrequency();
     }
-
 }

@@ -387,8 +387,7 @@ public class ScadaCheckConnect {
             return true;
         }
 
-        if (lstRequests.testChannelConnects(dblTmOut) == false) {
-
+        if (!lstRequests.testChannelConnects(dblTmOut)) {
             this.lstChnFail = lstRequests.getPending();
 
             return false;

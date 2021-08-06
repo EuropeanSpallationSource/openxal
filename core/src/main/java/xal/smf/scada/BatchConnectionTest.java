@@ -80,6 +80,26 @@ public class BatchConnectionTest {
         public void connectionDropped(Channel channel) {
             channel.removeConnectionListener(this);
         }
+
+        /**
+         * Removes the given channel from the list of channels pending
+         * connection.
+         *
+         * @param chn channel to remove
+         *
+         * @author Christopher K. Allen
+         * @since Mar 11, 2011
+         */
+        private void connectionAcknowledged(Channel chn) {
+            synchronized (objLock) {
+                setPending.remove(chn);
+                setPassed.add(chn);
+
+                if (setPending.isEmpty()) {
+                    thdCurr.interrupt();
+                }
+            }
+        }
     }
 
     /*
@@ -340,25 +360,6 @@ public class BatchConnectionTest {
             ConnectionMonitor monConn = new ConnectionMonitor();
             chnReq.addConnectionListener(monConn);
             setPending.add(chnReq);
-        }
-    }
-
-    /**
-     * Removes the given channel from the list of channels pending connection.
-     *
-     * @param chn channel to remove
-     *
-     * @author Christopher K. Allen
-     * @since Mar 11, 2011
-     */
-    private void connectionAcknowledged(Channel chn) {
-        synchronized (objLock) {
-            setPending.remove(chn);
-            setPassed.add(chn);
-
-            if (setPending.isEmpty()) {
-                thdCurr.interrupt();
-            }
         }
     }
 }

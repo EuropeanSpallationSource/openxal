@@ -16,7 +16,7 @@ public abstract class DipoleCorr extends Dipole {
     /**
      * Primary Constructor
      */
-    public DipoleCorr(final String strId, final ChannelFactory channelFactory) {
+    protected DipoleCorr(final String strId, final ChannelFactory channelFactory) {
         super(strId, channelFactory);
         setMagBucket(new DipoleCorrBucket());
     }

@@ -7,10 +7,11 @@ package xal.smf.impl;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.impl.qualify.ElementTypeManager;
@@ -23,6 +24,8 @@ import xal.tools.data.DataAdaptor;
  * @author tap
  */
 public class TrimmedQuadrupole extends Quadrupole implements TrimmedMagnet {
+
+    private static final Logger LOGGER = Logger.getLogger(TrimmedQuadrupole.class.getName());
 
     public static final String TYPE = "QT";
     public static final String HORIZONTAL_TYPE = "QTH";
@@ -102,7 +105,7 @@ public class TrimmedQuadrupole extends Quadrupole implements TrimmedMagnet {
         try {
             handles.addAll(getTrimSupply().getChannelSuite().getHandles());
         } catch (NullPointerException exception) {
-            System.err.println("exception getting handles from the trim supply \"" + getTrimSupply() + "\" for trimmed quadrupole: " + getId());
+            LOGGER.log(Level.SEVERE, "exception getting handles from the trim supply \"{0}\" for trimmed quadrupole: {1}", new Object[]{getTrimSupply(), getId()});
             throw exception;
         }
         return handles;
@@ -140,7 +143,7 @@ public class TrimmedQuadrupole extends Quadrupole implements TrimmedMagnet {
      * @param newField is the new field level in T/(m^(n-1)), where n = 1 for
      * dipole, 2 for quad, etc.
      */
-    public void setTrimField(final double newField) throws ConnectionException, PutException {
+    public void setTrimField(final double newField) throws PutException {
         getTrimSupply().setField(toCAFromField(newField));
     }
 
@@ -151,7 +154,7 @@ public class TrimmedQuadrupole extends Quadrupole implements TrimmedMagnet {
      * @return the field setting in T/(m^(n-1)), where n = 1 for dipole, 2 for
      * quad, etc.
      */
-    public double getTrimFieldSetting() throws ConnectionException, GetException {
+    public double getTrimFieldSetting() throws GetException {
         return toFieldFromCA(getTrimSupply().getFieldSetting());
     }
 
@@ -162,14 +165,14 @@ public class TrimmedQuadrupole extends Quadrupole implements TrimmedMagnet {
      * @return the field setting in T/(m^(n-1)), where n = 1 for dipole, 2 for
      * quad, etc.
      */
-    public double getTotalFieldSetting() throws ConnectionException, GetException {
+    public double getTotalFieldSetting() throws GetException {
         return getFieldSetting() + getTrimFieldSetting();
     }
 
     /**
      * Get the trim power supply current in this electromagnet via ca (A)
      */
-    public double getTrimCurrent() throws ConnectionException, GetException {
+    public double getTrimCurrent() throws GetException {
         return getTrimSupply().getCurrent();
     }
 
@@ -178,7 +181,7 @@ public class TrimmedQuadrupole extends Quadrupole implements TrimmedMagnet {
      *
      * @param newCurrent is the new current (A)
      */
-    public void setTrimCurrent(final double newCurrent) throws ConnectionException, PutException {
+    public void setTrimCurrent(final double newCurrent) throws PutException {
         getTrimSupply().setCurrent(newCurrent);
     }
 
@@ -190,6 +193,6 @@ public class TrimmedQuadrupole extends Quadrupole implements TrimmedMagnet {
      */
     @Override
     public int getOrientation() {
-        return (type.equalsIgnoreCase(HORIZONTAL_TYPE)) ? HORIZONTAL : VERTICAL;
+        return (nodeType.equalsIgnoreCase(HORIZONTAL_TYPE)) ? HORIZONTAL : VERTICAL;
     }
 }

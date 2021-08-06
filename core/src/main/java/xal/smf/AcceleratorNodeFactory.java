@@ -79,7 +79,7 @@ public final class AcceleratorNodeFactory {
 
         try {
             @SuppressWarnings("rawtypes")
-            final Constructor<T> constructor = nodeClass.getConstructor(new Class[]{String.class, ChannelFactory.class});
+            final Constructor<T> constructor = nodeClass.getConstructor(String.class, ChannelFactory.class);
             constructors.put(nodeType, constructor);
         } catch (NoSuchMethodException | SecurityException exception) {
             final String message = "AcceleratorNodeFactory: class registeration failure for type: " + nodeType;

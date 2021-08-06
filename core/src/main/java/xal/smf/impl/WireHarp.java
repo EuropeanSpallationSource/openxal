@@ -88,7 +88,7 @@ public class WireHarp extends ProfileDevice {
          * Command-issuing handle
          */
         public static final String HANDLE_CMD = "Command";
-        public final AccessibleProperty cmd = new AccessibleProperty("command", HANDLE_CMD);
+        public final AccessibleProperty command = new AccessibleProperty("command", HANDLE_CMD);
 
         /**
          * command result handle
@@ -631,7 +631,7 @@ public class WireHarp extends ProfileDevice {
                 case DIA:
                     return this.arrPosDia;
                 default:
-                    return null;
+                    return new double[0];
             }
         }
 
@@ -664,9 +664,8 @@ public class WireHarp extends ProfileDevice {
             int indMax = this.getSampleCount(angle) - 1;
             double[] arrPos = this.getSamplePositions(angle);
             double posMax = arrPos[indMax];
-            double dblLen = posMax - this.getInitialPosition(angle);
 
-            return dblLen;
+            return posMax - this.getInitialPosition(angle);
         }
     }
 
@@ -1251,50 +1250,6 @@ public class WireHarp extends ProfileDevice {
         setSigs.getDia().setCnt(CNT_WIRES);
     }
 
-    /**
-     * This methods processes the given data set removing samples from invalid
-     * wires. These wires are identified in the DAQ structure provided in the
-     * arguments. The given signal set is modified so that the
-     * <code>Signal</code> objects within have new <code>Signal#pos</code> and
-     * <code>Signal#val</code> objects.
-     *
-     * @param setSigs the set of signals to be processed and modified
-     * @param cfgDaq data structure containing the valid wire info
-     *
-     * @author Christopher K. Allen
-     * @since Jun 5, 2014
-     *
-     * @deprecated I don't want to throw this away but I don't want anyone using
-     * it yet either.
-     */
-    @Deprecated
-    private static void cleanTheDataSet(SignalSet setSigs, DaqConfig cfgDaq) {
-
-        for (ANGLE angle : ANGLE.values()) {
-            int cntWires = cfgDaq.getSampleCount(angle);
-            int cntValid = cfgDaq.validWireCount(angle);
-
-            double[] arrPos = new double[cntValid];
-            double[] arrVal = new double[cntValid];
-            Signal sigAng = setSigs.getSignal(angle);
-            int indVld = 0;
-            for (int indSmp = 0; indSmp < cntWires; indSmp++) {
-                if (!cfgDaq.validWire(angle, indSmp)) {
-                    continue;
-                }
-
-                arrPos[indVld] = sigAng.getPos()[indSmp];
-                arrVal[indVld] = sigAng.getVal()[indSmp];
-                indVld++;
-            }
-
-            sigAng.setCnt(cntValid);
-            sigAng.setPos(arrPos);
-            sigAng.setVal(arrVal);
-        }
-    }
-
-
     /*
      * SMF Requirements
      */
@@ -1368,7 +1323,7 @@ public class WireHarp extends ProfileDevice {
      * @throws PutException unable to set channel value
      * @throws InterruptedException command buffer reset thread interrupted
      */
-    public synchronized void runCommand(final CMD cmd) throws ConnectionException, PutException, InterruptedException {
+    public synchronized void runCommand(final CMD cmd) throws PutException, InterruptedException {
         // Issue command
         Channel channel = getAndConnectChannel(CMD.HANDLE_CMD);
         channel.putVal(cmd.getCode());
@@ -1384,7 +1339,7 @@ public class WireHarp extends ProfileDevice {
      * @throws ConnectionException Unable to connect to result readback channel
      * @throws GetException Unable to read result from readback channel
      */
-    public int[] getCommandResult() throws ConnectionException, GetException {
+    public int[] getCommandResult() throws GetException {
         final Channel channel = getAndConnectChannel(CMD.HANDLE_RESULT);
 
         return channel.getArrInt();

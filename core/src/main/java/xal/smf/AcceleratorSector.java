@@ -87,27 +87,10 @@ public final class AcceleratorSector extends AcceleratorSeq {
         super(strId, intReserve);
     }
 
-    /**
-     * Adds node to the Sector at the tail. Sector become the owner of the node.
-     * CKA 08.02
-     *
-     * @param node node to be appended to Sector
-     * @return true if successfully add, false if node already is owned by
-     * Sector
-     *
-     */
-    @Override
-    public boolean addNode(AcceleratorNode node) {
-        return super.addNode(node);
-    }
-
     public AcceleratorSeq concatenate(AcceleratorSector sec) {
         // new name
         String newStrId = this.getId() + ":" + sec.getId();
         // concatenated sequence
-        AcceleratorSeq seqNew = new AcceleratorSeq(newStrId);
-
-        return seqNew;
+        return new AcceleratorSeq(newStrId);
     }
-
 }

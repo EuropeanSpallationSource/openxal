@@ -22,21 +22,21 @@ public class BLM extends AcceleratorNode {
      * BLMs official avg channel handle
      */
     public static final String LOSS_AVG_HANDLE = "lossAvg";
-    public final AccessibleProperty lossAvg = new AccessibleProperty("lossAvg", LOSS_AVG_HANDLE);
+    public final AccessibleProperty lossAvg = new AccessibleProperty(LOSS_AVG_HANDLE, LOSS_AVG_HANDLE);
     private Channel lossAvgC = null;
 
     /**
      * BLMs official integrated channel handle
      */
     public static final String LOSS_INT_HANDLE = "lossInt";
-    public final AccessibleProperty lossInt = new AccessibleProperty("lossInt", LOSS_INT_HANDLE);
+    public final AccessibleProperty lossInt = new AccessibleProperty(LOSS_INT_HANDLE, LOSS_INT_HANDLE);
     private Channel lossIntC = null;
 
     /**
      * BLM official tAvgLen channel handle
      */
     public static final String T_AVG_LEN_HANDLE = "tAvgLen";
-    public final AccessibleProperty tAvgLen = new AccessibleProperty("tAvgLen", T_AVG_LEN_HANDLE);
+    public final AccessibleProperty tAvgLen = new AccessibleProperty(T_AVG_LEN_HANDLE, T_AVG_LEN_HANDLE);
     private Channel tAvgLenC = null;
 
     static {
@@ -83,7 +83,7 @@ public class BLM extends AcceleratorNode {
     /**
      * returns average loss
      */
-    public double getLossAvg() throws ConnectionException, GetException {
+    public double getLossAvg() throws GetException {
         lossAvgC = lazilyGetAndConnect(LOSS_AVG_HANDLE, lossAvgC);
         return lossAvgC.getValDbl();
     }
@@ -91,7 +91,7 @@ public class BLM extends AcceleratorNode {
     /**
      * returns integrated loss
      */
-    public double getLossInt() throws ConnectionException, GetException {
+    public double getLossInt() throws GetException {
         lossIntC = lazilyGetAndConnect(LOSS_INT_HANDLE, lossIntC);
         return lossIntC.getValDbl();
     }
@@ -99,7 +99,7 @@ public class BLM extends AcceleratorNode {
     /**
      * returns length of the averaged period (micro-sec)
      */
-    public double getTAvgLen() throws ConnectionException, GetException {
+    public double getTAvgLen() throws GetException {
         tAvgLenC = lazilyGetAndConnect(T_AVG_LEN_HANDLE, tAvgLenC);
         return tAvgLenC.getValDbl();
     }

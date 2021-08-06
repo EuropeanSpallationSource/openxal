@@ -4,7 +4,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.tools.data.DataAdaptor;
 import xal.smf.AcceleratorNode;
@@ -105,8 +104,6 @@ public class Electrostatic extends AcceleratorNode {
         super.addBucket(buc);
     }
 
-    ;
-    
     @Override
     public String getType() {
         return TYPE;
@@ -139,7 +136,7 @@ public class Electrostatic extends AcceleratorNode {
      * @return the field in T/(m^(n-1)), where n = 1 for dipole, 2 for quad,
      * etc.
      */
-    public double getField() throws ConnectionException, GetException {
+    public double getField() throws GetException {
         return (useFieldReadback) ? getFieldReadback() : getTotalFieldSetting();
     }
 
@@ -151,7 +148,7 @@ public class Electrostatic extends AcceleratorNode {
      * @return the field setting in T/(m^(n-1)), where n = 1 for dipole, 2 for
      * quad, etc.
      */
-    public double getTotalFieldSetting() throws ConnectionException, GetException {
+    public double getTotalFieldSetting() throws GetException {
         return getFieldSetting();
     }
 
@@ -161,7 +158,7 @@ public class Electrostatic extends AcceleratorNode {
      * @return the readback field in T/(m^(n-1)), where n = 1 for dipole, 2 for
      * quad, etc.
      */
-    public double getFieldReadback() throws ConnectionException, GetException {
+    public double getFieldReadback() throws GetException {
         Channel fieldRBChannel = getAndConnectChannel(FIELD_RB_HANDLE);
 
         return toFieldFromCA(fieldRBChannel.getValDbl());
@@ -174,7 +171,7 @@ public class Electrostatic extends AcceleratorNode {
      * @return the field setting in T/(m^(n-1)), where n = 1 for dipole, 2 for
      * quad, etc.
      */
-    public double getFieldSetting() throws ConnectionException, GetException {
+    public double getFieldSetting() throws GetException {
         return toFieldFromCA(getMainSupply().getFieldSetting());
     }
 

@@ -7,8 +7,6 @@
 //
 package xal.smf.impl.qualify;
 
-import xal.smf.*;
-
 /**
  * Factory to create qualifiers.
  */
@@ -41,13 +39,10 @@ public class QualifierFactory {
      * @param softType software type for comparison
      */
     public static TypeQualifier getSoftTypeQualifier(final String softType) {
-        return new TypeQualifier() {
-            @Override
-            public boolean match(final AcceleratorNode node) {
-                final String nodeSoftType = node.getSoftType();
-                // if neither soft type is null, then compare strings for equality for best reliability otherwise compare pointers
-                return nodeSoftType != null && softType != null ? nodeSoftType.equals(softType) : nodeSoftType == softType;
-            }
+        return node -> {
+            final String nodeSoftType = node.getSoftType();
+            // if neither soft type is null, then compare strings for equality for best reliability otherwise compare pointers
+            return nodeSoftType != null && softType != null ? nodeSoftType.equals(softType) : false;
         };
     }
 
@@ -91,19 +86,8 @@ public class QualifierFactory {
      */
     protected static void populateStatusQualifiers() {
         if (goodStatusQualifier == null) {
-            goodStatusQualifier = new TypeQualifier() {
-                @Override
-                public boolean match(final AcceleratorNode node) {
-                    return node.getStatus();
-                }
-            };
-
-            badStatusQualifier = new TypeQualifier() {
-                @Override
-                public boolean match(final AcceleratorNode node) {
-                    return !node.getStatus();
-                }
-            };
+            goodStatusQualifier = node -> node.getStatus();
+            badStatusQualifier = node -> !node.getStatus();
         }
     }
 }

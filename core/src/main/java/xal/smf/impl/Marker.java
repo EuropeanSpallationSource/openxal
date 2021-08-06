@@ -14,7 +14,7 @@ public class Marker extends AcceleratorNode {
      * for generic marker
      */
     public static final String TYPE = "marker";
-    private String type = TYPE;
+    private String nodeType = TYPE;
 
     private String softType = null;
 
@@ -72,7 +72,7 @@ public class Marker extends AcceleratorNode {
      */
     @Override
     public String getType() {
-        return type;
+        return nodeType;
     }
 
     /**
@@ -109,7 +109,7 @@ public class Marker extends AcceleratorNode {
     @Override
     public void update(final DataAdaptor adaptor) {
         if (adaptor.hasAttribute("type")) {
-            type = adaptor.stringValue("type");
+            nodeType = adaptor.stringValue("type");
         }
         if (adaptor.hasAttribute("softType")) {
             softType = adaptor.stringValue("softType");
@@ -130,7 +130,7 @@ public class Marker extends AcceleratorNode {
      */
     @Override
     public boolean isKindOf(final String type) {
-        return type.equalsIgnoreCase(this.type) || super.isKindOf(type);
+        return type.equalsIgnoreCase(this.nodeType) || super.isKindOf(type);
     }
 
 }

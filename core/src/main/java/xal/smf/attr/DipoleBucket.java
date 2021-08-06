@@ -17,8 +17,6 @@
  */
 package xal.smf.attr;
 
-import xal.tools.data.DataAdaptor;
-
 /**
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
@@ -86,9 +84,9 @@ public class DipoleBucket extends MagnetBucket {
         return attPathLength.getDouble();
     }
 
-    ;
-    
-    /** return the dipole rotation angle for entrance pole face (in degrees) */
+    /**
+     * return the dipole rotation angle for entrance pole face (in degrees)
+     */
     public double getDipoleEntrRotAngle() {
         return attDipoleEntrRotAngle.getDouble();
     }
@@ -125,7 +123,6 @@ public class DipoleBucket extends MagnetBucket {
         attPathLength.set(dblVal);
     }
 
-    ;
     public void setDipoleEntrRotAngle(double dblVal) {
         attDipoleEntrRotAngle.set(dblVal);
     }
@@ -147,10 +144,4 @@ public class DipoleBucket extends MagnetBucket {
     public void setDipoleQuadComponent(double dblVal) {
         attDipoleQuadComponent.set(dblVal);
     }
-
-    @Override
-    public void update(DataAdaptor adaptor) throws NumberFormatException {
-        super.update(adaptor);
-    }
-
 }

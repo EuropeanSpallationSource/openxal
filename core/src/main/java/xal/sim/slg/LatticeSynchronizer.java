@@ -576,7 +576,7 @@ public class LatticeSynchronizer implements Visitor {
         } else if (ModelProxy.PARAMSRC_LIVE.equals(paramSrc)) {
             try {
                 return rfgap.getGapPhaseAvg() * Math.PI / 180.;
-            } catch (ConnectionException | GetException e) {
+            } catch (GetException e) {
                 if (e.getMessage() != null) {
                     LOGGER.log(Level.INFO, e.getMessage());
                 } else {
@@ -603,7 +603,7 @@ public class LatticeSynchronizer implements Visitor {
         } else if (ModelProxy.PARAMSRC_LIVE.equals(paramSrc)) {
             try {
                 return rfgap.getGapE0TL() * 1.e6;
-            } catch (ConnectionException | GetException e) {
+            } catch (GetException e) {
                 if (e.getMessage() != null) {
                     LOGGER.log(Level.INFO, e.getMessage());
                 } else {
@@ -634,7 +634,7 @@ public class LatticeSynchronizer implements Visitor {
                 } else {
                     return magnet.getDesignField();
                 }
-            } catch (ConnectionException | GetException e) {
+            } catch (GetException e) {
                 if (e.getMessage() != null) {
                     LOGGER.log(Level.INFO, e.getMessage());
                 } else {
@@ -663,7 +663,7 @@ public class LatticeSynchronizer implements Visitor {
                 } else {
                     return magnet.getDesignField();
                 }
-            } catch (ConnectionException | GetException e) {
+            } catch (GetException e) {
                 if (e.getMessage() != null) {
                     LOGGER.log(Level.INFO, null, e);
                 } else {

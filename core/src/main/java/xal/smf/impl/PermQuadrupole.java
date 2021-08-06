@@ -28,7 +28,7 @@ public class PermQuadrupole extends PermanentMagnet {
     public static final String VERTICAL_TYPE = "PMQV";
 
     // instance variables
-    protected String type = "PQ";
+    protected String nodeType = "PQ";
 
     // static initializer
     static {
@@ -69,7 +69,7 @@ public class PermQuadrupole extends PermanentMagnet {
      */
     @Override
     public String getType() {
-        return type;
+        return nodeType;
     }
 
     /**
@@ -82,7 +82,7 @@ public class PermQuadrupole extends PermanentMagnet {
     @Override
     public void update(DataAdaptor adaptor) {
         if (adaptor.hasAttribute("type")) {
-            type = adaptor.stringValue("type");
+            nodeType = adaptor.stringValue("type");
         }
         super.update(adaptor);
     }
@@ -105,10 +105,10 @@ public class PermQuadrupole extends PermanentMagnet {
      */
     @Override
     public int getOrientation() {
-        if (type.equalsIgnoreCase(TYPE)) {
+        if (nodeType.equalsIgnoreCase(TYPE)) {
             return NO_ORIENTATION;
         } else {
-            return (type.equalsIgnoreCase(HORIZONTAL_TYPE)) ? HORIZONTAL : VERTICAL;
+            return (nodeType.equalsIgnoreCase(HORIZONTAL_TYPE)) ? HORIZONTAL : VERTICAL;
         }
     }
 
@@ -123,6 +123,6 @@ public class PermQuadrupole extends PermanentMagnet {
      */
     @Override
     public boolean isKindOf(String compType) {
-        return compType.equalsIgnoreCase(this.type) || super.isKindOf(compType);
+        return compType.equalsIgnoreCase(this.nodeType) || super.isKindOf(compType);
     }
 }

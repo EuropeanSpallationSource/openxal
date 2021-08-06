@@ -10,7 +10,9 @@ public class EDipole extends Electrostatic {
     /**
      * standard type for instances of this class
      */
-    public static String TYPE = "EDipole";
+    public static final String TYPE = "EDipole";
+
+    private String dipoleTYPE = TYPE;
 
     // orientation constants
     public static final int NO_ORIENTATION = 0;
@@ -56,7 +58,11 @@ public class EDipole extends Electrostatic {
 
     @Override
     public String getType() {
-        return TYPE;
+        return dipoleTYPE;
+    }
+
+    public void setType(String newType) {
+        dipoleTYPE = newType;
     }
 
     /**
@@ -67,7 +73,7 @@ public class EDipole extends Electrostatic {
      */
     @Override
     public int getOrientation() {
-        return TYPE.equalsIgnoreCase(HORIZONTAL_TYPE) ? HORIZONTAL : VERTICAL;
+        return dipoleTYPE.equalsIgnoreCase(HORIZONTAL_TYPE) ? HORIZONTAL : VERTICAL;
     }
 
     /**
@@ -94,18 +100,18 @@ public class EDipole extends Electrostatic {
     @Override
     public void update(final DataAdaptor adaptor) {
         if (adaptor.hasAttribute("type")) {
-            TYPE = adaptor.stringValue("type");
+            setType(adaptor.stringValue("type"));
         }
         super.update(adaptor);
         ElementTypeManager typeManager = ElementTypeManager.defaultManager();
         // check if this type already registered first.  If not, register it.
-        if (!(typeManager.match(EQuad.class, TYPE))) {
-            typeManager.registerType(EQuad.class, TYPE);
+        if (!(typeManager.match(EQuad.class, dipoleTYPE))) {
+            typeManager.registerType(EQuad.class, dipoleTYPE);
         }
     }
 
     @Override
     public boolean isKindOf(final String type) {
-        return type.equalsIgnoreCase(TYPE) || super.isKindOf(type);
+        return type.equalsIgnoreCase(dipoleTYPE) || super.isKindOf(type);
     }
 }

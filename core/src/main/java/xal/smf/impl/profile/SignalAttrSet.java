@@ -120,7 +120,8 @@ public abstract class SignalAttrSet implements DataListener {
             case DIA:
                 this.dia = attrSignal;
                 break;
-            default:  ;
+            default:
+                break;
         }
     }
 

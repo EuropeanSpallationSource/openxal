@@ -25,80 +25,80 @@ public class RingBPM extends BPM {
      */
     public static final String STAGE1_LEN_HANDLE = "Stage1Len";
     public static final String STAGE1_LEN_RB_HANDLE = "Stage1LenRB";
-    public final AccessibleProperty stage1Len = new AccessibleProperty("Stage1Len", STAGE1_LEN_RB_HANDLE, STAGE1_LEN_HANDLE);
+    public final AccessibleProperty stage1Len = new AccessibleProperty(STAGE1_LEN_HANDLE, STAGE1_LEN_RB_HANDLE, STAGE1_LEN_HANDLE);
 
     /**
      * BPM stage 1 gain channel handle
      */
     public static final String STAGE1_GAIN_HANDLE = "Stage1Gain";
     public static final String STAGE1_GAIN_RB_HANDLE = "Stage1GainRB";
-    public final AccessibleProperty stage1Gain = new AccessibleProperty("Stage1Gain", STAGE1_GAIN_RB_HANDLE, STAGE1_GAIN_HANDLE);
+    public final AccessibleProperty stage1Gain = new AccessibleProperty(STAGE1_GAIN_HANDLE, STAGE1_GAIN_RB_HANDLE, STAGE1_GAIN_HANDLE);
 
     /**
      * BPM stage 1 method channel handle
      */
     public static final String STAGE1_METHOD_HANDLE = "Stage1Method";
     public static final String STAGE1_METHOD_RB_HANDLE = "Stage1MethodRB";
-    public final AccessibleProperty stage1Method = new AccessibleProperty("Stage1Method", STAGE1_METHOD_RB_HANDLE, STAGE1_METHOD_HANDLE);
+    public final AccessibleProperty stage1Method = new AccessibleProperty(STAGE1_METHOD_HANDLE, STAGE1_METHOD_RB_HANDLE, STAGE1_METHOD_HANDLE);
 
     /**
      * BPM stage 2 length channel handle
      */
     public static final String STAGE2_LEN_HANDLE = "Stage2Len";
     public static final String STAGE2_LEN_RB_HANDLE = "Stage2LenRB";
-    public final AccessibleProperty stage2Len = new AccessibleProperty("Stage2Len", STAGE2_LEN_RB_HANDLE, STAGE2_LEN_HANDLE);
+    public final AccessibleProperty stage2Len = new AccessibleProperty(STAGE2_LEN_HANDLE, STAGE2_LEN_RB_HANDLE, STAGE2_LEN_HANDLE);
 
     /**
      * BPM stage 2 gain channel handle
      */
     public static final String STAGE2_GAIN_HANDLE = "Stage2Gain";
     public static final String STAGE2_GAIN_RB_HANDLE = "Stage2GainRB";
-    public final AccessibleProperty stage2Gain = new AccessibleProperty("Stage2Gain", STAGE2_GAIN_RB_HANDLE, STAGE2_GAIN_HANDLE);
+    public final AccessibleProperty stage2Gain = new AccessibleProperty(STAGE2_GAIN_HANDLE, STAGE2_GAIN_RB_HANDLE, STAGE2_GAIN_HANDLE);
 
     /**
      * BPM stage 2 method channel handle
      */
     public static final String STAGE2_METHOD_HANDLE = "Stage2Method";
     public static final String STAGE2_METHOD_RB_HANDLE = "Stage2MethodRB";
-    public final AccessibleProperty stage2Method = new AccessibleProperty("Stage2Method", STAGE2_METHOD_RB_HANDLE, STAGE2_METHOD_HANDLE);
+    public final AccessibleProperty stage2Method = new AccessibleProperty(STAGE2_METHOD_HANDLE, STAGE2_METHOD_RB_HANDLE, STAGE2_METHOD_HANDLE);
 
     /**
      * BPM stage 3 length channel handle
      */
     public static final String STAGE3_LEN_HANDLE = "Stage3Len";
     public static final String STAGE3_LEN_RB_HANDLE = "Stage3LenRB";
-    public final AccessibleProperty stage3Len = new AccessibleProperty("Stage3Len", STAGE3_LEN_RB_HANDLE, STAGE3_LEN_HANDLE);
+    public final AccessibleProperty stage3Len = new AccessibleProperty(STAGE3_LEN_HANDLE, STAGE3_LEN_RB_HANDLE, STAGE3_LEN_HANDLE);
 
     // BPM stage 3 gain channel handle
     public static final String STAGE3_GAIN_HANDLE = "Stage3Gain";
     public static final String STAGE3_GAIN_RB_HANDLE = "Stage3GainRB";
-    public final AccessibleProperty stage3Gain = new AccessibleProperty("Stage3Gain", STAGE3_GAIN_RB_HANDLE, STAGE3_GAIN_HANDLE);
+    public final AccessibleProperty stage3Gain = new AccessibleProperty(STAGE3_GAIN_HANDLE, STAGE3_GAIN_RB_HANDLE, STAGE3_GAIN_HANDLE);
 
     // BPM stage 3 method channel handle
     public static final String STAGE3_METHOD_HANDLE = "Stage3Method";
     public static final String STAGE3_METHOD_RB_HANDLE = "Stage3MethodRB";
-    public final AccessibleProperty stage3Method = new AccessibleProperty("Stage3Method", STAGE3_METHOD_RB_HANDLE, STAGE3_METHOD_HANDLE);
+    public final AccessibleProperty stage3Method = new AccessibleProperty(STAGE3_METHOD_HANDLE, STAGE3_METHOD_RB_HANDLE, STAGE3_METHOD_HANDLE);
 
     /**
      * BPM stage 4 length channel handle
      */
     public static final String STAGE4_LEN_HANDLE = "Stage4Len";
     public static final String STAGE4_LEN_RB_HANDLE = "Stage4LenRB";
-    public final AccessibleProperty stage4Len = new AccessibleProperty("Stage4Len", STAGE4_LEN_RB_HANDLE, STAGE4_LEN_HANDLE);
+    public final AccessibleProperty stage4Len = new AccessibleProperty(STAGE4_LEN_HANDLE, STAGE4_LEN_RB_HANDLE, STAGE4_LEN_HANDLE);
 
     /**
      * BPM stage 4 gain channel handle
      */
     public static final String STAGE4_GAIN_HANDLE = "Stage4Gain";
     public static final String STAGE4_GAIN_RB_HANDLE = "Stage4GainRB";
-    public final AccessibleProperty stage4Gain = new AccessibleProperty("Stage4Gain", STAGE4_GAIN_RB_HANDLE, STAGE4_GAIN_HANDLE);
+    public final AccessibleProperty stage4Gain = new AccessibleProperty(STAGE4_GAIN_HANDLE, STAGE4_GAIN_RB_HANDLE, STAGE4_GAIN_HANDLE);
 
     /**
      * BPM stage 4 method channel handle
      */
     public static final String STAGE4_METHOD_HANDLE = "Stage4Method";
     public static final String STAGE4_METHOD_RB_HANDLE = "Stage4MethodRB";
-    public final AccessibleProperty stage4Method = new AccessibleProperty("Stage4Method", STAGE4_METHOD_RB_HANDLE, STAGE4_METHOD_HANDLE);
+    public final AccessibleProperty stage4Method = new AccessibleProperty(STAGE4_METHOD_HANDLE, STAGE4_METHOD_RB_HANDLE, STAGE4_METHOD_HANDLE);
 
     private Channel stage1LenRBC = null;
     private Channel stage1GainRBC = null;
@@ -148,7 +148,7 @@ public class RingBPM extends BPM {
     /**
      * returns stage 1 length
      */
-    public int getStage1Len() throws ConnectionException, GetException {
+    public int getStage1Len() throws GetException {
         stage1LenRBC = lazilyGetAndConnect(STAGE1_LEN_RB_HANDLE, stage1LenRBC);
         return stage1LenRBC.getValInt();
     }
@@ -156,7 +156,7 @@ public class RingBPM extends BPM {
     /**
      * returns stage 1 gain
      */
-    public int getStage1Gain() throws ConnectionException, GetException {
+    public int getStage1Gain() throws GetException {
         stage1GainRBC = lazilyGetAndConnect(STAGE1_GAIN_RB_HANDLE, stage1GainRBC);
         return stage1GainRBC.getValInt();
     }
@@ -164,7 +164,7 @@ public class RingBPM extends BPM {
     /**
      * returns stage 1 method
      */
-    public int getStage1Method() throws ConnectionException, GetException {
+    public int getStage1Method() throws GetException {
         stage1MethodRBC = lazilyGetAndConnect(STAGE1_METHOD_RB_HANDLE, stage1MethodRBC);
         return stage1MethodRBC.getValInt();
     }
@@ -172,7 +172,7 @@ public class RingBPM extends BPM {
     /**
      * returns stage 2 length
      */
-    public int getStage2Len() throws ConnectionException, GetException {
+    public int getStage2Len() throws GetException {
         stage2LenRBC = lazilyGetAndConnect(STAGE2_LEN_RB_HANDLE, stage2LenRBC);
         return stage2LenRBC.getValInt();
     }
@@ -180,7 +180,7 @@ public class RingBPM extends BPM {
     /**
      * returns stage 2 gain
      */
-    public int getStage2Gain() throws ConnectionException, GetException {
+    public int getStage2Gain() throws GetException {
         stage2GainRBC = lazilyGetAndConnect(STAGE2_GAIN_RB_HANDLE, stage2GainRBC);
         return stage2GainRBC.getValInt();
     }
@@ -188,7 +188,7 @@ public class RingBPM extends BPM {
     /**
      * returns stage 2 method
      */
-    public int getStage2Method() throws ConnectionException, GetException {
+    public int getStage2Method() throws GetException {
         stage2MethodRBC = lazilyGetAndConnect(STAGE2_METHOD_RB_HANDLE, stage2MethodRBC);
         return stage2MethodRBC.getValInt();
     }
@@ -196,7 +196,7 @@ public class RingBPM extends BPM {
     /**
      * returns stage 3 length
      */
-    public int getStage3Len() throws ConnectionException, GetException {
+    public int getStage3Len() throws GetException {
         stage3LenRBC = lazilyGetAndConnect(STAGE3_LEN_RB_HANDLE, stage3LenRBC);
         return stage3LenRBC.getValInt();
     }
@@ -204,7 +204,7 @@ public class RingBPM extends BPM {
     /**
      * returns stage 3 gain
      */
-    public int getStage3Gain() throws ConnectionException, GetException {
+    public int getStage3Gain() throws GetException {
         stage3GainRBC = lazilyGetAndConnect(STAGE3_GAIN_RB_HANDLE, stage3GainRBC);
         return stage3GainRBC.getValInt();
     }
@@ -212,7 +212,7 @@ public class RingBPM extends BPM {
     /**
      * returns stage 3 method
      */
-    public int getStage3Method() throws ConnectionException, GetException {
+    public int getStage3Method() throws GetException {
         stage3MethodRBC = lazilyGetAndConnect(STAGE3_METHOD_RB_HANDLE, stage3MethodRBC);
         return stage3MethodRBC.getValInt();
     }
@@ -220,7 +220,7 @@ public class RingBPM extends BPM {
     /**
      * returns stage 4 length
      */
-    public int getStage4Len() throws ConnectionException, GetException {
+    public int getStage4Len() throws GetException {
         stage4LenRBC = lazilyGetAndConnect(STAGE4_LEN_RB_HANDLE, stage4LenRBC);
         return stage4LenRBC.getValInt();
     }
@@ -228,7 +228,7 @@ public class RingBPM extends BPM {
     /**
      * returns stage 4 gain
      */
-    public int getStage4Gain() throws ConnectionException, GetException {
+    public int getStage4Gain() throws GetException {
         stage4GainRBC = lazilyGetAndConnect(STAGE4_GAIN_RB_HANDLE, stage4GainRBC);
         return stage4GainRBC.getValInt();
     }
@@ -236,7 +236,7 @@ public class RingBPM extends BPM {
     /**
      * returns stage 4 method
      */
-    public int getStage4Method() throws ConnectionException, GetException {
+    public int getStage4Method() throws GetException {
         stage4MethodRBC = lazilyGetAndConnect(STAGE4_METHOD_RB_HANDLE, stage4MethodRBC);
         return stage4MethodRBC.getValInt();
     }
@@ -248,7 +248,7 @@ public class RingBPM extends BPM {
      * @throws xal.ca.ConnectionException if the put channel cannot be connected
      * @throws xal.ca.PutException if the put channel set action fails
      */
-    public void setStage1Len(long len) throws ConnectionException, PutException {
+    public void setStage1Len(long len) throws PutException {
         Channel stage1LenSetChannel = getAndConnectChannel(STAGE1_LEN_HANDLE);
         stage1LenSetChannel.putVal(len);
     }
@@ -260,7 +260,7 @@ public class RingBPM extends BPM {
      * @throws xal.ca.ConnectionException if the put channel cannot be connected
      * @throws xal.ca.PutException if the put channel set action fails
      */
-    public void setStage2Len(long len) throws ConnectionException, PutException {
+    public void setStage2Len(long len) throws PutException {
         Channel stage2LenSetChannel = getAndConnectChannel(STAGE2_LEN_HANDLE);
         stage2LenSetChannel.putVal(len);
     }
@@ -272,7 +272,7 @@ public class RingBPM extends BPM {
      * @throws xal.ca.ConnectionException if the put channel cannot be connected
      * @throws xal.ca.PutException if the put channel set action fails
      */
-    public void setStage3Len(long len) throws ConnectionException, PutException {
+    public void setStage3Len(long len) throws PutException {
         Channel stage3LenSetChannel = getAndConnectChannel(STAGE3_LEN_HANDLE);
         stage3LenSetChannel.putVal(len);
     }
@@ -284,7 +284,7 @@ public class RingBPM extends BPM {
      * @throws xal.ca.ConnectionException if the put channel cannot be connected
      * @throws xal.ca.PutException if the put channel set action fails
      */
-    public void setStage4Len(long len) throws ConnectionException, PutException {
+    public void setStage4Len(long len) throws PutException {
         Channel stage4LenSetChannel = getAndConnectChannel(STAGE4_LEN_HANDLE);
         stage4LenSetChannel.putVal(len);
     }
@@ -296,7 +296,7 @@ public class RingBPM extends BPM {
      * @throws xal.ca.ConnectionException if the put channel cannot be connected
      * @throws xal.ca.PutException if the put channel set action fails
      */
-    public void setStage1Gain(long gain) throws ConnectionException, PutException {
+    public void setStage1Gain(long gain) throws PutException {
         Channel stage1GainSetChannel = getAndConnectChannel(STAGE1_GAIN_HANDLE);
         stage1GainSetChannel.putVal(gain);
     }
@@ -308,7 +308,7 @@ public class RingBPM extends BPM {
      * @throws xal.ca.ConnectionException if the put channel cannot be connected
      * @throws xal.ca.PutException if the put channel set action fails
      */
-    public void setStage2Gain(long gain) throws ConnectionException, PutException {
+    public void setStage2Gain(long gain) throws PutException {
         Channel stage2GainSetChannel = getAndConnectChannel(STAGE2_GAIN_HANDLE);
         stage2GainSetChannel.putVal(gain);
     }
@@ -320,7 +320,7 @@ public class RingBPM extends BPM {
      * @throws xal.ca.ConnectionException if the put channel cannot be connected
      * @throws xal.ca.PutException if the put channel set action fails
      */
-    public void setStage3Gain(long gain) throws ConnectionException, PutException {
+    public void setStage3Gain(long gain) throws PutException {
         Channel stage3GainSetChannel = getAndConnectChannel(STAGE3_GAIN_HANDLE);
         stage3GainSetChannel.putVal(gain);
     }
@@ -332,7 +332,7 @@ public class RingBPM extends BPM {
      * @throws xal.ca.ConnectionException if the put channel cannot be connected
      * @throws xal.ca.PutException if the put channel set action fails
      */
-    public void setStage4Gain(long gain) throws ConnectionException, PutException {
+    public void setStage4Gain(long gain) throws PutException {
         Channel stage4GainSetChannel = getAndConnectChannel(STAGE4_GAIN_HANDLE);
         stage4GainSetChannel.putVal(gain);
     }
@@ -344,7 +344,7 @@ public class RingBPM extends BPM {
      * @throws xal.ca.ConnectionException if the put channel cannot be connected
      * @throws xal.ca.PutException if the put channel set action fails
      */
-    public void setStage1Method(int method) throws ConnectionException, PutException {
+    public void setStage1Method(int method) throws PutException {
         Channel stage1MethodSetChannel = getAndConnectChannel(STAGE1_METHOD_HANDLE);
         stage1MethodSetChannel.putVal(method);
     }
@@ -356,7 +356,7 @@ public class RingBPM extends BPM {
      * @throws xal.ca.ConnectionException if the put channel cannot be connected
      * @throws xal.ca.PutException if the put channel set action fails
      */
-    public void setStage2Method(int method) throws ConnectionException, PutException {
+    public void setStage2Method(int method) throws PutException {
         Channel stage2MethodSetChannel = getAndConnectChannel(STAGE2_METHOD_HANDLE);
         stage2MethodSetChannel.putVal(method);
     }
@@ -368,7 +368,7 @@ public class RingBPM extends BPM {
      * @throws xal.ca.ConnectionException if the put channel cannot be connected
      * @throws xal.ca.PutException if the put channel set action fails
      */
-    public void setStage3Method(int method) throws ConnectionException, PutException {
+    public void setStage3Method(int method) throws PutException {
         Channel stage3MethodSetChannel = getAndConnectChannel(STAGE3_METHOD_HANDLE);
         stage3MethodSetChannel.putVal(method);
     }
@@ -380,7 +380,7 @@ public class RingBPM extends BPM {
      * @throws xal.ca.ConnectionException if the put channel cannot be connected
      * @throws xal.ca.PutException if the put channel set action fails
      */
-    public void setStage4Method(int method) throws ConnectionException, PutException {
+    public void setStage4Method(int method) throws PutException {
         Channel stage4MethodSetChannel = getAndConnectChannel(STAGE4_METHOD_HANDLE);
         stage4MethodSetChannel.putVal(method);
     }
@@ -390,7 +390,7 @@ public class RingBPM extends BPM {
      *
      * @param stage stage number
      */
-    public double getXAvg(int stage) throws ConnectionException, GetException {
+    public double getXAvg(int stage) throws GetException {
         if (stage > 4) {
             LOGGER.log(Level.INFO, "Stage no. {0} is larger than 4", stage);
             return 0;
@@ -446,7 +446,7 @@ public class RingBPM extends BPM {
      *
      * @param stage stage number
      */
-    public double getYAvg(int stage) throws ConnectionException, GetException {
+    public double getYAvg(int stage) throws GetException {
         if (stage > 4) {
             LOGGER.log(Level.INFO, "Stage no. {0} is larger than 4", stage);
             return 0;

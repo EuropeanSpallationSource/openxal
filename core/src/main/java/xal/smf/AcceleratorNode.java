@@ -22,6 +22,14 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
 
     private static final Logger LOGGER = Logger.getLogger(AcceleratorNode.class.getName());
 
+    private static final String ID_ATTR = "id";
+    private static final String LEN_ATTR = "len";
+    private static final String S_ATTR = "s";
+    private static final String POS_ATTR = "pos";
+    private static final String STATUS_ATTR = "status";
+    private static final String EID_ATTR = "eid";
+    private static final String PID_ATTR = "pid";
+
     /*
      *  Local Attributes
      */
@@ -108,7 +116,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
     protected enum ChannelType {
         SET,
         RB
-    };
+    }
 
     /**
      * Derived class must furnish a unique type id
@@ -129,7 +137,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      * @param channelFactory channel factory (null for default) for generating
      * this node's channels
      */
-    public AcceleratorNode(final String strId, final ChannelFactory channelFactory) {
+    protected AcceleratorNode(final String strId, final ChannelFactory channelFactory) {
         this.strId = strId;
 
         bolStatus = true;
@@ -145,7 +153,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      *
      * @param strId the string ID for this node
      */
-    public AcceleratorNode(final String strId) {
+    protected AcceleratorNode(final String strId) {
         this(strId, ChannelFactory.defaultFactory());
     }
 
@@ -165,29 +173,29 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
     public void update(DataAdaptor adaptor) throws NumberFormatException {
         // set the id only the first time
         if (strId == null) {
-            strId = adaptor.stringValue("id");
+            strId = adaptor.stringValue(ID_ATTR);
         }
 
         // update physics id
-        if (adaptor.hasAttribute("pid")) {
-            strPId = adaptor.stringValue("pid");
+        if (adaptor.hasAttribute(PID_ATTR)) {
+            strPId = adaptor.stringValue(PID_ATTR);
         }
 
         // update engineering id
-        if (adaptor.hasAttribute("eid")) {
-            strEId = adaptor.stringValue("eid");
+        if (adaptor.hasAttribute(EID_ATTR)) {
+            strEId = adaptor.stringValue(EID_ATTR);
         }
 
         // get the status of the node which identifies whether the node is operational
-        if (adaptor.hasAttribute("status")) {
-            bolStatus = adaptor.booleanValue("status");
+        if (adaptor.hasAttribute(STATUS_ATTR)) {
+            bolStatus = adaptor.booleanValue(STATUS_ATTR);
         }
 
         // update length attribute if the adaptor supplies it
-        if (adaptor.hasAttribute("len")) {
+        if (adaptor.hasAttribute(LEN_ATTR)) {
             double newLength;
             try {
-                newLength = adaptor.doubleValue("len");
+                newLength = adaptor.doubleValue(LEN_ATTR);
             } catch (NumberFormatException exception) {
                 final String message = "Error reading node: " + strId;
                 LOGGER.log(Level.SEVERE, message, exception);
@@ -198,14 +206,14 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
         }
 
         // update position attribute if the adaptor supplies it
-        if (adaptor.hasAttribute("pos")) {
-            double newPosition = adaptor.doubleValue("pos");
+        if (adaptor.hasAttribute(POS_ATTR)) {
+            double newPosition = adaptor.doubleValue(POS_ATTR);
             setPosition(newPosition);
         }
 
         // update s display coordinate if there is one
-        if (adaptor.hasAttribute("s")) {
-            double newSDisplay = adaptor.doubleValue("s");
+        if (adaptor.hasAttribute(S_ATTR)) {
+            double newSDisplay = adaptor.doubleValue(S_ATTR);
             setSDisplay(newSDisplay);
         }
 
@@ -253,10 +261,10 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      * method to write status of the node into a separate file
      */
     public void writeStatus(DataAdaptor adaptor) {
-        if (bolStatus == false && getAccelerator().hasStatusFile()) {
+        if (!bolStatus && getAccelerator().hasStatusFile()) {
             DataAdaptor childAdaptor = adaptor.createChild(dataLabel());
-            childAdaptor.setValue("id", strId);
-            childAdaptor.setValue("status", bolStatus);
+            childAdaptor.setValue(ID_ATTR, strId);
+            childAdaptor.setValue(STATUS_ATTR, bolStatus);
         }
     }
 
@@ -267,21 +275,21 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      * @param adaptor
      */
     protected void writeAttributes(DataAdaptor adaptor) {
-        adaptor.setValue("id", strId);
+        adaptor.setValue(ID_ATTR, strId);
         adaptor.setValue("len", dblLen);
         adaptor.setValue("pos", dblPos);
         adaptor.setValue("type", getType());
         if (strPId != null) {
-            adaptor.setValue("pid", strPId);
+            adaptor.setValue(PID_ATTR, strPId);
         }
         if (strEId != null) {
-            adaptor.setValue("eid", strEId);
+            adaptor.setValue(EID_ATTR, strEId);
         }
         if (getSoftType() != null) {
             adaptor.setValue("softType", getSoftType());
         }
-        if (bolStatus == false && getAccelerator().hasStatusFile()) {
-            adaptor.setValue("status", bolStatus);
+        if (!bolStatus && getAccelerator().hasStatusFile()) {
+            adaptor.setValue(STATUS_ATTR, bolStatus);
         }
         if (dblS != 0) {
             adaptor.setValue("s", dblS);
@@ -331,7 +339,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      * the handle is associated with this node.
      * @throws xal.ca.ConnectionException if the channel cannot be connected
      */
-    public Channel getAndConnectChannel(final String handle) throws NoSuchChannelException, ConnectionException {
+    public Channel getAndConnectChannel(final String handle) throws NoSuchChannelException {
         final Channel channel = getChannel(handle);
         channel.connectAndWait();
 
@@ -343,7 +351,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      * connection is initiated, and no extra work is done, if the channel
      * connection already exists
      */
-    public Channel lazilyGetAndConnect(String chanHandle, Channel channel) throws ConnectionException, NoSuchChannelException {
+    public Channel lazilyGetAndConnect(String chanHandle, Channel channel) throws NoSuchChannelException {
         Channel tmpChan;
 
         if (channel == null) {
@@ -424,7 +432,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      * the handle is associated with this node.
      * @throws xal.ca.ConnectionException if the channel cannot be connected
      */
-    public Map<ChannelType, Channel> getAndConnectChannelSetAndReadback(String readbackHandle) throws NoSuchChannelException, ConnectionException {
+    public Map<ChannelType, Channel> getAndConnectChannelSetAndReadback(String readbackHandle) throws NoSuchChannelException {
         Channel setChannel = getChannel(getSetHandle(readbackHandle));
         Channel redBackChannel = getChannel(readbackHandle);
         setChannel.connectAndWait();
@@ -449,7 +457,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
                 return prop.getReadbackHandles();
             }
         }
-        return null;
+        return new String[0];
     }
 
     /**
@@ -484,12 +492,12 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      * @throws PutException
      * @throws MonitorException
      */
-    public boolean setValueAndVerify(String setHandle, Number value, Number tolerance, double delay) throws ConnectionException, PutException, MonitorException {
+    public boolean setValueAndVerify(String setHandle, Number value, Number tolerance, double delay) throws PutException, MonitorException {
         Map<ChannelType, Channel> channels;
 
         try {
             channels = getAndConnectChannelSetAndReadback(setHandle);
-        } catch (NoSuchChannelException | ConnectionException ex) {
+        } catch (NoSuchChannelException ex) {
             return false;
         }
 
@@ -500,43 +508,43 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
             Channel setChannel = channels.get(ChannelType.SET);
             Monitor monitor = null;
             if (value instanceof Byte) {
-                monitor = rbChannel.addMonitorValue((record, chan) -> {
-                    if (Math.abs(record.byteValue() - value.byteValue()) <= tolerance.byteValue()) {
+                monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
+                    if (Math.abs(channelRecord.byteValue() - value.byteValue()) <= tolerance.byteValue()) {
                         latch.countDown();
                     }
                 }, 0);
                 setChannel.putVal(value.byteValue());
             } else if (value instanceof Float) {
-                monitor = rbChannel.addMonitorValue((record, chan) -> {
-                    if (Math.abs(record.floatValue() - value.floatValue()) <= tolerance.floatValue()) {
+                monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
+                    if (Math.abs(channelRecord.floatValue() - value.floatValue()) <= tolerance.floatValue()) {
                         latch.countDown();
                     }
                 }, 0);
                 setChannel.putVal(value.floatValue());
             } else if (value instanceof Double) {
-                monitor = rbChannel.addMonitorValue((record, chan) -> {
-                    if (Math.abs(record.doubleValue() - value.doubleValue()) <= tolerance.doubleValue()) {
+                monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
+                    if (Math.abs(channelRecord.doubleValue() - value.doubleValue()) <= tolerance.doubleValue()) {
                         latch.countDown();
                     }
                 }, 0);
                 setChannel.putVal(value.doubleValue());
             } else if (value instanceof Short) {
-                monitor = rbChannel.addMonitorValue((record, chan) -> {
-                    if (Math.abs(record.shortValue() - value.shortValue()) <= tolerance.shortValue()) {
+                monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
+                    if (Math.abs(channelRecord.shortValue() - value.shortValue()) <= tolerance.shortValue()) {
                         latch.countDown();
                     }
                 }, 0);
                 setChannel.putVal(value.shortValue());
             } else if (value instanceof Integer) {
-                monitor = rbChannel.addMonitorValue((record, chan) -> {
-                    if (Math.abs(record.intValue() - value.intValue()) <= tolerance.intValue()) {
+                monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
+                    if (Math.abs(channelRecord.intValue() - value.intValue()) <= tolerance.intValue()) {
                         latch.countDown();
                     }
                 }, 0);
                 setChannel.putVal(value.intValue());
             } else if (value instanceof Long) {
-                monitor = rbChannel.addMonitorValue((record, chan) -> {
-                    if (Math.abs(record.longValue() - value.longValue()) <= tolerance.longValue()) {
+                monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
+                    if (Math.abs(channelRecord.longValue() - value.longValue()) <= tolerance.longValue()) {
                         latch.countDown();
                     }
                 }, 0);

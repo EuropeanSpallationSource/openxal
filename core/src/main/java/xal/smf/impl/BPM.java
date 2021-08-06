@@ -27,47 +27,47 @@ public class BPM extends AcceleratorNode {
     // BPM channel handles
     // BPMs official xAvg channel handle
     public static final String X_AVG_HANDLE = "xAvg";
-    public final AccessibleProperty xAvg = new AccessibleProperty("xAvg", X_AVG_HANDLE);
+    public final AccessibleProperty xAvg = new AccessibleProperty(X_AVG_HANDLE, X_AVG_HANDLE);
     private Channel xAvgC = null;
 
     // BPMs official yAvg channel handle
     public static final String Y_AVG_HANDLE = "yAvg";
-    public final AccessibleProperty yAvg = new AccessibleProperty("yAvg", Y_AVG_HANDLE);
+    public final AccessibleProperty yAvg = new AccessibleProperty(Y_AVG_HANDLE, Y_AVG_HANDLE);
     private Channel yAvgC = null;
 
     // BPMs official ampAvg channel handle
     public static final String AMP_AVG_HANDLE = "amplitudeAvg";
-    public final AccessibleProperty amplitudeAvg = new AccessibleProperty("amplitudeAvg", AMP_AVG_HANDLE);
+    public final AccessibleProperty amplitudeAvg = new AccessibleProperty(AMP_AVG_HANDLE, AMP_AVG_HANDLE);
     private Channel ampAvgC = null;
 
     // BPMs official phaseAvg channel handle
     public static final String PHASE_AVG_HANDLE = "phaseAvg";
-    public final AccessibleProperty phaseAvg = new AccessibleProperty("phaseAvg", PHASE_AVG_HANDLE);
+    public final AccessibleProperty phaseAvg = new AccessibleProperty(PHASE_AVG_HANDLE, PHASE_AVG_HANDLE);
     private Channel phaseAvgC = null;
 
     // BPMs official x turn-by-turn channel handle
     public static final String X_TBT_HANDLE = "xTBT";
-    public final AccessibleProperty xTBT = new AccessibleProperty("xTBT", X_TBT_HANDLE);
+    public final AccessibleProperty xTBT = new AccessibleProperty(X_TBT_HANDLE, X_TBT_HANDLE);
     private Channel xTBTC = null;
 
     // BPMs official y turn-by-turn channel handle
     public static final String Y_TBT_HANDLE = "yTBT";
-    public final AccessibleProperty yTBT = new AccessibleProperty("yTBT", Y_TBT_HANDLE);
+    public final AccessibleProperty yTBT = new AccessibleProperty(Y_TBT_HANDLE, Y_TBT_HANDLE);
     private Channel yTBTC = null;
 
     // BPMs official amplitude turn-by-turn channel handle
     public static final String AMP_TBT_HANDLE = "ampTBT";
-    public final AccessibleProperty ampTBT = new AccessibleProperty("ampTBT", AMP_TBT_HANDLE);
+    public final AccessibleProperty ampTBT = new AccessibleProperty(AMP_TBT_HANDLE, AMP_TBT_HANDLE);
     private Channel ampTBTC = null;
 
     // BPMs official phase turn-by-turn channel handle
     public static final String PHASE_TBT_HANDLE = "phaseTBT";
-    public final AccessibleProperty phaseTBT = new AccessibleProperty("phaseTBT", PHASE_TBT_HANDLE);
+    public final AccessibleProperty phaseTBT = new AccessibleProperty(PHASE_TBT_HANDLE, PHASE_TBT_HANDLE);
     private Channel phaseTBTC = null;
 
     // BPM official tAvgLen channel handle
     public static final String T_AVG_LEN_HANDLE = "tAvgLen";
-    public final AccessibleProperty tAvgLen = new AccessibleProperty("tAvgLen", T_AVG_LEN_HANDLE);
+    public final AccessibleProperty tAvgLen = new AccessibleProperty(T_AVG_LEN_HANDLE, T_AVG_LEN_HANDLE);
     private Channel tAvgLenC = null;
 
     static {
@@ -139,7 +139,7 @@ public class BPM extends AcceleratorNode {
     /**
      * returns average X position over macropulse (mm) accounting for alignment
      */
-    public double getXAvg() throws ConnectionException, GetException {
+    public double getXAvg() throws GetException {
         xAvgC = lazilyGetAndConnect(X_AVG_HANDLE, xAvgC);
         return xAvgC.getValDbl();
     }
@@ -147,7 +147,7 @@ public class BPM extends AcceleratorNode {
     /**
      * returns average Y position over macropulse (mm) accounting for alignment
      */
-    public double getYAvg() throws ConnectionException, GetException {
+    public double getYAvg() throws GetException {
         yAvgC = lazilyGetAndConnect(Y_AVG_HANDLE, yAvgC);
         return yAvgC.getValDbl();
     }
@@ -155,7 +155,7 @@ public class BPM extends AcceleratorNode {
     /**
      * returns average bpm Amplitude signal over macropulse (au)
      */
-    public double getAmpAvg() throws ConnectionException, GetException {
+    public double getAmpAvg() throws GetException {
         ampAvgC = lazilyGetAndConnect(AMP_AVG_HANDLE, ampAvgC);
         return ampAvgC.getValDbl();
     }
@@ -163,7 +163,7 @@ public class BPM extends AcceleratorNode {
     /**
      * returns average bpm phase signal over macropulse (au)
      */
-    public double getPhaseAvg() throws ConnectionException, GetException {
+    public double getPhaseAvg() throws GetException {
         phaseAvgC = lazilyGetAndConnect(PHASE_AVG_HANDLE, phaseAvgC);
         return phaseAvgC.getValDbl();
     }
@@ -171,7 +171,7 @@ public class BPM extends AcceleratorNode {
     /**
      * returns bpm x turn-by-turn array
      */
-    public double[] getXTBT() throws ConnectionException, GetException {
+    public double[] getXTBT() throws GetException {
         xTBTC = lazilyGetAndConnect(X_TBT_HANDLE, xTBTC);
         return xTBTC.getArrDbl();
     }
@@ -179,7 +179,7 @@ public class BPM extends AcceleratorNode {
     /**
      * returns bpm y turn-by-turn array
      */
-    public double[] getYTBT() throws ConnectionException, GetException {
+    public double[] getYTBT() throws GetException {
         yTBTC = lazilyGetAndConnect(Y_TBT_HANDLE, yTBTC);
         return yTBTC.getArrDbl();
     }
@@ -187,7 +187,7 @@ public class BPM extends AcceleratorNode {
     /**
      * returns bpm amplitude turn-by-turn array
      */
-    public double[] getAmpTBT() throws ConnectionException, GetException {
+    public double[] getAmpTBT() throws GetException {
         ampTBTC = lazilyGetAndConnect(AMP_TBT_HANDLE, ampTBTC);
         return ampTBTC.getArrDbl();
     }
@@ -195,7 +195,7 @@ public class BPM extends AcceleratorNode {
     /**
      * returns bpm phase turn-by-turn array
      */
-    public double[] getPhaseTBT() throws ConnectionException, GetException {
+    public double[] getPhaseTBT() throws GetException {
         phaseTBTC = lazilyGetAndConnect(PHASE_TBT_HANDLE, phaseTBTC);
         return phaseTBTC.getArrDbl();
     }
@@ -203,7 +203,7 @@ public class BPM extends AcceleratorNode {
     /**
      * returns length of the averaged period (micro-sec)
      */
-    public double getTAvgLen() throws ConnectionException, GetException {
+    public double getTAvgLen() throws GetException {
         tAvgLenC = lazilyGetAndConnect(T_AVG_LEN_HANDLE, tAvgLenC);
         return tAvgLenC.getValDbl();
     }

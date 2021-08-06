@@ -6,7 +6,9 @@ import xal.ca.ChannelFactory;
 
 public class EQuad extends Electrostatic {
 
-    public static String TYPE = "EQuad";
+    public static final String TYPE = "EQuad";
+
+    private String quadType = TYPE;
 
     /**
      * horizontal quadrupole type
@@ -50,7 +52,11 @@ public class EQuad extends Electrostatic {
 
     @Override
     public String getType() {
-        return TYPE;
+        return quadType;
+    }
+
+    public void setType(String newType) {
+        quadType = newType;
     }
 
     /**
@@ -61,10 +67,10 @@ public class EQuad extends Electrostatic {
      */
     @Override
     public int getOrientation() {
-        if (TYPE.equalsIgnoreCase(SKEW_TYPE)) {
+        if (quadType.equalsIgnoreCase(SKEW_TYPE)) {
             return NO_ORIENTATION;
         } else {
-            return TYPE.equalsIgnoreCase(HORIZONTAL_TYPE) ? HORIZONTAL : VERTICAL;
+            return quadType.equalsIgnoreCase(HORIZONTAL_TYPE) ? HORIZONTAL : VERTICAL;
         }
     }
 
@@ -78,18 +84,18 @@ public class EQuad extends Electrostatic {
     @Override
     public void update(final DataAdaptor adaptor) {
         if (adaptor.hasAttribute("type")) {
-            TYPE = adaptor.stringValue("type");
+            setType(adaptor.stringValue("type"));
         }
         super.update(adaptor);
         ElementTypeManager typeManager = ElementTypeManager.defaultManager();
         // check if this type already registered first.  If not, register it.
-        if (!(typeManager.match(EQuad.class, TYPE))) {
-            typeManager.registerType(EQuad.class, TYPE);
+        if (!(typeManager.match(EQuad.class, quadType))) {
+            typeManager.registerType(EQuad.class, quadType);
         }
     }
 
     @Override
     public boolean isKindOf(final String type) {
-        return type.equalsIgnoreCase(TYPE) || super.isKindOf(type);
+        return type.equalsIgnoreCase(quadType) || super.isKindOf(type);
     }
 }

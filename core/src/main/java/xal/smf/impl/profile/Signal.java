@@ -140,10 +140,7 @@ public class Signal extends ScadaRecord {
                     return null;
                 }
 
-                ScadaFieldDescriptor sfdFld = new ScadaFieldDescriptor(strFldNm, clsFldTyp, strFldHnd);
-
-                return sfdFld;
-
+                return new ScadaFieldDescriptor(strFldNm, clsFldTyp, strFldHnd);
             } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
                 throw new ScadaAnnotationException("Bad annotation " + annSig.getClass());
 
@@ -203,7 +200,7 @@ public class Signal extends ScadaRecord {
                 this.fldAnnVal = ASignal.class.getMethod(strChanHnd);
 
             } catch (NoSuchMethodException | SecurityException e) {
-                LOGGER.log(Level.SEVERE, null, e);
+                LOGGER.log(Level.SEVERE, strErrMsg, e);
             }
         }
     }
@@ -222,9 +219,7 @@ public class Signal extends ScadaRecord {
      * @since Apr 19, 2012
      */
     public static Signal createBlankSignal() {
-        Signal sigBlank = new Signal();
-
-        return sigBlank;
+        return new Signal();
     }
 
     /**
@@ -270,9 +265,7 @@ public class Signal extends ScadaRecord {
             }
         }
 
-        Signal sigInit = new Signal(lstDscr);
-
-        return sigInit;
+        return new Signal(lstDscr);
     }
 
     //
@@ -463,18 +456,6 @@ public class Signal extends ScadaRecord {
         }
 
         super.update(daptSgnl);
-    }
-
-    /**
-     *
-     * @see xal.smf.scada.ScadaRecord#write(xal.tools.data.DataAdaptor)
-     *
-     * @author Christopher K. Allen
-     * @since Oct 14, 2014
-     */
-    @Override
-    public void write(DataAdaptor daptSink) throws BadStructException {
-        super.write(daptSink);
     }
 
     /*

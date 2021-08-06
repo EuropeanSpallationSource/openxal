@@ -161,13 +161,8 @@ public class OpticsSwitcher {
         dialog.pack();
         dialog.setLocationRelativeTo(view);
 
-        setDisposalHandler(new Runnable() {
-            @Override
-            public void run() {
-                // close the dialog
-                dialog.setVisible(false);
-            }
-        });
+        // close the dialog
+        setDisposalHandler(() -> dialog.setVisible(false));
 
         dialog.setVisible(true);
     }
@@ -288,17 +283,17 @@ class OpticsSelectionEditor {
      */
     private Component createView(final boolean includeDisposeButtons) {
         // add the main panel
-        final Box mainView = new Box(BoxLayout.Y_AXIS);
+        final Box mainViewBox = new Box(BoxLayout.Y_AXIS);
 
         // add the label
         final Box labelRow = new Box(BoxLayout.X_AXIS);
-        mainView.add(labelRow);
+        mainViewBox.add(labelRow);
         labelRow.add(new JLabel("Path to Default Optics:"));
         labelRow.add(Box.createHorizontalGlue());
 
         // add a row for specifying and browsing to the path
         final Box pathRow = new Box(BoxLayout.X_AXIS);
-        mainView.add(pathRow);
+        mainViewBox.add(pathRow);
 
         // add the path field
         pathField.setColumns(40);
@@ -309,17 +304,17 @@ class OpticsSelectionEditor {
         pathField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void changedUpdate(DocumentEvent evt) {
-                textChanged(evt);
+                textChanged();
             }
 
             @Override
             public void removeUpdate(DocumentEvent evt) {
-                textChanged(evt);
+                textChanged();
             }
 
             @Override
             public void insertUpdate(DocumentEvent evt) {
-                textChanged(evt);
+                textChanged();
             }
         });
 
@@ -328,16 +323,11 @@ class OpticsSelectionEditor {
         pathRow.add(browseButton);
 
         // browse button event handler
-        browseButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                browseButtonAction(event);
-            }
-        });
+        browseButton.addActionListener(this::browseButtonAction);
 
         // create a row of buttons for commiting changes
         final Box commitRow = new Box(BoxLayout.X_AXIS);
-        mainView.add(commitRow);
+        mainViewBox.add(commitRow);
         commitRow.add(Box.createHorizontalGlue());
 
         // only include cancel and close buttons if requested (typically included only for a dialog)
@@ -346,24 +336,16 @@ class OpticsSelectionEditor {
             final JButton cancelButton = new JButton("Cancel");
             cancelButton.setToolTipText("Cancel the dialog without applying any uncommitted changes and without selecting an accelerator.");
             commitRow.add(cancelButton);
-            cancelButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(final ActionEvent event) {
-                    isCanceled = true;
-                    dispose();
-                }
+            cancelButton.addActionListener(event -> {
+                isCanceled = true;
+                dispose();
             });
 
             // add a close button (close with no changes)
             JButton closeButton = new JButton("Close");
             closeButton.setToolTipText("Close the dialog without applying any uncommitted changes.");
             commitRow.add(closeButton);
-            closeButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(final ActionEvent event) {
-                    dispose();
-                }
-            });
+            closeButton.addActionListener(event -> dispose());
         }
 
         // add the revert button
@@ -371,13 +353,10 @@ class OpticsSelectionEditor {
         commitRow.add(revertButon);
 
         // commit button event handler
-        revertButon.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                // revert to the present default optics file
-                pathField.setText(AcceleratorChooser.defaultPath());
-                updateView();
-            }
+        revertButon.addActionListener(event -> {
+            // revert to the present default optics file
+            pathField.setText(AcceleratorChooser.defaultPath());
+            updateView();
         });
 
         // add the commit button
@@ -385,27 +364,24 @@ class OpticsSelectionEditor {
         commitRow.add(commitButton);
 
         // commit button event handler
-        commitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                final String path = pathField.getText();
-                if (new File(path).exists()) {
-                    // make this file the new default optics
-                    AcceleratorChooser.setDefaultPath(path);
-                } else {
-                    String title = "Error: File does not exist...";
-                    String message = "The specified file does not exist.\nThe path will not be set.";
-                    int messageType = JOptionPane.ERROR_MESSAGE;
-                    JOptionPane.showMessageDialog(mainView, message, title, messageType);
-                }
-                updateView();
+        commitButton.addActionListener(event -> {
+            final String path = pathField.getText();
+            if (new File(path).exists()) {
+                // make this file the new default optics
+                AcceleratorChooser.setDefaultPath(path);
+            } else {
+                String title = "Error: File does not exist...";
+                String message = "The specified file does not exist.\nThe path will not be set.";
+                int messageType = JOptionPane.ERROR_MESSAGE;
+                JOptionPane.showMessageDialog(mainViewBox, message, title, messageType);
             }
+            updateView();
         });
 
         // update the view to reflect the model
         updateView();
 
-        return mainView;
+        return mainViewBox;
     }
 
     /**
@@ -426,7 +402,7 @@ class OpticsSelectionEditor {
      *
      * @param event the document event
      */
-    private void textChanged(final DocumentEvent event) {
+    private void textChanged() {
         updateView();
     }
 
@@ -436,8 +412,6 @@ class OpticsSelectionEditor {
     private void updateView() {
         boolean textSame = pathField.getText().equals(AcceleratorChooser.defaultPath());
         revertButon.setEnabled(!textSame);
-        //  CR [19.04.2017]: Commented to allow the button being always enabled.
-        //COMMIT_BUTTON.setEnabled( !textSame );
     }
 }
 
@@ -476,10 +450,8 @@ class AcceleratorChooser extends JFileChooser {
             @Override
             public boolean accept(File file) {
                 String name = file.getName().toLowerCase();
-                if (file.isDirectory() || name.endsWith("xal")) {
-                    return true;
-                }
-                return false;
+                return file.isDirectory() || name.endsWith("xal");
+
             }
 
             @Override

@@ -54,9 +54,9 @@ public class PrimaryPropertyAccessor {
      * request values for the nodes and the specified sync mode
      */
     public void requestValuesForNodes(final Collection<AcceleratorNode> nodes, final String syncMode) {
-        final BatchPropertyAccessor batchAccessor = BatchPropertyAccessor.getInstance(syncMode);
-        batchAccessor.requestValuesForNodes(nodes);
-        this.batchAccessor = batchAccessor;
+        final BatchPropertyAccessor batchAccessorInstance = BatchPropertyAccessor.getInstance(syncMode);
+        batchAccessorInstance.requestValuesForNodes(nodes);
+        batchAccessor = batchAccessorInstance;
     }
 
     /**
@@ -300,6 +300,7 @@ class DesignBatchPropertyAccessor extends BatchPropertyAccessor {
      */
     @Override
     public void requestValuesForNodes(final Collection<AcceleratorNode> nodes) {
+        // Do nothing
     }
 
     /**
@@ -311,7 +312,7 @@ class DesignBatchPropertyAccessor extends BatchPropertyAccessor {
     @Override
     public Map<String, Double> valueMapFor(final AcceleratorNode node) {
         final PropertyAccessor accessor = getAccessorFor(node);
-        return accessor.getDesignValueMap(node);
+        return accessor != null ? accessor.getDesignValueMap(node) : new HashMap<>();
     }
 }
 
@@ -354,12 +355,12 @@ abstract class BatchChannelPropertyAccessor extends BatchPropertyAccessor {
         }
 
         // gather values for the channels in a map keyed by channel
-        final Map<Channel, Double> channelValues = new HashMap<>();
+        final Map<Channel, Double> channelValuesMap = new HashMap<>();
         final List<String> unreadChannels = new ArrayList<>();
         for (final Channel channel : channels) {
-            final ChannelRecord record = request.getRecord(channel);
-            if (record != null) {
-                channelValues.put(channel, record.doubleValue());
+            final ChannelRecord channelRecord = request.getRecord(channel);
+            if (channelRecord != null) {
+                channelValuesMap.put(channel, channelRecord.doubleValue());
             } else {
                 unreadChannels.add(channel.getId());
             }
@@ -368,7 +369,7 @@ abstract class BatchChannelPropertyAccessor extends BatchPropertyAccessor {
             Logger.getLogger(BatchChannelPropertyAccessor.class.getName()).log(Level.WARNING, "No record for channels: {0}", unreadChannels);
         }
 
-        this.channelValues = channelValues;
+        this.channelValues = channelValuesMap;
     }
 
     /**

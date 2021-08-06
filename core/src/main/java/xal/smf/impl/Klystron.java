@@ -26,11 +26,6 @@ public class Klystron implements DataListener {
     protected String strId;
     public static final String TYPE = "KLYS";
 
-    private Channel klysAmpSetC = null;
-    private Channel klysPhaseSetC = null;
-    private Channel klysAmpC = null;
-    private Channel klysPhaseC = null;
-
     private int[] powerFact;
     private int[] controlFlag;
     private boolean stat = false;
@@ -72,7 +67,7 @@ public class Klystron implements DataListener {
      * the handle is associated with this node.
      * @throws xal.ca.ConnectionException if the channel cannot be connected
      */
-    public Channel getAndConnectChannel(final String handle) throws NoSuchChannelException, ConnectionException {
+    public Channel getAndConnectChannel(final String handle) throws NoSuchChannelException {
         Channel channel = getChannel(handle);
         channel.connectAndWait();
 
@@ -111,8 +106,8 @@ public class Klystron implements DataListener {
      * @throws ConnectionException
      * @throws GetException
      */
-    public double getKlysAmp() throws ConnectionException, GetException {
-        klysAmpC = getAndConnectChannel(KLYS_AMP_RB_HANDLE);
+    public double getKlysAmp() throws GetException {
+        Channel klysAmpC = getAndConnectChannel(KLYS_AMP_RB_HANDLE);
 
         return klysAmpC.getValDbl();
     }
@@ -124,8 +119,8 @@ public class Klystron implements DataListener {
      * @throws ConnectionException
      * @throws GetException
      */
-    public double getKlysPhase() throws ConnectionException, GetException {
-        klysPhaseC = getAndConnectChannel(KLYS_PHASE_RB_HANDLE);
+    public double getKlysPhase() throws GetException {
+        Channel klysPhaseC = getAndConnectChannel(KLYS_PHASE_RB_HANDLE);
 
         return klysPhaseC.getValDbl();
     }
@@ -177,8 +172,8 @@ public class Klystron implements DataListener {
      * @throws ConnectionException
      * @throws PutException
      */
-    public void setKlysAmp(double newAmp) throws ConnectionException, PutException {
-        klysAmpSetC = getAndConnectChannel(KLYS_AMP_SET_HANDLE);
+    public void setKlysAmp(double newAmp) throws PutException {
+        Channel klysAmpSetC = getAndConnectChannel(KLYS_AMP_SET_HANDLE);
         klysAmpSetC.putVal(newAmp);
     }
 
@@ -189,8 +184,8 @@ public class Klystron implements DataListener {
      * @throws ConnectionException
      * @throws PutException
      */
-    public void setKlysPhase(double newPhase) throws ConnectionException, PutException {
-        klysPhaseSetC = getAndConnectChannel(KLYS_PHASE_SET_HANDLE);
+    public void setKlysPhase(double newPhase) throws PutException {
+        Channel klysPhaseSetC = getAndConnectChannel(KLYS_PHASE_SET_HANDLE);
         klysPhaseSetC.putVal(newPhase);
     }
 

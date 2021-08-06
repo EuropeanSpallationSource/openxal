@@ -162,27 +162,27 @@ public class Hdf5Writer {
         Datatype dtype;
 
         switch (attribute.getType()) {
-            case Attribute.iBoolean:
+            case Attribute.BOOLEAN:
                 dtype = new H5Datatype(Datatype.CLASS_INTEGER, Byte.BYTES, Datatype.NATIVE, Datatype.NATIVE);
                 H5ScalarDS.create(attributeName, group, dtype, new long[]{1}, null, null, 0, new int[]{(attribute.getBoolean() ? 1 : 0)});
                 break;
-            case Attribute.iInteger:
+            case Attribute.INTEGER:
                 dtype = new H5Datatype(Datatype.CLASS_INTEGER, Integer.BYTES, Datatype.NATIVE, Datatype.NATIVE);
                 H5ScalarDS.create(attributeName, group, dtype, new long[]{1}, null, null, 0, new long[]{attribute.getInteger()});
                 break;
-            case Attribute.iLong:
+            case Attribute.LONG:
                 dtype = new H5Datatype(Datatype.CLASS_INTEGER, Long.BYTES, Datatype.NATIVE, Datatype.NATIVE);
                 H5ScalarDS.create(attributeName, group, dtype, new long[]{1}, null, null, 0, new long[]{attribute.getLong()});
                 break;
-            case Attribute.iDouble:
+            case Attribute.DOUBLE:
                 dtype = new H5Datatype(Datatype.CLASS_FLOAT, Double.BYTES, Datatype.NATIVE, Datatype.NATIVE);
                 H5ScalarDS.create(attributeName, group, dtype, new long[]{1}, null, null, 0, new double[]{attribute.getDouble()});
                 break;
-            case Attribute.iString:
+            case Attribute.STRING:
                 dtype = new H5Datatype(Datatype.CLASS_STRING, attribute.getString().length(), Datatype.NATIVE, Datatype.NATIVE);
                 H5ScalarDS.create(attributeName, group, dtype, new long[]{1}, null, null, 0, new String[]{attribute.getString()});
                 break;
-            case Attribute.iArrDbl:
+            case Attribute.ARR_DBL:
                 dtype = new H5Datatype(Datatype.CLASS_FLOAT, Double.BYTES, Datatype.NATIVE, Datatype.NATIVE);
                 H5ScalarDS.create(attributeName, group, dtype, new long[]{attribute.getArrDbl().length}, null, null, 0, attribute.getArrDbl());
                 break;

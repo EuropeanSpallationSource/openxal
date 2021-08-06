@@ -295,13 +295,11 @@ class SignalSuite {
      */
     private static final Set<String> SETTABLE_CHANNEL_HANDLES = new HashSet<>();
 
+    private static final String[] HANDLES = {"I_Set", "fieldSet", "cycleEnable", "cavAmpSet", "cavPhaseSet", "deltaTRFStart", "deltaTRFEnd", "tDelay", "blankBeam"};
+
     // assign the settable handles
     static {
-        final String[] HANDLES = {"I_Set", "fieldSet", "cycleEnable", "cavAmpSet", "cavPhaseSet", "deltaTRFStart", "deltaTRFEnd", "tDelay", "blankBeam"};
-
-        for (final String handle : HANDLES) {
-            SETTABLE_CHANNEL_HANDLES.add(handle);
-        }
+        SETTABLE_CHANNEL_HANDLES.addAll(Arrays.asList(HANDLES));
     }
 
     /**
@@ -354,26 +352,26 @@ class SignalSuite {
             }
 
             // if the settable attribute is specified, then use its value otherwise fallback to the default settable handles lookup
-            if (channelAdaptor.hasAttribute("settable")) {
-                final boolean settable = channelAdaptor.booleanValue("settable");
+            if (channelAdaptor.hasAttribute(SETTABLE_ATTR)) {
+                final boolean settable = channelAdaptor.booleanValue(SETTABLE_ATTR);
                 signalEntry.setSettable(settable);
                 // if settable is not explicitly specified, determine if the handle is settable by default
             } else if (isHandleSettable(handle)) {
                 signalEntry.setSettable(true);
             }
 
-            if (channelAdaptor.hasAttribute("valid")) {
-                final boolean valid = channelAdaptor.booleanValue("valid");
+            if (channelAdaptor.hasAttribute(VALID_ATTR)) {
+                final boolean valid = channelAdaptor.booleanValue(VALID_ATTR);
                 signalEntry.setValid(valid);
             }
 
-            if (channelAdaptor.hasAttribute("transform")) {
-                final String transformKey = channelAdaptor.stringValue("transform");
+            if (channelAdaptor.hasAttribute(TRANSFORM_ATTR)) {
+                final String transformKey = channelAdaptor.stringValue(TRANSFORM_ATTR);
                 signalEntry.setTransformKey(transformKey);
             }
         }
 
-        final List<DataAdaptor> transformAdaptors = adaptor.childAdaptors("transform");
+        final List<DataAdaptor> transformAdaptors = adaptor.childAdaptors(TRANSFORM_ATTR);
         if (transformAdaptors == null) {
             return;
         }
@@ -383,6 +381,9 @@ class SignalSuite {
             putTransform(name, transform);
         }
     }
+    private static final String TRANSFORM_ATTR = "transform";
+    private static final String VALID_ATTR = "valid";
+    private static final String SETTABLE_ATTR = "settable";
 
     /**
      * Write data to the data adaptor for storage.
@@ -397,12 +398,12 @@ class SignalSuite {
 
             channelAdaptor.setValue("handle", entry.getKey());
             channelAdaptor.setValue("signal", signalEntry.signal());
-            channelAdaptor.setValue("settable", signalEntry.settable());
+            channelAdaptor.setValue(SETTABLE_ATTR, signalEntry.settable());
             if (!signalEntry.isValid()) {
-                channelAdaptor.setValue("valid", signalEntry.isValid());
+                channelAdaptor.setValue(VALID_ATTR, signalEntry.isValid());
             }
             if (signalEntry.getTransformKey() != null) {
-                channelAdaptor.setValue("transform", signalEntry.getTransformKey());
+                channelAdaptor.setValue(TRANSFORM_ATTR, signalEntry.getTransformKey());
             }
         }
     }

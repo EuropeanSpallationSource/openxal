@@ -76,7 +76,7 @@ public class ElementTypeManager {
      * Check if the class or one of its superclasses is associated with the
      * type.
      */
-    public <NodeType> boolean match(final Class<NodeType> theClass, final String type) {
+    public <T> boolean match(final Class<T> theClass, final String type) {
         final String lowerType = type.toLowerCase();
         final Collection<Class<?>> classSet = getClassSet(lowerType);
 

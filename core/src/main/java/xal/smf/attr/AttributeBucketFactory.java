@@ -139,6 +139,4 @@ public final class AttributeBucketFactory {
      */
     private AttributeBucketFactory() {
     }
-;
-
 }

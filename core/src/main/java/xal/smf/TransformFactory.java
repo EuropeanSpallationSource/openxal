@@ -22,6 +22,9 @@ import xal.tools.transforms.*;
  */
 public class TransformFactory {
 
+    private static final String SCALE_KEY = "scale";
+    private static final String OFFSET_KEY = "offset";
+
     /**
      * Creates a new instance of TransformFactory
      */
@@ -60,7 +63,7 @@ public class TransformFactory {
      * @return A value transform with the properties specified by the adaptor.
      */
     public static ValueTransform doubleScaleTransform(final DataAdaptor adaptor) {
-        double scale = adaptor.doubleValue("scale");
+        double scale = adaptor.doubleValue(SCALE_KEY);
         return DataTransformFactory.doubleScaleTransform(scale).valueTransform();
     }
 
@@ -72,7 +75,7 @@ public class TransformFactory {
      * @return A value transform with the properties specified by the adaptor.
      */
     public static ValueTransform doubleTranslationTransform(final DataAdaptor adaptor) {
-        double offset = adaptor.doubleValue("offset");
+        double offset = adaptor.doubleValue(OFFSET_KEY);
         return DataTransformFactory.doubleTranslationTransform(offset).valueTransform();
     }
 
@@ -84,8 +87,8 @@ public class TransformFactory {
      * @return A value transform with the properties specified by the adaptor.
      */
     public static ValueTransform doubleLinearTransform(final DataAdaptor adaptor) {
-        double scale = adaptor.doubleValue("scale");
-        double offset = adaptor.doubleValue("offset");
+        double scale = adaptor.doubleValue(SCALE_KEY);
+        double offset = adaptor.doubleValue(OFFSET_KEY);
         return DataTransformFactory.doubleLinearTransform(scale, offset).valueTransform();
     }
 
@@ -96,7 +99,7 @@ public class TransformFactory {
      * @return A value transform with the properties specified by the adaptor.
      */
     public static ValueTransform doubleArrayScaleTransform(final DataAdaptor adaptor) {
-        double scale = adaptor.doubleValue("scale");
+        double scale = adaptor.doubleValue(SCALE_KEY);
         return DataTransformFactory.doubleArrayScaleTransform(scale).valueTransform();
     }
 
@@ -108,7 +111,7 @@ public class TransformFactory {
      * @return A value transform with the properties specified by the adaptor.
      */
     public static ValueTransform doubleArrayTranslationTransform(final DataAdaptor adaptor) {
-        double offset = adaptor.doubleValue("offset");
+        double offset = adaptor.doubleValue(OFFSET_KEY);
         return DataTransformFactory.doubleArrayTranslationTransform(offset).valueTransform();
     }
 
@@ -120,8 +123,8 @@ public class TransformFactory {
      * @return A value transform with the properties specified by the adaptor.
      */
     public static ValueTransform doubleArrayLinearTransform(final DataAdaptor adaptor) {
-        double scale = adaptor.doubleValue("scale");
-        double offset = adaptor.doubleValue("offset");
+        double scale = adaptor.doubleValue(SCALE_KEY);
+        double offset = adaptor.doubleValue(OFFSET_KEY);
         return DataTransformFactory.doubleArrayLinearTransform(scale, offset).valueTransform();
     }
 }

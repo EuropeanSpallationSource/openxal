@@ -16,22 +16,12 @@ package xal.smf.impl;
 public class ProfileFit {
 
     /**
-     * Create a new <code>ProfileFit</code> object.
-     *
-     *
-     * @since Apr 20, 2009
-     * @author Christopher K. Allen
-     */
-    public ProfileFit() {
-    }
-
-    /**
      * the mean position of a profile (mm)
      */
     private double mean;
 
     /**
-     * the standard deviation of a fitter gaussian to the profile (mm)
+     * the standard deviation of a fitter Gaussian to the profile (mm)
      */
     private double sigma;
 

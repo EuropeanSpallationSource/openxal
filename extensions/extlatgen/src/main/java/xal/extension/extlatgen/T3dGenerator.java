@@ -178,11 +178,8 @@ public class T3dGenerator {
                             devStr = devTypeInd + ", A(1, " + counter + ")="
                                     + nf.format(((xal.smf.impl.Quadrupole) element.getAcceleratorNode()).getField()) + ", "
                                     + nf.format(element.getLength() * 1000.) + ",\n";
-                        } catch (ConnectionException e) {
-                            devStr = devTypeInd + ", A(1, " + counter + ")="
-                                    + "0., " + nf.format(element.getLength() * 1000.) + ",\n";
-                            LOGGER.log(Level.WARNING, "Set the field to 0.", e);
                         } catch (GetException e) {
+                            LOGGER.log(Level.WARNING, null, e);
                         }
                     }
                 }
@@ -212,7 +209,7 @@ public class T3dGenerator {
                                 + nf.format(((xal.smf.impl.Solenoid) element.getAcceleratorNode()).getField() * 10000.) + ", "
                                 + nf.format(((xal.smf.impl.Solenoid) element.getAcceleratorNode()).getLength() * 1000.)
                                 + ",\n";
-                    } catch (ConnectionException | GetException e) {
+                    } catch (GetException e) {
                         devStr = devTypeInd + ", A(1, " + counter + ")="
                                 + "0., " + nf.format(element.getLength() * 1000.) + ",\n";
                     }
@@ -231,10 +228,8 @@ public class T3dGenerator {
                                 + nf.format(((xal.smf.impl.HDipoleCorr) element.getAcceleratorNode()).getField()
                                         * ((xal.smf.impl.HDipoleCorr) element.getAcceleratorNode()).getLength())
                                 + ", 0,\n";
-                    } catch (ConnectionException e) {
-                        devStr = devTypeInd + ", A(1, " + counter + ")="
-                                + "0., 0,\n";
                     } catch (GetException e) {
+                        LOGGER.log(Level.WARNING, null, e);
                     }
                 }
                 // for vertical dipole correctors
@@ -251,10 +246,8 @@ public class T3dGenerator {
                                 + nf.format(((xal.smf.impl.VDipoleCorr) element.getAcceleratorNode()).getField()
                                         * ((xal.smf.impl.VDipoleCorr) element.getAcceleratorNode()).getLength())
                                 + ", 1,\n";
-                    } catch (ConnectionException e) {
-                        devStr = devTypeInd + ", A(1, " + counter + ")="
-                                + "0., 1,\n";
                     } catch (GetException e) {
+                        LOGGER.log(Level.WARNING, null, e);
                     }
                 }
                 // for rf gaps
@@ -274,10 +267,8 @@ public class T3dGenerator {
                                 + nf.format(((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapPhaseAvg()) + ", "
                                 + "1, 1, 1, "
                                 + "\n";
-                    } catch (ConnectionException e) {
-                        devStr = devTypeInd + ", A(1, " + counter + ")="
-                                + "0., 0., 1, 1, 1, \n";
                     } catch (GetException e) {
+                        LOGGER.log(Level.WARNING, null, e);
                     }
                 }
             }
@@ -316,7 +307,5 @@ public class T3dGenerator {
         t3dInput.write(bufferEnd);
 
         t3dInput.close();
-
     }
-
 }

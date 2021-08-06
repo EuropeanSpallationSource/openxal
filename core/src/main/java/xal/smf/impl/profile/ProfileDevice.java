@@ -935,7 +935,7 @@ public abstract class ProfileDevice extends AcceleratorNode {
      * @author Christopher K. Allen
      * @since Mar 21, 2014
      */
-    public ProfileDevice(final String strId, final ChannelFactory channelFactory) {
+    protected ProfileDevice(final String strId, final ChannelFactory channelFactory) {
         super(strId, channelFactory);
 
         this.tstConnect = new BatchConnectionTest(this);
@@ -949,7 +949,7 @@ public abstract class ProfileDevice extends AcceleratorNode {
      * @author Christopher K. Allen
      * @since Mar 21, 2014
      */
-    public ProfileDevice(final String strId) {
+    protected ProfileDevice(final String strId) {
         this(strId, null);
     }
 
@@ -984,10 +984,7 @@ public abstract class ProfileDevice extends AcceleratorNode {
 
         try {
             Constructor<T> ctorCfg = clsType.getConstructor(clsType);
-            T cfgAcq = ctorCfg.newInstance(this);
-
-            return cfgAcq;
-
+            return ctorCfg.newInstance(this);
         } catch (SecurityException | NoSuchMethodException | IllegalAccessException e) {
             throw new BadStructException("Could not access constructor for " + clsType.getName(), e);
 
@@ -1030,10 +1027,7 @@ public abstract class ProfileDevice extends AcceleratorNode {
 
         try {
             Constructor<T> ctorData = clsType.getConstructor(clsType);
-            T dataAcq = ctorData.newInstance(this);
-
-            return dataAcq;
-
+            return ctorData.newInstance(this);
         } catch (SecurityException | NoSuchMethodException | IllegalAccessException e) {
             throw new BadStructException("Could not access constructor for " + clsType.getName(), e);
 
@@ -1092,9 +1086,7 @@ public abstract class ProfileDevice extends AcceleratorNode {
         // Retrieve the channel and create the monitor
         final String strHnd = pvdFld.getPvDescriptor().getRbHandle();
         final Channel channel = getAndConnectChannel(strHnd);
-        final Monitor monitor = channel.addMonitorValue(snkEvents, intEvtType);
-
-        return monitor;
+        return channel.addMonitorValue(snkEvents, intEvtType);
     }
 
     /**
@@ -1161,9 +1153,7 @@ public abstract class ProfileDevice extends AcceleratorNode {
      */
     public synchronized boolean testConnection(Collection<ScadaFieldDescriptor> setFds, double dblTmOut)
             throws BadChannelException {
-        boolean bolResult = this.tstConnect.testConnection(setFds, dblTmOut);
-
-        return bolResult;
+        return this.tstConnect.testConnection(setFds, dblTmOut);
     }
 
 }

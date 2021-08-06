@@ -503,7 +503,7 @@ public class QuadTest extends SingleElementTest {
         ApertureBucket aper = new ApertureBucket();
         aper.setAperX(R * 1e-3);
         aper.setAperY(R * 1e-3);
-        aper.setShape(ApertureBucket.iRectangle);
+        aper.setShape(ApertureBucket.RECTANGLE);
         Quadrupole quad = ElementFactory.createQuadrupole("quad", L * 1e-3, G, aper, null, L * 1e-3 * 0.5);
 
         quad.getAlign().setX(dx * 1e-3);

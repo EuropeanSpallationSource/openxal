@@ -38,7 +38,7 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
     /**
      * Primary Constructor
      */
-    public Magnet(final String strId, final ChannelFactory channelFactory) {
+    protected Magnet(final String strId, final ChannelFactory channelFactory) {
         super(strId, channelFactory);
         setMagBucket(new MagnetBucket());
     }
@@ -46,7 +46,7 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
     /**
      * Constructor
      */
-    public Magnet(final String strId) {
+    protected Magnet(final String strId) {
         this(strId, ChannelFactory.defaultFactory());
     }
 
@@ -58,14 +58,10 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
         return bucMagnet;
     }
 
-    ;
-
- 
-   /**
-     *  
+    /**
+     *
      * Set the attribute bucket containing the machine magnet info
      */
-
     public void setMagBucket(MagnetBucket buc) {
         if (bucMagnet != null) {
             mapAttrs.remove(bucMagnet.getType(), bucMagnet);

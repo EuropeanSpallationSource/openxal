@@ -30,11 +30,11 @@ public class ApertureBucket extends AttributeBucket {
     /*
      *  Constants
      */
-    public static final int iUnkown = 0;
-    public static final int iEllipse = 1;
-    public static final int iRectangle = 2;
-    public static final int iDiamond = 3;
-    public static final int iIrregular = 11;
+    public static final int UNKNOWN = 0;
+    public static final int ELLIPSE = 1;
+    public static final int RECTANGLE = 2;
+    public static final int DIAMOND = 3;
+    public static final int IRREGULAR = 11;
 
     public static final String TYPE = "aperture";
 
