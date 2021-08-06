@@ -39,7 +39,7 @@ public class EllipticIntegral {
      *
      * @return the value of RD(x,y,z)
      */
-    public static double RD(double x, double y, double z) {
+    public static double rd(double x, double y, double z) {
         final double errTol = 0.05;
         final double tiny = 1.0e-25;
         final double big = 4.5e21;
@@ -50,17 +50,24 @@ public class EllipticIntegral {
         final double c5 = (0.25 * c3);
         final double c6 = (1.5 * c4);
 
-        double alamb, ave, delx, dely, delz, ea, eb, ec, ed, ee, fac, sqrtx, sqrty, sqrtz, sum, xt, yt, zt;
+        double alamb;
+        double ave;
+        double delx;
+        double dely;
+        double delz;
+        double sqrtx;
+        double sqrty;
+        double sqrtz;
 
         if (Math.min(x, y) < 0.0 || Math.min(x + y, z) < tiny || Math.max(Math.max(x, y), z) > big) {
             return 0.0;
         }
 
-        xt = x;
-        yt = y;
-        zt = z;
-        sum = 0.0;
-        fac = 1.0;
+        double xt = x;
+        double yt = y;
+        double zt = z;
+        double sum = 0.0;
+        double fac = 1.0;
         do {
             sqrtx = Math.sqrt(xt);
             sqrty = Math.sqrt(yt);
@@ -77,11 +84,11 @@ public class EllipticIntegral {
             delz = (ave - zt) / ave;
         } while (Math.max(Math.max(Math.abs(delx), Math.abs(dely)), Math.abs(delz)) > errTol);
 
-        ea = delx * dely;
-        eb = delz * delz;
-        ec = ea - eb;
-        ed = ea - 6.0 * eb;
-        ee = ed + ec + ec;
+        double ea = delx * dely;
+        double eb = delz * delz;
+        double ec = ea - eb;
+        double ed = ea - 6.0 * eb;
+        double ee = ed + ec + ec;
         return 3.0 * sum + fac * (1.0 + ed * (-c1 + c5 * ed - c6 * delz * ee)
                 + delz * (c2 * ee + delz * (-c3 * ec + delz * c4 * ea))) / (ave * Math.sqrt(ave));
     }
@@ -115,7 +122,7 @@ public class EllipticIntegral {
      *
      * @throws IllegalArgumentException argument less than zero
      *
-     * @see EllipticIntegral#RD(double, double, double)
+     * @see EllipticIntegral#rd(double, double, double)
      */
     public static double symmetricRDz(double r, double z)
             throws IllegalArgumentException {
@@ -158,7 +165,7 @@ public class EllipticIntegral {
      *
      * @throws IllegalArgumentException argument less than zero
      *
-     * @see EllipticIntegral#RD(double, double, double)
+     * @see EllipticIntegral#rd(double, double, double)
      * @see EllipticIntegral#symmetricRDz(double, double)
      */
     public static double symmetricRDr(double r, double z)
@@ -232,22 +239,21 @@ public class EllipticIntegral {
      * Testing Driver
      */
     public static void main(String[] args) {
-
         double x = 5.55984e-7;
         double y = 4.35084e-7;
         double z = 3.12004e-6;
 
-        LOGGER.log(Level.INFO, "{0}", RD(y / x, z / x, 1));
-        LOGGER.log(Level.INFO, "{0}", RD(y / x, z / y, 1));
-        LOGGER.log(Level.INFO, "{0}", RD(x / z, y / z, 1));
+        LOGGER.log(Level.INFO, "{0}", rd(y / x, z / x, 1));
+        LOGGER.log(Level.INFO, "{0}", rd(y / x, z / y, 1));
+        LOGGER.log(Level.INFO, "{0}", rd(x / z, y / z, 1));
 
-        LOGGER.log(Level.INFO, "R_d(.5,.5,1.0) = {0}", RD(.5, .5, 1.0));
-        LOGGER.log(Level.INFO, "R_d(.5,1.0,1.0) = {0}", RD(.5, 1.0, 1.0));
-        LOGGER.log(Level.INFO, "R_d(.5,1.5,1.0) = {0}", RD(.5, 1.5, 1.0));
-        LOGGER.log(Level.INFO, "R_d(1.0,1.0,1.0) = {0}", RD(1.0, 1.0, 1.0));
-        LOGGER.log(Level.INFO, "R_d(1.0,1.5,1.0) = {0}", RD(1.0, 1.5, 1.0));
-        LOGGER.log(Level.INFO, "R_d(1.5,1.5,1.0) = {0}", RD(1.5, 1.5, 1.0));
-        LOGGER.log(Level.INFO, "R_d(2.0,2.0,2.0) = {0}", RD(2.0, 2.0, 2.0));
+        LOGGER.log(Level.INFO, "R_d(.5,.5,1.0) = {0}", rd(.5, .5, 1.0));
+        LOGGER.log(Level.INFO, "R_d(.5,1.0,1.0) = {0}", rd(.5, 1.0, 1.0));
+        LOGGER.log(Level.INFO, "R_d(.5,1.5,1.0) = {0}", rd(.5, 1.5, 1.0));
+        LOGGER.log(Level.INFO, "R_d(1.0,1.0,1.0) = {0}", rd(1.0, 1.0, 1.0));
+        LOGGER.log(Level.INFO, "R_d(1.0,1.5,1.0) = {0}", rd(1.0, 1.5, 1.0));
+        LOGGER.log(Level.INFO, "R_d(1.5,1.5,1.0) = {0}", rd(1.5, 1.5, 1.0));
+        LOGGER.log(Level.INFO, "R_d(2.0,2.0,2.0) = {0}", rd(2.0, 2.0, 2.0));
 
         for (int i = 0; i < 20; i++) {
             double s = 0.1 * i;

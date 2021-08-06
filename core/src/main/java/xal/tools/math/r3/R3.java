@@ -250,7 +250,7 @@ public class R3 extends BaseVector<R3> implements Serializable {
      */
     public void set1(double x1) {
         super.setElem(IND.X, x1);
-        /*this.x1 = x1;*/ }
+    }
 
     /**
      * Set second coordinate value.
@@ -259,7 +259,7 @@ public class R3 extends BaseVector<R3> implements Serializable {
      */
     public void set2(double x2) {
         super.setElem(IND.Y, x2);
-        /*this.x2 = x2;*/ }
+    }
 
     /**
      * Set third coordinate value.
@@ -268,7 +268,7 @@ public class R3 extends BaseVector<R3> implements Serializable {
      */
     public void set3(double x3) {
         super.setElem(IND.Z, x3);
-        /* this.x3 = x3;*/ }
+    }
 
     /**
      * Set first coordinate value.
@@ -277,7 +277,7 @@ public class R3 extends BaseVector<R3> implements Serializable {
      */
     public void setx(double x) {
         super.setElem(IND.X, x);
-        /*this.x1 = x;*/ }
+    }
 
     /**
      * Set second coordinate value.
@@ -286,7 +286,7 @@ public class R3 extends BaseVector<R3> implements Serializable {
      */
     public void sety(double y) {
         super.setElem(IND.Y, y);
-        /* this.x2 = y;*/ }
+    }
 
     /**
      * Set third coordinate value.
@@ -295,7 +295,6 @@ public class R3 extends BaseVector<R3> implements Serializable {
      */
     public void setz(double z) {
         super.setElem(IND.Z, z);
-        /*this.x3 = z; */
     }
 
     /**
@@ -329,7 +328,7 @@ public class R3 extends BaseVector<R3> implements Serializable {
      */
     public double get1() {
         return super.getElem(IND.X);
-        /* return x1; */ }
+    }
 
     /**
      * Return second coordinate value.
@@ -338,7 +337,7 @@ public class R3 extends BaseVector<R3> implements Serializable {
      */
     public double get2() {
         return super.getElem(IND.Y);
-        /* return x2; */ }
+    }
 
     /**
      * Return third coordinate value.
@@ -347,7 +346,7 @@ public class R3 extends BaseVector<R3> implements Serializable {
      */
     public double get3() {
         return super.getElem(IND.Z);
-        /* return x3; */ }
+    }
 
     /**
      * Return first coordinate value.
@@ -356,7 +355,7 @@ public class R3 extends BaseVector<R3> implements Serializable {
      */
     public double getx() {
         return super.getElem(IND.X);
-        /* return x1; */ }
+    }
 
     /**
      * Return second coordinate value.
@@ -365,7 +364,7 @@ public class R3 extends BaseVector<R3> implements Serializable {
      */
     public double gety() {
         return super.getElem(IND.Y);
-        /* return x2; */ }
+    }
 
     /**
      * Return third coordinate value.
@@ -374,7 +373,7 @@ public class R3 extends BaseVector<R3> implements Serializable {
      */
     public double getz() {
         return super.getElem(IND.Z);
-        /* return x3; */ }
+    }
 
     /*
      *  Object method overrides
@@ -399,11 +398,8 @@ public class R3 extends BaseVector<R3> implements Serializable {
      */
     @Override
     public String toString() {
-
         // Create vector string
-        String strVec = "(" + getElem(IND.X) + "," + getElem(IND.Y) + "," + getElem(IND.Z) + ")";
-
-        return strVec;
+        return "(" + getElem(IND.X) + "," + getElem(IND.Y) + "," + getElem(IND.Z) + ")";
     }
 
 
@@ -430,20 +426,20 @@ public class R3 extends BaseVector<R3> implements Serializable {
     /**
      * Apply coordinate transform from cartesian to spherical coordinates.
      *
-     * @return polar coordinates (R, theta, phi) of this cartesian point
+     * @return polar coordinates (r, theta, phi) of this cartesian point
      */
     public R3 cartesian2Spherical() {
         double x1 = get1();
         double x2 = get2();
         double x3 = get3();
 
-        double r_2 = x1 * x1 + x2 * x2;
-        double r = Math.sqrt(r_2);
-        double R = Math.sqrt(r_2 + x3 * x3);
-        double theta = Math.atan2(x3, r);
+        double r2 = x1 * x1 + x2 * x2;
+        double rho = Math.sqrt(r2);
+        double r = Math.sqrt(r2 + x3 * x3);
+        double theta = Math.atan2(x3, rho);
         double phi = Math.atan2(x2, x1);
 
-        return new R3(R, theta, phi);
+        return new R3(r, theta, phi);
     }
 
     /**

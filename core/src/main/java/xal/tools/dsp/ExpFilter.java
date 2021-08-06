@@ -44,7 +44,7 @@ public class ExpFilter {
      * @param szData size of the functions this filter can process
      */
     public ExpFilter(int szData) {
-        this.dftXfrm = new FourierExpTransform(szData);
+        dftXfrm = new FourierExpTransform(szData);
     }
 
     /*
@@ -56,7 +56,7 @@ public class ExpFilter {
      * @return array size for functions this filter object can process
      */
     public int getDataSize() {
-        return this.dftXfrm.getDataSize();
+        return dftXfrm.getDataSize();
     }
 
     /**
@@ -65,7 +65,7 @@ public class ExpFilter {
      * @return maximum (positive) filter frequency
      */
     public int getMaximumFrequency() {
-        return this.getDataSize() / 2;
+        return getDataSize() / 2;
     }
 
     /*
@@ -90,21 +90,19 @@ public class ExpFilter {
     public double[] perfectLowPass(int intFreq, final double[] arrFunc)
             throws IndexOutOfBoundsException, IllegalArgumentException {
         // Check arguments
-        this.checkFunction(arrFunc);
-        this.checkFrequency(intFreq);
+        checkFunction(arrFunc);
+        checkFrequency(intFreq);
 
         // Transform function to frequency domain then remove components greater than cutoff
         int iFreqMax = this.getMaximumFrequency();
-        AbstractComplexVector vecTrans = this.getTranformer().transform(arrFunc);
+        AbstractComplexVector vecTrans = getTranformer().transform(arrFunc);
 
         for (int index = intFreq + 1; index < iFreqMax; index++) {
-            this.clearFreqComponent(index, vecTrans);
+            clearFreqComponent(index, vecTrans);
         }
 
         // Transform back to time domain and return
-        double[] arrRecvrd = this.getTranformer().inverse(vecTrans);
-
-        return arrRecvrd;
+        return getTranformer().inverse(vecTrans);
     }
 
     /**
@@ -125,20 +123,18 @@ public class ExpFilter {
     public double[] perfectHighPass(int intFreq, final double[] arrFunc)
             throws IndexOutOfBoundsException, IllegalArgumentException {
         // Check arguments
-        this.checkFunction(arrFunc);
-        this.checkFrequency(intFreq);
+        checkFunction(arrFunc);
+        checkFrequency(intFreq);
 
         // Transform function to frequency domain then remove components less than cutoff
-        AbstractComplexVector vecTrans = this.getTranformer().transform(arrFunc);
+        AbstractComplexVector vecTrans = getTranformer().transform(arrFunc);
 
         for (int index = 0; index < intFreq; index++) {
-            this.clearFreqComponent(index, vecTrans);
+            clearFreqComponent(index, vecTrans);
         }
 
         // Transform back to time domain and return
-        double[] arrRecvrd = this.getTranformer().inverse(vecTrans);
-
-        return arrRecvrd;
+        return getTranformer().inverse(vecTrans);
     }
 
     /**
@@ -163,27 +159,25 @@ public class ExpFilter {
     public double[] perfectBandPass(int intFreqLow, int intFreqHigh, final double[] arrFunc)
             throws IndexOutOfBoundsException, IllegalArgumentException {
         // Check arguments
-        this.checkFunction(arrFunc);
-        this.checkFrequency(intFreqLow);
-        this.checkFrequency(intFreqHigh);
+        checkFunction(arrFunc);
+        checkFrequency(intFreqLow);
+        checkFrequency(intFreqHigh);
 
         // Transform function to frequency domain then remove components greater than cutoff
         int intFreqMax = this.getMaximumFrequency();
-        AbstractComplexVector vecTrans = this.getTranformer().transform(arrFunc);
+        AbstractComplexVector vecTrans = getTranformer().transform(arrFunc);
 
         // remove low frequencies    
         for (int index = 0; index < intFreqLow; index++) {
-            this.clearFreqComponent(index, vecTrans);
+            clearFreqComponent(index, vecTrans);
         }
         // remove high frequencies
         for (int index = intFreqHigh + 1; index < intFreqMax; index++) {
-            this.clearFreqComponent(index, vecTrans);
+            clearFreqComponent(index, vecTrans);
         }
 
         // Transform back to time domain and return
-        double[] arrRecvrd = this.getTranformer().inverse(vecTrans);
-
-        return arrRecvrd;
+        return getTranformer().inverse(vecTrans);
     }
 
     /**
@@ -207,22 +201,20 @@ public class ExpFilter {
     public double[] perfectNotch(int intFreqLow, int intFreqHigh, final double[] arrFunc)
             throws IndexOutOfBoundsException, IllegalArgumentException {
         // Check arguments
-        this.checkFunction(arrFunc);
-        this.checkFrequency(intFreqLow);
-        this.checkFrequency(intFreqHigh);
+        checkFunction(arrFunc);
+        checkFrequency(intFreqLow);
+        checkFrequency(intFreqHigh);
 
         // Transform function to frequency domain then remove components greater than cutoff
-        AbstractComplexVector vecTrans = this.getTranformer().transform(arrFunc);
+        AbstractComplexVector vecTrans = getTranformer().transform(arrFunc);
 
         // remove notch frequencies    
         for (int index = intFreqLow; index < intFreqHigh; index++) {
-            this.clearFreqComponent(index, vecTrans);
+            clearFreqComponent(index, vecTrans);
         }
 
         // Transform back to time domain and return
-        double[] arrRecvrd = this.getTranformer().inverse(vecTrans);
-
-        return arrRecvrd;
+        return getTranformer().inverse(vecTrans);
     }
 
     /**
@@ -267,15 +259,15 @@ public class ExpFilter {
     public double[] parabolicLowPass(int intFreq, final double[] arrFunc)
             throws IndexOutOfBoundsException, IllegalArgumentException {
         // Check arguments
-        this.checkFunction(arrFunc);
-        this.checkFrequency(intFreq);
+        checkFunction(arrFunc);
+        checkFrequency(intFreq);
 
         // Transform function to frequency domain then remove components greater than cutoff
-        int iFreqMax = this.getMaximumFrequency();
-        AbstractComplexVector vecTrans = this.getTranformer().transform(arrFunc);
+        int iFreqMax = getMaximumFrequency();
+        AbstractComplexVector vecTrans = getTranformer().transform(arrFunc);
 
         for (int index = intFreq; index < iFreqMax; index++) {
-            this.clearFreqComponent(index, vecTrans);
+            clearFreqComponent(index, vecTrans);
         }
 
         // Attenuate the pass-band
@@ -283,13 +275,11 @@ public class ExpFilter {
             double dblH = (1.0 * index) / intFreq;
             Complex cpxA = new Complex(1.0 - dblH * dblH, 0.0);
 
-            this.amplifyFreqComponent(index, cpxA, vecTrans);
+            amplifyFreqComponent(index, cpxA, vecTrans);
         }
 
         // Transform back to time domain and return
-        double[] arrRecvrd = this.getTranformer().inverse(vecTrans);
-
-        return arrRecvrd;
+        return getTranformer().inverse(vecTrans);
     }
 
     /*
@@ -312,14 +302,14 @@ public class ExpFilter {
      * @param vecTrans transform function
      */
     private void clearFreqComponent(int intFreq, AbstractComplexVector vecTrans) {
-        int N = this.getDataSize();
+        int n = this.getDataSize();
 
         vecTrans.setComponent(intFreq, Complex.ZERO);
 
         if (intFreq == 0) {
             return;
         }
-        vecTrans.setComponent(N - intFreq, Complex.ZERO);
+        vecTrans.setComponent(n - intFreq, Complex.ZERO);
     }
 
     /**
@@ -331,7 +321,7 @@ public class ExpFilter {
      * @param vecTrans transform function
      */
     private void amplifyFreqComponent(int intFreq, Complex cpxA, AbstractComplexVector vecTrans) {
-        int N = this.getDataSize();
+        int n = this.getDataSize();
 
         Complex cpxSpec;
 
@@ -341,29 +331,8 @@ public class ExpFilter {
         if (intFreq == 0) {
             return;
         }
-        cpxSpec = vecTrans.getComponent(N - intFreq);
-        vecTrans.setComponent(N - intFreq, cpxSpec.multiply(cpxA));
-    }
-
-    /**
-     * Correct the phasing of the frequency response to simulate that of a
-     * linear phase filter. These filters have constant time delay for all
-     * frequencies.
-     *
-     * @param vecTrans transformed spectrum to be phased
-     */
-    private void linearPhase(AbstractComplexVector vecTrans) {
-        int N = this.getDataSize();
-        double h = 2.0 * Math.PI / N;
-
-        for (int iFreq = 0; iFreq < N; iFreq++) {
-            double cos = Math.cos(iFreq * h);
-            double sin = Math.sin(iFreq * h);
-
-            Complex cpxPhase = new Complex(cos, -sin);
-            Complex cpxSpec = vecTrans.getComponent(iFreq);
-            vecTrans.setComponent(iFreq, cpxSpec.multiply(cpxPhase));
-        }
+        cpxSpec = vecTrans.getComponent(n - intFreq);
+        vecTrans.setComponent(n - intFreq, cpxSpec.multiply(cpxA));
     }
 
     /**

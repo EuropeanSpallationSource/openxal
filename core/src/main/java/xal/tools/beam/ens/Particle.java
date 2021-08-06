@@ -8,7 +8,7 @@ package xal.tools.beam.ens;
 import java.io.PrintWriter;
 import java.io.Serializable;
 
-import xal.tools.beam.IConstants;
+import xal.tools.beam.Constants;
 import xal.tools.beam.PhaseVector;
 import xal.tools.math.r3.R3;
 
@@ -30,12 +30,12 @@ public class Particle implements Serializable {
     /**
      * Coefficient for electrical properties
      */
-    public static final double FAC_ELEC = 1.0 / (4.0 * Math.PI * IConstants.PERMITTIVITY);
+    public static final double FAC_ELEC = 1.0 / (4.0 * Math.PI * Constants.PERMITTIVITY);
 
     /**
      * Coefficient for magnetic properties
      */
-    public static final double FAC_MAG = 1.0 / (4.0 * Math.PI * IConstants.PERMEABILITY);
+    public static final double FAC_MAG = 1.0 / (4.0 * Math.PI * Constants.PERMEABILITY);
 
 
     /*
@@ -170,7 +170,7 @@ public class Particle implements Serializable {
      * @return the coulomb potential in volts
      */
     public double electricPotential(R3 ptFld) {
-        return this.electricPotential(ptFld, IConstants.PROTON_RADIUS);
+        return this.electricPotential(ptFld, Constants.PROTON_RADIUS);
     }
 
     /**
@@ -184,60 +184,51 @@ public class Particle implements Serializable {
      * parameter for averaging.
      *
      * @param ptFld field point to evaluate the potential
-     * @param R radius of finite particle
+     * @param radius radius of finite particle
      *
      * @return electric potential of "smeared" particle at field point in volts
      */
-    public double electricPotential(R3 ptFld, double R) {
-
+    public double electricPotential(R3 ptFld, double radius) {
         // Compute distance between field and source point
         // source location of this charge
-        R3 ptSrc;
+        R3 ptSrc = getPosition();
         // displacement vector between source and field points
-        R3 vecDis;
+        R3 vecDis = ptFld.minus(ptSrc);
         // distance between field and source point
-        double dblDis;
-
-        ptSrc = getPosition();
-        vecDis = ptFld.minus(ptSrc);
-        dblDis = vecDis.norm2();
+        double dblDis = vecDis.norm2();
 
         // Return coulomb potential if field point is more distant than R
-        if (dblDis > R) {
+        if (dblDis > radius) {
             return FAC_ELEC * getCharge() / dblDis;
         }
 
         // Field point is within R, must use potential of a sphere
         // normalized distance, must be <1
-        double r;
+        double r = dblDis / radius;
         // electric potential
-        double V;
+        double v = 0.5 * FAC_ELEC * getCharge() / radius;
 
-        r = dblDis / R;
-        V = 0.5 * FAC_ELEC * getCharge() / R;
-        V = V * (3.0 - r * r);
+        v *= (3.0 - r * r);
 
-        return V;
+        return v;
     }
 
-    ;
-    
-    
     /**
-     *  Computes the Coulomb electric field of the particle at the given field point.
-     *  Note that very large fields exist sufficiently close to the particle.
+     * Computes the Coulomb electric field of the particle at the given field
+     * point. Note that very large fields exist sufficiently close to the
+     * particle.
      *
-     *  To avoid numerical singularities the particle is assumed to have a finite
-     *  radius equal to the "classical proton radius", which is ~1e-18.  Thus, the 
-     *  field of a uniform sphere is substituted for field points closer than
-     *  this radius.
+     * To avoid numerical singularities the particle is assumed to have a finite
+     * radius equal to the "classical proton radius", which is ~1e-18. Thus, the
+     * field of a uniform sphere is substituted for field points closer than
+     * this radius.
      *
-     *  @param  ptFld   field point to evaluate the potential
+     * @param ptFld field point to evaluate the potential
      *
-     *  @return         electric field vector in volts/meter
+     * @return electric field vector in volts/meter
      */
     public R3 electricField(R3 ptFld) {
-        return this.electricField(ptFld, IConstants.PROTON_RADIUS);
+        return this.electricField(ptFld, Constants.PROTON_RADIUS);
     }
 
     /**
@@ -251,38 +242,31 @@ public class Particle implements Serializable {
      * for averaging.
      *
      * @param ptFld field point to evaluate the electric field
-     * @param R radius of finite particle
+     * @param radius radius of finite particle
      *
      * @return electric field vector of "smeared" particle in volts/meter
      */
-    public R3 electricField(R3 ptFld, double R) {
-
+    public R3 electricField(R3 ptFld, double radius) {
         // Compute distance between field and source point
         // source location of this charge
-        R3 ptSrc;
+        R3 ptSrc = getPosition();
         // displacement vector between source and field points
-        R3 vecDis;
+        R3 vecDis = ptFld.minus(ptSrc);
         // distance between field and source point
-        double dblDis;
-
-        ptSrc = getPosition();
-        vecDis = ptFld.minus(ptSrc);
-        dblDis = vecDis.norm2();
+        double dblDis = vecDis.norm2();
 
         // Compute the electric field
         // scalar coefficient of displacement vector
-        double dblCoef;
-
-        dblCoef = FAC_ELEC * getCharge();
+        double dblCoef = FAC_ELEC * getCharge();
 
         // Return coulomb electric field if field point is more distant than R
-        if (dblDis > R) {
+        if (dblDis > radius) {
             dblCoef *= 1.0 / (dblDis * dblDis * dblDis);
             return vecDis.times(dblCoef);
         }
 
         // Field point is within R, must use field of a sphere
-        dblCoef *= 1.0 / (R * R * R);
+        dblCoef *= 1.0 / (radius * radius * radius);
 
         return vecDis.times(dblCoef);
     }
@@ -309,7 +293,7 @@ public class Particle implements Serializable {
      * @return magnetic field vector of "smeared" particle in Amperes/Meter
      */
     public R3 magneticField(R3 ptFld) {
-        return magneticField(ptFld, IConstants.PROTON_RADIUS);
+        return magneticField(ptFld, Constants.PROTON_RADIUS);
     }
 
     /**
@@ -329,46 +313,38 @@ public class Particle implements Serializable {
      * for averaging.
      *
      * @param ptFld field point to evaluate the electric field
-     * @param R radius of finite particle
+     * @param radius radius of finite particle
      *
      * @return magnetic field vector of "smeared" particle in Amperes/Meter
      */
-    public R3 magneticField(R3 ptFld, double R) {
+    public R3 magneticField(R3 ptFld, double radius) {
 
         // Compute distance between field and source point
         // source location of this charge
-        R3 ptSrc;
+        R3 ptSrc = getPosition();
         // velocity vector of particle
-        R3 vecVel;
+        R3 vecVel = getMomentum();
         // displacement vector between source and field points
-        R3 vecDis;
+        R3 vecDis = ptFld.minus(ptSrc);
         // distance between field and source point
-        double dblDis;
-
-        ptSrc = getPosition();
-        vecVel = getMomentum();
-        vecDis = ptFld.minus(ptSrc);
-        dblDis = vecDis.norm2();
+        double dblDis = vecDis.norm2();
 
         // Compute the magnetic field
         // scalar coefficient of field vector
-        double dblCoef;
+        double dblCoef = getCharge() / (4.0 * Math.PI);
         // magnetic field vector
-        R3 H;
-
-        dblCoef = getCharge() / (4.0 * Math.PI);
-        H = vecVel.times(vecDis);
+        R3 h = vecVel.times(vecDis);
 
         // Return Biot/Savart magnetic field if field point > R
-        if (dblDis > R) {
+        if (dblDis > radius) {
             dblCoef *= 1.0 / (dblDis * dblDis * dblDis);
-            return H.times(dblCoef);
+            return h.times(dblCoef);
         }
 
         // Field point is within R, must use field of a sphere
-        dblCoef *= 1.0 / (R * R * R);
+        dblCoef *= 1.0 / (radius * radius * radius);
 
-        return H.times(dblCoef);
+        return h.times(dblCoef);
     }
 
     /*
@@ -383,11 +359,9 @@ public class Particle implements Serializable {
      * @since Apr 15, 2011
      */
     public void print(PrintWriter os) {
-
         os.println("  mass   = " + this.getMass());
         os.println("  charge = " + this.getCharge());
         os.print("  coords = ");
         this.getPhase().println(os);
     }
-
 }

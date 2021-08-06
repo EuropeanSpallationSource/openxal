@@ -46,35 +46,25 @@ public class Sphere implements java.io.Serializable {
         return dblRad;
     }
 
-    ;
-    
     /**
-     *  Get the centroid of the sphere
+     * Get the centroid of the sphere
      */
     public R3 getCentroid() {
         return ptOrg;
     }
 
-    ;
-    
-    
-    
     /**
-     *  Determine whether a point is an element of the sphere
+     * Determine whether a point is an element of the sphere
      *
-     *  @param  pt      point to be tested for membership
+     * @param pt point to be tested for membership
      *
-     *  @return         true if pt is an element of the sphere
+     * @return true if pt is an element of the sphere
      */
     public boolean membership(R3 pt) {
         R3 vecDis = pt.minus(ptOrg);
         double dblDis = vecDis.norm2();
 
-        if (dblDis <= dblRad) {
-            return true;
-        }
-
-        return false;
+        return dblDis <= dblRad;
     }
 
     /**
@@ -88,11 +78,7 @@ public class Sphere implements java.io.Serializable {
         R3 vecDis = pt.minus(ptOrg);
         double dblDis = vecDis.norm2();
 
-        if (dblDis == dblRad) {
-            return true;
-        }
-
-        return false;
+        return dblDis == dblRad;
     }
 
     /**
@@ -103,5 +89,4 @@ public class Sphere implements java.io.Serializable {
     public double volume() {
         return (4.0 / 3.0) * Math.PI * dblRad * dblRad * dblRad;
     }
-
 }

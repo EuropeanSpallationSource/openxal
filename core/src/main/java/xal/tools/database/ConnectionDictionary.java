@@ -182,7 +182,6 @@ public class ConnectionDictionary extends Properties {
             return (DatabaseAdaptor) databaseAdaptorClass.newInstance();
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException exception) {
             final String message = "Failed to instantiate database adaptor for class:  " + className;
-            LOGGER.log(Level.SEVERE, message, exception);
             throw new RuntimeException(message, exception);
         }
     }

@@ -36,19 +36,19 @@ public class Info {
         if (infoLocation != null) {
             try {
                 final StringBuilder buffer = new StringBuilder();
-                final InputStream infoStream = infoLocation.openStream();
-                final BufferedReader infoReader = new BufferedReader(new InputStreamReader(infoStream));
-                while (true) {
-                    final String nextLine = infoReader.readLine();
-                    if (nextLine != null) {
-                        buffer.append(nextLine);
-                        buffer.append("\n");
-                    } else {
-                        // end of input
-                        break;
+                try (InputStream infoStream = infoLocation.openStream()) {
+                    final BufferedReader infoReader = new BufferedReader(new InputStreamReader(infoStream));
+                    while (true) {
+                        final String nextLine = infoReader.readLine();
+                        if (nextLine != null) {
+                            buffer.append(nextLine);
+                            buffer.append("\n");
+                        } else {
+                            // end of input
+                            break;
+                        }
                     }
                 }
-                infoStream.close();
 
                 @SuppressWarnings("unchecked")
                 final Map<String, Object> infoMap = (Map<String, Object>) JSONCoder.defaultDecode(buffer.toString());

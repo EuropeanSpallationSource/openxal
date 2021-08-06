@@ -67,14 +67,13 @@ public class R4x4 extends SquareMatrix<R4x4> {
         public int val() {
             return i;
         }
-        ;
 
-        
         /*
          * Local Attributes
          */
-        
-        /** index value */
+        /**
+         * index value
+         */
         private final int i;
 
         /*
@@ -153,12 +152,12 @@ public class R4x4 extends SquareMatrix<R4x4> {
      * rotations in <em>S0</em>(2)
      */
     public static R4x4 rotationProduct(R2x2 matSO2) {
-
         // Populate the phase rotation matrix
         R4x4 matSO4 = R4x4.newIdentity();
 
         // indices into the SO(7) matrix
-        int m, n;
+        int m;
+        int n;
         // matSO3 matrix element
         double val;
 

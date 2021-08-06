@@ -82,13 +82,13 @@ public class CalculationsOnParticles extends CalculationEngine implements ISimLo
     public CalculationsOnParticles(Trajectory<ParticleProbeState> datSim) {
         ParticleProbeState pstFinal = datSim.finalState();
 
-        this.trjSimul = datSim;
-        this.staFinal = pstFinal;
-        this.matResp = this.staFinal.getResponseMatrix();
+        trjSimul = datSim;
+        staFinal = pstFinal;
+        matResp = staFinal.getResponseMatrix();
 
-        this.vecPhsAdv = super.calculatePhaseAdvPerCell(this.matResp);
-        this.vecFxdPt = super.calculateFixedPoint(this.matResp);
-        this.arrTwsMch = super.calculateMatchedTwiss(this.matResp);
+        vecPhsAdv = super.calculatePhaseAdvPerCell(matResp);
+        vecFxdPt = super.calculateFixedPoint(matResp);
+        arrTwsMch = super.calculateMatchedTwiss(matResp);
     }
 
 
@@ -105,7 +105,7 @@ public class CalculationsOnParticles extends CalculationEngine implements ISimLo
      * @since Nov 7, 2013
      */
     public Trajectory<ParticleProbeState> getTrajectory() {
-        return this.trjSimul;
+        return trjSimul;
     }
 
     /**
@@ -121,7 +121,7 @@ public class CalculationsOnParticles extends CalculationEngine implements ISimLo
      * @since Nov 7, 2013
      */
     public PhaseMatrix getFullResponseMatrix() {
-        return this.matResp;
+        return matResp;
     }
 
     /**
@@ -150,7 +150,7 @@ public class CalculationsOnParticles extends CalculationEngine implements ISimLo
      * @since Oct 30, 2013
      */
     public R3 periodBetatronPhaseAdvance() {
-        return this.vecPhsAdv;
+        return vecPhsAdv;
     }
 
     /**
@@ -182,7 +182,7 @@ public class CalculationsOnParticles extends CalculationEngine implements ISimLo
      * @since Oct 30, 2013
      */
     public PhaseVector periodFixedOrbitPt() {
-        return this.vecFxdPt;
+        return vecFxdPt;
     }
 
     /**
@@ -210,7 +210,7 @@ public class CalculationsOnParticles extends CalculationEngine implements ISimLo
      * @since Oct 30, 2013
      */
     public Twiss[] periodMatchedTwiss() {
-        return this.arrTwsMch;
+        return arrTwsMch;
     }
 
 
@@ -229,9 +229,7 @@ public class CalculationsOnParticles extends CalculationEngine implements ISimLo
      */
     @Override
     public PhaseVector computeCoordinatePosition(ParticleProbeState state) {
-        PhaseVector vecPos = state.getPhaseCoordinates();
-
-        return vecPos;
+        return state.getPhaseCoordinates();
     }
 
     /**
@@ -337,10 +335,7 @@ public class CalculationsOnParticles extends CalculationEngine implements ISimLo
      */
     @Override
     public PhaseVector computeFixedOrbit(ParticleProbeState state) {
-
-        PhaseVector vecFxdOrb = this.computeCoordinatePosition(state);
-
-        return vecFxdOrb;
+        return this.computeCoordinatePosition(state);
     }
 
     /**
@@ -361,14 +356,9 @@ public class CalculationsOnParticles extends CalculationEngine implements ISimLo
     @Override
     public PhaseVector computeChromAberration(ParticleProbeState state) {
         double dblGamma = state.getGamma();
-        PhaseMatrix matResp = state.getResponseMatrix();
-        R6 vecDel = super.calculateAberration(matResp, dblGamma);
+        PhaseMatrix mat = state.getResponseMatrix();
+        R6 vecDel = super.calculateAberration(mat, dblGamma);
 
         return PhaseVector.embed(vecDel);
     }
-
-
-    /*
-     * Support Methods
-     */
 }

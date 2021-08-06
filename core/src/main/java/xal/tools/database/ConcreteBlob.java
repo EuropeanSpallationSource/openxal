@@ -44,9 +44,9 @@ public class ConcreteBlob implements Blob {
 
     @Override
     public InputStream getBinaryStream(long position, long length) {
-        final byte[] data = new byte[(int) length - (int) position];
-        System.arraycopy(this.data, (int) position, data, 0, (int) length);
-        return new ByteArrayInputStream(data);
+        final byte[] newData = new byte[(int) length - (int) position];
+        System.arraycopy(this.data, (int) position, newData, 0, (int) length);
+        return new ByteArrayInputStream(newData);
     }
 
     @Override
@@ -61,10 +61,10 @@ public class ConcreteBlob implements Blob {
      */
     @Override
     public byte[] getBytes(final long position, final int length) {
-        final byte[] data = new byte[length - (int) position];
-        System.arraycopy(this.data, (int) position, data, 0, length);
+        final byte[] newData = new byte[length - (int) position];
+        System.arraycopy(this.data, (int) position, newData, 0, length);
 
-        return data;
+        return newData;
     }
 
     /**
@@ -90,7 +90,7 @@ public class ConcreteBlob implements Blob {
      */
     @Override
     public long position(final byte[] pattern, long start) {
-        final long MAX_INDEX = data.length - pattern.length + 1;
+        final long MAX_INDEX = data.length - pattern.length + 1L;
 
         for (long index = 0; index < MAX_INDEX; index++, start++) {
             if (isMatch(pattern, 0, (int) start)) {
@@ -149,9 +149,9 @@ public class ConcreteBlob implements Blob {
      */
     @Override
     public void truncate(long length) {
-        final byte[] data = new byte[(int) length];
-        System.arraycopy(this.data, 0, data, 0, (int) length);
-        this.data = data;
+        final byte[] newData = new byte[(int) length];
+        System.arraycopy(this.data, 0, newData, 0, (int) length);
+        this.data = newData;
     }
 
 }

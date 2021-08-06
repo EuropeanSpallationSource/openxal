@@ -652,11 +652,11 @@ public class EnvTrackerAdapt extends EnvelopeTrackerBase {
 
         // Get the algorithm class name from the EditContext
         DataTable tblAlgorithm = ecTableData.getTable(EnvTrackerAdapt.TBL_LBL_ENVTRACKERADAPT);
-        GenericRecord recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, strPrimKeyVal);
+        GenericRecord recTracker = tblAlgorithm.genericRecord(Tracker.TBL_PRIM_KEY_NAME, strPrimKeyVal);
 
         if (recTracker == null) {
             // just use the default record
-            recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");
+            recTracker = tblAlgorithm.genericRecord(Tracker.TBL_PRIM_KEY_NAME, "default");
         }
 
         final double errorTolerance = recTracker.doubleValueForKey(ATTRTAG_ERRTOL);

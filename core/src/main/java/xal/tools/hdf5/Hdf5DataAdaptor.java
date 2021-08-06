@@ -161,7 +161,7 @@ public class Hdf5DataAdaptor implements FileDataAdaptor {
         if (attribute != null) {
             return attribute.getArrDbl();
         } else {
-            return null;
+            return new double[0];
         }
     }
 
@@ -223,8 +223,7 @@ public class Hdf5DataAdaptor implements FileDataAdaptor {
      * create a new adaptor for the specified node
      */
     private static Hdf5DataAdaptor newAdaptor(H5Node node) {
-        Hdf5DataAdaptor adaptor = new Hdf5DataAdaptor(node);
-        return adaptor;
+        return new Hdf5DataAdaptor(node);
     }
 
     @Override

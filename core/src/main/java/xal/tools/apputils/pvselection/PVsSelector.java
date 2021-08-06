@@ -14,6 +14,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.net.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.ca.*;
 import xal.ca.view.*;
@@ -65,7 +67,7 @@ public class PVsSelector extends JPanel {
     private JTextField messageJText = new JTextField(60);
 
     //Add action listener
-    private java.awt.event.ActionListener addPVActionListener = null;
+    private transient ActionListener addPVActionListener = null;
 
     //upper panel to provide ability to remove the message text field
     private JPanel uppPanel = new JPanel();
@@ -73,6 +75,7 @@ public class PVsSelector extends JPanel {
     private Font fnt = null;
 
     private HandleNode selectedHandleNode = null;
+    private static final Logger LOGGER = Logger.getLogger(PVsSelector.class.getName());
 
     /**
      * The constructor. Just creates objects we need internally.
@@ -103,8 +106,8 @@ public class PVsSelector extends JPanel {
 
         pvNameJText.setEditable(false);
 
-        setPVButton.setHorizontalAlignment(JButton.RIGHT);
-        removePVButton.setHorizontalAlignment(JButton.RIGHT);
+        setPVButton.setHorizontalAlignment(SwingConstants.RIGHT);
+        removePVButton.setHorizontalAlignment(SwingConstants.RIGHT);
 
         // line up the labels, buttons and panels
         setLayout(new BorderLayout());
@@ -154,100 +157,94 @@ public class PVsSelector extends JPanel {
         removePVButton.setToolTipText("delete PV name from the left PV tree");
 
         //button action listener definition
-        addPVActionListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                showMessage(null);
-                PVTreeNode pvNode = PVTreeNode.getSelectedPVTreeNode(pvRoot);
-                if (pvNode == null) {
-                    showMessage("Please, select a right place for new PV in the right tree!");
+        addPVActionListener = evt -> {
+            showMessage(null);
+            PVTreeNode pvNode = PVTreeNode.getSelectedPVTreeNode(pvRoot);
+            if (pvNode == null) {
+                showMessage("Please, select a right place for new PV in the right tree!");
+                return;
+            }
+            if (rawPVButton.isSelected()) {
+                String pvName = pvNameJText.getText();
+                if (pvName.length() == 0) {
+                    showMessage("PV name field is empty.");
                     return;
                 }
-                if (rawPVButton.isSelected()) {
-                    String pvName = pvNameJText.getText();
-                    if (pvName.length() == 0) {
-                        showMessage("PV name field is empty.");
+                if (pvNode.isPVNamesAllowed() && !pvNode.isPVName()) {
+                    //check that it is not maximal number of PVs
+                    if (pvNode.getPVNumberLimit() <= pvNode.getChildCount()) {
+                        showMessage("This container can include only n="
+                                + pvNode.getPVNumberLimit() + " PVs and you have n="
+                                + pvNode.getLeafCount());
                         return;
                     }
-                    if (pvNode.isPVNamesAllowed() && !pvNode.isPVName()) {
-                        //check that it is not maximal number of PVs
-                        if (pvNode.getPVNumberLimit() <= pvNode.getChildCount()) {
-                            showMessage("This container can include only n="
-                                    + pvNode.getPVNumberLimit() + " PVs and you have n="
-                                    + pvNode.getLeafCount());
-                            return;
-                        }
-                        //create new node
-                        PVTreeNode pvNodeNew = new PVTreeNode(pvName);
-                        Channel channel = ChannelFactory.defaultFactory().getChannel(pvName);
-                        pvNodeNew.setChannel(channel);
-                        pvNodeNew.setAsPVName(true);
-                        pvNodeNew.setCheckBoxVisible(pvNode.isCheckBoxVisible());
-                        pvNode.add(pvNodeNew);
-                        JTree pvTree = pvTreePanel.getJTree();
-                        DefaultTreeModel treeModel = (DefaultTreeModel) pvTree.getModel();
-                        treeModel.reload(pvNode);
-                        pvNodeNew.setSwitchedOnOffListener(pvNode.getSwitchedOnOffListener());
-                        pvNodeNew.setCreateRemoveListener(pvNode.getCreateRemoveListener());
-                        pvNodeNew.setRenameListener(pvNode.getRenameListener());
-                        pvNodeNew.creatingOccurred();
-                        pvTree.scrollPathToVisible(new TreePath(pvNodeNew.getPath()));
+                    //create new node
+                    PVTreeNode pvNodeNew = new PVTreeNode(pvName);
+                    Channel channel = ChannelFactory.defaultFactory().getChannel(pvName);
+                    pvNodeNew.setChannel(channel);
+                    pvNodeNew.setAsPVName(true);
+                    pvNodeNew.setCheckBoxVisible(pvNode.isCheckBoxVisible());
+                    pvNode.add(pvNodeNew);
+                    JTree pvTree = pvTreePanel.getJTree();
+                    DefaultTreeModel treeModel = (DefaultTreeModel) pvTree.getModel();
+                    treeModel.reload(pvNode);
+                    pvNodeNew.setSwitchedOnOffListener(pvNode.getSwitchedOnOffListener());
+                    pvNodeNew.setCreateRemoveListener(pvNode.getCreateRemoveListener());
+                    pvNodeNew.setRenameListener(pvNode.getRenameListener());
+                    pvNodeNew.creatingOccurred();
+                    pvTree.scrollPathToVisible(new TreePath(pvNodeNew.getPath()));
+                    return;
+                }
+                if (pvNode.isPVName()) {
+                    //change pv name for existing node
+                    pvNode.setColor(null);
+                    pvNode.setCheckBoxVisible(((PVTreeNode) pvNode.getParent()).isCheckBoxVisible());
+                    Channel channel = ChannelFactory.defaultFactory().getChannel(pvName);
+                    pvNode.setChannel(channel);
+                    pvNode.setName(pvName);
+                    JTree pvTree = pvTreePanel.getJTree();
+                    DefaultTreeModel treeModel = (DefaultTreeModel) pvTree.getModel();
+                    treeModel.reload(pvNode.getParent());
+                }
+            } else {
+                //raw PV button is not selected
+                if (pvNode.isPVNamesAllowed() && !pvNode.isPVName()) {
+                    //check that it is not maximal number of PVs
+                    if (pvNode.getPVNumberLimit() <= pvNode.getChildCount()) {
+                        showMessage("This container can include only n="
+                                + pvNode.getPVNumberLimit() + " PVs and you have n="
+                                + pvNode.getLeafCount());
                         return;
                     }
-                    if (pvNode.isPVName()) {
-                        //change pv name for existing node
-                        pvNode.setColor(null);
-                        pvNode.setCheckBoxVisible(((PVTreeNode) pvNode.getParent()).isCheckBoxVisible());
-                        Channel channel = ChannelFactory.defaultFactory().getChannel(pvName);
-                        pvNode.setChannel(channel);
-                        pvNode.setName(pvName);
-                        JTree pvTree = pvTreePanel.getJTree();
-                        DefaultTreeModel treeModel = (DefaultTreeModel) pvTree.getModel();
-                        treeModel.reload(pvNode.getParent());
+                    if (selectedHandleNode == null) {
+                        showMessage("You did not select PV handler in the left accelerator tree.");
                         return;
                     }
-                } else {
-                    //raw PV button is not selected
-                    if (pvNode.isPVNamesAllowed() && !pvNode.isPVName()) {
-                        //check that it is not maximal number of PVs
-                        if (pvNode.getPVNumberLimit() <= pvNode.getChildCount()) {
-                            showMessage("This container can include only n="
-                                    + pvNode.getPVNumberLimit() + " PVs and you have n="
-                                    + pvNode.getLeafCount());
-                            return;
-                        }
-                        if (selectedHandleNode == null) {
-                            showMessage("You did not select PV handler in the left accelerator tree.");
-                            return;
-                        }
-                        //create new node
-                        PVTreeNode pvNodeNew = new PVTreeNode(selectedHandleNode.getSignalName());
-                        pvNodeNew.setChannel(selectedHandleNode.getChannel());
-                        pvNodeNew.setAsPVName(true);
-                        pvNodeNew.setCheckBoxVisible(pvNode.isCheckBoxVisible());
-                        pvNode.add(pvNodeNew);
-                        JTree pvTree = pvTreePanel.getJTree();
-                        DefaultTreeModel treeModel = (DefaultTreeModel) pvTree.getModel();
-                        treeModel.reload(pvNode);
-                        pvNodeNew.setSwitchedOnOffListener(pvNode.getSwitchedOnOffListener());
-                        pvNodeNew.setCreateRemoveListener(pvNode.getCreateRemoveListener());
-                        pvNodeNew.setRenameListener(pvNode.getRenameListener());
-                        pvNodeNew.creatingOccurred();
-                        pvTree.scrollPathToVisible(new TreePath(pvNodeNew.getPath()));
-                        return;
-                    }
-                    if (pvNode.isPVName()) {
-                        //change pv name for existing node
-                        pvNode.setColor(null);
-                        pvNode.setCheckBoxVisible(((PVTreeNode) pvNode.getParent()).isCheckBoxVisible());
-                        pvNode.setChannel(selectedHandleNode.getChannel());
-                        pvNode.setName(selectedHandleNode.getSignalName());
-                        JTree pvTree = pvTreePanel.getJTree();
-                        DefaultTreeModel treeModel = (DefaultTreeModel) pvTree.getModel();
-                        treeModel.reload(pvNode.getParent());
-                        return;
-                    }
-
+                    //create new node
+                    PVTreeNode pvNodeNew = new PVTreeNode(selectedHandleNode.getSignalName());
+                    pvNodeNew.setChannel(selectedHandleNode.getChannel());
+                    pvNodeNew.setAsPVName(true);
+                    pvNodeNew.setCheckBoxVisible(pvNode.isCheckBoxVisible());
+                    pvNode.add(pvNodeNew);
+                    JTree pvTree = pvTreePanel.getJTree();
+                    DefaultTreeModel treeModel = (DefaultTreeModel) pvTree.getModel();
+                    treeModel.reload(pvNode);
+                    pvNodeNew.setSwitchedOnOffListener(pvNode.getSwitchedOnOffListener());
+                    pvNodeNew.setCreateRemoveListener(pvNode.getCreateRemoveListener());
+                    pvNodeNew.setRenameListener(pvNode.getRenameListener());
+                    pvNodeNew.creatingOccurred();
+                    pvTree.scrollPathToVisible(new TreePath(pvNodeNew.getPath()));
+                    return;
+                }
+                if (pvNode.isPVName()) {
+                    //change pv name for existing node
+                    pvNode.setColor(null);
+                    pvNode.setCheckBoxVisible(((PVTreeNode) pvNode.getParent()).isCheckBoxVisible());
+                    pvNode.setChannel(selectedHandleNode.getChannel());
+                    pvNode.setName(selectedHandleNode.getSignalName());
+                    JTree pvTree = pvTreePanel.getJTree();
+                    DefaultTreeModel treeModel = (DefaultTreeModel) pvTree.getModel();
+                    treeModel.reload(pvNode.getParent());
                 }
             }
         };
@@ -256,55 +253,44 @@ public class PVsSelector extends JPanel {
 
         pvNameJText.addActionListener(addPVActionListener);
 
-        removePVButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                showMessage(null);
-                PVTreeNode pvNode = PVTreeNode.getSelectedPVTreeNode(pvRoot);
-                if (pvNode == null || !pvNode.isPVName()) {
-                    showMessage("Please, select PV in the right tree! You can delete PV only!");
-                    return;
-                }
-
-                PVTreeNode pvNode_Parent = (PVTreeNode) pvNode.getParent();
-                pvNode.removingOccurred();
-                pvNode_Parent.remove(pvNode);
-                Channel channel = pvNode.getChannel();
-                String pvName = null;
-                if (channel != null) {
-                    pvName = channel.channelName();
-                } else {
-                    pvName = pvNode.getName();
-                }
-                pvNameJText.setText(pvName);
-                JTree pvTree = pvTreePanel.getJTree();
-                DefaultTreeModel treeModel = (DefaultTreeModel) pvTree.getModel();
-                treeModel.reload(pvNode_Parent);
+        removePVButton.addActionListener(evt -> {
+            showMessage(null);
+            PVTreeNode pvNode = PVTreeNode.getSelectedPVTreeNode(pvRoot);
+            if (pvNode == null || !pvNode.isPVName()) {
+                showMessage("Please, select PV in the right tree! You can delete PV only!");
+                return;
             }
+
+            PVTreeNode pvNodeParent = (PVTreeNode) pvNode.getParent();
+            pvNode.removingOccurred();
+            pvNodeParent.remove(pvNode);
+            Channel channel = pvNode.getChannel();
+            String pvName;
+            if (channel != null) {
+                pvName = channel.channelName();
+            } else {
+                pvName = pvNode.getName();
+            }
+            pvNameJText.setText(pvName);
+            JTree pvTree = pvTreePanel.getJTree();
+            DefaultTreeModel treeModel = (DefaultTreeModel) pvTree.getModel();
+            treeModel.reload(pvNodeParent);
         });
 
-        rawPVButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                pvNameJText.setEditable(rawPVButton.isSelected());
-            }
-        });
+        rawPVButton.addActionListener(evt -> pvNameJText.setEditable(rawPVButton.isSelected()));
 
-        ActionListener extTreeSelectionListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Object source = e.getSource();
-                if (source instanceof PVTreeNode) {
-                    PVTreeNode tn = (PVTreeNode) source;
-                    if (tn.isPVName()) {
-                        Channel channel = tn.getChannel();
-                        if (channel != null) {
-                            pvNameJText.setText(null);
-                            pvNameJText.setText(channel.channelName());
-                        } else {
-                            pvNameJText.setText(null);
-                            pvNameJText.setText(tn.getName());
-                        }
+        ActionListener extTreeSelectionListener = e -> {
+            Object source = e.getSource();
+            if (source instanceof PVTreeNode) {
+                PVTreeNode tn = (PVTreeNode) source;
+                if (tn.isPVName()) {
+                    Channel channel = tn.getChannel();
+                    if (channel != null) {
+                        pvNameJText.setText(null);
+                        pvNameJText.setText(channel.channelName());
+                    } else {
+                        pvNameJText.setText(null);
+                        pvNameJText.setText(tn.getName());
                     }
                 }
             }
@@ -344,8 +330,7 @@ public class PVsSelector extends JPanel {
 
     public DefaultTreeModel getDefaultTreeModel() {
         JTree pvTree = pvTreePanel.getJTree();
-        DefaultTreeModel treeModel = (DefaultTreeModel) pvTree.getModel();
-        return treeModel;
+        return (DefaultTreeModel) pvTree.getModel();
     }
 
     public void removeMessageTextField() {
@@ -416,14 +401,11 @@ public class PVsSelector extends JPanel {
                 if (selRow != -1) {
                     pvNameJText.setText(null);
                     Object value = selPath.getLastPathComponent();
-                    if (value instanceof HandleNode) {
-                        if (((HandleNode) value).isSignal()) {
-                            selectedHandleNode = (HandleNode) value;
-                            String PVName = selectedHandleNode.getChannelName();
-                            pvNameJText.setText(PVName);
-                        }
+                    if (value instanceof HandleNode && ((HandleNode) value).isSignal()) {
+                        selectedHandleNode = (HandleNode) value;
+                        String pvName = selectedHandleNode.getChannelName();
+                        pvNameJText.setText(pvName);
                     }
-
                 }
             }
         };
@@ -434,7 +416,7 @@ public class PVsSelector extends JPanel {
     public void setAcceleratorFileName(String nameOfXALFile) {
         File flIn = new File(nameOfXALFile);
         if (flIn.exists()) {
-            String url = null;
+            String url;
             try {
                 url = flIn.toURI().toURL().toString();
             } catch (MalformedURLException e) {
@@ -443,19 +425,18 @@ public class PVsSelector extends JPanel {
             }
 
             XMLDataManager dMgr = new XMLDataManager(url);
-            Accelerator accel = null;
+            Accelerator accel;
             try {
                 accel = dMgr.getAccelerator();
 
             } catch (ParseException e) {
-                System.err.println("Cannot get accelerator: Exeption - " + e.getMessage());
+                LOGGER.log(Level.WARNING, "Cannot get accelerator: Exeption - {0}", e.getMessage());
                 Toolkit.getDefaultToolkit().beep();
                 return;
             }
             setAccelerator(accel);
         } else {
             Toolkit.getDefaultToolkit().beep();
-            return;
         }
     }
 
@@ -473,7 +454,5 @@ public class PVsSelector extends JPanel {
         if (tree != null) {
             tree.setFont(fnt);
         }
-
     }
-
 }

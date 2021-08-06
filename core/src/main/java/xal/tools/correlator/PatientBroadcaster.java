@@ -19,14 +19,14 @@ import xal.tools.messaging.MessageCenter;
  *
  * @author tap
  */
-public class PatientBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
+public class PatientBroadcaster<T> extends AbstractBroadcaster<T> {
     // correlator variables
 
     protected double binTimespan;
 
     // state variables
     protected double lastTime;
-    protected Correlation<RecordType> pendingCorrelation;
+    protected Correlation<T> pendingCorrelation;
 
     /**
      * Creates a new instance of PatientBroadcaster
@@ -46,7 +46,7 @@ public class PatientBroadcaster<RecordType> extends AbstractBroadcaster<RecordTy
      * @param correlation The new correlation.
      */
     @Override
-    public synchronized void newCorrelation(final BinAgent<RecordType> sender, final Correlation<RecordType> correlation) {
+    public synchronized void newCorrelation(final BinAgent<T> sender, final Correlation<T> correlation) {
         final int numRecords = correlation.numRecords();
         final boolean isFullCount = (numRecords == fullCount);
         final double correlationTime = correlation.meanTimeInSeconds();
@@ -107,7 +107,7 @@ public class PatientBroadcaster<RecordType> extends AbstractBroadcaster<RecordTy
      * @param newTimespan The new timespan used by the correlator.
      */
     @Override
-    public void binTimespanChanged(final Correlator<?, RecordType, ?> sender, final double newTimespan) {
+    public void binTimespanChanged(final Correlator<?, T, ?> sender, final double newTimespan) {
         super.binTimespanChanged(sender, newTimespan);
         binTimespan = newTimespan;
     }

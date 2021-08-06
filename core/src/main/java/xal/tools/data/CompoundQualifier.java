@@ -33,7 +33,7 @@ public abstract class CompoundQualifier implements Qualifier {
      * @param reserve the initial reserve estimate for the number of qualifiers
      * that form this compound qualifier.
      */
-    public CompoundQualifier(final int reserve) {
+    protected CompoundQualifier(final int reserve) {
         qualifierCount = 0;
         qualifiers = new Qualifier[reserve];
     }
@@ -41,7 +41,7 @@ public abstract class CompoundQualifier implements Qualifier {
     /**
      * Constructor
      */
-    public CompoundQualifier() {
+    protected CompoundQualifier() {
         this(DEFAULT_RESERVE_CAPACITY);
     }
 
@@ -53,18 +53,18 @@ public abstract class CompoundQualifier implements Qualifier {
      * @return This instance for convenience of chaining "append" operations.
      */
     public CompoundQualifier append(final Qualifier qualifier) {
-        Qualifier[] qualifiers;
+        Qualifier[] newQualifiers;
 
         if (this.qualifiers.length <= qualifierCount) {
             // increase the size by atleast two and roughly 10% more
-            qualifiers = new Qualifier[2 + (int) (1.1 * this.qualifiers.length)];
-            System.arraycopy(this.qualifiers, 0, qualifiers, 0, this.qualifiers.length);
+            newQualifiers = new Qualifier[2 + (int) (1.1 * this.qualifiers.length)];
+            System.arraycopy(this.qualifiers, 0, newQualifiers, 0, this.qualifiers.length);
         } else {
-            qualifiers = this.qualifiers;
+            newQualifiers = this.qualifiers;
         }
 
-        qualifiers[qualifierCount] = qualifier;
-        this.qualifiers = qualifiers;
+        newQualifiers[qualifierCount] = qualifier;
+        this.qualifiers = newQualifiers;
         ++qualifierCount;
 
         return this;

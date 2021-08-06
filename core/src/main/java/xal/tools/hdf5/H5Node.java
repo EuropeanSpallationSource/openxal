@@ -32,6 +32,7 @@
 package xal.tools.hdf5;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import xal.smf.attr.Attribute;
@@ -59,7 +60,7 @@ class H5Node {
         attributes = new HashMap<>();
     }
 
-    public HashMap<String, Attribute> getAttributes() {
+    public Map<String, Attribute> getAttributes() {
         return attributes;
     }
 

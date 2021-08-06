@@ -39,16 +39,18 @@ public class VerticalLayout implements LayoutManager {
     /* Required by LayoutManager. */
     @Override
     public void addLayoutComponent(String name, Component comp) {
+        // Do nothing
     }
 
     /* Required by LayoutManager. */
     @Override
     public void removeLayoutComponent(Component comp) {
+        // Do nothing
     }
 
     private void setSizes(Container parent) {
         int nComps = parent.getComponentCount();
-        Dimension d = null;
+        Dimension d;
 
         //Reset preferred/minimum width and height.
         preferredWidth = 0;
@@ -121,13 +123,11 @@ public class VerticalLayout implements LayoutManager {
     @Override
     public void layoutContainer(Container parent) {
         Insets insets = parent.getInsets();
-        int maxWidth = parent.getSize().width
-                - (insets.left + insets.right);
-        int maxHeight = parent.getSize().height
-                - (insets.top + insets.bottom);
+
         int nComps = parent.getComponentCount();
         int previousHeight = 0;
-        int x = insets.left, y = insets.top;
+        int x = insets.left;
+        int y = insets.top;
 
         // Go through the components' sizes, if neither
         // preferredLayoutSize nor minimumLayoutSize has
@@ -214,7 +214,5 @@ public class VerticalLayout implements LayoutManager {
 
         mainFrame.pack();
         mainFrame.setVisible(true);
-
     }
-
 }

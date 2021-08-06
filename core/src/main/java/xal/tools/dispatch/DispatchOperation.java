@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 /**
  * Wraps a operation so status can be monitored
  */
-abstract class DispatchOperation<ReturnType> implements Callable<ReturnType> {
+abstract class DispatchOperation<T> implements Callable<T> {
 
     /**
      * indicates whether the task is a barrier operation
@@ -41,7 +41,7 @@ abstract class DispatchOperation<ReturnType> implements Callable<ReturnType> {
     /**
      * result of the operation upon successful completion
      */
-    private ReturnType result;
+    private T result;
 
     private static final Logger LOGGER = Logger.getLogger(DispatchOperation.class.getName());
 
@@ -69,7 +69,7 @@ abstract class DispatchOperation<ReturnType> implements Callable<ReturnType> {
     /**
      * Get a new dispatch operation that wraps the specified raw operation
      */
-    public static <ReturnType> DispatchOperation<ReturnType> getInstance(final Callable<ReturnType> rawOperation, final DispatchOperationListener delegate, final boolean isBarrier) {
+    public static <T> DispatchOperation<T> getInstance(final Callable<T> rawOperation, final DispatchOperationListener delegate, final boolean isBarrier) {
         return new DispatchOperationRawCallable<>(rawOperation, delegate, isBarrier);
     }
 
@@ -119,7 +119,7 @@ abstract class DispatchOperation<ReturnType> implements Callable<ReturnType> {
     /**
      * Get the result
      */
-    public final ReturnType getResult() {
+    public final T getResult() {
         return result;
     }
 
@@ -127,11 +127,10 @@ abstract class DispatchOperation<ReturnType> implements Callable<ReturnType> {
      * perform the operation
      */
     @Override
-    public final ReturnType call() {
+    public final T call() {
         try {
             isRunning = true;
-            final ReturnType result = executeRawOperation();
-            this.result = result;
+            result = executeRawOperation();
             return result;
         } catch (Exception exception) {
             throw new RuntimeException(exception);
@@ -151,7 +150,7 @@ abstract class DispatchOperation<ReturnType> implements Callable<ReturnType> {
         }
     }
 
-    protected abstract ReturnType executeRawOperation() throws java.lang.Exception;
+    protected abstract T executeRawOperation() throws Exception;
 
     /**
      * notify the queue and groups that the operation has completed
@@ -183,7 +182,7 @@ class DispatchOperationRawRunnable extends DispatchOperation<Void> {
     }
 
     @Override
-    protected Void executeRawOperation() throws java.lang.Exception {
+    protected Void executeRawOperation() throws Exception {
         rawOperation.run();
         return null;
     }
@@ -192,24 +191,23 @@ class DispatchOperationRawRunnable extends DispatchOperation<Void> {
 /**
  * Dispatch operation built to execute a raw runnable operation
  */
-class DispatchOperationRawCallable<ReturnType> extends DispatchOperation<ReturnType> {
-
+class DispatchOperationRawCallable<T> extends DispatchOperation<T> {
     /**
      * wrapped operation
      */
-    private final Callable<ReturnType> rawOperation;
+    private final Callable<T> rawOperation;
 
     /**
      * Primary Constructor
      */
-    public DispatchOperationRawCallable(final Callable<ReturnType> rawOperation, final DispatchOperationListener delegate, final boolean isBarrier) {
+    public DispatchOperationRawCallable(final Callable<T> rawOperation, final DispatchOperationListener delegate, final boolean isBarrier) {
         super(delegate, isBarrier);
 
         this.rawOperation = rawOperation;
     }
 
     @Override
-    protected ReturnType executeRawOperation() throws java.lang.Exception {
+    protected T executeRawOperation() throws Exception {
         return rawOperation.call();
     }
 }

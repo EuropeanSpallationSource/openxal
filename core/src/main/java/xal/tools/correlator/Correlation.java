@@ -14,15 +14,15 @@ import java.util.*;
  *
  * @author tap
  */
-public class Correlation<RecordType> {
+public class Correlation<T> {
 
-    private final Map<String, RecordType> recordTable;
+    private final Map<String, T> recordTable;
     private final UnivariateStatistics timeStatistics;
 
     /**
      * Creates new Correlation
      */
-    public Correlation(final Map<String, RecordType> newRecordTable, final UnivariateStatistics newTimeStatistics) {
+    public Correlation(final Map<String, T> newRecordTable, final UnivariateStatistics newTimeStatistics) {
         recordTable = Collections.unmodifiableMap(new HashMap<>(newRecordTable));
         timeStatistics = new UnivariateStatistics(newTimeStatistics);
     }
@@ -62,7 +62,7 @@ public class Correlation<RecordType> {
      * @return Collection of records in the correlation.
      * @see #getRecord
      */
-    public final Collection<RecordType> getRecords() {
+    public final Collection<T> getRecords() {
         return recordTable.values();
     }
 
@@ -76,7 +76,7 @@ public class Correlation<RecordType> {
      * @param name The name that identifies the desired record.
      * @return The record corresponding to the specified name.
      */
-    public final RecordType getRecord(final String name) {
+    public final T getRecord(final String name) {
         return recordTable.get(name);
     }
 
@@ -89,7 +89,7 @@ public class Correlation<RecordType> {
      * @return true if this correlation contains all of the records of the
      * specified correlation and false otherwise.
      */
-    public boolean contains(final Correlation<RecordType> correlation) {
+    public boolean contains(final Correlation<T> correlation) {
         return getRecords().containsAll(correlation.getRecords());
     }
 
@@ -124,8 +124,8 @@ public class Correlation<RecordType> {
     @Override
     public String toString() {
         final StringBuilder buffer = new StringBuilder();
-        final Collection<Map.Entry<String, RecordType>> recordEntries = recordTable.entrySet();
-        for (final Map.Entry<String, RecordType> entry : recordEntries) {
+        final Collection<Map.Entry<String, T>> recordEntries = recordTable.entrySet();
+        for (final Map.Entry<String, T> entry : recordEntries) {
             buffer.append("name: ").append(entry.getKey()).append(", ");
             buffer.append(entry.getValue());
             buffer.append("\n");

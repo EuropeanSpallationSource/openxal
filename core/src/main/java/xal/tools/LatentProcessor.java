@@ -35,12 +35,12 @@ public class LatentProcessor extends FreshProcessor {
         }
 
         // convert from seconds to milliseconds
-        final double latencyMilliseconds = 1000.0 * latency;
+        double dblLatencyMilliseconds = 1000.0 * latency;
         // millisecond portion of latency
-        this.latencyMilliseconds = (long) (latencyMilliseconds);
+        latencyMilliseconds = (long) (dblLatencyMilliseconds);
 
         // get the nanosecond remainder
-        final double remainderNanos = 1.0e6 * (latencyMilliseconds - latencyMilliseconds);
+        double remainderNanos = 1.0e6 * (dblLatencyMilliseconds - latencyMilliseconds);
         // nanosecond portion of latency rounded up
         latencyNanoseconds = (int) (remainderNanos + 0.5);
     }

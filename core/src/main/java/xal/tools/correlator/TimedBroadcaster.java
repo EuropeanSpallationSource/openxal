@@ -12,7 +12,6 @@ package xal.tools.correlator;
 import xal.tools.messaging.MessageCenter;
 
 import javax.swing.Timer;
-import java.awt.event.*;
 
 /**
  * TimedBroadcaster broadcasts the most recent best correlation (or
@@ -24,12 +23,12 @@ import java.awt.event.*;
  *
  * @author tap
  */
-class TimedBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
+class TimedBroadcaster<T> extends AbstractBroadcaster<T> {
 
     /**
      * less than full count
      */
-    private Correlation<RecordType> bestPartialCorrelation;
+    private Correlation<T> bestPartialCorrelation;
     private boolean isFresh;
     protected Timer timer;
 
@@ -42,12 +41,7 @@ class TimedBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
         bestPartialCorrelation = null;
 
         int msecPeriod = (int) (period * 1000);
-        timer = new Timer(msecPeriod, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                postBestPartialCorrelation();
-            }
-        });
+        timer = new Timer(msecPeriod, event -> postBestPartialCorrelation());
         timer.setRepeats(true);
         timer.setCoalesce(true);
     }
@@ -55,7 +49,7 @@ class TimedBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
     /**
      * get the best correlation which may be partial
      */
-    public Correlation<RecordType> getBestPartialCorrelation() {
+    public Correlation<T> getBestPartialCorrelation() {
         return bestPartialCorrelation;
     }
 
@@ -119,7 +113,7 @@ class TimedBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
      * @param correlation The new correlation.
      */
     @Override
-    public synchronized void newCorrelation(final BinAgent<RecordType> sender, final Correlation<RecordType> correlation) {
+    public synchronized void newCorrelation(final BinAgent<T> sender, final Correlation<T> correlation) {
         int numRecords = correlation.numRecords();
 
         // broadcast a full correlation immediately
@@ -142,7 +136,7 @@ class TimedBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
      * @param sender The correlator that will stop.
      */
     @Override
-    public void willStopMonitoring(final Correlator<?, RecordType, ?> sender) {
+    public void willStopMonitoring(final Correlator<?, T, ?> sender) {
         timer.stop();
     }
 
@@ -152,7 +146,7 @@ class TimedBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
      * @param sender The correlator that will start.
      */
     @Override
-    public void willStartMonitoring(final Correlator<?, RecordType, ?> sender) {
+    public void willStartMonitoring(final Correlator<?, T, ?> sender) {
         timer.start();
     }
 }

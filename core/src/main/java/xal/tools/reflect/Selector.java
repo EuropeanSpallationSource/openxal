@@ -71,7 +71,7 @@ public class Selector {
     /**
      * Test if the target will respond to the selector
      */
-    public <TargetType> boolean invokesStaticOn(final Class<TargetType> targetClass) {
+    public <T> boolean invokesStaticOn(final Class<T> targetClass) {
         try {
             Method method = methodForClass(targetClass);
             return Modifier.isStatic(method.getModifiers());
@@ -120,21 +120,21 @@ public class Selector {
     /**
      * Invoke the appropriate static method on the specified class
      */
-    public <TargetType> Object invokeStatic(final Class<TargetType> targetClass) throws IllegalArgumentException, AccessException, InvocationException, MethodNotFoundException {
+    public <T> Object invokeStatic(final Class<T> targetClass) throws IllegalArgumentException, AccessException, InvocationException, MethodNotFoundException {
         return invokeStatic(targetClass, new Object[0]);
     }
 
     /**
      * Invoke the appropriate static method on the specified class
      */
-    public <TargetType> Object invokeStatic(final Class<TargetType> targetClass, final Object argument) throws IllegalArgumentException, AccessException, InvocationException, MethodNotFoundException {
+    public <T> Object invokeStatic(final Class<T> targetClass, final Object argument) throws IllegalArgumentException, AccessException, InvocationException, MethodNotFoundException {
         return invokeStatic(targetClass, new Object[]{argument});
     }
 
     /**
      * Invoke the appropriate static method on the specified class
      */
-    public <TargetType> Object invokeStatic(final Class<TargetType> targetClass, final Object[] arguments) throws IllegalArgumentException, AccessException, InvocationException, MethodNotFoundException {
+    public <T> Object invokeStatic(final Class<T> targetClass, final Object[] arguments) throws IllegalArgumentException, AccessException, InvocationException, MethodNotFoundException {
         Method method = methodForClass(targetClass);
         Object result = null;
 
@@ -183,7 +183,7 @@ public class Selector {
      * Invoke the static method with the specified arguments on the specified
      * target class
      */
-    public static <TargetType> Object invokeStaticMethod(final String methodName, final Class<?>[] argumentTypes, final Class<TargetType> targetClass, final Object[] arguments)
+    public static <T> Object invokeStaticMethod(final String methodName, final Class<?>[] argumentTypes, final Class<T> targetClass, final Object[] arguments)
             throws IllegalArgumentException, AccessException, InvocationException, MethodNotFoundException {
         Selector selector = new Selector(methodName, argumentTypes);
         return selector.invokeStatic(targetClass, arguments);
@@ -193,7 +193,7 @@ public class Selector {
      * Invoke the static method with the specified arguments on the specified
      * target class
      */
-    public static <TargetType> Object invokeStaticMethod(final String methodName, final Class<?> argumentType, final Class<TargetType> targetClass, final Object argument) throws IllegalArgumentException, AccessException, InvocationException, MethodNotFoundException {
+    public static <T> Object invokeStaticMethod(final String methodName, final Class<?> argumentType, final Class<T> targetClass, final Object argument) throws IllegalArgumentException, AccessException, InvocationException, MethodNotFoundException {
         final Selector selector = new Selector(methodName, argumentType);
         return selector.invokeStatic(targetClass, argument);
     }
@@ -202,7 +202,7 @@ public class Selector {
      * Invoke the static method with the specified arguments on the specified
      * target class
      */
-    public static <TargetType> Object invokeStaticMethod(final String methodName, final Class<TargetType> targetClass) throws IllegalArgumentException, AccessException, InvocationException, MethodNotFoundException {
+    public static <T> Object invokeStaticMethod(final String methodName, final Class<T> targetClass) throws IllegalArgumentException, AccessException, InvocationException, MethodNotFoundException {
         final Selector selector = new Selector(methodName);
         return selector.invokeStatic(targetClass);
     }
@@ -210,7 +210,7 @@ public class Selector {
     /**
      * Return a Method instance that binds the selector to a target class.
      */
-    public <TargetType> Method methodForClass(final Class<TargetType> targetClass) throws MethodNotFoundException, SecurityException {
+    public <T> Method methodForClass(final Class<T> targetClass) throws MethodNotFoundException, SecurityException {
         Method method;
 
         try {
@@ -257,7 +257,7 @@ public class Selector {
          */
         private static final long serialVersionUID = 1L;
 
-        private InvocationTargetException exception;
+        private final InvocationTargetException exception;
 
         public InvocationException(InvocationTargetException exception) {
             this.exception = exception;

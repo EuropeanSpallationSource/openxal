@@ -343,6 +343,7 @@ public class SimpleChartDialog extends JDialog implements MouseListener, SwingCo
      */
     @Override
     public void mouseClicked(MouseEvent event) {
+        // Do nothing
     }
 
     /**
@@ -350,6 +351,7 @@ public class SimpleChartDialog extends JDialog implements MouseListener, SwingCo
      */
     @Override
     public void mouseEntered(MouseEvent event) {
+        // Do nothing
     }
 
     /**
@@ -357,6 +359,7 @@ public class SimpleChartDialog extends JDialog implements MouseListener, SwingCo
      */
     @Override
     public void mouseExited(MouseEvent event) {
+        // Do nothing
     }
 
     /**
@@ -374,6 +377,7 @@ public class SimpleChartDialog extends JDialog implements MouseListener, SwingCo
      */
     @Override
     public void mouseReleased(MouseEvent event) {
+        // Do nothing
     }
 
     /**
@@ -387,7 +391,7 @@ public class SimpleChartDialog extends JDialog implements MouseListener, SwingCo
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent evt) {
-                closeDialog(evt);
+                closeDialog();
             }
         });
 
@@ -401,19 +405,14 @@ public class SimpleChartDialog extends JDialog implements MouseListener, SwingCo
         Box row = new Box(HORIZONTAL);
 
         xAutoScaleCheckbox = new JCheckBox("Auto Scale");
-        xAutoScaleCheckbox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                xAutoScaleCheckboxActionPerformed(evt);
-            }
-        });
+        xAutoScaleCheckbox.addActionListener(event -> xAutoScaleCheckboxActionPerformed());
         row.add(Box.createHorizontalGlue());
         row.add(xAutoScaleCheckbox);
         xAxisView.add(row);
 
         xAxisMinValueField = new JTextField(10);
         xAxisMinValueField.setMaximumSize(xAxisMinValueField.getPreferredSize());
-        xAxisMinValueField.setHorizontalAlignment(JTextField.RIGHT);
+        xAxisMinValueField.setHorizontalAlignment(SwingConstants.RIGHT);
         xAxisMinValueField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent event) {
@@ -434,7 +433,7 @@ public class SimpleChartDialog extends JDialog implements MouseListener, SwingCo
 
         xAxisMaxValueField = new JTextField(10);
         xAxisMaxValueField.setMaximumSize(xAxisMaxValueField.getPreferredSize());
-        xAxisMaxValueField.setHorizontalAlignment(JTextField.RIGHT);
+        xAxisMaxValueField.setHorizontalAlignment(SwingConstants.RIGHT);
         xAxisMaxValueField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent event) {
@@ -455,7 +454,7 @@ public class SimpleChartDialog extends JDialog implements MouseListener, SwingCo
 
         xAxisDivisionsField = new JTextField(10);
         xAxisDivisionsField.setMaximumSize(xAxisDivisionsField.getPreferredSize());
-        xAxisDivisionsField.setHorizontalAlignment(JTextField.RIGHT);
+        xAxisDivisionsField.setHorizontalAlignment(SwingConstants.RIGHT);
         xAxisDivisionsField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent event) {
@@ -476,7 +475,7 @@ public class SimpleChartDialog extends JDialog implements MouseListener, SwingCo
 
         xAxisMinorTicksField = new JTextField(10);
         xAxisMinorTicksField.setMaximumSize(xAxisMinorTicksField.getPreferredSize());
-        xAxisMinorTicksField.setHorizontalAlignment(JTextField.RIGHT);
+        xAxisMinorTicksField.setHorizontalAlignment(SwingConstants.RIGHT);
         xAxisMinorTicksField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent event) {
@@ -496,12 +495,7 @@ public class SimpleChartDialog extends JDialog implements MouseListener, SwingCo
         xAxisView.add(row);
 
         xGridCheckbox = new JCheckBox("Show Grid");
-        xGridCheckbox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                xGridCheckboxActionPerformed(evt);
-            }
-        });
+        xGridCheckbox.addActionListener(event -> xGridCheckboxActionPerformed());
         row = new Box(HORIZONTAL);
         row.add(Box.createHorizontalGlue());
         row.add(xGridCheckbox);
@@ -512,12 +506,7 @@ public class SimpleChartDialog extends JDialog implements MouseListener, SwingCo
         mainView.add(yAxisView);
 
         yAutoScaleCheckbox = new JCheckBox("Auto Scale");
-        yAutoScaleCheckbox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                yAutoScaleCheckboxActionPerformed(evt);
-            }
-        });
+        yAutoScaleCheckbox.addActionListener(event -> yAutoScaleCheckboxActionPerformed());
         row = new Box(HORIZONTAL);
         row.add(Box.createHorizontalGlue());
         row.add(yAutoScaleCheckbox);
@@ -525,7 +514,7 @@ public class SimpleChartDialog extends JDialog implements MouseListener, SwingCo
 
         yAxisMinValueField = new JTextField(10);
         yAxisMinValueField.setMaximumSize(yAxisMinValueField.getPreferredSize());
-        yAxisMinValueField.setHorizontalAlignment(JTextField.RIGHT);
+        yAxisMinValueField.setHorizontalAlignment(SwingConstants.RIGHT);
         yAxisMinValueField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent event) {
@@ -546,7 +535,7 @@ public class SimpleChartDialog extends JDialog implements MouseListener, SwingCo
 
         yAxisMaxValueField = new JTextField(10);
         yAxisMaxValueField.setMaximumSize(yAxisMaxValueField.getPreferredSize());
-        yAxisMaxValueField.setHorizontalAlignment(JTextField.RIGHT);
+        yAxisMaxValueField.setHorizontalAlignment(SwingConstants.RIGHT);
         yAxisMaxValueField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent event) {
@@ -567,7 +556,7 @@ public class SimpleChartDialog extends JDialog implements MouseListener, SwingCo
 
         yAxisDivisionsField = new JTextField(10);
         yAxisDivisionsField.setMaximumSize(yAxisDivisionsField.getPreferredSize());
-        yAxisDivisionsField.setHorizontalAlignment(JTextField.RIGHT);
+        yAxisDivisionsField.setHorizontalAlignment(SwingConstants.RIGHT);
         yAxisDivisionsField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent event) {
@@ -588,7 +577,7 @@ public class SimpleChartDialog extends JDialog implements MouseListener, SwingCo
 
         yAxisMinorTicksField = new JTextField(10);
         yAxisMinorTicksField.setMaximumSize(yAxisMinorTicksField.getPreferredSize());
-        yAxisMinorTicksField.setHorizontalAlignment(JTextField.RIGHT);
+        yAxisMinorTicksField.setHorizontalAlignment(SwingConstants.RIGHT);
         yAxisMinorTicksField.addFocusListener(new FocusAdapter() {
             @Override
             public void focusGained(FocusEvent event) {
@@ -609,12 +598,7 @@ public class SimpleChartDialog extends JDialog implements MouseListener, SwingCo
 
         yGridCheckbox = new JCheckBox();
         yGridCheckbox.setText("Show Grid");
-        yGridCheckbox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                yGridCheckboxActionPerformed(evt);
-            }
-        });
+        yGridCheckbox.addActionListener(event -> yGridCheckboxActionPerformed());
         row = new Box(HORIZONTAL);
         row.add(Box.createHorizontalGlue());
         row.add(yGridCheckbox);
@@ -625,60 +609,50 @@ public class SimpleChartDialog extends JDialog implements MouseListener, SwingCo
         buttonView.add(Box.createHorizontalGlue());
 
         JButton revertButton = new JButton("Revert");
-        revertButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                revertButtonActionPerformed(event);
-            }
-        });
+        revertButton.addActionListener(event -> revertButtonActionPerformed());
         buttonView.add(revertButton);
 
         JButton applyButton = new JButton("Apply");
-        applyButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                applyButtonActionPerformed(event);
-            }
-        });
+        applyButton.addActionListener(event -> applyButtonActionPerformed());
         buttonView.add(applyButton);
 
         pack();
     }
 
-    private void yGridCheckboxActionPerformed(ActionEvent evt) {
+    private void yGridCheckboxActionPerformed() {
         applyYAxisGridSetting();
         revertSettings();
     }
 
-    private void xGridCheckboxActionPerformed(ActionEvent evt) {
+    private void xGridCheckboxActionPerformed() {
         applyXAxisGridSetting();
         revertSettings();
     }
 
-    private void yAutoScaleCheckboxActionPerformed(ActionEvent evt) {
+    private void yAutoScaleCheckboxActionPerformed() {
         boolean autoScales = yAutoScaleCheckbox.isSelected();
         chartAdaptor.setYAutoScale(autoScales);
         revertSettings();
     }
 
-    private void xAutoScaleCheckboxActionPerformed(ActionEvent evt) {
+    private void xAutoScaleCheckboxActionPerformed() {
         boolean autoScales = xAutoScaleCheckbox.isSelected();
         chartAdaptor.setXAutoScale(autoScales);
         revertSettings();
     }
 
-    private void revertButtonActionPerformed(ActionEvent evt) {
+    private void revertButtonActionPerformed() {
         revertSettings();
     }
 
-    private void applyButtonActionPerformed(ActionEvent evt) {
+    private void applyButtonActionPerformed() {
         applySettings();
     }
 
     /**
      * Closes the dialog
      */
-    private void closeDialog(WindowEvent evt) {
+    private void closeDialog() {
         setVisible(false);
     }
 }

@@ -57,18 +57,17 @@ public class Interval implements Serializable {
      * @since Apr 28, 2011
      */
     public static Interval createFromMidpoint(double dblMidpt, double dblLng) {
-
         // Compute the interval endpoints
         double dblDel = dblLng / 2.0;
         double dblMin = dblMidpt - dblDel;
         double dblMax = dblMidpt + dblDel;
 
         // Create the interval object and return it
-        Interval I = new Interval();
-        I.setMin(dblMin);
-        I.setMax(dblMax);
+        Interval interval = new Interval();
+        interval.setMin(dblMin);
+        interval.setMax(dblMax);
 
-        return I;
+        return interval;
     }
 
     /**
@@ -86,15 +85,10 @@ public class Interval implements Serializable {
      * @since Apr 28, 2011
      */
     public static Interval createFromEndpoints(double dblMin, double dblMax) {
-
         try {
-            Interval I = new Interval(dblMin, dblMax);
-
-            return I;
-
+            return new Interval(dblMin, dblMax);
         } catch (IllegalArgumentException e) {
             return null;
-
         }
     }
 
@@ -146,12 +140,12 @@ public class Interval implements Serializable {
      * Copy constructor - create a new open interval initialized to the
      * argument.
      *
-     * @param I interval to copy
+     * @param interval interval to copy
      *
      * @throws MathException malformed interval to copy
      */
-    public Interval(Interval I) throws MathException {
-        this(I.getMin(), I.getMax());
+    public Interval(Interval interval) throws MathException {
+        this(interval.getMin(), interval.getMax());
     }
 
     /**
@@ -238,8 +232,8 @@ public class Interval implements Serializable {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Interval) {
-            Interval I = (Interval) obj;
-            return (dblMin == I.dblMin) && (dblMax == I.dblMax);
+            Interval interval = (Interval) obj;
+            return (dblMin == interval.dblMin) && (dblMax == interval.dblMax);
         } else {
             return false;
         }
@@ -248,8 +242,8 @@ public class Interval implements Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 37 * hash + (int) (Double.doubleToLongBits(this.dblMin) ^ (Double.doubleToLongBits(this.dblMin) >>> 32));
-        hash = 37 * hash + (int) (Double.doubleToLongBits(this.dblMax) ^ (Double.doubleToLongBits(this.dblMax) >>> 32));
+        hash = 37 * hash + (int) (Double.doubleToLongBits(dblMin) ^ (Double.doubleToLongBits(dblMin) >>> 32));
+        hash = 37 * hash + (int) (Double.doubleToLongBits(dblMax) ^ (Double.doubleToLongBits(dblMax) >>> 32));
         return hash;
     }
 
@@ -264,18 +258,14 @@ public class Interval implements Serializable {
      * @since Sep 25, 2015 by Christopher K. Allen
      */
     public boolean isRealLine() {
-        if (this.dblMin == Double.NEGATIVE_INFINITY && this.dblMax == Double.POSITIVE_INFINITY) {
-            return true;
-        }
-
-        return false;
+        return dblMin == Double.NEGATIVE_INFINITY && dblMax == Double.POSITIVE_INFINITY;
     }
 
     /**
      * Inspects for non-empty intersection with the given interval. The interval
      * is assumed closed.
      *
-     * @param I interval to inspect.
+     * @param interval interval to inspect.
      *
      * @return          <strong>true</strong> if <em>this</em> &cap; <em>I</em> &ne; {},
      * <strong>false</strong>
@@ -284,21 +274,17 @@ public class Interval implements Serializable {
      * @since Jun 2, 2009
      * @author Christopher K. Allen
      */
-    public boolean intersects(Interval I) {
+    public boolean intersects(Interval interval) {
 
-        if (this.membership(I.getMin())) {
+        if (this.membership(interval.getMin())) {
             return true;
         }
 
-        if (this.membership(I.getMax())) {
+        if (this.membership(interval.getMax())) {
             return true;
         }
 
-        if (I.getMin() <= this.getMin() && I.getMax() >= this.getMax()) {
-            return true;
-        }
-
-        return false;
+        return interval.getMin() <= getMin() && interval.getMax() >= getMax();
     }
 
     /**
@@ -311,7 +297,7 @@ public class Interval implements Serializable {
      * is closed or open.
      * </p>
      *
-     * @param I interval to be tested
+     * @param interval interval to be tested
      *
      * @return     <code>true</code> if <em>I</em> &sub; <code>this</code>,
      * <code>false</code> otherwise
@@ -319,13 +305,8 @@ public class Interval implements Serializable {
      * @author Christopher K. Allen
      * @since Apr 28, 2011
      */
-    public boolean containsAE(Interval I) {
-
-        if (I.getMin() >= this.getMin() && I.getMax() <= this.getMax()) {
-            return true;
-        }
-
-        return false;
+    public boolean containsAE(Interval interval) {
+        return interval.getMin() >= getMin() && interval.getMax() <= getMax();
     }
 
     /*
@@ -433,27 +414,25 @@ public class Interval implements Serializable {
             throw new MathException(strMsg);
         }
 
-        double dblDet = this.getMax() - this.getMin();
-        double dblLambda1 = (this.getMax() - x) / dblDet;
-        double dblLambda2 = (x - this.getMin()) / dblDet;
+        double dblDet = getMax() - this.getMin();
+        double dblLambda1 = (getMax() - x) / dblDet;
+        double dblLambda2 = (x - getMin()) / dblDet;
 
-        double[] arrLambdas = new double[]{dblLambda1, dblLambda2};
-
-        return arrLambdas;
+        return new double[]{dblLambda1, dblLambda2};
     }
 
     /**
      * Compute and return the smallest interval containing both this interval
      * and the argument interval (i.e., the union of they are intersected).
      *
-     * @param I right-hand-side argument
+     * @param interval right-hand-side argument
      * @return union of <code>this</code> and <code>I</code>
      *
      * @throws MathException empty intersection
      */
-    public Interval convexHull(Interval I) throws MathException {
-        double min = Math.min(this.getMin(), I.getMin());
-        double max = Math.max(this.getMax(), I.getMax());
+    public Interval convexHull(Interval interval) throws MathException {
+        double min = Math.min(getMin(), interval.getMin());
+        double max = Math.max(getMax(), interval.getMax());
 
         return new Interval(min, max);
     }
@@ -466,14 +445,15 @@ public class Interval implements Serializable {
      * intersection, this value should be considered in any robust
      * implementation.
      *
-     * @param I interval to be intersected with <code>this</code> interval
+     * @param interval interval to be intersected with <code>this</code>
+     * interval
      *
      * @return intersection of <code>this</code> and <code>I</code>, or
      * <code>null</code> if the empty set {}
      */
-    public Interval intersection(Interval I) {
-        double min = Math.max(this.getMin(), I.getMin());
-        double max = Math.min(this.getMax(), I.getMax());
+    public Interval intersection(Interval interval) {
+        double min = Math.max(getMin(), interval.getMin());
+        double max = Math.min(getMax(), interval.getMax());
 
         // Check if the intersection is {}
         if (min > max) {
@@ -519,5 +499,4 @@ public class Interval implements Serializable {
     public void println(PrintWriter os) {
         os.println(this.toString());
     }
-
 }

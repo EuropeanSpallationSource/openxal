@@ -101,16 +101,10 @@ public class Twiss implements Serializable {
          * @author Christopher K. Allen
          */
         public double getPropertyValue(Twiss data) {
-
             try {
-                Method mthFldGtr = this.mthFldGtr;
-                double dblFldVal = (Double) mthFldGtr.invoke(data);
-
-                return dblFldVal;
-
+                return (Double) mthFldGtr.invoke(data);
             } catch (SecurityException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-                System.err.println("SERIOUS ERROR: Twiss$PROP#getPropertyValue()");
-                LOGGER.log(Level.SEVERE, null, e);
+                LOGGER.log(Level.SEVERE, "SERIOUS ERROR: Twiss$PROP#getPropertyValue()", e);
 
             }
 
@@ -141,9 +135,9 @@ public class Twiss implements Serializable {
             try {
                 this.mthFldGtr = Twiss.class.getMethod(strFldGtr);
             } catch (SecurityException e) {
-                LOGGER.log(Level.SEVERE, "SERIOUS ERROR: Twiss$PROP#PROP() - getter inaccessible: " + strFldGtr, e);
+                LOGGER.log(Level.SEVERE, e, () -> "SERIOUS ERROR: Twiss$PROP#PROP() - getter inaccessible: " + strFldGtr);
             } catch (NoSuchMethodException e) {
-                LOGGER.log(Level.SEVERE, "SERIOUS ERROR: Twiss$PROP#PROP() no getter method " + strFldGtr, e);
+                LOGGER.log(Level.SEVERE, e, () -> "SERIOUS ERROR: Twiss$PROP#PROP() no getter method " + strFldGtr);
             }
         }
     }
@@ -600,5 +594,4 @@ public class Twiss implements Serializable {
     public String toString() {
         return "alpha: " + dblAlpha + ", beta: " + dblBeta + ", emittance: " + dblEmitt;
     }
-
 }

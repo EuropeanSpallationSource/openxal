@@ -16,15 +16,15 @@ public interface DataTableListener {
      * Event indicating that a record has been added to a table.
      *
      * @param table the table to which the record has been added
-     * @param record the record added to the table
+     * @param genericRecord the record added to the table
      */
-    public void recordAdded(DataTable table, GenericRecord record);
+    public void recordAdded(DataTable table, GenericRecord genericRecord);
 
     /**
      * Event indicating that a record has been removed from a table.
      *
      * @param table the table from which the record has been removed
-     * @param record the record removed from the table
+     * @param genericRecord the record removed from the table
      */
-    public void recordRemoved(DataTable table, GenericRecord record);
+    public void recordRemoved(DataTable table, GenericRecord genericRecord);
 }

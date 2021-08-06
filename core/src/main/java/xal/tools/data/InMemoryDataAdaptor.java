@@ -41,6 +41,7 @@ public class InMemoryDataAdaptor implements DataAdaptor {
     /**
      * name for the particular node in the data tree
      */
+    @Override
     public String name() {
         return name;
     }
@@ -278,8 +279,8 @@ public class InMemoryDataAdaptor implements DataAdaptor {
      */
     @Override
     public void writeNode(final DataListener listener) {
-        final String name = listener.dataLabel();
-        final DataAdaptor adaptor = createChild(name);
+        final String nodeName = listener.dataLabel();
+        final DataAdaptor adaptor = createChild(nodeName);
         listener.write(adaptor);
     }
 

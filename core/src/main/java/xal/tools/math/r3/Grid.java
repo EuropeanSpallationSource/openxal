@@ -84,8 +84,14 @@ public class Grid implements Serializable {
         /**
          * objects composing cell vertices
          */
-        GridPt pt000, pt001, pt010, pt011;
-        GridPt pt100, pt101, pt110, pt111;
+        GridPt pt000;
+        GridPt pt001;
+        GridPt pt010;
+        GridPt pt011;
+        GridPt pt100;
+        GridPt pt101;
+        GridPt pt110;
+        GridPt pt111;
 
         /*
          *  Auxiliary Variables
@@ -93,12 +99,16 @@ public class Grid implements Serializable {
         /**
          * stored local coordinates
          */
-        double u1, u2, u3;
+        double u1;
+        double u2;
+        double u3;
 
         /**
          * stored compliments of the local coordinates
          */
-        double c1, c2, c3;
+        double c1;
+        double c2;
+        double c3;
 
         /*
          *  Methods
@@ -162,13 +172,15 @@ public class Grid implements Serializable {
 
             // Compute the local coordinates
             // local coordinates
-            double u1, u2, u3;
+            double v1;
+            double v2;
+            double v3;
 
-            u1 = vecDis.get1() % vecRes.get1();
-            u2 = vecDis.get2() % vecRes.get2();
-            u3 = vecDis.get3() % vecRes.get3();
+            v1 = vecDis.get1() % vecRes.get1();
+            v2 = vecDis.get2() % vecRes.get2();
+            v3 = vecDis.get3() % vecRes.get3();
 
-            return new R3(u1, u2, u3);
+            return new R3(v1, v2, v3);
         }
 
         /**
@@ -199,9 +211,9 @@ public class Grid implements Serializable {
          */
         public R3 interpolateGradient(R3 pt) {
             // the gradient components
-            double g1, g2, g3;
-            // the gradient vector
-            R3 vecGrad;
+            double g1;
+            double g2;
+            double g3;
 
             computeLocalCoords(pt);
 
@@ -374,58 +386,48 @@ public class Grid implements Serializable {
         return vecSize;
     }
 
-    ;
-    
     /**
-     *  Get the domain of the grid in R3.
+     * Get the domain of the grid in R3.
      *
-     *  @return     a ClosedBox object describing the domain of definition for this grid
+     * @return a ClosedBox object describing the domain of definition for this
+     * grid
      */
     public ClosedBox getGridDomain() {
         return boxDom;
     }
 
-    ;
-
     /**
-     *  Get grid resolution.
+     * Get grid resolution.
      *
-     *  @return     vector (dx,dy,dz) of spacing between grid points
+     * @return vector (dx,dy,dz) of spacing between grid points
      */
     public R3 getGridResolution() {
         return vecRes;
     }
 
-    ;
-
     /**
-     *  Get the coordinates of the grid origin, i.e., the first grid vertex.
+     * Get the coordinates of the grid origin, i.e., the first grid vertex.
      *
-     *  @return     (x,y,z) coordinates of grid origin
+     * @return (x,y,z) coordinates of grid origin
      */
     public R3 getGridOrigin() {
         return ptOrg;
     }
 
-    ;
-
-    
-    
     /*
      *  Grid Queries
      */
-
     /**
-     *  Get the function value at the grid point indexed by (i,j,k)
+     * Get the function value at the grid point indexed by (i,j,k)
      *
-     *  @param  i       index of the first grid dimension
-     *  @param  j       index of the second grid dimension
-     *  @param  k       index of the third grid dimension
+     * @param i index of the first grid dimension
+     * @param j index of the second grid dimension
+     * @param k index of the third grid dimension
      *
-     *  @return         function value stored at grid point (i,j,k)
+     * @return function value stored at grid point (i,j,k)
      */
     public double getPtValue(int i, int j, int k) {
-        return this.getGridPt(i, j, k).val;
+        return getGridPt(i, j, k).val;
     }
 
     /**
@@ -437,7 +439,7 @@ public class Grid implements Serializable {
      * @return true if pt is in domain of definition
      */
     public boolean membershipGrid(R3 pt) {
-        return this.getGridDomain().membership(pt);
+        return getGridDomain().membership(pt);
     }
 
     /**
@@ -451,7 +453,9 @@ public class Grid implements Serializable {
      */
     public Z3 compCellIndex(R3 pt) {
         // indices of the base vertex
-        int i, j, k;
+        int i;
+        int j;
+        int k;
         // displacement of pt from grid origin
         R3 vecDis;
 
@@ -475,14 +479,15 @@ public class Grid implements Serializable {
      */
     public R3 compPtCoords(int i, int j, int k) {
         // displacements from grid origin
-        double dx, dy, dz;
+        double dx;
+        double dy;
+        double dz;
 
         dx = (i * this.getGridResolution().getx());
         dy = (j * this.getGridResolution().gety());
         dz = (k * this.getGridResolution().getz());
 
         R3 vecDis = new R3(dx, dy, dz);
-        R3 ptOrg = this.getGridOrigin();
 
         return ptOrg.plus(vecDis);
     }
@@ -507,7 +512,9 @@ public class Grid implements Serializable {
      */
     public GridCell compCellContaining(R3 pt) {
         // indices of the base vertex
-        int i, j, k;
+        int i;
+        int j;
+        int k;
         // displacement of pt from grid origin
         R3 vecDis;
 
@@ -553,19 +560,15 @@ public class Grid implements Serializable {
         return cell.interpolateGradient(pt);
     }
 
-    ;
-
     /*
      *  Testing and Debugging
      */
-    
     /**
-     *  Print out grid parameters on an output stream
+     * Print out grid parameters on an output stream
      *
-     *  @param  os      output stream to receive text description of grid
+     * @param os output stream to receive text description of grid
      */
     public void print(PrintWriter os) {
-
         os.println("GRID PARAMETERS");
         os.print("Grid size               : ");
         this.getGridSize().println(os);
@@ -648,14 +651,15 @@ public class Grid implements Serializable {
      * GridCells
      */
     private void allocateGrid(int n1, int n2, int n3) throws GridException {
-
         // Allocate grid objects
         arrPts = this.allocatePts(n1, n2, n3);
         arrCells = this.allocateCells(n1 - 1, n2 - 1, n3 - 1);
 
         // Configure grid cells
         // loop control variables for each dimension
-        int i, j, k;
+        int i;
+        int j;
+        int k;
 
         for (i = 0; i < n1 - 1; i++) {
             for (j = 0; j < n2 - 1; j++) {
@@ -709,5 +713,4 @@ public class Grid implements Serializable {
     protected GridCell[][][] allocateCells(int n1, int n2, int n3) throws GridException {
         return new GridCell[n1][n2][n3];
     }
-
 }

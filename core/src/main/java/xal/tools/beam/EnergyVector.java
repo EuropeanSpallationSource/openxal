@@ -6,6 +6,7 @@
  */
 package xal.tools.beam;
 
+import java.util.Set;
 import java.util.EnumSet;
 
 import xal.tools.data.DataAdaptor;
@@ -79,7 +80,7 @@ public class EnergyVector extends BaseVector<EnergyVector> {
          * the set of IND constants that only include synchronous phase space
          * variables (not the homogeneous coordinate)
          */
-        private static final EnumSet<IND> SET_PHASE = EnumSet.of(PHI, W);
+        private static final Set<IND> SET_PHASE = EnumSet.of(PHI, W);
 
         /*
          * Global Operations
@@ -97,7 +98,7 @@ public class EnergyVector extends BaseVector<EnergyVector> {
          * @author Christopher K. Allen
          * @since Oct 15, 2013
          */
-        public static EnumSet<IND> valuesSync() {
+        public static Set<IND> valuesSync() {
             return SET_PHASE;
         }
 
@@ -115,7 +116,7 @@ public class EnergyVector extends BaseVector<EnergyVector> {
          */
         @Override
         public int val() {
-            return this.val;
+            return this.value;
         }
 
         /*
@@ -124,7 +125,7 @@ public class EnergyVector extends BaseVector<EnergyVector> {
         /**
          * The numerical value of this enumeration index
          */
-        public final int val;
+        public final int value;
 
         /**
          * Creates a new <code>IND</code> enumeration constant initialized to
@@ -136,7 +137,7 @@ public class EnergyVector extends BaseVector<EnergyVector> {
          * @since Sep 25, 2013
          */
         private IND(int index) {
-            this.val = index;
+            this.value = index;
         }
     }
 
@@ -163,7 +164,7 @@ public class EnergyVector extends BaseVector<EnergyVector> {
      */
     public EnergyVector() {
         super(SIZE_VECTOR);
-        this.setElem(IND.HOM, 1.0);
+        setElem(IND.HOM, 1.0);
     }
 
     /**
@@ -171,14 +172,14 @@ public class EnergyVector extends BaseVector<EnergyVector> {
      * &phi; and energy <em>W</em> are given as arguments in the constructor.
      *
      * @param phi initial phase &phi; (in radians)
-     * @param W initial energy <em>W</em> (in electron-Volts)
+     * @param w initial energy <em>W</em> (in electron-Volts)
      *
      * @since Oct 13, 2015, Christopher K. Allen
      */
-    public EnergyVector(double phi, double W) {
+    public EnergyVector(double phi, double w) {
         super(SIZE_VECTOR);
-        double[] arrVecInit = {phi, W, 1.0};
-        this.setVector(arrVecInit);
+        double[] arrVecInit = {phi, w, 1.0};
+        setVector(arrVecInit);
     }
 
     /**
@@ -260,12 +261,12 @@ public class EnergyVector extends BaseVector<EnergyVector> {
     /**
      * Sets the kinetic energy component of the synchronous phase variables.
      *
-     * @param W kinetic energy (electron-Volts)
+     * @param w kinetic energy (electron-Volts)
      *
      * @since Oct 12, 2015, Christopher K. Allen
      */
-    public void setEnergy(double W) {
-        super.setElem(IND.W, W);
+    public void setEnergy(double w) {
+        super.setElem(IND.W, w);
     }
 
     /**
@@ -301,9 +302,7 @@ public class EnergyVector extends BaseVector<EnergyVector> {
      */
     @Override
     public EnergyVector clone() {
-        EnergyVector vec = new EnergyVector(this);
-
-        return vec;
+        return new EnergyVector(this);
     }
 
     /**
@@ -314,9 +313,7 @@ public class EnergyVector extends BaseVector<EnergyVector> {
      */
     @Override
     protected EnergyVector newInstance(int size) {
-        EnergyVector vec = new EnergyVector();
-
-        return vec;
+        return new EnergyVector();
     }
 
     /**
@@ -327,9 +324,6 @@ public class EnergyVector extends BaseVector<EnergyVector> {
      */
     @Override
     protected EnergyVector newInstance(double[] arrVecInit) {
-        EnergyVector vec = new EnergyVector(arrVecInit);
-
-        return vec;
+        return new EnergyVector(arrVecInit);
     }
-
 }

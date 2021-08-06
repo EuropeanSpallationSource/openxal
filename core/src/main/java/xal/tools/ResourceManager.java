@@ -35,6 +35,11 @@ import java.util.regex.*;
  */
 public abstract class ResourceManager {
 
+    /**
+     * root location of the project
+     */
+    protected static final String PROJECT_HOME_PROPERTY = "OPENXAL_HOME";
+
     protected static final String RESOURCES_FILE_SEARCH_PROPERTY = "OPENXAL_FIND_RESOURCES_IN_ROOT";
 
     /**
@@ -133,8 +138,7 @@ public abstract class ResourceManager {
      * @return URL to the resource
      */
     public static URL getResourceURL(final String subdomain, final Class<?> rootClass, final String resourcePath) {
-        final URL resourceURL = DEFAULT_MANAGER.fetchResourceURL(subdomain, rootClass, resourcePath);
-        return resourceURL;
+        return DEFAULT_MANAGER.fetchResourceURL(subdomain, rootClass, resourcePath);
     }
 
     /**
@@ -145,7 +149,7 @@ public abstract class ResourceManager {
         // the property set to true indicates whether to find resources under the OPENXAL_HOME directory instead of the jar files
         final String path = System.getProperty("xal.home");
 
-        return path != null ? path : System.getenv("OPENXAL_HOME");
+        return path != null ? path : System.getenv(PROJECT_HOME_PROPERTY);
     }
 }
 
@@ -213,7 +217,7 @@ class JarredResourceManager extends ResourceManager {
 
             final String packageSuffix = packagePartition.packageSuffix;
             if (packageSuffix != null && packageSuffix.length() > 0) {
-                final String suffixPath = packageSuffix.replaceAll("\\.", "/");
+                final String suffixPath = packageSuffix.replace("\\.", "/");
                 pathBuilder.append("/").append(suffixPath);
             }
 
@@ -231,11 +235,6 @@ class JarredResourceManager extends ResourceManager {
  * Resource manager that loads resources from file system
  */
 class FileResourceManager extends ResourceManager {
-
-    /**
-     * root location of the project
-     */
-    private static final String PROJECT_HOME_PROPERTY = "OPENXAL_HOME";
 
     /**
      * singleton instance
@@ -355,7 +354,7 @@ class FileResourceManager extends ResourceManager {
             // resource path is relative and hence relative to the root class's package
         } else {
             // replace package dot delimiter with URL slash delimiter (should work on all platforms if we use URLs here instead of files)
-            final String packagePath = rootClass.getPackage().getName().replaceAll("\\.", "/");
+            final String packagePath = rootClass.getPackage().getName().replace("\\.", "/");
             pathFromResources = packagePath + "/" + resourcePath;
         }
 
@@ -447,7 +446,7 @@ class FileResourceManager extends ResourceManager {
                 // replace package dot delimiter with URL slash delimiter (should work on all platforms if we use URLs here instead of files)
                 final String packageSuffix = packagePartition.packageSuffix;
                 // e.g. smf  (replacing dots with /)
-                final String relativePackagePath = packageSuffix != null ? packageSuffix.replaceAll("\\.", "/") : null;
+                final String relativePackagePath = packageSuffix != null ? packageSuffix.replace("\\.", "/") : null;
                 // e.g. smf/menudef.properties
                 pathFromResources = relativePackagePath != null ? relativePackagePath + "/" + resourcePath : resourcePath;
             }
@@ -524,8 +523,6 @@ class PackagePartition {
 
         final Matcher packageMatcher = XAL_PACKAGE_PATTERN.matcher(packageName);
         final int groupCount = packageMatcher.groupCount();
-
-        final String[] parts = new String[groupCount];
 
         if (packageMatcher.matches()) {
             // e.g. xal

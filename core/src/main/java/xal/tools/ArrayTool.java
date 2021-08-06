@@ -5,8 +5,6 @@
  */
 package xal.tools;
 
-import xal.tools.StringJoiner;
-
 import java.lang.reflect.Array;
 
 /**

@@ -16,15 +16,18 @@ public class EdgeConstraints implements Cloneable {
     /**
      * how the component should grow
      */
-    public int growBehavior;
+    protected int growBehavior;
     /**
      * how the
      */
-    public int strutBehavior;
+    protected int strutBehavior;
     /**
      * struts from each edge
      */
-    public int topStrut, leftStrut, bottomStrut, rightStrut;
+    protected int topStrut;
+    protected int leftStrut;
+    protected int bottomStrut;
+    protected int rightStrut;
 
     /**
      * Empty Constructor

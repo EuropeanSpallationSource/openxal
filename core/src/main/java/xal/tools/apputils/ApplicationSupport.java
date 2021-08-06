@@ -17,11 +17,6 @@ import java.awt.Window;
  */
 public class ApplicationSupport {
 
-    /**
-     * serialization ID
-     */
-    private static final long serialVersionUID = 1L;
-
     private ApplicationSupport() {
         throw new IllegalStateException("Utility class");
     }
@@ -139,8 +134,6 @@ public class ApplicationSupport {
      * displayed.
      */
     public static void displayApplicationError(final String title, final String prefix, final Exception exception) {
-        Toolkit.getDefaultToolkit().beep();
-        String message = prefix + "\n" + "Exception: " + exception.getClass().getName() + "\n" + exception.getMessage();
-        JOptionPane.showMessageDialog(getActiveWindow(), message, title, JOptionPane.ERROR_MESSAGE);
+        displayError(title, prefix, exception);
     }
 }

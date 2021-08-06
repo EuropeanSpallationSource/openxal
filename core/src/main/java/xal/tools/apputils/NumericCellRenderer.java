@@ -62,6 +62,7 @@ public class NumericCellRenderer extends JLabel implements TableCellRenderer {
      */
     @Override
     public final void validate() {
+        // Do nothing
     }
 
     /**
@@ -69,6 +70,7 @@ public class NumericCellRenderer extends JLabel implements TableCellRenderer {
      */
     @Override
     public final void revalidate() {
+        // Do nothing
     }
 
     /**
@@ -76,6 +78,7 @@ public class NumericCellRenderer extends JLabel implements TableCellRenderer {
      */
     @Override
     public final void repaint(final Rectangle rectangle) {
+        // Do nothing
     }
 
     /**
@@ -83,6 +86,7 @@ public class NumericCellRenderer extends JLabel implements TableCellRenderer {
      */
     @Override
     public final void repaint(final long tm, final int x, final int y, final int width, final int height) {
+        // Do nothing
     }
 
     /**
@@ -90,6 +94,7 @@ public class NumericCellRenderer extends JLabel implements TableCellRenderer {
      */
     @Override
     protected final void firePropertyChange(final String name, final Object oldValue, final Object newValue) {
+        // Do nothing
     }
 
     /**
@@ -97,5 +102,6 @@ public class NumericCellRenderer extends JLabel implements TableCellRenderer {
      */
     @Override
     public final void firePropertyChange(final String name, final boolean oldValue, final boolean newValue) {
+        // Do nothing
     }
 }

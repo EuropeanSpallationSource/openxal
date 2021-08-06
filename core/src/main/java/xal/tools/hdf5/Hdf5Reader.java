@@ -49,10 +49,10 @@ import xal.tools.data.DataAdaptor;
  */
 public class Hdf5Reader {
 
+    private static final Logger LOGGER = Logger.getLogger(Hdf5Reader.class.getName());
+
     private Hdf5DataAdaptor adaptor;
     private String fileUrl;
-
-    private H5File h5File;
 
     private Hdf5Reader(Hdf5DataAdaptor adaptor, String fileUrl) {
         this.adaptor = adaptor;
@@ -67,7 +67,7 @@ public class Hdf5Reader {
         try {
             hdf5Reader.read();
         } catch (Exception ex) {
-            Logger.getLogger(Hdf5Writer.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -76,17 +76,12 @@ public class Hdf5Reader {
         FileFormat fileFormat = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
 
         if (fileFormat == null) {
-            Logger.getLogger(Hdf5Writer.class.getName()).log(Level.SEVERE, "Can't find HDF5 FileFormat. Check the java library path.");
+            LOGGER.severe("Can't find HDF5 FileFormat. Check the java library path.");
             throw new RuntimeException();
         }
 
         // Open the HDF5 file with a given file name.
-        h5File = new H5File(new URL(fileUrl).getFile(), FileFormat.READ);
-
-        if (h5File == null) {
-            Logger.getLogger(Hdf5Writer.class.getName()).log(Level.SEVERE, "Failed to create file:{0}", fileUrl);
-            throw new RuntimeException();
-        }
+        H5File h5File = new H5File(new URL(fileUrl).getFile(), FileFormat.READ);
 
         // open the file and retrieve the root group
         h5File.open();
@@ -139,6 +134,8 @@ public class Hdf5Reader {
                     case Long.BYTES:
                         adaptor.setValue(dataset.getName(), ((long[]) dataset.getData())[0]);
                         break;
+                    default:
+                        break;
                 }
                 break;
             case Datatype.CLASS_FLOAT:
@@ -150,6 +147,8 @@ public class Hdf5Reader {
                 break;
             case Datatype.CLASS_STRING:
                 adaptor.setValue(dataset.getName(), ((String[]) dataset.getData())[0]);
+                break;
+            default:
                 break;
         }
     }

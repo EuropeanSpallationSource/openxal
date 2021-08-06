@@ -34,7 +34,6 @@ package xal.tools.data;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import xal.tools.data.DataAdaptor;
 
 /**
  * Interface extending DataAdaptor with some convenience methods to write

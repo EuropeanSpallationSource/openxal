@@ -12,5 +12,5 @@ package xal.tools.dispatch;
  */
 interface DispatchOperationListener {
 
-    public <ReturnType> void operationCompleted(final DispatchOperation<ReturnType> operation);
+    public <T> void operationCompleted(final DispatchOperation<T> operation);
 }

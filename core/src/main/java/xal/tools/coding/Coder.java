@@ -27,7 +27,7 @@ public interface Coder {
     /**
      * Register the custom type by class and its associated adaptor
      */
-    public <CustomType, RepresentationType> void registerType(final Class<CustomType> type, final ConversionAdaptor<CustomType, RepresentationType> adaptor);
+    public <C, R> void registerType(final Class<C> type, final ConversionAdaptor<C, R> adaptor);
 
     /**
      * Get a list of all types which are supported for coding and decoding

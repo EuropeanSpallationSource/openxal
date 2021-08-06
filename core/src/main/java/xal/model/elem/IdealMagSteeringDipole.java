@@ -19,7 +19,7 @@ import xal.model.PropagationException;
 import xal.sim.scenario.LatticeElement;
 import xal.smf.attr.DipoleCorrBucket;
 import xal.smf.impl.Magnet;
-import xal.tools.beam.IConstants;
+import xal.tools.beam.Constants;
 import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 
@@ -220,7 +220,7 @@ public class IdealMagSteeringDipole extends ThinElectromagnet {
     protected PhaseMap transferMap(IProbe probe) throws ModelException {
 
         // Get constants
-        double c = IConstants.LIGHT_SPEED;
+        double c = Constants.LIGHT_SPEED;
 
         // Get element parameters
         double b = this.getMagField();

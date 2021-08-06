@@ -65,7 +65,6 @@ public class DoubleToString {
     //And required double related constants.  
     private static final long DOUBLE_SIGN_MASK = 0x8000000000000000L;
     private static final long DOUBLE_EXP_MASK = 0x7ff0000000000000L;
-    private static final long DOUBLE_FRACT_MASK = ~(DOUBLE_SIGN_MASK | DOUBLE_EXP_MASK);
     private static final int DOUBLE_SIGN_SHIFT = 52;
     private static final int DOUBLE_EXP_BIAS = 1023;
 
@@ -353,17 +352,17 @@ public class DoubleToString {
         }
     }
 
-    private static void appendNearlyZeroNumber(StringBuffer s, double d, int d_magnitude,
+    private static void appendNearlyZeroNumber(StringBuffer s, double d, int magnitude,
             int numFractDigits, char decimalPoint) {
-        if (d_magnitude + numFractDigits == -1) {
+        if (magnitude + numFractDigits == -1) {
             //Possibly too small, depends on whether the top digit is 5 or greater
             //So we have to scale to get the leading digit
             int i;
             //Probably not necessary. Who is going to print 305 places?
-            if (d_magnitude < -305) {
-                i = (int) ((d * 1E19) / dTenthPowers[d_magnitude + 324 + 18]);
+            if (magnitude < -305) {
+                i = (int) ((d * 1E19) / dTenthPowers[magnitude + 324 + 18]);
             } else {
-                i = (int) (d / dTenthPowers[d_magnitude + 323]);
+                i = (int) (d / dTenthPowers[magnitude + 323]);
             }
 
             if (i >= 5) {
@@ -481,7 +480,6 @@ public class DoubleToString {
     }
 
     public static void main1(String[] args) {
-        long time1, time2;
         double[] ds = {100D, 234000.567D, 2340000.56789D, 23400000.56789D, 234000000.56789D,
             567.89023D, -1.234D, 0.2D, 0.03D, 0.00235D, 999, 900
             - 0.000456D, -0.000543D, -0.0000456D, -0.0000543D,};
@@ -493,9 +491,9 @@ public class DoubleToString {
     }
 
     private static void mainAdj(int repeat, String name, double[] arr, String list) {
-        long time1, time2;
+        long time1;
+        long time2;
         StringBuffer s;
-        int numDigits = 4;
 
         LOGGER.log(Level.INFO, "The {0}", name);
         LOGGER.log(Level.INFO, "    {0}", list);
@@ -694,70 +692,106 @@ public class DoubleToString {
         } else if (i < 1000) {
             //three digits
             s.append(charForDigit[i / 100]);
-            s.append(charForDigit[(c = i % 100) / 10]);
+            c = i % 100;
+            s.append(charForDigit[c / 10]);
             s.append(charForDigit[c % 10]);
         } else if (i < 10000) {
             //four digits
             s.append(charForDigit[i / 1000]);
-            s.append(charForDigit[(c = i % 1000) / 100]);
-            s.append(charForDigit[(c %= 100) / 10]);
+            c = i % 1000;
+            s.append(charForDigit[c / 100]);
+            c %= 100;
+            s.append(charForDigit[c / 10]);
             s.append(charForDigit[c % 10]);
         } else if (i < 100000) {
             //five digits
             s.append(charForDigit[i / 10000]);
-            s.append(charForDigit[(c = i % 10000) / 1000]);
-            s.append(charForDigit[(c %= 1000) / 100]);
-            s.append(charForDigit[(c %= 100) / 10]);
+            c = i % 10000;
+            s.append(charForDigit[c / 1000]);
+            c %= 1000;
+            s.append(charForDigit[c / 100]);
+            c %= 100;
+            s.append(charForDigit[c / 10]);
             s.append(charForDigit[c % 10]);
         } else if (i < 1000000) {
             //six digits
             s.append(charForDigit[i / 100000]);
-            s.append(charForDigit[(c = i % 100000) / 10000]);
-            s.append(charForDigit[(c %= 10000) / 1000]);
-            s.append(charForDigit[(c %= 1000) / 100]);
-            s.append(charForDigit[(c %= 100) / 10]);
+            c = i % 100000;
+            s.append(charForDigit[c / 10000]);
+            c %= 10000;
+            s.append(charForDigit[c / 1000]);
+            c %= 1000;
+            s.append(charForDigit[c / 100]);
+            c %= 100;
+            s.append(charForDigit[c / 10]);
             s.append(charForDigit[c % 10]);
         } else if (i < 10000000) {
             //seven digits
             s.append(charForDigit[i / 1000000]);
-            s.append(charForDigit[(c = i % 1000000) / 100000]);
-            s.append(charForDigit[(c %= 100000) / 10000]);
-            s.append(charForDigit[(c %= 10000) / 1000]);
-            s.append(charForDigit[(c %= 1000) / 100]);
-            s.append(charForDigit[(c %= 100) / 10]);
+            c = i % 1000000;
+            s.append(charForDigit[c / 100000]);
+            c %= 100000;
+            s.append(charForDigit[c / 10000]);
+            c %= 10000;
+            s.append(charForDigit[c / 1000]);
+            c %= 1000;
+            s.append(charForDigit[c / 100]);
+            c %= 100;
+            s.append(charForDigit[c / 10]);
             s.append(charForDigit[c % 10]);
         } else if (i < 100000000) {
             //eight digits
             s.append(charForDigit[i / 10000000]);
-            s.append(charForDigit[(c = i % 10000000) / 1000000]);
-            s.append(charForDigit[(c %= 1000000) / 100000]);
-            s.append(charForDigit[(c %= 100000) / 10000]);
-            s.append(charForDigit[(c %= 10000) / 1000]);
-            s.append(charForDigit[(c %= 1000) / 100]);
-            s.append(charForDigit[(c %= 100) / 10]);
+            c = i % 10000000;
+            s.append(charForDigit[c / 1000000]);
+            c %= 1000000;
+            s.append(charForDigit[c / 100000]);
+            c %= 100000;
+            s.append(charForDigit[c / 10000]);
+            c %= 10000;
+            s.append(charForDigit[c / 1000]);
+            c %= 1000;
+            s.append(charForDigit[c / 100]);
+            c %= 100;
+            s.append(charForDigit[c / 10]);
             s.append(charForDigit[c % 10]);
         } else if (i < 1000000000) {
             //nine digits
             s.append(charForDigit[i / 100000000]);
-            s.append(charForDigit[(c = i % 100000000) / 10000000]);
-            s.append(charForDigit[(c %= 10000000) / 1000000]);
-            s.append(charForDigit[(c %= 1000000) / 100000]);
-            s.append(charForDigit[(c %= 100000) / 10000]);
-            s.append(charForDigit[(c %= 10000) / 1000]);
-            s.append(charForDigit[(c %= 1000) / 100]);
-            s.append(charForDigit[(c %= 100) / 10]);
+            c = i % 100000000;
+            s.append(charForDigit[c / 10000000]);
+            c %= 10000000;
+            s.append(charForDigit[c / 1000000]);
+            c %= 1000000;
+            s.append(charForDigit[c / 100000]);
+            c %= 100000;
+            s.append(charForDigit[c / 10000]);
+            c %= 10000;
+            s.append(charForDigit[c / 1000]);
+            c %= 1000;
+            s.append(charForDigit[c / 100]);
+            c %= 100;
+            s.append(charForDigit[c / 10]);
             s.append(charForDigit[c % 10]);
         } else {
             //ten digits
             s.append(charForDigit[i / 1000000000]);
-            s.append(charForDigit[(c = i % 1000000000) / 100000000]);
-            s.append(charForDigit[(c %= 100000000) / 10000000]);
-            s.append(charForDigit[(c %= 10000000) / 1000000]);
-            s.append(charForDigit[(c %= 1000000) / 100000]);
-            s.append(charForDigit[(c %= 100000) / 10000]);
-            s.append(charForDigit[(c %= 10000) / 1000]);
-            s.append(charForDigit[(c %= 1000) / 100]);
-            s.append(charForDigit[(c %= 100) / 10]);
+            c = i % 1000000000;
+            s.append(charForDigit[c / 100000000]);
+            c %= 100000000;
+            s.append(charForDigit[c / 10000000]);
+            c %= 10000000;
+            s.append(charForDigit[c / 1000000]);
+            c %= 1000000;
+            s.append(charForDigit[c / 100000]);
+            c %= 100000;
+            s.append(charForDigit[c / 10000]);
+            c %= 10000;
+            s.append(charForDigit[c / 1000]);
+            c %= 1000;
+            s.append(charForDigit[c / 100]);
+            c %= 100;
+            s.append(charForDigit[c / 10]);
             s.append(charForDigit[c % 10]);
         }
     }
@@ -793,11 +827,10 @@ public class DoubleToString {
         }
     }
 
-    public static final char[] NEGATIVE_INFINITY = {'-', 'I', 'n', 'f', 'i', 'n', 'i', 't', 'y'};
-    public static final char[] POSITIVE_INFINITY = {'I', 'n', 'f', 'i', 'n', 'i', 't', 'y'};
-    public static final char[] DOUBLE_ZERO = {'0', '.', '0'};
-    public static final char[] DOUBLE_ZERO2 = {'0', '.', '0', '0'};
-    public static final char[] DOUBLE_ZERO0 = {'0', '.'};
-    public static final char[] DOT_ZERO = {'.', '0'};
-
+    private static final char[] NEGATIVE_INFINITY = {'-', 'I', 'n', 'f', 'i', 'n', 'i', 't', 'y'};
+    private static final char[] POSITIVE_INFINITY = {'I', 'n', 'f', 'i', 'n', 'i', 't', 'y'};
+    private static final char[] DOUBLE_ZERO = {'0', '.', '0'};
+    private static final char[] DOUBLE_ZERO2 = {'0', '.', '0', '0'};
+    private static final char[] DOUBLE_ZERO0 = {'0', '.'};
+    private static final char[] DOT_ZERO = {'.', '0'};
 }

@@ -14,7 +14,7 @@ import xal.sim.scenario.ElementMapping;
 import xal.smf.AcceleratorSeq;
 import xal.smf.attr.ApertureBucket;
 import xal.smf.impl.qualify.MagnetType;
-import xal.tools.beam.IConstants;
+import xal.tools.beam.Constants;
 
 @RunWith(Parameterized.class)
 public class BendTest extends TestCommon {
@@ -267,7 +267,7 @@ public class BendTest extends TestCommon {
         double quadComp = -N / (rho * rho);
 
         // following are used to calculate field        
-        double c = IConstants.LIGHT_SPEED;
+        double c = Constants.LIGHT_SPEED;
         double e = probe.getSpeciesCharge();
         double Er = probe.getSpeciesRestEnergy();
         double gamma = probe.getGamma();

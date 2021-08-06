@@ -9,6 +9,8 @@ package xal.tools.beam;
 
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Set;
 import java.util.EnumSet;
 import java.util.StringTokenizer;
 
@@ -103,7 +105,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
         /**
          * Index of the X' coordinate
          */
-        Xp(1),
+        XP(1),
         /**
          * Index of the Y coordinate
          */
@@ -111,7 +113,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
         /**
          * Index of the Y' coordinate
          */
-        Yp(3),
+        YP(3),
         /**
          * Index of the Z (longitudinal) coordinate
          */
@@ -119,7 +121,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
         /**
          * Index of the Z' (change in momentum) coordinate
          */
-        Zp(5),
+        ZP(5),
         /**
          * Index of the homogeneous coordinate
          */
@@ -132,7 +134,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
          * the set of IND constants that only include phase space variables (not
          * the homogeneous coordinate)
          */
-        private static final EnumSet<IND> SET_PHASE = EnumSet.of(X, Xp, Y, Yp, Z, Zp);
+        private static final EnumSet<IND> SET_PHASE = EnumSet.of(X, XP, Y, YP, Z, ZP);
 
         /*
          * Global Operations
@@ -150,7 +152,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
          * @author Christopher K. Allen
          * @since Oct 15, 2013
          */
-        public static EnumSet<IND> valuesPhase() {
+        public static Set<IND> valuesPhase() {
             return SET_PHASE;
         }
 
@@ -168,7 +170,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
          */
         @Override
         public int val() {
-            return this.val;
+            return this.value;
         }
 
         /*
@@ -177,7 +179,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
         /**
          * The numerical value of this enumeration index
          */
-        public final int val;
+        public final int value;
 
         /**
          * Creates a new <code>IND</code> enumeration constant initialized to
@@ -189,7 +191,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
          * @since Sep 25, 2013
          */
         private IND(int index) {
-            this.val = index;
+            this.value = index;
         }
     }
 
@@ -253,9 +255,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
      * @since Jan 4, 2016, Christopher K. Allen
      */
     public static PhaseVector loadFrom(DataAdaptor daSource) throws DataFormatException {
-        PhaseVector vecNew = new PhaseVector(daSource);
-
-        return vecNew;
+        return new PhaseVector(daSource);
     }
 
     /**
@@ -435,7 +435,6 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
      */
     @Override
     public void setVector(String strValues) {
-
         // Error check the number of token strings
         StringTokenizer tokArgs = new StringTokenizer(strValues, " ,()[]{}");
 
@@ -465,13 +464,11 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
      */
     @Override
     public void setVector(double[] arrVector) throws IllegalArgumentException {
-
         // Check the dimensions of the argument double array
         if (arrVector.length < 6) {
             throw new IllegalArgumentException(
                     "Missing values: You need at least 6 values for a PhaseVector - "
-                    + arrVector
-            );
+                    + Arrays.toString(arrVector));
         }
 
         // Set the elements of this array to that given by the corresponding 
@@ -483,16 +480,6 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
         }
 
         this.setElem(IND.HOM, 1.0);
-    }
-
-    /**
-     * Set the element at index. Note that you cannot change the last element
-     * value, it must remain 1.
-     *
-     * @param i index of new element value
-     */
-    public void setElem(PhaseIndex i, double dblVal) {
-        super.setElem(i, dblVal);
     }
 
     /**
@@ -916,7 +903,6 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
      */
     @Override
     public void print(PrintWriter os) {
-
         // Create vector string
         String strVec = this.toString();
 
@@ -945,7 +931,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
     public String printString() {
         String strVec = "";
         for (int i = 0; i < 6; i++) {
-            strVec = strVec + this.getElem(i) + ",";
+            strVec += this.getElem(i) + ",";
         }
         strVec = strVec + this.getElem(6);
         return strVec;
@@ -955,21 +941,20 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
      * Test driver
      */
     public static void main(String[] arrArgs) {
-        PrintWriter os = new PrintWriter(System.out);
+        try (PrintWriter os = new PrintWriter(System.out)) {
+            PhaseVector z1 = new PhaseVector();
+            os.print("Vector #1 = ");
+            z1.println(os);
 
-        PhaseVector z1 = new PhaseVector();
-        os.print("Vector #1 = ");
-        z1.println(os);
+            PhaseVector z2 = new PhaseVector(1.0, 0.0, 2.0, 0.0, 3.0, 0.0);
+            os.print("Vector #2 = ");
+            z2.println(os);
 
-        PhaseVector z2 = new PhaseVector(1.0, 0.0, 2.0, 0.0, 3.0, 0.0);
-        os.print("Vector #2 = ");
-        z2.println(os);
+            PhaseVector z3 = new PhaseVector("1.0 2.0 3.0 4.0 5.0 6.0");
+            os.print("Vector #3 = ");
+            z3.println(os);
 
-        PhaseVector z3 = new PhaseVector("1.0 2.0 3.0 4.0 5.0 6.0");
-        os.print("Vector #3 = ");
-        z3.println(os);
-
-        os.flush();
+            os.flush();
+        }
     }
-
 }

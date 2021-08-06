@@ -61,7 +61,8 @@ public class Complex {
      */
     public static Complex sqrt(final Complex s) {
         Complex csqrt;
-        double dX, dY, dW, dR;
+        double dW;
+        double dR;
 
         final double dblReal = s.real();
         final double dblImag = s.imaginary();
@@ -71,8 +72,8 @@ public class Complex {
             return (csqrt);
         }
 
-        dX = Math.abs(dblReal);
-        dY = Math.abs(dblImag);
+        double dX = Math.abs(dblReal);
+        double dY = Math.abs(dblImag);
 
         if (dX >= dY) {
             dR = dY / dX;
@@ -117,9 +118,7 @@ public class Complex {
         double dblMag = Math.log(s.modulus());
         double dblAng = s.phase();
 
-        Complex cpxLog = new Complex(dblMag, dblAng);
-
-        return cpxLog;
+        return new Complex(dblMag, dblAng);
     }
 
     /**
@@ -167,9 +166,7 @@ public class Complex {
      * @since Oct 7, 2015, Christopher K. Allen
      */
     public static Complex euler(final double ang) {
-        Complex cpxAng = new Complex(Math.cos(ang), Math.sin(ang));
-
-        return cpxAng;
+        return new Complex(Math.cos(ang), Math.sin(ang));
     }
 
     /**
@@ -196,9 +193,7 @@ public class Complex {
         double dblRe = +Math.sin(s.real()) * Math.cosh(s.imaginary());
         double dblIm = -Math.cos(s.real()) * Math.sinh(s.imaginary());
 
-        Complex cpxSin = new Complex(dblRe, dblIm);
-
-        return cpxSin;
+        return new Complex(dblRe, dblIm);
     }
 
     /**
@@ -225,9 +220,7 @@ public class Complex {
         double dblRe = +Math.sinh(s.real()) * Math.cos(s.imaginary());
         double dblIm = +Math.cosh(s.real()) * Math.sin(s.imaginary());
 
-        Complex cpxSinh = new Complex(dblRe, dblIm);
-
-        return cpxSinh;
+        return new Complex(dblRe, dblIm);
     }
 
     /**
@@ -254,9 +247,7 @@ public class Complex {
         double dblRe = +Math.cos(s.real()) * Math.cosh(s.imaginary());
         double dblIm = -Math.sin(s.real()) * Math.sinh(s.imaginary());
 
-        Complex cpxSin = new Complex(dblRe, dblIm);
-
-        return cpxSin;
+        return new Complex(dblRe, dblIm);
     }
 
     /**
@@ -283,9 +274,7 @@ public class Complex {
         double dblRe = +Math.cosh(s.real()) * Math.cos(s.imaginary());
         double dblIm = +Math.sinh(s.real()) * Math.sin(s.imaginary());
 
-        Complex cpxSinh = new Complex(dblRe, dblIm);
-
-        return cpxSinh;
+        return new Complex(dblRe, dblIm);
     }
 
     /*
@@ -452,5 +441,4 @@ public class Complex {
     public final Complex minus(final double subtrahend) {
         return new Complex(dblReal - subtrahend, dblImag);
     }
-
 }

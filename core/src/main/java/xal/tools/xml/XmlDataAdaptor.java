@@ -161,13 +161,6 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     }
 
     /**
-     * cast the mainNode as an XML Document
-     */
-    private Document asDocument() {
-        return (Document) mainNode;
-    }
-
-    /**
      * get the tag name for the specified XML node
      */
     private static String nameForNode(Node node) {
@@ -228,7 +221,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     public double doubleValue(final String attribute) throws NumberFormatException {
         String strValue = rawValue(attribute);
 
-        if (strValue.length() != 0) {
+        if (strValue != null && strValue.length() != 0) {
             try {
                 return Double.parseDouble(strValue);
             } catch (NumberFormatException excpt) {
@@ -249,7 +242,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     public long longValue(final String attribute) throws NumberFormatException {
         String strValue = rawValue(attribute);
 
-        if (strValue.length() != 0) {
+        if (strValue != null && strValue.length() != 0) {
             try {
                 return Long.parseLong(strValue);
             } catch (NumberFormatException excpt) {
@@ -270,7 +263,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     public int intValue(final String attribute) throws NumberFormatException {
         String strValue = rawValue(attribute);
 
-        if (strValue.length() != 0) {
+        if (strValue != null && strValue.length() != 0) {
             try {
                 return Integer.parseInt(strValue);
             } catch (NumberFormatException excpt) {
@@ -311,18 +304,21 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     @Override
     public double[] doubleArray(final String attribute) throws NumberFormatException {
         final String strValue = rawValue(attribute);
-        try {
-            final String[] tokens = strValue.split(",");
-            final double[] array = new double[tokens.length];
-            int index = 0;
-            for (final String token : tokens) {
-                array[index++] = Double.parseDouble(token);
+        if (strValue != null) {
+            try {
+                final String[] tokens = strValue.split(",");
+                final double[] array = new double[tokens.length];
+                int index = 0;
+                for (final String token : tokens) {
+                    array[index++] = Double.parseDouble(token);
+                }
+                return array;
+            } catch (NumberFormatException exception) {
+                final String message = "Error parsing as double array attribute: " + attribute + ", from string: " + strValue + ", for XML node: " + name();
+                throw new NumberFormatException(message);
             }
-            return array;
-        } catch (NumberFormatException exception) {
-            final String message = "Error parsing as double array attribute: " + attribute + ", from string: " + strValue + ", for XML node: " + name();
-            throw new NumberFormatException(message);
         }
+        return new double[0];
     }
 
     /**
@@ -445,8 +441,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
      * create a new adaptor for the specified node
      */
     private static XmlDataAdaptor newAdaptor(Node node) {
-        XmlDataAdaptor adaptor = new XmlDataAdaptor(node);
-        return adaptor;
+        return new XmlDataAdaptor(node);
     }
 
     /**
@@ -740,7 +735,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
 
             adaptor = new XmlDataAdaptor(document);
             adaptor.writeNode(dataHandler);
-        } catch (Exception excpt) {
+        } catch (ParserConfigurationException | DOMException excpt) {
             throw new CreationException(excpt);
         }
 
@@ -768,7 +763,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
             }
 
             adaptor = new XmlDataAdaptor(document);
-        } catch (Exception excpt) {
+        } catch (ParserConfigurationException | DOMException excpt) {
             throw new CreationException(excpt);
         }
 

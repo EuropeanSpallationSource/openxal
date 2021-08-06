@@ -7,6 +7,8 @@
  */
 package xal.tools.math.r3;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.tools.math.r3.R3x3.POS;
 
 /**
@@ -43,6 +45,7 @@ import xal.tools.math.r3.R3x3.POS;
  */
 public class R3x3JacobiDecomposition {
 
+    private static final Logger LOGGER = Logger.getLogger(R3x3JacobiDecomposition.class.getName());
 
     /*
      * Global Constants
@@ -213,35 +216,35 @@ public class R3x3JacobiDecomposition {
         // rotation angle
         double angle = iter.getAngle();
         // rotation matrix
-        R3x3 R = iter.getRotation();
+        R3x3 r;
         // transpose of rotation matrix          
-        R3x3 Rt = R.transpose();
+        R3x3 rT;
         // diagonalization matrix
-        R3x3 D = matTarget;
+        R3x3 d = matTarget;
 
         this.cntIter = 0;
         this.matRot = R3x3.newIdentity();
 
         // while the rotation angle is large
         while (Math.abs(angle) > ROTATION_TOLERANCE) {
-            R = iter.getRotation();
-            Rt = R.transpose();
+            r = iter.getRotation();
+            rT = r.transpose();
 
-            D = Rt.times(D.times(R));
+            d = rT.times(d.times(r));
 
-            this.matRot = this.matRot.times(R);
+            this.matRot = this.matRot.times(r);
             this.cntIter++;
 
             if (bolDebug) {
-                System.out.printf("iter : %d, angle = %g degrees\n", this.cntIter, 180.0 * (angle / Math.PI));
+                LOGGER.log(Level.INFO, "iter : {0}, angle = {1} degrees\n", new Object[]{this.cntIter, 180.0 * (angle / Math.PI)});
             }
 
-            iter = new JacobiIterate(D);
+            iter = new JacobiIterate(d);
             angle = iter.getAngle();
         }
 
         // Save the answer
-        this.matDiag = D;
+        this.matDiag = d;
     }
 
 }
@@ -350,7 +353,6 @@ class JacobiIterate {
      * @return the pivot position as a <code>OffDiagonal</code> enumeration
      */
     private POS compPivot() {
-
         // current coupling value
         double cplVal;
         // maximum coupling value
@@ -394,40 +396,9 @@ class JacobiIterate {
      * @return value of the coupling coefficient for given <code>pos</code>
      */
     private double compCoupling(POS pos) {
-
         double dblVal = pos.getValue(matTarget);
-        double dblMag = Math.abs(dblVal);
+        return Math.abs(dblVal);
 
-        return dblMag;
-    }
-
-    /**
-     * Compute the angle of rotation necessary to zero out the pivot element in
-     * the Jacobi iteration. Note that there are two solutions to this angle. We
-     * return the one whose magnitude is less than <em>pi</em>/4. This value
-     * provides the most stable reduction.
-     *
-     * This method solves the simplified double angle formula for the rotation
-     * angle then converts back to the smaller rotation angle.
-     *
-     * @return angle of rotation in the interval [-pi/4,pi/4]
-     */
-    @SuppressWarnings("unused")
-    private double compAngle1() {
-        double dblVal = posPivot.getValue(matTarget);
-        double dblRow = posPivot.getRowDiag(matTarget);
-        double dblCol = posPivot.getColDiag(matTarget);
-
-        double dblAng = 0.5 * Math.atan2(2.0 * dblVal, (dblRow - dblCol));
-
-        if (dblAng > PI_BY_4) {
-            dblAng = dblAng - PI_BY_2;
-        }
-        if (dblAng < -PI_BY_4) {
-            dblAng = dblAng + PI_BY_2;
-        }
-
-        return dblAng;
     }
 
     /**
@@ -457,8 +428,6 @@ class JacobiIterate {
         //      Note that des>0 and des>|b|
         // tangent of the rotation angle
         double tan;
-        // rotation angle
-        double ang;
 
         if (b > 0) {
             // 'minus' quadratic solution
@@ -467,9 +436,8 @@ class JacobiIterate {
             // 'plus' quadratic solution
             tan = b + des;
         }
-        ang = Math.atan(tan);
+        return Math.atan(tan);
 
-        return ang;
     }
 
     /**
@@ -479,45 +447,18 @@ class JacobiIterate {
      * @return rotation matrix in SO(2) contained in SO(3)
      */
     private R3x3 compRotation() {
-        R3x3 matRot = R3x3.newIdentity();
+        R3x3 cmpMatRot = R3x3.newIdentity();
         double dblSin = Math.sin(this.dblAng);
         double dblCos = Math.cos(this.dblAng);
 
         int iRow = posPivot.row();
         int iCol = posPivot.col();
 
-        matRot.setElem(iRow, iCol, -dblSin);
-        matRot.setElem(iRow, iRow, dblCos);
-        matRot.setElem(iCol, iRow, dblSin);
-        matRot.setElem(iCol, iCol, dblCos);
+        cmpMatRot.setElem(iRow, iCol, -dblSin);
+        cmpMatRot.setElem(iRow, iRow, dblCos);
+        cmpMatRot.setElem(iCol, iRow, dblSin);
+        cmpMatRot.setElem(iCol, iCol, dblCos);
 
-        return matRot;
-    }
-
-    /*
-     * Class Debugging
-     */
-    /**
-     * See if the original angle equation is satisfied.
-     *
-     * @param ang rotation angle
-     */
-    @SuppressWarnings("unused")
-    private boolean checkAngleFormula(double ang) {
-        // pivot element
-        double aij = posPivot.getValue(matTarget);
-        // row diagonal
-        double aii = posPivot.getRowDiag(matTarget);
-        // column diagonal
-        double ajj = posPivot.getColDiag(matTarget);
-
-        double sin = Math.sin(ang);
-        double cos = Math.cos(ang);
-
-        double val = aij * (cos * cos - sin * sin) + sin * cos * (ajj - aii);
-
-        boolean res = Math.abs(val) < R3x3JacobiDecomposition.ERROR_TOLERANCE;
-
-        return res;
+        return cmpMatRot;
     }
 }

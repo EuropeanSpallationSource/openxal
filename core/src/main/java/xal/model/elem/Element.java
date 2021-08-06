@@ -20,7 +20,7 @@ import xal.model.ModelException;
 import xal.model.alg.Tracker;
 import xal.sim.scenario.LatticeElement;
 import xal.smf.attr.AlignmentBucket;
-import xal.tools.beam.IConstants;
+import xal.tools.beam.Constants;
 import xal.tools.beam.PhaseMap;
 import xal.tools.math.r3.R3;
 
@@ -370,7 +370,7 @@ public abstract class Element implements IElement {
         // normalized probe velocity
         double dblBeta = probe.getBeta();
 
-        return dblLen / (IConstants.LIGHT_SPEED * dblBeta);
+        return dblLen / (Constants.LIGHT_SPEED * dblBeta);
     }
 
     /*

@@ -13,8 +13,6 @@ import java.lang.reflect.Array;
 import java.util.*;
 import java.util.regex.*;
 import java.io.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * encode and decode objects with JSON
@@ -96,7 +94,7 @@ public class JSONCoder implements Coder {
      * constructs
      */
     @Override
-    public <CustomType, RepresentationType> void registerType(final Class<CustomType> type, final ConversionAdaptor<CustomType, RepresentationType> adaptor) {
+    public <C, R> void registerType(final Class<C> type, final ConversionAdaptor<C, R> adaptor) {
         conversionAdaptorStore.registerType(type, adaptor);
     }
 
@@ -126,7 +124,7 @@ public class JSONCoder implements Coder {
     @Override
     public Object decode(final String archive) {
         final JSONDecoder decoder = JSONDecoder.getInstance(archive, new ConversionAdaptorStore(conversionAdaptorStore));
-        return decoder != null ? decoder.decode() : null;
+        return decoder.decode();
     }
 
     /**
@@ -259,7 +257,7 @@ class JSONEncoder {
 /**
  * Base class of encoders
  */
-abstract class AbstractEncoder<DataType> {
+abstract class AbstractEncoder<T> {
 
     /**
      * preprocess the object graph prior to encoding so the references can be
@@ -282,7 +280,7 @@ abstract class AbstractEncoder<DataType> {
 /**
  * Base class of encoders for hard objects (not references)
  */
-abstract class HardEncoder<DataType> extends AbstractEncoder<DataType> {
+abstract class HardEncoder<T> extends AbstractEncoder<T> {
 
     /**
      * preprocess the object graph prior to encoding so the references can be
@@ -305,7 +303,7 @@ abstract class HardEncoder<DataType> extends AbstractEncoder<DataType> {
 /**
  * Base class of encoders for objects that support references
  */
-abstract class SoftValueEncoder<DataType> extends AbstractEncoder<DataType> {
+abstract class SoftValueEncoder<T> extends AbstractEncoder<T> {
 
     /**
      * key to indicate a reference
@@ -333,7 +331,7 @@ abstract class SoftValueEncoder<DataType> extends AbstractEncoder<DataType> {
             if (identityReference != null && identityReference.hasMultiple()) {
                 if (identityReference.isEncoded()) {
                     // create dictionary with the reference
-                    encodeReference(encoder, jsonBuilder, value, identityReference.getID());
+                    encodeReference(encoder, jsonBuilder, identityReference.getID());
                 } else {
                     // first mark the reference as encoded in case there is a nested reference to itself
                     // further encoding of the value will be encoded as references
@@ -375,7 +373,7 @@ abstract class SoftValueEncoder<DataType> extends AbstractEncoder<DataType> {
      */
     // need to cast the value to Map<String,Object>
     @SuppressWarnings("unchecked")
-    private void encodeReference(final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value, final long referenceID) {
+    private void encodeReference(final JSONEncoder encoder, final StringBuilder jsonBuilder, final long referenceID) {
         jsonBuilder.append("{");
 
         jsonBuilder.append("\"" + REFERENCE_KEY + "\"");
@@ -516,7 +514,7 @@ class BooleanEncoder extends HardEncoder<Boolean> {
      */
     @Override
     public void encodeRaw(final JSONEncoder encoder, final StringBuilder jsonBuilder, final Object value) {
-        jsonBuilder.append(((Boolean) value) ? "true" : "false");
+        jsonBuilder.append(((boolean) value) ? "true" : "false");
     }
 }
 
@@ -580,6 +578,7 @@ class DictionaryEncoder extends SoftValueEncoder<Map<String, Object>> {
      */
     // need to cast the value to Map<String,Object>
     @SuppressWarnings("unchecked")
+    @Override
     public void preprocess(final JSONEncoder encoder, final Object value) {
         final ReferenceStore referenceStore = encoder.getReferenceStore();
         referenceStore.store(value);
@@ -607,12 +606,8 @@ class DictionaryEncoder extends SoftValueEncoder<Map<String, Object>> {
 
         int index = 0;
         for (final Map.Entry<String, Object> entry : dictionary.entrySet()) {
-            switch (index) {
-                case 0:
-                    break;
-                default:
-                    jsonBuilder.append(", ");
-                    break;
+            if (index != 0) {
+                jsonBuilder.append(", ");
             }
 
             final String entryKey = entry.getKey();
@@ -901,12 +896,8 @@ class TypedArrayEncoder extends ArrayEncoder {
 
         jsonBuilder.append("[");
         for (int index = 0; index < array.length; index++) {
-            switch (index) {
-                case 0:
-                    break;
-                default:
-                    jsonBuilder.append(", ");
-                    break;
+            if (index != 0) {
+                jsonBuilder.append(", ");
             }
 
             // encode the item
@@ -917,15 +908,6 @@ class TypedArrayEncoder extends ArrayEncoder {
         }
         jsonBuilder.append("]");
 
-    }
-
-    /**
-     * Get the component type appropriate for an Object (e.g. wrapper for a
-     * primitive)
-     */
-    private static String getComponentObjectType(final Object array) {
-        final Class<?> componentClass = array.getClass().getComponentType();
-        return getObjectTypeForClass(componentClass);
     }
 
     /**
@@ -956,7 +938,7 @@ class TypedArrayEncoder extends ArrayEncoder {
      * populate the table of primitive type wrappers
      */
     private static Map<Class<?>, Class<?>> populatePrimitiveTypeWrappers() {
-        final Map<Class<?>, Class<?>> table = new Hashtable<>();
+        final Map<Class<?>, Class<?>> table = new HashMap<>();
 
         table.put(Integer.TYPE, Integer.class);
         table.put(Long.TYPE, Long.class);
@@ -974,7 +956,7 @@ class TypedArrayEncoder extends ArrayEncoder {
      * generate the table of primitive classes keyed by name
      */
     private static Map<String, Class<?>> generatePrimitiveClassMap() {
-        final Map<String, Class<?>> classTable = new Hashtable<>();
+        final Map<String, Class<?>> classTable = new HashMap<>();
         registerPrimitiveType(classTable, Float.TYPE);
         registerPrimitiveType(classTable, Double.TYPE);
         registerPrimitiveType(classTable, Byte.TYPE);
@@ -1040,12 +1022,8 @@ class ArrayEncoder extends SoftValueEncoder<Object[]> {
 
         jsonBuilder.append("[");
         for (int index = 0; index < array.length; index++) {
-            switch (index) {
-                case 0:
-                    break;
-                default:
-                    jsonBuilder.append(", ");
-                    break;
+            if (index != 0) {
+                jsonBuilder.append(", ");
             }
 
             // encode the item
@@ -1060,8 +1038,7 @@ class ArrayEncoder extends SoftValueEncoder<Object[]> {
      */
     private static boolean isTypedArray(final Object array) {
         final Class<?> itemClass = array.getClass().getComponentType();
-        final boolean isTyped = itemClass != null && itemClass != Object.class;
-        return isTyped;
+        return itemClass != null && itemClass != Object.class;
     }
 }
 
@@ -1228,12 +1205,12 @@ class JSONDecoder {
 /**
  * Base class of decoders
  */
-abstract class AbstractDecoder<DataType> {
+abstract class AbstractDecoder<T> {
 
     /**
      * decode the source to extract the next object
      */
-    protected abstract DataType decode(final JSONDecoder source);
+    protected abstract T decode(final JSONDecoder source);
 }
 
 /**
@@ -1363,7 +1340,6 @@ class NullDecoder extends AbstractDecoder<Object> {
     protected Object decode(final JSONDecoder source) {
         final int startScanPosition = source.getScanPosition();
         final String archive = source.getArchive();
-        final char firstChar = archive.charAt(startScanPosition);
 
         final int scanLength = 4;
         if (startScanPosition + scanLength <= archive.length()) {
@@ -1450,8 +1426,6 @@ class StringDecoder extends AbstractDecoder<String> {
     @Override
     protected String decode(final JSONDecoder source) {
         final int startScanPosition = source.getScanPosition();
-        final String archive = source.getArchive();
-        final int archiveLength = archive.length();
 
         // start decoding the string at the character immediately following the initial quotation mark
         return decode(source, startScanPosition + 1);
@@ -1515,7 +1489,7 @@ class ArrayDecoder extends AbstractDecoder<Object[]> {
                 // process the next array item
             } else if (expectingNextItem) {
                 // we've got an empty array
-                if (items.size() == 0 && nextChar == ']') {
+                if (items.isEmpty() && nextChar == ']') {
                     source.setScanPosition(position + 1);
                     // we're done with this array
                     return;
@@ -1559,8 +1533,6 @@ class DictionaryDecoder extends AbstractDecoder<Object> {
      * default dictionary decoder
      */
     private static final DictionaryDecoder DEFAULT_DECODER;
-
-    private static final Logger LOGGER = Logger.getLogger(DictionaryDecoder.class.getName());
 
     // static initializer
     static {
@@ -1612,19 +1584,13 @@ class DictionaryDecoder extends AbstractDecoder<Object> {
                 }
                 return array;
             } catch (ArrayIndexOutOfBoundsException | ClassNotFoundException | IllegalArgumentException | NegativeArraySizeException exception) {
-                LOGGER.log(Level.SEVERE, null, exception);
                 throw new RuntimeException("Exception decoding a typed array of type: " + componentType, exception);
             }
         } else if (dictionary.containsKey(SerializationEncoder.SERIALIZATION_VALUE_KEY)) {
             final byte[] serializationData = (byte[]) dictionary.get(SerializationEncoder.SERIALIZATION_VALUE_KEY);
 
-            try {
-                final ByteArrayInputStream byteInputStream = new ByteArrayInputStream(serializationData);
-                final ObjectInputStream objectInputStream = new ObjectInputStream(byteInputStream);
-                final Object value = objectInputStream.readObject();
-                objectInputStream.close();
-                byteInputStream.close();
-                return value;
+            try (ByteArrayInputStream byteInputStream = new ByteArrayInputStream(serializationData); ObjectInputStream objectInputStream = new ObjectInputStream(byteInputStream)) {
+                return objectInputStream.readObject();
             } catch (IOException | ClassNotFoundException exception) {
                 throw new RuntimeException("Exception decoding serialized object from dictionary: " + dictionary, exception);
             }
@@ -1668,7 +1634,7 @@ class DictionaryDecoder extends AbstractDecoder<Object> {
                 // process the next key/value pair
             } else if (expectingNextPair) {
                 // we've got an empty dictionary
-                if (dictionary.size() == 0 && nextChar == '}') {
+                if (dictionary.isEmpty() && nextChar == '}') {
                     source.setScanPosition(position + 1);
                     // we're done with this dictionary
                     return;
@@ -1832,11 +1798,10 @@ class ReferenceStore {
      */
     // no way to test type at compile time
     @SuppressWarnings("unchecked")
-    public <ItemType> IdentityReference<ItemType> store(final ItemType item) {
-        if (!equalityReferences.containsKey(item)) {
-            equalityReferences.put(item, new EqualityReference<>());
-        }
-        final EqualityReference<ItemType> equalityReference = (EqualityReference<ItemType>) equalityReferences.get(item);
+    public <T> IdentityReference<T> store(final T item) {
+        equalityReferences.computeIfAbsent(item, i -> new EqualityReference<>());
+
+        final EqualityReference<T> equalityReference = (EqualityReference<T>) equalityReferences.get(item);
         return equalityReference.add(item, ++objectCounter);
     }
 
@@ -1845,9 +1810,9 @@ class ReferenceStore {
      */
     // no way to test type at compile time
     @SuppressWarnings("unchecked")
-    public <ItemType> IdentityReference<ItemType> getIdentityReference(final ItemType item) {
+    public <T> IdentityReference<T> getIdentityReference(final T item) {
         if (equalityReferences.containsKey(item)) {
-            final EqualityReference<ItemType> equalityReference = (EqualityReference<ItemType>) equalityReferences.get(item);
+            final EqualityReference<T> equalityReference = (EqualityReference<T>) equalityReferences.get(item);
             return equalityReference.getIdentityReference(item);
         } else {
             return null;
@@ -1858,12 +1823,12 @@ class ReferenceStore {
 /**
  * reference to a collection of objects which are equal among themselves
  */
-class EqualityReference<ItemType> {
+class EqualityReference<T> {
 
     /**
      * list of identity references
      */
-    private final List<IdentityReference<ItemType>> identityReferences;
+    private final List<IdentityReference<T>> identityReferences;
 
     /**
      * Constructor
@@ -1875,15 +1840,15 @@ class EqualityReference<ItemType> {
     /**
      * add the object to the set of equals
      */
-    public IdentityReference<ItemType> add(final ItemType item, final long uniqueID) {
-        final IdentityReference<ItemType> existingReference = getIdentityReference(item);
+    public IdentityReference<T> add(final T item, final long uniqueID) {
+        final IdentityReference<T> existingReference = getIdentityReference(item);
 
         if (existingReference != null) {
             existingReference.setHasMultiple(true);
             return existingReference;
         } else {
             // create a new reference
-            final IdentityReference<ItemType> reference = new IdentityReference<>(item, uniqueID);
+            final IdentityReference<T> reference = new IdentityReference<>(item, uniqueID);
             identityReferences.add(reference);
             return reference;
         }
@@ -1892,9 +1857,9 @@ class EqualityReference<ItemType> {
     /**
      * get the identity reference for the specified item
      */
-    public IdentityReference<ItemType> getIdentityReference(final ItemType item) {
+    public IdentityReference<T> getIdentityReference(final T item) {
         // search for references that are identical
-        for (final IdentityReference<ItemType> reference : identityReferences) {
+        for (final IdentityReference<T> reference : identityReferences) {
             if (reference.getItem() == item) {
                 return reference;
             }
@@ -1908,12 +1873,12 @@ class EqualityReference<ItemType> {
 /**
  * reference to an object along with the count
  */
-class IdentityReference<ItemType> {
+class IdentityReference<T> {
 
     /**
      * referenced item
      */
-    private final ItemType item;
+    private final T item;
 
     /**
      * unique ID for this object
@@ -1933,7 +1898,7 @@ class IdentityReference<ItemType> {
     /**
      * Constructor
      */
-    public IdentityReference(final ItemType item, final long uniqueID) {
+    public IdentityReference(final T item, final long uniqueID) {
         this.item = item;
         id = uniqueID;
         hasMultiple = false;
@@ -1943,7 +1908,7 @@ class IdentityReference<ItemType> {
     /**
      * get the item
      */
-    public ItemType getItem() {
+    public T getItem() {
         return item;
     }
 
@@ -2141,7 +2106,7 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
      * @param alternateKeys zero or more alternate names used to reference the
      * adaptor (e.g. "double" for "java.lang.Double")
      */
-    public <CustomType, RepresentationType> void registerType(final Class<?> type, final ConversionAdaptor<CustomType, RepresentationType> adaptor, final String... alternateKeys) {
+    public <C, R> void registerType(final Class<?> type, final ConversionAdaptor<C, R> adaptor, final String... alternateKeys) {
         registerType(type.getName(), adaptor);
 
         if (alternateKeys != null) {
@@ -2158,7 +2123,7 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
      * @param adaptor translator between the custom type and representation JSON
      * constructs
      */
-    public <CustomType, RepresentationType> void registerType(final String type, final ConversionAdaptor<CustomType, RepresentationType> adaptor) {
+    public <C, R> void registerType(final String type, final ConversionAdaptor<C, R> adaptor) {
         typeExtensionAdaptors.put(type, adaptor);
     }
 
@@ -2337,9 +2302,7 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
             @Override
             public ArrayList<?> toNative(final Object[] array) {
                 final ArrayList<Object> list = new ArrayList<>(array.length);
-                for (final Object item : array) {
-                    list.add(item);
-                }
+                list.addAll(Arrays.asList(array));
                 return list;
             }
         });
@@ -2362,9 +2325,7 @@ class MutableConversionAdaptorStore extends ConversionAdaptorStore {
             @Override
             public Vector<?> toNative(final Object[] array) {
                 final Vector<Object> list = new Vector<>(array.length);
-                for (final Object item : array) {
-                    list.add(item);
-                }
+                list.addAll(Arrays.asList(array));
                 return list;
             }
         });

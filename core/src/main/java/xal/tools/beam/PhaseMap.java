@@ -443,16 +443,13 @@ public class PhaseMap implements IArchive {
      * @return a new map which is the inverse of this map.
      */
     public PhaseMap inverse() {
-
         // Compute the components of the inverse map
         PhaseVector vecInvCntr = new PhaseVector(this.getRangeDisplace());
         PhaseVector vecInvDspl = new PhaseVector(this.getDomainCenter());
         PhaseMatrix matInvLin = this.getFirstOrder().inverse();
 
         // Create the inverse map and return it
-        PhaseMap mapInv = new PhaseMap(vecInvCntr, vecInvDspl, matInvLin);
-
-        return mapInv;
+        return new PhaseMap(vecInvCntr, vecInvDspl, matInvLin);
     }
 
     /**
@@ -541,7 +538,6 @@ public class PhaseMap implements IArchive {
      * <strong>&phi;</strong><sub>1</sub>
      */
     public PhaseMap compose(PhaseMap mapRight) {
-
         // Compute the new center (trivial - same as last)
         PhaseVector vecCntr = mapRight.getDomainCenter();
 
@@ -552,9 +548,7 @@ public class PhaseMap implements IArchive {
         PhaseMatrix matLin = this.getFirstOrder().times(mapRight.getFirstOrder());
 
         // Create the new map and return it
-        PhaseMap mapCmp = new PhaseMap(vecCntr, vecDspl, matLin);
-
-        return mapCmp;
+        return new PhaseMap(vecCntr, vecDspl, matLin);
     }
 
     /**
@@ -610,9 +604,7 @@ public class PhaseMap implements IArchive {
     public PhaseVector apply(PhaseVector vecIn) {
         PhaseVector vecCntrd = vecIn.minus(this.getDomainCenter());
         PhaseVector vecMappd = this.getFirstOrder().times(vecCntrd);
-        PhaseVector vecDspld = vecMappd.plus(this.getRangeDisplace());
-
-        return vecDspld;
+        return vecMappd.plus(this.getRangeDisplace());
     }
 
     /*
@@ -641,8 +633,6 @@ public class PhaseMap implements IArchive {
         // Compute the new displacement vector
         PhaseVector vecTrm1 = mapRight.getRangeDisplace().minus(mapLeft.getDomainCenter());
         PhaseVector vecTrm2 = mapLeft.getFirstOrder().times(vecTrm1);
-        PhaseVector vecDspl = vecTrm2.plus(mapLeft.getRangeDisplace());
-
-        return vecDspl;
+        return vecTrm2.plus(mapLeft.getRangeDisplace());
     }
 }

@@ -127,7 +127,7 @@ public class FourierExpTransform {
      * @see FourierSineTransform#transform(double[])
      */
     public FourierExpTransform(int szData) {
-        this.initTransform(szData);
+        initTransform(szData);
     }
 
     /*
@@ -140,7 +140,7 @@ public class FourierExpTransform {
      * @return size of the transform vectors (that is, the value <em>N</em>)
      */
     public int getDataSize() {
-        return this.szData;
+        return szData;
     }
 
     /**
@@ -156,7 +156,7 @@ public class FourierExpTransform {
      * @return the transform generator
      */
     public Complex getKernelGenerator() {
-        return this.cpxZ;
+        return cpxZ;
     }
 
     /*
@@ -183,10 +183,10 @@ public class FourierExpTransform {
      * @return frequency interval (stride) between transformed data points
      */
     public double compFreqStrideFromInterval(double dblDelta) {
-        int N = this.getDataSize();
-        double T = dblDelta * N;
+        int n = this.getDataSize();
+        double t = dblDelta * n;
 
-        return this.compFreqStrideFromPeriod(T);
+        return compFreqStrideFromPeriod(t);
     }
 
     /**
@@ -213,20 +213,18 @@ public class FourierExpTransform {
         int szArr = arrFunc.length;
 
         // Check the dimensions
-        if (szArr != this.getDataSize()) {
+        if (szArr != getDataSize()) {
             throw new IllegalArgumentException(
                     "FourierExpTransform#transform():"
                     + " array size != "
-                    + this.getDataSize()
+                    + getDataSize()
             );
         }
 
         // Perform the transform
-        double[] arrZero = this.createZeroFunction(this.getDataSize());
+        double[] arrZero = createZeroFunction(getDataSize());
         ComplexVector vecFunc = new ComplexVector(arrFunc, arrZero);
-        AbstractComplexVector vecTrans = this.matKerFwd.multiply(vecFunc);
-
-        return vecTrans;
+        return matKerFwd.multiply(vecFunc);
     }
 
     /**
@@ -335,91 +333,39 @@ public class FourierExpTransform {
     /**
      * Computes and stores the transform kernel.
      *
-     * @param szData dimensions of the tranform kernel.
+     * @param szData dimensions of the transform kernel.
      */
     private void initTransform(int szData) {
-
         // vector/matrix dimensions 
-        final int N = szData;
+        int n = szData;
 
         // Compute the z transform generator
-        Double h = 2.0 * Math.PI / N;
+        Double h = 2.0 * Math.PI / n;
         Complex z = new Complex(Math.cos(h), Math.sin(h));
 
         // Create matrix kernel and compute element values
         // normalization constant
-        final double c = Math.sqrt(1.0 / N);
-        ComplexSquareMatrix Kf = new ComplexSquareMatrix(N);
-        ComplexSquareMatrix Ki = new ComplexSquareMatrix(N);
+        double c = Math.sqrt(1.0 / n);
+        ComplexSquareMatrix kF = new ComplexSquareMatrix(n);
+        ComplexSquareMatrix kI = new ComplexSquareMatrix(n);
 
-        for (int m = 0; m < N; m++) {
-            for (int n = m; n < N; n++) {
-                double cos = c * Math.cos(h * m * n);
-                double sin = c * Math.sin(h * m * n);
+        for (int i = 0; i < n; i++) {
+            for (int k = i; k < n; k++) {
+                double cos = c * Math.cos(h * i * k);
+                double sin = c * Math.sin(h * i * k);
 
-                Kf.setElement(m, n, cos, -sin);
-                Kf.setElement(n, m, cos, -sin);
+                kF.setElement(i, k, cos, -sin);
+                kF.setElement(k, i, cos, -sin);
 
-                Ki.setElement(m, n, cos, sin);
-                Ki.setElement(n, m, cos, sin);
+                kI.setElement(i, k, cos, sin);
+                kI.setElement(k, i, cos, sin);
             }
         }
 
-        this.szData = N;
-        this.cpxZ = z;
-        this.matKerFwd = Kf;
-        this.matKerInv = Ki;
-    }
-
-    /**
-     * Computes and stores the transform kernel.
-     *
-     * @param szData dimensions of the transform kernel.
-     */
-    private void initTransform_old(int szData) {
-
-        // vector/matrix dimensions 
-        final int N = szData;
-
-        // Compute the z transform generator
-        Double h = 2.0 * Math.PI / N;
-        Complex zf = new Complex(Math.cos(h), -Math.sin(h));
-        Complex zi = new Complex(Math.cos(h), Math.sin(h));
-
-        // Create matrix kernel and compute element values
-        // normalization constant
-        final double c = Math.sqrt(1.0 / N);
-        ComplexSquareMatrix Kf = new ComplexSquareMatrix(N);
-        ComplexSquareMatrix Ki = new ComplexSquareMatrix(N);
-
-        // matrix kernel element values
-        Complex kf, ki;
-        Complex zfm = Complex.ONE;
-        Complex zim = Complex.ONE;
-        for (int m = 0; m < N; m++) {
-
-            kf = zfm.multiply(c);
-            ki = zim.multiply(c);
-
-            for (int n = m; n < N; n++) {
-                Kf.setElement(m, n, kf);
-                Kf.setElement(n, m, kf);
-
-                Ki.setElement(m, n, ki);
-                Ki.setElement(n, m, ki);
-
-                kf = kf.multiply(zfm);
-                ki = ki.multiply(zim);
-            }
-
-            zfm = zfm.multiply(zf);
-            zim = zim.multiply(zi);
-        }
-
-        this.szData = N;
-        this.cpxZ = zi;
-        this.matKerFwd = Kf;
-        this.matKerInv = Ki;
+        this.szData = n;
+        cpxZ = z;
+        matKerFwd = kF;
+        matKerInv = kI;
     }
 
     /**
@@ -439,5 +385,4 @@ public class FourierExpTransform {
 
         return arrFunc;
     }
-
 }

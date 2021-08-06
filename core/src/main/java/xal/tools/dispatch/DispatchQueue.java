@@ -147,12 +147,8 @@ public abstract class DispatchQueue implements DispatchOperationListener {
      * disposed or already suspended)
      */
     public void suspend() {
-        switch (queueState) {
-            case PROCESSING:
-                queueState = DispatchQueueState.SUSPENDED;
-                break;
-            default:
-                break;
+        if (queueState == DispatchQueueState.PROCESSING) {
+            queueState = DispatchQueueState.SUSPENDED;
         }
     }
 
@@ -316,8 +312,8 @@ public abstract class DispatchQueue implements DispatchOperationListener {
      * submit the operation for execution on the queue and wait for it to
      * complete
      */
-    public <ReturnType> ReturnType dispatchSync(final Callable<ReturnType> rawOperation) {
-        final DispatchOperation<ReturnType> operation = makeDispatchOperation(rawOperation);
+    public <T> T dispatchSync(final Callable<T> rawOperation) {
+        final DispatchOperation<T> operation = makeDispatchOperation(rawOperation);
         enqueueOperation(operation);
 
         // wait until the operation completes
@@ -440,12 +436,7 @@ public abstract class DispatchQueue implements DispatchOperationListener {
         final DispatchGroup group = new DispatchGroup();
         for (int index = 0; index < iterations; index++) {
             final int iteration = index;
-            dispatchAsync(group, new Runnable() {
-                @Override
-                public void run() {
-                    iterationKernel.evaluateIteration(iteration);
-                }
-            });
+            dispatchAsync(group, () -> iterationKernel.evaluateIteration(iteration));
         }
         group.waitForCompletion();
     }
@@ -454,7 +445,7 @@ public abstract class DispatchQueue implements DispatchOperationListener {
      * Enqueue the operation and process make sure the operation queue gets
      * processed
      */
-    protected <ReturnType> void enqueueOperation(final DispatchOperation<ReturnType> operation) {
+    protected <T> void enqueueOperation(final DispatchOperation<T> operation) {
         pendingOperationQueue.add(operation);
         processOperationQueue();
     }
@@ -469,14 +460,14 @@ public abstract class DispatchQueue implements DispatchOperationListener {
     /**
      * call this method when an operation has completed execution
      */
-    protected <ReturnType> void postProcessOperation(final DispatchOperation<ReturnType> operation) {
+    protected <T> void postProcessOperation(final DispatchOperation<T> operation) {
         decrementRunningOperationCount();
     }
 
     /**
      * Make a callable operation wrapper from a raw runnable operation
      */
-    protected <ReturnType> DispatchOperation<ReturnType> makeDispatchOperation(final Callable<ReturnType> rawOperation) {
+    protected <T> DispatchOperation<T> makeDispatchOperation(final Callable<T> rawOperation) {
         return makeDispatchOperation(rawOperation, false);
     }
 
@@ -497,7 +488,7 @@ public abstract class DispatchQueue implements DispatchOperationListener {
     /**
      * Make a callable operation wrapper from a raw runnable operation
      */
-    protected <ReturnType> DispatchOperation<ReturnType> makeDispatchOperation(final Callable<ReturnType> rawOperation, final boolean isBarrier) {
+    protected <T> DispatchOperation<T> makeDispatchOperation(final Callable<T> rawOperation, final boolean isBarrier) {
         return DispatchOperation.getInstance(rawOperation, this, isBarrier);
     }
 
@@ -505,7 +496,7 @@ public abstract class DispatchQueue implements DispatchOperationListener {
      * Event indicating that an operation in this group has completed
      */
     @Override
-    public <ReturnType> void operationCompleted(final DispatchOperation<ReturnType> operation) {
+    public <T> void operationCompleted(final DispatchOperation<T> operation) {
         postProcessOperation(operation);
     }
 
@@ -563,7 +554,7 @@ class ConcurrentDispatchQueue extends DispatchQueue {
      */
     private void processPendingOperations() {
         // process (in order) all pending operations which can be processed
-        while (queueState == DispatchQueueState.PROCESSING && pendingOperationQueue.size() > 0) {
+        while (queueState == DispatchQueueState.PROCESSING && !pendingOperationQueue.isEmpty()) {
             final DispatchOperation<?> nextOperation = pendingOperationQueue.peek();
 
             if (nextOperation != null) {
@@ -584,6 +575,7 @@ class ConcurrentDispatchQueue extends DispatchQueue {
                     // remove the null operation
                     pendingOperationQueue.remove();
                 } catch (NoSuchElementException exception) {
+                    LOGGER.log(Level.WARNING, null, exception);
                 }
             }
         }
@@ -597,10 +589,8 @@ class ConcurrentDispatchQueue extends DispatchQueue {
         if (isRunningBarrierOperation) {
             return false;
             // if the next operation is a barrier operation, wait until all currently running operations are complete
-        } else if (nextOperation.isBarrier() && runningOperationCounter.get() > 0) {
-            return false;
         } else {
-            return true;
+            return !(nextOperation.isBarrier() && runningOperationCounter.get() > 0);
         }
     }
 
@@ -608,7 +598,7 @@ class ConcurrentDispatchQueue extends DispatchQueue {
      * call this method when an operation has completed execution
      */
     @Override
-    protected <ReturnType> void postProcessOperation(final DispatchOperation<ReturnType> operation) {
+    protected <T> void postProcessOperation(final DispatchOperation<T> operation) {
         super.postProcessOperation(operation);
         // this is correct whether the operation just completed is a barrier or another operation just completed
         isRunningBarrierOperation = false;
@@ -619,7 +609,8 @@ class ConcurrentDispatchQueue extends DispatchQueue {
     /**
      * process the next pending operation
      */
-    @SuppressWarnings("unchecked")    // executor expects a known type but the operations are arbitrary
+    // executor expects a known type but the operations are arbitrary
+    @SuppressWarnings("unchecked")
     private void processNextPendingOperation() {
         try {
             final DispatchOperation<?> operation = pendingOperationQueue.remove();
@@ -629,7 +620,8 @@ class ConcurrentDispatchQueue extends DispatchQueue {
             incrementRunningOperationCount();
             dispatchExecutor.submit(operation);
         } catch (NoSuchElementException exception) {
-        }    // nothing left to process in the queue
+            LOGGER.log(Level.WARNING, null, exception);
+        }  // nothing left to process in the queue
     }
 
     /**
@@ -639,12 +631,7 @@ class ConcurrentDispatchQueue extends DispatchQueue {
      */
     @Override
     protected void processOperationQueue() {
-        queueProcessor.submit(new Runnable() {
-            @Override
-            public void run() {
-                processPendingOperations();
-            }
-        });
+        queueProcessor.submit(this::processPendingOperations);
     }
 }
 
@@ -704,6 +691,7 @@ class GlobalDispatchQueue extends ConcurrentDispatchQueue {
      */
     @Override
     public void resume() {
+        // Do nothing
     }
 
     /**
@@ -742,6 +730,8 @@ class GlobalDispatchQueue extends ConcurrentDispatchQueue {
  */
 class SerialDispatchQueue extends DispatchQueue {
 
+    private static final Logger LOGGER = Logger.getLogger(SerialDispatchQueue.class.getName());
+
     /**
      * Constructor
      */
@@ -761,7 +751,7 @@ class SerialDispatchQueue extends DispatchQueue {
      * called when an operation has completed execution
      */
     @Override
-    protected <ReturnType> void postProcessOperation(final DispatchOperation<ReturnType> operation) {
+    protected <T> void postProcessOperation(final DispatchOperation<T> operation) {
         super.postProcessOperation(operation);
         // attempt to process the next pending operation
         processOperationQueue();
@@ -774,12 +764,7 @@ class SerialDispatchQueue extends DispatchQueue {
      */
     @Override
     protected void processOperationQueue() {
-        queueProcessor.submit(new Runnable() {
-            @Override
-            public void run() {
-                processNextPendingOperation();
-            }
-        });
+        queueProcessor.submit(this::processNextPendingOperation);
     }
 
     /**
@@ -795,6 +780,7 @@ class SerialDispatchQueue extends DispatchQueue {
                     dispatchExecutor.submit(nextOperation);
                 }
             } catch (NoSuchElementException exception) {
+                LOGGER.log(Level.WARNING, null, exception);
             }        // nothing left to process in the queue
         }
     }
@@ -804,6 +790,8 @@ class SerialDispatchQueue extends DispatchQueue {
  * serial queue to the Swing event dispatch thread
  */
 class MainDispatchQueue extends SerialDispatchQueue {
+
+    private static final Logger LOGGER = Logger.getLogger(MainDispatchQueue.class.getName());
 
     /**
      * queue on which to submit operations to the Swing dispatch thread
@@ -853,6 +841,7 @@ class MainDispatchQueue extends SerialDispatchQueue {
      */
     @Override
     public void resume() {
+        // Do nothing
     }
 
     /**
@@ -868,8 +857,8 @@ class MainDispatchQueue extends SerialDispatchQueue {
      * complete
      */
     @Override
-    public <ReturnType> ReturnType dispatchSync(final Callable<ReturnType> rawOperation) {
-        final CallRunnable<ReturnType> runnableOperation = new CallRunnable<>(rawOperation);
+    public <T> T dispatchSync(final Callable<T> rawOperation) {
+        final CallRunnable<T> runnableOperation = new CallRunnable<>(rawOperation);
         dispatchSync(runnableOperation);
         return runnableOperation.getResult();
     }
@@ -884,19 +873,17 @@ class MainDispatchQueue extends SerialDispatchQueue {
                 final Callable<?> nextOperation = pendingOperationQueue.remove();
                 if (nextOperation != null) {
                     incrementRunningOperationCount();
-                    final Runnable runnableOperation = new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                nextOperation.call();
-                            } catch (Exception exception) {
-                                throw new RuntimeException(exception);
-                            }
+                    final Runnable runnableOperation = () -> {
+                        try {
+                            nextOperation.call();
+                        } catch (Exception exception) {
+                            throw new RuntimeException(exception);
                         }
                     };
                     SwingUtilities.invokeLater(runnableOperation);
                 }
             } catch (NoSuchElementException exception) {
+                LOGGER.log(Level.WARNING, null, exception);
             }    // nothing left to process in the queue
         }
     }
@@ -905,29 +892,29 @@ class MainDispatchQueue extends SerialDispatchQueue {
 /**
  * Wrapper of a callable object as Runnable
  */
-class CallRunnable<ReturnType> implements Runnable {
+class CallRunnable<T> implements Runnable {
 
     /**
      * result returned by the call
      */
-    private ReturnType result;
+    private T result;
 
     /**
      * wrapped callable
      */
-    private final Callable<ReturnType> wrappedCallable;
+    private final Callable<T> wrappedCallable;
 
     /**
      * Constructor
      */
-    public CallRunnable(final Callable<ReturnType> callable) {
+    public CallRunnable(final Callable<T> callable) {
         wrappedCallable = callable;
     }
 
     /**
      * Get the result
      */
-    public ReturnType getResult() {
+    public T getResult() {
         return result;
     }
 
@@ -992,12 +979,7 @@ class DispatchThread extends Thread {
     /**
      * stores the current queue
      */
-    private static final ThreadLocal<DispatchQueue> QUEUE_THREAD_LOCAL;
-
-    // static initializer
-    static {
-        QUEUE_THREAD_LOCAL = new ThreadLocal<>();
-    }
+    private static final ThreadLocal<DispatchQueue> QUEUE_THREAD_LOCAL = new ThreadLocal<>();
 
     /**
      * constructor

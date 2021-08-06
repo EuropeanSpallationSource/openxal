@@ -100,8 +100,8 @@ public class CalculationsOnRings extends CalculationsOnMachines {
         super(datSim);
         PhaseMatrix matPhiFull = super.getFullTransferMap().getFirstOrder();
 
-        this.vecPhsAdv = super.calculatePhaseAdvPerCell(matPhiFull);
-        this.vecFxdPt = super.calculateFixedPoint(matPhiFull);
+        vecPhsAdv = super.calculatePhaseAdvPerCell(matPhiFull);
+        vecFxdPt = super.calculateFixedPoint(matPhiFull);
     }
 
     /*
@@ -129,7 +129,7 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      * @since Oct 30, 2013
      */
     public R3 ringBetatronPhaseAdvance() {
-        return this.vecPhsAdv;
+        return vecPhsAdv;
     }
 
     /**
@@ -154,7 +154,7 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      * @since Oct 30, 2013
      */
     public PhaseVector ringFixedOrbitPt() {
-        return this.vecFxdPt;
+        return vecFxdPt;
     }
 
     /**
@@ -218,9 +218,7 @@ public class CalculationsOnRings extends CalculationsOnMachines {
         Twiss[] arrTws2 = this.computeMatchedTwissAt(state2);
         PhaseMatrix matPhi = computeTransferMatrix(state1, state2);
 
-        R3 vecPhsAdv = this.calculatePhaseAdvance(matPhi, arrTws1, arrTws2);
-
-        return vecPhsAdv;
+        return calculatePhaseAdvance(matPhi, arrTws1, arrTws2);
     }
 
     /**
@@ -261,12 +259,9 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      * @since Nov 4, 2014
      */
     public R3 computeFractionalTunes() {
-
         PhaseMatrix matPhi = this.getOneTurnMap().getFirstOrder();
         R3 vecSigma = super.calculatePhaseAdvPerCell(matPhi);
-        R3 vecNu = vecSigma.times(1 / (2.0 * Math.PI));
-
-        return vecNu;
+        return vecSigma.times(1 / (2.0 * Math.PI));
     }
 
     /**
@@ -291,9 +286,8 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      *
      */
     public R3 computeFullTunes() {
-
         // Initialize the vector of full tunes
-        R3 vecPhsAdv = new R3();
+        R3 vec = new R3();
 
         // Initialize the loop
         Twiss[] arrTwsPrv = super.getMatchedTwiss();
@@ -318,7 +312,7 @@ public class CalculationsOnRings extends CalculationsOnMachines {
             // Compute the phase advance through this state then add it to the sum
             R3 vecDelPhs = super.calculatePhaseAdvance(matXfrStep, arrTwsPrv, arrTwsCur);
 
-            vecPhsAdv.plusEquals(vecDelPhs);
+            vec.plusEquals(vecDelPhs);
 
             // Reset the loop
             arrTwsPrv = arrTwsCur;
@@ -326,9 +320,9 @@ public class CalculationsOnRings extends CalculationsOnMachines {
         }
 
         //  Normalize the phase in radians to unitless tunes then return
-        vecPhsAdv.timesEquals(1.0 / (2.0 * Math.PI));
+        vec.timesEquals(1.0 / (2.0 * Math.PI));
 
-        return vecPhsAdv;
+        return vec;
     }
 
     /**
@@ -366,9 +360,7 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      * @since Nov 4, 2014
      */
     public PhaseMatrix computeRingFullTurnMatrixAt(TransferMapState state) {
-        PhaseMatrix matFull = super.calculateFullLatticeMatrixAt(state);
-
-        return matFull;
+        return super.calculateFullLatticeMatrixAt(state);
     }
 
     /**
@@ -456,26 +448,17 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      * @since Nov 3, 2014
      */
     public PhaseMatrix computeRingTransferMatrix(TransferMapState state1, TransferMapState state2) {
-
         double dblPos1 = state1.getPosition();
         double dblPos2 = state2.getPosition();
 
         if (dblPos1 < dblPos2) {
-
-            PhaseMatrix matTrn = CalculationsOnMachines.computeTransferMatrix(state1, state2);
-
-            return matTrn;
-
+            return CalculationsOnMachines.computeTransferMatrix(state1, state2);
         } else {
-
             PhaseMatrix matPhi1 = state1.getTransferMap().getFirstOrder();
             PhaseMatrix matPhi2 = state2.getTransferMap().getFirstOrder();
             PhaseMatrix matFull = this.getFullTransferMap().getFirstOrder();
 
-            PhaseMatrix matTrn = matPhi2.times(matFull.times(matPhi1.inverse()));
-
-            return matTrn;
-
+            return matPhi2.times(matFull.times(matPhi1.inverse()));
         }
     }
 
@@ -561,25 +544,17 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      * @since Nov 3, 2014
      */
     public PhaseMap computeRingTransferMap(TransferMapState state1, TransferMapState state2) {
-
         double dblPos1 = state1.getPosition();
         double dblPos2 = state2.getPosition();
 
         if (dblPos1 < dblPos2) {
-
-            PhaseMap mapTrn = CalculationsOnMachines.computeTransferMap(state1, state2);
-
-            return mapTrn;
-
+            return CalculationsOnMachines.computeTransferMap(state1, state2);
         } else {
-
             PhaseMap mapPhi1 = state1.getTransferMap();
             PhaseMap mapPhi2 = state2.getTransferMap();
             PhaseMap mapFull = this.getFullTransferMap();
 
-            PhaseMap mapTrn = mapPhi2.compose(mapFull.compose(mapPhi1.inverse()));
-
-            return mapTrn;
+            return mapPhi2.compose(mapFull.compose(mapPhi1.inverse()));
         }
     }
 
@@ -638,7 +613,6 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      * @since Nov 4, 2014
      */
     public PhaseVector[] computeTurnByTurnResponse(TransferMapState stateInj, TransferMapState stateObs, int cntTurns, PhaseVector vecInj) {
-
         PhaseMatrix matPhi = this.computeRingTransferMatrix(stateInj, stateObs);
         PhaseMatrix matFull = this.computeRingFullTurnMatrixAt(stateObs);
 
@@ -704,7 +678,6 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      * @since Nov 4, 2014
      */
     public PhaseVector[] computeTurnByTurnRespWrtFixedOrbit(TransferMapState stateInj, TransferMapState stateObs, int cntTurns, PhaseVector vecInj) {
-
         PhaseMatrix matPhi = this.computeRingTransferMatrix(stateInj, stateObs);
         PhaseMatrix matFull = this.computeRingFullTurnMatrixAt(stateObs);
 
@@ -776,9 +749,6 @@ public class CalculationsOnRings extends CalculationsOnMachines {
      */
     public Twiss[] computeMatchedTwissAt(TransferMapState state) {
         PhaseMatrix matPhi = this.computeRingFullTurnMatrixAt(state);
-        Twiss[] arrTws = super.calculateMatchedTwiss(matPhi);
-
-        return arrTws;
+        return super.calculateMatchedTwiss(matPhi);
     }
-
 }

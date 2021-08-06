@@ -17,7 +17,7 @@ import xal.tools.messaging.MessageCenter;
  *
  * @author tap
  */
-class DefaultBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
+class DefaultBroadcaster<T> extends AbstractBroadcaster<T> {
 
     /**
      * Creates a new instance of Broadcaster
@@ -34,7 +34,7 @@ class DefaultBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
      * @param correlation The new correlation.
      */
     @Override
-    public synchronized void newCorrelation(final BinAgent<RecordType> sender, final Correlation<RecordType> correlation) {
+    public synchronized void newCorrelation(final BinAgent<T> sender, final Correlation<T> correlation) {
         // broadcast the correlation
         if (correlation.numRecords() == fullCount) {
             postCorrelation(correlation);

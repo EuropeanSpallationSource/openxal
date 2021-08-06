@@ -9,6 +9,7 @@ package xal.tools.math.r3;
 
 import java.io.Serializable;
 import java.util.EnumSet;
+import java.util.Set;
 
 import xal.tools.math.IIndex;
 import xal.tools.math.SquareMatrix;
@@ -150,31 +151,24 @@ public class R3x3 extends SquareMatrix<R3x3> implements Serializable {
             return i;
         }
 
-        ;
-
-        /** return the column index of the matrix position */
+        /**
+         * return the column index of the matrix position
+         */
         public int col() {
             return j;
         }
 
-        ;
-
-        
-        /** 
-         * Return the <code>Position</code> object representing the 
-         * transpose element of this position.
-         * 
-         * NOTE:
-         * The current implementation is slow.
-         * 
-         * @return  the transpose position of the current position
-         */ 
+        /**
+         * Return the <code>Position</code> object representing the transpose
+         * element of this position.
+         *
+         * NOTE: The current implementation is slow.
+         *
+         * @return the transpose position of the current position
+         */
         public POS transpose() {
-            int i = this.col();
-            int j = this.row();
-
             for (POS pos : POS.values()) {
-                if (pos.row() == i && pos.col() == j) {
+                if (pos.row() == col() && pos.col() == row()) {
                     return pos;
                 }
             }
@@ -182,96 +176,73 @@ public class R3x3 extends SquareMatrix<R3x3> implements Serializable {
             return null;
         }
 
-        ;
-        
-        
-        
         /*
          * Enumerating Positions
          */
-        
-        /** 
-         *  Returns the set of all element positions above the matrix 
-         *  diagonal.
-         *  
-         *  @return     set of upper triangle matrix positions
+        /**
+         * Returns the set of all element positions above the matrix diagonal.
+         *
+         * @return set of upper triangle matrix positions
          */
-        public static EnumSet<POS> getUpperTriangle() {
+        public static Set<POS> getUpperTriangle() {
             return EnumSet.of(XY, XZ, YZ);
         }
 
-        ;
-        
         /**
-         * Return the set of all matrix element positions along the 
-         * diagonal.
-         * 
-         * @return      set of diagonal element positions
+         * Return the set of all matrix element positions along the diagonal.
+         *
+         * @return set of diagonal element positions
          */
-        public static EnumSet<POS> getDiagonal() {
+        public static Set<POS> getDiagonal() {
             return EnumSet.of(XX, YY, ZZ);
         }
 
-        ;
-        
         /**
-         * Return the set of all element positions below the matrix
-         * diagonal.
-         * 
-         * @return      set of lower triangle matrix positions
+         * Return the set of all element positions below the matrix diagonal.
+         *
+         * @return set of lower triangle matrix positions
          */
-        public static EnumSet<POS> getLowerTriangle() {
+        public static Set<POS> getLowerTriangle() {
             return EnumSet.of(YX, ZX, ZY);
         }
 
-        ;
-        
         /**
          * Return the set of all off-diagonal matrix positions.
-         * 
-         * @return      set of off diagonal positions, both upper and lower.
+         *
+         * @return set of off diagonal positions, both upper and lower.
          */
-        public static EnumSet<POS> getOffDiagonal() {
-            return EnumSet.complementOf(POS.getDiagonal());
+        public static Set<POS> getOffDiagonal() {
+            return EnumSet.complementOf((EnumSet<POS>) POS.getDiagonal());
         }
 
-        ;
-        
-        
-        
         /*
          * Matrix Element Accessing
          */
-        
-        /** 
+        /**
          * Return the matrix element value for this position
-         * 
-         * @param   matTarget   target matrix
-         * @return              element value for this position
+         *
+         * @param matTarget target matrix
+         * @return element value for this position
          */
         public double getValue(R3x3 matTarget) {
             return matTarget.getElem(row(), col());
         }
 
-        ;
-
         /**
          * Get the diagonal element in the same row as this element position.
-         * 
-         * @param matTarget     target matrix
-         * @return              row diagonal element value
+         *
+         * @param matTarget target matrix
+         * @return row diagonal element value
          */
         public double getRowDiag(R3x3 matTarget) {
             return matTarget.getElem(row(), row());
         }
 
-        ;
-        
         /**
          * Get the diagonal element in the same column as this element position.
-         * 
-         * @param matTarget     target matrix
-         * @return              column diagonal element value
+         *
+         * @param matTarget target matrix
+         * @return column diagonal element value
          */
         public double getColDiag(R3x3 matTarget) {
             return matTarget.getElem(col(), col());
@@ -508,22 +479,6 @@ public class R3x3 extends SquareMatrix<R3x3> implements Serializable {
      */
     public R3x3(String strTokens) throws IllegalArgumentException, NumberFormatException {
         super(INT_SIZE, strTokens);
-    }
-
-    /*
-     *  Assignment
-     */
-    /**
-     * Element assignment - assigns matrix element to the specified value
-     *
-     * @param i row index
-     * @param j column index
-     * @parm s new matrix element value
-     *
-     * @exception ArrayIndexOutOfBoundsException index must be in {0,1,2}
-     */
-    public void setElem(IND i, IND j, double s) throws ArrayIndexOutOfBoundsException {
-        super.setElem(i, j, s);
     }
 
     /**

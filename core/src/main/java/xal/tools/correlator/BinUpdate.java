@@ -10,7 +10,7 @@ package xal.tools.correlator;
  * @author tap
  * @version
  */
-interface BinUpdate<RecordType> {
+interface BinUpdate<T> {
 
-    public void newEvent(final String name, final RecordType record, final double timestamp);
+    public void newEvent(final String name, final T aRecord, final double timestamp);
 }

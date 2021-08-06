@@ -16,7 +16,7 @@ import java.util.*;
  *
  * @author tap
  */
-public abstract class SourceAgent<RecordType> implements StateNotice<RecordType> {
+public abstract class SourceAgent<T> implements StateNotice<T> {
 
     /**
      * number of bins to store events for correlation comparison
@@ -31,7 +31,7 @@ public abstract class SourceAgent<RecordType> implements StateNotice<RecordType>
     /**
      * tester for correlations
      */
-    private final CorrelationTester<RecordType> correlationTester;
+    private final CorrelationTester<T> correlationTester;
 
     /**
      * unique name of this source agent
@@ -41,17 +41,17 @@ public abstract class SourceAgent<RecordType> implements StateNotice<RecordType>
     /**
      * bins sorted by timestamp
      */
-    private LinkedList<BinAgent<RecordType>> binAgents;
+    private LinkedList<BinAgent<T>> binAgents;
 
     /**
      * proxy to forward bin update events to registered listeners
      */
-    protected BinUpdate<RecordType> binUpdateProxy;
+    protected BinUpdate<T> binUpdateProxy;
 
     /**
      * Creates new ChannelAgent
      */
-    public SourceAgent(final MessageCenter messageCenter, final String name, final RecordFilter<RecordType> recordFilter, final CorrelationTester<RecordType> tester) {
+    protected SourceAgent(final MessageCenter messageCenter, final String name, final RecordFilter<T> recordFilter, final CorrelationTester<T> tester) {
         this.name = name;
         correlationTester = tester;
         this.messageCenter = messageCenter;
@@ -64,7 +64,7 @@ public abstract class SourceAgent<RecordType> implements StateNotice<RecordType>
 
     @SuppressWarnings("unchecked")    // need cast to get the proxy using Generics 
     private void registerEvents() {
-        binUpdateProxy = (BinUpdate<RecordType>) messageCenter.registerSource(this, BinUpdate.class);
+        binUpdateProxy = (BinUpdate<T>) messageCenter.registerSource(this, BinUpdate.class);
         messageCenter.registerTarget(this, StateNotice.class);
     }
 
@@ -82,13 +82,13 @@ public abstract class SourceAgent<RecordType> implements StateNotice<RecordType>
      * @param recordFilter filter for records to accept or reject
      * @see #postEvent
      */
-    protected abstract void setupEventHandler(RecordFilter<RecordType> recordFilter);
+    protected abstract void setupEventHandler(RecordFilter<T> recordFilter);
 
     /**
      * clear memory of all events
      */
     public void reset() {
-        for (final BinAgent<RecordType> binAgent : binAgents) {
+        for (final BinAgent<T> binAgent : binAgents) {
             binAgent.reset();
         }
     }
@@ -99,13 +99,7 @@ public abstract class SourceAgent<RecordType> implements StateNotice<RecordType>
      * @param timespan for each bin
      */
     public void setBinTimespan(final double timespan) {
-        final List<BinAgent<RecordType>> binAgents = new ArrayList<>();
-        // need to synchronize since nextBin() modifies _binAgents
-        synchronized (binAgents) {
-            binAgents.addAll(binAgents);
-        }
-
-        for (final BinAgent<RecordType> binAgent : binAgents) {
+        for (final BinAgent<T> binAgent : binAgents) {
             binAgent.setTimespan(timespan);
         }
     }
@@ -125,7 +119,7 @@ public abstract class SourceAgent<RecordType> implements StateNotice<RecordType>
      * Create a new bin. Register each bin for events.
      */
     private void createNewBin() {
-        final BinAgent<RecordType> binAgent = new BinAgent<>(messageCenter, correlationTester);
+        final BinAgent<T> binAgent = new BinAgent<>(messageCenter, correlationTester);
 
         messageCenter.registerTarget(binAgent, BinUpdate.class);
         messageCenter.registerTarget(binAgent, StateNotice.class);
@@ -137,8 +131,8 @@ public abstract class SourceAgent<RecordType> implements StateNotice<RecordType>
      * deallocate the bins when they are no longer needed
      */
     private void removeBins() {
-        synchronized (binAgents) {
-            for (final BinAgent<RecordType> binAgent : binAgents) {
+        synchronized (this) {
+            for (final BinAgent<T> binAgent : binAgents) {
                 removeBin(binAgent);
             }
 
@@ -149,7 +143,7 @@ public abstract class SourceAgent<RecordType> implements StateNotice<RecordType>
     /**
      * Remove a bin
      */
-    private void removeBin(final BinAgent<RecordType> binAgent) {
+    private void removeBin(final BinAgent<T> binAgent) {
         messageCenter.removeTarget(binAgent, BinUpdate.class);
         messageCenter.removeTarget(binAgent, StateNotice.class);
 
@@ -159,10 +153,10 @@ public abstract class SourceAgent<RecordType> implements StateNotice<RecordType>
     /**
      * Used when recycling bins. Cycle bins in a circular buffer.
      */
-    private BinAgent<RecordType> nextBin() {
-        BinAgent<RecordType> nextBin;
+    private BinAgent<T> nextBin() {
+        BinAgent<T> nextBin;
 
-        synchronized (binAgents) {
+        synchronized (this) {
             nextBin = binAgents.removeFirst();
             binAgents.addLast(nextBin);
         }
@@ -176,14 +170,14 @@ public abstract class SourceAgent<RecordType> implements StateNotice<RecordType>
      * the filter test it should be posted via this method so that other
      * stakeholders (i.e. the bin agents) can handle the event properly.
      *
-     * @param record for which the event was posted
+     * @param eventRecord for which the event was posted
      * @param timestamp for which the event was posted
      */
-    protected final void postEvent(final RecordType record, final double timestamp) {
-        nextBin().resetWithRecord(name(), record, timestamp);
+    protected final void postEvent(final T eventRecord, final double timestamp) {
+        nextBin().resetWithRecord(name(), eventRecord, timestamp);
 
         // now notify bins everywhere of the new record
-        binUpdateProxy.newEvent(name(), record, timestamp);
+        binUpdateProxy.newEvent(name(), eventRecord, timestamp);
     }
 
     /**
@@ -210,7 +204,7 @@ public abstract class SourceAgent<RecordType> implements StateNotice<RecordType>
     /**
      * shutdown this channel agent and remove itself
      */
-    synchronized protected void shutdown() {
+    protected synchronized void shutdown() {
         stopMonitor();
         unregisterEvents();
         removeBins();
@@ -218,29 +212,29 @@ public abstract class SourceAgent<RecordType> implements StateNotice<RecordType>
 
     // implement StateNotice interface
     @Override
-    public void sourceAdded(final Correlator<?, RecordType, ?> sender, final String name, final int newCount) {
+    public void sourceAdded(final Correlator<?, T, ?> sender, final String name, final int newCount) {
     }
 
     // implement StateNotice interface
     @Override
-    public void sourceRemoved(final Correlator<?, RecordType, ?> sender, final String name, final int newCount) {
+    public void sourceRemoved(final Correlator<?, T, ?> sender, final String name, final int newCount) {
     }
 
     // implement StateNotice interface
     @Override
-    public void binTimespanChanged(final Correlator<?, RecordType, ?> sender, final double newTimespan) {
+    public void binTimespanChanged(final Correlator<?, T, ?> sender, final double newTimespan) {
         setBinTimespan(newTimespan);
     }
 
     // implement StateNotice interface
     @Override
-    public void willStopMonitoring(final Correlator<?, RecordType, ?> sender) {
+    public void willStopMonitoring(final Correlator<?, T, ?> sender) {
         stopMonitor();
     }
 
     // implement StateNotice interface
     @Override
-    public void willStartMonitoring(final Correlator<?, RecordType, ?> sender) {
+    public void willStartMonitoring(final Correlator<?, T, ?> sender) {
         reset();
         startMonitor();
     }
@@ -249,6 +243,6 @@ public abstract class SourceAgent<RecordType> implements StateNotice<RecordType>
      * Implement StateNotice interface to listen for change of state
      */
     @Override
-    public void correlationFilterChanged(final Correlator<?, RecordType, ?> sender, final CorrelationFilter<RecordType> newFilter) {
+    public void correlationFilterChanged(final Correlator<?, T, ?> sender, final CorrelationFilter<T> newFilter) {
     }
 }

@@ -14,7 +14,7 @@ public class ImpactXalUnitConverter {
     /**
      * Speed of light in a vacuum (meters/second)
      */
-    private static final double LIGHT_SPEED = IConstants.LIGHT_SPEED;
+    private static final double LIGHT_SPEED = Constants.LIGHT_SPEED;
 
     /*
      * Global Methods
@@ -25,13 +25,13 @@ public class ImpactXalUnitConverter {
      * object will assume the values provided in the initial configuration.
      *
      * @param f machine electromagnetic frequency in Hz
-     * @param ER the rest energy of the beam particle species in eV
-     * @param W the kinetic energy of the beam in eV
+     * @param er the rest energy of the beam particle species in eV
+     * @param w the kinetic energy of the beam in eV
      *
      * @return new unit conversion object configured to above parameters
      */
-    public static ImpactXalUnitConverter newConverter(double f, double ER, double W) {
-        return new ImpactXalUnitConverter(f, ER, W);
+    public static ImpactXalUnitConverter newConverter(double f, double er, double w) {
+        return new ImpactXalUnitConverter(f, er, w);
     }
 
     /*
@@ -47,12 +47,12 @@ public class ImpactXalUnitConverter {
     /**
      * particle rest energy in electron-volts
      */
-    private double ER;
+    private double er;
 
     /**
      * beam kinetic energy in electron-volts
      */
-    private double W;
+    private double w;
 
     //
     // Consistent Auxiliary Parameters
@@ -62,7 +62,7 @@ public class ImpactXalUnitConverter {
     /**
      * c/omega
      */
-    private double c_omega;
+    private double cOverOmega;
 
     /**
      * relativistic parameter
@@ -83,13 +83,13 @@ public class ImpactXalUnitConverter {
      * For the moment only allow construction of conversion objects through a
      * factory method. Configuration mechanism may be changed in the future.
      */
-    private ImpactXalUnitConverter(double f, double ER, double W) {
+    private ImpactXalUnitConverter(double f, double er, double w) {
         this.f = f;
-        this.ER = ER;
-        this.W = W;
+        this.er = er;
+        this.w = w;
 
         this.computeAuxiliaryParameters();
-        traceXal = TraceXalUnitConverter.newConverter(f, ER, W);
+        traceXal = TraceXalUnitConverter.newConverter(f, er, w);
 
     }
 
@@ -99,8 +99,8 @@ public class ImpactXalUnitConverter {
      *
      */
     private void computeAuxiliaryParameters() {
-        c_omega = LIGHT_SPEED / (2. * Math.PI * f);
-        gamma = 1.0 + (W / ER);
+        cOverOmega = LIGHT_SPEED / (2. * Math.PI * f);
+        gamma = 1.0 + (w / er);
         b = Math.sqrt(1.0 - (1.0 / (gamma * gamma)));
     }
 
@@ -123,26 +123,26 @@ public class ImpactXalUnitConverter {
     /**
      * Change the current beam kinetic energy.
      *
-     * @param W new beam energy in <strong>eV</strong>
+     * @param w new beam energy in <strong>eV</strong>
      */
-    public void setKineticEnergy(double W) {
-        if (this.W == W) {
+    public void setKineticEnergy(double w) {
+        if (this.w == w) {
             return;
         }
-        this.W = W;
+        this.w = w;
         this.computeAuxiliaryParameters();
     }
 
     /**
      * Change the current particle species rest energy.
      *
-     * @param ER new rest energy in <strong>eV</strong>
+     * @param er new rest energy in <strong>eV</strong>
      */
-    public void setRestEnergy(double ER) {
-        if (this.ER == ER) {
+    public void setRestEnergy(double er) {
+        if (this.er == er) {
             return;
         }
-        this.ER = ER;
+        this.er = er;
         this.computeAuxiliaryParameters();
     }
 
@@ -184,22 +184,17 @@ public class ImpactXalUnitConverter {
 
         // Convert the transverse coordinates
         // x phase plane coordinates
-        double x, xp;
+        double x = vecCoords.getx() * cOverOmega;
+        // x phase plane coordinates
+        double xp = vecCoords.getxp() / (gamma * b);
         // y phase plane coordinates
-        double y, yp;
-
-        x = vecCoords.getx() * c_omega;
-        xp = vecCoords.getxp() / (gamma * b);
-        y = vecCoords.gety() * c_omega;
-        yp = vecCoords.getyp() / (gamma * b);
+        double y = vecCoords.gety() * cOverOmega;
+        double yp = vecCoords.getyp() / (gamma * b);
 
         // Convert the longitudinal coordinates
-        // z phase plane coordinates
-        double z, zp;
-
         // to dz, offset from syncr
-        z = -b * c_omega * vecCoords.getz();
-        zp = -vecCoords.getzp() / (gamma * gamma * gamma * b * b);
+        double z = -b * cOverOmega * vecCoords.getz();
+        double zp = -vecCoords.getzp() / (gamma * gamma * gamma * b * b);
 
         return new PhaseVector(x, xp, y, yp, z, zp);
     }
@@ -239,21 +234,15 @@ public class ImpactXalUnitConverter {
 
         // Convert the transverse coordinates
         // x phase plane coordinates
-        double x, xp;
+        double x = vecCoords.getx() / cOverOmega;
+        double xp = vecCoords.getxp() * (gamma * b);
         // y phase plane coordinates
-        double y, yp;
-
-        x = vecCoords.getx() / c_omega;
-        xp = vecCoords.getxp() * (gamma * b);
-        y = vecCoords.gety() / c_omega;
-        yp = vecCoords.getyp() * (gamma * b);
+        double y = vecCoords.gety() / cOverOmega;
+        double yp = vecCoords.getyp() * (gamma * b);
 
         // Convert the longitudinal coordinates
-        // z phase plane coordinates
-        double z, zp;
-
-        z = -vecCoords.getz() / (b * c_omega);
-        zp = -(gamma * gamma * gamma * b * b) * vecCoords.getzp();
+        double z = -vecCoords.getz() / (b * cOverOmega);
+        double zp = -(gamma * gamma * gamma * b * b) * vecCoords.getzp();
 
         return new PhaseVector(x, xp, y, yp, z, zp);
     }
@@ -301,8 +290,8 @@ public class ImpactXalUnitConverter {
         double imu = impactTwiss.getEmittance();
 
         double alpha = imu / Math.sqrt(1 - imu * imu);
-        double beta = c_omega * b * gamma * isigma / ilambda / Math.sqrt(1 - imu * imu);
-        double emittance = c_omega / b / gamma * isigma * ilambda / Math.sqrt(1 - imu * imu);
+        double beta = cOverOmega * b * gamma * isigma / ilambda / Math.sqrt(1 - imu * imu);
+        double emittance = cOverOmega / b / gamma * isigma * ilambda / Math.sqrt(1 - imu * imu);
 
         return new Twiss(alpha, beta, emittance);
     }
@@ -346,15 +335,11 @@ public class ImpactXalUnitConverter {
         double ilambda = impactTwiss.getBeta();
         double imu = impactTwiss.getEmittance();
 
-        final double m = ER;
-
         double alphaT3d = imu / Math.sqrt(1 - imu * imu);
-        double betaT3d = 180. / (Math.PI * m) * isigma / ilambda / Math.sqrt(1 - imu * imu) * 1e+3;
-        double emitT3d = 180. * m / Math.PI * isigma * ilambda / Math.sqrt(1 - imu * imu) * 5. / (1e+3);
+        double betaT3d = 180. / (Math.PI * er) * isigma / ilambda / Math.sqrt(1 - imu * imu) * 1e+3;
+        double emitT3d = 180. * er / Math.PI * isigma * ilambda / Math.sqrt(1 - imu * imu) * 5. / (1e+3);
 
-        Twiss twissXal = traceXal.traceToXalLongitudinal(new Twiss(alphaT3d, betaT3d, emitT3d));
-
-        return twissXal;
+        return traceXal.traceToXalLongitudinal(new Twiss(alphaT3d, betaT3d, emitT3d));
     }
 
     /**
@@ -399,7 +384,7 @@ public class ImpactXalUnitConverter {
         // Unnormalized pi m*rad
         double emittance = twissXal.getEmittance();
 
-        double isigma = Math.sqrt(emittance / gammax) / c_omega;
+        double isigma = Math.sqrt(emittance / gammax) / cOverOmega;
         double ilambda = b * gamma * Math.sqrt(emittance / beta);
         double imu = alpha / Math.sqrt(1 + alpha * alpha);
         return new Twiss(isigma, ilambda, imu);
@@ -449,9 +434,8 @@ public class ImpactXalUnitConverter {
         double gammaT3d = (1 + alphaT3d * alphaT3d) / (betaT3d * 1e-3);
 
         //eV
-        double m = ER;
         double isigma = Math.sqrt((emitT3d * 1e+3 / 5) / gammaT3d) * Math.PI / 180.;
-        double ilambda = 1 / m * Math.sqrt((emitT3d * 1e+3 / 5) / (betaT3d * 1e-3));
+        double ilambda = 1 / er * Math.sqrt((emitT3d * 1e+3 / 5) / (betaT3d * 1e-3));
         double imu = alphaT3d / Math.sqrt(1 + alphaT3d * alphaT3d);
         return new Twiss(isigma, ilambda, imu);
     }
@@ -466,14 +450,11 @@ public class ImpactXalUnitConverter {
      * @author H. Sako
      */
     public double xalToImpactDispersion(double dXal, PhaseIndex index) {
-
-        double dT3d = 0;
         if (index == PhaseIndex.X || index == PhaseIndex.Y) {
-            dT3d = dXal * gamma * gamma;
+            return dXal * gamma * gamma;
         } else {
-            dT3d = dXal;
+            return dXal;
         }
-        return dT3d;
     }
 
     /**
@@ -486,14 +467,11 @@ public class ImpactXalUnitConverter {
      * @author H. Sako
      */
     public double impactToXalDispersion(double dT3d, PhaseIndex index) {
-        double dXal = 0;
-
         if (index == PhaseIndex.X || index == PhaseIndex.Y) {
-            dXal = dT3d / (gamma * gamma);
+            return dT3d / (gamma * gamma);
         } else {
-            dXal = dT3d;
+            return dT3d;
         }
-        return dXal;
     }
 
     /**
@@ -533,7 +511,6 @@ public class ImpactXalUnitConverter {
      * @see #traceToXalTransverse
      */
     public CovarianceMatrix correlationMatrixFromT3d(Twiss t3dX, Twiss t3dY, Twiss t3dZ) {
-
         // Convert to MKS units
         Twiss xalX = impactToXalTransverse(t3dX);
         Twiss xalY = impactToXalTransverse(t3dY);
@@ -658,7 +635,6 @@ public class ImpactXalUnitConverter {
      *
      */
     public Twiss[] twissParametersFromXal(CovarianceMatrix mat) {
-
         Twiss[] arrTwissXal = mat.computeTwiss();
 
         Twiss[] arrTwissT3d = new Twiss[3];

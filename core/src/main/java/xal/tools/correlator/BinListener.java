@@ -9,9 +9,9 @@ package xal.tools.correlator;
  *
  * @author tap
  */
-public interface BinListener<RecordType> {
+public interface BinListener<T> {
 
-    public void newCorrelation(BinAgent<RecordType> sender, Correlation<RecordType> correlation);
+    public void newCorrelation(BinAgent<T> sender, Correlation<T> correlation);
 
-    public void willReset(BinAgent<RecordType> sender);
+    public void willReset(BinAgent<T> sender);
 }

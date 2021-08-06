@@ -31,11 +31,9 @@ public class QuadrupoleLens {
     public static double[][] transferFocPlane(double k, double l) {
         double ang = k * l;
 
-        double[][] arrF = new double[][]{{Math.cos(ang), l * ElementaryFunction.sinc(ang)},
+        return new double[][]{{Math.cos(ang), l * ElementaryFunction.sinc(ang)},
         {-Math.sin(ang) * k, Math.cos(ang)}
         };
-
-        return arrF;
     }
 
     /**
@@ -52,12 +50,10 @@ public class QuadrupoleLens {
     public static double[][] transferDefPlane(double k, double l) {
         double ang = k * l;
 
-        double[][] arrD = new double[][]{
+        return new double[][]{
             {ElementaryFunction.cosh(ang), l * ElementaryFunction.sinch(ang)},
             {ElementaryFunction.sinh(ang) * k, ElementaryFunction.cosh(ang)}
         };
-
-        return arrD;
     }
 
     public static double[][] transferFocPlaneExact(double k, double l) {
@@ -108,13 +104,10 @@ public class QuadrupoleLens {
      * @return 2x2 transfer matrix for defocusing phase plane
      */
     public static double[][] transferFocPlaneApprox(double k, double l) {
-        double[][] arrF = new double[][]{
-            //               {1, l},
-            //                {-k*k*l, 1}
+        return new double[][]{
             {1, l},
             {-k * k * l, -k * k * l * l + 1}
         };
-        return arrF;
     }
 
     /**
@@ -128,11 +121,10 @@ public class QuadrupoleLens {
      * @return 2x2 transfer matrix for defocusing phase plane
      */
     public static double[][] transferFocPlaneApproxSandWitch(double k, double l) {
-        double[][] arrF = new double[][]{
+        return new double[][]{
             {1 - k * k * l * l / 2, l - k * k * l * l * l / 4},
             {-k * k * l, 1 - k * k * l * l / 2}
         };
-        return arrF;
     }
 
     /**
@@ -147,13 +139,10 @@ public class QuadrupoleLens {
      * @return 2x2 transfer matrix for defocusing phase plane
      */
     public static double[][] transferDefPlaneApprox(double k, double l) {
-        double[][] arrD = new double[][]{
-            //                {1, l},
-            //                {k*k*l, 1}
+        return new double[][]{
             {1, l},
             {k * k * l, k * k * l * l + 1}
         };
-        return arrD;
     }
 
     /**
@@ -168,11 +157,10 @@ public class QuadrupoleLens {
      * @return 2x2 transfer matrix for defocusing phase plane
      */
     public static double[][] transferDefPlaneApproxSandWitch(double k, double l) {
-        double[][] arrD = new double[][]{
+        return new double[][]{
             {1 + k * k * l * l / 2, l + k * k * l * l * l / 4},
             {k * k * l, 1 + k * k * l * l / 2}
         };
-        return arrD;
     }
 
     /*

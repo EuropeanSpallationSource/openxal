@@ -113,7 +113,6 @@ public final class ElementaryFunction {
      * </code>false</code> otherwise
      */
     public static boolean approxEq(double x, double y, int cntUlps) {
-
         if (x == y) {
             return true;
         }
@@ -122,18 +121,9 @@ public final class ElementaryFunction {
         double dy = cntUlps * Math.ulp(y);
 
         if (x < y) {
-            if (x + dx >= y - dy) {
-                return true;
-            } else {
-                return false;
-            }
-
+            return (x + dx >= y - dy);
         } else {
-            if (y + dy >= x - dx) {
-                return true;
-            } else {
-                return false;
-            }
+            return (y + dy >= x - dx);
         }
     }
 
@@ -152,16 +142,13 @@ public final class ElementaryFunction {
      * @since Dec 31, 2015, Christopher K. Allen
      */
     public static boolean significantDigitsEqs(double x, double y, int cntDgts) {
-
-        BigDecimal bdRndX = new BigDecimal(x);
-        BigDecimal bdRndY = new BigDecimal(y);
+        BigDecimal bdRndX = BigDecimal.valueOf(x);
+        BigDecimal bdRndY = BigDecimal.valueOf(y);
 
         bdRndX = bdRndX.setScale(cntDgts, RoundingMode.HALF_UP);
         bdRndY = bdRndY.setScale(cntDgts, RoundingMode.HALF_UP);
 
-        boolean bolEq = bdRndX.equals(bdRndY);
-
-        return bolEq;
+        return bdRndX.equals(bdRndY);
     }
 
     /**
@@ -397,7 +384,6 @@ public final class ElementaryFunction {
 
         if (Math.abs(x) > ElementaryFunction.EPS) {
             return sinh(x) / x;
-        } else {
         }
 
         double x2 = x * x;
@@ -420,7 +406,6 @@ public final class ElementaryFunction {
 
         if (Math.abs(x) > ElementaryFunction.EPS) {
             return Math.sinh(x) / x;
-        } else {
         }
 
         double x2 = x * x;
@@ -444,32 +429,28 @@ public final class ElementaryFunction {
         return 0.5 * (Math.exp(x) - Math.exp(-x));
     }
 
-    ;
-    
     /**
-     * Hyperbolic cosine function.  This too.
-     * 
-     * @param   x   any real number
-     * 
-     * @return &frac12;(<em>e</em><sup>+<em>x</em></sup> + <em>e</em><sup>-<em>x</em></sup>) 
+     * Hyperbolic cosine function. This too.
+     *
+     * @param x any real number
+     *
+     * @return &frac12;(<em>e</em><sup>+<em>x</em></sup> +
+     * <em>e</em><sup>-<em>x</em></sup>)
      */
     public static final double cosh(double x) {
         return 0.5 * (Math.exp(x) + Math.exp(-x));
     }
 
-    ;
-    
     /**
      * Hyperbolic tangent function.
-     *  
+     *
      * @author Christopher Allen
-     * 
+     *
      * @return sinh(<em>x</em>)/cosh(<em>x</em>)
      */
     public static final double tanh(double x) {
         return sinh(x) / cosh(x);
     }
-
 
     /*
      * Inverse Hyperbolic Functions

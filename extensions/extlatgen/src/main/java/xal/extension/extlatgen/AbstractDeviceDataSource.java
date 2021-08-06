@@ -16,7 +16,7 @@ import xal.service.pvlogger.sim.PVLoggerDataSource;
 import xal.smf.impl.Bend;
 import xal.smf.impl.Electromagnet;
 import xal.smf.impl.Magnet;
-import xal.tools.beam.IConstants;
+import xal.tools.beam.Constants;
 
 /**
  * Abstract Device Data Source
@@ -31,7 +31,7 @@ public abstract class AbstractDeviceDataSource {
     /**
      * Speed of light in billions of meters per second
      */
-    static final double LIGHT_SPEED = IConstants.LIGHT_SPEED / 1e9;
+    static final double LIGHT_SPEED = Constants.LIGHT_SPEED / 1e9;
 
     // static initializer
     static {

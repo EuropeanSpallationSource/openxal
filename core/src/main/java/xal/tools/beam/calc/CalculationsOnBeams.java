@@ -33,7 +33,6 @@ import xal.tools.math.r6.R6;
  */
 public class CalculationsOnBeams extends CalculationEngine implements ISimLocResults<EnvelopeProbeState>, ISimEnvResults<EnvelopeProbeState> {
 
-
     /*
      * Local Attributes
      */
@@ -85,14 +84,14 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      * @since Oct 22, 2013
      */
     public CalculationsOnBeams(Trajectory<EnvelopeProbeState> datSim) {
-        this.trjSimul = datSim;
-        this.staInit = datSim.initialState();
-        this.staFinal = datSim.finalState();
-        this.matResp = this.staFinal.getResponseMatrix();
+        trjSimul = datSim;
+        staInit = datSim.initialState();
+        staFinal = datSim.finalState();
+        matResp = this.staFinal.getResponseMatrix();
 
-        this.vecPhsAdv = super.calculatePhaseAdvPerCell(this.matResp);
-        this.vecFxdPt = super.calculateFixedPoint(this.matResp);
-        this.arrTwsMch = super.calculateMatchedTwiss(this.matResp);
+        vecPhsAdv = super.calculatePhaseAdvPerCell(matResp);
+        vecFxdPt = super.calculateFixedPoint(matResp);
+        arrTwsMch = super.calculateMatchedTwiss(matResp);
     }
 
     /*
@@ -108,7 +107,7 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      * @since Nov 7, 2013
      */
     public Trajectory<EnvelopeProbeState> getTrajectory() {
-        return this.trjSimul;
+        return trjSimul;
     }
 
     /**
@@ -121,7 +120,7 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      * @since Nov 7, 2013
      */
     public PhaseMatrix getFullResponseMatrix() {
-        return this.matResp;
+        return matResp;
     }
 
     /**
@@ -144,7 +143,7 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      * @since Oct 30, 2013
      */
     public R3 periodBetatronPhaseAdvance() {
-        return this.vecPhsAdv;
+        return vecPhsAdv;
     }
 
     /**
@@ -171,7 +170,7 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      * @since Oct 30, 2013
      */
     public PhaseVector periodFixedOrbitPt() {
-        return this.vecFxdPt;
+        return vecFxdPt;
     }
 
     /**
@@ -199,7 +198,7 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      * @since Oct 30, 2013
      */
     public Twiss[] periodMatchedTwiss() {
-        return this.arrTwsMch;
+        return arrTwsMch;
     }
 
     /*
@@ -230,7 +229,8 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
             throw new IllegalArgumentException("unknown element id");
         }
 
-        int indFrom, indTo;
+        int indFrom;
+        int indTo;
         // use last state before start element
         indTo = arrIndTo[arrIndTo.length - 1];
 
@@ -268,9 +268,7 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
     @Override
     public PhaseVector computeCoordinatePosition(EnvelopeProbeState state) {
         CovarianceMatrix matSigLoc = state.getCovarianceMatrix();
-        PhaseVector vecCenter = matSigLoc.getMean();
-
-        return vecCenter;
+        return matSigLoc.getMean();
     }
 
     /**
@@ -376,9 +374,7 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      */
     @Override
     public PhaseVector computeFixedOrbit(EnvelopeProbeState state) {
-        PhaseVector vecFxdOrb = this.computeCoordinatePosition(state);
-
-        return vecFxdOrb;
+        return computeCoordinatePosition(state);
     }
 
     /**
@@ -399,8 +395,8 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
     @Override
     public PhaseVector computeChromAberration(EnvelopeProbeState state) {
         double dblGamma = state.getGamma();
-        PhaseMatrix matResp = state.getResponseMatrix();
-        R6 vecDel = super.calculateAberration(matResp, dblGamma);
+        PhaseMatrix mat = state.getResponseMatrix();
+        R6 vecDel = super.calculateAberration(mat, dblGamma);
 
         return PhaseVector.embed(vecDel);
     }
@@ -426,11 +422,8 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
      */
     @Override
     public Twiss[] computeTwissParameters(EnvelopeProbeState state) {
-
         CovarianceMatrix matSigma = state.getCovarianceMatrix();
-        Twiss[] arrTwiss = matSigma.computeTwiss();
-
-        return arrTwiss;
+        return matSigma.computeTwiss();
     }
 
     /**
@@ -491,9 +484,7 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
 
         PhaseMatrix matPhiLoc = state.getResponseMatrix();
 
-        R3 vecPhsAdv = super.calculatePhaseAdvance(matPhiLoc, arrTwsInit, arrTwsLoc);
-
-        return vecPhsAdv;
+        return super.calculatePhaseAdvance(matPhiLoc, arrTwsInit, arrTwsLoc);
     }
 
     /**
@@ -525,9 +516,9 @@ public class CalculationsOnBeams extends CalculationEngine implements ISimLocRes
     @Override
     public PhaseVector computeChromDispersion(EnvelopeProbeState state) {
         double dblGamma = state.getGamma();
-        PhaseMatrix matResp = state.getResponseMatrix();
+        PhaseMatrix mat = state.getResponseMatrix();
 
-        R4 vecDisp = super.calculateDispersion(matResp, dblGamma);
+        R4 vecDisp = super.calculateDispersion(mat, dblGamma);
 
         return PhaseVector.embed(vecDisp);
     }

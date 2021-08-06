@@ -8,7 +8,6 @@
 package xal.tools.database;
 
 import xal.tools.xml.XmlDataAdaptor;
-import xal.tools.database.DBConfiguration;
 import xal.tools.data.DataAdaptor;
 
 import java.io.*;
@@ -29,6 +28,12 @@ public class DBConfiguration {
      * key for getting the URL from the preferences
      */
     protected static final String PREFERENCES_URL_KEY = "configURL";
+
+    private static final String ADAPTOR_ATTR = "adaptor";
+    private static final String PASSWORD_ATTR = "password";
+    private static final String SERVER_ATTR = "server";
+    private static final String NAME_ATTR = "name";
+    private static final String DEFAULT_ATTR = "default";
 
     /**
      * name of the default database adaptor
@@ -226,7 +231,6 @@ public class DBConfiguration {
         try {
             return hasDefaultConfiguration() ? getInstance(getDefaultURL()) : null;
         } catch (MalformedURLException exception) {
-            System.err.println(exception.getMessage());
             throw new RuntimeException("Malformed URL specification", exception);
         }
     }
@@ -246,37 +250,37 @@ public class DBConfiguration {
         final DataAdaptor configAdaptor = documentAdaptor.childAdaptor("dbconfig");
 
         final DataAdaptor dbAdaptorGroup = configAdaptor.childAdaptor("adaptors");
-        final String defaultDBAdaptorName = dbAdaptorGroup.hasAttribute("default") ? dbAdaptorGroup.stringValue("default") : null;
-        final List<DataAdaptor> dbAdaptors = dbAdaptorGroup.childAdaptors("adaptor");
+        final String defaultDBAdaptorName = dbAdaptorGroup.hasAttribute(DEFAULT_ATTR) ? dbAdaptorGroup.stringValue(DEFAULT_ATTR) : null;
+        final List<DataAdaptor> dbAdaptors = dbAdaptorGroup.childAdaptors(ADAPTOR_ATTR);
         final Map<String, String> dbAdaptorTable = new HashMap<>();
         for (final DataAdaptor dbAdaptor : dbAdaptors) {
-            final String name = dbAdaptor.stringValue("name");
+            final String name = dbAdaptor.stringValue(NAME_ATTR);
             final String className = dbAdaptor.stringValue("class");
             dbAdaptorTable.put(name, className);
         }
 
         final DataAdaptor serverGroup = configAdaptor.childAdaptor("servers");
-        final String defaultServerName = serverGroup.hasAttribute("default") ? serverGroup.stringValue("default") : null;
-        final List<DataAdaptor> serverAdaptors = serverGroup.childAdaptors("server");
+        final String defaultServerName = serverGroup.hasAttribute(DEFAULT_ATTR) ? serverGroup.stringValue(DEFAULT_ATTR) : null;
+        final List<DataAdaptor> serverAdaptors = serverGroup.childAdaptors(SERVER_ATTR);
         final Map<String, DBServerConfig> serverTable = new HashMap<>();
         for (final DataAdaptor serverAdaptor : serverAdaptors) {
-            final String name = serverAdaptor.stringValue("name");
+            final String name = serverAdaptor.stringValue(NAME_ATTR);
             final String url = serverAdaptor.stringValue("url");
-            final String dbAdaptorName = serverAdaptor.hasAttribute("adaptor") ? serverAdaptor.stringValue("adaptor") : defaultDBAdaptorName;
+            final String dbAdaptorName = serverAdaptor.hasAttribute(ADAPTOR_ATTR) ? serverAdaptor.stringValue(ADAPTOR_ATTR) : defaultDBAdaptorName;
             final String dbAdaptorClassName = dbAdaptorTable.get(dbAdaptorName);
             final DBServerConfig serverConfig = new DBServerConfig(name, url, dbAdaptorClassName);
             serverTable.put(name, serverConfig);
         }
 
         final DataAdaptor accountGroup = configAdaptor.childAdaptor("accounts");
-        final String defaultAccountName = accountGroup.hasAttribute("default") ? accountGroup.stringValue("default") : null;
+        final String defaultAccountName = accountGroup.hasAttribute(DEFAULT_ATTR) ? accountGroup.stringValue(DEFAULT_ATTR) : null;
         final List<DataAdaptor> accountAdaptors = accountGroup.childAdaptors("account");
         final Map<String, DBAccountConfig> accountTable = new HashMap<>();
         for (final DataAdaptor accountAdaptor : accountAdaptors) {
-            final String name = accountAdaptor.stringValue("name");
+            final String name = accountAdaptor.stringValue(NAME_ATTR);
             final String user = accountAdaptor.stringValue("user");
-            final String password = accountAdaptor.hasAttribute("password") ? accountAdaptor.stringValue("password") : null;
-            final String serverName = accountAdaptor.hasAttribute("server") ? accountAdaptor.stringValue("server") : null;
+            final String password = accountAdaptor.hasAttribute(PASSWORD_ATTR) ? accountAdaptor.stringValue(PASSWORD_ATTR) : null;
+            final String serverName = accountAdaptor.hasAttribute(SERVER_ATTR) ? accountAdaptor.stringValue(SERVER_ATTR) : null;
             accountTable.put(name, new DBAccountConfig(name, user, password, serverName));
         }
 
@@ -284,7 +288,7 @@ public class DBConfiguration {
         final List<DataAdaptor> schemaAdaptors = schemasGroup.childAdaptors("schema");
         final Map<String, URL> schemaUrls = new HashMap<>();
         for (final DataAdaptor schemaAdaptor : schemaAdaptors) {
-            final String name = schemaAdaptor.stringValue("name");
+            final String name = schemaAdaptor.stringValue(NAME_ATTR);
             try {
                 URL url = new URL(baseURL, schemaAdaptor.stringValue("url"));
                 schemaUrls.put(name, url);
@@ -305,7 +309,7 @@ public class DBConfiguration {
             urlSpec = getDefaultURLSpec();
             return urlSpec != null && !urlSpec.isEmpty() && new File(new URL(urlSpec).toURI()).exists();
         } catch (MalformedURLException | URISyntaxException exception) {
-            LOGGER.log(Level.INFO, "Database configuration: " + urlSpec);
+            LOGGER.log(Level.INFO, "Database configuration: {0}", urlSpec);
             return false;
         }
     }

@@ -377,7 +377,7 @@ public class ProbeFactory {
         final DataTable speciesTable = editContext.getTable(SPECIES_TABLE);
         final DataTable locationTable = editContext.getTable(LOCATION_TABLE);
 
-        final GenericRecord locationRecord = locationTable.record("name", locationID);
+        final GenericRecord locationRecord = locationTable.genericRecord("name", locationID);
         if (locationRecord == null) {
             return false;
         }
@@ -389,7 +389,7 @@ public class ProbeFactory {
         final double time = locationRecord.doubleValueForKey("t");
         final String currentElement = locationRecord.stringValueForKey("elem");
 
-        final GenericRecord speciesRecord = speciesTable.record(SPECIES_NAME_PARAM, species);
+        final GenericRecord speciesRecord = speciesTable.genericRecord(SPECIES_NAME_PARAM, species);
         final double mass = speciesRecord.doubleValueForKey(MASS_PARAM);
         final double charge = speciesRecord.doubleValueForKey(CHARGE_PARAM);
         final String name = speciesRecord.stringValueForKey(SPECIES_NAME_PARAM);
@@ -430,7 +430,7 @@ public class ProbeFactory {
         }
 
         // If the table is there look for a record with the given location ID
-        final GenericRecord recCoords = tblPhsCoords.record("name", strLocId);
+        final GenericRecord recCoords = tblPhsCoords.genericRecord("name", strLocId);
         if (recCoords == null) {
             return;
         }
@@ -455,7 +455,7 @@ public class ProbeFactory {
         final EditContext editContext = sequence.getAccelerator().editContext();
         final DataTable beamTable = editContext.getTable(BEAM_TABLE);
 
-        final GenericRecord beamRecord = beamTable.record("name", "default");
+        final GenericRecord beamRecord = beamTable.genericRecord("name", "default");
         final double bunchFreq = beamRecord.doubleValueForKey("bunchFreq");
         final double beamCurrent = beamRecord.doubleValueForKey("current");
 
@@ -485,7 +485,7 @@ public class ProbeFactory {
 
         // Extract the betratron phase and set it
         final DataTable tblBeam = edcData.getTable(BEAM_TABLE);
-        final GenericRecord recBeam = tblBeam.record("name", "default");
+        final GenericRecord recBeam = tblBeam.genericRecord("name", "default");
         final String strPhs = recBeam.stringValueForKey("phase");
         final R3 vecPhs = new R3(strPhs);
         prbTwiss.setBetatronPhase(vecPhs);
@@ -545,11 +545,11 @@ public class ProbeFactory {
         bindings.put("name", strLocId);
 
         bindings.put("coordinate", "x");
-        final GenericRecord twissX = twissTable.record(bindings);
+        final GenericRecord twissX = twissTable.genericRecord(bindings);
         bindings.put("coordinate", "y");
-        final GenericRecord twissY = twissTable.record(bindings);
+        final GenericRecord twissY = twissTable.genericRecord(bindings);
         bindings.put("coordinate", "z");
-        final GenericRecord twissZ = twissTable.record(bindings);
+        final GenericRecord twissZ = twissTable.genericRecord(bindings);
 
         return new Twiss[]{getTwiss(twissX), getTwiss(twissY), getTwiss(twissZ)};
     }
@@ -592,7 +592,7 @@ public class ProbeFactory {
         }
 
         // If the table is there look for a record with the given location ID
-        final GenericRecord recCoords = tblCentCoords.record("name", strLocId);
+        final GenericRecord recCoords = tblCentCoords.genericRecord("name", strLocId);
         if (recCoords == null) {
             return null;
         }
@@ -689,7 +689,7 @@ public class ProbeFactory {
         final Map<String, String> bindings = new HashMap<>();
         bindings.put("name", seqId);
         bindings.put("coordinate", "x");
-        return tblTwiss.record(bindings) != null;
+        return tblTwiss.genericRecord(bindings) != null;
     }
 
     public static void storeInitialValues(EditContext ecTableData, List<EnvelopeProbeState> states) {

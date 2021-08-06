@@ -61,12 +61,12 @@ public class ClosedInterval extends Interval {
      * Copy constructor - create a new open interval initialized to the
      * argument.
      *
-     * @param I interval to copy
+     * @param interval interval to copy
      *
      * @throws MathException malformed interval to copy
      */
-    public ClosedInterval(Interval I) throws MathException {
-        super(I);
+    public ClosedInterval(Interval interval) throws MathException {
+        super(interval);
     }
 
     /*
@@ -87,17 +87,17 @@ public class ClosedInterval extends Interval {
     /**
      * Is there a nonzero intersection between this interval and the argument.
      *
-     * @param I interval to be tested
+     * @param interval interval to be tested
      * @return true if the intervals intersect
      */
-    public boolean intersect(ClosedInterval I) {
-        return (this.getMax() >= I.getMin()) || (this.getMin() <= I.getMax());
+    public boolean intersect(ClosedInterval interval) {
+        return (getMax() >= interval.getMin()) || (getMin() <= interval.getMax());
     }
 
     /**
      * Is the given interval a subset of this interval.
      *
-     * @param I interval under test
+     * @param interval interval under test
      *
      * @return      <code>true</code> if <strong>I</strong>&sub;<code>this</code>,
      * <code>false</code> otherwise.
@@ -105,8 +105,8 @@ public class ClosedInterval extends Interval {
      * @author Christopher K. Allen
      * @since Apr 27, 2011
      */
-    public boolean contains(ClosedInterval I) {
-        return (this.getMax() >= I.getMax() && this.getMin() <= I.getMin());
+    public boolean contains(ClosedInterval interval) {
+        return (getMax() >= interval.getMax() && getMin() <= interval.getMin());
     }
 
     /**
@@ -119,8 +119,8 @@ public class ClosedInterval extends Interval {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ClosedInterval) {
-            ClosedInterval I = (ClosedInterval) obj;
-            return (this.getMin() == I.getMin()) && (this.getMax() == I.getMax());
+            ClosedInterval interval = (ClosedInterval) obj;
+            return (getMin() == interval.getMin()) && (getMax() == interval.getMax());
         } else {
             return super.equals(obj);
         }
@@ -130,7 +130,6 @@ public class ClosedInterval extends Interval {
     public int hashCode() {
         return super.hashCode();
     }
-
 
     /*
      * Debugging
@@ -146,5 +145,4 @@ public class ClosedInterval extends Interval {
     public String toString() {
         return "(" + getMin() + "," + getMax() + ")";
     }
-
 }

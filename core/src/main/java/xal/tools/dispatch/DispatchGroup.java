@@ -123,7 +123,7 @@ public class DispatchGroup implements DispatchOperationListener {
      * add the operation to this group and the current groups without double
      * counting this group
      */
-    public <ReturnType> void addOperationToThisGroupAndCurrentGroups(final DispatchOperation<ReturnType> operation) {
+    public <T> void addOperationToThisGroupAndCurrentGroups(final DispatchOperation<T> operation) {
         final Set<DispatchGroup> groups = new HashSet<>(getCurrentGroups());
         groups.add(this);
         addOperationToGroups(operation, groups);
@@ -132,14 +132,14 @@ public class DispatchGroup implements DispatchOperationListener {
     /**
      * add the operation to the current groups
      */
-    public static <ReturnType> void addOperationToCurrentGroups(final DispatchOperation<ReturnType> operation) {
+    public static <T> void addOperationToCurrentGroups(final DispatchOperation<T> operation) {
         addOperationToGroups(operation, getCurrentGroups());
     }
 
     /**
      * add the operation to the specified groups
      */
-    public static <ReturnType> void addOperationToGroups(final DispatchOperation<ReturnType> operation, final Set<DispatchGroup> groups) {
+    public static <T> void addOperationToGroups(final DispatchOperation<T> operation, final Set<DispatchGroup> groups) {
         if (!operation.isComplete()) {
             for (final DispatchGroup group : groups) {
                 operation.addDispatchOperationListener(group);
@@ -174,7 +174,7 @@ public class DispatchGroup implements DispatchOperationListener {
     /**
      * add an operation to this group
      */
-    public <ReturnType> void addOperation(final DispatchOperation<ReturnType> operation) {
+    public <T> void addOperation(final DispatchOperation<T> operation) {
         if (!operation.isComplete()) {
             operation.addDispatchOperationListener(DispatchGroup.this);
             incrementPendingOperationCount();
@@ -185,7 +185,7 @@ public class DispatchGroup implements DispatchOperationListener {
      * Event indicating that an operation in this group has completed
      */
     @Override
-    public <ReturnType> void operationCompleted(final DispatchOperation<ReturnType> operation) {
+    public <T> void operationCompleted(final DispatchOperation<T> operation) {
         decrementPendingOperationCount();
     }
 }

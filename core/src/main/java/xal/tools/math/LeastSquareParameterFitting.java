@@ -132,7 +132,7 @@ public class LeastSquareParameterFitting implements Runnable {
      * samples
      */
     @Override
-    public void run() throws java.lang.IllegalStateException {
+    public void run() throws IllegalStateException {
         if (dataSample.size() < parameters.length) {
             throw new IllegalStateException("At least " + parameters.length + " samples are needed, but only " + dataSample.size() + " were supplied.");
         }
@@ -178,15 +178,15 @@ public class LeastSquareParameterFitting implements Runnable {
      * Construct the minimizer
      */
     private DifferentiableOperationMinimizer createMinimizer() {
-        final List<BoundedDifferentiableVariable> parameters = new ArrayList<>(this.parameters.length);
+        final List<BoundedDifferentiableVariable> params = new ArrayList<>(this.parameters.length);
         for (final BoundedDifferentiableVariable parameter : this.parameters) {
-            parameters.add(parameter);
+            params.add(parameter);
         }
 
         final DifferentiableOperation penaltyOperation = createPenaltyOperation();
-        final DifferentiableOperationMinimizer minimizer = new DifferentiableOperationMinimizer(penaltyOperation, parameters);
-        minimizer.setMaxEvaluations(maxEvaluations);
-        return minimizer;
+        final DifferentiableOperationMinimizer newMinimizer = new DifferentiableOperationMinimizer(penaltyOperation, params);
+        newMinimizer.setMaxEvaluations(maxEvaluations);
+        return newMinimizer;
     }
 
     /**

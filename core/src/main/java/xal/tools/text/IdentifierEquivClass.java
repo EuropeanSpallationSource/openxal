@@ -146,9 +146,8 @@ public class IdentifierEquivClass implements Comparable<IdentifierEquivClass> {
 
         // The two classes are not equivalent.
         //  Use a lexicographical string comparison since neither is a substring of the other
-        int iResult = this.strClassId.compareTo(idcCmp.strClassId);
+        return strClassId.compareTo(idcCmp.strClassId);
 
-        return iResult;
     }
 
 
@@ -199,7 +198,7 @@ public class IdentifierEquivClass implements Comparable<IdentifierEquivClass> {
      */
     @Override
     public int hashCode() {
-        return this.strClassId.hashCode();
+        return strClassId.hashCode();
     }
 
     /**
@@ -214,7 +213,7 @@ public class IdentifierEquivClass implements Comparable<IdentifierEquivClass> {
      */
     @Override
     public String toString() {
-        return this.strClassId;
+        return strClassId;
     }
 
 
@@ -273,42 +272,36 @@ public class IdentifierEquivClass implements Comparable<IdentifierEquivClass> {
     public int compareTo(String strElemId) throws NoSuchElementException {
 
         // Check if this is the zero class and argument is the empty ID
-        if (this.strClassId.length() == 0 && strElemId.length() == 0) {
+        if (strClassId.length() == 0 && strElemId.length() == 0) {
 
             return 0;
         }
 
         // Check if either string is empty, then we cannot be equivalent strings
-        if (this.strClassId.length() == 0 || strElemId.length() == 0) {
+        if (strClassId.length() == 0 || strElemId.length() == 0) {
             throw new NoSuchElementException("Argument " + strElemId + " is not an element of the empty ID ''");
         }
 
         // Check if the argument is contained within this ID
         //  (Then this is "larger" then the argument)
-        if (strElemId.length() < this.strClassId.length()) {
-            if (this.strClassId.startsWith(strElemId)) {
-
-                return +1;
-            }
+        if (strElemId.length() < strClassId.length() && strClassId.startsWith(strElemId)) {
+            return +1;
         }
 
         // Check if this ID is contained within the argument
         //  (Then this is "smaller" then the argument)
-        if (this.strClassId.length() < strElemId.length()) {
-            if (strElemId.startsWith(this.strClassId)) {
-
-                return -1;
-            }
+        if (strClassId.length() < strElemId.length() && strElemId.startsWith(strClassId)) {
+            return -1;
         }
 
         // The two identifier strings are the same length
         //  They must be equal as strings to be equal
-        if (this.strClassId.equals(strElemId)) {
+        if (strClassId.equals(strElemId)) {
             return 0;
         }
 
         // The argument is not a member of this equivalence class  
         throw new NoSuchElementException("Argument " + strElemId
-                + " is not an element of ID class [" + this.strClassId + "]");
+                + " is not an element of ID class [" + strClassId + "]");
     }
 }

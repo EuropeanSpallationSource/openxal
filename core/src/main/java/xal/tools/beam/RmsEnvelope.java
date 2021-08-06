@@ -37,8 +37,6 @@ public class RmsEnvelope {
         return this.getSigma();
     }
 
-    ;  
-    
     public PhaseMatrix getSigma() {
         return matSigma;
     }

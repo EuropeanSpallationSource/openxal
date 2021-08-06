@@ -7,6 +7,7 @@
 package xal.tools.beam.calc;
 
 import java.util.EnumSet;
+import java.util.logging.Logger;
 
 import xal.model.probe.TwissProbe;
 import xal.tools.beam.PhaseMatrix;
@@ -64,12 +65,7 @@ public abstract class CalculationEngine {
      */
     private static final int NUM_MODES = 3;
 
-
-    /*
-     * Initialization
-     */
-    public CalculationEngine() {
-    }
+    private static final Logger LOGGER = Logger.getLogger(CalculationEngine.class.getName());
 
     /**
      * <p>
@@ -165,9 +161,7 @@ public abstract class CalculationEngine {
         if (dblCndNum < DBL_CND_MIN) {
 
             R6 vecp = matR.solve(vecdZ);
-            PhaseVector vecP = PhaseVector.embed(vecp);
-
-            return vecP;
+            return PhaseVector.embed(vecp);
         }
 
         // The system is indeterminant in full 6D phase space
@@ -426,121 +420,7 @@ public abstract class CalculationEngine {
         }
 
         // Pack into vector format and return
-        R3 vecPhases = new R3(arrPhsAdv);
-
-        return vecPhases;
-    }
-
-    /**
-     * <p>
-     * Taken from <code>TransferMapState</code>.
-     * </p>
-     * <p>
-     * Compute and return the particle phase advance for under the action of the
-     * given phase matrix when used as a transfer matrix.
-     * </p>
-     * <p>
-     * Calculates the phase advances given the initial and final Courant-Snyder
-     * &alpha; and &beta; values provided. This is the general phase advance of
-     * the particle through the transfer matrix <strong>&Phi;</strong>, and no
-     * special requirements are placed upon <strong>&Phi;</strong>. One phase
-     * advance is provided for each phase plane, i.e.,
-     * (&sigma;<sub><em>x</em></sub>, &sigma;<sub><em>z</em></sub>,
-     * &sigma;<sub><em>z</em></sub>).
-     * </p>
-     * <p>
-     * The definition of phase advance &sigma; is given by
-     * <br>
-     * <br>
-     * &nbsp; &nbsp; &sigma;(<em>s</em>) &equiv; &int;<sup><em>s</em></sup>
-     * [1/&beta;(<em>t</em>)]<em>dt</em> ,
-     * <br>
-     * <br>
-     * where &beta;(<em>s</em>) is the Courant-Snyder, envelope function, and
-     * the integral is taken along the interval between the initial and final
-     * Courant-Snyder parameters.
-     * </p>
-     * <p>
-     * The basic relation used to compute &sigma; is the following:
-     * <br>
-     * <br>
-     * &nbsp; &nbsp; &sigma; = sin<sup>-1</sup>
-     * &phi;<sub>12</sub>/(&beta;<sub>1</sub>&beta;<sub>2</sub>)<sup>&frac12;</sup>
-     * ,
-     * <br>
-     * <br>
-     * where &phi;<sub>12</sub> is the element of <strong>&Phi;</strong> in the
-     * upper right corner of each 2&times;2 diagonal block, &beta;<sub>1</sub>
-     * is the initial beta function value (provided) and &beta;<sub>2</sub> is
-     * the final beta function value (provided).
-     * </p>
-     *
-     * @param matPhi the transfer matrix that propagated the Twiss parameters
-     * @param twsInit initial Twiss parameter before application of matrix
-     * @param twsFinal final Twiss parameter after application of matrix
-     *
-     * @return the array of betatron tunes (&sigma;<sub><em>x</em></sub>,
-     * &sigma;<sub><em>z</em></sub>, &sigma;<sub><em>z</em></sub>)
-     *
-     * @author Christopher K. Allen
-     * @author Thomas Pelaia
-     * @since Jun, 2004
-     * @version Oct, 2013
-     *
-     * @deprecated Does not determine the phase quadrants correctly and
-     * therefore cannot produce an accurate phase advance
-     */
-    @Deprecated
-    protected R3 calculatePhaseAdvance_old(PhaseMatrix matPhi, Twiss[] twsInit, Twiss[] twsFinal) {
-
-        final Twiss[] twsFnl = twsFinal;
-        final Twiss[] twsInt = twsInit;
-
-        final double[] arrPhsAdv = new double[3];
-
-        for (int mode = 0; mode < 3; mode++) {
-            final double dblBetaFnl = twsFnl[mode].getBeta();
-            final double dblBetaInt = twsInt[mode].getBeta();
-
-            final double dblAlphInt = twsInt[mode].getAlpha();
-
-            final double dblM11 = matPhi.getElem(2 * mode, 2 * mode);
-            final double dblM12 = matPhi.getElem(2 * mode, 2 * mode + 1);
-
-            // Compute the phase advance for this plane
-            double dblSinPhs = dblM12 / Math.sqrt(dblBetaFnl * dblBetaInt);
-            // make sure it is in the range [-1, 1]
-            dblSinPhs = Math.max(Math.min(dblSinPhs, 1.0), -1.0);
-
-            // This returns a value phi in the domain [-pi/2,pi/2]
-            final double dblPhsAdv = Math.asin(dblSinPhs);
-
-            // Compute the cosine of phase advance for identifying the phase quadrant
-            //    Sako - (I think the following is wrong)
-            //      final double cosPhase = m11 * Math.sqrt( beta / initialBeta ) - initialAlpha * sinPhase;
-            //    Replaced by
-            final double cosPhase = dblM11 * Math.sqrt(dblBetaInt / dblBetaFnl) - dblAlphInt * dblSinPhs;
-
-            // Put the phase advance in the positive real line
-            if (cosPhase >= 0) {
-                if (dblSinPhs >= 0) {
-
-                    arrPhsAdv[mode] = dblPhsAdv;
-                } else {
-
-                    arrPhsAdv[mode] = 2 * Math.PI + dblPhsAdv;
-                }
-
-            } else {
-
-                arrPhsAdv[mode] = Math.PI - dblPhsAdv;
-            }
-        }
-
-        // Pack into vector format and return
-        R3 vecPhases = new R3(arrPhsAdv);
-
-        return vecPhases;
+        return new R3(arrPhsAdv);
     }
 
     /**
@@ -603,7 +483,7 @@ public abstract class CalculationEngine {
      * @since Jun 2004
      * @version Oct, 2013
      */
-    protected Twiss[] calculateMatchedTwiss(PhaseMatrix matPhiCell /*, double[] arrPhsCell*/) {
+    protected Twiss[] calculateMatchedTwiss(PhaseMatrix matPhiCell) {
         final R3 vecPhsCell = this.calculatePhaseAdvPerCell(matPhiCell);
 
         final Twiss[] arrTwsCell = new Twiss[NUM_MODES];
@@ -720,14 +600,14 @@ public abstract class CalculationEngine {
      */
     protected R6 calculateAberration(final PhaseMatrix matPhi, final double dblGamma) {
         PhaseMatrix matResp = matPhi;
-        R6 vecDelta = matResp.projectColumn(IND.Zp);
+        R6 vecDelta = matResp.projectColumn(IND.ZP);
 
         double dblGamma2 = dblGamma * dblGamma;
 
         // Need to normalize the transverse coordinates to momentum rather than angle
-        EnumSet<IND> SET_TRNV = EnumSet.of(IND.X, IND.Xp, IND.Y, IND.Yp);
+        EnumSet<IND> setTrnv = EnumSet.of(IND.X, IND.XP, IND.Y, IND.YP);
 
-        for (IND i : SET_TRNV) {
+        for (IND i : setTrnv) {
             double dblDspAng = vecDelta.getElem(i);
             double dblDspMom = dblDspAng / dblGamma2;
 
@@ -863,7 +743,7 @@ public abstract class CalculationEngine {
         //    components.  The decomposition contains the linear algebraic
         //    system we need to solve the dispersion relations.
         // Extract the transverse divergence-angle vector
-        R6 vecdP = matPhi.projectColumn(IND.Zp);
+        R6 vecdP = matPhi.projectColumn(IND.ZP);
 
         // Convert it to transverse momentum
         R4 vecdp = new R4();
@@ -885,14 +765,9 @@ public abstract class CalculationEngine {
 
         // Solve for the dispersion vector and return it
         try {
-
-            R4 vecd = matR.solve(vecdp);
-
-            return vecd;
-
+            return matR.solve(vecdp);
         } catch (Exception e) {
-
-            System.err.println("Error in solving matrix-vector equation");
+            LOGGER.warning("Error in solving matrix-vector equation");
 
             return R4.newZero();
         }
@@ -933,13 +808,13 @@ public abstract class CalculationEngine {
             ratLong = 1.0;
 
         } else {
-            double ER = probe.getSpeciesRestEnergy();
-            double W0 = probe.getKineticEnergy();
-            double W1 = W0 + dW;
+            double eR = probe.getSpeciesRestEnergy();
+            double w0 = probe.getKineticEnergy();
+            double w1 = w0 + dW;
 
             double g0 = probe.getGamma();
             double b0 = probe.getBeta();
-            double g1 = RelativisticParameterConverter.computeGammaFromEnergies(W1, ER);
+            double g1 = RelativisticParameterConverter.computeGammaFromEnergies(w1, eR);
             double b1 = RelativisticParameterConverter.computeBetaFromGamma(g1);
 
             ratTran = (g0 * b0) / (b1 * g1);
@@ -954,21 +829,24 @@ public abstract class CalculationEngine {
         Twiss3D twissEnv1 = new Twiss3D();
 
         // old twiss parameters
-        double alpha0, beta0, gamma0;
+        double alpha0;
+        double beta0;
+        double gamma0;
         // old (unnormalized) emittance
         double emit0;
         // new twiss parameters
-        double alpha1, beta1;
+        double alpha1;
+        double beta1;
         // new (unnormalized) emittance
         double emit1;
 
         // Transfer matrix diagonal sub-block
-        double Rjj;
+        double rjj;
         //  | Rjj  Rjjp  |
-        double Rjjp;
+        double rjjp;
         //  | Rjpj Rjpjp |
-        double Rjpj;
-        double Rjpjp;
+        double rjpj;
+        double rjpjp;
 
         int j = 0;
         // for each phase plane
@@ -981,13 +859,13 @@ public abstract class CalculationEngine {
             gamma0 = twissEnv0.getTwiss(index).getGamma();
             emit0 = twissEnv0.getTwiss(index).getEmittance();
 
-            Rjj = matPhi.getElem(j, j);
-            Rjjp = matPhi.getElem(j, j + 1);
-            Rjpj = matPhi.getElem(j + 1, j);
-            Rjpjp = matPhi.getElem(j + 1, j + 1);
+            rjj = matPhi.getElem(j, j);
+            rjjp = matPhi.getElem(j, j + 1);
+            rjpj = matPhi.getElem(j + 1, j);
+            rjpjp = matPhi.getElem(j + 1, j + 1);
 
-            beta1 = Rjj * Rjj * beta0 - 2. * Rjj * Rjjp * alpha0 + Rjjp * Rjjp * gamma0;
-            alpha1 = -Rjj * Rjpj * beta0 + (Rjj * Rjpjp + Rjjp * Rjpj) * alpha0 - Rjjp * Rjpjp * gamma0;
+            beta1 = rjj * rjj * beta0 - 2. * rjj * rjjp * alpha0 + rjjp * rjjp * gamma0;
+            alpha1 = -rjj * rjpj * beta0 + (rjj * rjpjp + rjjp * rjpj) * alpha0 - rjjp * rjpjp * gamma0;
 
             // longitudinal plane
             if (index == IND_3D.Z) {

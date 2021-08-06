@@ -24,12 +24,7 @@ public interface DataTransform {
     /**
      * No Operation Transform suitable as a default transform
      */
-    public static final DataTransform NO_OPERATION_TRANSFORM = new DataTransform() {
-        @Override
-        public ValueTransform valueTransform() {
-            return ValueTransform.NO_OPERATION_TRANSFORM;
-        }
-    };
+    public static final DataTransform NO_OPERATION_TRANSFORM = () -> ValueTransform.NO_OPERATION_TRANSFORM;
 
     /**
      * Construct and return a general ValueTransform from the DataTransform.

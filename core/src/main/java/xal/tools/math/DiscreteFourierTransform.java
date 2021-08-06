@@ -43,8 +43,8 @@ public class DiscreteFourierTransform {
      * compute the discrete Fourier transform
      */
     private Complex[] computeTransform() {
-        final double[] values = this.values;
-        final int count = values.length;
+        final double[] newValues = values;
+        final int count = newValues.length;
         final double countReciprocal = 1.0 / count;
 
         final Complex[] transform = new Complex[count];
@@ -53,8 +53,8 @@ public class DiscreteFourierTransform {
             double iSum = 0.0;
             for (int k = 0; k < count; k++) {
                 final double phase = PI2 * p * k * countReciprocal;
-                realSum += values[k] * Math.cos(phase);
-                iSum += values[k] * Math.sin(phase);
+                realSum += newValues[k] * Math.cos(phase);
+                iSum += newValues[k] * Math.sin(phase);
             }
             realSum *= countReciprocal;
             iSum *= countReciprocal;

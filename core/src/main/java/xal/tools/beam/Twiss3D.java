@@ -79,27 +79,23 @@ public class Twiss3D implements IArchive {
             this.i = i;
         }
 
-        ;
-        
-        /** 
+        /**
          * Return the integer value of the index position
-         *  
-         * @return  Integer value of enumeration constant
+         *
+         * @return Integer value of enumeration constant
          */
         @Override
         public int val() {
             return i;
         }
-    ;
+    }
 
-    }    
-    
-    
     /*
      * Global Constants
      */
-
-    /** element tag for envelope Twiss parameters */
+    /**
+     * element tag for envelope Twiss parameters
+     */
     protected static final String LABEL_TWISS = "twiss";
 
     /**
@@ -329,9 +325,7 @@ public class Twiss3D implements IArchive {
         String strTwsY = this.getTwiss(IND_3D.Y).toString();
         String strTwsZ = this.getTwiss(IND_3D.Z).toString();
 
-        String strTws = "HOR(" + strTwsX + ") VER(" + strTwsY + ") LNG(" + strTwsZ + ")";
-
-        return strTws;
+        return "HOR(" + strTwsX + ") VER(" + strTwsY + ") LNG(" + strTwsZ + ")";
     }
 
     /*

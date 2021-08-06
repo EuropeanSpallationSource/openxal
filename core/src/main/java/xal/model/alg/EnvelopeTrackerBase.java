@@ -499,11 +499,11 @@ public abstract class EnvelopeTrackerBase extends Tracker {
 
         // Get the algorithm class name from the EditContext
         DataTable tblAlgorithm = ecTableData.getTable(TBL_LBL_ENVBASETRACKER);
-        GenericRecord recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, strPrimKeyVal);
+        GenericRecord recTracker = tblAlgorithm.genericRecord(Tracker.TBL_PRIM_KEY_NAME, strPrimKeyVal);
 
         if (recTracker == null) {
             // just use the default record
-            recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");
+            recTracker = tblAlgorithm.genericRecord(Tracker.TBL_PRIM_KEY_NAME, "default");
         }
 
         this.setEmittanceGrowth(recTracker.booleanValueForKey(ATTR_EMITGROWTH));
@@ -666,14 +666,14 @@ public abstract class EnvelopeTrackerBase extends Tracker {
         // thin-lens focal-length element of tranfer matrix
         double fl;
 
-        fl = matPhi.getElem(IND.Xp, IND.X);
-        matPhi.setElem(IND.Xp, IND.X, fl * fT);
+        fl = matPhi.getElem(IND.XP, IND.X);
+        matPhi.setElem(IND.XP, IND.X, fl * fT);
 
-        fl = matPhi.getElem(IND.Yp, IND.Y);
-        matPhi.setElem(IND.Yp, IND.Y, fl * fT);
+        fl = matPhi.getElem(IND.YP, IND.Y);
+        matPhi.setElem(IND.YP, IND.Y, fl * fT);
 
-        fl = matPhi.getElem(IND.Zp, IND.Z);
-        matPhi.setElem(IND.Zp, IND.Z, fl * fZ);
+        fl = matPhi.getElem(IND.ZP, IND.Z);
+        matPhi.setElem(IND.ZP, IND.Z, fl * fZ);
 
         return matPhi;
     }
@@ -748,8 +748,8 @@ public abstract class EnvelopeTrackerBase extends Tracker {
                 double kx = dblLen * k / (4 * Math.sqrt(covXX) * (Math.sqrt(covXX) + Math.sqrt(covYY)));
                 double ky = dblLen * k / (4 * Math.sqrt(covYY) * (Math.sqrt(covXX) + Math.sqrt(covYY)));
 
-                matPhiSc.setElem(IND.Xp, IND.X, kx);
-                matPhiSc.setElem(IND.Yp, IND.Y, ky);
+                matPhiSc.setElem(IND.XP, IND.X, kx);
+                matPhiSc.setElem(IND.YP, IND.Y, ky);
 
                 // Transform to laboratory coordinates
                 PhaseVector z = tau0.getMean();
@@ -779,18 +779,18 @@ public abstract class EnvelopeTrackerBase extends Tracker {
                 double g2 = gamma * gamma;
 
                 // Compute elliptic integrals
-                double rDx = EllipticIntegral.RD(covYY, g2 * covZZ, covXX) / EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
-                double rDy = EllipticIntegral.RD(g2 * covZZ, covXX, covYY) / EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
-                double rDz = EllipticIntegral.RD(covXX, covYY, g2 * covZZ) / EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
+                double rDx = EllipticIntegral.rd(covYY, g2 * covZZ, covXX) / EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
+                double rDy = EllipticIntegral.rd(g2 * covZZ, covXX, covYY) / EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
+                double rDz = EllipticIntegral.rd(covXX, covYY, g2 * covZZ) / EnvelopeTrackerBase.CONST_UNIFORM_BEAM;
 
                 // Compute defocusing constants in the laboratory frame
                 double kx = gamma * dblLen * k * rDx;
                 double ky = gamma * dblLen * k * rDy;
                 double kz = gamma * dblLen * k * rDz;
 
-                matPhiSc.setElem(IND.Xp, IND.X, kx);
-                matPhiSc.setElem(IND.Yp, IND.Y, ky);
-                matPhiSc.setElem(IND.Zp, IND.Z, kz);
+                matPhiSc.setElem(IND.XP, IND.X, kx);
+                matPhiSc.setElem(IND.YP, IND.Y, ky);
+                matPhiSc.setElem(IND.ZP, IND.Z, kz);
 
                 // Transform to laboratory coordinates
                 PhaseVector z = tau0.getMean();

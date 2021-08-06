@@ -178,7 +178,7 @@ public class DataTable {
                 final List<DataAdaptor> recordAdaptors = adaptor.childAdaptors("record");
                 for (final DataAdaptor recordAdaptor : recordAdaptors) {
                     try {
-                        final Constructor<GenericRecord> constructor = (Constructor<GenericRecord>) recordClass.getConstructor(new Class<?>[]{DataTable.class});
+                        final Constructor<GenericRecord> constructor = (Constructor<GenericRecord>) recordClass.getConstructor(DataTable.class);
 
                         GenericRecord genericRecord = constructor.newInstance(new Object[]{DataTable.this});
                         genericRecord.update(recordAdaptor);
@@ -195,7 +195,7 @@ public class DataTable {
             @Override
             public void write(final DataAdaptor adaptor) {
                 adaptor.setValue("name", name);
-                adaptor.setValue("recordClass", recordClass.getName());
+                adaptor.setValue(RECORD_CLASS_ATTRIBUTE, recordClass.getName());
 
                 adaptor.writeNode(schema);
 
@@ -295,16 +295,16 @@ public class DataTable {
      * one or more of the primary keys. If the record is not unique, an
      * exception will be thrown.
      */
-    public <ValueType extends Object> GenericRecord record(final Map<String, ValueType> bindings) throws NonUniqueRecordException {
-        return keyTable.record(bindings);
+    public <T extends Object> GenericRecord genericRecord(final Map<String, T> bindings) throws NonUniqueRecordException {
+        return keyTable.genericRecord(bindings);
     }
 
     /**
      * Fetch the record with a matching key/value pair binding. The key must be
      * a primary key. If the record is not unique, an exception will be thrown.
      */
-    public GenericRecord record(final String key, final Object value) throws NonUniqueRecordException {
-        return keyTable.record(key, value);
+    public GenericRecord genericRecord(final String key, final Object value) throws NonUniqueRecordException {
+        return keyTable.genericRecord(key, value);
     }
 
     /**
@@ -315,7 +315,7 @@ public class DataTable {
      * subset of primary keys and the values are the ones we want to match.
      * @return The matching records.
      */
-    public <ValueType extends Object> Collection<GenericRecord> records(final Map<String, ValueType> bindings) {
+    public <T extends Object> Collection<GenericRecord> records(final Map<String, T> bindings) {
         return keyTable.records(bindings);
     }
 
@@ -329,7 +329,7 @@ public class DataTable {
      * @param ordering The sort ordering used to sort the records.
      * @return The matching records sorted according to the ordering.
      */
-    public <ValueType extends Object> List<GenericRecord> getRecords(final Map<String, ValueType> bindings, final SortOrdering ordering) {
+    public <T extends Object> List<GenericRecord> getRecords(final Map<String, T> bindings, final SortOrdering ordering) {
         return orderRecords(records(bindings), ordering);
     }
 
@@ -363,7 +363,7 @@ public class DataTable {
      * "nodeId". If the record is not unique, an exception will be thrown.
      */
     public GenericRecord recordForNode(final String nodeId) throws NonUniqueRecordException {
-        return record(NODE_KEY, nodeId);
+        return genericRecord(NODE_KEY, nodeId);
     }
 
     /**
@@ -385,9 +385,9 @@ public class DataTable {
     }
 
     /**
-     * Reindex the record based on new primary key values (if any).
+     * Re-index the record based on new primary key values (if any).
      */
-    synchronized final void reIndex(final GenericRecord genericRecord, final String key, final Object oldValue) {
+    final synchronized void reIndex(final GenericRecord genericRecord, final String key, final Object oldValue) {
         if (schema.isPrimaryKey(key) && this.hasRecord(genericRecord)) {
             keyTable.reIndex(genericRecord, key, oldValue);
         }
@@ -441,7 +441,7 @@ public class DataTable {
          * Get a record matching all of the primary key bindings. Bindings
          * should include all primary keys to ensure a unique record.
          */
-        public <V extends Object> GenericRecord record(final Map<String, V> bindings) throws NonUniqueRecordException {
+        public <V extends Object> GenericRecord genericRecord(final Map<String, V> bindings) throws NonUniqueRecordException {
             final Collection<GenericRecord> records = records(bindings);
 
             if (records.size() > 1) {
@@ -456,11 +456,11 @@ public class DataTable {
          * Get a record matching the specified primary key value. The key should
          * be the sole primary key to assure a unique record.
          */
-        public GenericRecord record(final String key, final Object value) throws NonUniqueRecordException {
+        public GenericRecord genericRecord(final String key, final Object value) throws NonUniqueRecordException {
             final Map<String, Object> bindings = new HashMap<>(1);
             bindings.put(key, value);
 
-            return record(bindings);
+            return genericRecord(bindings);
         }
 
         /**
@@ -545,7 +545,7 @@ public class DataTable {
          */
         private boolean hasConflictingRecord(final GenericRecord genericRecord) {
             final Map<String, Object> bindings = primaryBindings(genericRecord);
-            return record(bindings) != null;
+            return genericRecord(bindings) != null;
         }
 
         /**
@@ -709,14 +709,14 @@ public class DataTable {
          */
         private static final long serialVersionUID = 1L;
 
-        private Map<String, Object> bindings;
+        private final transient Map<String, Object> bindings;
 
         /**
          * Constructor
          */
         // exception classes don't support generics so we have no choice but to cast
         @SuppressWarnings("unchecked")
-        public <ValueType> NonUniqueRecordException(final Map<String, ValueType> theBindings) {
+        public <T> NonUniqueRecordException(final Map<String, T> theBindings) {
             bindings = (Map<String, Object>) theBindings;
         }
 
@@ -742,7 +742,7 @@ public class DataTable {
          */
         private static final long serialVersionUID = 1L;
 
-        private GenericRecord genericRecord;
+        private final GenericRecord genericRecord;
 
         /**
          * Constructor

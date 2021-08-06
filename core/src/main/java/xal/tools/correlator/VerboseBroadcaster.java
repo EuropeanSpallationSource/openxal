@@ -17,7 +17,7 @@ import xal.tools.messaging.MessageCenter;
  *
  * @author tap
  */
-class VerboseBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
+class VerboseBroadcaster<T> extends AbstractBroadcaster<T> {
 
     /**
      * Creates a new instance of Broadcaster
@@ -34,7 +34,7 @@ class VerboseBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
      * @param correlation The new correlation.
      */
     @Override
-    public synchronized void newCorrelation(final BinAgent<RecordType> sender, final Correlation<RecordType> correlation) {
+    public synchronized void newCorrelation(final BinAgent<T> sender, final Correlation<T> correlation) {
         postCorrelation(correlation);
     }
 }

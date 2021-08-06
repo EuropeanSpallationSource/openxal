@@ -40,9 +40,7 @@ public class Rmxn extends BaseMatrix<Rmxn> {
             arrInternal[i][i] = 1.0;
         }
 
-        Rmxn matId = new Rmxn(arrInternal);
-
-        return matId;
+        return new Rmxn(arrInternal);
     }
 
     /*
@@ -154,7 +152,7 @@ public class Rmxn extends BaseMatrix<Rmxn> {
      */
     @Override
     public Rmxn plus(Rmxn matAddend) {
-        this.checkEqualDimensions(matAddend);
+        checkEqualDimensions(matAddend);
         return super.plus(matAddend);
     }
 
@@ -168,7 +166,7 @@ public class Rmxn extends BaseMatrix<Rmxn> {
      */
     @Override
     public void plusEquals(Rmxn matAddend) {
-        this.checkEqualDimensions(matAddend);
+        checkEqualDimensions(matAddend);
         super.plusEquals(matAddend);
     }
 
@@ -182,7 +180,7 @@ public class Rmxn extends BaseMatrix<Rmxn> {
      */
     @Override
     public Rmxn minus(Rmxn matSub) {
-        this.checkEqualDimensions(matSub);
+        checkEqualDimensions(matSub);
         return super.minus(matSub);
     }
 
@@ -196,7 +194,7 @@ public class Rmxn extends BaseMatrix<Rmxn> {
      */
     @Override
     public void minusEquals(Rmxn matSub) {
-        this.checkEqualDimensions(matSub);
+        checkEqualDimensions(matSub);
         super.minusEquals(matSub);
     }
 
@@ -234,19 +232,19 @@ public class Rmxn extends BaseMatrix<Rmxn> {
      */
     public Rn times(Rn vecFac) throws IllegalArgumentException {
         // Check sizes
-        if (vecFac.getSize() != this.getColCnt()) {
+        if (vecFac.getSize() != getColCnt()) {
             throw new IllegalArgumentException(vecFac.getClass().getName() + " vector must have compatible size");
         }
 
         // Create solution vector of appropriate size
-        Rn vecSoln = new Rn(this.getRowCnt());
+        Rn vecSoln = new Rn(getRowCnt());
 
         // Perform matrix-vector multiplication
-        for (int i = 0; i < this.getRowCnt(); i++) {
+        for (int i = 0; i < getRowCnt(); i++) {
             double dblSum = 0.0;
 
-            for (int j = 0; j < this.getColCnt(); j++) {
-                double dblFac = this.getElem(i, j) * vecFac.getElem(j);
+            for (int j = 0; j < getColCnt(); j++) {
+                double dblFac = getElem(i, j) * vecFac.getElem(j);
 
                 dblSum += dblFac;
             }
@@ -303,28 +301,8 @@ public class Rmxn extends BaseMatrix<Rmxn> {
         int cntRowsTest = matTest.getRowCnt();
         int cntColsTest = matTest.getColCnt();
 
-        if (this.getRowCnt() != cntRowsTest || this.getColCnt() != cntColsTest) {
+        if (getRowCnt() != cntRowsTest || getColCnt() != cntColsTest) {
             throw new IllegalArgumentException("Unequal matrix dimensions");
-        }
-    }
-
-    /**
-     * Checks that the given matrix dimensions are suitable for
-     * pre-multiplication by this matrix.
-     *
-     * @param matTest matrix under test
-     *
-     * @throws IllegalArgumentException the given matrix row count is different
-     * than this matrix's column count
-     *
-     * @since Jul 22, 2015 by Christopher K. Allen
-     */
-    private void checkInternalDimensions(Rmxn matTest) throws IllegalArgumentException {
-        int cntColThis = this.getColCnt();
-        int cntRowTest = matTest.getRowCnt();
-
-        if (cntColThis != cntRowTest) {
-            throw new IllegalArgumentException("Inconsistent internal dimensions");
         }
     }
 }

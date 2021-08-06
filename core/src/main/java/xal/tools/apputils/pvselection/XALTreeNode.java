@@ -129,7 +129,7 @@ class TypeNode extends HandleNode {
         for (int k = 0; k < devs.size(); k++) {
             Collection<String> handlesOfNode = devs.elementAt(k).getHandles();
             Vector<String> handleV = new Vector<>();
-            handlesOfNode.forEach((element) -> handleV.addElement(element));
+            handlesOfNode.forEach(handleV::addElement);
 
             add(new DeviceNode(devIds.elementAt(k), handleV, devs.elementAt(k)));
         }

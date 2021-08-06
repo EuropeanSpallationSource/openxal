@@ -100,8 +100,8 @@ public class KeyValueQualifier implements Qualifier {
     @SuppressWarnings("unchecked")
     @Override
     public boolean matches(final Object object) {
-        final Comparable<Object> value = (Comparable<Object>) ((KeyedRecord) object).valueForKey(key);
-        final int comparisonResult = value.compareTo(this.value);
+        final Comparable<Object> testValue = (Comparable<Object>) ((KeyedRecord) object).valueForKey(key);
+        final int comparisonResult = testValue.compareTo(value);
 
         switch (operation) {
             case COMPARE_LESS_THAN:

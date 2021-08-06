@@ -7,6 +7,7 @@ package xal.tools.math;
 
 import java.io.PrintWriter;
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
 
 import org.ejml.data.DenseMatrix64F;
 import org.ejml.ops.CommonOps;
@@ -34,6 +35,7 @@ import xal.tools.data.IArchive;
  */
 public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, java.io.Serializable {
 
+    private static final Logger LOGGER = Logger.getLogger(BaseVector.class.getName());
 
     /*
      * Global Constants
@@ -79,10 +81,10 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      */
     public void setVector(double[] arrVector) throws IllegalArgumentException {
         // Check the dimensions of the argument double array
-        if (this.getSize() != arrVector.length) {
+        if (getSize() != arrVector.length) {
             throw new IllegalArgumentException(
                     "Dimensions of argument do not correspond to size of this vector = "
-                    + this.getSize()
+                    + getSize()
             );
         }
 
@@ -92,7 +94,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
         for (int i = 0; i < this.getSize(); i++) {
             double dblVal = arrVector[i];
 
-            this.setElem(i, dblVal);
+            setElem(i, dblVal);
         }
     }
 
@@ -110,7 +112,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      */
     public void setVector(V vecParent) {
         DenseMatrix64F impParent = vecParent.getVector();
-        this.assignVector(impParent);
+        assignVector(impParent);
     }
 
     /**
@@ -144,7 +146,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
             String strVal = tokArgs.nextToken();
             double dblVal = Double.parseDouble(strVal);
 
-            this.setElem(i, dblVal);
+            setElem(i, dblVal);
         }
     }
 
@@ -158,7 +160,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * vector
      */
     public void setElem(int intIndex, double dblVal) throws ArrayIndexOutOfBoundsException {
-        this.vecImpl.set(intIndex, 0, dblVal);
+        vecImpl.set(intIndex, 0, dblVal);
     }
 
     /**
@@ -175,7 +177,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * vector
      */
     public void setElem(IIndex iIndex, double dblVal) throws ArrayIndexOutOfBoundsException {
-        this.setElem(iIndex.val(), dblVal);
+        setElem(iIndex.val(), dblVal);
     }
 
     /*
@@ -187,7 +189,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @return vector length
      */
     public int getSize() {
-        return this.vecImpl.numRows;
+        return vecImpl.numRows;
     }
 
     /**
@@ -201,7 +203,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * size
      */
     public double getElem(int iIndex) throws ArrayIndexOutOfBoundsException {
-        return this.vecImpl.get(iIndex, 0);
+        return vecImpl.get(iIndex, 0);
     }
 
     /**
@@ -231,7 +233,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * vector
      */
     public double getElem(IIndex iIndex) throws ArrayIndexOutOfBoundsException {
-        return this.getElem(iIndex.val());
+        return getElem(iIndex.val());
     }
 
     /**
@@ -246,8 +248,8 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since Sep 25, 2013
      */
     public double[] getArrayCopy() {
-        double[] copy = new double[this.getSize()];
-        System.arraycopy(this.vecImpl.data, 0, copy, 0, this.getSize());
+        double[] copy = new double[getSize()];
+        System.arraycopy(vecImpl.data, 0, copy, 0, getSize());
         return copy;
     }
 
@@ -281,14 +283,14 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
     @Override
     public String toString() {
         // double is 15 significant digits plus the spaces and brackets
-        final int size = (this.getSize() * this.getSize() * 16) + (this.getSize() * 2) + 4;
+        final int size = (getSize() * getSize() * 16) + (getSize() * 2) + 4;
         StringBuilder strBuf = new StringBuilder(size);
 
         // get lock once instead of once per append
         synchronized (strBuf) {
             strBuf.append("{ ");
-            for (int i = 0; i < this.getSize(); i++) {
-                strBuf.append(this.getElem(i));
+            for (int i = 0; i < getSize(); i++) {
+                strBuf.append(getElem(i));
                 strBuf.append(" ");
             }
             strBuf.append(" }");
@@ -307,7 +309,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
     @Override
     public int hashCode() {
         long bits = 0;
-        for (int i = 0; i < this.getSize(); i++) {
+        for (int i = 0; i < getSize(); i++) {
             bits = bits * 31 + Double.doubleToLongBits(getElem(i));
         }
 
@@ -326,12 +328,12 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
         if (!(obj instanceof BaseVector)) {
             return false;
         }
-        BaseVector b = (BaseVector) obj;
-        if (this.getSize() != b.getSize()) {
+        BaseVector<?> b = (BaseVector<?>) obj;
+        if (getSize() != b.getSize()) {
             return false;
         }
-        for (int i = 0; i < this.getSize(); i++) {
-            if (this.getElem(i) != b.getElem(i)) {
+        for (int i = 0; i < getSize(); i++) {
+            if (getElem(i) != b.getElem(i)) {
                 return false;
             }
         }
@@ -347,23 +349,21 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @return a cloned copy of this vector
      */
     public V copyVector() {
-        V vecClone = this.newInstance(this.getSize());
-        ((BaseVector<V>) vecClone).assignVector(this.vecImpl);
+        BaseVector<V> vecClone = newInstance(getSize());
+        vecClone.assignVector(vecImpl);
 
-        return vecClone;
+        return (V) vecClone;
     }
 
-    ;
-
     /**
-     *  Assign this vector to be the zero vector, specifically
-     *  the vector containing all 0's.
+     * Assign this vector to be the zero vector, specifically the vector
+     * containing all 0's.
      *
      * @author Christopher K. Allen
-     * @since  Oct 3, 2013
+     * @since Oct 3, 2013
      */
     public void assignZero() {
-        CommonOps.fill(this.vecImpl, 0.0);
+        CommonOps.fill(vecImpl, 0.0);
     }
 
     /**
@@ -373,7 +373,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since Oct 3, 2013
      */
     public void assignUnity() {
-        CommonOps.fill(this.vecImpl, 1.0);
+        CommonOps.fill(vecImpl, 1.0);
     }
 
     /**
@@ -406,14 +406,13 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since Oct 18, 2013
      */
     public <U extends BaseVector<U>> void projectOnto(U vecSub) {
-
         // Check size of sub-space vector
-        if (vecSub.getSize() > this.getSize()) {
+        if (vecSub.getSize() > getSize()) {
             throw new IllegalArgumentException("Cannot project this vector onto the larger vector " + vecSub);
         }
 
         for (int i = 0; i < vecSub.getSize(); i++) {
-            double dblVal = this.getElem(i);
+            double dblVal = getElem(i);
 
             vecSub.setElem(i, dblVal);
         }
@@ -450,14 +449,13 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since Oct 18, 2013
      */
     public <U extends BaseVector<U>> void embedIn(U vecSup) {
-
         // Check the size of the super-space vector
-        if (vecSup.getSize() < this.getSize()) {
+        if (vecSup.getSize() < getSize()) {
             throw new IllegalArgumentException("Cannot embed this vector into a smaller vector " + vecSup);
         }
 
-        for (int i = 0; i < this.getSize(); i++) {
-            double dblVal = this.getElem(i);
+        for (int i = 0; i < getSize(); i++) {
+            double dblVal = getElem(i);
 
             vecSup.setElem(i, dblVal);
         }
@@ -476,10 +474,10 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since Oct 1, 2013
      */
     public boolean isEquivalentTo(V vecTest) {
-        if (!this.getClass().equals(vecTest.getClass())) {
+        if (!getClass().equals(vecTest.getClass())) {
             return false;
         }
-        return MatrixFeatures.isEquals(vecTest.getVector(), this.vecImpl, 1e-6);
+        return MatrixFeatures.isEquals(vecTest.getVector(), vecImpl, 1e-6);
     }
 
 
@@ -496,7 +494,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since Oct 10, 2013
      */
     public V negate() {
-        return this.times(-1.);
+        return times(-1.);
     }
 
     /**
@@ -506,7 +504,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since Oct 10, 2013
      */
     public void negateEquals() {
-        CommonOps.changeSign(this.vecImpl);
+        CommonOps.changeSign(vecImpl);
     }
 
     /**
@@ -517,22 +515,20 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *
      */
     public void plusEquals(V vecAdd) {
-        CommonOps.addEquals(this.vecImpl, vecAdd.getVector());
+        CommonOps.addEquals(vecImpl, vecAdd.getVector());
     }
 
-    ;
-
     /**
-     *  Vector addition without destruction
+     * Vector addition without destruction
      *
-     *  @param  vecAdd     vector added to this one (addend)
+     * @param vecAdd vector added to this one (addend)
      *
-     *  @return            sum of this vector and given vector,
+     * @return sum of this vector and given vector,
      *
      */
     public V plus(V vecAdd) {
         V result = newInstance(this.getSize());
-        CommonOps.add(this.vecImpl, vecAdd.getVector(), result.getVector());
+        CommonOps.add(vecImpl, vecAdd.getVector(), result.getVector());
 
         return result;
     }
@@ -545,7 +541,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *
      */
     public void minusEquals(V vecSub) {
-        CommonOps.subtractEquals(this.vecImpl, vecSub.getVector());
+        CommonOps.subtractEquals(vecImpl, vecSub.getVector());
     }
 
     /**
@@ -558,7 +554,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      */
     public V minus(V vecSub) {
         V result = newInstance(this.getSize());
-        CommonOps.subtract(this.vecImpl, vecSub.getVector(), result.getVector());
+        CommonOps.subtract(vecImpl, vecSub.getVector(), result.getVector());
 
         return result;
     }
@@ -571,8 +567,8 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @return result of scalar multiplication
      */
     public V times(double s) {
-        V result = newInstance(this.getSize());
-        CommonOps.scale(s, this.vecImpl, result.getVector());
+        V result = newInstance(getSize());
+        CommonOps.scale(s, vecImpl, result.getVector());
 
         return result;
     }
@@ -583,24 +579,20 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @param s scalar
      */
     public void timesEquals(double s) {
-        CommonOps.scale(s, this.vecImpl);
+        CommonOps.scale(s, vecImpl);
     }
 
-    ;
-
-
     /**
-     *  Vector inner product.
+     * Vector inner product.
      *
-     *  Computes the inner product of of this vector with the given
-     *  vector.
+     * Computes the inner product of of this vector with the given vector.
      *
-     *  @param  v     second vector
+     * @param v second vector
      *
-     *  @return         inner product of this vector and argument
+     * @return inner product of this vector and argument
      */
     public double innerProd(V v) {
-        return CommonOps.dot(this.vecImpl, v.getVector());
+        return CommonOps.dot(vecImpl, v.getVector());
     }
 
     /**
@@ -613,20 +605,19 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      *
      */
     public <M extends SquareMatrix<M>> V leftMultiply(M mat) {
-
         // Check sizes
-        if (this.getSize() != mat.getSize()) {
+        if (getSize() != mat.getSize()) {
             throw new IllegalArgumentException("matrix and vector must be of compatible dimensions");
         }
 
         // Perform covariant multiplication
-        V result = newInstance(this.getSize());
-        for (int j = 0; j < this.getSize(); j++) {
+        V result = newInstance(getSize());
+        for (int j = 0; j < getSize(); j++) {
 
             double dblSum = 0.0;
-            for (int i = 0; i < this.getSize(); i++) {
+            for (int i = 0; i < getSize(); i++) {
 
-                dblSum += mat.getElem(i, j) * this.getElem(i);
+                dblSum += mat.getElem(i, j) * getElem(i);
             }
 
             result.getVector().set(j, dblSum);
@@ -646,18 +637,18 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      */
     public <M extends SquareMatrix<M>> V rightMultiply(M mat) {
         // Check sizes
-        if (this.getSize() != mat.getSize()) {
+        if (getSize() != mat.getSize()) {
             throw new IllegalArgumentException("matrix and vector must be of compatible dimensions");
         }
 
         // Perform contra-variant multiplication
-        V result = newInstance(this.getSize());
-        for (int i = 0; i < this.getSize(); i++) {
+        V result = newInstance(getSize());
+        for (int i = 0; i < getSize(); i++) {
 
             double dblSum = 0.0;
-            for (int j = 0; j < this.getSize(); j++) {
+            for (int j = 0; j < getSize(); j++) {
 
-                dblSum += mat.getElem(i, j) * this.getElem(i);
+                dblSum += mat.getElem(i, j) * getElem(i);
             }
 
             result.getVector().set(i, dblSum);
@@ -684,7 +675,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
 
         dblSum = 0.0;
         for (i = 0; i < getSize(); i++) {
-            dblSum += Math.abs(this.getElem(i));
+            dblSum += Math.abs(getElem(i));
         }
 
         return dblSum;
@@ -703,8 +694,8 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
         double dblSum;
 
         dblSum = 0.0;
-        for (i = 0; i < this.getSize(); i++) {
-            dblSum += this.getElem(i) * this.getElem(i);
+        for (i = 0; i < getSize(); i++) {
+            dblSum += getElem(i) * getElem(i);
         }
 
         return dblSum;
@@ -723,9 +714,9 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
         double dblMax;
 
         dblMax = 0.0;
-        for (i = 0; i < this.getSize(); i++) {
-            if (Math.abs(this.getElem(i)) > dblMax) {
-                dblMax = Math.abs(this.getElem(i));
+        for (i = 0; i < getSize(); i++) {
+            if (Math.abs(getElem(i)) > dblMax) {
+                dblMax = Math.abs(getElem(i));
             }
         }
 
@@ -744,7 +735,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      */
     @Override
     public void save(DataAdaptor daptArchive) {
-        daptArchive.setValue(ATTR_DATA, this.toString());
+        daptArchive.setValue(ATTR_DATA, toString());
     }
 
     /**
@@ -760,7 +751,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
     public void load(DataAdaptor daptArchive) throws DataFormatException {
         if (daptArchive.hasAttribute(ATTR_DATA)) {
             String strValues = daptArchive.stringValue(ATTR_DATA);
-            this.setVector(strValues);
+            setVector(strValues);
         }
     }
 
@@ -771,7 +762,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * Print the vector contents to standard output.
      */
     public void print() {
-        System.out.print(this.toString());
+        LOGGER.info(toString());
     }
 
     /**
@@ -780,15 +771,16 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @param os output stream object
      */
     public void print(PrintWriter os) {
-
         // Create vector string
-        int indLast = this.getSize() - 1;
-        String strVec = "(";
+        int indLast = getSize() - 1;
 
+        StringBuilder bld = new StringBuilder();
+        bld.append("(");
         for (int i = 0; i < indLast; i++) {
-            strVec = strVec + this.getElem(i) + ",";
+            bld.append(getElem(i)).append(",");
         }
-        strVec = strVec + this.getElem(indLast) + ")";
+        bld.append(getElem(indLast)).append(")");
+        String strVec = bld.toString();
 
         // Send to output stream
         os.print(strVec);
@@ -800,15 +792,16 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @param os output stream object
      */
     public void println(PrintWriter os) {
-
         // Create vector string
-        int indLast = this.getSize() - 1;
-        String strVec = "(";
+        int indLast = getSize() - 1;
 
+        StringBuilder bld = new StringBuilder();
+        bld.append("(");
         for (int i = 0; i < indLast; i++) {
-            strVec = strVec + this.getElem(i) + ",";
+            bld.append(getElem(i)).append(",");
         }
-        strVec = strVec + this.getElem(indLast) + ")";
+        bld.append(getElem(indLast)).append(")");
+        String strVec = bld.toString();
 
         // Send to output stream
         os.println(strVec);
@@ -828,7 +821,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * public, zero-argument constructor
      */
     protected BaseVector(int intSize) {
-        this.vecImpl = new DenseMatrix64F(intSize, 1);
+        vecImpl = new DenseMatrix64F(intSize, 1);
     }
 
     /**
@@ -844,7 +837,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since Sep 25, 2013
      */
     protected BaseVector(V vecParent) throws UnsupportedOperationException {
-        this.assignVector(vecParent.getVector());
+        assignVector(vecParent.getVector());
     }
 
     /**
@@ -883,16 +876,16 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
         // Error check the number of token strings
         StringTokenizer tokArgs = new StringTokenizer(strTokens, " ,()[]{}");
 
-        if (tokArgs.countTokens() != this.getSize()) {
+        if (tokArgs.countTokens() != getSize()) {
             throw new IllegalArgumentException("Vector, wrong number of token in string initializer: " + strTokens);
         }
 
         // Extract initial phase coordinate values
-        for (int i = 0; i < this.getSize(); i++) {
+        for (int i = 0; i < getSize(); i++) {
             String strVal = tokArgs.nextToken();
             double dblVal = Double.parseDouble(strVal);
 
-            this.setElem(i, dblVal);
+            setElem(i, dblVal);
         }
     }
 
@@ -914,7 +907,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      */
     protected BaseVector(double[] arrVals) {
         this(arrVals.length);
-        this.setVector(arrVals);;
+        setVector(arrVals);
     }
 
     /**
@@ -929,7 +922,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      */
     protected BaseVector(int intSize, DataAdaptor daSource) {
         this(intSize);
-        this.load(daSource);
+        load(daSource);
     }
 
 
@@ -942,7 +935,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @return the internal implementation matrix object
      */
     protected DenseMatrix64F getVector() {
-        return this.vecImpl;
+        return vecImpl;
     }
 
     /**
@@ -960,7 +953,7 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
         if (vecValue.numCols > 1) {
             throw new IllegalArgumentException("Provided object has more than one column.");
         }
-        this.vecImpl = vecValue.copy();
+        vecImpl = vecValue.copy();
     }
 
     /**
@@ -995,9 +988,8 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * @since Oct 1, 2013
      */
     protected V newInstance(DenseMatrix64F vecInit) {
-        V vecNewInst = this.newInstance(vecInit.numRows);
-        ((BaseVector<V>) vecNewInst).assignVector(vecInit);
-        return vecNewInst;
+        BaseVector<V> vecNewInst = newInstance(vecInit.numRows);
+        vecNewInst.assignVector(vecInit);
+        return (V) vecNewInst;
     }
-
 }

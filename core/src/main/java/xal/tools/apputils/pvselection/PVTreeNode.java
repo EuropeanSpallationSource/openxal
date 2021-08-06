@@ -29,7 +29,7 @@ public class PVTreeNode extends DefaultMutableTreeNode {
 
     private Channel channel = null;
 
-    private ActionListener switchOnOffListener = null;
+    private transient ActionListener switchOnOffListener = null;
 
     public static final int SWITCHED_ON = 1;
     public static final int SWITCHED_OFF = 0;
@@ -37,7 +37,7 @@ public class PVTreeNode extends DefaultMutableTreeNode {
     public static final String SWITCHED_ON_COMMAND = "on";
     public static final String SWITCHED_OFF_COMMAND = "off";
 
-    private ActionListener createRemoveListener = null;
+    private transient ActionListener createRemoveListener = null;
 
     public static final int CREATE_PV = 2;
     public static final int REMOVE_PV = 3;
@@ -45,7 +45,7 @@ public class PVTreeNode extends DefaultMutableTreeNode {
     public static final String CREATE_PV_COMMAND = "create";
     public static final String REMOVE_PV_COMMAND = "remove";
 
-    private ActionListener renameListener = null;
+    private transient ActionListener renameListener = null;
     public static final int RENAME_PV = 4;
     public static final String RENAME_PV_COMMAND = "rename";
 
@@ -58,15 +58,6 @@ public class PVTreeNode extends DefaultMutableTreeNode {
     public PVTreeNode(String name) {
         super();
         this.name = name;
-    }
-
-    /**
-     * Get the child PVTreeNode enumeration overriding the inherited untyped
-     * Enumeration
-     */
-    @Override
-    public Enumeration<TreeNode> children() {
-        return (Enumeration<TreeNode>) super.children();
     }
 
     public void setName(String name) {
@@ -203,31 +194,25 @@ public class PVTreeNode extends DefaultMutableTreeNode {
 
     public static Integer getIndexOfSelectedNode(PVTreeNode root) {
         Integer index = null;
-        synchronized (root) {
-            PVTreeNode next = root;
-            int indSelected = 0;
-            while (next != null && !next.isSelected()) {
-                indSelected++;
-                next = (PVTreeNode) next.getNextNode();
-            }
-            if (getNumberOfSelectedNodes(root) == 1) {
-                index = indSelected;
-            }
+        PVTreeNode next = root;
+        int indSelected = 0;
+        while (next != null && !next.isSelected()) {
+            indSelected++;
+            next = (PVTreeNode) next.getNextNode();
+        }
+        if (getNumberOfSelectedNodes(root) == 1) {
+            index = indSelected;
         }
         return index;
     }
 
     public static PVTreeNode getSelectedPVTreeNode(PVTreeNode root) {
         PVTreeNode next = root;
-        synchronized (root) {
-            int indSelected = 0;
-            while (next != null && !next.isSelected()) {
-                indSelected++;
-                next = (PVTreeNode) next.getNextNode();
-            }
-            if (getNumberOfSelectedNodes(root) == 1) {
-                return next;
-            }
+        while (next != null && !next.isSelected()) {
+            next = (PVTreeNode) next.getNextNode();
+        }
+        if (getNumberOfSelectedNodes(root) == 1) {
+            return next;
         }
         return null;
     }

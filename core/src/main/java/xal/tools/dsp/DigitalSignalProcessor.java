@@ -55,16 +55,6 @@ public class DigitalSignalProcessor {
      */
     private FourierExpTransform dftExp = null;
 
-    /**
-     * frequency spectrum analyzer - instantiated on demand
-     */
-    private FourierSineTransform dftSin = null;
-
-    /**
-     * the filter object - instantiated on demand
-     */
-    private ExpFilter efoFilter = null;
-
     /*
      * Initialization
      */
@@ -87,7 +77,7 @@ public class DigitalSignalProcessor {
      * @return digital signal size expected for processing
      */
     public int getSignalSize() {
-        return this.szSignal;
+        return szSignal;
     }
 
     /*
@@ -104,7 +94,7 @@ public class DigitalSignalProcessor {
      * error)
      */
     public double[] differentiate(final double[] arrSignal) throws IllegalArgumentException {
-        return this.getDifferentiator().response(arrSignal);
+        return getDifferentiator().response(arrSignal);
     }
 
     /**
@@ -119,7 +109,7 @@ public class DigitalSignalProcessor {
      * error)
      */
     public double[] integrate(final double[] arrSignal) throws IllegalArgumentException {
-        return this.getIntegrator().response(arrSignal);
+        return getIntegrator().response(arrSignal);
     }
 
     /**
@@ -133,7 +123,7 @@ public class DigitalSignalProcessor {
      * error)
      */
     public double[] average(final double[] arrSignal) throws IllegalArgumentException {
-        return this.getAverager().response(arrSignal);
+        return getAverager().response(arrSignal);
     }
 
     /**
@@ -152,9 +142,7 @@ public class DigitalSignalProcessor {
 
         double[] arrDif = this.getDifferentiator().response(arrSignal);
         double[] arrAbs = DigitalFunctionUtility.abs(arrDif);
-        double[] arrTv = this.getDifferentiator().response(arrAbs);
-
-        return arrTv;
+        return getDifferentiator().response(arrAbs);
     }
 
     /*
@@ -183,13 +171,13 @@ public class DigitalSignalProcessor {
      * @see DigitalFunctionUtility#totalVariation(double[])
      */
     public double[] signalIndicator(final double[] arrSignal) throws IllegalArgumentException {
-        int N = arrSignal.length;
+        int n = arrSignal.length;
 
         double[] arrAve = this.average(arrSignal);
         double[] arrDif = DigitalFunctionUtility.subtract(arrSignal, arrAve);
         double[] arrTv = this.totalVariation(arrDif);
 
-        double dblMax = arrTv[N - 1];
+        double dblMax = arrTv[n - 1];
         DigitalFunctionUtility.scaleFunction(1.0 / dblMax, arrTv);
 
         return arrTv;
@@ -229,7 +217,7 @@ public class DigitalSignalProcessor {
      * error)
      */
     public double[] autoCorrelation(double[] arrSignal) throws IllegalArgumentException {
-        return this.crossCorrelation(arrSignal, arrSignal);
+        return crossCorrelation(arrSignal, arrSignal);
     }
 
     /**
@@ -265,19 +253,19 @@ public class DigitalSignalProcessor {
                     + "arguments are different sizes"
             );
         }
-        int N = arrStat.length;
+        int n = arrStat.length;
 
-        double[] arrRxy = new double[N];
-        for (int d = 0; d < N; d++) {
+        double[] arrRxy = new double[n];
+        for (int d = 0; d < n; d++) {
             double dblSum = 0.0;
 
-            for (int m = 0; m < N; m++) {
-                int n = (d + m) % N;
+            for (int m = 0; m < n; m++) {
+                int k = (d + m) % n;
 
-                dblSum += arrStat[m] * arrShft[n];
+                dblSum += arrStat[m] * arrShft[k];
             }
 
-            arrRxy[d] = dblSum / N;
+            arrRxy[d] = dblSum / n;
         }
 
         return arrRxy;
@@ -306,33 +294,7 @@ public class DigitalSignalProcessor {
      * @see FourierExpTransform#powerSpectrum(double[])
      */
     public double[] powerSpectrum(final double[] arrSignal) throws IllegalArgumentException {
-        double[] arrSpec = this.getTransformer().powerSpectrum(arrSignal);
-
-        return arrSpec;
-    }
-
-    /**
-     *
-     */
-    /*
-     * Internal Support
-     */
-    /**
-     * Check the given discrete function for the proper dimensions.
-     *
-     * @param arrSignal discrete function to check
-     *
-     * @throws IllegalArgumentException function did not have proper dimensions
-     */
-    private void checkSignal(double[] arrSignal) throws IllegalArgumentException {
-        if (arrSignal.length != this.getSignalSize()) {
-            throw new IllegalArgumentException(
-                    "DigitalSignalProcessor#checkSignal() - given signal has size = "
-                    + Integer.toString(arrSignal.length)
-                    + ", expected size = "
-                    + Integer.toString(this.getSignalSize())
-            );
-        }
+        return getTransformer().powerSpectrum(arrSignal);
     }
 
     /**
@@ -343,40 +305,11 @@ public class DigitalSignalProcessor {
      * @return the spectrum analyzer object for this instance
      */
     private FourierExpTransform getTransformer() {
-        if (this.dftExp == null) {
-            this.dftExp = new FourierExpTransform(this.getSignalSize());
+        if (dftExp == null) {
+            dftExp = new FourierExpTransform(this.getSignalSize());
         }
 
-        return this.dftExp;
-    }
-
-    /**
-     * Return the spectrum analyzer (Fourier transformer) object. If the
-     * transform has not already been created then we instantiate it and return
-     * it.
-     *
-     * @return the spectrum analyzer object for this instance
-     */
-    private FourierSineTransform getSinTransformer() {
-        if (this.dftSin == null) {
-            this.dftSin = new FourierSineTransform(this.getSignalSize());
-        }
-
-        return this.dftSin;
-    }
-
-    /**
-     * Return the filter object used by this instance. If the filter has not
-     * already been created then instantiate and return it.
-     *
-     * @return the filter object for this instance
-     */
-    private ExpFilter getFilter() {
-        if (this.efoFilter == null) {
-            this.efoFilter = new ExpFilter(this.getSignalSize());
-        }
-
-        return this.efoFilter;
+        return dftExp;
     }
 
     /**
@@ -387,12 +320,12 @@ public class DigitalSignalProcessor {
      * @return the differentiator object for this instance
      */
     private DigitalDifferentiator getDifferentiator() {
-        if (this.dfoDiffer == null) {
-            this.dfoDiffer = new DigitalDifferentiator();
+        if (dfoDiffer == null) {
+            dfoDiffer = new DigitalDifferentiator();
         }
 
-        this.dfoDiffer.reset();
-        return this.dfoDiffer;
+        dfoDiffer.reset();
+        return dfoDiffer;
     }
 
     /**
@@ -402,12 +335,12 @@ public class DigitalSignalProcessor {
      * @return the integrator object for this instance
      */
     private DigitalIntegrator getIntegrator() {
-        if (this.dfoIntegr == null) {
-            this.dfoIntegr = new DigitalIntegrator();
+        if (dfoIntegr == null) {
+            dfoIntegr = new DigitalIntegrator();
         }
 
-        this.dfoIntegr.reset();
-        return this.dfoIntegr;
+        dfoIntegr.reset();
+        return dfoIntegr;
     }
 
     /**
@@ -417,12 +350,11 @@ public class DigitalSignalProcessor {
      * @return the averager object for this instance
      */
     private DigitalAverager getAverager() {
-        if (this.dfoAverag == null) {
-            this.dfoAverag = new DigitalAverager();
+        if (dfoAverag == null) {
+            dfoAverag = new DigitalAverager();
         }
 
-        this.dfoAverag.reset();
-        return this.dfoAverag;
+        dfoAverag.reset();
+        return dfoAverag;
     }
-
 }

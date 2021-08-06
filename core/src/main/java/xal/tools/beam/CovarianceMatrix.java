@@ -65,11 +65,6 @@ public class CovarianceMatrix extends PhaseMatrix {
      */
     private static final int CNT_SYMMETRY_DIGITS = 10;
 
-    /**
-     * default number of ULPs to use for comparing numbers for equality
-     */
-    private static final int CNT_SYMMETRY_ULPS = 10000;
-
     /*
      *  Global Methods
      */
@@ -169,20 +164,19 @@ public class CovarianceMatrix extends PhaseMatrix {
      * @return correlation matrix corresponding to the above twiss parameters
      */
     public static CovarianceMatrix buildCovariance(Twiss twissX, Twiss twissY, Twiss twissZ) {
-
         CovarianceMatrix matCorr = new CovarianceMatrix(PhaseMatrix.zero());
 
         // Fill in x plane block
-        double[][] Rxx = twissX.correlationMatrix();
-        matCorr.setSubMatrix(0, 1, 0, 1, Rxx);
+        double[][] rxx = twissX.correlationMatrix();
+        matCorr.setSubMatrix(0, 1, 0, 1, rxx);
 
         // Fill in y plane block
-        double[][] Ryy = twissY.correlationMatrix();
-        matCorr.setSubMatrix(2, 3, 2, 3, Ryy);
+        double[][] ryy = twissY.correlationMatrix();
+        matCorr.setSubMatrix(2, 3, 2, 3, ryy);
 
         // Fill in z plane block
-        double[][] Rzz = twissZ.correlationMatrix();
-        matCorr.setSubMatrix(4, 5, 4, 5, Rzz);
+        double[][] rzz = twissZ.correlationMatrix();
+        matCorr.setSubMatrix(4, 5, 4, 5, rzz);
 
         matCorr.setElem(6, 6, 1.0);
 
@@ -257,7 +251,7 @@ public class CovarianceMatrix extends PhaseMatrix {
         PhaseMatrix matBase = PhaseMatrix.loadFrom(daSource);
         CovarianceMatrix matCov = new CovarianceMatrix(matBase);
 
-        if (!matCov.checkSymmetryToSigDigits(matCov, CNT_SYMMETRY_DIGITS)) {
+        if (!matCov.checkSymmetryToSigDigits(CNT_SYMMETRY_DIGITS)) {
             throw new IllegalArgumentException("CovarianceMatrix(PhaseMatrix) - argument not symmetric.");
         }
 
@@ -308,7 +302,7 @@ public class CovarianceMatrix extends PhaseMatrix {
             throws IllegalArgumentException, NumberFormatException {
         super(strTokens);
 
-        if (!this.checkSymmetryToSigDigits(this, CNT_SYMMETRY_DIGITS)) {
+        if (!this.checkSymmetryToSigDigits(CNT_SYMMETRY_DIGITS)) {
             throw new IllegalArgumentException("CovarianceMatrix(String) - argument not symmetric.");
         }
     }
@@ -568,9 +562,7 @@ public class CovarianceMatrix extends PhaseMatrix {
      */
     public double getSigmaX() {
         double dblCovX = this.computeCentralCovXX();
-        double dblSigX = Math.sqrt(dblCovX);
-
-        return dblSigX;
+        return Math.sqrt(dblCovX);
     }
 
     /**
@@ -581,9 +573,7 @@ public class CovarianceMatrix extends PhaseMatrix {
      */
     public double getSigmaY() {
         double dblCovY = this.computeCentralCovYY();
-        double dblSigY = Math.sqrt(dblCovY);
-
-        return dblSigY;
+        return Math.sqrt(dblCovY);
     }
 
     /**
@@ -594,9 +584,7 @@ public class CovarianceMatrix extends PhaseMatrix {
      */
     public double getSigmaZ() {
         double dblCovZ = this.computeCentralCovZZ();
-        double dblSigZ = Math.sqrt(dblCovZ);
-
-        return dblSigZ;
+        return Math.sqrt(dblCovZ);
     }
 
     /**
@@ -637,21 +625,21 @@ public class CovarianceMatrix extends PhaseMatrix {
     public double[] computeRmsEmittances() {
         CovarianceMatrix matSig = this.computeCentralCovariance();
 
-        double ex_2
+        double ex2
                 = matSig.getElem(0, 0) * matSig.getElem(1, 1)
                 - matSig.getElem(0, 1) * matSig.getElem(1, 0);
-        double ey_2
+        double ey2
                 = matSig.getElem(2, 2) * matSig.getElem(3, 3)
                 - matSig.getElem(2, 3) * matSig.getElem(3, 2);
-        double ez_2
+        double ez2
                 = matSig.getElem(4, 4) * matSig.getElem(5, 5)
                 - matSig.getElem(4, 5) * matSig.getElem(5, 4);
 
         double[] arrEmitt = new double[3];
 
-        arrEmitt[0] = java.lang.Math.sqrt(ex_2);
-        arrEmitt[1] = java.lang.Math.sqrt(ey_2);
-        arrEmitt[2] = java.lang.Math.sqrt(ez_2);
+        arrEmitt[0] = java.lang.Math.sqrt(ex2);
+        arrEmitt[1] = java.lang.Math.sqrt(ey2);
+        arrEmitt[2] = java.lang.Math.sqrt(ez2);
 
         return arrEmitt;
     }
@@ -674,41 +662,31 @@ public class CovarianceMatrix extends PhaseMatrix {
         CovarianceMatrix matSig = this.computeCentralCovariance();
 
         // array of rms emittance values
-        double[] arrEmit;
-
-        arrEmit = computeRmsEmittances();
+        double[] arrEmit = computeRmsEmittances();
 
         // Compute the X plane twiss parameters
         // x plane twiss parameters
-        double ax, bx, ex;
+        double ex = arrEmit[0];
+        double bx = matSig.getElem(0, 0) / ex;
+        double ax = -matSig.getElem(0, 1) / ex;
         // twiss parameter object
-        Twiss twissX;
-
-        ex = arrEmit[0];
-        bx = matSig.getElem(0, 0) / ex;
-        ax = -matSig.getElem(0, 1) / ex;
-        twissX = new Twiss(ax, bx, ex);
+        Twiss twissX = new Twiss(ax, bx, ex);
 
         // Compute the Y plane twiss parameters
         // y plane twiss parameters
-        double ay, by, ey;
+        double ey = arrEmit[1];
+        double by = matSig.getElem(2, 2) / ey;
+        double ay = -matSig.getElem(2, 3) / ey;
         // twiss parameter object
-        Twiss twissY;
-        ey = arrEmit[1];
-        by = matSig.getElem(2, 2) / ey;
-        ay = -matSig.getElem(2, 3) / ey;
-        twissY = new Twiss(ay, by, ey);
+        Twiss twissY = new Twiss(ay, by, ey);
 
         // Compute the Z plane twiss parameters
         // z plane twiss parameters
-        double az, bz, ez;
+        double ez = arrEmit[2];
+        double bz = matSig.getElem(4, 4) / ez;
+        double az = -matSig.getElem(4, 5) / ez;
         // twiss parameter object
-        Twiss twissZ;
-
-        ez = arrEmit[2];
-        bz = matSig.getElem(4, 4) / ez;
-        az = -matSig.getElem(4, 5) / ez;
-        twissZ = new Twiss(az, bz, ez);
+        Twiss twissZ = new Twiss(az, bz, ez);
 
         return new Twiss[]{twissX, twissY, twissZ};
     }
@@ -732,45 +710,6 @@ public class CovarianceMatrix extends PhaseMatrix {
     /*
      * Matrix Operations
      */
- /*
-     * Support Methods
-     */
-    /**
-     * Check matrix for symmetry. This method uses the number of Units in the
-     * Last Place (ULPs) to round numbers when comparing. For specific use of
-     * the ULPs bracketing procedure see
-     * <code>{@link ElementaryFunction#approxEq(double,double)}</code>.
-     *
-     * @param matCov   <code>CovarianceMatrix</code> object to check
-     * @param cntUlps number of ULPs of tolerance when comparing two numbers for
-     * equivalence
-     *
-     * @return true if symmetric, false if not
-     *
-     * @version Jan 4, 2016, Christopher K Allen
-     *
-     * @see ElementaryFunction#approxEq(double, double)
-     *
-     */
-    @SuppressWarnings("unused")
-    private boolean checkSymmetryToUlps(CovarianceMatrix matCov, int cntUlps) {
-        //loop control variables
-        int i, j;
-
-        for (i = 0; i < 7; i++) {
-            for (j = i + 1; j < 7; j++) {
-                double dblValUp = this.getElem(i, j);
-                double dblValLw = this.getElem(j, i);
-
-                if (!ElementaryFunction.approxEq(dblValUp, dblValLw, cntUlps)) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
     /**
      * Checks the symmetric of the given covariance matrix to <em>N</em>
      * significant digits of accuracy. Specifically, when comparing to opposing
@@ -789,14 +728,11 @@ public class CovarianceMatrix extends PhaseMatrix {
      *
      * @see ElementaryFunction#significantDigitsEqs(double, double, int)
      */
-    private boolean checkSymmetryToSigDigits(CovarianceMatrix matCov, int cntDigits) {
-        //loop control variables
-        int i, j;
-
-        for (i = 0; i < 7; i++) {
-            for (j = i + 1; j < 7; j++) {
-                double dblValUp = this.getElem(i, j);
-                double dblValLw = this.getElem(j, i);
+    private boolean checkSymmetryToSigDigits(int cntDigits) {
+        for (int i = 0; i < 7; i++) {
+            for (int j = i + 1; j < 7; j++) {
+                double dblValUp = getElem(i, j);
+                double dblValLw = getElem(j, i);
 
                 if (!ElementaryFunction.significantDigitsEqs(dblValUp, dblValLw, cntDigits)) {
                     return false;

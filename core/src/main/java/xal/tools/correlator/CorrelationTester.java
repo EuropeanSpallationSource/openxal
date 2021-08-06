@@ -15,15 +15,15 @@ package xal.tools.correlator;
  *
  * @author tap
  */
-public class CorrelationTester<RecordType> {
+public class CorrelationTester<T> {
 
     private volatile int fullCount;
-    private volatile CorrelationFilter<RecordType> filter;
+    private volatile CorrelationFilter<T> filter;
 
     /**
      * Creates a new instance of CorrelationTester
      */
-    public CorrelationTester(final int fullCount, final CorrelationFilter<RecordType> aFilter) {
+    public CorrelationTester(final int fullCount, final CorrelationFilter<T> aFilter) {
         this.fullCount = fullCount;
         setFilter(aFilter);
     }
@@ -42,7 +42,7 @@ public class CorrelationTester<RecordType> {
      *
      * @return The correlation filter.
      */
-    public CorrelationFilter<RecordType> getFilter() {
+    public CorrelationFilter<T> getFilter() {
         return filter;
     }
 
@@ -51,9 +51,9 @@ public class CorrelationTester<RecordType> {
      *
      * @param newFilter The new filter to apply to correlations.
      */
-    public void setFilter(final CorrelationFilter<RecordType> newFilter) {
+    public void setFilter(final CorrelationFilter<T> newFilter) {
         if (newFilter == null) {
-            filter = CorrelationFilterFactory.<RecordType>defaultFilter();
+            filter = CorrelationFilterFactory.<T>defaultFilter();
         } else {
             filter = newFilter;
         }
@@ -65,7 +65,7 @@ public class CorrelationTester<RecordType> {
      * @param correlation The correlation to test.
      * @return true if the correlation passes the filter test, and false if not.
      */
-    public boolean accept(final Correlation<RecordType> correlation) {
+    public boolean accept(final Correlation<T> correlation) {
         return filter.accept(correlation, fullCount);
     }
 }

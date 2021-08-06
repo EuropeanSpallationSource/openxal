@@ -12,7 +12,7 @@ package xal.tools.correlator;
  *
  * @author tap
  */
-public interface CorrelationNotice<RecordType> {
+public interface CorrelationNotice<T> {
 
     /**
      * Handle the correlation event. This method gets called when a correlation
@@ -21,7 +21,7 @@ public interface CorrelationNotice<RecordType> {
      * @param sender The poster of the correlation event.
      * @param correlation The correlation that was posted.
      */
-    public void newCorrelation(Object sender, Correlation<RecordType> correlation);
+    public void newCorrelation(Object sender, Correlation<T> correlation);
 
     /**
      * Handle the no correlation event. This method gets called when no

@@ -44,7 +44,7 @@ public class DifferentiableOperationMinimizer implements Runnable {
     /**
      * maximum number of evaluations to evaluate the operation
      */
-    volatile private int maxEvaluations;
+    private volatile int maxEvaluations;
 
     /**
      * best solution found
@@ -216,7 +216,7 @@ public class DifferentiableOperationMinimizer implements Runnable {
 
         final double curvature = Hessian.getCurvature(gradient, hessian);
 
-        double searchStep = 0.0;
+        double searchStep;
         if (curvature <= 0.0 || Double.isInfinite(curvature) || Double.isNaN(curvature)) {
             searchStep = getMaxSearchStep(initialPoint, gradient);
         } else {
@@ -299,8 +299,8 @@ public class DifferentiableOperationMinimizer implements Runnable {
         final double lowerRange = initialValue - variable.getLowerLimit();
         final double upperRange = variable.getUpperLimit() - initialValue;
         final double randomLocation = randomValue(0.0, lowerRange + upperRange);
-        double limit = 0.0;
-        double rangeFraction = 0.0;
+        double limit;
+        double rangeFraction;
         if (randomLocation < lowerRange) {
             limit = variable.getLowerLimit();
             rangeFraction = randomLocation / lowerRange;

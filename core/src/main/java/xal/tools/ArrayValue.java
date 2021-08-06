@@ -29,8 +29,8 @@ public abstract class ArrayValue extends Number {
     /**
      * Empty constructor
      */
-    public ArrayValue() {
-        array = new Double(Double.NaN);
+    protected ArrayValue() {
+        array = Double.NaN;
     }
 
     /**
@@ -325,7 +325,7 @@ abstract class NumericStore extends ArrayValue {
     /**
      * Constructor
      */
-    public NumericStore(final Object newArray) {
+    protected NumericStore(final Object newArray) {
         super(newArray);
     }
 

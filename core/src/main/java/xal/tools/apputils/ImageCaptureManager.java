@@ -69,10 +69,7 @@ public class ImageCaptureManager {
                 if (file.isDirectory()) {
                     return true;
                 }
-                if (name.endsWith("." + "png")) {
-                    return true;
-                }
-                return false;
+                return name.endsWith("." + "png");
             }
 
             /**
@@ -149,6 +146,8 @@ public class ImageCaptureManager {
                 ImageIO.write(image, "png", fileSelection);
                 break;
             case JFileChooser.ERROR_OPTION:
+                break;
+            default:
                 break;
         }
     }

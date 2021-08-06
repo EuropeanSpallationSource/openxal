@@ -18,39 +18,40 @@ import java.util.*;
  *
  * @author tap
  */
-public class CorrelationStack<RecordType> {
+public class CorrelationStack<T> {
 
     /**
      * buffer is a LILO stack of correlations with the oldest correlations
      * having the smallest indices.
      */
-    protected final LinkedList<Correlation<RecordType>> buffer;
+    protected final LinkedList<Correlation<T>> buffer;
     protected int stackSize;
-    protected Correlation<RecordType> lastCorrelation;
+    protected Correlation<T> lastCorrelation;
 
     /**
      * Correlator
      */
-    protected Correlator<?, RecordType, ?> correlator;
+    protected Correlator<?, T, ?> correlator;
 
     /**
      * Creates a new instance of CorrelationStack
      */
-    public CorrelationStack(final Correlator<?, RecordType, ?> aCorrelator, final int aStackSize) {
+    public CorrelationStack(final Correlator<?, T, ?> aCorrelator, final int aStackSize) {
         stackSize = aStackSize;
         buffer = new LinkedList<>();
         lastCorrelation = null;
 
         correlator = aCorrelator;
         correlator.usePatientBroadcaster();
-        correlator.addListener(new CorrelationNotice<RecordType>() {
+        correlator.addListener(new CorrelationNotice<T>() {
             @Override
-            public void newCorrelation(final Object sender, final Correlation<RecordType> correlation) {
+            public void newCorrelation(final Object sender, final Correlation<T> correlation) {
                 push(correlation);
             }
 
             @Override
             public void noCorrelationCaught(Object sender) {
+                // Do nothing
             }
         });
     }
@@ -94,7 +95,7 @@ public class CorrelationStack<RecordType> {
      * @throws java.util.NoSuchElementException if there are no correlations on
      * the stack.
      */
-    public Correlation<RecordType> popCorrelation() throws NoSuchElementException {
+    public Correlation<T> popCorrelation() throws NoSuchElementException {
         synchronized (buffer) {
             return buffer.removeFirst();
         }
@@ -105,9 +106,9 @@ public class CorrelationStack<RecordType> {
      *
      * @return all correlations on the stack.
      */
-    public List<Correlation<RecordType>> popAllCorrelations() {
+    public List<Correlation<T>> popAllCorrelations() {
         synchronized (buffer) {
-            final List<Correlation<RecordType>> correlations = new ArrayList<Correlation<RecordType>>(buffer);
+            List<Correlation<T>> correlations = new ArrayList<>(buffer);
             buffer.removeAll(correlations);
 
             return correlations;
@@ -119,7 +120,7 @@ public class CorrelationStack<RecordType> {
      *
      * @param correlation The correlation to push onto the stack.
      */
-    protected void push(final Correlation<RecordType> correlation) {
+    protected void push(final Correlation<T> correlation) {
         synchronized (buffer) {
             buffer.addLast(correlation);
             trimBuffer();

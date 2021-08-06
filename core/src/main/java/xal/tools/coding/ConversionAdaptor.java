@@ -12,15 +12,15 @@ package xal.tools.coding;
  * representation suitable for a particular tool (e.g. for archiving and
  * unarchiving objects).
  */
-public interface ConversionAdaptor<NativeType, RepresentationType> {
+public interface ConversionAdaptor<N, R> {
 
     /**
      * convert the native type to a desired representation
      */
-    public RepresentationType toRepresentation(final NativeType custom);
+    public R toRepresentation(final N custom);
 
     /**
      * convert the representation into the native type
      */
-    public NativeType toNative(final RepresentationType primitive);
+    public N toNative(final R primitive);
 }

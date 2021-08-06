@@ -26,10 +26,8 @@ public class DriftSpace {
      * @return 2x2 transfer matrix for a phase plane drift
      */
     public static double[][] transferDriftPlane(double l) {
-        double[][] arr0 = new double[][]{{1.0, l},
-        {0.0, 1.0}
-        };
-
-        return arr0;
+        return new double[][]{
+            {1.0, l},
+            {0.0, 1.0}};
     }
 }

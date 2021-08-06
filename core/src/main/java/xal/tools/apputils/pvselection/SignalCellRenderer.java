@@ -9,11 +9,6 @@ public class SignalCellRenderer implements TreeCellRenderer {
 
     private EmptyBorder epmtyBorder = new EmptyBorder(0, 0, 0, 0);
 
-    public SignalCellRenderer() {
-    }
-
-    ;
- 
     @Override
     public Component getTreeCellRendererComponent(JTree tree,
             Object value,
@@ -38,7 +33,7 @@ public class SignalCellRenderer implements TreeCellRenderer {
                 }
                 treecell.add(center);
             } else {
-                JLabel label = new JLabel(((HandleNode) value).toString(), JLabel.LEFT);
+                JLabel label = new JLabel(((HandleNode) value).toString(), SwingConstants.LEFT);
                 label.setFont(tree.getFont());
                 treecell.add(label);
                 if (row == 0) {

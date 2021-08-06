@@ -230,39 +230,6 @@ public class R2x2 extends SquareMatrix<R2x2> implements Serializable {
         super(INT_SIZE, strTokens);
     }
 
-
-    /*
-     *  Assignment
-     */
-    /**
-     * Set the element the given indices to the new value.
-     *
-     * @param iRow matrix row location
-     * @param iCol matrix column index
-     *
-     * @param dblAng matrix element at given row and column will be set to this
-     * value
-     */
-    public void setElem(IND iRow, IND iCol, double dblVal) {
-        super.setElem(iRow, iCol, dblVal);
-    }
-
-    /*
-     *  Matrix Properties
-     */
-    /**
-     * Return matrix element value. Get matrix element value at specified
-     * position.
-     *
-     * @param iRow row index
-     * @param iCol column index
-     *
-     * @return the matrix element at the position specified by the indices.
-     */
-    public double getElem(IND iRow, IND iCol) {
-        return super.getElem(iRow, iCol);
-    }
-
     /**
      * Non-destructive Matrix-Vector multiplication. Specifically, the vector
      * <strong>y</strong> given by
@@ -299,5 +266,4 @@ public class R2x2 extends SquareMatrix<R2x2> implements Serializable {
     protected R2x2 newInstance(int row, int cnt) {
         return new R2x2();
     }
-
 }

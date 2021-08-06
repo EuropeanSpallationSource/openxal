@@ -12,7 +12,6 @@ package xal.tools.database;
 import java.sql.*;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.logging.*;
 
 /**
  * DatabaseAdaptor provides a generic adaptor to wrap database specific code.
@@ -21,8 +20,6 @@ import java.util.logging.*;
  * @author tap
  */
 public abstract class DatabaseAdaptor {
-
-    private static final Logger LOGGER = Logger.getLogger(DatabaseAdaptor.class.getName());
 
     /**
      * Instantiate an empty Blob.
@@ -60,8 +57,7 @@ public abstract class DatabaseAdaptor {
         try {
             return DriverManager.getConnection(urlSpec, user, password);
         } catch (SQLException exception) {
-            LOGGER.log(Level.SEVERE, "Error connecting to the database at URL: \"" + urlSpec + "\" as user: " + user, exception);
-            throw new DatabaseException("Exception connecting to the database.", this, exception);
+            throw new DatabaseException("Exception connecting to the database at URL: \"" + urlSpec + "\" as user: " + user, this, exception);
         }
     }
 
@@ -100,11 +96,11 @@ public abstract class DatabaseAdaptor {
         try {
             final List<String> schemas = new ArrayList<>();
             final DatabaseMetaData metaData = connection.getMetaData();
-            final ResultSet result = metaData.getSchemas();
-            while (result.next()) {
-                schemas.add(result.getString("TABLE_SCHEM"));
+            try (ResultSet result = metaData.getSchemas()) {
+                while (result.next()) {
+                    schemas.add(result.getString("TABLE_SCHEM"));
+                }
             }
-            result.close();
             return schemas;
         } catch (SQLException exception) {
             throw new DatabaseException("Database exception while fetching schemas.", this, exception);
@@ -135,12 +131,12 @@ public abstract class DatabaseAdaptor {
         try {
             final List<String> tables = new ArrayList<>();
             final DatabaseMetaData metaData = connection.getMetaData();
-            final ResultSet result = getTablesResultSet(metaData, schema);
-            while (result.next()) {
-                String name = result.getString("TABLE_NAME");
-                tables.add(name);
+            try (ResultSet result = getTablesResultSet(metaData, schema)) {
+                while (result.next()) {
+                    String name = result.getString("TABLE_NAME");
+                    tables.add(name);
+                }
             }
-            result.close();
             return tables;
         } catch (SQLException exception) {
             throw new DatabaseException("Database exception while fetching schemas.", this, exception);
@@ -175,12 +171,12 @@ public abstract class DatabaseAdaptor {
         try {
             final List<String> primaryKeys = new ArrayList<>();
             final DatabaseMetaData metaData = connection.getMetaData();
-            final ResultSet result = getPrimaryKeysResultSet(metaData, schema, table);
-            while (result.next()) {
-                final String column = result.getString("COLUMN_NAME");
-                primaryKeys.add(column);
+            try (ResultSet result = getPrimaryKeysResultSet(metaData, schema, table)) {
+                while (result.next()) {
+                    final String column = result.getString("COLUMN_NAME");
+                    primaryKeys.add(column);
+                }
             }
-            result.close();
             return primaryKeys;
         } catch (SQLException exception) {
             throw new DatabaseException("Database exception while fetching primary keys.", this, exception);

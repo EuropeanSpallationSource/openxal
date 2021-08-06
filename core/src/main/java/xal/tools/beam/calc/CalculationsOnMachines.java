@@ -94,9 +94,7 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
         PhaseMatrix matPhi2 = state2.getTransferMap().getFirstOrder();
 
         PhaseMatrix matPhi1inv = matPhi1.inverse();
-        PhaseMatrix matPhi21 = matPhi2.times(matPhi1inv);
-
-        return matPhi21;
+        return matPhi2.times(matPhi1inv);
     }
 
     /**
@@ -158,9 +156,7 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
         PhaseMap mapPhi2 = state2.getTransferMap();
 
         PhaseMap mapPhi1inv = mapPhi1.inverse();
-        PhaseMap mapPhi21 = mapPhi2.compose(mapPhi1inv);
-
-        return mapPhi21;
+        return mapPhi2.compose(mapPhi1inv);
     }
 
 
@@ -309,14 +305,13 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
             throw new IllegalArgumentException("unknown element id");
         }
 
-        int indFrom, indTo;
         // use last state before start element
-        indTo = arrIndTo[arrIndTo.length - 1];
+        int indTo = arrIndTo[arrIndTo.length - 1];
 
         TransferMapState stateTo = trajectory.stateWithIndex(indTo);
         PhaseMatrix matTo = stateTo.getTransferMap().getFirstOrder();
 
-        indFrom = arrIndFrom[0] - 1;
+        int indFrom = arrIndFrom[0] - 1;
         if (indFrom < 0) {
             // response from beginning of machine
             return matTo;
@@ -385,9 +380,7 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
         PhaseMatrix matPhi = this.calculateFullLatticeMatrixAt(state);
         R6 vecDel = matPhi.projectColumn(IND.HOM);
 
-        PhaseVector vecTranslate = PhaseVector.embed(vecDel);
-
-        return vecTranslate;
+        return PhaseVector.embed(vecDel);
     }
 
     /**
@@ -477,9 +470,7 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
     @Override
     public PhaseVector computeFixedOrbit(TransferMapState state) {
         PhaseMatrix matFullTrn = this.calculateFullLatticeMatrixAt(state);
-        PhaseVector vecFixedPt = super.calculateFixedPoint(matFullTrn);
-
-        return vecFixedPt;
+        return super.calculateFixedPoint(matFullTrn);
     }
 
     /**
@@ -574,11 +565,8 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
      */
     @Override
     public Twiss[] computeTwissParameters(TransferMapState state) {
-
         PhaseMatrix matFullTrn = this.calculateFullLatticeMatrixAt(state);
-        Twiss[] arrTwsMtch = super.calculateMatchedTwiss(matFullTrn);
-
-        return arrTwsMtch;
+        return super.calculateMatchedTwiss(matFullTrn);
     }
 
     /**
@@ -647,9 +635,7 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
         Twiss[] arrTwsLoc = super.calculateMatchedTwiss(matFullTrn);
 
         PhaseMatrix matPhiLoc = state.getTransferMap().getFirstOrder();
-        R3 vecPhsAdv = super.calculatePhaseAdvance(matPhiLoc, this.arrTwsMch, arrTwsLoc);
-
-        return vecPhsAdv;
+        return super.calculatePhaseAdvance(matPhiLoc, this.arrTwsMch, arrTwsLoc);
     }
 
     /**
@@ -765,9 +751,7 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
         double dblGamma = state.getGamma();
 
         R4 vecDispR4 = super.calculateDispersion(matFullTn, dblGamma);
-        PhaseVector vecDisp = PhaseVector.embed(vecDispR4);
-
-        return vecDisp;
+        return PhaseVector.embed(vecDispR4);
     }
 
 
@@ -824,5 +808,4 @@ public class CalculationsOnMachines extends CalculationEngine implements ISimLoc
 
         return matFullTnLoc;
     }
-
 }

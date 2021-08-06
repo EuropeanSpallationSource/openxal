@@ -69,7 +69,7 @@ public class PVSelector extends JPanel {
     /**
      * the proxy to call listeners of PV changes
      */
-    private ActionListener actionListenerProxy = null;
+    private transient ActionListener actionListenerProxy = null;
 
     /**
      * the action event
@@ -102,7 +102,7 @@ public class PVSelector extends JPanel {
         actionEvent = new ActionEvent(this, 0, "pv_chosen");
 
         // line up the label, textField, Tree vertically:
-        jText.setHorizontalAlignment(JTextField.CENTER);
+        jText.setHorizontalAlignment(SwingConstants.CENTER);
         setLayout(new BorderLayout());
         add(jText, BorderLayout.NORTH);
 
@@ -110,13 +110,10 @@ public class PVSelector extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
         add(slectButton, BorderLayout.SOUTH);
 
-        slectButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                selectedPVName = jText.getText();
-                if (actionListenerProxy != null) {
-                    actionListenerProxy.actionPerformed(actionEvent);
-                }
+        slectButton.addActionListener(evt -> {
+            selectedPVName = jText.getText();
+            if (actionListenerProxy != null) {
+                actionListenerProxy.actionPerformed(actionEvent);
             }
         });
 
@@ -197,13 +194,10 @@ public class PVSelector extends JPanel {
         scrollPane.setViewportView(tree);
 
         // catch when someone directly types in a PV to the textField 
-        jText.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                selectedPVName = jText.getText();
-                if (actionListenerProxy != null) {
-                    actionListenerProxy.actionPerformed(actionEvent);
-                }
+        jText.addActionListener(evt -> {
+            selectedPVName = jText.getText();
+            if (actionListenerProxy != null) {
+                actionListenerProxy.actionPerformed(actionEvent);
             }
         });
 
@@ -217,32 +211,21 @@ public class PVSelector extends JPanel {
                         jText.setText(null);
                         selectedPVName = null;
                         Object value = selPath.getLastPathComponent();
-                        if (value instanceof HandleNode) {
-                            if (((HandleNode) value).isSignal()) {
-                                // get full PV name instead of just handle
-                                String PVName = ((HandleNode) value).getSignalName();
-                                myChannel = ((HandleNode) value).getChannel();
-                                jText.setText(null);
-                                jText.setText(PVName);
-                                selectedPVName = PVName;
-                                if (treeSelectionListenerYes) {
-                                    if (actionListenerProxy != null) {
-                                        actionListenerProxy.actionPerformed(actionEvent);
-                                    }
-                                }
+                        if (value instanceof HandleNode && ((HandleNode) value).isSignal()) {
+                            // get full PV name instead of just handle
+                            String pvName = ((HandleNode) value).getSignalName();
+                            myChannel = ((HandleNode) value).getChannel();
+                            jText.setText(null);
+                            jText.setText(pvName);
+                            selectedPVName = pvName;
+                            if (treeSelectionListenerYes && actionListenerProxy != null) {
+                                actionListenerProxy.actionPerformed(actionEvent);
                             }
                         }
-                    } else if (e.getClickCount() == 2) {
-                        if (!treeSelectionListenerYes) {
-                            if (actionListenerProxy != null) {
-                                Object value = selPath.getLastPathComponent();
-                                if (value instanceof HandleNode) {
-                                    if (((HandleNode) value).isSignal()) {
-                                        actionListenerProxy.actionPerformed(actionEvent);
-                                    }
-                                }
-
-                            }
+                    } else if (e.getClickCount() == 2 && !treeSelectionListenerYes && actionListenerProxy != null) {
+                        Object value = selPath.getLastPathComponent();
+                        if (value instanceof HandleNode && ((HandleNode) value).isSignal()) {
+                            actionListenerProxy.actionPerformed(actionEvent);
                         }
                     }
                 }
@@ -265,8 +248,6 @@ public class PVSelector extends JPanel {
     public String getSelectedPVName() {
         return selectedPVName;
     }
-
-    ;
   
     /** convenience method to get selected channel */
     public Channel getSelectedChannel() {
@@ -290,5 +271,4 @@ public class PVSelector extends JPanel {
     public String getPVText() {
         return jText.getText();
     }
-
 }

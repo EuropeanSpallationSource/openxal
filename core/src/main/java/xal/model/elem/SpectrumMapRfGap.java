@@ -537,7 +537,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         double e = this.getE0();
         double f = this.getFrequency();
         double kMid = RelativisticParameterConverter.computeWavenumberFromBeta(bMid, f);
-        double tMid = this.spcGapFlds.Tz(kMid);
+        double tMid = this.spcGapFlds.tz(kMid);
         double l = this.getLength();
 
         double a = this.compCavModeFieldCoeff();
@@ -1494,7 +1494,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
             double bMid = RelativisticParameterConverter.computeBetaFromEnergies(w0, eR);
             double kMid = DBL_2PI / (bMid * IElement.LIGHT_SPEED / this.getFrequency());
 
-            double theEnergyGain = qAEL * this.spcGapFlds.Tz(kMid) * Math.cos(phi0 + dphim);
+            double theEnergyGain = qAEL * this.spcGapFlds.tz(kMid) * Math.cos(phi0 + dphim);
             double deltaPhaseCorrection = q * a * this.gapAcclMdl.computeNormWaveNumber(w0 + dWm, eR) * this.spcGapFlds.dkTz(ki) * Math.sin(phi0 + dphim);
 
             // TODO - Remove this old XAL reproduction stuff if we are going to production 

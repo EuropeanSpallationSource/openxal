@@ -6,6 +6,7 @@
  */
 package xal.tools.dyn;
 
+import java.util.Set;
 import java.util.EnumSet;
 
 import xal.tools.math.BaseVector;
@@ -61,7 +62,7 @@ public class TrnsPhaseVector extends BaseVector<TrnsPhaseVector> {
         /**
          * Index of the X' coordinate
          */
-        Xp(1),
+        XP(1),
         /**
          * Index of the Y coordinate
          */
@@ -69,7 +70,7 @@ public class TrnsPhaseVector extends BaseVector<TrnsPhaseVector> {
         /**
          * Index of the Y' coordinate
          */
-        Yp(3),
+        YP(3),
         /**
          * Index of the homogeneous coordinate
          */
@@ -82,7 +83,7 @@ public class TrnsPhaseVector extends BaseVector<TrnsPhaseVector> {
          * the set of IND constants that only include phase space variables (not
          * the homogeneous coordinate)
          */
-        private static final EnumSet<IND> SET_PHASE = EnumSet.of(X, Xp, Y, Yp);
+        private static final Set<IND> SET_PHASE = EnumSet.of(X, XP, Y, YP);
 
         /*
          * Global Operations
@@ -100,7 +101,7 @@ public class TrnsPhaseVector extends BaseVector<TrnsPhaseVector> {
          * @author Christopher K. Allen
          * @since Oct 15, 2013
          */
-        public static EnumSet<IND> valuesPhase() {
+        public static Set<IND> valuesPhase() {
             return SET_PHASE;
         }
 
@@ -307,8 +308,6 @@ public class TrnsPhaseVector extends BaseVector<TrnsPhaseVector> {
 
     @Override
     protected TrnsPhaseVector newInstance(double[] arrVecInt) {
-        // TODO Auto-generated method stub
         return null;
     }
-
 }

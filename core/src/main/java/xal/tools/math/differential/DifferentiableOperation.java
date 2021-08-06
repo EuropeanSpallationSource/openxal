@@ -1989,14 +1989,14 @@ class DifferentiableConstantPower extends DifferentiableSymbol {
     /**
      * power to which to raise the argument
      */
-    private final double POWER;
+    private final double power;
 
     /**
      * Constructor
      */
     public DifferentiableConstantPower(final DifferentiableOperation argument, final double power) {
         this.argument = argument;
-        POWER = power;
+        this.power = power;
     }
 
     /**
@@ -2009,7 +2009,7 @@ class DifferentiableConstantPower extends DifferentiableSymbol {
      */
     @Override
     protected DifferentiableOperation copySubstituting(final Map<DifferentiableOperation, DifferentiableOperation> substitutions) {
-        return new DifferentiableConstantPower(argument.copySubstitutingWithCache(substitutions), POWER);
+        return new DifferentiableConstantPower(argument.copySubstitutingWithCache(substitutions), power);
     }
 
     /**
@@ -2040,7 +2040,7 @@ class DifferentiableConstantPower extends DifferentiableSymbol {
      */
     @Override
     public double evaluate(final DifferentiableVariableValues valueMap, final Map<DifferentiableOperation, Double> cache) {
-        return Math.pow(argument.evaluateWithCache(valueMap, cache), POWER);
+        return Math.pow(argument.evaluateWithCache(valueMap, cache), power);
     }
 
     /**
@@ -2048,7 +2048,7 @@ class DifferentiableConstantPower extends DifferentiableSymbol {
      */
     @Override
     public final DifferentiableOperation getDerivative(final DifferentiableVariable variable) {
-        return new DifferentiableConstant(POWER).times(argument.getDerivative(variable)).times(DifferentiableConstantPower.pow(argument, POWER - 1.0));
+        return new DifferentiableConstant(power).times(argument.getDerivative(variable)).times(DifferentiableConstantPower.pow(argument, power - 1.0));
     }
 
     /**
@@ -2057,7 +2057,7 @@ class DifferentiableConstantPower extends DifferentiableSymbol {
      */
     @Override
     protected boolean isEquivalentTo(final DifferentiableOperation operation) {
-        return argument.isEqualTo(((DifferentiableConstantPower) operation).argument) && POWER == ((DifferentiableConstantPower) operation).POWER;
+        return argument.isEqualTo(((DifferentiableConstantPower) operation).argument) && power == ((DifferentiableConstantPower) operation).power;
     }
 
     /**
@@ -2065,7 +2065,7 @@ class DifferentiableConstantPower extends DifferentiableSymbol {
      */
     @Override
     public String toString() {
-        return argument.toString(getPrecedence()) + " ^ " + POWER;
+        return argument.toString(getPrecedence()) + " ^ " + power;
     }
 }
 

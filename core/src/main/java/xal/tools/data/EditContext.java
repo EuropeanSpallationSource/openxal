@@ -241,7 +241,7 @@ public class EditContext {
     /**
      * Get the records from the table where the bindings map is valid.
      */
-    public <ValueType extends Object> Collection<GenericRecord> records(final String tableName, final Map<String, ValueType> bindings) {
+    public <T extends Object> Collection<GenericRecord> records(final String tableName, final Map<String, T> bindings) {
         final DataTable table = getTable(tableName);
         return table.records(bindings);
     }
@@ -249,7 +249,7 @@ public class EditContext {
     /**
      * Get the records from the table where the bindings map is valid.
      */
-    public <ValueType extends Object> Collection<GenericRecord> records(final DataTable table, final Map<String, ValueType> bindings) {
+    public <T extends Object> Collection<GenericRecord> records(final DataTable table, final Map<String, T> bindings) {
         return table.records(bindings);
     }
 

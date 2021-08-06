@@ -18,12 +18,12 @@ import xal.tools.messaging.MessageCenter;
  *
  * @author tap
  */
-class PassiveBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
+class PassiveBroadcaster<T> extends AbstractBroadcaster<T> {
 
     /**
      * less than full count
      */
-    private Correlation<RecordType> bestPartialCorrelation;
+    private Correlation<T> bestPartialCorrelation;
     private boolean isFresh;
 
     /**
@@ -40,7 +40,7 @@ class PassiveBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
      *
      * @return the best partial correlation.
      */
-    synchronized Correlation<RecordType> getBestPartialCorrelation() {
+    synchronized Correlation<T> getBestPartialCorrelation() {
         return bestPartialCorrelation;
     }
 
@@ -67,7 +67,7 @@ class PassiveBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
      * @param correlation The new correlation.
      */
     @Override
-    public synchronized void newCorrelation(final BinAgent<RecordType> sender, Correlation<RecordType> correlation) {
+    public synchronized void newCorrelation(final BinAgent<T> sender, Correlation<T> correlation) {
         if (!isFresh || (correlation.numRecords() >= bestPartialCorrelation.numRecords())) {
             bestPartialCorrelation = correlation;
             isFresh = true;

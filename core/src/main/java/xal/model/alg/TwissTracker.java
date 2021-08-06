@@ -297,11 +297,11 @@ public class TwissTracker extends Tracker {
 
         // Get the algorithm class name from the EditContext
         DataTable tblAlgorithm = ecTableData.getTable(TwissTracker.TBL_LBL_TWISSTRACKER);
-        GenericRecord recTracker = tblAlgorithm.record(TwissTracker.TBL_PRIM_KEY_NAME, strPrimKeyVal);
+        GenericRecord recTracker = tblAlgorithm.genericRecord(TwissTracker.TBL_PRIM_KEY_NAME, strPrimKeyVal);
 
         if (recTracker == null) {
             // just use the default record
-            recTracker = tblAlgorithm.record(TwissTracker.TBL_PRIM_KEY_NAME, "default");
+            recTracker = tblAlgorithm.genericRecord(TwissTracker.TBL_PRIM_KEY_NAME, "default");
         }
 
         this.setStepSize(recTracker.doubleValueForKey(TwissTracker.ATTR_STEPSIZE));

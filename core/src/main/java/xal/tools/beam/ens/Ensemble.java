@@ -10,7 +10,6 @@ package xal.tools.beam.ens;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -23,7 +22,7 @@ import java.util.Iterator;
 import java.util.Comparator;
 
 import xal.tools.beam.CovarianceMatrix;
-import xal.tools.beam.IConstants;
+import xal.tools.beam.Constants;
 import xal.tools.beam.PhaseMatrix;
 import xal.tools.beam.PhaseVector;
 import xal.tools.math.r3.R3;
@@ -154,7 +153,7 @@ public class Ensemble implements Serializable {
      * @param ens ensemble object to be deep copied
      */
     public Ensemble(Ensemble ens) {
-        setEns = this.deepCopyParticles(ens);
+        setEns = deepCopyParticles(ens);
     }
 
     /**
@@ -194,7 +193,7 @@ public class Ensemble implements Serializable {
      * @return homogeneous phase space coordinates of ensemble centroid
      */
     public PhaseVector phaseMean() {
-        int N = this.getCount();
+        int n = this.getCount();
         PhaseVector vecSum = new PhaseVector();
         Iterator<Particle> iter = this.iterator();
 
@@ -203,7 +202,7 @@ public class Ensemble implements Serializable {
             vecSum.plusEquals(p.getPhase());
         }
 
-        vecSum.timesEquals(1.0 / N);
+        vecSum.timesEquals(1.0 / n);
         return vecSum;
     }
 
@@ -213,7 +212,7 @@ public class Ensemble implements Serializable {
      * @return the 7x7 correlation matrix of the ensemble distribution
      */
     public CovarianceMatrix phaseCovariance() {
-        int N = this.getCount();
+        int n = this.getCount();
         CovarianceMatrix matSigma = new CovarianceMatrix();
         Iterator<Particle> iter = this.iterator();
 
@@ -226,7 +225,7 @@ public class Ensemble implements Serializable {
             matSigma.plusEquals(matOuter);
         }
 
-        matSigma.timesEquals(1.0 / N);
+        matSigma.timesEquals(1.0 / n);
         return matSigma;
     }
 
@@ -262,13 +261,14 @@ public class Ensemble implements Serializable {
         double q;
         // particle phase coordinates
         PhaseVector vecPhase;
-        // current components
-        double Ix, Iy, Iz;
-        // ensemble particle iterator
-        Iterator<Particle> iter;
 
-        Ix = Iy = Iz = 0.0;
-        iter = this.iterator();
+        // current components
+        double iX = 0.0;
+        double iY = 0.0;
+        double iZ = 0.0;
+
+        // ensemble particle iterator
+        Iterator<Particle> iter = this.iterator();
 
         while (iter.hasNext()) {
             Particle p = iter.next();
@@ -276,12 +276,12 @@ public class Ensemble implements Serializable {
             vecPhase = p.getPhase();
             q = p.getCharge();
 
-            Ix += q * vecPhase.getxp();
-            Iy += q * vecPhase.getyp();
-            Iz += q * vecPhase.getzp();
+            iX += q * vecPhase.getxp();
+            iY += q * vecPhase.getyp();
+            iZ += q * vecPhase.getzp();
         }
 
-        return new R3(Ix, Iy, Iz);
+        return new R3(iX, iY, iZ);
     }
 
     /**
@@ -289,20 +289,18 @@ public class Ensemble implements Serializable {
      */
     public double totalCharge() {
         // total ensemble charge
-        double Q;
-        // ensemble particle iterator
-        Iterator<Particle> iter;
+        double q = 0.0;
 
-        Q = 0.0;
-        iter = this.iterator();
+        // ensemble particle iterator
+        Iterator<Particle> iter = this.iterator();
 
         while (iter.hasNext()) {
             Particle p = iter.next();
 
-            Q += p.getCharge();
+            q += p.getCharge();
         }
 
-        return Q;
+        return q;
     }
 
     /**
@@ -318,12 +316,10 @@ public class Ensemble implements Serializable {
      */
     public double potentialSummation(R3 ptFld) {
         // coulomb potential
-        double dblVol;
-        // ensemble particle iterator
-        Iterator<Particle> iter;
+        double dblVol = 0.0;
 
-        dblVol = 0.0;
-        iter = this.iterator();
+        // ensemble particle iterator
+        Iterator<Particle> iter = this.iterator();
 
         while (iter.hasNext()) {
             Particle p = iter.next();
@@ -362,65 +358,56 @@ public class Ensemble implements Serializable {
      *
      * @return potential from quadrupole expansion of the ensemble
      */
-    public double potentialQuadExpansion(R3 pt, double Q, PhaseMatrix matSigma) {
-
+    public double potentialQuadExpansion(R3 pt, double q, PhaseMatrix matSigma) {
         // Get the field and source points then compute the distance
         // field points
-        double xf, yf, zf;
+        double xf = pt.get1();
+        double yf = pt.get2();
+        double zf = pt.get3();
+
         // ensemble centroid location
-        double xc, yc, zc;
+        double xc = matSigma.getElem(6, 0);
+        double yc = matSigma.getElem(6, 2);
+        double zc = matSigma.getElem(6, 4);
         // coordinate displacements of the field and centroid points
-        double dx, dy, dz;
+        double dx = xf - xc;
+        double dy = yf - yc;
+        double dz = zf - zc;
+
+        // distance squared
+        double r2 = dx * dx + dy * dy + dz * dz;
         // distance from the field point to the centroid
-        double R;
-        // distance squared, distance to the fifth power
-        double R2, R5;
-
-        xf = pt.get1();
-        yf = pt.get2();
-        zf = pt.get3();
-        xc = matSigma.getElem(6, 0);
-        yc = matSigma.getElem(6, 2);
-        zc = matSigma.getElem(6, 4);
-        dx = xf - xc;
-        dy = yf - yc;
-        dz = zf - zc;
-
-        R2 = dx * dx + dy * dy + dz * dz;
-        R = Math.sqrt(R2);
-        R5 = R2 * R2 * R;
+        double r = Math.sqrt(r2);
+        // distance to the fifth power
+        double r5 = r2 * r2 * r;
 
         // Compute the central second moments
         // second moments of the ensemble
-        double xx, xy, yy, yz, zx, zz;
-        // central second moments of the ensemble
-        double xxc, xyc, yyc, yzc, zxc, zzc;
+        double xx = matSigma.getElem(0, 0);
+        double xy = matSigma.getElem(0, 2);
+        double yy = matSigma.getElem(2, 2);
+        double yz = matSigma.getElem(2, 4);
+        double zx = matSigma.getElem(4, 0);
+        double zz = matSigma.getElem(4, 4);
 
-        xx = matSigma.getElem(0, 0);
-        xxc = xx - xc * xc;
-        xy = matSigma.getElem(0, 2);
-        xyc = xy - xc * yc;
-        yy = matSigma.getElem(2, 2);
-        yyc = yy - yc * yc;
-        yz = matSigma.getElem(2, 4);
-        yzc = yz - yc * zc;
-        zx = matSigma.getElem(4, 0);
-        zxc = zx - zc * xc;
-        zz = matSigma.getElem(4, 4);
-        zzc = zz - zc * zc;
+        // central second moments of the ensemble
+        double xxc = xx - xc * xc;
+        double xyc = xy - xc * yc;
+        double yyc = yy - yc * yc;
+        double yzc = yz - yc * zc;
+        double zxc = zx - zc * xc;
+        double zzc = zz - zc * zc;
 
         // Compute the quadrupole expansion potential
         // electric potential
-        double V;
+        double v = (3.0 * dx * dx - r2) * xxc + (3.0 * dy * dy - r2) * yyc + (3.0 * dz * dz - r2) * zzc;
+        v += 3.0 * (dx * dy * xyc + dy * dz * yzc + dz * dx * zxc);
+        v /= r5;
+        v += 1.0 / r;
 
-        V = (3.0 * dx * dx - R2) * xxc + (3.0 * dy * dy - R2) * yyc + (3.0 * dz * dz - R2) * zzc;
-        V += 3.0 * (dx * dy * xyc + dy * dz * yzc + dz * dx * zxc);
-        V /= R5;
-        V += 1.0 / R;
+        v *= q / (4.0 * Math.PI * Constants.PERMITTIVITY);
 
-        V *= Q / (4.0 * Math.PI * IConstants.PERMITTIVITY);
-
-        return V;
+        return v;
     }
 
     /*
@@ -435,7 +422,7 @@ public class Ensemble implements Serializable {
      * @return true if successfully recovered ensemble from file
      */
     public boolean load(String strFile) {
-        return this.load(new File(strFile));
+        return load(new File(strFile));
     }
 
     /**
@@ -448,25 +435,16 @@ public class Ensemble implements Serializable {
      */
     @SuppressWarnings("unchecked")
     public boolean load(File file) {
-        try {
-            FileInputStream is = new FileInputStream(file);
+        try (FileInputStream is = new FileInputStream(file)) {
             ObjectInputStream p = new ObjectInputStream(is);
 
             setEns = (TreeSet<Particle>) p.readObject();
-            is.close();
             return true;
-
-        } catch (FileNotFoundException e) {
-            return false;
-
         } catch (IOException e) {
             return false;
-
         } catch (ClassNotFoundException e) {
             return true;
-
         }
-
     }
 
     /**
@@ -478,21 +456,14 @@ public class Ensemble implements Serializable {
      * @return true if successfully saved ensemble to file
      */
     public boolean save(File file) {
-        try {
-            FileOutputStream os = new FileOutputStream(file);
+        try (FileOutputStream os = new FileOutputStream(file)) {
             ObjectOutputStream p = new ObjectOutputStream(os);
 
             p.writeObject(setEns);
             p.flush();
-            os.close();
             return true;
-
-        } catch (FileNotFoundException e) {
-            return false;
-
         } catch (IOException e) {
             return false;
-
         }
     }
 
@@ -517,18 +488,17 @@ public class Ensemble implements Serializable {
 
             iPar++;
         }
-
     }
 
     /**
      * Test driver for testing Ensemble class.
      */
     public static void main(String[] arg) {
-        PrintWriter osLog = new PrintWriter(System.out);
-
         // Test persistent storage mechanism
-        testPersistence(osLog);
-        osLog.close();
+        try (PrintWriter osLog = new PrintWriter(System.out)) {
+            // Test persistent storage mechanism
+            testPersistence(osLog);
+        }
     }
 
     /**
@@ -606,5 +576,4 @@ public class Ensemble implements Serializable {
 
         return set;
     }
-
 }

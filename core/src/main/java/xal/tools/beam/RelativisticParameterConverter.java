@@ -48,15 +48,13 @@ public class RelativisticParameterConverter {
      * Convenience function for computing the relativistic factor gamma from a
      * particle's kinetic energy and rest energy.
      *
-     * @param W kinetic energy of the particle
-     * @param Er rest energy of particle
+     * @param w kinetic energy of the particle
+     * @param eR rest energy of particle
      *
      * @return relativistic factor gamma
      */
-    public static double computeGammaFromEnergies(double W, double Er) {
-        double gamma = W / Er + 1.0;
-
-        return gamma;
+    public static double computeGammaFromEnergies(double w, double eR) {
+        return w / eR + 1.0;
     }
 
     /**
@@ -67,24 +65,20 @@ public class RelativisticParameterConverter {
      * @return speed of probe (w.r.t. speed of light)
      */
     public static double computeBetaFromGamma(double gamma) {
-        double beta = Math.sqrt(1.0 - 1.0 / (gamma * gamma));
-
-        return beta;
+        return Math.sqrt(1.0 - 1.0 / (gamma * gamma));
     }
 
     /**
      * Convenience function for computing the probe's velocity beta (w.r.t. the
      * speed of light) from the particle's kinetic and rest energies.
      *
-     * @param W kinetic energy of the particle (eV)
-     * @param Er rest energy of particle (eV)
+     * @param W kinetic energy of w particle (eV)
+     * @param eR rest energy of particle (eV)
      * @return speed of probe (w.r.t. speed of light)
      */
-    public static double computeBetaFromEnergies(double W, double Er) {
-        double gamma = computeGammaFromEnergies(W, Er);
-        double beta = computeBetaFromGamma(gamma);
-
-        return beta;
+    public static double computeBetaFromEnergies(double w, double eR) {
+        double gamma = computeGammaFromEnergies(w, eR);
+        return computeBetaFromGamma(gamma);
     }
 
     /**
@@ -109,9 +103,7 @@ public class RelativisticParameterConverter {
      */
     public static double computeWavenumberFromBeta(double beta, double freq) {
         double lambda = DBL_LGHT_SPD / freq;
-        double k = DBL_2PI / (beta * lambda);
-
-        return k;
+        return DBL_2PI / (beta * lambda);
     }
 
     /**
@@ -130,23 +122,21 @@ public class RelativisticParameterConverter {
      */
     public static double computeBetaFromWavenumber(double k, double freq) {
         double lambda = DBL_LGHT_SPD / freq;
-        double beta = DBL_2PI / (k * lambda);
-
-        return beta;
+        return DBL_2PI / (k * lambda);
     }
 
     /**
      * Convenience function for computing momentum from kinetic energy
      *
-     * @param W kinetic energy of the particle (eV)
-     * @param Er rest energy of particle (eV)
+     * @param w kinetic energy of the particle (eV)
+     * @param eR rest energy of particle (eV)
      * @return particle momentum in eV where is the speed of light
      */
-    public static double computeMomentumFromEnergies(double W, double Er) {
-        double gamma = computeGammaFromEnergies(W, Er);
+    public static double computeMomentumFromEnergies(double w, double eR) {
+        double gamma = computeGammaFromEnergies(w, eR);
         double beta = computeBetaFromGamma(gamma);
 
-        return beta * gamma * Er;
+        return beta * gamma * eR;
     }
 
     /**
@@ -164,19 +154,18 @@ public class RelativisticParameterConverter {
      * <em>m</em> is the mass of the particle, and <em>c</em> is the speed of
      * light.
      *
-     * @param W kinetic energy of the particle (eV)
-     * @param Er rest energy of particle (eV)
+     * @param w kinetic energy of the particle (eV)
+     * @param eR rest energy of particle (eV)
      *
      * @return particle momentum in <em>eV</em>/<em>c</em> where <em>c</em> is
      * the speed of light
      *
      * @since Oct 1, 2015, Christopher K. Allen
      */
-    public static double computeStandardMomentumFromEnergies(double W, double Er) {
-        double gamma = computeGammaFromEnergies(W, Er);
+    public static double computeStandardMomentumFromEnergies(double w, double eR) {
+        double gamma = computeGammaFromEnergies(w, eR);
         double beta = computeBetaFromGamma(gamma);
 
-        return beta * gamma * Er / DBL_LGHT_SPD;
+        return beta * gamma * eR / DBL_LGHT_SPD;
     }
-
 }

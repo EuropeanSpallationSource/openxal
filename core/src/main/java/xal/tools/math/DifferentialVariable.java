@@ -119,7 +119,7 @@ public class DifferentialVariable {
      */
     public double varianceWithSignalVariances(final int offset, final double... variances) {
         double variance = 0.0;
-        int vindex = offset - offset;
+        int vindex = this.offset - offset;
         for (int index = offset; index < derivatives.length; index++) {
             final double derivative = getDerivative(index);
             variance += derivative * derivative * variances[vindex];
@@ -291,25 +291,25 @@ public class DifferentialVariable {
      * negate the variable
      */
     public DifferentialVariable negate() {
-        final double[] derivatives = new double[this.derivatives.length];
-        for (int index = 0; index < derivatives.length; index++) {
-            derivatives[index] = -derivatives[index];
+        final double[] negDerivatives = new double[derivatives.length];
+        for (int index = 0; index < negDerivatives.length; index++) {
+            negDerivatives[index] = -derivatives[index];
         }
-        return new DifferentialVariable(-this.value, this.offset, derivatives);
+        return new DifferentialVariable(-value, offset, negDerivatives);
     }
 
     /**
      * calculate and return the reciprocal of this variable
      */
     public DifferentialVariable reciprocal() {
-        final double value = 1.0 / this.value;
+        final double newValue = 1.0 / value;
         // f = 1/u -> df = - du / u^2
-        final double inverseFactor = -value * value;
-        final double[] derivatives = new double[this.derivatives.length];
-        for (int index = 0; index < derivatives.length; index++) {
-            derivatives[index] = inverseFactor * this.derivatives[index];
+        final double inverseFactor = -newValue * newValue;
+        final double[] newDerivatives = new double[derivatives.length];
+        for (int index = 0; index < newDerivatives.length; index++) {
+            newDerivatives[index] = inverseFactor * derivatives[index];
         }
-        return new DifferentialVariable(value, this.offset, derivatives);
+        return new DifferentialVariable(newValue, this.offset, newDerivatives);
     }
 
     /**
@@ -372,21 +372,21 @@ public class DifferentialVariable {
      * Perform a unary math operation with the resulting value and the
      * differential factor from the chain rule
      */
-    private final DifferentialVariable unaryOperation(final double value, final double differentialFactor) {
-        final double[] derivatives = new double[this.derivatives.length];
-        for (int index = 0; index < this.derivatives.length; index++) {
-            derivatives[index] = differentialFactor * this.derivatives[index];
+    private DifferentialVariable unaryOperation(final double value, final double differentialFactor) {
+        final double[] newDerivatives = new double[derivatives.length];
+        for (int index = 0; index < derivatives.length; index++) {
+            newDerivatives[index] = differentialFactor * derivatives[index];
         }
-        return new DifferentialVariable(value, this.offset, derivatives);
+        return new DifferentialVariable(value, this.offset, newDerivatives);
     }
 
     /**
      * raise this variable to the specified power
      */
     public final DifferentialVariable pow(final double power) {
-        final double value = Math.pow(this.value, power);
-        final double differentialFactor = power * Math.pow(this.value, power - 1.0);
-        return unaryOperation(value, differentialFactor);
+        final double newValue = Math.pow(value, power);
+        final double differentialFactor = power * Math.pow(value, power - 1.0);
+        return unaryOperation(newValue, differentialFactor);
     }
 
     /**
@@ -400,108 +400,108 @@ public class DifferentialVariable {
      * get the absolute value of this variable
      */
     public final DifferentialVariable abs() {
-        final double value = Math.abs(this.value);
-        final double differentialFactor = this.value / value;
-        return unaryOperation(value, differentialFactor);
+        final double newValue = Math.abs(value);
+        final double differentialFactor = value / newValue;
+        return unaryOperation(newValue, differentialFactor);
     }
 
     /**
      * get the natural logarithm (base e) of this variable
      */
     public final DifferentialVariable log() {
-        final double value = Math.log(this.value);
+        final double newValue = Math.log(this.value);
         final double differentialFactor = 1.0 / this.value;
-        return unaryOperation(value, differentialFactor);
+        return unaryOperation(newValue, differentialFactor);
     }
 
     /**
      * get the exponential (base e) of this variable
      */
     public final DifferentialVariable exp() {
-        final double value = Math.exp(this.value);
-        return unaryOperation(value, value);
+        final double newValue = Math.exp(this.value);
+        return unaryOperation(newValue, newValue);
     }
 
     /**
      * get the sine of this variable
      */
     public final DifferentialVariable sin() {
-        final double value = Math.sin(this.value);
+        final double newValue = Math.sin(this.value);
         final double differentialFactor = Math.cos(this.value);
-        return unaryOperation(value, differentialFactor);
+        return unaryOperation(newValue, differentialFactor);
     }
 
     /**
      * get the cosine of this variable
      */
     public final DifferentialVariable cos() {
-        final double value = Math.cos(this.value);
+        final double newValue = Math.cos(this.value);
         final double differentialFactor = -Math.sin(this.value);
-        return unaryOperation(value, differentialFactor);
+        return unaryOperation(newValue, differentialFactor);
     }
 
     /**
      * get the tangent of this variable
      */
     public final DifferentialVariable tan() {
-        final double value = Math.tan(this.value);
+        final double newValue = Math.tan(this.value);
         final double secant = 1.0 / Math.cos(this.value);
         final double differentialFactor = secant * secant;
-        return unaryOperation(value, differentialFactor);
+        return unaryOperation(newValue, differentialFactor);
     }
 
     /**
      * get the arc sine of this variable
      */
     public final DifferentialVariable asin() {
-        final double value = Math.asin(this.value);
+        final double newValue = Math.asin(this.value);
         final double differentialFactor = 1.0 / Math.sqrt(1.0 - this.value * this.value);
-        return unaryOperation(value, differentialFactor);
+        return unaryOperation(newValue, differentialFactor);
     }
 
     /**
      * get the arc cosine of this variable
      */
     public final DifferentialVariable acos() {
-        final double value = Math.acos(this.value);
+        final double newValue = Math.acos(this.value);
         final double differentialFactor = -1.0 / Math.sqrt(1.0 - this.value * this.value);
-        return unaryOperation(value, differentialFactor);
+        return unaryOperation(newValue, differentialFactor);
     }
 
     /**
      * get the arc tangent of this variable
      */
     public final DifferentialVariable atan() {
-        final double value = Math.atan(this.value);
+        final double newValue = Math.atan(this.value);
         final double differentialFactor = 1.0 / (1.0 + this.value * this.value);
-        return unaryOperation(value, differentialFactor);
+        return unaryOperation(newValue, differentialFactor);
     }
 
     /**
      * get the hyperbolic sine of this variable
      */
     public final DifferentialVariable sinh() {
-        final double value = Math.sinh(this.value);
+        final double newValue = Math.sinh(this.value);
         final double differentialFactor = Math.cosh(this.value);
-        return unaryOperation(value, differentialFactor);
+        return unaryOperation(newValue, differentialFactor);
     }
 
     /**
      * get the hyperbolic cosine of this variable
      */
     public final DifferentialVariable cosh() {
-        final double value = Math.cosh(this.value);
+        final double newValue = Math.cosh(this.value);
         final double differentialFactor = Math.sinh(this.value);
-        return unaryOperation(value, differentialFactor);
+        return unaryOperation(newValue, differentialFactor);
     }
 
     /**
      * get the hyperbolic tangent of this variable
      */
     public final DifferentialVariable tanh() {
-        final double value = Math.tanh(this.value);
+        final double newValue = Math.tanh(this.value);
         final double sech = 1.0 / Math.cosh(this.value);
         final double differentialFactor = sech * sech;
-        return unaryOperation(value, differentialFactor);
+        return unaryOperation(newValue, differentialFactor);
     }
 }

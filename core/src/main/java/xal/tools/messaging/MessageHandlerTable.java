@@ -38,8 +38,8 @@ class MessageHandlerTable implements java.io.Serializable {
     /**
      * add the handler to the table
      */
-    public <ProtocolType> void addHandler(final MessageHandler<ProtocolType> handler) {
-        final Class<ProtocolType> protocol = handler.getProtocol();
+    public <T> void addHandler(final MessageHandler<T> handler) {
+        final Class<T> protocol = handler.getProtocol();
         final String protocolKey = protocolKey(protocol);
         final Object source = handler.getSource();
         // table of handlers keyed by source
@@ -62,8 +62,8 @@ class MessageHandlerTable implements java.io.Serializable {
     /**
      * remove the handler from the table
      */
-    public <ProtocolType> void removeHandler(final MessageHandler<ProtocolType> handler) {
-        final Class<ProtocolType> protocol = handler.getProtocol();
+    public <T> void removeHandler(final MessageHandler<T> handler) {
+        final Class<T> protocol = handler.getProtocol();
         final String protocolKey = protocolKey(protocol);
         final Object source = handler.getSource();
 
@@ -89,7 +89,7 @@ class MessageHandlerTable implements java.io.Serializable {
     /**
      * get all handler associated with the protocol
      */
-    public <ProtocolType> Set<Map.Entry<Object, MessageHandler<?>>> getHandlers(final Class<ProtocolType> protocol) {
+    public <T> Set<Map.Entry<Object, MessageHandler<?>>> getHandlers(final Class<T> protocol) {
         final String protocolKey = protocolKey(protocol);
 
         if (protocolTable.containsKey(protocolKey)) {
@@ -115,7 +115,7 @@ class MessageHandlerTable implements java.io.Serializable {
         }
     }
 
-    private <ProtocolType> String protocolKey(final Class<ProtocolType> protocol) {
+    private <T> String protocolKey(final Class<T> protocol) {
         return protocol.getName();
     }
 }

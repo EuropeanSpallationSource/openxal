@@ -8,13 +8,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JButton;
+import javax.swing.ScrollPaneConstants;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import xal.tools.apputils.EdgeLayout;
 
 /**
  * Non-consecutive sequence selector moved from db2xal app and can be used by
@@ -30,13 +30,13 @@ public class NonConsecutiveSeqSelector implements ActionListener {
 
     private static final Logger LOGGER = Logger.getLogger(NonConsecutiveSeqSelector.class.getName());
 
-    private boolean DEBUG = false;
+    private static final boolean DEBUG = false;
 
     protected JDialog sequenceDialog;
 
     protected JTable table;
 
-    protected ArrayList<Object> seqList;
+    protected List<Object> seqList;
 
     protected MyTableModel myModel;
 
@@ -56,8 +56,8 @@ public class NonConsecutiveSeqSelector implements ActionListener {
 
         // Create the scroll pane and add the table to it.
         JScrollPane scrollPane = new JScrollPane(table,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         JPanel selectionDone = new JPanel();
         JButton done = new JButton("OK");
@@ -89,7 +89,7 @@ public class NonConsecutiveSeqSelector implements ActionListener {
 
             seqList = new ArrayList<>();
             for (int i = 0; i < myModel.data.length; i++) {
-                if (((Boolean) myModel.data[i][1])) {
+                if (((boolean) myModel.data[i][1])) {
                     seqList.add(myModel.data[i][0]);
                 }
             }
@@ -100,7 +100,7 @@ public class NonConsecutiveSeqSelector implements ActionListener {
 
     }
 
-    public ArrayList<Object> getSeqList() {
+    public List<Object> getSeqList() {
         return seqList;
     }
 
@@ -112,7 +112,7 @@ public class NonConsecutiveSeqSelector implements ActionListener {
         private static final long serialVersionUID = 1L;
         final String[] columnNames = {"Sequence", "Selected"};
 
-        final Object[][] data = {
+        final transient Object[][] data = {
             {"LEBT", false},
             {"RFQ", false},
             {"MEBT", false},
@@ -181,11 +181,7 @@ public class NonConsecutiveSeqSelector implements ActionListener {
         public boolean isCellEditable(int row, int col) {
             // Note that the data/cell address is constant,
             // no matter where the cell appears onscreen.
-            if (col < 1) {
-                return false;
-            } else {
-                return true;
-            }
+            return col >= 1;
         }
 
         /*
@@ -250,9 +246,9 @@ public class NonConsecutiveSeqSelector implements ActionListener {
             int numCols = getColumnCount();
 
             for (int i = 0; i < numRows; i++) {
-                System.out.print("    row " + i + ":");
+                LOGGER.log(Level.INFO, "    row {0}:", i);
                 for (int j = 0; j < numCols; j++) {
-                    System.out.print("  " + data[i][j]);
+                    LOGGER.log(Level.INFO, "  {0}", data[i][j]);
                 }
             }
             LOGGER.log(Level.INFO, "--------------------------");

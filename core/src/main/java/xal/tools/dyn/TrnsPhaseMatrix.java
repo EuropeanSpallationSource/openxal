@@ -6,6 +6,7 @@
  */
 package xal.tools.dyn;
 
+import java.util.Set;
 import java.util.EnumSet;
 
 import xal.tools.beam.PhaseMatrix;
@@ -60,7 +61,7 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
         /**
          * Index of the X' coordinate
          */
-        Xp(1),
+        XP(1),
         /**
          * Index of the Y coordinate
          */
@@ -68,7 +69,7 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
         /**
          * Index of the Y' coordinate
          */
-        Yp(3),
+        YP(3),
         /**
          * Index of the homogeneous coordinate
          */
@@ -81,7 +82,7 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
          * the set of IND constants that only include phase space variables (not
          * the homogeneous coordinate)
          */
-        private static final EnumSet<IND> SET_PHASE = EnumSet.of(X, Xp, Y, Yp);
+        private static final Set<IND> SET_PHASE = EnumSet.of(X, XP, Y, YP);
 
         /*
          * Global Operations
@@ -99,7 +100,7 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
          * @author Christopher K. Allen
          * @since Oct 15, 2013
          */
-        public static EnumSet<IND> valuesPhase() {
+        public static Set<IND> valuesPhase() {
             return SET_PHASE;
         }
 
@@ -228,9 +229,9 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
         TrnsPhaseMatrix matTrans = TrnsPhaseMatrix.newIdentity();
 
         matTrans.setElem(IND.X, IND.HOM, vecTrans.getElem(TrnsPhaseVector.IND.X));
-        matTrans.setElem(IND.Xp, IND.HOM, vecTrans.getElem(IND.Xp));
+        matTrans.setElem(IND.XP, IND.HOM, vecTrans.getElem(IND.XP));
         matTrans.setElem(IND.Y, IND.HOM, vecTrans.getElem(IND.Y));
-        matTrans.setElem(IND.Yp, IND.HOM, vecTrans.getElem(IND.Yp));
+        matTrans.setElem(IND.YP, IND.HOM, vecTrans.getElem(IND.YP));
 
         return matTrans;
     }
@@ -270,7 +271,8 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
         TrnsPhaseMatrix matSO4 = TrnsPhaseMatrix.newIdentity();
 
         // indices into the SO(4) matrix
-        int m, n;
+        int m;
+        int n;
         // matSO3 matrix element
         double val;
 
@@ -407,5 +409,4 @@ public class TrnsPhaseMatrix extends SquareMatrix<TrnsPhaseMatrix> {
     protected TrnsPhaseMatrix newInstance(int row, int cnt) {
         return new TrnsPhaseMatrix();
     }
-
 }

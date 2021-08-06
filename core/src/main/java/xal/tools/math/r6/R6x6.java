@@ -75,14 +75,13 @@ public class R6x6 extends SquareMatrix<R6x6> {
         public int val() {
             return i;
         }
-        ;
 
-        
         /*
          * Local Attributes
          */
-        
-        /** index value */
+        /**
+         * index value
+         */
         private final int i;
 
         /*
@@ -165,12 +164,12 @@ public class R6x6 extends SquareMatrix<R6x6> {
      * rotations in <em>S0</em>(3)
      */
     public static R6x6 rotationProduct(R3x3 matSO3) {
-
         // Populate the phase rotation matrix
         R6x6 matSO6 = R6x6.newIdentity();
 
         // indices into the SO(7) matrix
-        int m, n;
+        int m;
+        int n;
         // matSO3 matrix element
         double val;
 

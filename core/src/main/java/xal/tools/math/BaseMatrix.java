@@ -289,8 +289,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @since Sep 30, 2013
      */
     public double getElem(IIndex indRow, IIndex indCol) {
-        double dblVal = this.matImpl.get(indRow.val(), indCol.val());
-        return dblVal;
+        return this.matImpl.get(indRow.val(), indCol.val());
     }
 
     /**
@@ -372,7 +371,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
     public boolean isApproxEqual(M matTest, int cntUlp) {
         for (int i = 0; i < getRowCnt(); i++) {
             for (int j = 0; j < getColCnt(); j++) {
-                double dblVal = this.getElem(i, j);
+                double dblVal = getElem(i, j);
                 double dblCmp = matTest.getElem(i, j);
 
                 if (!ElementaryFunction.approxEq(dblVal, dblCmp, cntUlp)) {
@@ -391,9 +390,9 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @return a deep copy object of this matrix
      */
     public M copy() {
-        M matClone = this.newInstance(this.getRowCnt(), this.getColCnt());
-        ((BaseMatrix<M>) matClone).assignMatrix(this.matImpl);
-        return matClone;
+        BaseMatrix<M> matClone = newInstance(getRowCnt(), getColCnt());
+        matClone.assignMatrix(matImpl);
+        return (M) matClone;
     }
 
     /**
@@ -404,7 +403,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * @since Oct 3, 2013
      */
     public void assignZero() {
-        CommonOps.fill(this.matImpl, 0.0);
+        CommonOps.fill(matImpl, 0.0);
     }
 
     /**
@@ -412,7 +411,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      * matrix with 1's on the diagonal and 0's everywhere else.
      */
     public void assignIdentity() {
-        CommonOps.setIdentity(this.matImpl);
+        CommonOps.setIdentity(matImpl);
     }
 
     /**
@@ -832,9 +831,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
      */
     @Override
     public boolean equals(Object objTest) {
-        final boolean bResult = super.equals(objTest);
-
-        return bResult;
+        return super.equals(objTest);
     }
 
     /**
@@ -953,7 +950,7 @@ public abstract class BaseMatrix<M extends BaseMatrix<M>> implements IArchive {
         long bits = 0;
         for (int i = 0; i < this.getRowCnt(); i++) {
             for (int j = 0; j < this.getColCnt(); j++) {
-                bits = bits * 31 + Double.doubleToLongBits(getElem(i, j));;
+                bits = bits * 31 + Double.doubleToLongBits(getElem(i, j));
             }
         }
 

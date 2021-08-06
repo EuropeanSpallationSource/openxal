@@ -189,7 +189,7 @@ public class XmlWriter {
             writeAttributes();
 
             // no child nodes => close the open tag after the attributes
-            if (childNodes.size() == 0) {
+            if (childNodes.isEmpty()) {
                 writer.write("/");
             }
             writer.write(">\n");
@@ -253,7 +253,7 @@ public class XmlWriter {
          */
         protected void writeCloseTag() throws IOException {
             // no child nodes => no closing tag
-            if (childNodes.size() == 0) {
+            if (childNodes.isEmpty()) {
                 return;
             }
 
@@ -272,11 +272,13 @@ public class XmlWriter {
          * indent tags for easy reading according to the nesting level
          */
         protected void makeIndent() {
-            indent = "";
+            StringBuilder indentStr = new StringBuilder();
 
             for (int index = 0; index < nestLevel; index++) {
-                indent += "    ";
+                indentStr.append("    ");
             }
+
+            indent = indentStr.toString();
         }
     }
 

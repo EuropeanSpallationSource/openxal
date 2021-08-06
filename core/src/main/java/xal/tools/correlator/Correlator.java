@@ -40,16 +40,16 @@ public abstract class Correlator<S, R, A extends SourceAgent<R>> {
     /**
      * Creates new Correlator
      */
-    public Correlator(double aBinTimespan) {
+    protected Correlator(double aBinTimespan) {
         this(aBinTimespan, null);
     }
 
     /**
      * Correlator constructor
      */
-    public Correlator(final double aBinTimespan, final CorrelationFilter<R> aFilter) {
+    protected Correlator(final double aBinTimespan, final CorrelationFilter<R> aFilter) {
         isMonitoring = false;
-        sourceAgentTable = new Hashtable<>();
+        sourceAgentTable = new HashMap<>();
         correlationTester = new CorrelationTester<>(0, aFilter);
 
         registerEvents();

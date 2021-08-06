@@ -10,16 +10,16 @@ package xal.tools.data;
 /**
  * Listener for key value record modifications
  */
-public interface KeyValueRecordListener<SourceType, RecordType> {
+public interface KeyValueRecordListener<S, R> {
 
     /**
      * Event indicating that the specified record has been modified in the
      * specified source.
      *
      * @param source the source posting the modification event
-     * @param record the record which was modified
+     * @param recordType the record which was modified
      * @param keyPath the key path to the modified value
      * @param value the new value
      */
-    public void recordModified(final SourceType source, final RecordType record, final String keyPath, final Object value);
+    public void recordModified(final S source, final R recordType, final String keyPath, final Object value);
 }

@@ -86,7 +86,6 @@ public class URLReference {
         try {
             return directory != null && file != null && isRootedIn(directory.toURI().toURL(), file.toURI().toURL());
         } catch (MalformedURLException exception) {
-            LOGGER.log(Level.SEVERE, null, exception);
             throw new RuntimeException("Exception testing whether the file is rooted in the directory.", exception);
         }
     }

@@ -128,6 +128,7 @@ public class EdgeLayout implements LayoutManager {
      */
     @Override
     public void addLayoutComponent(String name, Component component) {
+        // Do nothing
     }
 
     /**
@@ -158,8 +159,8 @@ public class EdgeLayout implements LayoutManager {
             return;
         }
 
-        int left_side = constraint.leftStrut;
-        int top_side = constraint.topStrut;
+        int leftSide = constraint.leftStrut;
+        int topSide = constraint.topStrut;
 
         if ((constraint.growBehavior & GROW_HORIZONTAL) != 0) {
             if ((constraint.strutBehavior & LEFT_RIGHT) == LEFT_RIGHT) {
@@ -180,15 +181,15 @@ public class EdgeLayout implements LayoutManager {
         }
 
         if ((constraint.strutBehavior & RIGHT) != 0) {
-            left_side = parent.getWidth() - constraint.rightStrut - width;
+            leftSide = parent.getWidth() - constraint.rightStrut - width;
         }
 
         if ((constraint.strutBehavior & BOTTOM) != 0) {
-            top_side = parent.getHeight() - constraint.bottomStrut - height;
+            topSide = parent.getHeight() - constraint.bottomStrut - height;
         }
 
         component.setSize(width, height);
-        component.setLocation(left_side, top_side);
+        component.setLocation(leftSide, topSide);
     }
 
     /**
@@ -250,5 +251,6 @@ public class EdgeLayout implements LayoutManager {
      */
     @Override
     public void removeLayoutComponent(Component component) {
+        // Do nothing
     }
 }

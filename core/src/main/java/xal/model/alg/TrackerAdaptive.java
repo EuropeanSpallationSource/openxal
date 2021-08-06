@@ -123,10 +123,10 @@ public abstract class TrackerAdaptive extends Tracker {
     public void initializeFromEditContext(final String locationID, final AcceleratorSeq sequence) {
         final EditContext editContext = sequence.getAccelerator().editContext();
         final DataTable adaptiveTrackerTable = editContext.getTable("adaptivetracker");
-        GenericRecord channelRecord = adaptiveTrackerTable.record("name", locationID);
+        GenericRecord channelRecord = adaptiveTrackerTable.genericRecord("name", locationID);
         if (channelRecord == null) {
             // just use the default record
-            channelRecord = adaptiveTrackerTable.record("name", "default");
+            channelRecord = adaptiveTrackerTable.genericRecord("name", "default");
         }
 
         final double errorTolerance = channelRecord.doubleValueForKey(ATTRTAG_ERRTOL);

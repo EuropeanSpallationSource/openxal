@@ -9,7 +9,10 @@ package xal.tools.beam;
  *
  * @author Christopher Allen
  */
-public interface IConstants {
+public final class Constants {
+
+    private Constants() {
+    }
 
     /*
      *  Physical Constants

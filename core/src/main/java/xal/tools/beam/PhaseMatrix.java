@@ -5,6 +5,7 @@
  */
 package xal.tools.beam;
 
+import java.util.Set;
 import java.util.EnumSet;
 
 import xal.tools.data.DataAdaptor;
@@ -17,7 +18,6 @@ import xal.tools.math.r3.R3x3.POS;
 import xal.tools.math.r4.R4x4;
 import xal.tools.math.r6.R6;
 import xal.tools.math.r6.R6x6;
-import xal.tools.beam.PhaseVector;
 
 /**
  * <p>
@@ -83,7 +83,7 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
         /**
          * Index of the X' coordinate
          */
-        Xp(1),
+        XP(1),
         /**
          * Index of the Y coordinate
          */
@@ -91,7 +91,7 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
         /**
          * Index of the Y' coordinate
          */
-        Yp(3),
+        YP(3),
         /**
          * Index of the Z (longitudinal) coordinate
          */
@@ -99,7 +99,7 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
         /**
          * Index of the Z' (change in momentum) coordinate
          */
-        Zp(5),
+        ZP(5),
         /**
          * Index of the homogeneous coordinate
          */
@@ -112,7 +112,7 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
          * the set of IND constants that only include phase space variables (not
          * the homogeneous coordinate)
          */
-        private static final EnumSet<IND> SET_PHASE = EnumSet.of(X, Xp, Y, Yp, Z, Zp);
+        private static final Set<IND> SET_PHASE = EnumSet.of(X, XP, Y, YP, Z, ZP);
 
         /*
          * Global Operations
@@ -130,7 +130,7 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
          * @author Christopher K. Allen
          * @since Oct 15, 2013
          */
-        public static EnumSet<IND> valuesPhase() {
+        public static Set<IND> valuesPhase() {
             return SET_PHASE;
         }
 
@@ -238,8 +238,7 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
             arrInternal[i][i] = 1.0;
         }
 
-        PhaseMatrix matIden = new PhaseMatrix(arrInternal);
-        return matIden;
+        return new PhaseMatrix(arrInternal);
     }
 
     /**
@@ -299,11 +298,11 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
         PhaseMatrix matTrans = PhaseMatrix.identity();
 
         matTrans.setElem(IND.X, IND.HOM, vecTrans.getx());
-        matTrans.setElem(IND.Xp, IND.HOM, vecTrans.getxp());
+        matTrans.setElem(IND.XP, IND.HOM, vecTrans.getxp());
         matTrans.setElem(IND.Y, IND.HOM, vecTrans.gety());
-        matTrans.setElem(IND.Yp, IND.HOM, vecTrans.getyp());
+        matTrans.setElem(IND.YP, IND.HOM, vecTrans.getyp());
         matTrans.setElem(IND.Z, IND.HOM, vecTrans.getz());
-        matTrans.setElem(IND.Zp, IND.HOM, vecTrans.getzp());
+        matTrans.setElem(IND.ZP, IND.HOM, vecTrans.getzp());
 
         return matTrans;
     }
@@ -357,11 +356,11 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
         PhaseMatrix matTrans = PhaseMatrix.identity();
 
         matTrans.setElem(IND.X, IND.HOM, vecDispl.getx());
-        matTrans.setElem(IND.Xp, IND.HOM, 0);
+        matTrans.setElem(IND.XP, IND.HOM, 0);
         matTrans.setElem(IND.Y, IND.HOM, vecDispl.gety());
-        matTrans.setElem(IND.Yp, IND.HOM, 0);
+        matTrans.setElem(IND.YP, IND.HOM, 0);
         matTrans.setElem(IND.Z, IND.HOM, vecDispl.getz());
-        matTrans.setElem(IND.Zp, IND.HOM, 0);
+        matTrans.setElem(IND.ZP, IND.HOM, 0);
 
         return matTrans;
     }
@@ -402,7 +401,8 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
         PhaseMatrix matSO7 = PhaseMatrix.identity();
 
         // indices into the SO(7) matrix
-        int m, n;
+        int m;
+        int n;
         // matSO3 matrix element
         double val;
 
@@ -453,9 +453,7 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
      * @since Jan 4, 2016, Christopher K. Allen
      */
     public static PhaseMatrix loadFrom(DataAdaptor daSource) throws DataFormatException {
-        PhaseMatrix matNew = new PhaseMatrix(daSource);
-
-        return matNew;
+        return new PhaseMatrix(daSource);
     }
 
     /*
@@ -564,21 +562,6 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
         this.setElem(IND.HOM, IND.HOM, 1.0);
     }
 
-    /*
-     *  Assignment
-     */
-    /**
-     * Element assignment - assigns matrix element to the specified value
-     *
-     * @param iRow row index
-     * @param iCol column index
-     * @param s new matrix element value
-     *
-     */
-    public void setElem(IND iRow, IND iCol, double s) {
-        super.setElem(iRow, iCol, s);
-    }
-
     /**
      * Explicitly enforce the homogeneous nature of this matrix. That is, make
      * sure that it is can represent a linear operator on 6D projective space
@@ -619,7 +602,6 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
      * @since Oct 16, 2013
      */
     public R6x6 projectR6x6() {
-
         R6x6 matProj = new R6x6();
 
         for (IND i : IND.valuesPhase()) {
@@ -652,7 +634,6 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
      * @since Oct 16, 2013
      */
     public R4x4 projectR4x4() {
-
         R4x4 matProj = new R4x4();
 
         for (R4x4.IND i : R4x4.IND.values()) {
@@ -733,7 +714,6 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
      * @see #projectColumn(int)
      */
     public R6 projectColumn(IND j) {
-
         return this.projectColumn(j.val());
     }
 
@@ -867,9 +847,7 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
     @Override
     public double max() {
         R6x6 matLin = this.projectR6x6();
-        double dblNorm = matLin.max();
-
-        return dblNorm;
+        return matLin.max();
     }
 
     /**
@@ -886,9 +864,7 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
     @Override
     public double normInf() {
         R6x6 matLin = this.projectR6x6();
-        double dblNorm = matLin.normInf();
-
-        return dblNorm;
+        return matLin.normInf();
     }
 
     /**
@@ -905,9 +881,7 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
     @Override
     public double norm1() {
         R6x6 matLin = this.projectR6x6();
-        double dblNorm = matLin.norm1();
-
-        return dblNorm;
+        return matLin.norm1();
     }
 
     /**
@@ -924,9 +898,7 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
     @Override
     public double norm2() {
         R6x6 matLin = this.projectR6x6();
-        double dblNorm = matLin.norm2();
-
-        return dblNorm;
+        return matLin.norm2();
     }
 
     /**
@@ -943,12 +915,6 @@ public class PhaseMatrix extends SquareMatrix<PhaseMatrix> implements java.io.Se
     @Override
     public double normF() {
         R6x6 matLin = this.projectR6x6();
-        double dblNorm = matLin.normF();
-
-        return dblNorm;
+        return matLin.normF();
     }
-
-    /*
-     *  Matrix Properties
-     */
 }

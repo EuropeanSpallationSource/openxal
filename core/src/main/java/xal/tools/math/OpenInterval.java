@@ -45,12 +45,12 @@ public class OpenInterval extends Interval {
      * Copy constructor - create a new open interval initialized to the
      * argument.
      *
-     * @param I interval to copy
+     * @param interval interval to copy
      *
      * @throws MathException malformed interval object
      */
-    public OpenInterval(Interval I) throws MathException {
-        super(I);
+    public OpenInterval(Interval interval) throws MathException {
+        super(interval);
     }
 
     /*
@@ -71,11 +71,11 @@ public class OpenInterval extends Interval {
     /**
      * Is there a nonzero intersection between this interval and the argument.
      *
-     * @param I interval to be tested
+     * @param interval interval to be tested
      * @return true if the intervals intersect
      */
-    public boolean intersect(Interval I) {
-        return (this.getMax() > I.getMin()) || (this.getMin() < I.getMax());
+    public boolean intersect(Interval interval) {
+        return (getMax() > interval.getMin()) || (getMin() < interval.getMax());
     }
 
     /**
@@ -88,8 +88,8 @@ public class OpenInterval extends Interval {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof OpenInterval) {
-            OpenInterval I = (OpenInterval) obj;
-            return (this.getMin() == I.getMin()) && (this.getMax() == I.getMax());
+            OpenInterval interval = (OpenInterval) obj;
+            return (getMin() == interval.getMin()) && (getMax() == interval.getMax());
         } else {
             return super.equals(obj);
         }
@@ -115,5 +115,4 @@ public class OpenInterval extends Interval {
     public String toString() {
         return "(" + getMin() + "," + getMax() + ")";
     }
-
 }

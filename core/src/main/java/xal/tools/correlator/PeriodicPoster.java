@@ -17,11 +17,11 @@ import javax.swing.Timer;
  *
  * @author tap
  */
-public class PeriodicPoster<RecordType> implements ActionListener {
+public class PeriodicPoster<T> implements ActionListener {
 
-    private final Correlator<?, RecordType, ? extends SourceAgent<RecordType>> CORRELATOR;
-    private final PassiveBroadcaster<RecordType> BROADCASTER;
-    private final Timer TIMER;
+    private final Correlator<?, T, ? extends SourceAgent<T>> correlator;
+    private final PassiveBroadcaster<T> broadcaster;
+    private final Timer timer;
 
     /**
      * Creates a new instance of PeriodicPoster
@@ -29,15 +29,15 @@ public class PeriodicPoster<RecordType> implements ActionListener {
      * @param aCorrelator The correlator providing the correlations.
      * @param period The posting period.
      */
-    public PeriodicPoster(final Correlator<?, RecordType, ? extends SourceAgent<RecordType>> aCorrelator, final double period) {
-        CORRELATOR = aCorrelator;
+    public PeriodicPoster(final Correlator<?, T, ? extends SourceAgent<T>> aCorrelator, final double period) {
+        correlator = aCorrelator;
 
-        BROADCASTER = CORRELATOR.usePassiveBroadcaster();
+        broadcaster = correlator.usePassiveBroadcaster();
 
         int msecPeriod = (int) (period * 1000);
-        TIMER = new javax.swing.Timer(msecPeriod, this);
-        TIMER.setRepeats(true);
-        TIMER.setCoalesce(true);
+        timer = new javax.swing.Timer(msecPeriod, this);
+        timer.setRepeats(true);
+        timer.setCoalesce(true);
     }
 
     /**
@@ -45,8 +45,8 @@ public class PeriodicPoster<RecordType> implements ActionListener {
      *
      * @return the correlator providing the correlations.
      */
-    public Correlator<?, RecordType, ? extends SourceAgent<RecordType>> getCorrelator() {
-        return CORRELATOR;
+    public Correlator<?, T, ? extends SourceAgent<T>> getCorrelator() {
+        return correlator;
     }
 
     /**
@@ -55,7 +55,7 @@ public class PeriodicPoster<RecordType> implements ActionListener {
      * @return The timer period.
      */
     public double getPeriod() {
-        int msecPeriod = TIMER.getDelay();
+        int msecPeriod = timer.getDelay();
         return ((double) (msecPeriod)) / 1000.;
     }
 
@@ -66,7 +66,7 @@ public class PeriodicPoster<RecordType> implements ActionListener {
      */
     public void setPeriod(double period) {
         int msecPeriod = (int) (period * 1000);
-        TIMER.setDelay(msecPeriod);
+        timer.setDelay(msecPeriod);
     }
 
     /**
@@ -75,35 +75,35 @@ public class PeriodicPoster<RecordType> implements ActionListener {
      * @return true if the poster is running and false if not.
      */
     public boolean isRunning() {
-        return TIMER.isRunning();
+        return timer.isRunning();
     }
 
     /**
      * Start the timer
      */
     public void start() {
-        TIMER.start();
+        timer.start();
     }
 
     /**
      * Stop posting
      */
     public void stop() {
-        TIMER.stop();
+        timer.stop();
     }
 
     /**
      * Restart posting
      */
     public void restart() {
-        TIMER.restart();
+        timer.restart();
     }
 
     /**
      * Dispose of the poster
      */
     public void dispose() {
-        TIMER.stop();
+        timer.stop();
     }
 
     /**
@@ -111,8 +111,8 @@ public class PeriodicPoster<RecordType> implements ActionListener {
      *
      * @param listener A listener of the correlation notice.
      */
-    public void addCorrelationNoticeListener(final CorrelationNotice<RecordType> listener) {
-        CORRELATOR.addListener(listener);
+    public void addCorrelationNoticeListener(final CorrelationNotice<T> listener) {
+        correlator.addListener(listener);
     }
 
     /**
@@ -120,8 +120,8 @@ public class PeriodicPoster<RecordType> implements ActionListener {
      *
      * @param listener A listener of the correlation notice.
      */
-    public void removeCorrelationNoticeListener(final CorrelationNotice<RecordType> listener) {
-        CORRELATOR.removeListener(listener);
+    public void removeCorrelationNoticeListener(final CorrelationNotice<T> listener) {
+        correlator.removeListener(listener);
     }
 
     /**
@@ -132,6 +132,6 @@ public class PeriodicPoster<RecordType> implements ActionListener {
      */
     @Override
     public synchronized void actionPerformed(final ActionEvent event) {
-        BROADCASTER.postBestPartialCorrelation();
+        broadcaster.postBestPartialCorrelation();
     }
 }

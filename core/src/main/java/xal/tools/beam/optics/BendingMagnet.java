@@ -7,7 +7,7 @@
 package xal.tools.beam.optics;
 
 import xal.model.IProbe;
-import xal.tools.beam.IConstants;
+import xal.tools.beam.Constants;
 
 /**
  * @author Chris Allen
@@ -34,20 +34,16 @@ public class BendingMagnet {
      * <strong>1/meters</strong>)
      */
     public static double compCurvature(IProbe probe, double dblFld) {
-
         // Get  parameters
-        double B0 = dblFld;
-        double c = IConstants.LIGHT_SPEED;
+        double b0 = dblFld;
+        double c = Constants.LIGHT_SPEED;
 
         double e = probe.getSpeciesCharge();
-        double Er = probe.getSpeciesRestEnergy();
+        double eR = probe.getSpeciesRestEnergy();
         double gamma = probe.getGamma();
         double beta = probe.getBeta();
 
         // Compute the equilibrium curvature h=1/R
-        double h = (e * c * B0) / (beta * gamma * Er);
-
-        return h;
+        return (e * c * b0) / (beta * gamma * eR);
     }
-
 }

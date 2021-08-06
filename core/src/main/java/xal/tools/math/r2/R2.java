@@ -90,33 +90,28 @@ public class R2 implements Serializable {
      * Set first coordinate value.
      */
     public void setx(double x) {
-        this.x1 = x;
+        set1(x);
     }
 
     /**
      * Set second coordinate value.
      */
     public void sety(double y) {
-        this.x2 = y;
+        set2(y);
     }
 
     /**
      * Set all coordinates to value
      */
     public void set(double s) {
-        this.x1 = this.x2 = s;
+        x1 = x2 = s;
     }
 
-    ;
-    
-
-    
     /*
      *  Properties
      */
-    
     /**
-     *  Return first coordinate value.
+     * Return first coordinate value.
      */
     public double get1() {
         return x1;
@@ -133,14 +128,14 @@ public class R2 implements Serializable {
      * Return first coordinate value.
      */
     public double getx() {
-        return x1;
+        return get1();
     }
 
     /**
      * Return second coordinate value.
      */
     public double gety() {
-        return x2;
+        return get2();
     }
 
     /*
@@ -239,9 +234,7 @@ public class R2 implements Serializable {
      */
     @Override
     public String toString() {
-        String strVec = "(" + x1 + "," + x2 + ")";
-
-        return strVec;
+        return "(" + x1 + "," + x2 + ")";
     }
 
     /**
@@ -262,5 +255,4 @@ public class R2 implements Serializable {
     public void println(PrintWriter os) {
         os.println(this.toString());
     }
-
 }

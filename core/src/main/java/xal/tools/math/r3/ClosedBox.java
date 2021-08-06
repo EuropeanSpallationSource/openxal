@@ -32,17 +32,17 @@ public class ClosedBox implements Serializable {
     /**
      * first dimension extent of domain
      */
-    private ClosedInterval I1;
+    private ClosedInterval i1;
 
     /**
      * second dimension extent of domain
      */
-    private ClosedInterval I2;
+    private ClosedInterval i2;
 
     /**
      * third dimension extent of domain
      */
-    private ClosedInterval I3;
+    private ClosedInterval i3;
 
     /**
      * Default constructor - creates an empty DomainR3 object to be initialized
@@ -55,14 +55,14 @@ public class ClosedBox implements Serializable {
      * Initializing constructor - creates a new instance of DomainR3 according
      * to the given parameters.
      *
-     * @param I1 interval of definition in x dimension
-     * @param I2 interval of definition in y dimension
-     * @param I3 interval of definition in z dimension
+     * @param i1 interval of definition in x dimension
+     * @param i2 interval of definition in y dimension
+     * @param i3 interval of definition in z dimension
      */
-    public ClosedBox(ClosedInterval I1, ClosedInterval I2, ClosedInterval I3) {
-        this.I1 = I1;
-        this.I2 = I2;
-        this.I3 = I3;
+    public ClosedBox(ClosedInterval i1, ClosedInterval i2, ClosedInterval i3) {
+        this.i1 = i1;
+        this.i2 = i2;
+        this.i3 = i3;
     }
 
     /**
@@ -86,10 +86,9 @@ public class ClosedBox implements Serializable {
      *
      */
     public ClosedBox(double xmin, double xmax, double ymin, double ymax, double zmin, double zmax) throws MathException {
-
-        I1 = new ClosedInterval(xmin, xmax);
-        I2 = new ClosedInterval(ymin, ymax);
-        I3 = new ClosedInterval(zmin, zmax);
+        i1 = new ClosedInterval(xmin, xmax);
+        i2 = new ClosedInterval(ymin, ymax);
+        i3 = new ClosedInterval(zmin, zmax);
     }
 
 
@@ -100,56 +99,56 @@ public class ClosedBox implements Serializable {
      * Get first dimension extent
      */
     public ClosedInterval get1() {
-        return I1;
+        return i1;
     }
 
     /**
      * Get second dimension extent
      */
     public ClosedInterval get2() {
-        return I2;
+        return i2;
     }
 
     /**
      * Get second dimension extent
      */
     public ClosedInterval get3() {
-        return I3;
+        return i3;
     }
 
     /**
      * Get the x dimension
      */
     public ClosedInterval getXDimension() {
-        return I1;
+        return i1;
     }
 
     /**
      * Get the y dimension
      */
     public ClosedInterval getYDimension() {
-        return I2;
+        return i2;
     }
 
     /**
      * Get the z dimension
      */
     public ClosedInterval getZDimension() {
-        return I3;
+        return i3;
     }
 
     /**
      * Get the minimum vertex
      */
     public R3 getVertexMin() {
-        return new R3(I1.getMin(), I2.getMin(), I3.getMin());
+        return new R3(i1.getMin(), i2.getMin(), i3.getMin());
     }
 
     /**
      * Get the maximum vertex
      */
     public R3 getVertexMax() {
-        return new R3(I1.getMax(), I2.getMax(), I3.getMax());
+        return new R3(i1.getMax(), i2.getMax(), i3.getMax());
     }
 
     /**
@@ -158,18 +157,7 @@ public class ClosedBox implements Serializable {
      * @return true if pt is in domain
      */
     public boolean membership(R3 pt) {
-
-        if (!I1.membership(pt.getx())) {
-            return false;
-        }
-        if (!I2.membership(pt.gety())) {
-            return false;
-        }
-        if (!I3.membership(pt.getz())) {
-            return false;
-        }
-
-        return true;
+        return i1.membership(pt.getx()) && i2.membership(pt.gety()) && i3.membership(pt.getz());
     }
 
     /**
@@ -178,24 +166,14 @@ public class ClosedBox implements Serializable {
      * @return true if pt is a boundary element
      */
     public boolean boundary(R3 pt) {
-        if (I1.isBoundary(pt.getx())) {
-            return true;
-        }
-        if (I2.isBoundary(pt.gety())) {
-            return true;
-        }
-        if (I3.isBoundary(pt.getz())) {
-            return true;
-        }
-
-        return false;
+        return i1.isBoundary(pt.getx()) || i2.isBoundary(pt.gety()) || i3.isBoundary(pt.getz());
     }
 
     /**
      * Compute the centroid of the domain
      */
     public R3 centroid() {
-        return new R3(I1.midpoint(), I2.midpoint(), I3.midpoint());
+        return new R3(i1.midpoint(), i2.midpoint(), i3.midpoint());
     }
 
     /**
@@ -209,7 +187,7 @@ public class ClosedBox implements Serializable {
      * Compute the volume of the domain.
      */
     public double volume() {
-        return I1.measure() * I2.measure() * I3.measure();
+        return i1.measure() * i2.measure() * i3.measure();
     }
 
     /**
@@ -218,7 +196,7 @@ public class ClosedBox implements Serializable {
      * @return (lx,ly,lz)
      */
     public R3 dimensions() {
-        return new R3(I1.measure(), I2.measure(), I3.measure());
+        return new R3(i1.measure(), i2.measure(), i3.measure());
     }
 
     /*
@@ -230,11 +208,11 @@ public class ClosedBox implements Serializable {
      * @param os output stream receiving content dump
      */
     public void print(PrintWriter os) {
-        I1.print(os);
+        i1.print(os);
         os.print("x");
-        I2.print(os);
+        i2.print(os);
         os.print("x");
-        I3.print(os);
+        i3.print(os);
     }
 
     /**
@@ -243,10 +221,10 @@ public class ClosedBox implements Serializable {
      * @param os output stream receiving content dump
      */
     public void println(PrintWriter os) {
-        I1.print(os);
+        i1.print(os);
         os.print("x");
-        I2.print(os);
+        i2.print(os);
         os.print("x");
-        I3.println(os);
+        i3.println(os);
     }
 }

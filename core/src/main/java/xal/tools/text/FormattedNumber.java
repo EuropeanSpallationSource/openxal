@@ -33,12 +33,7 @@ public class FormattedNumber extends Number implements Comparable<FormattedNumbe
      * comparator which compares FormattedNumber instances according to their
      * double value
      */
-    private static final Comparator<FormattedNumber> DOUBLE_VALUE_COMPARATOR = new Comparator<FormattedNumber>() {
-        @Override
-        public int compare(final FormattedNumber left, final FormattedNumber right) {
-            return Double.compare(left.doubleValue(), right.doubleValue());
-        }
-    };
+    private static final Comparator<FormattedNumber> DOUBLE_VALUE_COMPARATOR = (left, right) -> Double.compare(left.doubleValue(), right.doubleValue());
 
     /**
      * the number
@@ -87,7 +82,7 @@ public class FormattedNumber extends Number implements Comparable<FormattedNumbe
      * @param valueString the string to parse as a number
      */
     public FormattedNumber(final String valueString) {
-        this(new Double(valueString));
+        this(Double.valueOf(valueString));
     }
 
     /**

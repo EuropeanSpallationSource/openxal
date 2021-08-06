@@ -76,18 +76,17 @@ public class DigitalFunctionUtility {
         }
 
         // Build the table of function values
-        String strValTbl = "";
-        int index;
+        StringBuilder builder = new StringBuilder();
 
-        for (index = 0; index < szData; index++) {
-            strValTbl += Integer.toString(index) + "\t";
+        for (int index = 0; index < szData; index++) {
+            builder.append(Integer.toString(index)).append("\t");
             for (double[] arrFunc : argFuncs) {
-                strValTbl += Double.toString(arrFunc[index]) + "\t";
+                builder.append(Double.toString(arrFunc[index])).append("\t");
             }
-            strValTbl += "\n";
+            builder.append("\n");
         }
 
-        return strValTbl;
+        return builder.toString();
     }
 
     /*
@@ -145,8 +144,8 @@ public class DigitalFunctionUtility {
      * @param dblVal scale factor
      */
     public static void scaleFunction(double dblVal, double[] arrFunc) {
-        int N = arrFunc.length;
-        for (int index = 0; index < N; index++) {
+        int n = arrFunc.length;
+        for (int index = 0; index < n; index++) {
             arrFunc[index] *= dblVal;
         }
     }
@@ -169,10 +168,10 @@ public class DigitalFunctionUtility {
                     + "arguments are different sizes"
             );
         }
-        int N = arrFunc1.length;
+        int n = arrFunc1.length;
 
-        double[] arrSum = new double[N];
-        for (int index = 0; index < N; index++) {
+        double[] arrSum = new double[n];
+        for (int index = 0; index < n; index++) {
             arrSum[index] = arrFunc1[index] + arrFunc2[index];
         }
 
@@ -197,10 +196,10 @@ public class DigitalFunctionUtility {
                     + "arguments are different sizes"
             );
         }
-        int N = arrFunc1.length;
+        int n = arrFunc1.length;
 
-        double[] arrDif = new double[N];
-        for (int index = 0; index < N; index++) {
+        double[] arrDif = new double[n];
+        for (int index = 0; index < n; index++) {
             arrDif[index] = arrFunc1[index] - arrFunc2[index];
         }
 
@@ -371,16 +370,16 @@ public class DigitalFunctionUtility {
      * @return total variation of given function
      */
     public static double[] totalVariation(double[] arrFunc) {
-        int N = arrFunc.length;
+        int n = arrFunc.length;
 
-        if (N == 0) {
-            return null;
+        if (n == 0) {
+            return new double[0];
         }
 
         double dblSum = 0.0;
-        double[] arrTv = new double[N];
+        double[] arrTv = new double[n];
         arrTv[0] = 0.0;
-        for (int index = 1; index < N; index++) {
+        for (int index = 1; index < n; index++) {
             dblSum += Math.abs(arrFunc[index] - arrFunc[index - 1]);
 
             arrTv[index] = dblSum;

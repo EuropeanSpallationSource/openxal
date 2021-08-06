@@ -75,7 +75,6 @@ public class TransientDataAdaptor implements DataAdaptor {
      */
     @Override
     public String[] attributes() {
-
         // Allocate the string array
         // number of attributes
         int nAttrs;
@@ -126,9 +125,7 @@ public class TransientDataAdaptor implements DataAdaptor {
      */
     @Override
     public String stringValue(String strAttrName) {
-        String strValue = mapAttrs.get(strAttrName);
-
-        return strValue;
+        return mapAttrs.get(strAttrName);
     }
 
     /**
@@ -216,7 +213,7 @@ public class TransientDataAdaptor implements DataAdaptor {
         String strValues = stringValue(strAttr);
 
         if (strValues.length() == 0) {
-            return null;
+            return new double[0];
         }
 
         String strErrMsg = "Error parsing as double attribute: " + strAttr
@@ -263,7 +260,7 @@ public class TransientDataAdaptor implements DataAdaptor {
     public void setValue(String strAttrName, Object objAttrVal) {
         String strAttrVal = objAttrVal.toString();
 
-        this.setValue(strAttrName, strAttrVal);
+        setValue(strAttrName, strAttrVal);
     }
 
     /**
@@ -276,7 +273,7 @@ public class TransientDataAdaptor implements DataAdaptor {
     public void setValue(String strAttrName, boolean bolAttrVal) {
         String strAttrVal = String.valueOf(bolAttrVal);
 
-        this.setValue(strAttrName, strAttrVal);
+        setValue(strAttrName, strAttrVal);
     }
 
     /**
@@ -289,7 +286,7 @@ public class TransientDataAdaptor implements DataAdaptor {
     public void setValue(String strAttrName, int intAttrVal) {
         String strAttrVal = String.valueOf(intAttrVal);
 
-        this.setValue(strAttrName, strAttrVal);
+        setValue(strAttrName, strAttrVal);
     }
 
     /**
@@ -302,7 +299,7 @@ public class TransientDataAdaptor implements DataAdaptor {
     public void setValue(String strAttrName, long longAttrVal) {
         String strAttrVal = String.valueOf(longAttrVal);
 
-        this.setValue(strAttrName, strAttrVal);
+        setValue(strAttrName, strAttrVal);
     }
 
     /**
@@ -315,7 +312,7 @@ public class TransientDataAdaptor implements DataAdaptor {
     public void setValue(String strAttrName, double dblAttrVal) {
         String strAttrVal = String.valueOf(dblAttrVal);
 
-        this.setValue(strAttrName, strAttrVal);
+        setValue(strAttrName, strAttrVal);
     }
 
     /**
@@ -337,7 +334,7 @@ public class TransientDataAdaptor implements DataAdaptor {
             bufVals.append(", ");
         }
 
-        this.setValue(strAttr, bufVals.toString());
+        setValue(strAttr, bufVals.toString());
     }
 
     /**
@@ -432,14 +429,14 @@ public class TransientDataAdaptor implements DataAdaptor {
     public DataAdaptor createChild(String strLabel) {
         TransientDataAdaptor daptChild = new TransientDataAdaptor(strLabel);
 
-        this.lstKids.add(daptChild);
+        lstKids.add(daptChild);
 
         return daptChild;
     }
 
     @Override
     public void removeChild(DataAdaptor adaptor) {
-        this.lstKids.remove(adaptor);
+        lstKids.remove(adaptor);
     }
 
     /**
@@ -450,9 +447,9 @@ public class TransientDataAdaptor implements DataAdaptor {
      */
     @Override
     public void writeNode(DataListener ifcSrc) {
-        String strLabel = ifcSrc.dataLabel();
+        String label = ifcSrc.dataLabel();
 
-        DataAdaptor daptChild = this.createChild(strLabel);
+        DataAdaptor daptChild = this.createChild(label);
         ifcSrc.write(daptChild);
     }
 
@@ -499,5 +496,4 @@ public class TransientDataAdaptor implements DataAdaptor {
             os.println("  " + strAttrName + ": " + strAttrVal);
         }
     }
-
 }

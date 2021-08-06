@@ -92,6 +92,9 @@ public class DataAttribute {
      */
     private class ReaderWriter implements DataListener {
 
+        private static final String DEFAULT_VALUE_ATTR = "defaultValue";
+        private static final String PRIMARY_KEY_ATTR = "isPrimaryKey";
+
         @Override
         public String dataLabel() {
             return "attribute";
@@ -107,14 +110,14 @@ public class DataAttribute {
                 LOGGER.log(Level.SEVERE, "Error during update.", exception);
             }
 
-            if (adaptor.hasAttribute("isPrimaryKey")) {
-                isPrimaryKey = adaptor.booleanValue("isPrimaryKey");
+            if (adaptor.hasAttribute(PRIMARY_KEY_ATTR)) {
+                isPrimaryKey = adaptor.booleanValue((PRIMARY_KEY_ATTR));
             } else {
                 isPrimaryKey = false;
             }
 
-            if (adaptor.hasAttribute("defaultValue")) {
-                defaultValueStr = adaptor.stringValue("defaultValue");
+            if (adaptor.hasAttribute(DEFAULT_VALUE_ATTR)) {
+                defaultValueStr = adaptor.stringValue(DEFAULT_VALUE_ATTR);
             }
         }
 
@@ -125,10 +128,10 @@ public class DataAttribute {
             String typeName = type.getName();
             adaptor.setValue("type", typeName);
 
-            adaptor.setValue("isPrimaryKey", isPrimaryKey);
+            adaptor.setValue((PRIMARY_KEY_ATTR), isPrimaryKey);
 
             if (defaultValueStr != null) {
-                adaptor.setValue("defaultValue", defaultValueStr);
+                adaptor.setValue(DEFAULT_VALUE_ATTR, defaultValueStr);
             }
         }
     }

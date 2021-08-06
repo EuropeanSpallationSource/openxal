@@ -115,7 +115,8 @@ public class PathPreferenceSelector extends JDialog implements ScrollPaneConstan
      */
     protected void initComponents() {
         // setup the frame to add components
-        final int width = 500, height = 100;
+        int width = 500;
+        int height = 100;
         setSize(width, height);
         setResizable(true);
 
@@ -139,12 +140,7 @@ public class PathPreferenceSelector extends JDialog implements ScrollPaneConstan
         row.add(browseButton);
 
         // browse button event handler
-        browseButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                browsePath();
-            }
-        });
+        browseButton.addActionListener(e -> browsePath());
 
         mainView.add(row);
 
@@ -175,36 +171,21 @@ public class PathPreferenceSelector extends JDialog implements ScrollPaneConstan
         row.add(closeButton);
 
         // close button event handler
-        closeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                close();
-            }
-        });
+        closeButton.addActionListener(e -> close());
 
         // add the revert button
         revertButton = new JButton("Revert");
         row.add(revertButton);
 
         // commit button event handler
-        revertButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                revertPath();
-            }
-        });
+        revertButton.addActionListener(e -> revertPath());
 
         // add the commit button
         commitButton = new JButton("Make Default");
         row.add(commitButton);
 
         // commit button event handler
-        commitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                commitChanges();
-            }
-        });
+        commitButton.addActionListener(e -> commitChanges());
 
         // add the button row to the main view
         mainView.add(row);
@@ -330,7 +311,7 @@ class CustomChooser extends JFileChooser {
     private static final long serialVersionUID = 1L;
 
     // constants
-    protected final Preferences DEFAULTS;
+    protected final transient Preferences defaults;
     protected final String urlKey;
 
     // state variables
@@ -350,7 +331,7 @@ class CustomChooser extends JFileChooser {
     public CustomChooser(final Preferences defaults, final String urlKey, final String suffix, final String description) {
         super();
 
-        DEFAULTS = defaults;
+        this.defaults = defaults;
         this.urlKey = urlKey;
 
         // only accept files of the correct type
@@ -359,10 +340,7 @@ class CustomChooser extends JFileChooser {
             @Override
             public boolean accept(File file) {
                 String name = file.getName().toLowerCase();
-                if (file.isDirectory() || name.endsWith(suffix)) {
-                    return true;
-                }
-                return false;
+                return (file.isDirectory() || name.endsWith(suffix));
             }
 
             @Override
@@ -387,7 +365,7 @@ class CustomChooser extends JFileChooser {
      * @return the user preferences for this class
      */
     protected Preferences getDefaults() {
-        return DEFAULTS;
+        return defaults;
     }
 
     /**
@@ -434,7 +412,7 @@ class CustomChooser extends JFileChooser {
      * @return the default URL spec.
      */
     public String getDefaultURLSpec() {
-        return DEFAULTS.get(urlKey, "");
+        return defaults.get(urlKey, "");
     }
 
     /**
@@ -475,8 +453,8 @@ class CustomChooser extends JFileChooser {
      */
     public void setDefaultURLSpec(final String urlSpec) {
         try {
-            DEFAULTS.put(urlKey, urlSpec);
-            DEFAULTS.flush();
+            defaults.put(urlKey, urlSpec);
+            defaults.flush();
         } catch (BackingStoreException exception) {
             LOGGER.log(Level.SEVERE, null, exception);
         }

@@ -14,7 +14,7 @@ public class TraceXalUnitConverter {
     /**
      * Speed of light in a vacuum (meters/second)
      */
-    private static final double LIGHT_SPEED = IConstants.LIGHT_SPEED;
+    private static final double LIGHT_SPEED = Constants.LIGHT_SPEED;
 
     /**
      * m to mm
@@ -34,13 +34,13 @@ public class TraceXalUnitConverter {
      * object will assume the values provided in the initial configuration.
      *
      * @param f machine electromagnetic frequency in Hz
-     * @param ER the rest energy of the beam particle species in eV
-     * @param W the kinetic energy of the beam in eV
+     * @param eR the rest energy of the beam particle species in eV
+     * @param w the kinetic energy of the beam in eV
      *
      * @return new unit conversion object configured to above parameters
      */
-    public static TraceXalUnitConverter newConverter(double f, double ER, double W) {
-        return new TraceXalUnitConverter(f, ER, W);
+    public static TraceXalUnitConverter newConverter(double f, double eR, double w) {
+        return new TraceXalUnitConverter(f, eR, w);
     }
 
     /*
@@ -56,12 +56,12 @@ public class TraceXalUnitConverter {
     /**
      * particle rest energy in electron-volts
      */
-    private double ER;
+    private double eR;
 
     /**
      * beam kinetic energy in electron-volts
      */
-    private double W;
+    private double w;
 
     //
     // Consistent Auxiliary Parameters
@@ -87,10 +87,10 @@ public class TraceXalUnitConverter {
      * For the moment only allow construction of conversion objects through a
      * factory method. Configuration mechanism may be changed in the future.
      */
-    private TraceXalUnitConverter(double f, double ER, double W) {
+    private TraceXalUnitConverter(double f, double eR, double w) {
         this.f = f;
-        this.ER = ER;
-        this.W = W;
+        this.eR = eR;
+        this.w = w;
 
         this.computeAuxiliaryParameters();
     }
@@ -102,7 +102,7 @@ public class TraceXalUnitConverter {
      */
     private void computeAuxiliaryParameters() {
         lambda = LIGHT_SPEED / f;
-        gamma = 1.0 + (W / ER);
+        gamma = 1.0 + (w / eR);
         vnorm = Math.sqrt(1.0 - (1.0 / (gamma * gamma)));
     }
 
@@ -125,26 +125,26 @@ public class TraceXalUnitConverter {
     /**
      * Change the current beam kinetic energy.
      *
-     * @param W new beam energy in <strong>eV</strong>
+     * @param w new beam energy in <strong>eV</strong>
      */
-    public void setKineticEnergy(double W) {
-        if (this.W == W) {
+    public void setKineticEnergy(double w) {
+        if (this.w == w) {
             return;
         }
-        this.W = W;
+        this.w = w;
         this.computeAuxiliaryParameters();
     }
 
     /**
      * Change the current particle species rest energy.
      *
-     * @param ER new rest energy in <strong>eV</strong>
+     * @param eR new rest energy in <strong>eV</strong>
      */
-    public void setRestEnergy(double ER) {
-        if (this.ER == ER) {
+    public void setRestEnergy(double eR) {
+        if (this.eR == eR) {
             return;
         }
-        this.ER = ER;
+        this.eR = eR;
         this.computeAuxiliaryParameters();
     }
 
@@ -183,32 +183,23 @@ public class TraceXalUnitConverter {
      * @return coordinate phase vector in XAL (MKS) units
      */
     public PhaseVector traceToXalCoordinates(PhaseVector vecCoords) {
-
         // Convert the transverse coordinates
         // x phase plane coordinates
-        double x, xp;
+        double x = vecCoords.getx() * TRACE_TO_XAL_DIMENSION;
+        double xp = vecCoords.getxp() * TRACE_TO_XAL_DIMENSION;
         // y phase plane coordinates
-        double y, yp;
-
-        x = vecCoords.getx() * TRACE_TO_XAL_DIMENSION;
-        xp = vecCoords.getxp() * TRACE_TO_XAL_DIMENSION;
-        y = vecCoords.gety() * TRACE_TO_XAL_DIMENSION;
-        yp = vecCoords.getyp() * TRACE_TO_XAL_DIMENSION;
+        double y = vecCoords.gety() * TRACE_TO_XAL_DIMENSION;
+        double yp = vecCoords.getyp() * TRACE_TO_XAL_DIMENSION;
 
         // Convert the longitudinal coordinates
-        // the energy difference in eV
-        double dW;
-        // z phase plane coordinates
-        double z, zp;
-
         // to dz, offset from syncr
-        z = -((vnorm * lambda) / 360.0) * vecCoords.getz();
+        double z = -((vnorm * lambda) / 360.0) * vecCoords.getz();
         // from keV to eV
-        dW = vecCoords.getzp() * 1.0e+3;
+        double dW = vecCoords.getzp() * 1.0e+3;
         // to dp/p
-        zp = (gamma / (gamma + 1)) * (dW / W);
+        double zp = (gamma / (gamma + 1)) * (dW / w);
         // to z' radians
-        zp = zp / (gamma * gamma);
+        zp /= (gamma * gamma);
 
         return new PhaseVector(x, xp, y, yp, z, zp);
     }
@@ -245,29 +236,24 @@ public class TraceXalUnitConverter {
      * @return coordinate phase vector in Trace3D units
      */
     public PhaseVector xalToTraceCoordinates(PhaseVector vecCoords) {
-
         // Convert the transverse coordinates
-        // x phase plane coordinates
-        double x, xp;
-        // y phase plane coordinates
-        double y, yp;
 
-        x = vecCoords.getx() * XAL_TO_TRACE_DIMENSION;
-        xp = vecCoords.getxp() * XAL_TO_TRACE_DIMENSION;
-        y = vecCoords.gety() * XAL_TO_TRACE_DIMENSION;
-        yp = vecCoords.getyp() * XAL_TO_TRACE_DIMENSION;
+        // x phase plane coordinates
+        double x = vecCoords.getx() * XAL_TO_TRACE_DIMENSION;
+        double xp = vecCoords.getxp() * XAL_TO_TRACE_DIMENSION;
+        // y phase plane coordinates
+        double y = vecCoords.gety() * XAL_TO_TRACE_DIMENSION;
+        double yp = vecCoords.getyp() * XAL_TO_TRACE_DIMENSION;
 
         // Convert the longitudinal coordinates
         // z phase plane coordinates
-        double dPhi, dW;
-
-        dPhi = -(1.0 / ((vnorm * lambda) / 360.0)) * vecCoords.getz();
+        double dPhi = -(1.0 / ((vnorm * lambda) / 360.0)) * vecCoords.getz();
         // to dp/p
-        dW = gamma * gamma * vecCoords.getzp();
+        double dW = gamma * gamma * vecCoords.getzp();
         // to eV
-        dW = W * ((gamma + 1.0) / gamma) * dW;
+        dW *= w * ((gamma + 1.0) / gamma);
         // to keV
-        dW = dW * 1.0e-3;
+        dW *= 1.0e-3;
 
         return new PhaseVector(x, xp, y, yp, dPhi, dW);
     }
@@ -360,43 +346,31 @@ public class TraceXalUnitConverter {
      * @return Twiss parameters in XAL units
      */
     public Twiss traceToXalLongitudinal(Twiss t3dTwiss) {
-
         // Compute conversion factors
-        // temporary conversion factor
-        double t1;
-        // temporary conversion factor
-        double t2;
-        // temporary conversion factor
-        double t3;
+        // temporary conversion factors
+        double t1 = (vnorm * lambda / 360.0);
+        double t2 = (gamma / (gamma + 1.0)) * (1.0 / w);
+        double t3 = 1.0 / (gamma * gamma);
         // emittance conversion factor
-        double Cdeg;
-
-        t1 = (vnorm * lambda / 360.0);
-        t2 = (gamma / (gamma + 1.0)) * (1.0 / W);
-        t3 = 1.0 / (gamma * gamma);
-        Cdeg = t1 * t2 * t3;
+        double cDeg = t1 * t2 * t3;
 
         // Compute value of Twiss parameters in MKS units
         // Twiss alpha parameter
-        double alpha;
+        double alpha = -t3dTwiss.getAlpha();
+
         // Twiss beta parameter
-        double beta;
-        // beam emittance
-        double emittance;
-
-        alpha = -t3dTwiss.getAlpha();
-
         // to deg/eV
-        beta = t3dTwiss.getBeta() * 0.001;
+        double beta = t3dTwiss.getBeta() * 0.001;
         // to m/rad
-        beta = beta * t1 * (1.0 / t2) * (1.0 / t3);
+        beta *= t1 * (1.0 / t2) * (1.0 / t3);
 
+        // beam emittance
         // to deg-eV
-        emittance = t3dTwiss.getEmittance() * 1000.0;
+        double emittance = t3dTwiss.getEmittance() * 1000.0;
         // to rms emittance
-        emittance = emittance / 5.0;
+        emittance /= 5.0;
         // to m-rad
-        emittance = emittance * Cdeg;
+        emittance *= cDeg;
 
         return new Twiss(alpha, beta, emittance);
     }
@@ -437,19 +411,15 @@ public class TraceXalUnitConverter {
      */
     public Twiss xalToTraceTransverse(Twiss twissXal) {
         // Twiss alpha parameter
-        double alpha;
+        double alpha = twissXal.getAlpha();
         // Twiss beta parameter
-        double beta;
+        double beta = twissXal.getBeta();
+
         // beam emittance
-        double emittance;
-
-        alpha = twissXal.getAlpha();
-        beta = twissXal.getBeta();
-
         // to mm-mrad
-        emittance = twissXal.getEmittance() * (XAL_TO_TRACE_DIMENSION * XAL_TO_TRACE_DIMENSION);
+        double emittance = twissXal.getEmittance() * (XAL_TO_TRACE_DIMENSION * XAL_TO_TRACE_DIMENSION);
         // to effective emittance
-        emittance = emittance * 5.0;
+        emittance *= 5.0;
 
         return new Twiss(alpha, beta, emittance);
     }
@@ -491,43 +461,29 @@ public class TraceXalUnitConverter {
     public Twiss xalToTraceLongitudinal(Twiss twissXal) {
 
         // Compute conversion factors
-        // temporary conversion factor
-        double t1;
-        // temporary conversion factor
-        double t2;
-        // temporary conversion factor
-        double t3;
-        // emittance conversion factor
-        double Cdeg;
-
-        t1 = (vnorm * lambda / 360.0);
-        t2 = (gamma / (gamma + 1.0)) * (1.0 / W);
-        t3 = 1.0 / (gamma * gamma);
-        Cdeg = t1 * t2 * t3;
+        double t1 = (vnorm * lambda / 360.0);
+        double t2 = (gamma / (gamma + 1.0)) * (1.0 / w);
+        double t3 = 1.0 / (gamma * gamma);
+        double cDeg = t1 * t2 * t3;
 
         // Compute value of Twiss parameters in Trace3D units
         // Twiss alpha parameter
-        double alpha;
+        double alpha = -twissXal.getAlpha();
         // Twiss beta parameter
-        double beta;
-        // beam emittance
-        double emittance;
-
-        alpha = -twissXal.getAlpha();
-
-        beta = twissXal.getBeta();
+        double beta = twissXal.getBeta();
         // to deg/eV
-        beta = beta * t3 * t2 / t1;
+        beta *= t3 * t2 / t1;
         // to deg/keV
-        beta = beta * 1000.0;
+        beta *= 1000.0;
 
-        emittance = twissXal.getEmittance();
+        // beam emittance
+        double emittance = twissXal.getEmittance();
         // to deg-eV
-        emittance = emittance / Cdeg;
+        emittance /= cDeg;
         // to deg-keV
-        emittance = emittance / 1000.0;
+        emittance /= 1000.0;
         // to effective emittance
-        emittance = emittance * 5.0;
+        emittance *= 5.0;
 
         return new Twiss(alpha, beta, emittance);
     }
@@ -542,12 +498,7 @@ public class TraceXalUnitConverter {
      * @author H. Sako
      */
     public double xalToTraceDispersion(double dXal, PhaseIndex index) {
-
-        double dT3d = 0;
-
-        dT3d = dXal;
-
-        return dT3d;
+        return dXal;
     }
 
     /**
@@ -560,11 +511,7 @@ public class TraceXalUnitConverter {
      * @author H. Sako
      */
     public double traceToXalDispersion(double dT3d, PhaseIndex index) {
-        double dXal = 0;
-
-        dXal = dT3d;
-
-        return dXal;
+        return dT3d;
     }
 
     /**
@@ -604,7 +551,6 @@ public class TraceXalUnitConverter {
      * @see #traceToXalTransverse
      */
     public CovarianceMatrix correlationMatrixFromT3d(Twiss t3dX, Twiss t3dY, Twiss t3dZ) {
-
         // Convert to MKS units
         Twiss xalX = traceToXalTransverse(t3dX);
         Twiss xalY = traceToXalTransverse(t3dY);

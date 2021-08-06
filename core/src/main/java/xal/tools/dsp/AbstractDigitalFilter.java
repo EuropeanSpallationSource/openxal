@@ -123,8 +123,8 @@ public abstract class AbstractDigitalFilter {
      *
      * @param intOrder filter order
      */
-    public AbstractDigitalFilter(int intOrder) {
-        this.initialize(intOrder);
+    protected AbstractDigitalFilter(int intOrder) {
+        initialize(intOrder);
     }
 
     /**
@@ -136,7 +136,7 @@ public abstract class AbstractDigitalFilter {
      * @return filter order
      */
     public int getOrder() {
-        return this.intOrder;
+        return intOrder;
     }
 
     /**
@@ -146,7 +146,7 @@ public abstract class AbstractDigitalFilter {
      * @return size of coefficient arrays (i.e., DigitalFilter#getOrder() + 1)
      */
     public int getCoefficientCount() {
-        return this.cntCoefs;
+        return cntCoefs;
     }
 
     /**
@@ -175,7 +175,7 @@ public abstract class AbstractDigitalFilter {
      * @see AbstractDigitalFilter#response(double)
      */
     public int getTimeIndex() {
-        return this.intTime;
+        return intTime;
     }
 
     /**
@@ -220,30 +220,30 @@ public abstract class AbstractDigitalFilter {
         // current output value
         double dblOutput;
 
-        iTime = this.getTimeIndex();
+        iTime = getTimeIndex();
 
         // process the inputs
         iDelay = 0;
         dblOutput = this.getInputCoefficient(iTime, iDelay++) * dblInput;
-        for (Double dblInpDel : this.bufInput) {
-            double dblCoef = this.getInputCoefficient(iTime, iDelay++);
+        for (Double dblInpDel : bufInput) {
+            double dblCoef = getInputCoefficient(iTime, iDelay++);
 
             dblOutput += dblCoef * dblInpDel;
         }
 
         // process the outputs
         iDelay = 1;
-        for (Double dblOutDel : this.bufOutput) {
-            double dblCoef = this.getOutputCoefficient(iTime, iDelay++);
+        for (Double dblOutDel : bufOutput) {
+            double dblCoef = getOutputCoefficient(iTime, iDelay++);
 
             dblOutput -= dblCoef * dblOutDel;
         }
-        dblOutput = dblOutput / this.getOutputCoefficient(iTime, 0);
+        dblOutput = dblOutput / getOutputCoefficient(iTime, 0);
 
         // Load buffers, update the index, and return
-        this.bufInput.add(dblInput);
-        this.bufOutput.add(dblOutput);
-        this.intTime++;
+        bufInput.add(dblInput);
+        bufOutput.add(dblOutput);
+        intTime++;
 
         return dblOutput;
     }
@@ -263,11 +263,11 @@ public abstract class AbstractDigitalFilter {
      * @see AbstractDigitalFilter#response(double)
      */
     public double[] response(final double[] arrTrain) {
-        int N = arrTrain.length;
+        int n = arrTrain.length;
 
-        double[] arrResp = new double[N];
-        for (int n = 0; n < N; n++) {
-            arrResp[n] = this.response(arrTrain[n]);
+        double[] arrResp = new double[n];
+        for (int i = 0; i < n; i++) {
+            arrResp[i] = response(arrTrain[i]);
         }
 
         return arrResp;
@@ -277,9 +277,9 @@ public abstract class AbstractDigitalFilter {
      * Clears the input and output buffers, resetting filter for a new signal.
      */
     public void reset() {
-        this.intTime = 0;
-        this.bufInput.clear();
-        this.bufOutput.clear();
+        intTime = 0;
+        bufInput.clear();
+        bufOutput.clear();
     }
 
     /**
@@ -294,12 +294,12 @@ public abstract class AbstractDigitalFilter {
     public String toString() {
         String strBuffer = "";
 
-        strBuffer += "filter order  = " + this.getOrder() + "\n";
-        strBuffer += "current index = " + this.getTimeIndex() + "\n";
+        strBuffer += "filter order  = " + getOrder() + "\n";
+        strBuffer += "current index = " + getTimeIndex() + "\n";
         strBuffer += "input buffer\n";
-        strBuffer += this.bufInput.toString() + "\n";
+        strBuffer += bufInput.toString() + "\n";
         strBuffer += "output buffer\n";
-        strBuffer += this.bufOutput + "\n";
+        strBuffer += bufOutput + "\n";
 
         return strBuffer;
     }
@@ -313,31 +313,11 @@ public abstract class AbstractDigitalFilter {
      * @param intOrder filter order
      */
     private void initialize(int intOrder) {
-        this.intTime = 0;
+        intTime = 0;
         this.intOrder = intOrder;
-        this.cntCoefs = intOrder + 1;
+        cntCoefs = intOrder + 1;
 
-        this.bufInput = new LinearBuffer<Double>(intOrder);
-        this.bufOutput = new LinearBuffer<Double>(intOrder);
+        bufInput = new LinearBuffer<>(intOrder);
+        bufOutput = new LinearBuffer<>(intOrder);
     }
-
-    /**
-     * Check the given coefficient delay index for bounds errors.
-     *
-     * @param index coefficient delay index
-     *
-     * @throws IndexOutOfBoundsException index outside bounds
-     */
-    private void checkIndex(int index) throws IndexOutOfBoundsException {
-        if ((index < 0) || (index > this.getOrder())) {
-            throw new IllegalArgumentException(
-                    "DigitalFiler#checkIndex(): "
-                    + "index outside domain [0,"
-                    + this.getOrder()
-                    + "]"
-            );
-        }
-
-    }
-
 }

@@ -12,7 +12,6 @@ package xal.tools.database;
 import java.util.*;
 import java.util.logging.*;
 import javax.swing.*;
-import java.awt.event.*;
 import java.awt.Frame;
 import java.awt.Dialog;
 import java.awt.Dimension;
@@ -49,11 +48,6 @@ public class ConnectionDialog extends JDialog {
      * database configuration
      */
     private DBConfiguration configuration;
-
-    /**
-     * file chooser for browsing to a connection dictionary
-     */
-    private JFileChooser dictionaryBrowser;
 
     /**
      * box for the server menu
@@ -198,8 +192,7 @@ public class ConnectionDialog extends JDialog {
      * load the default configuration
      */
     private void loadDefaultConfiguration() {
-        final DBConfiguration configuration = DBConfiguration.getInstance();
-        this.configuration = configuration;
+        configuration = DBConfiguration.getInstance();
         String selectedServerItem = null;
         if (configuration != null) {
             final List<String> servers = new Vector<>(configuration.getServerNames());
@@ -285,19 +278,19 @@ public class ConnectionDialog extends JDialog {
      * @return the new connection or null if the user canceled the dialog
      */
     public Connection showConnectionDialog(final DatabaseAdaptor databaseAdaptor) {
-        ConnectionDictionary dictionary = showDialog();
+        ConnectionDictionary connDictionary = showDialog();
 
         // check if the user cancelled the dialog
-        if (dictionary == null) {
+        if (connDictionary == null) {
             return null;
         }
 
         try {
-            return databaseAdaptor.getConnection(dictionary);
+            return databaseAdaptor.getConnection(connDictionary);
         } catch (DatabaseException exception) {
             JOptionPane.showMessageDialog(getOwner(), exception.getMessage(), "Connection Error!", JOptionPane.ERROR_MESSAGE);
             LOGGER.log(Level.SEVERE, "Database connection error.", exception);
-            return showConnectionDialog((JFrame) getOwner(), databaseAdaptor, dictionary);
+            return showConnectionDialog((JFrame) getOwner(), databaseAdaptor, connDictionary);
         }
     }
 
@@ -456,13 +449,10 @@ public class ConnectionDialog extends JDialog {
         mainView.add(buttonBox);
 
         final JButton configureButton = new JButton("Configure...");
-        configureButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                final boolean changed = ConnectionPreferenceController.displayPathPreferenceSelector(ConnectionDialog.this);
-                if (changed) {
-                    loadDefaultConfiguration();
-                }
+        configureButton.addActionListener(event -> {
+            final boolean changed = ConnectionPreferenceController.displayPathPreferenceSelector(ConnectionDialog.this);
+            if (changed) {
+                loadDefaultConfiguration();
             }
         });
 
@@ -471,58 +461,49 @@ public class ConnectionDialog extends JDialog {
 
         final JButton cancelButton = new JButton("Cancel");
         buttonBox.add(cancelButton);
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                setVisible(false);
-                dispose();
-            }
+        cancelButton.addActionListener(event -> {
+            setVisible(false);
+            dispose();
         });
 
         final JButton submitButton = new JButton(submitLabel);
         getRootPane().setDefaultButton(submitButton);
         buttonBox.add(submitButton);
-        submitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                dictionary = new ConnectionDictionary();
+        submitButton.addActionListener(event -> {
+            dictionary = new ConnectionDictionary();
 
-                if (userField.getText() != null) {
-                    dictionary.setUser(userField.getText());
-                }
-                if (passwordField.getPassword() != null) {
-                    dictionary.setPassword(String.valueOf(passwordField.getPassword()));
-                }
-                if (urlField.getText() != null) {
-                    dictionary.setURLSpec(urlField.getText());
-                }
-                if (adaptorField.getText() != null) {
-                    dictionary.setDatabaseAdaptorClass(adaptorField.getText());
-                }
-                setVisible(false);
-                dispose();
+            if (userField.getText() != null) {
+                dictionary.setUser(userField.getText());
             }
+            if (passwordField.getPassword() != null) {
+                dictionary.setPassword(String.valueOf(passwordField.getPassword()));
+            }
+            if (urlField.getText() != null) {
+                dictionary.setURLSpec(urlField.getText());
+            }
+            if (adaptorField.getText() != null) {
+                dictionary.setDatabaseAdaptorClass(adaptorField.getText());
+            }
+            setVisible(false);
+            dispose();
         });
 
-        serverMenu.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                final int selectedIndex = serverMenu.getSelectedIndex();
-                if (selectedIndex > 0) {
-                    final Object selection = serverMenu.getSelectedItem();
-                    if (selection != null && configuration != null) {
-                        final String serverName = selection.toString();
-                        final ConnectionDictionary dictionary = configuration.newConnectionDictionary(null, serverName);
-                        final DatabaseAdaptor adaptor = dictionary.getDatabaseAdaptor();
-                        adaptorField.setText(adaptor != null ? adaptor.getClass().getCanonicalName() : "");
-                        urlField.setText(dictionary.getURLSpec());
-                        setDisplayServerCustomForm(false);
-                    } else {
-                        setDisplayServerCustomForm(true);
-                    }
-                } else if (selectedIndex == 0) {
+        serverMenu.addActionListener(event -> {
+            final int selectedIndex = serverMenu.getSelectedIndex();
+            if (selectedIndex > 0) {
+                final Object selection = serverMenu.getSelectedItem();
+                if (selection != null && configuration != null) {
+                    final String serverName = selection.toString();
+                    final ConnectionDictionary connDictionary = configuration.newConnectionDictionary(null, serverName);
+                    final DatabaseAdaptor adaptor = connDictionary.getDatabaseAdaptor();
+                    adaptorField.setText(adaptor != null ? adaptor.getClass().getCanonicalName() : "");
+                    urlField.setText(connDictionary.getURLSpec());
+                    setDisplayServerCustomForm(false);
+                } else {
                     setDisplayServerCustomForm(true);
                 }
+            } else if (selectedIndex == 0) {
+                setDisplayServerCustomForm(true);
             }
         });
 

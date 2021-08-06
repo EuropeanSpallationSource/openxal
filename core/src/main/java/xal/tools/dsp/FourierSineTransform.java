@@ -102,7 +102,7 @@ public class FourierSineTransform {
      * @see FourierSineTransform#transform(double[])
      */
     public FourierSineTransform(int szData) {
-        this.initTransform(szData);
+        initTransform(szData);
     }
 
     /*
@@ -115,7 +115,7 @@ public class FourierSineTransform {
      * @return size of the transform vectors (that is, the value <em>N</em>)
      */
     public int getDataSize() {
-        return this.szData;
+        return szData;
     }
 
     /*
@@ -142,10 +142,10 @@ public class FourierSineTransform {
      * @return frequency interval (stride) between transformed data points
      */
     public double compFreqStrideFromInterval(double dblDelta) {
-        int N = this.getDataSize() - 1;
-        double T = dblDelta * N;
+        int n = this.getDataSize() - 1;
+        double t = dblDelta * n;
 
-        return this.compFreqStrideFromPeriod(T);
+        return compFreqStrideFromPeriod(t);
     }
 
     /**
@@ -175,12 +175,12 @@ public class FourierSineTransform {
         int szArr = arrFunc.length;
 
         // Check the dimensions
-        if (szArr != this.getDataSize()) {
-            throw new IllegalArgumentException("FourierSineTransform#transform() - array size #= " + this.getDataSize());
+        if (szArr != getDataSize()) {
+            throw new IllegalArgumentException("FourierSineTransform#transform() - array size #= " + getDataSize());
         }
 
         // Perform the transform
-        AbstractDoubleVector vecTrans = this.matKer.multiply(new DoubleVector(arrFunc));
+        AbstractDoubleVector vecTrans = matKer.multiply(new DoubleVector(arrFunc));
         double[] arrTrans = new double[szArr];
 
         // Unpack the results and return them
@@ -212,9 +212,9 @@ public class FourierSineTransform {
      * @throws IllegalArgumentException invalid function dimension
      */
     public double[] powerSpectrum(final double[] arrFunc) throws IllegalArgumentException {
-        double[] arrSpec = this.transform(arrFunc);
+        double[] arrSpec = transform(arrFunc);
 
-        for (int index = 0; index < this.getDataSize(); index++) {
+        for (int index = 0; index < getDataSize(); index++) {
             double dblVal = arrSpec[index];
             arrSpec[index] = dblVal * dblVal;
         }
@@ -228,32 +228,26 @@ public class FourierSineTransform {
     /**
      * Computes and stores the sine transform kernel.
      *
-     * @param szData dimensions of the tranform kernel.
+     * @param szData dimensions of the transform kernel.
      */
     private void initTransform(int szData) {
-        // matrix indices
-        int m, n;
-        // current matrix value
-        double k;
-
         // vector/matrix dimensions 
-        final int N = szData - 1;
+        final int dim = szData - 1;
         // normalization constant
-        final double c = Math.sqrt(2.0 / N);
+        final double c = Math.sqrt(2.0 / dim);
 
         // Create matrix kernel and compute element values
-        DoubleSquareMatrix K = new DoubleSquareMatrix(N + 1);
-        for (m = 0; m <= N; m++) {
-            for (n = m; n <= N; n++) {
-                k = c * Math.sin(Math.PI * m * n / N);
+        DoubleSquareMatrix kernel = new DoubleSquareMatrix(dim + 1);
+        for (int m = 0; m <= dim; m++) {
+            for (int n = m; n <= dim; n++) {
+                double k = c * Math.sin(Math.PI * m * n / dim);
 
-                K.setElement(m, n, k);
-                K.setElement(n, m, k);
+                kernel.setElement(m, n, k);
+                kernel.setElement(n, m, k);
             }
         }
 
-        this.szData = N + 1;
-        this.matKer = K;
+        this.szData = dim + 1;
+        matKer = kernel;
     }
-
 }

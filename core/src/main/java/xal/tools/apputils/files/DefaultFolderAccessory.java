@@ -10,7 +10,6 @@ package xal.tools.apputils.files;
 import java.io.*;
 import java.beans.*;
 import java.awt.Component;
-import java.awt.event.*;
 import javax.swing.*;
 import java.util.prefs.Preferences;
 import java.net.*;
@@ -187,14 +186,12 @@ public class DefaultFolderAccessory implements PropertyChangeListener {
                 final int confirm = JOptionPane.showConfirmDialog(view, message, "Specify Default Folder", JOptionPane.YES_NO_OPTION);
 
                 try {
-                    switch (confirm) {
-                        case JOptionPane.YES_OPTION:
-                            if (!showDefaultFolderSelector()) {
-                                return;
-                            }
-                            break;
-                        default:
+                    if (confirm == JOptionPane.YES_OPTION) {
+                        if (!showDefaultFolderSelector()) {
                             return;
+                        }
+                    } else {
+                        return;
                     }
                 } catch (Exception exception) {
                     LOGGER.log(Level.SEVERE, null, exception);
@@ -216,17 +213,16 @@ public class DefaultFolderAccessory implements PropertyChangeListener {
             selector.setDialogTitle(title);
             final int status = selector.showDialog(view, "Make Default");
 
-            switch (status) {
-                case JFileChooser.APPROVE_OPTION:
-                    final File defaultFolder = selector.getSelectedFile();
-                    if (defaultFolder != null) {
-                        folderTracker.cacheURL(defaultFolder.toURI().toURL());
-                        return true;
-                    } else {
-                        return false;
-                    }
-                default:
+            if (status == JFileChooser.APPROVE_OPTION) {
+                File defaultFolder = selector.getSelectedFile();
+                if (defaultFolder != null) {
+                    folderTracker.cacheURL(defaultFolder.toURI().toURL());
+                    return true;
+                } else {
                     return false;
+                }
+            } else {
+                return false;
             }
         }
 
@@ -245,14 +241,11 @@ public class DefaultFolderAccessory implements PropertyChangeListener {
         protected Component makeDefaultFolderNavigationButton() {
             final JButton goButton = new JButton("Default Folder");
             goButton.setToolTipText("Navigate to the default folder.");
-            goButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(final ActionEvent event) {
-                    try {
-                        handleToDefaultFolderAction();
-                    } catch (Exception exception) {
-                        reportException(exception);
-                    }
+            goButton.addActionListener(event -> {
+                try {
+                    handleToDefaultFolderAction();
+                } catch (Exception exception) {
+                    reportException(exception);
                 }
             });
 

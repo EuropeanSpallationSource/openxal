@@ -19,13 +19,13 @@ public class RealNumericIndexer<T> implements Iterable<T> {
     /**
      * records of data
      */
-    protected final List<NumericRecord<T>> records;
+    protected final List<NumericRecord<T>> numericRecords;
 
     /**
      * Constructor
      */
     public RealNumericIndexer() {
-        records = new ArrayList<>();
+        numericRecords = new ArrayList<>();
     }
 
     /**
@@ -34,7 +34,7 @@ public class RealNumericIndexer<T> implements Iterable<T> {
      * @return the number of items indexed
      */
     public int size() {
-        return records.size();
+        return numericRecords.size();
     }
 
     /**
@@ -49,12 +49,12 @@ public class RealNumericIndexer<T> implements Iterable<T> {
 
             @Override
             public boolean hasNext() {
-                return index < records.size();
+                return index < numericRecords.size();
             }
 
             @Override
             public T next() {
-                return records.get(index++).getValue();
+                return numericRecords.get(index++).getValue();
             }
 
             @Override
@@ -84,7 +84,7 @@ public class RealNumericIndexer<T> implements Iterable<T> {
      * @return the value at the specified index
      */
     public T get(final int index) {
-        return records.get(index).getValue();
+        return numericRecords.get(index).getValue();
     }
 
     /**
@@ -94,7 +94,7 @@ public class RealNumericIndexer<T> implements Iterable<T> {
      * @return the location corresponding to the specified index
      */
     public double getLocation(final int index) {
-        return records.get(index).getLocation();
+        return numericRecords.get(index).getLocation();
     }
 
     /**
@@ -170,7 +170,7 @@ public class RealNumericIndexer<T> implements Iterable<T> {
     public int[] getIndicesWithinLocationRange(final double startLocation, final double endLocation) {
         final int count = size();
         if (count == 0) {
-            return null;
+            return new int[0];
         } else if (startLocation == endLocation) {
             final int index = (int) findIndex(startLocation);
             return getLocation(index) == startLocation ? new int[]{index, index} : null;
@@ -180,7 +180,7 @@ public class RealNumericIndexer<T> implements Iterable<T> {
                 ++lowerIndex;
             }
             if (lowerIndex >= count) {
-                return null;
+                return new int[0];
             }
             int upperIndex = getUpperIndex(endLocation, lowerIndex);
             if (getLocation(upperIndex) > endLocation) {
@@ -189,7 +189,7 @@ public class RealNumericIndexer<T> implements Iterable<T> {
             if (upperIndex >= lowerIndex) {
                 return new int[]{lowerIndex, upperIndex};
             } else {
-                return null;
+                return new int[0];
             }
         }
     }
@@ -241,9 +241,7 @@ public class RealNumericIndexer<T> implements Iterable<T> {
             return nmax;
         }
 
-        int iterations = 0;
         while (nmax - nmin > 1) {
-            iterations += 1;
             int index = (int) Math.round(estimateIndex(location, nmin, nmax, xmin, xmax));
             if (index <= nmin) {
                 // this is needed to guarantee progress
@@ -284,7 +282,7 @@ public class RealNumericIndexer<T> implements Iterable<T> {
      * @return the minimum location
      */
     private double getMinLocation() {
-        return size() > 0 ? records.get(0).getLocation() : Double.NaN;
+        return size() > 0 ? numericRecords.get(0).getLocation() : Double.NaN;
     }
 
     /**
@@ -294,7 +292,7 @@ public class RealNumericIndexer<T> implements Iterable<T> {
      */
     private double getMaxLocation() {
         final int count = size();
-        return count > 0 ? records.get(count - 1).getLocation() : Double.NaN;
+        return count > 0 ? numericRecords.get(count - 1).getLocation() : Double.NaN;
     }
 
     /**
@@ -305,20 +303,20 @@ public class RealNumericIndexer<T> implements Iterable<T> {
      */
     public void add(final double location, final T value) {
         final NumericRecord<T> newRecord = new NumericRecord<>(value, location);
-        final int numRecords = records.size();
+        final int numRecords = numericRecords.size();
         if (numRecords > 0) {
             final int index = getUpperIndex(location);
             if (location < getMinLocation()) {
-                records.add(0, newRecord);
+                numericRecords.add(0, newRecord);
             } else if (location >= getMaxLocation()) {
-                records.add(newRecord);
+                numericRecords.add(newRecord);
             } else if (index >= 0 && index < numRecords) {
-                records.add(index, newRecord);
+                numericRecords.add(index, newRecord);
             } else {
                 throw new RuntimeException("RealNumericIndexer exception while adding a new record at location: " + location + " with index: " + index);
             }
         } else {
-            records.add(newRecord);
+            numericRecords.add(newRecord);
         }
     }
 
@@ -328,8 +326,8 @@ public class RealNumericIndexer<T> implements Iterable<T> {
      * @param index the index of the item to remove
      */
     public T remove(final int index) {
-        final NumericRecord<T> record = records.remove(index);
-        return record != null ? record.getValue() : null;
+        final NumericRecord<T> numericRecord = numericRecords.remove(index);
+        return numericRecord != null ? numericRecord.getValue() : null;
     }
 }
 
@@ -367,8 +365,8 @@ final class NumericRecord<T> implements Comparable<NumericRecord<T>> {
      * compare this record to another
      */
     @Override
-    public final int compareTo(final NumericRecord<T> record) {
-        return location < record.location ? -1 : location > record.location ? 1 : 0;
+    public final int compareTo(final NumericRecord<T> numericRecord) {
+        return location < numericRecord.location ? -1 : location > numericRecord.location ? 1 : 0;
     }
 
     /**
@@ -377,8 +375,8 @@ final class NumericRecord<T> implements Comparable<NumericRecord<T>> {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof NumericRecord) {
-            NumericRecord<T> record = (NumericRecord<T>) obj;
-            return location == record.location;
+            NumericRecord<T> numericRecord = (NumericRecord<T>) obj;
+            return location == numericRecord.location;
         } else {
             return false;
         }

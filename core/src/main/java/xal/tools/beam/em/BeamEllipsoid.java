@@ -91,7 +91,6 @@ import xal.tools.math.r3.R3x3JacobiDecomposition;
  */
 public class BeamEllipsoid {
 
-
     /*
      * Global Constants
      */
@@ -174,21 +173,21 @@ public class BeamEllipsoid {
      */
     public static double[] compDefocusConstants(double dblGamma, double[] arrMoments) {
         // Get the second-order spatial moments
-        double a_2 = arrMoments[0];
-        double b_2 = arrMoments[1];
-        double c_2 = arrMoments[2];
+        double a2 = arrMoments[0];
+        double b2 = arrMoments[1];
+        double c2 = arrMoments[2];
 
         // Compute the Carlson elliptic integral values
-        double ellipticX = EllipticIntegral.RD(b_2, c_2, a_2);
-        double ellipticY = EllipticIntegral.RD(c_2, a_2, b_2);
-        double ellipticZ = EllipticIntegral.RD(a_2, b_2, c_2);
+        double ellipticX = EllipticIntegral.rd(b2, c2, a2);
+        double ellipticY = EllipticIntegral.rd(c2, a2, b2);
+        double ellipticZ = EllipticIntegral.rd(a2, b2, c2);
 
         // Compute (de)focusing strengths from space charge
-        double Knx = (dblGamma * ellipticX) / CONST_UNIFORM_BEAM;
-        double Kny = (dblGamma * ellipticY) / CONST_UNIFORM_BEAM;
-        double Knz = (dblGamma * ellipticZ) / CONST_UNIFORM_BEAM;
+        double knx = (dblGamma * ellipticX) / CONST_UNIFORM_BEAM;
+        double kny = (dblGamma * ellipticY) / CONST_UNIFORM_BEAM;
+        double knz = (dblGamma * ellipticZ) / CONST_UNIFORM_BEAM;
 
-        return new double[]{Knx, Kny, Knz};
+        return new double[]{knx, kny, knz};
     }
 
     /**
@@ -214,14 +213,14 @@ public class BeamEllipsoid {
      */
     public static double[] compDefocusConstantsAlaTrace3D(double dblGamma, double[] arrMoments) {
         // Get the second-order spatial moments
-        double a_2 = arrMoments[0];
-        double b_2 = arrMoments[1];
-        double c_2 = arrMoments[2];
+        double a2 = arrMoments[0];
+        double b2 = arrMoments[1];
+        double c2 = arrMoments[2];
 
         // Get the semi-axes
-        double a = Math.sqrt(a_2);
-        double b = Math.sqrt(b_2);
-        double c = Math.sqrt(c_2);
+        double a = Math.sqrt(a2);
+        double b = Math.sqrt(b2);
+        double c = Math.sqrt(c2);
 
         // Compute the form factor terms
         double s = c / Math.sqrt(a * b);
@@ -233,11 +232,11 @@ public class BeamEllipsoid {
         double approxRdZ = (3.0 / (a * b * c)) * xi;
 
         // Compute (de)focusing strengths from space charge
-        double KnX = (dblGamma * approxRdX) / CONST_UNIFORM_BEAM;
-        double KnY = (dblGamma * approxRdY) / CONST_UNIFORM_BEAM;
-        double KnZ = (dblGamma * approxRdZ) / CONST_UNIFORM_BEAM;
+        double knX = (dblGamma * approxRdX) / CONST_UNIFORM_BEAM;
+        double knY = (dblGamma * approxRdY) / CONST_UNIFORM_BEAM;
+        double knZ = (dblGamma * approxRdZ) / CONST_UNIFORM_BEAM;
 
-        return new double[]{KnX, KnY, KnZ};
+        return new double[]{knX, knY, knZ};
     }
 
     /*
@@ -343,8 +342,7 @@ public class BeamEllipsoid {
      * @author Christopher K. Allen
      * @version Oct, 2013
      */
-    public BeamEllipsoid(double dblGamma, CovarianceMatrix matSigLab) /* throws InstantiationException  */ {
-
+    public BeamEllipsoid(double dblGamma, CovarianceMatrix matSigLab) {
         // Save the arguments
         this.dblGamma = dblGamma;
         this.matSigLab = matSigLab;
@@ -433,16 +431,15 @@ public class BeamEllipsoid {
      * @since Aug 25, 2011
      */
     public BeamEllipsoid(double dblGamma, R3 vec1stMmts, R3 vec2ndMmts) {
-
         // Save the arguments
         this.dblGamma = dblGamma;
-        this.arrMoments = vec2ndMmts.toArray();
+        arrMoments = vec2ndMmts.toArray();
 
-        this.matLorentz = this.computeLorentzMatrix(dblGamma);
-        this.matTranslate = PhaseMatrix.spatialTranslation(vec1stMmts);
-        this.matRotate = PhaseMatrix.identity();
+        matLorentz = this.computeLorentzMatrix(dblGamma);
+        matTranslate = PhaseMatrix.spatialTranslation(vec1stMmts);
+        matRotate = PhaseMatrix.identity();
 
-        this.arrDefocus = BeamEllipsoid.compDefocusConstants(this.dblGamma, this.arrMoments);
+        arrDefocus = BeamEllipsoid.compDefocusConstants(dblGamma, arrMoments);
     }
 
     /*
@@ -456,7 +453,7 @@ public class BeamEllipsoid {
      * <em>v</em><sup>2</sup>/<em>c</em><sup>2</sup>)<sup>1/2</sup>
      */
     public double getGamma() {
-        return this.dblGamma;
+        return dblGamma;
     }
 
     /**
@@ -466,7 +463,7 @@ public class BeamEllipsoid {
      * @return beam correlation matrix in laboratory frame
      */
     public CovarianceMatrix getCorrelationLab() {
-        return this.matSigLab;
+        return matSigLab;
     }
 
     /**
@@ -479,7 +476,7 @@ public class BeamEllipsoid {
      * @return second moment <x*x>
      */
     public double get2ndMomentX() {
-        return this.arrMoments[0];
+        return arrMoments[0];
     }
 
     /**
@@ -492,7 +489,7 @@ public class BeamEllipsoid {
      * @return second moment <y*y>
      */
     public double get2ndMomentY() {
-        return this.arrMoments[1];
+        return arrMoments[1];
     }
 
     /**
@@ -505,7 +502,7 @@ public class BeamEllipsoid {
      * @return second moment <z*z>
      */
     public double get2ndMomentZ() {
-        return this.arrMoments[2];
+        return arrMoments[2];
     }
 
     /**
@@ -518,7 +515,7 @@ public class BeamEllipsoid {
      * @return three-array (<x*x>,<y*y>,<z*z>) second moments
      */
     public double[] get2ndMoments() {
-        return this.arrMoments;
+        return arrMoments;
     }
 
     /**
@@ -533,7 +530,7 @@ public class BeamEllipsoid {
      * @see BeamEllipsoid#getSemiAxes()
      */
     public double getSemiAxisX() {
-        return Math.sqrt(this.arrMoments[0]);
+        return Math.sqrt(arrMoments[0]);
     }
 
     /**
@@ -548,7 +545,7 @@ public class BeamEllipsoid {
      * @see BeamEllipsoid#getSemiAxes()
      */
     public double getSemiAxisY() {
-        return Math.sqrt(this.arrMoments[1]);
+        return Math.sqrt(arrMoments[1]);
     }
 
     /**
@@ -563,21 +560,17 @@ public class BeamEllipsoid {
      * @see BeamEllipsoid#getSemiAxes()
      */
     public double getSemiAxisZ() {
-        return Math.sqrt(this.arrMoments[2]);
+        return Math.sqrt(arrMoments[2]);
     }
 
-    ;
-
     /**
-     *  Return all the ellipsoid semi-axes lengths as an array.
-     *  Note that these semi-axes are the values in the stationary
-     *  beam frame.
-     *  
-     *  NOTE
-     *  The after rotation the (x,y,z) coordinate are somewhat arbitrary
-     *  and no longer coincide with the original laboratory coordinates.
-     * 
-     *  @return     array (a,b,c) of ellipsoid semi-axes
+     * Return all the ellipsoid semi-axes lengths as an array. Note that these
+     * semi-axes are the values in the stationary beam frame.
+     *
+     * NOTE The after rotation the (x,y,z) coordinate are somewhat arbitrary and
+     * no longer coincide with the original laboratory coordinates.
+     *
+     * @return array (a,b,c) of ellipsoid semi-axes
      */
     public double[] getSemiAxes() {
         double[] arrSemiAxes = new double[3];
@@ -600,73 +593,66 @@ public class BeamEllipsoid {
      * @see BeamEllipsoid#getDefocusingConstants()
      */
     public double getDefocusingConstantX() {
-        return this.arrDefocus[0];
+        return arrDefocus[0];
     }
-
-    ;
 
     /**
      * Return the 2nd normalized space charge defocusing constant.
-     * 
-     *  NOTE
-     *  The after rotation the (x,y,z) coordinate are somewhat arbitrary
-     *  and no longer coincide with the original laboratory coordinates.
-     *  
-     *  @return     2nd normalized defocusing constant knx
-     *  
-     *  @see    BeamEllipsoid#getDefocusingConstants()
+     *
+     * NOTE The after rotation the (x,y,z) coordinate are somewhat arbitrary and
+     * no longer coincide with the original laboratory coordinates.
+     *
+     * @return 2nd normalized defocusing constant knx
+     *
+     * @see BeamEllipsoid#getDefocusingConstants()
      */
     public double getDefocusingConstantY() {
-        return this.arrDefocus[1];
+        return arrDefocus[1];
     }
-
-    ;
 
     /**
      * Return the 3rd normalized space charge defocusing constant.
-     * 
-     *  NOTE
-     *  The after rotation the (x,y,z) coordinate are somewhat arbitrary
-     *  and no longer coincide with the original laboratory coordinates.
-     *  
-     *  @return     3rd normalized defocusing constant knz
-     *  
-     *  @see    BeamEllipsoid#getDefocusingConstants()
+     *
+     * NOTE The after rotation the (x,y,z) coordinate are somewhat arbitrary and
+     * no longer coincide with the original laboratory coordinates.
+     *
+     * @return 3rd normalized defocusing constant knz
+     *
+     * @see BeamEllipsoid#getDefocusingConstants()
      */
     public double getDefocusingConstantZ() {
-        return this.arrDefocus[2];
+        return arrDefocus[2];
     }
-
-    ;
 
     /**
      * <p>
-     * Return all the normalized space-charge defocusing constants
-     * for the beam ellipsoid.  These are the inverses of the normalized defocal
-     * lengths (fnx,fny,fnz) and are used to construct the space charge 
-     * generator matrix and space charge transfer matrix.  The unnormalized 
-     * focal lengths <em>f</em> are given by
+     * Return all the normalized space-charge defocusing constants for the beam
+     * ellipsoid. These are the inverses of the normalized defocal lengths
+     * (fnx,fny,fnz) and are used to construct the space charge generator matrix
+     * and space charge transfer matrix. The unnormalized focal lengths
+     * <em>f</em> are given by
      * <br>
      * <br>
-     *      f = ds*K*fn
-     * <br>
-     * <br>     
-     * where <em>ds</em> is the increment path length over which the space charge 
-     * kick is being applied, <em>K</em> is the generalized (3D) beam perveance,
-     * and <em>fn</n> is the normalized defocal length.  The normalized defocal 
-     * length is given by
+     * f = ds*K*fn
      * <br>
      * <br>
-     *      fn = 1/kn^2
+     * where <em>ds</em> is the increment path length over which the space
+     * charge kick is being applied, <em>K</em> is the generalized (3D) beam
+     * perveance, and <em>fn</n> is the normalized defocal length. The
+     * normalized defocal length is given by
      * <br>
-     * <br>     
-     * where <em>kn^2</em> is the normalized (squared) focusing constant, i.e., the value
-     * returned by this method.
-     * 
-     * @return  three-array (knx^2, kny^2, knz^2) of normalized defocusing constants
+     * <br>
+     * fn = 1/kn^2
+     * <br>
+     * <br>
+     * where <em>kn^2</em> is the normalized (squared) focusing constant, i.e.,
+     * the value returned by this method.
+     *
+     * @return three-array (knx^2, kny^2, knz^2) of normalized defocusing
+     * constants
      */
     public double[] getDefocusingConstants() {
-        return this.arrDefocus;
+        return arrDefocus;
     }
 
     /**
@@ -676,7 +662,7 @@ public class BeamEllipsoid {
      * @return beam correlation matrix in beam frame
      */
     public CovarianceMatrix getCorrelationBeam() {
-        return this.matSigBeam;
+        return matSigBeam;
     }
 
     /**
@@ -692,7 +678,7 @@ public class BeamEllipsoid {
      * coordinates
      */
     public PhaseMatrix getLorentzTransform() {
-        return this.matLorentz;
+        return matLorentz;
     }
 
     /**
@@ -706,7 +692,7 @@ public class BeamEllipsoid {
      * centroid
      */
     public PhaseMatrix getTranslation() {
-        return this.matTranslate;
+        return matTranslate;
     }
 
     /**
@@ -734,7 +720,7 @@ public class BeamEllipsoid {
      * position
      */
     public PhaseMatrix getRotation() {
-        return this.matRotate;
+        return matRotate;
     }
 
     /**
@@ -766,16 +752,13 @@ public class BeamEllipsoid {
      * @see BeamEllipsoid#getRotation()
      */
     public PhaseMatrix getLabToBeamTransform() {
-
         // Get transform matrices
-        PhaseMatrix L0 = this.getLorentzTransform();
-        PhaseMatrix T0 = this.getTranslation();
-        PhaseMatrix R0 = this.getRotation();
+        PhaseMatrix l0 = this.getLorentzTransform();
+        PhaseMatrix t0 = this.getTranslation();
+        PhaseMatrix r0 = this.getRotation();
 
         // Build the transform to ellipsoid coordinates in beam frame
-        PhaseMatrix M = R0.times(T0.times(L0));
-
-        return M;
+        return r0.times(t0.times(l0));
     }
 
     /**
@@ -804,15 +787,12 @@ public class BeamEllipsoid {
      * @see BeamEllipsoid#getRotation()
      */
     public PhaseMatrix getBeamToEllipseTransform() {
-
         // Get transform matrices
-        PhaseMatrix T0 = this.getTranslation();
-        PhaseMatrix R0 = this.getRotation();
+        PhaseMatrix t0 = this.getTranslation();
+        PhaseMatrix r0 = this.getRotation();
 
         // Build the transform to ellipsoid coordinates in beam frame
-        PhaseMatrix M = R0.times(T0);
-
-        return M;
+        return r0.times(t0);
     }
 
     /**
@@ -892,20 +872,17 @@ public class BeamEllipsoid {
      * @see BeamEllipsoid#computeScheffMatrix
      */
     public PhaseMatrix computeScheffGenerator(double dblPerveance) {
-
         // Check for pathelogical zero-space charge case
         if (dblPerveance == 0.0) {
             return PhaseMatrix.identity();
         }
 
         // Compute generator matrix and transform it to laboratory frame 
-        PhaseMatrix M = this.getLabToBeamTransform();
-        PhaseMatrix Mi = M.inverse();
+        PhaseMatrix m = this.getLabToBeamTransform();
+        PhaseMatrix mI = m.inverse();
 
-        PhaseMatrix G0 = this.buildScheffGeneratorLocal(dblPerveance);
-        PhaseMatrix G = Mi.times(G0.times(M));
-
-        return G;
+        PhaseMatrix g0 = this.buildScheffGeneratorLocal(dblPerveance);
+        return mI.times(g0.times(m));
     }
 
     /**
@@ -982,15 +959,14 @@ public class BeamEllipsoid {
      * @see BeamEllipsoid#computeScheffGenerator
      */
     public PhaseMatrix computeScheffMatrix(double dblLen, double dblPerveance) {
-
         // Check for pathelogical zero-space charge case
         if (dblPerveance == 0.0) {
             return PhaseMatrix.identity();
         }
 
         // Compute the laboratory/beam frame transform 
-        PhaseMatrix M = this.getBeamToEllipseTransform();
-        PhaseMatrix Mi = M.inverse();
+        PhaseMatrix m = this.getBeamToEllipseTransform();
+        PhaseMatrix mI = m.inverse();
 
         // compute defocusing constants
         double dblMagScheff = dblLen * dblPerveance;
@@ -1000,14 +976,12 @@ public class BeamEllipsoid {
         double kz = dblMagScheff * this.getDefocusingConstantZ();
 
         // Build the transfer matrix and transform it to laboratory frame 
-        PhaseMatrix F0 = PhaseMatrix.identity();
-        F0.setElem(IND.Xp, IND.X, kx);
-        F0.setElem(IND.Yp, IND.Y, ky);
-        F0.setElem(IND.Zp, IND.Z, kz);
+        PhaseMatrix f0 = PhaseMatrix.identity();
+        f0.setElem(IND.XP, IND.X, kx);
+        f0.setElem(IND.YP, IND.Y, ky);
+        f0.setElem(IND.ZP, IND.Z, kz);
 
-        PhaseMatrix F = Mi.times(F0.times(M));
-
-        return F;
+        return mI.times(f0.times(m));
     }
 
     public PhaseMatrix computeDCScheffMatrix(double dblLen, double dblPerveance) {
@@ -1018,8 +992,8 @@ public class BeamEllipsoid {
         }
 
         // Compute the laboratory/beam frame transform 
-        PhaseMatrix M = this.getBeamToEllipseTransform();
-        PhaseMatrix Mi = M.inverse();
+        PhaseMatrix m = this.getBeamToEllipseTransform();
+        PhaseMatrix mI = m.inverse();
 
         // Get the second-order spatial moments
         double a = 2 * Math.sqrt(arrMoments[0]);
@@ -1029,13 +1003,11 @@ public class BeamEllipsoid {
         double ky = dblLen * dblPerveance * 1 / (b * (a + b));
 
         // Build the transfer matrix and transform it to laboratory frame 
-        PhaseMatrix F0 = PhaseMatrix.identity();
-        F0.setElem(IND.Xp, IND.X, kx);
-        F0.setElem(IND.Yp, IND.Y, ky);
+        PhaseMatrix f0 = PhaseMatrix.identity();
+        f0.setElem(IND.XP, IND.X, kx);
+        f0.setElem(IND.YP, IND.Y, ky);
 
-        PhaseMatrix F = Mi.times(F0.times(M));
-
-        return F;
+        return mI.times(f0.times(m));
     }
 
 
@@ -1053,13 +1025,13 @@ public class BeamEllipsoid {
      * @return Lorentz transform matrix
      */
     private PhaseMatrix computeLorentzMatrix(double dblGamma) {
-        PhaseMatrix matLorentz;
+        PhaseMatrix mat;
 
-        matLorentz = PhaseMatrix.identity();
-        matLorentz.setElem(IND.Z, IND.Z, dblGamma);
-        matLorentz.setElem(IND.Zp, IND.Zp, dblGamma);
+        mat = PhaseMatrix.identity();
+        mat.setElem(IND.Z, IND.Z, dblGamma);
+        mat.setElem(IND.ZP, IND.ZP, dblGamma);
 
-        return matLorentz;
+        return mat;
     }
 
     /**
@@ -1072,12 +1044,10 @@ public class BeamEllipsoid {
      * @return correlation matrix in the (stationary) beam frame
      */
     private CovarianceMatrix computeLorentzTransform(CovarianceMatrix matSigLab) {
-        PhaseMatrix L = this.getLorentzTransform();
+        PhaseMatrix l = this.getLorentzTransform();
 
-        PhaseMatrix matTauBF = matSigLab.conjugateTrans(L);
-        CovarianceMatrix tauBeam = new CovarianceMatrix(matTauBF);
-
-        return tauBeam;
+        PhaseMatrix matTauBF = matSigLab.conjugateTrans(l);
+        return new CovarianceMatrix(matTauBF);
     }
 
     /**
@@ -1096,9 +1066,7 @@ public class BeamEllipsoid {
     private PhaseMatrix computeTranslation(CovarianceMatrix matSigBeam) {
         PhaseVector vecCent = matSigBeam.getMean();
         PhaseVector vecTrans = vecCent.negate();
-        PhaseMatrix matTrans = PhaseMatrix.translation(vecTrans);
-
-        return matTrans;
+        return PhaseMatrix.translation(vecTrans);
     }
 
     /**
@@ -1136,20 +1104,19 @@ public class BeamEllipsoid {
      * @return space charge generator matrix in ellipsoid coordinates
      */
     private PhaseMatrix buildScheffGeneratorLocal(double dblPerveance) {
-
         // compute defocusing constants
         double kx = dblPerveance * this.getDefocusingConstantX();
         double ky = dblPerveance * this.getDefocusingConstantY();
         double kz = dblPerveance * this.getDefocusingConstantZ();
 
         // Build the generator matrix in the ellipsoid coordinates
-        PhaseMatrix G0 = PhaseMatrix.zero();
+        PhaseMatrix g0 = PhaseMatrix.zero();
 
-        G0.setElem(IND.Xp, IND.X, kx);
-        G0.setElem(IND.Yp, IND.Y, ky);
-        G0.setElem(IND.Zp, IND.Z, kz);
+        g0.setElem(IND.XP, IND.X, kx);
+        g0.setElem(IND.YP, IND.Y, ky);
+        g0.setElem(IND.ZP, IND.Z, kz);
 
-        return G0;
+        return g0;
     }
 
 }

@@ -11,16 +11,16 @@ package xal.tools.correlator;
  */
 public class CorrelationFilterFactory {
 
-    public static <RecordType> CorrelationFilter<RecordType> defaultFilter() {
+    public static <T> CorrelationFilter<T> defaultFilter() {
         return maxMissingFilter(0);
     }
 
     /**
      * accept correlations with no more than maxMissing records
      */
-    public static <RecordType> CorrelationFilter<RecordType> maxMissingFilter(final int maxMissing) {
-        return new CorrelationFilter<RecordType>() {
-            public boolean accept(final Correlation<RecordType> correlation, final int fullCount) {
+    public static <T> CorrelationFilter<T> maxMissingFilter(final int maxMissing) {
+        return new CorrelationFilter<T>() {
+            public boolean accept(final Correlation<T> correlation, final int fullCount) {
                 return correlation.numRecords() >= fullCount - maxMissing;
             }
         };
@@ -29,10 +29,10 @@ public class CorrelationFilterFactory {
     /**
      * accept correlations with at least minCount records
      */
-    public static <RecordType> CorrelationFilter<RecordType> minCountFilter(final int minCount) {
-        return new CorrelationFilter<RecordType>() {
+    public static <T> CorrelationFilter<T> minCountFilter(final int minCount) {
+        return new CorrelationFilter<T>() {
             @Override
-            public boolean accept(final Correlation<RecordType> correlation, final int fullCount) {
+            public boolean accept(final Correlation<T> correlation, final int fullCount) {
                 return correlation.numRecords() >= minCount;
             }
         };
@@ -43,10 +43,10 @@ public class CorrelationFilterFactory {
      * stacking correlators and a correlation of one correlator is the record of
      * another.
      */
-    public static <RecordType> CorrelationFilter<RecordType> correlationFilter(final RecordFilter<Correlation<RecordType>> recordFilter) {
-        return new CorrelationFilter<RecordType>() {
+    public static <T> CorrelationFilter<T> correlationFilter(final RecordFilter<Correlation<T>> recordFilter) {
+        return new CorrelationFilter<T>() {
             @Override
-            public boolean accept(final Correlation<RecordType> correlation, final int fullCount) {
+            public boolean accept(final Correlation<T> correlation, final int fullCount) {
                 return recordFilter.accept(correlation);
             }
         };

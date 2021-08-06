@@ -201,7 +201,8 @@ public final class BesselFunction {
 
         double ax;
         double y;
-        double ans1, ans2;
+        double ans1;
+        double ans2;
 
         if ((ax = Math.abs(x)) < 8.0) {
             y = x * x;
@@ -252,8 +253,15 @@ public final class BesselFunction {
      * @see BesselFunction#J1(double)
      */
     public static double Jn(final int n, final double x) {
-        int j, m;
-        double ax, bj, bjm, bjp, sum, tox, ans;
+        int j;
+        int m;
+        double ax;
+        double bj;
+        double bjm;
+        double bjp;
+        double sum;
+        double tox;
+        double ans;
         boolean jsum;
 
         double acc = 40.0;
@@ -327,8 +335,7 @@ public final class BesselFunction {
      *
      * @see BesselFunction#J0(double)
      */
-    public static double Y0(final double x) {
-
+    public static double y0(final double x) {
         if (x < 8.0) {
             double y = x * x;
 
@@ -370,8 +377,7 @@ public final class BesselFunction {
      *
      * @see BesselFunction#J1(double)
      */
-    public static double Y1(final double x) {
-
+    public static double y1(final double x) {
         if (x < 8.0) {
             double y = x * x;
             double ans1 = x * (-0.4900604943e13 + y * (0.1275274390e13
@@ -415,19 +421,22 @@ public final class BesselFunction {
      * the argument,
      * <em>Y</em><sub><em>n</em></sub>(<em>x</em>).
      */
-    public static double Yn(final int n, final double x) {
-        double by, bym, byp, tox;
+    public static double yN(final int n, final double x) {
+        double by;
+        double bym;
+        double byp;
+        double tox;
 
         if (n == 0) {
-            return Y0(x);
+            return y0(x);
         }
         if (n == 1) {
-            return Y1(x);
+            return y1(x);
         }
 
         tox = 2.0 / x;
-        by = Y1(x);
-        bym = Y0(x);
+        by = y1(x);
+        bym = y0(x);
         for (int j = 1; j < n; j++) {
             byp = j * tox * by - bym;
             bym = by;
@@ -480,7 +489,6 @@ public final class BesselFunction {
      * @return sinc(<var>x</var>) &equiv; sin(<var>x</var>)/<var>x</var>
      */
     public static double sinc(final double x) {
-
         // avoid singularity at zero
         if (Math.abs(x) < BesselFunction.SMALL_ARG) {
             double x2 = x * x;
@@ -511,7 +519,6 @@ public final class BesselFunction {
      * @see BesselFunction#sinc(double)
      */
     public static double j0(final double x) {
-
         return sinc(x);
     }
 
@@ -721,7 +728,6 @@ public final class BesselFunction {
 
             // Numerically unstable at x=0, compute expansion
             double x2 = x * x;
-            double x3 = x2 * x;
             double x4 = x2 * x2;
             double x6 = x2 * x4;
             double x8 = x2 * x6;

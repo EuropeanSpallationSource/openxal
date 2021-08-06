@@ -84,7 +84,7 @@ public class URLUtil {
          */
         private static final long serialVersionUID = 1L;
 
-        private String filePath;
+        private final String filePath;
 
         public FilePathException(String newFilePath) {
             filePath = newFilePath;
@@ -110,7 +110,7 @@ public class URLUtil {
          */
         private static final long serialVersionUID = 1L;
 
-        private String urlSpec;
+        private final String urlSpec;
 
         public UrlSpecException(String newUrlPath) {
             urlSpec = newUrlPath;

@@ -262,7 +262,7 @@ public class KeyValueAdaptor {
         /**
          * object on which we are trying to get a value
          */
-        private final Object target;
+        private final transient Object target;
 
         /**
          * Constructor
@@ -307,12 +307,12 @@ public class KeyValueAdaptor {
         /**
          * object on which we are trying to get a value
          */
-        private final Object target;
+        private final transient Object target;
 
         /**
          * value to pass to the setter method
          */
-        private final Object value;
+        private final transient Object value;
 
         /**
          * Constructor

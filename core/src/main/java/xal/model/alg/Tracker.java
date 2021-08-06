@@ -310,11 +310,11 @@ public abstract class Tracker implements IAlgorithm, IArchive {
         // Get the algorithm class name from the EditContext
         EditContext ecXalGlobal = sequence.getAccelerator().editContext();
         DataTable tblAlgorithm = ecXalGlobal.getTable(Tracker.TBL_LBL_ALGORITHM);
-        GenericRecord recAlgorithm = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, strPrimKeyVal);
+        GenericRecord recAlgorithm = tblAlgorithm.genericRecord(Tracker.TBL_PRIM_KEY_NAME, strPrimKeyVal);
 
         if (recAlgorithm == null) {
             // just use the default record
-            recAlgorithm = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");
+            recAlgorithm = tblAlgorithm.genericRecord(Tracker.TBL_PRIM_KEY_NAME, "default");
         }
 
         // Get the algorithm class name from the algorithm record
@@ -766,11 +766,11 @@ public abstract class Tracker implements IAlgorithm, IArchive {
 
         // Get the algorithm class name from the EditContext
         DataTable tblAlgorithm = ecTableData.getTable(Tracker.TBL_LBL_ALGORITHM);
-        GenericRecord recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, strPrimKeyVal);
+        GenericRecord recTracker = tblAlgorithm.genericRecord(Tracker.TBL_PRIM_KEY_NAME, strPrimKeyVal);
 
         if (recTracker == null) {
             // just use the default record
-            recTracker = tblAlgorithm.record(Tracker.TBL_PRIM_KEY_NAME, "default");
+            recTracker = tblAlgorithm.genericRecord(Tracker.TBL_PRIM_KEY_NAME, "default");
         }
 
         this.setDebugMode(recTracker.booleanValueForKey(Tracker.ATTRTAG_DEBUG));

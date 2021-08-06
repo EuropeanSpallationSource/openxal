@@ -126,8 +126,7 @@ public class GenericRecord implements KeyedRecord, DataListener {
      * Boolean.
      */
     public boolean booleanValueForKey(final String key) {
-        final Boolean booleanObject = (Boolean) valueForKey(key);
-        return booleanObject;
+        return (Boolean) valueForKey(key);
     }
 
     /**
@@ -174,8 +173,7 @@ public class GenericRecord implements KeyedRecord, DataListener {
      * Number.
      */
     public long longValueForKey(final String key) {
-        Number number = numberForKey(key);
-        return number.intValue();
+        return intValueForKey(key);
     }
 
     /**
@@ -209,7 +207,7 @@ public class GenericRecord implements KeyedRecord, DataListener {
      * @param key The key for which to associated the new value.
      */
     public void setValueForKey(final double value, final String key) {
-        setValueForKey(new Double(value), key);
+        setValueForKey((Double) value, key);
     }
 
     /**
@@ -292,9 +290,9 @@ public class GenericRecord implements KeyedRecord, DataListener {
 
         try {
             // suppress raw type warning since Class array can't be generic
-            final Method valueOfMethod = type.getMethod("valueOf", new Class[]{java.lang.String.class});
+            final Method valueOfMethod = type.getMethod("valueOf", String.class);
             // convert the value to the Object of the appropriate class
-            value = valueOfMethod.invoke(null, new Object[]{stringValue});
+            value = valueOfMethod.invoke(null, stringValue);
         } catch (NoSuchMethodException exception) {
             final String message = "The valueOf() method was not found for the attribute of type:" + type;
             LOGGER.log(Level.SEVERE, message, exception);
@@ -306,12 +304,10 @@ public class GenericRecord implements KeyedRecord, DataListener {
         } catch (IllegalArgumentException exception) {
             // this should never get thrown since we would have received a NoSuchMethodException earlier
             final String message = "The valueOf() method does not take the correct single String argument for the type: " + type;
-            System.err.println(message);
             LOGGER.log(Level.SEVERE, message, exception);
         } catch (IllegalAccessException exception) {
             // this should never get thrown since we would have received a NoSuchMethodException earlier
             final String message = "The valueOf() method does not have public access for the type: " + type;
-            System.err.println(message);
             LOGGER.log(Level.SEVERE, message, exception);
         } catch (InvocationTargetException exception) {
             // this exception gets called if the valueOf() method throws an exception

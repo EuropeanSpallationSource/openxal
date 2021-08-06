@@ -187,21 +187,17 @@ public class DispatchTimer {
         // Since the start time is changing, we need to immediately cancel the next pending event here plus later on the schedule queue (see code below).
         cancelNextScheduledEvent();
 
-        scheduleQueue.dispatchAsync(new Runnable() {
-            @Override
-            public void run() {
-                // Cancel any currently scheduled event on the schedule queue in addition to immediately (see code above)
-                cancelNextScheduledEvent();
+        scheduleQueue.dispatchAsync(() -> {
+            // Cancel any currently scheduled event on the schedule queue in addition to immediately (see code above)
+            cancelNextScheduledEvent();
 
-                DispatchTimer.this.milliInterval = milliInterval;
-                DispatchTimer.this.nanoInterval = nanoInterval;
+            DispatchTimer.this.milliInterval = milliInterval;
+            DispatchTimer.this.nanoInterval = nanoInterval;
 
-                // schedule an event that will execute immediately upon dispatch
-                final ScheduledEvent nextScheduledEvent = new ScheduledEvent(startTime);
-                DispatchTimer.this.nextScheduledEvent = nextScheduledEvent;
-                // dispatch after the start time
-                scheduleQueue.dispatchAfter(startTime, nextScheduledEvent);
-            }
+            // schedule an event that will execute immediately upon dispatch
+            DispatchTimer.this.nextScheduledEvent = new ScheduledEvent(startTime);
+            // dispatch after the start time
+            scheduleQueue.dispatchAfter(startTime, nextScheduledEvent);
         });
     }
 
@@ -209,12 +205,9 @@ public class DispatchTimer {
      * Schedule the next event
      */
     private void scheduleNextEvent(final ScheduledEvent nextScheduledEvent) {
-        scheduleQueue.dispatchAsync(new Runnable() {
-            @Override
-            public void run() {
-                DispatchTimer.this.nextScheduledEvent = nextScheduledEvent;
-                scheduleQueue.dispatchAsync(nextScheduledEvent);
-            }
+        scheduleQueue.dispatchAsync(() -> {
+            DispatchTimer.this.nextScheduledEvent = nextScheduledEvent;
+            scheduleQueue.dispatchAsync(nextScheduledEvent);
         });
     }
 
@@ -226,7 +219,6 @@ public class DispatchTimer {
 
         cancelNextScheduledEvent();
 
-        final Runnable cancelHandler = this.cancelHandler;
         if (cancelHandler != null) {
             eventQueue.dispatchAsync(cancelHandler);
         }
@@ -236,7 +228,6 @@ public class DispatchTimer {
      * Cancel the next scheduled event if any
      */
     private void cancelNextScheduledEvent() {
-        final ScheduledEvent nextScheduledEvent = this.nextScheduledEvent;
         if (nextScheduledEvent != null) {
             nextScheduledEvent.cancel();
         }
@@ -256,12 +247,8 @@ public class DispatchTimer {
      * suspended)
      */
     public void suspend() {
-        switch (runState) {
-            case PROCESSING:
-                runState = DispatchTimerRunState.SUSPENDED;
-                break;
-            default:
-                break;
+        if (runState == DispatchTimerRunState.PROCESSING) {
+            runState = DispatchTimerRunState.SUSPENDED;
         }
     }
 
@@ -285,7 +272,6 @@ public class DispatchTimer {
      * resume scheduling events
      */
     private void resumeScheduling() {
-        final ScheduledEvent nextScheduledEvent = this.nextScheduledEvent;
         if (nextScheduledEvent != null) {
             nextScheduledEvent.resume();
         }
@@ -394,9 +380,9 @@ public class DispatchTimer {
         public ScheduledEvent nextScheduledEvent(final long milliDelay, final int nanoDelay) {
             // Calculate the new target time and nano offset. If nanos accumulate more than a millisecond, shift that amount to the milliseconds.
             final int nanoShift = nanoOffset + nanoDelay;
-            final long targetTime = this.targetTime + milliDelay + nanoShift / 1000000;
-            final int nanoOffset = nanoShift % 1000000;
-            return new ScheduledEvent(targetTime, nanoOffset);
+            final long nextTargetTime = this.targetTime + milliDelay + nanoShift / 1000000;
+            final int nexrNanoOffset = nanoShift % 1000000;
+            return new ScheduledEvent(nextTargetTime, nexrNanoOffset);
         }
 
         /**
@@ -408,6 +394,7 @@ public class DispatchTimer {
                 try {
                     scheduleQueue.notifyAll();
                 } catch (Exception exception) {
+                    LOGGER.log(Level.WARNING, null, exception);
                 }
             }
         }
@@ -426,13 +413,10 @@ public class DispatchTimer {
          */
         private void dispatchEventIfEnabled() {
             if (!isCanceled) {
-                switch (runState) {
-                    case PROCESSING:
-                        dispatchModeDelegate.processTimerEvent(eventHandler);
-                        break;
-                    default:
-                        isPastDue = true;
-                        break;
+                if (runState == DispatchTimerRunState.PROCESSING) {
+                    dispatchModeDelegate.processTimerEvent(eventHandler);
+                } else {
+                    isPastDue = true;
                 }
             }
         }

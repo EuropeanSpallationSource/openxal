@@ -110,16 +110,11 @@ public class Z3 implements java.io.Serializable {
         this.i = this.j = this.k = s;
     }
 
-    ;
-    
-
-    
     /*
      *  Properties
      */
-    
     /**
-     *  Return first coordinate value.
+     * Return first coordinate value.
      */
     public int geti() {
         return i;

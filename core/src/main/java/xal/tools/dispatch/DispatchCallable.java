@@ -12,5 +12,5 @@ import java.util.concurrent.Callable;
 /**
  * Convenience interface so the dispatch package is self-contained
  */
-public interface DispatchCallable<ReturnType> extends Callable<ReturnType> {
+public interface DispatchCallable<T> extends Callable<T> {
 }

@@ -24,13 +24,13 @@ class TargetDirectory implements Serializable {
     /**
      * Map of target sets keyed by source which are keyed by protocol name
      */
-    private final Map<String, Map<Object, Set<Object>>> protocolTable;
+    private final transient Map<String, Map<Object, Set<Object>>> protocolTable;
 
     /**
      * Creates new TargetDirectory
      */
     public TargetDirectory() {
-        protocolTable = new Hashtable<>();
+        protocolTable = new HashMap<>();
     }
 
     /**
@@ -52,20 +52,20 @@ class TargetDirectory implements Serializable {
         if (protocolTable.containsKey(protocolKey)) {
             sourceTable = protocolTable.get(protocolKey);
         } else {
-            return emptySet(protocol);
+            return emptySet();
         }
 
         if (sourceTable.containsKey(source)) {
             return (Set<T>) sourceTable.get(source);
         } else {
-            return emptySet(protocol);
+            return emptySet();
         }
     }
 
     /**
      * an emptySet
      */
-    private <T> Set<T> emptySet(final Class<T> protocol) {
+    private <T> Set<T> emptySet() {
         return new HashSet<>();
     }
 

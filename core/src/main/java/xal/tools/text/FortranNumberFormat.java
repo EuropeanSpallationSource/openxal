@@ -264,7 +264,7 @@ public class FortranNumberFormat extends DecimalFormat {
 
         //fill out buffer with additinal spaces
         //if it is presribed by fixedLength = true
-        if (fixedLength == true && sb.length() < srtLength) {
+        if (fixedLength  && sb.length() < srtLength) {
             int addSpaces = srtLength - sb.length();
             for (int i = 0; i < addSpaces; i++) {
                 sb.insert(0, ' ');
@@ -284,6 +284,7 @@ public class FortranNumberFormat extends DecimalFormat {
      * offsets of the alignment field
      * @return The text that will be displayed
      */
+    @Override
     public StringBuffer format(long val, StringBuffer toAppendTo, FieldPosition pos) {
         return format((double) val, toAppendTo, pos);
     }

@@ -310,7 +310,7 @@ public class MessageCenter implements Serializable {
             handlerTable.addHandler(handler);
         }
 
-        return handler.getProxy();
+        return handler != null ? handler.getProxy() : null;
     }
 
     /**

@@ -8,6 +8,7 @@
 package xal.tools.beam;
 
 import java.util.EnumSet;
+import java.util.Set;
 
 import xal.tools.math.IIndex;
 
@@ -24,12 +25,12 @@ public enum PhaseIndex implements IIndex {
      * Enumeration Constants
      */
     X(0, 1), // x plane spatial
-    Xp(1, 0), // x plane momentum
+    XP(1, 0), // x plane momentum
     Y(2, 3), // y plane spatial
-    Yp(3, 2), // y plane momentum
+    YP(3, 2), // y plane momentum
     Z(4, 5), // z plane spatial
     // z plane momentum
-    Zp(5, 4);
+    ZP(5, 4);
 
     /*
      * Global Methods
@@ -39,7 +40,7 @@ public enum PhaseIndex implements IIndex {
      *
      * @return set of spatial indices
      */
-    public static EnumSet<PhaseIndex> spatialIndices() {
+    public static Set<PhaseIndex> spatialIndices() {
         return EnumSet.of(X, Y, Z);
     }
 
@@ -48,8 +49,8 @@ public enum PhaseIndex implements IIndex {
      *
      * @return set of momentum indices
      */
-    public static EnumSet<PhaseIndex> momentumIndices() {
-        return EnumSet.of(Xp, Yp, Zp);
+    public static Set<PhaseIndex> momentumIndices() {
+        return EnumSet.of(XP, YP, ZP);
     }
 
     /*
@@ -102,5 +103,4 @@ public enum PhaseIndex implements IIndex {
 
         return this;
     }
-
 }

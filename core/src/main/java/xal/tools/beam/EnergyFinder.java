@@ -26,7 +26,7 @@ public class EnergyFinder {
      * energy that gives the right phase, within a 2*pi interval from this
      * energy
      */
-    private double EGuess;
+    private double energyGuess;
 
     /**
      * frequency of BPM phase (Hz)
@@ -60,8 +60,8 @@ public class EnergyFinder {
     /**
      * initialize problem specific information
      */
-    public void initCalc(double l, double E) {
-        EGuess = E;
+    public void initCalc(double l, double energy) {
+        energyGuess = energy;
         length = l;
     }
 
@@ -69,10 +69,10 @@ public class EnergyFinder {
      * solve the problem, using a simple linear step scheme
      *
      * @param targetPhase the phase difference between BPMs in deg
-     * @param E the starting guess for energy (MeV)
+     * @param energy the starting guess for energy (MeV)
      */
-    public double findEnergy(double targetPhase, double E) {
-        EGuess = E;
+    public double findEnergy(double targetPhase, double energy) {
+        energyGuess = energy;
         return findEnergy(targetPhase);
     }
 
@@ -82,11 +82,16 @@ public class EnergyFinder {
      * @param targetPhase the phase difference between BPMs in deg
      */
     public double findEnergy(double targetPhase) {
-        double error, errorOld = 1.;
-        double ENew, slope, b, step, temp;
+        double error;
+        double errorOld;
+        double eNew;
+        double slope;
+        double b;
+        double step;
+        double temp;
         int nTrys = 0;
         // solve in space -180 < phi < 180
-        error = findPhase(EGuess) - targetPhase;
+        error = findPhase(energyGuess) - targetPhase;
         if (error < -180.) {
             error += 360.;
         }
@@ -94,12 +99,11 @@ public class EnergyFinder {
             error -= 360.;
         }
         errorOld = error;
-        //if(error > 180.)
-        //else
-        step = EGuess * 0.005;
-        ENew = EGuess + step;
+
+        step = energyGuess * 0.005;
+        eNew = energyGuess + step;
         while (Math.abs((error / targetPhase)) > TOL && (nTrys < N_MAX)) {
-            error = findPhase(ENew) - targetPhase;
+            error = findPhase(eNew) - targetPhase;
             if (error < -180.) {
                 error += 360.;
             }
@@ -107,15 +111,15 @@ public class EnergyFinder {
                 error -= 360.;
             }
             slope = (error - errorOld) / step;
-            b = error - slope * ENew;
+            b = error - slope * eNew;
             temp = -b / slope;
-            step = temp - ENew;
+            step = temp - eNew;
             errorOld = error;
-            ENew = temp;
+            eNew = temp;
             nTrys++;
         }
         if (nTrys < N_MAX) {
-            return ENew;
+            return eNew;
         } else {
             return -1.;
         }
@@ -124,11 +128,10 @@ public class EnergyFinder {
     /**
      * find the phase for a given energy
      */
-    private double findPhase(double E) {
-        double gamma = 1 + E / restMass;
+    private double findPhase(double energy) {
+        double gamma = 1 + energy / restMass;
         double beta = Math.sqrt(1.0 - 1.0 / (gamma * gamma));
-        double time = length / (beta * IConstants.LIGHT_SPEED);
-        double phase = ((time * frequency) % 1.) * 360.;
-        return phase;
+        double time = length / (beta * Constants.LIGHT_SPEED);
+        return ((time * frequency) % 1.) * 360.;
     }
 }

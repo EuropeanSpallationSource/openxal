@@ -14,6 +14,9 @@ import java.util.Comparator;
  */
 public class KeyValueSorting {
 
+    private KeyValueSorting() {
+        throw new IllegalStateException("Utility class");
+    }
     /**
      * indicates ascending order
      */
@@ -34,8 +37,8 @@ public class KeyValueSorting {
      * @return a comparator which compares objects according to the keyed
      * parameter
      */
-    public static <RecordType> Comparator<RecordType> comparatorForKeyPath(final String keyPath, final int order) {
-        return KeyValueSorting.<RecordType>comparatorForKeyPath(new KeyValueAdaptor(), keyPath, order);
+    public static <T> Comparator<T> comparatorForKeyPath(final String keyPath, final int order) {
+        return KeyValueSorting.<T>comparatorForKeyPath(new KeyValueAdaptor(), keyPath, order);
     }
 
     /**
@@ -50,15 +53,15 @@ public class KeyValueSorting {
      * @return a comparator which compares objects according to the keyed
      * parameter
      */
-    public static <RecordType> Comparator<RecordType> comparatorForKeyPath(final KeyValueAdaptor adaptor, final String keyPath, final int order) {
-        return new Comparator<RecordType>() {
+    public static <T> Comparator<T> comparatorForKeyPath(final KeyValueAdaptor adaptor, final String keyPath, final int order) {
+        return new Comparator<T>() {
             /**
              * compares the two items for order
              */
             // no way to predetermine the value types
             @SuppressWarnings("unchecked")
             @Override
-            public int compare(final RecordType record1, final RecordType record2) {
+            public int compare(final T record1, final T record2) {
                 final Comparable<Object> value1 = (Comparable<Object>) adaptor.valueForKeyPath(record1, keyPath);
                 final Object value2 = adaptor.valueForKeyPath(record2, keyPath);
                 return order * value1.compareTo(value2);
@@ -70,6 +73,11 @@ public class KeyValueSorting {
             @Override
             public boolean equals(final Object object) {
                 return object == this;
+            }
+
+            @Override
+            public int hashCode() {
+                return 3;
             }
         };
     }
@@ -83,16 +91,16 @@ public class KeyValueSorting {
      * @return the compound comparator
      */
     @SafeVarargs        // let the compiler know that heap pollution will not occur
-    public static <RecordType> Comparator<RecordType> compoundComparator(final Comparator<RecordType>... comparators) {
-        return new Comparator<RecordType>() {
+    public static <T> Comparator<T> compoundComparator(final Comparator<T>... comparators) {
+        return new Comparator<T>() {
             /**
              * compares the two items for order
              */
             // no way to predetermine the item types
             @SuppressWarnings("unchecked")
             @Override
-            public int compare(final RecordType record1, final RecordType record2) {
-                for (final Comparator<RecordType> comparator : comparators) {
+            public int compare(final T record1, final T record2) {
+                for (final Comparator<T> comparator : comparators) {
                     final int ordering = comparator.compare(record1, record2);
                     if (ordering != 0) {
                         return ordering;

@@ -82,6 +82,7 @@ public class FreshProcessor {
      * Perform post processing
      */
     protected void postProcess() throws Exception {
+        // Do nothing
     }
 
     /**
@@ -111,5 +112,6 @@ class EmptyRequest implements Runnable {
 
     @Override
     public void run() {
+        // Do nothing
     }
 }

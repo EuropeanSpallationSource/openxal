@@ -257,20 +257,20 @@ public class AcceleratingRfGap {
      * defining the RF accelerating gap are provided.
      *
      * @param f time-harmonic frequency of the accelerating field (Hz)
-     * @param V0 total potential drop across gap axial field (Volts)
+     * @param v0 total potential drop across gap axial field (Volts)
      * @param spcRfFld spectrum of the RF field along design axis
      *
      * @since Oct 1, 2015, Christopher K. Allen
      */
-    public AcceleratingRfGap(double f, double V0, AxialFieldSpectrum spcRfFld) {
-        this.dblFldFrq = f;
-        this.dblFldMag = V0;
-        this.spcFldSpc = spcRfFld;
+    public AcceleratingRfGap(double f, double v0, AxialFieldSpectrum spcRfFld) {
+        dblFldFrq = f;
+        dblFldMag = v0;
+        spcFldSpc = spcRfFld;
 
-        this.dblRfWvNm = DBL_2PI * f / DBL_LGHT_SPD;
+        dblRfWvNm = DBL_2PI * f / DBL_LGHT_SPD;
 
-        this.cntIterMax = CNT_MAX_ITER;
-        this.dblErrTol = DBL_ERR_TOL;
+        cntIterMax = CNT_MAX_ITER;
+        dblErrTol = DBL_ERR_TOL;
     }
 
     /**
@@ -304,13 +304,13 @@ public class AcceleratingRfGap {
     /**
      * Resets the total potential gain across the accelerating gap.
      *
-     * @param V0 the integral &int;<em>E<sub>z</em></em>(<em>z<em>) <em>dz</em>
+     * @param v0 the integral &int;<em>E<sub>z</em></em>(<em>z<em>) <em>dz</em>
      * (in Volts)
      *
      * @since Oct 16, 2015, Christopher K. Allen
      */
-    public void setRfFieldPotential(double V0) {
-        this.dblFldMag = V0;
+    public void setRfFieldPotential(double v0) {
+        dblFldMag = v0;
     }
 
     /*
@@ -328,7 +328,7 @@ public class AcceleratingRfGap {
      * @see AcceleratingRfGap#setMaxIterations()
      */
     public int getMaxIterations() {
-        return this.cntIterMax;
+        return cntIterMax;
     }
 
     /**
@@ -344,7 +344,7 @@ public class AcceleratingRfGap {
      * @since Oct 13, 2015, Christopher K. Allen
      */
     public double getErrorTolerance() {
-        return this.dblErrTol;
+        return dblErrTol;
     }
 
     /**
@@ -355,7 +355,7 @@ public class AcceleratingRfGap {
      * @since Sep 28, 2015 by Christopher K. Allen
      */
     public double getRfFrequency() {
-        return this.dblFldFrq;
+        return dblFldFrq;
     }
 
     /**
@@ -374,7 +374,7 @@ public class AcceleratingRfGap {
      * @since Oct 1, 2015, Christopher K. Allen
      */
     public double getRfWaveNumber() {
-        return this.dblRfWvNm;
+        return dblRfWvNm;
     }
 
     /**
@@ -396,7 +396,7 @@ public class AcceleratingRfGap {
      * @since Oct 2, 2015, Christopher K. Allen
      */
     public double getRfFieldPotential() {
-        return this.dblFldMag;
+        return dblFldMag;
     }
 
     /**
@@ -407,7 +407,7 @@ public class AcceleratingRfGap {
      * @since Oct 9, 2015, Christopher K. Allen
      */
     public AxialFieldSpectrum getFieldSpectrum() {
-        return this.spcFldSpc;
+        return spcFldSpc;
     }
 
     /*
@@ -471,9 +471,9 @@ public class AcceleratingRfGap {
      *
      * @param locHam location of longitudinal gain calculations, with respect to
      * gap center
-     * @param Q charge of the incoming particles in terms of fundamental charge
+     * @param q charge of the incoming particles in terms of fundamental charge
      * <em>q</em> (unitless)
-     * @param Er rest energy of the incoming particles (electron-Volts)
+     * @param eR rest energy of the incoming particles (electron-Volts)
      * @param vecInit initial phase and energy pair
      * (&phi;<sub>0</sub>,<em>W<sub>i</sub></em>) into specified gap region
      * (radians, electron-Volts)
@@ -487,28 +487,28 @@ public class AcceleratingRfGap {
      *
      * @since Oct 15, 2015, Christopher K. Allen
      */
-    public EnergyVector computeGapGains(LOC locHam, double Q, double Er, EnergyVector vecInit) throws NoConvergenceException {
+    public EnergyVector computeGapGains(LOC locHam, double q, double eR, EnergyVector vecInit) throws NoConvergenceException {
 
         // Variable scaling constants (scales the "Hamiltonian")
-        final double V0 = Q * this.getRfFieldPotential();
-        final double Ki = Q * this.computeNormWaveNumber(vecInit.getEnergy(), Er);
+        final double v0 = q * this.getRfFieldPotential();
+        final double ki = q * this.computeNormWaveNumber(vecInit.getEnergy(), eR);
 
         // For the asymptotic model, get the phase intercept, the initial kinetic energy, 
         //  and the initial wave number 
         double phi0 = vecInit.getPhase();
-        double Wi = vecInit.getEnergy();
+        double wi = vecInit.getEnergy();
 
         // Initialize the search variables.
         //  Use the phase intercept and initial energy as starting values
         // the synchronous phase at the gap center
         double phi = phi0;
         // the energy gained up to the gap center
-        double W = Wi;
-        double k = this.computeWaveNumber(W, Er);
+        double w = wi;
+        double k = this.computeWaveNumber(w, eR);
 
         // Compute the starting values for phase jump and energy gain
-        double dW = -V0 * locHam.dphiGapHamiltonian(this, phi, k).imaginary();
-        double dphi = +Ki * locHam.dkGapHamiltonian(this, phi, k).imaginary();
+        double dW = -v0 * locHam.dphiGapHamiltonian(this, phi, k).imaginary();
+        double dphi = +ki * locHam.dkGapHamiltonian(this, phi, k).imaginary();
 
         // Initialize the search loop
         int cntIter = 0;
@@ -518,30 +518,27 @@ public class AcceleratingRfGap {
             // Compute the new phase and energy from the previously computed
             //  phase jump and energy gain
             phi = phi0 + dphi;
-            W = Wi + dW;
-            k = this.computeWaveNumber(W, Er);
+            w = wi + dW;
+            k = this.computeWaveNumber(w, eR);
 
             // Compute the new phase jump and energy gain from the new phase 
             //  and energies
-            double dphi_i = +Ki * locHam.dkGapHamiltonian(this, phi, k).imaginary();
-            double dW_i = -V0 * locHam.dphiGapHamiltonian(this, phi, k).imaginary();
+            double dphiI = +ki * locHam.dkGapHamiltonian(this, phi, k).imaginary();
+            double dWi = -v0 * locHam.dphiGapHamiltonian(this, phi, k).imaginary();
 
             // Compute stopping criteria values 
             cntIter++;
-            dblErr = (dphi_i - dphi) * (dphi_i - dphi) + (dW - dW_i) * (dW - dW_i) / (Wi * Wi);
+            dblErr = (dphiI - dphi) * (dphiI - dphi) + (dW - dWi) * (dW - dWi) / (wi * wi);
 
             // Update the values of the dependent variables wave number, phase jump, 
             //  and energy gain 
-            dphi = dphi_i;
-            dW = dW_i;
+            dphi = dphiI;
+            dW = dWi;
 
             // Check for Cauchy sequence convergence.  Stop and return gains if passed. 
             if (dblErr < this.getErrorTolerance()) {
-                EnergyVector vecGains = new EnergyVector(dphi, dW);
-
-                return vecGains;
+                return new EnergyVector(dphi, dW);
             }
-
         }
 
         // If we made it outside the loop then there was no converge.
@@ -591,7 +588,7 @@ public class AcceleratingRfGap {
      * &Delta;<em>W</em>.
      * </p>
      *
-     * @param Er rest energy of the incoming particles (electron-Volts)
+     * @param eR rest energy of the incoming particles (electron-Volts)
      * @param vecInit gap phase and initial energy pair
      * (&phi;<sub>0</sub><sup>-</sup>,<em>W<sub>i</sub></em>) (radians,
      * electron-Volts)
@@ -605,28 +602,28 @@ public class AcceleratingRfGap {
      * @since Oct 15, 2015, Christopher K. Allen
      */
     @Deprecated
-    public EnergyVector computePreGapGains(double Er, EnergyVector vecInit) throws NoConvergenceException {
+    public EnergyVector computePreGapGains(double eR, EnergyVector vecInit) throws NoConvergenceException {
 
         // Variable scaling constants (scales the "Hamiltonian")
-        final double V0 = this.getRfFieldPotential();
-        final double Ki = this.computeNormWaveNumber(vecInit.getEnergy(), Er);
+        final double v0 = this.getRfFieldPotential();
+        final double ki = this.computeNormWaveNumber(vecInit.getEnergy(), eR);
 
         // For the asymptotic model, get the phase intercept, the initial kinetic energy, 
         //  and the initial wave number 
         double phi0 = vecInit.getPhase();
-        double Wi = vecInit.getEnergy();
+        double wi = vecInit.getEnergy();
 
         // Initialize the search variables.
         //  Use the phase intercept and initial energy as starting values
         // the synchronous phase at the gap center
         double phi = phi0;
         // the energy gained up to the gap center
-        double W = Wi;
-        double k = this.computeWaveNumber(W, Er);
+        double w = wi;
+        double k = this.computeWaveNumber(w, eR);
 
         // Compute the starting values for phase jump and energy gain
-        double dW = -V0 * this.dphiPreGapHamiltonian(phi, k).imaginary();
-        double dphi = +Ki * this.dkPreGapHamiltonian(phi, k).imaginary();
+        double dW = -v0 * this.dphiPreGapHamiltonian(phi, k).imaginary();
+        double dphi = +ki * this.dkPreGapHamiltonian(phi, k).imaginary();
 
         // Initialize the search loop
         int cntIter = 0;
@@ -636,30 +633,27 @@ public class AcceleratingRfGap {
             // Compute the new phase and energy from the previously computed
             //  phase jump and energy gain
             phi = phi0 + dphi;
-            W = Wi + dW;
-            k = this.computeWaveNumber(W, Er);
+            w = wi + dW;
+            k = computeWaveNumber(w, eR);
 
             // Compute the new phase jump and energy gain from the new phase 
             //  and energies
-            double dphi_i = +Ki * this.dkPreGapHamiltonian(phi, k).imaginary();
-            double dW_i = -V0 * this.dphiPreGapHamiltonian(phi, k).imaginary();
+            double dphiI = +ki * this.dkPreGapHamiltonian(phi, k).imaginary();
+            double dWi = -v0 * this.dphiPreGapHamiltonian(phi, k).imaginary();
 
             // Compute stopping criteria values 
             cntIter++;
-            dblErr = (dphi_i - dphi) * (dphi_i - dphi) + (dW - dW_i) * (dW - dW_i) / (Wi * Wi);
+            dblErr = (dphiI - dphi) * (dphiI - dphi) + (dW - dWi) * (dW - dWi) / (wi * wi);
 
             // Update the values of the dependent variables wave number, phase jump, 
             //  and energy gain 
-            dphi = dphi_i;
-            dW = dW_i;
+            dphi = dphiI;
+            dW = dWi;
 
             // Check for Cauchy sequence convergence.  Stop and return gains if passed. 
             if (dblErr < this.getErrorTolerance()) {
-                EnergyVector vecGains = new EnergyVector(dphi, dW);
-
-                return vecGains;
+                return new EnergyVector(dphi, dW);
             }
-
         }
 
         // If we made it outside the loop then there was no converge.
@@ -669,50 +663,6 @@ public class AcceleratingRfGap {
                 + dblErr;
 
         throw new NoConvergenceException(strMsg);
-    }
-
-    /*
-     * Support Methods
-     */
-    //
-    // Phase Variables
-    //
-    /**
-     * Returns the energy gain of a particle up to the middle of the gap given
-     * that its middle-gap phase is &phi; and its pre-gap wave number is
-     * <em>k</em>. This value is computed from a complex Hamiltonian
-     * <em>H</em><sup>-</sup>(&phi;,<em>k</em>) built from the product of the
-     * pre-gap spectral envelope &Escr;<sup>-</sup>(<em>k</em>) and the complex
-     * angle &exponentiale;<sup>-<em>i</em>&phi;</sup>. Specifically, the energy
-     * gain &Delta;<em>W</em> is is
-     * <br/>
-     * <br/>
-     * &nbsp; &nbsp; &Delta;<em>W</em> = -<em>V</em><sub>0</sub> Im
-     * <em>dH</em>/<em>d</em>&phi; ,
-     * <br/>
-     * <br/>
-     * where <em>V</em><sub>0</sub> is the potential drop across the gap and Im
-     * indicates the imaginary part of a complex number. Note that the wave
-     * number is the "best fit" constant describing the dynamic value that
-     * changes as it traverses the gap.
-     *
-     *
-     * @param phi the synchronous particle phase &phi; at the gap center
-     * (radians)
-     * @param k the wave number <em>k</em> of the particle within the gap
-     * (radians/meter)
-     *
-     * @return the energy gain of the particle
-     *
-     * @since Oct 9, 2015, Christopher K. Allen
-     */
-    private double computePreGapEnergyGain(double phi, double k) {
-
-        Complex cpxDphiHamil = this.dphiPreGapHamiltonian(phi, k);
-        double dblImagHamil = cpxDphiHamil.imaginary();
-        double dW = -this.getRfFieldPotential() * dblImagHamil;
-
-        return dW;
     }
 
     /**
@@ -741,9 +691,7 @@ public class AcceleratingRfGap {
     private Complex preGapHamiltonain(double phi, double k) {
         Complex cpxPreSpc = this.spcFldSpc.preEnvSpectrum(k);
         Complex cpxPreAng = Complex.euler(phi);
-        Complex cpxHamilt = cpxPreSpc.times(cpxPreAng);
-
-        return cpxHamilt;
+        return cpxPreSpc.times(cpxPreAng);
     }
 
     /**
@@ -772,9 +720,7 @@ public class AcceleratingRfGap {
     private Complex postGapHamiltonain(double phi, double k) {
         Complex cpxPostSpc = this.spcFldSpc.postEnvSpectrum(k);
         Complex cpxPostAng = Complex.euler(phi);
-        Complex cpxHamilt = cpxPostSpc.times(cpxPostAng);
-
-        return cpxHamilt;
+        return cpxPostSpc.times(cpxPostAng);
     }
 
     /**
@@ -807,9 +753,7 @@ public class AcceleratingRfGap {
     private Complex dkPreGapHamiltonian(double phi, double k) {
         Complex cpxDkPreSpc = this.spcFldSpc.dkPreEnvSpectrum(k);
         Complex cpxPreAngle = Complex.euler(phi);
-        Complex cpxDkHamilt = cpxDkPreSpc.times(cpxPreAngle);
-
-        return cpxDkHamilt;
+        return cpxDkPreSpc.times(cpxPreAngle);
     }
 
     /**
@@ -843,9 +787,7 @@ public class AcceleratingRfGap {
     private Complex dkPostGapHamiltonian(double phi, double k) {
         Complex cpxDkPostSpc = this.spcFldSpc.dkPostEnvSpectrum(k);
         Complex cpxPostAngle = Complex.euler(phi);
-        Complex cpxDkHamilt = cpxDkPostSpc.times(cpxPostAngle);
-
-        return cpxDkHamilt;
+        return cpxDkPostSpc.times(cpxPostAngle);
     }
 
     /**
@@ -879,9 +821,7 @@ public class AcceleratingRfGap {
     private Complex dphiPreGapHamiltonian(double phi, double k) {
         Complex cpxHamil = this.preGapHamiltonain(phi, k);
         Complex cpxRotat = Complex.IUNIT.negate();
-        Complex cpxDphiHamil = cpxHamil.times(cpxRotat);
-
-        return cpxDphiHamil;
+        return cpxHamil.times(cpxRotat);
     }
 
     /**
@@ -916,9 +856,7 @@ public class AcceleratingRfGap {
     private Complex dphiPostGapHamiltonian(double phi, double k) {
         Complex cpxHamil = this.postGapHamiltonain(phi, k);
         Complex cpxRotat = Complex.IUNIT.negate();
-        Complex cpxDphiHamil = cpxHamil.times(cpxRotat);
-
-        return cpxDphiHamil;
+        return cpxHamil.times(cpxRotat);
     }
 
     //
@@ -941,22 +879,20 @@ public class AcceleratingRfGap {
      * relativistic factor.
      * </p>
      *
-     * @param W particle kinetic energy <em>W</em> (electron-Volts)
-     * @param Er particle rest mass <em>mc</em><sup>2</sup>/<em>q</em>
+     * @param w particle kinetic energy <em>W</em> (electron-Volts)
+     * @param eR particle rest mass <em>mc</em><sup>2</sup>/<em>q</em>
      * (electron-Volts)
      *
      * @return particle wave number with respect to the RF (radians/meter)
      *
      * @since Oct 12, 2015 by Christopher K. Allen
      */
-    private double computeWaveNumber(double W, double Er) {
-        double gamma = this.computeGammaFromEnergy(W, Er);
+    private double computeWaveNumber(double w, double eR) {
+        double gamma = this.computeGammaFromEnergy(w, eR);
         double beta = Math.sqrt(1.0 - 1.0 / (gamma * gamma));
         double k0 = this.getRfWaveNumber();
 
-        double k = k0 / beta;;
-
-        return k;
+        return k0 / beta;
     }
 
     /**
@@ -985,26 +921,24 @@ public class AcceleratingRfGap {
      * energy space rather that momentum space.
      * </p>
      *
-     * @param W particle kinetic energy <em>W</em> (electron-Volts)
-     * @param Er particle rest mass <em>mc</em><sup>2</sup>/<em>q</em>
+     * @param w particle kinetic energy <em>W</em> (electron-Volts)
+     * @param eR particle rest mass <em>mc</em><sup>2</sup>/<em>q</em>
      * (electron-Volts)
      *
      * @return normalized wave number <em>K</em> (in radians/meter)
      *
      * @since Oct 1, 2015, Christopher K. Allen
      */
-    public double computeNormWaveNumber(double W, double Er) {
-        double gamma = this.computeGammaFromEnergy(W, Er);
+    public double computeNormWaveNumber(double w, double eR) {
+        double gamma = computeGammaFromEnergy(w, eR);
         double bg = Math.sqrt(gamma * gamma - 1.0);
         double bg3 = bg * bg * bg;
 
-        double V0 = this.getRfFieldPotential();
-        double k0 = this.getRfWaveNumber();
+        double v0 = getRfFieldPotential();
+        double k0 = getRfWaveNumber();
 
-        double En = Er * bg3;
-        double K = (V0 / En) * k0;
-
-        return K;
+        double eN = eR * bg3;
+        return (v0 / eN) * k0;
     }
 
     /**
@@ -1019,8 +953,8 @@ public class AcceleratingRfGap {
      * where the energy quantities can be in any (consistent) units but
      * electron- volts are typically used.
      *
-     * @param W kinetic energy <em>W</em> of particle (electron-Volts)
-     * @param Er rest energy <em>E<sub>r</sub></em> = <em>mc</em><sup>2</sup> of
+     * @param w kinetic energy <em>W</em> of particle (electron-Volts)
+     * @param eR rest energy <em>E<sub>r</sub></em> = <em>mc</em><sup>2</sup> of
      * particle (electron-Volts)
      *
      * @return the relativistic factor &gamma; for a particle of energy
@@ -1029,9 +963,7 @@ public class AcceleratingRfGap {
      *
      * @since Oct 12, 2015, Christopher K. Allen
      */
-    private double computeGammaFromEnergy(double W, double Er) {
-        double gamma = 1.0 + W / Er;
-
-        return gamma;
+    private double computeGammaFromEnergy(double w, double eR) {
+        return 1.0 + w / eR;
     }
 }

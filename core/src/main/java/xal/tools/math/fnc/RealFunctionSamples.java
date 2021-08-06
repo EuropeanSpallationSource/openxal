@@ -16,6 +16,9 @@ package xal.tools.math.fnc;
  */
 public class RealFunctionSamples {
 
+    private RealFunctionSamples() {
+        throw new IllegalStateException("Utility class");
+    }
 
     /*
      * Internal Classes

@@ -637,12 +637,10 @@ public class AxialFieldSpectrum {
      * @since Sep 30, 2015, Christopher K. Allen
      */
     public Complex fldSpectrum(double k) {
-        double dblReal = +this.Tz(k);
-        double dblImag = -this.Sz(k);
+        double dblReal = +this.tz(k);
+        double dblImag = -this.sz(k);
 
-        Complex cpxSpectra = new Complex(dblReal, dblImag);
-
-        return cpxSpectra;
+        return new Complex(dblReal, dblImag);
     }
 
     /**
@@ -681,9 +679,7 @@ public class AxialFieldSpectrum {
         double dblReal = +this.dkTz(k);
         double dblImag = -this.dkSz(k);
 
-        Complex cpxSpectra = new Complex(dblReal, dblImag);
-
-        return cpxSpectra;
+        return new Complex(dblReal, dblImag);
     }
 
     /**
@@ -717,12 +713,10 @@ public class AxialFieldSpectrum {
      * @since Sep 30, 2015, Christopher K. Allen
      */
     public Complex cnjSpectrum(double k) {
-        double dblReal = +this.Tq(k);
-        double dblImag = -this.Sq(k);
+        double dblReal = +this.tq(k);
+        double dblImag = -this.sq(k);
 
-        Complex cpxSpectra = new Complex(dblReal, dblImag);
-
-        return cpxSpectra;
+        return new Complex(dblReal, dblImag);
     }
 
     /**
@@ -762,9 +756,7 @@ public class AxialFieldSpectrum {
         double dblReal = +this.dkTq(k);
         double dblImag = -this.dkSq(k);
 
-        Complex cpxSpectra = new Complex(dblReal, dblImag);
-
-        return cpxSpectra;
+        return new Complex(dblReal, dblImag);
     }
 
 
@@ -937,16 +929,12 @@ public class AxialFieldSpectrum {
      *
      * @since Sep 28, 2015 by Christopher K. Allen
      */
-    public double Tz(double k) {
-        double Tz;
-
+    public double tz(double k) {
         if (this.bolPrtlFldMdl) {
-            Tz = this.TzfromTz0(k);
+            return this.tzfromTz0(k);
         } else {
-            Tz = this.fncTz.evaluateAt(k);
+            return this.fncTz.evaluateAt(k);
         }
-
-        return Tz;
     }
 
     /**
@@ -963,15 +951,11 @@ public class AxialFieldSpectrum {
      * @since Sep 28, 2015 by Christopher K. Allen
      */
     public double dkTz(double k) {
-        double dTz;
-
         if (this.bolPrtlFldMdl) {
-            dTz = this.dkTzfromDkTz0(k);
+            return this.dkTzfromDkTz0(k);
         } else {
-            dTz = this.fncDTz.evaluateAt(k);
+            return this.fncDTz.evaluateAt(k);
         }
-
-        return dTz;
     }
 
     /**
@@ -987,16 +971,12 @@ public class AxialFieldSpectrum {
      *
      * @since Sep 28, 2015 by Christopher K. Allen
      */
-    public double Sz(double k) {
-        double Sz;
-
+    public double sz(double k) {
         if (this.bolPrtlFldMdl) {
-            Sz = this.SzfromTz0(k);
+            return this.szfromTz0(k);
         } else {
-            Sz = this.fncSz.evaluateAt(k);
+            return this.fncSz.evaluateAt(k);
         }
-
-        return Sz;
     }
 
     /**
@@ -1015,15 +995,11 @@ public class AxialFieldSpectrum {
      * @since Sep 28, 2015 by Christopher K. Allen
      */
     public double dkSz(double k) {
-        double dSz;
-
         if (this.bolPrtlFldMdl) {
-            dSz = this.dkSzfromDkTz0(k);
+            return this.dkSzfromDkTz0(k);
         } else {
-            dSz = this.fncDSz.evaluateAt(k);
+            return this.fncDSz.evaluateAt(k);
         }
-
-        return dSz;
     }
 
     /**
@@ -1038,16 +1014,12 @@ public class AxialFieldSpectrum {
      *
      * @since Sep 29, 2015 by Christopher K. Allen
      */
-    public double Tq(double k) {
-        double Tq;
-
+    public double tq(double k) {
         if (this.bolPrtlFldMdl) {
-            Tq = this.TqFromSq0(k);
+            return this.tqFromSq0(k);
         } else {
-            Tq = this.fncTq.evaluateAt(k);
+            return this.fncTq.evaluateAt(k);
         }
-
-        return Tq;
     }
 
     /**
@@ -1063,15 +1035,11 @@ public class AxialFieldSpectrum {
      * @since Sep 29, 2015, Christopher K. Allen
      */
     public double dkTq(double k) {
-        double dTq;
-
         if (this.bolPrtlFldMdl) {
-            dTq = this.dkTqFromDkSq0(k);
+            return this.dkTqFromDkSq0(k);
         } else {
-            dTq = this.fncDTq.evaluateAt(k);
+            return this.fncDTq.evaluateAt(k);
         }
-
-        return dTq;
     }
 
     /**
@@ -1086,16 +1054,12 @@ public class AxialFieldSpectrum {
      *
      * @since Sep 29, 2015 by Christopher K. Allen
      */
-    public double Sq(double k) {
-        double Sq;
-
+    public double sq(double k) {
         if (this.bolPrtlFldMdl) {
-            Sq = this.SqFromSq0(k);
+            return this.sqFromSq0(k);
         } else {
-            Sq = this.fncSq.evaluateAt(k);
+            return this.fncSq.evaluateAt(k);
         }
-
-        return Sq;
     }
 
     /**
@@ -1111,15 +1075,11 @@ public class AxialFieldSpectrum {
      * @since Sep 29, 2015, Christopher K. Allen
      */
     public double dkSq(double k) {
-        double dSq;
-
         if (this.bolPrtlFldMdl) {
-            dSq = this.dkSqFromDkSq0(k);
+            return this.dkSqFromDkSq0(k);
         } else {
-            dSq = this.fncDSq.evaluateAt(k);
+            return this.fncDSq.evaluateAt(k);
         }
-
-        return dSq;
     }
 
 
@@ -1161,15 +1121,13 @@ public class AxialFieldSpectrum {
      *
      * @since Feb 13, 2015 by Christopher K. Allen
      */
-    private double TzfromTz0(double k) {
+    private double tzfromTz0(double k) {
         double dz = -this.getFieldOffset();
         double cos = Math.cos(k * dz);
 
         double beta = this.computeVelocity(k);
-        double T0 = this.fncTz0.evaluateAt(beta);
-        double Tz = T0 * cos;
-
-        return Tz;
+        double t0 = this.fncTz0.evaluateAt(beta);
+        return t0 * cos;
     }
 
     /**
@@ -1230,12 +1188,10 @@ public class AxialFieldSpectrum {
         double beta = this.computeVelocity(k);
 
         double dTz0 = this.fncDTz0.evaluateAt(beta);
-        double Tz0 = this.fncTz0.evaluateAt(beta);
+        double tz0 = this.fncTz0.evaluateAt(beta);
 
         // To compare with XAL implementation
-        double dT = 0.01 * dTz0 * cos - Tz0 * dz * sin;
-
-        return dT;
+        return 0.01 * dTz0 * cos - tz0 * dz * sin;
     }
 
     /**
@@ -1274,15 +1230,13 @@ public class AxialFieldSpectrum {
      *
      * @since Feb 16, 2015 by Christopher K. Allen
      */
-    private double SzfromTz0(double k) {
+    private double szfromTz0(double k) {
         double dz = -this.getFieldOffset();
         double sin = Math.sin(k * dz);
 
         double beta = this.computeVelocity(k);
-        double Tz0 = this.fncTz0.evaluateAt(beta);
-        double Sz = Tz0 * sin;
-
-        return Sz;
+        double tz0 = this.fncTz0.evaluateAt(beta);
+        return tz0 * sin;
     }
 
     /**
@@ -1344,12 +1298,10 @@ public class AxialFieldSpectrum {
 
         double beta = this.computeVelocity(k);
         double dTz0 = this.fncDTz0.evaluateAt(beta);
-        double Tz0 = this.fncTz0.evaluateAt(beta);
+        double tz0 = this.fncTz0.evaluateAt(beta);
 
         // compare with XAL implementation
-        double dS = 0.01 * dTz0 * sin + Tz0 * dz * cos;
-
-        return dS;
+        return 0.01 * dTz0 * sin + tz0 * dz * cos;
     }
 
     /**
@@ -1383,15 +1335,13 @@ public class AxialFieldSpectrum {
      *
      * @since Sept 23, 2015 by Christopher K. Allen
      */
-    private double TqFromSq0(double k) {
+    private double tqFromSq0(double k) {
         double dz = -this.getFieldOffset();
         double sin = Math.sin(k * dz);
 
         double beta = this.computeVelocity(k);
-        double Sq0 = this.fncSq0.evaluateAt(beta);
-        double Tq = -Sq0 * sin;
-
-        return Tq;
+        double sq0 = this.fncSq0.evaluateAt(beta);
+        return -sq0 * sin;
     }
 
     /**
@@ -1459,12 +1409,10 @@ public class AxialFieldSpectrum {
 
         double beta = this.computeVelocity(k);
         double dSq0 = this.fncDSq0.evaluateAt(beta);
-        double Sq0 = this.fncSq0.evaluateAt(beta);
+        double sq0 = this.fncSq0.evaluateAt(beta);
 
         // To emulate XAL implementation
-        double dTq = -0.01 * dSq0 * sin - Sq0 * dz * cos;
-
-        return dTq;
+        return -0.01 * dSq0 * sin - sq0 * dz * cos;
     }
 
     /**
@@ -1498,15 +1446,13 @@ public class AxialFieldSpectrum {
      *
      * @since Sep 23, 2015 by Christopher K. Allen
      */
-    private double SqFromSq0(double k) {
+    private double sqFromSq0(double k) {
         double dz = -this.getFieldOffset();
         double cos = Math.cos(k * dz);
 
         double beta = this.computeVelocity(k);
-        double Sq0 = this.fncSq0.evaluateAt(beta);
-        double Sq = Sq0 * cos;
-
-        return Sq;
+        double sq0 = this.fncSq0.evaluateAt(beta);
+        return sq0 * cos;
     }
 
     /**
@@ -1563,12 +1509,10 @@ public class AxialFieldSpectrum {
 
         double beta = this.computeVelocity(k);
         double dSq0 = this.fncDSq0.evaluateAt(beta);
-        double Sq0 = this.fncSq0.evaluateAt(beta);
+        double sq0 = this.fncSq0.evaluateAt(beta);
 
         // To compare with XAL implementation
-        double dSq = 0.01 * dSq0 * cos - Sq0 * dz * sin;
-
-        return dSq;
+        return 0.01 * dSq0 * cos - sq0 * dz * sin;
     }
 
     /**
@@ -1585,8 +1529,6 @@ public class AxialFieldSpectrum {
      */
     private double computeVelocity(double k) {
         double lambda = DBL_LGHT_SPD / this.getFrequency();
-        double beta = DBL_2PI / (k * lambda);
-
-        return beta;
+        return DBL_2PI / (k * lambda);
     }
 }

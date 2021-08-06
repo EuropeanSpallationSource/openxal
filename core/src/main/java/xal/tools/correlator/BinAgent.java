@@ -103,13 +103,13 @@ public class BinAgent<R> implements BinUpdate<R>, StateNotice<R> {
      * Forget all events and set the timestamp to the supplied one. This is used
      * when a bin is recycled.
      */
-    public synchronized void resetWithRecord(final String name, final R record, final double timestamp) {
+    public synchronized void resetWithRecord(final String name, final R aRecord, final double timestamp) {
         reset();
         timeStatistics.addSample(timestamp);
         earliestTimestamp = timestamp;
         latestTimestamp = timestamp;
         enabled = true;
-        newEvent(name, record, timestamp);
+        newEvent(name, aRecord, timestamp);
     }
 
     /**
@@ -122,8 +122,8 @@ public class BinAgent<R> implements BinUpdate<R>, StateNotice<R> {
     /**
      * record the event record and handle any complete correlation sets found
      */
-    private synchronized void addRecord(final String name, final R record, final double timestamp) {
-        recordTable.put(name, record);
+    private synchronized void addRecord(final String name, final R aRecord, final double timestamp) {
+        recordTable.put(name, aRecord);
         timeStatistics.addSample(timestamp);
         final Correlation<R> correlation = new Correlation<>(recordTable, timeStatistics);
         if (correlationTester.accept(correlation)) {
@@ -144,7 +144,7 @@ public class BinAgent<R> implements BinUpdate<R>, StateNotice<R> {
      * Implement BinUpdate interface
      */
     @Override
-    public synchronized void newEvent(final String name, final R record, final double timestamp) {
+    public synchronized void newEvent(final String name, final R aRecord, final double timestamp) {
         if (!enabled || recordTable.containsKey(name)) {
             return;
         }
@@ -154,7 +154,7 @@ public class BinAgent<R> implements BinUpdate<R>, StateNotice<R> {
         double range = Math.max(earlyRange, lateRange);
 
         if (range < timespan) {
-            addRecord(name, record, timestamp);
+            addRecord(name, aRecord, timestamp);
             earliestTimestamp = Math.min(timestamp, earliestTimestamp);
             latestTimestamp = Math.max(timestamp, latestTimestamp);
         }

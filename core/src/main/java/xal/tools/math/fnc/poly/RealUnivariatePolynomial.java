@@ -129,16 +129,16 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
      */
     @Override
     public double evaluateAt(double dblVal) {
-        if (this.arrCoef == null) {
+        if (arrCoef == null) {
             return 0.0;
         }
 
         // number of coefficients
-        int N = this.arrCoef.length;
+        int len = arrCoef.length;
         // accumulator
         double dblAccum = 0.0;
 
-        for (int n = N - 1; n >= 0; n--) {
+        for (int n = len - 1; n >= 0; n--) {
             dblAccum += this.getCoef(n) * Math.pow(dblVal, n);
         }
 
@@ -158,18 +158,18 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
      */
     @Override
     public double derivativeAt(double dblVal) {
-        if (this.arrCoef == null) {
+        if (arrCoef == null) {
             return 0.0;
         }
 
         // number of coefficients
-        int N = this.arrCoef.length;
+        int len = arrCoef.length;
         // the the nomial
         double dblPow = 1.0;
         // accumulator
         double dblSum = 0.0;
 
-        for (int n = 1; n < N; n++) {
+        for (int n = 1; n < len; n++) {
             double dblCoef = n * this.getCoef(n);
 
             dblSum += dblCoef * dblPow;
@@ -188,7 +188,6 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
      */
     @Override
     public double derivativeAt(int nOrder, double dblLoc) throws IllegalArgumentException {
-
         // Check if the order of the derivative is greater than the degree of the polynomial
         if (nOrder > this.getDegree()) {
             return 0.0;
@@ -227,7 +226,7 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
     /**
      * Nondestructively add two polynomials. The current polynomial and the
      * argument are added according to standard definitions (i.e., the
-     * coefficient array is added vectorally).
+     * coefficient array is added vectorially).
      *
      * @param polyAddend polynomial to be added to this
      *
@@ -235,13 +234,13 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
      */
     public RealUnivariatePolynomial plus(RealUnivariatePolynomial polyAddend) {
         int nLen = Math.max(polyAddend.getDegree(), this.getDegree()) + 1;
-        double[] arrCoef = new double[nLen];
+        double[] newArrCoef = new double[nLen];
 
         for (int n = 0; n < nLen; n++) {
-            arrCoef[n] = this.getCoef(n) + polyAddend.getCoef(n);
+            newArrCoef[n] = this.getCoef(n) + polyAddend.getCoef(n);
         }
 
-        return new RealUnivariatePolynomial(arrCoef);
+        return new RealUnivariatePolynomial(newArrCoef);
     }
 
     /**
@@ -253,7 +252,7 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
      */
     public RealUnivariatePolynomial times(RealUnivariatePolynomial polyFac) {
         int nLen = polyFac.getDegree() * this.getDegree() + 1;
-        double[] arrCoef = new double[nLen];
+        double[] newArrCoef = new double[nLen];
         double dblAccum;
 
         for (int n = 0; n < nLen; n++) {
@@ -262,10 +261,10 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
             for (int i = 0; i <= n; i++) {
                 dblAccum += this.getCoef(i) * polyFac.getCoef(n - i);
             }
-            arrCoef[n] = dblAccum;
+            newArrCoef[n] = dblAccum;
         }
 
-        return new RealUnivariatePolynomial(arrCoef);
+        return new RealUnivariatePolynomial(newArrCoef);
     }
 
 
@@ -282,15 +281,15 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
      */
     @Override
     public String toString() {
-        int N = this.getDegree();
+        int n = this.getDegree();
 
-        String strPoly = Double.toString(this.getCoef(0));
-
-        for (int n = 1; n <= N; n++) {
-            strPoly += " + " + this.getCoef(n) + "x^" + n;
+        StringBuilder bld = new StringBuilder();
+        bld.append(Double.toString(this.getCoef(0)));
+        for (int i = 1; i <= n; i++) {
+            bld.append(" + ").append(this.getCoef(i)).append("x^").append(i);
         }
 
-        return strPoly;
+        return bld.toString();
     }
 
     /**
@@ -300,13 +299,12 @@ public class RealUnivariatePolynomial implements ISmoothRealFunction {
         RealUnivariatePolynomial poly1 = new RealUnivariatePolynomial(new double[]{1.0, 2.0, 3.0});
         RealUnivariatePolynomial poly2 = new RealUnivariatePolynomial(new double[]{1.1, 1.2, 1.3});
 
-        LOGGER.log(Level.INFO, "poly1 = {0}", poly1.toString());
-        LOGGER.log(Level.INFO, "poly2 = {0}", poly2.toString());
-        LOGGER.log(Level.INFO, "poly1 + poly2 = {0}", (poly1.plus(poly2)).toString());
-        LOGGER.log(Level.INFO, "poly1 * poly2 = {0}", (poly1.times(poly2)).toString());
+        LOGGER.log(Level.INFO, "poly1 = {0}", poly1);
+        LOGGER.log(Level.INFO, "poly2 = {0}", poly2);
+        LOGGER.log(Level.INFO, "poly1 + poly2 = {0}", (poly1.plus(poly2)));
+        LOGGER.log(Level.INFO, "poly1 * poly2 = {0}", (poly1.times(poly2)));
         LOGGER.log(Level.INFO, "poly1(1.0) = {0}", poly1.evaluateAt(1.0));
         LOGGER.log(Level.INFO, "poly1(2.0) = {0}", poly1.evaluateAt(2.0));
         LOGGER.log(Level.INFO, "poly2(1.0) = {0}", poly2.evaluateAt(1.0));
     }
-
 }
