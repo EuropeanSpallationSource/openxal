@@ -105,7 +105,7 @@ public class AnalysisController {
      * Sets mask specifying if the data for scan PV scan read back PV should be
      * shown.
      */
-    public void setScanPVandScanPV_RB_State(boolean scanPVShowState, boolean scanPVRBShowState) {
+    public void setScanPVandScanPVRBState(boolean scanPVShowState, boolean scanPVRBShowState) {
         this.scanPVShowState = scanPVShowState;
         this.scanPVRBShowState = scanPVRBShowState;
     }
@@ -124,21 +124,23 @@ public class AnalysisController {
      * super-class method in this method.
      */
     public void setFontsForAll(Font fnt) {
-
+        // Do nothing
     }
 
     /**
      * Does what necessary for close this analysis window. This method could be
      * overridden, because it is empty here.
      */
-    public void ShutUp() {
+    public void shutUp() {
+        // Do nothing
     }
 
     /**
      * Does what necessary for open this analysis window. This method could be
      * overridden, because it is empty here.
      */
-    public void ShowUp() {
+    public void showUp() {
+        // Do nothing
     }
 
     /**
@@ -148,6 +150,7 @@ public class AnalysisController {
      * because it is empty here.
      */
     public void updateDataSetOnGraphPanel() {
+        // Do nothing
     }
 
     /**
@@ -156,5 +159,4 @@ public class AnalysisController {
     public void setMessageTextField(JTextField messageTextLocal) {
         this.messageTextLocal = messageTextLocal;
     }
-
 }

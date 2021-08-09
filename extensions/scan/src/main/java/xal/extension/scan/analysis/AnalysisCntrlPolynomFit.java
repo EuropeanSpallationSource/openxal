@@ -4,7 +4,6 @@ import java.util.*;
 import java.awt.*;
 import java.text.*;
 import javax.swing.*;
-import java.awt.event.*;
 
 import xal.tools.data.DataAdaptor;
 import xal.extension.scan.*;
@@ -22,7 +21,7 @@ public final class AnalysisCntrlPolynomFit extends AnalysisController {
     private JPanel polynomFitMaxPanel = new JPanel();
     private JButton fittingPanel2Button = new JButton("START FITTING");
     private JSpinner rankPanel2Spinner = new JSpinner(new SpinnerNumberModel(0, 0, 3, 1));
-    private JLabel spinnerPanel2Label = new JLabel(" Order of Fitting :", JLabel.LEFT);
+    private JLabel spinnerPanel2Label = new JLabel(" Order of Fitting :", SwingConstants.LEFT);
     private DecimalFormat coeffPanel2Format = new DecimalFormat("0.000E0");
 
     /**
@@ -67,14 +66,6 @@ public final class AnalysisCntrlPolynomFit extends AnalysisController {
     }
 
     /**
-     * Sets the configurations of the analysis.
-     */
-    @Override
-    public void dumpAnalysisConfig(DataAdaptor analysisConfig) {
-        super.dumpAnalysisConfig(analysisConfig);
-    }
-
-    /**
      * Sets fonts for all GUI elements.
      */
     @Override
@@ -92,8 +83,8 @@ public final class AnalysisCntrlPolynomFit extends AnalysisController {
      * Does what necessary for close this analysis window.
      */
     @Override
-    public void ShutUp() {
-        super.ShutUp();
+    public void shutUp() {
+        super.shutUp();
         customControlPanel.removeAll();
     }
 
@@ -102,20 +93,12 @@ public final class AnalysisCntrlPolynomFit extends AnalysisController {
      * overridden, because it is empty here.
      */
     @Override
-    public void ShowUp() {
-        super.ShowUp();
+    public void showUp() {
+        super.showUp();
         customControlPanel.add(dataReaderPanel, BorderLayout.NORTH);
         customControlPanel.add(polynomFitMaxPanel, BorderLayout.CENTER);
         customGraphPanel.add(graphAnalysis, BorderLayout.CENTER);
         customGraphPanel.add(globalButtonsPanel, BorderLayout.SOUTH);
-    }
-
-    /**
-     * Updates data on the analysis graph panel.
-     */
-    @Override
-    public void updateDataSetOnGraphPanel() {
-        super.updateDataSetOnGraphPanel();
     }
 
     //-----------------------------------------------------
@@ -123,7 +106,7 @@ public final class AnalysisCntrlPolynomFit extends AnalysisController {
     //-----------------------------------------------------
     private void makePolynomFittingPanel() {
 
-        rankPanel2Spinner.setAlignmentX(JSpinner.CENTER_ALIGNMENT);
+        rankPanel2Spinner.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JPanel tmp0 = new JPanel();
         tmp0.setLayout(new GridLayout(1, 2, 1, 1));
@@ -138,46 +121,41 @@ public final class AnalysisCntrlPolynomFit extends AnalysisController {
         polynomFitMaxPanel.setLayout(new BorderLayout());
         polynomFitMaxPanel.add(tmp1, BorderLayout.NORTH);
 
-        fittingPanel2Button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                BasicGraphData gd = mainController.getChoosenDraphData();
-                if (gd != null) {
-                    graphAnalysis.removeGraphData(graphDataLocal);
-                    graphDataLocal.removeAllPoints();
-                    double xMin = graphAnalysis.getCurrentMinX();
-                    double xMax = graphAnalysis.getCurrentMaxX();
-                    double yMin = graphAnalysis.getCurrentMinY();
-                    double yMax = graphAnalysis.getCurrentMaxY();
-                    int order = ((Integer) rankPanel2Spinner.getValue());
-                    GraphDataOperations.polynomialFit(gd, graphDataLocal, xMin, xMax, order, 10);
+        fittingPanel2Button.addActionListener(e -> {
+            BasicGraphData gd = mainController.getChoosenDraphData();
+            if (gd != null) {
+                graphAnalysis.removeGraphData(graphDataLocal);
+                graphDataLocal.removeAllPoints();
+                double xMin = graphAnalysis.getCurrentMinX();
+                double xMax = graphAnalysis.getCurrentMaxX();
+                int order = ((Integer) rankPanel2Spinner.getValue());
+                GraphDataOperations.polynomialFit(gd, graphDataLocal, xMin, xMax, order, 10);
 
-                    double[][] coeff = GraphDataOperations.polynomialFit(gd, xMin, xMax, order);
-                    if (coeff != null && coeff[0].length > 0) {
-                        String formula = "Fitting: y = ";
-                        for (int i = 0, n = coeff[0].length; i < n; i++) {
-                            formula = formula + "(" + coeffPanel2Format.format(coeff[0][i]) + ")*X^" + i;
-                            if (i != (n - 1)) {
-                                formula = formula + " + ";
-                            }
+                double[][] coeff = GraphDataOperations.polynomialFit(gd, xMin, xMax, order);
+                if (coeff != null && coeff[0].length > 0) {
+                    StringBuilder formulaBuilder = new StringBuilder();
+                    formulaBuilder.append("Fitting: y = ");
+                    for (int i = 0, n = coeff[0].length; i < n; i++) {
+                        formulaBuilder.append("(").append(coeffPanel2Format.format(coeff[0][i])).append(")*X^").append(i);
+                        if (i != (n - 1)) {
+                            formulaBuilder.append(" + ");
                         }
-                        messageTextLocal.setText(null);
-                        messageTextLocal.setText(formula);
-                    } else {
-                        messageTextLocal.setText(null);
-                        messageTextLocal.setText("Cannot do fitting.");
-                        Toolkit.getDefaultToolkit().beep();
                     }
-                    graphAnalysis.addGraphData(graphDataLocal);
+                    messageTextLocal.setText(null);
+                    messageTextLocal.setText(formulaBuilder.toString());
                 } else {
                     messageTextLocal.setText(null);
-                    messageTextLocal.setText("Please choose graph and point first. Use S-button on the graph panel.");
+                    messageTextLocal.setText("Cannot do fitting.");
                     Toolkit.getDefaultToolkit().beep();
                 }
+                graphAnalysis.addGraphData(graphDataLocal);
+            } else {
+                messageTextLocal.setText(null);
+                messageTextLocal.setText("Please choose graph and point first. Use S-button on the graph panel.");
+                Toolkit.getDefaultToolkit().beep();
             }
         });
 
         fittingPanel2Button.setForeground(Color.blue);
     }
-
 }

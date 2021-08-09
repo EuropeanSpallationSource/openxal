@@ -120,8 +120,7 @@ public class MeasuredValue {
     public double getMeasurementSigma() {
         if (nMeasurements > 0) {
             double mean = sumValues / nMeasurements;
-            double sigma = Math.sqrt(Math.abs(sumValues2 - nMeasurements * mean * mean) / nMeasurements);
-            return sigma;
+            return Math.sqrt(Math.abs(sumValues2 - nMeasurements * mean * mean) / nMeasurements);
         }
         return 0.0;
     }
@@ -357,7 +356,7 @@ public class MeasuredValue {
     protected void consumeData(double x) {
         BasicGraphData gd = getDataContainer();
         if (gd != null && mpv.getChannel() != null) {
-            if (generateUnwrap == false) {
+            if (!generateUnwrap) {
                 gd.addPoint(x, getMeasurement(), getMeasurementSigma());
             } else {
                 int np = gd.getNumbOfPoints();
@@ -375,7 +374,7 @@ public class MeasuredValue {
     protected void consumeDataRB(double xRB) {
         BasicGraphData gd = getDataContainerRB();
         if (gd != null && mpv.getChannel() != null) {
-            if (generateUnwrap == false) {
+            if (!generateUnwrap) {
                 gd.addPoint(xRB, getMeasurement(), getMeasurementSigma());
             } else {
                 int np = gd.getNumbOfPoints();
@@ -399,7 +398,7 @@ public class MeasuredValue {
         }
         int n = 0;
         double diffMin = Math.abs(yIn - y);
-        double diff = diffMin;
+        double diff;
         int nMax = 1 + ((int) (diffMin / 360.));
         for (int i = -nMax; i <= nMax; i++) {
             diff = Math.abs(y + i * 360. - yIn);

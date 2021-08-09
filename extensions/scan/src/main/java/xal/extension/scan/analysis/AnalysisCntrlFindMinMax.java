@@ -26,8 +26,6 @@ public final class AnalysisCntrlFindMinMax extends AnalysisController {
     private JLabel pvSetLabel = new JLabel(" Scan PV Set:");
     private JLabel pvRBLabel = new JLabel(" Scan PV RB:");
 
-    private ActionListener findMaxMinListener = null;
-
     private JButton findButton = new JButton("FIND MAX/MIN");
     private JButton setValButton = new JButton("SET FOUND VALUE TO EPICS");
     private JButton readValButton = new JButton("READ CURRENT VALUES");
@@ -36,7 +34,7 @@ public final class AnalysisCntrlFindMinMax extends AnalysisController {
     private DoubleInputTextField pvSetValText = new DoubleInputTextField(10);
     private DoubleInputTextField pvRBValText = new DoubleInputTextField(10);
 
-    private DecimalFormat val_Format = new DecimalFormat("####.####");
+    private DecimalFormat valFormat = new DecimalFormat("####.####");
 
     private ActionListener dragVerLineListener = null;
     private double markerPos = 0.;
@@ -99,16 +97,6 @@ public final class AnalysisCntrlFindMinMax extends AnalysisController {
     }
 
     /**
-     * Sets the configurations of the analysis.
-     *
-     * @param analysisConfig Description of the Parameter
-     */
-    @Override
-    public void dumpAnalysisConfig(DataAdaptor analysisConfig) {
-        super.dumpAnalysisConfig(analysisConfig);
-    }
-
-    /**
      * Sets fonts for all GUI elements.
      *
      * @param fnt The new fontsForAll value
@@ -132,8 +120,8 @@ public final class AnalysisCntrlFindMinMax extends AnalysisController {
      * Does what necessary for close this analysis window.
      */
     @Override
-    public void ShutUp() {
-        super.ShutUp();
+    public void shutUp() {
+        super.shutUp();
         customControlPanel.removeAll();
         graphAnalysis.addDraggedVerLinesListener(null);
         graphAnalysis.removeVerticalValue(0);
@@ -144,8 +132,8 @@ public final class AnalysisCntrlFindMinMax extends AnalysisController {
      * overridden, because it is empty here.
      */
     @Override
-    public void ShowUp() {
-        super.ShowUp();
+    public void showUp() {
+        super.showUp();
 
         graphAnalysis.addVerticalLine(markerPos, Color.red);
         graphAnalysis.addDraggedVerLinesListener(dragVerLineListener);
@@ -155,14 +143,6 @@ public final class AnalysisCntrlFindMinMax extends AnalysisController {
         customControlPanel.add(findMinMaxPanel, BorderLayout.CENTER);
         customGraphPanel.add(graphAnalysis, BorderLayout.CENTER);
         customGraphPanel.add(globalButtonsPanel, BorderLayout.SOUTH);
-    }
-
-    /**
-     * Updates data on the analysis graph panel.
-     */
-    @Override
-    public void updateDataSetOnGraphPanel() {
-        super.updateDataSetOnGraphPanel();
     }
 
     //-----------------------------------------------------
@@ -176,13 +156,13 @@ public final class AnalysisCntrlFindMinMax extends AnalysisController {
         pvSetValText.setEditable(false);
         pvRBValText.setEditable(false);
 
-        markerPosText.setNumberFormat(val_Format);
-        pvSetValText.setNumberFormat(val_Format);
-        pvRBValText.setNumberFormat(val_Format);
+        markerPosText.setNumberFormat(valFormat);
+        pvSetValText.setNumberFormat(valFormat);
+        pvRBValText.setNumberFormat(valFormat);
 
-        markerPosText.setHorizontalAlignment(JTextField.CENTER);
-        pvSetValText.setHorizontalAlignment(JTextField.CENTER);
-        pvRBValText.setHorizontalAlignment(JTextField.CENTER);
+        markerPosText.setHorizontalAlignment(SwingConstants.CENTER);
+        pvSetValText.setHorizontalAlignment(SwingConstants.CENTER);
+        pvRBValText.setHorizontalAlignment(SwingConstants.CENTER);
 
         markerPosText.removeInnerFocusListener();
         pvSetValText.removeInnerFocusListener();
@@ -218,129 +198,109 @@ public final class AnalysisCntrlFindMinMax extends AnalysisController {
 
         findMinMaxPanel.add(temp3, BorderLayout.NORTH);
 
-        dragVerLineListener
-                = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int ind = graphAnalysis.getDraggedLineIndex();
-                markerPos = graphAnalysis.getVerticalValue(ind);
-                markerPos -= phaseShift;
-                if (phaseShift != 0.) {
-                    markerPos += 180.;
-                    while (markerPos < 0.) {
-                        markerPos += 360.;
-                    }
-                    markerPos = markerPos % 360.;
-                    markerPos -= 180.;
+        dragVerLineListener = e -> {
+            int ind = graphAnalysis.getDraggedLineIndex();
+            markerPos = graphAnalysis.getVerticalValue(ind);
+            markerPos -= phaseShift;
+            if (phaseShift != 0.) {
+                markerPos += 180.;
+                while (markerPos < 0.) {
+                    markerPos += 360.;
                 }
-                markerPosText.setValueQuietly(markerPos);
+                markerPos = markerPos % 360.;
+                markerPos -= 180.;
             }
+            markerPosText.setValueQuietly(markerPos);
         };
 
-        markerPosText.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                graphAnalysis.addDraggedVerLinesListener(null);
-                markerPos = markerPosText.getValue();
-                double phase = markerPos + phaseShift;
-                if (phaseShift != 0.) {
-                    phase += 180.;
-                    while (phase < 0.) {
-                        phase += 360.;
-                    }
-                    phase = phase % 360.;
-                    phase -= 180.;
+        markerPosText.addActionListener(e -> {
+            graphAnalysis.addDraggedVerLinesListener(null);
+            markerPos = markerPosText.getValue();
+            double phase = markerPos + phaseShift;
+            if (phaseShift != 0.) {
+                phase += 180.;
+                while (phase < 0.) {
+                    phase += 360.;
                 }
-                graphAnalysis.setVerticalLineValue(phase, 0);
-                graphAnalysis.addDraggedVerLinesListener(dragVerLineListener);
+                phase = phase % 360.;
+                phase -= 180.;
             }
+            graphAnalysis.setVerticalLineValue(phase, 0);
+            graphAnalysis.addDraggedVerLinesListener(dragVerLineListener);
         });
 
-        findMaxMinListener
-                = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                BasicGraphData gd = mainController.getChoosenDraphData();
-                if (gd != null) {
-                    graphAnalysis.removeGraphData(graphDataLocal);
-                    graphDataLocal.removeAllPoints();
-                    if (gd.getNumbOfPoints() > 0) {
-                        GraphDataOperations.polynomialFit(gd, graphDataLocal,
-                                graphAnalysis.getCurrentMinX(),
-                                graphAnalysis.getCurrentMaxX(), 2, 10);
-                        double dMaxPos = GraphDataOperations.getExtremumPosition(graphDataLocal,
-                                graphAnalysis.getCurrentMinX(),
-                                graphAnalysis.getCurrentMaxX());
-                        if (dMaxPos > graphAnalysis.getCurrentMinX() && dMaxPos < graphAnalysis.getCurrentMaxX()) {
-                            phaseShift = MainAnalysisController.getPhaseShift(gd);
-                            graphAnalysis.addDraggedVerLinesListener(null);
-                            dMaxPos -= phaseShift;
-                            if (phaseShift != 0.) {
-                                dMaxPos += 180.;
-                                while (dMaxPos < 0.) {
-                                    dMaxPos += 360.;
-                                }
-                                dMaxPos = dMaxPos % 360.;
-                                dMaxPos -= 180.;
+        ActionListener findMaxMinListener = e -> {
+            BasicGraphData gd = mainController.getChoosenDraphData();
+            if (gd != null) {
+                graphAnalysis.removeGraphData(graphDataLocal);
+                graphDataLocal.removeAllPoints();
+                if (gd.getNumbOfPoints() > 0) {
+                    GraphDataOperations.polynomialFit(gd, graphDataLocal,
+                            graphAnalysis.getCurrentMinX(),
+                            graphAnalysis.getCurrentMaxX(), 2, 10);
+                    double dMaxPos = GraphDataOperations.getExtremumPosition(graphDataLocal,
+                            graphAnalysis.getCurrentMinX(),
+                            graphAnalysis.getCurrentMaxX());
+                    if (dMaxPos > graphAnalysis.getCurrentMinX() && dMaxPos < graphAnalysis.getCurrentMaxX()) {
+                        phaseShift = MainAnalysisController.getPhaseShift(gd);
+                        graphAnalysis.addDraggedVerLinesListener(null);
+                        dMaxPos -= phaseShift;
+                        if (phaseShift != 0.) {
+                            dMaxPos += 180.;
+                            while (dMaxPos < 0.) {
+                                dMaxPos += 360.;
                             }
-                            markerPosText.setValue(dMaxPos);
-                            graphAnalysis.addDraggedVerLinesListener(dragVerLineListener);
-                            messageTextLocal.setText(null);
-                            messageTextLocal.setText("Extremum has been found. The phase_shift value =" + val_Format.format(phaseShift));
-                        } else {
-                            Toolkit.getDefaultToolkit().beep();
-                            messageTextLocal.setText(null);
-                            messageTextLocal.setText("Cannot find extremum in the specified region.");
-                            graphDataLocal.removeAllPoints();
-                            graphAnalysis.refreshGraphJPanel();
+                            dMaxPos = dMaxPos % 360.;
+                            dMaxPos -= 180.;
                         }
-
+                        markerPosText.setValue(dMaxPos);
+                        graphAnalysis.addDraggedVerLinesListener(dragVerLineListener);
+                        messageTextLocal.setText(null);
+                        messageTextLocal.setText("Extremum has been found. The phase_shift value =" + valFormat.format(phaseShift));
                     } else {
                         Toolkit.getDefaultToolkit().beep();
                         messageTextLocal.setText(null);
-                        messageTextLocal.setText("The graph does not have data points.");
+                        messageTextLocal.setText("Cannot find extremum in the specified region.");
+                        graphDataLocal.removeAllPoints();
+                        graphAnalysis.refreshGraphJPanel();
                     }
-                    graphAnalysis.addGraphData(graphDataLocal);
+
                 } else {
-                    messageTextLocal.setText(null);
-                    messageTextLocal.setText("Please choose graph and point first. Use S-button on the graph panel.");
                     Toolkit.getDefaultToolkit().beep();
+                    messageTextLocal.setText(null);
+                    messageTextLocal.setText("The graph does not have data points.");
                 }
+                graphAnalysis.addGraphData(graphDataLocal);
+            } else {
+                messageTextLocal.setText(null);
+                messageTextLocal.setText("Please choose graph and point first. Use S-button on the graph panel.");
+                Toolkit.getDefaultToolkit().beep();
             }
         };
 
-        setValButton.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                double val = markerPosText.getValue();
-                if (scanVariable.getChannel() != null) {
-                    scanVariable.setValue(val);
-                } else {
-                    messageTextLocal.setText(null);
-                    messageTextLocal.setText("The scan PV channel does not exist.");
-                    Toolkit.getDefaultToolkit().beep();
-                }
+        setValButton.addActionListener(e -> {
+            double val = markerPosText.getValue();
+            if (scanVariable.getChannel() != null) {
+                scanVariable.setValue(val);
+            } else {
+                messageTextLocal.setText(null);
+                messageTextLocal.setText("The scan PV channel does not exist.");
+                Toolkit.getDefaultToolkit().beep();
             }
         });
 
-        readValButton.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (scanVariable.getChannel() != null) {
-                    pvSetValText.setValue(scanVariable.getValue());
-                } else {
-                    pvSetValText.setText(null);
-                    pvSetValText.setBackground(Color.white);
-                }
-                if (scanVariable.getChannelRB() != null) {
-                    pvRBValText.setValue(scanVariable.getValueRB());
-                } else {
-                    pvRBValText.setText(null);
-                    pvRBValText.setBackground(Color.white);
-                }
+        readValButton.addActionListener(e -> {
+            if (scanVariable.getChannel() != null) {
+                pvSetValText.setValue(scanVariable.getValue());
+            } else {
+                pvSetValText.setText(null);
+                pvSetValText.setBackground(Color.white);
+            }
+            if (scanVariable.getChannelRB() != null) {
+                pvRBValText.setValue(scanVariable.getValueRB());
+            } else {
+                pvRBValText.setText(null);
+                pvRBValText.setBackground(Color.white);
             }
         });
 
@@ -350,5 +310,4 @@ public final class AnalysisCntrlFindMinMax extends AnalysisController {
         setValButton.setForeground(Color.blue);
         readValButton.setForeground(Color.blue);
     }
-
 }

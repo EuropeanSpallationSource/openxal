@@ -63,7 +63,7 @@ public class ScanVariable {
         return mpv;
     }
 
-    public MonitoredPV getMonitoredPV_RB() {
+    public MonitoredPV getMonitoredPVRB() {
         return mpvRB;
     }
 
@@ -85,9 +85,9 @@ public class ScanVariable {
         }
     }
 
-    public void setChannelRB(Channel ch_RB) {
+    public void setChannelRB(Channel chRB) {
         synchronized (lockObj) {
-            mpvRB.setChannel(ch_RB);
+            mpvRB.setChannel(chRB);
         }
     }
 

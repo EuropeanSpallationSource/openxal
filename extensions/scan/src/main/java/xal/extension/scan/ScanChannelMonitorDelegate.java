@@ -22,5 +22,5 @@ interface ScanChannelMonitorDelegate {
     /**
      * Indicates that the channel record has been updated
      */
-    public void channelRecordUpdate(final ScanChannelMonitor monitor, final ChannelTimeRecord record);
+    public void channelRecordUpdate(final ScanChannelMonitor monitor, final ChannelTimeRecord channelRecord);
 }

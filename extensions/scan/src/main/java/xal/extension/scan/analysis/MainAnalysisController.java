@@ -191,13 +191,9 @@ public class MainAnalysisController {
         //define main chooser
         operationChooser = new JComboBox<>(operationList);
         operationChooser.setBackground(Color.cyan);
-        operationChooser.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int index = operationChooser.getSelectedIndex();
-                setAnalysisControlPanel(index);
-            }
+        operationChooser.addActionListener(e -> {
+            int index = operationChooser.getSelectedIndex();
+            setAnalysisControlPanel(index);
         });
 
         customControlPanel.setLayout(new BorderLayout());
@@ -213,7 +209,6 @@ public class MainAnalysisController {
         analysisControlPanel.add(customControlPanel, BorderLayout.SOUTH);
 
         setAnalysisControlPanel(-1);
-
     }
 
     /**
@@ -340,13 +335,9 @@ public class MainAnalysisController {
         //define main chooser
         operationChooser = new JComboBox<>(operationList);
         operationChooser.setBackground(Color.cyan);
-        operationChooser.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int index = operationChooser.getSelectedIndex();
-                setAnalysisControlPanel(index);
-            }
+        operationChooser.addActionListener(e -> {
+            int index = operationChooser.getSelectedIndex();
+            setAnalysisControlPanel(index);
         });
 
         font = operationChooser.getFont();
@@ -384,11 +375,11 @@ public class MainAnalysisController {
      * @param scanPVShowState The new scanPVandScanPV_RB_State value
      * @param scanPVRBShowState The new scanPVandScanPV_RB_State value
      */
-    public void setScanPVandScanPV_RB_State(boolean scanPVShowState, boolean scanPVRBShowState) {
+    public void setScanPVandScanPVRBState(boolean scanPVShowState, boolean scanPVRBShowState) {
         this.scanPVShowState = scanPVShowState;
         this.scanPVRBShowState = scanPVRBShowState;
         for (int i = 0; i < analysisControllers.length; i++) {
-            analysisControllers[i].setScanPVandScanPV_RB_State(scanPVShowState, scanPVRBShowState);
+            analysisControllers[i].setScanPVandScanPVRBState(scanPVShowState, scanPVRBShowState);
         }
     }
 
@@ -432,11 +423,11 @@ public class MainAnalysisController {
             messageTextLocal.setText(null);
             if (indexOfPanelOld >= 0
                     && indexOfPanelOld < analysisControllers.length) {
-                analysisControllers[indexOfPanelOld].ShutUp();
+                analysisControllers[indexOfPanelOld].shutUp();
             }
             if (indexOfPanelNew >= 0
                     && indexOfPanelNew < analysisControllers.length) {
-                analysisControllers[indexOfPanelNew].ShowUp();
+                analysisControllers[indexOfPanelNew].showUp();
             }
 
             indexOfPanelOld = indexOfPanelNew;
@@ -449,6 +440,7 @@ public class MainAnalysisController {
      * This method executed when analysis panel showing up.
      */
     public void isGoingShowUp() {
+        // Do nothing
     }
 
     /**
@@ -498,139 +490,172 @@ public class MainAnalysisController {
         removePhaseShiftGlobalButton.setToolTipText("Un-shift x-coordinates (phase)");
 
         //"HIDE" button
-        hideGlobalButton.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                BasicGraphData gd = getChoosenDraphData();
-                if (gd != null) {
-                    graphAnalysis.removeGraphData(gd);
-                    messageTextLocal.setText(null);
-                } else {
-                    messageTextLocal.setText(null);
-                    messageTextLocal.setText("Please choose graph first. Use S-button on the graph panel.");
-                    Toolkit.getDefaultToolkit().beep();
-                }
+        hideGlobalButton.addActionListener(e -> {
+            BasicGraphData gd = getChoosenDraphData();
+            if (gd != null) {
+                graphAnalysis.removeGraphData(gd);
+                messageTextLocal.setText(null);
+            } else {
+                messageTextLocal.setText(null);
+                messageTextLocal.setText("Please choose graph first. Use S-button on the graph panel.");
+                Toolkit.getDefaultToolkit().beep();
             }
         });
 
         //"SHOW ALL" button
-        showAllGlobalButton.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                updateDataSetOnGraphPanel();
-                messageTextLocal.setText(null);
-            }
+        showAllGlobalButton.addActionListener(e -> {
+            updateDataSetOnGraphPanel();
+            messageTextLocal.setText(null);
         });
 
         //"REMOVE POINT" button
-        removePointGlobalButton.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Object[] choosenObjArr = getChoosenDraphDataAndPoint();
-                BasicGraphData gd = (BasicGraphData) choosenObjArr[0];
-                Integer IndP = (Integer) choosenObjArr[1];
-                if (gd != null && IndP != null) {
-                    gd.removePoint(IndP.intValue());
-                    graphAnalysis.refreshGraphJPanel();
-                } else {
-                    messageTextLocal.setText(null);
-                    messageTextLocal.setText("Please choose graph and point first. Use S-button on the graph panel.");
-                    Toolkit.getDefaultToolkit().beep();
-                }
+        removePointGlobalButton.addActionListener(e -> {
+            Object[] choosenObjArr = getChoosenDraphDataAndPoint();
+            BasicGraphData gd = (BasicGraphData) choosenObjArr[0];
+            Integer indP = (Integer) choosenObjArr[1];
+            if (gd != null && indP != null) {
+                gd.removePoint(indP.intValue());
+                graphAnalysis.refreshGraphJPanel();
+            } else {
+                messageTextLocal.setText(null);
+                messageTextLocal.setText("Please choose graph and point first. Use S-button on the graph panel.");
+                Toolkit.getDefaultToolkit().beep();
             }
         });
 
         //"REMOVE GRAPH" button
-        removeGraphGlobalButton.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                BasicGraphData gd = getChoosenDraphData();
-                Integer Ind = graphAnalysis.getGraphChosenIndex();
-                if (gd != null) {
-                    if (gd != graphDataLocal) {
-                        graphAnalysis.removeGraphData(gd);
-                        for (int i = 0, n = measuredValuesV.size(); i < n; i++) {
-                            MeasuredValue mv_tmp = measuredValuesV.get(i);
-                            mv_tmp.removeDataContainer(gd);
-                        }
-                    } else {
-                        graphDataLocal.removeAllPoints();
+        removeGraphGlobalButton.addActionListener(e -> {
+            BasicGraphData gd = getChoosenDraphData();
+
+            if (gd != null) {
+                if (gd != graphDataLocal) {
+                    graphAnalysis.removeGraphData(gd);
+                    for (int i = 0, n = measuredValuesV.size(); i < n; i++) {
+                        MeasuredValue mv_tmp = measuredValuesV.get(i);
+                        mv_tmp.removeDataContainer(gd);
                     }
-                    graphAnalysis.refreshGraphJPanel();
-                    messageTextLocal.setText(null);
                 } else {
-                    messageTextLocal.setText(null);
-                    messageTextLocal.setText("Please choose graph and point first. Use S-button on the graph panel.");
-                    Toolkit.getDefaultToolkit().beep();
+                    graphDataLocal.removeAllPoints();
                 }
+                graphAnalysis.refreshGraphJPanel();
+                messageTextLocal.setText(null);
+            } else {
+                messageTextLocal.setText(null);
+                messageTextLocal.setText("Please choose graph and point first. Use S-button on the graph panel.");
+                Toolkit.getDefaultToolkit().beep();
             }
         });
 
         //"REMOVE ALL" button
-        removeAllGlobalButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                for (int i = 0, n = measuredValuesV.size(); i < n; i++) {
-                    if (measuredValuesShowStateV.get(i)) {
-                        MeasuredValue mv_tmp = measuredValuesV.get(i);
-                        if (scanPVShowState || scanVariable.getChannel() == null) {
-                            mv_tmp.removeAllDataContainersNonRB();
-                        }
-                        if (scanPVRBShowState) {
-                            mv_tmp.removeAllDataContainersRB();
-                        }
+        removeAllGlobalButton.addActionListener(e -> {
+            for (int i = 0, n = measuredValuesV.size(); i < n; i++) {
+                if (measuredValuesShowStateV.get(i)) {
+                    MeasuredValue mvTmp = measuredValuesV.get(i);
+                    if (scanPVShowState || scanVariable.getChannel() == null) {
+                        mvTmp.removeAllDataContainersNonRB();
+                    }
+                    if (scanPVRBShowState) {
+                        mvTmp.removeAllDataContainersRB();
                     }
                 }
-                updateDataSetOnGraphPanel();
-                messageTextLocal.setText(null);
             }
+            updateDataSetOnGraphPanel();
+            messageTextLocal.setText(null);
         });
 
         //"WRAP DATA" button
-        wrapGraphGlobalButton.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                BasicGraphData gd = getChoosenDraphData();
-                if (gd != null) {
-                    GraphDataOperations.unwrapData(gd);
-                    graphAnalysis.refreshGraphJPanel();
-                    messageTextLocal.setText(null);
-                } else {
-                    messageTextLocal.setText(null);
-                    messageTextLocal.setText("Please choose graph first. Use S-button on the graph panel.");
-                    Toolkit.getDefaultToolkit().beep();
-                }
+        wrapGraphGlobalButton.addActionListener(e -> {
+            BasicGraphData gd = getChoosenDraphData();
+            if (gd != null) {
+                GraphDataOperations.unwrapData(gd);
+                graphAnalysis.refreshGraphJPanel();
+                messageTextLocal.setText(null);
+            } else {
+                messageTextLocal.setText(null);
+                messageTextLocal.setText("Please choose graph first. Use S-button on the graph panel.");
+                Toolkit.getDefaultToolkit().beep();
             }
         });
 
         //"EXPORT ASCII"
-        exportGraphGlobalButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                BasicGraphData gd = getChoosenDraphData();
-                if (gd != null) {
+        exportGraphGlobalButton.addActionListener(e -> {
+            BasicGraphData gd = getChoosenDraphData();
+            if (gd != null) {
+                JFileChooser ch = new JFileChooser();
+                ch.setDialogTitle("Export to ASCII");
+                if (dataFile != null) {
+                    ch.setSelectedFile(dataFile);
+                }
+                int returnVal = ch.showSaveDialog(parentAnalysisPanel);
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    dataFile = ch.getSelectedFile();
+                    try (BufferedWriter out = new BufferedWriter(new FileWriter(dataFile))) {
+                        int nP = gd.getNumbOfPoints();
+                        for (int i = 0; i < nP; i++) {
+                            out.write(" " + gd.getX(i) + " " + gd.getY(i) + " " + gd.getErr(i));
+                            out.newLine();
+                        }
+                        out.flush();
+                    } catch (IOException exp) {
+                        Toolkit.getDefaultToolkit().beep();
+                        LOGGER.log(Level.INFO, exp.toString());
+                    }
+                }
+                messageTextLocal.setText(null);
+            } else {
+                if (canSaveAsTable()) {
+                    //save data as table
                     JFileChooser ch = new JFileChooser();
-                    ch.setDialogTitle("Export to ASCII");
+                    ch.setDialogTitle("Export to ASCII as a Table");
                     if (dataFile != null) {
                         ch.setSelectedFile(dataFile);
                     }
                     int returnVal = ch.showSaveDialog(parentAnalysisPanel);
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
-                        try {
-                            dataFile = ch.getSelectedFile();
-                            BufferedWriter out = new BufferedWriter(new FileWriter(dataFile));
+                        dataFile = ch.getSelectedFile();
+                        try (BufferedWriter out = new BufferedWriter(new FileWriter(dataFile))) {
+                            Vector<BasicGraphData> gdVTmp = graphAnalysis.getAllGraphData();
+
+                            Vector<BasicGraphData> gdV = new Vector<>();
+                            for (int i = 0; i < gdVTmp.size(); i++) {
+                                gd = gdVTmp.get(i);
+                                if (gd.getNumbOfPoints() > 0) {
+                                    gdV.add(gd);
+                                }
+                            }
+
+                            gd = gdV.get(0);
                             int nP = gd.getNumbOfPoints();
-                            for (int i = 0; i < nP; i++) {
-                                out.write(" " + gd.getX(i) + " " + gd.getY(i) + " " + gd.getErr(i));
+
+                            for (int i = 0; i < gdV.size(); i++) {
+                                gd = gdV.get(i);
+                                out.write("% data # " + i + "  Legend = "
+                                        + gd.getGraphProperty(graphAnalysis.getLegendKeyString()));
                                 out.newLine();
                             }
+
+                            out.write("% x/data # ");
+                            for (int i = 0; i < gdV.size(); i++) {
+                                out.write("       " + i + "    ");
+
+                            }
+                            out.newLine();
+
+                            for (int j = 0; j < nP; j++) {
+                                gd = gdV.get(0);
+                                out.write(" " + xyPanelMainFormat.format(gd.getX(j)));
+
+                                for (int i = 0; i < gdV.size(); i++) {
+                                    gd = gdV.get(i);
+                                    out.write(" " + xyPanelMainFormat.format(gd.getY(j)));
+
+                                }
+
+                                out.write(" ");
+                                out.newLine();
+                            }
+
                             out.flush();
-                            out.close();
                         } catch (IOException exp) {
                             Toolkit.getDefaultToolkit().beep();
                             LOGGER.log(Level.INFO, exp.toString());
@@ -638,162 +663,74 @@ public class MainAnalysisController {
                     }
                     messageTextLocal.setText(null);
                 } else {
-                    if (canSaveAsTable()) {
-                        //save data as table
-                        JFileChooser ch = new JFileChooser();
-                        ch.setDialogTitle("Export to ASCII as a Table");
-                        if (dataFile != null) {
-                            ch.setSelectedFile(dataFile);
-                        }
-                        int returnVal = ch.showSaveDialog(parentAnalysisPanel);
-                        if (returnVal == JFileChooser.APPROVE_OPTION) {
-                            try {
-                                dataFile = ch.getSelectedFile();
-                                BufferedWriter out = new BufferedWriter(new FileWriter(dataFile));
-                                Vector<BasicGraphData> gdV_tmp = graphAnalysis.getAllGraphData();
-
-                                Vector<BasicGraphData> gdV = new Vector<>();
-                                for (int i = 0; i < gdV_tmp.size(); i++) {
-                                    gd = gdV_tmp.get(i);
-                                    if (gd.getNumbOfPoints() > 0) {
-                                        gdV.add(gd);
-                                    }
-                                }
-
-                                gd = gdV.get(0);
-                                int nP = gd.getNumbOfPoints();
-
-                                for (int i = 0; i < gdV.size(); i++) {
-                                    gd = gdV.get(i);
-                                    out.write("% data # " + i + "  Legend = "
-                                            + gd.getGraphProperty(graphAnalysis.getLegendKeyString()));
-                                    out.newLine();
-                                }
-
-                                out.write("% x/data # ");
-                                for (int i = 0; i < gdV.size(); i++) {
-                                    out.write("       " + i + "    ");
-
-                                }
-                                out.newLine();
-
-                                for (int j = 0; j < nP; j++) {
-                                    gd = gdV.get(0);
-                                    out.write(" " + xyPanelMainFormat.format(gd.getX(j)));
-
-                                    for (int i = 0; i < gdV.size(); i++) {
-                                        gd = gdV.get(i);
-                                        out.write(" " + xyPanelMainFormat.format(gd.getY(j)));
-
-                                    }
-
-                                    out.write(" ");
-                                    out.newLine();
-                                }
-
-                                out.flush();
-                                out.close();
-                            } catch (IOException exp) {
-                                Toolkit.getDefaultToolkit().beep();
-                                LOGGER.log(Level.INFO, exp.toString());
-                            }
-                        }
-                        messageTextLocal.setText(null);
-                    } else {
-                        messageTextLocal.setText(null);
-                        messageTextLocal.setText("Please choose graph first. Use S-button on the graph panel.");
-                        Toolkit.getDefaultToolkit().beep();
-                    }
-                }
-            }
-        });
-
-        exportGraphToCSVGlobalButton.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                if (canSaveAsTable()) {
-                    exportDisplayedGraphToCSV();
-                } else {
-                    messageTextLocal.setText("The X data is not common to all graphs. Please select only one of either the Setpoint or Readback under Scan PV.");
+                    messageTextLocal.setText(null);
+                    messageTextLocal.setText("Please choose graph first. Use S-button on the graph panel.");
                     Toolkit.getDefaultToolkit().beep();
                 }
             }
-        }
-        );
+        });
+
+        exportGraphToCSVGlobalButton.addActionListener(event -> {
+            if (canSaveAsTable()) {
+                exportDisplayedGraphToCSV();
+            } else {
+                messageTextLocal.setText("The X data is not common to all graphs. Please select only one of either the Setpoint or Readback under Scan PV.");
+                Toolkit.getDefaultToolkit().beep();
+            }
+        });
 
         //"INCR. COLOR" button
-        incrColorGlobalButton.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Vector<BasicGraphData> gdV = graphAnalysis.getAllGraphData();
-                int count = 0;
-                for (int i = 0, n = gdV.size(); i < n; i++) {
-                    BasicGraphData gd = gdV.get(i);
-                    if (gd != graphDataLocal) {
-                        gd.setGraphColor(IncrementalColor.getColor(count));
-                        count++;
-                    }
+        incrColorGlobalButton.addActionListener(e -> {
+            Vector<BasicGraphData> gdV = graphAnalysis.getAllGraphData();
+            int count = 0;
+            for (int i = 0, n = gdV.size(); i < n; i++) {
+                BasicGraphData gd = gdV.get(i);
+                if (gd != graphDataLocal) {
+                    gd.setGraphColor(IncrementalColor.getColor(count));
+                    count++;
                 }
-                graphAnalysis.refreshGraphJPanel();
-                messageTextLocal.setText(null);
             }
+            graphAnalysis.refreshGraphJPanel();
+            messageTextLocal.setText(null);
         });
 
         //"DATA COLOR" button
-        dataColorGlobalButton.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                restoreDataColoring();
-                messageTextLocal.setText(null);
-            }
+        dataColorGlobalButton.addActionListener(e -> {
+            restoreDataColoring();
+            messageTextLocal.setText(null);
         });
 
         //"REMOVE TEMP." button
-        removeTmpGlobalButton.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                graphDataLocal.removeAllPoints();
-                graphAnalysis.refreshGraphJPanel();
-                messageTextLocal.setText(null);
-            }
+        removeTmpGlobalButton.addActionListener(e -> {
+            graphDataLocal.removeAllPoints();
+            graphAnalysis.refreshGraphJPanel();
+            messageTextLocal.setText(null);
         });
 
         //SHIFT x-Phase button
-        phaseShiftGlobalButton.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Vector<BasicGraphData> gdV = graphAnalysis.getAllGraphData();
-                for (int i = 0, n = gdV.size(); i < n; i++) {
-                    BasicGraphData gd = gdV.get(i);
-                    if (gd != graphDataLocal) {
-                        shiftGraphData(gd, 25.);
-                    }
+        phaseShiftGlobalButton.addActionListener(e -> {
+            Vector<BasicGraphData> gdV = graphAnalysis.getAllGraphData();
+            for (int i = 0, n = gdV.size(); i < n; i++) {
+                BasicGraphData gd = gdV.get(i);
+                if (gd != graphDataLocal) {
+                    shiftGraphData(gd, 25.);
                 }
-                graphAnalysis.refreshGraphJPanel();
-                messageTextLocal.setText(null);
             }
+            graphAnalysis.refreshGraphJPanel();
+            messageTextLocal.setText(null);
         });
 
         //UN-SHIFT button
-        removePhaseShiftGlobalButton.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Vector<BasicGraphData> gdV = graphAnalysis.getAllGraphData();
-                for (int i = 0, n = gdV.size(); i < n; i++) {
-                    BasicGraphData gd = gdV.get(i);
-                    if (gd != graphDataLocal) {
-                        unShiftGraphData(gd);
-                    }
+        removePhaseShiftGlobalButton.addActionListener(e -> {
+            Vector<BasicGraphData> gdV = graphAnalysis.getAllGraphData();
+            for (int i = 0, n = gdV.size(); i < n; i++) {
+                BasicGraphData gd = gdV.get(i);
+                if (gd != graphDataLocal) {
+                    unShiftGraphData(gd);
                 }
-                graphAnalysis.refreshGraphJPanel();
-                messageTextLocal.setText(null);
             }
+            graphAnalysis.refreshGraphJPanel();
+            messageTextLocal.setText(null);
         });
     }
 
@@ -828,28 +765,27 @@ public class MainAnalysisController {
 
                 if (validGraphData.size() > 0) {
                     csvFile = chooser.getSelectedFile();
-                    final BufferedWriter out = new BufferedWriter(new FileWriter(csvFile));
-
-                    out.write("" + validGraphData.get(0).getGraphProperty("xLabel"));
-                    for (int column = 0; column < validGraphData.size(); column++) {
-                        final BasicGraphData graphData = validGraphData.get(column);
-                        out.write(", " + graphData.getGraphProperty("yLabel"));
-                    }
-                    out.newLine();
-
-                    for (int row = 0; row < numPoints; row++) {
-                        out.write(" " + xyPanelMainFormat.format(validGraphData.get(0).getX(row)));
-
+                    try (BufferedWriter out = new BufferedWriter(new FileWriter(csvFile))) {
+                        out.write("" + validGraphData.get(0).getGraphProperty("xLabel"));
                         for (int column = 0; column < validGraphData.size(); column++) {
                             final BasicGraphData graphData = validGraphData.get(column);
-                            out.write(", " + xyPanelMainFormat.format(graphData.getY(row)));
-
+                            out.write(", " + graphData.getGraphProperty("yLabel"));
                         }
                         out.newLine();
-                    }
 
-                    out.flush();
-                    out.close();
+                        for (int row = 0; row < numPoints; row++) {
+                            out.write(" " + xyPanelMainFormat.format(validGraphData.get(0).getX(row)));
+
+                            for (int column = 0; column < validGraphData.size(); column++) {
+                                final BasicGraphData graphData = validGraphData.get(column);
+                                out.write(", " + xyPanelMainFormat.format(graphData.getY(row)));
+
+                            }
+                            out.newLine();
+                        }
+
+                        out.flush();
+                    }
                 }
             } catch (IOException exception) {
                 Toolkit.getDefaultToolkit().beep();
@@ -863,8 +799,8 @@ public class MainAnalysisController {
      */
     private void restoreDataColoring() {
         for (int i = 0, n = measuredValuesV.size(); i < n; i++) {
-            MeasuredValue mv_tmp = measuredValuesV.get(i);
-            mv_tmp.setColor(IncrementalColor.getColor(i));
+            MeasuredValue mvTmp = measuredValuesV.get(i);
+            mvTmp.setColor(IncrementalColor.getColor(i));
         }
         graphAnalysis.refreshGraphJPanel();
         graphScan.refreshGraphJPanel();
@@ -976,10 +912,8 @@ public class MainAnalysisController {
         String key = getPhaseShiftKey();
         double shift = 0.;
         int nP = gd.getNumbOfPoints();
-        if (nP > 0) {
-            if (gd.getGraphProperty(key) != null) {
-                shift = ((Double) gd.getGraphProperty(key));
-            }
+        if (nP > 0 && gd.getGraphProperty(key) != null) {
+            shift = ((Double) gd.getGraphProperty(key));
         }
         return shift;
     }
@@ -990,7 +924,7 @@ public class MainAnalysisController {
      * @return The choosenDraphData value
      */
     protected BasicGraphData getChoosenDraphData() {
-        BasicGraphData gd = null;
+        BasicGraphData gd;
         Integer ind = graphAnalysis.getGraphChosenIndex();
         if (ind != null && ind >= 0) {
             gd = graphAnalysis.getInstanceOfGraphData(ind);
@@ -1005,7 +939,7 @@ public class MainAnalysisController {
                 gd = gdV.get(0);
                 return gd;
             } else {
-                if (gdV.size() == 0) {
+                if (gdV.isEmpty()) {
                     return null;
                 }
                 Vector<BasicGraphData> gdInsideV
@@ -1063,10 +997,10 @@ public class MainAnalysisController {
      * @return Description of the Return Value
      */
     private boolean canSaveAsTable() {
-        Vector<BasicGraphData> gdV_tmp = graphAnalysis.getAllGraphData();
+        Vector<BasicGraphData> gdTemp = graphAnalysis.getAllGraphData();
         Vector<BasicGraphData> gdV = new Vector<>();
-        for (int i = 0; i < gdV_tmp.size(); i++) {
-            BasicGraphData gd = gdV_tmp.get(i);
+        for (int i = 0; i < gdTemp.size(); i++) {
+            BasicGraphData gd = gdTemp.get(i);
             if (gd.getNumbOfPoints() > 0) {
                 gdV.add(gd);
             }
@@ -1074,17 +1008,17 @@ public class MainAnalysisController {
         if (gdV.size() <= 0) {
             return false;
         }
-        BasicGraphData gd_0 = gdV.get(0);
-        int nP_0 = gd_0.getNumbOfPoints();
+        BasicGraphData gd0 = gdV.get(0);
+        int nP0 = gd0.getNumbOfPoints();
         for (int i = 1; i < gdV.size(); i++) {
             BasicGraphData gd = gdV.get(i);
             int nP = gd.getNumbOfPoints();
-            if (nP_0 != nP) {
+            if (nP0 != nP) {
                 return false;
             }
             for (int j = 0; j < nP; j++) {
-                double diff = Math.abs(gd_0.getX(j) - gd.getX(j));
-                double val = Math.abs(gd_0.getX(j));
+                double diff = Math.abs(gd0.getX(j) - gd.getX(j));
+                double val = Math.abs(gd0.getX(j));
                 if (val > 0.) {
                     if (diff / val > 0.0001) {
                         return false;
@@ -1098,5 +1032,4 @@ public class MainAnalysisController {
         }
         return true;
     }
-
 }

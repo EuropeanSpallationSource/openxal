@@ -55,7 +55,7 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
     //--------------------------------------------------
     //vectors include BasicGraphData instances with
     //"ENERGY_DELTA" as properties key with delta energy in percent parameter
-    private String ENERGY_DLT = "ENERGY_DELTA";
+    private String energyDelta = "ENERGY_DELTA";
     private Vector<BasicGraphData> extWidthVsAmpDataV = new Vector<>();
     private Vector<BasicGraphData> extAmpVsWidthDataV = new Vector<>();
 
@@ -212,7 +212,7 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
 
         designEnrgDevText.setNormalBackground(Color.white);
         designEnrgDevText.setNumberFormat(ampFormat);
-        designEnrgDevText.setHorizontalAlignment(JTextField.CENTER);
+        designEnrgDevText.setHorizontalAlignment(SwingConstants.CENTER);
         designEnrgDevText.setValue(designEnrgTmp);
 
         JPanel tmp0 = new JPanel();
@@ -222,66 +222,54 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
 
         operationChooser = new JComboBox<>(panelNameList);
         operationChooser.setBackground(Color.cyan);
-        operationChooser.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int index = operationChooser.getSelectedIndex();
-                showPanel(index);
-            }
+        operationChooser.addActionListener(e -> {
+            int index = operationChooser.getSelectedIndex();
+            showPanel(index);
         });
 
         commonPanel.add(tmp0, BorderLayout.NORTH);
         commonPanel.add(operationChooser, BorderLayout.SOUTH);
 
         //create PANEL #0 name = "FIND WIDTH FOR 1D SCAN     "
-        createPanelFIND_WIDTH();
+        createPanelFindWidth();
 
         //create PANEL #1 name = "PLOT WIDTH VS. AMPLITUDE   "
-        createPanelWIDTH_VS_AMP();
+        createPanelWidthVsAmp();
 
         //create listener for vertical line - phase marker
-        dragVerLineListener
-                = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int ind = graphAnalysis.getDraggedLineIndex();
-                double markerPos = graphAnalysis.getVerticalValue(ind);
-                double phaseShift = MainAnalysisController.getPhaseShift(graphAnalysis.getAllGraphData());
-                markerPos -= phaseShift;
-                if (phaseShift != 0.) {
-                    markerPos += 180.;
-                    while (markerPos < 0.) {
-                        markerPos += 360.;
-                    }
-                    markerPos = markerPos % 360.;
-                    markerPos -= 180.;
+        dragVerLineListener = e -> {
+            int ind = graphAnalysis.getDraggedLineIndex();
+            double markerPos = graphAnalysis.getVerticalValue(ind);
+            double phaseShift = MainAnalysisController.getPhaseShift(graphAnalysis.getAllGraphData());
+            markerPos -= phaseShift;
+            if (phaseShift != 0.) {
+                markerPos += 180.;
+                while (markerPos < 0.) {
+                    markerPos += 360.;
                 }
-                guessPhaseP0Text.setValueQuietly(markerPos);
-                guessPhaseP1Text.setValueQuietly(markerPos);
+                markerPos = markerPos % 360.;
+                markerPos -= 180.;
             }
+            guessPhaseP0Text.setValueQuietly(markerPos);
+            guessPhaseP1Text.setValueQuietly(markerPos);
         };
 
-        guessPhaseP0Text.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                graphAnalysis.addDraggedVerLinesListener(null);
-                double markerPos = guessPhaseP0Text.getValue();
-                guessPhaseP1Text.setValueQuietly(markerPos);
-                double phaseShift = MainAnalysisController.getPhaseShift(graphAnalysis.getAllGraphData());
-                markerPos += phaseShift;
-                if (phaseShift != 0.) {
-                    markerPos += 180.;
-                    while (markerPos < 0.) {
-                        markerPos += 360.;
-                    }
-                    markerPos = markerPos % 360.;
-                    markerPos -= 180.;
+        guessPhaseP0Text.addActionListener(e -> {
+            graphAnalysis.addDraggedVerLinesListener(null);
+            double markerPos = guessPhaseP0Text.getValue();
+            guessPhaseP1Text.setValueQuietly(markerPos);
+            double phaseShift = MainAnalysisController.getPhaseShift(graphAnalysis.getAllGraphData());
+            markerPos += phaseShift;
+            if (phaseShift != 0.) {
+                markerPos += 180.;
+                while (markerPos < 0.) {
+                    markerPos += 360.;
                 }
-                graphAnalysis.setVerticalLineValue(markerPos, 0);
-                graphAnalysis.addDraggedVerLinesListener(dragVerLineListener);
+                markerPos = markerPos % 360.;
+                markerPos -= 180.;
             }
+            graphAnalysis.setVerticalLineValue(markerPos, 0);
+            graphAnalysis.addDraggedVerLinesListener(dragVerLineListener);
         });
 
         graphAnalysis.addDraggedVerLinesListener(null);
@@ -357,8 +345,8 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
      * Does what necessary for close this analysis window.
      */
     @Override
-    public void ShutUp() {
-        super.ShutUp();
+    public void shutUp() {
+        super.shutUp();
         customControlPanel.removeAll();
         customGraphPanel.removeAll();
         graphAnalysis.addDraggedVerLinesListener(null);
@@ -372,8 +360,8 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
      * Does what necessary for open this analysis window.
      */
     @Override
-    public void ShowUp() {
-        super.ShowUp();
+    public void showUp() {
+        super.showUp();
 
         graphAnalysis.addVerticalLine(guessPhaseP0Text.getValue(), Color.red);
         graphAnalysis.addDraggedVerLinesListener(dragVerLineListener);
@@ -388,14 +376,6 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
         childGraphPanels[0].add(globalButtonsPanel, BorderLayout.SOUTH);
 
         showPanel(0);
-    }
-
-    /**
-     * Updates data on the analysis graph panel.
-     */
-    @Override
-    public void updateDataSetOnGraphPanel() {
-        super.updateDataSetOnGraphPanel();
     }
 
     /**
@@ -467,7 +447,7 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
     /**
      * Description of the Method
      */
-    private void createPanelFIND_WIDTH() {
+    private void createPanelFindWidth() {
         childGraphPanels[0] = new JPanel();
         childGraphPanels[0].setLayout(new BorderLayout());
 
@@ -481,8 +461,8 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
         paramPVValueText.setNumberFormat(ampFormat);
         paramPVRBValueText.setNumberFormat(ampFormat);
 
-        paramPVValueText.setHorizontalAlignment(JTextField.CENTER);
-        paramPVRBValueText.setHorizontalAlignment(JTextField.CENTER);
+        paramPVValueText.setHorizontalAlignment(SwingConstants.CENTER);
+        paramPVRBValueText.setHorizontalAlignment(SwingConstants.CENTER);
 
         paramPVValueText.removeInnerFocusListener();
         paramPVRBValueText.removeInnerFocusListener();
@@ -500,9 +480,9 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
         guessAmpP0Text.setNumberFormat(ampFormat);
         guessPhaseP0Text.setNumberFormat(phaseFormat);
 
-        widthP0Text.setHorizontalAlignment(JTextField.CENTER);
-        guessAmpP0Text.setHorizontalAlignment(JTextField.CENTER);
-        guessPhaseP0Text.setHorizontalAlignment(JTextField.CENTER);
+        widthP0Text.setHorizontalAlignment(SwingConstants.CENTER);
+        guessAmpP0Text.setHorizontalAlignment(SwingConstants.CENTER);
+        guessPhaseP0Text.setHorizontalAlignment(SwingConstants.CENTER);
 
         widthP0Text.removeInnerFocusListener();
         guessAmpP0Text.removeInnerFocusListener();
@@ -518,43 +498,38 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
         findWidthP0Button.setForeground(Color.blue);
         setGuessAmpP0Button.setForeground(Color.blue);
 
-        graphChooserListener
-                = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Integer ind = graphAnalysis.getGraphChosenIndex();
-                if (ind != null && ind >= 0) {
-                    BasicGraphData gd = graphAnalysis.getInstanceOfGraphData(ind);
+        graphChooserListener = e -> {
+            Integer ind = graphAnalysis.getGraphChosenIndex();
+            if (ind != null && ind >= 0) {
+                BasicGraphData gd = graphAnalysis.getInstanceOfGraphData(ind);
 
-                    Double parD = (Double) gd.getGraphProperty("PARAMETER_VALUE");
-                    if (parD != null) {
-                        paramPVValueText.setValue(parD);
-                    } else {
-                        paramPVValueText.setText(null);
-                        paramPVValueText.setBackground(Color.white);
-                    }
-                    parD = (Double) gd.getGraphProperty("PARAMETER_VALUERB");
-                    if (parD != null) {
-                        paramPVRBValueText.setValue(parD);
-                    } else {
-                        paramPVRBValueText.setText(null);
-                        paramPVRBValueText.setBackground(Color.white);
-                    }
+                Double parD = (Double) gd.getGraphProperty("PARAMETER_VALUE");
+                if (parD != null) {
+                    paramPVValueText.setValue(parD);
                 } else {
                     paramPVValueText.setText(null);
                     paramPVValueText.setBackground(Color.white);
+                }
+                parD = (Double) gd.getGraphProperty("PARAMETER_VALUERB");
+                if (parD != null) {
+                    paramPVRBValueText.setValue(parD);
+                } else {
                     paramPVRBValueText.setText(null);
                     paramPVRBValueText.setBackground(Color.white);
                 }
-
-                widthP0Text.setText(null);
-                widthP0Text.setBackground(Color.white);
-                guessAmpP0Text.setText(null);
-                guessAmpP0Text.setBackground(Color.white);
-                guessPhaseP0Text.setText(null);
-                guessPhaseP0Text.setBackground(Color.white);
-
+            } else {
+                paramPVValueText.setText(null);
+                paramPVValueText.setBackground(Color.white);
+                paramPVRBValueText.setText(null);
+                paramPVRBValueText.setBackground(Color.white);
             }
+
+            widthP0Text.setText(null);
+            widthP0Text.setBackground(Color.white);
+            guessAmpP0Text.setText(null);
+            guessAmpP0Text.setBackground(Color.white);
+            guessPhaseP0Text.setText(null);
+            guessPhaseP0Text.setBackground(Color.white);
         };
 
         graphChooserMouseAdapter
@@ -571,71 +546,63 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
             }
         };
 
-        findWidthP0Button.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                BasicGraphData gd = mainController.getChoosenDraphData();
-                if (gd != null) {
-                    Double[] resArr = findWidthAndPlot(gd);
-                    Double widthD = resArr[0];
-                    Double phaseLD = resArr[1];
-                    Double phaseRD = resArr[2];
+        findWidthP0Button.addActionListener(e -> {
+            BasicGraphData gd = mainController.getChoosenDraphData();
+            if (gd != null) {
+                Double[] resArr = findWidthAndPlot(gd);
+                Double widthD = resArr[0];
+                Double phaseLD = resArr[1];
+                Double phaseRD = resArr[2];
 
-                    if (widthD != null && phaseLD != null && phaseRD != null) {
-                        double energyDlt = designEnrgDevText.getValue();
-                        makeForwardAndBackWardGraphs(energyDlt);
-                        //normalized amplitude from ampl_vs_width graph
-                        double newAmpNorm = gdP1AFw.getValueY(widthD);
-                        double amp = ((Double) gd.getGraphProperty("PARAMETER_VALUE"));
-                        amp = amp / newAmpNorm;
-                        //get phase_guess
-                        double k_shift = gdP1KsFa.getValueY(newAmpNorm);
-                        double phaseGuess = phaseLD + k_shift * (phaseRD - phaseLD);
-                        double phaseShift = MainAnalysisController.getPhaseShift(gd);
-                        double markerPos = phaseGuess - phaseShift;
-                        if (phaseShift != 0.) {
-                            markerPos += 180.;
-                            while (markerPos < 0.) {
-                                markerPos += 360.;
-                            }
-                            markerPos = markerPos % 360.;
-                            markerPos -= 180.;
+                if (widthD != null && phaseLD != null && phaseRD != null) {
+                    double energyDlt = designEnrgDevText.getValue();
+                    makeForwardAndBackWardGraphs(energyDlt);
+                    //normalized amplitude from ampl_vs_width graph
+                    double newAmpNorm = gdP1AFw.getValueY(widthD);
+                    double amp = ((Double) gd.getGraphProperty("PARAMETER_VALUE"));
+                    amp = amp / newAmpNorm;
+                    //get phase_guess
+                    double kShift = gdP1KsFa.getValueY(newAmpNorm);
+                    double phaseGuess = phaseLD + kShift * (phaseRD - phaseLD);
+                    double phaseShift = MainAnalysisController.getPhaseShift(gd);
+                    double markerPos = phaseGuess - phaseShift;
+                    if (phaseShift != 0.) {
+                        markerPos += 180.;
+                        while (markerPos < 0.) {
+                            markerPos += 360.;
                         }
-                        //DEBUG print ----------------------------------------------------
-                        LOGGER.log(Level.INFO, "debug new point  newAmpNorm={0} Edlt={1} w={2} amp/guessA={3} phiL={4} phiR={5} phi={6} k_s={7} phaseShift={8}", new Object[]{ampFormat.format(newAmpNorm), ampFormat.format(energyDlt), ampFormat.format(widthD), ampFormat.format(amp), ampFormat.format(phaseLD), ampFormat.format(phaseRD), ampFormat.format(phaseGuess), ampFormat.format(k_shift), ampFormat.format(phaseShift)});
-                        //DEBUG print ----------------------------------------------------
-
-                        guessAmpP0Text.setValue(amp);
-                        guessPhaseP0Text.setValue(markerPos);
+                        markerPos = markerPos % 360.;
+                        markerPos -= 180.;
                     }
-                } else {
-                    widthP0Text.setText(null);
-                    widthP0Text.setBackground(Color.white);
-                    guessAmpP0Text.setText(null);
-                    guessAmpP0Text.setBackground(Color.white);
-                    Toolkit.getDefaultToolkit().beep();
-                    messageTextLocal.setText(null);
-                    messageTextLocal.setText("Please choose the graph first. Use S-button on the graph panel.");
+                    //DEBUG print ----------------------------------------------------
+                    LOGGER.log(Level.INFO, "debug new point  newAmpNorm={0} Edlt={1} w={2} amp/guessA={3} phiL={4} phiR={5} phi={6} k_s={7} phaseShift={8}", new Object[]{ampFormat.format(newAmpNorm), ampFormat.format(energyDlt), ampFormat.format(widthD), ampFormat.format(amp), ampFormat.format(phaseLD), ampFormat.format(phaseRD), ampFormat.format(phaseGuess), ampFormat.format(kShift), ampFormat.format(phaseShift)});
+                    //DEBUG print ----------------------------------------------------
+
+                    guessAmpP0Text.setValue(amp);
+                    guessPhaseP0Text.setValue(markerPos);
                 }
+            } else {
+                widthP0Text.setText(null);
+                widthP0Text.setBackground(Color.white);
+                guessAmpP0Text.setText(null);
+                guessAmpP0Text.setBackground(Color.white);
+                Toolkit.getDefaultToolkit().beep();
+                messageTextLocal.setText(null);
+                messageTextLocal.setText("Please choose the graph first. Use S-button on the graph panel.");
             }
         });
 
-        setGuessAmpP0Button.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                double ampVal = guessAmpP0Text.getValue();
-                double phaseVal = guessPhaseP0Text.getValue();
-                if (scanVariableParameter.getChannel() != null
-                        && scanVariable.getChannel() != null) {
-                    scanVariableParameter.setValue(ampVal);
-                    scanVariable.setValue(phaseVal);
-                } else {
-                    messageTextLocal.setText(null);
-                    messageTextLocal.setText("The parameter or Scan Variable PV channel does not exist.");
-                    Toolkit.getDefaultToolkit().beep();
-                }
+        setGuessAmpP0Button.addActionListener(e -> {
+            double ampVal = guessAmpP0Text.getValue();
+            double phaseVal = guessPhaseP0Text.getValue();
+            if (scanVariableParameter.getChannel() != null
+                    && scanVariable.getChannel() != null) {
+                scanVariableParameter.setValue(ampVal);
+                scanVariable.setValue(phaseVal);
+            } else {
+                messageTextLocal.setText(null);
+                messageTextLocal.setText("The parameter or Scan Variable PV channel does not exist.");
+                Toolkit.getDefaultToolkit().beep();
             }
         });
 
@@ -680,7 +647,7 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
     /**
      * Description of the Method
      */
-    private void createPanelWIDTH_VS_AMP() {
+    private void createPanelWidthVsAmp() {
         childGraphPanels[1] = new JPanel();
         childGraphPanels[1].setLayout(new BorderLayout());
 
@@ -726,21 +693,21 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
         //text elements
         enrgDltP1Text.setEditable(false);
         enrgDltP1Text.setNumberFormat(ampFormat);
-        enrgDltP1Text.setHorizontalAlignment(JTextField.CENTER);
+        enrgDltP1Text.setHorizontalAlignment(SwingConstants.CENTER);
         enrgDltP1Text.removeInnerFocusListener();
         enrgDltP1Text.setText(null);
         enrgDltP1Text.setBackground(Color.white);
 
         guessAmpP1Text.setEditable(false);
         guessAmpP1Text.setNumberFormat(ampFormat);
-        guessAmpP1Text.setHorizontalAlignment(JTextField.CENTER);
+        guessAmpP1Text.setHorizontalAlignment(SwingConstants.CENTER);
         guessAmpP1Text.removeInnerFocusListener();
         guessAmpP1Text.setText(null);
         guessAmpP1Text.setBackground(Color.white);
 
         guessPhaseP1Text.setEditable(false);
         guessPhaseP1Text.setNumberFormat(phaseFormat);
-        guessPhaseP1Text.setHorizontalAlignment(JTextField.CENTER);
+        guessPhaseP1Text.setHorizontalAlignment(SwingConstants.CENTER);
         guessPhaseP1Text.removeInnerFocusListener();
         guessPhaseP1Text.setText(null);
         guessPhaseP1Text.setBackground(Color.white);
@@ -748,31 +715,23 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
         setEnrgDltP1Button.setForeground(Color.blue);
         setGuessAmpP1Button.setForeground(Color.blue);
 
-        setEnrgDltP1Button.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                double val = enrgDltP1Text.getValue();
-                if (enrgDltP1Text.getText().length() > 0) {
-                    designEnrgDevText.setValue(val);
-                }
+        setEnrgDltP1Button.addActionListener(e -> {
+            double val = enrgDltP1Text.getValue();
+            if (enrgDltP1Text.getText().length() > 0) {
+                designEnrgDevText.setValue(val);
             }
         });
 
-        setGuessAmpP1Button.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                double ampVal = guessAmpP1Text.getValue();
-                double phaseVal = guessPhaseP0Text.getValue();
-                if (scanVariableParameter.getChannel() != null && scanVariable.getChannel() != null) {
-                    scanVariableParameter.setValue(ampVal);
-                    scanVariable.setValue(phaseVal);
-                } else {
-                    messageTextLocal.setText(null);
-                    messageTextLocal.setText("The parameter PV channel does not exist.");
-                    Toolkit.getDefaultToolkit().beep();
-                }
+        setGuessAmpP1Button.addActionListener(e -> {
+            double ampVal = guessAmpP1Text.getValue();
+            double phaseVal = guessPhaseP0Text.getValue();
+            if (scanVariableParameter.getChannel() != null && scanVariable.getChannel() != null) {
+                scanVariableParameter.setValue(ampVal);
+                scanVariable.setValue(phaseVal);
+            } else {
+                messageTextLocal.setText(null);
+                messageTextLocal.setText("The parameter PV channel does not exist.");
+                Toolkit.getDefaultToolkit().beep();
             }
         });
 
@@ -821,7 +780,7 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
         resultArr[1] = null;
         resultArr[2] = null;
 
-        Double widthD = null;
+        Double widthD;
 
         graphAnalysis.removeGraphData(graphDataLocal);
         graphDataLocal.removeAllPoints();
@@ -930,18 +889,18 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
 
         double[] results = null;
         Vector<BasicGraphData> gdVTmp = graphAnalysis.getAllGraphData();
-        BasicGraphData gd = null;
+        BasicGraphData gd;
         Vector<BasicGraphData> gdV = new Vector<>(20);
-        double[] x_gr = null;
+        double[] xGr = null;
         for (int i = 0; i < gdVTmp.size(); i++) {
             gd = gdVTmp.get(i);
-            x_gr = findWidth(gd);
+            xGr = findWidth(gd);
             Double ampD = (Double) gd.getGraphProperty("PARAMETER_VALUE");
-            if (x_gr != null && ampD != null) {
+            if (xGr != null && ampD != null) {
                 gdV.add(gd);
-                gd.setGraphProperty("PHASE_WIDTH", x_gr[1] - x_gr[0]);
-                gd.setGraphProperty("PHASE_LEFT", x_gr[0]);
-                gd.setGraphProperty("PHASE_RIGHT", x_gr[1]);
+                gd.setGraphProperty("PHASE_WIDTH", xGr[1] - xGr[0]);
+                gd.setGraphProperty("PHASE_LEFT", xGr[0]);
+                gd.setGraphProperty("PHASE_RIGHT", xGr[1]);
             }
         }
 
@@ -1000,7 +959,7 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
         double bestGuessAmpErr = guessAmp2[minInd];
 
         gd = extWidthVsAmpDataV.get(minInd);
-        double energyDlt = ((Double) gd.getGraphProperty(ENERGY_DLT));
+        double energyDlt = ((Double) gd.getGraphProperty(energyDelta));
 
         gdP1WFa.removeAllPoints();
         gdP1AFw.removeAllPoints();
@@ -1039,21 +998,21 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
 
         int graphInd = 0;
         gd = extKShiftVsAmpDataV.get(0);
-        double energyDltTmp = ((Double) gd.getGraphProperty(ENERGY_DLT));
+        double energyDltTmp = ((Double) gd.getGraphProperty(energyDelta));
         double energyDltNearest = Math.abs(energyDlt - energyDltTmp);
         for (int j = 0; j < extKShiftVsAmpDataV.size(); j++) {
             gd = extKShiftVsAmpDataV.get(j);
-            energyDltTmp = ((Double) gd.getGraphProperty(ENERGY_DLT));
+            energyDltTmp = ((Double) gd.getGraphProperty(energyDelta));
             if (energyDltNearest > Math.abs(energyDlt - energyDltTmp)) {
                 energyDltNearest = Math.abs(energyDlt - energyDltTmp);
                 graphInd = j;
             }
         }
 
-        double kShift = 0;
-        double phiLeft = 0.;
-        double phiRight = 0.;
-        double phaseTmp = 0.;
+        double kShift;
+        double phiLeft;
+        double phiRight;
+        double phaseTmp;
 
         for (int j = 0; j < nMeasurements; j++) {
             gd = gdV.get(j);
@@ -1102,9 +1061,8 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
         //============READ DPHI Vs. AMPLITUDE =====================================================
         URL dataURL = Application.getAdaptor().getResourceURL("data/" + fNameWvsA);
 
-        try {
-            InputStream inps = dataURL.openStream();
-            BufferedReader in = new BufferedReader(new InputStreamReader(inps));
+        try (InputStream inps = dataURL.openStream();
+                BufferedReader in = new BufferedReader(new InputStreamReader(inps))) {
 
             extWidthVsAmpDataV.clear();
             extAmpVsWidthDataV.clear();
@@ -1116,11 +1074,11 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
             for (int i = 0; i < dataS.length; i++) {
                 if (dataS[i].length() > 0) {
                     BasicGraphData gd = new BasicGraphData();
-                    gd.setGraphProperty(ENERGY_DLT, Double.valueOf(dataS[i]));
+                    gd.setGraphProperty(energyDelta, Double.valueOf(dataS[i]));
                     extWidthVsAmpDataV.add(gd);
                     //reverse data
                     BasicGraphData gdR = new BasicGraphData();
-                    gdR.setGraphProperty(ENERGY_DLT, Double.valueOf(dataS[i]));
+                    gdR.setGraphProperty(energyDelta, Double.valueOf(dataS[i]));
                     extAmpVsWidthDataV.add(gdR);
 
                 }
@@ -1148,9 +1106,6 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
 
                 lineIn = in.readLine();
             }
-
-            in.close();
-
         } catch (IOException exception) {
             messageTextLocal.setText(null);
             messageTextLocal.setText("Fatal error. Can not open file =" + fNameWvsA
@@ -1160,9 +1115,9 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
         //============READ k shift coeff. Vs. AMPLITUDE =====================================================
         dataURL = Application.getAdaptor().getResourceURL("data/" + fNameKSvsA);
 
-        try {
-            InputStream inps = dataURL.openStream();
-            BufferedReader in = new BufferedReader(new InputStreamReader(inps));
+        try (
+                InputStream inps = dataURL.openStream();
+                BufferedReader in = new BufferedReader(new InputStreamReader(inps))) {
 
             extKShiftVsAmpDataV.clear();
             extAmpVsKShiftDataV.clear();
@@ -1174,11 +1129,11 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
             for (int i = 0; i < dataS.length; i++) {
                 if (dataS[i].length() > 0) {
                     BasicGraphData gd = new BasicGraphData();
-                    gd.setGraphProperty(ENERGY_DLT, Double.valueOf(dataS[i]));
+                    gd.setGraphProperty(energyDelta, Double.valueOf(dataS[i]));
                     extKShiftVsAmpDataV.add(gd);
                     //reverse data
                     BasicGraphData gdR = new BasicGraphData();
-                    gdR.setGraphProperty(ENERGY_DLT, Double.valueOf(dataS[i]));
+                    gdR.setGraphProperty(energyDelta, Double.valueOf(dataS[i]));
                     extAmpVsKShiftDataV.add(gdR);
 
                 }
@@ -1206,9 +1161,6 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
 
                 lineIn = in.readLine();
             }
-
-            in.close();
-
         } catch (IOException exception) {
             messageTextLocal.setText(null);
             messageTextLocal.setText("Fatal error. Can not open file =" + fNameKSvsA
@@ -1230,12 +1182,12 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
         gdP1AFw.removeAllPoints();
 
         BasicGraphData gd = extWidthVsAmpDataV.get(0);
-        double energyDltGrph = ((Double) gd.getGraphProperty(ENERGY_DLT));
+        double energyDltGrph = ((Double) gd.getGraphProperty(energyDelta));
         double minDev = Math.abs(energyDlt - energyDltGrph);
         int indexGrph = 0;
         for (int i = 0; i < extWidthVsAmpDataV.size(); i++) {
             gd = extWidthVsAmpDataV.get(i);
-            energyDltGrph = ((Double) gd.getGraphProperty(ENERGY_DLT));
+            energyDltGrph = ((Double) gd.getGraphProperty(energyDelta));
             double dev = Math.abs(energyDlt - energyDltGrph);
             if (minDev > dev) {
                 minDev = dev;
@@ -1258,12 +1210,12 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
         gdP1AFks.removeAllPoints();
 
         gd = extKShiftVsAmpDataV.get(0);
-        energyDltGrph = ((Double) gd.getGraphProperty(ENERGY_DLT));
+        energyDltGrph = ((Double) gd.getGraphProperty(energyDelta));
         minDev = Math.abs(energyDlt - energyDltGrph);
         indexGrph = 0;
         for (int i = 0; i < extKShiftVsAmpDataV.size(); i++) {
             gd = extKShiftVsAmpDataV.get(i);
-            energyDltGrph = ((Double) gd.getGraphProperty(ENERGY_DLT));
+            energyDltGrph = ((Double) gd.getGraphProperty(energyDelta));
             double dev = Math.abs(energyDlt - energyDltGrph);
             if (minDev > dev) {
                 minDev = dev;
@@ -1278,7 +1230,5 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
             gdP1KsFa.addPoint(x, y);
             gdP1AFks.addPoint(y, x);
         }
-
     }
-
 }

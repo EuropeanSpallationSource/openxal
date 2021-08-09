@@ -16,8 +16,8 @@ public class AvgController {
 
     private JRadioButton avgCntrButton = new JRadioButton("Average for N read out with T delay");
 
-    private JLabel avgNumberLabel = new JLabel(" N= ", JLabel.CENTER);
-    private JLabel timeDelayLabel = new JLabel(" T delay [sec]= ", JLabel.CENTER);
+    private JLabel avgNumberLabel = new JLabel(" N= ", SwingConstants.CENTER);
+    private JLabel timeDelayLabel = new JLabel(" T delay [sec]= ", SwingConstants.CENTER);
 
     //controller panel
     private JPanel avgCntrPanel = new JPanel();
@@ -30,7 +30,7 @@ public class AvgController {
 
     private volatile boolean isOn = false;
 
-    private Vector<ChangeListener> ChangeListenerV = new Vector<>();
+    private Vector<ChangeListener> changeListenerV = new Vector<>();
     private ChangeEvent changeEvent = null;
 
     public AvgController() {
@@ -42,8 +42,8 @@ public class AvgController {
         avgNumberText.setNormalBackground(Color.white);
         timeDelayText.setNormalBackground(Color.white);
 
-        avgNumberText.setHorizontalAlignment(JTextField.CENTER);
-        timeDelayText.setHorizontalAlignment(JTextField.CENTER);
+        avgNumberText.setHorizontalAlignment(SwingConstants.CENTER);
+        timeDelayText.setHorizontalAlignment(SwingConstants.CENTER);
 
         avgCntrButton.setSelected(false);
         avgNumberText.setEditable(false);
@@ -54,34 +54,25 @@ public class AvgController {
 
         changeEvent = new ChangeEvent(this);
 
-        timeDelayText.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                timeDelay = timeDelayText.getValue();
-                notifyChanges();
-            }
+        timeDelayText.addActionListener(e -> {
+            timeDelay = timeDelayText.getValue();
+            notifyChanges();
         });
 
-        avgNumberText.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                avgNumber = avgNumberText.getValue();
-                notifyChanges();
-            }
+        avgNumberText.addActionListener(e -> {
+            avgNumber = avgNumberText.getValue();
+            notifyChanges();
         });
 
-        avgCntrButton.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    setOnOff(true);
-                    avgNumberText.setEditable(true);
-                    timeDelayText.setEditable(true);
-                } else {
-                    setOnOff(false);
-                    avgNumberText.setEditable(false);
-                    timeDelayText.setEditable(false);
-                }
+        avgCntrButton.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                setOnOff(true);
+                avgNumberText.setEditable(true);
+                timeDelayText.setEditable(true);
+            } else {
+                setOnOff(false);
+                avgNumberText.setEditable(false);
+                timeDelayText.setEditable(false);
             }
         });
 
@@ -163,20 +154,20 @@ public class AvgController {
     }
 
     public void addChangeListener(ChangeListener chgL) {
-        ChangeListenerV.add(chgL);
+        changeListenerV.add(chgL);
     }
 
     public void removeChangeListener(ChangeListener chgL) {
-        ChangeListenerV.remove(chgL);
+        changeListenerV.remove(chgL);
     }
 
     public void removeAllChangeListeners() {
-        ChangeListenerV.clear();
+        changeListenerV.clear();
     }
 
     private void notifyChanges() {
-        for (int i = 0, n = ChangeListenerV.size(); i < n; i++) {
-            ChangeListenerV.get(i).stateChanged(changeEvent);
+        for (int i = 0, n = changeListenerV.size(); i < n; i++) {
+            changeListenerV.get(i).stateChanged(changeEvent);
         }
     }
 

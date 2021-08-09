@@ -82,7 +82,7 @@ public class ScanController1D {
     private JLabel unitsLabel = new JLabel("dim");
 
     private DoubleInputTextField sleepTimeText = new DoubleInputTextField(6);
-    private JLabel sleepTimeLabel = new JLabel("Time delay after settings [sec]: ", JLabel.CENTER);
+    private JLabel sleepTimeLabel = new JLabel("Time delay after settings [sec]: ", SwingConstants.CENTER);
 
     private JButton startButton = new JButton("START ");
     private JButton resumeButton = new JButton("RESUME");
@@ -138,9 +138,9 @@ public class ScanController1D {
     private volatile boolean scanOn = false;
 
     //state of buttons there are three possible combinations
-    private static int START_BUTTONS_STATE = 0;
-    private static int RESUME_BUTTONS_STATE = 1;
-    private static int SCAN_BUTTONS_STATE = 2;
+    private static final int START_BUTTONS_STATE = 0;
+    private static final int RESUME_BUTTONS_STATE = 1;
+    private static final int SCAN_BUTTONS_STATE = 2;
 
     private int currentButtonsState = 0;
 
@@ -173,49 +173,46 @@ public class ScanController1D {
         stepText.setNumberFormat(valueFormat);
         sleepTimeText.setNumberFormat(sleepTimeFormat);
 
-        lowLimText.setHorizontalAlignment(JTextField.CENTER);
-        uppLimText.setHorizontalAlignment(JTextField.CENTER);
-        valueText.setHorizontalAlignment(JTextField.CENTER);
-        valueTextRB.setHorizontalAlignment(JTextField.CENTER);
-        stepText.setHorizontalAlignment(JTextField.CENTER);
-        sleepTimeText.setHorizontalAlignment(JTextField.CENTER);
+        lowLimText.setHorizontalAlignment(SwingConstants.CENTER);
+        uppLimText.setHorizontalAlignment(SwingConstants.CENTER);
+        valueText.setHorizontalAlignment(SwingConstants.CENTER);
+        valueTextRB.setHorizontalAlignment(SwingConstants.CENTER);
+        stepText.setHorizontalAlignment(SwingConstants.CENTER);
+        sleepTimeText.setHorizontalAlignment(SwingConstants.CENTER);
 
-        valueText.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (scanOn == false) {
-                    try {
-                        scanValue = Double.parseDouble(valueText.getText());
-                    } catch (NumberFormatException exc) {
-                    }
-                    setCurrentValue(scanValue);
-
-                    boolean containersCreated = false;
-
-                    for (int i = 0, n = measuredValuesV.size(); i < n; i++) {
-                        MeasuredValue mv_tmp = measuredValuesV.get(i);
-                        if (mv_tmp != null && mv_tmp.getNumberOfDataContainers() == 0) {
-                            mv_tmp.createNewDataContainer();
-                            containersCreated = true;
-                            if (scanVariable.getChannelRB() != null
-                                    && mv_tmp.getNumberOfDataContainersRB() == 0) {
-                                mv_tmp.createNewDataContainerRB();
-                            }
-                        }
-                    }
-
-                    if (containersCreated) {
-                        for (int i = 0, n = newSetOfDataListenersV.size(); i < n; i++) {
-                            newSetOfDataListenersV.get(i).actionPerformed(newSetOfDataAction);
-                        }
-                    }
-
-                    measure(scanValue);
-                } else {
-                    Toolkit.getDefaultToolkit().beep();
-                    setCurrentValue(scanValue);
+        valueText.addActionListener(e -> {
+            if (!scanOn) {
+                try {
+                    scanValue = Double.parseDouble(valueText.getText());
+                } catch (NumberFormatException exc) {
+                    LOGGER.log(Level.WARNING, null, exc);
                 }
+                setCurrentValue(scanValue);
+
+                boolean containersCreated = false;
+
+                for (int i = 0, n = measuredValuesV.size(); i < n; i++) {
+                    MeasuredValue mvTmp = measuredValuesV.get(i);
+                    if (mvTmp != null && mvTmp.getNumberOfDataContainers() == 0) {
+                        mvTmp.createNewDataContainer();
+                        containersCreated = true;
+                        if (scanVariable.getChannelRB() != null
+                                && mvTmp.getNumberOfDataContainersRB() == 0) {
+                            mvTmp.createNewDataContainerRB();
+                        }
+                    }
+                }
+
+                if (containersCreated) {
+                    for (int i = 0, n = newSetOfDataListenersV.size(); i < n; i++) {
+                        newSetOfDataListenersV.get(i).actionPerformed(newSetOfDataAction);
+                    }
+                }
+
+                measure(scanValue);
+            } else {
+                Toolkit.getDefaultToolkit().beep();
+                setCurrentValue(scanValue);
             }
         });
 
@@ -224,7 +221,7 @@ public class ScanController1D {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
-                    if (scanOn == false) {
+                    if (!scanOn) {
                         try {
                             scanValue = Double.parseDouble(valueText.getText());
                         } catch (NumberFormatException exc) {
@@ -265,7 +262,7 @@ public class ScanController1D {
             @Override
             public void mouseClicked(MouseEvent e) {
                 valueTextRB.setText(null);
-                if (scanVariable != null && scanOn == false) {
+                if (scanVariable != null && !scanOn) {
                     scanValueRB = scanVariable.getValueRB();
                     if (scanVariable.getChannelRB() != null) {
                         scanValueRB = scanVariable.getValueRB();
@@ -275,56 +272,35 @@ public class ScanController1D {
             }
         });
 
-        lowLimText.addActionListener(
-                new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                lowLim = lowLimText.getValue();
-                setSliderValue(scanValue);
-                continueMode = false;
-                setButtonsState(START_BUTTONS_STATE);
-            }
+        lowLimText.addActionListener(e -> {
+            lowLim = lowLimText.getValue();
+            setSliderValue(scanValue);
+            continueMode = false;
+            setButtonsState(START_BUTTONS_STATE);
         });
 
-        uppLimText.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                uppLim = uppLimText.getValue();
-                setSliderValue(scanValue);
-                continueMode = false;
-                setButtonsState(START_BUTTONS_STATE);
-            }
+        uppLimText.addActionListener(e -> {
+            uppLim = uppLimText.getValue();
+            setSliderValue(scanValue);
+            continueMode = false;
+            setButtonsState(START_BUTTONS_STATE);
         });
 
-        stepText.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                step = stepText.getValue();
-                continueMode = false;
-                setButtonsState(START_BUTTONS_STATE);
-            }
+        stepText.addActionListener(e -> {
+            step = stepText.getValue();
+            continueMode = false;
+            setButtonsState(START_BUTTONS_STATE);
         });
 
-        sleepTimeText.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                sleepTime = sleepTimeText.getValue();
-            }
-        });
+        sleepTimeText.addActionListener(e -> sleepTime = sleepTimeText.getValue());
 
         scrollBar.setBlockIncrement((scrollBar.getMaximum() - scrollBar.getMinimum()) / 50);
-        scrollBar.getModel().addChangeListener(
-                new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent e) {
-                if (!scrollBarLocked) {
-                    int iVal = scrollBar.getValue();
-                    double val = lowLim + iVal * (uppLim - lowLim) / (scrollBar.getMaximum() - scrollBar.getMinimum());
-                    valueText.setText(null);
-                    valueText.setText(valueFormat.format(val));
-                }
+        scrollBar.getModel().addChangeListener(e -> {
+            if (!scrollBarLocked) {
+                int iVal = scrollBar.getValue();
+                double val = lowLim + iVal * (uppLim - lowLim) / (scrollBar.getMaximum() - scrollBar.getMinimum());
+                valueText.setText(null);
+                valueText.setText(valueFormat.format(val));
             }
         });
 
@@ -335,96 +311,79 @@ public class ScanController1D {
         stopButton.setHorizontalTextPosition(SwingConstants.CENTER);
         resumeButton.setHorizontalTextPosition(SwingConstants.CENTER);
 
-        startButtonListener
-                = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (scanOn == true) {
-                    Toolkit.getDefaultToolkit().beep();
-                    return;
-                }
-                messageText.setText(null);
-                continueMode = false;
-                scanVarShouldBeRestored = true;
-
-                if (currentButtonsState == START_BUTTONS_STATE) {
-                    scanVarShouldBeMemorized = true;
-                } else {
-                    scanVarShouldBeMemorized = false;
-                }
-
-                setButtonsState(SCAN_BUTTONS_STATE);
-                for (int i = 0, n = startListenersV.size(); i < n; i++) {
-                    startListenersV.get(i).actionPerformed(startButtonAction);
-                }
-                measure();
+        startButtonListener = e -> {
+            if (scanOn) {
+                Toolkit.getDefaultToolkit().beep();
+                return;
             }
+            messageText.setText(null);
+            continueMode = false;
+            scanVarShouldBeRestored = true;
+
+            if (currentButtonsState == START_BUTTONS_STATE) {
+                scanVarShouldBeMemorized = true;
+            } else {
+                scanVarShouldBeMemorized = false;
+            }
+
+            setButtonsState(SCAN_BUTTONS_STATE);
+            for (int i = 0, n = startListenersV.size(); i < n; i++) {
+                startListenersV.get(i).actionPerformed(startButtonAction);
+            }
+            measure();
         };
 
         startButton.addActionListener(startButtonListener);
 
-        resumeButtonListener
-                = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                scanVarShouldBeMemorized = false;
-                if (currentButtonsState == RESUME_BUTTONS_STATE) {
-                    if (scanOn == true) {
-                        Toolkit.getDefaultToolkit().beep();
-                        return;
-                    }
-                    messageText.setText(null);
-                    continueMode = true;
-                    scanVarShouldBeRestored = true;
-                    setButtonsState(SCAN_BUTTONS_STATE);
-                    for (int i = 0, n = resumeListenersV.size(); i < n; i++) {
-                        resumeListenersV.get(i).actionPerformed(resumeButtonAction);
-                    }
-                    measure();
-                } else {
-                    if (scanOn == false) {
-                        Toolkit.getDefaultToolkit().beep();
-                        return;
-                    }
-                    scanOn = false;
-                    scanVarShouldBeRestored = false;
-                    if (measurementThread != null && measurementThread.isAlive()) {
-                        measurementThread.interrupt();
-                    }
+        resumeButtonListener = e -> {
+            scanVarShouldBeMemorized = false;
+            if (currentButtonsState == RESUME_BUTTONS_STATE) {
+                if (scanOn) {
+                    Toolkit.getDefaultToolkit().beep();
+                    return;
+                }
+                messageText.setText(null);
+                continueMode = true;
+                scanVarShouldBeRestored = true;
+                setButtonsState(SCAN_BUTTONS_STATE);
+                for (int i = 0, n = resumeListenersV.size(); i < n; i++) {
+                    resumeListenersV.get(i).actionPerformed(resumeButtonAction);
+                }
+                measure();
+            } else {
+                if (!scanOn) {
+                    Toolkit.getDefaultToolkit().beep();
+                    return;
+                }
+                scanOn = false;
+                scanVarShouldBeRestored = false;
+                if (measurementThread != null && measurementThread.isAlive()) {
+                    measurementThread.interrupt();
                 }
             }
         };
 
         resumeButton.addActionListener(resumeButtonListener);
 
-        stopButtonListener
-                = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                scanVarShouldBeMemorized = false;
-                if (scanOn == false) {
-                    Toolkit.getDefaultToolkit().beep();
-                    return;
-                }
-                scanOn = false;
-                scanVarShouldBeRestored = true;
-                if (measurementThread != null && measurementThread.isAlive()) {
-                    measurementThread.interrupt();
-                }
+        stopButtonListener = e -> {
+            scanVarShouldBeMemorized = false;
+            if (!scanOn) {
+                Toolkit.getDefaultToolkit().beep();
+                return;
+            }
+            scanOn = false;
+            scanVarShouldBeRestored = true;
+            if (measurementThread != null && measurementThread.isAlive()) {
+                measurementThread.interrupt();
             }
         };
-
         stopButton.addActionListener(stopButtonListener);
 
         //stop scan listener definition
-        stopScanListener
-                = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                scanOn = false;
-                if (measurementThread != null && measurementThread.isAlive()) {
-                    measurementThread.interrupt();
-                }
+        stopScanListener = e -> {
+            scanOn = false;
+            if (measurementThread != null && measurementThread.isAlive()) {
+                measurementThread.interrupt();
             }
         };
 
@@ -640,14 +599,10 @@ public class ScanController1D {
         this.avgController = avgController;
         if (avgController != null) {
             if (avgParamChangeListener == null) {
-                avgParamChangeListener
-                        = new ChangeListener() {
-                    @Override
-                    public void stateChanged(ChangeEvent changeEvent) {
-                        AvgController avgCntr = (AvgController) changeEvent.getSource();
-                        avrgTime = avgCntr.getTimeDelay();
-                        nAveraging = avgCntr.getAvgNumber();
-                    }
+                avgParamChangeListener = changeEvent -> {
+                    AvgController avgCntr = (AvgController) changeEvent.getSource();
+                    avrgTime = avgCntr.getTimeDelay();
+                    nAveraging = avgCntr.getAvgNumber();
                 };
             }
             avgController.addChangeListener(avgParamChangeListener);
@@ -669,15 +624,11 @@ public class ScanController1D {
         this.validationController = validationController;
         if (validationController != null) {
             if (validationParamChangeListener == null) {
-                validationParamChangeListener
-                        = new ChangeListener() {
-                    @Override
-                    public void stateChanged(ChangeEvent changeEvent) {
-                        ValidationController validCntr = (ValidationController) changeEvent.getSource();
-                        validateMeasurement = validCntr.isOn();
-                        lowValidationLim = validCntr.getLowLim();
-                        uppValidationLim = validCntr.getUppLim();
-                    }
+                validationParamChangeListener = changeEvent -> {
+                    ValidationController validCntr = (ValidationController) changeEvent.getSource();
+                    validateMeasurement = validCntr.isOn();
+                    lowValidationLim = validCntr.getLowLim();
+                    uppValidationLim = validCntr.getUppLim();
                 };
             }
             validationController.addChangeListener(validationParamChangeListener);
@@ -1165,11 +1116,11 @@ public class ScanController1D {
     /**
      * Sets the buttonsState attribute of the ScanController1D object
      *
-     * @param BUTTONS_STATE The new buttonsState value
+     * @param buttonState The new buttonsState value
      */
-    private void setButtonsState(int BUTTONS_STATE) {
+    private void setButtonsState(int buttonState) {
 
-        currentButtonsState = BUTTONS_STATE;
+        currentButtonsState = buttonState;
 
         if (currentButtonsState == START_BUTTONS_STATE) {
             startButton.setEnabled(true);
@@ -1227,84 +1178,75 @@ public class ScanController1D {
      * Description of the Method
      */
     public void measure() {
-        Runnable runMeasure
-                = new Runnable() {
-            @Override
-            public void run() {
-                synchronized (lockObj) {
-                    scanOn = true;
-                    measurementThread = Thread.currentThread();
+        Runnable runMeasure = () -> {
+            synchronized (lockObj) {
+                scanOn = true;
+                measurementThread = Thread.currentThread();
 
-                    if (scanVarShouldBeMemorized == true) {
-                        if (scanVariable != null
-                                && scanVariable.getMonitoredPV().isGood()) {
-                            scanVariable.memorizeValue();
-                        }
-                        scanValueMem = scanValue;
-                    }
-
-                    trueMeasure();
-
-                    if (scanVarShouldBeRestored == true
-                            && scanVariable != null
+                if (scanVarShouldBeMemorized) {
+                    if (scanVariable != null
                             && scanVariable.getMonitoredPV().isGood()) {
-                        if (restoreValueAfterScanButton.isSelected() == true) {
-                            scanVariable.restoreFromMemory();
+                        scanVariable.memorizeValue();
+                    }
+                    scanValueMem = scanValue;
+                }
+
+                trueMeasure();
+
+                if (scanVarShouldBeRestored
+                        && scanVariable != null
+                        && scanVariable.getMonitoredPV().isGood()) {
+                    if (restoreValueAfterScanButton.isSelected()) {
+                        scanVariable.restoreFromMemory();
+                    }
+                }
+
+                if (scanVariable != null && scanVariable.getMonitoredPV().isGood()) {
+                    if (scanOn && sleepTime > 0.) {
+                        try {
+                            lockObj.wait((long) (1000.0 * sleepTime));
+                        } catch (InterruptedException e) {
                         }
                     }
-
-                    if (scanVariable != null && scanVariable.getMonitoredPV().isGood()) {
-                        if (scanOn != false && sleepTime > 0.) {
+                    if (scanVariable.getChannel() != null) {
+                        Thread localUpDateThread = new Thread(() -> {
                             try {
-                                lockObj.wait((long) (1000.0 * sleepTime));
+                                Thread.sleep(1000);
                             } catch (InterruptedException e) {
                             }
-                        }
-                        if (scanVariable.getChannel() != null) {
-                            Thread localUpDateThread = new Thread(
-                                    new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        Thread.sleep(1000);
-                                    } catch (InterruptedException e) {
-                                    }
-                                    setCurrentValue(scanVariable.getValue());
-                                    if (scanVariable.getChannelRB() != null) {
-                                        setCurrentValueRB(scanVariable.getValueRB());
-                                    } else {
-                                        valueTextRB.setText(null);
-                                    }
-
-                                }
-                            });
-                            localUpDateThread.start();
-                        } else {
-                            valueTextRB.setText(null);
-                            if (scanVarShouldBeRestored == true) {
-                                setCurrentValue(scanValueMem);
+                            setCurrentValue(scanVariable.getValue());
+                            if (scanVariable.getChannelRB() != null) {
+                                setCurrentValueRB(scanVariable.getValueRB());
                             } else {
-                                setCurrentValue(scanValue);
+                                valueTextRB.setText(null);
                             }
-                        }
+                        });
+                        localUpDateThread.start();
                     } else {
                         valueTextRB.setText(null);
-                        if (scanVarShouldBeRestored == true) {
+                        if (scanVarShouldBeRestored) {
                             setCurrentValue(scanValueMem);
                         } else {
                             setCurrentValue(scanValue);
                         }
                     }
-
-                    if (continueMode) {
-                        setButtonsState(RESUME_BUTTONS_STATE);
+                } else {
+                    valueTextRB.setText(null);
+                    if (scanVarShouldBeRestored) {
+                        setCurrentValue(scanValueMem);
                     } else {
-                        setButtonsState(START_BUTTONS_STATE);
+                        setCurrentValue(scanValue);
                     }
-                    scanOn = false;
-                    for (int i = 0, n = stopListenersV.size(); i < n; i++) {
-                        stopListenersV.get(i).actionPerformed(stopButtonAction);
-                    }
+                }
+
+                if (continueMode) {
+                    setButtonsState(RESUME_BUTTONS_STATE);
+                } else {
+                    setButtonsState(START_BUTTONS_STATE);
+                }
+                scanOn = false;
+                for (int i = 0, n = stopListenersV.size(); i < n; i++) {
+                    stopListenersV.get(i).actionPerformed(stopButtonAction);
                 }
             }
         };
@@ -1318,45 +1260,35 @@ public class ScanController1D {
      * @param val Description of the Parameter
      */
     private void measure(final double val) {
-        Runnable runMeasure
-                = new Runnable() {
-            @Override
-            public void run() {
-                synchronized (lockObj) {
+        Runnable runMeasure = () -> {
+            synchronized (lockObj) {
+                scanOn = true;
+                measurementThread = Thread.currentThread();
 
-                    scanOn = true;
-                    measurementThread = Thread.currentThread();
+                scanValueMem = scanValue;
 
-                    scanValueMem = scanValue;
+                if (scanVariable != null && scanVariable.getMonitoredPV().isGood()) {
+                    scanVariable.memorizeValue();
+                }
 
-                    if (scanVariable != null && scanVariable.getMonitoredPV().isGood()) {
-                        scanVariable.memorizeValue();
+                trueMeasure(val);
+
+                if (scanVariable != null && scanVariable.getMonitoredPV().isGood() && restoreValueAfterScanButton.isSelected()) {
+                    scanVariable.restoreFromMemory();
+                }
+
+                if (scanVariable != null && scanVariable.getMonitoredPV().isGood()) {
+                    try {
+                        lockObj.wait((long) (1000.0 * sleepTime));
+                    } catch (InterruptedException e) {
+                        LOGGER.log(Level.WARNING, null, e);
                     }
-
-                    trueMeasure(val);
-
-                    if (scanVariable != null && scanVariable.getMonitoredPV().isGood()) {
-                        if (restoreValueAfterScanButton.isSelected() == true) {
-                            scanVariable.restoreFromMemory();
-                        }
-                    }
-
-                    if (scanVariable != null && scanVariable.getMonitoredPV().isGood()) {
-                        try {
-                            lockObj.wait((long) (1000.0 * sleepTime));
-                        } catch (InterruptedException e) {
-                        }
-                        if (scanVariable.getChannel() != null) {
-                            setCurrentValue(scanVariable.getValue());
-                            if (scanVariable.getChannelRB() != null) {
-                                setCurrentValueRB(scanVariable.getValueRB());
-                            } else {
-                                valueTextRB.setText(null);
-                                scanValueRB = scanValue;
-                            }
+                    if (scanVariable.getChannel() != null) {
+                        setCurrentValue(scanVariable.getValue());
+                        if (scanVariable.getChannelRB() != null) {
+                            setCurrentValueRB(scanVariable.getValueRB());
                         } else {
                             valueTextRB.setText(null);
-                            setCurrentValue(scanValueMem);
                             scanValueRB = scanValue;
                         }
                     } else {
@@ -1364,8 +1296,12 @@ public class ScanController1D {
                         setCurrentValue(scanValueMem);
                         scanValueRB = scanValue;
                     }
-                    scanOn = false;
+                } else {
+                    valueTextRB.setText(null);
+                    setCurrentValue(scanValueMem);
+                    scanValueRB = scanValue;
                 }
+                scanOn = false;
             }
         };
         Thread mThread = new Thread(runMeasure);
@@ -1390,6 +1326,7 @@ public class ScanController1D {
             try {
                 lockObj.wait((long) (1000.0 * sleepTime));
             } catch (InterruptedException e) {
+                LOGGER.log(Level.WARNING, null, e);
             }
         }
         for (int k = 0, n = measuredValuesV.size(); k < n; k++) {
@@ -1425,12 +1362,14 @@ public class ScanController1D {
                     try {
                         lockObj.wait((long) (1000.0 * avrgTime));
                     } catch (InterruptedException e) {
+                        LOGGER.log(Level.WARNING, null, e);
                     }
                 }
                 if (nAveraging == 1 && badCount > 0) {
                     try {
                         lockObj.wait((long) (1000.0 * Math.max(sleepTime, avrgTime)));
                     } catch (InterruptedException e) {
+                        LOGGER.log(Level.WARNING, null, e);
                     }
                 }
                 badCount++;
@@ -1450,6 +1389,7 @@ public class ScanController1D {
                 try {
                     lockObj.wait((long) (1000.0 * Math.max(sleepTime, avrgTime)));
                 } catch (InterruptedException e) {
+                    LOGGER.log(Level.WARNING, null, e);
                 }
             }
             if (!scanOn) {
@@ -1459,7 +1399,7 @@ public class ScanController1D {
 
         setCurrentValue(scanValue);
         if (scanVariable != null && scanVariable.getChannelRB() != null
-                && scanVariable.getMonitoredPV_RB().isGood()) {
+                && scanVariable.getMonitoredPVRB().isGood()) {
             setCurrentValueRB(scanVariable.getValueRB());
         } else {
             scanValueRB = scanValue;
@@ -1474,7 +1414,7 @@ public class ScanController1D {
      * Description of the Method
      */
     private void trueMeasure() {
-        if (continueMode == false) {
+        if (!continueMode) {
             setVariableSet();
             startNewSetOfData();
         }
@@ -1506,10 +1446,10 @@ public class ScanController1D {
      * update the graph meta data
      */
     private void updateGraphMetadata() {
-        if (scanVariable != null) {
-            final String xScanLabel = scanVariable != null ? scanVariable.getChannelName() : "";
-            final String xScanReadbackLabel = scanVariable != null ? scanVariable.getChannelNameRB() : "";
+        final String xScanLabel = scanVariable != null ? scanVariable.getChannelName() : "";
+        final String xScanReadbackLabel = scanVariable != null ? scanVariable.getChannelNameRB() : "";
 
+        if (scanVariable != null) {
             for (int k = 0, n = measuredValuesV.size(); k < n; k++) {
                 measuredValuesV.get(k).setLabels(xScanLabel, xScanReadbackLabel);
             }
@@ -1523,7 +1463,7 @@ public class ScanController1D {
      */
     private boolean validateMeasurements() {
         if (validateMeasurement && validationController != null) {
-            double validVal = 0.;
+            double validVal;
             for (int i = 0, n = validationValuesV.size(); i < n; i++) {
                 MeasuredValue mv = validationValuesV.get(i);
                 validVal = mv.getValue();
@@ -1610,10 +1550,7 @@ public class ScanController1D {
      * @return The boolean True if the phase scan button is visible
      */
     public boolean getPhaseScanButtonVizible() {
-        if (phaseScanAndRBPanel.getComponentCount() == 2) {
-            return false;
-        }
-        return true;
+        return phaseScanAndRBPanel.getComponentCount() != 2;
     }
 
     /**
@@ -1642,15 +1579,13 @@ public class ScanController1D {
      */
     private double phaseWrappingFunction(double inValue) {
         double outValue = inValue;
-        if (phaseScanButton.isSelected()) {
-            if (Math.abs(inValue) > 180.) {
-                outValue += 180.;
-                while (outValue < 0.) {
-                    outValue += 360.;
-                }
-                outValue = outValue % 360.;
-                outValue -= 180.;
+        if (phaseScanButton.isSelected() && Math.abs(inValue) > 180.) {
+            outValue += 180.;
+            while (outValue < 0.) {
+                outValue += 360.;
             }
+            outValue = outValue % 360.;
+            outValue -= 180.;
         }
         return outValue;
     }
@@ -1720,13 +1655,12 @@ public class ScanController1D {
     public static void main(String[] args) {
         JFrame mainFrame = new JFrame("Test of the IndependentValueRange class");
         mainFrame.addWindowListener(
-                new java.awt.event.WindowAdapter() {
+                new WindowAdapter() {
             @Override
-            public void windowClosing(java.awt.event.WindowEvent evt) {
+            public void windowClosing(WindowEvent evt) {
                 System.exit(0);
             }
-        }
-        );
+        });
 
         mainFrame.getContentPane().setLayout(new BorderLayout());
 
@@ -1749,37 +1683,26 @@ public class ScanController1D {
         mainFrame.setVisible(true);
 
         //add listeners
-        iRange.addStartListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ScanController1D scc = (ScanController1D) e.getSource();
-                LOGGER.log(Level.INFO, "Start Listener is scanOn = {0}    Is it continue={1}", new Object[]{scc.isScanON(), scc.isContinueON()});
-            }
+        iRange.addStartListener(e -> {
+            ScanController1D scc = (ScanController1D) e.getSource();
+            LOGGER.log(Level.INFO, "Start Listener is scanOn = {0}    Is it continue={1}", new Object[]{scc.isScanON(), scc.isContinueON()});
         });
 
-        iRange.addStopListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ScanController1D scc = (ScanController1D) e.getSource();
-                LOGGER.log(Level.INFO, "Stop Listener is scanOn = {0}    Is it continue={1}", new Object[]{scc.isScanON(), scc.isContinueON()});
-            }
+        iRange.addStopListener(e -> {
+            ScanController1D scc = (ScanController1D) e.getSource();
+            LOGGER.log(Level.INFO, "Stop Listener is scanOn = {0}    Is it continue={1}", new Object[]{scc.isScanON(), scc.isContinueON()});
         });
 
-        iRange.addResumeListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                ScanController1D scc = (ScanController1D) e.getSource();
-                LOGGER.log(Level.INFO, "Resume Listener is scanOn = {0}    Is it continue={1}", new Object[]{scc.isScanON(), scc.isContinueON()});
-            }
+        iRange.addResumeListener(e -> {
+            ScanController1D scc = (ScanController1D) e.getSource();
+            LOGGER.log(Level.INFO, "Resume Listener is scanOn = {0}    Is it continue={1}", new Object[]{scc.isScanON(), scc.isContinueON()});
         });
 
         //start scan
         try {
             Thread.sleep(2000);
         } catch (InterruptedException exc) {
+            LOGGER.log(Level.WARNING, null, exc);
         }
 
         iRange.startScan();
@@ -1788,6 +1711,7 @@ public class ScanController1D {
         try {
             Thread.sleep(10000);
         } catch (InterruptedException exc) {
+            LOGGER.log(Level.WARNING, null, exc);
         }
 
         iRange.stopScan();
@@ -1796,6 +1720,7 @@ public class ScanController1D {
         try {
             Thread.sleep(5000);
         } catch (InterruptedException exc) {
+            LOGGER.log(Level.WARNING, null, exc);
         }
 
         iRange.resumeScan();

@@ -60,8 +60,8 @@ public class WrappedChannel extends MonitoredPV {
      * Make an event for the given record and channel
      */
     @Override
-    ActionEvent makeEvent(final ChannelTimeRecord record, final Channel channel) {
-        return new PV_Event(this, record, channel);
+    ActionEvent makeEvent(final ChannelTimeRecord channelRecord, final Channel channel) {
+        return new PVEvent(this, channelRecord, channel);
     }
 
     //====================================================================
@@ -73,14 +73,14 @@ public class WrappedChannel extends MonitoredPV {
      *
      * @author shishlo created September 18, 2006
      */
-    public static class PV_Event extends ActionEvent {
+    public static class PVEvent extends ActionEvent {
 
         /**
          * serialization ID recommended for Serializable classes
          */
         private static final long serialVersionUID = 0L;
 
-        private ChannelRecord record = null;
+        private ChannelRecord channelRecord = null;
         private Channel chan = null;
 
         /**
@@ -90,9 +90,9 @@ public class WrappedChannel extends MonitoredPV {
          * @param chanIn The channel
          * @param wch The Parameter
          */
-        public PV_Event(WrappedChannel wch, ChannelRecord recordIn, Channel chanIn) {
+        public PVEvent(WrappedChannel wch, ChannelRecord recordIn, Channel chanIn) {
             super(wch, 0, "changed");
-            record = recordIn;
+            channelRecord = recordIn;
             chan = chanIn;
         }
 
@@ -102,7 +102,7 @@ public class WrappedChannel extends MonitoredPV {
          * @return The channel's record
          */
         public ChannelRecord getChannelRecord() {
-            return record;
+            return channelRecord;
         }
 
         /**

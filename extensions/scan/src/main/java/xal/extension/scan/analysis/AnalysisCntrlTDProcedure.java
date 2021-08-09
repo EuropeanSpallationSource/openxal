@@ -5,7 +5,6 @@ import java.awt.*;
 import java.text.*;
 import javax.swing.*;
 import java.io.*;
-import java.awt.event.*;
 import javax.swing.border.*;
 import java.net.*;
 import java.util.logging.Logger;
@@ -44,8 +43,8 @@ public final class AnalysisCntrlTDProcedure extends AnalysisController {
     private JButton makeAnalysisButton = new JButton("PERFORM ANALYSIS");
 
     //vectors with graph data for B and C BPMs
-    private Vector<BasicGraphData> gdV_B = new Vector<>();
-    private Vector<BasicGraphData> gdV_C = new Vector<>();
+    private Vector<BasicGraphData> gdVB = new Vector<>();
+    private Vector<BasicGraphData> gdVC = new Vector<>();
 
     //Cavity of CCL index
     private int cavIndex = -1;
@@ -70,25 +69,25 @@ public final class AnalysisCntrlTDProcedure extends AnalysisController {
     //left custom control panel
     private JTextField leftTitle = new JTextField("===================SCAN DATA====================");
     private int verticalLeftGraphSize = 13;
-    private JLabel verticalLeftGraphLabel_1 = new JLabel(" ");
-    private JLabel verticalLeftGraphLabel_2 = new JLabel(" ");
+    private JLabel verticalLeftGraphLabel1 = new JLabel(" ");
+    private JLabel verticalLeftGraphLabel2 = new JLabel(" ");
 
     //TOP custom panel
-    private JLabel moduleNameLabel = new JLabel("Name of the Module", JLabel.CENTER);
+    private JLabel moduleNameLabel = new JLabel("Name of the Module", SwingConstants.CENTER);
     private String bpm1NameString = "BPM #1 name";
     private String bpm2NameString = "BPM #2 name";
-    private JLabel bpm1NameLabel = new JLabel("  BPM #1 :  ", JLabel.CENTER);
-    private JLabel bpm2NameLabel = new JLabel("  BPM #2 :  ", JLabel.CENTER);
+    private JLabel bpm1NameLabel = new JLabel("  BPM #1 :  ", SwingConstants.CENTER);
+    private JLabel bpm2NameLabel = new JLabel("  BPM #2 :  ", SwingConstants.CENTER);
     private JRadioButton aMatrixSwitchButton = new JRadioButton("Use matrix A for Module Amplitude Deviation = 0      ");
 
-    private JLabel rfPhaseLabel = new JLabel("  Recomended RF Phase, deg", JLabel.LEFT);
-    private JLabel rfAmpLabel = new JLabel("  Recomended RF Amplitude", JLabel.LEFT);
+    private JLabel rfPhaseLabel = new JLabel("  Recomended RF Phase, deg", SwingConstants.LEFT);
+    private JLabel rfAmpLabel = new JLabel("  Recomended RF Amplitude", SwingConstants.LEFT);
     private JButton setToAccelButton = new JButton("  SET VALUES TO RF CAVITY  ");
 
-    private JLabel inputEnergyDevLabel = new JLabel("  Input Energy Deviation, keV", JLabel.LEFT);
-    private JLabel currentAmpLabel = new JLabel("  Current RF Amplitude", JLabel.LEFT);
-    private JLabel expSlopeLabel = new JLabel("  Experimental Slope, deg", JLabel.LEFT);
-    private JLabel energyStepLabel = new JLabel("  Step for Energy Markers, keV", JLabel.LEFT);
+    private JLabel inputEnergyDevLabel = new JLabel("  Input Energy Deviation, keV", SwingConstants.LEFT);
+    private JLabel currentAmpLabel = new JLabel("  Current RF Amplitude", SwingConstants.LEFT);
+    private JLabel expSlopeLabel = new JLabel("  Experimental Slope, deg", SwingConstants.LEFT);
+    private JLabel energyStepLabel = new JLabel("  Step for Energy Markers, keV", SwingConstants.LEFT);
 
     private DoubleInputTextField rfPhaseText = new DoubleInputTextField(10);
     private DoubleInputTextField rfAmpText = new DoubleInputTextField(10);
@@ -217,50 +216,50 @@ public final class AnalysisCntrlTDProcedure extends AnalysisController {
         dateTimeField = new JFormattedTextField(dateFormat);
 
         //specify the left local panel
-        JPanel tmp_l = new JPanel();
-        tmp_l.setLayout(new FlowLayout(FlowLayout.CENTER));
-        tmp_l.add(makeAnalysisButton);
+        JPanel tmpL = new JPanel();
+        tmpL.setLayout(new FlowLayout(FlowLayout.CENTER));
+        tmpL.add(makeAnalysisButton);
         makeAnalysisButton.setForeground(Color.red);
 
         //specify the left local panel
-        JPanel tmp_3 = new JPanel();
-        tmp_3.setLayout(new FlowLayout(FlowLayout.CENTER));
-        tmp_3.add(exportDataButton);
+        JPanel tmp3 = new JPanel();
+        tmp3.setLayout(new FlowLayout(FlowLayout.CENTER));
+        tmp3.add(exportDataButton);
         exportDataButton.setForeground(Color.red);
 
         //left graph panels
-        JPanel tmp_2 = new JPanel();
-        tmp_2.setLayout(new GridLayout(2, 1));
+        JPanel tmp2 = new JPanel();
+        tmp2.setLayout(new GridLayout(2, 1));
 
-        JPanel tmp_2_1 = new JPanel();
-        tmp_2_1.setLayout(new BorderLayout());
+        JPanel tmp21 = new JPanel();
+        tmp21.setLayout(new BorderLayout());
 
-        JPanel tmp_2_1_L = new JPanel();
-        tmp_2_1_L.setLayout(new GridLayout(verticalLeftGraphSize, 1));
-        tmp_2_1_L.add(verticalLeftGraphLabel_1);
-        tmp_2_1.add(tmp_2_1_L, BorderLayout.WEST);
-        tmp_2_1.add(graphLeftPanel1, BorderLayout.CENTER);
+        JPanel tmp21L = new JPanel();
+        tmp21L.setLayout(new GridLayout(verticalLeftGraphSize, 1));
+        tmp21L.add(verticalLeftGraphLabel1);
+        tmp21.add(tmp21L, BorderLayout.WEST);
+        tmp21.add(graphLeftPanel1, BorderLayout.CENTER);
 
-        JPanel tmp_2_2 = new JPanel();
-        tmp_2_2.setLayout(new BorderLayout());
+        JPanel tmp22 = new JPanel();
+        tmp22.setLayout(new BorderLayout());
 
-        JPanel tmp_2_2_L = new JPanel();
-        tmp_2_2_L.setLayout(new GridLayout(verticalLeftGraphSize, 1));
-        tmp_2_2_L.add(verticalLeftGraphLabel_2);
-        tmp_2_2.add(tmp_2_2_L, BorderLayout.WEST);
-        tmp_2_2.add(graphLeftPanel2, BorderLayout.CENTER);
+        JPanel tmp22L = new JPanel();
+        tmp22L.setLayout(new GridLayout(verticalLeftGraphSize, 1));
+        tmp22L.add(verticalLeftGraphLabel2);
+        tmp22.add(tmp22L, BorderLayout.WEST);
+        tmp22.add(graphLeftPanel2, BorderLayout.CENTER);
 
-        tmp_2.add(tmp_2_1);
-        tmp_2.add(tmp_2_2);
+        tmp2.add(tmp21);
+        tmp2.add(tmp22);
 
-        tmp_2_1.setBorder(etchedBorder);
-        tmp_2_2.setBorder(etchedBorder);
+        tmp21.setBorder(etchedBorder);
+        tmp22.setBorder(etchedBorder);
 
         localCntrlPanel.setLayout(new VerticalLayout());
         localCntrlPanel.add(leftTitle);
-        localCntrlPanel.add(tmp_l);
-        localCntrlPanel.add(tmp_2);
-        localCntrlPanel.add(tmp_3);
+        localCntrlPanel.add(tmpL);
+        localCntrlPanel.add(tmp2);
+        localCntrlPanel.add(tmp3);
 
         graphLeftPanel1.setGraphBackGroundColor(Color.BLACK);
         graphLeftPanel2.setGraphBackGroundColor(Color.BLACK);
@@ -399,8 +398,8 @@ public final class AnalysisCntrlTDProcedure extends AnalysisController {
      * Does what necessary to close this analysis window.
      */
     @Override
-    public void ShutUp() {
-        super.ShutUp();
+    public void shutUp() {
+        super.shutUp();
         customControlPanel.removeAll();
         customGraphPanel.removeAll();
     }
@@ -410,8 +409,8 @@ public final class AnalysisCntrlTDProcedure extends AnalysisController {
      * overridden, because it is empty here.
      */
     @Override
-    public void ShowUp() {
-        super.ShowUp();
+    public void showUp() {
+        super.showUp();
 
         customControlPanel.add(localCntrlPanel, BorderLayout.NORTH);
         customGraphPanel.add(localAnalysisPanel, BorderLayout.CENTER);
@@ -485,21 +484,21 @@ public final class AnalysisCntrlTDProcedure extends AnalysisController {
             return false;
         }
 
-        MeasuredValue bpmB_mv = measuredValuesV.get(0);
-        MeasuredValue bpmC_mv = measuredValuesV.get(1);
+        MeasuredValue bpmBMv = measuredValuesV.get(0);
+        MeasuredValue bpmCMv = measuredValuesV.get(1);
 
-        gdV_B = bpmB_mv.getDataContainers();
-        gdV_C = bpmC_mv.getDataContainers();
+        gdVB = bpmBMv.getDataContainers();
+        gdVC = bpmCMv.getDataContainers();
 
-        if (gdV_B.size() != 2 || gdV_C.size() != 2) {
+        if (gdVB.size() != 2 || gdVC.size() != 2) {
             return false;
         }
 
-        gdBpmBOn = gdV_B.get(0);
-        gdBpmCOn = gdV_C.get(0);
+        gdBpmBOn = gdVB.get(0);
+        gdBpmCOn = gdVC.get(0);
 
-        gdBpmBOff = gdV_B.get(1);
-        gdBpmCOff = gdV_C.get(1);
+        gdBpmBOff = gdVB.get(1);
+        gdBpmCOff = gdVC.get(1);
 
         if (gdBpmBOn.getNumbOfPoints() != gdBpmCOn.getNumbOfPoints()
                 || gdBpmBOff.getNumbOfPoints() != gdBpmCOff.getNumbOfPoints()) {
@@ -529,157 +528,143 @@ public final class AnalysisCntrlTDProcedure extends AnalysisController {
     private void defineButtonActions() {
 
         //make analysis button
-        makeAnalysisButton.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                makeDeltaTimeAnalysis();
-            }
-        });
+        makeAnalysisButton.addActionListener(e -> makeDeltaTimeAnalysis());
 
         //set data to EPICS
-        setToAccelButton.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setAmplitudeAndPhaseToEPICS();
-            }
-        });
+        setToAccelButton.addActionListener(e -> setAmplitudeAndPhaseToEPICS());
 
         //"EXPORT ASCII"
-        exportDataButton.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (canSaveASDTtable()) {
-                    //save data as table
-                    JFileChooser ch = new JFileChooser();
-                    ch.setDialogTitle("Export data into dT procedure file");
-                    if (dataFile != null) {
-                        ch.setSelectedFile(dataFile);
-                    } else {
-                        if (defaultPath != null) {
-                            File path = new File(defaultPath);
-                            if (path != null && path.exists()) {
-                                ch.setSelectedFile(path);
-                            }
-                        }
-                    }
-                    int returnVal = ch.showSaveDialog(parentAnalysisPanel);
-                    if (returnVal == JFileChooser.APPROVE_OPTION) {
-                        try {
-                            dataFile = ch.getSelectedFile();
-                            defaultPath = dataFile.getAbsolutePath();
-                            BufferedWriter out = new BufferedWriter(new FileWriter(dataFile));
-
-                            Preferences pref = xal.tools.apputils.Preferences.nodeForPackage(this.getClass());
-                            try {
-                                defaultPath = dataFile.getAbsolutePath();
-                                pref.put(defaultPathName, defaultPath);
-                                pref.flush();
-                            } catch (BackingStoreException exp) {
-                            }
-
-                            //place to write data into acsii file
-                            gdBpmBOn = gdV_B.get(0);
-                            gdBpmCOn = gdV_C.get(0);
-
-                            gdBpmBOff = gdV_B.get(1);
-                            gdBpmCOff = gdV_C.get(1);
-
-                            double amplitude = ((Double) gdBpmBOn.getGraphProperty("PARAMETER_VALUE"));
-
-                            //1-st line - set date and time
-                            dateTimeField.setValue(new Date());
-
-                            String line = "Dt module ";
-                            line = line + cavIndex + dateTimeField.getText();
-
-                            line = line + " ";
-                            out.write(line);
-                            out.newLine();
-
-                            //2-nd line (nPoints for On) (Amplitude) (nPoints for Off)
-                            line = " ";
-                            line = line + intFormat.format(gdBpmBOn.getNumbOfPoints()) + " ";
-                            line = line + dblFormat.format(amplitude) + " ";
-                            line = line + intFormat.format(gdBpmBOff.getNumbOfPoints()) + " ";
-                            out.write(line);
-                            out.newLine();
-
-                            //3-rd line - x-array (phase values)
-                            line = " ";
-                            int nP = gdBpmBOn.getNumbOfPoints();
-                            for (int i = 0; i < nP; i++) {
-                                line = line + dblFormat.format(gdBpmBOn.getX(i)) + " ";
-                            }
-                            line = line + " ";
-                            out.write(line);
-                            out.newLine();
-
-                            //4-th line B-bpm phases for On
-                            line = " ";
-                            for (int i = 0; i < nP; i++) {
-                                line = line + dblFormat.format(gdBpmBOn.getY(i)) + " ";
-                            }
-                            line = line + " ";
-                            out.write(line);
-                            out.newLine();
-
-                            //5-th line C-bpm phases for On
-                            line = " ";
-                            for (int i = 0; i < nP; i++) {
-                                line = line + dblFormat.format(gdBpmCOn.getY(i)) + " ";
-                            }
-                            line = line + " ";
-                            out.write(line);
-                            out.newLine();
-
-                            //6-th line B-bpm phases for Off
-                            nP = gdBpmBOff.getNumbOfPoints();
-                            line = " ";
-                            for (int i = 0; i < nP; i++) {
-                                line = line + dblFormat.format(gdBpmBOff.getY(i)) + " ";
-                            }
-                            line = line + " ";
-                            out.write(line);
-                            out.newLine();
-
-                            //7-th line C-bpm phases for Off
-                            line = " ";
-                            for (int i = 0; i < nP; i++) {
-                                line = line + dblFormat.format(gdBpmCOff.getY(i)) + " ";
-                            }
-                            line = line + " ";
-                            out.write(line);
-                            out.newLine();
-
-                            out.flush();
-                            out.close();
-
-                        } catch (IOException exp) {
-                            Toolkit.getDefaultToolkit().beep();
-                            LOGGER.log(Level.WARNING, null, exp);
-                        }
-                    }
-                    messageTextLocal.setText(null);
+        exportDataButton.addActionListener(e -> {
+            if (canSaveASDTtable()) {
+                //save data as table
+                JFileChooser ch = new JFileChooser();
+                ch.setDialogTitle("Export data into dT procedure file");
+                if (dataFile != null) {
+                    ch.setSelectedFile(dataFile);
                 } else {
-                    Toolkit.getDefaultToolkit().beep();
-                    messageTextLocal.setText(null);
-                    messageTextLocal.setText("Cannot save data as an ASCII file for dT procedure."
-                            + " Clean and measure again!");
-                    Toolkit.getDefaultToolkit().beep();
+                    if (defaultPath != null) {
+                        File path = new File(defaultPath);
+                        if (path != null && path.exists()) {
+                            ch.setSelectedFile(path);
+                        }
+                    }
                 }
+                int returnVal = ch.showSaveDialog(parentAnalysisPanel);
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    dataFile = ch.getSelectedFile();
+                    defaultPath = dataFile.getAbsolutePath();
+                    try (BufferedWriter out = new BufferedWriter(new FileWriter(dataFile))) {
+                        Preferences pref = xal.tools.apputils.Preferences.nodeForPackage(this.getClass());
+
+                        defaultPath = dataFile.getAbsolutePath();
+                        pref.put(defaultPathName, defaultPath);
+                        pref.flush();
+
+                        //place to write data into acsii file
+                        gdBpmBOn = gdVB.get(0);
+                        gdBpmCOn = gdVC.get(0);
+
+                        gdBpmBOff = gdVB.get(1);
+                        gdBpmCOff = gdVC.get(1);
+
+                        double amplitude = ((Double) gdBpmBOn.getGraphProperty("PARAMETER_VALUE"));
+
+                        //1-st line - set date and time
+                        dateTimeField.setValue(new Date());
+
+                        String line = "Dt module ";
+                        StringBuilder builder = new StringBuilder();
+                        builder.append(line);
+                        builder.append(cavIndex).append(dateTimeField.getText()).append(" ");
+
+                        out.write(builder.toString());
+                        out.newLine();
+
+                        //2-nd line (nPoints for On) (Amplitude) (nPoints for Off)
+                        builder = new StringBuilder();
+                        builder.append(" ");
+                        builder.append(intFormat.format(gdBpmBOn.getNumbOfPoints())).append(" ");
+                        builder.append(dblFormat.format(amplitude)).append(" ");
+                        builder.append(intFormat.format(gdBpmBOff.getNumbOfPoints())).append(" ");
+
+                        out.write(builder.toString());
+                        out.newLine();
+
+                        //3-rd line - x-array (phase values)
+                        builder = new StringBuilder();
+                        builder.append(" ");
+                        int nP = gdBpmBOn.getNumbOfPoints();
+                        for (int i = 0; i < nP; i++) {
+                            builder.append(dblFormat.format(gdBpmBOn.getX(i))).append(" ");
+                        }
+                        builder.append(" ");
+                        out.write(builder.toString());
+                        out.newLine();
+
+                        //4-th line B-bpm phases for On
+                        builder = new StringBuilder();
+                        builder.append(" ");
+                        for (int i = 0; i < nP; i++) {
+                            builder.append(dblFormat.format(gdBpmBOn.getY(i))).append(" ");
+                        }
+                        builder.append(" ");
+                        out.write(builder.toString());
+                        out.newLine();
+
+                        //5-th line C-bpm phases for On
+                        builder = new StringBuilder();
+                        builder.append(" ");
+                        for (int i = 0; i < nP; i++) {
+                            builder.append(dblFormat.format(gdBpmCOn.getY(i))).append(" ");
+                        }
+                        builder.append(" ");
+                        out.write(builder.toString());
+                        out.newLine();
+
+                        //6-th line B-bpm phases for Off
+                        nP = gdBpmBOff.getNumbOfPoints();
+                        builder = new StringBuilder();
+                        builder.append(" ");
+                        for (int i = 0; i < nP; i++) {
+                            builder.append(dblFormat.format(gdBpmBOff.getY(i))).append(" ");
+                        }
+                        builder.append(" ");
+                        out.write(builder.toString());
+                        out.newLine();
+
+                        //7-th line C-bpm phases for Off
+                        builder = new StringBuilder();
+                        builder.append(" ");
+                        for (int i = 0; i < nP; i++) {
+                            builder.append(dblFormat.format(gdBpmCOff.getY(i))).append(" ");
+                        }
+                        builder.append(" ");
+                        out.write(builder.toString());
+                        out.newLine();
+
+                        out.flush();
+                    } catch (IOException exp) {
+                        Toolkit.getDefaultToolkit().beep();
+                        LOGGER.log(Level.WARNING, null, exp);
+                    } catch (BackingStoreException exp) {
+                        LOGGER.log(Level.WARNING, null, exp);
+                    }
+                }
+                messageTextLocal.setText(null);
+            } else {
+                Toolkit.getDefaultToolkit().beep();
+                messageTextLocal.setText(null);
+                messageTextLocal.setText("Cannot save data as an ASCII file for dT procedure."
+                        + " Clean and measure again!");
+                Toolkit.getDefaultToolkit().beep();
             }
         });
-
     }
 
     /**
      * Creates local analysis panel
      */
     private void makeLocalAnalysisPanel() {
-
         setToAccelButton.setForeground(Color.red);
 
         rfPhaseText.setNumberFormat(format);
@@ -689,13 +674,13 @@ public final class AnalysisCntrlTDProcedure extends AnalysisController {
         expSlopeText.setNumberFormat(format);
         energyStepText.setNumberFormat(format);
 
-        rfPhaseText.setHorizontalAlignment(JTextField.CENTER);
-        rfAmpText.setHorizontalAlignment(JTextField.CENTER);
-        inputEnergyDevText.setHorizontalAlignment(JTextField.CENTER);
-        currentAmpText.setHorizontalAlignment(JTextField.CENTER);
-        expSlopeText.setHorizontalAlignment(JTextField.CENTER);
-        rfPhaseText.setHorizontalAlignment(JTextField.CENTER);
-        energyStepText.setHorizontalAlignment(JTextField.CENTER);
+        rfPhaseText.setHorizontalAlignment(SwingConstants.CENTER);
+        rfAmpText.setHorizontalAlignment(SwingConstants.CENTER);
+        inputEnergyDevText.setHorizontalAlignment(SwingConstants.CENTER);
+        currentAmpText.setHorizontalAlignment(SwingConstants.CENTER);
+        expSlopeText.setHorizontalAlignment(SwingConstants.CENTER);
+        rfPhaseText.setHorizontalAlignment(SwingConstants.CENTER);
+        energyStepText.setHorizontalAlignment(SwingConstants.CENTER);
 
         rfPhaseText.setEditable(false);
         rfAmpText.setEditable(false);
@@ -730,95 +715,92 @@ public final class AnalysisCntrlTDProcedure extends AnalysisController {
         ampDevGraphPanel.setLegendButtonVisible(true);
 
         //compose panels
-        JPanel tmp_name = new JPanel(new GridLayout(3, 1));
+        JPanel tmpName = new JPanel(new GridLayout(3, 1));
 
-        tmp_name.add(moduleNameLabel);
-        tmp_name.add(bpm1NameLabel);
-        tmp_name.add(bpm2NameLabel);
-        tmp_name.setBorder(etchedBorder);
+        tmpName.add(moduleNameLabel);
+        tmpName.add(bpm1NameLabel);
+        tmpName.add(bpm2NameLabel);
+        tmpName.setBorder(etchedBorder);
 
-        JPanel tmp_0 = new JPanel(new GridLayout(2, 1));
-        tmp_0.add(rfPhaseText);
-        tmp_0.add(rfAmpText);
+        JPanel tmp0 = new JPanel(new GridLayout(2, 1));
+        tmp0.add(rfPhaseText);
+        tmp0.add(rfAmpText);
 
-        JPanel tmp_1 = new JPanel(new GridLayout(2, 1));
-        tmp_1.add(rfPhaseLabel);
-        tmp_1.add(rfAmpLabel);
+        JPanel tmp1 = new JPanel(new GridLayout(2, 1));
+        tmp1.add(rfPhaseLabel);
+        tmp1.add(rfAmpLabel);
 
-        JPanel tmp_2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        tmp_2.add(setToAccelButton);
+        JPanel tmp2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        tmp2.add(setToAccelButton);
 
-        JPanel tmp_3 = new JPanel(new BorderLayout());
-        tmp_3.add(tmp_0, BorderLayout.WEST);
-        tmp_3.add(tmp_1, BorderLayout.CENTER);
-        tmp_3.add(tmp_2, BorderLayout.SOUTH);
+        JPanel tmp3 = new JPanel(new BorderLayout());
+        tmp3.add(tmp0, BorderLayout.WEST);
+        tmp3.add(tmp1, BorderLayout.CENTER);
+        tmp3.add(tmp2, BorderLayout.SOUTH);
 
-        JPanel tmp_res = new JPanel(new BorderLayout());
-        tmp_res.add(tmp_3, BorderLayout.WEST);
-        tmp_res.setBorder(etchedBorder);
+        JPanel tmpRes = new JPanel(new BorderLayout());
+        tmpRes.add(tmp3, BorderLayout.WEST);
+        tmpRes.setBorder(etchedBorder);
 
-        JPanel tmp_top = new JPanel(new BorderLayout());
-        tmp_top.add(tmp_name, BorderLayout.WEST);
-        tmp_top.add(tmp_res, BorderLayout.CENTER);
+        JPanel tmpTop = new JPanel(new BorderLayout());
+        tmpTop.add(tmpName, BorderLayout.WEST);
+        tmpTop.add(tmpRes, BorderLayout.CENTER);
 
-        JPanel tmp_10 = new JPanel(new GridLayout(4, 1));
-        tmp_10.add(inputEnergyDevLabel);
-        tmp_10.add(currentAmpLabel);
-        tmp_10.add(expSlopeLabel);
-        tmp_10.add(energyStepLabel);
+        JPanel tmp10 = new JPanel(new GridLayout(4, 1));
+        tmp10.add(inputEnergyDevLabel);
+        tmp10.add(currentAmpLabel);
+        tmp10.add(expSlopeLabel);
+        tmp10.add(energyStepLabel);
 
-        JPanel tmp_11 = new JPanel(new GridLayout(4, 1));
-        tmp_11.add(inputEnergyDevText);
-        tmp_11.add(currentAmpText);
-        tmp_11.add(expSlopeText);
-        tmp_11.add(energyStepText);
+        JPanel tmp11 = new JPanel(new GridLayout(4, 1));
+        tmp11.add(inputEnergyDevText);
+        tmp11.add(currentAmpText);
+        tmp11.add(expSlopeText);
+        tmp11.add(energyStepText);
 
-        JPanel tmp_left_top = new JPanel(new BorderLayout());
-        tmp_left_top.setBorder(etchedBorder);
-        tmp_left_top.add(aMatrixSwitchButton, BorderLayout.NORTH);
-        tmp_left_top.add(tmp_10, BorderLayout.CENTER);
-        tmp_left_top.add(tmp_11, BorderLayout.WEST);
+        JPanel tmpLeftTop = new JPanel(new BorderLayout());
+        tmpLeftTop.setBorder(etchedBorder);
+        tmpLeftTop.add(aMatrixSwitchButton, BorderLayout.NORTH);
+        tmpLeftTop.add(tmp10, BorderLayout.CENTER);
+        tmpLeftTop.add(tmp11, BorderLayout.WEST);
 
-        JPanel tmp_20 = new JPanel(new BorderLayout());
-        tmp_20.setBorder(etchedBorder);
-        tmp_20.add(ampDevGraphPanel, BorderLayout.CENTER);
+        JPanel tmp20 = new JPanel(new BorderLayout());
+        tmp20.setBorder(etchedBorder);
+        tmp20.add(ampDevGraphPanel, BorderLayout.CENTER);
 
-        JPanel tmp_left = new JPanel(new BorderLayout());
-        tmp_left.add(tmp_left_top, BorderLayout.NORTH);
-        tmp_left.add(tmp_20, BorderLayout.CENTER);
+        JPanel tmpLeft = new JPanel(new BorderLayout());
+        tmpLeft.add(tmpLeftTop, BorderLayout.NORTH);
+        tmpLeft.add(tmp20, BorderLayout.CENTER);
 
-        JPanel tmp_30 = new JPanel(new BorderLayout());
-        tmp_30.setBorder(etchedBorder);
-        tmp_30.add(dphi12graphPanel, BorderLayout.CENTER);
+        JPanel tmp30 = new JPanel(new BorderLayout());
+        tmp30.setBorder(etchedBorder);
+        tmp30.add(dphi12graphPanel, BorderLayout.CENTER);
 
-        JPanel tmp_center = new JPanel(new BorderLayout());
-        tmp_center.add(tmp_30, BorderLayout.CENTER);
-        tmp_center.add(tmp_left, BorderLayout.EAST);
+        JPanel tmpCenter = new JPanel(new BorderLayout());
+        tmpCenter.add(tmp30, BorderLayout.CENTER);
+        tmpCenter.add(tmpLeft, BorderLayout.EAST);
 
         localAnalysisPanel.setLayout(new BorderLayout());
 
-        localAnalysisPanel.add(tmp_top, BorderLayout.NORTH);
-        localAnalysisPanel.add(tmp_center, BorderLayout.CENTER);
-
+        localAnalysisPanel.add(tmpTop, BorderLayout.NORTH);
+        localAnalysisPanel.add(tmpCenter, BorderLayout.CENTER);
     }
 
     /**
      * Reads theory data from data file
      *
-     * @param fileName_TheoryDataIn Description of the Parameter
+     * @param fileNameTheoryDataIn Description of the Parameter
      */
-    private void readTheoryData(String fileName_TheoryDataIn) {
+    private void readTheoryData(String fileNameTheoryDataIn) {
         theoryData.clean();
-        fileNameTheoryData = fileName_TheoryDataIn;
+        fileNameTheoryData = fileNameTheoryDataIn;
 
         URL dataURL = Application.getAdaptor().getResourceURL("data/delta_t/" + fileNameTheoryData);
 
-        try {
-            InputStream inps = dataURL.openStream();
+        try (InputStream inps = dataURL.openStream()) {
             BufferedReader in = new BufferedReader(new InputStreamReader(inps));
-
             String lineIn = in.readLine();
-            String[] dataS = null;
+            String[] dataS;
 
             while (lineIn != null) {
                 if (!lineIn.startsWith("%")) {
@@ -845,8 +827,6 @@ public final class AnalysisCntrlTDProcedure extends AnalysisController {
                 }
                 lineIn = in.readLine();
             }
-            in.close();
-
         } catch (IOException exception) {
             Toolkit.getDefaultToolkit().beep();
             messageTextLocal.setText(null);
@@ -885,37 +865,37 @@ public final class AnalysisCntrlTDProcedure extends AnalysisController {
         energyPosGd.setImmediateContainerUpdate(false);
         energyNegGd.setImmediateContainerUpdate(false);
 
-        boolean analysis_exists = false;
+        boolean analysisExists = false;
         if (bpm12ExGd.getNumbOfPoints() > 1) {
-            analysis_exists = true;
+            analysisExists = true;
         }
 
-        double y1 = 0.;
-        double y2 = 0.;
-        double x1 = 0.;
-        double x2 = 0.;
+        double y1;
+        double y2;
+        double x1;
+        double x2;
 
         //interpolation coefficients of experimental data for bpm1 and bpm2
-        double[][] coeff1 = null;
-        double[][] coeff2 = null;
+        double[][] coeff1;
+        double[][] coeff2;
 
-        if (!analysis_exists) {
+        if (!analysisExists) {
             //we have to calculate experimental data first
             bpm1ExGd.removeAllPoints();
             bpm2ExGd.removeAllPoints();
             bpm12ExGd.removeAllPoints();
 
             //calculate average phase for "off" state
-            double phi_1_avg_off = 0.;
-            double phi_2_avg_off = 0.;
+            double phi1AvgOff = 0.;
+            double phi2AvgOff = 0.;
             for (int i = 0; i < gdBpmBOff.getNumbOfPoints(); i++) {
-                phi_1_avg_off += gdBpmBOff.getY(i) / gdBpmBOff.getNumbOfPoints();
-                phi_2_avg_off += gdBpmCOff.getY(i) / gdBpmCOff.getNumbOfPoints();
+                phi1AvgOff += gdBpmBOff.getY(i) / gdBpmBOff.getNumbOfPoints();
+                phi2AvgOff += gdBpmCOff.getY(i) / gdBpmCOff.getNumbOfPoints();
             }
 
             for (int i = 0; i < gdBpmBOn.getNumbOfPoints(); i++) {
-                y1 = -(gdBpmBOn.getY(i) - phi_1_avg_off) - theoryData.getDeltaPhiIni1();
-                y2 = -(gdBpmCOn.getY(i) - phi_2_avg_off) - theoryData.getDeltaPhiIni2();
+                y1 = -(gdBpmBOn.getY(i) - phi1AvgOff) - theoryData.getDeltaPhiIni1();
+                y2 = -(gdBpmCOn.getY(i) - phi2AvgOff) - theoryData.getDeltaPhiIni2();
 
                 y1 += 180.;
                 while (y1 < 0.) {
@@ -1053,7 +1033,7 @@ public final class AnalysisCntrlTDProcedure extends AnalysisController {
         int nEpMin = ((int) (energyMin / energyStep)) - 1;
         int nEpMax = ((int) (energyMax / energyStep)) + 1;
 
-        double enrg = 0.;
+        double enrg;
         energyPosGd.removeAllPoints();
         energyNegGd.removeAllPoints();
         if (Math.abs(nEpMax - nEpMin) < 100) {
@@ -1303,7 +1283,5 @@ public final class AnalysisCntrlTDProcedure extends AnalysisController {
             deltaPhiIniBpm1 = 0.0;
             deltaPhiIniBpm2 = 0.0;
         }
-
     }
-
 }

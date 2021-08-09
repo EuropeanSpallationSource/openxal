@@ -17,9 +17,9 @@ import xal.ca.*;
  * @version July 29, 2005
  */
 public class MonitoredArrayPV {
-    
+
     private final Object lockObj = new Object();
-    
+
     private Object syncObj = new Object();
 
     private double[] vals = new double[0];
@@ -36,38 +36,32 @@ public class MonitoredArrayPV {
      * Constructor for the MonitoredArrayPV object.
      */
     public MonitoredArrayPV() {
-        updateListener
-                = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                synchronized (lockObj) {
+        updateListener = e -> {
+            synchronized (lockObj) {
 
-                    MonitoredPVEvent mpvEvt = (MonitoredPVEvent) e.getSource();
+                MonitoredPVEvent mpvEvt = (MonitoredPVEvent) e.getSource();
 
-                    if (!switchOn) {
-                        if (vals.length != 0) {
-                            vals = new double[0];
-                        }
-                        return;
-                    }
-
-                    if (mpv != null && mpv.isGood()) {
-                        ChannelRecord record = mpvEvt.getChannelRecord();
-                        double[] localVals = new double[0];
-
-                        if (record != null) {
-                            localVals = record.doubleArray();
-                        }
-
-                        if (localVals.length != vals.length) {
-                            vals = new double[localVals.length];
-                        }
-                        for (int i = 0; i < localVals.length; i++) {
-                            vals[i] = localVals[i];
-                        }
-                    } else {
+                if (!switchOn) {
+                    if (vals.length != 0) {
                         vals = new double[0];
                     }
+                    return;
+                }
+
+                if (mpv != null && mpv.isGood()) {
+                    ChannelRecord channelRecord = mpvEvt.getChannelRecord();
+                    double[] localVals = new double[0];
+
+                    if (channelRecord != null) {
+                        localVals = channelRecord.doubleArray();
+                    }
+
+                    if (localVals.length != vals.length) {
+                        vals = new double[localVals.length];
+                    }
+                    System.arraycopy(localVals, 0, vals, 0, localVals.length);
+                } else {
+                    vals = new double[0];
                 }
             }
         };
@@ -225,5 +219,4 @@ public class MonitoredArrayPV {
             super.finalize();
         }
     }
-
 }

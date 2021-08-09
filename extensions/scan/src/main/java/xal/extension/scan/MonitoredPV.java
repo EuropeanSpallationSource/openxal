@@ -61,7 +61,7 @@ public class MonitoredPV {
      * market used to indicate whether the value has changed since the last
      * reset
      */
-    volatile private boolean valueChanged;
+    private volatile boolean valueChanged;
 
     /**
      * the current value (either monitored or set)
@@ -341,8 +341,8 @@ public class MonitoredPV {
     /**
      * Make an event for the given record and channel
      */
-    ActionEvent makeEvent(final ChannelTimeRecord record, final Channel channel) {
-        return new MonitoredPVEvent(this, record, channel);
+    ActionEvent makeEvent(final ChannelTimeRecord channelRecord, final Channel channel) {
+        return new MonitoredPVEvent(this, channelRecord, channel);
     }
 
     /**
@@ -381,12 +381,12 @@ public class MonitoredPV {
          * Callback for channel monitor events
          */
         @Override
-        public void channelRecordUpdate(final ScanChannelMonitor monitor, final ChannelTimeRecord record) {
-            final double value = record.doubleValue();
+        public void channelRecordUpdate(final ScanChannelMonitor monitor, final ChannelTimeRecord channelRecord) {
+            final double value = channelRecord.doubleValue();
             MonitoredPV.this.currentValue = value;
             MonitoredPV.this.valueChanged = true;
             MonitoredPV.this.latestEventSuccessful = true;
-            final ActionEvent valueChangedAction = makeEvent(record, monitor.getChannel());
+            final ActionEvent valueChangedAction = makeEvent(channelRecord, monitor.getChannel());
             valueEventDispatch.actionPerformed(valueChangedAction);
         }
     }

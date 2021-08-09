@@ -41,22 +41,22 @@ public class ScanChannelMonitor {
     /**
      * indicates whether this wrapper is viable or disposed
      */
-    volatile private boolean viable;
+    private volatile boolean viable;
 
     /**
      * indicates whether the monitor is allowed
      */
-    volatile private boolean allowsMonitor;
+    private volatile boolean allowsMonitor;
 
     /**
      * handler of the monitor events
      */
-    volatile private ScanChannelMonitorDelegate delegate;
+    private volatile ScanChannelMonitorDelegate delegate;
 
     /**
      * latest record captured
      */
-    volatile private ChannelTimeRecord latestRecord;
+    private volatile ChannelTimeRecord latestRecord;
 
     /**
      * Constructor with null delegate
@@ -224,12 +224,12 @@ public class ScanChannelMonitor {
          * Handle monitor event
          */
         @Override
-        public void eventValue(final ChannelTimeRecord record, final Channel channel) {
-            latestRecord = record;
+        public void eventValue(final ChannelTimeRecord channelRecord, final Channel channel) {
+            latestRecord = channelRecord;
 
             if (delegate != null) {
                 // forward the event to the delegate
-                delegate.channelRecordUpdate(ScanChannelMonitor.this, record);
+                delegate.channelRecordUpdate(ScanChannelMonitor.this, channelRecord);
             }
         }
     }

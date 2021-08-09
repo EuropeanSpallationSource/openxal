@@ -56,27 +56,11 @@ public final class AnalysisCntrlManagement extends AnalysisController {
     }
 
     /**
-     * Sets the configurations of the analysis.
-     */
-    @Override
-    public void dumpAnalysisConfig(DataAdaptor analysisConfig) {
-        super.dumpAnalysisConfig(analysisConfig);
-    }
-
-    /**
-     * Sets fonts for all GUI elements.
-     */
-    @Override
-    public void setFontsForAll(Font fnt) {
-        super.setFontsForAll(fnt);
-    }
-
-    /**
      * Does what necessary for close this analysis window.
      */
     @Override
-    public void ShutUp() {
-        super.ShutUp();
+    public void shutUp() {
+        super.shutUp();
         customControlPanel.removeAll();
         customGraphPanel.removeAll();
     }
@@ -86,18 +70,10 @@ public final class AnalysisCntrlManagement extends AnalysisController {
      * overridden, because it is empty here.
      */
     @Override
-    public void ShowUp() {
-        super.ShowUp();
+    public void showUp() {
+        super.showUp();
         customControlPanel.add(dataReaderPanel, BorderLayout.NORTH);
         customGraphPanel.add(graphAnalysis, BorderLayout.CENTER);
         customGraphPanel.add(globalButtonsPanel, BorderLayout.SOUTH);
-    }
-
-    /**
-     * Updates data on the analysis graph panel.
-     */
-    @Override
-    public void updateDataSetOnGraphPanel() {
-        super.updateDataSetOnGraphPanel();
     }
 }

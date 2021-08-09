@@ -17,8 +17,8 @@ public class ValidationController {
     private DecimalFormat limFormat = new DecimalFormat("###.###");
 
     private JRadioButton validationButton = new JRadioButton("Validation:");
-    private JLabel lowLimLabel = new JLabel(" low=", JLabel.CENTER);
-    private JLabel uppLimLabel = new JLabel(" upp=", JLabel.CENTER);
+    private JLabel lowLimLabel = new JLabel(" low=", SwingConstants.CENTER);
+    private JLabel uppLimLabel = new JLabel(" upp=", SwingConstants.CENTER);
 
     private JPanel validatorLimitsPanel = new JPanel();
 
@@ -41,8 +41,8 @@ public class ValidationController {
     public void init(double lowLimIn, double uppLimIn) {
         lowLim = lowLimIn;
         uppLim = uppLimIn;
-        lowLimText.setHorizontalAlignment(JTextField.CENTER);
-        uppLimText.setHorizontalAlignment(JTextField.CENTER);
+        lowLimText.setHorizontalAlignment(SwingConstants.CENTER);
+        uppLimText.setHorizontalAlignment(SwingConstants.CENTER);
         lowLimText.setNormalBackground(Color.white);
         uppLimText.setNormalBackground(Color.white);
 
@@ -58,34 +58,25 @@ public class ValidationController {
 
         changeEvent = new ChangeEvent(this);
 
-        lowLimText.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                lowLim = lowLimText.getValue();
-                notifyChanges();
-            }
+        lowLimText.addActionListener(e -> {
+            lowLim = lowLimText.getValue();
+            notifyChanges();
         });
 
-        uppLimText.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                uppLim = uppLimText.getValue();
-                notifyChanges();
-            }
+        uppLimText.addActionListener(e -> {
+            uppLim = uppLimText.getValue();
+            notifyChanges();
         });
 
-        validationButton.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    setOnOff(true);
-                    lowLimText.setEditable(true);
-                    uppLimText.setEditable(true);
-                } else {
-                    setOnOff(false);
-                    lowLimText.setEditable(false);
-                    uppLimText.setEditable(false);
-                }
+        validationButton.addItemListener(e -> {
+            if (e.getStateChange() == ItemEvent.SELECTED) {
+                setOnOff(true);
+                lowLimText.setEditable(true);
+                uppLimText.setEditable(true);
+            } else {
+                setOnOff(false);
+                lowLimText.setEditable(false);
+                uppLimText.setEditable(false);
             }
         });
 
@@ -217,29 +208,26 @@ public class ValidationController {
     public static void main(String[] args) {
         JFrame mainFrame = new JFrame("Valuator Limits Manager Class");
         mainFrame.addWindowListener(
-                new java.awt.event.WindowAdapter() {
+                new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent evt) {
                 System.exit(0);
             }
-        }
-        );
+        });
 
         mainFrame.getContentPane().setLayout(new BorderLayout());
 
-        JPanel tmp_p = new JPanel();
-        tmp_p.setLayout(new BorderLayout());
-        mainFrame.getContentPane().add(tmp_p, BorderLayout.WEST);
+        JPanel tmpP = new JPanel();
+        tmpP.setLayout(new BorderLayout());
+        mainFrame.getContentPane().add(tmpP, BorderLayout.WEST);
 
         ValidationController vm = new ValidationController(0.0, 20.0);
         JPanel vmPanel = vm.getJPanel();
         vmPanel.setBackground(Color.getHSBColor(0.9f, 0.9f, 0.9f));
-        tmp_p.add(vmPanel, BorderLayout.NORTH);
+        tmpP.add(vmPanel, BorderLayout.NORTH);
 
         mainFrame.pack();
         mainFrame.setSize(new Dimension(300, 430));
         mainFrame.setVisible(true);
-
     }
-
 }
