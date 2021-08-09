@@ -153,7 +153,7 @@ public class ActionFactory {
      * @see #openRecentHandler
      */
     protected static Action openURLAction(final String urlSpec) {
-        final Action action = new AbstractAction("open-file") {
+        return new AbstractAction("open-file") {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -161,8 +161,6 @@ public class ActionFactory {
                 Application.getApp().openURL(urlSpec);
             }
         };
-
-        return action;
     }
 
     /**
@@ -220,6 +218,7 @@ public class ActionFactory {
              */
             @Override
             public void menuCanceled(final MenuEvent event) {
+                //Do nothing
             }
 
             /**
@@ -227,6 +226,7 @@ public class ActionFactory {
              */
             @Override
             public void menuDeselected(final MenuEvent event) {
+                //Do nothing
             }
         };
 
@@ -259,14 +259,17 @@ public class ActionFactory {
 
             @Override
             public void hasChangesChanged(final XalDocument document, final boolean newHasChangesStatus) {
+                //Do nothing
             }
 
             @Override
             public void documentWillClose(final XalDocument document) {
+                //Do nothing
             }
 
             @Override
             public void documentHasClosed(final XalDocument document) {
+                //Do nothing
             }
         });
 
@@ -307,7 +310,7 @@ public class ActionFactory {
      * @return An action that closes all documents in the application
      */
     static Action closeAllDocumentsAction() {
-        final Action action = new AbstractAction("close-all-documents") {
+        return new AbstractAction("close-all-documents") {
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -315,8 +318,6 @@ public class ActionFactory {
                 Application.getApp().closeAllDocuments();
             }
         };
-
-        return action;
     }
 
     /**
@@ -345,19 +346,23 @@ public class ActionFactory {
         document.addXalDocumentListener(new XalDocumentListener() {
             @Override
             public void titleChanged(final XalDocument document, final String newTitle) {
+                //Do nothing
             }
 
             @Override
             public void hasChangesChanged(final XalDocument document, final boolean newHasChangesStatus) {
+                //Do nothing
                 action.setEnabled(document.hasChanges());
             }
 
             @Override
             public void documentWillClose(final XalDocument document) {
+                //Do nothing
             }
 
             @Override
             public void documentHasClosed(final XalDocument document) {
+                //Do nothing
             }
         });
 
@@ -393,6 +398,7 @@ public class ActionFactory {
         document.addXalInternalDocumentListener(new XalInternalDocumentListener() {
             @Override
             public void titleChanged(final XalInternalDocument document, final String newTitle) {
+                //Do nothing
             }
 
             @Override
@@ -402,18 +408,22 @@ public class ActionFactory {
 
             @Override
             public void documentWillClose(final XalInternalDocument document) {
+                //Do nothing
             }
 
             @Override
             public void documentHasClosed(final XalInternalDocument document) {
+                //Do nothing
             }
 
             @Override
             public void documentActivated(XalInternalDocument document) {
+                //Do nothing
             }
 
             @Override
             public void documentDeactivated(XalInternalDocument document) {
+                //Do nothing
             }
         });
 
@@ -502,10 +512,12 @@ public class ActionFactory {
 
             @Override
             public void documentWillClose(final XalDocument document) {
+                //Do nothing
             }
 
             @Override
             public void documentHasClosed(final XalDocument document) {
+                //Do nothing
             }
 
             public boolean shouldEnableRevert() {
@@ -549,10 +561,12 @@ public class ActionFactory {
 
             @Override
             public void documentWillClose(final XalInternalDocument document) {
+                //Do nothing
             }
 
             @Override
             public void documentHasClosed(final XalInternalDocument document) {
+                //Do nothing
             }
 
             public boolean shouldEnableRevert() {
@@ -561,10 +575,12 @@ public class ActionFactory {
 
             @Override
             public void documentActivated(XalInternalDocument document) {
+                //Do nothing
             }
 
             @Override
             public void documentDeactivated(XalInternalDocument document) {
+                //Do nothing
             }
         });
 
@@ -647,7 +663,6 @@ public class ActionFactory {
                 final TransferHandler transferHandler = focusTracker.getLastTransferHandler();
                 if (transferHandler != null) {
                     final JComponent sourceComponent = focusTracker.getLastFocusedComponent();
-                    final int supportedActions = transferHandler.getSourceActions(sourceComponent);
                     if (canPerformCopyOnComponent(sourceComponent)) {
                         transferHandler.exportToClipboard(sourceComponent, Toolkit.getDefaultToolkit().getSystemClipboard(), TransferHandler.COPY);
                     } else {
@@ -660,12 +675,7 @@ public class ActionFactory {
         action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionFactory.MENU_KEY_SHORTCUT_MASK));
         action.setEnabled(canPerformCopyOnComponent(focusTracker.getLastFocusedComponent()));
 
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", new PropertyChangeListener() {
-            @Override
-            public void propertyChange(final PropertyChangeEvent event) {
-                action.setEnabled(canPerformCopyOnComponent(focusTracker.getLastFocusedComponent()));
-            }
-        });
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", event -> action.setEnabled(canPerformCopyOnComponent(focusTracker.getLastFocusedComponent())));
 
         return action;
     }
@@ -717,12 +727,7 @@ public class ActionFactory {
         action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionFactory.MENU_KEY_SHORTCUT_MASK));
         action.setEnabled(canPerformCutOnComponent(focusTracker.getLastFocusedComponent()));
 
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", new PropertyChangeListener() {
-            @Override
-            public void propertyChange(final PropertyChangeEvent event) {
-                action.setEnabled(canPerformCutOnComponent(focusTracker.getLastFocusedComponent()));
-            }
-        });
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", event -> action.setEnabled(canPerformCutOnComponent(focusTracker.getLastFocusedComponent())));
 
         return action;
     }
@@ -768,12 +773,7 @@ public class ActionFactory {
         action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionFactory.MENU_KEY_SHORTCUT_MASK));
         action.setEnabled(canPerformPasteOnComponent(focusTracker.getLastFocusedComponent()));
 
-        KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", new PropertyChangeListener() {
-            @Override
-            public void propertyChange(final PropertyChangeEvent event) {
-                action.setEnabled(canPerformPasteOnComponent(focusTracker.getLastFocusedComponent()));
-            }
-        });
+        KeyboardFocusManager.getCurrentKeyboardFocusManager().addPropertyChangeListener("permanentFocusOwner", event -> action.setEnabled(canPerformPasteOnComponent(focusTracker.getLastFocusedComponent())));
 
         return action;
     }
@@ -812,7 +812,9 @@ public class ActionFactory {
 
         try {
             // need to suppress raw types
-            Application.getAdaptor().getClass().getDeclaredMethod("editPreferences", new Class[]{XalDocument.class});
+            Application.getAdaptor().getClass().getDeclaredMethod("editPreferences", new Class[]{XalDocument.class
+
+            });
             action.setEnabled(true);
         } catch (NoSuchMethodException exception) {
             action.setEnabled(false);
@@ -839,7 +841,9 @@ public class ActionFactory {
 
         try {
             // need to suppress rawtypes
-            Application.getAdaptor().getClass().getDeclaredMethod("editPreferences", new Class[]{XalInternalDocument.class});
+            Application.getAdaptor().getClass().getDeclaredMethod("editPreferences", new Class[]{XalInternalDocument.class
+
+            });
             action.setEnabled(true);
         } catch (NoSuchMethodException exception) {
             action.setEnabled(false);
@@ -889,7 +893,7 @@ public class ActionFactory {
      * @return An action that updates the list of open documents
      */
     static MenuListener documentsHandler() {
-        MenuListener handler = new MenuListener() {
+        return new MenuListener() {
             /**
              * MenuListener interface
              */
@@ -911,6 +915,7 @@ public class ActionFactory {
              */
             @Override
             public void menuCanceled(final MenuEvent event) {
+                //Do nothing
             }
 
             /**
@@ -918,10 +923,9 @@ public class ActionFactory {
              */
             @Override
             public void menuDeselected(final MenuEvent event) {
+                //Do nothing
             }
         };
-
-        return handler;
     }
 
     /**
@@ -1057,6 +1061,7 @@ public class ActionFactory {
         action.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke(KeyEvent.VK_HELP, 0));
 
         return action;
+
     }
 }
 
@@ -1082,27 +1087,27 @@ class ComponentFocusTracker {
      */
     public void refresh() {
         final KeyboardFocusManager keyboardManager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
-        final Window focusedWindow = keyboardManager.getFocusedWindow();
+        final Window theFocusedWindow = keyboardManager.getFocusedWindow();
         final Component component = keyboardManager.getPermanentFocusOwner();
 
         // if the window changes, accept the new focused swing component
-        if (focusedWindow != this.focusedWindow) {
+        if (theFocusedWindow != this.focusedWindow) {
             if (component != null) {
                 // only accept swing components
                 lastFocusedComponent = component instanceof JComponent ? (JComponent) component : null;
             } else {
                 lastFocusedComponent = null;
             }
-        // don't consider buttons as having meaningful focus for editing
+            // don't consider buttons as having meaningful focus for editing
         } else if (component == null || component instanceof AbstractButton) {
-        // only accept swing components
+            // only accept swing components
         } else if (component instanceof JComponent) {
             lastFocusedComponent = (JComponent) component;
         } else {
             lastFocusedComponent = null;
         }
 
-        this.focusedWindow = focusedWindow;
+        this.focusedWindow = theFocusedWindow;
     }
 
     /**

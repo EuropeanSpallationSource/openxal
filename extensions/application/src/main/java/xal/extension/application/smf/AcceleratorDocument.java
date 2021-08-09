@@ -40,7 +40,7 @@ public abstract class AcceleratorDocument extends XalDocument {
     /**
      * Creates a new instance of AcceleratorDocument
      */
-    public AcceleratorDocument() {
+    protected AcceleratorDocument() {
         super();
         accelerator = null;
         acceleratorFilePath = null;
@@ -288,6 +288,7 @@ public abstract class AcceleratorDocument extends XalDocument {
      * nothing.
      */
     public void acceleratorChanged() {
+        //Do nothing
     }
 
     /**
@@ -296,6 +297,7 @@ public abstract class AcceleratorDocument extends XalDocument {
      * nothing.
      */
     public void selectedSequenceChanged() {
+        //Do nothing
     }
 
     /**
@@ -304,6 +306,7 @@ public abstract class AcceleratorDocument extends XalDocument {
      * handler does nothing.
      */
     public void acceleratorFilePathChanged() {
+        //Do nothing
     }
 
     /**
@@ -312,13 +315,13 @@ public abstract class AcceleratorDocument extends XalDocument {
     protected void catchXmlDataAdaptorException(WriteException exception) {
         if (exception.getCause() instanceof FileNotFoundException) {
             LOGGER.log(Level.SEVERE, "Save failed due to a file access exception!", exception);
-            displayError("Save Failed!", "Save failed due to a file access exception!", exception);
+            displayError(SAVE_FAILED_TITLE, "Save failed due to a file access exception!", exception);
         } else if (exception.getCause() instanceof IOException) {
             LOGGER.log(Level.SEVERE, "Save failed due to a file IO exception!", exception);
-            displayError("Save Failed!", "Save failed due to a file IO exception!", exception);
+            displayError(SAVE_FAILED_TITLE, "Save failed due to a file IO exception!", exception);
         } else {
             LOGGER.log(Level.SEVERE, "Save failed due to an internal write exception!", exception);
-            displayError("Save Failed!", "Save failed due to an internal write exception!", exception);
+            displayError(SAVE_FAILED_TITLE, "Save failed due to an internal write exception!", exception);
         }
     }
 }

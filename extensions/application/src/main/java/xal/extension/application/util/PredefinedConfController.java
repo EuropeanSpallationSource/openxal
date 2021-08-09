@@ -48,7 +48,7 @@ public class PredefinedConfController {
 
     private JTree tree = null;
 
-    private JLabel titleLabel = new JLabel("==Predefined Configurations Selection Panel==", JLabel.CENTER);
+    private JLabel titleLabel = new JLabel("==Predefined Configurations Selection Panel==", SwingConstants.CENTER);
 
     //external action listener
     private ActionListener extSelectionListener = null;
@@ -90,23 +90,19 @@ public class PredefinedConfController {
             tree.setCellRenderer(render);
 
             //Listen for when the selection changes.
-            tree.addTreeSelectionListener(
-                    new TreeSelectionListener() {
-                @Override
-                public void valueChanged(TreeSelectionEvent e) {
-                    LOGGER.log(Level.INFO, "Configuration item selected...");
-                    ConfigNode node = (ConfigNode) tree.getLastSelectedPathComponent();
-                    if (node == null) {
-                        return;
-                    }
-                    configFileURL = null;
-                    if (node.isConfig()) {
-                        String fileName = node.getURL_String();
-                        configFileURL = Application.getAdaptor().getResourceURL(resourcePath + "/" + fileName);
-                    }
-                    descriptionText.setText(null);
-                    descriptionText.setText("Description: " + node.getDescription());
+            tree.addTreeSelectionListener(e -> {
+                LOGGER.log(Level.INFO, "Configuration item selected...");
+                ConfigNode node = (ConfigNode) tree.getLastSelectedPathComponent();
+                if (node == null) {
+                    return;
                 }
+                configFileURL = null;
+                if (node.isConfig()) {
+                    String fileName = node.getURLString();
+                    configFileURL = Application.getAdaptor().getResourceURL(resourcePath + "/" + fileName);
+                }
+                descriptionText.setText(null);
+                descriptionText.setText("Description: " + node.getDescription());
             });
 
             //Mouse listener for tree
@@ -124,7 +120,7 @@ public class PredefinedConfController {
                         ConfigNode node = (ConfigNode) value;
                         configFileURL = null;
                         if (node.isConfig()) {
-                            String fileName = node.getURL_String();
+                            String fileName = node.getURLString();
                             configFileURL = Application.getAdaptor().getResourceURL(resourcePath + "/" + fileName);
                             URL url = getSelectedConfigFileURL();
                             if (extSelectionListener != null && url != null) {
@@ -155,22 +151,18 @@ public class PredefinedConfController {
             //set button
             setConfigButton.setForeground(Color.red);
             ActionListener internalListener
-                    = new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    URL url = getSelectedConfigFileURL();
-                    if (extSelectionListener != null && url != null) {
-                        ActionEvent actEvnt = new ActionEvent(url, 0, "selected");
-                        extSelectionListener.actionPerformed(actEvnt);
-                    } else {
-                        LOGGER.log(Level.INFO, "url: " + url + ", external selection listener: " + extSelectionListener);
-                        messageText.setText(null);
-                        messageText.setText("Please, select a configuration from the tree.");
-                        Toolkit.getDefaultToolkit().beep();
-                    }
-
-                }
-            };
+                    = e -> {
+                        URL url = getSelectedConfigFileURL();
+                        if (extSelectionListener != null && url != null) {
+                            ActionEvent actEvnt = new ActionEvent(url, 0, "selected");
+                            extSelectionListener.actionPerformed(actEvnt);
+                        } else {
+                            LOGGER.log(Level.INFO, "url: {0}, external selection listener: {1}", new Object[]{url, extSelectionListener});
+                            messageText.setText(null);
+                            messageText.setText("Please, select a configuration from the tree.");
+                            Toolkit.getDefaultToolkit().beep();
+                        }
+                    };
 
             setConfigButton.addActionListener(internalListener);
 
@@ -280,15 +272,15 @@ public class PredefinedConfController {
         /**
          * Constructor for the ConfigNode object
          *
-         * @param DA Description of the Parameter
+         * @param da Description of the Parameter
          */
-        public ConfigNode(XmlDataAdaptor DA) {
-            if (DA != null) {
-                java.util.List<DataAdaptor> childList = DA.childAdaptors();
-                descriptionText = DA.stringValue("text");
-                treeName = DA.stringValue("tree_name");
-                if (DA.hasAttribute("url")) {
-                    urlString = DA.stringValue("url");
+        public ConfigNode(XmlDataAdaptor da) {
+            if (da != null) {
+                java.util.List<DataAdaptor> childList = da.childAdaptors();
+                descriptionText = da.stringValue("text");
+                treeName = da.stringValue("tree_name");
+                if (da.hasAttribute("url")) {
+                    urlString = da.stringValue("url");
                     isConfigutation = true;
                 }
                 for (int i = 0; i < childList.size(); i++) {
@@ -331,7 +323,7 @@ public class PredefinedConfController {
          *
          * @return The uRL_String value
          */
-        public String getURL_String() {
+        public String getURLString() {
             return urlString;
         }
 
@@ -346,12 +338,6 @@ public class PredefinedConfController {
      * @author shishlo
      */
     private static class ConfigNodeCellRenderer implements TreeCellRenderer {
-
-        /**
-         * Constructor for the ConfigNodeCellRenderer object
-         */
-        public ConfigNodeCellRenderer() {
-        }
 
         /**
          * Gets the treeCellRendererComponent attribute of the
@@ -382,18 +368,17 @@ public class PredefinedConfController {
             ConfigNode confNode = (ConfigNode) value;
 
             if (confNode.isConfig()) {
-                JLabel confLabel = new JLabel("Config.:", JLabel.LEFT);
+                JLabel confLabel = new JLabel("Config.:", SwingConstants.LEFT);
                 confLabel.setFont(fnt);
                 confLabel.setForeground(Color.blue);
-                JLabel nameLabel = new JLabel(confNode.getTreeName(), JLabel.LEFT);
+                JLabel nameLabel = new JLabel(confNode.getTreeName(), SwingConstants.LEFT);
                 nameLabel.setFont(fnt);
                 treecell.add(confLabel);
                 treecell.add(nameLabel);
             } else {
-                JLabel nameLabel = new JLabel(confNode.getTreeName(), JLabel.LEFT);
+                JLabel nameLabel = new JLabel(confNode.getTreeName(), SwingConstants.LEFT);
                 nameLabel.setFont(fnt);
                 treecell.add(nameLabel);
-
             }
 
             if (selected) {
@@ -403,5 +388,4 @@ public class PredefinedConfController {
             return treecell;
         }
     }
-
 }

@@ -132,7 +132,7 @@ class ComboSequenceComposer {
      * @param owner the window that owns the sequence selector
      */
     // need to cast from untyped JList
-    @SuppressWarnings("unchecked")        
+    @SuppressWarnings("unchecked")
     public static AcceleratorSeqCombo composeComboSequence(final Accelerator accelerator, final JFrame owner) {
         final ComboSequenceComposer composer = new ComboSequenceComposer(accelerator);
 
@@ -145,20 +145,12 @@ class ComboSequenceComposer {
         final JTextField comboNameField = (JTextField) windowReference.getView("Combo Name Field");
 
         final JButton cancelButton = (JButton) windowReference.getView("CancelButton");
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                dialog.setVisible(false);
-            }
-        });
+        cancelButton.addActionListener(event -> dialog.setVisible(false));
 
         final JButton okayButton = (JButton) windowReference.getView("OkayButton");
-        okayButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                composer.setConfirmed(true);
-                dialog.setVisible(false);
-            }
+        okayButton.addActionListener(event -> {
+            composer.setConfirmed(true);
+            dialog.setVisible(false);
         });
 
         final Vector<String> sequenceNames = new Vector<>();
@@ -168,31 +160,25 @@ class ComboSequenceComposer {
 
         final JList<String> startSequenceList = (JList<String>) windowReference.getView("Start Sequence List");
         startSequenceList.setListData(sequenceNames);
-        startSequenceList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(final ListSelectionEvent event) {
-                if (!event.getValueIsAdjusting()) {
-                    final Object selection = startSequenceList.getSelectedValue();
-                    final AcceleratorSeq sequence = selection != null ? accelerator.getSequence(selection.toString()) : null;
-                    composer.setStartSequence(sequence);
-                    comboNameField.setText(composer.suggestedComboName());
-                    okayButton.setEnabled(composer.isValidCombo());
-                }
+        startSequenceList.addListSelectionListener(event -> {
+            if (!event.getValueIsAdjusting()) {
+                final Object selection = startSequenceList.getSelectedValue();
+                final AcceleratorSeq sequence = selection != null ? accelerator.getSequence(selection.toString()) : null;
+                composer.setStartSequence(sequence);
+                comboNameField.setText(composer.suggestedComboName());
+                okayButton.setEnabled(composer.isValidCombo());
             }
         });
 
         final JList<String> endSequenceList = (JList<String>) windowReference.getView("End Sequence List");
         endSequenceList.setListData(sequenceNames);
-        endSequenceList.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(final ListSelectionEvent event) {
-                if (!event.getValueIsAdjusting()) {
-                    final Object selection = endSequenceList.getSelectedValue();
-                    final AcceleratorSeq sequence = selection != null ? accelerator.getSequence(selection.toString()) : null;
-                    composer.setEndSequence(sequence);
-                    comboNameField.setText(composer.suggestedComboName());
-                    okayButton.setEnabled(composer.isValidCombo());
-                }
+        endSequenceList.addListSelectionListener(event -> {
+            if (!event.getValueIsAdjusting()) {
+                final Object selection = endSequenceList.getSelectedValue();
+                final AcceleratorSeq sequence = selection != null ? accelerator.getSequence(selection.toString()) : null;
+                composer.setEndSequence(sequence);
+                comboNameField.setText(composer.suggestedComboName());
+                okayButton.setEnabled(composer.isValidCombo());
             }
         });
 

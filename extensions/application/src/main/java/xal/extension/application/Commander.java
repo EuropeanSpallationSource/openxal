@@ -42,6 +42,7 @@ public class Commander {
      * name for the menu definition resource which may or may not exist
      */
     public static final String MENU_DEFINITION_RESOURCE = "menudef.properties";
+    private static final String ACTION_PROP = "action";
 
     private static final Logger LOGGER = Logger.getLogger(Commander.class.getName());
 
@@ -319,7 +320,7 @@ public class Commander {
             } else if (menuItemKey.startsWith("^")) {
                 JMenuItem menuItem = makeMenu(menuItemKey.substring(1));
                 menu.add(menuItem);
-            // an asterisk identifies a radio button group of menu items
+                // an asterisk identifies a radio button group of menu items
             } else if (menuItemKey.startsWith("*")) {
                 addMenuItemsFromGroup(menu, menuItemKey.substring(1));
             } else {
@@ -397,14 +398,14 @@ public class Commander {
             }
             if (buttonKey.equals("-")) {
                 toolBar.addSeparator();
-            // an asterisk identifies a toggle button group
+                // an asterisk identifies a toggle button group
             } else if (buttonKey.startsWith("*")) {
                 addToolbarItemsFromGroup(toolBar, buttonKey.substring(1));
             } else {
                 final String label = getLabel(buttonKey);
                 AbstractButton button;
 
-                final String actionKey = getItemFieldProperty(buttonKey, "action");
+                final String actionKey = getItemFieldProperty(buttonKey, ACTION_PROP);
                 if (actionKey != null) {
                     final ButtonModel model = buttonModelMap.get(actionKey);
                     final Action action = (Action) commands.get(actionKey);
@@ -476,13 +477,13 @@ public class Commander {
             final String label = getLabel(itemKey);
             JToggleButton button = new JToggleButton(label);
 
-            String actionKey = getItemFieldProperty(itemKey, "action");
+            String actionKey = getItemFieldProperty(itemKey, ACTION_PROP);
             if (actionKey != null) {
                 final Action action = (Action) commands.get(actionKey);
                 button.setAction(action);
 
                 final ButtonModel model = buttonModelMap.get(actionKey);
-                if (model != null && (model instanceof ToggleButtonModel)) {
+                if (model instanceof ToggleButtonModel) {
                     button.setModel(model);
                     buttonGroup.add(button);
                 } else {
@@ -560,7 +561,7 @@ public class Commander {
         try {
             return menuHandlerKey != null ? (MenuListener) commands.get(menuHandlerKey) : null;
         } catch (ClassCastException exception) {
-            System.err.println("Excepting casting menu handler item to MenuListener for key: " + menuHandlerKey);
+            LOGGER.log(Level.SEVERE, "Excepting casting menu handler item to MenuListener for key: {}", menuHandlerKey);
             return null;
         }
     }
@@ -599,7 +600,7 @@ public class Commander {
      * @return the action key for the menu item
      */
     public String getActionKey(final String menuItemKey) {
-        return getItemFieldProperty(menuItemKey, "action");
+        return getItemFieldProperty(menuItemKey, ACTION_PROP);
     }
 
     /**
@@ -624,7 +625,7 @@ public class Commander {
         if (itemsListString != null && itemsListString.length() > 0) {
             return Util.getTokens(itemsListString);
         } else {
-            return null;
+            return new String[0];
         }
     }
 
@@ -636,7 +637,7 @@ public class Commander {
         if (itemsListString != null && itemsListString.length() > 0) {
             return Util.getTokens(itemsListString);
         } else {
-            return null;
+            return new String[0];
         }
     }
 
@@ -655,7 +656,7 @@ public class Commander {
                 final String group = components[0];
                 final String imageName = components[1];
                 return IconLib.getIcon(group, imageName);
-            // look for the image under the application's resources
+                // look for the image under the application's resources
             } else {
                 final AbstractApplicationAdaptor appAdaptor = Application.getApp().getApplicationAdaptor();
                 final URL imageURL = appAdaptor.getResourceURL(imageSpec);
@@ -705,14 +706,14 @@ public class Commander {
             final String label = getLabel(menuItemKey);
             JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem(label);
 
-            String actionKey = getItemFieldProperty(menuItemKey, "action");
+            String actionKey = getItemFieldProperty(menuItemKey, ACTION_PROP);
             if (actionKey != null) {
                 final Action action = (Action) commands.get(actionKey);
                 menuItem.setAction(action);
                 menuItem.setText(label);
 
                 final ButtonModel model = buttonModelMap.get(actionKey);
-                if (model != null && (model instanceof ToggleButtonModel)) {
+                if (model instanceof ToggleButtonModel) {
                     menuItem.setModel(model);
                     buttonGroup.add(menuItem);
                 } else {
@@ -899,6 +900,7 @@ public class Commander {
      * @see ApplicationAdaptor#customizeCommands
      */
     protected void registerCustomCommands() {
+        //Do nothing
     }
 
     /**
@@ -913,6 +915,7 @@ public class Commander {
      * @see ApplicationAdaptor#customizeCommands
      */
     protected void registerCustomCommands(final XalDocument document) {
+        //Do nothing
     }
 
     /**
@@ -928,6 +931,7 @@ public class Commander {
      * @see ApplicationAdaptor#customizeCommands
      */
     protected void registerCustomCommands(final XalInternalDocument document) {
+        //Do nothing
     }
 
     /**

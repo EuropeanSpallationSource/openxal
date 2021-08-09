@@ -28,11 +28,6 @@ public class AcceleratorApplication extends FrameApplication {
     private JFileChooser acceleratorFileChooser;
 
     /**
-     * keep track of the default accelerator folder
-     */
-    private DefaultFolderAccessory defaultFolderAccessory;
-
-    /**
      * Creates a new instance of AcceleratorApplication
      */
     public AcceleratorApplication(ApplicationAdaptor adaptor, URL[] urls) {
@@ -49,7 +44,7 @@ public class AcceleratorApplication extends FrameApplication {
     @Override
     protected void setup(final URL[] urls) {
         acceleratorFileChooser = new JFileChooser();
-        defaultFolderAccessory = new DefaultFolderAccessory(this.getClass());
+        DefaultFolderAccessory defaultFolderAccessory = new DefaultFolderAccessory(this.getClass());
         defaultFolderAccessory.applyTo(acceleratorFileChooser);
         FileFilterFactory.applyFileFilters(acceleratorFileChooser, new String[]{"xal"});
         acceleratorFileChooser.setMultiSelectionEnabled(false);

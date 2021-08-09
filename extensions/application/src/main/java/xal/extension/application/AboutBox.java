@@ -70,52 +70,52 @@ class AboutBox {
     private String generateMessage() {
         final Map<String, String> appInfo = loadApplicationInfo();
 
-        StringBuilder message = new StringBuilder("<html>");
-        message.append("<head>");
-        message.append("<style type=\"text/css\">");
-        message.append("P.title {text-align: center; font-size: large;}");
-        message.append("P.version {text-align: center; font-size: medium;}");
-        message.append("P.description {text-align: left; font-size:medium;}");
-        message.append("li.author {font-size:medium;}");
-        message.append("td.footer {text-align: center; font-size:small;}");
-        message.append("Body.normal {background-color: silver}");
-        message.append("</style>");
-        message.append("</head>");
-        message.append("<body class=normal>");
+        StringBuilder messageBuilder = new StringBuilder("<html>");
+        messageBuilder.append("<head>");
+        messageBuilder.append("<style type=\"text/css\">");
+        messageBuilder.append("P.title {text-align: center; font-size: large;}");
+        messageBuilder.append("P.version {text-align: center; font-size: medium;}");
+        messageBuilder.append("P.description {text-align: left; font-size:medium;}");
+        messageBuilder.append("li.author {font-size:medium;}");
+        messageBuilder.append("td.footer {text-align: center; font-size:small;}");
+        messageBuilder.append("Body.normal {background-color: silver}");
+        messageBuilder.append("</style>");
+        messageBuilder.append("</head>");
+        messageBuilder.append("<body class=normal>");
 
         String appName = getValue("name", appInfo);
-        message.append("<P class=title>").append(appName).append("</P>");
+        messageBuilder.append("<P class=title>").append(appName).append("</P>");
 
         String version = getValue("version", appInfo);
-        message.append("<P class=version> <strong>Version:</strong> ").append(version).append("</P>");
+        messageBuilder.append("<P class=version> <strong>Version:</strong> ").append(version).append("</P>");
 
         String description = getValue("description", appInfo);
-        message.append("<dl><dt><strong>Description:</strong></dt><dd>").append(description).append("</dd></dl>");
+        messageBuilder.append("<dl><dt><strong>Description:</strong></dt><dd>").append(description).append("</dd></dl>");
 
         String authorList = getValue("authors", appInfo);
         String[] authors = Util.getTokens(authorList, ",");
-        message.append("<p> <strong>Authors:</strong>");
+        messageBuilder.append("<p> <strong>Authors:</strong>");
         for (int index = 0; index < authors.length; index++) {
             String author = authors[index];
-            message.append("<li class=author>").append(author).append("</li>");
+            messageBuilder.append("<li class=author>").append(author).append("</li>");
         }
-        message.append("</p>");
+        messageBuilder.append("</p>");
 
-        message.append("<center> <table width=80%>");
-        message.append("<tr><td class=footer> <hr> </td></tr>");
+        messageBuilder.append("<center> <table width=80%>");
+        messageBuilder.append("<tr><td class=footer> <hr> </td></tr>");
 
         String organization = getValue("organization", appInfo);
-        message.append("<tr><td class=footer>").append(organization).append("</td></tr>");
+        messageBuilder.append("<tr><td class=footer>").append(organization).append("</td></tr>");
 
         String date = getValue("date", appInfo);
-        message.append("<tr><td class=footer>").append(date).append("</td></tr>");
+        messageBuilder.append("<tr><td class=footer>").append(date).append("</td></tr>");
 
-        message.append("</table> </P>");
+        messageBuilder.append("</table> </P>");
 
-        message.append("</body>");
-        message.append("</html>");
+        messageBuilder.append("</body>");
+        messageBuilder.append("</html>");
 
-        return message.toString();
+        return messageBuilder.toString();
     }
 
     /**
@@ -148,8 +148,8 @@ class AboutBox {
         try {
             infoMap = Util.getPropertiesForResource(ABOUT_INFO_RESOURCE);
         } catch (MissingResourceException exception) {
-            final String message = "No application \"About Box\" information resource found in the application's resources directory: " + ABOUT_INFO_RESOURCE;
-            LOGGER.log(Level.WARNING, message, exception);
+            final String excMessage = "No application \"About Box\" information resource found in the application's resources directory: " + ABOUT_INFO_RESOURCE;
+            LOGGER.log(Level.WARNING, excMessage, exception);
 
             // substitute with default information
             infoMap = new HashMap<>();

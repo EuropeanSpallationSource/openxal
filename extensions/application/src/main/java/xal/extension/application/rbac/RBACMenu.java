@@ -35,12 +35,9 @@ public class RBACMenu extends JMenu {
         this.setEnabled(true);
 
         JMenuItem changeUserItem = new JMenuItem("Change User");
-        changeUserItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Application.getApp().changeRBACUser();
-                updateUsername();
-            }
+        changeUserItem.addActionListener(e -> {
+            Application.getApp().changeRBACUser();
+            updateUsername();
         });
         this.add(changeUserItem);
     }

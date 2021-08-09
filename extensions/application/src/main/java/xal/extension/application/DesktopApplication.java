@@ -65,42 +65,39 @@ public class DesktopApplication extends Application implements XalInternalDocume
     @Override
     protected void setup(final URL[] urls) {
         try {
-            SwingUtilities.invokeAndWait(new Runnable() {
-                @Override
-                public void run() {
-                    createDesktopFrame();
+            SwingUtilities.invokeAndWait(() -> {
+                createDesktopFrame();
 
-                    registerEvents();
+                registerEvents();
 
-                    setupConsole();
+                setupConsole();
 
-                    // Make the open/save file choosers as early as possible since JFileChooser has a known race condition bug.
-                    makeFileChoosers();
+                // Make the open/save file choosers as early as possible since JFileChooser has a known race condition bug.
+                makeFileChoosers();
 
-                    // setup the application commander and load custom application commands
-                    commander = makeCommander();
-                    applicationAdaptor.customizeCommands(commander);
-                    setupMenuBar(commander);
+                // setup the application commander and load custom application commands
+                commander = makeCommander();
+                applicationAdaptor.customizeCommands(commander);
+                setupMenuBar(commander);
 
-                    // notify the adaptor that the desktop frame will be displayed
-                    ((DesktopApplicationAdaptor) applicationAdaptor).applicationWillDisplayDesktopPane();
+                // notify the adaptor that the desktop frame will be displayed
+                ((DesktopApplicationAdaptor) applicationAdaptor).applicationWillDisplayDesktopPane();
 
-                    desktopFrame.setVisible(true);
-                    desktopFrame.toFront();
+                desktopFrame.setVisible(true);
+                desktopFrame.toFront();
 
-                    // notify listeners that the initial documents, if any, will be opened
-                    noticeProxy.applicationWillOpenInitialDocuments();
+                // notify listeners that the initial documents, if any, will be opened
+                noticeProxy.applicationWillOpenInitialDocuments();
 
-                    if (urls.length > 0) {
-                        for (int index = 0; index < urls.length; index++) {
-                            openDocument(urls[index]);
-                        }
+                if (urls.length > 0) {
+                    for (int index = 0; index < urls.length; index++) {
+                        openDocument(urls[index]);
                     }
+                }
 
-                    // if multiple documents are opened then cascade them
-                    if (openDocuments.size() > 1) {
-                        cascadeWindowsAbout(openDocuments.get(0));
-                    }
+                // if multiple documents are opened then cascade them
+                if (openDocuments.size() > 1) {
+                    cascadeWindowsAbout(openDocuments.get(0));
                 }
             });
         } catch (InterruptedException | InvocationTargetException exception) {
@@ -237,6 +234,7 @@ public class DesktopApplication extends Application implements XalInternalDocume
      */
     @Override
     public void titleChanged(final XalInternalDocument document, final String newTitle) {
+        //Do nothing
     }
 
     /**
@@ -244,6 +242,7 @@ public class DesktopApplication extends Application implements XalInternalDocume
      */
     @Override
     public void hasChangesChanged(final XalInternalDocument document, final boolean newHasChangesStatus) {
+        //Do nothing
     }
 
     /**
@@ -251,6 +250,7 @@ public class DesktopApplication extends Application implements XalInternalDocume
      */
     @Override
     public void documentWillClose(final XalInternalDocument document) {
+        //Do nothing
     }
 
     /**

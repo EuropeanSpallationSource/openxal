@@ -67,11 +67,11 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
     /**
      * Creates a new instance of WindowAdaptor
      */
-    public XalWindow(final XalDocument aDocument) {
+    protected XalWindow(final XalDocument aDocument) {
         this(aDocument, true);
     }
 
-    public XalWindow(final XalDocument aDocument, final boolean displayToolbar) {
+    protected XalWindow(final XalDocument aDocument, final boolean displayToolbar) {
         positionWindow();
         registerEvents();
 
@@ -164,7 +164,7 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
         try {
             final String applicationName = Application.getApp().getApplicationAdaptor().applicationName();
             final Date now = new Date();
-            final String imageName = applicationName.replaceAll(" ", "") + "_" + new SimpleDateFormat("yyyyMMdd'T'HHmmss").format(now);
+            final String imageName = applicationName.replace(" ", "") + "_" + new SimpleDateFormat("yyyyMMdd'T'HHmmss").format(now);
             ImageCaptureManager.defaultManager().saveSnapshot(this.getContentPane(), imageName);
         } catch (AWTException | IOException exception) {
             LOGGER.log(Level.WARNING, "Failed to capture image.", exception);
@@ -264,17 +264,10 @@ public abstract class XalWindow extends JFrame implements XalDocumentView, XalDo
             setTitle(windowTitle.toString());
         } else {
             try {
-                SwingUtilities.invokeAndWait(new Runnable() {
-                    @Override
-                    public void run() {
-                        setTitle(windowTitle.toString());
-                    }
-                });
+                SwingUtilities.invokeAndWait(() -> setTitle(windowTitle.toString()));
             } catch (InterruptedException | InvocationTargetException exception) {
-                LOGGER.log(Level.SEVERE, null, exception);
                 throw new RuntimeException("Exception updating the window title.", exception);
             }
-
         }
     }
 

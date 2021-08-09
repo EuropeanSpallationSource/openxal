@@ -58,7 +58,7 @@ public abstract class XalInternalWindow extends JInternalFrame implements XalDoc
     /**
      * Creates a new instance of WindowAdaptor
      */
-    public XalInternalWindow(final XalInternalDocument aDocument) {
+    protected XalInternalWindow(final XalInternalDocument aDocument) {
         super("", true, true, true, true);
 
         positionWindow();
@@ -255,17 +255,10 @@ public abstract class XalInternalWindow extends JInternalFrame implements XalDoc
             setTitle(theTitle);
         } else {
             try {
-                SwingUtilities.invokeAndWait(new Runnable() {
-                    @Override
-                    public void run() {
-                        setTitle(theTitle);
-                    }
-                });
+                SwingUtilities.invokeAndWait(() -> setTitle(theTitle));
             } catch (InterruptedException | InvocationTargetException exception) {
-                LOGGER.log(Level.SEVERE, null, exception);
                 throw new RuntimeException("Exception updating the window title.", exception);
             }
-
         }
     }
 

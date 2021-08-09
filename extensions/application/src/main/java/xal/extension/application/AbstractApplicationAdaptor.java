@@ -51,7 +51,7 @@ public abstract class AbstractApplicationAdaptor implements ApplicationListener 
     /**
      * Constructor
      */
-    public AbstractApplicationAdaptor() {
+    protected AbstractApplicationAdaptor() {
         // resources are located using the default resource manager
         setResourcesLocation(null);
     }
@@ -169,7 +169,7 @@ public abstract class AbstractApplicationAdaptor implements ApplicationListener 
             return xal.tools.apputils.Preferences.userNodeForPackage(this.getClass());
             // class is not from XAL so probably a script (e.g. jruby)
         } else {
-            final String scriptID = applicationName().toLowerCase().replaceAll(" ", "_").replaceAll("\\/", "-");
+            final String scriptID = applicationName().toLowerCase().replace(" ", "_").replace("\\/", "-");
             return xal.tools.apputils.Preferences.userNodeForPackage(AbstractApplicationAdaptor.class).node("/xal/script/" + scriptID);
         }
     }
@@ -219,7 +219,7 @@ public abstract class AbstractApplicationAdaptor implements ApplicationListener 
                     docPaths.add(arg);
                 }
             }
-            if (docPaths.size() > 0) {
+            if (!docPaths.isEmpty()) {
                 docURLs = new URL[docPaths.size()];
                 for (int index = 0; index < docPaths.size(); index++) {
                     try {

@@ -44,7 +44,7 @@ public abstract class XalInternalDocument extends XalAbstractDocument {
     /**
      * Constructor for new documents
      */
-    public XalInternalDocument() {
+    protected XalInternalDocument() {
         super();
     }
 
@@ -154,10 +154,8 @@ public abstract class XalInternalDocument extends XalAbstractDocument {
      */
     @Override
     public boolean closeDocument() {
-        if (warnUserOfUnsavedChangesWhenClosing() && hasChanges()) {
-            if (!mainWindow.userPermitsCloseWithUnsavedChanges()) {
-                return false;
-            }
+        if (warnUserOfUnsavedChangesWhenClosing() && hasChanges() && !mainWindow.userPermitsCloseWithUnsavedChanges()) {
+            return false;
         }
 
         documentListenerProxy.documentWillClose(this);

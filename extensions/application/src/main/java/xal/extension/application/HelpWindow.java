@@ -10,7 +10,6 @@ import javax.swing.event.*;
 import javax.swing.text.*;
 import javax.swing.text.html.*;
 import java.awt.Cursor;
-import java.awt.event.*;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -53,7 +52,6 @@ class HelpWindow extends JFrame implements SwingConstants {
     // visual components
     private JButton backButton;
     private JButton forwardButton;
-    private JButton homeButton;
 
     static {
         homePage = getHelpSource();
@@ -120,7 +118,7 @@ class HelpWindow extends JFrame implements SwingConstants {
         try {
             setCursor(new Cursor(Cursor.WAIT_CURSOR));
             textPane.setPage(link);
-            EditorKit editorKit = textPane.getEditorKit();
+            textPane.getEditorKit();
             pageHistoryIndex = index;
             updateView();
         } catch (IOException exception) {
@@ -232,28 +230,13 @@ class HelpWindow extends JFrame implements SwingConstants {
         Box buttonRow = new Box(BoxLayout.X_AXIS);
 
         backButton = new JButton("<");
-        backButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                incrementPage(-1);
-            }
-        });
+        backButton.addActionListener(event -> incrementPage(-1));
 
         forwardButton = new JButton(">");
-        forwardButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                incrementPage(1);
-            }
-        });
+        forwardButton.addActionListener(event -> incrementPage(1));
 
-        homeButton = new JButton("Home");
-        homeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                loadLink(homePage);
-            }
-        });
+        JButton homeButton = new JButton("Home");
+        homeButton.addActionListener(event -> loadLink(homePage));
 
         buttonRow.add(backButton);
         buttonRow.add(forwardButton);
@@ -266,12 +249,7 @@ class HelpWindow extends JFrame implements SwingConstants {
         textPane.setFont(new Font("TimesNewRoman", 0, 12));
         textPane.setPreferredSize(new Dimension(6, 6));
 
-        textPane.addHyperlinkListener(new HyperlinkListener() {
-            @Override
-            public void hyperlinkUpdate(HyperlinkEvent event) {
-                handleHyperlink(event);
-            }
-        });
+        textPane.addHyperlinkListener(event -> handleHyperlink(event));
 
         scrollPane.setViewportView(textPane);
 

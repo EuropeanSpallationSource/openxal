@@ -37,6 +37,8 @@ abstract class XalAbstractDocument implements Pageable {
     public static final int YES_OPTION = JOptionPane.YES_OPTION;
     public static final int NO_OPTION = JOptionPane.NO_OPTION;
 
+    protected static final String SAVE_FAILED_TITLE = "Save Failed!";
+
     private static final Logger LOGGER = Logger.getLogger(XalAbstractDocument.class.getName());
 
     /**
@@ -62,7 +64,7 @@ abstract class XalAbstractDocument implements Pageable {
     /**
      * Constructor for new documents
      */
-    public XalAbstractDocument() {
+    protected XalAbstractDocument() {
         messageCenter = new MessageCenter("Xal Document Messaging");
 
         setHasChanges(false);
@@ -326,17 +328,17 @@ abstract class XalAbstractDocument implements Pageable {
         } catch (XmlDataAdaptor.WriteException exception) {
             if (exception.getCause() instanceof FileNotFoundException) {
                 LOGGER.log(Level.SEVERE, "Save failed due to a file access exception!", exception);
-                displayError("Save Failed!", "Save failed due to a file access exception!", exception);
+                displayError(SAVE_FAILED_TITLE, "Save failed due to a file access exception!", exception);
             } else if (exception.getCause() instanceof java.io.IOException) {
                 LOGGER.log(Level.SEVERE, "Save failed due to a file IO exception!", exception);
-                displayError("Save Failed!", "Save failed due to a file IO exception!", exception);
+                displayError(SAVE_FAILED_TITLE, "Save failed due to a file IO exception!", exception);
             } else {
                 LOGGER.log(Level.SEVERE, "Save failed due to an internal write exception!", exception);
-                displayError("Save Failed!", "Save failed due to an internal write exception!", exception);
+                displayError(SAVE_FAILED_TITLE, "Save failed due to an internal write exception!", exception);
             }
         } catch (Exception exception) {
             LOGGER.log(Level.SEVERE, "Save failed due to an internal exception!", exception);
-            displayError("Save Failed!", "Save failed due to an internal exception!", exception);
+            displayError(SAVE_FAILED_TITLE, "Save failed due to an internal exception!", exception);
         }
     }
 
@@ -576,24 +578,21 @@ abstract class XalAbstractDocument implements Pageable {
      */
     @Override
     public Printable getPrintable(final int pageIndex) throws IndexOutOfBoundsException {
-        return new Printable() {
-            @Override
-            public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) {
-                final Graphics2D graphics2D = (Graphics2D) graphics;
-                graphics2D.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
+        return (graphics, pageFormat, pI) -> {
+            final Graphics2D graphics2D = (Graphics2D) graphics;
+            graphics2D.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
 
-                final Dimension viewSize = getDocumentView().getContentPane().getSize();
-                final double pageWidth = pageFormat.getImageableWidth();
-                final double pageHeight = pageFormat.getImageableHeight();
-                final double xScale = pageWidth / viewSize.width;
-                final double yScale = pageHeight / viewSize.height;
-                final double scale = Math.min(xScale, yScale);
-                graphics2D.scale(scale, scale);
+            final Dimension viewSize = getDocumentView().getContentPane().getSize();
+            final double pageWidth = pageFormat.getImageableWidth();
+            final double pageHeight = pageFormat.getImageableHeight();
+            final double xScale = pageWidth / viewSize.width;
+            final double yScale = pageHeight / viewSize.height;
+            final double scale = Math.min(xScale, yScale);
+            graphics2D.scale(scale, scale);
 
-                getDocumentView().getContentPane().printAll(graphics);
+            getDocumentView().getContentPane().printAll(graphics);
 
-                return Printable.PAGE_EXISTS;
-            }
+            return Printable.PAGE_EXISTS;
         };
     }
 }

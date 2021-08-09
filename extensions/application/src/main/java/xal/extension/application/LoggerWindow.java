@@ -11,8 +11,6 @@ package xal.extension.application;
 
 import javax.swing.*;
 import javax.swing.table.*;
-import javax.swing.event.*;
-import java.awt.event.*;
 import java.awt.Component;
 import java.util.*;
 import java.util.logging.*;
@@ -120,13 +118,7 @@ class LoggerWindow extends JFrame {
 
         JButton clearButton = new JButton("Clear");
         bar.add(clearButton);
-        clearButton.addActionListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                loggerHandler.clear();
-            }
-        });
+        clearButton.addActionListener(event -> loggerHandler.clear());
 
         return bar;
     }
@@ -144,17 +136,13 @@ class LoggerWindow extends JFrame {
         JScrollPane scrollPane = new JScrollPane(table);
         view.add(scrollPane);
 
-        table.getSelectionModel().addListSelectionListener(
-                new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent event) {
-                int selectedRow = table.getSelectedRow();
-                if (selectedRow >= 0) {
-                    LogTableModel tableModel = (LogTableModel) table.getModel();
-                    setSelectedRecord(tableModel.getRecord(selectedRow));
-                } else {
-                    setSelectedRecord(null);
-                }
+        table.getSelectionModel().addListSelectionListener(event -> {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow >= 0) {
+                LogTableModel tableModel = (LogTableModel) table.getModel();
+                setSelectedRecord(tableModel.getRecord(selectedRow));
+            } else {
+                setSelectedRecord(null);
             }
         });
 
@@ -227,15 +215,15 @@ class LoggerWindow extends JFrame {
     /**
      * Set the selected record to the value specified.
      *
-     * @param record the new selected record
+     * @param logRecord the new selected record
      */
-    public void setSelectedRecord(final LogRecord record) {
-        if (record != selectedRecord) {
-            selectedRecord = record;
+    public void setSelectedRecord(final LogRecord logRecord) {
+        if (logRecord != selectedRecord) {
+            selectedRecord = logRecord;
 
-            if (record != null) {
-                selectedRecordMessageView.setText(record.getMessage());
-                Throwable exception = record.getThrown();
+            if (logRecord != null) {
+                selectedRecordMessageView.setText(logRecord.getMessage());
+                Throwable exception = logRecord.getThrown();
                 String exceptionText = exception != null ? exception.toString() : "";
                 selectedRecordExceptionView.setText(exceptionText);
             } else {
@@ -266,7 +254,7 @@ class LogTableModel extends AbstractTableModel implements LoggerBufferListener {
     /**
      * log records
      */
-    protected List<LogRecord> records;
+    protected final transient List<LogRecord> logRecords;
 
     /**
      * Map of level colors keyed by level
@@ -284,7 +272,7 @@ class LogTableModel extends AbstractTableModel implements LoggerBufferListener {
      * Constructor
      */
     public LogTableModel() {
-        records = new ArrayList<>();
+        logRecords = new ArrayList<>();
     }
 
     /**
@@ -310,8 +298,8 @@ class LogTableModel extends AbstractTableModel implements LoggerBufferListener {
      */
     @Override
     public int getRowCount() {
-        synchronized (records) {
-            return records.size();
+        synchronized (logRecords) {
+            return logRecords.size();
         }
     }
 
@@ -360,12 +348,12 @@ class LogTableModel extends AbstractTableModel implements LoggerBufferListener {
      */
     @Override
     public Object getValueAt(final int row, final int column) {
-        final LogRecord record = getRecord(row);
-        if (record == null) {
+        final LogRecord logRecord = getRecord(row);
+        if (logRecord == null) {
             return null;
         }
 
-        final Level level = record.getLevel();
+        final Level level = logRecord.getLevel();
         final String color = getColor(level);
         Object value;
 
@@ -374,19 +362,19 @@ class LogTableModel extends AbstractTableModel implements LoggerBufferListener {
                 value = level;
                 break;
             case TIMESTAMP_COLUMN:
-                value = new Date(record.getMillis());
+                value = new Date(logRecord.getMillis());
                 break;
             case CLASS_COLUMN:
-                value = record.getSourceClassName();
+                value = logRecord.getSourceClassName();
                 break;
             case METHOD_COLUMN:
-                value = record.getSourceMethodName();
+                value = logRecord.getSourceMethodName();
                 break;
             case MESSAGE_COLUMN:
-                value = record.getMessage();
+                value = logRecord.getMessage();
                 break;
             case EXCEPTION_COLUMN:
-                value = record.getThrown();
+                value = logRecord.getThrown();
                 break;
             default:
                 value = "";
@@ -426,9 +414,9 @@ class LogTableModel extends AbstractTableModel implements LoggerBufferListener {
      * @return the log record at the specified index
      */
     public LogRecord getRecord(final int index) {
-        synchronized (records) {
+        synchronized (logRecords) {
             try {
-                return records.get(index);
+                return logRecords.get(index);
             } catch (ArrayIndexOutOfBoundsException exception) {
                 return null;
             }
@@ -439,13 +427,13 @@ class LogTableModel extends AbstractTableModel implements LoggerBufferListener {
      * Event indicating that the records in the logger buffer have changed.
      *
      * @param buffer the buffer whose records have changed
-     * @param records the new records in the buffer
+     * @param logRecords the new records in the buffer
      */
     @Override
-    public void recordsChanged(LoggerBuffer buffer, List<LogRecord> records) {
-        synchronized (records) {
-            records.clear();
-            records.addAll(records);
+    public void recordsChanged(LoggerBuffer buffer, List<LogRecord> logRecords) {
+        synchronized (this.logRecords) {
+            this.logRecords.clear();
+            this.logRecords.addAll(logRecords);
             fireTableDataChanged();
         }
     }

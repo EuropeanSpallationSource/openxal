@@ -9,11 +9,8 @@ import java.awt.Container;
 import java.awt.HeadlessException;
 import java.awt.Point;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -77,7 +74,7 @@ public abstract class Application {
     private static final Logger LOGGER = Logger.getLogger(Application.class.getName());
 
     // private constants
-    private final Date LAUNCH_TIME;
+    private final Date launchTime;
 
     // static variables
     private static Application application;
@@ -135,7 +132,8 @@ public abstract class Application {
     /* RBAC service */
     private RBACLogin rbacLogin;
     private RBACSubject rbacSubject;
-    private boolean useRBACLogin;
+
+    private static final String OPEN_TEMPLATE_STR = "Open Template";
 
     /**
      * static initializer
@@ -170,7 +168,7 @@ public abstract class Application {
     protected Application(final AbstractApplicationAdaptor adaptor, final URL[] urls) {
         nextDocumentOpenLocation = new Point(0, 0);
 
-        LAUNCH_TIME = new Date();
+        launchTime = new Date();
 
         applicationAdaptor = adaptor;
         openDocuments = new LinkedList<>();
@@ -216,7 +214,7 @@ public abstract class Application {
         try {
             rbacLogin = RBACLogin.newRBACLogin();
         } catch (RuntimeException e) {
-            System.err.println("RBAC plugin not found. Continuing without RBAC.");
+            LOGGER.severe("RBAC plugin not found. Continuing without RBAC.");
             return true;
         }
 
@@ -244,14 +242,14 @@ public abstract class Application {
                 return false;
             }
             rbacSubject = rbacLogin.authenticate(credentials.getUsername(), credentials.getPassword(), credentials.getPreferredRole(), credentials.getIP());
-            System.out.printf("Authentication successful with username %s.\n", credentials.getUsername());
+            LOGGER.log(Level.SEVERE, "Authentication successful with username {}.\n", credentials.getUsername());
             return (rbacSubject != null);
         } catch (AccessDeniedException e) {
-            System.err.printf("Access denied during authentication: %s\n", e.getMessage());
+            LOGGER.log(Level.SEVERE, "Access denied during authentication:", e);
             JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
             return false;
         } catch (RBACException e) {
-            System.err.printf("Error while trying to authenticate: %s\n", e.getMessage());
+            LOGGER.log(Level.SEVERE, "Error while trying to authenticate:", e);
             JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(), "Error while trying to authenticate", JOptionPane.ERROR_MESSAGE);
             return false;
         }
@@ -275,20 +273,20 @@ public abstract class Application {
             try {
                 String appName = getAdaptor().applicationName().replace(" ", "");
                 String resource = "Xal" + appName.substring(0, 1).toUpperCase() + appName.substring(1);
-                System.out.printf("Starting authorization for resource %s, permission %s.\n", resource, permission);
+                LOGGER.log(Level.INFO, "Starting authorization for resource {}, permission {}.\n", new Object[]{resource, permission});
                 if (rbacSubject.hasPermission(resource, permission)) {
                     LOGGER.log(Level.INFO, "Authorization successful. Proceeding...");
                     return true;
                 } else {
-                    System.err.printf("No authorisation for resource %s, permission %s.\n", resource, permission);
+                    LOGGER.log(Level.SEVERE, "No authorisation for resource {}, permission {}.\n", new Object[]{resource, permission});
                     return false;
                 }
             } catch (RBACException e) {
-                System.err.printf("Error while trying to authorize: %s.\n", e.getMessage());
+                LOGGER.log(Level.SEVERE, "Error while trying to authorize: %s.\n", e);
                 JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(), "Error while trying to authorize", JOptionPane.ERROR_MESSAGE);
                 return false;
             } catch (AccessDeniedException e) {
-                System.err.printf("Access denied during authorisation: %s\n", e.getMessage());
+                LOGGER.log(Level.SEVERE, "Access denied during authorisation: %s\n", e);
                 JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(), "Access denied", JOptionPane.ERROR_MESSAGE);
                 return false;
             }
@@ -319,14 +317,14 @@ public abstract class Application {
         }
 
         try {
-            final FileInputStream propertiesStream = new FileInputStream(propertiesPath);
-            final Properties defaultProperties = System.getProperties();
-            // must create properties from the default properties to keep Java Web Start happy
-            final Properties userProperties = new Properties(defaultProperties);
-            userProperties.clear();
-
-            userProperties.load(propertiesStream);
-            propertiesStream.close();
+            final Properties userProperties;
+            try (FileInputStream propertiesStream = new FileInputStream(propertiesPath)) {
+                final Properties defaultProperties = System.getProperties();
+                // must create properties from the default properties to keep Java Web Start happy
+                userProperties = new Properties(defaultProperties);
+                userProperties.clear();
+                userProperties.load(propertiesStream);
+            }
 
             // don't override existing system properties since they may have been passed at the command line
             final Set<String> propertyNames = userProperties.stringPropertyNames();
@@ -337,18 +335,8 @@ public abstract class Application {
             }
             System.setProperties(userProperties);
             LOGGER.log(Level.INFO, "Applied user properties from file: {0}", propertiesPath);
-        } catch (FileNotFoundException exception) {
-            LOGGER.log(Level.SEVERE, null, exception);
-            LOGGER.log(Level.WARNING, "Failed to load user properties from file: " + propertiesPath, exception);
-        } catch (IOException exception) {
-            LOGGER.log(Level.SEVERE, null, exception);
-            LOGGER.log(Level.WARNING, "Failed to load user properties from file: " + propertiesPath, exception);
-        } catch (SecurityException exception) {
-            LOGGER.log(Level.SEVERE, null, exception);
-            LOGGER.log(Level.WARNING, "Failed to load user properties from file: " + propertiesPath, exception);
-        } catch (Exception exception) {
-            LOGGER.log(Level.SEVERE, null, exception);
-            LOGGER.log(Level.WARNING, "Failed to load user properties from file: " + propertiesPath, exception);
+        } catch (IOException | SecurityException exception) {
+            LOGGER.log(Level.WARNING, exception, () -> "Failed to load user properties from file: " + propertiesPath);
         }
     }
 
@@ -373,7 +361,7 @@ public abstract class Application {
      * @return The launch time
      */
     public Date getLaunchTime() {
-        return (Date) LAUNCH_TIME.clone();
+        return (Date) launchTime.clone();
     }
 
     /**
@@ -433,7 +421,7 @@ public abstract class Application {
      */
     protected final void registerApplicationStatusService() {
         // check to see if the startup flag has disabled application services
-        Boolean shouldRegister = Boolean.valueOf(System.getProperty("registerApplicationService", "true"));
+        boolean shouldRegister = Boolean.parseBoolean(System.getProperty("registerApplicationService", "true"));
 
         if (shouldRegister) {
             try {
@@ -621,11 +609,11 @@ public abstract class Application {
      */
     // suppress unchecked casting to DocumentType since there is not way around it
     @SuppressWarnings("unchecked")
-    public <DocumentType extends XalAbstractDocument> List<DocumentType> getDocumentsCopy() {
+    public <T extends XalAbstractDocument> List<T> getDocumentsCopy() {
         final List<XalAbstractDocument> documents = getDocuments();
-        final List<DocumentType> documentsCopy = new ArrayList<>(documents.size());
+        final List<T> documentsCopy = new ArrayList<>(documents.size());
         for (final XalAbstractDocument document : documents) {
-            documentsCopy.add((DocumentType) document);
+            documentsCopy.add((T) document);
         }
 
         return documentsCopy;
@@ -661,13 +649,13 @@ public abstract class Application {
         updateNextDocumentOpenLocation();
 
         final File defaultFolder = getDefaultDocumentFolder();
-        final File templateFolder = getTemplateFolder();
-        final File chooserFolder = templateFolder != null && templateFolder.exists() ? templateFolder : defaultFolder;
+        final File theTemplateFolder = getTemplateFolder();
+        final File chooserFolder = theTemplateFolder != null && theTemplateFolder.exists() ? theTemplateFolder : defaultFolder;
         final JFileChooser templateChooser = new JFileChooser(chooserFolder);
         FileFilterFactory.applyFileFilters(templateChooser, applicationAdaptor.readableDocumentTypes());
         templateChooser.setMultiSelectionEnabled(true);
-        templateChooser.setDialogTitle("Open Template");
-        templateChooser.setApproveButtonText("Open Template");
+        templateChooser.setDialogTitle(OPEN_TEMPLATE_STR);
+        templateChooser.setApproveButtonText(OPEN_TEMPLATE_STR);
         templateChooser.setApproveButtonToolTipText("Open new copies of the selected templates");
 
         openDocuments(templateChooser, true, false, false);
@@ -730,6 +718,8 @@ public abstract class Application {
                 break;
             case JFileChooser.ERROR_OPTION:
                 break;
+            default:
+                break;
         }
     }
 
@@ -756,7 +746,7 @@ public abstract class Application {
             final URL url = new URL(urlSpec);
             openDocument(url, copySource, trackRecent);
         } catch (MalformedURLException exception) {
-            LOGGER.log(Level.WARNING, "Error opening URL: " + urlSpec, exception);
+            LOGGER.log(Level.WARNING, exception, () -> "Error opening URL: " + urlSpec);
             displayError(exception);
         }
     }
@@ -786,7 +776,7 @@ public abstract class Application {
             final URL url = file.toURI().toURL();
             openDocument(url, copySource, trackRecent);
         } catch (MalformedURLException exception) {
-            LOGGER.log(Level.WARNING, "Error opening file: " + file, exception);
+            LOGGER.log(Level.WARNING, exception, () -> "Error opening file: " + file);
             displayError(exception);
         }
     }
@@ -854,7 +844,7 @@ public abstract class Application {
             }
             updateNextDocumentOpenLocationOffsetFrom(document);
         } catch (Exception exception) {
-            LOGGER.log(Level.WARNING, "Error opening document: " + url, exception);
+            LOGGER.log(Level.WARNING, exception, () -> "Error opening document: " + url);
             displayError("Open Failed!", "Open failed due to an internal exception!", exception);
         }
     }
@@ -962,7 +952,6 @@ public abstract class Application {
                 return null;
             }
         } catch (URISyntaxException exception) {
-            LOGGER.log(Level.SEVERE, null, exception);
             throw new RuntimeException("Exception generating source version info for document.", exception);
         }
     }
@@ -978,7 +967,7 @@ public abstract class Application {
                 final File yearFolder = versionInfo.getCurrentFolder();
                 if (yearFolder != null && (yearFolder.exists() || yearFolder.mkdirs())) {
                     final String baseName = versionInfo.getBaseName();
-                    final String targetName = baseName.replaceFirst("\\.", new java.text.SimpleDateFormat("_@yyyyMMdd'T'HHmmss@").format(versionInfo.getTimestamp()) + ".");;
+                    final String targetName = baseName.replaceFirst("\\.", new java.text.SimpleDateFormat("_@yyyyMMdd'T'HHmmss@").format(versionInfo.getTimestamp()) + ".");
                     final File targetFile = new File(yearFolder, targetName);
                     targetFile.createNewFile();
                     copyFile(versionInfo.getSourceFile(), targetFile);
@@ -1022,6 +1011,8 @@ public abstract class Application {
                 break;
             case JFileChooser.ERROR_OPTION:
                 break;
+            default:
+                break;
         }
     }
 
@@ -1050,8 +1041,7 @@ public abstract class Application {
             }
             saveDocumentVersion(document);
         } catch (MalformedURLException exception) {
-            LOGGER.log(Level.WARNING, "Failed to save document to file: " + file, exception);
-            LOGGER.log(Level.SEVERE, null, exception);
+            LOGGER.log(Level.WARNING, exception, () -> "Failed to save document to file: " + file);
             document.displayError("Save Error", "Error attempting to save the document.", exception);
         }
     }
@@ -1121,7 +1111,7 @@ public abstract class Application {
      * otherwise
      */
     private boolean rbacLogout() {
-        useRBACLogin = RBACPlugin.useRBACLogin();
+        boolean useRBACLogin = RBACPlugin.useRBACLogin();
 
         if (rbacSubject != null && useRBACLogin) {
             final int option = JOptionPane.showConfirmDialog(getActiveWindow(), "Would you like to logout?", "Logout",
@@ -1202,6 +1192,7 @@ public abstract class Application {
                 // prepare for next window
                 windowOrigin.translate(offset, offset);
             } catch (Exception exception) {
+                LOGGER.log(Level.WARNING, null, exception);
             }
         }
     }
@@ -1292,16 +1283,14 @@ public abstract class Application {
     private File getTemplateFolder() {
         if (templateFolder == null) {
             final File defaultFolder = getDefaultDocumentFolder();
-            final File templateFolder = defaultFolder != null && defaultFolder.exists() ? new File(defaultFolder, "Templates") : null;
+            final File theTemplateFolder = defaultFolder != null && defaultFolder.exists() ? new File(defaultFolder, "Templates") : null;
 
             // attempt to make the template folder if it doesn't already exist but the default folder does
-            if (templateFolder != null && !templateFolder.exists()) {
-                if (defaultFolder.canWrite()) {
-                    templateFolder.mkdir();
-                }
+            if (theTemplateFolder != null && !theTemplateFolder.exists() && defaultFolder.canWrite()) {
+                theTemplateFolder.mkdir();
             }
 
-            this.templateFolder = templateFolder;
+            this.templateFolder = theTemplateFolder;
         }
 
         return templateFolder;
@@ -1312,11 +1301,10 @@ public abstract class Application {
      * and necessary
      */
     private URL getTemplateFolderURL() {
-        final File templateFolder = getTemplateFolder();
+        final File theTemplateFolder = getTemplateFolder();
         try {
-            return templateFolder != null ? templateFolder.toURI().toURL() : null;
+            return theTemplateFolder != null ? theTemplateFolder.toURI().toURL() : null;
         } catch (MalformedURLException exception) {
-            LOGGER.log(Level.SEVERE, null, exception);
             throw new RuntimeException("Exception getting the template URL", exception);
         }
     }
@@ -1429,16 +1417,10 @@ public abstract class Application {
      * Copy the source file to the target file
      */
     private static void copyFile(final File sourceFile, final File targetFile) {
-        try {
-            final FileChannel sourceChannel = new FileInputStream(sourceFile).getChannel();
-            final FileChannel targetChannel = new FileOutputStream(targetFile).getChannel();
-
+        try (FileChannel sourceChannel = new FileInputStream(sourceFile).getChannel();
+                FileChannel targetChannel = new FileOutputStream(targetFile).getChannel()) {
             sourceChannel.transferTo(0, sourceChannel.size(), targetChannel);
-
-            sourceChannel.close();
-            targetChannel.close();
         } catch (IOException exception) {
-            LOGGER.log(Level.SEVERE, null, exception);
             throw new RuntimeException("Exception attempting to copy the source file to the target file.", exception);
         }
     }
@@ -1608,13 +1590,13 @@ public abstract class Application {
             documentChooser.setDialogTitle("Select " + getAdaptor().applicationName() + " documents to open");
             FileFilterFactory.applyFileFilters(documentChooser, applicationAdaptor.readableDocumentTypes());
 
-            final File templateFolder = getTemplateFolder();
+            final File theTemplateFolder = getTemplateFolder();
             final File documentFolder = getDefaultDocumentFolder();
 
             setOpenMode(TEMPLATE_MODE);
 
-            if (templateFolder != null && templateFolder.exists() && templateFolder.isDirectory() && templateFolder.list().length > 0) {
-                documentChooser.setCurrentDirectory(templateFolder);
+            if (theTemplateFolder != null && theTemplateFolder.exists() && theTemplateFolder.isDirectory() && theTemplateFolder.list().length > 0) {
+                documentChooser.setCurrentDirectory(theTemplateFolder);
                 setOpenMode(TEMPLATE_MODE);
             } else if (documentFolder != null && documentFolder.exists() && documentFolder.isDirectory()) {
                 documentChooser.setCurrentDirectory(documentFolder);
@@ -1623,39 +1605,27 @@ public abstract class Application {
                 setOpenMode(DOCUMENT_MODE);
             }
 
-            newButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(final ActionEvent event) {
-                    setOpenMode(NEW_MODE);
+            newButton.addActionListener(event -> {
+                setOpenMode(NEW_MODE);
+                documentChooser.approveSelection();
+            });
+
+            openButton.addActionListener(event -> {
+                documentChooser.setCurrentDirectory(documentFolder);
+                setOpenMode(DOCUMENT_MODE);
+            });
+
+            templateButton.addActionListener(event -> {
+                documentChooser.setCurrentDirectory(theTemplateFolder);
+                setOpenMode(TEMPLATE_MODE);
+            });
+
+            recentButton.addActionListener(event -> {
+                final URLReference selection = (URLReference) JOptionPane.showInputDialog(documentChooser, "Open the selected document", "Recent Documents", JOptionPane.PLAIN_MESSAGE, null, recentURLReferences, null);
+                if (selection != null) {
+                    setOpenMode(RECENT_MODE);
                     documentChooser.approveSelection();
-                }
-            });
-
-            openButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(final ActionEvent event) {
-                    documentChooser.setCurrentDirectory(documentFolder);
-                    setOpenMode(DOCUMENT_MODE);
-                }
-            });
-
-            templateButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(final ActionEvent event) {
-                    documentChooser.setCurrentDirectory(templateFolder);
-                    setOpenMode(TEMPLATE_MODE);
-                }
-            });
-
-            recentButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(final ActionEvent event) {
-                    final URLReference selection = (URLReference) JOptionPane.showInputDialog(documentChooser, "Open the selected document", "Recent Documents", JOptionPane.PLAIN_MESSAGE, null, recentURLReferences, null);
-                    if (selection != null) {
-                        setOpenMode(RECENT_MODE);
-                        documentChooser.approveSelection();
-                        openURL(selection.getFullURLSpec());
-                    }
+                    openURL(selection.getFullURLSpec());
                 }
             });
 
@@ -1682,7 +1652,7 @@ public abstract class Application {
 
             switch (mode) {
                 case TEMPLATE_MODE:
-                    documentChooser.setApproveButtonText("Open Template");
+                    documentChooser.setApproveButtonText(OPEN_TEMPLATE_STR);
                     documentChooser.setApproveButtonToolTipText("Open new copies of the selected templates");
                     break;
                 case DOCUMENT_MODE:
@@ -1777,32 +1747,32 @@ public abstract class Application {
  */
 class FileVersionInfo {
 
-    private final String BASE_NAME;
-    private final File CURRENT_FOLDER;
-    private final Date TIMESTAMP;
-    private final File SOURCE_FILE;
+    private final String baseName;
+    private final File currentFolder;
+    private final Date timestamp;
+    private final File sourceFile;
 
     /**
      * Constructor
      */
     public FileVersionInfo(final File sourceFile, final File defaultFolder, final Date timestamp) {
-        TIMESTAMP = timestamp;
-        SOURCE_FILE = sourceFile;
+        this.timestamp = timestamp;
+        this.sourceFile = sourceFile;
 
         if (sourceFile.exists() && sourceFile.canRead()) {
-            BASE_NAME = getBaseNameStrippingTimestamp(sourceFile);
+            baseName = getBaseNameStrippingTimestamp(sourceFile);
             if (defaultFolder != null && defaultFolder.exists()) {
                 final File versionsFolder = new File(defaultFolder, ".versions");
-                final File baseFolder = new File(versionsFolder, BASE_NAME);
+                final File baseFolder = new File(versionsFolder, baseName);
 
                 final String yearString = new java.text.SimpleDateFormat("yyyy").format(timestamp);
-                CURRENT_FOLDER = new File(baseFolder, yearString);
+                currentFolder = new File(baseFolder, yearString);
             } else {
-                CURRENT_FOLDER = null;
+                currentFolder = null;
             }
         } else {
-            BASE_NAME = null;
-            CURRENT_FOLDER = null;
+            baseName = null;
+            currentFolder = null;
         }
     }
 
@@ -1810,28 +1780,28 @@ class FileVersionInfo {
      * get the source file
      */
     public File getSourceFile() {
-        return SOURCE_FILE;
+        return sourceFile;
     }
 
     /**
      * versions base name for the source file
      */
     public String getBaseName() {
-        return BASE_NAME;
+        return baseName;
     }
 
     /**
      * current folder to hold the latest version
      */
     public File getCurrentFolder() {
-        return CURRENT_FOLDER;
+        return currentFolder;
     }
 
     /**
      * get the timestamp
      */
     public Date getTimestamp() {
-        return TIMESTAMP;
+        return timestamp;
     }
 
     /**

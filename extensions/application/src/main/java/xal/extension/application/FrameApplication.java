@@ -57,42 +57,38 @@ public class FrameApplication extends Application implements XalDocumentListener
         registerEvents();
 
         try {
-            SwingUtilities.invokeAndWait(new Runnable() {
-                @Override
-                public void run() {
-                    setupConsole();
+            SwingUtilities.invokeAndWait(() -> {
+                setupConsole();
 
-                    // Make the open/save file choosers as early as possible since JFileChooser has a known
-                    // race condition bug.
-                    makeFileChoosers();
+                // Make the open/save file choosers as early as possible since JFileChooser has a known
+                // race condition bug.
+                makeFileChoosers();
 
-                    // setup the application commander and load custom application commands
-                    commander = makeCommander();
-                    applicationAdaptor.customizeCommands(commander);
+                // setup the application commander and load custom application commands
+                commander = makeCommander();
+                applicationAdaptor.customizeCommands(commander);
 
-                    // notify listeners that the initial documents, if any, will be opened
-                    noticeProxy.applicationWillOpenInitialDocuments();
+                // notify listeners that the initial documents, if any, will be opened
+                noticeProxy.applicationWillOpenInitialDocuments();
 
-                    if (urls == null || urls.length == 0) {
-                        if (showsWelcomeDialogAtLaunch()) {
-                            showWelcomeDialog();
-                        } else {
-                            newDocument();
-                        }
+                if (urls == null || urls.length == 0) {
+                    if (showsWelcomeDialogAtLaunch()) {
+                        showWelcomeDialog();
                     } else {
-                        for (int index = 0; index < urls.length; index++) {
-                            openDocument(urls[index]);
-                        }
+                        newDocument();
                     }
+                } else {
+                    for (int index = 0; index < urls.length; index++) {
+                        openDocument(urls[index]);
+                    }
+                }
 
-                    // if multiple documents are opened then cascade them
-                    if (openDocuments.size() > 1) {
-                        cascadeWindowsAbout(openDocuments.get(0));
-                    }
+                // if multiple documents are opened then cascade them
+                if (openDocuments.size() > 1) {
+                    cascadeWindowsAbout(openDocuments.get(0));
                 }
             });
         } catch (InterruptedException | InvocationTargetException exception) {
-            LOGGER.log(Level.SEVERE, null, exception);
             throw new RuntimeException(exception);
         }
 
@@ -193,6 +189,7 @@ public class FrameApplication extends Application implements XalDocumentListener
      */
     @Override
     public void titleChanged(final XalDocument document, final String newTitle) {
+        //Do nothing
     }
 
     /**
@@ -200,6 +197,7 @@ public class FrameApplication extends Application implements XalDocumentListener
      */
     @Override
     public void hasChangesChanged(final XalDocument document, final boolean newHasChangesStatus) {
+        //Do nothing
     }
 
     /**
@@ -207,6 +205,7 @@ public class FrameApplication extends Application implements XalDocumentListener
      */
     @Override
     public void documentWillClose(final XalDocument document) {
+        //Do nothing
     }
 
     /**

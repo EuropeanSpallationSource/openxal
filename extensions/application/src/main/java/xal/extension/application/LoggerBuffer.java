@@ -110,6 +110,7 @@ class LoggerBuffer extends Handler {
      */
     @Override
     public void flush() {
+        //Do nothing
     }
 
     /**
@@ -129,17 +130,18 @@ class LoggerBuffer extends Handler {
      */
     @Override
     public void close() throws SecurityException {
+        //Do nothing
     }
 
     /**
      * Record the new log record.
      *
-     * @param record the new log record
+     * @param logRecord the new log record
      */
     @Override
-    public void publish(final LogRecord record) {
+    public void publish(final LogRecord logRecord) {
         synchronized (records) {
-            records.add(record);
+            records.add(logRecord);
             eventProxy.recordsChanged(this, new ArrayList<>(records));
         }
     }

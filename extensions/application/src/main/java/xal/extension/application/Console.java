@@ -148,13 +148,11 @@ class Console {
         clearButton.setIcon(IconLib.getIcon("custom", "Clear24.gif"));
         clearButton.setToolTipText("Clear the console...");
 
-        clearButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                try {
-                    document.remove(0, document.getLength());
-                } catch (BadLocationException exception) {
-                }
+        clearButton.addActionListener(event -> {
+            try {
+                document.remove(0, document.getLength());
+            } catch (BadLocationException exception) {
+                LOGGER.log(Level.WARNING, null, exception);
             }
         });
 
@@ -165,15 +163,12 @@ class Console {
         logCheckBox.setToolTipText("Enable/disable persistent logging for all applications. Launch an application using -Dxal.admin=true to enable this option.");
         logCheckBox.setSelected(logsOutput);
 
-        logCheckBox.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                logsOutput = logCheckBox.isSelected();
-                if (logsOutput) {
-                    configureLogs();
-                }
-                LOG_PREFS.putBoolean(LOGGING_KEY, logsOutput);
+        logCheckBox.addActionListener(event -> {
+            logsOutput = logCheckBox.isSelected();
+            if (logsOutput) {
+                configureLogs();
             }
+            LOG_PREFS.putBoolean(LOGGING_KEY, logsOutput);
         });
         buttonBar.add(logCheckBox);
         // if the application was launched with the -Dxal.admin=true flag, then allow the user to change the logging flag
@@ -272,6 +267,7 @@ class Console {
                     logWriter.flush();
                 }
             } catch (IOException | BadLocationException exception) {
+                LOGGER.log(Level.SEVERE, null, exception);
             }
         }
     }
@@ -301,6 +297,7 @@ class Console {
                     logWriter.flush();
                 }
             } catch (IOException | BadLocationException exception) {
+                LOGGER.log(Level.SEVERE, null, exception);
             }
         }
     }

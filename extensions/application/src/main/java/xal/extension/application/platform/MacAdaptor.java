@@ -29,7 +29,7 @@ public class MacAdaptor {
      * perform Mac initialization
      */
     // no way around it since newProxyInstance takes an array of typed Class and which isn't allowed
-    @SuppressWarnings({"unchecked", "rawtypes"})    
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static void initialize() {
         // display the menu bar at the top of the screen consistent with the Mac look and feel
         System.setProperty("apple.laf.useScreenMenuBar", "true");
@@ -46,16 +46,14 @@ public class MacAdaptor {
             final Method appMethod = macApplicationClass.getMethod("getApplication");
             final Object macApplication = appMethod.invoke(null);
 
-            final Class<?>[] array = new Class[1];
-
             // register the quit handler to handle Mac quit events through XAL
             final Object quitProxy = Proxy.newProxyInstance(MacAdaptor.class.getClassLoader(), new Class[]{macQuitHandlerClass}, new MacQuitHandler());
-            final Method quitRegistrationMethod = macApplicationClass.getMethod("setQuitHandler", new Class[]{macQuitHandlerClass});
+            final Method quitRegistrationMethod = macApplicationClass.getMethod("setQuitHandler", macQuitHandlerClass);
             quitRegistrationMethod.invoke(macApplication, quitProxy);
 
             // register the about box handler to handle Mac about box events through XAL
             final Object aboutProxy = Proxy.newProxyInstance(MacAdaptor.class.getClassLoader(), new Class[]{macAboutHandlerClass}, new MacAboutHandler());
-            final Method aboutRegistrationMethod = macApplicationClass.getMethod("setAboutHandler", new Class[]{macAboutHandlerClass});
+            final Method aboutRegistrationMethod = macApplicationClass.getMethod("setAboutHandler", macAboutHandlerClass);
             aboutRegistrationMethod.invoke(macApplication, aboutProxy);
         } catch (ClassNotFoundException exception) {
             initializeFallback();
@@ -73,7 +71,6 @@ public class MacAdaptor {
         public Object invoke(final Object proxy, final Method method, final Object[] args) {
             try {
                 final String methodName = method.getName();
-                final Object event = args[0];
                 final Object response = args[1];
 
                 // get the XAL application
@@ -100,7 +97,6 @@ public class MacAdaptor {
         @Override
         public Object invoke(final Object proxy, final Method method, final Object[] args) {
             final String methodName = method.getName();
-            final Object event = args[0];
 
             // show the about box if the method matches this request
             if (methodName.equals("handleAbout")) {
@@ -117,7 +113,7 @@ public class MacAdaptor {
      * reasonable time in the future.
      */
     // no way around it since newProxyInstance takes an array of typed Class and which isn't allowed
-    @SuppressWarnings({"unchecked", "rawtypes"})    
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private static void initializeFallback() {
         try {
             // dynamically get the Mac specific extensions
@@ -130,7 +126,7 @@ public class MacAdaptor {
 
             // register our handler to handle Mac events from com.apple.eawt.ApplicationListener
             final Object proxy = Proxy.newProxyInstance(MacAdaptor.class.getClassLoader(), new Class[]{macEventListenerClass}, new MacEventHandler());
-            final Method registrationMethod = macApplicationClass.getMethod("addApplicationListener", new Class[]{macEventListenerClass});
+            final Method registrationMethod = macApplicationClass.getMethod("addApplicationListener", macEventListenerClass);
             registrationMethod.invoke(macApplication, proxy);
         } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
             LOGGER.log(Level.SEVERE, null, exception);
@@ -145,14 +141,14 @@ public class MacAdaptor {
     private static class MacEventHandler implements InvocationHandler {
 
         // no way around it since getMethod takes an array of typed Class and which isn't allowed
-        @SuppressWarnings({"unchecked", "rawtypes"})    
+        @SuppressWarnings({"unchecked", "rawtypes"})
         @Override
         public Object invoke(final Object proxy, final Method method, final Object[] args) {
             try {
                 final String methodName = method.getName();
                 final Object event = args[0];
                 // method to indicate whether we handled the event
-                final Method markMethod = event.getClass().getMethod("setHandled", new Class[]{Boolean.TYPE});
+                final Method markMethod = event.getClass().getMethod("setHandled", Boolean.TYPE);
 
                 // get the XAL application
                 final xal.extension.application.Application xalApp = xal.extension.application.Application.getApp();

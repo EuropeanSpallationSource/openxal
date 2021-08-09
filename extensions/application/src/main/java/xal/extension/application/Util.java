@@ -5,11 +5,14 @@
  */
 package xal.extension.application;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Utility class providing convenience methods for use in the application
@@ -18,6 +21,8 @@ import java.util.Map.Entry;
  * @author tap
  */
 public class Util {
+
+    private static final Logger LOGGER = Logger.getLogger(Util.class.getName());
 
     /**
      * Creates a new instance of Util
@@ -41,8 +46,7 @@ public class Util {
             return infoMap;
         }
 
-        try {
-            final InputStream inputStream = resourceURL.openStream();
+        try (InputStream inputStream = resourceURL.openStream()) {
             final Properties properties = new Properties();
             properties.load(inputStream);
 
@@ -54,7 +58,8 @@ public class Util {
             }
 
             return infoMap;
-        } catch (java.io.FileNotFoundException exception) {
+        } catch (FileNotFoundException exception) {
+            LOGGER.log(Level.WARNING, null, exception);
             // this may be fine as the resource may be optional
             // return null to indicate that the resource was missing
             return null;

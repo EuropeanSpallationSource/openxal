@@ -16,21 +16,20 @@ import xal.extension.bricks.WindowReference;
  */
 public abstract class XalDocument extends XalAbstractDocument {
 
-    // basic document instance variables
     /**
      * The main window for the document
      */
-    public XalWindow mainWindow;
+    protected XalWindow mainWindow;
 
     /**
      * proxy for dispatching document events
      */
-    private XalDocumentListener documentListenerProxy;    //
+    private XalDocumentListener documentListenerProxy;
 
     /**
      * Constructor for new documents
      */
-    public XalDocument() {
+    protected XalDocument() {
         super();
     }
 
@@ -118,10 +117,8 @@ public abstract class XalDocument extends XalAbstractDocument {
      */
     @Override
     public boolean closeDocument() {
-        if (warnUserOfUnsavedChangesWhenClosing() && hasChanges()) {
-            if (!mainWindow.userPermitsCloseWithUnsavedChanges()) {
-                return false;
-            }
+        if (warnUserOfUnsavedChangesWhenClosing() && hasChanges() && !mainWindow.userPermitsCloseWithUnsavedChanges()) {
+            return false;
         }
 
         documentListenerProxy.documentWillClose(this);

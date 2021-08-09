@@ -76,7 +76,7 @@ public class AcceleratorActionFactory {
                 final List<AcceleratorSeqCombo> comboSequences = (accelerator != null) ? new ArrayList<>(accelerator.getComboSequences()) : Collections.<AcceleratorSeqCombo>emptyList();
 
                 // If the selected sequence is a combo sequence make sure there is an appropriate menu item
-                if (selectedSequence != null && selectedSequence instanceof AcceleratorSeqCombo && !comboSequences.contains(selectedSequence)) {
+                if (selectedSequence instanceof AcceleratorSeqCombo && !comboSequences.contains(selectedSequence)) {
                     comboSequences.add((AcceleratorSeqCombo) selectedSequence);
                 }
 
@@ -98,6 +98,7 @@ public class AcceleratorActionFactory {
              */
             @Override
             public void menuCanceled(final MenuEvent event) {
+                //Do nothing
             }
 
             /**
@@ -105,6 +106,7 @@ public class AcceleratorActionFactory {
              */
             @Override
             public void menuDeselected(final MenuEvent event) {
+                //Do nothing
             }
         };
     }
@@ -170,10 +172,11 @@ public class AcceleratorActionFactory {
                             break;
                         case JFileChooser.ERROR_OPTION:
                             break;
+                        default:
+                            break;
                     }
                 } catch (FilePathException exception) {
                     final String message = "Exception while loading the selected accelerator: ";
-                    System.err.println(message + '\n' + exception);
                     Logger.getLogger("global").log(Level.SEVERE, message, exception);
                     document.displayError("Exception", message, exception);
                 }

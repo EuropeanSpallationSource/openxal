@@ -23,7 +23,7 @@ public abstract class AcceleratorWindow extends XalWindow {
     /**
      * Creates a new instance of AcceleratorWindow
      */
-    public AcceleratorWindow(XalDocument aDocument) {
+    protected AcceleratorWindow(XalDocument aDocument) {
         super(aDocument);
     }
 
