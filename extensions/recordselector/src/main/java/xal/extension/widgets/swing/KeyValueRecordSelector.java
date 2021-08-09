@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * display a dialog that allows users to select records from a table
  */
-public class KeyValueRecordSelector<RecordType> {
+public class KeyValueRecordSelector<T> {
 
     /**
      * dialog box for channel selection
@@ -34,7 +34,7 @@ public class KeyValueRecordSelector<RecordType> {
     /**
      * table model for the records to display
      */
-    private final KeyValueFilteredTableModel<RecordType> recordTableModel;
+    private final KeyValueFilteredTableModel<T> recordTableModel;
 
     /**
      * indicates whether the user confirmed the selections
@@ -44,7 +44,7 @@ public class KeyValueRecordSelector<RecordType> {
     /**
      * Primary Constructor
      */
-    protected KeyValueRecordSelector(final KeyValueFilteredTableModel<RecordType> tableModel, final JFrame owner, final String title, final String filterPrompt) {
+    protected KeyValueRecordSelector(final KeyValueFilteredTableModel<T> tableModel, final JFrame owner, final String title, final String filterPrompt) {
         final URL uiURL = ResourceManager.getResourceURL(KeyValueRecordSelector.class, "RecordSelector.bricks");
         final WindowReference windowReference = new WindowReference(uiURL, "RecordSelectorDialog", owner, title);
         dialog = (JDialog) windowReference.getWindow();
@@ -75,7 +75,7 @@ public class KeyValueRecordSelector<RecordType> {
     /**
      * Constructor with default filter prompt
      */
-    protected KeyValueRecordSelector(final KeyValueFilteredTableModel<RecordType> tableModel, final JFrame owner, final String title) {
+    protected KeyValueRecordSelector(final KeyValueFilteredTableModel<T> tableModel, final JFrame owner, final String title) {
         this(tableModel, owner, title, "Record filter");
     }
 
@@ -87,7 +87,7 @@ public class KeyValueRecordSelector<RecordType> {
      * @param owner the window that owns the dialog window
      * @param title the title of the dialog window
      */
-    public static <RecordType> KeyValueRecordSelector<RecordType> getInstance(final KeyValueFilteredTableModel<RecordType> tableModel, final JFrame owner, final String title) {
+    public static <T> KeyValueRecordSelector<T> getInstance(final KeyValueFilteredTableModel<T> tableModel, final JFrame owner, final String title) {
         return new KeyValueRecordSelector<>(tableModel, owner, title);
     }
 
@@ -101,7 +101,7 @@ public class KeyValueRecordSelector<RecordType> {
      * @param keyPaths are the key paths applied to each record to supply the
      * table's column data
      */
-    public static <RecordType> KeyValueRecordSelector<RecordType> getInstance(final List<RecordType> records, final JFrame owner, final String title, final String... keyPaths) {
+    public static <T> KeyValueRecordSelector<T> getInstance(final List<T> records, final JFrame owner, final String title, final String... keyPaths) {
         return new KeyValueRecordSelector<>(new KeyValueFilteredTableModel<>(records, keyPaths), owner, title);
     }
 
@@ -115,7 +115,7 @@ public class KeyValueRecordSelector<RecordType> {
      * @param filterPrompt the prompt to appear as a placeholder in the filter
      * field
      */
-    public static <RecordType> KeyValueRecordSelector<RecordType> getInstanceWithFilterPrompt(final KeyValueFilteredTableModel<RecordType> tableModel, final JFrame owner, final String title, final String filterPrompt) {
+    public static <T> KeyValueRecordSelector<T> getInstanceWithFilterPrompt(final KeyValueFilteredTableModel<T> tableModel, final JFrame owner, final String title, final String filterPrompt) {
         return new KeyValueRecordSelector<>(tableModel, owner, title, filterPrompt);
     }
 
@@ -131,7 +131,7 @@ public class KeyValueRecordSelector<RecordType> {
      * @param keyPaths are the key paths applied to each record to supply the
      * table's column data
      */
-    public static <RecordType> KeyValueRecordSelector<RecordType> getInstanceWithFilterPrompt(final List<RecordType> records, final JFrame owner, final String title, final String filterPrompt, final String... keyPaths) {
+    public static <T> KeyValueRecordSelector<T> getInstanceWithFilterPrompt(final List<T> records, final JFrame owner, final String title, final String filterPrompt, final String... keyPaths) {
         return new KeyValueRecordSelector<>(new KeyValueFilteredTableModel<>(records, keyPaths), owner, title, filterPrompt);
     }
 
@@ -145,7 +145,7 @@ public class KeyValueRecordSelector<RecordType> {
     /**
      * get the table model for displaying the records
      */
-    public KeyValueFilteredTableModel<RecordType> getRecordTableModel() {
+    public KeyValueFilteredTableModel<T> getRecordTableModel() {
         return recordTableModel;
     }
 
@@ -156,9 +156,9 @@ public class KeyValueRecordSelector<RecordType> {
      * @return the selected record or null if no record was selected or the
      * dialog was canceled
      */
-    public RecordType showSingleSelectionDialog() {
-        final List<RecordType> records = showDialog(ListSelectionModel.SINGLE_SELECTION);
-        return records != null && records.size() > 0 ? records.get(0) : null;
+    public T showSingleSelectionDialog() {
+        final List<T> records = showDialog(ListSelectionModel.SINGLE_SELECTION);
+        return records != null && !records.isEmpty() ? records.get(0) : null;
     }
 
     /**
@@ -167,7 +167,7 @@ public class KeyValueRecordSelector<RecordType> {
      *
      * @return the selected records or null if the dialog was canceled
      */
-    public List<RecordType> showDialog() {
+    public List<T> showDialog() {
         return showDialog(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     }
 
@@ -181,7 +181,7 @@ public class KeyValueRecordSelector<RecordType> {
      * ListSelectionModel.MULTIPLE_INTERVAL_SELECTION
      * @return the selected records or null if the dialog was canceled
      */
-    public List<RecordType> showDialog(final int selectionMode) {
+    public List<T> showDialog(final int selectionMode) {
         isConfirmed = false;
 
         recordTable.setSelectionMode(selectionMode);
@@ -203,10 +203,10 @@ public class KeyValueRecordSelector<RecordType> {
     /**
      * get the list of selected records
      */
-    protected List<RecordType> getSelectedRecords() {
+    protected List<T> getSelectedRecords() {
         final RowSorter<?> sorter = recordTable.getRowSorter();
         final int[] selectedRows = recordTable.getSelectedRows();
-        final List<RecordType> records = new ArrayList<>(selectedRows.length);
+        final List<T> records = new ArrayList<>(selectedRows.length);
         for (final int row : selectedRows) {
             final int modelRow = sorter.convertRowIndexToModel(row);
             records.add(recordTableModel.getRecordAtRow(modelRow));
@@ -218,12 +218,9 @@ public class KeyValueRecordSelector<RecordType> {
      * get the handler for the cancel button
      */
     private ActionListener getCancelHandler() {
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                dialog.setVisible(false);
-                isConfirmed = false;
-            }
+        return event -> {
+            dialog.setVisible(false);
+            isConfirmed = false;
         };
     }
 
@@ -231,24 +228,14 @@ public class KeyValueRecordSelector<RecordType> {
      * get the handler for the okay button
      */
     private ActionListener getOkayHandler() {
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                performOkay();
-            }
-        };
+        return event -> performOkay();
     }
 
     /**
      * get the handler for clearing the filter field
      */
     private ActionListener getClearFilterHandler(final JTextField filterField) {
-        return new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                filterField.setText("");
-            }
-        };
+        return event -> filterField.setText("");
     }
 
     /**
