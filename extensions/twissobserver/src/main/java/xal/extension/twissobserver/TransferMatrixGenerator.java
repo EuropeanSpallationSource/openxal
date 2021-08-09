@@ -86,7 +86,7 @@ public class TransferMatrixGenerator {
          * @see Scenario#setSynchronizationMode(String)
          */
         public String getSynchronizationValue() {
-            return this.strSynMode;
+            return strSynMode;
         }
 
         /*
@@ -178,7 +178,7 @@ public class TransferMatrixGenerator {
      */
     public TransferMatrixGenerator(AcceleratorSeq smfSeq, long lngPvLogId) throws ModelException {
         this(smfSeq);
-        this.setSyncToMachineHistory(lngPvLogId);
+        setSyncToMachineHistory(lngPvLogId);
     }
 
     /**
@@ -201,20 +201,20 @@ public class TransferMatrixGenerator {
             // Create the zero-current probe 
             TransferMapTracker algXmap = AlgorithmFactory.createTransferMapTracker(smfSeq);
 
-            this.mdlTmapProbe = ProbeFactory.getTransferMapProbe(this.smfSeq, algXmap);
-            this.mdlTmapProbe.reset();
+            mdlTmapProbe = ProbeFactory.getTransferMapProbe(this.smfSeq, algXmap);
+            mdlTmapProbe.reset();
 
             // Create the finite space charge probe
             EnvTrackerAdapt algEnvTrk = AlgorithmFactory.createEnvTrackerAdapt(smfSeq);
             algEnvTrk.setMaxIterations(1000);
 
             // Create and initialize the envelope probe
-            this.mdlEnvProbe = ProbeFactory.getEnvelopeProbe(this.smfSeq, algEnvTrk);
-            this.mdlEnvProbe.reset();
+            mdlEnvProbe = ProbeFactory.getEnvelopeProbe(this.smfSeq, algEnvTrk);
+            mdlEnvProbe.reset();
 
             // Create the model and load the parameters from the saved PV Logger data
-            this.mdlBeamline = Scenario.newScenarioFor(smfSeq);
-            this.setSynchronizationMode(enmSyn);
+            mdlBeamline = Scenario.newScenarioFor(smfSeq);
+            setSynchronizationMode(enmSyn);
 
         } catch (InstantiationException e) {
 
@@ -222,9 +222,9 @@ public class TransferMatrixGenerator {
         }
 
         // Obviate uninitialized objects
-        this.bolScheff = false;
-        this.mdlTrjMap = null;
-        this.mdlTrjEnv = null;
+        bolScheff = false;
+        mdlTrjMap = null;
+        mdlTrjEnv = null;
     }
 
     /**
@@ -244,8 +244,8 @@ public class TransferMatrixGenerator {
      * @since Jul 19, 2012
      */
     public void setSynchronizationMode(SYNC enmSync) throws SynchronizationException {
-        this.mdlBeamline.setSynchronizationMode(enmSync.getSynchronizationValue());
-        this.mdlBeamline.resync();
+        mdlBeamline.setSynchronizationMode(enmSync.getSynchronizationValue());
+        mdlBeamline.resync();
     }
 
     /**
@@ -264,7 +264,7 @@ public class TransferMatrixGenerator {
     public void setSyncToMachineHistory(final long lngPvLogId) throws SynchronizationException {
 
         PVLoggerDataSource srcPvLog = new PVLoggerDataSource(lngPvLogId);
-        srcPvLog.setModelSource(this.smfSeq, this.mdlBeamline);
+        srcPvLog.setModelSource(smfSeq, mdlBeamline);
     }
 
     /*
@@ -290,16 +290,16 @@ public class TransferMatrixGenerator {
     public void generateWithoutSpaceCharge() throws ModelException {
 
         // Initialize Probe
-        this.mdlTmapProbe.reset();
+        mdlTmapProbe.reset();
 
         // Load the probe, synchronize the model, and run 
-        this.mdlBeamline.setProbe(this.mdlTmapProbe);
-        this.mdlBeamline.resyncFromCache();
-        this.mdlBeamline.run();
+        mdlBeamline.setProbe(mdlTmapProbe);
+        mdlBeamline.resyncFromCache();
+        mdlBeamline.run();
 
         // Save the trajectory
-        this.mdlTrjMap = this.mdlBeamline.getTrajectory();
-        this.bolScheff = false;
+        mdlTrjMap = mdlBeamline.getTrajectory();
+        bolScheff = false;
     }
 
     /**
@@ -370,23 +370,23 @@ public class TransferMatrixGenerator {
             throws ModelException {
 
         // Initialize the probe
-        this.mdlEnvProbe.reset();
-        this.mdlEnvProbe.setCovariance(matInitState);
-        this.mdlEnvProbe.setBunchFrequency(dblBnchFreq);
-        this.mdlEnvProbe.setBeamCurrent(dblBeamCurr);
+        mdlEnvProbe.reset();
+        mdlEnvProbe.setCovariance(matInitState);
+        mdlEnvProbe.setBunchFrequency(dblBnchFreq);
+        mdlEnvProbe.setBeamCurrent(dblBeamCurr);
 
         // Load the probe into the model, synchronize the model parameters, 
         //     set the start location, and run
-        this.mdlBeamline.setProbe(this.mdlEnvProbe);
-        this.mdlBeamline.resyncFromCache();
+        mdlBeamline.setProbe(this.mdlEnvProbe);
+        mdlBeamline.resyncFromCache();
         if (strDevIdStart != null) {
-            this.mdlBeamline.setStartNode(strDevIdStart);
+            mdlBeamline.setStartNode(strDevIdStart);
         }
-        this.mdlBeamline.run();
+        mdlBeamline.run();
 
         // Save the trajectory
-        this.mdlTrjEnv = this.mdlBeamline.getTrajectory();
-        this.bolScheff = true;
+        mdlTrjEnv = mdlBeamline.getTrajectory();
+        bolScheff = true;
     }
 
     /**
@@ -412,39 +412,26 @@ public class TransferMatrixGenerator {
      * @since Jul 27, 2012
      */
     public PhaseMatrix retrieveTransferMatrix(String strElemStop) throws IllegalStateException {
-
         // The transfer matrices are beam independent
-        if (this.bolScheff == false) {
-
+        if (!bolScheff) {
             // Error condition - the simulation hasn't been run yet
-            if (this.mdlTrjMap == null) {
+            if (mdlTrjMap == null) {
                 throw new IllegalStateException("No transfer matrices, model has not been run");
             }
 
-            TransferMapState stateElem = this.mdlTrjMap.stateForElement(strElemStop);
+            TransferMapState stateElem = mdlTrjMap.stateForElement(strElemStop);
             PhaseMap mapPhi = stateElem.getTransferMap();
-            PhaseMatrix matPhi = mapPhi.getFirstOrder();
-
-            return matPhi;
-        }
-
-        // The transfer matrices contain space charge effects
-        if (this.bolScheff) {
-
+            return mapPhi.getFirstOrder();
+        } else {
+            // The transfer matrices contain space charge effects
             // Error condition - the simulation hasn't been run yet
-            if (this.mdlTrjEnv == null) {
+            if (mdlTrjEnv == null) {
                 throw new IllegalStateException("No transfer matrices, model has not been run");
             }
 
-            EnvelopeProbeState stateEnv = this.mdlTrjEnv.stateForElement(strElemStop);
-            PhaseMatrix matPhi = stateEnv.getResponseMatrix();
-
-            return matPhi;
+            EnvelopeProbeState stateEnv = mdlTrjEnv.stateForElement(strElemStop);
+            return stateEnv.getResponseMatrix();
         }
-
-        // There can only be envelope trajectories or transfer map trajectories
-        //  There is no way to reach this point so a serious error has occurred
-        throw new IllegalStateException("Serious internal error - unknown simulation trajectory");
     }
 
     /**
@@ -470,12 +457,11 @@ public class TransferMatrixGenerator {
      * @since Jul 18, 2012
      */
     public PhaseMatrix retrieveTransferMatrix(String strElemStart, String strElemStop) throws IllegalStateException {
-
         // The transfer matrices are beam independent
-        if (this.bolScheff == false) {
+        if (!bolScheff) {
 
             // Error condition - the simulation hasn't been run yet
-            if (this.mdlTrjMap == null) {
+            if (mdlTrjMap == null) {
                 throw new IllegalStateException("No transfer matrices, model has not been run");
             }
 
@@ -484,13 +470,9 @@ public class TransferMatrixGenerator {
 
             PhaseMatrix matPhi1 = state1.getTransferMap().getFirstOrder();
             PhaseMatrix matPhi2 = state2.getTransferMap().getFirstOrder();
-            PhaseMatrix matPhi = matPhi2.times(matPhi1.inverse());
-
-            return matPhi;
-        }
-
-        // The transfer matrices contain space charge effects 
-        if (this.bolScheff) {
+            return matPhi2.times(matPhi1.inverse());
+        } else {
+            // The transfer matrices contain space charge effects 
 
             // Error condition - the simulation hasn't been run yet
             if (this.mdlTrjEnv == null) {
@@ -502,14 +484,7 @@ public class TransferMatrixGenerator {
 
             PhaseMatrix matPhi1 = state1.getResponseMatrix();
             PhaseMatrix matPhi2 = state2.getResponseMatrix();
-            PhaseMatrix matPhi = matPhi2.times(matPhi1.inverse());
-
-            return matPhi;
+            return matPhi2.times(matPhi1.inverse());
         }
-
-        // There can only be envelope trajectories or transfer map trajectories
-        //  There is no way to reach this point so a serious error has occurred
-        throw new IllegalStateException("Serious internal error - unknown simulation trajectory");
     }
-
 }

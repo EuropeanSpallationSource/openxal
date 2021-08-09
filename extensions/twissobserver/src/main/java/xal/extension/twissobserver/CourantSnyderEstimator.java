@@ -8,12 +8,12 @@ package xal.extension.twissobserver;
 
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.PhaseMatrix;
-import xal.tools.beam.Twiss;
 import xal.tools.math.GenericMatrix;
 import xal.model.ModelException;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * <p>
@@ -79,7 +79,7 @@ public abstract class CourantSnyderEstimator {
      * @author Christopher K. Allen
      * @since Apr 2, 2013
      */
-    public abstract CovarianceMatrix computeReconstruction(String strRecDevId, double dblBnchFreq, double dblBmCurr, ArrayList<Measurement> arrData) throws Exception;
+    public abstract CovarianceMatrix computeReconstruction(String strRecDevId, double dblBnchFreq, double dblBmCurr, List<Measurement> arrData) throws Exception;
 
     /*
      * Global Constants
@@ -144,7 +144,7 @@ public abstract class CourantSnyderEstimator {
      * @author Christopher K. Allen
      * @since Sep 4, 2012
      */
-    public CourantSnyderEstimator(TransferMatrixGenerator genTransMatrix) {
+    protected CourantSnyderEstimator(TransferMatrixGenerator genTransMatrix) {
         this(false, genTransMatrix);
     }
 
@@ -163,15 +163,15 @@ public abstract class CourantSnyderEstimator {
      * @author Eric Dai
      * @since Jul 20, 2012
      */
-    public CourantSnyderEstimator(boolean bolDebug, TransferMatrixGenerator genTransMat) {
+    protected CourantSnyderEstimator(boolean bolDebug, TransferMatrixGenerator genTransMat) {
         this.genTransMat = genTransMat;
         this.bolDebug = bolDebug;
 
-        this.dblResErr = Double.MAX_VALUE;
-        this.dblConvErr = Double.MAX_VALUE;
+        dblResErr = Double.MAX_VALUE;
+        dblConvErr = Double.MAX_VALUE;
 
-        this.fmtMatrix = new DecimalFormat("0.##E0#");
-        this.fmtMatrix.getDecimalFormatSymbols().setNaN("NaN");
+        fmtMatrix = new DecimalFormat("0.##E0#");
+        fmtMatrix.getDecimalFormatSymbols().setNaN("NaN");
     }
 
     /**
@@ -200,7 +200,7 @@ public abstract class CourantSnyderEstimator {
      * @since Apr 16, 2013
      */
     public boolean isDebuggingOn() {
-        return this.bolDebug;
+        return bolDebug;
     }
 
     /**
@@ -223,7 +223,7 @@ public abstract class CourantSnyderEstimator {
      * @since Nov 21, 2012
      */
     public CovarianceMatrix getReconstruction() {
-        return this.matCurrSigma;
+        return matCurrSigma;
     }
 
     /**
@@ -245,7 +245,7 @@ public abstract class CourantSnyderEstimator {
      * @since Nov 21, 2012
      */
     public double getReconResidualError() {
-        return this.dblResErr;
+        return dblResErr;
     }
 
     /**
@@ -268,7 +268,7 @@ public abstract class CourantSnyderEstimator {
      * @since Nov 21, 2012
      */
     public double getReconConvergenceError() {
-        return this.dblConvErr;
+        return dblConvErr;
     }
 
 
@@ -296,9 +296,9 @@ public abstract class CourantSnyderEstimator {
      * @author Christopher K. Allen
      * @since Apr 18, 2013
      */
-    public CovarianceMatrix computeZeroCurrReconFunction(String strRecDevId, ArrayList<Measurement> arrData)
+    public CovarianceMatrix computeZeroCurrReconFunction(String strRecDevId, List<Measurement> arrData)
             throws ModelException {
-        return this.computeReconFunction(null, 0.0, 0.0, strRecDevId, arrData);
+        return computeReconFunction(null, 0.0, 0.0, strRecDevId, arrData);
     }
 
     /**
@@ -332,23 +332,23 @@ public abstract class CourantSnyderEstimator {
             double dblBnchFreq,
             double dblBeamCurr,
             String strRecDevId,
-            ArrayList<Measurement> arrData
+            List<Measurement> arrData
     )
             throws ModelException {
         if (dblBeamCurr == 0.0) {
-            this.genTransMat.generateWithoutSpaceCharge();
+            genTransMat.generateWithoutSpaceCharge();
         } else {
-            this.genTransMat.generateWithSpaceCharge(dblBnchFreq, dblBeamCurr, matSig0);
+            genTransMat.generateWithSpaceCharge(dblBnchFreq, dblBeamCurr, matSig0);
         }
 
-        GenericMatrix vecMmtsHor = this.computeReconSubFunction(PHASEPLANE.HOR, strRecDevId, arrData);
-        GenericMatrix vecMmtsVer = this.computeReconSubFunction(PHASEPLANE.VER, strRecDevId, arrData);
-        GenericMatrix vecMmtsLng = this.computeReconSubFunction(PHASEPLANE.LNG, strRecDevId, arrData);
+        GenericMatrix vecMmtsHor = computeReconSubFunction(PHASEPLANE.HOR, strRecDevId, arrData);
+        GenericMatrix vecMmtsVer = computeReconSubFunction(PHASEPLANE.VER, strRecDevId, arrData);
+        GenericMatrix vecMmtsLng = computeReconSubFunction(PHASEPLANE.LNG, strRecDevId, arrData);
 
         CovarianceMatrix matSig = PHASEPLANE.constructCovariance(vecMmtsHor, vecMmtsVer, vecMmtsLng);
 
-        this.matCurrSigma = matSig;
-        this.dblResErr = this.computeResidualError(matSig, strRecDevId, arrData);
+        matCurrSigma = matSig;
+        dblResErr = this.computeResidualError(matSig, strRecDevId, arrData);
 
         return matSig;
     }
@@ -386,7 +386,7 @@ public abstract class CourantSnyderEstimator {
      * @author Christopher K. Allen
      * @since Apr 16, 2013
      */
-    public GenericMatrix computeObservationMatrix(String strReconDevId, ArrayList<Measurement> arrData)
+    public GenericMatrix computeObservationMatrix(String strReconDevId, List<Measurement> arrData)
             throws IllegalArgumentException, IllegalStateException {
         // These are the dimensions of the diagonal blocks
         //  NOT the final matrix
@@ -401,7 +401,7 @@ public abstract class CourantSnyderEstimator {
         for (PHASEPLANE plane : PHASEPLANE.values()) {
 
             // Compute the block diagonal observation matrix, i.e., for this phase plane
-            GenericMatrix matBlkDiag = this.computeObservationMatrix(plane, strReconDevId, arrData);
+            GenericMatrix matBlkDiag = computeObservationMatrix(plane, strReconDevId, arrData);
 
             // Get the index of the top left corner of the block diagonal with the phase matrix
             //  object.  With that we can set the entire sub array within the phase matrix.
@@ -463,21 +463,21 @@ public abstract class CourantSnyderEstimator {
      * @return Resulting <strong>&sigma;</strong> vector of second moments at
      * the given device location
      */
-    protected GenericMatrix computeReconSubFunction(PHASEPLANE plane, String strTargElemId, ArrayList<Measurement> arrData) {
-        GenericMatrix vecData = this.constructDataVector(plane, arrData);
-        GenericMatrix matObs = this.computeObservationMatrix(plane, strTargElemId, arrData);
+    protected GenericMatrix computeReconSubFunction(PHASEPLANE plane, String strTargElemId, List<Measurement> arrData) {
+        GenericMatrix vecData = constructDataVector(plane, arrData);
+        GenericMatrix matObs = computeObservationMatrix(plane, strTargElemId, arrData);
 
         GenericMatrix vecSigma;
-        int N = arrData.size();
-        if (N == 3) {
+        int n = arrData.size();
+        if (n == 3) {
             vecSigma = matObs.inverse().times(vecData);
 
-        } else if (N < 3) {
+        } else if (n < 3) {
             GenericMatrix matRngOper = matObs.times(matObs.transpose());
             GenericMatrix matPseudoInv = matRngOper.inverse();
 
             vecSigma = matPseudoInv.times(matObs.times(vecData));
-        } else if (N > 3) {
+        } else if (n > 3) {
             GenericMatrix matObsT = matObs.transpose();
             GenericMatrix matDomOper = matObsT.times(matObs);
             GenericMatrix matPseudoInv = matDomOper.inverse();
@@ -519,8 +519,8 @@ public abstract class CourantSnyderEstimator {
      * @throws IllegalStateException transfer matrices have not been generated
      */
     protected GenericMatrix computeObservationMatrix(PHASEPLANE plane, String strReconDevId,
-            ArrayList<Measurement> arrData) throws IllegalArgumentException, IllegalStateException {
-        ArrayList<PhaseMatrix> arrTransMatrices = new ArrayList<PhaseMatrix>();
+            List<Measurement> arrData) throws IllegalArgumentException, IllegalStateException {
+        List<PhaseMatrix> arrTransMatrices = new ArrayList<>();
 
         // Get all the transfer matrices between the reconstruction location and the data locations
         int n = 0;
@@ -568,29 +568,25 @@ public abstract class CourantSnyderEstimator {
      * @author Christopher K. Allen
      * @since Nov 15, 2012
      */
-    protected double computeResidualError(CovarianceMatrix matSigSoln, String strRecDevId, ArrayList<Measurement> arrData) {
-        int N = arrData.size();
+    protected double computeResidualError(CovarianceMatrix matSigSoln, String strRecDevId, List<Measurement> arrData) {
+        int n = arrData.size();
 
         double dblErrTotal = 0.0;
         for (PHASEPLANE plane : PHASEPLANE.values()) {
             GenericMatrix vecSig = plane.extractCovarianceVector(matSigSoln);
 
-            double dblError = 0.0;
-            if (N < 3) {
+            double dblError;
+            if (n < 3) {
                 dblError = vecSig.normF();
-
-            } else if (N >= 3) {
+            } else if (n >= 3) {
                 GenericMatrix vecData = this.constructDataVector(plane, arrData);
                 GenericMatrix matObs = this.computeObservationMatrix(plane, strRecDevId, arrData);
 
                 dblError = (vecData.minus(matObs.times(vecSig))).normF();
-
             } else {
                 dblError = 0.0;
-
             }
             dblErrTotal += dblError * dblError;
-
         }
 
         return Math.sqrt(dblErrTotal);
@@ -638,7 +634,7 @@ public abstract class CourantSnyderEstimator {
      * @since Jul 20, 2012
      *
      */
-    private GenericMatrix constructDataVector(PHASEPLANE plane, ArrayList<Measurement> arrMsmt) {
+    private GenericMatrix constructDataVector(PHASEPLANE plane, List<Measurement> arrMsmt) {
         GenericMatrix matData = new GenericMatrix(arrMsmt.size(), 1);
 
         for (int n = 0; n < arrMsmt.size(); n++) {
@@ -651,29 +647,4 @@ public abstract class CourantSnyderEstimator {
 
         return matData;
     }
-
-    /**
-     * Computes and returns the Courant-Snyder parameters (i.e, the
-     * <code>Twiss</code> object) having the equivalent information as the given
-     * vector of second-order (RMS) moments.
-     *
-     * @param vecMmts a 3&times;1 matrix vector
-     * (&lt;<em>x</em><sup>2</sup>&gt;,&lt;<em>xx'</em>&gt;,&lt;,&lt;<em>x'</em><sup>2</sup>&gt;)<sup>T</sup>
-     * @return Courant-Snyder parameters (&alpha;,&beta;,&epsilon;)
-     * corresponding to the given moments.
-     *
-     * @author Christopher K. Allen
-     * @since Aug 31, 2012
-     */
-    @SuppressWarnings("unused")
-    private Twiss computeEquivalentTwiss(GenericMatrix vecMmts) {
-
-        double dblMmtPos = vecMmts.getElem(0, 0);
-        double dblMmtCov = vecMmts.getElem(1, 0);
-        double dblMmtAng = vecMmts.getElem(2, 0);
-        Twiss twsEquiv = Twiss.createFromMoments(dblMmtPos, dblMmtCov, dblMmtAng);
-
-        return twsEquiv;
-    }
-
 }

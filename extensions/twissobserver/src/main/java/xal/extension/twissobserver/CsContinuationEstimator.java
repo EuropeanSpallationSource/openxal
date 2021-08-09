@@ -13,6 +13,7 @@ import xal.model.ModelException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -223,11 +224,11 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
         super(false, genTransMat);
 
         this.bol2ndSrch = bol2ndSrch;
-        this.slnEmbed = new CsFixedPtEstimator(genTransMat);
+        slnEmbed = new CsFixedPtEstimator(genTransMat);
 
-        this.cntCurSteps = cntChgSteps;
-        this.dblDelCurPct = dblDelCurFrac;
-        this.dblDelMmtPct = dblDelMmtFrac;
+        cntCurSteps = cntChgSteps;
+        dblDelCurPct = dblDelCurFrac;
+        dblDelMmtPct = dblDelMmtFrac;
     }
 
     /**
@@ -243,7 +244,7 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
      * @since Apr 5, 2013
      */
     public void setUseSecondarySearch(boolean bolScndSrch) {
-        this.bol2ndSrch = bolScndSrch;
+        bol2ndSrch = bolScndSrch;
     }
 
     /**
@@ -256,7 +257,7 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
      * @since Apr 18, 2013
      */
     public void setSecondarySearchIterations(int cntMaxIters) {
-        this.slnEmbed.setMaxIterations(cntMaxIters);
+        slnEmbed.setMaxIterations(cntMaxIters);
     }
 
     /**
@@ -445,20 +446,20 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
      * @since Apr 2, 2013
      */
     @Override
-    public CovarianceMatrix computeReconstruction(String strRecDevId, double dblBnchFreq, double dblBmCurr, ArrayList<Measurement> arrData)
+    public CovarianceMatrix computeReconstruction(String strRecDevId, double dblBnchFreq, double dblBmCurr, List<Measurement> arrData)
             throws ModelException {
         // "Convergence" does not make sense here, unless we run the secondary search
         super.dblConvErr = Double.NaN;
 
         // Compute the initial values
-        double dblDelI = dblBmCurr / this.cntCurSteps;
-        CovarianceMatrix matSig0 = this.computeZeroCurrReconFunction(strRecDevId, arrData);
+        double dblDelI = dblBmCurr / cntCurSteps;
+        CovarianceMatrix matSig0 = computeZeroCurrReconFunction(strRecDevId, arrData);
 
-        this.matCurrSigma = matSig0;
-        this.matCurrF = matSig0;
+        matCurrSigma = matSig0;
+        matCurrF = matSig0;
 
         // Initialize the iterative beam current stepping
-        double dblCurrI = 0.0;
+        double dblCurrI;
 
         // Compute the solution curve step by step by incrementing the beam charge
         for (int n = 1; n <= this.cntCurSteps; n++) {
@@ -466,15 +467,14 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
             dblCurrI = n * dblDelI;
 
             // Compute the new covariance matrix from the current one
-            CovarianceMatrix matSig1 = this.iterateNext(matSig0, strRecDevId, dblBnchFreq, dblCurrI, dblDelI, arrData);
+            CovarianceMatrix matSig1 = iterateNext(matSig0, strRecDevId, dblBnchFreq, dblCurrI, dblDelI, arrData);
 
             // Move the current solution value back onto the solution curve
             if (this.bol2ndSrch) {
                 try {
-                    matSig1 = this.slnEmbed.computeReconstruction(strRecDevId, dblBnchFreq, dblCurrI, matSig1, arrData);
+                    matSig1 = slnEmbed.computeReconstruction(strRecDevId, dblBnchFreq, dblCurrI, matSig1, arrData);
 
-                    super.dblConvErr = this.slnEmbed.getReconConvergenceError();
-
+                    super.dblConvErr = slnEmbed.getReconConvergenceError();
                 } catch (ConvergenceException e) {
                     matSig1 = this.getReconstruction();
 
@@ -622,7 +622,7 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
             double dblBnchFreq,
             double dblBnchChg,
             double dblDelChg,
-            ArrayList<Measurement> arrData
+            List<Measurement> arrData
     )
             throws ModelException {
 
@@ -637,12 +637,12 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
             matId.assignIdentity();
 
             // Compute the moment function resolvent
-            GenericMatrix matDFdSig = this.computePartialWrtMoments(plane, matSig0, strRecDevId, dblBnchFreq, dblBnchChg, arrData);
+            GenericMatrix matDFdSig = computePartialWrtMoments(plane, matSig0, strRecDevId, dblBnchFreq, dblBnchChg, arrData);
             GenericMatrix matDGdSig = matDFdSig.minus(matId);
             GenericMatrix matDGdSigInv = matDGdSig.inverse();
 
             // Compute the partial of the solution curve w.r.t. charge and store
-            GenericMatrix vecDFdq = this.computePartialWrtCharge(plane, matSig0, strRecDevId, dblBnchFreq, dblBnchChg, arrData);
+            GenericMatrix vecDFdq = computePartialWrtCharge(plane, matSig0, strRecDevId, dblBnchFreq, dblBnchChg, arrData);
             GenericMatrix vecDSigDq = matDGdSigInv.times(vecDFdq);
 
             mapVecDSigdq.put(plane, vecDSigDq);
@@ -653,9 +653,7 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
         GenericMatrix vecDelSigLng = mapVecDSigdq.get(PHASEPLANE.LNG).times(dblDelChg);
 
         CovarianceMatrix matDelSig = PHASEPLANE.constructCovariance(vecDelSigHor, vecDelSigVer, vecDelSigLng);
-        CovarianceMatrix matSig1 = new CovarianceMatrix(matSig0.plus(matDelSig));
-
-        return matSig1;
+        return new CovarianceMatrix(matSig0.plus(matDelSig));
     }
 
     /**
@@ -698,23 +696,21 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
      * simulation error
      *
      */
-    private GenericMatrix computePartialWrtCharge(PHASEPLANE plane, CovarianceMatrix matSig0, String strRecDevId, double dblBnchFreq, double dblChg, ArrayList<Measurement> arrMsmts)
+    private GenericMatrix computePartialWrtCharge(PHASEPLANE plane, CovarianceMatrix matSig0, String strRecDevId, double dblBnchFreq, double dblChg, List<Measurement> arrMsmts)
             throws ModelException {
 
         // Compute the current moment vector
-        this.genTransMat.generateWithSpaceCharge(dblBnchFreq, dblChg, matSig0);
-        GenericMatrix vecMmtsInit = this.computeReconSubFunction(plane, strRecDevId, arrMsmts);
+        genTransMat.generateWithSpaceCharge(dblBnchFreq, dblChg, matSig0);
+        GenericMatrix vecMmtsInit = computeReconSubFunction(plane, strRecDevId, arrMsmts);
 
         // Perturb the beam charge and recompute the moment vector
-        double dblChgPert = (1.0 + this.dblDelCurPct) * dblChg;
-        this.genTransMat.generateWithSpaceCharge(dblBnchFreq, dblChgPert, matSig0);
-        GenericMatrix vecMmtsPert = this.computeReconSubFunction(plane, strRecDevId, arrMsmts);
+        double dblChgPert = (1.0 + dblDelCurPct) * dblChg;
+        genTransMat.generateWithSpaceCharge(dblBnchFreq, dblChgPert, matSig0);
+        GenericMatrix vecMmtsPert = computeReconSubFunction(plane, strRecDevId, arrMsmts);
 
         // Approximate the moment vector derivative by finite difference
         GenericMatrix vecDelF = vecMmtsPert.minus(vecMmtsInit);
-        GenericMatrix vecDFdq = vecDelF.times(1.0 / (this.dblDelCurPct * dblChg));
-
-        return vecDFdq;
+        return vecDelF.times(1.0 / (dblDelCurPct * dblChg));
     }
 
     /**
@@ -778,7 +774,7 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
      * @author Christopher K. Allen
      * @since Apr 1, 2013
      */
-    private GenericMatrix computePartialWrtMoments(PHASEPLANE plane, CovarianceMatrix matSig0, String strRecDevId, double dblBnchFreq, double dblChg, ArrayList<Measurement> arrMsmts)
+    private GenericMatrix computePartialWrtMoments(PHASEPLANE plane, CovarianceMatrix matSig0, String strRecDevId, double dblBnchFreq, double dblChg, List<Measurement> arrMsmts)
             throws ModelException {
 
         // Extract the initial moments from the covariance matrix

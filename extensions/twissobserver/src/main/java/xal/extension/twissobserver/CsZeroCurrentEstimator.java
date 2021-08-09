@@ -11,6 +11,7 @@ import xal.tools.math.GenericMatrix;
 import xal.model.ModelException;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Reconstructs the zero-current second-order beam moments from multiple profile
@@ -103,9 +104,9 @@ public class CsZeroCurrentEstimator extends CourantSnyderEstimator {
      * @author Christopher K. Allen
      * @since Aug 31, 2012
      */
-    public CovarianceMatrix computeReconstruction(String strRecDevId, ArrayList<Measurement> arrData)
+    public CovarianceMatrix computeReconstruction(String strRecDevId, List<Measurement> arrData)
             throws ModelException {
-        this.genTransMat.generateWithoutSpaceCharge();
+        genTransMat.generateWithoutSpaceCharge();
 
         GenericMatrix vecMmtsHor = this.computeReconSubFunction(PHASEPLANE.HOR, strRecDevId, arrData);
         GenericMatrix vecMmtsVer = this.computeReconSubFunction(PHASEPLANE.VER, strRecDevId, arrData);
@@ -143,11 +144,8 @@ public class CsZeroCurrentEstimator extends CourantSnyderEstimator {
      * @since May 1, 2013
      */
     @Override
-    public CovarianceMatrix computeReconstruction(String strRecDevId, double dblBnchFreq, double dblBmCurr, ArrayList<Measurement> arrMsmts)
+    public CovarianceMatrix computeReconstruction(String strRecDevId, double dblBnchFreq, double dblBmCurr, List<Measurement> arrMsmts)
             throws ModelException {
-        CovarianceMatrix matSigRec = this.computeReconstruction(strRecDevId, arrMsmts);
-
-        return matSigRec;
+        return computeReconstruction(strRecDevId, arrMsmts);
     }
-
 }

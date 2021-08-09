@@ -13,7 +13,7 @@ import xal.extension.widgets.olmplot.TrajectoryGraph;
 import xal.smf.AcceleratorNode;
 import xal.smf.AcceleratorSeq;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class represents a curve within a graph (see
@@ -56,18 +56,18 @@ public class MeasurementCurve extends BasicGraphData {
      * @author Christopher K. Allen
      * @since Nov 27, 2012
      */
-    public MeasurementCurve(PLANE plane, AcceleratorSeq smfSeqSrc, ArrayList<Measurement> arrMsmt) {
+    public MeasurementCurve(PLANE plane, AcceleratorSeq smfSeqSrc, List<Measurement> arrMsmt) {
         super();
 
         this.plane = plane;
         this.smfSeq = smfSeqSrc;
 
-        this.setDrawLinesOn(false);
-        this.setGraphColor(plane.getColor());
-        this.setGraphName(plane.toString());
-        this.setGraphPointSize(10);
+        setDrawLinesOn(false);
+        setGraphColor(plane.getColor());
+        setGraphName(plane.toString());
+        setGraphPointSize(10);
 
-        this.loadMeasurements(arrMsmt);
+        loadMeasurements(arrMsmt);
     }
 
     /*
@@ -82,12 +82,11 @@ public class MeasurementCurve extends BasicGraphData {
      * @author Christopher K. Allen
      * @since Nov 27, 2012
      */
-    private void loadMeasurements(ArrayList<Measurement> arrMsmt) {
-
+    private void loadMeasurements(List<Measurement> arrMsmt) {
         for (Measurement msmt : arrMsmt) {
-            AcceleratorNode smfDev = this.smfSeq.getNodeWithId(msmt.getStrDevId());
+            AcceleratorNode smfDev = smfSeq.getNodeWithId(msmt.getStrDevId());
             double dblPos = smfDev.getPosition();
-            double dblSig = this.getMeasurement(msmt);
+            double dblSig = getMeasurement(msmt);
 
             this.addPoint(dblPos, dblSig);
         }
@@ -107,9 +106,7 @@ public class MeasurementCurve extends BasicGraphData {
      * @since Nov 27, 2012
      */
     private double getMeasurement(Measurement msmt) {
-
-        switch (this.plane) {
-
+        switch (plane) {
             case HOR:
                 return msmt.getDblSigHor();
             case VER:

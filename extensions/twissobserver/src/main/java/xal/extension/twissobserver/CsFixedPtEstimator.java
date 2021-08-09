@@ -104,76 +104,6 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
      * Internal Classes
      */
     /**
-     * This class is a
-     * <br>
-     * <br>
-     * This idea probably won't work.
-     *
-     * @author Christopher K. Allen
-     * @since Oct 22, 2014
-     */
-    private static class ProgressUpdateThread extends Thread {
-
-        /*
-         * Local Attributes
-         */
-        /**
-         * Current number of iterations
-         */
-        private int cntIter;
-
-        /**
-         * Current residual error
-         */
-        private double dblError;
-
-        /**
-         * Fixed point tuning parameter - normalized distance along convex hull
-         * between current iterate and next
-         */
-        private double dblAlpha;
-
-        /**
-         * The listener object to receive the update
-         */
-        private IProgressListener lsnUpdate;
-
-        /*
-         * Initialization
-         */
-        /**
-         * Constructor for ProgressUpdateThread.
-         *
-         * @param lsnUpdate listener object to be updated
-         * @param cntIter current number of iterations
-         * @param dblError current error
-         * @param dblAlpha current tuning parameter
-         *
-         * @author Christopher K. Allen
-         * @since Oct 22, 2014
-         */
-        public ProgressUpdateThread(IProgressListener lsnUpdate, int cntIter, double dblError, double dblAlpha) {
-            this.lsnUpdate = lsnUpdate;
-            this.cntIter = cntIter;
-            this.dblError = dblError;
-            this.dblAlpha = dblAlpha;
-        }
-
-        /**
-         * Calls the listener's update method.
-         *
-         * @see java.lang.Thread#run()
-         *
-         * @author Christopher K. Allen
-         * @since Oct 22, 2014
-         */
-        @Override
-        public void run() {
-            this.lsnUpdate.iterationUpdate(this.cntIter, this.dblError, this.dblAlpha);
-        }
-    }
-
-    /**
      * Convenience class for storing circular buffers of moment vector objects
      * by their phase plane.
      *
@@ -206,7 +136,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
                 int cntSize = plane.getCovariantBasisSize();
                 LinearBuffer<GenericMatrix> bufVec = new LinearBuffer<>(cntSize);
 
-                this.put(plane, bufVec);
+                put(plane, bufVec);
             }
         }
 
@@ -237,7 +167,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
         public void initWithBasisVectors() {
             for (PHASEPLANE plane : PHASEPLANE.values()) {
                 int szBasis = plane.getCovariantBasisSize();
-                LinearBuffer<GenericMatrix> bufCovVecs = this.get(plane);
+                LinearBuffer<GenericMatrix> bufCovVecs = get(plane);
 
                 for (int i = 0; i < szBasis; i++) {
                     GenericMatrix vecCovBasis = new GenericMatrix(szBasis, 1);
@@ -261,7 +191,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
          * @since Apr 11, 2013
          */
         public GenericMatrix createAugmentedMatrix(PHASEPLANE plane) {
-            LinearBuffer<GenericMatrix> bufVecs = this.get(plane);
+            LinearBuffer<GenericMatrix> bufVecs = get(plane);
 
             // Instantiate the augmented matrix
             int szRow = bufVecs.get(0).getRowCnt();
@@ -278,7 +208,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
 
             return matAug;
         }
-    };
+    }
 
     /*
      * Global Constants
@@ -402,10 +332,10 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
         this.dblMaxError = dblMaxError;
         this.dblAlpha = dblAlpha;
 
-        this.mapDeltaF = new MomentVectorBuffer();
-        this.mapDeltaSig = new MomentVectorBuffer();
+        mapDeltaF = new MomentVectorBuffer();
+        mapDeltaSig = new MomentVectorBuffer();
 
-        this.lstProgLsns = new LinkedList<>();
+        lstProgLsns = new LinkedList<>();
     }
 
     /**
@@ -484,7 +414,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
      * @since Apr 17, 2013
      */
     public int getSolnIterations() {
-        return this.cntCurrIters;
+        return cntCurrIters;
     }
 
     /**
@@ -497,7 +427,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
      * @since Oct 2, 2014
      */
     public void addProgressListener(IProgressListener lsnProg) {
-        this.lstProgLsns.add(lsnProg);
+        lstProgLsns.add(lsnProg);
     }
 
     /*
@@ -539,14 +469,12 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
      * @since Aug 30, 2012
      */
     @Override
-    public CovarianceMatrix computeReconstruction(String strRecDevId, double dblBnchFreq, double dblBmCurr, ArrayList<Measurement> arrData)
+    public CovarianceMatrix computeReconstruction(String strRecDevId, double dblBnchFreq, double dblBmCurr, List<Measurement> arrData)
             throws ModelException, ConvergenceException {
 
         // Compute the initial position, compute the solution, then return it
-        CovarianceMatrix matSig0 = this.computeZeroCurrReconFunction(strRecDevId, arrData);
-        CovarianceMatrix matSig1 = this.computeReconstruction(strRecDevId, dblBnchFreq, dblBmCurr, matSig0, arrData);
-
-        return matSig1;
+        CovarianceMatrix matSig0 = computeZeroCurrReconFunction(strRecDevId, arrData);
+        return computeReconstruction(strRecDevId, dblBnchFreq, dblBmCurr, matSig0, arrData);
     }
 
     /**
@@ -591,18 +519,18 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
             double dblBnchFreq,
             double dblBmCurr,
             CovarianceMatrix matSigInit,
-            ArrayList<Measurement> arrData
+            List<Measurement> arrData
     )
             throws ModelException, ConvergenceException {
         // Initialize the delta vector buffers
-        this.mapDeltaF.initWithBasisVectors();
-        this.mapDeltaSig.initWithBasisVectors();
+        mapDeltaF.initWithBasisVectors();
+        mapDeltaSig.initWithBasisVectors();
 
         // Initialize the iterative search
-        this.matCurrSigma = matSigInit;
-        this.matCurrF = matSigInit;
-        this.dblConvErr = Double.MAX_VALUE;
-        this.dblResErr = Double.MAX_VALUE;
+        matCurrSigma = matSigInit;
+        matCurrF = matSigInit;
+        dblConvErr = Double.MAX_VALUE;
+        dblResErr = Double.MAX_VALUE;
 
         int cntIter = 0;
         double dblErr = this.dblConvErr;
@@ -612,7 +540,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
         while (cntIter++ < this.cntMaxIter) {
 
             // Compute the new covariance matrix from the current one
-            CovarianceMatrix matSig1 = this.iterateNext(matSig0, strRecDevId, dblBnchFreq, dblBmCurr, arrData);
+            CovarianceMatrix matSig1 = iterateNext(matSig0, strRecDevId, dblBnchFreq, dblBmCurr, arrData);
 
             // Compute the convergence error
             //  If it is less than the maximum return the solution
@@ -673,7 +601,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
      * @author Christopher K. Allen
      * @since Sep 10, 2012
      */
-    private CovarianceMatrix iterateNext(CovarianceMatrix matSig0, String strRecDevId, double dblBnchFreq, double dblBmCurr, ArrayList<Measurement> arrData)
+    private CovarianceMatrix iterateNext(CovarianceMatrix matSig0, String strRecDevId, double dblBnchFreq, double dblBmCurr, List<Measurement> arrData)
             throws ModelException {
 
         // Compute the transfer matrices between stations 
@@ -709,20 +637,20 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
         for (PHASEPLANE plane : PHASEPLANE.values()) {
 
             // Now compute the change in the recursion function value
-            GenericMatrix vecFprev = plane.extractCovarianceVector(this.matCurrF);
+            GenericMatrix vecFprev = plane.extractCovarianceVector(matCurrF);
             GenericMatrix vecFcurr = mapFcurr.get(plane);
             GenericMatrix vecDelF = vecFcurr.minus(vecFprev);
-            this.mapDeltaF.add(plane, vecDelF);
+            mapDeltaF.add(plane, vecDelF);
 
             // Compute the change in the moments that produces the recursion function change
-            GenericMatrix vecSigPrev = plane.extractCovarianceVector(this.matCurrSigma);
+            GenericMatrix vecSigPrev = plane.extractCovarianceVector(matCurrSigma);
             GenericMatrix vecSigCurr = plane.extractCovarianceVector(covSig1);
             GenericMatrix vecDelSig = vecSigCurr.minus(vecSigPrev);
-            this.mapDeltaSig.add(plane, vecDelSig);
+            mapDeltaSig.add(plane, vecDelSig);
         }
 
         // Record the current solution iterates
-        this.dblCurrAlpha = alpha;
+        dblCurrAlpha = alpha;
         super.matCurrF = covF1;
         super.matCurrSigma = covSig1;
 
@@ -746,8 +674,8 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
         for (PHASEPLANE plane : PHASEPLANE.values()) {
 
             // Create the augmented change in values matrices
-            GenericMatrix matDelF = this.mapDeltaF.createAugmentedMatrix(plane);
-            GenericMatrix matDelSig = this.mapDeltaSig.createAugmentedMatrix(plane);
+            GenericMatrix matDelF = mapDeltaF.createAugmentedMatrix(plane);
+            GenericMatrix matDelSig = mapDeltaSig.createAugmentedMatrix(plane);
 
             // Create an identity matrix
             int cntRows = matDelSig.getRowCnt();
@@ -795,7 +723,7 @@ public class CsFixedPtEstimator extends CourantSnyderEstimator {
      * @since Oct 2, 2014
      */
     private void fireProgressUpdate(int cntIter, double dblAlpha, double dblError) {
-        if (this.lstProgLsns.size() > 0) {
+        if (!lstProgLsns.isEmpty()) {
             for (IProgressListener lsnProg : this.lstProgLsns) {
                 lsnProg.iterationUpdate(cntIter, dblAlpha, dblError);
             }

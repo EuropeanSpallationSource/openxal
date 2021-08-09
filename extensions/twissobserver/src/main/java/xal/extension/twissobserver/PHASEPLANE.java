@@ -9,7 +9,7 @@
  * PHASEPLANE.java
  *
  * @author  Christopher K. Allen
- * @since    Jul 20, 2012
+ * @since Jul 20, 2012
  */
 package xal.extension.twissobserver;
 
@@ -98,7 +98,7 @@ public enum PHASEPLANE {
      * @since Mar 27, 2013
      */
     public int getCovIndexOffset() {
-        return this.iMatOffset;
+        return iMatOffset;
     }
 
     /**
@@ -110,7 +110,7 @@ public enum PHASEPLANE {
      * @since Mar 28, 2013
      */
     public int getStandardBasisSize() {
-        return this.arrStdBasis.size();
+        return arrStdBasis.size();
     }
 
     /**
@@ -159,7 +159,7 @@ public enum PHASEPLANE {
      * @since Mar 27, 2013
      */
     public PhaseMatrix getStandardBasis(int indBasis) throws ArrayIndexOutOfBoundsException {
-        return this.arrStdBasis.get(indBasis);
+        return arrStdBasis.get(indBasis);
     }
 
     /**
@@ -171,7 +171,7 @@ public enum PHASEPLANE {
      * @since Mar 28, 2013
      */
     public int getCovariantBasisSize() {
-        return this.arrCovBasis.size();
+        return arrCovBasis.size();
     }
 
     /**
@@ -215,7 +215,7 @@ public enum PHASEPLANE {
      * @since Mar 27, 2013
      */
     public CovarianceMatrix getCovarianceBasis(int indBasis) throws ArrayIndexOutOfBoundsException {
-        return this.arrCovBasis.get(indBasis);
+        return arrCovBasis.get(indBasis);
     }
 
     /**
@@ -231,16 +231,12 @@ public enum PHASEPLANE {
      */
     public double extractBeamSize(Measurement msmt) {
         try {
-            Double dblBmSz = (Double) this.fldMsmtBmSz.get(msmt);
-
-            return dblBmSz;
-
+            return (double) fldMsmtBmSz.get(msmt);
         } catch (IllegalArgumentException | IllegalAccessException e) {
             Logger.getLogger(PHASEPLANE.class.getName()).log(Level.SEVERE, "Serious error - Exiting.", e);
             System.exit(1);
 
             return 0.0;
-
         }
     }
 
@@ -307,13 +303,13 @@ public enum PHASEPLANE {
      * beam size for this plane
      */
     private PHASEPLANE(final int indCovMat, String strFldNm) {
-        this.iMatOffset = indCovMat;
-        this.arrStdBasis = new ArrayList<>();
-        this.arrCovBasis = new ArrayList<>();
+        iMatOffset = indCovMat;
+        arrStdBasis = new ArrayList<>();
+        arrCovBasis = new ArrayList<>();
 
-        this.initBmSzFld(strFldNm);
-        this.initStdBasis();
-        this.initCovBasis();
+        initBmSzFld(strFldNm);
+        initStdBasis();
+        initCovBasis();
     }
 
     /**
@@ -326,18 +322,14 @@ public enum PHASEPLANE {
      * @since Mar 28, 2013
      */
     private void initBmSzFld(String strFldNm) {
-
         try {
-            this.fldMsmtBmSz = Measurement.class.getDeclaredField(strFldNm);
-
+            fldMsmtBmSz = Measurement.class.getDeclaredField(strFldNm);
         } catch (NoSuchFieldException e) {
-            Logger.getLogger(PHASEPLANE.class.getName()).log(Level.SEVERE, "Measurement field '" + strFldNm + "' not found.  Exiting.", e);
+            Logger.getLogger(PHASEPLANE.class.getName()).log(Level.SEVERE, e, () -> "Measurement field '" + strFldNm + "' not found.  Exiting.");
             System.exit(1);
-
         } catch (SecurityException e) {
-            Logger.getLogger(PHASEPLANE.class.getName()).log(Level.SEVERE, "Measurement field '" + strFldNm + "' not accessible.  Exiting.", e);
+            Logger.getLogger(PHASEPLANE.class.getName()).log(Level.SEVERE, e, () -> "Measurement field '" + strFldNm + "' not accessible.  Exiting.");
             System.exit(1);
-
         }
     }
 
@@ -351,13 +343,12 @@ public enum PHASEPLANE {
      * @since Mar 27, 2013
      */
     private void initStdBasis() {
-
         for (int i = 0; i < 2; i++) {
             for (int j = 0; j < 2; j++) {
                 PhaseMatrix matBasis = PhaseMatrix.zero();
 
-                matBasis.setElem(i + this.iMatOffset, j + this.iMatOffset, 1.0);
-                this.arrStdBasis.add(matBasis);
+                matBasis.setElem(i + iMatOffset, j + iMatOffset, 1.0);
+                arrStdBasis.add(matBasis);
             }
         }
     }
@@ -372,17 +363,17 @@ public enum PHASEPLANE {
      */
     private void initCovBasis() {
         CovarianceMatrix matBasis1 = CovarianceMatrix.newZero();
-        matBasis1.setElem(this.iMatOffset, this.iMatOffset, 1.0);
-        this.arrCovBasis.add(matBasis1);
+        matBasis1.setElem(iMatOffset, iMatOffset, 1.0);
+        arrCovBasis.add(matBasis1);
 
         CovarianceMatrix matBasis2 = CovarianceMatrix.newZero();
-        matBasis2.setElem(this.iMatOffset, this.iMatOffset + 1, 1.0);
-        matBasis2.setElem(this.iMatOffset + 1, this.iMatOffset, 1.0);
-        this.arrCovBasis.add(matBasis2);
+        matBasis2.setElem(iMatOffset, iMatOffset + 1, 1.0);
+        matBasis2.setElem(iMatOffset + 1, iMatOffset, 1.0);
+        arrCovBasis.add(matBasis2);
 
         CovarianceMatrix matBasis3 = CovarianceMatrix.newZero();
-        matBasis3.setElem(this.iMatOffset + 1, this.iMatOffset + 1, 1.0);
-        this.arrCovBasis.add(matBasis3);
+        matBasis3.setElem(iMatOffset + 1, iMatOffset + 1, 1.0);
+        arrCovBasis.add(matBasis3);
     }
 
 }

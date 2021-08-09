@@ -2,11 +2,11 @@
  * BunchLengthSimulator.java
  *
  * @author  Christopher K. Allen
- * @since    Sep 6, 2012
+ * @since Sep 6, 2012
  */
 package xal.extension.twissobserver;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import xal.tools.beam.CovarianceMatrix;
 import xal.extension.twissobserver.TransferMatrixGenerator.SYNC;
@@ -83,7 +83,7 @@ public class BunchLengthSimulator {
      */
     public BunchLengthSimulator(AcceleratorSeq smfSeq, long lngPvLogId) throws ModelException {
         this(smfSeq);
-        this.setSyncToMachineHistory(lngPvLogId);
+        setSyncToMachineHistory(lngPvLogId);
     }
 
     /**
@@ -107,7 +107,7 @@ public class BunchLengthSimulator {
             EnvTrackerAdapt algEnvTrk = AlgorithmFactory.createEnvTrackerAdapt(smfSeq);
 
             // Create and initialize the envelope probe
-            this.mdlProbe = ProbeFactory.getEnvelopeProbe(this.smfSeq, algEnvTrk);
+            mdlProbe = ProbeFactory.getEnvelopeProbe(this.smfSeq, algEnvTrk);
 
         } catch (InstantiationException e) {
 
@@ -115,8 +115,8 @@ public class BunchLengthSimulator {
         }
 
         // Create the model and load the parameters from the saved PV Logger data
-        this.mdlBeamline = Scenario.newScenarioFor(smfSeq);
-        this.setSynchronizationMode(enmSyn);
+        mdlBeamline = Scenario.newScenarioFor(smfSeq);
+        setSynchronizationMode(enmSyn);
     }
 
     /**
@@ -133,7 +133,7 @@ public class BunchLengthSimulator {
      * @since Jul 19, 2012
      */
     public void setSynchronizationMode(SYNC enmSync) {
-        this.mdlBeamline.setSynchronizationMode(enmSync.getSynchronizationValue());
+        mdlBeamline.setSynchronizationMode(enmSync.getSynchronizationValue());
     }
 
     /**
@@ -168,9 +168,9 @@ public class BunchLengthSimulator {
      * @author Christopher K. Allen
      * @since Sep 6, 2012
      */
-    public void generateBunchLengths(ArrayList<Measurement> arrMsmts, double dblBnchFreq, double dblBmCurr)
+    public void generateBunchLengths(List<Measurement> arrMsmts, double dblBnchFreq, double dblBmCurr)
             throws ModelException {
-        this.generateBunchLengths(arrMsmts, 1.0, dblBnchFreq, dblBmCurr);
+        generateBunchLengths(arrMsmts, 1.0, dblBnchFreq, dblBmCurr);
     }
 
     /**
@@ -194,9 +194,9 @@ public class BunchLengthSimulator {
      * @author Christopher K. Allen
      * @since Sep 6, 2012
      */
-    public void generateBunchLengths(ArrayList<Measurement> arrMsmts, double dblScale, double dblBnchFreq, double dblBmCurr)
+    public void generateBunchLengths(List<Measurement> arrMsmts, double dblScale, double dblBnchFreq, double dblBmCurr)
             throws ModelException {
-        this.generateBunchLengths(arrMsmts, dblScale, dblBnchFreq, dblBmCurr, null);
+        generateBunchLengths(arrMsmts, dblScale, dblBnchFreq, dblBmCurr, null);
     }
 
     /**
@@ -222,9 +222,9 @@ public class BunchLengthSimulator {
      * @author Christopher K. Allen
      * @since Jul 26, 2012
      */
-    public void generateBunchLengths(ArrayList<Measurement> arrMsmts, double dblScale, double dblBnchFreq, double dblBmCurr, CovarianceMatrix matInitState)
+    public void generateBunchLengths(List<Measurement> arrMsmts, double dblScale, double dblBnchFreq, double dblBmCurr, CovarianceMatrix matInitState)
             throws ModelException {
-        Trajectory<EnvelopeProbeState> trjEnv = this.runSimulation(dblBnchFreq, dblBmCurr, matInitState);
+        Trajectory<EnvelopeProbeState> trjEnv = runSimulation(dblBnchFreq, dblBmCurr, matInitState);
 
         for (Measurement msmt : arrMsmts) {
             EnvelopeProbeState steProbe = trjEnv.stateForElement(msmt.getStrDevId());
@@ -259,21 +259,19 @@ public class BunchLengthSimulator {
 
         // Create and initialize the envelope probe
         if (matInitState != null) {
-            this.mdlProbe.setCovariance(matInitState);
+            mdlProbe.setCovariance(matInitState);
         }
-        this.mdlProbe.setBunchFrequency(dblBnchFreq);
-        this.mdlProbe.setBeamCurrent(dblBmCurr);
-        this.mdlProbe.reset();
+        mdlProbe.setBunchFrequency(dblBnchFreq);
+        mdlProbe.setBeamCurrent(dblBmCurr);
+        mdlProbe.reset();
 
         // Load the probe into the model, synchronize the model parameters, 
         //     set the start location, and run
-        this.mdlBeamline.setProbe(this.mdlProbe);
-        this.mdlBeamline.resync();
-        this.mdlBeamline.run();
+        mdlBeamline.setProbe(this.mdlProbe);
+        mdlBeamline.resync();
+        mdlBeamline.run();
 
         // Extract and type the trajectory
-        Trajectory<EnvelopeProbeState> trjBase = this.mdlBeamline.getTrajectory();
-
-        return trjBase;
+        return mdlBeamline.getTrajectory();
     }
 }

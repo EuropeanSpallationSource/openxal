@@ -49,10 +49,10 @@ public class Measurement implements Cloneable {
      * @since Apr 26, 2013
      */
     public Measurement() {
-        this.strDevId = null;
-        this.dblSigHor = 0.0;
-        this.dblSigVer = 0.0;
-        this.dblSigLng = 0.0;
+        strDevId = null;
+        dblSigHor = 0.0;
+        dblSigVer = 0.0;
+        dblSigLng = 0.0;
     }
 
     /**
@@ -104,13 +104,11 @@ public class Measurement implements Cloneable {
      */
     @Override
     public String toString() {
-        String strBuf = "(DevId=" + this.strDevId
-                + ",sx=" + this.dblSigHor
-                + ",sy=" + this.dblSigVer
-                + ",sz=" + this.dblSigLng
+        return "(DevId=" + strDevId
+                + ",sx=" + dblSigHor
+                + ",sy=" + dblSigVer
+                + ",sz=" + dblSigLng
                 + ")";
-
-        return strBuf;
     }
 
     /**
@@ -129,13 +127,12 @@ public class Measurement implements Cloneable {
      */
     @Override
     public Measurement clone() throws CloneNotSupportedException {
-
         Measurement mstClone = new Measurement();
 
-        mstClone.strDevId = this.strDevId;
-        mstClone.dblSigHor = this.dblSigHor;
-        mstClone.dblSigVer = this.dblSigVer;
-        mstClone.dblSigLng = this.dblSigLng;
+        mstClone.strDevId = strDevId;
+        mstClone.dblSigHor = dblSigHor;
+        mstClone.dblSigVer = dblSigVer;
+        mstClone.dblSigLng = dblSigLng;
 
         return mstClone;
     }
