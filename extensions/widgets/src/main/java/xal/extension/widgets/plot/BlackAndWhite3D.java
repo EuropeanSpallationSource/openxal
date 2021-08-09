@@ -23,15 +23,12 @@ public class BlackAndWhite3D extends ColorSurfaceData {
      */
     @Override
     public double getValue(double x, double y) {
-
-        int i, j;
-
         if (x < xMin || y < yMin || x > xMax || y > yMax) {
             return zMin;
         }
 
-        i = (int) ((x - xMin) / xStep + 0.5);
-        j = (int) ((y - yMin) / yStep + 0.5);
+        int i = (int) ((x - xMin) / xStep + 0.5);
+        int j = (int) ((y - yMin) / yStep + 0.5);
 
         if (i < 0) {
             i = 0;
@@ -55,10 +52,8 @@ public class BlackAndWhite3D extends ColorSurfaceData {
      */
     @Override
     public void addValue(double x, double y, double value) {
-        int i, j;
-
-        i = (int) ((x - xMin) / xStep + 0.5);
-        j = (int) ((y - yMin) / yStep + 0.5);
+        int i = (int) ((x - xMin) / xStep + 0.5);
+        int j = (int) ((y - yMin) / yStep + 0.5);
 
         if (i < 0) {
             i = 0;

@@ -55,16 +55,16 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
     protected ChartPopupAdaptor chartAdaptor;
 
     // Menu action table keyed by action ID
-    protected Map<String, Action> actionTable;
+    protected transient Map<String, Action> actionTable;
 
     // Menu actions
-    protected Action scaleOnceAction;
-    protected Action xAutoScaleAction;
-    protected Action yAutoScaleAction;
-    protected Action xGridAction;
-    protected Action yGridAction;
-    protected Action optionsAction;
-    protected Action imageCaptureAction;
+    protected transient Action scaleOnceAction;
+    protected transient Action xAutoScaleAction;
+    protected transient Action yAutoScaleAction;
+    protected transient Action xGridAction;
+    protected transient Action yGridAction;
+    protected transient Action optionsAction;
+    protected transient Action imageCaptureAction;
 
     // Other components
     protected Component chart;
@@ -311,6 +311,7 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
      */
     @Override
     public void mouseClicked(MouseEvent event) {
+        // Do nothing
     }
 
     /**
@@ -318,6 +319,7 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
      */
     @Override
     public void mouseEntered(MouseEvent event) {
+        // Do nothing
     }
 
     /**
@@ -325,6 +327,7 @@ public class SimpleChartPopupMenu extends JPopupMenu implements MouseListener {
      */
     @Override
     public void mouseExited(MouseEvent event) {
+        // Do nothing
     }
 
     /**

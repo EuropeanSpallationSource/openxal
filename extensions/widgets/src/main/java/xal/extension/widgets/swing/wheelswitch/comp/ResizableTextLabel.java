@@ -26,6 +26,7 @@ import java.awt.event.ComponentEvent;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 
 /**
  * A text area in which the text can dynamically adjust its font size to fill
@@ -106,7 +107,7 @@ public class ResizableTextLabel extends JLabel {
      * @param arg0 java.lang.String text to be displayed in the label.
      */
     public ResizableTextLabel(String arg0) {
-        this(arg0, null, JLabel.LEADING);
+        this(arg0, null, SwingConstants.LEADING);
     }
 
     /**
@@ -127,14 +128,14 @@ public class ResizableTextLabel extends JLabel {
      * @param image Icon image to be displayed in the label.
      */
     public ResizableTextLabel(Icon image) {
-        this(null, image, JLabel.LEADING);
+        this(null, image, SwingConstants.LEADING);
     }
 
     /**
      * Creates an empty label.
      */
     public ResizableTextLabel() {
-        this(" ", null, JLabel.LEADING);
+        this(" ", null, SwingConstants.LEADING);
     }
 
     /**

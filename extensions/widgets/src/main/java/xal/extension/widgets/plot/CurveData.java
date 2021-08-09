@@ -20,8 +20,10 @@ public class CurveData {
     private double[] pointsX = null;
     private double[] pointsY = null;
 
-    private double xMin, xMax;
-    private double yMin, yMax;
+    private double xMin;
+    private double xMax;
+    private double yMin;
+    private double yMax;
 
     private Color color = Color.black;
 
@@ -247,14 +249,14 @@ public class CurveData {
 
     private void resize(int nSize) {
         if (nSize > pointsX.length) {
-            double[] tmp_x = new double[nSize + nChunk];
-            double[] tmp_y = new double[nSize + nChunk];
+            double[] tmpX = new double[nSize + nChunk];
+            double[] tmpY = new double[nSize + nChunk];
             for (int i = 0; i < pointsX.length; i++) {
-                tmp_x[i] = pointsX[i];
-                tmp_y[i] = pointsY[i];
+                tmpX[i] = pointsX[i];
+                tmpY[i] = pointsY[i];
             }
-            pointsX = tmp_x;
-            pointsY = tmp_y;
+            pointsX = tmpX;
+            pointsY = tmpY;
         }
     }
 }

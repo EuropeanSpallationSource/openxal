@@ -3,8 +3,9 @@ package xal.extension.widgets.plot.barchart;
 import java.util.*;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import javax.swing.border.*;
-import java.awt.event.*;
 import java.text.*;
 
 import xal.tools.text.ScientificNumberFormat;
@@ -19,15 +20,15 @@ public class BarChart {
 
     private JPanel barChartPanel = new JPanel(new BorderLayout());
 
-    private FunctionGraphsJPanel GP = new FunctionGraphsJPanel();
+    private FunctionGraphsJPanel graphsPanel = new FunctionGraphsJPanel();
 
     private BarColumnColor bcColor = new BarColumnColor();
 
-    private Vector<BarColumn> barColumns = new java.util.Vector<>();
+    private Vector<BarColumn> barColumns = new Vector<>();
 
     private TitledBorder border = null;
 
-    private MarkerFormat MarkerFormat = null;
+    private MarkerFormat markerFormat = null;
 
     private SmartFormater formatter = new SmartFormater();
 
@@ -51,73 +52,63 @@ public class BarChart {
             cvV.add(new CurveData());
         }
 
-        barChartPanel.add(GP, BorderLayout.CENTER);
+        barChartPanel.add(graphsPanel, BorderLayout.CENTER);
 
         Border etchedBorder = BorderFactory.createEtchedBorder();
         border = BorderFactory.createTitledBorder(etchedBorder, "Title");
         border.setTitleColor(Color.blue);
         barChartPanel.setBorder(border);
 
-        MarkerFormat = new MarkerFormat(barColumns);
+        markerFormat = new MarkerFormat(barColumns);
 
-        GP.setSmartGL(false);
-        GP.setNumberFormatX(MarkerFormat);
+        graphsPanel.setSmartGL(false);
+        graphsPanel.setNumberFormatX(markerFormat);
 
-        GP.addHorLimitsListener(
-                new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                int nClmns = barColumns.size();
-                int nMaxLines = 0;
-                java.util.Iterator<BarColumn> itr = barColumns.iterator();
-                while (itr.hasNext()) {
-                    BarColumn bc = itr.next();
-                    if (nMaxLines < bc.size()) {
-                        nMaxLines = bc.size();
-                    }
+        graphsPanel.addHorLimitsListener(e -> {
+            int nClmns = barColumns.size();
+            int nMaxLines = 0;
+            java.util.Iterator<BarColumn> itr = barColumns.iterator();
+            while (itr.hasNext()) {
+                BarColumn bc = itr.next();
+                if (nMaxLines < bc.size()) {
+                    nMaxLines = bc.size();
                 }
-
-                if (nClmns > 0 && nMaxLines > 0) {
-                    int iMin = GP.getScreenX(GP.getInnerMinX());
-                    int iMax = GP.getScreenX(GP.getInnerMaxX());
-
-                    width = (int) ((iMax - iMin) / (1.9 * nMaxLines * nClmns));
-                    if (width < 1) {
-                        width = 1;
-                    }
-
-                    for (int i = 1, n = Math.min(nClmns * nMaxLines + 1, cvV.size()); i < n; i++) {
-                        CurveData cd = cvV.get(i);
-                        cd.setLineWidth(width);
-                    }
-                }
-
-                Runnable runRefresh
-                        = new Runnable() {
-                    public void run() {
-                        GP.refreshGraphJPanel();
-                    }
-                };
-                Thread mThread = new Thread(runRefresh);
-                mThread.start();
             }
+
+            if (nClmns > 0 && nMaxLines > 0) {
+                int iMin = graphsPanel.getScreenX(graphsPanel.getInnerMinX());
+                int iMax = graphsPanel.getScreenX(graphsPanel.getInnerMaxX());
+
+                width = (int) ((iMax - iMin) / (1.9 * nMaxLines * nClmns));
+                if (width < 1) {
+                    width = 1;
+                }
+
+                for (int i = 1, n = Math.min(nClmns * nMaxLines + 1, cvV.size()); i < n; i++) {
+                    CurveData cd = cvV.get(i);
+                    cd.setLineWidth(width);
+                }
+            }
+
+            Runnable runRefresh = graphsPanel::refreshGraphJPanel;
+            Thread mThread = new Thread(runRefresh);
+            mThread.start();
         });
 
         //operations with clicked point object
-        JLabel infoLabel = new JLabel("  Clicked Point Info: ", JLabel.CENTER);
+        JLabel infoLabel = new JLabel("  Clicked Point Info: ", SwingConstants.CENTER);
 
-        FunctionGraphsJPanel.ClickedPoint cpObj = GP.getClickedPointObject();
-        cpObj.setxValueLabel(new JLabel("X-Marker=", JLabel.RIGHT));
-        cpObj.setxValueFormat(MarkerFormat);
+        FunctionGraphsJPanel.ClickedPoint cpObj = graphsPanel.getClickedPointObject();
+        cpObj.setxValueLabel(new JLabel("X-Marker=", SwingConstants.RIGHT));
+        cpObj.setxValueFormat(markerFormat);
         cpObj.setxValueText(new JTextField(10));
-        cpObj.getxValueText().setHorizontalAlignment(JTextField.CENTER);
+        cpObj.getxValueText().setHorizontalAlignment(SwingConstants.CENTER);
         cpObj.getxValueText().setForeground(Color.blue);
 
-        cpObj.setyValueLabel(new JLabel("    Value=", JLabel.RIGHT));
+        cpObj.setyValueLabel(new JLabel("    Value=", SwingConstants.RIGHT));
         cpObj.setyValueFormat(fortranFrmt);
         cpObj.setyValueText(new JTextField(12));
-        cpObj.getyValueText().setHorizontalAlignment(JTextField.CENTER);
+        cpObj.getyValueText().setHorizontalAlignment(SwingConstants.CENTER);
         cpObj.getyValueText().setForeground(Color.blue);
 
         JPanel infoPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
@@ -145,7 +136,7 @@ public class BarChart {
      * @return The graph panel instance which is inside of the BarChart panel
      */
     public FunctionGraphsJPanel getGraphPanel() {
-        return GP;
+        return graphsPanel;
     }
 
     /**
@@ -154,7 +145,7 @@ public class BarChart {
      * @param name The new name
      */
     public void setAxisNameX(String name) {
-        GP.setAxisNameX(name);
+        graphsPanel.setAxisNameX(name);
     }
 
     /**
@@ -163,7 +154,7 @@ public class BarChart {
      * @param name The new name
      */
     public void setAxisNameY(String name) {
-        GP.setAxisNameY(name);
+        graphsPanel.setAxisNameY(name);
     }
 
     /**
@@ -191,7 +182,7 @@ public class BarChart {
      */
     public void setBarColumns(final Vector<BarColumn> clmns) {
 
-        GP.removeAllCurveData();
+        graphsPanel.removeAllCurveData();
         barColumns.clear();
         int nCv = 0;
         for (final BarColumn bc : clmns) {
@@ -209,11 +200,11 @@ public class BarChart {
         //calculate the width of the lines in the bar
         width = 3;
 
-        GP.clearZoomStack();
-        GP.setExternalGL(null);
+        graphsPanel.clearZoomStack();
+        graphsPanel.setExternalGL(null);
 
         if (barColumns.size() < 10) {
-            GP.setLimitsAndTicksX(0., barColumns.size() + 1.0, 1.0);
+            graphsPanel.setLimitsAndTicksX(0., barColumns.size() + 1.0, 1.0);
         }
 
         updateChart();
@@ -223,8 +214,8 @@ public class BarChart {
      * Updates graphics part of the bar chart
      */
     public void updateChart() {
-        double val_min = Double.MAX_VALUE;
-        double val_max = -Double.MAX_VALUE;
+        double valMin = Double.MAX_VALUE;
+        double valMax = -Double.MAX_VALUE;
         Vector<CurveData> cdV = new Vector<>();
 
         int maxMarkLength = 1;
@@ -233,11 +224,11 @@ public class BarChart {
         for (final BarColumn bc : barColumns) {
             if (bc.show()) {
                 for (int j = 0; j < bc.size(); j++) {
-                    if (val_min > bc.value(j)) {
-                        val_min = bc.value(j);
+                    if (valMin > bc.value(j)) {
+                        valMin = bc.value(j);
                     }
-                    if (val_max < bc.value(j)) {
-                        val_max = bc.value(j);
+                    if (valMax < bc.value(j)) {
+                        valMax = bc.value(j);
                     }
                 }
             }
@@ -249,22 +240,22 @@ public class BarChart {
             }
         }
 
-        String tmp_str = "";
+        String tmpStr = "";
         for (int i = 0; i < maxMarkLength; i++) {
-            tmp_str = tmp_str + " ";
+            tmpStr = tmpStr + " ";
         }
-        emptyStr = tmp_str;
+        emptyStr = tmpStr;
 
-        if (val_min * val_max > 0.) {
-            if (val_min > 0.) {
-                val_min = 0.;
+        if (valMin * valMax > 0.) {
+            if (valMin > 0.) {
+                valMin = 0.;
             } else {
-                val_max = 0.;
+                valMax = 0.;
             }
         }
 
-        int iMin = GP.getScreenX(GP.getCurrentMinX());
-        int iMax = GP.getScreenX(GP.getCurrentMaxX());
+        int iMin = graphsPanel.getScreenX(graphsPanel.getCurrentMinX());
+        int iMax = graphsPanel.getScreenX(graphsPanel.getCurrentMaxX());
         width = (int) ((iMax - iMin) / (1.9 * nMaxLines * nClmns));
         if (width < 1) {
             width = 1;
@@ -286,10 +277,10 @@ public class BarChart {
         for (int i = 1; i <= nClmns; i++) {
             BarColumn bc = barColumns.get(i - 1);
             if (bc.show()) {
-                double d_min = i - 0.35;
-                double d_max = i + 0.35;
+                double dMin = i - 0.35;
+                double dMax = i + 0.35;
                 int nL = bc.size();
-                double st = (d_max - d_min) / nL;
+                double st = (dMax - dMin) / nL;
                 for (int j = 0; j < nL; j++) {
                     if (bc.show(j)) {
                         if (cvCount < cvV.size()) {
@@ -299,8 +290,8 @@ public class BarChart {
                             cvV.add(cd);
                         }
                         cd.clear();
-                        cd.addPoint(d_min + (j + 0.5) * st, 0.);
-                        cd.addPoint(d_min + (j + 0.5) * st, bc.value(j));
+                        cd.addPoint(dMin + (j + 0.5) * st, 0.);
+                        cd.addPoint(dMin + (j + 0.5) * st, bc.value(j));
                         cd.setLineWidth(width);
                         if (bc.getColor(j) == null) {
                             cd.setColor(bcColor.getColor(j));
@@ -315,21 +306,21 @@ public class BarChart {
             }
         }
 
-        if (val_min < val_max) {
-            formatter.makeAnalysis(val_min, val_max);
-            GP.setNumberFormatY(formatter.getFormat());
-            GP.setLimitsAndTicksY(formatter.getMin(), formatter.getMax(), formatter.getStep());
+        if (valMin < valMax) {
+            formatter.makeAnalysis(valMin, valMax);
+            graphsPanel.setNumberFormatY(formatter.getFormat());
+            graphsPanel.setLimitsAndTicksY(formatter.getMin(), formatter.getMax(), formatter.getStep());
         }
 
         if (barColumns.size() >= 10) {
-            GP.getCurrentGL().setXminOn(false);
-            GP.getCurrentGL().setXmaxOn(false);
+            graphsPanel.getCurrentGL().setXminOn(false);
+            graphsPanel.getCurrentGL().setXmaxOn(false);
         }
 
         if (cdV.size() > 0) {
-            GP.setCurveData(cdV);
+            graphsPanel.setCurveData(cdV);
         } else {
-            GP.removeAllCurveData();
+            graphsPanel.removeAllCurveData();
         }
     }
 
@@ -368,9 +359,9 @@ public class BarChart {
     public static void main(String[] args) {
         JFrame mainFrame = new JFrame("Test of the BarChart class");
         mainFrame.addWindowListener(
-                new java.awt.event.WindowAdapter() {
+                new WindowAdapter() {
             @Override
-            public void windowClosing(java.awt.event.WindowEvent evt) {
+            public void windowClosing(WindowEvent evt) {
                 System.exit(0);
             }
         });
@@ -651,7 +642,6 @@ public class BarChart {
                 int n = Math.abs(nV) + Math.abs(nD) - 2;
                 if (n <= 4) {
                     fmtResult = simpleFormats[n];
-                    return;
                 }
             }
         }

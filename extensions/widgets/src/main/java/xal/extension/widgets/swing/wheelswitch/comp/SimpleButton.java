@@ -33,7 +33,7 @@ import java.awt.event.MouseListener;
 
 import java.util.Date;
 import javax.swing.Icon;
-import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.event.EventListenerList;
@@ -147,10 +147,10 @@ public class SimpleButton extends GradientLabel {
         pressedBorder = new PanelFlushBorder(false, true);
         fireRate = 20;
 
-        setHorizontalAlignment(JLabel.CENTER);
-        setHorizontalTextPosition(JLabel.CENTER);
-        setVerticalAlignment(JLabel.CENTER);
-        setVerticalTextPosition(JLabel.CENTER);
+        setHorizontalAlignment(SwingConstants.CENTER);
+        setHorizontalTextPosition(SwingConstants.CENTER);
+        setVerticalAlignment(SwingConstants.CENTER);
+        setVerticalTextPosition(SwingConstants.CENTER);
         setGradientEnabled(false);
         setFocusable(true);
         setEnabled(true);
@@ -1016,11 +1016,7 @@ public class SimpleButton extends GradientLabel {
                 fireActionPerformed(new ActionEvent(SimpleButton.this, ActionEvent.ACTION_PERFORMED, MOUSE_PRESSED));
 
                 // wait for the chain trigger duration before beginning to chain events for a pressed and held button
-                DispatchQueue.getMainQueue().dispatchAfterDelay(CHAIN_TRIGGER_DURATION, new Runnable() {
-                    public void run() {
-                        chainPressEvents(ChainMouseListener.this);
-                    }
-                });
+                DispatchQueue.getMainQueue().dispatchAfterDelay(CHAIN_TRIGGER_DURATION, () -> chainPressEvents(ChainMouseListener.this));
             }
         }
 
@@ -1041,13 +1037,9 @@ public class SimpleButton extends GradientLabel {
          * Mark the pressed state as false when the user exits this button with
          * the mouse
          */
+        @Override
         public void mouseExited(final MouseEvent event) {
-            // mouse is no longer pressed, so reset the pressed time to 0
-            this.lastPressedTime = 0;
-
-            if (isPressed()) {
-                setPressed(false);
-            }
+            mouseReleased(event);
         }
     }
 
@@ -1056,19 +1048,14 @@ public class SimpleButton extends GradientLabel {
      */
     private void chainPressEvents(final ChainMouseListener sender) {
         // make sure the user is still pressing the button and the button is still enabled
-        if (pressed && isEnabled()) {
-            // verify that the user has pressed continuously for a long time
-            if (sender.isLongPress()) {
-                // fire the event
-                fireActionPerformed(new ActionEvent(SimpleButton.this, ActionEvent.ACTION_PERFORMED, MOUSE_CHAIN));
+        if (pressed && isEnabled()
+                // verify that the user has pressed continuously for a long time
+                && sender.isLongPress()) {
+            // fire the event
+            fireActionPerformed(new ActionEvent(SimpleButton.this, ActionEvent.ACTION_PERFORMED, MOUSE_CHAIN));
 
-                // schedule the next event in the chain based on the fireRate (really a fire period in milliseconds)
-                DispatchQueue.getMainQueue().dispatchAfterDelay(fireRate, new Runnable() {
-                    public void run() {
-                        chainPressEvents(sender);
-                    }
-                });
-            }
+            // schedule the next event in the chain based on the fireRate (really a fire period in milliseconds)
+            DispatchQueue.getMainQueue().dispatchAfterDelay(fireRate, () -> chainPressEvents(sender));
         }
     }
 

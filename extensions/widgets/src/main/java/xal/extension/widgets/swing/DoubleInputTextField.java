@@ -13,6 +13,8 @@ import java.awt.event.*;
 import javax.swing.event.*;
 import javax.swing.text.*;
 import java.text.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This is an input formatted text field for a double value. This text field
@@ -27,6 +29,8 @@ import java.text.*;
  */
 public class DoubleInputTextField extends JTextField {
 
+    private static final Logger LOGGER = Logger.getLogger(DoubleInputTextField.class.getName());
+
     private static final long serialVersionUID = 0L;
 
     private Color alertColor = Color.orange;
@@ -35,11 +39,11 @@ public class DoubleInputTextField extends JTextField {
     private NumberFormat format = new DecimalFormat("####.###");
     private double val = 0.0;
 
-    private DocumentListener docListener = null;
+    private transient DocumentListener docListener = null;
 
-    private ActionListener innerListener = null;
+    private transient ActionListener innerListener = null;
 
-    private FocusListener innerFocusListener = null;
+    private transient FocusListener innerFocusListener = null;
 
     /**
      * Creates new DoubleInputTextField
@@ -65,6 +69,7 @@ public class DoubleInputTextField extends JTextField {
         try {
             val = Double.parseDouble(text);
         } catch (NumberFormatException exc) {
+            LOGGER.log(Level.WARNING, null, exc);
         }
         setText(format.format(val));
         setListeners();
@@ -79,6 +84,7 @@ public class DoubleInputTextField extends JTextField {
         try {
             val = Double.parseDouble(text);
         } catch (NumberFormatException exc) {
+            LOGGER.log(Level.WARNING, null, exc);
         }
         setText(format.format(val));
         setListeners();
@@ -96,6 +102,7 @@ public class DoubleInputTextField extends JTextField {
         try {
             val = Double.parseDouble(format.format(valIn));
         } catch (NumberFormatException exc) {
+            LOGGER.log(Level.WARNING, null, exc);
         }
         setText(format.format(val));
         setListeners();
@@ -122,6 +129,7 @@ public class DoubleInputTextField extends JTextField {
         try {
             val = Double.parseDouble(format.format(valIn));
         } catch (NumberFormatException exc) {
+            LOGGER.log(Level.WARNING, null, exc);
         }
         setText(format.format(val));
         postActionEvent();
@@ -143,6 +151,7 @@ public class DoubleInputTextField extends JTextField {
         try {
             val = Double.parseDouble(format.format(valIn));
         } catch (NumberFormatException exc) {
+            LOGGER.log(Level.WARNING, null, exc);
         }
         setText(format.format(val));
         setBackground(normalColor);
@@ -209,6 +218,7 @@ public class DoubleInputTextField extends JTextField {
     /**
      * Fires ActionPerformed method of superclass
      */
+    @Override
     protected void fireActionPerformed() {
         innerListener.actionPerformed(new ActionEvent(this, 0, "changes"));
         super.fireActionPerformed();
@@ -218,6 +228,7 @@ public class DoubleInputTextField extends JTextField {
      * Overrides setDocument method of superclass to keep existing document
      * listener
      */
+    @Override
     public void setDocument(Document doc) {
         if (doc == null) {
             return;
@@ -260,29 +271,26 @@ public class DoubleInputTextField extends JTextField {
         addMouseListener(mAdpt);
 
         //we need this empty listener to fire action
-        ActionListener emptyListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            }
+        ActionListener emptyListener = e -> {
+            // Do nothing
         };
 
         addActionListener(emptyListener);
 
-        innerListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    val = Double.parseDouble(getText());
-                } catch (NumberFormatException exc) {
-                }
-                setText(format.format(val));
-                setBackground(normalColor);
+        innerListener = e -> {
+            try {
+                val = Double.parseDouble(getText());
+            } catch (NumberFormatException exc) {
+                LOGGER.log(Level.WARNING, null, exc);
             }
+            setText(format.format(val));
+            setBackground(normalColor);
         };
 
         innerFocusListener = new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
+                // Do nothing
             }
 
             @Override
@@ -293,6 +301,7 @@ public class DoubleInputTextField extends JTextField {
                 try {
                     val = Double.parseDouble(getText());
                 } catch (NumberFormatException exc) {
+                    LOGGER.log(Level.WARNING, null, exc);
                 }
                 setText(format.format(val));
                 setBackground(normalColor);
@@ -317,11 +326,8 @@ public class DoubleInputTextField extends JTextField {
             public void removeUpdate(DocumentEvent e) {
                 setBackground(alertColor);
             }
-
         };
 
         getDocument().addDocumentListener(docListener);
-
     }
-
 }

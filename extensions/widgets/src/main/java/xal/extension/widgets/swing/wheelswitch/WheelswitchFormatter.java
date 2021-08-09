@@ -397,7 +397,7 @@ public class WheelswitchFormatter {
             value = newValue;
         } else if (newValue > maximum) {
             value = maximum;
-        } else if (newValue < minimum) {
+        } else {
             value = minimum;
         }
 

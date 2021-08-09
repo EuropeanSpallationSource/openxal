@@ -9,10 +9,7 @@
 package xal.extension.widgets.beaneditor;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 
@@ -20,6 +17,8 @@ import javax.swing.*;
 import javax.swing.table.*;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.extension.widgets.swing.*;
 import xal.tools.data.*;
@@ -37,25 +36,26 @@ public class SimpleBeanEditor<T> extends JDialog {
     /**
      * Table model of property records
      */
-    private final KeyValueFilteredTableModel<PropertyRecord> PROPERTY_TABLE_MODEL;
+    private final KeyValueFilteredTableModel<PropertyRecord> propertyTableModel;
 
     /**
      * List of properties that appear in the properties table
      */
-    private final List<PropertyRecord> BEAN_PROPERTY_RECORDS;
+    private final List<PropertyRecord> beanPropertyRecords;
 
     /**
      * Bean that is being edited
      */
-    private final T BEAN;
+    private final T bean;
 
     /**
      * model column for the value in the property table
      */
-    private final int PROPERTY_TABLE_VALUE_COLUMN;
+    private final int propertyTableValueColumn;
 
     private JTable propertyTable;
     private Box controlPanel;
+    private static final Logger LOGGER = Logger.getLogger(SimpleBeanEditor.class.getName());
 
     public SimpleBeanEditor(final Frame owner, final String dialogTitle, final String beanName, final T bean) {
         this(owner, dialogTitle, beanName, bean, true, true);
@@ -69,21 +69,21 @@ public class SimpleBeanEditor<T> extends JDialog {
         super(owner, dialogTitle, true);
 
         // Set the bean to edit
-        BEAN = bean;
+        this.bean = bean;
 
         // generate the bean property tree
         final EditablePropertyContainer probePropertyTree = EditableProperty.getInstanceWithRoot(beanName, bean);
 
-        BEAN_PROPERTY_RECORDS = PropertyRecord.toRecords(probePropertyTree);
+        beanPropertyRecords = PropertyRecord.toRecords(probePropertyTree);
 
-        PROPERTY_TABLE_MODEL = new KeyValueFilteredTableModel<>(BEAN_PROPERTY_RECORDS, "displayLabel", "value", "units");
+        propertyTableModel = new KeyValueFilteredTableModel<>(beanPropertyRecords, "displayLabel", "value", "units");
         // match on the path
-        PROPERTY_TABLE_MODEL.setMatchingKeyPaths("path");
-        PROPERTY_TABLE_MODEL.setColumnName("displayLabel", "Property");
+        propertyTableModel.setMatchingKeyPaths("path");
+        propertyTableModel.setColumnName("displayLabel", "Property");
         // the value is editable if the record is editable
-        PROPERTY_TABLE_MODEL.setColumnEditKeyPath("value", "editable");
+        propertyTableModel.setColumnEditKeyPath("value", "editable");
         // store the column for the "value" key path
-        PROPERTY_TABLE_VALUE_COLUMN = PROPERTY_TABLE_MODEL.getColumnForKeyPath("value");
+        propertyTableValueColumn = propertyTableModel.getColumnForKeyPath("value");
 
         // Set the window size
         setSize(600, 600);
@@ -101,37 +101,37 @@ public class SimpleBeanEditor<T> extends JDialog {
      * @return probe associated with this editor
      */
     public T getBean() {
-        return BEAN;
+        return bean;
     }
 
     /**
      * publish record values to the bean
      */
     protected void publishToBean() {
-        for (final PropertyRecord record : BEAN_PROPERTY_RECORDS) {
-            record.publishIfNeeded();
+        for (final PropertyRecord aRecord : beanPropertyRecords) {
+            aRecord.publishIfNeeded();
         }
-        PROPERTY_TABLE_MODEL.fireTableDataChanged();
+        propertyTableModel.fireTableDataChanged();
     }
 
     /**
      * revert the record values from the bean (if changed by the user)
      */
     protected void revertFromBean() {
-        for (final PropertyRecord record : BEAN_PROPERTY_RECORDS) {
-            record.revertIfNeeded();
+        for (final PropertyRecord aRecord : beanPropertyRecords) {
+            aRecord.revertIfNeeded();
         }
-        PROPERTY_TABLE_MODEL.fireTableDataChanged();
+        propertyTableModel.fireTableDataChanged();
     }
 
     /**
      * reload all the record values from the bean (changed by external code)
      */
     protected void reloadBean() {
-        final EditablePropertyContainer probePropertyTree = EditableProperty.getInstanceWithRoot("", BEAN);
-        BEAN_PROPERTY_RECORDS.clear();
-        BEAN_PROPERTY_RECORDS.addAll(PropertyRecord.toRecords(probePropertyTree));
-        PROPERTY_TABLE_MODEL.setRecords(BEAN_PROPERTY_RECORDS);
+        final EditablePropertyContainer probePropertyTree = EditableProperty.getInstanceWithRoot("", bean);
+        beanPropertyRecords.clear();
+        beanPropertyRecords.addAll(PropertyRecord.toRecords(probePropertyTree));
+        propertyTableModel.setRecords(beanPropertyRecords);
     }
 
     /**
@@ -151,14 +151,12 @@ public class SimpleBeanEditor<T> extends JDialog {
             /**
              * renderer for a table section
              */
-            private final TableCellRenderer SECTION_RENDERER = makeSectionRenderer();
+            private final TableCellRenderer sectionRenderer = makeSectionRenderer();
 
             //Get the cell editor for the table
             @Override
             public TableCellEditor getCellEditor(final int row, final int column) {
                 //Value at [row, col] of the table
-                final int recordIndex = this.convertRowIndexToModel(row);
-                final PropertyRecord record = PROPERTY_TABLE_MODEL.getRecordAtRow(recordIndex);
                 final Object value = getValueAt(row, column);
 
                 if (value == null) {
@@ -182,34 +180,28 @@ public class SimpleBeanEditor<T> extends JDialog {
             public TableCellRenderer getCellRenderer(final int row, final int column) {
                 // index of the record in the model
                 final int recordIndex = this.convertRowIndexToModel(row);
-                final PropertyRecord record = PROPERTY_TABLE_MODEL.getRecordAtRow(recordIndex);
+                final PropertyRecord aRecord = propertyTableModel.getRecordAtRow(recordIndex);
                 final Object value = getValueAt(row, column);
 
                 //Set the renderer according to the property type (e.g. Boolean => checkbox display, numeric => right justified)
-                if (!record.isEditable()) {
-                    return SECTION_RENDERER;
+                if (!aRecord.isEditable()) {
+                    return sectionRenderer;
                 } else if (value == null) {
                     return super.getCellRenderer(row, column);
                 } else if (value instanceof Enum) {
                     final JComboBox<Object> combo = new JComboBox<>(((Enum<?>) value).getDeclaringClass().getEnumConstants());
                     setRowHeight(row, (int) combo.getPreferredSize().getHeight());
 
-                    return new TableCellRenderer() {
-
-                        @Override
-                        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-                                boolean hasFocus, int row, int column) {
-
-                            if (isSelected) {
-                                combo.setForeground(table.getSelectionForeground());
-                                combo.setBackground(table.getSelectionBackground());
-                            } else {
-                                combo.setForeground(table.getForeground());
-                                combo.setBackground(table.getBackground());
-                            }
-                            combo.setSelectedItem(value);
-                            return combo;
+                    return (table, newValue, isSelected, hasFocus, selRow, selColumn) -> {
+                        if (isSelected) {
+                            combo.setForeground(table.getSelectionForeground());
+                            combo.setBackground(table.getSelectionBackground());
+                        } else {
+                            combo.setForeground(table.getForeground());
+                            combo.setBackground(table.getBackground());
                         }
+                        combo.setSelectedItem(newValue);
+                        return combo;
                     };
                 } else {
                     final TableCellRenderer renderer = getDefaultRenderer(value.getClass());
@@ -217,7 +209,7 @@ public class SimpleBeanEditor<T> extends JDialog {
                         final DefaultTableCellRenderer defaultRenderer = (DefaultTableCellRenderer) renderer;
                         final int modelColumn = convertColumnIndexToModel(column);
                         // highlight the cell if the column corresponds to the value and it has unpublished changes
-                        defaultRenderer.setForeground(modelColumn == PROPERTY_TABLE_VALUE_COLUMN && record.hasChanges() ? Color.BLUE : Color.BLACK);
+                        defaultRenderer.setForeground(modelColumn == propertyTableValueColumn && aRecord.hasChanges() ? Color.BLUE : Color.BLACK);
                     }
                     return renderer;
                 }
@@ -237,7 +229,7 @@ public class SimpleBeanEditor<T> extends JDialog {
             private static final long serialVersionUID = 1L;
 
             {
-                setHorizontalAlignment(JLabel.RIGHT);
+                setHorizontalAlignment(SwingConstants.RIGHT);
             }
 
             @Override
@@ -252,18 +244,18 @@ public class SimpleBeanEditor<T> extends JDialog {
         propertyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         //Set the model to the table
-        propertyTable.setModel(PROPERTY_TABLE_MODEL);
+        propertyTable.setModel(propertyTableModel);
 
         //Configure the text field to filter the table
         final JTextField filterTextField = new JTextField();
         filterTextField.setMaximumSize(new Dimension(32000, filterTextField.getPreferredSize().height));
         filterTextField.putClientProperty("JTextField.variant", "search");
         filterTextField.putClientProperty("JTextField.Search.Prompt", "Property Filter");
-        PROPERTY_TABLE_MODEL.setInputFilterComponent(filterTextField);
+        propertyTableModel.setInputFilterComponent(filterTextField);
         mainContainer.add(filterTextField, BorderLayout.NORTH);
 
         //Add the scrollpane to the table with a vertical scrollbar
-        final JScrollPane scrollPane = new JScrollPane(propertyTable, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        final JScrollPane scrollPane = new JScrollPane(propertyTable, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         mainContainer.add(scrollPane);
 
         //Add everything to the dialog
@@ -292,42 +284,33 @@ public class SimpleBeanEditor<T> extends JDialog {
         okayButton.setEnabled(true);
 
         //Add the action listener as the ApplyButtonListener
-        revertButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                revertFromBean();
-                revertButton.setEnabled(false);
-                publishButton.setEnabled(false);
-            }
+        revertButton.addActionListener(event -> {
+            revertFromBean();
+            revertButton.setEnabled(false);
+            publishButton.setEnabled(false);
         });
 
         //Add the action listener as the ApplyButtonListener
-        publishButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
+        publishButton.addActionListener(event -> {
+            publishToBean();
+            revertButton.setEnabled(false);
+            publishButton.setEnabled(false);
+        });
+
+        //Add the action listener as the ApplyButtonListener
+        okayButton.addActionListener(event -> {
+            try {
                 publishToBean();
-                revertButton.setEnabled(false);
-                publishButton.setEnabled(false);
+                dispose();
+            } catch (Exception exception) {
+                JOptionPane.showMessageDialog(SimpleBeanEditor.this, exception.getMessage(), "Error Publishing", JOptionPane.ERROR_MESSAGE);
+                LOGGER.log(Level.WARNING, "Exception publishing values: ", exception);
             }
         });
 
-        //Add the action listener as the ApplyButtonListener
-        okayButton.addActionListener(new ActionListener() {
+        propertyTableModel.addKeyValueRecordListener(new KeyValueRecordListener<KeyValueTableModel<PropertyRecord>, PropertyRecord>() {
             @Override
-            public void actionPerformed(final ActionEvent event) {
-                try {
-                    publishToBean();
-                    dispose();
-                } catch (Exception exception) {
-                    JOptionPane.showMessageDialog(SimpleBeanEditor.this, exception.getMessage(), "Error Publishing", JOptionPane.ERROR_MESSAGE);
-                    System.err.println("Exception publishing values: " + exception);
-                }
-            }
-        });
-
-        PROPERTY_TABLE_MODEL.addKeyValueRecordListener(new KeyValueRecordListener<KeyValueTableModel<PropertyRecord>, PropertyRecord>() {
-            @Override
-            public void recordModified(final KeyValueTableModel<PropertyRecord> source, final PropertyRecord record, final String keyPath, final Object value) {
+            public void recordModified(final KeyValueTableModel<PropertyRecord> source, final PropertyRecord aRecord, final String keyPath, final Object value) {
                 revertButton.setEnabled(true);
                 publishButton.setEnabled(true);
             }

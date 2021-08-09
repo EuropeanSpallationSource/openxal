@@ -9,16 +9,12 @@
  * EnvelopeGraph.java
  *
  * @author  Christopher K. Allen
- * @since    Nov 26, 2012
+ * @since Nov 26, 2012
  */
 package xal.extension.widgets.olmplot;
 
 import java.awt.Dimension;
 
-import xal.extension.widgets.olmplot.EnvelopeCurve;
-import xal.extension.widgets.olmplot.PLANE;
-import xal.extension.widgets.olmplot.ParticleCurve;
-import xal.extension.widgets.olmplot.TrajectoryGraph;
 import xal.extension.widgets.plot.BasicGraphData;
 import xal.extension.widgets.plot.FunctionGraphsJPanel;
 import xal.model.probe.traj.EnvelopeProbeState;
@@ -51,7 +47,7 @@ public class TrajectoryGraph extends FunctionGraphsJPanel {
     /**
      * The dimensions of the solution graph
      */
-    private static Dimension DIM_GRAPH_SOLN = new Dimension(600, 450);
+    private static Dimension dimGraphSoln = new Dimension(600, 450);
 
     /*
      * Global Methods
@@ -114,7 +110,7 @@ public class TrajectoryGraph extends FunctionGraphsJPanel {
      */
     private TrajectoryGraph() {
         super();
-        this.setPreferredSize(DIM_GRAPH_SOLN);
+        this.setPreferredSize(dimGraphSoln);
     }
 
     /*

@@ -3,8 +3,6 @@ package xal.extension.widgets.olmplot;
 import java.awt.Color;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.model.probe.traj.ParticleProbeState;
@@ -19,6 +17,7 @@ import xal.tools.beam.PhaseVector;
  * @since Nov 26, 2012
  */
 public enum PLANE {
+
     /**
      * Enumeration for the horizontal plane
      */
@@ -63,15 +62,10 @@ public enum PLANE {
     public double getParticlePos(ParticleProbeState state) {
         try {
             PhaseVector vecPhase = state.getPhaseCoordinates();
-            Method mthGetPos = PhaseVector.class.getMethod(this.strMthPar);
-            Double dblPosVal = (Double) mthGetPos.invoke(vecPhase);
-
-            return dblPosVal;
-
+            Method mthGetPos = PhaseVector.class.getMethod(strMthPar);
+            return (Double) mthGetPos.invoke(vecPhase);
         } catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
             String strMsg = this.getClass().getName() + " is unable to invoke method " + this.strMthPar;
-            Logger.getLogger(PLANE.class.getName()).log(Level.SEVERE, strMsg, e);
-
             throw new RuntimeException(strMsg, e);
         }
     }
@@ -93,15 +87,9 @@ public enum PLANE {
         try {
             CovarianceMatrix matSigma = state.getCovarianceMatrix();
             Method mthGetEnv = CovarianceMatrix.class.getMethod(this.strMthEnv);
-            Double dblEnvVal = (Double) mthGetEnv.invoke(matSigma);
-
-            return dblEnvVal;
-
+            return (Double) mthGetEnv.invoke(matSigma);
         } catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException e) {
             String strMsg = this.getClass().getName() + " is unable to invoke method " + this.strMthEnv;
-            System.err.println(strMsg);
-            Logger.getLogger(PLANE.class.getName()).log(Level.SEVERE, strMsg, e);
-
             throw new RuntimeException(strMsg, e);
         }
     }
@@ -141,5 +129,4 @@ public enum PLANE {
         this.strMthEnv = strMthEnv;
         this.clrPlane = clrPlane;
     }
-
 }

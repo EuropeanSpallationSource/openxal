@@ -446,18 +446,18 @@ public class XALSynopticPanel extends JPanel {
         int i = event.getPoint().x - margin.left;
 
         if (i >= 0 && i < labels.length) {
-            int i_upper = i;
-            int i_down = i;
-            while (i_upper < (labels.length - 1) && labels[i_upper] == null) {
-                i_upper += 1;
+            int iUpper = i;
+            int iDown = i;
+            while (iUpper < (labels.length - 1) && labels[iUpper] == null) {
+                iUpper += 1;
             }
-            while (i_down > 0 && labels[i_down] == null) {
-                i_down -= 1;
+            while (iDown > 0 && labels[iDown] == null) {
+                iDown -= 1;
             }
-            if (Math.abs(i - i_down) < Math.abs(i_upper - i)) {
-                return labels[i_down];
+            if (Math.abs(i - iDown) < Math.abs(iUpper - i)) {
+                return labels[iDown];
             } else {
-                return labels[i_upper];
+                return labels[iUpper];
             }
 
         } else {

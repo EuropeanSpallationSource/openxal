@@ -72,7 +72,7 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
      * Empty Constructor
      */
     public KeyValueFilteredTableModel() {
-        this(new ArrayList<T>(), "toString");
+        this(new ArrayList<>(), "toString");
     }
 
     /**
@@ -81,9 +81,9 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
     @Override
     public void setValueAt(final Object value, final int row, final int column) {
         super.setValueAt(value, row, column);
-        final T record = getRecordAtRow(row);
-        if (record != null) {
-            recordFilter.reIndexRecord(record);
+        final T aRecord = getRecordAtRow(row);
+        if (aRecord != null) {
+            recordFilter.reIndexRecord(aRecord);
             filterRecords();
         }
     }
@@ -198,20 +198,20 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
         /**
          * processor for filtering records
          */
-        private final FreshProcessor FILTER_PROCESSOR;
+        private final FreshProcessor filterProcessor;
 
         /**
          * Constructor
          */
         public InputFilterHandler() {
-            FILTER_PROCESSOR = new FreshProcessor();
+            filterProcessor = new FreshProcessor();
         }
 
         /**
          * clear pending requests
          */
         public void clear() {
-            FILTER_PROCESSOR.clear();
+            filterProcessor.clear();
         }
 
         /**
@@ -244,7 +244,7 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
         private void recordsNeedsFiltering(final DocumentEvent event) {
             final Document document = event.getDocument();
             final String text = getText(document);
-            FILTER_PROCESSOR.post(new FilterRecordsRequest(text));
+            filterProcessor.post(new FilterRecordsRequest(text));
         }
     }
 
@@ -257,13 +257,13 @@ public class KeyValueFilteredTableModel<T> extends KeyValueTableModel<T> {
         /**
          * text with which to filter the records
          */
-        private final String FILTER_TEXT;
+        private final String filterText;
 
         /**
          * Constructor
          */
         public FilterRecordsRequest(final String text) {
-            FILTER_TEXT = text;
+            filterText = text;
         }
 
         /**

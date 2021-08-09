@@ -23,11 +23,16 @@ public class LinearData3D extends ColorSurfaceData {
      */
     @Override
     public double getValue(double x, double y) {
-
-        int i, j;
-        double fracX, fracY;
-        double Wxm, Wxp, Wym, Wyp;
-        double Vm, Vp;
+        int i;
+        int j;
+        double fracX;
+        double fracY;
+        double wxm;
+        double wxp;
+        double wym;
+        double wyp;
+        double vm;
+        double vp;
 
         if (x < xMin || y < yMin || x > xMax || y > yMax) {
             return zMin;
@@ -63,16 +68,16 @@ public class LinearData3D extends ColorSurfaceData {
         fracX = (x - xMin - i * xStep) / xStep;
         fracY = (y - yMin - j * yStep) / yStep;
 
-        Wxm = 1.0 - fracX;
-        Wxp = fracX;
+        wxm = 1.0 - fracX;
+        wxp = fracX;
 
-        Wym = 1.0 - fracY;
-        Wyp = fracY;
+        wym = 1.0 - fracY;
+        wyp = fracY;
 
-        Vm = Wxm * gridData[i][j] + Wxp * gridData[i + 1][j];
-        Vp = Wxm * gridData[i][j + 1] + Wxp * gridData[i + 1][j + 1];
+        vm = wxm * gridData[i][j] + wxp * gridData[i + 1][j];
+        vp = wxm * gridData[i][j + 1] + wxp * gridData[i + 1][j + 1];
 
-        return Wym * Vm + Wyp * Vp;
+        return wym * vm + wyp * vp;
     }
 
     /**
@@ -80,10 +85,15 @@ public class LinearData3D extends ColorSurfaceData {
      */
     @Override
     public void addValue(double x, double y, double value) {
-        int i, j;
-        double fracX, fracY;
-        double Wxm, Wxp, Wym, Wyp;
-        double Vm, Vp, tmp;
+        int i;
+        int j;
+        double fracX;
+        double fracY;
+        double wxm;
+        double wxp;
+        double wym;
+        double wyp;
+        double tmp;
 
         i = (int) ((x - xMin) / xStep + 0.5);
         j = (int) ((y - yMin) / yStep + 0.5);
@@ -115,18 +125,18 @@ public class LinearData3D extends ColorSurfaceData {
         fracX = (x - xMin - i * xStep) / xStep;
         fracY = (y - yMin - j * yStep) / yStep;
 
-        Wxm = 1.0 - fracX;
-        Wxp = fracX;
+        wxm = 1.0 - fracX;
+        wxp = fracX;
 
-        Wym = 1.0 - fracY;
-        Wyp = fracY;
+        wym = 1.0 - fracY;
+        wyp = fracY;
 
-        tmp = Wym * value;
-        gridData[i][j] += Wxm * tmp;
-        gridData[i + 1][j] += Wxp * tmp;
-        tmp = Wyp * value;
-        gridData[i][j + 1] += Wxm * tmp;
-        gridData[i + 1][j + 1] += Wxp * tmp;
+        tmp = wym * value;
+        gridData[i][j] += wxm * tmp;
+        gridData[i + 1][j] += wxp * tmp;
+        tmp = wyp * value;
+        gridData[i][j + 1] += wxm * tmp;
+        gridData[i + 1][j + 1] += wxp * tmp;
 
         for (int ii = 0; ii < 2; ii++) {
             for (int jj = 0; jj < 2; jj++) {
@@ -138,7 +148,5 @@ public class LinearData3D extends ColorSurfaceData {
                 }
             }
         }
-
     }
-
 }

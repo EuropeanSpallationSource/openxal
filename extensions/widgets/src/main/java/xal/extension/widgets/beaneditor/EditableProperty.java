@@ -147,7 +147,7 @@ public abstract class EditableProperty {
             final BeanInfo beanInfo = getBeanInfo(target);
             return getPropertyDescriptorsForBeanInfo(beanInfo);
         } else {
-            return null;
+            return new PropertyDescriptor[0];
         }
     }
 

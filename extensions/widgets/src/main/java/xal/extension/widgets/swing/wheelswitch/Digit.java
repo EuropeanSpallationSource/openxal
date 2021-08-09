@@ -89,7 +89,7 @@ public abstract class Digit extends SimpleButton {
     /**
      * Constructor for Digit creates an empty Digit.
      */
-    public Digit() {
+    protected Digit() {
         super();
 
         if (images == null) {
@@ -176,21 +176,19 @@ public abstract class Digit extends SimpleButton {
         this.newText = newText;
         super.setText(newText);
 
-        if (enhanced) {
-            if (animationCompleted >= 1f) {
-                animationCompleted = 0f;
+        if (enhanced && animationCompleted >= 1f) {
+            animationCompleted = 0f;
 
-                if (animationTimer == null) {
-                    animationTimer = new Timer();
-                }
+            if (animationTimer == null) {
+                animationTimer = new Timer();
+            }
 
-                // TODO this is workaround for applet, has to be investigated
-                try {
-                    animationTimer.schedule(new AnimationTask(), 0, 10);
-                } catch (IllegalStateException e) {
-                    animationTimer = new Timer();
-                    animationTimer.schedule(new AnimationTask(), 0, 10);
-                }
+            // TODO this is workaround for applet, has to be investigated
+            try {
+                animationTimer.schedule(new AnimationTask(), 0, 10);
+            } catch (IllegalStateException e) {
+                animationTimer = new Timer();
+                animationTimer.schedule(new AnimationTask(), 0, 10);
             }
         }
     }

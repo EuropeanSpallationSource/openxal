@@ -9,17 +9,16 @@
  * PlotFrame.java
  *
  * @author  Christopher K. Allen
- * @since    Nov 26, 2012
+ * @since Nov 26, 2012
  */
 package xal.extension.widgets.olmplot;
 
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.WindowConstants;
 
 import xal.extension.widgets.plot.FunctionGraphsJPanel;
 
@@ -63,18 +62,11 @@ public class GraphFrame {
 
         this.frmMain = new JFrame(strTitle);
         this.frmMain.getContentPane().add(pnlMain);
-        this.frmMain.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.frmMain.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.frmMain.pack();
 
         // Add the event response for the quit button
-        butQuit.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                System.exit(0);
-            }
-        }
-        );
+        butQuit.addActionListener(e -> System.exit(0));
     }
 
     /*
@@ -103,5 +95,4 @@ public class GraphFrame {
     public void setPreferredSize(Dimension dimSize) {
         this.frmMain.setPreferredSize(dimSize);
     }
-
 }

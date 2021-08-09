@@ -45,12 +45,7 @@ public class FunctionGraphsXALSynopticAdaptor {
         synopticView.setPreferredSize(new Dimension(chart.getWidth(), 50));
         synopticView.setBackground(chart.getBackground());
 
-        chart.addHorLimitsListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                synchronizeSynopticView(synopticView, chart);
-            }
-        });
+        chart.addHorLimitsListener(event -> synchronizeSynopticView(synopticView, chart));
 
         return synopticView;
     }

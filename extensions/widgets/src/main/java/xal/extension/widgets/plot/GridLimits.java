@@ -13,8 +13,14 @@ import java.awt.*;
  */
 public class GridLimits {
 
-    private double xMin, yMin, xMax, yMax;
-    private boolean ixMin, iyMin, ixMax, iyMax;
+    private double xMin;
+    private double yMin;
+    private double xMax;
+    private double yMax;
+    private boolean ixMin;
+    private boolean iyMin;
+    private boolean ixMax;
+    private boolean iyMax;
 
     private NumberFormat numberFormatX = new DecimalFormat("0.00E0");
     private NumberFormat numberFormatY = new DecimalFormat("0.00E0");
@@ -35,7 +41,7 @@ public class GridLimits {
      * Constructor for the GridLimits object
      */
     public GridLimits() {
-        this.initialize();
+        initialize();
     }
 
     /**
@@ -51,6 +57,7 @@ public class GridLimits {
      * defined in the sub-class. Here it is empty
      */
     public void setSmartLimitsX() {
+        // Do nothing
     }
 
     /**
@@ -58,24 +65,25 @@ public class GridLimits {
      * defined in the sub-class. Here it is empty
      */
     public void setSmartLimitsY() {
+        // Do nothing
     }
 
     /**
      * Sets the numberFormatX attribute of the GridLimits object
      *
-     * @param numberFormatX_In The new format for x-axis
+     * @param numberFormatXIn The new format for x-axis
      */
-    public synchronized void setNumberFormatX(NumberFormat numberFormatX_In) {
-        numberFormatX = numberFormatX_In;
+    public synchronized void setNumberFormatX(NumberFormat numberFormatXIn) {
+        numberFormatX = numberFormatXIn;
     }
 
     /**
      * Sets the numberFormatY attribute of the GridLimits object
      *
-     * @param numberFormatY_In The new format for x-axis
+     * @param numberFormatYIn The new format for x-axis
      */
-    public synchronized void setNumberFormatY(NumberFormat numberFormatY_In) {
-        numberFormatY = numberFormatY_In;
+    public synchronized void setNumberFormatY(NumberFormat numberFormatYIn) {
+        numberFormatY = numberFormatYIn;
     }
 
     /**

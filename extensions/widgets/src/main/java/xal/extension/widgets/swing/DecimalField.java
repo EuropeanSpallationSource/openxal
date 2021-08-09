@@ -27,7 +27,7 @@ public class DecimalField extends JFormattedTextField {
         super(format);
         setColumns(columns);
         setValue(value);
-        setHorizontalAlignment(JTextField.RIGHT);
+        setHorizontalAlignment(SwingConstants.RIGHT);
     }
 
     /**

@@ -2,13 +2,12 @@
  * EnvelopeCurve.java
  *
  * @author  Christopher K. Allen
- * @since    Nov 26, 2012
+ * @since Nov 26, 2012
  */
 package xal.extension.widgets.olmplot;
 
 import java.util.Iterator;
 
-import xal.extension.widgets.olmplot.PLANE;
 import xal.extension.widgets.plot.BasicGraphData;
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.model.probe.traj.Trajectory;

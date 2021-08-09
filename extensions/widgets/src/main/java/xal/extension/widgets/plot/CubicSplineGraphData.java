@@ -40,7 +40,7 @@ public class CubicSplineGraphData extends BasicGraphData {
     @Override
     public double getValueY(double x) {
         synchronized (lockUpObj) {
-            if (xyPointV.size() == 0) {
+            if (xyPointV.isEmpty()) {
                 return (-Double.MAX_VALUE);
             }
             if (xyPointV.size() == 1) {
@@ -72,7 +72,7 @@ public class CubicSplineGraphData extends BasicGraphData {
     @Override
     public double getValueDerivativeY(double x) {
         synchronized (lockUpObj) {
-            if (xyPointV.size() == 0) {
+            if (xyPointV.isEmpty()) {
                 return (-Double.MAX_VALUE);
             }
             if (xyPointV.size() == 1) {
@@ -112,7 +112,7 @@ public class CubicSplineGraphData extends BasicGraphData {
 
         double[] gamma = new double[n1];
         double[] delta = new double[n1];
-        double[] D = new double[n1];
+        double[] d = new double[n1];
         double[] z = new double[n1];
 
         if (cY == null) {
@@ -142,14 +142,14 @@ public class CubicSplineGraphData extends BasicGraphData {
         }
         delta[n] = (3 * (z[n] - z[n - 1]) - delta[n - 1]) * gamma[n];
 
-        D[n] = delta[n];
+        d[n] = delta[n];
         for (i = n - 1; i >= 0; i--) {
-            D[i] = delta[i] - gamma[i] * D[i + 1];
+            d[i] = delta[i] - gamma[i] * d[i + 1];
         }
 
         for (i = 0; i < n; i++) {
-            cY.get(i).setCoeff(z[i], D[i], 3 * (z[i + 1] - z[i]) - 2 * D[i] - D[i + 1],
-                    2 * (z[i] - z[i + 1]) + D[i] + D[i + 1]);
+            cY.get(i).setCoeff(z[i], d[i], 3 * (z[i + 1] - z[i]) - 2 * d[i] - d[i + 1],
+                    2 * (z[i] - z[i + 1]) + d[i] + d[i + 1]);
         }
     }
 
@@ -161,21 +161,23 @@ public class CubicSplineGraphData extends BasicGraphData {
      */
     private static class Cubic {
 
-        double a, b, c, d;
+        double a;
+        double b;
+        double c;
+        double d;
         /* a + b*u + c*u^2 +d*u^3 */
-        double e, f, g;
-
-        public Cubic() {
-        }
+        double e;
+        double f;
+        double g;
 
         public void setCoeff(double a, double b, double c, double d) {
             this.a = a;
             this.b = b;
             this.c = c;
             this.d = d;
-            this.g = 3.0 * d;
-            this.f = 2.0 * c;
-            this.e = b;
+            g = 3.0 * d;
+            f = 2.0 * c;
+            e = b;
         }
 
         /**
@@ -191,7 +193,6 @@ public class CubicSplineGraphData extends BasicGraphData {
         public double evalDerivative(double u) {
             return ((g * u) + f) * u + e;
         }
-
     }
 
     /*
@@ -217,12 +218,12 @@ public class CubicSplineGraphData extends BasicGraphData {
         double x;
         double y;
         double yp;
-        int NgraphPoint = 50;
+        int nGraphPoint = 50;
         LOGGER.log(Level.INFO, "==CubicSplineGraphData results========");
         LOGGER.log(Level.INFO, "====x====  ====y=====   ====derivative y====");
-        double step = (spl.getMaxX() - spl.getMinX()) / NgraphPoint;
+        double step = (spl.getMaxX() - spl.getMinX()) / nGraphPoint;
 
-        for (int i = 0; i < NgraphPoint; i++) {
+        for (int i = 0; i < nGraphPoint; i++) {
             x = spl.getMinX() + step * i + 0.5 * step;
             y = spl.getValueY(x);
             yp = spl.getValueDerivativeY(x);
@@ -231,5 +232,4 @@ public class CubicSplineGraphData extends BasicGraphData {
 
         LOGGER.log(Level.INFO, "Stop.");
     }
-
 }

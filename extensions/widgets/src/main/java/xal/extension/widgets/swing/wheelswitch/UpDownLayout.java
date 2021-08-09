@@ -22,6 +22,7 @@ public class UpDownLayout implements LayoutManager {
      */
     @Override
     public void addLayoutComponent(String name, Component comp) {
+        // Do nothing
     }
 
     /**
@@ -29,6 +30,7 @@ public class UpDownLayout implements LayoutManager {
      */
     @Override
     public void removeLayoutComponent(Component comp) {
+        // Do nothing
     }
 
     /**

@@ -33,6 +33,7 @@ public class StaticDigit extends Digit {
      */
     @Override
     public void setSelected(boolean newSel) {
+        // Do nothing
     }
 
     /**

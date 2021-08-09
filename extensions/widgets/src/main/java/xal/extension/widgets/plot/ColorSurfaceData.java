@@ -17,13 +17,18 @@ public abstract class ColorSurfaceData {
      */
     protected double[][] gridData = new double[0][0];
 
-    protected int nX, nY;
+    protected int nX;
+    protected int nY;
 
-    protected double xStep, yStep;
+    protected double xStep;
+    protected double yStep;
 
-    protected double xMin, xMax;
-    protected double yMin, yMax;
-    protected double zMin, zMax;
+    protected double xMin;
+    protected double xMax;
+    protected double yMin;
+    protected double yMax;
+    protected double zMin;
+    protected double zMax;
 
     private int nScreenX;
     private int nScreenY;
@@ -33,7 +38,7 @@ public abstract class ColorSurfaceData {
     /**
      * The data set constructor with size of the grid.
      */
-    public ColorSurfaceData(int nX, int nY) {
+    protected ColorSurfaceData(int nX, int nY) {
         this.nX = nX;
         this.nY = nY;
         gridData = new double[nX][nY];
@@ -220,8 +225,8 @@ public abstract class ColorSurfaceData {
      * Sets all values of the 2D array to 0.
      */
     public void setZero() {
-        for (int i = 0, j; i < nX; i++) {
-            for (j = 0; j < nY; j++) {
+        for (int i = 0; i < nX; i++) {
+            for (int j = 0; j < nY; j++) {
                 gridData[i][j] = 0.;
             }
         }
@@ -276,8 +281,8 @@ public abstract class ColorSurfaceData {
     public void multiplyBy(double value) {
         zMin = Double.MAX_VALUE;
         zMax = -Double.MAX_VALUE;
-        for (int i = 0, j; i < nX; i++) {
-            for (j = 0; j < nY; j++) {
+        for (int i = 0; i < nX; i++) {
+            for (int j = 0; j < nY; j++) {
                 gridData[i][j] *= value;
                 if (zMin > gridData[i][j]) {
                     zMin = gridData[i][j];
@@ -297,8 +302,8 @@ public abstract class ColorSurfaceData {
     public void calcMaxMinZ() {
         zMin = Double.MAX_VALUE;
         zMax = -Double.MAX_VALUE;
-        for (int i = 0, j; i < nX; i++) {
-            for (j = 0; j < nY; j++) {
+        for (int i = 0; i < nX; i++) {
+            for (int j = 0; j < nY; j++) {
                 if (zMin > gridData[i][j]) {
                     zMin = gridData[i][j];
                 }

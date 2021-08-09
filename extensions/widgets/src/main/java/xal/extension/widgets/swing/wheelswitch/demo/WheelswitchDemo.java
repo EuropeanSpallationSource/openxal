@@ -11,14 +11,10 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.ScrollPane;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 import javax.swing.JApplet;
 import javax.swing.JButton;
@@ -122,7 +118,9 @@ public class WheelswitchDemo extends JPanel {
         JTextField txt5;
         JButton jb1;
         JButton jb2;
-        JCheckBox tgb1, tgb2, tgb3;
+        JCheckBox tgb1;
+        JCheckBox tgb2;
+        JCheckBox tgb3;
         JPanel pan0;
 
         private class HelpAdapter extends MouseAdapter {
@@ -179,71 +177,37 @@ public class WheelswitchDemo extends JPanel {
             txt4.addMouseListener(new HelpAdapter("Values in the wheelswitch can be bounded by setting maximum and minimum values. To change these, enter new values here press the 'Apply' button"));
             txt5.addMouseListener(new HelpAdapter("Values in the wheelswitch can be bounded by setting maximum and minimum values. To change these, enter new values here press the 'Apply' button"));
 
-            jb1.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    wSwitch.setValue(Double.parseDouble(txt2.getText()));
-                    wSwitch.setFormat(txt1.getText());
-                    wSwitch.setUnit(txt3.getText());
-                    wSwitch.setGraphMax(Double.parseDouble(txt4.getText()));
-                    wSwitch.setGraphMin(Double.parseDouble(txt5.getText()));
-                }
+            jb1.addActionListener(e -> {
+                wSwitch.setValue(Double.parseDouble(txt2.getText()));
+                wSwitch.setFormat(txt1.getText());
+                wSwitch.setUnit(txt3.getText());
+                wSwitch.setGraphMax(Double.parseDouble(txt4.getText()));
+                wSwitch.setGraphMin(Double.parseDouble(txt5.getText()));
             });
             jb1.addMouseListener(new HelpAdapter("Press the 'Apply' button to apply settings in the textfields to the wheelswitch."));
 
-            jb2.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    txt2.setText(String.valueOf(wSwitch.getValue()));
-                }
-            });
+            jb2.addActionListener(e -> txt2.setText(String.valueOf(wSwitch.getValue())));
             jb2.addMouseListener(new HelpAdapter("Press the 'Get Value' button to read the value in the wheelswitch and display it in the 'Value' textfield."));
 
-            wSwitch.addPropertyChangeListener(Wheelswitch.VALUE, new PropertyChangeListener() {
-                @Override
-                public void propertyChange(PropertyChangeEvent evt) {
-                    txt2.setText(evt.getNewValue().toString());
-                }
-            });
+            wSwitch.addPropertyChangeListener(Wheelswitch.VALUE, evt -> txt2.setText(evt.getNewValue().toString()));
 
-            tgb1.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (tgb1.isSelected()) {
-                        wSwitch.getParent().setLayout(new GridLayout(1, 1));
-                    } else {
-                        wSwitch.getParent().setLayout(new FlowLayout());
-                    }
-                    wSwitch.getParent().doLayout();
-                    wSwitch.getParent().validate();
-                    repaint();
+            tgb1.addActionListener(e -> {
+                if (tgb1.isSelected()) {
+                    wSwitch.getParent().setLayout(new GridLayout(1, 1));
+                } else {
+                    wSwitch.getParent().setLayout(new FlowLayout());
                 }
+                wSwitch.getParent().doLayout();
+                wSwitch.getParent().validate();
+                repaint();
             });
             tgb1.addMouseListener(new HelpAdapter("Check here to demonstrate wheelswitch resizing."));
 
-            tgb2.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (tgb2.isSelected()) {
-                        wSwitch.setEnhanced(true);
-                    } else {
-                        wSwitch.setEnhanced(false);
-                    }
-                }
-            });
+            tgb2.addActionListener(e -> wSwitch.setEnhanced(tgb2.isSelected()));
             tgb2.setSelected(true);
             tgb2.addMouseListener(new HelpAdapter("Check here to set the enhnced mode of the wheelswitch."));
 
-            tgb3.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (tgb3.isSelected()) {
-                        wSwitch.setEditable(true);
-                    } else {
-                        wSwitch.setEditable(false);
-                    }
-                }
-            });
+            tgb3.addActionListener(e -> wSwitch.setEditable(tgb3.isSelected()));
             tgb3.setSelected(true);
             tgb3.addMouseListener(new HelpAdapter("Check here to set the editable mode of the wheelswitch."));
 
@@ -351,9 +315,7 @@ public class WheelswitchDemo extends JPanel {
             JPanel divider2 = new JPanel();
             divider2.setPreferredSize(new Dimension(1, 20));
             add(divider2, cons);
-
         }
-
     }
 
     private JTextArea helpTextArea;
@@ -399,5 +361,6 @@ public class WheelswitchDemo extends JPanel {
      * @see com.cosylab.util.Suspendable#setSuspended(boolean)
      */
     public void setSuspended(boolean suspended) {
+        // Do nothing
     }
 }

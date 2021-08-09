@@ -29,7 +29,7 @@ public class BasicGraphData {
     /**
      * Description of the Field
      */
-    protected Object lockUpObj = new Object();
+    protected final Object lockUpObj = new Object();
 
     //-----------------------------------------------------
     //members defining data
@@ -62,7 +62,11 @@ public class BasicGraphData {
     /**
      * Description of the Field
      */
-    protected double xMax, yMax, xMin, yMin, errYmax;
+    protected double xMax;
+    protected double yMax;
+    protected double xMin;
+    protected double yMin;
+    protected double errYmax;
 
     //-----------------------------------------------------
     //members related to the graph presentation
@@ -194,10 +198,10 @@ public class BasicGraphData {
                 xyPointV.add(new XYpoint(x[i], y[i], 0.0));
             }
             Collections.sort(xyPointV, new CompareX());
-            this.calculateRepresentation();
-            this.updateData();
+            calculateRepresentation();
+            updateData();
         }
-        this.updateContainer();
+        updateContainer();
     }
 
     /**
@@ -214,10 +218,10 @@ public class BasicGraphData {
                 xyPointV.add(new XYpoint(x[i], y[i], Math.abs(err[i])));
             }
             Collections.sort(xyPointV, new CompareX());
-            this.calculateRepresentation();
-            this.updateData();
+            calculateRepresentation();
+            updateData();
         }
-        this.updateContainer();
+        updateContainer();
     }
 
     /**
@@ -243,10 +247,10 @@ public class BasicGraphData {
                 }
             }
             Collections.sort(xyPointV, new CompareX());
-            this.calculateRepresentation();
-            this.updateData();
+            calculateRepresentation();
+            updateData();
         }
-        this.updateContainer();
+        updateContainer();
     }
 
     /**
@@ -271,10 +275,10 @@ public class BasicGraphData {
                 }
             }
             Collections.sort(xyPointV, new CompareX());
-            this.calculateRepresentation();
-            this.updateData();
+            calculateRepresentation();
+            updateData();
         }
-        this.updateContainer();
+        updateContainer();
     }
 
     /**
@@ -291,10 +295,10 @@ public class BasicGraphData {
             for (int i = 0; i < y.length; i++) {
                 xyPointV.get(i).setY(y[i], Math.abs(err[i]));
             }
-            this.calculateRepresentation();
-            this.updateData();
+            calculateRepresentation();
+            updateData();
         }
-        this.updateContainer();
+        updateContainer();
     }
 
     /**
@@ -310,10 +314,10 @@ public class BasicGraphData {
             for (int i = 0; i < y.length; i++) {
                 xyPointV.get(i).setY(y[i]);
             }
-            this.calculateRepresentation();
-            this.updateData();
+            calculateRepresentation();
+            updateData();
         }
-        this.updateContainer();
+        updateContainer();
     }
 
     /**
@@ -328,10 +332,10 @@ public class BasicGraphData {
                 return;
             }
             xyPointV.get(index).setY(y);
-            this.calculateRepresentation();
-            this.updateData();
+            calculateRepresentation();
+            updateData();
         }
-        this.updateContainer();
+        updateContainer();
     }
 
     /**
@@ -349,10 +353,10 @@ public class BasicGraphData {
             xyPointV.remove(index);
             xyPointV.add(new XYpoint(x, y, 0.0));
             Collections.sort(xyPointV, new CompareX());
-            this.calculateRepresentation();
-            this.updateData();
+            calculateRepresentation();
+            updateData();
         }
-        this.updateContainer();
+        updateContainer();
     }
 
     /**
@@ -372,10 +376,10 @@ public class BasicGraphData {
             xyPointV.remove(index);
             xyPointV.add(new XYpoint(x, y, err));
             Collections.sort(xyPointV, new CompareX());
-            this.calculateRepresentation();
-            this.updateData();
+            calculateRepresentation();
+            updateData();
         }
-        this.updateContainer();
+        updateContainer();
     }
 
     /**
@@ -387,11 +391,11 @@ public class BasicGraphData {
         synchronized (lockUpObj) {
             if (index >= 0 && index < xyPointV.size()) {
                 xyPointV.remove(index);
-                this.calculateRepresentation();
-                this.updateData();
+                calculateRepresentation();
+                updateData();
             }
         }
-        this.updateContainer();
+        updateContainer();
     }
 
     /**
@@ -403,10 +407,10 @@ public class BasicGraphData {
                 return;
             }
             xyPointV.clear();
-            this.calculateRepresentation();
-            this.updateData();
+            calculateRepresentation();
+            updateData();
         }
-        this.updateContainer();
+        updateContainer();
     }
 
     //This method can be overridden in subclasses to provide data for
@@ -416,7 +420,7 @@ public class BasicGraphData {
      * Description of the Method
      */
     protected void calculateRepresentation() {
-
+        // Do nothing
     }
 
     //Calculates the value of the function at specific point
@@ -429,7 +433,7 @@ public class BasicGraphData {
      */
     public double getValueY(double x) {
         synchronized (lockUpObj) {
-            if (xyPointV.size() == 0) {
+            if (xyPointV.isEmpty()) {
                 return Double.MIN_VALUE;
             }
             if (xyPointV.size() == 1) {
@@ -467,7 +471,7 @@ public class BasicGraphData {
      */
     public double getValueDerivativeY(double x) {
         synchronized (lockUpObj) {
-            if (xyPointV.size() == 0) {
+            if (xyPointV.isEmpty()) {
                 return Double.MIN_VALUE;
             }
             if (xyPointV.size() == 1) {
@@ -642,8 +646,7 @@ public class BasicGraphData {
      * Description of the Method
      */
     protected void updateData() {
-
-        if (xyPointV.size() == 0) {
+        if (xyPointV.isEmpty()) {
             return;
         }
 
@@ -1263,12 +1266,12 @@ public class BasicGraphData {
         double x;
         double y;
         double yp;
-        int NgraphPoint = 50;
+        int nGraphPoint = 50;
         LOGGER.log(Level.INFO, "==BasicGraphData results========");
         LOGGER.log(Level.INFO, "====x====  ====y=====   ====derivative y====");
-        double step = (spl.getMaxX() - spl.getMinX()) / NgraphPoint;
+        double step = (spl.getMaxX() - spl.getMinX()) / nGraphPoint;
 
-        for (int i = 0; i < NgraphPoint; i++) {
+        for (int i = 0; i < nGraphPoint; i++) {
             x = spl.getMinX() + step * i + 0.5 * step;
             y = spl.getValueY(x);
             yp = spl.getValueDerivativeY(x);
@@ -1277,5 +1280,4 @@ public class BasicGraphData {
 
         LOGGER.log(Level.INFO, "Stop.");
     }
-
 }

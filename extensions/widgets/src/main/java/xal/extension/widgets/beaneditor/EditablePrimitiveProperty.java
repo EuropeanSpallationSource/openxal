@@ -18,7 +18,7 @@ class EditablePrimitiveProperty extends EditableProperty {
     /**
      * property's units
      */
-    private final String UNITS;
+    private final String units;
 
     /**
      * Constructor
@@ -26,7 +26,7 @@ class EditablePrimitiveProperty extends EditableProperty {
     protected EditablePrimitiveProperty(final String pathPrefix, final Object target, final PropertyDescriptor descriptor) {
         super(pathPrefix, target, descriptor);
 
-        UNITS = fetchUnits();
+        units = fetchUnits();
     }
 
     /**
@@ -118,7 +118,7 @@ class EditablePrimitiveProperty extends EditableProperty {
      */
     @Override
     public String getUnits() {
-        return UNITS;
+        return units;
     }
 
     /**

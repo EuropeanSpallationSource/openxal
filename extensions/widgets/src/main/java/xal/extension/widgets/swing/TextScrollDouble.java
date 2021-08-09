@@ -1,9 +1,7 @@
 package xal.extension.widgets.swing;
 
 import java.awt.*;
-import java.awt.event.*;
 import java.text.NumberFormat;
-import xal.extension.widgets.swing.*;
 import javax.swing.*;
 
 /**
@@ -27,7 +25,6 @@ public class TextScrollDouble extends JPanel {
     private double currentincrement;
     private double drangemin;
     private double drangemax;
-    private NumberFormat numberFormat;
 
     /**
      * An instance the class. Default values used are: orient (relative layout
@@ -48,7 +45,7 @@ public class TextScrollDouble extends JPanel {
         fracdigits = 3;
         textdigits = 6;
 
-        ActivateTextScroll();
+        activateTextScroll();
     }
 
     /**
@@ -69,7 +66,7 @@ public class TextScrollDouble extends JPanel {
         fracdigits = 3;
         textdigits = 6;
 
-        ActivateTextScroll();
+        activateTextScroll();
     }
 
     /**
@@ -88,7 +85,7 @@ public class TextScrollDouble extends JPanel {
 
         fracdigits = 3;
         textdigits = 6;
-        ActivateTextScroll();
+        activateTextScroll();
     }
 
     /**
@@ -115,12 +112,12 @@ public class TextScrollDouble extends JPanel {
         dvalue = dval;
         textdigits = tdigits;
         fracdigits = fdigits;
-        ActivateTextScroll();
+        activateTextScroll();
     }
 
-    private void ActivateTextScroll() {
+    private void activateTextScroll() {
 
-        numberFormat = NumberFormat.getNumberInstance();
+        NumberFormat numberFormat = NumberFormat.getNumberInstance();
         numberFormat.setMinimumFractionDigits(fracdigits);
 
         textField = new DecimalField(dvalue, textdigits, numberFormat);
@@ -133,30 +130,24 @@ public class TextScrollDouble extends JPanel {
         scrollBar.setUnitIncrement(increment);
         scrollBar.setBlockIncrement(increment);
 
-        textField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (textField.getDoubleValue() > drangemax
-                        || textField.getDoubleValue() < drangemin) {
-                    JOptionPane frame = new JOptionPane();
-                    JOptionPane.showMessageDialog(frame,
-                            "Value is out of range",
-                            "Warning",
-                            JOptionPane.WARNING_MESSAGE);
-                }
-                double dvalue = textField.getDoubleValue();
-                int ivalue = convertTextFieldNumber(dvalue, increment);
-                scrollBar.setValue(ivalue);
+        textField.addActionListener(e -> {
+            if (textField.getDoubleValue() > drangemax
+                    || textField.getDoubleValue() < drangemin) {
+                JOptionPane frame = new JOptionPane();
+                JOptionPane.showMessageDialog(frame,
+                        "Value is out of range",
+                        "Warning",
+                        JOptionPane.WARNING_MESSAGE);
             }
+            double dvalue = textField.getDoubleValue();
+            int ivalue = convertTextFieldNumber(dvalue, increment);
+            scrollBar.setValue(ivalue);
         });
 
-        scrollBar.addAdjustmentListener(new AdjustmentListener() {
-            @Override
-            public void adjustmentValueChanged(AdjustmentEvent e) {
-                int ivalue = scrollBar.getValue();
-                double dvalue = convertScrollBarNumber(ivalue, increment);
-                textField.setValue(dvalue);
-            }
+        scrollBar.addAdjustmentListener(e -> {
+            int ivalue = scrollBar.getValue();
+            double dvalue = convertScrollBarNumber(ivalue, increment);
+            textField.setValue(dvalue);
         });
 
         JPanel comboPane = new JPanel();
@@ -194,7 +185,7 @@ public class TextScrollDouble extends JPanel {
      */
     public void setMaximum(double value) {
         drangemax = value;
-        ActivateTextScroll();
+        activateTextScroll();
     }
 
     /**
@@ -203,8 +194,8 @@ public class TextScrollDouble extends JPanel {
      */
     public void setIncrement(double dincrement) {
         currentincrement = dincrement;
-        Double drange = new Double((drangemax - drangemin) / currentincrement);
-        increment = nearestInt(drange.doubleValue());
+        Double drange = (drangemax - drangemin) / currentincrement;
+        increment = nearestInt(drange);
         scrollBar.setUnitIncrement(scrollrange / increment);
         scrollBar.setBlockIncrement(scrollrange / increment);
     }
@@ -220,38 +211,34 @@ public class TextScrollDouble extends JPanel {
      * Get the value in the text field.
      */
     public double getValue() {
-        double value = textField.getDoubleValue();
-        return value;
+        return textField.getDoubleValue();
     }
 
     /**
      * Get the minimum value of the range
      */
     public double getMinimum() {
-        double value = drangemin;
-        return value;
+        return drangemin;
     }
 
     /**
      * Get the maximum value of the range
      */
     public double getMaximum() {
-        double value = drangemax;
-        return value;
+        return drangemax;
     }
 
     /**
      * Get the current increment
      */
     public int getIncrement() {
-        int value = increment;
-        return value;
+        return increment;
     }
 
     /**
      * Disable.
      */
-    public void Disable() {
+    public void disableIt() {
         scrollBar.setEnabled(false);
         textField.setEnabled(false);
     }
@@ -259,22 +246,16 @@ public class TextScrollDouble extends JPanel {
     /**
      * Enable.
      */
-    public void Enable() {
+    public void enableIt() {
         scrollBar.setEnabled(true);
         textField.setEnabled(true);
     }
 
     private int nearestInt(double darg) {
-        int iResult;
-        int iCompare;
-        Double dVal;
-        Double dCompare;
+        int iResult = ((Double) darg).intValue();
 
-        dVal = new Double(darg);
-        iResult = dVal.intValue();
-
-        dCompare = new Double(darg + 0.5);
-        iCompare = dCompare.intValue();
+        Double dCompare = darg + 0.5;
+        int iCompare = dCompare.intValue();
 
         if (iCompare > iResult) {
             iResult = iCompare;
@@ -284,43 +265,31 @@ public class TextScrollDouble extends JPanel {
     }
 
     private int convertTextFieldNumber(double dValue, int iprecision) {
+        double drangeDelta = drangemax - drangemin;
 
-        int iValue;
-        int irangeDelta;
-        Integer iPrecision;
-        Integer iRangeDelta;
-        double drangeDelta;
-        Double tempD;
-
-        drangeDelta = drangemax - drangemin;
-
-        irangeDelta = scrollrange;
-        iRangeDelta = Integer.valueOf(irangeDelta);
-        iPrecision = Integer.valueOf(iprecision);
-        tempD = new Double((dValue - drangemin)
+        int irangeDelta = scrollrange;
+        Integer iRangeDelta = irangeDelta;
+        Integer iPrecision = iprecision;
+        Double tempD = (dValue - drangemin)
                 * iPrecision.doubleValue() / drangeDelta
                 * (iRangeDelta.doubleValue())
-                / iPrecision.doubleValue());
+                / iPrecision.doubleValue();
 
-        iValue = nearestInt(tempD.doubleValue());
+        return nearestInt(tempD);
 
-        return iValue;
     }
 
     private double convertScrollBarNumber(int iValue, int iprecision) {
 
         int irangeDelta;
-        Integer iPrecision;
         Integer iRangeDelta;
         double dValue;
         double drangeDelta;
-        Double tempD;
 
         drangeDelta = drangemax - drangemin;
 
         irangeDelta = scrollrange;
         iRangeDelta = irangeDelta;
-        iPrecision = iprecision;
 
         dValue = drangemin + iValue / iRangeDelta.doubleValue() * drangeDelta;
 

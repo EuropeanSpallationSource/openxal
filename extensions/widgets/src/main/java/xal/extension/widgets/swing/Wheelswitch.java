@@ -285,8 +285,8 @@ public class Wheelswitch extends JPanel {
         }
     }
 
-    protected static int INCREASE_SELECTION = -11;
-    protected static int DECREASE_SELECTION = -12;
+    protected static final int INCREASE_SELECTION = -11;
+    protected static final int DECREASE_SELECTION = -12;
 
     /**
      * DOCUMENT ME!
@@ -296,14 +296,14 @@ public class Wheelswitch extends JPanel {
     /**
      * DOCUMENT ME!
      */
-    public static final String EDITABLE = "editable";
+    public static final String EDITABLE_STR = "editable";
 
     private static final Logger LOGGER = Logger.getLogger(Wheelswitch.class.getName());
 
-    protected FocusHandler focusHandler;
-    protected KeyHandler keyHandler;
-    protected MouseHandler mouseHandler;
-    protected TiltHandler tiltHandler;
+    protected transient FocusHandler focusHandler;
+    protected transient KeyHandler keyHandler;
+    protected transient MouseHandler mouseHandler;
+    protected transient TiltHandler tiltHandler;
     private Dimension minimumSize = null;
     private Dimension preferredSize = null;
     private List<Digit> digits;
@@ -467,8 +467,7 @@ public class Wheelswitch extends JPanel {
         try {
             formatter.setFormat(newFormat);
         } catch (IllegalArgumentException e) {
-            LOGGER.log(Level.WARNING, "Exception setting new format: " + newFormat, e);
-
+            LOGGER.log(Level.WARNING, e, () -> "Exception setting new format: " + newFormat);
             return;
         }
 
@@ -807,15 +806,14 @@ public class Wheelswitch extends JPanel {
                     && (oldStringValue.charAt(j) != '+')
                     && (oldStringValue.charAt(j) != '-') && (newValue != 0));
                     j--) {
-                if (oldStringValue.charAt(j) == '.') {
-                    continue;
-                } else if (oldStringValue.charAt(j) != '9') {
+
+                if (oldStringValue.charAt(j) != '9') {
                     newStringValue = newStringValue.substring(0, j)
                             + String.valueOf(Integer.parseInt(
                                     newStringValue.substring(j, j + 1)) + 1)
                             + newStringValue.substring(j + 1);
                     newValue = 0;
-                } else {
+                } else if (oldStringValue.charAt(j) != '.') {
                     newStringValue = newStringValue.substring(0, j) + "0"
                             + newStringValue.substring(j + 1);
                 }
@@ -871,32 +869,40 @@ public class Wheelswitch extends JPanel {
                 int indexOfE = oldStringValue.indexOf('E');
 
                 if (i > indexOfE) {
-                    if (oldStringValue.charAt(indexOfE + 1) == '+') {
-                        newStringValue = newStringValue.substring(0,
-                                indexOfE + 1) + "-"
-                                + newStringValue.substring(indexOfE + 2, i) + "1"
-                                + newStringValue.substring(i + 1);
-                    } else if (oldStringValue.charAt(indexOfE + 1) == '-') {
-                        newStringValue = newStringValue.substring(0,
-                                indexOfE + 1) + "+"
-                                + newStringValue.substring(indexOfE + 2, i) + "1"
-                                + newStringValue.substring(i + 1);
-                    } else {
-                        newStringValue = newStringValue.substring(0,
-                                indexOfE + 1) + "-"
-                                + newStringValue.substring(indexOfE + 1, i) + "1"
-                                + newStringValue.substring(i + 1);
+                    switch (oldStringValue.charAt(indexOfE + 1)) {
+                        case '+':
+                            newStringValue = newStringValue.substring(0,
+                                    indexOfE + 1) + "-"
+                                    + newStringValue.substring(indexOfE + 2, i) + "1"
+                                    + newStringValue.substring(i + 1);
+                            break;
+                        case '-':
+                            newStringValue = newStringValue.substring(0,
+                                    indexOfE + 1) + "+"
+                                    + newStringValue.substring(indexOfE + 2, i) + "1"
+                                    + newStringValue.substring(i + 1);
+                            break;
+                        default:
+                            newStringValue = newStringValue.substring(0,
+                                    indexOfE + 1) + "-"
+                                    + newStringValue.substring(indexOfE + 1, i) + "1"
+                                    + newStringValue.substring(i + 1);
+                            break;
                     }
                 } else {
-                    if (oldStringValue.charAt(0) == '+') {
-                        newStringValue = "-" + newStringValue.substring(1, i)
-                                + "1" + newStringValue.substring(i + 1);
-                    } else if (oldStringValue.charAt(0) == '-') {
-                        newStringValue = "+" + newStringValue.substring(1, i)
-                                + "1" + newStringValue.substring(i + 1);
-                    } else {
-                        newStringValue = "-" + newStringValue.substring(0, i)
-                                + "1" + newStringValue.substring(i + 1);
+                    switch (oldStringValue.charAt(0)) {
+                        case '+':
+                            newStringValue = "-" + newStringValue.substring(1, i)
+                                    + "1" + newStringValue.substring(i + 1);
+                            break;
+                        case '-':
+                            newStringValue = "+" + newStringValue.substring(1, i)
+                                    + "1" + newStringValue.substring(i + 1);
+                            break;
+                        default:
+                            newStringValue = "-" + newStringValue.substring(0, i)
+                                    + "1" + newStringValue.substring(i + 1);
+                            break;
                     }
                 }
             }
@@ -1212,9 +1218,7 @@ public class Wheelswitch extends JPanel {
                 digitPosition += exponent;
             }
 
-            if ((expIndex != -1) && (digitPosition >= expIndex)) {
-                return Integer.MAX_VALUE;
-            } else if (digitPosition >= dgts.length()) {
+            if ((expIndex != -1) && (digitPosition >= expIndex) || digitPosition >= dgts.length()) {
                 return Integer.MAX_VALUE;
             }
         }
@@ -1245,10 +1249,7 @@ public class Wheelswitch extends JPanel {
         if (oldString.indexOf("E") != newString.indexOf("E")) {
             return false;
         }
-        if (oldString.indexOf("e") != newString.indexOf("e")) {
-            return false;
-        }
-        return true;
+        return oldString.indexOf("e") == newString.indexOf("e");
     }
 
     private void process(String oldStringValue, String newStringValue) {

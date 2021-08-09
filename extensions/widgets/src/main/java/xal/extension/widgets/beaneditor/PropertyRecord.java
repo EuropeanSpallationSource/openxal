@@ -1,18 +1,22 @@
 package xal.extension.widgets.beaneditor;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Wraps a property for display as a record in a table
  */
 public class PropertyRecord {
 
+    private static final Logger LOGGER = Logger.getLogger(PropertyRecord.class.getName());
     /**
      * wrapped property
      */
-    private final EditableProperty PROPERTY;
+    private final EditableProperty property;
 
     /**
      * current value which may be pending
@@ -28,7 +32,7 @@ public class PropertyRecord {
      * Constructor
      */
     public PropertyRecord(final EditableProperty property) {
-        PROPERTY = property;
+        this.property = property;
 
         // initialize the value and status from the underlying property
         revert();
@@ -38,14 +42,14 @@ public class PropertyRecord {
      * name of the property
      */
     public String getName() {
-        return PROPERTY.getName();
+        return property.getName();
     }
 
     /**
      * Get the path to this property
      */
     public String getPath() {
-        return PROPERTY.getPath();
+        return property.getPath();
     }
 
     /**
@@ -59,7 +63,7 @@ public class PropertyRecord {
      * Get the property type
      */
     public Class<?> getPropertyType() {
-        return PROPERTY.getPropertyType();
+        return property.getPropertyType();
     }
 
     /**
@@ -77,7 +81,7 @@ public class PropertyRecord {
             this.value = value;
 
             // get the property's current value
-            final Object propertyValue = PROPERTY.getValue();
+            final Object propertyValue = property.getValue();
 
             // if the value is really different from the property's current value then mark it as having changes
             // if the value is null then look for strict equality otherwise compare using equals
@@ -111,8 +115,8 @@ public class PropertyRecord {
                 final Object objectValue = toObjectOfType(value, type);
                 setValue(objectValue);
             } catch (Exception exception) {
-                System.err.println("Exception: " + exception);
-                System.err.println("Error parsing the value: " + value + " as " + rawType);
+                LOGGER.log(Level.WARNING, "Exception: ", exception);
+                LOGGER.log(Level.WARNING, "Error parsing the value: {0} as {1}", new Object[]{value, rawType});
             }
         }
     }
@@ -125,7 +129,7 @@ public class PropertyRecord {
             // every wrapper class has a static method named "valueOf" that takes a String and returns a corresponding instance of the wrapper
             final Method converter = type.getMethod("valueOf", String.class);
             return converter.invoke(null, stringValue);
-        } catch (Exception exception) {
+        } catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException exception) {
             throw new RuntimeException("No match to parse string: " + stringValue + " as " + type);
         }
     }
@@ -141,7 +145,7 @@ public class PropertyRecord {
      * only primitive properties are editable
      */
     public boolean isEditable() {
-        return PROPERTY.isPrimitive();
+        return property.isPrimitive();
     }
 
     /**
@@ -166,7 +170,7 @@ public class PropertyRecord {
      */
     public void revert() {
         // the value is only meaningful for primitive properties (only thing we want to display)
-        value = PROPERTY.isPrimitive() ? PROPERTY.getValue() : null;
+        value = property.isPrimitive() ? property.getValue() : null;
         hasChanges = false;
     }
 
@@ -184,7 +188,7 @@ public class PropertyRecord {
      * publish the pending value to the underlying property
      */
     public void publish() {
-        PROPERTY.setValue(value);
+        property.setValue(value);
         hasChanges = false;
     }
 
@@ -192,7 +196,7 @@ public class PropertyRecord {
      * Get the units
      */
     public String getUnits() {
-        return PROPERTY.getUnits();
+        return property.getUnits();
     }
 
     /**

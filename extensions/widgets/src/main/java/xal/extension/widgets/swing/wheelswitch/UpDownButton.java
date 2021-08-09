@@ -4,8 +4,6 @@
 package xal.extension.widgets.swing.wheelswitch;
 
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JComponent;
 import javax.swing.event.ChangeEvent;
@@ -43,23 +41,17 @@ public class UpDownButton extends JComponent {
         bn.setFocusable(false);
         bn.setEnabled(isEnabled());
         bn.setBackground(ColorHelper.getCosyControl());
-        bn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                value = UP_PRESSED;
-                fireUpDownChanged();
-            }
+        bn.addActionListener(e -> {
+            value = UP_PRESSED;
+            fireUpDownChanged();
         });
         ArrowButton bs = new ArrowButton(ArrowButton.Orientation.DOWN);
         bs.setFocusable(false);
         bs.setEnabled(isEnabled());
         bs.setBackground(ColorHelper.getCosyControl());
-        bs.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                value = DOWN_PRESSED;
-                fireUpDownChanged();
-            }
+        bs.addActionListener(e -> {
+            value = DOWN_PRESSED;
+            fireUpDownChanged();
         });
         add(bn);
         add(bs);
@@ -143,5 +135,4 @@ public class UpDownButton extends JComponent {
         getComponent(0).setEnabled(arg0);
         getComponent(1).setEnabled(arg0);
     }
-
 }

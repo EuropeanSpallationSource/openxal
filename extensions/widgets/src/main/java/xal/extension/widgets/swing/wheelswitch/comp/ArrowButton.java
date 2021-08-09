@@ -33,7 +33,7 @@ public class ArrowButton extends SimpleButton {
 
     private static final long serialVersionUID = 1L;
 
-    public static enum Orientation {
+    public enum Orientation {
         UP, DOWN, LEFT, RIGHT;
     }
 

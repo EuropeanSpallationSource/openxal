@@ -48,9 +48,12 @@ public class GraphDataOperations {
         Double intersPoints = null;
 
         Double[] intersArr;
-        double xInters = 0.0, yInters = 0.0;
-        double xInterS = 0.0, yInterS = 0.0;
-        double xInterS2 = 0.0, yInterS2 = 0.0;
+        double xInters = 0.0;
+        double yInters = 0.0;
+        double xInterS = 0.0;
+        double yInterS = 0.0;
+        double xInterS2 = 0.0;
+        double yInterS2 = 0.0;
         int nPoints = 0;
         int nCount = 0;
         synchronized (gdV) {
@@ -165,12 +168,12 @@ public class GraphDataOperations {
         double yInterS = 0.0;
         double xInterS2 = 0.0;
         double yInterS2 = 0.0;
-        double xInter = 0.0;
-        double yInter = 0.0;
+        double xInter;
+        double yInter;
         int nCount = 0;
-        double xc0 = xMin;
-        double xc1 = xMax;
-        double signD = 0.;
+        double xc0;
+        double xc1;
+        double signD;
         int nGraphPoints1 = gd1.getNumbOfPoints();
         if (nGraphPoints1 > 1
                 && xMin < xMax
@@ -178,7 +181,8 @@ public class GraphDataOperations {
                 && xMax > gd1.getX(0)) {
 
             //check the left and right points
-            int ind0 = 0, ind1 = nGraphPoints1 - 1;
+            int ind0 = 0;
+            int ind1 = nGraphPoints1 - 1;
             while (xMin > gd1.getX(ind0) && ind0 < (nGraphPoints1 - 1)) {
                 ind0++;
             }
@@ -302,7 +306,8 @@ public class GraphDataOperations {
         Double intersX = null;
         Double intersY = null;
         Double[] intersArr;
-        double xInter = 0.0, yInter = 0.0;
+        double xInter = 0.0;
+        double yInter = 0.0;
         int nCount = 0;
 
         int nIterMax = 50;
@@ -311,14 +316,13 @@ public class GraphDataOperations {
         double sign0 = gd1.getValueY(xMin) - gd2.getValueY(xMin);
         double sign1 = gd1.getValueY(xMax) - gd2.getValueY(xMax);
         if (sign0 * sign1 <= 0.) {
-            double sign = 0.;
+            double sign;
             double x = 0.;
             while (Math.abs(xMin - xMax) > eps && nIter < nIterMax) {
                 x = (xMin + xMax) / 2.0;
                 sign = gd1.getValueY(x) - gd2.getValueY(x);
                 if (sign * sign0 <= 0.) {
                     xMax = x;
-                    sign1 = gd1.getValueY(x) - gd2.getValueY(x);
                 } else {
                     xMin = x;
                     sign0 = gd1.getValueY(x) - gd2.getValueY(x);
@@ -417,13 +421,17 @@ public class GraphDataOperations {
         if (coeff == null) {
             return;
         }
-        double x, y, x0, x1, step;
+        double x;
+        double y;
+        double x0;
+        double x1;
+        double step;
         int nTotalPoints = (nInterP + 1) * (gdSource.getNumbOfPoints() - 1) + 1;
         if (nTotalPoints <= 0) {
             return;
         }
-        double[] x_arr = new double[nTotalPoints];
-        double[] y_arr = new double[nTotalPoints];
+        double[] xArr = new double[nTotalPoints];
+        double[] yArr = new double[nTotalPoints];
         int iCount = 0;
         for (int i = 0, n = gdSource.getNumbOfPoints() - 1; i < n; i++) {
             x0 = gdSource.getX(i);
@@ -432,30 +440,29 @@ public class GraphDataOperations {
             for (int j = 0; j < nInterP + 1; j++) {
                 x = x0 + j * step;
                 y = polynom(x, coeff[0]);
-                x_arr[iCount] = x;
-                y_arr[iCount] = y;
+                xArr[iCount] = x;
+                yArr[iCount] = y;
                 iCount++;
             }
         }
         x = gdSource.getX(gdSource.getNumbOfPoints() - 1);
         y = polynom(x, coeff[0]);
-        x_arr[iCount] = x;
-        y_arr[iCount] = y;
-        gdTarget.addPoint(x_arr, y_arr);
+        xArr[iCount] = x;
+        yArr[iCount] = y;
+        gdTarget.addPoint(xArr, yArr);
     }
 
     public static double[][] polynomialFit(BasicGraphData gd, double xMin, double xMax, int nOrderIn) {
         if (gd == null) {
-            return null;
+            return new double[0][0];
         }
         if (nOrderIn < 0) {
-            return null;
+            return new double[0][0];
         }
         int nOrder = nOrderIn + 1;
         int nPoints = 0;
         int lowIndex = -1;
-        double x = 0.;
-        double y = 0.;
+        double x;
         for (int i = 0, n = gd.getNumbOfPoints(); i < n; i++) {
             x = gd.getX(i);
             if (x >= xMin && x <= xMax) {
@@ -466,7 +473,7 @@ public class GraphDataOperations {
             }
         }
         if (nPoints < 1) {
-            return null;
+            return new double[0][0];
         }
         if (nPoints < nOrder) {
             nOrder = nPoints;
@@ -521,7 +528,7 @@ public class GraphDataOperations {
         double[][] resCoeff = new double[2][nOrderIn + 1];
 
         if (!reverseMatrix(aTCa)) {
-            return null;
+            return new double[0][0];
         }
 
         for (int i = 0; i < nOrder; i++) {
@@ -551,18 +558,18 @@ public class GraphDataOperations {
             return resCoeff;
         }
 
-        if (nonZeroErr == true) {
+        if (nonZeroErr) {
             return resCoeff;
         }
 
         double totalSigma = 0.;
-        double tmp_sum = 0.;
+        double tmpSum;
         for (int i = 0; i < nPoints; i++) {
-            tmp_sum = 0.;
+            tmpSum = 0.;
             for (int j = 0; j < nOrder; j++) {
-                tmp_sum = tmp_sum + aMatr[i][j] * resCoeff[0][j];
+                tmpSum = tmpSum + aMatr[i][j] * resCoeff[0][j];
             }
-            totalSigma = totalSigma + (yExpArr[i] - tmp_sum) * (yExpArr[i] - tmp_sum);
+            totalSigma = totalSigma + (yExpArr[i] - tmpSum) * (yExpArr[i] - tmpSum);
         }
 
         totalSigma = Math.sqrt(totalSigma / (nPoints - 2));
@@ -605,18 +612,18 @@ public class GraphDataOperations {
         }
         int n = 0;
         double diff = yIn - y;
-        double diff_min = Math.abs(diff);
-        if (diff_min == 0.) {
+        double diffMin = Math.abs(diff);
+        if (diffMin == 0.) {
             return y;
         }
-        double sign = diff / diff_min;
-        int n_curr = n + 1;
-        double diff_min_curr = Math.abs(y + sign * n_curr * 360. - yIn);
-        while (diff_min_curr < diff_min) {
-            n = n_curr;
-            diff_min = Math.abs(y + sign * n * 360. - yIn);
-            n_curr++;
-            diff_min_curr = Math.abs(y + sign * n_curr * 360. - yIn);
+        double sign = diff / diffMin;
+        int nCurr = n + 1;
+        double diffMinCurr = Math.abs(y + sign * nCurr * 360. - yIn);
+        while (diffMinCurr < diffMin) {
+            n = nCurr;
+            diffMin = Math.abs(y + sign * n * 360. - yIn);
+            nCurr++;
+            diffMinCurr = Math.abs(y + sign * nCurr * 360. - yIn);
         }
         return (y + sign * n * 360.);
     }
@@ -642,8 +649,8 @@ public class GraphDataOperations {
             int ind = -1;
             int count = 0;
 
-            double x = 0.;
-            double y = 0.;
+            double x;
+            double y;
 
             int nGraphPoints = gd.getNumbOfPoints();
             for (int i = 0; i < nGraphPoints; i++) {
@@ -669,13 +676,11 @@ public class GraphDataOperations {
             double xMin, double xMax,
             double yMin, double yMax) {
         Vector<BasicGraphData> rezV = new Vector<>();
-        BasicGraphData gd = null;
+        BasicGraphData gd;
         for (int i = 0, n = gdV.size(); i < n; i++) {
             gd = gdV.get(i);
-            if (gd != null) {
-                if (isIntersectRectangle(gd, xMin, xMax, yMin, yMax)) {
-                    rezV.add(gd);
-                }
+            if (gd != null && isIntersectRectangle(gd, xMin, xMax, yMin, yMax)) {
+                rezV.add(gd);
             }
         }
         return rezV;
@@ -687,8 +692,8 @@ public class GraphDataOperations {
     public static boolean isIntersectRectangle(BasicGraphData gd,
             double xMin, double xMax,
             double yMin, double yMax) {
-        double x = 0.;
-        double y = 0.;
+        double x;
+        double y;
         int nGraphPoints = gd.getNumbOfPoints();
         for (int i = 0; i < nGraphPoints; i++) {
             x = gd.getX(i);
@@ -726,7 +731,9 @@ public class GraphDataOperations {
         }
 
         int nPoints = gd.getNumbOfPoints();
-        double x, y, yApp;
+        double x;
+        double y;
+        double yApp;
         for (int i = 0; i < nPoints; i++) {
             x = gd.getX(i);
             y = gd.getY(i);
@@ -746,7 +753,5 @@ public class GraphDataOperations {
         double xMax = GraphDataOperations.getExtremumPosition(gd, -100., +100.);
         LOGGER.log(Level.INFO, "Extremum pos. theoretical={0}", xExtr);
         LOGGER.log(Level.INFO, "max pos={0}", xMax);
-
     }
-
 }

@@ -15,6 +15,8 @@ import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -42,11 +44,12 @@ public class IntegerInputTextField extends JTextField {
     private DecimalFormat format = new DecimalFormat("###");
     private int val = 0;
 
-    private DocumentListener docListener = null;
+    private transient DocumentListener docListener = null;
 
-    private ActionListener innerListener = null;
+    private transient ActionListener innerListener = null;
 
-    private FocusListener innerFocusListener = null;
+    private transient FocusListener innerFocusListener = null;
+    private static final Logger LOGGER = Logger.getLogger(IntegerInputTextField.class.getName());
 
     /**
      * Creates new IntegerInputTextField
@@ -72,6 +75,7 @@ public class IntegerInputTextField extends JTextField {
         try {
             val = Integer.parseInt(text);
         } catch (NumberFormatException exc) {
+            LOGGER.log(Level.WARNING, null, exc);
         }
         setText(format.format(val));
         setListeners();
@@ -86,6 +90,7 @@ public class IntegerInputTextField extends JTextField {
         try {
             val = Integer.parseInt(text);
         } catch (NumberFormatException exc) {
+            LOGGER.log(Level.WARNING, null, exc);
         }
         setText(format.format(val));
         setListeners();
@@ -103,6 +108,7 @@ public class IntegerInputTextField extends JTextField {
         try {
             val = Integer.parseInt(format.format(valIn));
         } catch (NumberFormatException exc) {
+            LOGGER.log(Level.WARNING, null, exc);
         }
         setText(format.format(val));
         setListeners();
@@ -158,6 +164,7 @@ public class IntegerInputTextField extends JTextField {
         try {
             val = Integer.parseInt(format.format(valIn));
         } catch (NumberFormatException exc) {
+            LOGGER.log(Level.WARNING, null, exc);
         }
         setText(format.format(val));
         postActionEvent();
@@ -172,6 +179,7 @@ public class IntegerInputTextField extends JTextField {
         try {
             val = Integer.parseInt(format.format(valIn));
         } catch (NumberFormatException exc) {
+            LOGGER.log(Level.WARNING, null, exc);
         }
         setText(format.format(val));
         setBackground(normalColor);
@@ -264,29 +272,26 @@ public class IntegerInputTextField extends JTextField {
         addMouseListener(mAdpt);
 
         //we need this empty listener to fire action
-        ActionListener emptyListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            }
+        ActionListener emptyListener = e -> {
+            // Do nothing
         };
 
         addActionListener(emptyListener);
 
-        innerListener = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    val = Integer.parseInt(getText());
-                } catch (NumberFormatException exc) {
-                }
-                setText(format.format(val));
-                setBackground(normalColor);
+        innerListener = e -> {
+            try {
+                val = Integer.parseInt(getText());
+            } catch (NumberFormatException exc) {
+                LOGGER.log(Level.WARNING, null, exc);
             }
+            setText(format.format(val));
+            setBackground(normalColor);
         };
 
         innerFocusListener = new FocusListener() {
             @Override
             public void focusGained(FocusEvent e) {
+                // Do nothing
             }
 
             @Override
@@ -297,6 +302,7 @@ public class IntegerInputTextField extends JTextField {
                 try {
                     val = Integer.parseInt(getText());
                 } catch (NumberFormatException exc) {
+                    LOGGER.log(Level.WARNING, null, exc);
                 }
                 setText(format.format(val));
                 setBackground(normalColor);
@@ -325,6 +331,5 @@ public class IntegerInputTextField extends JTextField {
         };
 
         getDocument().addDocumentListener(docListener);
-
     }
 }

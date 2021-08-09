@@ -87,12 +87,12 @@ public class UnwrappedGeneratorGraphData extends BasicGraphData {
         double diffMin = Math.abs(diff);
         double sign = diff / diffMin;
         int nCurr = n + 1;
-        double diff_min_curr = Math.abs(y + sign * nCurr * 360. - yIn);
-        while (diff_min_curr < diffMin) {
+        double diffMinCurr = Math.abs(y + sign * nCurr * 360. - yIn);
+        while (diffMinCurr < diffMin) {
             n = nCurr;
             diffMin = Math.abs(y + sign * n * 360. - yIn);
             nCurr++;
-            diff_min_curr = Math.abs(y + sign * nCurr * 360. - yIn);
+            diffMinCurr = Math.abs(y + sign * nCurr * 360. - yIn);
         }
         return (y + sign * n * 360.);
     }

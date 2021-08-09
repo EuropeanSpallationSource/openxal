@@ -20,7 +20,7 @@ import javax.swing.plaf.metal.MetalLookAndFeel;
  */
 public final class FontHelper {
 
-    private static List<Font> fonts = new ArrayList<Font>();
+    private static List<Font> fonts = new ArrayList<>();
 
     private FontHelper() {
         throw new IllegalStateException("Utility class");

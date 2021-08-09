@@ -62,17 +62,17 @@ public class DateGraphFormat extends NumberFormat {
      * The overridden format method of the NumberFormat class.
      */
     @Override
-    public StringBuffer format(double t_sec, StringBuffer toAppendTo, FieldPosition pos) {
-        return format((long) t_sec, toAppendTo, pos);
+    public StringBuffer format(double tSec, StringBuffer toAppendTo, FieldPosition pos) {
+        return format((long) tSec, toAppendTo, pos);
     }
 
     /**
      * The overridden format method of the NumberFormat class.
      */
     @Override
-    public StringBuffer format(long t_sec, StringBuffer toAppendTo, FieldPosition pos) {
-        long t_l = 1000 * t_sec;
-        return dateFormat.format(new Date(t_l), toAppendTo, pos);
+    public StringBuffer format(long tSec, StringBuffer toAppendTo, FieldPosition pos) {
+        long tL = 1000 * tSec;
+        return dateFormat.format(new Date(tL), toAppendTo, pos);
     }
 
     /**
