@@ -17,17 +17,11 @@ public class SolverLSM implements FitSolver {
     private int[] indArr = new int[0];
     private double[] errArr = new double[0];
 
-    private double[][] ATWA = new double[0][0];
+    private double[][] atwa = new double[0][0];
 
-    private double[] ATWY = new double[0];
+    private double[] atwy = new double[0];
 
-    private double[] W = new double[0];
-
-    /**
-     * Constructor for the SolverLSM object
-     */
-    public SolverLSM() {
-    }
+    private double[] w = new double[0];
 
     /**
      * Solve the fitting problem.
@@ -47,7 +41,7 @@ public class SolverLSM implements FitSolver {
 
         int na = 0;
         for (int i = 0; i < iniArr.length; i++) {
-            if (useArr[i] == true) {
+            if (useArr[i]) {
                 na++;
             }
         }
@@ -56,14 +50,14 @@ public class SolverLSM implements FitSolver {
             a = new double[na];
             indArr = new int[na];
             errArr = new double[na];
-            ATWA = new double[na][na];
-            ATWY = new double[na];
+            atwa = new double[na][na];
+            atwy = new double[na];
         }
 
         int count = 0;
         for (int i = 0; i < iniArr.length; i++) {
             errIniArr[i] = 0.;
-            if (useArr[i] == true) {
+            if (useArr[i]) {
                 a[count] = iniArr[i];
                 indArr[count] = i;
                 errArr[count] = 0.;
@@ -76,12 +70,12 @@ public class SolverLSM implements FitSolver {
             return false;
         }
 
-        if (nD != W.length) {
-            W = new double[nD];
+        if (nD != w.length) {
+            w = new double[nD];
         }
 
         for (int i = 0; i < nD; i++) {
-            W[i] = 1.0;
+            w[i] = 1.0;
         }
 
         boolean errExist = true;
@@ -93,18 +87,18 @@ public class SolverLSM implements FitSolver {
             }
         }
 
-        if (errExist == true) {
+        if (errExist) {
             for (int i = 0; i < nD; i++) {
-                W[i] = 1. / (ds.getErrY(i) * ds.getErrY(i));
+                w[i] = 1. / (ds.getErrY(i) * ds.getErrY(i));
             }
         }
 
         //calculation ATWY
         for (int i = 0; i < na; i++) {
-            ATWY[i] = 0.;
+            atwy[i] = 0.;
             for (int j = 0; j < nD; j++) {
-                ATWY[i] += mf.getDerivative(ds.getArrX(j), iniArr, indArr[i])
-                        * W[j]
+                atwy[i] += mf.getDerivative(ds.getArrX(j), iniArr, indArr[i])
+                        * w[j]
                         * (ds.getY(j) - mf.getValue(ds.getArrX(j), iniArr));
             }
         }
@@ -112,35 +106,35 @@ public class SolverLSM implements FitSolver {
         //calculation ATWA
         for (int i = 0; i < na; i++) {
             for (int k = 0; k < na; k++) {
-                ATWA[i][k] = 0.;
+                atwa[i][k] = 0.;
                 for (int j = 0; j < nD; j++) {
-                    ATWA[i][k] += mf.getDerivative(ds.getArrX(j), iniArr, indArr[i])
+                    atwa[i][k] += mf.getDerivative(ds.getArrX(j), iniArr, indArr[i])
                             * mf.getDerivative(ds.getArrX(j), iniArr, indArr[k])
-                            * W[j];
+                            * w[j];
                 }
             }
         }
 
-        boolean res = ArrayMath.invertMatrix(ATWA);
-        if (res != true) {
+        boolean res = ArrayMath.invertMatrix(atwa);
+        if (!res) {
             return false;
         }
 
         for (int i = 0; i < na; i++) {
             for (int k = 0; k < na; k++) {
-                a[i] += ATWA[i][k] * ATWY[k];
+                a[i] += atwa[i][k] * atwy[k];
             }
         }
 
         for (int i = 0; i < na; i++) {
             iniArr[indArr[i]] = a[i];
-            errIniArr[indArr[i]] = Math.sqrt(Math.abs(ATWA[i][i]));
+            errIniArr[indArr[i]] = Math.sqrt(Math.abs(atwa[i][i]));
         }
 
-        if (errExist != true) {
+        if (!errExist) {
             double y2Avg = 0.;
-            double yT = 0.;
-            double yA = 0.;
+            double yT;
+            double yA;
             for (int j = 0; j < nD; j++) {
                 yA = mf.getValue(ds.getArrX(j), iniArr);
                 yT = ds.getY(j);
@@ -180,14 +174,13 @@ public class SolverLSM implements FitSolver {
             }
 
             @Override
-            public double getDerivative(double x, double[] a, int a_index) {
+            public double getDerivative(double x, double[] a, int aIndex) {
                 double res = 1.;
-                for (int i = 0; i < a_index; i++) {
+                for (int i = 0; i < aIndex; i++) {
                     res *= x;
                 }
                 return res;
             }
-
         };
 
         int nPoints = 11;
@@ -195,31 +188,19 @@ public class SolverLSM implements FitSolver {
         double[] yArr = new double[nPoints];
         double[] yErrArr = new double[nPoints];
         double[][] xArr = new double[nPoints][1];
-        double z = 0.;
+        double z;
         for (int i = 0; i < nPoints; i++) {
-            z = i + 1;
+            z = i + 1.;
             xArr[i][0] = z;
             yArr[i] = 1.0 + z + z * z + z * z * z;
             yErrArr[i] = 1.0;
         }
 
-        double[] a = new double[4];
-        a[0] = 0.3;
-        a[1] = 1.0;
-        a[2] = 0.3;
-        a[3] = 0.3;
+        double[] a = new double[]{0.3, 1.0, 0.3, 0.3};
 
-        double[] aErr = new double[4];
-        aErr[0] = 0.;
-        aErr[1] = 0.;
-        aErr[2] = 0.;
-        aErr[3] = 0.;
+        double[] aErr = new double[]{0.0, 0.0, 0.0, 0.0};
 
-        boolean[] mask = new boolean[4];
-        mask[0] = true;
-        mask[1] = true;
-        mask[2] = true;
-        mask[3] = true;
+        boolean[] mask = new boolean[]{true, true, true, true};
 
         DataStore ds = new DataStore(yArr, yErrArr, xArr);
 
@@ -249,7 +230,5 @@ public class SolverLSM implements FitSolver {
         for (int i = 0; i < xArr.length; i++) {
             LOGGER.log(Level.INFO, " {0}  {1}  {2}", new Object[]{xArr[i][0], yArr[i], mf.getValue(xArr[i][0], a)});
         }
-
     }
-
 }

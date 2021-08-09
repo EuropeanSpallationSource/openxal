@@ -22,8 +22,8 @@ import xal.tools.math.GenericVector;
  * A*Y; where the equation is represented by AC=Y. and :
  *
  * (dX, dY)- coordinate arrays for data points m- int for number of data points
- * k-    int for order of poly equation mC-    Matrix for the constant coefficients of
- * equation dR-    correlation coefficient getValue(dx)- returns value of y
+ * k- int for order of poly equation mC- Matrix for the constant coefficients of
+ * equation dR- correlation coefficient getValue(dx)- returns value of y
  * coordinate from equation Correlation()- returns the correlation coefficient
  * as a String Equation()- returns the characteristic equation as a String
  */
@@ -41,16 +41,13 @@ public class PolyLeastsquares {
     /**
      * points to fit
      */
-    private double[] dX, dY;
+    private double[] dX;
+    private double[] dY;
 
     /**
      * equation coefficient vector
      */
     private GenericVector mC;
-    /**
-     * correlation coefficient factor
-     */
-    private double dR;
 
     /**
      * constructor
@@ -69,17 +66,13 @@ public class PolyLeastsquares {
         }
         this.m = dX.length;
         this.k = k;
-        Init();
+        init();
     }
 
     /**
      * Initialize various stuff
      */
-    private void Init() {
-
-        GenericMatrix mA, mAl;
-        GenericVector mY;
-
+    private void init() {
         double[][] dCols = new double[m][k + 1];
 
         for (int i = 0; i < m; i++) {
@@ -87,36 +80,31 @@ public class PolyLeastsquares {
                 dCols[i][j] = Math.pow(dX[i], j);
             }
         }
-        mA = new GenericMatrix(dCols);
-        mY = new GenericVector(dY);
+        GenericMatrix mA = new GenericMatrix(dCols);
+        GenericVector mY = new GenericVector(dY);
 
-        //mAl= mA'mA
-        mAl = mA.transpose().times(mA);
+        GenericMatrix mAl = mA.transpose().times(mA);
         mC = mAl.inverse().times(mA.transpose()).times(mY);
-
-        return;
     }
 
     /**
      * Calculate the predicted y value for an inputed x
      */
     public double getValue(double dX) {
-        double dY = 0;
+        double predY = 0;
 
         for (int j = 0; j < k + 1; j++) {
-            dY += mC.getElem(j) * Math.pow(dX, j);
+            predY += mC.getElem(j) * Math.pow(dX, j);
         }
 
-        return dY;
+        return predY;
     }
 
     /**
      * Find the correlation coefficient for the fit
      */
-    public String Correlation() {
-
+    public String correlation() {
         //dR is the correlation coefficient
-        double dMean, dVarUnexplained, dVarTotal;
         double[] dYfit = new double[m];
 
         //to calculate dYfit:
@@ -129,20 +117,20 @@ public class PolyLeastsquares {
         }
 
         //  calculate square sums:
-        dMean = dY[0] / m;
+        double dMean = dY[0] / m;
         for (int i = 1; i < m; i++) {
             dMean += dY[i] / m;
         }
 
-        dVarUnexplained = Math.pow(dY[0] - dYfit[0], 2);
-        dVarTotal = Math.pow(dY[0] - dMean, 2);
+        double dVarUnexplained = Math.pow(dY[0] - dYfit[0], 2);
+        double dVarTotal = Math.pow(dY[0] - dMean, 2);
         for (int i = 1; i < m; i++) {
             dVarUnexplained += Math.pow(dY[i] - dYfit[i], 2);
             dVarTotal += Math.pow(dY[i] - dMean, 2);
         }
 
         //calculate correlation coefficient:
-        dR = Math.sqrt(1 - dVarUnexplained / dVarTotal);
+        double dR = Math.sqrt(1 - dVarUnexplained / dVarTotal);
 
         //to round it to 4 decimal places
         dR = Math.round(dR * 10000.0) / 10000.0;
@@ -158,7 +146,7 @@ public class PolyLeastsquares {
     /**
      * Return the characteristic equation as a String
      */
-    public String Equation() {
+    public String equation() {
         String eq;
 
         //round the constants to two decimal places

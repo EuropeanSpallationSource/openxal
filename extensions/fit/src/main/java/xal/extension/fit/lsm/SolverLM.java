@@ -26,12 +26,6 @@ public class SolverLM implements FitSolver {
     int totalIterLimit = 30;
 
     /**
-     * Constructor for the SolverLM object
-     */
-    public SolverLM() {
-    }
-
-    /**
      * Solve the fitting problem.
      *
      * @param ds The data for fitting.
@@ -50,7 +44,7 @@ public class SolverLM implements FitSolver {
         int nD = ds.size();
         int count = 0;
         for (int i = 0; i < iniArr.length; i++) {
-            if (useArr[i] == true) {
+            if (useArr[i]) {
                 count++;
             }
         }
@@ -77,17 +71,17 @@ public class SolverLM implements FitSolver {
 
         solution.init(ds, mf, a, useArr);
 
-        double chi2ini = 0.;
-        double chi2new = 0.;
+        double chi2ini;
+        double chi2new;
 
         double chi2Min = 0.;
 
-        double devIni = 0.;
-        double devNew = 0.;
+        double devIni;
+        double devNew;
 
         boolean iStop = false;
         double lambda = lambdaIni;
-        double d = 0.;
+        double d;
 
         int iter = 0;
         int iterTotal = 0;
@@ -281,31 +275,19 @@ public class SolverLM implements FitSolver {
         double[] yArr = new double[nPoints];
         double[] yErrArr = new double[nPoints];
         double[][] xArr = new double[nPoints][1];
-        double z = 0.;
+        double z;
         for (int i = 0; i < nPoints; i++) {
-            z = i + 1;
+            z = i + 1.;
             xArr[i][0] = z;
             yArr[i] = 1.0 + z + z * z + z * z * z;
             yErrArr[i] = 1.0;
         }
 
-        double[] fitArr = new double[4];
-        fitArr[0] = 0.3;
-        fitArr[1] = 1.0;
-        fitArr[2] = 0.3;
-        fitArr[3] = 0.3;
+        double[] fitArr = new double[]{0.3, 1.0, 0.3, 0.3};
 
-        double[] fitErrArr = new double[4];
-        fitErrArr[0] = 0.;
-        fitErrArr[1] = 0.;
-        fitErrArr[2] = 0.;
-        fitErrArr[3] = 0.;
+        double[] fitErrArr = new double[]{0.0, 0.0, 0.0, 0.0};
 
-        boolean[] mask = new boolean[4];
-        mask[0] = true;
-        mask[1] = true;
-        mask[2] = true;
-        mask[3] = true;
+        boolean[] mask = new boolean[]{true, true, true, true};
 
         DataStore ds = new DataStore(yArr, yErrArr, xArr);
 
@@ -349,12 +331,12 @@ public class SolverLM implements FitSolver {
         private int[] indArr = new int[0];
         private double[] errArr = new double[0];
 
-        private double[][] ATWAIni = new double[0][0];
-        private double[][] ATWA = new double[0][0];
+        private double[][] atwaIni = new double[0][0];
+        private double[][] atwa = new double[0][0];
 
-        private double[] ATWY = new double[0];
+        private double[] atwy = new double[0];
 
-        private double[] W = new double[0];
+        private double[] w = new double[0];
 
         private DataStore ds = null;
 
@@ -404,7 +386,7 @@ public class SolverLM implements FitSolver {
 
             int na = 0;
             for (int i = 0; i < iniArr.length; i++) {
-                if (useArr[i] == true) {
+                if (useArr[i]) {
                     na++;
                 }
             }
@@ -413,14 +395,14 @@ public class SolverLM implements FitSolver {
                 a = new double[na];
                 indArr = new int[na];
                 errArr = new double[na];
-                ATWA = new double[na][na];
-                ATWAIni = new double[na][na];
-                ATWY = new double[na];
+                atwa = new double[na][na];
+                atwaIni = new double[na][na];
+                atwy = new double[na];
             }
 
             int count = 0;
             for (int i = 0; i < iniArr.length; i++) {
-                if (useArr[i] == true) {
+                if (useArr[i]) {
                     a[count] = iniArr[i];
                     indArr[count] = i;
                     errArr[count] = 0.;
@@ -429,13 +411,13 @@ public class SolverLM implements FitSolver {
             }
 
             int nD = ds.size();
-            if (nD != W.length) {
-                W = new double[nD];
+            if (nD != w.length) {
+                w = new double[nD];
                 dltArr = new double[nD];
             }
 
             for (int i = 0; i < nD; i++) {
-                W[i] = 1.0;
+                w[i] = 1.0;
             }
 
             errExist = true;
@@ -447,9 +429,9 @@ public class SolverLM implements FitSolver {
                 }
             }
 
-            if (errExist == true) {
+            if (errExist) {
                 for (int i = 0; i < nD; i++) {
-                    W[i] = 1. / (ds.getErrY(i) * ds.getErrY(i));
+                    w[i] = 1. / (ds.getErrY(i) * ds.getErrY(i));
                 }
             }
 
@@ -457,7 +439,7 @@ public class SolverLM implements FitSolver {
             chi2Ini = 0.;
             for (int j = 0; j < nD; j++) {
                 dltArr[j] = ds.getY(j) - mf.getValue(ds.getArrX(j), iniArr);
-                chi2Ini += dltArr[j] * dltArr[j] / W[j];
+                chi2Ini += dltArr[j] * dltArr[j] / w[j];
             }
 
             devAvgIni = 0.;
@@ -467,21 +449,21 @@ public class SolverLM implements FitSolver {
             devAvgIni /= nD;
 
             for (int i = 0; i < na; i++) {
-                ATWY[i] = 0.;
+                atwy[i] = 0.;
                 for (int j = 0; j < nD; j++) {
-                    ATWY[i] += mf.getDerivative(ds.getArrX(j), iniArr, indArr[i])
-                            * W[j] * dltArr[j];
+                    atwy[i] += mf.getDerivative(ds.getArrX(j), iniArr, indArr[i])
+                            * w[j] * dltArr[j];
                 }
             }
 
             //calculation ATWA
             for (int i = 0; i < na; i++) {
                 for (int k = 0; k < na; k++) {
-                    ATWAIni[i][k] = 0.;
+                    atwaIni[i][k] = 0.;
                     for (int j = 0; j < nD; j++) {
-                        ATWAIni[i][k] += mf.getDerivative(ds.getArrX(j), iniArr, indArr[i])
+                        atwaIni[i][k] += mf.getDerivative(ds.getArrX(j), iniArr, indArr[i])
                                 * mf.getDerivative(ds.getArrX(j), iniArr, indArr[k])
-                                * W[j];
+                                * w[j];
                     }
                 }
             }
@@ -500,21 +482,21 @@ public class SolverLM implements FitSolver {
 
             for (int i = 0; i < na; i++) {
                 for (int k = 0; k < na; k++) {
-                    ATWA[i][k] = ATWAIni[i][k];
+                    atwa[i][k] = atwaIni[i][k];
                     if (i == k) {
-                        ATWA[i][k] += lambda;
+                        atwa[i][k] += lambda;
                     }
                 }
             }
 
-            boolean res = ArrayMath.invertMatrix(ATWA);
-            if (res != true) {
+            boolean res = ArrayMath.invertMatrix(atwa);
+            if (!res) {
                 return false;
             }
 
             for (int i = 0; i < na; i++) {
                 for (int k = 0; k < na; k++) {
-                    a[i] += ATWA[i][k] * ATWY[k];
+                    a[i] += atwa[i][k] * atwy[k];
                 }
             }
 
@@ -525,7 +507,7 @@ public class SolverLM implements FitSolver {
             chi2New = 0.;
             for (int j = 0; j < nD; j++) {
                 dltArr[j] = ds.getY(j) - mf.getValue(ds.getArrX(j), newArr);
-                chi2New += dltArr[j] * dltArr[j] / W[j];
+                chi2New += dltArr[j] * dltArr[j] / w[j];
             }
 
             devAvgNew = 0.;
@@ -579,11 +561,7 @@ public class SolverLM implements FitSolver {
          * @param iniArrIn The external Array.
          */
         void setParam(double[] iniArrIn) {
-            int na = a.length;
-
-            for (int i = 0; i < iniArrIn.length; i++) {
-                iniArrIn[i] = newArr[i];
-            }
+            System.arraycopy(newArr, 0, iniArrIn, 0, iniArrIn.length);
         }
 
         /**
@@ -604,12 +582,10 @@ public class SolverLM implements FitSolver {
             }
 
             for (int i = 0; i < na; i++) {
-                for (int k = 0; k < na; k++) {
-                    ATWA[i][k] = ATWAIni[i][k];
-                }
+                System.arraycopy(atwaIni[i], 0, atwa[i], 0, na);
             }
 
-            boolean res = ArrayMath.invertMatrix(ATWA);
+            boolean res = ArrayMath.invertMatrix(atwa);
 
             if (!res) {
                 return;
@@ -617,17 +593,14 @@ public class SolverLM implements FitSolver {
 
             if (errExist) {
                 for (int i = 0; i < na; i++) {
-                    iniArrIn[indArr[i]] = Math.sqrt(Math.abs(ATWA[i][i]));
+                    iniArrIn[indArr[i]] = Math.sqrt(Math.abs(atwa[i][i]));
                 }
             } else {
                 double coeff = Math.sqrt(getChi2new() / (nD - na));
                 for (int i = 0; i < na; i++) {
-                    iniArrIn[indArr[i]] = coeff * Math.sqrt(Math.abs(ATWA[i][i]));
+                    iniArrIn[indArr[i]] = coeff * Math.sqrt(Math.abs(atwa[i][i]));
                 }
             }
-
         }
-
     }
-
 }

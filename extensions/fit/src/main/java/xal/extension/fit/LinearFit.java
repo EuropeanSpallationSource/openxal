@@ -122,7 +122,7 @@ public class LinearFit {
      * Perform a linear fit if the the fit needs to be updated due to newly
      * added data.
      */
-    synchronized protected void performFitIfNeeded() {
+    protected synchronized void performFitIfNeeded() {
         if (needsUpdate) {
             performFit();
         }
@@ -131,7 +131,7 @@ public class LinearFit {
     /**
      * Calculate the slope and intercept.
      */
-    synchronized protected void performFit() {
+    protected synchronized void performFit() {
         final double xMean = xStats.mean();
         final double yMean = yStats.mean();
         final double xyMean = xyStats.mean();

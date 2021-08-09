@@ -56,27 +56,27 @@ public class DoubleSymmetricGaussian {
     /**
      * The "sigma0" parameter
      */
-    public static final String SIGMA = "sigma";
+    public static final String SIGMA_STR = "sigma";
     /**
      * The "amplitude0" parameter
      */
-    public static final String AMP = "amplitude";
+    public static final String AMP_STR = "amplitude";
     /**
      * The "center" parameter
      */
-    public static final String CENTER = "center";
+    public static final String CENTER_STR = "center";
     /**
      * The "center0" parameter
      */
-    public static final String CENTER0 = "center0";
+    public static final String CENTER0_STR = "center0";
     /**
      * The "center1" parameter
      */
-    public static final String CENTER1 = "center1";
+    public static final String CENTER1_STR = "center1";
     /**
      * The "pedestal" parameter
      */
-    public static final String PEDESTAL = "pedestal";
+    public static final String PEDESTAL_STR = "pedestal";
 
     /**
      * Creates a new instance of Gaussian
@@ -89,9 +89,7 @@ public class DoubleSymmetricGaussian {
      * Description of the Method
      */
     private void init() {
-
-        mf
-                = new ModelFunction1D() {
+        mf = new ModelFunction1D() {
 
             @Override
             public double getValue(double x, double[] a) {
@@ -126,13 +124,12 @@ public class DoubleSymmetricGaussian {
                         break;
                     case 4:
                         res = a[1] * (x - a[4]) * Math.exp(-(x - a[4]) * (x - a[4]) / (2.0 * a[0] * a[0])) / (a[0] * a[0]);
-                        ;
+                        break;
+                    default:
                         break;
                 }
-
                 return res;
             }
-
         };
     }
 
@@ -154,17 +151,17 @@ public class DoubleSymmetricGaussian {
      * @return The parameter value
      */
     public double getParameter(String key) {
-        if (key.equals(SIGMA)) {
+        if (key.equals(SIGMA_STR)) {
             return sigma;
-        } else if (key.equals(AMP)) {
+        } else if (key.equals(AMP_STR)) {
             return amp;
-        } else if (key.equals(CENTER0)) {
+        } else if (key.equals(CENTER0_STR)) {
             return center0;
-        } else if (key.equals(CENTER1)) {
+        } else if (key.equals(CENTER1_STR)) {
             return center1;
-        } else if (key.equals(CENTER)) {
+        } else if (key.equals(CENTER_STR)) {
             return (center0 + center1) / 2.0;
-        } else if (key.equals(PEDESTAL)) {
+        } else if (key.equals(PEDESTAL_STR)) {
             return pedestal;
         }
         return 0.;
@@ -177,17 +174,17 @@ public class DoubleSymmetricGaussian {
      * @return The parameter value error
      */
     public double getParameterError(String key) {
-        if (key.equals(SIGMA)) {
+        if (key.equals(SIGMA_STR)) {
             return sigmaErr;
-        } else if (key.equals(AMP)) {
+        } else if (key.equals(AMP_STR)) {
             return ampErr;
-        } else if (key.equals(CENTER)) {
+        } else if (key.equals(CENTER_STR)) {
             return (center0Err + center1Err) / 2.0;
-        } else if (key.equals(CENTER0)) {
+        } else if (key.equals(CENTER0_STR)) {
             return center0Err;
-        } else if (key.equals(CENTER1)) {
+        } else if (key.equals(CENTER1_STR)) {
             return center1Err;
-        } else if (key.equals(PEDESTAL)) {
+        } else if (key.equals(PEDESTAL_STR)) {
             return pedestalErr;
         }
         return 0.;
@@ -201,18 +198,18 @@ public class DoubleSymmetricGaussian {
      * fitting
      */
     public void fitParameter(String key, boolean incl) {
-        if (key.equals(SIGMA)) {
+        if (key.equals(SIGMA_STR)) {
             sigmaIncl = incl;
-        } else if (key.equals(AMP)) {
+        } else if (key.equals(AMP_STR)) {
             ampIncl = incl;
-        } else if (key.equals(CENTER)) {
+        } else if (key.equals(CENTER_STR)) {
             center0Incl = incl;
             center1Incl = incl;
-        } else if (key.equals(CENTER0)) {
+        } else if (key.equals(CENTER0_STR)) {
             center0Incl = incl;
-        } else if (key.equals(CENTER1)) {
+        } else if (key.equals(CENTER1_STR)) {
             center1Incl = incl;
-        } else if (key.equals(PEDESTAL)) {
+        } else if (key.equals(PEDESTAL_STR)) {
             pedestalIncl = incl;
         }
     }
@@ -223,15 +220,15 @@ public class DoubleSymmetricGaussian {
      * @param key The parameter name
      */
     public boolean fitParameter(String key) {
-        if (key.equals(SIGMA)) {
+        if (key.equals(SIGMA_STR)) {
             return sigmaIncl;
-        } else if (key.equals(AMP)) {
+        } else if (key.equals(AMP_STR)) {
             return ampIncl;
-        } else if (key.equals(CENTER0)) {
+        } else if (key.equals(CENTER0_STR)) {
             return center0Incl;
-        } else if (key.equals(CENTER1)) {
+        } else if (key.equals(CENTER1_STR)) {
             return center1Incl;
-        } else if (key.equals(PEDESTAL)) {
+        } else if (key.equals(PEDESTAL_STR)) {
             return pedestalIncl;
         }
         return false;
@@ -244,15 +241,15 @@ public class DoubleSymmetricGaussian {
      * @param val The new parameter value
      */
     public void setParameter(String key, double val) {
-        if (key.equals(SIGMA)) {
+        if (key.equals(SIGMA_STR)) {
             sigma = val;
-        } else if (key.equals(AMP)) {
+        } else if (key.equals(AMP_STR)) {
             amp = val;
-        } else if (key.equals(CENTER0)) {
+        } else if (key.equals(CENTER0_STR)) {
             center0 = val;
-        } else if (key.equals(CENTER1)) {
+        } else if (key.equals(CENTER1_STR)) {
             center1 = val;
-        } else if (key.equals(PEDESTAL)) {
+        } else if (key.equals(PEDESTAL_STR)) {
             pedestal = val;
         }
         updateParams();
@@ -416,7 +413,7 @@ public class DoubleSymmetricGaussian {
         int n = ds.size();
         double yMin = Double.MAX_VALUE;
         double yMax = -Double.MAX_VALUE;
-        double y = 0.;
+        double y;
         for (int i = 0; i < n; i++) {
             y = ds.getY(i);
             if (y > yMax) {
@@ -430,14 +427,13 @@ public class DoubleSymmetricGaussian {
             return false;
         }
         double yLevel = 0.607 * (yMax - yMin) + yMin;
-        int nCross = 0;
+
         double xMin = Double.MAX_VALUE;
         double xMax = -Double.MAX_VALUE;
         int iXMin = -1;
         int iXMax = -1;
         for (int i = 1; i < n; i++) {
             if ((yLevel - ds.getY(i - 1)) * (yLevel - ds.getY(i)) <= 0.) {
-                nCross++;
                 if (xMin > ds.getArrX(i)[0]) {
                     xMin = ds.getArrX(i)[0];
                     iXMin = i;
@@ -503,27 +499,10 @@ public class DoubleSymmetricGaussian {
         pedestalIncl = false;
 
         boolean res = fit(4);
-        if (res == false) {
+        if (!res) {
             return res;
         }
 
-        /**
-         * LOGGER.log(Level.INFO, "Debug s = " +
-         * getParameter(DoubleSymmetricGaussian.SIGMA) + " +- " +
-         * getParameterError(DoubleSymmetricGaussian.SIGMA));
-         * LOGGER.log(Level.INFO, "Debug a = " +
-         * getParameter(DoubleSymmetricGaussian.AMP) + " +- " +
-         * getParameterError(DoubleSymmetricGaussian.AMP));
-         * LOGGER.log(Level.INFO, "Debug c0 = " +
-         * getParameter(DoubleSymmetricGaussian.CENTER0) + " +- " +
-         * getParameterError(DoubleSymmetricGaussian.CENTER0));
-         * LOGGER.log(Level.INFO, "Debug c1 = " +
-         * getParameter(DoubleSymmetricGaussian.CENTER1) + " +- " +
-         * getParameterError(DoubleSymmetricGaussian.CENTER1));
-         * LOGGER.log(Level.INFO, "Debug p = " +
-         * getParameter(DoubleSymmetricGaussian.PEDESTAL) + " +- " +
-         * getParameterError(DoubleSymmetricGaussian.PEDESTAL));
-         */
         sigmaIncl = sigmaInclIni;
         ampIncl = ampInclIni;
         center0Incl = center0InclIni;
@@ -531,11 +510,7 @@ public class DoubleSymmetricGaussian {
         pedestalIncl = pedestalInclIni;
 
         res = fit(1);
-        if (res == false) {
-            return res;
-        }
-
-        return res;
+        return !res;
     }
 
     /**
@@ -569,7 +544,7 @@ public class DoubleSymmetricGaussian {
         double[] xArr = new double[n];
         double[] yArr = new double[n];
 
-        double x = 0.;
+        double x;
         double errLevel = 0.0;
 
         for (int i = 0; i < n; i++) {
@@ -583,17 +558,17 @@ public class DoubleSymmetricGaussian {
 
         gs.setData(xArr, yArr);
 
-        gs.setParameter(DoubleSymmetricGaussian.SIGMA, s * 1.1);
-        gs.setParameter(DoubleSymmetricGaussian.AMP, a * 1.1);
-        gs.setParameter(DoubleSymmetricGaussian.CENTER0, c0 * 0.9);
-        gs.setParameter(DoubleSymmetricGaussian.CENTER1, c1 * 1.1);
-        gs.setParameter(DoubleSymmetricGaussian.PEDESTAL, p * 1.0);
+        gs.setParameter(DoubleSymmetricGaussian.SIGMA_STR, s * 1.1);
+        gs.setParameter(DoubleSymmetricGaussian.AMP_STR, a * 1.1);
+        gs.setParameter(DoubleSymmetricGaussian.CENTER0_STR, c0 * 0.9);
+        gs.setParameter(DoubleSymmetricGaussian.CENTER1_STR, c1 * 1.1);
+        gs.setParameter(DoubleSymmetricGaussian.PEDESTAL_STR, p * 1.0);
 
-        gs.fitParameter(DoubleSymmetricGaussian.SIGMA, true);
-        gs.fitParameter(DoubleSymmetricGaussian.AMP, true);
-        gs.fitParameter(DoubleSymmetricGaussian.CENTER0, true);
-        gs.fitParameter(DoubleSymmetricGaussian.CENTER1, true);
-        gs.fitParameter(DoubleSymmetricGaussian.PEDESTAL, true);
+        gs.fitParameter(DoubleSymmetricGaussian.SIGMA_STR, true);
+        gs.fitParameter(DoubleSymmetricGaussian.AMP_STR, true);
+        gs.fitParameter(DoubleSymmetricGaussian.CENTER0_STR, true);
+        gs.fitParameter(DoubleSymmetricGaussian.CENTER1_STR, true);
+        gs.fitParameter(DoubleSymmetricGaussian.PEDESTAL_STR, true);
 
         LOGGER.log(Level.INFO, "================START================");
         LOGGER.log(Level.INFO, "data error level [%]= {0}", errLevel * 100);
@@ -605,19 +580,17 @@ public class DoubleSymmetricGaussian {
 
         int nIter = 8;
 
-        boolean res = false;
-
         //guess does not work very well 
         //when two peaks are not separated clearly
-        res = gs.guessAndFit();
+        boolean res = gs.guessAndFit();
 
         for (int j = 0; j < nIter; j++) {
             LOGGER.log(Level.INFO, "Main: iteration ={0}  res = {1}", new Object[]{j, res});
-            LOGGER.log(Level.INFO, "Main: s = {0} +- {1}", new Object[]{gs.getParameter(DoubleSymmetricGaussian.SIGMA), gs.getParameterError(DoubleSymmetricGaussian.SIGMA)});
-            LOGGER.log(Level.INFO, "Main: a = {0} +- {1}", new Object[]{gs.getParameter(DoubleSymmetricGaussian.AMP), gs.getParameterError(DoubleSymmetricGaussian.AMP)});
-            LOGGER.log(Level.INFO, "Main: c0  = {0} +- {1}", new Object[]{gs.getParameter(DoubleSymmetricGaussian.CENTER0), gs.getParameterError(DoubleSymmetricGaussian.CENTER0)});
-            LOGGER.log(Level.INFO, "Main: c1  = {0} +- {1}", new Object[]{gs.getParameter(DoubleSymmetricGaussian.CENTER1), gs.getParameterError(DoubleSymmetricGaussian.CENTER1)});
-            LOGGER.log(Level.INFO, "Main: p  = {0} +- {1}", new Object[]{gs.getParameter(DoubleSymmetricGaussian.PEDESTAL), gs.getParameterError(DoubleSymmetricGaussian.PEDESTAL)});
+            LOGGER.log(Level.INFO, "Main: s = {0} +- {1}", new Object[]{gs.getParameter(DoubleSymmetricGaussian.SIGMA_STR), gs.getParameterError(DoubleSymmetricGaussian.SIGMA_STR)});
+            LOGGER.log(Level.INFO, "Main: a = {0} +- {1}", new Object[]{gs.getParameter(DoubleSymmetricGaussian.AMP_STR), gs.getParameterError(DoubleSymmetricGaussian.AMP_STR)});
+            LOGGER.log(Level.INFO, "Main: c0  = {0} +- {1}", new Object[]{gs.getParameter(DoubleSymmetricGaussian.CENTER0_STR), gs.getParameterError(DoubleSymmetricGaussian.CENTER0_STR)});
+            LOGGER.log(Level.INFO, "Main: c1  = {0} +- {1}", new Object[]{gs.getParameter(DoubleSymmetricGaussian.CENTER1_STR), gs.getParameterError(DoubleSymmetricGaussian.CENTER1_STR)});
+            LOGGER.log(Level.INFO, "Main: p  = {0} +- {1}", new Object[]{gs.getParameter(DoubleSymmetricGaussian.PEDESTAL_STR), gs.getParameterError(DoubleSymmetricGaussian.PEDESTAL_STR)});
             res = gs.fit();
         }
 
@@ -629,13 +602,11 @@ public class DoubleSymmetricGaussian {
         nIter = 100;
         java.util.Date start = new java.util.Date();
         for (int j = 0; j < nIter; j++) {
-            res = gs.fit();
+            gs.fit();
         }
         Date stop = new Date();
         double time = (stop.getTime() - start.getTime()) / 1000.;
         time /= nIter;
-        LOGGER.log(Level.INFO, "time for one step [sec] ={ 0}", time);
-
+        LOGGER.log(Level.INFO, "time for one step [sec] = {0}", time);
     }
-
 }

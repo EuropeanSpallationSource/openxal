@@ -47,19 +47,19 @@ public class Gaussian {
     /**
      * The "sigma" parameter
      */
-    public static final String SIGMA = "sigma";
+    public static final String SIGMA_STR = "sigma";
     /**
      * The "amplitude" parameter
      */
-    public static final String AMP = "amplitude";
+    public static final String AMP_STR = "amplitude";
     /**
      * The "center" parameter
      */
-    public static final String CENTER = "center";
+    public static final String CENTER_STR = "center";
     /**
      * The "pedestal" parameter
      */
-    public static final String PEDESTAL = "pedestal";
+    public static final String PEDESTAL_STR = "pedestal";
 
     /**
      * Creates a new instance of Gaussian
@@ -81,18 +81,16 @@ public class Gaussian {
                     return 0.;
                 }
 
-                double res = a[3] + a[1] * Math.exp(-(x - a[2]) * (x - a[2]) / (2.0 * a[0] * a[0]));
-
-                return res;
+                return a[3] + a[1] * Math.exp(-(x - a[2]) * (x - a[2]) / (2.0 * a[0] * a[0]));
             }
 
             @Override
-            public double getDerivative(double x, double[] a, int a_index) {
+            public double getDerivative(double x, double[] a, int aIndex) {
                 double res = 0.;
                 if (a.length != 4) {
                     return 0.;
                 }
-                switch (a_index) {
+                switch (aIndex) {
                     case 0:
                         res = a[1] * (x - a[2]) * (x - a[2]) * Math.exp(-(x - a[2]) * (x - a[2]) / (2.0 * a[0] * a[0])) / (a[0] * a[0] * a[0]);
                         break;
@@ -104,6 +102,9 @@ public class Gaussian {
                         break;
                     case 3:
                         res = 1.0;
+                        break;
+                    default:
+                        break;
                 }
 
                 return res;
@@ -129,13 +130,13 @@ public class Gaussian {
      * @return The parameter value
      */
     public double getParameter(String key) {
-        if (key.equals(SIGMA)) {
+        if (key.equals(SIGMA_STR)) {
             return sigma;
-        } else if (key.equals(AMP)) {
+        } else if (key.equals(AMP_STR)) {
             return amp;
-        } else if (key.equals(CENTER)) {
+        } else if (key.equals(CENTER_STR)) {
             return center;
-        } else if (key.equals(PEDESTAL)) {
+        } else if (key.equals(PEDESTAL_STR)) {
             return pedestal;
         }
         return 0.;
@@ -148,13 +149,13 @@ public class Gaussian {
      * @return The parameter value error
      */
     public double getParameterError(String key) {
-        if (key.equals(SIGMA)) {
+        if (key.equals(SIGMA_STR)) {
             return sigmaErr;
-        } else if (key.equals(AMP)) {
+        } else if (key.equals(AMP_STR)) {
             return ampErr;
-        } else if (key.equals(CENTER)) {
+        } else if (key.equals(CENTER_STR)) {
             return centerErr;
-        } else if (key.equals(PEDESTAL)) {
+        } else if (key.equals(PEDESTAL_STR)) {
             return pedestalErr;
         }
         return 0.;
@@ -168,13 +169,13 @@ public class Gaussian {
      * fitting
      */
     public void fitParameter(String key, boolean incl) {
-        if (key.equals(SIGMA)) {
+        if (key.equals(SIGMA_STR)) {
             sigmaIncl = incl;
-        } else if (key.equals(AMP)) {
+        } else if (key.equals(AMP_STR)) {
             ampIncl = incl;
-        } else if (key.equals(CENTER)) {
+        } else if (key.equals(CENTER_STR)) {
             centerIncl = incl;
-        } else if (key.equals(PEDESTAL)) {
+        } else if (key.equals(PEDESTAL_STR)) {
             pedestalIncl = incl;
         }
     }
@@ -185,13 +186,13 @@ public class Gaussian {
      * @param key The parameter name
      */
     public boolean fitParameter(String key) {
-        if (key.equals(SIGMA)) {
+        if (key.equals(SIGMA_STR)) {
             return sigmaIncl;
-        } else if (key.equals(AMP)) {
+        } else if (key.equals(AMP_STR)) {
             return ampIncl;
-        } else if (key.equals(CENTER)) {
+        } else if (key.equals(CENTER_STR)) {
             return centerIncl;
-        } else if (key.equals(PEDESTAL)) {
+        } else if (key.equals(PEDESTAL_STR)) {
             return pedestalIncl;
         }
         return false;
@@ -204,13 +205,13 @@ public class Gaussian {
      * @param val The new parameter value
      */
     public void setParameter(String key, double val) {
-        if (key.equals(SIGMA)) {
+        if (key.equals(SIGMA_STR)) {
             sigma = val;
-        } else if (key.equals(AMP)) {
+        } else if (key.equals(AMP_STR)) {
             amp = val;
-        } else if (key.equals(CENTER)) {
+        } else if (key.equals(CENTER_STR)) {
             center = val;
-        } else if (key.equals(PEDESTAL)) {
+        } else if (key.equals(PEDESTAL_STR)) {
             pedestal = val;
         }
         updateParams();
@@ -369,7 +370,7 @@ public class Gaussian {
         int n = ds.size();
         double yMin = Double.MAX_VALUE;
         double yMax = -Double.MAX_VALUE;
-        double y = 0.;
+        double y;
         for (int i = 0; i < n; i++) {
             y = ds.getY(i);
             if (y > yMax) {
@@ -383,12 +384,11 @@ public class Gaussian {
             return false;
         }
         double yLevel = 0.607 * (yMax - yMin) + yMin;
-        int n_cross = 0;
+
         double xMin = Double.MAX_VALUE;
         double xMax = -Double.MAX_VALUE;
         for (int i = 1; i < n; i++) {
             if ((yLevel - ds.getY(i - 1)) * (yLevel - ds.getY(i)) <= 0.) {
-                n_cross++;
                 if (xMin > ds.getArrX(i)[0]) {
                     xMin = ds.getArrX(i)[0];
                 }
@@ -406,8 +406,7 @@ public class Gaussian {
         pedestal = Math.min(Math.abs(yMin), Math.abs(yMax));
         amp = (yMax - yMin);
 
-        boolean res = fit();
-        return res;
+        return fit();
     }
 
     /**
@@ -440,49 +439,47 @@ public class Gaussian {
         double[] xArr = new double[n];
         double[] yArr = new double[n];
 
-        double x = 0.;
-        double err_level = 0.05;
+        double x;
+        double errLevel = 0.05;
 
         for (int i = 0; i < n; i++) {
             x = xMin + step * i;
             xArr[i] = x;
             yArr[i] = p + a * Math.exp(-(x - c) * (x - c) / (2. * s * s));
-            yArr[i] = yArr[i] * (1.0 + err_level * 2.0 * (Math.random() - 0.5));
+            yArr[i] = yArr[i] * (1.0 + errLevel * 2.0 * (Math.random() - 0.5));
         }
 
         Gaussian gs = new Gaussian();
 
         gs.setData(xArr, yArr);
 
-        gs.setParameter(Gaussian.SIGMA, s * 1.5);
-        gs.setParameter(Gaussian.AMP, a * 0.9);
-        gs.setParameter(Gaussian.CENTER, c * 1.2);
-        gs.setParameter(Gaussian.PEDESTAL, p * 0.9);
+        gs.setParameter(Gaussian.SIGMA_STR, s * 1.5);
+        gs.setParameter(Gaussian.AMP_STR, a * 0.9);
+        gs.setParameter(Gaussian.CENTER_STR, c * 1.2);
+        gs.setParameter(Gaussian.PEDESTAL_STR, p * 0.9);
 
-        gs.fitParameter(Gaussian.SIGMA, true);
-        gs.fitParameter(Gaussian.AMP, true);
-        gs.fitParameter(Gaussian.CENTER, true);
-        gs.fitParameter(Gaussian.PEDESTAL, true);
+        gs.fitParameter(Gaussian.SIGMA_STR, true);
+        gs.fitParameter(Gaussian.AMP_STR, true);
+        gs.fitParameter(Gaussian.CENTER_STR, true);
+        gs.fitParameter(Gaussian.PEDESTAL_STR, true);
 
         LOGGER.log(Level.INFO, "================START================");
-        LOGGER.log(Level.INFO, "data error level [%]= {0}", err_level * 100);
+        LOGGER.log(Level.INFO, "data error level [%]= {0}", errLevel * 100);
         LOGGER.log(Level.INFO, "Main ini: s = {0}", s);
         LOGGER.log(Level.INFO, "Main ini: a = {0}", a);
         LOGGER.log(Level.INFO, "Main ini: c = {0}", c);
         LOGGER.log(Level.INFO, "Main ini: p = {0}", p);
 
-        int n_iter = 8;
+        int nIter = 8;
 
-        boolean res = false;
+        boolean res = gs.guessAndFit();
 
-        res = gs.guessAndFit();
-
-        for (int j = 0; j < n_iter; j++) {
+        for (int j = 0; j < nIter; j++) {
             LOGGER.log(Level.INFO, "Main: iteration = {0}  res = {1}", new Object[]{j, res});
-            LOGGER.log(Level.INFO, "Main: s = {0} +- {1}", new Object[]{gs.getParameter(Gaussian.SIGMA), gs.getParameterError(Gaussian.SIGMA)});
-            LOGGER.log(Level.INFO, "Main: a = {0} +- {1}", new Object[]{gs.getParameter(Gaussian.AMP), gs.getParameterError(Gaussian.AMP)});
-            LOGGER.log(Level.INFO, "Main: c = {0} +- {1}", new Object[]{gs.getParameter(Gaussian.CENTER), gs.getParameterError(Gaussian.CENTER)});
-            LOGGER.log(Level.INFO, "Main: p = {0} +- {1}", new Object[]{gs.getParameter(Gaussian.PEDESTAL), gs.getParameterError(Gaussian.PEDESTAL)});
+            LOGGER.log(Level.INFO, "Main: s = {0} +- {1}", new Object[]{gs.getParameter(Gaussian.SIGMA_STR), gs.getParameterError(Gaussian.SIGMA_STR)});
+            LOGGER.log(Level.INFO, "Main: a = {0} +- {1}", new Object[]{gs.getParameter(Gaussian.AMP_STR), gs.getParameterError(Gaussian.AMP_STR)});
+            LOGGER.log(Level.INFO, "Main: c = {0} +- {1}", new Object[]{gs.getParameter(Gaussian.CENTER_STR), gs.getParameterError(Gaussian.CENTER_STR)});
+            LOGGER.log(Level.INFO, "Main: p = {0} +- {1}", new Object[]{gs.getParameter(Gaussian.PEDESTAL_STR), gs.getParameterError(Gaussian.PEDESTAL_STR)});
             res = gs.fit();
         }
 
@@ -491,16 +488,14 @@ public class Gaussian {
             LOGGER.log(Level.INFO, "i={0} x={1} y_ini={2} model={3}", new Object[]{i, x, yArr[i], gs.getValue(x)});
         }
 
-        n_iter = 100;
+        nIter = 100;
         java.util.Date start = new java.util.Date();
-        for (int j = 0; j < n_iter; j++) {
-            res = gs.fit();
+        for (int j = 0; j < nIter; j++) {
+            gs.fit();
         }
         java.util.Date stop = new java.util.Date();
         double time = (stop.getTime() - start.getTime()) / 1000.;
-        time /= n_iter;
+        time /= nIter;
         LOGGER.log(Level.INFO, "time for one step [sec] ={0}", time);
-
     }
-
 }

@@ -28,11 +28,11 @@ public abstract class ModelFunction1D implements ModelFunction {
      *
      * @param x The value of independent variable
      * @param a The array with set of parameters that should be found
-     * @param a_index The index of parameters for which the derivative is
+     * @param aIndex The index of parameters for which the derivative is
      * calculated
      * @return The value of the function
      */
-    public abstract double getDerivative(double x, double[] a, int a_index);
+    public abstract double getDerivative(double x, double[] a, int aIndex);
 
     /**
      * Returns the value of the model function for the particular set of
@@ -54,12 +54,12 @@ public abstract class ModelFunction1D implements ModelFunction {
      *
      * @param x The array with the set of independent variables
      * @param a The array with set of parameters that should be found
-     * @param a_index The index of parameters for which the derivative is
+     * @param aIndex The index of parameters for which the derivative is
      * calculated
      * @return The value of the function
      */
     @Override
-    public final double getDerivative(double[] x, double[] a, int a_index) {
-        return getDerivative(x[0], a, a_index);
+    public final double getDerivative(double[] x, double[] a, int aIndex) {
+        return getDerivative(x[0], a, aIndex);
     }
 }

@@ -65,10 +65,10 @@ public class Polynomial {
             @Override
             public double getValue(double x, double[] a) {
                 double res = 0.;
-                double x_pow = 1.;
+                double xPow = 1.;
                 for (int i = 0; i < a.length; i++) {
-                    res += x_pow * a[i];
-                    x_pow *= x;
+                    res += xPow * a[i];
+                    xPow *= x;
                 }
                 return res;
             }
@@ -243,11 +243,11 @@ public class Polynomial {
      *
      * @param x The x value
      * @param y The y value
-     * @param y_err The error of the y value
+     * @param yErr The error of the y value
      */
-    public void addData(double x, double y, double y_err) {
+    public void addData(double x, double y, double yErr) {
         xTmp[0] = x;
-        ds.addRecord(y, y_err, xTmp);
+        ds.addRecord(y, yErr, xTmp);
     }
 
     /**
@@ -257,8 +257,7 @@ public class Polynomial {
      */
     public boolean fit() {
         setToZero();
-        boolean res = solver.solve(ds, mf, a, errArr, mask);
-        return res;
+        return solver.solve(ds, mf, a, errArr, mask);
     }
 
     /**
@@ -306,12 +305,12 @@ public class Polynomial {
         boolean res = solver.solve(dsTmp, mf, tmpArr, errTmpArr, maskTmp);
 
         //shift x and y back 
-        if (res != false) {
+        if (res) {
             for (int j = 0; j < a.length; j++) {
                 double s = 0.;
                 double s2 = 0.;
                 double x = 1.0;
-                double cij = 0.;
+                double cij;
                 for (int i = j; i < a.length; i++) {
                     cij = fact[i] / (fact[j] * fact[i - j]);
                     s = s + tmpArr[i] * x * cij;
@@ -381,14 +380,12 @@ public class Polynomial {
         if (a.length <= 0) {
             return eq;
         }
-        if (mask[0] == false && a[0] == 0.) {
-        } else {
+        if (mask[0] || a[0] != 0.) {
             eq += "(" + frmtLoc.format(a[0])
                     + " +- " + frmtLoc.format(errArr[0]) + ")";
         }
         for (int i = 1; i < a.length; i++) {
-            if (mask[i] == false && a[i] == 0.) {
-            } else {
+            if (mask[i] || a[i] != 0.) {
                 eq += " + x^" + i
                         + "*(" + frmtLoc.format(a[i])
                         + " +- " + frmtLoc.format(errArr[i]) + ")";
@@ -449,7 +446,5 @@ public class Polynomial {
         }
 
         LOGGER.log(Level.INFO, "eq:{0}", gs.equation());
-
     }
-
 }

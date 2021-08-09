@@ -45,11 +45,15 @@ public class CubicSpline {
     /**
      * work space
      */
-    private double xMin, xMax;
+    private double xMin;
+    private double xMax;
     /**
      * spline coefficient containers
      */
-    private double[] aVal, bVal, cVal, dVal;
+    private double[] aVal;
+    private double[] bVal;
+    private double[] cVal;
+    private double[] dVal;
 
     /* the x xalues of the data points */
     private double[] xVals;
@@ -145,7 +149,9 @@ public class CubicSpline {
      * the parameter rage - set return value = end point
      */
     public double evaluateAt(double xx) {
-        int k, klo, khi;
+        int k;
+        int klo;
+        int khi;
         double dx;
 
         if (xx >= xMax) {
@@ -171,65 +177,19 @@ public class CubicSpline {
         return ((((dVal[k - 1] * dx + cVal[k - 1]) * dx + bVal[k - 1]) * dx) + aVal[k - 1]);
     }
 
-
-    /*  need to convert this from C++ still
-///////////////////////////////////////////////////////////////////////////
-//
-// NAME
-//    CubicSpline::coefs
-//
-// DESCRIPTION
-//    Returns the spline coeficients at a given x value
-//
-// PARAMETERS
-//    xx:              X-value to return coefs at.
-//    x1,a,b,c,d:      Coefs.  f(x) = d dx^3 + c dx^2 + b dx + a; dx = xx - x1
-//
-// RETURNS
-//    Fix at xx.
-//
-///////////////////////////////////////////////////////////////////////////
-
-void CubicSpline::coefs(Real xx, Real &x1, Real &a, Real &b, Real &c, Real &d) const
-{
-register Integer k, klo, khi;
-  
-if (xx >= xMax)
-k = nPoints;
-else if (xx <= xMin)
-k = 1;
-else
-{
-    klo = 1;
-    khi = nPoints + 1;
-    while (khi - klo > 1)
-    {
-        k = (khi + klo) >> 1;
-        if (xVals(k) > xx)
-        khi = k;
-        else
-        klo = k;
-    }
-    k = klo;
-}
-
-x1 = xVals(k);
-a = aVal(k); b = bVal(k); c = cVal(k); d = dVal(k);
-}
-     */
     /**
      * Differentiates a spline in place. After calling this routine, a calls to
      * evaluateAt() return the derivative.
      */
     public void differentiate() {
         double[] iVals = new double[nPoints + 1];
-        int i;
-        double fp0, fpn, dx;
-        CubicSpline temp;
-        fp0 = 0.;
-        fpn = 0.;
 
-        for (i = 0; i < nPoints; i++) {
+        double dx;
+
+        double fp0 = 0.;
+        double fpn = 0.;
+
+        for (int i = 0; i < nPoints; i++) {
             if (i == 0) {
                 fp0 = 2.0 * cVal[0];
             }
@@ -241,9 +201,9 @@ a = aVal(k); b = bVal(k); c = cVal(k); d = dVal(k);
             iVals[i] = bVal[i];
         }
 
-        temp = new CubicSpline(xVals, iVals, fp0, fpn);
+        CubicSpline temp = new CubicSpline(xVals, iVals, fp0, fpn);
 
-        for (i = 0; i < nPoints + 1; i++) {
+        for (int i = 0; i < nPoints + 1; i++) {
             aVal[i] = temp.aVal[i];
             bVal[i] = temp.bVal[i];
             cVal[i] = temp.cVal[i];
@@ -258,12 +218,11 @@ a = aVal(k); b = bVal(k); c = cVal(k); d = dVal(k);
      */
     public void integrate() {
         double[] iVals = new double[nPoints + 1];
-        int i, i1;
+        int i1;
         double dx;
-        CubicSpline temp;
 
         iVals[0] = 0.0;
-        for (i = 1; i < nPoints + 1; i++) {
+        for (int i = 1; i < nPoints + 1; i++) {
             i1 = i - 1;
             dx = xVals[i] - xVals[i1];
             iVals[i] = iVals[i1]
@@ -271,9 +230,9 @@ a = aVal(k); b = bVal(k); c = cVal(k); d = dVal(k);
                     + 6.0 * bVal[i1]) * dx + 12.0 * aVal[i1]) * dx / 12.0;
         }
 
-        temp = new CubicSpline(xVals, iVals, this.xMin, this.xMax);
+        CubicSpline temp = new CubicSpline(xVals, iVals, this.xMin, this.xMax);
 
-        for (i = 0; i < nPoints + 1; i++) {
+        for (int i = 0; i < nPoints + 1; i++) {
             aVal[i] = temp.aVal[i];
             bVal[i] = temp.bVal[i];
             cVal[i] = temp.cVal[i];

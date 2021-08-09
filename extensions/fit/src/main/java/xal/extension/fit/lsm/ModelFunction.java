@@ -26,9 +26,9 @@ public interface ModelFunction {
      *
      * @param x The array with the set of independent variables
      * @param a The array with set of parameters that should be found
-     * @param a_index The index of parameters for which the derivative is
+     * @param aIndex The index of parameters for which the derivative is
      * calculated
      * @return The value of the function
      */
-    public double getDerivative(double[] x, double[] a, int a_index);
+    public double getDerivative(double[] x, double[] a, int aIndex);
 }
