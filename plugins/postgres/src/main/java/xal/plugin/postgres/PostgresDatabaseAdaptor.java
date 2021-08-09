@@ -9,9 +9,6 @@ package xal.plugin.postgres;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import xal.tools.database.ConnectionDictionary;
 import xal.tools.database.DatabaseAdaptor;
@@ -32,38 +29,59 @@ public class PostgresDatabaseAdaptor extends DatabaseAdaptor {
      */
     @Override
     public Array getArray(final String type, final Connection connection, final Object array) throws DatabaseException {
-        List<Object> objectList = new ArrayList<>();
+        Object[] newArray;
 
         if (array instanceof byte[]) {
             byte[] a = (byte[]) array;
-            objectList.addAll(Arrays.asList(a));
+            newArray = new Byte[a.length];
+            for (int j = 0; j < a.length; j++) {
+                newArray[j] = a[j];
+            }
         } else if (array instanceof short[]) {
             short[] a = (short[]) array;
-            objectList.addAll(Arrays.asList(a));
+            newArray = new Short[a.length];
+            for (int j = 0; j < a.length; j++) {
+                newArray[j] = a[j];
+            }
         } else if (array instanceof int[]) {
             int[] a = (int[]) array;
-            objectList.addAll(Arrays.asList(a));
+            newArray = new Integer[a.length];
+            for (int j = 0; j < a.length; j++) {
+                newArray[j] = a[j];
+            }
         } else if (array instanceof long[]) {
             long[] a = (long[]) array;
-            objectList.addAll(Arrays.asList(a));
+            newArray = new Long[a.length];
+            for (int j = 0; j < a.length; j++) {
+                newArray[j] = a[j];
+            }
         } else if (array instanceof float[]) {
             float[] a = (float[]) array;
-            objectList.addAll(Arrays.asList(a));
+            newArray = new Float[a.length];
+            for (int j = 0; j < a.length; j++) {
+                newArray[j] = a[j];
+            }
         } else if (array instanceof double[]) {
             double[] a = (double[]) array;
-            objectList.addAll(Arrays.asList(a));
+            newArray = new Double[a.length];
+            for (int j = 0; j < a.length; j++) {
+                newArray[j] = a[j];
+            }
         } else if (array instanceof boolean[]) {
             boolean[] a = (boolean[]) array;
-            objectList.addAll(Arrays.asList(a));
+            newArray = new Boolean[a.length];
+            for (int j = 0; j < a.length; j++) {
+                newArray[j] = a[j];
+            }
         } else if (array instanceof char[]) {
             char[] a = (char[]) array;
-            objectList.addAll(Arrays.asList(a));
+            newArray = new Character[a.length];
+            for (int j = 0; j < a.length; j++) {
+                newArray[j] = a[j];
+            }
         } else {
-            Object[] a = (Object[]) array;
-            objectList.addAll(Arrays.asList(a));
+            newArray = (Object[]) array;
         }
-
-        Object[] newArray = objectList.toArray(new Object[0]);
 
         try {
             return connection.createArrayOf(type, newArray);
