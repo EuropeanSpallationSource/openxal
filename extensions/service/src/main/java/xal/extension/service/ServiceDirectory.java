@@ -46,12 +46,12 @@ public final class ServiceDirectory {
     /**
      * thread pool
      */
-    private final ExecutorService THREAD_POOL;
+    private final ExecutorService threadPool;
 
     /**
      * coder for encoding and encoding messages for remote transport
      */
-    private final Coder MESSAGE_CODER;
+    private final Coder messageCoder;
 
     /**
      * XML-RPC server used for registering services
@@ -84,10 +84,10 @@ public final class ServiceDirectory {
      * ServiceDirectory constructor.
      */
     public ServiceDirectory() throws ServiceException {
-        THREAD_POOL = Executors.newCachedThreadPool();
-        MESSAGE_CODER = JSONCoder.getInstance();
+        threadPool = Executors.newCachedThreadPool();
+        messageCoder = JSONCoder.getInstance();
 
-        listenerMap = new Hashtable<>();
+        listenerMap = new HashMap<>();
 
         try {
             try {
@@ -180,7 +180,7 @@ public final class ServiceDirectory {
      * Get a list of all data types which are supported for coding and decoding
      */
     public List<String> getSupportedCodingTypes() {
-        return MESSAGE_CODER.getSupportedTypes();
+        return messageCoder.getSupportedTypes();
     }
 
     /**
@@ -191,8 +191,8 @@ public final class ServiceDirectory {
      * @param adaptor translator between the custom type and representation
      * constructs
      */
-    public <CustomType, RepresentationType> void registerCodingType(final Class<CustomType> type, final ConversionAdaptor<CustomType, RepresentationType> adaptor) {
-        MESSAGE_CODER.registerType(type, adaptor);
+    public <C, R> void registerCodingType(final Class<C> type, final ConversionAdaptor<C, R> adaptor) {
+        messageCoder.registerType(type, adaptor);
     }
 
     /**
@@ -204,7 +204,7 @@ public final class ServiceDirectory {
      * @return a new service reference for successful registration and null
      * otherwise.
      */
-    public <ProtocolType> ServiceRef registerService(final Class<ProtocolType> protocol, final String name, final ProtocolType provider) throws ServiceException {
+    public <T> ServiceRef registerService(final Class<T> protocol, final String name, final T provider) throws ServiceException {
         return registerService(protocol, name, provider, new HashMap<>());
     }
 
@@ -218,14 +218,14 @@ public final class ServiceDirectory {
      * @return a new service reference for successful registration and null
      * otherwise.
      */
-    public <ProtocolType> ServiceRef registerService(final Class<ProtocolType> protocol, final String serviceName, final ProtocolType provider, final Map<String, Object> properties) {
+    public <T> ServiceRef registerService(final Class<T> protocol, final String serviceName, final T provider, final Map<String, Object> properties) {
         properties.put(ServiceRef.SERVICE_KEY, serviceName);
 
         final String serviceType = getDefaultType(protocol);
 
         try {
             if (rpcServer == null) {
-                rpcServer = new RpcServer(MESSAGE_CODER);
+                rpcServer = new RpcServer(messageCoder);
                 rpcServer.start();
             }
 
@@ -271,7 +271,7 @@ public final class ServiceDirectory {
     public <T> T getProxy(final Class<T> protocol, final ServiceRef serviceRef) {
         final ServiceInfo info = serviceRef.getServiceInfo();
         final String hostAddress = serviceRef.getHostAddress();
-        return new ClientHandler<>(hostAddress, info.getPort(), serviceRef.getServiceName(), protocol, MESSAGE_CODER).getProxy();
+        return new ClientHandler<>(hostAddress, info.getPort(), serviceRef.getServiceName(), protocol, messageCoder).getProxy();
     }
 
     /**
@@ -346,7 +346,7 @@ public final class ServiceDirectory {
      * @see #addServiceListener
      */
     public ServiceRef[] findServicesWithType(final String serviceType, final long timeout) throws ServiceException {
-        final Map<String, ServiceRef> serviceTable = new Hashtable<>();
+        final Map<String, ServiceRef> serviceTable = new HashMap<>();
 
         final ServiceListener listener = new ServiceListener() {
             @Override
@@ -378,7 +378,7 @@ public final class ServiceDirectory {
             return services;
         } catch (InterruptedException exception) {
             removeServiceListener(listener);
-            LOGGER.log(Level.SEVERE, "Error attempting to find services for service type: " + serviceType, exception);
+            LOGGER.log(Level.SEVERE, exception, () -> "Error attempting to find services for service type: " + serviceType);
         }
 
         return new ServiceRef[0];
@@ -417,13 +417,8 @@ public final class ServiceDirectory {
                  */
                 @Override
                 public void serviceAdded(final ServiceEvent event) {
-                    LOGGER.log(Level.INFO, "Service added: " + event.getName());
-                    THREAD_POOL.execute(new Runnable() {
-                        @Override
-                        public void run() {
-                            event.getDNS().requestServiceInfo(event.getType(), event.getName());
-                        }
-                    });
+                    LOGGER.log(Level.INFO, "Service added: {0}", event.getName());
+                    threadPool.execute(() -> event.getDNS().requestServiceInfo(event.getType(), event.getName()));
                 }
 
                 /**
@@ -434,7 +429,7 @@ public final class ServiceDirectory {
                  */
                 @Override
                 public void serviceRemoved(final ServiceEvent event) {
-                    LOGGER.log(Level.INFO, "Service removed: " + event.getName());
+                    LOGGER.log(Level.INFO, "Service removed: {0}", event.getName());
                     final String type = event.getType();
                     listener.serviceRemoved(ServiceDirectory.this, ServiceRef.getBaseType(type), event.getName());
                 }
@@ -456,7 +451,6 @@ public final class ServiceDirectory {
                 }
             });
         } catch (Exception exception) {
-            LOGGER.log(Level.SEVERE, "Error attempting to add a service listener of service type: " + type, exception);
             throw new ServiceException(exception, "Exception while trying to add a service listener...");
         }
     }
@@ -468,9 +462,9 @@ public final class ServiceDirectory {
      */
     public void removeServiceListener(final ServiceListener listener) {
         final BonjourServiceListenerInfo info = listenerMap.get(listener);
-        final javax.jmdns.ServiceListener bonjourListener = info.LISTENER;
+        final javax.jmdns.ServiceListener bonjourListener = info.listener;
         if (bonjourListener != null) {
-            bonjour.removeServiceListener(info.TYPE, bonjourListener);
+            bonjour.removeServiceListener(info.type, bonjourListener);
         }
     }
 
@@ -544,19 +538,19 @@ public final class ServiceDirectory {
         /**
          * JmDNS type
          */
-        public final String TYPE;
+        public final String type;
 
         /**
          * JmDNS service listener
          */
-        public final javax.jmdns.ServiceListener LISTENER;
+        public final javax.jmdns.ServiceListener listener;
 
         /**
          * Constructor
          */
         public BonjourServiceListenerInfo(final String type, final javax.jmdns.ServiceListener listener) {
-            TYPE = type;
-            LISTENER = listener;
+            this.type = type;
+            this.listener = listener;
         }
     }
 }

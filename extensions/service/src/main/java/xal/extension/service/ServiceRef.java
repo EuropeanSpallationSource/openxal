@@ -92,8 +92,7 @@ public class ServiceRef {
      */
     private static String getHostAddress(final ServiceInfo info) {
         final String[] hostAddresses = info.getHostAddresses();
-        final String hostAddress = hostAddresses != null && hostAddresses.length > 0 ? hostAddresses[0] : null;
-        return hostAddress;
+        return hostAddresses != null && hostAddresses.length > 0 ? hostAddresses[0] : null;
     }
 
     /**
@@ -133,7 +132,7 @@ public class ServiceRef {
      */
     @Override
     public boolean equals(Object other) {
-        return serviceInfo.equals(((ServiceRef) other).serviceInfo);
+        return serviceInfo != null ? serviceInfo.equals(((ServiceRef) other).serviceInfo) : false;
     }
 
     /**

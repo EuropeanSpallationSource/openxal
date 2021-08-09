@@ -23,7 +23,6 @@ import java.util.logging.*;
  *
  * @author tap
  */
-//public class RpcServer extends WebServer {
 public class RpcServer {
 
     private static final Logger LOGGER = Logger.getLogger(RpcServer.class.getName());
@@ -36,32 +35,32 @@ public class RpcServer {
     /**
      * socket which listens for and dispatches remote requests
      */
-    private final ServerSocket SERVER_SOCKET;
+    private final ServerSocket serverSocket;
 
     /**
      * set of active sockets serving remote requests
      */
-    private final Set<Socket> REMOTE_SOCKETS;
+    private final Set<Socket> remoteSockets;
 
     /**
      * remote request handlers keyed by service name
      */
-    private final Map<String, RemoteRequestHandler<?>> REMOTE_REQUEST_HANDLERS;
+    private final Map<String, RemoteRequestHandler<?>> remoteRequestHandlers;
 
     /**
      * coder for encoding and decoding messages for remote transport
      */
-    private final Coder MESSAGE_CODER;
+    private final Coder messageCoder;
 
     /**
      * Constructor
      */
     public RpcServer(final Coder messageCoder) throws java.io.IOException {
-        MESSAGE_CODER = messageCoder;
+        this.messageCoder = messageCoder;
 
-        REMOTE_REQUEST_HANDLERS = new Hashtable<>();
-        SERVER_SOCKET = new ServerSocket(0);
-        REMOTE_SOCKETS = new HashSet<>();
+        remoteRequestHandlers = new HashMap<>();
+        serverSocket = new ServerSocket(0);
+        remoteSockets = new HashSet<>();
 
     }
 
@@ -71,7 +70,7 @@ public class RpcServer {
      * @return The port used by the web server.
      */
     public int getPort() {
-        return SERVER_SOCKET.getLocalPort();
+        return serverSocket.getLocalPort();
     }
 
     /**
@@ -95,23 +94,21 @@ public class RpcServer {
      * appropriate handlers
      */
     public void start() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    while (!SERVER_SOCKET.isClosed()) {
-                        final Socket remoteSocket = SERVER_SOCKET.accept();
-                        remoteSocket.setKeepAlive(true);
-                        synchronized (REMOTE_SOCKETS) {
-                            REMOTE_SOCKETS.add(remoteSocket);
-                        }
-                        processRemoteEvents(remoteSocket);
+        new Thread(() -> {
+            try {
+                while (!serverSocket.isClosed()) {
+                    final Socket remoteSocket = serverSocket.accept();
+                    remoteSocket.setKeepAlive(true);
+                    synchronized (remoteSockets) {
+                        remoteSockets.add(remoteSocket);
                     }
-                } catch (SocketException exception) {
-                    // server being shutdown
-                } catch (IOException exception) {
-                    LOGGER.log(Level.SEVERE, null, exception);
+                    processRemoteEvents(remoteSocket);
                 }
+            } catch (SocketException exception) {
+                // server being shutdown
+                LOGGER.log(Level.INFO, null, exception);
+            } catch (IOException exception) {
+                LOGGER.log(Level.SEVERE, null, exception);
             }
         }).start();
     }
@@ -121,12 +118,12 @@ public class RpcServer {
      */
     public void shutdown() throws IOException {
         // stop establishing new remote sockets
-        SERVER_SOCKET.close();
+        serverSocket.close();
 
         // close the existing remote sockets
         final Set<Socket> sockets = new HashSet<>();
-        synchronized (REMOTE_SOCKETS) {
-            sockets.addAll(REMOTE_SOCKETS);
+        synchronized (remoteSockets) {
+            sockets.addAll(remoteSockets);
         }
         for (final Socket socket : sockets) {
             try {
@@ -137,8 +134,8 @@ public class RpcServer {
         }
 
         // clear the remote sockets
-        synchronized (REMOTE_SOCKETS) {
-            REMOTE_SOCKETS.clear();
+        synchronized (remoteSockets) {
+            remoteSockets.clear();
         }
     }
 
@@ -146,24 +143,24 @@ public class RpcServer {
      * cleanup the remote socket which has been closed
      */
     private void cleanupClosedRemoteSocket(final Socket remoteSocket) {
-        synchronized (REMOTE_SOCKETS) {
-            REMOTE_SOCKETS.remove(remoteSocket);
+        synchronized (remoteSockets) {
+            remoteSockets.remove(remoteSocket);
         }
     }
 
     /**
      * add a handler to associate with the specified service and provider
      */
-    public <ProtocolType> void addHandler(final String serviceName, final Class<ProtocolType> protocol, final ProtocolType provider) {
-        final RemoteRequestHandler<ProtocolType> handler = new RemoteRequestHandler<>(serviceName, protocol, provider);
-        REMOTE_REQUEST_HANDLERS.put(serviceName, handler);
+    public <T> void addHandler(final String serviceName, final Class<T> protocol, final T provider) {
+        final RemoteRequestHandler<T> handler = new RemoteRequestHandler<>(serviceName, protocol, provider);
+        remoteRequestHandlers.put(serviceName, handler);
     }
 
     /**
      * remove the registered handler
      */
     public void removeHandler(final String serviceName) {
-        REMOTE_REQUEST_HANDLERS.remove(serviceName);
+        remoteRequestHandlers.remove(serviceName);
     }
 
     /**
@@ -172,66 +169,63 @@ public class RpcServer {
     // need to cast generic request object to Map
     @SuppressWarnings("unchecked")
     private void processRemoteEvents(final Socket remoteSocket) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (!remoteSocket.isClosed()) {
-                    // process the initial handshake
-                    try {
-                        WebSocketIO.processRequestHandshake(remoteSocket);
-                    } catch (IOException exception) {
-                        throw new RuntimeException("Exception handling handshake", exception);
-                    }
+        new Thread(() -> {
+            if (!remoteSocket.isClosed()) {
+                // process the initial handshake
+                try {
+                    WebSocketIO.processRequestHandshake(remoteSocket);
+                } catch (IOException exception) {
+                    throw new RuntimeException("Exception handling handshake", exception);
+                }
+            }
+
+            // process the messages as they arrive
+            while (!remoteSocket.isClosed()) {
+                String jsonRequest = null;
+                try {
+                    jsonRequest = WebSocketIO.readMessage(remoteSocket);
+                } catch (IOException | WebSocketIO.SocketPrematurelyClosedException exception) {
+                    throw new RemoteClientDroppedException("Session has been closed during read...");
                 }
 
-                // process the messages as they arrive
-                while (!remoteSocket.isClosed()) {
-                    try {
-                        String jsonRequest = null;
-                        try {
-                            jsonRequest = WebSocketIO.readMessage(remoteSocket);
-                        } catch (IOException | WebSocketIO.SocketPrematurelyClosedException exception) {
-                            throw new RemoteClientDroppedException("Session has been closed during read...");
+                try {
+                    final Object requestObject = messageCoder.decode(jsonRequest);
+                    if (requestObject instanceof Map) {
+                        final Map<String, Object> request = (Map<String, Object>) requestObject;
+                        final String message = (String) request.get("message");
+                        final String[] messageParts = decodeRemoteMessage(message);
+                        final String serviceName = messageParts[0];
+                        final String methodName = messageParts[1];
+                        final Number requestID = (Number) request.get("id");
+                        final Object[] params = (Object[]) request.get("params");
+
+                        final RemoteRequestHandler<?> handler = remoteRequestHandlers.get(serviceName);
+                        final EvaluationResult result = handler.evaluateRequest(methodName, params);
+
+                        // methods marked with the OneWay annotation return immediately and do not provide any response
+                        final boolean provideResponse = !result.isOneWay();
+
+                        if (provideResponse) {
+                            final Map<String, Object> response = new HashMap<>();
+                            response.put("result", result.getValue());
+                            response.put("id", requestID);
+                            response.put("error", result.getRuntimeExceptionWrapper());
+
+                            final String jsonResponse = messageCoder.encode(response);
+                            WebSocketIO.sendMessage(remoteSocket, jsonResponse);
                         }
-
-                        final Object requestObject = MESSAGE_CODER.decode(jsonRequest);
-                        if (requestObject instanceof Map) {
-                            final Map<String, Object> request = (Map<String, Object>) requestObject;
-                            final String message = (String) request.get("message");
-                            final String[] messageParts = decodeRemoteMessage(message);
-                            final String serviceName = messageParts[0];
-                            final String methodName = messageParts[1];
-                            final Number requestID = (Number) request.get("id");
-                            final Object[] params = (Object[]) request.get("params");
-
-                            final RemoteRequestHandler<?> handler = REMOTE_REQUEST_HANDLERS.get(serviceName);
-                            final EvaluationResult result = handler.evaluateRequest(methodName, params);
-
-                            // methods marked with the OneWay annotation return immediately and do not provide any response
-                            final boolean provideResponse = !result.isOneWay();
-
-                            if (provideResponse) {
-                                final Map<String, Object> response = new HashMap<>();
-                                response.put("result", result.getValue());
-                                response.put("id", requestID);
-                                response.put("error", result.getRuntimeExceptionWrapper());
-
-                                final String jsonResponse = MESSAGE_CODER.encode(response);
-                                WebSocketIO.sendMessage(remoteSocket, jsonResponse);
-                            }
-                        }
-                    } catch (IOException | RemoteClientDroppedException exception) {
-                        if (!remoteSocket.isClosed()) {
-                            try {
-                                remoteSocket.close();
-                            } catch (IOException closeException) {
-                                LOGGER.log(Level.SEVERE, null, closeException);
-                            }
-                        }
-
-                        cleanupClosedRemoteSocket(remoteSocket);
-                        return;
                     }
+                } catch (IOException | RemoteClientDroppedException exception) {
+                    if (!remoteSocket.isClosed()) {
+                        try {
+                            remoteSocket.close();
+                        } catch (IOException closeException) {
+                            LOGGER.log(Level.SEVERE, null, closeException);
+                        }
+                    }
+
+                    cleanupClosedRemoteSocket(remoteSocket);
+                    return;
                 }
             }
         }).start();
@@ -255,7 +249,7 @@ public class RpcServer {
 /**
  * Handles remote requests
  */
-class RemoteRequestHandler<ProtocolType> {
+class RemoteRequestHandler<T> {
 
     /**
      * primitive type wrappers keyed by type
@@ -263,24 +257,19 @@ class RemoteRequestHandler<ProtocolType> {
     private static final Map<Class<?>, Class<?>> PRIMITIVE_TYPE_WRAPPERS;
 
     /**
-     * identifier of the service
-     */
-    private final String SERVICE_NAME;
-
-    /**
      * protocol of available methods
      */
-    private final Class<ProtocolType> PROTOCOL;
+    private final Class<T> protocol;
 
     /**
      * object to message
      */
-    private final ProtocolType PROVIDER;
+    private final T provider;
 
     /**
      * cache of methods keyed by their signature
      */
-    private final Map<String, Method> METHOD_CACHE;
+    private final Map<String, Method> methodCache;
 
     // static initializer
     static {
@@ -292,18 +281,17 @@ class RemoteRequestHandler<ProtocolType> {
     /**
      * Constructor
      */
-    public RemoteRequestHandler(final String serviceName, final Class<ProtocolType> protocol, final ProtocolType provider) {
-        SERVICE_NAME = serviceName;
-        PROTOCOL = protocol;
-        PROVIDER = provider;
-        METHOD_CACHE = new Hashtable<>();
+    public RemoteRequestHandler(final String serviceName, final Class<T> protocol, final T provider) {
+        this.protocol = protocol;
+        this.provider = provider;
+        methodCache = new HashMap<>();
     }
 
     /**
      * populate the table of primitive type wrappers
      */
     private static Map<Class<?>, Class<?>> populatePrimitiveTypeWrappers() {
-        final Map<Class<?>, Class<?>> table = new Hashtable<>();
+        final Map<Class<?>, Class<?>> table = new HashMap<>();
 
         table.put(Integer.TYPE, Integer.class);
         table.put(Long.TYPE, Long.class);
@@ -331,7 +319,7 @@ class RemoteRequestHandler<ProtocolType> {
         final boolean isOneWay = method.isAnnotationPresent(OneWay.class);
 
         try {
-            final Object value = method.invoke(PROVIDER, methodParams);
+            final Object value = method.invoke(provider, methodParams);
             return new EvaluationResult(value, isOneWay);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
             LOGGER.log(Level.SEVERE, null, exception);
@@ -345,10 +333,10 @@ class RemoteRequestHandler<ProtocolType> {
     private Method getMethod(final String methodName, final Class<?>[] parameterTypes) {
         final String methodSignature = getMethodSignature(methodName, parameterTypes);
 
-        Method method = METHOD_CACHE.get(methodSignature);
+        Method method = methodCache.get(methodSignature);
         if (method == null) {
             method = findMethod(methodName, parameterTypes);
-            METHOD_CACHE.put(methodSignature, method);
+            methodCache.put(methodSignature, method);
         }
         return method;
     }
@@ -374,11 +362,11 @@ class RemoteRequestHandler<ProtocolType> {
      */
     private Method findMethod(final String methodName, final Class<?>[] parameterTypes) {
         try {
-            return PROTOCOL.getMethod(methodName, parameterTypes);
+            return protocol.getMethod(methodName, parameterTypes);
         } catch (NoSuchMethodException exception) {
             try {
-                final Method[] methods = PROTOCOL.getMethods();
-                final List<Method> methodCandidates = new ArrayList<>();
+                final Method[] methods = protocol.getMethods();
+
                 int bestScore = 0;
                 Method bestMethod = null;
                 for (final Method method : methods) {

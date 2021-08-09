@@ -17,6 +17,7 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.lang.reflect.*;
 import java.lang.reflect.Proxy;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,15 +27,13 @@ import java.util.logging.Logger;
  *
  * @author tap
  */
-class ClientHandler<ProxyType> implements InvocationHandler {
-
-    private static final Logger LOGGER = Logger.getLogger(ClientHandler.class.getName());
+class ClientHandler<T> implements InvocationHandler {
 
     /**
      * protocol implemented by the remote service and dispatched through the
      * proxy
      */
-    private final Class<ProxyType> serviceProtocol;
+    private final Class<T> serviceProtocol;
 
     /**
      * name of the remote service
@@ -44,7 +43,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
     /**
      * proxy which forwards invocations to the remote service
      */
-    private final ProxyType proxy;
+    private final T proxy;
 
     /**
      * remote host
@@ -64,8 +63,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
     /**
      * request ID counter is incremented to provide a unique ID for each request
      */
-    private volatile int requestIDCounter;
-
+    private AtomicInteger requestIDCounter;
     /**
      * coder for encoding and decoding messages for remote transport
      */
@@ -81,7 +79,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
      * @param messageCoder coder for encoding and decoding messages for remote
      * transport
      */
-    public ClientHandler(final String host, final int port, final String name, final Class<ProxyType> newProtocol, final Coder messageCoder) {
+    public ClientHandler(final String host, final int port, final String name, final Class<T> newProtocol, final Coder messageCoder) {
         remoteHost = host;
         remotePort = port;
         serviceName = name;
@@ -92,14 +90,14 @@ class ClientHandler<ProxyType> implements InvocationHandler {
 
         messageProcessors = new ConcurrentLinkedQueue<>();
 
-        requestIDCounter = 0;
+        requestIDCounter =  new AtomicInteger(0);
     }
 
     /**
      * Get the next request ID and increment it
      */
     private int getNextRequestID() {
-        return requestIDCounter++;
+        return requestIDCounter.incrementAndGet();
     }
 
     /**
@@ -143,7 +141,7 @@ class ClientHandler<ProxyType> implements InvocationHandler {
      *
      * @return The proxy that will forward requests to the remote service.
      */
-    public ProxyType getProxy() {
+    public T getProxy() {
         return proxy;
     }
 
@@ -154,11 +152,11 @@ class ClientHandler<ProxyType> implements InvocationHandler {
      */
     // we have not choice but to cast since newProxyInstance does not support generics
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private ProxyType createProxy() {
+    private T createProxy() {
         ClassLoader loader = this.getClass().getClassLoader();
         Class[] protocols = new Class[]{serviceProtocol, ServiceState.class};
 
-        return (ProxyType) Proxy.newProxyInstance(loader, protocols, this);
+        return (T) Proxy.newProxyInstance(loader, protocols, this);
     }
 
     /**
@@ -284,7 +282,6 @@ class ClientHandler<ProxyType> implements InvocationHandler {
         } catch (IllegalArgumentException | RemoteMessageException | RemoteServiceDroppedException exception) {
             throw exception;
         } catch (RuntimeException exception) {
-            LOGGER.log(Level.SEVERE, null, exception);
             throw new RuntimeException("Exception performing invocation for remote request.", exception);
         }
     }
@@ -296,7 +293,6 @@ class ClientHandler<ProxyType> implements InvocationHandler {
         try {
             return method.invoke(newServiceState(), args);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
-            LOGGER.log(Level.SEVERE, null, exception);
             throw new RuntimeException("Exception performing local service state call on proxy to remote.", exception);
         }
     }
@@ -484,7 +480,7 @@ class SerialRemoteMessageProcessor {
      */
     // no way to know response Object type at compile time
     @SuppressWarnings("unchecked")
-    private void processRemoteResponse(final PendingResult pendingResult) throws java.net.SocketException, java.io.IOException {
+    private void processRemoteResponse(final PendingResult pendingResult) throws java.io.IOException {
         try {
             final String jsonResponse = WebSocketIO.readMessage(remoteSocket);
             if (jsonResponse != null) {
@@ -549,6 +545,7 @@ class SerialRemoteMessageProcessor {
                 try {
                     remoteSocket.close();
                 } catch (IOException closeException) {
+                    LOGGER.log(Level.INFO, null, closeException);
                 }
             }
             if (hasResponse) {

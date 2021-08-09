@@ -19,19 +19,19 @@ import xal.tools.dispatch.DispatchQueue;
  * RemoteDataCache is a utility for managing calls to remote services to avoid
  * deadlock if a service is down.
  */
-public class RemoteDataCache<DataType> {
+public class RemoteDataCache<T> {
 
     private static final Logger LOGGER = Logger.getLogger(RemoteDataCache.class.getName());
 
     /**
      * remote operation to perform
      */
-    private final Callable<DataType> REMOTE_OPERATION;
+    private final Callable<T> remoteOperation;
 
     /**
      * latest data that has been cached
      */
-    protected volatile RemoteData<DataType> cachedData;
+    protected volatile RemoteData<T> cachedData;
 
     /**
      * indicates whether the remote service is connected
@@ -51,15 +51,15 @@ public class RemoteDataCache<DataType> {
     /**
      * Constructor
      */
-    public RemoteDataCache(final Callable<DataType> remoteOperation) {
+    public RemoteDataCache(final Callable<T> remoteOperation) {
         this(remoteOperation, null);
     }
 
     /**
      * Primary Constructor
      */
-    public RemoteDataCache(final Callable<DataType> remoteOperation, final UpdateListener updateHandler) {
-        REMOTE_OPERATION = remoteOperation;
+    public RemoteDataCache(final Callable<T> remoteOperation, final UpdateListener updateHandler) {
+        this.remoteOperation = remoteOperation;
 
         updateListener = updateHandler;
 
@@ -98,15 +98,15 @@ public class RemoteDataCache<DataType> {
      * Get the timestamp of the last fetch
      */
     public Date getTimestamp() {
-        final RemoteData<DataType> newCachedData = this.cachedData;
+        final RemoteData<T> newCachedData = this.cachedData;
         return newCachedData != null ? newCachedData.getTimestamp() : null;
     }
 
     /**
      * Fetch the value and cache it for future requests
      */
-    public DataType getValue() {
-        final RemoteData<DataType> newCachedData = this.cachedData;
+    public T getValue() {
+        final RemoteData<T> newCachedData = this.cachedData;
 
         if (newCachedData == null) {
             refresh();
@@ -128,26 +128,23 @@ public class RemoteDataCache<DataType> {
     private void fetchData() {
         isFetchPending = true;
 
-        DispatchQueue.getGlobalDefaultPriorityQueue().dispatchAsync(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final DataType result = REMOTE_OPERATION.call();
-                    cachedData = new RemoteData<>(result);
-                } catch (RemoteServiceDroppedException exception) {
-                    cachedData = null;
-                    isConnected = false;
-                } catch (Exception exception) {
-                    LOGGER.log(Level.SEVERE, null, exception);
-                    cachedData = null;
-                } finally {
-                    isFetchPending = false;
+        DispatchQueue.getGlobalDefaultPriorityQueue().dispatchAsync(() -> {
+            try {
+                final T result = remoteOperation.call();
+                cachedData = new RemoteData<>(result);
+            } catch (RemoteServiceDroppedException exception) {
+                cachedData = null;
+                isConnected = false;
+            } catch (Exception exception) {
+                LOGGER.log(Level.SEVERE, null, exception);
+                cachedData = null;
+            } finally {
+                isFetchPending = false;
 
-                    // if there is an update listener, notify it of the updated value
-                    final UpdateListener updateHandler = updateListener;
-                    if (updateHandler != null) {
-                        updateHandler.observedUpdate(RemoteDataCache.this);
-                    }
+                // if there is an update listener, notify it of the updated value
+                final UpdateListener updateHandler = updateListener;
+                if (updateHandler != null) {
+                    updateHandler.observedUpdate(RemoteDataCache.this);
                 }
             }
         });
@@ -157,12 +154,12 @@ public class RemoteDataCache<DataType> {
 /**
  * data from a remote fetch
  */
-class RemoteData<DataType> {
+class RemoteData<T> {
 
     /**
      * latest data that has been cached
      */
-    private final DataType value;
+    private final T value;
 
     /**
      * time of the last fetch from which the expiration should be measured
@@ -172,7 +169,7 @@ class RemoteData<DataType> {
     /**
      * Primary Constructor
      */
-    public RemoteData(final DataType value, final Date timestamp) {
+    public RemoteData(final T value, final Date timestamp) {
         this.value = value;
         fetchTimestamp = timestamp;
     }
@@ -180,14 +177,14 @@ class RemoteData<DataType> {
     /**
      * Constructor
      */
-    public RemoteData(final DataType value) {
+    public RemoteData(final T value) {
         this(value, new Date());
     }
 
     /**
      * get the value
      */
-    public DataType getValue() {
+    public T getValue() {
         return value;
     }
 

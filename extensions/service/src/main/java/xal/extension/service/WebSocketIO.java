@@ -10,7 +10,7 @@ package xal.extension.service;
 import java.net.Socket;
 import java.io.*;
 import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.*;
 import java.util.*;
 import java.util.logging.Level;
@@ -38,7 +38,7 @@ class WebSocketIO {
      * Send the handshake (from the client) generating a random security value
      * and process the response. Returns true upon success.
      */
-    static boolean performHandshake(final Socket socket) throws java.net.SocketException, IOException, SocketPrematurelyClosedException {
+    static boolean performHandshake(final Socket socket) throws IOException, SocketPrematurelyClosedException {
         sendHandshakeRequest(socket);
         return processResponseHandshake(socket);
     }
@@ -47,7 +47,7 @@ class WebSocketIO {
      * Send the handshake (from the client) generating a random security value.
      * Use this method when you don't need to valide the header response.
      */
-    static void sendHandshakeRequest(final Socket socket) throws java.net.SocketException, IOException {
+    static void sendHandshakeRequest(final Socket socket) throws IOException {
         sendHandshakeRequest(socket, new Random().nextLong());
     }
 
@@ -56,7 +56,7 @@ class WebSocketIO {
      * security key. Use this method when you want to validate the header
      * response.
      */
-    static void sendHandshakeRequest(final Socket socket, final long randomSecurityValue) throws java.net.SocketException, IOException {
+    static void sendHandshakeRequest(final Socket socket, final long randomSecurityValue) throws IOException {
         final String randomKey = String.valueOf(randomSecurityValue);
         // base64 encoded random key
         final String encodedRandomKey = toBase64(randomKey);
@@ -76,7 +76,7 @@ class WebSocketIO {
     /**
      * process the handshake (on the server)
      */
-    private static boolean sendHandshakeResponse(final Socket socket, final String requestHeader) throws java.net.SocketException, IOException {
+    private static boolean sendHandshakeResponse(final Socket socket, final String requestHeader) throws IOException {
         final Map<String, String> headerMap = new HashMap<>();
         final BufferedReader reader = new BufferedReader(new StringReader(requestHeader));
         while (true) {
@@ -94,9 +94,9 @@ class WebSocketIO {
 
         try {
             final String secWebSocketKey = headerMap.get("Sec-WebSocket-Key");
-            final String input_plus = secWebSocketKey + "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+            final String inputPlus = secWebSocketKey + HANDSHAKE_ENCODE_KEY;
             final MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
-            messageDigest.update(input_plus.getBytes(Charset.forName("UTF-8")));
+            messageDigest.update(inputPlus.getBytes(StandardCharsets.UTF_8));
             final String secWebSocketAccept = DatatypeConverter.printBase64Binary(messageDigest.digest());
 
             final Writer writer = new OutputStreamWriter(socket.getOutputStream());
@@ -117,15 +117,15 @@ class WebSocketIO {
     /**
      * process the handshake with the socket
      */
-    static boolean processRequestHandshake(final Socket socket) throws java.net.SocketException, IOException {
-        final int BUFFER_SIZE = socket.getReceiveBufferSize();
-        final char[] streamBuffer = new char[BUFFER_SIZE];
+    static boolean processRequestHandshake(final Socket socket) throws IOException {
+        final int bufferSize = socket.getReceiveBufferSize();
+        final char[] streamBuffer = new char[bufferSize];
         final InputStream readStream = socket.getInputStream();
         final BufferedReader reader = new BufferedReader(new InputStreamReader(readStream));
         final StringBuilder inputBuffer = new StringBuilder();
 
         do {
-            final int readCount = reader.read(streamBuffer, 0, BUFFER_SIZE);
+            final int readCount = reader.read(streamBuffer, 0, bufferSize);
 
             // the session has been closed
             if (readCount == -1) {
@@ -141,16 +141,16 @@ class WebSocketIO {
     /**
      * process the handshake response for the socket without any validation
      */
-    static boolean processResponseHandshake(final Socket socket) throws java.net.SocketException, IOException, WebSocketIO.SocketPrematurelyClosedException {
-        final int BUFFER_SIZE = socket.getReceiveBufferSize();
-        final char[] streamBuffer = new char[BUFFER_SIZE];
+    static boolean processResponseHandshake(final Socket socket) throws IOException, WebSocketIO.SocketPrematurelyClosedException {
+        final int bufferSize = socket.getReceiveBufferSize();
+        final char[] streamBuffer = new char[bufferSize];
         final InputStream readStream = socket.getInputStream();
         final BufferedReader reader = new BufferedReader(new InputStreamReader(readStream));
         final StringBuilder inputBuffer = new StringBuilder();
 
         // empty out the buffer and store the header info
         do {
-            final int readCount = reader.read(streamBuffer, 0, BUFFER_SIZE);
+            final int readCount = reader.read(streamBuffer, 0, bufferSize);
 
             // the session has been closed
             if (readCount == -1) {
@@ -167,7 +167,7 @@ class WebSocketIO {
     /**
      * send the message
      */
-    static void sendMessage(final Socket socket, final String message) throws java.net.SocketException, IOException {
+    static void sendMessage(final Socket socket, final String message) throws IOException {
 
         final OutputStream output = socket.getOutputStream();
 
@@ -211,7 +211,7 @@ class WebSocketIO {
         }
 
         // write the raw message
-        final byte[] messageBytes = message.getBytes(Charset.forName("UTF-8"));
+        final byte[] messageBytes = message.getBytes(StandardCharsets.UTF_8);
         output.write(messageBytes, 0, messageBytes.length);
         output.flush();
     }
@@ -219,52 +219,39 @@ class WebSocketIO {
     /**
      * Read the message from the socket and return it
      */
-    static String readMessage(final Socket socket) throws java.net.SocketException, IOException, WebSocketIO.SocketPrematurelyClosedException {
-
-        final int BUFFER_SIZE = socket.getReceiveBufferSize();
+    static String readMessage(final Socket socket) throws IOException, WebSocketIO.SocketPrematurelyClosedException {
+        final int bufferSize = socket.getReceiveBufferSize();
         final InputStream readStream = socket.getInputStream();
-        final StreamByteReader byteReader = new StreamByteReader(readStream, BUFFER_SIZE);
+        final StreamByteReader byteReader = new StreamByteReader(readStream, bufferSize);
 
         try {
-            final byte head1 = byteReader.nextByte();
+            byteReader.nextByte();
             final byte head2 = byteReader.nextByte();
 
-            final boolean fin = (head1 & 0b10000000) == 0b10000000;
-            final byte opcode = (byte) (head1 & 0b00001111);
             final boolean masked = (head2 & 0b10000000) == 0b10000000;
             final byte lengthCode = (byte) (head2 & 0b01111111);
 
             int dataLength = 0;
+            byte[] lenBytes;
+            ByteBuffer lenByteBuffer;
             switch (lengthCode) {
                 case 126:
                     // payload length defined by next 2 bytes
-                    try {
-                    final byte[] lenBytes = byteReader.nextBytes(2);
-                    final ByteBuffer lenByteBuffer = ByteBuffer.wrap(lenBytes);
-                    final short shortLen = lenByteBuffer.getShort();
+                    lenBytes = byteReader.nextBytes(2);
+                    lenByteBuffer = ByteBuffer.wrap(lenBytes);
+                    short shortLen = lenByteBuffer.getShort();
 
                     // since Java doesn't have unsigned short, we must take care to interpret negative numbers properly
                     dataLength = shortLen >= 0 ? shortLen : 65536 + shortLen;
-                } catch (RuntimeException exception) {
-                    LOGGER.log(Level.SEVERE, "Exception getting short message", exception);
-                    throw exception;
-                }
-                break;
-
+                    break;
                 case 127:
                     // payload length defined by next 8 bytes
                     // TODO: Need to handle true 8 byte lengths. Java only accepts 4 byte lengths (i.e. int) for arrays, so the following code really only supports processing 4 byte lengths even though it reads the 8 byte length.
-                    try {
-                    final byte[] lenBytes = byteReader.nextBytes(8);
-                    final ByteBuffer lenByteBuffer = ByteBuffer.wrap(lenBytes);
+                    lenBytes = byteReader.nextBytes(8);
+                    lenByteBuffer = ByteBuffer.wrap(lenBytes);
                     // cast the long to int since arrays only allow 32 bit lengths
                     dataLength = (int) lenByteBuffer.getLong();
-                } catch (RuntimeException exception) {
-                    LOGGER.log(Level.SEVERE, "Exception getting long message", exception);
-                    throw exception;
-                }
-                break;
-
+                    break;
                 default:
                     // payload length is simply the lengthCode itself
                     dataLength = lengthCode;
@@ -279,27 +266,26 @@ class WebSocketIO {
                 maskPayloadReader = new MaskPayloadReader(mask);
             }
 
-            try {
-                final byte[] rawDataBytes = byteReader.nextBytes(dataLength);
-                byte[] dataBytes = null;
+            final byte[] rawDataBytes = byteReader.nextBytes(dataLength);
+            byte[] dataBytes;
 
-                if (masked) {
-                    dataBytes = new byte[dataLength];
-                    for (int index = 0; index < dataLength; index++) {
-                        dataBytes[index] = maskPayloadReader.readCharCode(rawDataBytes, index);
-                    }
-                } else {
-                    dataBytes = rawDataBytes;
+            if (masked) {
+                dataBytes = new byte[dataLength];
+                for (int index = 0; index < dataLength; index++) {
+                    dataBytes[index] = maskPayloadReader.readCharCode(rawDataBytes, index);
                 }
-
-                final String result = new String(dataBytes, 0, dataLength, "UTF-8");
-                return result;
-            } catch (IOException | StreamByteReader.StreamPrematurelyClosedException exception) {
-                LOGGER.log(Level.SEVERE, "Exception reading characters", exception);
-                return "";
+            } else {
+                dataBytes = rawDataBytes;
             }
+
+            return new String(dataBytes, 0, dataLength, StandardCharsets.UTF_8);
+        } catch (IOException exception) {
+            LOGGER.log(Level.SEVERE, "Exception reading characters", exception);
+            return "";
         } catch (StreamByteReader.StreamPrematurelyClosedException exception) {
             throw new SocketPrematurelyClosedException("The remote socket has closed while reading the message...");
+        } catch (RuntimeException exception) {
+            throw exception;
         }
     }
 
@@ -307,7 +293,7 @@ class WebSocketIO {
      * Encode the the specified input string as Base64
      */
     private static String toBase64(final String input) {
-        final byte[] rawInputBytes = input.getBytes(Charset.forName("UTF-8"));
+        final byte[] rawInputBytes = input.getBytes(StandardCharsets.UTF_8);
         return DatatypeConverter.printBase64Binary(rawInputBytes);
     }
 
@@ -338,20 +324,20 @@ class MaskPayloadReader {
     /**
      * mask to use
      */
-    private final byte[] MASK;
+    private final byte[] mask;
 
     /**
      * Constructor
      */
     public MaskPayloadReader(final byte[] mask) {
-        MASK = mask;
+        this.mask = mask;
     }
 
     /**
      * read the specified character and mask it
      */
     public byte readCharCode(final byte[] inputBuffer, final int index) {
-        return (byte) (MASK[index % 4] ^ inputBuffer[index]);
+        return (byte) (mask[index % 4] ^ inputBuffer[index]);
     }
 }
 
