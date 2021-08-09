@@ -29,7 +29,7 @@ public abstract class Objective {
      *
      * @param name the name to assign the objective
      */
-    public Objective(final String name) {
+    protected Objective(final String name) {
         this.name = name;
     }
 

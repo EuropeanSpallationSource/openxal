@@ -69,7 +69,7 @@ public abstract class SearchAlgorithm implements AlgorithmScheduleListener, Solu
     /**
      * Empty constructor.
      */
-    public SearchAlgorithm() {
+    protected SearchAlgorithm() {
         messageCenter = new MessageCenter("Search Algorithm");
         eventProxy = messageCenter.registerSource(this, SearchAlgorithmListener.class);
     }
@@ -151,13 +151,10 @@ public abstract class SearchAlgorithm implements AlgorithmScheduleListener, Solu
      * @return a new efficiency comparator
      */
     private static Comparator<SearchAlgorithm> makeEfficiencyComparator() {
-        return new Comparator<SearchAlgorithm>() {
-            @Override
-            public int compare(final SearchAlgorithm algorithmA, final SearchAlgorithm algorithmB) {
-                final double efficiencyA = algorithmA.getEfficiency();
-                final double efficiencyB = algorithmB.getEfficiency();
-                return efficiencyA < efficiencyB ? 1 : (efficiencyA > efficiencyB ? -1 : algorithmA.getLabel().compareTo(algorithmB.getLabel()));
-            }
+        return (algorithmA, algorithmB) -> {
+            final double efficiencyA = algorithmA.getEfficiency();
+            final double efficiencyB = algorithmB.getEfficiency();
+            return efficiencyA < efficiencyB ? 1 : (efficiencyA > efficiencyB ? -1 : algorithmA.getLabel().compareTo(algorithmB.getLabel()));
         };
     }
 
@@ -276,6 +273,7 @@ public abstract class SearchAlgorithm implements AlgorithmScheduleListener, Solu
      */
     @Override
     public void trialScored(final AlgorithmSchedule schedule, Trial trial) {
+        // Do nothing
     }
 
     /**
@@ -286,6 +284,7 @@ public abstract class SearchAlgorithm implements AlgorithmScheduleListener, Solu
      */
     @Override
     public void trialVetoed(final AlgorithmSchedule schedule, final Trial trial) {
+        // Do nothing
     }
 
     /**
@@ -297,6 +296,7 @@ public abstract class SearchAlgorithm implements AlgorithmScheduleListener, Solu
      */
     @Override
     public void algorithmRunWillExecute(final AlgorithmSchedule schedule, final SearchAlgorithm algorithm, final ScoreBoard scoreBoard) {
+        // Do nothing
     }
 
     /**
@@ -308,6 +308,7 @@ public abstract class SearchAlgorithm implements AlgorithmScheduleListener, Solu
      */
     @Override
     public void algorithmRunExecuted(final AlgorithmSchedule schedule, final SearchAlgorithm algorithm, final ScoreBoard scoreBoard) {
+        // Do nothing
     }
 
     /**
@@ -319,5 +320,6 @@ public abstract class SearchAlgorithm implements AlgorithmScheduleListener, Solu
      */
     @Override
     public void foundNewOptimalSolution(final SolutionJudge source, final List<Trial> solutions, final Trial solution) {
+        // Do nothing
     }
 }

@@ -228,7 +228,7 @@ public final class ScoreBoard implements AlgorithmScheduleListener, SolutionJudg
         }
 
         if (efficiencyLogger != null) {
-            efficiencyLogger.record(trial);
+            efficiencyLogger.recordEval(trial);
         }
     }
 
@@ -254,6 +254,7 @@ public final class ScoreBoard implements AlgorithmScheduleListener, SolutionJudg
      */
     @Override
     public void algorithmRunWillExecute(final AlgorithmSchedule schedule, final SearchAlgorithm algorithm, final ScoreBoard scoreBoard) {
+        // Do nothing
     }
 
     /**
@@ -399,7 +400,7 @@ public final class ScoreBoard implements AlgorithmScheduleListener, SolutionJudg
         /*
          * Records the evaluation for an algorithm, keeping track of the efficiency. Basically just shows if there is any improvement by that algorithm
          */
-        public void record(Trial trial) {
+        public void recordEval(Trial trial) {
             pendingEvaluations++;
 
             String thisLabel = trial.getAlgorithm().getLabel();
@@ -454,8 +455,8 @@ public final class ScoreBoard implements AlgorithmScheduleListener, SolutionJudg
                         algorithmIndx = 0;
                     }
 
-                    double evaluations = dataArray[0];
-                    double efficiency = (finalSatisfaction - initialSatisfaction) / ((1.0 - initialSatisfaction) * evaluations);
+                    double newEvaluations = dataArray[0];
+                    double efficiency = (finalSatisfaction - initialSatisfaction) / ((1.0 - initialSatisfaction) * newEvaluations);
 
                     String shortLabel;
                     if (label.length() > 13) {
@@ -464,11 +465,11 @@ public final class ScoreBoard implements AlgorithmScheduleListener, SolutionJudg
                         shortLabel = label;
                     }
 
-                    if (evaluations == 0) {
+                    if (newEvaluations == 0) {
                         efficiency = 0;
                     }
 
-                    System.out.printf("%s %5.0f, %8.5f || ", shortLabel, evaluations, efficiency);
+                    System.out.printf("%s %5.0f, %8.5f || ", shortLabel, newEvaluations, efficiency);
 
                     currentData.put(label, emptyArray);
                 }

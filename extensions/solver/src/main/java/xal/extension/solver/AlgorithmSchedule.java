@@ -40,7 +40,7 @@ public class AlgorithmSchedule {
     /**
      * determines when to stop the trials
      */
-    volatile protected Stopper stopper;
+    protected volatile Stopper stopper;
 
     /**
      * the problem to solve

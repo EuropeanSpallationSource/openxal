@@ -12,11 +12,15 @@ import xal.extension.solver.solutionjudge.*;
 import xal.extension.solver.hint.*;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Based on the acceleration-step of Forsythe and Motzkin
  */
 public class DirectedStep extends SearchAlgorithm {
+
+    private static final Logger LOGGER = Logger.getLogger(DirectedStep.class.getName());
 
     /**
      * number of steps along acceleration search
@@ -37,12 +41,6 @@ public class DirectedStep extends SearchAlgorithm {
      * Last origin trial
      */
     private Trial lastOriginTrial;
-
-    /**
-     * Constructor
-     */
-    public DirectedStep() {
-    }
 
     /**
      * reset the algorithm for searching from scratch
@@ -75,9 +73,10 @@ public class DirectedStep extends SearchAlgorithm {
             // no point in repeating the same result
             if (lastOriginTrial != bestSolution) {
                 lastOriginTrial = bestSolution;
-                final Trial bestTrial = performAcceleratedSearch(bestSolution);
+                performAcceleratedSearch(bestSolution);
             }
         } catch (RunTerminationException exception) {
+            LOGGER.log(Level.WARNING, null, exception);
         }
     }
 
@@ -117,7 +116,9 @@ public class DirectedStep extends SearchAlgorithm {
         final List<Variable> variables = problem.getVariables();
         final Map<Variable, Number> valueMap = new HashMap<>(originTrial.getTrialPoint().getValueMap());
         final double[] gradient = new double[variables.size()];
-        final double originSatisfaction = getSatisfaction(originTrial);
+
+        getSatisfaction(originTrial);
+
         int index = 0;
         for (Variable variable : variables) {
             final double originValue = valueMap.get(variable).doubleValue();
@@ -147,7 +148,7 @@ public class DirectedStep extends SearchAlgorithm {
      */
     protected double[] calculateVector(final TrialPoint originPoint, final TrialPoint targetPoint) {
         final List<Variable> variables = problem.getVariables();
-        final Map<Variable, Number> valueMap = new HashMap<>(variables.size());
+
         final double[] vector = new double[variables.size()];
         int index = 0;
         for (Variable variable : variables) {
@@ -270,8 +271,7 @@ public class DirectedStep extends SearchAlgorithm {
      */
     @Override
     public int getMinEvaluationsPerRun() {
-        int minEvals = problem != null ? 4 * problem.getVariables().size() + 3 * 2 * NUM_SCALE_STEPS : 0;
-        return minEvals;
+        return problem != null ? 4 * problem.getVariables().size() + 3 * 2 * NUM_SCALE_STEPS : 0;
     }
 
     /**
@@ -300,6 +300,7 @@ public class DirectedStep extends SearchAlgorithm {
      * @param source The source of the available algorithm.
      */
     public void algorithmAvailable(SearchAlgorithm source) {
+        // Do nothing
     }
 
     /**
@@ -308,6 +309,7 @@ public class DirectedStep extends SearchAlgorithm {
      * @param source The source of the available algorithm.
      */
     public void algorithmUnavailable(SearchAlgorithm source) {
+        // Do nothing
     }
 
     /**
@@ -318,6 +320,7 @@ public class DirectedStep extends SearchAlgorithm {
      */
     @Override
     public void trialScored(AlgorithmSchedule schedule, Trial trial) {
+        // Do nothing
     }
 
     /**
@@ -328,6 +331,7 @@ public class DirectedStep extends SearchAlgorithm {
      */
     @Override
     public void trialVetoed(AlgorithmSchedule schedule, Trial trial) {
+        // Do nothing
     }
 
     /**

@@ -20,7 +20,7 @@ public abstract class DomainHint extends Hint {
     /**
      * Constructor
      */
-    public DomainHint(final String label) {
+    protected DomainHint(final String label) {
         super(label);
     }
 

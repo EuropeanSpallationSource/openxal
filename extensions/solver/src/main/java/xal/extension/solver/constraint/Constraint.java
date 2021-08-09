@@ -26,7 +26,7 @@ public abstract class Constraint {
      *
      * @param aName The name of the constraint.
      */
-    public Constraint(String aName) {
+    protected Constraint(String aName) {
         name = aName;
     }
 

@@ -13,6 +13,8 @@ import xal.extension.solver.*;
 import xal.extension.solver.solutionjudge.*;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * RandomSearch returns a random trial point that lies within the bounds
@@ -22,6 +24,7 @@ import java.util.*;
  */
 public class RandomSearch extends SearchAlgorithm {
 
+    private static final Logger LOGGER = Logger.getLogger(RandomSearch.class.getName());
     /**
      * random number generator
      */
@@ -67,6 +70,7 @@ public class RandomSearch extends SearchAlgorithm {
                 evaluateTrialPoint(nextTrialPoint());
             }
         } catch (RunTerminationException exception) {
+            LOGGER.log(Level.WARNING, null, exception);
         }
     }
 
@@ -110,6 +114,7 @@ public class RandomSearch extends SearchAlgorithm {
      * @param source The source of the available algorithm.
      */
     public void algorithmAvailable(SearchAlgorithm source) {
+        // Do nothing
     }
 
     /**
@@ -118,6 +123,7 @@ public class RandomSearch extends SearchAlgorithm {
      * @param source The source of the available algorithm.
      */
     public void algorithmUnavailable(SearchAlgorithm source) {
+        // Do nothing
     }
 
     /**
@@ -128,6 +134,7 @@ public class RandomSearch extends SearchAlgorithm {
      */
     @Override
     public void trialScored(AlgorithmSchedule schedule, Trial trial) {
+        // Do nothing
     }
 
     /**
@@ -138,6 +145,7 @@ public class RandomSearch extends SearchAlgorithm {
      */
     @Override
     public void trialVetoed(AlgorithmSchedule schedule, Trial trial) {
+        // Do nothing
     }
 
     /**
@@ -149,5 +157,6 @@ public class RandomSearch extends SearchAlgorithm {
      */
     @Override
     public void foundNewOptimalSolution(SolutionJudge source, List<Trial> solutions, Trial solution) {
+        // Do nothing
     }
 }

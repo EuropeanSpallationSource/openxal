@@ -59,23 +59,6 @@ public class RandomShrinkSearch extends SearchAlgorithm {
     protected boolean isLastEvaluation = false;
 
     /**
-     * Empty constructor.
-     */
-    public RandomShrinkSearch() {
-    }
-
-    /**
-     * Set the specified problem to solve. Override the inherited method to look
-     * for hints.
-     *
-     * @param problem the problem to solve
-     */
-    @Override
-    public void setProblem(final Problem problem) {
-        super.setProblem(problem);
-    }
-
-    /**
      * Get the label for this search algorithm.
      *
      * @return The label for this algorithm
@@ -132,6 +115,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
             // clear the flag to avoid side effects
             isLastEvaluation = false;
         } catch (RunTerminationException exception) {
+            LOGGER.log(Level.WARNING, null, exception);
         }
     }
 
@@ -172,6 +156,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
      * @param source The source of the available algorithm.
      */
     public void algorithmAvailable(final SearchAlgorithm source) {
+        // Do nothing
     }
 
     /**
@@ -180,6 +165,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
      * @param source The source of the available algorithm.
      */
     public void algorithmUnavailable(final SearchAlgorithm source) {
+        // Do nothing
     }
 
     /**
@@ -230,6 +216,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
      */
     @Override
     public void foundNewOptimalSolution(final SolutionJudge source, final List<Trial> solutions, final Trial solution) {
+        // Do nothing
     }
 
     /**
@@ -308,6 +295,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
          */
         @Override
         public void shouldShift() {
+            // Do nothing
         }
 
         /**
@@ -325,6 +313,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
          */
         @Override
         public void reset() {
+            // Do nothing
         }
 
         /**
@@ -337,6 +326,7 @@ public class RandomShrinkSearch extends SearchAlgorithm {
          */
         @Override
         public void newTopSolution(final TrialPoint oldPoint, final TrialPoint newPoint) {
+            // Do nothing
         }
 
         /**

@@ -24,7 +24,7 @@ public abstract class Hint {
     /**
      * Creates a new instance of Hint
      */
-    public Hint(final String aHint) {
+    protected Hint(final String aHint) {
         label = aHint;
     }
 

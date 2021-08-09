@@ -43,14 +43,14 @@ public class MutableTrialPoint extends TrialPoint {
      * @param size intial size allocated to the trial point's map of values
      */
     public MutableTrialPoint(final int size) {
-        this(new HashMap<Variable, Number>(size));
+        this(new HashMap<>(size));
     }
 
     /**
      * Constructor
      */
     public MutableTrialPoint() {
-        this(new HashMap<Variable, Number>());
+        this(new HashMap<>());
     }
 
     /**

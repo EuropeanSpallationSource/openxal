@@ -175,20 +175,20 @@ class AbsoluteMaxExcursionDomain implements VariableExcursionDomain {
     /**
      * the change about the current value
      */
-    private final double MAX_EXCURSION;
+    private final double maxExcursion;
 
     /**
      * Primary Constructor
      */
     protected AbsoluteMaxExcursionDomain(final double maxExcursion) {
-        MAX_EXCURSION = maxExcursion;
+        this.maxExcursion = maxExcursion;
     }
 
     /**
      * get the lower limit
      */
     public double[] getRange(final double value) {
-        return new double[]{value - MAX_EXCURSION, value + MAX_EXCURSION};
+        return new double[]{value - maxExcursion, value + maxExcursion};
     }
 
     /**

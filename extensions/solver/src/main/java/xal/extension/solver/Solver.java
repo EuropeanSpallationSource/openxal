@@ -271,6 +271,7 @@ public class Solver implements AlgorithmPoolListener, AlgorithmMarketListener {
      */
     @Override
     public void algorithmAvailable(final AlgorithmPool source, final SearchAlgorithm algorithm) {
+        // Do nothing
     }
 
     /**
@@ -281,6 +282,7 @@ public class Solver implements AlgorithmPoolListener, AlgorithmMarketListener {
      */
     @Override
     public void algorithmUnavailable(final AlgorithmPool source, final SearchAlgorithm algorithm) {
+        // Do nothing
     }
 
     /**

@@ -73,7 +73,7 @@ public class Problem {
      * evaluator.
      */
     public Problem(final List<Objective> objectives, final List<Variable> variables, final Evaluator evaluator) {
-        this(objectives, variables, evaluator, new ArrayList<Constraint>(), new ArrayList<Hint>());
+        this(objectives, variables, evaluator, new ArrayList<>(), new ArrayList<>());
     }
 
     /**

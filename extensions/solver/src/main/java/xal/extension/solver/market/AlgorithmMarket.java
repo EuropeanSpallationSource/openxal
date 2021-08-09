@@ -153,16 +153,6 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
     }
 
     /**
-     * Set the list of algorithms.
-     *
-     * @param algorithmsList The list of algorithms.
-     */
-    private void setAlgorithms(final List<SearchAlgorithm> algorithms) {
-        algorithmsByEfficiency.clear();
-        algorithmsByEfficiency.addAll(algorithms);
-    }
-
-    /**
      * Set the algorithm pool.
      *
      * @param pool The algorithm pool used to set the local algorithm pool.
@@ -201,6 +191,7 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
      */
     @Override
     public void algorithmRunWillExecute(final AlgorithmSchedule schedule, final SearchAlgorithm algorithm, final ScoreBoard scoreBoard) {
+        // Do nothing
     }
 
     /**
@@ -212,6 +203,7 @@ public class AlgorithmMarket implements AlgorithmScheduleListener, SolutionJudge
      */
     @Override
     public void algorithmRunExecuted(final AlgorithmSchedule schedule, final SearchAlgorithm algorithm, final ScoreBoard scoreBoard) {
+        // Do nothing
     }
 
     /**

@@ -248,6 +248,7 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
      */
     @Override
     public void algorithmRunWillExecute(final AlgorithmSchedule schedule, final SearchAlgorithm algorithm, final ScoreBoard scoreBoard) {
+        // Do nothing
     }
 
     /**
@@ -259,6 +260,7 @@ public class AlgorithmPool implements SearchAlgorithmListener, SolutionJudgeList
      */
     @Override
     public void algorithmRunExecuted(final AlgorithmSchedule schedule, final SearchAlgorithm algorithm, final ScoreBoard scoreBoard) {
+        // Do nothing
     }
 
     /**

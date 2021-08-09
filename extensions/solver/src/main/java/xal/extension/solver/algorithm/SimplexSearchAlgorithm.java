@@ -158,10 +158,10 @@ public class SimplexSearchAlgorithm extends SearchAlgorithm {
      */
     @Override
     public void trialScored(final AlgorithmSchedule schedule, Trial trial) {
-        SearchAlgorithm s_a = trial.getAlgorithm();
-        if (s_a.getLabel().equals(getLabel())) {
-            SimplexSearchAlgorithm s_s_a = (SimplexSearchAlgorithm) s_a;
-            if (s_s_a != this) {
+        SearchAlgorithm sA = trial.getAlgorithm();
+        if (sA.getLabel().equals(getLabel())) {
+            SimplexSearchAlgorithm sSA = (SimplexSearchAlgorithm) sA;
+            if (sSA != this) {
                 algorithmChanged = true;
             }
         } else {
@@ -192,10 +192,10 @@ public class SimplexSearchAlgorithm extends SearchAlgorithm {
     public void foundNewOptimalSolution(final SolutionJudge source, final List<Trial> solutions, final Trial solution) {
         TrialPoint newPoint = solution.getTrialPoint();
         bestPoint = newPoint;
-        SearchAlgorithm s_a = solution.getAlgorithm();
-        if (s_a.getLabel().equals(getLabel())) {
-            SimplexSearchAlgorithm s_s_a = (SimplexSearchAlgorithm) s_a;
-            if (s_s_a != this) {
+        SearchAlgorithm sA = solution.getAlgorithm();
+        if (sA.getLabel().equals(getLabel())) {
+            SimplexSearchAlgorithm sSA = (SimplexSearchAlgorithm) sA;
+            if (sSA != this) {
                 //the simplex should be moved to the new point
                 //that was found by other algorithm
                 //The simplex vertexes should be generated from the scratch.
@@ -253,17 +253,16 @@ class SimplexSearcher {
 
     //vertexes
     private Vector<Vertex> vertexesV = new Vector<>();
-    private double[] stepArr = new double[0];
 
-    private double[] coord_r = new double[0];
-    private double[] coord_e = new double[0];
-    private double[] coord_oc = new double[0];
-    private double[] coord_ic = new double[0];
+    private double[] coordR = new double[0];
+    private double[] coordE = new double[0];
+    private double[] coordOc = new double[0];
+    private double[] coordIc = new double[0];
 
-    private Vertex vt_r = new Vertex();
-    private Vertex vt_e = new Vertex();
-    private Vertex vt_oc = new Vertex();
-    private Vertex vt_ic = new Vertex();
+    private Vertex vtR = new Vertex();
+    private Vertex vtE = new Vertex();
+    private Vertex vtOc = new Vertex();
+    private Vertex vtIc = new Vertex();
 
     //shrinkage limit and counter
     private int nShrinkMax = 20;
@@ -305,9 +304,9 @@ class SimplexSearcher {
     /**
      * reset for searching from scratch; forget history
      *
-     * @param tr_point Description of the Parameter
+     * @param trPoint Description of the Parameter
      */
-    protected void reset(TrialPoint tr_point) {
+    protected void reset(TrialPoint trPoint) {
 
         iniSimplexReady = false;
 
@@ -327,22 +326,22 @@ class SimplexSearcher {
         }
 
         //create all arrays
-        stepArr = new double[nD];
+        double[] stepArr = new double[nD];
 
-        coord_r = new double[nD];
-        coord_e = new double[nD];
-        coord_oc = new double[nD];
-        coord_ic = new double[nD];
+        coordR = new double[nD];
+        coordE = new double[nD];
+        coordOc = new double[nD];
+        coordIc = new double[nD];
 
-        vt_r.setCoords(coord_r);
-        vt_e.setCoords(coord_e);
-        vt_oc.setCoords(coord_oc);
-        vt_ic.setCoords(coord_ic);
+        vtR.setCoords(coordR);
+        vtE.setCoords(coordE);
+        vtOc.setCoords(coordOc);
+        vtIc.setCoords(coordIc);
 
-        vt_r.setProblem(problem);
-        vt_e.setProblem(problem);
-        vt_oc.setProblem(problem);
-        vt_ic.setProblem(problem);
+        vtR.setProblem(problem);
+        vtE.setProblem(problem);
+        vtOc.setProblem(problem);
+        vtIc.setProblem(problem);
 
         //create vertixes
         vertexesV.clear();
@@ -439,61 +438,61 @@ class SimplexSearcher {
         bestScore = vertexesV.get(0).getScore();
 
         //Stage 2. Reflect ==============
-        reflectVertex(rho, coord_r);
-        vt_r.setCoords(coord_r);
+        reflectVertex(rho, coordR);
+        vtR.setCoords(coordR);
 
-        if (!findScore(vt_r)) {
+        if (!findScore(vtR)) {
             return false;
         }
-        double score_r = vt_r.getScore();
+        double scoreR = vtR.getScore();
 
         //if f_r < f(n) i.e. f(n) - it is not last
-        if (score_r < vertexesV.get(nD - 1).getScore()) {
+        if (scoreR < vertexesV.get(nD - 1).getScore()) {
             //Stage 3. Expand
-            reflectVertex(rho * chi, coord_e);
-            vt_e.setCoords(coord_e);
+            reflectVertex(rho * chi, coordE);
+            vtE.setCoords(coordE);
 
-            if (!findScore(vt_e)) {
+            if (!findScore(vtE)) {
                 return false;
             }
-            double score_e = vt_e.getScore();
+            double scoreE = vtE.getScore();
 
-            if (score_r < vertexesV.get(0).getScore() && score_e <= score_r) {
-                setLastVertex(coord_e, score_e);
+            if (scoreR < vertexesV.get(0).getScore() && scoreE <= scoreR) {
+                setLastVertex(coordE, scoreE);
             } else {
-                setLastVertex(coord_r, score_r);
+                setLastVertex(coordR, scoreR);
             }
         } else {
 
             boolean goToShrink = false;
 
-            if (score_r < vertexesV.get(nD).getScore()) {
+            if (scoreR < vertexesV.get(nD).getScore()) {
                 //Stage 4.a Contract
-                reflectVertex(rho * gamma, coord_oc);
-                vt_oc.setCoords(coord_oc);
+                reflectVertex(rho * gamma, coordOc);
+                vtOc.setCoords(coordOc);
 
-                if (!findScore(vt_oc)) {
+                if (!findScore(vtOc)) {
                     return false;
                 }
-                double score_oc = vt_oc.getScore();
+                double scoreOc = vtOc.getScore();
 
-                if (score_oc < score_r) {
-                    setLastVertex(coord_oc, score_oc);
+                if (scoreOc < scoreR) {
+                    setLastVertex(coordOc, scoreOc);
                 } else {
                     goToShrink = true;
                 }
             } else {
                 //Stage 4.b Contract
-                reflectVertex(-gamma, coord_ic);
-                vt_ic.setCoords(coord_ic);
+                reflectVertex(-gamma, coordIc);
+                vtIc.setCoords(coordIc);
 
-                if (!findScore(vt_ic)) {
+                if (!findScore(vtIc)) {
                     return false;
                 }
-                double score_ic = vt_ic.getScore();
+                double scoreIc = vtIc.getScore();
 
-                if (score_ic < vertexesV.get(nD).getScore()) {
-                    setLastVertex(coord_ic, score_ic);
+                if (scoreIc < vertexesV.get(nD).getScore()) {
+                    setLastVertex(coordIc, scoreIc);
                 } else {
                     goToShrink = true;
                 }
@@ -593,10 +592,7 @@ class SimplexSearcher {
      */
     private boolean acceptSimplex() {
         int nVars = problem.getVariables().size();
-        if (nVars != nD || (nD + 1) != vertexesV.size()) {
-            return false;
-        }
-        return true;
+        return nVars == nD && (nD + 1) == vertexesV.size();
     }
 
     /**
@@ -632,22 +628,6 @@ class SimplexSearcher {
         }
     }
 
-    //calculates x = xAvg + coeff*(xAvg - xLast)
-    //               for last vertex of the simplex
-    /**
-     * Description of the Method
-     *
-     * @param coeff Description of the Parameter
-     * @param resArr Description of the Parameter
-     */
-    private void reflectSimplex(double coeff, double[] resArr) {
-        reflectVertex(coeff, resArr);
-        Vertex vrN = vertexesV.get(nD);
-        for (int i = 0; i < nD; i++) {
-            vrN.getCoords()[i] = resArr[i];
-        }
-    }
-
     /**
      * Sets the lastVertex attribute of the SimplexSearcher object
      *
@@ -656,58 +636,8 @@ class SimplexSearcher {
      */
     private void setLastVertex(double[] resArr, double score) {
         Vertex vrN = vertexesV.get(nD);
-        for (int i = 0; i < nD; i++) {
-            vrN.getCoords()[i] = resArr[i];
-        }
+        System.arraycopy(resArr, 0, vrN.getCoords(), 0, nD);
         vrN.setScore(score);
-    }
-
-    /**
-     * Gets the firstVertexCoords attribute of the SimplexSearcher object
-     *
-     * @param resArr Description of the Parameter
-     * @return The firstVertexCoords value
-     */
-    private double getFirstVertexCoords(double[] resArr) {
-        Vertex vrI = vertexesV.get(0);
-        for (int i = 0; i < nD; i++) {
-            resArr[i] = vrI.getCoords()[i];
-        }
-        return vrI.getScore();
-    }
-
-    /**
-     * Description of the Method
-     */
-    private void printSimplex() {
-        LOGGER.log(Level.INFO, "----simplex----");
-        for (int iv = 0; iv <= nD; iv++) {
-            Vertex vr = vertexesV.get(iv);
-            String str = "n=" + iv + " ";
-            for (int i = 0; i < nD; i++) {
-                str = str + " i=" + i + " coor=" + vr.getCoords()[i] + "  ";
-            }
-            str = str + "  score=" + vr.getScore();
-            LOGGER.log(Level.INFO, str);
-        }
-        LOGGER.log(Level.INFO, "----simplex end----");
-    }
-
-    /**
-     * Description of the Method
-     *
-     * @param vr Description of the Parameter
-     * @param name Description of the Parameter
-     */
-    private void printVertex(Vertex vr, String name) {
-        LOGGER.log(Level.INFO, "----vertex---start---- name={0}", name);
-        String str = " ";
-        for (int i = 0; i < nD; i++) {
-            str = str + " i=" + i + " coor=" + vr.getCoords()[i] + "  ";
-        }
-        str = str + "  score=" + vr.getScore();
-        LOGGER.log(Level.INFO, str);
-        LOGGER.log(Level.INFO, "----vertex---end------ name={0}", name);
     }
 
     //----------------------------------------------
@@ -877,18 +807,14 @@ class SimplexSearcher {
                     Trial trial = algorithm.evaluateTrialPoint(trialPoint.getTrialPoint());
                     satisfaction = trial.getSatisfaction();
                 } catch (RunTerminationException exept) {
+                    LOGGER.log(Level.WARNING, null, exept);
                 }
 
                 if (satisfaction > 0.) {
                     score = 1. / satisfaction;
                     return true;
                 } else {
-                    if (satisfaction == 0.) {
-                        score = Double.MAX_VALUE;
-                        return true;
-                    } else {
-                        return false;
-                    }
+                    return satisfaction == 0.;
                 }
             } else {
                 return false;
@@ -932,9 +858,7 @@ class SimplexSearcher {
                 nDim = coordsIn.length;
                 coords = new double[nDim];
             }
-            for (int i = 0; i < nDim; i++) {
-                coords[i] = coordsIn[i];
-            }
+            System.arraycopy(coordsIn, 0, coords, 0, nDim);
         }
 
         /**
@@ -972,5 +896,4 @@ class SimplexSearcher {
             return 0;
         }
     }
-
 }
