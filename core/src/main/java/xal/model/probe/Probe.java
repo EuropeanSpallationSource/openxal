@@ -438,7 +438,8 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      *
      * @return time stamp
      */
-    @NoEdit    // editors should not access this property
+    // editors should not access this property
+    @NoEdit    
     public Date getTimestamp() {
         return dateStamp;
     }
@@ -485,7 +486,8 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      *
      * @return Trajectory object of the proper sub-type for the probe type
      */
-    @NoEdit // editors should not access this property
+    // editors should not access this property
+    @NoEdit 
     @Override
     public Trajectory<S> getTrajectory() {
         return trajHist;
@@ -714,7 +716,8 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      *
      * @author jdg
      */
-    @NoEdit    // editors should not edit this property
+    // editors should not edit this property
+    @NoEdit    
     @Override
     public void setTime(double dblTime) {
         this.stateCurrent.setTime(dblTime);
@@ -856,7 +859,8 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      *
      * @see xal.tools.data.IArchive
      */
-    @NoEdit // hide this property so it doesn't appear in editors
+    // hide this property so it doesn't appear in editors
+    @NoEdit 
     @Override
     public IArchive getArchive() {
         return this;

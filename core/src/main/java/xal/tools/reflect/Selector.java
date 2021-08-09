@@ -37,7 +37,8 @@ public class Selector {
     /**
      * Constructor for a method that takes multiple arguments
      */
-    @SuppressWarnings("rawtypes")        // cannot mix generics with arrays
+    // cannot mix generics with arrays
+    @SuppressWarnings("rawtypes")        
     public Selector(final String methodName, final Class<?>... argumentTypes) {
         this.methodName = methodName;
         int argumentCount = argumentTypes.length;

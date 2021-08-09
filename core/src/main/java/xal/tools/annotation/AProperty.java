@@ -11,13 +11,15 @@ import java.lang.annotation.*;
 /**
  * Annotation group for a property
  */
-@Retention(RetentionPolicy.RUNTIME)    // make this annotation available at runtime via reflection
+// make this annotation available at runtime via reflection
+@Retention(RetentionPolicy.RUNTIME)    
 public @interface AProperty {
 
     /**
      * Specifies units for the property accessor
      */
-    @Retention(RetentionPolicy.RUNTIME)    // make this annotation available at runtime via reflection
+    // make this annotation available at runtime via reflection
+    @Retention(RetentionPolicy.RUNTIME)    
     public @interface Units {
 
         String value() default "";
@@ -27,7 +29,8 @@ public @interface AProperty {
      * Specifies that the property should not be edited regardless of whether it
      * is public
      */
-    @Retention(RetentionPolicy.RUNTIME)    // make this annotation available at runtime via reflection
+    // make this annotation available at runtime via reflection
+    @Retention(RetentionPolicy.RUNTIME)    
     public @interface NoEdit {
     }
 }

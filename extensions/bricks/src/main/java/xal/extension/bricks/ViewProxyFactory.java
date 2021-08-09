@@ -209,7 +209,8 @@ public class ViewProxyFactory {
     /**
      * Generate a view proxy for a combo box view
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})    // TODO: JComboBox is typed in Java 7 but not earlier
+    // TODO: JComboBox is typed in Java 7 but not earlier
+    @SuppressWarnings({"unchecked", "rawtypes"})    
     public static ViewProxy<JComboBox> getComboBoxProxy() {
         return new ViewProxy<JComboBox>(JComboBox.class, false, false) {
             @Override
@@ -234,7 +235,8 @@ public class ViewProxyFactory {
     /**
      * Generate a view proxy for a list view
      */
-    @SuppressWarnings({"rawtypes", "unchecked"})    // TODO: JList is typed in Java 7 but not earlier
+    // TODO: JList is typed in Java 7 but not earlier
+    @SuppressWarnings({"rawtypes", "unchecked"})    
     public static ViewProxy<JList> getListProxy() {
         return new ViewProxy<JList>(JList.class, false, false) {
             /**

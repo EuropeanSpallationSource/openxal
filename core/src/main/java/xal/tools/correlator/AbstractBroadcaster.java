@@ -33,7 +33,8 @@ abstract class AbstractBroadcaster<T> implements BinListener<T>, StateNotice<T> 
     /**
      * Creates a new instance of Broadcaster
      */
-    @SuppressWarnings("unchecked")    // must cast proxy for Generics
+    // must cast proxy for Generics
+    @SuppressWarnings("unchecked")    
     protected AbstractBroadcaster(final MessageCenter localCenter) {
         // external broadcast center  
         broadcastCenter = new MessageCenter("Correlator Broadcast");

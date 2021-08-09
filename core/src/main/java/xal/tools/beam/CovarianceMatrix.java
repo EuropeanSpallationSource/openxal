@@ -411,7 +411,8 @@ public class CovarianceMatrix extends PhaseMatrix {
      *
      * @return PhaseVector representing the mean values of the correlation
      */
-    @NoEdit        // editors should ignore this property as it is really a computed value
+    // editors should ignore this property as it is really a computed value
+    @NoEdit        
     public PhaseVector getMean() {
         PhaseVector vec = new PhaseVector();
 

@@ -288,7 +288,8 @@ public abstract class DispatchQueue implements DispatchOperationListener {
      * get the current queue or null if the current thread does not belong to a
      * queue
      */
-    @SuppressWarnings("unchecked")    // need to cast thread to DispatchThread after checking
+    // need to cast thread to DispatchThread after checking
+    @SuppressWarnings("unchecked")    
     public static DispatchQueue getCurrentQueue() {
         final Thread currentThread = Thread.currentThread();
         if (currentThread instanceof DispatchThread) {

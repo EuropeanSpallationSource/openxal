@@ -1256,7 +1256,8 @@ public class XMLDataManager {
                     final String deviceType = deviceAdaptor.stringValue(TYPE_KEY);
                     final String softType = deviceAdaptor.hasAttribute(SOFT_TYPE_KEY) ? deviceAdaptor.stringValue(SOFT_TYPE_KEY) : null;
                     final String deviceClassName = deviceAdaptor.stringValue("class");
-                    @SuppressWarnings("unchecked")    // cast to AcceleratorNode class
+                    // cast to AcceleratorNode class
+                    @SuppressWarnings("unchecked")    
                     final Class<AcceleratorNode> deviceClass = (Class<AcceleratorNode>) Class.forName(deviceClassName);
                     nodeFactory.registerNodeClass(deviceType, softType, deviceClass);
                 } catch (ClassNotFoundException exception) {

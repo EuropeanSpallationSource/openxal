@@ -90,7 +90,8 @@ public class KeyValueSorting {
      * first by the first comparator and last by the last comparator)
      * @return the compound comparator
      */
-    @SafeVarargs        // let the compiler know that heap pollution will not occur
+    // let the compiler know that heap pollution will not occur
+    @SafeVarargs        
     public static <T> Comparator<T> compoundComparator(final Comparator<T>... comparators) {
         return new Comparator<T>() {
             /**

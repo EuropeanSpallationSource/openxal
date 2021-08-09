@@ -277,7 +277,8 @@ public abstract class Element implements VisitorListener, Cloneable {
         this.len = length;
     }
 
-    @SuppressWarnings("rawtypes")        // arrays don't support generics
+    // arrays don't support generics
+    @SuppressWarnings("rawtypes")        
     protected List<Element> split(Element insert) throws LatticeError {
         //The slice (and replace) operation. The thick element (this)
         //is cut into an upstream and a downstream part and then element 'insert'

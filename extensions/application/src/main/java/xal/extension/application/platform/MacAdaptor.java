@@ -28,7 +28,8 @@ public class MacAdaptor {
     /**
      * perform Mac initialization
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})    // no way around it since newProxyInstance takes an array of typed Class and which isn't allowed
+    // no way around it since newProxyInstance takes an array of typed Class and which isn't allowed
+    @SuppressWarnings({"unchecked", "rawtypes"})    
     public static void initialize() {
         // display the menu bar at the top of the screen consistent with the Mac look and feel
         System.setProperty("apple.laf.useScreenMenuBar", "true");
@@ -115,7 +116,8 @@ public class MacAdaptor {
      * modern event system is not present. This method should be removed at a
      * reasonable time in the future.
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})    // no way around it since newProxyInstance takes an array of typed Class and which isn't allowed
+    // no way around it since newProxyInstance takes an array of typed Class and which isn't allowed
+    @SuppressWarnings({"unchecked", "rawtypes"})    
     private static void initializeFallback() {
         try {
             // dynamically get the Mac specific extensions
@@ -142,7 +144,8 @@ public class MacAdaptor {
      */
     private static class MacEventHandler implements InvocationHandler {
 
-        @SuppressWarnings({"unchecked", "rawtypes"})    // no way around it since getMethod takes an array of typed Class and which isn't allowed
+        // no way around it since getMethod takes an array of typed Class and which isn't allowed
+        @SuppressWarnings({"unchecked", "rawtypes"})    
         @Override
         public Object invoke(final Object proxy, final Method method, final Object[] args) {
             try {

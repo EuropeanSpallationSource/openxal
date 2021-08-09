@@ -113,7 +113,8 @@ public final class AttributeBucketFactory {
         setBuckTypes.add(objInst);
     }
 
-    @SuppressWarnings("rawtypes")        // generics aren't supported in arrays
+    // generics aren't supported in arrays
+    @SuppressWarnings("rawtypes")        
     private static void buildCtorMap() {
         mapCtors = new HashMap<>();
 

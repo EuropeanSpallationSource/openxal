@@ -126,7 +126,8 @@ public class DataTable {
     /**
      * Handle reading and writing from a data adaptor
      */
-    @SuppressWarnings("unchecked")    // need to cast Class forName() call
+    // need to cast Class forName() call
+    @SuppressWarnings("unchecked")    
     public DataListener dataHandler() throws MissingPrimaryKeyException {
         /* Anonymous class responsible for reading and writing an instance of DataTable with the data store */
         return new DataListener() {
