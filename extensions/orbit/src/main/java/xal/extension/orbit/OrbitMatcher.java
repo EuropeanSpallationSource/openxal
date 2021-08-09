@@ -128,9 +128,7 @@ public class OrbitMatcher {
         final PhaseMatrix toTransferMatrix = toState.getTransferMap().getFirstOrder();
 
         // compute the transfer matrix from the "from" state to the "toState"
-        final PhaseMatrix fromToTransferMatrix = toTransferMatrix.times(fromTransferMatrix.inverse());
-
-        return fromToTransferMatrix;
+        return toTransferMatrix.times(fromTransferMatrix.inverse());
     }
 }
 
@@ -149,18 +147,16 @@ class BeamPositionTransform {
     public BeamPositionTransform(final List<TransferRow> transferRows) {
         final int rowCount = transferRows.size();
 
-        final GenericMatrix kickTransform = new GenericMatrix(rowCount, 1);
+        kickTransform = new GenericMatrix(rowCount, 1);
         final GenericMatrix phaseTransform = new GenericMatrix(rowCount, 2);
 
         int row = 0;
         for (final TransferRow transferRow : transferRows) {
-            phaseTransform.setElem(row, 0, transferRow.T11);
-            phaseTransform.setElem(row, 1, transferRow.T12);
-            kickTransform.setElem(row, 0, transferRow.T13);
+            phaseTransform.setElem(row, 0, transferRow.t11);
+            phaseTransform.setElem(row, 1, transferRow.t12);
+            kickTransform.setElem(row, 0, transferRow.t13);
             ++row;
         }
-
-        this.kickTransform = kickTransform;
 
         // projection transform:  (A<sup>T</sup> A)<sup>-1</sup> A<sup>T</sup>
         final GenericMatrix phaseTransformTranspose = phaseTransform.transpose();
@@ -187,16 +183,16 @@ class BeamPositionTransform {
  */
 class TransferRow {
 
-    public final double T11;
-    public final double T12;
-    public final double T13;
+    public final double t11;
+    public final double t12;
+    public final double t13;
 
     /**
      * Constructor
      */
     public TransferRow(final double t11, final double t12, final double t13) {
-        T11 = t11;
-        T12 = t12;
-        T13 = t13;
+        this.t11 = t11;
+        this.t12 = t12;
+        this.t13 = t13;
     }
 }

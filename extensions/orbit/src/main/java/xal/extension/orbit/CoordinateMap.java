@@ -285,8 +285,7 @@ public class CoordinateMap {
     private TransferMapState getProbeState(final Trajectory<TransferMapState> trajectory, final AcceleratorNode node) {
         final String elementID = getElementIdForNode(node);
 
-        final TransferMapState state = elementID != null ? trajectory.stateForElement(elementID) : null;
-        return state;
+        return elementID != null ? trajectory.stateForElement(elementID) : null;
     }
 
     /**
@@ -339,7 +338,6 @@ public class CoordinateMap {
             // "from" node is across the origin near the front of the sequence, and the "to" node is near the end of the sequence
         } else if (fromPath > sequence.getLength()) {
             // Xo = F * Xp, Xf = Tf * Xo, Xt = Tt * Xp  ->  Xf = Tf * F * Xp  ->  Xp = (Tf * F)^-1 * Xf  ->  Xt = Tt * (Tf * F)^-1 * Xf  ->  Tft = Tt * (Tf * F)^-1
-            final TransferMapState originState = trajectory.initialState();
             final PhaseMatrix fullTurnOriginMatrix = new CalculationsOnRings(trajectory).getFullTransferMap().getFirstOrder();
             return toMatrix.times(fromMatrix.times(fullTurnOriginMatrix).inverse());
             // "from" and "to" nodes are on the same side of the origin (i.e. shortest path between them along the ring does not cross the origin of the sequence)
