@@ -31,7 +31,7 @@ class ViewInspectorTableModel extends AbstractTableModel implements PropertyTabl
     public static final int NAME_COLUMN = 0;
     public static final int VALUE_COLUMN = 1;
 
-    protected final PropertyDescriptor[] propertyDescriptors;
+    protected final transient PropertyDescriptor[] propertyDescriptors;
     protected final BeanNode<?> beanNode;
     protected final PropertyValueEditorManager propertyValueEditorManager;
 
@@ -118,10 +118,7 @@ class ViewInspectorTableModel extends AbstractTableModel implements PropertyTabl
      */
     @Override
     public Class<?> getColumnClass(final int column) {
-        switch (column) {
-            default:
-                return String.class;
-        }
+        return String.class;
     }
 
     /**
@@ -129,12 +126,11 @@ class ViewInspectorTableModel extends AbstractTableModel implements PropertyTabl
      */
     @Override
     public boolean isCellEditable(final int row, final int column) {
-        switch (column) {
-            case VALUE_COLUMN:
-                final PropertyDescriptor propertyDescriptor = propertyDescriptors[row];
-                return isPropertyEditable(propertyDescriptor);
-            default:
-                return false;
+        if (column == ViewInspectorTableModel.VALUE_COLUMN) {
+            final PropertyDescriptor propertyDescriptor = propertyDescriptors[row];
+            return isPropertyEditable(propertyDescriptor);
+        } else {
+            return false;
         }
     }
 
@@ -188,19 +184,14 @@ class ViewInspectorTableModel extends AbstractTableModel implements PropertyTabl
      */
     @Override
     public void setValueAt(final Object value, final int row, final int column) {
-        switch (column) {
-            case VALUE_COLUMN:
-                try {
+        if (column == ViewInspectorTableModel.VALUE_COLUMN) {
+            try {
                 final PropertyDescriptor propertyDescriptor = propertyDescriptors[row];
                 beanNode.setPropertyValue(propertyDescriptor, value);
-                break;
             } catch (Exception exception) {
                 LOGGER.log(Level.SEVERE, "Error Setting Value", exception);
                 ApplicationSupport.displayWarning("Error Setting Value", "Property Setting Exception:", exception);
-                return;
             }
-            default:
-                return;
         }
     }
 }

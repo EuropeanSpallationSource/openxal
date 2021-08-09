@@ -27,6 +27,7 @@ public abstract class BeanNode<T> extends Brick implements DataListener {
      * data label from bean properties
      */
     protected static final String BEAN_DATA_LABEL = "BeanProperty";
+    private static final String CUSTOM_BEAN_ATTR = "customBeanClass";
 
     /**
      * bean object
@@ -56,7 +57,7 @@ public abstract class BeanNode<T> extends Brick implements DataListener {
     /**
      * Primary Constructor
      */
-    public BeanNode(final BeanProxy<T> beanProxy, final Map<String, Object> beanSettings, final String tag) {
+    protected BeanNode(final BeanProxy<T> beanProxy, final Map<String, Object> beanSettings, final String tag) {
         this.beanProxy = beanProxy;
         beanObject = getPrototypeBean(beanProxy);
         this.beanSettings = new HashMap<>();
@@ -73,7 +74,7 @@ public abstract class BeanNode<T> extends Brick implements DataListener {
     /**
      * Constructor
      */
-    public BeanNode(final BeanNode<T> node) {
+    protected BeanNode(final BeanNode<T> node) {
         this(node.beanProxy, node.beanSettings, node.getTag());
 
         setCustomBeanClassName(node.getCustomBeanClassName());
@@ -82,7 +83,7 @@ public abstract class BeanNode<T> extends Brick implements DataListener {
     /**
      * Constructor
      */
-    public BeanNode(final BeanProxy<T> beanProxy) {
+    protected BeanNode(final BeanProxy<T> beanProxy) {
         this(beanProxy, null, beanProxy.getName());
     }
 
@@ -316,8 +317,8 @@ public abstract class BeanNode<T> extends Brick implements DataListener {
      */
     @Override
     public void update(final DataAdaptor adaptor) {
-        if (adaptor.hasAttribute("customBeanClass")) {
-            setCustomBeanClassName(adaptor.stringValue("customBeanClass"));
+        if (adaptor.hasAttribute(CUSTOM_BEAN_ATTR)) {
+            setCustomBeanClassName(adaptor.stringValue(CUSTOM_BEAN_ATTR));
         }
 
         final PropertyValueEditorManager editorManager = PropertyValueEditorManager.getDefaultManager();
@@ -348,7 +349,7 @@ public abstract class BeanNode<T> extends Brick implements DataListener {
         adaptor.setValue("tag", tag);
 
         if (customBeanClassName != null) {
-            adaptor.setValue("customBeanClass", customBeanClassName);
+            adaptor.setValue(CUSTOM_BEAN_ATTR, customBeanClassName);
         }
 
         adaptor.writeNode(beanProxy);
@@ -385,6 +386,7 @@ public abstract class BeanNode<T> extends Brick implements DataListener {
              */
             @Override
             public void update(final DataAdaptor adaptor) {
+                // Do nothing
             }
 
             /**

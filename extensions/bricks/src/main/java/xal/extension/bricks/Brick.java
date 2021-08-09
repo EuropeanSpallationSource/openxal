@@ -35,7 +35,7 @@ public abstract class Brick {
     /**
      * Primary Constructor
      */
-    public Brick() {
+    protected Brick() {
         treeNode = new DefaultMutableTreeNode(this);
         treeNode.setAllowsChildren(true);
 

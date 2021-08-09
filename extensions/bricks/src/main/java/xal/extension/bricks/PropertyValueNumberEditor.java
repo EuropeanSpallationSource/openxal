@@ -17,8 +17,8 @@ public abstract class PropertyValueNumberEditor<T> extends PropertyValueTextEdit
     /**
      * Constructor
      */
-    public PropertyValueNumberEditor() {
-        ((JTextField) editorComponent).setHorizontalAlignment(JTextField.RIGHT);
-        ((JLabel) renderingComponent).setHorizontalAlignment(JLabel.RIGHT);
+    protected PropertyValueNumberEditor() {
+        ((JTextField) editorComponent).setHorizontalAlignment(SwingConstants.RIGHT);
+        ((JLabel) renderingComponent).setHorizontalAlignment(SwingConstants.RIGHT);
     }
 }

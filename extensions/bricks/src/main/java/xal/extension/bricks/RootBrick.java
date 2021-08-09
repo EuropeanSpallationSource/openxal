@@ -79,7 +79,7 @@ public class RootBrick extends Brick implements ViewNodeContainer, DataListener 
      * @param beanProxies the views to add to this node
      */
     // must cast bean proxy to view proxy
-    @SuppressWarnings("unchecked")    
+    @SuppressWarnings("unchecked")
     @Override
     public void add(final List<BeanProxy<?>> beanProxies) {
         final List<BeanNode<?>> nodes = new ArrayList<>(beanProxies.size());
@@ -114,6 +114,7 @@ public class RootBrick extends Brick implements ViewNodeContainer, DataListener 
      */
     @Override
     public void moveDownNodes(final List<BeanNode<?>> nodes) {
+        // Do nothing
     }
 
     /**
@@ -123,6 +124,7 @@ public class RootBrick extends Brick implements ViewNodeContainer, DataListener 
      */
     @Override
     public void moveUpNodes(final List<BeanNode<?>> nodes) {
+        // Do nothing
     }
 
     /**
@@ -147,6 +149,7 @@ public class RootBrick extends Brick implements ViewNodeContainer, DataListener 
      */
     @Override
     public void insertSiblings(final List<BeanProxy<?>> viewProxies) {
+        // Do nothing
     }
 
     /**
@@ -177,6 +180,7 @@ public class RootBrick extends Brick implements ViewNodeContainer, DataListener 
      */
     @Override
     public void insertSiblingNodes(final List<BeanNode<?>> originalNodes) {
+        // Do nothing
     }
 
     /**
@@ -216,6 +220,7 @@ public class RootBrick extends Brick implements ViewNodeContainer, DataListener 
      */
     @Override
     public void removeFromParent() {
+        // Do nothing
     }
 
     /**

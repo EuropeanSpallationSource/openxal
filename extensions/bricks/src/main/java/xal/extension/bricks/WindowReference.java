@@ -31,6 +31,7 @@ public class WindowReference {
 
     private static final Logger LOGGER = Logger.getLogger(WindowReference.class.getName());
 
+    private static final String CUSTOM_BEAN_ATTR = "customBeanClass";
     /**
      * context in which this window reference was made
      */
@@ -81,7 +82,7 @@ public class WindowReference {
      */
     public Object getView(final String tag) {
         final List<Object> views = getViews(tag);
-        return views != null && views.size() > 0 ? views.get(0) : null;
+        return views != null && !views.isEmpty() ? views.get(0) : null;
     }
 
     /**
@@ -104,17 +105,17 @@ public class WindowReference {
     protected Window loadWindow(final URL url, final String tag, final Object[] windowParameters) {
         final DataAdaptor windowAdaptor = getWindowAdaptor(url, tag);
         if (windowAdaptor != null) {
-            final Window window = (Window) getView(windowAdaptor, windowParameters);
+            final Window theWindow = (Window) getView(windowAdaptor, windowParameters);
 
             if (windowAdaptor.hasAttribute("width")) {
                 final int width = windowAdaptor.intValue("width");
                 final int height = windowAdaptor.intValue("height");
-                window.setSize(width, height);
+                theWindow.setSize(width, height);
             }
 
-            registerView(window, tag);
+            registerView(theWindow, tag);
 
-            return window;
+            return theWindow;
         } else {
             return null;
         }
@@ -149,9 +150,9 @@ public class WindowReference {
         final String tag = adaptor.stringValue("tag");
 
         Class<?> viewClass = viewProxy.getPrototypeClass();
-        if (adaptor.hasAttribute("customBeanClass")) {
+        if (adaptor.hasAttribute(CUSTOM_BEAN_ATTR)) {
             try {
-                final String customClassName = adaptor.stringValue("customBeanClass");
+                final String customClassName = adaptor.stringValue(CUSTOM_BEAN_ATTR);
                 viewClass = Class.forName(customClassName);
             } catch (ClassNotFoundException exception) {
                 LOGGER.log(Level.SEVERE, null, exception);
@@ -202,14 +203,14 @@ public class WindowReference {
      * Find a constructor that matches the specified parameters
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private static <ClassType> Constructor<ClassType> findConstructor(final Class<ClassType> theClass, final Object[] parameters) {
+    private static <T> Constructor<T> findConstructor(final Class<T> theClass, final Object[] parameters) {
         final Class<?>[] parameterTypes = new Class[parameters.length];
         for (int index = 0; index < parameters.length; index++) {
             parameterTypes[index] = parameters[index].getClass();
         }
 
         try {
-            final Constructor<ClassType> constructor = theClass.getConstructor(parameterTypes);
+            final Constructor<T> constructor = theClass.getConstructor(parameterTypes);
             constructor.setAccessible(true);
             return constructor;
         } catch (NoSuchMethodException | SecurityException exception) {
@@ -251,9 +252,9 @@ public class WindowReference {
         final String tag = adaptor.stringValue("tag");
 
         Class<?> borderClass = borderProxy.getPrototypeClass();
-        if (adaptor.hasAttribute("customBeanClass")) {
+        if (adaptor.hasAttribute(CUSTOM_BEAN_ATTR)) {
             try {
-                final String customClassName = adaptor.stringValue("customBeanClass");
+                final String customClassName = adaptor.stringValue(CUSTOM_BEAN_ATTR);
                 borderClass = Class.forName(customClassName);
             } catch (ClassNotFoundException exception) {
                 LOGGER.log(Level.SEVERE, null, exception);
@@ -304,7 +305,7 @@ public class WindowReference {
      */
     protected static Map<String, PropertyDescriptor> getProperyDescriptorTable(final Object object) {
         try {
-            final BeanInfo beanInfo = Introspector.getBeanInfo(object.getClass());;
+            final BeanInfo beanInfo = Introspector.getBeanInfo(object.getClass());
             final PropertyDescriptor[] descriptors = beanInfo != null ? beanInfo.getPropertyDescriptors() : new PropertyDescriptor[0];
             final Map<String, PropertyDescriptor> descriptorTable = new HashMap<>();
             for (final PropertyDescriptor descriptor : descriptors) {

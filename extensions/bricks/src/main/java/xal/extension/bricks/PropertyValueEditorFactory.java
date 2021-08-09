@@ -29,6 +29,10 @@ public class PropertyValueEditorFactory {
 
     private static final Logger LOGGER = Logger.getLogger(PropertyValueEditorFactory.class.getName());
 
+    private static final String HEIGHT_STR = "height";
+    private static final String WIDTH_STR = "width";
+    private static final String VALUE_STR = "value";
+
     private PropertyValueEditorFactory() {
         throw new IllegalStateException("Utility class");
     }
@@ -52,7 +56,7 @@ public class PropertyValueEditorFactory {
             @Override
             public void writeValue(final String name, final Object value, final DataAdaptor adaptor) {
                 super.writeValue(name, value, adaptor);
-                adaptor.setValue("value", value.toString());
+                adaptor.setValue(VALUE_STR, value.toString());
             }
 
             /**
@@ -60,7 +64,7 @@ public class PropertyValueEditorFactory {
              */
             @Override
             public String readValue(final DataAdaptor adaptor) {
-                return adaptor.stringValue("value");
+                return adaptor.stringValue(VALUE_STR);
             }
         };
     }
@@ -76,7 +80,7 @@ public class PropertyValueEditorFactory {
             @Override
             public Double getEditorValue(final BricksContext context) {
                 final String text = ((JTextField) getEditorComponent()).getText();
-                return new Double(text);
+                return Double.parseDouble(text);
             }
 
             /**
@@ -85,7 +89,7 @@ public class PropertyValueEditorFactory {
             @Override
             public void writeValue(final String name, final Object value, final DataAdaptor adaptor) {
                 super.writeValue(name, value, adaptor);
-                adaptor.setValue("value", (Double) value);
+                adaptor.setValue(VALUE_STR, (Double) value);
             }
 
             /**
@@ -93,7 +97,7 @@ public class PropertyValueEditorFactory {
              */
             @Override
             public Double readValue(final DataAdaptor adaptor) {
-                return adaptor.doubleValue("value");
+                return adaptor.doubleValue(VALUE_STR);
             }
         };
     }
@@ -118,7 +122,7 @@ public class PropertyValueEditorFactory {
             @Override
             public void writeValue(final String name, final Object value, final DataAdaptor adaptor) {
                 super.writeValue(name, value, adaptor);
-                adaptor.setValue("value", (Integer) value);
+                adaptor.setValue(VALUE_STR, (Integer) value);
             }
 
             /**
@@ -126,7 +130,7 @@ public class PropertyValueEditorFactory {
              */
             @Override
             public Integer readValue(final DataAdaptor adaptor) {
-                return adaptor.intValue("value");
+                return adaptor.intValue(VALUE_STR);
             }
         };
     }
@@ -173,12 +177,9 @@ public class PropertyValueEditorFactory {
             @Override
             public Component getEditorComponentInstance() {
                 final JCheckBox checkBox = new JCheckBox();
-                checkBox.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(final ActionEvent event) {
-                        if (currentCellEditor != null) {
-                            currentCellEditor.fireEditingStopped();
-                        }
+                checkBox.addActionListener(e -> {
+                    if (currentCellEditor != null) {
+                        currentCellEditor.fireEditingStopped();
                     }
                 });
                 return checkBox;
@@ -214,7 +215,7 @@ public class PropertyValueEditorFactory {
             @Override
             public void writeValue(final String name, final Object value, final DataAdaptor adaptor) {
                 super.writeValue(name, value, adaptor);
-                adaptor.setValue("value", (Boolean) value);
+                adaptor.setValue(VALUE_STR, (Boolean) value);
             }
 
             /**
@@ -222,7 +223,7 @@ public class PropertyValueEditorFactory {
              */
             @Override
             public Boolean readValue(final DataAdaptor adaptor) {
-                return adaptor.booleanValue("value");
+                return adaptor.booleanValue(VALUE_STR);
             }
         };
     }
@@ -357,8 +358,8 @@ public class PropertyValueEditorFactory {
             public void writeValue(final String name, final Object rawValue, final DataAdaptor adaptor) {
                 final Dimension value = (Dimension) rawValue;
                 super.writeValue(name, value, adaptor);
-                adaptor.setValue("width", value.width);
-                adaptor.setValue("height", value.height);
+                adaptor.setValue(WIDTH_STR, value.width);
+                adaptor.setValue(HEIGHT_STR, value.height);
             }
 
             /**
@@ -366,8 +367,8 @@ public class PropertyValueEditorFactory {
              */
             @Override
             public Dimension readValue(final DataAdaptor adaptor) {
-                final int width = adaptor.intValue("width");
-                final int height = adaptor.intValue("height");
+                final int width = adaptor.intValue(WIDTH_STR);
+                final int height = adaptor.intValue(HEIGHT_STR);
                 return new Dimension(width, height);
             }
         };
@@ -429,8 +430,8 @@ public class PropertyValueEditorFactory {
                 super.writeValue(name, value, adaptor);
                 adaptor.setValue("x", value.x);
                 adaptor.setValue("y", value.y);
-                adaptor.setValue("width", value.width);
-                adaptor.setValue("height", value.height);
+                adaptor.setValue(WIDTH_STR, value.width);
+                adaptor.setValue(HEIGHT_STR, value.height);
             }
 
             /**
@@ -440,8 +441,8 @@ public class PropertyValueEditorFactory {
             public Rectangle readValue(final DataAdaptor adaptor) {
                 final int x = adaptor.intValue("x");
                 final int y = adaptor.intValue("y");
-                final int width = adaptor.intValue("width");
-                final int height = adaptor.intValue("height");
+                final int width = adaptor.intValue(WIDTH_STR);
+                final int height = adaptor.intValue(HEIGHT_STR);
                 return new Rectangle(x, y, width, height);
             }
         };
@@ -550,7 +551,7 @@ public class PropertyValueEditorFactory {
             @Override
             public void setEditorValue(final Object value) {
                 final JTextField textField = (JTextField) getEditorComponent();
-                if (value != null && value instanceof IconResource) {
+                if (value instanceof IconResource) {
                     final IconResource icon = (IconResource) value;
                     final String group = icon.getGroup();
                     final String iconName = icon.getIconName();
@@ -567,7 +568,7 @@ public class PropertyValueEditorFactory {
             @Override
             public void setRenderingValue(final Object value) {
                 final JLabel iconLabel = (JLabel) getRenderingComponent();
-                if (value != null && value instanceof IconResource) {
+                if (value instanceof IconResource) {
                     final IconResource icon = (IconResource) value;
                     iconLabel.setText("group:  " + icon.getGroup() + ", name:  " + icon.getIconName());
                 } else {
@@ -636,19 +637,14 @@ class PropertyValueColorEditor extends PropertyValueEditor<Color> {
     @Override
     public Component getEditorComponentInstance() {
         final JButton button = new JButton("Color");
-        final ActionListener handler = new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-            }
+        final ActionListener handler = e -> {
+            // Do nothing
         };
         final JDialog dialog = JColorChooser.createDialog(button, "Pick a Color", true, getColorChooser(), handler, null);
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                dialog.setVisible(true);
-                if (currentCellEditor != null) {
-                    currentCellEditor.fireEditingStopped();
-                }
+        button.addActionListener(e -> {
+            dialog.setVisible(true);
+            if (currentCellEditor != null) {
+                currentCellEditor.fireEditingStopped();
             }
         });
 
@@ -668,8 +664,7 @@ class PropertyValueColorEditor extends PropertyValueEditor<Color> {
      */
     @Override
     public Color getEditorValue(final BricksContext context) {
-        final Color color = getColorChooser().getColor();
-        return color;
+        return getColorChooser().getColor();
     }
 
     /**

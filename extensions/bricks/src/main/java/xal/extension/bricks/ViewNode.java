@@ -31,6 +31,9 @@ import xal.tools.data.*;
  */
 public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 
+    private static final String HEIGHT_STR = "height";
+    private static final String WIDTH_STR = "width";
+
     private static final Logger LOGGER = Logger.getLogger(ViewNode.class.getName());
 
     /**
@@ -74,7 +77,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
      * Constructor
      */
     // DefaultMutableTreeNode returns an untyped Enumeration
-    @SuppressWarnings("rawtypes")        
+    @SuppressWarnings("rawtypes")
     public ViewNode(final ViewNode node) {
         this(node.getViewProxy(), node.beanSettings, node.getTag());
 
@@ -83,17 +86,17 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
         final List<BeanNode<?>> beanNodes = new ArrayList<>(treeNode.getChildCount());
         final Enumeration childNodeEnumerator = node.getTreeNode().children();
         while (childNodeEnumerator.hasMoreElements()) {
-            final DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) childNodeEnumerator.nextElement();
-            final Object userObject = treeNode.getUserObject();
-            if (userObject != null && userObject instanceof BeanNode) {
+            final DefaultMutableTreeNode aTreeNode = (DefaultMutableTreeNode) childNodeEnumerator.nextElement();
+            final Object userObject = aTreeNode.getUserObject();
+            if (userObject instanceof BeanNode) {
                 beanNodes.add((BeanNode) userObject);
             }
         }
         addNodes(beanNodes);
 
-        final BorderNode borderNode = node.getBorderNode();
-        if (borderNode != null) {
-            setBorderNode(new BorderNode(borderNode));
+        final BorderNode theBorderNode = node.getBorderNode();
+        if (theBorderNode != null) {
+            setBorderNode(new BorderNode(theBorderNode));
         }
 
         if (isWindow()) {
@@ -105,7 +108,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
      * generator
      */
     // must cast view proxy to have Component type
-    @SuppressWarnings("unchecked")    
+    @SuppressWarnings("unchecked")
     public static ViewNode getInstance(final DataAdaptor adaptor) {
         final DataAdaptor proxyAdaptor = adaptor.childAdaptor(ViewProxy.DATA_LABEL);
         final ViewProxy<Component> viewProxy = (ViewProxy<Component>) ViewProxy.getInstance(proxyAdaptor);
@@ -206,23 +209,23 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
      * @param beanProxies the beans to add to this node
      */
     // must cast bean proxy to view proxy
-    @SuppressWarnings("unchecked")    
+    @SuppressWarnings("unchecked")
     @Override
     public void add(final List<BeanProxy<?>> beanProxies) {
         final List<BeanNode<?>> nodes = new ArrayList<>(beanProxies.size());
         final Container container = getContainer();
-        for (final BeanProxy<?> beanProxy : beanProxies) {
-            if (beanProxy instanceof ViewProxy) {
+        for (final BeanProxy<?> aBeanProxy : beanProxies) {
+            if (aBeanProxy instanceof ViewProxy) {
                 if (container == null) {
                     return;
                 }
-                final ViewNode node = new ViewNode((ViewProxy<Component>) beanProxy);
+                final ViewNode node = new ViewNode((ViewProxy<Component>) aBeanProxy);
                 container.add(node.getView());
                 node.addBrickListener(this);
                 nodes.add(node);
                 treeNode.add(node.getTreeNode());
-            } else if (beanProxy instanceof BorderProxy) {
-                final BorderNode node = new BorderNode((BorderProxy) beanProxy);
+            } else if (aBeanProxy instanceof BorderProxy) {
+                final BorderNode node = new BorderNode((BorderProxy) aBeanProxy);
                 setBorderNode(node);
                 nodes.add(node);
             }
@@ -268,7 +271,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
      * @param beanProxies the views to add to this node
      */
     // must cast bean proxy to view proxy
-    @SuppressWarnings("unchecked")    
+    @SuppressWarnings("unchecked")
     @Override
     public void insertSiblings(final List<BeanProxy<?>> beanProxies) {
         int treeIndex = treeNode.getParent().getIndex(treeNode);
@@ -276,9 +279,9 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
         int viewIndex = treeIndex - target.getTreeIndexOffsetFromViewIndex();
 
         final List<BeanNode<?>> nodes = new ArrayList<>(beanProxies.size());
-        for (final BeanProxy<?> beanProxy : beanProxies) {
-            if (beanProxy instanceof ViewProxy) {
-                final ViewNode node = new ViewNode((ViewProxy<Component>) beanProxy);
+        for (final BeanProxy<?> aBeanProxy : beanProxies) {
+            if (aBeanProxy instanceof ViewProxy) {
+                final ViewNode node = new ViewNode((ViewProxy<Component>) aBeanProxy);
                 target.insertViewNode(node, viewIndex++);
                 nodes.add(node);
             }
@@ -367,11 +370,9 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
                 }
 
                 for (final int index : indicesToMove) {
-                    final TreeNode treeNode = this.treeNode.getChildAt(index);
-                    if (treeNode instanceof DefaultMutableTreeNode) {
-                        final ViewNode viewNode = (ViewNode) ((DefaultMutableTreeNode) treeNode).getUserObject();
-                        final int nodeIndex = index + 1;
-                        this.treeNode.insert((MutableTreeNode) treeNode, nodeIndex);
+                    TreeNode aTreeNode = treeNode.getChildAt(index);
+                    if (aTreeNode instanceof DefaultMutableTreeNode) {
+                        treeNode.insert((MutableTreeNode) aTreeNode, index + 1);
                     }
                 }
                 reconstructContainer(true);
@@ -387,9 +388,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
      */
     @Override
     public void moveUpNodes(final List<BeanNode<?>> nodes) {
-        if (nodes.size() > 0) {
-            final int brickCount = treeNode.getChildCount();
-
+        if (!nodes.isEmpty()) {
             final List<Integer> indicesToMove = new ArrayList<>(nodes.size());
             for (final BeanNode<?> node : nodes) {
                 final int index = treeNode.getIndex(node.treeNode);
@@ -406,11 +405,11 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
                 }
 
                 for (final int index : indicesToMove) {
-                    final TreeNode treeNode = this.treeNode.getChildAt(index);
-                    if (treeNode instanceof DefaultMutableTreeNode) {
-                        final ViewNode viewNode = (ViewNode) ((DefaultMutableTreeNode) treeNode).getUserObject();
+                    final TreeNode aTreeNode = this.treeNode.getChildAt(index);
+                    if (aTreeNode instanceof DefaultMutableTreeNode) {
+
                         final int nodeIndex = index - 1;
-                        this.treeNode.insert((MutableTreeNode) treeNode, nodeIndex);
+                        this.treeNode.insert((MutableTreeNode) aTreeNode, nodeIndex);
                     }
                 }
                 reconstructContainer(true);
@@ -568,6 +567,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
      */
     @Override
     public void nodesAdded(final Object source, final Brick container, final List<BeanNode<?>> nodes) {
+        // Do nothing
     }
 
     /**
@@ -579,6 +579,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
      */
     @Override
     public void nodesRemoved(final Object source, final Brick container, final List<BeanNode<?>> nodes) {
+        // Do nothing
     }
 
     /**
@@ -620,7 +621,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
     public void display() {
         final Component view = getView();
         final Component window = view instanceof Window ? view : SwingUtilities.getWindowAncestor(view);
-        if (window != null && window instanceof Window) {
+        if (window instanceof Window) {
             window.setVisible(true);
             ((Window) window).toFront();
         }
@@ -645,8 +646,8 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
     public void update(final DataAdaptor adaptor) {
         final DataAdaptor borderAdaptor = adaptor.childAdaptor(BorderNode.DATA_LABEL);
         if (borderAdaptor != null) {
-            final BorderNode borderNode = BorderNode.getInstance(borderAdaptor);
-            setBorderNode(borderNode);
+            final BorderNode theBorderNode = BorderNode.getInstance(borderAdaptor);
+            setBorderNode(theBorderNode);
         }
 
         final List<DataAdaptor> nodeAdaptors = adaptor.childAdaptors(ViewNode.DATA_LABEL);
@@ -657,9 +658,9 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
         }
         addNodes(nodes);
 
-        if (isWindow() && adaptor.hasAttribute("width")) {
-            final int width = adaptor.intValue("width");
-            final int height = adaptor.intValue("height");
+        if (isWindow() && adaptor.hasAttribute(WIDTH_STR)) {
+            final int width = adaptor.intValue(WIDTH_STR);
+            final int height = adaptor.intValue(HEIGHT_STR);
             getView().setSize(width, height);
         }
 
@@ -672,22 +673,22 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
      * @param adaptor The adaptor to which the receiver's data is written
      */
     // DefaultMutableTreeNode returns an untyped Enumeration
-    @SuppressWarnings("rawtypes")        
+    @SuppressWarnings("rawtypes")
     @Override
     public void write(final DataAdaptor adaptor) {
         super.write(adaptor);
 
         if (isWindow()) {
             final Dimension size = getView().getSize();
-            adaptor.setValue("width", size.width);
-            adaptor.setValue("height", size.height);
+            adaptor.setValue(WIDTH_STR, size.width);
+            adaptor.setValue(HEIGHT_STR, size.height);
         }
 
         final Enumeration childNodeEnumerator = getTreeNode().children();
         while (childNodeEnumerator.hasMoreElements()) {
-            final DefaultMutableTreeNode treeNode = (DefaultMutableTreeNode) childNodeEnumerator.nextElement();
-            final Object userObject = treeNode.getUserObject();
-            if (userObject != null && userObject instanceof BeanNode) {
+            final DefaultMutableTreeNode aTreeNode = (DefaultMutableTreeNode) childNodeEnumerator.nextElement();
+            final Object userObject = aTreeNode.getUserObject();
+            if (userObject instanceof BeanNode) {
                 adaptor.writeNode((BeanNode) userObject);
             }
         }
@@ -711,6 +712,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
 
         @Override
         public void dragEnter(final DropTargetDragEvent event) {
+            // Do nothing
         }
 
         // we have no choice but to cast the transfered data

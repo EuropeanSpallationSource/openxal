@@ -21,7 +21,7 @@ import xal.tools.data.*;
 /**
  * interface for providing view node behavior
  */
-public abstract class ViewProxy<ViewType extends Component> extends BeanProxy<ViewType> {
+public abstract class ViewProxy<T extends Component> extends BeanProxy<T> {
 
     /**
      * data label
@@ -41,7 +41,7 @@ public abstract class ViewProxy<ViewType extends Component> extends BeanProxy<Vi
     /**
      * Constructor
      */
-    public ViewProxy(final Class<ViewType> prototypeClass, final boolean isContainer, final boolean makeIcon) {
+    protected ViewProxy(final Class<T> prototypeClass, final boolean isContainer, final boolean makeIcon) {
         super(prototypeClass);
         this.isContainer = isContainer;
         this.makeIcon = makeIcon;
@@ -74,7 +74,7 @@ public abstract class ViewProxy<ViewType extends Component> extends BeanProxy<Vi
      * @param view the view whose container is to be gotten
      * @return the view's container
      */
-    public Container getContainer(final ViewType view) {
+    public Container getContainer(final T view) {
         return view instanceof RootPaneContainer ? ((RootPaneContainer) view).getContentPane() : view instanceof Container ? (Container) view : null;
     }
 

@@ -8,8 +8,6 @@
 package xal.extension.bricks;
 
 import java.lang.reflect.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.*;
 
 import xal.tools.data.*;
@@ -17,28 +15,26 @@ import xal.tools.data.*;
 /**
  * proxy for generating a Java Bean object
  */
-public abstract class BeanProxy<ViewType> implements DataListener {
-
-    private static final Logger LOGGER = Logger.getLogger(BeanProxy.class.getName());
+public abstract class BeanProxy<T> implements DataListener {
 
     /**
      * prototype class
      */
-    protected final Class<ViewType> prototypeClass;
+    protected final Class<T> prototypeClass;
 
     /**
      * Constructor
      */
-    public BeanProxy(final Class<ViewType> prototypeClass) {
+    protected BeanProxy(final Class<T> prototypeClass) {
         this.prototypeClass = prototypeClass;
     }
 
     /**
      * Create an instance of the specified view
      */
-    public ViewType getBeanInstance(final Class<ViewType> theClass) {
+    public T getBeanInstance(final Class<T> theClass) {
         try {
-            final Constructor<ViewType> constructor = theClass.getConstructor(getConstructorParameterTypes());
+            final Constructor<T> constructor = theClass.getConstructor(getConstructorParameterTypes());
             final Object[] parameters = getConstructorParameters();
             return getBeanInstance(theClass, constructor, parameters);
         } catch (NoSuchMethodException | SecurityException exception) {
@@ -49,14 +45,13 @@ public abstract class BeanProxy<ViewType> implements DataListener {
     /**
      * Create an instance of the specified view
      */
-    public ViewType getBeanInstance(final Class<ViewType> theClass, final Constructor<ViewType> constructor, Object... parameters) {
+    public T getBeanInstance(final Class<T> theClass, final Constructor<T> constructor, Object... parameters) {
         try {
             constructor.setAccessible(true);
-            final ViewType object = constructor.newInstance(parameters);
+            final T object = constructor.newInstance(parameters);
             setup(object);
             return object;
         } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | InvocationTargetException exception) {
-            LOGGER.log(Level.SEVERE, null, exception);
             throw new RuntimeException("Can't instantiate class:  " + theClass.toString(), exception);
         }
     }
@@ -64,19 +59,19 @@ public abstract class BeanProxy<ViewType> implements DataListener {
     /**
      * setup the instance after construction
      */
-    public void setup(final ViewType object) {
+    public void setup(final T object) {
     }
 
     /**
      * setup the instance after construction with prototype data
      */
-    public void setupPrototype(final ViewType object) {
+    public void setupPrototype(final T object) {
     }
 
     /**
      * Get the class of the view
      */
-    public final Class<ViewType> getPrototypeClass() {
+    public final Class<T> getPrototypeClass() {
         return prototypeClass;
     }
 
@@ -85,8 +80,8 @@ public abstract class BeanProxy<ViewType> implements DataListener {
      *
      * @return the prototype view
      */
-    public final ViewType getPrototype() {
-        final ViewType object = getBeanInstance(prototypeClass);
+    public final T getPrototype() {
+        final T object = getBeanInstance(prototypeClass);
         setupPrototype(object);
         return object;
     }
@@ -97,7 +92,7 @@ public abstract class BeanProxy<ViewType> implements DataListener {
      * @return the constructor arguments
      */
     // generics don't mix with arrays
-    @SuppressWarnings("rawtypes")        
+    @SuppressWarnings("rawtypes")
     public Class[] getConstructorParameterTypes() {
         return new Class[0];
     }
@@ -225,7 +220,7 @@ public abstract class BeanProxy<ViewType> implements DataListener {
     /**
      * get the java reference snippet
      */
-    public String getXALReferenceSnippet(final BeanNode<ViewType> node) {
+    public String getXALReferenceSnippet(final BeanNode<T> node) {
         return getJavaReferenceSnippet(node);
     }
 
@@ -234,7 +229,7 @@ public abstract class BeanProxy<ViewType> implements DataListener {
      *
      * @return the java declaration snippet
      */
-    public String getJavaDeclarationSnippet(final BeanNode<ViewType> node) {
+    public String getJavaDeclarationSnippet(final BeanNode<T> node) {
         final StringBuilder buffer = new StringBuilder();
         buffer.append(node.getShortClassName());
         buffer.append(" ");

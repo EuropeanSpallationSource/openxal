@@ -24,7 +24,7 @@ public abstract class BorderProxy<T extends Border> extends BeanProxy<T> {
     /**
      * Constructor
      */
-    public BorderProxy(final Class<T> prototypeClass) {
+    protected BorderProxy(final Class<T> prototypeClass) {
         super(prototypeClass);
     }
 

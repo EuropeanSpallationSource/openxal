@@ -26,6 +26,8 @@ import xal.extension.widgets.plot.*;
  */
 public class ViewProxyFactory {
 
+    private static final String LINE_SEPARATOR_STR = "line.separator";
+
     /**
      * table of proxies keyed by type
      */
@@ -210,7 +212,7 @@ public class ViewProxyFactory {
      * Generate a view proxy for a combo box view
      */
     // TODO: JComboBox is typed in Java 7 but not earlier
-    @SuppressWarnings({"unchecked", "rawtypes"})    
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public static ViewProxy<JComboBox> getComboBoxProxy() {
         return new ViewProxy<JComboBox>(JComboBox.class, false, false) {
             @Override
@@ -236,7 +238,7 @@ public class ViewProxyFactory {
      * Generate a view proxy for a list view
      */
     // TODO: JList is typed in Java 7 but not earlier
-    @SuppressWarnings({"rawtypes", "unchecked"})    
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public static ViewProxy<JList> getListProxy() {
         return new ViewProxy<JList>(JList.class, false, false) {
             /**
@@ -661,7 +663,7 @@ public class ViewProxyFactory {
                 final StringBuilder buffer = new StringBuilder();
                 buffer.append("WindowReference windowReference = new WindowReference( url, ");
                 buffer.append("\"").append(node.getTag()).append("\", arg1, arg2 );");
-                buffer.append(System.getProperty("line.separator"));
+                buffer.append(System.getProperty(LINE_SEPARATOR_STR));
                 buffer.append(super.getJavaReferenceSnippet(node));
                 return buffer.toString();
             }
@@ -674,7 +676,7 @@ public class ViewProxyFactory {
                 final StringBuilder buffer = new StringBuilder();
                 buffer.append("WindowReference windowReference = Application.getAdaptor().getDefaultWindowReference( ");
                 buffer.append("\"").append(node.getTag()).append("\", arg1, arg2 );");
-                buffer.append(System.getProperty("line.separator"));
+                buffer.append(System.getProperty(LINE_SEPARATOR_STR));
                 buffer.append(super.getJavaReferenceSnippet(node));
                 return buffer.toString();
             }
@@ -687,7 +689,7 @@ public class ViewProxyFactory {
                 final StringBuilder buffer = new StringBuilder();
                 buffer.append("window_reference = WindowReference( url, ");
                 buffer.append("\"").append(node.getTag()).append("\", [arg1, arg2] )");
-                buffer.append(System.getProperty("line.separator"));
+                buffer.append(System.getProperty(LINE_SEPARATOR_STR));
                 buffer.append(super.getJythonReferenceSnippet(node));
                 return buffer.toString();
             }
@@ -745,7 +747,7 @@ public class ViewProxyFactory {
                 final StringBuilder buffer = new StringBuilder();
                 buffer.append("WindowReference windowReference = new WindowReference( url, ");
                 buffer.append("\"").append(node.getTag()).append("\", arg1, arg2 );");
-                buffer.append(System.getProperty("line.separator"));
+                buffer.append(System.getProperty(LINE_SEPARATOR_STR));
                 buffer.append(super.getJavaReferenceSnippet(node));
                 return buffer.toString();
             }
@@ -758,7 +760,7 @@ public class ViewProxyFactory {
                 final StringBuilder buffer = new StringBuilder();
                 buffer.append("WindowReference windowReference = Application.getAdaptor().getDefaultWindowReference( ");
                 buffer.append("\"").append(node.getTag()).append("\", arg1, arg2 );");
-                buffer.append(System.getProperty("line.separator"));
+                buffer.append(System.getProperty(LINE_SEPARATOR_STR));
                 buffer.append(super.getJavaReferenceSnippet(node));
                 return buffer.toString();
             }
@@ -771,7 +773,7 @@ public class ViewProxyFactory {
                 final StringBuilder buffer = new StringBuilder();
                 buffer.append("window_reference = WindowReference( url, ");
                 buffer.append("\"").append(node.getTag()).append("\", [arg1, arg2] )");
-                buffer.append(System.getProperty("line.separator"));
+                buffer.append(System.getProperty(LINE_SEPARATOR_STR));
                 buffer.append(super.getJythonReferenceSnippet(node));
                 return buffer.toString();
             }

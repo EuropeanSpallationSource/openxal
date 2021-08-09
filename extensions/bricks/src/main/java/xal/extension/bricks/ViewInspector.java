@@ -171,12 +171,9 @@ public class ViewInspector extends Box {
 
         tagField.setMaximumSize(new Dimension(10000, tagField.getPreferredSize().height));
 
-        tagField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                if (node != null) {
-                    node.setTag(tagField.getText());
-                }
+        tagField.addActionListener(event -> {
+            if (node != null) {
+                node.setTag(tagField.getText());
             }
         });
 
@@ -194,23 +191,17 @@ public class ViewInspector extends Box {
 
         customClassField.setMaximumSize(new Dimension(10000, tagField.getPreferredSize().height));
 
-        customClassField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                if (node != null) {
-                    node.setCustomBeanClassName(customClassField.getText());
-                }
+        customClassField.addActionListener(event -> {
+            if (node != null) {
+                node.setCustomBeanClassName(customClassField.getText());
             }
         });
 
-        customClassEnable.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(final ActionEvent event) {
-                if (node != null) {
-                    final boolean shouldEnable = customClassEnable.isSelected();
-                    node.setCustomBeanClassName(shouldEnable ? node.getClassName() : null);
-                    refreshCustomClassView();
-                }
+        customClassEnable.addActionListener(event -> {
+            if (node != null) {
+                final boolean shouldEnable = customClassEnable.isSelected();
+                node.setCustomBeanClassName(shouldEnable ? node.getClassName() : null);
+                refreshCustomClassView();
             }
         });
 
