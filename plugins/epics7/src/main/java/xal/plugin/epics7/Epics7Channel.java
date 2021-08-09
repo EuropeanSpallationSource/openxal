@@ -103,6 +103,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     private static final String NO_CONTROL_FIELD_EXC = "The channel didn't return a \"control\" field.";
     private static final String NO_VALUE_ALARM_FIELD_EXC = "The channel didn't return a \"valueAlarm\" field.";
     private static final String UNSUPPORTED_EXC = "Not supported in EPICS7 (only CA).";
+    protected static final String CONNECTION_EXC = "Connection Exception thrown";
 
     private volatile Channel caChannel;
     private volatile Channel pvaChannel;
@@ -501,7 +502,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         try {
             checkConnection("addMonitorValTime");
         } catch (ConnectionException ex) {
-            throw new MonitorException("Connection Exception thrown");
+            throw new MonitorException(CONNECTION_EXC);
         }
 
         return Epics7Monitor.createNewMonitor(this, TIME_REQUEST, pvStructure -> {
@@ -515,7 +516,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         try {
             checkConnection("addMonitorValStatus");
         } catch (ConnectionException ex) {
-            throw new MonitorException("Connection Exception thrown");
+            throw new MonitorException(CONNECTION_EXC);
         }
 
         return Epics7Monitor.createNewMonitor(this, STATUS_REQUEST, pvStructure -> {
@@ -529,7 +530,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         try {
             checkConnection("addMonitorValue");
         } catch (ConnectionException ex) {
-            throw new MonitorException("Connection Exception thrown");
+            throw new MonitorException(CONNECTION_EXC);
         }
 
         return Epics7Monitor.createNewMonitor(this, VALUE_REQUEST, pvStructure -> {
@@ -543,7 +544,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         try {
             checkConnection("putRawValCallback");
         } catch (ConnectionException ex) {
-            throw new PutException("Connection Exception thrown");
+            throw new PutException(CONNECTION_EXC);
         }
         // If listener == null, wait for putDone event.
         if (listener == null) {

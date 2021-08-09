@@ -24,7 +24,6 @@ import xal.ca.Channel;
 import xal.ca.ChannelFactory;
 import xal.ca.ChannelSystem;
 import xal.plugin.epics7.FinishedThreadHook;
-import xal.plugin.epics7.server.Epics7ServerChannelSystem;
 
 /**
  *

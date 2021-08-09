@@ -134,7 +134,7 @@ public class ChannelCorrelator extends Correlator<Channel, ChannelTimeRecord, Ch
      * @param channel The channel to monitor for correlations.
      */
     // must cast null to call the correct overloaded method
-    @SuppressWarnings("unchecked")    
+    @SuppressWarnings("unchecked")
     public final void addChannel(final Channel channel) {
         addChannel(channel, (RecordFilter<ChannelTimeRecord>) null);
     }
@@ -175,7 +175,7 @@ public class ChannelCorrelator extends Correlator<Channel, ChannelTimeRecord, Ch
      * @param channelId ID to associate with the channel.
      * @param recordFilter The filter to apply to the channel's records.
      */
-    public synchronized final void addChannel(final Channel channel, final String channelId, final RecordFilter<ChannelTimeRecord> recordFilter) {
+    public final synchronized void addChannel(final Channel channel, final String channelId, final RecordFilter<ChannelTimeRecord> recordFilter) {
         addSource(channel, channelId, recordFilter);
     }
 

@@ -122,7 +122,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
             // other one is updated by new data received in a put.
             try {
                 Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable,
-                        Epics7Channel.VALUE_REQUEST, (pvS) -> {
+                        Epics7Channel.VALUE_REQUEST, pvS -> {
                         }, 0);
             } catch (MonitorException ex) {
                 Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
@@ -277,7 +277,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         try {
             checkConnection("addMonitorValTime");
         } catch (ConnectionException ex) {
-            throw new MonitorException("Connection Exception thrown");
+            throw new MonitorException(CONNECTION_EXC);
         }
 
         return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.TIME_REQUEST, pvStructure -> {
@@ -291,7 +291,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         try {
             checkConnection("addMonitorValStatus");
         } catch (ConnectionException ex) {
-            throw new MonitorException("Connection Exception thrown");
+            throw new MonitorException(CONNECTION_EXC);
         }
 
         return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.STATUS_REQUEST, pvStructure -> {
@@ -305,7 +305,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         try {
             checkConnection("addMonitorValue");
         } catch (ConnectionException ex) {
-            throw new MonitorException("Connection Exception thrown");
+            throw new MonitorException(CONNECTION_EXC);
         }
 
         return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.VALUE_REQUEST, pvStructure -> {

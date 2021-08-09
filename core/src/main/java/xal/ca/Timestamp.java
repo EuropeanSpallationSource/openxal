@@ -10,6 +10,7 @@
 package xal.ca;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -25,7 +26,7 @@ public class Timestamp implements Comparable<Timestamp> {
     /**
      * date formatter
      */
-    static final SimpleDateFormat timeFormatter;
+    static final SimpleDateFormat TIME_FORMATTER;
 
     /**
      * format an integer to have nine digits including leading zeros as
@@ -41,11 +42,11 @@ public class Timestamp implements Comparable<Timestamp> {
     /**
      * the timestamp information
      */
-    protected BigDecimal timestamp;
+    protected BigDecimal timestampBD;
 
     // static initializer
     static {
-        timeFormatter = new SimpleDateFormat("MMM d, yyyy HH:mm:ss");
+        TIME_FORMATTER = new SimpleDateFormat("MMM d, yyyy HH:mm:ss");
         NANOSECOND_FORMATTER = new DecimalFormat("000000000");
     }
 
@@ -55,7 +56,7 @@ public class Timestamp implements Comparable<Timestamp> {
      * @param timestamp the number of seconds since the Java epoch
      */
     public Timestamp(final BigDecimal timestamp) {
-        this.timestamp = timestamp;
+        this.timestampBD = timestamp;
     }
 
     /**
@@ -83,7 +84,7 @@ public class Timestamp implements Comparable<Timestamp> {
      * @return The time in milliseconds since the Java epoch.
      */
     public long getTime() {
-        return (timestamp.multiply(THOUSAND)).longValue();
+        return (timestampBD.multiply(THOUSAND)).longValue();
     }
 
     /**
@@ -92,7 +93,7 @@ public class Timestamp implements Comparable<Timestamp> {
      * @return the time in seconds since the Java epoch.
      */
     public double getSeconds() {
-        return timestamp.doubleValue();
+        return timestampBD.doubleValue();
     }
 
     /**
@@ -101,7 +102,7 @@ public class Timestamp implements Comparable<Timestamp> {
      * @return the time in seconds since the Java epoch.
      */
     public BigDecimal getFullSeconds() {
-        return timestamp;
+        return timestampBD;
     }
 
     /**
@@ -111,7 +112,7 @@ public class Timestamp implements Comparable<Timestamp> {
      */
     public java.sql.Timestamp getSQLTimestamp() {
         java.sql.Timestamp sqlTimestamp = new java.sql.Timestamp(getTime());
-        int nanoseconds = timestamp.subtract(timestamp.setScale(0, BigDecimal.ROUND_DOWN)).movePointRight(9).intValue();
+        int nanoseconds = timestampBD.subtract(timestampBD.setScale(0, RoundingMode.DOWN)).movePointRight(9).intValue();
         sqlTimestamp.setNanos(nanoseconds);
 
         return sqlTimestamp;
@@ -126,7 +127,7 @@ public class Timestamp implements Comparable<Timestamp> {
     private static BigDecimal toBigDecimal(java.sql.Timestamp timestamp) {
         BigDecimal seconds = new BigDecimal(timestamp.getTime() / 1000);
         BigDecimal nanoSeconds = new BigDecimal(timestamp.getNanos());
-        return seconds.add(nanoSeconds.movePointLeft(9)).setScale(9, BigDecimal.ROUND_HALF_UP);
+        return seconds.add(nanoSeconds.movePointLeft(9)).setScale(9, RoundingMode.HALF_UP);
     }
 
     /**
@@ -138,7 +139,7 @@ public class Timestamp implements Comparable<Timestamp> {
      * @return formatted string representation
      */
     public String toString(final DateFormat timeFormat) {
-        final long nanoseconds = timestamp.subtract(timestamp.setScale(0, BigDecimal.ROUND_DOWN)).movePointRight(9).longValue();
+        final long nanoseconds = timestampBD.subtract(timestampBD.setScale(0, RoundingMode.DOWN)).movePointRight(9).longValue();
         return timeFormat.format(getDate()) + "." + NANOSECOND_FORMATTER.format(nanoseconds);
     }
 
@@ -149,7 +150,7 @@ public class Timestamp implements Comparable<Timestamp> {
      */
     @Override
     public String toString() {
-        return toString(timeFormatter);
+        return toString(TIME_FORMATTER);
     }
 
     /**
@@ -159,8 +160,8 @@ public class Timestamp implements Comparable<Timestamp> {
      */
     @Override
     public boolean equals(final Object timestamp) {
-        if (timestamp != null && timestamp instanceof Timestamp) {
-            return ((Timestamp) timestamp).timestamp.equals(this.timestamp);
+        if (timestamp instanceof Timestamp) {
+            return ((Timestamp) timestamp).timestampBD.equals(this.timestampBD);
         } else {
             return false;
         }
@@ -172,7 +173,7 @@ public class Timestamp implements Comparable<Timestamp> {
      */
     @Override
     public int hashCode() {
-        return timestamp.hashCode();
+        return timestampBD.hashCode();
     }
 
     /**
@@ -184,6 +185,6 @@ public class Timestamp implements Comparable<Timestamp> {
      */
     @Override
     public int compareTo(final Timestamp otherTimestamp) {
-        return timestamp.compareTo(otherTimestamp.timestamp);
+        return timestampBD.compareTo(otherTimestamp.timestampBD);
     }
 }

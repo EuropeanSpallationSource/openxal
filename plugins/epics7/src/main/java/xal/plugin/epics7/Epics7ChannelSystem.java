@@ -89,12 +89,7 @@ public class Epics7ChannelSystem implements ChannelSystem {
         // Create shutdown hook to close the resource when calling System.exit() or 
         // if the process is terminated.
         // TODO: check whether this is needed, e.g., monitors are stopped without this?
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                dispose();
-            }
-        });
+        Thread t = new Thread(this::dispose);
         t.setDaemon(false);
         Runtime.getRuntime().addShutdownHook(t);
 

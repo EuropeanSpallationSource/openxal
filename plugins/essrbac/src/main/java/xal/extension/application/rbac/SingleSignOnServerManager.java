@@ -5,6 +5,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
+import java.nio.file.Files;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.XalException;
 
@@ -17,6 +20,8 @@ import xal.XalException;
  * @author Blaz Kranjc <blaz.kranjc@cosylab.com>
  */
 public class SingleSignOnServerManager {
+
+    private static final Logger LOGGER = Logger.getLogger(SingleSignOnServerManager.class.getName());
 
     /**
      * Port used by RBAC SSO server
@@ -35,22 +40,12 @@ public class SingleSignOnServerManager {
      * it is not.
      */
     private static boolean isSSORunning() {
-        ServerSocket ss = null;
-        try {
-            ss = new ServerSocket(ssoPort);
+        try (ServerSocket ss = new ServerSocket(ssoPort)) {
             ss.setReuseAddress(true);
             return false;
         } catch (IOException e) {
-        } finally {
-            if (ss != null) {
-                try {
-                    ss.close();
-                } catch (IOException e) {
-                    /* should not be thrown */
-                }
-            }
+            LOGGER.log(Level.WARNING, null, e);
         }
-
         return true;
     }
 
@@ -68,7 +63,7 @@ public class SingleSignOnServerManager {
 
         File file = new File(folder, jarName);
         if (file.exists()) {
-            file.delete();
+            Files.delete(file.toPath());
         }
 
         InputStream stream = RBACPlugin.class.getClassLoader().getResourceAsStream(jarName);

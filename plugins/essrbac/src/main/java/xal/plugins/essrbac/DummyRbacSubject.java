@@ -26,8 +26,7 @@ public class DummyRbacSubject implements RBACSubject {
 
     @Override
     public void logout() throws RBACException {
-        return;
-
+        // Do nothing
     }
 
     @Override
@@ -53,12 +52,12 @@ public class DummyRbacSubject implements RBACSubject {
 
     @Override
     public void setAutoLogoutTimeout(int timeoutInMinutes, AutoLogoutCallback callback) {
-        return;
+        // Do nothing
     }
 
     @Override
     public void updateLastAction() {
-        return;
+        // Do nothing
     }
 
     @Override

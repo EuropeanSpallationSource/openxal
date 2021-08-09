@@ -45,7 +45,6 @@ public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
     private gov.aps.jca.cas.ServerContext caContext;
     private ServerContext pvaContext;
     private DefaultServerImpl channelServer;
-    private ProcessVariableEventDispatcher processVariableEventDispatcher;
 
     public static Epics7ServerChannelSystem newEpics7ServerChannelSystem() {
         Epics7ServerChannelSystem epics7ServerChannelSystem = new Epics7ServerChannelSystem();
@@ -59,17 +58,17 @@ public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
      * Once a record is created by the ChannelFactory, it must be added to the
      * master database to be able to serve the PV.
      *
-     * @param record
+     * @param pvRecord
      */
-    public synchronized void addRecord(PVRecord record) {
-        master.addRecord(record);
+    public synchronized void addRecord(PVRecord pvRecord) {
+        master.addRecord(pvRecord);
     }
 
     public synchronized void addMemPV(MemoryProcessVariable memoryProcessVariable) {
         channelServer.registerProcessVaribale(memoryProcessVariable);
         channelServer.registerProcessVaribale(memoryProcessVariable.getName() + ".VAL", memoryProcessVariable);
 
-        processVariableEventDispatcher = new ProcessVariableEventDispatcher(memoryProcessVariable);
+        ProcessVariableEventDispatcher processVariableEventDispatcher = new ProcessVariableEventDispatcher(memoryProcessVariable);
         memoryProcessVariable.setEventCallback(processVariableEventDispatcher);
     }
 
@@ -82,10 +81,10 @@ public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
     /**
      * To remove a record from the master database.
      *
-     * @param record
+     * @param pvRecord
      */
-    public synchronized void removeRecord(PVRecord record) {
-        master.removeRecord(record);
+    public synchronized void removeRecord(PVRecord pvRecord) {
+        master.removeRecord(pvRecord);
     }
 
     @Override
@@ -102,13 +101,10 @@ public class Epics7ServerChannelSystem extends Epics7ChannelSystem {
             Logger.getLogger(Epics7ServerChannelSystem.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                caContext.dispose();
-                pvaContext.dispose();
-                pvaChannelProvider.destroy();
-            }
+        Thread t = new Thread(() -> {
+            caContext.dispose();
+            pvaContext.dispose();
+            pvaChannelProvider.destroy();
         });
         t.setDaemon(false);
         Runtime.getRuntime().addShutdownHook(t);

@@ -15,8 +15,6 @@ import junit.framework.TestSuite;
 @Deprecated
 public class TrajectoryTest extends TestCase {
 
-    private static final String XML_IN = "xml/ModelValidation.lat.mod.xal.xml";
-
     /**
      * JUnit 3 test suite entry point.
      *

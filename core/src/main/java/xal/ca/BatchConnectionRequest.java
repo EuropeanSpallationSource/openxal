@@ -151,7 +151,7 @@ public class BatchConnectionRequest extends java.lang.Object {
      * @return the number of channels for which connections are requested
      */
     public int getChannelCount() {
-        return resourceSyncQueue.dispatchSync(() -> channels.size());
+        return resourceSyncQueue.dispatchSync(channels::size);
     }
 
     /**
@@ -169,7 +169,7 @@ public class BatchConnectionRequest extends java.lang.Object {
      * @return the number of channels that were connected
      */
     public int getConnectedCount() {
-        return resourceSyncQueue.dispatchSync(() -> connectedChannels.size());
+        return resourceSyncQueue.dispatchSync(connectedChannels::size);
     }
 
     /**
@@ -187,7 +187,7 @@ public class BatchConnectionRequest extends java.lang.Object {
      * @return the number of disconnected channels
      */
     public int getDisconnectedCount() {
-        return resourceSyncQueue.dispatchSync(() -> disconnectedChannels.size());
+        return resourceSyncQueue.dispatchSync(disconnectedChannels::size);
     }
 
     /**
@@ -346,7 +346,7 @@ public class BatchConnectionRequest extends java.lang.Object {
      * @return true if complete and false otherwise
      */
     public boolean isComplete() {
-        return resourceSyncQueue.dispatchSync(() -> pendingChannels.isEmpty());
+        return resourceSyncQueue.dispatchSync(pendingChannels::isEmpty);
     }
 
     /**

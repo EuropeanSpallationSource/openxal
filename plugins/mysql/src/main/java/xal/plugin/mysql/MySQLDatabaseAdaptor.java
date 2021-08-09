@@ -10,18 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class MySQLDatabaseAdaptor extends DatabaseAdaptor {
-
-    private static final Logger LOGGER = Logger.getLogger(MySQLDatabaseAdaptor.class.getName());
-
-    /**
-     * Public Constructor
-     */
-    public MySQLDatabaseAdaptor() {
-    }
 
     @Override
     public Array getArray(String type, Connection connection, Object array)
@@ -36,8 +26,7 @@ public class MySQLDatabaseAdaptor extends DatabaseAdaptor {
         try {
             return DriverManager.getConnection(urlSpec, user, password);
         } catch (SQLException exception) {
-            LOGGER.log(Level.SEVERE, "Error connecting to the database at URL: \"" + urlSpec + "\" as user: " + user, exception);
-            throw new DatabaseException("Exception connecting to the database.", this, exception);
+            throw new DatabaseException("Exception connecting to the database at URL: \"" + urlSpec + "\" as user: " + user, this, exception);
         }
     }
 
@@ -54,12 +43,11 @@ public class MySQLDatabaseAdaptor extends DatabaseAdaptor {
         try {
             final List<String> schemas = new ArrayList<>();
             final DatabaseMetaData metaData = connection.getMetaData();
-            final ResultSet result = metaData.getCatalogs();
-
-            while (result.next()) {
-                schemas.add(result.getString("TABLE_CAT"));
+            try (ResultSet result = metaData.getCatalogs()) {
+                while (result.next()) {
+                    schemas.add(result.getString("TABLE_CAT"));
+                }
             }
-            result.close();
             return schemas;
         } catch (SQLException exception) {
             throw new DatabaseException("Database exception while fetching schemas.", this, exception);

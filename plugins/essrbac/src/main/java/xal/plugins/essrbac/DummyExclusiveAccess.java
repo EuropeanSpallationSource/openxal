@@ -20,7 +20,7 @@ public class DummyExclusiveAccess extends ExclusiveAccess {
 
     @Override
     public void releaseExclusiveAccess() throws AccessDeniedException, RBACException {
-        return;
+        // Do nothing
     }
 
 }

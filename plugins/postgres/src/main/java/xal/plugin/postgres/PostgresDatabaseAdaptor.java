@@ -9,22 +9,15 @@ package xal.plugin.postgres;
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import xal.tools.database.ConnectionDictionary;
 import xal.tools.database.DatabaseAdaptor;
 import xal.tools.database.DatabaseException;
 
 public class PostgresDatabaseAdaptor extends DatabaseAdaptor {
-
-    private static final Logger LOGGER = Logger.getLogger(PostgresDatabaseAdaptor.class.getName());
-
-    /**
-     * Public Constructor
-     */
-    public PostgresDatabaseAdaptor() {
-    }
 
     /**
      * Get an SQL Array given an SQL array type, connection and a primitive
@@ -39,65 +32,43 @@ public class PostgresDatabaseAdaptor extends DatabaseAdaptor {
      */
     @Override
     public Array getArray(final String type, final Connection connection, final Object array) throws DatabaseException {
-        Object[] newArray = null;
+        List<Object> objectList = new ArrayList<>();
 
         if (array instanceof byte[]) {
             byte[] a = (byte[]) array;
-            newArray = new Byte[a.length];
-            for (int j = 0; j < a.length; j++) {
-                newArray[j] = a[j];
-            }
+            objectList.addAll(Arrays.asList(a));
         } else if (array instanceof short[]) {
             short[] a = (short[]) array;
-            newArray = new Short[a.length];
-            for (int j = 0; j < a.length; j++) {
-                newArray[j] = a[j];
-            }
+            objectList.addAll(Arrays.asList(a));
         } else if (array instanceof int[]) {
             int[] a = (int[]) array;
-            newArray = new Integer[a.length];
-            for (int j = 0; j < a.length; j++) {
-                newArray[j] = a[j];
-            }
+            objectList.addAll(Arrays.asList(a));
         } else if (array instanceof long[]) {
             long[] a = (long[]) array;
-            newArray = new Long[a.length];
-            for (int j = 0; j < a.length; j++) {
-                newArray[j] = a[j];
-            }
+            objectList.addAll(Arrays.asList(a));
         } else if (array instanceof float[]) {
             float[] a = (float[]) array;
-            newArray = new Float[a.length];
-            for (int j = 0; j < a.length; j++) {
-                newArray[j] = a[j];
-            }
+            objectList.addAll(Arrays.asList(a));
         } else if (array instanceof double[]) {
             double[] a = (double[]) array;
-            newArray = new Double[a.length];
-            for (int j = 0; j < a.length; j++) {
-                newArray[j] = a[j];
-            }
+            objectList.addAll(Arrays.asList(a));
         } else if (array instanceof boolean[]) {
             boolean[] a = (boolean[]) array;
-            newArray = new Boolean[a.length];
-            for (int j = 0; j < a.length; j++) {
-                newArray[j] = a[j];
-            }
+            objectList.addAll(Arrays.asList(a));
         } else if (array instanceof char[]) {
             char[] a = (char[]) array;
-            newArray = new Character[a.length];
-            for (int j = 0; j < a.length; j++) {
-                newArray[j] = a[j];
-            }
+            objectList.addAll(Arrays.asList(a));
         } else {
-            newArray = (Object[]) array;
+            Object[] a = (Object[]) array;
+            objectList.addAll(Arrays.asList(a));
         }
+
+        Object[] newArray = objectList.toArray(new Object[0]);
 
         try {
             return connection.createArrayOf(type, newArray);
         } catch (SQLException exception) {
-            LOGGER.log(Level.SEVERE, "Error instantiating an SQL array of type: " + type, exception);
-            throw new DatabaseException("Exception generating an SQL array.", this, exception);
+            throw new DatabaseException("Exception generating an SQL array of type: " + type, this, exception);
         }
     }
 
