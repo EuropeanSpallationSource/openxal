@@ -9,7 +9,6 @@ package xal.extension.extlatgen;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.service.pvlogger.PvLoggerException;
 import xal.service.pvlogger.sim.PVLoggerDataSource;
@@ -130,13 +129,13 @@ class PVLoggerSnapshotDeviceDataSource extends MeasurementDataSource {
     /**
      * PVLogger Data Source
      */
-    private final PVLoggerDataSource LOGGER_DATA_SOURCE;
+    private final PVLoggerDataSource loggerDataSource;
 
     /**
      * Constructor
      */
     public PVLoggerSnapshotDeviceDataSource(final long pvLoggerID) {
-        LOGGER_DATA_SOURCE = new PVLoggerDataSource(pvLoggerID);
+        loggerDataSource = new PVLoggerDataSource(pvLoggerID);
     }
 
     /**
@@ -156,7 +155,7 @@ class PVLoggerSnapshotDeviceDataSource extends MeasurementDataSource {
             return magnet.getDesignField();
         }
         try {
-            return LOGGER_DATA_SOURCE.getLoggedField((Electromagnet) magnet);
+            return loggerDataSource.getLoggedField((Electromagnet) magnet);
         } catch (PvLoggerException e) {
             // TODO: Meaningful handle for this case, currently 
             // this is handled as it was before the exception throwing

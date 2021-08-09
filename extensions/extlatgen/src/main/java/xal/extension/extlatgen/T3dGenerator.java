@@ -89,223 +89,222 @@ public class T3dGenerator {
             myLatticeName = myLattice.getName();
         }
 
-        FileWriter t3dInput = new FileWriter(myLatticeName + ".t3d");
-        Date today = new Date();
-        int elementCount = myLattice.len();
+        try (FileWriter t3dInput = new FileWriter(myLatticeName + ".t3d")) {
+            Date today = new Date();
+            int elementCount = myLattice.len();
 
-        TraceXalUnitConverter uc = TraceXalUnitConverter.newConverter(
-                402500000.,
-                myProbe.getSpeciesRestEnergy(),
-                myProbe.getKineticEnergy());
+            TraceXalUnitConverter uc = TraceXalUnitConverter.newConverter(
+                    402500000.,
+                    myProbe.getSpeciesRestEnergy(),
+                    myProbe.getKineticEnergy());
 
-        NumberFormat nf = NumberFormat.getNumberInstance();
-        ((DecimalFormat) nf).setMaximumFractionDigits(5);
-        nf.setGroupingUsed(false);
+            NumberFormat nf = NumberFormat.getNumberInstance();
+            ((DecimalFormat) nf).setMaximumFractionDigits(5);
+            nf.setGroupingUsed(false);
 
-        CovarianceMatrix covarianceMatrix = myProbe.createProbeState().getCovarianceMatrix();
+            CovarianceMatrix covarianceMatrix = myProbe.createProbeState().getCovarianceMatrix();
 
-        Twiss[] twiss = covarianceMatrix.computeTwiss();
-        // for T3d header
-        String t3dHeader
-                = " $DATA\n"
-                //       + " ER= " + (myProbe.getSpeciesRestEnergy()/1.e6) + ", Q= " + (myProbe.getSpeciesCharge() /1.602e-19)
-                + " ER= " + (myProbe.getSpeciesRestEnergy() / 1.e6) + ", Q= " + (myProbe.getSpeciesCharge())
-                + ", W =  " + (myProbe.getKineticEnergy() / 1.e6) + ", XI=  " + (myProbe.getBeamCurrent() * 1000.) + "\n"
-                + " EMITI =     "
-                + nf.format(uc.xalToTraceTransverse(twiss[0]).getEmittance()) + ",  "
-                + nf.format(uc.xalToTraceTransverse(twiss[1]).getEmittance()) + ",  "
-                + nf.format(uc.xalToTraceLongitudinal(twiss[2]).getEmittance()) + ",\n"
-                + " BEAMI =     "
-                + nf.format(uc.xalToTraceTransverse(twiss[0]).getAlpha()) + ",   "
-                + nf.format(uc.xalToTraceTransverse(twiss[0]).getBeta()) + ",   "
-                + nf.format(uc.xalToTraceTransverse(twiss[1]).getAlpha()) + ",   "
-                + nf.format(uc.xalToTraceTransverse(twiss[1]).getBeta()) + ",   "
-                + nf.format(uc.xalToTraceLongitudinal(twiss[2]).getAlpha()) + ",   "
-                + nf.format(uc.xalToTraceLongitudinal(twiss[2]).getBeta()) + ",\n"
-                + " BEAMCI =      "
-                + uc.xalToTraceCoordinates(myProbe.phaseMean()).getx() + ",   "
-                + uc.xalToTraceCoordinates(myProbe.phaseMean()).getxp() + ",   "
-                + uc.xalToTraceCoordinates(myProbe.phaseMean()).gety() + ",    "
-                + uc.xalToTraceCoordinates(myProbe.phaseMean()).getyp() + ",      "
-                + uc.xalToTraceCoordinates(myProbe.phaseMean()).getz() + ",      "
-                + uc.xalToTraceCoordinates(myProbe.phaseMean()).getzp() + ",\n"
-                + " FREQ=   402.500, ICHROM= 0, IBS= 0,\n"
-                + " N1=  1, N2= " + elementCount
-                + ", SMAX=   2.0, \n"
-                + " VAL=     0.0000000,     0.0000000,     0.0000000,     0.0000000,     0.0000000,     0.0000000,\n"
-                + " ISECURE=0,\n";
+            Twiss[] twiss = covarianceMatrix.computeTwiss();
+            // for T3d header
+            String t3dHeader
+                    = " $DATA\n"
+                    //       + " ER= " + (myProbe.getSpeciesRestEnergy()/1.e6) + ", Q= " + (myProbe.getSpeciesCharge() /1.602e-19)
+                    + " ER= " + (myProbe.getSpeciesRestEnergy() / 1.e6) + ", Q= " + (myProbe.getSpeciesCharge())
+                    + ", W =  " + (myProbe.getKineticEnergy() / 1.e6) + ", XI=  " + (myProbe.getBeamCurrent() * 1000.) + "\n"
+                    + " EMITI =     "
+                    + nf.format(uc.xalToTraceTransverse(twiss[0]).getEmittance()) + ",  "
+                    + nf.format(uc.xalToTraceTransverse(twiss[1]).getEmittance()) + ",  "
+                    + nf.format(uc.xalToTraceLongitudinal(twiss[2]).getEmittance()) + ",\n"
+                    + " BEAMI =     "
+                    + nf.format(uc.xalToTraceTransverse(twiss[0]).getAlpha()) + ",   "
+                    + nf.format(uc.xalToTraceTransverse(twiss[0]).getBeta()) + ",   "
+                    + nf.format(uc.xalToTraceTransverse(twiss[1]).getAlpha()) + ",   "
+                    + nf.format(uc.xalToTraceTransverse(twiss[1]).getBeta()) + ",   "
+                    + nf.format(uc.xalToTraceLongitudinal(twiss[2]).getAlpha()) + ",   "
+                    + nf.format(uc.xalToTraceLongitudinal(twiss[2]).getBeta()) + ",\n"
+                    + " BEAMCI =      "
+                    + uc.xalToTraceCoordinates(myProbe.phaseMean()).getx() + ",   "
+                    + uc.xalToTraceCoordinates(myProbe.phaseMean()).getxp() + ",   "
+                    + uc.xalToTraceCoordinates(myProbe.phaseMean()).gety() + ",    "
+                    + uc.xalToTraceCoordinates(myProbe.phaseMean()).getyp() + ",      "
+                    + uc.xalToTraceCoordinates(myProbe.phaseMean()).getz() + ",      "
+                    + uc.xalToTraceCoordinates(myProbe.phaseMean()).getzp() + ",\n"
+                    + " FREQ=   402.500, ICHROM= 0, IBS= 0,\n"
+                    + " N1=  1, N2= " + elementCount
+                    + ", SMAX=   2.0, \n"
+                    + " VAL=     0.0000000,     0.0000000,     0.0000000,     0.0000000,     0.0000000,     0.0000000,\n"
+                    + " ISECURE=0,\n";
 
-        LatticeIterator ilat = myLattice.latticeIterator();
-        int counter = 1;
-        String str = t3dHeader;
-        int devTypeInd = 1;
-        String devStr = "";
+            LatticeIterator ilat = myLattice.latticeIterator();
+            int counter = 1;
+            String str = t3dHeader;
+            int devTypeInd = 1;
+            String devStr = "";
 
-        char[] bufferHeader = new char[str.length()];
-        str.getChars(0, str.length(), bufferHeader, 0);
-        t3dInput.write(bufferHeader);
+            char[] bufferHeader = new char[str.length()];
+            str.getChars(0, str.length(), bufferHeader, 0);
+            t3dInput.write(bufferHeader);
 
-        while (ilat.hasNext()) {
-            Element element = ilat.next();
-            // for regular drift space, diagnostic devices
-            if (element.getType().equals("drift")
-                    || element.getType().equals("beampositionmonitor")
-                    || element.getType().equals("beamcurrentmonitor")
-                    || element.getType().equals("beamlossmonitor")
-                    || element.getType().equals("wirescanner")
-                    || element.getType().equals("pmarker")
-                    || element.getType().equals("foil")) {
-                devTypeInd = 1;
-                devStr = devTypeInd + ", A(1, " + counter + ")="
-                        + nf.format(element.getLength() * 1000.) + ",\n";
-                // for quads
-            } else if (element.getType().equals("quadrupole")) {
-                devTypeInd = 3;
-                // for PM quads, i.e. always use design field
-                if (element.getAcceleratorNode().getType().equals("PMQH")
-                        || element.getAcceleratorNode().getType().equals("PMQV")) {
+            while (ilat.hasNext()) {
+                Element element = ilat.next();
+                // for regular drift space, diagnostic devices
+                if (element.getType().equals("drift")
+                        || element.getType().equals("beampositionmonitor")
+                        || element.getType().equals("beamcurrentmonitor")
+                        || element.getType().equals("beamlossmonitor")
+                        || element.getType().equals("wirescanner")
+                        || element.getType().equals("pmarker")
+                        || element.getType().equals("foil")) {
+                    devTypeInd = 1;
                     devStr = devTypeInd + ", A(1, " + counter + ")="
-                            + nf.format(((xal.smf.impl.PermQuadrupole) element.getAcceleratorNode()).getDfltField()) + ", "
                             + nf.format(element.getLength() * 1000.) + ",\n";
-                } else {
+                    // for quads
+                } else if (element.getType().equals("quadrupole")) {
+                    devTypeInd = 3;
+                    // for PM quads, i.e. always use design field
+                    if (element.getAcceleratorNode().getType().equals("PMQH")
+                            || element.getAcceleratorNode().getType().equals("PMQV")) {
+                        devStr = devTypeInd + ", A(1, " + counter + ")="
+                                + nf.format(((xal.smf.impl.PermQuadrupole) element.getAcceleratorNode()).getDfltField()) + ", "
+                                + nf.format(element.getLength() * 1000.) + ",\n";
+                    } else {
+                        if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
+                            devStr = devTypeInd + ", A(1, " + counter + ")="
+                                    + nf.format(((xal.smf.impl.Quadrupole) element.getAcceleratorNode()).getDfltField()) + ", "
+                                    + nf.format(element.getLength() * 1000.) + ",\n";
+                        } else if (srcSelector.equals(Scenario.SYNC_MODE_LIVE)
+                                || srcSelector.equals(Scenario.SYNC_MODE_RF_DESIGN)) {
+                            try {
+                                devStr = devTypeInd + ", A(1, " + counter + ")="
+                                        + nf.format(((xal.smf.impl.Quadrupole) element.getAcceleratorNode()).getField()) + ", "
+                                        + nf.format(element.getLength() * 1000.) + ",\n";
+                            } catch (GetException e) {
+                                LOGGER.log(Level.WARNING, null, e);
+                            }
+                        }
+                    }
+                    // for bending dipole
+                } else if (element.getType().equals("dipole")) {
+                    devTypeInd = 8;
                     if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
                         devStr = devTypeInd + ", A(1, " + counter + ")="
-                                + nf.format(((xal.smf.impl.Quadrupole) element.getAcceleratorNode()).getDfltField()) + ", "
-                                + nf.format(element.getLength() * 1000.) + ",\n";
+                                + nf.format(((xal.smf.impl.Bend) element.getAcceleratorNode()).getDfltBendAngle() / 2.0) + ", "
+                                + "0, "
+                                + "0, "
+                                + "0,\n";
+                    }
+
+                    // for solenoid
+                } else if (element.getType().equals("solenoid")) {
+                    devTypeInd = 5;
+                    if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
+                        devStr = devTypeInd + ", A(1, " + counter + ")="
+                                + nf.format(((xal.smf.impl.Solenoid) element.getAcceleratorNode()).getDfltField() * 10000.) + ", "
+                                + nf.format(((xal.smf.impl.Solenoid) element.getAcceleratorNode()).getLength() * 1000.)
+                                + ",\n";
                     } else if (srcSelector.equals(Scenario.SYNC_MODE_LIVE)
                             || srcSelector.equals(Scenario.SYNC_MODE_RF_DESIGN)) {
                         try {
                             devStr = devTypeInd + ", A(1, " + counter + ")="
-                                    + nf.format(((xal.smf.impl.Quadrupole) element.getAcceleratorNode()).getField()) + ", "
-                                    + nf.format(element.getLength() * 1000.) + ",\n";
+                                    + nf.format(((xal.smf.impl.Solenoid) element.getAcceleratorNode()).getField() * 10000.) + ", "
+                                    + nf.format(((xal.smf.impl.Solenoid) element.getAcceleratorNode()).getLength() * 1000.)
+                                    + ",\n";
+                        } catch (GetException e) {
+                            devStr = devTypeInd + ", A(1, " + counter + ")="
+                                    + "0., " + nf.format(element.getLength() * 1000.) + ",\n";
+                        }
+                    }
+                    // for horizontal dipole correctors
+                } else if (element.getType().equals("hsteerer")) {
+                    devTypeInd = 19;
+                    if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
+                        devStr = devTypeInd + ", A(1, " + counter + ")="
+                                + nf.format(((xal.smf.impl.HDipoleCorr) element.getAcceleratorNode()).getDfltField())
+                                + ", 0,\n";
+                    } else if (srcSelector.equals(Scenario.SYNC_MODE_LIVE)
+                            || srcSelector.equals(Scenario.SYNC_MODE_RF_DESIGN)) {
+                        try {
+                            devStr = devTypeInd + ", A(1, " + counter + ")="
+                                    + nf.format(((xal.smf.impl.HDipoleCorr) element.getAcceleratorNode()).getField()
+                                            * ((xal.smf.impl.HDipoleCorr) element.getAcceleratorNode()).getLength())
+                                    + ", 0,\n";
+                        } catch (GetException e) {
+                            LOGGER.log(Level.WARNING, null, e);
+                        }
+                    }
+                    // for vertical dipole correctors
+                } else if (element.getType().equals("vsteerer")) {
+                    devTypeInd = 19;
+                    if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
+                        devStr = devTypeInd + ", A(1, " + counter + ")="
+                                + nf.format(((xal.smf.impl.VDipoleCorr) element.getAcceleratorNode()).getDfltField())
+                                + ", 1,\n";
+                    } else if (srcSelector.equals(Scenario.SYNC_MODE_LIVE)
+                            || srcSelector.equals(Scenario.SYNC_MODE_RF_DESIGN)) {
+                        try {
+                            devStr = devTypeInd + ", A(1, " + counter + ")="
+                                    + nf.format(((xal.smf.impl.VDipoleCorr) element.getAcceleratorNode()).getField()
+                                            * ((xal.smf.impl.VDipoleCorr) element.getAcceleratorNode()).getLength())
+                                    + ", 1,\n";
+                        } catch (GetException e) {
+                            LOGGER.log(Level.WARNING, null, e);
+                        }
+                    }
+                    // for rf gaps
+                } else if (element.getType().equals("rfgap")) {
+                    devTypeInd = 10;
+                    if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)
+                            || srcSelector.equals(Scenario.SYNC_MODE_RF_DESIGN)) {
+                        devStr = devTypeInd + ", A(1, " + counter + ")="
+                                + nf.format(((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapDfltE0TL()) + ", "
+                                + nf.format(((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapDfltPhase()) + ", "
+                                + "1, 1, 1, "
+                                + "\n";
+                    } else if (srcSelector.equals(Scenario.SYNC_MODE_LIVE)) {
+                        try {
+                            devStr = devTypeInd + ", A(1, " + counter + ")="
+                                    + nf.format(((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapE0TL()) + ", "
+                                    + nf.format(((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapPhaseAvg()) + ", "
+                                    + "1, 1, 1, "
+                                    + "\n";
                         } catch (GetException e) {
                             LOGGER.log(Level.WARNING, null, e);
                         }
                     }
                 }
-                // for bending dipole
-            } else if (element.getType().equals("dipole")) {
-                devTypeInd = 8;
-                if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
-                    devStr = devTypeInd + ", A(1, " + counter + ")="
-                            + nf.format(((xal.smf.impl.Bend) element.getAcceleratorNode()).getDfltBendAngle() / 2.0) + ", "
-                            + "0, "
-                            + "0, "
-                            + "0,\n";
+
+                if (element.getType().equals("drift")
+                        || element.getType().equals("beampositionmonitor")
+                        || element.getType().equals("beamcurrentmonitor")
+                        || element.getType().equals("beamlossmonitor")
+                        || element.getType().equals("wirescanner")
+                        || element.getType().equals("pmarker")
+                        || element.getType().equals("foil")) {
+                    str = "CMT(" + counter + ")='" + element.getName() + "', NT(" + counter + ")="
+                            + devStr;
+                } else {
+                    str = "CMT(" + counter + ")='" + element.getAcceleratorNode().getId() + "', NT(" + counter + ")="
+                            + devStr;
                 }
 
-                // for solenoid
-            } else if (element.getType().equals("solenoid")) {
-                devTypeInd = 5;
-                if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
-                    devStr = devTypeInd + ", A(1, " + counter + ")="
-                            + nf.format(((xal.smf.impl.Solenoid) element.getAcceleratorNode()).getDfltField() * 10000.) + ", "
-                            + nf.format(((xal.smf.impl.Solenoid) element.getAcceleratorNode()).getLength() * 1000.)
-                            + ",\n";
-                } else if (srcSelector.equals(Scenario.SYNC_MODE_LIVE)
-                        || srcSelector.equals(Scenario.SYNC_MODE_RF_DESIGN)) {
-                    try {
-                        devStr = devTypeInd + ", A(1, " + counter + ")="
-                                + nf.format(((xal.smf.impl.Solenoid) element.getAcceleratorNode()).getField() * 10000.) + ", "
-                                + nf.format(((xal.smf.impl.Solenoid) element.getAcceleratorNode()).getLength() * 1000.)
-                                + ",\n";
-                    } catch (GetException e) {
-                        devStr = devTypeInd + ", A(1, " + counter + ")="
-                                + "0., " + nf.format(element.getLength() * 1000.) + ",\n";
-                    }
-                }
-                // for horizontal dipole correctors
-            } else if (element.getType().equals("hsteerer")) {
-                devTypeInd = 19;
-                if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
-                    devStr = devTypeInd + ", A(1, " + counter + ")="
-                            + nf.format(((xal.smf.impl.HDipoleCorr) element.getAcceleratorNode()).getDfltField())
-                            + ", 0,\n";
-                } else if (srcSelector.equals(Scenario.SYNC_MODE_LIVE)
-                        || srcSelector.equals(Scenario.SYNC_MODE_RF_DESIGN)) {
-                    try {
-                        devStr = devTypeInd + ", A(1, " + counter + ")="
-                                + nf.format(((xal.smf.impl.HDipoleCorr) element.getAcceleratorNode()).getField()
-                                        * ((xal.smf.impl.HDipoleCorr) element.getAcceleratorNode()).getLength())
-                                + ", 0,\n";
-                    } catch (GetException e) {
-                        LOGGER.log(Level.WARNING, null, e);
-                    }
-                }
-                // for vertical dipole correctors
-            } else if (element.getType().equals("vsteerer")) {
-                devTypeInd = 19;
-                if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
-                    devStr = devTypeInd + ", A(1, " + counter + ")="
-                            + nf.format(((xal.smf.impl.VDipoleCorr) element.getAcceleratorNode()).getDfltField())
-                            + ", 1,\n";
-                } else if (srcSelector.equals(Scenario.SYNC_MODE_LIVE)
-                        || srcSelector.equals(Scenario.SYNC_MODE_RF_DESIGN)) {
-                    try {
-                        devStr = devTypeInd + ", A(1, " + counter + ")="
-                                + nf.format(((xal.smf.impl.VDipoleCorr) element.getAcceleratorNode()).getField()
-                                        * ((xal.smf.impl.VDipoleCorr) element.getAcceleratorNode()).getLength())
-                                + ", 1,\n";
-                    } catch (GetException e) {
-                        LOGGER.log(Level.WARNING, null, e);
-                    }
-                }
-                // for rf gaps
-            } else if (element.getType().equals("rfgap")) {
-                devTypeInd = 10;
-                if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)
-                        || srcSelector.equals(Scenario.SYNC_MODE_RF_DESIGN)) {
-                    devStr = devTypeInd + ", A(1, " + counter + ")="
-                            + nf.format(((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapDfltE0TL()) + ", "
-                            + nf.format(((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapDfltPhase()) + ", "
-                            + "1, 1, 1, "
-                            + "\n";
-                } else if (srcSelector.equals(Scenario.SYNC_MODE_LIVE)) {
-                    try {
-                        devStr = devTypeInd + ", A(1, " + counter + ")="
-                                + nf.format(((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapE0TL()) + ", "
-                                + nf.format(((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapPhaseAvg()) + ", "
-                                + "1, 1, 1, "
-                                + "\n";
-                    } catch (GetException e) {
-                        LOGGER.log(Level.WARNING, null, e);
-                    }
-                }
+                char[] buffer = new char[str.length()];
+                str.getChars(0, str.length(), buffer, 0);
+                t3dInput.write(buffer);
+
+                counter++;
+            }
+            if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
+                str = " COMMENT='" + today.toString() + "  Design Lattice" + "'\n"
+                        + " $END";
+            } else if (srcSelector.equals(Scenario.SYNC_MODE_LIVE)
+                    || srcSelector.equals(Scenario.SYNC_MODE_RF_DESIGN)) {
+                str = " COMMENT='" + today.toString() + "  Measured Lattice" + "'\n"
+                        + " $END";
             }
 
-            if (element.getType().equals("drift")
-                    || element.getType().equals("beampositionmonitor")
-                    || element.getType().equals("beamcurrentmonitor")
-                    || element.getType().equals("beamlossmonitor")
-                    || element.getType().equals("wirescanner")
-                    || element.getType().equals("pmarker")
-                    || element.getType().equals("foil")) {
-                str = "CMT(" + counter + ")='" + element.getName() + "', NT(" + counter + ")="
-                        + devStr;
-            } else {
-                str = "CMT(" + counter + ")='" + element.getAcceleratorNode().getId() + "', NT(" + counter + ")="
-                        + devStr;
-            }
-
-            char[] buffer = new char[str.length()];
-            str.getChars(0, str.length(), buffer, 0);
-            t3dInput.write(buffer);
-
-            counter++;
+            char[] bufferEnd = new char[str.length()];
+            str.getChars(0, str.length(), bufferEnd, 0);
+            t3dInput.write(bufferEnd);
         }
-        if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
-            str = " COMMENT='" + today.toString() + "  Design Lattice" + "'\n"
-                    + " $END";
-        } else if (srcSelector.equals(Scenario.SYNC_MODE_LIVE)
-                || srcSelector.equals(Scenario.SYNC_MODE_RF_DESIGN)) {
-            str = " COMMENT='" + today.toString() + "  Measured Lattice" + "'\n"
-                    + " $END";
-        }
-
-        char[] bufferEnd = new char[str.length()];
-        str.getChars(0, str.length(), bufferEnd, 0);
-        t3dInput.write(bufferEnd);
-
-        t3dInput.close();
     }
 }

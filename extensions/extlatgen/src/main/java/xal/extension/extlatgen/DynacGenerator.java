@@ -101,284 +101,284 @@ public class DynacGenerator {
             myLatticeName = myLattice.getName();
         }
 
-        FileWriter dynacInput = new FileWriter(myLatticeName + ".in");
-        Date today = new Date();
+        try (
+                FileWriter dynacInput = new FileWriter(myLatticeName + ".in")) {
+            Date today = new Date();
 
-        TraceXalUnitConverter uc = TraceXalUnitConverter.newConverter(
-                402500000.,
-                myProbe.getSpeciesRestEnergy(),
-                myProbe.getKineticEnergy());
-        // for Dynac header
-        CovarianceMatrix covarianceMatrix = myProbe.getCovariance();
+            TraceXalUnitConverter uc = TraceXalUnitConverter.newConverter(
+                    402500000.,
+                    myProbe.getSpeciesRestEnergy(),
+                    myProbe.getKineticEnergy());
+            // for Dynac header
+            CovarianceMatrix covarianceMatrix = myProbe.getCovariance();
 
-        Twiss[] twiss = covarianceMatrix.computeTwiss();
-        String dynacHeader
-                = "SNS " + myLatticeName + " " + today.toString() + "\n"
-                + "GEBEAM\n"
-                + "2 1\n"
-                + "402.5E06\n"
-                + "10000\n"
-                + uc.xalToTraceCoordinates(myProbe.phaseMean()).getx() / 10. + " "
-                + uc.xalToTraceCoordinates(myProbe.phaseMean()).getxp() + " "
-                + uc.xalToTraceCoordinates(myProbe.phaseMean()).gety() / 10. + " "
-                + uc.xalToTraceCoordinates(myProbe.phaseMean()).getyp() + " "
-                + uc.xalToTraceCoordinates(myProbe.phaseMean()).getzp() * 3600. + " "
-                + uc.xalToTraceCoordinates(myProbe.phaseMean()).getz() / 1000. + "\n"
-                + uc.xalToTraceTransverse(twiss[0]).getAlpha() + " "
-                + uc.xalToTraceTransverse(twiss[0]).getBeta() + " "
-                + uc.xalToTraceTransverse(twiss[0]).getEmittance() + "\n"
-                + uc.xalToTraceTransverse(twiss[1]).getAlpha() + " "
-                + uc.xalToTraceTransverse(twiss[1]).getBeta() + " "
-                + uc.xalToTraceTransverse(twiss[1]).getEmittance() + "\n"
-                + uc.xalToTraceLongitudinal(twiss[2]).getAlpha() + " "
-                + uc.xalToTraceLongitudinal(twiss[2]).getBeta() + " "
-                + uc.xalToTraceLongitudinal(twiss[2]).getEmittance() + "\n"
-                + "87647\n"
-                + "INPUT\n"
-                + "1111111\n"
-                //       + (myProbe.getSpeciesRestEnergy()/1.e6) + " 1. " + (myProbe.getSpeciesCharge() /1.602e-19) +"\n"
-                + (myProbe.getSpeciesRestEnergy() / 1.e6) + " 1. " + (myProbe.getSpeciesCharge()) + "\n"
-                + (myProbe.getKineticEnergy() / 1.e6) + " 0. \n"
-                + "1\n"
-                + "EMIPRT\n"
-                + "1\n"
-                + "SCDYNAC\n"
-                + "3\n"
-                + myProbe.getBeamCurrent() * 1000.
-                + " 3.\n"
-                + "0\n"
-                + "EMITGR\n"
-                + "BEAM AT INPUT " + myLatticeName + "\n"
-                + "0 5\n"
-                + "1. 50. 1. 50. 1. 1.  90. 0.1\n";
+            Twiss[] twiss = covarianceMatrix.computeTwiss();
+            String dynacHeader
+                    = "SNS " + myLatticeName + " " + today.toString() + "\n"
+                    + "GEBEAM\n"
+                    + "2 1\n"
+                    + "402.5E06\n"
+                    + "10000\n"
+                    + uc.xalToTraceCoordinates(myProbe.phaseMean()).getx() / 10. + " "
+                    + uc.xalToTraceCoordinates(myProbe.phaseMean()).getxp() + " "
+                    + uc.xalToTraceCoordinates(myProbe.phaseMean()).gety() / 10. + " "
+                    + uc.xalToTraceCoordinates(myProbe.phaseMean()).getyp() + " "
+                    + uc.xalToTraceCoordinates(myProbe.phaseMean()).getzp() * 3600. + " "
+                    + uc.xalToTraceCoordinates(myProbe.phaseMean()).getz() / 1000. + "\n"
+                    + uc.xalToTraceTransverse(twiss[0]).getAlpha() + " "
+                    + uc.xalToTraceTransverse(twiss[0]).getBeta() + " "
+                    + uc.xalToTraceTransverse(twiss[0]).getEmittance() + "\n"
+                    + uc.xalToTraceTransverse(twiss[1]).getAlpha() + " "
+                    + uc.xalToTraceTransverse(twiss[1]).getBeta() + " "
+                    + uc.xalToTraceTransverse(twiss[1]).getEmittance() + "\n"
+                    + uc.xalToTraceLongitudinal(twiss[2]).getAlpha() + " "
+                    + uc.xalToTraceLongitudinal(twiss[2]).getBeta() + " "
+                    + uc.xalToTraceLongitudinal(twiss[2]).getEmittance() + "\n"
+                    + "87647\n"
+                    + "INPUT\n"
+                    + "1111111\n"
+                    //       + (myProbe.getSpeciesRestEnergy()/1.e6) + " 1. " + (myProbe.getSpeciesCharge() /1.602e-19) +"\n"
+                    + (myProbe.getSpeciesRestEnergy() / 1.e6) + " 1. " + (myProbe.getSpeciesCharge()) + "\n"
+                    + (myProbe.getKineticEnergy() / 1.e6) + " 0. \n"
+                    + "1\n"
+                    + "EMIPRT\n"
+                    + "1\n"
+                    + "SCDYNAC\n"
+                    + "3\n"
+                    + myProbe.getBeamCurrent() * 1000.
+                    + " 3.\n"
+                    + "0\n"
+                    + "EMITGR\n"
+                    + "BEAM AT INPUT " + myLatticeName + "\n"
+                    + "0 5\n"
+                    + "1. 50. 1. 50. 1. 1.  90. 0.1\n";
 
-        LatticeIterator ilat = myLattice.latticeIterator();
+            LatticeIterator ilat = myLattice.latticeIterator();
 
-        String str = dynacHeader;
-        String devStr = "";
+            String str = dynacHeader;
+            String devStr = "";
 
-        String prevElementType = "";
-        double quadLength = 0.;
+            String prevElementType = "";
+            double quadLength = 0.;
 
-        char[] bufferHeader = new char[str.length()];
-        str.getChars(0, str.length(), bufferHeader, 0);
-        dynacInput.write(bufferHeader);
+            char[] bufferHeader = new char[str.length()];
+            str.getChars(0, str.length(), bufferHeader, 0);
+            dynacInput.write(bufferHeader);
 
-        // run online model here so we don't propagate the probe before we set all the initial conditions
-        runOnlineModel();
+            // run online model here so we don't propagate the probe before we set all the initial conditions
+            runOnlineModel();
 
-        // DTL indicator
-        boolean dtlInd = false;
+            // DTL indicator
+            boolean dtlInd = false;
 
-        while (ilat.hasNext()) {
-            Element element = ilat.next();
-            // for diagnostic devices
-            if (element.getType().equals("beampositionmonitor")
-                    || element.getType().equals("beamcurrentmonitor")
-                    || element.getType().equals("beamlossmonitor")
-                    || element.getType().equals("wirescanner")
-                    || element.getType().equals("pmarker")
-                    || element.getType().equals("foil")) {
-                devStr = "DRIFT\n"
-                        + "  " + element.getLength() * 100. + "\n";
-                // drift space
-            } else if (element.getType().equals("drift")) {
-                // for regular drift space except for DTL's (do nothing for DTL drifts)
-                if (!dtlInd) {
-                    // if the drift is too long (>10cm), break it to more pieces
-                    devStr = "";
-                    long driftPieces = 0;
-                    double stepSize = 10.;
-                    if (element.getLength() * 100. > stepSize) {
-                        driftPieces = Math.round(element.getLength() * 100. / stepSize);
-                        if (driftPieces * stepSize > element.getLength() * 100.) {
-                            driftPieces = driftPieces - 1;
-                        }
-                        for (int i = 0; i < driftPieces; i++) {
-                            devStr += "DRIFT\n"
-                                    + "  " + stepSize + "\n";
-                        }
-                    }
-                    devStr += "DRIFT\n"
-                            + "  " + (element.getLength() * 100. - driftPieces * stepSize) + "\n";
-                } else {
-                    // do nothing for DTL drift space
-                    devStr = "";
-                }
-                // for quads
-            } else if (element.getType().equals("quadrupole")) {
-                if (prevElementType.equals("rfgap") && dtlInd) {
+            while (ilat.hasNext()) {
+                Element element = ilat.next();
+                // for diagnostic devices
+                if (element.getType().equals("beampositionmonitor")
+                        || element.getType().equals("beamcurrentmonitor")
+                        || element.getType().equals("beamlossmonitor")
+                        || element.getType().equals("wirescanner")
+                        || element.getType().equals("pmarker")
+                        || element.getType().equals("foil")) {
                     devStr = "DRIFT\n"
-                            + "  " + -1. * element.getLength() * 100. + "\n";
-                } else {
-                    devStr = "";
-                }
+                            + "  " + element.getLength() * 100. + "\n";
+                    // drift space
+                } else if (element.getType().equals("drift")) {
+                    // for regular drift space except for DTL's (do nothing for DTL drifts)
+                    if (!dtlInd) {
+                        // if the drift is too long (>10cm), break it to more pieces
+                        devStr = "";
+                        long driftPieces = 0;
+                        double stepSize = 10.;
+                        if (element.getLength() * 100. > stepSize) {
+                            driftPieces = Math.round(element.getLength() * 100. / stepSize);
+                            if (driftPieces * stepSize > element.getLength() * 100.) {
+                                driftPieces = driftPieces - 1;
+                            }
+                            for (int i = 0; i < driftPieces; i++) {
+                                devStr += "DRIFT\n"
+                                        + "  " + stepSize + "\n";
+                            }
+                        }
+                        devStr += "DRIFT\n"
+                                + "  " + (element.getLength() * 100. - driftPieces * stepSize) + "\n";
+                    } else {
+                        // do nothing for DTL drift space
+                        devStr = "";
+                    }
+                    // for quads
+                } else if (element.getType().equals("quadrupole")) {
+                    if (prevElementType.equals("rfgap") && dtlInd) {
+                        devStr = "DRIFT\n"
+                                + "  " + -1. * element.getLength() * 100. + "\n";
+                    } else {
+                        devStr = "";
+                    }
 
-                // magnet aperture
-                double aper = element.getAcceleratorNode().getAper().getAperX()[0];
+                    // magnet aperture
+                    double aper = element.getAcceleratorNode().getAper().getAperX()[0];
 
-                // for PM quads, i.e. always use design field
-                if (element.getAcceleratorNode().getType().equals("PMQH")
-                        || element.getAcceleratorNode().getType().equals("PMQV")) {
-                    devStr += "QUADRUPO\n"
-                            + "  " + element.getLength() * 100. + " "
-                            + ((xal.smf.impl.PermQuadrupole) element.getAcceleratorNode()).getDfltField() * aper * 10.
-                            + " " + aper * 100. + "\n";
-                } else {
-                    if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
+                    // for PM quads, i.e. always use design field
+                    if (element.getAcceleratorNode().getType().equals("PMQH")
+                            || element.getAcceleratorNode().getType().equals("PMQV")) {
                         devStr += "QUADRUPO\n"
                                 + "  " + element.getLength() * 100. + " "
-                                + ((xal.smf.impl.Quadrupole) element.getAcceleratorNode()).getDfltField() * aper * 10.
+                                + ((xal.smf.impl.PermQuadrupole) element.getAcceleratorNode()).getDfltField() * aper * 10.
                                 + " " + aper * 100. + "\n";
+                    } else {
+                        if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
+                            devStr += "QUADRUPO\n"
+                                    + "  " + element.getLength() * 100. + " "
+                                    + ((xal.smf.impl.Quadrupole) element.getAcceleratorNode()).getDfltField() * aper * 10.
+                                    + " " + aper * 100. + "\n";
+                        } else if (srcSelector.equals(Scenario.SYNC_MODE_LIVE)
+                                || srcSelector.equals(Scenario.SYNC_MODE_RF_DESIGN)) {
+                            try {
+                                devStr += "QUADRUPO\n"
+                                        + "  " + element.getLength() * 100. + " "
+                                        + ((xal.smf.impl.Quadrupole) element.getAcceleratorNode()).getField() * aper * 10.
+                                        + " " + aper * 100. + "\n";
+                            } catch (GetException e) {
+                                LOGGER.log(Level.WARNING, null, e);
+                            }
+                        }
+                    }
+
+                    prevElementType = "quadrupole";
+                    quadLength = element.getLength() * 100.;
+                    if (element.getAcceleratorNode().getId().substring(0, 3).equals("DTL")) {
+                        dtlInd = true;
+                    }
+                    // for horizontal dipole correctors
+                } else if (element.getType().equals("hsteerer")) {
+                    if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
+                        devStr = "STEER\n"
+                                + "  " + ((xal.smf.impl.HDipoleCorr) element.getAcceleratorNode()).getDfltField()
+                                + " 0\n";
                     } else if (srcSelector.equals(Scenario.SYNC_MODE_LIVE)
                             || srcSelector.equals(Scenario.SYNC_MODE_RF_DESIGN)) {
                         try {
-                            devStr += "QUADRUPO\n"
-                                    + "  " + element.getLength() * 100. + " "
-                                    + ((xal.smf.impl.Quadrupole) element.getAcceleratorNode()).getField() * aper * 10.
-                                    + " " + aper * 100. + "\n";
+                            devStr = "STEER\n"
+                                    + "  " + ((xal.smf.impl.HDipoleCorr) element.getAcceleratorNode()).getField()
+                                    * ((xal.smf.impl.HDipoleCorr) element.getAcceleratorNode()).getLength()
+                                    + " 0\n";
                         } catch (GetException e) {
                             LOGGER.log(Level.WARNING, null, e);
                         }
                     }
-                }
 
-                prevElementType = "quadrupole";
-                quadLength = element.getLength() * 100.;
-                if (element.getAcceleratorNode().getId().substring(0, 3).equals("DTL")) {
-                    dtlInd = true;
-                }
-                // for horizontal dipole correctors
-            } else if (element.getType().equals("hsteerer")) {
-                if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
-                    devStr = "STEER\n"
-                            + "  " + ((xal.smf.impl.HDipoleCorr) element.getAcceleratorNode()).getDfltField()
-                            + " 0\n";
-                } else if (srcSelector.equals(Scenario.SYNC_MODE_LIVE)
-                        || srcSelector.equals(Scenario.SYNC_MODE_RF_DESIGN)) {
-                    try {
+                    prevElementType = "hsteerer";
+                    // for vertical dipole correctors
+                } else if (element.getType().equals("vsteerer")) {
+                    if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
                         devStr = "STEER\n"
-                                + "  " + ((xal.smf.impl.HDipoleCorr) element.getAcceleratorNode()).getField()
-                                * ((xal.smf.impl.HDipoleCorr) element.getAcceleratorNode()).getLength()
-                                + " 0\n";
-                    } catch (GetException e) {
-                        LOGGER.log(Level.WARNING, null, e);
-                    }
-                }
-
-                prevElementType = "hsteerer";
-                // for vertical dipole correctors
-            } else if (element.getType().equals("vsteerer")) {
-                if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)) {
-                    devStr = "STEER\n"
-                            + "  " + ((xal.smf.impl.VDipoleCorr) element.getAcceleratorNode()).getDfltField()
-                            + " 1\n";
-                } else if (srcSelector.equals(Scenario.SYNC_MODE_LIVE)
-                        || srcSelector.equals(Scenario.SYNC_MODE_RF_DESIGN)) {
-                    try {
-                        devStr = "STEER\n"
-                                + "  " + ((xal.smf.impl.VDipoleCorr) element.getAcceleratorNode()).getField()
-                                * ((xal.smf.impl.VDipoleCorr) element.getAcceleratorNode()).getLength()
+                                + "  " + ((xal.smf.impl.VDipoleCorr) element.getAcceleratorNode()).getDfltField()
                                 + " 1\n";
-                    } catch (GetException e) {
-                        LOGGER.log(Level.WARNING, null, e);
-                    }
-                }
-
-                prevElementType = "vsteerer";
-                // for rf gaps
-            } else if (element.getType().equals("rfgap")) {
-                // get TTF etc.
-                ProbeState<?> state = myScenario.getTrajectory().statesForElement(element.getAcceleratorNode().getId()).get(0);
-                double gamma = 1. + state.getKineticEnergy() / state.getSpeciesRestEnergy();
-                double beta = Math.sqrt(1. - 1. / (gamma * gamma));
-                double ttf = ((RfGap) element.getAcceleratorNode()).getTTFFit().evaluateAt(beta);
-                double ttfPrime = ((RfGap) element.getAcceleratorNode()).getTTFPrimeFit().evaluateAt(beta);
-
-                // if the previous element is a quad, move backward half magnet length to get correct rf gap calculation
-                if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)
-                        || srcSelector.equals(Scenario.SYNC_MODE_RF_DESIGN)) {
-                    if (element.getAcceleratorNode().getParent().getType().equals("Bnch")) {
-                        devStr = "BUNCHER\n"
-                                + "  " + -1. * ((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapDfltE0TL()
-                                + " " + ((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapDfltPhase()
-                                + " 1 1.5 "
-                                + "\n";
-                    } else {
-                        int indOfGapCount = element.getAcceleratorNode().getId().indexOf("Rg");
-                        String gapCount = element.getAcceleratorNode().getId().substring(indOfGapCount + 2);
-                        devStr = "";
-
-                        if (prevElementType.equals("quadrupole") && dtlInd) {
-                            devStr = "DRIFT\n"
-                                    + "  " + -1. * quadLength + "\n";
+                    } else if (srcSelector.equals(Scenario.SYNC_MODE_LIVE)
+                            || srcSelector.equals(Scenario.SYNC_MODE_RF_DESIGN)) {
+                        try {
+                            devStr = "STEER\n"
+                                    + "  " + ((xal.smf.impl.VDipoleCorr) element.getAcceleratorNode()).getField()
+                                    * ((xal.smf.impl.VDipoleCorr) element.getAcceleratorNode()).getLength()
+                                    + " 1\n";
+                        } catch (GetException e) {
+                            LOGGER.log(Level.WARNING, null, e);
                         }
-
-                        devStr += "CAVSC\n"
-                                + Integer.parseInt(gapCount) + "  0.  0.  "
-                                + ((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapLength() * 100. + " "
-                                + ttf + " "
-                                + ttfPrime
-                                + "  0.  0.  0.  0.  "
-                                + " " + ((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapDfltAmp()
-                                + " " + ((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapDfltPhase()
-                                + " 0.  0.  402.5  1."
-                                + "\n";
                     }
-                } else if (srcSelector.equals(Scenario.SYNC_MODE_LIVE)) {
-                    try {
+
+                    prevElementType = "vsteerer";
+                    // for rf gaps
+                } else if (element.getType().equals("rfgap")) {
+                    // get TTF etc.
+                    ProbeState<?> state = myScenario.getTrajectory().statesForElement(element.getAcceleratorNode().getId()).get(0);
+                    double gamma = 1. + state.getKineticEnergy() / state.getSpeciesRestEnergy();
+                    double beta = Math.sqrt(1. - 1. / (gamma * gamma));
+                    double ttf = ((RfGap) element.getAcceleratorNode()).getTTFFit().evaluateAt(beta);
+                    double ttfPrime = ((RfGap) element.getAcceleratorNode()).getTTFPrimeFit().evaluateAt(beta);
+
+                    // if the previous element is a quad, move backward half magnet length to get correct rf gap calculation
+                    if (srcSelector.equals(Scenario.SYNC_MODE_DESIGN)
+                            || srcSelector.equals(Scenario.SYNC_MODE_RF_DESIGN)) {
                         if (element.getAcceleratorNode().getParent().getType().equals("Bnch")) {
                             devStr = "BUNCHER\n"
-                                    + "  " + ((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapE0TL()
-                                    + " " + ((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapPhaseAvg()
+                                    + "  " + -1. * ((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapDfltE0TL()
+                                    + " " + ((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapDfltPhase()
                                     + " 1 1.5 "
                                     + "\n";
                         } else {
+                            int indOfGapCount = element.getAcceleratorNode().getId().indexOf("Rg");
+                            String gapCount = element.getAcceleratorNode().getId().substring(indOfGapCount + 2);
                             devStr = "";
+
                             if (prevElementType.equals("quadrupole") && dtlInd) {
                                 devStr = "DRIFT\n"
                                         + "  " + -1. * quadLength + "\n";
                             }
+
                             devStr += "CAVSC\n"
-                                    + "  0  0.  0.  "
+                                    + Integer.parseInt(gapCount) + "  0.  0.  "
                                     + ((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapLength() * 100. + " "
                                     + ttf + " "
                                     + ttfPrime
                                     + "  0.  0.  0.  0.  "
-                                    + ((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapAmpAvg() + " "
-                                    + ((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapPhaseAvg()
-                                    + "  0.  0.  402.5  1."
+                                    + " " + ((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapDfltAmp()
+                                    + " " + ((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapDfltPhase()
+                                    + " 0.  0.  402.5  1."
                                     + "\n";
                         }
-                    } catch (GetException e) {
-                        LOGGER.log(Level.SEVERE, null, e);
+                    } else if (srcSelector.equals(Scenario.SYNC_MODE_LIVE)) {
+                        try {
+                            if (element.getAcceleratorNode().getParent().getType().equals("Bnch")) {
+                                devStr = "BUNCHER\n"
+                                        + "  " + ((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapE0TL()
+                                        + " " + ((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapPhaseAvg()
+                                        + " 1 1.5 "
+                                        + "\n";
+                            } else {
+                                devStr = "";
+                                if (prevElementType.equals("quadrupole") && dtlInd) {
+                                    devStr = "DRIFT\n"
+                                            + "  " + -1. * quadLength + "\n";
+                                }
+                                devStr += "CAVSC\n"
+                                        + "  0  0.  0.  "
+                                        + ((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapLength() * 100. + " "
+                                        + ttf + " "
+                                        + ttfPrime
+                                        + "  0.  0.  0.  0.  "
+                                        + ((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapAmpAvg() + " "
+                                        + ((xal.smf.impl.RfGap) element.getAcceleratorNode()).getGapPhaseAvg()
+                                        + "  0.  0.  402.5  1."
+                                        + "\n";
+                            }
+                        } catch (GetException e) {
+                            LOGGER.log(Level.SEVERE, null, e);
+                        }
+                    }
+
+                    prevElementType = "rfgap";
+                    if (element.getAcceleratorNode().getId().substring(0, 3).equals("DTL")) {
+                        dtlInd = true;
                     }
                 }
 
-                prevElementType = "rfgap";
-                if (element.getAcceleratorNode().getId().substring(0, 3).equals("DTL")) {
-                    dtlInd = true;
+                if (!element.getName().substring(0, 4).equals("DRFT")) {
+                    str = ";" + element.getName() + "\n"
+                            + devStr;
+                } else {
+                    str = devStr;
                 }
-            }
 
-            if (!element.getName().substring(0, 4).equals("DRFT")) {
-                str = ";" + element.getName() + "\n"
-                        + devStr;
-            } else {
-                str = devStr;
+                char[] buffer = new char[str.length()];
+                str.getChars(0, str.length(), buffer, 0);
+                dynacInput.write(buffer);
             }
+            str = "STOP";
 
-            char[] buffer = new char[str.length()];
-            str.getChars(0, str.length(), buffer, 0);
-            dynacInput.write(buffer);
+            char[] bufferEnd = new char[str.length()];
+            str.getChars(0, str.length(), bufferEnd, 0);
+            dynacInput.write(bufferEnd);
         }
-        str = "STOP";
-
-        char[] bufferEnd = new char[str.length()];
-        str.getChars(0, str.length(), bufferEnd, 0);
-        dynacInput.write(bufferEnd);
-
-        dynacInput.close();
     }
 
     /**

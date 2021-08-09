@@ -60,7 +60,7 @@ public class MadXGenerator {
     /**
      * sign of particle charge
      */
-    protected double Q = -1.;
+    protected double q = -1.;
 
     /**
      * list of MAD elements
@@ -187,208 +187,202 @@ public class MadXGenerator {
 
         File madFile = outputFile != null ? outputFile : new File(myLatticeName + ".mad");
         LOGGER.log(Level.INFO, "Exporting MAD optics to file: {0}", madFile.getAbsolutePath());
-        final FileWriter madxWritter = new FileWriter(madFile);
-        final Date today = new Date();
+        try (FileWriter madxWritter = new FileWriter(madFile)) {
+            final Date today = new Date();
 
-        double momentum = RelativisticParameterConverter.computeMomentumFromEnergies(myProbe.getKineticEnergy(), myProbe.getSpeciesRestEnergy()) / 1.e9;
-        LOGGER.log(Level.INFO, "momentum = {0}", momentum);
+            double momentum = RelativisticParameterConverter.computeMomentumFromEnergies(myProbe.getKineticEnergy(), myProbe.getSpeciesRestEnergy()) / 1.e9;
+            LOGGER.log(Level.INFO, "momentum = {0}", momentum);
 
-        Q = myProbe.getSpeciesCharge();
+            q = myProbe.getSpeciesCharge();
 
-        final String sourceLabel = deviceDataSource.getLabel();
-        madxWritter.write("TITLE, \"" + sourceLabel + ": " + formatName(myLatticeName) + "  Date created: " + today.toString() + "\";\n\n");
+            final String sourceLabel = deviceDataSource.getLabel();
+            madxWritter.write("TITLE, \"" + sourceLabel + ": " + formatName(myLatticeName) + "  Date created: " + today.toString() + "\";\n\n");
 
-        // no need to put drift spaces in the file
-        madXElements = new ArrayList<>();
+            // no need to put drift spaces in the file
+            madXElements = new ArrayList<>();
 
-        ArrayList<Double> latLengths = new ArrayList<>();
-        HashMap<String, Double> elemPosMap = new HashMap<>();
-        ArrayList<String> allNames = new ArrayList<>();
+            ArrayList<Double> latLengths = new ArrayList<>();
+            HashMap<String, Double> elemPosMap = new HashMap<>();
+            ArrayList<String> allNames = new ArrayList<>();
 
-        for (int i = 0; i < sequenceChain.size(); i++) {
-            Lattice myLattice = createLattice(sequenceChain.get(i));
-            latLengths.add(myLattice.getLength());
-            LatticeIterator ilat = myLattice.latticeIterator();
-            int counter = 1;
+            for (int i = 0; i < sequenceChain.size(); i++) {
+                Lattice myLattice = createLattice(sequenceChain.get(i));
+                latLengths.add(myLattice.getLength());
+                LatticeIterator ilat = myLattice.latticeIterator();
 
-            // there can at most be one thick node at any location
-            AcceleratorNode currentThickNode = null;
-            // total current path taken through the thick node (only bends modify and use this variable)
-            double currentThickNodePath = 0.0;
+                // there can at most be one thick node at any location
+                AcceleratorNode currentThickNode = null;
+                // total current path taken through the thick node (only bends modify and use this variable)
+                double currentThickNodePath = 0.0;
 
-            while (ilat.hasNext()) {
-                final Element element = ilat.next();
-                final String elementName = element.getName();
-                String formattedName = formatName(elementName);
-                if (!allNames.contains(formattedName)) {
-                    allNames.add(formattedName);
-                } else {
-                    formattedName = formattedName.concat("_A");
-                    allNames.add(formattedName);
-                }
-                final String elementType = element.getType();
-                final double elementLength = element.getLength();
-                final AcceleratorNode node = element.getAcceleratorNode();
+                while (ilat.hasNext()) {
+                    final Element element = ilat.next();
+                    final String elementName = element.getName();
+                    String formattedName = formatName(elementName);
+                    if (!allNames.contains(formattedName)) {
+                        allNames.add(formattedName);
+                    } else {
+                        formattedName = formattedName.concat("_A");
+                        allNames.add(formattedName);
+                    }
+                    final String elementType = element.getType();
+                    final double elementLength = element.getLength();
+                    final AcceleratorNode node = element.getAcceleratorNode();
 
-                if (elementType.equals("rfgap")) {
-                    elemPosMap.put(formatName(node.getParent().getId()), element.getPosition());
-                } else {
-                    elemPosMap.put(formattedName, element.getPosition());
-                }
+                    if (elementType.equals("rfgap")) {
+                        elemPosMap.put(formatName(node.getParent().getId()), element.getPosition());
+                    } else {
+                        elemPosMap.put(formattedName, element.getPosition());
+                    }
 
-                if (element.isThick()) {
-                    if (node != currentThickNode) {
+                    if (element.isThick() && node != currentThickNode) {
                         currentThickNode = node;
                         currentThickNodePath = 0.0;
                     }
-                }
 
-                // for marker
-                if (elementType.equals("pmarker") || elementType.equals("foil")) {
-                    if (!element.getName().contains("CENTER")) {
-                        addElement(formattedName, "MARKER");
-                    }
-                    // for diagnostic devices (monitors)
-                } else if (elementType.equals("beampositionmonitor") || elementType.equals("beamlossmonitor") || elementType.equals("beamcurrentmonitor") || elementType.equals("wirescanner")) {
-                    addElement(formattedName, "MONITOR");
-                    // for quads
-                } else if (elementType.equals("quadrupole") || elementType.equals("skewquadrupole")) {
-                    // get the roll angle in radians
-                    final double rollAngle = node.getAlign().getRoll() * Math.PI / 180.0;
-                    final double field = getField(node, deviceDataSource);
+                    // for marker
+                    if (elementType.equals("pmarker") || elementType.equals("foil")) {
+                        if (!element.getName().contains("CENTER")) {
+                            addElement(formattedName, "MARKER");
+                        }
+                        // for diagnostic devices (monitors)
+                    } else if (elementType.equals("beampositionmonitor") || elementType.equals("beamlossmonitor") || elementType.equals("beamcurrentmonitor") || elementType.equals("wirescanner")) {
+                        addElement(formattedName, "MONITOR");
+                        // for quads
+                    } else if (elementType.equals("quadrupole") || elementType.equals("skewquadrupole")) {
+                        // get the roll angle in radians
+                        final double rollAngle = node.getAlign().getRoll() * Math.PI / 180.0;
+                        final double field = getField(node, deviceDataSource);
 
-                    String definition = "QUADRUPOLE, L=" + NUMBER_FORMAT.format(elementLength) + ", K1=" + NUMBER_FORMAT.format(Q * field * LIGHT_SPEED / momentum);
-                    if (rollAngle != 0.0) {
-                        definition += ", TILT=" + rollAngle;
-                    }
-                    addElement(formattedName, definition);
-                    // for bending dipole
-                } else if (elementType.equals("dipole")) {
-                    final xal.smf.impl.Bend bendNode = (xal.smf.impl.Bend) node;
-                    final double bendMagneticLength = bendNode.getEffLength();
+                        String definition = "QUADRUPOLE, L=" + NUMBER_FORMAT.format(elementLength) + ", K1=" + NUMBER_FORMAT.format(q * field * LIGHT_SPEED / momentum);
+                        if (rollAngle != 0.0) {
+                            definition += ", TILT=" + rollAngle;
+                        }
+                        addElement(formattedName, definition);
+                        // for bending dipole
+                    } else if (elementType.equals("dipole")) {
+                        final xal.smf.impl.Bend bendNode = (xal.smf.impl.Bend) node;
+                        final double bendMagneticLength = bendNode.getEffLength();
 
-                    final double bendAngle = elementLength * bendDataSource.getBendAnglePerLength(bendNode, Q, momentum);
+                        final double bendAngle = elementLength * bendDataSource.getBendAnglePerLength(bendNode, q, momentum);
 
-                    // if the element is the first for the bend magnet then we apply the entrance angle for this element
-                    // an element is determined to be the first element of a bend if the current path through the bend is at the beginning (i.e. zero).
-                    final double entranceAngle = currentThickNodePath == 0.0 ? bendDataSource.getBendEntranceAngle(bendNode, Q, momentum) : 0.0;
-                    // advance the path through the bend magnet
-                    currentThickNodePath += elementLength;
-                    // if the element is the last for the bend magnet then we apply the exit angle for this element
-                    // an element is determined to be the last element of a bend if the path after having passed through the element equals the magnetic length of the whole bend
-                    // ideally this should be 1.0, but we must allow for numerical precision errors
-                    final double lengthThreshold = 0.99999;
-                    final double exitAngle = currentThickNodePath > lengthThreshold * bendMagneticLength ? bendDataSource.getBendExitAngle(bendNode, Q, momentum) : 0.0;
+                        // if the element is the first for the bend magnet then we apply the entrance angle for this element
+                        // an element is determined to be the first element of a bend if the current path through the bend is at the beginning (i.e. zero).
+                        final double entranceAngle = currentThickNodePath == 0.0 ? bendDataSource.getBendEntranceAngle(bendNode, q, momentum) : 0.0;
+                        // advance the path through the bend magnet
+                        currentThickNodePath += elementLength;
+                        // if the element is the last for the bend magnet then we apply the exit angle for this element
+                        // an element is determined to be the last element of a bend if the path after having passed through the element equals the magnetic length of the whole bend
+                        // ideally this should be 1.0, but we must allow for numerical precision errors
+                        final double lengthThreshold = 0.99999;
+                        final double exitAngle = currentThickNodePath > lengthThreshold * bendMagneticLength ? bendDataSource.getBendExitAngle(bendNode, q, momentum) : 0.0;
 
-                    final double k1 = bendNode.getQuadComponent();
+                        final double k1 = bendNode.getQuadComponent();
 
-                    addElement(formattedName, "SBEND, L=" + NUMBER_FORMAT.format(elementLength) + ", ANGLE=" + NUMBER_FORMAT.format(bendAngle) + ", K1=" + NUMBER_FORMAT.format(k1) + ", " + "E1=" + NUMBER_FORMAT.format(entranceAngle) + ", " + "E2=" + NUMBER_FORMAT.format(exitAngle));
-                    // for solenoid
-                } else if (elementType.equals("solenoid")) {
-                    final double field = getField(node, deviceDataSource);
-                    addElement(formattedName, "SOLENOID, L=" + NUMBER_FORMAT.format(elementLength) + ", KS=" + NUMBER_FORMAT.format(field * LIGHT_SPEED / momentum));
-                    // for horizontal dipole correctors
-                } else if (elementType.equals("hsteerer")) {
-                    final HDipoleCorr corrector = (HDipoleCorr) node;
-                    final double field = getField(node, deviceDataSource);
-                    final double kick = -field * LIGHT_SPEED * corrector.getEffLength() / momentum;
-                    addElement(formattedName, "HKICKER, KICK=" + NUMBER_FORMAT.format(kick));
-                    // for vertical dipole correctors
-                } else if (elementType.equals("vsteerer")) {
-                    final VDipoleCorr corrector = (VDipoleCorr) node;
-                    final double field = getField(node, deviceDataSource);
-                    final double kick = -field * LIGHT_SPEED * corrector.getEffLength() / momentum;
-                    addElement(formattedName, "VKICKER, KICK=" + NUMBER_FORMAT.format(kick));
-                    // for sextupoles
-                } else if (elementType.equals("sextupole")) {
-                    final double field = getField(node, deviceDataSource);
-                    final double k2 = Q * field * LIGHT_SPEED / momentum;
-                    addElement(formattedName, "SEXTUPOLE, L=" + NUMBER_FORMAT.format(elementLength) + ", K2=" + NUMBER_FORMAT.format(k2));
-                    // RF Cavities are not handled properly, so comment out the RF Cavity code
-                    // for rf gaps
-                } else if (elementType.equals("rfgap")) {
-                    double field = 0.;
-                    field = ((RfCavity) node.getParent()).getDfltCavAmp();
-                    final double phase = ((RfGap) node).getGapDfltPhase();
-                    addElement(formatName(node.getParent().getId()), "RFCAVITY, L=" + NUMBER_FORMAT.format(node.getParent().getLength()) + ", VOLT=" + NUMBER_FORMAT.format(field) + ", LAG=" + NUMBER_FORMAT.format(phase) + ", HARMON =1, FREQ=" + ((RfCavity) node.getParent()).getCavFreq());
-                } else {
-                    if (node != null) {
-                        LOGGER.log(Level.INFO, "Ignored element type: {0}, node: {1}, length: {2}", new Object[]{elementType, node.getId(), node.getLength()});
+                        addElement(formattedName, "SBEND, L=" + NUMBER_FORMAT.format(elementLength) + ", ANGLE=" + NUMBER_FORMAT.format(bendAngle) + ", K1=" + NUMBER_FORMAT.format(k1) + ", " + "E1=" + NUMBER_FORMAT.format(entranceAngle) + ", " + "E2=" + NUMBER_FORMAT.format(exitAngle));
+                        // for solenoid
+                    } else if (elementType.equals("solenoid")) {
+                        final double field = getField(node, deviceDataSource);
+                        addElement(formattedName, "SOLENOID, L=" + NUMBER_FORMAT.format(elementLength) + ", KS=" + NUMBER_FORMAT.format(field * LIGHT_SPEED / momentum));
+                        // for horizontal dipole correctors
+                    } else if (elementType.equals("hsteerer")) {
+                        final HDipoleCorr corrector = (HDipoleCorr) node;
+                        final double field = getField(node, deviceDataSource);
+                        final double kick = -field * LIGHT_SPEED * corrector.getEffLength() / momentum;
+                        addElement(formattedName, "HKICKER, KICK=" + NUMBER_FORMAT.format(kick));
+                        // for vertical dipole correctors
+                    } else if (elementType.equals("vsteerer")) {
+                        final VDipoleCorr corrector = (VDipoleCorr) node;
+                        final double field = getField(node, deviceDataSource);
+                        final double kick = -field * LIGHT_SPEED * corrector.getEffLength() / momentum;
+                        addElement(formattedName, "VKICKER, KICK=" + NUMBER_FORMAT.format(kick));
+                        // for sextupoles
+                    } else if (elementType.equals("sextupole")) {
+                        final double field = getField(node, deviceDataSource);
+                        final double k2 = q * field * LIGHT_SPEED / momentum;
+                        addElement(formattedName, "SEXTUPOLE, L=" + NUMBER_FORMAT.format(elementLength) + ", K2=" + NUMBER_FORMAT.format(k2));
+                        // RF Cavities are not handled properly, so comment out the RF Cavity code
+                        // for rf gaps
+                    } else if (elementType.equals("rfgap")) {
+                        double field = 0.;
+                        field = ((RfCavity) node.getParent()).getDfltCavAmp();
+                        final double phase = ((RfGap) node).getGapDfltPhase();
+                        addElement(formatName(node.getParent().getId()), "RFCAVITY, L=" + NUMBER_FORMAT.format(node.getParent().getLength()) + ", VOLT=" + NUMBER_FORMAT.format(field) + ", LAG=" + NUMBER_FORMAT.format(phase) + ", HARMON =1, FREQ=" + ((RfCavity) node.getParent()).getCavFreq());
                     } else {
-                        LOGGER.log(Level.INFO, "Ignored element type: {0}", elementType);
+                        if (node != null) {
+                            LOGGER.log(Level.INFO, "Ignored element type: {0}, node: {1}, length: {2}", new Object[]{elementType, node.getId(), node.getLength()});
+                        } else {
+                            LOGGER.log(Level.INFO, "Ignored element type: {0}", elementType);
+                        }
+                        continue;
                     }
-                    continue;
                 }
-                counter++;
             }
-        }
 
-        // write the MAD element definitions
-        for (final MadXElement element : madXElements) {
-            madxWritter.write(element.name + ": " + element.definition + ";\n");
-        }
-
-        // construct the MAD lines
-        final int MAX_LINE_LENGTH = 1250;
-        int lineIndex = MAX_LINE_LENGTH;
-        final List<List<MadXElement>> lines = new ArrayList<>();
-        // current line
-        List<MadXElement> line = null;
-        for (final MadXElement element : madXElements) {
-            if (lineIndex >= MAX_LINE_LENGTH) {
-                line = new ArrayList<>(MAX_LINE_LENGTH);
-                lines.add(line);
-                lineIndex = 1;
+            // write the MAD element definitions
+            for (final MadXElement element : madXElements) {
+                madxWritter.write(element.name + ": " + element.definition + ";\n");
             }
-            line.add(element);
-            ++lineIndex;
-        }
 
-        // write the MAD lines
-        final int lineCount = lines.size();
-        for (lineIndex = 0; lineIndex < lineCount; lineIndex++) {
-            final List<MadXElement> theLine = lines.get(lineIndex);
-            madxWritter.write(formatName(myLatticeName) + ": SEQUENCE, REFER=CENTER, L=" + latLengths.get(lineIndex) + ";\n");
-            final int numELements = theLine.size();
-            for (int index = 0; index < numELements; index++) {
-                final MadXElement element = theLine.get(index);
-                madxWritter.write("    " + element.name + ", AT=" + elemPosMap.get(element.name) + ";\n");
+            // construct the MAD lines
+            final int MAX_LINE_LENGTH = 1250;
+            int lineIndex = MAX_LINE_LENGTH;
+            final List<List<MadXElement>> lines = new ArrayList<>();
+            // current line
+            List<MadXElement> line = null;
+            for (final MadXElement element : madXElements) {
+                if (lineIndex >= MAX_LINE_LENGTH) {
+                    line = new ArrayList<>(MAX_LINE_LENGTH);
+                    lines.add(line);
+                    lineIndex = 1;
+                }
+                line.add(element);
+                ++lineIndex;
             }
-            madxWritter.write("ENDSEQUENCE;\n");
+
+            // write the MAD lines
+            final int lineCount = lines.size();
+            for (lineIndex = 0; lineIndex < lineCount; lineIndex++) {
+                final List<MadXElement> theLine = lines.get(lineIndex);
+                madxWritter.write(formatName(myLatticeName) + ": SEQUENCE, REFER=CENTER, L=" + latLengths.get(lineIndex) + ";\n");
+                final int numELements = theLine.size();
+                for (int index = 0; index < numELements; index++) {
+                    final MadXElement element = theLine.get(index);
+                    madxWritter.write("    " + element.name + ", AT=" + elemPosMap.get(element.name) + ";\n");
+                }
+                madxWritter.write("ENDSEQUENCE;\n");
+            }
+
+            final StringBuilder footerBuffer = new StringBuilder();
+            footerBuffer.append("BEAM, PARTICLE=").append(myProbe.getSpeciesName()).append(", MASS=").append(NUMBER_FORMAT.format(myProbe.getSpeciesRestEnergy() / 1.e9));
+            footerBuffer.append(", CHARGE=").append(NUMBER_FORMAT.format(myProbe.getSpeciesCharge()));
+            footerBuffer.append(", ENERGY=").append(NUMBER_FORMAT.format((RelativisticParameterConverter.computeGammaFromEnergies(myProbe.getKineticEnergy(), myProbe.getSpeciesRestEnergy()) * myProbe.getSpeciesRestEnergy()) / 1.e9)).append(";\n");
+            footerBuffer.append("USE, sequence=").append(formatName(myLatticeName)).append(";\n");
+            if (myProbe instanceof EnvelopeProbe) {
+                CovarianceMatrix covarianceMatrix = ((EnvelopeProbe) myProbe).createProbeState().getCovarianceMatrix();
+
+                Twiss[] inputTwiss = covarianceMatrix.computeTwiss();
+
+                footerBuffer.append("   SELECT, flag=twiss, COLUMN = NAME,KEYWORD,S,L,K1,x,y,BETX,ALFX,DX,BETY,ALFY,DY,ENERGY;\n");
+                footerBuffer.append("   TWISS");
+                footerBuffer.append(",BETX=").append(inputTwiss[0].getBeta());
+                footerBuffer.append(",ALFX=").append(inputTwiss[0].getAlpha());
+                footerBuffer.append(",BETY=").append(inputTwiss[1].getBeta());
+                footerBuffer.append(",ALFY=").append(inputTwiss[1].getAlpha());
+                footerBuffer.append(",DX=").append(0.0);
+                footerBuffer.append(",DPX=").append(0.0);
+                footerBuffer.append(", file='twiss.out';\n");
+            } else {
+                footerBuffer.append("   SELECT, Flag=twiss, Class=MONITOR, PATTERN=\"BPM.*\", RANGE=#S/#E, COLUMN=name,s,x,y,betx,bety,alfx,alfy,mux,muy,Dx,Dy;\n");
+                footerBuffer.append("   twiss, file=twiss.out;\n");
+            }
+            footerBuffer.append("   setplot, post=1, font=-1;\n");
+            footerBuffer.append("   plot, haxis=s, vaxis1=betx,bety, range=#s/#e, style=100, colour=100, notitle=true;\n");
+            footerBuffer.append("   plot, haxis=s, vaxis1=x,y, range=#s/#e, style=100, colour=100, notitle=true;\n");
+            footerBuffer.append("STOP;\n");
+
+            madxWritter.write(footerBuffer.toString());
         }
-
-        final StringBuilder footerBuffer = new StringBuilder();
-        footerBuffer.append("BEAM, PARTICLE=").append(myProbe.getSpeciesName()).append(", MASS=").append(NUMBER_FORMAT.format(myProbe.getSpeciesRestEnergy() / 1.e9));
-        footerBuffer.append(", CHARGE=").append(NUMBER_FORMAT.format(myProbe.getSpeciesCharge()));
-        footerBuffer.append(", ENERGY=").append(NUMBER_FORMAT.format((RelativisticParameterConverter.computeGammaFromEnergies(myProbe.getKineticEnergy(), myProbe.getSpeciesRestEnergy()) * myProbe.getSpeciesRestEnergy()) / 1.e9)).append(";\n");
-        footerBuffer.append("USE, sequence=").append(formatName(myLatticeName)).append(";\n");
-        if (myProbe instanceof EnvelopeProbe) {
-            CovarianceMatrix covarianceMatrix = ((EnvelopeProbe) myProbe).createProbeState().getCovarianceMatrix();
-
-            Twiss[] inputTwiss = covarianceMatrix.computeTwiss();
-
-            footerBuffer.append("   SELECT, flag=twiss, COLUMN = NAME,KEYWORD,S,L,K1,x,y,BETX,ALFX,DX,BETY,ALFY,DY,ENERGY;\n");
-            footerBuffer.append("   TWISS");
-            footerBuffer.append(",BETX=").append(inputTwiss[0].getBeta());
-            footerBuffer.append(",ALFX=").append(inputTwiss[0].getAlpha());
-            footerBuffer.append(",BETY=").append(inputTwiss[1].getBeta());
-            footerBuffer.append(",ALFY=").append(inputTwiss[1].getAlpha());
-            footerBuffer.append(",DX=").append(0.0);
-            footerBuffer.append(",DPX=").append(0.0);
-            footerBuffer.append(", file='twiss.out';\n");
-        } else {
-            footerBuffer.append("   SELECT, Flag=twiss, Class=MONITOR, PATTERN=\"BPM.*\", RANGE=#S/#E, COLUMN=name,s,x,y,betx,bety,alfx,alfy,mux,muy,Dx,Dy;\n");
-            footerBuffer.append("   twiss, file=twiss.out;\n");
-        }
-        footerBuffer.append("   setplot, post=1, font=-1;\n");
-        footerBuffer.append("   plot, haxis=s, vaxis1=betx,bety, range=#s/#e, style=100, colour=100, notitle=true;\n");
-        footerBuffer.append("   plot, haxis=s, vaxis1=x,y, range=#s/#e, style=100, colour=100, notitle=true;\n");
-        footerBuffer.append("STOP;\n");
-
-        madxWritter.write(footerBuffer.toString());
-
-        madxWritter.close();
-
     }
 
     /**
@@ -397,8 +391,7 @@ public class MadXGenerator {
      * beamline name
      */
     public String formatName(final String name) {
-        final String formattedName = name.replaceFirst(".*_.*:", "").replace('-', '_').replace(':', '_').replace(' ', '_');
-        return formattedName;
+        return name.replaceFirst(".*_.*:", "").replace('-', '_').replace(':', '_').replace(' ', '_');
     }
 
     /**
@@ -449,5 +442,4 @@ class MadXElement {
         this.name = name;
         this.definition = definition;
     }
-
 }
