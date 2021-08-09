@@ -81,13 +81,13 @@ public abstract class XalFxDocument {
      */
     protected boolean testMode = false;
 
-    public XalFxDocument() {
+    protected XalFxDocument() {
         this.HELP_WIKI_BASE = "https://confluence.esss.lu.se/pages/viewpage.action?pageId=";
         this.accelerator = new AcceleratorProperty();
         this.sequence = new SimpleStringProperty();
     }
 
-    public XalFxDocument(Stage stage) {
+    protected XalFxDocument(Stage stage) {
         this();
         this.mainStage = stage;
     }
@@ -116,10 +116,7 @@ public abstract class XalFxDocument {
     }
 
     public boolean sourceSetAndValid() {
-        if (source == null) {
-            return false;
-        }
-        return true;
+        return source != null;
     }
 
     public void setSource(File newSource) {
@@ -203,7 +200,6 @@ public abstract class XalFxDocument {
         if (HELP_PAGEID != null && HELP_PAGEID.length() > 1) {
             openUrl(HELP_WIKI_BASE + HELP_PAGEID);
         }
-
     }
 
     public void openUrl(String url) {

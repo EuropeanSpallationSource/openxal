@@ -229,17 +229,17 @@ public abstract class FxApplication extends Application {
             Menu fileMenu = new Menu("File");
             if (HAS_DOCUMENTS) {
                 MenuItem newFileMenu = new MenuItem("New");
-                newFileMenu.setOnAction((e) -> newFileMenuHandler());
+                newFileMenu.setOnAction(e -> newFileMenuHandler());
                 final MenuItem saveFileMenu = new MenuItem("Save");
-                saveFileMenu.setOnAction((e) -> saveFileMenuHandler(false));
+                saveFileMenu.setOnAction(e -> saveFileMenuHandler(false));
                 final MenuItem saveAsFileMenu = new MenuItem("Save as..");
-                saveAsFileMenu.setOnAction((e) -> saveFileMenuHandler(true));
+                saveAsFileMenu.setOnAction(e -> saveFileMenuHandler(true));
                 final MenuItem loadFileMenu = new MenuItem("Load");
-                loadFileMenu.setOnAction((e) -> loadFileMenuHandler());
+                loadFileMenu.setOnAction(e -> loadFileMenuHandler());
                 fileMenu.getItems().addAll(newFileMenu, saveFileMenu, saveAsFileMenu, loadFileMenu);
             }
             final MenuItem exitMenu = new MenuItem("Exit");
-            exitMenu.setOnAction((e) -> exitMenuHandler());
+            exitMenu.setOnAction(e -> exitMenuHandler());
             fileMenu.getItems().addAll(exitMenu);
 
             final Menu editMenu = new Menu("Edit");
@@ -249,11 +249,11 @@ public abstract class FxApplication extends Application {
             final ToggleGroup groupSequence = new ToggleGroup();
             if (HAS_ACCELERATOR) {
                 final MenuItem loadDefaultAcceleratorMenu = new MenuItem("Load Default Accelerator");
-                loadDefaultAcceleratorMenu.setOnAction((e) -> loadDefaultAcceleratorMenuHandler());
+                loadDefaultAcceleratorMenu.setOnAction(e -> loadDefaultAcceleratorMenuHandler());
                 final MenuItem loadAcceleratorMenu = new MenuItem("Load Accelerator ...");
-                loadAcceleratorMenu.setOnAction((e) -> loadAcceleratorMenuHandler());
+                loadAcceleratorMenu.setOnAction(e -> loadAcceleratorMenuHandler());
                 final MenuItem testModeMenu = new MenuItem("Enable Test Mode");
-                testModeMenu.setOnAction((e) -> testModeMenuHandler(e));
+                testModeMenu.setOnAction(e -> testModeMenuHandler(e));
                 acceleratorMenu.getItems().addAll(loadDefaultAcceleratorMenu, loadAcceleratorMenu, testModeMenu);
 
                 if (HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator() != null) {
@@ -264,11 +264,11 @@ public abstract class FxApplication extends Application {
 
             final Menu eLogMenu = new Menu("eLog");
             final MenuItem openLogMenu = new MenuItem("Open");
-            openLogMenu.setOnAction((e) -> urlMenuHandler());
+            openLogMenu.setOnAction(e -> urlMenuHandler());
             final MenuItem makePostMenu = new MenuItem("Post Screen Shot");
-            makePostMenu.setOnAction((e) -> eLogMenuHandler("image"));
+            makePostMenu.setOnAction(e -> eLogMenuHandler("image"));
             final MenuItem makePostDataMenu = new MenuItem("Post Data");
-            makePostDataMenu.setOnAction((e) -> eLogMenuHandler("file"));
+            makePostDataMenu.setOnAction(e -> eLogMenuHandler("file"));
             if (HAS_DOCUMENTS) {
                 eLogMenu.getItems().addAll(openLogMenu, makePostMenu, makePostDataMenu);
             } else {
@@ -282,7 +282,7 @@ public abstract class FxApplication extends Application {
             } else {
                 switchThemeMenu = new MenuItem("Set default Theme");
             }
-            switchThemeMenu.setOnAction((e) -> {
+            switchThemeMenu.setOnAction(e -> {
                 if (theme == THEME.DEFAULT) {
                     setOxalDarkStyle(stage.getScene());
                     switchThemeMenu.setText("Set default Theme");
@@ -296,9 +296,9 @@ public abstract class FxApplication extends Application {
 
             final Menu helpMenu = new Menu("Help");
             final MenuItem docMenu = new MenuItem("Documentation");
-            docMenu.setOnAction((e) -> helpMenuHandler());
+            docMenu.setOnAction(e -> helpMenuHandler());
             final MenuItem aboutMenu = new MenuItem("About");
-            aboutMenu.setOnAction((e) -> aboutMenuHandler());
+            aboutMenu.setOnAction(e -> aboutMenuHandler());
             helpMenu.getItems().addAll(docMenu, aboutMenu);
 
             MENU_BAR.getMenus().addAll(fileMenu, editMenu);
@@ -419,7 +419,7 @@ public abstract class FxApplication extends Application {
     public void buildSequenceMenu(Accelerator accelerator, Menu sequenceMenu, ToggleGroup groupSequence) {
         RadioMenuItem acceleratorItem = new RadioMenuItem("Full Accelerator");
         acceleratorItem.setToggleGroup(groupSequence);
-        acceleratorItem.setOnAction((e) -> DOCUMENT.getSequenceProperty().set(null));
+        acceleratorItem.setOnAction(e -> DOCUMENT.getSequenceProperty().set(null));
         sequenceMenu.getItems().addAll(acceleratorItem, new SeparatorMenuItem());
 
         //Populate the Sequence Menu with the sequences of the machine
@@ -430,7 +430,7 @@ public abstract class FxApplication extends Application {
             RadioMenuItem addedItem = new RadioMenuItem(item.toString());
             sequenceMenu.getItems().add(addedItem);
             addedItem.setToggleGroup(groupSequence);
-            addedItem.setOnAction((e) -> selectSequenceMenuHandler(e));
+            addedItem.setOnAction(e -> selectSequenceMenuHandler(e));
         }
 
         sequenceMenu.getItems().add(new SeparatorMenuItem());
@@ -441,12 +441,12 @@ public abstract class FxApplication extends Application {
             RadioMenuItem addedItem = new RadioMenuItem(item.toString());
             sequenceMenu.getItems().add(addedItem);
             addedItem.setToggleGroup(groupSequence);
-            addedItem.setOnAction((e) -> selectSequenceMenuHandler(e));
+            addedItem.setOnAction(e -> selectSequenceMenuHandler(e));
         }
         sequenceMenu.getItems().add(new SeparatorMenuItem());
 
         final MenuItem addCombo = new MenuItem("Add new Combo Sequence");
-        addCombo.setOnAction((e) -> addComboHandler(groupSequence, e));
+        addCombo.setOnAction(e -> addComboHandler(groupSequence, e));
         sequenceMenu.getItems().add(addCombo);
     }
 
@@ -456,14 +456,13 @@ public abstract class FxApplication extends Application {
      */
     protected final void registerApplicationStatusService() {
         // check to see if the startup flag has disabled application services
-        Boolean shouldRegister = Boolean.valueOf(System.getProperty("registerApplicationService", "true"));
+        boolean shouldRegister = Boolean.parseBoolean(System.getProperty("registerApplicationService", "true"));
 
         if (shouldRegister) {
             try {
                 ServiceDirectory.defaultDirectory().registerService(ApplicationStatus.class, STAGE_TITLE, new FxApplicationStatusService(this));
                 Logger.getLogger(FxApplication.class.getName()).log(Level.INFO, "Registered application services...");
             } catch (ServiceException exception) {
-                System.err.println("Service registration failed due to " + exception);
                 Logger.getLogger(FxApplication.class.getName()).log(Level.SEVERE, "Service registration failed due to ", exception);
             }
         } else {
@@ -586,7 +585,6 @@ public abstract class FxApplication extends Application {
     protected void loadFileMenuHandler() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Load Application State");
-        //fileChooser.setInitialFileName(document.DEFAULT_FILENAME);
 
         //Set extension filter
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(DOCUMENT.FILETYPE_DESCRIPTION + " (" + DOCUMENT.WILDCARD_FILE_EXTENSION + ")", DOCUMENT.WILDCARD_FILE_EXTENSION);
@@ -690,19 +688,19 @@ public abstract class FxApplication extends Application {
     }
 
     protected void addComboHandler(ToggleGroup groupSequence, Event t) {
-        Stage stage;
-        Parent root;
+        Stage newStage;
+        Parent parent;
         URL url = null;
         String sceneFile = "/xal/extension/fxapplication/CreateComboSequence.fxml";
         try {
-            stage = new Stage();
-            url = getClass().getResource(sceneFile);
+            newStage = new Stage();
+
             FXMLLoader loader = new FXMLLoader();
             loader.setLocation(FxApplication.class.getResource(sceneFile));
-            root = loader.load();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Create a Combo Sequence");
-            stage.initModality(Modality.APPLICATION_MODAL);
+            parent = loader.load();
+            newStage.setScene(new Scene(parent));
+            newStage.setTitle("Create a Combo Sequence");
+            newStage.initModality(Modality.APPLICATION_MODAL);
             CreateComboSequenceController loginController = loader.getController();
             loginController.setProperties(DOCUMENT.accelerator.getAccelerator());
             loginController.loggedInProperty().addListener((ObservableValue<? extends Boolean> obs, Boolean wasLoggedIn, Boolean isNowLoggedIn) -> {
@@ -711,7 +709,7 @@ public abstract class FxApplication extends Application {
                         AcceleratorSeqCombo comboSequence = new AcceleratorSeqCombo(loginController.getComboName(), loginController.getNewComboSequence());
                         MenuItem addComboMenu = (MenuItem) t.getSource();
                         RadioMenuItem addedItem = new RadioMenuItem(loginController.getComboName());
-                        addedItem.setOnAction((e) -> selectSequenceMenuHandler(e));
+                        addedItem.setOnAction(e -> selectSequenceMenuHandler(e));
                         addedItem.setToggleGroup(groupSequence);
                         groupSequence.selectToggle(addedItem);
                         DOCUMENT.setSequence(loginController.getComboName());
@@ -719,14 +717,14 @@ public abstract class FxApplication extends Application {
                         int index = addComboMenu.getParentMenu().getItems().size() - 2;
                         addComboMenu.getParentMenu().getItems().add(index, addedItem);
                     }
-                    stage.close();
+                    newStage.close();
                 }
             });
-            stage.showAndWait();
+            newStage.showAndWait();
         } catch (IOException ex) {
             LOGGER.log(Level.INFO, "Exception on FXMLLoader.load()");
-            LOGGER.log(Level.INFO, "  * url: " + url);
-            LOGGER.log(Level.INFO, "  * " + ex);
+            LOGGER.log(Level.INFO, "  * url: {0}", url);
+            LOGGER.log(Level.INFO, "  * ", ex);
             LOGGER.log(Level.INFO, "    ----------------------------------------\n");
         }
     }
@@ -751,7 +749,7 @@ public abstract class FxApplication extends Application {
 
             try {
                 oxalVersion = properties.getProperty("version");
-                LOGGER.log(Level.INFO, "OXAL version = " + oxalVersion);
+                LOGGER.log(Level.INFO, "OXAL version = {0}", oxalVersion);
             } finally {
                 propertyStream.close();
             }

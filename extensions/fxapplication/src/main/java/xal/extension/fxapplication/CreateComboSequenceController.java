@@ -90,9 +90,7 @@ public class CreateComboSequenceController {
         sequence = accl.getSequences();
         ObservableList<String> items = FXCollections.observableArrayList();
 
-        sequence.forEach((seqItem) -> {
-            items.add(seqItem.toString());
-        });
+        sequence.forEach(seqItem -> items.add(seqItem.toString()));
 
         listStart.setItems(items);
         listEnd.setItems(items);

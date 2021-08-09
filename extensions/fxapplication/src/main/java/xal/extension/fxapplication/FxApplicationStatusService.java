@@ -43,10 +43,10 @@ import xal.extension.application.ApplicationStatus;
  */
 public class FxApplicationStatusService implements ApplicationStatus {
 
-    private FxApplication _application = null;
+    private FxApplication application = null;
 
     public FxApplicationStatusService(FxApplication application) {
-        _application = application;
+        this.application = application;
     }
 
     /**
@@ -74,7 +74,7 @@ public class FxApplicationStatusService implements ApplicationStatus {
      */
     @Override
     public void showAllWindows() {
-        _application.showAllWindows();
+        application.showAllWindows();
     }
 
     /**
@@ -92,7 +92,7 @@ public class FxApplicationStatusService implements ApplicationStatus {
      */
     @Override
     public void quit(final int code) {
-        _application.quit();
+        application.quit();
     }
 
     /**
@@ -126,7 +126,7 @@ public class FxApplicationStatusService implements ApplicationStatus {
      */
     @Override
     public String getApplicationName() {
-        return _application.getApplicationName();
+        return application.getApplicationName();
     }
 
     /**
@@ -138,7 +138,7 @@ public class FxApplicationStatusService implements ApplicationStatus {
      */
     @Override
     public Date getLaunchTime() {
-        return _application.getLaunchTime();
+        return application.getLaunchTime();
     }
 
     /**

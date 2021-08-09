@@ -54,9 +54,7 @@ public class ComboSequencesTreeView extends XalTreeView<AcceleratorNode> {
     @Override
     public void setDocument(XalFxDocument document) {
         update(document.getAccelerator());
-        document.getAcceleratorProperty().addChangeListener((ChangeListener<Accelerator>) (ov, oldAccelerator, newAccelerator) -> {
-            update(newAccelerator);
-        });
+        document.getAcceleratorProperty().addChangeListener((ChangeListener<Accelerator>) (ov, oldAccelerator, newAccelerator) -> update(newAccelerator));
     }
 
     @Override

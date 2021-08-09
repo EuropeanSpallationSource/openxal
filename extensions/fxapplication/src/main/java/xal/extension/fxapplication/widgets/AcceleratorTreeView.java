@@ -87,8 +87,8 @@ public class AcceleratorTreeView extends XalTreeView<AcceleratorNode> {
         ObservableList<MenuItem> menuItems = filterMenu.getItems();
         MenuItem menuItemSelectAll = new MenuItem("Select All Types");
         MenuItem menuItemDeselecttAll = new MenuItem("Deselect All Types");
-        menuItemSelectAll.setOnAction((e) -> this.selectAllFilters());
-        menuItemDeselecttAll.setOnAction((e) -> this.deselectAllFilters());
+        menuItemSelectAll.setOnAction(e -> this.selectAllFilters());
+        menuItemDeselecttAll.setOnAction(e -> this.deselectAllFilters());
         menuItems.add(menuItemSelectAll);
         menuItems.add(menuItemDeselecttAll);
         menuItems.add(new SeparatorMenuItem());
@@ -99,7 +99,7 @@ public class AcceleratorTreeView extends XalTreeView<AcceleratorNode> {
         treeView.setCellFactory(p -> new AcceleratorNodeTreeCell());
 
         // Set actions on mouse double-click
-        doubleClickEH = (MouseEvent event) -> {
+        doubleClickEH = event -> {
             if (document != null && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
                 TreeItem<AcceleratorNode> selectedItem = (TreeItem<AcceleratorNode>) treeView.getSelectionModel().getSelectedItem();
                 if (selectedItem != null && selectedItem.getValue() instanceof AcceleratorSeq
