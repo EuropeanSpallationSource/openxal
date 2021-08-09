@@ -145,8 +145,6 @@ public class ElogUtility {
         final Connection connection = newConnection();
         try {
             postEntry(connection, getUserBadgeNumber(connection), logbook, title, content);
-        } catch (DatabaseException exception) {
-            throw exception;
         } finally {
             closeConnection(connection);
         }
@@ -245,7 +243,7 @@ public class ElogUtility {
         final Blob blob = databaseAdaptor.newBlob(connection);
 
         try {
-            int count = blob.setBytes(1L, data);
+            blob.setBytes(1L, data);
 
             final CallableStatement postDataEntry = connection.prepareCall("call logbook.logbook_pkg.insert_logbook_entry (?, ?, ?, ?, ?, ?, ?, ?)");
 
@@ -331,9 +329,9 @@ public class ElogUtility {
             connection.commit();
 
             while (result.next()) {
-                long ID = result.getLong("image_type_id");
+                long id = result.getLong("image_type_id");
                 String extension = result.getString("file_extension");
-                binaryTypes.put(extension, new BinaryType(ID, extension));
+                binaryTypes.put(extension, new BinaryType(id, extension));
             }
         } catch (SQLException exception) {
             throw new DatabaseException("Exception while fetching the image types.", databaseAdaptor, exception);
