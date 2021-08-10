@@ -274,7 +274,7 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
 
     @Override
     public boolean isFirstCell() {
-        return initialGap;
+        return isFirstGap();
     }
 
     @Override

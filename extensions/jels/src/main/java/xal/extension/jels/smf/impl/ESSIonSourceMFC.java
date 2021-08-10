@@ -43,7 +43,7 @@ public class ESSIonSourceMFC extends AcceleratorNode {
     private Channel h2FlowRC = null;
     private Channel h2FlowSC = null;
     public final AccessibleProperty h2Flow = new AccessibleProperty("h2Flow", H_2_FLOW_R_HANDLE, H_2_FLOW_S_HANDLE);
-    public final AccessibleProperty h2FlowRB = new AccessibleProperty("h2FlowRB", H_2_FLOW_RB_HANDLE, H_2_FLOW_S_HANDLE);
+    public final AccessibleProperty h2FlowRB = new AccessibleProperty(H_2_FLOW_RB_HANDLE, H_2_FLOW_RB_HANDLE, H_2_FLOW_S_HANDLE);
 
     // High-voltage power supply channel handles
     public static final String VOLTAGE_SET_HANDLE = "volS";
@@ -62,7 +62,7 @@ public class ESSIonSourceMFC extends AcceleratorNode {
     Channel currentReadChannel = null;
     Channel currentRBChannel = null;
     public final AccessibleProperty curr = new AccessibleProperty("curr", CURRENT_READ_HANDLE, CURRENT_SET_HANDLE);
-    public final AccessibleProperty currRB = new AccessibleProperty("currRB", CURRENT_RB_HANDLE, CURRENT_SET_HANDLE);
+    public final AccessibleProperty currRB = new AccessibleProperty(CURRENT_RB_HANDLE, CURRENT_RB_HANDLE, CURRENT_SET_HANDLE);
 
     /**
      * the ID of this magnet's main power supply

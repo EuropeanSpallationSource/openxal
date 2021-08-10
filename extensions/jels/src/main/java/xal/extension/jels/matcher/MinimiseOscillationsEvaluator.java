@@ -22,7 +22,8 @@ public class MinimiseOscillationsEvaluator extends OnlineModelEvaluator {
         super(matcher);
         for (AcceleratorSeq seq : matcher.getAccelerator().getSequences()) {
             objectives.add(new MinimizeOscillationsObjective(seq));
-            System.out.printf("%s %f %f%n", seq.getId(), seq.getPosition(), seq.getPosition() + seq.getLength());
+            String msg = String.format("%s %f %f%n", seq.getId(), seq.getPosition(), seq.getPosition() + seq.getLength());
+            LOGGER.log(Level.INFO, msg);
         }
     }
 
@@ -43,9 +44,12 @@ public class MinimiseOscillationsEvaluator extends OnlineModelEvaluator {
             MinimizeOscillationsObjective moo = (MinimizeOscillationsObjective) o;
             List<EnvelopeProbeState> ps = trajectory.statesInPositionRange(moo.getSeq().getPosition(), moo.getSeq().getPosition() + moo.getSeq().getLength());
 
-            double minx = 1e100, maxx = -1e100;
-            double miny = 1e100, maxy = -1e100;
-            double minz = 1e100, maxz = -1e100;
+            double minx = 1e100;
+            double maxx = -1e100;
+            double miny = 1e100;
+            double maxy = -1e100;
+            double minz = 1e100;
+            double maxz = -1e100;
             for (int i = 0; i < ps.size(); i++) {
                 Twiss[] t = ((EnvelopeProbeState) ps.get(i)).twissParameters();
                 if (t[0].getEnvelopeRadius() < minx) {

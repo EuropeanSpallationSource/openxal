@@ -66,7 +66,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
     /**
      * K0 (no length)
      */
-    private double K0 = 0;
+    private double k0 = 0;
 
     /**
      * The dipole gap height (m)
@@ -210,7 +210,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * @since Apr 19, 2011
      */
     public void setK0(double dbl) {
-        K0 = dbl;
+        k0 = dbl;
     }
 
     /*
@@ -228,7 +228,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * @since Apr 19, 2011
      */
     public double getK0() {
-        return K0;
+        return k0;
     }
 
     /**
@@ -288,7 +288,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * @return design trajectory path length (in meters)
      */
     public double getDesignPathLength() {
-        return this.dblPathLen;
+        return dblPathLen;
     }
 
     /**
@@ -297,7 +297,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * @return design trajectory bending angle (in radians)
      */
     public double getDesignBendingAngle() {
-        return this.dblBendAng;
+        return dblBendAng;
     }
 
     /**
@@ -309,10 +309,10 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * @see IdealMagSectorDipole2#compDesignBendingRadius()
      */
     public double compDesignCurvature() {
-        double L0 = this.getDesignPathLength();
+        double l0 = this.getDesignPathLength();
         double theta0 = this.getDesignBendingAngle();
 
-        return theta0 / L0;
+        return theta0 / l0;
     }
 
 
@@ -356,20 +356,20 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      */
     @Override
     protected PhaseMap transferMap(IProbe probe) throws ModelException {
-        double B = -getPoleFaceAngle();
-        if (B == 0) {
+        double b = -getPoleFaceAngle();
+        if (b == 0) {
             return PhaseMap.identity();
         }
 
-        double K1 = getFringeIntegral();
-        double K2 = getFringeIntegral2();
+        double k1 = getFringeIntegral();
+        double k2 = getFringeIntegral2();
 
-        double G = getGapHeight();
+        double g = getGapHeight();
         double rho = 1 / compDesignCurvature();
 
         double psi;
 
-        psi = K1 * G / Math.abs(rho) * ((1 + Math.pow(Math.sin(B), 2)) / Math.cos(B)) * (1 - K1 * K2 * G / Math.abs(rho) * Math.tan(B));
+        psi = k1 * g / Math.abs(rho) * ((1 + Math.pow(Math.sin(b), 2)) / Math.cos(b)) * (1 - k1 * k2 * g / Math.abs(rho) * Math.tan(b));
 
         PhaseMatrix matPhi = new PhaseMatrix();
 
@@ -381,13 +381,13 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
 
         switch (this.getOrientation()) {
             case IElectromagnet.ORIENT_HOR:
-                matPhi.setElem(1, 0, Math.tan(B) / Math.abs(rho));
-                matPhi.setElem(3, 2, -Math.tan(B - psi) / Math.abs(rho));
+                matPhi.setElem(1, 0, Math.tan(b) / Math.abs(rho));
+                matPhi.setElem(3, 2, -Math.tan(b - psi) / Math.abs(rho));
                 break;
 
             case IElectromagnet.ORIENT_VER:
-                matPhi.setElem(1, 0, -Math.tan(B - psi) / Math.abs(rho));
-                matPhi.setElem(3, 2, Math.tan(B) / Math.abs(rho));
+                matPhi.setElem(1, 0, -Math.tan(b - psi) / Math.abs(rho));
+                matPhi.setElem(3, 2, Math.tan(b) / Math.abs(rho));
                 break;
 
             default:
@@ -399,8 +399,8 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
         matPhi.setElem(6, 6, 1);
 
         //Jan 2019 Apply the slice error form the ThinElement
-        PhaseMatrix Phidx = applyErrors(matPhi, 0.0);
-        matPhi = Phidx;
+        PhaseMatrix phidx = applyErrors(matPhi, 0.0);
+        matPhi = phidx;
 
         return new PhaseMap(matPhi);
     }

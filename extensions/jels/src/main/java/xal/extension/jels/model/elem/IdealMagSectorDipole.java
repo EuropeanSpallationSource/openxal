@@ -98,7 +98,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
     /**
      * K0 (no length)
      */
-    private double K0 = 0;
+    private double k0 = 0;
 
     /**
      * The gap height (m)
@@ -172,10 +172,10 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
             double dblGap, double dblFldInd) {
         super(TYPE, strId, dblLen);
 
-        this.setGapHeight(dblGap);
-        this.setMagField(dblFld);
-        this.setFieldIndex(dblFldInd);
-        this.setOrientation(enmOrient);
+        setGapHeight(dblGap);
+        setMagField(dblFld);
+        setFieldIndex(dblFldInd);
+        setOrientation(enmOrient);
     }
 
     /**
@@ -190,7 +190,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * @since Apr 19, 2011
      */
     public double getK0() {
-        return K0;
+        return k0;
     }
 
     /**
@@ -203,7 +203,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * @since Apr 19, 2011
      */
     public void setK0(double dbl) {
-        K0 = dbl;
+        k0 = dbl;
     }
 
     /**
@@ -286,7 +286,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * @return field index of the magnet at the design orbit (unitless)
      */
     public double getFieldIndex() {
-        return this.dblQuadFldIndex;
+        return dblQuadFldIndex;
     }
 
     /**
@@ -295,7 +295,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * @return quadrupole field component of this magnet
      */
     public double getQuadComponent() {
-        return this.dblQuadComponent;
+        return dblQuadComponent;
     }
 
     /**
@@ -304,7 +304,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * @return gap size in <strong>meters</strong>
      */
     public double getGapHeight() {
-        return this.dblGapHeight;
+        return dblGapHeight;
     }
 
     /**
@@ -313,7 +313,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * @return design trajectory path length (in meters)
      */
     public double getDesignPathLength() {
-        return this.dblPathLen;
+        return dblPathLen;
     }
 
     /**
@@ -322,7 +322,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * @return design trajectory bending angle (in radians)
      */
     public double getDesignBendingAngle() {
-        return this.dblBendAng;
+        return dblBendAng;
     }
 
     /**
@@ -347,10 +347,10 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
      * @see IdealMagSectorDipole#compDesignCurvature()
      */
     public double compDesignBendingRadius() {
-        double L0 = this.getDesignPathLength();
-        double theta0 = this.getDesignBendingAngle();
+        double l0 = getDesignPathLength();
+        double theta0 = getDesignBendingAngle();
 
-        return L0 / theta0;
+        return l0 / theta0;
     }
 
     /**
@@ -430,105 +430,61 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
 
         double rho = compDesignBendingRadius();
         double alfa = dblLen / rho;
-        double N = getFieldIndex();
+        double n = getFieldIndex();
 
         double h = Math.signum(alfa) / Math.abs(rho);
-        double kx = Math.sqrt(Math.abs(1 - N)) * Math.abs(h);
-        double ky = Math.sqrt(Math.abs(N)) * Math.abs(h);
+        double kx = Math.sqrt(Math.abs(1 - n)) * Math.abs(h);
+        double ky = Math.sqrt(Math.abs(n)) * Math.abs(h);
         double gamma = probe.getGamma();
-        double Deltas = dblLen;
+        double deltas = dblLen;
 
         if (getOrientation() == IElectromagnet.ORIENT_HOR) {
-            matPhi.setElem(0, 0, Math.cos(kx * Deltas));
-            matPhi.setElem(0, 1, ElementaryFunction.sinc(kx * Deltas) * Deltas);
-            matPhi.setElem(1, 0, -kx * Math.sin(kx * Deltas));
-            matPhi.setElem(1, 1, Math.cos(kx * Deltas));
+            matPhi.setElem(0, 0, Math.cos(kx * deltas));
+            matPhi.setElem(0, 1, ElementaryFunction.sinc(kx * deltas) * deltas);
+            matPhi.setElem(1, 0, -kx * Math.sin(kx * deltas));
+            matPhi.setElem(1, 1, Math.cos(kx * deltas));
 
-            matPhi.setElem(2, 2, Math.cos(ky * Deltas));
-            matPhi.setElem(2, 3, ElementaryFunction.sinc(ky * Deltas) * Deltas);
-            matPhi.setElem(3, 2, -ky * Math.sin(ky * Deltas));
-            matPhi.setElem(3, 3, Math.cos(ky * Deltas));
+            matPhi.setElem(2, 2, Math.cos(ky * deltas));
+            matPhi.setElem(2, 3, ElementaryFunction.sinc(ky * deltas) * deltas);
+            matPhi.setElem(3, 2, -ky * Math.sin(ky * deltas));
+            matPhi.setElem(3, 3, Math.cos(ky * deltas));
 
             matPhi.setElem(4, 4, 1);
-            matPhi.setElem(4, 5, -Math.pow(h * gamma, 2) * (kx * Deltas * Math.pow(probe.getBeta(), 2) - Math.sin(kx * Deltas)) / Math.pow(kx, 3) + Deltas * (1 - Math.pow(h / kx, 2)));
+            matPhi.setElem(4, 5, -Math.pow(h * gamma, 2) * (kx * deltas * Math.pow(probe.getBeta(), 2) - Math.sin(kx * deltas)) / Math.pow(kx, 3) + deltas * (1 - Math.pow(h / kx, 2)));
             matPhi.setElem(5, 5, 1);
 
-            matPhi.setElem(4, 0, -h * Math.sin(kx * Deltas) / kx);
-            matPhi.setElem(4, 1, -h * (1 - Math.cos(kx * Deltas)) / Math.pow(kx, 2));
+            matPhi.setElem(4, 0, -h * Math.sin(kx * deltas) / kx);
+            matPhi.setElem(4, 1, -h * (1 - Math.cos(kx * deltas)) / Math.pow(kx, 2));
 
-            matPhi.setElem(0, 5, Math.pow(gamma, 2) * h * (1 - Math.cos(kx * Deltas)) / Math.pow(kx, 2));
-            matPhi.setElem(1, 5, Math.pow(gamma, 2) * h * Math.sin(kx * Deltas) / kx);
+            matPhi.setElem(0, 5, Math.pow(gamma, 2) * h * (1 - Math.cos(kx * deltas)) / Math.pow(kx, 2));
+            matPhi.setElem(1, 5, Math.pow(gamma, 2) * h * Math.sin(kx * deltas) / kx);
         }
 
         if (getOrientation() == IElectromagnet.ORIENT_VER) {
-            matPhi.setElem(0, 0, Math.cos(ky * Deltas));
-            matPhi.setElem(0, 1, ElementaryFunction.sinc(ky * Deltas) * Deltas);
-            matPhi.setElem(1, 0, -ky * Math.sin(ky * Deltas));
-            matPhi.setElem(1, 1, Math.cos(ky * Deltas));
+            matPhi.setElem(0, 0, Math.cos(ky * deltas));
+            matPhi.setElem(0, 1, ElementaryFunction.sinc(ky * deltas) * deltas);
+            matPhi.setElem(1, 0, -ky * Math.sin(ky * deltas));
+            matPhi.setElem(1, 1, Math.cos(ky * deltas));
 
-            matPhi.setElem(2, 2, Math.cos(kx * Deltas));
-            matPhi.setElem(2, 3, ElementaryFunction.sinc(kx * Deltas) * Deltas);
-            matPhi.setElem(3, 2, -kx * Math.sin(kx * Deltas));
-            matPhi.setElem(3, 3, Math.cos(kx * Deltas));
+            matPhi.setElem(2, 2, Math.cos(kx * deltas));
+            matPhi.setElem(2, 3, ElementaryFunction.sinc(kx * deltas) * deltas);
+            matPhi.setElem(3, 2, -kx * Math.sin(kx * deltas));
+            matPhi.setElem(3, 3, Math.cos(kx * deltas));
 
             matPhi.setElem(4, 4, 1);
-            matPhi.setElem(4, 5, -Math.pow(h * gamma, 2) * (kx * Deltas * Math.pow(probe.getBeta(), 2) - Math.sin(kx * Deltas)) / Math.pow(kx, 3) + Deltas * (1 - Math.pow(h / kx, 2)));
+            matPhi.setElem(4, 5, -Math.pow(h * gamma, 2) * (kx * deltas * Math.pow(probe.getBeta(), 2) - Math.sin(kx * deltas)) / Math.pow(kx, 3) + deltas * (1 - Math.pow(h / kx, 2)));
             matPhi.setElem(5, 5, 1);
 
-            matPhi.setElem(4, 2, -h * Math.sin(kx * Deltas) / kx);
-            matPhi.setElem(4, 3, -h * (1 - Math.cos(kx * Deltas)) / Math.pow(kx, 2));
+            matPhi.setElem(4, 2, -h * Math.sin(kx * deltas) / kx);
+            matPhi.setElem(4, 3, -h * (1 - Math.cos(kx * deltas)) / Math.pow(kx, 2));
 
-            matPhi.setElem(2, 5, Math.pow(gamma, 2) * h * (1 - Math.cos(kx * Deltas)) / Math.pow(kx, 2));
-            matPhi.setElem(3, 5, Math.pow(gamma, 2) * h * Math.sin(kx * Deltas) / kx);
+            matPhi.setElem(2, 5, Math.pow(gamma, 2) * h * (1 - Math.cos(kx * deltas)) / Math.pow(kx, 2));
+            matPhi.setElem(3, 5, Math.pow(gamma, 2) * h * Math.sin(kx * deltas) / kx);
         }
 
         matPhi.setElem(6, 6, 1);
 
         return new PhaseMap(matPhi);
-    }
-
-    /*
-     * Internal Support
-     */
-    /**
-     * <p>
-     * Compute and return the partial deflection angle of the design trajectory
-     * at position <em>s</em> within the magnet. Note that <em>s</em> is not the
-     * position along the design trajectory. That value is found by multiply the
-     * returned value by the curvature radius.
-     * </p>
-     *
-     * NOTE
-     * <p>
-     * This function is necessary since the space charge calculations step
-     * through the <strong>physical</strong> distance of the magnet, not the
-     * design path.
-     * </p>
-     *
-     * <p>
-     * The result is computed using repeated application of the law of cosines.
-     * </p>
-     *
-     *
-     * @param s physical distance from magnet entrance location (meters)
-     *
-     * @return the partial deflection angle at distance s
-     *
-     * @author Christopher K. Allen sako, 2007/11/27, exception handling
-     */
-    private double compCurrentAngle(double s) {
-        double R0 = this.compDesignBendingRadius();
-        double L0 = this.getLength();
-
-        double num = R0 - ((L0 / 2.0) / R0) * s;
-        double den = Math.sqrt(R0 * R0 + s * (s - L0));
-        double ratio = num / den;
-        if (ratio > 1) {
-            ratio = 1;
-        } else if (ratio < -1) {
-            ratio = -1;
-        }
-        return Math.acos(ratio);
     }
 
 

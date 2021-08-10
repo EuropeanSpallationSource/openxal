@@ -16,7 +16,7 @@ public class ESSRfCavityBucket extends RfCavityBucket {
     /*
      *  Constants
      */
-    public static final String c_strType = "rfcavity";
+    public static final String TYPE = "rfcavity";
 
     static final String[] ARR_NAMES = {"TTF_startCoefs",
         "TTFPrime_startCoefs",
@@ -55,7 +55,7 @@ public class ESSRfCavityBucket extends RfCavityBucket {
      */
     @Override
     public String getType() {
-        return c_strType;
+        return TYPE;
     }
 
     public ESSRfCavityBucket() {

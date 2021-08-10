@@ -32,7 +32,7 @@ public class FieldMapIntegrator extends PhaseMatrix {
 
     private static final int NDIM = 7;
     private boolean coupled = true;
-    private Integrator integrator = this::RK4Integrator;
+    private Integrator integrator = this::rk4Integrator;
     private Operations operations = new CoupledOperations();
 
     public void setCoupled(boolean coupled) {
@@ -79,7 +79,7 @@ public class FieldMapIntegrator extends PhaseMatrix {
 
         // Building the infinitesimal transfer matrix (X' = F*X)
         double[] infTransferMatrixArray = new double[NDIM * NDIM];
-        // Horizontal plane;
+        // Horizontal plane
         infTransferMatrixArray[1 * NDIM + 0] = k * (fieldMapPoint.getdExdx() - beta * LIGHT_SPEED * fieldMapPoint.getdBydx());
         infTransferMatrixArray[1 * NDIM + 1] = -k * fieldMapPoint.getEz();
 
@@ -93,7 +93,7 @@ public class FieldMapIntegrator extends PhaseMatrix {
 
         // Coupling terms
         if (coupled) {
-            // Horizontal plane;
+            // Horizontal plane
             infTransferMatrixArray[1 * NDIM + 2] = k * (fieldMapPoint.getdExdy() - beta * LIGHT_SPEED * fieldMapPoint.getdBydy());
             infTransferMatrixArray[1 * NDIM + 3] = k * beta * LIGHT_SPEED * fieldMapPoint.getBz();
             infTransferMatrixArray[1 * NDIM + 4] = k * (fieldMapPoint.getdExdz() - beta * LIGHT_SPEED * fieldMapPoint.getdBydz());
@@ -150,7 +150,7 @@ public class FieldMapIntegrator extends PhaseMatrix {
      * @param infTransferMatrix
      * @param length
      */
-    private void RK4Integrator(double[] infTransferMatrixArray, double length) {
+    private void rk4Integrator(double[] infTransferMatrixArray, double length) {
         double[] k1 = infTransferMatrixArray;
         operations.matrixDoubleMultiplication(k1, length);
         double[] k2 = k1.clone();

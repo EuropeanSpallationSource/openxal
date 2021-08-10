@@ -56,10 +56,17 @@ public class InitialBeamParameters {
 
     }
 
-    final TwissVariable ax, bx, ay, by, az, bz;
+    final TwissVariable ax;
+    final TwissVariable bx;
+    final TwissVariable ay;
+    final TwissVariable by;
+    final TwissVariable az;
+    final TwissVariable bz;
     final List<Variable> variables;
 
-    final TwissVariable Ex, Ey, Ez;
+    final TwissVariable ex;
+    final TwissVariable ey;
+    final TwissVariable ez;
 
     private EnvelopeProbe probe;
 
@@ -74,9 +81,9 @@ public class InitialBeamParameters {
         bz = new TwissVariable(IND.Z, PROP.BETA, -1, 1);
         variables = Arrays.<Variable>asList(ax, bx, ay, by, az, bz);
 
-        Ex = new TwissVariable(IND.X, PROP.EMIT, -1, 1);
-        Ey = new TwissVariable(IND.Y, PROP.EMIT, -1, 1);
-        Ez = new TwissVariable(IND.Z, PROP.EMIT, -1, 1);
+        ex = new TwissVariable(IND.X, PROP.EMIT, -1, 1);
+        ey = new TwissVariable(IND.Y, PROP.EMIT, -1, 1);
+        ez = new TwissVariable(IND.Z, PROP.EMIT, -1, 1);
 
     }
 
@@ -89,20 +96,20 @@ public class InitialBeamParameters {
     }
 
     public EnvelopeProbe getProbe(TrialPoint trialPoint) {
-        EnvelopeProbe probe = this.probe.copy();
+        EnvelopeProbe probeCopy = this.probe.copy();
 
-        double Ax = trialPoint.getValue(ax),
-                Bx = trialPoint.getValue(bx),
-                Ay = trialPoint.getValue(ay),
-                By = trialPoint.getValue(by),
-                Az = trialPoint.getValue(az),
-                Bz = trialPoint.getValue(bz);
+        double aX = trialPoint.getValue(ax);
+        double bX = trialPoint.getValue(bx);
+        double aY = trialPoint.getValue(ay);
+        double bY = trialPoint.getValue(by);
+        double aZ = trialPoint.getValue(az);
+        double bZ = trialPoint.getValue(bz);
 
-        probe.initFromTwiss(new Twiss[]{new Twiss(Ax, Bx, Ex.getInitialValue()),
-            new Twiss(Ay, By, Ey.getInitialValue()),
-            new Twiss(Az, Bz, Ez.getInitialValue())});
+        probeCopy.initFromTwiss(new Twiss[]{new Twiss(aX, bX, ex.getInitialValue()),
+            new Twiss(aY, bY, ey.getInitialValue()),
+            new Twiss(aZ, bZ, ez.getInitialValue())});
 
-        return probe;
+        return probeCopy;
     }
 
     public List<Variable> getVariables() {

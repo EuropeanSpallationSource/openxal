@@ -136,17 +136,17 @@ public class ImporterHelpers {
     }
 
     private static void addEnvTrackerAdapt(EditContext editContext) {
-        DataTable tblEnvTrackerAdapt = new DataTable("EnvTrackerAdapt", Arrays.asList(new DataAttribute[]{
-            new DataAttribute("name", String.class, true),
-            new DataAttribute("initstep", Double.class, false, Double.toString(0.01)),
-            new DataAttribute("maxstep", Double.class, false, Double.toString(0.0)),
-            new DataAttribute("maxstepdriftpmq", Double.class, false, Double.toString(0.0)),
-            new DataAttribute("errortol", Double.class, false, Double.toString(1e-5)),
-            new DataAttribute("slack", Double.class, false, Double.toString(0.05)),
-            new DataAttribute("norm", Integer.class, false, Integer.toString(0)),
-            new DataAttribute("maxiter", Integer.class, false, Integer.toString(50)),
-            new DataAttribute("order", Integer.class, false, Integer.toString(2))
-        }));
+        DataTable tblEnvTrackerAdapt = new DataTable("EnvTrackerAdapt", Arrays.asList(
+                new DataAttribute("name", String.class, true),
+                new DataAttribute("initstep", Double.class, false, Double.toString(0.01)),
+                new DataAttribute("maxstep", Double.class, false, Double.toString(0.0)),
+                new DataAttribute("maxstepdriftpmq", Double.class, false, Double.toString(0.0)),
+                new DataAttribute("errortol", Double.class, false, Double.toString(1e-5)),
+                new DataAttribute("slack", Double.class, false, Double.toString(0.05)),
+                new DataAttribute("norm", Integer.class, false, Integer.toString(0)),
+                new DataAttribute("maxiter", Integer.class, false, Integer.toString(50)),
+                new DataAttribute("order", Integer.class, false, Integer.toString(2))
+        ));
         GenericRecord defaultRec = new GenericRecord(tblEnvTrackerAdapt);
         defaultRec.setValueForKey("default", Tracker.TBL_PRIM_KEY_NAME);
         tblEnvTrackerAdapt.add(defaultRec);
@@ -225,7 +225,7 @@ public class ImporterHelpers {
 
             DataTable tblTwiss = editContext.getTable("twiss");
             DataTable tblLocation = editContext.getTable("location");
-            GenericRecord record = null;
+
             for (AcceleratorSeq seq : accelerator.getSequences()) {
 
                 gamma = 1 + kineticEnergy.get(i) / probe.getSpeciesRestEnergy();
@@ -244,10 +244,10 @@ public class ImporterHelpers {
                 // Adding centroid coordinates
                 addCentroidToTable(seq.getId(), initialCentroid.get(i), tblCentroid);
 
-                record = new GenericRecord(tblLocation);
-                record.setValueForKey(seq.getId(), "name");
-                record.setValueForKey(kineticEnergy.get(i), "W");
-                tblLocation.add(record);
+                GenericRecord aRecord = new GenericRecord(tblLocation);
+                aRecord.setValueForKey(seq.getId(), "name");
+                aRecord.setValueForKey(kineticEnergy.get(i), "W");
+                tblLocation.add(aRecord);
 
                 i++;
             }
@@ -260,10 +260,8 @@ public class ImporterHelpers {
      * Adds a centroid table to the context
      */
     private static DataTable addCentroidSchema(EditContext editContext) {
-        DataTable tblCentroid = new DataTable("CentroidCoordinates", Arrays.asList(new DataAttribute[]{
-            new DataAttribute("name", String.class, true),
-            new DataAttribute("coordinates", String.class, true)
-        }));
+        DataTable tblCentroid = new DataTable("CentroidCoordinates",
+                Arrays.asList(new DataAttribute("name", String.class, true), new DataAttribute("coordinates", String.class, true)));
 
         editContext.addTableToGroup(tblCentroid, "modelparams");
 
@@ -273,13 +271,13 @@ public class ImporterHelpers {
     private static void addTwissToTable(String seq, Twiss[] twiss, DataTable tblTwiss) {
         for (int i = 0; i < 3; i++) {
             String axis = new String[]{"x", "y", "z"}[i];
-            GenericRecord record = new GenericRecord(tblTwiss);
-            record.setValueForKey(seq, "name");
-            record.setValueForKey(axis, "coordinate");
-            record.setValueForKey(twiss[i].getAlpha(), "alpha");
-            record.setValueForKey(twiss[i].getBeta(), "beta");
-            record.setValueForKey(twiss[i].getEmittance(), "emittance");
-            tblTwiss.add(record);
+            GenericRecord aRecord = new GenericRecord(tblTwiss);
+            aRecord.setValueForKey(seq, "name");
+            aRecord.setValueForKey(axis, "coordinate");
+            aRecord.setValueForKey(twiss[i].getAlpha(), "alpha");
+            aRecord.setValueForKey(twiss[i].getBeta(), "beta");
+            aRecord.setValueForKey(twiss[i].getEmittance(), "emittance");
+            tblTwiss.add(aRecord);
         }
 
     }
@@ -288,10 +286,10 @@ public class ImporterHelpers {
      * Adds a centroid record for a given sequence to the "CentroidCoordinates" table
      */
     private static void addCentroidToTable(String seqName, PhaseVector initialCentroid, DataTable tblCentroid) {
-        GenericRecord record = new GenericRecord(tblCentroid);
-        record.setValueForKey(seqName, "name");
-        record.setValueForKey("(" + initialCentroid.printString() + ")", "coordinates");
-        tblCentroid.add(record);
+        GenericRecord aRecord = new GenericRecord(tblCentroid);
+        aRecord.setValueForKey(seqName, "name");
+        aRecord.setValueForKey("(" + initialCentroid.printString() + ")", "coordinates");
+        tblCentroid.add(aRecord);
     }
 
     /**
@@ -329,7 +327,8 @@ public class ImporterHelpers {
             }
         }
 
-        for (int i = 0; i < children.getLength();) {
+        int i = 0;
+        while (i < children.getLength()) {
             Node child = children.item(i);
             attrs = child.getAttributes();
             // remove twiss and align - not needed

@@ -87,17 +87,17 @@ public class Doppler extends AcceleratorNode {
     /*
      *  Process variable Gets 
      */
-    public double getFraction_H() throws ConnectionException, GetException {
+    public double getFractionH() throws ConnectionException, GetException {
         fractionHRC = lazilyGetAndConnect(FRACTION_H_R_HANDLE, fractionHRC);
         return fractionHRC.getValDbl();
     }
 
-    public double getFraction_H2() throws ConnectionException, GetException {
+    public double getFractionH2() throws ConnectionException, GetException {
         fractionH2RC = lazilyGetAndConnect(FRACTION_H2_R_HANDLE, fractionH2RC);
         return fractionH2RC.getValDbl();
     }
 
-    public double getFraction_H3() throws ConnectionException, GetException {
+    public double getFractionH3() throws ConnectionException, GetException {
         fractionH3RC = lazilyGetAndConnect(FRACTION_H_R_HANDLE, fractionH3RC);
         return fractionH3RC.getValDbl();
     }

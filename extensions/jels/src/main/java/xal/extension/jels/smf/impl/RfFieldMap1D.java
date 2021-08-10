@@ -60,7 +60,7 @@ public class RfFieldMap1D extends FieldMap {
 
     @Override
     public void saveFieldMap(String path, String filename) throws IOException, URISyntaxException {
-        FieldComponent<double[]> fieldComponentZ = electricField.get("z");
+        FieldComponent<double[]> fieldComponentZ = (FieldComponent<double[]>) electricField.get("z");
 
         saveFile1D(path, filename + ".edz", fieldComponentZ);
     }
@@ -74,7 +74,7 @@ public class RfFieldMap1D extends FieldMap {
      */
     @Override
     public FieldMapPoint getFieldAt(double position) {
-        FieldComponent<double[]> fieldComponent = electricField.get("z");
+        FieldComponent<double[]> fieldComponent = (FieldComponent<double[]>) electricField.get("z");
 
         if (position < -1e-6 || position > fieldComponent.getMax()[0] + 1e-6) {
             return null;
@@ -94,7 +94,7 @@ public class RfFieldMap1D extends FieldMap {
             positionIndex = numberOfPointsZ - 2;
         }
 
-        double Ez0 = field[positionIndex] + (position - positionIndex * spacingZ)
+        double ez0 = field[positionIndex] + (position - positionIndex * spacingZ)
                 * (field[positionIndex + 1] - field[positionIndex]) / spacingZ;
         double dEzds;
         positionIndex = (int) Math.round(position / spacingZ);
@@ -108,13 +108,13 @@ public class RfFieldMap1D extends FieldMap {
 
         FieldMapPoint fieldMapPoint = new FieldMapPoint();
 
-        fieldMapPoint.setEz(Ez0);
+        fieldMapPoint.setEz(ez0);
         fieldMapPoint.setdExdx(-0.5 * dEzds);
         fieldMapPoint.setdEydy(-0.5 * dEzds);
         fieldMapPoint.setdEzdz(dEzds);
-        fieldMapPoint.setdBxdy(0.5 * Ez0);
-        fieldMapPoint.setdBydx(-0.5 * Ez0);
-        fieldMapPoint.setEz(Ez0);
+        fieldMapPoint.setdBxdy(0.5 * ez0);
+        fieldMapPoint.setdBydx(-0.5 * ez0);
+        fieldMapPoint.setEz(ez0);
 
         return fieldMapPoint;
     }

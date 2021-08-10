@@ -83,7 +83,7 @@ public class RepellerElectrode extends AcceleratorNode {
     /*
      *  Process variable Gets
      */
-    public int getStatusON_OFF() throws ConnectionException, GetException {
+    public int getStatusOnOff() throws ConnectionException, GetException {
         statusRC = lazilyGetAndConnect(STATUS_RB_HANDLE, statusRC);
         return statusRC.getValEnum();
     }
@@ -91,9 +91,8 @@ public class RepellerElectrode extends AcceleratorNode {
     /*
      *  Process variable Puts
      */
-    public void setStatusON_OFF(int intVal) throws ConnectionException, PutException {
+    public void setStatusOnOff(int intVal) throws ConnectionException, PutException {
         statusSC = lazilyGetAndConnect(STATUS_SET_HANDLE, statusSC);
         statusSC.putVal(intVal);
     }
-
 }

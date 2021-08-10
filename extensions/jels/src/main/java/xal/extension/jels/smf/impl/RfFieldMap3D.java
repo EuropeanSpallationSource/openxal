@@ -98,13 +98,13 @@ public class RfFieldMap3D extends FieldMap {
 
     @Override
     public void saveFieldMap(String path, String filename) throws IOException, URISyntaxException {
-        FieldComponent<double[][][]> electricFieldX = electricField.get("x");
-        FieldComponent<double[][][]> electricFieldY = electricField.get("y");
-        FieldComponent<double[][][]> electricFieldZ = electricField.get("z");
+        FieldComponent<double[][][]> electricFieldX = (FieldComponent<double[][][]>) electricField.get("x");
+        FieldComponent<double[][][]> electricFieldY = (FieldComponent<double[][][]>) electricField.get("y");
+        FieldComponent<double[][][]> electricFieldZ = (FieldComponent<double[][][]>) electricField.get("z");
 
-        FieldComponent<double[][][]> magneticFieldX = magneticField.get("x");
-        FieldComponent<double[][][]> magneticFieldY = magneticField.get("y");
-        FieldComponent<double[][][]> magneticFieldZ = magneticField.get("z");
+        FieldComponent<double[][][]> magneticFieldX = (FieldComponent<double[][][]>) magneticField.get("x");
+        FieldComponent<double[][][]> magneticFieldY = (FieldComponent<double[][][]>) magneticField.get("y");
+        FieldComponent<double[][][]> magneticFieldZ = (FieldComponent<double[][][]>) magneticField.get("z");
 
         saveFile3D(path, filename + ".edx", electricFieldX);
         saveFile3D(path, filename + ".edy", electricFieldY);
@@ -124,13 +124,13 @@ public class RfFieldMap3D extends FieldMap {
      */
     @Override
     public FieldMapPoint getFieldAt(double position) {
-        FieldComponent<double[][][]> electricFieldX = electricField.get("x");
-        FieldComponent<double[][][]> electricFieldY = electricField.get("y");
-        FieldComponent<double[][][]> electricFieldZ = electricField.get("z");
+        FieldComponent<double[][][]> electricFieldX = (FieldComponent<double[][][]>) electricField.get("x");
+        FieldComponent<double[][][]> electricFieldY = (FieldComponent<double[][][]>) electricField.get("y");
+        FieldComponent<double[][][]> electricFieldZ = (FieldComponent<double[][][]>) electricField.get("z");
 
-        FieldComponent<double[][][]> magneticFieldX = magneticField.get("x");
-        FieldComponent<double[][][]> magneticFieldY = magneticField.get("y");
-        FieldComponent<double[][][]> magneticFieldZ = magneticField.get("z");
+        FieldComponent<double[][][]> magneticFieldX = (FieldComponent<double[][][]>) magneticField.get("x");
+        FieldComponent<double[][][]> magneticFieldY = (FieldComponent<double[][][]>) magneticField.get("y");
+        FieldComponent<double[][][]> magneticFieldZ = (FieldComponent<double[][][]>) magneticField.get("z");
 
         if (position < 0.0 || position > electricFieldZ.getMax()[0] || position > magneticFieldZ.getMax()[0]) {
             return null;
@@ -184,41 +184,37 @@ public class RfFieldMap3D extends FieldMap {
             positionIndex = numberOfPointsZ - 2;
         }
 
-        double interpolation_factor = position / spacingZ - positionIndex;
+        double interpolationFactor = position / spacingZ - positionIndex;
 
         // To get the (0,0) point in the XY plane.
         int midPointX = (int) (-minX / spacingX);
         int midPointY = (int) (-minY / spacingY);
 
-        double Fx0 = fieldX[positionIndex][midPointY][midPointX] + interpolation_factor
+        double fx0 = fieldX[positionIndex][midPointY][midPointX] + interpolationFactor
                 * (fieldX[positionIndex + 1][midPointY][midPointX] - fieldX[positionIndex][midPointY][midPointX]);
-        double Fy0 = fieldY[positionIndex][midPointY][midPointX] + interpolation_factor
+        double fy0 = fieldY[positionIndex][midPointY][midPointX] + interpolationFactor
                 * (fieldY[positionIndex + 1][midPointY][midPointX] - fieldY[positionIndex][midPointY][midPointX]);
-        double Fz0 = fieldZ[positionIndex][midPointY][midPointX] + interpolation_factor
+        double fz0 = fieldZ[positionIndex][midPointY][midPointX] + interpolationFactor
                 * (fieldZ[positionIndex + 1][midPointY][midPointX] - fieldZ[positionIndex][midPointY][midPointX]);
 
-        double dFxdx = (fieldX[positionIndex][midPointY][midPointX + 1] - fieldX[positionIndex][midPointY][midPointX]) + interpolation_factor
+        double dFxdx = (fieldX[positionIndex][midPointY][midPointX + 1] - fieldX[positionIndex][midPointY][midPointX]) + interpolationFactor
                 * (fieldX[positionIndex + 1][midPointY][midPointX + 1] - fieldX[positionIndex + 1][midPointY][midPointX] - (fieldX[positionIndex][midPointY][midPointX + 1] - fieldX[positionIndex][midPointY][midPointX]));
-        double dFxdy = (fieldX[positionIndex][midPointY + 1][midPointX] - fieldX[positionIndex][midPointY][midPointX]) + interpolation_factor
+        double dFxdy = (fieldX[positionIndex][midPointY + 1][midPointX] - fieldX[positionIndex][midPointY][midPointX]) + interpolationFactor
                 * (fieldX[positionIndex + 1][midPointY + 1][midPointX] - fieldX[positionIndex + 1][midPointY][midPointX] - (fieldX[positionIndex][midPointY + 1][midPointX] - fieldX[positionIndex][midPointY][midPointX]));
-        double dFydx = (fieldY[positionIndex][midPointY][midPointX + 1] - fieldY[positionIndex][midPointY][midPointX]) + interpolation_factor
+        double dFydx = (fieldY[positionIndex][midPointY][midPointX + 1] - fieldY[positionIndex][midPointY][midPointX]) + interpolationFactor
                 * (fieldY[positionIndex + 1][midPointY][midPointX + 1] - fieldY[positionIndex + 1][midPointY][midPointX] - (fieldY[positionIndex][midPointY][midPointX + 1] - fieldY[positionIndex][midPointY][midPointX]));
-        double dFydy = (fieldY[positionIndex][midPointY + 1][midPointX] - fieldY[positionIndex][midPointY][midPointX]) + interpolation_factor
+        double dFydy = (fieldY[positionIndex][midPointY + 1][midPointX] - fieldY[positionIndex][midPointY][midPointX]) + interpolationFactor
                 * (fieldY[positionIndex + 1][midPointY + 1][midPointX] - fieldY[positionIndex + 1][midPointY][midPointX] - (fieldY[positionIndex][midPointY + 1][midPointX] - fieldY[positionIndex][midPointY][midPointX]));
-        double dFzdx = (fieldZ[positionIndex][midPointY][midPointX + 1] - fieldZ[positionIndex][midPointY][midPointX]) + interpolation_factor
+        double dFzdx = (fieldZ[positionIndex][midPointY][midPointX + 1] - fieldZ[positionIndex][midPointY][midPointX]) + interpolationFactor
                 * (fieldZ[positionIndex + 1][midPointY][midPointX + 1] - fieldZ[positionIndex + 1][midPointY][midPointX] - (fieldZ[positionIndex][midPointY][midPointX + 1] - fieldZ[positionIndex][midPointY][midPointX]));
-        double dFzdy = (fieldZ[positionIndex][midPointY + 1][midPointX] - fieldZ[positionIndex][midPointY][midPointX]) + interpolation_factor
+        double dFzdy = (fieldZ[positionIndex][midPointY + 1][midPointX] - fieldZ[positionIndex][midPointY][midPointX]) + interpolationFactor
                 * (fieldZ[positionIndex + 1][midPointY + 1][midPointX] - fieldZ[positionIndex + 1][midPointY][midPointX] - (fieldZ[positionIndex][midPointY + 1][midPointX] - fieldZ[positionIndex][midPointY][midPointX]));
 
         double dFxdz;
         double dFydz;
         double dFzdz;
 
-        if (positionIndex == 0) {
-            dFxdz = (fieldX[positionIndex + 1][midPointY][midPointX] - fieldX[positionIndex][midPointY][midPointX]);
-            dFydz = (fieldY[positionIndex + 1][midPointY][midPointX] - fieldY[positionIndex][midPointY][midPointX]);
-            dFzdz = (fieldZ[positionIndex + 1][midPointY][midPointX] - fieldZ[positionIndex][midPointY][midPointX]);
-        } else if (positionIndex == fieldZ.length - 1) {
+        if (positionIndex == fieldZ.length - 1) {
             dFxdz = (fieldX[positionIndex][midPointY][midPointX] - fieldX[positionIndex - 1][midPointY][midPointX]);
             dFydz = (fieldY[positionIndex][midPointY][midPointX] - fieldY[positionIndex - 1][midPointY][midPointX]);
             dFzdz = (fieldZ[positionIndex][midPointY][midPointX] - fieldZ[positionIndex - 1][midPointY][midPointX]);
@@ -229,9 +225,9 @@ public class RfFieldMap3D extends FieldMap {
         }
 
         // Denormalising
-        Fx0 /= normX;
-        Fy0 /= normY;
-        Fz0 /= normZ;
+        fx0 /= normX;
+        fy0 /= normY;
+        fz0 /= normZ;
         dFxdx /= spacingX * normX;
         dFxdy /= spacingY * normX;
         dFydx /= spacingX * normY;
@@ -243,9 +239,9 @@ public class RfFieldMap3D extends FieldMap {
         dFzdz /= spacingZ * normZ;
 
         if (electricField) {
-            fieldMapPoint.setEx(Fx0);
-            fieldMapPoint.setEy(Fy0);
-            fieldMapPoint.setEz(Fz0);
+            fieldMapPoint.setEx(fx0);
+            fieldMapPoint.setEy(fy0);
+            fieldMapPoint.setEz(fz0);
 
             fieldMapPoint.setdExdx(dFxdx);
             fieldMapPoint.setdExdy(dFxdy);
@@ -259,9 +255,9 @@ public class RfFieldMap3D extends FieldMap {
             fieldMapPoint.setdEzdy(dFzdy);
             fieldMapPoint.setdEzdz(dFzdz);
         } else {
-            fieldMapPoint.setBx(Fx0);
-            fieldMapPoint.setBy(Fy0);
-            fieldMapPoint.setBz(Fz0);
+            fieldMapPoint.setBx(fx0);
+            fieldMapPoint.setBy(fy0);
+            fieldMapPoint.setBz(fz0);
 
             fieldMapPoint.setdBxdx(dFxdx);
             fieldMapPoint.setdBxdy(dFxdy);

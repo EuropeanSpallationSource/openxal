@@ -360,7 +360,7 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
     @Override
     public boolean isFirstCell() {
-        return initialGap;
+        return isFirstGap();
     }
 
     @Override

@@ -23,33 +23,32 @@ package xal.extension.jels.tools.math;
  */
 public class MeanFieldPolynomial extends InverseRealPolynomial {
 
-    private final InverseRealPolynomial TTF;
-    private final InverseRealPolynomial TTFPrime;
+    private final InverseRealPolynomial ttf;
+    private final InverseRealPolynomial ttfPrime;
 
-    public MeanFieldPolynomial(InverseRealPolynomial TTF, InverseRealPolynomial TTFPrime) {
-        this.TTF = TTF;
-        this.TTFPrime = TTFPrime;
+    public MeanFieldPolynomial(InverseRealPolynomial ttf, InverseRealPolynomial ttfPrime) {
+        this.ttf = ttf;
+        this.ttfPrime = ttfPrime;
     }
 
     @Override
     public double evaluateAt(double dblVal) {
-        return TTF.evaluateAt(dblVal);
+        return ttf.evaluateAt(dblVal);
     }
 
     @Override
     public double derivativeAt(double dblVal) {
         // If TTFPrime coefficients are not provided, it uses TTF
-        if (TTFPrime.getCoef(0) != 0) {
-            return 0.01 * TTFPrime.evaluateAt(dblVal);
+        if (ttfPrime.getCoef(0) != 0) {
+            return 0.01 * ttfPrime.evaluateAt(dblVal);
         } else {
-            return TTF.derivativeAt(dblVal);
+            return ttf.derivativeAt(dblVal);
         }
     }
 
     // TODO: return coefficients of all polynomials
     @Override
     public double getCoef(int iOrder) {
-
-        return TTF.getCoef(iOrder);
+        return ttf.getCoef(iOrder);
     }
 }

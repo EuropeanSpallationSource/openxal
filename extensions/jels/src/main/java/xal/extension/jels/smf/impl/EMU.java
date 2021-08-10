@@ -40,27 +40,27 @@ public class EMU extends AcceleratorNode {
     // EMU channel handles           
     public static final String EMITT_X_HANDLE = "xEmitt";
     private Channel emittXC = null;
-    public final AccessibleProperty xEmitt = new AccessibleProperty("xEmitt", EMITT_X_HANDLE);
+    public final AccessibleProperty xEmitt = new AccessibleProperty(EMITT_X_HANDLE);
 
     public static final String EMITT_Y_HANDLE = "yEmitt";
     private Channel emittYC = null;
-    public final AccessibleProperty yEmitt = new AccessibleProperty("yEmitt", EMITT_Y_HANDLE);
+    public final AccessibleProperty yEmitt = new AccessibleProperty(EMITT_Y_HANDLE);
 
     public static final String ALPHA_Y_TWISS_HANDLE = "yAlphaTwiss";
     private Channel alphayTwissC = null;
-    public final AccessibleProperty yAlphaTwiss = new AccessibleProperty("yAlphaTwiss", ALPHA_Y_TWISS_HANDLE);
+    public final AccessibleProperty yAlphaTwiss = new AccessibleProperty(ALPHA_Y_TWISS_HANDLE);
 
     public static final String BETA_Y_TWISS_HANDLE = "yBetaTwiss";
     private Channel betayTwissC = null;
-    public final AccessibleProperty yBetaTwiss = new AccessibleProperty("yBetaTwiss", BETA_Y_TWISS_HANDLE);
+    public final AccessibleProperty yBetaTwiss = new AccessibleProperty(BETA_Y_TWISS_HANDLE);
 
     public static final String ALPHA_X_TWISS_HANDLE = "xAlphaTwiss";
     private Channel alphaxTwissC = null;
-    public final AccessibleProperty xAlphaTwiss = new AccessibleProperty("xAlphaTwiss", ALPHA_X_TWISS_HANDLE);
+    public final AccessibleProperty xAlphaTwiss = new AccessibleProperty(ALPHA_X_TWISS_HANDLE);
 
     public static final String BETA_X_TWISS_HANDLE = "xBetaTwiss";
     private Channel betaxTwissC = null;
-    public final AccessibleProperty xBetaTwiss = new AccessibleProperty("xBetaTwiss", BETA_X_TWISS_HANDLE);
+    public final AccessibleProperty xBetaTwiss = new AccessibleProperty(BETA_X_TWISS_HANDLE);
 
     static {
         registerType();
@@ -76,6 +76,7 @@ public class EMU extends AcceleratorNode {
     /**
      * Override to provide type signature
      */
+    @Override
     public String getType() {
         return TYPE;
     }

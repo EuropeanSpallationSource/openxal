@@ -42,9 +42,9 @@ public class ESSIonSourceMagnetron extends AcceleratorNode {
     public static final String FORWD_PRW_R_HANDLE = "forwdPrwR";
     private Channel forwdPrwRC = null;
     public static final String FORWD_PRW_S_HANDLE = "forwdPrwS";
-    private Channel forwdPrwSC = null;
+
     public final AccessibleProperty forwdPrw = new AccessibleProperty("forwdPrw", FORWD_PRW_R_HANDLE, FORWD_PRW_S_HANDLE);
-    public final AccessibleProperty forwdPrwRB = new AccessibleProperty("forwdPrwRB", FORWD_PRW_RB_HANDLE, FORWD_PRW_S_HANDLE);
+    public final AccessibleProperty forwdPrwRB = new AccessibleProperty(FORWD_PRW_RB_HANDLE, FORWD_PRW_RB_HANDLE, FORWD_PRW_S_HANDLE);
 
     static {
         registerType();
@@ -60,6 +60,7 @@ public class ESSIonSourceMagnetron extends AcceleratorNode {
     /**
      * Override to provide type signature
      */
+    @Override
     public String getType() {
         return TYPE;
     }
@@ -92,7 +93,7 @@ public class ESSIonSourceMagnetron extends AcceleratorNode {
     }
 
     public void setForwdPrwS(double dblVal) throws NoSuchChannelException, ConnectionException, PutException {
-        forwdPrwSC = getAndConnectChannel(FORWD_PRW_S_HANDLE);
+        Channel forwdPrwSC = getAndConnectChannel(FORWD_PRW_S_HANDLE);
         forwdPrwSC.putVal(dblVal);
     }
 }

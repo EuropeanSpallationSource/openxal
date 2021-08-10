@@ -10,7 +10,6 @@ import xal.extension.jels.smf.impl.ESSRfGap;
 import xal.extension.jels.smf.impl.FieldMap;
 import xal.extension.jels.smf.impl.FieldMapFactory;
 import xal.extension.jels.smf.impl.MagFieldMap;
-import xal.extension.jels.smf.impl.RfFieldMap1D;
 import xal.smf.AcceleratorNode;
 import xal.smf.ChannelSuite;
 import xal.smf.attr.ApertureBucket;
@@ -214,8 +213,7 @@ public final class ESSElementFactory {
                 fieldFile, true, FieldMapFactory.FieldType.ELECTRIC, dimensions, numberOfPoints);
         fm.setFieldMap(fieldMap);
 
-        ESSRfCavity cavity = createESSRfCavity(name, length, new AcceleratorNode[]{fm}, rfphase, amplitude * fieldMap.getFieldIntegral(), frequency, position);
-        return cavity;
+        return createESSRfCavity(name, length, new AcceleratorNode[]{fm}, rfphase, amplitude * fieldMap.getFieldIntegral(), frequency, position);
     }
 
     /**

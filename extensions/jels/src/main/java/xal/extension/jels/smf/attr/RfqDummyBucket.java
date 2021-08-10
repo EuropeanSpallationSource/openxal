@@ -40,7 +40,7 @@ public class RfqDummyBucket extends AttributeBucket {
 
     private static final long serialVersionUID = 1;
 
-    public static final String c_strType = "rfq";
+    public static final String TYPE = "rfq";
 
     static final String[] ARR_NAMES = {
         "c11",
@@ -90,7 +90,7 @@ public class RfqDummyBucket extends AttributeBucket {
      */
     @Override
     public String getType() {
-        return c_strType;
+        return TYPE;
     }
 
     public double getAttC11() {

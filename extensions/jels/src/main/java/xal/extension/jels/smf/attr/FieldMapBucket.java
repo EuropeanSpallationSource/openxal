@@ -31,7 +31,7 @@ public class FieldMapBucket extends AttributeBucket {
 
     private static final long serialVersionUID = 1;
 
-    public static final String c_strType = "fieldmap";
+    public static final String TYPE = "fieldmap";
 
     static final String[] ARR_NAMES = {
         "fieldMapFile",
@@ -73,7 +73,7 @@ public class FieldMapBucket extends AttributeBucket {
      */
     @Override
     public String getType() {
-        return c_strType;
+        return TYPE;
     }
 
     public FieldMapBucket() {

@@ -50,8 +50,9 @@ public class TransferMapLoader {
     public class TransferMaps implements Comparable<TransferMaps> {
 
         private double[] positions;
-        private PhaseMatrix[] transferMaps;
-        private double position, length;
+        private PhaseMatrix[] transferMapArr;
+        private double position;
+        private double length;
 
         public TransferMaps(double position, double length) {
             this.position = position;
@@ -60,7 +61,7 @@ public class TransferMapLoader {
 
         public TransferMaps(double[] positions, PhaseMatrix[] transferMaps) {
             this.positions = positions.clone();
-            this.transferMaps = transferMaps.clone();
+            this.transferMapArr = transferMaps.clone();
         }
 
         public PhaseMatrix transferMap(IProbe p, double l) {
@@ -68,7 +69,8 @@ public class TransferMapLoader {
                 lazyLoader();
             }
 
-            int i0 = -1, in = -1;
+            int i0 = -1;
+            int in = -1;
             double s0 = p.getPosition();
             double s1 = s0 + l;
             for (int i = 0; i < positions.length; i++) {
@@ -84,20 +86,18 @@ public class TransferMapLoader {
                 i0 = 1;
             }
             if (in == -1) {
-                in = transferMaps.length - 1;
+                in = transferMapArr.length - 1;
             }
-            PhaseMatrix m0 = null;
-            PhaseMatrix mn = null;
-            m0 = interpolate(s0, i0 - 1, i0);
-            mn = interpolate(s0 + l, in - 1, in);
-            return TW2OX(mn.times(m0.inverse()), p, l);
+            PhaseMatrix m0 = interpolate(s0, i0 - 1, i0);
+            PhaseMatrix mn = interpolate(s0 + l, in - 1, in);
+            return tW2OX(mn.times(m0.inverse()), p, l);
         }
 
         public double energyGain(IProbe p, double l) {
             return getEnergy(p.getPosition() + l) - getEnergy(p.getPosition());
         }
 
-        private PhaseMatrix TW2OX(PhaseMatrix r, IProbe p, double l) {
+        private PhaseMatrix tW2OX(PhaseMatrix r, IProbe p, double l) {
             double gammaStart = getEnergy(p.getPosition()) / p.getSpeciesRestEnergy() + 1;
             double gammaEnd = getEnergy(p.getPosition() + l) / p.getSpeciesRestEnergy() + 1;
             for (int i = 0; i < 6; i++) {
@@ -112,15 +112,15 @@ public class TransferMapLoader {
         private PhaseMatrix interpolate(double s, int i0, int in) {
             double p0 = positions[i0];
             double pn = positions[in];
-            PhaseMatrix m1 = transferMaps[i0];
-            PhaseMatrix mn = transferMaps[in];
+            PhaseMatrix m1 = transferMapArr[i0];
+            PhaseMatrix mn = transferMapArr[in];
             PhaseMatrix m = new PhaseMatrix();
             for (int i = 0; i < 6; i++) {
                 for (int j = 0; j < 6; j++) {
                     m.setElem(i, j, (m1.getElem(i, j) * (pn - s) + mn.getElem(i, j) * (s - p0)) / (pn - p0));
                 }
             }
-            return transferMaps[in];
+            return transferMapArr[in];
         }
 
         @Override
@@ -197,10 +197,8 @@ public class TransferMapLoader {
         int currentTmIndex = 0;
         TransferMaps currentTm = tms.get(currentTmIndex);
 
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(new File(tmFile)));
-            br.readLine();
-            String line;
+        try (BufferedReader br = new BufferedReader(new FileReader(new File(tmFile)))) {
+            String line = br.readLine();
             double pos = 0.;
             String[] data = "0 1 0 0 1 1 0 0 1 1 0 0 1".split(" ");
             while ((line = br.readLine()) != null) {
@@ -212,7 +210,7 @@ public class TransferMapLoader {
                     transferMaps.add(extractMatrix(data));
                 }
                 if (pos > (currentTm.position + currentTm.length)) {
-                    currentTm.transferMaps = transferMaps.toArray(new PhaseMatrix[0]);
+                    currentTm.transferMapArr = transferMaps.toArray(new PhaseMatrix[0]);
                     double[] positionsarray = new double[positions.size()];
                     for (int i = 0; i < positionsarray.length; i++) {
                         positionsarray[i] = positions.get(i);
@@ -231,7 +229,6 @@ public class TransferMapLoader {
                 data = nextdata;
                 pos = nextpos;
             }
-            br.close();
         } catch (IOException e) {
             LOGGER.log(Level.INFO, "Error accessing the file.", e);
         }
@@ -244,17 +241,17 @@ public class TransferMapLoader {
             syncEnergy = new double[n];
             energy = new double[n];
 
-            BufferedReader br = new BufferedReader(new FileReader(new File(file)));
-            br.readLine();
-            String line;
-            int i = 0;
-            while ((line = br.readLine()) != null) {
-                String[] data = line.split(" ");
-                syncEnergy[i] = Double.parseDouble(data[0]);
-                energy[i] = Double.parseDouble(data[1]);
-                i++;
+            try (BufferedReader br = new BufferedReader(new FileReader(new File(file)))) {
+                String line = br.readLine();
+
+                int i = 0;
+                while ((line = br.readLine()) != null) {
+                    String[] data = line.split(" ");
+                    syncEnergy[i] = Double.parseDouble(data[0]);
+                    energy[i] = Double.parseDouble(data[1]);
+                    i++;
+                }
             }
-            br.close();
         } catch (IOException e) {
             LOGGER.log(Level.INFO, "Error accessing the file.", e);
         }
@@ -268,12 +265,13 @@ public class TransferMapLoader {
      * @throws IOException
      */
     private static int countLines(URI file) throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader(new File(file)));
-        int i = 0;
-        while (br.readLine() != null) {
-            i++;
+        int i;
+        try (BufferedReader br = new BufferedReader(new FileReader(new File(file)))) {
+            i = 0;
+            while (br.readLine() != null) {
+                i++;
+            }
         }
-        br.close();
         return i;
     }
 
@@ -332,10 +330,8 @@ public class TransferMapLoader {
      * @param args file name
      */
     public static void main(String[] args) {
-        try {
-            BufferedReader br = new BufferedReader(new FileReader(args[0]));
-            br.readLine();
-            String line;
+        try (BufferedReader br = new BufferedReader(new FileReader(args[0]))) {
+            String line = br.readLine();
             double pos = 0.;
             PhaseMatrix data = PhaseMatrix.identity();
             while ((line = br.readLine()) != null) {
@@ -345,18 +341,18 @@ public class TransferMapLoader {
                 PhaseMatrix nextmatrix = extractMatrix(nextdata);
 
                 PhaseMatrix t = nextmatrix.times(data.inverse());
-                LOGGER.log(Level.INFO, String.format("%E ", pos));
+                String msg = String.format("%E ", pos);
+                LOGGER.log(Level.INFO, msg);
                 for (int j = 0; j < 6; j++) {
                     for (int k = 0; k < 6; k++) {
                         LOGGER.log(Level.INFO, String.format("%E ", t.getElem(j, k)));
                     }
                 }
-                System.out.println();
+                LOGGER.log(Level.INFO, "\n");
 
                 data = nextmatrix;
                 pos = nextpos;
             }
-            br.close();
         } catch (IOException e) {
             LOGGER.log(Level.INFO, "Error accessing the file.", e);
         }

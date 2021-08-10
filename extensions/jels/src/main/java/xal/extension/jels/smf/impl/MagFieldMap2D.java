@@ -47,8 +47,8 @@ public class MagFieldMap2D extends FieldMap {
 
     @Override
     public void saveFieldMap(String path, String filename) throws IOException, URISyntaxException {
-        FieldComponent<double[][]> fieldComponentZ = magneticField.get("z");
-        FieldComponent<double[][]> fieldComponentR = magneticField.get("r");
+        FieldComponent<double[][]> fieldComponentZ = (FieldComponent<double[][]>) magneticField.get("z");
+        FieldComponent<double[][]> fieldComponentR = (FieldComponent<double[][]>) magneticField.get("r");
 
         saveFile2D(path, filename + ".bsz", fieldComponentZ);
         saveFile2D(path, filename + ".bsr", fieldComponentR);
@@ -63,8 +63,8 @@ public class MagFieldMap2D extends FieldMap {
      */
     @Override
     public FieldMapPoint getFieldAt(double position) {
-        FieldComponent<double[][]> fieldComponentZ = magneticField.get("z");
-        FieldComponent<double[][]> fieldComponentR = magneticField.get("r");
+        FieldComponent<double[][]> fieldComponentZ = (FieldComponent<double[][]>) magneticField.get("z");
+        FieldComponent<double[][]> fieldComponentR = (FieldComponent<double[][]>) magneticField.get("r");
 
         if (position < -1e-6 || position > fieldComponentZ.getMax()[0] + 1e-6) {
             return null;
@@ -94,18 +94,18 @@ public class MagFieldMap2D extends FieldMap {
             positionIndex = numberOfPointsZ - 2;
         }
 
-        double interpolation_factor = position / spacingZ - positionIndex;
+        double interpolationFactor = position / spacingZ - positionIndex;
 
-        double Bz0 = fieldZ[positionIndex][0] + interpolation_factor
+        double bz0 = fieldZ[positionIndex][0] + interpolationFactor
                 * (fieldZ[positionIndex + 1][0] - fieldZ[positionIndex][0]);
 
         // First derivative - 1th order accuracy (forward)
-        double dBrdr = -(fieldR[positionIndex][0] + interpolation_factor * (fieldR[positionIndex + 1][0] - fieldR[positionIndex][0]))
-                + (fieldR[positionIndex][1] + interpolation_factor * (fieldR[positionIndex + 1][1] - fieldR[positionIndex][1]));
+        double dBrdr = -(fieldR[positionIndex][0] + interpolationFactor * (fieldR[positionIndex + 1][0] - fieldR[positionIndex][0]))
+                + (fieldR[positionIndex][1] + interpolationFactor * (fieldR[positionIndex + 1][1] - fieldR[positionIndex][1]));
 
         FieldMapPoint fieldMapPoint = new FieldMapPoint();
 
-        fieldMapPoint.setBz(Bz0 / normZ);
+        fieldMapPoint.setBz(bz0 / normZ);
         fieldMapPoint.setdBxdx(dBrdr / spacingR / normR);
         fieldMapPoint.setdBydy(dBrdr / spacingR / normR);
 

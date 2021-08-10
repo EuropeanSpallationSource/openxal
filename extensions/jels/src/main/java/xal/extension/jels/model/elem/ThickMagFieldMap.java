@@ -41,7 +41,6 @@ public class ThickMagFieldMap extends ThickElectromagnet {
 
     private FieldMap magFieldmap;
 
-    private double startPosition = 0;
     private double sliceLength = 0;
 
     private double sliceStartPosition;
@@ -77,7 +76,7 @@ public class ThickMagFieldMap extends ThickElectromagnet {
     public PhaseMap transferMap(IProbe probe, double dblLen)
             throws ModelException {
 
-        startPosition = getLatticePosition() - getLength() / 2. - sliceStartPosition;
+        double startPosition = getLatticePosition() - getLength() / 2. - sliceStartPosition;
 
         // Find the field map points included in the current slice.
         List<Double> fieldMapPointPositions = magFieldmap.getFieldMapPointPositions(probe.getPosition() - startPosition, dblLen);

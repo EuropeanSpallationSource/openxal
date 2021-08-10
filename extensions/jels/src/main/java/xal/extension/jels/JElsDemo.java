@@ -72,17 +72,17 @@ public class JElsDemo {
                 sequence = accelerator.getSequence(comboSequence);
             }
             if (sequence == null) {
-                LOGGER.severe("No appropriate sequence with name: " + comboSequence);
+                LOGGER.log(Level.SEVERE, "No appropriate sequence with name: {0}", comboSequence);
                 return;
             }
         } else {
             sequence = accelerator.getComboSequences().get(0);
-            LOGGER.log(Level.INFO, "Selecting combo sequence " + sequence.getId());
+            LOGGER.log(Level.INFO, "Selecting combo sequence {0}", sequence.getId());
         }
 
         // path to probe
         if (args.length > argspos) {
-            probe = loadProbeFromXML(args[argspos++]);
+            probe = loadProbeFromXML(args[argspos]);
         } else {
             Tracker tracker;
             if (adaptiveTracker) {
@@ -109,7 +109,7 @@ public class JElsDemo {
         // Getting results
         Trajectory<EnvelopeProbeState> trajectory = probe.getTrajectory();
 
-        EnvelopeProbeState ps = trajectory.stateAtPosition(0);
+        EnvelopeProbeState ps;
         Iterator<EnvelopeProbeState> iterState = trajectory.stateIterator();
 
         int i = 0;
@@ -120,7 +120,7 @@ public class JElsDemo {
 
             PhaseVector mean = ps.phaseMean();
 
-            System.out.printf("%E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %s%n", ps.getPosition(), ps.getGamma() - 1,
+            String msg = String.format("%E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %E %s%n", ps.getPosition(), ps.getGamma() - 1,
                     twiss[0].getEnvelopeRadius(),
                     Math.sqrt(twiss[0].getGamma() * twiss[0].getEmittance()),
                     twiss[1].getEnvelopeRadius(),
@@ -138,7 +138,7 @@ public class JElsDemo {
                     twiss[1].getBeta(),
                     ps.getTime(),
                     ps.getElementId());
-
+            LOGGER.log(Level.INFO, msg);
             i = i + 1;
         }
     }
@@ -152,10 +152,9 @@ public class JElsDemo {
 
     public static EnvelopeProbe loadProbeFromXML(String file) {
         try {
-            EnvelopeProbe probe = (EnvelopeProbe) ProbeXmlParser.parse(file);
-            return probe;
+            return (EnvelopeProbe) ProbeXmlParser.parse(file);
         } catch (ParsingException e1) {
-            LOGGER.log(Level.SEVERE, "Couldn't load the probe from xml.", e1);
+            LOGGER.log(Level.SEVERE, "Could not load the probe from xml.", e1);
         }
         return null;
     }
@@ -164,7 +163,7 @@ public class JElsDemo {
         try {
             ProbeXmlWriter.writeXml(probe, file);
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Couldn't save the probe to xml.", e);
+            LOGGER.log(Level.SEVERE, "Could not save the probe to xml.", e);
         }
     }
 
@@ -173,7 +172,7 @@ public class JElsDemo {
         try {
             LatticeXmlWriter.writeXml(lattice, file);
         } catch (IOException e1) {
-            LOGGER.log(Level.SEVERE, "Couldn't save the lattice to xml.", e1);
+            LOGGER.log(Level.SEVERE, "Could not save the lattice to xml.", e1);
         }
     }
 
@@ -190,7 +189,7 @@ public class JElsDemo {
 
     private static Accelerator loadAccelerator(String path) {
         /* Loading SMF model */
-        LOGGER.log(Level.INFO, "Loading accelerator from: " + path);
+        LOGGER.log(Level.INFO, "Loading accelerator from: {0}", path);
         Accelerator accelerator = XMLDataManager.acceleratorWithUrlSpec(new File(path).toURI().toString());
 
         if (accelerator == null) {
