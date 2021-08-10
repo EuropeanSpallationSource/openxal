@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
 import xal.ca.ChannelTimeRecord;
-import xal.ca.ConnectionException;
 import xal.ca.ConnectionListener;
 import xal.ca.IEventSinkValTime;
 import xal.ca.Monitor;
@@ -44,7 +43,7 @@ public class ChannelWrapper {
     /**
      * The latest channel record found by the monitor
      */
-    protected volatile ChannelTimeRecord record;
+    protected volatile ChannelTimeRecord channelRecord;
 
     /**
      * The handler handles channel connection events
@@ -116,7 +115,7 @@ public class ChannelWrapper {
                  */
                 @Override
                 public void eventValue(final ChannelTimeRecord aRecord, final Channel chan) {
-                    record = isValid(aRecord) ? aRecord : null;
+                    channelRecord = isValid(aRecord) ? aRecord : null;
                 }
             }, Monitor.VALUE);
         } catch (MonitorException exception) {
@@ -127,11 +126,11 @@ public class ChannelWrapper {
     /**
      * Validate the record.
      *
-     * @param record the record to validate
+     * @param channelRecord the record to validate
      * @return true if the record is valid and false if not
      */
-    private static boolean isValid(final ChannelTimeRecord record) {
-        final double[] array = record.doubleArray();
+    private static boolean isValid(final ChannelTimeRecord channelRecord) {
+        final double[] array = channelRecord.doubleArray();
         for (int index = 0; index < array.length; index++) {
             if (!isValidValue(array[index])) {
                 return false;
@@ -175,7 +174,7 @@ public class ChannelWrapper {
      * @return the latest channel record cached.
      */
     public ChannelTimeRecord getRecord() {
-        return record;
+        return channelRecord;
     }
 
     /**
@@ -205,7 +204,7 @@ public class ChannelWrapper {
          */
         @Override
         public void connectionDropped(final Channel channel) {
-            record = null;
+            channelRecord = null;
         }
     }
 }

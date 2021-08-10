@@ -114,8 +114,7 @@ class ChannelSnapshotTable {
                     insertStatement.addBatch();
                     needsInsert = true;
                 } catch (SQLException | DatabaseException exception) {
-                    System.err.println("Exception publishing channel snapshot:  " + channelSnapshot);
-                    LOGGER.log(Level.SEVERE, null, exception);
+                    LOGGER.log(Level.SEVERE, exception, () -> "Exception publishing channel snapshot:  " + channelSnapshot);
                 }
 
             }
@@ -143,20 +142,18 @@ class ChannelSnapshotTable {
         final PreparedStatement snapshotQuery = getQueryByMachineSnapshotStatement(connection);
         snapshotQuery.setLong(1, machineSnapshotID);
 
-        final ResultSet resultSet = snapshotQuery.executeQuery();
-        while (resultSet.next()) {
-            final String pv = resultSet.getString(pvColumn);
-            final Timestamp timestamp = resultSet.getTimestamp(timestampColumn);
-            final Number[] bigValue = (Number[]) resultSet.getArray(valueColumn).getArray();
-            final double[] value = toDoubleArray(bigValue);
-            final short status = resultSet.getShort(statusColumn);
-            final short severity = resultSet.getShort(severityColumn);
-            snapshots.add(new ChannelSnapshot(pv, value, status, severity, new xal.ca.Timestamp(timestamp)));
-        }
-        if (snapshotQuery != null) {
+        try (ResultSet resultSet = snapshotQuery.executeQuery()) {
+            while (resultSet.next()) {
+                final String pv = resultSet.getString(pvColumn);
+                final Timestamp timestamp = resultSet.getTimestamp(timestampColumn);
+                final Number[] bigValue = (Number[]) resultSet.getArray(valueColumn).getArray();
+                final double[] value = toDoubleArray(bigValue);
+                final short status = resultSet.getShort(statusColumn);
+                final short severity = resultSet.getShort(severityColumn);
+                snapshots.add(new ChannelSnapshot(pv, value, status, severity, new xal.ca.Timestamp(timestamp)));
+            }
             snapshotQuery.close();
         }
-        resultSet.close();
         return snapshots.toArray(new ChannelSnapshot[snapshots.size()]);
     }
 

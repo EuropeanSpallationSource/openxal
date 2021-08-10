@@ -61,6 +61,8 @@ class SnapshotGroupTable {
 
     private static final Logger LOGGER = Logger.getLogger(SnapshotGroupTable.class.getName());
 
+    private static final String SELECT_QRY = "SELECT * FROM ";
+
     /**
      * Constructor
      */
@@ -89,14 +91,13 @@ class SnapshotGroupTable {
      */
     public List<ChannelGroup> fetchChannelGroups(final Connection connection) throws SQLException {
         final ArrayList<ChannelGroup> groups = new ArrayList<>();
-        final PreparedStatement groupsQueryStatement = getGroupsQueryStatement(connection);
-        final ResultSet resultSet = groupsQueryStatement.executeQuery();
-        while (resultSet.next()) {
-            final ChannelGroup group = newChannelGroup(connection, resultSet);
-            groups.add(group);
+        try (PreparedStatement groupsQueryStatement = getGroupsQueryStatement(connection);
+                ResultSet resultSet = groupsQueryStatement.executeQuery()) {
+            while (resultSet.next()) {
+                final ChannelGroup group = newChannelGroup(connection, resultSet);
+                groups.add(group);
+            }
         }
-        resultSet.close();
-        groupsQueryStatement.close();
         return groups;
     }
 
@@ -111,11 +112,9 @@ class SnapshotGroupTable {
         final PreparedStatement groupQueryStatement = getGroupQueryByNameStatement(connection);
         groupQueryStatement.setString(1, type);
 
-        final ResultSet resultSet = groupQueryStatement.executeQuery();
-        try {
+        try (ResultSet resultSet = groupQueryStatement.executeQuery()) {
             return resultSet.next() ? newChannelGroup(connection, resultSet) : null;
         } finally {
-            resultSet.close();
             groupQueryStatement.close();
         }
     }
@@ -144,11 +143,11 @@ class SnapshotGroupTable {
      */
     public String[] fetchTypes(final Connection connection) throws SQLException {
         final List<String> types = new ArrayList<>();
-        final ResultSet result = getGroupsQueryStatement(connection).executeQuery();
-        while (result.next()) {
-            types.add(result.getString(primaryKey));
+        try (ResultSet result = getGroupsQueryStatement(connection).executeQuery()) {
+            while (result.next()) {
+                types.add(result.getString(primaryKey));
+            }
         }
-        result.close();
         return types.toArray(new String[types.size()]);
     }
 
@@ -162,16 +161,16 @@ class SnapshotGroupTable {
      * service ID
      */
     public String[] fetchTypes(final Connection connection, final String serviceID) throws SQLException {
-        final PreparedStatement statement = getGroupsQueryByServiceStatement(connection);
-        statement.setString(1, serviceID);
-
-        final List<String> types = new ArrayList<>();
-        final ResultSet result = statement.executeQuery();
-        while (result.next()) {
-            types.add(result.getString(primaryKey));
+        final List<String> types;
+        try (PreparedStatement statement = getGroupsQueryByServiceStatement(connection)) {
+            statement.setString(1, serviceID);
+            types = new ArrayList<>();
+            try (ResultSet result = statement.executeQuery()) {
+                while (result.next()) {
+                    types.add(result.getString(primaryKey));
+                }
+            }
         }
-        result.close();
-        statement.close();
         return types.toArray(new String[types.size()]);
     }
 
@@ -183,7 +182,7 @@ class SnapshotGroupTable {
      * evaluation
      */
     protected PreparedStatement getGroupsQueryStatement(final Connection connection) throws SQLException {
-        return connection.prepareStatement("SELECT * FROM " + tableName);
+        return connection.prepareStatement(SELECT_QRY + tableName);
     }
 
     /**
@@ -196,7 +195,7 @@ class SnapshotGroupTable {
      * evaluation
      */
     protected PreparedStatement getGroupQueryByNameStatement(final Connection connection) throws SQLException {
-        return connection.prepareStatement("SELECT * FROM " + tableName + " WHERE " + primaryKey + " = ?");
+        return connection.prepareStatement(SELECT_QRY + tableName + " WHERE " + primaryKey + " = ?");
     }
 
     /**
@@ -209,7 +208,7 @@ class SnapshotGroupTable {
      * evaluation
      */
     protected PreparedStatement getGroupsQueryByServiceStatement(final Connection connection) throws SQLException {
-        return connection.prepareStatement("SELECT * FROM " + tableName + " WHERE " + serviceColumn + " = ?");
+        return connection.prepareStatement(SELECT_QRY + tableName + " WHERE " + serviceColumn + " = ?");
     }
 
     /**

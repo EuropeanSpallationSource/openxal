@@ -9,6 +9,7 @@
  */
 package xal.service.pvlogger.apputils.browser;
 
+import java.sql.SQLException;
 import xal.service.pvlogger.*;
 import xal.tools.messaging.*;
 import xal.tools.data.KeyValueRecordListener;
@@ -37,32 +38,32 @@ public class BrowserController implements BrowserModelListener, KeyValueRecordLi
     /**
      * The message center for dispatching messages
      */
-    private final MessageCenter MESSAGE_CENTER;
+    private final MessageCenter messageCenter;
 
     /**
      * Proxy for forwarding messages to registered listeners
      */
-    private final BrowserControllerListener EVENT_PROXY;
+    private final BrowserControllerListener eventProxy;
 
     /**
      * table model of PVs
      */
-    private final KeyValueFilteredTableModel<PVRecord> PV_TABLE_MODEL;
+    private final KeyValueFilteredTableModel<PVRecord> pvTableModel;
 
     /**
      * map of PV Records keyed by signal
      */
-    private final Map<String, PVRecord> SIGNAL_RECORDS;
+    private final Map<String, PVRecord> signalRecords;
 
     /**
      * table model for displaying the machine snapshots
      */
-    private final KeyValueTableModel<MachineSnapshot> MACHINE_SNAPSHOT_TABLE_MODEL;
+    private final KeyValueTableModel<MachineSnapshot> machineSnapshotTableModel;
 
     /**
      * table model for displaying the channel snapshots
      */
-    private final KeyValueTableModel<ChannelSnapshot> CHANNEL_SNAPSHOT_TABLE_MODEL;
+    private final KeyValueTableModel<ChannelSnapshot> channelSnapshotTableModel;
 
     /**
      * Constructor
@@ -71,24 +72,24 @@ public class BrowserController implements BrowserModelListener, KeyValueRecordLi
         this.model = model;
         model.addBrowserModelListener(this);
 
-        PV_TABLE_MODEL = new KeyValueFilteredTableModel<>();
-        PV_TABLE_MODEL.setKeyPaths("enabled", "signal");
-        PV_TABLE_MODEL.setMatchingKeyPaths("signal");
-        PV_TABLE_MODEL.setColumnName("enabled", "Use");
-        PV_TABLE_MODEL.setColumnEditable("enabled", true);
-        PV_TABLE_MODEL.setColumnClass("enabled", Boolean.class);
-        PV_TABLE_MODEL.addKeyValueRecordListener(this);
+        pvTableModel = new KeyValueFilteredTableModel<>();
+        pvTableModel.setKeyPaths("enabled", "signal");
+        pvTableModel.setMatchingKeyPaths("signal");
+        pvTableModel.setColumnName("enabled", "Use");
+        pvTableModel.setColumnEditable("enabled", true);
+        pvTableModel.setColumnClass("enabled", Boolean.class);
+        pvTableModel.addKeyValueRecordListener(this);
 
-        MACHINE_SNAPSHOT_TABLE_MODEL = new KeyValueTableModel<>();
-        MACHINE_SNAPSHOT_TABLE_MODEL.setKeyPaths("id", "timestamp");
+        machineSnapshotTableModel = new KeyValueTableModel<>();
+        machineSnapshotTableModel.setKeyPaths("id", "timestamp");
 
-        CHANNEL_SNAPSHOT_TABLE_MODEL = new KeyValueTableModel<>();
-        CHANNEL_SNAPSHOT_TABLE_MODEL.setKeyPaths("PV", "timestamp", "valueCount", "scalarValue", "status", "severity");
+        channelSnapshotTableModel = new KeyValueTableModel<>();
+        channelSnapshotTableModel.setKeyPaths("PV", "timestamp", "valueCount", "scalarValue", "status", "severity");
 
-        SIGNAL_RECORDS = new Hashtable<>();
+        signalRecords = new HashMap<>();
 
-        MESSAGE_CENTER = new MessageCenter("Browser Controller");
-        EVENT_PROXY = MESSAGE_CENTER.registerSource(this, BrowserControllerListener.class);
+        messageCenter = new MessageCenter("Browser Controller");
+        eventProxy = messageCenter.registerSource(this, BrowserControllerListener.class);
 
         updatePVTableModel();
     }
@@ -99,7 +100,7 @@ public class BrowserController implements BrowserModelListener, KeyValueRecordLi
      * @param listener the listener to add
      */
     public void addBrowserControllerListener(final BrowserControllerListener listener) {
-        MESSAGE_CENTER.registerTarget(listener, this, BrowserControllerListener.class);
+        messageCenter.registerTarget(listener, this, BrowserControllerListener.class);
     }
 
     /**
@@ -108,28 +109,28 @@ public class BrowserController implements BrowserModelListener, KeyValueRecordLi
      * @param listener the listener to remove
      */
     public void removeBrowserControllerListener(final BrowserControllerListener listener) {
-        MESSAGE_CENTER.removeTarget(listener, this, BrowserControllerListener.class);
+        messageCenter.removeTarget(listener, this, BrowserControllerListener.class);
     }
 
     /**
      * get the table model of PVs
      */
     public KeyValueFilteredTableModel<PVRecord> getPVTableModel() {
-        return PV_TABLE_MODEL;
+        return pvTableModel;
     }
 
     /**
      * get the table model of machine snapshots
      */
     public KeyValueTableModel<MachineSnapshot> getMachineSnapshotTableModel() {
-        return MACHINE_SNAPSHOT_TABLE_MODEL;
+        return machineSnapshotTableModel;
     }
 
     /**
      * get the table model of channel snapshots
      */
     public KeyValueTableModel<ChannelSnapshot> getChannelSnapshotTableModel() {
-        return CHANNEL_SNAPSHOT_TABLE_MODEL;
+        return channelSnapshotTableModel;
     }
 
     /**
@@ -153,14 +154,12 @@ public class BrowserController implements BrowserModelListener, KeyValueRecordLi
      * @param select true to select signals and false to deselect signals
      */
     public void selectSignals(final boolean select) {
-        final List<PVRecord> signalRecords = PV_TABLE_MODEL.getRowRecords();
-
-        for (final PVRecord record : signalRecords) {
-            record.setEnabled(select);
+        for (final PVRecord pvRecord : pvTableModel.getRowRecords()) {
+            pvRecord.setEnabled(select);
         }
 
-        PV_TABLE_MODEL.fireTableDataChanged();
-        EVENT_PROXY.selectedSignalsChanged(this, getSelectedSignals());
+        pvTableModel.fireTableDataChanged();
+        eventProxy.selectedSignalsChanged(this, getSelectedSignals());
     }
 
     /**
@@ -168,11 +167,10 @@ public class BrowserController implements BrowserModelListener, KeyValueRecordLi
      */
     public List<String> getSelectedSignals() {
         final List<String> selectedSignals = new ArrayList<>();
-        final List<PVRecord> signalRecords = PV_TABLE_MODEL.getRowRecords();
 
-        for (final PVRecord record : signalRecords) {
-            if (record.getEnabled()) {
-                selectedSignals.add(record.getSignal());
+        for (final PVRecord pvRecord : pvTableModel.getRowRecords()) {
+            if (pvRecord.getEnabled()) {
+                selectedSignals.add(pvRecord.getSignal());
             }
         }
         return selectedSignals;
@@ -182,8 +180,8 @@ public class BrowserController implements BrowserModelListener, KeyValueRecordLi
      * determine whether the signal is selected
      */
     private boolean isSignalSelected(final String signal) {
-        final PVRecord record = SIGNAL_RECORDS.get(signal);
-        return record != null && record.getEnabled();
+        final PVRecord pvRecord = signalRecords.get(signal);
+        return pvRecord != null && pvRecord.getEnabled();
     }
 
     /**
@@ -220,21 +218,19 @@ public class BrowserController implements BrowserModelListener, KeyValueRecordLi
      * update the PV table model
      */
     private void updatePVTableModel() {
-        SIGNAL_RECORDS.clear();
+        signalRecords.clear();
 
         final ChannelGroup group = model.getSelectedGroup();
-        final List<PVRecord> signalRecords = new ArrayList<>();
         if (group != null) {
             final ChannelWrapper[] wrappers = group.getChannelWrappers();
             for (final ChannelWrapper wrapper : wrappers) {
                 final String signal = wrapper.getPV();
-                final PVRecord record = new PVRecord(signal);
-                signalRecords.add(record);
-                SIGNAL_RECORDS.put(signal, record);
+                final PVRecord aRecord = new PVRecord(signal);
+                this.signalRecords.put(signal, aRecord);
             }
         }
 
-        PV_TABLE_MODEL.setRecords(signalRecords);
+        pvTableModel.setRecords((List<PVRecord>) signalRecords.values());
     }
 
     /**
@@ -250,7 +246,7 @@ public class BrowserController implements BrowserModelListener, KeyValueRecordLi
                 channelSnapshotRecords.add(channelSnapshot);
             }
         }
-        CHANNEL_SNAPSHOT_TABLE_MODEL.setRecords(channelSnapshotRecords);
+        channelSnapshotTableModel.setRecords(channelSnapshotRecords);
     }
 
     /**
@@ -262,14 +258,14 @@ public class BrowserController implements BrowserModelListener, KeyValueRecordLi
         if (snapshot != null) {
             try {
                 model.populateSnapshot(snapshot);
-            } catch (Exception exception) {
+            } catch (SQLException exception) {
                 throw new RuntimeException(exception);
             }
         }
         selectedSnapshot = snapshot;
         updateSelectedMachineSnapshotDetail();
 
-        EVENT_PROXY.snapshotSelected(this, snapshot);
+        eventProxy.snapshotSelected(this, snapshot);
     }
 
     /**
@@ -279,6 +275,7 @@ public class BrowserController implements BrowserModelListener, KeyValueRecordLi
      */
     @Override
     public void connectionChanged(final BrowserModel model) {
+        // Do nothing
     }
 
     /**
@@ -291,7 +288,7 @@ public class BrowserController implements BrowserModelListener, KeyValueRecordLi
     @Override
     public void selectedChannelGroupChanged(final BrowserModel model, final ChannelGroup newGroup) {
         updatePVTableModel();
-        EVENT_PROXY.selectedChannelGroupChanged(this, newGroup);
+        eventProxy.selectedChannelGroupChanged(this, newGroup);
     }
 
     /**
@@ -306,15 +303,15 @@ public class BrowserController implements BrowserModelListener, KeyValueRecordLi
         for (final MachineSnapshot snapshot : snapshots) {
             machineSnapshots.add(snapshot);
         }
-        MACHINE_SNAPSHOT_TABLE_MODEL.setRecords(machineSnapshots);
+        machineSnapshotTableModel.setRecords(machineSnapshots);
     }
 
     /**
      * forward message that table record changed
      */
     @Override
-    public void recordModified(final KeyValueFilteredTableModel<PVRecord> tableModel, final PVRecord record, final String keyPath, final Object value) {
+    public void recordModified(final KeyValueFilteredTableModel<PVRecord> tableModel, final PVRecord pvRecord, final String keyPath, final Object value) {
         updateSelectedMachineSnapshotDetail();
-        EVENT_PROXY.selectedSignalsChanged(this, getSelectedSignals());
+        eventProxy.selectedSignalsChanged(this, getSelectedSignals());
     }
 }

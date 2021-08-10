@@ -19,11 +19,9 @@ import java.util.Collection;
 import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.Container;
-import java.awt.event.*;
 import java.awt.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.event.*;
 
 /**
  * This class provides a UI component (a JDialog) for selecting PV Logger ID. It
@@ -132,7 +130,7 @@ public class PVLogSnapshotChooser {
 
         try {
             model.selectGroup(groupName);
-        } catch (Exception exception) {
+        } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
 
@@ -147,16 +145,13 @@ public class PVLogSnapshotChooser {
         queryView.add(Box.createHorizontalStrut(BUTTON_GAP));
         JButton fetchButton = new JButton("Fetch");
         queryView.add(fetchButton);
-        fetchButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                try {
-                    Date startDate = fromDateModel.getDate();
-                    Date endDate = toDateModel.getDate();
-                    model.fetchMachineSnapshots(startDate, endDate);
-                } catch (Exception exception) {
-                    throw new RuntimeException(exception);
-                }
+        fetchButton.addActionListener(e -> {
+            try {
+                Date startDate = fromDateModel.getDate();
+                Date endDate = toDateModel.getDate();
+                model.fetchMachineSnapshots(startDate, endDate);
+            } catch (SQLException exception) {
+                throw new RuntimeException(exception);
             }
         });
 
@@ -182,20 +177,17 @@ public class PVLogSnapshotChooser {
         tableView.add(snapshotTable.getTableHeader());
         tableView.add(new JScrollPane(snapshotTable));
 
-        snapshotTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent event) {
-                if (!event.getValueIsAdjusting()) {
-                    final int selectedRow = snapshotTable.getSelectedRow();
-                    final int selectedModelRow = snapshotTable.convertRowIndexToModel(selectedRow);
-                    if (selectedModelRow < 0) {
-                        controller.setSelectedSnapshot(null);
-                    } else if (selectedModelRow < machineSnapshotTableModel.getRowCount()) {
-                        final MachineSnapshot selectedSnapshot = machineSnapshotTableModel.getRecordAtRow(selectedModelRow);
-                        controller.setSelectedSnapshot(selectedSnapshot);
-                    } else {
-                        snapshotTable.clearSelection();
-                    }
+        snapshotTable.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) {
+                final int selectedRow = snapshotTable.getSelectedRow();
+                final int selectedModelRow = snapshotTable.convertRowIndexToModel(selectedRow);
+                if (selectedModelRow < 0) {
+                    controller.setSelectedSnapshot(null);
+                } else if (selectedModelRow < machineSnapshotTableModel.getRowCount()) {
+                    final MachineSnapshot selectedSnapshot = machineSnapshotTableModel.getRecordAtRow(selectedModelRow);
+                    controller.setSelectedSnapshot(selectedSnapshot);
+                } else {
+                    snapshotTable.clearSelection();
                 }
             }
         });
@@ -249,6 +241,7 @@ public class PVLogSnapshotChooser {
              */
             @Override
             public void selectedChannelGroupChanged(BrowserController source, ChannelGroup newGroup) {
+                // Do nothing
             }
 
             /**
@@ -259,6 +252,7 @@ public class PVLogSnapshotChooser {
              */
             @Override
             public void selectedSignalsChanged(BrowserController source, Collection<String> selectedSignals) {
+                // Do nothing
             }
         });
         JSplitPane mainPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, commentTextView, tableBox);
@@ -277,13 +271,10 @@ public class PVLogSnapshotChooser {
 
         result.add(Box.createHorizontalStrut(20));
         JButton done = new JButton("Select");
-        done.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent event) {
-                pvLogId = Long.parseLong(pvLogIdField.getText());
-                pvLogDialog.setVisible(false);
-                LOGGER.log(Level.INFO, "pvLogId = {0}", pvLogId);
-            }
+        done.addActionListener(e -> {
+            pvLogId = Long.parseLong(pvLogIdField.getText());
+            pvLogDialog.setVisible(false);
+            LOGGER.log(Level.INFO, "pvLogId = {0}", pvLogId);
         });
         result.add(done);
 

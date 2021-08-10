@@ -243,8 +243,8 @@ class PersistentStore {
      * @return machine snapshots successfully published to the database
      */
     public List<MachineSnapshot> publish(final Connection connection, final DatabaseAdaptor databaseAdaptor, final List<MachineSnapshot> machineSnapshots) {
-        if (machineSnapshots.size() == 0) {
-            return null;
+        if (machineSnapshots.isEmpty()) {
+            return new ArrayList<>();
         }
 
         final List<MachineSnapshot> successfulSnapshots = new ArrayList<>(machineSnapshots.size());

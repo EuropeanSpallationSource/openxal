@@ -115,7 +115,7 @@ class SnapshotGroupChannelTable {
                     insertStatement.addBatch();
                     needsInsert = true;
                 } catch (SQLException exception) {
-                    LOGGER.log(Level.SEVERE, "Exception publishing channel:  " + channelName, exception);
+                    LOGGER.log(Level.SEVERE, exception, () -> "Exception publishing channel:  " + channelName);
                 }
             }
         }

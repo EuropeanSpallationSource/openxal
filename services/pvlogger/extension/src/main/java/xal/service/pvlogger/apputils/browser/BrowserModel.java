@@ -26,8 +26,8 @@ public class BrowserModel {
 
     private static final Logger LOGGER = Logger.getLogger(BrowserModel.class.getName());
 
-    protected final MessageCenter MESSAGE_CENTER;
-    protected final BrowserModelListener EVENT_PROXY;
+    protected final MessageCenter messageCenter;
+    protected final BrowserModelListener eventProxy;
 
     protected boolean hasConnected = false;
 
@@ -41,8 +41,8 @@ public class BrowserModel {
      * Constructor
      */
     public BrowserModel() {
-        MESSAGE_CENTER = new MessageCenter("Browser Model");
-        EVENT_PROXY = MESSAGE_CENTER.registerSource(this, BrowserModelListener.class);
+        messageCenter = new MessageCenter("Browser Model");
+        eventProxy = messageCenter.registerSource(this, BrowserModelListener.class);
 
         snapshots = new MachineSnapshot[0];
         group = null;
@@ -54,7 +54,7 @@ public class BrowserModel {
      * @param listener the listener to add for receiving model events.
      */
     public void addBrowserModelListener(final BrowserModelListener listener) {
-        MESSAGE_CENTER.registerTarget(listener, this, BrowserModelListener.class);
+        messageCenter.registerTarget(listener, this, BrowserModelListener.class);
     }
 
     /**
@@ -63,7 +63,7 @@ public class BrowserModel {
      * @param listener the listener to remove from receiving model events.
      */
     public void removeBrowserModelListener(final BrowserModelListener listener) {
-        MESSAGE_CENTER.removeTarget(listener, this, BrowserModelListener.class);
+        messageCenter.removeTarget(listener, this, BrowserModelListener.class);
     }
 
     /**
@@ -79,7 +79,7 @@ public class BrowserModel {
         loggerTypes = null;
         pvLogger = new PVLogger(dictionary);
         hasConnected = true;
-        EVENT_PROXY.connectionChanged(this);
+        eventProxy.connectionChanged(this);
     }
 
     /**
@@ -141,10 +141,10 @@ public class BrowserModel {
     public ChannelGroup selectGroup(final String type) throws SQLException {
         if (type == null) {
             group = null;
-            EVENT_PROXY.selectedChannelGroupChanged(this, group);
+            eventProxy.selectedChannelGroupChanged(this, group);
         } else if (group == null || !group.getLabel().equals(type)) {
             group = pvLogger.getChannelGroup(type);
-            EVENT_PROXY.selectedChannelGroupChanged(this, group);
+            eventProxy.selectedChannelGroupChanged(this, group);
         }
         return group;
     }
@@ -177,7 +177,7 @@ public class BrowserModel {
     public void fetchMachineSnapshots(final java.util.Date startTime, final java.util.Date endTime) throws SQLException {
         snapshots = pvLogger.fetchMachineSnapshotsInRange(group.getLabel(), startTime, endTime);
         LOGGER.log(Level.INFO, "Found {0} snapshots...", snapshots.length);
-        EVENT_PROXY.machineSnapshotsFetched(this, snapshots);
+        eventProxy.machineSnapshotsFetched(this, snapshots);
     }
 
     /**

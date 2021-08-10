@@ -17,6 +17,7 @@ import javax.swing.*;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.sql.SQLException;
 import java.util.*;
 
 /**
@@ -100,7 +101,7 @@ public class SignalHistoryPlotWindow extends JFrame implements SwingConstants {
         final int numSignals = signals.size();
         final MachineSnapshot[] machineSnapshots = model.getSnapshots();
 
-        final Map<String, List<ChannelSnapshot>> signalMap = new HashMap<String, List<ChannelSnapshot>>(numSignals);
+        final Map<String, List<ChannelSnapshot>> signalMap = new HashMap<>(numSignals);
         for (int signalIndex = 0; signalIndex < numSignals; signalIndex++) {
             final String signal = signals.get(signalIndex);
             signalMap.put(signal, new ArrayList<>());
@@ -108,15 +109,14 @@ public class SignalHistoryPlotWindow extends JFrame implements SwingConstants {
 
         try {
             model.populateSnapshots();
-        } catch (Exception exception) {
+        } catch (SQLException exception) {
             throw new RuntimeException(exception);
         }
 
         for (int machineSnapshotIndex = 0; machineSnapshotIndex < machineSnapshots.length; machineSnapshotIndex++) {
             final MachineSnapshot machineSnapshot = machineSnapshots[machineSnapshotIndex];
             final ChannelSnapshot[] channelSnapshots = machineSnapshot.getChannelSnapshots();
-            for (int index = 0; index < channelSnapshots.length; index++) {
-                final ChannelSnapshot channelSnapshot = channelSnapshots[index];
+            for (ChannelSnapshot channelSnapshot : channelSnapshots) {
                 final String signal = channelSnapshot.getPV();
                 final List<ChannelSnapshot> dataList = signalMap.get(signal);
                 if (dataList != null) {

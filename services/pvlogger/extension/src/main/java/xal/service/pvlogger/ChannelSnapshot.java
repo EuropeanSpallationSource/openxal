@@ -77,10 +77,10 @@ public class ChannelSnapshot {
      * Constructor of a snapshot from a channel record.
      *
      * @param pv The PV identifying the channel.
-     * @param record The record holding the channel data, state and timestamp
+     * @param channelRecord The record holding the channel data, state and timestamp
      */
-    public ChannelSnapshot(String pv, ChannelTimeRecord record) {
-        this(pv, record.doubleArray(), record.status(), record.severity(), record.getTimestamp());
+    public ChannelSnapshot(String pv, ChannelTimeRecord channelRecord) {
+        this(pv, channelRecord.doubleArray(), channelRecord.status(), channelRecord.severity(), channelRecord.getTimestamp());
     }
 
     /**

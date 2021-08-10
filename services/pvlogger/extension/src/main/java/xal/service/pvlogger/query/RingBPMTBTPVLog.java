@@ -51,59 +51,39 @@ public class RingBPMTBTPVLog {
      *
      * @return BPM TBT data
      */
-    public HashMap<String, double[][]> getBPMMap() {
-        HashMap<String, double[][]> pvMap = new HashMap<>();
+    public Map<String, double[][]> getBPMMap() {
+        Map<String, double[][]> pvMap = new HashMap<>();
 
-        ChannelSnapshot[] css = mss.getChannelSnapshots();
+        ChannelSnapshot[] channelSnapshot = mss.getChannelSnapshots();
 
-        for (int i = 0; i < css.length; i++) {
-            double[] xdata, ydata;
-            if (css[i].getPV().contains("xTBT")) {
-                String BPMId = css[i].getPV().substring(0, 17);
-                xdata = css[i].getValue();
+        for (ChannelSnapshot channelSnapshot1 : channelSnapshot) {
+            double[] xdata;
+            double[] ydata;
+            if (channelSnapshot1.getPV().contains("xTBT")) {
+                String bpmId = channelSnapshot1.getPV().substring(0, 17);
+                xdata = channelSnapshot1.getValue();
                 double[][] data = new double[2][xdata.length];
-
-                /*                if (!xMap.containsKey(BPMId)) {
-                    xMap.put(BPMId, xdata);
-                }
-                if (yMap.containsKey(BPMId)) {
+                if (!pvMap.containsKey(bpmId)) {
                     data[0] = xdata;
-                    data[1] = yMap.get(BPMId);
-                    pvMap.put(BPMId, data);
-                }
-                 */
-                if (!pvMap.containsKey(BPMId)) {
-                    data[0] = xdata;
-                    pvMap.put(BPMId, data);
+                    pvMap.put(bpmId, data);
                 } else {
-                    System.arraycopy(xdata, 0, pvMap.get(BPMId)[0], 0, xdata.length);
+                    System.arraycopy(xdata, 0, pvMap.get(bpmId)[0], 0, xdata.length);
                 }
             }
-
-            if (css[i].getPV().contains("yTBT")) {
-                String BPMId = css[i].getPV().substring(0, 17);
-                ydata = css[i].getValue();
+            if (channelSnapshot1.getPV().contains("yTBT")) {
+                String bpmId = channelSnapshot1.getPV().substring(0, 17);
+                ydata = channelSnapshot1.getValue();
                 double[][] data = new double[2][ydata.length];
-
-                /*                if (!yMap.containsKey(BPMId)) {
-                    yMap.put(BPMId, ydata);
-                }
-                if (xMap.containsKey(BPMId)) {
-                    data[0] = xMap.get(BPMId);
+                if (!pvMap.containsKey(bpmId)) {
                     data[1] = ydata;
-                    pvMap.put(BPMId, data);
-                }
-                 */
-                if (!pvMap.containsKey(BPMId)) {
-                    data[1] = ydata;
-                    pvMap.put(BPMId, data);
+                    pvMap.put(bpmId, data);
                 } else {
-                    System.arraycopy(ydata, 0, pvMap.get(BPMId)[1], 0, ydata.length);
+                    System.arraycopy(ydata, 0, pvMap.get(bpmId)[1], 0, ydata.length);
                 }
             }
         }
 
-        LOGGER.log(Level.INFO, "Got " + pvMap.size() + " BPMs.");
+        LOGGER.log(Level.INFO, "Got {0} BPMs.", pvMap.size());
 
         return pvMap;
     }

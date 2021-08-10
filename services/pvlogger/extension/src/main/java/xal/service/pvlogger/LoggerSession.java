@@ -32,7 +32,7 @@ public class LoggerSession {
     /**
      * initial timer delay
      */
-    protected final int INITIAL_DELAY = 1000;
+    protected static final int INITIAL_DELAY = 1000;
 
     /**
      * default logging period in seconds
@@ -42,7 +42,7 @@ public class LoggerSession {
     /**
      * publisher of snapshots to the persistent store
      */
-    protected final SnapshotPublisher SNAPSHOT_PUBLISHER;
+    protected final SnapshotPublisher snapshotPublisher;
 
     /**
      * latest snapshot taken which may or may not have been published
@@ -50,12 +50,12 @@ public class LoggerSession {
     protected volatile MachineSnapshot latestMachineSnapshot;
 
     // messaging
-    protected final MessageCenter MESSAGE_CENTER;
-    protected final LoggerChangeListener EVENT_PROXY;
+    protected final MessageCenter messageCenter;
+    protected final LoggerChangeListener eventProxy;
 
     // state variables
     protected ChannelGroup group;
-    protected final Timer LOG_TIMER;
+    protected final Timer logTimer;
     protected TimerTask logTask;
     /**
      * logging period in seconds
@@ -70,12 +70,12 @@ public class LoggerSession {
      * @param publisher The snapshot publisher.
      */
     public LoggerSession(final ChannelGroup group, final SnapshotPublisher publisher) {
-        MESSAGE_CENTER = new MessageCenter("PV Logger");
-        EVENT_PROXY = MESSAGE_CENTER.registerSource(this, LoggerChangeListener.class);
+        messageCenter = new MessageCenter("PV Logger");
+        eventProxy = messageCenter.registerSource(this, LoggerChangeListener.class);
 
-        SNAPSHOT_PUBLISHER = publisher;
+        snapshotPublisher = publisher;
 
-        LOG_TIMER = new Timer();
+        logTimer = new Timer();
 
         enabled = false;
         setChannelGroup(group);
@@ -87,7 +87,7 @@ public class LoggerSession {
      * @param listener The listener of the logger change events.
      */
     public void addLoggerChangeListener(final LoggerChangeListener listener) {
-        MESSAGE_CENTER.registerTarget(listener, this, LoggerChangeListener.class);
+        messageCenter.registerTarget(listener, this, LoggerChangeListener.class);
     }
 
     /**
@@ -96,7 +96,7 @@ public class LoggerSession {
      * @param listener The listener of the logger change events.
      */
     public void removeLoggerChangeListener(final LoggerChangeListener listener) {
-        MESSAGE_CENTER.removeTarget(listener, this, LoggerChangeListener.class);
+        messageCenter.removeTarget(listener, this, LoggerChangeListener.class);
     }
 
     /**
@@ -107,8 +107,8 @@ public class LoggerSession {
             disposeLoggingTask();
             logTask = newLoggingTask();
             final long delay = (long) (loggingPeriod * 1000);
-            LOG_TIMER.schedule(logTask, delay, delay);
-            EVENT_PROXY.stateChanged(this, LoggerChangeListener.LOGGING_CHANGED);
+            logTimer.schedule(logTask, delay, delay);
+            eventProxy.stateChanged(this, LoggerChangeListener.LOGGING_CHANGED);
         }
     }
 
@@ -116,8 +116,7 @@ public class LoggerSession {
      * Start periodically logging machine state to the persistent storage.
      */
     public void startLogging() {
-        final double loggingPeriod = getLoggingPeriod();
-        final String message = "Start logging \"" + group.getLabel() + "\" with period " + loggingPeriod + " seconds";
+        final String message = "Start logging \"" + group.getLabel() + "\" with period " + getLoggingPeriod() + " seconds";
         LOGGER.log(Level.INFO, message);
         LOGGER.log(Level.INFO, message);
         resumeLogging();
@@ -140,7 +139,7 @@ public class LoggerSession {
     public void stopLogging() {
         if (logTask != null) {
             disposeLoggingTask();
-            EVENT_PROXY.stateChanged(this, LoggerChangeListener.LOGGING_CHANGED);
+            eventProxy.stateChanged(this, LoggerChangeListener.LOGGING_CHANGED);
         }
     }
 
@@ -169,7 +168,7 @@ public class LoggerSession {
                 disposeLoggingTask();
                 resumeLogging();
             }
-            EVENT_PROXY.stateChanged(this, LoggerChangeListener.LOGGING_PERIOD_CHANGED);
+            eventProxy.stateChanged(this, LoggerChangeListener.LOGGING_PERIOD_CHANGED);
         }
     }
 
@@ -202,7 +201,7 @@ public class LoggerSession {
         if (isLogging()) {
             stopLogging();
         }
-        EVENT_PROXY.stateChanged(this, LoggerChangeListener.ENABLE_CHANGED);
+        eventProxy.stateChanged(this, LoggerChangeListener.ENABLE_CHANGED);
     }
 
     /**
@@ -241,7 +240,7 @@ public class LoggerSession {
         if (shouldLog) {
             resumeLogging();
         }
-        EVENT_PROXY.stateChanged(this, LoggerChangeListener.GROUP_CHANGED);
+        eventProxy.stateChanged(this, LoggerChangeListener.GROUP_CHANGED);
     }
 
     /**
@@ -291,7 +290,7 @@ public class LoggerSession {
      */
     protected final MachineSnapshot takeAndScheduleSnapshotForPublication() {
         final MachineSnapshot machineSnapshot = takeSnapshot();
-        SNAPSHOT_PUBLISHER.scheduleSnapshotPublication(machineSnapshot);
+        snapshotPublisher.scheduleSnapshotPublication(machineSnapshot);
         return machineSnapshot;
     }
 
@@ -306,19 +305,17 @@ public class LoggerSession {
         machineSnapshot.setType(group.getLabel());
         for (int index = 0; index < channelWrappers.length; index++) {
             ChannelWrapper channelWrapper = channelWrappers[index];
-            if (channelWrapper == null) {
-                continue;
+            if (channelWrapper != null) {
+                ChannelTimeRecord channelRecord = channelWrapper.getRecord();
+                if (channelRecord != null) {
+                    ChannelSnapshot snapshot = new ChannelSnapshot(channelWrapper.getPV(), channelRecord);
+                    machineSnapshot.setChannelSnapshot(index, snapshot);
+                }
             }
-            ChannelTimeRecord record = channelWrapper.getRecord();
-            if (record == null) {
-                continue;
-            }
-            ChannelSnapshot snapshot = new ChannelSnapshot(channelWrapper.getPV(), record);
-            machineSnapshot.setChannelSnapshot(index, snapshot);
         }
 
         latestMachineSnapshot = machineSnapshot;
-        EVENT_PROXY.snapshotTaken(this, machineSnapshot);
+        eventProxy.snapshotTaken(this, machineSnapshot);
         return machineSnapshot;
     }
 
@@ -328,9 +325,9 @@ public class LoggerSession {
      * @param machineSnapshot The machine snapshot to publish.
      */
     public final void publishSnapshot(final MachineSnapshot machineSnapshot) {
-        SNAPSHOT_PUBLISHER.scheduleSnapshotPublication(machineSnapshot);
-        SNAPSHOT_PUBLISHER.publishSnapshots();
-        EVENT_PROXY.snapshotPublished(this, machineSnapshot);
+        snapshotPublisher.scheduleSnapshotPublication(machineSnapshot);
+        snapshotPublisher.publishSnapshots();
+        eventProxy.snapshotPublished(this, machineSnapshot);
     }
 
     /**
@@ -340,7 +337,7 @@ public class LoggerSession {
         if (logTask != null) {
             logTask.cancel();
         }
-        LOG_TIMER.purge();
+        logTimer.purge();
         logTask = null;
     }
 
@@ -354,7 +351,7 @@ public class LoggerSession {
                 // must catch exceptions to avoid the timer stopping
                 try {
                     final MachineSnapshot machineSnapshot = takeSnapshot();
-                    SNAPSHOT_PUBLISHER.scheduleSnapshotPublication(machineSnapshot);
+                    snapshotPublisher.scheduleSnapshotPublication(machineSnapshot);
                 } catch (Exception exception) {
                     LOGGER.log(Level.WARNING, "Error publishing snapshot: ", exception);
                 }

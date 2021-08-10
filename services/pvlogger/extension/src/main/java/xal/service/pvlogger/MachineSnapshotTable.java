@@ -52,6 +52,9 @@ class MachineSnapshotTable {
      */
     protected final String nextPrimaryKeySql;
 
+    private static final String SELECT_QRY = "SELECT * FROM ";
+    private static final String WHERE_QRY = " WHERE ";
+
     /**
      * Constructor
      */
@@ -70,36 +73,36 @@ class MachineSnapshotTable {
      * insert the machine snapshot and update its ID upon success
      */
     public void insert(final Connection connection, final DatabaseAdaptor databaseAdaptor, final ChannelSnapshotTable channelSnapshotTable, final MachineSnapshot machineSnapshot) throws SQLException {
-        final long primaryKey = fetchNextPrimaryKey(connection);
+        final long nextPrimaryKey = fetchNextPrimaryKey(connection);
         final String type = machineSnapshot.getType();
         final Timestamp timeStamp = new Timestamp(machineSnapshot.getTimestamp().getTime());
 
         final PreparedStatement insertStatement = getInsertStatement(connection);
-        insertStatement.setLong(1, primaryKey);
+        insertStatement.setLong(1, nextPrimaryKey);
         insertStatement.setTimestamp(2, timeStamp);
         insertStatement.setString(3, type);
         insertStatement.setString(4, machineSnapshot.getComment());
         insertStatement.executeUpdate();
 
         final ChannelSnapshot[] channelSnapshots = machineSnapshot.getChannelSnapshots();
-        channelSnapshotTable.insert(connection, databaseAdaptor, channelSnapshots, primaryKey);
+        channelSnapshotTable.insert(connection, databaseAdaptor, channelSnapshots, nextPrimaryKey);
 
         connection.commit();
-        machineSnapshot.setId(primaryKey);
+        machineSnapshot.setId(nextPrimaryKey);
     }
 
     /**
      * fetch the next primary key
      */
     public long fetchNextPrimaryKey(final Connection connection) throws SQLException {
-        final PreparedStatement queryStatement = getNextPrimaryKeyStatement(connection);
-        final ResultSet record = queryStatement.executeQuery();
-        record.next();
-        long l = record.getLong(1);
-        if (queryStatement != null) {
-            queryStatement.close();
+        final ResultSet aRecord;
+        long l;
+        try (PreparedStatement queryStatement = getNextPrimaryKeyStatement(connection)) {
+            aRecord = queryStatement.executeQuery();
+            aRecord.next();
+            l = aRecord.getLong(1);
         }
-        record.close();
+        aRecord.close();
         return l;
     }
 
@@ -113,21 +116,17 @@ class MachineSnapshotTable {
     public MachineSnapshot fetchMachineSnapshot(final Connection connection, final long primaryKey) throws SQLException {
         final PreparedStatement queryStatement = getQueryByPrimaryKeyStatement(connection);
         queryStatement.setLong(1, primaryKey);
-        final ResultSet record = queryStatement.executeQuery();
-        if (record.next()) {
-            final String type = record.getString(typeColumn);
-            final Timestamp timestamp = record.getTimestamp(timestampColumn);
-            final String comment = record.getString(commentColumn);
-            if (queryStatement != null) {
-                queryStatement.close();
-            }
-            record.close();
+        final ResultSet aRecord = queryStatement.executeQuery();
+        if (aRecord.next()) {
+            final String type = aRecord.getString(typeColumn);
+            final Timestamp timestamp = aRecord.getTimestamp(timestampColumn);
+            final String comment = aRecord.getString(commentColumn);
+            queryStatement.close();
+            aRecord.close();
             return new MachineSnapshot(primaryKey, type, timestamp, comment, new ChannelSnapshot[0]);
         } else {
-            if (queryStatement != null) {
-                queryStatement.close();
-            }
-            record.close();
+            queryStatement.close();
+            aRecord.close();
             return null;
         }
     }
@@ -175,18 +174,16 @@ class MachineSnapshotTable {
         queryStatement.setTimestamp(2, new Timestamp(startTime.getTime()));
         queryStatement.setTimestamp(3, new Timestamp(endTime.getTime()));
 
-        final ResultSet snapshotResult = queryStatement.executeQuery();
-        while (snapshotResult.next()) {
-            final long id = snapshotResult.getLong(primaryKey);
-            final String foundType = snapshotResult.getString(typeColumn);
-            final Timestamp timestamp = snapshotResult.getTimestamp(timestampColumn);
-            final String comment = snapshotResult.getString(commentColumn);
-            snapshots.add(new MachineSnapshot(id, foundType, timestamp, comment, new ChannelSnapshot[0]));
-        }
-        if (queryStatement != null) {
+        try (ResultSet snapshotResult = queryStatement.executeQuery()) {
+            while (snapshotResult.next()) {
+                final long id = snapshotResult.getLong(primaryKey);
+                final String foundType = snapshotResult.getString(typeColumn);
+                final Timestamp timestamp = snapshotResult.getTimestamp(timestampColumn);
+                final String comment = snapshotResult.getString(commentColumn);
+                snapshots.add(new MachineSnapshot(id, foundType, timestamp, comment, new ChannelSnapshot[0]));
+            }
             queryStatement.close();
         }
-        snapshotResult.close();
         return snapshots.toArray(new MachineSnapshot[snapshots.size()]);
     }
 
@@ -207,18 +204,16 @@ class MachineSnapshotTable {
         queryStatement.setTimestamp(1, new Timestamp(startTime.getTime()));
         queryStatement.setTimestamp(2, new Timestamp(endTime.getTime()));
 
-        final ResultSet snapshotResult = queryStatement.executeQuery();
-        while (snapshotResult.next()) {
-            final long id = snapshotResult.getLong(primaryKey);
-            final String foundType = snapshotResult.getString(typeColumn);
-            final Timestamp timestamp = snapshotResult.getTimestamp(timestampColumn);
-            final String comment = snapshotResult.getString(commentColumn);
-            snapshots.add(new MachineSnapshot(id, foundType, timestamp, comment, new ChannelSnapshot[0]));
-        }
-        if (queryStatement != null) {
+        try (ResultSet snapshotResult = queryStatement.executeQuery()) {
+            while (snapshotResult.next()) {
+                final long id = snapshotResult.getLong(primaryKey);
+                final String foundType = snapshotResult.getString(typeColumn);
+                final Timestamp timestamp = snapshotResult.getTimestamp(timestampColumn);
+                final String comment = snapshotResult.getString(commentColumn);
+                snapshots.add(new MachineSnapshot(id, foundType, timestamp, comment, new ChannelSnapshot[0]));
+            }
             queryStatement.close();
         }
-        snapshotResult.close();
         return snapshots.toArray(new MachineSnapshot[snapshots.size()]);
     }
 
@@ -253,7 +248,7 @@ class MachineSnapshotTable {
      * evaluation
      */
     protected PreparedStatement getQueryStatement(final Connection connection) throws SQLException {
-        return connection.prepareStatement("SELECT * FROM " + tableName);
+        return connection.prepareStatement(SELECT_QRY + tableName);
     }
 
     /**
@@ -265,7 +260,7 @@ class MachineSnapshotTable {
      * evaluation
      */
     protected PreparedStatement getQueryByPrimaryKeyStatement(final Connection connection) throws SQLException {
-        return connection.prepareStatement("SELECT * FROM " + tableName + " WHERE " + primaryKey + " = ?");
+        return connection.prepareStatement(SELECT_QRY + tableName + WHERE_QRY + primaryKey + " = ?");
     }
 
     /**
@@ -277,7 +272,7 @@ class MachineSnapshotTable {
      * evaluation
      */
     protected PreparedStatement getQueryByTypeAndTimerangeStatement(final Connection connection) throws SQLException {
-        return connection.prepareStatement("SELECT * FROM " + tableName + " WHERE " + typeColumn + " = ? AND " + timestampColumn + " > ? AND " + timestampColumn + " < ? order by " + timestampColumn);
+        return connection.prepareStatement(SELECT_QRY + tableName + WHERE_QRY + typeColumn + " = ? AND " + timestampColumn + " > ? AND " + timestampColumn + " < ? order by " + timestampColumn);
     }
 
     /**
@@ -289,6 +284,6 @@ class MachineSnapshotTable {
      * evaluation
      */
     protected PreparedStatement getQueryByTimerangeStatement(final Connection connection) throws SQLException {
-        return connection.prepareStatement("SELECT * FROM " + tableName + " WHERE " + timestampColumn + " > ? AND " + timestampColumn + " < ? order by " + timestampColumn);
+        return connection.prepareStatement(SELECT_QRY + tableName + WHERE_QRY + timestampColumn + " > ? AND " + timestampColumn + " < ? order by " + timestampColumn);
     }
 }

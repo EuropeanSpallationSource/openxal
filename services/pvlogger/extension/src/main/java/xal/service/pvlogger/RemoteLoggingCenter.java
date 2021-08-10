@@ -8,8 +8,10 @@
 package xal.service.pvlogger;
 
 import java.util.Collection;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.extension.service.ServiceDirectory;
 import xal.extension.service.ServiceListener;
@@ -20,6 +22,7 @@ import xal.extension.service.ServiceRef;
  */
 public class RemoteLoggingCenter {
 
+    private static final Logger LOGGER = Logger.getLogger(RemoteLoggingCenter.class.getName());
     /**
      * list of remote services
      */
@@ -29,7 +32,7 @@ public class RemoteLoggingCenter {
      * Constructor
      */
     public RemoteLoggingCenter() {
-        remoteServicesMap = new Hashtable<>();
+        remoteServicesMap = new HashMap<>();
         monitorLoggers();
     }
 
@@ -96,6 +99,7 @@ public class RemoteLoggingCenter {
                     return service;
                 }
             } catch (Exception exception) {
+                LOGGER.log(Level.WARNING, null, exception);
             }
         }
 
@@ -103,7 +107,8 @@ public class RemoteLoggingCenter {
             try {
                 Thread.sleep(1000);
                 return findLogger(groupID, maxAttempts - 1);
-            } catch (Exception exception) {
+            } catch (InterruptedException exception) {
+                LOGGER.log(Level.WARNING, null, exception);
                 return null;
             }
         } else {

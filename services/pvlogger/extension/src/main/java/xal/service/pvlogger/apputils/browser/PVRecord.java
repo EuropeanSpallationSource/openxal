@@ -15,7 +15,7 @@ public class PVRecord {
     /**
      * process variable signal
      */
-    private final String SIGNAL;
+    private final String signal;
 
     /**
      * indicates the enabled status of the signal
@@ -26,7 +26,7 @@ public class PVRecord {
      * Primary Constructor
      */
     public PVRecord(final String signal, final boolean enabled) {
-        SIGNAL = signal;
+        this.signal = signal;
         this.enabled = enabled;
     }
 
@@ -41,7 +41,7 @@ public class PVRecord {
      * get the signal
      */
     public String getSignal() {
-        return SIGNAL;
+        return signal;
     }
 
     /**

@@ -24,6 +24,7 @@ public class LoggerChangeAdapter implements LoggerChangeListener {
      */
     @Override
     public void stateChanged(LoggerSession logger, int type) {
+        // Do nothing
     }
 
     /**
@@ -34,6 +35,7 @@ public class LoggerChangeAdapter implements LoggerChangeListener {
      */
     @Override
     public void snapshotTaken(LoggerSession logger, MachineSnapshot snapshot) {
+        // Do nothing
     }
 
     /**
@@ -44,5 +46,6 @@ public class LoggerChangeAdapter implements LoggerChangeListener {
      */
     @Override
     public void snapshotPublished(LoggerSession logger, MachineSnapshot snapshot) {
+        // Do nothing
     }
 }
