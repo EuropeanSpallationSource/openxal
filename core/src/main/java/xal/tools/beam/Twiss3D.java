@@ -49,17 +49,14 @@ public class Twiss3D implements IArchive {
         /**
          * The horizontal axis
          */
-        X(0), // x plane spatial
-
+        X(0),
         /**
          * The vertical axis
          */
-        Y(1), // y plane spatial
-
+        Y(1),
         /**
          * The longitudinal axis
          */
-        // z plane spatial
         Z(2);
 
         /*

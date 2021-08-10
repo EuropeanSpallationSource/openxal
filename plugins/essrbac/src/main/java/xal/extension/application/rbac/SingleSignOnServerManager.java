@@ -109,8 +109,7 @@ public class SingleSignOnServerManager {
             System.getProperty("java.home") + File.separator + "bin" + File.separator + "java",
             "-jar",
             System.getProperty("java.io.tmpdir") + File.separator + jarName,
-            "-i", "false" //non-interactive mode 
-        };
+            "-i", "false"};
 
         try {
             Runtime.getRuntime().exec(commandLine);

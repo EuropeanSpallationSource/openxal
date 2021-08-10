@@ -41,8 +41,10 @@ public class DipoleCorrBucket extends DipoleBucket {
     private static final String TYPE = "steerer";
 
     private static final String[] ARR_NAMES = {
-        "slices", // number of slices in which thin correctors are split
-        "slicesEffLength" // effecttive length of each slice
+        // number of slices in which thin correctors are split
+        "slices",
+        // effecttive length of each slice
+        "slicesEffLength"
     };
 
     /**

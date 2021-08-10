@@ -31,12 +31,17 @@ public class MagnetBucket extends AttributeBucket {
      */
     private static final String TYPE = "magnet";
 
-    private static final String[] ARR_NAMES = {"len", // effective length
-        "dfltMagFld", // default field value
-        "polarity", // default polarity value
-        "multFieldNorm", // normal field components
-        "multFieldSkew", // skew field components
-};
+    private static final String[] ARR_NAMES = {
+        // effective length
+        "len",
+        // default field value
+        "dfltMagFld",
+        // default polarity value
+        "polarity",
+        // normal field components
+        "multFieldNorm",
+        // skew field components
+        "multFieldSkew",};
 
     /**
      * Override virtual to provide type signature

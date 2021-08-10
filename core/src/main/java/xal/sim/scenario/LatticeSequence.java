@@ -777,9 +777,9 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
 
         // Now check if any of my children are actually grand children
         // Looking through all my child sequences, see if the current child is
-        for (LatticeSequence lsqChild : this.getSubSequences()) //  contained in one.  If so we add it to the sequence and place it in the
+        //  contained in one.  If so we add it to the sequence and place it in the
         //  list of my child elements to be removed from my direct ownership 
-        {
+        for (LatticeSequence lsqChild : this.getSubSequences()) {
             for (LatticeElement lemChild : this) {
                 if (lemChild != lsqChild && lemChild.isContainedIn(lsqChild)) {
                     // Change coordinates to that of the new parent sequence

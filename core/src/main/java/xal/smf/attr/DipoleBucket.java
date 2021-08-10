@@ -55,12 +55,16 @@ public class DipoleBucket extends MagnetBucket {
     private static final String TYPE = "dipole";
 
     protected static final String[] ARR_NAMES = {
-        "bendAngle", // bend angle
-        "pathLength", // path length
-        "dipoleEntrRotAngle", // dipole rotation angle for entrance pole face
-        "dipoleExitRotAngle", // dipole rotation angle for exit pole face
-        "dipoleQuadComponent", // quadrupole component for bend dipole
-    };
+        // bend angle
+        "bendAngle",
+        // path length
+        "pathLength",
+        // dipole rotation angle for entrance pole face
+        "dipoleEntrRotAngle",
+        // dipole rotation angle for exit pole face
+        "dipoleExitRotAngle",
+        // quadrupole component for bend dipole
+        "dipoleQuadComponent",};
 
     /**
      * Override virtual to provide type signature

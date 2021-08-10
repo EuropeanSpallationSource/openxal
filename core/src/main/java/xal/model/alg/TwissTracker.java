@@ -542,10 +542,10 @@ public class TwissTracker extends Tracker {
 
             // transverse plane
             if (index != IND_3D.Z) {
-                k = this.correctTransSigmaPhaseSpread(probe, elem);
-            } else // longitudinal plane
-            {
-                k = this.correctLongSigmaPhaseSpread(probe, elem);
+                k = correctTransSigmaPhaseSpread(probe, elem);
+            } else {
+                // longitudinal plane
+                k = correctLongSigmaPhaseSpread(probe, elem);
             }
 
             ratio = Math.sqrt(1.0 + k * b0 * b0);
@@ -712,8 +712,8 @@ public class TwissTracker extends Tracker {
             // longitudinal plane
             if (index == IND_3D.Z) {
                 emit1 = emit0 * ratLong;
-            } else // transver plane
-            {
+            } else {
+                // transverse plane
                 emit1 = emit0 * ratTran;
             }
 

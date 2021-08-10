@@ -871,8 +871,8 @@ public abstract class CalculationEngine {
             // longitudinal plane
             if (index == IND_3D.Z) {
                 emit1 = emit0 * ratLong;
-            } else // transver plane
-            {
+            } else {
+                // transverse plane
                 emit1 = emit0 * ratTran;
             }
 

@@ -133,9 +133,8 @@ public class CurrentMonitor extends AcceleratorNode {
             if (start != end) {
                 beamArray = new double[end - start];
                 System.arraycopy(fullArray, start, beamArray, 0, end - start);
-                // if cannot find obvious beam, set this array to size 1, and value
-            } // = 0.
-            else {
+                // if cannot find obvious beam, set this array to size 1, and value=0.
+            } else {
                 beamArray = new double[1];
             }
             // if < 1mA, just return 0.

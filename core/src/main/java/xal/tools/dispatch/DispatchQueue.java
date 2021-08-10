@@ -622,7 +622,8 @@ class ConcurrentDispatchQueue extends DispatchQueue {
             dispatchExecutor.submit(operation);
         } catch (NoSuchElementException exception) {
             LOGGER.log(Level.WARNING, null, exception);
-        }  // nothing left to process in the queue
+        }
+        // nothing left to process in the queue
     }
 
     /**
@@ -782,7 +783,8 @@ class SerialDispatchQueue extends DispatchQueue {
                 }
             } catch (NoSuchElementException exception) {
                 LOGGER.log(Level.WARNING, null, exception);
-            }        // nothing left to process in the queue
+            }
+            // nothing left to process in the queue
         }
     }
 }
@@ -885,7 +887,8 @@ class MainDispatchQueue extends SerialDispatchQueue {
                 }
             } catch (NoSuchElementException exception) {
                 LOGGER.log(Level.WARNING, null, exception);
-            }    // nothing left to process in the queue
+            }
+            // nothing left to process in the queue
         }
     }
 }

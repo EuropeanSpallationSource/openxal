@@ -24,11 +24,16 @@ public enum PhaseIndex implements IIndex {
     /*
      * Enumeration Constants
      */
-    X(0, 1), // x plane spatial
-    XP(1, 0), // x plane momentum
-    Y(2, 3), // y plane spatial
-    YP(3, 2), // y plane momentum
-    Z(4, 5), // z plane spatial
+    // x plane spatial
+    X(0, 1),
+    // x plane momentum
+    XP(1, 0),
+    // y plane spatial
+    Y(2, 3),
+    // y plane momentum
+    YP(3, 2),
+    // z plane spatial
+    Z(4, 5),
     // z plane momentum
     ZP(5, 4);
 

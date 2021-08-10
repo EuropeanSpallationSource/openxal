@@ -39,10 +39,13 @@ public class ApertureBucket extends AttributeBucket {
     public static final String TYPE = "aperture";
 
     static final String[] ARR_NAMES = {"shape",
-        "x", // Aperture in the horizontal plane.
-        "y", // Aperture in the vertical plane.
-        "pos" // Position in the element.
-};
+        // Aperture in the horizontal plane.
+        "x",
+        // Aperture in the vertical plane.
+        "y",
+        // Position in the element.
+        "pos"
+    };
 
     /*
      *  Local Attributes

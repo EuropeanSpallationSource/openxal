@@ -180,8 +180,8 @@ public class DoubleToString {
                 if (negativeSuffix != '\uFFFF') {
                     s.append(negativeSuffix);
                 }
-            } else //d == 0.0
-            {
+            } else {
+                //d == 0.0
                 s.append('0').append(decimalPoint).append(ZEROS[numFractDigits]);
             }
         } else {
