@@ -19,7 +19,7 @@ public class MultipoleMagnet extends Magnet {
      * @author <a href="mailto:jaka.bobnar@cosylab.com">Jaka Bobnar</a>
      *
      */
-    public static enum MagnetType {
+    public enum MagnetType {
         SOLENOID(0), DIPOLE(1), QUADRUPOLE(2), SEXTUPOLE(3), OCTUPOLE(4), DECAPOLE(5), DODECAPOLE(6);
 
         private int val;

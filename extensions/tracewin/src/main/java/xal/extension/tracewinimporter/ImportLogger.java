@@ -30,13 +30,12 @@ public class ImportLogger {
 
     private static final Logger LOGGER = Logger.getLogger(ImportLogger.class.getName());
 
-    public ImportLogger() {
-    }
 
     public void log(String string) {
         LOGGER.log(Level.INFO, string);
     }
 
     public void close() {
+        // Do nothing
     }
 }

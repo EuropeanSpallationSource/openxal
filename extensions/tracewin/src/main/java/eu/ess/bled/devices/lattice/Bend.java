@@ -19,7 +19,7 @@ public class Bend extends Magnet {
      * Prelog</a>
      *
      */
-    public static enum Orientation {
+    public enum Orientation {
         HORIZONTAL(0), VERTICAL(1);
 
         private int val;

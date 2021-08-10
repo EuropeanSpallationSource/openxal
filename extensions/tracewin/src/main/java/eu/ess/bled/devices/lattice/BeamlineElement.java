@@ -26,7 +26,7 @@ public class BeamlineElement extends Subsystem {
      *
      * @author <a href="mailto:jaka.bobnar@cosylab.com">Jaka Bobnar</a>
      */
-    public static enum ApertureType {
+    public enum ApertureType {
         RECTANGULAR(0), CIRCULAR(1), PERPERPOT_MODE(2), RECTANGULAR_TO_BEAM_FRACTION(3), HORIZONTAL_FINGER(4), VERTICAL_FINGER(
                 5);
 

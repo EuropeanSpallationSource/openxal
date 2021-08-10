@@ -65,11 +65,11 @@ public class GitParser {
      * @param urlString repository URL
      * @return true if parsing was successful
      */
-    public boolean URL2Json(String urlString) {
+    public boolean url2Json(String urlString) {
         JSONObject jsonMainPage;
         JSONArray jsonSeqList;
         String seqname;
-        String seqUrl;
+        StringBuilder seqUrl = new StringBuilder();
         List<URI> files = new ArrayList<>();
         List<String> sequences = new ArrayList<>();
         try {
@@ -81,10 +81,10 @@ public class GitParser {
                     seqname = jsonSeqList.getJSONObject(i).getString("path");
                     if (seqname.substring(0, 1).matches("\\d+(\\.\\d+)?")
                             && Integer.parseInt(seqname.substring(2, 3)) == 0) {
-                        seqUrl = jsonSeqList.getJSONObject(i).getJSONObject("links").getJSONObject("self").getString("href");
+                        seqUrl.append(jsonSeqList.getJSONObject(i).getJSONObject("links").getJSONObject("self").getString("href"));
                         sequences.add(seqname.substring(4));
-                        seqUrl += "Beam_Physics/lattice.dat";
-                        files.add(new URI(seqUrl));
+                        seqUrl.append("Beam_Physics/lattice.dat");
+                        files.add(new URI(seqUrl.toString()));
                     }
                 }
                 if (jsonMainPage.has("next")) {
@@ -106,5 +106,4 @@ public class GitParser {
 
         return false;
     }
-
 }

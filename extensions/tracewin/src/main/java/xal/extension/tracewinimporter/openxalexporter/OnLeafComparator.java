@@ -16,9 +16,6 @@ public class OnLeafComparator implements Comparator<Subsystem> {
 
     private Map<Integer, Integer> systemPos = new HashMap<>();
 
-    public OnLeafComparator() {
-    }
-
     public void init(Collection<Subsystem> systems) {
         LOGGER.log(Level.INFO, "Collecting all leafs");
 
@@ -66,7 +63,7 @@ public class OnLeafComparator implements Comparator<Subsystem> {
         List<Subsystem> sortedList = new ArrayList<>();
         sortedList.addAll(subsystems);
 
-        Collections.sort(sortedList, new Comparator<Subsystem>() {
+        Collections.sort(sortedList, new Comparator<>() {
 
             @Override
             public int compare(Subsystem o1, Subsystem o2) {

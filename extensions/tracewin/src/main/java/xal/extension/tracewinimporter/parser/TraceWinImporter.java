@@ -1,7 +1,6 @@
 package xal.extension.tracewinimporter.parser;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
@@ -52,13 +51,11 @@ import java.util.logging.Level;
  * @version 0.2 11 Jul 2017
  * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
  */
-public class TraceWinImporter implements TraceWinTags {
+public class TraceWinImporter extends TraceWinTags {
 
     private static final Logger LOG = Logger.getLogger("eu.ess.bled.import");
 
-    private static final String COMMAND_PREFIX = "C_";
     private static final String LATTICE_END_SUFFIX = "-END";
-    private static final String FILE_END_SUFFIX = "-END";
 
     private Section section;
     private double lastFrequency;
@@ -100,8 +97,7 @@ public class TraceWinImporter implements TraceWinTags {
         bledComponentFactory = new ComponentFactory();
     }
 
-    public List<Subsystem> importFromTraceWin(URI sourceFileName, PrintWriter responseWriter, String basePath)
-            throws FileNotFoundException, IOException {
+    public List<Subsystem> importFromTraceWin(URI sourceFileName, PrintWriter responseWriter, String basePath) throws IOException {
         // Initializing
         initClassVariables();
         bledComponentFactory.setBasePath(basePath);
@@ -130,7 +126,7 @@ public class TraceWinImporter implements TraceWinTags {
     }
 
     public List<Subsystem> importFromTraceWinSequences(URI[] sourceFileNames, String[] sequencesNames, PrintWriter responseWriter, String basePath)
-            throws FileNotFoundException, IOException {
+            throws IOException {
         // Initializing
         initClassVariables();
         bledComponentFactory.setBasePath(basePath);
@@ -174,7 +170,8 @@ public class TraceWinImporter implements TraceWinTags {
     private void parseFromBufferedReader(Subsystem parentSubsystem, BufferedReader reader) throws IOException {
         String line;
         String originalLine;
-        int idx, trailinglen;
+        int idx;
+        int trailinglen;
         String[] values;
 
         // first read the header
@@ -215,7 +212,7 @@ public class TraceWinImporter implements TraceWinTags {
                 name = assignName(cmd);
             } else {
                 // Replacing ".." in TraceWin file with ":"
-                name = name.replaceAll("\\.\\.", ":");
+                name = name.replace("\\.\\.", ":");
             }
 
             // if lattice end command was read, abort
@@ -232,66 +229,63 @@ public class TraceWinImporter implements TraceWinTags {
                         writeFeedback("Lattice end detected before lattice start!");
                     }
                 }
-                readLatticeCommand(reader, originalLine, section, name, parentSubsystem);
+                readLatticeCommand(originalLine, section, name);
                 if (currentBeamline != null) {
                     currentBeamline.setDescription(currentBeamline.getDescription() + " " + name);
                 }
             } else if (isEdge(originalLine)) {
                 // Bend magnet consists of three consecutive entries: bend edge,
                 // bend magnet and another bend edge
-                String edge1Line = line;
                 String originalBendLine = readNextUncommentedLine(reader);
                 String originalEdge2Line = readNextUncommentedLine(reader);
+                if (originalBendLine != null && originalEdge2Line != null) {
+                    int bendIndex = originalBendLine.indexOf(NAME_VALUE_SEPARATOR + PART_SEPARATOR);
+                    int edge1Index = originalLine.indexOf(NAME_VALUE_SEPARATOR + PART_SEPARATOR);
+                    int edge2Index = originalEdge2Line.indexOf(NAME_VALUE_SEPARATOR + PART_SEPARATOR);
 
-                int bendIndex = originalBendLine.indexOf(NAME_VALUE_SEPARATOR + PART_SEPARATOR);
-                int edge1Index = originalLine.indexOf(NAME_VALUE_SEPARATOR + PART_SEPARATOR);
-                int edge2Index = originalEdge2Line.indexOf(NAME_VALUE_SEPARATOR + PART_SEPARATOR);
+                    originalBendLine = replace(originalBendLine);
+                    String bendLine = originalBendLine.toUpperCase().substring(bendIndex + 1).trim();
+                    originalEdge2Line = replace(originalEdge2Line);
+                    String edge2Line = originalEdge2Line.toUpperCase().substring(edge2Index + 1).trim();
 
-                originalBendLine = replace(originalBendLine);
-                String bendLine = originalBendLine.toUpperCase().substring(bendIndex + 1).trim();
-                originalEdge2Line = replace(originalEdge2Line);
-                String edge2Line = originalEdge2Line.toUpperCase().substring(edge2Index + 1).trim();
+                    if (bendLine.startsWith(E_BENDING_MAGNET) && edge2Line.startsWith(E_EDGE_BENDING_MAGNET)) {
 
-                if (bendLine.startsWith(E_BENDING_MAGNET) && edge2Line.startsWith(E_EDGE_BENDING_MAGNET)) {
+                        String[] edge1Values = values;
+                        String[] bendValues = split(bendLine);
+                        String[] edge2Values = split(edge2Line);
 
-                    String[] edge1Values = values;
-                    String[] bendValues = split(bendLine);
-                    String[] edge2Values = split(edge2Line);
+                        String bendName;
+                        String edge1Name;
+                        String edge2Name;
 
-                    String bendName;
-                    String edge1Name;
-                    String edge2Name;
+                        if (bendIndex > 0) {
+                            bendLine = bendLine.substring(bendIndex + 1).trim();
+                            bendName = originalBendLine.substring(0, bendIndex);
+                        } else {
+                            bendName = assignName(E_BENDING_MAGNET);
+                        }
 
-                    if (bendIndex > 0) {
-                        bendLine = bendLine.substring(bendIndex + 1).trim();
-                        bendName = originalBendLine.substring(0, bendIndex);
-                    } else {
-                        bendName = assignName(E_BENDING_MAGNET);
-                    }
+                        if (edge1Index > 0) {
+                            edge1Name = originalLine.substring(0, edge1Index);
+                        } else {
+                            edge1Name = assignName(E_EDGE_BENDING_MAGNET);
+                        }
 
-                    if (edge1Index > 0) {
-                        edge1Name = originalLine.substring(0, edge1Index);
-                    } else {
-                        edge1Name = assignName(E_EDGE_BENDING_MAGNET);
-                    }
+                        if (edge2Index > 0) {
+                            edge2Name = originalEdge2Line.substring(0, edge2Index);
+                        } else {
+                            edge2Name = assignName(E_EDGE_BENDING_MAGNET);
+                        }
 
-                    if (edge2Index > 0) {
-                        edge2Line = edge2Line.substring(edge2Index + 1);
-                        edge2Name = originalEdge2Line.substring(0, edge2Index);
-                    } else {
-                        edge2Name = assignName(E_EDGE_BENDING_MAGNET);
-                    }
-
-                    readEdge(edge1Line, edge1Values, edge1Name, bendLine, bendValues, bendName, edge2Line, edge2Values,
-                            edge2Name, section);
-                    if (currentBeamline != null) {
-                        currentBeamline.setDescription(currentBeamline.getDescription() + " " + bendName);
+                        readEdge(edge1Values, edge1Name, bendLine, bendValues, bendName, edge2Values, edge2Name, section);
+                        if (currentBeamline != null) {
+                            currentBeamline.setDescription(currentBeamline.getDescription() + " " + bendName);
+                        }
                     }
                 }
             } else if (isESSMetaTag(originalLine)) {
                 LOG.log(Level.FINEST, "ESS Meta Tag: {0}", originalLine);
                 readESSMetaTag(originalLine, section, parentSubsystem);
-                // } else if (isLatticeBoundaryCommand(originalLine)) {
             } else if (!originalLine.startsWith(COMMENT_MARKER)) {
                 writeFeedback("Unknown TraceWin entry: " + originalLine);
             }
@@ -324,15 +318,13 @@ public class TraceWinImporter implements TraceWinTags {
             fileLineNumber++;
             if (originalLine.length() == 0) {
                 writeFeedback("Empty line detected.");
-                continue;
+            } else {
+                originalLine = replace(originalLine);
+                line = originalLine.toUpperCase();
+                if (!line.startsWith(COMMENT_MARKER)) {
+                    break;
+                }
             }
-            originalLine = replace(originalLine);
-            line = originalLine.toUpperCase();
-            if (line.startsWith(COMMENT_MARKER)) {
-                continue;
-            }
-
-            break;
         }
         return originalLine;
     }
@@ -455,7 +447,7 @@ public class TraceWinImporter implements TraceWinTags {
      * </code> otherwise
      */
     private boolean startsWithTag(String line, List<String> tagList) {
-        return tagList.stream().anyMatch((tag) -> (line.startsWith(tag)));
+        return tagList.stream().anyMatch(tag -> (line.startsWith(tag)));
     }
 
     /**
@@ -527,8 +519,7 @@ public class TraceWinImporter implements TraceWinTags {
     /**
      * Reads a command from the line.
      */
-    private void readLatticeCommand(BufferedReader reader, String originalLine, Section section, String name,
-            Subsystem parentSubsystem) throws IOException {
+    private void readLatticeCommand(String originalLine, Section section, String name) throws IOException {
         LOG.log(Level.FINEST, "Importing command {0} from line: {1}", new Object[]{name, originalLine});
         LatticeCommand latticeCommand = bledComponentFactory.getLatticeCommand(name, originalLine, lastSubsystem);
         section.addComponent(latticeCommand);
@@ -777,8 +768,8 @@ public class TraceWinImporter implements TraceWinTags {
      * parameter values.
      * @param section {@link Section} where this element belongs to.
      */
-    private void readEdge(String edge1Line, String[] edge1Values, String edge1Name, String bendLine,
-            String[] bendValues, String bendName, String edge2Line, String[] edge2Values, String edge2Name,
+    private void readEdge(String[] edge1Values, String edge1Name, String bendLine,
+            String[] bendValues, String bendName, String[] edge2Values, String edge2Name,
             Section section) {
         LOG.log(Level.FINEST, "Importing bend element {0} from line: {1}", new Object[]{bendName, bendLine});
 
@@ -844,53 +835,12 @@ public class TraceWinImporter implements TraceWinTags {
 
         for (Subsystem beamline : section.getBeamlines()) {
             List<Subsystem> children = findChildren(beamline, allSubsystems);
-            children.forEach((child) -> {
-                child.setParentSubsystem(beamline);
-            });
+            children.forEach(child -> child.setParentSubsystem(beamline));
         }
 
         for (Subsystem slot : section.getSlots()) {
             List<Subsystem> children = findChildren(slot, allSubsystems);
-            children.forEach((child) -> {
-                child.setParentSubsystem(slot);
-            });
-        }
-    }
-
-    @SuppressWarnings("unused")
-    private void checkReferenceConsistency() {
-        List<String> allSubsystemNames = new ArrayList<>();
-        for (Subsystem subsystem : section.getBeamlines()) {
-            allSubsystemNames.add(subsystem.getName().toUpperCase());
-        }
-        for (Subsystem subsystem : section.getSlots()) {
-            allSubsystemNames.add(subsystem.getName().toUpperCase());
-        }
-        for (Subsystem subsystem : section.getComponents()) {
-            allSubsystemNames.add(subsystem.getName().toUpperCase());
-        }
-
-        for (Subsystem beamline : section.getBeamlines()) {
-            if (beamline.getDescription() != null) {
-                String[] parts = split(beamline.getDescription().toUpperCase());
-                for (int i = 2; i < parts.length; i++) {
-                    if (!allSubsystemNames.contains(parts[i])) {
-                        writeFeedback("Beam line " + beamline.getName() + " is referring to a non-existing element "
-                                + parts[i]);
-                    }
-                }
-            }
-        }
-
-        for (Subsystem slot : section.getSlots()) {
-            if (slot.getDescription() != null) {
-                String[] parts = split(slot.getDescription().toUpperCase());
-                for (int i = 2; i < parts.length; i++) {
-                    if (!allSubsystemNames.contains(parts[i])) {
-                        writeFeedback("Slot " + slot.getName() + " is referring to a non-existing element " + parts[i]);
-                    }
-                }
-            }
+            children.forEach(child -> child.setParentSubsystem(slot));
         }
     }
 
@@ -928,13 +878,11 @@ public class TraceWinImporter implements TraceWinTags {
             List<String> childrenNames = Arrays.asList(split(parentSubsystem.getDescription().toLowerCase()));
             String parentName = parentSubsystem.getName().toLowerCase();
             // Check children candidates by name.
-            candidates.forEach((candidate) -> {
+            candidates.forEach(candidate -> {
                 String candidateName = candidate.getName().toLowerCase();
                 // Parent is not its own child.
-                if (!candidateName.equals(parentName)) {
-                    if (childrenNames.contains(candidateName)) {
-                        children.add(candidate);
-                    }
+                if (!candidateName.equals(parentName) && childrenNames.contains(candidateName)) {
+                    children.add(candidate);
                 }
             });
         }

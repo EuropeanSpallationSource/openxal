@@ -83,9 +83,6 @@ public class IniFileParser {
      * @param iniFilePath The path of the .ini file.
      */
     public void loadTwissFromIni(String iniFilePath) {
-
-        BufferedInputStream iniFile = null;
-
         double emittanceX = 0;
         double emittanceY = 0;
         double emittanceZ = 0;
@@ -102,8 +99,7 @@ public class IniFileParser {
         double centerZ = 0;
         double centerpZ = 0;
 
-        try {
-            iniFile = new BufferedInputStream(new URL(iniFilePath).openStream());
+        try (BufferedInputStream iniFile = new BufferedInputStream(new URL(iniFilePath).openStream())) {
 
             int nBytes = 8;
             byte[] doubleAux = new byte[8];
@@ -112,7 +108,10 @@ public class IniFileParser {
 
             // Read bunch frequency (MHz)
             long offsetFrequency = 0x2f24;
-            iniFile.skip(offsetFrequency);
+            long skipped = iniFile.skip(offsetFrequency);
+            if (skipped != offsetFrequency) {
+                throw new IOException();
+            }
             if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
                 bunchFrequency = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
             } else {
@@ -122,7 +121,10 @@ public class IniFileParser {
 
             // Read beam current (A)
             long offsetCurrent = 0x2f34;
-            iniFile.skip(offsetCurrent - currentOffset);
+            skipped = iniFile.skip(offsetCurrent - currentOffset);
+            if (skipped != offsetFrequency - currentOffset) {
+                throw new IOException();
+            }
             if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
                 beamCurrent = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
             } else {
@@ -133,25 +135,37 @@ public class IniFileParser {
             // Read kinetic energy (eV) and emittances (normalized)
             long offsetKineticEnergy = 0x2f44;
 
-            iniFile.skip(offsetKineticEnergy - currentOffset);
+            skipped = iniFile.skip(offsetKineticEnergy - currentOffset);
+            if (skipped != offsetKineticEnergy - currentOffset) {
+                throw new IOException();
+            }
             if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
                 kineticEnergy = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
             } else {
                 throw new IOException();
             }
-            iniFile.skip(nBytes);
+            skipped = iniFile.skip(nBytes);
+            if (skipped != nBytes) {
+                throw new IOException();
+            }
             if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
                 emittanceX = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
             } else {
                 throw new IOException();
             }
-            iniFile.skip(nBytes);
+            skipped = iniFile.skip(nBytes);
+            if (skipped != nBytes) {
+                throw new IOException();
+            }
             if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
                 emittanceY = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
             } else {
                 throw new IOException();
             }
-            iniFile.skip(nBytes);
+            skipped = iniFile.skip(nBytes);
+            if (skipped != nBytes) {
+                throw new IOException();
+            }
             if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
                 emittanceZ = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
             } else {
@@ -163,7 +177,10 @@ public class IniFileParser {
             // Now move to the area where beam centroid parameters are stored
             long offsetCenterX = 0x3024;
 
-            iniFile.skip(offsetCenterX - currentOffset);
+            skipped = iniFile.skip(offsetCenterX - currentOffset);
+            if (skipped != offsetCenterX - currentOffset) {
+                throw new IOException();
+            }
             if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
                 centerX = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
             } else {
@@ -200,7 +217,10 @@ public class IniFileParser {
             // Now move to the area where alpha and beta parameters are stored
             long offsetAlphaX = 0x30dc;
 
-            iniFile.skip(offsetAlphaX - currentOffset);
+            skipped = iniFile.skip(offsetAlphaX - currentOffset);
+            if (skipped != offsetAlphaX - currentOffset) {
+                throw new IOException();
+            }
             if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
                 alphaX = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
             } else {
@@ -211,7 +231,10 @@ public class IniFileParser {
             } else {
                 throw new IOException();
             }
-            iniFile.skip(2 * nBytes);
+            skipped = iniFile.skip(2L * nBytes);
+            if (skipped != 2 * nBytes) {
+                throw new IOException();
+            }
             if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
                 alphaY = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
             } else {
@@ -222,7 +245,10 @@ public class IniFileParser {
             } else {
                 throw new IOException();
             }
-            iniFile.skip(2 * nBytes);
+            skipped = iniFile.skip(2L * nBytes);
+            if (skipped != 2 * nBytes) {
+                throw new IOException();
+            }
             if (iniFile.read(doubleAux, 0, nBytes) == nBytes) {
                 alphaZ = ByteBuffer.wrap(doubleAux).order(ByteOrder.LITTLE_ENDIAN).getDouble();
             } else {
@@ -237,14 +263,6 @@ public class IniFileParser {
             Logger.getLogger(TraceWin.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(IniFileParser.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            if (iniFile != null) {
-                try {
-                    iniFile.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(IniFileParser.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
         }
 
         initialTwiss = new Twiss[]{new Twiss(alphaX, betaX, emittanceX),

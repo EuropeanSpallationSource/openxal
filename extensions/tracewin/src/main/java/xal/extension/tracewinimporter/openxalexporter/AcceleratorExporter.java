@@ -209,7 +209,7 @@ public class AcceleratorExporter {
      * @throws IOException
      * @throws URISyntaxException
      */
-    private void exportModelConfigs() throws IOException, URISyntaxException {
+    private void exportModelConfigs() throws IOException {
         InputStream modelConfigResource = this.getClass().getResourceAsStream("ModelConfig.xml");
         Files.copy(modelConfigResource, modelConfigFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }

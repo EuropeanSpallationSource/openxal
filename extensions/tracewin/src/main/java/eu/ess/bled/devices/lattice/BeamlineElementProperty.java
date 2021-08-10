@@ -27,7 +27,7 @@ public class BeamlineElementProperty implements BLEDEntity {
      * @author <a href="mailto:jaka.bobnar@cosylab.com">Jaka Bobnar</a>
      *
      */
-    public static enum PropertyType {
+    public enum PropertyType {
         TEXT(0), DECIMAL(1), INTEGER(2);
 
         private int val;
