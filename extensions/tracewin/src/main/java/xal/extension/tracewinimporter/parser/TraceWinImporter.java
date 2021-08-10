@@ -38,6 +38,7 @@ import eu.ess.bled.devices.lattice.ThinLens;
 import eu.ess.lt.parser.ComponentFactory;
 import eu.ess.lt.parser.ValidationResult;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 
@@ -106,7 +107,7 @@ public class TraceWinImporter extends TraceWinTags {
         // Parsing
         Subsystem parentSubsystem = new Subsystem();
         parentSubsystem.setName("Accelerator");
-        try (BufferedReader tracewinInput = new BufferedReader(new InputStreamReader(sourceFileName.toURL().openStream()))) {
+        try (BufferedReader tracewinInput = new BufferedReader(new InputStreamReader(sourceFileName.toURL().openStream(), StandardCharsets.UTF_8))) {
             parseFromBufferedReader(parentSubsystem, tracewinInput);
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, null, e);
@@ -143,7 +144,7 @@ public class TraceWinImporter extends TraceWinTags {
             section.addBeamline(currentBeamline);
             lastSubsystem = lastSubsystem + 1;
 
-            try (BufferedReader tracewinInput = new BufferedReader(new InputStreamReader(sourceFileNames[i].toURL().openStream()))) {
+            try (BufferedReader tracewinInput = new BufferedReader(new InputStreamReader(sourceFileNames[i].toURL().openStream(), StandardCharsets.UTF_8))) {
                 parseFromBufferedReader(parentSubsystem, tracewinInput);
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, null, e);

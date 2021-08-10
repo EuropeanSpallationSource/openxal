@@ -13,10 +13,12 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.net.*;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Info about the current Open XAL.
  */
+
 public class Info {
 
     /**
@@ -37,7 +39,7 @@ public class Info {
             try {
                 final StringBuilder buffer = new StringBuilder();
                 try (InputStream infoStream = infoLocation.openStream();
-                        BufferedReader infoReader = new BufferedReader(new InputStreamReader(infoStream))) {
+                        BufferedReader infoReader = new BufferedReader(new InputStreamReader(infoStream, StandardCharsets.UTF_8))) {
                     while (true) {
                         final String nextLine = infoReader.readLine();
                         if (nextLine != null) {

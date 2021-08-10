@@ -61,7 +61,7 @@ class WebSocketIO {
         // base64 encoded random key
         final String encodedRandomKey = toBase64(randomKey);
 
-        final Writer writer = new OutputStreamWriter(socket.getOutputStream());
+        final Writer writer = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8);
         writer.write("GET /stuff HTTP/1.1\r\n");
         writer.write("Upgrade: websocket\r\n");
         writer.write("Host: " + socket.getInetAddress().getHostName() + ":" + socket.getPort() + "\r\n");
@@ -99,7 +99,7 @@ class WebSocketIO {
             messageDigest.update(inputPlus.getBytes(StandardCharsets.UTF_8));
             final String secWebSocketAccept = DatatypeConverter.printBase64Binary(messageDigest.digest());
 
-            final Writer writer = new OutputStreamWriter(socket.getOutputStream());
+            final Writer writer = new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8);
             writer.write("HTTP/1.1 101 Switching Protocols\r\n");
             writer.write("Upgrade: websocket\r\n");
             writer.write("Connection: Upgrade\r\n");
@@ -121,7 +121,7 @@ class WebSocketIO {
         final int bufferSize = socket.getReceiveBufferSize();
         final char[] streamBuffer = new char[bufferSize];
         final InputStream readStream = socket.getInputStream();
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(readStream));
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(readStream, StandardCharsets.UTF_8));
         final StringBuilder inputBuffer = new StringBuilder();
 
         do {
@@ -145,7 +145,7 @@ class WebSocketIO {
         final int bufferSize = socket.getReceiveBufferSize();
         final char[] streamBuffer = new char[bufferSize];
         final InputStream readStream = socket.getInputStream();
-        final BufferedReader reader = new BufferedReader(new InputStreamReader(readStream));
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(readStream, StandardCharsets.UTF_8));
         final StringBuilder inputBuffer = new StringBuilder();
 
         // empty out the buffer and store the header info

@@ -9,8 +9,8 @@ import javax.swing.*;
 import java.util.*;
 import java.text.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.border.*;
@@ -246,8 +246,8 @@ public class MainAnalysisController {
         ((JTextField) operationChooser.getEditor().getEditorComponent()).setFont(fnt);
         operationChooser.setPreferredSize(new Dimension(1, fnt.getSize() + 10));
 
-        for (int i = 0; i < analysisControllers.length; i++) {
-            analysisControllers[i].setFontsForAll(fnt);
+        for (AnalysisController analysisController : analysisControllers) {
+            analysisController.setFontsForAll(fnt);
         }
 
         chooserLabel.setFont(fnt);
@@ -271,8 +271,8 @@ public class MainAnalysisController {
      */
     public void setMessageTextField(JTextField messageTextLocal) {
         this.messageTextLocal = messageTextLocal;
-        for (int i = 0; i < analysisControllers.length; i++) {
-            analysisControllers[i].setMessageTextField(messageTextLocal);
+        for (AnalysisController analysisController : analysisControllers) {
+            analysisController.setMessageTextField(messageTextLocal);
         }
     }
 
@@ -362,9 +362,9 @@ public class MainAnalysisController {
      * @param analysisConfig Description of the Parameter
      */
     public void dumpChildAnalysisConfig(DataAdaptor analysisConfig) {
-        for (int i = 0; i < analysisControllers.length; i++) {
-            DataAdaptor aConf = analysisConfig.createChild(analysisControllers[i].getTypeName());
-            analysisControllers[i].dumpAnalysisConfig(aConf);
+        for (AnalysisController analysisController : analysisControllers) {
+            DataAdaptor aConf = analysisConfig.createChild(analysisController.getTypeName());
+            analysisController.dumpAnalysisConfig(aConf);
         }
     }
 
@@ -378,8 +378,8 @@ public class MainAnalysisController {
     public void setScanPVandScanPVRBState(boolean scanPVShowState, boolean scanPVRBShowState) {
         this.scanPVShowState = scanPVShowState;
         this.scanPVRBShowState = scanPVRBShowState;
-        for (int i = 0; i < analysisControllers.length; i++) {
-            analysisControllers[i].setScanPVandScanPVRBState(scanPVShowState, scanPVRBShowState);
+        for (AnalysisController analysisController : analysisControllers) {
+            analysisController.setScanPVandScanPVRBState(scanPVShowState, scanPVRBShowState);
         }
     }
 
@@ -391,13 +391,13 @@ public class MainAnalysisController {
         graphAnalysis.removeAllGraphData();
         graphAnalysis.clearZoomStack();
         for (int i = 0, n = measuredValuesV.size(); i < n; i++) {
-            if (measuredValuesShowStateV.get(i)) {
-                MeasuredValue mv_tmp = measuredValuesV.get(i);
+            if (Boolean.TRUE.equals(measuredValuesShowStateV.get(i))) {
+                MeasuredValue mvTmp = measuredValuesV.get(i);
                 if (scanPVShowState || scanVariable.getChannel() == null) {
-                    graphAnalysis.addGraphData(mv_tmp.getDataContainers());
+                    graphAnalysis.addGraphData(mvTmp.getDataContainers());
                 }
                 if (scanPVRBShowState) {
-                    graphAnalysis.addGraphData(mv_tmp.getDataContainersRB());
+                    graphAnalysis.addGraphData(mvTmp.getDataContainersRB());
                 }
             }
         }
@@ -514,7 +514,7 @@ public class MainAnalysisController {
             BasicGraphData gd = (BasicGraphData) choosenObjArr[0];
             Integer indP = (Integer) choosenObjArr[1];
             if (gd != null && indP != null) {
-                gd.removePoint(indP.intValue());
+                gd.removePoint(indP);
                 graphAnalysis.refreshGraphJPanel();
             } else {
                 messageTextLocal.setText(null);
@@ -531,8 +531,8 @@ public class MainAnalysisController {
                 if (gd != graphDataLocal) {
                     graphAnalysis.removeGraphData(gd);
                     for (int i = 0, n = measuredValuesV.size(); i < n; i++) {
-                        MeasuredValue mv_tmp = measuredValuesV.get(i);
-                        mv_tmp.removeDataContainer(gd);
+                        MeasuredValue mvTmp = measuredValuesV.get(i);
+                        mvTmp.removeDataContainer(gd);
                     }
                 } else {
                     graphDataLocal.removeAllPoints();
@@ -549,7 +549,7 @@ public class MainAnalysisController {
         //"REMOVE ALL" button
         removeAllGlobalButton.addActionListener(e -> {
             for (int i = 0, n = measuredValuesV.size(); i < n; i++) {
-                if (measuredValuesShowStateV.get(i)) {
+                if (Boolean.TRUE.equals(measuredValuesShowStateV.get(i))) {
                     MeasuredValue mvTmp = measuredValuesV.get(i);
                     if (scanPVShowState || scanVariable.getChannel() == null) {
                         mvTmp.removeAllDataContainersNonRB();
@@ -589,7 +589,7 @@ public class MainAnalysisController {
                 int returnVal = ch.showSaveDialog(parentAnalysisPanel);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     dataFile = ch.getSelectedFile();
-                    try (BufferedWriter out = new BufferedWriter(new FileWriter(dataFile))) {
+                    try (BufferedWriter out = new BufferedWriter(new FileWriter(dataFile, StandardCharsets.UTF_8))) {
                         int nP = gd.getNumbOfPoints();
                         for (int i = 0; i < nP; i++) {
                             out.write(" " + gd.getX(i) + " " + gd.getY(i) + " " + gd.getErr(i));
@@ -613,7 +613,7 @@ public class MainAnalysisController {
                     int returnVal = ch.showSaveDialog(parentAnalysisPanel);
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
                         dataFile = ch.getSelectedFile();
-                        try (BufferedWriter out = new BufferedWriter(new FileWriter(dataFile))) {
+                        try (BufferedWriter out = new BufferedWriter(new FileWriter(dataFile, StandardCharsets.UTF_8))) {
                             Vector<BasicGraphData> gdVTmp = graphAnalysis.getAllGraphData();
 
                             Vector<BasicGraphData> gdV = new Vector<>();
@@ -765,7 +765,7 @@ public class MainAnalysisController {
 
                 if (validGraphData.size() > 0) {
                     csvFile = chooser.getSelectedFile();
-                    try (BufferedWriter out = new BufferedWriter(new FileWriter(csvFile))) {
+                    try (BufferedWriter out = new BufferedWriter(new FileWriter(csvFile, StandardCharsets.UTF_8))) {
                         out.write("" + validGraphData.get(0).getGraphProperty("xLabel"));
                         for (int column = 0; column < validGraphData.size(); column++) {
                             final BasicGraphData graphData = validGraphData.get(column);
@@ -889,11 +889,9 @@ public class MainAnalysisController {
         for (int i = 0, n = gdV.size(); i < n; i++) {
             BasicGraphData gd = gdV.get(i);
             int nP = gd.getNumbOfPoints();
-            if (nP > 0) {
-                if (gd.getGraphProperty(key) != null) {
-                    shift += ((Double) gd.getGraphProperty(key));
-                    nCount++;
-                }
+            if (nP > 0 && gd.getGraphProperty(key) != null) {
+                shift += ((Double) gd.getGraphProperty(key));
+                nCount++;
             }
         }
         if (nCount > 0) {

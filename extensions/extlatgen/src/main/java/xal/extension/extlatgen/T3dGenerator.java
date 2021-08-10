@@ -9,6 +9,7 @@
 package xal.extension.extlatgen;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.text.NumberFormat;
 import java.text.DecimalFormat;
@@ -89,7 +90,7 @@ public class T3dGenerator {
             myLatticeName = myLattice.getName();
         }
 
-        try (FileWriter t3dInput = new FileWriter(myLatticeName + ".t3d")) {
+        try (FileWriter t3dInput = new FileWriter(myLatticeName + ".t3d", StandardCharsets.UTF_8)) {
             Date today = new Date();
             int elementCount = myLattice.len();
 

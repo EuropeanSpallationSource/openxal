@@ -3,6 +3,7 @@ package xal.extension.extlatgen;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
@@ -179,7 +180,7 @@ public class ImpactGenerator {
 
         File impactFile = outputFile != null ? outputFile : new File("test.in");
         LOGGER.log(Level.INFO, "Exporting IMPACT optics to file: {0}", impactFile.getAbsolutePath());
-        try (FileWriter impactWriter = new FileWriter(impactFile)) {
+        try (FileWriter impactWriter = new FileWriter(impactFile, StandardCharsets.UTF_8)) {
             double momentum = RelativisticParameterConverter.computeMomentumFromEnergies(myProbe.getKineticEnergy(), myProbe.getSpeciesRestEnergy()) / 1.e9;
             LOGGER.log(Level.INFO, "momentum = {0}", momentum);
 

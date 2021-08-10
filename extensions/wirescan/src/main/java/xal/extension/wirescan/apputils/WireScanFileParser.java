@@ -6,6 +6,7 @@ package xal.extension.wirescan.apputils;
 
 import java.util.Vector;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -32,7 +33,7 @@ public class WireScanFileParser {
         WireScanData wsD = new WireScanData();
         String str;
 
-        try (BufferedReader in = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader in = new BufferedReader(new FileReader(file, StandardCharsets.UTF_8))) {
             while ((str = in.readLine()) != null) {
                 if (str.contains("WS")) {
                     wsD = new WireScanData();

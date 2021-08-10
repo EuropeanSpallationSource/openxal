@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -197,7 +198,7 @@ public class TransferMapLoader {
         int currentTmIndex = 0;
         TransferMaps currentTm = tms.get(currentTmIndex);
 
-        try (BufferedReader br = new BufferedReader(new FileReader(new File(tmFile)))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(new File(tmFile), StandardCharsets.UTF_8))) {
             String line = br.readLine();
             double pos = 0.;
             String[] data = "0 1 0 0 1 1 0 0 1 1 0 0 1".split(" ");
@@ -241,7 +242,7 @@ public class TransferMapLoader {
             syncEnergy = new double[n];
             energy = new double[n];
 
-            try (BufferedReader br = new BufferedReader(new FileReader(new File(file)))) {
+            try (BufferedReader br = new BufferedReader(new FileReader(new File(file), StandardCharsets.UTF_8))) {
                 String line = br.readLine();
 
                 int i = 0;
@@ -266,7 +267,7 @@ public class TransferMapLoader {
      */
     private static int countLines(URI file) throws IOException {
         int i;
-        try (BufferedReader br = new BufferedReader(new FileReader(new File(file)))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(new File(file), StandardCharsets.UTF_8))) {
             i = 0;
             while (br.readLine() != null) {
                 i++;
@@ -330,7 +331,7 @@ public class TransferMapLoader {
      * @param args file name
      */
     public static void main(String[] args) {
-        try (BufferedReader br = new BufferedReader(new FileReader(args[0]))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(args[0], StandardCharsets.UTF_8))) {
             String line = br.readLine();
             double pos = 0.;
             PhaseMatrix data = PhaseMatrix.identity();

@@ -10,10 +10,10 @@ import xal.tools.IconLib;
 import java.io.*;
 import javax.swing.*;
 import javax.swing.text.*;
-import java.awt.event.*;
 import java.awt.Color;
 import java.awt.BorderLayout;
 import java.awt.Container;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
@@ -117,7 +117,7 @@ class Console {
                     logDirectory.mkdirs();
                 }
                 final File logFile = new File(logDirectory, appName + "_" + new SimpleDateFormat("yyyyMMdd'_'HHmmss'_'SSS").format(now) + ".log");
-                logWriter = new BufferedWriter(new FileWriter(logFile));
+                logWriter = new BufferedWriter(new FileWriter(logFile, StandardCharsets.UTF_8));
             } catch (IOException exception) {
                 LOGGER.log(Level.SEVERE, null, exception);
             }
@@ -203,14 +203,14 @@ class Console {
      * Sets the console to capture standard output.
      */
     static void captureOutput() {
-        System.setOut(new PrintStream(CONSOLE.outStream));
+        System.setOut(new PrintStream(CONSOLE.outStream, false, StandardCharsets.UTF_8));
     }
 
     /**
      * Sets the console to capture standard error.
      */
     static void captureErr() {
-        System.setErr(new PrintStream(CONSOLE.errStream));
+        System.setErr(new PrintStream(CONSOLE.errStream, false, StandardCharsets.UTF_8));
     }
 
     /**

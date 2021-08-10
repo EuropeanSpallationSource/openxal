@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.io.*;
 import javax.swing.border.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
@@ -553,7 +554,7 @@ public final class AnalysisCntrlTDProcedure extends AnalysisController {
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     dataFile = ch.getSelectedFile();
                     defaultPath = dataFile.getAbsolutePath();
-                    try (BufferedWriter out = new BufferedWriter(new FileWriter(dataFile))) {
+                    try (BufferedWriter out = new BufferedWriter(new FileWriter(dataFile, StandardCharsets.UTF_8))) {
                         Preferences pref = xal.tools.apputils.Preferences.nodeForPackage(this.getClass());
 
                         defaultPath = dataFile.getAbsolutePath();
@@ -798,7 +799,7 @@ public final class AnalysisCntrlTDProcedure extends AnalysisController {
         URL dataURL = Application.getAdaptor().getResourceURL("data/delta_t/" + fileNameTheoryData);
 
         try (InputStream inps = dataURL.openStream()) {
-            BufferedReader in = new BufferedReader(new InputStreamReader(inps));
+            BufferedReader in = new BufferedReader(new InputStreamReader(inps, StandardCharsets.UTF_8));
             String lineIn = in.readLine();
             String[] dataS;
 

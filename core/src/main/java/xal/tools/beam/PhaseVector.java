@@ -9,6 +9,7 @@ package xal.tools.beam;
 
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.EnumSet;
@@ -578,7 +579,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
      * @return (x,y,z)
      */
     // returns a new instance so should not edit
-    @NoEdit        
+    @NoEdit
     public R3 getPosition() {
         return new R3(getx(), gety(), getz());
     }
@@ -589,7 +590,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
      * @return (xp,yp,zp)
      */
     // returns a new instance so should not edit
-    @NoEdit        
+    @NoEdit
     public R3 getMomentum() {
         return new R3(getxp(), getyp(), getzp());
     }
@@ -943,7 +944,7 @@ public class PhaseVector extends BaseVector<PhaseVector> implements Serializable
      * Test driver
      */
     public static void main(String[] arrArgs) {
-        try (PrintWriter os = new PrintWriter(System.out)) {
+        try (PrintWriter os = new PrintWriter(System.out, false, StandardCharsets.UTF_8)) {
             PhaseVector z1 = new PhaseVector();
             os.print("Vector #1 = ");
             z1.println(os);

@@ -8,6 +8,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.net.*;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -1062,7 +1063,7 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
         URL dataURL = Application.getAdaptor().getResourceURL("data/" + fNameWvsA);
 
         try (InputStream inps = dataURL.openStream();
-                BufferedReader in = new BufferedReader(new InputStreamReader(inps))) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(inps, StandardCharsets.UTF_8))) {
 
             extWidthVsAmpDataV.clear();
             extAmpVsWidthDataV.clear();
@@ -1118,7 +1119,7 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
 
         try (
                 InputStream inps = dataURL.openStream();
-                BufferedReader in = new BufferedReader(new InputStreamReader(inps))) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(inps, StandardCharsets.UTF_8))) {
 
             extKShiftVsAmpDataV.clear();
             extAmpVsKShiftDataV.clear();

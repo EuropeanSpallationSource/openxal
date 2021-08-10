@@ -1,6 +1,7 @@
 package xal.extension.extlatgen;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -187,7 +188,7 @@ public class MadXGenerator {
 
         File madFile = outputFile != null ? outputFile : new File(myLatticeName + ".mad");
         LOGGER.log(Level.INFO, "Exporting MAD optics to file: {0}", madFile.getAbsolutePath());
-        try (FileWriter madxWritter = new FileWriter(madFile)) {
+        try (FileWriter madxWritter = new FileWriter(madFile, StandardCharsets.UTF_8)) {
             final Date today = new Date();
 
             double momentum = RelativisticParameterConverter.computeMomentumFromEnergies(myProbe.getKineticEnergy(), myProbe.getSpeciesRestEnergy()) / 1.e9;

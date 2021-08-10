@@ -9,6 +9,7 @@
 package xal.extension.extlatgen;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -102,7 +103,7 @@ public class DynacGenerator {
         }
 
         try (
-                FileWriter dynacInput = new FileWriter(myLatticeName + ".in")) {
+                FileWriter dynacInput = new FileWriter(myLatticeName + ".in", StandardCharsets.UTF_8)) {
             Date today = new Date();
 
             TraceXalUnitConverter uc = TraceXalUnitConverter.newConverter(

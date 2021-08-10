@@ -6,6 +6,7 @@
 package xal.extension.wirescan.apputils;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.text.*;
 import java.util.logging.Logger;
@@ -22,8 +23,8 @@ public class WireDataFileParser {
     boolean readingRawArrays = false;
     boolean readingFitArrays = false;
     boolean zeroData = false;
-    ArrayList<WireData> wires = new ArrayList<>();
-    HashMap<String, WireData> wireMap = new HashMap<>();
+    List<WireData> wires = new ArrayList<>();
+    Map<String, WireData> wireMap = new HashMap<>();
 
     String name = "";
     String header = "";
@@ -91,7 +92,7 @@ public class WireDataFileParser {
         int lineNumber = 0;
 
         try (BufferedReader in = new BufferedReader(
-                new InputStreamReader(new FileInputStream(file)))) {
+                new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))) {
 
             String line;
 

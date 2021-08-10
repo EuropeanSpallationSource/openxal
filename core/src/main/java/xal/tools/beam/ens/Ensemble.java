@@ -16,6 +16,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.nio.charset.StandardCharsets;
 
 import java.util.TreeSet;
 import java.util.Iterator;
@@ -502,7 +503,7 @@ public class Ensemble implements Serializable {
      */
     public static void main(String[] arg) {
         // Test persistent storage mechanism
-        try (PrintWriter osLog = new PrintWriter(System.out)) {
+        try (PrintWriter osLog = new PrintWriter(System.out, false, StandardCharsets.UTF_8)) {
             // Test persistent storage mechanism
             testPersistence(osLog);
         }

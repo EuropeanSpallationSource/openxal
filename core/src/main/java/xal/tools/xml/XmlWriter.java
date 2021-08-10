@@ -7,6 +7,7 @@ package xal.tools.xml;
 
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.logging.*;
 import java.util.regex.*;
@@ -79,7 +80,7 @@ public class XmlWriter {
      * write the XML document to the UNIX file path
      */
     public static void writeToPath(Document newDocument, String filePath) throws IOException {
-        Writer fileWriter = new FileWriter(filePath);
+        Writer fileWriter = new FileWriter(filePath, StandardCharsets.UTF_8);
         writeToWriter(newDocument, fileWriter);
     }
 
@@ -90,10 +91,10 @@ public class XmlWriter {
      * @param file the file to be written
      */
     public static void writeToFile(final Document document, final File file) throws IOException {
-        Writer fileWriter = new FileWriter(file);
-        writeToWriter(document, fileWriter);
-        fileWriter.flush();
-        fileWriter.close();
+        try (Writer fileWriter = new FileWriter(file, StandardCharsets.UTF_8)) {
+            writeToWriter(document, fileWriter);
+            fileWriter.flush();
+        }
     }
 
     /**

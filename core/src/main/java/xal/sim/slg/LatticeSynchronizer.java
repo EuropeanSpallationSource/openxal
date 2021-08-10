@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -167,7 +168,7 @@ public class LatticeSynchronizer implements Visitor {
      * Convenience method for writing an XML file
      */
     public void writeTo(File file) throws IOException {
-        writeTo(new FileWriter(file));
+        writeTo(new FileWriter(file, StandardCharsets.UTF_8));
     }
 
     /**

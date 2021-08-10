@@ -8,6 +8,7 @@ package xal.tools.xml;
 import java.util.*;
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.*;
@@ -597,7 +598,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
      */
     @Override
     public void writeTo(File file) throws IOException {
-        writeTo(new FileWriter(file));
+        writeTo(new FileWriter(file, StandardCharsets.UTF_8));
     }
 
     /**
@@ -646,7 +647,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     public static XmlDataAdaptor adaptorForString(final String source, final boolean isValidating) throws ParseException, ResourceNotFoundException {
         try {
             DocumentBuilder builder = newDocumentBuilder(isValidating);
-            Document document = builder.parse(new ByteArrayInputStream(source.getBytes()));
+            Document document = builder.parse(new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8)));
 
             return new XmlDataAdaptor(document);
         } catch (FileNotFoundException exception) {

@@ -25,6 +25,7 @@ import java.util.List;
 
 import eu.ess.bled.Subsystem;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.logging.Level;
@@ -210,7 +211,7 @@ public class TraceWin {
         List<Subsystem> systems;
 
         String basePath = new File(sourceFileName).getParentFile().toURI().toString();
-        systems = importer.importFromTraceWin(sourceFileName, new PrintWriter(System.err), basePath);
+        systems = importer.importFromTraceWin(sourceFileName, new PrintWriter(System.err, false, StandardCharsets.UTF_8), basePath);
 
         return exportToOpenxal(systems, modelMapping);
     }
@@ -220,7 +221,7 @@ public class TraceWin {
         TraceWinImporter importer = new TraceWinImporter();
         List<Subsystem> systems;
 
-        systems = importer.importFromTraceWinSequences(sourceFileNames, sequenceNames, new PrintWriter(System.err), basePath);
+        systems = importer.importFromTraceWinSequences(sourceFileNames, sequenceNames, new PrintWriter(System.err, false, StandardCharsets.UTF_8), basePath);
 
         return exportToOpenxal(systems, modelMapping);
     }
