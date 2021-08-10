@@ -217,12 +217,12 @@ public class ProfileDataStatistics {
      * @return average step length between axis sample positions
      */
     public double compAveAxisStepSize(ProfileData.Angle view) {
-        double[] arrPos = this.pdoData.getAxisPositions(view);
-        int N = arrPos.length;
-        double x1 = arrPos[N - 1];
+        double[] arrPos = pdoData.getAxisPositions(view);
+        int n = arrPos.length;
+        double x1 = arrPos[n - 1];
         double x0 = arrPos[0];
 
-        return (x1 - x0) / (N - 1.0);
+        return (x1 - x0) / (n - 1.0);
     }
 
     /**
@@ -257,12 +257,11 @@ public class ProfileDataStatistics {
      */
     public double compStdDev(ProfileData.Angle view) {
         double std = 0.0;
-        double sig2 = this.computeCentralMoment(2, view);
 
-        double mm2 = this.computeMoment(2, view);
-        double mu = this.getCenter(view);
+        double mm2 = computeMoment(2, view);
+        double mu = getCenter(view);
 
-        sig2 = mm2 - mu * mu;
+        double sig2 = mm2 - mu * mu;
 
         if (sig2 > 0.0) {
             std = Math.sqrt(sig2);
@@ -295,8 +294,8 @@ public class ProfileDataStatistics {
      * @return moment of given view
      */
     public double computeMoment(int intOrder, ProfileData.Angle view) {
-        double mass = this.getMass(view);
-        double sum = this.computeWeightedSum(intOrder, 0.0, view);
+        double mass = getMass(view);
+        double sum = computeWeightedSum(intOrder, 0.0, view);
 
         return sum / mass;
     }
@@ -352,14 +351,13 @@ public class ProfileDataStatistics {
      * @return the value <em>S<sub>n</sub></em>(<em>&mu;</em>) as defined above
      */
     public double computeWeightedSum(int intOrder, double dblCntr, ProfileData.Angle view) {
-
         // Get the projection data
         double[] arrPrj = this.getProjection(view);
-        int N = arrPrj.length;
+        int n = arrPrj.length;
 
         // Initialize and begin summation loop
         double sum = 0.0;
-        for (int k = 0; k < N; k++) {
+        for (int k = 0; k < n; k++) {
             double wgt = this.exponentiate(k - dblCntr, intOrder);
             double smp = arrPrj[k];
 
@@ -426,5 +424,4 @@ public class ProfileDataStatistics {
 
         return dblProd;
     }
-
 }

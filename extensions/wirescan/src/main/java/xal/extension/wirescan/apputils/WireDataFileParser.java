@@ -87,18 +87,17 @@ public class WireDataFileParser {
     /**
      * read in saved wire scan data file
      */
-    public ArrayList<WireData> readFile(File file) {
+    public List<WireData> readFile(File file) {
         int lineNumber = 0;
 
-        try {
-            BufferedReader in = new BufferedReader(
-                    new InputStreamReader(new FileInputStream(file)));
+        try (BufferedReader in = new BufferedReader(
+                new InputStreamReader(new FileInputStream(file)))) {
 
             String line;
 
             while ((line = in.readLine()) != null) {
                 // get rid of "\n"
-                line = line.replaceAll("\n", "");
+                line = line.replace("\n", "");
                 lineNumber++;
                 String[] tokens = line.split("\\s+");
                 int nValues = tokens.length;
@@ -106,29 +105,17 @@ public class WireDataFileParser {
                     continue;
                 }
                 if (nValues == 4) {
-                    double num1;
-                    double num2;
-                    double num3;
-                    try {
-                        num1 = Double.parseDouble(tokens[0]);
-                        num2 = Double.parseDouble(tokens[1]);
-                        num3 = Double.parseDouble(tokens[2]);
+                    double num1 = Double.parseDouble(tokens[0]);
+                    double num2 = Double.parseDouble(tokens[1]);
+                    double num3 = Double.parseDouble(tokens[2]);
 
-                        if (num1 == 0. && num2 == 0. && num3 == 0.) {
-                            zeroData = true;
-                        } else {
-                            zeroData = false;
-                        }
-
-                    } catch (NumberFormatException e) {
-                        num1 = 1.;
-                    }
+                    zeroData = num1 == 0. && num2 == 0. && num3 == 0.;
                 }
 
                 String firstName = tokens[0];
                 if (firstName.startsWith("start")) {
                     header = line;
-                } else if (firstName.indexOf("WS") > 0) {
+                } else if (firstName.contains("WS")) {
                     if (lineNumber > 3) {
                         dumpData();
                     }
@@ -138,42 +125,7 @@ public class WireDataFileParser {
                 } else if (firstName.equals("")) {
                     readingRawArrays = false;
                     readingFitArrays = false;
-                } else if (firstName.startsWith("Area")) {
-                    xFitL.add(tokens[1]);
-                    xRMSL.add(tokens[2]);
-                    yFitL.add(tokens[3]);
-                    yRMSL.add(tokens[4]);
-                    zFitL.add(tokens[5]);
-                    zRMSL.add(tokens[6]);
-                } else if (firstName.startsWith("Ampl")) {
-                    xFitL.add(tokens[1]);
-                    xRMSL.add(tokens[2]);
-                    yFitL.add(tokens[3]);
-                    yRMSL.add(tokens[4]);
-                    zFitL.add(tokens[5]);
-                    zRMSL.add(tokens[6]);
-                } else if (firstName.startsWith("Mean")) {
-                    xFitL.add(tokens[1]);
-                    xRMSL.add(tokens[2]);
-                    yFitL.add(tokens[3]);
-                    yRMSL.add(tokens[4]);
-                    zFitL.add(tokens[5]);
-                    zRMSL.add(tokens[6]);
-                } else if (firstName.startsWith("Sigma")) {
-                    xFitL.add(tokens[1]);
-                    xRMSL.add(tokens[2]);
-                    yFitL.add(tokens[3]);
-                    yRMSL.add(tokens[4]);
-                    zFitL.add(tokens[5]);
-                    zRMSL.add(tokens[6]);
-                } else if (firstName.startsWith("Offset")) {
-                    xFitL.add(tokens[1]);
-                    xRMSL.add(tokens[2]);
-                    yFitL.add(tokens[3]);
-                    yRMSL.add(tokens[4]);
-                    zFitL.add(tokens[5]);
-                    zRMSL.add(tokens[6]);
-                } else if (firstName.startsWith("Slope")) {
+                } else if (firstName.startsWith("Area") || firstName.startsWith("Ampl") || firstName.startsWith("Mean") || firstName.startsWith("Sigma") || firstName.startsWith("Offset") || firstName.startsWith("Slope")) {
                     xFitL.add(tokens[1]);
                     xRMSL.add(tokens[2]);
                     yFitL.add(tokens[3]);
@@ -185,10 +137,11 @@ public class WireDataFileParser {
                 } else if (firstName.equals("Position") && tokens[2].equals("Fit")) {
                     readingFitArrays = true;
                 } else if (firstName.startsWith("---")) {
+                    // Ignore
                 } else if (firstName.equals("PVLoggerID")) {
                     String pvLoggerIdS = tokens[2];
                     pvLoggerId = Integer.parseInt(pvLoggerIdS);
-                    LOGGER.log(Level.INFO, "PV logger Id = " + pvLoggerId);
+                    LOGGER.log(Level.INFO, "PV logger Id = {0}", pvLoggerId);
                 } else if (readingRawArrays && !zeroData) {
                     posRawL.add(tokens[0]);
                     xRawL.add(tokens[1]);
@@ -200,12 +153,9 @@ public class WireDataFileParser {
                     yFitDataL.add(tokens[2]);
                     zFitDataL.add(tokens[3]);
                 }
-
             }
 
-            in.close();
             dumpData();
-
         } catch (FileNotFoundException e) {
             LOGGER.log(Level.INFO, "Cannot find file: {0}", file.getPath());
         } catch (IOException e) {
@@ -279,7 +229,7 @@ public class WireDataFileParser {
         resetData();
     }
 
-    public HashMap<String, WireData> getWireMap() {
+    public Map<String, WireData> getWireMap() {
         return wireMap;
     }
 
@@ -309,7 +259,5 @@ public class WireDataFileParser {
         zFitDataL.clear();
         posRawL.clear();
         posFitL.clear();
-
     }
-
 }

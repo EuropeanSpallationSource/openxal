@@ -296,9 +296,9 @@ public class ProfileData {
      * @param szArrData the size of each data array
      */
     protected ProfileData(String strDevId, final Date dateTmStamp, final int szArrData) {
-        this.setDeviceId(strDevId);
-        this.setTimeStamp(dateTmStamp);
-        this.allocStorage(szArrData);
+        setDeviceId(strDevId);
+        setTimeStamp(dateTmStamp);
+        allocStorage(szArrData);
     }
 
     /*
@@ -312,10 +312,10 @@ public class ProfileData {
      */
     void allocStorage(int szArrData) {
         this.szArrData = szArrData;
-        this.arrPosActr = new double[szArrData];
-        this.arrPosAxes = new ArrayList<>(Angle.getCount());
-        this.arrPrjData = new ArrayList<>(Angle.getCount());
-        for (Angle view : Angle.values()) {
+        arrPosActr = new double[szArrData];
+        arrPosAxes = new ArrayList<>(Angle.getCount());
+        arrPrjData = new ArrayList<>(Angle.getCount());
+        for (int i = 0; i < Angle.getCount(); i++) {
             this.arrPosAxes.add(new double[szArrData]);
             this.arrPrjData.add(new double[szArrData]);
         }
@@ -471,7 +471,7 @@ public class ProfileData {
      * Note that the given list must have length equal to the storage specified
      * by <code>ProfileData#allocStorage</code>.
      *
-     * @param    view    viewing angle
+     * @param view viewing angle
      * @param lstVals ordered list of axis positions
      *
      * @throws ArrayIndexOutOfBoundsException list size not equal storage
@@ -539,7 +539,6 @@ public class ProfileData {
      * allocated
      */
     public void setProjection(Angle view, final double[] arrVals) throws ArrayIndexOutOfBoundsException {
-
         if (arrVals.length != this.getDataSize()) {
             throw new ArrayIndexOutOfBoundsException("ProfileData#setProfile: data size not equal to " + this.getDataSize());
         }
@@ -561,14 +560,13 @@ public class ProfileData {
      * allocated
      */
     public void setProjection(Angle view, final List<Double> lstVals) throws ArrayIndexOutOfBoundsException {
-
-        if (lstVals.size() != this.getDataSize()) {
-            throw new ArrayIndexOutOfBoundsException("ProfileData#setHorizontalProfile: list size not equal to " + this.getDataSize());
+        if (lstVals.size() != getDataSize()) {
+            throw new ArrayIndexOutOfBoundsException("ProfileData#setHorizontalProfile: list size not equal to " + getDataSize());
         }
 
         int index = 0;
         for (double dblVal : lstVals) {
-            this.setProjectionAt(view, index++, dblVal);
+            setProjectionAt(view, index++, dblVal);
         }
     }
 
@@ -578,7 +576,7 @@ public class ProfileData {
      * @return the device identifier associated with this data
      */
     public String getDeviceId() {
-        return this.strDevId;
+        return strDevId;
     }
 
     /**
@@ -587,7 +585,7 @@ public class ProfileData {
      * @return the device type associated with this data
      */
     public DeviceType getDeviceType() {
-        return this.dtSensor;
+        return dtSensor;
     }
 
     /**
@@ -598,7 +596,7 @@ public class ProfileData {
      * @return true if data set contains missing data points.
      */
     public boolean hasMissingData() {
-        return this.bolMissingData;
+        return bolMissingData;
     }
 
     /**
@@ -607,7 +605,7 @@ public class ProfileData {
      * @return the time stamp of this data
      */
     public Date getTimeStamp() {
-        return new Date(this.dateTmStamp.getTime());
+        return new Date(dateTmStamp.getTime());
     }
 
     /**
@@ -617,7 +615,7 @@ public class ProfileData {
      * @return PVLogger snapshot id
      */
     public int getPvLoggerId() {
-        return this.intPvLogId;
+        return intPvLogId;
     }
 
     /**
@@ -626,7 +624,7 @@ public class ProfileData {
      * @return user comment string or null if none
      */
     public String getComment() {
-        return this.strComment;
+        return strComment;
     }
 
     /**
@@ -635,7 +633,7 @@ public class ProfileData {
      * @return data vector length.
      */
     public int getDataSize() {
-        return this.szArrData;
+        return szArrData;
     }
 
     /**
@@ -644,7 +642,7 @@ public class ProfileData {
      * @return array of axis positions
      */
     public double[] getActuatorPositions() {
-        return this.arrPosActr;
+        return arrPosActr;
     }
 
     /**
@@ -662,18 +660,18 @@ public class ProfileData {
      * @return axis position at index
      */
     public double getActuatorPositionAt(int index) {
-        return this.arrPosActr[index];
+        return arrPosActr[index];
     }
 
     /**
      * Returns the vector array of axis positions for each data value.
      *
-     * @param    view    projection viewing angle
+     * @param view projection viewing angle
      *
      * @return array of axis positions
      */
     public double[] getAxisPositions(Angle view) {
-        return this.arrPosAxes.get(view.getIndex());
+        return arrPosAxes.get(view.getIndex());
     }
 
     /**
@@ -692,18 +690,18 @@ public class ProfileData {
      * @return axis position at index
      */
     public double getAxisPositionAt(Angle view, int index) {
-        return this.arrPosAxes.get(view.getIndex())[index];
+        return arrPosAxes.get(view.getIndex())[index];
     }
 
     /**
      * Returns the projection data array for the given viewing angle.
      *
-     * @param    view    projection viewing angle
+     * @param view projection viewing angle
      *
      * @return projection data array
      */
     public double[] getProjection(Angle view) {
-        return this.arrPrjData.get(view.getIndex());
+        return arrPrjData.get(view.getIndex());
     }
 
     /**
@@ -722,7 +720,7 @@ public class ProfileData {
      * @return projection data value at index
      */
     public double getProjectionAt(Angle view, int index) {
-        return this.getProjection(view)[index];
+        return getProjection(view)[index];
     }
 
     /*
@@ -741,7 +739,6 @@ public class ProfileData {
      */
     @Override
     public boolean equals(Object objData) {
-
         // Check the easy stuff first
         if (objData == this) {
             return true;
@@ -754,26 +751,26 @@ public class ProfileData {
         // So we have a ProfileData object.  Start the detailed testing...
         ProfileData pdoTest = (ProfileData) objData;
 
-        if (this.getDataSize() != pdoTest.getDataSize()) {
+        if (getDataSize() != pdoTest.getDataSize()) {
             return false;
         }
-        if (!this.getDeviceId().equals(pdoTest.getDeviceId())) {
+        if (!getDeviceId().equals(pdoTest.getDeviceId())) {
             return false;
         }
-        if (!this.getTimeStamp().equals(pdoTest.getTimeStamp())) {
+        if (!getTimeStamp().equals(pdoTest.getTimeStamp())) {
             return false;
         }
-        if (this.getPvLoggerId() != pdoTest.getPvLoggerId()) {
+        if (getPvLoggerId() != pdoTest.getPvLoggerId()) {
             return false;
         }
-        if (!this.checkEquality(this.getActuatorPositions(), pdoTest.getActuatorPositions())) {
+        if (!checkEquality(getActuatorPositions(), pdoTest.getActuatorPositions())) {
             return false;
         }
         for (Angle view : Angle.values()) {
-            if (!this.checkEquality(this.getAxisPositions(view), pdoTest.getAxisPositions(view))) {
+            if (!checkEquality(getAxisPositions(view), pdoTest.getAxisPositions(view))) {
                 return false;
             }
-            if (!this.checkEquality(this.getProjection(view), pdoTest.getProjection(view))) {
+            if (!checkEquality(getProjection(view), pdoTest.getProjection(view))) {
                 return false;
             }
         }
@@ -789,7 +786,7 @@ public class ProfileData {
      */
     @Override
     public int hashCode() {
-        return this.intPvLogId;
+        return intPvLogId;
     }
 
     /**
@@ -799,7 +796,6 @@ public class ProfileData {
      */
     @Override
     public String toString() {
-
         // Create a string formatter
         StringWriter os = new StringWriter();
 
@@ -869,15 +865,15 @@ public class ProfileData {
      * @throws ArrayIndexOutOfBoundsException index exceeds storage capacity
      */
     private void checkNewValue(int index, double dblVal) throws ArrayIndexOutOfBoundsException {
-        if (index >= this.getDataSize()) {
+        if (index >= getDataSize()) {
             throw new ArrayIndexOutOfBoundsException(
                     "ProfileData#checkNewValue(): Index " + index
-                    + " exceeds storage capacity " + this.getDataSize()
+                    + " exceeds storage capacity " + getDataSize()
             );
         }
 
         if (dblVal == Double.NaN) {
-            this.bolMissingData = true;
+            bolMissingData = true;
         }
     }
 

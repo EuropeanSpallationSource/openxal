@@ -56,6 +56,8 @@ public class WireScanData {
     private BasicGraphData logFitWfX = new BasicGraphData();
     private BasicGraphData logFitWfY = new BasicGraphData();
 
+    private static final String LEGEND_STR = "Legend";
+
     /**
      * Constructor of an empty wire scanner data object
      */
@@ -65,14 +67,14 @@ public class WireScanData {
 
     private void setLegendToGraphs() {
         String str = " file=" + wsFilename + "ws=" + wsId + " pvLog= " + pvlogId + " dir= ";
-        wfX.setGraphProperty("Legend", str + "X  raw");
-        wfY.setGraphProperty("Legend", str + "Y  raw");
-        logWfX.setGraphProperty("Legend", str + "X  log(raw)");
-        logWfY.setGraphProperty("Legend", str + "Y  log(raw)");
-        fitWfX.setGraphProperty("Legend", str + "X  Gauss Fit");
-        fitWfY.setGraphProperty("Legend", str + "Y  Gauss Fit");
-        logFitWfX.setGraphProperty("Legend", str + "X  log(Gauss Fit)");
-        logFitWfY.setGraphProperty("Legend", str + "Y  log(Gauss Fit)");
+        wfX.setGraphProperty(LEGEND_STR, str + "X  raw");
+        wfY.setGraphProperty(LEGEND_STR, str + "Y  raw");
+        logWfX.setGraphProperty(LEGEND_STR, str + "X  log(raw)");
+        logWfY.setGraphProperty(LEGEND_STR, str + "Y  log(raw)");
+        fitWfX.setGraphProperty(LEGEND_STR, str + "X  Gauss Fit");
+        fitWfY.setGraphProperty(LEGEND_STR, str + "Y  Gauss Fit");
+        logFitWfX.setGraphProperty(LEGEND_STR, str + "X  log(Gauss Fit)");
+        logFitWfY.setGraphProperty(LEGEND_STR, str + "Y  log(Gauss Fit)");
 
         wfX.setGraphColor(Color.black);
         wfY.setGraphColor(Color.black);
@@ -142,8 +144,8 @@ public class WireScanData {
     /**
      * Sets the name of WS data file
      */
-    public void setWSFileName(String ws_filename) {
-        this.wsFilename = ws_filename;
+    public void setWSFileName(String wsFilename) {
+        this.wsFilename = wsFilename;
         setLegendToGraphs();
     }
 

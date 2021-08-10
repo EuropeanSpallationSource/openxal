@@ -72,7 +72,7 @@ import xal.tools.dsp.LtiDigitalFilter;
  * may include samples corrupted by noise.
  * <br>
  * <br>ProfileDataProcessor.{@link #thresholdFilter(double dblFracSigMax)}
- * <br><var>dblFracSigMax</var>    = fraction of maximum signal where threshold is
+ * <br><var>dblFracSigMax</var> = fraction of maximum signal where threshold is
  * applied
  * <br>The argument is the fraction of the maximum signal strength where the
  * threshold is activated. Thus, this value is in the interval (-1,1) where a
@@ -216,7 +216,7 @@ public class ProfileDataProcessor {
      *
      * @param dataOrg profile data under process
      *
-     * @see    ProfileDataProcessor
+     * @see ProfileDataProcessor
      */
     public ProfileDataProcessor(final ProfileData dataOrg) {
         this.dataRaw = dataOrg;
@@ -460,26 +460,25 @@ public class ProfileDataProcessor {
      * calculation
      */
     public void decoupleSignals(int cntSmpMax, double dblFracSigMin) {
-
         // Compute the cross-talk coefficient, the gain matrix, then factor the two
-        this.computeXTalk(cntSmpMax, dblFracSigMin);
-        this.computeGains();
-        this.factorGainAndXTalk();
+        computeXTalk(cntSmpMax, dblFracSigMin);
+        computeGains();
+        factorGainAndXTalk();
 
         // Decouple the profile signals by inverting gain and coupling matrices
-        AbstractDoubleSquareMatrix matGC = this.matGain.multiply(this.matXTlk);
+        AbstractDoubleSquareMatrix matGC = matGain.multiply(matXTlk);
         AbstractDoubleSquareMatrix matGCi = matGC.inverse();
 
-        int N = this.getDataSize();
+        int n = getDataSize();
         int szVec = ProfileData.Angle.getCount();
         DoubleVector vecMeas = new DoubleVector(szVec);
 
         // for each signal value
-        for (int n = 0; n < N; n++) {
+        for (int i = 0; i < n; i++) {
 
             // pack measurement vector
             for (ProfileData.Angle view : ProfileData.Angle.values()) {
-                double dblMeas = this.getProcessedData(view)[n];
+                double dblMeas = getProcessedData(view)[i];
                 vecMeas.setComponent(view.getIndex(), dblMeas);
             }
 
@@ -489,7 +488,7 @@ public class ProfileDataProcessor {
             // unpack decoupled signal
             for (ProfileData.Angle view : ProfileData.Angle.values()) {
                 double dblDecpl = vecDecpl.getComponent(view.getIndex());
-                this.getProcessedData(view)[n] = dblDecpl;
+                getProcessedData(view)[i] = dblDecpl;
             }
         }
     }
@@ -520,7 +519,7 @@ public class ProfileDataProcessor {
      * value 0 would indicate no action by the filter.
      * </p>
      *
-     * @param dblFracSigMax    fraction of maximum signal where threshold is
+     * @param dblFracSigMax fraction of maximum signal where threshold is
      * applied
      */
     public void thresholdFilter(double dblFracSigMax) {
@@ -649,7 +648,6 @@ public class ProfileDataProcessor {
     private void linearInterpolate(double[] arrFunc) throws DataProcessingException {
 
         for (int index = 0; index < arrFunc.length; index++) {
-
             // If its good data ignore it
             if (arrFunc[index] != Double.NaN) {
                 continue;

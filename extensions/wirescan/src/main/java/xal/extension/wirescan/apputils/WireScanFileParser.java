@@ -6,12 +6,16 @@ package xal.extension.wirescan.apputils;
 
 import java.util.Vector;
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author T. Gorlov
  */
 public class WireScanFileParser {
+
+    private static final Logger LOGGER = Logger.getLogger(WireScanFileParser.class.getName());
 
     private WireScanFileParser() {
         throw new IllegalStateException("Utility class");
@@ -23,13 +27,12 @@ public class WireScanFileParser {
     public static Vector<WireScanData> parseFile(File file) {
 
         Vector<WireScanData> resV = new Vector<>();
-        Boolean raw = false;
+        boolean raw = false;
         int pvLogId = -1;
         WireScanData wsD = new WireScanData();
         String str;
 
-        try {
-            BufferedReader in = new BufferedReader(new FileReader(file));
+        try (BufferedReader in = new BufferedReader(new FileReader(file))) {
             while ((str = in.readLine()) != null) {
                 if (str.contains("WS")) {
                     wsD = new WireScanData();
@@ -60,7 +63,7 @@ public class WireScanFileParser {
                 }
 
             }
-            in.close();
+
             for (int i = 0; i < resV.size(); i++) {
                 wsD = resV.get(i);
                 wsD.setPVLogId(pvLogId);
@@ -83,6 +86,7 @@ public class WireScanFileParser {
             }
             return resV;
         } catch (IOException e) {
+            LOGGER.log(Level.WARNING, null, e);
         }
         return new Vector<>();
     }
