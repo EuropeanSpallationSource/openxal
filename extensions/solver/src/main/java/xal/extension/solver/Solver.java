@@ -113,10 +113,10 @@ public class Solver implements AlgorithmPoolListener, AlgorithmMarketListener {
      * is ill defined
      */
     public void solve(final Problem problem) throws InvalidConfigurationException {
-        if (problem.getVariables().size() < 1) {
+        if (problem.getVariables().isEmpty()) {
             throw new InvalidConfigurationException("At least one variable must be specified.");
         }
-        if (problem.getObjectives().size() < 1) {
+        if (problem.getObjectives().isEmpty()) {
             throw new InvalidConfigurationException("At least one objective must be specified.");
         }
 

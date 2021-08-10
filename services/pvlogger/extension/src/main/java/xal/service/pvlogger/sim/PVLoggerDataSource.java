@@ -485,7 +485,7 @@ public class PVLoggerDataSource {
         List<AcceleratorNode> bcms = sequence.getAllNodesOfType("BCM");
         List<AcceleratorNode> allBCMs = AcceleratorSeq.filterNodesByStatus(bcms, true);
 
-        if (sequence.getAllNodesOfType("BCM").size() > 0) {
+        if (!sequence.getAllNodesOfType("BCM").isEmpty()) {
             String firstBCM = ((CurrentMonitor) allBCMs.get(0)).getId();
             for (ChannelSnapshot channelSnapshot : channelSnapshots) {
                 if (channelSnapshot.getPV().contains(firstBCM) && channelSnapshot.getPV().contains(":currentMax")

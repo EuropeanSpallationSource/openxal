@@ -763,7 +763,7 @@ public class MainAnalysisController {
 
                 final int numPoints = validGraphData.get(0).getNumbOfPoints();
 
-                if (validGraphData.size() > 0) {
+                if (!validGraphData.isEmpty()) {
                     csvFile = chooser.getSelectedFile();
                     try (BufferedWriter out = new BufferedWriter(new FileWriter(csvFile, StandardCharsets.UTF_8))) {
                         out.write("" + validGraphData.get(0).getGraphProperty("xLabel"));
@@ -1003,7 +1003,7 @@ public class MainAnalysisController {
                 gdV.add(gd);
             }
         }
-        if (gdV.size() <= 0) {
+        if (gdV.isEmpty()) {
             return false;
         }
         BasicGraphData gd0 = gdV.get(0);

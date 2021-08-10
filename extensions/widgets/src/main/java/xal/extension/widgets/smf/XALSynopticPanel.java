@@ -183,7 +183,7 @@ public class XALSynopticPanel extends JPanel {
         final List<AcceleratorNode> list = acceleratorSequence.getAllNodes();
 
         // set initial size from sequence
-        if (list.size() > 0 && startPosition == endPosition) {
+        if (!list.isEmpty() && startPosition == endPosition) {
             startPosition = acceleratorSequence.getPosition(list.get(0)) - list.get(0).getLength() / 2.0;
             endPosition = acceleratorSequence.getPosition(list.get(list.size() - 1)) + list.get(list.size() - 1).getLength() / 2.0;
         }

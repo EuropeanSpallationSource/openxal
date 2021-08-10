@@ -228,7 +228,7 @@ public abstract class SignalAttrSet implements DataListener {
         List<DataAdaptor> lstDaptOld = daptSgnl.childAdaptors(strLblOld);
 
         // If we are in the middle format, we load sequentially according to index and return.
-        if (lstDaptOld.size() > 0) {
+        if (!lstDaptOld.isEmpty()) {
             for (ProfileDevice.ANGLE angle : ProfileDevice.ANGLE.values()) {
                 int index = angle.getIndex();
                 DataAdaptor dapt = lstDaptOld.get(index);

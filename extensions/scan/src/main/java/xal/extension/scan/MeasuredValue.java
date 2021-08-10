@@ -169,7 +169,7 @@ public class MeasuredValue {
         if (mpv.getChannel() == null) {
             return;
         }
-        if (graphDataV.size() > 0
+        if (!graphDataV.isEmpty()
                 && graphDataV.lastElement().getNumbOfPoints() == 0) {
             return;
         }
@@ -190,7 +190,7 @@ public class MeasuredValue {
         if (mpv.getChannel() == null) {
             return;
         }
-        if (graphDataRBV.size() > 0
+        if (!graphDataRBV.isEmpty()
                 && graphDataRBV.lastElement().getNumbOfPoints() == 0) {
             return;
         }
@@ -268,14 +268,14 @@ public class MeasuredValue {
     }
 
     public BasicGraphData getDataContainer() {
-        if (graphDataV.size() > 0) {
+        if (!graphDataV.isEmpty()) {
             return graphDataV.get(graphDataV.size() - 1);
         }
         return null;
     }
 
     public BasicGraphData getDataContainerRB() {
-        if (graphDataRBV.size() > 0) {
+        if (!graphDataRBV.isEmpty()) {
             return graphDataRBV.get(graphDataRBV.size() - 1);
         }
         return null;

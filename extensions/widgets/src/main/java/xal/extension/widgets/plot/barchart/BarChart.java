@@ -317,7 +317,7 @@ public class BarChart {
             graphsPanel.getCurrentGL().setXmaxOn(false);
         }
 
-        if (cdV.size() > 0) {
+        if (!cdV.isEmpty()) {
             graphsPanel.setCurveData(cdV);
         } else {
             graphsPanel.removeAllCurveData();
@@ -482,7 +482,7 @@ public class BarChart {
          */
         private StringBuffer formattedStringBuffer(final double value) {
             StringBuffer strb = new StringBuffer(" ");
-            if (barColumns != null && barColumns.size() > 0) {
+            if (barColumns != null && !barColumns.isEmpty()) {
                 int ind = (int) Math.round(value - 1.0);
                 if (ind >= 0 && ind < barColumns.size()) {
                     strb.append(barColumns.get(ind).marker());

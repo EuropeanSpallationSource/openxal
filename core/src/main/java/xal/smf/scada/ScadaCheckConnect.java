@@ -232,8 +232,8 @@ public class ScadaCheckConnect {
          * @since Mar 7, 2011
          */
         public void add(Channel chn) {
-            synchronized (this.lstChnPend) {
-                if (this.lstChnPend.contains(chn)) {
+            synchronized (lstChnPend) {
+                if (lstChnPend.contains(chn)) {
                     return;
                 }
 
@@ -243,8 +243,8 @@ public class ScadaCheckConnect {
 
                 ConnectionMonitor monConn = new ConnectionMonitor(chn, this);
                 chn.addConnectionListener(monConn);
-                this.lstChnPend.add(chn);
-                this.lstLsnCon.add(monConn);
+                lstChnPend.add(chn);
+                lstLsnCon.add(monConn);
             }
         }
 
@@ -258,12 +258,12 @@ public class ScadaCheckConnect {
          * @since Mar 7, 2011
          */
         public void remove(Channel chn) {
-            synchronized (this.lstChnPend) {
-                this.lstChnPend.remove(chn);
-                this.lstChnPass.add(chn);
+            synchronized (lstChnPend) {
+                lstChnPend.remove(chn);
+                lstChnPass.add(chn);
 
-                if (this.lstChnPend.size() == 0) {
-                    this.thdCurr.interrupt();
+                if (lstChnPend.isEmpty()) {
+                    thdCurr.interrupt();
                 }
             }
         }

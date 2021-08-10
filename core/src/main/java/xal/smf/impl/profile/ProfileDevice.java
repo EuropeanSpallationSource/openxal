@@ -1127,7 +1127,7 @@ public abstract class ProfileDevice extends AcceleratorNode {
 
         Collection<ScadaFieldDescriptor> setFds = new ScadaFieldList(clsScada);
 
-        if (setFds.size() == 0) {
+        if (setFds.isEmpty()) {
             throw new BadStructException("Class is not a SCADA data structure");
         }
 

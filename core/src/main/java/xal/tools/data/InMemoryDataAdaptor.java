@@ -247,7 +247,7 @@ public class InMemoryDataAdaptor implements DataAdaptor {
     @Override
     public DataAdaptor childAdaptor(final String label) {
         final List<DataAdaptor> namedSubnodes = childAdaptors(label);
-        return namedSubnodes.size() > 0 ? namedSubnodes.get(0) : null;
+        return namedSubnodes.isEmpty() ? null : namedSubnodes.get(0);
     }
 
     /**

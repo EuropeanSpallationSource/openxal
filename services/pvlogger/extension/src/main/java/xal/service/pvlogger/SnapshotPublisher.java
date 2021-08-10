@@ -142,7 +142,7 @@ class SnapshotPublisher {
     public synchronized void publishSnapshots(final ConnectionDictionary connectionDictionary) {
         try {
             final List<MachineSnapshot> machineSnapshots = getSnapshotBufferCopy();
-            if (machineSnapshots.size() > 0) {
+            if (!machineSnapshots.isEmpty()) {
                 final Connection connection = PersistentStore.connectionInstance(connectionDictionary);
 
                 try {
@@ -185,7 +185,7 @@ class SnapshotPublisher {
      * clear the buffer of the specified snapshots
      */
     protected void removeFromBuffer(final List<MachineSnapshot> snapshots) {
-        if (snapshots != null && snapshots.size() > 0) {
+        if (snapshots != null && !snapshots.isEmpty()) {
             synchronized (snapshotBuffer) {
                 snapshotBuffer.removeAll(snapshots);
             }

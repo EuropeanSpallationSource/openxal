@@ -993,7 +993,7 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
         double guessPhase = 0.;
         double guessPhase2 = 0.;
 
-        if (extKShiftVsAmpDataV.size() < 1) {
+        if (extKShiftVsAmpDataV.isEmpty()) {
             return results;
         }
 

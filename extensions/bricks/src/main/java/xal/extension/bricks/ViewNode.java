@@ -351,7 +351,7 @@ public class ViewNode extends BeanNode<Component> implements ViewNodeContainer {
      */
     @Override
     public void moveDownNodes(final List<BeanNode<?>> nodes) {
-        if (nodes.size() > 0) {
+        if (!nodes.isEmpty()) {
             final int brickCount = treeNode.getChildCount();
 
             final List<Integer> indicesToMove = new ArrayList<>(nodes.size());
