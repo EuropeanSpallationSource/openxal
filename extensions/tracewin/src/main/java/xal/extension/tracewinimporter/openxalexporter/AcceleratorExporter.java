@@ -178,7 +178,7 @@ public class AcceleratorExporter {
      *
      * @throws IOException
      */
-    private void exportModelParams() throws IOException {
+    private void exportModelParams() {
         XmlTableIO.writeTableGroupToFile(acc.editContext(), "modelparams", paramsFile);
     }
 

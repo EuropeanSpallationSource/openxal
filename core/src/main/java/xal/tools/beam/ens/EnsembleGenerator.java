@@ -65,28 +65,27 @@ public final class EnsembleGenerator {
         }
     }
 
-    private static Ensemble generateKV(Twiss csX, Twiss csY, Twiss csZ) throws EnsembleException {
+    private static Ensemble generateKV(Twiss csX, Twiss csY, Twiss csZ) {
         Ensemble ens = new Ensemble();
 
         return ens;
     }
 
-    private static Ensemble generateWaterbag(Twiss csX, Twiss csY, Twiss csZ) throws EnsembleException {
+    private static Ensemble generateWaterbag(Twiss csX, Twiss csY, Twiss csZ) {
         Ensemble ens = new Ensemble();
 
         return ens;
     }
 
-    private static Ensemble generateSemiGauss(int nStd, Twiss csX, Twiss csY, Twiss csZ) throws EnsembleException {
+    private static Ensemble generateSemiGauss(int nStd, Twiss csX, Twiss csY, Twiss csZ) {
         Ensemble ens = new Ensemble();
 
         return ens;
     }
 
-    private static Ensemble generateGaussian(int nStd, Twiss csX, Twiss csY, Twiss csZ) throws EnsembleException {
+    private static Ensemble generateGaussian(int nStd, Twiss csX, Twiss csY, Twiss csZ) {
         Ensemble ens = new Ensemble();
 
         return ens;
     }
-
 }

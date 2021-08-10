@@ -521,7 +521,7 @@ public class TraceWinImporter extends TraceWinTags {
     /**
      * Reads a command from the line.
      */
-    private void readLatticeCommand(String originalLine, Section section, String name) throws IOException {
+    private void readLatticeCommand(String originalLine, Section section, String name) {
         LOGGER.log(Level.FINEST, "Importing command {0} from line: {1}", new Object[]{name, originalLine});
         LatticeCommand latticeCommand = bledComponentFactory.getLatticeCommand(name, originalLine, lastSubsystem);
         section.addComponent(latticeCommand);

@@ -19,7 +19,6 @@ package xal.extension.jels.smf.impl;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
@@ -82,17 +81,17 @@ public class ESSIonSourceMagnetron extends AcceleratorNode {
     /*
      *  Process variable Gets 
      */
-    public double getForwdPrwRB() throws ConnectionException, GetException {
+    public double getForwdPrwRB() throws GetException {
         forwdPrwRBC = lazilyGetAndConnect(FORWD_PRW_RB_HANDLE, forwdPrwRBC);
         return forwdPrwRBC.getValDbl();
     }
 
-    public double getForwdPrwR() throws ConnectionException, GetException {
+    public double getForwdPrwR() throws GetException {
         forwdPrwRC = lazilyGetAndConnect(FORWD_PRW_R_HANDLE, forwdPrwRC);
         return forwdPrwRC.getValDbl();
     }
 
-    public void setForwdPrwS(double dblVal) throws NoSuchChannelException, ConnectionException, PutException {
+    public void setForwdPrwS(double dblVal) throws NoSuchChannelException, PutException {
         Channel forwdPrwSC = getAndConnectChannel(FORWD_PRW_S_HANDLE);
         forwdPrwSC.putVal(dblVal);
     }

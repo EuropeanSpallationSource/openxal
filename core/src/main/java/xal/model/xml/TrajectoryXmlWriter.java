@@ -17,11 +17,6 @@ import xal.tools.xml.XmlDataAdaptor;
  */
 public class TrajectoryXmlWriter {
 
-    @SuppressWarnings("unused")
-    private static final String DOC_TYPE = Trajectory.TRAJ_LABEL;
-    @SuppressWarnings("unused")
-    private static final String DTD_URI = "xml/Trajectory.mod.xal.dtd";
-
     /**
      * Writes supplied <code>Trajectory</code> to the specified XML file.
      *
@@ -51,5 +46,4 @@ public class TrajectoryXmlWriter {
         trajectory.save(document);
         document.writeTo(new File(fileURI));
     }
-
 }

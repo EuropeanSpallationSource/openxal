@@ -19,7 +19,6 @@ package xal.extension.jels.smf.impl;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
@@ -84,7 +83,7 @@ public class SpaceChargeCompensation extends AcceleratorNode {
     /*
      *  Process variable Gets 
      */
-    public double getN2Flow() throws ConnectionException, GetException {
+    public double getN2Flow() throws GetException {
         n2flowRC = lazilyGetAndConnect(N2FLOW_RB_HANDLE, n2flowRC);
         return n2flowRC.getValDbl();
     }
@@ -92,7 +91,7 @@ public class SpaceChargeCompensation extends AcceleratorNode {
     /*
      *  Process variable Puts 
      */
-    public void setN2Flow(double dblVal) throws ConnectionException, PutException {
+    public void setN2Flow(double dblVal) throws PutException {
         n2flowSC = lazilyGetAndConnect(N2FLOW_SET_HANDLE, n2flowSC);
         n2flowSC.putVal(dblVal);
     }

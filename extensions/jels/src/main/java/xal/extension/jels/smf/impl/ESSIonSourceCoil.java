@@ -19,7 +19,6 @@ package xal.extension.jels.smf.impl;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
@@ -55,12 +54,12 @@ public class ESSIonSourceCoil extends AcceleratorNode {
         super(strId, channelFactory);
     }
 
-    public double getCurrent() throws ConnectionException, GetException {
+    public double getCurrent() throws GetException {
         iC = lazilyGetAndConnect(I_HANDLE, iC);
         return iC.getValDbl();
     }
 
-    public void setCurrent(double dblValue) throws ConnectionException, PutException {
+    public void setCurrent(double dblValue) throws PutException {
         iSetC = lazilyGetAndConnect(I_SET_HANDLE, iSetC);
         iSetC.putVal(dblValue);
     }

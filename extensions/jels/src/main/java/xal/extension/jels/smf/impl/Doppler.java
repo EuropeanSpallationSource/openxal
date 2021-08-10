@@ -19,7 +19,6 @@ package xal.extension.jels.smf.impl;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.smf.AcceleratorNode;
 import xal.smf.AccessibleProperty;
@@ -87,17 +86,17 @@ public class Doppler extends AcceleratorNode {
     /*
      *  Process variable Gets 
      */
-    public double getFractionH() throws ConnectionException, GetException {
+    public double getFractionH() throws GetException {
         fractionHRC = lazilyGetAndConnect(FRACTION_H_R_HANDLE, fractionHRC);
         return fractionHRC.getValDbl();
     }
 
-    public double getFractionH2() throws ConnectionException, GetException {
+    public double getFractionH2() throws GetException {
         fractionH2RC = lazilyGetAndConnect(FRACTION_H2_R_HANDLE, fractionH2RC);
         return fractionH2RC.getValDbl();
     }
 
-    public double getFractionH3() throws ConnectionException, GetException {
+    public double getFractionH3() throws GetException {
         fractionH3RC = lazilyGetAndConnect(FRACTION_H_R_HANDLE, fractionH3RC);
         return fractionH3RC.getValDbl();
     }

@@ -19,7 +19,6 @@ package xal.extension.jels.smf.impl;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
@@ -83,7 +82,7 @@ public class RepellerElectrode extends AcceleratorNode {
     /*
      *  Process variable Gets
      */
-    public int getStatusOnOff() throws ConnectionException, GetException {
+    public int getStatusOnOff() throws GetException {
         statusRC = lazilyGetAndConnect(STATUS_RB_HANDLE, statusRC);
         return statusRC.getValEnum();
     }
@@ -91,7 +90,7 @@ public class RepellerElectrode extends AcceleratorNode {
     /*
      *  Process variable Puts
      */
-    public void setStatusOnOff(int intVal) throws ConnectionException, PutException {
+    public void setStatusOnOff(int intVal) throws PutException {
         statusSC = lazilyGetAndConnect(STATUS_SET_HANDLE, statusSC);
         statusSC.putVal(intVal);
     }

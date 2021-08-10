@@ -29,7 +29,6 @@ import xal.extension.widgets.plot.BasicGraphData;
 import xal.extension.widgets.plot.FunctionGraphsJPanel;
 import xal.model.IAlgorithm;
 import xal.model.Lattice;
-import xal.model.ModelException;
 import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.model.probe.traj.Trajectory;
@@ -297,7 +296,7 @@ public class Matcher implements Runnable, Stopper {
         }
     }
 
-    public static void main(String[] args) throws ModelException, InstantiationException {
+    public static void main(String[] args) throws InstantiationException {
         Accelerator accelerator = loadAccelerator();
 
         IAlgorithm tracker = AlgorithmFactory.createEnvelopeTracker(accelerator);

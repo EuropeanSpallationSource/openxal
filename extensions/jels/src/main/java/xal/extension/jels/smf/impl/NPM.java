@@ -19,7 +19,6 @@ package xal.extension.jels.smf.impl;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.extension.jels.smf.attr.NPMBucket;
 import xal.smf.AccessibleProperty;
@@ -151,42 +150,42 @@ public class NPM extends BPM {
     /*
      *  Process variable Gets 
      */
-    public double getYpAvg() throws ConnectionException, GetException {
+    public double getYpAvg() throws GetException {
         ypAvgC = lazilyGetAndConnect(Y_P_AVG_HANDLE, ypAvgC);
         return ypAvgC.getValDbl();
     }
 
-    public double getXpAvg() throws ConnectionException, GetException {
+    public double getXpAvg() throws GetException {
         xpAvgC = lazilyGetAndConnect(X_P_AVG_HANDLE, xpAvgC);
         return xpAvgC.getValDbl();
     }
 
-    public double getYSigmaAvg() throws ConnectionException, GetException {
+    public double getYSigmaAvg() throws GetException {
         sigmayAvgC = lazilyGetAndConnect(SIGMA_Y_AVG_HANDLE, sigmayAvgC);
         return sigmayAvgC.getValDbl();
     }
 
-    public double getXSigmaAvg() throws ConnectionException, GetException {
+    public double getXSigmaAvg() throws GetException {
         sigmaxAvgC = lazilyGetAndConnect(SIGMA_X_AVG_HANDLE, sigmaxAvgC);
         return sigmaxAvgC.getValDbl();
     }
 
-    public double getYAlphaTwiss() throws ConnectionException, GetException {
+    public double getYAlphaTwiss() throws GetException {
         alphayTwissC = lazilyGetAndConnect(ALPHA_Y_TWISS_HANDLE, alphayTwissC);
         return alphayTwissC.getValDbl();
     }
 
-    public double getYBetaTwiss() throws ConnectionException, GetException {
+    public double getYBetaTwiss() throws GetException {
         betayTwissC = lazilyGetAndConnect(BETA_Y_TWISS_HANDLE, betayTwissC);
         return betayTwissC.getValDbl();
     }
 
-    public double getXAlphaTwiss() throws ConnectionException, GetException {
+    public double getXAlphaTwiss() throws GetException {
         alphaxTwissC = lazilyGetAndConnect(ALPHA_X_TWISS_HANDLE, alphaxTwissC);
         return alphaxTwissC.getValDbl();
     }
 
-    public double getXBetaTwiss() throws ConnectionException, GetException {
+    public double getXBetaTwiss() throws GetException {
         betaxTwissC = lazilyGetAndConnect(BETA_X_TWISS_HANDLE, betaxTwissC);
         return betaxTwissC.getValDbl();
     }

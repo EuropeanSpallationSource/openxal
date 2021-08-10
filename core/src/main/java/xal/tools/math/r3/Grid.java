@@ -694,7 +694,7 @@ public class Grid implements Serializable {
      *
      * @return array of objects living at grid points
      */
-    protected GridPt[][][] allocatePts(int n1, int n2, int n3) throws GridException {
+    protected GridPt[][][] allocatePts(int n1, int n2, int n3) {
         return new GridPt[n1][n2][n3];
     }
 
@@ -710,7 +710,7 @@ public class Grid implements Serializable {
      *
      * @return array of objects composing grid cells
      */
-    protected GridCell[][][] allocateCells(int n1, int n2, int n3) throws GridException {
+    protected GridCell[][][] allocateCells(int n1, int n2, int n3) {
         return new GridCell[n1][n2][n3];
     }
 }

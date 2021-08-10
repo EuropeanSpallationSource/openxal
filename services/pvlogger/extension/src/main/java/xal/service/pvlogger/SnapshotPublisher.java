@@ -8,7 +8,6 @@
 package xal.service.pvlogger;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -161,17 +160,9 @@ class SnapshotPublisher {
     /**
      * publish machine snapshots to the persistent storage
      */
-    protected void publishSnapshots(final Connection connection, final DatabaseAdaptor databaseAdaptor, final List<MachineSnapshot> machineSnapshots) throws SQLException {
+    protected void publishSnapshots(final Connection connection, final DatabaseAdaptor databaseAdaptor, final List<MachineSnapshot> machineSnapshots) {
         final List<MachineSnapshot> publishedSnapshots = persistentStore.publish(connection, databaseAdaptor, machineSnapshots);
         removeFromBuffer(publishedSnapshots);
-    }
-
-    /**
-     * convert milliseconds to seconds
-     */
-    @SuppressWarnings("unused")
-    private static double toSecondsFromMilliseconds(final long milliseconds) {
-        return ((double) milliseconds) / 1000.0;
     }
 
     /**

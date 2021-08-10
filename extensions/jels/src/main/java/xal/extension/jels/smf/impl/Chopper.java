@@ -19,7 +19,6 @@ package xal.extension.jels.smf.impl;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
@@ -92,17 +91,17 @@ public class Chopper extends AcceleratorNode {
     /*
      *  Process variable Gets
      */
-    public int getStatusOnOff() throws ConnectionException, GetException {
+    public int getStatusOnOff() throws GetException {
         statusRC = lazilyGetAndConnect(STATUS_RB_HANDLE, statusRC);
         return statusRC.getValEnum();
     }
 
-    public double getDelay() throws ConnectionException, GetException {
+    public double getDelay() throws GetException {
         delayRC = lazilyGetAndConnect(DELAY_RB_HANDLE, delayRC);
         return delayRC.getValDbl();
     }
 
-    public double getPulseLength() throws ConnectionException, GetException {
+    public double getPulseLength() throws GetException {
         lengthRC = lazilyGetAndConnect(LENGTH_RB_HANDLE, lengthRC);
         return lengthRC.getValDbl();
     }
@@ -110,17 +109,17 @@ public class Chopper extends AcceleratorNode {
     /*
      *  Process variable Puts
      */
-    public void setStatusOnOff(int intVal) throws ConnectionException, PutException {
+    public void setStatusOnOff(int intVal) throws PutException {
         statusSC = lazilyGetAndConnect(STATUS_SET_HANDLE, statusSC);
         statusSC.putVal(intVal);
     }
 
-    public void setDelay(double dblVal) throws ConnectionException, PutException {
+    public void setDelay(double dblVal) throws PutException {
         delaySC = lazilyGetAndConnect(DELAY_SET_HANDLE, delaySC);
         delaySC.putVal(dblVal);
     }
 
-    public void setPulseLength(double dblVal) throws ConnectionException, PutException {
+    public void setPulseLength(double dblVal) throws PutException {
         lengthSC = lazilyGetAndConnect(LENGTH_SET_HANDLE, lengthSC);
         lengthSC.putVal(dblVal);
     }

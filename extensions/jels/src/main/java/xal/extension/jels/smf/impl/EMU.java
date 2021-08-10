@@ -19,7 +19,6 @@ package xal.extension.jels.smf.impl;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.smf.AcceleratorNode;
 import xal.smf.AccessibleProperty;
@@ -98,32 +97,32 @@ public class EMU extends AcceleratorNode {
     /*
      *  Process variable Gets 
      */
-    public double getXEmittance() throws ConnectionException, GetException {
+    public double getXEmittance() throws GetException {
         emittXC = lazilyGetAndConnect(EMITT_X_HANDLE, emittXC);
         return emittXC.getValDbl();
     }
 
-    public double getYEmittance() throws ConnectionException, GetException {
+    public double getYEmittance() throws GetException {
         emittYC = lazilyGetAndConnect(EMITT_Y_HANDLE, emittYC);
         return emittYC.getValDbl();
     }
 
-    public double getYAlphaTwiss() throws ConnectionException, GetException {
+    public double getYAlphaTwiss() throws GetException {
         alphayTwissC = lazilyGetAndConnect(ALPHA_Y_TWISS_HANDLE, alphayTwissC);
         return alphayTwissC.getValDbl();
     }
 
-    public double getYBetaTwiss() throws ConnectionException, GetException {
+    public double getYBetaTwiss() throws GetException {
         betayTwissC = lazilyGetAndConnect(BETA_Y_TWISS_HANDLE, betayTwissC);
         return betayTwissC.getValDbl();
     }
 
-    public double getXAlphaTwiss() throws ConnectionException, GetException {
+    public double getXAlphaTwiss() throws GetException {
         alphaxTwissC = lazilyGetAndConnect(ALPHA_X_TWISS_HANDLE, alphaxTwissC);
         return alphaxTwissC.getValDbl();
     }
 
-    public double getXBetaTwiss() throws ConnectionException, GetException {
+    public double getXBetaTwiss() throws GetException {
         betaxTwissC = lazilyGetAndConnect(BETA_X_TWISS_HANDLE, betaxTwissC);
         return betaxTwissC.getValDbl();
     }

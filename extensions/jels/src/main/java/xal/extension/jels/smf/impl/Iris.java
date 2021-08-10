@@ -19,7 +19,6 @@ package xal.extension.jels.smf.impl;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
@@ -93,17 +92,17 @@ public class Iris extends AcceleratorNode {
     /*
      *  Process variable Gets 
      */
-    public double getAperture() throws ConnectionException, GetException {
+    public double getAperture() throws GetException {
         apertureRBC = lazilyGetAndConnect(APERTURE_RB_HANDLE, apertureRBC);
         return apertureRBC.getValDbl();
     }
 
-    public double getOffsetX() throws ConnectionException, GetException {
+    public double getOffsetX() throws GetException {
         offsetXRBC = lazilyGetAndConnect(OFFSET_X_RB_HANDLE, offsetXRBC);
         return offsetXRBC.getValDbl();
     }
 
-    public double getOffsetY() throws ConnectionException, GetException {
+    public double getOffsetY() throws GetException {
         offsetYRBC = lazilyGetAndConnect(OFFSET_Y_RB_HANDLE, offsetYRBC);
         return offsetYRBC.getValDbl();
     }
@@ -111,17 +110,17 @@ public class Iris extends AcceleratorNode {
     /*
      *  Process variable Puts 
      */
-    public void setAperture(double dblVal) throws ConnectionException, PutException {
+    public void setAperture(double dblVal) throws PutException {
         apertureSC = lazilyGetAndConnect(APERTURE_SET_HANDLE, apertureSC);
         apertureSC.putVal(dblVal);
     }
 
-    public void setOffsetX(double dblVal) throws ConnectionException, PutException {
+    public void setOffsetX(double dblVal) throws PutException {
         offsetXSC = lazilyGetAndConnect(OFFSET_X_SET_HANDLE, offsetXSC);
         offsetXSC.putVal(dblVal);
     }
 
-    public void setOffsetY(double dblVal) throws ConnectionException, PutException {
+    public void setOffsetY(double dblVal) throws PutException {
         offsetYSC = lazilyGetAndConnect(OFFSET_Y_SET_HANDLE, offsetYSC);
         offsetYSC.putVal(dblVal);
     }

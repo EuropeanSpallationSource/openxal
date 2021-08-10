@@ -101,10 +101,8 @@ public class DiagnosticTracker extends Tracker {
      * @param elem Element acting on probe
      * @param dblLen length of element subsection to advance probe through
      */
-    protected void advanceState(IProbe probe, IElement elem, double dblLen)
-            throws ModelException {
+    protected void advanceState(IProbe probe, IElement elem, double dblLen) {
         LOGGER.log(Level.INFO, "probe visiting: {0}", elem.getId());
         ((DiagnosticProbe) probe).incrementElementsVisited();
     }
-
 }

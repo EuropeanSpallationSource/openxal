@@ -142,7 +142,7 @@ public class Lattice implements Cloneable {
      * @return the combined lattice from left to right.
      *
      */
-    static Lattice concatenate(Lattice left, Lattice right) throws LatticeError {
+    static Lattice concatenate(Lattice left, Lattice right) {
         Lattice part1 = (Lattice) left.clone();
         Lattice part2 = (Lattice) right.clone();
         //shift position base of second part

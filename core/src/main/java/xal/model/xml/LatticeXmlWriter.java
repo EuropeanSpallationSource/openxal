@@ -91,8 +91,7 @@ public class LatticeXmlWriter {
      *
      * @throws IOException error writing to fileURI
      */
-    private XmlDataAdaptor writeLatticeToDoc(Lattice lattice)
-            throws IOException {
+    private XmlDataAdaptor writeLatticeToDoc(Lattice lattice) {
         XmlDataAdaptor document
                 = XmlDataAdaptor.newEmptyDocumentAdaptor(DOC_TYPE, DTD_URI);
         writeLatticeObject(lattice, document);

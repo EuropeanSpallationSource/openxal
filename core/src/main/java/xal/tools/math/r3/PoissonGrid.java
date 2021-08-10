@@ -535,7 +535,7 @@ public class PoissonGrid extends Grid implements Serializable {
      * @exception GridException unable to allocate array
      */
     @Override
-    protected Grid.GridPt[][][] allocatePts(int n1, int n2, int n3) throws GridException {
+    protected Grid.GridPt[][][] allocatePts(int n1, int n2, int n3) {
         return new Point[n1][n2][n3];
     }
 
@@ -552,7 +552,7 @@ public class PoissonGrid extends Grid implements Serializable {
      * @exception GridException unable to allocate array
      */
     @Override
-    protected Grid.GridCell[][][] allocateCells(int n1, int n2, int n3) throws GridException {
+    protected Grid.GridCell[][][] allocateCells(int n1, int n2, int n3) {
         return new Cell[n1][n2][n3];
     }
 

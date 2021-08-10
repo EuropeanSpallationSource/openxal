@@ -36,8 +36,8 @@ public class Info {
         if (infoLocation != null) {
             try {
                 final StringBuilder buffer = new StringBuilder();
-                try (InputStream infoStream = infoLocation.openStream()) {
-                    final BufferedReader infoReader = new BufferedReader(new InputStreamReader(infoStream));
+                try (InputStream infoStream = infoLocation.openStream();
+                        BufferedReader infoReader = new BufferedReader(new InputStreamReader(infoStream))) {
                     while (true) {
                         final String nextLine = infoReader.readLine();
                         if (nextLine != null) {
