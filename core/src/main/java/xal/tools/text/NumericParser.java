@@ -5,9 +5,6 @@
  */
 package xal.tools.text;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * NumericParser parses a string value into an instance of a specified Number
  * subclass. It also maintains a static directory of the numeric parsers. It is
@@ -19,21 +16,22 @@ import java.util.Map;
  */
 public abstract class NumericParser {
 
-    /**
-     * map of parsers keyed by numeric class
-     */
-    protected static final Map<Class<? extends Number>, NumericParser> PARSER_CLASS_MAP;
-
-    // static initializer
-    static {
-        // create a table of parsers
-        PARSER_CLASS_MAP = new HashMap<>();
-        PARSER_CLASS_MAP.put(Double.class, new DoubleParser());
-        PARSER_CLASS_MAP.put(Integer.class, new IntegerParser());
-        PARSER_CLASS_MAP.put(Short.class, new ShortParser());
-        PARSER_CLASS_MAP.put(Long.class, new LongParser());
-        PARSER_CLASS_MAP.put(Float.class, new FloatParser());
-        PARSER_CLASS_MAP.put(Byte.class, new ByteParser());
+    private static NumericParser getParser(Class<? extends Number> numericType) {
+        if (numericType == Double.class) {
+            return new DoubleParser();
+        } else if (numericType == Integer.class) {
+            return new IntegerParser();
+        } else if (numericType == Short.class) {
+            return new ShortParser();
+        } else if (numericType == Long.class) {
+            return new LongParser();
+        } else if (numericType == Float.class) {
+            return new FloatParser();
+        } else if (numericType == Byte.class) {
+            return new ByteParser();
+        } else {
+            throw new IllegalArgumentException("Unsupported numeric type: " + numericType.getName());
+        }
     }
 
     /**
@@ -48,12 +46,8 @@ public abstract class NumericParser {
      * is unsupported
      */
     public static Number getNumericValue(final String stringValue, final Class<? extends Number> numericType) throws NumberFormatException, IllegalArgumentException {
-        final NumericParser parser = PARSER_CLASS_MAP.get(numericType);
-        try {
-            return parser.getNumericValue(stringValue);
-        } catch (NullPointerException exception) {
-            throw new IllegalArgumentException("Unsupported numeric type: " + numericType.getName());
-        }
+        final NumericParser parser = getParser(numericType);
+        return parser.getNumericValue(stringValue);
     }
 
     /**

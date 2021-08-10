@@ -418,7 +418,7 @@ public class ThickDipole extends ThickElectromagnet {
 
         // Compute the transfer matrix components
         double[][] arrB = {
-            {Math.cos(kx * dL), Math.sin(kx * dL) / kx},
+            {Math.cos(kx * dL), kx != 0 ? Math.sin(kx * dL) / kx : dL},
             {-Math.sin(kx * dL) * kx, Math.cos(kx * dL)},};
 
         // Build the diople body tranfer matrix

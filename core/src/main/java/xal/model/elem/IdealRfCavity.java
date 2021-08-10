@@ -429,42 +429,40 @@ public class IdealRfCavity extends ElementSeq implements IRfCavity {
             IComponent cmp = iterCmps.next();
 
             // If the child component is not a cavity cell skip it
-            if (!(cmp instanceof IRfCavityCell)) {
-                continue;
-            }
+            if (cmp instanceof IRfCavityCell) {
+                IRfCavityCell mdlCavCell = (IRfCavityCell) cmp;
 
-            IRfCavityCell mdlCavCell = (IRfCavityCell) cmp;
-
-            if (lastNodeId != null && lastNodeId.equals(cmp.getHardwareNodeId())) {
-                continue;
-            } else {
-                lastNodeId = cmp.getHardwareNodeId();
-            }
-
-            // SET THE CELL INDEX
-            mdlCavCell.setCavityCellIndex(indCell);
-
-            //
-            // Compute next index
-            //
-            // We are at either end of a bank of cavity cells
-            // We've hit the last cell in a cell bank
-            if (mdlCavCell.isEndCell()) {
-                if (bolInCellBank) {
-
-                    // the cell banks remain in phase
-                    indCell += 2;
-                    bolInCellBank = false;
-
-                    // We've hit the first cell in a cell bank
+                if (lastNodeId != null && lastNodeId.equals(cmp.getHardwareNodeId())) {
+                    continue;
                 } else {
-
-                    indCell++;
-                    bolInCellBank = true;
+                    lastNodeId = cmp.getHardwareNodeId();
                 }
-                // We are in the middle of a cell bank
-            } else {
-                indCell++;
+
+                // SET THE CELL INDEX
+                mdlCavCell.setCavityCellIndex(indCell);
+
+                //
+                // Compute next index
+                //
+                // We are at either end of a bank of cavity cells
+                // We've hit the last cell in a cell bank
+                if (mdlCavCell.isEndCell()) {
+                    if (bolInCellBank) {
+
+                        // the cell banks remain in phase
+                        indCell += 2;
+                        bolInCellBank = false;
+
+                        // We've hit the first cell in a cell bank
+                    } else {
+
+                        indCell++;
+                        bolInCellBank = true;
+                    }
+                    // We are in the middle of a cell bank
+                } else {
+                    indCell++;
+                }
             }
         }
     }

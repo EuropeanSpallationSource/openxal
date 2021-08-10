@@ -360,7 +360,7 @@ public class RfCavity extends AcceleratorSeq {
             totalLength += gapLength;
         }
 
-        return phaseSum / totalLength;
+        return totalLength != 0 ? phaseSum / totalLength : 0;
     }
 
     /**

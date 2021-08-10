@@ -45,13 +45,17 @@ public abstract class ResourceManager {
     /**
      * default resource manager
      */
-    private static final ResourceManager DEFAULT_MANAGER;
+    private static ResourceManager defaultManager;
 
     /**
      * static initializer
      */
-    static {
-        DEFAULT_MANAGER = useFileResourceManager() ? getFileResourceManager() : getJarredResourceManager();
+    private static ResourceManager getDefaultManager() {
+        if (defaultManager == null) {
+            defaultManager = useFileResourceManager() ? getFileResourceManager() : getJarredResourceManager();
+        }
+        return defaultManager;
+
     }
 
     /**
@@ -138,7 +142,7 @@ public abstract class ResourceManager {
      * @return URL to the resource
      */
     public static URL getResourceURL(final String subdomain, final Class<?> rootClass, final String resourcePath) {
-        return DEFAULT_MANAGER.fetchResourceURL(subdomain, rootClass, resourcePath);
+        return getDefaultManager().fetchResourceURL(subdomain, rootClass, resourcePath);
     }
 
     /**

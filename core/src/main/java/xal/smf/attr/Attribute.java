@@ -294,7 +294,7 @@ public final class Attribute extends Object implements Serializable {
      *  Local Attributes
      */
     private int intTypeId = UNKNOWN;
-    private Object objValue = null;
+    private transient Object objValue = null;
 
     /*
      *  Local Support Functions

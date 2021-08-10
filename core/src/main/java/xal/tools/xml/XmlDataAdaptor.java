@@ -15,6 +15,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 import xal.tools.ExceptionWrapper;
 
 import xal.tools.ResourceManager;
@@ -648,9 +649,9 @@ public class XmlDataAdaptor implements FileDataAdaptor {
             Document document = builder.parse(new ByteArrayInputStream(source.getBytes()));
 
             return new XmlDataAdaptor(document);
-        } catch (java.io.FileNotFoundException exception) {
+        } catch (FileNotFoundException exception) {
             throw new ResourceNotFoundException(exception);
-        } catch (Exception exception) {
+        } catch (IOException | SAXException | ParserConfigurationException exception) {
             throw new ParseException(exception);
         }
     }
@@ -658,7 +659,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     /**
      * Create a new document builder with the given DTD validation
      */
-    protected static DocumentBuilder newDocumentBuilder(final boolean isValidating) throws Exception {
+    protected static DocumentBuilder newDocumentBuilder(final boolean isValidating) throws SAXException, ParserConfigurationException {
         return newDocumentBuilder(isValidating, null);
     }
 
@@ -666,7 +667,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
      * Create a new document builder with the given DTD validation, and
      * schemaUrl
      */
-    protected static DocumentBuilder newDocumentBuilder(final boolean isValidating, final URL schemaURL) throws Exception {
+    protected static DocumentBuilder newDocumentBuilder(final boolean isValidating, final URL schemaURL) throws SAXException, ParserConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setValidating(isValidating);
 
@@ -686,7 +687,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     /*
      * Exception to wrap any exceptions thrown by adaptorForUrl()
      */
-    public static class ParseException extends xal.tools.ExceptionWrapper {
+    public static class ParseException extends ExceptionWrapper {
 
         /**
          * serialization ID
@@ -701,7 +702,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
     /*
      * Exception when the source of the URL does not exist
      */
-    public static class ResourceNotFoundException extends xal.tools.ExceptionWrapper {
+    public static class ResourceNotFoundException extends ExceptionWrapper {
 
         /**
          * serialization ID

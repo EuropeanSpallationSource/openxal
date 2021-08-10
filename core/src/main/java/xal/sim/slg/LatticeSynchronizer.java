@@ -25,7 +25,6 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 
 import org.w3c.dom.Document;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 
 /**

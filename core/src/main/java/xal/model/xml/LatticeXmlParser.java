@@ -11,8 +11,6 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import xal.tools.data.*;
 import xal.tools.xml.*;
@@ -28,8 +26,6 @@ import xal.model.elem.*;
  * @author Christopher Allen
  */
 public class LatticeXmlParser {
-
-    private static final Logger LOGGER = Logger.getLogger(LatticeXmlParser.class.getName());
 
     /*
      *  Global Attributes
@@ -373,7 +369,7 @@ public class LatticeXmlParser {
 
                             objParam = ctorParam.newInstance(arrCtorArg);
                         }
-                        setter.invoke(elem, new Object[]{objParam});
+                        setter.invoke(elem, objParam);
                     }
                 }
 

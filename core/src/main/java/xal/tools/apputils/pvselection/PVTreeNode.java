@@ -3,7 +3,6 @@ package xal.tools.apputils.pvselection;
 import javax.swing.tree.*;
 import java.awt.event.*;
 import java.awt.*;
-import java.util.Enumeration;
 
 import xal.ca.*;
 

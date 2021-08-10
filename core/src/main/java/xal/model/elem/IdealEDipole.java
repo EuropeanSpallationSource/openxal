@@ -448,7 +448,7 @@ public class IdealEDipole extends ThickElectrostatic {
         double gi2 = gi * gi;
         double bi2gi2 = bi2 * gi2;
 
-        // Compute the bending constant h == 1 / bend radius (1/meter);
+        // Compute the bending constant h == 1 / bend radius (1/meter)
         // if h and hProbe have opposite signs, the bend is defined for
         // the wrong charge sign (this can happen at injection, due to
         // stripping) ... the following redefines the bend parameters for
@@ -573,7 +573,7 @@ public class IdealEDipole extends ThickElectrostatic {
         matExit.setElem(1, 0, h * Math.tan(exAng));
         matExit.setElem(3, 2, -h * Math.tan(exAng - exitAnglePhi));
 
-        // Multiply the 3 matrices together, starting at entrance side;
+        // Multiply the 3 matrices together, starting at entrance side
         // deal with "split bend disease" here
         PhaseMatrix matProd1;
         PhaseMatrix matProd2;

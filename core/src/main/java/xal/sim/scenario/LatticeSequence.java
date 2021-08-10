@@ -14,6 +14,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import xal.model.IComponent;
@@ -747,9 +748,9 @@ public class LatticeSequence extends LatticeElement implements Iterable<LatticeE
             }
         }
         if (dblBeginSeqChild < -EPS || dblEndSeqChild > getLength() + EPS) {
-            System.err.printf("Error: Elements do not fit sequence %s (element positions: [%f,%f], sequence position [0,%f])!\n",
+            String msg = String.format("Error: Elements do not fit sequence %s (element positions: [%f,%f], sequence position [0,%f])!\n",
                     getHardwareNode().getId(), dblBeginSeqChild, dblEndSeqChild, getLength());
-
+            LOGGER.log(Level.WARNING, msg);
             // Now lets try to fix this. If we fail, some thick element will cover another.
             // Translate all the non-artificial element along the sequence axis
             for (LatticeElement lem : this) {

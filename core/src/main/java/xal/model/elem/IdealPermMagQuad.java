@@ -688,11 +688,11 @@ public class IdealPermMagQuad extends ThickElectromagnet {
         double f1 = 0.5 * (1 - 0.125 * z1 * (1 / r1 + 1 / r2) * vtemp);
 
         double w1 = 0;
-        if (r1 != 0) {
+        if (r1 != 0.0) {
             w1 = 1 / Math.sqrt(1 + (z2 / r1) * (z2 / r1));
         }
         double w2 = 0;
-        if (r2 != 0) {
+        if (r2 != 0.0) {
             w2 = 1 / Math.sqrt(1 + (z2 / r2) * (z2 / r2));
         }
 
@@ -725,5 +725,4 @@ public class IdealPermMagQuad extends ThickElectromagnet {
         os.println("  magnetic field     : " + this.getMagField());
         os.println("  magnet orientation : " + this.getOrientation());
     }
-
 }

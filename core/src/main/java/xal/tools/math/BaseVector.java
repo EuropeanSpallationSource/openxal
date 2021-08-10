@@ -762,7 +762,8 @@ public abstract class BaseVector<V extends BaseVector<V>> implements IArchive, j
      * Print the vector contents to standard output.
      */
     public void print() {
-        LOGGER.info(toString());
+        String msg = toString();
+        LOGGER.info(msg);
     }
 
     /**

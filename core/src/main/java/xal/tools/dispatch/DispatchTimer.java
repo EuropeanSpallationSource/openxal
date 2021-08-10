@@ -437,12 +437,12 @@ public class DispatchTimer {
                             if (milliTimeout > 0) {
                                 // wait the remaining millisecond timeout
                                 scheduleQueue.wait(milliTimeout, 0);
-                            } else if (milliTimeout == 0 && nanoTimeout > 0) {
-                                // wait the remaining nano interval
-                                scheduleQueue.wait(0, nanoTimeout);
-                                // assume the nano timeout was successful as we have no way to verify otherwise
-                                break;
                             } else {
+                                if (milliTimeout == 0 && nanoTimeout > 0) {
+                                    // wait the remaining nano interval
+                                    scheduleQueue.wait(0, nanoTimeout);
+                                    // assume the nano timeout was successful as we have no way to verify otherwise
+                                }
                                 break;
                             }
                         }

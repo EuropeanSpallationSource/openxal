@@ -142,12 +142,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
 
             // Create the comparator for ordering the tree map nodes according to node IDs
             //  Then create the map itself
-            this.cmpKeyOrder = new Comparator<String>() {
-                @Override
-                public int compare(String strId1, String strId2) {
-                    return strId1.compareTo(strId2);
-                }
-            };
+            this.cmpKeyOrder = (strId1, strId2) -> strId1.compareTo(strId2);
 
             this.mapNodeToStates = new TreeMap<>(cmpKeyOrder);
 
@@ -674,37 +669,22 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
      * @see #subTrajectoryInclusive(String, String)
      */
     public Trajectory<S> subTrajectory(String strSmfNodeId1, String strSmfNodeId2) {
-        boolean bolStart1 = false;
-
         // The returned sub-trajectory
         Trajectory<S> trjSub = new Trajectory<>(this.clsStates);
 
         // For every state in this trajectory...
         for (S state : this) {
-
             String strStateId = state.getHardwareNodeId();
 
-            // Look for the first state, set the "start state found" flag if so
+            // Look for the first state
             if (strStateId.equals(strSmfNodeId1)) {
-                bolStart1 = true;
-            }
+                // Check for the stop state.  
+                if (strStateId.equals(strSmfNodeId2)) {
+                    break;
+                }
 
-            // We have not encountered the first state, skip to loop beginning
-            if (!bolStart1) {
-                continue;
+                trjSub.addState(state);
             }
-
-            // Check for the stop state. 
-            //   If found, set the "stop state found" flag and save the current
-            //   state to the sub trajectory (if the sub-trajectory contains states
-            //   all the way through the last hardware node).
-            // If no longer at stop state we pass through and the
-            //   "stop state found" flag is left at true.   
-            if (strStateId.equals(strSmfNodeId2)) {
-                break;
-            }
-
-            trjSub.saveState(state);
         }
 
         return trjSub;
@@ -738,55 +718,21 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
      * @see #subTrajectory(String, String)
      */
     public Trajectory<S> subTrajectoryInclusive(String strSmfNodeId1, String strSmfNodeId2) {
-        boolean bolStart1 = false;
-        boolean bolStop2 = false;
-
         // The returned sub-trajectory
         Trajectory<S> trjSub = new Trajectory<>(this.clsStates);
 
         // For every state in this trajectory...
         for (S state : this) {
-
             String strStateId = state.getHardwareNodeId();
 
-            // Look for the first state, set the "start state found" flag if so
+            // Look for the first state
             if (strStateId.equals(strSmfNodeId1)) {
-                bolStart1 = true;
-            }
-
-            // We have not encountered the first state, skip to loop beginning
-            if (!bolStart1) {
-                continue;
-            }
-
-            // Check for the stop state. 
-            //   If found, set the "stop state found" flag and save the current
-            //   state to the sub trajectory (if the subtrajectory contains states
-            //   all the way through the last hardware node).
-            // If no longer at stop state we pass through and the
-            //   "stop state found" flag is left at true.   
-            if (strStateId.equals(strSmfNodeId2)) {
-                bolStop2 = true;
-
                 trjSub.addState(state);
-                continue;
-            }
 
-            // If we have made it this far we have
-            //     bolStart1 = true
-            //   and bolStop2 depends upon whether or not the above
-            //   if conditional set it.  If not, than we have not hit
-            //   the last element yet.
-            if (!bolStop2) {
-                trjSub.addState(state);
-            }
-
-            // We have 
-            //     bolStart1 = true
-            // We have started and stopped.  All the states of the
-            //     subtrajectory have been collected and we are done.
-            if (bolStop2) {
-                break;
+                // Check for the stop state.  
+                if (strStateId.equals(strSmfNodeId2)) {
+                    break;
+                }
             }
         }
 

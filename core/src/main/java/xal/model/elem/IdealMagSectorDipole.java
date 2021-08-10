@@ -484,7 +484,7 @@ public class IdealMagSectorDipole extends ThickElectromagnet {
         double ky = Math.sqrt(Math.abs(nQ)) * h;
 
         // Compute the transfer matrix components
-        double[][] arrB = {{Math.cos(kx * dL), Math.sin(kx * dL) / kx}, {-Math.sin(kx * dL) * kx, Math.cos(kx * dL)}};
+        double[][] arrB = {{Math.cos(kx * dL), kx == 0 ? dL : Math.sin(kx * dL) / kx}, {-Math.sin(kx * dL) * kx, Math.cos(kx * dL)}};
 
         // Build the diople body tranfer matrix
         PhaseMatrix matBody = PhaseMatrix.identity();

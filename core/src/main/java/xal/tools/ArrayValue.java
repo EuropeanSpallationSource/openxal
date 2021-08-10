@@ -24,7 +24,7 @@ public abstract class ArrayValue extends Number {
     /**
      * the array of data
      */
-    protected Object array;
+    protected transient Object array;
 
     /**
      * Empty constructor

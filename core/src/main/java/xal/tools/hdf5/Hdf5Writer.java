@@ -75,7 +75,7 @@ public class Hdf5Writer {
     /**
      * Writes a DataAdaptor to an HDF5 file defined by an URL.
      */
-    static void writeToUrl(H5Node document, URL url) throws IOException {
+    static void writeToUrl(H5Node document, URL url) {
         try {
             final File file = new File(url.toURI());
             writeToFile(document, file);
@@ -87,7 +87,7 @@ public class Hdf5Writer {
     /**
      * Writes a DataAdaptor to an HDF5 file specified by a File object.
      */
-    static void writeToFile(H5Node document, final File file) throws IOException {
+    static void writeToFile(H5Node document, final File file) {
         Hdf5Writer hdf5Writer = new Hdf5Writer(document, file);
         try {
             hdf5Writer.write();

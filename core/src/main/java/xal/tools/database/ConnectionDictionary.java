@@ -9,7 +9,6 @@
  */
 package xal.tools.database;
 
-import java.util.logging.*;
 import java.util.Properties;
 
 /**
@@ -26,8 +25,6 @@ public class ConnectionDictionary extends Properties {
      * serialization ID
      */
     private static final long serialVersionUID = 1L;
-
-    private static final Logger LOGGER = Logger.getLogger(ConnectionDictionary.class.getName());
 
     // public dictionary keys
     public static final String USER_KEY = "user";

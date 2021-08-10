@@ -298,11 +298,10 @@ public class Lattice implements Cloneable {
         //search for markers that embrace the element
         int after = markers[jx - 1];
         for (int m = 0; m < jx; m++) {
-            if (getItem(markers[m]).getPosition() <= element.getPosition()) {
-                continue;
+            if (getItem(markers[m]).getPosition() > element.getPosition()) {
+                after = markers[m];
+                break;
             }
-            after = markers[m];
-            break;
         }
         //slice the element between the two markers
         int between = after - 1;

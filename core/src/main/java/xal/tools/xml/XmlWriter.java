@@ -58,7 +58,7 @@ public class XmlWriter {
     /**
      * write the XML document to the URL
      */
-    public static void writeToUrl(final Document document, final URL url) throws MalformedURLException, IOException {
+    public static void writeToUrl(final Document document, final URL url) throws IOException {
         try {
             final File file = new File(url.toURI());
             writeToFile(document, file);
@@ -70,7 +70,7 @@ public class XmlWriter {
     /**
      * write the XML document to the URL spec
      */
-    public static void writeToUrlSpec(Document newDocument, String urlSpec) throws MalformedURLException, IOException {
+    public static void writeToUrlSpec(Document newDocument, String urlSpec) throws IOException {
         URL url = new URL(urlSpec);
         writeToUrl(newDocument, url);
     }
