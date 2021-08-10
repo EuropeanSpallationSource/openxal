@@ -750,8 +750,7 @@ public class XmlDataAdaptor implements FileDataAdaptor {
         XmlDataAdaptor adaptor;
 
         try {
-            DocumentBuilderFactory factory
-                    = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
             DocumentBuilder builder = factory.newDocumentBuilder();
             DOMImplementation implementation = builder.getDOMImplementation();

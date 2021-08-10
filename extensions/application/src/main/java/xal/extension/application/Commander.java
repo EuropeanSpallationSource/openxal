@@ -561,7 +561,7 @@ public class Commander {
         try {
             return menuHandlerKey != null ? (MenuListener) commands.get(menuHandlerKey) : null;
         } catch (ClassCastException exception) {
-            LOGGER.log(Level.SEVERE, "Excepting casting menu handler item to MenuListener for key: {}", menuHandlerKey);
+            LOGGER.log(Level.SEVERE, "Excepting casting menu handler item to MenuListener for key: {}", new Object[]{menuHandlerKey, exception});
             return null;
         }
     }

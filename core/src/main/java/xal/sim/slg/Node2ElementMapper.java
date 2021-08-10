@@ -55,7 +55,7 @@ public class Node2ElementMapper implements Visitor {
             Element element = node2ElementMap.get(node);
             return element.getName();
         } catch (NullPointerException e) {
-            throw new LatticeError(nodeId + ": not a lattice element!");
+            throw new LatticeError(nodeId + ": not a lattice element!", e);
         }
     }
 

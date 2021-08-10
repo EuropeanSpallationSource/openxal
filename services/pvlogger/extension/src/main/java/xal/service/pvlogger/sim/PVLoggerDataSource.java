@@ -457,6 +457,7 @@ public class PVLoggerDataSource {
                 final double field = getLoggedField(magnet);
                 scenario.setModelInput(magnet, ElectromagnetPropertyAccessor.PROPERTY_FIELD, field);
             } catch (PvLoggerException e) {
+                LOGGER.log(Level.INFO, null, e);
                 // Ignore
             }
         }

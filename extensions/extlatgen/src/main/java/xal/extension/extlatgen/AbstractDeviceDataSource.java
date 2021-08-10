@@ -126,6 +126,8 @@ abstract class MeasurementDataSource extends AbstractDeviceDataSource {
  */
 class PVLoggerSnapshotDeviceDataSource extends MeasurementDataSource {
 
+    private static final Logger LOGGER = Logger.getLogger(PVLoggerSnapshotDeviceDataSource.class.getName());
+    
     /**
      * PVLogger Data Source
      */
@@ -157,6 +159,7 @@ class PVLoggerSnapshotDeviceDataSource extends MeasurementDataSource {
         try {
             return loggerDataSource.getLoggedField((Electromagnet) magnet);
         } catch (PvLoggerException e) {
+            LOGGER.log(Level.SEVERE, null, e);
             // TODO: Meaningful handle for this case, currently 
             // this is handled as it was before the exception throwing
             return 0.0;

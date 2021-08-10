@@ -157,9 +157,9 @@ public class WireDataFileParser {
 
             dumpData();
         } catch (FileNotFoundException e) {
-            LOGGER.log(Level.INFO, "Cannot find file: {0}", file.getPath());
+            LOGGER.log(Level.INFO, "Cannot find file: {0}", new Object[]{file.getPath(), e});
         } catch (IOException e) {
-            LOGGER.log(Level.INFO, "File reading error: {0}", file.getPath());
+            LOGGER.log(Level.INFO, "File reading error: {0}", new Object[]{file.getPath(), e});
         }
 
         // return an ArrayList with <WireData> in it

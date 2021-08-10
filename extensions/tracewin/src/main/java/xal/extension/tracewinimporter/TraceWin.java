@@ -297,7 +297,7 @@ public class TraceWin {
                 throw new IOException();
             }
         } catch (IOException e1) {
-            LOGGER.log(Level.SEVERE, "Error while trying to read input.");
+            LOGGER.log(Level.SEVERE, "Error while trying to read input.", e1);
             System.exit(1);
         }
 
@@ -375,6 +375,7 @@ public class TraceWin {
                 throw new IOException();
             }
         } catch (IOException | NumberFormatException e1) {
+            LOGGER.log(Level.WARNING, null, e1);
             importLogger.log("Error while trying to read input.");
             for (StackTraceElement st : e1.getStackTrace()) {
                 importLogger.log(st.toString());
@@ -411,6 +412,7 @@ public class TraceWin {
             try {
                 ImporterHelpers.addInitialParameters(accelerator, bunchFrequency, beamCurrent, kineticEnergy, initialCentroid, initialTwiss);
             } catch (Exception ex) {
+                LOGGER.log(Level.WARNING, null, ex);
                 importLogger.log("Problem with input parameters. Output probably corrupted (*-model.params).");
             }
 

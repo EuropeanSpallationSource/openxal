@@ -7,6 +7,8 @@ package xal.tools.reflect;
 
 import java.lang.reflect.*;
 import java.util.Arrays;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 /**
  * Selector is a convenience class that makes much of the Method class easier to
@@ -24,6 +26,8 @@ import java.util.Arrays;
  */
 public class Selector {
 
+    private static final Logger LOGGER = Logger.getLogger(Selector.class.getName());
+
     /**
      * name of the method
      */
@@ -38,7 +42,7 @@ public class Selector {
      * Constructor for a method that takes multiple arguments
      */
     // cannot mix generics with arrays
-    @SuppressWarnings("rawtypes")        
+    @SuppressWarnings("rawtypes")
     public Selector(final String methodName, final Class<?>... argumentTypes) {
         this.methodName = methodName;
         int argumentCount = argumentTypes.length;
@@ -64,7 +68,8 @@ public class Selector {
         try {
             methodForObject(target);
             return true;
-        } catch (Exception excpt) {
+        } catch (SecurityException | MethodNotFoundException excpt) {
+            LOGGER.log(Level.WARNING, null, excpt);
             return false;
         }
     }
@@ -76,7 +81,8 @@ public class Selector {
         try {
             Method method = methodForClass(targetClass);
             return Modifier.isStatic(method.getModifiers());
-        } catch (Exception excpt) {
+        } catch (SecurityException | MethodNotFoundException excpt) {
+            LOGGER.log(Level.WARNING, null, excpt);
             return false;
         }
     }
@@ -219,7 +225,7 @@ public class Selector {
         } catch (NoSuchMethodException except) {
             String message = "Method: \"" + methodName + "\" with parameters: "
                     + Arrays.asList(argumentTypes) + " not found for class: " + targetClass + ".";
-            throw new MethodNotFoundException(message);
+            throw new MethodNotFoundException(message, except);
         }
 
         return method;
@@ -243,8 +249,8 @@ public class Selector {
          */
         private static final long serialVersionUID = 1L;
 
-        public MethodNotFoundException(String message) {
-            super(message);
+        public MethodNotFoundException(String message, Throwable cause) {
+            super(message, cause);
         }
     }
 

@@ -76,7 +76,7 @@ public class EssRbacLogin implements RBACLogin {
             LOGGER.log(Level.SEVERE, null, e);
             throw new AccessDeniedException("Unable to authenticate.");
         } catch (AccessDeniedException e) {
-            throw new RBACException("Error while trying to authenticate.");
+            throw new RBACException("Error while trying to authenticate.", e);
         }
     }
 }

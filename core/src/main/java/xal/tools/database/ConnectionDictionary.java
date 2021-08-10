@@ -9,6 +9,7 @@
  */
 package xal.tools.database;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Properties;
 
 /**
@@ -176,8 +177,8 @@ public class ConnectionDictionary extends Properties {
         }
         try {
             final Class<?> databaseAdaptorClass = Class.forName(className);
-            return (DatabaseAdaptor) databaseAdaptorClass.newInstance();
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException exception) {
+            return (DatabaseAdaptor) databaseAdaptorClass.getDeclaredConstructor().newInstance();
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException exception) {
             final String message = "Failed to instantiate database adaptor for class:  " + className;
             throw new RuntimeException(message, exception);
         }

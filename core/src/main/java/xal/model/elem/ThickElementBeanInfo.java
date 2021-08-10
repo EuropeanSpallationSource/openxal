@@ -32,7 +32,7 @@ public class ThickElementBeanInfo extends SimpleBeanInfo {
             return new PropertyDescriptor[]{length};
 
         } catch (IntrospectionException e) {
-            throw new Error(e.toString());
+            throw new RuntimeException(e);
         }
     }
 }

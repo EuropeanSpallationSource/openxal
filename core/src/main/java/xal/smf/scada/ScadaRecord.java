@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -214,6 +215,7 @@ public abstract class ScadaRecord implements DataListener, Cloneable {
                 bufStr.append(strFldNm).append(" = ").append(strFldVal).append("\n");
 
             } catch (SecurityException | NoSuchFieldException | IllegalArgumentException | IllegalAccessException e) {
+                LOGGER.log(Level.WARNING, null, e);
                 bufStr.append(strFldNm).append(" = ERROR\n");
             }
 
@@ -697,13 +699,13 @@ public abstract class ScadaRecord implements DataListener, Cloneable {
                 throw new BadStructException(strMsg);
             }
         } catch (SecurityException e) {
-            throw new BadStructException("ScadaRecord#getPv(): Security Exception: inaccessible field " + strFldName);
+            throw new BadStructException("ScadaRecord#getPv(): Security Exception: inaccessible field " + strFldName, e);
         } catch (NoSuchFieldException e) {
-            throw new BadStructException("ScadaRecord#getPv(): ERROR: No such field " + strFldName);
+            throw new BadStructException("ScadaRecord#getPv(): ERROR: No such field " + strFldName, e);
         } catch (IllegalArgumentException e) {
-            throw new BadStructException("ScadaRecord#getPv(): Illegal type conversion for field " + strFldName);
+            throw new BadStructException("ScadaRecord#getPv(): Illegal type conversion for field " + strFldName, e);
         } catch (IllegalAccessException e) {
-            throw new BadStructException("ScadaRecord#getPv(): Illegal access attempt for field " + strFldName);
+            throw new BadStructException("ScadaRecord#getPv(): Illegal access attempt for field " + strFldName, e);
         }
     }
 }

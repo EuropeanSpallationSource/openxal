@@ -168,7 +168,7 @@ public class WindowReference {
                 }
                 view = (Component) viewProxy.getBeanInstance(viewClass, viewConstructor, viewParameters);
             } catch (RuntimeException exception) {
-                throw new RuntimeException("Can't instantiate class:  " + viewClass.toString());
+                throw new RuntimeException("Can't instantiate class:  " + viewClass.toString(), exception);
             }
         } else {
             view = (Component) viewProxy.getBeanInstance(viewClass);
@@ -214,6 +214,7 @@ public class WindowReference {
             constructor.setAccessible(true);
             return constructor;
         } catch (NoSuchMethodException | SecurityException exception) {
+            LOGGER.log(Level.WARNING, null, exception);
             final Constructor[] constructors = theClass.getConstructors();
             for (final Constructor constructor : constructors) {
                 if (constructorCanOperateOn(constructor, parameters)) {
@@ -313,6 +314,7 @@ public class WindowReference {
             }
             return descriptorTable;
         } catch (IntrospectionException exception) {
+            LOGGER.log(Level.WARNING, null, exception);
             return null;
         }
     }

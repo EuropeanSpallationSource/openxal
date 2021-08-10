@@ -111,7 +111,7 @@ public final class AcceleratorNodeFactory {
         try {
             return (AcceleratorNode) constructor.newInstance(args);
         } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | InvocationTargetException exception) {
-            throw new ClassNotFoundException("Unknown AcceleratorNode type : " + nodeType);
+            throw new ClassNotFoundException("Unknown AcceleratorNode type : " + nodeType, exception);
         }
     }
 

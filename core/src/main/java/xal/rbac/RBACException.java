@@ -20,4 +20,12 @@ public class RBACException extends Exception {
     public RBACException(String message) {
         super(message);
     }
+
+    public RBACException(Throwable cause) {
+        super(cause);
+    }
+
+    public RBACException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

@@ -29,6 +29,8 @@ import java.util.logging.Logger;
  */
 class ClientHandler<T> implements InvocationHandler {
 
+    private static final Logger LOGGER = Logger.getLogger(ClientHandler.class.getName());
+
     /**
      * protocol implemented by the remote service and dispatched through the
      * proxy
@@ -90,7 +92,7 @@ class ClientHandler<T> implements InvocationHandler {
 
         messageProcessors = new ConcurrentLinkedQueue<>();
 
-        requestIDCounter =  new AtomicInteger(0);
+        requestIDCounter = new AtomicInteger(0);
     }
 
     /**
@@ -233,6 +235,7 @@ class ClientHandler<T> implements InvocationHandler {
             serviceProtocol.getMethod(method.getName(), method.getParameterTypes());
             return performRemoteServiceCall(method, args);
         } catch (NoSuchMethodException exception) {
+            LOGGER.log(Level.INFO, null, exception);
             return performServiceStateCall(method, args);
         }
     }
@@ -495,6 +498,7 @@ class SerialRemoteMessageProcessor {
                 }
             }
         } catch (WebSocketIO.SocketPrematurelyClosedException exception) {
+            LOGGER.log(Level.SEVERE, null, exception);
             cleanupClosedSocket(pendingResult, new RemoteServiceDroppedException("The remote socket has closed while reading the remote response..."));
         }
     }
@@ -525,9 +529,6 @@ class SerialRemoteMessageProcessor {
                 try {
                     processRemoteResponse(pendingResult);
                     return pendingResult;
-                } catch (SocketException exception) {
-                    // no need to flood output when we expect socket exceptions when remote services drop
-                    return pendingResult;
                 } catch (IOException exception) {
                     LOGGER.log(Level.SEVERE, null, exception);
                     return pendingResult;
@@ -541,6 +542,7 @@ class SerialRemoteMessageProcessor {
                 return null;
             }
         } catch (SocketException exception) {
+            LOGGER.log(Level.SEVERE, null, exception);
             if (!remoteSocket.isClosed()) {
                 try {
                     remoteSocket.close();

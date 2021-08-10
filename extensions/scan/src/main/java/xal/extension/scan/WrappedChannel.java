@@ -3,6 +3,8 @@ package xal.extension.scan;
 import xal.ca.*;
 
 import java.awt.event.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The wrapper around ca channel class. This wrapper can be used as container
@@ -16,6 +18,8 @@ import java.awt.event.*;
  * @author tap created September 18, 2006
  */
 public class WrappedChannel extends MonitoredPV {
+
+    private static final Logger LOGGER = Logger.getLogger(WrappedChannel.class.getName());
 
     /**
      * Constructor for the WrappedChannel object
@@ -47,6 +51,7 @@ public class WrappedChannel extends MonitoredPV {
                 channel.putVal(value);
                 latestEventSuccessful = true;
             } catch (PutException exception) {
+                LOGGER.log(Level.WARNING, null, exception);
                 latestEventSuccessful = false;
                 final ActionEvent stateChangedAction = makeEvent(null, channel);
                 stateEventDispatch.actionPerformed(stateChangedAction);

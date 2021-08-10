@@ -828,6 +828,7 @@ public final class AnalysisCntrlTDProcedure extends AnalysisController {
                 lineIn = in.readLine();
             }
         } catch (IOException exception) {
+            LOGGER.log(Level.SEVERE, null, exception);
             Toolkit.getDefaultToolkit().beep();
             messageTextLocal.setText(null);
             messageTextLocal.setText("Fatal error. Can not read file ="

@@ -9,11 +9,15 @@ package xal.tools.data;
 
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Provides methods to set and get an object's values for its named properties
  */
 public class KeyValueAdaptor {
+
+    private static final Logger LOGGER = Logger.getLogger(KeyValueAdaptor.class.getName());
 
     /**
      * table of keyed getters
@@ -52,6 +56,7 @@ public class KeyValueAdaptor {
             final KeyedAccessing accessor = accessorForKey(target, key);
             return accessor != null ? accessor.valueForTarget(target) : valueForInvalidAccessor(target, key);
         } catch (InvalidKeyException exception) {
+            LOGGER.log(Level.INFO, null, exception);
             return valueForInvalidAccessor(target, key);
         }
     }
@@ -105,6 +110,7 @@ public class KeyValueAdaptor {
                 setValueForInvalidSetter(target, key, value);
             }
         } catch (InvalidKeyException exception) {
+            LOGGER.log(Level.INFO, null, exception);
             setValueForInvalidSetter(target, key, value);
         }
     }
@@ -404,6 +410,7 @@ interface KeyedSetting {
  */
 class KeyedMethodAccessor implements KeyedAccessing {
 
+    private static final Logger LOGGER = Logger.getLogger(KeyedMethodAccessor.class.getName());
     /**
      * method for accessing a keyed value
      */
@@ -465,8 +472,10 @@ class KeyedMethodAccessor implements KeyedAccessing {
         try {
             return targetClass.getMethod(key);
         } catch (NoSuchMethodException exception) {
+            LOGGER.log(Level.INFO, null, exception);
             return getterForKey(targetClass, key);
         } catch (SecurityException exception) {
+            LOGGER.log(Level.INFO, null, exception);
             return null;
         }
     }
@@ -484,6 +493,7 @@ class KeyedMethodAccessor implements KeyedAccessing {
             final String methodName = toGetMethodName(key);
             return targetClass.getMethod(methodName);
         } catch (NoSuchMethodException | SecurityException exception) {
+            LOGGER.log(Level.INFO, null, exception);
             return null;
         }
     }
@@ -503,6 +513,8 @@ class KeyedMethodAccessor implements KeyedAccessing {
  * Keyed access using methods
  */
 class KeyedMethodSetter implements KeyedSetting {
+
+    private static final Logger LOGGER = Logger.getLogger(KeyedMethodSetter.class.getName());
 
     /**
      * method for setting a keyed value
@@ -565,6 +577,7 @@ class KeyedMethodSetter implements KeyedSetting {
         try {
             return targetClass.getMethod(methodName, argumentClass);
         } catch (NoSuchMethodException exception) {
+            LOGGER.log(Level.INFO, null, exception);
             try {
                 // test to see if the argument is a primitive type
                 if (argumentClass.isAssignableFrom(Boolean.class)) {
@@ -585,9 +598,11 @@ class KeyedMethodSetter implements KeyedSetting {
                     return targetClass.getMethod(methodName, Object.class);
                 }
             } catch (NoSuchMethodException | SecurityException subException) {
+                LOGGER.log(Level.INFO, null, subException);
                 return null;
             }
         } catch (SecurityException exception) {
+            LOGGER.log(Level.INFO, null, exception);
             return null;
         }
     }

@@ -191,7 +191,7 @@ public class Electrostatic extends AcceleratorNode {
         try {
             return bucMagnet.getPolarity();
         } catch (Exception e) {
-            LOGGER.log(Level.INFO, " Polarity not set on {0}, for stability sake, using + field", this.getId());
+            LOGGER.log(Level.INFO, e, () -> " Polarity not set on " + getId() + ", for stability sake, using + field");
             return 1;
         }
     }

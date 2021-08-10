@@ -210,6 +210,7 @@ public class T3dGenerator {
                                     + nf.format(((xal.smf.impl.Solenoid) element.getAcceleratorNode()).getLength() * 1000.)
                                     + ",\n";
                         } catch (GetException e) {
+                            LOGGER.log(Level.WARNING, null, e);
                             devStr = devTypeInd + ", A(1, " + counter + ")="
                                     + "0., " + nf.format(element.getLength() * 1000.) + ",\n";
                         }

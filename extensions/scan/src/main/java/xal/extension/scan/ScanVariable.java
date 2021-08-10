@@ -106,6 +106,7 @@ public class ScanVariable {
             try {
                 ch.putVal(val);
             } catch (PutException e) {
+                LOGGER.log(Level.WARNING, null, e);
                 stopScanWithMessage("Cannot put value to the channel: " + chanName);
             }
         }

@@ -107,6 +107,7 @@ public abstract class AcceleratorDocument extends XalDocument {
                 setAcceleratorWithPath(filePath);
                 return getAccelerator();
             } catch (OpticsVersionException exception) {
+                LOGGER.log(Level.WARNING, null, exception);
                 return requestAndSetAccelerator(exception.getMessage() + " \nPlease select a substitute accelerator.");
             }
         } else {

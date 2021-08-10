@@ -131,7 +131,7 @@ public class Lattice implements Cloneable {
             return cloned;
         } catch (CloneNotSupportedException e) {
             //cannot happen -- we support clone
-            throw new InternalError(e.toString());
+            throw new InternalError(e);
         }
     }
 

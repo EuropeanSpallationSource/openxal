@@ -217,8 +217,7 @@ public class TransferMatrixGenerator {
             setSynchronizationMode(enmSyn);
 
         } catch (InstantiationException e) {
-
-            throw new ModelException("Unable to instantiate tracker algorithm: " + e.getMessage());
+            throw new ModelException("Unable to instantiate tracker algorithm: ", e);
         }
 
         // Obviate uninitialized objects

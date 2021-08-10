@@ -381,7 +381,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
             return trjNew;
 
         } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InstantiationException | NoSuchMethodException | SecurityException | InvocationTargetException | DataFormatException e) {
-            throw new DataFormatException(e.getMessage());
+            throw new DataFormatException("", e);
         }
     }
 
@@ -917,8 +917,9 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
      */
     public S stateWithIndex(int i) {
         try {
-            return this.rniStateHistory.get(i);
+            return rniStateHistory.get(i);
         } catch (IndexOutOfBoundsException e) {
+            LOGGER.log(Level.WARNING, null, e);
             return null;
         }
     }
@@ -992,7 +993,7 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
         try {
             readStatesFrom(daptTraj);
         } catch (DataFormatException e) {
-            throw new DataFormatException("Exception loading from adaptor: " + e.getMessage());
+            throw new DataFormatException("Exception loading from adaptor: ", e);
 
         }
     }
@@ -1045,13 +1046,13 @@ public class Trajectory<S extends ProbeState<S>> implements IArchive, Iterable<S
                 String strStateType = childNode.stringValue(ProbeState.TYPE_LABEL);
 
                 Class<?> clsProbeState = Class.forName(strStateType);
-                S probeState = (S) clsProbeState.newInstance();
+                S probeState = (S) clsProbeState.getDeclaredConstructor().newInstance();
                 probeState.load(childNode);
 
                 addState(probeState);
 
-            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | DataFormatException e) {
-                throw new DataFormatException(e.getMessage());
+            } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | DataFormatException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException e) {
+                throw new DataFormatException("", e);
             }
 
         }

@@ -38,7 +38,7 @@ public abstract class BeanProxy<T> implements DataListener {
             final Object[] parameters = getConstructorParameters();
             return getBeanInstance(theClass, constructor, parameters);
         } catch (NoSuchMethodException | SecurityException exception) {
-            throw new RuntimeException("Can't instantiate class:  " + theClass.toString());
+            throw new RuntimeException("Can't instantiate class:  " + theClass.toString(), exception);
         }
     }
 

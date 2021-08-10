@@ -102,7 +102,7 @@ public class SingleSignOnServerManager {
         try {
             copySsoJar();
         } catch (IOException ex) {
-            throw new XalException("Failed to copy SSO server jar.");
+            throw new XalException("Failed to copy SSO server jar.", ex);
         }
 
         final String[] commandLine = new String[]{
@@ -115,7 +115,7 @@ public class SingleSignOnServerManager {
         try {
             Runtime.getRuntime().exec(commandLine);
         } catch (IOException ex) {
-            throw new XalException("Failed to execute the start SSO server.");
+            throw new XalException("Failed to execute the start SSO server.", ex);
         }
     }
 

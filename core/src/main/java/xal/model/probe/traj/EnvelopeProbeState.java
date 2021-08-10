@@ -511,10 +511,10 @@ public class EnvelopeProbeState extends BunchProbeState<EnvelopeProbeState> {
             }
 
         } catch (DataFormatException e) {
-            throw new DataFormatException("The source data was corrupted - " + e.getMessage());
+            throw new DataFormatException("The source data was corrupted - ", e);
 
         } catch (IllegalArgumentException e) {
-            throw new DataFormatException("The provided covariance matrix was asymmetric - " + e.getMessage());
+            throw new DataFormatException("The provided covariance matrix was asymmetric - ", e);
 
         }
     }

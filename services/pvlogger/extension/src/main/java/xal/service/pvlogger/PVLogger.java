@@ -494,6 +494,7 @@ public class PVLogger {
         try {
             return !connection.isClosed();
         } catch (SQLException exception) {
+            LOGGER.log(Level.INFO, null, exception);
             return false;
         }
     }

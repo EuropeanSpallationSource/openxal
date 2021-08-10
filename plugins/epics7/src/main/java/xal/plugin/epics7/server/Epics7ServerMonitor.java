@@ -84,7 +84,7 @@ public class Epics7ServerMonitor extends Epics7Monitor implements MonitorRequest
         try {
             monitor = new Epics7ServerMonitor(listener, intMaskEvent);
         } catch (ConnectionException ex) {
-            throw new MonitorException("Connection Exception thrown");
+            throw new MonitorException("Connection Exception thrown", ex);
         }
 
         monitor.createRequest(pvRecord, memoryProcessVariable, request);

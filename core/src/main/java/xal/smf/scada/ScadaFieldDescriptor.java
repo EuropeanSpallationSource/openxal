@@ -5,6 +5,8 @@ package xal.smf.scada;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -24,6 +26,8 @@ import java.util.List;
  * @author Christopher K. Allen
  */
 public class ScadaFieldDescriptor extends XalPvDescriptor {
+
+    private static final Logger LOGGER = Logger.getLogger(ScadaFieldDescriptor.class.getName());
 
     /*
      * Global Methods
@@ -116,6 +120,7 @@ public class ScadaFieldDescriptor extends XalPvDescriptor {
         try {
             fldTgt = clsScada.getField(strFldName);
         } catch (SecurityException | NoSuchFieldException e) {
+            LOGGER.log(Level.WARNING, null, e);
             return null;
         }
 

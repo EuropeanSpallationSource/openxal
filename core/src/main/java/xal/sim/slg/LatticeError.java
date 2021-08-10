@@ -36,6 +36,16 @@ public class LatticeError extends Exception {
         message = MESSAGE_HEADER + ": " + msg;
     }
 
+    public LatticeError(Throwable cause) {
+        super(cause);
+        message = cause.getMessage();
+    }
+
+    public LatticeError(String msg, Throwable cause) {
+        super(msg, cause);
+        message = msg;
+    }
+
     @Override
     public String toString() {
         return message;

@@ -498,6 +498,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
         try {
             channels = getAndConnectChannelSetAndReadback(setHandle);
         } catch (NoSuchChannelException ex) {
+            LOGGER.log(Level.INFO, null, ex);
             return false;
         }
 

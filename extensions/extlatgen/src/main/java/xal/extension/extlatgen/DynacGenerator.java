@@ -69,7 +69,7 @@ public class DynacGenerator {
         try {
             myScenario = Scenario.newScenarioFor(myAccSeq);
         } catch (ModelException e) {
-            LOGGER.log(Level.INFO, "Cannot create Scenario for {0}", myAccSeq.getId());
+            LOGGER.log(Level.INFO, "Cannot create Scenario for {0}", new Object[]{myAccSeq.getId(), e});
         }
     }
 

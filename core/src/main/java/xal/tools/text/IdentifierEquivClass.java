@@ -7,6 +7,8 @@
 package xal.tools.text;
 
 import java.util.NoSuchElementException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -33,6 +35,8 @@ import java.util.NoSuchElementException;
  *
  */
 public class IdentifierEquivClass implements Comparable<IdentifierEquivClass> {
+
+    private static final Logger LOGGER = Logger.getLogger(IdentifierEquivClass.class.getName());
 
     /*
      * Local Attributes
@@ -89,6 +93,7 @@ public class IdentifierEquivClass implements Comparable<IdentifierEquivClass> {
 
             // The argument is not comparable, therefore, not in the equivalence class
         } catch (NoSuchElementException e) {
+            LOGGER.log(Level.INFO, null, e);
             return false;
 
         }

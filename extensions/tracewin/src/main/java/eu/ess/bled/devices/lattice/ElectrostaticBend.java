@@ -1,5 +1,8 @@
 package eu.ess.bled.devices.lattice;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * <code>ElectrostaticBend</code> represents an electrostatic bend element.
  *
@@ -8,6 +11,8 @@ package eu.ess.bled.devices.lattice;
  */
 // TODO Check persistence annotations
 public class ElectrostaticBend extends BeamlineElement {
+
+    private static final Logger LOGGER = Logger.getLogger(ElectrostaticBend.class.getName());
 
     private static final long serialVersionUID = -8428134678904715521L;
 
@@ -45,6 +50,7 @@ public class ElectrostaticBend extends BeamlineElement {
             try {
                 return values()[val - 1];
             } catch (IndexOutOfBoundsException e) {
+                LOGGER.log(Level.SEVERE, null, e);
                 return null;
             }
         }

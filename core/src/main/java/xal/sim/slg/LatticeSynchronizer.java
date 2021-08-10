@@ -577,9 +577,9 @@ public class LatticeSynchronizer implements Visitor {
                 return rfgap.getGapPhaseAvg() * Math.PI / 180.;
             } catch (GetException e) {
                 if (e.getMessage() != null) {
-                    LOGGER.log(Level.INFO, e.getMessage());
+                    LOGGER.log(Level.INFO, null, e);
                 } else {
-                    LOGGER.log(Level.INFO, "RfGap.getGapPhaseAvg(): channel access failed: {0}", rfgap.getId());
+                    LOGGER.log(Level.INFO, "RfGap.getGapPhaseAvg(): channel access failed: {0}", new Object[]{rfgap.getId(), e});
                 }
                 // 90 degrees
                 return Math.PI * 0.5;
@@ -604,9 +604,9 @@ public class LatticeSynchronizer implements Visitor {
                 return rfgap.getGapE0TL() * 1.e6;
             } catch (GetException e) {
                 if (e.getMessage() != null) {
-                    LOGGER.log(Level.INFO, e.getMessage());
+                    LOGGER.log(Level.INFO, null, e);
                 } else {
-                    LOGGER.log(Level.INFO, "RfGap.getGapE0TL(): channel access failed: {0}", rfgap.getId());
+                    LOGGER.log(Level.INFO, "RfGap.getGapE0TL(): channel access failed: {0}", new Object[]{rfgap.getId(), e});
                 }
                 return rfgap.getGapDfltE0TL() * 1.e6;
             }
@@ -635,9 +635,9 @@ public class LatticeSynchronizer implements Visitor {
                 }
             } catch (GetException e) {
                 if (e.getMessage() != null) {
-                    LOGGER.log(Level.INFO, e.getMessage());
+                    LOGGER.log(Level.INFO, null, e);
                 } else {
-                    LOGGER.log(Level.INFO, "Electromagnet.getField(): channel access failed: " + magnet.getId());
+                    LOGGER.log(Level.INFO, "Electromagnet.getField(): channel access failed: " + magnet.getId(), e);
                 }
                 return 0.d;
             }

@@ -10,6 +10,8 @@
 package xal.extension.application;
 
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * ApplicationStatusService handles application status queries on behalf of the
@@ -19,6 +21,8 @@ import java.util.Date;
  * @author tap
  */
 public class ApplicationStatusService implements ApplicationStatus {
+
+    private static final Logger LOGGER = Logger.getLogger(ApplicationStatusService.class.getName());
 
     /**
      * Get the free memory available to the application instance.
@@ -86,6 +90,7 @@ public class ApplicationStatusService implements ApplicationStatus {
         try {
             return java.net.InetAddress.getLocalHost().getHostName();
         } catch (java.net.UnknownHostException exception) {
+            LOGGER.log(Level.WARNING, null, exception);
             return "";
         }
     }

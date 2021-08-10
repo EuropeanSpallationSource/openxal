@@ -29,4 +29,8 @@ public class NoSuchTransformException extends RuntimeException {
     public NoSuchTransformException(String type) {
         super("No generator for a transform of type, " + type + ", could be found.");
     }
+
+    public NoSuchTransformException(String type, Throwable cause) {
+        super("No generator for a transform of type, " + type + ", could be found.", cause);
+    }
 }

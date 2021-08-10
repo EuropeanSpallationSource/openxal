@@ -25,6 +25,7 @@ import java.util.logging.Logger;
  * @author tap
  */
 public class PathPreferenceSelector extends JDialog implements ScrollPaneConstants {
+    private static final Logger LOGGER = Logger.getLogger(PathPreferenceSelector.class.getName());
 
     /**
      * serialization ID
@@ -232,6 +233,7 @@ public class PathPreferenceSelector extends JDialog implements ScrollPaneConstan
             updateView();
             userSavedChanges = true;
         } catch (Exception exception) {
+            LOGGER.log(Level.WARNING, null, exception);
             Toolkit.getDefaultToolkit().beep();
         }
     }

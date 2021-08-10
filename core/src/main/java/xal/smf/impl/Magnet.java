@@ -195,7 +195,7 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
         try {
             return bucMagnet.getPolarity();
         } catch (Exception e) {
-            LOGGER.log(Level.INFO, " Polarity not set on {0}, for stability sake, using + field", this.getId());
+            LOGGER.log(Level.INFO, " Polarity not set on {0}, for stability sake, using + field", new Object[]{this.getId(), e});
             return 1;
         }
     }

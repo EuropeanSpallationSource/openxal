@@ -54,7 +54,7 @@ public class Epics7Monitor extends xal.ca.Monitor implements MonitorRequester {
         try {
             monitor = new Epics7Monitor(channel, listener, intMaskEvent);
         } catch (ConnectionException ex) {
-            throw new MonitorException("Connection Exception thrown");
+            throw new MonitorException("Connection Exception thrown", ex);
         }
 
         monitor.createRequest(channel, request);

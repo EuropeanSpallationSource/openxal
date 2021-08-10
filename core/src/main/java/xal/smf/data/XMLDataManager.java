@@ -1257,7 +1257,7 @@ public class XMLDataManager {
                     final String softType = deviceAdaptor.hasAttribute(SOFT_TYPE_KEY) ? deviceAdaptor.stringValue(SOFT_TYPE_KEY) : null;
                     final String deviceClassName = deviceAdaptor.stringValue("class");
                     // cast to AcceleratorNode class
-                    @SuppressWarnings("unchecked")    
+                    @SuppressWarnings("unchecked")
                     final Class<AcceleratorNode> deviceClass = (Class<AcceleratorNode>) Class.forName(deviceClassName);
                     nodeFactory.registerNodeClass(deviceType, softType, deviceClass);
                 } catch (ClassNotFoundException exception) {
@@ -1416,11 +1416,11 @@ public class XMLDataManager {
                 urlSpec = absoluteUrlSpecForTableGroup(tableGroup);
                 XmlTableIO.readTableGroupFromUrl(editContext, tableGroup, urlSpec, isValidating);
             } catch (ResourceNotFoundException excpt) {
-                LOGGER.log(Level.WARNING, "The group: \"{0}\" could not be loaded due to a missing resource: {1}", new Object[]{tableGroup, urlSpec});
+                LOGGER.log(Level.WARNING, "The group: \"{0}\" could not be loaded due to a missing resource: {1}", new Object[]{tableGroup, urlSpec, excpt});
             } catch (ParseException excpt) {
-                LOGGER.log(Level.WARNING, "The group: \"{0}\" could not be loaded due to parse exception: {1}", new Object[]{tableGroup, excpt.getMessage()});
+                LOGGER.log(Level.WARNING, "The group: \"{0}\" could not be loaded due to parse exception: ", new Object[]{tableGroup, excpt});
             } catch (MissingUrlForGroup excpt) {
-                LOGGER.log(Level.WARNING, "The group: \"{0}\" could not be loaded due to exception: {1}", new Object[]{tableGroup, excpt.getMessage()});
+                LOGGER.log(Level.WARNING, "The group: \"{0}\" could not be loaded due to exception: ", new Object[]{tableGroup, excpt});
             }
         }
 
@@ -1442,7 +1442,7 @@ public class XMLDataManager {
                 String urlSpec = absoluteUrlSpecForTableGroup(group);
                 XmlTableIO.writeTableGroupToUrl(editContext, group, urlSpec);
             } catch (MissingUrlForGroup excpt) {
-                LOGGER.log(Level.WARNING, "Due to unspecified URL, will skip writing group: {0}", group);
+                LOGGER.log(Level.WARNING, "Due to unspecified URL, will skip writing group: {0}", new Object[]{group, excpt});
             }
         }
     }

@@ -30,6 +30,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
@@ -41,6 +43,8 @@ import javax.swing.border.LineBorder;
  * @version $id$
  */
 public abstract class Digit extends SimpleButton {
+
+    private static final Logger LOGGER = Logger.getLogger(Digit.class.getName());
 
     private static final long serialVersionUID = 1L;
 
@@ -187,6 +191,7 @@ public abstract class Digit extends SimpleButton {
             try {
                 animationTimer.schedule(new AnimationTask(), 0, 10);
             } catch (IllegalStateException e) {
+                LOGGER.log(Level.SEVERE, null, e);
                 animationTimer = new Timer();
                 animationTimer.schedule(new AnimationTask(), 0, 10);
             }
@@ -408,5 +413,3 @@ public abstract class Digit extends SimpleButton {
         }
     }
 }
-
-/* __oOo__ */

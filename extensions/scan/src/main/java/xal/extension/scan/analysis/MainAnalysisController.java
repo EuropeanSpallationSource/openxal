@@ -598,7 +598,7 @@ public class MainAnalysisController {
                         out.flush();
                     } catch (IOException exp) {
                         Toolkit.getDefaultToolkit().beep();
-                        LOGGER.log(Level.INFO, exp.toString());
+                        LOGGER.log(Level.INFO, null, exp);
                     }
                 }
                 messageTextLocal.setText(null);
@@ -658,7 +658,7 @@ public class MainAnalysisController {
                             out.flush();
                         } catch (IOException exp) {
                             Toolkit.getDefaultToolkit().beep();
-                            LOGGER.log(Level.INFO, exp.toString());
+                            LOGGER.log(Level.INFO, null, exp);
                         }
                     }
                     messageTextLocal.setText(null);

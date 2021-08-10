@@ -12,6 +12,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.regex.PatternSyntaxException;
 
 /**
@@ -24,6 +26,8 @@ import java.util.regex.PatternSyntaxException;
  * @author Christopher K. Allen
  */
 public class TransientDataAdaptor implements DataAdaptor {
+
+    private static final Logger LOGGER = Logger.getLogger(TransientDataAdaptor.class.getName());
 
     /*
      *  Local Attributes
@@ -234,6 +238,7 @@ public class TransientDataAdaptor implements DataAdaptor {
             return arrVals;
 
         } catch (PatternSyntaxException | java.lang.NumberFormatException e) {
+            LOGGER.log(Level.WARNING, null, e);
             throw new NumberFormatException(strErrMsg);
 
         }

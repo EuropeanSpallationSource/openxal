@@ -25,4 +25,15 @@ public class ParsingException extends XalException {
         super(msg);
     }
 
+    /**
+     * Create a new <code>ParsingException</code> object which is spawned (in
+     * principle) by the given exception object.
+     *
+     * @param excSrc originating cause for the exception
+     *
+     */
+    public ParsingException(Throwable excSrc) {
+        super(excSrc);
+    }
+
 }

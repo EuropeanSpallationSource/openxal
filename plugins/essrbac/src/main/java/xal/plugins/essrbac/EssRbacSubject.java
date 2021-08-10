@@ -43,7 +43,7 @@ public class EssRbacSubject implements RBACSubject {
             SecurityFacade.getDefaultInstance().logout();
             this.token = null;
         } catch (SecurityFacadeException e) {
-            throw new RBACException(e.getMessage());
+            throw new RBACException(e);
         }
 
     }
@@ -54,9 +54,9 @@ public class EssRbacSubject implements RBACSubject {
         try {
             return SecurityFacade.getDefaultInstance().hasPermission(resource, permission);
         } catch (se.esss.ics.rbac.access.AccessDeniedException e) {
-            throw new AccessDeniedException(e.getMessage());
+            throw new AccessDeniedException(e);
         } catch (SecurityFacadeException e) {
-            throw new RBACException(e.getMessage());
+            throw new RBACException(e);
         }
     }
 
@@ -66,9 +66,9 @@ public class EssRbacSubject implements RBACSubject {
         try {
             return SecurityFacade.getDefaultInstance().hasPermissions(resource, permissions);
         } catch (se.esss.ics.rbac.access.AccessDeniedException e) {
-            throw new AccessDeniedException(e.getMessage());
+            throw new AccessDeniedException(e);
         } catch (SecurityFacadeException e) {
-            throw new RBACException(e.getMessage());
+            throw new RBACException(e);
         }
     }
 
@@ -79,9 +79,9 @@ public class EssRbacSubject implements RBACSubject {
             return new EssExclusiveAccess(SecurityFacade.getDefaultInstance().requestExclusiveAccess(resource,
                     permission, durationInMinutes));
         } catch (se.esss.ics.rbac.access.AccessDeniedException e) {
-            throw new AccessDeniedException(e.getMessage());
+            throw new AccessDeniedException(e);
         } catch (SecurityFacadeException e) {
-            throw new RBACException(e.getMessage());
+            throw new RBACException(e);
         }
     }
 

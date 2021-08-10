@@ -110,9 +110,9 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
         Probe<?> probe;
         try {
             Class<?> probeClass = Class.forName(type);
-            probe = (Probe<?>) probeClass.newInstance();
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-            throw new DataFormatException(e.getMessage());
+            probe = (Probe<?>) probeClass.getDeclaredConstructor().newInstance();
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException e) {
+            throw new DataFormatException("", e);
         }
         probe.load(daptProbe);
         return probe;
@@ -439,7 +439,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      * @return time stamp
      */
     // editors should not access this property
-    @NoEdit    
+    @NoEdit
     public Date getTimestamp() {
         return dateStamp;
     }
@@ -487,7 +487,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      * @return Trajectory object of the proper sub-type for the probe type
      */
     // editors should not access this property
-    @NoEdit 
+    @NoEdit
     @Override
     public Trajectory<S> getTrajectory() {
         return trajHist;
@@ -717,7 +717,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      * @author jdg
      */
     // editors should not edit this property
-    @NoEdit    
+    @NoEdit
     @Override
     public void setTime(double dblTime) {
         this.stateCurrent.setTime(dblTime);
@@ -860,7 +860,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
      * @see xal.tools.data.IArchive
      */
     // hide this property so it doesn't appear in editors
-    @NoEdit 
+    @NoEdit
     @Override
     public IArchive getArchive() {
         return this;
@@ -937,7 +937,7 @@ public abstract class Probe<S extends ProbeState<S>> implements IProbe, IArchive
         try {
             state = readStateFrom(daptState);
         } catch (DataFormatException e) {
-            throw new DataFormatException("Probe#load() - exception parsing state element");
+            throw new DataFormatException("Probe#load() - exception parsing state element", e);
         }
         this.applyState(state);
     }

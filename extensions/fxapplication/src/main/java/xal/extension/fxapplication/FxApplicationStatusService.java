@@ -31,7 +31,11 @@
  */
 package xal.extension.fxapplication;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.extension.application.ApplicationStatus;
 
 /**
@@ -42,6 +46,8 @@ import xal.extension.application.ApplicationStatus;
  * @author tap, Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 public class FxApplicationStatusService implements ApplicationStatus {
+
+    private static final Logger LOGGER = Logger.getLogger(FxApplicationStatusService.class.getName());
 
     private FxApplication application = null;
 
@@ -113,8 +119,9 @@ public class FxApplicationStatusService implements ApplicationStatus {
     @Override
     public String getHostName() {
         try {
-            return java.net.InetAddress.getLocalHost().getHostName();
-        } catch (java.net.UnknownHostException exception) {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException exception) {
+            LOGGER.log(Level.SEVERE, null, exception);
             return "";
         }
     }

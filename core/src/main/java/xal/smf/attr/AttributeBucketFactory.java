@@ -95,7 +95,7 @@ public final class AttributeBucketFactory {
         try {
             buck = (AttributeBucket) ctor.newInstance(arrArgs);
         } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | InvocationTargetException e) {
-            throw new ClassNotFoundException("Unknown AttributeBucket type : " + strType);
+            throw new ClassNotFoundException("Unknown AttributeBucket type : " + strType, e);
         }
 
         // Return new node

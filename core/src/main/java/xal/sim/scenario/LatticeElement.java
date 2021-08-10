@@ -5,6 +5,9 @@
  */
 package xal.sim.scenario;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.model.IComponent;
 import xal.model.IComposite;
 import xal.model.ModelException;
@@ -485,11 +488,11 @@ public class LatticeElement implements Comparable<LatticeElement> {
     public IComponent createModelingElement() throws ModelException {
         if (component == null) {
             try {
-                component = clsModElemType.newInstance();
+                component = clsModElemType.getDeclaredConstructor().newInstance();
                 component.initializeFrom(this);
 
                 return component;
-            } catch (InstantiationException | IllegalAccessException e) {
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException e) {
                 throw new ModelException("Exception while instantiating class " + clsModElemType.getName() + " for node " + smfNode.getId(), e);
             }
         }

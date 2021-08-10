@@ -206,7 +206,7 @@ public abstract class ChannelFactory {
             }
             return channelFactory;
         } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException exception) {
-            throw new RuntimeException("Failed to load the ChannelFactoryPlugin: " + exception.getMessage());
+            throw new RuntimeException("Failed to load the ChannelFactoryPlugin.", exception);
         }
     }
 
@@ -226,7 +226,7 @@ public abstract class ChannelFactory {
             }
             return channelFactory;
         } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException exception) {
-            throw new RuntimeException("Failed to load the ChannelFactoryPlugin: " + exception.getMessage());
+            throw new RuntimeException("Failed to load the ChannelFactoryPlugin.", exception);
         }
     }
 

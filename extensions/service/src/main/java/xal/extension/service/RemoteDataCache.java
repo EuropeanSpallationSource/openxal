@@ -133,6 +133,7 @@ public class RemoteDataCache<T> {
                 final T result = remoteOperation.call();
                 cachedData = new RemoteData<>(result);
             } catch (RemoteServiceDroppedException exception) {
+                LOGGER.log(Level.WARNING, null, exception);
                 cachedData = null;
                 isConnected = false;
             } catch (Exception exception) {

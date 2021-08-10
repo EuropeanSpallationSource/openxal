@@ -16,6 +16,7 @@ import xal.tools.StringJoiner;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+
 import java.util.regex.*;
 import javax.swing.table.AbstractTableModel;
 
@@ -482,12 +483,8 @@ public class KeyValueTableModel<T> extends AbstractTableModel {
          */
         @Override
         public boolean isCellEditable(final R aRecord) {
-            try {
-                final Object value = keyValueAdaptor.valueForKeyPath(aRecord, editKeypath);
-                return value instanceof Boolean ? negation ^ ((boolean) value) : false;
-            } catch (Exception exception) {
-                return false;
-            }
+            final Object value = keyValueAdaptor.valueForKeyPath(aRecord, editKeypath);
+            return value instanceof Boolean ? negation ^ ((boolean) value) : false;
         }
     }
 }

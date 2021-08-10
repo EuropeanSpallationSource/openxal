@@ -8,11 +8,15 @@
 package xal.extension.bricks;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * manage the property value editor relationship to classes to render
  */
 public class PropertyValueEditorManager {
+
+    private static final Logger LOGGER = Logger.getLogger(PropertyValueEditorManager.class.getName());
 
     protected final Map<String, PropertyValueEditor<?>> editorTable;
 
@@ -84,6 +88,7 @@ public class PropertyValueEditorManager {
         try {
             return getEditor(Class.forName(className));
         } catch (ClassNotFoundException exception) {
+            LOGGER.log(Level.WARNING, null, exception);
             return null;
         }
     }

@@ -5,6 +5,9 @@
  */
 package xal.tools.statistics;
 
+import java.util.logging.Logger;
+import java.util.logging.Level;
+
 /**
  * UnivariateStatistics calculates statistics of a series of measurements.
  * UnivariateStatistics is immutable. Use MutableUnivariateStatistics if you
@@ -14,6 +17,8 @@ package xal.tools.statistics;
  * @author tap
  */
 public class UnivariateStatistics {
+
+    private static final Logger LOGGER = Logger.getLogger(UnivariateStatistics.class.getName());
 
     /**
      * the number of samples
@@ -130,7 +135,8 @@ public class UnivariateStatistics {
         try {
             final double scale = ((double) population) / (population - 1);
             sampleVariance = scale * variance();
-        } catch (ArithmeticException excption) {
+        } catch (ArithmeticException exception) {
+            LOGGER.log(Level.WARNING, null, exception);
             sampleVariance = Double.POSITIVE_INFINITY;
         }
 

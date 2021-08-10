@@ -414,7 +414,7 @@ public class MadGenerator {
             lattice.clearMarkers();
             lattice.joinDrifts();
         } catch (LatticeError lerr) {
-            LOGGER.log(Level.INFO, lerr.getMessage());
+            LOGGER.log(Level.INFO, null, lerr);
         }
 
         return lattice;

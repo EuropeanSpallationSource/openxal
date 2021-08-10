@@ -11,6 +11,8 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.data.*;
 import xal.tools.xml.*;
@@ -26,6 +28,8 @@ import xal.model.elem.*;
  * @author Christopher Allen
  */
 public class LatticeXmlParser {
+
+    private static final Logger LOGGER = Logger.getLogger(LatticeXmlParser.class.getName());
 
     /*
      *  Global Attributes
@@ -139,9 +143,8 @@ public class LatticeXmlParser {
 
         try {
             this.loadComposite(latUrl, daptLat);
-
         } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException e) {
-            throw new ParsingException(e.getMessage());
+            throw new ParsingException(e);
         }
 
         return latUrl;
@@ -238,14 +241,14 @@ public class LatticeXmlParser {
             elemNew = (IElement) ctorElem.newInstance((Object[]) null);
 
         } catch (IllegalArgumentException e) {
+            LOGGER.log(Level.WARNING, null, e);
             throw new InstantiationException("No default element contructor.");
-
         } catch (IllegalAccessException e) {
+            LOGGER.log(Level.WARNING, null, e);
             throw new InstantiationException("Unable to access element constructor");
-
         } catch (InvocationTargetException e) {
+            LOGGER.log(Level.WARNING, null, e);
             throw new InstantiationException("Unable to instantiate element.");
-
         }
 
         // Set the optional element attributes
@@ -374,17 +377,16 @@ public class LatticeXmlParser {
                 }
 
             } catch (NumberFormatException e) {
+                LOGGER.log(Level.WARNING, null, e);
                 throw new NumberFormatException("LatticeParser#loadParameters() - bad parameter number format"
                         + strName + " for element " + elem.getId()
                 );
             } catch (NoSuchMethodException e) {
+                LOGGER.log(Level.WARNING, null, e);
                 throw new NoSuchMethodException("LatticeParser#loadParameters() - unknown parameter "
-                        + strName + " for element " + elem.getId()
-                );
+                        + strName + " for element " + elem.getId());
             } catch (IntrospectionException | ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InstantiationException | SecurityException | InvocationTargetException e) {
-                throw new DataFormatException("LatticeParser#loadParameters() - unable to set parameter "
-                        + strName + " for element " + elem.getId()
-                );
+                throw new DataFormatException("LatticeParser#loadParameters() - unable to set parameter " + strName + " for element " + elem.getId(), e);
             }
         }
     }

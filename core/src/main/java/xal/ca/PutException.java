@@ -31,4 +31,8 @@ public class PutException extends ChannelException {
     public PutException(String msg) {
         super(msg);
     }
+
+    public PutException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

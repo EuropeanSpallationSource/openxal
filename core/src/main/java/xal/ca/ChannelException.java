@@ -11,7 +11,7 @@ package xal.ca;
  * @author CKAllen
  * @author tapsns
  */
-public class ChannelException extends java.lang.Exception {
+public class ChannelException extends Exception {
 
     /**
      * required for serializable objects
@@ -32,5 +32,9 @@ public class ChannelException extends java.lang.Exception {
      */
     public ChannelException(final String message) {
         super(message);
+    }
+
+    public ChannelException(final String message, Throwable cause) {
+        super(message, cause);
     }
 }

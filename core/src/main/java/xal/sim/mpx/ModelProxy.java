@@ -154,7 +154,7 @@ public class ModelProxy {
             // notify the new results
             notifyListeners(ModelProxyListener.RESULTS_CHANGED);
         } catch (LatticeError e) {
-            throw new ModelException(e.getMessage());
+            throw new ModelException("", e);
         }
     }
 
@@ -287,7 +287,7 @@ public class ModelProxy {
             try {
                 p = ProbeXmlParser.parse(probeMasterFile.getPath());
             } catch (ParsingException e) {
-                throw new LatticeError(e.getMessage());
+                throw new LatticeError(e);
             }
             // set the probe
             setNewProbe(p);
@@ -491,7 +491,7 @@ public class ModelProxy {
             String latticeElementId = elem.getId();
             state = scenario.trajectoryStatesForElement(latticeElementId).get(0);
         } catch (LatticeError e) {
-            throw new ModelException(e.getMessage());
+            throw new ModelException("", e);
         }
         return state;
     }
@@ -510,7 +510,7 @@ public class ModelProxy {
             checkLattice();
             checkProbe();
         } catch (LatticeError e) {
-            throw new ModelException(e.getMessage());
+            throw new ModelException("", e);
         }
         List<? extends ProbeState<?>> lstStates = scenario.trajectoryStatesForElement(id);
 

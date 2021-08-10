@@ -49,6 +49,7 @@ public class RemoteLoggingCenter {
             final RemoteLogging service = findLogger(groupID, 5);
             return service != null ? service.takeAndPublishSnapshot(groupID, comment) : -1;
         } catch (Exception exception) {
+            LOGGER.log(Level.INFO, null, exception);
             return -2;
         }
     }

@@ -52,7 +52,7 @@ public class TransformFactory {
         try {
             return (ValueTransform) selector.invokeStatic(TransformFactory.class, adaptor);
         } catch (MethodNotFoundException exception) {
-            throw new NoSuchTransformException(type);
+            throw new NoSuchTransformException(type, exception);
         }
     }
 

@@ -239,6 +239,8 @@ class LoggerWindow extends JFrame {
  */
 class LogTableModel extends AbstractTableModel implements LoggerBufferListener {
 
+    private static final Logger LOGGER = Logger.getLogger(LogTableModel.class.getName());
+
     /**
      * serialization ID
      */
@@ -418,6 +420,7 @@ class LogTableModel extends AbstractTableModel implements LoggerBufferListener {
             try {
                 return logRecords.get(index);
             } catch (ArrayIndexOutOfBoundsException exception) {
+                LOGGER.log(Level.WARNING, null, exception);
                 return null;
             }
         }

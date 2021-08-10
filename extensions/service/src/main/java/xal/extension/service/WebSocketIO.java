@@ -283,7 +283,7 @@ class WebSocketIO {
             LOGGER.log(Level.SEVERE, "Exception reading characters", exception);
             return "";
         } catch (StreamByteReader.StreamPrematurelyClosedException exception) {
-            throw new SocketPrematurelyClosedException("The remote socket has closed while reading the message...");
+            throw new SocketPrematurelyClosedException("The remote socket has closed while reading the message...", exception);
         } catch (RuntimeException exception) {
             throw exception;
         }
@@ -312,6 +312,10 @@ class WebSocketIO {
          */
         public SocketPrematurelyClosedException(final String message) {
             super(message);
+        }
+
+        public SocketPrematurelyClosedException(final String message, Throwable cause) {
+            super(message, cause);
         }
     }
 }

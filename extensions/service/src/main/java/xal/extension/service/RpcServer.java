@@ -185,6 +185,7 @@ public class RpcServer {
                 try {
                     jsonRequest = WebSocketIO.readMessage(remoteSocket);
                 } catch (IOException | WebSocketIO.SocketPrematurelyClosedException exception) {
+                    LOGGER.log(Level.WARNING, null, exception);
                     throw new RemoteClientDroppedException("Session has been closed during read...");
                 }
 
@@ -216,6 +217,7 @@ public class RpcServer {
                         }
                     }
                 } catch (IOException | RemoteClientDroppedException exception) {
+                    LOGGER.log(Level.WARNING, null, exception);
                     if (!remoteSocket.isClosed()) {
                         try {
                             remoteSocket.close();

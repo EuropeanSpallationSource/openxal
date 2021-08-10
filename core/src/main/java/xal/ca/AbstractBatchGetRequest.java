@@ -457,14 +457,10 @@ public abstract class AbstractBatchGetRequest<T extends ChannelRecord> implement
                 }
 
                 if (!channelSet.isEmpty()) {
-                    try {
-                        channelSet.forEach(channel -> processRequest(channel));
-                        Channel.flushIO();
-                        // yield to other threads so we can accumulate a batch of channels to process 
-                        Thread.yield();
-                    } catch (Exception exception) {
-                        LOGGER.log(Level.SEVERE, null, exception);
-                    }
+                    channelSet.forEach(channel -> processRequest(channel));
+                    Channel.flushIO();
+                    // yield to other threads so we can accumulate a batch of channels to process 
+                    Thread.yield();
                 }
             });
         }

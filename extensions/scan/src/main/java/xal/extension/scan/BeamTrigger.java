@@ -6,12 +6,16 @@ import java.text.DecimalFormat;
 import java.awt.Font;
 import java.awt.Color;
 import java.awt.BorderLayout;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.ca.*;
 import xal.extension.widgets.swing.*;
 import xal.smf.TimingCenter;
 
 public class BeamTrigger {
+
+    private static final Logger LOGGER = Logger.getLogger(BeamTrigger.class.getName());
 
     //name of the beam trigger PV
     private String triggerNamePV = "ICS_Tim:Gate_BeamOn:SSTrigger";
@@ -76,12 +80,14 @@ public class BeamTrigger {
             try {
                 ch.putVal(1.0);
             } catch (PutException e) {
+                LOGGER.log(Level.SEVERE, null, e);
                 setOnOff(false);
                 return;
             }
             try {
                 Thread.sleep((long) (tDelayText.getValue() * 1000.0));
             } catch (InterruptedException e) {
+                LOGGER.log(Level.SEVERE, null, e);
             }
         }
     }

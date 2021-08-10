@@ -24,4 +24,7 @@ public class AccessDeniedException extends Exception {
         super(message);
     }
 
+    public AccessDeniedException(Throwable cause) {
+        super(cause);
+    }
 }

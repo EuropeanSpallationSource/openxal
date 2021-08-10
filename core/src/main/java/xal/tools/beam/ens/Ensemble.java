@@ -20,6 +20,8 @@ import java.io.Serializable;
 import java.util.TreeSet;
 import java.util.Iterator;
 import java.util.Comparator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.beam.CovarianceMatrix;
 import xal.tools.beam.Constants;
@@ -34,6 +36,8 @@ import xal.tools.math.r3.R3;
  * @author CKAllen
  */
 public class Ensemble implements Serializable {
+
+    private static final Logger LOGGER = Logger.getLogger(Ensemble.class.getName());
 
     /**
      * Serialization version
@@ -441,8 +445,10 @@ public class Ensemble implements Serializable {
             setEns = (TreeSet<Particle>) p.readObject();
             return true;
         } catch (IOException e) {
+            LOGGER.log(Level.INFO, null, e);
             return false;
         } catch (ClassNotFoundException e) {
+            LOGGER.log(Level.INFO, null, e);
             return true;
         }
     }
@@ -463,6 +469,7 @@ public class Ensemble implements Serializable {
             p.flush();
             return true;
         } catch (IOException e) {
+            LOGGER.log(Level.INFO, null, e);
             return false;
         }
     }

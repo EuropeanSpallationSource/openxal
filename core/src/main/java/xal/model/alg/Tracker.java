@@ -5,6 +5,7 @@
  */
 package xal.model.alg;
 
+import java.lang.reflect.InvocationTargetException;
 import xal.tools.data.DataAdaptor;
 import xal.tools.data.DataFormatException;
 import xal.tools.data.DataTable;
@@ -211,9 +212,9 @@ public abstract class Tracker implements IAlgorithm, IArchive {
         IAlgorithm algorithm;
         try {
             Class<?> clsAlg = Class.forName(strTypeName);
-            algorithm = (IAlgorithm) clsAlg.newInstance();
+            algorithm = (IAlgorithm) clsAlg.getDeclaredConstructor().newInstance();
 
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException e) {
             LOGGER.log(Level.SEVERE, null, e);
             throw new DataFormatException("Tracker#newInstance() - unknown algorithm type " + strTypeName);
 
@@ -325,9 +326,9 @@ public abstract class Tracker implements IAlgorithm, IArchive {
         IAlgorithm algorithm;
         try {
             Class<?> clsTracker = Class.forName(strClsAlg);
-            algorithm = (IAlgorithm) clsTracker.newInstance();
+            algorithm = (IAlgorithm) clsTracker.getDeclaredConstructor().newInstance();
 
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException e) {
             LOGGER.log(Level.SEVERE, null, e);
             throw new DataFormatException("Tracker.newFromEditContext(): unknow algorithm type " + strClsAlg);
 

@@ -528,8 +528,7 @@ public abstract class ProbeState<S extends ProbeState<S>> implements IProbeState
         try {
             readPropertiesFrom(container);
         } catch (DataFormatException e) {
-            throw new DataFormatException("error loading from adaptor: "
-                    + e.getMessage());
+            throw new DataFormatException("error loading from adaptor: ", e);
         }
     }
 

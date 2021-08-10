@@ -398,8 +398,7 @@ public class TwissProbeState extends BunchProbeState<TwissProbeState> {
             this.setTwiss(newEnvTwiss);
 
         } catch (DataFormatException e) {
-            throw new DataFormatException(e.getMessage());
-
+            throw new DataFormatException("", e);
         }
     }
 }

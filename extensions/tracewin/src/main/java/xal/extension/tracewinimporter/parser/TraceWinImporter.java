@@ -53,7 +53,7 @@ import java.util.logging.Level;
  */
 public class TraceWinImporter extends TraceWinTags {
 
-    private static final Logger LOG = Logger.getLogger("eu.ess.bled.import");
+    private static final Logger LOGGER = Logger.getLogger("eu.ess.bled.import");
 
     private static final String LATTICE_END_SUFFIX = "-END";
 
@@ -109,6 +109,7 @@ public class TraceWinImporter extends TraceWinTags {
         try (BufferedReader tracewinInput = new BufferedReader(new InputStreamReader(sourceFileName.toURL().openStream()))) {
             parseFromBufferedReader(parentSubsystem, tracewinInput);
         } catch (Exception e) {
+            LOGGER.log(Level.WARNING, null, e);
             e.printStackTrace(responseWriter);
             throw new RuntimeException();
         }
@@ -145,6 +146,7 @@ public class TraceWinImporter extends TraceWinTags {
             try (BufferedReader tracewinInput = new BufferedReader(new InputStreamReader(sourceFileNames[i].toURL().openStream()))) {
                 parseFromBufferedReader(parentSubsystem, tracewinInput);
             } catch (Exception e) {
+                LOGGER.log(Level.WARNING, null, e);
                 e.printStackTrace(responseWriter);
             }
         }
@@ -284,7 +286,7 @@ public class TraceWinImporter extends TraceWinTags {
                     }
                 }
             } else if (isESSMetaTag(originalLine)) {
-                LOG.log(Level.FINEST, "ESS Meta Tag: {0}", originalLine);
+                LOGGER.log(Level.FINEST, "ESS Meta Tag: {0}", originalLine);
                 readESSMetaTag(originalLine, section, parentSubsystem);
             } else if (!originalLine.startsWith(COMMENT_MARKER)) {
                 writeFeedback("Unknown TraceWin entry: " + originalLine);
@@ -431,7 +433,7 @@ public class TraceWinImporter extends TraceWinTags {
      * @return true if the line represents a beam line, slot or a marker.
      */
     private boolean isESSMetaTag(String line) {
-        LOG.log(Level.FINER, "Checking for meta tag {0} : {1}", new Object[]{line, line.startsWith(COMMENT_MARKER + M_BEAMLINE) || line.startsWith(COMMENT_MARKER + M_MARKER)
+        LOGGER.log(Level.FINER, "Checking for meta tag {0} : {1}", new Object[]{line, line.startsWith(COMMENT_MARKER + M_BEAMLINE) || line.startsWith(COMMENT_MARKER + M_MARKER)
             || line.startsWith(COMMENT_MARKER + M_SLOT) || line.startsWith(COMMENT_MARKER + M_BEGINBEAMLINE)});
         line = line.toUpperCase();
         return line.startsWith(COMMENT_MARKER + M_BEAMLINE) || line.startsWith(COMMENT_MARKER + M_MARKER)
@@ -462,7 +464,7 @@ public class TraceWinImporter extends TraceWinTags {
      * @return <code>true</code> if the line is processed successfully.
      */
     private boolean readESSMetaTag(String originalLine, Section section, Subsystem parentSubsystem) {
-        LOG.log(Level.FINEST, "Importing ESS meta tag from line: {0}", originalLine);
+        LOGGER.log(Level.FINEST, "Importing ESS meta tag from line: {0}", originalLine);
 
         String line = originalLine.toUpperCase().trim();
 
@@ -520,7 +522,7 @@ public class TraceWinImporter extends TraceWinTags {
      * Reads a command from the line.
      */
     private void readLatticeCommand(String originalLine, Section section, String name) throws IOException {
-        LOG.log(Level.FINEST, "Importing command {0} from line: {1}", new Object[]{name, originalLine});
+        LOGGER.log(Level.FINEST, "Importing command {0} from line: {1}", new Object[]{name, originalLine});
         LatticeCommand latticeCommand = bledComponentFactory.getLatticeCommand(name, originalLine, lastSubsystem);
         section.addComponent(latticeCommand);
         lastSubsystem = lastSubsystem + 1;
@@ -546,7 +548,7 @@ public class TraceWinImporter extends TraceWinTags {
      * @param frequency the frequency at the element
      */
     private void readElement(String line, String[] values, Section section, String name) {
-        LOG.log(Level.FINEST, "Importing element {0} from line: {1}", new Object[]{name, line});
+        LOGGER.log(Level.FINEST, "Importing element {0} from line: {1}", new Object[]{name, line});
 
         // check if it is an element and add it to the section
         if (line.startsWith(E_APERTURE)) {
@@ -771,7 +773,7 @@ public class TraceWinImporter extends TraceWinTags {
     private void readEdge(String[] edge1Values, String edge1Name, String bendLine,
             String[] bendValues, String bendName, String[] edge2Values, String edge2Name,
             Section section) {
-        LOG.log(Level.FINEST, "Importing bend element {0} from line: {1}", new Object[]{bendName, bendLine});
+        LOGGER.log(Level.FINEST, "Importing bend element {0} from line: {1}", new Object[]{bendName, bendLine});
 
         edge1Values = composeTableValues(edge1Values, 8, true);
         bendValues = composeTableValues(bendValues, 8, true);

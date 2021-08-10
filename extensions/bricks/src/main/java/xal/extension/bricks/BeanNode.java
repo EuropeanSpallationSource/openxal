@@ -117,6 +117,7 @@ public abstract class BeanNode<T> extends Brick implements DataListener {
         try {
             return Introspector.getBeanInfo(beanObject.getClass());
         } catch (IntrospectionException exception) {
+            LOGGER.log(Level.SEVERE, null, exception);
             return null;
         }
     }

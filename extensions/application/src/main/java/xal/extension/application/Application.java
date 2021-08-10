@@ -188,6 +188,7 @@ public abstract class Application {
                         try {
                             rbacSubject.logout();
                         } catch (RBACException e) {
+                            LOGGER.log(Level.WARNING, null, e);
                             JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(), "Error while trying to logout", JOptionPane.ERROR_MESSAGE);
                         }
                         rbacSubject = null;
@@ -214,7 +215,7 @@ public abstract class Application {
         try {
             rbacLogin = RBACLogin.newRBACLogin();
         } catch (RuntimeException e) {
-            LOGGER.severe("RBAC plugin not found. Continuing without RBAC.");
+            LOGGER.log(Level.SEVERE, "RBAC plugin not found. Continuing without RBAC.", e);
             return true;
         }
 
@@ -228,6 +229,7 @@ public abstract class Application {
                 }
             } catch (AccessDeniedException | RBACException e) {
                 // Fall to authentication pane
+                LOGGER.log(Level.WARNING, null, e);
             }
         }
 
@@ -1120,6 +1122,7 @@ public abstract class Application {
                 try {
                     rbacSubject.logout();
                 } catch (RBACException e) {
+                    LOGGER.log(Level.WARNING, null, e);
                     JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(), "Error while trying to logout",
                             JOptionPane.ERROR_MESSAGE);
                 }
@@ -1152,6 +1155,7 @@ public abstract class Application {
                         try {
                             rbacSubject.logout();
                         } catch (RBACException e) {
+                            LOGGER.log(Level.WARNING, null, e);
                             JOptionPane.showMessageDialog(getActiveWindow(), e.getMessage(),
                                     "Error while trying to logout", JOptionPane.ERROR_MESSAGE);
                         }
@@ -1347,6 +1351,7 @@ public abstract class Application {
                 launch(adaptor, docURLs);
             }
         } catch (NullPointerException exception) {
+            LOGGER.log(Level.WARNING, null, exception);
             launch(adaptor, new URL[]{});
         }
     }

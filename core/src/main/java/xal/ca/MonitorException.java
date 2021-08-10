@@ -31,4 +31,8 @@ public class MonitorException extends ChannelException {
     public MonitorException(String msg) {
         super(msg);
     }
+
+    public MonitorException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

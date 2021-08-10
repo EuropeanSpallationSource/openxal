@@ -1107,6 +1107,7 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
                 lineIn = in.readLine();
             }
         } catch (IOException exception) {
+            LOGGER.log(Level.SEVERE, null, exception);
             messageTextLocal.setText(null);
             messageTextLocal.setText("Fatal error. Can not open file =" + fNameWvsA
                     + ". Stop execution all analysis will be wrong");
@@ -1162,6 +1163,7 @@ public final class AnalysisCntrlDTLPhase extends AnalysisController {
                 lineIn = in.readLine();
             }
         } catch (IOException exception) {
+            LOGGER.log(Level.SEVERE, null, exception);
             messageTextLocal.setText(null);
             messageTextLocal.setText("Fatal error. Can not open file =" + fNameKSvsA
                     + ". Stop execution all analysis will be wrong");

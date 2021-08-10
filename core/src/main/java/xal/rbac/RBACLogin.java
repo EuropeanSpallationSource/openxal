@@ -80,7 +80,7 @@ public interface RBACLogin {
             final Method creatorMethod = pluginClass.getMethod("getRBACLoginInstance");
             return (RBACLogin) creatorMethod.invoke(null);
         } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException exception) {
-            throw new RuntimeException("Failed to load the RBACPlugin: " + exception.getMessage());
+            throw new RuntimeException("Failed to load the RBACPlugin.", exception);
         }
     }
 }

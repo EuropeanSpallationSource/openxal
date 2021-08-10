@@ -56,6 +56,7 @@ public class MacAdaptor {
             final Method aboutRegistrationMethod = macApplicationClass.getMethod("setAboutHandler", macAboutHandlerClass);
             aboutRegistrationMethod.invoke(macApplication, aboutProxy);
         } catch (ClassNotFoundException exception) {
+            LOGGER.log(Level.SEVERE, null, exception);
             initializeFallback();
         } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException exception) {
             LOGGER.log(Level.SEVERE, null, exception);

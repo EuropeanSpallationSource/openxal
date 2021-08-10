@@ -15,6 +15,8 @@ import java.awt.image.*;
 import java.awt.Window;
 import javax.swing.*;
 import java.beans.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.tools.data.*;
 
@@ -22,6 +24,8 @@ import xal.tools.data.*;
  * interface for providing view node behavior
  */
 public abstract class ViewProxy<T extends Component> extends BeanProxy<T> {
+
+    private static final Logger LOGGER = Logger.getLogger(ViewProxy.class.getName());
 
     /**
      * data label
@@ -105,6 +109,7 @@ public abstract class ViewProxy<T extends Component> extends BeanProxy<T> {
             final Image image = beanInfo.getIcon(BeanInfo.ICON_COLOR_16x16);
             return image != null ? image : makeImage();
         } catch (IntrospectionException exception) {
+            LOGGER.log(Level.WARNING, null, exception);
             return makeImage();
         }
     }

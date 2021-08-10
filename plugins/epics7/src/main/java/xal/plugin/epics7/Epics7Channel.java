@@ -502,7 +502,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         try {
             checkConnection("addMonitorValTime");
         } catch (ConnectionException ex) {
-            throw new MonitorException(CONNECTION_EXC);
+            throw new MonitorException(CONNECTION_EXC, ex);
         }
 
         return Epics7Monitor.createNewMonitor(this, TIME_REQUEST, pvStructure -> {
@@ -516,7 +516,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         try {
             checkConnection("addMonitorValStatus");
         } catch (ConnectionException ex) {
-            throw new MonitorException(CONNECTION_EXC);
+            throw new MonitorException(CONNECTION_EXC, ex);
         }
 
         return Epics7Monitor.createNewMonitor(this, STATUS_REQUEST, pvStructure -> {
@@ -530,7 +530,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         try {
             checkConnection("addMonitorValue");
         } catch (ConnectionException ex) {
-            throw new MonitorException(CONNECTION_EXC);
+            throw new MonitorException(CONNECTION_EXC, ex);
         }
 
         return Epics7Monitor.createNewMonitor(this, VALUE_REQUEST, pvStructure -> {
@@ -544,7 +544,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         try {
             checkConnection("putRawValCallback");
         } catch (ConnectionException ex) {
-            throw new PutException(CONNECTION_EXC);
+            throw new PutException(CONNECTION_EXC, ex);
         }
         // If listener == null, wait for putDone event.
         if (listener == null) {

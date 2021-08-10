@@ -817,6 +817,7 @@ public class ActionFactory {
             });
             action.setEnabled(true);
         } catch (NoSuchMethodException exception) {
+            LOGGER.log(Level.WARNING, null, exception);
             action.setEnabled(false);
         }
 
@@ -846,6 +847,7 @@ public class ActionFactory {
             });
             action.setEnabled(true);
         } catch (NoSuchMethodException exception) {
+            LOGGER.log(Level.WARNING, null, exception);
             action.setEnabled(false);
         }
 

@@ -5,6 +5,9 @@
  */
 package xal.sim.scenario;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.model.IAlgorithm;
 import xal.model.alg.EnvTrackerAdapt;
 import xal.model.alg.EnvelopeBacktracker;
@@ -52,6 +55,8 @@ import xal.tools.data.EditContext;
  * @since Oct 25, 2012
  */
 public final class AlgorithmFactory {
+
+    private static final Logger LOGGER = Logger.getLogger(AlgorithmFactory.class.getName());
 
     /*
      * Global Constants
@@ -445,15 +450,13 @@ public final class AlgorithmFactory {
 
         T algTracker;
         try {
-            algTracker = clsTkr.newInstance();
+            algTracker = clsTkr.getDeclaredConstructor().newInstance();
             algTracker.load(strSeqId, ctxParams);
 
             return algTracker;
-
-        } catch (IllegalAccessException e) {
-            throw new InstantiationException("Unable to access constructor for " + clsTkr.getName()
-                    + ". Source Msg: " + e.getMessage()
-            );
+        } catch (IllegalAccessException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException e) {
+            LOGGER.log(Level.SEVERE, null, e);
+            throw new InstantiationException("Unable to access constructor for " + clsTkr.getName() + ". Source Msg: " + e.getMessage());
         }
     }
 }

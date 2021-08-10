@@ -9,6 +9,8 @@ package xal.tools.math;
 
 import java.io.PrintWriter;
 import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -24,6 +26,8 @@ import java.io.Serializable;
  * @author Christopher K. Allen
  */
 public class Interval implements Serializable {
+
+    private static final Logger LOGGER = Logger.getLogger(Interval.class.getName());
 
     /*
      * Global Constants
@@ -88,6 +92,7 @@ public class Interval implements Serializable {
         try {
             return new Interval(dblMin, dblMax);
         } catch (IllegalArgumentException e) {
+            LOGGER.log(Level.INFO, null, e);
             return null;
         }
     }
@@ -465,6 +470,7 @@ public class Interval implements Serializable {
 
             // This cannot occur - already checked for it.
         } catch (IllegalArgumentException e) {
+            LOGGER.log(Level.INFO, null, e);
             return null;
 
         }

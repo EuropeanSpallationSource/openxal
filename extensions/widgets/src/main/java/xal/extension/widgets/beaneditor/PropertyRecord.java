@@ -130,7 +130,7 @@ public class PropertyRecord {
             final Method converter = type.getMethod("valueOf", String.class);
             return converter.invoke(null, stringValue);
         } catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException exception) {
-            throw new RuntimeException("No match to parse string: " + stringValue + " as " + type);
+            throw new RuntimeException("No match to parse string: " + stringValue + " as " + type, exception);
         }
     }
 

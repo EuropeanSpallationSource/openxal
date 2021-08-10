@@ -289,7 +289,7 @@ public abstract class DispatchQueue implements DispatchOperationListener {
      * queue
      */
     // need to cast thread to DispatchThread after checking
-    @SuppressWarnings("unchecked")    
+    @SuppressWarnings("unchecked")
     public static DispatchQueue getCurrentQueue() {
         final Thread currentThread = Thread.currentThread();
         if (currentThread instanceof DispatchThread) {
@@ -965,7 +965,7 @@ class DispatchThreadFactory implements ThreadFactory {
             try {
                 thread.setPriority(priority);
             } catch (Exception exception) {
-                throw new RuntimeException("Cannot set priority on new thread.");
+                throw new RuntimeException("Cannot set priority on new thread.", exception);
             }
         }
         return thread;

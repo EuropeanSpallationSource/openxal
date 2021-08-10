@@ -38,7 +38,7 @@ class EditablePrimitiveProperty extends EditableProperty {
         final Units units = readMethod != null ? readMethod.getAnnotation(Units.class) : null;
         if (units != null) {
             return units.value();
-        // unit property methods allow for dynamic units (i.e. units not known at runtime)
+            // unit property methods allow for dynamic units (i.e. units not known at runtime)
         } else {
             // form the accessor as get<PropertyName>Units() replacing <PropertyName> with the property's name whose first character is upper case
             final char[] nameChars = getName().toCharArray();
@@ -55,6 +55,7 @@ class EditablePrimitiveProperty extends EditableProperty {
                     return (String) unitsAccessor.invoke(target);
                 }
             } catch (NoSuchMethodException exception) {
+                LOGGER.log(Level.INFO, null, exception);
                 // fallback look for a method of the form getUnitsForProperty( String name ) returning a String
                 try {
                     final Method unitsAccessor = target.getClass().getMethod("getUnitsForProperty", String.class);
@@ -63,6 +64,7 @@ class EditablePrimitiveProperty extends EditableProperty {
                     }
                     return "";
                 } catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException fallbackException) {
+                    LOGGER.log(Level.INFO, null, fallbackException);
                     return "";
                 }
             } catch (IllegalAccessException | IllegalArgumentException | SecurityException | InvocationTargetException exception) {

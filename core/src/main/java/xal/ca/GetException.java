@@ -31,4 +31,8 @@ public class GetException extends ChannelException {
     public GetException(String msg) {
         super(msg);
     }
+
+    public GetException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

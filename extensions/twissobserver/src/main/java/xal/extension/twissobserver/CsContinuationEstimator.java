@@ -476,8 +476,8 @@ public class CsContinuationEstimator extends CourantSnyderEstimator {
 
                     super.dblConvErr = slnEmbed.getReconConvergenceError();
                 } catch (ConvergenceException e) {
+                    LOGGER.log(Level.SEVERE, null, e);
                     matSig1 = this.getReconstruction();
-
                 }
 
                 if (super.isDebuggingOn()) {

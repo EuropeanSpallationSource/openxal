@@ -324,7 +324,7 @@ public class ParticleProbeState extends ProbeState<ParticleProbeState> /*impleme
             }
 
         } catch (DataFormatException e) {
-            throw new DataFormatException("The source data was corrupted - " + e.getMessage());
+            throw new DataFormatException("The source data was corrupted - ", e);
 
         }
 

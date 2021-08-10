@@ -11,6 +11,7 @@ import xal.tools.xml.XmlDataAdaptor;
 import xal.tools.data.DataAdaptor;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.net.*;
 import java.util.*;
 import java.util.logging.Level;
@@ -309,7 +310,7 @@ public class DBConfiguration {
             urlSpec = getDefaultURLSpec();
             return urlSpec != null && !urlSpec.isEmpty() && new File(new URL(urlSpec).toURI()).exists();
         } catch (MalformedURLException | URISyntaxException exception) {
-            LOGGER.log(Level.INFO, "Database configuration: {0}", urlSpec);
+            LOGGER.log(Level.INFO, "Database configuration: " + urlSpec, exception);
             return false;
         }
     }
@@ -387,8 +388,8 @@ public class DBConfiguration {
         }
         try {
             final Class<?> databaseAdaptorClass = Class.forName(className);
-            return (DatabaseAdaptor) databaseAdaptorClass.newInstance();
-        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException exception) {
+            return (DatabaseAdaptor) databaseAdaptorClass.getDeclaredConstructor().newInstance();
+        } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | NoSuchMethodException | SecurityException | IllegalArgumentException | InvocationTargetException exception) {
             final String message = "Failed to instantiate database adaptor for class:  " + className;
             throw new RuntimeException(message, exception);
         }

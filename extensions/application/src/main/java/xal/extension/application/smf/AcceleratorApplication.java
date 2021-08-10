@@ -13,6 +13,8 @@ import xal.smf.*;
 import javax.swing.*;
 import java.io.File;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * AcceleratorApplication is the subclass of Application that is required for
@@ -21,6 +23,8 @@ import java.net.URL;
  * @author tap
  */
 public class AcceleratorApplication extends FrameApplication {
+
+    private static final Logger LOGGER = Logger.getLogger(AcceleratorApplication.class.getName());
 
     /**
      * file chooser for selecting an accelerator file
@@ -88,6 +92,7 @@ public class AcceleratorApplication extends FrameApplication {
         try {
             launch(adaptor, AbstractApplicationAdaptor.getDocURLs());
         } catch (NullPointerException e) {
+            LOGGER.log(Level.WARNING, null, e);
             new AcceleratorApplication(adaptor, new URL[]{});
         }
     }

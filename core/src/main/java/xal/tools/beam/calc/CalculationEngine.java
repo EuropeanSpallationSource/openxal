@@ -7,6 +7,7 @@
 package xal.tools.beam.calc;
 
 import java.util.EnumSet;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import xal.model.probe.TwissProbe;
@@ -767,7 +768,7 @@ public abstract class CalculationEngine {
         try {
             return matR.solve(vecdp);
         } catch (Exception e) {
-            LOGGER.warning("Error in solving matrix-vector equation");
+            LOGGER.log(Level.WARNING, "Error in solving matrix-vector equation", e);
 
             return R4.newZero();
         }

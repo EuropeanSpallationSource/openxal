@@ -142,7 +142,7 @@ public class Signal extends ScadaRecord {
 
                 return new ScadaFieldDescriptor(strFldNm, clsFldTyp, strFldHnd);
             } catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-                throw new ScadaAnnotationException("Bad annotation " + annSig.getClass());
+                throw new ScadaAnnotationException("Bad annotation " + annSig.getClass(), e);
 
             }
 
