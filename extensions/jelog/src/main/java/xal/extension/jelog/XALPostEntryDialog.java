@@ -21,6 +21,8 @@ import java.io.IOException;
 import java.util.List;
 import eu.ess.jelog.Attachment;
 import eu.ess.jelog.PostEntryDialog;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
@@ -44,19 +46,19 @@ public class XALPostEntryDialog {
         XALPostEntryDialog.elogURL = elogURL;
     }
 
-    public static Stage post(Pair<String, String>... defaultAttributes) throws IOException, Exception {
+    public static Stage post(Pair<String, String>... defaultAttributes) throws IOException {
         return post(null, null, defaultAttributes);
     }
 
-    public static Stage post(String defaultLogbook, Pair<String, String>... defaultAttributes) throws IOException, Exception {
+    public static Stage post(String defaultLogbook, Pair<String, String>... defaultAttributes) throws IOException {
         return post(null, defaultLogbook, defaultAttributes);
     }
 
-    public static Stage post(List<Attachment> attachments, Pair<String, String>... defaultAttributes) throws IOException, Exception {
+    public static Stage post(List<Attachment> attachments, Pair<String, String>... defaultAttributes) throws IOException {
         return post(attachments, null, defaultAttributes);
     }
 
-    public static Stage post(List<Attachment> attachments, String defaultLogbook, Pair<String, String>... defaultAttributes) throws IOException, Exception {
+    public static Stage post(List<Attachment> attachments, String defaultLogbook, Pair<String, String>... defaultAttributes) throws IOException {
         // Trick to locate CKEditor files. Only works on LCR-type installations, where
         // the html folder is located next to the library.jar file.
         String ckeditorPath = PostEntryDialog.class.getResource("PostEntryDialog.class").toExternalForm();
@@ -71,6 +73,11 @@ public class XALPostEntryDialog {
             PostEntryDialog.setElogServer(elogURL);
         }
 
-        return PostEntryDialog.post(attachments, defaultLogbook, defaultAttributes);
+        try {
+            return PostEntryDialog.post(attachments, defaultLogbook, defaultAttributes);
+        } catch (Exception ex) {
+            Logger.getLogger(XALPostEntryDialog.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 }

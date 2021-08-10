@@ -18,7 +18,7 @@
 package xal.extension.jelog;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.logging.Logger;
 import eu.ess.jelog.Attachment;
@@ -44,11 +44,11 @@ public class PostEntry {
         PostEntry.elogServer = elogServer;
     }
 
-    public static int post(HashMap<String, String> fields, String textBody, String logbook) throws IOException, Exception {
+    public static int post(Map<String, String> fields, String textBody, String logbook) throws IOException {
         return post(fields, textBody, logbook, null);
     }
 
-    public static int post(HashMap<String, String> fields, String textBody, String logbook, List<Attachment> attachments) throws IOException, Exception {
+    public static int post(Map<String, String> fields, String textBody, String logbook, List<Attachment> attachments) throws IOException {
         if (elogServer == null) {
             elogServer = ElogServer.getElogURL();
         }
@@ -72,7 +72,7 @@ public class PostEntry {
      * @throws IOException
      * @throws Exception
      */
-    public static boolean login(String user, char[] password) throws IOException, Exception {
+    public static boolean login(String user, char[] password) throws IOException {
         Jelog jelog = new Jelog(elogServer);
 
         return jelog.login(user, password, true);
