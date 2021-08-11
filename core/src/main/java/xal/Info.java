@@ -21,11 +21,15 @@ import java.io.*;
  */
 public class Info {
     /** Label for this version of Open XAL */
-    final private static String LABEL;
+     private static String LABEL;
     private static final Logger LOGGER = Logger.getLogger(Info.class.getName());
 
-    // static initializer
-    static {
+    // static initializer    
+    static{
+        Info.init();
+    }
+
+    private static void init() {
         // assign the default label
         String label = "Open XAL";
 
