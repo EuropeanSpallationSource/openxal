@@ -364,10 +364,11 @@ public class IdealRfGap extends ThinElement implements IRfGap {
         return dT;
     }
 
-//    /** the interface method to provide the energy gain.
-//    * since this calculation has gotten complicated it is done
-//    * in the TransferMap method and the answer is returned here. */
-//
+    /**
+     * the interface method to provide the energy gain. since this calculation
+     * has gotten complicated it is done in the TransferMap method and the
+     * answer is returned here.
+     */
     /**
      * Compute the energy gain of the RF gap for a probe including the effects
      * of calculating the phase advance.
@@ -642,6 +643,10 @@ public class IdealRfGap extends ThinElement implements IRfGap {
         sPrimeFit = rfgap.getSPrimeFit();
         sFit = rfgap.getSFit();
         structureMode = rfgap.getStructureMode();
+        dblETL = rfgap.getGapDfltE0TL() * 1e6;
+        dblFreq = rfgap.getGapDfltFrequency() * 1e6;
+        dblPhase = (rfgap.getGapDfltPhase() + rfgap.getRfGap().getPhaseFactor()) * Math.PI / 180.;
+        e0 = rfgap.getGapDfltAmp() * 1e6 * rfgap.getRfGap().getAmpFactor();
     }
 
     @Override
