@@ -88,4 +88,28 @@ public class InfoTest {
         String result = Info.getLabel();
         assertEquals(label, result);
     }
+
+    /**
+     * Test of getLabel method reading a json file.
+     */
+    @Test
+    public void testGetLabelFromEmptyJson() throws ClassNotFoundException, InstantiationException, IllegalAccessException, NoSuchMethodException, URISyntaxException, IOException, IllegalArgumentException, InvocationTargetException {
+        System.out.println("getLabelFromJson");
+
+        String label = "Open XAL";
+
+        URL url = ResourceManager.getResourceURL(Info.class, "");
+        File parentDirectory = new File(new URI(url.toString()));
+        File infoFile = new File(parentDirectory, "info.json");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(infoFile))) {
+            writer.write("");
+        }
+
+        Class<?> info = Class.forName(Info.class.getName());
+        Method initMethod = info.getDeclaredMethod("init");
+        initMethod.setAccessible(true);
+        initMethod.invoke(null, null);
+        String result = Info.getLabel();
+        assertEquals(label, result);
+    }
 }
