@@ -16,7 +16,6 @@
         <module>application</module>
         <module>fxapplication</module>
         <module>bricks</module>
-        <module>extlatgen</module>
         <module>fit</module>
         <module>logbook</module>
         <module>orbit</module>
