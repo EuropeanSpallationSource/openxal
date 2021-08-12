@@ -15,16 +15,10 @@
     <modules>
         <module>application</module>
         <module>fxapplication</module>
-        <module>bricks</module>
-        <module>extlatgen</module>
-        <module>fit</module>
-        <module>logbook</module>
-        <module>orbit</module>
         <module>recordselector</module>
         <module>scan</module>
         <module>service</module>
         <module>solver</module>
-        <module>twissobserver</module>
         <module>widgets</module>
         <module>wirescan</module>
         <module>jels</module>
