@@ -19,14 +19,9 @@ package xal.ca;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import xal.tools.dispatch.DispatchQueue;
@@ -37,13 +32,20 @@ import xal.tools.dispatch.DispatchQueue;
  */
 public class BatchConnectionRequestTest {
 
-    private List<Channel> channels;
-    private Channel channel;
+    private List<Channel> connectedChannels;
+    private Channel connectedChannel;
+
+    private List<Channel> disconnectedChannels;
+    private Channel disconnectedChannel;
 
     public BatchConnectionRequestTest() {
-        channels = new ArrayList<>();
-        channel = ChannelFactory.defaultFactory().getChannel("TEST");
-        channels.add(channel);
+        connectedChannels = new ArrayList<>();
+        connectedChannel = new TestChannelAutoConnect("TEST");
+        connectedChannels.add(connectedChannel);
+
+        disconnectedChannels = new ArrayList<>();
+        disconnectedChannel = ChannelFactory.defaultFactory().getChannel("TEST");
+        disconnectedChannels.add(disconnectedChannel);
     }
 
     /**
@@ -92,9 +94,9 @@ public class BatchConnectionRequestTest {
     @Test
     public void testGetChannels() {
         System.out.println("getChannels");
-        BatchConnectionRequest instance = new BatchConnectionRequest(channels);
+        BatchConnectionRequest instance = new BatchConnectionRequest(connectedChannels);
         Set<Channel> result = instance.getChannels();
-        assertTrue(result.contains(channel));
+        assertTrue(result.contains(connectedChannel));
     }
 
     /**
@@ -108,7 +110,7 @@ public class BatchConnectionRequestTest {
         int result = instance.getChannelCount();
         assertEquals(expResult, result);
 
-        instance = new BatchConnectionRequest(channels);
+        instance = new BatchConnectionRequest(connectedChannels);
         expResult = 1;
         result = instance.getChannelCount();
         assertEquals(expResult, result);
@@ -131,7 +133,7 @@ public class BatchConnectionRequestTest {
     @Test
     public void testGetConnectedCount() {
         System.out.println("getConnectedCount");
-        BatchConnectionRequest instance = new BatchConnectionRequest(channels);
+        BatchConnectionRequest instance = new BatchConnectionRequest(connectedChannels);
         int expResult = 0;
         int result = instance.getConnectedCount();
         assertEquals(expResult, result);
@@ -147,10 +149,15 @@ public class BatchConnectionRequestTest {
         Set<Channel> result = instance.getDisconnectedChannels();
         assertTrue(result.isEmpty());
 
-        instance = new BatchConnectionRequest(channels);
+        instance = new BatchConnectionRequest(disconnectedChannels);
         instance.submitAndWait(0.1);
         result = instance.getPendingChannels();
-        assertTrue(result.contains(channel));
+        assertTrue(result.contains(disconnectedChannel));
+
+        instance = new BatchConnectionRequest(connectedChannels);
+        instance.submitAndWait(0.1);
+        result = instance.getPendingChannels();
+        assertTrue(result.isEmpty());
     }
 
     /**
@@ -175,10 +182,15 @@ public class BatchConnectionRequestTest {
         Set<Channel> result = instance.getPendingChannels();
         assertTrue(result.isEmpty());
 
-        instance = new BatchConnectionRequest(channels);
+        instance = new BatchConnectionRequest(disconnectedChannels);
         instance.submit();
         result = instance.getPendingChannels();
-        assertTrue(result.contains(channel));
+        assertTrue(result.contains(disconnectedChannel));
+
+        instance = new BatchConnectionRequest(connectedChannels);
+        instance.submit();
+        result = instance.getPendingChannels();
+        assertTrue(result.isEmpty());
     }
 
     /**
@@ -187,10 +199,10 @@ public class BatchConnectionRequestTest {
     @Test
     public void testGetException() {
         System.out.println("getException");
-        BatchConnectionRequest instance = new BatchConnectionRequest(channels);
+        BatchConnectionRequest instance = new BatchConnectionRequest(connectedChannels);
         instance.submitAndWait(0.1);
 
-        Exception result = instance.getException(channel);
+        Exception result = instance.getException(connectedChannel);
         assertEquals(null, result);
     }
 
@@ -200,7 +212,7 @@ public class BatchConnectionRequestTest {
     @Test
     public void testGetFailedChannels() {
         System.out.println("getFailedChannels");
-        BatchConnectionRequest instance = new BatchConnectionRequest(channels);
+        BatchConnectionRequest instance = new BatchConnectionRequest(connectedChannels);
         instance.submitAndWait(0.1);
 
         Set<Channel> result = instance.getFailedChannels();
@@ -213,7 +225,7 @@ public class BatchConnectionRequestTest {
     @Test
     public void testGetExceptionCount() {
         System.out.println("getExceptionCount");
-        BatchConnectionRequest instance = new BatchConnectionRequest(channels);
+        BatchConnectionRequest instance = new BatchConnectionRequest(connectedChannels);
         instance.submitAndWait(0.1);
         int expResult = 0;
         int result = instance.getExceptionCount();
@@ -227,7 +239,7 @@ public class BatchConnectionRequestTest {
     public void testAwait() {
         System.out.println("await");
         double timeout = 0.1;
-        BatchConnectionRequest instance = new BatchConnectionRequest(channels);
+        BatchConnectionRequest instance = new BatchConnectionRequest(connectedChannels);
         boolean expResult = true;
         boolean result = instance.await(timeout);
         assertEquals(expResult, result);
@@ -239,7 +251,7 @@ public class BatchConnectionRequestTest {
     @Test
     public void testIsCanceled() {
         System.out.println("isCanceled");
-        BatchConnectionRequest instance = new BatchConnectionRequest(channels);
+        BatchConnectionRequest instance = new BatchConnectionRequest(connectedChannels);
         boolean expResult = false;
         boolean result = instance.isCanceled();
         assertEquals(expResult, result);
@@ -262,7 +274,13 @@ public class BatchConnectionRequestTest {
         boolean result = instance.isComplete();
         assertEquals(expResult, result);
 
-        instance = new BatchConnectionRequest(channels);
+        instance = new BatchConnectionRequest(connectedChannels);
+        instance.submit();
+        expResult = true;
+        result = instance.isComplete();
+        assertEquals(expResult, result);
+
+        instance = new BatchConnectionRequest(disconnectedChannels);
         instance.submit();
         expResult = false;
         result = instance.isComplete();
@@ -290,4 +308,5 @@ public class BatchConnectionRequestTest {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     }
+
 }
