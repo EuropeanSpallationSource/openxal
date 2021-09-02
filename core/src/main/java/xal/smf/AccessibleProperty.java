@@ -21,8 +21,16 @@ import java.util.Arrays;
 
 /**
  * Container for properties with their corresponding readback and set channel
- * handles, together with methods to get the design and live values (when
- * needed).
+ * handles, together with methods to get and set the design and live values.
+ * <p>
+ * Some properties may have getter and setter for design values, or only for
+ * live values if the properties are not used by the model.
+ * <p>
+ * For live values, getter and setters are meant to only convert the value, so
+ * if they are not provided the value will be returned the same. EPICS
+ * communication is done by the {@link xal.smf.AcceleratorNode} object using the
+ * methods {@link xal.smf.AcceleratorNode#getLivePropertyValue} and
+ * {@link xal.smf.AcceleratorNode#setLivePropertyValue}.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
@@ -35,28 +43,41 @@ public class AccessibleProperty {
 
     private GetterDesign getterDesign = null;
     private GetterLive getterLive = null;
-    private boolean getters = false;
 
-    public AccessibleProperty(String name, String readbackHandle, String setHandle, GetterDesign getterDesign, GetterLive getterLive) {
-        this.name = name;
-        this.readbackHandles = new String[]{readbackHandle};
-        this.setHandle = setHandle;
-        this.getterDesign = getterDesign;
-        this.getterLive = getterLive;
-        if (getterDesign != null && getterLive != null) {
-            this.getters = true;
-        }
+    private SetterDesign setterDesign = null;
+    private SetterLive setterLive = null;
+
+    // Flag that indicates if the property has design values. Otherwise it is a value only available in EPICS.
+    private boolean designValues = false;
+
+    public AccessibleProperty(String name, String readbackHandle, String setHandle, GetterDesign getterDesign, SetterDesign setterDesign) {
+        this(name, new String[]{readbackHandle}, setHandle, getterDesign, setterDesign, null, null);
     }
 
-    public AccessibleProperty(String name, String[] readbackHandles, String setHandle, GetterDesign getterDesign, GetterLive getterLive) {
+    public AccessibleProperty(String name, String readbackHandle, String setHandle, GetterLive getterLive, SetterLive setterLive) {
+        this(name, new String[]{readbackHandle}, setHandle, null, null, getterLive, setterLive);
+    }
+
+    public AccessibleProperty(String name, String readbackHandle, String setHandle, GetterDesign getterDesign, SetterDesign setterDesign, GetterLive getterLive, SetterLive setterLive) {
+        this(name, new String[]{readbackHandle}, setHandle, getterDesign, setterDesign, getterLive, setterLive);
+    }
+
+    public AccessibleProperty(String name, String[] readbackHandles, String setHandle, GetterDesign getterDesign, SetterDesign setterDesign, GetterLive getterLive, SetterLive setterLive) {
         this.name = name;
         this.readbackHandles = readbackHandles;
         this.setHandle = setHandle;
         this.getterDesign = getterDesign;
+        this.setterDesign = setterDesign;
         this.getterLive = getterLive;
-        if (getterDesign != null && getterLive != null) {
-            this.getters = true;
+        this.setterLive = setterLive;
+
+        if (getterDesign != null && setterDesign != null) {
+            designValues = true;
         }
+    }
+
+    public AccessibleProperty(String name, String handle, GetterDesign getterDesign, SetterDesign setterDesign) {
+        this(name, handle, handle, getterDesign, setterDesign);
     }
 
     /**
@@ -66,20 +87,11 @@ public class AccessibleProperty {
      * @param setHandle Set handle
      */
     public AccessibleProperty(String name, String readbackHandle, String setHandle) {
-        this.name = name;
-        this.readbackHandles = new String[]{readbackHandle};
-        this.setHandle = setHandle;
+        this(name, readbackHandle, setHandle, null, null, null, null);
     }
 
-    /**
-     *
-     * @param name
-     * @param handle
-     */
     public AccessibleProperty(String name, String handle) {
-        this.name = name;
-        this.readbackHandles = new String[]{handle};
-        this.setHandle = handle;
+        this(name, handle, handle);
     }
 
     public String getName() {
@@ -103,13 +115,30 @@ public class AccessibleProperty {
     }
 
     public double getLive(double[] channelValues) {
-        return getterLive.get(channelValues);
+        if (getterLive != null) {
+            return getterLive.get(channelValues);
+        } else {
+            return channelValues[0];
+        }
     }
 
-    public boolean hasGetters() {
-        return getters;
+    public void setDesign(double channelValue) {
+        setterDesign.set(channelValue);
     }
 
+    public boolean hasDesignValues() {
+        return designValues;
+    }
+
+    public double setLive(double channelValue) {
+        if (setterLive != null) {
+            return setterLive.set(channelValue);
+        } else {
+            return channelValue;
+        }
+    }
+
+    @Override
     public String toString() {
         return String.format("%s: {rb=%s, s=%s}", name, Arrays.toString(readbackHandles), setHandle);
     }

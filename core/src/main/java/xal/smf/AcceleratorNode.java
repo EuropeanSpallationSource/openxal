@@ -538,7 +538,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
         List<AccessibleProperty> accessibleProperties = getAccessibleProperties();
         List<String> properties = new ArrayList<>();
         for (AccessibleProperty prop : accessibleProperties) {
-            if (prop.hasGetters()) {
+            if (prop.hasDesignValues()) {
                 properties.add(prop.getName());
             }
         }
@@ -551,8 +551,21 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
     public double getDesignPropertyValue(final String propertyName) {
         List<AccessibleProperty> properties = getAccessibleProperties();
         for (AccessibleProperty prop : properties) {
-            if (prop.getName().equals(propertyName) && prop.hasGetters()) {
+            if (prop.getName().equals(propertyName) && prop.hasDesignValues()) {
                 return prop.getDesign();
+            }
+        }
+        throw new IllegalArgumentException("Unsupported AcceleratorNode design value property: " + propertyName);
+    }
+
+    /**
+     * Get the design value for the specified property
+     */
+    public void setDesignPropertyValue(String propertyName, double value) {
+        List<AccessibleProperty> properties = getAccessibleProperties();
+        for (AccessibleProperty prop : properties) {
+            if (prop.getName().equals(propertyName) && prop.hasDesignValues()) {
+                prop.setDesign(value);
             }
         }
         throw new IllegalArgumentException("Unsupported AcceleratorNode design value property: " + propertyName);
@@ -565,8 +578,24 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
     public double getLivePropertyValue(final String propertyName, final double[] channelValues) {
         List<AccessibleProperty> properties = getAccessibleProperties();
         for (AccessibleProperty prop : properties) {
-            if (prop.getName().equals(propertyName) && prop.hasGetters()) {
+            if (prop.getName().equals(propertyName)) {
                 return prop.getLive(channelValues);
+            }
+        }
+        throw new IllegalArgumentException("Unsupported AcceleratorNode live value property: " + propertyName);
+    }
+
+    /**
+     * Set the live property value for the corresponding array of channel values
+     * in the order given by getLivePropertyChannels()
+     */
+    public void setLivePropertyValue(String propertyName, double channelValue) throws ConnectionException, PutException {
+        List<AccessibleProperty> properties = getAccessibleProperties();
+        for (AccessibleProperty prop : properties) {
+            if (prop.getName().equals(propertyName)) {
+                double setterValue = prop.setLive(channelValue);
+                Channel setChannel = findChannel(prop.getSetHandle());
+                setChannel.putVal(setterValue);
             }
         }
         throw new IllegalArgumentException("Unsupported AcceleratorNode live value property: " + propertyName);
@@ -579,7 +608,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
         List<Channel> channels = new ArrayList<>();
         List<AccessibleProperty> properties = getAccessibleProperties();
         for (AccessibleProperty prop : properties) {
-            if (prop.getName().equals(propertyName) && prop.hasGetters()) {
+            if (prop.getName().equals(propertyName) && prop.hasDesignValues()) {
                 for(String readback : prop.getReadbackHandles())
                     channels.add(findChannel(readback));
                 return channels.toArray(new Channel[0]);

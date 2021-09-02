@@ -307,9 +307,9 @@ public abstract class MagnetPowerSupply implements DataListener {
         List<AccessibleProperty> accessibleProperties = getAccessibleProperties();
         List<String> properties = new ArrayList<>();
         for (AccessibleProperty prop : accessibleProperties) {
-            if (prop.hasGetters()) {
-                properties.add(prop.getName());
-            }
+            if (prop.hasDesignValues()) {
+            properties.add(prop.getName());
+        }
         }
         return properties;
     }
