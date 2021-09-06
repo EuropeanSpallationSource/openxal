@@ -8,128 +8,146 @@ package xal.smf;
 import java.util.ArrayList;
 import java.util.List;
 
-/** 
- * The implementation of the Aperture Profile for the chamber of each
- * section of the machine. 
+/**
+ * The implementation of the Aperture Profile for the chamber of each section of
+ * the machine.
  *
  * @author nataliamilas
  */
 public class ApertureProfile {
-    
-    /** map of the positions versus the apertures in horizontal and vertical and the profile shape */
+
+    /**
+     * map of the positions versus the apertures in horizontal and vertical and
+     * the profile shape
+     */
     private List<Double> _profilePos;
-    
+
     private List<Double> _profileX;
-    
+
     private List<Double> _profileY;
-    
+
     private List<Integer> _apertureShape;
 
-    
     /* 
     * Constructor
-    */
-    
+     */
     public ApertureProfile() {
         this._profilePos = new ArrayList<>();
         this._profileX = new ArrayList<>();
         this._profileY = new ArrayList<>();
         this._apertureShape = new ArrayList<>();
-    }           
-    
-    
+    }
+
     /* Add a single point to the list
     * @param aperX horizontal aperture in m
-    */
-    public void addProfilePosData(double pos){
+     */
+    public void addProfilePosData(double pos) {
         _profilePos.add(pos);
     }
-    
+
     /* Add a single point to the list
     * @param aperX horizontal aperture in m
-    */
-    public void addProfileXData(double aperX){
+     */
+    public void addProfileXData(double aperX) {
         _profileX.add(aperX);
     }
-    
+
     /* Add a single point to the list
     * @param aperY vertical aperture in m
-    */
-    public void addProfileYData(double aperY){
+     */
+    public void addProfileYData(double aperY) {
         _profileY.add(aperY);
     }
-    
+
     /* Add a single point to the list
     * @param aperShape code for aperture shape in OpenXAL
-    */
-    public void addShapeData(int aperShape){
+     */
+    public void addShapeData(int aperShape) {
         _apertureShape.add(aperShape);
     }
-    
+
     /* Get the full list   
     * @return list with the positionwhere there is aperture information
-    */
-    public List<Double>  getProfilePos(){
-        return _profilePos;        
-    } 
-    
+     */
+    public List<Double> getProfilePos() {
+        return _profilePos;
+    }
+
     /* Get the full list   
     * @return list with horizontal profiles values
-    */
-    public List<Double>  getProfileX(){
-        return _profileX;        
-    } 
-    
+     */
+    public List<Double> getProfileX() {
+        return _profileX;
+    }
+
     /* Get array of position and profile   
     * @return 2D array with [position,profileX]
-    */
-    public double[][] getProfileXArray(){
+     */
+    public double[][] getProfileXArray() {
         double[][] profileArray = new double[2][_profilePos.size()];
-        for(int j=0; j<_profilePos.size();j++){
+        for (int j = 0; j < _profilePos.size(); j++) {
             profileArray[0][j] = _profilePos.get(j);
             profileArray[1][j] = _profileX.get(j);
         }
-        
-        return profileArray;        
-    } 
-    
+
+        return profileArray;
+    }
+
     /* Get the full list  
     * @return list with vertical profiles values
-    */
-    public List<Double>  getProfileY(){
-        return _profileY;        
-    } 
-    
+     */
+    public List<Double> getProfileY() {
+        return _profileY;
+    }
+
     /* Get array of position and profile   
     * @return 2D array with [position,profileY]
-    */
-    public double[][] getProfileYArray(){
+     */
+    public double[][] getProfileYArray() {
         double[][] profileArray = new double[2][_profilePos.size()];
-        for(int j=0; j<_profilePos.size();j++){
+        for (int j = 0; j < _profilePos.size(); j++) {
             profileArray[0][j] = _profilePos.get(j);
             profileArray[1][j] = _profileY.get(j);
         }
-        
-        return profileArray;        
-    } 
-    
+
+        return profileArray;
+    }
+
     /* Get the full list   
     * @return list with shape value codes
-    */
-    public List<Integer> getProfileShape(){
-        return _apertureShape;        
-    } 
-    
+     */
+    public List<Integer> getProfileShape() {
+        return _apertureShape;
+    }
+
     /* Get array of position and profile   
     * @return 2D array with [position,shape]
-    */
-    public double[][] getShapeArray(){
+     */
+    public double[][] getShapeArray() {
         double[][] profileArray = new double[2][_profilePos.size()];
-        for(int j=0; j<_profilePos.size();j++){
+        for (int j = 0; j < _profilePos.size(); j++) {
             profileArray[0][j] = _profilePos.get(j);
             profileArray[1][j] = _apertureShape.get(j);
         }
-        
-        return profileArray;        
-    } 
+
+        return profileArray;
+    }
+
+    public void addProfileData(List<Double> profilePos, List<Double> profileX, List<Double> profileY, List<Integer> shape) {
+        for (int i = 0; i < profilePos.size(); i++) {
+            _profilePos.add(profilePos.get(i));
+            _profileX.add(profileX.get(i));
+            _profileY.add(profileY.get(i));
+            _apertureShape.add(shape.get(i));
+        }
+    }
+
+    public void addProfileData(double[] profilePos, double[] profileX, double[] profileY, int shape) {
+        for (int i = 0; i < profilePos.length; i++) {
+            _profilePos.add(profilePos[i]);
+            _profileX.add(profileX[i]);
+            _profileY.add(profileY[i]);
+            _apertureShape.add(shape);
+        }
+    }
 }
