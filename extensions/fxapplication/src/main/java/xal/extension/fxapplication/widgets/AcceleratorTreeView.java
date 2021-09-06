@@ -94,25 +94,25 @@ public class AcceleratorTreeView extends XalTreeView<AcceleratorNode> {
         titlebar.getChildren().addAll(titlebox, filterMenu);
         getChildren().add(titlebar);
 
-        // TreeView
-        treeView.setCellFactory(p -> new AcceleratorNodeTreeCell());
-
-        // Set actions on mouse double-click
-        doubleClickEH = (MouseEvent event) -> {
-            if (document != null && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
-                TreeItem<AcceleratorNode> selectedItem = (TreeItem<AcceleratorNode>) treeView.getSelectionModel().getSelectedItem();
-                if (selectedItem != null && selectedItem.getValue() instanceof AcceleratorSeq
-                        && !selectedItem.getValue().getId().equals(document.getSequence())
-                        && document.getAccelerator().getSequences().contains((AcceleratorSeq) selectedItem.getValue())) {
-                    String seqName = selectedItem.getValue().getId();
-                    document.getSequenceProperty().setValue(seqName);
-                }
-            }
-        };
-        treeView.addEventHandler(MouseEvent.MOUSE_CLICKED, doubleClickEH);
+        // Double-click handler to change sequence enabled by default.
+        enabledDefaultDoubleClickEventHandler = true;
 
         getChildren().addAll(treeView, bottombar);
         VBox.setVgrow(treeView, Priority.ALWAYS);
+    }
+
+    // Set actions on mouse double-click
+    @Override
+    protected void doubleClickEventHandler(MouseEvent event) {
+        if (document != null && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+            TreeItem<AcceleratorNode> selectedItem = (TreeItem<AcceleratorNode>) getSelectionModel().getSelectedItem();
+            if (selectedItem != null && selectedItem.getValue() instanceof AcceleratorSeq
+                    && !selectedItem.getValue().getId().equals(document.getSequence())
+                    && document.getAccelerator().getSequences().contains((AcceleratorSeq) selectedItem.getValue())) {
+                String seqName = selectedItem.getValue().getId();
+                document.getSequenceProperty().setValue(seqName);
+            }
+        }
     }
 
     @Override

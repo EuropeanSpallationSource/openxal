@@ -23,6 +23,8 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import xal.extension.fxapplication.XalFxDocument;
@@ -37,6 +39,8 @@ import xal.smf.AcceleratorSeqCombo;
  */
 public class ComboSequencesTreeView extends XalTreeView<AcceleratorNode> {
 
+    private XalFxDocument document;
+
     public ComboSequencesTreeView() {
         // Top bar
         titlebox.setPadding(new Insets(5));
@@ -44,15 +48,28 @@ public class ComboSequencesTreeView extends XalTreeView<AcceleratorNode> {
         titlebox.getChildren().add(titleLabel);
         titlebar.getChildren().add(titlebox);
 
-        // TreeView
-        treeView.setCellFactory(p -> new AcceleratorNodeTreeCell());
-
         getChildren().addAll(titlebar, treeView, bottombar);
         VBox.setVgrow(treeView, Priority.ALWAYS);
     }
 
+    // Set actions on mouse double-click
+    @Override
+    protected void doubleClickEventHandler(MouseEvent event) {
+        if (document != null && event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+            TreeItem<AcceleratorNode> selectedItem = (TreeItem<AcceleratorNode>) getSelectionModel().getSelectedItem();
+            if (selectedItem != null && selectedItem.getValue() instanceof AcceleratorSeqCombo
+                    && !selectedItem.getValue().getId().equals(document.getSequence())
+                    && document.getAccelerator().getComboSequences().contains((AcceleratorSeqCombo) selectedItem.getValue())) {
+                String seqName = selectedItem.getValue().getId();
+                document.getSequenceProperty().setValue(seqName);
+            }
+        }
+    }
+
     @Override
     public void setDocument(XalFxDocument document) {
+        this.document = document;
+
         update(document.getAccelerator());
         document.getAcceleratorProperty().addChangeListener((ChangeListener<Accelerator>) (ov, oldAccelerator, newAccelerator) -> {
             update(newAccelerator);
