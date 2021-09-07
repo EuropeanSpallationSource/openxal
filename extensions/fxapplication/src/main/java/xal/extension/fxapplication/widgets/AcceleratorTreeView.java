@@ -153,7 +153,7 @@ public class AcceleratorTreeView extends XalTreeView<AcceleratorNode> {
 
     public void setAlwaysShowRfCavities(boolean alwaysShowRfCavities) {
         this.alwaysShowRfCavities = alwaysShowRfCavities;
-        updateTreeView();
+        updateTreeViewKeepSelection();
     }
 
     @Override
@@ -238,6 +238,20 @@ public class AcceleratorTreeView extends XalTreeView<AcceleratorNode> {
         updateTreeView();
     }
 
+    protected void updateTreeViewKeepSelection() {
+        // Check if there any selected item
+        String selectedNodeId = getSelectedNodeId();
+
+        updateTreeView();
+
+        // Select the same item that was selected before calling this method, if available.
+        if (selectedNodeId != null) {
+            selectElement(selectedNodeId);
+        }
+
+        Logger.getLogger(getClass().getName()).fine("Updating accelerator treeview.");
+    }
+    
     protected void updateTreeView() {
         ImageView icon = new ImageView(getClass().getResource("icons/32/SEQ.png").toExternalForm());
         TreeItem<AcceleratorNode> rootNode = new TreeItem<>(currentSeq, icon);
@@ -264,6 +278,7 @@ public class AcceleratorTreeView extends XalTreeView<AcceleratorNode> {
             titlebox.getChildren().addAll(acceleratorName, separator, sequenceName);
         }
         addSequence(currentSeq, rootNode);
+
         Logger.getLogger(getClass().getName()).fine("Updating accelerator treeview.");
     }
 
@@ -293,7 +308,7 @@ public class AcceleratorTreeView extends XalTreeView<AcceleratorNode> {
         }
         typeMap.values().forEach(item -> item.setSelected(true));
 
-        updateTreeView();
+        updateTreeViewKeepSelection();
         synchronized (lock) {
             multipleSelectionFlag = false;
         }
@@ -309,7 +324,7 @@ public class AcceleratorTreeView extends XalTreeView<AcceleratorNode> {
         }
         typeMap.values().forEach(item -> item.setSelected(false));
 
-        updateTreeView();
+        updateTreeViewKeepSelection();
         synchronized (lock) {
             multipleSelectionFlag = false;
         }
@@ -371,7 +386,7 @@ public class AcceleratorTreeView extends XalTreeView<AcceleratorNode> {
             }
         }
 
-        updateTreeView();
+        updateTreeViewKeepSelection();
         synchronized (lock) {
             multipleSelectionFlag = false;
         }
@@ -404,7 +419,7 @@ public class AcceleratorTreeView extends XalTreeView<AcceleratorNode> {
                 }
             }
         }
-        updateTreeView();
+        updateTreeViewKeepSelection();
         synchronized (lock) {
             multipleSelectionFlag = false;
         }
@@ -438,7 +453,7 @@ public class AcceleratorTreeView extends XalTreeView<AcceleratorNode> {
             // If a multiple selection is being done, the update must be done manually.
             synchronized (lock) {
                 if (!multipleSelectionFlag) {
-                    updateTreeView();
+                    updateTreeViewKeepSelection();
                 }
             }
         });

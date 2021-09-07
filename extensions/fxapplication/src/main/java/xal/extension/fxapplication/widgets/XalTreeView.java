@@ -20,6 +20,7 @@ package xal.extension.fxapplication.widgets;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -348,19 +349,8 @@ public abstract class XalTreeView<T> extends VBox {
     protected boolean selectElement(TreeItem<T> parentNode, String nodeId) {
         for (TreeItem<T> treeItem : parentNode.getChildren()) {
             if (nodeId.equals(getId(treeItem))) {
-                // Expand all parent items.
-                for (TreeItem parent = treeItem; parent.getParent() != null; parent = parent.getParent()) {
-                    parent.getParent().setExpanded(true);
-                }
-                // Select the element.
-                treeView.getSelectionModel().select(treeItem);
-                // Scroll to the item if not visible.
-                int selectedIndex = treeView.getSelectionModel().getSelectedIndex();
-                ObservableList<Node> childrenUnmodifiable = treeView.getChildrenUnmodifiable();
-                VirtualFlow get = (VirtualFlow) childrenUnmodifiable.get(0);
-                if (selectedIndex >= get.getLastVisibleCell().getIndex() || selectedIndex <= get.getFirstVisibleCell().getIndex()) {
-                    treeView.scrollTo(selectedIndex);
-                }
+                // Make sure the TreeView is up-to-date before calling expandSelectAndScroll
+                Platform.runLater(() -> expandSelectAndScroll(treeItem));
                 return true;
             }
             // Check also the children recursively.
@@ -369,6 +359,28 @@ public abstract class XalTreeView<T> extends VBox {
             }
         }
         return false;
+    }
+
+    /**
+     * This method expands all parent items, select the item, and scroll if
+     * needed. In order for it to work, the TreeView must be up-to-date, so
+     * always call this method using Platform.runLater
+     */
+    private void expandSelectAndScroll(TreeItem treeItem) {
+        // Expand all parent items.
+        for (TreeItem parent = treeItem; parent.getParent() != null; parent = parent.getParent()) {
+            parent.getParent().setExpanded(true);
+        }
+        // Select the element.
+        treeView.getSelectionModel().select(treeItem);
+        // Scroll to the item if not visible.
+        int selectedIndex = treeView.getSelectionModel().getSelectedIndex();
+        ObservableList<Node> childrenUnmodifiable = treeView.getChildrenUnmodifiable();
+        VirtualFlow get = (VirtualFlow) childrenUnmodifiable.get(0);
+        if ((get.getLastVisibleCell() != null && selectedIndex >= get.getLastVisibleCell().getIndex())
+                || (get.getFirstVisibleCell() != null && selectedIndex <= get.getFirstVisibleCell().getIndex())) {
+            treeView.scrollTo(selectedIndex);
+        }
     }
 
     /**
