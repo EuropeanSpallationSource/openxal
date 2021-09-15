@@ -44,6 +44,42 @@ public class FieldMapFactory {
     }
 
     /**
+     * Static factory method to add a field profile without the need to have it
+     * on disk.
+     *
+     * @param key key used to store the fieldmap
+     * @param fieldmap The FieldMap object
+     */
+    public static void putInstance(String key, FieldMap fieldmap) throws FieldMapException {
+        if (instances.containsKey(key)) {
+            throw new FieldMapException("There is already a fieldmap that uses the same key: " + key);
+        }
+
+        instances.put(key, fieldmap);
+    }
+
+    /**
+     * Static factory method to add a field profile without the need to have it
+     * on disk.
+     *
+     * @param path not necessarily a path, used as a key
+     * @param filename not necessarily a filename, used as a key
+     * @param numberOfPoints number of points to use for integration. It can be
+     * lower or higher than the number of points in the field map
+     * @param fieldmap The FieldMap object
+     */
+    public static void putInstance(String path, String filename, int numberOfPoints, FieldMap fieldmap) throws FieldMapException {
+        String key = null;
+        try {
+            key = new URI(path).resolve(filename).toString() + numberOfPoints;
+        } catch (URISyntaxException ex) {
+            Logger.getLogger(FieldMapFactory.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        putInstance(key, fieldmap);
+    }
+
+    /**
      * Static factory method to give field profile for a specific file
      *
      * @param path path to the field map file

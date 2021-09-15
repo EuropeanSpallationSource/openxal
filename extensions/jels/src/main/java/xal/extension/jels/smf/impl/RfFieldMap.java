@@ -153,16 +153,11 @@ public class RfFieldMap extends RfGap implements ISplittable, IFileBasedFieldMap
     public void update(DataAdaptor adaptor) {
         super.update(adaptor);
 
-        try {
-            if (adaptor instanceof XmlDataAdaptor) {
-                String fieldMapPath = new URI(((XmlDataAdaptor) adaptor).document().getDocumentURI()).resolve(".").toString();
-                fieldMap = FieldMapFactory.getInstance(fieldMapPath, getFieldMapFile(),
-                        m_bucFieldMap.getDynamic(), m_bucFieldMap.getFieldType(),
-                        m_bucFieldMap.getDimensions(), m_bucFieldMap.getNumberOfPoints());
-            }
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(RfFieldMap.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        String fieldMapPath = getAccelerator().getFieldMapPath();
+
+        fieldMap = FieldMapFactory.getInstance(fieldMapPath, getFieldMapFile(),
+                m_bucFieldMap.getDynamic(), m_bucFieldMap.getFieldType(),
+                m_bucFieldMap.getDimensions(), m_bucFieldMap.getNumberOfPoints());
     }
 
     @Override

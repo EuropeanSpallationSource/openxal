@@ -54,6 +54,9 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
         private boolean powerSuppliesFile;
 
 
+    // URL to the directory where fieldmap files can be found.
+    private String fieldMapPath;
+    
     // DataAdaptor interface ----------------------
 
     /**
@@ -582,5 +585,13 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
      */
     public MagnetTrimSupply getMagnetTrimSupply(String supplyId) {
         return magnetTrimSupplies.get(supplyId);
+    }
+
+    public String getFieldMapPath() {
+        return fieldMapPath;
+    }
+
+    public void setFieldMapPath(String absoluteUrlSpec) {
+        fieldMapPath = absoluteUrlSpec;
     }
 }

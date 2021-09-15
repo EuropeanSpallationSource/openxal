@@ -187,7 +187,7 @@ public class InMemoryDataAdaptor implements DataAdaptor {
     
     /** return all child adaptors of the specified node name */
     public List<DataAdaptor> childAdaptors( final String label ) {
-        return SUBNODE_MAP.get( label );
+        return SUBNODE_MAP.getOrDefault(label, new ArrayList<DataAdaptor>());
     }
     
     
@@ -206,7 +206,7 @@ public class InMemoryDataAdaptor implements DataAdaptor {
     /** Convenience method to get a single child adaptor when only one is expected */
     public DataAdaptor childAdaptor( final String label ) {
         final List<DataAdaptor> namedSubnodes = childAdaptors( label );
-        return namedSubnodes.size() > 0 ? namedSubnodes.get( 0 ) : null;
+        return namedSubnodes != null && namedSubnodes.size() > 0 ? namedSubnodes.get(0) :  null;
     }
     
     
@@ -214,8 +214,7 @@ public class InMemoryDataAdaptor implements DataAdaptor {
     public DataAdaptor createChild( final String label ) {
         final DataAdaptor child = new InMemoryDataAdaptor( label );
         List<DataAdaptor> subnodes = childAdaptors( label );
-        if ( subnodes == null ) {
-            subnodes = new ArrayList<DataAdaptor>();
+        if ( subnodes.isEmpty() ) {
             SUBNODE_MAP.put( label, subnodes );
         }
         subnodes.add( child );
