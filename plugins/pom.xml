@@ -17,6 +17,8 @@
         <module>postgres</module>
         <module>essrbac</module>
         <module>epics7</module>
+        <module>olog</module>
+        <module>jelog</module>
     </modules>
 
     <!-- For the local repository -->

@@ -21,7 +21,7 @@
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.jelog</artifactId>
+            <artifactId>openxal.extensions.logbook</artifactId>
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>

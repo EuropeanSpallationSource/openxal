@@ -60,8 +60,12 @@
             <artifactId>openxal.extensions.application</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>openxal.extensions.jelog</artifactId>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.plugins.jelog</artifactId>    
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.plugins.olog</artifactId>     
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
