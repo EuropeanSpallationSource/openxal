@@ -661,6 +661,7 @@ abstract public class FxApplication extends Application {
     protected void loadAcceleratorMenuHandler() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Load Accelerator");
+        fileChooser.setInitialDirectory((new File(XMLDataManager.defaultPath())).getParentFile());
 
         //Set extension filter
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XAL files (*.xal)", "*.xal");
