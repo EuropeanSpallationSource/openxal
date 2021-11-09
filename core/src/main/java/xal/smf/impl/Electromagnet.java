@@ -227,6 +227,16 @@ abstract public class Electromagnet extends Magnet {
         }
     }
 
+    @Override
+    public boolean isChannelSettable(final String handle) {
+        if (channelSuite.hasHandle(handle)) {
+            return channelSuite.isSettable(handle);
+        } else {
+            final MagnetMainSupply supply = getMainSupply();
+            return supply.getChannelSuite().isSettable(handle);
+        }
+    }
+
     /**
      * Get the main power supply for this magnet.
      *
