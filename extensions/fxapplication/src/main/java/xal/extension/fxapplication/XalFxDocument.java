@@ -100,8 +100,10 @@ abstract public class XalFxDocument {
      */
     public void setHasChanges(final boolean changeStatus) {
         // Add a * after the file name in title bar in case there are changes to the file
-        if (!hasChanges) {
+        if (changeStatus) {
             sourceString.set(source + "*");
+        } else {
+            sourceString.set(source.toString());
         }
         hasChanges = changeStatus;
     }
