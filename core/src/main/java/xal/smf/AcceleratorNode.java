@@ -274,8 +274,8 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
         Channel channel;
         for (String handle : getHandles()) {
             channel = findChannel(handle);
-            if (channel != null)
-                channels.add(findChannel(handle));
+            if (channel != null && !channels.contains(channel))
+                channels.add(channel);
         }
         return channels;
     }
