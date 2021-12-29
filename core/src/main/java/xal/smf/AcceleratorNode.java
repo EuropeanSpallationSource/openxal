@@ -265,6 +265,30 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
             return channelSuite.getChannel( handle );
     }
 
+    /**
+     * Returns a collection of all channels
+     * @return channels (corresponding to all handles)
+     */
+    public List<Channel> getAllChannels() {
+        ArrayList<Channel> channels = new ArrayList<>();
+        Channel channel;
+        for (String handle : getHandles()) {
+            channel = findChannel(handle);
+            if (channel != null)
+                channels.add(findChannel(handle));
+        }
+        return channels;
+    }
+
+    /**
+     * Do a batch connection of all handles for this node
+     * @param timeout the maximum time in seconds to wait for completion
+     */
+    public void batchConnectAllHandles(double timeout) {
+        final BatchGetValueRequest request = new BatchGetValueRequest( getAllChannels() );
+        request.submitAndWait(timeout);
+    }
+
 
     // added by nickp 2/8/2002
     /** this method returns the Channel object of this node, associated with
