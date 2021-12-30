@@ -384,8 +384,6 @@ abstract public class FxApplication extends Application {
 
             stage.setTitle(STAGE_TITLE);
             stage.setScene(scene);
-            //YIL It is probably very bad to set this here but I am a stupid person.
-            DOCUMENT.sourceString = new SimpleStringProperty(DOCUMENT.DEFAULT_FILENAME);
             DOCUMENT.sourceString.addListener((observable, oldValue, newValue) -> stage.setTitle(STAGE_TITLE + ": " + newValue));
 
             loader.<Controller>getController().setApplication(this);

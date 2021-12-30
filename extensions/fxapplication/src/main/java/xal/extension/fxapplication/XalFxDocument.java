@@ -85,6 +85,7 @@ abstract public class XalFxDocument {
         this.HELP_WIKI_BASE = "https://confluence.esss.lu.se/pages/viewpage.action?pageId=";
         this.accelerator = new AcceleratorProperty();
         this.sequence = new SimpleStringProperty();
+        this.sourceString = new SimpleStringProperty(DEFAULT_FILENAME);
     }
 
     public XalFxDocument(Stage stage) {
