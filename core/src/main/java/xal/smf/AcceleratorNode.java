@@ -282,11 +282,21 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
 
     /**
      * Do a batch connection of all handles for this node
+     * @return the BatchConnectionRequest object
+     */
+    public BatchConnectionRequest batchConnectAllHandles() {
+        final BatchConnectionRequest request = new BatchConnectionRequest( getAllChannels() );
+        request.submit();
+        return request;
+    }
+
+    /**
+     * Do a batch connection of all handles for this node and wait for completion
      * @param timeout the maximum time in seconds to wait for completion
      * @return true if all channels successfully connected
      */
-    public boolean batchConnectAllHandles(double timeout) {
-        final BatchGetValueRequest request = new BatchGetValueRequest( getAllChannels() );
+    public boolean batchConnectAllHandlesAndWait(double timeout) {
+        final BatchConnectionRequest request = new BatchConnectionRequest( getAllChannels() );
         return request.submitAndWait(timeout);
     }
 
