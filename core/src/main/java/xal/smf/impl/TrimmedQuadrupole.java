@@ -113,6 +113,16 @@ public class TrimmedQuadrupole extends Quadrupole implements TrimmedMagnet {
 		return channel != null ? channel : getTrimSupply().getChannelSuite().getChannel( handle );
     }
     
+
+    @Override
+    public boolean isChannelSettable(final String handle) {
+        if (channelSuite.hasHandle(handle)) {
+            return channelSuite.isSettable(handle);
+        } else {
+            final MagnetTrimSupply supply = getTrimSupply();
+            return supply.getChannelSuite().isSettable(handle);
+        }
+    }
     
     /**
      * Get the trim power supply for this magnet.

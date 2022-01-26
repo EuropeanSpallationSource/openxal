@@ -199,7 +199,19 @@ public abstract class Magnet extends AcceleratorNode implements MagnetType {
             return 1;
         }
     }
-    
+
+    /**
+     * A magnet may have defined a (simple) conversion factor between
+     * the effective magnetic field and the current applied.
+     *
+     * Useful for simulating with current parameters.
+     *
+     * @return The conversion factor field/current [T/m^n/A]
+     */
+    public double getConversionFactor() {
+        return m_bucMagnet.getConversionFactor();
+    }
+
     /**
      * get Normal fields
      */
