@@ -23,7 +23,6 @@ import java.io.InputStream;
 import javafx.application.Application;
 import java.net.URL;
 import java.util.Date;
-import javafx.beans.property.SimpleStringProperty;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -84,6 +83,7 @@ abstract public class FxApplication extends Application {
     protected String MAIN_SCENE = "/fxml/Scene.fxml";
     protected static String CSS_STYLE = "/styles/Styles.css";
     private String STAGE_TITLE = "Demo Application";
+    private String acceleratorMainPath;
 
     private enum THEME {
         DEFAULT,
@@ -203,7 +203,7 @@ abstract public class FxApplication extends Application {
 
         try {
             if (HAS_ACCELERATOR) {
-                String acceleratorMainPath = XMLDataManager.defaultPath();
+                acceleratorMainPath = XMLDataManager.defaultPath();
                 if (acceleratorMainPath == null) {
                     acceleratorMainPath = latticeErrorDialog("Default accelerator not set", "Press OK to open file dialog to select the path to the accelerator lattice files or Cancel to close the application.");
                 }
@@ -628,6 +628,7 @@ abstract public class FxApplication extends Application {
             Accelerator accelerator = acceleratorXMLManager.getAccelerator();
             DOCUMENT.acceleratorXMLManager = acceleratorXMLManager;
             DOCUMENT.accelerator.setAccelerator(accelerator);
+            acceleratorMainPath = acceleratorPath;
         } catch (ParseException | ClassCastException ex) {
             Alert alert = new Alert(AlertType.WARNING);
             alert.setTitle("Load Accelerator Warning");
@@ -659,7 +660,7 @@ abstract public class FxApplication extends Application {
     protected void loadAcceleratorMenuHandler() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Load Accelerator");
-        fileChooser.setInitialDirectory((new File(XMLDataManager.defaultPath())).getParentFile());
+        fileChooser.setInitialDirectory(new File(acceleratorMainPath).getParentFile());
 
         //Set extension filter
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XAL files (*.xal)", "*.xal");
