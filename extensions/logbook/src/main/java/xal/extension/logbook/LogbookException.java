@@ -27,4 +27,8 @@ public class LogbookException extends Exception {
         super(msg);
     }
 
+    public LogbookException(Exception ex) {
+        super(ex);
+    }
+
 }

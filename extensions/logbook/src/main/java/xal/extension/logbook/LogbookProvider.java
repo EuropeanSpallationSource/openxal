@@ -19,8 +19,6 @@ package xal.extension.logbook;
 
 import java.util.Map;
 import java.util.List;
-import javafx.stage.Stage;
-import javafx.util.Pair;
 import xal.tools.apputils.Preferences;
 
 /**
@@ -56,7 +54,7 @@ public abstract class LogbookProvider {
         setServer(serverUrl);
     }
 
-    public abstract void login(String username, char[] password);
+    public abstract boolean login(String username, char[] password);
 
     public abstract void logout();
 
@@ -65,24 +63,24 @@ public abstract class LogbookProvider {
      */
     /**
      *
+     * @param logbook Name of the logbooks where the entry should be posted
      * @param fields map containing metadata as pair of name of the attribute
      * and value
      * @param textBody entry body text
-     * @param logbook Name of the logbook
      * @return the message ID
      */
-    public abstract int post(Map<String, String> fields, String textBody, String logbook);
+    public abstract long post(String[] logbooks, Map<String, List<String>> fields, String textBody) throws LogbookException;
 
-    public abstract int post(Map<String, String> fields, String textBody, String logbook, List<Attachment> attachments);
+    public abstract long post(String[] logbooks, Map<String, List<String>> fields, String textBody, List<Attachment> attachments) throws LogbookException;
 
     /* 
      * Methods to post new entries using the UI
      */
-    public abstract Stage post(Pair<String, String>... defaultAttributes);
+    public abstract long post(Map<String, List<String>> defaultAttributes) throws LogbookException;
 
-    public abstract Stage post(String defaultLogbook, Pair<String, String>... defaultAttributes);
+    public abstract long post(String[] defaultLogbooks, Map<String, List<String>> defaultAttributes) throws LogbookException;
 
-    public abstract Stage post(List<Attachment> attachments, Pair<String, String>... defaultAttributes);
+    public abstract long post(List<Attachment> attachments, Map<String, List<String>> defaultAttributes) throws LogbookException;
 
-    public abstract Stage post(List<Attachment> attachments, String defaultLogbook, Pair<String, String>... defaultAttributes);
+    public abstract long post(List<Attachment> attachments, String[] defaultLogbooks, Map<String, List<String>> defaultAttributes) throws LogbookException;
 }

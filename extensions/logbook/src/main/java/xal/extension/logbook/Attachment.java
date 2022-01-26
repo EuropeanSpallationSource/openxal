@@ -17,19 +17,16 @@
  */
 package xal.extension.logbook;
 
+import com.j256.simplemagic.ContentInfo;
+import com.j256.simplemagic.ContentInfoUtil;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URLConnection;
 import java.nio.file.Files;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.image.Image;
-import javax.imageio.ImageIO;
-import javafx.embed.swing.SwingFXUtils;
 
 /**
  * This class supports different types of attachments: File, InputStream, and
@@ -39,34 +36,56 @@ import javafx.embed.swing.SwingFXUtils;
  */
 public class Attachment {
 
+    // create a magic utility using the internal magic file
+    private static final ContentInfoUtil util = new ContentInfoUtil();
+
     private String fileName;
-    private final boolean isImage;
-    private final Image image;
     private String mimeType;
-    ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+    private ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
 
     public String getMimeType() {
         return mimeType;
     }
 
-    public boolean isImage() {
-        return isImage;
-    }
-
-    public Image getImage() {
-        return image;
+    public void setMimeType(String mimeType) {
+        this.mimeType = mimeType;
     }
 
     public String getFileName() {
         return fileName;
     }
 
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public ByteArrayOutputStream getContent() {
+        return byteOutput;
+    }
+
+    public void setContent(ByteArrayOutputStream byteOutput) {
+        this.byteOutput = byteOutput;
+    }
+
+    /**
+     * Empty constructor to be used only by subclasses.
+     */
+    protected Attachment() {
+    }
+
+    /**
+     * Creates a new Attachment instance from a File object.
+     *
+     * @param file
+     * @throws IOException
+     */
     public Attachment(File file) throws IOException {
         this(file.getName(), Files.newInputStream(file.toPath()));
     }
 
     /**
-     *
+     * Creates a new Attachment from an InputStream.
+     * 
      * @param fileName Filename, including extension.
      * @param fileContent An InputStream object. If it is an image, it will
      * recognize it.
@@ -85,45 +104,13 @@ public class Attachment {
             Logger.getLogger(Attachment.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        // Try to load the image, if possible
-        image = new Image(new ByteArrayInputStream(byteOutput.toByteArray()));
-        isImage = !image.isError();
-
         try {
-            mimeType = URLConnection.guessContentTypeFromStream(new ByteArrayInputStream(byteOutput.toByteArray()));
+            ContentInfo content = util.findMatch(new ByteArrayInputStream(byteOutput.toByteArray()));
+            if (content != null) {
+                mimeType = content.getMimeType();
+            }
         } catch (IOException ex) {
             Logger.getLogger(Attachment.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-
-    /**
-     *
-     * @param fileName Filename, including extension.
-     * @param image Screenshot
-     */
-    public Attachment(String fileName, Image image) {
-        this.fileName = fileName;
-        this.image = image;
-        isImage = true;
-        mimeType = "image/png";
-
-        try {
-            ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", byteOutput);
-            byteOutput.flush();
-        } catch (IOException ex) {
-            Logger.getLogger(Attachment.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    /**
-     * Write the attachment to an OutputStream object, typically an HTTP
-     * connection to the elog server.
-     *
-     * @param os
-     * @throws java.io.IOException
-     */
-    public void writeTo(OutputStream os) throws IOException {
-        byteOutput.writeTo(os);
-        os.flush();
     }
 }

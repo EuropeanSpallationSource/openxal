@@ -11,7 +11,7 @@
         <main.basedir>${project.basedir}</main.basedir>     <!-- For the local repository -->
         <surefireArgLine></surefireArgLine>                 <!-- To be able to run tests on Netbeans -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <javafx-version>16</javafx-version>
+        <javafx-version>17</javafx-version>
         <sonar.exclusions> <!-- Exclude source we do not use -->
             **/tools/data/KeyValueSorting.java,
             **/sim/slg/*.py,
@@ -455,7 +455,7 @@
             <dependency>
                 <groupId>eu.ess</groupId>
                 <artifactId>jelog</artifactId>
-                <version>2.5</version>
+                <version>3.0-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

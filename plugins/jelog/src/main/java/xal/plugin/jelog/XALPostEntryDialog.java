@@ -21,8 +21,8 @@ import java.io.IOException;
 import java.util.List;
 import eu.ess.jelog.Attachment;
 import eu.ess.jelog.PostEntryDialog;
+import java.util.Map;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 
 /**
  * Class to submit new entries using a JavaFX dialog. Useful for logging data
@@ -36,23 +36,27 @@ public class XALPostEntryDialog {
 
     private static String elogURL = null;
 
+    private XALPostEntryDialog() {
+        // Utility class
+    }
+
     public static void setElogServer(String elogURL) {
         XALPostEntryDialog.elogURL = elogURL;
     }
 
-    public static Stage post(Pair<String, String>... defaultAttributes) throws IOException, Exception {
+    public static int post(Map<String, List<String>> defaultAttributes) throws IOException {
         return post(null, null, defaultAttributes);
     }
 
-    public static Stage post(String defaultLogbook, Pair<String, String>... defaultAttributes) throws IOException, Exception {
+    public static int post(String defaultLogbook, Map<String, List<String>> defaultAttributes) throws IOException {
         return post(null, defaultLogbook, defaultAttributes);
     }
 
-    public static Stage post(List<Attachment> attachments, Pair<String, String>... defaultAttributes) throws IOException, Exception {
+    public static int post(List<Attachment> attachments, Map<String, List<String>> defaultAttributes) throws IOException {
         return post(attachments, null, defaultAttributes);
     }
 
-    public static Stage post(List<Attachment> attachments, String defaultLogbook, Pair<String, String>... defaultAttributes) throws IOException, Exception {
+    public static int post(List<Attachment> attachments, String defaultLogbook, Map<String, List<String>> defaultAttributes) throws IOException {
         // Trick to locate CKEditor files. Only works on LCR-type installations, where
         // the html folder is located next to the library.jar file.
         String ckeditorPath = PostEntryDialog.class.getResource("PostEntryDialog.class").toExternalForm();
@@ -61,11 +65,7 @@ public class XALPostEntryDialog {
         ckeditorPath += "/html/ckeditor.html";
         System.setProperty("eu.ess.jelog.ckeditor_path", ckeditorPath);
 
-        if (elogURL == null) {
-            PostEntryDialog.setElogServer(ElogServer.getElogURL());
-        } else {
-            PostEntryDialog.setElogServer(elogURL);
-        }
+        PostEntryDialog.setElogServer(elogURL);
 
         return PostEntryDialog.post(attachments, defaultLogbook, defaultAttributes);
     }

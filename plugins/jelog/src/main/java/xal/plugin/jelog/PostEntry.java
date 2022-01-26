@@ -18,11 +18,12 @@
 package xal.plugin.jelog;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 import java.util.logging.Logger;
 import eu.ess.jelog.Attachment;
 import eu.ess.jelog.Jelog;
+import java.net.MalformedURLException;
 
 /**
  * Class to submit new entries without a GUI. Useful for applications that
@@ -36,27 +37,27 @@ public class PostEntry {
 
     public static final Logger LOGGER = Logger.getLogger(PostEntry.class.getName());
 
+    private PostEntry() {
+        // Utility class
+    }
+
     public static void setElogServer(String elogServer) {
         PostEntry.elogServer = elogServer;
     }
 
-    public static int post(HashMap<String, String> fields, String textBody, String logbook) throws IOException, Exception {
+    public static int post(Map<String, List<String>> fields, String textBody, String logbook) throws IOException {
         return post(fields, textBody, logbook, null);
     }
 
-    public static int post(HashMap<String, String> fields, String textBody, String logbook, List<Attachment> attachments) throws IOException, Exception {
-        if (elogServer == null) {
-            elogServer = ElogServer.getElogURL();
-        }
-        
+    public static int post(Map<String, List<String>> fields, String textBody, String logbook, List<Attachment> attachments) throws IOException {
         Jelog jelog = new Jelog(elogServer);
 
         if (jelog.getUserName() == null) {
             LOGGER.severe("Not logged in. Please log in using the login() method.");
+            return -1;
         }
 
-        return jelog.submit(fields, textBody, null, attachments,
-                logbook);
+        return jelog.submit(fields, textBody, null, attachments, logbook);
     }
 
     /**
@@ -68,9 +69,15 @@ public class PostEntry {
      * @throws IOException
      * @throws Exception
      */
-    public static boolean login(String user, char[] password) throws IOException, Exception {
+    public static boolean login(String user, char[] password) throws MalformedURLException {
         Jelog jelog = new Jelog(elogServer);
-    
+
         return jelog.login(user, password, true);
+    }
+
+    public static void logout() throws MalformedURLException {
+        Jelog jelog = new Jelog(elogServer);
+
+        jelog.logout();
     }
 }
