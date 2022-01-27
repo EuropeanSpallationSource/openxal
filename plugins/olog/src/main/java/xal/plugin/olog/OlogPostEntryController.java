@@ -161,6 +161,7 @@ public class OlogPostEntryController implements Initializable {
 
     private TextArea body = new TextArea();
     private WebView previewWV = new WebView();
+    
     private SplitPane editorSplitPane = new SplitPane();
     private WebEngine engine = previewWV.getEngine();
     @FXML
@@ -253,6 +254,11 @@ public class OlogPostEntryController implements Initializable {
         // Preparing the editor panel
         VBox.setVgrow(body, Priority.ALWAYS);
         VBox.setVgrow(previewWV, Priority.ALWAYS);
+        VBox.setVgrow(editorSplitPane, Priority.ALWAYS);
+        
+        previewWV.prefHeightProperty().bind(VBoxEditor.heightProperty());
+        editorSplitPane.setStyle("-fx-padding: 0;");
+        
         editorSplitPane.getItems().addAll(body, previewWV);
         editorSplitPane.setDividerPositions(0.5);
 
@@ -445,6 +451,7 @@ public class OlogPostEntryController implements Initializable {
                 Pair<String, Map<String, String>> p = OlogProvider.parseProperty(property);
                 Property newProp = new Property(p.getKey(), p.getValue());
                 properties.add(newProp);
+                availableProperties.remove(p.getKey());
             }
         }
     }
@@ -484,6 +491,7 @@ public class OlogPostEntryController implements Initializable {
 
             if (!propertyName.isBlank()) {
                 properties.add(new Property(propertyName, (Map<String, String>) availableProperties.get(propertyName).stream().collect(Collectors.toMap(item -> item, item -> ""))));
+                availableProperties.remove(propertyName);
             }
         } catch (Exception ex) {
             Alert alert = new Alert(AlertType.ERROR);
