@@ -163,6 +163,8 @@ public class OlogPostEntryController implements Initializable {
     private WebView previewWV = new WebView();
     private SplitPane editorSplitPane = new SplitPane();
     private WebEngine engine = previewWV.getEngine();
+    @FXML
+    private Button logoutB;
 
     /**
      * Initializes the controller class.
@@ -171,6 +173,11 @@ public class OlogPostEntryController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         HBoxAttachmentsTitle.minWidthProperty().bind(titledPaneAttachments.widthProperty());
         HBoxPropertiesTitle.minWidthProperty().bind(titledPaneProperties.widthProperty());
+
+        if (CLIENT.isLoggedIn()) {
+            userLabel.setText(CLIENT.getUserName());
+            logoutB.setDisable(false);
+        }
 
         // Populating Olog attributes
         try {
@@ -187,7 +194,6 @@ public class OlogPostEntryController implements Initializable {
 
             throw new RuntimeException(errMsg);
         }
-
 
         // Creating checkboxes for logbooks
         List<CheckBox> checkBoxLogbooksList = new ArrayList<>();
@@ -517,7 +523,7 @@ public class OlogPostEntryController implements Initializable {
         VBoxEditor.getChildren().add(editorSplitPane);
 
         body.setOnKeyTyped((e) -> updatePreview());
-        
+
         updatePreview();
     }
 
@@ -549,5 +555,12 @@ public class OlogPostEntryController implements Initializable {
 
         String html = renderer.render(document);
         engine.loadContent(html);
+    }
+
+    @FXML
+    private void logoutBAction(ActionEvent event) {
+        CLIENT.forgetCredentials();
+        userLabel.setText("");
+        logoutB.setDisable(true);
     }
 }

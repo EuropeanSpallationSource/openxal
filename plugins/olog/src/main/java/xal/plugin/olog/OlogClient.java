@@ -62,6 +62,7 @@ public class OlogClient {
     private static final String LOGBOOK_ENTRY_TYPE_PROPERTY = "entryTypes";
 
     private static String credentials;
+    private String username;
 
     private OlogClient() {
     }
@@ -124,7 +125,12 @@ public class OlogClient {
         }
     }
 
+    public String getUserName() {
+        return username;
+    }
+
     public void setCredentials(String username, char[] password) {
+        this.username = username;
         String auth = username + ":" + String.copyValueOf(password);
         byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
 
@@ -133,6 +139,7 @@ public class OlogClient {
 
     public void forgetCredentials() {
         credentials = null;
+        username = null;
     }
 
     public boolean isLoggedIn() {

@@ -79,7 +79,19 @@
                 </HBox>
                 <HBox alignment="CENTER_LEFT" styleClass="attribvalue" GridPane.columnIndex="1">
                     <children>
-                        <Label fx:id="userLabel" />
+                  <GridPane HBox.hgrow="ALWAYS">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0" />
+                        <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                              <Label fx:id="userLabel" />
+                        <Button fx:id="logoutB" disable="true" mnemonicParsing="false" onAction="#logoutBAction" text="Logout" GridPane.columnIndex="1" />
+                     </children>
+                  </GridPane>
                     </children>
                 </HBox>
                 <FlowPane fx:id="logbooksFP" alignment="CENTER_LEFT" hgap="15.0" styleClass="attribvalue" GridPane.columnIndex="1" GridPane.rowIndex="1" />
