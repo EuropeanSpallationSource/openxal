@@ -58,7 +58,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import xal.extension.application.ApplicationStatus;
-import xal.extension.jelog.ElogServer;
+import xal.extension.logbook.Logbook;
+import xal.extension.logbook.LogbookException;
+import xal.extension.logbook.LogbookProvider;
 import xal.extension.service.ServiceDirectory;
 import xal.extension.service.ServiceException;
 import xal.smf.Accelerator;
@@ -257,17 +259,19 @@ abstract public class FxApplication extends Application {
                 }
             }
 
-            final Menu eLogMenu = new Menu("eLog");
+            final Menu eLogMenu = new Menu("Logbook");
             final MenuItem openLogMenu = new MenuItem("Open");
             openLogMenu.setOnAction((e) -> urlMenuHandler());
-            final MenuItem makePostMenu = new MenuItem("Post Screen Shot");
-            makePostMenu.setOnAction((e) -> eLogMenuHandler("image"));
+            final MenuItem makePostMenu = new MenuItem("Post New entry");
+            makePostMenu.setOnAction((e) -> eLogMenuHandler("none"));
+            final MenuItem makePostScreenshotMenu = new MenuItem("Post Screen Shot");
+            makePostScreenshotMenu.setOnAction((e) -> eLogMenuHandler("image"));
             final MenuItem makePostDataMenu = new MenuItem("Post Data");
             makePostDataMenu.setOnAction((e) -> eLogMenuHandler("file"));
             if (HAS_DOCUMENTS) {
-                eLogMenu.getItems().addAll(openLogMenu, makePostMenu, makePostDataMenu);
+                eLogMenu.getItems().addAll(openLogMenu, makePostMenu, makePostScreenshotMenu, makePostDataMenu);
             } else {
-                eLogMenu.getItems().addAll(openLogMenu, makePostMenu);
+                eLogMenu.getItems().addAll(openLogMenu, makePostMenu, makePostScreenshotMenu);
             }
 
             final Menu viewMenu = new Menu("View");
@@ -806,6 +810,20 @@ abstract public class FxApplication extends Application {
     }
 
     protected void urlMenuHandler() {
-        DOCUMENT.openUrl(ElogServer.getElogURL());
+        try {
+            LogbookProvider logbookProvider = Logbook.getDefaultLogbookProvider(false);
+
+            if (logbookProvider == null) {
+                logbookProvider = XalFxDocument.logbookProviderDialog();
+            }
+            // Return if no provider selected.
+            if (logbookProvider == null) {
+                return;
+            }
+
+            DOCUMENT.openUrl(logbookProvider.getServer());
+        } catch (LogbookException ex) {
+            Logger.getLogger(FxApplication.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
