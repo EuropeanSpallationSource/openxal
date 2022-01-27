@@ -1,0 +1,116 @@
+.button {
+    -fx-font-weight: bold;
+}
+.root {
+    -fx-font-family: "Source Sans Pro", sans-serif;
+}
+
+/* Global variables */
+
+* {
+    -attribname-background: rgb(230, 230, 230);
+}
+
+.attribname {
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
+    -fx-font-size: 9pt;
+    -fx-background-color: -attribname-background;
+    -fx-border-color: white white rgb( 200, 200, 200) white;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 0px 0px 0px 10px;
+    -fx-min-width: 200px;
+    -fx-min-height: 28px;
+}
+
+.attribnametext {
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
+    -fx-font-size: 10pt;
+}
+
+.attribname:hover {
+    -fx-background-color: derive( -attribname-background, 10%);
+}
+
+/* Required attribute */
+.attribnamereq {
+    -fx-text-fill: rgb(150, 50, 50);
+}
+
+.attribvalue {
+    -fx-text-fill: black;
+    -fx-background-color: derive( -attribname-background, 20%);
+    -fx-border-color: rgb( 200, 200, 200);
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 0px 10px 0px 10px;
+    /* -fx-max-width: 10000px; */
+    -fx-min-height: 28px;
+}
+
+.titled-pane > .title {
+    -fx-background-color: derive( -attribname-background, 20%);
+    -fx-min-height: 28px;
+}
+
+.titled-pane > *.content {
+    -fx-background-color: derive( -attribname-background, 20%);
+    -fx-padding: 0px 0px 0px 0px;
+    -fx-border-width: 0;
+}
+
+.accordionvalue {
+    -fx-text-fill: black;
+    -fx-background-color: derive( -attribname-background, 20%);
+    -fx-border-color: rgb( 200, 200, 200);
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 0px 0px 0px 0px;
+    -fx-max-width: 10000px;
+    -fx-min-height: 28px;
+}
+
+.choice-box {
+    -fx-background-color: white;
+    -fx-background-radius: 0px;
+    -fx-padding: -3 -3 -3 -3;
+    -fx-border-color: #B0B0B0;
+    -fx-border-width: 1 1 1 1;
+    -fx-font-size: 10pt;
+}
+
+.text-field {
+    -fx-background-color: white;
+    -fx-background-radius: 0px;
+    -fx-padding: 2 2 2 2;
+    -fx-border-color: #B0B0B0;
+    -fx-border-width: 1 1 1 1;
+    -fx-font-size: 10pt;
+}
+
+.check-box .box {
+    -fx-background-color: white;
+    -fx-border-color:grey;
+    -fx-border-radius: 0px;
+}
+.check-box .box .mark {
+    -fx-padding: 5px;
+}
+
+.check-box {
+    -fx-background-radius: 0px;
+    -fx-padding: 2 2 2 2;
+    -fx-font-size: 10pt;
+}
+
+.combo-box {
+    -fx-background-color: white;
+    -fx-background-radius: 0px;
+    -fx-padding: -3 -3 -3 -3;
+    -fx-border-color: #B0B0B0;
+    -fx-border-width: 1 1 1 1;
+    -fx-font-size: 10pt;
+}
+.hide-header .column-header-background {
+    visibility: hidden;
+    -fx-padding: -1em;
+}

@@ -27,6 +27,9 @@
                         </goals>
                         <configuration>
                             <createSourcesJar>true</createSourcesJar>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                            </transformers>
                         </configuration>
                     </execution>
                 </executions>
@@ -119,7 +122,11 @@
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.jelog</artifactId>        
+            <artifactId>openxal.plugins.jelog</artifactId>        
+        </dependency>
+        <dependency>
+            <groupId>org.xal</groupId>
+            <artifactId>openxal.plugins.olog</artifactId>        
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>

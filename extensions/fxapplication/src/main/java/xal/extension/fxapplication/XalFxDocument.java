@@ -17,7 +17,10 @@
  */
 package xal.extension.fxapplication;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -29,10 +32,18 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
-import eu.ess.jelog.Attachment;
-import xal.extension.jelog.XALPostEntryDialog;
+import javax.imageio.ImageIO;
+import xal.extension.logbook.Attachment;
+import xal.extension.logbook.Logbook;
+import xal.extension.logbook.LogbookException;
+import xal.extension.logbook.LogbookProvider;
 import xal.smf.Accelerator;
 import xal.smf.data.XMLDataManager;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
 
 /**
  * The base class for custom documents for JavaFX applications.
@@ -174,27 +185,51 @@ abstract public class XalFxDocument {
     }
 
     /**
-     * Method for creating an eLog Post.
+     * Method for creating a Logbook Post.
      */
     public void eLogPost(String docType) {
-        Logger.getLogger(XalFxDocument.class.getName()).log(Level.FINER, "New e-log entry");
+        Logger.getLogger(XalFxDocument.class.getName()).log(Level.FINER, "New logbook entry");
+
+        // Logbook
         try {
+            LogbookProvider logbookProvider = Logbook.getDefaultLogbookProvider(false);
+
+            if (logbookProvider == null) {
+                logbookProvider = logbookProviderDialog();
+            }
+            // Return if no provider selected.
+            if (logbookProvider == null) {
+                return;
+            }
+
             List<Attachment> attachments = new ArrayList<>();
             if (docType.equals("image")) {
-                attachments.add(new Attachment("screenshot.png", mainStage.getScene().snapshot(null)));
-                XALPostEntryDialog.post(attachments, "Studies");
+                try {
+                    ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+                    ImageIO.write(SwingFXUtils.fromFXImage(mainStage.getScene().snapshot(null), null), "png", byteOutput);
+                    byteOutput.flush();
+                    ByteArrayInputStream imageFile = new ByteArrayInputStream(byteOutput.toByteArray());
+                    attachments.add(new Attachment("screenshot.png", imageFile));
+                } catch (IOException ex) {
+                    Logger.getLogger(XalFxDocument.class.getName()).log(Level.INFO, "Issues with attached screenshot.", ex);
+                }
             } else if (docType.equals("file") && sourceSetAndValid()) {
-                attachments.add(new Attachment(new File(source.getPath())));
-                XALPostEntryDialog.post(attachments, "Studies");
-            } else if (docType.equals("file") && !sourceSetAndValid()) {
+                try {
+                    attachments.add(new Attachment(new File(source.getPath())));
+                } catch (IOException ex) {
+                    Logger.getLogger(XalFxDocument.class.getName()).log(Level.INFO, "Issues with attached file.", ex);
+                }
+            } else if (!docType.equals("none") && docType.equals("file") && !sourceSetAndValid()) {
                 Alert alert = new Alert(AlertType.WARNING);
                 alert.setTitle("Error");
                 alert.setHeaderText("No data file specified!");
                 alert.setContentText("Be sure to save a data file from this application \n before posting data to the logbook.");
 
                 alert.showAndWait();
+                return;
             }
-        } catch (Exception ex) {
+            logbookProvider.post(attachments, logbookProvider.getDefaultLogbook().split(","), null);
+        } catch (LogbookException ex) {
             Logger.getLogger(XalFxDocument.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -206,7 +241,6 @@ abstract public class XalFxDocument {
         if (HELP_PAGEID != null && HELP_PAGEID.length() > 1) {
             openUrl(HELP_WIKI_BASE + HELP_PAGEID);
         }
-
     }
 
     public void openUrl(String url) {
@@ -266,5 +300,31 @@ abstract public class XalFxDocument {
 
     public String getDefaultFilename() {
         return DEFAULT_FILENAME;
+    }
+
+    protected static LogbookProvider logbookProviderDialog() throws LogbookException {
+        // Show dialog to select provider
+        FXMLLoader fxmlLoader = new FXMLLoader(XalFxDocument.class.getResource("/fxml/LogbookProviderSelectionDialog.fxml"));
+
+        Parent root;
+        try {
+            root = (Parent) fxmlLoader.load();
+        } catch (IOException ex) {
+            throw new LogbookException(ex);
+        }
+
+        Scene scene = new Scene(root);
+
+        Stage stage = new Stage();
+        stage.initModality(Modality.APPLICATION_MODAL);
+        stage.setTitle("Provider selection");
+        stage.setScene(scene);
+        stage.showAndWait();
+
+        LogbookProviderSelectionController controller = fxmlLoader.<LogbookProviderSelectionController>getController();
+        if (controller.getProvider() != null) {
+            return controller.getProvider();
+        }
+        return null;
     }
 }
