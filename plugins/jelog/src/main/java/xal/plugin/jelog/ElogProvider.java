@@ -84,6 +84,7 @@ public class ElogProvider extends LogbookProvider {
     @Override
     public long post(Map<String, List<String>> defaultAttributes) throws LogbookException {
         try {
+            XALPostEntryDialog.setElogServer(getServer());
             return XALPostEntryDialog.post(defaultAttributes);
         } catch (IOException ex) {
             throw new LogbookException(ex);
@@ -97,6 +98,7 @@ public class ElogProvider extends LogbookProvider {
         }
 
         try {
+            XALPostEntryDialog.setElogServer(getServer());
             return XALPostEntryDialog.post(defaultLogbooks[0], defaultAttributes);
         } catch (IOException ex) {
             throw new LogbookException(ex);
@@ -106,6 +108,7 @@ public class ElogProvider extends LogbookProvider {
     @Override
     public long post(List<Attachment> attachments, Map<String, List<String>> defaultAttributes) throws LogbookException {
         try {
+            XALPostEntryDialog.setElogServer(getServer());
             return XALPostEntryDialog.post(convertAttachments(attachments), defaultAttributes);
         } catch (IOException ex) {
             throw new LogbookException(ex);
@@ -119,6 +122,7 @@ public class ElogProvider extends LogbookProvider {
         }
 
         try {
+            XALPostEntryDialog.setElogServer(getServer());
             return XALPostEntryDialog.post(convertAttachments(attachments), defaultLogbooks[0], defaultAttributes);
         } catch (IOException ex) {
             throw new LogbookException(ex);

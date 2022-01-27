@@ -29,6 +29,8 @@ import xal.tools.apputils.Preferences;
 public abstract class LogbookProvider {
 
     private static final String LOGBOOK_SERVER_PROPERTY = "serverURL";
+    private static final String DEFAULT_LOGBOOK = "defaultLogbook";
+
     private String logbookServer;
 
     protected LogbookProvider() {
@@ -41,6 +43,20 @@ public abstract class LogbookProvider {
 
     public void setServer(String server) {
         logbookServer = server;
+    }
+
+    /**
+     *
+     * @return the name of the default logbook
+     */
+    public String getDefaultLogbook() {
+        java.util.prefs.Preferences defaults = Preferences.nodeForPackage(this.getClass());
+        return defaults.get(DEFAULT_LOGBOOK, "");
+    }
+
+    public void setDefaultLogbook(String logbook) {
+        java.util.prefs.Preferences defaults = Preferences.nodeForPackage(this.getClass());
+        defaults.put(DEFAULT_LOGBOOK, logbook);
     }
 
     public final String getDefaultServerUrl() {

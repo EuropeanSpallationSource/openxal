@@ -30,7 +30,7 @@ import xal.tools.apputils.Preferences;
  */
 public class Logbook {
 
-    private static final String LOGBOOK_PROVIDER = "defaultLogbookProvider";
+    public static final String LOGBOOK_PROVIDER = "defaultLogbookProvider";
     private static final Logger LOGGER = Logger.getLogger(Logbook.class.getName());
 
     private Logbook() {
@@ -52,30 +52,42 @@ public class Logbook {
     }
 
     public static LogbookProvider getDefaultLogbookProvider() throws LogbookException {
+        return getDefaultLogbookProvider(true);
+    }
+
+    public static LogbookProvider getDefaultLogbookProvider(boolean alwaysReturn) throws LogbookException {
         List<LogbookProvider> logbookProviders = getLogbookProviders();
 
         if (logbookProviders.isEmpty()) {
             throw new LogbookException("No logbook service provider found.");
         }
         java.util.prefs.Preferences defaults = Preferences.nodeForPackage(Logbook.class);
-        String providerName = defaults.get(LOGBOOK_PROVIDER, null);
+        String providerName = defaults.get(LOGBOOK_PROVIDER, "");
 
-        if (providerName != null) {
+        if (!providerName.equals("")) {
             for (LogbookProvider provider : logbookProviders) {
                 if (providerName.equals(provider.getClass().getName())) {
                     return provider;
                 }
             }
         }
-
-        LOGGER.log(Level.INFO, "Default logbook not found in preferences, using the provider with lower order.");
-        return logbookProviders.get(0);
+        if (alwaysReturn) {
+            LOGGER.log(Level.INFO, "Default logbook not found in preferences, using the provider with lower order.");
+            return logbookProviders.get(0);
+        } else {
+            return null;
+        }
     }
 
     public static void setDefaultLogbookProvider(LogbookProvider provider) throws LogbookException {
+        java.util.prefs.Preferences defaults = Preferences.nodeForPackage(Logbook.class);
+        if (provider == null) {
+            defaults.put(LOGBOOK_PROVIDER, "");
+            return;
+        }
+
         List<LogbookProvider> logbookProviders = getLogbookProviders();
 
-        java.util.prefs.Preferences defaults = Preferences.nodeForPackage(Logbook.class);
         for (LogbookProvider provider_i : logbookProviders) {
             if (provider.getClass().equals(provider_i.getClass())) {
                 defaults.put(LOGBOOK_PROVIDER, provider.getClass().getName());

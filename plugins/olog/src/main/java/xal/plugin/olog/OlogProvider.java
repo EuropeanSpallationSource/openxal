@@ -143,7 +143,7 @@ public class OlogProvider extends LogbookProvider {
             Map<String, List<String>> defaultAttributes) throws LogbookException {
         // Set server URL in Olog client class.
         client.setServerUrl(getServer());
-        
+
         Stage stage = null;
 
         FXMLLoader fxmlLoader = new FXMLLoader(OlogPostEntryController.class.getResource("/fxml/OlogPostEntryScene.fxml"));
@@ -166,13 +166,13 @@ public class OlogProvider extends LogbookProvider {
             controller.setDefaultLogbooks(defaultLogbooks);
         }
 
-        if (!defaultAttributes.isEmpty()) {
+        if (defaultAttributes != null && !defaultAttributes.isEmpty()) {
             for (Entry<String, List<String>> attribute : defaultAttributes.entrySet()) {
                 controller.addDefaultAttribute(attribute.getKey(), attribute.getValue());
             }
         }
 
-        if (attachments != null) {
+        if (attachments != null && !attachments.isEmpty()) {
             controller.setAttachments(attachments);
         }
 

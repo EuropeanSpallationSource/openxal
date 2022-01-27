@@ -151,6 +151,7 @@ public class OlogClient {
         if (!serverUrl.endsWith("/")) {
             serverUrl += "/";
         }
+        serverUrl += "Olog/";
     }
 
     public List<String> getLogbooks() throws LogbookException {
