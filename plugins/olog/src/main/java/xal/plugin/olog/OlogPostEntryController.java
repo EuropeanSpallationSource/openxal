@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,6 +37,8 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -131,7 +134,8 @@ public class OlogPostEntryController implements Initializable {
 
     private List<String> logbooks;
     private List<String> tags;
-    private Map<String, List<String>> availableProperties;
+    private List<String> availableProperties;
+    private Map<String, List<String>> serverProperties;
     @FXML
     private Label userLabel;
     @FXML
@@ -161,7 +165,7 @@ public class OlogPostEntryController implements Initializable {
 
     private TextArea body = new TextArea();
     private WebView previewWV = new WebView();
-    
+
     private SplitPane editorSplitPane = new SplitPane();
     private WebEngine engine = previewWV.getEngine();
     @FXML
@@ -184,7 +188,9 @@ public class OlogPostEntryController implements Initializable {
         try {
             logbooks = CLIENT.getLogbooks();
             tags = CLIENT.getTags();
-            availableProperties = CLIENT.getProperties();
+            serverProperties = CLIENT.getProperties();
+            // To keep track of properties not yet included in the log entry.
+            availableProperties = new ArrayList<>(serverProperties.keySet());
         } catch (LogbookException ex) {
             String errMsg = "Could not retrieve logbook configuration.";
             Alert alert = new Alert(AlertType.ERROR);
@@ -234,6 +240,35 @@ public class OlogPostEntryController implements Initializable {
         propertyNameTTC.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
         propertyValueTTC.setCellValueFactory(new TreeItemPropertyValueFactory<>("value"));
 
+        propertyNameTTC.setCellFactory(c -> {
+            TreeTableCell<Property, String> cell = new TextFieldTreeTableCell<>(new DefaultStringConverter()) {
+                @Override
+                public void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    this.setGraphic(null);
+                    getTableRow().setEditable(false);
+                    // Make only leaf nodes editable
+                    if (getTableRow().getItem() != null && !getTableRow().getItem().getAttributes().isEmpty()) {
+                        GridPane pane = new GridPane();
+                        Label label = new Label(item);
+                        Button removeButton = new Button("-");
+                        removeButton.setStyle("-fx-background-insets: 0; -fx-padding: 0; -fx-border-color: #000000; -fx-border-radius: 3; -fx-font-size: 14; -fx-font-weight: bold");
+                        removeButton.setMinWidth(20);
+                        removeButton.setOnAction((e) -> removeProperty(item));
+                        pane.add(label, 0, 0);
+                        pane.add(removeButton, 1, 0);
+                        GridPane.setMargin(label, new Insets(0, 0, 0, 20));
+                        GridPane.setHgrow(removeButton, Priority.ALWAYS);
+                        GridPane.setHalignment(removeButton, HPos.RIGHT);
+                        setGraphic(pane);
+                        setText(null);
+                    }
+                }
+
+            };
+            return cell;
+        });
+
         propertyValueTTC.setCellFactory(c -> {
             TreeTableCell<Property, String> cell = new TextFieldTreeTableCell<>(new DefaultStringConverter()) {
                 @Override
@@ -246,7 +281,6 @@ public class OlogPostEntryController implements Initializable {
                         getTableRow().setEditable(false);
                     }
                 }
-
             };
             return cell;
         });
@@ -255,10 +289,10 @@ public class OlogPostEntryController implements Initializable {
         VBox.setVgrow(body, Priority.ALWAYS);
         VBox.setVgrow(previewWV, Priority.ALWAYS);
         VBox.setVgrow(editorSplitPane, Priority.ALWAYS);
-        
+
         previewWV.prefHeightProperty().bind(VBoxEditor.heightProperty());
         editorSplitPane.setStyle("-fx-padding: 0;");
-        
+
         editorSplitPane.getItems().addAll(body, previewWV);
         editorSplitPane.setDividerPositions(0.5);
 
@@ -294,7 +328,6 @@ public class OlogPostEntryController implements Initializable {
         }
     }
 
-    // TODO: option to remove properties
     private void updateProperties() {
         if (!properties.isEmpty()) {
             titledPaneProperties.setExpanded(true);
@@ -312,6 +345,17 @@ public class OlogPostEntryController implements Initializable {
             propertiesTTV.setRoot(propertyItems);
         } else {
             titledPaneProperties.setExpanded(false);
+        }
+    }
+
+    private void removeProperty(String propertyName) {
+        Iterator<Property> iterator = properties.iterator();
+        while (iterator.hasNext()) {
+            Property property = iterator.next();
+            if (property.getName().equals(propertyName)) {
+                iterator.remove();
+                availableProperties.add(propertyName);
+            }
         }
     }
 
@@ -450,6 +494,17 @@ public class OlogPostEntryController implements Initializable {
             for (String property : options) {
                 Pair<String, Map<String, String>> p = OlogProvider.parseProperty(property);
                 Property newProp = new Property(p.getKey(), p.getValue());
+                if (availableProperties.contains(p.getKey())) {
+                    List<String> propertiesMissing = new ArrayList<>(serverProperties.get(p.getKey()));
+                    for (Property prop : newProp.getAttributes()) {
+                        propertiesMissing.remove(prop.getName());
+                    }
+                    if (!propertiesMissing.isEmpty()) {
+                        for (String attribute : propertiesMissing) {
+                            newProp.addAttribute(attribute, "");
+                        }
+                    }
+                }
                 properties.add(newProp);
                 availableProperties.remove(p.getKey());
             }
@@ -467,13 +522,21 @@ public class OlogPostEntryController implements Initializable {
 
     @FXML
     private void addPropertyButtonAction(ActionEvent event) {
+        if (availableProperties.isEmpty()) {
+            Alert alert = new Alert(AlertType.WARNING);
+            alert.setTitle("Error");
+            alert.setHeaderText("There are no (more) properties available.");
+            alert.showAndWait();
+            return;
+        }
+
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(OlogPostEntryController.class.getResource("/fxml/AddPropertyScene.fxml"));
 
             Parent root = (Parent) fxmlLoader.load();
 
             AddPropertyController controller = fxmlLoader.<AddPropertyController>getController();
-            controller.setProperties(availableProperties.keySet());
+            controller.setProperties(serverProperties.keySet());
 
             Scene scene = new Scene(root);
             scene.getStylesheets().add(OlogPostEntryController.class.getResource("/styles/olog.css").toExternalForm());
@@ -490,7 +553,7 @@ public class OlogPostEntryController implements Initializable {
             String propertyName = controller.getSelectedProperty();
 
             if (!propertyName.isBlank()) {
-                properties.add(new Property(propertyName, (Map<String, String>) availableProperties.get(propertyName).stream().collect(Collectors.toMap(item -> item, item -> ""))));
+                properties.add(new Property(propertyName, (Map<String, String>) serverProperties.get(propertyName).stream().collect(Collectors.toMap(item -> item, item -> ""))));
                 availableProperties.remove(propertyName);
             }
         } catch (Exception ex) {

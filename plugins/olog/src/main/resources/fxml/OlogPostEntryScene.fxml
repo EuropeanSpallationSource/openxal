@@ -79,19 +79,19 @@
                 </HBox>
                 <HBox alignment="CENTER_LEFT" styleClass="attribvalue" GridPane.columnIndex="1">
                     <children>
-                  <GridPane HBox.hgrow="ALWAYS">
-                     <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0" />
-                        <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                     </columnConstraints>
-                     <rowConstraints>
-                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                     </rowConstraints>
-                     <children>
-                              <Label fx:id="userLabel" />
-                        <Button fx:id="logoutB" disable="true" mnemonicParsing="false" onAction="#logoutBAction" text="Logout" GridPane.columnIndex="1" />
-                     </children>
-                  </GridPane>
+                        <GridPane HBox.hgrow="ALWAYS">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0" />
+                                <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                            </rowConstraints>
+                            <children>
+                                <Label fx:id="userLabel" />
+                                <Button fx:id="logoutB" disable="true" mnemonicParsing="false" onAction="#logoutBAction" text="Logout" GridPane.columnIndex="1" />
+                            </children>
+                        </GridPane>
                     </children>
                 </HBox>
                 <FlowPane fx:id="logbooksFP" alignment="CENTER_LEFT" hgap="15.0" styleClass="attribvalue" GridPane.columnIndex="1" GridPane.rowIndex="1" />
@@ -135,9 +135,9 @@
                     <children>
                         <Label text="Attachments" HBox.hgrow="NEVER" />
                         <HBox HBox.hgrow="ALWAYS" />
-                        <Button fx:id="addAttachmentButton" minWidth="10.0" mnemonicParsing="false" onAction="#addAttachmentButtonAction" style="-fx-background-insets: 0; -fx-padding: 3; -fx-border-color: #000000; -fx-border-radius: 3;" text="+" HBox.hgrow="NEVER">
+                        <Button fx:id="addAttachmentButton" minWidth="20.0" mnemonicParsing="false" onAction="#addAttachmentButtonAction" style="-fx-background-insets: 0; -fx-padding: 0; -fx-border-color: #000000; -fx-border-radius: 3;" text="+" HBox.hgrow="NEVER">
                             <font>
-                                <Font name="System Bold" size="13.0" />
+                                <Font name="System Bold" size="14.0" />
                             </font>
                         </Button>
                     </children>
@@ -174,9 +174,9 @@
                     <children>
                         <Label text="Properties" HBox.hgrow="NEVER" />
                         <HBox HBox.hgrow="ALWAYS" />
-                        <Button fx:id="addPropertyButton" minWidth="10.0" mnemonicParsing="false" onAction="#addPropertyButtonAction" style="-fx-background-insets: 0; -fx-padding: 3; -fx-border-color: #000000; -fx-border-radius: 3;" text="+" HBox.hgrow="NEVER">
+                        <Button fx:id="addPropertyButton" alignment="CENTER" contentDisplay="CENTER" minWidth="20.0" mnemonicParsing="false" onAction="#addPropertyButtonAction" style="-fx-background-insets: 0; -fx-padding: 0; -fx-border-color: #000000; -fx-border-radius: 3;" text="+" textAlignment="CENTER" HBox.hgrow="NEVER">
                             <font>
-                                <Font name="System Bold" size="13.0" />
+                                <Font name="System Bold" size="14.0" />
                             </font>
                         </Button>
                     </children>
@@ -206,7 +206,7 @@
                         </ButtonBar>
                     </children>
                 </HBox>
-            <VBox fx:id="VBoxEditor" VBox.vgrow="ALWAYS" />
+                <VBox fx:id="VBoxEditor" VBox.vgrow="ALWAYS" />
             </children>
             <VBox.margin>
                 <Insets />
