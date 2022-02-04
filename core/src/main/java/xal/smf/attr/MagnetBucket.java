@@ -35,6 +35,7 @@ public class MagnetBucket extends AttributeBucket {
                                                     "polarity", // default polarity value
                                                     "multFieldNorm",      // normal field components
                                                     "multFieldSkew",       // skew field components
+                                                    "useCurrent",       // flag to use current instead of magnetic field in the IOC
                                                     "convFactor",       // conversion factor field/current
                                     };
     
@@ -50,6 +51,7 @@ public class MagnetBucket extends AttributeBucket {
         m_attLenEff  = new Attribute(0.0);
         m_attFldDflt = new Attribute(0.0 );
         m_attConvFac = new Attribute(1.0 );
+        m_attUseCurrent = new Attribute(false );
         m_attPolarity = new Attribute(1.0 );
         m_attFldNorm = new Attribute(new double[] {} );
         m_attFldTang = new Attribute(new double[] {} );
@@ -59,7 +61,8 @@ public class MagnetBucket extends AttributeBucket {
         super.registerAttribute(c_arrNames[2], m_attPolarity, "Magnet polarity ( 1 or -1).");
         super.registerAttribute(c_arrNames[3], m_attFldNorm, "Normal field multipole coefficients.");
         super.registerAttribute(c_arrNames[4], m_attFldTang, "Skew field multipole coefficients.");
-        super.registerAttribute(c_arrNames[5], m_attConvFac, "Conversion factor between field and current");
+        super.registerAttribute(c_arrNames[5], m_attUseCurrent, "Flag to use current instead of magnetic field in the IOC.");
+        super.registerAttribute(c_arrNames[6], m_attConvFac, "Conversion factor between field and current");
     }
     
      
@@ -69,6 +72,7 @@ public class MagnetBucket extends AttributeBucket {
     public double   getDfltField()  { return m_attFldDflt.getDouble(); };
     /** return the magnet polarity ( 1 or -1) */
     public double   getPolarity()   { return m_attPolarity.getDouble(); };
+    public boolean   getUseCurrentFlag() { return m_attUseCurrent.getBoolean();}
     public double   getConversionFactor() { return m_attConvFac.getDouble();}
     public double[] getNormField()  { return m_attFldNorm.getArrDbl(); };
     public double[] getTangField()  { return m_attFldTang.getArrDbl(); };
@@ -83,7 +87,10 @@ public class MagnetBucket extends AttributeBucket {
     public void setPolarity(double dblVal)      { m_attPolarity.set(dblVal); };
     public void setNormField(double[] arrVal)   { m_attFldNorm.set(arrVal); };
     public void setTangField(double[] arrVal)   { m_attFldTang.set(arrVal); };
-    public void setDfltField(double dblVal)   { m_attFldDflt.set(dblVal); };   
+    public void setDfltField(double dblVal)   { m_attFldDflt.set(dblVal); };
+    public void setUseCurrentFlag(boolean bolVal) { m_attUseCurrent.set(bolVal);}
+    public void setConversionFactor(double dblVal) { m_attConvFac.set(dblVal);}
+
     /** set the dipole rotation angle for entrance pole face (in degrees) 
      * @param dblVal dipole rotation angle for entrance pole face in degrees
      */
@@ -96,6 +103,8 @@ public class MagnetBucket extends AttributeBucket {
     private Attribute       m_attLenEff;            
     /**  design field strength (T/m^(n-1)), n=1 for dipole, 2 for quad,... */
     private Attribute       m_attFldDflt;
+    /** flag to use current instead of magnetic field in the IOC */
+    private Attribute       m_attUseCurrent;
     /** conversion factor field/current */
     private Attribute       m_attConvFac;
     /** polarity */

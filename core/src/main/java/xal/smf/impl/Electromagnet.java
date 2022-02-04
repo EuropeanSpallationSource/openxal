@@ -31,10 +31,14 @@ abstract public class Electromagnet extends Magnet {
             () -> getDesignField(), (v) -> setDfltField(v),
             (v) -> toFieldFromCA(v[0]), (v) -> toCAFromField(v));
 
+    public final AccessibleProperty fieldFromCurrent = new AccessibleProperty("field", MagnetMainSupply.CURRENT_RB_HANDLE, MagnetMainSupply.CURRENT_SET_HANDLE,
+            () -> getDesignField(), (v) -> setDfltField(v),
+            (v) -> toFieldFromCA(toFieldFromCurrent(v[0])), (v) -> toCAFromField(toCurrentFromField(v)));
+
     // indicates whether to use the actual field readback or the field setting in the getField() method
     // by default use the field readback
     protected boolean _useFieldReadback = true;
-
+    
     /**
      * the ID of this magnet's main power supply
      */
@@ -268,6 +272,13 @@ abstract public class Electromagnet extends Magnet {
         if (supply != null) {
             properties.addAll(supply.getAccessibleProperties());
         }
+        
+        // Keep only one property for field
+        if (getMagBucket().getUseCurrentFlag()) {
+            properties.remove(field);
+        } else {
+            properties.remove(fieldFromCurrent);
+        }
 
         return properties;
     }
@@ -300,7 +311,11 @@ abstract public class Electromagnet extends Magnet {
      * etc.
      */
     public double getField() throws ConnectionException, GetException {
-        return (_useFieldReadback) ? getFieldReadback() : getTotalFieldSetting();
+        if (getMagBucket().getUseCurrentFlag()) {
+            return toFieldFromCA(toFieldFromCurrent(getCurrent()));
+        } else {
+            return (_useFieldReadback) ? getFieldReadback() : getTotalFieldSetting();
+        }
     }
 
     /**
@@ -332,7 +347,11 @@ abstract public class Electromagnet extends Magnet {
      * dipole, 2 for quad, etc.
      */
     public void setField(final double newField) throws ConnectionException, PutException {
-        getMainSupply().setField(toCAFromField(newField));
+        if (getMagBucket().getUseCurrentFlag()) {
+            setCurrent(toCAFromField(toCurrentFromField(newField)));
+        } else {
+            getMainSupply().setField(toCAFromField(newField));
+        }
     }
 
     /**
@@ -378,6 +397,26 @@ abstract public class Electromagnet extends Magnet {
         return field * getPolarity();
     }
 
+    /**
+     * Convert the current value in the power supply to field value.
+     *
+     * @param current the current in the magnet in A
+     * @return the channel access value
+     */
+    public final double toFieldFromCurrent(double current){
+        return current * getMagBucket().getConversionFactor();
+    }
+
+    /**
+     * Convert the field value to a current value for the power supply.
+     *
+     * @param field the magnetic field in T/m^(n-1)
+     * @return the channel access value
+     */
+    public final double toCurrentFromField(double field){
+        return field / getMagBucket().getConversionFactor();
+    }
+    
     /**
      * Get the field upper settable limit of the main power supply in
      * T/(m^(n-1)), where n = 1 for dipole, 2 for quad, etc.

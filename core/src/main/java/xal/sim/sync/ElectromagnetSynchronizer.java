@@ -21,11 +21,11 @@ public class ElectromagnetSynchronizer implements Synchronizer {
         @Override
 	public void resync( final IComponent aComp, final Map<String,Double> valueMap ) throws SynchronizationException {
 		if ( !(aComp instanceof IElectromagnet) )  throw new IllegalArgumentException( "expected IElectromagnet instance, got: " + aComp.getClass().getName() );
-		final IElectromagnet mag = (IElectromagnet) aComp;
+            final IElectromagnet mag = (IElectromagnet) aComp;
 		final Double field = valueMap.get( ElectromagnetPropertyAccessor.PROPERTY_FIELD );
 		if ( field == null )  throw new SynchronizationException("missing value for Field property");
-		mag.setMagField(field);
-	}
+                mag.setMagField(field);
+            }
 
 	
 	/*
