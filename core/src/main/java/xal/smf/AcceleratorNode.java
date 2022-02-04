@@ -377,7 +377,6 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      * null if there is no match.
      * @throws xal.smf.NoSuchChannelException if no such channel as specified by
      * the handle is associated with this node.
-     * @throws xal.ca.ConnectionException if the channel cannot be connected
      */
     public Channel getAndConnectChannel(final String handle) throws NoSuchChannelException {
         final Channel channel = getChannel(handle);
@@ -470,7 +469,6 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      * this node and the specified set handle or null if there is no match.
      * @throws xal.smf.NoSuchChannelException if no such channel as specified by
      * the handle is associated with this node.
-     * @throws xal.ca.ConnectionException if the channel cannot be connected
      */
     public Map<ChannelType, Channel> getAndConnectChannelSetAndReadback(String readbackHandle) throws NoSuchChannelException {
         Channel setChannel = getChannel(getSetHandle(readbackHandle));
@@ -528,7 +526,6 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      * @param delay Delay in seconds for the readback to reach the set value
      * before failing.
      * @return true if the value is set correctly, otherwise false.
-     * @throws ConnectionException
      * @throws PutException
      * @throws MonitorException
      */
@@ -674,7 +671,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      * Set the live property value for the corresponding array of channel values
      * in the order given by getLivePropertyChannels()
      */
-    public void setLivePropertyValue(String propertyName, double channelValue) throws ConnectionException, PutException {
+    public void setLivePropertyValue(String propertyName, double channelValue) throws PutException {
         List<AccessibleProperty> properties = getAccessibleProperties();
         for (AccessibleProperty prop : properties) {
             if (prop.getName().equals(propertyName)) {

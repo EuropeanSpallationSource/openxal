@@ -266,11 +266,11 @@ public abstract class FxApplication extends Application {
 
             final Menu eLogMenu = new Menu("Logbook");
             final MenuItem openLogMenu = new MenuItem("Open");
-            openLogMenu.setOnAction((e) -> urlMenuHandler());
+            openLogMenu.setOnAction(e -> urlMenuHandler());
             final MenuItem makePostMenu = new MenuItem("Post New entry");
-            makePostMenu.setOnAction((e) -> eLogMenuHandler("none"));
+            makePostMenu.setOnAction(e -> eLogMenuHandler("none"));
             final MenuItem makePostScreenshotMenu = new MenuItem("Post Screen Shot");
-            makePostScreenshotMenu.setOnAction((e) -> eLogMenuHandler("image"));
+            makePostScreenshotMenu.setOnAction(e -> eLogMenuHandler("image"));
             final MenuItem makePostDataMenu = new MenuItem("Post Data");
             makePostDataMenu.setOnAction(e -> eLogMenuHandler("file"));
             if (HAS_DOCUMENTS) {
@@ -501,7 +501,7 @@ public abstract class FxApplication extends Application {
     }
 
     private String latticeErrorDialog(String title, String message) {
-        String acceleratorMainPath = null;
+        acceleratorMainPath = null;
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle(title);
         alert.setHeaderText(title);

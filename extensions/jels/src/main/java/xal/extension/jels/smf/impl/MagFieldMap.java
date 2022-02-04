@@ -19,7 +19,6 @@ package xal.extension.jels.smf.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,7 +30,6 @@ import xal.smf.attr.AttributeBucket;
 import xal.smf.impl.Electromagnet;
 import xal.smf.impl.qualify.ElementTypeManager;
 import xal.tools.data.DataAdaptor;
-import xal.tools.xml.XmlDataAdaptor;
 
 /**
  * General magnetic Field Map element. It can be used with any type of
