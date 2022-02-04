@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox fx:id="vBoxParent" minHeight="700.0" minWidth="400.0" prefWidth="900.0" VBox.vgrow="NEVER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.plugin.olog.OlogPostEntryController">
+    <children>
+        <GridPane fx:id="gridPaneLogbook">
+            <columnConstraints>
+                <ColumnConstraints hgrow="NEVER" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="382.0" />
+            </columnConstraints>
+            <VBox.margin>
+                <Insets />
+            </VBox.margin>
+        </GridPane>
+        <GridPane fx:id="gridPaneAttributes">
+            <columnConstraints>
+                <ColumnConstraints hgrow="NEVER" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="200.0" />
+                <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="377.0" />
+            </columnConstraints>
+            <children>
+                <HBox alignment="CENTER_LEFT" styleClass="attribname">
+                    <children>
+                        <Label styleClass="attribnametext" text="User:" />
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" styleClass="attribname" GridPane.rowIndex="1">
+                    <children>
+                        <Label text="Logbooks:">
+                            <styleClass>
+                                <String fx:value="attribnametext" />
+                                <String fx:value="attribnamereq" />
+                            </styleClass>
+                        </Label>
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" styleClass="attribname" GridPane.rowIndex="2">
+                    <children>
+                        <Label text="Entry Type:">
+                            <styleClass>
+                                <String fx:value="attribnametext" />
+                                <String fx:value="attribnamereq" />
+                            </styleClass>
+                        </Label>
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" styleClass="attribname" GridPane.rowIndex="3">
+                    <children>
+                        <Label styleClass="attribnametext" text="Tags:" />
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" styleClass="attribname" GridPane.rowIndex="4">
+                    <children>
+                        <Label text="Subject:">
+                            <styleClass>
+                                <String fx:value="attribnametext" />
+                                <String fx:value="attribnamereq" />
+                            </styleClass>
+                        </Label>
+                    </children>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" styleClass="attribvalue" GridPane.columnIndex="1">
+                    <children>
+                        <GridPane HBox.hgrow="ALWAYS">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="0.0" />
+                                <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                            </rowConstraints>
+                            <children>
+                                <Label fx:id="userLabel" />
+                                <Button fx:id="logoutB" disable="true" mnemonicParsing="false" onAction="#logoutBAction" text="Logout" GridPane.columnIndex="1" />
+                            </children>
+                        </GridPane>
+                    </children>
+                </HBox>
+                <FlowPane fx:id="logbooksFP" alignment="CENTER_LEFT" hgap="15.0" styleClass="attribvalue" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <HBox fx:id="entryTypeHBox" alignment="CENTER_LEFT" styleClass="attribvalue" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                    <children>
+                        <ComboBox fx:id="entryTypeCB" prefWidth="150.0" />
+                    </children>
+                </HBox>
+                <FlowPane fx:id="tagsFP" alignment="CENTER_LEFT" hgap="15.0" styleClass="attribvalue" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <HBox alignment="CENTER_LEFT" styleClass="attribvalue" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                    <children>
+                        <TextField fx:id="subjectTF" HBox.hgrow="ALWAYS" />
+                    </children>
+                </HBox>
+            </children>
+            <rowConstraints>
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+                <RowConstraints />
+            </rowConstraints>
+        </GridPane>
+        <TitledPane fx:id="titledPaneAttachments" animated="false" expanded="false">
+            <content>
+                <ScrollPane fx:id="thumbnailsScrollPane" fitToWidth="true" hbarPolicy="NEVER" minHeight="100.0" prefHeight="100.0">
+                    <content>
+                        <FlowPane fx:id="thumbnailsPane" hgap="5.0" vgap="5.0">
+                            <padding>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                            </padding>
+                        </FlowPane>
+                    </content>
+                    <padding>
+                        <Insets left="5.0" right="5.0" />
+                    </padding>
+                </ScrollPane>
+            </content>
+            <graphic>
+                <HBox fx:id="HBoxAttachmentsTitle" alignment="CENTER">
+                    <children>
+                        <Label text="Attachments" HBox.hgrow="NEVER" />
+                        <HBox HBox.hgrow="ALWAYS" />
+                        <Button fx:id="addAttachmentButton" minWidth="20.0" mnemonicParsing="false" onAction="#addAttachmentButtonAction" style="-fx-background-insets: 0; -fx-padding: 0; -fx-border-color: #000000; -fx-border-radius: 3;" text="+" HBox.hgrow="NEVER">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Button>
+                    </children>
+                    <padding>
+                        <Insets right="30.0" />
+                    </padding>
+                </HBox>
+            </graphic>
+            <VBox.margin>
+                <Insets />
+            </VBox.margin>
+        </TitledPane>
+        <TitledPane fx:id="titledPaneProperties" animated="false" expanded="false">
+            <content>
+                <VBox fx:id="VBoxPropertyEditor" VBox.vgrow="ALWAYS">
+                    <VBox.margin>
+                        <Insets left="5.0" right="5.0" />
+                    </VBox.margin>
+                    <children>
+                        <TreeTableView fx:id="propertiesTTV" editable="true" prefHeight="200.0" showRoot="false" styleClass="hide-header" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TreeTableColumn fx:id="propertyNameTTC" editable="false" prefWidth="200.0" text="C1" />
+                                <TreeTableColumn fx:id="propertyValueTTC" prefWidth="-1.0" text="C2" />
+                            </columns>
+                            <columnResizePolicy>
+                                <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                            </columnResizePolicy>
+                        </TreeTableView>
+                    </children>        
+                </VBox>
+            </content>
+            <graphic>
+                <HBox fx:id="HBoxPropertiesTitle" alignment="CENTER">
+                    <children>
+                        <Label text="Properties" HBox.hgrow="NEVER" />
+                        <HBox HBox.hgrow="ALWAYS" />
+                        <Button fx:id="addPropertyButton" alignment="CENTER" contentDisplay="CENTER" minWidth="20.0" mnemonicParsing="false" onAction="#addPropertyButtonAction" style="-fx-background-insets: 0; -fx-padding: 0; -fx-border-color: #000000; -fx-border-radius: 3;" text="+" textAlignment="CENTER" HBox.hgrow="NEVER">
+                            <font>
+                                <Font name="System Bold" size="14.0" />
+                            </font>
+                        </Button>
+                    </children>
+                    <padding>
+                        <Insets right="30.0" />
+                    </padding>
+                </HBox>
+            </graphic>
+            <VBox.margin>
+                <Insets />
+            </VBox.margin>
+        </TitledPane>
+        <VBox VBox.vgrow="ALWAYS">
+            <children>
+                <HBox alignment="CENTER_LEFT" styleClass="attribname">
+                    <children>
+                        <Label styleClass="attribnametext" text="Text:" />
+                        <ButtonBar prefHeight="20.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                            <buttons>
+                                <ToggleButton fx:id="markdownB" mnemonicParsing="false" onAction="#markdownBAction" selected="true" text="Markdown" />
+                                <ToggleButton fx:id="splitB" mnemonicParsing="false" onAction="#splitBAction" text="Split View" />
+                                <ToggleButton fx:id="previewB" mnemonicParsing="false" onAction="#previewBAction" text="Preview" />
+                            </buttons>
+                            <padding>
+                                <Insets right="5.0" />
+                            </padding>
+                        </ButtonBar>
+                    </children>
+                </HBox>
+                <VBox fx:id="VBoxEditor" VBox.vgrow="ALWAYS" />
+            </children>
+            <VBox.margin>
+                <Insets />
+            </VBox.margin>
+        </VBox>
+        <ButtonBar fx:id="buttonBar" VBox.vgrow="NEVER">
+            <buttons>
+                <Button fx:id="buttonCancel" mnemonicParsing="false" onAction="#handleButtonCancel" text="Cancel" />
+                <Button fx:id="buttonSubmit" mnemonicParsing="false" onAction="#handleButtonSubmit" text="Submit" />
+            </buttons>
+            <VBox.margin>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            </VBox.margin>
+        </ButtonBar>
+    </children>
+</VBox>

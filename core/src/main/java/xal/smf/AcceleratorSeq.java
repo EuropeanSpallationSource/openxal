@@ -1099,29 +1099,43 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
      *
      */
     public ApertureProfile getAperProfile() {
-        ApertureProfile aperProfile = new ApertureProfile();
-        double[] pos;
-        double[] aperX;
-        double[] aperY;
+        return getAperProfile(getNodes());
+    }
 
-        if (!getNodes().isEmpty()) {
-            for (AcceleratorNode node : getNodes()) {
-                if (node.getAper().getAperPos().length > 1) {
-                    pos = node.getAper().getAperPos();
-                    aperX = node.getAper().getAperX();
-                    aperY = node.getAper().getAperY();
-                    for (int i = 0; i < pos.length; i++) {
-                        aperProfile.addProfilePosData(pos[i] + node.getSDisplay() - node.getLength() / 2);
-                        aperProfile.addProfileXData(aperX[i]);
-                        aperProfile.addProfileYData(aperY[i]);
-                        aperProfile.addShapeData(node.getAper().getShape());
-                    }
-                } else if (node.getAper().getAperX()[0] != 0 && node.getAper().getAperY()[0] != 0) {
-                    aperProfile.addProfilePosData(node.getSDisplay());
-                    aperProfile.addProfileXData(node.getAper().getAperX()[0]);
-                    aperProfile.addProfileYData(node.getAper().getAperY()[0]);
-                    aperProfile.addShapeData(node.getAper().getShape());
+    public ApertureProfile getAperProfile(List<AcceleratorNode> nodes) {
+        ApertureProfile aperProfile = new ApertureProfile();
+
+        for (AcceleratorNode node : nodes) {
+            double pos = node.getPosition();
+            double[] aperPos = node.getAper().getAperPos();
+            double[] aperX = node.getAper().getAperX();
+            double[] aperY = node.getAper().getAperY();
+            int shape = node.getAper().getShape();
+
+            if (node instanceof AcceleratorSeq) {
+                // Add apertures of elements in the sequence
+                ApertureProfile seqProfile = ((AcceleratorSeq) node).getAperProfile();
+                List<Double> seqProfilePos = seqProfile.getProfilePos();
+                for (int i = 0; i < seqProfilePos.size(); i++) {
+                    seqProfilePos.set(i, pos + seqProfilePos.get(i));
                 }
+                aperProfile.addProfileData(seqProfilePos, seqProfile.getProfileX(), seqProfile.getProfileY(), seqProfile.getProfileShape());
+            } else {
+                // For AcceleratorNode objects, position is center position.
+                pos -= node.getLength() / 2.0;
+            }
+
+            if (node.getAper().getAperPos().length > 1) {
+                for (int i = 0; i < aperPos.length; i++) {
+                    aperPos[i] += pos;
+                }
+                aperProfile.addProfileData(aperPos, aperX, aperY, shape);
+
+            } else if (aperX[0] != 0 && aperY[0] != 0) {
+                aperProfile.addProfileData(new double[]{pos, pos + node.getLength()},
+                        new double[]{aperX[0], aperX[0]},
+                        new double[]{aperY[0], aperY[0]},
+                        shape);
             }
         }
 

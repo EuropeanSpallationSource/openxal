@@ -49,5 +49,4 @@ public class ElectromagnetSynchronizer implements Synchronizer {
             throw new SynchronizationException("synchronized value doesn't agree with node property");
         }
     }
-
 }

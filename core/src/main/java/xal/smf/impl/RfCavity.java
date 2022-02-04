@@ -38,8 +38,8 @@ public class RfCavity extends AcceleratorSeq {
     public static final String T_DELAY_HANDLE = "tDelay";
     public static final String BLANK_BEAM_HANDLE = "blankBeam";
 
-    public final AccessibleProperty amplitude = new AccessibleProperty("amplitude", CAV_AMP_AVG_HANDLE, CAV_AMP_SET_HANDLE, this::getDfltCavAmp, channelValues -> toCavAmpAvgFromCA(channelValues[0]));
-    public final AccessibleProperty phase = new AccessibleProperty("phase", CAV_PHASE_AVG_HANDLE, CAV_PHASE_SET_HANDLE, this::getDfltAvgCavPhase, channelValues -> toCavPhaseAvgFromCA(channelValues[0]));
+    public final AccessibleProperty amplitude = new AccessibleProperty("amplitude", CAV_AMP_AVG_HANDLE, CAV_AMP_SET_HANDLE, this::getDfltCavAmp, designValue -> toCavAmpAvgFromCA(designValue));
+    public final AccessibleProperty phase = new AccessibleProperty("phase", CAV_PHASE_AVG_HANDLE, CAV_PHASE_SET_HANDLE, this::getDfltAvgCavPhase, designValue -> toCavPhaseAvgFromCA(designValue));
     public final AccessibleProperty deltaTRFStart = new AccessibleProperty(DELTA_TRF_START_HANDLE);
     public final AccessibleProperty deltaTRFEnd = new AccessibleProperty(DELTA_TRF_END_HANDLE);
     public final AccessibleProperty tDelay = new AccessibleProperty(T_DELAY_HANDLE);

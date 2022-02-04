@@ -18,8 +18,7 @@ import xal.ca.*;
 public abstract class PermanentMagnet extends Magnet {
 
     // accessible properties
-    private String[] readbackHandle = new String[]{};
-    public final AccessibleProperty field = new AccessibleProperty("field", readbackHandle, null, this::getDesignField, cV -> getDesignField());
+    public final AccessibleProperty field = new AccessibleProperty("field", "", "", this::getDesignField, cV -> getDesignField());
 
     // static initializer
     static {
@@ -36,14 +35,14 @@ public abstract class PermanentMagnet extends Magnet {
     /**
      * Creates new PermanentMagnet
      */
-    protected PermanentMagnet(final String strId, final ChannelFactory channelFactory) {
+    public PermanentMagnet(final String strId, final ChannelFactory channelFactory) {
         super(strId, channelFactory);
     }
 
     /**
      * Creates new PermanentMagnet
      */
-    protected PermanentMagnet(final String strId) {
+    public PermanentMagnet(final String strId) {
         this(strId, null);
     }
 
@@ -65,7 +64,7 @@ public abstract class PermanentMagnet extends Magnet {
     public Channel[] getLivePropertyChannels(final String propertyName) {
         List<AccessibleProperty> properties = getAccessibleProperties();
         for (AccessibleProperty prop : properties) {
-            if (prop.getName().equals(propertyName) && prop.hasGetters()) {
+            if (prop.getName().equals(propertyName) && prop.hasDesignValues()) {
                 return new Channel[0];
             }
         }

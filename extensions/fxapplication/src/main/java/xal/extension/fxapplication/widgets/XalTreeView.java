@@ -18,6 +18,9 @@
 package xal.extension.fxapplication.widgets;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -27,6 +30,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.skin.VirtualFlow;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -66,10 +70,24 @@ public abstract class XalTreeView<T> extends VBox {
     protected final HBox titlebar = new HBox();
     protected final HBox titlebox = new HBox();
     protected final HBox bottombar = new HBox();
+    protected boolean enabledDefaultSingleClickEventHandler = false;
+    protected boolean enabledDefaultDoubleClickEventHandler = false;
 
-    protected EventHandler<MouseEvent> doubleClickEH;
+    private List<EventHandler<MouseEvent>> treeCellSingleClickHandlers = new ArrayList<>();
+    private List<EventHandler<MouseEvent>> treeCellDoubleClickHandlers = new ArrayList<>();
 
-    protected XalTreeView() {
+    public TreeView getTreeView() {
+        return treeView;
+    }
+
+    public XalTreeView() {
+        // Set default CellFactory for the TreeView and add default click handler.
+        treeView.setCellFactory(p -> new AcceleratorNodeTreeCell() {
+            @Override
+            public void onMouseClicked(MouseEvent event, boolean empty) {
+                defaultClickHandler(event, empty);
+            }
+        });
     }
 
     /**
@@ -91,24 +109,46 @@ public abstract class XalTreeView<T> extends VBox {
     }
 
     /**
-     * Adds a new click event handler to the TreeView.
+     * Adds a new single-click event handler to the TreeView TreeCell objects.
      *
      * @param eventHandler
      */
-    public void addClickEventHandler(EventHandler<MouseEvent> eventHandler) {
+    public void addSingleClickEventHandler(EventHandler<MouseEvent> eventHandler) {
         if (eventHandler != null) {
-            treeView.addEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler);
+            treeCellSingleClickHandlers.add(eventHandler);
         }
     }
 
     /**
-     * Removes a click event handler from the TreeView.
+     * Removes a single-click event handler from the TreeView TreeCell objects.
      *
      * @param eventHandler
      */
-    public void removeClickEventHandler(EventHandler<MouseEvent> eventHandler) {
+    public void removeSingleClickEventHandler(EventHandler<MouseEvent> eventHandler) {
         if (eventHandler != null) {
-            treeView.removeEventHandler(MouseEvent.MOUSE_CLICKED, eventHandler);
+            treeCellSingleClickHandlers.remove(eventHandler);
+        }
+    }
+
+    /**
+     * Adds a new double-click event handler to the TreeView TreeCell objects.
+     *
+     * @param eventHandler
+     */
+    public void addDoubleClickEventHandler(EventHandler<MouseEvent> eventHandler) {
+        if (eventHandler != null) {
+            treeCellDoubleClickHandlers.add(eventHandler);
+        }
+    }
+
+    /**
+     * Removes a double-click event handler from the TreeView TreeCell objects.
+     *
+     * @param eventHandler
+     */
+    public void removeDoubleClickEventHandler(EventHandler<MouseEvent> eventHandler) {
+        if (eventHandler != null) {
+            treeCellDoubleClickHandlers.remove(eventHandler);
         }
     }
 
@@ -117,17 +157,43 @@ public abstract class XalTreeView<T> extends VBox {
      * click event handler must be initialized by the subclass constructor.
      */
     public void enableDefaultClickEventHandler() {
-        if (doubleClickEH != null) {
-            treeView.addEventHandler(MouseEvent.MOUSE_CLICKED, doubleClickEH);
-        }
+        enabledDefaultDoubleClickEventHandler = true;
     }
 
     /**
      * Disables the default click event handler in the TreeView.
      */
     public void disableDefaultClickEventHandler() {
-        if (doubleClickEH != null) {
-            treeView.removeEventHandler(MouseEvent.MOUSE_CLICKED, doubleClickEH);
+        enabledDefaultDoubleClickEventHandler = false;
+    }
+
+    protected void singleClickEventHandler(MouseEvent event) {
+        throw new UnsupportedOperationException("Single click event handler not implemented.");
+    }
+
+    protected void doubleClickEventHandler(MouseEvent event) {
+        throw new UnsupportedOperationException("Double click event handler not implemented.");
+    }
+
+    private void defaultClickHandler(MouseEvent event, boolean empty) {
+        if (empty) {
+            treeView.getSelectionModel().clearSelection();
+        }
+
+        if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 1) {
+            if (enabledDefaultSingleClickEventHandler) {
+                singleClickEventHandler(event);
+            }
+            for (EventHandler<MouseEvent> eventHandler : treeCellSingleClickHandlers) {
+                eventHandler.handle(event);
+            }
+        } else if (event.getButton() == MouseButton.PRIMARY && event.getClickCount() == 2) {
+            if (enabledDefaultDoubleClickEventHandler) {
+                doubleClickEventHandler(event);
+            }
+            for (EventHandler<MouseEvent> eventHandler : treeCellDoubleClickHandlers) {
+                eventHandler.handle(event);
+            }
         }
     }
 
@@ -206,13 +272,16 @@ public abstract class XalTreeView<T> extends VBox {
      * @return The TreeItem or null if none selected.
      */
     public TreeItem<T> getSelectedItem() {
-        MultipleSelectionModel<TreeItem<T>> selectionModel = treeView.getSelectionModel();
-        TreeItem<T> selectedItem = selectionModel.getSelectedItem();
+        TreeItem<T> selectedItem = getSelectionModel().getSelectedItem();
         if (selectedItem != null) {
             return selectedItem;
         } else {
             return null;
         }
+    }
+
+    public MultipleSelectionModel<TreeItem<T>> getSelectionModel() {
+        return treeView.getSelectionModel();
     }
 
     /**
@@ -279,19 +348,8 @@ public abstract class XalTreeView<T> extends VBox {
     protected boolean selectElement(TreeItem<T> parentNode, String nodeId) {
         for (TreeItem<T> treeItem : parentNode.getChildren()) {
             if (nodeId.equals(getId(treeItem))) {
-                // Expand all parent items.
-                for (TreeItem parent = treeItem; parent.getParent() != null; parent = parent.getParent()) {
-                    parent.getParent().setExpanded(true);
-                }
-                // Select the element.
-                treeView.getSelectionModel().select(treeItem);
-                // Scroll to the item if not visible.
-                int selectedIndex = treeView.getSelectionModel().getSelectedIndex();
-                ObservableList<Node> childrenUnmodifiable = treeView.getChildrenUnmodifiable();
-                VirtualFlow get = (VirtualFlow) childrenUnmodifiable.get(0);
-                if (selectedIndex >= get.getLastVisibleCell().getIndex() || selectedIndex <= get.getFirstVisibleCell().getIndex()) {
-                    treeView.scrollTo(selectedIndex);
-                }
+                // Make sure the TreeView is up-to-date before calling expandSelectAndScroll
+                Platform.runLater(() -> expandSelectAndScroll(treeItem));
                 return true;
             }
             // Check also the children recursively.
@@ -300,6 +358,28 @@ public abstract class XalTreeView<T> extends VBox {
             }
         }
         return false;
+    }
+
+    /**
+     * This method expands all parent items, select the item, and scroll if
+     * needed. In order for it to work, the TreeView must be up-to-date, so
+     * always call this method using Platform.runLater
+     */
+    private void expandSelectAndScroll(TreeItem treeItem) {
+        // Expand all parent items.
+        for (TreeItem parent = treeItem; parent.getParent() != null; parent = parent.getParent()) {
+            parent.getParent().setExpanded(true);
+        }
+        // Select the element.
+        treeView.getSelectionModel().select(treeItem);
+        // Scroll to the item if not visible.
+        int selectedIndex = treeView.getSelectionModel().getSelectedIndex();
+        ObservableList<Node> childrenUnmodifiable = treeView.getChildrenUnmodifiable();
+        VirtualFlow get = (VirtualFlow) childrenUnmodifiable.get(0);
+        if ((get.getLastVisibleCell() != null && selectedIndex >= get.getLastVisibleCell().getIndex())
+                || (get.getFirstVisibleCell() != null && selectedIndex <= get.getFirstVisibleCell().getIndex())) {
+            treeView.scrollTo(selectedIndex);
+        }
     }
 
     /**

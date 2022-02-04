@@ -136,13 +136,8 @@ public class MagFieldMap extends Electromagnet implements ISplittable, IFileBase
     @Override
     public void update(DataAdaptor adaptor) {
         super.update(adaptor);
-        String fieldMapPath = null;
 
-        try {
-            fieldMapPath = new URI(((XmlDataAdaptor) adaptor).document().getDocumentURI()).resolve(".").toString();
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(RfFieldMap.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        String fieldMapPath = getAccelerator().getFieldMapPath();
 
         fieldMap = FieldMapFactory.getInstance(fieldMapPath, getFieldMapFile(),
                 bucFieldMap.getDynamic(), bucFieldMap.getFieldType(),

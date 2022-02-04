@@ -19,6 +19,7 @@ package xal.extension.fxapplication.widgets;
 
 import java.lang.reflect.InvocationTargetException;
 import static java.util.logging.Level.WARNING;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import xal.smf.Accelerator;
 import xal.smf.AcceleratorNode;
@@ -29,11 +30,12 @@ import xal.smf.AcceleratorNode;
  *
  * @author Juan F. Esteban Müller <juanf.estebanmuller@ess.eu>
  */
-class AcceleratorNodeTreeCell extends ElementTreeCell<AcceleratorNode> {
+abstract class AcceleratorNodeTreeCell extends ElementTreeCell<AcceleratorNode> {
+
+    public abstract void onMouseClicked(MouseEvent event, boolean empty);
 
     @Override
     protected void updateItem(AcceleratorNode item, boolean empty) {
-
         super.updateItem(item, empty);
 
         // The cell is not empty (TreeItem is not null)
@@ -69,10 +71,12 @@ class AcceleratorNodeTreeCell extends ElementTreeCell<AcceleratorNode> {
 
             StackPane disclosureNode = (StackPane) getDisclosureNode();
             disclosureNode.setStyle("-fx-padding: 8 6 8 8;");
+            setOnMouseClicked(ev -> onMouseClicked(ev, false));
         } else {
             assert item == null;
             setGraphic(null);
             setText(null);
+            setOnMouseClicked(ev -> onMouseClicked(ev, true));
         }
     }
 }

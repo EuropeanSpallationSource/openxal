@@ -35,33 +35,24 @@ public class ESSIonSourceMFC extends AcceleratorNode {
     public static final String TYPE = "ISMFC";
 
     // Ion Source's mass flow controller channel handles
-    public static final String H_2_FLOW_RB_HANDLE = "h2FlowRB";
     public static final String H_2_FLOW_R_HANDLE = "h2FlowR";
     public static final String H_2_FLOW_S_HANDLE = "h2FlowS";
-    private Channel h2FlowRBC = null;
     private Channel h2FlowRC = null;
     private Channel h2FlowSC = null;
     public final AccessibleProperty h2Flow = new AccessibleProperty("h2Flow", H_2_FLOW_R_HANDLE, H_2_FLOW_S_HANDLE);
-    public final AccessibleProperty h2FlowRB = new AccessibleProperty(H_2_FLOW_RB_HANDLE, H_2_FLOW_RB_HANDLE, H_2_FLOW_S_HANDLE);
 
     // High-voltage power supply channel handles
     public static final String VOLTAGE_SET_HANDLE = "volS";
     public static final String VOLTAGE_READ_HANDLE = "volR";
-    public static final String VOLTAGE_RB_HANDLE = "volRB";
     Channel voltageSetChannel = null;
     Channel voltageReadChannel = null;
-    Channel voltageRBChannel = null;
     public final AccessibleProperty voltqge = new AccessibleProperty("voltqge", VOLTAGE_READ_HANDLE, VOLTAGE_SET_HANDLE);
-    public final AccessibleProperty voltqgeRB = new AccessibleProperty("voltqgeRB", VOLTAGE_RB_HANDLE, VOLTAGE_SET_HANDLE);
 
     public static final String CURRENT_SET_HANDLE = "currS";
     public static final String CURRENT_READ_HANDLE = "currR";
-    public static final String CURRENT_RB_HANDLE = "currRB";
     Channel currentSetChannel = null;
     Channel currentReadChannel = null;
-    Channel currentRBChannel = null;
     public final AccessibleProperty curr = new AccessibleProperty("curr", CURRENT_READ_HANDLE, CURRENT_SET_HANDLE);
-    public final AccessibleProperty currRB = new AccessibleProperty(CURRENT_RB_HANDLE, CURRENT_RB_HANDLE, CURRENT_SET_HANDLE);
 
     /**
      * the ID of this magnet's main power supply
@@ -103,11 +94,6 @@ public class ESSIonSourceMFC extends AcceleratorNode {
     /*
      *  Process variable Gets 
      */
-    public double getH2FlowRB() throws GetException {
-        h2FlowRBC = lazilyGetAndConnect(H_2_FLOW_RB_HANDLE, h2FlowRBC);
-        return h2FlowRBC.getValDbl();
-    }
-
     public double getH2FlowR() throws GetException {
         h2FlowRC = lazilyGetAndConnect(H_2_FLOW_R_HANDLE, h2FlowRC);
         return h2FlowRC.getValDbl();
@@ -130,12 +116,6 @@ public class ESSIonSourceMFC extends AcceleratorNode {
         return voltageReadChannel.getValDbl();
     }
 
-    public double getVoltageRB() throws GetException {
-        voltageRBChannel = lazilyGetAndConnect(VOLTAGE_RB_HANDLE, voltageRBChannel);
-
-        return voltageRBChannel.getValDbl();
-    }
-
     public void setCurrent(double dblVal) throws PutException {
         currentSetChannel = lazilyGetAndConnect(CURRENT_SET_HANDLE, currentSetChannel);
 
@@ -146,11 +126,5 @@ public class ESSIonSourceMFC extends AcceleratorNode {
         currentReadChannel = lazilyGetAndConnect(CURRENT_READ_HANDLE, currentReadChannel);
 
         return currentReadChannel.getValDbl();
-    }
-
-    public double getCurrentRB() throws GetException {
-        currentRBChannel = lazilyGetAndConnect(CURRENT_RB_HANDLE, currentRBChannel);
-
-        return currentRBChannel.getValDbl();
     }
 }

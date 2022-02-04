@@ -132,4 +132,22 @@ public class ApertureProfile {
 
         return profileArray;
     }
+
+    public void addProfileData(List<Double> profilePos, List<Double> profileX, List<Double> profileY, List<Integer> shape) {
+        for (int i = 0; i < profilePos.size(); i++) {
+            this.profilePos.add(profilePos.get(i));
+            this.profileX.add(profileX.get(i));
+            this.profileY.add(profileY.get(i));
+            this.apertureShape.add(shape.get(i));
+        }
+    }
+
+    public void addProfileData(double[] profilePos, double[] profileX, double[] profileY, int shape) {
+        for (int i = 0; i < profilePos.length; i++) {
+            this.profilePos.add(profilePos[i]);
+            this.profileX.add(profileX[i]);
+            this.profileY.add(profileY[i]);
+            this.apertureShape.add(shape);
+        }
+    }
 }

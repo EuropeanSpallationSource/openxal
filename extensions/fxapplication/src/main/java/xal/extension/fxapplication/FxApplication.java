@@ -23,7 +23,6 @@ import java.io.InputStream;
 import javafx.application.Application;
 import java.net.URL;
 import java.util.Date;
-import javafx.beans.property.SimpleStringProperty;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -59,7 +58,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
 import xal.extension.application.ApplicationStatus;
-import xal.extension.jelog.ElogServer;
+import xal.extension.logbook.Logbook;
+import xal.extension.logbook.LogbookException;
+import xal.extension.logbook.LogbookProvider;
 import xal.extension.service.ServiceDirectory;
 import xal.extension.service.ServiceException;
 import xal.smf.Accelerator;
@@ -86,6 +87,7 @@ public abstract class FxApplication extends Application {
     protected String MAIN_SCENE = "/fxml/Scene.fxml";
     protected static String CSS_STYLE = "/styles/Styles.css";
     private String STAGE_TITLE = "Demo Application";
+    private String acceleratorMainPath;
 
     private enum THEME {
         DEFAULT,
@@ -208,7 +210,7 @@ public abstract class FxApplication extends Application {
 
         try {
             if (HAS_ACCELERATOR) {
-                String acceleratorMainPath = XMLDataManager.defaultPath();
+                acceleratorMainPath = XMLDataManager.defaultPath();
                 if (acceleratorMainPath == null) {
                     acceleratorMainPath = latticeErrorDialog("Default accelerator not set", "Press OK to open file dialog to select the path to the accelerator lattice files or Cancel to close the application.");
                 }
@@ -262,17 +264,19 @@ public abstract class FxApplication extends Application {
                 }
             }
 
-            final Menu eLogMenu = new Menu("eLog");
+            final Menu eLogMenu = new Menu("Logbook");
             final MenuItem openLogMenu = new MenuItem("Open");
-            openLogMenu.setOnAction(e -> urlMenuHandler());
-            final MenuItem makePostMenu = new MenuItem("Post Screen Shot");
-            makePostMenu.setOnAction(e -> eLogMenuHandler("image"));
+            openLogMenu.setOnAction((e) -> urlMenuHandler());
+            final MenuItem makePostMenu = new MenuItem("Post New entry");
+            makePostMenu.setOnAction((e) -> eLogMenuHandler("none"));
+            final MenuItem makePostScreenshotMenu = new MenuItem("Post Screen Shot");
+            makePostScreenshotMenu.setOnAction((e) -> eLogMenuHandler("image"));
             final MenuItem makePostDataMenu = new MenuItem("Post Data");
             makePostDataMenu.setOnAction(e -> eLogMenuHandler("file"));
             if (HAS_DOCUMENTS) {
-                eLogMenu.getItems().addAll(openLogMenu, makePostMenu, makePostDataMenu);
+                eLogMenu.getItems().addAll(openLogMenu, makePostMenu, makePostScreenshotMenu, makePostDataMenu);
             } else {
-                eLogMenu.getItems().addAll(openLogMenu, makePostMenu);
+                eLogMenu.getItems().addAll(openLogMenu, makePostMenu, makePostScreenshotMenu);
             }
 
             final Menu viewMenu = new Menu("View");
@@ -389,8 +393,6 @@ public abstract class FxApplication extends Application {
 
             stage.setTitle(STAGE_TITLE);
             stage.setScene(scene);
-            //YIL It is probably very bad to set this here but I am a stupid person.
-            DOCUMENT.sourceString = new SimpleStringProperty(DOCUMENT.DEFAULT_FILENAME);
             DOCUMENT.sourceString.addListener((observable, oldValue, newValue) -> stage.setTitle(STAGE_TITLE + ": " + newValue));
 
             loader.<Controller>getController().setApplication(this);
@@ -635,6 +637,7 @@ public abstract class FxApplication extends Application {
             Accelerator accelerator = acceleratorXMLManager.getAccelerator();
             DOCUMENT.acceleratorXMLManager = acceleratorXMLManager;
             DOCUMENT.accelerator.setAccelerator(accelerator);
+            acceleratorMainPath = acceleratorPath;
         } catch (ParseException | ClassCastException ex) {
             Alert alert = new Alert(AlertType.WARNING);
             alert.setTitle("Load Accelerator Warning");
@@ -666,6 +669,7 @@ public abstract class FxApplication extends Application {
     protected void loadAcceleratorMenuHandler() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Load Accelerator");
+        fileChooser.setInitialDirectory(new File(acceleratorMainPath).getParentFile());
 
         //Set extension filter
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("XAL files (*.xal)", "*.xal");
@@ -811,6 +815,20 @@ public abstract class FxApplication extends Application {
     }
 
     protected void urlMenuHandler() {
-        DOCUMENT.openUrl(ElogServer.getElogURL());
+        try {
+            LogbookProvider logbookProvider = Logbook.getDefaultLogbookProvider(false);
+
+            if (logbookProvider == null) {
+                logbookProvider = XalFxDocument.logbookProviderDialog();
+            }
+            // Return if no provider selected.
+            if (logbookProvider == null) {
+                return;
+            }
+
+            DOCUMENT.openUrl(logbookProvider.getServer());
+        } catch (LogbookException ex) {
+            Logger.getLogger(FxApplication.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

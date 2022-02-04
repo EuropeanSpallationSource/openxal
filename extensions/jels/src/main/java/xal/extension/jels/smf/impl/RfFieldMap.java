@@ -19,7 +19,6 @@ package xal.extension.jels.smf.impl;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,7 +30,6 @@ import xal.smf.attr.AttributeBucket;
 import xal.smf.impl.RfGap;
 import xal.smf.impl.qualify.ElementTypeManager;
 import xal.tools.data.DataAdaptor;
-import xal.tools.xml.XmlDataAdaptor;
 
 /**
  * General RF Field Map element. It can be used with any type of
@@ -153,16 +151,11 @@ public class RfFieldMap extends RfGap implements ISplittable, IFileBasedFieldMap
     public void update(DataAdaptor adaptor) {
         super.update(adaptor);
 
-        try {
-            if (adaptor instanceof XmlDataAdaptor) {
-                String fieldMapPath = new URI(((XmlDataAdaptor) adaptor).document().getDocumentURI()).resolve(".").toString();
-                fieldMap = FieldMapFactory.getInstance(fieldMapPath, getFieldMapFile(),
-                        bucFieldMap.getDynamic(), bucFieldMap.getFieldType(),
-                        bucFieldMap.getDimensions(), bucFieldMap.getNumberOfPoints());
-            }
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(RfFieldMap.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        String fieldMapPath = getAccelerator().getFieldMapPath();
+
+        fieldMap = FieldMapFactory.getInstance(fieldMapPath, getFieldMapFile(),
+                bucFieldMap.getDynamic(), bucFieldMap.getFieldType(),
+                bucFieldMap.getDimensions(), bucFieldMap.getNumberOfPoints());
     }
 
     @Override

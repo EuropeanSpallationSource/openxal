@@ -80,6 +80,10 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
     private static final String DATE_ATTR = "date";
     private static final String VER_ATTR = "ver";
     private static final String SYSTEM_ATTR = "system";
+    // URL to the directory where fieldmap files can be found.
+    private String fieldMapPath;
+    
+    // DataAdaptor interface ----------------------
 
     // DataAdaptor interface ----------------------
     /**
@@ -639,5 +643,13 @@ public class Accelerator extends AcceleratorSeq implements /* IElement, */ DataL
      */
     public MagnetTrimSupply getMagnetTrimSupply(String supplyId) {
         return magnetTrimSupplies.get(supplyId);
+    }
+
+    public String getFieldMapPath() {
+        return fieldMapPath;
+    }
+
+    public void setFieldMapPath(String absoluteUrlSpec) {
+        fieldMapPath = absoluteUrlSpec;
     }
 }

@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal</artifactId>
-        <version>5.2-SNAPSHOT</version>
+        <version>5.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>openxal.extensions</artifactId>
@@ -22,7 +22,6 @@
         <module>widgets</module>
         <module>wirescan</module>
         <module>jels</module>
-        <module>jelog</module>
         <module>tracewin</module>
         <module>../services/pvlogger/extension</module>
         <module>../services/worker/extension</module>

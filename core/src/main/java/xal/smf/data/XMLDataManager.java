@@ -1079,6 +1079,8 @@ public class XMLDataManager {
 
             accelerator.setTimingCenter(getTimingCenter());
 
+            accelerator.setFieldMapPath(absoluteUrlSpec);
+            
             accelerator.update(accelAdaptor);
 
             loadExtraOptics(accelerator, isValidating);

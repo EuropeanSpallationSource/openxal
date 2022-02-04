@@ -5,8 +5,20 @@
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal.extensions</artifactId>
-        <version>5.2-SNAPSHOT</version>
+        <version>5.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>openxal.extensions.logbook</artifactId>
+    
+    <dependencies>
+        <dependency>
+            <groupId>eu.ess</groupId>
+            <artifactId>xaos.tools</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.j256.simplemagic</groupId>
+            <artifactId>simplemagic</artifactId>
+            <version>1.16</version>
+        </dependency>
+    </dependencies>
 </project>

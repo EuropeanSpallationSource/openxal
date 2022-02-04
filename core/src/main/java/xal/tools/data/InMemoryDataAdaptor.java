@@ -217,13 +217,11 @@ public class InMemoryDataAdaptor implements DataAdaptor {
         }
         return subnodes;
     }
-
-    /**
-     * return all child adaptors of the specified node name
-     */
-    @Override
-    public List<DataAdaptor> childAdaptors(final String label) {
-        return subnodeMap.get(label);
+    
+    
+    /** return all child adaptors of the specified node name */
+    public List<DataAdaptor> childAdaptors( final String label ) {
+        return subnodeMap.getOrDefault(label, new ArrayList<DataAdaptor>());
     }
 
     /**
@@ -232,34 +230,27 @@ public class InMemoryDataAdaptor implements DataAdaptor {
     public Iterator<DataAdaptor> childAdaptorIterator() {
         return childAdaptors().iterator();
     }
-
-    /**
-     * return an iterator of all child adaptors of the specified name
-     */
-    public Iterator<DataAdaptor> childAdaptorIterator(final String label) {
-        return childAdaptors(label).iterator();
+    
+    
+    /** return an iterator of all child adaptors of the specified name */
+    public Iterator<DataAdaptor> childAdaptorIterator( final String label ) {
+        return childAdaptors( label ).iterator();
     }
-
-    /**
-     * Convenience method to get a single child adaptor when only one is
-     * expected
-     */
-    @Override
-    public DataAdaptor childAdaptor(final String label) {
-        final List<DataAdaptor> namedSubnodes = childAdaptors(label);
-        return namedSubnodes.isEmpty() ? null : namedSubnodes.get(0);
+    
+    
+    /** Convenience method to get a single child adaptor when only one is expected */
+    public DataAdaptor childAdaptor( final String label ) {
+        final List<DataAdaptor> namedSubnodes = childAdaptors( label );
+        return namedSubnodes != null && namedSubnodes.size() > 0 ? namedSubnodes.get(0) :  null;
     }
-
-    /**
-     * Create an new empty child adaptor with label
-     */
-    @Override
-    public DataAdaptor createChild(final String label) {
-        final DataAdaptor child = new InMemoryDataAdaptor(label);
-        List<DataAdaptor> subnodes = childAdaptors(label);
-        if (subnodes == null) {
-            subnodes = new ArrayList<>();
-            subnodeMap.put(label, subnodes);
+    
+    
+    /** Create an new empty child adaptor with label */
+    public DataAdaptor createChild( final String label ) {
+        final DataAdaptor child = new InMemoryDataAdaptor( label );
+        List<DataAdaptor> subnodes = childAdaptors( label );
+        if ( subnodes.isEmpty() ) {
+            subnodeMap.put( label, subnodes );
         }
         subnodes.add(child);
         return child;

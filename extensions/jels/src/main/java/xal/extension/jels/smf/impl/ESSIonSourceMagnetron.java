@@ -36,14 +36,11 @@ public class ESSIonSourceMagnetron extends AcceleratorNode {
     public static final String TYPE = "ISM";
 
     // Ion Source's magnetron channel handles
-    public static final String FORWD_PRW_RB_HANDLE = "forwdPrwRB";
-    private Channel forwdPrwRBC = null;
     public static final String FORWD_PRW_R_HANDLE = "forwdPrwR";
     private Channel forwdPrwRC = null;
     public static final String FORWD_PRW_S_HANDLE = "forwdPrwS";
 
     public final AccessibleProperty forwdPrw = new AccessibleProperty("forwdPrw", FORWD_PRW_R_HANDLE, FORWD_PRW_S_HANDLE);
-    public final AccessibleProperty forwdPrwRB = new AccessibleProperty(FORWD_PRW_RB_HANDLE, FORWD_PRW_RB_HANDLE, FORWD_PRW_S_HANDLE);
 
     static {
         registerType();
@@ -81,11 +78,6 @@ public class ESSIonSourceMagnetron extends AcceleratorNode {
     /*
      *  Process variable Gets 
      */
-    public double getForwdPrwRB() throws GetException {
-        forwdPrwRBC = lazilyGetAndConnect(FORWD_PRW_RB_HANDLE, forwdPrwRBC);
-        return forwdPrwRBC.getValDbl();
-    }
-
     public double getForwdPrwR() throws GetException {
         forwdPrwRC = lazilyGetAndConnect(FORWD_PRW_R_HANDLE, forwdPrwRC);
         return forwdPrwRC.getValDbl();

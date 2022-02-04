@@ -4,14 +4,14 @@
     
     <groupId>org.xal</groupId>
     <artifactId>openxal</artifactId>
-    <version>5.2-SNAPSHOT</version>
+    <version>5.4-SNAPSHOT</version>
 
     <properties>
-        <revision>5.2-SNAPSHOT</revision>
+        <revision>5.4-SNAPSHOT</revision>
         <main.basedir>${project.basedir}</main.basedir>     <!-- For the local repository -->
         <surefireArgLine></surefireArgLine>                 <!-- To be able to run tests on Netbeans -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <javafx-version>16</javafx-version>
+        <javafx-version>17.0.1</javafx-version>
         <sonar.exclusions> <!-- Exclude source we do not use -->
             **/tools/data/KeyValueSorting.java,
             **/sim/slg/*.py,
@@ -50,7 +50,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.9.0</version>
                 <configuration>
                     <release>11</release>
                     <compilerArgs>
@@ -61,7 +61,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.3.1</version>
                 <configuration>
                     <isOffline>true</isOffline>
                     <doclint>none</doclint>
@@ -106,7 +106,7 @@
             <plugin>
                 <groupId>org.jfrog.buildinfo</groupId>
                 <artifactId>artifactory-maven-plugin</artifactId>
-                <version>3.2.3</version>
+                <version>3.3.0</version>
                 <inherited>false</inherited>
                 <executions>
                     <execution>                        
@@ -321,8 +321,13 @@
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
-                <artifactId>openxal.extensions.jelog</artifactId>
-                <version>${revision}</version>
+                <artifactId>openxal.plugins.jelog</artifactId>    
+                <version>${revision}</version>    
+            </dependency>
+            <dependency>
+                <groupId>org.xal</groupId>
+                <artifactId>openxal.plugins.olog</artifactId>     
+                <version>${revision}</version>   
             </dependency>
             <dependency>
                 <groupId>org.xal</groupId>
@@ -439,13 +444,18 @@
             </dependency>            
             <dependency>
                 <groupId>eu.ess</groupId>
+                <artifactId>xaos.tools</artifactId>
+                <version>0.6</version>
+            </dependency>           
+            <dependency>
+                <groupId>eu.ess</groupId>
                 <artifactId>xaos.ui.plot</artifactId>
                 <version>0.6</version>
             </dependency>
             <dependency>
                 <groupId>eu.ess</groupId>
                 <artifactId>jelog</artifactId>
-                <version>2.5</version>
+                <version>3.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
