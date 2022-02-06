@@ -77,23 +77,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>openxal.extensions.extlatgen</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>openxal.extensions.solver</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>openxal.extensions.fit</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>openxal.extensions.logbook</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>openxal.extensions.orbit</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -102,10 +90,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>openxal.extensions.scan</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>openxal.extensions.twissobserver</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -118,10 +102,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>openxal.plugins.epics7</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>openxal.plugins.postgres</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

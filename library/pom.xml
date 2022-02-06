@@ -64,23 +64,11 @@
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.extlatgen</artifactId>        
-        </dependency>
-        <dependency>
-            <groupId>org.xal</groupId>
             <artifactId>openxal.extensions.solver</artifactId>        
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.fit</artifactId>        
-        </dependency>
-        <dependency>
-            <groupId>org.xal</groupId>
             <artifactId>openxal.extensions.logbook</artifactId>        
-        </dependency>
-        <dependency>
-            <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.orbit</artifactId>        
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
@@ -89,10 +77,6 @@
         <dependency>
             <groupId>org.xal</groupId>
             <artifactId>openxal.extensions.scan</artifactId>        
-        </dependency>
-        <dependency>
-            <groupId>org.xal</groupId>
-            <artifactId>openxal.extensions.twissobserver</artifactId>        
         </dependency>
         <dependency>
             <groupId>org.xal</groupId>
