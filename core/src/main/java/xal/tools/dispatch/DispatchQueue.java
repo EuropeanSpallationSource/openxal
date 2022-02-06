@@ -576,7 +576,7 @@ class ConcurrentDispatchQueue extends DispatchQueue {
                     // remove the null operation
                     pendingOperationQueue.remove();
                 } catch (NoSuchElementException exception) {
-                    LOGGER.log(Level.WARNING, null, exception);
+                    LOGGER.log(Level.FINEST, null, exception);
                 }
             }
         }
@@ -621,7 +621,7 @@ class ConcurrentDispatchQueue extends DispatchQueue {
             incrementRunningOperationCount();
             dispatchExecutor.submit(operation);
         } catch (NoSuchElementException exception) {
-            LOGGER.log(Level.WARNING, null, exception);
+            LOGGER.log(Level.FINEST, null, exception);
         }
         // nothing left to process in the queue
     }
@@ -782,7 +782,7 @@ class SerialDispatchQueue extends DispatchQueue {
                     dispatchExecutor.submit(nextOperation);
                 }
             } catch (NoSuchElementException exception) {
-                LOGGER.log(Level.WARNING, null, exception);
+                LOGGER.log(Level.FINEST, null, exception);
             }
             // nothing left to process in the queue
         }
@@ -886,7 +886,7 @@ class MainDispatchQueue extends SerialDispatchQueue {
                     SwingUtilities.invokeLater(runnableOperation);
                 }
             } catch (NoSuchElementException exception) {
-                LOGGER.log(Level.WARNING, null, exception);
+                LOGGER.log(Level.FINEST, null, exception);
             }
             // nothing left to process in the queue
         }

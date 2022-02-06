@@ -36,14 +36,14 @@ public class MacAdaptor {
 
         try {
             // modern quit handler
-            final Class<?> macQuitHandlerClass = Class.forName("com.apple.eawt.QuitHandler");
+            final Class<?> macQuitHandlerClass = Class.forName("java.awt.desktop.QuitHandler");
 
             // modern about handler
-            final Class<?> macAboutHandlerClass = Class.forName("com.apple.eawt.AboutHandler");
+            final Class<?> macAboutHandlerClass = Class.forName("java.awt.desktop.AboutHandler");
 
             // get the Mac application instance
-            final Class<?> macApplicationClass = Class.forName("com.apple.eawt.Application");
-            final Method appMethod = macApplicationClass.getMethod("getApplication");
+            final Class<?> macApplicationClass = Class.forName("java.awt.Desktop");
+            final Method appMethod = macApplicationClass.getMethod("getDesktop");
             final Object macApplication = appMethod.invoke(null);
 
             // register the quit handler to handle Mac quit events through XAL
@@ -118,8 +118,8 @@ public class MacAdaptor {
     private static void initializeFallback() {
         try {
             // dynamically get the Mac specific extensions
-            final Class<?> macApplicationClass = Class.forName("com.apple.eawt.Application");
-            final Class<?> macEventListenerClass = Class.forName("com.apple.eawt.ApplicationListener");
+            final Class<?> macApplicationClass = Class.forName("java.awt.desktop.Application");
+            final Class<?> macEventListenerClass = Class.forName("java.awt.desktop.ApplicationListener");
 
             // get the Mac application instance for our application
             final Method appMethod = macApplicationClass.getMethod("getApplication");

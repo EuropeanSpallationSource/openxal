@@ -812,12 +812,10 @@ public class ActionFactory {
 
         try {
             // need to suppress raw types
-            Application.getAdaptor().getClass().getDeclaredMethod("editPreferences", new Class[]{XalDocument.class
-
-            });
+            Application.getAdaptor().getClass().getDeclaredMethod("editPreferences", new Class[]{XalDocument.class});
             action.setEnabled(true);
         } catch (NoSuchMethodException exception) {
-            LOGGER.log(Level.WARNING, null, exception);
+            LOGGER.log(Level.FINEST, null, exception);
             action.setEnabled(false);
         }
 
@@ -842,12 +840,10 @@ public class ActionFactory {
 
         try {
             // need to suppress rawtypes
-            Application.getAdaptor().getClass().getDeclaredMethod("editPreferences", new Class[]{XalInternalDocument.class
-
-            });
+            Application.getAdaptor().getClass().getDeclaredMethod("editPreferences", new Class[]{XalInternalDocument.class});
             action.setEnabled(true);
         } catch (NoSuchMethodException exception) {
-            LOGGER.log(Level.WARNING, null, exception);
+            LOGGER.log(Level.FINEST, null, exception);
             action.setEnabled(false);
         }
 
