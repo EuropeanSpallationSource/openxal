@@ -16,6 +16,7 @@
         <module>application</module>
         <module>fxapplication</module>
         <module>bricks</module>
+        <module>fit</module>
         <module>logbook</module>
         <module>recordselector</module>
         <module>scan</module>

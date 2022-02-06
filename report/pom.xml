@@ -48,6 +48,10 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>openxal.extensions.fit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>openxal.extensions.service</artifactId>
         </dependency>
         <dependency>
