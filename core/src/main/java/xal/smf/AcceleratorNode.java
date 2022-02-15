@@ -678,6 +678,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
                 double setterValue = prop.setLive(channelValue);
                 Channel setChannel = findChannel(prop.getSetHandle());
                 setChannel.putVal(setterValue);
+                return;
             }
         }
         throw new IllegalArgumentException("Unsupported AcceleratorNode live value property: " + propertyName);
@@ -694,8 +695,8 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
                 for (String readback : prop.getReadbackHandles()) {
                     channels.add(findChannel(readback));
                 }
+                return channels.toArray(new Channel[0]);
             }
-            return channels.toArray(new Channel[0]);
         }
 
         throw new IllegalArgumentException("Unsupported AcceleratorNode live channels property: " + propertyName);

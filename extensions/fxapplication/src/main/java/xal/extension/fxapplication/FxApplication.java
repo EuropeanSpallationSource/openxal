@@ -88,6 +88,7 @@ public abstract class FxApplication extends Application {
     protected static String CSS_STYLE = "/styles/Styles.css";
     private String STAGE_TITLE = "Demo Application";
     private String acceleratorMainPath;
+    private MenuItem testModeMenu;
 
     private enum THEME {
         DEFAULT,
@@ -234,7 +235,7 @@ public abstract class FxApplication extends Application {
                 newFileMenu.setOnAction(e -> newFileMenuHandler());
                 final MenuItem saveFileMenu = new MenuItem("Save");
                 saveFileMenu.setOnAction(e -> saveFileMenuHandler(false));
-                final MenuItem saveAsFileMenu = new MenuItem("Save as..");
+                final MenuItem saveAsFileMenu = new MenuItem("Save as...");
                 saveAsFileMenu.setOnAction(e -> saveFileMenuHandler(true));
                 final MenuItem loadFileMenu = new MenuItem("Load");
                 loadFileMenu.setOnAction(e -> loadFileMenuHandler());
@@ -252,9 +253,9 @@ public abstract class FxApplication extends Application {
             if (HAS_ACCELERATOR) {
                 final MenuItem loadDefaultAcceleratorMenu = new MenuItem("Load Default Accelerator");
                 loadDefaultAcceleratorMenu.setOnAction(e -> loadDefaultAcceleratorMenuHandler());
-                final MenuItem loadAcceleratorMenu = new MenuItem("Load Accelerator ...");
+                final MenuItem loadAcceleratorMenu = new MenuItem("Load Accelerator...");
                 loadAcceleratorMenu.setOnAction(e -> loadAcceleratorMenuHandler());
-                final MenuItem testModeMenu = new MenuItem("Enable Test Mode");
+                testModeMenu = new MenuItem("Enable Test Mode");
                 testModeMenu.setOnAction(e -> testModeMenuHandler(e));
                 acceleratorMenu.getItems().addAll(loadDefaultAcceleratorMenu, loadAcceleratorMenu, testModeMenu);
 
@@ -615,14 +616,18 @@ public abstract class FxApplication extends Application {
     }
 
     protected void testModeMenuHandler(Event e) {
-        DOCUMENT.testMode = !DOCUMENT.testMode;
+        setTestMode(!DOCUMENT.testMode);
+    }
 
-        DOCUMENT.accelerator.setTestMode(DOCUMENT.testMode);
+    public void setTestMode(boolean testModeFlag) {
+        DOCUMENT.testMode = testModeFlag;
 
-        if (DOCUMENT.testMode) {
-            ((MenuItem) e.getSource()).setText("Disable Test Mode");
+        DOCUMENT.accelerator.setTestMode(testModeFlag);
+
+        if (testModeFlag) {
+            testModeMenu.setText("Disable Test Mode");
         } else {
-            ((MenuItem) e.getSource()).setText("Enable Test Mode");
+            testModeMenu.setText("Enable Test Mode");
         }
     }
 

@@ -33,11 +33,13 @@ public abstract class Electromagnet extends Magnet {
     // field readback handle
     public static final String FIELD_RB_HANDLE = "fieldRB";
 
-    public final AccessibleProperty field = new AccessibleProperty("field", FIELD_RB_HANDLE, MagnetMainSupply.FIELD_SET_HANDLE, this::getDesignField, designValue -> toFieldFromCA(designValue));
-    
+    public final AccessibleProperty field = new AccessibleProperty("field", FIELD_RB_HANDLE, MagnetMainSupply.FIELD_SET_HANDLE,
+            this::getDesignField, designValue -> toFieldFromCA(designValue),
+            channelValues -> toFieldFromCA(channelValues[0]), channelValues -> toCAFromField(channelValues));
+
     public final AccessibleProperty fieldFromCurrent = new AccessibleProperty("field", MagnetMainSupply.CURRENT_RB_HANDLE, MagnetMainSupply.CURRENT_SET_HANDLE,
-    this::getDesignField, value -> setDfltField(value),
-    channelValues -> toFieldFromCA(toFieldFromCurrent(channelValues[0])), channelValues -> toCAFromField(toCurrentFromField(channelValues)));
+            this::getDesignField, value -> setDfltField(value),
+            channelValues -> toFieldFromCA(toFieldFromCurrent(channelValues[0])), channelValues -> toCAFromField(toCurrentFromField(channelValues)));
 
     // indicates whether to use the actual field readback or the field setting in the getField() method
     // by default use the field readback
@@ -282,7 +284,7 @@ public abstract class Electromagnet extends Magnet {
         if (supply != null) {
             properties.addAll(supply.getAccessibleProperties());
         }
-        
+
         // Keep only one property for field
         if (getMagBucket().getUseCurrentFlag()) {
             properties.remove(field);
@@ -413,7 +415,7 @@ public abstract class Electromagnet extends Magnet {
      * @param current the current in the magnet in A
      * @return the channel access value
      */
-    public final double toFieldFromCurrent(double current){
+    public final double toFieldFromCurrent(double current) {
         return current * getMagBucket().getConversionFactor();
     }
 
@@ -423,10 +425,10 @@ public abstract class Electromagnet extends Magnet {
      * @param field the magnetic field in T/m^(n-1)
      * @return the channel access value
      */
-    public final double toCurrentFromField(double field){
+    public final double toCurrentFromField(double field) {
         return field / getMagBucket().getConversionFactor();
     }
-    
+
     /**
      * Get the field upper settable limit of the main power supply in
      * T/(m^(n-1)), where n = 1 for dipole, 2 for quad, etc.

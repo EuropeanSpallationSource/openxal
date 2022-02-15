@@ -58,6 +58,15 @@ public abstract class PermanentMagnet extends Magnet {
     }
 
     /**
+     * Get the live property value for the corresponding array of channel values
+     * in the order given by getLivePropertyChannels()
+     */
+    @Override
+    public double getLivePropertyValue(final String propertyName, final double[] channelValues) {
+        return getDesignPropertyValue(propertyName);
+    }
+
+    /**
      * Get the array of channels for the specified property
      */
     @Override
