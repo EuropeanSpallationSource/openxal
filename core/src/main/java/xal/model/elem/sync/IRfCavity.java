@@ -3,70 +3,68 @@
  */
 package xal.model.elem.sync;
 
-import xal.model.IProbe;
-
 /**
  * Common parameters of RF Cavity structures.
- * 
+ *
  * TODO CKA Add PROPERTY_FREQUENCY property to RfCavitySynchronizer??
- * 
+ *
  * @author Craig McChesney
  * @author Christopher K. Allen
- * 
+ *
  * @since Mar 17, 2004
  * @version Jan 25, 2015
  */
-public interface IRfCavity  {
+public interface IRfCavity {
 
     /**
-     *  Get the RF cavity field amplitude.
+     * Get the RF cavity field amplitude.
      *
-     *  @return     cavity amplitude (in <bold>MV/m</bold>).
+     * @return cavity amplitude (in <bold>MV/m</bold>).
      */
     public double getCavAmp();
-    
+
     /**
-     *  Get the operating frequency of the cavity.
+     * Get the operating frequency of the cavity.
      *
-     *  @return  frequency of RF cavity (in <bold>Hertz</bold>)
+     * @return frequency of RF cavity (in <bold>Hertz</bold>)
      */
     public double getCavFrequency();
-    
+
     /**
-     *  Get the RF cavity field phase.
+     * Get the RF cavity field phase.
      *
-     *  @return     cavity phase (in <bold>Rad</bold>).
+     * @return cavity phase (in <bold>Rad</bold>).
      */
     public double getCavPhase();
-    
+
     /**
-     *  Set the RF cavity field amplitude.
+     * Set the RF cavity field amplitude.
      *
-     *  @param  dblAmp    cavity amplitude (in <bold>MV/m</bold>).
+     * @param dblAmp cavity amplitude (in <bold>MV/m</bold>).
      */
     public void setCavAmp(double dblAmp);
 
     /**
      * Sets the frequency of the RF in the cavity.
-     *  
-     * @param dblFreq   RF frequency (in <b>Hz</b>)
      *
-     * @since  Jan 22, 2015   by Christopher K. Allen
+     * @param dblFreq RF frequency (in <strong>Hz</strong>)
+     *
+     * @since Jan 22, 2015 by Christopher K. Allen
      */
     public void setCavFrequency(double dblFreq);
-        
+
     /**
-     *  Set the RF cavity field phase.
+     * Set the RF cavity field phase.
      *
-     *  @param  dblAmp    cavity phase (in <bold>Rad</bold>).
+     * @param dblAmp cavity phase (in <bold>Rad</bold>).
      */
     public void setCavPhase(double dblPhase);
-    
+
     /**
      * Compute the synchronous phase and the energy gain for a cavity gap.
      */
     public void computeSynchronousPhaseAndEnergyGain();
-    
+
     /**
      * Return the synchronous phase of a cavity gap, which must be previously
      * calculated using computeSynchronousPhase.
@@ -74,11 +72,11 @@ public interface IRfCavity  {
      * @return synchronous phase [rad]
      */
     public double getSynchronousPhase();
-    
+
     /**
      * Return the energy gain of a cavity gap previously calculated.
      *
-     * @return 
+     * @return
      */
     public double getEnergyGain();
 }

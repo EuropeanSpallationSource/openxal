@@ -3,26 +3,33 @@ package xal.smf.attr;
 /**
  * Class factory for all (registered) AttributeBucket objects.
  *
- * @author  Nikolay Malitsky, Christopher K. Allen
+ * @author Nikolay Malitsky, Christopher K. Allen
  */
-
-import  java.util.*;
-import  java.lang.reflect.*;
-
+import java.util.*;
+import java.lang.reflect.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class AttributeBucketFactory {
 
+    private static final Logger LOGGER = Logger.getLogger(AttributeBucketFactory.class.getName());
 
     /*
      *  Global Attributes
      */
+    /**
+     * set of all AttributeBucket derived classes
+     */
+    private static HashSet<AttributeBucket> setBuckTypes;
+    /**
+     * map of node type ids to constructors
+     */
+    private static HashMap<String, Constructor<?>> mapCtors;
 
-    static private HashSet<AttributeBucket>                  m_setBuckTypes;     // set of all AttributeBucket derived classes
-    static private HashMap<String,Constructor<?>>                  m_mapCtors;         // map of node type ids to constructors
-
-
-
-    /** Class loader invoked script - must be modified to register all AttributeBucket types */
+    /**
+     * Class loader invoked script - must be modified to register all
+     * AttributeBucket types
+     */
     static {
 
         registerClass(new AlignmentBucket());
@@ -36,101 +43,101 @@ public final class AttributeBucketFactory {
         registerClass(new DipoleBucket());
         registerClass(new DipoleCorrBucket());
 
-
         buildCtorMap();
-  };
+    }
 
-
-
-
-    /** Get set of all AccelerNode type strings */
+    /**
+     * Get set of all AccelerNode type strings
+     */
     public static String[] getBucketTypes() {
-        int                 nTypes;     // number of node types
-        String[]            arrTypes;   // returned array of node type strings
-
+        // number of node types
+        int nTypes;
+        // returned array of node type strings
+        String[] arrTypes;
 
         // Allocate the string array
-        nTypes   = m_mapCtors.size();
+        nTypes = mapCtors.size();
         arrTypes = new String[nTypes];
 
-
         // Build the string array
-        int                 iType;      // index of current type
-        final Set<String> nodeTypes = m_mapCtors.keySet();
-        iType    = 0;
-		for ( final String nodeType : nodeTypes ) {
+        // index of current type
+        int iType;
+        final Set<String> nodeTypes = mapCtors.keySet();
+        iType = 0;
+        for (final String nodeType : nodeTypes) {
             arrTypes[iType++] = nodeType;
         }
 
         return arrTypes;
-    };
+    }
 
-
-
-    /** Creates the node with the specified string id. */
+    /**
+     * Creates the node with the specified string id.
+     */
     public static AttributeBucket create(String strType) throws ClassNotFoundException {
 
         // Error check
-        if (!m_mapCtors.containsKey(strType))
+        if (!mapCtors.containsKey(strType)) {
             throw new ClassNotFoundException("Unknown AttributeBucket type : " + strType);
-
+        }
 
         // Find the constructur object for the AttributeBucket and instantiate new node
-        Constructor<?>         ctor;       // contructor object for node type
-        Object[]            arrArgs;    // constructor arguments
-        AttributeBucket     buck;       // the returned object
+        // contructor object for node type
+        Constructor<?> ctor;
+        // constructor arguments
+        Object[] arrArgs;
+        // the returned object
+        AttributeBucket buck;
 
-        ctor    = m_mapCtors.get(strType);
+        ctor = mapCtors.get(strType);
         arrArgs = null;
 
         try {
-            buck    = (AttributeBucket)ctor.newInstance(arrArgs);
-        } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | InvocationTargetException e)   {
-             throw new ClassNotFoundException("Unknown AttributeBucket type : " + strType);
+            buck = (AttributeBucket) ctor.newInstance(arrArgs);
+        } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | InvocationTargetException e) {
+            throw new ClassNotFoundException("Unknown AttributeBucket type : " + strType, e);
         }
-
 
         // Return new node
         return buck;
-    };
-
-
+    }
 
     /*
      *  Internal Support
      */
+    private static void registerClass(AttributeBucket objInst) {
+        if (setBuckTypes == null) {
+            setBuckTypes = new HashSet<>();
+        }
 
-    private static void registerClass(AttributeBucket objInst)   {
-        if (m_setBuckTypes == null)
-            m_setBuckTypes = new HashSet<AttributeBucket>();
+        setBuckTypes.add(objInst);
+    }
 
-        m_setBuckTypes.add(objInst);
-    };
+    // generics aren't supported in arrays
+    @SuppressWarnings("rawtypes")        
+    private static void buildCtorMap() {
+        mapCtors = new HashMap<>();
 
-
-	@SuppressWarnings( "rawtypes" )		// generics aren't supported in arrays
-    private static void buildCtorMap()  {
-        m_mapCtors = new HashMap<String,Constructor<?>>();
-
-		for ( final AttributeBucket bucType : m_setBuckTypes ) {
+        for (final AttributeBucket bucType : setBuckTypes) {
             try {
-                Class<?>           clsType = bucType.getClass();
-                String          strType = bucType.getType();
-                Constructor<?>     ctrType = clsType.getConstructor(new Class[] { });
+                Class<?> clsType = bucType.getClass();
+                String strType = bucType.getType();
+                Constructor<?> ctrType = clsType.getConstructor(new Class[]{});
 
-                m_mapCtors.put(strType, ctrType);
+                mapCtors.put(strType, ctrType);
 
-           } catch (NoSuchMethodException e) {
-                System.out.println("NoSuchMethodException: " + e.getMessage());
-           } catch (SecurityException e)    {
-               System.out.println("SecurityException: " + e.getMessage());
-           }
+            } catch (NoSuchMethodException e) {
+                LOGGER.log(Level.INFO, "NoSuchMethodException: ", e);
+            } catch (SecurityException e) {
+                LOGGER.log(Level.INFO, "SecurityException: ", e);
+            }
 
         }
-    };
+    }
 
-    /** Hide the constructor - should never be called */
-    private AttributeBucketFactory() {};
-
-
-};
+    /**
+     * Hide the constructor - should never be called
+     */
+    private AttributeBucketFactory() {
+    }
+}

@@ -66,9 +66,7 @@ public class PowerSuppliesTreeView extends XalTreeView<MagnetPowerSupply> {
     @Override
     public void setDocument(XalFxDocument document) {
         update(document.getAccelerator());
-        document.getAcceleratorProperty().addChangeListener((ChangeListener<Accelerator>) (ov, oldAccelerator, newAccelerator) -> {
-            update(newAccelerator);
-        });
+        document.getAcceleratorProperty().addChangeListener((ChangeListener<Accelerator>) (ov, oldAccelerator, newAccelerator) -> update(newAccelerator));
     }
 
     @Override

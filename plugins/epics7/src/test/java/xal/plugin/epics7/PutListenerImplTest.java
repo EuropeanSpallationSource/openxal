@@ -18,6 +18,8 @@
 package xal.plugin.epics7;
 
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import xal.ca.Channel;
@@ -28,12 +30,14 @@ import xal.ca.Channel;
  */
 public class PutListenerImplTest {
 
+    private static final Logger LOGGER = Logger.getLogger(PutListenerImplTest.class.getName());
+
     /**
      * Test of putCompleted method, of class PutListenerImpl.
      */
     @Test
     public void testPutCompleted() {
-        System.out.println("putCompleted");
+        LOGGER.log(Level.INFO, "putCompleted");
         Channel chan = null;
         PutListenerImpl instance = new PutListenerImpl();
         instance.putCompleted(chan);

@@ -35,25 +35,25 @@ public class DipoleCorrBucket extends xal.smf.attr.DipoleCorrBucket {
     /*
      *  Constants
      */
-    private final static String[] c_arrNames = {
+    private static final String[] ARR_NAMES = {
         // Orientation of the magnet (H/V)
         "orientation"};
 
     public DipoleCorrBucket() {
         super();
-        
-        m_attOrientation = new Attribute("");
 
-        super.registerAttribute(c_arrNames[0], m_attOrientation, "Orientation of the magnet (H/V).");
+        attOrientation = new Attribute("");
+
+        super.registerAttribute(ARR_NAMES[0], attOrientation, "Orientation of the magnet (H/V).");
     }
 
     /**
      * Orientation of the magnet (H/V)
      */
-    private Attribute m_attOrientation;
-    
+    private Attribute attOrientation;
+
     public int getOrientation() {
-        String strFieldType = m_attOrientation.getString();
+        String strFieldType = attOrientation.getString();
         if ("horizontal".equalsIgnoreCase(strFieldType) || "H".equalsIgnoreCase(strFieldType)) {
             return MagnetType.HORIZONTAL;
         } else if ("vertical".equalsIgnoreCase(strFieldType) || "V".equalsIgnoreCase(strFieldType)) {
@@ -64,11 +64,11 @@ public class DipoleCorrBucket extends xal.smf.attr.DipoleCorrBucket {
 
     public void setOrientation(int intVal) {
         if (intVal == MagnetType.HORIZONTAL) {
-            m_attOrientation.set("horizontal");
+            attOrientation.set("horizontal");
         } else if (intVal == MagnetType.VERTICAL) {
-            m_attOrientation.set("vertical");
+            attOrientation.set("vertical");
         } else {
-            m_attOrientation.set("");
+            attOrientation.set("");
         }
     }
 }

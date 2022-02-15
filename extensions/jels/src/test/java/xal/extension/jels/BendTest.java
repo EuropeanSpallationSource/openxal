@@ -1,5 +1,7 @@
 package xal.extension.jels;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -12,10 +14,12 @@ import xal.sim.scenario.ElementMapping;
 import xal.smf.AcceleratorSeq;
 import xal.smf.attr.ApertureBucket;
 import xal.smf.impl.qualify.MagnetType;
-import xal.tools.beam.IConstants;
+import xal.tools.beam.Constants;
 
 @RunWith(Parameterized.class)
 public class BendTest extends TestCommon {
+
+    private static final Logger LOGGER = Logger.getLogger(BendTest.class.getName());
 
     private double errTolerance = 1e-6;
 
@@ -24,40 +28,32 @@ public class BendTest extends TestCommon {
     }
 
     /*
-	 * Test used for madx comparison.
-	 * 
-	 * */
-// 	@Test
+     * Test used for madx comparison.
+     * 
+     * */
     public void doHorizontalBendTestMadX() throws InstantiationException, ModelException {
         probe.reset();
-        System.out.println("Horizontal madx");
+        LOGGER.log(Level.INFO, "Horizontal madx");
 
-        AcceleratorSeq sequence = bend(-5.5, -11, -5.5, 9375.67, 0., 0, 0., 0, 0., 0, 0, 0);        
+        AcceleratorSeq sequence = bend(-5.5, -11, -5.5, 9375.67, 0., 0, 0., 0, 0., 0, 0, 0);
 
         run(sequence);
-
-//        printResults();
-//		checkTWTransferMatrix(new double[][]{});
     }
 
     @Test
     public void doVerticalBendTest() throws InstantiationException, ModelException {
         probe.reset();
-        System.out.println("Vertical");
+        LOGGER.log(Level.INFO, "Vertical");
         /*
-		EDGE -5.5 9375.67 50 0.45 2.8 50 1; this is a magnet length of 1.8 m 
-		BEND -11 9375.67 0 50 1
-		EDGE -5.5 9375.67 50 0.45 2.8 50 1
+        EDGE -5.5 9375.67 50 0.45 2.8 50 1; this is a magnet length of 1.8 m 
+        BEND -11 9375.67 0 50 1
+        EDGE -5.5 9375.67 50 0.45 2.8 50 1
          */
-        AcceleratorSeq sequence = bend(-5.5, -11, -5.5, 9375.67, 0., 50, 0.45, 2.80, 0.45, 2.80, 50, 1);       
+        AcceleratorSeq sequence = bend(-5.5, -11, -5.5, 9375.67, 0., 50, 0.45, 2.80, 0.45, 2.80, 50, 1);
 
         run(sequence);
 
-        //printResults();
         if (initialEnergy == 3e6) {
-//            checkELSResults(1.799999E+00, new double[]{6.182466E-03, 5.210289E-03, 5.142904E-03},
-//                    new double[]{1.458045E+01, 1.039017E+01, 7.424592E+00}, errTolerance); // when halfMag=true
-
             checkTWTransferMatrix(new double[][]{
                 {+1.018958e+00, +1.799999e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00,},
                 {+2.126416e-02, +1.018958e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00,},
@@ -97,21 +93,17 @@ public class BendTest extends TestCommon {
     @Test
     public void doHorizontalBendTest() throws InstantiationException, ModelException {
         probe.reset();
-        System.out.println("Horizontal");
+        LOGGER.log(Level.INFO, "Horizontal");
         /*
-		EDGE -5.5 9375.67 50 0.45 2.8 50 0; this is a magnet length of 1.8 m 
-		BEND -11 9375.67 0 50 0
-		EDGE -5.5 9375.67 50 0.45 2.8 50 0
+        EDGE -5.5 9375.67 50 0.45 2.8 50 0; this is a magnet length of 1.8 m 
+        BEND -11 9375.67 0 50 0
+        EDGE -5.5 9375.67 50 0.45 2.8 50 0
          */
         AcceleratorSeq sequence = bend(-5.5, -11, -5.5, 9375.67, 0., 50, 0.45, 2.80, 0.45, 2.80, 50, 0);
 
         run(sequence);
 
-        //printResults();
         if (initialEnergy == 3e6) {
-//            checkELSResults(1.799999E+00, new double[]{6.132800E-03, 5.266670E-03, 5.142904E-03},
-//                    new double[]{1.434713E+01, 1.061625E+01, 7.424592E+00}, errTolerance);
-
             checkTWTransferMatrix(new double[][]{
                 {+9.632544e-01, +1.788962e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, -1.722575e-01},
                 {-4.032563e-02, +9.632544e-01, +0.000000e+00, +0.000000e+00, +0.000000e+00, -1.890399e-01},
@@ -150,21 +142,17 @@ public class BendTest extends TestCommon {
     @Test
     public void doHorizontalBendTest2() throws InstantiationException, ModelException {
         probe.reset();
-        System.out.println("Horizontal N=0.2");
+        LOGGER.log(Level.INFO, "Horizontal N=0.2");
         /*
-		EDGE -5.5 9375.67 50 0.45 2.8 50 0; this is a magnet length of 1.8 m 
-		BEND -11 9375.67 0.2 50 0
-		EDGE -5.5 9375.67 50 0.45 2.8 50 0
+        EDGE -5.5 9375.67 50 0.45 2.8 50 0; this is a magnet length of 1.8 m 
+        BEND -11 9375.67 0.2 50 0
+        EDGE -5.5 9375.67 50 0.45 2.8 50 0
          */
         AcceleratorSeq sequence = bend(-5.5, -11, -5.5, 9375.67, 0.2, 50, 0.45, 2.80, 0.45, 2.80, 50, 0);
 
         run(sequence);
 
-        //printResults();
         if (initialEnergy == 3e6) {
-//            checkELSResults(1.799999E+00, new double[]{6.132800E-03, 5.266670E-03, 5.142904E-03},
-//                    new double[]{1.434713E+01, 1.061625E+01, 7.424592E+00}, errTolerance);
-
             checkTWTransferMatrix(new double[][]{
                 {+9.668973e-01, +1.791166e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, -1.723634e-01},
                 {-3.635045e-02, +9.668973e-01, +0.000000e+00, +0.000000e+00, +0.000000e+00, -1.892739e-01},
@@ -203,17 +191,16 @@ public class BendTest extends TestCommon {
     @Test
     public void doVerticalBendTest2() throws InstantiationException, ModelException {
         probe.reset();
-        System.out.println("Vertical N=0.9");
+        LOGGER.log(Level.INFO, "Vertical N=0.9");
         /*
-		EDGE -5.5 9375.67 50 0.45 2.8 50 1; this is a magnet length of 1.8 m 
-		BEND -11 9375.67 0.9 50 1
-		EDGE -5.5 9375.67 50 0.45 2.8 50 1
+        EDGE -5.5 9375.67 50 0.45 2.8 50 1; this is a magnet length of 1.8 m 
+        BEND -11 9375.67 0.9 50 1
+        EDGE -5.5 9375.67 50 0.45 2.8 50 1
          */
         AcceleratorSeq sequence = bend(-5.5, -11, -5.5, 9375.67, 0.9, 50, 0.45, 2.80, 0.45, 2.80, 50, 1);
-        
+
         run(sequence);
 
-        //printResults();
         if (initialEnergy == 3e6) {
             checkTWTransferMatrix(new double[][]{
                 {+1.002313e+00, +1.790064e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00},
@@ -275,18 +262,19 @@ public class BendTest extends TestCommon {
         G *= 1e-3;
         R *= 1e-3;
 
-        // calculations		
+        // calculations        
         double len = Math.abs(rho * alpha_deg * Math.PI / 180.0);
         double quadComp = -N / (rho * rho);
 
-        // following are used to calculate field		
-        double c = IConstants.LightSpeed;
+        // following are used to calculate field        
+        double c = Constants.LIGHT_SPEED;
         double e = probe.getSpeciesCharge();
         double Er = probe.getSpeciesRestEnergy();
         double gamma = probe.getGamma();
         double b = probe.getBeta();
 
-        double k = b * gamma * Er / (e * c); // = -0.22862458629665997
+        // = -0.22862458629665997
+        double k = b * gamma * Er / (e * c);
         int orientation = HV == 0 ? MagnetType.HORIZONTAL : MagnetType.VERTICAL;
 
         Bend bend = ESSElementFactory.createESSBend("b", alpha_deg, k, rho, entry_angle_deg, exit_angle_deg, entrK1, entrK2,

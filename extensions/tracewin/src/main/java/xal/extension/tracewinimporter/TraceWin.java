@@ -25,9 +25,9 @@ import java.util.List;
 
 import eu.ess.bled.Subsystem;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import xal.extension.jels.ImporterHelpers;
@@ -57,6 +57,8 @@ import xal.tools.beam.Twiss;
  * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
  */
 public class TraceWin {
+
+    private static final Logger LOGGER = Logger.getLogger(TraceWin.class.getName());
 
     private File inputFile;
     private File inputDir;
@@ -109,13 +111,10 @@ public class TraceWin {
         this.initialCentroid = initialCentroid;
     }
 
-    private ImportLogger logger;
+    private ImportLogger importLogger;
 
     private String outputDir;
     private String outputName;
-
-    public TraceWin() {
-    }
 
     public File getInputFile() {
         return inputFile;
@@ -146,7 +145,7 @@ public class TraceWin {
     }
 
     public void setLogger(ImportLogger logger) {
-        this.logger = logger;
+        this.importLogger = logger;
     }
 
     public String getOutputDir() {
@@ -212,11 +211,9 @@ public class TraceWin {
         List<Subsystem> systems;
 
         String basePath = new File(sourceFileName).getParentFile().toURI().toString();
-        systems = importer.importFromTraceWin(sourceFileName, new PrintWriter(System.err), basePath);
+        systems = importer.importFromTraceWin(sourceFileName, new PrintWriter(System.err, false, StandardCharsets.UTF_8), basePath);
 
-        ESSAccelerator accelerator = exportToOpenxal(systems, modelMapping);
-
-        return accelerator;
+        return exportToOpenxal(systems, modelMapping);
     }
 
     private ESSAccelerator loadAcceleator(URI[] sourceFileNames, String[] sequenceNames, String basePath, ElementMapping modelMapping) throws IOException {
@@ -224,11 +221,9 @@ public class TraceWin {
         TraceWinImporter importer = new TraceWinImporter();
         List<Subsystem> systems;
 
-        systems = importer.importFromTraceWinSequences(sourceFileNames, sequenceNames, new PrintWriter(System.err), basePath);
+        systems = importer.importFromTraceWinSequences(sourceFileNames, sequenceNames, new PrintWriter(System.err, false, StandardCharsets.UTF_8), basePath);
 
-        ESSAccelerator accelerator = exportToOpenxal(systems, modelMapping);
-
-        return accelerator;
+        return exportToOpenxal(systems, modelMapping);
     }
 
     private ESSAccelerator exportToOpenxal(List<Subsystem> systems, ElementMapping modelMapping) {
@@ -269,7 +264,7 @@ public class TraceWin {
 
         // Checking commandline arguments
         if (args.length < 3) {
-            System.out.println("Usage: TraceWin input outputDir outputName [initialParametersMode]");
+            LOGGER.log(Level.INFO, "Usage: TraceWin input outputDir outputName [initialParametersMode]");
             System.exit(0);
         }
         final String input = args[0];
@@ -303,7 +298,7 @@ public class TraceWin {
                 throw new IOException();
             }
         } catch (IOException e1) {
-            System.err.println("Error while trying to read input.");
+            LOGGER.log(Level.SEVERE, "Error while trying to read input.", e1);
             System.exit(1);
         }
 
@@ -312,7 +307,7 @@ public class TraceWin {
 
     public void importTW() {
         // Starting conversion
-        logger.log("Started parsing.");
+        importLogger.log("Started parsing.");
         ESSAccelerator accelerator = null;
         IniFileParser iniFileParser = null;
 
@@ -334,7 +329,7 @@ public class TraceWin {
             if (getInputFile() != null) {
                 accelerator = loadAcceleator(getInputFile().toURI());
                 if (getInitialParametersMode() > 1) {
-                    logger.log("Initial parameters mode incomatible. Changing to hardcoded values for MEBT.");
+                    importLogger.log("Initial parameters mode incomatible. Changing to hardcoded values for MEBT.");
                 }
                 setInitialParametersMode(1);
             } else if (getInputDir() != null) {
@@ -343,9 +338,9 @@ public class TraceWin {
                 List<String> sequenceNames = new ArrayList<>();
                 basePath = getInputDir().toURI().toString();
                 for (File inputFilei : inputFiles) {
+                    // Remove Dump
                     if (inputFilei.isDirectory() && inputFilei.getName().substring(0, 1).matches("\\d+(\\.\\d+)?")
-                            //                            && Integer.parseInt(inputFilei.getName().substring(0, 1)) > 2 // Load from MEBT
-                            && Integer.parseInt(inputFilei.getName().substring(2, 3)) == 0) { // Remove Dump
+                            && Integer.parseInt(inputFilei.getName().substring(2, 3)) == 0) {
                         File traceWinFile = Paths.get(inputFilei.toString(), "Beam_Physics", "lattice.dat").toFile();
                         if (traceWinFile.exists()) {
                             sourceFileNames.add(traceWinFile.toURI());
@@ -357,7 +352,7 @@ public class TraceWin {
                 sequenceNamesArray = sequenceNames.toArray(new String[]{});
                 accelerator = loadAcceleator(sourceFileNamesArray, sequenceNamesArray, basePath);
                 if (getInitialParametersMode() == 1) {
-                    logger.log("Initial parameters mode incomatible. Changing to 'From .ini files.'");
+                    importLogger.log("Initial parameters mode incomatible. Changing to 'From .ini files.'");
                     setInitialParametersMode(3);
                 }
                 if (getInitialParametersMode() == 0) {
@@ -365,13 +360,13 @@ public class TraceWin {
                 }
             } else if (getInputGit() != null) {
                 GitParser gitParser = new GitParser();
-                gitParser.URL2Json(getInputGit());
+                gitParser.url2Json(getInputGit());
                 sourceFileNamesArray = gitParser.getSourceFileNames();
                 sequenceNamesArray = gitParser.getSequenceNames();
                 basePath = gitParser.getBasePath();
                 accelerator = loadAcceleator(sourceFileNamesArray, sequenceNamesArray, basePath);
                 if (getInitialParametersMode() == 1) {
-                    logger.log("Initial parameters mode incomatible. Changing to 'From .ini files.'");
+                    importLogger.log("Initial parameters mode incomatible. Changing to 'From .ini files.'");
                     setInitialParametersMode(3);
                 }
                 if (getInitialParametersMode() == 0) {
@@ -380,19 +375,20 @@ public class TraceWin {
             } else {
                 throw new IOException();
             }
-        } catch (Exception e1) {
-            logger.log("Error while trying to read input.");
+        } catch (IOException | NumberFormatException e1) {
+            LOGGER.log(Level.WARNING, null, e1);
+            importLogger.log("Error while trying to read input.");
             for (StackTraceElement st : e1.getStackTrace()) {
-                logger.log(st.toString());
+                importLogger.log(st.toString());
             }
-            logger.close();
+            importLogger.close();
             return;
         }
-        logger.log("Parsing finished.");
+        importLogger.log("Parsing finished.");
 
         // Loading initial paramaters
         if (getInitialParametersMode() == 3) {
-            logger.log("Importing initial beam parameters from .ini files.");
+            importLogger.log("Importing initial beam parameters from .ini files.");
             for (String seq : sequenceNamesArray) {
                 iniFileParser.loadTwissFromIni(basePath + "/ProjectFiles/" + seq + ".ini");
                 bunchFrequencyList.add(iniFileParser.getBunchFrequency());
@@ -405,7 +401,7 @@ public class TraceWin {
             ImporterHelpers.addAllInitialParameters(accelerator, bunchFrequencyList, beamCurrentList, kineticEnergyList, initialCentroidList, initialTwissList);
         } else {
             if (getInitialParametersMode() == 2) {
-                logger.log("Importing initial beam parameters from MEBT.ini and simulating for other sequences.");
+                importLogger.log("Importing initial beam parameters from MEBT.ini and simulating for other sequences.");
                 // Taking initial parameters from MEBT. For the other sequences are simulated.
                 iniFileParser.loadTwissFromIni(basePath + "/ProjectFiles/MEBT.ini");
                 bunchFrequency = iniFileParser.getBunchFrequency();
@@ -417,7 +413,8 @@ public class TraceWin {
             try {
                 ImporterHelpers.addInitialParameters(accelerator, bunchFrequency, beamCurrent, kineticEnergy, initialCentroid, initialTwiss);
             } catch (Exception ex) {
-                logger.log("Problem with input parameters. Output probably corrupted (*-model.params).");
+                LOGGER.log(Level.WARNING, null, ex);
+                importLogger.log("Problem with input parameters. Output probably corrupted (*-model.params).");
             }
 
         }
@@ -425,18 +422,18 @@ public class TraceWin {
         AcceleratorExporter accExp = new AcceleratorExporter(accelerator, getOutputDir(), getOutputName());
         try {
             accExp.export();
-            logger.log("Finished exporting.");
-        } catch (Exception ex) {
-            Logger.getLogger(TraceWin.class.getName()).log(Level.SEVERE, null, ex);
-            logger.log("Error exporting.");
+            importLogger.log("Finished exporting.");
+        } catch (IOException | URISyntaxException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+            importLogger.log("Error exporting.");
             for (StackTraceElement st : ex.getStackTrace()) {
-                logger.log(st.toString());
+                importLogger.log(st.toString());
             }
         }
 
         report(accelerator);
 
-        logger.close();
+        importLogger.close();
     }
 
     /**
@@ -445,11 +442,9 @@ public class TraceWin {
      * @param accelerator
      */
     private void report(Accelerator accelerator) {
-        logger.log("--------------------------");
-        logger.log("The following sequences were exported to Open XAL:");
+        importLogger.log("--------------------------");
+        importLogger.log("The following sequences were exported to Open XAL:");
 
-        accelerator.getSequences().forEach((seq) -> {
-            logger.log(seq.getId());
-        });
+        accelerator.getSequences().forEach(seq -> importLogger.log(seq.getId()));
     }
-};
+}

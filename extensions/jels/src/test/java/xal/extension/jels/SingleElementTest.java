@@ -63,11 +63,6 @@ public abstract class SingleElementTest extends TestCommon {
 
         run(data.sequence);
 
-//        //printResults();
-//        if (data.elsSigma != null) {
-//            checkELSResults(data.elsPosition, data.elsSigma, data.elsBeta, data.ELSerrTolerance);
-//        }
-
         checkTWTransferMatrix(data.TWTransferMatrix, data.TMerrTolerance);
 
         if (data.TWMean == null) {
@@ -79,6 +74,6 @@ public abstract class SingleElementTest extends TestCommon {
 
     @Parameters
     public static Collection<Object[]> probes() {
-        return new ArrayList<Object[]>(0);
+        return new ArrayList<>(0);
     }
 }

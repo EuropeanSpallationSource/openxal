@@ -13,17 +13,20 @@
  * more details.
  * 
  * You should have received a copy of the GNU General Public License along with
- * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ //www.gnu.org/licenses/gpl-2.0.txt
+ * this program. If not, see https:
  */
 package xal.rbac;
 
 import java.util.Arrays;
 
 /**
- * Credentials carry the login information. They are created by the SecurityCallback during the 
- * authentication and are discarded immediately afterwards.
- * 
- * @author <a href="mailto:jakob.battelino@cosylab.com">Jakob Battelino Prelog</a>
+ * Credentials carry the login information. They are created by the
+ * SecurityCallback during the authentication and are discarded immediately
+ * afterwards.
+ *
+ * @author <a href="mailto:jakob.battelino@cosylab.com">Jakob Battelino
+ * Prelog</a>
  */
 public class Credentials {
 
@@ -34,7 +37,7 @@ public class Credentials {
 
     /**
      * Constructs new Credentials. Preferred role and IP are set to null.
-     * 
+     *
      * @param username the username used for authentication
      * @param password the password used for authentication
      */
@@ -43,8 +46,9 @@ public class Credentials {
     }
 
     /**
-     * Constructs new credentials with fields set to the provided values. IP is set to null.
-     * 
+     * Constructs new credentials with fields set to the provided values. IP is
+     * set to null.
+     *
      * @param username that will be used for authentication.
      * @param password that will be used for authentication.
      * @param preferredRole the user would prefer to have.
@@ -54,8 +58,8 @@ public class Credentials {
     }
 
     /**
-     * Constructs new credentials with fields set to the provided values. 
-     * 
+     * Constructs new credentials with fields set to the provided values.
+     *
      * @param username that will be used for authentication.
      * @param password that will be used for authentication.
      * @param preferredRole the user would prefer to have.
@@ -70,7 +74,7 @@ public class Credentials {
 
     /**
      * Returns username that will be used for authentication.
-     * 
+     *
      * @return username that will be used for authentication.
      */
     public String getUsername() {
@@ -79,7 +83,7 @@ public class Credentials {
 
     /**
      * Returns password that will be used for authentication.
-     * 
+     *
      * @return password that will be used for authentication.
      */
     public char[] getPassword() {
@@ -91,7 +95,7 @@ public class Credentials {
 
     /**
      * Returns the name of the role the user would prefer to have.
-     * 
+     *
      * @return the name of the role the user would prefer to have.
      */
     public String getPreferredRole() {
@@ -100,7 +104,7 @@ public class Credentials {
 
     /**
      * Returns IP address that will be used for authentication.
-     * 
+     *
      * @return IP address that will be used for authentication.
      */
     public String getIP() {

@@ -7,9 +7,9 @@
  * Oak Ridge National Laboratory
  * Oak Ridge, TN 37830
  */
-
 package xal.service.pvlogger.apputils.browser;
 
+import java.sql.SQLException;
 import xal.service.pvlogger.*;
 import xal.tools.messaging.*;
 import xal.tools.data.KeyValueRecordListener;
@@ -18,275 +18,300 @@ import xal.extension.widgets.swing.KeyValueFilteredTableModel;
 
 import java.util.*;
 
-
 /**
  * BrowserController manages the selection state of the browser window.
  *
- * @author  tap
+ * @author tap
  */
-public class BrowserController implements BrowserModelListener, KeyValueRecordListener<KeyValueFilteredTableModel<PVRecord>,PVRecord> {
-	/** browser model */
-	protected BrowserModel _model;
-	
-	/** selected Machine snapshot **/
-	protected MachineSnapshot _selectedSnapshot;
+public class BrowserController implements BrowserModelListener, KeyValueRecordListener<KeyValueFilteredTableModel<PVRecord>, PVRecord> {
 
-	/** The message center for dispatching messages */
-	private final MessageCenter MESSAGE_CENTER;
-	
-	/** Proxy for forwarding messages to registered listeners */
-	private final BrowserControllerListener EVENT_PROXY;
+    /**
+     * browser model
+     */
+    protected BrowserModel model;
 
-	/** table model of PVs */
-	private final KeyValueFilteredTableModel<PVRecord> PV_TABLE_MODEL;
+    /**
+     * selected Machine snapshot *
+     */
+    protected MachineSnapshot selectedSnapshot;
 
-	/** map of PV Records keyed by signal */
-	private final Map<String,PVRecord> SIGNAL_RECORDS;
+    /**
+     * The message center for dispatching messages
+     */
+    private final MessageCenter messageCenter;
 
-	/** table model for displaying the machine snapshots */
-	private final KeyValueTableModel<MachineSnapshot> MACHINE_SNAPSHOT_TABLE_MODEL;
+    /**
+     * Proxy for forwarding messages to registered listeners
+     */
+    private final BrowserControllerListener eventProxy;
 
-	/** table model for displaying the channel snapshots */
-	private final KeyValueTableModel<ChannelSnapshot> CHANNEL_SNAPSHOT_TABLE_MODEL;
+    /**
+     * table model of PVs
+     */
+    private final KeyValueFilteredTableModel<PVRecord> pvTableModel;
 
-	
-	/**
-	 * Constructor
-	 */
-	public BrowserController( final BrowserModel model ) {
-		_model = model;
-		model.addBrowserModelListener(this);
+    /**
+     * map of PV Records keyed by signal
+     */
+    private final Map<String, PVRecord> signalRecords;
 
-		PV_TABLE_MODEL = new KeyValueFilteredTableModel<PVRecord>();
-		PV_TABLE_MODEL.setKeyPaths( "enabled", "signal" );
-		PV_TABLE_MODEL.setMatchingKeyPaths( "signal" );
-		PV_TABLE_MODEL.setColumnName( "enabled", "Use" );
-		PV_TABLE_MODEL.setColumnEditable( "enabled", true );
-		PV_TABLE_MODEL.setColumnClass( "enabled", Boolean.class );
-		PV_TABLE_MODEL.addKeyValueRecordListener( this );
+    /**
+     * table model for displaying the machine snapshots
+     */
+    private final KeyValueTableModel<MachineSnapshot> machineSnapshotTableModel;
 
-		MACHINE_SNAPSHOT_TABLE_MODEL = new KeyValueTableModel<MachineSnapshot>();
-		MACHINE_SNAPSHOT_TABLE_MODEL.setKeyPaths( "id", "timestamp" );
+    /**
+     * table model for displaying the channel snapshots
+     */
+    private final KeyValueTableModel<ChannelSnapshot> channelSnapshotTableModel;
 
-		CHANNEL_SNAPSHOT_TABLE_MODEL = new KeyValueTableModel<ChannelSnapshot>();
-		CHANNEL_SNAPSHOT_TABLE_MODEL.setKeyPaths( "PV", "timestamp", "valueCount", "scalarValue", "status", "severity" );
-		
-		SIGNAL_RECORDS = new Hashtable<String,PVRecord>();
+    /**
+     * Constructor
+     */
+    public BrowserController(final BrowserModel model) {
+        this.model = model;
+        model.addBrowserModelListener(this);
 
-		MESSAGE_CENTER = new MessageCenter("Browser Controller");
-		EVENT_PROXY = MESSAGE_CENTER.registerSource( this, BrowserControllerListener.class );
-		
-		updatePVTableModel();
-	}
-	
-	
-	/**
-	 * Add a listener of controller events from this controller
-	 * @param listener the listener to add
-	 */
-	public void addBrowserControllerListener( final BrowserControllerListener listener ) {
-		MESSAGE_CENTER.registerTarget( listener, this, BrowserControllerListener.class );
-	}
-	
-	
-	/**
-	 * Remove the listener from receiving controller events from this controller
-	 * @param listener the listener to remove
-	 */
-	public void removeBrowserControllerListener( final BrowserControllerListener listener ) {
-		MESSAGE_CENTER.removeTarget( listener, this, BrowserControllerListener.class );
-	}
+        pvTableModel = new KeyValueFilteredTableModel<>();
+        pvTableModel.setKeyPaths("enabled", "signal");
+        pvTableModel.setMatchingKeyPaths("signal");
+        pvTableModel.setColumnName("enabled", "Use");
+        pvTableModel.setColumnEditable("enabled", true);
+        pvTableModel.setColumnClass("enabled", Boolean.class);
+        pvTableModel.addKeyValueRecordListener(this);
 
+        machineSnapshotTableModel = new KeyValueTableModel<>();
+        machineSnapshotTableModel.setKeyPaths("id", "timestamp");
 
-	/** get the table model of PVs */
-	public KeyValueFilteredTableModel<PVRecord> getPVTableModel() {
-		return PV_TABLE_MODEL;
-	}
+        channelSnapshotTableModel = new KeyValueTableModel<>();
+        channelSnapshotTableModel.setKeyPaths("PV", "timestamp", "valueCount", "scalarValue", "status", "severity");
 
+        signalRecords = new HashMap<>();
 
-	/** get the table model of machine snapshots */
-	public KeyValueTableModel<MachineSnapshot> getMachineSnapshotTableModel() {
-		return MACHINE_SNAPSHOT_TABLE_MODEL;
-	}
+        messageCenter = new MessageCenter("Browser Controller");
+        eventProxy = messageCenter.registerSource(this, BrowserControllerListener.class);
 
+        updatePVTableModel();
+    }
 
-	/** get the table model of channel snapshots */
-	public KeyValueTableModel<ChannelSnapshot> getChannelSnapshotTableModel() {
-		return CHANNEL_SNAPSHOT_TABLE_MODEL;
-	}
-	
-	
-	/**
-	 * Convert the array of channel wrappers to an array of signals.
-	 * @param wrappers the array of channel wrappers
-	 * @return the corresponding array of signals
-	 */
-	static protected String[] convertToPVs( final ChannelWrapper[] wrappers ) {
-		String[] signals = new String[wrappers.length];
-		for ( int index = 0 ; index < wrappers.length ; index++ ) {
-			signals[index] = wrappers[index].getPV();
-		}
-		return signals;
-	}
+    /**
+     * Add a listener of controller events from this controller
+     *
+     * @param listener the listener to add
+     */
+    public void addBrowserControllerListener(final BrowserControllerListener listener) {
+        messageCenter.registerTarget(listener, this, BrowserControllerListener.class);
+    }
 
-	
-	/**
-	 * Select or deselect the collection of signals without affecting the selection status of other signals.
-	 * @param select true to select signals and false to deselect signals
-	 */
-	public void selectSignals( final boolean select ) {
-		final List<PVRecord> signalRecords = PV_TABLE_MODEL.getRowRecords();
+    /**
+     * Remove the listener from receiving controller events from this controller
+     *
+     * @param listener the listener to remove
+     */
+    public void removeBrowserControllerListener(final BrowserControllerListener listener) {
+        messageCenter.removeTarget(listener, this, BrowserControllerListener.class);
+    }
 
-		for ( final PVRecord record : signalRecords ) {
-			record.setEnabled( select );
-		}
+    /**
+     * get the table model of PVs
+     */
+    public KeyValueFilteredTableModel<PVRecord> getPVTableModel() {
+        return pvTableModel;
+    }
 
-		PV_TABLE_MODEL.fireTableDataChanged();
-		EVENT_PROXY.selectedSignalsChanged( this, getSelectedSignals() );
-	}
+    /**
+     * get the table model of machine snapshots
+     */
+    public KeyValueTableModel<MachineSnapshot> getMachineSnapshotTableModel() {
+        return machineSnapshotTableModel;
+    }
 
+    /**
+     * get the table model of channel snapshots
+     */
+    public KeyValueTableModel<ChannelSnapshot> getChannelSnapshotTableModel() {
+        return channelSnapshotTableModel;
+    }
 
-	/** get the list of selected signals */
-	public List<String> getSelectedSignals() {
-		final List<String> selectedSignals = new ArrayList<String>();
-		final List<PVRecord> signalRecords = PV_TABLE_MODEL.getRowRecords();
+    /**
+     * Convert the array of channel wrappers to an array of signals.
+     *
+     * @param wrappers the array of channel wrappers
+     * @return the corresponding array of signals
+     */
+    protected static String[] convertToPVs(final ChannelWrapper[] wrappers) {
+        String[] signals = new String[wrappers.length];
+        for (int index = 0; index < wrappers.length; index++) {
+            signals[index] = wrappers[index].getPV();
+        }
+        return signals;
+    }
 
-		for ( final PVRecord record : signalRecords ) {
-			if ( record.getEnabled() ) {
-				selectedSignals.add( record.getSignal() );
-			}
-		}
-		return selectedSignals;
-	}
+    /**
+     * Select or deselect the collection of signals without affecting the
+     * selection status of other signals.
+     *
+     * @param select true to select signals and false to deselect signals
+     */
+    public void selectSignals(final boolean select) {
+        for (final PVRecord pvRecord : pvTableModel.getRowRecords()) {
+            pvRecord.setEnabled(select);
+        }
 
+        pvTableModel.fireTableDataChanged();
+        eventProxy.selectedSignalsChanged(this, getSelectedSignals());
+    }
 
-	/** determine whether the signal is selected */
-	private boolean isSignalSelected( final String signal ) {
-		final PVRecord record = SIGNAL_RECORDS.get( signal );
-		return record != null && record.getEnabled();
-	}
-	
-	
-	/**
-	 * Filter each channel snapshot based on whether its signal is selected
-	 * @param snapshots The snapshots to filter
-	 * @return the array of filtered snapshots corresponding to selected signals
-	 */
-	public ChannelSnapshot[] filterSnapshots( final ChannelSnapshot[] snapshots ) {
-		final List<ChannelSnapshot> filteredSnapshots = new ArrayList<ChannelSnapshot>( snapshots.length );
-		
-		for ( int index = 0 ; index < snapshots.length ; index++ ) {
-			final ChannelSnapshot snapshot = snapshots[index];
-			if ( isSignalSelected( snapshot.getPV() ) )  filteredSnapshots.add( snapshot );
-		}
-		ChannelSnapshot[] result = new ChannelSnapshot[filteredSnapshots.size()];
-		filteredSnapshots.toArray( result );
-		
-		return result;
-	}
+    /**
+     * get the list of selected signals
+     */
+    public List<String> getSelectedSignals() {
+        final List<String> selectedSignals = new ArrayList<>();
 
-	
-	/**
-	 * Get the main model
-	 * @return the main model
-	 */
-	public BrowserModel getModel() {
-		return _model;
-	}
+        for (final PVRecord pvRecord : pvTableModel.getRowRecords()) {
+            if (pvRecord.getEnabled()) {
+                selectedSignals.add(pvRecord.getSignal());
+            }
+        }
+        return selectedSignals;
+    }
 
+    /**
+     * determine whether the signal is selected
+     */
+    private boolean isSignalSelected(final String signal) {
+        final PVRecord pvRecord = signalRecords.get(signal);
+        return pvRecord != null && pvRecord.getEnabled();
+    }
 
-	/** update the PV table model */
-	private void updatePVTableModel() {
-		SIGNAL_RECORDS.clear();
+    /**
+     * Filter each channel snapshot based on whether its signal is selected
+     *
+     * @param snapshots The snapshots to filter
+     * @return the array of filtered snapshots corresponding to selected signals
+     */
+    public ChannelSnapshot[] filterSnapshots(final ChannelSnapshot[] snapshots) {
+        final List<ChannelSnapshot> filteredSnapshots = new ArrayList<>(snapshots.length);
 
-		final ChannelGroup group = _model.getSelectedGroup();
-		final List<PVRecord> signalRecords = new ArrayList<PVRecord>();
-		if ( group != null ) {
-			final ChannelWrapper[] wrappers = group.getChannelWrappers();
-			for ( final ChannelWrapper wrapper : wrappers ) {
-				final String signal = wrapper.getPV();
-				final PVRecord record = new PVRecord( signal );
-				signalRecords.add( record );
-				SIGNAL_RECORDS.put( signal, record );
-			}
-		}
+        for (int index = 0; index < snapshots.length; index++) {
+            final ChannelSnapshot snapshot = snapshots[index];
+            if (isSignalSelected(snapshot.getPV())) {
+                filteredSnapshots.add(snapshot);
+            }
+        }
+        ChannelSnapshot[] result = new ChannelSnapshot[filteredSnapshots.size()];
+        filteredSnapshots.toArray(result);
 
-		PV_TABLE_MODEL.setRecords( signalRecords );
-	}
+        return result;
+    }
 
+    /**
+     * Get the main model
+     *
+     * @return the main model
+     */
+    public BrowserModel getModel() {
+        return model;
+    }
 
-	/** update the detail for the selected machine snapshot */
-	private void updateSelectedMachineSnapshotDetail() {
-		final MachineSnapshot snapshot = _selectedSnapshot;
-		
-		final ChannelSnapshot[] channelSnapshots = ( snapshot != null ) ? filterSnapshots( snapshot.getChannelSnapshots() ) : null;
-		final List<ChannelSnapshot> channelSnapshotRecords = new ArrayList<ChannelSnapshot>();
-		if ( channelSnapshots != null ) {
-			for ( final ChannelSnapshot channelSnapshot : channelSnapshots ) {
-				channelSnapshotRecords.add( channelSnapshot );
-			}
-		}
-		CHANNEL_SNAPSHOT_TABLE_MODEL.setRecords( channelSnapshotRecords );
-	}
+    /**
+     * update the PV table model
+     */
+    private void updatePVTableModel() {
+        signalRecords.clear();
 
-	
-	/**
-	 * Set the snapshot which is selected by the user
-	 * @param snapshot the machine snapshot to select
-	 */
-	public void setSelectedSnapshot( final MachineSnapshot snapshot ) {
-		if ( snapshot != null ) {
-			try {
-				_model.populateSnapshot( snapshot );
-			}
-			catch( Exception exception ) {
-				throw new RuntimeException( exception );
-			}
-		}
-		_selectedSnapshot = snapshot;
-		updateSelectedMachineSnapshotDetail();
+        final ChannelGroup group = model.getSelectedGroup();
+        if (group != null) {
+            final ChannelWrapper[] wrappers = group.getChannelWrappers();
+            for (final ChannelWrapper wrapper : wrappers) {
+                final String signal = wrapper.getPV();
+                final PVRecord aRecord = new PVRecord(signal);
+                this.signalRecords.put(signal, aRecord);
+            }
+        }
 
-		EVENT_PROXY.snapshotSelected( this, snapshot );
-	}
-	
-	
-	/**
-	 * The model's connection has changed
-	 * @param model The model whose connection changed
-	 */
-	public void connectionChanged( final BrowserModel model ) {}
-	
-	
-	/**
-	 * Update the channel wrappers for the newly selected channel group and 
-	 * forward this event to the browser controller listeners.
-	 * @param model the source of the event
-	 * @param newGroup the newly selected channel group
-	 */
-	public void selectedChannelGroupChanged( final BrowserModel model, final ChannelGroup newGroup ) {
-		updatePVTableModel();
-		EVENT_PROXY.selectedChannelGroupChanged( this, newGroup );
-	}
-	
-	
-	/**
-	 * Handle the "machine snapshot fetched" event.  Does nothing.
-	 * @param model the model providing the event
-	 * @param snapshots the new snapshots that have been fetched
-	 */
-	public void machineSnapshotsFetched( final BrowserModel model, final MachineSnapshot[] snapshots) {
-		final List<MachineSnapshot> machineSnapshots = new ArrayList<MachineSnapshot>();
-		for ( final MachineSnapshot snapshot : snapshots ) {
-			machineSnapshots.add( snapshot );
-		}
-		MACHINE_SNAPSHOT_TABLE_MODEL.setRecords( machineSnapshots );
-	}
+        pvTableModel.setRecords((List<PVRecord>) signalRecords.values());
+    }
 
+    /**
+     * update the detail for the selected machine snapshot
+     */
+    private void updateSelectedMachineSnapshotDetail() {
+        final MachineSnapshot snapshot = selectedSnapshot;
 
-	/** forward message that table record changed */
-	public void recordModified( final KeyValueFilteredTableModel<PVRecord> tableModel, final PVRecord record, final String keyPath, final Object value ) {
-		updateSelectedMachineSnapshotDetail();
-		EVENT_PROXY.selectedSignalsChanged( this, getSelectedSignals() );
-	}
+        final ChannelSnapshot[] channelSnapshots = (snapshot != null) ? filterSnapshots(snapshot.getChannelSnapshots()) : null;
+        final List<ChannelSnapshot> channelSnapshotRecords = new ArrayList<>();
+        if (channelSnapshots != null) {
+            for (final ChannelSnapshot channelSnapshot : channelSnapshots) {
+                channelSnapshotRecords.add(channelSnapshot);
+            }
+        }
+        channelSnapshotTableModel.setRecords(channelSnapshotRecords);
+    }
+
+    /**
+     * Set the snapshot which is selected by the user
+     *
+     * @param snapshot the machine snapshot to select
+     */
+    public void setSelectedSnapshot(final MachineSnapshot snapshot) {
+        if (snapshot != null) {
+            try {
+                model.populateSnapshot(snapshot);
+            } catch (SQLException exception) {
+                throw new RuntimeException(exception);
+            }
+        }
+        selectedSnapshot = snapshot;
+        updateSelectedMachineSnapshotDetail();
+
+        eventProxy.snapshotSelected(this, snapshot);
+    }
+
+    /**
+     * The model's connection has changed
+     *
+     * @param model The model whose connection changed
+     */
+    @Override
+    public void connectionChanged(final BrowserModel model) {
+        // Do nothing
+    }
+
+    /**
+     * Update the channel wrappers for the newly selected channel group and
+     * forward this event to the browser controller listeners.
+     *
+     * @param model the source of the event
+     * @param newGroup the newly selected channel group
+     */
+    @Override
+    public void selectedChannelGroupChanged(final BrowserModel model, final ChannelGroup newGroup) {
+        updatePVTableModel();
+        eventProxy.selectedChannelGroupChanged(this, newGroup);
+    }
+
+    /**
+     * Handle the "machine snapshot fetched" event. Does nothing.
+     *
+     * @param model the model providing the event
+     * @param snapshots the new snapshots that have been fetched
+     */
+    @Override
+    public void machineSnapshotsFetched(final BrowserModel model, final MachineSnapshot[] snapshots) {
+        final List<MachineSnapshot> machineSnapshots = new ArrayList<>();
+        for (final MachineSnapshot snapshot : snapshots) {
+            machineSnapshots.add(snapshot);
+        }
+        machineSnapshotTableModel.setRecords(machineSnapshots);
+    }
+
+    /**
+     * forward message that table record changed
+     */
+    @Override
+    public void recordModified(final KeyValueFilteredTableModel<PVRecord> tableModel, final PVRecord pvRecord, final String keyPath, final Object value) {
+        updateSelectedMachineSnapshotDetail();
+        eventProxy.selectedSignalsChanged(this, getSelectedSignals());
+    }
 }
-

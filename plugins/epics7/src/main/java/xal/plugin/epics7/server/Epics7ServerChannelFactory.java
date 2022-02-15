@@ -24,7 +24,6 @@ import xal.ca.Channel;
 import xal.ca.ChannelFactory;
 import xal.ca.ChannelSystem;
 import xal.plugin.epics7.FinishedThreadHook;
-import xal.plugin.epics7.server.Epics7ServerChannelSystem;
 
 /**
  *
@@ -33,7 +32,7 @@ import xal.plugin.epics7.server.Epics7ServerChannelSystem;
 public class Epics7ServerChannelFactory extends ChannelFactory {
 
     // EPICS7 channel system
-    private static Epics7ServerChannelSystem CHANNEL_SYSTEM;
+    private static volatile Epics7ServerChannelSystem channelSystem;
 
     // To keep track of the threads using the Epics7ChannelSystem
     public static final List<Thread> threadList = new ArrayList<>();
@@ -43,13 +42,13 @@ public class Epics7ServerChannelFactory extends ChannelFactory {
     }
 
     private void setChannelSystem() {
-        if (CHANNEL_SYSTEM == null) {
-            CHANNEL_SYSTEM = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
+        if (channelSystem == null) {
+            channelSystem = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
         }
         synchronized (threadList) {
             if (!threadList.contains(Thread.currentThread())) {
                 threadList.add(Thread.currentThread());
-                FinishedThreadHook finishedThreadHook = new FinishedThreadHook(Thread.currentThread(), threadList, CHANNEL_SYSTEM);
+                FinishedThreadHook finishedThreadHook = new FinishedThreadHook(Thread.currentThread(), threadList, channelSystem);
                 finishedThreadHook.start();
             }
         }
@@ -57,39 +56,39 @@ public class Epics7ServerChannelFactory extends ChannelFactory {
 
     @Override
     protected Channel newChannel(String signalName) {
-        if (CHANNEL_SYSTEM == null) {
+        if (channelSystem == null) {
             return null;
         }
         if (isTest()) {
-            signalName += TEST_SUFFIX;
+            signalName += testSuffix;
         }
-        return new Epics7ServerChannel(signalName, CHANNEL_SYSTEM);
+        return new Epics7ServerChannel(signalName, channelSystem);
     }
 
     @Override
     protected void dispose() {
-        if (CHANNEL_SYSTEM != null) {
-            CHANNEL_SYSTEM.dispose();
-            CHANNEL_SYSTEM = null;
+        if (channelSystem != null) {
+            channelSystem.dispose();
+            channelSystem = null;
         }
     }
 
     @Override
     public void printInfo() {
         Logger.getLogger(Epics7ServerChannelFactory.class.getName()).info("Using EPICS7 Open XAL plugin.");
-        CHANNEL_SYSTEM.printInfo();
+        channelSystem.printInfo();
     }
 
     @Override
     public boolean init() {
-        if (CHANNEL_SYSTEM == null) {
+        if (channelSystem == null) {
             return false;
         }
-        return CHANNEL_SYSTEM.isInitialized();
+        return channelSystem.isInitialized();
     }
 
     @Override
     protected ChannelSystem channelSystem() {
-        return CHANNEL_SYSTEM;
-    }    
+        return channelSystem;
+    }
 }

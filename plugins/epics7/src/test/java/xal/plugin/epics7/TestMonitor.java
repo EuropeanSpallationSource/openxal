@@ -37,10 +37,9 @@ import static xal.plugin.epics7.Epics7Channel.VALUE_ALARM_FIELD;
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
-public class TestMonitor implements Monitor{
+public class TestMonitor implements Monitor {
 
     boolean poll = true;
-
 
     @Override
     public Status start() {
@@ -70,12 +69,14 @@ public class TestMonitor implements Monitor{
 
                 @Override
                 public BitSet getChangedBitSet() {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    //To change body of generated methods, choose Tools | Templates.
+                    throw new UnsupportedOperationException("Not supported yet.");
                 }
 
                 @Override
                 public BitSet getOverrunBitSet() {
-                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    //To change body of generated methods, choose Tools | Templates.
+                    throw new UnsupportedOperationException("Not supported yet.");
                 }
             };
         } else {
@@ -90,6 +91,7 @@ public class TestMonitor implements Monitor{
 
     @Override
     public void destroy() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

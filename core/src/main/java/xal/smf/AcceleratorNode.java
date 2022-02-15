@@ -13,149 +13,192 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 /**
  * The base class in the hierarchy of different accelerator node types.
- * @author  Nikolay Malitsky, Christopher K. Allen, Nick D. Pattengale
+ *
+ * @author Nikolay Malitsky, Christopher K. Allen, Nick D. Pattengale
  */
-public abstract class AcceleratorNode implements /* IElement, */ ElementType, DataListener {   
+public abstract class AcceleratorNode implements ElementType, DataListener {
+
+    private static final Logger LOGGER = Logger.getLogger(AcceleratorNode.class.getName());
+
+    private static final String ID_ATTR = "id";
+    private static final String LEN_ATTR = "len";
+    private static final String S_ATTR = "s";
+    private static final String POS_ATTR = "pos";
+    private static final String STATUS_ATTR = "status";
+    private static final String EID_ATTR = "eid";
+    private static final String PID_ATTR = "pid";
+
     /*
      *  Local Attributes
      */
+    /**
+     * node identifier
+     */
+    protected String strId;
 
-    /** node identifier  */
-    protected String            m_strId;
+    /**
+     * physics identifier
+     */
+    protected String strPId;
 
-    /** physics identifier  */
-    protected String            m_strPId;
+    /**
+     * engineering identifier
+     */
+    protected String strEId;
 
-    /** engineering identifier  */
-    protected String            m_strEId;
+    /**
+     * position of node
+     */
+    protected double dblPos;
 
-    /** position of node   */
-    protected double            m_dblPos;
+    /**
+     * length of node
+     */
+    protected double dblLen;
 
-    /** length of node */
-    protected double            m_dblLen;
+    /**
+     * parent sequence object
+     */
+    protected AcceleratorSeq seqParent;
 
+    /**
+     * the associated Accelerator object
+     */
+    protected Accelerator objAccel;
 
+    /**
+     * all attribute buckets for node
+     */
+    protected Map<String, AttributeBucket> mapAttrs;
 
-    /**   parent sequence object  */
-    protected AcceleratorSeq    m_seqParent;
+    /**
+     * alignment attribute bucket for node
+     */
+    protected AlignmentBucket bucAlign;
 
-    /**   the associated Accelerator object  */
-    protected Accelerator       m_objAccel;
+    /**
+     * twiss parameter bucket for node
+     */
+    protected TwissBucket bucTwiss;
 
-    /**   all attribute buckets for node   */
-    protected Map<String,AttributeBucket>   m_mapAttrs;
+    /**
+     * aperture parameters for node
+     */
+    protected ApertureBucket bucAper;
 
-    /**   alignment attribute bucket for node */
-    protected AlignmentBucket   m_bucAlign;
+    /**
+     * Indicator as to whether the Accelerator Node is functional
+     */
+    protected boolean bolStatus;
 
-    /**    twiss parameter bucket for node   */
-    protected TwissBucket       m_bucTwiss;
+    /**
+     * Indicator as to whether accelerator node is valid
+     */
+    protected boolean bolValid;
 
-    /**                  aperture parameters for node   */
-    protected ApertureBucket    m_bucAper;
+    /**
+     * "s" position for global display
+     */
+    protected double dblS;
 
-    /** Indicator as to whether the Accelerator Node is functional */
-    protected boolean            m_bolStatus;
+    /**
+     * Indicator if this node is a "softNode" copy
+     */
+    protected boolean bolIsSoft = false;
 
-    /** Indicator as to whether accelerator node is valid */
-    protected boolean            m_bolValid;
-
-    /** "s" position for global display */
-    protected double 			m_dblS;
-
-
-    /** Indicator if this node is a "softNode" copy */
-    protected boolean       m_bolIsSoft=false;
-
-
-    /** channel suite associated with this node */
+    /**
+     * channel suite associated with this node
+     */
     protected ChannelSuite channelSuite;
 
     protected enum ChannelType {
         SET,
         RB
-    };
-
-    /** Derived class must furnish a unique type id */
-    abstract public String getType();
-
-
-    /** Derived class may furnish a unique software type */
-	public String getSoftType() {
-		return null;
-	}
-
-
-	/**
-	 * Designated constructor
-	 * @param strId the string ID for this node
-	 * @param channelFactory channel factory (null for default) for generating this node's channels
-	 */
-	public AcceleratorNode( final String strId, final ChannelFactory channelFactory ) {
-		m_strId = strId;
-
-		m_bolStatus = true;
-		m_bolValid = true;
-
-		m_mapAttrs = new HashMap<String,AttributeBucket>();
-
-		channelSuite = new ChannelSuite( channelFactory );
-	}
-
-
-    /**
-	 * Convenience constructor using the default channel factory
-     * @param strId the string ID for this node
-	 */
-    public AcceleratorNode( final String strId ) {
-		this( strId, ChannelFactory.defaultFactory() );
     }
 
+    /**
+     * Derived class must furnish a unique type id
+     */
+    public abstract String getType();
+
+    /**
+     * Derived class may furnish a unique software type
+     */
+    public String getSoftType() {
+        return null;
+    }
+
+    /**
+     * Designated constructor
+     *
+     * @param strId the string ID for this node
+     * @param channelFactory channel factory (null for default) for generating
+     * this node's channels
+     */
+    protected AcceleratorNode(final String strId, final ChannelFactory channelFactory) {
+        this.strId = strId;
+
+        bolStatus = true;
+        bolValid = true;
+
+        mapAttrs = new HashMap<>();
+
+        channelSuite = new ChannelSuite(channelFactory);
+    }
+
+    /**
+     * Convenience constructor using the default channel factory
+     *
+     * @param strId the string ID for this node
+     */
+    protected AcceleratorNode(final String strId) {
+        this(strId, ChannelFactory.defaultFactory());
+    }
 
     // DataListener interface -tap
+    /**
+     * implement DataListener interface
+     */
+    @Override
+    public String dataLabel() {
+        return "node";
+    }
 
-    /** implement DataListener interface */
-    public String dataLabel() { return "node"; }
-
-
-    /** implement DataListener interface */
+    /**
+     * implement DataListener interface
+     */
+    @Override
     public void update(DataAdaptor adaptor) throws NumberFormatException {
         // set the id only the first time
-        if ( m_strId == null ) {
-            m_strId = adaptor.stringValue("id");
+        if (strId == null) {
+            strId = adaptor.stringValue(ID_ATTR);
         }
 
         // update physics id
-        if ( adaptor.hasAttribute("pid") ) {
-        	m_strPId = adaptor.stringValue("pid");
+        if (adaptor.hasAttribute(PID_ATTR)) {
+            strPId = adaptor.stringValue(PID_ATTR);
         }
 
         // update engineering id
-        if ( adaptor.hasAttribute("eid") ) {
-        	m_strEId = adaptor.stringValue("eid");
+        if (adaptor.hasAttribute(EID_ATTR)) {
+            strEId = adaptor.stringValue(EID_ATTR);
         }
 
         // get the status of the node which identifies whether the node is operational
-        if ( adaptor.hasAttribute("status") ) {
-            m_bolStatus = adaptor.booleanValue("status");
+        if (adaptor.hasAttribute(STATUS_ATTR)) {
+            bolStatus = adaptor.booleanValue(STATUS_ATTR);
         }
 
-
         // update length attribute if the adaptor supplies it
-        if ( adaptor.hasAttribute("len") ) {
+        if (adaptor.hasAttribute(LEN_ATTR)) {
             double newLength;
             try {
-                newLength = adaptor.doubleValue("len");
-            }
-            catch(NumberFormatException exception) {
-				final String message = "Error reading node: " + m_strId;
-                System.err.println( message );
-                System.err.println( exception );
-				Logger.getLogger("global").log( Level.SEVERE, message, exception );
+                newLength = adaptor.doubleValue(LEN_ATTR);
+            } catch (NumberFormatException exception) {
+                final String message = "Error reading node: " + strId;
+                LOGGER.log(Level.SEVERE, message, exception);
                 newLength = Double.NaN;
             }
 
@@ -163,43 +206,45 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
         }
 
         // update position attribute if the adaptor supplies it
-        if ( adaptor.hasAttribute("pos") ) {
-            double newPosition = adaptor.doubleValue("pos");
+        if (adaptor.hasAttribute(POS_ATTR)) {
+            double newPosition = adaptor.doubleValue(POS_ATTR);
             setPosition(newPosition);
         }
 
         // update s display coordinate if there is one
-        if ( adaptor.hasAttribute("s") ) {
-            double newSDisplay = adaptor.doubleValue("s");
+        if (adaptor.hasAttribute(S_ATTR)) {
+            double newSDisplay = adaptor.doubleValue(S_ATTR);
             setSDisplay(newSDisplay);
         }
 
         // read the channel suites
         DataAdaptor suiteAdaptor = adaptor.childAdaptor("channelsuite");
-        if ( suiteAdaptor != null ) {
+        if (suiteAdaptor != null) {
             channelSuite.update(suiteAdaptor);
         }
 
         // read the attribute buckets
-        final List<DataAdaptor> parserAdaptors = adaptor.childAdaptors( "attributes" );
-        for ( final DataAdaptor parserAdaptor : parserAdaptors ) {
+        final List<DataAdaptor> parserAdaptors = adaptor.childAdaptors("attributes");
+        for (final DataAdaptor parserAdaptor : parserAdaptors) {
             final Collection<AttributeBucket> buckets = getBuckets();
-            final BucketParser parser = new BucketParser( buckets );
-            parser.update( parserAdaptor );
+            final BucketParser parser = new BucketParser(buckets);
+            parser.update(parserAdaptor);
 
             // get the attribute buckets from the parser
             final Collection<AttributeBucket> bucketList = parser.getBuckets();
-			for ( final AttributeBucket bucket : bucketList ) {
+            for (final AttributeBucket bucket : bucketList) {
                 // add the bucket only if it already hasn't been added
-                if ( !hasBucket(bucket) ) {
+                if (!hasBucket(bucket)) {
                     addBucket(bucket);
                 }
             }
         }
     }
 
-
-    /** implement DataListener interface */
+    /**
+     * implement DataListener interface
+     */
+    @Override
     public void write(DataAdaptor adaptor) {
         writeAttributes(adaptor);
 
@@ -212,61 +257,59 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
         }
     }
 
-
     /**
      * method to write status of the node into a separate file
      */
     public void writeStatus(DataAdaptor adaptor) {
-        if (m_bolStatus == false && getAccelerator().hasStatusFile()) {
+        if (!bolStatus && getAccelerator().hasStatusFile()) {
             DataAdaptor childAdaptor = adaptor.createChild(dataLabel());
-            childAdaptor.setValue("id", m_strId);
-            childAdaptor.setValue("status", m_bolStatus);
+            childAdaptor.setValue(ID_ATTR, strId);
+            childAdaptor.setValue(STATUS_ATTR, bolStatus);
         }
     }
-    
+
     /**
-     * write the attributes of the Node.
-     * Subclasses can be override this method
+     * write the attributes of the Node. Subclasses can be override this method
      * to write a different set of attributes
      *
-     * @param adaptor 
+     * @param adaptor
      */
     protected void writeAttributes(DataAdaptor adaptor) {
-        adaptor.setValue("id", m_strId);
-        adaptor.setValue("len", m_dblLen);
-        adaptor.setValue("pos", m_dblPos);
+        adaptor.setValue(ID_ATTR, strId);
+        adaptor.setValue("len", dblLen);
+        adaptor.setValue("pos", dblPos);
         adaptor.setValue("type", getType());
-        if (m_strPId != null) {
-            adaptor.setValue("pid", m_strPId);
+        if (strPId != null) {
+            adaptor.setValue(PID_ATTR, strPId);
         }
-        if (m_strEId != null) {
-            adaptor.setValue("eid", m_strEId);
+        if (strEId != null) {
+            adaptor.setValue(EID_ATTR, strEId);
         }
         if (getSoftType() != null) {
             adaptor.setValue("softType", getSoftType());
         }
-        if (m_bolStatus == false && getAccelerator().hasStatusFile()) {
-            adaptor.setValue("status", m_bolStatus);
+        if (!bolStatus && getAccelerator().hasStatusFile()) {
+            adaptor.setValue(STATUS_ATTR, bolStatus);
         }
-        if (m_dblS != 0) {
-            adaptor.setValue("s", m_dblS);
+        if (dblS != 0) {
+            adaptor.setValue("s", dblS);
         }
     }
     // end DataListener interface -tap
 
-
-
     /**
      * Attempt to find a channel for the given handle.
+     *
      * @param handle the handle for which to find an associated channel
      * @return channel for the given handle or null if none could be found
      */
-    public Channel findChannel( final String handle ) {
-            return channelSuite.getChannel( handle );
+    public Channel findChannel(final String handle) {
+        return channelSuite.getChannel(handle);
     }
 
     /**
      * Returns a collection of all channels
+     *
      * @return channels (corresponding to all handles)
      */
     public List<Channel> getAllChannels() {
@@ -274,83 +317,88 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
         Channel channel;
         for (String handle : getHandles()) {
             channel = findChannel(handle);
-            if (channel != null && !channels.contains(channel))
+            if (channel != null && !channels.contains(channel)) {
                 channels.add(channel);
+            }
         }
         return channels;
     }
 
     /**
      * Do a batch connection of all handles for this node
+     *
      * @return the BatchConnectionRequest object
      */
     public BatchConnectionRequest batchConnectAllHandles() {
-        final BatchConnectionRequest request = new BatchConnectionRequest( getAllChannels() );
+        final BatchConnectionRequest request = new BatchConnectionRequest(getAllChannels());
         request.submit();
         return request;
     }
 
     /**
-     * Do a batch connection of all handles for this node and wait for completion
+     * Do a batch connection of all handles for this node and wait for
+     * completion
+     *
      * @param timeout the maximum time in seconds to wait for completion
      * @return true if all channels successfully connected
      */
     public boolean batchConnectAllHandlesAndWait(double timeout) {
-        final BatchConnectionRequest request = new BatchConnectionRequest( getAllChannels() );
+        final BatchConnectionRequest request = new BatchConnectionRequest(getAllChannels());
         return request.submitAndWait(timeout);
     }
 
-
     // added by nickp 2/8/2002
-    /** this method returns the Channel object of this node, associated with
-     * a prescribed PV name. Note - xal interacts with EPICS via Channel objects.
-     * @param chanHandle The handle to the epics channel in stored in the channel suite
+    /**
+     * this method returns the Channel object of this node, associated with a
+     * prescribed PV name. Note - xal interacts with EPICS via Channel objects.
+     *
+     * @param chanHandle The handle to the epics channel in stored in the
+     * channel suite
      */
-    public Channel getChannel( final String chanHandle ) throws NoSuchChannelException {
-        final Channel channel = findChannel( chanHandle );
+    public Channel getChannel(final String chanHandle) throws NoSuchChannelException {
+        final Channel channel = findChannel(chanHandle);
 
-        if ( channel == null ) {
-           throw new NoSuchChannelException(this, chanHandle);
+        if (channel == null) {
+            throw new NoSuchChannelException(this, chanHandle);
         }
 
         return channel;
     }
-    
-    public boolean isChannelSettable( final String handle ) {
-            return channelSuite.isSettable( handle );
-    }
 
+    public boolean isChannelSettable(final String handle) {
+        return channelSuite.isSettable(handle);
+    }
 
     /**
      * Get the channel corresponding to the specified handle and connect it.
+     *
      * @param handle The handle for the channel to get.
-     * @return The channel associated with this node and the specified handle or null if there is no match.
-     * @throws xal.smf.NoSuchChannelException if no such channel as specified by the handle is associated with this node.
-     * @throws xal.ca.ConnectionException if the channel cannot be connected
+     * @return The channel associated with this node and the specified handle or
+     * null if there is no match.
+     * @throws xal.smf.NoSuchChannelException if no such channel as specified by
+     * the handle is associated with this node.
      */
-    public Channel getAndConnectChannel( final String handle ) throws NoSuchChannelException, ConnectionException {
+    public Channel getAndConnectChannel(final String handle) throws NoSuchChannelException {
         final Channel channel = getChannel(handle);
         channel.connectAndWait();
 
         return channel;
     }
 
-
     /**
-     * A method to make an EPICS ca  connection for a given PV name
-     * The channel connection is initiated, and no extra work is
-     * done, if the channel connection already exists
+     * A method to make an EPICS ca connection for a given PV name The channel
+     * connection is initiated, and no extra work is done, if the channel
+     * connection already exists
      */
-    public Channel lazilyGetAndConnect(String chanHandle, Channel channel) throws ConnectionException, NoSuchChannelException {
+    public Channel lazilyGetAndConnect(String chanHandle, Channel channel) throws NoSuchChannelException {
         Channel tmpChan;
 
-        if(channel == null) {
+        if (channel == null) {
             tmpChan = getChannel(chanHandle);
-            if ( tmpChan == null ) {
+            if (tmpChan == null) {
                 throw new NoSuchChannelException(this, chanHandle);
             }
-        }
-        else {
+        } else {
             tmpChan = channel;
         }
 
@@ -375,7 +423,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
 
         List<Field> fieldList = Arrays.asList(cls.getDeclaredFields());
         for (Field field : fieldList) {
-            if (field.getType().equals(AccessibleProperty.class)){
+            if (field.getType().equals(AccessibleProperty.class)) {
                 try {
                     properties.add((AccessibleProperty) field.get(this));
                 } catch (IllegalArgumentException | IllegalAccessException ex) {
@@ -390,7 +438,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
 
         return properties;
     }
-    
+
     /**
      *
      * @return a list with expected channel handles by default.
@@ -421,9 +469,8 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * this node and the specified set handle or null if there is no match.
      * @throws xal.smf.NoSuchChannelException if no such channel as specified by
      * the handle is associated with this node.
-     * @throws xal.ca.ConnectionException if the channel cannot be connected
      */
-    public Map<ChannelType, Channel> getAndConnectChannelSetAndReadback(String readbackHandle) throws NoSuchChannelException, ConnectionException {
+    public Map<ChannelType, Channel> getAndConnectChannelSetAndReadback(String readbackHandle) throws NoSuchChannelException {
         Channel setChannel = getChannel(getSetHandle(readbackHandle));
         Channel redBackChannel = getChannel(readbackHandle);
         setChannel.connectAndWait();
@@ -448,7 +495,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
                 return prop.getReadbackHandles();
             }
         }
-        return null;
+        return new String[0];
     }
 
     /**
@@ -472,23 +519,23 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * Set a value to the get channel corresponding to the set handle, and then
      * check on the readback channel that the value is within an interval around
      * the set value.
-       * 
+     *
      * @param setHandle Handle corresponding to the set channel.
      * @param value Value to be set.
      * @param tolerance Defines an interval around the value (absolute value).
      * @param delay Delay in seconds for the readback to reach the set value
      * before failing.
      * @return true if the value is set correctly, otherwise false.
-     * @throws ConnectionException
      * @throws PutException
      * @throws MonitorException
      */
-    public boolean setValueAndVerify(String setHandle, Number value, Number tolerance, double delay) throws ConnectionException, PutException, MonitorException {
+    public boolean setValueAndVerify(String setHandle, Number value, Number tolerance, double delay) throws PutException, MonitorException {
         Map<ChannelType, Channel> channels;
 
         try {
             channels = getAndConnectChannelSetAndReadback(setHandle);
-        } catch (NoSuchChannelException | ConnectionException ex) {
+        } catch (NoSuchChannelException ex) {
+            LOGGER.log(Level.INFO, null, ex);
             return false;
         }
 
@@ -499,43 +546,43 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
             Channel setChannel = channels.get(ChannelType.SET);
             Monitor monitor = null;
             if (value instanceof Byte) {
-                monitor = rbChannel.addMonitorValue((record, chan) -> {
-                    if (Math.abs(record.byteValue() - value.byteValue()) <= tolerance.byteValue()) {
+                monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
+                    if (Math.abs(channelRecord.byteValue() - value.byteValue()) <= tolerance.byteValue()) {
                         latch.countDown();
                     }
                 }, 0);
                 setChannel.putVal(value.byteValue());
             } else if (value instanceof Float) {
-                monitor = rbChannel.addMonitorValue((record, chan) -> {
-                    if (Math.abs(record.floatValue() - value.floatValue()) <= tolerance.floatValue()) {
+                monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
+                    if (Math.abs(channelRecord.floatValue() - value.floatValue()) <= tolerance.floatValue()) {
                         latch.countDown();
                     }
                 }, 0);
                 setChannel.putVal(value.floatValue());
             } else if (value instanceof Double) {
-                monitor = rbChannel.addMonitorValue((record, chan) -> {
-                    if (Math.abs(record.doubleValue() - value.doubleValue()) <= tolerance.doubleValue()) {
+                monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
+                    if (Math.abs(channelRecord.doubleValue() - value.doubleValue()) <= tolerance.doubleValue()) {
                         latch.countDown();
                     }
                 }, 0);
                 setChannel.putVal(value.doubleValue());
             } else if (value instanceof Short) {
-                monitor = rbChannel.addMonitorValue((record, chan) -> {
-                    if (Math.abs(record.shortValue() - value.shortValue()) <= tolerance.shortValue()) {
+                monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
+                    if (Math.abs(channelRecord.shortValue() - value.shortValue()) <= tolerance.shortValue()) {
                         latch.countDown();
                     }
                 }, 0);
                 setChannel.putVal(value.shortValue());
             } else if (value instanceof Integer) {
-                monitor = rbChannel.addMonitorValue((record, chan) -> {
-                    if (Math.abs(record.intValue() - value.intValue()) <= tolerance.intValue()) {
+                monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
+                    if (Math.abs(channelRecord.intValue() - value.intValue()) <= tolerance.intValue()) {
                         latch.countDown();
                     }
                 }, 0);
                 setChannel.putVal(value.intValue());
             } else if (value instanceof Long) {
-                monitor = rbChannel.addMonitorValue((record, chan) -> {
-                    if (Math.abs(record.longValue() - value.longValue()) <= tolerance.longValue()) {
+                monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
+                    if (Math.abs(channelRecord.longValue() - value.longValue()) <= tolerance.longValue()) {
                         latch.countDown();
                     }
                 }, 0);
@@ -566,7 +613,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
     /**
      * Get a list with the names of properties that can be accessed through
      * EPICS and that are used by the model.
-       * 
+     *
      * @return properties that can be accessed via EPICS.
      */
     public List<String> getProperties() {
@@ -624,13 +671,14 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * Set the live property value for the corresponding array of channel values
      * in the order given by getLivePropertyChannels()
      */
-    public void setLivePropertyValue(String propertyName, double channelValue) throws ConnectionException, PutException {
+    public void setLivePropertyValue(String propertyName, double channelValue) throws PutException {
         List<AccessibleProperty> properties = getAccessibleProperties();
         for (AccessibleProperty prop : properties) {
             if (prop.getName().equals(propertyName)) {
                 double setterValue = prop.setLive(channelValue);
                 Channel setChannel = findChannel(prop.getSetHandle());
                 setChannel.putVal(setterValue);
+                return;
             }
         }
         throw new IllegalArgumentException("Unsupported AcceleratorNode live value property: " + propertyName);
@@ -644,149 +692,213 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
         List<AccessibleProperty> properties = getAccessibleProperties();
         for (AccessibleProperty prop : properties) {
             if (prop.getName().equals(propertyName) && prop.hasDesignValues()) {
-                for(String readback : prop.getReadbackHandles())
+                for (String readback : prop.getReadbackHandles()) {
                     channels.add(findChannel(readback));
+                }
                 return channels.toArray(new Channel[0]);
             }
         }
+
         throw new IllegalArgumentException("Unsupported AcceleratorNode live channels property: " + propertyName);
     }
-    
+
     /*
      *  User Interface
      */
-
-    /** return the ID of this node */
-    public String           getId()             { return m_strId;  };
-
-    /** return the engineering ID of this node */
-    public String           getEId()             { return m_strEId;  };
-
-    /** return the physics ID of this node */
-    public String           getPId()             { return m_strPId;  };
-
-    /** return the physical length of this node (m) */
-    public double           getLength()         { return m_dblLen; };
-
-    /** return the position of this node,  along the reference orbit
-     * within its sequence (m) */
-    public double           getPosition()       { return m_dblPos; };
-
-
     /**
-     * return global "s" display coordinate
-     * @return s coordinate
+     * return the ID of this node
      */
-    public double 			getSDisplay()		{ return m_dblS;};
-
-    /** return the top level accelerator that this node belongs to */
-    public Accelerator      getAccelerator()    { return m_objAccel; };
-
-    /** return the parent sequence that this node belongs to */
-    public AcceleratorSeq  getParent()         { return m_seqParent; }
-
-
-	/** get the primary ancestor sequence that is a direct child of the accelerator */
-	public AcceleratorSeq getPrimaryAncestor() {
-		return getParent().getPrimaryAncestor();
-	}
-
-
-    /** Indicates if the node has a parent set */
-    public boolean  hasParent()         {
-        return (m_seqParent != null);
+    public String getId() {
+        return strId;
     }
 
     /**
-     *  Runtime indication of accelerator component operation
-     *  @return         true(up and running)
-     *                  false(down)
+     * return the engineering ID of this node
      */
-    public boolean          getStatus()         { return m_bolStatus; };
+    public String getEId() {
+        return strEId;
+    }
 
     /**
-     *  Runtime indication of the validatity of component operation
-     *  @return         true(valid operation)
-     *                  false(questionable operation)
+     * return the physics ID of this node
      */
-    public boolean          getValid()          { return m_bolValid; };
+    public String getPId() {
+        return strPId;
+    }
 
+    /**
+     * return the physical length of this node (m)
+     */
+    public double getLength() {
+        return dblLen;
+    }
 
-    void     setPId(String value)         { m_strPId = value; }
-    void     setEId(String value)         { m_strEId = value; }
+    /**
+     * return the position of this node, along the reference orbit within its
+     * sequence (m)
+     */
+    public double getPosition() {
+        return dblPos;
+    }
 
-    /** set the position of this accelerator node within its parent sequence */
-	public void setPosition( final double position )  { m_dblPos = position; };
+    /**
+     * return global "s" display coordinate
+     *
+     * @return s coordinate
+     */
+    public double getSDisplay() {
+        return dblS;
+    }
 
+    /**
+     * return the top level accelerator that this node belongs to
+     */
+    public Accelerator getAccelerator() {
+        return objAccel;
+    }
 
-	/** set the length of this accelerator node  */
-	public void setLength( final double length )    { m_dblLen = length; };
+    /**
+     * return the parent sequence that this node belongs to
+     */
+    public AcceleratorSeq getParent() {
+        return seqParent;
+    }
+
+    /**
+     * get the primary ancestor sequence that is a direct child of the
+     * accelerator
+     */
+    public AcceleratorSeq getPrimaryAncestor() {
+        return getParent().getPrimaryAncestor();
+    }
+
+    /**
+     * Indicates if the node has a parent set
+     */
+    public boolean hasParent() {
+        return (seqParent != null);
+    }
+
+    /**
+     * Runtime indication of accelerator component operation
+     *
+     * @return true(up and running) false(down)
+     */
+    public boolean getStatus() {
+        return bolStatus;
+    }
+
+    /**
+     * Runtime indication of the validity of component operation
+     *
+     * @return true(valid operation) false(questionable operation)
+     */
+    public boolean getValid() {
+        return bolValid;
+    }
+
+    void setPId(String value) {
+        strPId = value;
+    }
+
+    void setEId(String value) {
+        strEId = value;
+    }
+
+    /**
+     * set the position of this accelerator node within its parent sequence
+     */
+    public void setPosition(final double position) {
+        dblPos = position;
+    }
+
+    /**
+     * set the length of this accelerator node
+     */
+    public void setLength(final double length) {
+        dblLen = length;
+    }
 
     /**
      * set "s" coordinate
+     *
      * @param dblS s coordinate
      */
-    public void 	setSDisplay(double dblS) { m_dblS = dblS; };
-
-
-    /**
-     *  Runtime indication of accelerator operation
-     *  @param      bolStatus       true(up and running)
-     *                              false(down)
-     */
-    public void     setStatus(boolean bolStatus)    { m_bolStatus = bolStatus; };
-
+    public void setSDisplay(double dblS) {
+        this.dblS = dblS;
+    }
 
     /**
-     *  Runtime indication of the validatity of component operation
-     *  @param  bolValid    true(valid operation)
-     *                      false(questionable operation)
+     * Runtime indication of accelerator operation
+     *
+     * @param bolStatus true(up and running) false(down)
      */
-    public void     setValid(boolean bolValid)      { m_bolValid = bolValid; };
+    public void setStatus(boolean bolStatus) {
+        this.bolStatus = bolStatus;
+    }
+
+    /**
+     * Runtime indication of the validity of component operation
+     *
+     * @param bolValid true(valid operation) false(questionable operation)
+     */
+    public void setValid(boolean bolValid) {
+        this.bolValid = bolValid;
+    }
 
 
     /*
      *  SMF Attribute Buckets Support
      */
+    /**
+     * General attribute buckets support
+     */
+    public void addBucket(AttributeBucket buc) {
 
-    /** General attribute buckets support */
-    public void addBucket(AttributeBucket buc)  {
-
-        if (buc.getClass().equals( TwissBucket.class )) {
-            setTwiss((TwissBucket)buc);
+        if (buc.getClass().equals(TwissBucket.class)) {
+            setTwiss((TwissBucket) buc);
         }
-        if (buc.getClass().equals( AlignmentBucket.class ))  {
-            setAlign((AlignmentBucket)buc);
+        if (buc.getClass().equals(AlignmentBucket.class)) {
+            setAlign((AlignmentBucket) buc);
         }
-        if (buc.getClass().equals( ApertureBucket.class )){
-            setAper((ApertureBucket)buc);
+        if (buc.getClass().equals(ApertureBucket.class)) {
+            setAper((ApertureBucket) buc);
         }
 
         // List of all attribute buckets
-        m_mapAttrs.put( buc.getType(), buc );
-    };
+        mapAttrs.put(buc.getType(), buc);
+    }
 
-    public Collection<AttributeBucket>       getBuckets()            { return m_mapAttrs.values(); };
-    public AttributeBucket  getBucket(String type)  { return m_mapAttrs.get(type); };
+    public Collection<AttributeBucket> getBuckets() {
+        return mapAttrs.values();
+    }
+
+    public AttributeBucket getBucket(String type) {
+        return mapAttrs.get(type);
+    }
+
     public boolean hasBucket(AttributeBucket bucket) {
         String bucketType = bucket.getType();
         return bucket == getBucket(bucketType);
     }
 
-
     // Specific Buckets
+    /**
+     * returns the bucket containing the Twiss parameters - see attr.TwissBucket
+     */
+    public TwissBucket getTwiss() {
+        return bucTwiss;
+    }
 
-    /** returns the bucket containing the twiss parameters
-     *   - see attr.TwissBucket  */
-    public TwissBucket      getTwiss()          { return m_bucTwiss; };
-
-    /** returns the bucket containing the alignment parameters
-     *   - see attr.AlignBucket  */
+    /**
+     * returns the bucket containing the alignment parameters - see
+     * attr.AlignBucket
+     */
     public AlignmentBucket getAlign() {
-        if (m_bucAlign == null) {
+        if (bucAlign == null) {
             setAlign(new AlignmentBucket());
         }
-        return m_bucAlign;
+        return bucAlign;
     }
 
     /**
@@ -795,7 +907,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @return pitch angle
      */
     public double getPitchAngle() {
-        if (m_bucAlign != null) {
+        if (bucAlign != null) {
             return getAlign().getPitch();
         } else {
             return new AlignmentBucket().getPitch();
@@ -808,7 +920,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @return yaw angle
      */
     public double getYawAngle() {
-        if (m_bucAlign != null) {
+        if (bucAlign != null) {
             return getAlign().getYaw();
         } else {
             return new AlignmentBucket().getYaw();
@@ -821,7 +933,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @return roll angle
      */
     public double getRollAngle() {
-        if (m_bucAlign != null) {
+        if (bucAlign != null) {
             return getAlign().getRoll();
         } else {
             return new AlignmentBucket().getRoll();
@@ -834,7 +946,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @return x offset
      */
     public double getXOffset() {
-        if (m_bucAlign != null) {
+        if (bucAlign != null) {
             return getAlign().getX();
         } else {
             return new AlignmentBucket().getX();
@@ -847,7 +959,7 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @return y offset
      */
     public double getYOffset() {
-        if (m_bucAlign != null) {
+        if (bucAlign != null) {
             return getAlign().getY();
         } else {
             return new AlignmentBucket().getY();
@@ -860,181 +972,203 @@ public abstract class AcceleratorNode implements /* IElement, */ ElementType, Da
      * @return z offset
      */
     public double getZOffset() {
-        if (m_bucAlign != null) {
-            return m_bucAlign.getZ();
+        if (bucAlign != null) {
+            return bucAlign.getZ();
         } else {
             return new AlignmentBucket().getZ();
         }
     }
 
-    /** returns the bucket containing the Aperture parameters
-     *   - see attr.ApertureBucket  */
+    /**
+     * returns the bucket containing the Aperture parameters - see
+     * attr.ApertureBucket
+     */
     public ApertureBucket getAper() {
-        if (m_bucAper == null) {
+        if (bucAper == null) {
             setAper(new ApertureBucket());
         }
-        return m_bucAper;
+        return bucAper;
     }
 
-    /** sets the bucket containing the twiss parameters
-     *   - see attr.TwissBucket  */
+    /**
+     * sets the bucket containing the twiss parameters - see attr.TwissBucket
+     */
+    public void setAlign(AlignmentBucket buc) {
+        bucAlign = buc;
+        mapAttrs.put(buc.getType(), buc);
+    }
 
-    public void setAlign(AlignmentBucket buc)   { m_bucAlign = buc; m_mapAttrs.put(buc.getType(), buc); };
+    /**
+     * sets the bucket containing the alignment parameters - see
+     * attr.AlignBucket
+     */
+    public void setTwiss(TwissBucket buc) {
+        bucTwiss = buc;
+        mapAttrs.put(buc.getType(), buc);
+    }
 
-    /** sets the bucket containing the alignment parameters
-     *   - see attr.AlignBucket  */
-    public void setTwiss(TwissBucket buc)       { m_bucTwiss = buc; m_mapAttrs.put(buc.getType(), buc); };
-
-    /** sets the bucket containing the Aperture parameters
-     *   - see attr.ApertureBucket  */
-    public void setAper(ApertureBucket buc)     { m_bucAper = buc;  m_mapAttrs.put(buc.getType(), buc); };
+    /**
+     * sets the bucket containing the Aperture parameters - see
+     * attr.ApertureBucket
+     */
+    public void setAper(ApertureBucket buc) {
+        bucAper = buc;
+        mapAttrs.put(buc.getType(), buc);
+    }
 
     /**
      * set device pitch angle
+     *
      * @param angle pitch angle in degree
      */
     public void setPitchAngle(double angle) {
-    	getAlign().setPitch(angle);
+        getAlign().setPitch(angle);
     }
 
     /**
      * set device yaw angle
+     *
      * @param angle yaw angle in degree
      */
     public void setYawAngle(double angle) {
-    	getAlign().setYaw(angle);
+        getAlign().setYaw(angle);
     }
 
     /**
      * set device roll angle
+     *
      * @param angle roll angle in degree
      */
     public void setRollAngle(double angle) {
-    	getAlign().setRoll(angle);
+        getAlign().setRoll(angle);
     }
 
     /**
      * set device x offset
+     *
      * @param offset x offset
      */
     public void setXOffset(double offset) {
-    	getAlign().setX(offset);
+        getAlign().setX(offset);
     }
 
     /**
      * set device y offset
+     *
      * @param offset y offset
      */
     public void setYOffset(double offset) {
-    	getAlign().setY(offset);
+        getAlign().setY(offset);
     }
 
     /**
      * set device z offset
+     *
      * @param offset z offset
      */
     public void setZOffset(double offset) {
-    	getAlign().setZ(offset);
+        getAlign().setZ(offset);
     }
 
     /*
      *  SMF Data Structure Methods
      */
-
     /**
      * remove this node from the accelerator hieracrhcy
      */
     public void clear() {
         removeFromParent();
-    };
+    }
 
     /**
      * remove this node from its immediate parent sequence
      */
-    protected void removeFromParent()  {
-        if(m_seqParent == null) return;
-        m_seqParent.removeNode(this);
-    };
+    protected void removeFromParent() {
+        if (seqParent == null) {
+            return;
+        }
+        seqParent.removeNode(this);
+    }
 
     /**
      * define the parent sequence for this node
      */
-    protected void  setParent(AcceleratorSeq parent)   {
+    protected void setParent(AcceleratorSeq parent) {
         removeFromParent();
-        m_seqParent = parent;
-    };
+        seqParent = parent;
+    }
 
     /**
      * set the top level accelerator for this node
      */
     protected void setAccelerator(Accelerator accel) {
-        if ( m_objAccel != null ) {
-            m_objAccel.nodeRemoved(this);
+        if (objAccel != null) {
+            objAccel.nodeRemoved(this);
         }
 
-        m_objAccel = accel;
+        objAccel = accel;
 
-        if ( accel != null ) {
+        if (accel != null) {
             accel.nodeAdded(this);
         }
     }
 
-
-
-
-    /** channel suite accessor */
+    /**
+     * channel suite accessor
+     */
     public ChannelSuite channelSuite() {
         return channelSuite;
     }
 
-
-    /** accessor to channel suite handles */
+    /**
+     * accessor to channel suite handles
+     */
     public Collection<String> getHandles() {
         return channelSuite.getHandles();
     }
 
-
     //------- ElementType interface --------------------------------
-
     /**
-     * Determine if a node is of the specified type.  The comparison is based
-     * upon the node's class and the element type manager handles checking
-     * for inherited classes to types get inherited.  Subclasses can override
-     * this method if the types comparison is more complicated (e.g. if more
-     * than one type can be associated with the same node class).
+     * Determine if a node is of the specified type. The comparison is based
+     * upon the node's class and the element type manager handles checking for
+     * inherited classes to types get inherited. Subclasses can override this
+     * method if the types comparison is more complicated (e.g. if more than one
+     * type can be associated with the same node class).
+     *
      * @param compType The type against which to compare.
      * @return true if the node is of the specified type; false otherwise.
      */
+    @Override
     public boolean isKindOf(String compType) {
         return ElementTypeManager.defaultManager().match(this.getClass(), compType);
     }
 
-
     /**
      * Determine if the node is a magnet.
+     *
      * @return true if the node is a magnet; false other.
      */
+    @Override
     public boolean isMagnet() {
-        return false;   // by default, a node is not an magnet
+        // by default, a node is not an magnet
+        return false;
     }
 
-
     //------------------ Object Overrides ------------------------------\\
-
     /**
      * Returns the identifier string of the node.
      *
-     * @return  the physical hardware identifier
+     * @return the physical hardware identifier
      *
-     * @since 	Aug 20, 2009
-     * @author  Christopher K. Allen
+     * @since Aug 20, 2009
+     * @author Christopher K. Allen
      *
-     * @see    java.lang.Object#toString()
-     * @see    AcceleratorNode#getId()
+     * @see java.lang.Object#toString()
+     * @see AcceleratorNode#getId()
      *
      */
     @Override
-    public String       toString()      {
+    public String toString() {
         return this.getId();
     }
 }

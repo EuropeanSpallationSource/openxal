@@ -29,6 +29,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,8 +53,12 @@ import xal.extension.jels.model.elem.FieldMapPoint;
 public abstract class FieldMap {
 
     // Field components are stored here, the key pf the hashmap is the component (x,y,z,r).
-    protected HashMap<String, FieldComponent> electricField = new HashMap<>();
-    protected HashMap<String, FieldComponent> magneticField = new HashMap<>();
+    protected HashMap<String, FieldComponent<?>> electricField = new HashMap<>();
+    protected HashMap<String, FieldComponent<?>> magneticField = new HashMap<>();
+
+    private static final int DOUBLE_BYTES = 8;
+    private static final int FLOAT_BYTES = 4;
+    private static final int INT_BYTES = 4;
 
     protected static final Logger LOGGER = Logger.getLogger(FieldMap.class.getName());
 
@@ -108,7 +113,7 @@ public abstract class FieldMap {
      * @param path
      * @param filename
      */
-    abstract public void saveFieldMap(String path, String filename) throws IOException, URISyntaxException;
+    public abstract void saveFieldMap(String path, String filename) throws IOException, URISyntaxException;
 
     /**
      * This method returns the length of the field map.
@@ -202,11 +207,13 @@ public abstract class FieldMap {
                 }
             }
         } catch (IOException ex) {
+            LOGGER.log(Level.WARNING, null, ex);
         } finally {
             if (stream != null) {
                 try {
                     stream.close();
                 } catch (IOException ex) {
+                    LOGGER.log(Level.WARNING, null, ex);
                 }
             }
         }
@@ -221,7 +228,7 @@ public abstract class FieldMap {
      * @param name
      * @return
      */
-    protected final FieldComponent loadFile1D(String path, String name) {
+    protected final FieldComponent<double[]> loadFile1D(String path, String name) {
         try {
             URL fileURL = new URL(new URL(path), name);
 
@@ -241,7 +248,7 @@ public abstract class FieldMap {
      * @param name
      * @return
      */
-    protected final FieldComponent loadFile2D(String path, String name) {
+    protected final FieldComponent<double[][]> loadFile2D(String path, String name) {
         try {
             URL fileURL = new URL(new URL(path), name);
 
@@ -261,7 +268,7 @@ public abstract class FieldMap {
      * @param name
      * @return
      */
-    protected final FieldComponent loadFile3D(String path, String name) {
+    protected final FieldComponent<double[][][]> loadFile3D(String path, String name) {
         try {
             URL fileURL = new URL(new URL(path), name);
 
@@ -277,11 +284,10 @@ public abstract class FieldMap {
         return null;
     }
 
-    private FieldComponent loadASCIIFile1D(URL fileURL) {
-        FieldComponent fieldComponent = new FieldComponent();
+    private FieldComponent<double[]> loadASCIIFile1D(URL fileURL) {
+        FieldComponent<double[]> fieldComponent = new FieldComponent<>();
 
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(fileURL.openStream()));
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(fileURL.openStream(), StandardCharsets.UTF_8))) {
 
             // first line
             String line = br.readLine();
@@ -289,8 +295,8 @@ public abstract class FieldMap {
 
             int nPoints = Integer.parseInt(data[0]) + 1;
             double[] field = new double[nPoints];
-            double length = Double.parseDouble(data[1]);
-            fieldComponent.setMax(new double[]{length});
+            double len = Double.parseDouble(data[1]);
+            fieldComponent.setMax(new double[]{len});
 
             // Read norm and not use it
             line = br.readLine();
@@ -302,22 +308,18 @@ public abstract class FieldMap {
                 field[i++] = Double.parseDouble(line);
             }
 
-            br.close();
-
             fieldComponent.setField(field);
         } catch (IOException ex) {
-            LOGGER.log(Level.INFO, "Field map " + fileURL.toString() + " not found.", ex);
+            LOGGER.log(Level.INFO, ex, () -> "Field map " + fileURL.toString() + " not found.");
         }
 
         return fieldComponent;
     }
 
-    private FieldComponent loadASCIIFile2D(URL fileURL) {
-        FieldComponent fieldComponent = new FieldComponent();
+    private FieldComponent<double[][]> loadASCIIFile2D(URL fileURL) {
+        FieldComponent<double[][]> fieldComponent = new FieldComponent<>();
 
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(fileURL.openStream()));
-
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(fileURL.openStream(), StandardCharsets.UTF_8))) {
             // first line
             String line = br.readLine();
             String[] data = line.split(" ");
@@ -349,22 +351,18 @@ public abstract class FieldMap {
                 }
             }
 
-            br.close();
-
             fieldComponent.setField(field);
         } catch (IOException ex) {
-            LOGGER.log(Level.INFO, "Field map " + fileURL.toString() + " not found.", ex);
+            LOGGER.log(Level.INFO, ex, () -> "Field map " + fileURL.toString() + " not found.");
         }
 
         return fieldComponent;
     }
 
-    private FieldComponent loadASCIIFile3D(URL fileURL) {
-        FieldComponent fieldComponent = new FieldComponent();
+    private FieldComponent<double[][][]> loadASCIIFile3D(URL fileURL) {
+        FieldComponent<double[][][]> fieldComponent = new FieldComponent<>();
 
-        try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(fileURL.openStream()));
-
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(fileURL.openStream(), StandardCharsets.UTF_8))) {
             // first line
             String line = br.readLine();
             String[] data = line.split(" ");
@@ -408,25 +406,18 @@ public abstract class FieldMap {
                 }
             }
 
-            br.close();
-
             fieldComponent.setField(field);
         } catch (IOException ex) {
-            LOGGER.log(Level.INFO, "Field map " + fileURL.toString() + " not found.", ex);
+            LOGGER.log(Level.INFO, ex, () -> "Field map " + fileURL.toString() + " not found.");
         }
 
         return fieldComponent;
     }
 
-    private FieldComponent loadBinaryFile3D(URL fileURL) {
-        FieldComponent fieldComponent = new FieldComponent();
+    private FieldComponent<double[][][]> loadBinaryFile3D(URL fileURL) {
+        FieldComponent<double[][][]> fieldComponent = new FieldComponent<>();
 
-        try {
-            InputStream stream = fileURL.openStream();
-
-            int INT_BYTES = 4;
-            int FLOAT_BYTES = 4;
-            int DOUBLE_BYTES = 8;
+        try (InputStream stream = fileURL.openStream()) {
             byte[] intAux = new byte[INT_BYTES];
             byte[] floatAux = new byte[FLOAT_BYTES];
             byte[] doubleAux = new byte[DOUBLE_BYTES];
@@ -515,11 +506,9 @@ public abstract class FieldMap {
                 }
             }
 
-            stream.close();
-
             fieldComponent.setField(field);
         } catch (IOException ex) {
-            LOGGER.log(Level.INFO, "Field map " + fileURL.toString() + " not found.", ex);
+            LOGGER.log(Level.INFO, ex, () -> "Field map " + fileURL.toString() + " not found.");
         }
 
         return fieldComponent;
@@ -535,7 +524,7 @@ public abstract class FieldMap {
     protected final void saveFile1D(String path, String name, FieldComponent<double[]> fieldComponent) throws IOException, URISyntaxException {
         File fieldMapfile = new File(new URL(new URL(path), name).toURI());
         fieldMapfile.getParentFile().mkdirs();
-        PrintWriter pw = new PrintWriter(new FileWriter(fieldMapfile));
+        PrintWriter pw = new PrintWriter(new FileWriter(fieldMapfile, StandardCharsets.UTF_8));
 
         double[] field = fieldComponent.getField();
         pw.format(Locale.US, "%d %f%n%f%n", field.length - 1, fieldComponent.getMax()[0], 1.0);
@@ -555,18 +544,17 @@ public abstract class FieldMap {
     protected final void saveFile2D(String path, String name, FieldComponent<double[][]> fieldComponent) throws IOException, URISyntaxException {
         File fieldMapfile = new File(new URL(new URL(path), name).toURI());
         fieldMapfile.getParentFile().mkdirs();
-        PrintWriter pw = new PrintWriter(new FileWriter(fieldMapfile));
-
-        double zmax = fieldComponent.getMax()[0];
-        double rmax = fieldComponent.getMax()[1];
-        double[][] field = fieldComponent.getField();
-        pw.format(Locale.US, "%d %f%n%d %f%n%f%n", field.length - 1, zmax, field[0].length - 1, rmax, fieldComponent.getNorm());
-        for (int i = 0; i < field.length; i++) {
-            for (int j = 0; j < field[0].length; j++) {
-                pw.format(Locale.US, "%e%n", field[i][j]);
+        try (PrintWriter pw = new PrintWriter(new FileWriter(fieldMapfile, StandardCharsets.UTF_8))) {
+            double zmax = fieldComponent.getMax()[0];
+            double rmax = fieldComponent.getMax()[1];
+            double[][] field = fieldComponent.getField();
+            pw.format(Locale.US, "%d %f%n%d %f%n%f%n", field.length - 1, zmax, field[0].length - 1, rmax, fieldComponent.getNorm());
+            for (int i = 0; i < field.length; i++) {
+                for (int j = 0; j < field[0].length; j++) {
+                    pw.format(Locale.US, "%e%n", field[i][j]);
+                }
             }
         }
-        pw.close();
     }
 
     /**
@@ -579,22 +567,22 @@ public abstract class FieldMap {
     protected final void saveFile3D(String path, String name, FieldComponent<double[][][]> fieldComponent) throws IOException, URISyntaxException {
         File fieldMapfile = new File(new URL(new URL(path), name).toURI());
         fieldMapfile.getParentFile().mkdirs();
-        PrintWriter pw = new PrintWriter(new FileWriter(fieldMapfile));
+        try (PrintWriter pw = new PrintWriter(new FileWriter(fieldMapfile, StandardCharsets.UTF_8))) {
 
-        double zmax = fieldComponent.getMax()[0];
-        double xmin = fieldComponent.getMin()[1];
-        double xmax = fieldComponent.getMax()[1];
-        double ymin = fieldComponent.getMin()[2];
-        double ymax = fieldComponent.getMax()[2];
-        double[][][] field = fieldComponent.getField();
-        pw.format(Locale.US, "%d %f%n%d %f %f%n%d %f %f%n%f%n", field.length - 1, zmax, field[0].length - 1, ymin, ymax, field[0][0].length - 1, xmin, xmax, fieldComponent.getNorm());
-        for (int i = 0; i < field.length; i++) {
-            for (int j = 0; j < field[0].length; j++) {
-                for (int k = 0; k < field[0][0].length; k++) {
-                    pw.format(Locale.US, "%e%n", field[i][j][k]);
+            double zmax = fieldComponent.getMax()[0];
+            double xmin = fieldComponent.getMin()[1];
+            double xmax = fieldComponent.getMax()[1];
+            double ymin = fieldComponent.getMin()[2];
+            double ymax = fieldComponent.getMax()[2];
+            double[][][] field = fieldComponent.getField();
+            pw.format(Locale.US, "%d %f%n%d %f %f%n%d %f %f%n%f%n", field.length - 1, zmax, field[0].length - 1, ymin, ymax, field[0][0].length - 1, xmin, xmax, fieldComponent.getNorm());
+            for (int i = 0; i < field.length; i++) {
+                for (int j = 0; j < field[0].length; j++) {
+                    for (int k = 0; k < field[0][0].length; k++) {
+                        pw.format(Locale.US, "%e%n", field[i][j][k]);
+                    }
                 }
             }
-            pw.close();
         }
     }
 
@@ -615,9 +603,6 @@ public abstract class FieldMap {
         private double norm = 0.;
         // Array containing the fieldComponent points. It can be a 1D, a 2D, or a 3D array.
         private T field;
-
-        public FieldComponent() {
-        }
 
         public double[] getMin() {
             return min;
@@ -651,5 +636,4 @@ public abstract class FieldMap {
             this.field = field;
         }
     }
-
 }

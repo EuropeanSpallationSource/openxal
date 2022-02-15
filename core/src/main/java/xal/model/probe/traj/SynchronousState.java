@@ -52,9 +52,9 @@ public class SynchronousState extends BunchProbeState<SynchronousState> {
 
     // Local Attributes
     // Synchronous phase
-    private double m_dblPhsRf;
+    private double dblPhsRf;
     // Energy gain
-    private double m_dblEnergyGain;
+    private double dblEnergyGain;
 
     // Initialization
     /**
@@ -63,8 +63,8 @@ public class SynchronousState extends BunchProbeState<SynchronousState> {
      */
     public SynchronousState() {
         super();
-        this.m_dblPhsRf = 0.0;
-        this.m_dblEnergyGain = 0.0;
+        this.dblPhsRf = 0.0;
+        this.dblEnergyGain = 0.0;
     }
 
     /**
@@ -77,8 +77,8 @@ public class SynchronousState extends BunchProbeState<SynchronousState> {
     public SynchronousState(SynchronousState stateSync) {
         super(stateSync);
 
-        this.m_dblPhsRf = stateSync.m_dblPhsRf;
-        this.m_dblEnergyGain = stateSync.m_dblEnergyGain;
+        this.dblPhsRf = stateSync.dblPhsRf;
+        this.dblEnergyGain = stateSync.dblEnergyGain;
     }
 
     /**
@@ -97,37 +97,37 @@ public class SynchronousState extends BunchProbeState<SynchronousState> {
     /**
      * Set synchronous phase.
      *
-     * @param dblPhase synchronous phase in <b>radians</b>
+     * @param dblPhase synchronous phase in <strong>radians</strong>
      */
     public void setSynchronousPhase(double dblPhase) {
-        this.m_dblPhsRf = dblPhase;
+        this.dblPhsRf = dblPhase;
     }
 
     /**
      * Return the synchronous phase.
      *
-     * @return synchronous phase in <b>radians</b>
+     * @return synchronous phase in <strong>radians</strong>
      */
     public double getSynchronousPhase() {
-        return this.m_dblPhsRf;
+        return this.dblPhsRf;
     }
 
     /**
      * Set the energy gain for the current element.
      *
-     * @param dblEnergyGain energy gain in <b>eV</b>
+     * @param dblEnergyGain energy gain in <strong>eV</strong>
      */
     public void setEnergyGain(double dblEnergyGain) {
-        this.m_dblEnergyGain = dblEnergyGain;
+        this.dblEnergyGain = dblEnergyGain;
     }
 
     /**
      * Return the energy gain in the current element.
      *
-     * @return energy gain in <b>eV</b>
+     * @return energy gain in <strong>eV</strong>
      */
     public double getEnergyGain() {
-        return m_dblEnergyGain;
+        return dblEnergyGain;
     }
 
     // ProbeState Overrides

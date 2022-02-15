@@ -57,8 +57,10 @@ public class SynchronousPhaseTest extends SynchronousTrackerTestCommon {
                 sequence = spokeFieldMap(0.988, frequency * 1e-6, 0.974792, -1.10293);
 
                 // TW results
-                TWSyncPhase = -40.801559; //deg
-                TWEnergyGain = 3.61514; // MeV/m
+                //deg
+                TWSyncPhase = -40.801559;
+                // MeV/m
+                TWEnergyGain = 3.61514;
 
                 errTolerance = 3e-4;
             }
@@ -81,8 +83,10 @@ public class SynchronousPhaseTest extends SynchronousTrackerTestCommon {
                 sequence = spokeFieldMap(0.988, frequency * 1e-6, 0.974792, -1.10293);
 
                 // TW results
-                TWSyncPhase = -40.801559; //deg
-                TWEnergyGain = 3.61514; // MeV/m
+                //deg
+                TWSyncPhase = -40.801559;
+                // MeV/m
+                TWEnergyGain = 3.61514;
 
                 errTolerance = 3e-4;
             }
@@ -99,8 +103,10 @@ public class SynchronousPhaseTest extends SynchronousTrackerTestCommon {
                 sequence = hbFieldMap(1.5, 2 * frequency * 1e-6, 0.99941, 66.7114);
 
                 // TW results
-                TWSyncPhase = -14.165023; //deg
-                TWEnergyGain = 8.95195; // MeV/m
+                //deg
+                TWSyncPhase = -14.165023;
+                // MeV/m
+                TWEnergyGain = 8.95195;
 
                 errTolerance = 1e-6;
             }
@@ -123,8 +129,10 @@ public class SynchronousPhaseTest extends SynchronousTrackerTestCommon {
                 sequence = hbFieldMap(1.5, 2 * frequency * 1e-6, 0.99941, 66.7114);
 
                 // TW results
-                TWSyncPhase = -14.165023; //deg
-                TWEnergyGain = 8.95195; // MeV/m
+                //deg
+                TWSyncPhase = -14.165023;
+                // MeV/m
+                TWEnergyGain = 8.95195;
 
                 errTolerance = 1e-6;
             }

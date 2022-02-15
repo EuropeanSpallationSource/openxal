@@ -16,9 +16,9 @@ public class ESSRfCavityBucket extends RfCavityBucket {
     /*
      *  Constants
      */
-    public static final String c_strType = "rfcavity";
+    public static final String TYPE = "rfcavity";
 
-    static final String[] c_arrNames = {"TTF_startCoefs",
+    static final String[] ARR_NAMES = {"TTF_startCoefs",
         "TTFPrime_startCoefs",
         "STF_startCoefs",
         "STFPrime_startCoefs",};
@@ -30,22 +30,22 @@ public class ESSRfCavityBucket extends RfCavityBucket {
      * quadratic fit coefficients for the transit time factor as a function of
      * beta for the start cells (constant, linear, quad)
      */
-    private Attribute m_attTTF_startCoefs;
+    private Attribute attTTFStartCoefs;
     /**
      * quadratic fit coefficients for the transit time factor prime as a
      * function of beta for the start cells (constant, linear, quad)
      */
-    private Attribute m_attTTFPrime_startCoefs;
+    private Attribute attTTFPrimeStartCoefs;
     /**
      * quadratic fit coefficients for the "S transit time factor" as a function
      * of beta for the start cells (constant, linear, quad)
      */
-    private Attribute m_attSTF_startCoefs;
+    private Attribute attSTFStartCoefs;
     /**
      * quadratic fit coefficients for the "S transit time factor" prime as a
      * function of beta for the start cells (constant, linear, quad)
      */
-    private Attribute m_attSTFPrime_startCoefs;
+    private Attribute attSTFPrimeStartCoefs;
 
     /*
      *  User Interface
@@ -55,52 +55,52 @@ public class ESSRfCavityBucket extends RfCavityBucket {
      */
     @Override
     public String getType() {
-        return c_strType;
+        return TYPE;
     }
 
     public ESSRfCavityBucket() {
         super();
 
-        m_attTTF_startCoefs = new Attribute(new double[]{});
-        m_attTTFPrime_startCoefs = new Attribute(new double[]{});
-        m_attSTF_startCoefs = new Attribute(new double[]{});
-        m_attSTFPrime_startCoefs = new Attribute(new double[]{});
+        attTTFStartCoefs = new Attribute(new double[]{});
+        attTTFPrimeStartCoefs = new Attribute(new double[]{});
+        attSTFStartCoefs = new Attribute(new double[]{});
+        attSTFPrimeStartCoefs = new Attribute(new double[]{});
 
-        super.registerAttribute(c_arrNames[0], m_attTTF_startCoefs, "Quadratic fit coefficients for the transit time factor as a function of beta for the start cells (constant, linear, quad).");
-        super.registerAttribute(c_arrNames[1], m_attTTFPrime_startCoefs, "Quadratic fit coefficients for the transit time factor prime as a function of beta for the start cells (constant, linear, quad).");
-        super.registerAttribute(c_arrNames[2], m_attSTF_startCoefs, "Quadratic fit coefficients for the \"S transit time factor\" as a function of beta for the start cells (constant, linear, quad).");
-        super.registerAttribute(c_arrNames[3], m_attSTFPrime_startCoefs, "Quadratic fit coefficients for the \"S transit time factor\" prime as a function of beta for the start cells (constant, linear, quad).");
+        super.registerAttribute(ARR_NAMES[0], attTTFStartCoefs, "Quadratic fit coefficients for the transit time factor as a function of beta for the start cells (constant, linear, quad).");
+        super.registerAttribute(ARR_NAMES[1], attTTFPrimeStartCoefs, "Quadratic fit coefficients for the transit time factor prime as a function of beta for the start cells (constant, linear, quad).");
+        super.registerAttribute(ARR_NAMES[2], attSTFStartCoefs, "Quadratic fit coefficients for the \"S transit time factor\" as a function of beta for the start cells (constant, linear, quad).");
+        super.registerAttribute(ARR_NAMES[3], attSTFPrimeStartCoefs, "Quadratic fit coefficients for the \"S transit time factor\" prime as a function of beta for the start cells (constant, linear, quad).");
     }
 
-    public double[] getTTF_startCoefs() {
-        return m_attTTF_startCoefs.getArrDbl();
+    public double[] getTTFStartCoefs() {
+        return attTTFStartCoefs.getArrDbl();
     }
 
-    public double[] getTTFPrime_startCoefs() {
-        return m_attTTFPrime_startCoefs.getArrDbl();
+    public double[] getTTFPrimeStartCoefs() {
+        return attTTFPrimeStartCoefs.getArrDbl();
     }
 
-    public double[] getSTF_startCoefs() {
-        return m_attSTF_startCoefs.getArrDbl();
+    public double[] getSTFStartCoefs() {
+        return attSTFStartCoefs.getArrDbl();
     }
 
-    public double[] getSTFPrime_startCoefs() {
-        return m_attSTFPrime_startCoefs.getArrDbl();
+    public double[] getSTFPrimeStartCoefs() {
+        return attSTFPrimeStartCoefs.getArrDbl();
     }
 
-    public void setTTF_startCoefs(double[] arrVal) {
-        m_attTTF_startCoefs.set(arrVal);
+    public void setTTFStartCoefs(double[] arrVal) {
+        attTTFStartCoefs.set(arrVal);
     }
 
-    public void setTTFPrime_startCoefs(double[] arrVal) {
-        m_attTTFPrime_startCoefs.set(arrVal);
+    public void setTTFPrimeStartCoefs(double[] arrVal) {
+        attTTFPrimeStartCoefs.set(arrVal);
     }
 
-    public void setSTF_startCoefs(double[] arrVal) {
-        m_attSTF_startCoefs.set(arrVal);
+    public void setSTFStartCoefs(double[] arrVal) {
+        attSTFStartCoefs.set(arrVal);
     }
 
-    public void setSTFPrime_startCoefs(double[] arrVal) {
-        m_attSTFPrime_startCoefs.set(arrVal);
+    public void setSTFPrimeStartCoefs(double[] arrVal) {
+        attSTFPrimeStartCoefs.set(arrVal);
     }
 }

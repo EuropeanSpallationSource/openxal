@@ -41,7 +41,7 @@ public class InverseRealPolynomial extends RealUnivariatePolynomial {
     /**
      * the vector of coefficients
      */
-    private double[] m_arrCoef = null;
+    private double[] arrCoef = null;
 
 
     /*
@@ -59,7 +59,7 @@ public class InverseRealPolynomial extends RealUnivariatePolynomial {
      * @param arrCoef
      */
     public InverseRealPolynomial(double[] arrCoef) {
-        this.setCoefArray(arrCoef);
+        setCoefArray(arrCoef);
     }
 
     /**
@@ -70,7 +70,7 @@ public class InverseRealPolynomial extends RealUnivariatePolynomial {
      */
     @Override
     public void setCoefArray(double[] arrCoef) {
-        this.m_arrCoef = arrCoef.clone();
+        this.arrCoef = arrCoef.clone();
     }
 
 
@@ -83,7 +83,7 @@ public class InverseRealPolynomial extends RealUnivariatePolynomial {
      */
     @Override
     public int getDegree() {
-        return this.getCoefs().length - 1;
+        return getCoefs().length - 1;
     }
 
     /**
@@ -97,14 +97,14 @@ public class InverseRealPolynomial extends RealUnivariatePolynomial {
      */
     @Override
     public double getCoef(int iOrder) {
-        if (this.m_arrCoef.length == 0) {
+        if (arrCoef.length == 0) {
             return 0.0;
         }
-        if (iOrder >= this.m_arrCoef.length) {
+        if (iOrder >= arrCoef.length) {
             return 0.0;
         }
 
-        return this.m_arrCoef[iOrder];
+        return arrCoef[iOrder];
     }
 
     /**
@@ -114,7 +114,7 @@ public class InverseRealPolynomial extends RealUnivariatePolynomial {
      */
     @Override
     public double[] getCoefs() {
-        return this.m_arrCoef;
+        return arrCoef;
     }
 
     /*
@@ -126,31 +126,33 @@ public class InverseRealPolynomial extends RealUnivariatePolynomial {
      * are coefficients.
      *
      * @param dblVal indeterminate value to evaluate the model function at
-     * @return 
+     * @return
      */
     @Override
     public double evaluateAt(double dblVal) {
-        if (this.m_arrCoef == null || this.m_arrCoef.length == 0) {
+        if (arrCoef == null || arrCoef.length == 0) {
             return 1.0;
         }
 
-        double x0 = m_arrCoef[0];
+        double x0 = arrCoef[0];
         if (x0 == 0.0) {
             return 1.0;
         }
 
-        int length = this.m_arrCoef.length;      // number of coefficients
-        double dblAccum = 0.0;                 // accumulator
+        // number of coefficients
+        int length = arrCoef.length;
+        // accumulator
+        double dblAccum = 0.0;
 
         for (int n = length - 1; n >= 1; n--) {
             double f = 1.;
             for (int j = 2; j < n; j++) {
                 f *= j;
             }
-            dblAccum += this.getCoef(n) * Math.pow(x0 / dblVal - 1, n - 1) / f;
+            dblAccum += getCoef(n) * Math.pow(x0 / dblVal - 1, (double) n - 1) / f;
         }
 
-        return dblAccum / m_arrCoef[1];
+        return dblAccum / arrCoef[1];
     }
 
     /**
@@ -166,13 +168,13 @@ public class InverseRealPolynomial extends RealUnivariatePolynomial {
      */
     @Override
     public double derivativeAt(double dblVal) {
-        if (this.m_arrCoef == null || this.m_arrCoef.length == 0) {
+        if (arrCoef == null || arrCoef.length == 0) {
             return 0.0;
         }
 
-        double x0 = m_arrCoef[0];
+        double x0 = arrCoef[0];
         // number of coefficients
-        int length = this.m_arrCoef.length;
+        int length = arrCoef.length;
         // accumulator
         double dblAccum = 0.0;
 
@@ -181,10 +183,10 @@ public class InverseRealPolynomial extends RealUnivariatePolynomial {
             for (int j = 2; j < n - 1; j++) {
                 f *= j;
             }
-            dblAccum += this.getCoef(n) * Math.pow(x0 / dblVal - 1, n - 2) * x0 / dblVal / dblVal / f;
+            dblAccum += this.getCoef(n) * Math.pow(x0 / dblVal - 1, (double) n - 2) * x0 / dblVal / dblVal / f;
         }
 
-        return -dblAccum / m_arrCoef[1];
+        return -dblAccum / arrCoef[1];
     }
 
     public InverseRealPolynomial plus(InverseRealPolynomial polyAddend) {
@@ -209,16 +211,16 @@ public class InverseRealPolynomial extends RealUnivariatePolynomial {
      */
     @Override
     public String toString() {
-        int length = this.getDegree();
+        int length = getDegree();
 
-        String x0 = Double.toString(this.getCoef(0));
-        String strPoly = "(" + Double.toString(this.getCoef(1));
+        String x0 = Double.toString(getCoef(0));
+        StringBuilder strPoly = new StringBuilder();
+        strPoly.append("(").append(Double.toString(getCoef(1)));
 
         for (int n = 2; n <= length; n++) {
-            strPoly += " + " + this.getCoef(n) + "(" + x0 + "/x)^" + (n - 1);
+            strPoly.append(" + ").append(getCoef(n)).append("(").append(x0).append("/x)^").append(n - 1);
         }
 
-        return strPoly + ")/x1";
+        return strPoly.append(")/x1").toString();
     }
-
 }

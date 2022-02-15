@@ -22,7 +22,8 @@ import java.util.List;
 import eu.ess.jelog.Attachment;
 import eu.ess.jelog.PostEntryDialog;
 import java.util.Map;
-import javafx.stage.Stage;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Class to submit new entries using a JavaFX dialog. Useful for logging data
@@ -37,7 +38,7 @@ public class XALPostEntryDialog {
     private static String elogURL = null;
 
     private XALPostEntryDialog() {
-        // Utility class
+        throw new IllegalStateException("Utility class");
     }
 
     public static void setElogServer(String elogURL) {
@@ -67,6 +68,11 @@ public class XALPostEntryDialog {
 
         PostEntryDialog.setElogServer(elogURL);
 
-        return PostEntryDialog.post(attachments, defaultLogbook, defaultAttributes);
+        try {
+            return PostEntryDialog.post(attachments, defaultLogbook, defaultAttributes);
+        } catch (Exception ex) {
+            Logger.getLogger(XALPostEntryDialog.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
     }
 }

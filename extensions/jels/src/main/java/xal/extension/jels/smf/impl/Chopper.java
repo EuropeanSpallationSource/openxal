@@ -19,7 +19,6 @@ package xal.extension.jels.smf.impl;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
@@ -35,7 +34,7 @@ public class Chopper extends AcceleratorNode {
     /*
      *  Constants
      */
-    public static final String s_strType = "CHP";
+    public static final String TYPE = "CHP";
 
     public static final String LENGTH_SET_HANDLE = "lengthS";
     private Channel lengthSC = null;
@@ -51,7 +50,7 @@ public class Chopper extends AcceleratorNode {
      * Register type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes(Chopper.class, s_strType);
+        ElementTypeManager.defaultManager().registerTypes(Chopper.class, TYPE);
     }
 
     /**
@@ -59,7 +58,7 @@ public class Chopper extends AcceleratorNode {
      */
     @Override
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /**
@@ -79,12 +78,12 @@ public class Chopper extends AcceleratorNode {
     /*
      *  Process variable Gets
      */
-    public int getStatusON_OFF() throws ConnectionException, GetException {
+    public int getStatusOnOff() throws GetException {
         statusRC = lazilyGetAndConnect(STATUS_RB_HANDLE, statusRC);
         return statusRC.getValEnum();
     }
 
-    public void setPulseLength(double dblVal) throws ConnectionException, PutException {
+    public void setPulseLength(double dblVal) throws PutException {
         lengthSC = lazilyGetAndConnect(LENGTH_SET_HANDLE, lengthSC);
         lengthSC.putVal(dblVal);
     }

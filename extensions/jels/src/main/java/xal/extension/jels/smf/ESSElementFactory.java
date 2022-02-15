@@ -10,7 +10,6 @@ import xal.extension.jels.smf.impl.ESSRfGap;
 import xal.extension.jels.smf.impl.FieldMap;
 import xal.extension.jels.smf.impl.FieldMapFactory;
 import xal.extension.jels.smf.impl.MagFieldMap;
-import xal.extension.jels.smf.impl.RfFieldMap1D;
 import xal.smf.AcceleratorNode;
 import xal.smf.ChannelSuite;
 import xal.smf.attr.ApertureBucket;
@@ -105,8 +104,6 @@ public final class ESSElementFactory {
         // calculations
         double len = Math.abs(rho * alpha * Math.PI / 180.0);
 
-//        Field not used in computations.
-//        double B0 = k / rho * Math.signum(alpha);
         Bend bend = new Bend(name, orientation);
         if (ps != null) {
             bend.setMainSupplyId(ps.getId());
@@ -120,7 +117,6 @@ public final class ESSElementFactory {
         dipoleBucket.setBendAngle(alpha);
         dipoleBucket.setPathLength(len);
         dipoleBucket.setDipoleExitRotAngle(-exitAngle);
-//        bend.setDfltField(B0);
         dipoleBucket.setDipoleQuadComponent(quadComp);
 
         bend.setGap(gap);
@@ -217,8 +213,7 @@ public final class ESSElementFactory {
                 fieldFile, true, FieldMapFactory.FieldType.ELECTRIC, dimensions, numberOfPoints);
         fm.setFieldMap(fieldMap);
 
-        ESSRfCavity cavity = createESSRfCavity(name, length, new AcceleratorNode[]{fm}, rfphase, amplitude * fieldMap.getFieldIntegral(), frequency, position);
-        return cavity;
+        return createESSRfCavity(name, length, new AcceleratorNode[]{fm}, rfphase, amplitude * fieldMap.getFieldIntegral(), frequency, position);
     }
 
     /**

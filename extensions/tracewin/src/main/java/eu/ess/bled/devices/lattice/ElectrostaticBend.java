@@ -1,101 +1,107 @@
 package eu.ess.bled.devices.lattice;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * <code>ElectrostaticBend</code> represents an electrostatic bend element.
- * 
+ *
  * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovic</a>
- * 
+ *
  */
 // TODO Check persistence annotations
 public class ElectrostaticBend extends BeamlineElement {
 
-	private static final long serialVersionUID = -8428134678904715521L;
+    private static final Logger LOGGER = Logger.getLogger(ElectrostaticBend.class.getName());
 
-	/**
-	 * <code>BendType</code> describes a type of electrostatic bend.
-	 * 
-	 * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovic</a>
-	 */
-	public enum BendType {
-		CYLINDRICAL(1), SPHERICAL(2), TOROIDAL(3);
+    private static final long serialVersionUID = -8428134678904715521L;
 
-		private final int val;
+    /**
+     * <code>BendType</code> describes a type of electrostatic bend.
+     *
+     * @author <a href="mailto:miha.vitorovic@cosylab.com">Miha Vitorovic</a>
+     */
+    public enum BendType {
+        CYLINDRICAL(1), SPHERICAL(2), TOROIDAL(3);
 
-		BendType(int val) {
-			this.val = val;
-		}
+        private final int val;
 
-		/**
-		 * Returns the integer representation of this type.
-		 * 
-		 * @return the integer value
-		 */
-		public int getIntegerValue() {
-			return val;
-		}
+        BendType(int val) {
+            this.val = val;
+        }
 
-		/**
-		 * Maps integer value to enum value.
-		 * 
-		 * @param val <code>int</code> 1, 2 or 3
-		 * @return the <code>enum</code> constant associated with the value or
-		 *         <code>null</code> if such a value does not exist.
-		 */
-		public static BendType toEnum(int val) {
-			try {
-				return values()[val - 1];
-			} catch (IndexOutOfBoundsException e) {
-				return null;
-			}
-		}
-	}
+        /**
+         * Returns the integer representation of this type.
+         *
+         * @return the integer value
+         */
+        public int getIntegerValue() {
+            return val;
+        }
 
-	private Double bendAngle;
-	private Double curvatureRadius;
-	private BendType bendType;
-	private Boolean isVertical;
+        /**
+         * Maps integer value to enum value.
+         *
+         * @param val <code>int</code> 1, 2 or 3
+         * @return the <code>enum</code> constant associated with the value or
+         * <code>null</code> if such a value does not exist.
+         */
+        public static BendType toEnum(int val) {
+            try {
+                return values()[val - 1];
+            } catch (IndexOutOfBoundsException e) {
+                LOGGER.log(Level.SEVERE, null, e);
+                return null;
+            }
+        }
+    }
 
-	public Double getBendAngle() {
-		return bendAngle;
-	}
+    private Double bendAngle;
+    private Double curvatureRadius;
+    private BendType bendType;
+    private Boolean isVertical;
 
-	public void setBendAngle(Double bendAngle) {
-		this.bendAngle = bendAngle;
-	}
+    public Double getBendAngle() {
+        return bendAngle;
+    }
 
-	public Double getCurvatureRadius() {
-		return curvatureRadius;
-	}
+    public void setBendAngle(Double bendAngle) {
+        this.bendAngle = bendAngle;
+    }
 
-	public void setCurvatureRadius(Double curvatureRadius) {
-		this.curvatureRadius = curvatureRadius;
-	}
+    public Double getCurvatureRadius() {
+        return curvatureRadius;
+    }
 
-	public BendType getBendType() {
-		return bendType;
-	}
+    public void setCurvatureRadius(Double curvatureRadius) {
+        this.curvatureRadius = curvatureRadius;
+    }
 
-	public void setBendType(BendType bendType) {
-		this.bendType = bendType;
-	}
+    public BendType getBendType() {
+        return bendType;
+    }
 
-	/**
-	 * Returns <code>true</code> if the element is vertical. <code>false</code>
-	 * if the element is horizontal.
-	 * 
-	 * @return the orientation of the element.
-	 */
-	public Boolean isVertical() {
-		return isVertical;
-	}
+    public void setBendType(BendType bendType) {
+        this.bendType = bendType;
+    }
 
-	/**
-	 * Set to <code>true</code> if the element is vertical. <code>false</code>
-	 * if the element is horizontal.
-	 *  
-	 * @param isVertical is element vertical?
-	 */
-	public void setVertical(Boolean isVertical) {
-		this.isVertical = isVertical;
-	}
+    /**
+     * Returns <code>true</code> if the element is vertical. <code>false</code>
+     * if the element is horizontal.
+     *
+     * @return the orientation of the element.
+     */
+    public Boolean isVertical() {
+        return isVertical;
+    }
+
+    /**
+     * Set to <code>true</code> if the element is vertical. <code>false</code>
+     * if the element is horizontal.
+     *
+     * @param isVertical is element vertical?
+     */
+    public void setVertical(Boolean isVertical) {
+        this.isVertical = isVertical;
+    }
 }

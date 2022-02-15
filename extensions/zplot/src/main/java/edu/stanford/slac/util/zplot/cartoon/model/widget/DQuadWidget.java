@@ -6,16 +6,16 @@ import java.awt.geom.Rectangle2D;
 
 public class DQuadWidget extends CartoonWidget {
 
-	public DQuadWidget() {
-		super(Color.RED);
-	}
+    public DQuadWidget() {
+        super(Color.RED);
+    }
 
-	@Override
-	public Shape getShape(int length) {
-		if(length <= 0){
-			length = 1;
-		}
-		return new Rectangle2D.Double(0, 0, length,
-				REF_HEIGHT * 2);
-	}
+    @Override
+    public Shape getShape(int length) {
+        if (length <= 0) {
+            length = 1;
+        }
+        return new Rectangle2D.Double(0, 0, length,
+                REF_HEIGHT * 2);
+    }
 }

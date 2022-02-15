@@ -13,6 +13,8 @@ import java.util.Formatter;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +43,8 @@ import xal.tools.beam.Twiss;
  */
 @RunWith(Parameterized.class)
 public class GeneralTest {
+
+    private static final Logger LOGGER = Logger.getLogger(GeneralTest.class.getName());
 
     /**
      * Describes Openxal, Tracewin columns/functions of the results. Sets
@@ -107,11 +111,10 @@ public class GeneralTest {
      */
     @Test
     public void runTest() throws IOException, ModelException {
-        double dataTW[][] = loadTWData(tracewinData);
-        double dataOX[][] = run(probe, seq);
+        double[][] dataTW = loadTWData(tracewinData);
+        double[][] dataOX = run(probe, seq);
 
-        //saveResults(tracewinData.getFile() + ".out", dataOX, probe.getTrajectory());
-        System.out.printf("%s\t", probe.getComment());
+        LOGGER.log(Level.INFO, String.format("%s\t", probe.getComment()));
         Column[] allCols = Column.values();
         StringBuilder message = new StringBuilder();
         boolean ok = true;
@@ -120,18 +123,17 @@ public class GeneralTest {
             if (e >= allCols[j].allowedError) {
                 message.append(allCols[j].name()).append(" ");
                 ok = false;
-                System.out.printf("%s: %E %c %E\n", allCols[j].name(), e, e < allCols[j].allowedError ? '<' : '>', allCols[j].allowedError);
-                System.out.printf("%s: %E %E\n", allCols[j].name(), dataOX[allCols[j].openxal][dataOX[allCols[j].openxal].length - 1], dataTW[allCols[j].tracewin][dataTW[allCols[j].tracewin].length - 1]);
-                System.out.printf("%E\t", e);
+                LOGGER.log(Level.INFO, String.format("%s: %E %c %E\n", allCols[j].name(), e, e < allCols[j].allowedError ? '<' : '>', allCols[j].allowedError));
+                LOGGER.log(Level.INFO, String.format("%s: %E %E\n", allCols[j].name(), dataOX[allCols[j].openxal][dataOX[allCols[j].openxal].length - 1], dataTW[allCols[j].tracewin][dataTW[allCols[j].tracewin].length - 1]));
+                LOGGER.log(Level.INFO, String.format("%E\t", e));
             }
-            //System.out.printf("%E %E\n",dataOX[allCols[j].openxal][0], dataTW[allCols[j].tracewin][0]);
         }
-        System.out.println();
+
         assertTrue(message.append("are not within the allowed error").toString(), ok);
 
         dataTW = null;
         dataOX = null;
-        System.gc();
+        
     }
 
     protected static void saveResults(String file, double[][] data) throws FileNotFoundException {
@@ -173,7 +175,7 @@ public class GeneralTest {
 
         int i = 0;
         for (String line; (line = br.readLine()) != null; i++) {
-            String cols[] = line.split(" ", TWcols + 1);
+            String[] cols = line.split(" ", TWcols + 1);
             for (int j = 0; j < TWcols; j++) {
                 data[j][i] = Double.parseDouble(cols[j]);
             }
@@ -259,14 +261,14 @@ public class GeneralTest {
             dataOX[Column.GAMA_1.openxal][i] = ps.getGamma() - 1.;
             dataOX[Column.RMSX.openxal][i] = twiss[0].getEnvelopeRadius() * 1e3;
             dataOX[Column.RMSY.openxal][i] = twiss[1].getEnvelopeRadius() * 1e3;
-            dataOX[Column.RMSZ.openxal][i] = twiss[2].getEnvelopeRadius() * 360 * ps.getBunchFrequency() / (beta * IElement.LightSpeed);
+            dataOX[Column.RMSZ.openxal][i] = twiss[2].getEnvelopeRadius() * 360 * ps.getBunchFrequency() / (beta * IElement.LIGHT_SPEED);
 
             PhaseVector mean = ps.phaseMean();
             dataOX[Column.CENTX.openxal][i] = mean.getx() * 1e3;
             dataOX[Column.CENTXp.openxal][i] = mean.getxp() * 1e3;
             dataOX[Column.CENTY.openxal][i] = mean.gety() * 1e3;
             dataOX[Column.CENTYp.openxal][i] = mean.getyp() * 1e3;
-            dataOX[Column.CENTZ.openxal][i] = -mean.getz() * 360 * ps.getBunchFrequency() / (beta * IElement.LightSpeed) * Math.sqrt(1 + Math.pow(mean.getx(), 2) / 4 + Math.pow(mean.gety(), 2) / 4);
+            dataOX[Column.CENTZ.openxal][i] = -mean.getz() * 360 * ps.getBunchFrequency() / (beta * IElement.LIGHT_SPEED) * Math.sqrt(1 + Math.pow(mean.getx(), 2) / 4 + Math.pow(mean.gety(), 2) / 4);
             dataOX[Column.CENTdpp.openxal][i] = mean.getzp() * gamma * gamma * gamma * beta * beta * ps.getSpeciesRestEnergy() * 1e-6;
 
             i = i + 1;
@@ -302,10 +304,9 @@ public class GeneralTest {
      * @param yb y values of second function
      * @return returns relative error
      */
-    public static double compare(double[] xa, double[] xb, double[] ya, double yb[]) {
+    public static double compare(double[] xa, double[] xb, double[] ya, double[] yb) {
         double d = integrateL1sup(xa, xb, ya, yb);
         double a = integrateSup(xb, yb);
-        //System.out.printf("%E %E\n", d, a);
         if (a < 1e-6) {
             return d;
         }
@@ -338,7 +339,7 @@ public class GeneralTest {
      * @param yb y values of second function
      * @return value of the integral
      */
-    private static double integrateL1sup(double[] xa, double[] xb, double[] ya, double yb[]) {
+    private static double integrateL1sup(double[] xa, double[] xb, double[] ya, double[] yb) {
         if (xa.length == 0) {
             return integrateSup(xb, yb);
         }
@@ -389,10 +390,10 @@ public class GeneralTest {
      * @return value of the integral
      */
     @SuppressWarnings("unused")
-    private double integrateL1linear(double[] xa, double[] xb, double[] ya, double yb[]) {
+    private double integrateL1linear(double[] xa, double[] xb, double[] ya, double[] yb) {
 
         // merge the positions together
-        double p[] = new double[xa.length + xb.length];
+        double[] p = new double[xa.length + xb.length];
         for (int i = 0, j = 0; i < xa.length || j < xb.length;) {
             if (j >= xb.length) {
                 p[i + j] = xa[i];
@@ -410,7 +411,7 @@ public class GeneralTest {
         }
 
         // interpolate
-        double f[] = new double[p.length];
+        double[] f = new double[p.length];
         for (int i = 0, k = 0; i < p.length; i++) {
             while (k < xa.length && p[i] >= xa[k]) {
                 k++;
@@ -428,7 +429,7 @@ public class GeneralTest {
             }
         }
 
-        double g[] = new double[p.length];
+        double[] g = new double[p.length];
         for (int i = 0, k = 0; i < p.length; i++) {
             while (k < xb.length && p[i] >= xb[k]) {
                 k++;

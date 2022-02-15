@@ -19,7 +19,6 @@ package xal.extension.jels.smf.impl;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.smf.AcceleratorNode;
 import xal.smf.AccessibleProperty;
@@ -35,33 +34,32 @@ public class EMU extends AcceleratorNode {
     /*
      *  Constants
      */
-    public static final String s_strType = "EMU";
+    public static final String TYPE = "EMU";
 
     // EMU channel handles           
     public static final String EMITT_X_HANDLE = "xEmitt";
-    private Channel emittXC = null;   
-    public final AccessibleProperty xEmitt = new AccessibleProperty("xEmitt", EMITT_X_HANDLE);
-    
-    public static final String EMITT_Y_HANDLE = "yEmitt";
-    private Channel emittYC = null;   
-    public final AccessibleProperty yEmitt = new AccessibleProperty("yEmitt", EMITT_Y_HANDLE);
-    
-    public static final String ALPHA_Y_TWISS_HANDLE = "yAlphaTwiss";
-    private Channel alphayTwissC = null;   
-    public final AccessibleProperty yAlphaTwiss = new AccessibleProperty("yAlphaTwiss", ALPHA_Y_TWISS_HANDLE);
-    
-    public static final String BETA_Y_TWISS_HANDLE = "yBetaTwiss";
-    private Channel betayTwissC = null;   
-    public final AccessibleProperty yBetaTwiss = new AccessibleProperty("yBetaTwiss", BETA_Y_TWISS_HANDLE);
-    
-    public static final String ALPHA_X_TWISS_HANDLE = "xAlphaTwiss";
-    private Channel alphaxTwissC = null;   
-    public final AccessibleProperty xAlphaTwiss = new AccessibleProperty("xAlphaTwiss", ALPHA_X_TWISS_HANDLE);
-    
-    public static final String BETA_X_TWISS_HANDLE = "xBetaTwiss";
-    private Channel betaxTwissC = null;    
-    public final AccessibleProperty xBetaTwiss = new AccessibleProperty("xBetaTwiss", BETA_X_TWISS_HANDLE);
+    private Channel emittXC = null;
+    public final AccessibleProperty xEmitt = new AccessibleProperty(EMITT_X_HANDLE);
 
+    public static final String EMITT_Y_HANDLE = "yEmitt";
+    private Channel emittYC = null;
+    public final AccessibleProperty yEmitt = new AccessibleProperty(EMITT_Y_HANDLE);
+
+    public static final String ALPHA_Y_TWISS_HANDLE = "yAlphaTwiss";
+    private Channel alphayTwissC = null;
+    public final AccessibleProperty yAlphaTwiss = new AccessibleProperty(ALPHA_Y_TWISS_HANDLE);
+
+    public static final String BETA_Y_TWISS_HANDLE = "yBetaTwiss";
+    private Channel betayTwissC = null;
+    public final AccessibleProperty yBetaTwiss = new AccessibleProperty(BETA_Y_TWISS_HANDLE);
+
+    public static final String ALPHA_X_TWISS_HANDLE = "xAlphaTwiss";
+    private Channel alphaxTwissC = null;
+    public final AccessibleProperty xAlphaTwiss = new AccessibleProperty(ALPHA_X_TWISS_HANDLE);
+
+    public static final String BETA_X_TWISS_HANDLE = "xBetaTwiss";
+    private Channel betaxTwissC = null;
+    public final AccessibleProperty xBetaTwiss = new AccessibleProperty(BETA_X_TWISS_HANDLE);
 
     static {
         registerType();
@@ -71,14 +69,15 @@ public class EMU extends AcceleratorNode {
      * Register type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes(EMU.class, s_strType);
+        ElementTypeManager.defaultManager().registerTypes(EMU.class, TYPE);
     }
 
     /**
      * Override to provide type signature
      */
+    @Override
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /**
@@ -98,32 +97,32 @@ public class EMU extends AcceleratorNode {
     /*
      *  Process variable Gets 
      */
-    public double getXEmittance() throws ConnectionException, GetException {
+    public double getXEmittance() throws GetException {
         emittXC = lazilyGetAndConnect(EMITT_X_HANDLE, emittXC);
         return emittXC.getValDbl();
     }
 
-    public double getYEmittance() throws ConnectionException, GetException {
+    public double getYEmittance() throws GetException {
         emittYC = lazilyGetAndConnect(EMITT_Y_HANDLE, emittYC);
         return emittYC.getValDbl();
     }
 
-    public double getYAlphaTwiss() throws ConnectionException, GetException {
+    public double getYAlphaTwiss() throws GetException {
         alphayTwissC = lazilyGetAndConnect(ALPHA_Y_TWISS_HANDLE, alphayTwissC);
         return alphayTwissC.getValDbl();
     }
 
-    public double getYBetaTwiss() throws ConnectionException, GetException {
+    public double getYBetaTwiss() throws GetException {
         betayTwissC = lazilyGetAndConnect(BETA_Y_TWISS_HANDLE, betayTwissC);
         return betayTwissC.getValDbl();
     }
 
-    public double getXAlphaTwiss() throws ConnectionException, GetException {
+    public double getXAlphaTwiss() throws GetException {
         alphaxTwissC = lazilyGetAndConnect(ALPHA_X_TWISS_HANDLE, alphaxTwissC);
         return alphaxTwissC.getValDbl();
     }
 
-    public double getXBetaTwiss() throws ConnectionException, GetException {
+    public double getXBetaTwiss() throws GetException {
         betaxTwissC = lazilyGetAndConnect(BETA_X_TWISS_HANDLE, betaxTwissC);
         return betaxTwissC.getValDbl();
     }

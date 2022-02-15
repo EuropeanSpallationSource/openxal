@@ -5,192 +5,232 @@
 // Created by Pelaia II, Tom on 1/10/13
 // Copyright 2013 ORNL. All rights reserved.
 //
-
 package xal.extension.scan;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.ca.*;
 
-
-/** ScanChannelMonitor */
+/**
+ * ScanChannelMonitor
+ */
 public class ScanChannelMonitor {
-	/** synchronization lock */
-	final private Object SYNC_LOCK;
 
-	/** channel to monitor */
-	final private Channel CHANNEL;
+    private static final Logger LOGGER = Logger.getLogger(ScanChannelMonitor.class.getName());
 
-	/** handler of events */
-	final private EventHandler EVENT_HANDLER;
+    /**
+     * synchronization lock
+     */
+    private final Object syncLock;
 
-	/** channel event monitor */
-	private Monitor _monitor;
+    /**
+     * channel to monitor
+     */
+    private final Channel channel;
 
-	/** indicates whether this wrapper is viable or disposed */
-	volatile private boolean _viable;
+    /**
+     * handler of events
+     */
+    private final EventHandler eventHandler;
 
-	/** indicates whether the monitor is allowed */
-	volatile private boolean _allowsMonitor;
+    /**
+     * channel event monitor
+     */
+    private Monitor monitor;
 
-	/** handler of the monitor events */
-	volatile private ScanChannelMonitorDelegate _delegate;
+    /**
+     * indicates whether this wrapper is viable or disposed
+     */
+    private volatile boolean viable;
 
-	/** latest record captured */
-	volatile private ChannelTimeRecord _latestRecord;
+    /**
+     * indicates whether the monitor is allowed
+     */
+    private volatile boolean allowsMonitor;
 
+    /**
+     * handler of the monitor events
+     */
+    private volatile ScanChannelMonitorDelegate delegate;
 
-	/** Constructor with null delegate */
-	public ScanChannelMonitor( final Channel channel ) {
-		this( channel, null );
-	}
+    /**
+     * latest record captured
+     */
+    private volatile ChannelTimeRecord latestRecord;
 
+    /**
+     * Constructor with null delegate
+     */
+    public ScanChannelMonitor(final Channel channel) {
+        this(channel, null);
+    }
 
-	/** Constructor */
-	public ScanChannelMonitor( final Channel channel, final ScanChannelMonitorDelegate delegate ) {
-		this( channel, delegate, true );
-	}
+    /**
+     * Constructor
+     */
+    public ScanChannelMonitor(final Channel channel, final ScanChannelMonitorDelegate delegate) {
+        this(channel, delegate, true);
+    }
 
+    /**
+     * Primary Constructor
+     */
+    public ScanChannelMonitor(final Channel channel, final ScanChannelMonitorDelegate delegate, final boolean requestEvents) {
+        syncLock = new Object();
+        eventHandler = new EventHandler();
 
-	/** Primary Constructor */
-	public ScanChannelMonitor( final Channel channel, final ScanChannelMonitorDelegate delegate, final boolean requestEvents ) {
-		SYNC_LOCK = new Object();
-		EVENT_HANDLER = new EventHandler();
+        viable = true;
 
-		_viable = true;
+        allowsMonitor = requestEvents;
 
-		_allowsMonitor = requestEvents;
+        latestRecord = null;
+        monitor = null;
+        this.delegate = delegate;
 
-		_latestRecord = null;
-		_monitor = null;
-		_delegate = delegate;
+        if (channel == null) {
+            throw new IllegalArgumentException("Channel Wrapper cannot be assigned a null channel");
+        }
 
-		if ( channel == null )	throw new IllegalArgumentException( "Channel Wrapper cannot be assigned a null channel" );
+        this.channel = channel;
 
-		CHANNEL = channel;
+        if (requestEvents) {
+            start();
+        }
+    }
 
-		if ( requestEvents ) {
-			start();
-		}
-	}
+    /**
+     * Get the channel
+     */
+    public Channel getChannel() {
+        return channel;
+    }
 
+    /**
+     * set the delegate
+     */
+    public void setDelegate(final ScanChannelMonitorDelegate delegate) {
+        this.delegate = delegate;
+    }
 
-	/** Get the channel */
-	public Channel getChannel() {
-		return CHANNEL;
-	}
+    /**
+     * determine whether the channel is connected
+     */
+    public boolean isConnected() {
+        return channel.isConnected();
+    }
 
+    /**
+     * determine whether the channel is valid (has a record and is connected)
+     */
+    public boolean isValid() {
+        return latestRecord != null && channel.isConnected();
+    }
 
-	/** set the delegate */
-	public void setDelegate( final ScanChannelMonitorDelegate delegate ) {
-		_delegate = delegate;
-	}
+    /**
+     * Get the latest record
+     */
+    public ChannelTimeRecord getLatestRecord() {
+        return latestRecord;
+    }
 
+    /**
+     * stop the monitor
+     */
+    public void stop() {
+        synchronized (syncLock) {
+            channel.removeConnectionListener(eventHandler);
+            allowsMonitor = false;
 
-	/** determine whether the channel is connected */
-	public boolean isConnected() {
-		return CHANNEL.isConnected();
-	}
+            if (monitor != null) {
+                monitor.clear();
+            }
+            monitor = null;
+        }
+    }
 
+    /**
+     * start the monitor
+     */
+    public void start() {
+        synchronized (syncLock) {
+            allowsMonitor = true;
+            channel.addConnectionListener(eventHandler);
+            channel.requestConnection();
+        }
+    }
 
-	/** determine whether the channel is valid (has a record and is connected) */
-	public boolean isValid() {
-		return _latestRecord != null && CHANNEL.isConnected();
-	}
+    /**
+     * start the monitor
+     */
+    public void createMonitor() {
+        synchronized (syncLock) {
+            if (allowsMonitor && viable && monitor == null) {
+                try {
+                    monitor = channel.addMonitorValTime(eventHandler, Monitor.VALUE);
+                    Channel.flushIO();
+                } catch (MonitorException exception) {
+                    LOGGER.log(Level.SEVERE, "Exception creating monitor for channel: " + channel.getId(), exception);
+                }
+            }
+        }
+    }
 
+    /**
+     * Dispose of the channel
+     */
+    public void dispose() {
+        synchronized (syncLock) {
+            viable = false;
+            delegate = null;
 
-	/** Get the latest record */
-	public ChannelTimeRecord getLatestRecord() {
-		return _latestRecord;
-	}
+            stop();
+        }
+    }
 
+    /**
+     * process events
+     */
+    private class EventHandler implements ConnectionListener, IEventSinkValTime {
 
-	/** stop the monitor */
-	public void stop() {
-		synchronized( SYNC_LOCK	) {
-			CHANNEL.removeConnectionListener( EVENT_HANDLER );
-			_allowsMonitor = false;
+        /**
+         * Indicates that a connection to the specified channel has been
+         * established.
+         *
+         * @param channel The channel which has been connected.
+         */
+        @Override
+        public void connectionMade(final Channel channel) {
+            createMonitor();
 
-			final Monitor monitor = _monitor;
-			_monitor = null;
-			if ( monitor != null )  monitor.clear();
-		}
-	}
+            if (delegate != null) {
+                delegate.channelStateChanged(ScanChannelMonitor.this, latestRecord != null);
+            }
+        }
 
+        /**
+         * Indicates that a connection to the specified channel has been
+         * dropped.
+         *
+         * @param channel The channel which has been disconnected.
+         */
+        @Override
+        public void connectionDropped(final Channel channel) {
+            if (delegate != null) {
+                delegate.channelStateChanged(ScanChannelMonitor.this, false);
+            }
+        }
 
-	/** start the monitor */
-	public void start() {
-		synchronized( SYNC_LOCK	) {
-			_allowsMonitor = true;
-			CHANNEL.addConnectionListener( EVENT_HANDLER );
-			CHANNEL.requestConnection();
-		}
-	}
+        /**
+         * Handle monitor event
+         */
+        @Override
+        public void eventValue(final ChannelTimeRecord channelRecord, final Channel channel) {
+            latestRecord = channelRecord;
 
-
-	/** start the monitor */
-	public void createMonitor() {
-		synchronized( SYNC_LOCK	) {
-			if ( _allowsMonitor && _viable && _monitor == null ) {
-				try {
-					_monitor = CHANNEL.addMonitorValTime( EVENT_HANDLER, Monitor.VALUE );
-					Channel.flushIO();
-				}
-				catch( Exception exception ) {
-					System.err.println( "Exception creating monitor for channel: " + CHANNEL.getId() );
-					exception.printStackTrace();
-				}
-			}
-		}
-	}
-
-
-	/** Dispose of the channel */
-	public void dispose() {
-		synchronized( SYNC_LOCK ) {
-			_viable = false;
-			_delegate = null;
-
-			stop();
-		}
-	}
-
-
-	/** process events */
-	private class EventHandler implements ConnectionListener, IEventSinkValTime {
-		/**
-		 * Indicates that a connection to the specified channel has been established.
-		 * @param channel The channel which has been connected.
-		 */
-		public void connectionMade( final Channel channel ) {
-			createMonitor();
-
-			final ScanChannelMonitorDelegate delegate = _delegate;
-			if ( delegate != null ) {
-				delegate.channelStateChanged( ScanChannelMonitor.this, _latestRecord != null );
-			}
-		}
-
-
-		/**
-		 * Indicates that a connection to the specified channel has been dropped.
-		 * @param channel The channel which has been disconnected.
-		 */
-		public void connectionDropped( final Channel channel ) {
-			final ScanChannelMonitorDelegate delegate = _delegate;
-			if ( delegate != null ) {
-				delegate.channelStateChanged( ScanChannelMonitor.this, false );
-			}
-		}
-
-
-		/** Handle monitor event */
-		public void eventValue( final ChannelTimeRecord record, final Channel channel ) {
-			_latestRecord = record;
-			//System.out.println( "Captured record: " + record );
-
-			final ScanChannelMonitorDelegate delegate = _delegate;
-			if ( delegate != null ) {
-				delegate.channelRecordUpdate( ScanChannelMonitor.this, record );		// forward the event to the delegate
-			}
-		}
-	}
+            if (delegate != null) {
+                // forward the event to the delegate
+                delegate.channelRecordUpdate(ScanChannelMonitor.this, channelRecord);
+            }
+        }
+    }
 }

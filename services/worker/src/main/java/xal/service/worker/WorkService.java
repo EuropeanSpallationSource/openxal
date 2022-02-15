@@ -7,66 +7,78 @@
  * Oak Ridge National Laboratory
  * Oak Ridge, TN 37830
  */
-
 package xal.service.worker;
 
 import java.util.Date;
 
-
 /**
  * Demo service providing demo work.
- * @author  tap
+ *
+ * @author tap
  */
 public class WorkService implements Working {
-    /** add two numbers */
-    public double add( final double summand, final double addend ) {
+
+    /**
+     * add two numbers
+     */
+    @Override
+    public double add(final double summand, final double addend) {
         return summand + addend;
     }
 
+    /**
+     * add the integers and return the resulting sum
+     */
+    @Override
+    public int sumIntegers(final int[] summands) {
+        int sum = 0;
 
-	/** add the integers and return the resulting sum */
-	public int sumIntegers( final int[] summands ) {
-		int sum = 0;
+        for (final int summand : summands) {
+            sum += summand;
+        }
 
-		for ( final int summand : summands ) {
-			sum += summand;
-		}
+        return sum;
+    }
 
-		return sum;
-	}
-
-    
-    /** get the launch time */
+    /**
+     * get the launch time
+     */
+    @Override
     public Date getLaunchTime() {
         return Main.getLaunchTime();
     }
 
-	
-	/** calculate the sinusoid waveform from zero to 2pi */
-	public double[] generateSinusoid( final double amplitude, final double frequency, final double phase, final int numPoints ) {
-		final double omega = 2 * Math.PI * frequency;
-		final double step = 1.0 / ( numPoints - 1 );
+    /**
+     * calculate the sinusoid waveform from zero to 2pi
+     */
+    @Override
+    public double[] generateSinusoid(final double amplitude, final double frequency, final double phase, final int numPoints) {
+        final double omega = 2 * Math.PI * frequency;
+        final double step = 1.0 / (numPoints - 1);
 
-		final double[] waveform = new double[numPoints];
-		double x = 0.0;
-		for ( int windex = 0 ; windex < numPoints ; windex++ ) {
-			waveform[windex] = amplitude * Math.sin( omega * x + phase );
-			x += step;
-		}
+        final double[] waveform = new double[numPoints];
+        double x = 0.0;
+        for (int windex = 0; windex < numPoints; windex++) {
+            waveform[windex] = amplitude * Math.sin(omega * x + phase);
+            x += step;
+        }
 
-		return waveform;
-	}
+        return waveform;
+    }
 
+    /**
+     * say hello to the person with the specified name
+     */
+    @Override
+    public String sayHelloTo(final String name) {
+        return name != null && !name.isEmpty() ? "Hello, " + name + "!" : "Greetings!";
+    }
 
-	/** say hello to the person with the specified name */
-	public String sayHelloTo( final String name ) {
-		return name != null && !name.isEmpty() ? "Hello, " + name + "!" : "Greetings!";
-	}
-
-    
-    /** shutdown the service */
-    public void shutdown( final int code ) {
-        Main.shutdown( code );
+    /**
+     * shutdown the service
+     */
+    @Override
+    public void shutdown(final int code) {
+        Main.shutdown(code);
     }
 }
-

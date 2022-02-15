@@ -33,7 +33,7 @@ public abstract class OnlineModelEvaluator implements Evaluator {
 
     private static final Logger LOGGER = Logger.getLogger(OnlineModelEvaluator.class.getName());
 
-    public OnlineModelEvaluator(Matcher matcher) {
+    protected OnlineModelEvaluator(Matcher matcher) {
         this.matcher = matcher;
 
         try {
@@ -62,9 +62,8 @@ public abstract class OnlineModelEvaluator implements Evaluator {
             LOGGER.log(Level.SEVERE, "Model exception.", e);
         }
 
-        try {
-            Formatter f1 = new Formatter(file + ".dat", "UTF8", Locale.ENGLISH);
-            Formatter f2 = new Formatter(file + ".phi.dat", "UTF8", Locale.ENGLISH);
+        try (Formatter f1 = new Formatter(file + ".dat", "UTF8", Locale.ENGLISH);
+                Formatter f2 = new Formatter(file + ".phi.dat", "UTF8", Locale.ENGLISH)) {
 
             Trajectory<EnvelopeProbeState> trajectory = probe.getTrajectory();
 
@@ -108,9 +107,6 @@ public abstract class OnlineModelEvaluator implements Evaluator {
                     phil = null;
                 }
             }
-
-            f1.close();
-            f2.close();
         } catch (FileNotFoundException | UnsupportedEncodingException e) {
             LOGGER.log(Level.SEVERE, "Problem writing the file.", e);
         }

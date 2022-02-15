@@ -10,11 +10,8 @@
 package xal.extension.solver;
 
 import xal.extension.solver.algorithm.*;
-import xal.extension.solver.constraint.*;
-import xal.extension.solver.market.*;
 
 import java.util.*;
-
 
 /**
  * Trial keeps track of trial points.
@@ -23,220 +20,239 @@ import java.util.*;
  * @author t6p
  */
 public class Trial {
-	/** trial point of variable values */
-	protected final TrialPoint _trialPoint;
-	
-	/** the problem being solved */
-	protected final Problem _problem;
-	
-	/** the algorithm that generated this trial */
-	protected final SearchAlgorithm _searchAlgorithm;
-	
-	/** a veto if any */
-	protected TrialVeto _veto;
-	
-	/** table of objective scores */
-	protected final Map<Objective,Score> OBJECTIVE_SCORES;
-	
-	/** overall satisfaction provided by some solution judges */
-	protected double _satisfaction;
-	
-	/** optional, custom information that an objective or evaluator may choose to store here for convenience */
-	protected Object _customInfo;
 
-	
-	/**
-	 * Primary Constructor.
-	 * @param problem              the problem being solved
-	 * @param trialPoint           the trial point of variable values
-	 * @param algorithm            the algorithm that generated this trial
-	 */
-	public Trial( final Problem problem, final TrialPoint trialPoint, final SearchAlgorithm algorithm ) {
-		_problem = problem;
-		_trialPoint = trialPoint;
-		_searchAlgorithm = algorithm;
-		OBJECTIVE_SCORES = new HashMap<Objective,Score>();
-		_veto = null;
-	}
-	
-	
-	/**
-	 * Constructor.
-	 * @param problem              the problem being solved
-	 * @param trialPoint           the trial point of variable values
-	 */
-	public Trial( final Problem problem, final TrialPoint trialPoint ) {
-		this( problem, trialPoint, null );
-	}
-	
+    /**
+     * trial point of variable values
+     */
+    protected final TrialPoint trialPoint;
 
-	/**
-	 * Veto the trial.
-	 * @param veto the veto
-	 */
-	public void vetoTrial( final TrialVeto veto ) {
-		_veto = veto;
-	}
-	
-	
-	/**
-	 * Get the trial veto if any
-	 * @return the trial veto or null if there is none
-	 */
-	public TrialVeto getVeto() {
-		return _veto;
-	}
-	
-	
-	/**
-	 * Determine if this trial has been vetoed
-	 * @return true if the trial has been vetoed and false if not
-	 */
-	public boolean isVetoed() {
-		return _veto != null;
-	}
-	
+    /**
+     * the problem being solved
+     */
+    protected final Problem problem;
 
-	/**
-	 * Set the scores of a trial point.
-	 * @param score  The new score value
-	 */
-	public void setScore( final Score score ) {
-		Objective objective = score.getObjective();
-		OBJECTIVE_SCORES.put( objective, score );
-	}
+    /**
+     * the algorithm that generated this trial
+     */
+    protected final SearchAlgorithm searchAlgorithm;
 
+    /**
+     * a veto if any
+     */
+    protected TrialVeto veto;
 
-	/**
-	 * Set the scores of a trial point.
-	 * @param objective  The new score value
-	 * @param value      The new score value
-	 */
-	public void setScore( final Objective objective, final double value ) {
-		setScore( new Score( objective, value ) );
-	}
+    /**
+     * table of objective scores
+     */
+    protected final Map<Objective, Score> objectiveScores;
 
+    /**
+     * overall satisfaction provided by some solution judges
+     */
+    protected double satisfaction;
 
-	/**
-	 * Get the score corresponding to the specified objective.
-	 * @param objective  Description of the Parameter
-	 * @return             The score of the specified objective.
-	 */
-	public Score getScore( final Objective objective ) {
-		return OBJECTIVE_SCORES.get( objective );
-	}
+    /**
+     * optional, custom information that an objective or evaluator may choose to
+     * store here for convenience
+     */
+    protected Object customInfo;
 
+    /**
+     * Primary Constructor.
+     *
+     * @param problem the problem being solved
+     * @param trialPoint the trial point of variable values
+     * @param algorithm the algorithm that generated this trial
+     */
+    public Trial(final Problem problem, final TrialPoint trialPoint, final SearchAlgorithm algorithm) {
+        this.problem = problem;
+        this.trialPoint = trialPoint;
+        searchAlgorithm = algorithm;
+        objectiveScores = new HashMap<>();
+        veto = null;
+    }
 
-	/**
-	 * Get the satisfaction for a specific objective.
-	 * @param objective  The objective to get.
-	 * @return             The satisfaction.
-	 */
-	public double getSatisfaction( final Objective objective ) {
-		final Score score = OBJECTIVE_SCORES.get( objective );
-		final double satisfaction = score.getSatisfaction();
+    /**
+     * Constructor.
+     *
+     * @param problem the problem being solved
+     * @param trialPoint the trial point of variable values
+     */
+    public Trial(final Problem problem, final TrialPoint trialPoint) {
+        this(problem, trialPoint, null);
+    }
 
-		if ( !validateSatisfaction( satisfaction ) ) {
-			throw new RuntimeException( "Objective \"" + objective.getName() + "\" has satisfaction of " + satisfaction + " which is outside the accepted range of 0 to 1." );
-		}
+    /**
+     * Veto the trial.
+     *
+     * @param veto the veto
+     */
+    public void vetoTrial(final TrialVeto veto) {
+        this.veto = veto;
+    }
 
-		return satisfaction;
-	}
-	
-	
-	/**
-	 * Specify the overall satisfaction of this solution.
-	 * @param satisfaction the overall satisfaction of this solution
-	 */
-	public void setSatisfaction( final double satisfaction ) {
-		if ( !validateSatisfaction( satisfaction ) ) {
-			throw new IllegalArgumentException( "Attempting to set trial satisfaction to " + satisfaction + " which is outside the accepted range of 0 to 1." );
-		}
+    /**
+     * Get the trial veto if any
+     *
+     * @return the trial veto or null if there is none
+     */
+    public TrialVeto getVeto() {
+        return veto;
+    }
 
-		_satisfaction = satisfaction;
-	}
+    /**
+     * Determine if this trial has been vetoed
+     *
+     * @return true if the trial has been vetoed and false if not
+     */
+    public boolean isVetoed() {
+        return veto != null;
+    }
 
+    /**
+     * Set the scores of a trial point.
+     *
+     * @param score The new score value
+     */
+    public void setScore(final Score score) {
+        Objective objective = score.getObjective();
+        objectiveScores.put(objective, score);
+    }
 
-	/** Validate that the satisfaciton is within the accepted bounds of 0 to 1. */
-	static private boolean validateSatisfaction( final double satisfaction ) {
-		return satisfaction >= 0 && satisfaction <= 1.0;
-	}
-	
-	
-	/**
-	 * Get the overall satisfaction which many solution judges provide.
-	 * @return the overall satisfaction of this solution
-	 */
-	public double getSatisfaction()  {
-		return _satisfaction;
-	}
-	
+    /**
+     * Set the scores of a trial point.
+     *
+     * @param objective The new score value
+     * @param value The new score value
+     */
+    public void setScore(final Objective objective, final double value) {
+        setScore(new Score(objective, value));
+    }
 
-	/**
-	 * Get the problem.
-	 * @return   The problem.
-	 */
-	public Problem getProblem() {
-		return _problem;
-	}
+    /**
+     * Get the score corresponding to the specified objective.
+     *
+     * @param objective Description of the Parameter
+     * @return The score of the specified objective.
+     */
+    public Score getScore(final Objective objective) {
+        return objectiveScores.get(objective);
+    }
 
+    /**
+     * Get the satisfaction for a specific objective.
+     *
+     * @param objective The objective to get.
+     * @return The satisfaction.
+     */
+    public double getSatisfaction(final Objective objective) {
+        final Score score = objectiveScores.get(objective);
+        final double newSatisfaction = score.getSatisfaction();
 
-	/**
-	 * Get the trial point.
-	 * @return   The trial point.
-	 */
-	public TrialPoint getTrialPoint() {
-		return _trialPoint;
-	}
+        if (!validateSatisfaction(newSatisfaction)) {
+            throw new RuntimeException("Objective \"" + objective.getName() + "\" has satisfaction of " + newSatisfaction + " which is outside the accepted range of 0 to 1.");
+        }
 
+        return newSatisfaction;
+    }
 
-	/**
-	 * Get the search algorithm that generated this trial.
-	 * @return   The search algorithm.
-	 */
-	public SearchAlgorithm getAlgorithm() {
-		return _searchAlgorithm;
-	}
+    /**
+     * Specify the overall satisfaction of this solution.
+     *
+     * @param satisfaction the overall satisfaction of this solution
+     */
+    public void setSatisfaction(final double satisfaction) {
+        if (!validateSatisfaction(satisfaction)) {
+            throw new IllegalArgumentException("Attempting to set trial satisfaction to " + satisfaction + " which is outside the accepted range of 0 to 1.");
+        }
 
+        this.satisfaction = satisfaction;
+    }
 
-	/**
-	 * Get the scores keyed by objective
-	 * @return   Table of scores keyed by objective.
-	 */
-	public Map<Objective,Score> getScores() {
-		return OBJECTIVE_SCORES;
-	}
-	
-	
-	/**
-	 * Get optional, custom information (if any) that was provided for convenience.
-	 * @return optional, custom information
-	 */
-	public Object getCustomInfo() {
-		return _customInfo;
-	}
-	
-	
-	/**
-	 * Provide optional, custom information for convenience
-	 * @param customInfo the custom information to provide
-	 */
-	public void setCustomInfo( final Object customInfo ) {
-		_customInfo = customInfo;
-	}
+    /**
+     * Validate that the satisfaciton is within the accepted bounds of 0 to 1.
+     */
+    private static boolean validateSatisfaction(final double satisfaction) {
+        return satisfaction >= 0 && satisfaction <= 1.0;
+    }
 
+    /**
+     * Get the overall satisfaction which many solution judges provide.
+     *
+     * @return the overall satisfaction of this solution
+     */
+    public double getSatisfaction() {
+        return satisfaction;
+    }
 
-	/**
-	 * A string for displaying a trial. The string consist of a trial point and a score.
-	 * @return   The string representation of a trial.
-	 */
-	public String toString() {
-		StringBuffer buffer = new StringBuffer();
-		buffer.append( "\nTrial Point: " + _trialPoint + "\n " );
-		buffer.append( "Satisfaction: " + _satisfaction + "\n" );
-		buffer.append( "Scores: " + OBJECTIVE_SCORES + "\n" );
+    /**
+     * Get the problem.
+     *
+     * @return The problem.
+     */
+    public Problem getProblem() {
+        return problem;
+    }
 
-		return buffer.toString();
-	}
+    /**
+     * Get the trial point.
+     *
+     * @return The trial point.
+     */
+    public TrialPoint getTrialPoint() {
+        return trialPoint;
+    }
+
+    /**
+     * Get the search algorithm that generated this trial.
+     *
+     * @return The search algorithm.
+     */
+    public SearchAlgorithm getAlgorithm() {
+        return searchAlgorithm;
+    }
+
+    /**
+     * Get the scores keyed by objective
+     *
+     * @return Table of scores keyed by objective.
+     */
+    public Map<Objective, Score> getScores() {
+        return objectiveScores;
+    }
+
+    /**
+     * Get optional, custom information (if any) that was provided for
+     * convenience.
+     *
+     * @return optional, custom information
+     */
+    public Object getCustomInfo() {
+        return customInfo;
+    }
+
+    /**
+     * Provide optional, custom information for convenience
+     *
+     * @param customInfo the custom information to provide
+     */
+    public void setCustomInfo(final Object customInfo) {
+        this.customInfo = customInfo;
+    }
+
+    /**
+     * A string for displaying a trial. The string consist of a trial point and
+     * a score.
+     *
+     * @return The string representation of a trial.
+     */
+    @Override
+    public String toString() {
+        StringBuilder buffer = new StringBuilder();
+        buffer.append("\nTrial Point: ").append(trialPoint).append("\n ");
+        buffer.append("Satisfaction: ").append(satisfaction).append("\n");
+        buffer.append("Scores: ").append(objectiveScores).append("\n");
+
+        return buffer.toString();
+    }
 }
-

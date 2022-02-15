@@ -40,10 +40,9 @@ public class Epics7ChannelTimeRecord extends Epics7ChannelStatusRecord implement
      * Creates new Epics7ChannelStatusRecord
      *
      * @param pvStructure
-     * @param channelName
      */
-    public Epics7ChannelTimeRecord(PVStructure pvStructure, String channelName) {
-        super(pvStructure, channelName);
+    public Epics7ChannelTimeRecord(PVStructure pvStructure) {
+        super(pvStructure);
 
         long seconds = pvStructure.getStructureField(TIMESTAMP_FIELD_NAME).getLongField(SECONDS_FIELD_NAME).get();
         int nanoSeconds = pvStructure.getStructureField(TIMESTAMP_FIELD_NAME).getIntField(NANOSECONDS_FIELD_NAME).get();

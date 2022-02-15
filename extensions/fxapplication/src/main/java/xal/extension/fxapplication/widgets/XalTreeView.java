@@ -246,8 +246,7 @@ public abstract class XalTreeView<T> extends VBox {
     }
 
     protected TreeItem<T> newItem(T node) {
-        TreeItem<T> item = new TreeItem<>(node, getIcon(node));
-        return item;
+        return new TreeItem<>(node, getIcon(node));
     }
 
     protected void addItem(TreeItem<T> item, TreeItem<T> parentItem) {

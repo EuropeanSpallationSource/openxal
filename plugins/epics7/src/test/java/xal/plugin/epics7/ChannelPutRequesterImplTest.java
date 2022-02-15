@@ -42,6 +42,8 @@ import static xal.plugin.epics7.Epics7Channel.TIMESTAMP_FIELD;
  */
 public class ChannelPutRequesterImplTest {
 
+    private static final Logger LOGGER = Logger.getLogger(ChannelPutRequesterImplTest.class.getName());
+
     boolean eventListenerCalled = false;
     boolean putListenerCalled = false;
 
@@ -50,7 +52,7 @@ public class ChannelPutRequesterImplTest {
      */
     @Test
     public void testChannelPutConnect() {
-        System.out.println("channelPutConnect");
+        LOGGER.log(Level.INFO, "channelPutConnect");
         eventListenerCalled = false;
         Status status = StatusFactory.getStatusCreate().getStatusOK();
         ChannelPutImpl channelPut = new ChannelPutImpl();
@@ -75,7 +77,7 @@ public class ChannelPutRequesterImplTest {
      */
     @Test
     public void testPutDone() {
-        System.out.println("putDone");
+        LOGGER.log(Level.INFO, "putDone");
         putListenerCalled = false;
         Status status = null;
         ChannelPut channelPut = null;
@@ -96,7 +98,7 @@ public class ChannelPutRequesterImplTest {
      */
     @Test
     public void testGetRequesterName() {
-        System.out.println("getRequesterName");
+        LOGGER.log(Level.INFO, "getRequesterName");
 
         PutListener listener = (event) -> {
         };
@@ -113,7 +115,7 @@ public class ChannelPutRequesterImplTest {
      */
     @Test
     public void testMessage() {
-        System.out.println("message");
+        LOGGER.log(Level.INFO, "message");
         String message = "Test";
         MessageType messageType = null;
 
@@ -134,14 +136,14 @@ public class ChannelPutRequesterImplTest {
 
     private static class ChannelPutImpl implements ChannelPut {
 
-        public boolean putCalled = false;
-        public boolean getCalled = false;
-        public boolean getChannelCalled = false;
-        public boolean cancelCalled = false;
-        public boolean lastRequestCalled = false;
-        public boolean lockCalled = false;
-        public boolean unlockCalled = false;
-        public boolean destroyCalled = false;
+        private boolean putCalled = false;
+        private boolean getCalled = false;
+        private boolean getChannelCalled = false;
+        private boolean cancelCalled = false;
+        private boolean lastRequestCalled = false;
+        private boolean lockCalled = false;
+        private boolean unlockCalled = false;
+        private boolean destroyCalled = false;
 
         @Override
         public void put(PVStructure pvPutStructure, BitSet bitSet) {

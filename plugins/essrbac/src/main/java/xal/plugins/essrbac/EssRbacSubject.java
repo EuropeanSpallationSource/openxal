@@ -1,6 +1,8 @@
 package xal.plugins.essrbac;
 
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import se.esss.ics.rbac.access.SecurityCallbackAdapter;
 import se.esss.ics.rbac.access.SecurityFacade;
@@ -14,19 +16,21 @@ import xal.rbac.RBACSubject;
 import xal.rbac.RBACUserInfo;
 
 /**
- * Implementation of {@link RBACSubject}. A wrapper to {@link SecurityFacade} for getting permissions,
- * and log out.
- * 
+ * Implementation of {@link RBACSubject}. A wrapper to {@link SecurityFacade}
+ * for getting permissions, and log out.
+ *
  * @version 0.2 28 Jul 2015
  * @author Blaž Kranjc <blaz.kranjc@cosylab.com>
  */
 public class EssRbacSubject implements RBACSubject {
 
+    private static final Logger LOGGER = Logger.getLogger(EssRbacSubject.class.getName());
+
     private Token token;
 
     /**
      * Constructor
-     * 
+     *
      * @param token of the authenticated user.
      */
     EssRbacSubject(Token token) {
@@ -39,7 +43,7 @@ public class EssRbacSubject implements RBACSubject {
             SecurityFacade.getDefaultInstance().logout();
             this.token = null;
         } catch (SecurityFacadeException e) {
-            throw new RBACException(e.getMessage());
+            throw new RBACException(e);
         }
 
     }
@@ -50,9 +54,9 @@ public class EssRbacSubject implements RBACSubject {
         try {
             return SecurityFacade.getDefaultInstance().hasPermission(resource, permission);
         } catch (se.esss.ics.rbac.access.AccessDeniedException e) {
-            throw new AccessDeniedException(e.getMessage());
+            throw new AccessDeniedException(e);
         } catch (SecurityFacadeException e) {
-            throw new RBACException(e.getMessage());
+            throw new RBACException(e);
         }
     }
 
@@ -62,9 +66,9 @@ public class EssRbacSubject implements RBACSubject {
         try {
             return SecurityFacade.getDefaultInstance().hasPermissions(resource, permissions);
         } catch (se.esss.ics.rbac.access.AccessDeniedException e) {
-            throw new AccessDeniedException(e.getMessage());
+            throw new AccessDeniedException(e);
         } catch (SecurityFacadeException e) {
-            throw new RBACException(e.getMessage());
+            throw new RBACException(e);
         }
     }
 
@@ -75,9 +79,9 @@ public class EssRbacSubject implements RBACSubject {
             return new EssExclusiveAccess(SecurityFacade.getDefaultInstance().requestExclusiveAccess(resource,
                     permission, durationInMinutes));
         } catch (se.esss.ics.rbac.access.AccessDeniedException e) {
-            throw new AccessDeniedException(e.getMessage());
+            throw new AccessDeniedException(e);
         } catch (SecurityFacadeException e) {
-            throw new RBACException(e.getMessage());
+            throw new RBACException(e);
         }
     }
 
@@ -85,7 +89,8 @@ public class EssRbacSubject implements RBACSubject {
     public void setAutoLogoutTimeout(final int timeoutInMinutes, final AutoLogoutCallback callback) {
         SecurityFacade.getDefaultInstance().setAutoLogoutTimeout(timeoutInMinutes);
         final EssRbacSubject subject = this;
-        SecurityFacade.getDefaultInstance().setDefaultSecurityCallback(new SecurityCallbackAdapter() {//User is already logged in so we don't need get credentials method.
+        //User is already logged in so we don't need get credentials method.
+        SecurityFacade.getDefaultInstance().setDefaultSecurityCallback(new SecurityCallbackAdapter() {
             @Override
             public boolean autoLogoutConfirm(Token token, int timeoutInSeconds) {
                 return callback.autoLogoutConfirm(subject, timeoutInSeconds);
@@ -99,16 +104,16 @@ public class EssRbacSubject implements RBACSubject {
         try {
             this.token = SecurityFacade.getDefaultInstance().renewToken();
         } catch (SecurityFacadeException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
         }
     }
-    
+
     @Override
     public RBACUserInfo getUserInfo() {
-    	if (token == null) {
-    		return null;
-    	}
-   		return new RBACUserInfo(token.getUsername(), token.getFirstName(), token.getLastName());
+        if (token == null) {
+            return null;
+        }
+        return new RBACUserInfo(token.getUsername(), token.getFirstName(), token.getLastName());
     }
 
 }

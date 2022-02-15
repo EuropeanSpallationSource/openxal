@@ -24,6 +24,8 @@ import gov.aps.jca.dbr.DBR_CTRL_Int;
 import gov.aps.jca.dbr.DBR_CTRL_Short;
 import gov.aps.jca.dbr.DBR_CTRL_String;
 import gov.aps.jca.dbr.DBR_Enum;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.epics.pvdata.copy.CreateRequest;
 import org.epics.pvdata.factory.PVDataFactory;
 import org.epics.pvdata.factory.StandardFieldFactory;
@@ -54,6 +56,8 @@ import xal.plugin.epics7.TestMonitor;
  */
 public class Epics7ServerMonitorTest {
 
+    private static final Logger LOGGER = Logger.getLogger(Epics7ServerMonitorTest.class.getName());
+
     private boolean methodCalled = false;
 
     /**
@@ -61,7 +65,7 @@ public class Epics7ServerMonitorTest {
      */
     @Test
     public void testBegin() throws ConnectionException, MonitorException {
-        System.out.println("begin");
+        LOGGER.log(Level.INFO, "begin");
         Epics7ServerChannelFactory channelFactory = new Epics7ServerChannelFactory();
         Channel channel = channelFactory.newChannel("TestChannel");
 
@@ -84,7 +88,7 @@ public class Epics7ServerMonitorTest {
      */
     @Test
     public void testMonitorConnect() throws ConnectionException, MonitorException {
-        System.out.println("monitorConnect");
+        LOGGER.log(Level.INFO, "monitorConnect");
         Epics7ServerChannelFactory channelFactory = new Epics7ServerChannelFactory();
         Channel channel = channelFactory.newChannel("TestChannel");
 
@@ -94,7 +98,7 @@ public class Epics7ServerMonitorTest {
 
         methodCalled = false;
 
-        instance.monitorConnect(null, MonitorFactory.create(instance.record, instance, CreateRequest.create().createRequest(VALUE_REQUEST)), null);
+        instance.monitorConnect(null, MonitorFactory.create(instance.pvRecord, instance, CreateRequest.create().createRequest(VALUE_REQUEST)), null);
 
         assertEquals(true, methodCalled);
 
@@ -105,7 +109,7 @@ public class Epics7ServerMonitorTest {
      */
     @Test
     public void testMonitorEvent() throws ConnectionException, MonitorException, PutException {
-        System.out.println("monitorEvent");
+        LOGGER.log(Level.INFO, "monitorEvent");
         Epics7ServerChannelFactory channelFactory = new Epics7ServerChannelFactory();
         Channel channel = channelFactory.newChannel("TestChannel");
 
@@ -146,12 +150,14 @@ public class Epics7ServerMonitorTest {
 
                         @Override
                         public BitSet getChangedBitSet() {
-                            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                            //To change body of generated methods, choose Tools | Templates.
+                            throw new UnsupportedOperationException("Not supported yet.");
                         }
 
                         @Override
                         public BitSet getOverrunBitSet() {
-                            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                            //To change body of generated methods, choose Tools | Templates.
+                            throw new UnsupportedOperationException("Not supported yet.");
                         }
                     };
                 } else {
@@ -188,12 +194,14 @@ public class Epics7ServerMonitorTest {
 
                         @Override
                         public BitSet getChangedBitSet() {
-                            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                            //To change body of generated methods, choose Tools | Templates.
+                            throw new UnsupportedOperationException("Not supported yet.");
                         }
 
                         @Override
                         public BitSet getOverrunBitSet() {
-                            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                            //To change body of generated methods, choose Tools | Templates.
+                            throw new UnsupportedOperationException("Not supported yet.");
                         }
                     };
                 } else {
@@ -210,7 +218,7 @@ public class Epics7ServerMonitorTest {
     @Test
 
     public void testPostEvent() throws ConnectionException, MonitorException, PutException {
-        System.out.println("postEvent");
+        LOGGER.log(Level.INFO, "postEvent");
         Epics7ServerChannelFactory channelFactory = new Epics7ServerChannelFactory();
         Channel channel = channelFactory.newChannel("TestChannel");
 
@@ -327,7 +335,7 @@ public class Epics7ServerMonitorTest {
      */
     @Test
     public void testCanceled() throws ConnectionException, MonitorException {
-        System.out.println("canceled");
+        LOGGER.log(Level.INFO, "canceled");
         Epics7ServerChannelFactory channelFactory = new Epics7ServerChannelFactory();
         Channel channel = channelFactory.newChannel("TestChannel");
 

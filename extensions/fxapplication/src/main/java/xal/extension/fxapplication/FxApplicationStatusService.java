@@ -31,7 +31,11 @@
  */
 package xal.extension.fxapplication;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.extension.application.ApplicationStatus;
 
 /**
@@ -43,10 +47,12 @@ import xal.extension.application.ApplicationStatus;
  */
 public class FxApplicationStatusService implements ApplicationStatus {
 
-    private FxApplication _application = null;
+    private static final Logger LOGGER = Logger.getLogger(FxApplicationStatusService.class.getName());
+
+    private FxApplication application = null;
 
     public FxApplicationStatusService(FxApplication application) {
-        _application = application;
+        this.application = application;
     }
 
     /**
@@ -74,7 +80,7 @@ public class FxApplicationStatusService implements ApplicationStatus {
      */
     @Override
     public void showAllWindows() {
-        _application.showAllWindows();
+        application.showAllWindows();
     }
 
     /**
@@ -92,7 +98,7 @@ public class FxApplicationStatusService implements ApplicationStatus {
      */
     @Override
     public void quit(final int code) {
-        _application.quit();
+        application.quit();
     }
 
     /**
@@ -113,8 +119,9 @@ public class FxApplicationStatusService implements ApplicationStatus {
     @Override
     public String getHostName() {
         try {
-            return java.net.InetAddress.getLocalHost().getHostName();
-        } catch (java.net.UnknownHostException exception) {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException exception) {
+            LOGGER.log(Level.SEVERE, null, exception);
             return "";
         }
     }
@@ -126,7 +133,7 @@ public class FxApplicationStatusService implements ApplicationStatus {
      */
     @Override
     public String getApplicationName() {
-        return _application.getApplicationName();
+        return application.getApplicationName();
     }
 
     /**
@@ -138,7 +145,7 @@ public class FxApplicationStatusService implements ApplicationStatus {
      */
     @Override
     public Date getLaunchTime() {
-        return _application.getLaunchTime();
+        return application.getLaunchTime();
     }
 
     /**

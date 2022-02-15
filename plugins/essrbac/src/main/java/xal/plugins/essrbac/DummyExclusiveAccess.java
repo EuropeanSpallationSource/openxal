@@ -12,8 +12,7 @@ import xal.rbac.RBACException;
  * @version 0.1 28 Jul 2015
  * @author Blaz Kranjc <blaz.kranjc@cosylab.com>
  */
-public class DummyExclusiveAccess extends ExclusiveAccess{
-
+public class DummyExclusiveAccess extends ExclusiveAccess {
 
     protected DummyExclusiveAccess(String resource, String permission, int expirationDate) {
         super(resource, permission, new Date(expirationDate * 60 * 1000 + System.currentTimeMillis()));
@@ -21,7 +20,7 @@ public class DummyExclusiveAccess extends ExclusiveAccess{
 
     @Override
     public void releaseExclusiveAccess() throws AccessDeniedException, RBACException {
-        return;
+        // Do nothing
     }
 
 }

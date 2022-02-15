@@ -29,12 +29,13 @@ public class ElementFactory {
     private ElementFactory() {
     }
 
-	/**
-	 * Add channels for a BPM to the channelSuite.
-	 * @param name BPM name.
-	 * @param channelSuite Target channelSuite.
-	 */
-	private static void addBPMChannels(String name, ChannelSuite channelSuite) {
+    /**
+     * Add channels for a BPM to the channelSuite.
+     *
+     * @param name BPM name.
+     * @param channelSuite Target channelSuite.
+     */
+    private static void addBPMChannels(String name, ChannelSuite channelSuite) {
         name = name.replace('_', ':');
         channelSuite.putChannel(BPM.X_AVG_HANDLE, name + ":XAvg", false);
         channelSuite.putChannel(BPM.Y_AVG_HANDLE, name + ":YAvg", false);
@@ -223,20 +224,20 @@ public class ElementFactory {
      * @param alpha Bend angle in degrees.
      * @param k beta*gamma*Er/(e0*c).
      * @param rho Curvature radius in meter.
-     * @param entry_angle Entry angle in degrees.
-     * @param exit_angle Exit angle in degrees.
+     * @param entryAngle Entry angle in degrees.
+     * @param exitAngle Exit angle in degrees.
      * @param quadComp Quadrupole component error on dipole.
      * @param aper Aperture details.
      * @param ps Power supply for the magnet. Can be null.
      * @param position Position of the magnet in the accelerator.
      * @return Bend object.
      */
-    public static Bend createBend(String name, double alpha, double k, double rho, double entry_angle,
-            double exit_angle, double quadComp, ApertureBucket aper, MagnetMainSupply ps, double position) {
+    public static Bend createBend(String name, double alpha, double k, double rho, double entryAngle,
+            double exitAngle, double quadComp, ApertureBucket aper, MagnetMainSupply ps, double position) {
 
         double len = Math.abs(rho * alpha * Math.PI / 180.0);
 
-        double B0 = k / rho * Math.signum(alpha);
+        double b0 = k / rho * Math.signum(alpha);
 
         Bend bend = new Bend(name);
         addElectromagnetChannels(name, "B", bend.channelSuite());
@@ -247,11 +248,11 @@ public class ElementFactory {
         bend.setLength(len);
 
         DipoleBucket dipoleBucket = ((DipoleBucket) bend.getMagBucket());
-        dipoleBucket.setDipoleEntrRotAngle(-entry_angle);
+        dipoleBucket.setDipoleEntrRotAngle(-entryAngle);
         dipoleBucket.setBendAngle(alpha);
         dipoleBucket.setPathLength(len);
-        dipoleBucket.setDipoleExitRotAngle(-exit_angle);
-        bend.setDfltField(B0);
+        dipoleBucket.setDipoleExitRotAngle(-exitAngle);
+        bend.setDfltField(b0);
         dipoleBucket.setDipoleQuadComponent(quadComp);
         bend.setAper(aper);
 
@@ -290,15 +291,15 @@ public class ElementFactory {
      * @param name Name of the RF cavity.
      * @param length Length of the cavity in meters.
      * @param node Node to include in the cavity.
-     * @param Phis Phase.
+     * @param phiS Phase.
      * @param amplitude Amplitude.
      * @param frequency Frequency at the start of the element.
      * @param position Position of the cavity.
      * @return RfCavity object.
      */
-    public static RfCavity createRfCavity(String name, double length, AcceleratorNode node, double Phis, double amplitude,
+    public static RfCavity createRfCavity(String name, double length, AcceleratorNode node, double phiS, double amplitude,
             double frequency, double position) {
-        return createRfCavity(name, length, new AcceleratorNode[]{node}, Phis, amplitude, frequency, position);
+        return createRfCavity(name, length, new AcceleratorNode[]{node}, phiS, amplitude, frequency, position);
     }
 
     /**
@@ -308,13 +309,13 @@ public class ElementFactory {
      * @param name Name of the RF cavity.
      * @param length Length of the cavity in meters.
      * @param nodes Nodes to include in the cavity.
-     * @param Phis Phase.
+     * @param phiS Phase.
      * @param amplitude Amplitude.
      * @param frequency Frequency at the start of the element.
      * @param position Position of the cavity.
      * @return RfCavity object.
      */
-    public static RfCavity createRfCavity(String name, double length, AcceleratorNode[] nodes, double Phis, double amplitude,
+    public static RfCavity createRfCavity(String name, double length, AcceleratorNode[] nodes, double phiS, double amplitude,
             double frequency, double position) {
         RfCavity cavity = new RfCavity(name);
         addRFCavityChannels(name + ":Amp", name + ":Phs", cavity.channelSuite());
@@ -322,7 +323,7 @@ public class ElementFactory {
             cavity.addNode(gap);
         }
 
-        cavity.getRfField().setPhase(Phis);
+        cavity.getRfField().setPhase(phiS);
         cavity.getRfField().setAmplitude(amplitude);
         cavity.getRfField().setFrequency(frequency);
         cavity.setPosition(position);

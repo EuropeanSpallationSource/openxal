@@ -16,118 +16,117 @@ import eu.ess.bled.devices.lattice.installation.CorrectionElement;
  * element does not depend to a {@link CorrectionElement} and it can resides on
  * its own, but if there is a {@link CorrectionElement} that depends on this
  * {@link BeamlineElement}, those corrections need to be taken into account.
- * 
+ *
  * @author <a href="mailto:jaka.bobnar@cosylab.com">Jaka Bobnar</a>
  */
 public class BeamlineElement extends Subsystem {
 
-	/**
-	 * <code>ApertureType</code> describes different types of apertures.
-	 * 
-	 * @author <a href="mailto:jaka.bobnar@cosylab.com">Jaka Bobnar</a>
-	 */
-	public static enum ApertureType {
-		RECTANGULAR(0), CIRCULAR(1), PERPERPOT_MODE(2), RECTANGULAR_TO_BEAM_FRACTION(3), HORIZONTAL_FINGER(4), VERTICAL_FINGER(
-				5);
+    /**
+     * <code>ApertureType</code> describes different types of apertures.
+     *
+     * @author <a href="mailto:jaka.bobnar@cosylab.com">Jaka Bobnar</a>
+     */
+    public enum ApertureType {
+        RECTANGULAR(0), CIRCULAR(1), PERPERPOT_MODE(2), RECTANGULAR_TO_BEAM_FRACTION(3), HORIZONTAL_FINGER(4), VERTICAL_FINGER(
+                5);
 
-		private int val;
+        private int val;
 
-		ApertureType(int val) {
-			this.val = val;
-		}
+        ApertureType(int val) {
+            this.val = val;
+        }
 
-		/**
-		 * Returns the type that corresponds the given int value.
-		 * 
-		 * @param val
-		 *            the requested value
-		 * @return the enum type
-		 */
-		public static ApertureType toEnum(int val) {
-			return values()[val];
-		}
+        /**
+         * Returns the type that corresponds the given int value.
+         *
+         * @param val the requested value
+         * @return the enum type
+         */
+        public static ApertureType toEnum(int val) {
+            return values()[val];
+        }
 
-		/**
-		 * Returns the integer representation of this type.
-		 * 
-		 * @return the integer value
-		 */
-		public int getIntegerValue() {
-			return val;
-		}
-	}
+        /**
+         * Returns the integer representation of this type.
+         *
+         * @return the integer value
+         */
+        public int getIntegerValue() {
+            return val;
+        }
+    }
 
-	private static final long serialVersionUID = 2130649385503728900L;
-	private Double length;
-	private Double opticalLength;
-	private Double position;
-	private Double apertureY;
-	private Double apertureX;
-	private ApertureType apertureType;
-	private CorrectionElement correctionElement;
-	private Collection<BeamlineElementPropertyValue> properties;
+    private static final long serialVersionUID = 2130649385503728900L;
+    private Double length;
+    private Double opticalLength;
+    private Double position;
+    private Double apertureY;
+    private Double apertureX;
+    private ApertureType apertureType;
+    private CorrectionElement correctionElement;
+    private Collection<BeamlineElementPropertyValue> properties;
 
-	public Double getLength() {
-		return length;
-	}
+    public Double getLength() {
+        return length;
+    }
 
-	public void setLength(Double length) {
-		this.length = length;
-	}
+    public void setLength(Double length) {
+        this.length = length;
+    }
 
-	public Double getPosition() {
-		return position;
-	}
+    public Double getPosition() {
+        return position;
+    }
 
-	public void setPosition(Double position) {
-		this.position = position;
-	}
+    public void setPosition(Double position) {
+        this.position = position;
+    }
 
-	public Double getApertureY() {
-		return apertureY;
-	}
+    public Double getApertureY() {
+        return apertureY;
+    }
 
-	public void setApertureY(Double apertureY) {
-		this.apertureY = apertureY;
-	}
+    public void setApertureY(Double apertureY) {
+        this.apertureY = apertureY;
+    }
 
-	public Double getApertureX() {
-		return apertureX;
-	}
+    public Double getApertureX() {
+        return apertureX;
+    }
 
-	public void setApertureX(Double apertureX) {
-		this.apertureX = apertureX;
-	}
+    public void setApertureX(Double apertureX) {
+        this.apertureX = apertureX;
+    }
 
-	public void setOpticalLength(Double opticalLength) {
-		this.opticalLength = opticalLength;
-	}
+    public void setOpticalLength(Double opticalLength) {
+        this.opticalLength = opticalLength;
+    }
 
-	public Double getOpticalLength() {
-		return opticalLength;
-	}
+    public Double getOpticalLength() {
+        return opticalLength;
+    }
 
-	public ApertureType getApertureType() {
-		return apertureType;
-	}
+    public ApertureType getApertureType() {
+        return apertureType;
+    }
 
-	public void setApertureType(ApertureType apertureType) {
-		this.apertureType = apertureType;
-	}
+    public void setApertureType(ApertureType apertureType) {
+        this.apertureType = apertureType;
+    }
 
-	public CorrectionElement getCorrectionElement() {
-		return correctionElement;
-	}
+    public CorrectionElement getCorrectionElement() {
+        return correctionElement;
+    }
 
-	public void setCorrectionElement(CorrectionElement correctionElement) {
-		this.correctionElement = correctionElement;
-	}
+    public void setCorrectionElement(CorrectionElement correctionElement) {
+        this.correctionElement = correctionElement;
+    }
 
-	public Collection<BeamlineElementPropertyValue> getProperties() {
-		return properties;
-	}
+    public Collection<BeamlineElementPropertyValue> getProperties() {
+        return properties;
+    }
 
-	public void setProperties(Collection<BeamlineElementPropertyValue> properties) {
-		this.properties = properties;
-	}
+    public void setProperties(Collection<BeamlineElementPropertyValue> properties) {
+        this.properties = properties;
+    }
 }

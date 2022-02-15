@@ -3,114 +3,129 @@
  *
  * Created on May 20, 2003, 12:37 PM
  */
-
 package xal.extension.application.smf;
 
+import java.awt.Component;
 import xal.ca.ChannelFactory;
 import xal.smf.*;
 import xal.smf.data.*;
 import xal.extension.application.*;
-import xal.tools.xml.XmlDataAdaptor;
 
 import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import javax.swing.JFileChooser;
-
+import xal.tools.xml.XmlDataAdaptor.WriteException;
 
 /**
- * AcceleratorDocument is a subclass of XalDocument for accelerator based applications.
- * @author  tap
+ * AcceleratorDocument is a subclass of XalDocument for accelerator based
+ * applications.
+ *
+ * @author tap
  */
-abstract public class AcceleratorDocument extends XalDocument {
+public abstract class AcceleratorDocument extends XalDocument {
+
+    private static final String USE_DEFAULT_ACCELERATOR = "Use the Default Accelerator";
+    private static final String SELECT_ACCELERATOR = "Select an Accelerator...";
+    private static final String CANCEL_OPTION = "Cancel";
+
+    private static final Logger LOGGER = Logger.getLogger(AcceleratorDocument.class.getName());
+
     protected Accelerator accelerator;
     protected AcceleratorSeq selectedSequence;
     protected String acceleratorFilePath;
     protected List<AcceleratorSeq> selectedSequenceList;
 
-
-    /** Creates a new instance of AcceleratorDocument */
-    public AcceleratorDocument() {
+    /**
+     * Creates a new instance of AcceleratorDocument
+     */
+    protected AcceleratorDocument() {
         super();
         accelerator = null;
         acceleratorFilePath = null;
-        selectedSequenceList = new ArrayList<AcceleratorSeq>();
+        selectedSequenceList = new ArrayList<>();
     }
 
-
     /**
-     * Get the channel factory which is used to instantiate the NEXT accelerator within this document.
-     * Note that this channel factory does not necessarily match the channel factory of the current accelerator in this document.
-     * The base AcceleratorDocument class returns ChannelFactory.defaultFactory().
-     * Subclasses may override this method to provide a custom channel factory if desired.
+     * Get the channel factory which is used to instantiate the NEXT accelerator
+     * within this document. Note that this channel factory does not necessarily
+     * match the channel factory of the current accelerator in this document.
+     * The base AcceleratorDocument class returns
+     * ChannelFactory.defaultFactory(). Subclasses may override this method to
+     * provide a custom channel factory if desired.
+     *
      * @return the channel factory to initialize a new accelerator
      */
     public ChannelFactory nextChannelFactory() {
         return ChannelFactory.defaultFactory();
     }
 
-
     /**
      * Get the accelerator window managed by this document
+     *
      * @return this document's accelerator window
      */
     public AcceleratorWindow getAcceleratorWindow() {
-        return (AcceleratorWindow)getMainWindow();
+        return (AcceleratorWindow) getMainWindow();
     }
 
-
-    /** Generate and set the title for this document. */
+    /**
+     * Generate and set the title for this document.
+     */
+    @Override
     public void generateDocumentTitle() {
         final String filePath = getDisplayFilePath();
         final String title = selectedSequence != null ? " (" + selectedSequence.getId() + ") - " + filePath : filePath;
-        setTitle( title );
+        setTitle(title);
     }
 
-
     /**
-     * Get the prefix for a new file (precedes timestamp) defaulting to the selected sequence ID if any or the super class's default if no sequence is selected.
+     * Get the prefix for a new file (precedes timestamp) defaulting to the
+     * selected sequence ID if any or the super class's default if no sequence
+     * is selected.
+     *
      * @return prefix for a new file
      */
+    @Override
     public String getNewFileNamePrefix() {
-        return selectedSequence != null ? selectedSequence.getId().replace( ":", "-" ) : super.getNewFileNamePrefix();
+        return selectedSequence != null ? selectedSequence.getId().replace(":", "-") : super.getNewFileNamePrefix();
     }
-
 
     /**
-     * Attempt to load the accelerator with the specified path and if none exists, then request a substitute accelerator from the user.
-     * @param filePath file path to the accelerator for which to first attempt to load
+     * Attempt to load the accelerator with the specified path and if none
+     * exists, then request a substitute accelerator from the user.
+     *
+     * @param filePath file path to the accelerator for which to first attempt
+     * to load
      */
-    public Accelerator applySelectedAcceleratorWithDefaultPath( final String filePath ) {
-        if ( filePath == null || filePath.length() == 0 ) {
-            return requestAndSetAccelerator( "No accelerator file has been specified. \n Please select an accelerator file." );
-        }
-        else if ( new File( filePath ).exists() ) {
+    public Accelerator applySelectedAcceleratorWithDefaultPath(final String filePath) {
+        if (filePath == null || filePath.length() == 0) {
+            return requestAndSetAccelerator("No accelerator file has been specified. \n Please select an accelerator file.");
+        } else if (new File(filePath).exists()) {
             try {
-                setAcceleratorWithPath( filePath );
+                setAcceleratorWithPath(filePath);
                 return getAccelerator();
+            } catch (OpticsVersionException exception) {
+                LOGGER.log(Level.WARNING, null, exception);
+                return requestAndSetAccelerator(exception.getMessage() + " \nPlease select a substitute accelerator.");
             }
-            catch( OpticsVersionException exception ) {
-                return requestAndSetAccelerator( exception.getMessage() + " \nPlease select a substitute accelerator." );
-            }
-        }
-        else {
-            return requestAndSetAccelerator( "Cannot locate the accelerator file: \n" + filePath + " \nPlease select a substitute accelerator." );
+        } else {
+            return requestAndSetAccelerator("Cannot locate the accelerator file: \n" + filePath + " \nPlease select a substitute accelerator.");
         }
     }
-
 
     /**
      * Request and set an accelerator
+     *
      * @param message the text to display in the dialog box
      */
-    private Accelerator requestAndSetAccelerator( final String message ) {
-        final java.awt.Component targetWindow = getMainWindow();
-        final String USE_DEFAULT_ACCELERATOR = "Use the Default Accelerator";
-        final String SELECT_ACCELERATOR = "Select an Accelerator...";
-        final String CANCEL_OPTION = "Cancel";
-        final Object[] options = new Object[] { USE_DEFAULT_ACCELERATOR, SELECT_ACCELERATOR, CANCEL_OPTION };
-        final int selectedOptionIndex = JOptionPane.showOptionDialog( targetWindow, message, "Select a Substitute Accelerator", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, USE_DEFAULT_ACCELERATOR );
-        switch( selectedOptionIndex ) {
+    private Accelerator requestAndSetAccelerator(final String message) {
+        final Component targetWindow = getMainWindow();
+
+        final Object[] options = new Object[]{USE_DEFAULT_ACCELERATOR, SELECT_ACCELERATOR, CANCEL_OPTION};
+        final int selectedOptionIndex = JOptionPane.showOptionDialog(targetWindow, message, "Select a Substitute Accelerator", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE, null, options, USE_DEFAULT_ACCELERATOR);
+        switch (selectedOptionIndex) {
             case 0:
                 loadDefaultAccelerator();
                 return accelerator;
@@ -125,38 +140,42 @@ abstract public class AcceleratorDocument extends XalDocument {
         }
     }
 
-
-    /** Displays a file selection dialog to allow the user to select an accelerator */
+    /**
+     * Displays a file selection dialog to allow the user to select an
+     * accelerator
+     */
     private Accelerator selectAccelerator() {
-        AcceleratorActionFactory.loadAcceleratorAction( this ).actionPerformed( null );
+        AcceleratorActionFactory.loadAcceleratorAction(this).actionPerformed(null);
         return accelerator;
     }
 
-
     /**
-     * Set the accelerator managed by the document.  Every document manages
-     * one accelerator (or possibly null).
+     * Set the accelerator managed by the document. Every document manages one
+     * accelerator (or possibly null).
+     *
      * @param newAccelerator The accelerator managed by this document.
      * @param newPath The path to the accelerator managed by this document.
      */
-    public void setAccelerator( final Accelerator newAccelerator, final String newPath ) {
+    public void setAccelerator(final Accelerator newAccelerator, final String newPath) {
         selectedSequence = null;
-        selectedSequenceList = new ArrayList<AcceleratorSeq>();
+        selectedSequenceList = new ArrayList<>();
         accelerator = newAccelerator;
-        setAcceleratorFilePath( newPath );
-        acceleratorChanged();       // hook for possible further processing
+        setAcceleratorFilePath(newPath);
+        // hook for possible further processing
+        acceleratorChanged();
     }
 
-
-    /** Set the accelerator given the file path */
-    private void setAcceleratorWithPath( final String filePath ) {
-        final Accelerator theAccelerator = XMLDataManager.acceleratorWithPath( filePath, nextChannelFactory() );
-        setAccelerator( theAccelerator, filePath );
+    /**
+     * Set the accelerator given the file path
+     */
+    private void setAcceleratorWithPath(final String filePath) {
+        final Accelerator theAccelerator = XMLDataManager.acceleratorWithPath(filePath, nextChannelFactory());
+        setAccelerator(theAccelerator, filePath);
     }
-
 
     /**
      * Get the accelerator managed by this document.
+     *
      * @return The accelerator managed by this document.
      */
     public Accelerator getAccelerator() {
@@ -164,101 +183,98 @@ abstract public class AcceleratorDocument extends XalDocument {
     }
 
     /**
-     * Set the accelerator file path.  Every document manages
-     * one accelerator (or possibly null).
+     * Set the accelerator file path. Every document manages one accelerator (or
+     * possibly null).
+     *
      * @param newPath The path to the accelerator managed by this document.
      */
-    public void setAcceleratorFilePath( final String newPath ) {
+    public void setAcceleratorFilePath(final String newPath) {
         acceleratorFilePath = newPath;
     }
 
-
     /**
      * Get the path to the xml file of the accelerator managed by this document.
+     *
      * @return path to the xml file of the accelerator managed by this document.
      */
     public String getAcceleratorFilePath() {
         return acceleratorFilePath;
     }
 
-
     /**
-     * Attempt to load the user's default accelerator.  If no default accelerator is specified,
-     * then prompt the user to specify the default optics path.  The document's accelerator
-     * file is set to the user's default accelerator.
+     * Attempt to load the user's default accelerator. If no default accelerator
+     * is specified, then prompt the user to specify the default optics path.
+     * The document's accelerator file is set to the user's default accelerator.
+     *
      * @return true if the default accelerator was successfully loaded
      */
     protected boolean loadDefaultAccelerator() {
         Accelerator defaultAccelerator = null;
 
         try {
-            defaultAccelerator = XMLDataManager.loadDefaultAccelerator( nextChannelFactory() );
-        }
-        catch( Exception exception ) {
-            exception.printStackTrace();
+            defaultAccelerator = XMLDataManager.loadDefaultAccelerator(nextChannelFactory());
+        } catch (Exception exception) {
+            LOGGER.log(Level.SEVERE, "Exception loading default accelerator: Failed to load default accelerator", exception);
             Application.displayError("Exception loading default accelerator", "Failed to load default accelerator", exception);
         }
 
-        if ( defaultAccelerator != null ) {
-            setAccelerator( defaultAccelerator, XMLDataManager.defaultPath() );
+        if (defaultAccelerator != null) {
+            setAccelerator(defaultAccelerator, XMLDataManager.defaultPath());
             return true;
-        }
-        else {
+        } else {
             final OpticsSwitcher switcher = OpticsSwitcher.getInstance();
-            switcher.showDialogNearOwner( getAcceleratorWindow() );
-            if ( switcher.isCanceled() ) {
+            switcher.showDialogNearOwner(getAcceleratorWindow());
+            if (switcher.isCanceled()) {
                 return false;
-            }
-            else if ( switcher.getDefaultOpticsPath() != null ) {
+            } else if (switcher.getDefaultOpticsPath() != null) {
                 return loadDefaultAccelerator();
             }
         }
         return false;
     }
 
-
     /**
      * Set the selected accelerator sequence managed by this document.
+     *
      * @param selection The accelerator sequence to be managed by this document.
      */
-    public void setSelectedSequence( final AcceleratorSeq selection ) {
+    public void setSelectedSequence(final AcceleratorSeq selection) {
         selectedSequence = selection;
-        final List<AcceleratorSeq> sequences = new ArrayList<AcceleratorSeq>();
-        if ( selection != null ) {
-            sequences.add( selection );
+        final List<AcceleratorSeq> sequences = new ArrayList<>();
+        if (selection != null) {
+            sequences.add(selection);
         }
-        setSelectedSequenceList( sequences );
+        setSelectedSequenceList(sequences);
         selectedSequenceChanged();
         generateDocumentTitle();
     }
 
-
     /**
      * Set a list of selected sequences
+     *
      * @param seqList The list of selected sequences
      */
-    public void setSelectedSequenceList( final List<AcceleratorSeq> seqList ) {
+    public void setSelectedSequenceList(final List<AcceleratorSeq> seqList) {
         selectedSequenceList = seqList;
     }
 
-
     /**
      * Get the selected accelerator sequence managed by this document.
+     *
      * @return The sequence managed by this document.
      */
     public AcceleratorSeq getSelectedSequence() {
         return selectedSequence;
     }
 
-
     /**
      * Get the selected sequence list
+     *
      * @return the selected sequence list
      */
     public List<AcceleratorSeq> getSelectedSequenceList() {
         return selectedSequenceList;
     }
-
 
     /**
      * Is the sequence selected a ring?
@@ -267,46 +283,46 @@ abstract public class AcceleratorDocument extends XalDocument {
         return selectedSequence instanceof xal.smf.Ring;
     }
 
-
     /**
-     * Hook for handling the accelerator change event.  Subclasses should override
-     * this method to provide custom handling.  The default handler does nothing.
+     * Hook for handling the accelerator change event. Subclasses should
+     * override this method to provide custom handling. The default handler does
+     * nothing.
      */
     public void acceleratorChanged() {
+        //Do nothing
     }
 
-
     /**
-     * Hook for handling the selected sequence change event.  Subclasses should override
-     * this method to provide custom handling.  The default handler does nothing.
+     * Hook for handling the selected sequence change event. Subclasses should
+     * override this method to provide custom handling. The default handler does
+     * nothing.
      */
     public void selectedSequenceChanged() {
+        //Do nothing
     }
-
 
     /**
-     * Hook for handling the accelerator file path change event.  Subclasses should override
-     * this method to provide custom handling.  The default handler does nothing.
+     * Hook for handling the accelerator file path change event. Subclasses
+     * should override this method to provide custom handling. The default
+     * handler does nothing.
      */
     public void acceleratorFilePathChanged() {
+        //Do nothing
     }
-
 
     /**
      * Standard way of catching XML Write exceptions
      */
-    protected void catchXmlDataAdaptorException(XmlDataAdaptor.WriteException exception) {
-        if ( exception.getCause() instanceof java.io.FileNotFoundException ) {
-            System.err.println( exception );
-            displayError( "Save Failed!", "Save failed due to a file access exception!", exception );
-        }
-        else if ( exception.getCause() instanceof java.io.IOException ) {
-            System.err.println( exception );
-            displayError( "Save Failed!", "Save failed due to a file IO exception!", exception );
-        }
-        else {
-            exception.printStackTrace();
-            displayError( "Save Failed!", "Save failed due to an internal write exception!", exception );
+    protected void catchXmlDataAdaptorException(WriteException exception) {
+        if (exception.getCause() instanceof FileNotFoundException) {
+            LOGGER.log(Level.SEVERE, "Save failed due to a file access exception!", exception);
+            displayError(SAVE_FAILED_TITLE, "Save failed due to a file access exception!", exception);
+        } else if (exception.getCause() instanceof IOException) {
+            LOGGER.log(Level.SEVERE, "Save failed due to a file IO exception!", exception);
+            displayError(SAVE_FAILED_TITLE, "Save failed due to a file IO exception!", exception);
+        } else {
+            LOGGER.log(Level.SEVERE, "Save failed due to an internal write exception!", exception);
+            displayError(SAVE_FAILED_TITLE, "Save failed due to an internal write exception!", exception);
         }
     }
 }

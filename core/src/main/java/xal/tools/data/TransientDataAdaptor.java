@@ -3,9 +3,7 @@
  *
  * Created on March 5, 2003, 9:23 PM
  */
-
 package xal.tools.data;
-
 
 import java.io.PrintStream;
 import java.util.Collection;
@@ -14,477 +12,493 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.util.regex.PatternSyntaxException;
 
-
-
 /**
- * A volatile implementation of the <code>DataAdaptor</code> interface.  
- * <code>TransientDataAdaptor</code> is intended as a convenience class
- * for passing data using the </code>DataAdaptor</code> interface.  Note, 
- * however, class supports no persistence.  Once an object of class 
+ * A volatile implementation of the <code>DataAdaptor</code> interface.
+ * <code>TransientDataAdaptor</code> is intended as a convenience class for
+ * passing data using the <code>DataAdaptor</code> interface. Note, however,
+ * class supports no persistence. Once an object of class
  * <code>TransientDataAdaptor</code> is destroyed all internal data is lost.
  *
- * @author  Christopher K. Allen
+ * @author Christopher K. Allen
  */
 public class TransientDataAdaptor implements DataAdaptor {
-    
-    
+
+    private static final Logger LOGGER = Logger.getLogger(TransientDataAdaptor.class.getName());
+
     /*
      *  Local Attributes
      */
-    
-    /** label of data store */
-    private final String      m_strLabel;
-    
-    /** map of all the attribute-value pairs */
-    private final HashMap<String, String>           m_mapAttrs = new HashMap<String, String>();
-    
-    /** list of all child adaptors */
-    private final LinkedList<DataAdaptor>  m_lstKids = new LinkedList<DataAdaptor>();
-    
-    
-    
+    /**
+     * label of data store
+     */
+    private final String strLabel;
+
+    /**
+     * map of all the attribute-value pairs
+     */
+    private final HashMap<String, String> mapAttrs = new HashMap<>();
+
+    /**
+     * list of all child adaptors
+     */
+    private final LinkedList<DataAdaptor> lstKids = new LinkedList<>();
+
     /*
      *  Initialization
      */
-    
-    /** 
-     *  Create a new instance of VolatileDataAdaptor 
+    /**
+     * Create a new instance of VolatileDataAdaptor
      *
-     *  @param  strLabel    label for new data node
+     * @param strLabel label for new data node
      */
     public TransientDataAdaptor(String strLabel) {
-        m_strLabel = strLabel;
+        this.strLabel = strLabel;
     }
-    
-    
-    
-    
+
     /*
      *  DataAdaptor Interface
      */
-    
-    /** 
-     *  Get the label for this data node.
+    /**
+     * Get the label for this data node.
      *
-     *  @return         name for the particular node in the data tree 
+     * @return name for the particular node in the data tree
      */
+    @Override
     public String name() {
-        return m_strLabel;
+        return strLabel;
     }
-    
-    /** 
-     *  Get all the attribute names in the data node.
-     *
-     * @return  array of all attributes names
-     */
-    public String[] attributes() {
-        
-        // Allocate the string array
-        int                 nAttrs;     // number of attributes
-        String[]            arrNames;   // returned array attribute names
 
-        nAttrs   = m_mapAttrs.size();
+    /**
+     * Get all the attribute names in the data node.
+     *
+     * @return array of all attributes names
+     */
+    @Override
+    public String[] attributes() {
+        // Allocate the string array
+        // number of attributes
+        int nAttrs;
+        // returned array attribute names
+        String[] arrNames;
+
+        nAttrs = mapAttrs.size();
         arrNames = new String[nAttrs];
-        
-        
+
         // Build the string array
-        int                 iName;      // index of current attribute name
-        Set<String>        setNames;   // set of attribute names
-        Iterator<String>   iter;       // name set iterator
-        
-        setNames = m_mapAttrs.keySet();
-        iter     = setNames.iterator();
-        iName    = 0;
-        while (iter.hasNext())  {
+        // index of current attribute name
+        int iName;
+        // set of attribute names
+        Set<String> setNames;
+        // name set iterator
+        Iterator<String> iter;
+
+        setNames = mapAttrs.keySet();
+        iter = setNames.iterator();
+        iName = 0;
+        while (iter.hasNext()) {
             arrNames[iName] = iter.next();
-            
+
             iName++;
         }
-            
+
         return arrNames;
     }
-    
-    /** 
-     *  Test whether or not an attribute is present in the data node.
+
+    /**
+     * Test whether or not an attribute is present in the data node.
      *
-     *  @param  strAttrName     attribute name
+     * @param strAttrName attribute name
      *
-     *  @return                 true if specified attribute is present, false otherwise
+     * @return true if specified attribute is present, false otherwise
      */
+    @Override
     public boolean hasAttribute(String strAttrName) {
-        return m_mapAttrs.containsKey(strAttrName);
+        return mapAttrs.containsKey(strAttrName);
     }
-    
-    
-    /** 
-     *  Get the value of an attribute.
+
+    /**
+     * Get the value of an attribute.
      *
-     *  @param  strAttrName     name of attribute
+     * @param strAttrName name of attribute
      *
-     *  @return                 value of attribute as boolean
+     * @return value of attribute as boolean
      */
+    @Override
     public String stringValue(String strAttrName) {
-        String  strValue = m_mapAttrs.get(strAttrName);
-        
-        return strValue;
+        return mapAttrs.get(strAttrName);
     }
-    
-    /** 
-     *  Get the value of an attribute.
+
+    /**
+     * Get the value of an attribute.
      *
-     *  @param  strAttrName     name of attribute
+     * @param strAttrName name of attribute
      *
-     *  @return                 value of attribute as boolean
+     * @return value of attribute as boolean
      *
-     *  @exception  NumberFormatException   unable to parse value as boolean
+     * @exception NumberFormatException unable to parse value as boolean
      */
+    @Override
     public boolean booleanValue(String strAttrName) throws NumberFormatException {
         String strValue = stringValue(strAttrName);
-        
-        return Boolean.valueOf(strValue).booleanValue();
+
+        return Boolean.parseBoolean(strValue);
     }
-    
-    /** 
-     *  Get the value of an attribute.
+
+    /**
+     * Get the value of an attribute.
      *
-     *  @param  strAttrName     name of attribute
+     * @param strAttrName name of attribute
      *
-     *  @return                 value of attribute as int
+     * @return value of attribute as int
      *
-     *  @exception  NumberFormatException   unable to parse value as int
+     * @exception NumberFormatException unable to parse value as int
      */
+    @Override
     public int intValue(String strAttrName) {
         String strValue = stringValue(strAttrName);
-        
-        return Integer.valueOf(strValue).intValue();
+
+        return Integer.parseInt(strValue);
     }
-    
-    /** 
-     *  Get the value of an attribute.
+
+    /**
+     * Get the value of an attribute.
      *
-     *  @param  strAttrName     name of attribute
+     * @param strAttrName name of attribute
      *
-     *  @return                 value of attribute as long
+     * @return value of attribute as long
      *
-     *  @exception  NumberFormatException   unable to parse value as long
+     * @exception NumberFormatException unable to parse value as long
      */
+    @Override
     public long longValue(String strAttrName) {
         String strValue = stringValue(strAttrName);
-        
-        return Long.valueOf(strValue).longValue();
+
+        return Long.parseLong(strValue);
     }
-    
-    /** 
-     *  Get the value of an attribute.
+
+    /**
+     * Get the value of an attribute.
      *
-     *  @param  strAttrName     name of attribute
+     * @param strAttrName name of attribute
      *
-     *  @return                 value of attribute as double
+     * @return value of attribute as double
      *
-     *  @exception  NumberFormatException   unable to parse value as double
+     * @exception NumberFormatException unable to parse value as double
      */
+    @Override
     public double doubleValue(String strAttrName) {
         String strValue = stringValue(strAttrName);
-        
-        return Double.valueOf(strValue).doubleValue();
+
+        return Double.parseDouble(strValue);
     }
-    
+
     /**
-     * Returns the value of an attribute as an array of doubles.  The
-     * attribute value must be stored as a string of comma separated 
-     * values (CSVs).  The values are parsed into doubles and packed into
-     * the returned array.
+     * Returns the value of an attribute as an array of doubles. The attribute
+     * value must be stored as a string of comma separated values (CSVs). The
+     * values are parsed into doubles and packed into the returned array.
      *
-     * @param strAttr   the attribute name
-     * 
-     * @return  Array of double values as parsed from the value string.
-     *          A <code>null</code> value is returned if the value string is empty.
-     * 
-     * @throws NumberFormatException    at least one value was malformed, 
-     *                                  or the CSV string was malformed 
-     * 
-     * @since  Mar 12, 2010
+     * @param strAttr the attribute name
+     *
+     * @return Array of double values as parsed from the value string. A
+     * <code>null</code> value is returned if the value string is empty.
+     *
+     * @throws NumberFormatException at least one value was malformed, or the
+     * CSV string was malformed
+     *
+     * @since Mar 12, 2010
      * @author Christopher K. Allen
      */
+    @Override
     public double[] doubleArray(final String strAttr) throws NumberFormatException {
         String strValues = stringValue(strAttr);
-        
-        if (strValues.length() == 0)
-            return null;
-        
-        String strErrMsg = "Error parsing as double attribute: " + strAttr + 
-                        ", from string: " + strValues + ", for XML node: " + name();
-        
-            try {
-                String[]        arrTokens = strValues.split(",");
-                double[]        arrVals = new double[arrTokens.length];
-                
-                int     index = 0;
-                for (String strVal : arrTokens) {
-                    double      dblVal = Double.parseDouble(strVal);
-                    
-                    arrVals[index] = dblVal;
-                    index++;
-                }
-                
-                return arrVals;
-                
-            } catch (PatternSyntaxException e) {
-                throw new NumberFormatException(strErrMsg);
-                
-            } catch(java.lang.NumberFormatException e) {
-                throw new NumberFormatException(strErrMsg);
-            }
-    }
-    
 
-    /** 
-     *  Set the value of the specified attribute as a string.
+        if (strValues.length() == 0) {
+            return new double[0];
+        }
+
+        String strErrMsg = "Error parsing as double attribute: " + strAttr
+                + ", from string: " + strValues + ", for XML node: " + name();
+
+        try {
+            String[] arrTokens = strValues.split(",");
+            double[] arrVals = new double[arrTokens.length];
+
+            int index = 0;
+            for (String strVal : arrTokens) {
+                double dblVal = Double.parseDouble(strVal);
+
+                arrVals[index] = dblVal;
+                index++;
+            }
+
+            return arrVals;
+
+        } catch (PatternSyntaxException | java.lang.NumberFormatException e) {
+            LOGGER.log(Level.WARNING, null, e);
+            throw new NumberFormatException(strErrMsg);
+
+        }
+    }
+
+    /**
+     * Set the value of the specified attribute as a string.
      *
-     *  @param  strAttrName     attribute name
-     *  @param  strAttrVal      attribute value
+     * @param strAttrName attribute name
+     * @param strAttrVal attribute value
      */
+    @Override
     public void setValue(String strAttrName, String strAttrVal) {
-        m_mapAttrs.put(strAttrName, strAttrVal);
+        mapAttrs.put(strAttrName, strAttrVal);
     }
-    
-    /** 
-     *  Set the value of the specified attribute
+
+    /**
+     * Set the value of the specified attribute
      *
-     *  @param  strAttrName     attribute name
-     *  @param  objAttrVal      new attribute value  
+     * @param strAttrName attribute name
+     * @param objAttrVal new attribute value
      */
+    @Override
     public void setValue(String strAttrName, Object objAttrVal) {
-        String  strAttrVal = objAttrVal.toString();
-        
-        this.setValue(strAttrName, strAttrVal);
+        String strAttrVal = objAttrVal.toString();
+
+        setValue(strAttrName, strAttrVal);
     }
-    
-    /** 
-     *  Set the value of the specified attribute
+
+    /**
+     * Set the value of the specified attribute
      *
-     *  @param  strAttrName     attribute name
-     *  @param  bolAttrVal      new attribute value  
+     * @param strAttrName attribute name
+     * @param bolAttrVal new attribute value
      */
+    @Override
     public void setValue(String strAttrName, boolean bolAttrVal) {
-        String  strAttrVal = String.valueOf(bolAttrVal);
-        
-        this.setValue(strAttrName, strAttrVal);
+        String strAttrVal = String.valueOf(bolAttrVal);
+
+        setValue(strAttrName, strAttrVal);
     }
-    
-    /** 
-     *  Set the value of the specified attribute
+
+    /**
+     * Set the value of the specified attribute
      *
-     *  @param  strAttrName     attribute name
-     *  @param  intAttrVal      new attribute value  
+     * @param strAttrName attribute name
+     * @param intAttrVal new attribute value
      */
+    @Override
     public void setValue(String strAttrName, int intAttrVal) {
         String strAttrVal = String.valueOf(intAttrVal);
-        
-        this.setValue(strAttrName, strAttrVal);
+
+        setValue(strAttrName, strAttrVal);
     }
-    
-    /** 
-     *  Set the value of the specified attribute
+
+    /**
+     * Set the value of the specified attribute
      *
-     *  @param  strAttrName     attribute name
-     *  @param  longAttrVal     new attribute value  
+     * @param strAttrName attribute name
+     * @param longAttrVal new attribute value
      */
+    @Override
     public void setValue(String strAttrName, long longAttrVal) {
         String strAttrVal = String.valueOf(longAttrVal);
-        
-        this.setValue(strAttrName, strAttrVal);
+
+        setValue(strAttrName, strAttrVal);
     }
-    
-    /** 
-     *  Set the value of the specified attribute
-     *
-     *  @param  strAttrName     attribute name
-     *  @param  dblAttrVal      new attribute value  
-     */
-    public void setValue(String strAttrName, double dblAttrVal) {
-        String  strAttrVal = String.valueOf(dblAttrVal);
-        
-        this.setValue(strAttrName, strAttrVal);
-    }
-    
+
     /**
-     * Sets the attribute (name,value) pair for the given arguments.  
-     * The value here is a double array which is stored as a string 
-     * of comma separated values.
+     * Set the value of the specified attribute
      *
-     * @since   Mar 11, 2010
-     * @author  Christopher K. Allen
+     * @param strAttrName attribute name
+     * @param dblAttrVal new attribute value
+     */
+    @Override
+    public void setValue(String strAttrName, double dblAttrVal) {
+        String strAttrVal = String.valueOf(dblAttrVal);
+
+        setValue(strAttrName, strAttrVal);
+    }
+
+    /**
+     * Sets the attribute (name,value) pair for the given arguments. The value
+     * here is a double array which is stored as a string of comma separated
+     * values.
+     *
+     * @since Mar 11, 2010
+     * @author Christopher K. Allen
      *
      * @see xal.tools.data.DataAdaptor#setValue(java.lang.String, double[])
      */
     @Override
     public void setValue(String strAttr, double[] arrVal) {
-        StringBuffer    bufVals = new StringBuffer(arrVal.length);
-        
+        StringBuilder bufVals = new StringBuilder(arrVal.length);
+
         for (double dblVal : arrVal) {
             bufVals.append(dblVal);
             bufVals.append(", ");
         }
-        
-        this.setValue(strAttr, bufVals.toString());
+
+        setValue(strAttr, bufVals.toString());
     }
-    
-    
-    /** 
-     *  Get the number of child data nodes.
+
+    /**
+     * Get the number of child data nodes.
      *
-     *  @return         number of child node adaptors  
+     * @return number of child node adaptors
      */
     public int nodeCount() {
-        return m_lstKids.size();
+        return lstKids.size();
     }
-    
-    /** 
-     *  Convenience method to get a single child adaptor when only one is expected.
+
+    /**
+     * Convenience method to get a single child adaptor when only one is
+     * expected.
      *
-     *  @param  strLabel    data label of child node
+     * @param strLabel data label of child node
      *
-     *  @return             first child node with label strLabel, null if none exist
+     * @return first child node with label strLabel, null if none exist
      */
+    @Override
     public DataAdaptor childAdaptor(String strLabel) {
-        Iterator<DataAdaptor>    iter = this.childAdaptorIterator(strLabel);
-        
-        if ( !iter.hasNext() ) return null;
-        else                   return iter.next(); 
-    }
-    
-    /** 
-     *  Get all the child data nodes of this adaptor.
-     *
-     *  @return             all child adaptors  
-     */
-    public List<DataAdaptor> childAdaptors() {
-        return m_lstKids;
-    }
-    
-    /** 
-     *  Get all the child data nodes of a particular data label.
-     *
-     *  @param  strLabel    data label for child nodes
-     *
-     *  @return             all child adaptors with specified label 
-     */
-    public List<DataAdaptor> childAdaptors(String strLabel) {
-        LinkedList<DataAdaptor>  lst  = new LinkedList<DataAdaptor>();
-        Iterator<DataAdaptor>    iter = this.childAdaptorIterator();
-        
-        while (iter.hasNext())  {
-            DataAdaptor daptChild = iter.next();
-            
-            if ( daptChild.name().equals(strLabel) )
-                lst.add(daptChild);
+        Iterator<DataAdaptor> iter = this.childAdaptorIterator(strLabel);
+
+        if (!iter.hasNext()) {
+            return null;
+        } else {
+            return iter.next();
         }
-        
+    }
+
+    /**
+     * Get all the child data nodes of this adaptor.
+     *
+     * @return all child adaptors
+     */
+    @Override
+    public List<DataAdaptor> childAdaptors() {
+        return lstKids;
+    }
+
+    /**
+     * Get all the child data nodes of a particular data label.
+     *
+     * @param strLabel data label for child nodes
+     *
+     * @return all child adaptors with specified label
+     */
+    @Override
+    public List<DataAdaptor> childAdaptors(String strLabel) {
+        LinkedList<DataAdaptor> lst = new LinkedList<>();
+        Iterator<DataAdaptor> iter = this.childAdaptorIterator();
+
+        while (iter.hasNext()) {
+            DataAdaptor daptChild = iter.next();
+
+            if (daptChild.name().equals(strLabel)) {
+                lst.add(daptChild);
+            }
+        }
+
         return lst;
     }
-    
-    /** 
-     *  Get an iterator containing all child adaptors of this node.
+
+    /**
+     * Get an iterator containing all child adaptors of this node.
      *
-     *  @return                 iterator of all child adaptors  
+     * @return iterator of all child adaptors
      */
     public Iterator<DataAdaptor> childAdaptorIterator() {
-        return m_lstKids.iterator();
+        return lstKids.iterator();
     }
-    
-    /** 
-     *  Get an iterator for all child data nodes having a given data label.
+
+    /**
+     * Get an iterator for all child data nodes having a given data label.
      *
-     *  @param  strLabel    data label for child nodes
+     * @param strLabel data label for child nodes
      *
-     *  @return             iterator of child adaptors with specified label 
+     * @return iterator of child adaptors with specified label
      */
     public Iterator<DataAdaptor> childAdaptorIterator(String strLabel) {
         return this.childAdaptors(strLabel).iterator();
     }
-    
-    /** 
-     *  Create a new empty child adaptor with the specified label.
+
+    /**
+     * Create a new empty child adaptor with the specified label.
      *
-     *  @param  strLabel        data label for the child node
+     * @param strLabel data label for the child node
      *
-     *  @return                 new child data node attached to this  
+     * @return new child data node attached to this
      */
+    @Override
     public DataAdaptor createChild(String strLabel) {
-        TransientDataAdaptor     daptChild = new TransientDataAdaptor(strLabel);
-        
-        this.m_lstKids.add(daptChild);
-        
+        TransientDataAdaptor daptChild = new TransientDataAdaptor(strLabel);
+
+        lstKids.add(daptChild);
+
         return daptChild;
     }
-    
-    
+
     @Override
     public void removeChild(DataAdaptor adaptor) {
-        this.m_lstKids.remove(adaptor);
+        lstKids.remove(adaptor);
     }
-    
-    
-    
-    /** 
-     *  Write out the listener data as a new node then append it as a child node
-     *  in the data tree.
+
+    /**
+     * Write out the listener data as a new node then append it as a child node
+     * in the data tree.
      *
-     *  @param  ifcSrc
+     * @param ifcSrc
      */
+    @Override
     public void writeNode(DataListener ifcSrc) {
-        String strLabel = ifcSrc.dataLabel();
-        
-        DataAdaptor daptChild = this.createChild(strLabel);
+        String label = ifcSrc.dataLabel();
+
+        DataAdaptor daptChild = this.createChild(label);
         ifcSrc.write(daptChild);
     }
-    
+
     /**
-     *  write the collection of listeners to new nodes and append them
-     *  to the data tree.
-     *  
-     * @param colSrcs   collection data sources exposing <code>DataListener</code> interface
-     *  
+     * write the collection of listeners to new nodes and append them to the
+     * data tree.
+     *
+     * @param colSrcs collection data sources exposing <code>DataListener</code>
+     * interface
+     *
      */
+    @Override
     public void writeNodes(Collection<? extends DataListener> colSrcs) {
         Iterator<? extends DataListener> iterSrcs = colSrcs.iterator();
-        
-        while ( iterSrcs.hasNext() ) {
+
+        while (iterSrcs.hasNext()) {
             DataListener ifcSrc = iterSrcs.next();
             writeNode(ifcSrc);
         }
     }
 
-    
-    
     /*
      *  Testing and Debugging
      */
-
     /**
      * Print out the contents of this adaptor.
      *
-     * @param os        output stream
-     * 
-     * @since  Mar 12, 2010
+     * @param os output stream
+     *
+     * @since Mar 12, 2010
      * @author Christopher K. Allen
      */
     public void print(PrintStream os) {
-        String[]    arrAttrNames = this.attributes();
-        int         nAttrs = arrAttrNames.length;
-        int         iAttr  = 0;
-        
+        String[] arrAttrNames = this.attributes();
+        int nAttrs = arrAttrNames.length;
+        int iAttr = 0;
+
         os.println(this.name());
-        
-        for (iAttr=0; iAttr<nAttrs; iAttr++)    {
-            String  strAttrName = arrAttrNames[iAttr];
-            String  strAttrVal = this.stringValue(strAttrName);
-            
+
+        for (iAttr = 0; iAttr < nAttrs; iAttr++) {
+            String strAttrName = arrAttrNames[iAttr];
+            String strAttrVal = this.stringValue(strAttrName);
+
             os.println("  " + strAttrName + ": " + strAttrVal);
         }
     }
-    
 }

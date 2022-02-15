@@ -60,6 +60,7 @@ import org.epics.pvdata.pv.Type;
 import org.epics.pvdatabase.PVRecord;
 import org.epics.pvdatabase.pva.MonitorFactory;
 import xal.ca.ConnectionException;
+import xal.ca.MonitorException;
 import xal.ca.PutException;
 import static xal.plugin.epics7.Epics7Channel.VALUE_FIELD;
 
@@ -72,26 +73,31 @@ public class Epics7ServerMonitor extends Epics7Monitor implements MonitorRequest
 
     protected ProcessVariableEventDispatcher processVariableEventDispatcher;
     protected MemoryProcessVariable memoryProcessVariable;
-    protected PVRecord record;
+    protected PVRecord pvRecord;
 
     private Epics7ServerMonitor(EventListener listener, int intMaskEvent) throws ConnectionException {
         super(null, listener, intMaskEvent);
     }
 
-    public static Epics7ServerMonitor createNewMonitor(PVRecord pvRecord, MemoryProcessVariable memoryProcessVariable, String request, EventListener listener, int intMaskEvent) throws ConnectionException {
-        Epics7ServerMonitor monitor = new Epics7ServerMonitor(listener, intMaskEvent);
+    public static Epics7ServerMonitor createNewMonitor(PVRecord pvRecord, MemoryProcessVariable memoryProcessVariable, String request, EventListener listener, int intMaskEvent) throws MonitorException {
+        Epics7ServerMonitor monitor;
+        try {
+            monitor = new Epics7ServerMonitor(listener, intMaskEvent);
+        } catch (ConnectionException ex) {
+            throw new MonitorException("Connection Exception thrown", ex);
+        }
 
         monitor.createRequest(pvRecord, memoryProcessVariable, request);
 
         return monitor;
     }
 
-    private void createRequest(PVRecord record, MemoryProcessVariable memoryProcessVariable, String request) {
-        this.record = record;
+    private void createRequest(PVRecord pvRecord, MemoryProcessVariable memoryProcessVariable, String request) {
+        this.pvRecord = pvRecord;
         this.memoryProcessVariable = memoryProcessVariable;
 
         PVStructure structure = CreateRequest.create().createRequest(request);
-        nativeMonitor = MonitorFactory.create(record, this, structure);
+        nativeMonitor = MonitorFactory.create(pvRecord, this, structure);
         processVariableEventDispatcher = (ProcessVariableEventDispatcher) memoryProcessVariable.getEventCallback();
 
         processVariableEventDispatcher.registerEventListener(this);
@@ -110,6 +116,7 @@ public class Epics7ServerMonitor extends Epics7Monitor implements MonitorRequest
     }
 
     // PVA monitor event    @Override
+    @Override
     public void monitorConnect(Status status, Monitor monitor, Structure structure) {
         monitor.start();
     }
@@ -147,7 +154,7 @@ public class Epics7ServerMonitor extends Epics7Monitor implements MonitorRequest
     }
 
     private PVStructure updatePvRecord(DBR event) {
-        PVStructure pvStructure = record.getPVStructure();
+        PVStructure pvStructure = pvRecord.getPVStructure();
 
         if (event.getType().isBYTE()) {
             updateByteValue(event, pvStructure);

@@ -7,22 +7,20 @@
  * Oak Ridge National Laboratory
  * Oak Ridge, TN 37830
  */
-   
- package xal.extension.solver; 
- 
- import java.util.*;
- 
- /**
+package xal.extension.solver;
+
+/**
  * Stopper is an interface for an object than can be used to stop a solver.
  *
- * @author  ky6
+ * @author ky6
  */
- public interface Stopper {
-	 
-	 /**
-	 * Signal whether the solver should stop.
-	 * @param aSolver The solver the stopper was generated for.
-	 * @return true to stop the solver and false to continue solving.
-	 */
-     public boolean shouldStop(Solver aSolver);
- }
+public interface Stopper {
+
+    /**
+     * Signal whether the solver should stop.
+     *
+     * @param aSolver The solver the stopper was generated for.
+     * @return true to stop the solver and false to continue solving.
+     */
+    public boolean shouldStop(Solver aSolver);
+}

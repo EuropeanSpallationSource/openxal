@@ -93,7 +93,7 @@ public class RfFieldMap3DTest extends SingleElementTest {
             }
         }});
 
-        // 1: thick rf fieldmap	
+        // 1: thick rf fieldmap    
         // FIELD_MAP 700 988 -1.10293 28 0 0.974792 0 0 Spoke_W_coupler
         tests.add(new Object[]{new SingleElementTestData() {
             {
@@ -266,7 +266,7 @@ public class RfFieldMap3DTest extends SingleElementTest {
             }
         }});
 
-        // dx thick rf fieldmap	
+        // dx thick rf fieldmap    
         // FIELD_MAP 700 988 -1.10293 28 0 0.974792 0 0 Spoke_W_coupler
         tests.add(new Object[]{new SingleElementTestData() {
             {
@@ -353,7 +353,7 @@ public class RfFieldMap3DTest extends SingleElementTest {
             }
         }});
 
-        // dy thick rf fieldmap	
+        // dy thick rf fieldmap    
         // FIELD_MAP 700 988 -1.10293 28 0 0.974792 0 0 Spoke_W_coupler
         tests.add(
                 new Object[]{new SingleElementTestData() {
@@ -445,7 +445,7 @@ public class RfFieldMap3DTest extends SingleElementTest {
                 }
         );
 
-        // pitch thick rf fieldmap	
+        // pitch thick rf fieldmap    
         // FIELD_MAP 700 988 -1.10293 28 0 0.974792 0 0 Spoke_W_coupler
         tests.add(
                 new Object[]{new SingleElementTestData() {
@@ -504,7 +504,6 @@ public class RfFieldMap3DTest extends SingleElementTest {
                             putMap("rfm", ThinRfFieldMap.class);
                         }
                     };
-//                elementMapping = JElsElementMapping.getInstance();
                     sequence = spokeFieldMap(0.988, frequency * 1e-6, 0.974792, -1.10293, 0., 0., 0., 1 * Math.PI / 180., 0.);
 
                     // TW transfer matrix
@@ -533,7 +532,7 @@ public class RfFieldMap3DTest extends SingleElementTest {
                 }
             }});
 
-        // yaw thick rf fieldmap	
+        // yaw thick rf fieldmap    
         // FIELD_MAP 700 988 -1.10293 28 0 0.974792 0 0 Spoke_W_coupler
         tests.add(
                 new Object[]{new SingleElementTestData() {
@@ -622,7 +621,7 @@ public class RfFieldMap3DTest extends SingleElementTest {
                 }
             }});
 
-        // roll thick rf fieldmap	
+        // roll thick rf fieldmap    
         // FIELD_MAP 700 988 -1.10293 28 0 0.974792 0 0 Spoke_W_coupler
         tests.add(
                 new Object[]{new SingleElementTestData() {
@@ -663,7 +662,7 @@ public class RfFieldMap3DTest extends SingleElementTest {
                 }
             }});
 
-        // all errors thin rf fieldmap	
+        // all errors thin rf fieldmap    
         // FIELD_MAP 700 988 -1.10293 28 0 0.974792 0 0 Spoke_W_coupler
         tests.add(
                 new Object[]{new SingleElementTestData() {
@@ -710,7 +709,7 @@ public class RfFieldMap3DTest extends SingleElementTest {
                 }
             }});
 
-        // all errors thick rf fieldmap	
+        // all errors thick rf fieldmap    
         // FIELD_MAP 700 988 -1.10293 28 0 0.974792 0 0 Spoke_W_coupler
         tests.add(
                 new Object[]{new SingleElementTestData() {

@@ -3,7 +3,6 @@
  *
  * Created on October 22, 2002, 2:39 PM
  */
-
 package xal.model.elem;
 
 import xal.tools.beam.PhaseMap;
@@ -13,178 +12,174 @@ import xal.tools.math.r3.R3x3;
 import xal.model.IProbe;
 import xal.model.ModelException;
 
-
 /**
- *  Classes derived from ThinElement are modeled as having no length.  Thus, space 
- *  charge effects are neglected here.  The IElement interface method getLength()
- *  always returns zero.  However, a ThinElement may have an "effective length" which
- *  is a parameter used to determine it's effect on the beam, that is, it is used to
- *  compute the transfer matrix.
+ * Classes derived from ThinElement are modeled as having no length. Thus, space
+ * charge effects are neglected here. The IElement interface method getLength()
+ * always returns zero. However, a ThinElement may have an "effective length"
+ * which is a parameter used to determine it's effect on the beam, that is, it
+ * is used to compute the transfer matrix.
  *
- * @author  Christopher Allen
+ * @author Christopher Allen
  */
 public abstract class ThinElement extends Element {
-    
- 
-    /** 
+
+    /**
      * Creates a new instance of ThinElement specifying the element type
      * identifier.
      *
-     *  @param  strType     type identifier string of element
+     * @param strType type identifier string of element
      */
-    public ThinElement(String strType) {
+    protected ThinElement(String strType) {
         super(strType);
-    };
-    
-    /** 
-     * Creates a new instance of ThinElement specifying with the element
-     * type identifier and the instance identifier.
+    }
+
+    /**
+     * Creates a new instance of ThinElement specifying with the element type
+     * identifier and the instance identifier.
      *
-     *  @param  strType     type string of element
-     *  @param  strId       string identifier of the element
+     * @param strType type string of element
+     * @param strId string identifier of the element
      */
-    public ThinElement(String strType, String strId) {
+    protected ThinElement(String strType, String strId) {
         super(strType, strId);
-    };
-    
-    
+    }
+
     /*
      *  Abstract Protocol for concrete ThinElements
      */
-     
     /**
      * Returns the time taken for the probe to propagate through element.
-     * 
-     *  @param  probe   propagating probe
-     *  
-     *  @return         elapsed time through element <b>Units: seconds</b> 
+     *
+     * @param probe propagating probe
+     *
+     * @return elapsed time through element <strong>Units: seconds</strong>
      */
     protected abstract double elapsedTime(IProbe probe);
-    
+
     /**
      * Calculate the energy gain for this element on the supplied probe.
      *
      * @return this element's energy gain
      */
     protected abstract double energyGain(IProbe probe);
-    
+
     /**
      * Compute the transfer matrix of this element.
-     * 
+     *
      * @return transfer map for this element
      */
     protected abstract PhaseMap transferMap(IProbe probe) throws ModelException;
-        
-    
+
     /**
      * <p>
-     * Again, this is a kluge.
-     * We return zero since the notion of frequency is not defined for every
-     * element (perhaps if this element is the child of an RF cavity).  
-     * For those elements that do create a phase advance they
-     * need to override this method.
+     * Again, this is a kluge. We return zero since the notion of frequency is
+     * not defined for every element (perhaps if this element is the child of an
+     * RF cavity). For those elements that do create a phase advance they need
+     * to override this method.
      * </p>
      * <p>
-     * There is some legitimacy in returning zero since a thin element generally 
-     * has no phase advance. That is, there is no propagation therefore no elapsed
-     * time and no phase advance.  Only if there is energy gain must there be a
-     * corresponding conjugate phase advance.  
+     * There is some legitimacy in returning zero since a thin element generally
+     * has no phase advance. That is, there is no propagation therefore no
+     * elapsed time and no phase advance. Only if there is energy gain must
+     * there be a corresponding conjugate phase advance.
      * </p>
-     * 
-     * @param probe     probe experiencing a phase advance through this element
-     * 
-     * @return          the change in phase while going through the element
+     *
+     * @param probe probe experiencing a phase advance through this element
+     *
+     * @return the change in phase while going through the element
      *
      * @author Christopher K. Allen
-     * @since  Nov 23, 2014
+     * @since Nov 23, 2014
      */
     protected double longitudinalPhaseAdvance(IProbe probe) {
         return 0.0;
     }
-    
+
     /*
      *  IComponent Interface
      */
-    
-    /** 
-     *  Return the length of this element 
+    /**
+     * Return the length of this element
      *
-     *  @return     a value of zero
+     * @return a value of zero
      */
     @Override
-    public double getLength() { return 0.0; };
-    
+    public double getLength() {
+        return 0.0;
+    }
+
     /*
      *  IElement Interface
      */
-    
     /**
      * Returns the time taken for the probe to drift through part of the
      * element.
-     * 
-     *  @param  probe   propagating probe
-     *  @param  dblLen  length of subsection to propagate through <b>meters</b>
-     *  
-     *  @return         the elapsed time through section<b>Units: seconds</b> 
+     *
+     * @param probe propagating probe
+     * @param dblLen length of subsection to propagate through
+     * <strong>meters</strong>
+     *
+     * @return the elapsed time through section<strong>Units: seconds</strong>
      */
     @Override
-    public double elapsedTime(IProbe probe, double dblLen)  {
+    public double elapsedTime(IProbe probe, double dblLen) {
         return elapsedTime(probe);
     }
-    
+
     /**
-     * Calculate the energy gain for this element.  Because this is a thin element
-     * with no length, the length parameter is ignored.
-     * 
-     * @param probe  Probe for which energy gain is to be computed
-     * 
-     * @return  the energy gain for this element on the particular probe
+     * Calculate the energy gain for this element. Because this is a thin
+     * element with no length, the length parameter is ignored.
+     *
+     * @param probe Probe for which energy gain is to be computed
+     *
+     * @return the energy gain for this element on the particular probe
      */
     @Override
     public double energyGain(IProbe probe, double dblLen) {
-    	return energyGain(probe);
+        return energyGain(probe);
     }
-    
+
     /**
-     * Calculate the longitudinal phase advance through this element ignoring the
-     * length parameter (or lack thereof). We simply return
-     * 0 assume the zero length of this element allows no phase advance.  Of course
-     * there are thin elements which do create a finite phase advance (e.g., an
-     * RF gap), those element must override this method.
+     * Calculate the longitudinal phase advance through this element ignoring
+     * the length parameter (or lack thereof). We simply return 0 assume the
+     * zero length of this element allows no phase advance. Of course there are
+     * thin elements which do create a finite phase advance (e.g., an RF gap),
+     * those element must override this method.
      *
-     * @see xal.model.elem.Element#longitudinalPhaseAdvance(xal.model.IProbe, double)
+     * @see xal.model.elem.Element#longitudinalPhaseAdvance(xal.model.IProbe,
+     * double)
      *
      * @author Christopher K. Allen
-     * @since  Nov 23, 2014
+     * @since Nov 23, 2014
      */
     @Override
     public double longitudinalPhaseAdvance(IProbe probe, double dblLen) {
         return longitudinalPhaseAdvance(probe);
     }
-    
+
     /**
-     *  Compute the transfer matrix for <b>subsection</b> of this element of length 
-     *  <code>dblLen</code> for the specified given probe.  Because this is a thin
-     *  element (with no length), the length parameter is ignored in computing the
-     *  transfer matrix.
+     * Compute the transfer matrix for <strong>subsection</strong> of this
+     * element of length <code>dblLen</code> for the specified given probe.
+     * Because this is a thin element (with no length), the length parameter is
+     * ignored in computing the transfer matrix.
      *
-     *  @param  dblLen      length of subelement
-     *  @param  probe       probe containing parameters for the subsectional transfer matrix
+     * @param dblLen length of subelement
+     * @param probe probe containing parameters for the subsectional transfer
+     * matrix
      *
-     *  @return             transfer map for an element of length dblLen
+     * @return transfer map for an element of length dblLen
      *
-     *  @exception  ModelException    unable to compute transfer map
+     * @exception ModelException unable to compute transfer map
      *
-     *  @see    #transferMap()
+     * @see #transferMap()
      */
     @Override
-    public PhaseMap transferMap(IProbe probe, double dblLen) 
-    	throws ModelException
-    {
-    	return transferMap(probe);
+    public PhaseMap transferMap(IProbe probe, double dblLen)
+            throws ModelException {
+        return transferMap(probe);
     }
 
-     /**
+    /**
      * <h2>Add Rotation and Displacement Error to Transfer Matrix</h2>
      * <p>
      * Method to add the effects of a spatial rotation and displacement to the
@@ -194,10 +189,11 @@ public abstract class ThinElement extends Element {
      * sub-slice of the element. Besides reducing number of matrix
      * multiplications, there is also less numerical error.
      *
-     * @param matPhi transfer matrix <b>&Phi;</b> to be processed
+     * @param matPhi transfer matrix <strong>&Phi;</strong> to be processed
      * @param length element length (used only for FM composed of many thing
      * elements stacked)
-     * @return transfer matrix <b>&Phi;</b> after applying displacement
+     * @return transfer matrix <strong>&Phi;</strong> after applying
+     * displacement
      *
      * @author Natalia Milas
      *
@@ -214,34 +210,34 @@ public abstract class ThinElement extends Element {
 
         //check if the element is contained in a sequence which has its own misalignements
         if (this.getParent() instanceof ElementSeq) {
-            double Dx = (getNodePos() - this.getParent().getLength() / 2) * ((ElementSeq) this.getParent()).getPhiY();
-            double Dy = (getNodePos() - this.getParent().getLength() / 2) * ((ElementSeq) this.getParent()).getPhiX();
+            double dX = (getNodePos() - this.getParent().getLength() / 2) * ((ElementSeq) this.getParent()).getPhiY();
+            double dY = (getNodePos() - this.getParent().getLength() / 2) * ((ElementSeq) this.getParent()).getPhiX();
 
             px = px + ((ElementSeq) this.getParent()).getPhiX();
             py = py + ((ElementSeq) this.getParent()).getPhiY();
             pz = pz + ((ElementSeq) this.getParent()).getPhiZ();
 
-            dx = dx + Dx + ((ElementSeq) this.getParent()).getAlignX();
-            dy = dy + Dy + ((ElementSeq) this.getParent()).getAlignY();
+            dx = dx + dX + ((ElementSeq) this.getParent()).getAlignX();
+            dy = dy + dY + ((ElementSeq) this.getParent()).getAlignY();
             dz = dz + ((ElementSeq) this.getParent()).getAlignZ();
         }
 
         if (pz != 0.) {
-            PhaseMatrix R = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));
-            matPhi = R.transpose().times(matPhi.times(R));
+            PhaseMatrix r = PhaseMatrix.rotationProduct(R3x3.newRotationZ(-pz));
+            matPhi = r.transpose().times(matPhi.times(r));
         }
 
         if (px != 0. || py != 0. || dz != 0. || dx != 0. || dy != 0.) {
-            PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(py * length - dx, -py, px * length - dy, -px, -dz, 0.));
-            matPhi = matPhi.times(T);
+            PhaseMatrix t = PhaseMatrix.translation(new PhaseVector(py * length - dx, -py, px * length - dy, -px, -dz, 0.));
+            matPhi = matPhi.times(t);
         }
 
         if (px != 0. || py != 0. || dz != 0. || dx != 0. || dy != 0.) {
-            PhaseMatrix T = PhaseMatrix.translation(new PhaseVector(-py * length + dx, py, -px * length + dy, px, dz, 0.));
-            matPhi = T.times(matPhi);
+            PhaseMatrix t = PhaseMatrix.translation(new PhaseVector(-py * length + dx, py, -px * length + dy, px, dz, 0.));
+            matPhi = t.times(matPhi);
         }
 
         return matPhi;
     }
 
-};
+}

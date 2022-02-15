@@ -19,7 +19,6 @@ package xal.extension.jels.smf.impl;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
@@ -34,13 +33,13 @@ import xal.smf.impl.qualify.ElementTypeManager;
  */
 public class ESSIonSourceMagnetron extends AcceleratorNode {
 
-    public static final String s_strType = "ISM";
+    public static final String TYPE = "ISM";
 
     // Ion Source's magnetron channel handles
     public static final String FORWD_PRW_R_HANDLE = "forwdPrwR";
     private Channel forwdPrwRC = null;
     public static final String FORWD_PRW_S_HANDLE = "forwdPrwS";
-    private Channel forwdPrwSC = null;
+
     public final AccessibleProperty forwdPrw = new AccessibleProperty("forwdPrw", FORWD_PRW_R_HANDLE, FORWD_PRW_S_HANDLE);
 
     static {
@@ -51,14 +50,15 @@ public class ESSIonSourceMagnetron extends AcceleratorNode {
      * Register type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes(ESSIonSourceMagnetron.class, s_strType);
+        ElementTypeManager.defaultManager().registerTypes(ESSIonSourceMagnetron.class, TYPE);
     }
 
     /**
      * Override to provide type signature
      */
+    @Override
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /**
@@ -78,13 +78,13 @@ public class ESSIonSourceMagnetron extends AcceleratorNode {
     /*
      *  Process variable Gets 
      */
-    public double getForwdPrwR() throws ConnectionException, GetException {
+    public double getForwdPrwR() throws GetException {
         forwdPrwRC = lazilyGetAndConnect(FORWD_PRW_R_HANDLE, forwdPrwRC);
         return forwdPrwRC.getValDbl();
     }
 
-    public void setForwdPrwS(double dblVal) throws NoSuchChannelException, ConnectionException, PutException {
-        forwdPrwSC = getAndConnectChannel(FORWD_PRW_S_HANDLE);
+    public void setForwdPrwS(double dblVal) throws NoSuchChannelException, PutException {
+        Channel forwdPrwSC = getAndConnectChannel(FORWD_PRW_S_HANDLE);
         forwdPrwSC.putVal(dblVal);
     }
 }

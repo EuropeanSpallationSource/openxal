@@ -12,7 +12,7 @@ import xal.tools.IconLib;
 /**
  * A RBAC menu for usage in Menubar. This menu displays the active username and
  * contains a button for user change.
- * 
+ *
  * @author <a href="mailto:blaz.kranjc@cosylab.com">Blaz Kranjc</a>
  */
 public class RBACMenu extends JMenu {
@@ -35,12 +35,9 @@ public class RBACMenu extends JMenu {
         this.setEnabled(true);
 
         JMenuItem changeUserItem = new JMenuItem("Change User");
-        changeUserItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Application.getApp().changeRBACUser();
-                updateUsername();
-            }
+        changeUserItem.addActionListener(e -> {
+            Application.getApp().changeRBACUser();
+            updateUsername();
         });
         this.add(changeUserItem);
     }
@@ -54,7 +51,7 @@ public class RBACMenu extends JMenu {
 
     /**
      * Retrieves the RBAC username from the application.
-     * 
+     *
      * @return username
      */
     private static String getUsername() {

@@ -20,7 +20,7 @@ public class ChannelRecordImpl implements ChannelRecord {
     /**
      * internal data storage
      */
-    protected ArrayValue _store;
+    protected ArrayValue store;
 
     /**
      * Constructor
@@ -28,7 +28,7 @@ public class ChannelRecordImpl implements ChannelRecord {
      * @param adaptor from which to generate a record
      */
     public ChannelRecordImpl(final ValueAdaptor adaptor) {
-        _store = adaptor.getStore();
+        store = adaptor.getStore();
     }
 
     /**
@@ -36,8 +36,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      *
      * @return The length of the array.
      */
+    @Override
     public int getCount() {
-        return _store.getCount();
+        return store.getCount();
     }
 
     /**
@@ -45,8 +46,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      *
      * @return The native type of the data.
      */
+    @Override
     public Class<?> getType() {
-        return _store.getType();
+        return store.getType();
     }
 
     /**
@@ -55,8 +57,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      *
      * @return The data as a scalar byte.
      */
+    @Override
     public byte byteValue() {
-        return _store.byteValue();
+        return store.byteValue();
     }
 
     /**
@@ -66,8 +69,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      * @param index The index of the array element to get.
      * @return The data element at the index as a scalar byte.
      */
+    @Override
     public byte byteValueAt(final int index) {
-        return _store.byteValueAt(index);
+        return store.byteValueAt(index);
     }
 
     /**
@@ -75,8 +79,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      *
      * @return The data as a byte array.
      */
+    @Override
     public byte[] byteArray() {
-        return _store.byteArray();
+        return store.byteArray();
     }
 
     /**
@@ -85,8 +90,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      *
      * @return The data as a scalar short.
      */
+    @Override
     public short shortValue() {
-        return _store.shortValue();
+        return store.shortValue();
     }
 
     /**
@@ -96,8 +102,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      * @param index The index of the array element to get.
      * @return The data element at the index as a scalar short.
      */
+    @Override
     public short shortValueAt(final int index) {
-        return _store.shortValueAt(index);
+        return store.shortValueAt(index);
     }
 
     /**
@@ -105,8 +112,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      *
      * @return The data as a short array.
      */
+    @Override
     public short[] shortArray() {
-        return _store.shortArray();
+        return store.shortArray();
     }
 
     /**
@@ -115,8 +123,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      *
      * @return The data as a scalar int.
      */
+    @Override
     public int intValue() {
-        return _store.intValue();
+        return store.intValue();
     }
 
     /**
@@ -126,8 +135,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      * @param index The index of the array element to get.
      * @return The data element at the index as a scalar int.
      */
+    @Override
     public int intValueAt(final int index) {
-        return _store.intValueAt(index);
+        return store.intValueAt(index);
     }
 
     /**
@@ -135,8 +145,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      *
      * @return The data as a int array.
      */
+    @Override
     public int[] intArray() {
-        return _store.intArray();
+        return store.intArray();
     }
 
     /**
@@ -145,8 +156,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      *
      * @return The data as a scalar long.
      */
+    @Override
     public long longValue() {
-        return _store.longValue();
+        return store.longValue();
     }
 
     /**
@@ -156,8 +168,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      * @param index The index of the array element to get.
      * @return The data element at the index as a scalar long.
      */
+    @Override
     public long longValueAt(final int index) {
-        return _store.longValueAt(index);
+        return store.longValueAt(index);
     }
 
     /**
@@ -165,8 +178,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      *
      * @return The data as a long array.
      */
+    @Override
     public long[] longArray() {
-        return _store.longArray();
+        return store.longArray();
     }
 
     /**
@@ -175,8 +189,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      *
      * @return The data as a scalar float.
      */
+    @Override
     public float floatValue() {
-        return _store.floatValue();
+        return store.floatValue();
     }
 
     /**
@@ -186,8 +201,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      * @param index The index of the array element to get.
      * @return The data element at the index as a scalar float.
      */
+    @Override
     public float floatValueAt(final int index) {
-        return _store.floatValueAt(index);
+        return store.floatValueAt(index);
     }
 
     /**
@@ -195,8 +211,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      *
      * @return The data as a float array.
      */
+    @Override
     public float[] floatArray() {
-        return _store.floatArray();
+        return store.floatArray();
     }
 
     /**
@@ -205,8 +222,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      *
      * @return The data as a scalar double.
      */
+    @Override
     public double doubleValue() {
-        return _store.doubleValue();
+        return store.doubleValue();
     }
 
     /**
@@ -216,8 +234,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      * @param index The index of the array element to get.
      * @return The data element at the index as a scalar double.
      */
+    @Override
     public double doubleValueAt(final int index) {
-        return _store.doubleValueAt(index);
+        return store.doubleValueAt(index);
     }
 
     /**
@@ -225,8 +244,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      *
      * @return The data as a double array.
      */
+    @Override
     public double[] doubleArray() {
-        return _store.doubleArray();
+        return store.doubleArray();
     }
 
     /**
@@ -235,8 +255,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      *
      * @return The data as a scalar string.
      */
+    @Override
     public String stringValue() {
-        return _store.stringValue();
+        return store.stringValue();
     }
 
     /**
@@ -246,8 +267,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      * @param index The index of the array element to get.
      * @return The data element at the index as a scalar string.
      */
+    @Override
     public String stringValueAt(final int index) {
-        return _store.stringValueAt(index);
+        return store.stringValueAt(index);
     }
 
     /**
@@ -255,8 +277,9 @@ public class ChannelRecordImpl implements ChannelRecord {
      *
      * @return The data as a string array.
      */
+    @Override
     public String[] stringArray() {
-        return _store.stringArray();
+        return store.stringArray();
     }
 
     /**
@@ -264,18 +287,20 @@ public class ChannelRecordImpl implements ChannelRecord {
      *
      * @return A string representation of this object.
      */
+    @Override
     public String toString() {
-        return "value: " + _store.toString();
+        return "value: " + store.toString();
     }
 
     /**
-     * Convert the _store from a raw value to a processed value.
+     * Convert the store from a raw value to a processed value.
      *
      * @param transform The transform used to convert the store.
      * @return this instance as a convenience.
      */
+    @Override
     public ChannelRecord applyTransform(ValueTransform transform) {
-        _store = transform.convertFromRaw(_store);
+        store = transform.convertFromRaw(store);
         return this;
     }
 
@@ -284,7 +309,8 @@ public class ChannelRecordImpl implements ChannelRecord {
      *
      * @return The internal data storage.
      */
+    @Override
     public ArrayValue arrayValue() {
-        return _store;
+        return store;
     }
 }

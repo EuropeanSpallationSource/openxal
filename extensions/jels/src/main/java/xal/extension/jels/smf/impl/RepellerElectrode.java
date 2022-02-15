@@ -19,22 +19,23 @@ package xal.extension.jels.smf.impl;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
 import xal.smf.AccessibleProperty;
 import xal.smf.impl.qualify.ElementTypeManager;
+
 /**
  * The implementation of the Repeller Electrode class.
  *
  * @author Natalia Milas <natalia.milas@esss.se>
  */
 public class RepellerElectrode extends AcceleratorNode {
+
     /*
      *  Constants
      */
-    public static final String s_strType = "REP";
+    public static final String TYPE = "REP";
 
     public static final String STATUS_RB_HANDLE = "statusRB";
     private Channel statusRC = null;
@@ -51,16 +52,17 @@ public class RepellerElectrode extends AcceleratorNode {
      * Register type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes(RepellerElectrode.class, s_strType);
+        ElementTypeManager.defaultManager().registerTypes(RepellerElectrode.class, TYPE);
     }
 
     /**
      * Override to provide type signature
+     *
      * @return String type
      */
     @Override
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /**
@@ -80,7 +82,7 @@ public class RepellerElectrode extends AcceleratorNode {
     /*
      *  Process variable Gets
      */
-    public int getStatusON_OFF() throws ConnectionException, GetException {
+    public int getStatusOnOff() throws GetException {
         statusRC = lazilyGetAndConnect(STATUS_RB_HANDLE, statusRC);
         return statusRC.getValEnum();
     }
@@ -88,9 +90,8 @@ public class RepellerElectrode extends AcceleratorNode {
     /*
      *  Process variable Puts
      */
-    public void setStatusON_OFF(int intVal) throws ConnectionException, PutException {
+    public void setStatusOnOff(int intVal) throws PutException {
         statusSC = lazilyGetAndConnect(STATUS_SET_HANDLE, statusSC);
         statusSC.putVal(intVal);
     }
-
 }

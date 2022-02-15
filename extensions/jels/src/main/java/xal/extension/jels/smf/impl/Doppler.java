@@ -19,32 +19,33 @@ package xal.extension.jels.smf.impl;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.smf.AcceleratorNode;
 import xal.smf.AccessibleProperty;
 import xal.smf.impl.qualify.ElementTypeManager;
+
 /**
  * The implementation of the Repeller Electrode class.
- * 
+ *
  * @author Natalia Milas <natalia.milas@esss.se>
  */
 public class Doppler extends AcceleratorNode {
+
     /*
      *  Constants
      */
-    public static final String s_strType = "DPL";
-    
+    public static final String TYPE = "DPL";
+
     public static final String FRACTION_H_R_HANDLE = "fractionH+";
     public final AccessibleProperty fractionH = new AccessibleProperty("fractionH", FRACTION_H_R_HANDLE);
     private Channel fractionHRC = null;
 
     public static final String FRACTION_H2_R_HANDLE = "fractionH2+";
     public final AccessibleProperty fractionH2 = new AccessibleProperty("fractionH2", FRACTION_H2_R_HANDLE);
-    private Channel fractionH2RC = null; 
+    private Channel fractionH2RC = null;
 
     public static final String FRACTION_H3_R_HANDLE = "fractionH3+";
-    private Channel fractionH3RC = null; 
+    private Channel fractionH3RC = null;
     public final AccessibleProperty fractionH3 = new AccessibleProperty("fractionH3", FRACTION_H3_R_HANDLE);
 
     static {
@@ -55,16 +56,17 @@ public class Doppler extends AcceleratorNode {
      * Register type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes(Doppler.class, s_strType);
+        ElementTypeManager.defaultManager().registerTypes(Doppler.class, TYPE);
     }
 
     /**
      * Override to provide type signature
+     *
      * @return String type
      */
     @Override
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /**
@@ -84,20 +86,19 @@ public class Doppler extends AcceleratorNode {
     /*
      *  Process variable Gets 
      */
-    public double getFraction_H() throws ConnectionException, GetException {
+    public double getFractionH() throws GetException {
         fractionHRC = lazilyGetAndConnect(FRACTION_H_R_HANDLE, fractionHRC);
         return fractionHRC.getValDbl();
     }
-    
-    public double getFraction_H2() throws ConnectionException, GetException {
+
+    public double getFractionH2() throws GetException {
         fractionH2RC = lazilyGetAndConnect(FRACTION_H2_R_HANDLE, fractionH2RC);
         return fractionH2RC.getValDbl();
     }
-    
-    public double getFraction_H3() throws ConnectionException, GetException {
+
+    public double getFractionH3() throws GetException {
         fractionH3RC = lazilyGetAndConnect(FRACTION_H_R_HANDLE, fractionH3RC);
         return fractionH3RC.getValDbl();
     }
-  
-   
+
 }

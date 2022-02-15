@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JFrame;
+import javax.swing.WindowConstants;
 
 import xal.extension.jels.JElsDemo;
 import xal.extension.solver.AlgorithmSchedule;
@@ -28,7 +29,6 @@ import xal.extension.widgets.plot.BasicGraphData;
 import xal.extension.widgets.plot.FunctionGraphsJPanel;
 import xal.model.IAlgorithm;
 import xal.model.Lattice;
-import xal.model.ModelException;
 import xal.model.probe.EnvelopeProbe;
 import xal.model.probe.traj.EnvelopeProbeState;
 import xal.model.probe.traj.Trajectory;
@@ -47,7 +47,7 @@ public class Matcher implements Runnable, Stopper {
 
     private OnlineModelEvaluator evaluator;
 
-    private ModelEvaluatorEnum criteria = ModelEvaluatorEnum.PhaseAdvance;
+    private ModelEvaluatorEnum criteria = ModelEvaluatorEnum.PHASE_ADVANCE;
 
     private double timeLimit = 1.;
 
@@ -124,7 +124,6 @@ public class Matcher implements Runnable, Stopper {
             LatticeXmlWriter.writeXml(lattice, file);
         } catch (IOException e1) {
             LOGGER.log(Level.SEVERE, "Error while saving the lattice.", e1);
-            return;
         }
     }
 
@@ -144,19 +143,19 @@ public class Matcher implements Runnable, Stopper {
         frame.setSize(500, 500);
         frame.add(plot);
         frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
     }
 
     public void updateSimulationPlot(Trajectory<EnvelopeProbeState> t) {
-        Vector<EnvelopeCurve> data = new Vector<>(2);
+        Vector<EnvelopeCurve> newData = new Vector<>(2);
         EnvelopeCurve cx = new EnvelopeCurve(PLANE.HOR, t);
-        data.add(cx);
+        newData.add(cx);
 
         EnvelopeCurve cy = new EnvelopeCurve(PLANE.VER, t);
-        data.add(cy);
+        newData.add(cy);
 
         plot.removeGraphData(0);
-        plot.addGraphData(data);
+        plot.addGraphData(newData);
     }
 
     public void showScorePlot(boolean show) {
@@ -164,17 +163,17 @@ public class Matcher implements Runnable, Stopper {
             scoreFrame = new JFrame();
             scorePlot = new BasicGraphData();
 
-            FunctionGraphsJPanel plot = new FunctionGraphsJPanel();
+            FunctionGraphsJPanel newPlot = new FunctionGraphsJPanel();
 
-            plot.setVisible(true);
-            plot.addGraphData(scorePlot);
-            plot.setAxisNames("trial", "score");
-            plot.refreshGraphJPanel();
+            newPlot.setVisible(true);
+            newPlot.addGraphData(scorePlot);
+            newPlot.setAxisNames("trial", "score");
+            newPlot.refreshGraphJPanel();
 
             scoreFrame.setSize(500, 500);
-            scoreFrame.add(plot);
+            scoreFrame.add(newPlot);
             scoreFrame.setVisible(true);
-            scoreFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            scoreFrame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         }
 
         if (show) {
@@ -195,6 +194,7 @@ public class Matcher implements Runnable, Stopper {
         return progress;
     }
 
+    @Override
     public void run() {
         aborted = false;
         progress = 0.;
@@ -221,7 +221,8 @@ public class Matcher implements Runnable, Stopper {
 
         InitialBeamParameters initialParameters = getInitialBeamParameters();
         for (Variable v : initialParameters.getVariables()) {
-            System.out.printf("%s: %f%n", v.getName(), v.getInitialValue());
+            String msg = String.format("%s: %f%n", v.getName(), v.getInitialValue());
+            LOGGER.log(Level.INFO, msg);
         }
 
         Problem problem = new Problem(evaluator.getObjectives(), initialParameters.getVariables(), evaluator);
@@ -233,11 +234,13 @@ public class Matcher implements Runnable, Stopper {
 
             @Override
             public void trialVetoed(AlgorithmSchedule algorithmSchedule, Trial trial) {
+                // Do nothing
             }
 
             @Override
             public void trialScored(AlgorithmSchedule algorithmSchedule, Trial trial) {
-                System.out.printf("score: %f algo: %s%n", trial.getSatisfaction(), trial.getAlgorithm().getClass());
+                String msg = String.format("score: %f algo: %s%n", trial.getSatisfaction(), trial.getAlgorithm().getClass());
+                LOGGER.log(Level.INFO, msg);
                 if (showScore) {
                     scorePlot.addPoint(i++, trial.getSatisfaction());
                 }
@@ -248,11 +251,13 @@ public class Matcher implements Runnable, Stopper {
             @Override
             public void algorithmRunWillExecute(AlgorithmSchedule schedule, SearchAlgorithm algorithm,
                     ScoreBoard scoreBoard) {
+                // Do nothing
             }
 
             @Override
             public void algorithmRunExecuted(AlgorithmSchedule schedule, SearchAlgorithm algorithm,
                     ScoreBoard scoreBoard) {
+                // Do nothing
             }
         });
 
@@ -271,7 +276,8 @@ public class Matcher implements Runnable, Stopper {
                     f1.format("%s: %f%n", v.getName(), solver.getScoreBoard().getBestSolution().getTrialPoint().getValue(v));
                 }
 
-                System.out.printf("best score: %f%n", solver.getScoreBoard().getBestSolution().getSatisfaction());
+                String msg = String.format("best score: %f%n", solver.getScoreBoard().getBestSolution().getSatisfaction());
+                LOGGER.log(Level.INFO, msg);
                 f1.format("best score: %f%n", solver.getScoreBoard().getBestSolution().getSatisfaction());
                 f1.close();
             } catch (FileNotFoundException e) {
@@ -284,11 +290,13 @@ public class Matcher implements Runnable, Stopper {
         // set back final values to initial
         initialParameters.setInitialProbe(initialParameters.getProbe(solver.getScoreBoard().getBestSolution().getTrialPoint()));
         for (Variable v : initialParameters.getVariables()) {
-            System.out.printf("%s: %f\n", v.getName(), solver.getScoreBoard().getBestSolution().getTrialPoint().getValue(v));
+            String msg = String.format("%s: %f\n", v.getName(), solver.getScoreBoard().getBestSolution().getTrialPoint().getValue(v));
+            LOGGER.log(Level.INFO, msg);
+
         }
     }
 
-    public static void main(String args[]) throws ModelException, InstantiationException {
+    public static void main(String[] args) throws InstantiationException {
         Accelerator accelerator = loadAccelerator();
 
         IAlgorithm tracker = AlgorithmFactory.createEnvelopeTracker(accelerator);
@@ -317,8 +325,8 @@ public class Matcher implements Runnable, Stopper {
 }
 
 enum ModelEvaluatorEnum {
-    PhaseAdvance(PhaseAdvEvaluator.class),
-    MinimiseOscillations(MinimiseOscillationsEvaluator.class);
+    PHASE_ADVANCE(PhaseAdvEvaluator.class),
+    MINIMISE_OSCILLATIONS(MinimiseOscillationsEvaluator.class);
 
     private Class<? extends OnlineModelEvaluator> c;
 

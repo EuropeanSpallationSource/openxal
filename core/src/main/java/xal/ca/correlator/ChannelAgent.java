@@ -3,209 +3,214 @@
  *
  * Created on June 27, 2002, 8:46 AM
  */
-
 package xal.ca.correlator;
 
 import xal.tools.correlator.*;
 import xal.tools.messaging.MessageCenter;
 import xal.ca.*;
 
-import java.util.*;
 import java.util.logging.Logger;
 import java.util.logging.Level;
 
 /**
- * ChannelAgent manages a single channel.  It performs any setup, monitors the
- * channel and it manages a circular buffer of bin agents that gather
- * correlated events.
+ * ChannelAgent manages a single channel. It performs any setup, monitors the
+ * channel and it manages a circular buffer of bin agents that gather correlated
+ * events.
  *
- * @author  tap
+ * @author tap
  */
 public class ChannelAgent extends SourceAgent<ChannelTimeRecord> {
-    private String _name;
-    private Channel _channel;
-    private Monitor _monitor;
-    private volatile boolean _enabled;
-    private volatile boolean _activeFlag;
-    private EventHandler _eventHandler;
-    private ConnectionListener _connectionHandler;
-    private static final Logger LOGGER = Logger.getLogger(ChannelAgent.class.getName());
 
+    private Channel channel;
+    private Monitor monitor;
+    private volatile boolean enabled;
+    private volatile boolean activeFlag;
+    private EventHandler eventHandler;
+    private ConnectionListener connectionHandler;
+    private static final Logger LOGGER = Logger.getLogger(ChannelAgent.class.getName());
 
     /**
      * Creates new ChannelAgent
+     *
      * @param localCenter local shared message center
      * @param newChannel channel to monitor
      * @param newName name
      * @param recordFilter filter for records
      * @param tester correlation tester
      */
-    public ChannelAgent( final MessageCenter localCenter, final Channel newChannel, final String newName, final RecordFilter<ChannelTimeRecord> recordFilter, final CorrelationTester<ChannelTimeRecord> tester ) {
-        super( localCenter, newName, recordFilter, tester );
-        _channel = newChannel;
-        _monitor = null;
+    public ChannelAgent(final MessageCenter localCenter, final Channel newChannel, final String newName, final RecordFilter<ChannelTimeRecord> recordFilter, final CorrelationTester<ChannelTimeRecord> tester) {
+        super(localCenter, newName, recordFilter, tester);
+        channel = newChannel;
+        monitor = null;
     }
-
 
     /**
      * Setup the event handler to use the specified record filter to filter
      * monitor events for this channel.
+     *
      * @param recordFilter The filter to use for this channel.
      */
-    protected void setupEventHandler( final RecordFilter<ChannelTimeRecord> recordFilter ) {
-        _activeFlag = false;
+    @Override
+    protected void setupEventHandler(final RecordFilter<ChannelTimeRecord> recordFilter) {
+        activeFlag = false;
 
-        if ( recordFilter == null ) {
-            _eventHandler = new EventHandler();
-        }
-        else {
-            _eventHandler = new FilteredEventHandler( recordFilter );
+        if (recordFilter == null) {
+            eventHandler = new EventHandler();
+        } else {
+            eventHandler = new FilteredEventHandler(recordFilter);
         }
     }
-
 
     /**
      * Determine if the channel is enabled for correlations.
+     *
      * @return true if the channel is enabled for correlations.
      */
     public boolean isEnabled() {
-        return _enabled;
+        return enabled;
     }
-
 
     /**
      * Determine if the channel is actively being monitored.
+     *
      * @return true if the channel is being monitored and false otherwise.
      */
     public boolean isActive() {
-        return _activeFlag;
+        return activeFlag;
     }
-
 
     /**
      * Start monitoring the channel.
-     * @return true if the channel is successfully being monitored and false otherwise.
+     *
+     * @return true if the channel is successfully being monitored and false
+     * otherwise.
      */
+    @Override
     public boolean startMonitor() {
-        _enabled = true;
-        if ( _connectionHandler == null ) {
-            _connectionHandler = new ConnectionHandler();
-            _channel.addConnectionListener( _connectionHandler );
+        enabled = true;
+        if (connectionHandler == null) {
+            connectionHandler = new ConnectionHandler();
+            channel.addConnectionListener(connectionHandler);
         }
 
         // try to connect the channel
-        _activeFlag = false;
-        if ( !_channel.isConnected() ) {
-            _channel.requestConnection();
+        activeFlag = false;
+        if (!channel.isConnected()) {
+            channel.requestConnection();
             Channel.flushIO();
-        }
-        else {
+        } else {
             makeMonitor();
         }
 
-        return _activeFlag;
+        return activeFlag;
     }
-
 
     /**
      * Stop monitoring the channel
      */
+    @Override
     public void stopMonitor() {
-        _enabled = false;
-        if ( _connectionHandler != null ) {
-            _channel.removeConnectionListener( _connectionHandler );
-            _connectionHandler = null;
+        enabled = false;
+        if (connectionHandler != null) {
+            channel.removeConnectionListener(connectionHandler);
+            connectionHandler = null;
         }
-        if ( _monitor != null ) {
-            _monitor.clear();
-            _monitor = null;
+        if (monitor != null) {
+            monitor.clear();
+            monitor = null;
         }
-        _activeFlag = false;
+        activeFlag = false;
     }
-
 
     /**
-    * Create a monitor to listen for new channel records.
-    */
-    synchronized protected void makeMonitor() {
+     * Create a monitor to listen for new channel records.
+     */
+    protected synchronized void makeMonitor() {
         try {
-            if ( _enabled && _channel.isConnected() ) {
-                if ( _monitor == null ) {
-                    _monitor = _channel.addMonitorValTime( _eventHandler, Monitor.VALUE );
+            if (enabled && channel.isConnected()) {
+                if (monitor == null) {
+                    monitor = channel.addMonitorValTime(eventHandler, Monitor.VALUE);
                 }
-                _activeFlag = true;
+                activeFlag = true;
             }
-        }
-        catch( ConnectionException exception ) {
-            LOGGER.log(Level.WARNING, "Connection exception caught, turning off active flag", exception);
-            _activeFlag = false;
-        }
-        catch( MonitorException exception ) {
+        } catch (MonitorException exception) {
             LOGGER.log(Level.WARNING, "Monitoring exception caught, turning off active flag", exception);
-            _activeFlag = false;
+            activeFlag = false;
         }
     }
-
 
     /**
      * Handle connection changes for the channel
      */
     private class ConnectionHandler implements ConnectionListener {
+
         /**
          * Make a monitor when the channel is connected.
+         *
          * @param channel The channel which has been connected.
          */
-        public void connectionMade( final Channel channel ) {
+        @Override
+        public void connectionMade(final Channel channel) {
             makeMonitor();
         }
 
-
         /**
-         * Indicates that a connection to the specified channel has been dropped.
+         * Indicates that a connection to the specified channel has been
+         * dropped.
+         *
          * @param channel The channel which has been disconnected.
          */
-        public void connectionDropped( final Channel channel ) {
-            _activeFlag = false;
+        @Override
+        public void connectionDropped(final Channel channel) {
+            activeFlag = false;
         }
     }
 
-
-    /** Handle the monitor events */
+    /**
+     * Handle the monitor events
+     */
     protected class EventHandler implements IEventSinkValTime {
+
         /**
          * Implement IEventSinkValTime interface
          *
-         * Handle the monitor events for this channel.
-         * When the monitor fires, recycle the oldest bin.  Clear all memory of events
-         * and assign the timestamp of the record to be the timestamp for the bin.
-         * Broadcast the event within the correlation world so that bins of all
-         * channel agents (not just this one) are notified of the event.
+         * Handle the monitor events for this channel. When the monitor fires,
+         * recycle the oldest bin. Clear all memory of events and assign the
+         * timestamp of the record to be the timestamp for the bin. Broadcast
+         * the event within the correlation world so that bins of all channel
+         * agents (not just this one) are notified of the event.
          */
-        synchronized public void eventValue( final ChannelTimeRecord record, final Channel channel ) {
-            if ( !_activeFlag ) return;
+        @Override
+        public synchronized void eventValue(final ChannelTimeRecord channelRecord, final Channel channel) {
+            if (!activeFlag) {
+                return;
+            }
 
-            double timestamp = record.getTimestamp().getSeconds();
-            postEvent( record, timestamp );
+            double timestamp = channelRecord.getTimestamp().getSeconds();
+            postEvent(channelRecord, timestamp);
         }
     }
-
 
     /**
      * Handle the Monitor events and filter the events according to the supplied
      * <code>ChannelRecordFilter</code>.
      */
     protected class FilteredEventHandler extends EventHandler {
+
         RecordFilter<ChannelTimeRecord> filter;
 
-        public FilteredEventHandler( final RecordFilter<ChannelTimeRecord> newFilter ) {
+        public FilteredEventHandler(final RecordFilter<ChannelTimeRecord> newFilter) {
             filter = newFilter;
         }
 
-        synchronized public void eventValue( final ChannelTimeRecord record, final Channel channel ) {
-            /** Handle only those events accepted by the filter */
-            if ( filter.accept( record ) ) {
-                super.eventValue( record, channel );
+        @Override
+        public synchronized void eventValue(final ChannelTimeRecord channelRecord, final Channel channel) {
+            /**
+             * Handle only those events accepted by the filter
+             */
+            if (filter.accept(channelRecord)) {
+                super.eventValue(channelRecord, channel);
             }
         }
-   }
+    }
 }

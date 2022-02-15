@@ -15,12 +15,10 @@ import xal.ca.*;
  *
  * @author tap
  */
-abstract public class PermanentMagnet extends Magnet {
+public abstract class PermanentMagnet extends Magnet {
 
     // accessible properties
-    private String[] readbackHandle = null;
-    public AccessibleProperty field = new AccessibleProperty("field", readbackHandle, null, () -> getDesignField(), (v) -> {
-    }, (cV) -> getDesignField(), (v) -> getDesignField());
+    public final AccessibleProperty field = new AccessibleProperty("field", "", "", this::getDesignField, cV -> getDesignField());
 
     // static initializer
     static {
@@ -54,8 +52,18 @@ abstract public class PermanentMagnet extends Magnet {
      *
      * @return true since all PermanentMagnet instances are permanent magnets.
      */
+    @Override
     public boolean isPermanent() {
         return true;
+    }
+
+    /**
+     * Get the live property value for the corresponding array of channel values
+     * in the order given by getLivePropertyChannels()
+     */
+    @Override
+    public double getLivePropertyValue(final String propertyName, final double[] channelValues) {
+        return getDesignPropertyValue(propertyName);
     }
 
     /**

@@ -3,7 +3,6 @@
  *
  * Created on September 1, 2015, 10:38 AM
  */
-
 package xal;
 
 import xal.tools.ResourceManager;
@@ -14,62 +13,70 @@ import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.net.*;
 import java.io.*;
-
+import java.nio.charset.StandardCharsets;
 
 /**
  * Info about the current Open XAL.
  */
 public class Info {
-    /** Label for this version of Open XAL */
-    final private static String LABEL;
+
+    /**
+     * Label for this version of Open XAL
+     */
+    private static String label;
     private static final Logger LOGGER = Logger.getLogger(Info.class.getName());
 
-    // static initializer
+    // static initializer    
     static {
+        Info.init();
+    }
+
+    private static void init() {
         // assign the default label
-        String label = "Open XAL";
+        String defLabel = "Open XAL";
 
         // attempt to load info properties from the "info.json" file
-        System.out.println( "Getting info resource..." );
-        final URL infoLocation = ResourceManager.getResourceURL( Info.class, "info.json" );
-        if ( infoLocation != null ) {
+        LOGGER.log(Level.INFO, "Getting info resource...");
+        final URL infoLocation = ResourceManager.getResourceURL(Info.class, "info.json");
+        if (infoLocation != null) {
             try {
-                //System.out.println( "Attempting to load Info from URL: " + infoLocation );
-                final StringBuffer buffer = new StringBuffer();
-                final InputStream infoStream = infoLocation.openStream();
-                final BufferedReader infoReader = new BufferedReader( new InputStreamReader( infoStream ) );
-                while( true ) {
-                    final String nextLine = infoReader.readLine();
-                    if ( nextLine != null ) {
-                        buffer.append( nextLine );
-                        buffer.append( "\n" );
-                    } else {
-                        break;  // end of input
+                final StringBuilder buffer = new StringBuilder();
+                try (InputStream infoStream = infoLocation.openStream();
+                        BufferedReader infoReader = new BufferedReader(new InputStreamReader(infoStream, StandardCharsets.UTF_8))) {
+                    while (true) {
+                        final String nextLine = infoReader.readLine();
+                        if (nextLine != null) {
+                            buffer.append(nextLine);
+                            buffer.append("\n");
+                        } else {
+                            // end of input
+                            break;
+                        }
                     }
                 }
-                infoStream.close();
-
-                //System.out.println( "Buffer: " + buffer.toString() );
 
                 @SuppressWarnings("unchecked")
-                final Map<String,Object> infoMap = (Map<String,Object>)JSONCoder.defaultDecode( buffer.toString() );
+                final Map<String, Object> infoMap = (Map<String, Object>) JSONCoder.defaultDecode(buffer.toString());
 
-                //System.out.println( "Info map: " + infoMap );
-
-                label = (String)infoMap.get("label");
-            } catch( Exception exception ) {
-                LOGGER.log(Level.SEVERE, "Exception attempting to load Open XAL info from: " + infoLocation, exception);
-                LOGGER.info("Will revert to default info label: " + label );
+                defLabel = (String) infoMap.get("label");
+            } catch (IOException | NullPointerException exception) {
+                LOGGER.log(Level.SEVERE, exception, () -> "Exception attempting to load Open XAL info from: " + infoLocation);
+                LOGGER.log(Level.INFO, "Will revert to default info label: {0}", defLabel);
             }
         }
 
         // assign the Info propreties
-        LABEL = label;
+        Info.label = defLabel;
     }
 
+    private Info() {
+        throw new IllegalStateException("Utility class");
+    }
 
-    /** Get the label for this version of Open XAL */
-    static public String getLabel() {
-        return LABEL;
+    /**
+     * Get the label for this version of Open XAL
+     */
+    public static String getLabel() {
+        return label;
     }
 }

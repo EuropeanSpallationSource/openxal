@@ -1,5 +1,7 @@
 package xal.extension.jels;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -18,6 +20,8 @@ import xal.smf.impl.qualify.MagnetType;
 @RunWith(Parameterized.class)
 public class SteererTest extends TestCommon {
 
+    private static final Logger LOGGER = Logger.getLogger(SteererTest.class.getName());
+
     public SteererTest(Probe probe, ElementMapping elementMapping) {
         super(probe, elementMapping);
     }
@@ -27,17 +31,13 @@ public class SteererTest extends TestCommon {
     @Test
     public void doQuadTest() throws InstantiationException, ModelException {
         probe.reset();
-        System.out.println("QUAD 70 -16 15 0 0 0 0 0");
+        LOGGER.log(Level.INFO, "QUAD 70 -16 15 0 0 0 0 0");
         //QUAD 70 -16 15 0 0 0 0 0
         AcceleratorSeq sequence = quad_steerer(70., -16., 15., 10, -20);
 
         run(sequence);
 
-        //printResults();
         if (initialEnergy == 3e6) {
-//            checkELSResults(7.000000E-02, new double[]{1.000780E-03, 9.345521E-04, 1.833376E-03},
-//                    new double[]{3.820541E-01, 3.342766E-01, 9.435362E-01}, errTolerance);
-
             checkTWTransferMatrix(new double[][]{
                 {+1.160625e+00, +7.370925e-02, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00},
                 {+4.708370e+00, +1.160625e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00},
@@ -74,9 +74,9 @@ public class SteererTest extends TestCommon {
                 {+0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +5.106308e-08, +1.599526e-06},},
                     new double[]{4.4423, 126.998, 2.21983, 63.3862, 0, 0}, errTolerance);
             /*      dx  = 4.4423 mm
-					 dx' = 126.998 mrad
-					 dy  = 2.21983 mm
-					 dy' = 63.3862 mrad*/
+                     dx' = 126.998 mrad
+                     dy  = 2.21983 mm
+                     dy' = 63.3862 mrad*/
         }
     }
 
@@ -93,7 +93,7 @@ public class SteererTest extends TestCommon {
         ApertureBucket aper = new ApertureBucket();
         aper.setAperX(R * 1e-3);
         aper.setAperY(R * 1e-3);
-        aper.setShape(ApertureBucket.iRectangle);
+        aper.setShape(ApertureBucket.RECTANGLE);
         AcceleratorSeq sequence = new AcceleratorSeq("QuadTest");
         Quadrupole quad = ElementFactory.createQuadrupole("quad", L * 1e-3, G * Math.signum(probe.getSpeciesCharge()), aper,
                 null, L / 2. * 1e-3);

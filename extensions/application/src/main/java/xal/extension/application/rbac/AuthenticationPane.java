@@ -13,7 +13,8 @@
  * more details.
  * 
  * You should have received a copy of the GNU General Public License along with
- * this program. If not, see https://www.gnu.org/licenses/gpl-2.0.txt
+ //www.gnu.org/licenses/gpl-2.0.txt
+ * this program. If not, see https:
  */
 package xal.extension.application.rbac;
 
@@ -35,21 +36,21 @@ import javax.swing.JTextField;
 
 import xal.rbac.Credentials;
 
-
-
-
 /**
- * 
- * <code>AuthenticationPane</code> is an option pane that shows the username and password field, where user can input
- * his credentials that should be used for authentication.
- * 
+ *
+ * <code>AuthenticationPane</code> is an option pane that shows the username and
+ * password field, where user can input his credentials that should be used for
+ * authentication.
+ *
  * @author <a href="mailto:jaka.bobnar@cosylab.com">Jaka Bobnar</a>
- * 
+ *
  */
 public class AuthenticationPane extends JOptionPane {
+
     private static final long serialVersionUID = -832188649399294844L;
 
     private static class LoginPanel extends JPanel {
+
         private static final long serialVersionUID = 694419876299762198L;
 
         private JTextField tfUsername;
@@ -93,12 +94,11 @@ public class AuthenticationPane extends JOptionPane {
 
     /**
      * Creates a dialog that contains this pane.
-     * 
-     * @param parent
-     *            the parent of this dialog
+     *
+     * @param parent the parent of this dialog
      * @return the dialog
-     * @throws HeadlessException
-     *             if <code>GraphicsEnvironment.isHeadless</code> returns <code>true</code>
+     * @throws HeadlessException if <code>GraphicsEnvironment.isHeadless</code>
+     * returns <code>true</code>
      */
     public JDialog createDialog(Component parent) throws HeadlessException {
         JDialog dialog = super.createDialog(parent, "Sign In");
@@ -114,7 +114,7 @@ public class AuthenticationPane extends JOptionPane {
 
     /**
      * Returns the credentials if the OK button was pressed or null otherwise.
-     * 
+     *
      * @return the credentials
      */
     public static Credentials getCredentials() {
@@ -123,13 +123,13 @@ public class AuthenticationPane extends JOptionPane {
         dlg.setModal(true);
         dlg.setAlwaysOnTop(true);
         dlg.setVisible(true);
-        
+
         Object o = pane.getValue();
         if (o == UNINITIALIZED_VALUE) {
             return null;
         }
         if (o instanceof Integer) {
-            return ((Integer) o).intValue() == JOptionPane.OK_OPTION ? ((LoginPanel) pane.getMessage()).getCredentials()
+            return ((Integer) o) == JOptionPane.OK_OPTION ? ((LoginPanel) pane.getMessage()).getCredentials()
                     : null;
         }
         return null;

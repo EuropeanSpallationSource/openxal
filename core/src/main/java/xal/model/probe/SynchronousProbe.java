@@ -68,8 +68,8 @@ public class SynchronousProbe extends BunchProbe<SynchronousState> {
 
     /**
      * Set the synchronous phase.
-     * 
-     * @param dblPhase synchronous phase in <b>radians</b>
+     *
+     * @param dblPhase synchronous phase in <strong>radians</strong>
      */
     public void setSynchronousPhase(double dblPhase) {
         this.stateCurrent.setSynchronousPhase(dblPhase);
@@ -79,7 +79,7 @@ public class SynchronousProbe extends BunchProbe<SynchronousState> {
     /**
      * Return the synchronous phase.
      *
-     * @return synchronous phase in <b>radians</b>
+     * @return synchronous phase in <strong>radians</strong>
      */
     public double getSynchronousPhase() {
         return this.stateCurrent.getSynchronousPhase();
@@ -88,7 +88,7 @@ public class SynchronousProbe extends BunchProbe<SynchronousState> {
     /**
      * Set the energy gain for the current element.
      *
-     * @param dblEnergyGain energy gain in <b>eV</b>
+     * @param dblEnergyGain energy gain in <strong>eV</strong>
      */
     public void setEnergyGain(double dblEnergyGain) {
         this.stateCurrent.setEnergyGain(dblEnergyGain);
@@ -97,7 +97,7 @@ public class SynchronousProbe extends BunchProbe<SynchronousState> {
     /**
      * Return the energy gain in the current element.
      *
-     * @return energy gain in <b>eV</b>
+     * @return energy gain in <strong>eV</strong>
      */
     public double getEnergyGain() {
         return this.stateCurrent.getEnergyGain();
@@ -113,7 +113,7 @@ public class SynchronousProbe extends BunchProbe<SynchronousState> {
      */
     @Override
     public Trajectory<SynchronousState> createTrajectory() {
-        return new Trajectory<SynchronousState>(SynchronousState.class);
+        return new Trajectory<>(SynchronousState.class);
     }
 
     /**

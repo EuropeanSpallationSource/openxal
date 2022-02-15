@@ -9,1500 +9,1441 @@ import xal.tools.messaging.MessageCenter;
 import xal.tools.ArrayValue;
 import xal.tools.transforms.ValueTransform;
 
-
 /**
- * Channel is an abstract high level XAL wrapper for a native process variable (PV) channel.
- * Subclasses provide native implementations.
+ * Channel is an abstract high level XAL wrapper for a native process variable
+ * (PV) channel. Subclasses provide native implementations.
  *
- * @author  Christopher K. Allen
+ * @author Christopher K. Allen
  * @author Tom Pelaia
  * @version 1.1
  */
-abstract public class Channel {
-    /** Static variables */
-    static protected ChannelSystem channelSystem;
+public abstract class Channel {
 
-    /**  Local Attributes */
-    protected String          m_strId;                // channel name
-    protected double          m_dblTmIO;              // pend IO timeout
-    protected double          m_dblTmEvt;             // pend event timeout
-    private ValueTransform valueTransform;            // transform between raw and physical values
+    /*
+     * Static variables
+     */
+    protected static ChannelSystem channelSystem;
 
-    /** Notify listeners when connection is made or dropped */
+    /*
+     * Local Attributes
+     */
+    /**
+     * channel name
+     */
+    protected String strId;
+    /**
+     * pend IO timeout
+     */
+    protected double dblTmIO;
+    /**
+     * pend event timeout
+     */
+    protected double dblTmEvt;
+    /**
+     * transform between raw and physical values
+     */
+    private ValueTransform valueTransform;
+
+    /**
+     * Notify listeners when connection is made or dropped
+     */
     protected ConnectionListener connectionProxy;
 
+    /**
+     * One MessageCenter for all Channel events
+     */
+    protected static MessageCenter messageCenter;
 
-    /** One MessageCenter for all Channel events */
-    static protected MessageCenter messageCenter;
-
-
-    /** hold connection status */
+    /**
+     * hold connection status
+     */
     protected volatile boolean connectionFlag;
 
-	/** indicates whether this channel is marked as being valid */
-	private boolean _valid;
-
+    /**
+     * indicates whether this channel is marked as being valid
+     */
+    private boolean valid;
 
     static {
         channelSystem = ChannelFactory.defaultSystem();
         messageCenter = new MessageCenter("Channel Message Center");
     }
 
-
-	/** flush IO requests */
-	public static void flushIO() {
-		channelSystem.flushIO();
-	}
-
+    /**
+     * flush IO requests
+     */
+    public static void flushIO() {
+        channelSystem.flushIO();
+    }
 
     /**
-     *  Flush the EPICS Channel Access request buffer and return as soon as complete or timeout has
-     *  expired.
+     * Flush the EPICS Channel Access request buffer and return as soon as
+     * complete or timeout has expired.
      *
-     *  Must use a pendX() function if synchronous request queuing is on!
+     * Must use a pendX() function if synchronous request queuing is on!
      *
-     *  Requests include Channel.connect() and Channel.getVal()
-     *  @param    timeout      time to wait before giving up
-     *  @return   false if time out occurs
+     * Requests include Channel.connect() and Channel.getVal()
+     *
+     * @param timeout time to wait before giving up
+     * @return false if time out occurs
      */
-    public static boolean pendIO( final double timeout )    {
+    public static boolean pendIO(final double timeout) {
         return channelSystem.pendIO(timeout);
     }
 
-
     /**
-     *  Flush the EPICS Channel Access request buffer and wait for asynchronous event.  This function
-     *  blocks until the time out has expired!  Neither will it return until the channel access queue
-     *  has been processed.
+     * Flush the EPICS Channel Access request buffer and wait for asynchronous
+     * event. This function blocks until the time out has expired! Neither will
+     * it return until the channel access queue has been processed.
      *
-     *  Must use a pendX() function if synchronous request queuing is on!
+     * Must use a pendX() function if synchronous request queuing is on!
      *
-     *  Requests include Channel.connectCallback Channel.getValCallback(), Channel.putValCallback and
-     *  all monitor events.
-     *  @param  timeout      time to wait before giving up
+     * Requests include Channel.connectCallback Channel.getValCallback(),
+     * Channel.putValCallback and all monitor events.
+     *
+     * @param timeout time to wait before giving up
      */
-    public static void pendEvent( final double timeout )  {
+    public static void pendEvent(final double timeout) {
         channelSystem.pendEvent(timeout);
     }
 
-
-
-    /***************************************************************************
-     *  Constructors
+    /**
+     * *************************************************************************
+     * Constructors
      */
-
-    /**  Creates empty Channel */
-    protected Channel()    {
-        this( null );
+    /**
+     * Creates empty Channel
+     */
+    protected Channel() {
+        this(null);
     }
-
 
     /**
-     *  Creates new Channel
-     *  @param  name     EPICS channel name
+     * Creates new Channel
+     *
+     * @param name EPICS channel name
      */
     protected Channel(String name) {
-        this( name, ValueTransform.noOperationTransform );
+        this(name, ValueTransform.NO_OPERATION_TRANSFORM);
     }
-
 
     /**
      * Create a new Channel
+     *
      * @param name The EPICS PV name
      * @param aTransform The transform to apply to PV values
      */
-    protected Channel( String name, ValueTransform aTransform ) {
+    protected Channel(String name, ValueTransform aTransform) {
         // Initialize attributes
-		_valid = true;		// by default a channel is valid unless marked otherwise
+        // by default a channel is valid unless marked otherwise
+        valid = true;
         connectionFlag = false;
-        m_strId   = name;
+        strId = name;
         valueTransform = aTransform;
     }
 
+    /**
+     * From the default channel factory, get a channel for the specified signal
+     * name.
+     *
+     * @param signalName the PV for which to get the channel
+     * @return a channel for the specified PV
+     */
+    public static Channel getInstance(final String signalName) {
+        return ChannelFactory.defaultFactory().getChannel(signalName);
+    }
 
-	/**
-	 * From the default channel factory, get a channel for the specified signal name.
-	 * @param signalName the PV for which to get the channel
-	 * @return a channel for the specified PV
-	 */
-	static public Channel getInstance( final String signalName ) {
-		return ChannelFactory.defaultFactory().getChannel( signalName );
-	}
+    /**
+     * From the default channel factory, get a channel for the specified signal
+     * name and value transform.
+     *
+     * @param signalName the PV for which to get the channel
+     * @param transform to transform the value between raw and physical
+     * @return a channel for the specified PV
+     */
+    public static Channel getInstance(final String signalName, final ValueTransform transform) {
+        return ChannelFactory.defaultFactory().getChannel(signalName, transform);
+    }
 
+    /**
+     * set whether this channel is valid
+     *
+     * @param valid marks whether the channel is valid (true) or not (false)
+     */
+    public void setValid(final boolean valid) {
+        this.valid = valid;
+    }
 
-	/**
-	 * From the default channel factory, get a channel for the specified signal name and value transform.
-	 * @param signalName the PV for which to get the channel
-	 * @param transform to transfrom the value between raw and physical
-	 * @return a channel for the specified PV
-	 */
-	static public Channel getInstance( final String signalName, final ValueTransform transform ) {
-		return ChannelFactory.defaultFactory().getChannel( signalName, transform );
-	}
-
-
-	/**
-	 * set whether this channel is valid
-	 * @param valid marks whether the channel is valid (true) or not (false)
-	 */
-	public void setValid( final boolean valid ) {
-		_valid = valid;
-	}
-
-
-	/**
-	 * determine whether this channel is valid
-	 * @return true if it the channel is valid and false if not
-	 */
-	public boolean isValid() {
-		return _valid;
-	}
-
+    /**
+     * determine whether this channel is valid
+     *
+     * @return true if it the channel is valid and false if not
+     */
+    public boolean isValid() {
+        return valid;
+    }
 
     /**
      * Set a value transform for this channel.
+     *
      * @param aTransform The transform to use for this channel.
      */
     void setValueTransform(ValueTransform aTransform) {
         valueTransform = aTransform;
     }
 
-
     /**
      * Get the value transform applied to this channel.
+     *
      * @return The value transform applied to this channel.
      */
     public ValueTransform getValueTransform() {
         return valueTransform;
     }
 
-
     /**
-	 * Add a listener of connection changes
-	 * @param listener to register for connection events
-	 */
-    public void addConnectionListener( final ConnectionListener listener ) {
-        if ( connectionProxy == null ) {
+     * Add a listener of connection changes
+     *
+     * @param listener to register for connection events
+     */
+    public void addConnectionListener(final ConnectionListener listener) {
+        if (connectionProxy == null) {
             connectionProxy = messageCenter.registerSource(this, ConnectionListener.class);
         }
         messageCenter.registerTarget(listener, this, ConnectionListener.class);
-		if ( isConnected() )  listener.connectionMade(this);	// immediately post to new listener
+        if (isConnected()) {
+            // immediately post to new listener
+            listener.connectionMade(this);
+        }
     }
 
-
     /**
-	 * Remove a listener of connection changes
-	 * @param listener to remove from receiving connection events
-	 */
-    public void removeConnectionListener( final ConnectionListener listener ) {
+     * Remove a listener of connection changes
+     *
+     * @param listener to remove from receiving connection events
+     */
+    public void removeConnectionListener(final ConnectionListener listener) {
         messageCenter.removeTarget(listener, this, ConnectionListener.class);
     }
 
-
     /**
-     * Return a unique identifier of this channel so as to distinguish
-     * channels which share the same PV but have different transforms.
+     * Return a unique identifier of this channel so as to distinguish channels
+     * which share the same PV but have different transforms.
+     *
      * @return A channel identifier built from the PV and value transform
      */
     public String getId() {
-		return generateId( this.channelName(), valueTransform );
+        return generateId(this.channelName(), valueTransform);
     }
 
-
-	/** generate an ID for a channel transform pair */
-	static String generateId( final String signal, final ValueTransform transform ) {
-        if ( transform != null && transform != ValueTransform.noOperationTransform ) {
+    /**
+     * generate an ID for a channel transform pair
+     */
+    static String generateId(final String signal, final ValueTransform transform) {
+        if (transform != null && transform != ValueTransform.NO_OPERATION_TRANSFORM) {
             return signal + "_transform" + transform.hashCode();
-        }
-        else {
+        } else {
             return signal;
         }
-	}
-
-
-    /**
-     *  Returns EPICS channel name for process variable
-     *  @return     string descriptor for EPICS channel
-     */
-    public String  channelName() {
-        return m_strId;
     }
 
-
     /**
-     *  Set the EPICS channel name for the connection
-     *  @param  strNameChan     EPICS channel name
+     * Returns EPICS channel name for process variable
+     *
+     * @return string descriptor for EPICS channel
      */
-    public void setChannelName(String strNameChan)  {
-        m_strId = strNameChan;
+    public String channelName() {
+        return strId;
     }
 
+    /**
+     * Set the EPICS channel name for the connection
+     *
+     * @param strNameChan EPICS channel name
+     */
+    public void setChannelName(String strNameChan) {
+        strId = strNameChan;
+    }
 
     public static synchronized void setDebugMode(boolean bDebug) {
         channelSystem.setDebugMode(bDebug);
     }
 
+    /**
+     * Set the channel access Pend IO timeout
+     *
+     * @param dblTm I/O timeout
+     */
+    public void setIoTimeout(double dblTm) {
+        dblTmIO = dblTm;
+    }
 
     /**
-     *  Set the channel access Pend IO timeout
-     *  @param  dblTm       I/O timeout
+     * Set the channel access Pend Event timeout
+     *
+     * @param dblTm event timeout
      */
-    public void setIoTimeout(double dblTm)      { m_dblTmIO = dblTm; }
+    public void setEventTimeout(double dblTm) {
+        dblTmEvt = dblTm;
+    }
 
     /**
-     *  Set the channel access Pend Event timeout
-     *  @param  dblTm       event timeout
+     * Get the channel access Pend IO timeout
+     *
+     * @return I/O timeout
      */
-    public void setEventTimeout(double dblTm)   { m_dblTmEvt = dblTm; }
+    public double getIoTimeout() {
+        return dblTmIO;
+    }
 
     /**
-     *  Get the channel access Pend IO timeout
-     *  @return       I/O timeout
+     * Get the channel access Pend Event timeout
+     *
+     * @return event timeout
      */
-    public double getIoTimeout()      { return m_dblTmIO; }
+    public double getEventTimeout() {
+        return dblTmEvt;
+    }
 
     /**
-     *  Get the channel access Pend Event timeout
-     *  @return       event timeout
+     * Connect and wait the default timeout.
+     *
+     * @return true if the connection was made within the timeout and false if
+     * not
      */
-    public double getEventTimeout()   { return m_dblTmEvt; }
-
-
-	/**
-	 * Connect and wait the default timeout.
-	 * @return true if the connection was made within the timeout and false if not
-	 */
-	public boolean connectAndWait() {
-		return connectAndWait( m_dblTmIO );
-	}
-
-
-	/**
-	 * Request a new connection and wait for it no longer than the timeout.
-	 * @param timeout seconds to wait for a connection before giving up
-	 * @return true if the connection was made within the timeout and false if not
-	 */
-	abstract public boolean connectAndWait( final double timeout );
-
-
-	/**
-	 * Request that the channel be connected.  Connections are made in the background
-	 * so this method returns immediately upon making the request.  The connection will be
-	 * made in the future as soon as possible.  A connection event will be sent to registered
-	 * connection listeners when the connection has been established.
-	 */
-	abstract public void requestConnection();
-
+    public boolean connectAndWait() {
+        return connectAndWait(dblTmIO);
+    }
 
     /**
-     *  Terminate the network channel connection and clear all events associated
-     *  with process variable
+     * Request a new connection and wait for it no longer than the timeout.
+     *
+     * @param timeout seconds to wait for a connection before giving up
+     * @return true if the connection was made within the timeout and false if
+     * not
      */
-    abstract public void disconnect();
-
+    public abstract boolean connectAndWait(final double timeout);
 
     /**
-     *  Checks if channel is connected to process variable
-     *  @return     true if connected
+     * Request that the channel be connected. Connections are made in the
+     * background so this method returns immediately upon making the request.
+     * The connection will be made in the future as soon as possible. A
+     * connection event will be sent to registered connection listeners when the
+     * connection has been established.
      */
-    public boolean isConnected()    {
+    public abstract void requestConnection();
+
+    /**
+     * Terminate the network channel connection and clear all events associated
+     * with process variable
+     */
+    public abstract void disconnect();
+
+    /**
+     * Checks if channel is connected to process variable
+     *
+     * @return true if connected
+     */
+    public boolean isConnected() {
         return connectionFlag;
     }
 
-
     /**
-	 * Checks for process variable channel connection and throws a ConnectionException if absent.
-	 * @throws xal.ca.ConnectionException accordingly
-	 */
-    public void checkConnection() throws ConnectionException  {
-        if ( !connectAndWait() ) {
-            throw new ConnectionException(this, "Channel Error - The channel \"" + m_strId + "\" must be connected to use this feature.");
+     * Checks for process variable channel connection and throws a
+     * ConnectionException if absent.
+     *
+     * @throws xal.ca.ConnectionException accordingly
+     */
+    public void checkConnection() throws ConnectionException {
+        if (!connectAndWait()) {
+            throw new ConnectionException(this, "Channel Error - The channel \"" + strId + "\" must be connected to use this feature.");
         }
     }
 
-
     /**
-     * Checks for process variable channel connection and throws a ConnectionException if absent after attempting a connection if necessary.
-     * @param  methodName     name of method using connection
-	 * @throws xal.ca.ConnectionException accordingly
+     * Checks for process variable channel connection and throws a
+     * ConnectionException if absent after attempting a connection if necessary.
+     *
+     * @param methodName name of method using connection
+     * @throws xal.ca.ConnectionException accordingly
      */
-    protected void checkConnection( final String methodName ) throws ConnectionException  {
-		checkConnection( methodName, true );
+    protected void checkConnection(final String methodName) throws ConnectionException {
+        checkConnection(methodName, true);
     }
 
-
     /**
-	 * Checks for process variable channel connection and throws a ConnectionException if absent.
-     * @param methodName     name of method using connection
-	 * @param attemptConnection indicates whether or not to attempt a blocking connection request
-	 * @throws xal.ca.ConnectionException accordingly
+     * Checks for process variable channel connection and throws a
+     * ConnectionException if absent.
+     *
+     * @param methodName name of method using connection
+     * @param attemptConnection indicates whether or not to attempt a blocking
+     * connection request
+     * @throws xal.ca.ConnectionException accordingly
      */
-    protected void checkConnection( final String methodName, final boolean attemptConnection ) throws ConnectionException  {
-		if ( !isConnected() ) {
-			if ( attemptConnection ) {
-				connectAndWait();
-				checkConnection( methodName, false );
-			}
-			else {
-				throw new ConnectionException( this, "Channel#" + methodName + " - The channel \"" + m_strId + "\" must be connected to use this feature." );
-			}
-		}
+    protected void checkConnection(final String methodName, final boolean attemptConnection) throws ConnectionException {
+        if (!isConnected()) {
+            if (attemptConnection) {
+                connectAndWait();
+                checkConnection(methodName, false);
+            } else {
+                throw new ConnectionException(this, "Channel#" + methodName + " - The channel \"" + strId + "\" must be connected to use this feature.");
+            }
+        }
     }
 
 
     /*
      *  Native Properties of Channel Process Variable
      */
-
-
     /**
-	 * get the Java class associated with the native type of this channel
-	 * @return the native element type
-	 * @throws xal.ca.ConnectionException accordingly
-	 */
-    abstract public Class<?> elementType() throws ConnectionException;
-
+     * get the Java class associated with the native type of this channel
+     *
+     * @return the native element type
+     * @throws xal.ca.ConnectionException accordingly
+     */
+    public abstract Class<?> elementType() throws ConnectionException;
 
     /**
      * Return size of value array associated with process variable
-     * @return     number of values in process variable
-	 * @throws xal.ca.ConnectionException accordingly
-     */
-    abstract public int elementCount() throws ConnectionException;
-
-
-    /**
-     *  Determine if channel has read access to process variable
-     *  @return             true if channel has read access
      *
-     *  @exception  ConnectionException     channel not connected
+     * @return number of values in process variable
+     * @throws xal.ca.ConnectionException accordingly
      */
-
-    abstract public boolean readAccess() throws ConnectionException;
-
+    public abstract int elementCount() throws ConnectionException;
 
     /**
-     *  Determine if channel has write access to process variable
-     *  @return             true if channel has write access
+     * Determine if channel has read access to process variable
      *
-     *  @exception  ConnectionException     channel not connected
+     * @return true if channel has read access
+     *
+     * @exception ConnectionException channel not connected
      */
-    abstract public boolean writeAccess() throws ConnectionException;
-
+    public abstract boolean readAccess() throws ConnectionException;
 
     /**
-	 * Convenience method which returns the units for this channel.
-	 * @return the units
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException	accordingly
-	 */
-    abstract public String getUnits() throws ConnectionException, GetException;
+     * Determine if channel has write access to process variable
+     *
+     * @return true if channel has write access
+     *
+     * @exception ConnectionException channel not connected
+     */
+    public abstract boolean writeAccess() throws ConnectionException;
 
+    /**
+     * Convenience method which returns the units for this channel.
+     *
+     * @return the units
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public abstract String getUnits() throws GetException;
 
     /**
      * Get the lower and upper operation limit PVs
+     *
      * @return two element array of PVs with the lower and upper limit PVs
      */
-    abstract public String[] getOperationLimitPVs();
-
+    public abstract String[] getOperationLimitPVs();
 
     /**
      * Get the lower and upper warning limit PVs
+     *
      * @return two element array of PVs with the lower and upper limit PVs
      */
-    abstract public String[] getWarningLimitPVs();
-
+    public abstract String[] getWarningLimitPVs();
 
     /**
      * Get the lower and upper alarm limit PVs
+     *
      * @return two element array of PVs with the lower and upper limit PVs
      */
-    abstract public String[] getAlarmLimitPVs();
-
+    public abstract String[] getAlarmLimitPVs();
 
     /**
      * Get the lower and upper drive limit PVs
+     *
      * @return two element array of PVs with the lower and upper limit PVs
      */
-    abstract public String[] getDriveLimitPVs();
-
-
-    /**
-	 * Convenience method which returns the upper display limit.
-	 * @return the raw upper display limit
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-	 */
-    abstract public Number rawUpperDisplayLimit() throws ConnectionException, GetException;
-
+    public abstract String[] getDriveLimitPVs();
 
     /**
-	 * Convenience method which returns the lower display limit.
-	 * @return the raw lower display limit
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-	 */
-    abstract public Number rawLowerDisplayLimit() throws ConnectionException, GetException;
-
-
-    /**
-	 * Convenience method which returns the upper alarm limit.
-	 * @return the raw upper alarm limit
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-	 */
-    abstract public Number rawUpperAlarmLimit() throws ConnectionException, GetException;
-
-
-    /**
-	 * Convenience method which returns the lower alarm limit.
-	 * @return the raw lower alarm limit
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-	 */
-    abstract public Number rawLowerAlarmLimit() throws ConnectionException, GetException;
-
-
-    /**
-	 * Convenience method which returns the upper warning limit.
-	 * @return the raw upper warning limit
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-	 */
-    abstract public Number rawUpperWarningLimit() throws ConnectionException, GetException;
-
-
-    /**
-	 * Convenience method which returns the lower warning limit.
-	 * @return the raw lower warning limit
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-	 */
-    abstract public Number rawLowerWarningLimit() throws ConnectionException, GetException;
-
-
-    /**
-	 * Convenience method which returns the upper control limit.
-	 * @return the raw upper control limit
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-	 */
-    abstract public Number rawUpperControlLimit() throws ConnectionException, GetException;
-
-
-    /**
-	 * Convenience method which returns the lower control limit.
-	 * @return the raw lower control limit
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-	 */
-    abstract public Number rawLowerControlLimit() throws ConnectionException, GetException;
-
-
-    /**
-	 * Convenience method which returns the upper display limit.
-	 * @return the upper display limit
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-	 */
-    final public Number upperDisplayLimit() throws ConnectionException, GetException {
-        ArrayValue rawValue = ArrayValue.numberStore( rawUpperDisplayLimit() );
-        return valueTransform.convertFromRaw(rawValue);
-    }
-
-
-    /**
-	 * Convenience method which returns the lower display limit.
-	 * @return the lower display limit
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-	 */
-    final public Number lowerDisplayLimit() throws ConnectionException, GetException {
-        ArrayValue rawValue = ArrayValue.numberStore( rawLowerDisplayLimit() );
-        return valueTransform.convertFromRaw(rawValue);
-    }
-
-
-    /**
-	 * Convenience method which returns the upper alarm limit.
-	 * @return the upper alarm limit
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-	 */
-    final public Number upperAlarmLimit() throws ConnectionException, GetException {
-        ArrayValue rawValue = ArrayValue.numberStore( rawUpperAlarmLimit() );
-        return valueTransform.convertFromRaw(rawValue);
-    }
-
-
-    /**
-	 * Convenience method which returns the lower alarm limit.
-	 * @return the lower alarm limit
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-	 */
-    final public Number lowerAlarmLimit() throws ConnectionException, GetException {
-        ArrayValue rawValue = ArrayValue.numberStore( rawLowerAlarmLimit() );
-        return valueTransform.convertFromRaw(rawValue);
-    }
-
-
-    /**
-	 * Convenience method which returns the upper warning limit.
-	 * @return the upper warning limit
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-	 */
-    final public Number upperWarningLimit() throws ConnectionException, GetException {
-        ArrayValue rawValue = ArrayValue.numberStore( rawUpperWarningLimit() );
-        return valueTransform.convertFromRaw(rawValue);
-    }
-
-
-    /**
-	 * Convenience method which returns the lower warning limit.
-	 * @return the lower warning limit
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-	 */
-    final public Number lowerWarningLimit() throws ConnectionException, GetException {
-        ArrayValue rawValue = ArrayValue.numberStore( rawLowerWarningLimit() );
-        return valueTransform.convertFromRaw(rawValue);
-    }
-
-
-    /**
-	 * Convenience method which returns the upper control limit.
-	 * @return upper control limit
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-	 */
-    final public Number upperControlLimit() throws ConnectionException, GetException {
-        ArrayValue rawValue = ArrayValue.numberStore( rawUpperControlLimit() );
-        return valueTransform.convertFromRaw(rawValue);
-    }
-
-
-    /**
-	 * Convenience method which returns the lower control limit.
-	 * @return the lower control limit
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-	 */
-    final public Number lowerControlLimit() throws ConnectionException, GetException {
-        ArrayValue rawValue = ArrayValue.numberStore( rawLowerControlLimit() );
-        return valueTransform.convertFromRaw(rawValue);
-    }
-
-
-    /**
-     *  Get channel value
-     *  @return             value of the PV
+     * Convenience method which returns the upper display limit.
      *
-     *  @exception  ConnectionException channel not connected
-     *  @exception  GetException        general channel access PV get failure
+     * @return the raw upper display limit
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
      */
-    public byte getValByte() throws ConnectionException, GetException    {
+    public abstract Number rawUpperDisplayLimit() throws GetException;
+
+    /**
+     * Convenience method which returns the lower display limit.
+     *
+     * @return the raw lower display limit
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public abstract Number rawLowerDisplayLimit() throws GetException;
+
+    /**
+     * Convenience method which returns the upper alarm limit.
+     *
+     * @return the raw upper alarm limit
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public abstract Number rawUpperAlarmLimit() throws GetException;
+
+    /**
+     * Convenience method which returns the lower alarm limit.
+     *
+     * @return the raw lower alarm limit
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public abstract Number rawLowerAlarmLimit() throws GetException;
+
+    /**
+     * Convenience method which returns the upper warning limit.
+     *
+     * @return the raw upper warning limit
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public abstract Number rawUpperWarningLimit() throws GetException;
+
+    /**
+     * Convenience method which returns the lower warning limit.
+     *
+     * @return the raw lower warning limit
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public abstract Number rawLowerWarningLimit() throws GetException;
+
+    /**
+     * Convenience method which returns the upper control limit.
+     *
+     * @return the raw upper control limit
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public abstract Number rawUpperControlLimit() throws GetException;
+
+    /**
+     * Convenience method which returns the lower control limit.
+     *
+     * @return the raw lower control limit
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public abstract Number rawLowerControlLimit() throws GetException;
+
+    /**
+     * Convenience method which returns the upper display limit.
+     *
+     * @return the upper display limit
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public final Number upperDisplayLimit() throws GetException {
+        ArrayValue rawValue = ArrayValue.numberStore(rawUpperDisplayLimit());
+        return valueTransform.convertFromRaw(rawValue);
+    }
+
+    /**
+     * Convenience method which returns the lower display limit.
+     *
+     * @return the lower display limit
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public final Number lowerDisplayLimit() throws GetException {
+        ArrayValue rawValue = ArrayValue.numberStore(rawLowerDisplayLimit());
+        return valueTransform.convertFromRaw(rawValue);
+    }
+
+    /**
+     * Convenience method which returns the upper alarm limit.
+     *
+     * @return the upper alarm limit
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public final Number upperAlarmLimit() throws GetException {
+        ArrayValue rawValue = ArrayValue.numberStore(rawUpperAlarmLimit());
+        return valueTransform.convertFromRaw(rawValue);
+    }
+
+    /**
+     * Convenience method which returns the lower alarm limit.
+     *
+     * @return the lower alarm limit
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public final Number lowerAlarmLimit() throws GetException {
+        ArrayValue rawValue = ArrayValue.numberStore(rawLowerAlarmLimit());
+        return valueTransform.convertFromRaw(rawValue);
+    }
+
+    /**
+     * Convenience method which returns the upper warning limit.
+     *
+     * @return the upper warning limit
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public final Number upperWarningLimit() throws GetException {
+        ArrayValue rawValue = ArrayValue.numberStore(rawUpperWarningLimit());
+        return valueTransform.convertFromRaw(rawValue);
+    }
+
+    /**
+     * Convenience method which returns the lower warning limit.
+     *
+     * @return the lower warning limit
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public final Number lowerWarningLimit() throws GetException {
+        ArrayValue rawValue = ArrayValue.numberStore(rawLowerWarningLimit());
+        return valueTransform.convertFromRaw(rawValue);
+    }
+
+    /**
+     * Convenience method which returns the upper control limit.
+     *
+     * @return upper control limit
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public final Number upperControlLimit() throws GetException {
+        ArrayValue rawValue = ArrayValue.numberStore(rawUpperControlLimit());
+        return valueTransform.convertFromRaw(rawValue);
+    }
+
+    /**
+     * Convenience method which returns the lower control limit.
+     *
+     * @return the lower control limit
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public final Number lowerControlLimit() throws GetException {
+        ArrayValue rawValue = ArrayValue.numberStore(rawLowerControlLimit());
+        return valueTransform.convertFromRaw(rawValue);
+    }
+
+    /**
+     * Get channel value
+     *
+     * @return value of the PV
+     *
+     * @exception ConnectionException channel not connected
+     * @exception GetException general channel access PV get failure
+     */
+    public byte getValByte() throws GetException {
         return getValueRecord().byteValue();
     }
 
-    public int getValEnum() throws ConnectionException, GetException    {
+    public int getValEnum() throws GetException {
         return getValueRecord().shortValue();
     }
 
-    public short getValShort() throws ConnectionException, GetException    {
+    public short getValShort() throws GetException {
         return getValueRecord().shortValue();
     }
 
-    public int getValInt() throws ConnectionException, GetException    {
+    public int getValInt() throws GetException {
         return getValueRecord().intValue();
     }
 
-    public long getValLong() throws ConnectionException, GetException    {
+    public long getValLong() throws GetException {
         return getValueRecord().longValue();
     }
 
-    public float getValFlt() throws ConnectionException, GetException    {
+    public float getValFlt() throws GetException {
         return getValueRecord().floatValue();
     }
 
-    public double getValDbl() throws ConnectionException, GetException    {
+    public double getValDbl() throws GetException {
         return getValueRecord().doubleValue();
     }
 
-    public String getValString() throws ConnectionException, GetException    {
+    public String getValString() throws GetException {
         return getStringValueRecord().stringValue();
     }
 
-
-
     /**
-     *  Get channel value as array
-     *  @return             value array of the PV
-     *  @exception  ConnectionException channel not connected
-     *  @exception  GetException        general channel access PV get failure
+     * Get channel value as array
+     *
+     * @return value array of the PV
+     * @exception ConnectionException channel not connected
+     * @exception GetException general channel access PV get failure
      */
-    public byte[] getArrByte() throws ConnectionException, GetException    {
+    public byte[] getArrByte() throws GetException {
         return getValueRecord().byteArray();
     }
 
-    public int[] getArrInt() throws ConnectionException, GetException    {
+    public int[] getArrInt() throws GetException {
         return getValueRecord().intArray();
     }
 
-    public long[] getArrLong() throws ConnectionException, GetException    {
+    public long[] getArrLong() throws GetException {
         return getValueRecord().longArray();
     }
 
-    public short[] getArrShort() throws ConnectionException, GetException    {
+    public short[] getArrShort() throws GetException {
         return getValueRecord().shortArray();
     }
 
-    public float[] getArrFlt() throws ConnectionException, GetException    {
+    public float[] getArrFlt() throws GetException {
         return getValueRecord().floatArray();
     }
 
-    public double[] getArrDbl() throws ConnectionException, GetException    {
+    public double[] getArrDbl() throws GetException {
         return getValueRecord().doubleArray();
     }
 
-    public String[] getArrString() throws ConnectionException, GetException    {
+    public String[] getArrString() throws GetException {
         return getStringValueRecord().stringArray();
     }
 
-
     /**
      * Fetch the data value for the channel and return it as an ArrayValue.
-	 * @return channel's array value
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
+     *
+     * @return channel's array value
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
      */
-    public ArrayValue getArrayValue() throws ConnectionException, GetException {
+    public ArrayValue getArrayValue() throws GetException {
         return getValueRecord().arrayValue();
     }
 
+    /**
+     * Return a raw <code>ChannelRecord</code> representing the fetched record
+     * for the native type of this channel. This is a convenient way to get the
+     * value of the PV.
+     *
+     * @return raw channel record
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public abstract ChannelRecord getRawValueRecord() throws GetException;
 
     /**
-     * Return a raw <code>ChannelRecord</code> representing the fetched record for the
-     * native type of this channel.  This is a convenient way to get the value of the PV.
-	 * @return raw channel record
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
+     * Get a <code>ChannelRecord</code> representing the fetched record for the
+     * specified type.
+     *
+     * @return the channel record
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
      */
-    abstract public ChannelRecord getRawValueRecord()  throws ConnectionException, GetException;
-
-
-	/**
-	 * Get a <code>ChannelRecord</code> representing the fetched record for the specified type.
-	 * @return the channel record
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-     */
-	abstract protected ChannelRecord getRawStringValueRecord()  throws ConnectionException, GetException;
-
-
-	/**
-	 * Get a <code>ChannelStatusRecord</code> representing the fetched record for the specified type.
-	 * @return the channel record
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-     */
-	abstract protected ChannelStatusRecord getRawStringStatusRecord()  throws ConnectionException, GetException;
-
-
-	/**
-	 * Get a <code>ChannelTimeRecord</code> representing the fetched record for the specified type.
-	 * @return the channel record
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-     */
-	abstract protected ChannelTimeRecord getRawStringTimeRecord()  throws ConnectionException, GetException;
-
+    protected abstract ChannelRecord getRawStringValueRecord() throws GetException;
 
     /**
-     * Return a raw <code>ChannelStatusRecord</code> representing the fetched record for the
-     * native type of this channel.  This is a convenient way to get the value of
-     * the PV along with status.
-	 * @return raw channel record
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
+     * Get a <code>ChannelStatusRecord</code> representing the fetched record
+     * for the specified type.
+     *
+     * @return the channel record
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
      */
-    abstract public ChannelStatusRecord getRawStatusRecord()  throws ConnectionException, GetException;
-
+    protected abstract ChannelStatusRecord getRawStringStatusRecord() throws GetException;
 
     /**
-     * Return a raw <code>ChannelTimeRecord</code> representing the fetched record for the
-     * native type of this channel.  This is a convenient way to get the value of
-     * the PV along with status and timestamp.
-	 * @return raw channel record
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
+     * Get a <code>ChannelTimeRecord</code> representing the fetched record for
+     * the specified type.
+     *
+     * @return the channel record
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
      */
-    abstract public ChannelTimeRecord getRawTimeRecord()  throws ConnectionException, GetException;
-
+    protected abstract ChannelTimeRecord getRawStringTimeRecord() throws GetException;
 
     /**
-     * Return a <code>ChannelRecord</code> representing the fetched record for the
-     * native type of this channel.  This is a convenient way to get the value of the PV.
-	 * @return channel record
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
+     * Return a raw <code>ChannelStatusRecord</code> representing the fetched
+     * record for the native type of this channel. This is a convenient way to
+     * get the value of the PV along with status.
+     *
+     * @return raw channel record
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
      */
-    final public ChannelRecord getValueRecord()  throws ConnectionException, GetException {
-        return getRawValueRecord().applyTransform( valueTransform );
+    public abstract ChannelStatusRecord getRawStatusRecord() throws GetException;
+
+    /**
+     * Return a raw <code>ChannelTimeRecord</code> representing the fetched
+     * record for the native type of this channel. This is a convenient way to
+     * get the value of the PV along with status and timestamp.
+     *
+     * @return raw channel record
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public abstract ChannelTimeRecord getRawTimeRecord() throws GetException;
+
+    /**
+     * Return a <code>ChannelRecord</code> representing the fetched record for
+     * the native type of this channel. This is a convenient way to get the
+     * value of the PV.
+     *
+     * @return channel record
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public final ChannelRecord getValueRecord() throws GetException {
+        return getRawValueRecord().applyTransform(valueTransform);
     }
 
-
     /**
-	 * Get a <code>ChannelRecord</code> representing the fetched record for the native type of this channel.
-	 * @return channel record
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-	 */
-    final public ChannelRecord getStringValueRecord()  throws ConnectionException, GetException {
-        return getRawStringValueRecord().applyTransform( valueTransform );
-    }
-
-
-    /**
-	 * Get a <code>ChannelStatusRecord</code> representing the fetched record for the native type of this channel.
-	 * @return channel record
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-	 */
-    final public ChannelRecord getStringStatusRecord()  throws ConnectionException, GetException {
-        return getRawStringStatusRecord().applyTransform( valueTransform );
-    }
-
-
-    /**
-	 * Get a <code>ChannelTimeRecord</code> representing the fetched record for the native type of this channel.
-	 * @return channel record
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-	 */
-    final public ChannelRecord getStringTimeRecord()  throws ConnectionException, GetException {
-        return getRawStringTimeRecord().applyTransform( valueTransform );
-    }
-
-
-    /**
-     * Return a <code>ChannelStatusRecord</code> representing the fetched record for the
-     * native type of this channel.  This is a convenient way to get the value of the PV along with status.
-	 * @return channel record
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
+     * Get a <code>ChannelRecord</code> representing the fetched record for the
+     * native type of this channel.
+     *
+     * @return channel record
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
      */
-    final public ChannelStatusRecord getStatusRecord()  throws ConnectionException, GetException {
-        ChannelStatusRecord record = getRawStatusRecord();
-        record.applyTransform( valueTransform );
-        return record;
+    public final ChannelRecord getStringValueRecord() throws GetException {
+        return getRawStringValueRecord().applyTransform(valueTransform);
     }
 
-
     /**
-     * Return a <code>ChannelTimeRecord</code> representing the fetched record for the native type of this channel.
-     * This is a convenient way to get the value of the PV along with status and timestamp.
-	 * @return channel record
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
+     * Get a <code>ChannelStatusRecord</code> representing the fetched record
+     * for the native type of this channel.
+     *
+     * @return channel record
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
      */
-    final public ChannelTimeRecord getTimeRecord()  throws ConnectionException, GetException {
-        ChannelTimeRecord record = getRawTimeRecord();
-        record.applyTransform( valueTransform );
-        return record;
+    public final ChannelRecord getStringStatusRecord() throws GetException {
+        return getRawStringStatusRecord().applyTransform(valueTransform);
     }
 
+    /**
+     * Get a <code>ChannelTimeRecord</code> representing the fetched record for
+     * the native type of this channel.
+     *
+     * @return channel record
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public final ChannelRecord getStringTimeRecord() throws GetException {
+        return getRawStringTimeRecord().applyTransform(valueTransform);
+    }
 
     /**
-	 * Handle a callback for getting the raw value for the channel.
-     * @param listener The receiver of the callback.
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
+     * Return a <code>ChannelStatusRecord</code> representing the fetched record
+     * for the native type of this channel. This is a convenient way to get the
+     * value of the PV along with status.
+     *
+     * @return channel record
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
      */
-    abstract protected void getRawValueCallback( final IEventSinkValue listener ) throws ConnectionException, GetException;
+    public final ChannelStatusRecord getStatusRecord() throws GetException {
+        ChannelStatusRecord channelRecord = getRawStatusRecord();
+        channelRecord.applyTransform(valueTransform);
+        return channelRecord;
+    }
 
+    /**
+     * Return a <code>ChannelTimeRecord</code> representing the fetched record
+     * for the native type of this channel. This is a convenient way to get the
+     * value of the PV along with status and timestamp.
+     *
+     * @return channel record
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public final ChannelTimeRecord getTimeRecord() throws GetException {
+        ChannelTimeRecord channelRecord = getRawTimeRecord();
+        channelRecord.applyTransform(valueTransform);
+        return channelRecord;
+    }
 
     /**
      * Handle a callback for getting the raw value for the channel.
+     *
      * @param listener The receiver of the callback.
-	 * @param attemptConnection indicates whether or not to attempt a blocking connection if this channel is not connected
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
      */
-    abstract protected void getRawValueCallback( final IEventSinkValue listener, final boolean attemptConnection ) throws ConnectionException, GetException;
-
-
-	/**
-	 * Submit a non-blocking Get request with callback
-	 * @param listener to receive callback upon completion
-	 * @param attemptConnection true to attempt connection and false not to attempt connection
-	 * @throws xal.ca.ConnectionException accordingly
-	 * @throws xal.ca.GetException accordingly
-	 */
-	abstract public void getRawValueTimeCallback( final IEventSinkValTime listener, final boolean attemptConnection ) throws ConnectionException, GetException;
-
+    protected abstract void getRawValueCallback(final IEventSinkValue listener) throws GetException;
 
     /**
-	 *  Get the value of the process variable via a callback to the specified listener.
-     *  @param  listener     receiver of the callback event.
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.GetException            general channel access failure
+     * Handle a callback for getting the raw value for the channel.
+     *
+     * @param listener The receiver of the callback.
+     * @param attemptConnection indicates whether or not to attempt a blocking
+     * connection if this channel is not connected
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
      */
-    final public void getValueCallback( final IEventSinkValue listener ) throws ConnectionException, GetException {
-		getValueCallback( listener, true );
+    protected abstract void getRawValueCallback(final IEventSinkValue listener, final boolean attemptConnection) throws GetException;
+
+    /**
+     * Submit a non-blocking Get request with callback
+     *
+     * @param listener to receive callback upon completion
+     * @param attemptConnection true to attempt connection and false not to
+     * attempt connection
+     * @throws xal.ca.ConnectionException accordingly
+     * @throws xal.ca.GetException accordingly
+     */
+    public abstract void getRawValueTimeCallback(final IEventSinkValTime listener, final boolean attemptConnection) throws GetException;
+
+    /**
+     * Get the value of the process variable via a callback to the specified
+     * listener.
+     *
+     * @param listener receiver of the callback event.
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.GetException general channel access failure
+     */
+    public final void getValueCallback(final IEventSinkValue listener) throws GetException {
+        getValueCallback(listener, true);
     }
 
-
     /**
-	 * Get the value of the process variable via a callback to the specified listener.
-     * @param  listener     receiver of the callback event.
-	 * @param attemptConnection indicates whether or not to attempt a blocking connection if this channel is not connected
-     * @throws  xal.ca.ConnectionException     channel is not connected
-     * @throws  xal.ca.GetException            general channel access failure
+     * Get the value of the process variable via a callback to the specified
+     * listener.
+     *
+     * @param listener receiver of the callback event.
+     * @param attemptConnection indicates whether or not to attempt a blocking
+     * connection if this channel is not connected
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.GetException general channel access failure
      */
-    final public void getValueCallback( final IEventSinkValue listener, final boolean attemptConnection ) throws ConnectionException, GetException {
-        getRawValueCallback((final ChannelRecord record, final Channel channel) -> {
-            listener.eventValue( record.applyTransform(valueTransform), Channel.this );
-        }, attemptConnection );
+    public final void getValueCallback(final IEventSinkValue listener, final boolean attemptConnection) throws GetException {
+        getRawValueCallback((final ChannelRecord channelRecord, final Channel channel) -> listener.eventValue(channelRecord.applyTransform(valueTransform), Channel.this), attemptConnection);
     }
 
-
     /**
-	 * Get the value time record of the process variable via a callback to the specified listener.
-     * @param  listener     receiver of the callback event.
-	 * @param attemptConnection indicates whether or not to attempt a blocking connection if this channel is not connected
-     * @throws  xal.ca.ConnectionException     channel is not connected
-     * @throws  xal.ca.GetException            general channel access failure
+     * Get the value time record of the process variable via a callback to the
+     * specified listener.
+     *
+     * @param listener receiver of the callback event.
+     * @param attemptConnection indicates whether or not to attempt a blocking
+     * connection if this channel is not connected
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.GetException general channel access failure
      */
-    final public void getValueTimeCallback( final IEventSinkValTime listener, final boolean attemptConnection ) throws ConnectionException, GetException {
-        getRawValueTimeCallback((final ChannelTimeRecord record, final Channel channel) -> {
-            record.applyTransform( valueTransform );
-            listener.eventValue( record, Channel.this );
-        }, attemptConnection );
+    public final void getValueTimeCallback(final IEventSinkValTime listener, final boolean attemptConnection) throws GetException {
+        getRawValueTimeCallback((final ChannelTimeRecord channelRecord, final Channel channel) -> {
+            channelRecord.applyTransform(valueTransform);
+            listener.eventValue(channelRecord, Channel.this);
+        }, attemptConnection);
     }
 
-
     /**
-     *  Get the value of the process variable via a callback to the specified listener.
-     *  @param  listener     receiver of the callback event.
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.GetException            general channel access failure
+     * Get the value of the process variable via a callback to the specified
+     * listener.
+     *
+     * @param listener receiver of the callback event.
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.GetException general channel access failure
      */
-    final public void getValByteCallback( final IEventSinkValByte listener ) throws ConnectionException, GetException {
-        getRawValueCallback((final ChannelRecord record, Channel channel) -> {
-            listener.eventValue(record.applyTransform(valueTransform).byteValue(), Channel.this);
-        });
+    public final void getValByteCallback(final IEventSinkValByte listener) throws GetException {
+        getRawValueCallback((final ChannelRecord channelRecord, Channel channel) -> listener.eventValue(channelRecord.applyTransform(valueTransform).byteValue(), Channel.this));
     }
 
-
     /**
-     *  Get the value of the process variable via a callback to the specified listener.
-     *  @param  listener     receiver of the callback event.
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.GetException            general channel access failure
+     * Get the value of the process variable via a callback to the specified
+     * listener.
+     *
+     * @param listener receiver of the callback event.
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.GetException general channel access failure
      */
-    final public void getValIntCallback( final IEventSinkValInt listener ) throws ConnectionException, GetException {
-        getRawValueCallback((final ChannelRecord record, Channel channel) -> {
-            listener.eventValue(record.applyTransform(valueTransform).intValue(), Channel.this);
-        });
+    public final void getValIntCallback(final IEventSinkValInt listener) throws GetException {
+        getRawValueCallback((final ChannelRecord channelRecord, Channel channel) -> listener.eventValue(channelRecord.applyTransform(valueTransform).intValue(), Channel.this));
     }
 
-
     /**
-     *  Get the value of the process variable via a callback to the specified listener.
-     *  @param  listener     receiver of the callback event.
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.GetException            general channel access failure
+     * Get the value of the process variable via a callback to the specified
+     * listener.
+     *
+     * @param listener receiver of the callback event.
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.GetException general channel access failure
      */
-    final public void getValFltCallback( final IEventSinkValFlt listener ) throws ConnectionException, GetException {
-        getRawValueCallback((final ChannelRecord record, Channel channel) -> {
-            final float value = record.applyTransform( valueTransform ).floatValue();
-            listener.eventValue( value, Channel.this );
-        });
+    public final void getValFltCallback(final IEventSinkValFlt listener) throws GetException {
+        getRawValueCallback((final ChannelRecord channelRecord, Channel channel) -> listener.eventValue(channelRecord.applyTransform(valueTransform).floatValue(), Channel.this));
     }
 
-
     /**
-     *  Get the value of the process variable via a callback to the specified listener.
-     *  @param  listener     receiver of the callback event.
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.GetException            general channel access failure
+     * Get the value of the process variable via a callback to the specified
+     * listener.
+     *
+     * @param listener receiver of the callback event.
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.GetException general channel access failure
      */
-    final public void getValDblCallback( final IEventSinkValDbl listener ) throws ConnectionException, GetException {
-        getRawValueCallback((final ChannelRecord record, Channel channel) -> {
-            final double value = record.applyTransform( valueTransform ).doubleValue();
-            listener.eventValue( value, Channel.this );
-        });
+    public final void getValDblCallback(final IEventSinkValDbl listener) throws GetException {
+        getRawValueCallback((final ChannelRecord channelRecord, Channel channel) -> listener.eventValue(channelRecord.applyTransform(valueTransform).doubleValue(), Channel.this));
     }
 
-
     /**
-     *  Get the value of the process variable via a callback to the specified listener.
-     *  @param  listener     receiver of the callback event.
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.GetException            general channel access failure
+     * Get the value of the process variable via a callback to the specified
+     * listener.
+     *
+     * @param listener receiver of the callback event.
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.GetException general channel access failure
      */
-    final public void getArrByteCallback( final IEventSinkArrByte listener) throws ConnectionException, GetException {
-        getRawValueCallback((final ChannelRecord record, Channel channel) -> {
-            listener.eventArray(record.applyTransform(valueTransform).byteArray(), Channel.this);
-        });
+    public final void getArrByteCallback(final IEventSinkArrByte listener) throws GetException {
+        getRawValueCallback((final ChannelRecord channelRecord, Channel channel) -> listener.eventArray(channelRecord.applyTransform(valueTransform).byteArray(), Channel.this));
     }
 
-
     /**
-     *  Get the value of the process variable via a callback to the specified listener.
-     *  @param  listener     receiver of the callback event.
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.GetException            general channel access failure
+     * Get the value of the process variable via a callback to the specified
+     * listener.
+     *
+     * @param listener receiver of the callback event.
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.GetException general channel access failure
      */
-    final public void getArrIntCallback( final IEventSinkArrInt listener ) throws ConnectionException, GetException {
-        getRawValueCallback((final ChannelRecord record, Channel channel) -> {
-            listener.eventArray(record.applyTransform(valueTransform).intArray(), Channel.this);
-        });
+    public final void getArrIntCallback(final IEventSinkArrInt listener) throws GetException {
+        getRawValueCallback((final ChannelRecord channelRecord, Channel channel) -> listener.eventArray(channelRecord.applyTransform(valueTransform).intArray(), Channel.this));
     }
 
-
     /**
-     *  Get the value of the process variable via a callback to the specified listener.
-     *  @param  listener     receiver of the callback event.
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.GetException            general channel access failure
+     * Get the value of the process variable via a callback to the specified
+     * listener.
+     *
+     * @param listener receiver of the callback event.
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.GetException general channel access failure
      */
-    final public void getArrFltCallback( final IEventSinkArrFlt listener ) throws ConnectionException, GetException {
-        getRawValueCallback((final ChannelRecord record, Channel channel) -> {
-            listener.eventArray(record.applyTransform(valueTransform).floatArray(), Channel.this);
-        });
+    public final void getArrFltCallback(final IEventSinkArrFlt listener) throws GetException {
+        getRawValueCallback((final ChannelRecord channelRecord, Channel channel) -> listener.eventArray(channelRecord.applyTransform(valueTransform).floatArray(), Channel.this));
     }
 
-
     /**
-     *  Get the value of the process variable via a callback to the specified listener.
-     *  @param  listener     receiver of the callback event.
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.GetException            general channel access failure
+     * Get the value of the process variable via a callback to the specified
+     * listener.
+     *
+     * @param listener receiver of the callback event.
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.GetException general channel access failure
      */
-    final public void getArrDblCallback( final IEventSinkArrDbl listener )  throws ConnectionException, GetException {
-        getRawValueCallback((final ChannelRecord record, Channel channel) -> {
-            listener.eventArray(record.applyTransform(valueTransform).doubleArray(), Channel.this);
-        });
+    public final void getArrDblCallback(final IEventSinkArrDbl listener) throws GetException {
+        getRawValueCallback((final ChannelRecord channelRecord, Channel channel) -> listener.eventArray(channelRecord.applyTransform(valueTransform).doubleArray(), Channel.this));
     }
 
+    /**
+     * Setup a value-status-timestamp monitor on this channel
+     *
+     * @param listener interface to data sink
+     * @param intMaskFire code specifying when the monitor is fired or'ed
+     * combination of {Monitor.VALUE, Monitor.LOG, Monitor.ALARM}
+     * @return A new monitor
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.MonitorException general monitor failure
+     */
+    public abstract xal.ca.Monitor addMonitorValTime(IEventSinkValTime listener, int intMaskFire)
+            throws MonitorException;
 
     /**
-     *  Setup a value-status-timestamp monitor on this channel
-     *  @param  listener     interface to data sink
-     *  @param  intMaskFire code specifying when the monitor is fired or'ed combination of {Monitor.VALUE, Monitor.LOG, Monitor.ALARM}
-     *  @return A new monitor
-     *  @throws xal.ca.ConnectionException     channel is not connected
-     *  @throws xal.ca.MonitorException        general monitor failure
+     * Setup a value-status monitor on this channel
+     *
+     * @param listener interface to data sink
+     * @param intMaskFire code specifying when the monitor is fired or'ed
+     * combination of {Monitor.VALUE, Monitor.LOG, Monitor.ALARM}
+     * @return A new monitor
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.MonitorException general monitor failure
      */
-    abstract public xal.ca.Monitor addMonitorValTime(IEventSinkValTime listener, int intMaskFire)
-        throws ConnectionException, MonitorException;
-
+    public abstract xal.ca.Monitor addMonitorValStatus(IEventSinkValStatus listener, int intMaskFire)
+            throws MonitorException;
 
     /**
-     *  Setup a value-status monitor on this channel
-     *  @param  listener     interface to data sink
-     *  @param  intMaskFire code specifying when the monitor is fired or'ed combination of {Monitor.VALUE, Monitor.LOG, Monitor.ALARM}
-     *  @return A new monitor
-     *  @throws xal.ca.ConnectionException     channel is not connected
-     *  @throws xal.ca.MonitorException        general monitor failure
+     * Setup a value monitor on this channel
+     *
+     * @param listener interface to data sink
+     * @param intMaskFire code specifying when the monitor is fired or'ed
+     * combination of {Monitor.VALUE, Monitor.LOG, Monitor.ALARM}
+     * @return A new monitor
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.MonitorException general monitor failure
      */
-    abstract public xal.ca.Monitor addMonitorValStatus(IEventSinkValStatus listener, int intMaskFire)
-        throws ConnectionException, MonitorException;
-
+    public abstract xal.ca.Monitor addMonitorValue(IEventSinkValue listener, int intMaskFire)
+            throws MonitorException;
 
     /**
-     *  Setup a value monitor on this channel
-     *  @param  listener     interface to data sink
-     *  @param  intMaskFire code specifying when the monitor is fired or'ed combination of {Monitor.VALUE, Monitor.LOG, Monitor.ALARM}
-     *  @return A new monitor
-     *  @throws xal.ca.ConnectionException     channel is not connected
-     *  @throws xal.ca.MonitorException        general monitor failure
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
      */
-    abstract public xal.ca.Monitor addMonitorValue(IEventSinkValue listener, int intMaskFire)
-        throws ConnectionException, MonitorException;
-
-
-
-    /**
-     *  Synchronously put a value to the channel process variable.
-     *  @param  newVal      value sent to process variable
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.PutException            channel access failure, including
-     */
-    public void putVal(Object newVal) throws ConnectionException, PutException    {
+    public void putVal(Object newVal) throws PutException {
         this.putValCallback(newVal, null);
     }
 
-
     /**
-     *  Synchronously put a value to the channel process variable.
-     *  @param  newVal      value sent to process variable
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.PutException            channel access failure, including
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
      */
-    public void putVal(String newVal) throws ConnectionException, PutException    {
+    public void putVal(String newVal) throws PutException {
         this.putValCallback(newVal, null);
     }
 
-
     /**
-     *  Synchronously put a value to the channel process variable.
-     *  @param  newVal      value sent to process variable
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.PutException            channel access failure, including
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
      */
-    public void putVal(byte newVal) throws ConnectionException, PutException   {
+    public void putVal(byte newVal) throws PutException {
         this.putValCallback(newVal, null);
     }
 
-
     /**
-     *  Synchronously put a value to the channel process variable.
-     *  @param  newVal      value sent to process variable
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.PutException            channel access failure, including
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
      */
-    public void putVal(short newVal) throws ConnectionException, PutException   {
+    public void putVal(short newVal) throws PutException {
         this.putValCallback(newVal, null);
     }
 
-
     /**
-     *  Synchronously put a value to the channel process variable.
-     *  @param  newVal      value sent to process variable
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.PutException            channel access failure, including
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
      */
-    public void putVal(int newVal) throws ConnectionException, PutException  {
+    public void putVal(int newVal) throws PutException {
         this.putValCallback(newVal, null);
     }
 
-
     /**
-     *  Synchronously put a value to the channel process variable.
-     *  @param  newVal      value sent to process variable
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.PutException            channel access failure, including
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
      */
-    public void putVal(long newVal) throws ConnectionException, PutException  {
+    public void putVal(long newVal) throws PutException {
         this.putValCallback(newVal, null);
     }
 
-
     /**
-     *  Synchronously put a value to the channel process variable.
-     *  @param  newVal      value sent to process variable
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.PutException            channel access failure, including
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
      */
-    public void putVal(float newVal) throws ConnectionException, PutException   {
+    public void putVal(float newVal) throws PutException {
         this.putValCallback(newVal, null);
     }
 
-
     /**
-     *  Synchronously put a value to the channel process variable.
-     *  @param  newVal      value sent to process variable
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.PutException            channel access failure, including
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
      */
-    public void putVal(double newVal) throws ConnectionException, PutException    {
+    public void putVal(double newVal) throws PutException {
         this.putValCallback(newVal, null);
     }
 
-    
     /**
-     *  Synchronously put a value to the channel process variable.
-     *  @param  newVal      value sent to process variable
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.PutException            channel access failure, including
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
      */
-    public void putVal(String[] newVal) throws ConnectionException, PutException {
+    public void putVal(String[] newVal) throws PutException {
         this.putValCallback(newVal, null);
     }
 
-    
     /**
-     *  Synchronously put a value to the channel process variable.
-     *  @param  newVal      value sent to process variable
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.PutException            channel access failure, including
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
      */
-    public void putVal(byte[] newVal) throws ConnectionException, PutException   {
+    public void putVal(byte[] newVal) throws PutException {
         this.putValCallback(newVal, null);
     }
 
-
     /**
-     *  Synchronously put a value to the channel process variable.
-     *  @param  newVal      value sent to process variable
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.PutException            channel access failure, including
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
      */
-    public void putVal(short[] newVal) throws ConnectionException, PutException    {
+    public void putVal(short[] newVal) throws PutException {
         this.putValCallback(newVal, null);
     }
 
-
     /**
-     *  Synchronously put a value to the channel process variable.
-     *  @param  newVal      value sent to process variable
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.PutException            channel access failure, including
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
      */
-    public void putVal(int[] newVal) throws ConnectionException, PutException   {
+    public void putVal(int[] newVal) throws PutException {
         this.putValCallback(newVal, null);
     }
 
-
     /**
-     *  Synchronously put a value to the channel process variable.
-     *  @param  newVal      value sent to process variable
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.PutException            channel access failure, including
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
      */
-    public void putVal(long[] newVal) throws ConnectionException, PutException   {
+    public void putVal(long[] newVal) throws PutException {
         this.putValCallback(newVal, null);
     }
 
-
     /**
-     *  Synchronously put a value to the channel process variable.
-     *  @param  newVal      value sent to process variable
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.PutException            channel access failure, including
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
      */
-    public void putVal(float[] newVal) throws ConnectionException, PutException    {
+    public void putVal(float[] newVal) throws PutException {
         this.putValCallback(newVal, null);
     }
 
-
     /**
-     *  Synchronously put a value to the channel process variable.
-     *  @param  newVal      value sent to process variable
-     *  @throws  xal.ca.ConnectionException     channel is not connected
-     *  @throws  xal.ca.PutException            channel access failure, including
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
      */
-    public void putVal(double[] newVal) throws ConnectionException, PutException    {
+    public void putVal(double[] newVal) throws PutException {
         this.putValCallback(newVal, null);
     }
-    
+
     /**
-     * Asynchronously put a value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
+     * Asynchronously put a value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
      */
-    final public void putValCallback(Object newVal, PutListener listener) throws ConnectionException, PutException {
-        if (newVal instanceof String) {
-            this.putValCallback((String) newVal, listener);
-        } else if (newVal instanceof Byte) {
-            this.putValCallback((byte) newVal, listener);
-        } else if (newVal instanceof Short) {
-            this.putValCallback((short) newVal, listener);
-        } else if (newVal instanceof Integer) {
-            this.putValCallback((int) newVal, listener);
-        } else if (newVal instanceof Long) {
-            this.putValCallback((long) newVal, listener);
-        } else if (newVal instanceof Float) {
-            this.putValCallback((float) newVal, listener);
-        } else if (newVal instanceof Double) {
-            this.putValCallback((double) newVal, listener);
-        } else if (newVal instanceof String[]) {
-            this.putValCallback((String[]) newVal, listener);
-        } else if (newVal instanceof byte[]) {
-            this.putValCallback((byte[]) newVal, listener);
-        } else if (newVal instanceof short[]) {
-            this.putValCallback((short[]) newVal, listener);
-        } else if (newVal instanceof int[]) {
-            this.putValCallback((int[]) newVal, listener);
-        } else if (newVal instanceof long[]) {
-            this.putValCallback((long[]) newVal, listener);
-        } else if (newVal instanceof float[]) {
-            this.putValCallback((float[]) newVal, listener);
-        } else if (newVal instanceof double[]) {
-            this.putValCallback((double[]) newVal, listener);
-        } else {
-            throw new PutException("Type " + newVal.getClass().getName() + " not valid");
-        }
+    public final void putValCallback(Object newVal, PutListener listener) throws PutException {
+        throw new PutException("Type " + newVal.getClass().getName() + " not valid");
     }
 
     /**
-     * Asynchronously put a value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
+     * Asynchronously put a value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
      */
-    final public void putValCallback(String newVal, PutListener listener) throws ConnectionException, PutException {
-        String rawValue = valueTransform.convertToRaw( ArrayValue.stringStore(newVal) ).stringValue();
+    public final void putValCallback(String newVal, PutListener listener) throws PutException {
+        String rawValue = valueTransform.convertToRaw(ArrayValue.stringStore(newVal)).stringValue();
         putRawValCallback(rawValue, listener);
     }
 
-
     /**
-     * Asynchronously put a value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
+     * Asynchronously put a value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
      */
-    final public void putValCallback(byte newVal, PutListener listener) throws ConnectionException, PutException {
-        byte rawValue = valueTransform.convertToRaw( ArrayValue.byteStore(newVal) ).byteValue();
+    public final void putValCallback(byte newVal, PutListener listener) throws PutException {
+        byte rawValue = valueTransform.convertToRaw(ArrayValue.byteStore(newVal)).byteValue();
         putRawValCallback(rawValue, listener);
     }
 
-
     /**
-     * Asynchronously put a value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
+     * Asynchronously put a value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
      */
-    final public void putValCallback(short newVal, PutListener listener) throws ConnectionException, PutException {
-        short rawValue = valueTransform.convertToRaw( ArrayValue.shortStore(newVal) ).shortValue();
+    public final void putValCallback(short newVal, PutListener listener) throws PutException {
+        short rawValue = valueTransform.convertToRaw(ArrayValue.shortStore(newVal)).shortValue();
         putRawValCallback(rawValue, listener);
     }
 
-
     /**
-     * Asynchronously put a value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
+     * Asynchronously put a value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
      */
-    final public void putValCallback(int newVal, PutListener listener) throws ConnectionException, PutException {
-        int rawValue = valueTransform.convertToRaw( ArrayValue.intStore(newVal) ).intValue();
-        putRawValCallback(rawValue, listener);
-    }
-    
-    
-    /**
-     * Asynchronously put a value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
-     */
-    final public void putValCallback(long newVal, PutListener listener) throws ConnectionException, PutException {
-        long rawValue = valueTransform.convertToRaw( ArrayValue.longStore(newVal) ).longValue();
+    public final void putValCallback(int newVal, PutListener listener) throws PutException {
+        int rawValue = valueTransform.convertToRaw(ArrayValue.intStore(newVal)).intValue();
         putRawValCallback(rawValue, listener);
     }
 
-
     /**
-     * Asynchronously put a value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
+     * Asynchronously put a value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
      */
-    final public void putValCallback(float newVal, PutListener listener) throws ConnectionException, PutException {
-        float rawValue = valueTransform.convertToRaw( ArrayValue.floatStore(newVal) ).floatValue();
+    public final void putValCallback(long newVal, PutListener listener) throws PutException {
+        long rawValue = valueTransform.convertToRaw(ArrayValue.longStore(newVal)).longValue();
         putRawValCallback(rawValue, listener);
     }
 
-
     /**
-     * Asynchronously put a value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
+     * Asynchronously put a value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
      */
-    final public void putValCallback(double newVal, PutListener listener) throws ConnectionException, PutException {
-        double rawValue = valueTransform.convertToRaw( ArrayValue.doubleStore(newVal) ).doubleValue();
+    public final void putValCallback(float newVal, PutListener listener) throws PutException {
+        float rawValue = valueTransform.convertToRaw(ArrayValue.floatStore(newVal)).floatValue();
         putRawValCallback(rawValue, listener);
     }
 
+    /**
+     * Asynchronously put a value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
+     */
+    public final void putValCallback(double newVal, PutListener listener) throws PutException {
+        double rawValue = valueTransform.convertToRaw(ArrayValue.doubleStore(newVal)).doubleValue();
+        putRawValCallback(rawValue, listener);
+    }
 
     /**
-     * Asynchronously put a value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
+     * Asynchronously put a value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
      */
-    final public void putValCallback(String[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public final void putValCallback(String[] newVal, PutListener listener) throws PutException {
         String[] rawArray = valueTransform.convertToRaw(ArrayValue.stringStore(newVal)).stringArray();
         putRawValCallback(rawArray, listener);
     }
 
-
     /**
-     * Asynchronously put a value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
+     * Asynchronously put a value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
      */
-    final public void putValCallback(byte[] newVal, PutListener listener) throws ConnectionException, PutException {
-        byte[] rawArray = valueTransform.convertToRaw( ArrayValue.byteStore(newVal) ).byteArray();
+    public final void putValCallback(byte[] newVal, PutListener listener) throws PutException {
+        byte[] rawArray = valueTransform.convertToRaw(ArrayValue.byteStore(newVal)).byteArray();
         putRawValCallback(rawArray, listener);
     }
 
-
     /**
-     * Asynchronously put a value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
+     * Asynchronously put a value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
      */
-    final public void putValCallback(short[] newVal, PutListener listener) throws ConnectionException, PutException {
-        short[] rawArray = valueTransform.convertToRaw( ArrayValue.shortStore(newVal) ).shortArray();
+    public final void putValCallback(short[] newVal, PutListener listener) throws PutException {
+        short[] rawArray = valueTransform.convertToRaw(ArrayValue.shortStore(newVal)).shortArray();
         putRawValCallback(rawArray, listener);
     }
 
-
     /**
-     * Asynchronously put a value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
+     * Asynchronously put a value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
      */
-    final public void putValCallback(int[] newVal, PutListener listener) throws ConnectionException, PutException {
-        int[] rawArray = valueTransform.convertToRaw( ArrayValue.intStore(newVal) ).intArray();
+    public final void putValCallback(int[] newVal, PutListener listener) throws PutException {
+        int[] rawArray = valueTransform.convertToRaw(ArrayValue.intStore(newVal)).intArray();
         putRawValCallback(rawArray, listener);
     }
 
-
     /**
-     * Asynchronously put a value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
+     * Asynchronously put a value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
      */
-    final public void putValCallback(long[] newVal, PutListener listener) throws ConnectionException, PutException {
-        long[] rawArray = valueTransform.convertToRaw( ArrayValue.longStore(newVal) ).longArray();
+    public final void putValCallback(long[] newVal, PutListener listener) throws PutException {
+        long[] rawArray = valueTransform.convertToRaw(ArrayValue.longStore(newVal)).longArray();
         putRawValCallback(rawArray, listener);
     }
 
-
     /**
-     * Asynchronously put a value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
+     * Asynchronously put a value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
      */
-    final public void putValCallback(float[] newVal, PutListener listener) throws ConnectionException, PutException {
-        float[] rawArray = valueTransform.convertToRaw( ArrayValue.floatStore(newVal) ).floatArray();
+    public final void putValCallback(float[] newVal, PutListener listener) throws PutException {
+        float[] rawArray = valueTransform.convertToRaw(ArrayValue.floatStore(newVal)).floatArray();
         putRawValCallback(rawArray, listener);
     }
 
-
     /**
-     * Asynchronously put a value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
+     * Asynchronously put a value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
      */
-    final public void putValCallback(double[] newVal, PutListener listener) throws ConnectionException, PutException {
-        double[] rawArray = valueTransform.convertToRaw( ArrayValue.doubleStore(newVal) ).doubleArray();
+    public final void putValCallback(double[] newVal, PutListener listener) throws PutException {
+        double[] rawArray = valueTransform.convertToRaw(ArrayValue.doubleStore(newVal)).doubleArray();
         putRawValCallback(rawArray, listener);
     }
-
-
-    /**
-     * Asynchronously put a raw value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
-     */
-    abstract public void putRawValCallback(String newVal, PutListener listener) throws ConnectionException, PutException;
-
-
-    /**
-     * Asynchronously put a raw value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
-     */
-    abstract public void putRawValCallback(byte newVal, PutListener listener) throws ConnectionException, PutException;
-
-
-    /**
-     * Asynchronously put a raw value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
-     */
-    abstract public void putRawValCallback(short newVal, PutListener listener) throws ConnectionException, PutException;
-
-
-    /**
-     * Asynchronously put a raw value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
-     */
-    abstract public void putRawValCallback(int newVal, PutListener listener) throws ConnectionException, PutException;
-
-    
-    /**
-     * Asynchronously put a raw value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
-     */
-    abstract public void putRawValCallback(long newVal, PutListener listener) throws ConnectionException, PutException;
-
-
-    /**
-     * Asynchronously put a raw value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
-     */
-    abstract public void putRawValCallback(float newVal, PutListener listener) throws ConnectionException, PutException;
-
-
-    /**
-     * Asynchronously put a raw value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
-     */
-    abstract public void putRawValCallback(double newVal, PutListener listener) throws ConnectionException, PutException;
 
     /**
      * Asynchronously put a raw value to the channel process variable. Fire the
@@ -1513,71 +1454,148 @@ abstract public class Channel {
      * @throws xal.ca.ConnectionException channel is not connected
      * @throws xal.ca.PutException general put failure
      */
-    abstract public void putRawValCallback(String[] newVal, PutListener listener) throws ConnectionException, PutException;
+    public abstract void putRawValCallback(String newVal, PutListener listener) throws PutException;
 
     /**
-     * Asynchronously put a raw value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
+     * Asynchronously put a raw value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
      */
-    abstract public void putRawValCallback(byte[] newVal, PutListener listener) throws ConnectionException, PutException;
-
+    public abstract void putRawValCallback(byte newVal, PutListener listener) throws PutException;
 
     /**
-     * Asynchronously put a raw value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
+     * Asynchronously put a raw value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
      */
-    abstract public void putRawValCallback(short[] newVal, PutListener listener) throws ConnectionException, PutException;
-
+    public abstract void putRawValCallback(short newVal, PutListener listener) throws PutException;
 
     /**
-     * Asynchronously put a raw value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
+     * Asynchronously put a raw value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
      */
-    abstract public void putRawValCallback(int[] newVal, PutListener listener) throws ConnectionException, PutException;
-  
+    public abstract void putRawValCallback(int newVal, PutListener listener) throws PutException;
 
     /**
-     * Asynchronously put a raw value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
+     * Asynchronously put a raw value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
      */
-    abstract public void putRawValCallback(long[] newVal, PutListener listener) throws ConnectionException, PutException;
-
+    public abstract void putRawValCallback(long newVal, PutListener listener) throws PutException;
 
     /**
-     * Asynchronously put a raw value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
+     * Asynchronously put a raw value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
      */
-    abstract public void putRawValCallback(float[] newVal, PutListener listener) throws ConnectionException, PutException;
-
+    public abstract void putRawValCallback(float newVal, PutListener listener) throws PutException;
 
     /**
-     * Asynchronously put a raw value to the channel process variable.  Fire the specified callback
-     * when put is complete.
-     * @param  newVal      value sent to process variable
-     * @param  listener The receiver of the callback event
-     * @throws xal.ca.ConnectionException     channel is not connected
-     * @throws xal.ca.PutException        general put failure
+     * Asynchronously put a raw value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
      */
-    abstract public void putRawValCallback(double[] newVal, PutListener listener) throws ConnectionException, PutException;
+    public abstract void putRawValCallback(double newVal, PutListener listener) throws PutException;
+
+    /**
+     * Asynchronously put a raw value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
+     */
+    public abstract void putRawValCallback(String[] newVal, PutListener listener) throws PutException;
+
+    /**
+     * Asynchronously put a raw value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
+     */
+    public abstract void putRawValCallback(byte[] newVal, PutListener listener) throws PutException;
+
+    /**
+     * Asynchronously put a raw value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
+     */
+    public abstract void putRawValCallback(short[] newVal, PutListener listener) throws PutException;
+
+    /**
+     * Asynchronously put a raw value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
+     */
+    public abstract void putRawValCallback(int[] newVal, PutListener listener) throws PutException;
+
+    /**
+     * Asynchronously put a raw value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
+     */
+    public abstract void putRawValCallback(long[] newVal, PutListener listener) throws PutException;
+
+    /**
+     * Asynchronously put a raw value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
+     */
+    public abstract void putRawValCallback(float[] newVal, PutListener listener) throws PutException;
+
+    /**
+     * Asynchronously put a raw value to the channel process variable. Fire the
+     * specified callback when put is complete.
+     *
+     * @param newVal value sent to process variable
+     * @param listener The receiver of the callback event
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException general put failure
+     */
+    public abstract void putRawValCallback(double[] newVal, PutListener listener) throws PutException;
 }
-

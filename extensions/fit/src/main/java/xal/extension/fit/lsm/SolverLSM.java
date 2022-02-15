@@ -1,264 +1,234 @@
 package xal.extension.fit.lsm;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.tools.ArrayMath;
 
 /**
- *  The least square method solver
+ * The least square method solver
  *
- *@author    shishlo
+ * @author shishlo
  */
 public class SolverLSM implements FitSolver {
 
-	private double[] a = new double[0];
-	private int[] a_ind = new int[0];
-	private double[] a_err = new double[0];
+    private static final Logger LOGGER = Logger.getLogger(SolverLSM.class.getName());
 
-	private double[][] ATWA = new double[0][0];
+    private double[] a = new double[0];
+    private int[] indArr = new int[0];
+    private double[] errArr = new double[0];
 
-	private double[] ATWY = new double[0];
+    private double[][] atwa = new double[0][0];
 
-	private double[] W = new double[0];
+    private double[] atwy = new double[0];
 
+    private double[] w = new double[0];
 
-	/**
-	 *  Constructor for the SolverLSM object
-	 */
-	public SolverLSM() { }
+    /**
+     * Solve the fitting problem.
+     *
+     * @param ds The data for fitting.
+     * @param iniArr The initial values of the parameters.
+     * @param errIniArr The parameter values' errors.
+     * @param useArr The mask array specifying if the parameter will be used in
+     * fitting.
+     * @param mf The model function
+     * @return The boolean value specifying success of fitting.
+     */
+    @Override
+    public boolean solve(DataStore ds, ModelFunction mf,
+            double[] iniArr, double[] errIniArr,
+            boolean[] useArr) {
 
+        int na = 0;
+        for (int i = 0; i < iniArr.length; i++) {
+            if (useArr[i]) {
+                na++;
+            }
+        }
 
-	/**
-	 *  Solve the fitting problem.
-	 *
-	 *@param  ds         The data for fitting.
-	 *@param  a_ini      The initial values of the parameters.
-	 *@param  a_err_ini  The parameter values' errors.
-	 *@param  a_use      The mask array specifying if the parameter will be used in
-	 *      fitting.
-	 *@param  mf         The model function
-	 *@return            The boolean value specifying success of fitting.
-	 */
+        if (na != a.length) {
+            a = new double[na];
+            indArr = new int[na];
+            errArr = new double[na];
+            atwa = new double[na][na];
+            atwy = new double[na];
+        }
 
-	public boolean solve(DataStore ds, ModelFunction mf,
-			double[] a_ini, double[] a_err_ini,
-			boolean[] a_use) {
+        int count = 0;
+        for (int i = 0; i < iniArr.length; i++) {
+            errIniArr[i] = 0.;
+            if (useArr[i]) {
+                a[count] = iniArr[i];
+                indArr[count] = i;
+                errArr[count] = 0.;
+                count++;
+            }
+        }
 
-		int na = 0;
-		for (int i = 0; i < a_ini.length; i++) {
-			if (a_use[i] == true) {
-				na++;
-			}
-		}
+        int nD = ds.size();
+        if (nD < na) {
+            return false;
+        }
 
-		if (na != a.length) {
-			a = new double[na];
-			a_ind = new int[na];
-			a_err = new double[na];
-			ATWA = new double[na][na];
-			ATWY = new double[na];
-		}
+        if (nD != w.length) {
+            w = new double[nD];
+        }
 
-		int count = 0;
-		for (int i = 0; i < a_ini.length; i++) {
-			a_err_ini[i] = 0.;
-			if (a_use[i] == true) {
-				a[count] = a_ini[i];
-				a_ind[count] = i;
-				a_err[count] = 0.;
-				count++;
-			}
-		}
+        for (int i = 0; i < nD; i++) {
+            w[i] = 1.0;
+        }
 
-		int nD = ds.size();
-		if (nD < na) {
-			return false;
-		}
+        boolean errExist = true;
 
-		if (nD != W.length) {
-			W = new double[nD];
-		}
+        for (int i = 0; i < nD; i++) {
+            if (ds.getErrY(i) <= 0.) {
+                errExist = false;
+                break;
+            }
+        }
 
-		for (int i = 0; i < nD; i++) {
-			W[i] = 1.0;
-		}
+        if (errExist) {
+            for (int i = 0; i < nD; i++) {
+                w[i] = 1. / (ds.getErrY(i) * ds.getErrY(i));
+            }
+        }
 
-		boolean err_exist = true;
+        //calculation ATWY
+        for (int i = 0; i < na; i++) {
+            atwy[i] = 0.;
+            for (int j = 0; j < nD; j++) {
+                atwy[i] += mf.getDerivative(ds.getArrX(j), iniArr, indArr[i])
+                        * w[j]
+                        * (ds.getY(j) - mf.getValue(ds.getArrX(j), iniArr));
+            }
+        }
 
-		for (int i = 0; i < nD; i++) {
-			if (ds.getErrY(i) <= 0.) {
-				err_exist = false;
-				break;
-			}
-		}
+        //calculation ATWA
+        for (int i = 0; i < na; i++) {
+            for (int k = 0; k < na; k++) {
+                atwa[i][k] = 0.;
+                for (int j = 0; j < nD; j++) {
+                    atwa[i][k] += mf.getDerivative(ds.getArrX(j), iniArr, indArr[i])
+                            * mf.getDerivative(ds.getArrX(j), iniArr, indArr[k])
+                            * w[j];
+                }
+            }
+        }
 
-		if (err_exist == true) {
-			for (int i = 0; i < nD; i++) {
-				W[i] = 1. / (ds.getErrY(i)*ds.getErrY(i));
-			}
-		}
+        boolean res = ArrayMath.invertMatrix(atwa);
+        if (!res) {
+            return false;
+        }
 
-		//calculation ATWY
-		for (int i = 0; i < na; i++) {
-			ATWY[i] = 0.;
-			for (int j = 0; j < nD; j++) {
-				ATWY[i] += mf.getDerivative(ds.getArrX(j), a_ini, a_ind[i]) *
-						W[j] *
-						(ds.getY(j) - mf.getValue(ds.getArrX(j), a_ini));
-			}
-		}
+        for (int i = 0; i < na; i++) {
+            for (int k = 0; k < na; k++) {
+                a[i] += atwa[i][k] * atwy[k];
+            }
+        }
 
-		//calculation ATWA
-		for (int i = 0; i < na; i++) {
-			for (int k = 0; k < na; k++) {
-				ATWA[i][k] = 0.;
-				for (int j = 0; j < nD; j++) {
-					ATWA[i][k] += mf.getDerivative(ds.getArrX(j), a_ini, a_ind[i]) *
-							mf.getDerivative(ds.getArrX(j), a_ini, a_ind[k]) *
-							W[j];
-				}
-			}
-		}
+        for (int i = 0; i < na; i++) {
+            iniArr[indArr[i]] = a[i];
+            errIniArr[indArr[i]] = Math.sqrt(Math.abs(atwa[i][i]));
+        }
 
-		boolean res = ArrayMath.invertMatrix(ATWA);
-		if (res != true) {
-			return false;
-		}
+        if (!errExist) {
+            double y2Avg = 0.;
+            double yT;
+            double yA;
+            for (int j = 0; j < nD; j++) {
+                yA = mf.getValue(ds.getArrX(j), iniArr);
+                yT = ds.getY(j);
+                y2Avg += (yA - yT) * (yA - yT);
+            }
+            double err = 0.;
+            if (nD != na) {
+                err = y2Avg / (nD - na);
+            }
+            err = Math.sqrt(Math.abs(err));
+            for (int i = 0; i < na; i++) {
+                errIniArr[indArr[i]] *= err;
+            }
+        }
+        return true;
+    }
 
-		for (int i = 0; i < na; i++) {
-			for (int k = 0; k < na; k++) {
-				a[i] += ATWA[i][k] * ATWY[k];
-			}
-		}
+    /**
+     * MAIN for debugging
+     *
+     * @param args The array of strings as parameters
+     */
+    public static void main(String[] args) {
 
-		for (int i = 0; i < na; i++) {
-			a_ini[a_ind[i]] = a[i];
-			a_err_ini[a_ind[i]] = Math.sqrt(Math.abs(ATWA[i][i]));
-		}
+        ModelFunction1D mf
+                = new ModelFunction1D() {
 
-		if (err_exist != true) {
-			double y2_avg = 0.;
-			double y_t = 0.;
-			double y_a = 0.;
-			for (int j = 0; j < nD; j++) {
-				y_a = mf.getValue(ds.getArrX(j), a_ini);
-				y_t = ds.getY(j);
-				y2_avg += (y_a - y_t) * (y_a - y_t);
-			}
-			double err = 0.;
-			if(nD != na){
-			   err = y2_avg / (nD - na);
-			}
-			err = Math.sqrt(Math.abs(err));
-			for (int i = 0; i < na; i++) {
-				a_err_ini[a_ind[i]] *= err;
-			}
-		}
-		return true;
-	}
+            @Override
+            public double getValue(double x, double[] a) {
+                double res = 0.;
+                double xPow = 1.;
+                for (int i = 0; i < a.length; i++) {
+                    res += xPow * a[i];
+                    xPow *= x;
+                }
+                return res;
+            }
 
+            @Override
+            public double getDerivative(double x, double[] a, int aIndex) {
+                double res = 1.;
+                for (int i = 0; i < aIndex; i++) {
+                    res *= x;
+                }
+                return res;
+            }
+        };
 
-	/**
-	 *  MAIN for debugging
-	 *
-	 *@param  args  The array of strings as parameters
-	 */
-	public static void main(String args[]) {
+        int nPoints = 11;
 
-		ModelFunction1D mf =
-			new ModelFunction1D() {
+        double[] yArr = new double[nPoints];
+        double[] yErrArr = new double[nPoints];
+        double[][] xArr = new double[nPoints][1];
+        double z;
+        for (int i = 0; i < nPoints; i++) {
+            z = i + 1.;
+            xArr[i][0] = z;
+            yArr[i] = 1.0 + z + z * z + z * z * z;
+            yErrArr[i] = 1.0;
+        }
 
-				public double getValue(double x, double[] a) {
-					double res = 0.;
-					double x_pow = 1.;
-					for (int i = 0; i < a.length; i++) {
-						res += x_pow * a[i];
-						x_pow *= x;
-					}
-					return res;
-				}
+        double[] a = new double[]{0.3, 1.0, 0.3, 0.3};
 
+        double[] aErr = new double[]{0.0, 0.0, 0.0, 0.0};
 
-				public double getDerivative(double x, double[] a, int a_index) {
-					double res = 1.;
-					for (int i = 0; i < a_index; i++) {
-						res *= x;
-					}
-					return res;
-				}
+        boolean[] mask = new boolean[]{true, true, true, true};
 
-			};
+        DataStore ds = new DataStore(yArr, yErrArr, xArr);
 
-		int nPoints = 11;
+        SolverLSM solver = new SolverLSM();
 
-		double[] y_arr = new double[nPoints];
-		double[] y_err_arr = new double[nPoints];
-		double[][] x_arr = new double[nPoints][1];
-		double z = 0.;
-		for (int i = 0; i < nPoints; i++) {
-			z = i + 1;
-			x_arr[i][0] = z;
-			y_arr[i] = 1.0 + z + z * z + z * z * z;
-			y_err_arr[i] = 1.0;
-			//if(i%2 == 0) y_arr[i] += 1.0;
-		}
+        LOGGER.log(Level.INFO, "======BEFORE=========");
 
-		double[] a = new double[4];
-		a[0] = 0.3;
-		a[1] = 1.0;
-		a[2] = 0.3;
-		a[3] = 0.3;
+        for (int i = 0; i < a.length; i++) {
+            LOGGER.log(Level.INFO, "i={0} a={1} +- {2}", new Object[]{i, a[i], aErr[i]});
+        }
+        LOGGER.log(Level.INFO, "======START Solver=======");
 
-		double[] a_err = new double[4];
-		a_err[0] = 0.;
-		a_err[1] = 0.;
-		a_err[2] = 0.;
-		a_err[3] = 0.;
+        boolean res = solver.solve(ds, mf, a, aErr, mask);
 
-		boolean[] mask = new boolean[4];
-		mask[0] = true;
-		mask[1] = true;
-		mask[2] = true;
-		mask[3] = true;
+        LOGGER.log(Level.INFO, "sucess ={0}", res);
 
-		DataStore ds = new DataStore(y_arr, y_err_arr, x_arr);
+        for (int i = 0; i < a.length; i++) {
+            LOGGER.log(Level.INFO, "i={0} a={1} +- {2}", new Object[]{i, a[i], aErr[i]});
+        }
+        LOGGER.log(Level.INFO, "======STOP=======");
 
-		SolverLSM solver = new SolverLSM();
-
-		System.out.println("======BEFORE=========");
-
-		for (int i = 0; i < a.length; i++) {
-			System.out.println("i=" + i + " a=" + a[i] + " +- " + a_err[i]);
-		}
-		System.out.println("======START Solver=======");
-
-		boolean res = solver.solve(ds, mf, a, a_err, mask);
-
-		System.out.println("sucess =" + res);
-
-		for (int i = 0; i < a.length; i++) {
-			System.out.println("i=" + i + " a=" + a[i] + " +- " + a_err[i]);
-		}
-		System.out.println("======STOP=======");
-
-		a[0] = 1.;
-		a[1] = 1.;
-		a[2] = 1.;
-		a[3] = 1.;
-		System.out.println("  x        y          y_appr   ");
-		for (int i = 0; i < x_arr.length; i++) {
-			System.out.println(" " + x_arr[i][0] + "  "
-					 + y_arr[i] + "  "
-					 + mf.getValue(x_arr[i][0], a));
-		}
-
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-
+        a[0] = 1.;
+        a[1] = 1.;
+        a[2] = 1.;
+        a[3] = 1.;
+        LOGGER.log(Level.INFO, "  x        y          y_appr   ");
+        for (int i = 0; i < xArr.length; i++) {
+            LOGGER.log(Level.INFO, " {0}  {1}  {2}", new Object[]{xArr[i][0], yArr[i], mf.getValue(xArr[i][0], a)});
+        }
+    }
 }
-

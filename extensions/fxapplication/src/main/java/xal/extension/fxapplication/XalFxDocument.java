@@ -50,7 +50,7 @@ import javafx.stage.Modality;
  *
  * @author Yngve Levinsen <yngve.levinsen@ess.eu>
  */
-abstract public class XalFxDocument {
+public abstract class XalFxDocument {
 
     /**
      * wildcard file extension
@@ -92,14 +92,14 @@ abstract public class XalFxDocument {
      */
     protected boolean testMode = false;
 
-    public XalFxDocument() {
+    protected XalFxDocument() {
         this.HELP_WIKI_BASE = "https://confluence.esss.lu.se/pages/viewpage.action?pageId=";
         this.accelerator = new AcceleratorProperty();
         this.sequence = new SimpleStringProperty();
         this.sourceString = new SimpleStringProperty(DEFAULT_FILENAME);
     }
 
-    public XalFxDocument(Stage stage) {
+    protected XalFxDocument(Stage stage) {
         this();
         this.mainStage = stage;
     }
@@ -130,10 +130,7 @@ abstract public class XalFxDocument {
     }
 
     public boolean sourceSetAndValid() {
-        if (source == null) {
-            return false;
-        }
-        return true;
+        return source != null;
     }
 
     public void setSource(File newSource) {
@@ -157,7 +154,7 @@ abstract public class XalFxDocument {
      *
      * @param url The File to which this document should be saved.
      */
-    abstract public void saveDocumentAs(final URL url);
+    public abstract void saveDocumentAs(final URL url);
 
     /**
      * Subclasses need to implement this method for saving the document to a
@@ -165,13 +162,13 @@ abstract public class XalFxDocument {
      *
      * @param url The URL to which this document should be saved.
      */
-    abstract public void loadDocument(final URL url);
+    public abstract void loadDocument(final URL url);
 
     /**
      * Subclasses need to implement this method for creating a new document.
      *
      */
-    abstract public void newDocument();
+    public abstract void newDocument();
 
     /**
      * Save this document to its persistent storage source.

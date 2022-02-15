@@ -49,9 +49,9 @@ public class MagFieldMap3D extends FieldMap {
 
     @Override
     public void saveFieldMap(String path, String filename) throws IOException, URISyntaxException {
-        FieldComponent<double[][][]> fieldComponentX = magneticField.get("x");
-        FieldComponent<double[][][]> fieldComponentY = magneticField.get("y");
-        FieldComponent<double[][][]> fieldComponentZ = magneticField.get("z");
+        FieldComponent<double[][][]> fieldComponentX = (FieldComponent<double[][][]>) magneticField.get("x");
+        FieldComponent<double[][][]> fieldComponentY = (FieldComponent<double[][][]>) magneticField.get("y");
+        FieldComponent<double[][][]> fieldComponentZ = (FieldComponent<double[][][]>) magneticField.get("z");
 
         saveFile3D(path, filename + ".bsx", fieldComponentX);
         saveFile3D(path, filename + ".bsy", fieldComponentY);
@@ -67,9 +67,9 @@ public class MagFieldMap3D extends FieldMap {
      */
     @Override
     public FieldMapPoint getFieldAt(double position) {
-        FieldComponent<double[][][]> fieldComponentX = magneticField.get("x");
-        FieldComponent<double[][][]> fieldComponentY = magneticField.get("y");
-        FieldComponent<double[][][]> fieldComponentZ = magneticField.get("z");
+        FieldComponent<double[][][]> fieldComponentX = (FieldComponent<double[][][]>) magneticField.get("x");
+        FieldComponent<double[][][]> fieldComponentY = (FieldComponent<double[][][]>) magneticField.get("y");
+        FieldComponent<double[][][]> fieldComponentZ = (FieldComponent<double[][][]>) magneticField.get("z");
 
         if (position < 0.0 || position > fieldComponentZ.getMax()[0]) {
             return null;
@@ -106,35 +106,32 @@ public class MagFieldMap3D extends FieldMap {
             positionIndex = numberOfPointsZ - 2;
         }
 
-        double interpolation_factor = position / spacingZ - positionIndex;
+        double interpolationFactor = position / spacingZ - positionIndex;
 
         // To get the (0,0) point in the XY plane.
         int midPointX = (int) (-minX / spacingX);
         int midPointY = (int) (-minY / spacingY);
 
-        double Bx0 = fieldX[positionIndex][midPointY][midPointX] + interpolation_factor
+        double bx0 = fieldX[positionIndex][midPointY][midPointX] + interpolationFactor
                 * (fieldX[positionIndex + 1][midPointY][midPointX] - fieldX[positionIndex][midPointY][midPointX]);
-        double By0 = fieldY[positionIndex][midPointY][midPointX] + interpolation_factor
+        double by0 = fieldY[positionIndex][midPointY][midPointX] + interpolationFactor
                 * (fieldY[positionIndex + 1][midPointY][midPointX] - fieldY[positionIndex][midPointY][midPointX]);
-        double Bz0 = fieldZ[positionIndex][midPointY][midPointX] + interpolation_factor
+        double bz0 = fieldZ[positionIndex][midPointY][midPointX] + interpolationFactor
                 * (fieldZ[positionIndex + 1][midPointY][midPointX] - fieldZ[positionIndex][midPointY][midPointX]);
 
-        double dBxdx = (fieldX[positionIndex][midPointY][midPointX + 1] - fieldX[positionIndex][midPointY][midPointX]) + interpolation_factor
+        double dBxdx = (fieldX[positionIndex][midPointY][midPointX + 1] - fieldX[positionIndex][midPointY][midPointX]) + interpolationFactor
                 * (fieldX[positionIndex + 1][midPointY][midPointX + 1] - fieldX[positionIndex + 1][midPointY][midPointX] - (fieldX[positionIndex][midPointY][midPointX + 1] - fieldX[positionIndex][midPointY][midPointX]));
-        double dBxdy = (fieldX[positionIndex][midPointY + 1][midPointX] - fieldX[positionIndex][midPointY][midPointX]) + interpolation_factor
+        double dBxdy = (fieldX[positionIndex][midPointY + 1][midPointX] - fieldX[positionIndex][midPointY][midPointX]) + interpolationFactor
                 * (fieldX[positionIndex + 1][midPointY + 1][midPointX] - fieldX[positionIndex + 1][midPointY][midPointX] - (fieldX[positionIndex][midPointY + 1][midPointX] - fieldX[positionIndex][midPointY][midPointX]));
-        double dBydx = (fieldY[positionIndex][midPointY][midPointX + 1] - fieldY[positionIndex][midPointY][midPointX]) + interpolation_factor
+        double dBydx = (fieldY[positionIndex][midPointY][midPointX + 1] - fieldY[positionIndex][midPointY][midPointX]) + interpolationFactor
                 * (fieldY[positionIndex + 1][midPointY][midPointX + 1] - fieldY[positionIndex + 1][midPointY][midPointX] - (fieldY[positionIndex][midPointY][midPointX + 1] - fieldY[positionIndex][midPointY][midPointX]));
-        double dBydy = (fieldY[positionIndex][midPointY + 1][midPointX] - fieldY[positionIndex][midPointY][midPointX]) + interpolation_factor
+        double dBydy = (fieldY[positionIndex][midPointY + 1][midPointX] - fieldY[positionIndex][midPointY][midPointX]) + interpolationFactor
                 * (fieldY[positionIndex + 1][midPointY + 1][midPointX] - fieldY[positionIndex + 1][midPointY][midPointX] - (fieldY[positionIndex][midPointY + 1][midPointX] - fieldY[positionIndex][midPointY][midPointX]));
 
         double dBxdz;
         double dBydz;
 
-        if (positionIndex == 0) {
-            dBxdz = (fieldX[positionIndex + 1][midPointY][midPointX] - fieldX[positionIndex][midPointY][midPointX]);
-            dBydz = (fieldY[positionIndex + 1][midPointY][midPointX] - fieldY[positionIndex][midPointY][midPointX]);
-        } else if (positionIndex == fieldZ.length - 1) {
+        if (positionIndex == fieldZ.length - 1) {
             dBxdz = (fieldX[positionIndex][midPointY][midPointX] - fieldX[positionIndex - 1][midPointY][midPointX]);
             dBydz = (fieldY[positionIndex][midPointY][midPointX] - fieldY[positionIndex - 1][midPointY][midPointX]);
         } else {
@@ -143,9 +140,9 @@ public class MagFieldMap3D extends FieldMap {
         }
 
         // Denormalising
-        Bx0 /= normX;
-        By0 /= normY;
-        Bz0 /= normZ;
+        bx0 /= normX;
+        by0 /= normY;
+        bz0 /= normZ;
         dBxdx /= spacingX * normX;
         dBxdy /= spacingY * normX;
         dBydx /= spacingX * normY;
@@ -155,9 +152,9 @@ public class MagFieldMap3D extends FieldMap {
 
         FieldMapPoint fieldMapPoint = new FieldMapPoint();
 
-        fieldMapPoint.setBx(Bx0);
-        fieldMapPoint.setBy(By0);
-        fieldMapPoint.setBz(Bz0);
+        fieldMapPoint.setBx(bx0);
+        fieldMapPoint.setBy(by0);
+        fieldMapPoint.setBz(bz0);
 
         fieldMapPoint.setdBxdx(dBxdx);
         fieldMapPoint.setdBxdy(dBxdy);

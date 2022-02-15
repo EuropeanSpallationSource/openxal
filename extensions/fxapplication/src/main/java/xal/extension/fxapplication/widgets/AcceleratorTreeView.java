@@ -20,6 +20,7 @@ package xal.extension.fxapplication.widgets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 import javafx.collections.ObservableList;
@@ -86,8 +87,8 @@ public class AcceleratorTreeView extends XalTreeView<AcceleratorNode> {
         ObservableList<MenuItem> menuItems = filterMenu.getItems();
         MenuItem menuItemSelectAll = new MenuItem("Select All Types");
         MenuItem menuItemDeselecttAll = new MenuItem("Deselect All Types");
-        menuItemSelectAll.setOnAction((e) -> this.selectAllFilters());
-        menuItemDeselecttAll.setOnAction((e) -> this.deselectAllFilters());
+        menuItemSelectAll.setOnAction(e -> this.selectAllFilters());
+        menuItemDeselecttAll.setOnAction(e -> this.deselectAllFilters());
         menuItems.add(menuItemSelectAll);
         menuItems.add(menuItemDeselecttAll);
         menuItems.add(new SeparatorMenuItem());
@@ -337,9 +338,9 @@ public class AcceleratorTreeView extends XalTreeView<AcceleratorNode> {
      */
     public String[] getSelectedFilters() {
         List<String> filters = new ArrayList<>();
-        typeMap.keySet().forEach(item -> {
-            if (typeMap.get(item).isSelected()) {
-                filters.add(item);
+        typeMap.entrySet().forEach(entry -> {
+            if (entry.getValue().isSelected()) {
+                filters.add(entry.getKey());
             }
         });
         String[] filtersArray = new String[filters.size()];
@@ -354,8 +355,8 @@ public class AcceleratorTreeView extends XalTreeView<AcceleratorNode> {
     public boolean areAllFiltersSelected() {
         boolean allFiltersSelectedFlag = true;
 
-        for (String item : typeMap.keySet()) {
-            if (!typeMap.get(item).isSelected()) {
+        for (CheckMenuItem item : typeMap.values()) {
+            if (!item.isSelected()) {
                 allFiltersSelectedFlag = false;
             }
         }
@@ -375,13 +376,13 @@ public class AcceleratorTreeView extends XalTreeView<AcceleratorNode> {
             multipleSelectionFlag = true;
         }
 
-        for (String type : typeMap.keySet()) {
+        for (Entry<String, CheckMenuItem> entry : typeMap.entrySet()) {
             if (unselectOthers) {
-                typeMap.get(type).setSelected(false);
+                entry.getValue().setSelected(false);
             }
             for (String elementType : elementTypes) {
-                if (type.equals(elementType)) {
-                    typeMap.get(type).setSelected(true);
+                if (entry.getKey().equals(elementType)) {
+                    entry.getValue().setSelected(true);
                 }
             }
         }
@@ -413,9 +414,9 @@ public class AcceleratorTreeView extends XalTreeView<AcceleratorNode> {
         }
 
         for (String elementType : elementTypes) {
-            for (String type : typeMap.keySet()) {
-                if (type.equals(elementType)) {
-                    typeMap.get(type).setSelected(false);
+            for (Entry<String, CheckMenuItem> entry : typeMap.entrySet()) {
+                if (entry.getKey().equals(elementType)) {
+                    entry.getValue().setSelected(false);
                 }
             }
         }

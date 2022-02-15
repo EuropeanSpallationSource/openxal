@@ -5,12 +5,12 @@ import java.awt.Shape;
 
 public class SolenoidWidget extends CartoonWidget {
 
-	public SolenoidWidget() {
-		super(Color.GREEN);
-	}
+    public SolenoidWidget() {
+        super(Color.GREEN);
+    }
 
-	@Override
-	public Shape getShape(int length) {
-		return createSymmetricalRectangle(length, REF_HEIGHT);
-	}
+    @Override
+    public Shape getShape(int length) {
+        return createSymmetricalRectangle(length, REF_HEIGHT);
+    }
 }

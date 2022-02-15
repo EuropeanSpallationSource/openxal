@@ -3,63 +3,66 @@
  *
  * Created on 5/31/2002
  */
-
 package xal.smf.attr;
 
 /**
  *
- * A bucket to hold Information about sequences. In particular,
- * how long the sequence is, and allowed predecessor sequences.
+ * A bucket to hold Information about sequences. In particular, how long the
+ * sequence is, and allowed predecessor sequences.
+ *
  * @author J. Galambos
  * @version 1.0
  */
-
-
 public class SequenceBucket extends AttributeBucket {
-    /** serialization ID */
+
+    /**
+     * serialization ID
+     */
     private static final long serialVersionUID = 1L;
 
-    
     /*
      *  Constants
      */
+    public static final String TYPE = "sequence";
 
-    public final static String  c_strType = "sequence"; 
+    static final String[] ARR_NAMES = {"predecessors"
+    };
 
-    final static String[]       c_arrNames = {"predecessors"
-                                };
-    
-    
     /*
      *  Local Attributes
      */
-    
-    private Attribute m_attPredecessors;
+    private Attribute attPredecessors;
 
-    
     /*
      *  User Interface
      */
-    
-    /** Furnish a unique type id  */
-    public String getType()         { return c_strType; };
-    
+    /**
+     * Furnish a unique type id
+     */
+    @Override
+    public String getType() {
+        return TYPE;
+    }
 
-     
-    
-    /** Creates new SequenceBucket */
+    /**
+     * Creates new SequenceBucket
+     */
     public SequenceBucket() {
         super();
-        
-        String sa[] = new String[2]; // can have at most 2 predecessors
-        m_attPredecessors  = new Attribute(sa);
-        
-        super.registerAttribute(c_arrNames[0], m_attPredecessors, "Preceding sequences (max 2).");
-    };
 
-    
-    public String[]   getPredecessors()  { return m_attPredecessors.getArrStr(); };
-    
-    public void setPredecessors(String [] sa) { m_attPredecessors.set(sa); };
-    
-};
+        // can have at most 2 predecessors
+        String[] sa = new String[2];
+        attPredecessors = new Attribute(sa);
+
+        super.registerAttribute(ARR_NAMES[0], attPredecessors, "Preceding sequences (max 2).");
+    }
+
+    public String[] getPredecessors() {
+        return attPredecessors.getArrStr();
+    }
+
+    public void setPredecessors(String[] sa) {
+        attPredecessors.set(sa);
+    }
+
+}

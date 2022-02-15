@@ -3,6 +3,7 @@ package xal.tools.apputils;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.Set;
@@ -11,7 +12,10 @@ import java.util.logging.Level;
 import java.util.prefs.AbstractPreferences;
 import java.util.prefs.BackingStoreException;
 
-public class Preferences extends java.util.prefs.AbstractPreferences {
+public class Preferences extends AbstractPreferences {
+
+    private static final Logger LOGGER = Logger.getLogger(Preferences.class.getName());
+
     protected java.util.prefs.Preferences userPrefs;
     protected Properties sysPrefs;
     protected Set<String> usrKeys;
@@ -23,7 +27,9 @@ public class Preferences extends java.util.prefs.AbstractPreferences {
 
     private static Preferences parentPrefs(java.util.prefs.Preferences userPrefs) {
         java.util.prefs.Preferences parentPrefs = userPrefs.parent();
-        if (parentPrefs == null) return null;
+        if (parentPrefs == null) {
+            return null;
+        }
         return new Preferences(parentPrefs, parentPrefs.name());
     }
 
@@ -44,35 +50,43 @@ public class Preferences extends java.util.prefs.AbstractPreferences {
     }
 
     private boolean usrContains(String key) {
-        String keys[];
+        String[] keys;
         try {
             keys = userPrefs.keys();
-            for (String userKey : keys)
-                if (key.equals(userKey)) return true;
+            for (String userKey : keys) {
+                if (key.equals(userKey)) {
+                    return true;
+                }
+            }
         } catch (BackingStoreException e) {
+            LOGGER.log(Level.WARNING, null, e);
         }
         return false;
     }
 
     protected String fullName() {
-        if ("".equals(name())) return "xal";
-        Preferences parent = (Preferences)parent();
+        if ("".equals(name())) {
+            return "xal";
+        }
+        Preferences parent = (Preferences) parent();
         return parent == null || "".equals(parent.name()) ? name() : parent.fullName() + "." + name();
     }
 
-    protected Properties getSysPrefs()
-    {
+    protected Properties getSysPrefs() {
         if (sysPrefs == null) {
             String confDir = System.getenv("OPENXAL_CONFIG_DIR");
-            if (confDir == null) confDir = "/etc/openxal";
-            File confFile = new File(confDir + "/" + fullName() + ".prefs");
-            Logger.getLogger("global").log( Level.CONFIG, String.format("sysPrefs: %s", confFile.toString()) );
+            if (confDir == null) {
+                confDir = "/etc/openxal";
+            }
+            File confFile = new File(confDir, fullName() + ".prefs");
+            LOGGER.log(Level.CONFIG, "sysPrefs: {0}", confFile);
             if (confFile.exists()) {
-                Logger.getLogger("global").log( Level.INFO, "Configuration file found, loading..");
+                LOGGER.log(Level.INFO, "Configuration file found, loading..");
                 sysPrefs = new Properties();
-                try {
-                    sysPrefs.load(new FileReader(confFile));
+                try (FileReader fileReader = new FileReader(confFile, StandardCharsets.UTF_8)) {
+                    sysPrefs.load(fileReader);
                 } catch (IOException e) {
+                    LOGGER.log(Level.SEVERE, null, e);
                 }
             }
         }
@@ -81,7 +95,9 @@ public class Preferences extends java.util.prefs.AbstractPreferences {
 
     @Override
     protected String getSpi(String key) {
-        if (usrContains(key) || !getSysPrefs().containsKey(key)) return userPrefs.get(key, null);
+        if (usrContains(key) || !getSysPrefs().containsKey(key)) {
+            return userPrefs.get(key, null);
+        }
         return getSysPrefs().getProperty(key);
     }
 
@@ -112,10 +128,8 @@ public class Preferences extends java.util.prefs.AbstractPreferences {
         userPrefs.sync();
     }
 
-    public static java.util.prefs.Preferences nodeForPackage(Class<?> c)
-    {
-        java.util.prefs.Preferences userPrefs = Preferences.userNodeForPackage(c);
+    public static java.util.prefs.Preferences nodeForPackage(Class<?> c) {
+        java.util.prefs.Preferences userPrefs = java.util.prefs.Preferences.userNodeForPackage(c);
         return new Preferences(userPrefs, userPrefs.name());
     }
-
 }

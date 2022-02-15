@@ -3,13 +3,13 @@
  *
  * Created on June 26, 2002, 5:27 PM
  */
-
 package xal.ca;
 
 /**
  *
- * @author  tap
+ * @author tap
  */
 public interface IEventSinkValue {
-    public void eventValue(ChannelRecord record, Channel chan);
+
+    public void eventValue(ChannelRecord channelRecord, Channel chan);
 }

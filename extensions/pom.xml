@@ -1,11 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.xal</groupId>
         <artifactId>openxal</artifactId>
-        <version>5.4-SNAPSHOT</version>
+        <version>6.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>openxal.extensions</artifactId>
@@ -16,15 +16,12 @@
         <module>application</module>
         <module>fxapplication</module>
         <module>bricks</module>
-        <module>extlatgen</module>
         <module>fit</module>
         <module>logbook</module>
-        <module>orbit</module>
         <module>recordselector</module>
         <module>scan</module>
         <module>service</module>
         <module>solver</module>
-        <module>twissobserver</module>
         <module>widgets</module>
         <module>wirescan</module>
         <module>jels</module>

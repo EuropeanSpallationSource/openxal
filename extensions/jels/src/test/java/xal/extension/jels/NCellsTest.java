@@ -41,8 +41,6 @@ public class NCellsTest extends SingleElementTest {
         // 0: basic test m=0
         tests.add(new Object[]{new SingleElementTestData() {
             {
-//                double frequency2 = 299.792e6;
-//                double energy2 = 145.2e6;
                 description = "basic test, m=0";
                 probe = setupOpenXALProbe(3e6, frequency, current);
                 elementMapping = JElsElementMapping.getInstance();
@@ -73,7 +71,6 @@ public class NCellsTest extends SingleElementTest {
             }
         }});
 
-// 		System.out.println("NCELLS m=1");
         //  NCELLS 1 3 0.1 1.e4 -30 31 0 0.5 0.5 1.0 -1.0 0.1 0.664594 0.423349 0.350508 0.634734 0.628339 0.249724 0.639103 0.622128 0.25257
         // 1: basic test m=1
         tests.add(
@@ -109,7 +106,6 @@ public class NCellsTest extends SingleElementTest {
                 }
             }});
 
-// 		System.out.println("NCELLS m=2");
         //  NCELLS 2 3 0.1 1.e4 -30 31 0 0.5 0.5 1.0 -1.0 0.1 0.664594 0.423349 0.350508 0.634734 0.628339 0.249724 0.639103 0.622128 0.25257
         // 2: basic test m=2
         tests.add(
@@ -146,7 +142,6 @@ public class NCellsTest extends SingleElementTest {
             }});
 
         // NCELLS 0 3 0.1 1.e4 -30 31 0 0.5 0.5 1.0 -1.0 0 1 0 0 1 0 0 1 0 0
-        //System.out.println("NCELLS no TTF m=0");
         // 3: no TTF, m=0
         tests.add(
                 new Object[]{new SingleElementTestData() {
@@ -180,7 +175,6 @@ public class NCellsTest extends SingleElementTest {
             }});
 
         // NCELLS 1 3 0.1 1.e4 -30 31 0 0.5 0.5 1.0 -1.0 0 1 0 0 1 0 0 1 0 0
-        //System.out.println("NCELLS no TTF m=1");
         // 4: no TTF, m=1
         tests.add(
                 new Object[]{new SingleElementTestData() {
@@ -214,7 +208,6 @@ public class NCellsTest extends SingleElementTest {
             }});
 
         // NCELLS 2 3 0.1 1.e4 -30 31 0 0.5 0.5 1.0 -1.0 0 1 0 0 1 0 0 1 0 0
-        // System.out.println("NCELLS no TTF m=2");
         // 5: no TTF, m=2
         tests.add(
                 new Object[]{new SingleElementTestData() {
@@ -248,7 +241,6 @@ public class NCellsTest extends SingleElementTest {
             }});
 
         // NCELLS 0 3 0.1 1.e4 -30 31 0 0.5 0.5 1.0 -1.0 0 1 0 0 1 0 0 1 0 0
-        //System.out.println("NCELLS no TTF m=0 spacecharge I=30mA");
         // 6: spacecharge no TTF, m=0
         tests.add(
                 new Object[]{new SingleElementTestData() {
@@ -283,7 +275,6 @@ public class NCellsTest extends SingleElementTest {
             }});
 
         // NCELLS 0 3 0.5 1e6 -30 31 0 0.5 0.5 1.0 -1.0 0 1 0 0 1 0 0 1 0 0
-        //System.out.println("NCELLS no TTF m=0 spacecharge I=30mA E=200MeV");
         // 7: spacecharge no TTF, m=0, E=200MeV
         tests.add(
                 new Object[]{new SingleElementTestData() {
@@ -442,7 +433,7 @@ public class NCellsTest extends SingleElementTest {
         AcceleratorSeq sequence = new AcceleratorSeq("GapTest");
         AcceleratorNode[] nodes = new AcceleratorNode[n];
 
-        double lambda = IElement.LightSpeed / frequency;
+        double lambda = IElement.LIGHT_SPEED / frequency;
         double Lc0, Lc, Lcn;
         double amp0 = 1 + kE0Ti;
         double ampn = 1 + kE0To;
@@ -494,13 +485,13 @@ public class NCellsTest extends SingleElementTest {
 
         // TTF
         if (betas == 0.0) {
-            cavity.getRfField().setTTF_startCoefs(new double[]{});
+            cavity.getRfField().setTTFStartCoefs(new double[]{});
             cavity.getRfField().setTTFCoefs(new double[]{});
-            cavity.getRfField().setTTF_endCoefs(new double[]{});
+            cavity.getRfField().setTTFEndCoefs(new double[]{});
         } else {
-            cavity.getRfField().setTTF_startCoefs(new double[]{betas, Ti, kTi, k2Ti});
+            cavity.getRfField().setTTFStartCoefs(new double[]{betas, Ti, kTi, k2Ti});
             cavity.getRfField().setTTFCoefs(new double[]{betas, Ts, kTs, k2Ts});
-            cavity.getRfField().setTTF_endCoefs(new double[]{betas, To, kTo, k2To});
+            cavity.getRfField().setTTFEndCoefs(new double[]{betas, To, kTo, k2To});
         }
 
         if (m == 1) {

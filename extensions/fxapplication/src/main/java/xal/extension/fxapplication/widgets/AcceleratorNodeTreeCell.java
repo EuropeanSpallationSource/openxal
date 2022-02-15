@@ -59,7 +59,7 @@ abstract class AcceleratorNodeTreeCell extends ElementTreeCell<AcceleratorNode> 
             try {
                 displayInfo = item.getClass().getMethod("getType").invoke(item).toString();
             } catch (IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException ex) {
-                LOGGER.log(WARNING, "Getting type for {0}", classNameInfo);
+                LOGGER.log(WARNING, "Getting type for {0}", new Object[]{classNameInfo, ex});
             }
 
             displayInfoLabel.setText(displayInfo);

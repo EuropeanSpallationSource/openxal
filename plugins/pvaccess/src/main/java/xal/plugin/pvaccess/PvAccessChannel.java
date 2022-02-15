@@ -44,9 +44,9 @@ import xal.tools.apputils.Preferences;
  * library can be used to connect with pvAccess or ChannelAccess protocol.
  *
  * This implementation creates a connection to both protocols and only keeps the
- * first one that is connected. This means that <b>if a pva channel and ca
+ * first one that is connected. This means that <strong>if a pva channel and ca
  * channel with same name exist on the network the behavior of this class is
- * non-deterministic</b>.
+ * non-deterministic</strong>.
  *
  * To keep compatibility with jca plugin, where the PV.FLD is a valid notation,
  * the channel name is parsed and everything after the first dot is used as a
@@ -60,12 +60,11 @@ class PvAccessChannel extends Channel {
     // Default timeout parameters
     private static final double DEFAULT_IO_TIMEOUT = 5.0;
     private static final double DEFAULT_EVENT_TIMEOUT = 0.1;
-    
+
     // Property names
     private static final String DEF_TIME_IO = "c_dblDefTimeIO";
     private static final String DEF_TIME_EVENT = "c_dblDefTimeEvent";
 
-    
     // Names of the standard fields
     static final String VALUE_FIELD_NAME = "value";
     static final String ALARM_FIELD_NAME = "alarm";
@@ -109,12 +108,12 @@ class PvAccessChannel extends Channel {
 
         String requestString = defaultField.equals(VALUE_FIELD_NAME) ? "" : defaultField;
         pvRequest = CreateRequest.create().createRequest("field(" + requestString + ")");
-       
+
         // Load default timeouts from preferences if available, otherwise use hardcoded values.
         java.util.prefs.Preferences defaults = Preferences.nodeForPackage(Channel.class);
-        m_dblTmIO = defaults.getDouble( DEF_TIME_IO, DEFAULT_IO_TIMEOUT);
-        m_dblTmEvt = defaults.getDouble( DEF_TIME_EVENT, DEFAULT_EVENT_TIMEOUT);   
-        
+        dblTmIO = defaults.getDouble(DEF_TIME_IO, DEFAULT_IO_TIMEOUT);
+        dblTmEvt = defaults.getDouble(DEF_TIME_EVENT, DEFAULT_EVENT_TIMEOUT);
+
         connectionFlag = false;
     }
 
@@ -155,7 +154,7 @@ class PvAccessChannel extends Channel {
     public boolean isConnected() {
         return channel != null && channel.getConnectionState() == ConnectionState.CONNECTED;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -202,7 +201,7 @@ class PvAccessChannel extends Channel {
                 connectAndWait();
                 checkConnection(false);
             } else {
-                throw new ConnectionException(this, "The channel " + m_strId + " must be connected for this operation.");
+                throw new ConnectionException(this, "The channel " + strId + " must be connected for this operation.");
             }
         }
     }
@@ -212,7 +211,7 @@ class PvAccessChannel extends Channel {
      */
     @Override
     public boolean connectAndWait(double timeout) {
-        if (m_strId == null || isConnected()) {
+        if (strId == null || isConnected()) {
             return false;
         }
 
@@ -222,7 +221,7 @@ class PvAccessChannel extends Channel {
             connectionLatch = new CountDownLatch(1);
 
             channel = ChannelProviderRegistryFactory.getChannelProviderRegistry().
-                    createProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME).createChannel(m_strId,
+                    createProvider(org.epics.pvaccess.ClientFactory.PROVIDER_NAME).createChannel(strId,
                     new PvAccessChannel.ChannelRequesterImpl(), ChannelProvider.PRIORITY_DEFAULT);
         }
 
@@ -485,13 +484,13 @@ class PvAccessChannel extends Channel {
 
         getRawValueTimeCallback(listener, true);
         try {
-            if (latch.await((long) m_dblTmIO, TimeUnit.SECONDS)) {
+            if (latch.await((long) dblTmIO, TimeUnit.SECONDS)) {
                 return listener.getRecord();
             }
         } catch (InterruptedException e) {
             throw new GetException("Concurrency error" + e.getMessage());
         }
-        throw new GetException("Timeout on get operation. No data recieved in " + m_dblTmIO + " seconds.");
+        throw new GetException("Timeout on get operation. No data recieved in " + dblTmIO + " seconds.");
     }
 
     /**
@@ -665,7 +664,7 @@ class PvAccessChannel extends Channel {
      * ChannelRequesterImplementation that sends the connection established
      * events to the PvAccessChannel class on connection.
      */
-    private class ChannelRequesterImpl implements ChannelRequester {
+    private static class ChannelRequesterImpl implements ChannelRequester {
 
         /**
          * Constructor
@@ -716,7 +715,7 @@ class PvAccessChannel extends Channel {
     /**
      * ChannelGetRequester implementation.
      */
-    private class ChannelGetRequesterImpl implements ChannelGetRequester {
+    private static class ChannelGetRequesterImpl implements ChannelGetRequester {
 
         EventSinkAdapter listener;
 
@@ -775,7 +774,7 @@ class PvAccessChannel extends Channel {
     /**
      * ChannelPutRequester implementation.
      */
-    private class ChannelPutRequesterImpl implements ChannelPutRequester {
+    private static class ChannelPutRequesterImpl implements ChannelPutRequester {
 
         private final PutListener listener;
         private final Object value;

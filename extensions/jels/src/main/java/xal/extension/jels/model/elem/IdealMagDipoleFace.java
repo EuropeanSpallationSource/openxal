@@ -26,7 +26,7 @@ import xal.tools.beam.PhaseMatrix;
  * The model for the pole face effect is taken from D.C. Carey's book.
  * <br/>
  * <br/>
- * D.C. Carey, <i>The Optics of Charged Particle Beams</i> (Harwood, 1987)
+ * D.C. Carey, <em>The Optics of Charged Particle Beams</em> (Harwood, 1987)
  * </p>
  *
  *
@@ -43,22 +43,22 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
     /**
      * the string type identifier for all IdealMagSteeringDipole's
      */
-    public static final String s_strType = "IdealMagDipoleFace";
+    public static final String TYPE = "IdealMagDipoleFace";
 
     /**
      * Tags for parameters in the XML configuration file
      */
-    public static final String s_strParamLenEff = "EffLength";
+    public static final String PARAM_LEN_EFF = "EffLength";
 
     /**
      * Tags for parameters in the XML configuration file
      */
-    public static final String s_strParamOrient = "Orientation";
+    public static final String PARAM_ORIENT = "Orientation";
 
     /**
      * Tags for parameters in the XML configuration file
      */
-    public static final String s_strParamField = "MagField";
+    public static final String PARAM_FIELD = "MagField";
 
     /*
      *  Local Attributes
@@ -66,7 +66,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
     /**
      * K0 (no length)
      */
-    private double K0 = 0;
+    private double k0 = 0;
 
     /**
      * The dipole gap height (m)
@@ -111,7 +111,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * generation. Thus, all element properties are set following construction.
      */
     public IdealMagDipoleFace() {
-        super(s_strType);
+        super(TYPE);
     }
 
     /**
@@ -120,7 +120,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * @param strId string identifier for element
      */
     public IdealMagDipoleFace(String strId) {
-        super(s_strType, strId);
+        super(TYPE, strId);
     }
 
     /**
@@ -128,7 +128,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * trajectory. This can be either at the magnet entrance or exit, the effect
      * is the same.
      *
-     * @param dblAngPole pole face angle in <b>radians</b>
+     * @param dblAngPole pole face angle in <strong>radians</strong>
      *
      */
     public void setPoleFaceAngle(double dblAngPole) {
@@ -138,7 +138,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
     /**
      * Set the gap height between the magnet poles.
      *
-     * @param dblGap gap size in <b>meters</b>
+     * @param dblGap gap size in <strong>meters</strong>
      */
     public void setGapHeight(double dblGap) {
         this.dblGap = dblGap;
@@ -147,21 +147,22 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
     /**
      * Set the second-order moment integral of the dipole fringe field as
      * described by D.C. Carey. The integral determines the amount of defocusing
-     * caused by the fringe field. Denoting the integral <i>I2</i>
+     * caused by the fringe field. Denoting the integral <em>I2</em>
      * it has the definition
      *
      * I2 := Integral{ B(z)[B0 - B(z)]/(g B0^2) }dz
      *
-     * where <i>g</i> is the gap height, <i>B0</i> is the hard edge value for
-     * the magnetic field, and <i>B(z)</i> is the true magnetic field along the
-     * design trajectory with path length parameter <i>z</i>. The integral taken
-     * from a location <i>z0</i> within the magnet where <i>B(z0)=B0</i>
-     * out to <i>z</i> = infinity.
+     * where <em>g</em> is the gap height, <em>B0</em> is the hard edge value
+     * for the magnetic field, and <em>B(z)</em> is the true magnetic field
+     * along the design trajectory with path length parameter <em>z</em>. The
+     * integral taken from a location <em>z0</em> within the magnet where
+     * <em>B(z0)=B0</em>
+     * out to <em>z</em> = infinity.
      *
      * Some examples values are the following: I2 = 0.1666 linear drop off I2 =
      * 0.4 clamped Rogowski coil I2 = 0.7 unclamped Rogoski coil
      *
-     * @param dblFringeInt field moment I2 (<b>dimensionless</b>)
+     * @param dblFringeInt field moment I2 (<strong>dimensionless</strong>)
      */
     public void setFringeIntegral(double dblFringeInt) {
         this.dblFringeInt = dblFringeInt;
@@ -200,25 +201,26 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
     }
 
     /**
-     * Set the design curvature <i>h</i> of the bending magnet.
+     * Set the design curvature <em>h</em> of the bending magnet.
      *
-     * @param dbl design curvature <i>h</i> = 1/<i>R</i><sub>0</sub> where
-     * <i>R</i><sub>0</sub> is the design path radius.
+     * @param dbl design curvature <em>h</em> = 1/<em>R</em><sub>0</sub> where
+     * <em>R</em><sub>0</sub> is the design path radius.
      *
      * @author Christopher K. Allen
      * @since Apr 19, 2011
      */
     public void setK0(double dbl) {
-        K0 = dbl;
+        k0 = dbl;
     }
 
     /*
      * Property Query
      */
     /**
-     * This is the design bending curvature <i>h</i> = 1/<i>R</i><sub>0</sub>
+     * This is the design bending curvature <em>h</em> =
+     * 1/<em>R</em><sub>0</sub>
      * where
-     * <i>R</i><sub>0</sub> is the design bending radius.
+     * <em>R</em><sub>0</sub> is the design bending radius.
      *
      * @return the design curvature of the bending magnet
      *
@@ -226,13 +228,13 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * @since Apr 19, 2011
      */
     public double getK0() {
-        return K0;
+        return k0;
     }
 
     /**
      * Return distance between dipole magnet poles.
      *
-     * @return gap height in <b>meters</b>
+     * @return gap height in <strong>meters</strong>
      */
     public double getGapHeight() {
         return this.dblGap;
@@ -243,7 +245,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * trajectory. This can be either at the magnet entrance or exit, the effect
      * is the same.
      *
-     * @return pole face angle in <b>radians</b>
+     * @return pole face angle in <strong>radians</strong>
      */
     public double getPoleFaceAngle() {
         return this.dblAngFace;
@@ -254,7 +256,8 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * described by D.C. Carey. The integral determines the amount of defocusing
      * caused by the fringe field.
      *
-     * @return second-order integral of fringe field (<b>dimensionless</b>)
+     * @return second-order integral of fringe field
+     * (<strong>dimensionless</strong>)
      *
      * @see IdealMagDipoleFace#setFringeIntegral(double)
      */
@@ -285,7 +288,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * @return design trajectory path length (in meters)
      */
     public double getDesignPathLength() {
-        return this.dblPathLen;
+        return dblPathLen;
     }
 
     /**
@@ -294,7 +297,7 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * @return design trajectory bending angle (in radians)
      */
     public double getDesignBendingAngle() {
-        return this.dblBendAng;
+        return dblBendAng;
     }
 
     /**
@@ -306,10 +309,10 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      * @see IdealMagSectorDipole2#compDesignBendingRadius()
      */
     public double compDesignCurvature() {
-        double L0 = this.getDesignPathLength();
+        double l0 = this.getDesignPathLength();
         double theta0 = this.getDesignBendingAngle();
 
-        return theta0 / L0;
+        return theta0 / l0;
     }
 
 
@@ -353,20 +356,20 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
      */
     @Override
     protected PhaseMap transferMap(IProbe probe) throws ModelException {
-        double B = -getPoleFaceAngle();
-        if (B == 0) {
+        double b = -getPoleFaceAngle();
+        if (b == 0) {
             return PhaseMap.identity();
         }
 
-        double K1 = getFringeIntegral();
-        double K2 = getFringeIntegral2();
+        double k1 = getFringeIntegral();
+        double k2 = getFringeIntegral2();
 
-        double G = getGapHeight();
+        double g = getGapHeight();
         double rho = 1 / compDesignCurvature();
 
         double psi;
 
-        psi = K1 * G / Math.abs(rho) * ((1 + Math.pow(Math.sin(B), 2)) / Math.cos(B)) * (1 - K1 * K2 * G / Math.abs(rho) * Math.tan(B));
+        psi = k1 * g / Math.abs(rho) * ((1 + Math.pow(Math.sin(b), 2)) / Math.cos(b)) * (1 - k1 * k2 * g / Math.abs(rho) * Math.tan(b));
 
         PhaseMatrix matPhi = new PhaseMatrix();
 
@@ -378,13 +381,13 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
 
         switch (this.getOrientation()) {
             case IElectromagnet.ORIENT_HOR:
-                matPhi.setElem(1, 0, Math.tan(B) / Math.abs(rho));
-                matPhi.setElem(3, 2, -Math.tan(B - psi) / Math.abs(rho));
+                matPhi.setElem(1, 0, Math.tan(b) / Math.abs(rho));
+                matPhi.setElem(3, 2, -Math.tan(b - psi) / Math.abs(rho));
                 break;
 
             case IElectromagnet.ORIENT_VER:
-                matPhi.setElem(1, 0, -Math.tan(B - psi) / Math.abs(rho));
-                matPhi.setElem(3, 2, Math.tan(B) / Math.abs(rho));
+                matPhi.setElem(1, 0, -Math.tan(b - psi) / Math.abs(rho));
+                matPhi.setElem(3, 2, Math.tan(b) / Math.abs(rho));
                 break;
 
             default:
@@ -394,10 +397,10 @@ public class IdealMagDipoleFace extends ThinElectromagnet {
         matPhi.setElem(4, 4, 1);
         matPhi.setElem(5, 5, 1);
         matPhi.setElem(6, 6, 1);
-        
+
         //Jan 2019 Apply the slice error form the ThinElement
-        PhaseMatrix Phidx = applyErrors(matPhi,0.0);
-        matPhi = Phidx;
+        PhaseMatrix phidx = applyErrors(matPhi, 0.0);
+        matPhi = phidx;
 
         return new PhaseMap(matPhi);
     }

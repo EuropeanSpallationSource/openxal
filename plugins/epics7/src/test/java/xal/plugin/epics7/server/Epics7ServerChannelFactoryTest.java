@@ -31,12 +31,14 @@ import xal.plugin.epics7.HandlerImpl;
  */
 public class Epics7ServerChannelFactoryTest {
 
+    private static final Logger LOGGER = Logger.getLogger(Epics7ServerChannelFactoryTest.class.getName());
+
     /**
      * Test of newChannel method, of class Epics7ServerChannelFactory.
      */
     @Test
     public void testNewChannel() {
-        System.out.println("newChannel");
+        LOGGER.log(Level.INFO, "newChannel");
         Epics7ServerChannelFactory instance = new Epics7ServerChannelFactory();
 
         String signalName = "TestChannel";
@@ -58,7 +60,7 @@ public class Epics7ServerChannelFactoryTest {
      */
     @Test
     public void testDispose() {
-        System.out.println("dispose");
+        LOGGER.log(Level.INFO, "dispose");
         Epics7ServerChannelFactory instance = new Epics7ServerChannelFactory();
 
         instance.dispose();
@@ -72,7 +74,7 @@ public class Epics7ServerChannelFactoryTest {
      */
     @Test
     public void testPrintInfo() {
-        System.out.println("printInfo");
+        LOGGER.log(Level.INFO, "printInfo");
         Epics7ServerChannelFactory instance = new Epics7ServerChannelFactory();
 
         String message = "Using EPICS7 Open XAL plugin.";
@@ -91,7 +93,7 @@ public class Epics7ServerChannelFactoryTest {
      */
     @Test
     public void testInit() {
-        System.out.println("init");
+        LOGGER.log(Level.INFO, "init");
         Epics7ServerChannelFactory instance = new Epics7ServerChannelFactory();
         assertEquals(true, instance.init());
         instance.dispose();
@@ -103,7 +105,7 @@ public class Epics7ServerChannelFactoryTest {
      */
     @Test
     public void testChannelSystem() {
-        System.out.println("channelSystem");
+        LOGGER.log(Level.INFO, "channelSystem");
         Epics7ServerChannelFactory instance = new Epics7ServerChannelFactory();
         ChannelSystem result = instance.channelSystem();
         assertEquals(Epics7ServerChannelSystem.class, result.getClass());

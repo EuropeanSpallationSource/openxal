@@ -38,8 +38,8 @@ public class AcceleratorNodeIcon {
 
     private AcceleratorNodeIcon() {
         try {
-            XmlDataAdaptor document_adaptor = XmlDataAdaptor.adaptorForUrl(getClass().getResource("iconMapping.xml"), false);
-            DataAdaptor iconMapping = document_adaptor.childAdaptor("iconMapping");
+            XmlDataAdaptor documentAdaptor = XmlDataAdaptor.adaptorForUrl(getClass().getResource("iconMapping.xml"), false);
+            DataAdaptor iconMapping = documentAdaptor.childAdaptor("iconMapping");
             for (DataAdaptor element : iconMapping.childAdaptors()) {
                 map.put(element.stringValue("class"), element.stringValue("icon"));
             }
@@ -55,14 +55,14 @@ public class AcceleratorNodeIcon {
      * @param cls
      * @return
      */
-    public static String getIcon(Class cls) {
+    public static String getIcon(Class<?> cls) {
         if (instance == null) {
             instance = new AcceleratorNodeIcon();
         }
         String icon = instance.map.get(cls.getCanonicalName());
 
         if (icon == null) {
-            Class superClass = cls.getSuperclass();
+            Class<?> superClass = cls.getSuperclass();
             if (superClass != null) {
                 return getIcon(superClass);
             }

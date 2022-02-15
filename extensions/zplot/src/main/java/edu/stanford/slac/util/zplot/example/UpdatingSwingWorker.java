@@ -41,290 +41,288 @@ import edu.stanford.slac.util.zplot.model.Obstruction;
 import edu.stanford.slac.util.zplot.model.WidgetsRepository;
 
 public class UpdatingSwingWorker {
-	
-	// Note that you MAY want to run this with the following JVM argument:
-	// -Dsun.java2d.pmoffscreen=false 
 
-	private static double getRandomZ() {
-		return Math.random() * 1000;
-	}
+    // Note that you MAY want to run this with the following JVM argument:
+    // -Dsun.java2d.pmoffscreen=false 
+    private static double getRandomZ() {
+        return Math.random() * 1000;
+    }
 
-	private static double getRandomLength() {
-		return Math.random() * 3;
-	}
+    private static double getRandomLength() {
+        return Math.random() * 3;
+    }
 
-	private static double getRandomValue() {
-		return Math.random() * 5000;
-	}
+    private static double getRandomValue() {
+        return Math.random() * 5000;
+    }
 
-	private static int getRandomStatus() {
-		return (int) Math.round(Math.random());
-	}
+    private static int getRandomStatus() {
+        return (int) Math.round(Math.random());
+    }
 
-	private static double getRandomBeamlineLength() {
-		return Math.random() * 200 + 1;
-	}
+    private static double getRandomBeamlineLength() {
+        return Math.random() * 200 + 1;
+    }
 
-	private static int setup_count = 0;
+    private static int setup_count = 0;
 
-	private synchronized static void setup() {
-		setup_count = 1 + setup_count;
-		try {
-			//System.out.println("Setup entered-" + setup_count);
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		//System.out.println("Setup exit-" + setup_count);
-	}
+    private synchronized static void setup() {
+        setup_count = 1 + setup_count;
+        try {
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            LOGGER.log(Level.SEVERE, null, exception);
+        }
 
-		int ITERATIONS = 10;
-		int WAIT = 500; //ms
+    }
 
-		JFrame f = new JFrame("Updating Display Using Swing Worker");
-		JPanel p = new JPanel();
-		ZPlot zPlot = new ZPlot(2);
-		f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		f.setPreferredSize(new Dimension(1024, 768));
-		f.setLayout(new BorderLayout());
-		f.add(p, BorderLayout.CENTER);
-		final ZPlotPanel zPlotPanel = new ZPlotPanel(p, zPlot);
+    /**
+     * @param args
+     */
+    public static void main(String[] args) {
 
-		for (int iteration =0; iteration<ITERATIONS; iteration++) {
+        int ITERATIONS = 10;
+        //ms
+        int WAIT = 500;
 
-			// construct devices
-			int NR_DEVICES = 40;
-			Device[] devices = new Device[NR_DEVICES];
-			// -----------------------------------------------------------------
-			for (int i = 0; i < NR_DEVICES; i++) {
-				double z = getRandomZ();
-				double value = getRandomValue();
-				int status = getRandomStatus();
-				devices[i] = new Device("bpm" + i, z, value, WidgetsRepository.getBPMWidget(status));
-			}
+        JFrame f = new JFrame("Updating Display Using Swing Worker");
+        JPanel p = new JPanel();
+        ZPlot zPlot = new ZPlot(2);
+        f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        f.setPreferredSize(new Dimension(1024, 768));
+        f.setLayout(new BorderLayout());
+        f.add(p, BorderLayout.CENTER);
+        final ZPlotPanel zPlotPanel = new ZPlotPanel(p, zPlot);
 
-			// sort by z
-			Arrays.sort(devices);
-			Device[] bpms = new Device[devices.length];
-			System.arraycopy(devices, 0, bpms, 0, devices.length);
-			// -----------------------------------------------------------------
-			for (int i = 0; i < NR_DEVICES / 2; i++) {
-				devices[i] = new Device(bpms[i].getName(), bpms[i].getZ(), bpms[i].getY(), WidgetsRepository.getLargeDispersionBPMWidget(0));
+        for (int iteration = 0; iteration < ITERATIONS; iteration++) {
 
-			}
+            // construct devices
+            int NR_DEVICES = 40;
+            Device[] devices = new Device[NR_DEVICES];
+            // -----------------------------------------------------------------
+            for (int i = 0; i < NR_DEVICES; i++) {
+                double z = getRandomZ();
+                double value = getRandomValue();
+                int status = getRandomStatus();
+                devices[i] = new Device("bpm" + i, z, value, WidgetsRepository.getBPMWidget(status));
+            }
 
-			Device[] largeDispBPMs = new Device[devices.length / 2];
-			System.arraycopy(devices, 0, largeDispBPMs, 0, devices.length / 2);
-			// -----------------------------------------------------------------
+            // sort by z
+            Arrays.sort(devices);
+            Device[] bpms = new Device[devices.length];
+            System.arraycopy(devices, 0, bpms, 0, devices.length);
+            // -----------------------------------------------------------------
+            for (int i = 0; i < NR_DEVICES / 2; i++) {
+                devices[i] = new Device(bpms[i].getName(), bpms[i].getZ(), bpms[i].getY(), WidgetsRepository.getLargeDispersionBPMWidget(0));
 
-			for (int i = 0; i < NR_DEVICES; i++) {
-				double z = getRandomZ();
-				double value = getRandomValue();
-				int status = getRandomStatus();
+            }
 
-				devices[i] = new Device("marker" + i, z, value, WidgetsRepository.getMarkerWidget(status));
-			}
+            Device[] largeDispBPMs = new Device[devices.length / 2];
+            System.arraycopy(devices, 0, largeDispBPMs, 0, devices.length / 2);
+            // -----------------------------------------------------------------
 
-			// sort by z
-			Arrays.sort(devices);
-			Device[] markers = new Device[devices.length];
-			System.arraycopy(devices, 0, markers, 0, devices.length);
-			// -----------------------------------------------------------------
-			for (int i = 0; i < NR_DEVICES; i++) {
-				double z = getRandomZ();
-				// double value = getRandomValue();
-				int status = getRandomStatus();
-				devices[i] = new Device("magnet" + i, z, 0.0, WidgetsRepository.getAlarmedXCORWidget(status));
+            for (int i = 0; i < NR_DEVICES; i++) {
+                double z = getRandomZ();
+                double value = getRandomValue();
+                int status = getRandomStatus();
 
-			}
-			// sort by z
-			Arrays.sort(devices);
-			Device[] xmagnets = new Device[devices.length];
-			System.arraycopy(devices, 0, xmagnets, 0, devices.length);
-			// -----------------------------------------------------------------
-			for (int i = 0; i < NR_DEVICES; i++) {
-				double z = getRandomZ();
-				// double value = getRandomValue();
-				int status = getRandomStatus();
-				devices[i] = new Device("magnet" + i, z, 0.0, WidgetsRepository.getAlarmedYCORWidget(status));
+                devices[i] = new Device("marker" + i, z, value, WidgetsRepository.getMarkerWidget(status));
+            }
 
-			}
-			// sort by z
-			Arrays.sort(devices);
-			Device[] ymagnets = new Device[devices.length];
-			System.arraycopy(devices, 0, ymagnets, 0, devices.length);
-			// -----------------------------------------------------------------
-			for (int i = 0; i < NR_DEVICES; i++) {
-				double z = getRandomZ();
-				double value = getRandomValue();
-				int status = getRandomStatus();
-				if (i % 5 != 0) {
-					devices[i] = new Device("toroid" + i, z, value, WidgetsRepository.getToroidWidget(status));
-				} else {
-					devices[i] = new Device("marker" + i, z, value, WidgetsRepository.getMarkerWidget(status));
-				}
-			}
-			// sort by z
-			Arrays.sort(devices);
-			Device[] toroids = new Device[devices.length];
-			System.arraycopy(devices, 0, toroids, 0, devices.length);
-			// -----------------------------------------------------------------
-			for (int i = 0; i < NR_DEVICES; i++) {
-				double z = getRandomZ();
-				int status = getRandomStatus();
-				devices[i] = new Obstruction("pms" + i, z, WidgetsRepository.getProfMonScreenWidget(status));
+            // sort by z
+            Arrays.sort(devices);
+            Device[] markers = new Device[devices.length];
+            System.arraycopy(devices, 0, markers, 0, devices.length);
+            // -----------------------------------------------------------------
+            for (int i = 0; i < NR_DEVICES; i++) {
+                double z = getRandomZ();
+                int status = getRandomStatus();
+                devices[i] = new Device("magnet" + i, z, 0.0, WidgetsRepository.getAlarmedXCORWidget(status));
 
-			}
-			// sort by z
-			Arrays.sort(devices);
-			Device[] obstructions = new Device[devices.length];
-			System.arraycopy(devices, 0, obstructions, 0, devices.length);
-			// -----------------------------------------------------------------
-			// Beamline cartoon devices
-			int NR_CARTOON_DEVICE_TYPES = 16;
-			for (int i = 0; i < NR_DEVICES; i++) {
-				double z = getRandomZ();
-				double length = getRandomLength();
-				int m = NR_CARTOON_DEVICE_TYPES + 1;
-				if (i % m-- == 0) {
-					devices[i] = new CartoonDevice("bpm" + i, z, new BPMWidget());
-				} else if (i % m-- == 0) {
-					devices[i] = new CartoonDevice("cavity" + i, z, length, new CavityWidget());
-				} else if (i % m-- == 0) {
-					devices[i] = new CartoonDevice("dipole" + i, z, length, new DipoleWidget());
-				} else if (i % m-- == 0) {
-					devices[i] = new CartoonDevice("dquad" + i, z, length, new DQuadWidget());
-				} else if (i % m-- == 0) {
-					devices[i] = new CartoonDevice("fquad" + i, z, length, new FQuadWidget());
-				} else if (i % m-- == 0) {
-					devices[i] = new CartoonDevice("lossmonitor" + i, z, new LossMonitorWidget());
-				} else if (i % m-- == 0) {
-					devices[i] = new CartoonDevice("marker" + i, z, new MarkerWidget());
-				} else if (i % m-- == 0) {
-					devices[i] = new CartoonDevice("profmon" + i, z, new ProfileMonitorWidget());
-				} else if (i % m-- == 0) {
-					devices[i] = new CartoonDevice("solenoid" + i, z, length, new SolenoidWidget());
-				} else if (i % m-- == 0) {
-					devices[i] = new CartoonDevice("toroid" + i, z, length, new ToroidWidget());
-				} else if (i % m-- == 0) {
-					devices[i] = new CartoonDevice("undulator" + i, z, length, new UndulatorWidget());
-				} else if (i % m-- == 0) {
-					devices[i] = new CartoonDevice("wirescanner" + i, z, new WireScannerWidget());
-				} else if (i % m-- == 0) {
-					devices[i] = new CartoonDevice("xcollimator" + i, z, new XCollimatorWidget());
-				} else if (i % m-- == 0) {
-					devices[i] = new CartoonDevice("ycollimator" + i, z, new YCollimatorWidget());
-				} else if (i % m-- == 0) {
-					devices[i] = new CartoonDevice("xcor" + i, z, new XCorWidget());
-				} else {
-					devices[i] = new CartoonDevice("ycor" + i, z, new YCorWidget());
-				}
-			}
+            }
+            // sort by z
+            Arrays.sort(devices);
+            Device[] xmagnets = new Device[devices.length];
+            System.arraycopy(devices, 0, xmagnets, 0, devices.length);
+            // -----------------------------------------------------------------
+            for (int i = 0; i < NR_DEVICES; i++) {
+                double z = getRandomZ();
+                int status = getRandomStatus();
+                devices[i] = new Device("magnet" + i, z, 0.0, WidgetsRepository.getAlarmedYCORWidget(status));
 
-			// sort by z
-			Arrays.sort(devices);
-			CartoonDevice[] cartoonDevices = new CartoonDevice[devices.length];
-			System.arraycopy(devices, 0, cartoonDevices, 0, devices.length);
-			// -----------------------------------------------------------------
-			// beamlines
-			Beamline[] beamlines = new Beamline[10];
-			double startZ = 0;
-			double length = 0;
-			for (int i = 0; i < beamlines.length; i++) {
-				length = getRandomBeamlineLength();
-				beamlines[i] = new Beamline("bl" + i, startZ, startZ + length);
-				startZ = startZ + length;
-			}
+            }
+            // sort by z
+            Arrays.sort(devices);
+            Device[] ymagnets = new Device[devices.length];
+            System.arraycopy(devices, 0, ymagnets, 0, devices.length);
+            // -----------------------------------------------------------------
+            for (int i = 0; i < NR_DEVICES; i++) {
+                double z = getRandomZ();
+                double value = getRandomValue();
+                int status = getRandomStatus();
+                if (i % 5 != 0) {
+                    devices[i] = new Device("toroid" + i, z, value, WidgetsRepository.getToroidWidget(status));
+                } else {
+                    devices[i] = new Device("marker" + i, z, value, WidgetsRepository.getMarkerWidget(status));
+                }
+            }
+            // sort by z
+            Arrays.sort(devices);
+            Device[] toroids = new Device[devices.length];
+            System.arraycopy(devices, 0, toroids, 0, devices.length);
+            // -----------------------------------------------------------------
+            for (int i = 0; i < NR_DEVICES; i++) {
+                double z = getRandomZ();
+                int status = getRandomStatus();
+                devices[i] = new Obstruction("pms" + i, z, WidgetsRepository.getProfMonScreenWidget(status));
 
-			int X_PLOT_INDEX = 0;
-			int Y_PLOT_INDEX = 1;
+            }
+            // sort by z
+            Arrays.sort(devices);
+            Device[] obstructions = new Device[devices.length];
+            System.arraycopy(devices, 0, obstructions, 0, devices.length);
+            // -----------------------------------------------------------------
+            // Beamline cartoon devices
+            int NR_CARTOON_DEVICE_TYPES = 16;
+            for (int i = 0; i < NR_DEVICES; i++) {
+                double z = getRandomZ();
+                double length = getRandomLength();
+                int m = NR_CARTOON_DEVICE_TYPES + 1;
+                if (i % m-- == 0) {
+                    devices[i] = new CartoonDevice("bpm" + i, z, new BPMWidget());
+                } else if (i % m-- == 0) {
+                    devices[i] = new CartoonDevice("cavity" + i, z, length, new CavityWidget());
+                } else if (i % m-- == 0) {
+                    devices[i] = new CartoonDevice("dipole" + i, z, length, new DipoleWidget());
+                } else if (i % m-- == 0) {
+                    devices[i] = new CartoonDevice("dquad" + i, z, length, new DQuadWidget());
+                } else if (i % m-- == 0) {
+                    devices[i] = new CartoonDevice("fquad" + i, z, length, new FQuadWidget());
+                } else if (i % m-- == 0) {
+                    devices[i] = new CartoonDevice("lossmonitor" + i, z, new LossMonitorWidget());
+                } else if (i % m-- == 0) {
+                    devices[i] = new CartoonDevice("marker" + i, z, new MarkerWidget());
+                } else if (i % m-- == 0) {
+                    devices[i] = new CartoonDevice("profmon" + i, z, new ProfileMonitorWidget());
+                } else if (i % m-- == 0) {
+                    devices[i] = new CartoonDevice("solenoid" + i, z, length, new SolenoidWidget());
+                } else if (i % m-- == 0) {
+                    devices[i] = new CartoonDevice("toroid" + i, z, length, new ToroidWidget());
+                } else if (i % m-- == 0) {
+                    devices[i] = new CartoonDevice("undulator" + i, z, length, new UndulatorWidget());
+                } else if (i % m-- == 0) {
+                    devices[i] = new CartoonDevice("wirescanner" + i, z, new WireScannerWidget());
+                } else if (i % m-- == 0) {
+                    devices[i] = new CartoonDevice("xcollimator" + i, z, new XCollimatorWidget());
+                } else if (i % m-- == 0) {
+                    devices[i] = new CartoonDevice("ycollimator" + i, z, new YCollimatorWidget());
+                } else if (i % m-- == 0) {
+                    devices[i] = new CartoonDevice("xcor" + i, z, new XCorWidget());
+                } else {
+                    devices[i] = new CartoonDevice("ycor" + i, z, new YCorWidget());
+                }
+            }
 
-			// create z plot
-			// ZPlot zPlot = new ZPlot(2);
+            // sort by z
+            Arrays.sort(devices);
+            CartoonDevice[] cartoonDevices = new CartoonDevice[devices.length];
+            System.arraycopy(devices, 0, cartoonDevices, 0, devices.length);
+            // -----------------------------------------------------------------
+            // beamlines
+            Beamline[] beamlines = new Beamline[10];
+            double startZ = 0;
+            double length = 0;
+            for (int i = 0; i < beamlines.length; i++) {
+                length = getRandomBeamlineLength();
+                beamlines[i] = new Beamline("bl" + i, startZ, startZ + length);
+                startZ = startZ + length;
+            }
 
-			zPlot.labelDevices(bpms, beamlines);
-			zPlot.setGap(80);
+            int X_PLOT_INDEX = 0;
+            int Y_PLOT_INDEX = 1;
 
-			XYPlot xPlot = zPlot.getSubplot(X_PLOT_INDEX);
-			zPlot.setDevices(xPlot, bpms, 0, RendererType.FEATHER);
-			zPlot.setDevices(xPlot, largeDispBPMs, 1, RendererType.FEATHER);
-			zPlot.setDevices(xPlot, markers, 2, RendererType.FEATHER);
-			{
-				ZPlotFeatherRenderer renderer = (ZPlotFeatherRenderer) xPlot.getRenderer(1);
-				renderer.setBaseShapesVisible(true);
-			}
+            // create z plot
+            zPlot.labelDevices(bpms, beamlines);
+            zPlot.setGap(80);
 
-			xPlot.getRangeAxis().setLabel("Top Plot");
-			xPlot.getRangeAxis().setRange(-10, 1000);
+            XYPlot xPlot = zPlot.getSubplot(X_PLOT_INDEX);
+            zPlot.setDevices(xPlot, bpms, 0, RendererType.FEATHER);
+            zPlot.setDevices(xPlot, largeDispBPMs, 1, RendererType.FEATHER);
+            zPlot.setDevices(xPlot, markers, 2, RendererType.FEATHER);
+            {
+                ZPlotFeatherRenderer renderer = (ZPlotFeatherRenderer) xPlot.getRenderer(1);
+                renderer.setBaseShapesVisible(true);
+            }
 
-			XYPlot yPlot = zPlot.getSubplot(Y_PLOT_INDEX);
-			zPlot.setDevices(yPlot, toroids, 0, RendererType.LINE);
-			zPlot.setDevices(yPlot, obstructions, 1, RendererType.LINE);
+            xPlot.getRangeAxis().setLabel("Top Plot");
+            xPlot.getRangeAxis().setRange(-10, 1000);
 
-			yPlot.getRangeAxis().setLabel("Bottom Plot");
-			yPlot.getRangeAxis().setRange(0, 5000);
+            XYPlot yPlot = zPlot.getSubplot(Y_PLOT_INDEX);
+            zPlot.setDevices(yPlot, toroids, 0, RendererType.LINE);
+            zPlot.setDevices(yPlot, obstructions, 1, RendererType.LINE);
 
-			// add in alarmed magnets
-			zPlot.setDevices(xPlot, xmagnets, -1, RendererType.LINE);
-			XYLineAndShapeRenderer xrenderer = (XYLineAndShapeRenderer) xPlot.getRenderer(xPlot.getDatasetCount() - 1);
-			xrenderer.setBaseLinesVisible(false);
+            yPlot.getRangeAxis().setLabel("Bottom Plot");
+            yPlot.getRangeAxis().setRange(0, 5000);
 
-			zPlot.setDevices(yPlot, ymagnets, -1, RendererType.LINE);
-			XYLineAndShapeRenderer yrenderer = (XYLineAndShapeRenderer) yPlot.getRenderer(yPlot.getDatasetCount() - 1);
-			yrenderer.setBaseLinesVisible(false);
+            // add in alarmed magnets
+            zPlot.setDevices(xPlot, xmagnets, -1, RendererType.LINE);
+            XYLineAndShapeRenderer xrenderer = (XYLineAndShapeRenderer) xPlot.getRenderer(xPlot.getDatasetCount() - 1);
+            xrenderer.setBaseLinesVisible(false);
 
-			zPlot.setCartoonDevices(cartoonDevices);
+            zPlot.setDevices(yPlot, ymagnets, -1, RendererType.LINE);
+            XYLineAndShapeRenderer yrenderer = (XYLineAndShapeRenderer) yPlot.getRenderer(yPlot.getDatasetCount() - 1);
+            yrenderer.setBaseLinesVisible(false);
 
-			// label subplots
-			zPlot.setSubplotLabel(X_PLOT_INDEX, "X Plot");
-			zPlot.setSubplotLabel(Y_PLOT_INDEX, "Y Plot");
+            zPlot.setCartoonDevices(cartoonDevices);
 
-			// create plot panel
-			//final ZPlotPanel zPlotPanel = new ZPlotPanel(p, zPlot);
+            // label subplots
+            zPlot.setSubplotLabel(X_PLOT_INDEX, "X Plot");
+            zPlot.setSubplotLabel(Y_PLOT_INDEX, "Y Plot");
 
-			if (! f.isVisible()) {
-				f.pack();
-			    f.setVisible(true);
-			}
+            // create plot panel
+            if (!f.isVisible()) {
+                f.pack();
+                f.setVisible(true);
+            }
 
-			final String Title = new String("Display Number " + (1+iteration));
+            final String Title = new String("Display Number " + (1 + iteration));
 
-			zPlotPanel.setTitle(Title, Color.WHITE);
+            zPlotPanel.setTitle(Title, Color.WHITE);
 
-			final SwingWorker worker = new SwingWorker() {
-				public synchronized Object construct() {
-					setup(); // this is the slow part
-					return zPlotPanel;
-				}
-				public synchronized void finished() {
-					ZPlotPanel z = (ZPlotPanel)get();
-					z.repaint();
-					System.out.println("...just repainted " + z.getTitle());
-				} // end of finished()
-			};
-			worker.start();
+            final SwingWorker worker = new SwingWorker() {
+                public synchronized Object construct() {
+                    // this is the slow part
+                    setup();
+                    return zPlotPanel;
+                }
 
-			if (WAIT > 0) {
-				try {
-					Thread.sleep(WAIT);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-			
-			worker.get(); // wait the longer of the requested wait period or the time it takes to create & draw the display
+                public synchronized void finished() {
+                    ZPlotPanel z = (ZPlotPanel) get();
+                    z.repaint();
+                    LOGGER.log(Level.INFO, "...just repainted " + z.getTitle());
+                    // end of finished()
+                }
+            };
+            worker.start();
 
-		}
-		
-		System.out.println("Done.");
+            if (WAIT > 0) {
+                try {
+                    Thread.sleep(WAIT);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    LOGGER.log(Level.SEVERE, null, exception);
+                }
+            }
 
-	}
+            // wait the longer of the requested wait period or the time it takes to create & draw the display
+            worker.get();
+
+        }
+
+        LOGGER.log(Level.INFO, "Done.");
+
+    }
 
 }

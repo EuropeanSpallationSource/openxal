@@ -20,13 +20,18 @@
 package xal.extension.tracewinimporter;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.apache.commons.io.IOUtils;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.json.JSONException;
 
 /**
  * Class to parse the lattice repository using the JSON interface
@@ -34,6 +39,8 @@ import java.util.List;
  * @author emanuelelaface
  */
 public class GitParser {
+
+    private static final Logger LOGGER = Logger.getLogger(GitParser.class.getName());
 
     private URI[] sourceFileNames;
     private String[] sequenceNames;
@@ -58,30 +65,30 @@ public class GitParser {
      * @param urlString repository URL
      * @return true if parsing was successful
      */
-    public boolean URL2Json(String urlString) {
-        JSONObject json_main_page;
-        JSONArray json_seq_list;
-        String seq_name;
-        String seq_url;
+    public boolean url2Json(String urlString) {
+        JSONObject jsonMainPage;
+        JSONArray jsonSeqList;
+        String seqname;
+        StringBuilder seqUrl = new StringBuilder();
         List<URI> files = new ArrayList<>();
         List<String> sequences = new ArrayList<>();
         try {
             do {
                 URL url = new URL(urlString);
-                json_main_page = new JSONObject(IOUtils.toString(url.openStream()));
-                json_seq_list = json_main_page.getJSONArray("values");
-                for (int i = 0; i < json_seq_list.length(); i++) {
-                    seq_name = json_seq_list.getJSONObject(i).getString("path");
-                    if (seq_name.substring(0, 1).matches("\\d+(\\.\\d+)?")
-                            && Integer.parseInt(seq_name.substring(2, 3)) == 0) {
-                        seq_url = json_seq_list.getJSONObject(i).getJSONObject("links").getJSONObject("self").getString("href");
-                        sequences.add(seq_name.substring(4));
-                        seq_url += "Beam_Physics/lattice.dat";
-                        files.add(new URI(seq_url));
+                jsonMainPage = new JSONObject(IOUtils.toString(url.openStream()));
+                jsonSeqList = jsonMainPage.getJSONArray("values");
+                for (int i = 0; i < jsonSeqList.length(); i++) {
+                    seqname = jsonSeqList.getJSONObject(i).getString("path");
+                    if (seqname.substring(0, 1).matches("\\d+(\\.\\d+)?")
+                            && Integer.parseInt(seqname.substring(2, 3)) == 0) {
+                        seqUrl.append(jsonSeqList.getJSONObject(i).getJSONObject("links").getJSONObject("self").getString("href"));
+                        sequences.add(seqname.substring(4));
+                        seqUrl.append("Beam_Physics/lattice.dat");
+                        files.add(new URI(seqUrl.toString()));
                     }
                 }
-                if (json_main_page.has("next")) {
-                    urlString = json_main_page.getString("next");
+                if (jsonMainPage.has("next")) {
+                    urlString = jsonMainPage.getString("next");
                 } else {
                     urlString = null;
                 }
@@ -93,11 +100,10 @@ public class GitParser {
             basePath = new URL(sourceFileNames[0].toURL().getProtocol(), sourceFileNames[0].toURL().getHost(), sourceFileNames[0].toURL().getPort(), basePath).toString();
 
             return true;
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException | NumberFormatException | URISyntaxException | JSONException e) {
+            LOGGER.log(Level.SEVERE, null, e);
         }
 
         return false;
     }
-
 }

@@ -5,6 +5,7 @@
  */
 package xal.ca;
 
+import java.lang.reflect.InvocationTargetException;
 import xal.tools.transforms.ValueTransform;
 
 import java.lang.reflect.Method;
@@ -12,38 +13,40 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * ChannelFactory is a factory for generating channels.
  *
  * @author tap
  */
-abstract public class ChannelFactory {
+public abstract class ChannelFactory {
 
     /**
      * default channel factory instance
      */
-    static private ChannelFactory DEFAULT_FACTORY;
+    private static ChannelFactory defaultFactory;
 
-    static final private List<ChannelFactory> FACTORY_LIST = new ArrayList<>();
+    private static final List<ChannelFactory> FACTORY_LIST = new ArrayList<>();
 
     private boolean test = false;
-    protected String TEST_SUFFIX = ":TEST";
+
+    protected String testSuffix = ":TEST";
 
     /**
      * map of channels keyed by signal name
      */
-    private final Map<String, Channel> CHANNEL_MAP;
+    private final Map<String, Channel> channelMap;
 
     static {
-        DEFAULT_FACTORY = newFactory();
+        defaultFactory = newFactory();
     }
 
     /**
      * Creates a new instance of ChannelFactory
      */
     protected ChannelFactory() {
-        CHANNEL_MAP = new HashMap<>();
+        channelMap = new HashMap<>();
     }
 
     /**
@@ -51,16 +54,16 @@ abstract public class ChannelFactory {
      *
      * @return true if the initialization was successful and false if not
      */
-    abstract public boolean init();
+    public abstract boolean init();
 
-    abstract protected void dispose();
+    protected abstract void dispose();
 
     public void destroy() {
         dispose();
-        if (this == DEFAULT_FACTORY) {
-            DEFAULT_FACTORY = null;
-        }
         synchronized (FACTORY_LIST) {
+            if (this == defaultFactory) {
+                ChannelFactory.defaultFactory = null;
+            }
             FACTORY_LIST.remove(this);
         }
     }
@@ -75,7 +78,7 @@ abstract public class ChannelFactory {
             }
             FACTORY_LIST.clear();
         }
-        DEFAULT_FACTORY = null;
+        defaultFactory = null;
     }
 
     /**
@@ -87,15 +90,16 @@ abstract public class ChannelFactory {
      * @return The channel corresponding to the signal name
      */
     public Channel getChannel(final String signalName) {
-        if (signalName.equals("")) {
+        if ("".equals(signalName)) {
             return null;
-        }        Channel channel;
-        synchronized (CHANNEL_MAP) {
-            if (!CHANNEL_MAP.containsKey(signalName)) {
+        }
+        Channel channel;
+        synchronized (channelMap) {
+            if (!channelMap.containsKey(signalName)) {
                 channel = newChannel(signalName);
-                CHANNEL_MAP.put(signalName, channel);
+                channelMap.put(signalName, channel);
             } else {
-                channel = CHANNEL_MAP.get(signalName);
+                channel = channelMap.get(signalName);
             }
         }
 
@@ -112,18 +116,17 @@ abstract public class ChannelFactory {
      * @return The channel corresponding to the signal name
      */
     public Channel getChannel(final String signalName, final ValueTransform transform) {
-        if (signalName.equals("")) {
+        if ("".equals(signalName)) {
             return null;
         }
         final String channelID = Channel.generateId(signalName, transform);
-        synchronized (CHANNEL_MAP) {
-            if (!CHANNEL_MAP.containsKey(channelID)) {
+        synchronized (channelMap) {
+            if (!channelMap.containsKey(channelID)) {
                 final Channel channel = newChannel(signalName, transform);
-                CHANNEL_MAP.put(channelID, channel);
+                channelMap.put(channelID, channel);
                 return channel;
             } else {
-                final Channel channel = CHANNEL_MAP.get(channelID);
-                return channel;
+                return channelMap.get(channelID);
             }
         }
     }
@@ -134,7 +137,7 @@ abstract public class ChannelFactory {
      * @param signalName PV for which to create a new channel
      * @return a new channel for the specified signal name
      */
-    abstract protected Channel newChannel(final String signalName);
+    protected abstract Channel newChannel(final String signalName);
 
     /**
      * Create a new channel for the given signal name and set its value
@@ -156,11 +159,13 @@ abstract public class ChannelFactory {
      *
      * @return The default channel factory
      */
-    static public ChannelFactory defaultFactory() {
-        if (DEFAULT_FACTORY == null) {
-            DEFAULT_FACTORY = newFactory();
+    public static ChannelFactory defaultFactory() {
+        synchronized (FACTORY_LIST) {
+            if (defaultFactory == null) {
+                defaultFactory = newFactory();
+            }
         }
-        return DEFAULT_FACTORY;
+        return defaultFactory;
     }
 
     /**
@@ -169,18 +174,20 @@ abstract public class ChannelFactory {
      *
      * @return The channel system
      */
-    abstract protected ChannelSystem channelSystem();
+    protected abstract ChannelSystem channelSystem();
 
     /**
-     * get the defualt system which handles static behavior of Channels
+     * get the default system which handles static behavior of Channels
      *
      * @return the channel system associated with the default channel factory
      */
     static ChannelSystem defaultSystem() {
-        if (DEFAULT_FACTORY == null) {
-            defaultFactory();
+        synchronized (FACTORY_LIST) {
+            if (defaultFactory == null) {
+                defaultFactory();
+            }
         }
-        return DEFAULT_FACTORY.channelSystem();
+        return defaultFactory.channelSystem();
     }
 
     /**
@@ -188,7 +195,7 @@ abstract public class ChannelFactory {
      *
      * @return a new channel factory
      */
-    static protected ChannelFactory newFactory() {
+    protected static ChannelFactory newFactory() {
         try {
             // effectively returns ChannelFactoryPlugin.getChannelFactoryInstance()
             final Class<?> pluginClass = Class.forName("xal.ca.ChannelFactoryPlugin");
@@ -198,9 +205,8 @@ abstract public class ChannelFactory {
                 FACTORY_LIST.add(channelFactory);
             }
             return channelFactory;
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            throw new RuntimeException("Failed to load the ChannelFactoryPlugin: " + exception.getMessage());
+        } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException exception) {
+            throw new RuntimeException("Failed to load the ChannelFactoryPlugin.", exception);
         }
     }
 
@@ -219,16 +225,15 @@ abstract public class ChannelFactory {
                 FACTORY_LIST.add(channelFactory);
             }
             return channelFactory;
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            throw new RuntimeException("Failed to load the ChannelFactoryPlugin: " + exception.getMessage());
+        } catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | NoSuchMethodException | SecurityException | InvocationTargetException exception) {
+            throw new RuntimeException("Failed to load the ChannelFactoryPlugin.", exception);
         }
     }
 
     /**
      * Print information about this factory
      */
-    abstract public void printInfo();
+    public abstract void printInfo();
 
     /**
      * Sets the test flag. If the test flag is on, the factory will add a suffix
@@ -242,14 +247,15 @@ abstract public class ChannelFactory {
     public void setTest(boolean test) {
         this.test = test;
         if (test) {
-            for (Channel channel : CHANNEL_MAP.values()) {
-                channel.setChannelName(channel.channelName() + TEST_SUFFIX);
+            for (Channel channel : channelMap.values()) {
+                channel.setChannelName(channel.channelName() + testSuffix);
                 channel.disconnect();
                 channel.requestConnection();
             }
         } else {
-            for (String channelName : CHANNEL_MAP.keySet()) {
-                Channel channel = CHANNEL_MAP.get(channelName);
+            for (Entry<String, Channel> entry : channelMap.entrySet()) {
+                String channelName = entry.getKey();
+                Channel channel = entry.getValue();
                 channel.setChannelName(channelName);
                 channel.disconnect();
                 channel.requestConnection();
@@ -268,10 +274,10 @@ abstract public class ChannelFactory {
      * @param suffix
      */
     public void setTestSuffix(String suffix) {
-        this.TEST_SUFFIX = suffix;
+        this.testSuffix = suffix;
     }
 
     public String getTestSuffix() {
-        return this.TEST_SUFFIX;
+        return this.testSuffix;
     }
 }

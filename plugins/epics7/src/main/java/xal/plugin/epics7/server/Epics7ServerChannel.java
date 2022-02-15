@@ -85,15 +85,21 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     private static final String PROPERTIES = ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
             + DISPLAY_FIELD + "," + CONTROL_FIELD;
 
-    public Epics7ServerChannel(String signalName, Epics7ServerChannelSystem CHANNEL_SYSTEM) {
-        super(signalName, CHANNEL_SYSTEM);
+    private static final Logger LOGGER = Logger.getLogger(Epics7ServerChannel.class.getName());
+
+    private static final String DISPLAY_FIELD_ERR = "Couldn't find \"display\" field.";
+    private static final String VALUE_ALARM_FIELD_ERR = "Couldn't find \"valueAlarm\" field.";
+    private static final String CONTROL_FIELD_ERR = "Couldn't find \"control\" field.";
+
+    public Epics7ServerChannel(String signalName, Epics7ServerChannelSystem channelSystem) {
+        super(signalName, channelSystem);
 
         // Removing protocol in case it is defined.
-        if (m_strId.startsWith("ca://") || m_strId.startsWith("pva://")) {
-            m_strId = m_strId.substring(m_strId.indexOf("://") + 3);
+        if (strId.startsWith("ca://") || strId.startsWith("pva://")) {
+            strId = strId.substring(strId.indexOf("://") + 3);
         }
 
-        this.epics7ServerChannelSystem = CHANNEL_SYSTEM;
+        this.epics7ServerChannelSystem = channelSystem;
 
         requestConnection();
     }
@@ -116,10 +122,10 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
             // other one is updated by new data received in a put.
             try {
                 Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable,
-                        Epics7Channel.VALUE_REQUEST, (pvS) -> {
+                        Epics7Channel.VALUE_REQUEST, pvS -> {
                         }, 0);
-            } catch (ConnectionException e) {
-                Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Not possible to set callback to update value");
+            } catch (MonitorException ex) {
+                Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
             }
 
             connectionFlag = true;
@@ -134,7 +140,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     private void addCAPV(DBRType type) {
-        MemoryProcessVariable newMemoryProcessVariable = new MemoryProcessVariable(m_strId, null, type, new double[]{0.0});
+        MemoryProcessVariable newMemoryProcessVariable = new MemoryProcessVariable(strId, null, type, new double[]{0.0});
 
         if (memoryProcessVariable != null) {
             // TODO: Copy metadata from old record to new record
@@ -161,7 +167,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         }
         PVDataCreate pvDataCreate = PVDataFactory.getPVDataCreate();
         PVStructure pvStructure = pvDataCreate.createPVStructure(structure);
-        PVRecord newPVRecord = new PVRecord(m_strId, pvStructure);
+        PVRecord newPVRecord = new PVRecord(strId, pvStructure);
         if (pvRecord != null) {
             // TODO: Copy metadata from old record to new record
             removeRecord();
@@ -202,6 +208,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         return 0;
     }
 
+    @Override
     protected PVStructure getDisplay() {
         if (pvRecord != null) {
             return pvRecord.getPVStructure().getStructureField(DISPLAY_FIELD);
@@ -209,6 +216,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         return null;
     }
 
+    @Override
     protected PVStructure getVAlueAlarm() {
         if (pvRecord != null) {
             return pvRecord.getPVStructure().getStructureField(VALUE_ALARM_FIELD);
@@ -216,6 +224,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         return null;
     }
 
+    @Override
     protected PVStructure getControl() {
         if (pvRecord != null) {
             return pvRecord.getPVStructure().getStructureField(CONTROL_FIELD);
@@ -234,66 +243,78 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     @Override
-    public ChannelRecord getRawValueRecord() throws ConnectionException, GetException {
-        return new Epics7ChannelRecord(pvRecord.getPVStructure(), m_strId);
+    public ChannelRecord getRawValueRecord() throws GetException {
+        return new Epics7ChannelRecord(pvRecord.getPVStructure());
     }
 
     @Override
-    public ChannelStatusRecord getRawStatusRecord() throws ConnectionException, GetException {
-        return new Epics7ChannelStatusRecord(pvRecord.getPVStructure(), m_strId);
+    public ChannelStatusRecord getRawStatusRecord() throws GetException {
+        return new Epics7ChannelStatusRecord(pvRecord.getPVStructure());
     }
 
     @Override
-    public ChannelTimeRecord getRawTimeRecord() throws ConnectionException, GetException {
-        return new Epics7ChannelTimeRecord(pvRecord.getPVStructure(), m_strId);
+    public ChannelTimeRecord getRawTimeRecord() throws GetException {
+        return new Epics7ChannelTimeRecord(pvRecord.getPVStructure());
     }
 
     @Override
-    protected void getRawValueCallback(IEventSinkValue listener) throws ConnectionException, GetException {
+    protected void getRawValueCallback(IEventSinkValue listener) throws GetException {
         listener.eventValue(getRawValueRecord(), this);
     }
 
     @Override
-    protected void getRawValueCallback(IEventSinkValue listener, boolean attemptConnection) throws ConnectionException, GetException {
+    protected void getRawValueCallback(IEventSinkValue listener, boolean attemptConnection) throws GetException {
         listener.eventValue(getRawValueRecord(), this);
     }
 
     @Override
-    public void getRawValueTimeCallback(IEventSinkValTime listener, boolean attemptConnection) throws ConnectionException, GetException {
+    public void getRawValueTimeCallback(IEventSinkValTime listener, boolean attemptConnection) throws GetException {
         listener.eventValue(getRawTimeRecord(), this);
     }
 
     @Override
-    public Monitor addMonitorValTime(IEventSinkValTime listener, int intMaskFire) throws ConnectionException, MonitorException {
-        checkConnection("addMonitorValTime");
+    public Monitor addMonitorValTime(IEventSinkValTime listener, int intMaskFire) throws MonitorException {
+        try {
+            checkConnection("addMonitorValTime");
+        } catch (ConnectionException ex) {
+            throw new MonitorException(CONNECTION_EXC, ex);
+        }
 
-        return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.TIME_REQUEST, (pvStructure) -> {
-            ChannelTimeRecord record = new Epics7ChannelTimeRecord(pvStructure, this.channelName());
-            listener.eventValue(record, this);
+        return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.TIME_REQUEST, pvStructure -> {
+            ChannelTimeRecord channelRecord = new Epics7ChannelTimeRecord(pvStructure);
+            listener.eventValue(channelRecord, this);
         }, intMaskFire);
     }
 
     @Override
-    public Monitor addMonitorValStatus(IEventSinkValStatus listener, int intMaskFire) throws ConnectionException, MonitorException {
-        checkConnection("addMonitorValStatus");
+    public Monitor addMonitorValStatus(IEventSinkValStatus listener, int intMaskFire) throws MonitorException {
+        try {
+            checkConnection("addMonitorValStatus");
+        } catch (ConnectionException ex) {
+            throw new MonitorException(CONNECTION_EXC, ex);
+        }
 
-        return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.STATUS_REQUEST, (pvStructure) -> {
-            ChannelStatusRecord record = new Epics7ChannelStatusRecord(pvStructure, this.channelName());
-            listener.eventValue(record, this);
+        return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.STATUS_REQUEST, pvStructure -> {
+            ChannelStatusRecord channelRecord = new Epics7ChannelStatusRecord(pvStructure);
+            listener.eventValue(channelRecord, this);
         }, intMaskFire);
     }
 
     @Override
-    public Monitor addMonitorValue(IEventSinkValue listener, int intMaskFire) throws ConnectionException, MonitorException {
-        checkConnection("addMonitorValue");
+    public Monitor addMonitorValue(IEventSinkValue listener, int intMaskFire) throws MonitorException {
+        try {
+            checkConnection("addMonitorValue");
+        } catch (ConnectionException ex) {
+            throw new MonitorException(CONNECTION_EXC, ex);
+        }
 
-        return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.VALUE_REQUEST, (pvStructure) -> {
-            ChannelRecord record = new Epics7ChannelRecord(pvStructure, this.channelName());
-            listener.eventValue(record, this);
+        return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.VALUE_REQUEST, pvStructure -> {
+            ChannelRecord channelRecord = new Epics7ChannelRecord(pvStructure);
+            listener.eventValue(channelRecord, this);
         }, intMaskFire);
     }
 
-    private void beforeValueUpdated(Class<?> typeClass, DBRType dbrType, ScalarType scalarType, boolean array) throws ConnectionException {
+    private void beforeValueUpdated(Class<?> typeClass, DBRType dbrType, ScalarType scalarType, boolean array) {
         if (elementType() != typeClass) {
             addCAPV(dbrType);
             addRecord(scalarType, array);
@@ -307,7 +328,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         try {
             memoryProcessVariable.write(dbr, null);
         } catch (CAException ex) {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
 
         long currentTimeMillis = System.currentTimeMillis();
@@ -330,7 +351,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     @Override
-    public void putRawValCallback(String newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(String newVal, PutListener listener) throws PutException {
         beforeValueUpdated(String.class, DBRType.STRING, ScalarType.pvString, false);
 
         pvRecord.getPVStructure().getStringField(VALUE_FIELD).put(newVal);
@@ -341,7 +362,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     @Override
-    public void putRawValCallback(byte newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(byte newVal, PutListener listener) throws PutException {
         beforeValueUpdated(byte.class, DBRType.BYTE, ScalarType.pvByte, false);
 
         pvRecord.getPVStructure().getByteField(VALUE_FIELD).put(newVal);
@@ -352,7 +373,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     @Override
-    public void putRawValCallback(short newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(short newVal, PutListener listener) throws PutException {
         beforeValueUpdated(short.class, DBRType.SHORT, ScalarType.pvShort, false);
 
         pvRecord.getPVStructure().getShortField(VALUE_FIELD).put(newVal);
@@ -363,7 +384,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     @Override
-    public void putRawValCallback(int newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(int newVal, PutListener listener) throws PutException {
         beforeValueUpdated(int.class, DBRType.INT, ScalarType.pvInt, false);
 
         pvRecord.getPVStructure().getIntField(VALUE_FIELD).put(newVal);
@@ -377,7 +398,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
      * Long is not supported in EPICS3, so they are casted to int for CA.
      */
     @Override
-    public void putRawValCallback(long newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(long newVal, PutListener listener) throws PutException {
         beforeValueUpdated(long.class, DBRType.INT, ScalarType.pvLong, false);
 
         pvRecord.getPVStructure().getLongField(VALUE_FIELD).put(newVal);
@@ -388,7 +409,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     @Override
-    public void putRawValCallback(float newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(float newVal, PutListener listener) throws PutException {
         beforeValueUpdated(float.class, DBRType.FLOAT, ScalarType.pvFloat, false);
 
         pvRecord.getPVStructure().getFloatField(VALUE_FIELD).put(newVal);
@@ -399,7 +420,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     @Override
-    public void putRawValCallback(double newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(double newVal, PutListener listener) throws PutException {
         beforeValueUpdated(double.class, DBRType.DOUBLE, ScalarType.pvDouble, false);
 
         pvRecord.getPVStructure().getDoubleField(VALUE_FIELD).put(newVal);
@@ -410,7 +431,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     @Override
-    public void putRawValCallback(String[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(String[] newVal, PutListener listener) throws PutException {
         beforeValueUpdated(String[].class, DBRType.STRING, ScalarType.pvString, true);
 
         pvRecord.getPVStructure().getSubField(PVStringArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
@@ -421,7 +442,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     @Override
-    public void putRawValCallback(byte[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(byte[] newVal, PutListener listener) throws PutException {
         beforeValueUpdated(byte[].class, DBRType.BYTE, ScalarType.pvByte, true);
 
         pvRecord.getPVStructure().getSubField(PVByteArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
@@ -432,7 +453,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     @Override
-    public void putRawValCallback(short[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(short[] newVal, PutListener listener) throws PutException {
         beforeValueUpdated(short[].class, DBRType.SHORT, ScalarType.pvShort, true);
 
         pvRecord.getPVStructure().getSubField(PVShortArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
@@ -443,7 +464,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     @Override
-    public void putRawValCallback(int[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(int[] newVal, PutListener listener) throws PutException {
         beforeValueUpdated(int[].class, DBRType.INT, ScalarType.pvInt, true);
 
         pvRecord.getPVStructure().getSubField(PVIntArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
@@ -457,7 +478,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
      * Long is not supported in EPICS3, so they are casted to int for CA.
      */
     @Override
-    public void putRawValCallback(long[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(long[] newVal, PutListener listener) throws PutException {
         beforeValueUpdated(long[].class, DBRType.INT, ScalarType.pvLong, true);
 
         pvRecord.getPVStructure().getSubField(PVLongArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
@@ -472,7 +493,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     @Override
-    public void putRawValCallback(float[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(float[] newVal, PutListener listener) throws PutException {
         beforeValueUpdated(float[].class, DBRType.FLOAT, ScalarType.pvFloat, true);
 
         pvRecord.getPVStructure().getSubField(PVFloatArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
@@ -483,7 +504,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     @Override
-    public void putRawValCallback(double[] newVal, PutListener listener) throws ConnectionException, PutException {
+    public void putRawValCallback(double[] newVal, PutListener listener) throws PutException {
         beforeValueUpdated(double[].class, DBRType.DOUBLE, ScalarType.pvDouble, true);
 
         pvRecord.getPVStructure().getSubField(PVDoubleArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
@@ -499,7 +520,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         if (displayStructure != null) {
             displayStructure.getStringField("units").put(units);
         } else {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find \"display\" field.");
+            LOGGER.severe(DISPLAY_FIELD_ERR);
         }
 
         memoryProcessVariable.setUnits(units);
@@ -511,7 +532,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         if (displayStructure != null) {
             displayStructure.getDoubleField("limitLow").put(lowerLimit.doubleValue());
         } else {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find \"display\" field.");
+            LOGGER.severe(DISPLAY_FIELD_ERR);
         }
 
         memoryProcessVariable.setLowerDispLimit(lowerLimit);
@@ -523,7 +544,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         if (displayStructure != null) {
             displayStructure.getDoubleField("limitHigh").put(upperLimit.doubleValue());
         } else {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find  \"display\" field.");
+            LOGGER.severe(DISPLAY_FIELD_ERR);
         }
 
         memoryProcessVariable.setUpperDispLimit(upperLimit);
@@ -535,7 +556,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         if (alarmValueStructure != null) {
             alarmValueStructure.getDoubleField("lowAlarmLimit").put(lowerLimit.doubleValue());
         } else {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find  \"valueAlarm\" field.");
+            LOGGER.severe(VALUE_ALARM_FIELD_ERR);
         }
 
         memoryProcessVariable.setLowerAlarmLimit(lowerLimit);
@@ -547,7 +568,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         if (alarmValueStructure != null) {
             alarmValueStructure.getDoubleField("highAlarmLimit").put(upperLimit.doubleValue());
         } else {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find  \"valueAlarm\" field.");
+            LOGGER.severe(VALUE_ALARM_FIELD_ERR);
         }
 
         memoryProcessVariable.setUpperAlarmLimit(upperLimit);
@@ -559,7 +580,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         if (alarmValueStructure != null) {
             alarmValueStructure.getDoubleField("lowWarningLimit").put(lowerLimit.doubleValue());
         } else {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find  \"valueAlarm\" field.");
+            LOGGER.severe(VALUE_ALARM_FIELD_ERR);
         }
 
         memoryProcessVariable.setLowerWarningLimit(lowerLimit);
@@ -571,7 +592,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         if (alarmValueStructure != null) {
             alarmValueStructure.getDoubleField("highWarningLimit").put(upperLimit.doubleValue());
         } else {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find  \"valueAlarm\" field.");
+            LOGGER.severe(VALUE_ALARM_FIELD_ERR);
         }
 
         memoryProcessVariable.setUpperWarningLimit(upperLimit);
@@ -583,7 +604,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         if (alarmValueStructure != null) {
             alarmValueStructure.getDoubleField("limitLow").put(lowerLimit.doubleValue());
         } else {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find  \"control\" field.");
+            LOGGER.severe(CONTROL_FIELD_ERR);
         }
 
         memoryProcessVariable.setLowerCtrlLimit(lowerLimit);
@@ -595,7 +616,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         if (alarmValueStructure != null) {
             alarmValueStructure.getDoubleField("limitHigh").put(upperLimit.doubleValue());
         } else {
-            Logger.getLogger(Epics7ServerChannel.class.getName()).severe("Couldn't find  \"control\" field.");
+            LOGGER.severe(CONTROL_FIELD_ERR);
         }
 
         memoryProcessVariable.setUpperCtrlLimit(upperLimit);

@@ -4,7 +4,8 @@
  * The full license specifying the redistribution, modification, usage and other
  * rights and obligations is included with the distribution of this project in
  * the file "LICENSE-CAJ". If the license is not included visit Cosylab web site,
- * <http://www.cosylab.com>.
+ //www.cosylab.com>.
+ * <http:
  *
  * THIS SOFTWARE IS PROVIDED AS-IS WITHOUT WARRANTY OF ANY KIND, NOT EVEN THE
  * IMPLIED WARRANTY OF MERCHANTABILITY. THE AUTHOR OF THIS SOFTWARE, ASSUMES
@@ -37,10 +38,10 @@ public class ServerMemoryRecord extends ServerMemoryProcessVariable {
     /**
      * Creates and registers the main PV and all field PVs that are expected.
      *
-     * @param name	name of the PV.
-     * @param eventCallback	event callback, where to report value changes if
+     * @param name    name of the PV.
+     * @param eventCallback    event callback, where to report value changes if
      * <code>interest</code> is <code>true</code>.
-     * @param initialValue	initial value
+     * @param initialValue    initial value
      *
      * @see MemoryProcessVariable
      */

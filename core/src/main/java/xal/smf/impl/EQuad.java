@@ -6,80 +6,96 @@ import xal.ca.ChannelFactory;
 
 public class EQuad extends Electrostatic {
 
-    public static String      s_strType   = "EQuad";
+    public static final String TYPE = "EQuad";
 
-	/** horizontal quadrupole type */
+    private String quadType = TYPE;
+
+    /**
+     * horizontal quadrupole type
+     */
     public static final String HORIZONTAL_TYPE = "QHE";
-	
-	/** vertical quadrupole type */
+
+    /**
+     * vertical quadrupole type
+     */
     public static final String VERTICAL_TYPE = "QVE";
-    
+
     /**
      * skew quadrupole type
      */
     public static final String SKEW_TYPE = "QSE";
-    	
+
     static {
         registerType();
     }
-    
-    
+
     /*
      * Register type for qualification
      */
     private static void registerType() {
-		ElementTypeManager.defaultManager().registerTypes( EQuad.class, s_strType );
+        ElementTypeManager.defaultManager().registerTypes(EQuad.class, TYPE);
     }
 
-
-	/** Primary Constructor */
-	public EQuad( final String strId, final ChannelFactory channelFactory ) {
-		super( strId, channelFactory );
-	}
-
-
-	/** Constructor */
-    public EQuad( final String strId ) {
-		this( strId, null );
-	}
-
-
-	@Override
-	public String getType() {
-		return s_strType;
-	}
-
-    
     /**
-     * Get the orientation of the magnet as defined by MagnetType.  The orientation
-     * of the quad is determined by its type: QH or QV
+     * Primary Constructor
+     */
+    public EQuad(final String strId, final ChannelFactory channelFactory) {
+        super(strId, channelFactory);
+    }
+
+    /**
+     * Constructor
+     */
+    public EQuad(final String strId) {
+        this(strId, null);
+    }
+
+    @Override
+    public String getType() {
+        return quadType;
+    }
+
+    public void setType(String newType) {
+        quadType = newType;
+    }
+
+    /**
+     * Get the orientation of the magnet as defined by MagnetType. The
+     * orientation of the quad is determined by its type: QH or QV
+     *
      * @return One of HORIZONTAL or VERTICAL
      */
-	@Override
+    @Override
     public int getOrientation() {
-    	if (s_strType.equalsIgnoreCase(SKEW_TYPE))
-    		return NO_ORIENTATION;
-    	else
-    		return s_strType.equalsIgnoreCase( HORIZONTAL_TYPE ) ? HORIZONTAL : VERTICAL;
+        if (quadType.equalsIgnoreCase(SKEW_TYPE)) {
+            return NO_ORIENTATION;
+        } else {
+            return quadType.equalsIgnoreCase(HORIZONTAL_TYPE) ? HORIZONTAL : VERTICAL;
+        }
     }
-  
+
     /**
-     * Update the instance with data from the data adaptor.  Overrides the default implementation to 
-	 * set the quadrupole type since a quadrupole type can be either "QHE" or "QVE".
+     * Update the instance with data from the data adaptor. Overrides the
+     * default implementation to set the quadrupole type since a quadrupole type
+     * can be either "QHE" or "QVE".
+     *
      * @param adaptor The data provider.
      */
-    public void update( final DataAdaptor adaptor ) {
-    	if ( adaptor.hasAttribute( "type" ) ) {
-            s_strType = adaptor.stringValue( "type" );
+    @Override
+    public void update(final DataAdaptor adaptor) {
+        if (adaptor.hasAttribute("type")) {
+            setType(adaptor.stringValue("type"));
         }
-        super.update( adaptor );
+        super.update(adaptor);
         ElementTypeManager typeManager = ElementTypeManager.defaultManager();
         // check if this type already registered first.  If not, register it.
-        if (!(typeManager.match(EQuad.class, s_strType)))
-        	typeManager.registerType(EQuad.class, s_strType);
+        if (!(typeManager.match(EQuad.class, quadType))) {
+            typeManager.registerType(EQuad.class, quadType);
+        }
     }
-    
-    public boolean isKindOf( final String type ) {
-        return type.equalsIgnoreCase( s_strType ) || super.isKindOf( type );
+
+    @Override
+    public boolean isKindOf(final String type) {
+        return type.equalsIgnoreCase(quadType) || super.isKindOf(type);
     }
 }

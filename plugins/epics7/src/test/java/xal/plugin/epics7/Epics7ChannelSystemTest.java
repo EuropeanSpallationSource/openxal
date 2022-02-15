@@ -31,12 +31,14 @@ import static org.junit.Assert.*;
  */
 public class Epics7ChannelSystemTest {
 
+    private static final Logger LOGGER = Logger.getLogger(Epics7ChannelSystemTest.class.getName());
+
     /**
      * Test of getCaChannelProvider method, of class Epics7ChannelSystem.
      */
     @Test
     public void testGetCaChannelProvider() {
-        System.out.println("getCaChannelProvider");
+        LOGGER.log(Level.INFO, "getCaChannelProvider");
         Epics7ChannelSystem instance = new Epics7ChannelSystem();
         ChannelProvider expResult = null;
         ChannelProvider result = instance.getCaChannelProvider();
@@ -48,7 +50,7 @@ public class Epics7ChannelSystemTest {
      */
     @Test
     public void testGetPvaChannelProvider() {
-        System.out.println("getPvaChannelProvider");
+        LOGGER.log(Level.INFO, "getPvaChannelProvider");
         Epics7ChannelSystem instance = new Epics7ChannelSystem();
         ChannelProvider expResult = null;
         ChannelProvider result = instance.getPvaChannelProvider();
@@ -60,14 +62,14 @@ public class Epics7ChannelSystemTest {
      */
     @Test
     public void testLoadJcaConfig() {
-        System.out.println("loadJcaConfig");
+        LOGGER.log(Level.INFO, "loadJcaConfig");
         Epics7ChannelSystem instance = new Epics7ChannelSystem();
 
-        instance.loadConfig(false);
+        Epics7ChannelSystem.loadConfig(false);
         String property = System.getProperty(CAJContext.class.getName() + ".repeater_port", null);
         assertEquals(String.valueOf(CAConstants.CA_REPEATER_PORT), property);
 
-        instance.loadConfig(true);
+        Epics7ChannelSystem.loadConfig(true);
         property = System.getProperty(CAJContext.class.getName() + ".server_port", null);
         assertEquals(String.valueOf(CAConstants.CA_SERVER_PORT), property);
     }
@@ -77,7 +79,7 @@ public class Epics7ChannelSystemTest {
      */
     @Test
     public void testSetDebugMode() {
-        System.out.println("setDebugMode");
+        LOGGER.log(Level.INFO, "setDebugMode");
         boolean exceptionThrown = false;
 
         boolean debugFlag = false;
@@ -95,7 +97,7 @@ public class Epics7ChannelSystemTest {
      */
     @Test
     public void testFlushIO() {
-        System.out.println("flushIO");
+        LOGGER.log(Level.INFO, "flushIO");
         Epics7ChannelSystem instance = new Epics7ChannelSystem();
         instance.flushIO();
     }
@@ -105,7 +107,7 @@ public class Epics7ChannelSystemTest {
      */
     @Test
     public void testPendIO() {
-        System.out.println("pendIO");
+        LOGGER.log(Level.INFO, "pendIO");
         double timeout = 0.0;
         Epics7ChannelSystem instance = new Epics7ChannelSystem();
         boolean expResult = true;
@@ -118,7 +120,7 @@ public class Epics7ChannelSystemTest {
      */
     @Test
     public void testPendEvent() {
-        System.out.println("pendEvent");
+        LOGGER.log(Level.INFO, "pendEvent");
         double timeout = 0.0;
         Epics7ChannelSystem instance = new Epics7ChannelSystem();
         instance.pendEvent(timeout);
@@ -129,7 +131,7 @@ public class Epics7ChannelSystemTest {
      */
     @Test
     public void testPrintInfo() {
-        System.out.println("printInfo");
+        LOGGER.log(Level.INFO, "printInfo");
         HandlerImpl handler = new HandlerImpl();
         Logger.getLogger(Epics7ChannelSystem.class.getName()).addHandler(handler);
 

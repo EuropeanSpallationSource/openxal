@@ -19,7 +19,6 @@ package xal.extension.jels.smf.impl;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
@@ -33,7 +32,7 @@ import xal.smf.impl.qualify.ElementTypeManager;
  */
 public class ESSIonSourceMFC extends AcceleratorNode {
 
-    public static final String s_strType = "ISMFC";
+    public static final String TYPE = "ISMFC";
 
     // Ion Source's mass flow controller channel handles
     public static final String H_2_FLOW_R_HANDLE = "h2FlowR";
@@ -68,14 +67,14 @@ public class ESSIonSourceMFC extends AcceleratorNode {
      * Register type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes(ESSIonSourceMFC.class, s_strType);
+        ElementTypeManager.defaultManager().registerTypes(ESSIonSourceMFC.class, TYPE);
     }
 
     /**
      * Override to provide type signature
      */
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /**
@@ -95,35 +94,35 @@ public class ESSIonSourceMFC extends AcceleratorNode {
     /*
      *  Process variable Gets 
      */
-    public double getH2FlowR() throws ConnectionException, GetException {
+    public double getH2FlowR() throws GetException {
         h2FlowRC = lazilyGetAndConnect(H_2_FLOW_R_HANDLE, h2FlowRC);
         return h2FlowRC.getValDbl();
     }
 
-    public void setH2FlowS(double dblVal) throws ConnectionException, PutException {
+    public void setH2FlowS(double dblVal) throws PutException {
         h2FlowSC = lazilyGetAndConnect(H_2_FLOW_S_HANDLE, h2FlowSC);
         h2FlowSC.putVal(dblVal);
     }
 
-    public void setVoltage(double dblVal) throws ConnectionException, PutException {
+    public void setVoltage(double dblVal) throws PutException {
         voltageSetChannel = lazilyGetAndConnect(VOLTAGE_SET_HANDLE, voltageSetChannel);
 
         voltageSetChannel.putVal(dblVal);
     }
 
-    public double getVoltage() throws ConnectionException, GetException {
+    public double getVoltage() throws GetException {
         voltageReadChannel = lazilyGetAndConnect(VOLTAGE_READ_HANDLE, voltageReadChannel);
 
         return voltageReadChannel.getValDbl();
     }
 
-    public void setCurrent(double dblVal) throws ConnectionException, PutException {
+    public void setCurrent(double dblVal) throws PutException {
         currentSetChannel = lazilyGetAndConnect(CURRENT_SET_HANDLE, currentSetChannel);
 
         currentSetChannel.putVal(dblVal);
     }
 
-    public double getCurrent() throws ConnectionException, GetException {
+    public double getCurrent() throws GetException {
         currentReadChannel = lazilyGetAndConnect(CURRENT_READ_HANDLE, currentReadChannel);
 
         return currentReadChannel.getValDbl();

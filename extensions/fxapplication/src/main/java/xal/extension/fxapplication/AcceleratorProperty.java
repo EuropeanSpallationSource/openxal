@@ -35,9 +35,9 @@ public class AcceleratorProperty {
 
     public void setAccelerator(Accelerator accelerator) {
         synchronized (listeners) {
-            Accelerator old_accelerator = this.accelerator;
+            Accelerator oldAccelerator = this.accelerator;
             this.accelerator = accelerator;
-            listeners.forEach(listener -> listener.changed(null, old_accelerator, this.accelerator));
+            listeners.forEach(listener -> listener.changed(null, oldAccelerator, this.accelerator));
         }
 
     }

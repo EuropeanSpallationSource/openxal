@@ -39,10 +39,9 @@ public class Epics7ChannelStatusRecord extends Epics7ChannelRecord implements Ch
      * Creates new Epics7ChannelStatusRecord
      *
      * @param pvStructure
-     * @param channelName
      */
-    public Epics7ChannelStatusRecord(PVStructure pvStructure, String channelName) {
-        super(pvStructure, channelName);
+    public Epics7ChannelStatusRecord(PVStructure pvStructure) {
+        super(pvStructure);
 
         status = pvStructure.getStructureField(ALARM_FIELD_NAME).getIntField(STATUS_FIELD_NAME).get();
         severity = pvStructure.getStructureField(ALARM_FIELD_NAME).getIntField(SEVERITY_FIELD_NAME).get();

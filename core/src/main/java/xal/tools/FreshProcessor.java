@@ -5,86 +5,113 @@
 //  Created by Tom Pelaia on 5/22/08.
 //  Copyright 2008 Oak Ridge National Lab. All rights reserved.
 //
-
 package xal.tools;
 
 import java.util.concurrent.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-
-/** process on a separate thread pending requests dropping any previous ones */
+/**
+ * process on a separate thread pending requests dropping any previous ones
+ */
 public class FreshProcessor {
-	/** pending requests waiting to be processed */
-	final private ArrayBlockingQueue<Runnable> REQUEST_QUEUE;
-	
-	/** indicates whether the processor should keep running */
-	private volatile boolean _keepRunning;
-	
-	
-	/** Constructor */
-	public FreshProcessor() {
-		_keepRunning = true;
-		
-		REQUEST_QUEUE = new ArrayBlockingQueue<Runnable>( 1 );
-		new Thread( new RequestProcessor() ).start();
-	}
-	
-	
-	/** Clear pending requests */
-	synchronized public void clear() {
-		REQUEST_QUEUE.clear();
-	}
-	
-	
-	/** Stop processing pending requests */
-	synchronized public void terminate() {
-		_keepRunning = false;
-		post( new EmptyRequest() );
-	}
-	
-	
-	/**
-	 * Post a new request to be processed replacing any pending request.
-	 * @param request Runnable request to be processed
-	 */
-	synchronized public boolean post( final Runnable request ) {
-		try {
-			REQUEST_QUEUE.clear();
-			REQUEST_QUEUE.put( request );
-			return true;
-		}
-		catch( Exception exception ) {
-			exception.printStackTrace();
-			return false;
-		}
-	}
-	
-	
-	/** Perform post processing */
-	protected void postProcess() throws Exception {}
-	
-	
-	
-	/** Process runner task */
-	private class RequestProcessor extends Thread {
-		public void run() {
-			while ( _keepRunning ) {
-				try {
-					final Runnable request = REQUEST_QUEUE.take();
-					request.run();
-					postProcess();
-				}
-				catch( Exception exception ) {
-					exception.printStackTrace();
-				}
-			}
-		}
-	}	
+
+    /**
+     * pending requests waiting to be processed
+     */
+    private final ArrayBlockingQueue<Runnable> requestQueue;
+
+    /**
+     * indicates whether the processor should keep running
+     */
+    private volatile boolean keepRunning;
+
+    private volatile Thread thread;
+
+    private static final Logger LOGGER = Logger.getLogger(FreshProcessor.class.getName());
+
+    /**
+     * Constructor
+     */
+    public FreshProcessor() {
+        keepRunning = true;
+
+        requestQueue = new ArrayBlockingQueue<>(1);
+        start();
+    }
+
+    private synchronized void start() {
+        thread = new RequestProcessor();
+        thread.start();
+    }
+
+    /**
+     * Clear pending requests
+     */
+    public synchronized void clear() {
+        requestQueue.clear();
+    }
+
+    /**
+     * Stop processing pending requests
+     */
+    public synchronized void terminate() {
+        keepRunning = false;
+        post(new EmptyRequest());
+        thread.interrupt();
+        thread = null;
+    }
+
+    /**
+     * Post a new request to be processed replacing any pending request.
+     *
+     * @param request Runnable request to be processed
+     */
+    public synchronized boolean post(final Runnable request) {
+        try {
+            requestQueue.clear();
+            requestQueue.put(request);
+            return true;
+        } catch (InterruptedException exception) {
+            LOGGER.log(Level.SEVERE, null, exception);
+            return false;
+        }
+    }
+
+    /**
+     * Perform post processing
+     */
+    protected void postProcess() throws Exception {
+        // Do nothing
+    }
+
+    /**
+     * Process runner task
+     */
+    private class RequestProcessor extends Thread {
+
+        @Override
+        public void run() {
+            while (keepRunning) {
+                try {
+                    final Runnable request = requestQueue.take();
+                    request.run();
+                    postProcess();
+                } catch (Exception exception) {
+                    LOGGER.log(Level.SEVERE, null, exception);
+                }
+            }
+        }
+    }
 }
 
-
-
-/** Empty Request used during termination */
+/**
+ * Empty Request used during termination
+ */
 class EmptyRequest implements Runnable {
-	public void run() {}
-}
 
+    @Override
+    public void run() {
+        // Do nothing
+    }
+}

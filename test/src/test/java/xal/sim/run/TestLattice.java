@@ -12,6 +12,8 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -43,121 +45,128 @@ import xal.tools.beam.PhaseVector;
 
 import xal.test.ResourceManager;
 
-
 /**
  * Class of test cases for class <code>{@link Trajectory}</code>.
  *
  * @author Christopher K. Allen
- * @since  Aug 25, 2014
+ * @since Aug 25, 2014
  */
 public class TestLattice {
 
-    
+    private static final Logger LOGGER = Logger.getLogger(TestLattice.class.getName());
+
     /*
      * Global Constants
      */
-    
-    /** Location of the output file */
-    static final private String    STR_FILENAME_OUTPUT = TestLattice.class.getName() + ".txt";
+    /**
+     * Location of the output file
+     */
+    private static final String STR_FILENAME_OUTPUT = TestLattice.class.getName() + ".txt";
 
-    
-    /** Flag used for indicating whether to type out to stout or file */
-    private static final boolean    BOL_TYPE_STOUT = false;
-    
-    /** Flag for making plots of the simulation */
-    public static final boolean     BOL_MAKE_PLOTS  = false;    
+    /**
+     * Flag used for indicating whether to type out to stout or file
+     */
+    private static final boolean BOL_TYPE_STOUT = false;
 
-    
-    /** Bending Dipole ID */
-    /** Accelerator sequence used for testing */
-//  public static final String     STR_ACCL_SEQ_ID = "HEBT2";
-  public static final String     STR_ACCL_SEQ_ID = "SCLMed";
-//  public static final String     STR_ACCL_SEQ_ID = "CCL1";
-  
-  
-    public static final String      STR_DH1_ID = "HEBT_Mag:DH11";
-    
-    /** Bending Dipole ID */
-    public static final String      STR_DH2_ID = "HEBT_Mag:DH12";
-    
-    
+    /**
+     * Flag for making plots of the simulation
+     */
+    public static final boolean BOL_MAKE_PLOTS = false;
+
+    /**
+     * Bending Dipole ID
+     */
+    /**
+     * Accelerator sequence used for testing
+     */
+    public static final String STR_ACCL_SEQ_ID = "SCLMed";
+
+    public static final String STR_DH1_ID = "HEBT_Mag:DH11";
+
+    /**
+     * Bending Dipole ID
+     */
+    public static final String STR_DH2_ID = "HEBT_Mag:DH12";
+
     /*
      * Global Resources
      */
-    
-    /** The file where we send the testing output */
-    private static PrintStream    PRN_OUTPUT;
-    
-    
-    /** Accelerator hardware under test */
-    private static Accelerator    ACCEL_TEST;
-    
-    /** Accelerator sequence under test */
-    private static AcceleratorSeq SEQ_TEST;
+    /**
+     * The file where we send the testing output
+     */
+    private static PrintStream prnOutput;
 
-    
+    /**
+     * Accelerator hardware under test
+     */
+    private static Accelerator accelTest;
+
+    /**
+     * Accelerator sequence under test
+     */
+    private static AcceleratorSeq seqTest;
+
     /*
      * Global Attributes
      */
+    /**
+     * The online model scenario for the given accelerator sequence
+     */
+    private static Scenario modelTest;
 
-    /** The online model scenario for the given accelerator sequence */
-    private static Scenario         MODEL_TEST;
-    
-    /** Envelope probe used for simulations */
-    private static EnvelopeProbe    PROBE_ENV;
-    
-    /** Particle probe used for simulations */
-    private static ParticleProbe    PROBE_PARTC;
-    
-    /** Transfer map probe used for simulations */
-    private static TransferMapProbe PROBE_XFER;
-    
-    
-    
-    
+    /**
+     * Envelope probe used for simulations
+     */
+    private static EnvelopeProbe probeEnv;
+
+    /**
+     * Particle probe used for simulations
+     */
+    private static ParticleProbe probePartc;
+
+    /**
+     * Transfer map probe used for simulations
+     */
+    private static TransferMapProbe probeXfer;
+
     /*
      * Global Methods
      */
-    
     /**
      * @throws java.lang.Exception
      *
      * @author Christopher K. Allen
-     * @since  Aug 25, 2014
+     * @since Aug 25, 2014
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
         try {
-//            ACCEL_TEST = XMLDataManager.loadDefaultAccelerator();
-            ACCEL_TEST = ResourceManager.getTestAccelerator();
-            SEQ_TEST   = ACCEL_TEST.getSequence(STR_ACCL_SEQ_ID);
-            MODEL_TEST = Scenario.newScenarioFor(SEQ_TEST);
-            MODEL_TEST.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
-            
-            IAlgorithm      algor = AlgorithmFactory.createEnvTrackerAdapt(SEQ_TEST);
-            PROBE_ENV = ProbeFactory.getEnvelopeProbe(SEQ_TEST, algor);
-            PROBE_ENV.initialize();
+            accelTest = ResourceManager.getTestAccelerator();
+            seqTest = accelTest.getSequence(STR_ACCL_SEQ_ID);
+            modelTest = Scenario.newScenarioFor(seqTest);
+            modelTest.setSynchronizationMode(Scenario.SYNC_MODE_DESIGN);
 
-            algor = AlgorithmFactory.createParticleTracker(SEQ_TEST);
-            PROBE_PARTC = ProbeFactory.createParticleProbe(SEQ_TEST, algor);
-            PROBE_PARTC.initialize();
+            IAlgorithm algor = AlgorithmFactory.createEnvTrackerAdapt(seqTest);
+            probeEnv = ProbeFactory.getEnvelopeProbe(seqTest, algor);
+            probeEnv.initialize();
 
-            algor = AlgorithmFactory.createTransferMapTracker(SEQ_TEST);
-            PROBE_XFER = ProbeFactory.getTransferMapProbe(SEQ_TEST, algor);
-            PROBE_ENV.initialize();
-            
-            if (BOL_TYPE_STOUT) {
-                PRN_OUTPUT = PRN_OUTPUT;
-            } else {
-                File       fileOut = ResourceManager.getOutputFile(TestLattice.class, STR_FILENAME_OUTPUT);
-                
-                PRN_OUTPUT = new PrintStream(fileOut);
+            algor = AlgorithmFactory.createParticleTracker(seqTest);
+            probePartc = ProbeFactory.createParticleProbe(seqTest, algor);
+            probePartc.initialize();
+
+            algor = AlgorithmFactory.createTransferMapTracker(seqTest);
+            probeXfer = ProbeFactory.getTransferMapProbe(seqTest, algor);
+            probeEnv.initialize();
+
+            if (!BOL_TYPE_STOUT) {
+                File fileOut = ResourceManager.getOutputFile(TestLattice.class, STR_FILENAME_OUTPUT);
+
+                prnOutput = new PrintStream(fileOut);
             }
-            
-        } catch (ModelException | InstantiationException e) {
 
+        } catch (ModelException | InstantiationException e) {
             fail("Unable to create Scenario");
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
         }
     }
 
@@ -165,146 +174,142 @@ public class TestLattice {
      * @throws java.lang.Exception
      *
      * @author Christopher K. Allen
-     * @since  Aug 25, 2014
+     * @since Aug 25, 2014
      */
     @AfterClass
     public static void tearDownAfterClass() throws Exception {
     }
-    
-    
+
     /*
      * Test Cases
      */
-    
     /**
      * Prints out all the element in the online model.
      *
-     * @throws ModelException 
-
+     * @throws ModelException
+     *
      * @author Christopher K. Allen
-     * @since  Aug 26, 2014
+     * @since Aug 26, 2014
      */
     @Test
     public final void testModel() throws ModelException {
-        Lattice              latTest = MODEL_TEST.getLattice();
+        Lattice latTest = modelTest.getLattice();
         Iterator<IComponent> itrCmps = latTest.globalIterator();
-        
+
         int index = 0;
-        PRN_OUTPUT.println();
-        PRN_OUTPUT.println("ELEMENTS contained in MODEL");
+        prnOutput.println();
+        prnOutput.println("ELEMENTS contained in MODEL");
         while (itrCmps.hasNext()) {
             IComponent cmp = itrCmps.next();
-            if (cmp instanceof Element)
-                PRN_OUTPUT.println("  " + index + " " + (Element)cmp);
-            else
-                PRN_OUTPUT.println("  " + index + " " + cmp.getId());
-            index++;
-        }
-    }
- 
-    /**
-     * Iterates through all the states in the trajectory using a
-     * for each construct.
-     * 
-     * @author Christopher K. Allen
-     * @since  Sep 5, 2014
-     */
-    @Test
-    public final void testSimulation() {
-        Trajectory<ParticleProbeState>  trjPartc = this.runModel(PROBE_PARTC);
-        
-        PRN_OUTPUT.println();
-        PRN_OUTPUT.println("PARTICLE PROBE STATES retrieved iteration using the Iterable<> interface");
-        int index = 0;
-        for (ParticleProbeState state : trjPartc) {
-            PRN_OUTPUT.println("  " + index 
-                    + " " + state.getElementId()
-                    + " from " + state.getHardwareNodeId() );
-            PRN_OUTPUT.println("    position  " + state.getPosition());
-            PRN_OUTPUT.println("    energy    " + state.getKineticEnergy());
-            PRN_OUTPUT.println("    phase     " + (180.0/Math.PI)*state.getLongitudinalPhase());
-            PRN_OUTPUT.println("    phase|360 " + (180.0/Math.PI) *Math.IEEEremainder(state.getLongitudinalPhase(), 2.0*Math.PI) );
+            if (cmp instanceof Element) {
+                prnOutput.println("  " + index + " " + (Element) cmp);
+            } else {
+                prnOutput.println("  " + index + " " + cmp.getId());
+            }
             index++;
         }
     }
 
     /**
-     * Make plots of the design and production particle trajectories for
-     * all the phase planes.
+     * Iterates through all the states in the trajectory using a for each
+     * construct.
      *
      * @author Christopher K. Allen
-     * @since  Sep 12, 2014
+     * @since Sep 5, 2014
+     */
+    @Test
+    public final void testSimulation() {
+        Trajectory<ParticleProbeState> trjPartc = this.runModel(probePartc);
+
+        prnOutput.println();
+        prnOutput.println("PARTICLE PROBE STATES retrieved iteration using the Iterable<> interface");
+        int index = 0;
+        for (ParticleProbeState state : trjPartc) {
+            prnOutput.println("  " + index
+                    + " " + state.getElementId()
+                    + " from " + state.getHardwareNodeId());
+            prnOutput.println("    position  " + state.getPosition());
+            prnOutput.println("    energy    " + state.getKineticEnergy());
+            prnOutput.println("    phase     " + (180.0 / Math.PI) * state.getLongitudinalPhase());
+            prnOutput.println("    phase|360 " + (180.0 / Math.PI) * Math.IEEEremainder(state.getLongitudinalPhase(), 2.0 * Math.PI));
+            index++;
+        }
+    }
+
+    /**
+     * Make plots of the design and production particle trajectories for all the
+     * phase planes.
+     *
+     * @author Christopher K. Allen
+     * @since Sep 12, 2014
      */
     @SuppressWarnings("unused")
     @Test
     public final void testPlotDesignAndProduction() {
-        if (BOL_MAKE_PLOTS == false)
+        if (BOL_MAKE_PLOTS == false) {
             return;
-        
-        
-        Trajectory<ParticleProbeState>  trjDsgn = runModel(PROBE_PARTC);
-    
+        }
+
+        Trajectory<ParticleProbeState> trjDsgn = runModel(probePartc);
+
         for (PLANE plane : PLANE.values()) {
             final ParticleCurve crvSim = new ParticleCurve(plane, trjDsgn);
-    
+
             FunctionGraphsJPanel pltPlane = new FunctionGraphsJPanel();
             pltPlane.addGraphData(crvSim);
             pltPlane.setLegendVisible(true);
-            pltPlane.setPreferredSize(new Dimension(1000,750));
-            
-            
-            final GraphFrame  frmPlotTraj = new GraphFrame("Particle Trajectory for Plane " + plane.name(), pltPlane);
+            pltPlane.setPreferredSize(new Dimension(1000, 750));
+
+            final GraphFrame frmPlotTraj = new GraphFrame("Particle Trajectory for Plane " + plane.name(), pltPlane);
             frmPlotTraj.display();
         }
-    
+
         while (true);
     }
 
-    
     /*
      * Support Methods
      */
-
     /**
-     * Runs the global online model for the testing class on the
-     * given probe object.  The results are returned in an untyped
-     * <code>Trajectory<?></code> object. 
+     * Runs the global online model for the testing class on the given probe
+     * object. The results are returned in an untyped <code>Trajectory<?></code>
+     * object.
      *
-     * @param prbTest   The probe to be simulated
-     * 
-     * @return          simulation data for the given probe
+     * @param prbTest The probe to be simulated
+     *
+     * @return simulation data for the given probe
      *
      * @author Christopher K. Allen
-     * @since  Aug 25, 2014
+     * @since Aug 25, 2014
      */
-    private <S extends ProbeState<S>> Trajectory<S>   runModel(Probe<S> prbTest) {
+    private <S extends ProbeState<S>> Trajectory<S> runModel(Probe<S> prbTest) {
 
         prbTest.reset();
-        
+
         if (prbTest instanceof ParticleProbe) {
-            
-            PhaseVector     vecInit = new PhaseVector(0.001, 0.0,  0.0, 0.010,  0.0, 0.0);
-            ((ParticleProbe)prbTest).setPhaseCoordinates(vecInit);
+
+            PhaseVector vecInit = new PhaseVector(0.001, 0.0, 0.0, 0.010, 0.0, 0.0);
+            ((ParticleProbe) prbTest).setPhaseCoordinates(vecInit);
         }
-        
+
         try {
-            MODEL_TEST.setProbe( prbTest );
-            MODEL_TEST.resync();
-            MODEL_TEST.run();
-            
-            Trajectory<S>   trjTest = MODEL_TEST.getTrajectory();
-            
+            modelTest.setProbe(prbTest);
+            modelTest.resync();
+            modelTest.run();
+
+            Trajectory<S> trjTest = modelTest.getTrajectory();
+
             return trjTest;
-            
+
         } catch (SynchronizationException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             fail("Unable to synchronize model values");
-            
+
         } catch (ModelException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
             fail("Error running the online model");
         }
-        
+
         return null;
     }
 }

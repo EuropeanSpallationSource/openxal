@@ -19,7 +19,6 @@ package xal.extension.jels.smf.impl;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.extension.jels.smf.attr.NPMBucket;
 import xal.smf.AccessibleProperty;
@@ -37,7 +36,7 @@ public class NPM extends BPM {
     /*
      *  Constants
      */
-    public static final String s_strType = "NPM";
+    public static final String TYPE = "NPM";
 
     /**
      * The container for the NPM information
@@ -47,35 +46,35 @@ public class NPM extends BPM {
 
     // NPM channel handles
     public static final String Y_P_AVG_HANDLE = "ypAvg";
-    public final AccessibleProperty ypAvg = new AccessibleProperty("ypAvg", Y_P_AVG_HANDLE);
+    public final AccessibleProperty ypAvg = new AccessibleProperty(Y_P_AVG_HANDLE);
     private Channel ypAvgC = null;
 
     public static final String X_P_AVG_HANDLE = "xpAvg";
-    public final AccessibleProperty xpAvg = new AccessibleProperty("xpAvg", X_P_AVG_HANDLE);
+    public final AccessibleProperty xpAvg = new AccessibleProperty(X_P_AVG_HANDLE);
     private Channel xpAvgC = null;
 
     public static final String SIGMA_Y_AVG_HANDLE = "ySigma";
-    public final AccessibleProperty ySigma = new AccessibleProperty("ySigma", SIGMA_Y_AVG_HANDLE);
+    public final AccessibleProperty ySigma = new AccessibleProperty(SIGMA_Y_AVG_HANDLE);
     private Channel sigmayAvgC = null;
 
     public static final String SIGMA_X_AVG_HANDLE = "xSigma";
-    public final AccessibleProperty xSigma = new AccessibleProperty("xSigma", SIGMA_X_AVG_HANDLE);
+    public final AccessibleProperty xSigma = new AccessibleProperty(SIGMA_X_AVG_HANDLE);
     private Channel sigmaxAvgC = null;
 
     public static final String ALPHA_Y_TWISS_HANDLE = "yAlphaTwiss";
-    public final AccessibleProperty yAlphaTwiss = new AccessibleProperty("yAlphaTwiss", ALPHA_Y_TWISS_HANDLE);
+    public final AccessibleProperty yAlphaTwiss = new AccessibleProperty(ALPHA_Y_TWISS_HANDLE);
     private Channel alphayTwissC = null;
 
     public static final String BETA_Y_TWISS_HANDLE = "yBetaTwiss";
-    public final AccessibleProperty yBetaTwiss = new AccessibleProperty("yBetaTwiss", BETA_Y_TWISS_HANDLE);
+    public final AccessibleProperty yBetaTwiss = new AccessibleProperty(BETA_Y_TWISS_HANDLE);
     private Channel betayTwissC = null;
 
     public static final String ALPHA_X_TWISS_HANDLE = "xAlphaTwiss";
-    public final AccessibleProperty xAlphaTwiss = new AccessibleProperty("xAlphaTwiss", ALPHA_X_TWISS_HANDLE);
+    public final AccessibleProperty xAlphaTwiss = new AccessibleProperty(ALPHA_X_TWISS_HANDLE);
     private Channel alphaxTwissC = null;
 
     public static final String BETA_X_TWISS_HANDLE = "xBetaTwiss";
-    public final AccessibleProperty xBetaTwiss = new AccessibleProperty("xBetaTwiss", BETA_X_TWISS_HANDLE);
+    public final AccessibleProperty xBetaTwiss = new AccessibleProperty(BETA_X_TWISS_HANDLE);
     private Channel betaxTwissC = null;
 
     static {
@@ -86,14 +85,15 @@ public class NPM extends BPM {
      * Register type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes(NPM.class, s_strType);
+        ElementTypeManager.defaultManager().registerTypes(NPM.class, TYPE);
     }
 
     /**
      * Override to provide type signature
      */
+    @Override
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /**
@@ -102,7 +102,7 @@ public class NPM extends BPM {
      */
     @Override
     public boolean isKindOf(String compType) {
-        return s_strType.equals(compType);
+        return TYPE.equals(compType);
     }
 
     /**
@@ -139,8 +139,8 @@ public class NPM extends BPM {
      *
      * Override AcceleratorNode implementation to check for a BPMBucket
      */
+    @Override
     public void addBucket(AttributeBucket buc) {
-
         if (buc.getClass().equals(NPMBucket.class)) {
             setNPMBucket((NPMBucket) buc);
         }
@@ -150,42 +150,42 @@ public class NPM extends BPM {
     /*
      *  Process variable Gets 
      */
-    public double getYpAvg() throws ConnectionException, GetException {
+    public double getYpAvg() throws GetException {
         ypAvgC = lazilyGetAndConnect(Y_P_AVG_HANDLE, ypAvgC);
         return ypAvgC.getValDbl();
     }
 
-    public double getXpAvg() throws ConnectionException, GetException {
+    public double getXpAvg() throws GetException {
         xpAvgC = lazilyGetAndConnect(X_P_AVG_HANDLE, xpAvgC);
         return xpAvgC.getValDbl();
     }
 
-    public double getYSigmaAvg() throws ConnectionException, GetException {
+    public double getYSigmaAvg() throws GetException {
         sigmayAvgC = lazilyGetAndConnect(SIGMA_Y_AVG_HANDLE, sigmayAvgC);
         return sigmayAvgC.getValDbl();
     }
 
-    public double getXSigmaAvg() throws ConnectionException, GetException {
+    public double getXSigmaAvg() throws GetException {
         sigmaxAvgC = lazilyGetAndConnect(SIGMA_X_AVG_HANDLE, sigmaxAvgC);
         return sigmaxAvgC.getValDbl();
     }
 
-    public double getYAlphaTwiss() throws ConnectionException, GetException {
+    public double getYAlphaTwiss() throws GetException {
         alphayTwissC = lazilyGetAndConnect(ALPHA_Y_TWISS_HANDLE, alphayTwissC);
         return alphayTwissC.getValDbl();
     }
 
-    public double getYBetaTwiss() throws ConnectionException, GetException {
+    public double getYBetaTwiss() throws GetException {
         betayTwissC = lazilyGetAndConnect(BETA_Y_TWISS_HANDLE, betayTwissC);
         return betayTwissC.getValDbl();
     }
 
-    public double getXAlphaTwiss() throws ConnectionException, GetException {
+    public double getXAlphaTwiss() throws GetException {
         alphaxTwissC = lazilyGetAndConnect(ALPHA_X_TWISS_HANDLE, alphaxTwissC);
         return alphaxTwissC.getValDbl();
     }
 
-    public double getXBetaTwiss() throws ConnectionException, GetException {
+    public double getXBetaTwiss() throws GetException {
         betaxTwissC = lazilyGetAndConnect(BETA_X_TWISS_HANDLE, betaxTwissC);
         return betaxTwissC.getValDbl();
     }

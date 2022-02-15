@@ -260,7 +260,7 @@ public class SolFieldMapTest extends SingleElementTest {
                 CMerrTolerance = 8e-4;
             }
         }});
-        
+
         return tests;
     }
 

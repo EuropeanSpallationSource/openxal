@@ -6,11 +6,11 @@
  */
 /**
  * Package contains tools for working in the space of real
- * number pairs (<i>x,y</i>) &in; <b>R</b><sup>2</sup>.  This includes algebraic
- * structures and topological structures.
+ * number pairs (<em>x,y</em>) &in; <strong>R</strong><sup>2</sup>. This
+ * includes algebraic structures and topological structures.
  *
  *
  * @author Christopher K. Allen
- * @since  Sep 27, 2013
+ * @since Sep 27, 2013
  */
 package xal.tools.math.r2;

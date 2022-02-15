@@ -3,6 +3,8 @@
  */
 package xal.extension.jels.model.alg;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.extension.jels.model.probe.ElsProbe;
 import xal.model.IElement;
 import xal.model.IProbe;
@@ -21,6 +23,7 @@ import xal.tools.math.GenericMatrix;
  */
 public class ElsTracker extends EnvelopeTracker {
 
+    private static final Logger LOGGER = Logger.getLogger(ElsTracker.class.getName());
     /*
      * Global Constants
      */
@@ -28,17 +31,17 @@ public class ElsTracker extends EnvelopeTracker {
     /**
      * string type identifier for algorithm
      */
-    public static final String s_strTypeId = ElsTracker.class.getName();
+    public static final String TYPE_ID = ElsTracker.class.getName();
 
     /**
      * current algorithm version
      */
-    public static final int s_intVersion = 4;
+    public static final int VERSION = 4;
 
     /**
      * probe type recognized by this algorithm
      */
-    public static final Class<EnvelopeProbe> s_clsProbeType = EnvelopeProbe.class;
+    public static final Class<EnvelopeProbe> CLS_PROBE_TYPE = EnvelopeProbe.class;
 
     /*
      *  Local Attributes
@@ -47,7 +50,7 @@ public class ElsTracker extends EnvelopeTracker {
      * Creates a new instance of EnvelopeTracker
      */
     public ElsTracker() {
-        super(s_strTypeId, s_intVersion, s_clsProbeType);
+        super(TYPE_ID, VERSION, CLS_PROBE_TYPE);
         registerProbeType(ElsProbe.class);
     }
 
@@ -93,9 +96,10 @@ public class ElsTracker extends EnvelopeTracker {
      */
     @Override
     public void doPropagation(IProbe probe, IElement elem) throws ModelException {
-
-        int cntSteps;   // number of steps through element
-        double dblStep;    // step size through element
+        // number of steps through element
+        int cntSteps;
+        // step size through element
+        double dblStep;
 
         //sako
         double elemPos = this.getElemPosition();
@@ -103,7 +107,7 @@ public class ElsTracker extends EnvelopeTracker {
         double propLen = elemLen - elemPos;
 
         if (propLen < 0) {
-            System.err.println("doPropagation, elemPos, elemLen = " + elemPos + " " + elemLen);
+            LOGGER.log(Level.INFO, "doPropagation, elemPos, elemLen = {} {}", new Object[]{elemPos, elemLen});
             return;
         }
 
@@ -111,8 +115,8 @@ public class ElsTracker extends EnvelopeTracker {
         dblStep = propLen / cntSteps;
 
         for (int i = 0; i < cntSteps; i++) {
-            this.advanceState(probe, elem, dblStep);
-            this.advanceProbe(probe, elem, dblStep);
+            advanceState(probe, elem, dblStep);
+            advanceProbe(probe, elem, dblStep);
         }
     }
 
@@ -130,6 +134,7 @@ public class ElsTracker extends EnvelopeTracker {
      *
      * @exception ModelException bad element transfer matrix/corrupt probe state
      */
+    @Override
     protected void advanceState(IProbe ifcProbe, IElement ifcElem, double dblLen)
             throws ModelException {
 
@@ -148,21 +153,21 @@ public class ElsTracker extends EnvelopeTracker {
         double[] det = new double[3];
 
         for (int i = 0; i < 3; i++) {
-            double M11 = matrix.getElem(2 * i + 0, 2 * i + 0);
-            double M12 = matrix.getElem(2 * i + 0, 2 * i + 1);
-            double M21 = matrix.getElem(2 * i + 1, 2 * i + 0);
-            double M22 = matrix.getElem(2 * i + 1, 2 * i + 1);
-            det[i] = M11 * M22 - M21 * M12;
+            double m11 = matrix.getElem(2 * i + 0, 2 * i + 0);
+            double m12 = matrix.getElem(2 * i + 0, 2 * i + 1);
+            double m21 = matrix.getElem(2 * i + 1, 2 * i + 0);
+            double m22 = matrix.getElem(2 * i + 1, 2 * i + 1);
+            det[i] = m11 * m22 - m21 * m12;
 
-            optics.setElem(3 * i + 0, 3 * i + 0, Math.pow(M11, 2));
-            optics.setElem(3 * i + 0, 3 * i + 1, -2.0 * M11 * M12);
-            optics.setElem(3 * i + 0, 3 * i + 2, Math.pow(M12, 2));
-            optics.setElem(3 * i + 1, 3 * i + 0, -M11 * M21);
-            optics.setElem(3 * i + 1, 3 * i + 1, M11 * M22 + M12 * M21);
-            optics.setElem(3 * i + 1, 3 * i + 2, -M12 * M22);
-            optics.setElem(3 * i + 2, 3 * i + 0, Math.pow(M21, 2));
-            optics.setElem(3 * i + 2, 3 * i + 1, -2.0 * M21 * M22);
-            optics.setElem(3 * i + 2, 3 * i + 2, Math.pow(M22, 2));
+            optics.setElem(3 * i + 0, 3 * i + 0, Math.pow(m11, 2));
+            optics.setElem(3 * i + 0, 3 * i + 1, -2.0 * m11 * m12);
+            optics.setElem(3 * i + 0, 3 * i + 2, Math.pow(m12, 2));
+            optics.setElem(3 * i + 1, 3 * i + 0, -m11 * m21);
+            optics.setElem(3 * i + 1, 3 * i + 1, m11 * m22 + m12 * m21);
+            optics.setElem(3 * i + 1, 3 * i + 2, -m12 * m22);
+            optics.setElem(3 * i + 2, 3 * i + 0, Math.pow(m21, 2));
+            optics.setElem(3 * i + 2, 3 * i + 1, -2.0 * m21 * m22);
+            optics.setElem(3 * i + 2, 3 * i + 2, Math.pow(m22, 2));
         }
 
         optics = optics.times(1. / det[0]);
@@ -172,5 +177,4 @@ public class ElsTracker extends EnvelopeTracker {
         // Advance the probe states 
         probe.setEnvelope(envelope1);
     }
-
 }

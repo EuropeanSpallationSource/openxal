@@ -2,18 +2,19 @@
  * TestScenario.java
  *
  * @author Christopher K. Allen
- * @since  Nov 9, 2011
+ * @since Nov 9, 2011
  *
  */
-
 /**
  * TestScenario.java
  *
  * @author  Christopher K. Allen
- * @since	Nov 9, 2011
+ * @since    Nov 9, 2011
  */
 package xal.sim.scenario;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import static org.junit.Assert.fail;
 
 import org.junit.Before;
@@ -33,181 +34,174 @@ import xal.test.ResourceManager;
  * Testing scenario generation for the Open XAL online model.
  *
  * @author Christopher K. Allen
- * @since   Nov 9, 2011
+ * @since Nov 9, 2011
  */
 public class TestScenario {
 
-    
-    /** Accelerator sequence used for testing */
-    public static final String     STR_ACCL_SEQ_ID = "MEBT";
-//    public static final String     STR_ACCL_SEQ_ID = "HEBT2";
-    
-    
-    
+    private static final Logger LOGGER = Logger.getLogger(TestScenario.class.getName());
+
+    /**
+     * Accelerator sequence used for testing
+     */
+    public static final String STR_ACCL_SEQ_ID = "MEBT";
+
     /**
      *
      * @throws java.lang.Exception
      *
      * @author Christopher K. Allen
-     * @since  Nov 9, 2011
+     * @since Nov 9, 2011
      */
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        
-//        Scenario.setDebugging(true);
-        
+
     }
 
     /**
      * xal.sim.scenario
      *
      * @author Christopher K. Allen
-     * @since  Nov 9, 2011
+     * @since Nov 9, 2011
      *
      */
-
     /**
      *
      * @throws java.lang.Exception
      *
      * @author Christopher K. Allen
-     * @since  Nov 9, 2011
+     * @since Nov 9, 2011
      */
     @Before
     public void setUp() throws Exception {
     }
 
     /**
-     * Test method for {@link xal.sim.scenario.Scenario#newScenarioFor(xal.smf.AcceleratorSeq)}.
+     * Test method for
+     * {@link xal.sim.scenario.Scenario#newScenarioFor(xal.smf.AcceleratorSeq)}.
      */
     @Test
     public void testNewScenarioForAcceleratorSeq() {
 
-        Accelerator     accel = ResourceManager.getTestAccelerator();
-        AcceleratorSeq  seq   = accel.getSequence(STR_ACCL_SEQ_ID);
-        
-        try {
-            Scenario        model = Scenario.newScenarioFor(seq);
-            
-        } catch (ModelException e) {
+        Accelerator accel = ResourceManager.getTestAccelerator();
+        AcceleratorSeq seq = accel.getSequence(STR_ACCL_SEQ_ID);
 
+        try {
+            Scenario model = Scenario.newScenarioFor(seq);
+
+        } catch (ModelException e) {
             fail("Unable to create Scenario");
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
         }
-        
+
     }
 
     /**
-     * Test method for {@link xal.sim.scenario.Scenario#run()}.
-     * Uses an adaptive envelope probe.
+     * Test method for {@link xal.sim.scenario.Scenario#run()}. Uses an adaptive
+     * envelope probe.
      */
     @Test
     public void testRunFromFactories() {
-        Accelerator     accel = ResourceManager.getTestAccelerator();
-        AcceleratorSeq  seq   = accel.getSequence(STR_ACCL_SEQ_ID);
-        
-        try {
-            Scenario        model = Scenario.newScenarioFor(seq);
-            IAlgorithm      algor = AlgorithmFactory.createEnvTrackerAdapt(seq);
-            EnvelopeProbe   probe = ProbeFactory.getEnvelopeProbe(seq, algor);
-            
-            probe.initialize();
-            model.setProbe( probe );
-            model.resync();
-            
-            model.run();
-            
-        } catch (ModelException | InstantiationException e) {
+        Accelerator accel = ResourceManager.getTestAccelerator();
+        AcceleratorSeq seq = accel.getSequence(STR_ACCL_SEQ_ID);
 
+        try {
+            Scenario model = Scenario.newScenarioFor(seq);
+            IAlgorithm algor = AlgorithmFactory.createEnvTrackerAdapt(seq);
+            EnvelopeProbe probe = ProbeFactory.getEnvelopeProbe(seq, algor);
+
+            probe.initialize();
+            model.setProbe(probe);
+            model.resync();
+
+            model.run();
+
+        } catch (ModelException | InstantiationException e) {
             fail("Unable to run Scenario");
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
         }
     }
 
     /**
-     * Test method for {@link xal.sim.scenario.Scenario#run()}.
-     * Uses an adaptive envelope probe.
+     * Test method for {@link xal.sim.scenario.Scenario#run()}. Uses an adaptive
+     * envelope probe.
      */
     @Test
     public void testRunParticleProbeFromFactories() {
-        Accelerator     accel = ResourceManager.getTestAccelerator();
-        AcceleratorSeq  seq   = accel.getSequence(STR_ACCL_SEQ_ID);
-        
-        try {
-            Scenario        model = Scenario.newScenarioFor(seq);
-            IAlgorithm      algor = AlgorithmFactory.createParticleTracker(seq);
-            ParticleProbe   probe = ProbeFactory.createParticleProbe(seq, algor);
-            
-            probe.initialize();
-            model.setProbe( probe );
-            model.resync();
-            
-            model.run();
-            
-        } catch (ModelException | InstantiationException e) {
+        Accelerator accel = ResourceManager.getTestAccelerator();
+        AcceleratorSeq seq = accel.getSequence(STR_ACCL_SEQ_ID);
 
+        try {
+            Scenario model = Scenario.newScenarioFor(seq);
+            IAlgorithm algor = AlgorithmFactory.createParticleTracker(seq);
+            ParticleProbe probe = ProbeFactory.createParticleProbe(seq, algor);
+
+            probe.initialize();
+            model.setProbe(probe);
+            model.resync();
+
+            model.run();
+
+        } catch (ModelException | InstantiationException e) {
             fail("Unable to run Scenario");
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
         }
     }
 
     /**
-     * Test method for {@link xal.sim.scenario.Scenario#run()}.
-     * Uses a Synchronous probe.
+     * Test method for {@link xal.sim.scenario.Scenario#run()}. Uses a
+     * Synchronous probe.
      */
     @Test
     public void testRunSynchronousProbeFromFactories() {
-        Accelerator     accel = ResourceManager.getTestAccelerator();
-        AcceleratorSeq  seq   = accel.getSequence(STR_ACCL_SEQ_ID);
-        
-        try {
-            Scenario        model = Scenario.newScenarioFor(seq);
-            IAlgorithm      algor = AlgorithmFactory.createSynchronousTracker(seq);
-            SynchronousProbe   probe = ProbeFactory.getSynchronousProbe(seq, algor);
-            
-            probe.initialize();
-            model.setProbe( probe );
-            model.resync();
-            
-            model.run();
-            
-        } catch (ModelException | InstantiationException e) {
+        Accelerator accel = ResourceManager.getTestAccelerator();
+        AcceleratorSeq seq = accel.getSequence(STR_ACCL_SEQ_ID);
 
+        try {
+            Scenario model = Scenario.newScenarioFor(seq);
+            IAlgorithm algor = AlgorithmFactory.createSynchronousTracker(seq);
+            SynchronousProbe probe = ProbeFactory.getSynchronousProbe(seq, algor);
+
+            probe.initialize();
+            model.setProbe(probe);
+            model.resync();
+
+            model.run();
+
+        } catch (ModelException | InstantiationException e) {
             fail("Unable to run Scenario");
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
         }
     }
 
     /**
      * Test method for {@link xal.sim.scenario.Scenario#run()}.
-     * 
-     * @throws InstantiationException   algorithm creation failed 
+     *
+     * @throws InstantiationException algorithm creation failed
      */
     @Test
     public void testRunViaLoad() throws InstantiationException {
-        Accelerator     accel = ResourceManager.getTestAccelerator();
-        AcceleratorSeq  seq   = accel.getSequence(STR_ACCL_SEQ_ID);
-        
-        try {
-            
-            Scenario        model = Scenario.newScenarioFor(seq);
+        Accelerator accel = ResourceManager.getTestAccelerator();
+        AcceleratorSeq seq = accel.getSequence(STR_ACCL_SEQ_ID);
 
-            IAlgorithm      algor = AlgorithmFactory.createEnvTrackerAdapt(seq);
+        try {
+
+            Scenario model = Scenario.newScenarioFor(seq);
+
+            IAlgorithm algor = AlgorithmFactory.createEnvTrackerAdapt(seq);
             algor.load(seq.getEntranceID(), accel.editContext());
-            
-            EnvelopeProbe   probe = ProbeFactory.getEnvelopeProbe(seq, algor);
+
+            EnvelopeProbe probe = ProbeFactory.getEnvelopeProbe(seq, algor);
             probe.initialize();
-            
-            model.setProbe( probe );
+
+            model.setProbe(probe);
             model.resync();
             model.run();
-            
-        } catch (ModelException e) {
 
+        } catch (ModelException e) {
             fail("Unable to run Scenario");
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, null, e);
         }
-        
+
     }
 
     /**

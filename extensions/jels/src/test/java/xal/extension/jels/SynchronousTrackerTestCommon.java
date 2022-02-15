@@ -36,7 +36,7 @@ import xal.smf.AcceleratorSeq;
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
-public class SynchronousTrackerTestCommon extends TestCommon {
+public abstract class SynchronousTrackerTestCommon extends TestCommon {
 
     protected SynchronousTrackerTestData data;
 
@@ -99,7 +99,6 @@ public class SynchronousTrackerTestCommon extends TestCommon {
         super(data.probe, data.elementMapping);
         this.data = data;
     }
-    
 
     public static SynchronousProbe setupOpenXALProbe(double energy, double frequency) {
         // Synchronous probe and tracker
@@ -108,7 +107,7 @@ public class SynchronousTrackerTestCommon extends TestCommon {
 
         SynchronousProbe probe = new SynchronousProbe();
         probe.setAlgorithm(synchronousTracker);
-        probe.setSpeciesCharge(SpeciesCharge);
+        probe.setSpeciesCharge(speciesCharge);
         probe.setSpeciesRestEnergy(9.38272029e8);
         probe.setKineticEnergy(energy);
         probe.setPosition(0.0);
@@ -130,6 +129,6 @@ public class SynchronousTrackerTestCommon extends TestCommon {
 
     @Parameterized.Parameters
     public static Collection<Object[]> probes() {
-        return new ArrayList<Object[]>(0);
+        return new ArrayList<>(0);
     }
 }

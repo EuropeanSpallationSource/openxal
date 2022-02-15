@@ -297,12 +297,12 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
 
     @Override
     public void putRawValCallback(String newVal, PutListener listener) throws ConnectionException, PutException {
-        throw new PutException(m_strId + " channel only supports double data!");
+        throw new PutException(strId + " channel only supports double data!");
     }
 
     @Override
     public void putRawValCallback(byte newVal, PutListener listener) throws ConnectionException, PutException {
-        throw new PutException(m_strId + " channel only supports double data!");
+        throw new PutException(strId + " channel only supports double data!");
     }
 
     @Override
@@ -332,7 +332,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
 
     @Override
     public void putRawValCallback(byte[] newVal, PutListener listener) throws ConnectionException, PutException {
-        throw new PutException(m_strId + " channel only supports double data.");
+        throw new PutException(strId + " channel only supports double data.");
     }
 
     @Override
@@ -365,7 +365,7 @@ class PvAccessServerChannel extends Channel implements IServerChannel {
     @Override
     public void putRawValCallback(double[] newVal, PutListener listener) throws ConnectionException, PutException {
         if (size < newVal.length) {
-            throw new PutException("The provided array for put to " + m_strId + " is too big to fit to the record.");
+            throw new PutException("The provided array for put to " + strId + " is too big to fit to the record.");
         }
 
         if (size == 1) {

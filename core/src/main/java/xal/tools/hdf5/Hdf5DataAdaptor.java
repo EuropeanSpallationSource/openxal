@@ -51,9 +51,18 @@ import xal.tools.data.FileDataAdaptor;
  */
 public class Hdf5DataAdaptor implements FileDataAdaptor {
 
-    private H5Node document;  // root document
-    private H5Node mainNode;      // could be a document or an element
-    private List<H5Node> childNodes;    // child nodes as a List
+    /**
+     * root document
+     */
+    private H5Node document;
+    /**
+     * could be a document or an element
+     */
+    private H5Node mainNode;
+    /**
+     * child nodes as a List
+     */
+    private List<H5Node> childNodes;
 
     private Hdf5DataAdaptor(String name) {
         mainNode = new H5Node(name);
@@ -71,7 +80,7 @@ public class Hdf5DataAdaptor implements FileDataAdaptor {
     /**
      * get the tag name for the specified XML node
      */
-    static private String nameForNode(H5Node node) {
+    private static String nameForNode(H5Node node) {
         return node.getNodeName();
     }
 
@@ -152,7 +161,7 @@ public class Hdf5DataAdaptor implements FileDataAdaptor {
         if (attribute != null) {
             return attribute.getArrDbl();
         } else {
-            return null;
+            return new double[0];
         }
     }
 
@@ -213,9 +222,8 @@ public class Hdf5DataAdaptor implements FileDataAdaptor {
     /**
      * create a new adaptor for the specified node
      */
-    static private Hdf5DataAdaptor newAdaptor(H5Node node) {
-        Hdf5DataAdaptor adaptor = new Hdf5DataAdaptor(node);
-        return adaptor;
+    private static Hdf5DataAdaptor newAdaptor(H5Node node) {
+        return new Hdf5DataAdaptor(node);
     }
 
     @Override
@@ -309,7 +317,7 @@ public class Hdf5DataAdaptor implements FileDataAdaptor {
     /**
      * Generate an Hdf5DataAdaptor from a urlPath.
      */
-    static public Hdf5DataAdaptor adaptorForUrl(final String urlPath) {
+    public static Hdf5DataAdaptor adaptorForUrl(final String urlPath) {
         Hdf5DataAdaptor adaptor;
 
         adaptor = Hdf5DataAdaptor.newEmptyDocumentAdaptor();
@@ -322,14 +330,14 @@ public class Hdf5DataAdaptor implements FileDataAdaptor {
     /**
      * Generate an Hdf5DataAdaptor from a URL.
      */
-    static public Hdf5DataAdaptor adaptorForUrl(final URL url) {
+    public static Hdf5DataAdaptor adaptorForUrl(final URL url) {
         return Hdf5DataAdaptor.adaptorForUrl(url.toString());
     }
 
     /**
      * Generate an Hdf5DataAdaptor from a File.
      */
-    static public Hdf5DataAdaptor adaptorForFile(final File file) throws MalformedURLException {
+    public static Hdf5DataAdaptor adaptorForFile(final File file) throws MalformedURLException {
         return Hdf5DataAdaptor.adaptorForUrl(file.toURI().toURL());
     }
 
@@ -338,7 +346,7 @@ public class Hdf5DataAdaptor implements FileDataAdaptor {
      *
      * @return DataAdaptor containing the root document node.
      */
-    static public Hdf5DataAdaptor newEmptyDocumentAdaptor() {
+    public static Hdf5DataAdaptor newEmptyDocumentAdaptor() {
         Hdf5DataAdaptor adaptor;
 
         adaptor = new Hdf5DataAdaptor("root");

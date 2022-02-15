@@ -5,14 +5,14 @@ import xal.smf.attr.BPMBucket;
 /**
  * An attribute set for the NPM
  *
- * @author Juan F. Esteban Müller <juanf.estebanmuller@esss.se>
+ * @author Juan F. Esteban Müller <juanf.estebanmuller@ess.eu>
  */
 public class NPMBucket extends BPMBucket {
 
     /*
      *  Constants
      */
-    public final static String c_strType = "npm";
+    public static final String TYPE = "npm";
 
     /**
      * Override virtual to provide type signature
@@ -21,8 +21,9 @@ public class NPMBucket extends BPMBucket {
         super();
     }
 
+    @Override
     public String getType() {
-        return c_strType;
+        return TYPE;
     }
 
 }

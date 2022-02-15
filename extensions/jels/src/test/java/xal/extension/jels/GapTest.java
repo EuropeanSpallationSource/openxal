@@ -28,7 +28,7 @@ public class GapTest extends SingleElementTest {
 
         List<Object[]> tests = new ArrayList<>();
 
-        // 0: basic test, E=2.5MeV		
+        // 0: basic test, E=2.5MeV        
         tests.add(new Object[]{new SingleElementTestData() {
             {
                 description = "basic test, f=-80";
@@ -232,7 +232,7 @@ public class GapTest extends SingleElementTest {
             }
         }});
 
-        // 6: spacecharge test, E=2.5MeV		
+        // 6: spacecharge test, E=2.5MeV        
         tests.add(new Object[]{new SingleElementTestData() {
             {
                 description = "spacechage test, f=-80";
@@ -264,7 +264,7 @@ public class GapTest extends SingleElementTest {
             }
         }});
 
-        // 7: misalignment dx, E=2.5MeV		
+        // 7: misalignment dx, E=2.5MeV        
         tests.add(new Object[]{new SingleElementTestData() {
             {
                 description = "misalignment dx";
@@ -294,7 +294,6 @@ public class GapTest extends SingleElementTest {
 
                 TWMean = new double[]{0.00135294, -0.881345, 0, 0, 0, 0};
 
-//                TMerrTolerance = 1e-2;
                 CMerrTolerance = 3e-5;
             }
         }});
@@ -339,7 +338,6 @@ public class GapTest extends SingleElementTest {
                 probe = setupOpenXALProbe(2.5e6, frequency, current);
                 elementMapping = JElsElementMapping.getInstance();
                 // GAP 78019.7 -80 14.5 0 0 0 0 0 0 0
-                //sequence = gap(4.025e8, 78019.7, -80, 14.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0);
                 //swapping x and y angles
                 sequence = gap(4.025e8, 78019.7, -80, 14.5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
 
@@ -374,7 +372,6 @@ public class GapTest extends SingleElementTest {
                 probe = setupOpenXALProbe(2.5e6, frequency, current);
                 elementMapping = JElsElementMapping.getInstance();
                 // GAP 78019.7 -80 14.5 0 0 0 0 0 0 0
-                //sequence = gap(4.025e8, 78019.7, -80, 14.5, 0, 0, 0, 0, 0, 0, 0, 1., 2., 0, 3., 4.);
                 //swapping x and y angles
                 sequence = gap(4.025e8, 78019.7, -80, 14.5, 0, 0, 0, 0, 0, 0, 0, 1., 2., 0, 4., 3.);
 
@@ -428,7 +425,8 @@ public class GapTest extends SingleElementTest {
     public static AcceleratorSeq gap(double frequency, double E0TL, double Phis, double R, double p, double betas, double Ts, double kTs, double k2Ts, double kS, double k2S, double dx, double dy, double dz, double fx, double fy) {
         AcceleratorSeq sequence = new AcceleratorSeq("GapTest");
 
-        double length = 1.0; // length is not given in TraceWin, but is used only as a factor in E0TL in OpenXal
+        // length is not given in TraceWin, but is used only as a factor in E0TL in OpenXal
+        double length = 1.0;
 
         // FIXME position == 0?
         ESSRfGap gap = ESSElementFactory.createESSRfGap("g", true, 1, new ApertureBucket(), length, 0);
@@ -440,17 +438,17 @@ public class GapTest extends SingleElementTest {
         // FIXME position == 0?
         ESSRfCavity cavity = ESSElementFactory.createESSRfCavity("c", 0, gap, Phis, E0TL * 1e-6 / length, frequency * 1e-6, 0);
 
-        // TTF		
+        // TTF        
         if (betas == 0.0) {
             cavity.getRfField().setTTFCoefs(new double[]{});
-            cavity.getRfField().setTTF_endCoefs(new double[]{});
+            cavity.getRfField().setTTFEndCoefs(new double[]{});
         } else {
             cavity.getRfField().setTTFCoefs(new double[]{betas, Ts, kTs, k2Ts});
-            cavity.getRfField().setTTF_startCoefs(new double[]{betas, Ts, kTs, k2Ts});
-            cavity.getRfField().setTTF_endCoefs(new double[]{betas, Ts, kTs, k2Ts});
+            cavity.getRfField().setTTFStartCoefs(new double[]{betas, Ts, kTs, k2Ts});
+            cavity.getRfField().setTTFEndCoefs(new double[]{betas, Ts, kTs, k2Ts});
             cavity.getRfField().setSTFCoefs(new double[]{betas, 0., kS, k2S});
-            cavity.getRfField().setSTF_startCoefs(new double[]{betas, 0., kS, k2S});
-            cavity.getRfField().setSTF_endCoefs(new double[]{betas, 0., kS, k2S});
+            cavity.getRfField().setSTFStartCoefs(new double[]{betas, 0., kS, k2S});
+            cavity.getRfField().setSTFEndCoefs(new double[]{betas, 0., kS, k2S});
         }
 
         sequence.addNode(cavity);

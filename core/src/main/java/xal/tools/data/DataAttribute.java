@@ -3,133 +3,136 @@
  *
  * Created on May 22, 2002, 2:35 PM
  */
-
 package xal.tools.data;
 
 import java.util.logging.*;
 
-
 /**
  * DataAttribute class
- * @author  tap
+ *
+ * @author tap
  */
 public class DataAttribute {
-	private String DEFAULT_VALUE;
+
+    private static final Logger LOGGER = Logger.getLogger(DataAttribute.class.getName());
+
+    private String defaultValueStr;
     private String name;
     private Class<?> type;
     private boolean isPrimaryKey;
     private Object defaultValue;
 
-	
-    /** Creates new DataAttribute */
-    public DataAttribute( String aName, Class<?> aType, boolean primaryState, String defaultValue ) {
+    /**
+     * Creates new DataAttribute
+     */
+    public DataAttribute(String aName, Class<?> aType, boolean primaryState, String defaultValue) {
         name = aName;
         type = aType;
         isPrimaryKey = primaryState;
-		DEFAULT_VALUE = defaultValue;
+        defaultValueStr = defaultValue;
     }
 
-	
-    /** Creates new DataAttribute */
-    public DataAttribute( String aName, Class<?> aType, boolean primaryState ) {
-		this( aName, aType, primaryState, null );
+    /**
+     * Creates new DataAttribute
+     */
+    public DataAttribute(String aName, Class<?> aType, boolean primaryState) {
+        this(aName, aType, primaryState, null);
     }
 
-    
-    public DataAttribute( DataAdaptor adaptor ) {
+    public DataAttribute(DataAdaptor adaptor) {
         DataListener reader = readerWriter();
         reader.update(adaptor);
     }
-    
-    
+
     public DataListener readerWriter() {
         return new ReaderWriter();
     }
-    
-    
+
     public String name() {
         return name;
     }
-    
-    
+
     public Class<?> type() {
         return type;
     }
-    
-    
+
     public boolean isPrimaryKey() {
         return isPrimaryKey;
     }
-	
-	
-	/**
-	 * Get the serialized default value to assign for this attribute if a value is not specified.
-	 * @return the default value for this attribute
-	 */
-	public String getDefaultStringValue() {
-		return DEFAULT_VALUE;
-	}
-    
-	/**
-     * Get the deserialized default value to assign for this attribute if a value is not specified.
-	 * @return the default value for this attribute
-	 */
-	public Object getDefaultValue()
-	{
-		if (DEFAULT_VALUE == null) return null;
-		if (defaultValue == null) {
-			defaultValue = GenericRecord.valueOfTypeFromString( type, DEFAULT_VALUE );
-		}
-		return defaultValue;
-	}
-    
-    
+
+    /**
+     * Get the serialized default value to assign for this attribute if a value
+     * is not specified.
+     *
+     * @return the default value for this attribute
+     */
+    public String getDefaultStringValue() {
+        return defaultValueStr;
+    }
+
+    /**
+     * Get the deserialized default value to assign for this attribute if a
+     * value is not specified.
+     *
+     * @return the default value for this attribute
+     */
+    public Object getDefaultValue() {
+        if (defaultValueStr == null) {
+            return null;
+        }
+        if (defaultValue == null) {
+            defaultValue = GenericRecord.valueOfTypeFromString(type, defaultValueStr);
+        }
+        return defaultValue;
+    }
+
     /*
      * ReaderWriter is responsible for reading and writing a DataAttribute 
      * object based on a DataAdaptor adaptor.
      */
     private class ReaderWriter implements DataListener {
+
+        private static final String DEFAULT_VALUE_ATTR = "defaultValue";
+        private static final String PRIMARY_KEY_ATTR = "isPrimaryKey";
+
+        @Override
         public String dataLabel() {
             return "attribute";
         }
-        
-        
-        public void update( DataAdaptor adaptor ) {
+
+        @Override
+        public void update(DataAdaptor adaptor) {
             name = adaptor.stringValue("name");
             try {
                 String typeName = adaptor.stringValue("type");
                 type = Class.forName(typeName);
+            } catch (ClassNotFoundException exception) {
+                LOGGER.log(Level.SEVERE, "Error during update.", exception);
             }
-            catch( Exception exception ) {
-                System.err.println( exception );
-				Logger.getLogger("global").log( Level.SEVERE, "Error during update.", exception );
-                exception.printStackTrace();
-            }
-            
-            if ( adaptor.hasAttribute("isPrimaryKey") ) {
-                isPrimaryKey = adaptor.booleanValue("isPrimaryKey");
-            }
-            else {
+
+            if (adaptor.hasAttribute(PRIMARY_KEY_ATTR)) {
+                isPrimaryKey = adaptor.booleanValue((PRIMARY_KEY_ATTR));
+            } else {
                 isPrimaryKey = false;
             }
-			
-			if ( adaptor.hasAttribute( "defaultValue" ) ) {
-				DEFAULT_VALUE = adaptor.stringValue( "defaultValue" );
-			}
+
+            if (adaptor.hasAttribute(DEFAULT_VALUE_ATTR)) {
+                defaultValueStr = adaptor.stringValue(DEFAULT_VALUE_ATTR);
+            }
         }
-        
-        
-        public void write( DataAdaptor adaptor ) {
+
+        @Override
+        public void write(DataAdaptor adaptor) {
             adaptor.setValue("name", name);
-            
+
             String typeName = type.getName();
             adaptor.setValue("type", typeName);
-            
-            adaptor.setValue("isPrimaryKey", isPrimaryKey);
-			
-			if ( DEFAULT_VALUE != null ) {
-				adaptor.setValue( "defaultValue", DEFAULT_VALUE );
-			}
+
+            adaptor.setValue((PRIMARY_KEY_ATTR), isPrimaryKey);
+
+            if (defaultValueStr != null) {
+                adaptor.setValue(DEFAULT_VALUE_ATTR, defaultValueStr);
+            }
         }
     }
 }

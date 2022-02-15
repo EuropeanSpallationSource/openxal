@@ -10,7 +10,10 @@ import java.util.List;
  * @author <a href="mailto:jakob.battelino@cosylab.com">Jakob Battelino
  * Prelog</a>
  */
-public interface TraceWinTags {
+public abstract class TraceWinTags {
+
+    protected TraceWinTags() {
+    }
 
     public static final String DATE_PATTERN = "EEE MMM dd HH:mm:ss yyyy";
 

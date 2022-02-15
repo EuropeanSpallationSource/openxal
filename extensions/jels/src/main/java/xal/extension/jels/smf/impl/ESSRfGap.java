@@ -28,7 +28,7 @@ public class ESSRfGap extends RfGap {
      */
     @Override
     public InverseRealPolynomial getTTFFit() {
-        double[] arrCoeffs = this.m_bucRfGap.getTCoefficients();
+        double[] arrCoeffs = this.bucRfGap.getTCoefficients();
 
         // Defaults to the RF cavity transit time factor if none is
         //  defined for this gap.
@@ -56,7 +56,7 @@ public class ESSRfGap extends RfGap {
      */
     @Override
     public InverseRealPolynomial getTTFPrimeFit() {
-        double[] arrCoeffs = this.m_bucRfGap.getTpCoefficients();
+        double[] arrCoeffs = this.bucRfGap.getTpCoefficients();
 
         // Defaults to the RF cavity transit time factor if none is
         //  defined for this gap.
@@ -83,7 +83,7 @@ public class ESSRfGap extends RfGap {
      */
     @Override
     public InverseRealPolynomial getSFit() {
-        double[] arrCoeffs = this.m_bucRfGap.getSCoefficients();
+        double[] arrCoeffs = this.bucRfGap.getSCoefficients();
 
         // Defaults to the RF cavity transit time factor if none is
         //  defined for this gap.
@@ -111,7 +111,7 @@ public class ESSRfGap extends RfGap {
      */
     @Override
     public InverseRealPolynomial getSPrimeFit() {
-        double[] arrCoeffs = this.m_bucRfGap.getSpCoefficients();
+        double[] arrCoeffs = this.bucRfGap.getSpCoefficients();
 
         // Defaults to the RF cavity transit time prime factor if none is
         //  defined for this gap.

@@ -11,34 +11,40 @@ import xal.ca.*;
 import xal.tools.data.*;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Electromagnet is the base class representation of an electromagnet.
  *
  * @author tap
  */
-abstract public class Electromagnet extends Magnet {
+public abstract class Electromagnet extends Magnet {
+
+    private static final Logger LOGGER = Logger.getLogger(Electromagnet.class.getName());
+
+    private static final String EXCEPTION_MSG = "exception getting handles from the main supply \"{0}\" for electromagnet: {1}";
 
     /**
      * the node type
      */
-    public static final String s_strType = "emag";
+    public static final String TYPE = "emag";
 
     // field readback handle
     public static final String FIELD_RB_HANDLE = "fieldRB";
 
     public final AccessibleProperty field = new AccessibleProperty("field", FIELD_RB_HANDLE, MagnetMainSupply.FIELD_SET_HANDLE,
-            () -> getDesignField(), (v) -> setDfltField(v),
-            (v) -> toFieldFromCA(v[0]), (v) -> toCAFromField(v));
+            this::getDesignField, designValue -> toFieldFromCA(designValue),
+            channelValues -> toFieldFromCA(channelValues[0]), channelValues -> toCAFromField(channelValues));
 
     public final AccessibleProperty fieldFromCurrent = new AccessibleProperty("field", MagnetMainSupply.CURRENT_RB_HANDLE, MagnetMainSupply.CURRENT_SET_HANDLE,
-            () -> getDesignField(), (v) -> setDfltField(v),
-            (v) -> toFieldFromCA(toFieldFromCurrent(v[0])), (v) -> toCAFromField(toCurrentFromField(v)));
+            this::getDesignField, value -> setDfltField(value),
+            channelValues -> toFieldFromCA(toFieldFromCurrent(channelValues[0])), channelValues -> toCAFromField(toCurrentFromField(channelValues)));
 
     // indicates whether to use the actual field readback or the field setting in the getField() method
     // by default use the field readback
-    protected boolean _useFieldReadback = true;
-    
+    protected boolean useFieldReadback = true;
+
     /**
      * the ID of this magnet's main power supply
      */
@@ -51,7 +57,7 @@ abstract public class Electromagnet extends Magnet {
 
     // Register types for qualification
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes(Electromagnet.class, s_strType, "electromagnet");
+        ElementTypeManager.defaultManager().registerTypes(Electromagnet.class, TYPE, "electromagnet");
     }
 
     /**
@@ -73,6 +79,7 @@ abstract public class Electromagnet extends Magnet {
      *
      * @param adaptor The data provider
      */
+    @Override
     public void update(final DataAdaptor adaptor) throws NumberFormatException {
         super.update(adaptor);
         final DataAdaptor powerSupplyAdaptor = adaptor.childAdaptor("ps");
@@ -97,6 +104,7 @@ abstract public class Electromagnet extends Magnet {
      *
      * @param adaptor The data store
      */
+    @Override
     public void write(final DataAdaptor adaptor) {
         super.write(adaptor);
         DataAdaptor powerSupplyAdaptor = adaptor.createChild("ps");
@@ -120,7 +128,7 @@ abstract public class Electromagnet extends Magnet {
      * the field setting.
      */
     public void setUseFieldReadback(final boolean useFieldReadback) {
-        _useFieldReadback = useFieldReadback;
+        this.useFieldReadback = useFieldReadback;
         if (useFieldReadback) {
             field.setSetHandle(MagnetMainSupply.FIELD_SET_HANDLE);
         } else {
@@ -135,7 +143,7 @@ abstract public class Electromagnet extends Magnet {
      * instead the field setting is used.
      */
     public boolean useFieldReadback() {
-        return _useFieldReadback;
+        return useFieldReadback;
     }
 
     /**
@@ -144,15 +152,16 @@ abstract public class Electromagnet extends Magnet {
      *
      * @return The channel handles associated with this node
      */
+    @Override
     public Collection<String> getHandles() {
-        final Collection<String> handles = new HashSet<String>(super.getHandles());
+        final Collection<String> handles = new HashSet<>(super.getHandles());
         try {
             final MagnetMainSupply supply = getMainSupply();
             if (supply != null) {
                 handles.addAll(getMainSupply().getChannelSuite().getHandles());
             }
         } catch (NullPointerException exception) {
-            System.err.println("exception getting handles from the main supply \"" + getMainSupply() + "\" for electromagnet: " + getId());
+            LOGGER.log(Level.SEVERE, EXCEPTION_MSG, new Object[]{getMainSupply(), getId()});
             throw exception;
         }
         return handles;
@@ -175,6 +184,7 @@ abstract public class Electromagnet extends Magnet {
      * setHandle) {
      * @return The corresponding readback handle.
      */
+    @Override
     public String[] getReadbackHandles(String setHandle) {
         String[] readbackHandles = super.getReadbackHandles(setHandle);
         if (readbackHandles == null) {
@@ -184,7 +194,7 @@ abstract public class Electromagnet extends Magnet {
                     readbackHandles = supply.getReadbackHandles(setHandle);
                 }
             } catch (NullPointerException exception) {
-                System.err.println("exception getting ReadbackHandle from the main supply \"" + getMainSupply() + "\" for electromagnet: " + getId());
+                LOGGER.log(Level.SEVERE, EXCEPTION_MSG, new Object[]{getMainSupply(), getId()});
                 throw exception;
             }
         }
@@ -197,6 +207,7 @@ abstract public class Electromagnet extends Magnet {
      * @param readbackHandle The readback handle.
      * @return The corresponding set handle.
      */
+    @Override
     public String getSetHandle(String readbackHandle) {
         String setHandle = super.getSetHandle(readbackHandle);
         if (setHandle == null) {
@@ -206,7 +217,7 @@ abstract public class Electromagnet extends Magnet {
                     setHandle = supply.getSetHandle(readbackHandle);
                 }
             } catch (NullPointerException exception) {
-                System.err.println("exception getting setHandle from the main supply \"" + getMainSupply() + "\" for electromagnet: " + getId());
+                LOGGER.log(Level.SEVERE, EXCEPTION_MSG, new Object[]{getMainSupply(), getId()});
                 throw exception;
             }
         }
@@ -221,6 +232,7 @@ abstract public class Electromagnet extends Magnet {
      * @return The channel associated with this node and the specified handle or
      * null if there is no match.
      */
+    @Override
     public Channel findChannel(final String handle) {
         final Channel channel = super.findChannel(handle);
         if (channel != null) {
@@ -272,7 +284,7 @@ abstract public class Electromagnet extends Magnet {
         if (supply != null) {
             properties.addAll(supply.getAccessibleProperties());
         }
-        
+
         // Keep only one property for field
         if (getMagBucket().getUseCurrentFlag()) {
             properties.remove(field);
@@ -289,7 +301,7 @@ abstract public class Electromagnet extends Magnet {
      *
      * @param enable True to enable cycling; false to disable cycling.
      */
-    public void setCycleEnable(final boolean enable) throws ConnectionException, PutException {
+    public void setCycleEnable(final boolean enable) throws PutException {
         getMainSupply().setCycleEnable(enable);
     }
 
@@ -300,7 +312,7 @@ abstract public class Electromagnet extends Magnet {
      *
      * @return One of CYCLE_INVALID, CYCLING or CYCLE_VALID
      */
-    public int getCycleState() throws ConnectionException, GetException {
+    public int getCycleState() throws GetException {
         return getMainSupply().getCycleState();
     }
 
@@ -310,11 +322,11 @@ abstract public class Electromagnet extends Magnet {
      * @return the field in T/(m^(n-1)), where n = 1 for dipole, 2 for quad,
      * etc.
      */
-    public double getField() throws ConnectionException, GetException {
+    public double getField() throws GetException {
         if (getMagBucket().getUseCurrentFlag()) {
             return toFieldFromCA(toFieldFromCurrent(getCurrent()));
         } else {
-            return (_useFieldReadback) ? getFieldReadback() : getTotalFieldSetting();
+            return (useFieldReadback) ? getFieldReadback() : getTotalFieldSetting();
         }
     }
 
@@ -324,7 +336,7 @@ abstract public class Electromagnet extends Magnet {
      * @return the readback field in T/(m^(n-1)), where n = 1 for dipole, 2 for
      * quad, etc.
      */
-    public double getFieldReadback() throws ConnectionException, GetException {
+    public double getFieldReadback() throws GetException {
         Channel fieldRBChannel = getAndConnectChannel(FIELD_RB_HANDLE);
 
         return toFieldFromCA(fieldRBChannel.getValDbl());
@@ -334,7 +346,7 @@ abstract public class Electromagnet extends Magnet {
      * Get the integrated field in this electromagnet T-m/(m^(n-1)), where n = 1
      * for dipole, 2 for quad, etc.
      */
-    public double getFieldInt() throws ConnectionException, GetException {
+    public double getFieldInt() throws GetException {
         return getField() * getEffLength();
     }
 
@@ -346,7 +358,7 @@ abstract public class Electromagnet extends Magnet {
      * @param newField is the new field level in T/(m^(n-1)), where n = 1 for
      * dipole, 2 for quad, etc.
      */
-    public void setField(final double newField) throws ConnectionException, PutException {
+    public void setField(final double newField) throws PutException {
         if (getMagBucket().getUseCurrentFlag()) {
             setCurrent(toCAFromField(toCurrentFromField(newField)));
         } else {
@@ -361,7 +373,7 @@ abstract public class Electromagnet extends Magnet {
      * @return the field setting in T/(m^(n-1)), where n = 1 for dipole, 2 for
      * quad, etc.
      */
-    public double getFieldSetting() throws ConnectionException, GetException {
+    public double getFieldSetting() throws GetException {
         return toFieldFromCA(getMainSupply().getFieldSetting());
     }
 
@@ -373,7 +385,7 @@ abstract public class Electromagnet extends Magnet {
      * @return the field setting in T/(m^(n-1)), where n = 1 for dipole, 2 for
      * quad, etc.
      */
-    public double getTotalFieldSetting() throws ConnectionException, GetException {
+    public double getTotalFieldSetting() throws GetException {
         return getFieldSetting();
     }
 
@@ -383,7 +395,7 @@ abstract public class Electromagnet extends Magnet {
      * @param rawValue the raw channel value
      * @return the magnetic field in T/m^(n-1)
      */
-    final public double toFieldFromCA(final double rawValue) {
+    public final double toFieldFromCA(final double rawValue) {
         return rawValue * getPolarity();
     }
 
@@ -393,7 +405,7 @@ abstract public class Electromagnet extends Magnet {
      * @param field the magnetic field in T/m^(n-1)
      * @return the channel access value
      */
-    final public double toCAFromField(final double field) {
+    public final double toCAFromField(final double field) {
         return field * getPolarity();
     }
 
@@ -403,7 +415,7 @@ abstract public class Electromagnet extends Magnet {
      * @param current the current in the magnet in A
      * @return the channel access value
      */
-    public final double toFieldFromCurrent(double current){
+    public final double toFieldFromCurrent(double current) {
         return current * getMagBucket().getConversionFactor();
     }
 
@@ -413,15 +425,15 @@ abstract public class Electromagnet extends Magnet {
      * @param field the magnetic field in T/m^(n-1)
      * @return the channel access value
      */
-    public final double toCurrentFromField(double field){
+    public final double toCurrentFromField(double field) {
         return field / getMagBucket().getConversionFactor();
     }
-    
+
     /**
      * Get the field upper settable limit of the main power supply in
      * T/(m^(n-1)), where n = 1 for dipole, 2 for quad, etc.
      */
-    public double upperFieldLimit() throws ConnectionException, GetException {
+    public double upperFieldLimit() throws GetException {
         final MagnetMainSupply powerSupply = getMainSupply();
         return Math.max(toFieldFromCA(powerSupply.lowerFieldLimit()), toFieldFromCA(powerSupply.upperFieldLimit()));
     }
@@ -430,7 +442,7 @@ abstract public class Electromagnet extends Magnet {
      * Get the field lower settable limit of the main power supply in
      * T/(m^(n-1)), where n = 1 for dipole, 2 for quad, etc.
      */
-    public double lowerFieldLimit() throws ConnectionException, GetException {
+    public double lowerFieldLimit() throws GetException {
         final MagnetMainSupply powerSupply = getMainSupply();
         return Math.min(toFieldFromCA(powerSupply.lowerFieldLimit()), toFieldFromCA(powerSupply.upperFieldLimit()));
     }
@@ -439,7 +451,7 @@ abstract public class Electromagnet extends Magnet {
      * Get the field upper settable limit of the main power supply in
      * T/(m^(n-1)), where n = 1 for dipole, 2 for quad, etc.
      */
-    public double upperDisplayFieldLimit() throws ConnectionException, GetException {
+    public double upperDisplayFieldLimit() throws GetException {
         final MagnetMainSupply powerSupply = getMainSupply();
         return Math.max(toFieldFromCA(powerSupply.lowerDisplayFieldLimit()), toFieldFromCA(powerSupply.upperDisplayFieldLimit()));
     }
@@ -448,7 +460,7 @@ abstract public class Electromagnet extends Magnet {
      * Get the field lower settable limit of the main power supply in
      * T/(m^(n-1)), where n = 1 for dipole, 2 for quad, etc.
      */
-    public double lowerDisplayFieldLimit() throws ConnectionException, GetException {
+    public double lowerDisplayFieldLimit() throws GetException {
         final MagnetMainSupply powerSupply = getMainSupply();
         return Math.min(toFieldFromCA(powerSupply.lowerDisplayFieldLimit()), toFieldFromCA(powerSupply.upperDisplayFieldLimit()));
     }
@@ -457,7 +469,7 @@ abstract public class Electromagnet extends Magnet {
      * Get the field upper settable limit of the main power supply in
      * T/(m^(n-1)), where n = 1 for dipole, 2 for quad, etc.
      */
-    public double upperWarningFieldLimit() throws ConnectionException, GetException {
+    public double upperWarningFieldLimit() throws GetException {
         final MagnetMainSupply powerSupply = getMainSupply();
         return Math.max(toFieldFromCA(powerSupply.lowerWarningFieldLimit()), toFieldFromCA(powerSupply.upperWarningFieldLimit()));
     }
@@ -466,7 +478,7 @@ abstract public class Electromagnet extends Magnet {
      * Get the field lower settable limit of the main power supply in
      * T/(m^(n-1)), where n = 1 for dipole, 2 for quad, etc.
      */
-    public double lowerWarningFieldLimit() throws ConnectionException, GetException {
+    public double lowerWarningFieldLimit() throws GetException {
         final MagnetMainSupply powerSupply = getMainSupply();
         return Math.min(toFieldFromCA(powerSupply.lowerWarningFieldLimit()), toFieldFromCA(powerSupply.upperWarningFieldLimit()));
     }
@@ -475,7 +487,7 @@ abstract public class Electromagnet extends Magnet {
      * Get the field upper settable limit of the main power supply in
      * T/(m^(n-1)), where n = 1 for dipole, 2 for quad, etc.
      */
-    public double upperAlarmFieldLimit() throws ConnectionException, GetException {
+    public double upperAlarmFieldLimit() throws GetException {
         final MagnetMainSupply powerSupply = getMainSupply();
         return Math.max(toFieldFromCA(powerSupply.lowerAlarmFieldLimit()), toFieldFromCA(powerSupply.upperAlarmFieldLimit()));
     }
@@ -484,7 +496,7 @@ abstract public class Electromagnet extends Magnet {
      * Get the field lower settable limit of the main power supply in
      * T/(m^(n-1)), where n = 1 for dipole, 2 for quad, etc.
      */
-    public double lowerAlarmFieldLimit() throws ConnectionException, GetException {
+    public double lowerAlarmFieldLimit() throws GetException {
         final MagnetMainSupply powerSupply = getMainSupply();
         return Math.min(toFieldFromCA(powerSupply.lowerAlarmFieldLimit()), toFieldFromCA(powerSupply.upperAlarmFieldLimit()));
     }
@@ -492,7 +504,7 @@ abstract public class Electromagnet extends Magnet {
     /**
      * Get the main power supply current in this electromagnet via ca (A)
      */
-    public double getCurrent() throws ConnectionException, GetException {
+    public double getCurrent() throws GetException {
         return getMainSupply().getCurrent();
     }
 
@@ -501,21 +513,21 @@ abstract public class Electromagnet extends Magnet {
      *
      * @param newCurrent is the new current (A)
      */
-    public void setCurrent(final double newCurrent) throws ConnectionException, PutException {
+    public void setCurrent(final double newCurrent) throws PutException {
         getMainSupply().setCurrent(newCurrent);
     }
 
     /**
      * get the main power supply current lower settable limit (A)
      */
-    public double upperCurrentLimit() throws ConnectionException, GetException {
+    public double upperCurrentLimit() throws GetException {
         return getMainSupply().upperCurrentLimit();
     }
 
     /**
      * get the main power supply current lower settable limit (A)
      */
-    public double lowerCurrentLimit() throws ConnectionException, GetException {
+    public double lowerCurrentLimit() throws GetException {
         return getMainSupply().lowerCurrentLimit();
     }
 
@@ -526,6 +538,7 @@ abstract public class Electromagnet extends Magnet {
      * @return false since all Electromagnet instances are not permanent
      * magnets.
      */
+    @Override
     public boolean isPermanent() {
         return false;
     }

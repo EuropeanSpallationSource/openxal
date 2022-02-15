@@ -23,27 +23,26 @@ import eu.ess.bled.Subsystem;
  * stored for later export of the lattice. Therefore, the command is stored as a
  * String in a single field called {@link #value} as it was given when imported.
  * </p>
- * 
- * 
+ *
+ *
  * @author <a href="mailto:jaka.bobnar@cosylab.com">Jaka Bobnar</a>
  */
-
 public class LatticeCommand extends Subsystem implements BLEDEntity {
 
-	private static final long serialVersionUID = -7952962015154581512L;
-	private String value;
+    private static final long serialVersionUID = -7952962015154581512L;
+    private String value;
 
-	public String getValue() {
-		return value;
-	}
+    public String getValue() {
+        return value;
+    }
 
-	public void setValue(String value) {
-		this.value = value;
-	}
+    public void setValue(String value) {
+        this.value = value;
+    }
 
-	@Override
-	public Boolean isVirtual() {
-		return Boolean.TRUE;
-	}
+    @Override
+    public Boolean isVirtual() {
+        return Boolean.TRUE;
+    }
 
 }

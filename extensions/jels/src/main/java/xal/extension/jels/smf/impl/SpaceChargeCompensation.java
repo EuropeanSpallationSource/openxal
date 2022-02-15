@@ -19,7 +19,6 @@ package xal.extension.jels.smf.impl;
 
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.smf.AcceleratorNode;
@@ -32,17 +31,18 @@ import xal.smf.impl.qualify.ElementTypeManager;
  * @author Natalia Milas <natalia.milas@esss.se>
  */
 public class SpaceChargeCompensation extends AcceleratorNode {
+
     /*
      *  Constants
      */
-    public static final String s_strType = "SCC";
+    public static final String TYPE = "SCC";
 
-    public static final String N2FLOW_RB_HANDLE = "n2flowRB";    
+    public static final String N2FLOW_RB_HANDLE = "n2flowRB";
 
     private Channel n2flowRC = null;
     public static final String N2FLOW_SET_HANDLE = "n2flowS";
     private Channel n2flowSC = null;
-    
+
     public final AccessibleProperty n2flow = new AccessibleProperty("n2flow", N2FLOW_RB_HANDLE, N2FLOW_SET_HANDLE);
 
     static {
@@ -53,7 +53,7 @@ public class SpaceChargeCompensation extends AcceleratorNode {
      * Register type for qualification
      */
     private static void registerType() {
-        ElementTypeManager.defaultManager().registerTypes(SpaceChargeCompensation.class, s_strType);
+        ElementTypeManager.defaultManager().registerTypes(SpaceChargeCompensation.class, TYPE);
     }
 
     /**
@@ -63,7 +63,7 @@ public class SpaceChargeCompensation extends AcceleratorNode {
      */
     @Override
     public String getType() {
-        return s_strType;
+        return TYPE;
     }
 
     /**
@@ -83,7 +83,7 @@ public class SpaceChargeCompensation extends AcceleratorNode {
     /*
      *  Process variable Gets 
      */
-    public double getN2Flow() throws ConnectionException, GetException {
+    public double getN2Flow() throws GetException {
         n2flowRC = lazilyGetAndConnect(N2FLOW_RB_HANDLE, n2flowRC);
         return n2flowRC.getValDbl();
     }
@@ -91,7 +91,7 @@ public class SpaceChargeCompensation extends AcceleratorNode {
     /*
      *  Process variable Puts 
      */
-    public void setN2Flow(double dblVal) throws ConnectionException, PutException {
+    public void setN2Flow(double dblVal) throws PutException {
         n2flowSC = lazilyGetAndConnect(N2FLOW_SET_HANDLE, n2flowSC);
         n2flowSC.putVal(dblVal);
     }

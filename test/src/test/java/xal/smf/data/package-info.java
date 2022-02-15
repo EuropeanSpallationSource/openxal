@@ -9,6 +9,6 @@
  *
  *
  * @author Christopher K. Allen
- * @since  Jun 1, 2015
+ * @since Jun 1, 2015
  */
 package xal.smf.data;

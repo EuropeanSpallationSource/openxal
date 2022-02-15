@@ -4,13 +4,13 @@
  * Created on August 11, 2002, 8:43 AM
  *
  */
-
 package xal.model.elem;
-
-
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import xal.model.IAlgorithm;
 import xal.model.IComposite;
@@ -20,182 +20,183 @@ import xal.model.ModelException;
 import xal.model.alg.Tracker;
 import xal.sim.scenario.LatticeElement;
 import xal.smf.attr.AlignmentBucket;
-import xal.tools.beam.IConstants;
+import xal.tools.beam.Constants;
 import xal.tools.beam.PhaseMap;
-import xal.tools.beam.PhaseMatrix;
-import xal.tools.beam.PhaseVector;
 import xal.tools.math.r3.R3;
 
-
-
 /**
- * Convenience abstract base class for constructing XAL modeling elements.
- * This class implements many of the general methods for the 
- * <code>IElement</code> interface that are not element specific.
+ * Convenience abstract base class for constructing XAL modeling elements. This
+ * class implements many of the general methods for the <code>IElement</code>
+ * interface that are not element specific.
  *
- * @author  Christopher Allen
+ * @author Christopher Allen
  * @author Craig McChesney
  */
-
 public abstract class Element implements IElement {
 
-    
+    private static final Logger LOGGER = Logger.getLogger(Element.class.getName());
+
     /*
      *  Global Attributes
      */
-    
-    /** Global index counter for object identifiers */
-    private static  int     s_cntInstances;
-    
-    
+    /**
+     * Global index counter for object identifiers
+     */
+    private static int cntInstances;
+
     /*
      *  Class loader initialization
      */
     static {
-        s_cntInstances = 0;
-    };
-    
-    
+        cntInstances = 0;
+    }
+
     /*
      *  Local Attributes
      */
+    /**
+     * internal unique identifier of element
+     */
+    private int intUID;
 
-	/** internal unique identifier of element */
-    private int         m_intUID;
-    
-    /** the element type identifier */
-    private String      m_strType;
-    
-    /** modeling element string identifier (not necessarily unique) */
-    private String      m_strId;
-    
-    /** Identifier string of the model hardware node */
-    private String      strSmfId;
-    
-    /** the parent composite structure that owns this element */
-    private IComposite  cpsParent;
-    
+    /**
+     * the element type identifier
+     */
+    private String strType;
+
+    /**
+     * modeling element string identifier (not necessarily unique)
+     */
+    private String strId;
+
+    /**
+     * Identifier string of the model hardware node
+     */
+    private String strSmfId;
+
+    /**
+     * the parent composite structure that owns this element
+     */
+    private IComposite cpsParent;
+
     //  sako
     //position in s (m)
-    /** This is the center position of the element with the lattice - CKA */
-    private double      dblPos;
-    
-    /** total length of the node before it was sliced by scenario generator */
-    protected double m_dblNodeLen = 0.0;
-    /** position of the node before it was sliced by scenario generator */
-    protected double m_dblNodePos = 0.0;
-    
-    
+    /**
+     * This is the center position of the element with the lattice - CKA
+     */
+    private double dblPos;
+
+    /**
+     * total length of the node before it was sliced by scenario generator
+     */
+    protected double dblNodeLen = 0.0;
+    /**
+     * position of the node before it was sliced by scenario generator
+     */
+    protected double dblNodePos = 0.0;
+
     //sako closeElements (for fringe field calculations)
-    /** 
+    /**
      * This is a container of nearest-neighbor elements used for computing
      * transfer maps in the presence of permanent magnet quadrupoles.
      */
     private ArrayList<Element> closeElements = null;
-  
-    
+
     //hs alignment
     private double alignx = 0.0;
     private double aligny = 0.0;
     private double alignz = 0.0;
-    
+
     private double phix = 0.0;
     private double phiy = 0.0;
     private double phiz = 0.0;
-    
-  
-    
+
     /*
      *  Class loader initialization
      */
     static {
-        s_cntInstances = 0;
-    };
-    
-    
+        cntInstances = 0;
+    }
+
     /*
      * Initialization
      */
-                
     /**
-     *  Creates a new instance of Element
+     * Creates a new instance of Element
      *
-     *  @param  strType     type identifier of the element
+     * @param strType type identifier of the element
      */
-    public Element(String strType)    {
+    protected Element(String strType) {
         this(strType, "NULLID");
-    };
-    
+    }
+
     /**
-     *  Creates a new instance of Element
+     * Creates a new instance of Element
      *
-     *  @param  strType     type identifier of the element
-     *  @param  strId       string identifier of the element
+     * @param strType type identifier of the element
+     * @param strId string identifier of the element
      */
-    public Element(String strType, String strId)    {
-        this.m_intUID  = s_cntInstances++;
-        this.m_strType = strType;
-        this.m_strId   = strId;
+    protected Element(String strType, String strId) {
+        this.intUID = cntInstances++;
+        this.strType = strType;
+        this.strId = strId;
         this.strSmfId = "";
         this.dblPos = 0.0;
         this.cpsParent = null;
-    };
-    
+    }
 
     /**
-     *  Set the string identifier for the element.
+     * Set the string identifier for the element.
      *
-     *  @param  strId       new string identifier for element
+     * @param strId new string identifier for element
      */
     public void setId(String strId) {
-        m_strId = strId;
-    };
-    
+        this.strId = strId;
+    }
+
     /**
-     * Sets the string identifier of the hardware node which this
-     * element models.  Node that this element may only model part
-     * of the underlying hardware node or simply some aspect of it.
-     * Thus, this is not a unique value amount all modeling elements.
-     * 
-     * @param strSmfId  identifier for the modeled hardware node (SMF object)
+     * Sets the string identifier of the hardware node which this element
+     * models. Node that this element may only model part of the underlying
+     * hardware node or simply some aspect of it. Thus, this is not a unique
+     * value amount all modeling elements.
+     *
+     * @param strSmfId identifier for the modeled hardware node (SMF object)
      *
      * @author Christopher K. Allen
-     * @since  Sep 2, 2014
+     * @since Sep 2, 2014
      */
     public void setHardwareNodeId(String strSmfId) {
         this.strSmfId = strSmfId;
     }
 
     /**
-     * Set the center position of the element with the containing
-     * lattice.
-     * 
-     * @param dblPos    center position along the design trajectory (meters) 
+     * Set the center position of the element with the containing lattice.
+     *
+     * @param dblPos center position along the design trajectory (meters)
      */
     public void setPosition(double dblPos) {
         this.dblPos = dblPos;
     }
-    
+
     /**
      * Set the alignment parameters all at once.
-     * 
-     * @param vecAlign  (dx,dy,dz)
-     * 
+     *
+     * @param vecAlign (dx,dy,dz)
+     *
      * @author Christopher K. Allen
      */
-    public void setAlign(R3 vecAlign)    {
+    public void setAlign(R3 vecAlign) {
         alignx = vecAlign.getx();
         aligny = vecAlign.gety();
         alignz = vecAlign.getz();
     }
-    
-    
+
     /**
      * Set the horizontal misalignment
-     * 
-     * @param x     misalignment (in m)
      *
-     * @since  Dec 17, 2014   by Christopher K. Allen
+     * @param x misalignment (in m)
+     *
+     * @since Dec 17, 2014 by Christopher K. Allen
      */
     public void setAlignX(double x) {
         alignx = x;
@@ -203,10 +204,10 @@ public abstract class Element implements IElement {
 
     /**
      * Set the vertical misalignment
-     * 
-     * @param y     misalignment (in m)
      *
-     * @since  Dec 17, 2014   by Christopher K. Allen
+     * @param y misalignment (in m)
+     *
+     * @since Dec 17, 2014 by Christopher K. Allen
      */
     public void setAlignY(double y) {
         aligny = y;
@@ -214,35 +215,33 @@ public abstract class Element implements IElement {
 
     /**
      * Set the longitudinal misalignment
-     * 
-     * @param z     misalignment (in m)
      *
-     * @since  Dec 17, 2014   by Christopher K. Allen
+     * @param z misalignment (in m)
+     *
+     * @since Dec 17, 2014 by Christopher K. Allen
      */
     public void setAlignZ(double z) {
         alignz = z;
     }
 
-    
     /*
      *  Property Queries
      */
-    
-    /** 
-     *  Return the internal class unique identifier of this element.
+    /**
+     * Return the internal class unique identifier of this element.
      *
-     *  @return     the unique identifier of this object
+     * @return the unique identifier of this object
      */
-    public int  getUID()  { 
-        return m_intUID; 
-    };
-    
+    public int getUID() {
+        return intUID;
+    }
+
     /**
      * Get the horizontal misalignment
-     * 
-     * @return  the misalignment (in meters)
      *
-     * @since  Dec 17, 2014   by Christopher K. Allen
+     * @return the misalignment (in meters)
+     *
+     * @since Dec 17, 2014 by Christopher K. Allen
      */
     public double getAlignX() {
         return alignx;
@@ -250,26 +249,26 @@ public abstract class Element implements IElement {
 
     /**
      * Get the vertical misalignment
-     * 
-     * @return  the misalignment (in meters)
      *
-     * @since  Dec 17, 2014   by Christopher K. Allen
+     * @return the misalignment (in meters)
+     *
+     * @since Dec 17, 2014 by Christopher K. Allen
      */
     public double getAlignY() {
         return aligny;
     }
-    
+
     /**
      * Get the longitudinal misalignment
-     * 
-     * @return  the misalignment (in meters)
      *
-     * @since  Dec 17, 2014   by Christopher K. Allen
+     * @return the misalignment (in meters)
+     *
+     * @since Dec 17, 2014 by Christopher K. Allen
      */
     public double getAlignZ() {
         return alignz;
     }
-        
+
     public double getPhiX() {
         return phix;
     }
@@ -292,86 +291,24 @@ public abstract class Element implements IElement {
 
     public void setPhiZ(double phiz) {
         this.phiz = phiz;
-    };
+    }
 
-    
-    
     /*
      * Operations
      */
-    
     /**
      * Add an element to the list of nearest neighbor elements used when
      * considering the effects of PMQs
-     * 
-     * @param closeElem     an adjacent element
+     *
+     * @param closeElem an adjacent element
      */
     public void addCloseElements(Element closeElem) {
         if (closeElements == null) {
-            closeElements = new ArrayList<Element>();
+            closeElements = new ArrayList<>();
         }
         closeElements.add(closeElem);
     }
-    
-    /**
-     * 
-     * Removed in Jan 2019 - Natalia Milas
-     * 
-     * <h2>Add Displacement Error to Transfer Matrix</h2>
-     * <p>
-     * Method to add the effects of a spatially displaced to the
-     * beamline element represented by the given 
-     * transfer matrix.  The returned matrix is the
-     * original transfer matrix conjugated by the displacement
-     * matrix representing the displacement vector <b>&Delta;r</b>
-     * <br/>
-     * <br/>
-     * &nbsp; <b>&Delta;r</b> &equiv; (<i>dx,dy,dz</i>).
-     * <br/>
-     * </p>
-     * <p>
-     * <strong>NOTES</strong>: (H. SAKO)
-     * <br/>
-     * &middot; added alignment error in sigma matrix
-     * </p>
-     * 
-     * @param   matPhi      transfer matrix <b>&Phi;</b> to be processed
-     * 
-     * @return  transfer matrix <b>&Phi;</b> after applying displacement
-     * 
-     * @author  Hiroyuki Sako
-     * @author  Christopher K. Allen
-     * 
-     * @see PhaseMatrix
-     * @see PhaseMatrix#translation(PhaseVector)
-     * 
-     * @since Feb 20, 2009, version 2
-     */
-    /*protected PhaseMatrix applyAlignError(PhaseMatrix matPhi) {
-    	double dx = getAlignX();
-        double dy = getAlignY();
-        double dz = getAlignZ();
-         
-        if ((dx != 0)||(dy != 0)||(dz !=0)) {
-             PhaseMatrix T  = PhaseMatrix.identity();
-             PhaseMatrix Ti = PhaseMatrix.identity();
-             
-             T.setElem(IND.X,IND.HOM, -dx);
-             T.setElem(IND.Y,IND.HOM, -dy);
-             T.setElem(IND.Z,IND.HOM, -dz);
-             
-             Ti.setElem(IND.X,IND.HOM, dx);
-             Ti.setElem(IND.Y,IND.HOM, dy);
-             Ti.setElem(IND.Z,IND.HOM, dz);
-             
-             PhaseMatrix matPhiDspl = Ti.times(matPhi).times(T);
-             
-             return matPhiDspl;
-             
-        } 
 
-        return matPhi;
-	}
     /*
      
     /**
@@ -394,104 +331,101 @@ public abstract class Element implements IElement {
      * 
      * @author Christopher K. Allen
      */
-    public double  compProbeLocation(IProbe probe) {
-        
-        double lenElem = this.getLength();          // element length
-        double sCenter = this.getLatticePosition(); // center position w/in lattice
-        
-        double sProbe  = probe.getPosition();   // probe position within lattice
-        
-        double sElem = sProbe - (sCenter - lenElem/2.0);
-        
-        return sElem;
+    public double compProbeLocation(IProbe probe) {
+
+        // element length
+        double lenElem = this.getLength();
+        // center position w/in lattice
+        double sCenter = this.getLatticePosition();
+
+        // probe position within lattice
+        double sProbe = probe.getPosition();
+
+        return sProbe - (sCenter - lenElem / 2.0);
     }
-    
-    
+
     //
     // Methods for PMQ Support
     //
-    
     /**
-     * Return the list of nearest adjacent elements to this element.
-     * THis is used primarily in permanent magnet quadrupole considerations.
-     * 
-     * @return  List of adjacent modeling elements
+     * Return the list of nearest adjacent elements to this element. THis is
+     * used primarily in permanent magnet quadrupole considerations.
+     *
+     * @return List of adjacent modeling elements
      */
-    public ArrayList<Element> getCloseElements() {
+    public List<Element> getCloseElements() {
         return closeElements;
     }
-    
-    /** 
-     * Compute the time the probe <code>probe</code> spends drifting a
-     * a distance <code>dblLen</code>.
-     *  
-     * @param   probe       interface to drifting probe
-     * @param   dblLen      length of drift in <b>meters</b>  
-     * 
-     * @return              time interval during drift in <b>seconds</b>
-     */
-    
-    public double compDriftingTime(IProbe probe, double dblLen) {
 
-        double dblTime = 0.0;                // the time interval
-        double dblBeta = probe.getBeta();    // normalized probe velocity
-     
-        dblTime = dblLen / (IConstants.LightSpeed * dblBeta);
-        
-        return dblTime;
+    /**
+     * Compute the time the probe <code>probe</code> spends drifting a a
+     * distance <code>dblLen</code>.
+     *
+     * @param probe interface to drifting probe
+     * @param dblLen length of drift in <strong>meters</strong>
+     *
+     * @return time interval during drift in <strong>seconds</strong>
+     */
+    public double compDriftingTime(IProbe probe, double dblLen) {
+        // normalized probe velocity
+        double dblBeta = probe.getBeta();
+
+        return dblLen / (Constants.LIGHT_SPEED * dblBeta);
     }
-    
-    
+
     /*
      *  IComponent Interface
      */
-    
     /**
-     *  Return the element type identifier
+     * Return the element type identifier
      *
-     *  @return     element type string
+     * @return element type string
      */
     @Override
-    public String   getType()   { return m_strType; };
-    
+    public String getType() {
+        return strType;
+    }
+
     /**
-     *  Returns the string identifier for this element.
+     * Returns the string identifier for this element.
      *
-     *  @return     string identifier
+     * @return string identifier
      */
     @Override
-    public String   getId()     { return m_strId; };
-    
+    public String getId() {
+        return strId;
+    }
+
     /**
-     * Returns the string identifier of the hardware node which this
-     * element models.  Note that the element may model only a 
-     * portion of the hardware object or simply an aspect of it.
-     * Thus, this is not a unique values among modeling elements.
-     * 
-     * @return      the identifier string of the hardware this element models
+     * Returns the string identifier of the hardware node which this element
+     * models. Note that the element may model only a portion of the hardware
+     * object or simply an aspect of it. Thus, this is not a unique values among
+     * modeling elements.
+     *
+     * @return the identifier string of the hardware this element models
      *
      * @author Christopher K. Allen
-     * @since  Sep 2, 2014
+     * @since Sep 2, 2014
      */
     @Override
-    public String   getHardwareNodeId() {
+    public String getHardwareNodeId() {
         return this.strSmfId;
     }
 
     /**
      * Conversion method to be provided by the user
-     * 
+     *
      * @param latticeElement the SMF node to convert
      */
     @Override
     public void initializeFrom(LatticeElement latticeElement) {
-        String  strElemId = latticeElement.getModelingElementId();
-        String  strSmfId  = latticeElement.getHardwareNode().getId();
-        
-        setId( strElemId != null ? strElemId : strSmfId);
-        setHardwareNodeId(strSmfId);
+        String elemId = latticeElement.getModelingElementId();
+        String smfId = latticeElement.getHardwareNode().getId();
+
+        setId(elemId != null ? elemId : smfId);
+        setHardwareNodeId(smfId);
         setPosition(latticeElement.getCenterPosition());
-        
+
         AlignmentBucket alignmentBucket = latticeElement.getHardwareNode().getAlign();
         if (alignmentBucket != null) {
             setAlignX(alignmentBucket.getX());
@@ -502,81 +436,75 @@ public abstract class Element implements IElement {
             setPhiY(alignmentBucket.getYaw());
             setPhiZ(alignmentBucket.getRoll());
         }
-        
-        m_dblNodeLen = latticeElement.getHardwareNode().getLength();
-        m_dblNodePos = latticeElement.getHardwareNode().getPosition();
-        
-//        // CKA: Added to include hardware ID attribute for the new element.
-//        //   This is bound to ScenarioGenerator#collectElements(). 
-//        //   If "ELEMENT_CENTER" is changed you must modify both!
-//        if ( this instanceof Marker && 
-//             this.getId().startsWith("ELEMENT_CENTER")
-//             )
-//            setHardwareNodeId(this.getId().replace("ELEMENT_SEQUENCE:", "") );
+
+        dblNodeLen = latticeElement.getHardwareNode().getLength();
+        dblNodePos = latticeElement.getHardwareNode().getPosition();
     }
-   
+
     /**
-     *  Return the length of this element.  Derived class must
-     *  implement this because it is undetermined whether or not this is a thin
-     *  or thick element.
+     * Return the length of this element. Derived class must implement this
+     * because it is undetermined whether or not this is a thin or thick
+     * element.
      */
     @Override
     public abstract double getLength();
-    
+
     /**
      * Return the center position of the element along the design trajectory.
      * This is the position with the containing lattice.
-     * 
-     * @return  center position of the element (meters)
+     *
+     * @return center position of the element (meters)
      */
     @Override
     public double getPosition() {
         return dblPos;
     }
-    
 
     /**
-     * Returns the total length of the node, before the element was sliced by scenario generator
+     * Returns the total length of the node, before the element was sliced by
+     * scenario generator
+     *
      * @return original node length
      */
     public double getNodeLen() {
-        return m_dblNodeLen;
+        return dblNodeLen;
     }
 
     /**
-     * Returns the position of the node, before the element was sliced by scenario generator
+     * Returns the position of the node, before the element was sliced by
+     * scenario generator
+     *
      * @return original node length
      */
     public double getNodePos() {
-        return m_dblNodePos;
+        return dblNodePos;
     }
-    
+
     /**
      *
      * @see xal.model.IComponent#getLatticePosition()
      *
-     * @since  Dec 3, 2015,  Christopher K. Allen
+     * @since Dec 3, 2015, Christopher K. Allen
      */
     @Override
     public double getLatticePosition() {
-        if (this.getParent() == null)
+        if (this.getParent() == null) {
             return this.getPosition();
-        
-        double  dblLocPos = this.getPosition();
-        double  dblParPos = this.getParent().getLatticePosition();
-        double  dblParLen = this.getParent().getLength();
-        double  dblGblPos = (dblParPos - dblParLen/2.0) + dblLocPos;
-        
-        return dblGblPos;
+        }
+
+        double dblLocPos = this.getPosition();
+        double dblParPos = this.getParent().getLatticePosition();
+        double dblParLen = this.getParent().getLength();
+        return (dblParPos - dblParLen / 2.0) + dblLocPos;
     }
 
     /**
-     * @return  returns the composite structure owning this element, 
-     *          or <code>null</code> if this component is isolated
+     * @return returns the composite structure owning this element, or
+     * <code>null</code> if this component is isolated
      *
      * @see xal.model.IComponent#getParent()
      *
-     * @since  Jan 22, 2015   by Christopher K. Allen
+     * @since Jan 22, 2015 by Christopher K. Allen
      */
     @Override
     public IComposite getParent() {
@@ -587,7 +515,7 @@ public abstract class Element implements IElement {
      *
      * @see xal.model.IComponent#setParent(xal.model.IComposite)
      *
-     * @since  Jan 22, 2015   by Christopher K. Allen
+     * @since Jan 22, 2015 by Christopher K. Allen
      */
     @Override
     public void setParent(IComposite cpsParent) {
@@ -595,111 +523,42 @@ public abstract class Element implements IElement {
         this.cpsParent.setDirty(this);
     }
 
-    /** 
+    /**
      * <p>
-     * Override of {@link xal.model.IComponent#propagate(xal.model.IProbe, double)}
-     * Propagates the Probe object through this element based on the associated algorithm.
-     * </p>  
-     *  
-     *  <p>NOTE: CKA
-     *  <br>
-     *  The position of the probe within the element appears to be kept as a
-     *  field of the algorithm object.  I am not exactly sure of any 
-     *  side-effects of this implementation when using the
-     *  <code>{@link xal.model.alg.Tracker#propagate(IProbe, IElement)}</code> of the 
-     *  <code>{@link xal.model.alg.Tracker}</code> class.  Careful when modifying.
-     *  </p>
+     * Override of
+     * {@link xal.model.IComponent#propagate(xal.model.IProbe, double)}
+     * Propagates the Probe object through this element based on the associated
+     * algorithm.
+     * </p>
      *
-     *  @param  probe       probe object to propagate
-     *  @param  pos         I think it is position of the probe within this element
+     * <p>
+     * NOTE: CKA
+     * <br>
+     * The position of the probe within the element appears to be kept as a
+     * field of the algorithm object. I am not exactly sure of any side-effects
+     * of this implementation when using the
+     * <code>{@link xal.model.alg.Tracker#propagate(IProbe, IElement)}</code> of
+     * the <code>{@link xal.model.alg.Tracker}</code> class. Careful when
+     * modifying.
+     * </p>
      *
-     *  @exception  ModelException    error occurred during propagation
-     * 
-     *  @see xal.model.IComponent#propagate(xal.model.IProbe, double)
-     *  @see xal.model.alg.Tracker#propagate(IProbe, IElement)
+     * @param probe probe object to propagate
+     * @param pos I think it is position of the probe within this element
+     *
+     * @exception ModelException error occurred during propagation
+     *
+     * @see xal.model.IComponent#propagate(xal.model.IProbe, double)
+     * @see xal.model.alg.Tracker#propagate(IProbe, IElement)
      */
     @Override
     public void propagate(IProbe probe, double pos) throws ModelException {
-        
-        IAlgorithm      alg;    // algorithm for the probe
-        
-        alg = probe.getAlgorithm();
-        if (alg instanceof Tracker) {
-            Tracker tracker = (Tracker)alg;
-//          System.out.println("tracker.setElemPosition to "+pos);
-            
-            // The algorithm "element position" is also set in Tracker#advanceProbe() ??!!
-            tracker.setElemPosition(pos);
-        }
-        alg.propagate(probe, this);
-    };
-    
-    /** 
-     * <p>
-     * Override of {@link xal.model.IComponent#propagate(xal.model.IProbe, double)}
-     * Propagates the Probe object through this element based on the associated algorithm.
-     * </p>  
-     *
-     *  @param  probe       probe object to propagate
-     *
-     *  @exception  ModelException    error occurred during propagation
-     *  
-     *  @see xal.model.IComponent#propagate(xal.model.IProbe, double)
-     */
-    @Override
-    public void propagate(IProbe probe) throws ModelException {
-        
-        IAlgorithm      alg;    // algorithm for the probe
-        
-        alg = probe.getAlgorithm();
-        if (alg instanceof Tracker) {
-            Tracker tracker = (Tracker)alg;
 
-            // The algorithm "element position" is also set in Tracker#advanceProbe() ??!!
-            tracker.setElemPosition(0);
-        }
-        alg.propagate(probe, this);
-    };
-    
-    /** 
-     *  <p>
-     *  Back propagates the Probe object through this element 
-     *  based on the associated algorithm.
-     *  </p>
-     * <p>
-     * <strong>NOTES</strong>: CKA
-     *  <br>
-     *  The position of the probe within the element appears to be kept as a
-     *  field of the algorithm object.  I am not exactly sure of any 
-     *  side-effects of this implementation when using the
-     *  <code>{@link Tracker#propagate(IProbe, IElement)}</code> of the 
-     *  <code>{@link Tracker}</code> class.  Careful when modifying.
-     * <br>
-     * &middot; Support for backward propagation
-     * February, 2009.
-     * <br>
-     * &middot; You must use the <em>proper algorithm</em> object
-     * for this method to work correctly!
-     * </p>
-     * 
-     *
-     *  @param  probe       probe object to propagate
-     *  @param  pos         I think it is position of the probe within this element
-     *
-     *  @exception  ModelException    error occurred during propagation
-     * 
-     *  @see xal.model.IComponent#propagate(xal.model.IProbe, double)
-     *  @see xal.model.alg.Tracker#propagate(IProbe, IElement)
-     */
-    @Override
-    public void backPropagate(IProbe probe, double pos) throws ModelException {
-        
-        IAlgorithm      alg;    // algorithm for the probe
-        
+        // algorithm for the probe
+        IAlgorithm alg;
+
         alg = probe.getAlgorithm();
         if (alg instanceof Tracker) {
-            Tracker tracker = (Tracker)alg;
-            System.out.println("tracker.setElemPosition to "+pos);
+            Tracker tracker = (Tracker) alg;
 
             // The algorithm "element position" is also set in Tracker#advanceProbe() ??!!
             tracker.setElemPosition(pos);
@@ -707,36 +566,111 @@ public abstract class Element implements IElement {
         alg.propagate(probe, this);
     }
 
-    /** 
+    /**
      * <p>
-     * Back propagates the Probe object through this element based on the 
+     * Override of
+     * {@link xal.model.IComponent#propagate(xal.model.IProbe, double)}
+     * Propagates the Probe object through this element based on the associated
+     * algorithm.
+     * </p>
+     *
+     * @param probe probe object to propagate
+     *
+     * @exception ModelException error occurred during propagation
+     *
+     * @see xal.model.IComponent#propagate(xal.model.IProbe, double)
+     */
+    @Override
+    public void propagate(IProbe probe) throws ModelException {
+        // algorithm for the probe
+        IAlgorithm alg;
+
+        alg = probe.getAlgorithm();
+        if (alg instanceof Tracker) {
+            Tracker tracker = (Tracker) alg;
+
+            // The algorithm "element position" is also set in Tracker#advanceProbe() ??!!
+            tracker.setElemPosition(0);
+        }
+        alg.propagate(probe, this);
+    }
+
+    /**
+     * <p>
+     * Back propagates the Probe object through this element based on the
      * associated algorithm.
-     * </p>  
+     * </p>
      * <p>
      * <strong>NOTES</strong>: CKA
      * <br>
-     * &middot; Support for backward propagation
-     * February, 2009.
+     * The position of the probe within the element appears to be kept as a
+     * field of the algorithm object. I am not exactly sure of any side-effects
+     * of this implementation when using the
+     * <code>{@link Tracker#propagate(IProbe, IElement)}</code> of the
+     * <code>{@link Tracker}</code> class. Careful when modifying.
      * <br>
-     * &middot; You must use the <em>proper algorithm</em> object
-     * for this method to work correctly!
+     * &middot; Support for backward propagation February, 2009.
+     * <br>
+     * &middot; You must use the <em>proper algorithm</em> object for this
+     * method to work correctly!
      * </p>
-     * 
-     *  @param  probe       probe object to propagate
      *
-     *  @exception  ModelException    error occurred during propagation
-     *  
-     *  @see xal.model.IComponent#propagate(xal.model.IProbe, double)
+     *
+     * @param probe probe object to propagate
+     * @param pos I think it is position of the probe within this element
+     *
+     * @exception ModelException error occurred during propagation
+     *
+     * @see xal.model.IComponent#propagate(xal.model.IProbe, double)
+     * @see xal.model.alg.Tracker#propagate(IProbe, IElement)
+     */
+    @Override
+    public void backPropagate(IProbe probe, double pos) throws ModelException {
+
+        // algorithm for the probe
+        IAlgorithm alg;
+
+        alg = probe.getAlgorithm();
+        if (alg instanceof Tracker) {
+            Tracker tracker = (Tracker) alg;
+            LOGGER.log(Level.INFO, "tracker.setElemPosition to {0}", pos);
+
+            // The algorithm "element position" is also set in Tracker#advanceProbe() ??!!
+            tracker.setElemPosition(pos);
+        }
+        alg.propagate(probe, this);
+    }
+
+    /**
+     * <p>
+     * Back propagates the Probe object through this element based on the
+     * associated algorithm.
+     * </p>
+     * <p>
+     * <strong>NOTES</strong>: CKA
+     * <br>
+     * &middot; Support for backward propagation February, 2009.
+     * <br>
+     * &middot; You must use the <em>proper algorithm</em> object for this
+     * method to work correctly!
+     * </p>
+     *
+     * @param probe probe object to propagate
+     *
+     * @exception ModelException error occurred during propagation
+     *
+     * @see xal.model.IComponent#propagate(xal.model.IProbe, double)
      */
     @Override
     public void backPropagate(IProbe probe) throws ModelException {
-        
-        IAlgorithm      alg;    // algorithm for the probe
-        
+
+        // algorithm for the probe
+        IAlgorithm alg;
+
         alg = probe.getAlgorithm();
         if (alg instanceof Tracker) {
-            Tracker tracker = (Tracker)alg;
-    
+            Tracker tracker = (Tracker) alg;
+
             // set position at the exit of the element
             double pos = this.getLength();
 
@@ -746,106 +680,102 @@ public abstract class Element implements IElement {
         alg.propagate(probe, this);
     }
 
-    
     /*
      * IElement Interface
      */
-    
     /**
-     * Returns the time taken for the probe <code>probe</code> to propagate 
+     * Returns the time taken for the probe <code>probe</code> to propagate
      * through a subsection of the element with length <code>dblLen</code>.
-     * 
-     *  @param  probe   determine energy gain for this probe
-     *  @param  dblLen  length of subsection to calculate energy gain for
-     *  
-     *  @return         the elapsed time through section<bold>Units: seconds</bold> 
+     *
+     * @param probe determine energy gain for this probe
+     * @param dblLen length of subsection to calculate energy gain for
+     *
+     * @return the elapsed time through section<bold>Units: seconds</bold>
      */
+    @Override
     public abstract double elapsedTime(IProbe probe, double dblLen);
-    
-    /** 
-     *  Returns energy gain for <b>subsection</b> of this element of length 
-     *  <code>dblLen</code> for the specified given probe.
+
+    /**
+     * Returns energy gain for <strong>subsection</strong> of this element of
+     * length <code>dblLen</code> for the specified given probe.
      *
-     *  @param  probe   determine energy gain for this probe
+     * @param probe determine energy gain for this probe
      *
-     *  @return         the energy gain provided by this element <bold>Units: eV</bold> 
+     * @return the energy gain provided by this element <bold>Units: eV</bold>
      */
+    @Override
     public abstract double energyGain(IProbe probe, double dblLen);
 
     /**
-     * This is a kluge to make RF gaps work, since frequency is not defined for most
-     * modeling elements.  For such elements we simply return 0 phase advance.  For
-     * elements where frequency is defined, we can override this.
+     * This is a kluge to make RF gaps work, since frequency is not defined for
+     * most modeling elements. For such elements we simply return 0 phase
+     * advance. For elements where frequency is defined, we can override this.
      *
-     * @see xal.model.IElement#longitudinalPhaseAdvance(xal.model.IProbe, double)
+     * @see xal.model.IElement#longitudinalPhaseAdvance(xal.model.IProbe,
+     * double)
      *
      * @author Christopher K. Allen
-     * @since  Nov 23, 2014
+     * @since Nov 23, 2014
      */
-    public abstract double   longitudinalPhaseAdvance(IProbe probe, double dblLen);
+    @Override
+    public abstract double longitudinalPhaseAdvance(IProbe probe, double dblLen);
 
     /**
-     *  Compute the transfer matrix for <b>subsection</b> of this element of length 
-     *  <code>dblLen</code> for the specified given probe.  That is, this method should 
-     *  return the incremental transfer matrix.
+     * Compute the transfer matrix for <strong>subsection</strong> of this
+     * element of length <code>dblLen</code> for the specified given probe. That
+     * is, this method should return the incremental transfer matrix.
      *
-     *  @param  dblLen      length of sub-element
-     *  @param  probe       probe containing parameters for the sub-sectional transfer matrix
+     * @param dblLen length of sub-element
+     * @param probe probe containing parameters for the sub-sectional transfer
+     * matrix
      *
-     *  @return             transfer map for an element of length dblLen
+     * @return transfer map for an element of length dblLen
      *
-     *  @exception  ModelException    unable to compute transfer map
+     * @exception ModelException unable to compute transfer map
      *
-     *  @see    xal.model.IElement#transferMap(IProbe,double)
+     * @see xal.model.IElement#transferMap(IProbe,double)
      */
-    public abstract PhaseMap transferMap(IProbe probe, double dblLen) throws ModelException;   
+    @Override
+    public abstract PhaseMap transferMap(IProbe probe, double dblLen) throws ModelException;
 
 
     /*
      * Object Overrides
      */
-    
     /**
      *
      * @see java.lang.Object#toString()
      *
-     * @since  Jan 22, 2015   by Christopher K. Allen
+     * @since Jan 22, 2015 by Christopher K. Allen
      */
     @Override
     public String toString() {
-        StringBuffer    bufOut = new StringBuffer();
-        
-        bufOut.append("  Element - " + this.getId());
-        bufOut.append('\n');
-        
-        bufOut.append("  element type       : " + this.getType() );
+        StringBuilder bufOut = new StringBuilder();
+
+        bufOut.append("  Element - ").append(this.getId());
         bufOut.append('\n');
 
-        bufOut.append("  element UID        : " + this.getUID() );
+        bufOut.append("  element type       : ").append(this.getType());
         bufOut.append('\n');
 
-        bufOut.append("  element length     : " + this.getLength() );
+        bufOut.append("  element UID        : ").append(this.getUID());
+        bufOut.append('\n');
+
+        bufOut.append("  element length     : ").append(this.getLength());
         bufOut.append('\n');
 
         return bufOut.toString();
     }
 
-     
     /*
      *  Testing and Debugging
      */
-    
     /**
-     *  Dump current state and content to output stream.
+     * Dump current state and content to output stream.
      *
-     *  @param  os      output stream object
+     * @param os output stream object
      */
-    public void print(PrintWriter os)    {
-//        os.println("  Element - " + this.getId());
-//        os.println("  element type       : " + this.getType() );
-//        os.println("  element UID        : " + this.getUID() );
-//        os.println("  element length     : " + this.getLength() );
+    public void print(PrintWriter os) {
         os.println(this.toString());
-    };
-};
-
+    }
+}

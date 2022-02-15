@@ -31,9 +31,9 @@ public class FieldMapPoint {
     private double amplitudeFactorB = 1.0;
 
     // Electric field
-    private double Ex = 0;
-    private double Ey = 0;
-    private double Ez = 0;
+    private double ex = 0;
+    private double ey = 0;
+    private double ez = 0;
 
     // Derivatives of Ex
     private double dExdx = 0;
@@ -51,9 +51,9 @@ public class FieldMapPoint {
     private double dEzdz = 0;
 
     // Magnetic field
-    private double Bx = 0;
-    private double By = 0;
-    private double Bz = 0;
+    private double bx = 0;
+    private double by = 0;
+    private double bz = 0;
 
     // Derivatives of Bx
     private double dBxdx = 0;
@@ -68,14 +68,14 @@ public class FieldMapPoint {
     public FieldMapPoint() {
     }
 
-    public FieldMapPoint(double Ex, double Ey, double Ez, double dExdx, double dExdy, double dExdz,
+    public FieldMapPoint(double ex, double ey, double ez, double dExdx, double dExdy, double dExdz,
             double dEydx, double dEydy, double dEydz, double dEzdx, double dEzdy,
-            double dEzdz, double Bx, double By, double Bz, double dBxdx, double dBxdy,
+            double dEzdz, double bx, double by, double bz, double dBxdx, double dBxdy,
             double dBxdz, double dBydx, double dBydy, double dBydz) {
 
-        this.Ex = Ex;
-        this.Ey = Ey;
-        this.Ez = Ez;
+        this.ex = ex;
+        this.ey = ey;
+        this.ez = ez;
 
         this.dExdx = dExdx;
         this.dExdy = dExdy;
@@ -89,9 +89,9 @@ public class FieldMapPoint {
         this.dEzdy = dEzdy;
         this.dEzdz = dEzdz;
 
-        this.Bx = Bx;
-        this.By = By;
-        this.Bz = Bz;
+        this.bx = bx;
+        this.by = by;
+        this.bz = bz;
 
         this.dBxdx = dBxdx;
         this.dBxdy = dBxdy;
@@ -111,15 +111,15 @@ public class FieldMapPoint {
     }
 
     public double getEx() {
-        return Ex * amplitudeFactorE;
+        return ex * amplitudeFactorE;
     }
 
     public double getEy() {
-        return Ey * amplitudeFactorE;
+        return ey * amplitudeFactorE;
     }
 
     public double getEz() {
-        return Ez * amplitudeFactorE;
+        return ez * amplitudeFactorE;
     }
 
     public double getdExdx() {
@@ -159,15 +159,15 @@ public class FieldMapPoint {
     }
 
     public double getBx() {
-        return Bx * amplitudeFactorB;
+        return bx * amplitudeFactorB;
     }
 
     public double getBy() {
-        return By * amplitudeFactorB;
+        return by * amplitudeFactorB;
     }
 
     public double getBz() {
-        return Bz * amplitudeFactorB;
+        return bz * amplitudeFactorB;
     }
 
     public double getdBxdx() {
@@ -194,16 +194,16 @@ public class FieldMapPoint {
         return dBydz * amplitudeFactorB;
     }
 
-    public void setEx(double Ex) {
-        this.Ex = Ex;
+    public void setEx(double ex) {
+        this.ex = ex;
     }
 
-    public void setEy(double Ey) {
-        this.Ey = Ey;
+    public void setEy(double ey) {
+        this.ey = ey;
     }
 
-    public void setEz(double Ez) {
-        this.Ez = Ez;
+    public void setEz(double ez) {
+        this.ez = ez;
     }
 
     public void setdExdx(double dExdx) {
@@ -242,16 +242,16 @@ public class FieldMapPoint {
         this.dEzdz = dEzdz;
     }
 
-    public void setBx(double Bx) {
-        this.Bx = Bx;
+    public void setBx(double bx) {
+        this.bx = bx;
     }
 
-    public void setBy(double By) {
-        this.By = By;
+    public void setBy(double by) {
+        this.by = by;
     }
 
-    public void setBz(double Bz) {
-        this.Bz = Bz;
+    public void setBz(double bz) {
+        this.bz = bz;
     }
 
     public void setdBxdx(double dBxdx) {

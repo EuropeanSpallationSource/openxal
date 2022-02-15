@@ -46,7 +46,7 @@ class GetListener implements EventListener {
         doneSignal.countDown();
     }
 
-    public void await(long timeout, TimeUnit unit) throws InterruptedException {
-        doneSignal.await(timeout, unit);
+    public boolean await(long timeout, TimeUnit unit) throws InterruptedException {
+        return doneSignal.await(timeout, unit);
     }
 }

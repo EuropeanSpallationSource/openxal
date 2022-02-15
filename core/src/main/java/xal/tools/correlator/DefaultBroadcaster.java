@@ -7,33 +7,37 @@
  * Oak Ridge National Laboratory
  * Oak Ridge, TN 37830
  */
-
 package xal.tools.correlator;
 
 import xal.tools.messaging.MessageCenter;
 
-
 /**
- * DefaultBroadcaster immediately broadcasts every full correlation as they arrive from the bin agents. 
+ * DefaultBroadcaster immediately broadcasts every full correlation as they
+ * arrive from the bin agents.
  *
- * @author  tap
+ * @author tap
  */
-class DefaultBroadcaster<RecordType> extends AbstractBroadcaster<RecordType> {
-    /** Creates a new instance of Broadcaster */
-    public DefaultBroadcaster( final MessageCenter aLocalCenter ) {
-		super( aLocalCenter );
-	}
-	
-	
+class DefaultBroadcaster<T> extends AbstractBroadcaster<T> {
+
     /**
-     * Handle the BinListener event by immediately posting a correlation if the correlation has a full count.
-	 * @param sender The bin agent that published the new correlation.
-	 * @param correlation The new correlation.
+     * Creates a new instance of Broadcaster
      */
-    synchronized public void newCorrelation( final BinAgent<RecordType> sender, final Correlation<RecordType> correlation ) {
-        if ( correlation.numRecords() == fullCount ) {    // broadcast the correlation
-            postCorrelation( correlation );
+    public DefaultBroadcaster(final MessageCenter aLocalCenter) {
+        super(aLocalCenter);
+    }
+
+    /**
+     * Handle the BinListener event by immediately posting a correlation if the
+     * correlation has a full count.
+     *
+     * @param sender The bin agent that published the new correlation.
+     * @param correlation The new correlation.
+     */
+    @Override
+    public synchronized void newCorrelation(final BinAgent<T> sender, final Correlation<T> correlation) {
+        // broadcast the correlation
+        if (correlation.numRecords() == fullCount) {
+            postCorrelation(correlation);
         }
     }
 }
-

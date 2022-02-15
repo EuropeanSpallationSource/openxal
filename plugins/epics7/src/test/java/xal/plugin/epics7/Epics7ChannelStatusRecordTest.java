@@ -17,6 +17,8 @@
  */
 package xal.plugin.epics7;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.epics.pvdata.factory.PVDataFactory;
 import org.epics.pvdata.factory.StandardFieldFactory;
 import org.epics.pvdata.pv.PVDataCreate;
@@ -39,6 +41,8 @@ import static xal.plugin.epics7.Epics7ChannelStatusRecord.STATUS_FIELD_NAME;
  */
 public class Epics7ChannelStatusRecordTest {
 
+    private static final Logger LOGGER = Logger.getLogger(Epics7ChannelStatusRecordTest.class.getName());
+
     private PVStructure pvStructure;
     String properties = ALARM_FIELD + "," + TIMESTAMP_FIELD + ","
             + DISPLAY_FIELD + "," + CONTROL_FIELD;
@@ -51,7 +55,7 @@ public class Epics7ChannelStatusRecordTest {
         pvStructure.getStructureField(ALARM_FIELD_NAME).getIntField(STATUS_FIELD_NAME).put(1);
         pvStructure.getStructureField(ALARM_FIELD_NAME).getIntField(SEVERITY_FIELD_NAME).put(2);
 
-        Epics7ChannelStatusRecord epics7ChannelStatusRecord = new Epics7ChannelStatusRecord(pvStructure, "Test_Channel");
+        Epics7ChannelStatusRecord epics7ChannelStatusRecord = new Epics7ChannelStatusRecord(pvStructure);
         return epics7ChannelStatusRecord;
     }
 
@@ -60,7 +64,7 @@ public class Epics7ChannelStatusRecordTest {
      */
     @Test
     public void testStatus() {
-        System.out.println("status");
+        LOGGER.log(Level.INFO, "status");
         Epics7ChannelStatusRecord instance = newEpics7ChannelStatusRecord();
         int expResult = 1;
         int result = instance.status();
@@ -72,7 +76,7 @@ public class Epics7ChannelStatusRecordTest {
      */
     @Test
     public void testSeverity() {
-        System.out.println("severity");
+        LOGGER.log(Level.INFO, "severity");
         Epics7ChannelStatusRecord instance = newEpics7ChannelStatusRecord();
         int expResult = 2;
         int result = instance.severity();
@@ -84,7 +88,7 @@ public class Epics7ChannelStatusRecordTest {
      */
     @Test
     public void testToString() {
-        System.out.println("toString");
+        LOGGER.log(Level.INFO, "toString");
         Epics7ChannelStatusRecord instance = newEpics7ChannelStatusRecord();
         String expResult = ", status: 1, severity: 2";
         String result = instance.toString().substring(instance.toString().indexOf(','));

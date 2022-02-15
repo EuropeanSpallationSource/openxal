@@ -38,15 +38,15 @@ package eu.ess.bled;
  * Each {@link Subsystem} also has a {@link SubsystemType} which further
  * describes it. The type defines the group of {@link Subsystem}s that this
  * {@link Subsystem} belongs to, such as for instance vacuum or pump. The
- * {@link SubsystemType} defines also a part of the naming convention complient
+ * {@link SubsystemType} defines also a part of the naming convention compliant
  * name of this {@link Subsystem}. The {@link ProcessVariable} name that is
  * associated with this {@link Subsystem} is composed of the hierarchical
- * composition of the naming convetion complient name of the type and the
+ * composition of the naming convention compliant name of the type and the
  * instance name of this {@link Subsystem}.
  * </p>
  * <p>
- * Physical location of the {@link Subsystem} is defined by the Room
- * that this {@link Subsystem} is located in.
+ * Physical location of the {@link Subsystem} is defined by the Room that this
+ * {@link Subsystem} is located in.
  * </p>
  * <p>
  * Furthermore, {@link Subsystem}s can also be used to group devices or other
@@ -71,112 +71,114 @@ package eu.ess.bled;
  * {@link Subsystem} can have a link to a {@link ComponentInstance}, which
  * describes the actual physical component in the system, such as a physical
  * device installed in the accelerator.
- * 
+ *
  * @see For details on the name composition see ESS Naming Convention document.
  * @author <a href="mailto:jaka.bobnar@cosylab.com">Jaka Bobnar</a>
  */
 public class Subsystem implements BLEDEntity {
 
-	private static final long serialVersionUID = 3656417365837106137L;
-	private Integer id;
-	private String name;
-	private Subsystem parentSubsystem;
-	private Integer previousSubsystem;
-	private SubsystemType subsystemType;
-	private String description;
-	private Boolean active = true;
-	private String instanceName;
-	private Boolean virtual = false;
+    private static final long serialVersionUID = 3656417365837106137L;
+    private Integer id;
+    private String name;
+    private Subsystem parentSubsystem;
+    private Integer previousSubsystem;
+    private SubsystemType subsystemType;
+    private String description;
+    private Boolean active = true;
+    private String instanceName;
+    private Boolean virtual = false;
 
-	private static int nextid = 0;
-	
-	public Integer getId() {
-		if (id == null) id = nextid++;
-		return id;
-	}
+    private static int nextid = 0;
 
-	@SuppressWarnings("unused")
-	private void setId(Integer id) {
-		this.id = id;
-	}
+    public Integer getId() {
+        if (id == null) {
+            id = nextid++;
+        }
+        return id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    @SuppressWarnings("unused")
+    private void setId(Integer id) {
+        this.id = id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public Subsystem getParentSubsystem() {
-		return parentSubsystem;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public void setParentSubsystem(Subsystem parentSubsystem) {
-		this.parentSubsystem = parentSubsystem;
-	}
+    public Subsystem getParentSubsystem() {
+        return parentSubsystem;
+    }
 
-	public Integer getPreviousSubsystem() {
-		return previousSubsystem;
-	}
+    public void setParentSubsystem(Subsystem parentSubsystem) {
+        this.parentSubsystem = parentSubsystem;
+    }
 
-	public void setPreviousSubsystem(Integer previousSubsystem) {
-		this.previousSubsystem = previousSubsystem;
-	}
+    public Integer getPreviousSubsystem() {
+        return previousSubsystem;
+    }
 
-	public SubsystemType getSubsystemType() {
-		return subsystemType;
-	}
+    public void setPreviousSubsystem(Integer previousSubsystem) {
+        this.previousSubsystem = previousSubsystem;
+    }
 
-	public void setSubsystemType(SubsystemType subsystemType) {
-		this.subsystemType = subsystemType;
-	}
+    public SubsystemType getSubsystemType() {
+        return subsystemType;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public void setSubsystemType(SubsystemType subsystemType) {
+        this.subsystemType = subsystemType;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public Boolean isActive() {
-		return active;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public void setActive(Boolean active) {
-		this.active = active;
-	}
+    public Boolean isActive() {
+        return active;
+    }
 
-	public String getInstanceName() {
-		return instanceName;
-	}
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
 
-	public void setInstanceName(String instanceName) {
-		this.instanceName = instanceName;
-	}
+    public String getInstanceName() {
+        return instanceName;
+    }
 
-	public Boolean isVirtual() {
-		return virtual;
-	}
+    public void setInstanceName(String instanceName) {
+        this.instanceName = instanceName;
+    }
 
-	public void setVirtual(Boolean virtual) {
-		this.virtual = virtual;
-	}
+    public Boolean isVirtual() {
+        return virtual;
+    }
 
-	protected StringBuilder getValuesAsString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("name=");
-		sb.append(name);
-		sb.append(", instance_name=");
-		sb.append(instanceName);
-		sb.append(", description=");
-		sb.append(description);
-		return sb;
-	}
+    public void setVirtual(Boolean virtual) {
+        this.virtual = virtual;
+    }
 
-	@Override
-	public String toString() {
-		return "Subsystem: [" + getValuesAsString().toString() + "]";
-	}
+    protected StringBuilder getValuesAsString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("name=");
+        sb.append(name);
+        sb.append(", instance_name=");
+        sb.append(instanceName);
+        sb.append(", description=");
+        sb.append(description);
+        return sb;
+    }
+
+    @Override
+    public String toString() {
+        return "Subsystem: [" + getValuesAsString().toString() + "]";
+    }
 }

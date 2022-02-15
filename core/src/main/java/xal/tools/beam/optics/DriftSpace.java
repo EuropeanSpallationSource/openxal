@@ -8,26 +8,26 @@ package xal.tools.beam.optics;
 
 /**
  * This is a utility class for computing properties of drift spaces.
- * 
+ *
  * @author Christopher K. Allen
  */
 public class DriftSpace {
 
+    private DriftSpace() {
+        throw new IllegalStateException("Utility class");
+    }
 
     /**
-     * Compute the characteristic transfer matrix for a drift space 
-     * of length <code>l</code>.
-     * 
-     * @param l     length of the drift space (in <b>meters</b>)
-     * 
-     * @return      2x2 transfer matrix for a phase plane drift
+     * Compute the characteristic transfer matrix for a drift space of length
+     * <code>l</code>.
+     *
+     * @param l length of the drift space (in <strong>meters</strong>)
+     *
+     * @return 2x2 transfer matrix for a phase plane drift
      */
     public static double[][] transferDriftPlane(double l) {
-        double[][] arr0 = new double[][]
-            {   { 1.0, l }, 
-                { 0.0, 1.0 }
-            };
-     
-        return arr0;   
+        return new double[][]{
+            {1.0, l},
+            {0.0, 1.0}};
     }
 }

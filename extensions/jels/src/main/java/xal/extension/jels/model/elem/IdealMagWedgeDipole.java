@@ -6,10 +6,11 @@
  */
 package xal.extension.jels.model.elem;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.extension.jels.smf.impl.Bend;
 import xal.model.elem.ElectromagnetSeq;
 import xal.sim.scenario.LatticeElement;
-import xal.tools.math.r3.R3;
 
 /**
  * Represents a bending dipole magnet with arbitrary pole face angles. This is a
@@ -29,18 +30,19 @@ import xal.tools.math.r3.R3;
  */
 public class IdealMagWedgeDipole extends ElectromagnetSeq {
 
+    private static final Logger LOGGER = Logger.getLogger(IdealMagWedgeDipole.class.getName());
     /*
      *  Global Attributes
      */
     /**
      * string type identifier for all IdealMagSectorDipole objects
      */
-    public static final String s_strType = "IdealMagWedgeDipole";
+    public static final String TYPE = "IdealMagWedgeDipole";
 
     /**
      * storage to reserve for child components
      */
-    public static final int s_szReserve = 3;
+    public static final int SIZE_RESERVE = 3;
 
 
     /*
@@ -79,11 +81,11 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * @param strId instance identifier string
      */
     public IdealMagWedgeDipole(String strId) {
-        super(s_strType, strId, s_szReserve);
+        super(TYPE, strId, SIZE_RESERVE);
 
-        this.addChild(this.polEntr);
-        this.addChild(this.magBody);
-        this.addChild(this.polExit);
+        addChild(this.polEntr);
+        addChild(this.magBody);
+        addChild(this.polExit);
     }
 
     /**
@@ -99,9 +101,9 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
     public void setId(String strId) {
         super.setId(strId);
 
-        this.getMagBody().setId(strId + "Body");
-        this.getFaceEntr().setId(strId + "Entr");
-        this.getFaceExit().setId(strId + "Exit");
+        getMagBody().setId(strId + "Body");
+        getFaceEntr().setId(strId + "Entr");
+        getFaceExit().setId(strId + "Exit");
     }
 
     /**
@@ -112,53 +114,40 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * @param vecAlign (dx,dy,dz)
      */
     /**
-    public void setAlignment(R3 vecAlign) {
-        this.getMagBody().setAlign(vecAlign);
-        this.getFaceEntr().setAlign(vecAlign);
-        this.getFaceExit().setAlign(vecAlign);
-    }
-    * /
-
-    /**
+     * public void setAlignment(R3 vecAlign) {
+     * this.getMagBody().setAlign(vecAlign);
+     * this.getFaceEntr().setAlign(vecAlign);
+     * this.getFaceExit().setAlign(vecAlign); } /
+     *
+     * /**
      * set align x
      *
      * @param dx
      */
     /**
-    public void setAlignX(double dx) {
-        this.getFaceEntr().setAlignX(dx);
-        this.getMagBody().setAlignX(dx);
-        this.getFaceExit().setAlignX(dx);
-    }
-    * /
-
-    /**
+     * public void setAlignX(double dx) { this.getFaceEntr().setAlignX(dx);
+     * this.getMagBody().setAlignX(dx); this.getFaceExit().setAlignX(dx); } /
+     *
+     * /**
      * set align y
      *
      * @param dy
      */
     /**
-    public void setAlignY(double dy) {
-        this.getFaceEntr().setAlignY(dy);
-        this.getMagBody().setAlignY(dy);
-        this.getFaceExit().setAlignY(dy);
-    }
-    * /
-
-    /**
+     * public void setAlignY(double dy) { this.getFaceEntr().setAlignY(dy);
+     * this.getMagBody().setAlignY(dy); this.getFaceExit().setAlignY(dy); } /
+     *
+     * /**
      * set align z
      *
      * @param dz
      */
     /**
-    public void setAlignZ(double dz) {
-        this.getFaceEntr().setAlignY(dz);
-        this.getMagBody().setAlignY(dz);
-        this.getFaceExit().setAlignY(dz);
-    }
-    * /
-
-    /**
+     * public void setAlignZ(double dz) { this.getFaceEntr().setAlignY(dz);
+     * this.getMagBody().setAlignY(dz); this.getFaceExit().setAlignY(dz); } /
+     *
+     * /
+     **
      * <p>
      * Set the position of the magnet along the design path within the
      * containing lattice.
@@ -187,12 +176,9 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * @see IdealMagWedgeDipole#setPhysicalLength(double)
      */
     public void setPosition(double dblPos, double dblLen) {
-        //this.getMagBody().setPosition(dblPos);
-        //this.getFaceEntr().setPosition(dblPos - dblLen / 2.0);
-        //this.getFaceExit().setPosition(dblPos + dblLen / 2.0);
-        this.getMagBody().setPosition(dblLen/2.0);
-        this.getFaceEntr().setPosition(0.0);
-        this.getFaceExit().setPosition(dblLen);
+        getMagBody().setPosition(dblLen / 2.0);
+        getFaceEntr().setPosition(0.0);
+        getFaceExit().setPosition(dblLen);
     }
 
     /**
@@ -211,7 +197,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * @param dblFldInd field index of the magnet (unitless)
      */
     public void setFieldIndex(double dblFldInd) {
-        this.getMagBody().setFieldIndex(dblFldInd);
+        getMagBody().setFieldIndex(dblFldInd);
     }
 
     /**
@@ -220,78 +206,78 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * @param dblFldInd the field index for the quadrupole
      */
     public void setQuadComponent(double dblFldInd) {
-        this.getMagBody().setQuadComponent(dblFldInd);
+        getMagBody().setQuadComponent(dblFldInd);
     }
 
     /**
      * Set the gap size between the dipole magnet poles.
      *
-     * @param dblGap gap size in <b>meters</b>
+     * @param dblGap gap size in <strong>meters</strong>
      */
     public void setGapSize(double dblGap) {
-        this.getFaceEntr().setGapHeight(dblGap);
-        this.getMagBody().setGapHeight(dblGap);
-        this.getFaceExit().setGapHeight(dblGap);
+        getFaceEntr().setGapHeight(dblGap);
+        getMagBody().setGapHeight(dblGap);
+        getFaceExit().setGapHeight(dblGap);
     }
 
     /**
      * Set the entrance pole face angle with respect to the design trajectory
      *
-     * @param dblAngPole pole face angle in <b>radians</b>
+     * @param dblAngPole pole face angle in <strong>radians</strong>
      */
     public void setEntrPoleAngle(double dblAngPole) {
-        this.getFaceEntr().setPoleFaceAngle(dblAngPole);
+        getFaceEntr().setPoleFaceAngle(dblAngPole);
     }
 
     /**
      * Set the exit pole face angle with respect to the design trajectory
      *
-     * @param dblAngPole pole face angle in <b>radians</b>
+     * @param dblAngPole pole face angle in <strong>radians</strong>
      */
     public void setExitPoleAngle(double dblAngPole) {
-        this.getFaceExit().setPoleFaceAngle(dblAngPole);
+        getFaceExit().setPoleFaceAngle(dblAngPole);
     }
 
     /**
      * Set the entrance fringe integral (a la D.C. Carey) which accounts for the
      * first-order effects of the fringing field outside the dipole magnet.
      *
-     * @param dblFldInt fringe field integral (<b>unitless</b>)
+     * @param dblFldInt fringe field integral (<strong>unitless</strong>)
      *
      * @see IdealMagDipoleFace#setFringeIntegral
      */
     public void setEntrFringeIntegral(double dblFldInt) {
-        this.getFaceEntr().setFringeIntegral(dblFldInt);
+        getFaceEntr().setFringeIntegral(dblFldInt);
     }
 
     public void setEntrFringeIntegral2(double dblFldInt) {
-        this.getFaceEntr().setFringeIntegral2(dblFldInt);
+        getFaceEntr().setFringeIntegral2(dblFldInt);
     }
 
     /**
      * Set the exit fringe integral (a la D.C. Carey) which accounts for the
      * first-order effects of the fringing field outside the dipole magnet.
      *
-     * @param dblFldInt fringe field integral (<b>unitless</b>)
+     * @param dblFldInt fringe field integral (<strong>unitless</strong>)
      *
      * @see IdealMagDipoleFace#setFringeIntegral
      */
     public void setExitFringeIntegral(double dblFldInt) {
-        this.getFaceExit().setFringeIntegral(dblFldInt);
+        getFaceExit().setFringeIntegral(dblFldInt);
     }
 
     public void setExitFringeIntegral2(double dblFldInt) {
-        this.getFaceExit().setFringeIntegral2(dblFldInt);
+        getFaceExit().setFringeIntegral2(dblFldInt);
     }
 
     /**
      * Set the physical length of the bending dipole. The design path length is
      * generally larger than this value because of the curvature.
      *
-     * @param dblLen physical length through bend in <b>meters</b>
+     * @param dblLen physical length through bend in <strong>meters</strong>
      */
     public void setPhysicalLength(double dblLen) {
-        this.getMagBody().setLength(dblLen);
+        getMagBody().setLength(dblLen);
     }
 
     /**
@@ -301,9 +287,9 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      *
      */
     public void setDesignPathLength(double dblPathLen) {
-        this.getFaceEntr().setDesignPathLength(dblPathLen);
-        this.getMagBody().setDesignPathLength(dblPathLen);
-        this.getFaceExit().setDesignPathLength(dblPathLen);
+        getFaceEntr().setDesignPathLength(dblPathLen);
+        getMagBody().setDesignPathLength(dblPathLen);
+        getFaceExit().setDesignPathLength(dblPathLen);
     }
 
     /**
@@ -362,7 +348,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
     /**
      * Return the gap size between the dipole magnet poles.
      *
-     * @return gap size in <b>meters</b>
+     * @return gap size in <strong>meters</strong>
      */
     public double getGapHeight() {
         return this.getMagBody().getGapHeight();
@@ -371,7 +357,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
     /**
      * Get the entrance pole face angle with respect to the design trajectory
      *
-     * @return pole face angle in <b>radians</b>
+     * @return pole face angle in <strong>radians</strong>
      */
     public double getEntrPoleAngle() {
         return this.getFaceEntr().getPoleFaceAngle();
@@ -380,7 +366,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
     /**
      * Get the exit pole face angle with respect to the design trajectory
      *
-     * @return pole face angle in <b>radians</b>
+     * @return pole face angle in <strong>radians</strong>
      */
     public double getExitPoleAngle() {
         return this.getFaceExit().getPoleFaceAngle();
@@ -390,7 +376,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * Get the entrance fringe integral (a la D.C. Carey) which accounts for the
      * first-order effects of the fringing field outside the dipole magnet.
      *
-     * @return fringe field integral (<b>unitless</b>)
+     * @return fringe field integral (<strong>unitless</strong>)
      *
      * @see IdealMagDipoleFace#getFringeIntegral
      */
@@ -406,7 +392,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * Get the exit fringe integral (a la D.C. Carey) which accounts for the
      * first-order effects of the fringing field outside the dipole magnet.
      *
-     * @return fringe field integral (<b>unitless</b>)
+     * @return fringe field integral (<strong>unitless</strong>)
      *
      * @see IdealMagDipoleFace#getFringeIntegral
      */
@@ -424,16 +410,16 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * orbit. The field index is defined as
      * <br/>
      * <br/>
-     * &nbsp; &nbsp; <i>n</i> &equiv;
-     * -(<i>R</i><sub>0</sub>/<i>B</i><sub>0</sub>)(<i>dB/dR</i>)
+     * &nbsp; &nbsp; <em>n</em> &equiv;
+     * -(<em>R</em><sub>0</sub>/<em>B</em><sub>0</sub>)(<em>dB/dR</em>)
      * <br/>
      * <br/>
-     * where <i>R</i><sub>0</sub> is the radius of the design orbit,
-     * <i>B</i><sub>0</sub>
+     * where <em>R</em><sub>0</sub> is the radius of the design orbit,
+     * <em>B</em><sub>0</sub>
      * is the field at the design orbit (see
-     * {@link IdealMagSectorDipole#getFieldIndex()}), and <i>dB/dR</i> is the
+     * {@link IdealMagSectorDipole#getFieldIndex()}), and <em>dB/dR</em> is the
      * derivative of the field with respect to the path deflection - evaluated
-     * at the design radius <i>R</i><sub>0</sub>.
+     * at the design radius <em>R</em><sub>0</sub>.
      *
      * @return field index of the magnet at the design orbit (unitless)
      */
@@ -445,7 +431,7 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
      * Return the physical length of the bending dipole. The design path length
      * is generally larger than this value because of the curvature.
      *
-     * @return physical length through bend in <b>meters</b>
+     * @return physical length through bend in <strong>meters</strong>
      */
     public double getPhysicalLength() {
         return this.getMagBody().getLength();
@@ -561,35 +547,34 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
     public void initializeFrom(LatticeElement element) {
         super.initializeFrom(element);
 
-
         xal.smf.impl.Bend magnet = (xal.smf.impl.Bend) element.getHardwareNode();
 
         setPosition(element.getCenterPosition(), element.getLength());
 
-        // First retrieve all the physical parameters for a bending dipole				
-        double len_sect = element.getLength();
-        double len_path0 = magnet.getDfltPathLength();
-        double ang_bend0 = magnet.getDfltBendAngle() * Math.PI / 180.0;
-        double k_quad0 = magnet.getQuadComponent();
+        // First retrieve all the physical parameters for a bending dipole                
+        double lenSect = element.getLength();
+        double lenPath0 = magnet.getDfltPathLength();
+        double angBend0 = magnet.getDfltBendAngle() * Math.PI / 180.0;
+        double kQuad0 = magnet.getQuadComponent();
 
         // Now compute the dependent parameters
-        double R_bend0 = len_path0 / ang_bend0;
-        double fld_ind0 = - k_quad0 * R_bend0 * R_bend0;
+        double rBend0 = lenPath0 / angBend0;
+        double fldInd0 = -kQuad0 * rBend0 * rBend0;
 
-        double ang_bend = ang_bend0 * (len_sect / len_path0);
-        double len_path = R_bend0 * ang_bend;
+        double angBend = angBend0 * (lenSect / lenPath0);
+        double lenPath = rBend0 * angBend;
 
-        // Set the parameters for the new model element				
-        setPhysicalLength(len_sect);
-        setDesignPathLength(len_path);
-        setFieldIndex(fld_ind0);
-        setDesignBendAngle(ang_bend);                
+        // Set the parameters for the new model element                
+        setPhysicalLength(lenSect);
+        setDesignPathLength(lenPath);
+        setFieldIndex(fldInd0);
+        setDesignBendAngle(angBend);
 
         // first piece
         if (element.isFirstSlice()) {
             setEntrPoleAngle(magnet.getEntrRotAngle() * Math.PI / 180.);
-            if (fld_ind0 < 0. || fld_ind0 > 1.0) {
-                System.err.println("FieldIndex of a bend not in [0,1]. Element: " + getId() + " N=" + fld_ind0);
+            if (fldInd0 < 0. || fldInd0 > 1.0) {
+                LOGGER.log(Level.INFO, "FieldIndex of a bend not in [0,1]. Element: {} N={}", new Object[]{getId(), fldInd0});
             }
         }
         // last piece
@@ -600,13 +585,12 @@ public class IdealMagWedgeDipole extends ElectromagnetSeq {
         if (magnet instanceof Bend) {
             Bend magnet2 = (Bend) magnet;
             setGapSize(magnet2.getGap());
-            //setOrientation(magnet2.getOrientation());
             // first piece
             if (element.isFirstSlice()) {
                 setEntrFringeIntegral(magnet2.getEntrK1());
                 setEntrFringeIntegral2(magnet2.getEntrK2());
             }
-            // last piece	
+            // last piece    
             if (element.isLastSlice()) {
                 setExitFringeIntegral(magnet2.getExitK1());
                 setExitFringeIntegral2(magnet2.getExitK2());

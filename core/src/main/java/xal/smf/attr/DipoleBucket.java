@@ -17,94 +17,135 @@
  */
 package xal.smf.attr;
 
-import xal.tools.data.DataAdaptor;
-
 /**
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
 public class DipoleBucket extends MagnetBucket {
 
-           
     // bend Angle for dipoles (deg) 
-    protected Attribute       m_attBendAngle;
-    /** path length  (m) */
-    private Attribute       m_attPathLength;         
+    protected Attribute attBendAngle;
+    /**
+     * path length (m)
+     */
+    private Attribute attPathLength;
     // dipole rotation angle for entrance pole face (degree)
-    protected Attribute       m_attDipoleEntrRotAngle;
+    protected Attribute attDipoleEntrRotAngle;
     // dipole rotation angle for exit pole face (degree)
-    protected Attribute       m_attDipoleExitRotAngle;
+    protected Attribute attDipoleExitRotAngle;
     // quadrupole component for bend dipole
-    protected Attribute       m_attDipoleQuadComponent;
-    
+    protected Attribute attDipoleQuadComponent;
+
     public DipoleBucket() {
         super();
-        
-        m_attBendAngle = new Attribute(0.0);
-        m_attPathLength = new Attribute(0.0 );
-        m_attDipoleEntrRotAngle = new Attribute(0.0);
-        m_attDipoleExitRotAngle = new Attribute(0.0);
-        m_attDipoleQuadComponent = new Attribute(0.0);
-        
-        super.registerAttribute(c_arrNames[0], m_attBendAngle, "Bend angle for dipoles (deg).");
-        super.registerAttribute(c_arrNames[1], m_attPathLength, "Path length  (m).");
-        super.registerAttribute(c_arrNames[2], m_attDipoleEntrRotAngle, "Dipole rotation angle for entrance pole face (deg).");
-        super.registerAttribute(c_arrNames[3], m_attDipoleExitRotAngle, "Dipole rotation angle for exit pole face (deg).");
-	super.registerAttribute(c_arrNames[4], m_attDipoleQuadComponent, "Quadrupole component for bend dipole.");
+
+        attBendAngle = new Attribute(0.0);
+        attPathLength = new Attribute(0.0);
+        attDipoleEntrRotAngle = new Attribute(0.0);
+        attDipoleExitRotAngle = new Attribute(0.0);
+        attDipoleQuadComponent = new Attribute(0.0);
+
+        super.registerAttribute(ARR_NAMES[0], attBendAngle, "Bend angle for dipoles (deg).");
+        super.registerAttribute(ARR_NAMES[1], attPathLength, "Path length  (m).");
+        super.registerAttribute(ARR_NAMES[2], attDipoleEntrRotAngle, "Dipole rotation angle for entrance pole face (deg).");
+        super.registerAttribute(ARR_NAMES[3], attDipoleExitRotAngle, "Dipole rotation angle for exit pole face (deg).");
+        super.registerAttribute(ARR_NAMES[4], attDipoleQuadComponent, "Quadrupole component for bend dipole.");
     }
 
-    private final static String c_strType = "dipole";
+    private static final String TYPE = "dipole";
 
-    protected final static String[] c_arrNames = {
-        "bendAngle", // bend angle
-        "pathLength",   // path length
-        "dipoleEntrRotAngle", // dipole rotation angle for entrance pole face
-        "dipoleExitRotAngle", // dipole rotation angle for exit pole face
-        "dipoleQuadComponent", // quadrupole component for bend dipole
-    };
+    protected static final String[] ARR_NAMES = {
+        // bend angle
+        "bendAngle",
+        // path length
+        "pathLength",
+        // dipole rotation angle for entrance pole face
+        "dipoleEntrRotAngle",
+        // dipole rotation angle for exit pole face
+        "dipoleExitRotAngle",
+        // quadrupole component for bend dipole
+        "dipoleQuadComponent",};
 
     /**
      * Override virtual to provide type signature
      */
+    @Override
     public String getType() {
-        return c_strType;
+        return TYPE;
     }
-    
-    /** return the dipole bend angle (in degrees) */
-    public double   getBendAngle()   { return m_attBendAngle.getDouble(); }
-    /** return the design path length (in m) */
-    public double   getPathLength() { return m_attPathLength.getDouble(); };
-    
-    /** return the dipole rotation angle for entrance pole face (in degrees) */
-    public double   getDipoleEntrRotAngle() { return m_attDipoleEntrRotAngle.getDouble(); }
-    /** return the dipole rotation angle for exit pole face (in degrees) */
-    public double   getDipoleExitRotAngle() { return m_attDipoleExitRotAngle.getDouble(); }
-    /** return the quadrupole component for bend dipole */
-    public double   getDipoleQuadComponent() { return m_attDipoleQuadComponent.getDouble(); }
-   
-    
-    /** set the dipole bend angle (in degrees)
+
+    /**
+     * return the dipole bend angle (in degrees)
+     */
+    public double getBendAngle() {
+        return attBendAngle.getDouble();
+    }
+
+    /**
+     * return the design path length (in m)
+     */
+    public double getPathLength() {
+        return attPathLength.getDouble();
+    }
+
+    /**
+     * return the dipole rotation angle for entrance pole face (in degrees)
+     */
+    public double getDipoleEntrRotAngle() {
+        return attDipoleEntrRotAngle.getDouble();
+    }
+
+    /**
+     * return the dipole rotation angle for exit pole face (in degrees)
+     */
+    public double getDipoleExitRotAngle() {
+        return attDipoleExitRotAngle.getDouble();
+    }
+
+    /**
+     * return the quadrupole component for bend dipole
+     */
+    public double getDipoleQuadComponent() {
+        return attDipoleQuadComponent.getDouble();
+    }
+
+    /**
+     * set the dipole bend angle (in degrees)
+     *
      * @param dblVal dipole bend angle in degrees
      */
-    public void setBendAngle(double dblVal)      { m_attBendAngle.set(dblVal); }
-    /** set the dipole path length (in m) 
+    public void setBendAngle(double dblVal) {
+        attBendAngle.set(dblVal);
+    }
+
+    /**
+     * set the dipole path length (in m)
+     *
      * @param dblVal path length in meters
      */
-    public void setPathLength(double dblVal)    { m_attPathLength.set(dblVal); };
-    public void setDipoleEntrRotAngle(double dblVal)    { m_attDipoleEntrRotAngle.set(dblVal); }
-    /** set the dipole rotation angle for exit pole face (in degrees) 
+    public void setPathLength(double dblVal) {
+        attPathLength.set(dblVal);
+    }
+
+    public void setDipoleEntrRotAngle(double dblVal) {
+        attDipoleEntrRotAngle.set(dblVal);
+    }
+
+    /**
+     * set the dipole rotation angle for exit pole face (in degrees)
+     *
      * @param dblVal dipole rotation angle for exit pole face in degrees
      */
-    public void setDipoleExitRotAngle(double dblVal)    { m_attDipoleExitRotAngle.set(dblVal); }
-    /** set the quadrupole component for bend dipole
+    public void setDipoleExitRotAngle(double dblVal) {
+        attDipoleExitRotAngle.set(dblVal);
+    }
+
+    /**
+     * set the quadrupole component for bend dipole
+     *
      * @param dblVal quadrupole component for bend dipole
      */
-    public void setDipoleQuadComponent(double dblVal)    { m_attDipoleQuadComponent.set(dblVal); }
-    
-
-    @Override
-    public void update(DataAdaptor adaptor) throws NumberFormatException {
-        super.update(adaptor);
+    public void setDipoleQuadComponent(double dblVal) {
+        attDipoleQuadComponent.set(dblVal);
     }
-    
 }

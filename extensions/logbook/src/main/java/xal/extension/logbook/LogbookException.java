@@ -30,5 +30,4 @@ public class LogbookException extends Exception {
     public LogbookException(Exception ex) {
         super(ex);
     }
-
 }

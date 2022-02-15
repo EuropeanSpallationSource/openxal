@@ -151,25 +151,25 @@ public class AcceleratorExporter {
 
         // Field Maps - get a list of unique field maps.
         List<AcceleratorNode> fieldMapNodes = acc.getAllNodesOfType("RFM");
-        Map<String,FieldMap> fieldMaps = new HashMap<>();
+        Map<String, FieldMap> fieldMaps = new HashMap<>();
         for (AcceleratorNode fieldMapNode : fieldMapNodes) {
             RfFieldMap fieldMap = (RfFieldMap) fieldMapNode;
-            if(!fieldMaps.containsValue(fieldMap.getFieldMap())){
-                fieldMaps.put(fieldMap.getFieldMapFile(),fieldMap.getFieldMap());
+            if (!fieldMaps.containsValue(fieldMap.getFieldMap())) {
+                fieldMaps.put(fieldMap.getFieldMapFile(), fieldMap.getFieldMap());
             }
         }
         // Solenoid Field Maps
         fieldMapNodes = acc.getAllNodesOfType("MFM");
         for (AcceleratorNode fieldMapNode : fieldMapNodes) {
             MagFieldMap fieldMap = (MagFieldMap) fieldMapNode;
-            if(!fieldMaps.containsValue(fieldMap.getFieldMap())){
-                fieldMaps.put(fieldMap.getFieldMapFile(),fieldMap.getFieldMap());
+            if (!fieldMaps.containsValue(fieldMap.getFieldMap())) {
+                fieldMaps.put(fieldMap.getFieldMapFile(), fieldMap.getFieldMap());
             }
         }
-        
+
         // Export each field map only once.
-        for (String fieldMapFile: fieldMaps.keySet()){
-            fieldMaps.get(fieldMapFile).saveFieldMap(dir.toURI().toURL().toString(), fieldMapFile);
+        for (Entry<String, FieldMap> entry : fieldMaps.entrySet()) {
+            entry.getValue().saveFieldMap(dir.toURI().toURL().toString(), entry.getKey());
         }
     }
 
@@ -178,7 +178,7 @@ public class AcceleratorExporter {
      *
      * @throws IOException
      */
-    private void exportModelParams() throws IOException {
+    private void exportModelParams() {
         XmlTableIO.writeTableGroupToFile(acc.editContext(), "modelparams", paramsFile);
     }
 
@@ -209,7 +209,7 @@ public class AcceleratorExporter {
      * @throws IOException
      * @throws URISyntaxException
      */
-    private void exportModelConfigs() throws IOException, URISyntaxException {
+    private void exportModelConfigs() throws IOException {
         InputStream modelConfigResource = this.getClass().getResourceAsStream("ModelConfig.xml");
         Files.copy(modelConfigResource, modelConfigFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }

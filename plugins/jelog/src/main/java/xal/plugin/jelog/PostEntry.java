@@ -38,7 +38,7 @@ public class PostEntry {
     public static final Logger LOGGER = Logger.getLogger(PostEntry.class.getName());
 
     private PostEntry() {
-        // Utility class
+        throw new IllegalStateException("Utility class");
     }
 
     public static void setElogServer(String elogServer) {

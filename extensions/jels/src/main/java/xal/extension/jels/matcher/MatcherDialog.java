@@ -3,7 +3,6 @@ package xal.extension.jels.matcher;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.logging.Level;
@@ -56,7 +55,6 @@ public class MatcherDialog extends SimpleBeanEditor<Matcher> {
             final Thread matcher = new Thread(getBean());
 
             matcher.start();
-            //progressBar.setIndeterminate(true);
 
             progressBar.setMaximum(100);
             progressBar.setValue(0);
@@ -64,6 +62,7 @@ public class MatcherDialog extends SimpleBeanEditor<Matcher> {
             abort.setEnabled(true);
 
             new Thread() {
+                @Override
                 public void run() {
                     try {
                         while (matcher.isAlive()) {
@@ -83,12 +82,7 @@ public class MatcherDialog extends SimpleBeanEditor<Matcher> {
             }.start();
         });
 
-        abort.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                getBean().abort();
-            }
-        });
+        abort.addActionListener(e -> getBean().abort());
 
         addWindowListener(new WindowAdapter() {
             @Override
@@ -104,7 +98,7 @@ public class MatcherDialog extends SimpleBeanEditor<Matcher> {
         setVisible(true);
     }
 
-    public static void main(String args[]) throws InstantiationException {
+    public static void main(String[] args) throws InstantiationException {
         Accelerator accelerator = Matcher.loadAccelerator();
 
         IAlgorithm tracker = AlgorithmFactory.createEnvelopeTracker(accelerator);

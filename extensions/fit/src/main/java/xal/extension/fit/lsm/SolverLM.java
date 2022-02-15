@@ -1,662 +1,606 @@
 package xal.extension.fit.lsm;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import xal.tools.ArrayMath;
 
 /**
- *  The Levenberg-Marquardt fitting solver.
+ * The Levenberg-Marquardt fitting solver.
  *
- *@author    shishlo
+ * @author shishlo
  */
 public class SolverLM implements FitSolver {
 
-	private double[] a = new double[0];
-	private Solution solution = new Solution();
-
-	//Parameters of the method
-	private double factor = 10.;
-	private double lambda_ini = 0.001;
-	private double lambda_max = 10000.0;
-	private double eps_toll = 1.0E-5;
-
-	int iter_limit = 5;
-	int total_iter_limit = 30;
-
-
-	/**
-	 *  Constructor for the SolverLM object
-	 */
-	public SolverLM() { }
-
-
-	/**
-	 *  Solve the fitting problem.
-	 *
-	 *@param  ds         The data for fitting.
-	 *@param  a_ini      The initial values of the parameters.
-	 *@param  a_err_ini  The parameter values' errors.
-	 *@param  a_use      The mask array specifying if the parameter will be used in
-	 *      fitting.
-	 *@param  mf         The model function
-	 *@return            The boolean value specifying success of fitting.
-	 */
-
-	public boolean solve(DataStore ds, ModelFunction mf,
-			double[] a_ini, double[] a_err_ini,
-			boolean[] a_use) {
-
-		int nD = ds.size();
-		int count = 0;
-		for (int i = 0; i < a_ini.length; i++) {
-			if (a_use[i] == true) {
-				count++;
-			}
-		}
-
-		if (nD < count) {
-			return false;
-		}
-
-		if (a_ini.length != a.length) {
-			a = new double[a_ini.length];
-		}
-
-		for (int i = 0; i < a_ini.length; i++) {
-			a[i] = a_ini[i];
-			a_err_ini[i] = 0.;
-		}
-
-		//calc. y_abs_avg
-		double y_avg = 0.;
-		for (int j = 0; j < nD; j++) {
-			y_avg = Math.abs(ds.getY(j));
-		}
-		y_avg /= nD;
-
-		solution.init(ds, mf, a, a_use);
-
-		double chi2ini = 0.;
-		double chi2new = 0.;
-
-		double chi2_min = 0.;
-
-		double dev_ini = 0.;
-		double dev_new = 0.;
-
-		boolean i_stop = false;
-		double lambda = lambda_ini;
-		double d = 0.;
-
-		int iter = 0;
-		int iter_total = 0;
-
-		boolean result = true;
-
-		while (!i_stop) {
-			iter_total++;
-
-			if (lambda > lambda_max) {
-				return result;
-			}
-
-			if (iter_total > total_iter_limit) {
-				return result;
-			}
-
-			if (!solution.solve(lambda)) {
-				return false;
-			}
-
-			chi2ini = solution.getChi2ini();
-			chi2new = solution.getChi2new();
-
-			if (iter_total == 1) {
-				chi2_min = Math.min(chi2ini, chi2new);
-				if (chi2ini >= chi2new) {
-					solution.setParam(a_ini);
-				}
-				solution.setParamErr(a_err_ini);
-			} else {
-				if (chi2new <= chi2_min) {
-					chi2_min = chi2new;
-					solution.setParam(a_ini);
-					solution.setParamErr(a_err_ini);
-				}
-			}
-
-			dev_ini = solution.getDevAvgIni();
-			dev_new = solution.getDevAvgNew();
-
-			//System.out.println("debug lambda=" + lambda + "  dev_ini=" + dev_ini + " dev_new=" + dev_new);
-			//System.out.println("debug lambda=" + lambda + "  chi2ini=" + chi2ini + " chi2new=" + chi2new);
-
-			if (y_avg > 0.) {
-				d = Math.abs(dev_ini - dev_new) / y_avg;
-				if (d <= eps_toll) {
-					break;
-				}
-			}
-
-			if (chi2ini <= chi2new) {
-				lambda *= factor;
-				iter = 0;
-			} else {
-				result = true;
-				lambda /= factor;
-				solution.setParam(a);
-				solution.init(ds, mf, a, a_use);
-				iter++;
-			}
-			if (iter >= iter_limit) {
-				i_stop = true;
-			}
-		}
-
-		return result;
-	}
-
-
-	/**
-	 *  Sets the lambdaFactor attribute of the SolverLM object
-	 *
-	 *@param  factor  The new lambdaFactor value
-	 */
-	public void setLambdaFactor(double factor) {
-		this.factor = factor;
-	}
-
-
-	/**
-	 *  Gets the lambdaFactor attribute of the SolverLM object
-	 *
-	 *@return    The lambdaFactor value
-	 */
-	public double getLambdaFactor() {
-		return factor;
-	}
-
-
-	/**
-	 *  Sets the lambdaIni attribute of the SolverLM object
-	 *
-	 *@param  lambda_ini  The new lambdaIni value
-	 */
-	public void setLambdaIni(double lambda_ini) {
-		this.lambda_ini = lambda_ini;
-	}
-
-
-	/**
-	 *  Gets the lambdaIni attribute of the SolverLM object
-	 *
-	 *@return    The lambdaIni value
-	 */
-	public double getLambdaIni() {
-		return lambda_ini;
-	}
-
-
-	/**
-	 *  Sets the lambdaMax attribute of the SolverLM object
-	 *
-	 *@param  lambda_max  The new lambdaMax value
-	 */
-	public void setLambdaMax(double lambda_max) {
-		this.lambda_max = lambda_max;
-	}
-
-
-	/**
-	 *  Gets the lambdaMax attribute of the SolverLM object
-	 *
-	 *@return    The lambdaMax value
-	 */
-	public double getLambdaMax() {
-		return lambda_max;
-	}
-
-
-
-	/**
-	 *  Sets the toll attribute of the SolverLM object
-	 *
-	 *@param  eps_toll  The new toll value
-	 */
-	public void setToll(double eps_toll) {
-		this.eps_toll = eps_toll;
-	}
-
-
-	/**
-	 *  Gets the toll attribute of the SolverLM object
-	 *
-	 *@return    The toll value
-	 */
-	public double getToll() {
-		return eps_toll;
-	}
-
-
-
-	/**
-	 *  Sets the iterLimit attribute of the SolverLM object
-	 *
-	 *@param  total_iter_limit  The new iterLimit value
-	 */
-	public void setIterLimit(int total_iter_limit) {
-		this.total_iter_limit = total_iter_limit;
-	}
-
-
-	/**
-	 *  Description of the Method
-	 *
-	 *@return    Description of the Return Value
-	 */
-	public int getIterLimit() {
-		return total_iter_limit;
-	}
-
-
-	/**
-	 *  MAIN for debugging
-	 *
-	 *@param  args  The array of strings as parameters
-	 */
-	public static void main(String args[]) {
-
-		ModelFunction1D mf =
-			new ModelFunction1D() {
-
-				public double getValue(double x, double[] a) {
-					double res = 0.;
-					double x_pow = 1.;
-					for (int i = 0; i < a.length; i++) {
-						res += x_pow * a[i];
-						x_pow *= x;
-					}
-					return res;
-				}
-
-
-				public double getDerivative(double x, double[] a, int a_index) {
-					double res = 1.;
-					for (int i = 0; i < a_index; i++) {
-						res *= x;
-					}
-					return res;
-				}
-
-			};
-
-		int nPoints = 11;
-
-		double[] y_arr = new double[nPoints];
-		double[] y_err_arr = new double[nPoints];
-		double[][] x_arr = new double[nPoints][1];
-		double z = 0.;
-		for (int i = 0; i < nPoints; i++) {
-			z = i + 1;
-			x_arr[i][0] = z;
-			y_arr[i] = 1.0 + z + z * z + z * z * z;
-			y_err_arr[i] = 1.0;
-			//if(i%2 == 0) y_arr[i] += 1.0;
-		}
-
-		double[] a_fit_ = new double[4];
-		a_fit_[0] = 0.3;
-		a_fit_[1] = 1.0;
-		a_fit_[2] = 0.3;
-		a_fit_[3] = 0.3;
-
-		double[] a_fit__err = new double[4];
-		a_fit__err[0] = 0.;
-		a_fit__err[1] = 0.;
-		a_fit__err[2] = 0.;
-		a_fit__err[3] = 0.;
-
-		boolean[] mask = new boolean[4];
-		mask[0] = true;
-		mask[1] = true;
-		mask[2] = true;
-		mask[3] = true;
-
-		DataStore ds = new DataStore(y_arr, y_err_arr, x_arr);
-
-		SolverLM solver = new SolverLM();
-
-		System.out.println("======BEFORE=========");
-
-		for (int i = 0; i < a_fit_.length; i++) {
-			System.out.println("i=" + i + " a=" + a_fit_[i] + " +- " + a_fit__err[i]);
-		}
-		System.out.println("======START Solver=======");
-
-		boolean res = solver.solve(ds, mf, a_fit_, a_fit__err, mask);
-
-		System.out.println("sucess =" + res);
-
-		for (int i = 0; i < a_fit_.length; i++) {
-			System.out.println("i=" + i + " a=" + a_fit_[i] + " +- " + a_fit__err[i]);
-		}
-		System.out.println("======STOP=======");
-
-		//a_fit_[0] = 1.;
-		//a_fit_[1] = 1.;
-		//a_fit_[2] = 1.;
-		//a_fit_[3] = 1.;
-		System.out.println("  x        y          y_appr   ");
-		for (int i = 0; i < x_arr.length; i++) {
-			System.out.println(" " + x_arr[i][0] + "  "
-					 + y_arr[i] + "  "
-					 + mf.getValue(x_arr[i][0], a_fit_));
-		}
-		System.out.println("============");
-
-	}
-
-
-	/**
-	 *  Auxiliary inner class.
-	 *
-	 *@author    shishlo
-	 */
-	class Solution {
-
-		private double[] a_ini = new double[0];
-		private double[] a_new = new double[0];
-
-		private double[] a = new double[0];
-		private int[] a_ind = new int[0];
-		private double[] a_err = new double[0];
-
-		private double[][] ATWA_ini = new double[0][0];
-		private double[][] ATWA = new double[0][0];
-
-		private double[] ATWY = new double[0];
-
-		private double[] W = new double[0];
-
-		private DataStore ds = null;
-
-		//array for (y_exp - y_theory) array
-		private double[] dlt_arr = new double[0];
-
-		private double chi2_ini = 0.;
-		private double chi2_new = 0.;
-
-		private double dev_avg_ini = 0.;
-		private double dev_avg_new = 0.;
-
-		private ModelFunction mf = null;
-
-		private boolean err_exist = false;
-
-
-		/**
-		 *  Constructor for the Solution object
-		 */
-		Solution() { }
-
-
-		/**
-		 *  Initialize solution
-		 *
-		 *@param  ds_in     The data store
-		 *@param  mf_in     The model function
-		 *@param  a_ini_in  The initial parameters
-		 *@param  a_use     The boolean mask on parameters to use in fitting
-		 */
-		void init(DataStore ds_in,
-				ModelFunction mf_in,
-				double[] a_ini_in,
-				boolean[] a_use) {
-			ds = ds_in;
-			mf = mf_in;
-
-			if (a_ini.length != a_ini_in.length) {
-				a_ini = new double[a_ini_in.length];
-				a_new = new double[a_ini_in.length];
-			}
-
-			for (int i = 0; i < a_ini.length; i++) {
-				a_ini[i] = a_ini_in[i];
-				a_new[i] = a_ini_in[i];
-			}
-
-			int na = 0;
-			for (int i = 0; i < a_ini.length; i++) {
-				if (a_use[i] == true) {
-					na++;
-				}
-			}
-
-			if (na != a.length) {
-				a = new double[na];
-				a_ind = new int[na];
-				a_err = new double[na];
-				ATWA = new double[na][na];
-				ATWA_ini = new double[na][na];
-				ATWY = new double[na];
-			}
-
-			int count = 0;
-			for (int i = 0; i < a_ini.length; i++) {
-				if (a_use[i] == true) {
-					a[count] = a_ini[i];
-					a_ind[count] = i;
-					a_err[count] = 0.;
-					count++;
-				}
-			}
-
-			int nD = ds.size();
-			if (nD != W.length) {
-				W = new double[nD];
-				dlt_arr = new double[nD];
-			}
-
-			for (int i = 0; i < nD; i++) {
-				W[i] = 1.0;
-			}
-
-			err_exist = true;
-
-			for (int i = 0; i < nD; i++) {
-				if (ds.getErrY(i) <= 0.) {
-					err_exist = false;
-					break;
-				}
-			}
-
-			if (err_exist == true) {
-				for (int i = 0; i < nD; i++) {
-					W[i] = 1. / (ds.getErrY(i) * ds.getErrY(i));
-				}
-			}
-
-			//calculation ATWY
-			chi2_ini = 0.;
-			for (int j = 0; j < nD; j++) {
-				dlt_arr[j] = ds.getY(j) - mf.getValue(ds.getArrX(j), a_ini);
-				chi2_ini += dlt_arr[j] * dlt_arr[j] / W[j];
-			}
-
-			dev_avg_ini = 0.;
-			for (int j = 0; j < nD; j++) {
-				dev_avg_ini += Math.abs(dlt_arr[j]);
-			}
-			dev_avg_ini /= nD;
-
-			for (int i = 0; i < na; i++) {
-				ATWY[i] = 0.;
-				for (int j = 0; j < nD; j++) {
-					ATWY[i] += mf.getDerivative(ds.getArrX(j), a_ini, a_ind[i]) *
-							W[j] * dlt_arr[j];
-				}
-			}
-
-			//calculation ATWA
-			for (int i = 0; i < na; i++) {
-				for (int k = 0; k < na; k++) {
-					ATWA_ini[i][k] = 0.;
-					for (int j = 0; j < nD; j++) {
-						ATWA_ini[i][k] += mf.getDerivative(ds.getArrX(j), a_ini, a_ind[i]) *
-								mf.getDerivative(ds.getArrX(j), a_ini, a_ind[k]) *
-								W[j];
-					}
-				}
-			}
-
-		}
-
-
-		/**
-		 *  Description of the Method
-		 *
-		 *@param  lambda  Description of the Parameter
-		 *@return         Description of the Return Value
-		 */
-		boolean solve(double lambda) {
-			int na = a.length;
-			int nD = ds.size();
-
-			for (int i = 0; i < na; i++) {
-				for (int k = 0; k < na; k++) {
-					ATWA[i][k] = ATWA_ini[i][k];
-					if (i == k) {
-						ATWA[i][k] += lambda;
-					}
-				}
-			}
-
-			boolean res = ArrayMath.invertMatrix(ATWA);
-			if (res != true) {
-				return false;
-			}
-
-			for (int i = 0; i < na; i++) {
-				for (int k = 0; k < na; k++) {
-					a[i] += ATWA[i][k] * ATWY[k];
-				}
-			}
-
-			for (int i = 0; i < na; i++) {
-				a_new[a_ind[i]] = a[i];
-			}
-
-			chi2_new = 0.;
-			for (int j = 0; j < nD; j++) {
-				dlt_arr[j] = ds.getY(j) - mf.getValue(ds.getArrX(j), a_new);
-				chi2_new += dlt_arr[j] * dlt_arr[j] / W[j];
-			}
-
-			dev_avg_new = 0.;
-			for (int j = 0; j < nD; j++) {
-				dev_avg_new += Math.abs(dlt_arr[j]);
-			}
-			dev_avg_new /= nD;
-
-			return true;
-		}
-
-
-		/**
-		 *  Returns average deviation from initial data
-		 *
-		 *@return    The deviation value
-		 */
-		double getDevAvgIni() {
-			return dev_avg_ini;
-		}
-
-
-		/**
-		 *  Returns average deviation from initial data
-		 *
-		 *@return    The deviation value
-		 */
-		double getDevAvgNew() {
-			return dev_avg_new;
-		}
-
-
-		/**
-		 *  Gets the chi2ini attribute of the Solution object
-		 *
-		 *@return    The chi2ini value
-		 */
-		double getChi2ini() {
-			return chi2_ini;
-		}
-
-
-		/**
-		 *  Gets the chi2new attribute of the Solution object
-		 *
-		 *@return    The chi2new value
-		 */
-		double getChi2new() {
-			return chi2_new;
-		}
-
-
-		/**
-		 *  Sets the new values of parameters to the external array.
-		 *
-		 *@param  a_ini_in  The external array.
-		 */
-		void setParam(double[] a_ini_in) {
-			int na = a.length;
-
-			for (int i = 0; i < a_ini_in.length; i++) {
-				a_ini_in[i] = a_new[i];
-			}
-		}
-
-
-		/**
-		 *  Sets the new errors of parameters to the external array.
-		 *
-		 *@param  a_err_in  The new array of errors values
-		 */
-		void setParamErr(double[] a_err_in) {
-			int na = a.length;
-			int nD = ds.size();
-
-			for (int i = 0; i < a_err_in.length; i++) {
-				a_err_in[i] = 0.;
-			}
-
-			if (nD <= (na - 1)) {
-				return;
-			}
-
-			for (int i = 0; i < na; i++) {
-				for (int k = 0; k < na; k++) {
-					ATWA[i][k] = ATWA_ini[i][k];
-				}
-			}
-
-			boolean res = ArrayMath.invertMatrix(ATWA);
-
-			if (!res) {
-				return;
-			}
-
-			if (err_exist) {
-				for (int i = 0; i < na; i++) {
-					a_err_in[a_ind[i]] = Math.sqrt(Math.abs(ATWA[i][i]));
-				}
-			} else {
-				double coeff = Math.sqrt(getChi2new() / (nD - na));
-				for (int i = 0; i < na; i++) {
-					a_err_in[a_ind[i]] = coeff * Math.sqrt(Math.abs(ATWA[i][i]));
-				}
-			}
-
-		}
-
-	}
-
+    private static final Logger LOGGER = Logger.getLogger(SolverLM.class.getName());
+
+    private double[] a = new double[0];
+    private Solution solution = new Solution();
+
+    //Parameters of the method
+    private double factor = 10.;
+    private double lambdaIni = 0.001;
+    private double lambdaMax = 10000.0;
+    private double epsToll = 1.0E-5;
+
+    int iterLimit = 5;
+    int totalIterLimit = 30;
+
+    /**
+     * Solve the fitting problem.
+     *
+     * @param ds The data for fitting.
+     * @param iniArr The initial values of the parameters.
+     * @param errIniArr The parameter values' errors.
+     * @param useArr The mask Array specifying if the parameter will be used in
+     * fitting.
+     * @param mf The model function
+     * @return The boolean value specifying success of fitting.
+     */
+    @Override
+    public boolean solve(DataStore ds, ModelFunction mf,
+            double[] iniArr, double[] errIniArr,
+            boolean[] useArr) {
+
+        int nD = ds.size();
+        int count = 0;
+        for (int i = 0; i < iniArr.length; i++) {
+            if (useArr[i]) {
+                count++;
+            }
+        }
+
+        if (nD < count) {
+            return false;
+        }
+
+        if (iniArr.length != a.length) {
+            a = new double[iniArr.length];
+        }
+
+        for (int i = 0; i < iniArr.length; i++) {
+            a[i] = iniArr[i];
+            errIniArr[i] = 0.;
+        }
+
+        //calc. y_abs_avg
+        double yAvg = 0.;
+        for (int j = 0; j < nD; j++) {
+            yAvg = Math.abs(ds.getY(j));
+        }
+        yAvg /= nD;
+
+        solution.init(ds, mf, a, useArr);
+
+        double chi2ini;
+        double chi2new;
+
+        double chi2Min = 0.;
+
+        double devIni;
+        double devNew;
+
+        boolean iStop = false;
+        double lambda = lambdaIni;
+        double d;
+
+        int iter = 0;
+        int iterTotal = 0;
+
+        boolean result = true;
+
+        while (!iStop) {
+            iterTotal++;
+
+            if (lambda > lambdaMax) {
+                return result;
+            }
+
+            if (iterTotal > totalIterLimit) {
+                return result;
+            }
+
+            if (!solution.solve(lambda)) {
+                return false;
+            }
+
+            chi2ini = solution.getChi2ini();
+            chi2new = solution.getChi2new();
+
+            if (iterTotal == 1) {
+                chi2Min = Math.min(chi2ini, chi2new);
+                if (chi2ini >= chi2new) {
+                    solution.setParam(iniArr);
+                }
+                solution.setParamErr(errIniArr);
+            } else {
+                if (chi2new <= chi2Min) {
+                    chi2Min = chi2new;
+                    solution.setParam(iniArr);
+                    solution.setParamErr(errIniArr);
+                }
+            }
+
+            devIni = solution.getDevAvgIni();
+            devNew = solution.getDevAvgNew();
+
+            if (yAvg > 0.) {
+                d = Math.abs(devIni - devNew) / yAvg;
+                if (d <= epsToll) {
+                    break;
+                }
+            }
+
+            if (chi2ini <= chi2new) {
+                lambda *= factor;
+                iter = 0;
+            } else {
+                result = true;
+                lambda /= factor;
+                solution.setParam(a);
+                solution.init(ds, mf, a, useArr);
+                iter++;
+            }
+            if (iter >= iterLimit) {
+                iStop = true;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Sets the lambdaFactor attribute of the SolverLM object
+     *
+     * @param factor The new lambdaFactor value
+     */
+    public void setLambdaFactor(double factor) {
+        this.factor = factor;
+    }
+
+    /**
+     * Gets the lambdaFactor attribute of the SolverLM object
+     *
+     * @return The lambdaFactor value
+     */
+    public double getLambdaFactor() {
+        return factor;
+    }
+
+    /**
+     * Sets the lambdaIni attribute of the SolverLM object
+     *
+     * @param lambdaIni lambdaIni new lambdaIni value
+     */
+    public void setLambdaIni(double lambdaIni) {
+        this.lambdaIni = lambdaIni;
+    }
+
+    /**
+     * Gets the lambdaIni attribute of the SolverLM object
+     *
+     * @return The lambdaIni value
+     */
+    public double getLambdaIni() {
+        return lambdaIni;
+    }
+
+    /**
+     * Sets the lambdaMax attribute of the SolverLM object
+     *
+     * @param lambdaMax The new lambdaMax value
+     */
+    public void setLambdaMax(double lambdaMax) {
+        this.lambdaMax = lambdaMax;
+    }
+
+    /**
+     * Gets the lambdaMax attribute of the SolverLM object
+     *
+     * @return The lambdaMax value
+     */
+    public double getLambdaMax() {
+        return lambdaMax;
+    }
+
+    /**
+     * Sets the toll attribute of the SolverLM object
+     *
+     * @param epsToll The new toll value
+     */
+    public void setToll(double epsToll) {
+        this.epsToll = epsToll;
+    }
+
+    /**
+     * Gets the toll attribute of the SolverLM object
+     *
+     * @return The toll value
+     */
+    public double getToll() {
+        return epsToll;
+    }
+
+    /**
+     * Sets the iterLimit attribute of the SolverLM object
+     *
+     * @param totalIterLimit The new iterLimit value
+     */
+    public void setIterLimit(int totalIterLimit) {
+        this.totalIterLimit = totalIterLimit;
+    }
+
+    /**
+     * Description of the Method
+     *
+     * @return Description of the Return Value
+     */
+    public int getIterLimit() {
+        return totalIterLimit;
+    }
+
+    /**
+     * MAIN for debugging
+     *
+     * @param args The Array of strings as parameters
+     */
+    public static void main(String[] args) {
+
+        ModelFunction1D mf
+                = new ModelFunction1D() {
+
+            @Override
+            public double getValue(double x, double[] a) {
+                double res = 0.;
+                double xPow = 1.;
+                for (int i = 0; i < a.length; i++) {
+                    res += xPow * a[i];
+                    xPow *= x;
+                }
+                return res;
+            }
+
+            @Override
+            public double getDerivative(double x, double[] a, int indexArr) {
+                double res = 1.;
+                for (int i = 0; i < indexArr; i++) {
+                    res *= x;
+                }
+                return res;
+            }
+
+        };
+
+        int nPoints = 11;
+
+        double[] yArr = new double[nPoints];
+        double[] yErrArr = new double[nPoints];
+        double[][] xArr = new double[nPoints][1];
+        double z;
+        for (int i = 0; i < nPoints; i++) {
+            z = i + 1.;
+            xArr[i][0] = z;
+            yArr[i] = 1.0 + z + z * z + z * z * z;
+            yErrArr[i] = 1.0;
+        }
+
+        double[] fitArr = new double[]{0.3, 1.0, 0.3, 0.3};
+
+        double[] fitErrArr = new double[]{0.0, 0.0, 0.0, 0.0};
+
+        boolean[] mask = new boolean[]{true, true, true, true};
+
+        DataStore ds = new DataStore(yArr, yErrArr, xArr);
+
+        SolverLM solver = new SolverLM();
+
+        LOGGER.log(Level.INFO, "======BEFORE=========");
+
+        for (int i = 0; i < fitArr.length; i++) {
+            LOGGER.log(Level.INFO, "i={0} a={1} +- {2}", new Object[]{i, fitArr[i], fitErrArr[i]});
+        }
+        LOGGER.log(Level.INFO, "======START Solver=======");
+
+        boolean res = solver.solve(ds, mf, fitArr, fitErrArr, mask);
+
+        LOGGER.log(Level.INFO, "sucess ={0}", res);
+
+        for (int i = 0; i < fitArr.length; i++) {
+            LOGGER.log(Level.INFO, "i={0} a={1} +- {2}", new Object[]{i, fitArr[i], fitErrArr[i]});
+        }
+        LOGGER.log(Level.INFO, "======STOP=======");
+
+        LOGGER.log(Level.INFO, "  x        y          y_appr   ");
+        for (int i = 0; i < xArr.length; i++) {
+            LOGGER.log(Level.INFO, " {0}  {1}  {2}", new Object[]{xArr[i][0], yArr[i], mf.getValue(xArr[i][0], fitArr)});
+        }
+        LOGGER.log(Level.INFO, "============");
+
+    }
+
+    /**
+     * Auxiliary inner class.
+     *
+     * @author shishlo
+     */
+    static class Solution {
+
+        private double[] iniArr = new double[0];
+        private double[] newArr = new double[0];
+
+        private double[] a = new double[0];
+        private int[] indArr = new int[0];
+        private double[] errArr = new double[0];
+
+        private double[][] atwaIni = new double[0][0];
+        private double[][] atwa = new double[0][0];
+
+        private double[] atwy = new double[0];
+
+        private double[] w = new double[0];
+
+        private DataStore ds = null;
+
+        //Array for (y_exp - y_theory) Array
+        private double[] dltArr = new double[0];
+
+        private double chi2Ini = 0.;
+        private double chi2New = 0.;
+
+        private double devAvgIni = 0.;
+        private double devAvgNew = 0.;
+
+        private ModelFunction mf = null;
+
+        private boolean errExist = false;
+
+        /**
+         * Constructor for the Solution object
+         */
+        Solution() {
+        }
+
+        /**
+         * Initialize solution
+         *
+         * @param dsIn The data store
+         * @param mfIn The model function
+         * @param iniArrIn The initial parameters
+         * @param useArr The boolean mask on parameters to use in fitting
+         */
+        void init(DataStore dsIn,
+                ModelFunction mfIn,
+                double[] iniArrIn,
+                boolean[] useArr) {
+            ds = dsIn;
+            mf = mfIn;
+
+            if (iniArr.length != iniArrIn.length) {
+                iniArr = new double[iniArrIn.length];
+                newArr = new double[iniArrIn.length];
+            }
+
+            for (int i = 0; i < iniArr.length; i++) {
+                iniArr[i] = iniArrIn[i];
+                newArr[i] = iniArrIn[i];
+            }
+
+            int na = 0;
+            for (int i = 0; i < iniArr.length; i++) {
+                if (useArr[i]) {
+                    na++;
+                }
+            }
+
+            if (na != a.length) {
+                a = new double[na];
+                indArr = new int[na];
+                errArr = new double[na];
+                atwa = new double[na][na];
+                atwaIni = new double[na][na];
+                atwy = new double[na];
+            }
+
+            int count = 0;
+            for (int i = 0; i < iniArr.length; i++) {
+                if (useArr[i]) {
+                    a[count] = iniArr[i];
+                    indArr[count] = i;
+                    errArr[count] = 0.;
+                    count++;
+                }
+            }
+
+            int nD = ds.size();
+            if (nD != w.length) {
+                w = new double[nD];
+                dltArr = new double[nD];
+            }
+
+            for (int i = 0; i < nD; i++) {
+                w[i] = 1.0;
+            }
+
+            errExist = true;
+
+            for (int i = 0; i < nD; i++) {
+                if (ds.getErrY(i) <= 0.) {
+                    errExist = false;
+                    break;
+                }
+            }
+
+            if (errExist) {
+                for (int i = 0; i < nD; i++) {
+                    w[i] = 1. / (ds.getErrY(i) * ds.getErrY(i));
+                }
+            }
+
+            //calculation ATWY
+            chi2Ini = 0.;
+            for (int j = 0; j < nD; j++) {
+                dltArr[j] = ds.getY(j) - mf.getValue(ds.getArrX(j), iniArr);
+                chi2Ini += dltArr[j] * dltArr[j] / w[j];
+            }
+
+            devAvgIni = 0.;
+            for (int j = 0; j < nD; j++) {
+                devAvgIni += Math.abs(dltArr[j]);
+            }
+            devAvgIni /= nD;
+
+            for (int i = 0; i < na; i++) {
+                atwy[i] = 0.;
+                for (int j = 0; j < nD; j++) {
+                    atwy[i] += mf.getDerivative(ds.getArrX(j), iniArr, indArr[i])
+                            * w[j] * dltArr[j];
+                }
+            }
+
+            //calculation ATWA
+            for (int i = 0; i < na; i++) {
+                for (int k = 0; k < na; k++) {
+                    atwaIni[i][k] = 0.;
+                    for (int j = 0; j < nD; j++) {
+                        atwaIni[i][k] += mf.getDerivative(ds.getArrX(j), iniArr, indArr[i])
+                                * mf.getDerivative(ds.getArrX(j), iniArr, indArr[k])
+                                * w[j];
+                    }
+                }
+            }
+
+        }
+
+        /**
+         * Description of the Method
+         *
+         * @param lambda Description of the Parameter
+         * @return Description of the Return Value
+         */
+        boolean solve(double lambda) {
+            int na = a.length;
+            int nD = ds.size();
+
+            for (int i = 0; i < na; i++) {
+                for (int k = 0; k < na; k++) {
+                    atwa[i][k] = atwaIni[i][k];
+                    if (i == k) {
+                        atwa[i][k] += lambda;
+                    }
+                }
+            }
+
+            boolean res = ArrayMath.invertMatrix(atwa);
+            if (!res) {
+                return false;
+            }
+
+            for (int i = 0; i < na; i++) {
+                for (int k = 0; k < na; k++) {
+                    a[i] += atwa[i][k] * atwy[k];
+                }
+            }
+
+            for (int i = 0; i < na; i++) {
+                newArr[indArr[i]] = a[i];
+            }
+
+            chi2New = 0.;
+            for (int j = 0; j < nD; j++) {
+                dltArr[j] = ds.getY(j) - mf.getValue(ds.getArrX(j), newArr);
+                chi2New += dltArr[j] * dltArr[j] / w[j];
+            }
+
+            devAvgNew = 0.;
+            for (int j = 0; j < nD; j++) {
+                devAvgNew += Math.abs(dltArr[j]);
+            }
+            devAvgNew /= nD;
+
+            return true;
+        }
+
+        /**
+         * Returns average deviation from initial data
+         *
+         * @return The deviation value
+         */
+        double getDevAvgIni() {
+            return devAvgIni;
+        }
+
+        /**
+         * Returns average deviation from initial data
+         *
+         * @return The deviation value
+         */
+        double getDevAvgNew() {
+            return devAvgNew;
+        }
+
+        /**
+         * Gets the chi2ini attribute of the Solution object
+         *
+         * @return The chi2ini value
+         */
+        double getChi2ini() {
+            return chi2Ini;
+        }
+
+        /**
+         * Gets the chi2new attribute of the Solution object
+         *
+         * @return The chi2new value
+         */
+        double getChi2new() {
+            return chi2New;
+        }
+
+        /**
+         * Sets the new values of parameters to the external Array.
+         *
+         * @param iniArrIn The external Array.
+         */
+        void setParam(double[] iniArrIn) {
+            System.arraycopy(newArr, 0, iniArrIn, 0, iniArrIn.length);
+        }
+
+        /**
+         * Sets the new errors of parameters to the external Array.
+         *
+         * @param iniArrIn The new Array of errors values
+         */
+        void setParamErr(double[] iniArrIn) {
+            int na = a.length;
+            int nD = ds.size();
+
+            for (int i = 0; i < iniArrIn.length; i++) {
+                iniArrIn[i] = 0.;
+            }
+
+            if (nD <= (na - 1)) {
+                return;
+            }
+
+            for (int i = 0; i < na; i++) {
+                System.arraycopy(atwaIni[i], 0, atwa[i], 0, na);
+            }
+
+            boolean res = ArrayMath.invertMatrix(atwa);
+
+            if (!res) {
+                return;
+            }
+
+            if (errExist) {
+                for (int i = 0; i < na; i++) {
+                    iniArrIn[indArr[i]] = Math.sqrt(Math.abs(atwa[i][i]));
+                }
+            } else {
+                double coeff = Math.sqrt(getChi2new() / (nD - na));
+                for (int i = 0; i < na; i++) {
+                    iniArrIn[indArr[i]] = coeff * Math.sqrt(Math.abs(atwa[i][i]));
+                }
+            }
+        }
+    }
 }
-

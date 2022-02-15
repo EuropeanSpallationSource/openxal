@@ -27,9 +27,9 @@ import java.util.logging.Logger;
  */
 public class FinishedThreadHook extends Thread {
 
-    Thread callerThread;
-    Epics7ChannelSystem system;
-    List<Thread> threadList;
+    private final Thread callerThread;
+    private final Epics7ChannelSystem system;
+    private final List<Thread> threadList;
 
     public FinishedThreadHook(Thread callerThread, List<Thread> threadList, Epics7ChannelSystem system) {
         this.callerThread = callerThread;

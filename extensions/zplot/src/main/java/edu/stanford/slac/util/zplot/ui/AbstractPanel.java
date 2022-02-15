@@ -9,14 +9,15 @@ import javax.swing.JPanel;
  * @version %I%, %G%
  * @since
  */
-public abstract class AbstractPanel extends JPanel{
-	
-	protected abstract void createComponents();
-	protected abstract void addComponents();
-	
-	protected AbstractPanel(){
-		createComponents();
-		addComponents();
-	}
+public abstract class AbstractPanel extends JPanel {
+
+    protected abstract void createComponents();
+
+    protected abstract void addComponents();
+
+    protected AbstractPanel() {
+        createComponents();
+        addComponents();
+    }
 
 }

@@ -43,7 +43,7 @@ COORIDINATE_FORMAT = DecimalFormat("0.0E0")
 class WindowHandler(WindowAdapter):
 	def windowClosed(self, event):
 		#sys.exit(0)
-		print "Closing window..."
+		print("Closing window...")
 
 
 # class for holding node results
@@ -94,13 +94,13 @@ class Plotter:
 # change a corrector to kick the beam
 def kickBeam( scenario, sequence, corrector, field ):
 	scenario.setModelInput( corrector, ElectromagnetPropertyAccessor.PROPERTY_FIELD, field )
-	print "add field", field, "Tesla to corrector: ", corrector.getId(), ", position: ", sequence.getPosition(corrector), ", effective length: ", corrector.getEffLength()
+	print("add field", field, "Tesla to corrector: ", corrector.getId(), ", position: ", sequence.getPosition(corrector), ", effective length: ", corrector.getEffLength())
 
 
-# print results for the ring
+# print(results for the ring)
 def print_ring_results( trajectory ):
-	print ""
-	print "tunes: ", trajectory.getTunes()
+	print("")
+	print("tunes: ", trajectory.getTunes())
 
 
 # plot node results
@@ -110,7 +110,7 @@ def generate_xal_results( scenario, trajectory, sequence, nodes ):
 	winding_results = []
 	NUM_TURNS = 100
 	TURN_STEP = 25
-	print "First elements: ", trajectory.statesInPositionRange( 0.0, 0.1 )
+	print("First elements: ", trajectory.statesInPositionRange( 0.0, 0.1 ))
 	while node_iterator.hasNext():
 		node = node_iterator.next()
 		position = sequence.getPosition( node )
@@ -123,9 +123,9 @@ def generate_xal_results( scenario, trajectory, sequence, nodes ):
 		y = closed_orbit.gety() * 1000		# convert from meters to mm
 		z = closed_orbit.getz()
 		
-		print node.getId(), sequence.getPosition( node ), state.getPosition(), scenario.getPositionRelativeToStart( sequence.getPosition( node ) )
-		print "closed orbit: ", closed_orbit
-		print ""
+		print(node.getId(), sequence.getPosition( node ), state.getPosition(), scenario.getPositionRelativeToStart( sequence.getPosition( node ) ))
+		print("closed orbit: ", closed_orbit)
+		print("")
 		
 		closed_results.append( NodeResult( position, x, y, z ) )
 		
@@ -143,10 +143,10 @@ def generate_xal_results( scenario, trajectory, sequence, nodes ):
 
 # load the optics
 accelerator = XMLDataManager.loadDefaultAccelerator()
-print "loading the accelerator..."
+print("loading the accelerator...")
 #accelerator = XMLDataManager.acceleratorWithPath("/Users/t6p/Projects/xal/main/xal_xmls/main_ring.xal")
 sequence = accelerator.getComboSequence("Ring")
-print ""
+print("")
 
 # setup the model
 probe = ProbeFactory.getTransferMapProbe( sequence, TransferMapTracker() )
@@ -159,7 +159,7 @@ scenario.setProbe( probe )
 #scenario.setStartElementId("Ring_Mag:DCV_A13")
 scenario.setStartElementId("Ring_Inj:Foil")
 #scenario.setStartElementId("Ring_Mag:DCV_C07")
-print "Origin relative to start:  ", scenario.getPositionRelativeToStart( 0.0 )
+print("Origin relative to start:  ", scenario.getPositionRelativeToStart( 0.0 ))
 
 # pick the 1st corrector and change it
 horizontal_correctors = sequence.getNodesOfType( "dch" )		# fetch horizontal correctors
@@ -174,7 +174,7 @@ scenario.resync()
 scenario.run()
 trajectory = probe.getTrajectory()
 
-# print results
+# print(results)
 print_ring_results( trajectory )
 
 # generate the results at the magnets

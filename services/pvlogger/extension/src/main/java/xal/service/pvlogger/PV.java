@@ -7,46 +7,44 @@
  * Oak Ridge National Laboratory
  * Oak Ridge, TN 37830
  */
-
 package xal.service.pvlogger;
-
 
 /**
  * PV
  *
- * @author  tap
+ * @author tap
  */
 public class PV {
-	protected long _id;
-	protected String _address;
-	
-	
-	/**
-	 * Constructor
-	 * @param id the unique identifier
-	 * @param address the PV address
-	 */
-	public PV(long id, String address) {
-		_id = id;
-		_address = address;
-	}
-	
-	
-	/**
-	 * Get the id
-	 * @return the id
-	 */
-	public long getId() {
-		return _id;
-	}
-	
-	
-	/**
-	 * Get the PV address
-	 * @return the PV address
-	 */
-	String getAddress() {
-		return _address;
-	}
-}
 
+    protected long id;
+    protected String address;
+
+    /**
+     * Constructor
+     *
+     * @param id the unique identifier
+     * @param address the PV address
+     */
+    public PV(long id, String address) {
+        this.id = id;
+        this.address = address;
+    }
+
+    /**
+     * Get the id
+     *
+     * @return the id
+     */
+    public long getId() {
+        return id;
+    }
+
+    /**
+     * Get the PV address
+     *
+     * @return the PV address
+     */
+    String getAddress() {
+        return address;
+    }
+}

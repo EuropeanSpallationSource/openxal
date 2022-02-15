@@ -86,6 +86,7 @@ public interface ChannelRecord {
      * @return The data as a scalar int.
      */
     public int intValue();
+
     /**
      * Get the value of the array element identified by the index and convert it
      * to a int.
@@ -203,10 +204,11 @@ public interface ChannelRecord {
      *
      * @return A string representation of this object.
      */
+    @Override
     public String toString();
 
     /**
-     * Convert the _store from a raw value to a processed value.
+     * Convert the store from a raw value to a processed value.
      *
      * @param transform The transform used to convert the store.
      * @return this instance as a convenience.

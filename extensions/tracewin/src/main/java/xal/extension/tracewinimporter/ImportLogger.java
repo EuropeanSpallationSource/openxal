@@ -17,6 +17,9 @@
  */
 package xal.extension.tracewinimporter;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  * Class to log during import. This one only prints to the standard output, but
  * can be extended for GUIs.
@@ -25,13 +28,14 @@ package xal.extension.tracewinimporter;
  */
 public class ImportLogger {
 
-    public ImportLogger() {
-    }
+    private static final Logger LOGGER = Logger.getLogger(ImportLogger.class.getName());
+
 
     public void log(String string) {
-        System.out.println(string);
+        LOGGER.log(Level.INFO, string);
     }
 
     public void close() {
+        // Do nothing
     }
 }

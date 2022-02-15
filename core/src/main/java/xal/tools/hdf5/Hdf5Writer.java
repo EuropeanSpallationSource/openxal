@@ -33,7 +33,6 @@ package xal.tools.hdf5;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Map;
@@ -55,10 +54,10 @@ import xal.smf.attr.Attribute;
  */
 public class Hdf5Writer {
 
+    private static final Logger LOGGER = Logger.getLogger(Hdf5Writer.class.getName());
+
     private H5Node document;
     private File file;
-
-    private H5File h5File;
 
     private Hdf5Writer(H5Node document, File file) {
         this.document = document;
@@ -68,7 +67,7 @@ public class Hdf5Writer {
     /**
      * Writes a DataAdaptor to an HDF5 file defined by an UrlSpec.
      */
-    static void writeToUrlSpec(H5Node document, String urlSpec) throws MalformedURLException, IOException {
+    static void writeToUrlSpec(H5Node document, String urlSpec) throws IOException {
         URL url = new URL(urlSpec);
         writeToUrl(document, url);
     }
@@ -76,7 +75,7 @@ public class Hdf5Writer {
     /**
      * Writes a DataAdaptor to an HDF5 file defined by an URL.
      */
-    static void writeToUrl(H5Node document, URL url) throws IOException {
+    static void writeToUrl(H5Node document, URL url) {
         try {
             final File file = new File(url.toURI());
             writeToFile(document, file);
@@ -88,12 +87,12 @@ public class Hdf5Writer {
     /**
      * Writes a DataAdaptor to an HDF5 file specified by a File object.
      */
-    static void writeToFile(H5Node document, final File file) throws IOException {
+    static void writeToFile(H5Node document, final File file) {
         Hdf5Writer hdf5Writer = new Hdf5Writer(document, file);
         try {
             hdf5Writer.write();
         } catch (Exception ex) {
-            Logger.getLogger(Hdf5Writer.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
     }
 
@@ -102,19 +101,14 @@ public class Hdf5Writer {
         FileFormat fileFormat = FileFormat.getFileFormat(FileFormat.FILE_TYPE_HDF5);
 
         if (fileFormat == null) {
-            Logger.getLogger(Hdf5Writer.class.getName()).log(Level.SEVERE, "Can't find HDF5 FileFormat. Check the java library path.");
+            LOGGER.severe("Can't find HDF5 FileFormat. Check the java library path.");
             throw new RuntimeException();
         }
 
         // create a new file with a given file name.
-        h5File = new H5File(file.getAbsolutePath(), FileFormat.CREATE);
+        H5File h5File = new H5File(file.getAbsolutePath(), FileFormat.CREATE);
 
         h5File.open();
-
-        if (h5File == null) {
-            Logger.getLogger(Hdf5Writer.class.getName()).log(Level.SEVERE, "Failed to create file:{0}", file.getName());
-            throw new RuntimeException();
-        }
 
         writeNode(document, (Group) h5File.getRootObject());
 
@@ -162,29 +156,31 @@ public class Hdf5Writer {
         Datatype dtype;
 
         switch (attribute.getType()) {
-            case Attribute.iBoolean:
+            case Attribute.BOOLEAN:
                 dtype = new H5Datatype(Datatype.CLASS_INTEGER, Byte.BYTES, Datatype.NATIVE, Datatype.NATIVE);
                 H5ScalarDS.create(attributeName, group, dtype, new long[]{1}, null, null, 0, new int[]{(attribute.getBoolean() ? 1 : 0)});
                 break;
-            case Attribute.iInteger:
+            case Attribute.INTEGER:
                 dtype = new H5Datatype(Datatype.CLASS_INTEGER, Integer.BYTES, Datatype.NATIVE, Datatype.NATIVE);
                 H5ScalarDS.create(attributeName, group, dtype, new long[]{1}, null, null, 0, new long[]{attribute.getInteger()});
                 break;
-            case Attribute.iLong:
+            case Attribute.LONG:
                 dtype = new H5Datatype(Datatype.CLASS_INTEGER, Long.BYTES, Datatype.NATIVE, Datatype.NATIVE);
                 H5ScalarDS.create(attributeName, group, dtype, new long[]{1}, null, null, 0, new long[]{attribute.getLong()});
                 break;
-            case Attribute.iDouble:
+            case Attribute.DOUBLE:
                 dtype = new H5Datatype(Datatype.CLASS_FLOAT, Double.BYTES, Datatype.NATIVE, Datatype.NATIVE);
                 H5ScalarDS.create(attributeName, group, dtype, new long[]{1}, null, null, 0, new double[]{attribute.getDouble()});
                 break;
-            case Attribute.iString:
+            case Attribute.STRING:
                 dtype = new H5Datatype(Datatype.CLASS_STRING, attribute.getString().length(), Datatype.NATIVE, Datatype.NATIVE);
                 H5ScalarDS.create(attributeName, group, dtype, new long[]{1}, null, null, 0, new String[]{attribute.getString()});
                 break;
-            case Attribute.iArrDbl:
+            case Attribute.ARR_DBL:
                 dtype = new H5Datatype(Datatype.CLASS_FLOAT, Double.BYTES, Datatype.NATIVE, Datatype.NATIVE);
                 H5ScalarDS.create(attributeName, group, dtype, new long[]{attribute.getArrDbl().length}, null, null, 0, attribute.getArrDbl());
+                break;
+            default:
                 break;
         }
     }

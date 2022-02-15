@@ -24,7 +24,7 @@ public class DriftTest extends SingleElementTest {
 
         List<Object[]> tests = new ArrayList<>();
 
-        // 0: basic test, E=3MeV		
+        // 0: basic test, E=3MeV        
         tests.add(new Object[]{new SingleElementTestData() {
             {
                 probe = setupOpenXALProbe(3e6, frequency, current);
@@ -59,7 +59,7 @@ public class DriftTest extends SingleElementTest {
             }
         }});
 
-        // 1: high energy test, E=2.5GeV		
+        // 1: high energy test, E=2.5GeV        
         tests.add(new Object[]{new SingleElementTestData() {
             {
                 probe = setupOpenXALProbe(2.5e9, frequency, current);
@@ -89,7 +89,7 @@ public class DriftTest extends SingleElementTest {
             }
         }});
 
-        // 2: space charge test, I=30mA		
+        // 2: space charge test, I=30mA        
         tests.add(new Object[]{new SingleElementTestData() {
             {
                 probe = setupOpenXALProbe(3e6, frequency, 30e-3);

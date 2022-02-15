@@ -110,14 +110,14 @@ def field_for_kick( kick, magnet, probe ):
 def kickBeam( scenario, sequence, corrector, kick ):
 	field = field_for_kick( kick, corrector, scenario.getProbe() )
 	scenario.setModelInput( corrector, ElectromagnetPropertyAccessor.PROPERTY_FIELD, field )
-	print "add field", field, "Tesla to corrector: ", corrector.getId(), ", position: ", sequence.getPosition(corrector), ", effective length: ", corrector.getEffLength()
+	print("add field", field, "Tesla to corrector: ", corrector.getId(), ", position: ", sequence.getPosition(corrector), ", effective length: ", corrector.getEffLength())
 
 
-# print results for the ring
+# print(results for the ring)
 def print_ring_results( trajectory ):
-	print ""
-	print "tunes: ", trajectory.getTunes()
-	print ""
+	print("")
+	print("tunes: ", trajectory.getTunes())
+	print("")
 
 
 # plot node results
@@ -128,7 +128,7 @@ def generate_xal_results( trajectory, sequence, nodes ):
 		node = node_iterator.next()
 		position = sequence.getPosition( node )
 		
-		print "get state for element: ", node.getId()
+		print("get state for element: ", node.getId())
 		state = trajectory.stateForElement( node.getId() )
 		
 		twiss = state.getTwiss()
@@ -148,12 +148,12 @@ def generate_xal_results( trajectory, sequence, nodes ):
 		x = orbit.getx() * 1000		# convert from meters to mm
 		y = orbit.gety() * 1000		# convert from meters to mm
 		
-		print node.getId(), sequence.getPosition( node )
-		print "twiss: ", twiss
-		print "dispersion: ", state.getChromDispersionX(), state.getChromDispersionY()
-		print "map: ", state.getFullTurnMap().getFirstOrder()
-		print "orbit: ", orbit
-		print ""
+		print(node.getId(), sequence.getPosition( node ))
+		print("twiss: ", twiss)
+		print("dispersion: ", state.getChromDispersionX(), state.getChromDispersionY())
+		print("map: ", state.getFullTurnMap().getFirstOrder())
+		print("orbit: ", orbit)
+		print("")
 		
 		result = NodeResult( position, alphax, betax, phasex, etax, etapx, alphay, betay, phasey, etay, etapy, x, y )
 		results.append( result )
@@ -227,10 +227,10 @@ def get_commands():
 
 
 # main procedure
-print "processing user commands..."
+print("processing user commands...")
 commands = get_commands()
 
-print "loading the accelerator..."
+print("loading the accelerator...")
 accelerator = XMLDataManager.loadDefaultAccelerator()
 sequence = accelerator.getComboSequence("Ring")
 
@@ -257,7 +257,7 @@ scenario.resync()
 scenario.run()
 trajectory = probe.getTrajectory()
 
-# print results
+# print(results)
 print_ring_results( trajectory )
 
 # generate the results at the magnets
@@ -339,5 +339,5 @@ plotter.plot_node_results( xal_results, 10, Color.BLUE, "XAL Horizontal Orbit" )
 plotter.plot_node_results( mad_results, 11, Color.ORANGE, "MAD Vertical Orbit" )
 plotter.plot_node_results( xal_results, 11, Color.GREEN, "XAL Vertical Orbit" )
 
-print ""
+print("")
 

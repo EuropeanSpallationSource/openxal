@@ -29,6 +29,7 @@ import org.epics.pvdata.pv.PVStructure;
 import org.epics.pvdata.pv.Status;
 import org.epics.pvdata.pv.Structure;
 import xal.ca.ConnectionException;
+import xal.ca.MonitorException;
 import xal.ca.PutException;
 
 /**
@@ -38,8 +39,8 @@ import xal.ca.PutException;
  */
 public class Epics7Monitor extends xal.ca.Monitor implements MonitorRequester {
 
-    protected volatile Channel nativeChannel;
-    protected volatile Monitor nativeMonitor;
+    protected Channel nativeChannel;
+    protected Monitor nativeMonitor;
     protected final EventListener listener;
 
     protected Epics7Monitor(Epics7Channel channel, EventListener listener, int intMaskEvent) throws ConnectionException {
@@ -48,8 +49,13 @@ public class Epics7Monitor extends xal.ca.Monitor implements MonitorRequester {
 
     }
 
-    public static Epics7Monitor createNewMonitor(Epics7Channel channel, String request, EventListener listener, int intMaskEvent) throws ConnectionException {
-        Epics7Monitor monitor = new Epics7Monitor(channel, listener, intMaskEvent);
+    public static Epics7Monitor createNewMonitor(Epics7Channel channel, String request, EventListener listener, int intMaskEvent) throws MonitorException {
+        Epics7Monitor monitor;
+        try {
+            monitor = new Epics7Monitor(channel, listener, intMaskEvent);
+        } catch (ConnectionException ex) {
+            throw new MonitorException("Connection Exception thrown", ex);
+        }
 
         monitor.createRequest(channel, request);
 

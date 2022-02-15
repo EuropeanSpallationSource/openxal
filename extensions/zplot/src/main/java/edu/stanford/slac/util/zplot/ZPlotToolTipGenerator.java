@@ -12,11 +12,13 @@ import org.jfree.data.xy.XYDataset;
  */
 public final class ZPlotToolTipGenerator implements XYToolTipGenerator {
 
-	/**
-	 * @see org.jfree.chart.labels.XYToolTipGenerator#generateToolTip(org.jfree.data.xy.XYDataset, int, int)
-	 */
-	public String generateToolTip(XYDataset dataset, int series, int item) {
-		return null;
-	}
+    /**
+     * @see
+     * org.jfree.chart.labels.XYToolTipGenerator#generateToolTip(org.jfree.data.xy.XYDataset,
+     * int, int)
+     */
+    public String generateToolTip(XYDataset dataset, int series, int item) {
+        return null;
+    }
 
 }

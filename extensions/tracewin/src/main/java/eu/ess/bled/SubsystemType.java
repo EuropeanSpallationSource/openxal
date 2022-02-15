@@ -10,60 +10,60 @@ package eu.ess.bled;
  * which defines the naming convention name of that {@link Subsystem}. More than
  * one {@link Subsystem} can have a link to each {@link SubsystemType}.
  * </p>
- * 
+ *
  * @author <a href="mailto:jaka.bobnar@cosylab.com">Jaka Bobnar</a>
  */
 public class SubsystemType implements BLEDEntity {
 
-	private static final long serialVersionUID = -6701569406227532216L;
+    private static final long serialVersionUID = -6701569406227532216L;
 
-	private Integer id;
-	private String name;
-	private String ncName;
-	private String description;
+    private Integer id;
+    private String name;
+    private String ncName;
+    private String description;
 
-	public Integer getId() {
-		return id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	@SuppressWarnings("unused")
-	private void setId(Integer id) {
-		this.id = id;
-	}
+    @SuppressWarnings("unused")
+    private void setId(Integer id) {
+        this.id = id;
+    }
 
-	public String getNCName() {
-		return ncName;
-	}
+    public String getNCName() {
+        return ncName;
+    }
 
-	public void setNCName(String name) {
-		this.ncName = name;
-	}
+    public void setNCName(String name) {
+        this.ncName = name;
+    }
 
-	public String getDescription() {
-		return description;
-	}
+    public String getDescription() {
+        return description;
+    }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		sb.append("name=");
-		sb.append(name);
-		sb.append(", nc_name=");
-		sb.append(ncName);
-		sb.append(", description=");
-		sb.append(description);
-		return "SubsystemType [" + sb.toString() + "]";
-	}
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("name=");
+        sb.append(name);
+        sb.append(", nc_name=");
+        sb.append(ncName);
+        sb.append(", description=");
+        sb.append(description);
+        return "SubsystemType [" + sb.toString() + "]";
+    }
 }

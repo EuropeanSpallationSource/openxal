@@ -13,341 +13,301 @@ import xal.extension.widgets.plot.*;
 import xal.extension.widgets.swing.*;
 
 /**
- *  This class is a analysis class to find min and max.
+ * This class is a analysis class to find min and max.
  *
- *@author     A. Shishlo
- *@version    1.0
+ * @author A. Shishlo
+ * @version 1.0
  */
-
 public final class AnalysisCntrlFindMinMax extends AnalysisController {
 
-	//DEFINITION  "FIND MIN/MAX" PANEL
-	private JPanel findMinMaxPanel = new JPanel();
-	private JLabel markerPos_Label = new JLabel(" Marker Position :");
-	private JLabel pvSet_Label = new JLabel(" Scan PV Set:");
-	private JLabel pvRB_Label = new JLabel(" Scan PV RB:");
+    //DEFINITION  "FIND MIN/MAX" PANEL
+    private JPanel findMinMaxPanel = new JPanel();
+    private JLabel markerPosLabel = new JLabel(" Marker Position :");
+    private JLabel pvSetLabel = new JLabel(" Scan PV Set:");
+    private JLabel pvRBLabel = new JLabel(" Scan PV RB:");
 
-	private ActionListener findMaxMin_Listener = null;
+    private JButton findButton = new JButton("FIND MAX/MIN");
+    private JButton setValButton = new JButton("SET FOUND VALUE TO EPICS");
+    private JButton readValButton = new JButton("READ CURRENT VALUES");
 
-	private JButton find_Button = new JButton("FIND MAX/MIN");
-	private JButton setVal_Button = new JButton("SET FOUND VALUE TO EPICS");
-	private JButton readVal_Button = new JButton("READ CURRENT VALUES");
+    private DoubleInputTextField markerPosText = new DoubleInputTextField(10);
+    private DoubleInputTextField pvSetValText = new DoubleInputTextField(10);
+    private DoubleInputTextField pvRBValText = new DoubleInputTextField(10);
 
-	private DoubleInputTextField markerPos_Text = new DoubleInputTextField(10);
-	private DoubleInputTextField pvSetVal_Text = new DoubleInputTextField(10);
-	private DoubleInputTextField pvRBVal_Text = new DoubleInputTextField(10);
+    private DecimalFormat valFormat = new DecimalFormat("####.####");
 
-	private DecimalFormat val_Format = new DecimalFormat("####.####");
+    private ActionListener dragVerLineListener = null;
+    private double markerPos = 0.;
+    private double phaseShift = 0.;
 
-	private ActionListener dragVerLine_Listener = null;
-	private double markerPos = 0.;
-	private double phase_shift = 0.;
+    /**
+     * The constructor.
+     *
+     * @param mainControllerIn Description of the Parameter
+     * @param analysisConf Description of the Parameter
+     * @param parentAnalysisPanelIn Description of the Parameter
+     * @param customControlPanelIn Description of the Parameter
+     * @param customGraphPanelIn Description of the Parameter
+     * @param globalButtonsPanelIn Description of the Parameter
+     * @param scanVariableParameterIn Description of the Parameter
+     * @param scanVariableIn Description of the Parameter
+     * @param measuredValuesVIn Description of the Parameter
+     * @param graphAnalysisIn Description of the Parameter
+     * @param messageTextLocalIn Description of the Parameter
+     * @param graphDataLocalIn Description of the Parameter
+     */
+    public AnalysisCntrlFindMinMax(MainAnalysisController mainControllerIn,
+            DataAdaptor analysisConf,
+            JPanel parentAnalysisPanelIn,
+            JPanel customControlPanelIn,
+            JPanel customGraphPanelIn,
+            JPanel globalButtonsPanelIn,
+            ScanVariable scanVariableParameterIn,
+            ScanVariable scanVariableIn,
+            Vector<MeasuredValue> measuredValuesVIn,
+            FunctionGraphsJPanel graphAnalysisIn,
+            JTextField messageTextLocalIn,
+            BasicGraphData graphDataLocalIn) {
 
+        //call the superclass constructor
+        super(mainControllerIn,
+                analysisConf,
+                parentAnalysisPanelIn,
+                customControlPanelIn,
+                customGraphPanelIn,
+                globalButtonsPanelIn,
+                scanVariableParameterIn,
+                scanVariableIn,
+                measuredValuesVIn,
+                graphAnalysisIn,
+                messageTextLocalIn,
+                graphDataLocalIn);
 
-	/**
-	 *  The constructor.
-	 *
-	 *@param  mainController_In         Description of the Parameter
-	 *@param  analysisConf              Description of the Parameter
-	 *@param  parentAnalysisPanel_In    Description of the Parameter
-	 *@param  customControlPanel_In     Description of the Parameter
-	 *@param  customGraphPanel_In       Description of the Parameter
-	 *@param  globalButtonsPanel_In     Description of the Parameter
-	 *@param  scanVariableParameter_In  Description of the Parameter
-	 *@param  scanVariable_In           Description of the Parameter
-	 *@param  measuredValuesV_In        Description of the Parameter
-	 *@param  graphAnalysis_In          Description of the Parameter
-	 *@param  messageTextLocal_In       Description of the Parameter
-	 *@param  graphDataLocal_In         Description of the Parameter
-	 */
-	public AnalysisCntrlFindMinMax(MainAnalysisController mainController_In,
-			DataAdaptor analysisConf,
-			JPanel parentAnalysisPanel_In,
-			JPanel customControlPanel_In,
-			JPanel customGraphPanel_In,
-			JPanel globalButtonsPanel_In,
-			ScanVariable scanVariableParameter_In,
-			ScanVariable scanVariable_In,
-			Vector<MeasuredValue> measuredValuesV_In,
-			FunctionGraphsJPanel graphAnalysis_In,
-			JTextField messageTextLocal_In,
-			BasicGraphData graphDataLocal_In) {
+        String nameIn = "FIND MIN/MAX";
+        DataAdaptor nameDA = analysisConf.childAdaptor("ANALYSIS_NAME");
+        if (nameDA != null) {
+            nameIn = nameDA.stringValue("name");
+        }
+        setName(nameIn);
 
-		//call the superclass constructor
-		super(mainController_In,
-				analysisConf,
-				parentAnalysisPanel_In,
-				customControlPanel_In,
-				customGraphPanel_In,
-				globalButtonsPanel_In,
-				scanVariableParameter_In,
-				scanVariable_In,
-				measuredValuesV_In,
-				graphAnalysis_In,
-				messageTextLocal_In,
-				graphDataLocal_In);
+        graphAnalysis.addDraggedVerLinesListener(null);
+        graphAnalysis.removeVerticalValue(0);
 
-		String nameIn = "FIND MIN/MAX";
-		DataAdaptor nameDA =  analysisConf.childAdaptor("ANALYSIS_NAME");
-		if (nameDA != null) {
-			nameIn = nameDA.stringValue("name");
-		}
-		setName(nameIn);
+        makeFindMinMaxPanel();
+    }
 
-		graphAnalysis.addDraggedVerLinesListener(null);
-		graphAnalysis.removeVerticalValue(0);
+    /**
+     * Sets fonts for all GUI elements.
+     *
+     * @param fnt The new fontsForAll value
+     */
+    @Override
+    public void setFontsForAll(Font fnt) {
+        super.setFontsForAll(fnt);
 
-		makeFindMinMaxPanel();
-	}
+        markerPosLabel.setFont(fnt);
+        pvSetLabel.setFont(fnt);
+        pvRBLabel.setFont(fnt);
+        findButton.setFont(fnt);
+        setValButton.setFont(fnt);
+        readValButton.setFont(fnt);
+        markerPosText.setFont(fnt);
+        pvSetValText.setFont(fnt);
+        pvRBValText.setFont(fnt);
+    }
 
+    /**
+     * Does what necessary for close this analysis window.
+     */
+    @Override
+    public void shutUp() {
+        super.shutUp();
+        customControlPanel.removeAll();
+        graphAnalysis.addDraggedVerLinesListener(null);
+        graphAnalysis.removeVerticalValue(0);
+    }
 
-	/**
-	 *  Sets the configurations of the analysis.
-	 *
-	 *@param  analysisConfig  Description of the Parameter
-	 */
-	public void dumpAnalysisConfig(DataAdaptor analysisConfig) {
-		super.dumpAnalysisConfig(analysisConfig);
-	}
+    /**
+     * Does what necessary for open this analysis window. This method could be
+     * overridden, because it is empty here.
+     */
+    @Override
+    public void showUp() {
+        super.showUp();
 
+        graphAnalysis.addVerticalLine(markerPos, Color.red);
+        graphAnalysis.addDraggedVerLinesListener(dragVerLineListener);
+        graphAnalysis.setDraggedVerLinesMotionListen(true);
 
-	/**
-	 *  Sets fonts for all GUI elements.
-	 *
-	 *@param  fnt  The new fontsForAll value
-	 */
-	public void setFontsForAll(Font fnt) {
-		super.setFontsForAll(fnt);
+        customControlPanel.add(dataReaderPanel, BorderLayout.NORTH);
+        customControlPanel.add(findMinMaxPanel, BorderLayout.CENTER);
+        customGraphPanel.add(graphAnalysis, BorderLayout.CENTER);
+        customGraphPanel.add(globalButtonsPanel, BorderLayout.SOUTH);
+    }
 
-		markerPos_Label.setFont(fnt);
-		pvSet_Label.setFont(fnt);
-		pvRB_Label.setFont(fnt);
-		find_Button.setFont(fnt);
-		setVal_Button.setFont(fnt);
-		readVal_Button.setFont(fnt);
-		markerPos_Text.setFont(fnt);
-		pvSetVal_Text.setFont(fnt);
-		pvRBVal_Text.setFont(fnt);
-	}
+    //-----------------------------------------------------
+    //PANEL DEFINITION
+    //-----------------------------------------------------
+    /**
+     * Description of the Method
+     */
+    private void makeFindMinMaxPanel() {
+        markerPosText.setEditable(true);
+        pvSetValText.setEditable(false);
+        pvRBValText.setEditable(false);
 
+        markerPosText.setNumberFormat(valFormat);
+        pvSetValText.setNumberFormat(valFormat);
+        pvRBValText.setNumberFormat(valFormat);
 
-	/**
-	 *  Does what necessary for close this analysis window.
-	 */
-	public void ShutUp() {
-		super.ShutUp();
-		customControlPanel.removeAll();
-		graphAnalysis.addDraggedVerLinesListener(null);
-		graphAnalysis.removeVerticalValue(0);
-	}
+        markerPosText.setHorizontalAlignment(SwingConstants.CENTER);
+        pvSetValText.setHorizontalAlignment(SwingConstants.CENTER);
+        pvRBValText.setHorizontalAlignment(SwingConstants.CENTER);
 
+        markerPosText.removeInnerFocusListener();
+        pvSetValText.removeInnerFocusListener();
+        pvRBValText.removeInnerFocusListener();
 
-	/**
-	 *  Does what necessary for open this analysis window. This method could be
-	 *  overridden, because it is empty here.
-	 */
-	public void ShowUp() {
-		super.ShowUp();
+        findMinMaxPanel.setLayout(new BorderLayout());
+        Border etchedBorder = BorderFactory.createEtchedBorder();
+        findMinMaxPanel.setBorder(etchedBorder);
 
-		graphAnalysis.addVerticalLine(markerPos, Color.red);
-		graphAnalysis.addDraggedVerLinesListener(dragVerLine_Listener);
-		graphAnalysis.setDraggedVerLinesMotionListen(true);
+        JPanel temp0 = new JPanel();
+        temp0.setLayout(new GridLayout(1, 2, 1, 1));
+        temp0.add(markerPosLabel);
+        temp0.add(markerPosText);
 
-		customControlPanel.add(dataReaderPanel, BorderLayout.NORTH);
-		customControlPanel.add(findMinMaxPanel, BorderLayout.CENTER);
-		customGraphPanel.add(graphAnalysis, BorderLayout.CENTER);
-		customGraphPanel.add(globalButtonsPanel, BorderLayout.SOUTH);
-	}
+        JPanel temp1 = new JPanel();
+        temp1.setLayout(new BorderLayout());
+        temp1.add(findButton, BorderLayout.NORTH);
+        temp1.add(temp0, BorderLayout.CENTER);
+        temp1.add(setValButton, BorderLayout.SOUTH);
 
+        JPanel temp2 = new JPanel();
+        temp2.setLayout(new GridLayout(2, 2, 1, 1));
+        temp2.add(pvSetLabel);
+        temp2.add(pvSetValText);
+        temp2.add(pvRBLabel);
+        temp2.add(pvRBValText);
 
-	/**
-	 *  Updates data on the analysis graph panel.
-	 */
-	public void updateDataSetOnGraphPanel() {
-		super.updateDataSetOnGraphPanel();
-	}
+        JPanel temp3 = new JPanel();
+        temp3.setLayout(new BorderLayout());
+        temp3.add(temp1, BorderLayout.NORTH);
+        temp3.add(temp2, BorderLayout.CENTER);
+        temp3.add(readValButton, BorderLayout.SOUTH);
 
+        findMinMaxPanel.add(temp3, BorderLayout.NORTH);
 
-	//-----------------------------------------------------
-	//PANEL DEFINITION
-	//-----------------------------------------------------
-	/**
-	 *  Description of the Method
-	 */
-	private void makeFindMinMaxPanel() {
-		markerPos_Text.setEditable(true);
-		pvSetVal_Text.setEditable(false);
-		pvRBVal_Text.setEditable(false);
+        dragVerLineListener = e -> {
+            int ind = graphAnalysis.getDraggedLineIndex();
+            markerPos = graphAnalysis.getVerticalValue(ind);
+            markerPos -= phaseShift;
+            if (phaseShift != 0.) {
+                markerPos += 180.;
+                while (markerPos < 0.) {
+                    markerPos += 360.;
+                }
+                markerPos = markerPos % 360.;
+                markerPos -= 180.;
+            }
+            markerPosText.setValueQuietly(markerPos);
+        };
 
-		markerPos_Text.setNumberFormat(val_Format);
-		pvSetVal_Text.setNumberFormat(val_Format);
-		pvRBVal_Text.setNumberFormat(val_Format);
+        markerPosText.addActionListener(e -> {
+            graphAnalysis.addDraggedVerLinesListener(null);
+            markerPos = markerPosText.getValue();
+            double phase = markerPos + phaseShift;
+            if (phaseShift != 0.) {
+                phase += 180.;
+                while (phase < 0.) {
+                    phase += 360.;
+                }
+                phase = phase % 360.;
+                phase -= 180.;
+            }
+            graphAnalysis.setVerticalLineValue(phase, 0);
+            graphAnalysis.addDraggedVerLinesListener(dragVerLineListener);
+        });
 
-		markerPos_Text.setHorizontalAlignment(JTextField.CENTER);
-		pvSetVal_Text.setHorizontalAlignment(JTextField.CENTER);
-		pvRBVal_Text.setHorizontalAlignment(JTextField.CENTER);
+        ActionListener findMaxMinListener = e -> {
+            BasicGraphData gd = mainController.getChoosenDraphData();
+            if (gd != null) {
+                graphAnalysis.removeGraphData(graphDataLocal);
+                graphDataLocal.removeAllPoints();
+                if (gd.getNumbOfPoints() > 0) {
+                    GraphDataOperations.polynomialFit(gd, graphDataLocal,
+                            graphAnalysis.getCurrentMinX(),
+                            graphAnalysis.getCurrentMaxX(), 2, 10);
+                    double dMaxPos = GraphDataOperations.getExtremumPosition(graphDataLocal,
+                            graphAnalysis.getCurrentMinX(),
+                            graphAnalysis.getCurrentMaxX());
+                    if (dMaxPos > graphAnalysis.getCurrentMinX() && dMaxPos < graphAnalysis.getCurrentMaxX()) {
+                        phaseShift = MainAnalysisController.getPhaseShift(gd);
+                        graphAnalysis.addDraggedVerLinesListener(null);
+                        dMaxPos -= phaseShift;
+                        if (phaseShift != 0.) {
+                            dMaxPos += 180.;
+                            while (dMaxPos < 0.) {
+                                dMaxPos += 360.;
+                            }
+                            dMaxPos = dMaxPos % 360.;
+                            dMaxPos -= 180.;
+                        }
+                        markerPosText.setValue(dMaxPos);
+                        graphAnalysis.addDraggedVerLinesListener(dragVerLineListener);
+                        messageTextLocal.setText(null);
+                        messageTextLocal.setText("Extremum has been found. The phase_shift value =" + valFormat.format(phaseShift));
+                    } else {
+                        Toolkit.getDefaultToolkit().beep();
+                        messageTextLocal.setText(null);
+                        messageTextLocal.setText("Cannot find extremum in the specified region.");
+                        graphDataLocal.removeAllPoints();
+                        graphAnalysis.refreshGraphJPanel();
+                    }
 
-		markerPos_Text.removeInnerFocusListener();
-		pvSetVal_Text.removeInnerFocusListener();
-		pvRBVal_Text.removeInnerFocusListener();
+                } else {
+                    Toolkit.getDefaultToolkit().beep();
+                    messageTextLocal.setText(null);
+                    messageTextLocal.setText("The graph does not have data points.");
+                }
+                graphAnalysis.addGraphData(graphDataLocal);
+            } else {
+                messageTextLocal.setText(null);
+                messageTextLocal.setText("Please choose graph and point first. Use S-button on the graph panel.");
+                Toolkit.getDefaultToolkit().beep();
+            }
+        };
 
-		findMinMaxPanel.setLayout(new BorderLayout());
-		Border etchedBorder = BorderFactory.createEtchedBorder();
-		findMinMaxPanel.setBorder(etchedBorder);
+        setValButton.addActionListener(e -> {
+            double val = markerPosText.getValue();
+            if (scanVariable.getChannel() != null) {
+                scanVariable.setValue(val);
+            } else {
+                messageTextLocal.setText(null);
+                messageTextLocal.setText("The scan PV channel does not exist.");
+                Toolkit.getDefaultToolkit().beep();
+            }
+        });
 
-		JPanel temp_0 = new JPanel();
-		temp_0.setLayout(new GridLayout(1, 2, 1, 1));
-		temp_0.add(markerPos_Label);
-		temp_0.add(markerPos_Text);
+        readValButton.addActionListener(e -> {
+            if (scanVariable.getChannel() != null) {
+                pvSetValText.setValue(scanVariable.getValue());
+            } else {
+                pvSetValText.setText(null);
+                pvSetValText.setBackground(Color.white);
+            }
+            if (scanVariable.getChannelRB() != null) {
+                pvRBValText.setValue(scanVariable.getValueRB());
+            } else {
+                pvRBValText.setText(null);
+                pvRBValText.setBackground(Color.white);
+            }
+        });
 
-		JPanel temp_1 = new JPanel();
-		temp_1.setLayout(new BorderLayout());
-		temp_1.add(find_Button, BorderLayout.NORTH);
-		temp_1.add(temp_0, BorderLayout.CENTER);
-		temp_1.add(setVal_Button, BorderLayout.SOUTH);
+        findButton.addActionListener(findMaxMinListener);
 
-		JPanel temp_2 = new JPanel();
-		temp_2.setLayout(new GridLayout(2, 2, 1, 1));
-		temp_2.add(pvSet_Label);
-		temp_2.add(pvSetVal_Text);
-		temp_2.add(pvRB_Label);
-		temp_2.add(pvRBVal_Text);
-
-		JPanel temp_3 = new JPanel();
-		temp_3.setLayout(new BorderLayout());
-		temp_3.add(temp_1, BorderLayout.NORTH);
-		temp_3.add(temp_2, BorderLayout.CENTER);
-		temp_3.add(readVal_Button, BorderLayout.SOUTH);
-
-		findMinMaxPanel.add(temp_3, BorderLayout.NORTH);
-
-		dragVerLine_Listener =
-			new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					int ind = graphAnalysis.getDraggedLineIndex();
-					markerPos = graphAnalysis.getVerticalValue(ind);
-					markerPos -= phase_shift;
-					if (phase_shift != 0.) {
-						markerPos += 180.;
-						while (markerPos < 0.) {
-							markerPos += 360.;
-						}
-						markerPos = markerPos % 360.;
-						markerPos -= 180.;
-					}					
-					markerPos_Text.setValueQuietly(markerPos);
-				}
-			};
-
-		markerPos_Text.addActionListener(
-			new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					graphAnalysis.addDraggedVerLinesListener(null);
-					markerPos = markerPos_Text.getValue();
-					double phase = markerPos + phase_shift;
-					if (phase_shift != 0.) {
-						phase += 180.;
-						while (phase < 0.) {
-							phase += 360.;
-						}
-						phase = phase % 360.;
-						phase -= 180.;
-					}										
-					graphAnalysis.setVerticalLineValue(phase, 0);
-					graphAnalysis.addDraggedVerLinesListener(dragVerLine_Listener);
-				}
-			});
-
-		findMaxMin_Listener =
-			new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					BasicGraphData gd = mainController.getChoosenDraphData();
-					if (gd != null) {
-						graphAnalysis.removeGraphData(graphDataLocal);
-						graphDataLocal.removeAllPoints();
-						if (gd.getNumbOfPoints() > 0) {
-							GraphDataOperations.polynomialFit(gd, graphDataLocal,
-									graphAnalysis.getCurrentMinX(),
-									graphAnalysis.getCurrentMaxX(), 2, 10);
-							double d_max_pos = GraphDataOperations.getExtremumPosition(graphDataLocal,
-									graphAnalysis.getCurrentMinX(),
-									graphAnalysis.getCurrentMaxX());
-							if (d_max_pos > graphAnalysis.getCurrentMinX() && d_max_pos < graphAnalysis.getCurrentMaxX()) {
-								phase_shift = MainAnalysisController.getPhaseShift(gd);
-								graphAnalysis.addDraggedVerLinesListener(null);
-								d_max_pos -= phase_shift;
-								if (phase_shift != 0.) {
-									d_max_pos += 180.;
-									while (d_max_pos < 0.) {
-										d_max_pos += 360.;
-									}
-									d_max_pos = d_max_pos % 360.;
-									d_max_pos -= 180.;
-								}
-								markerPos_Text.setValue(d_max_pos);
-								graphAnalysis.addDraggedVerLinesListener(dragVerLine_Listener);
-								messageTextLocal.setText(null);
-								messageTextLocal.setText("Extremum has been found. The phase_shift value =" + val_Format.format(phase_shift));
-							} else {
-								Toolkit.getDefaultToolkit().beep();
-								messageTextLocal.setText(null);
-								messageTextLocal.setText("Cannot find extremum in the specified region.");
-								graphDataLocal.removeAllPoints();
-								graphAnalysis.refreshGraphJPanel();
-							}
-
-						} else {
-							Toolkit.getDefaultToolkit().beep();
-							messageTextLocal.setText(null);
-							messageTextLocal.setText("The graph does not have data points.");
-						}
-						graphAnalysis.addGraphData(graphDataLocal);
-					} else {
-						messageTextLocal.setText(null);
-						messageTextLocal.setText("Please choose graph and point first. Use S-button on the graph panel.");
-						Toolkit.getDefaultToolkit().beep();
-					}
-				}
-			};
-
-		setVal_Button.addActionListener(
-			new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					double val = markerPos_Text.getValue();
-					if (scanVariable.getChannel() != null) {
-						scanVariable.setValue(val);
-					} else {
-						messageTextLocal.setText(null);
-						messageTextLocal.setText("The scan PV channel does not exist.");
-						Toolkit.getDefaultToolkit().beep();
-					}
-				}
-			});
-
-		readVal_Button.addActionListener(
-			new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					if (scanVariable.getChannel() != null) {
-						pvSetVal_Text.setValue(scanVariable.getValue());
-					} else {
-						pvSetVal_Text.setText(null);
-						pvSetVal_Text.setBackground(Color.white);
-					}
-					if (scanVariable.getChannelRB() != null) {
-						pvRBVal_Text.setValue(scanVariable.getValueRB());
-					} else {
-						pvRBVal_Text.setText(null);
-						pvRBVal_Text.setBackground(Color.white);
-					}
-				}
-			});
-
-		find_Button.addActionListener(findMaxMin_Listener);
-
-		find_Button.setForeground(Color.blue);
-		setVal_Button.setForeground(Color.blue);
-		readVal_Button.setForeground(Color.blue);
-	}
-
+        findButton.setForeground(Color.blue);
+        setValButton.setForeground(Color.blue);
+        readValButton.setForeground(Color.blue);
+    }
 }
-

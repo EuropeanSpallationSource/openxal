@@ -1,183 +1,308 @@
 package xal.smf.attr;
 
-
-
 /**
  * A set of RF cavity attributes. Here's what's in it:
  *
- *  amp - the default field amplitude (in kV/m)
- *  phase - the default phase (deg)
- *  freq - the frequency (MHz)
- *  ampFactor - calibration factor for klystron amplitude to cavity field value (ratio)
- *  phaseOffset - calibration offset for beam - klystron phase
- *  TTFCoefs - coefficients of a 2nd order polynomial representing the transit time factor function T(betat) 
+ * amp - the default field amplitude (in kV/m) phase - the default phase (deg)
+ * freq - the frequency (MHz) ampFactor - calibration factor for klystron
+ * amplitude to cavity field value (ratio) phaseOffset - calibration offset for
+ * beam - klystron phase TTFCoefs - coefficients of a 2nd order polynomial
+ * representing the transit time factor function T(betat)
  *
- * @author  Nikolay Malitsky, Christopher K. Allen
+ * @author Nikolay Malitsky, Christopher K. Allen
  */
-
-
 public class RfCavityBucket extends AttributeBucket {
-    
-	private static final long serialVersionUID = 1;
-	
+
+    private static final long serialVersionUID = 1;
+
     /*
      *  Constants
      */
-    
-    public final static String  c_strType = "rfcavity"; 
+    public static final String TYPE = "rfcavity";
 
-    final static String[]       c_arrNames = {  "amp", 
-                                                "phase",
-                                                "freq",
-                                                "ampFactor",
-                                                "phaseOffset",
-                                                "TTFCoefs",
-                                                "TTFPrimeCoefs",
-                                                "STFCoefs",
-                                                "STFPrimeCoefs",
-                                                "TTF_endCoefs",
-                                                "TTFPrime_EndCoefs",
-                                                "STF_endCoefs",
-                                                "STFPrime_endCoefs",
-                                                "structureMode",
-                                                "qLoaded",
-                                                "structureTTF"
+    static final String[] ARR_NAMES = {"amp",
+        "phase",
+        "freq",
+        "ampFactor",
+        "phaseOffset",
+        "TTFCoefs",
+        "TTFPrimeCoefs",
+        "STFCoefs",
+        "STFPrimeCoefs",
+        "TTF_endCoefs",
+        "TTFPrime_EndCoefs",
+        "STF_endCoefs",
+        "STFPrime_endCoefs",
+        "structureMode",
+        "qLoaded",
+        "structureTTF"
     };
-    
-    
+
     /*
      *  Local Attributes
      */
-    
-    /** Default field amplitude (in MV/m) */
-    private Attribute   m_attAmp;
-    
-    /** Default (design) cavity RF phase (deg) */
-    private Attribute   m_attPhase;
-    
-    /** Design cavity resonant frequency (MHz) */
-    private Attribute   m_attFreq;
-    
-    /** Calibration factor for klystron amplitude to cavity field value (ratio) */
-    private Attribute   m_attAmpFactor;
-    
-    /** Calibration offset for beam-to-klystron phase */
-    private Attribute   m_attPhaseOffset;
-    
-    /** quadratic fit coefficients for the transit time factor as a function of beta (constant, linear, quad) */
-    private Attribute   m_attTTFCoefs;
-    
-    /** quadratic fit coefficients for the transit time factor prime as a function of beta (constant, linear, quad) */
-    private Attribute   m_attTTFPrimeCoefs;
-    
-    /** quadratic fit coefficients for the "S transit time factor" as a function of beta (constant, linear, quad) */
-    private Attribute   m_attSTFCoefs;
-    
-    /** quadratic fit coefficients for the "S transit time factor" prime as a function of beta (constant, linear, quad) */
-    private Attribute   m_attSTFPrimeCoefs;
-    
-   /** quadratic fit coefficients for the transit time factor as a function of beta  for the end cells (constant, linear, quad) */     
-    private Attribute   m_attTTF_endCoefs;
-    
-    /** quadratic fit coefficients for the transit time factor prime as a function of beta for the end cells  (constant, linear, quad) */
-    private Attribute   m_attTTFPrime_endCoefs;
-    
-    /** quadratic fit coefficients for the "S transit time factor" as a function of beta for the end cells  (constant, linear, quad) */
-    private Attribute   m_attSTF_endCoefs;
-    
-    /** quadratic fit coefficients for the "S transit time factor" prime as a function of beta for the end cells (constant, linear, quad) */
-    private Attribute   m_attSTFPrime_endCoefs;
-    
-    /** flag for the structure type (0 or pi mode) (CKA pi mode has a value 1/2) */
-    private Attribute m_attStructureMode;
-    
-    /** quality factor with all external contribution */
-    private Attribute m_attQLoaded;
-    
-    /** TTF used in the real accelerator LLRF */
-    private Attribute m_attStructureTTF;
-    
+    /**
+     * Default field amplitude (in MV/m)
+     */
+    private Attribute attAmp;
+
+    /**
+     * Default (design) cavity RF phase (deg)
+     */
+    private Attribute attPhase;
+
+    /**
+     * Design cavity resonant frequency (MHz)
+     */
+    private Attribute attFreq;
+
+    /**
+     * Calibration factor for klystron amplitude to cavity field value (ratio)
+     */
+    private Attribute attAmpFactor;
+
+    /**
+     * Calibration offset for beam-to-klystron phase
+     */
+    private Attribute attPhaseOffset;
+
+    /**
+     * quadratic fit coefficients for the transit time factor as a function of
+     * beta (constant, linear, quad)
+     */
+    private Attribute attTTFCoefs;
+
+    /**
+     * quadratic fit coefficients for the transit time factor prime as a
+     * function of beta (constant, linear, quad)
+     */
+    private Attribute attTTFPrimeCoefs;
+
+    /**
+     * quadratic fit coefficients for the "S transit time factor" as a function
+     * of beta (constant, linear, quad)
+     */
+    private Attribute attSTFCoefs;
+
+    /**
+     * quadratic fit coefficients for the "S transit time factor" prime as a
+     * function of beta (constant, linear, quad)
+     */
+    private Attribute attSTFPrimeCoefs;
+
+    /**
+     * quadratic fit coefficients for the transit time factor as a function of
+     * beta for the end cells (constant, linear, quad)
+     */
+    private Attribute attTTFEndCoefs;
+
+    /**
+     * quadratic fit coefficients for the transit time factor prime as a
+     * function of beta for the end cells (constant, linear, quad)
+     */
+    private Attribute attTTFPrimeEndCoefs;
+
+    /**
+     * quadratic fit coefficients for the "S transit time factor" as a function
+     * of beta for the end cells (constant, linear, quad)
+     */
+    private Attribute attSTFEndCoefs;
+
+    /**
+     * quadratic fit coefficients for the "S transit time factor" prime as a
+     * function of beta for the end cells (constant, linear, quad)
+     */
+    private Attribute attSTFPrimeEndCoefs;
+
+    /**
+     * flag for the structure type (0 or pi mode) (CKA pi mode has a value 1/2)
+     */
+    private Attribute attStructureMode;
+
+    /**
+     * quality factor with all external contribution
+     */
+    private Attribute attQLoaded;
+
+    /**
+     * TTF used in the real accelerator LLRF
+     */
+    private Attribute attStructureTTF;
+
     /*
      *  User Interface
      */
-    
-    
-    /** Override virtual to provide type signature */
-    public String getType() { return c_strType; };
-       
-    
-    
-    
+    /**
+     * Override virtual to provide type signature
+     */
+    @Override
+    public String getType() {
+        return TYPE;
+    }
+
     public RfCavityBucket() {
         super();
-        
-        m_attAmp = new Attribute( 0. );
-        m_attPhase = new Attribute(0. );
-        m_attFreq = new Attribute(0. );
-        m_attAmpFactor = new Attribute(1.);
-        m_attPhaseOffset = new Attribute(0. );
-        m_attTTFCoefs = new Attribute(new double[] {});
-        m_attTTFPrimeCoefs = new Attribute(new double[] {});
-        m_attSTFCoefs = new Attribute(new double[] {});
-        m_attSTFPrimeCoefs = new Attribute(new double[] {});
-        m_attTTF_endCoefs = new Attribute(new double[] {});
-        m_attTTFPrime_endCoefs = new Attribute(new double[] {});
-        m_attSTF_endCoefs = new Attribute(new double[] {});
-        m_attSTFPrime_endCoefs = new Attribute(new double[] {});
-        m_attStructureMode = new Attribute(0. );
-        m_attQLoaded = new Attribute(0. );
-        m_attStructureTTF = new Attribute(1. );
-	
-        super.registerAttribute(c_arrNames[0], m_attAmp, "Default field amplitude (in MV).");
-        super.registerAttribute(c_arrNames[1], m_attPhase, "Default (design) cavity RF phase (deg).");
-        super.registerAttribute(c_arrNames[2], m_attFreq, "Design cavity resonant frequency (MHz).");
-        super.registerAttribute(c_arrNames[3], m_attAmpFactor, "Calibration factor for klystron amplitude to cavity field value (ratio).");
-        super.registerAttribute(c_arrNames[4], m_attPhaseOffset, "Calibration offset for beam-to-klystron phase.");
-        super.registerAttribute(c_arrNames[5], m_attTTFCoefs, "Quadratic fit coefficients for the transit time factor as a function of beta (constant, linear, quad).");	
-        super.registerAttribute(c_arrNames[6], m_attTTFPrimeCoefs, "Quadratic fit coefficients for the transit time factor prime as a function of beta (constant, linear, quad).");
-        super.registerAttribute(c_arrNames[7], m_attSTFCoefs, "Quadratic fit coefficients for the \"S transit time factor\" as a function of beta (constant, linear, quad).");	
-        super.registerAttribute(c_arrNames[8], m_attSTFPrimeCoefs, "Quadratic fit coefficients for the \"S transit time factor\" prime as a function of beta (constant, linear, quad).");		
-        super.registerAttribute(c_arrNames[9], m_attTTF_endCoefs, "Quadratic fit coefficients for the transit time factor as a function of beta for the end cells (constant, linear, quad).");	
-        super.registerAttribute(c_arrNames[10], m_attTTFPrime_endCoefs, "Quadratic fit coefficients for the transit time factor prime as a function of beta for the end cells (constant, linear, quad).");
-        super.registerAttribute(c_arrNames[11], m_attSTF_endCoefs, "Quadratic fit coefficients for the \"S transit time factor\" as a function of beta for the end cells (constant, linear, quad).");	
-        super.registerAttribute(c_arrNames[12], m_attSTFPrime_endCoefs, "Quadratic fit coefficients for the \"S transit time factor\" prime as a function of beta for the end cells (constant, linear, quad).");
-        super.registerAttribute(c_arrNames[13], m_attStructureMode, "Flag for the structure type (0 or pi mode) (CKA pi mode has a value 1/2).");
-        super.registerAttribute(c_arrNames[14], m_attQLoaded, "Quality factor with all external contribution.");
-        super.registerAttribute(c_arrNames[15], m_attStructureTTF, "TTF used in the real accelerator LLRF.");
-    }
-    
-     
-    public double   getAmplitude()  { return m_attAmp.getDouble(); }
-    public double   getPhase()      { return m_attPhase.getDouble(); }
-    public double   getFrequency()  { return m_attFreq.getDouble(); }
-    public double   getAmpFactor()  { return m_attAmpFactor.getDouble(); }
-    public double   getPhaseOffset(){ return m_attPhaseOffset.getDouble(); }
-    public double []   getTTFCoefs(){ return m_attTTFCoefs.getArrDbl(); }
-    public double []   getTTFPrimeCoefs(){ return m_attTTFPrimeCoefs.getArrDbl(); }
-    public double []   getSTFCoefs(){ return m_attSTFCoefs.getArrDbl(); }
-    public double []   getSTFPrimeCoefs(){ return m_attSTFPrimeCoefs.getArrDbl(); }  
-    public double []   getTTF_endCoefs(){ return m_attTTF_endCoefs.getArrDbl(); }
-    public double []   getTTFPrime_endCoefs(){ return m_attTTFPrime_endCoefs.getArrDbl(); }
-    public double []   getSTF_endCoefs(){ return m_attSTF_endCoefs.getArrDbl(); }
-    public double []   getSTFPrime_endCoefs(){ return m_attSTFPrime_endCoefs.getArrDbl(); } 
-    public double getStructureMode() { return m_attStructureMode.getDouble();} 
-    public double getQLoaded() {return m_attQLoaded.getDouble();}
-    public double getStructureTTF() {return m_attStructureTTF.getDouble();}
 
-    public void setAmplitude(double dblVal)  { m_attAmp.set(dblVal); }
-    public void setPhase(double dblVal)      { m_attPhase.set(dblVal); }
-    public void setFrequency(double dblVal)  { m_attFreq.set(dblVal); }
-    public void setAmpFactor(double dblVal)  { m_attAmpFactor.set(dblVal); }
-    public void setPhaseOffset(double dblVal){ m_attPhaseOffset.set(dblVal); }
-    public void setTTFCoefs(double [] arrVal){ m_attTTFCoefs.set(arrVal); }
-    public void setTTFPrimeCoefs(double [] arrVal){ m_attTTFPrimeCoefs.set(arrVal); }  
-    public void setSTFCoefs(double [] arrVal){ m_attSTFCoefs.set(arrVal); }
-    public void setSTFPrimeCoefs(double [] arrVal){ m_attSTFPrimeCoefs.set(arrVal);}
-    public void setTTF_endCoefs(double [] arrVal){ m_attTTF_endCoefs.set(arrVal); }
-    public void setTTFPrime_endCoefs(double [] arrVal){ m_attTTFPrime_endCoefs.set(arrVal); }  
-    public void setSTF_endCoefs(double [] arrVal){ m_attSTF_endCoefs.set(arrVal); }
-    public void setSTFPrime_endCoefs(double [] arrVal){ m_attSTFPrime_endCoefs.set(arrVal); }
-    public void setStructureMode(double dblVal)  { m_attStructureMode.set(dblVal); }
-    public void setQLoaded(double dblVal) { m_attQLoaded.set(dblVal); }
-    public void setStructureTTF(double dblVal) { m_attStructureTTF.set(dblVal); }
-};
+        attAmp = new Attribute(0.);
+        attPhase = new Attribute(0.);
+        attFreq = new Attribute(0.);
+        attAmpFactor = new Attribute(1.);
+        attPhaseOffset = new Attribute(0.);
+        attTTFCoefs = new Attribute(new double[]{});
+        attTTFPrimeCoefs = new Attribute(new double[]{});
+        attSTFCoefs = new Attribute(new double[]{});
+        attSTFPrimeCoefs = new Attribute(new double[]{});
+        attTTFEndCoefs = new Attribute(new double[]{});
+        attTTFPrimeEndCoefs = new Attribute(new double[]{});
+        attSTFEndCoefs = new Attribute(new double[]{});
+        attSTFPrimeEndCoefs = new Attribute(new double[]{});
+        attStructureMode = new Attribute(0.);
+        attQLoaded = new Attribute(0.);
+        attStructureTTF = new Attribute(1.);
+
+        super.registerAttribute(ARR_NAMES[0], attAmp, "Default field amplitude (in MV).");
+        super.registerAttribute(ARR_NAMES[1], attPhase, "Default (design) cavity RF phase (deg).");
+        super.registerAttribute(ARR_NAMES[2], attFreq, "Design cavity resonant frequency (MHz).");
+        super.registerAttribute(ARR_NAMES[3], attAmpFactor, "Calibration factor for klystron amplitude to cavity field value (ratio).");
+        super.registerAttribute(ARR_NAMES[4], attPhaseOffset, "Calibration offset for beam-to-klystron phase.");
+        super.registerAttribute(ARR_NAMES[5], attTTFCoefs, "Quadratic fit coefficients for the transit time factor as a function of beta (constant, linear, quad).");
+        super.registerAttribute(ARR_NAMES[6], attTTFPrimeCoefs, "Quadratic fit coefficients for the transit time factor prime as a function of beta (constant, linear, quad).");
+        super.registerAttribute(ARR_NAMES[7], attSTFCoefs, "Quadratic fit coefficients for the \"S transit time factor\" as a function of beta (constant, linear, quad).");
+        super.registerAttribute(ARR_NAMES[8], attSTFPrimeCoefs, "Quadratic fit coefficients for the \"S transit time factor\" prime as a function of beta (constant, linear, quad).");
+        super.registerAttribute(ARR_NAMES[9], attTTFEndCoefs, "Quadratic fit coefficients for the transit time factor as a function of beta for the end cells (constant, linear, quad).");
+        super.registerAttribute(ARR_NAMES[10], attTTFPrimeEndCoefs, "Quadratic fit coefficients for the transit time factor prime as a function of beta for the end cells (constant, linear, quad).");
+        super.registerAttribute(ARR_NAMES[11], attSTFEndCoefs, "Quadratic fit coefficients for the \"S transit time factor\" as a function of beta for the end cells (constant, linear, quad).");
+        super.registerAttribute(ARR_NAMES[12], attSTFPrimeEndCoefs, "Quadratic fit coefficients for the \"S transit time factor\" prime as a function of beta for the end cells (constant, linear, quad).");
+        super.registerAttribute(ARR_NAMES[13], attStructureMode, "Flag for the structure type (0 or pi mode) (CKA pi mode has a value 1/2).");
+        super.registerAttribute(ARR_NAMES[14], attQLoaded, "Quality factor with all external contribution.");
+        super.registerAttribute(ARR_NAMES[15], attStructureTTF, "TTF used in the real accelerator LLRF.");
+    }
+
+    public double getAmplitude() {
+        return attAmp.getDouble();
+    }
+
+    public double getPhase() {
+        return attPhase.getDouble();
+    }
+
+    public double getFrequency() {
+        return attFreq.getDouble();
+    }
+
+    public double getAmpFactor() {
+        return attAmpFactor.getDouble();
+    }
+
+    public double getPhaseOffset() {
+        return attPhaseOffset.getDouble();
+    }
+
+    public double[] getTTFCoefs() {
+        return attTTFCoefs.getArrDbl();
+    }
+
+    public double[] getTTFPrimeCoefs() {
+        return attTTFPrimeCoefs.getArrDbl();
+    }
+
+    public double[] getSTFCoefs() {
+        return attSTFCoefs.getArrDbl();
+    }
+
+    public double[] getSTFPrimeCoefs() {
+        return attSTFPrimeCoefs.getArrDbl();
+    }
+
+    public double[] getTTFEndCoefs() {
+        return attTTFEndCoefs.getArrDbl();
+    }
+
+    public double[] getTTFPrimeEndCoefs() {
+        return attTTFPrimeEndCoefs.getArrDbl();
+    }
+
+    public double[] getSTFEndCoefs() {
+        return attSTFEndCoefs.getArrDbl();
+    }
+
+    public double[] getSTFPrimeEndCoefs() {
+        return attSTFPrimeEndCoefs.getArrDbl();
+    }
+
+    public double getStructureMode() {
+        return attStructureMode.getDouble();
+    }
+
+    public double getQLoaded() {
+        return attQLoaded.getDouble();
+    }
+
+    public double getStructureTTF() {
+        return attStructureTTF.getDouble();
+    }
+
+    public void setAmplitude(double dblVal) {
+        attAmp.set(dblVal);
+    }
+
+    public void setPhase(double dblVal) {
+        attPhase.set(dblVal);
+    }
+
+    public void setFrequency(double dblVal) {
+        attFreq.set(dblVal);
+    }
+
+    public void setAmpFactor(double dblVal) {
+        attAmpFactor.set(dblVal);
+    }
+
+    public void setPhaseOffset(double dblVal) {
+        attPhaseOffset.set(dblVal);
+    }
+
+    public void setTTFCoefs(double[] arrVal) {
+        attTTFCoefs.set(arrVal);
+    }
+
+    public void setTTFPrimeCoefs(double[] arrVal) {
+        attTTFPrimeCoefs.set(arrVal);
+    }
+
+    public void setSTFCoefs(double[] arrVal) {
+        attSTFCoefs.set(arrVal);
+    }
+
+    public void setSTFPrimeCoefs(double[] arrVal) {
+        attSTFPrimeCoefs.set(arrVal);
+    }
+
+    public void setTTFEndCoefs(double[] arrVal) {
+        attTTFEndCoefs.set(arrVal);
+    }
+
+    public void setTTFPrimeEndCoefs(double[] arrVal) {
+        attTTFPrimeEndCoefs.set(arrVal);
+    }
+
+    public void setSTFEndCoefs(double[] arrVal) {
+        attSTFEndCoefs.set(arrVal);
+    }
+
+    public void setSTFPrimeEndCoefs(double[] arrVal) {
+        attSTFPrimeEndCoefs.set(arrVal);
+    }
+
+    public void setStructureMode(double dblVal) {
+        attStructureMode.set(dblVal);
+    }
+
+    public void setQLoaded(double dblVal) {
+        attQLoaded.set(dblVal);
+    }
+
+    public void setStructureTTF(double dblVal) {
+        attStructureTTF.set(dblVal);
+    }
+}

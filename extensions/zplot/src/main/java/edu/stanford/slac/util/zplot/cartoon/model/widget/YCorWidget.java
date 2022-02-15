@@ -6,15 +6,15 @@ import java.awt.Shape;
 
 public class YCorWidget extends CartoonWidget {
 
-	public static final Shape SHAPE = new Polygon(new int[] {0, REF_HEIGHT/4, 
-			-REF_HEIGHT/4 }, new int[] { REF_HEIGHT/2, 0, 0 }, 3);
-	
-	public YCorWidget() {
-		super(Color.YELLOW);
-	}
+    public static final Shape SHAPE = new Polygon(new int[]{0, REF_HEIGHT / 4,
+        -REF_HEIGHT / 4}, new int[]{REF_HEIGHT / 2, 0, 0}, 3);
 
-	@Override
-	public Shape getShape(int length) {
-		return SHAPE;
-	}
+    public YCorWidget() {
+        super(Color.YELLOW);
+    }
+
+    @Override
+    public Shape getShape(int length) {
+        return SHAPE;
+    }
 }
