@@ -464,15 +464,16 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      * them. This method is useful when setting a value and checking that the
      * value was set.
      *
-     * @param readbackHandle The readback handle for the channel to get.
+     * @param setHandle The set handle for the channel to set.
      * @return A map containing the set and readback channels associated with
      * this node and the specified set handle or null if there is no match.
      * @throws xal.smf.NoSuchChannelException if no such channel as specified by
      * the handle is associated with this node.
      */
-    public Map<ChannelType, Channel> getAndConnectChannelSetAndReadback(String readbackHandle) throws NoSuchChannelException {
-        Channel setChannel = getChannel(getSetHandle(readbackHandle));
-        Channel redBackChannel = getChannel(readbackHandle);
+    public Map<ChannelType, Channel> getAndConnectChannelSetAndReadback(String setHandle) throws NoSuchChannelException {
+        Channel setChannel = getChannel(setHandle);
+        Channel redBackChannel = getChannel(getReadbackHandles(setHandle)[0]);
+
         setChannel.connectAndWait();
         redBackChannel.connectAndWait();
 
