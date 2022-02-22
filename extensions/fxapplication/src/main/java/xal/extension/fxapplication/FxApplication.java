@@ -28,6 +28,7 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -89,6 +90,9 @@ public abstract class FxApplication extends Application {
     private String STAGE_TITLE = "Demo Application";
     private String acceleratorMainPath;
     private MenuItem testModeMenu;
+
+    public static final String SAVE_PATH_PREF_KEY = "defaultSavePath";
+    File initialDir = null;
 
     private enum THEME {
         DEFAULT,
@@ -559,6 +563,20 @@ public abstract class FxApplication extends Application {
             fileChooser.setTitle("Save Application State");
             fileChooser.setInitialFileName(DOCUMENT.getDefaultFilename());
 
+            // Set the default path if no files have been loaded or saved before
+            if (initialDir == null) {
+                Preferences prefs = xal.tools.apputils.Preferences.nodeForPackage(FxApplication.class);
+                String defaultSaveDir = prefs.get(SAVE_PATH_PREF_KEY, null);
+                if (defaultSaveDir != null && !"".equals(defaultSaveDir)) {
+                    initialDir = new File(defaultSaveDir);
+                }
+            }
+
+            // Set initial save path
+            if (initialDir != null) {
+                fileChooser.setInitialDirectory(initialDir);
+            }
+
             //Set extension filter
             FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(DOCUMENT.FILETYPE_DESCRIPTION + " (" + DOCUMENT.WILDCARD_FILE_EXTENSION + ")", DOCUMENT.WILDCARD_FILE_EXTENSION);
             fileChooser.getExtensionFilters().add(extFilter);
@@ -567,6 +585,7 @@ public abstract class FxApplication extends Application {
             File selectedFile = fileChooser.showSaveDialog(null);
             if (selectedFile != null) {
                 DOCUMENT.setSource(selectedFile);
+                initialDir = selectedFile.getParentFile();
             } else {
                 Logger.getLogger(getClass().getName()).log(Level.WARNING, "Selected file is null {0}", selectedFile);
             }
@@ -593,6 +612,20 @@ public abstract class FxApplication extends Application {
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(DOCUMENT.FILETYPE_DESCRIPTION + " (" + DOCUMENT.WILDCARD_FILE_EXTENSION + ")", DOCUMENT.WILDCARD_FILE_EXTENSION);
         fileChooser.getExtensionFilters().add(extFilter);
 
+        // Set the default path if no files have been loaded or saved before
+        if (initialDir == null) {
+            Preferences prefs = xal.tools.apputils.Preferences.nodeForPackage(FxApplication.class);
+            String defaultSaveDir = prefs.get(SAVE_PATH_PREF_KEY, null);
+            if (defaultSaveDir != null && !"".equals(defaultSaveDir)) {
+                initialDir = new File(defaultSaveDir);
+            }
+        }
+
+        // Set initial save path
+        if (initialDir != null) {
+            fileChooser.setInitialDirectory(initialDir);
+        }
+
         //Show save file dialog
         File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile == null) {
@@ -601,6 +634,7 @@ public abstract class FxApplication extends Application {
             if (selectedFile.exists() && selectedFile.canRead()) {
                 DOCUMENT.setSource(selectedFile);
                 DOCUMENT.loadDocument(DOCUMENT.source);
+                initialDir = selectedFile.getParentFile();
             } else {
                 Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Could not open {0}", DOCUMENT.source);
             }
