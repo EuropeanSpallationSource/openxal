@@ -235,7 +235,7 @@ class ClientHandler<T> implements InvocationHandler {
             serviceProtocol.getMethod(method.getName(), method.getParameterTypes());
             return performRemoteServiceCall(method, args);
         } catch (NoSuchMethodException exception) {
-            LOGGER.log(Level.OFF, null, exception);
+            LOGGER.log(Level.FINEST, null, exception);
             return performServiceStateCall(method, args);
         }
     }

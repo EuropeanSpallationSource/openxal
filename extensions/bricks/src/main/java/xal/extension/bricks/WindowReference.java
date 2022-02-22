@@ -214,7 +214,7 @@ public class WindowReference {
             constructor.setAccessible(true);
             return constructor;
         } catch (NoSuchMethodException | SecurityException exception) {
-            LOGGER.log(Level.WARNING, null, exception);
+            LOGGER.log(Level.FINEST, null, exception);
             final Constructor[] constructors = theClass.getConstructors();
             for (final Constructor constructor : constructors) {
                 if (constructorCanOperateOn(constructor, parameters)) {
