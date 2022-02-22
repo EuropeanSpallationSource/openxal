@@ -35,7 +35,6 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import xal.ca.ChannelRecord;
 import xal.ca.ChannelStatusRecord;
-import xal.ca.ConnectionException;
 import xal.ca.GetException;
 import xal.ca.PutException;
 import xal.ca.PutListener;
@@ -112,7 +111,7 @@ public class Epics7ChannelTest {
         instance2.disconnect();
         instance3.disconnect();
 
-        double timeout = 1.0;
+        double timeout = 2.0;
         assertEquals(instance.connectAndWait(timeout), true);
         assertEquals(instance2.connectAndWait(timeout), true);
         assertEquals(instance3.connectAndWait(timeout), true);
