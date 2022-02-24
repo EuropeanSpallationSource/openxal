@@ -34,7 +34,7 @@ public abstract class Electromagnet extends Magnet {
     public static final String FIELD_RB_HANDLE = "fieldRB";
 
     public final AccessibleProperty field = new AccessibleProperty("field", FIELD_RB_HANDLE, MagnetMainSupply.FIELD_SET_HANDLE,
-            this::getDesignField, designValue -> toFieldFromCA(designValue),
+            this::getDesignField, designValue -> setDfltField(designValue),
             channelValues -> toFieldFromCA(channelValues[0]), channelValues -> toCAFromField(channelValues));
 
     public final AccessibleProperty fieldFromCurrent = new AccessibleProperty("field", MagnetMainSupply.CURRENT_RB_HANDLE, MagnetMainSupply.CURRENT_SET_HANDLE,
