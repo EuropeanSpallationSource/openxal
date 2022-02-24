@@ -93,15 +93,15 @@ public class ApertureBucket extends AttributeBucket {
     }
 
     public double[] getAperX() {
-        return attAperX.getArrDbl();
+        return attAperX.getArrDbl().clone();
     }
 
     public double[] getAperY() {
-        return attAperY.getArrDbl();
+        return attAperY.getArrDbl().clone();
     }
 
     public double[] getAperPos() {
-        return attAperPos.getArrDbl();
+        return attAperPos.getArrDbl().clone();
     }
 
     public void setShape(int intVal) {

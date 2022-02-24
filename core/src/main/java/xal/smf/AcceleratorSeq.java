@@ -1092,8 +1092,8 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
      * Get all nodes in the specified sequence and gets the aperture bucket
      * values.
      *
-     * @return a map with the position and a coordinate set {ApertureX,
-     * ApertureY}
+     * @return an ApertureProfile object containing the X and Y aperture
+     * profiles
      *
      * @author Natalia Milas - 2018-11
      *
