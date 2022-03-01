@@ -112,7 +112,7 @@ public abstract class XalFxDocument {
      */
     public void setHasChanges(final boolean changeStatus) {
         // Add a * after the file name in title bar in case there are changes to the file
-        if (changeStatus) {
+        if (changeStatus && sourceSetAndValid()) {
             sourceString.set(source + "*");
         } else {
             sourceString.set(source.toString());
@@ -142,9 +142,13 @@ public abstract class XalFxDocument {
                 sourceString.set(newSource.toString());
             } catch (MalformedURLException ex) {
                 Logger.getLogger(XalFxDocument.class.getName()).log(Level.SEVERE, null, ex);
+                source = null;
+                sourceString.setValue("");
             }
         } else {
             Logger.getLogger(XalFxDocument.class.getName()).log(Level.WARNING, "Not possible to write to file {0}", newSource);
+            source = null;
+            sourceString.setValue("");
         }
     }
 

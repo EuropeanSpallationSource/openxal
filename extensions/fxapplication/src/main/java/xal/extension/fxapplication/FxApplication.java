@@ -58,6 +58,7 @@ import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.FileChooser;
+import javafx.stage.WindowEvent;
 import xal.extension.application.ApplicationStatus;
 import xal.extension.logbook.Logbook;
 import xal.extension.logbook.LogbookException;
@@ -398,13 +399,28 @@ public abstract class FxApplication extends Application {
 
             stage.setTitle(STAGE_TITLE);
             stage.setScene(scene);
-            DOCUMENT.sourceString.addListener((observable, oldValue, newValue) -> stage.setTitle(STAGE_TITLE + ": " + newValue));
+
+            if (HAS_DOCUMENTS && DOCUMENT != null) {
+                DOCUMENT.sourceString.addListener((observable, oldValue, newValue) -> stage.setTitle(STAGE_TITLE + ": " + newValue));
+            }
 
             loader.<Controller>getController().setApplication(this);
         } catch (IOException e) {
             Logger.getLogger(getClass().getName()).log(Level.WARNING, "Error loading the scene.", e);
             throw (e);
         }
+
+        // On close hook to check if document has changes before exiting
+        stage.setOnCloseRequest((WindowEvent event) -> {
+            if (HAS_DOCUMENTS && DOCUMENT != null && DOCUMENT.hasChanges()) {
+                Alert dialog = new Alert(AlertType.CONFIRMATION);
+                dialog.setHeaderText("Document has unsaved changes, are you sure you want to exit?");
+                Optional<ButtonType> result = dialog.showAndWait();
+                if (!result.isPresent() || result.get() != ButtonType.OK) {
+                    event.consume();
+                }
+            }
+        });
 
         try {
             beforeStart(stage);
@@ -550,7 +566,15 @@ public abstract class FxApplication extends Application {
      * subclasses.
      */
     protected void newFileMenuHandler() {
-        DOCUMENT.newDocument();
+        if (DOCUMENT.hasChanges()) {
+            Alert dialog = new Alert(AlertType.CONFIRMATION);
+            dialog.setHeaderText("Document has unsaved changes, are you sure you want to create a new document?");
+            dialog.setContentText("Unsaved changes in the current document will be lost.");
+            Optional<ButtonType> result = dialog.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                DOCUMENT.newDocument();
+            }
+        }
     }
 
     /**
@@ -605,6 +629,16 @@ public abstract class FxApplication extends Application {
      * then calls the loadDocument() method of the XalFxDocument class.
      */
     protected void loadFileMenuHandler() {
+        if (DOCUMENT != null && DOCUMENT.hasChanges()) {
+            Alert dialog = new Alert(AlertType.CONFIRMATION);
+            dialog.setHeaderText("Document has unsaved changes, are you sure you want to load another document?");
+            dialog.setContentText("Unsaved changes in the current document will be lost.");
+            Optional<ButtonType> result = dialog.showAndWait();
+            if (!result.isPresent() || result.get() != ButtonType.OK) {
+                return;
+            }
+        }
+
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Load Application State");
 
