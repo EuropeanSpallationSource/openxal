@@ -422,10 +422,9 @@ public class Scenario {
      *
      * @param aNode AcceleratorNode whose properties to get
      * @return a Map of property values for the supplied node
-     * @throws SynchronizationException if error getting properties
      * @throws IllegalArgumentException if aNode is null
      */
-    public Map<String, Double> propertiesForNode(final AcceleratorNode aNode) throws SynchronizationException {
+    public Map<String, Double> propertiesForNode(final AcceleratorNode aNode) {
         if (aNode == null) {
             throw new IllegalArgumentException("node cannot be null getting property values");
         }
