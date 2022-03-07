@@ -472,14 +472,14 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      */
     public Map<ChannelType, Channel> getAndConnectChannelSetAndReadback(String setHandle) throws NoSuchChannelException {
         Channel setChannel = getChannel(setHandle);
-        Channel redBackChannel = getChannel(getReadbackHandles(setHandle)[0]);
+        Channel readBackChannel = getChannel(getReadbackHandles(setHandle)[0]);
 
         setChannel.connectAndWait();
-        redBackChannel.connectAndWait();
+        readBackChannel.connectAndWait();
 
         Map<ChannelType, Channel> map = new HashMap<>();
         map.put(ChannelType.SET, setChannel);
-        map.put(ChannelType.RB, redBackChannel);
+        map.put(ChannelType.RB, readBackChannel);
 
         return map;
     }
