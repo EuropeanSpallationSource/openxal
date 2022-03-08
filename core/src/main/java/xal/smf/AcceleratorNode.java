@@ -113,11 +113,6 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      */
     protected ChannelSuite channelSuite;
 
-    protected enum ChannelType {
-        SET,
-        RB
-    }
-
     /**
      * Derived class must furnish a unique type id
      */
@@ -465,23 +460,25 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      * value was set.
      *
      * @param setHandle The set handle for the channel to set.
-     * @return A map containing the set and readback channels associated with
-     * this node and the specified set handle or null if there is no match.
+     * @return A list containing the set (first) and readback channels
+     * (subsequent) associated with this node and the specified set handle or
+     * null if there is no match.
      * @throws xal.smf.NoSuchChannelException if no such channel as specified by
      * the handle is associated with this node.
      */
-    public Map<ChannelType, Channel> getAndConnectChannelSetAndReadback(String setHandle) throws NoSuchChannelException {
+    public List<Channel> getAndConnectChannelSetAndReadback(String setHandle) throws NoSuchChannelException {
+        List<Channel> list = new ArrayList<>();
         Channel setChannel = getChannel(setHandle);
-        Channel readBackChannel = getChannel(getReadbackHandles(setHandle)[0]);
-
         setChannel.connectAndWait();
-        readBackChannel.connectAndWait();
+        list.add(setChannel);
 
-        Map<ChannelType, Channel> map = new HashMap<>();
-        map.put(ChannelType.SET, setChannel);
-        map.put(ChannelType.RB, readBackChannel);
+        for (String handle : getReadbackHandles(setHandle)) {
+            Channel readBackChannel = getChannel(handle);
+            readBackChannel.connectAndWait();
+            list.add(readBackChannel);
+        }
 
-        return map;
+        return list;
     }
 
     /**
@@ -491,12 +488,15 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      * @return The corresponding readback handle.
      */
     public String[] getReadbackHandles(String setHandle) {
+        List readbackHandles = new ArrayList<>();
         for (AccessibleProperty prop : getAccessibleProperties()) {
             if (prop.getSetHandle().equals(setHandle)) {
-                return prop.getReadbackHandles();
+                for (String handle : prop.getReadbackHandles()) {
+                    readbackHandles.add(handle);
+                }
             }
         }
-        return new String[0];
+        return (String[]) readbackHandles.toArray(new String[0]);
     }
 
     /**
@@ -517,21 +517,21 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
     }
 
     /**
-     * Set a value to the get channel corresponding to the set handle, and then
+     * Set a value to the set channel corresponding to the set handle, and then
      * check on the readback channel that the value is within an interval around
      * the set value.
      *
      * @param setHandle Handle corresponding to the set channel.
      * @param value Value to be set.
      * @param tolerance Defines an interval around the value (absolute value).
-     * @param delay Delay in seconds for the readback to reach the set value
-     * before failing.
+     * @param timeout Timout in seconds for the readback to reach the set value
+     * before failing. Failure is indicated by returning false.
      * @return true if the value is set correctly, otherwise false.
      * @throws PutException
      * @throws MonitorException
      */
-    public boolean setValueAndVerify(String setHandle, Number value, Number tolerance, double delay) throws PutException, MonitorException {
-        Map<ChannelType, Channel> channels;
+    public boolean setValueAndVerify(String setHandle, Number value, Number tolerance, double timeout) throws PutException, MonitorException {
+        List<Channel> channels;
 
         try {
             channels = getAndConnectChannelSetAndReadback(setHandle);
@@ -540,68 +540,78 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
             return false;
         }
 
-        if (channels.get(ChannelType.SET) != null && channels.get(ChannelType.RB) != null) {
+        if (channels.size() >= 2 && channels.get(0) != null && channels.get(1) != null) {
             CountDownLatch latch = new CountDownLatch(1);
 
-            Channel rbChannel = channels.get(ChannelType.RB);
-            Channel setChannel = channels.get(ChannelType.SET);
-            Monitor monitor = null;
-            if (value instanceof Byte) {
-                monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
-                    if (Math.abs(channelRecord.byteValue() - value.byteValue()) <= tolerance.byteValue()) {
-                        latch.countDown();
-                    }
-                }, 0);
-                setChannel.putVal(value.byteValue());
-            } else if (value instanceof Float) {
-                monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
-                    if (Math.abs(channelRecord.floatValue() - value.floatValue()) <= tolerance.floatValue()) {
-                        latch.countDown();
-                    }
-                }, 0);
-                setChannel.putVal(value.floatValue());
-            } else if (value instanceof Double) {
-                monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
-                    if (Math.abs(channelRecord.doubleValue() - value.doubleValue()) <= tolerance.doubleValue()) {
-                        latch.countDown();
-                    }
-                }, 0);
-                setChannel.putVal(value.doubleValue());
-            } else if (value instanceof Short) {
-                monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
-                    if (Math.abs(channelRecord.shortValue() - value.shortValue()) <= tolerance.shortValue()) {
-                        latch.countDown();
-                    }
-                }, 0);
-                setChannel.putVal(value.shortValue());
-            } else if (value instanceof Integer) {
-                monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
-                    if (Math.abs(channelRecord.intValue() - value.intValue()) <= tolerance.intValue()) {
-                        latch.countDown();
-                    }
-                }, 0);
-                setChannel.putVal(value.intValue());
-            } else if (value instanceof Long) {
-                monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
-                    if (Math.abs(channelRecord.longValue() - value.longValue()) <= tolerance.longValue()) {
-                        latch.countDown();
-                    }
-                }, 0);
-                setChannel.putVal(value.longValue());
-            }
+            // First channel is the set channel
+            Channel setChannel = channels.get(0);
 
-            if (monitor == null) {
-                return false;
+            List<Monitor> monitors = new ArrayList<>();
+
+            // Try all readback channels, return after the first event that is within tolerance.
+            for (Channel rbChannel : channels.subList(1, channels.size() - 1)) {
+                Monitor monitor = null;
+                if (value instanceof Byte) {
+                    monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
+                        if (Math.abs(channelRecord.byteValue() - value.byteValue()) <= tolerance.byteValue()) {
+                            latch.countDown();
+                        }
+                    }, 0);
+                    setChannel.putVal(value.byteValue());
+                } else if (value instanceof Float) {
+                    monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
+                        if (Math.abs(channelRecord.floatValue() - value.floatValue()) <= tolerance.floatValue()) {
+                            latch.countDown();
+                        }
+                    }, 0);
+                    setChannel.putVal(value.floatValue());
+                } else if (value instanceof Double) {
+                    monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
+                        if (Math.abs(channelRecord.doubleValue() - value.doubleValue()) <= tolerance.doubleValue()) {
+                            latch.countDown();
+                        }
+                    }, 0);
+                    setChannel.putVal(value.doubleValue());
+                } else if (value instanceof Short) {
+                    monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
+                        if (Math.abs(channelRecord.shortValue() - value.shortValue()) <= tolerance.shortValue()) {
+                            latch.countDown();
+                        }
+                    }, 0);
+                    setChannel.putVal(value.shortValue());
+                } else if (value instanceof Integer) {
+                    monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
+                        if (Math.abs(channelRecord.intValue() - value.intValue()) <= tolerance.intValue()) {
+                            latch.countDown();
+                        }
+                    }, 0);
+                    setChannel.putVal(value.intValue());
+                } else if (value instanceof Long) {
+                    monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
+                        if (Math.abs(channelRecord.longValue() - value.longValue()) <= tolerance.longValue()) {
+                            latch.countDown();
+                        }
+                    }, 0);
+                    setChannel.putVal(value.longValue());
+                }
+
+                if (monitor == null) {
+                    return false;
+                } else {
+                    monitors.add(monitor);
+                }
             }
 
             // Wait for the delay
             try {
-                latch.await((long) (delay * 1000), TimeUnit.MILLISECONDS);
+                latch.await((long) (timeout * 1000), TimeUnit.MILLISECONDS);
             } catch (InterruptedException ex) {
                 Logger.getLogger(AcceleratorNode.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            monitor.clear();
+            for (Monitor monitor : monitors) {
+                monitor.clear();
+            }
 
             if (latch.getCount() == 0) {
                 return true;
