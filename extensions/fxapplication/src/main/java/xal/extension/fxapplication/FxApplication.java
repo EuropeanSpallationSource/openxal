@@ -49,6 +49,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.RadioMenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Toggle;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
@@ -260,9 +261,13 @@ public abstract class FxApplication extends Application {
                 loadDefaultAcceleratorMenu.setOnAction(e -> loadDefaultAcceleratorMenuHandler());
                 final MenuItem loadAcceleratorMenu = new MenuItem("Load Accelerator...");
                 loadAcceleratorMenu.setOnAction(e -> loadAcceleratorMenuHandler());
+                acceleratorMenu.getItems().addAll(loadDefaultAcceleratorMenu, loadAcceleratorMenu);
+                SeparatorMenuItem separator = new SeparatorMenuItem();
                 testModeMenu = new MenuItem("Enable Test Mode");
                 testModeMenu.setOnAction(e -> testModeMenuHandler(e));
-                acceleratorMenu.getItems().addAll(loadDefaultAcceleratorMenu, loadAcceleratorMenu, testModeMenu);
+                MenuItem changeTestModeSuffixMenu = new MenuItem("Change Test Mode Suffix");
+                changeTestModeSuffixMenu.setOnAction(e -> testModeSuffixMenuHandler(e));
+                acceleratorMenu.getItems().addAll(separator, testModeMenu, changeTestModeSuffixMenu);
 
                 if (HAS_SEQUENCE && DOCUMENT.accelerator.getAccelerator() != null) {
                     buildSequenceMenu(DOCUMENT.accelerator.getAccelerator(), sequenceMenu, groupSequence);
@@ -685,6 +690,16 @@ public abstract class FxApplication extends Application {
 
     protected void testModeMenuHandler(Event e) {
         setTestMode(!DOCUMENT.testMode);
+    }
+
+    protected void testModeSuffixMenuHandler(Event e) {
+        TextInputDialog dialog = new TextInputDialog(DOCUMENT.accelerator.getTestModeSuffix());
+        dialog.setTitle("Change Test Mode Suffix");
+        dialog.setHeaderText("Current suffix is " + DOCUMENT.accelerator.getTestModeSuffix());
+        dialog.setContentText("Please enter Test Mode Suffix:");
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(suffix -> DOCUMENT.accelerator.setTestModeSuffix(suffix));
     }
 
     public void setTestMode(boolean testModeFlag) {

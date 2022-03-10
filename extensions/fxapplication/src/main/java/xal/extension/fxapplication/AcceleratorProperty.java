@@ -52,6 +52,14 @@ public class AcceleratorProperty {
         accelerator.channelSuite().getChannelFactory().setTest(testMode);
     }
 
+    public void setTestModeSuffix(String testModeSuffix) {
+        accelerator.channelSuite().getChannelFactory().setTestSuffix(testModeSuffix);
+    }
+
+    public String getTestModeSuffix() {
+        return accelerator.channelSuite().getChannelFactory().getTestSuffix();
+    }
+
     public void addChangeListener(ChangeListener listener) {
         synchronized (listeners) {
             listeners.add(listener);
