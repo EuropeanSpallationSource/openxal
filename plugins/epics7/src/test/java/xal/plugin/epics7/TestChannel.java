@@ -34,6 +34,7 @@ import org.epics.pvaccess.client.ChannelRPC;
 import org.epics.pvaccess.client.ChannelRPCRequester;
 import org.epics.pvaccess.client.ChannelRequester;
 import org.epics.pvaccess.client.GetFieldRequester;
+import org.epics.pvdata.factory.StatusFactory;
 import org.epics.pvdata.monitor.Monitor;
 import org.epics.pvdata.monitor.MonitorRequester;
 import org.epics.pvdata.pv.MessageType;
@@ -135,8 +136,9 @@ public class TestChannel implements Channel {
     @Override
     public Monitor createMonitor(MonitorRequester monitorRequester, PVStructure pvRequest) {
         Monitor monitor = new TestMonitor();
+        monitorRequester.monitorConnect(StatusFactory.getStatusCreate().getStatusOK(), monitor, pvRequest.getStructure());
         monitorRequester.monitorEvent(monitor);
-        return null;
+        return monitor;
     }
 
     @Override

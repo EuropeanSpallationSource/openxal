@@ -62,6 +62,8 @@ public class Epics7Monitor extends xal.ca.Monitor implements MonitorRequester {
 
         monitor.createRequest(channel, request);
 
+        monitor.begin();
+
         return monitor;
     }
 
@@ -71,7 +73,6 @@ public class Epics7Monitor extends xal.ca.Monitor implements MonitorRequester {
 
         nativeChannel = channel.getNativeChannel();
         nativeMonitor = nativeChannel.createMonitor(this, pvRequest);
-        begin();
     }
 
     @Override
@@ -93,6 +94,9 @@ public class Epics7Monitor extends xal.ca.Monitor implements MonitorRequester {
     //---------------- Implementing MonitorRequester abstract methods ------------------
     @Override
     public void monitorConnect(Status status, Monitor monitor, Structure structure) {
+        synchronized (lock) {
+            started = true;
+        }
         monitor.start();
     }
 
