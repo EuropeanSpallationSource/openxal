@@ -18,7 +18,7 @@ import xal.ca.*;
 public abstract class PermanentMagnet extends Magnet {
 
     // accessible properties
-    public final AccessibleProperty field = new AccessibleProperty("field", "", "", this::getDesignField, cV -> getDesignField());
+    public final AccessibleProperty field = new AccessibleProperty("field", null, null, this::getDesignField, cV -> getDesignField());
 
     // static initializer
     static {

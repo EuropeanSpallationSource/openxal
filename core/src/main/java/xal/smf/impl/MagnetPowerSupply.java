@@ -13,6 +13,7 @@ import xal.ca.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * PowerSupply is the abstract super class of all power supplies.
@@ -290,12 +291,17 @@ public abstract class MagnetPowerSupply implements DataListener {
      * @return The corresponding readback handle.
      */
     public String[] getReadbackHandles(String setHandle) {
+        List<String> readbackHandles = new ArrayList<>();
         for (AccessibleProperty prop : getAccessibleProperties()) {
             if (prop.getSetHandle().equals(setHandle)) {
-                return prop.getReadbackHandles();
+                readbackHandles.addAll(Arrays.asList(prop.getReadbackHandles()));
             }
         }
-        return new String[0];
+
+        // Remove possible duplicates
+        readbackHandles = readbackHandles.stream().distinct().collect(Collectors.toList());
+
+        return (String[]) readbackHandles.toArray(new String[0]);
     }
 
     /**
@@ -323,8 +329,8 @@ public abstract class MagnetPowerSupply implements DataListener {
         List<String> properties = new ArrayList<>();
         for (AccessibleProperty prop : accessibleProperties) {
             if (prop.hasDesignValues()) {
-            properties.add(prop.getName());
-        }
+                properties.add(prop.getName());
+            }
         }
         return properties;
     }

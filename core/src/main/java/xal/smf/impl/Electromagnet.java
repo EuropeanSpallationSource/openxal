@@ -13,6 +13,7 @@ import xal.tools.data.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Electromagnet is the base class representation of an electromagnet.
@@ -36,6 +37,9 @@ public abstract class Electromagnet extends Magnet {
     public final AccessibleProperty field = new AccessibleProperty("field", FIELD_RB_HANDLE, MagnetMainSupply.FIELD_SET_HANDLE,
             this::getDesignField, designValue -> setDfltField(designValue),
             channelValues -> toFieldFromCA(channelValues[0]), channelValues -> toCAFromField(channelValues));
+
+    // When using current PVs to set field, the field property is removed and replaced with this one, which only links readback and set PVs.
+    public final AccessibleProperty fieldSimpleProperty = new AccessibleProperty("fieldSimple", FIELD_RB_HANDLE, MagnetMainSupply.FIELD_SET_HANDLE);
 
     public final AccessibleProperty fieldFromCurrent = new AccessibleProperty("field", MagnetMainSupply.CURRENT_RB_HANDLE, MagnetMainSupply.CURRENT_SET_HANDLE,
             this::getDesignField, value -> setDfltField(value),
@@ -186,19 +190,25 @@ public abstract class Electromagnet extends Magnet {
      */
     @Override
     public String[] getReadbackHandles(String setHandle) {
-        String[] readbackHandles = super.getReadbackHandles(setHandle);
-        if (readbackHandles == null) {
+        List<String> readbackHandles = new ArrayList<>();
+        if (super.getReadbackHandles(setHandle) != null) {
+            readbackHandles.addAll(Arrays.asList(super.getReadbackHandles(setHandle)));
+
             try {
-                final MagnetMainSupply supply = getMainSupply();
-                if (supply != null) {
-                    readbackHandles = supply.getReadbackHandles(setHandle);
+                MagnetMainSupply supply = getMainSupply();
+                if (supply != null && supply.getReadbackHandles(setHandle) != null) {
+                    readbackHandles.addAll(Arrays.asList(supply.getReadbackHandles(setHandle)));
                 }
             } catch (NullPointerException exception) {
                 LOGGER.log(Level.SEVERE, EXCEPTION_MSG, new Object[]{getMainSupply(), getId()});
                 throw exception;
             }
         }
-        return readbackHandles;
+
+        // Remove possible duplicates
+        readbackHandles = readbackHandles.stream().distinct().collect(Collectors.toList());
+
+        return (String[]) readbackHandles.toArray(new String[0]);
     }
 
     /**
@@ -290,6 +300,7 @@ public abstract class Electromagnet extends Magnet {
             properties.remove(field);
         } else {
             properties.remove(fieldFromCurrent);
+            properties.remove(fieldSimpleProperty);
         }
 
         return properties;

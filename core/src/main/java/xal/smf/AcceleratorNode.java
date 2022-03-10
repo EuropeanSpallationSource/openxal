@@ -12,6 +12,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * The base class in the hierarchy of different accelerator node types.
@@ -466,16 +467,25 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      * @throws xal.smf.NoSuchChannelException if no such channel as specified by
      * the handle is associated with this node.
      */
-    public List<Channel> getAndConnectChannelSetAndReadback(String setHandle) throws NoSuchChannelException {
+    public List<Channel> getAndConnectChannelSetAndReadback(String setHandle) {
         List<Channel> list = new ArrayList<>();
-        Channel setChannel = getChannel(setHandle);
-        setChannel.connectAndWait();
-        list.add(setChannel);
+        try {
+            Channel setChannel = getChannel(setHandle);
+            setChannel.connectAndWait();
+            list.add(setChannel);
+        } catch (NoSuchChannelException ex) {
+            Logger.getLogger(AcceleratorNode.class.getName()).log(Level.INFO, "Set channel not found for handle" + setHandle, ex);
+            return list;
+        }
 
         for (String handle : getReadbackHandles(setHandle)) {
-            Channel readBackChannel = getChannel(handle);
-            readBackChannel.connectAndWait();
-            list.add(readBackChannel);
+            try {
+                Channel readBackChannel = getChannel(handle);
+                readBackChannel.connectAndWait();
+                list.add(readBackChannel);
+            } catch (NoSuchChannelException ex) {
+                Logger.getLogger(AcceleratorNode.class.getName()).log(Level.INFO, "Readback channel not found for handle" + handle, ex);
+            }
         }
 
         return list;
@@ -488,14 +498,16 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      * @return The corresponding readback handle.
      */
     public String[] getReadbackHandles(String setHandle) {
-        List readbackHandles = new ArrayList<>();
+        List<String> readbackHandles = new ArrayList<>();
         for (AccessibleProperty prop : getAccessibleProperties()) {
             if (prop.getSetHandle().equals(setHandle)) {
-                for (String handle : prop.getReadbackHandles()) {
-                    readbackHandles.add(handle);
-                }
+                readbackHandles.addAll(Arrays.asList(prop.getReadbackHandles()));
             }
         }
+
+        // Remove possible duplicates
+        readbackHandles = readbackHandles.stream().distinct().collect(Collectors.toList());
+
         return (String[]) readbackHandles.toArray(new String[0]);
     }
 
@@ -524,21 +536,14 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      * @param setHandle Handle corresponding to the set channel.
      * @param value Value to be set.
      * @param tolerance Defines an interval around the value (absolute value).
-     * @param timeout Timout in seconds for the readback to reach the set value
+     * @param timeout Timeout in seconds for the readback to reach the set value
      * before failing. Failure is indicated by returning false.
      * @return true if the value is set correctly, otherwise false.
      * @throws PutException
      * @throws MonitorException
      */
     public boolean setValueAndVerify(String setHandle, Number value, Number tolerance, double timeout) throws PutException, MonitorException {
-        List<Channel> channels;
-
-        try {
-            channels = getAndConnectChannelSetAndReadback(setHandle);
-        } catch (NoSuchChannelException ex) {
-            LOGGER.log(Level.INFO, null, ex);
-            return false;
-        }
+        List<Channel> channels = getAndConnectChannelSetAndReadback(setHandle);
 
         if (channels.size() >= 2 && channels.get(0) != null && channels.get(1) != null) {
             CountDownLatch latch = new CountDownLatch(1);
@@ -549,8 +554,9 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
             List<Monitor> monitors = new ArrayList<>();
 
             // Try all readback channels, return after the first event that is within tolerance.
-            for (Channel rbChannel : channels.subList(1, channels.size() - 1)) {
+            for (Channel rbChannel : channels.subList(1, channels.size())) {
                 Monitor monitor = null;
+
                 if (value instanceof Byte) {
                     monitor = rbChannel.addMonitorValue((channelRecord, chan) -> {
                         if (Math.abs(channelRecord.byteValue() - value.byteValue()) <= tolerance.byteValue()) {
@@ -616,6 +622,27 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
             if (latch.getCount() == 0) {
                 return true;
             }
+        } else if (channels.size() == 1 && channels.get(0) != null) {
+            // Only set channel found, put Value and return false  
+            Logger.getLogger(AcceleratorNode.class.getName()).log(Level.INFO, "Only set channel found for handle {0}", setHandle);
+
+            Channel setChannel = channels.get(0);
+
+            if (value instanceof Byte) {
+                setChannel.putVal(value.byteValue());
+            } else if (value instanceof Float) {
+                setChannel.putVal(value.floatValue());
+            } else if (value instanceof Double) {
+                setChannel.putVal(value.doubleValue());
+            } else if (value instanceof Short) {
+                setChannel.putVal(value.shortValue());
+            } else if (value instanceof Integer) {
+                setChannel.putVal(value.intValue());
+            } else if (value instanceof Long) {
+                setChannel.putVal(value.longValue());
+            }
+        } else {
+            Logger.getLogger(AcceleratorNode.class.getName()).log(Level.INFO, "No channels found for handle {0}", setHandle);
         }
 
         return false;
