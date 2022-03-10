@@ -43,6 +43,9 @@ public class Epics7Monitor extends xal.ca.Monitor implements MonitorRequester {
     protected Monitor nativeMonitor;
     protected final EventListener listener;
 
+    protected boolean started = false;
+    protected final Object lock = new Object();
+
     protected Epics7Monitor(Epics7Channel channel, EventListener listener, int intMaskEvent) throws ConnectionException {
         super(channel, intMaskEvent);
         this.listener = listener;
@@ -68,16 +71,23 @@ public class Epics7Monitor extends xal.ca.Monitor implements MonitorRequester {
 
         nativeChannel = channel.getNativeChannel();
         nativeMonitor = nativeChannel.createMonitor(this, pvRequest);
+        begin();
     }
 
     @Override
     public void clear() {
-        nativeMonitor.stop();
+        synchronized (lock) {
+            started = false;
+            nativeMonitor.stop();
+        }
     }
 
     @Override
     protected void begin() {
-        nativeMonitor.start();
+        synchronized (lock) {
+            started = true;
+            nativeMonitor.start();
+        }
     }
 
     //---------------- Implementing MonitorRequester abstract methods ------------------
@@ -88,6 +98,14 @@ public class Epics7Monitor extends xal.ca.Monitor implements MonitorRequester {
 
     @Override
     public void monitorEvent(Monitor monitor) {
+        // clear monitor if clear method was called.
+        synchronized (lock) {
+            if (!started) {
+                unlisten(monitor);
+                return;
+            }
+        }
+
         MonitorElement element;
         while ((element = monitor.poll()) != null) {
             try {
@@ -102,7 +120,7 @@ public class Epics7Monitor extends xal.ca.Monitor implements MonitorRequester {
 
     @Override
     public void unlisten(Monitor monitor) {
-        clear();
+        monitor.destroy();
     }
 
     @Override
