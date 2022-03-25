@@ -27,6 +27,7 @@ import gov.aps.jca.dbr.DBR_Float;
 import gov.aps.jca.dbr.DBR_Int;
 import gov.aps.jca.dbr.DBR_Short;
 import gov.aps.jca.dbr.DBR_String;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.epics.pvdata.factory.PVDataFactory;
@@ -91,6 +92,11 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     private static final String VALUE_ALARM_FIELD_ERR = "Couldn't find \"valueAlarm\" field.";
     private static final String CONTROL_FIELD_ERR = "Couldn't find \"control\" field.";
 
+    private Epics7ServerMonitor protocolsLinkMonitor = null;
+    
+    private ReentrantLock caLock = new ReentrantLock();
+    private ReentrantLock pvaLock = new ReentrantLock();
+
     public Epics7ServerChannel(String signalName, Epics7ServerChannelSystem channelSystem) {
         super(signalName, channelSystem);
 
@@ -121,8 +127,11 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
             // Adding a monitor to update the value on one protocol channel when the
             // other one is updated by new data received in a put.
             try {
-                Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable,
+                protocolsLinkMonitor = Epics7ServerMonitor.createNewMonitor(this, pvRecord, memoryProcessVariable,
                         Epics7Channel.VALUE_REQUEST, pvS -> {
+                            if (protocolsLinkMonitor != null) {
+                                protocolsLinkMonitor.updateTheOtherProtocol(pvS);
+                            }
                         }, 0);
             } catch (MonitorException ex) {
                 Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
@@ -136,7 +145,17 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     public void disconnect() {
         removeCAPV();
         removeRecord();
+        protocolsLinkMonitor.clear();
+        protocolsLinkMonitor = null;
         connectionFlag = false;
+    }
+
+    public ReentrantLock getCaLock() {
+        return caLock;
+    }
+
+    public ReentrantLock getPvaLock() {
+        return pvaLock;
     }
 
     private void addCAPV(DBRType type) {
@@ -280,7 +299,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
             throw new MonitorException(CONNECTION_EXC, ex);
         }
 
-        return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.TIME_REQUEST, pvStructure -> {
+        return Epics7ServerMonitor.createNewMonitor(this, pvRecord, memoryProcessVariable, Epics7Channel.TIME_REQUEST, pvStructure -> {
             ChannelTimeRecord channelRecord = new Epics7ChannelTimeRecord(pvStructure);
             listener.eventValue(channelRecord, this);
         }, intMaskFire);
@@ -294,7 +313,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
             throw new MonitorException(CONNECTION_EXC, ex);
         }
 
-        return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.STATUS_REQUEST, pvStructure -> {
+        return Epics7ServerMonitor.createNewMonitor(this, pvRecord, memoryProcessVariable, Epics7Channel.STATUS_REQUEST, pvStructure -> {
             ChannelStatusRecord channelRecord = new Epics7ChannelStatusRecord(pvStructure);
             listener.eventValue(channelRecord, this);
         }, intMaskFire);
@@ -308,7 +327,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
             throw new MonitorException(CONNECTION_EXC, ex);
         }
 
-        return Epics7ServerMonitor.createNewMonitor(pvRecord, memoryProcessVariable, Epics7Channel.VALUE_REQUEST, pvStructure -> {
+        return Epics7ServerMonitor.createNewMonitor(this, pvRecord, memoryProcessVariable, Epics7Channel.VALUE_REQUEST, pvStructure -> {
             ChannelRecord channelRecord = new Epics7ChannelRecord(pvStructure);
             listener.eventValue(channelRecord, this);
         }, intMaskFire);
