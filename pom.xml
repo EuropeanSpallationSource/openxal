@@ -50,7 +50,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.9.0</version>
+                <version>3.10.1</version>
                 <configuration>
                     <release>11</release>
                     <compilerArgs>
@@ -61,7 +61,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.3.1</version>
+                <version>3.3.2</version>
                 <configuration>
                     <isOffline>true</isOffline>
                     <doclint>none</doclint>
@@ -106,7 +106,7 @@
             <plugin>
                 <groupId>org.jfrog.buildinfo</groupId>
                 <artifactId>artifactory-maven-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.4.0</version>
                 <inherited>false</inherited>
                 <executions>
                     <execution>                        
@@ -167,7 +167,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>versions-maven-plugin</artifactId>
-                <version>2.8.1</version>
+                <version>2.10.0</version>
                 <configuration>
                     <properties>
                         <property>
@@ -445,12 +445,12 @@
             <dependency>
                 <groupId>eu.ess</groupId>
                 <artifactId>xaos.tools</artifactId>
-                <version>0.7</version>
+                <version>0.8</version>
             </dependency>           
             <dependency>
                 <groupId>eu.ess</groupId>
                 <artifactId>xaos.ui.plot</artifactId>
-                <version>0.7</version>
+                <version>0.8</version>
             </dependency>
             <dependency>
                 <groupId>eu.ess</groupId>
