@@ -1246,7 +1246,37 @@ public abstract class Channel {
      * @throws xal.ca.PutException general put failure
      */
     public final void putValCallback(Object newVal, PutListener listener) throws PutException {
-        throw new PutException("Type " + newVal.getClass().getName() + " not valid");
+        if (newVal instanceof String) {
+            this.putValCallback((String) newVal, listener);
+        } else if (newVal instanceof Byte) {
+            this.putValCallback((byte) newVal, listener);
+        } else if (newVal instanceof Short) {
+            this.putValCallback((short) newVal, listener);
+        } else if (newVal instanceof Integer) {
+            this.putValCallback((int) newVal, listener);
+        } else if (newVal instanceof Long) {
+            this.putValCallback((long) newVal, listener);
+        } else if (newVal instanceof Float) {
+            this.putValCallback((float) newVal, listener);
+        } else if (newVal instanceof Double) {
+            this.putValCallback((double) newVal, listener);
+        } else if (newVal instanceof String[]) {
+            this.putValCallback((String[]) newVal, listener);
+        } else if (newVal instanceof byte[]) {
+            this.putValCallback((byte[]) newVal, listener);
+        } else if (newVal instanceof short[]) {
+            this.putValCallback((short[]) newVal, listener);
+        } else if (newVal instanceof int[]) {
+            this.putValCallback((int[]) newVal, listener);
+        } else if (newVal instanceof long[]) {
+            this.putValCallback((long[]) newVal, listener);
+        } else if (newVal instanceof float[]) {
+            this.putValCallback((float[]) newVal, listener);
+        } else if (newVal instanceof double[]) {
+            this.putValCallback((double[]) newVal, listener);
+        } else {
+            throw new PutException("Type " + newVal.getClass().getName() + " not valid");
+        }
     }
 
     /**
