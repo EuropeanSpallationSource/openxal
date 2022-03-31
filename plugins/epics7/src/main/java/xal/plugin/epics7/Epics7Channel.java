@@ -64,9 +64,8 @@ import xal.ca.PutListener;
 import xal.tools.apputils.Preferences;
 
 /**
- * This {@link xal.ca.Channel} implementation can connect to ChannelAccess or PV
- * Access. If the PV signal starts with 'ca://', it will only connect to CA; if
- * it starts with 'pva://', it will only connect to PVA; otherwise it tries to
+ * This {@link xal.ca.Channel} implementation can connect to ChannelAccess or PV Access. If the PV signal starts with
+ * 'ca://', it will only connect to CA; if it starts with 'pva://', it will only connect to PVA; otherwise it tries to
  * connect to both and uses the protocol that replies first.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
@@ -148,18 +147,18 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     public void requestConnection() {
         // Only request a new connection if not done previously.
         if (!isConnected() && connectionLatch == null) {
-            connectionLatch = new CountDownLatch(1);
+            synchronized (connectionLock) {
+                connectionLatch = new CountDownLatch(1);
 
-            if (!strId.startsWith(CA_PREFIX)) {
-                synchronized (connectionLock) {
+                if (!strId.startsWith(CA_PREFIX)) {
                     pvaChannel = epics7ChannelSystem.getPvaChannelProvider().createChannel(
-                            strId.startsWith(PVA_PREFIX) ? strId.substring(PVA_PREFIX.length()) : strId, this, ChannelProvider.PRIORITY_DEFAULT);
+                            strId.startsWith(PVA_PREFIX) ? strId.substring(PVA_PREFIX.length()) : strId,
+                            this, ChannelProvider.PRIORITY_DEFAULT);
                 }
-            }
-            if (!strId.startsWith(PVA_PREFIX)) {
-                synchronized (connectionLock) {
+                if (!strId.startsWith(PVA_PREFIX)) {
                     caChannel = epics7ChannelSystem.getCaChannelProvider().createChannel(
-                            strId.startsWith(CA_PREFIX) ? strId.substring(CA_PREFIX.length()) : strId, this, ChannelProvider.PRIORITY_DEFAULT);
+                            strId.startsWith(CA_PREFIX) ? strId.substring(CA_PREFIX.length()) : strId,
+                            this, ChannelProvider.PRIORITY_DEFAULT);
                 }
             }
         }
@@ -167,30 +166,36 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     @Override
     public void disconnect() {
-        if (caChannel != null) {
-            synchronized (connectionLock) {
+        synchronized (connectionLock) {
+            if (caChannel != null) {
                 caChannel.destroy();
             }
-        }
-        if (pvaChannel != null) {
-            synchronized (connectionLock) {
+            if (pvaChannel != null) {
                 pvaChannel.destroy();
             }
+            nativeChannel = null;
+            connectionFlag = false;
+            connectionLatch = null;
         }
-        nativeChannel = null;
-        connectionFlag = false;
-        connectionLatch = null;
     }
 
     //---------------- Implementing ChannelRequester abstract methods ------------------
     @Override
     public void channelStateChange(Channel chnl, Channel.ConnectionState cs) {
-        Logger.getLogger(Epics7Channel.class.getName()).log(Level.FINE, "{0} provider: channel {1} changed status to {2}", new Object[]{chnl.getProvider().getProviderName(), chnl.getChannelName(), cs});
+        Logger.getLogger(Epics7Channel.class.getName()).log(Level.FINE,
+                "{0} provider: channel {1} changed status to {2}",
+                new Object[]{chnl.getProvider().getProviderName(), chnl.getChannelName(), cs});
 
         if (cs == Channel.ConnectionState.CONNECTED) {
             // If the other channel is connected, destroy the channel that invoked this method.
             // Otherwise, use use it.
             synchronized (connectionLock) {
+                // This is in case the disconnect method is called after a connection is requested and before the
+                // connection is made.
+                if (connectionLatch == null) {
+                    return;
+                }
+
                 if (connectionFlag) {
                     if (chnl == caChannel) {
                         caChannel = null;
@@ -223,7 +228,8 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
     @Override
     public void channelCreated(Status status, Channel chnl) {
-        Logger.getLogger(Epics7Channel.class.getName()).log(Level.FINE, "{0} provider created a channel: {1}", new Object[]{chnl.getProvider().getProviderName(), chnl.getChannelName()});
+        Logger.getLogger(Epics7Channel.class.getName()).log(Level.FINE, "{0} provider created a channel: {1}",
+                new Object[]{chnl.getProvider().getProviderName(), chnl.getChannelName()});
     }
 
     //------------------- Implementing Requester abstract methods ----------------------
@@ -418,7 +424,8 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         return get(request, true);
     }
 
-    public void getCallback(String request, final EventListener listener, boolean attemptConnection) throws GetException {
+    public void getCallback(String request, final EventListener listener, boolean attemptConnection)
+            throws GetException {
         try {
             checkConnection("ChannelGet", attemptConnection);
         } catch (ConnectionException ex) {
