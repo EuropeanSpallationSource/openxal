@@ -4,10 +4,10 @@
     
     <groupId>org.xal</groupId>
     <artifactId>openxal</artifactId>
-    <version>6.2</version>
+    <version>6.3-SNAPSHOT</version>
 
     <properties>
-        <revision>6.2</revision>
+        <revision>6.3-SNAPSHOT</revision>
         <main.basedir>${project.basedir}</main.basedir>     <!-- For the local repository -->
         <surefireArgLine></surefireArgLine>                 <!-- To be able to run tests on Netbeans -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
