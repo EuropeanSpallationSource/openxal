@@ -5,6 +5,7 @@
  */
 package xal.ca;
 
+import java.util.stream.Stream;
 import xal.tools.messaging.MessageCenter;
 import xal.tools.ArrayValue;
 import xal.tools.transforms.ValueTransform;
@@ -945,7 +946,8 @@ public abstract class Channel {
      * @throws xal.ca.GetException general channel access failure
      */
     public final void getValByteCallback(final IEventSinkValByte listener) throws GetException {
-        getRawValueCallback((final ChannelRecord channelRecord, Channel channel) -> listener.eventValue(channelRecord.applyTransform(valueTransform).byteValue(), Channel.this));
+        getRawValueCallback((final ChannelRecord channelRecord, Channel channel)
+                -> listener.eventValue(channelRecord.applyTransform(valueTransform).byteValue(), Channel.this));
     }
 
     /**
@@ -957,7 +959,8 @@ public abstract class Channel {
      * @throws xal.ca.GetException general channel access failure
      */
     public final void getValIntCallback(final IEventSinkValInt listener) throws GetException {
-        getRawValueCallback((final ChannelRecord channelRecord, Channel channel) -> listener.eventValue(channelRecord.applyTransform(valueTransform).intValue(), Channel.this));
+        getRawValueCallback((final ChannelRecord channelRecord, Channel channel)
+                -> listener.eventValue(channelRecord.applyTransform(valueTransform).intValue(), Channel.this));
     }
 
     /**
@@ -969,7 +972,8 @@ public abstract class Channel {
      * @throws xal.ca.GetException general channel access failure
      */
     public final void getValFltCallback(final IEventSinkValFlt listener) throws GetException {
-        getRawValueCallback((final ChannelRecord channelRecord, Channel channel) -> listener.eventValue(channelRecord.applyTransform(valueTransform).floatValue(), Channel.this));
+        getRawValueCallback((final ChannelRecord channelRecord, Channel channel)
+                -> listener.eventValue(channelRecord.applyTransform(valueTransform).floatValue(), Channel.this));
     }
 
     /**
@@ -981,7 +985,8 @@ public abstract class Channel {
      * @throws xal.ca.GetException general channel access failure
      */
     public final void getValDblCallback(final IEventSinkValDbl listener) throws GetException {
-        getRawValueCallback((final ChannelRecord channelRecord, Channel channel) -> listener.eventValue(channelRecord.applyTransform(valueTransform).doubleValue(), Channel.this));
+        getRawValueCallback((final ChannelRecord channelRecord, Channel channel)
+                -> listener.eventValue(channelRecord.applyTransform(valueTransform).doubleValue(), Channel.this));
     }
 
     /**
@@ -993,7 +998,8 @@ public abstract class Channel {
      * @throws xal.ca.GetException general channel access failure
      */
     public final void getArrByteCallback(final IEventSinkArrByte listener) throws GetException {
-        getRawValueCallback((final ChannelRecord channelRecord, Channel channel) -> listener.eventArray(channelRecord.applyTransform(valueTransform).byteArray(), Channel.this));
+        getRawValueCallback((final ChannelRecord channelRecord, Channel channel)
+                -> listener.eventArray(channelRecord.applyTransform(valueTransform).byteArray(), Channel.this));
     }
 
     /**
@@ -1005,7 +1011,8 @@ public abstract class Channel {
      * @throws xal.ca.GetException general channel access failure
      */
     public final void getArrIntCallback(final IEventSinkArrInt listener) throws GetException {
-        getRawValueCallback((final ChannelRecord channelRecord, Channel channel) -> listener.eventArray(channelRecord.applyTransform(valueTransform).intArray(), Channel.this));
+        getRawValueCallback((final ChannelRecord channelRecord, Channel channel)
+                -> listener.eventArray(channelRecord.applyTransform(valueTransform).intArray(), Channel.this));
     }
 
     /**
@@ -1017,7 +1024,8 @@ public abstract class Channel {
      * @throws xal.ca.GetException general channel access failure
      */
     public final void getArrFltCallback(final IEventSinkArrFlt listener) throws GetException {
-        getRawValueCallback((final ChannelRecord channelRecord, Channel channel) -> listener.eventArray(channelRecord.applyTransform(valueTransform).floatArray(), Channel.this));
+        getRawValueCallback((final ChannelRecord channelRecord, Channel channel)
+                -> listener.eventArray(channelRecord.applyTransform(valueTransform).floatArray(), Channel.this));
     }
 
     /**
@@ -1029,7 +1037,8 @@ public abstract class Channel {
      * @throws xal.ca.GetException general channel access failure
      */
     public final void getArrDblCallback(final IEventSinkArrDbl listener) throws GetException {
-        getRawValueCallback((final ChannelRecord channelRecord, Channel channel) -> listener.eventArray(channelRecord.applyTransform(valueTransform).doubleArray(), Channel.this));
+        getRawValueCallback((final ChannelRecord channelRecord, Channel channel)
+                -> listener.eventArray(channelRecord.applyTransform(valueTransform).doubleArray(), Channel.this));
     }
 
     /**
@@ -1104,6 +1113,10 @@ public abstract class Channel {
         this.putValCallback(newVal, null);
     }
 
+    public void putVal(Byte newVal) throws PutException {
+        this.putValCallback((byte) newVal, null);
+    }
+
     /**
      * Synchronously put a value to the channel process variable.
      *
@@ -1113,6 +1126,10 @@ public abstract class Channel {
      */
     public void putVal(short newVal) throws PutException {
         this.putValCallback(newVal, null);
+    }
+
+    public void putVal(Short newVal) throws PutException {
+        this.putValCallback((short) newVal, null);
     }
 
     /**
@@ -1126,6 +1143,10 @@ public abstract class Channel {
         this.putValCallback(newVal, null);
     }
 
+    public void putVal(Integer newVal) throws PutException {
+        this.putValCallback((int) newVal, null);
+    }
+
     /**
      * Synchronously put a value to the channel process variable.
      *
@@ -1135,6 +1156,10 @@ public abstract class Channel {
      */
     public void putVal(long newVal) throws PutException {
         this.putValCallback(newVal, null);
+    }
+
+    public void putVal(Long newVal) throws PutException {
+        this.putValCallback((long) newVal, null);
     }
 
     /**
@@ -1148,6 +1173,10 @@ public abstract class Channel {
         this.putValCallback(newVal, null);
     }
 
+    public void putVal(Float newVal) throws PutException {
+        this.putValCallback((float) newVal, null);
+    }
+
     /**
      * Synchronously put a value to the channel process variable.
      *
@@ -1157,6 +1186,10 @@ public abstract class Channel {
      */
     public void putVal(double newVal) throws PutException {
         this.putValCallback(newVal, null);
+    }
+
+    public void putVal(Double newVal) throws PutException {
+        this.putValCallback((double) newVal, null);
     }
 
     /**
@@ -1181,6 +1214,15 @@ public abstract class Channel {
         this.putValCallback(newVal, null);
     }
 
+    public void putVal(Byte[] newVal) throws PutException {
+        byte[] val = new byte[newVal.length];
+        for (int i = 0; i < newVal.length; i++) {
+            val[i] = (byte) newVal[i];
+        }
+
+        this.putValCallback(val, null);
+    }
+
     /**
      * Synchronously put a value to the channel process variable.
      *
@@ -1190,6 +1232,15 @@ public abstract class Channel {
      */
     public void putVal(short[] newVal) throws PutException {
         this.putValCallback(newVal, null);
+    }
+
+    public void putVal(Short[] newVal) throws PutException {
+        short[] val = new short[newVal.length];
+        for (int i = 0; i < newVal.length; i++) {
+            val[i] = (short) newVal[i];
+        }
+
+        this.putValCallback(val, null);
     }
 
     /**
@@ -1203,6 +1254,12 @@ public abstract class Channel {
         this.putValCallback(newVal, null);
     }
 
+    public void putVal(Integer[] newVal) throws PutException {
+        int[] val = Stream.of(newVal).mapToInt(Integer::intValue).toArray();
+
+        this.putValCallback(val, null);
+    }
+
     /**
      * Synchronously put a value to the channel process variable.
      *
@@ -1212,6 +1269,12 @@ public abstract class Channel {
      */
     public void putVal(long[] newVal) throws PutException {
         this.putValCallback(newVal, null);
+    }
+
+    public void putVal(Long[] newVal) throws PutException {
+        long[] val = Stream.of(newVal).mapToLong(Long::longValue).toArray();
+
+        this.putValCallback(val, null);
     }
 
     /**
@@ -1225,6 +1288,15 @@ public abstract class Channel {
         this.putValCallback(newVal, null);
     }
 
+    public void putVal(Float[] newVal) throws PutException {
+        float[] val = new float[newVal.length];
+        for (int i = 0; i < newVal.length; i++) {
+            val[i] = (float) newVal[i];
+        }
+
+        this.putValCallback(val, null);
+    }
+
     /**
      * Synchronously put a value to the channel process variable.
      *
@@ -1234,6 +1306,11 @@ public abstract class Channel {
      */
     public void putVal(double[] newVal) throws PutException {
         this.putValCallback(newVal, null);
+    }
+
+    public void putVal(Double[] newVal) throws PutException {
+        double[] val = Stream.of(newVal).mapToDouble(Double::doubleValue).toArray();
+        this.putValCallback(val, null);
     }
 
     /**
@@ -1246,37 +1323,7 @@ public abstract class Channel {
      * @throws xal.ca.PutException general put failure
      */
     public final void putValCallback(Object newVal, PutListener listener) throws PutException {
-        if (newVal instanceof String) {
-            this.putValCallback((String) newVal, listener);
-        } else if (newVal instanceof Byte) {
-            this.putValCallback((byte) newVal, listener);
-        } else if (newVal instanceof Short) {
-            this.putValCallback((short) newVal, listener);
-        } else if (newVal instanceof Integer) {
-            this.putValCallback((int) newVal, listener);
-        } else if (newVal instanceof Long) {
-            this.putValCallback((long) newVal, listener);
-        } else if (newVal instanceof Float) {
-            this.putValCallback((float) newVal, listener);
-        } else if (newVal instanceof Double) {
-            this.putValCallback((double) newVal, listener);
-        } else if (newVal instanceof String[]) {
-            this.putValCallback((String[]) newVal, listener);
-        } else if (newVal instanceof byte[]) {
-            this.putValCallback((byte[]) newVal, listener);
-        } else if (newVal instanceof short[]) {
-            this.putValCallback((short[]) newVal, listener);
-        } else if (newVal instanceof int[]) {
-            this.putValCallback((int[]) newVal, listener);
-        } else if (newVal instanceof long[]) {
-            this.putValCallback((long[]) newVal, listener);
-        } else if (newVal instanceof float[]) {
-            this.putValCallback((float[]) newVal, listener);
-        } else if (newVal instanceof double[]) {
-            this.putValCallback((double[]) newVal, listener);
-        } else {
-            throw new PutException("Type " + newVal.getClass().getName() + " not valid");
-        }
+        throw new PutException("Type " + newVal.getClass().getName() + " not valid");
     }
 
     /**
