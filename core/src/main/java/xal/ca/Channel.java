@@ -11,8 +11,8 @@ import xal.tools.ArrayValue;
 import xal.tools.transforms.ValueTransform;
 
 /**
- * Channel is an abstract high level XAL wrapper for a native process variable
- * (PV) channel. Subclasses provide native implementations.
+ * Channel is an abstract high level XAL wrapper for a native process variable (PV) channel. Subclasses provide native
+ * implementations.
  *
  * @author Christopher K. Allen
  * @author Tom Pelaia
@@ -78,8 +78,7 @@ public abstract class Channel {
     }
 
     /**
-     * Flush the EPICS Channel Access request buffer and return as soon as
-     * complete or timeout has expired.
+     * Flush the EPICS Channel Access request buffer and return as soon as complete or timeout has expired.
      *
      * Must use a pendX() function if synchronous request queuing is on!
      *
@@ -93,14 +92,12 @@ public abstract class Channel {
     }
 
     /**
-     * Flush the EPICS Channel Access request buffer and wait for asynchronous
-     * event. This function blocks until the time out has expired! Neither will
-     * it return until the channel access queue has been processed.
+     * Flush the EPICS Channel Access request buffer and wait for asynchronous event. This function blocks until the
+     * time out has expired! Neither will it return until the channel access queue has been processed.
      *
      * Must use a pendX() function if synchronous request queuing is on!
      *
-     * Requests include Channel.connectCallback Channel.getValCallback(),
-     * Channel.putValCallback and all monitor events.
+     * Requests include Channel.connectCallback Channel.getValCallback(), Channel.putValCallback and all monitor events.
      *
      * @param timeout time to wait before giving up
      */
@@ -144,8 +141,7 @@ public abstract class Channel {
     }
 
     /**
-     * From the default channel factory, get a channel for the specified signal
-     * name.
+     * From the default channel factory, get a channel for the specified signal name.
      *
      * @param signalName the PV for which to get the channel
      * @return a channel for the specified PV
@@ -155,8 +151,7 @@ public abstract class Channel {
     }
 
     /**
-     * From the default channel factory, get a channel for the specified signal
-     * name and value transform.
+     * From the default channel factory, get a channel for the specified signal name and value transform.
      *
      * @param signalName the PV for which to get the channel
      * @param transform to transform the value between raw and physical
@@ -228,8 +223,8 @@ public abstract class Channel {
     }
 
     /**
-     * Return a unique identifier of this channel so as to distinguish channels
-     * which share the same PV but have different transforms.
+     * Return a unique identifier of this channel so as to distinguish channels which share the same PV but have
+     * different transforms.
      *
      * @return A channel identifier built from the PV and value transform
      */
@@ -309,8 +304,7 @@ public abstract class Channel {
     /**
      * Connect and wait the default timeout.
      *
-     * @return true if the connection was made within the timeout and false if
-     * not
+     * @return true if the connection was made within the timeout and false if not
      */
     public boolean connectAndWait() {
         return connectAndWait(dblTmIO);
@@ -320,23 +314,19 @@ public abstract class Channel {
      * Request a new connection and wait for it no longer than the timeout.
      *
      * @param timeout seconds to wait for a connection before giving up
-     * @return true if the connection was made within the timeout and false if
-     * not
+     * @return true if the connection was made within the timeout and false if not
      */
     public abstract boolean connectAndWait(final double timeout);
 
     /**
-     * Request that the channel be connected. Connections are made in the
-     * background so this method returns immediately upon making the request.
-     * The connection will be made in the future as soon as possible. A
-     * connection event will be sent to registered connection listeners when the
-     * connection has been established.
+     * Request that the channel be connected. Connections are made in the background so this method returns immediately
+     * upon making the request. The connection will be made in the future as soon as possible. A connection event will
+     * be sent to registered connection listeners when the connection has been established.
      */
     public abstract void requestConnection();
 
     /**
-     * Terminate the network channel connection and clear all events associated
-     * with process variable
+     * Terminate the network channel connection and clear all events associated with process variable
      */
     public abstract void disconnect();
 
@@ -350,20 +340,20 @@ public abstract class Channel {
     }
 
     /**
-     * Checks for process variable channel connection and throws a
-     * ConnectionException if absent.
+     * Checks for process variable channel connection and throws a ConnectionException if absent.
      *
      * @throws xal.ca.ConnectionException accordingly
      */
     public void checkConnection() throws ConnectionException {
         if (!connectAndWait()) {
-            throw new ConnectionException(this, "Channel Error - The channel \"" + strId + "\" must be connected to use this feature.");
+            throw new ConnectionException(this,
+                    "Channel Error - The channel \"" + strId + "\" must be connected to use this feature.");
         }
     }
 
     /**
-     * Checks for process variable channel connection and throws a
-     * ConnectionException if absent after attempting a connection if necessary.
+     * Checks for process variable channel connection and throws a ConnectionException if absent after attempting a
+     * connection if necessary.
      *
      * @param methodName name of method using connection
      * @throws xal.ca.ConnectionException accordingly
@@ -373,21 +363,21 @@ public abstract class Channel {
     }
 
     /**
-     * Checks for process variable channel connection and throws a
-     * ConnectionException if absent.
+     * Checks for process variable channel connection and throws a ConnectionException if absent.
      *
      * @param methodName name of method using connection
-     * @param attemptConnection indicates whether or not to attempt a blocking
-     * connection request
+     * @param attemptConnection indicates whether or not to attempt a blocking connection request
      * @throws xal.ca.ConnectionException accordingly
      */
-    protected void checkConnection(final String methodName, final boolean attemptConnection) throws ConnectionException {
+    protected void checkConnection(final String methodName, final boolean attemptConnection)
+            throws ConnectionException {
         if (!isConnected()) {
             if (attemptConnection) {
                 connectAndWait();
                 checkConnection(methodName, false);
             } else {
-                throw new ConnectionException(this, "Channel#" + methodName + " - The channel \"" + strId + "\" must be connected to use this feature.");
+                throw new ConnectionException(this, "Channel#" + methodName + " - The channel \""
+                        + strId + "\" must be connected to use this feature.");
             }
         }
     }
@@ -722,9 +712,8 @@ public abstract class Channel {
     }
 
     /**
-     * Return a raw <code>ChannelRecord</code> representing the fetched record
-     * for the native type of this channel. This is a convenient way to get the
-     * value of the PV.
+     * Return a raw <code>ChannelRecord</code> representing the fetched record for the native type of this channel. This
+     * is a convenient way to get the value of the PV.
      *
      * @return raw channel record
      * @throws xal.ca.ConnectionException accordingly
@@ -733,8 +722,7 @@ public abstract class Channel {
     public abstract ChannelRecord getRawValueRecord() throws GetException;
 
     /**
-     * Get a <code>ChannelRecord</code> representing the fetched record for the
-     * specified type.
+     * Get a <code>ChannelRecord</code> representing the fetched record for the specified type.
      *
      * @return the channel record
      * @throws xal.ca.ConnectionException accordingly
@@ -743,8 +731,7 @@ public abstract class Channel {
     protected abstract ChannelRecord getRawStringValueRecord() throws GetException;
 
     /**
-     * Get a <code>ChannelStatusRecord</code> representing the fetched record
-     * for the specified type.
+     * Get a <code>ChannelStatusRecord</code> representing the fetched record for the specified type.
      *
      * @return the channel record
      * @throws xal.ca.ConnectionException accordingly
@@ -753,8 +740,7 @@ public abstract class Channel {
     protected abstract ChannelStatusRecord getRawStringStatusRecord() throws GetException;
 
     /**
-     * Get a <code>ChannelTimeRecord</code> representing the fetched record for
-     * the specified type.
+     * Get a <code>ChannelTimeRecord</code> representing the fetched record for the specified type.
      *
      * @return the channel record
      * @throws xal.ca.ConnectionException accordingly
@@ -763,9 +749,8 @@ public abstract class Channel {
     protected abstract ChannelTimeRecord getRawStringTimeRecord() throws GetException;
 
     /**
-     * Return a raw <code>ChannelStatusRecord</code> representing the fetched
-     * record for the native type of this channel. This is a convenient way to
-     * get the value of the PV along with status.
+     * Return a raw <code>ChannelStatusRecord</code> representing the fetched record for the native type of this
+     * channel. This is a convenient way to get the value of the PV along with status.
      *
      * @return raw channel record
      * @throws xal.ca.ConnectionException accordingly
@@ -774,9 +759,8 @@ public abstract class Channel {
     public abstract ChannelStatusRecord getRawStatusRecord() throws GetException;
 
     /**
-     * Return a raw <code>ChannelTimeRecord</code> representing the fetched
-     * record for the native type of this channel. This is a convenient way to
-     * get the value of the PV along with status and timestamp.
+     * Return a raw <code>ChannelTimeRecord</code> representing the fetched record for the native type of this channel.
+     * This is a convenient way to get the value of the PV along with status and timestamp.
      *
      * @return raw channel record
      * @throws xal.ca.ConnectionException accordingly
@@ -785,9 +769,8 @@ public abstract class Channel {
     public abstract ChannelTimeRecord getRawTimeRecord() throws GetException;
 
     /**
-     * Return a <code>ChannelRecord</code> representing the fetched record for
-     * the native type of this channel. This is a convenient way to get the
-     * value of the PV.
+     * Return a <code>ChannelRecord</code> representing the fetched record for the native type of this channel. This is
+     * a convenient way to get the value of the PV.
      *
      * @return channel record
      * @throws xal.ca.ConnectionException accordingly
@@ -798,8 +781,7 @@ public abstract class Channel {
     }
 
     /**
-     * Get a <code>ChannelRecord</code> representing the fetched record for the
-     * native type of this channel.
+     * Get a <code>ChannelRecord</code> representing the fetched record for the native type of this channel.
      *
      * @return channel record
      * @throws xal.ca.ConnectionException accordingly
@@ -810,8 +792,7 @@ public abstract class Channel {
     }
 
     /**
-     * Get a <code>ChannelStatusRecord</code> representing the fetched record
-     * for the native type of this channel.
+     * Get a <code>ChannelStatusRecord</code> representing the fetched record for the native type of this channel.
      *
      * @return channel record
      * @throws xal.ca.ConnectionException accordingly
@@ -822,8 +803,7 @@ public abstract class Channel {
     }
 
     /**
-     * Get a <code>ChannelTimeRecord</code> representing the fetched record for
-     * the native type of this channel.
+     * Get a <code>ChannelTimeRecord</code> representing the fetched record for the native type of this channel.
      *
      * @return channel record
      * @throws xal.ca.ConnectionException accordingly
@@ -834,9 +814,8 @@ public abstract class Channel {
     }
 
     /**
-     * Return a <code>ChannelStatusRecord</code> representing the fetched record
-     * for the native type of this channel. This is a convenient way to get the
-     * value of the PV along with status.
+     * Return a <code>ChannelStatusRecord</code> representing the fetched record for the native type of this channel.
+     * This is a convenient way to get the value of the PV along with status.
      *
      * @return channel record
      * @throws xal.ca.ConnectionException accordingly
@@ -849,9 +828,8 @@ public abstract class Channel {
     }
 
     /**
-     * Return a <code>ChannelTimeRecord</code> representing the fetched record
-     * for the native type of this channel. This is a convenient way to get the
-     * value of the PV along with status and timestamp.
+     * Return a <code>ChannelTimeRecord</code> representing the fetched record for the native type of this channel. This
+     * is a convenient way to get the value of the PV along with status and timestamp.
      *
      * @return channel record
      * @throws xal.ca.ConnectionException accordingly
@@ -876,27 +854,27 @@ public abstract class Channel {
      * Handle a callback for getting the raw value for the channel.
      *
      * @param listener The receiver of the callback.
-     * @param attemptConnection indicates whether or not to attempt a blocking
-     * connection if this channel is not connected
+     * @param attemptConnection indicates whether or not to attempt a blocking connection if this channel is not
+     * connected
      * @throws xal.ca.ConnectionException accordingly
      * @throws xal.ca.GetException accordingly
      */
-    protected abstract void getRawValueCallback(final IEventSinkValue listener, final boolean attemptConnection) throws GetException;
+    protected abstract void getRawValueCallback(final IEventSinkValue listener, final boolean attemptConnection)
+            throws GetException;
 
     /**
      * Submit a non-blocking Get request with callback
      *
      * @param listener to receive callback upon completion
-     * @param attemptConnection true to attempt connection and false not to
-     * attempt connection
+     * @param attemptConnection true to attempt connection and false not to attempt connection
      * @throws xal.ca.ConnectionException accordingly
      * @throws xal.ca.GetException accordingly
      */
-    public abstract void getRawValueTimeCallback(final IEventSinkValTime listener, final boolean attemptConnection) throws GetException;
+    public abstract void getRawValueTimeCallback(final IEventSinkValTime listener, final boolean attemptConnection)
+            throws GetException;
 
     /**
-     * Get the value of the process variable via a callback to the specified
-     * listener.
+     * Get the value of the process variable via a callback to the specified listener.
      *
      * @param listener receiver of the callback event.
      * @throws xal.ca.ConnectionException channel is not connected
@@ -907,30 +885,31 @@ public abstract class Channel {
     }
 
     /**
-     * Get the value of the process variable via a callback to the specified
-     * listener.
+     * Get the value of the process variable via a callback to the specified listener.
      *
      * @param listener receiver of the callback event.
-     * @param attemptConnection indicates whether or not to attempt a blocking
-     * connection if this channel is not connected
+     * @param attemptConnection indicates whether or not to attempt a blocking connection if this channel is not
+     * connected
      * @throws xal.ca.ConnectionException channel is not connected
      * @throws xal.ca.GetException general channel access failure
      */
-    public final void getValueCallback(final IEventSinkValue listener, final boolean attemptConnection) throws GetException {
-        getRawValueCallback((final ChannelRecord channelRecord, final Channel channel) -> listener.eventValue(channelRecord.applyTransform(valueTransform), Channel.this), attemptConnection);
+    public final void getValueCallback(final IEventSinkValue listener, final boolean attemptConnection)
+            throws GetException {
+        getRawValueCallback((final ChannelRecord channelRecord, final Channel channel)
+                -> listener.eventValue(channelRecord.applyTransform(valueTransform), Channel.this), attemptConnection);
     }
 
     /**
-     * Get the value time record of the process variable via a callback to the
-     * specified listener.
+     * Get the value time record of the process variable via a callback to the specified listener.
      *
      * @param listener receiver of the callback event.
-     * @param attemptConnection indicates whether or not to attempt a blocking
-     * connection if this channel is not connected
+     * @param attemptConnection indicates whether or not to attempt a blocking connection if this channel is not
+     * connected
      * @throws xal.ca.ConnectionException channel is not connected
      * @throws xal.ca.GetException general channel access failure
      */
-    public final void getValueTimeCallback(final IEventSinkValTime listener, final boolean attemptConnection) throws GetException {
+    public final void getValueTimeCallback(final IEventSinkValTime listener, final boolean attemptConnection)
+            throws GetException {
         getRawValueTimeCallback((final ChannelTimeRecord channelRecord, final Channel channel) -> {
             channelRecord.applyTransform(valueTransform);
             listener.eventValue(channelRecord, Channel.this);
@@ -938,8 +917,7 @@ public abstract class Channel {
     }
 
     /**
-     * Get the value of the process variable via a callback to the specified
-     * listener.
+     * Get the value of the process variable via a callback to the specified listener.
      *
      * @param listener receiver of the callback event.
      * @throws xal.ca.ConnectionException channel is not connected
@@ -951,8 +929,7 @@ public abstract class Channel {
     }
 
     /**
-     * Get the value of the process variable via a callback to the specified
-     * listener.
+     * Get the value of the process variable via a callback to the specified listener.
      *
      * @param listener receiver of the callback event.
      * @throws xal.ca.ConnectionException channel is not connected
@@ -964,8 +941,7 @@ public abstract class Channel {
     }
 
     /**
-     * Get the value of the process variable via a callback to the specified
-     * listener.
+     * Get the value of the process variable via a callback to the specified listener.
      *
      * @param listener receiver of the callback event.
      * @throws xal.ca.ConnectionException channel is not connected
@@ -977,8 +953,7 @@ public abstract class Channel {
     }
 
     /**
-     * Get the value of the process variable via a callback to the specified
-     * listener.
+     * Get the value of the process variable via a callback to the specified listener.
      *
      * @param listener receiver of the callback event.
      * @throws xal.ca.ConnectionException channel is not connected
@@ -990,8 +965,7 @@ public abstract class Channel {
     }
 
     /**
-     * Get the value of the process variable via a callback to the specified
-     * listener.
+     * Get the value of the process variable via a callback to the specified listener.
      *
      * @param listener receiver of the callback event.
      * @throws xal.ca.ConnectionException channel is not connected
@@ -1003,8 +977,7 @@ public abstract class Channel {
     }
 
     /**
-     * Get the value of the process variable via a callback to the specified
-     * listener.
+     * Get the value of the process variable via a callback to the specified listener.
      *
      * @param listener receiver of the callback event.
      * @throws xal.ca.ConnectionException channel is not connected
@@ -1016,8 +989,7 @@ public abstract class Channel {
     }
 
     /**
-     * Get the value of the process variable via a callback to the specified
-     * listener.
+     * Get the value of the process variable via a callback to the specified listener.
      *
      * @param listener receiver of the callback event.
      * @throws xal.ca.ConnectionException channel is not connected
@@ -1029,8 +1001,7 @@ public abstract class Channel {
     }
 
     /**
-     * Get the value of the process variable via a callback to the specified
-     * listener.
+     * Get the value of the process variable via a callback to the specified listener.
      *
      * @param listener receiver of the callback event.
      * @throws xal.ca.ConnectionException channel is not connected
@@ -1045,8 +1016,8 @@ public abstract class Channel {
      * Setup a value-status-timestamp monitor on this channel
      *
      * @param listener interface to data sink
-     * @param intMaskFire code specifying when the monitor is fired or'ed
-     * combination of {Monitor.VALUE, Monitor.LOG, Monitor.ALARM}
+     * @param intMaskFire code specifying when the monitor is fired or'ed combination of {Monitor.VALUE, Monitor.LOG,
+     * Monitor.ALARM}
      * @return A new monitor
      * @throws xal.ca.ConnectionException channel is not connected
      * @throws xal.ca.MonitorException general monitor failure
@@ -1058,8 +1029,8 @@ public abstract class Channel {
      * Setup a value-status monitor on this channel
      *
      * @param listener interface to data sink
-     * @param intMaskFire code specifying when the monitor is fired or'ed
-     * combination of {Monitor.VALUE, Monitor.LOG, Monitor.ALARM}
+     * @param intMaskFire code specifying when the monitor is fired or'ed combination of {Monitor.VALUE, Monitor.LOG,
+     * Monitor.ALARM}
      * @return A new monitor
      * @throws xal.ca.ConnectionException channel is not connected
      * @throws xal.ca.MonitorException general monitor failure
@@ -1071,8 +1042,8 @@ public abstract class Channel {
      * Setup a value monitor on this channel
      *
      * @param listener interface to data sink
-     * @param intMaskFire code specifying when the monitor is fired or'ed
-     * combination of {Monitor.VALUE, Monitor.LOG, Monitor.ALARM}
+     * @param intMaskFire code specifying when the monitor is fired or'ed combination of {Monitor.VALUE, Monitor.LOG,
+     * Monitor.ALARM}
      * @return A new monitor
      * @throws xal.ca.ConnectionException channel is not connected
      * @throws xal.ca.MonitorException general monitor failure
@@ -1113,6 +1084,13 @@ public abstract class Channel {
         this.putValCallback(newVal, null);
     }
 
+    /**
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
+     */
     public void putVal(Byte newVal) throws PutException {
         this.putValCallback((byte) newVal, null);
     }
@@ -1128,6 +1106,13 @@ public abstract class Channel {
         this.putValCallback(newVal, null);
     }
 
+    /**
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
+     */
     public void putVal(Short newVal) throws PutException {
         this.putValCallback((short) newVal, null);
     }
@@ -1143,6 +1128,13 @@ public abstract class Channel {
         this.putValCallback(newVal, null);
     }
 
+    /**
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
+     */
     public void putVal(Integer newVal) throws PutException {
         this.putValCallback((int) newVal, null);
     }
@@ -1158,6 +1150,13 @@ public abstract class Channel {
         this.putValCallback(newVal, null);
     }
 
+    /**
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
+     */
     public void putVal(Long newVal) throws PutException {
         this.putValCallback((long) newVal, null);
     }
@@ -1173,6 +1172,13 @@ public abstract class Channel {
         this.putValCallback(newVal, null);
     }
 
+    /**
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
+     */
     public void putVal(Float newVal) throws PutException {
         this.putValCallback((float) newVal, null);
     }
@@ -1188,6 +1194,13 @@ public abstract class Channel {
         this.putValCallback(newVal, null);
     }
 
+    /**
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
+     */
     public void putVal(Double newVal) throws PutException {
         this.putValCallback((double) newVal, null);
     }
@@ -1214,6 +1227,13 @@ public abstract class Channel {
         this.putValCallback(newVal, null);
     }
 
+    /**
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
+     */
     public void putVal(Byte[] newVal) throws PutException {
         byte[] val = new byte[newVal.length];
         for (int i = 0; i < newVal.length; i++) {
@@ -1234,6 +1254,13 @@ public abstract class Channel {
         this.putValCallback(newVal, null);
     }
 
+    /**
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
+     */
     public void putVal(Short[] newVal) throws PutException {
         short[] val = new short[newVal.length];
         for (int i = 0; i < newVal.length; i++) {
@@ -1254,6 +1281,13 @@ public abstract class Channel {
         this.putValCallback(newVal, null);
     }
 
+    /**
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
+     */
     public void putVal(Integer[] newVal) throws PutException {
         int[] val = Stream.of(newVal).mapToInt(Integer::intValue).toArray();
 
@@ -1271,6 +1305,13 @@ public abstract class Channel {
         this.putValCallback(newVal, null);
     }
 
+    /**
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
+     */
     public void putVal(Long[] newVal) throws PutException {
         long[] val = Stream.of(newVal).mapToLong(Long::longValue).toArray();
 
@@ -1288,6 +1329,13 @@ public abstract class Channel {
         this.putValCallback(newVal, null);
     }
 
+    /**
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
+     */
     public void putVal(Float[] newVal) throws PutException {
         float[] val = new float[newVal.length];
         for (int i = 0; i < newVal.length; i++) {
@@ -1308,14 +1356,20 @@ public abstract class Channel {
         this.putValCallback(newVal, null);
     }
 
+    /**
+     * Synchronously put a value to the channel process variable.
+     *
+     * @param newVal value sent to process variable
+     * @throws xal.ca.ConnectionException channel is not connected
+     * @throws xal.ca.PutException channel access failure, including
+     */
     public void putVal(Double[] newVal) throws PutException {
         double[] val = Stream.of(newVal).mapToDouble(Double::doubleValue).toArray();
         this.putValCallback(val, null);
     }
 
     /**
-     * Asynchronously put a value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1327,8 +1381,7 @@ public abstract class Channel {
     }
 
     /**
-     * Asynchronously put a value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1341,8 +1394,7 @@ public abstract class Channel {
     }
 
     /**
-     * Asynchronously put a value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1355,8 +1407,7 @@ public abstract class Channel {
     }
 
     /**
-     * Asynchronously put a value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1369,8 +1420,7 @@ public abstract class Channel {
     }
 
     /**
-     * Asynchronously put a value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1383,8 +1433,7 @@ public abstract class Channel {
     }
 
     /**
-     * Asynchronously put a value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1397,8 +1446,7 @@ public abstract class Channel {
     }
 
     /**
-     * Asynchronously put a value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1411,8 +1459,7 @@ public abstract class Channel {
     }
 
     /**
-     * Asynchronously put a value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1425,8 +1472,7 @@ public abstract class Channel {
     }
 
     /**
-     * Asynchronously put a value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1439,8 +1485,7 @@ public abstract class Channel {
     }
 
     /**
-     * Asynchronously put a value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1453,8 +1498,7 @@ public abstract class Channel {
     }
 
     /**
-     * Asynchronously put a value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1467,8 +1511,7 @@ public abstract class Channel {
     }
 
     /**
-     * Asynchronously put a value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1481,8 +1524,7 @@ public abstract class Channel {
     }
 
     /**
-     * Asynchronously put a value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1495,8 +1537,7 @@ public abstract class Channel {
     }
 
     /**
-     * Asynchronously put a value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1509,8 +1550,7 @@ public abstract class Channel {
     }
 
     /**
-     * Asynchronously put a value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1523,8 +1563,7 @@ public abstract class Channel {
     }
 
     /**
-     * Asynchronously put a raw value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a raw value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1534,8 +1573,7 @@ public abstract class Channel {
     public abstract void putRawValCallback(String newVal, PutListener listener) throws PutException;
 
     /**
-     * Asynchronously put a raw value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a raw value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1545,8 +1583,7 @@ public abstract class Channel {
     public abstract void putRawValCallback(byte newVal, PutListener listener) throws PutException;
 
     /**
-     * Asynchronously put a raw value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a raw value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1556,8 +1593,7 @@ public abstract class Channel {
     public abstract void putRawValCallback(short newVal, PutListener listener) throws PutException;
 
     /**
-     * Asynchronously put a raw value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a raw value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1567,8 +1603,7 @@ public abstract class Channel {
     public abstract void putRawValCallback(int newVal, PutListener listener) throws PutException;
 
     /**
-     * Asynchronously put a raw value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a raw value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1578,8 +1613,7 @@ public abstract class Channel {
     public abstract void putRawValCallback(long newVal, PutListener listener) throws PutException;
 
     /**
-     * Asynchronously put a raw value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a raw value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1589,8 +1623,7 @@ public abstract class Channel {
     public abstract void putRawValCallback(float newVal, PutListener listener) throws PutException;
 
     /**
-     * Asynchronously put a raw value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a raw value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1600,8 +1633,7 @@ public abstract class Channel {
     public abstract void putRawValCallback(double newVal, PutListener listener) throws PutException;
 
     /**
-     * Asynchronously put a raw value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a raw value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1611,8 +1643,7 @@ public abstract class Channel {
     public abstract void putRawValCallback(String[] newVal, PutListener listener) throws PutException;
 
     /**
-     * Asynchronously put a raw value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a raw value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1622,8 +1653,7 @@ public abstract class Channel {
     public abstract void putRawValCallback(byte[] newVal, PutListener listener) throws PutException;
 
     /**
-     * Asynchronously put a raw value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a raw value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1633,8 +1663,7 @@ public abstract class Channel {
     public abstract void putRawValCallback(short[] newVal, PutListener listener) throws PutException;
 
     /**
-     * Asynchronously put a raw value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a raw value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1644,8 +1673,7 @@ public abstract class Channel {
     public abstract void putRawValCallback(int[] newVal, PutListener listener) throws PutException;
 
     /**
-     * Asynchronously put a raw value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a raw value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1655,8 +1683,7 @@ public abstract class Channel {
     public abstract void putRawValCallback(long[] newVal, PutListener listener) throws PutException;
 
     /**
-     * Asynchronously put a raw value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a raw value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
@@ -1666,8 +1693,7 @@ public abstract class Channel {
     public abstract void putRawValCallback(float[] newVal, PutListener listener) throws PutException;
 
     /**
-     * Asynchronously put a raw value to the channel process variable. Fire the
-     * specified callback when put is complete.
+     * Asynchronously put a raw value to the channel process variable. Fire the specified callback when put is complete.
      *
      * @param newVal value sent to process variable
      * @param listener The receiver of the callback event
