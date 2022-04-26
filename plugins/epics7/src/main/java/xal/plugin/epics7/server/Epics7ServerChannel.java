@@ -58,12 +58,10 @@ import xal.plugin.epics7.Epics7ChannelStatusRecord;
 import xal.plugin.epics7.Epics7ChannelTimeRecord;
 
 /**
- * Server channel implementation. It creates PVAccess and CA channels,
- * independently of the signal prefix. This is done to ensure backwards
- * compatibility.
+ * Server channel implementation. It creates PVAccess and CA channels, independently of the signal prefix. This is done
+ * to ensure backwards compatibility.
  *
- * Gets are done on the PVRecord, while sets are done to both PVRecord and CA
- * PV, so that they are always in sync.
+ * Gets are done on the PVRecord, while sets are done to both PVRecord and CA PV, so that they are always in sync.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
@@ -121,16 +119,18 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
             // from the network or using a putVal method.
             try {
                 protocolsLinkMonitor = Epics7ServerMonitor.createNewMonitor(this, pvRecord, memoryProcessVariable,
-                        Epics7Channel.VALUE_REQUEST, pvS -> {
-                            if (protocolsLinkMonitor != null) {
-                                protocolsLinkMonitor.updateTheOtherProtocol(pvS);
-                            }
-                        }, 0);
+                        Epics7Channel.VALUE_REQUEST, this::internalMonitor, 0);
             } catch (MonitorException ex) {
                 Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
             }
 
             connectionFlag = true;
+        }
+    }
+
+    private void internalMonitor(PVStructure pvStructure) {
+        if (protocolsLinkMonitor != null) {
+            protocolsLinkMonitor.updateTheOtherProtocol(pvStructure);
         }
     }
 
@@ -164,6 +164,12 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     private void addRecord(ScalarType scalarType, boolean array) {
+        // Remove the old monitor
+        if (protocolsLinkMonitor != null) {
+            protocolsLinkMonitor.clear();
+            protocolsLinkMonitor = null;
+        }
+        
         StandardField standardField = StandardFieldFactory.getStandardField();
 
         String properties = PROPERTIES;
@@ -187,6 +193,14 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         pvRecord = newPVRecord;
 
         epics7ServerChannelSystem.addRecord(pvRecord);
+
+        // Create a monitor for the new record
+        try {
+            protocolsLinkMonitor = Epics7ServerMonitor.createNewMonitor(this, pvRecord, memoryProcessVariable,
+                    Epics7Channel.VALUE_REQUEST, this::internalMonitor, 0);
+        } catch (MonitorException ex) {
+            Logger.getLogger(Epics7ServerChannel.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void removeCAPV() {
@@ -326,8 +340,9 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
         }, intMaskFire);
     }
 
-    private void beforeValueUpdated(Class<?> typeClass, ScalarType scalarType, boolean array) {
+    private void beforeValueUpdated(Class<?> typeClass, DBRType dbrType, ScalarType scalarType, boolean array) {
         if (elementType() != typeClass) {
+            addCAPV(dbrType);
             addRecord(scalarType, array);
         }
 
@@ -357,7 +372,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
 
     @Override
     public void putRawValCallback(String newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(String.class, ScalarType.pvString, false);
+        beforeValueUpdated(String.class, DBRType.STRING, ScalarType.pvString, false);
 
         pvRecord.getPVStructure().getStringField(VALUE_FIELD).put(newVal);
 
@@ -366,7 +381,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
 
     @Override
     public void putRawValCallback(byte newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(byte.class, ScalarType.pvByte, false);
+        beforeValueUpdated(byte.class, DBRType.BYTE, ScalarType.pvByte, false);
 
         pvRecord.getPVStructure().getByteField(VALUE_FIELD).put(newVal);
 
@@ -375,7 +390,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
 
     @Override
     public void putRawValCallback(short newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(short.class, ScalarType.pvShort, false);
+        beforeValueUpdated(short.class, DBRType.SHORT, ScalarType.pvShort, false);
 
         pvRecord.getPVStructure().getShortField(VALUE_FIELD).put(newVal);
 
@@ -384,7 +399,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
 
     @Override
     public void putRawValCallback(int newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(int.class, ScalarType.pvInt, false);
+        beforeValueUpdated(int.class, DBRType.INT, ScalarType.pvInt, false);
 
         pvRecord.getPVStructure().getIntField(VALUE_FIELD).put(newVal);
 
@@ -392,11 +407,11 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     /**
-     * Long is not supported in EPICS3, so they are casted to int for CA.
+     * Long is not supported in EPICS3, so they are cast to int for CA.
      */
     @Override
     public void putRawValCallback(long newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(long.class, ScalarType.pvLong, false);
+        beforeValueUpdated(long.class, DBRType.INT, ScalarType.pvLong, false);
 
         pvRecord.getPVStructure().getLongField(VALUE_FIELD).put(newVal);
 
@@ -405,7 +420,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
 
     @Override
     public void putRawValCallback(float newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(float.class, ScalarType.pvFloat, false);
+        beforeValueUpdated(float.class, DBRType.FLOAT, ScalarType.pvFloat, false);
 
         pvRecord.getPVStructure().getFloatField(VALUE_FIELD).put(newVal);
 
@@ -414,7 +429,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
 
     @Override
     public void putRawValCallback(double newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(double.class, ScalarType.pvDouble, false);
+        beforeValueUpdated(double.class, DBRType.DOUBLE, ScalarType.pvDouble, false);
 
         pvRecord.getPVStructure().getDoubleField(VALUE_FIELD).put(newVal);
 
@@ -423,7 +438,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
 
     @Override
     public void putRawValCallback(String[] newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(String[].class, ScalarType.pvString, true);
+        beforeValueUpdated(String[].class, DBRType.STRING, ScalarType.pvString, true);
 
         pvRecord.getPVStructure().getSubField(PVStringArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
 
@@ -432,7 +447,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
 
     @Override
     public void putRawValCallback(byte[] newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(byte[].class, ScalarType.pvByte, true);
+        beforeValueUpdated(byte[].class, DBRType.BYTE, ScalarType.pvByte, true);
 
         pvRecord.getPVStructure().getSubField(PVByteArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
 
@@ -441,7 +456,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
 
     @Override
     public void putRawValCallback(short[] newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(short[].class, ScalarType.pvShort, true);
+        beforeValueUpdated(short[].class, DBRType.SHORT, ScalarType.pvShort, true);
 
         pvRecord.getPVStructure().getSubField(PVShortArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
 
@@ -450,7 +465,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
 
     @Override
     public void putRawValCallback(int[] newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(int[].class, ScalarType.pvInt, true);
+        beforeValueUpdated(int[].class, DBRType.INT, ScalarType.pvInt, true);
 
         pvRecord.getPVStructure().getSubField(PVIntArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
 
@@ -458,11 +473,11 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
     }
 
     /**
-     * Long is not supported in EPICS3, so they are casted to int for CA.
+     * Long is not supported in EPICS3, so they are cast to int for CA.
      */
     @Override
     public void putRawValCallback(long[] newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(long[].class, ScalarType.pvLong, true);
+        beforeValueUpdated(long[].class, DBRType.INT, ScalarType.pvLong, true);
 
         pvRecord.getPVStructure().getSubField(PVLongArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
 
@@ -471,7 +486,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
 
     @Override
     public void putRawValCallback(float[] newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(float[].class, ScalarType.pvFloat, true);
+        beforeValueUpdated(float[].class, DBRType.FLOAT, ScalarType.pvFloat, true);
 
         pvRecord.getPVStructure().getSubField(PVFloatArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
 
@@ -480,7 +495,7 @@ public class Epics7ServerChannel extends Epics7Channel implements IServerChannel
 
     @Override
     public void putRawValCallback(double[] newVal, PutListener listener) throws PutException {
-        beforeValueUpdated(double[].class, ScalarType.pvDouble, true);
+        beforeValueUpdated(double[].class, DBRType.DOUBLE, ScalarType.pvDouble, true);
 
         pvRecord.getPVStructure().getSubField(PVDoubleArray.class, Epics7Channel.VALUE_REQUEST).put(0, newVal.length, newVal, 0);
 
