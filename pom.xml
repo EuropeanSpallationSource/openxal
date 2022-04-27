@@ -4,10 +4,10 @@
     
     <groupId>org.xal</groupId>
     <artifactId>openxal</artifactId>
-    <version>6.3</version>
+    <version>6.4-SNAPSHOT</version>
 
     <properties>
-        <revision>6.3</revision>
+        <revision>6.4-SNAPSHOT</revision>
         <main.basedir>${project.basedir}</main.basedir>     <!-- For the local repository -->
         <surefireArgLine></surefireArgLine>                 <!-- To be able to run tests on Netbeans -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -445,12 +445,12 @@
             <dependency>
                 <groupId>eu.ess</groupId>
                 <artifactId>xaos.tools</artifactId>
-                <version>0.8</version>
+                <version>0.9-SNAPSHOT</version>
             </dependency>           
             <dependency>
                 <groupId>eu.ess</groupId>
                 <artifactId>xaos.ui.plot</artifactId>
-                <version>0.8</version>
+                <version>0.9-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>eu.ess</groupId>

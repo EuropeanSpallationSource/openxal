@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
  *
  * @author Nikolay Malitsky, Christopher K. Allen, Nick D. Pattengale
  */
-public abstract class AcceleratorNode implements ElementType, DataListener {
+public abstract class AcceleratorNode implements ElementType, DataListener, Comparable {
 
     private static final Logger LOGGER = Logger.getLogger(AcceleratorNode.class.getName());
 
@@ -130,8 +130,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      * Designated constructor
      *
      * @param strId the string ID for this node
-     * @param channelFactory channel factory (null for default) for generating
-     * this node's channels
+     * @param channelFactory channel factory (null for default) for generating this node's channels
      */
     protected AcceleratorNode(final String strId, final ChannelFactory channelFactory) {
         this.strId = strId;
@@ -265,8 +264,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
     }
 
     /**
-     * write the attributes of the Node. Subclasses can be override this method
-     * to write a different set of attributes
+     * write the attributes of the Node. Subclasses can be override this method to write a different set of attributes
      *
      * @param adaptor
      */
@@ -332,8 +330,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
     }
 
     /**
-     * Do a batch connection of all handles for this node and wait for
-     * completion
+     * Do a batch connection of all handles for this node and wait for completion
      *
      * @param timeout the maximum time in seconds to wait for completion
      * @return true if all channels successfully connected
@@ -345,11 +342,10 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
 
     // added by nickp 2/8/2002
     /**
-     * this method returns the Channel object of this node, associated with a
-     * prescribed PV name. Note - xal interacts with EPICS via Channel objects.
+     * this method returns the Channel object of this node, associated with a prescribed PV name. Note - xal interacts
+     * with EPICS via Channel objects.
      *
-     * @param chanHandle The handle to the epics channel in stored in the
-     * channel suite
+     * @param chanHandle The handle to the epics channel in stored in the channel suite
      */
     public Channel getChannel(final String chanHandle) throws NoSuchChannelException {
         final Channel channel = findChannel(chanHandle);
@@ -369,10 +365,9 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
      * Get the channel corresponding to the specified handle and connect it.
      *
      * @param handle The handle for the channel to get.
-     * @return The channel associated with this node and the specified handle or
-     * null if there is no match.
-     * @throws xal.smf.NoSuchChannelException if no such channel as specified by
-     * the handle is associated with this node.
+     * @return The channel associated with this node and the specified handle or null if there is no match.
+     * @throws xal.smf.NoSuchChannelException if no such channel as specified by the handle is associated with this
+     * node.
      */
     public Channel getAndConnectChannel(final String handle) throws NoSuchChannelException {
         final Channel channel = getChannel(handle);
@@ -382,9 +377,8 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
     }
 
     /**
-     * A method to make an EPICS ca connection for a given PV name The channel
-     * connection is initiated, and no extra work is done, if the channel
-     * connection already exists
+     * A method to make an EPICS ca connection for a given PV name The channel connection is initiated, and no extra
+     * work is done, if the channel connection already exists
      */
     public Channel lazilyGetAndConnect(String chanHandle, Channel channel) throws NoSuchChannelException {
         Channel tmpChan;
@@ -456,16 +450,14 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
     }
 
     /**
-     * Get the channels corresponding to the specified handle and connect to
-     * them. This method is useful when setting a value and checking that the
-     * value was set.
+     * Get the channels corresponding to the specified handle and connect to them. This method is useful when setting a
+     * value and checking that the value was set.
      *
      * @param setHandle The set handle for the channel to set.
-     * @return A list containing the set (first) and readback channels
-     * (subsequent) associated with this node and the specified set handle or
-     * null if there is no match.
-     * @throws xal.smf.NoSuchChannelException if no such channel as specified by
-     * the handle is associated with this node.
+     * @return A list containing the set (first) and readback channels (subsequent) associated with this node and the
+     * specified set handle or null if there is no match.
+     * @throws xal.smf.NoSuchChannelException if no such channel as specified by the handle is associated with this
+     * node.
      */
     public List<Channel> getAndConnectChannelSetAndReadback(String setHandle) {
         List<Channel> list = new ArrayList<>();
@@ -529,15 +521,14 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
     }
 
     /**
-     * Set a value to the set channel corresponding to the set handle, and then
-     * check on the readback channel that the value is within an interval around
-     * the set value.
+     * Set a value to the set channel corresponding to the set handle, and then check on the readback channel that the
+     * value is within an interval around the set value.
      *
      * @param setHandle Handle corresponding to the set channel.
      * @param value Value to be set.
      * @param tolerance Defines an interval around the value (absolute value).
-     * @param timeout Timeout in seconds for the readback to reach the set value
-     * before failing. Failure is indicated by returning false.
+     * @param timeout Timeout in seconds for the readback to reach the set value before failing. Failure is indicated by
+     * returning false.
      * @return true if the value is set correctly, otherwise false.
      * @throws PutException
      * @throws MonitorException
@@ -649,8 +640,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
     }
 
     /**
-     * Get a list with the names of properties that can be accessed through
-     * EPICS and that are used by the model.
+     * Get a list with the names of properties that can be accessed through EPICS and that are used by the model.
      *
      * @return properties that can be accessed via EPICS.
      */
@@ -692,8 +682,8 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
     }
 
     /**
-     * Get the live property value for the corresponding array of channel values
-     * in the order given by getLivePropertyChannels()
+     * Get the live property value for the corresponding array of channel values in the order given by
+     * getLivePropertyChannels()
      */
     public double getLivePropertyValue(final String propertyName, final double[] channelValues) {
         List<AccessibleProperty> properties = getAccessibleProperties();
@@ -706,8 +696,8 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
     }
 
     /**
-     * Set the live property value for the corresponding array of channel values
-     * in the order given by getLivePropertyChannels()
+     * Set the live property value for the corresponding array of channel values in the order given by
+     * getLivePropertyChannels()
      */
     public void setLivePropertyValue(String propertyName, double channelValue) throws PutException {
         List<AccessibleProperty> properties = getAccessibleProperties();
@@ -772,8 +762,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
     }
 
     /**
-     * return the position of this node, along the reference orbit within its
-     * sequence (m)
+     * return the position of this node, along the reference orbit within its sequence (m)
      */
     public double getPosition() {
         return dblPos;
@@ -803,8 +792,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
     }
 
     /**
-     * get the primary ancestor sequence that is a direct child of the
-     * accelerator
+     * get the primary ancestor sequence that is a direct child of the accelerator
      */
     public AcceleratorSeq getPrimaryAncestor() {
         return getParent().getPrimaryAncestor();
@@ -929,8 +917,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
     }
 
     /**
-     * returns the bucket containing the alignment parameters - see
-     * attr.AlignBucket
+     * returns the bucket containing the alignment parameters - see attr.AlignBucket
      */
     public AlignmentBucket getAlign() {
         if (bucAlign == null) {
@@ -1018,8 +1005,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
     }
 
     /**
-     * returns the bucket containing the Aperture parameters - see
-     * attr.ApertureBucket
+     * returns the bucket containing the Aperture parameters - see attr.ApertureBucket
      */
     public ApertureBucket getAper() {
         if (bucAper == null) {
@@ -1037,8 +1023,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
     }
 
     /**
-     * sets the bucket containing the alignment parameters - see
-     * attr.AlignBucket
+     * sets the bucket containing the alignment parameters - see attr.AlignBucket
      */
     public void setTwiss(TwissBucket buc) {
         bucTwiss = buc;
@@ -1046,8 +1031,7 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
     }
 
     /**
-     * sets the bucket containing the Aperture parameters - see
-     * attr.ApertureBucket
+     * sets the bucket containing the Aperture parameters - see attr.ApertureBucket
      */
     public void setAper(ApertureBucket buc) {
         bucAper = buc;
@@ -1167,11 +1151,9 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
 
     //------- ElementType interface --------------------------------
     /**
-     * Determine if a node is of the specified type. The comparison is based
-     * upon the node's class and the element type manager handles checking for
-     * inherited classes to types get inherited. Subclasses can override this
-     * method if the types comparison is more complicated (e.g. if more than one
-     * type can be associated with the same node class).
+     * Determine if a node is of the specified type. The comparison is based upon the node's class and the element type
+     * manager handles checking for inherited classes to types get inherited. Subclasses can override this method if the
+     * types comparison is more complicated (e.g. if more than one type can be associated with the same node class).
      *
      * @param compType The type against which to compare.
      * @return true if the node is of the specified type; false otherwise.
@@ -1208,5 +1190,23 @@ public abstract class AcceleratorNode implements ElementType, DataListener {
     @Override
     public String toString() {
         return this.getId();
+    }
+
+    @Override
+    public int compareTo(Object node) {
+        if (node == this) {
+            return 0;
+        }
+
+        if (!(node instanceof AcceleratorNode)) {
+            return -1;
+        }
+
+        Accelerator acc = ((AcceleratorNode) node).getAccelerator();
+        if (acc.getPosition((AcceleratorNode) node) > acc.getPosition(this)) {
+            return 1;
+        } else {
+            return -1;
+        }
     }
 }
