@@ -66,6 +66,10 @@ public abstract class ChannelFactory {
             }
             FACTORY_LIST.remove(this);
         }
+
+        synchronized (channelMap) {
+            channelMap.clear();
+        }
     }
 
     /**
@@ -73,18 +77,17 @@ public abstract class ChannelFactory {
      */
     public static void disposeAll() {
         synchronized (FACTORY_LIST) {
-            for (ChannelFactory channelFactory : FACTORY_LIST) {
-                channelFactory.dispose();
-            }
+            // Looping over a copy to avoid ConcurrentModificationException
+            List<ChannelFactory> copy = new ArrayList<>(FACTORY_LIST);
+            copy.forEach(ChannelFactory::destroy);
             FACTORY_LIST.clear();
         }
         defaultFactory = null;
     }
 
     /**
-     * Get a channel associated with the signal name. If the channel is already
-     * in our map, then return it, otherwise create a new one and add it to our
-     * channel map.
+     * Get a channel associated with the signal name. If the channel is already in our map, then return it, otherwise
+     * create a new one and add it to our channel map.
      *
      * @param signalName The PV signal name of the channel
      * @return The channel corresponding to the signal name
@@ -107,9 +110,8 @@ public abstract class ChannelFactory {
     }
 
     /**
-     * Get a channel associated with the signal name and transform. If the
-     * channel is already in our map, then return it, otherwise create a new one
-     * and add it to our channel map.
+     * Get a channel associated with the signal name and transform. If the channel is already in our map, then return
+     * it, otherwise create a new one and add it to our channel map.
      *
      * @param signalName The PV signal name of the channel
      * @param transform The channel's value transform
@@ -140,8 +142,7 @@ public abstract class ChannelFactory {
     protected abstract Channel newChannel(final String signalName);
 
     /**
-     * Create a new channel for the given signal name and set its value
-     * transform.
+     * Create a new channel for the given signal name and set its value transform.
      *
      * @param signalName The PV signal name
      * @param transform The value transform to use in the channel
@@ -154,8 +155,7 @@ public abstract class ChannelFactory {
     }
 
     /**
-     * Get the default factory which determines the low level channel
-     * implementation
+     * Get the default factory which determines the low level channel implementation
      *
      * @return The default channel factory
      */
@@ -169,8 +169,7 @@ public abstract class ChannelFactory {
     }
 
     /**
-     * Get the associated channel system from the channel factory
-     * implementation.
+     * Get the associated channel system from the channel factory implementation.
      *
      * @return The channel system
      */
@@ -236,11 +235,11 @@ public abstract class ChannelFactory {
     public abstract void printInfo();
 
     /**
-     * Sets the test flag. If the test flag is on, the factory will add a suffix
-     * to the signal names to distinguish from the original signals.
+     * Sets the test flag. If the test flag is on, the factory will add a suffix to the signal names to distinguish from
+     * the original signals.
      *
-     * This is a useful feature to test applications, which can run a server
-     * with the test flag and the client will connect to the test channels.
+     * This is a useful feature to test applications, which can run a server with the test flag and the client will
+     * connect to the test channels.
      *
      * @param test
      */
@@ -268,8 +267,8 @@ public abstract class ChannelFactory {
     }
 
     /**
-     * This method allows to define a suffix for all PVs when the test mode is
-     * enabled. By default, the suffix is ":TEST".
+     * This method allows to define a suffix for all PVs when the test mode is enabled. By default, the suffix is
+     * ":TEST".
      *
      * @param suffix
      */

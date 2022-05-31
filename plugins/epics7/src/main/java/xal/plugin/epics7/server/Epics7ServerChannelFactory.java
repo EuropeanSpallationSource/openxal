@@ -17,13 +17,10 @@
  */
 package xal.plugin.epics7.server;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
 import xal.ca.ChannelSystem;
-import xal.plugin.epics7.FinishedThreadHook;
 
 /**
  *
@@ -34,8 +31,6 @@ public class Epics7ServerChannelFactory extends ChannelFactory {
     // EPICS7 channel system
     private static volatile Epics7ServerChannelSystem channelSystem;
 
-    // To keep track of the threads using the Epics7ChannelSystem
-    public static final List<Thread> threadList = new ArrayList<>();
 
     public Epics7ServerChannelFactory() {
         setChannelSystem();
@@ -44,13 +39,6 @@ public class Epics7ServerChannelFactory extends ChannelFactory {
     private void setChannelSystem() {
         if (channelSystem == null) {
             channelSystem = Epics7ServerChannelSystem.newEpics7ServerChannelSystem();
-        }
-        synchronized (threadList) {
-            if (!threadList.contains(Thread.currentThread())) {
-                threadList.add(Thread.currentThread());
-                FinishedThreadHook finishedThreadHook = new FinishedThreadHook(Thread.currentThread(), threadList, channelSystem);
-                finishedThreadHook.start();
-            }
         }
     }
 

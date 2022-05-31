@@ -17,18 +17,15 @@
  */
 package xal.plugin.epics7;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 import xal.ca.Channel;
 import xal.ca.ChannelFactory;
 import xal.ca.ChannelSystem;
 
 /**
- * NOTE: previous implementations kept a cache of native channels, but that is
- * not required since ChannelFactory keeps a list of Open XAL Channels, which
- * can create only 1 native channel each. TODO: test if it works when connecting
- * to 2 different fields of the same PV.
+ * NOTE: previous implementations kept a cache of native channels, but that is not required since ChannelFactory keeps a
+ * list of Open XAL Channels, which can create only 1 native channel each. TODO: test if it works when connecting to 2
+ * different fields of the same PV.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
@@ -36,9 +33,6 @@ public class Epics7ChannelFactory extends ChannelFactory {
 
     // EPICS7 channel system
     private static volatile Epics7ChannelSystem channelSystem;
-
-    // To keep track of the threads using the Epics7ChannelSystem
-    public static final List<Thread> threadList = new ArrayList<>();
 
     public Epics7ChannelFactory() {
         setChannelSystem();
@@ -48,18 +42,10 @@ public class Epics7ChannelFactory extends ChannelFactory {
         if (channelSystem == null) {
             channelSystem = Epics7ChannelSystem.newEpics7ChannelSystem();
         }
-        synchronized (threadList) {
-            if (!threadList.contains(Thread.currentThread())) {
-                threadList.add(Thread.currentThread());
-                FinishedThreadHook finishedThreadHook = new FinishedThreadHook(Thread.currentThread(), threadList, channelSystem);
-                finishedThreadHook.start();
-            }
-        }
     }
 
     /**
-     * This method does not perform any action, it only returns true if the
-     * system has been initialized.
+     * This method does not perform any action, it only returns true if the system has been initialized.
      *
      * @return
      */
