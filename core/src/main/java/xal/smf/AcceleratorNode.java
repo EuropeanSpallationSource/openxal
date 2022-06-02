@@ -298,7 +298,11 @@ public abstract class AcceleratorNode implements ElementType, DataListener, Comp
      * @return channel for the given handle or null if none could be found
      */
     public Channel findChannel(final String handle) {
-        return channelSuite.getChannel(handle);
+        Channel channel = channelSuite.getChannel(handle);
+        if (channel == null) {
+            LOGGER.log(Level.WARNING, "Missing channel value for handle: {0}, node: {1}", new Object[]{handle, getId()});
+        }
+        return channel;
     }
 
     /**

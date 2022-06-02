@@ -92,7 +92,9 @@ public abstract class AbstractPropertyAccessor implements PropertyAccessor {
         for (final String propertyName : propertyNames) {
             final Channel[] propertyChannels = node.getLivePropertyChannels(propertyName);
             for (final Channel channel : propertyChannels) {
-                channels.add(channel);
+                if (channel != null) {
+                    channels.add(channel);
+                }
             }
         }
 
