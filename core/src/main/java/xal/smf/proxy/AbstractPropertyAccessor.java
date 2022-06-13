@@ -94,6 +94,8 @@ public abstract class AbstractPropertyAccessor implements PropertyAccessor {
             for (final Channel channel : propertyChannels) {
                 if (channel != null) {
                     channels.add(channel);
+                } else {
+                    LOGGER.log(Level.WARNING, "Missing channel value for property: {0}, node: {1}", new Object[]{propertyName, node.getId()});
                 }
             }
         }
