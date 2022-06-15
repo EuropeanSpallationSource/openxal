@@ -48,10 +48,6 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
     /*
      *  Defining Attributes
      */
-    /**
-     * flag indicating that this is the leading gap of a cavity
-     */
-    private boolean initialGap = false;
 
     /**
      * ETL product of gap
@@ -125,6 +121,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
     private double dblAmpFactor;
     private double dblPhaseFactor;
     private double synchronousPhase;
+    private double longitudinalPhaseReference;
 
     /*
      * Initialization
@@ -153,14 +150,6 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
      */
     public IdealRfGap() {
         super(TYPE);
-    }
-
-    /**
-     * return whether this gap is the initial gap of a cavity
-     */
-    @Override
-    public boolean isFirstGap() {
-        return initialGap;
     }
 
     /*
@@ -319,15 +308,9 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
     protected PhaseMap transferMap(IProbe probe) throws ModelException {
         PhaseMatrix matPhi = new PhaseMatrix();
         double lambda = LIGHT_SPEED / getFrequency();
-
-        double phiS;
-        if (isFirstGap() || !probe.getAlgorithm().getRfGapPhaseCalculation()) {
-            phiS = getPhase();
-            phiS += structureMode * Math.PI * indCell;
-        } else {
-            phiS = probe.getLongitinalPhase();
-            phiS += structureMode * Math.PI * indCell;
-        }
+        
+        double phiS = getPhase() + probe.getLongitinalPhase() - getLongitudinalPhaseReference();
+        phiS += structureMode * Math.PI * indCell;
 
         // Applying phase offset
         phiS += dblPhaseFactor;
@@ -430,7 +413,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
         ESSRfGap rfgap = (ESSRfGap) element.getHardwareNode();
 
         // Initialize from source values
-        initialGap = rfgap.isFirstGap();
+        bolStartCell = rfgap.isFirstCell();
         cellLength = rfgap.getGapLength();
 
         if (rfgap.getTTFPrimeFit().getCoef(0) != 0) {
@@ -447,10 +430,6 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
 
         dblAmpFactor = rfgap.getRfGap().getAmpFactor();
         dblPhaseFactor = rfgap.getRfGap().getPhaseFactor();
-    }
-
-    public void setFirstGap(boolean initialGap) {
-        this.initialGap = initialGap;
     }
 
     public void setCellLength(double cellLength) {
@@ -471,12 +450,6 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
 
     @Override
     protected double longitudinalPhaseAdvance(IProbe probe) {
-        // WORKAROUND to set the initial phase
-        if (isFirstGap()) {
-            double phi0 = this.getPhase();
-            double phi = probe.getLongitinalPhase();
-            return deltaPhi - phi + phi0;
-        }
         return deltaPhi;
     }
 
@@ -550,7 +523,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
      */
     @Override
     public double getCavityModeConstant() {
-        return this.dblCavModeConst;
+        return dblCavModeConst;
     }
 
     /**
@@ -564,7 +537,7 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
      */
     @Override
     public boolean isEndCell() {
-        return this.bolEndCell;
+        return bolEndCell;
     }
 
     /**
@@ -575,18 +548,13 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
      */
     @Override
     public boolean isFirstCell() {
-        return this.bolStartCell;
+        return bolStartCell;
     }
 
     @Override
     public void computeSynchronousPhaseAndEnergyGain(IProbe probe) {
-        if (isFirstGap() || !probe.getAlgorithm().getRfGapPhaseCalculation()) {
-            synchronousPhase = getPhase();
-            synchronousPhase += structureMode * Math.PI * indCell;
-        } else {
-            synchronousPhase = probe.getLongitinalPhase();
-            synchronousPhase += structureMode * Math.PI * indCell;
-        }
+        synchronousPhase = getPhase() + probe.getLongitinalPhase() - getLongitudinalPhaseReference();
+        synchronousPhase += structureMode * Math.PI * indCell;
 
         // Applying phase offset
         synchronousPhase += dblPhaseFactor;
@@ -619,5 +587,15 @@ public class IdealRfGap extends ThinElement implements IRfGap, IRfCavityCell {
     @Override
     public double getEnergyGain() {
         return energyGain;
+    }
+
+    @Override
+    public void setLongitudinalPhaseReference(double longitudinalPhaseReference) {
+        this.longitudinalPhaseReference = longitudinalPhaseReference;
+    }
+
+    @Override
+    public double getLongitudinalPhaseReference() {
+        return longitudinalPhaseReference;
     }
 }

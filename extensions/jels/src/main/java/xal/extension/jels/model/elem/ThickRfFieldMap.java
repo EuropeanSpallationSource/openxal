@@ -29,11 +29,10 @@ import xal.tools.beam.PhaseMap;
 import xal.tools.beam.PhaseMatrix;
 
 /**
- * Thick element version for RF field map implementation. This class is supposed
- * to be faster than the {@link xal.extension.jels.model.elem.ThinRfFieldMap}
- * for fieldmaps with many data points, since it removes the overhead of
- * creating an element for every point in the fieldmap. The drawback is that it
- * can't be superposed to other ThickElements.
+ * Thick element version for RF field map implementation. This class is supposed to be faster than the
+ * {@link xal.extension.jels.model.elem.ThinRfFieldMap} for fieldmaps with many data points, since it removes the
+ * overhead of creating an element for every point in the fieldmap. The drawback is that it can't be superposed to other
+ * ThickElements.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@esss.se>
  *
@@ -75,8 +74,9 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     /**
      * flag indicating that this is the leading gap of a cavity
      */
-    private boolean initialGap = false;
+    private boolean firstCell = false;
     private double sliceStartPosition;
+    private double longitudinalPhaseReference;
 
     public ThickRfFieldMap() {
         this(null);
@@ -100,9 +100,12 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
         final RfFieldMap fieldmap = (RfFieldMap) element.getHardwareNode();
 
-        if (Math.abs(element.getStartPosition() - (fieldmap.getPosition() - fieldmap.getLength() / 2.0)) < 1e-6) {
-            initialGap = true;
+        // Since the ThickElements can be split, only the first slice of the first cell can return firstCell == true
+        if (fieldmap.isFirstCell()
+                && (Math.abs(element.getStartPosition() - (fieldmap.getPosition() - fieldmap.getLength() / 2.0)) < 1e-6)) {
+            firstCell = true;
         }
+
         sliceStartPosition = element.getStartPosition() - (fieldmap.getPosition() - fieldmap.getLength() / 2.0);
         rfFieldmap = fieldmap.getFieldMap();
         cellLength = fieldmap.getSliceLength();
@@ -117,21 +120,15 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     }
 
     /**
-     * Method calculates the phase drift and the energy gain on the current
-     * range (i.e from probe.getPosition, and for dblLength).
+     * Method calculates the phase drift and the energy gain on the current range (i.e from probe.getPosition, and for
+     * dblLength).
      *
      * @throws xal.model.ModelException
      */
     public void computePhaseDriftAndEnergyGain(IProbe probe, double dblLen) {
-
         startPosition = getLatticePosition() - getLength() / 2. - sliceStartPosition;
 
-        double initialPhase;
-        if (Math.abs(probe.getPosition() - startPosition) < 1e-6 || !probe.getAlgorithm().getRfGapPhaseCalculation()) {
-            initialPhase = getPhase();
-        } else {
-            initialPhase = probe.getLongitinalPhase();
-        }
+        double initialPhase = getPhase() + probe.getLongitinalPhase() - getLongitudinalPhaseReference();
 
         // Find the field map points included in the current slice.
         List<Double> fieldMapPointPositions = rfFieldmap.getFieldMapPointPositions(probe.getPosition() - startPosition, dblLen);
@@ -196,8 +193,8 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     }
 
     /**
-     * Method calculates transfer matrix for the field map on the current range
-     * (i.e from probe.getPosition, and for dblLength).
+     * Method calculates transfer matrix for the field map on the current range (i.e from probe.getPosition, and for
+     * dblLength).
      *
      * @return
      */
@@ -205,12 +202,7 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     public PhaseMap transferMap(IProbe probe, double dblLen) {
         computePhaseDriftAndEnergyGain(probe, dblLen);
 
-        double phiS;
-        if (Math.abs(probe.getPosition() - startPosition) < 1e-6 || !probe.getAlgorithm().getRfGapPhaseCalculation()) {
-            phiS = getPhase();
-        } else {
-            phiS = probe.getLongitinalPhase();
-        }
+        double initialPhase = getPhase() + probe.getLongitinalPhase() - getLongitudinalPhaseReference();
 
         // Find the field map points included in the current slice.
         List<Double> fieldMapPointPositions = rfFieldmap.getFieldMapPointPositions(probe.getPosition() - startPosition, dblLen);
@@ -238,8 +230,8 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
             FieldMapPoint fieldMapPoint = rfFieldmap.getFieldAt(fieldMapPointPositions.get(i));
 
-            fieldMapPoint.setAmplitudeFactorE(getE0() * Math.cos(phiS + deltaPhiArr[i + 1]));
-            fieldMapPoint.setAmplitudeFactorB(2.0 * Math.PI * getFrequency() / (LIGHT_SPEED * LIGHT_SPEED) * getE0() * Math.sin(phiS + deltaPhiArr[i + 1]));
+            fieldMapPoint.setAmplitudeFactorE(getE0() * Math.cos(initialPhase + deltaPhiArr[i + 1]));
+            fieldMapPoint.setAmplitudeFactorB(2.0 * Math.PI * getFrequency() / (LIGHT_SPEED * LIGHT_SPEED) * getE0() * Math.sin(initialPhase + deltaPhiArr[i + 1]));
 
             // Kick
             integrator.timesKick(probe, dz, fieldMapPoint, energyGainArr[i]);
@@ -263,13 +255,6 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     @Override
     public double longitudinalPhaseAdvance(IProbe probe, double dblLen) {
         computePhaseDriftAndEnergyGain(probe, dblLen);
-
-        // WORKAROUND to set the initial phase
-        if (Math.abs(probe.getPosition() - startPosition) < 1e-6) {
-            double phi0 = getPhase();
-            double phi = probe.getLongitinalPhase();
-            return deltaPhi - phi + phi0;
-        }
 
         return deltaPhi;
     }
@@ -329,11 +314,6 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     }
 
     @Override
-    public boolean isFirstGap() {
-        return initialGap;
-    }
-
-    @Override
     public void setCavityCellIndex(int indCell) {
         // It does nothing so far, only one fieldmap is used per cavity.
     }
@@ -360,7 +340,7 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
 
     @Override
     public boolean isFirstCell() {
-        return isFirstGap();
+        return firstCell;
     }
 
     @Override
@@ -377,5 +357,15 @@ public class ThickRfFieldMap extends ThickElement implements IRfGap, IRfCavityCe
     @Override
     public double getEnergyGain() {
         return energyGain;
+    }
+
+    @Override
+    public void setLongitudinalPhaseReference(double longitudinalPhaseEntrance) {
+        this.longitudinalPhaseReference = longitudinalPhaseEntrance;
+    }
+
+    @Override
+    public double getLongitudinalPhaseReference() {
+        return longitudinalPhaseReference;
     }
 }

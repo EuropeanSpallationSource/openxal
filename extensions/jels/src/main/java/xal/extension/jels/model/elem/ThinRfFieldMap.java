@@ -73,8 +73,9 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
     /**
      * flag indicating that this is the leading gap of a cavity
      */
-    private boolean initialGap = false;
+    private boolean firstCell = false;
     private double synchronousPhase;
+    private double longitudinalPhaseEntrance;
 
     public ThinRfFieldMap() {
         this(null);
@@ -110,7 +111,7 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
         position = element.getStartPosition();
         centerPosition = fieldmap.getPosition();
         if (position == 0) {
-            initialGap = true;
+            firstCell = true;
         }
         rfFieldmap = fieldmap.getFieldMap();
         cellLength = fieldmap.getSliceLength();
@@ -135,15 +136,9 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
      * @throws xal.model.ModelException
      */
     @Override
-    public PhaseMap transferMap(IProbe probe)
-            throws ModelException {
+    public PhaseMap transferMap(IProbe probe) throws ModelException {
 
-        double phiS;
-        if (isFirstGap() || !probe.getAlgorithm().getRfGapPhaseCalculation()) {
-            phiS = getPhase();
-        } else {
-            phiS = probe.getLongitinalPhase();
-        }
+        double phiS = getPhase() + probe.getLongitinalPhase() - getLongitudinalPhaseReference();
 
         double dz = getCellLength();
         // First and last slices of the element get half a kick
@@ -175,18 +170,12 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
 
     @Override
     protected double longitudinalPhaseAdvance(IProbe probe) {
-        // WORKAROUND to set the initial phase
-        if (isFirstGap()) {
-            double phi0 = this.getPhase();
-            double phi = probe.getLongitinalPhase();
-            return deltaPhi - phi + phi0;
-        }
         return deltaPhi;
     }
 
     @Override
     protected double elapsedTime(IProbe probe) {
-        return 0;
+        return deltaPhi / (getFrequency() * 2.0 * Math.PI);
     }
 
     /**
@@ -243,11 +232,6 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
     }
 
     @Override
-    public boolean isFirstGap() {
-        return initialGap;
-    }
-
-    @Override
     public void setCavityCellIndex(int indCell) {
         // It does nothing so far, only one fieldmap is used per cavity.
     }
@@ -274,17 +258,12 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
 
     @Override
     public boolean isFirstCell() {
-        return isFirstGap();
+        return firstCell;
     }
 
     @Override
     public void computeSynchronousPhaseAndEnergyGain(IProbe probe) {
-        double initialPhase;
-        if (isFirstGap() || !probe.getAlgorithm().getRfGapPhaseCalculation()) {
-            initialPhase = getPhase();
-        } else {
-            initialPhase = probe.getLongitinalPhase();
-        }
+        double initialPhase = getPhase() + probe.getLongitinalPhase() - getLongitudinalPhaseReference();
 
         double dz = getCellLength();
         // First and last slices of the element get half a kick
@@ -309,5 +288,15 @@ public class ThinRfFieldMap extends ThinElement implements IRfGap, IRfCavityCell
     @Override
     public double getEnergyGain() {
         return energyGain;
+    }
+
+    @Override
+    public void setLongitudinalPhaseReference(double longitudinalPhaseEntrance) {
+        this.longitudinalPhaseEntrance = longitudinalPhaseEntrance;
+    }
+
+    @Override
+    public double getLongitudinalPhaseReference() {
+        return longitudinalPhaseEntrance;
     }
 }
