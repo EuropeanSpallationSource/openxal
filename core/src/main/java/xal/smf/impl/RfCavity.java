@@ -212,7 +212,7 @@ public class RfCavity extends AcceleratorSeq {
      * where ampFactor is a calibration factor determined experimentally
      */
     public double getCavAmpAvg() throws GetException {
-        cavAmpAvgC = this.lazilyGetAndConnect(CAV_AMP_AVG_HANDLE, cavAmpAvgC);
+        cavAmpAvgC = lazilyGetAndConnect(CAV_AMP_AVG_HANDLE, cavAmpAvgC);
         return toCavAmpAvgFromCA(cavAmpAvgC.getValDbl());
     }
 
@@ -243,7 +243,7 @@ public class RfCavity extends AcceleratorSeq {
      * experimentally
      */
     public double getCavPhaseAvg() throws GetException {
-        cavPhaseAvgC = this.lazilyGetAndConnect(CAV_PHASE_AVG_HANDLE, cavPhaseAvgC);
+        cavPhaseAvgC = lazilyGetAndConnect(CAV_PHASE_AVG_HANDLE, cavPhaseAvgC);
         return toCavPhaseAvgFromCA(cavPhaseAvgC.getValDbl());
     }
 
@@ -358,7 +358,7 @@ public class RfCavity extends AcceleratorSeq {
         double phaseSum = 0.0;
         double totalLength = 0.0;
         for (int index = startIndex; index < endIndex; index++) {
-            final RfGap gap = this.gaps.get(index);
+            final RfGap gap = gaps.get(index);
             final double gapLength = gap.getGapLength();
             phaseSum += gap.toGapPhaseFromCavityPhase(cavityPhase) * gapLength;
             totalLength += gapLength;
@@ -373,7 +373,7 @@ public class RfCavity extends AcceleratorSeq {
      * experimentally
      */
     public void setCavAmp(double newAmp) throws PutException {
-        cavAmpSetC = this.lazilyGetAndConnect(amplitude.getSetHandle(), cavAmpSetC);
+        cavAmpSetC = lazilyGetAndConnect(amplitude.getSetHandle(), cavAmpSetC);
         cavAmpSetC.putVal(toCAFromCavAmpAvg(newAmp));
     }
 
@@ -383,7 +383,7 @@ public class RfCavity extends AcceleratorSeq {
      * determined experimentally
      */
     public void setCavPhase(double newPhase) throws PutException {
-        cavPhaseSetC = this.lazilyGetAndConnect(phase.getSetHandle(), cavPhaseSetC);
+        cavPhaseSetC = lazilyGetAndConnect(phase.getSetHandle(), cavPhaseSetC);
         cavPhaseSetC.putVal(toCAFromCavPhaseAvg(newPhase));
     }
 
@@ -391,7 +391,7 @@ public class RfCavity extends AcceleratorSeq {
      * return the present live set point for the amplitude
      */
     public double getCavAmpSetPoint() throws GetException {
-        cavAmpSetC = this.lazilyGetAndConnect(amplitude.getSetHandle(), cavAmpSetC);
+        cavAmpSetC = lazilyGetAndConnect(amplitude.getSetHandle(), cavAmpSetC);
         return cavAmpSetC.getValDbl() * bucRfCavity.getAmpFactor();
     }
 
@@ -399,7 +399,7 @@ public class RfCavity extends AcceleratorSeq {
      * return the present live set point for the phase
      */
     public double getCavPhaseSetPoint() throws GetException {
-        cavPhaseSetC = this.lazilyGetAndConnect(phase.getSetHandle(), cavPhaseSetC);
+        cavPhaseSetC = lazilyGetAndConnect(phase.getSetHandle(), cavPhaseSetC);
         return cavPhaseSetC.getValDbl();
     }
 
@@ -447,7 +447,7 @@ public class RfCavity extends AcceleratorSeq {
      * @param phase new design phase (deg)
      */
     public void updateDesignPhase(double phase) {
-        RfCavityBucket rfCavBuc = this.getRfField();
+        RfCavityBucket rfCavBuc = getRfField();
         rfCavBuc.setPhase(phase);
     }
 
@@ -457,7 +457,7 @@ public class RfCavity extends AcceleratorSeq {
      * @param amp new design amplitude (MV)
      */
     public void updateDesignAmp(double amp) {
-        RfCavityBucket rfCavBuc = this.getRfField();
+        RfCavityBucket rfCavBuc = getRfField();
         rfCavBuc.setAmplitude(amp);
     }
 
@@ -465,7 +465,7 @@ public class RfCavity extends AcceleratorSeq {
      * return a polynomial fit of the transit time factor as a function of beta
      */
     public RealUnivariatePolynomial getTTFFit() {
-        RfCavityBucket rfCavBuc = this.getRfField();
+        RfCavityBucket rfCavBuc = getRfField();
         return new RealUnivariatePolynomial(rfCavBuc.getTTFCoefs());
     }
 
@@ -474,7 +474,7 @@ public class RfCavity extends AcceleratorSeq {
      * beta
      */
     public RealUnivariatePolynomial getTTFPrimeFit() {
-        RfCavityBucket rfCavBuc = this.getRfField();
+        RfCavityBucket rfCavBuc = getRfField();
         return new RealUnivariatePolynomial(rfCavBuc.getTTFPrimeCoefs());
     }
 
@@ -483,7 +483,7 @@ public class RfCavity extends AcceleratorSeq {
      * beta
      */
     public RealUnivariatePolynomial getSTFFit() {
-        RfCavityBucket rfCavBuc = this.getRfField();
+        RfCavityBucket rfCavBuc = getRfField();
         return new RealUnivariatePolynomial(rfCavBuc.getSTFCoefs());
     }
 
@@ -492,7 +492,7 @@ public class RfCavity extends AcceleratorSeq {
      * function of beta
      */
     public RealUnivariatePolynomial getSTFPrimeFit() {
-        RfCavityBucket rfCavBuc = this.getRfField();
+        RfCavityBucket rfCavBuc = getRfField();
         return new RealUnivariatePolynomial(rfCavBuc.getSTFPrimeCoefs());
     }
 
@@ -501,7 +501,7 @@ public class RfCavity extends AcceleratorSeq {
      * function of beta
      */
     public RealUnivariatePolynomial getTTFFitEnd() {
-        RfCavityBucket rfCavBuc = this.getRfField();
+        RfCavityBucket rfCavBuc = getRfField();
         return new RealUnivariatePolynomial(rfCavBuc.getTTFEndCoefs());
     }
 
@@ -510,7 +510,7 @@ public class RfCavity extends AcceleratorSeq {
      * a function of beta
      */
     public RealUnivariatePolynomial getTTFPrimeFitEnd() {
-        RfCavityBucket rfCavBuc = this.getRfField();
+        RfCavityBucket rfCavBuc = getRfField();
         return new RealUnivariatePolynomial(rfCavBuc.getTTFPrimeEndCoefs());
     }
 
@@ -519,7 +519,7 @@ public class RfCavity extends AcceleratorSeq {
      * function of beta
      */
     public RealUnivariatePolynomial getSTFFitEnd() {
-        RfCavityBucket rfCavBuc = this.getRfField();
+        RfCavityBucket rfCavBuc = getRfField();
         return new RealUnivariatePolynomial(rfCavBuc.getSTFEndCoefs());
     }
 
@@ -528,7 +528,7 @@ public class RfCavity extends AcceleratorSeq {
      * cells as a function of beta
      */
     public RealUnivariatePolynomial getSTFPrimeFitEnd() {
-        RfCavityBucket rfCavBuc = this.getRfField();
+        RfCavityBucket rfCavBuc = getRfField();
         return new RealUnivariatePolynomial(rfCavBuc.getSTFPrimeEndCoefs());
     }
 
@@ -538,7 +538,7 @@ public class RfCavity extends AcceleratorSeq {
      * Superconducting)
      */
     public double getStructureMode() {
-        RfCavityBucket rfCavBuc = this.getRfField();
+        RfCavityBucket rfCavBuc = getRfField();
         return rfCavBuc.getStructureMode();
     }
 
@@ -548,6 +548,6 @@ public class RfCavity extends AcceleratorSeq {
      * @return RF cavity frequency (MHz)
      */
     public double getCavFreq() {
-        return this.getRfField().getFrequency();
+        return getRfField().getFrequency();
     }
 }
