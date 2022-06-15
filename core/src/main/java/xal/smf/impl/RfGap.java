@@ -49,7 +49,7 @@ public class RfGap extends AcceleratorNode {
     /**
      * a flag indicating whether this gap is the first gap in a cavity string
      */
-    private boolean firstGap = false;
+    private boolean firstCell = false;
 
     /**
      * Override to provide type signature
@@ -451,15 +451,15 @@ public class RfGap extends AcceleratorNode {
     /**
      * sets the flag indicating whether this is the first gap in a cavity
      */
-    public void setFirstGap(boolean tf) {
-        firstGap = tf;
+    public void setFirstCell(boolean tf) {
+        firstCell = tf;
     }
 
     /**
      * returns whether this is the first gap of a cavity string
      */
-    public boolean isFirstGap() {
-        return firstGap;
+    public boolean isFirstCell() {
+        return firstCell;
     }
 
     /**

@@ -168,7 +168,7 @@ public class RfCavity extends AcceleratorSeq {
         // gap in a cavity to come from an external source.
         while (gapIter.hasNext()) {
             RfGap gap = gapIter.next();
-            gap.setFirstGap(index == 0);
+            gap.setFirstCell(index == 0);
             index += 1;
         }
     }
