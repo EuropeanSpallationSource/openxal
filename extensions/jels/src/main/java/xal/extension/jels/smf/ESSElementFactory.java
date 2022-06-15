@@ -170,7 +170,7 @@ public final class ESSElementFactory {
     public static ESSRfGap createESSRfGap(String name, boolean isFirst, double ampFactor,
             ApertureBucket aper, double length, double position) {
         final ESSRfGap gap = new ESSRfGap(name);
-        gap.setFirstGap(isFirst);
+        gap.setFirstCell(isFirst);
         gap.getRfGap().setEndCell(0);
         gap.setLength(0.0);
         gap.getRfGap().setAmpFactor(ampFactor);

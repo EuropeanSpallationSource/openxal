@@ -273,7 +273,7 @@ public class ElementFactory {
     public static RfGap createRfGap(String name, boolean isFirst, double ampFactor,
             ApertureBucket aper, double length, double position) {
         final RfGap gap = new RfGap(name);
-        gap.setFirstGap(isFirst);
+        gap.setFirstCell(isFirst);
         gap.getRfGap().setEndCell(0);
         gap.setLength(0.0);
         gap.setPosition(position);
