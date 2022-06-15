@@ -144,6 +144,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 
     private double synchronousPhase;
     private double energyGain;
+    private double longitudinalPhaseEntrance;
 
     @Override
     public void computeSynchronousPhaseAndEnergyGain(IProbe probe) {
@@ -681,15 +682,6 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
  /*
      * Attribute Query
      */
-    /**
-     * return whether this gap is the initial gap of a cavity
-     *
-     * @return The firstGap value
-     */
-    @Override
-    public boolean isFirstGap() {
-        return bolStartCell;
-    }
 
     /**
      *
@@ -843,20 +835,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
      */
     @Override
     public double longitudinalPhaseAdvance(IProbe probe) {
-
-        // We trick the algorithm into resetting the probe's phase to the phase
-        //  of this gap, which is the klystron phase of this cavity
-        if (this.isFirstGap()) {
-            double phi0 = this.getPhase();
-            double phi = probe.getLongitinalPhase();
-            double dphi = this.compGapPhaseAndEnergyGain(probe).getPhase();
-
-            return -phi + phi0 + dphi;
-
-            // We're just a plain ole gap, advance the probe phase by the phase gain
-        } else {
-            return compGapPhaseAndEnergyGain(probe).getPhase();
-        }
+        return compGapPhaseAndEnergyGain(probe).getPhase();
     }
 
     /**
@@ -879,9 +858,9 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         // Determine the current energy gain and focusing constants for the gap
         // the following section is to calculate the phase of the beam at each gap, rather than use hardwired phases.
         // update the energy gain first:
-        double dW = this.compGapPhaseAndEnergyGain(probe).getEnergy();
-        double kz = this.compLongFocusing(probe);
-        double kt = this.compTransFocusing(probe);
+        double dW = compGapPhaseAndEnergyGain(probe).getEnergy();
+        double kz = compLongFocusing(probe);
+        double kt = compTransFocusing(probe);
 
         // Compute final energy parameters
         double wF = wI + dW;
@@ -938,7 +917,7 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         RfGap rfgap = (RfGap) element.getHardwareNode();
 
         // Initialize the RF gap properties
-        this.bolStartCell = rfgap.isFirstGap();
+        this.bolStartCell = rfgap.isFirstCell();
         this.bolEndCell = rfgap.isEndCell();
         this.dblGapLength = rfgap.getGapLength();
         this.gapOffset = rfgap.getGapOffset();
@@ -1053,8 +1032,8 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
      * @since Jan 12, 2015 by Christopher K. Allen
      */
     private double compCavModeFieldCoeff() {
-        final int n = this.getCavityCellIndex();
-        final double q = this.getCavityModeConstant();
+        final int n = getCavityCellIndex();
+        final double q = getCavityModeConstant();
 
         return Math.cos(n * q * Math.PI);
     }
@@ -1078,13 +1057,13 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
         // Create the accelerating gap model
         //  The accelerating gap potential is set for a unit charge.  It is later updated
         //  for whatever charge the probe carries when energy and phase calculations are made.
-        double e0 = this.getE0();
-        double a = this.compCavModeFieldCoeff();
-        double l = this.getGapLength();
+        double e0 = getE0();
+        double a = compCavModeFieldCoeff();
+        double l = getGapLength();
         // This is for a unit charge 
         double v0 = a * e0 * l;
 
-        this.gapAcclMdl = new AcceleratingRfGap(this.dblFreq, v0, this.spcGapFlds);
+        gapAcclMdl = new AcceleratingRfGap(this.dblFreq, v0, this.spcGapFlds);
     }
 
     /**
@@ -1120,13 +1099,12 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
      * @since Nov 26, 2014, Christopher K. Allen
      */
     private double compGapEntrancePhase(IProbe probe) {
-
         // Get the phase of the probe at the gap geometric center
-        double phi0 = this.isFirstGap() ? this.getPhase() : probe.getLongitinalPhase();
+        double phi0 = getPhase() + probe.getLongitinalPhase() - getLongitudinalPhaseReference();
 
         double bi = probe.getBeta();
-        double dl = this.getGapOffset();
-        double dphi = this.compDriftingPhaseAdvance(bi, dl);
+        double dl = getGapOffset();
+        double dphi = compDriftingPhaseAdvance(bi, dl);
 
         double phi = phi0 + dphi;
 
@@ -1505,5 +1483,15 @@ public class SpectrumMapRfGap extends ThinElement implements IRfGap, IRfCavityCe
 
             throw e;
         }
+    }
+
+    @Override
+    public void setLongitudinalPhaseReference(double longitudinalPhaseEntrance) {
+        this.longitudinalPhaseEntrance = longitudinalPhaseEntrance;
+    }
+
+    @Override
+    public double getLongitudinalPhaseReference() {
+        return longitudinalPhaseEntrance;
     }
 }

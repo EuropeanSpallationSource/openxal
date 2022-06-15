@@ -35,7 +35,7 @@ public class ESSRfGap extends RfGap {
         if (arrCoeffs == null || arrCoeffs.length == 0) {
 
             ESSRfCavity rfCav = (ESSRfCavity) this.getParent();
-            if (isFirstGap()) {
+            if (isFirstCell()) {
                 return rfCav.getTTFFitStart();
             } else if (isEndCell()) {
                 return rfCav.getTTFFitEnd();
@@ -62,7 +62,7 @@ public class ESSRfGap extends RfGap {
         //  defined for this gap.
         if (arrCoeffs == null || arrCoeffs.length == 0) {
             ESSRfCavity rfCav = (ESSRfCavity) this.getParent();
-            if (isFirstGap()) {
+            if (isFirstCell()) {
                 return rfCav.getTTFPrimeFitStart();
             } else if (isEndCell()) {
                 return rfCav.getTTFPrimeFitEnd();
@@ -90,7 +90,7 @@ public class ESSRfGap extends RfGap {
         if (arrCoeffs == null || arrCoeffs.length == 0) {
 
             ESSRfCavity rfCav = (ESSRfCavity) this.getParent();
-            if (isFirstGap()) {
+            if (isFirstCell()) {
                 return rfCav.getSTFFitStart();
             } else if (isEndCell()) {
                 return rfCav.getSTFFitEnd();
@@ -117,7 +117,7 @@ public class ESSRfGap extends RfGap {
         //  defined for this gap.
         if (arrCoeffs == null || arrCoeffs.length == 0) {
             ESSRfCavity rfCav = (ESSRfCavity) this.getParent();
-            if (isFirstGap()) {
+            if (isFirstCell()) {
                 return rfCav.getSTFPrimeFitStart();
             } else if (isEndCell()) {
                 return rfCav.getSTFPrimeFitEnd();

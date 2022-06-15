@@ -126,7 +126,7 @@ public class RfGapBucket extends AttributeBucket {
         //  base class.
         super.registerAttribute(ARR_NAMES[0], attLength, "The length is the length of the gap (m).");
         super.registerAttribute(ARR_NAMES[1], attPhaseFactor, "This factor is added to the cavity phase to calculate the RF phase in the gap (rad).");
-        super.registerAttribute(ARR_NAMES[2], attAmpFactor, "TThe ratio of the RF amplitude  in the gap over the amplitude in the first gap.");
+        super.registerAttribute(ARR_NAMES[2], attAmpFactor, "The ratio of the RF amplitude  in the gap over the amplitude in the first gap.");
         super.registerAttribute(ARR_NAMES[3], attTTF, "TTF - The transit time factor of this gap.");
         super.registerAttribute(ARR_NAMES[4], attEndCell, "Flag for whether this is an end cell (i.e. uses the end cell TTFs).");
         super.registerAttribute(ARR_NAMES[5], attGapOffset, "The distance between the Electric and geometric center (E_ctr - G_ctr) (m).");

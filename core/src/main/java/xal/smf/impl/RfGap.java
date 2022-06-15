@@ -49,7 +49,7 @@ public class RfGap extends AcceleratorNode {
     /**
      * a flag indicating whether this gap is the first gap in a cavity string
      */
-    private boolean firstGap = false;
+    private boolean firstCell = false;
 
     /**
      * Override to provide type signature
@@ -103,7 +103,7 @@ public class RfGap extends AcceleratorNode {
      * probably be modified
      */
     public double getGapAmpAvg() throws GetException {
-        final RfCavity rfCav = (RfCavity) this.getParent();
+        final RfCavity rfCav = (RfCavity) getParent();
         return toGapAmpFromCavityAmp(rfCav.getCavAmpAvg());
     }
 
@@ -111,7 +111,7 @@ public class RfGap extends AcceleratorNode {
      * return the RF amplitude in the gap (kV/m)
      */
     public double getGapDfltAmp() {
-        final RfCavity rfCav = (RfCavity) this.getParent();
+        final RfCavity rfCav = (RfCavity) getParent();
         final RfCavityBucket rfCavBuc = rfCav.getRfField();
         return toGapAmpFromCavityAmp(rfCavBuc.getAmplitude());
     }
@@ -122,7 +122,7 @@ public class RfGap extends AcceleratorNode {
      * @return the RF phase in the gap (deg).
      */
     public double getGapPhaseAvg() throws GetException {
-        final RfCavity rfCav = (RfCavity) this.getParent();
+        final RfCavity rfCav = (RfCavity) getParent();
         return toGapPhaseFromCavityPhase(rfCav.getCavPhaseAvg());
     }
 
@@ -148,7 +148,7 @@ public class RfGap extends AcceleratorNode {
      * return the RF phase in the gap (deg)
      */
     public double getGapDfltPhase() {
-        final RfCavity rfCav = (RfCavity) this.getParent();
+        final RfCavity rfCav = (RfCavity) getParent();
         final RfCavityBucket rfCavBuc = rfCav.getRfField();
         return toGapPhaseFromCavityPhase(rfCavBuc.getPhase());
     }
@@ -157,7 +157,7 @@ public class RfGap extends AcceleratorNode {
      * return the RF fundamental frequency
      */
     public double getGapDfltFrequency() {
-        final RfCavity rfCav = (RfCavity) this.getParent();
+        final RfCavity rfCav = (RfCavity) getParent();
         final RfCavityBucket rfCavBuc = rfCav.getRfField();
         return rfCavBuc.getFrequency();
     }
@@ -275,12 +275,12 @@ public class RfGap extends AcceleratorNode {
      */
     public RealUnivariatePolynomial getTTFFit() {
 
-        double[] arrCoeffs = this.bucRfGap.getTCoefficients();
+        double[] arrCoeffs = bucRfGap.getTCoefficients();
 
         // Defaults to the RF cavity transit time factor if none is 
         //  defined for this gap.
         if (arrCoeffs == null || arrCoeffs.length == 0) {
-            RfCavity rfCav = (RfCavity) this.getParent();
+            RfCavity rfCav = (RfCavity) getParent();
             if (isEndCell()) {
                 return rfCav.getTTFFitEnd();
             } else {
@@ -331,12 +331,12 @@ public class RfGap extends AcceleratorNode {
      */
     public RealUnivariatePolynomial getTTFPrimeFit() {
 
-        double[] arrCoeffs = this.bucRfGap.getTpCoefficients();
+        double[] arrCoeffs = bucRfGap.getTpCoefficients();
 
         // Defaults to the RF cavity transit time factor if none is 
         //  defined for this gap.
         if (arrCoeffs == null || arrCoeffs.length == 0) {
-            RfCavity rfCav = (RfCavity) this.getParent();
+            RfCavity rfCav = (RfCavity) getParent();
             if (isEndCell()) {
                 return rfCav.getTTFPrimeFitEnd();
             } else {
@@ -361,12 +361,12 @@ public class RfGap extends AcceleratorNode {
      */
     public RealUnivariatePolynomial getSFit() {
 
-        double[] arrCoeffs = this.bucRfGap.getSCoefficients();
+        double[] arrCoeffs = bucRfGap.getSCoefficients();
 
         // Defaults to the RF cavity transit time factor if none is 
         //  defined for this gap.
         if (arrCoeffs == null || arrCoeffs.length == 0) {
-            RfCavity rfCav = (RfCavity) this.getParent();
+            RfCavity rfCav = (RfCavity) getParent();
             if (isEndCell()) {
                 return rfCav.getSTFFitEnd();
             } else {
@@ -415,7 +415,7 @@ public class RfGap extends AcceleratorNode {
         // Defaults to the RF cavity transit time factor derivative if none is 
         //  defined for this gap.
         if (arrCoeffs == null || arrCoeffs.length == 0) {
-            RfCavity rfCav = (RfCavity) this.getParent();
+            RfCavity rfCav = (RfCavity) getParent();
             if (isEndCell()) {
                 return rfCav.getSTFPrimeFitEnd();
             } else {
@@ -435,7 +435,7 @@ public class RfGap extends AcceleratorNode {
      * Superconducting)
      */
     public double getStructureMode() {
-        RfCavity rfCav = (RfCavity) this.getParent();
+        RfCavity rfCav = (RfCavity) getParent();
         return rfCav.getStructureMode();
     }
 
@@ -451,15 +451,15 @@ public class RfGap extends AcceleratorNode {
     /**
      * sets the flag indicating whether this is the first gap in a cavity
      */
-    public void setFirstGap(boolean tf) {
-        firstGap = tf;
+    public void setFirstCell(boolean tf) {
+        firstCell = tf;
     }
 
     /**
      * returns whether this is the first gap of a cavity string
      */
-    public boolean isFirstGap() {
-        return firstGap;
+    public boolean isFirstCell() {
+        return firstCell;
     }
 
     /**
@@ -483,8 +483,8 @@ public class RfGap extends AcceleratorNode {
      * Added 10/17/02 CKA
      */
     public double getDesignEnergyGain() {
-        double etl = this.getGapDfltE0TL();
-        double phi = this.getGapDfltPhase();
+        double etl = getGapDfltE0TL();
+        double phi = getGapDfltPhase();
 
         return etl * Math.cos(phi);
     }

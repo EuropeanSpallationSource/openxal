@@ -150,6 +150,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
 
     private double synchronousPhase;
     private double energyGain;
+    private double longitudinalPhaseReference;
 
     @Override
     public void computeSynchronousPhaseAndEnergyGain(IProbe probe) {
@@ -688,15 +689,6 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
  /*
      * Attribute Query
      */
-    /**
-     * return whether this gap is the initial gap of a cavity
-     *
-     * @return The firstGap value
-     */
-    @Override
-    public boolean isFirstGap() {
-        return bolStartCell;
-    }
 
     /**
      *
@@ -845,18 +837,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      */
     @Override
     public double longitudinalPhaseAdvance(IProbe probe) {
-        // We trick the algorithm into resetting the probe's phase to the phase
-        //  of this gap, which is the klystron phase of this cavity
-        if (this.isFirstGap()) {
-            double phi0 = this.getPhase();
-            double phi = probe.getLongitinalPhase();
-            double dphi = this.compGapPhaseAndEnergyGain(probe).phi;
-
-            return -phi + phi0 + dphi;
-            // We're just a plain ole gap, advance the probe phase by the phase gain
-        } else {
-            return this.compGapPhaseAndEnergyGain(probe).phi;
-        }
+        return compGapPhaseAndEnergyGain(probe).phi;
     }
 
     /**
@@ -879,9 +860,9 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         // Determine the current energy gain and focusing constants for the gap
         // the following section is to calculate the phase of the beam at each gap, rather than use hardwired phases.
         // update the energy gain first:
-        double dW = this.compGapPhaseAndEnergyGain(probe).w;
-        double kz = this.compLongFocusing(probe);
-        double kt = this.compTransFocusing(probe);
+        double dW = compGapPhaseAndEnergyGain(probe).w;
+        double kz = compLongFocusing(probe);
+        double kt = compTransFocusing(probe);
 
         // Compute final energy parameters
         double wF = wI + dW;
@@ -921,7 +902,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         RfGap rfgap = (RfGap) element.getHardwareNode();
 
         // Initialize from source values
-        bolStartCell = rfgap.isFirstGap();
+        bolStartCell = rfgap.isFirstCell();
         bolEndCell = rfgap.isEndCell();
         dblGapLength = rfgap.getGapLength();
         gapOffset = rfgap.getGapOffset();
@@ -946,18 +927,18 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
 
         bufOut.append(super.toString());
 
-        bufOut.append("  Gap ETL product    : ").append(this.getETL());
+        bufOut.append("  Gap ETL product    : ").append(getETL());
         bufOut.append('\n');
-        bufOut.append("  Gap phase shift    : ").append(this.getPhase());
-        bufOut.append('\n');
-
-        bufOut.append("  RF frequency       : ").append(this.getFrequency());
+        bufOut.append("  Gap phase shift    : ").append(getPhase());
         bufOut.append('\n');
 
-        bufOut.append("  Axial field dblFieldE0     : ").append(this.getE0());
+        bufOut.append("  RF frequency       : ").append(getFrequency());
         bufOut.append('\n');
 
-        bufOut.append("  Gap offset         : ").append(this.getGapOffset());
+        bufOut.append("  Axial field dblFieldE0     : ").append(getE0());
+        bufOut.append('\n');
+
+        bufOut.append("  Gap offset         : ").append(getGapOffset());
         bufOut.append('\n');
 
         return bufOut.toString();
@@ -972,10 +953,10 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
     public void print(PrintWriter os) {
         super.print(os);
 
-        os.println("  Gap ETL product    : " + this.getETL());
-        os.println("  Gap phase shift    : " + this.getPhase());
-        os.println("  RF frequency       : " + this.getFrequency());
-        os.println("  Axial field dblFieldE0     : " + this.getE0());
+        os.println("  Gap ETL product    : " + getETL());
+        os.println("  Gap phase shift    : " + getPhase());
+        os.println("  RF frequency       : " + getFrequency());
+        os.println("  Axial field dblFieldE0     : " + getE0());
     }
 
 
@@ -1014,8 +995,8 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      * @since Jan 12, 2015 by Christopher K. Allen
      */
     private double compCavModeFieldCoeff() {
-        final int n = this.getCavityCellIndex();
-        final double q = this.getCavityModeConstant();
+        final int n = getCavityCellIndex();
+        final double q = getCavityModeConstant();
 
         return Math.cos(n * q * Math.PI);
     }
@@ -1053,19 +1034,18 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      * @since Nov 26, 2014 @author Christopher K. Allen
      */
     private double compGapEntrancePhase(IProbe probe) {
-
         // Get the phase of the probe at the gap geometric center
-        double phi0 = this.isFirstGap() ? this.getPhase() : probe.getLongitinalPhase();
+        double phi0  = getPhase() + probe.getLongitinalPhase() - getLongitudinalPhaseReference();
 
         double bi = probe.getBeta();
-        double dl = this.getGapOffset();
-        double dphi = this.compDriftingPhaseAdvance(bi, dl);
+        double dl = getGapOffset();
+        double dphi = compDriftingPhaseAdvance(bi, dl);
 
         double phi = phi0 + dphi;
 
         // Correct the phase as needed for any difference from electrical center according
         //  to the simulation mode we are using
-        switch (this.enmPhsCalcMth) {
+        switch (enmPhsCalcMth) {
             case DESIGN:
                 return phi0;
 
@@ -1105,12 +1085,11 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
      * @see #compGapPhaseAndEnergyImpulses(IProbe)
      */
     private EnergyVariables compMidGapPhaseAndEnergy(IProbe probe) {
-
         // Get the phase and energy at the entrance of the gap
         double wI = probe.getKineticEnergy();
-        double phiI = this.compGapEntrancePhase(probe);
+        double phiI = compGapEntrancePhase(probe);
 
-        EnergyVariables varDelVals = this.compGapPhaseAndEnergyGain(probe);
+        EnergyVariables varDelVals = compGapPhaseAndEnergyGain(probe);
         double dW = varDelVals.w;
         double dPhi = varDelVals.phi;
 
@@ -1220,9 +1199,9 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
     private EnergyVariables compGapPhaseAndEnergyGainDirect(IProbe probe) {
         // Compute the energy gain without corrections
         double q = Math.abs(probe.getSpeciesCharge());
-        double etl = this.getETL();
-        double a = this.compCavModeFieldCoeff();
-        double phi0 = this.compGapEntrancePhase(probe);
+        double etl = getETL();
+        double a = compCavModeFieldCoeff();
+        double phi0 = compGapEntrancePhase(probe);
 
         double dW = q * a * etl * Math.cos(phi0);
 
@@ -1237,7 +1216,7 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
         double bI = probe.getBeta();
         double bF = RelativisticParameterConverter.computeBetaFromEnergies(wF, eR);
 
-        double dphi = this.compGapOffsetPhaseChange(bI, bF);
+        double dphi = compGapOffsetPhaseChange(bI, bF);
 
         return new EnergyVariables(dphi, dW);
     }
@@ -1671,5 +1650,15 @@ public class IdealRfGapUpgraded extends ThinElement implements IRfGap, IRfCavity
     private double waveNumber(double beta) {
         double lambda = LIGHT_SPEED / this.getFrequency();
         return DBL_2PI / (beta * lambda);
+    }
+
+    @Override
+    public void setLongitudinalPhaseReference(double longitudinalPhaseEntrance) {
+        this.longitudinalPhaseReference = longitudinalPhaseEntrance;
+    }
+
+    @Override
+    public double getLongitudinalPhaseReference() {
+        return longitudinalPhaseReference;
     }
 }

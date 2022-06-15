@@ -83,16 +83,6 @@ public interface IRfGap /*extends gov.sns.xal.model.IElement*/ {
     public double getE0();
 
     /**
-     * Indicates whether or not this gap is in the first cell of an RF cavity.
-     *
-     * @return  <code>true</code> if this is the first gap in an RF cavity,
-     * <code>false</code> otherwise
-     *
-     * @since Jan 23, 2015 by Christopher K. Allen
-     */
-    public boolean isFirstGap();
-
-    /**
      * Compute the synchronous phase and the energy gain for a cavity gap.
      *
      * @param probe

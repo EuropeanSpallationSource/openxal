@@ -146,14 +146,13 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
      */
     @Override
     public void doPropagation(IProbe probe, IElement elem) throws ModelException {
-
         // number of steps through element
         int cntSteps;
         // step size through element
         double dblStep;
 
         //sako
-        double elemPos = this.getElemPosition();
+        double elemPos = getElemPosition();
         double elemLen = elem.getLength();
         double propLen = elemLen - elemPos;
 
@@ -171,8 +170,8 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         dblStep = propLen / cntSteps;
 
         for (int i = 0; i < cntSteps; i++) {
-            this.advanceState(probe, elem, dblStep);
-            this.advanceProbe(probe, elem, dblStep);
+            advanceState(probe, elem, dblStep);
+            advanceProbe(probe, elem, dblStep);
         }
     }
 
@@ -291,7 +290,7 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
             advanceProbe(probe, ifcElem, dblLen / 2.0);
 
             // space charge transfer matrix
-            PhaseMatrix matPhiSc = this.compScheffMatrix(dblLen, probe, ifcElem);
+            PhaseMatrix matPhiSc = compScheffMatrix(dblLen, probe, ifcElem);
 
             // Compute half-step transfer matrix at new probe location
             PhaseMap mapElem1 = ifcElem.transferMap(probe, dblLen / 2.0);
@@ -307,11 +306,11 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
 
         // Check for exceptional circumstance and modify transfer matrix accordingly
         // use this part for IdealRfGaps
-        if (this.getEmittanceGrowth() && ifcElem instanceof IdealRfGap) {
+        if (getEmittanceGrowth() && ifcElem instanceof IdealRfGap) {
             IdealRfGap elemRfGap = (IdealRfGap) ifcElem;
-            double dphi = this.effPhaseSpread(probe, elemRfGap);
+            double dphi = effPhaseSpread(probe, elemRfGap);
 
-            matPhi = this.modTransferMatrixForEmitGrowth(dphi, matPhi);
+            matPhi = modTransferMatrixForEmitGrowth(dphi, matPhi);
         }
 
         return matPhi;
@@ -474,7 +473,7 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
             return matTau;
         }
 
-        if (!this.getEmittanceGrowth()) {
+        if (!getEmittanceGrowth()) {
             return matTau;
         }
 
@@ -482,7 +481,7 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         IdealRfGap elemRfGap = (IdealRfGap) iElem;
 
         double phiS = elemRfGap.getPhase();
-        double dphi = this.effPhaseSpread(probe, elemRfGap);
+        double dphi = effPhaseSpread(probe, elemRfGap);
 
         // Compute the divergence angle increment coefficients 
         //  (emittance growth coefficients)
@@ -491,11 +490,11 @@ public class EnvelopeTracker extends EnvelopeTrackerBase {
         // longitudinal divergence angle augmentation factor
         double dzp2;
 
-        double qT = this.compEmitGrowthFunction(PhasePlane.TRANSVERSE, phiS, dphi);
+        double qT = compEmitGrowthFunction(PhasePlane.TRANSVERSE, phiS, dphi);
         double kt = elemRfGap.compTransFocusing(probe);
         dxp2 = kt * kt * qT;
 
-        double gz = this.compEmitGrowthFunction(PhasePlane.LONGITUDINAL, phiS, dphi);
+        double gz = compEmitGrowthFunction(PhasePlane.LONGITUDINAL, phiS, dphi);
         double kz = elemRfGap.compLongFocusing(probe);
 
         dzp2 = kz * kz * gz;

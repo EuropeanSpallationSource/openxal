@@ -76,6 +76,9 @@ public class IdealRfCavity extends ElementSeq implements IRfCavity {
     private double energyGain;
     // Synchronous phase in the cavity [rad]
     private double synchronousPhase;
+    
+    // The longitudinal phase reference, either at the entrance of the cavity or rf cell
+    private double longitudinalPhaseReference;
 
     /*
      * Initialization
@@ -321,19 +324,43 @@ public class IdealRfCavity extends ElementSeq implements IRfCavity {
      */
     @Override
     public void propagate(IProbe probe) throws ModelException {
+        IAlgorithm alg = probe.getAlgorithm();
+
         // It distributes parameters to the child modeling ELEMENTS of this cavity. 
         // We are not acting on the probe component.
         this.distributeCavityProperties();
         this.distributeCellIndices();
 
-        // Now we propagate the probe through this composite modeling element
-        //  as usual.
-        super.propagate(probe);
+        // When propagating through the cavity elements, we must carefully set the cavity phase depending on configuration.       
+        for (IComponent comp : getForwardCompList()) {
+            // The child component is a cavity cell
+            if (comp instanceof IRfCavityCell) {
+                IRfCavityCell mdlCavCell = (IRfCavityCell) comp;
+                /*
+                Set the phase reference for the first cell.
+                For RfGap it will be the center of the gap.
+                For Fieldmaps, it will be at the entrance of the fieldmap.
+                 */
+                if (((IRfCavityCell) comp).isFirstCell()) {
+                    longitudinalPhaseReference = probe.getLongitinalPhase();
+                }
 
-        // Propagate also this element in the Synchronous tracker
-        // This must be done after super.propagate() so that synchronous phases 
-        // are calculated correctly.
-        IAlgorithm alg = probe.getAlgorithm();
+                if (alg.getRfGapPhaseCalculation()) {
+                    // Same reference for all gaps when phase calculation is enabled
+                    mdlCavCell.setLongitudinalPhaseReference(longitudinalPhaseReference);
+                } else {
+                    // Reference set so that Cavity phase + phase factor is applied
+                    mdlCavCell.setLongitudinalPhaseReference(probe.getLongitinalPhase());
+                }
+            }
+            comp.propagate(probe);
+        }
+
+        /* 
+        Propagate also this element in the Synchronous tracker
+        This must be done after super.propagate() so that synchronous phases 
+        are calculated correctly.
+         */
         if (alg instanceof SynchronousTracker) {
             ((SynchronousTracker) alg).propagate(probe, this);
         }
