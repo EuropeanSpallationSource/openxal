@@ -58,7 +58,8 @@
                 <version>3.4.0</version>
                 <inherited>true</inherited>
                 <executions>
-                    <execution>                        
+                    <execution> 
+                        <id>apps</id>                       
                         <goals>
                             <goal>publish</goal>
                         </goals>
@@ -70,6 +71,22 @@
                                 <repoKey>OpenXAL/release</repoKey>
                                 <snapshotRepoKey>OpenXAL/snapshot</snapshotRepoKey>
                                 <includePatterns>**-${project.version}.jar</includePatterns>
+                            </publisher>
+                        </configuration>
+                    </execution>
+                    <execution>     
+                        <id>app.pom</id>                       
+                        <goals>
+                            <goal>publish</goal>
+                        </goals>
+                        <configuration>
+                            <publisher>
+                                <contextUrl>${artifactory.url}</contextUrl>
+                                <username>${artifactory.username}</username>
+                                <password>${artifactory.password}</password>
+                                <repoKey>libs-release-local</repoKey>
+                                <snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
+                                <includePatterns>*.pom</includePatterns>
                             </publisher>
                         </configuration>
                     </execution>
