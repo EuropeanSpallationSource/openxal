@@ -1106,7 +1106,7 @@ public class AcceleratorSeq extends AcceleratorNode implements DataListener {
         ApertureProfile aperProfile = new ApertureProfile();
 
         for (AcceleratorNode node : nodes) {
-            double pos = node.getPosition();
+            double pos = getPosition(node);
             double[] aperPos = node.getAper().getAperPos();
             double[] aperX = node.getAper().getAperX();
             double[] aperY = node.getAper().getAperY();
