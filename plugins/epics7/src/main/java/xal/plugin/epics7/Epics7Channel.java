@@ -77,10 +77,12 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     //  Constants
     public static final double C_DBL_DEF_TIME_IO = 5.0;
     public static final double C_DBL_DEF_TIME_EVENT = 0.1;
+    public static final String C_S_DEF_PROTOCOL = "NONE";
 
     // Property names
     private static final String DEF_TIME_IO = "c_dblDefTimeIO";
     private static final String DEF_TIME_EVENT = "c_dblDefTimeEvent";
+    private static final String DEF_PROTOCOL = "defProtocol";
 
     // Fields
     public static final String VALUE_FIELD = "value";
@@ -107,6 +109,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     private volatile Channel caChannel;
     private volatile Channel pvaChannel;
     private volatile Channel nativeChannel;
+    private String defaultProtocol;
 
     private final Object connectionLock = new Object();
 
@@ -121,6 +124,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
         java.util.prefs.Preferences defaults = Preferences.nodeForPackage(xal.ca.Channel.class);
         dblTmIO = defaults.getDouble(DEF_TIME_IO, C_DBL_DEF_TIME_IO);
         dblTmEvt = defaults.getDouble(DEF_TIME_EVENT, C_DBL_DEF_TIME_EVENT);
+        defaultProtocol = defaults.get(DEF_PROTOCOL, C_S_DEF_PROTOCOL);
     }
 
     protected Channel getNativeChannel() {
@@ -150,12 +154,14 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
             synchronized (connectionLock) {
                 connectionLatch = new CountDownLatch(1);
 
-                if (!strId.startsWith(CA_PREFIX)) {
+                // prefix is pva:// or else the default protocol is PVA or None
+                if (strId.startsWith(PVA_PREFIX) || (!strId.startsWith(CA_PREFIX) && !defaultProtocol.equals("CA"))) {
                     pvaChannel = epics7ChannelSystem.getPvaChannelProvider().createChannel(
                             strId.startsWith(PVA_PREFIX) ? strId.substring(PVA_PREFIX.length()) : strId,
                             this, ChannelProvider.PRIORITY_DEFAULT);
                 }
-                if (!strId.startsWith(PVA_PREFIX)) {
+                // prefix is ca:// or else the default protocol is CA or None
+                if (strId.startsWith(CA_PREFIX) || (!strId.startsWith(PVA_PREFIX) && !defaultProtocol.equals("PVA"))) {
                     caChannel = epics7ChannelSystem.getCaChannelProvider().createChannel(
                             strId.startsWith(CA_PREFIX) ? strId.substring(CA_PREFIX.length()) : strId,
                             this, ChannelProvider.PRIORITY_DEFAULT);
