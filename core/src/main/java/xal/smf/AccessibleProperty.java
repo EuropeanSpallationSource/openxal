@@ -20,17 +20,15 @@ package xal.smf;
 import java.util.Arrays;
 
 /**
- * Container for properties with their corresponding readback and set channel
- * handles, together with methods to get and set the design and live values.
+ * Container for properties with their corresponding readback and set channel handles, together with methods to get and
+ * set the design and live values.
  * <p>
- * Some properties may have getter and setter for design values, or only for
- * live values if the properties are not used by the model.
+ * Some properties may have getter and setter for design values, or only for live values if the properties are not used
+ * by the model.
  * <p>
- * For live values, getter and setters are meant to only convert the value, so
- * if they are not provided the value will be returned the same. EPICS
- * communication is done by the {@link xal.smf.AcceleratorNode} object using the
- * methods {@link xal.smf.AcceleratorNode#getLivePropertyValue} and
- * {@link xal.smf.AcceleratorNode#setLivePropertyValue}.
+ * For live values, getter and setters are meant to only convert the value, so if they are not provided the value will
+ * be returned the same. EPICS communication is done by the {@link xal.smf.AcceleratorNode} object using the methods
+ * {@link xal.smf.AcceleratorNode#getLivePropertyValue} and {@link xal.smf.AcceleratorNode#setLivePropertyValue}.
  *
  * @author Juan F. Esteban Müller <JuanF.EstebanMuller@ess.eu>
  */
@@ -49,6 +47,8 @@ public class AccessibleProperty {
 
     // Flag that indicates if the property has design values. Otherwise it is a value only available in EPICS.
     private boolean designValues = false;
+    // Flag that indicates if the property has LIVE values. Otherwise it is a design only value.
+    private boolean liveValues = false;
 
     public AccessibleProperty(String name, String readbackHandle, String setHandle, GetterDesign getterDesign, SetterDesign setterDesign) {
         this(name, new String[]{readbackHandle}, setHandle, getterDesign, setterDesign, null, null);
@@ -73,6 +73,10 @@ public class AccessibleProperty {
 
         if (getterDesign != null && setterDesign != null) {
             designValues = true;
+        }
+
+        if (readbackHandles != null && setHandle != null) {
+            liveValues = true;
         }
     }
 
@@ -138,6 +142,10 @@ public class AccessibleProperty {
 
     public boolean hasDesignValues() {
         return designValues;
+    }
+
+    public boolean hasLiveValues() {
+        return liveValues;
     }
 
     public double setLive(double channelValue) {
