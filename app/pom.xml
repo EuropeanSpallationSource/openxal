@@ -70,23 +70,7 @@
                                 <password>${artifactory.password}</password>
                                 <repoKey>OpenXAL/release</repoKey>
                                 <snapshotRepoKey>OpenXAL/snapshot</snapshotRepoKey>
-                                <includePatterns>**-${project.version}.jar</includePatterns>
-                            </publisher>
-                        </configuration>
-                    </execution>
-                    <execution>     
-                        <id>app.pom</id>                       
-                        <goals>
-                            <goal>publish</goal>
-                        </goals>
-                        <configuration>
-                            <publisher>
-                                <contextUrl>${artifactory.url}</contextUrl>
-                                <username>${artifactory.username}</username>
-                                <password>${artifactory.password}</password>
-                                <repoKey>libs-release-local</repoKey>
-                                <snapshotRepoKey>libs-snapshot-local</snapshotRepoKey>
-                                <includePatterns>*.pom</includePatterns>
+                                <includePatterns>**-${project.version}.jar,*.pom</includePatterns>
                             </publisher>
                         </configuration>
                     </execution>
