@@ -441,6 +441,17 @@ public abstract class FxApplication extends Application {
             throw (e);
         }
 
+        String document = getParameters().getNamed().getOrDefault("document", "");
+        if (!document.equals("")) {
+            File docFile = new File(document);
+            if (docFile.exists()) {
+                URL docUrl = docFile.toURI().toURL();
+                DOCUMENT.loadDocument(docUrl);
+            } else {
+                Logger.getLogger(getClass().getName()).log(Level.WARNING, "Document {0} was not found.", document);
+            }
+        }
+
         stage.show();
     }
 
