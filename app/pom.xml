@@ -70,7 +70,7 @@
                                 <password>${artifactory.password}</password>
                                 <repoKey>OpenXAL/release</repoKey>
                                 <snapshotRepoKey>OpenXAL/snapshot</snapshotRepoKey>
-                                <includePatterns>**-${project.version}.jar,*.pom</includePatterns>
+                                <includePatterns>**-${project.version}.jar,**.pom</includePatterns>
                             </publisher>
                         </configuration>
                     </execution>
