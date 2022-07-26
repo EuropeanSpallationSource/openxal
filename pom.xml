@@ -12,6 +12,7 @@
         <surefireArgLine></surefireArgLine>                 <!-- To be able to run tests on Netbeans -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javafx-version>18</javafx-version>
+        <xaos-version>0.10</xaos-version>
         <sonar.exclusions> <!-- Exclude source we do not use -->
             **/tools/data/KeyValueSorting.java,
             **/sim/slg/*.py,
@@ -445,12 +446,12 @@
             <dependency>
                 <groupId>eu.ess</groupId>
                 <artifactId>xaos.tools</artifactId>
-                <version>0.10-SNAPSHOT</version>
+                <version>${xaos-version}</version>
             </dependency>           
             <dependency>
                 <groupId>eu.ess</groupId>
                 <artifactId>xaos.ui.plot</artifactId>
-                <version>0.10-SNAPSHOT</version>
+                <version>${xaos-version}</version>
             </dependency>
             <dependency>
                 <groupId>eu.ess</groupId>
