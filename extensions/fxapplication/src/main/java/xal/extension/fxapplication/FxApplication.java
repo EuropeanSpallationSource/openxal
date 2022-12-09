@@ -725,6 +725,10 @@ public abstract class FxApplication extends Application {
         }
     }
 
+    public void setTestModeSuffix(String suffix) {
+        DOCUMENT.accelerator.setTestModeSuffix(suffix);
+    }
+
     protected void loadDefaultAcceleratorMenuHandler() {
         Logger.getLogger(getClass().getName()).log(Level.INFO, "Loading default accelerator.");
         setAcceleratorWithPath(XMLDataManager.defaultPath());
