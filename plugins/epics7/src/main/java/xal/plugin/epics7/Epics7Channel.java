@@ -109,7 +109,7 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
     private volatile Channel caChannel;
     private volatile Channel pvaChannel;
     private volatile Channel nativeChannel;
-    private String defaultProtocol;
+    private final String defaultProtocol;
 
     private final Object connectionLock = new Object();
 
@@ -215,20 +215,21 @@ public class Epics7Channel extends xal.ca.Channel implements ChannelRequester {
 
                 nativeChannel = chnl;
                 connectionFlag = true;
-                // Notify listeners.
-                if (connectionProxy != null) {
-                    connectionProxy.connectionMade(this);
-                }
 
                 // Releasing the connection latch.
-                connectionLatch.countDown();
+                connectionLatch.countDown();   
+            }
+            
+            // Notify listeners.
+            if (connectionProxy != null) {
+                connectionProxy.connectionMade(this);
             }
         } else if (cs == Channel.ConnectionState.DISCONNECTED && chnl == nativeChannel) {
+            connectionFlag = false;
             // Notify listeners if the channel that is in used is disconnected.
             if (connectionProxy != null) {
                 connectionProxy.connectionDropped(this);
             }
-            connectionFlag = false;
         }
     }
 
