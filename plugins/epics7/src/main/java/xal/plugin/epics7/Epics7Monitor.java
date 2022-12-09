@@ -61,7 +61,7 @@ public class Epics7Monitor extends xal.ca.Monitor implements MonitorRequester {
         }
 
         monitor.createRequest(channel, request);
-
+        
         monitor.begin();
 
         return monitor;
@@ -87,7 +87,6 @@ public class Epics7Monitor extends xal.ca.Monitor implements MonitorRequester {
     protected void begin() {
         synchronized (lock) {
             started = true;
-            nativeMonitor.start();
         }
     }
 
