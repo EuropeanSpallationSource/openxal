@@ -40,7 +40,7 @@ public class EssRbacSubject implements RBACSubject {
     @Override
     public void logout() throws RBACException {
         try {
-            SecurityFacade.getDefaultInstance().logout();
+            SecurityFacade.getDefaultInstance().logout(token.getIP());
             this.token = null;
         } catch (SecurityFacadeException e) {
             throw new RBACException(e);
@@ -52,7 +52,7 @@ public class EssRbacSubject implements RBACSubject {
     public boolean hasPermission(final String resource, final String permission) throws AccessDeniedException,
             RBACException {
         try {
-            return SecurityFacade.getDefaultInstance().hasPermission(resource, permission);
+            return SecurityFacade.getDefaultInstance().hasPermission(token.getIP(), resource, permission);
         } catch (se.esss.ics.rbac.access.AccessDeniedException e) {
             throw new AccessDeniedException(e);
         } catch (SecurityFacadeException e) {
@@ -64,7 +64,7 @@ public class EssRbacSubject implements RBACSubject {
     public Map<String, Boolean> hasPermissions(final String resource, final String... permissions)
             throws AccessDeniedException, RBACException {
         try {
-            return SecurityFacade.getDefaultInstance().hasPermissions(resource, permissions);
+            return SecurityFacade.getDefaultInstance().hasPermissions(token.getIP(), resource, permissions);
         } catch (se.esss.ics.rbac.access.AccessDeniedException e) {
             throw new AccessDeniedException(e);
         } catch (SecurityFacadeException e) {
@@ -76,7 +76,7 @@ public class EssRbacSubject implements RBACSubject {
     public ExclusiveAccess requestExclusiveAccess(final String resource, final String permission,
             final int durationInMinutes) throws AccessDeniedException, RBACException {
         try {
-            return new EssExclusiveAccess(SecurityFacade.getDefaultInstance().requestExclusiveAccess(resource,
+            return new EssExclusiveAccess(token.getIP(), SecurityFacade.getDefaultInstance().requestExclusiveAccess(token.getIP(), resource,
                     permission, durationInMinutes));
         } catch (se.esss.ics.rbac.access.AccessDeniedException e) {
             throw new AccessDeniedException(e);
@@ -102,7 +102,7 @@ public class EssRbacSubject implements RBACSubject {
     @Override
     public void updateLastAction() {
         try {
-            this.token = SecurityFacade.getDefaultInstance().renewToken();
+            this.token = SecurityFacade.getDefaultInstance().renewToken(token.getIP());
         } catch (SecurityFacadeException e) {
             LOGGER.log(Level.SEVERE, null, e);
         }

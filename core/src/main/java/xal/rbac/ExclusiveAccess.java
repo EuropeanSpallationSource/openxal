@@ -22,6 +22,7 @@ public abstract class ExclusiveAccess {
     /**
      * Construct a new exclusive access.
      *
+     * @param ip the host IP
      * @param resource the name of the resource that owns the permission
      * @param permission the name of the permission for which exclusive access
      * was requested

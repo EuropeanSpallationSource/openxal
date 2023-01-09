@@ -20,14 +20,26 @@ public class EssExclusiveAccess extends ExclusiveAccess {
 
     private static final Logger LOGGER = Logger.getLogger(EssExclusiveAccess.class.getName());
 
-    public EssExclusiveAccess(final se.esss.ics.rbac.access.ExclusiveAccess exclusiveAccess) {
+    protected String ip;
+
+    public EssExclusiveAccess(final String ip, final se.esss.ics.rbac.access.ExclusiveAccess exclusiveAccess) {
         super(exclusiveAccess.getResource(), exclusiveAccess.getPermission(), exclusiveAccess.getExpirationDate());
+        this.ip = ip;
+    }
+
+    /**
+     * Returns the host IP
+     *
+     * @return the host IP
+     */
+    public String getIp() {
+        return ip;
     }
 
     @Override
     public void releaseExclusiveAccess() throws AccessDeniedException, RBACException {
         try {
-            SecurityFacade.getDefaultInstance().releaseExclusiveAccess(getResource(), getPermission());
+            SecurityFacade.getDefaultInstance().releaseExclusiveAccess(ip, getResource(), getPermission());
         } catch (se.esss.ics.rbac.access.AccessDeniedException e) {
             LOGGER.log(Level.SEVERE, "User not loged in.", e);
             throw new AccessDeniedException("User not loged in.");

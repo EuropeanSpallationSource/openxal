@@ -15,7 +15,7 @@ import xal.rbac.RBACSubject;
 public class DummyRbacLogin implements RBACLogin {
 
     @Override
-    public String[] getRolesForUser(String username) throws RBACException {
+    public String[] getRolesForUser(String ip, String username) throws RBACException {
         return new String[0];
 
     }

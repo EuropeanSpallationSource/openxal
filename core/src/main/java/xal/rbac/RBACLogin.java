@@ -14,13 +14,14 @@ public interface RBACLogin {
      * Returns the list of all roles for the provided username.
      * {@link RBACException} is thrown in case of an error.
      *
+     * @param ip the host IP
      * @param username the username of the user to get assigned roles for
      *
      * @return array of role names assigned to the user
      *
      * @throws RBACException if there was an error
      */
-    public abstract String[] getRolesForUser(String username) throws RBACException;
+    public abstract String[] getRolesForUser(String ip, String username) throws RBACException;
 
     /**
      * Authenticates the user using username and password. The method returns

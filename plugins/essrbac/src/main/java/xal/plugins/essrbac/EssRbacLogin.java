@@ -30,9 +30,9 @@ public class EssRbacLogin implements RBACLogin {
     }
 
     @Override
-    public String[] getRolesForUser(final String username) throws RBACException {
+    public String[] getRolesForUser(final String ip, final String username) throws RBACException {
         try {
-            return SecurityFacade.getDefaultInstance().getRolesForUser(username);
+            return SecurityFacade.getDefaultInstance().getRolesForUser(ip, username);
         } catch (IllegalArgumentException | SecurityFacadeException e) {
             LOGGER.log(Level.SEVERE, null, e);
             throw new RBACException("Couldn't get roles for user: " + username + "\n\r\t");
@@ -65,8 +65,8 @@ public class EssRbacLogin implements RBACLogin {
 
         try {
             Token t = SecurityFacade.getDefaultInstance().authenticate();
-            if (!SecurityFacade.getDefaultInstance().isTokenValid()) {
-                SecurityFacade.getDefaultInstance().logout();
+            if (!SecurityFacade.getDefaultInstance().isTokenValid(ip)) {
+                SecurityFacade.getDefaultInstance().logout(ip);
                 throw new AccessDeniedException("Token expired.");
             }
             SecurityFacade.getDefaultInstance().setDefaultSecurityCallback(null);

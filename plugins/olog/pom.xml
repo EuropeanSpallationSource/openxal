@@ -44,6 +44,11 @@
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
+            <artifactId>javafx-controls</artifactId>
+            <classifier>mac-aarch64</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <classifier>win</classifier>
         </dependency>
@@ -59,6 +64,11 @@
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <classifier>mac-aarch64</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
             <classifier>win</classifier>
         </dependency>
@@ -71,26 +81,31 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
             <classifier>mac</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-web</artifactId>
+            <classifier>mac-aarch64</classifier>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20210307</version>
+            <version>20220924</version>
         </dependency>
         <dependency>
             <groupId>org.commonmark</groupId>
             <artifactId>commonmark</artifactId>
-            <version>0.18.1</version>
+            <version>0.21.0</version>
         </dependency>
         <dependency>
             <groupId>org.commonmark</groupId>
             <artifactId>commonmark-ext-gfm-tables</artifactId>
-            <version>0.18.1</version>
+            <version>0.21.0</version>
         </dependency>
         <dependency>
             <groupId>org.commonmark</groupId>
             <artifactId>commonmark-ext-image-attributes</artifactId>
-            <version>0.18.1</version>
+            <version>0.21.0</version>
         </dependency>
     </dependencies>
 </project>
