@@ -23,11 +23,23 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.net.CookiePolicy;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpRequest.BodyPublisher;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -54,6 +66,8 @@ import xal.tools.apputils.Preferences;
  */
 public class OlogClient {
 
+    private static final Logger LOGGER = Logger.getLogger(OlogClient.class.getName());
+
     private static OlogClient client;
     private String serverUrl;
     private final static char[] MULTIPART_CHARS
@@ -64,13 +78,48 @@ public class OlogClient {
     private static String credentials;
     private String username;
 
+    private static HttpClient httpClient;
+    private static TrustManager[] trustAllCerts = new TrustManager[]{
+        new X509TrustManager() {
+            @Override
+            public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                return null;
+            }
+
+            @Override
+            public void checkClientTrusted(
+                    java.security.cert.X509Certificate[] certs, String authType) {
+            }
+
+            @Override
+            public void checkServerTrusted(
+                    java.security.cert.X509Certificate[] certs, String authType) {
+            }
+        }
+    };
+
     private OlogClient() {
     }
 
     public static OlogClient getClient() {
         if (client == null) {
             client = new OlogClient();
-            OlogClient.setTrustAllCerts();
+
+            // Setting the default cookie manager
+            CookieHandler.setDefault(new CookieManager(null, CookiePolicy.ACCEPT_ALL));
+
+            try {
+                SSLContext sslContext = SSLContext.getInstance("TLS");
+                sslContext.init(null, trustAllCerts, new SecureRandom());
+
+                httpClient = HttpClient.newBuilder()
+                        .cookieHandler(CookieHandler.getDefault())
+                        .sslContext(sslContext)
+                        .connectTimeout(Duration.ofSeconds(10))
+                        .build();
+            } catch (NoSuchAlgorithmException | KeyManagementException ex) {
+                Logger.getLogger(OlogClient.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         return client;
     }
@@ -90,46 +139,64 @@ public class OlogClient {
         return buffer.toString();
     }
 
-    private static void setTrustAllCerts() {
-        TrustManager[] trustAllCerts = new TrustManager[]{
-            new X509TrustManager() {
-                @Override
-                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                    return null;
-                }
+    public boolean login(String username, char[] password) throws OlogUnauthorizedException, LogbookException {
+        setCredentials(username, password);
+        String boundaryString = "---" + generateBoundary();
 
-                @Override
-                public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-                }
+        StringBuilder body = new StringBuilder();
+        body.append("--").append(boundaryString).append("\r\n");
+        body.append("Content-Disposition: form-data; name=\"username\"\r\n\r\n");
+        body.append(username).append("\r\n");
+        body.append("--").append(boundaryString).append("\r\n");
+        body.append("Content-Disposition: form-data; name=\"password\"\r\n\r\n");
+        body.append(String.copyValueOf(password)).append("\r\n");
+        body.append("--").append(boundaryString).append("--").append("\r\n");
 
-                @Override
-                public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
-                }
-            }
-        };
-
-        // Install the all-trusting trust manager
         try {
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-            HttpsURLConnection.setDefaultHostnameVerifier(
-                    new HostnameVerifier() {
-                @Override
-                public boolean verify(String urlHostName, SSLSession session) {
-                    return true;
-                }
-            });
-        } catch (KeyManagementException | NoSuchAlgorithmException ex) {
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URL(new URL(serverUrl), "login").toURI())
+                    .header("Content-Type", "multipart/form-data; boundary=" + boundaryString)
+                    .header("Authorization", credentials)
+                    .method("POST", HttpRequest.BodyPublishers.ofString(body.toString()))
+                    .build();
+
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == HttpURLConnection.HTTP_OK) {
+                return true;
+            } else {
+                logout();
+                return false;
+            }
+        } catch (MalformedURLException | URISyntaxException ex) {
+            Logger.getLogger(OlogClient.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException | InterruptedException ex) {
             Logger.getLogger(OlogClient.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return false;
     }
 
-    public String getUserName() {
-        return username;
+    public String getUserLogedIn() {
+        HttpRequest request;
+        try {
+            request = HttpRequest.newBuilder()
+                    .uri(new URL(new URL(serverUrl), "user").toURI())
+                    .method("GET", HttpRequest.BodyPublishers.noBody())
+                    .build();
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                return username;
+            } else {
+                return null;
+            }
+        } catch (MalformedURLException | URISyntaxException ex) {
+            Logger.getLogger(OlogClient.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException | InterruptedException ex) {
+            Logger.getLogger(OlogClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
-    public void setCredentials(String username, char[] password) {
+    private void setCredentials(String username, char[] password) {
         this.username = username;
         String auth = username + ":" + String.copyValueOf(password);
         byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
@@ -137,7 +204,7 @@ public class OlogClient {
         credentials = "Basic " + new String(encodedAuth);
     }
 
-    public void forgetCredentials() {
+    public void logout() {
         credentials = null;
         username = null;
     }
@@ -253,7 +320,7 @@ public class OlogClient {
                 return response.toString();
             }
             // If the response code is not OK, then throw an exception.
-            throw new LogbookException("HTTP GET failed for URL: " + url.toString());
+            throw new LogbookException("HTTP GET failed for URL: " + url.toString() + " with response code " + responseCode, responseCode);
         } catch (IOException ex) {
             throw new LogbookException(ex);
         }
@@ -285,12 +352,11 @@ public class OlogClient {
             urlConnection.setRequestMethod("PUT");
 
             urlConnection.setRequestProperty("Authorization", credentials);
-
             urlConnection.setRequestProperty("Content-Type", "application/json");
             urlConnection.setRequestProperty("Accept", "application/json");
 
             urlConnection.setDoOutput(true);
-            try ( OutputStream os = urlConnection.getOutputStream()) {
+            try (OutputStream os = urlConnection.getOutputStream()) {
                 os.write(params.getBytes());
                 os.flush();
             }
@@ -301,7 +367,7 @@ public class OlogClient {
                 BufferedReader in = new BufferedReader(new InputStreamReader(
                         urlConnection.getInputStream()));
                 String inputLine;
-                StringBuffer response = new StringBuffer();
+                StringBuilder response = new StringBuilder();
 
                 while ((inputLine = in.readLine()) != null) {
                     response.append(inputLine);
@@ -334,7 +400,7 @@ public class OlogClient {
             urlConnection.setRequestProperty("Authorization", credentials);
 
             urlConnection.setDoOutput(true);
-            try ( OutputStream os = urlConnection.getOutputStream();  BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "ISO-8859-1"))) {
+            try (OutputStream os = urlConnection.getOutputStream(); BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "ISO-8859-1"))) {
                 writer.write("--" + boundaryString + "\r\n");
                 writer.write("Content-Disposition: form-data; name=\"filename\"\r\n");
                 writer.write("Content-Type: application/json\r\n\r\n");

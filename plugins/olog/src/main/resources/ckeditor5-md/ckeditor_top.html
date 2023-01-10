@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+	<style>
+		html,
+		body {
+			height: 100%;
+			margin: 0;
+		}
+
+		#fullscreenoverlay {
+			overflow: hidden;
+		}
+
+		#fullscreeneditor {
+			position: fixed !important;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			z-index: 1000;
+		}
+
+		#fullscreeneditor .ck-editor__editable.ck-rounded-corners.ck-editor__editable_inline,
+		#fullscreeneditor .ck.ck-editor__main,
+		#fullscreeneditor .ck-source-editing-area {
+			height: 100%;
+		}
+
+		#fullscreeneditor .ck-source-editing-area textarea {
+			overflow-y: scroll;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="editor">
+	</div>
+	<script>

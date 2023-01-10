@@ -23,11 +23,24 @@ package xal.extension.logbook;
  */
 public class LogbookException extends Exception {
 
+    private final int responseCode;
+
+    public int getResponseCode() {
+        return responseCode;
+    }
+
+    public LogbookException(String msg, int responseCode) {
+        super(msg);
+        this.responseCode = responseCode;
+    }
+
     public LogbookException(String msg) {
         super(msg);
+        this.responseCode = -1;
     }
 
     public LogbookException(Exception ex) {
         super(ex);
+        this.responseCode = -1;
     }
 }

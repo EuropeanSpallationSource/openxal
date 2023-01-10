@@ -20,7 +20,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox fx:id="vBoxParent" minHeight="700.0" minWidth="400.0" prefWidth="900.0" VBox.vgrow="NEVER" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.plugin.olog.OlogPostEntryController">
+<VBox fx:id="vBoxParent" minHeight="700.0" minWidth="400.0" prefWidth="900.0" VBox.vgrow="NEVER" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="xal.plugin.olog.OlogPostEntryController">
     <children>
         <GridPane fx:id="gridPaneLogbook">
             <columnConstraints>
@@ -89,7 +89,7 @@
                             </rowConstraints>
                             <children>
                                 <Label fx:id="userLabel" />
-                                <Button fx:id="logoutB" disable="true" mnemonicParsing="false" onAction="#logoutBAction" text="Logout" GridPane.columnIndex="1" />
+                                <Button fx:id="loginB" mnemonicParsing="false" GridPane.columnIndex="1" />
                             </children>
                         </GridPane>
                     </children>
@@ -194,7 +194,7 @@
                 <HBox alignment="CENTER_LEFT" styleClass="attribname">
                     <children>
                         <Label styleClass="attribnametext" text="Text:" />
-                        <ButtonBar prefHeight="20.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                        <ButtonBar fx:id="editorPreviewBB" prefHeight="20.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                             <buttons>
                                 <ToggleButton fx:id="markdownB" mnemonicParsing="false" onAction="#markdownBAction" selected="true" text="Markdown" />
                                 <ToggleButton fx:id="splitB" mnemonicParsing="false" onAction="#splitBAction" text="Split View" />
