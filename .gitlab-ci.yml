@@ -10,9 +10,25 @@ variables:
     tags:
         - docker
 
+build.ckeditor:
+    image: node:17-alpine3.14
+    only:
+        - /^site.ess.*$/
+    tags:
+        - docker
+    stage: build
+    script:
+        - 'cd plugins/olog/src/main/resources/ckeditor5-md'
+        - 'npm install'
+        - 'npm run build'
+    artifacts:
+            paths:
+                - plugins/olog/src/main/resources/ckeditor5-md/build
+
 build.maven:
     <<: *maven
     stage: build
+    needs: ["build.ckeditor"]
     script:
         - 'mvn $MAVEN_CLI_OPTS -DskipTests -Dmaven.javadoc.skip=true clean install'
     artifacts:
